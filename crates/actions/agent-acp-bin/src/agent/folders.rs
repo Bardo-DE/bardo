@@ -1,4 +1,4 @@
-//! The folder a coding agent works in under docket's data directory: its own, never the person's
+//! The folder a coding agent works in under the actions service's data directory: its own, never the person's
 //! home or a project.
 
 use super::places::Places;
@@ -8,7 +8,7 @@ use permission_core::ProgramName;
 
 use std::path::PathBuf;
 
-/// The folder an agent works in when the assistant hands it a turn: its own, under docket's data
+/// The folder an agent works in when the assistant hands it a turn: its own, under the actions service's data
 /// directory, never the person's home or a project. `None` for a name that is not a plain slug,
 /// which cannot be the name of a folder.
 fn workspace_name(program: &ProgramName) -> Option<&str> {
@@ -53,7 +53,7 @@ pub fn folder(program: &ProgramName, places: &Places) -> Result<String, FolderFa
     folder_under("assistant", name, places)
 }
 
-/// The folder `name` under `group` in docket's data directory, made if it is not there, and
+/// The folder `name` under `group` in the actions service's data directory, made if it is not there, and
 /// never the home folder or a place of secrets.
 pub fn folder_under(group: &str, name: &str, places: &Places) -> Result<String, FolderFault> {
     let dir: PathBuf = places.data_dir().join(group).join(name);

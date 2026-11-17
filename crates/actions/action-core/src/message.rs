@@ -1,6 +1,6 @@
 //! Sending a message through the router. The one message model is `provenance::Message`: a request
 //! to a worker, a worker's or a computer-use run's progress and final report, the person's own
-//! turn to a subagent and a note across Spaces are all that one type. docket adds no second
+//! turn to a subagent and a note across Spaces are all that one type. The actions service adds no second
 //! one. What lives here is the *draft* a sender hands the router to stamp, and what the router
 //! answers; the stamped result is a `provenance::Message`.
 //!

@@ -86,7 +86,7 @@ async fn a_session_through_the_launcher_asks_porter_in_order_and_gives_it_all_ba
         Arc::new(accounts.clone()),
         procs,
         dir.path().to_owned(),
-        abs("/opt/docket/bardo-agent-net-forward"),
+        abs("/opt/actions/bardo-agent-net-forward"),
         Registry::default(),
     );
     let (sandbox, _) = FakeSandbox::ready(Vec::new());

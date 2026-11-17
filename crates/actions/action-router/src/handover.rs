@@ -1,9 +1,9 @@
-//! A conversation with an agent app moving between docket and the app's own terminal program.
-//! The session stays one session at the router: an agent session while docket runs the app, a
+//! A conversation with an agent app moving between the actions service and the app's own terminal program.
+//! The session stays one session at the router: an agent session while the actions runs the app, a
 //! watch session (restore points only, marked by the terminal) while the person works in the
 //! terminal, and an agent session again when the conversation is brought back. A terminal that
 //! watches an agent app it can name opens its watch session the same way, so the same step
-//! brings it into docket. Every move is a `Hand` note in the session's log.
+//! brings it into the actions service. Every move is a `Hand` note in the session's log.
 
 use crate::router::Router;
 use crate::seams::Seams;
@@ -17,7 +17,7 @@ use provenance::SessionId;
 
 impl<S: Seams> Router<S> {
     /// Names the agent app of a watch session a terminal just opened and the app's own id for
-    /// the conversation, so the session can be brought into docket.
+    /// the conversation, so the session can be brought into the actions service.
     pub(crate) fn name_watched_agent(&self, session: &SessionId, agent: WatchedAgent) {
         let mut st = self.locked();
         let Some(record) = st.sessions.get_mut(session) else {

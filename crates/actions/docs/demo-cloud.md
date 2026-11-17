@@ -4,13 +4,13 @@ For the owner, on this machine, with the shell not running. Everything is instal
 root step is a copy of one file. The companion talks to inferd, inferd to OpenRouter with a key that only
 accountd holds (inferd asks it for the key when a turn needs it). About ten minutes.
 
-Run the first step from the checkouts the installer builds from: `~/docket`, `~/porter`, `~/memory` and
+Run the first step from the checkouts the installer builds from: `~/actions`, `~/porter`, `~/memory` and
 `~/models` (the model catalogue inferd reads).
 
 ## 1. Build and install
 
 ```sh
-cd ~/docket
+cd ~/actions
 dist/install-dev.sh --cloud    # cargo build --release --locked in three repos, then installs under ~/.local
 ```
 
@@ -120,7 +120,7 @@ To undo:
 
 ```sh
 systemctl --user stop bardo-companiond bardo-readerd bardo-actiond memoryd inferd accountd
-cd ~/docket && dist/install-dev.sh --uninstall   # removes exactly what the install put down; keeps an edited config
+cd ~/actions && dist/install-dev.sh --uninstall   # removes exactly what the install put down; keeps an edited config
 sudo rm /etc/bardo/accountd-callers.toml /etc/bardo/inferd-callers.toml
 systemctl --user daemon-reload
 ```

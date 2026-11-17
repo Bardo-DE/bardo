@@ -1,4 +1,4 @@
-//! What the bridge to the router adds: the agent's grants live in docket's store (created from
+//! What the bridge to the router adds: the agent's grants live in the actions service's store (created from
 //! the sheet's "Always", used and audited, listed and revoked over Control), a reviewer's no
 //! refuses, the router's sheets reach the person and come back (the desktop's by default, the
 //! host's own only with the development flag), and the person's prompt is what derives the task.
@@ -51,7 +51,8 @@ fn taint_then_writes(paths: &[&'static str]) -> Vec<Act> {
 }
 
 #[tokio::test]
-async fn an_always_from_the_sheet_is_a_grant_in_dockets_store_used_audited_listed_and_revoked() {
+async fn an_always_from_the_sheet_is_a_grant_in_actions_service_store_used_audited_listed_and_revoked()
+ {
     let (mut rig, files) = Box::pin(started(Setup {
         turns: vec![
             taint_then_writes(&[

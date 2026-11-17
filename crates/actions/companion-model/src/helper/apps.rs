@@ -126,7 +126,7 @@ pub trait AgentApps: Send + Sync {
     }
 
     /// Starts `agent` on the watch session `session`, which a terminal opened for it in `folder`,
-    /// as a conversation of docket's.
+    /// as a conversation of the actions service's.
     fn bring_back_watched<'a>(
         &'a self,
         session: &'a provenance::SessionId,

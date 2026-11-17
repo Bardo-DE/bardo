@@ -202,7 +202,7 @@ impl Desk {
                 .memoryd
                 .stored()
                 .iter()
-                .filter(|r| r.body.kind().as_str() == "docket.grants_ended")
+                .filter(|r| r.body.kind().as_str() == "actions.grants_ended")
                 .count();
             (n > 0).then_some(n)
         })

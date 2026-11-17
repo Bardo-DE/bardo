@@ -1,4 +1,4 @@
-//! A helper's conversation with its agent app moving between docket and the app's own
+//! A helper's conversation with its agent app moving between the actions service and the app's own
 //! command-line program in a terminal: what the host of the agent apps answers when the person
 //! opens the conversation in a terminal and when they bring it back.
 
@@ -76,7 +76,7 @@ pub enum BackOutcome {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BroughtOutcome {
-    /// The app is running on the watch session, which is a conversation of docket's now.
+    /// The app is running on the watch session, which is a conversation of the actions service's now.
     Brought(SessionId),
     /// It stayed in the terminal.
     Refused(HandFault),

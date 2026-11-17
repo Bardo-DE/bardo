@@ -12,7 +12,7 @@
 //! - `supervise`: registering the programs, ending a process whose credential accountd revoked,
 //!   and running the agent's own login visibly (`login`) when asked.
 //!
-//! docket never reads an agent's token: a login runs the agent's own command and reports only its
+//! The actions service never reads an agent's token: a login runs the agent's own command and reports only its
 //! coarse outcome.
 
 pub mod accounts;

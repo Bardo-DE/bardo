@@ -142,7 +142,7 @@ async fn restart_rebuilds_the_front_and_the_roster_from_recent_with_bodies() {
     let source = Scripted::new(Ok(vec![
         // Newest first, as `Recent` answers; a kind the rebuild does not read is skipped, and so
         // is an event whose body is gone.
-        entry(3, "docket.call", 3, Some("{}".into())),
+        entry(3, "actions.call", 3, Some("{}".into())),
         entry(2, "companion.session.closed", 2, None),
         entry(1, "companion.session.opened", 1, Some(opened(&task))),
     ]));

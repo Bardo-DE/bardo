@@ -368,7 +368,7 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
     pair.both(IntentsRequest::CheckpointWatch {
         workspace: Workspace::parse("/tmp/watched").expect("workspace"),
         label: "an agent in pane 2".into(),
-        rewind: Rewind::Docket,
+        rewind: Rewind::Actions,
     })
     .await;
     pair.both(IntentsRequest::CheckpointMark {
@@ -378,7 +378,7 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
     pair.both(IntentsRequest::CheckpointWatchAgent {
         workspace: Workspace::parse("/tmp/watched").expect("workspace"),
         label: "an agent in pane 2".into(),
-        rewind: Rewind::Docket,
+        rewind: Rewind::Actions,
         agent: companion_model::WatchedAgent {
             program: permission_core::ProgramName::parse("claude-code").expect("program"),
             session: companion_model::AppSessionId::parse("0a1b-2c3d").expect("id"),

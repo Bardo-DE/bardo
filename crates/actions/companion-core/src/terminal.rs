@@ -1,4 +1,4 @@
-//! A helper's conversation with its agent app moving between docket and the app's own
+//! A helper's conversation with its agent app moving between the actions service and the app's own
 //! command-line program in a terminal: where each conversation is, what the person can do about
 //! it, and which conversations a terminal started that they can bring in. While a conversation is
 //! in the terminal its helper is paused, so no job reaches the app.

@@ -1,4 +1,4 @@
-//! The built-in assistant's places, in docket's settings file: read as docket reads them, and
+//! The built-in assistant's places, in the actions service's settings file: read as the actions service reads them, and
 //! written as the `assistant` table's keys in one edit, so every other key of the file keeps its
 //! text.
 
@@ -19,7 +19,7 @@ fn file() -> Result<ConfigFile, FilesError> {
     })
 }
 
-/// The places docket's settings file holds; none when there is no file (or it cannot be read:
+/// The places the actions service's settings file holds; none when there is no file (or it cannot be read:
 /// saving then refuses, with the reason, rather than writing over it).
 #[must_use]
 pub fn load_places(home: &ConfigHome) -> PlacesLoaded {
@@ -30,9 +30,9 @@ pub fn load_places(home: &ConfigHome) -> PlacesLoaded {
     read_places(&text)
 }
 
-/// Writes `places` into docket's settings file.
+/// Writes `places` into the actions service's settings file.
 ///
-/// Each key of the `assistant` table in one edit and one rename (docket's directory watch never
+/// Each key of the `assistant` table in one edit and one rename (the actions service's directory watch never
 /// sees some of the keys changed and not the others), and nothing else in the file.
 ///
 /// # Errors

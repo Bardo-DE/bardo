@@ -1,5 +1,5 @@
 //! cuad's seams over the real daemons: the router's gate and message path through action-client's
-//! `DbusTransport` against a real intentd (over docket's fakes) on a private bus, and the event
+//! `DbusTransport` against a real intentd (over the actions service's fakes) on a private bus, and the event
 //! log through memory-client against a real memory service (over the memory service's fakes). Each caller is
 //! a connection that owns the well-known name its role is configured to have.
 

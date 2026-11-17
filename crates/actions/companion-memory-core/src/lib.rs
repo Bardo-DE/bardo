@@ -1,4 +1,4 @@
-//! docket's memory seam, pure: the router's audit records as the memory service's events, and the bounded
+//! The actions service's memory seam, pure: the router's audit records as the memory service's events, and the bounded
 //! queue the router appends them to. No transport and no IO: `companion-memory` holds the glue that
 //! drains the queue into a memory service `Memory`.
 //!

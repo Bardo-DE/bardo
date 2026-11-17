@@ -1,6 +1,6 @@
 [package]
 name = "agent-install"
-description = "Installs coding agents from the agent registry: fetch a pinned version, check it against its digest, unpack it into a directory docket owns, and read and write the records kept there. The values are agent-registry. Nothing here runs an agent, and the network is reached only by the install and update commands."
+description = "Installs coding agents from the agent registry: fetch a pinned version, check it against its digest, unpack it into a directory the actions service owns, and read and write the records kept there. The values are agent-registry. Nothing here runs an agent, and the network is reached only by the install and update commands."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

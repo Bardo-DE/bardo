@@ -1,5 +1,5 @@
 //! What the router appends to the event log. Never content: ids, kinds, decisions, codes.
-//! intentd stores most of these as `EventBody::Area { area: Docket }` in this serde form, with
+//! intentd stores most of these as `EventBody::Area { area: Actions }` in this serde form, with
 //! the things each names for cascade-forget; a message and an episode are the memory service's own typed
 //! bodies, so they travel as such.
 

@@ -25,7 +25,7 @@
 # - engine args: --max-num-seqs 8 and --max-num-batched-tokens 2048 shrink the profiling peak
 #   and the CUDA graph set; they make the 0.42 share fit.
 #
-# 2026-10-07, first live runs (docket live-smoke): the companion's planner asks for a 12000-token
+# 2026-10-07, first live runs (the actions service live-smoke): the companion's planner asks for a 12000-token
 # window, so 8192 was declined (NotListed). Context is 12288 now. At 0.42 with a 12288 window the
 # profiling run left 0.59 GiB of KV and vLLM refused to start; 0.45 with --enforce-eager (no CUDA
 # graphs, no torch.compile: a start of tens of seconds instead of minutes, slower decode) starts

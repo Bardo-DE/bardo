@@ -430,7 +430,7 @@ RULES=(
   "action-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
   "companion-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
   "agent-reader-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
-  # Test only: the acceptance run links the docket daemons to run them as processes (memoryd and inferd are built by build.rs, not linked); no HTTP,
+  # Test only: the acceptance run links the actions service daemons to run them as processes (memoryd and inferd are built by build.rs, not linked); no HTTP,
   # audio, embedding runtime or MCP SDK.
   # (The acceptance run starts the bardo-actions-mcp bridge as a process for the ACP engine, so it links rmcp through it.)
   "action-accept: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
@@ -470,20 +470,20 @@ done
 
 layers_check . || fail=1
 
-# docket sits below cua and the shell in the repo order (the model layer, porter, the memory service, docket, cua, the shell):
+# The actions service sits below cua and the shell in the repo order (the model layer, porter, the memory service, the actions service, cua, the shell):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
 THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture bardo-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)
 theirs_found=0
 for name in $THEIRS; do
   if grep -qx "$name" <<<"$workspace_tree"; then
-    echo "LEAK: the workspace depends on $name (cua), which sits above docket"
+    echo "LEAK: the workspace depends on $name (cua), which sits above actions"
     theirs_found=1
     fail=1
   fi
 done
 if grep -q '^shell-' <<<"$workspace_tree"; then
-  echo "LEAK: the workspace depends on a shell crate, which sits above docket"
+  echo "LEAK: the workspace depends on a shell crate, which sits above actions"
   theirs_found=1
   fail=1
 fi

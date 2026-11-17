@@ -59,7 +59,7 @@ put 755 "$BUILT" "$BIN_DEST"
 
 step "5/8 the PAM service, the intents manifest, the skills and the settings schema"
 put 644 "$DIST/pam.d/bardo-shell" "$PAM_DEST"
-# intentd (docket) lists it, and `bardo-do shell --list` shows it: bardo-shell serves it as `org.bardo.Shell`.
+# intentd (the actions service) lists it, and `bardo-do shell --list` shows it: bardo-shell serves it as `org.bardo.Shell`.
 put 644 "$DIST/intents/org.bardo.Shell.toml" "$INTENTS_DEST"
 # The skills the companion loads (agent-eval --check-skills validates them); they grant nothing.
 while IFS= read -r file; do

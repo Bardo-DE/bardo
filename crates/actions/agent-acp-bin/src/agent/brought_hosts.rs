@@ -1,4 +1,4 @@
-//! The hosts of an agent app that a terminal started and the person brought into docket: no
+//! The hosts of an agent app that a terminal started and the person brought into the actions service: no
 //! helper's card, only the app, the folder its conversation is in and the watch session at the
 //! router that becomes the conversation's. Its backend is made the way the host of a person's own
 //! agent session is (the whole menu of desktop actions, ruled by the router as any), and it picks

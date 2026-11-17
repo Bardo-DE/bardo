@@ -102,9 +102,9 @@ pub enum Part {
     Text(MessageText),
     /// A thing an app owns.
     Entity(EntityId),
-    /// The outcome of an action (docket's `Outcome`, by opaque reference).
+    /// The outcome of an action (the actions service's `Outcome`, by opaque reference).
     Outcome(OutcomeRef),
-    /// An undo journal entry (docket's `UndoId`, by opaque reference).
+    /// An undo journal entry (the actions service's `UndoId`, by opaque reference).
     Undo(UndoHandle),
 }
 

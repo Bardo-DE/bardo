@@ -23,7 +23,7 @@ const MESSAGE_KIND: &str = "companion.message";
 const EPISODE_KIND: &str = "companion.episode";
 /// The kinds of a computer-use run the rebuild reads: where it began, what it asked, who has the
 /// window, how it ended. Its steps are not read: they say nothing the roster shows. cuad writes
-/// them as `Area { Cua }` payloads in `computer-use-bus`'s `CuaRecord` form; docket names no cua type and
+/// them as `Area { Cua }` payloads in `computer-use-bus`'s `CuaRecord` form; the actions service names no cua type and
 /// reads only the words below.
 const RUN_KINDS: [&str; 6] = [
     "cua.run.started",

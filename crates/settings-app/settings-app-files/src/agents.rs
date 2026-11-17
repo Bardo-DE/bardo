@@ -1,4 +1,4 @@
-//! The outside agents docket may start (`actions/agents.toml`), read with what each last offered,
+//! The outside agents the actions service may start (`actions/agents.toml`), read with what each last offered,
 //! and the person's choice of model or way of signing in written back into the entry.
 
 use crate::error::FilesError;
@@ -13,13 +13,13 @@ use settings_app_model::FoundAgent;
 /// The agents file, under the configuration directory.
 const AGENTS_FILE: &str = "bardo/actions/agents.toml";
 
-/// Where docket keeps what it installed and what each agent offered, under the data directory.
+/// Where the actions service keeps what it installed and what each agent offered, under the data directory.
 pub(crate) const AGENTS_DIR: &str = "bardo/actions/agents";
 
 /// The agents `bardo/actions/agents.toml` lists, none when there is no file.
 #[must_use]
 pub fn load_agents(config: &ConfigHome, data: &DataHome) -> Agents {
-    // A file that cannot be read lists no agents; docket's own writer refuses to write over it.
+    // A file that cannot be read lists no agents; the actions service's own writer refuses to write over it.
     let text = text_of(&config.0.join(AGENTS_FILE))
         .ok()
         .flatten()
@@ -50,7 +50,7 @@ pub fn save_agent_choice(
     })
 }
 
-/// The coding assistants installed in docket's folder, whether `agents.toml` lists them or not: each id with its last installed version, in name order.
+/// The coding assistants installed in the actions service's folder, whether `agents.toml` lists them or not: each id with its last installed version, in name order.
 ///
 /// Only files are read; nothing is started and no network is used.
 #[must_use]

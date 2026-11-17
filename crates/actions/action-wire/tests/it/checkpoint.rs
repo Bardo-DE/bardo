@@ -72,7 +72,7 @@ fn the_checkpoint_requests_and_replies_round_trip_and_name_their_members() {
 }
 
 #[test]
-fn a_conversation_moving_between_docket_and_a_terminal_has_its_members_and_shapes() {
+fn a_conversation_moving_between_actions_service_and_a_terminal_has_its_members_and_shapes() {
     let session = SessionId::parse("s-2").expect("session");
     let agent = WatchedAgent {
         program: ProgramName::parse("claude-code").expect("program"),

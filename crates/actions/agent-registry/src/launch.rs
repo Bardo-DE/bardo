@@ -25,7 +25,7 @@ pub struct Launch {
 /// the same kind of failure.
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum LaunchFault {
-    /// The id or the version is not a name docket keeps agents under.
+    /// The id or the version is not a name the actions service keeps agents under.
     #[error(transparent)]
     Name(#[from] SlugRefused),
     /// Not installed, or the record is damaged.

@@ -11,12 +11,12 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    the OS (MOK, BIOS) the K5 Max must be on Cable or 2.4G, not Bluetooth.
 2. **Bring the sibling checkouts up to date.** The install builds with `--locked`, and `Cargo.lock`
    was resolved against the current master of every repo next to `~/shell`: `memory`, `anyview`,
-   `blitz-embed`, `cua`, `docket`, `key_remap`, `porter`, `bardo`, `layer-shell-host`, plus `models` and
+   `blitz-embed`, `cua`, `actions`, `key_remap`, `porter`, `bardo`, `layer-shell-host`, plus `models` and
    `desktop-protocols` (reached through them). `mouse_gestures` is not needed to build. A stale one
    (`anyview` was 11 commits behind once) stops the build with a raw cargo error, so check first:
 
    ```sh
-   for r in anyview Bardo layer-shell-host the key remap daemon blitz-embed memory cua docket porter models desktop-protocols; do
+   for r in anyview Bardo layer-shell-host the key remap daemon blitz-embed memory cua actions porter models desktop-protocols; do
      git -C ~/$r pull --ff-only || echo "NOT FAST-FORWARD: $r"; done
    git -C ~/anyview pull --ff-only                          # the one that was behind
    cd ~/shell && git status --short && git log --oneline -1  # clean, master

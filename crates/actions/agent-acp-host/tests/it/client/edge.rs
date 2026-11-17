@@ -18,7 +18,7 @@ const THREAD: &str = "t1";
 pub(super) fn offer(dir: &tempfile::TempDir) -> ToolsOffer {
     ToolsOffer {
         run_dir: dir.path().to_path_buf(),
-        bridge: abs("/opt/docket/bardo-actions-mcp"),
+        bridge: abs("/opt/actions/bardo-actions-mcp"),
     }
 }
 
@@ -76,7 +76,7 @@ async fn session_new_offers_one_stdio_server_whose_token_is_not_on_a_command_lin
     assert_eq!(servers.as_array().map(Vec::len), Some(1));
     let server = offered(&rig);
     assert_eq!(server.name, "bardo");
-    assert_eq!(server.command, "/opt/docket/bardo-actions-mcp");
+    assert_eq!(server.command, "/opt/actions/bardo-actions-mcp");
     assert_eq!(server.args.len(), 2);
     assert_eq!(server.args[0], "--host-socket");
     assert_eq!(server.token().len(), 64);
@@ -88,7 +88,7 @@ async fn session_new_offers_one_stdio_server_whose_token_is_not_on_a_command_lin
     let plans = rig.spawned.plans();
     let bind = plans[0].edge.as_ref().expect("an edge bind");
     assert_eq!(bind.socket.as_str(), server.socket());
-    assert_eq!(bind.bridge.as_str(), "/opt/docket/bardo-actions-mcp");
+    assert_eq!(bind.bridge.as_str(), "/opt/actions/bardo-actions-mcp");
 }
 
 #[tokio::test]
@@ -160,7 +160,7 @@ async fn a_read_is_a_router_call_in_the_agents_session_as_that_program() {
 }
 
 #[tokio::test]
-async fn a_write_asks_the_person_and_any_grant_is_the_programs_in_dockets_store() {
+async fn a_write_asks_the_person_and_any_grant_is_the_programs_in_actions_service_store() {
     let (mut rig, _dir) = Box::pin(with_mail(
         vec![vec![
             bridge_call(

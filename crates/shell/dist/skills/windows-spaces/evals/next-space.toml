@@ -1,4 +1,4 @@
-# No case format is run yet (docket FINDINGS: evals not run); written to skills.md section 6's shape.
+# No case format is run yet (the actions service FINDINGS: evals not run); written to skills.md section 6's shape.
 prompt = "Go to the next space"
 [[expect.calls]]
 action = "org.bardo.Shell:shell.workspace.switch"

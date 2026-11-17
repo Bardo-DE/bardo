@@ -1,5 +1,5 @@
 //! The router's records as the memory service's events. Never content: ids, kinds, decisions. A message and
-//! an episode are the memory service's own bodies; everything else is an `Area { area: Docket }` payload
+//! an episode are the memory service's own bodies; everything else is an `Area { area: Actions }` payload
 //! in `action-core`'s serde form, with the things it names for cascade-forget.
 //!
 //! What memoryd checks of a record from the router (memory-service `record_fault`): a message
@@ -21,30 +21,30 @@ use std::collections::BTreeSet;
 
 /// The header kind of a record.
 ///
-/// It is `docket.<what>`, the memory service's `companion.message` and
+/// It is `actions.<what>`, the memory service's `companion.message` and
 /// `companion.episode` for the two typed bodies, `companion.session.<slug>` for a record of
 /// the companion's own sessions and `helpers.card`, `helpers.job` or `helpers.post` for the
 /// helpers' own.
 #[must_use]
 pub fn kind_tag_of(record: &AuditRecord) -> Option<KindTag> {
     let text = match record {
-        AuditRecord::Call { .. } => "docket.call".to_owned(),
-        AuditRecord::Review { .. } => "docket.review".to_owned(),
-        AuditRecord::Classified { .. } => "docket.classified".to_owned(),
-        AuditRecord::Delegation { .. } => "docket.delegation".to_owned(),
-        AuditRecord::Confirm { .. } => "docket.confirm".to_owned(),
-        AuditRecord::Undo { .. } => "docket.undo".to_owned(),
-        AuditRecord::Halt { .. } => "docket.halt".to_owned(),
-        AuditRecord::TaskPolicy { .. } => "docket.task_policy".to_owned(),
-        AuditRecord::PolicyCorrected { .. } => "docket.policy_corrected".to_owned(),
-        AuditRecord::Breaker { .. } => "docket.breaker".to_owned(),
-        AuditRecord::StandingGranted { .. } => "docket.standing_granted".to_owned(),
-        AuditRecord::StandingUsed { .. } => "docket.standing_used".to_owned(),
-        AuditRecord::ApprovalUsed { .. } => "docket.approval_used".to_owned(),
-        AuditRecord::StandingRevoked { .. } => "docket.standing_revoked".to_owned(),
-        AuditRecord::GrantsEnded { .. } => "docket.grants_ended".to_owned(),
-        AuditRecord::TaskStarted { .. } => "docket.task_started".to_owned(),
-        AuditRecord::BriefConfirmed { .. } => "docket.brief_confirmed".to_owned(),
+        AuditRecord::Call { .. } => "actions.call".to_owned(),
+        AuditRecord::Review { .. } => "actions.review".to_owned(),
+        AuditRecord::Classified { .. } => "actions.classified".to_owned(),
+        AuditRecord::Delegation { .. } => "actions.delegation".to_owned(),
+        AuditRecord::Confirm { .. } => "actions.confirm".to_owned(),
+        AuditRecord::Undo { .. } => "actions.undo".to_owned(),
+        AuditRecord::Halt { .. } => "actions.halt".to_owned(),
+        AuditRecord::TaskPolicy { .. } => "actions.task_policy".to_owned(),
+        AuditRecord::PolicyCorrected { .. } => "actions.policy_corrected".to_owned(),
+        AuditRecord::Breaker { .. } => "actions.breaker".to_owned(),
+        AuditRecord::StandingGranted { .. } => "actions.standing_granted".to_owned(),
+        AuditRecord::StandingUsed { .. } => "actions.standing_used".to_owned(),
+        AuditRecord::ApprovalUsed { .. } => "actions.approval_used".to_owned(),
+        AuditRecord::StandingRevoked { .. } => "actions.standing_revoked".to_owned(),
+        AuditRecord::GrantsEnded { .. } => "actions.grants_ended".to_owned(),
+        AuditRecord::TaskStarted { .. } => "actions.task_started".to_owned(),
+        AuditRecord::BriefConfirmed { .. } => "actions.brief_confirmed".to_owned(),
         AuditRecord::Message(_) => "companion.message".to_owned(),
         AuditRecord::Episode(_) => "companion.episode".to_owned(),
         AuditRecord::Session { slug, .. } => format!("companion.session.{}", slug.as_str()),
@@ -221,7 +221,7 @@ fn who_and_how(record: &AuditRecord, space: &SpaceId) -> (Actor, Effect, Label) 
 ///
 /// `space` is where the caller says the record belongs; the Space a call, a started task, a
 /// message or an episode names itself wins over it. A message and an episode are the memory service's own
-/// bodies; everything else is an `Area { Docket }` payload carrying the record's serde form.
+/// bodies; everything else is an `Area { Actions }` payload carrying the record's serde form.
 #[must_use]
 pub fn record_of(record: &AuditRecord, space: &SpaceId) -> Record {
     let space = space_named_by(record).unwrap_or(space).clone();
@@ -242,7 +242,7 @@ pub fn record_of(record: &AuditRecord, space: &SpaceId) -> Record {
     }
 }
 
-/// The `Area` body of a record that has no typed body of its own: `Docket`'s, in this crate's
+/// The `Area` body of a record that has no typed body of its own: `Actions`'s, in this crate's
 /// serde form, a companion session record's own JSON under `Companion`, or a helper record's own
 /// JSON under `Helpers`.
 fn payload(record: &AuditRecord) -> EventBody {
@@ -266,8 +266,8 @@ fn payload(record: &AuditRecord) -> EventBody {
     }
     let json = serde_json::to_string(record).unwrap_or_else(|_| "null".to_owned());
     EventBody::Area(AreaPayload {
-        area: AreaTag::Docket,
-        kind: kind_tag_of(record).expect("every audit record has a `docket.` kind tag"),
+        area: AreaTag::Actions,
+        kind: kind_tag_of(record).expect("every audit record has a `actions.` kind tag"),
         json: JsonText::parse(&json).expect("serde_json writes one JSON value"),
         things: things_of(record),
     })

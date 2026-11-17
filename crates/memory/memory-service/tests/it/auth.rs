@@ -78,8 +78,8 @@ fn recording_follows_the_caller_class() {
             [false, true, false, false],
         ),
         (
-            "a docket audit by cuad",
-            MemoryRequest::Record(record(area_body(AreaTag::Docket), cua_actor())),
+            "an actions service audit by cuad",
+            MemoryRequest::Record(record(area_body(AreaTag::Actions), cua_actor())),
             [false, true, false, false],
         ),
         (
@@ -293,7 +293,7 @@ fn the_settings_app_is_refused_every_request_of_the_others() {
     }
 }
 
-/// docket lists the Spaces to name the one a task works in; it is the router's call as well.
+/// The actions service lists the Spaces to name the one a task works in; it is the router's call as well.
 #[test]
 fn listing_the_spaces_is_the_routers_and_the_shells() {
     for (who, caller) in callers() {

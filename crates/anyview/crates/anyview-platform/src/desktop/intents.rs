@@ -1,4 +1,4 @@
-//! The viewer as an app of docket, the desktop's agent layer: `org.bardo.IntentProvider1` served on
+//! The viewer as an app of the actions service, the desktop's agent layer: `org.bardo.IntentProvider1` served on
 //! the app's own bus name, `org.bardo.Anyview`, so the router can ask the viewer to open files.
 //! The declared actions are in `dist/intents/org.bardo.Anyview.toml`, which this module embeds, so
 //! the file the installer ships and the one the viewer answers for are one file.
@@ -26,7 +26,7 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::mpsc::Sender;
 
-/// The bus name docket's router calls: the viewer's app name, which docket's activation file starts.
+/// The bus name the actions service's router calls: the viewer's app name, which the actions service's activation file starts.
 pub const AGENT_BUS_NAME: &str = "org.bardo.Anyview";
 
 /// The action that opens files in the window.
@@ -52,7 +52,7 @@ fn intents_error(reason: &dyn std::fmt::Display) -> PlatformError {
 }
 
 /// Serve the viewer's intents on `connection`, which already owns the viewer's own name, and claim
-/// the app name docket calls. Requests the router makes arrive on `sender`. Only intentd's unit is
+/// the app name the actions service calls. Requests the router makes arrive on `sender`. Only intentd's unit is
 /// answered, found by its main process in the system's `/proc`, or in `proc_root` when a test
 /// gives a fixture tree of its own.
 pub(super) async fn serve(

@@ -1,4 +1,4 @@
-//! Where docket keeps agents: one directory it owns, apart from the person's own files.
+//! Where the actions service keeps agents: one directory it owns, apart from the person's own files.
 //!
 //! ```text
 //! <root>/installed/<id>/<version>/files/        what the archive unpacked to

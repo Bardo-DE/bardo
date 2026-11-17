@@ -112,7 +112,7 @@ pub fn rig(toml: &str, mood: Mood, with_process: bool) -> Rig {
         Arc::new(accounts.clone()),
         procs,
         dir.path().to_owned(),
-        abs("/opt/docket/bardo-agent-net-forward"),
+        abs("/opt/actions/bardo-agent-net-forward"),
         registry.clone(),
     );
     Rig {

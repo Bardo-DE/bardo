@@ -1,6 +1,6 @@
 [package]
 name = "permission-core"
-description = "docket's permission model: review rulings and strictness, modes and their rows, grants per action and per Space, standing grants and the rule for offering one, limits, rule files and the admin floor, the agent's own actions and the commands it runs, and the per-task policy with its trusted patterns and reach menu."
+description = "actions's permission model: review rulings and strictness, modes and their rows, grants per action and per Space, standing grants and the rule for offering one, limits, rule files and the admin floor, the agent's own actions and the commands it runs, and the per-task policy with its trusted patterns and reach menu."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

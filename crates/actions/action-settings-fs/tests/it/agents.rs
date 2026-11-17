@@ -251,9 +251,9 @@ fn who_keeps_the_history_is_read_with_the_profile_as_default_and_edited_in_place
             .map(|row| (row.rewind, row.rewind_line()))
     };
     let kept_by_agent = (Rewind::Agent, "Restore points: kept by the agent");
-    let kept_by_docket = (Rewind::Docket, "Restore points: kept by docket");
-    assert_eq!(read(&text, "antigravity"), Some(kept_by_docket));
-    assert_eq!(read(&text, "mine"), Some(kept_by_docket));
+    let kept_by_actions = (Rewind::Actions, "Restore points: kept by actions");
+    assert_eq!(read(&text, "antigravity"), Some(kept_by_actions));
+    assert_eq!(read(&text, "mine"), Some(kept_by_actions));
     assert_eq!(read(&text, "claude-code"), Some(kept_by_agent));
 
     // A choice is written out in full and moves nothing else; it beats the profile's default.
@@ -261,8 +261,8 @@ fn who_keeps_the_history_is_read_with_the_profile_as_default_and_edited_in_place
     assert!(out.contains("# my agents") && out.contains("model = \"pro\"   # keep me"));
     assert!(out.contains("checkpoints = \"agent\""));
     assert_eq!(read(&out, "mine"), Some(kept_by_agent));
-    let out = edit_agent_rewind(&text, "claude-code", Rewind::Docket).expect("edit");
-    assert_eq!(read(&out, "claude-code"), Some(kept_by_docket));
+    let out = edit_agent_rewind(&text, "claude-code", Rewind::Actions).expect("edit");
+    assert_eq!(read(&out, "claude-code"), Some(kept_by_actions));
 
     assert!(matches!(
         edit_agent_rewind(&text, "nobody", Rewind::Agent),

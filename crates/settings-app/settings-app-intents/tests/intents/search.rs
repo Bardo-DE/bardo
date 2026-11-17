@@ -10,7 +10,7 @@ use settings_app_testkit::{Scratch, seed_schemas};
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const MAGNIFICATION: &str = "dock.magnification";
 
-/// The fields docket's `ShippedEntries::parse` takes in a row; it refuses any other.
+/// The fields the actions service's `ShippedEntries::parse` takes in a row; it refuses any other.
 const ROW_FIELDS: [&str; 4] = ["kind", "key", "title", "subtitle"];
 
 fn generated(test: &str) -> (Catalogue, toml::Table) {
@@ -75,7 +75,7 @@ fn the_file_has_a_page_entry_per_page_and_a_key_entry_per_key() {
 }
 
 #[test]
-fn an_empty_catalogue_still_gives_a_file_docket_reads() {
+fn an_empty_catalogue_still_gives_a_file_actions_service_reads() {
     let table: toml::Table = search_entries(&Catalogue::default())
         .parse()
         .expect("a TOML file");

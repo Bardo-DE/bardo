@@ -1,6 +1,6 @@
 //! The companion's task model, portable: one identity over many tasks. It owns the front pointer
 //! (the task the launcher returns to), the roster, the side-conversation tracker and the idle
-//! pass; each task is its own docket session, with its own taint, budget and task policy, opened
+//! pass; each task is its own the actions session, with its own taint, budget and task policy, opened
 //! through `Intents1` in the role `companion`. The pure machines are `agent-loop`'s; this crate
 //! carries their effects out against a router link, a `Planner`, a clock and a surface.
 //!

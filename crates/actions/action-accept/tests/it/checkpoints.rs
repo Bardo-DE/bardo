@@ -233,7 +233,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
         world.logs()
     );
 
-    // A pane the terminal watches: an agent docket does not host. The terminal (Temor, one of
+    // A pane the terminal watches: an agent the actions service does not host. The terminal (Temor, one of
     // the shipped `cli` names) opens a watch session, marks the agent's turn, says it ended, and
     // the person restores from the list, the plan and the sheet as for any session.
     let pane = world.dir.path().join("pane");
@@ -248,7 +248,7 @@ async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_
             .checkpoint_watch(
                 Workspace::parse(&pane.to_string_lossy()).expect("workspace"),
                 "claude in pane 2".into(),
-                Rewind::Docket,
+                Rewind::Actions,
             )
             .await
             .expect("Checkpoint.Watch");

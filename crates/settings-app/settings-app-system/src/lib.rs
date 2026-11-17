@@ -1,5 +1,5 @@
 //! The real services the Settings app reaches, and their fakes: the bus, the portal,
-//! NetworkManager, BlueZ, the compositor, accountd, inferd, docket, memory and syncd. One module
+//! NetworkManager, BlueZ, the compositor, accountd, inferd, the actions service, memory and syncd. One module
 //! per service, named as its `settings-app-link` trait is, each with the real implementation
 //! (zbus proxies, wire decoding, error to `Absence`) and an in-memory fake under the `testing`
 //! feature. Pure rules found while reading the wire live in `settings-app-model`; nothing here

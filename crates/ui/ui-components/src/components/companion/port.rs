@@ -1,5 +1,5 @@
 //! The seam an app's companion client installs: how a summon reaches a field and how an answer
-//! comes back (design/32 section 5). `action-ui-adapter` implements it in the docket repo.
+//! comes back (design/32 section 5). `action-ui-adapter` implements it in the actions repo.
 
 use super::answer::model::AnswerView;
 use dioxus::prelude::*;

@@ -21,7 +21,7 @@
 #   scenario-build.sh --accounts   only what the accounts-* scenarios need (bardo-compositor, bardo-settings, bardo-shell with the probe, porter and its rig, the sync service and its rig, the inference service)
 #   scenario-build.sh --w2         only what scenarios/w2-excalidraw.sh needs (bardo-compositor, bardo-shell, and the two below):
 #   build/cua-target/debug/bardo-computer-use                                          bardo-computer-use (the screen helper) with --features fixture-callers: a plain build identifies nobody
-#   build/docket-target/debug/{agent-bringup,accept-*}                  action-accept's test builds (the assistant's services on a fake /proc, bardo-do)
+#   build/actions-target/debug/{agent-bringup,accept-*}                  action-accept's test builds (the assistant's services on a fake /proc, bardo-do)
 #
 # Nothing is written into the tree.
 # Exit codes: 0 built, 2 run inside a jail, 3 a host tool is missing or a build failed.
@@ -145,9 +145,9 @@ build_cuad() {
 
 # The assistant's services as action-accept builds (fixture identities, scripted stand-ins), agent-bringup and bardo-do's
 # test twin.
-build_docket() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/docket-target" nice cargo build -p action-accept --bins) &&
-    built_at docket-target
+build_actions() {
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/actions-target" nice cargo build -p action-accept --bins) &&
+    built_at actions-target
 }
 
 # bardo-shell with the debug probe: the accounts-* scenarios read the accounts sheet through it.
@@ -165,7 +165,7 @@ stage "bardo-compositor (bootstrap --build-only)" build_compositor
 if [ "$only_w2" = 1 ]; then
   stage "bardo-shell (--features debug)" build_shell
   stage "bardo-computer-use (--features fixture-callers)" build_cuad
-  stage "action-accept (the assistant's services, test builds)" build_docket
+  stage "action-accept (the assistant's services, test builds)" build_actions
   echo "scenario-build: done for W2 ($SCEN_BUILD)"
   exit 0
 fi

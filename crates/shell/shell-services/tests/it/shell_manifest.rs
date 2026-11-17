@@ -1,6 +1,6 @@
 //! The shell's manifest (`dist/intents/org.bardo.Shell.toml`) against the model that reads an
 //! invocation of it: every declared action is one the model knows, every choice a declared
-//! option, so a name or an option cannot drift between the file docket reads and the code bardo-shell
+//! option, so a name or an option cannot drift between the file the actions service reads and the code bardo-shell
 //! runs.
 
 use std::collections::BTreeMap;

@@ -47,13 +47,13 @@ pub struct DebugSeams {
     pub session_dry_run_offers: DryRunOffersArg,
     /// Callers named in this file (the person's own, mode 600 or 644; the caller-identity library's `[[peer]]` rows)
     /// are let in as the services they stand for, at a standing below every real proof: a stand-in
-    /// built in a checkout (`accountd_standin`, docket's `accept-actiond`) is the accounts service
+    /// built in a checkout (`accountd_standin`, the actions service's `accept-actiond`) is the accounts service
     /// or the router for this daemon only. The desktop's table is read as usual and wins.
     #[arg(long, value_name = "FILE")]
     pub dev_callers: Option<std::path::PathBuf>,
     /// Name callers by this stand-in `/proc` (`<DIR>/<pid>/cgroup`, `<DIR>/units/<unit>` for a
     /// unit's main process) instead of the system's and its systemd manager: a jail has neither,
-    /// so a test names intentd here as docket's own harness does (`BARDO_ACTIOND_PROC_ROOT`).
+    /// so a test names intentd here as the actions service's own harness does (`BARDO_ACTIOND_PROC_ROOT`).
     #[arg(long, value_name = "DIR")]
     pub proc_root: Option<std::path::PathBuf>,
 }

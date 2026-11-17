@@ -1,5 +1,5 @@
 //! The proposed values the specs name, as one typed configuration with the defaults, and the
-//! table of settings rows that carry them. docket never reads settings itself: the shell's
+//! table of settings rows that carry them. The actions service never reads settings itself: the shell's
 //! Intelligence page owns the keys (design/22 rows), and the daemons receive an
 //! [`AgentConfig`].
 
@@ -231,7 +231,7 @@ pub enum SettingValue {
     Word(&'static str),
 }
 
-/// One settings row docket's daemons read.
+/// One settings row the actions service's daemons read.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SettingRow {
     /// The key.

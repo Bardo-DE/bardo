@@ -27,7 +27,7 @@ pub fn decide(rewind: Rewind, cwd: Option<&Workspace>) -> Decision {
     };
     match rewind {
         Rewind::Agent => Decision::Skip(SkipReason::AgentKeepsOwn),
-        Rewind::Docket => match WorkRoot::of(workspace) {
+        Rewind::Actions => match WorkRoot::of(workspace) {
             Ok(root) => Decision::Take(root),
             Err(_) => Decision::Skip(SkipReason::Failed),
         },

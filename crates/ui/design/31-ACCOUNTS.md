@@ -548,7 +548,7 @@ Provider verdicts for the library home:
 | Rate and queue | token bucket per app and account; interactive first; `Retry-After`; GPU queue (§3.3) | P |
 | Indicator | a bar item shows when a request leaves the machine, naming the provider | P |
 | Audit | app, account, model, tokens, bytes, time; content never stored by default | P |
-| Tools | a chat request carries the functions a model may call (`ToolDecl`, from the companion's typed actions); the model's calls come back as `ToolCall` events and parts. inferd only passes them: the router (`docket`) gates every call, and MCP is an edge binary there (`bardo-actions-mcp`), not an inferd role | P |
+| Tools | a chat request carries the functions a model may call (`ToolDecl`, from the companion's typed actions); the model's calls come back as `ToolCall` events and parts. inferd only passes them: the router (`actions`) gates every call, and MCP is an edge binary there (`bardo-actions-mcp`), not an inferd role | P |
 
 ### 5.6 the Settings app's Accounts page and first run
 
@@ -645,7 +645,7 @@ those keys. v3, O.
 | Kinds | Identity, Mail, Calendar, Contacts, Tasks, Storage (with quota), Llm, Embeddings, Speech, ComputerUse; ImageGen and Rerank when a request kind and a consumer exist | P |
 | Providers | Nextcloud, Microsoft (our own verified multi-tenant client), generic IMAP/SMTP + DAV; AI: Ollama, llama.cpp, the supervised `local`; Anthropic key, OpenAI key and OpenRouter once the model layer's cloud backends exist. Google: **TODO** (owner, 2026-10-05) | P |
 | syncd | journal, scheduler, `Replica` for WebDAV and Graph (Google Drive with the Google TODO); the `PimMirror` dataset (§6.2); the Photos dataset built and contract-tested | P |
-| inferd | routing, local-only default, data-class floors, per-app grants, spend caps, audit, GPU queue, streaming sessions; no MCP (an edge in docket) | P |
+| inferd | routing, local-only default, data-class floors, per-app grants, spend caps, audit, GPU queue, streaming sessions; no MCP (an edge in the actions service) | P |
 | UI | the Settings app Accounts and Intelligence pages, sheets drawn by the shell (Bardo `ui-shell::accounts` views), first-run steps | P |
 | Photos | the app is its own repo and starts after mail and calendar work end to end (owner, 2026-10-05); library on Storage, import from folders | P |
 
@@ -679,7 +679,7 @@ Service and fake servers; the real system is never touched):
 | ChatGPT sign-in (R9), after a registration spike | a plan-billed account completes a Responses call and shows `PlanBudget` usage | O |
 | Files: Locations in the sidebar, selective sync; open/save chooser lists Storage accounts | a file saved from a sandboxed app lands in OneDrive and appears on the other machine | O |
 | Desktop-own account: settings, Spaces, dock, widgets, style CSS synced E2E over a Storage grant | changing the dock on A shows on B within one poll; the Storage account holds only ciphertext | O |
-| MCP edge (`bardo-actions-mcp` in docket, not inferd) | Notes exposes "search notes" as a tool; a chat in the launcher calls it after a confirmation | P |
+| MCP edge (`bardo-actions-mcp` in the actions service, not inferd) | Notes exposes "search notes" as a tool; a chat in the launcher calls it after a confirmation | P |
 
 ### 7.3 v3 (the ambitious options)
 

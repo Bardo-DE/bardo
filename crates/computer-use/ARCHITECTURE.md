@@ -22,7 +22,7 @@ picture), section 6 (copy the recipe).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `computer-use-desktop` | the base: windows (`ToplevelInfo`), leases (`LeaseRequest`, `LeaseGrant`, `Leased`, `EiSocket`), `BackendKind` and `BackendCaps::of`, `GlowState` and the protocol codes, `DesktopEvent`, the `Desktop` and `LeaseControl` seams, and the units every crate shares (`Stamp`, `Ms`, `Digest32`, `GlobalRect`). Re-exports `RunMode` and `WindowTrust` from docket. No backend lives here | none |
+| `computer-use-desktop` | the base: windows (`ToplevelInfo`), leases (`LeaseRequest`, `LeaseGrant`, `Leased`, `EiSocket`), `BackendKind` and `BackendCaps::of`, `GlowState` and the protocol codes, `DesktopEvent`, the `Desktop` and `LeaseControl` seams, and the units every crate shares (`Stamp`, `Ms`, `Digest32`, `GlobalRect`). Re-exports `RunMode` and `WindowTrust` from the actions service. No backend lives here | none |
 | `computer-use-types` | the leaf types the bus bodies carry and the capability crates produce: `Role`, `NodeSelector` (with `NameMatch`, `SelectorStep`), `InputReceipt`, `InputOrigin`, `TextPath`, `SeatError`, `FrameDigest`. The capability crates re-export them, so every old path works | none |
 | `maskcap` | `Frame`, `PixelBuf`, `MaskReport`, `apply_masks`, `FrameDigest`, `settle`, `pixel_diff`, the `WindowCapture` and `CaptureSession` seams. | none |
 | `computer-use-seat-input` | `InputOp`, `Keymap`, `SeatCaps`, `plan`, `InputReceipt`, `region`, the `AgentSeat` seam. | none |
@@ -38,7 +38,7 @@ picture), section 6 (copy the recipe).
 | `computer-use-seat-ei` | the EI client of the agent's seat: `EiSeat`, an `AgentSeat` over reis (the connection lives on a thread of its own) | reis, tokio |
 | `computer-use-a11y-atspi` | the AT-SPI backend of `computer-use-a11y-tree`: `AtspiSource`, `AtspiTree`, `read_window` (the walk, over any `AtspiTree`) | zbus, atspi, tokio |
 | `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CompositorDesktop` (the compositor's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdCuaModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
-| `bardo-computer-use` | the daemon and its library: `run` (the start-up: `main` passes the arguments and environment in), `CuaProvider` (`org.bardo.ComputerUse`), `reach_json` and `follow_settings` (`org.bardo.IntentReach1` beside the provider: `Reach()` says `{"computeruse.run.start": "offered"}` while `cua.enabled` is on, else `hidden`, and `ReachChanged` is emitted when the settings watch changes it; bardo-actiond lays that over the installed manifest, which declares the action hidden; a local mirror of action-dbus's interface until the next docket pin), `serve`, `serve_on` and `serve_on_with` (who is calling is the process behind the connection, named by `computer-use-callers.toml` through action-dbus's `Identity`; never a bus name), `classify`, `desktop_keymap` (the keymap built once at start: the chord keymap's conventions, plus the person's key remap daemon overrides with the `key_remap` feature). The binary serves both bus names; the person's settings: `SettingsWatch` (the directory watch on `computer-use/settings.toml`), `computer-use-host`'s names re-exported, `SCHEMA` (`dist/settings/computer-use.settings.toml`), and `--write-schema` | everything |
+| `bardo-computer-use` | the daemon and its library: `run` (the start-up: `main` passes the arguments and environment in), `CuaProvider` (`org.bardo.ComputerUse`), `reach_json` and `follow_settings` (`org.bardo.IntentReach1` beside the provider: `Reach()` says `{"computeruse.run.start": "offered"}` while `cua.enabled` is on, else `hidden`, and `ReachChanged` is emitted when the settings watch changes it; bardo-actiond lays that over the installed manifest, which declares the action hidden; a local mirror of action-dbus's interface until the next the actions pin), `serve`, `serve_on` and `serve_on_with` (who is calling is the process behind the connection, named by `computer-use-callers.toml` through action-dbus's `Identity`; never a bus name), `classify`, `desktop_keymap` (the keymap built once at start: the chord keymap's conventions, plus the person's key remap daemon overrides with the `key_remap` feature). The binary serves both bus names; the person's settings: `SettingsWatch` (the directory watch on `computer-use/settings.toml`), `computer-use-host`'s names re-exported, `SCHEMA` (`dist/settings/computer-use.settings.toml`), and `--write-schema` | everything |
 
 Tiers (the LAYERS table of `scripts/check-boundary.sh`; a crate depends on its own tier or a
 lower one, and the script bans source patterns per tier):
@@ -82,9 +82,9 @@ are named by both the desktop and the crates that serve it), and `computer-use-b
 where the leaf types its records and the `Start` body name now live (it links none of the capability crates). See FINDINGS, "Spec
 conflicts".
 
-The repo order is the model layer, porter, the memory service, docket, cua, the shell. cua reaches the model layer's
+The repo order is the model layer, porter, the memory service, the actions service, cua, the shell. cua reaches the model layer's
 `computer-use-action` and `model-replay`, porter's `prov`, `account-core`, `inference-core`,
-The memory service's `memory-core` and `memory-client`, and docket's `action-core`
+The memory service's `memory-core` and `memory-client`, and the actions service's `action-core`
 (`CuaAsk`, `GateAnswer`, `MessageDraft`) and `action-client`
 (`IntentProvider`, `Intents`), all by sibling path until pinned git revs replace them. Nothing of
 The shell may enter any tree here. cua never reaches `permission-policy`: the router is the one decision
@@ -130,9 +130,9 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | coordinate spaces, `CuaAction`, `Point<S>`, `Chord`, `NodeId` | the model layer `computer-use-action` (`WindowSpace`, never a bare pixel pair) |
 | the model step (`CuaBegin`, `CuaStepRequest`, `CuaStepReply`, `TreeText`, `StepIndex`, `ServedBy`) | porter `inference-core`; `cua_run::turn` builds the request |
 | the gate vocabulary `RunMode`, `WindowTrust`, `WindowClass` | the model layer `computer-use-action`; `computer-use-desktop` re-exports `RunMode` and `WindowTrust` |
-| the gate contract (`CuaAsk`, `GateAnswer`, `EffectBasis`, `GrantAsk`, `MessageDraft`) | docket `action-core` |
+| the gate contract (`CuaAsk`, `GateAnswer`, `EffectBasis`, `GrantAsk`, `MessageDraft`) | the actions service `action-core` |
 | the confirmation | the router's, through `Confirm1`; cua only stops its input (`RunEffect::SuspendLease(Consent)`, then `Proceed`) |
-| the per-app consent | docket's `ActionGrant` with caller Cua, asked through `Gate.Grant` at the level the person's `cua.apps` row gives (`RunEnv::grant_level`) |
+| the per-app consent | the actions service's `ActionGrant` with caller Cua, asked through `Gate.Grant` at the level the person's `cua.apps` row gives (`RunEnv::grant_level`) |
 | desktop vocabulary, units (`Stamp`, `Ms`, `Digest32`), leases, backend capabilities | `computer-use-desktop` |
 | frames, masks, digests, settling | `maskcap` |
 | input operations, the plan, the keymap, the EI region map | `computer-use-seat-input` (the region map is `seat_input::region`; nothing else names a global position) |
@@ -145,7 +145,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | the Wayland protocol | `bardo-agent-v1.xml` in `~/desktop-protocols` (the one home), used by computer-use-desktop and computer-use-capture-wayland; the server side is the fork's, later the compositor's |
 | the `computeruse.run.start` action | `manifests/org.bardo.ComputerUse.toml`, served by `bardo-computer-use::CuaProvider` |
 | what the screen model is told about the task and the earlier attempts | `CuaTask.asked` (the person's latest sentence) and `CuaTask.earlier` (this provider's stored records of the conversation, oldest first), both filled by the router from the `asked` and `earlier` parameters of `computeruse.run.start` (`Filled::PersonWords`, `Filled::OwnHistory { kinds: "cua.*" }`; the planner never sees or sends them) and read by `bardo-computer-use::provider::start_of` (an element that is not a record is skipped, bad JSON is none). `cua_run::briefing` builds the session's opening: the task line is `asked` when present, else `goal`; the hints, in order, are "The assistant's plan for this run: <goal>" (only when `asked` is present and differs), then "Earlier attempts at this (check the screen before trusting them):" and the digest lines, then the desktop's shared hints. `cua_run::attempts` is the digest: the last three runs in the task's app (the current run left out), each as `Attempt k:`, a `Tried:` line of verbs with repeats collapsed and a mark when not plainly done ("no visible change", "refused", "failed", "not run"; a stored input is "no visible change" when the `cua.step.seen` after it says so), and the end in the words of the planner's report (`said_of`); at most twelve lines. Never a coordinate, typed text or thought. A stalled run's report uses the same step words (`RunTrack.tried`, `stall_words`). The run's taint is the join of the goal's, `asked`'s and `earlier`'s labels |
-| the event-log record | `cua_bus::CuaRecord`; `bardo-computer-use::record_of` makes the memory service `EventBody::Area { area: Cua }`, naming the conversation (`CuaTask.conversation`, the thing docket's session log uses) as `Subject` and the run's app as `Source`, so the router reads a conversation's earlier runs by `Entries { about }` |
+| the event-log record | `cua_bus::CuaRecord`; `bardo-computer-use::record_of` makes the memory service `EventBody::Area { area: Cua }`, naming the conversation (`CuaTask.conversation`, the thing the actions service's session log uses) as `Subject` and the run's app as `Source`, so the router reads a conversation's earlier runs by `Entries { about }` |
 | views of the above for the shell | the shell's `shell-model` (`run_state_of(slug, outcome)`); cua defines none |
 
 ## 4. Traits
@@ -161,7 +161,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | `RecordSink` (`record`, and `open` by default nothing), `MessageLink` | `computer-use-run` | `DaemonLinks`, `MemoryEvents` |
 | `Clock` | `computer-use-run` | `SystemClock`, `FixedClock` |
 | `Seams` | `computer-use-run` | `SystemSeams`, `FakeSeams` |
-| `IntentProvider` | docket `action-client` | `CuaProvider` |
+| `IntentProvider` | the actions service `action-client` | `CuaProvider` |
 
 Closed sets stay enums: the backends (`BackendKind`, `CaptureBackend`), every
 machine state, input and effect, every record and body.
@@ -273,7 +273,7 @@ action it leads to is gated like any other.
 
 - Licence `MIT OR Apache-2.0`; edition 2024; `unsafe_code = "deny"`; `rust-toolchain.toml` pins
   1.98.1 and `deny.toml` is the licence gate.
-- Cross-repo dependencies are git dependencies at pinned revs (the model layer, porter, the memory service, docket,
+- Cross-repo dependencies are git dependencies at pinned revs (the model layer, porter, the memory service, the actions service,
   desktop-protocols), so a plain clone builds with no sibling checkout; the URLs and revs match the
   other repos' pins of the same crates, or cargo links two copies. External versions are copied from Bardo's `docs/workspace-deps.toml`, never chosen here;
   FINDINGS lists the ones added to this workspace.

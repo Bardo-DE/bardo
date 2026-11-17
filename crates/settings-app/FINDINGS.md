@@ -69,7 +69,7 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
 
 ## The Intelligence page
 
-- **Schemas read:** inferd's (`fixtures/schemas/inferd.settings.toml`, 21 rows, hands-off), docket's
+- **Schemas read:** inferd's (`fixtures/schemas/inferd.settings.toml`, 21 rows, hands-off), the actions service's
   (18 rows: Privacy basic; Review time, Session budgets and Task approvals Advanced), the memory service's
   (8 rows: Memory basic, Retention Advanced) and cua's (14 rows: Computer use basic; Run limits,
   Timing and Window detail Advanced). Each is installed to `$XDG_DATA_DIRS/bardo/settings/` and
@@ -179,7 +179,7 @@ Open items, each with its closing condition:
   anyview's FINDINGS name. Closes when anyview ships `anyview.settings.toml`: replace the scratch schema
   with a fixture from `scripts/gen-fixtures.sh`.
 - **No `org.bardo.Settings.ui.toml`.** The menu and shortcut rule of cli.md section 6 has nothing to
-  check until ds menu items carry an action id (docket-eval says so as a note).
+  check until ds menu items carry an action id (action-eval says so as a note).
 
 ## Accounts pane (`settings-app-ui/src/accounts/`)
 
@@ -207,7 +207,7 @@ Open items, each with its closing condition:
   Companion (`Block::Assistants`). The runtimes group that was "On this computer" is now "Models on
   this computer", because the assistant's own group has that name. Closes when the UI kit adds the page
   variant and the block moves to its own page.
-- **No source lists a person's other computers.** `docket_settings::PlaceSource` has no
+- **No source lists a person's other computers.** `action_settings::PlaceSource` has no
   implementation; "Your computers" shows the rows the settings file already holds, each off or on as
   the file says. Cloud accounts come from accountd (signed-in accounts of the Intelligence group).
   Closes when inferd or accountd lists computers.
@@ -215,9 +215,9 @@ Open items, each with its closing condition:
   words (`<account>/<model>`) that belong to the place's accounts: the local runtimes for this
   computer, the account of that name for a cloud row, none for a computer of the person's.
 - **The assistants that sign themselves in have a row and the way to their account, not a model
-  picker.** Their model is a `model` key of an `[[agent]]` entry in docket's `agents.toml`, which is
+  picker.** Their model is a `model` key of an `[[agent]]` entry in the actions service's `agents.toml`, which is
   keyed by the program, and nothing maps an accountd account to that entry or lists the models an
-  agent offers (it says them in a live session). Closes when docket publishes both.
+  agent offers (it says them in a live session). Closes when the actions service publishes both.
 - **The Spaces list is read when the page opens.** `Spaces1.Changed` is not followed, so a Space an
   app makes meanwhile shows after the page is opened again.
 - **Removal order.** `Control.RemoveSpace` goes to memory first and `Spaces1.Remove` second. Memory
@@ -350,9 +350,9 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
   unknown page. Like Software Update the page is `Page::App("Assistant Model")`, with the same
   closing condition (Bardo adding a variant).
 - **Which row: the text slot at the balanced tier** (`ai.model.text.balanced`, an older module's
-  `ai.model.llm.balanced`). `docket-planner`'s `PlannerModel::new` asks for `Tier::Balanced` ("the
+  `ai.model.llm.balanced`). `agent-planner`'s `PlannerModel::new` asks for `Tier::Balanced` ("the
   companion's is Balanced"), and the planner's need is text. One constant, `ASSISTANT_ROWS`, names it
-  for the page, the step and the welcome window's runtime choice. Question for docket: if the companion
+  for the page, the step and the welcome window's runtime choice. Question for the actions service: if the companion
   ever asks for another tier (`with_tier`), that constant changes with it; nothing tells the Settings app.
 - **How the shell should know the step was offered once.** Recommend the shell keeps the mark, in its own
   state directory, written when it opens the step (not when a button is pressed, so closing the window
@@ -543,7 +543,7 @@ What the audit found and where each landed. A row marked deferred or needing a d
 | SETTINGS-05 | fixed here (Bardo `OwnerCheck`, the caller-identity library) | Before anything is read from a service or sent to it, the owner of its bus name must hold the service's role in the desktop's caller table, proved in full (the unit manager confirms the unit): `org.bardo.Accounts1` holds `accounts`, `Sync1` `sync`, `Inference1` `inference`, `Updates1` `updater`, `Memory1` `memory`. `settings-app-callers::RoleCheck` is the `OwnerCheck` over the caller-identity library's `BusPeers`; every `LiveClient` takes it (Bardo asks it before the first read or `Set` and again whenever the name changes hands, and then speaks to the owner by its unique name, so a typed client secret cannot reach a program that merely took the name). The direct callers ask `live::confirmed` (sync holds: the signal is not joined, the discard is not confirmed; the Software Update page; memory's controls; inferd's computers and AI-key sheet) or `live::not_squatted` (the Spaces registry, memory's Space removal and the add sheet, which still ask by name when nobody owns it, as before, so the bus may start the real service). A refused owner is `Absence::Unavailable` ("could not be confirmed", per pane) and a `LiveError::NotTheService` becomes the same. Sync1's `NeedsConfirmation` is parsed with a name bound (`DATASET_NAME_MAX = 256`, a longer name drops the signal) and the banners with a row bound (`HOLDS_MAX = 64`, in `hold_step`); the rest of the service's strings were bounded by SETTINGS-06 and the UI kit's reply caps. Tests: `settings-app-ui/tests/ui/accounts/trust.rs` (squatter not read, sent no call and no secret; wrong role; right role read), `holds.rs` (squatter's hold not shown, nothing confirmed to it), `settings-app-model/src/accounts/hold_tests.rs` (the bounds), `settings-app-callers` (names to roles). Residual: the page's update subscription is made before the check, though everything it hears is read again through the check. Whether the updater's session-bus proxy lets a sandboxed app own those names is still the owner's call. If `/etc/bardo/desktop-callers.toml` is missing or not root-only, no program is trusted and every one of the five services shows as unavailable (a line in the log says why). |
 | SETTINGS-08 | fixed here | A Space removal where either choice is Delete is refused while memory is not running (`NoDaemon`): `WithoutMemory::of` in `settings-app-model/src/spaces/removal.rs` decides, `spaces/io.rs` returns before it calls `Spaces1.Remove`, and the person reads `MEMORY_NOT_RUNNING` ("Memory isn’t running right now, so this Space can’t be deleted. Try again in a moment."). A removal that keeps everything still proceeds with memory down. Tests: `settings-app-model/src/spaces/tests.rs` (the four choices), `settings-app-ui/tests/ui/spaces.rs` (each delete choice with no memory: a toast, the registry never asked, the Space stays). Residual: memory and the registry are still two calls, so a registry that denies after memory deleted leaves the memories gone and the Space listed (a retry deletes nothing more); closing that needs a pending-removal record in the registry (porter and the memory service). |
 | SETTINGS-18 | fixed | A read's problems are said once, until they change (`settings-app-ui/src/reported.rs`), and the invalid-value line no longer prints the value (a free-text key can hold a token). The in-window notice for an unreadable or invalid file is still absent (see "Not in v1"); the refusal toast on the first edit is the only in-window word. |
-| SETTINGS-10 | partly fixed | A read of a key and the accounts list are cut to the manifest's declared sizes, one line for a key (`settings-app-intents/src/limits.rs`, one named constant per output; a unit test holds the numbers equal to the manifest's, and the provider tests read an oversized key and an oversized accounts list back through the bus: `intents/provider.rs`, `intents/accounts.rs`; the cut is on a character). The journal keeps only settable keys' values, which are small. Open: whether docket asks before an undoable write of `launcher.web_search` or `notifications.dnd` is docket's policy (its FINDINGS says an undoable write still asks under "ask more"); making those two "ask every time" in the manifest is an owner decision. |
+| SETTINGS-10 | partly fixed | A read of a key and the accounts list are cut to the manifest's declared sizes, one line for a key (`settings-app-intents/src/limits.rs`, one named constant per output; a unit test holds the numbers equal to the manifest's, and the provider tests read an oversized key and an oversized accounts list back through the bus: `intents/provider.rs`, `intents/accounts.rs`; the cut is on a character). The journal keeps only settable keys' values, which are small. Open: whether the actions service asks before an undoable write of `launcher.web_search` or `notifications.dnd` is the actions service's policy (its FINDINGS says an undoable write still asks under "ask more"); making those two "ask every time" in the manifest is an owner decision. |
 | SETTINGS-11 | fixed here, to move to Bardo | `crates/settings-app/src/dirs.rs` ignores an empty or relative `XDG_*_HOME` and `HOME`, as the UI kit does for its own directories. It repeats the UI kit's rule because `ds_settings::xdg` is crate-private; the ask to Bardo is to make `base_dir` public, after which `dirs.rs` calls it. |
 | SETTINGS-13 | fixed here | A sign-in secret is write-only. The model marks one by its path (`accounts.clients.<issuer>.secret`, the same rule that makes it wait for its key; nothing in the schema marks it). It is still read to learn whether there is one, but `standing_only` (applied when a module's rows are heard) replaces its text with a mark at once and `SignInClient::read` keeps only `SecretStanding::{Set, NotSet}`, so neither the pane nor the rows it keeps hold the text. The field is a secure one that starts empty with "Set" or "Not set" where the text would be; what is typed replaces the secret (trimmed; an empty field writes nothing, because a field the person only passed through must not wipe the secret) and the field is made anew. A set secret has a Clear button beside it (`AccountsInput::SecretCleared`, `SignInClient::cleared`): it writes the empty text, which accountd takes as removing the secret (`client_rows.rs`, `RowEdit::Secret("")`), and the row reads Not set until the list is read again; nothing is sent for a secret there is none of, for a key, or while another change is in flight. The typed text travels as `Secret` (a newtype with a hand-written `Debug` that prints `Secret(<hidden>)`) in `ClientText::Secret` and `AccountsEffect::SetSecret`, so a derived `Debug` on an input or an effect cannot print it. Tests: `settings-app-model/src/accounts/flow_tests.rs` (a stored secret keeps only its standing, typing replaces it, an empty field writes nothing, Clear writes the empty text and only for a set secret, `Debug` of the secret, the input and the effect never prints it), `settings-app-ui/tests/ui/accounts/secrets.rs` (the field says Set, the text is nowhere on screen, typing sends the new one; Clear sends the empty text, then the field says Not set and the button is gone). Residual: the text exists in memory while it is typed and sent, and in the module's reply before `standing_only`. |
 | SETTINGS-14 | partly fixed | `Range` works the span of a slider in floating point (`i64::MIN..i64::MAX` no longer overflows) and the key-step uses `saturating_sub`. Not done: a pattern's regular expression is still compiled per cell per render (its size is bounded by the `regex` crate's limit). |

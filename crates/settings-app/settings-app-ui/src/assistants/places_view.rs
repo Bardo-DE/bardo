@@ -1,4 +1,4 @@
-//! "Where it may run": the built-in assistant's places, as docket's settings hold them. This
+//! "Where it may run": the built-in assistant's places, as the actions service's settings hold them. This
 //! computer is always on; each of the person's computers has a switch, on once added; each
 //! signed-in cloud account has a switch that is off until the person confirms.
 

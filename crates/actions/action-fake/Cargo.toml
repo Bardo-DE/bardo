@@ -1,6 +1,6 @@
 [package]
 name = "action-fake"
-description = "Test fakes for docket: fixture manifests, FakeMail and FakeFiles providers, scripted confirmer, reviewer, writer, reader and memory, and fake_router over them."
+description = "Test fakes for the actions service: fixture manifests, FakeMail and FakeFiles providers, scripted confirmer, reviewer, writer, reader and memory, and fake_router over them."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

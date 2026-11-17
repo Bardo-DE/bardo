@@ -1,4 +1,4 @@
-//! The one confined-path type for a directory docket hands to a sandbox as writable: a terminal's
+//! The one confined-path type for a directory the actions service hands to a sandbox as writable: a terminal's
 //! working directory, and the agent's own. A [`Workdir`] is a real directory (links resolved)
 //! that lies inside the session's folder, that no link on the way led to (the agent can make
 //! links in the folder it writes), that is not the person's home and does not hold it, and that

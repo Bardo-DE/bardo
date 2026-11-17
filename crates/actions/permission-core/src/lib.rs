@@ -1,4 +1,4 @@
-//! docket's permission model: how a call is judged, what the person has allowed, and the limits
+//! The actions service's permission model: how a call is judged, what the person has allowed, and the limits
 //! and rules that hold regardless. Strictness and review rulings, the modes and their rows, grants
 //! (per action and per Space), standing grants and the offer rule that decides when to offer one,
 //! limits, the rule files and the admin floor, the agent's own actions and the commands it runs

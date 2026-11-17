@@ -36,7 +36,7 @@ use tokio::sync::Mutex as AsyncMutex;
 
 type Maker = Box<dyn Fn(&HelperCard) -> HelperHosts<DbusAccounts> + Send + Sync>;
 
-/// An agent app a terminal started that the person brought into docket.
+/// An agent app a terminal started that the person brought into the actions service.
 type Brought = Arc<AsyncMutex<HelperAgent<BroughtHosts<DbusAccounts>>>>;
 
 /// The helpers' agent apps, running.
@@ -153,7 +153,7 @@ impl HelperHost {
     }
 
     /// Starts `agent` on the watch session `session` a terminal opened, in the folder the
-    /// terminal ran in, as a conversation of docket's.
+    /// terminal ran in, as a conversation of the actions service's.
     async fn bring_back_watched(
         &self,
         session: SessionId,

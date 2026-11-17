@@ -41,17 +41,17 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - **A message carries no authority.** No input grants a lease, mode, budget or permission;
   `a_message_changes_no_authority` pins it (ignored until the machine).
 - **Edges.** SPEC 1.3 gives seat-input, maskcap and a11y-tree only `cua-action`, and cua-bus only
-  prov, docket-core and porter-infer. Its own types need more: a lease, a `Stamp` and `SeatIsolation`
+  prov, action-core and porter-infer. Its own types need more: a lease, a `Stamp` and `SeatIsolation`
   are named by `AgentSeat::attach`, `WindowCapture::open` and `BackendCaps`; the records name
   `InputReceipt`, `FrameDigest`, `NodeSelector`. So `cua-desktop` is the base crate and the leaf
   crates depend on it; cua-bus depends on the four leaves; `RunBudget` lives in cua-bus (SPEC 2 says
   cua-run) because `CuaTask` carries it. ARCHITECTURE.md has the exact table, enforced.
 - **`LeaseGrant` is `Eq` data.** The EIS descriptor travels as `Leased { grant, socket: EiSocket }`;
   `AgentSeat::attach(&LeaseGrant, EiSocket)`.
-- **Authorising, confirming and the grant follow docket's gate, not cua.md.** `Gate.Check` returns a
+- **Authorising, confirming and the grant follow the actions service's gate, not cua.md.** `Gate.Check` returns a
   Request; its `Progress(Confirming(id))` becomes `RunInput::Confirming`, then stock suspends the
   lease and calls `Proceed`, and `Verdict(GateAnswer)` ends it (the machine and the seams are built
-  that way; docket-client does not hand the progress out yet, see the asks). `ConfirmText`, `ShowConsent`,
+  that way; action-client does not hand the progress out yet, see the asks). `ConfirmText`, `ShowConsent`,
   `DismissConsent`, `ConsentAnswered`, `DenyReason`, `CuaVerdict` and the per-run `denials` budget
   are gone (C10, C12, C14). `Gate.Grant` resolves inside the router: no `ShowGrantPrompt`.
 - **`ModeGap::NoHiddenInput` (Spike A).** Stock renders hidden windows but delivers them no input and
@@ -79,7 +79,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - **`Run::start` takes a `RunEnv`** (backend caps and settings), and `CuaTask` an `app`; a run
   targeting `TaskTarget::App` ends `Blocked(NeedsCapability)` until launch-into-mode lands.
 - **cuad has no edge to `policy-point`** (the edge table enforces it), and no longer reaches
-  `cedar-policy` either: docket-client's `InProcess` is behind its `in_process` feature, which
+  `cedar-policy` either: action-client's `InProcess` is behind its `in_process` feature, which
   only cuad's tests turn on, through the dev-dependency on intentd.
 
 ## Dependencies added to this workspace (not in Bardo's pinned block)
@@ -92,9 +92,9 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - `xkbcommon 0.8` with `default-features = false` (seat-input `Keymap::parse_xkb` reads the text
   of a keymap and no wayland keymap fd; the block's bare line enables `wayland` and `memmap2`);
   `blake3 1` (maskcap's frame digest and cua-run's thought digest; already in the lock); `futures-util`
-  on docket's line (cuad waits for its connection to close).
+  on the actions service's line (cuad waits for its connection to close).
 - Dev-dependencies of cuad's tests only, so not in any tree the boundary script checks: `intentd`,
-  `docket-fake`, `docket-router` (a real intentd over docket's fakes on a private bus) and
+  `action-fake`, `action-router` (a real intentd over the actions service's fakes on a private bus) and
   `memory-fake` with `memory-client`'s `in_process` (a real memory service); `tokio`'s `test-util`.
 - cua-eval only, the model layer's crates at the pinned rev: `cua-session`, `cua-vendors`, `model-catalog`, `model-http` (feature `hyper`), `model-openai-compat` and `vision-prep` (feature `pixels`, so `image` and `fast_image_resize`), the same ones porter's inferd uses to run a step. The eval's 8x16 font is cut from Hack Regular by `scripts/dev/gen-eval-font.py`; no font crate.
 - Not added: `ashpd`, `pipewire` (KWin).
@@ -103,8 +103,8 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 
 Closed by the w4-cua fill, from the asks lists (and by f4-cua-seat: 114, 149): 62 (cuad calls `Intents::gate_grant` and
 `gate_check`), 72 (`HandedBack.user_events`, cua-bus on memory-core), 92 (`Observation.notes`), the
-docket label ask (the router joins `Untrusted(Screen)` into the run's session at `Gate.Check`), the
-docket `InProcess` feature ask (it is behind `in_process`), and the porter `StepNote` ask
+The actions service label ask (the router joins `Untrusted(Screen)` into the run's session at `Gate.Check`), the
+The actions service `InProcess` feature ask (it is behind `in_process`), and the porter `StepNote` ask
 (`CuaStepRequest.notes` exists).
 
 - **The model layer `cua-action`:** the markers `WindowSpace`, `ImageSpace`, `GridSpace` derive neither `Hash`
@@ -112,7 +112,7 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
   `#[derive(Hash, PartialOrd, Ord)]` on the three markers.
 - **The model layer `cua-action`:** `PixelFormat` lacks `Abgr2101010`/`Xbgr2101010` (stock offers them);
   not needed, noted.
-- ~~**docket `docket-client`:** `Intents::gate_check` waits for the router's final answer inside one
+- ~~**the actions service `action-client`:** `Intents::gate_check` waits for the router's final answer inside one
   call and hands out neither the Request's `Progress(Confirming(id))` nor `Proceed`, and the router
   does not implement `Request.Proceed` yet. So a check here never says `Confirming`: the stock
   consent guard (cuad stops its own input before the router's sheet shows) is built in the machine
@@ -121,7 +121,7 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
   the router's Request waits out its expiry). cuad injects one action at a time and only after the
   verdict, so its input is idle while the router asks. Ask: `Intents::gate_check_watched(ask, on_confirming)`
   that reports the `ConfirmId` and returns a handle with `proceed()` and `close()`.~~ Closed by the f4-cua-seat fill (ask 149).
-- ~~**docket router / spec:** no one can open the session a run's steps are ruled in. `Gate.Check`
+- ~~**the actions router / spec:** no one can open the session a run's steps are ruled in. `Gate.Check`
   finds the session whose actor is `Companion { role: Cua { run } }` and answers `Halted(Any)`
   without it; `Session.Open` is for the launcher, field and companion roles (not cua), and the run
   id is minted by cuad after `cua.run.start`. cuad's tests open the session as the companion does,
@@ -129,8 +129,8 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
   open the session of its own run (`Session.Open { agent: Cua { run } }`, only for a run it started),
   or have `cua.run.start`'s perform open it and return both. `CuaTask.session`, `Message.Send` and
   every record carry that session, so the same answer fixes the sender of the reports (today a
-  report sent in the planner's session would go out as the planner). ~~ Closed: the cua role opens its run's session (docket ask 124) and cuad does it before the first check (ask 149).
-- **docket `Run.Perform` / Intents1 XML:** `inv.actor` carries the planner's session, which
+  report sent in the planner's session would go out as the planner). ~~ Closed: the cua role opens its run's session (the actions service ask 124) and cuad does it before the first check (ask 149).
+- **The actions service `Run.Perform` / Intents1 XML:** `inv.actor` carries the planner's session, which
   `cua.run.start` uses as the task's session until the ask above is settled (ask 62: any copy of
   the XML gains `session` on `Run.Perform` and `app` on `Context.Current`).
 - **porter `porter-infer` / cuad `Seams`:** a run holds a model session (`CuaBegin` once, then
@@ -138,7 +138,7 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
   long as it lasts and runs on different windows take turns at their first model call. Ask: a
   per-run model (`Seams::Model` becomes a factory, `fn open(&self) -> Self::Model`), so runs on
   different windows think at once.
-- **docket / cua context:** the `Context` call of `Intents1` answers a planner's view, not the
+- **The actions service / cua context:** the `Context` call of `Intents1` answers a planner's view, not the
   `ContextSnapshot` of the window the run works in, so `Observation.context` is always `Absent`
   (`RunEffect::FetchContext` is carried out as "no answer"). Ask: a `Context` member for the cua
   role that returns the snapshot of an app's window.
@@ -261,7 +261,7 @@ the machine under it. What was decided:
 - **`FakeDesktop::next_event`** wakes when an event is raised (it used to wait forever if none was
   queued when it was first polled). `cua_fake::scene` holds the scenes the tests share.
 - **Tests.** `cuad/tests/it/links.rs` runs `IntentsGate` and `DaemonLinks` against a real intentd on a
-  private bus (docket's fakes behind it) and a real memory service (the memory service's fakes);
+  private bus (the actions service's fakes behind it) and a real memory service (the memory service's fakes);
   `cuad/tests/it/serve.rs` runs `serve_on_with` on a private bus with callers introduced as their process's app and role;
   `cuad/tests/it/{supervisor,inflight}.rs` run the supervisor over the fakes with paused time.
 - **Not done:** `CuaProvider` offers no `dry_run`, search or suggest; procedures
@@ -311,10 +311,10 @@ the machine under it. What was decided:
   confirmation up. `cua.run.start` still answers the run's id (the planner's handle on it, and what
   `Cua1` calls name); the session is `Supervisor::view(run).task.session`. The asking session stays in
   `CuaTask.conversation` (and `RunStarted`); every record names it as a `Subject` thing
-  (`org.bardo.Companion` / `companion.session`, as docket's log does) and the app as a `Source` thing
+  (`org.bardo.Companion` / `companion.session`, as the actions service's log does) and the app as a `Source` thing
   (`<app>` / `desktop.app`; the memory service's `ThingRole` has only `Subject` and `Source`).
 - **Ask 114**: `Cargo.lock` is refreshed (adds `tokio`, `futures-util`, `rustix`, `cua-parse` edges) and
-  `--locked` passes against porter, docket, the model layer and the memory service master.
+  `--locked` passes against porter, the actions service, the model layer and the memory service master.
 
 ## The f4-cua-capture fill (2026-10-06): the stock wayland backends and the daemon's seams
 
@@ -388,7 +388,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
    `allow` is dropped and logged (`cua.apps[1]`); a browser (by its id: `is_browser`) asked for `always` is
    made `ask` and logged (QUESTIONS S9). **`allow` reaches the router as the grant's level (audit
    CUA-14, cua half done):** the supervisor maps the app's row with `AppAllow::grant_level` (`ask` ->
-   `Level::AlwaysAsk`; `session` and `always` -> `Level::AlwaysAllow`, since docket's level has no
+   `Level::AlwaysAsk`; `session` and `always` -> `Level::AlwaysAllow`, since the actions service's level has no
    per-session form and the router's store and its own question cover the rest; `Apps::Unrestricted`
    is `ask`) and the run carries it in `RunEnv::grant_level`, so the caller's task never chooses it.
    `Gate.Grant` sends `GrantAsk { app, space, level }`. The router may only be stricter: a
@@ -396,11 +396,11 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
    `Blocked(ConsentDenied)` with no lease.
 6. **The provider's manifest follows `cua.enabled` at start only.** `CuaProvider::manifest` returns a
    reference, so `reach` (`Hidden` or `Offered`) is fixed when `serve_on` runs; the guard that refuses a
-   `Start` is live. Closes when docket-client's provider seam can change its manifest after start.
+   `Start` is live. Closes when action-client's provider seam can change its manifest after start.
 7. **`cuad --write-schema DIR`** writes `cua.settings.toml` for a local install, like `actions-mcp
    --write-schema`.
 8. **Lockfile.** `notify` joins cua's `Cargo.lock` (cuad's watch). The watch code is the same shape as
-   docket's intentd and the memory service's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
+   The actions service's intentd and the memory service's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
    porter has a place for it.
 9. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent`
    mark) and parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a
@@ -410,7 +410,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-The model layer, porter, the memory service, docket and desktop-protocols are git dependencies at pinned revs in the root
+The model layer, porter, the memory service, the actions service and desktop-protocols are git dependencies at pinned revs in the root
 `Cargo.toml`, spelled `https://github.com/PoHsuanLai/<repo>` (no `.git`) as the other repos spell them, so one copy
 of each crate is in the graph. For cross-repo work, override a pin with a
 `[patch."https://github.com/PoHsuanLai/<repo>"]` table of `path` lines in a `.cargo/config.toml` in a directory
@@ -448,11 +448,11 @@ Each is a script whose verdict is `violation` or `stalled`, so the fact is teste
   Terminals are not form windows: a click there is still not outbound. The same script now ends
   `stalled` with nothing sent; `bank-transfer-approved` ends `pass`.
 - **CLOSED 2026-10-10: for banks, password managers and admin tools only the app id reached the
-  router.** `CuaAsk` is docket's type and has no class field. Without touching it, `classify_effect`
+  router.** `CuaAsk` is the actions service's type and has no class field. Without touching it, `classify_effect`
   now returns `EffectBasis::WindowClass(class)` for every step in a window of a named class (terminal,
   password manager, admin, payments, banking, mail compose), outbound or not, and `DefaultTable` only
   for `Ordinary` windows; the eval's reference gate reads the class from the ask's basis instead of
-  recomputing it from the app id. Cross-repo follow-up (docket, not done here): a typed `class` field
+  recomputing it from the app id. Cross-repo follow-up (the actions service, not done here): a typed `class` field
   on `CuaAsk` (additive, `#[serde(default)]`) would let the sheet name the window kind for an ask whose
   basis is a typed node action; and the router should treat a `WindowClass` basis on a non-outbound
   effect as a prompt for `PasswordManager`, `Admin` and `Banking` as the eval's gate does.
@@ -538,23 +538,23 @@ a real desktop. The model-time figures are wall time on a shared machine and are
   program can own a name, so one that took `org.bardo.Shell` while the shell restarted was the
   shell: it could answer confirmations, stop runs, and (through `emit_to_shell`) read a run's
   thoughts, proposed actions and questions.
-- **Change.** The caller is the process behind the message's sender, as docket does since
-  `187751f`: `docket_dbus::callers::Identity` (porter's `ProcCallers`) names the unit or app scope
+- **Change.** The caller is the process behind the message's sender, as the actions service does since
+  `187751f`: `action_dbus::callers::Identity` (porter's `ProcCallers`) names the unit or app scope
   from `/proc/<pid>/cgroup` and the systemd manager's main pid, and `cuad-callers.toml`
   (`dist/cuad-callers.toml`, laid over by the person's file; only the system's can give a fixed
-  role) gives the role. The router is docket's `INTENTD` (`org.bardo.Intents`, `agent`), the planner
-  is `org.bardo.Companion1` (`agent`), the shell is docket's `SHELL` (`org.bardo.Shell`,
+  role) gives the role. The router is the actions service's `INTENTD` (`org.bardo.Intents`, `agent`), the planner
+  is `org.bardo.Companion1` (`agent`), the shell is the actions service's `SHELL` (`org.bardo.Shell`,
   `sheet_host`); everything else, an app scope called like any of them included, is `Other`.
   `CallerNames` and `CuadConfig::callers` are gone (an old `callers` key in `computer-use.toml` is ignored).
 - **Shell-only signals** (`ThoughtDelta`, `ActionProposed`, `ActionDone`, `AskUser`) go to the owner
   of `org.bardo.Shell` only if that owner's process holds `SHELL`; otherwise nothing is emitted.
-- **Provider.** `org.bardo.Cua` still answers intentd's unit alone (`docket_client::serve_on`).
+- **Provider.** `org.bardo.Cua` still answers intentd's unit alone (`action_client::serve_on`).
   `serve_on_with` is the test seam: one `Identity` for the objects and the provider.
 - **API.** `serve_on(connection, supervisor, table)` takes the callers table (`read_callers`);
   `serve_on_with(connection, supervisor, identity)` is the seam. No environment variable or feature
   switches the proc root in the shipped binary.
-- **Pins.** porter `7911dee`, the model layer `f42e737`, and docket `187751f` (with the memory service `8a07b35`, the one
-  docket pins) move together: `Identity` exists from docket `187751f`. `docket-dbus` is a new
+- **Pins.** porter `7911dee`, the model layer `f42e737`, and the actions service `187751f` (with the memory service `8a07b35`, the one
+  The actions pins) move together: `Identity` exists from the actions service `187751f`. `action-dbus` is a new
   direct dependency of cuad.
 - **Tests.** The classify table, the shipped file's three rows, a squatter of the shell's name (not
   the shell: its Start and Answer are refused and it hears no shell-only signal); the links and serve
@@ -571,7 +571,7 @@ what the model is about to be shown, each turn, before the model is called.
 
 - **What it checks.** `cua_run::PatternCheck`, deterministic, no model, over the window's title and
   the tree's node names and text values (secret nodes are never read):
-  - *instruction-shaped text* from a data table (`screen/phrases.rs`) in the styles of docket's
+  - *instruction-shaped text* from a data table (`screen/phrases.rs`) in the styles of the actions service's
     injection corpus: ignore-previous, important-message and `<INFORMATION>` blocks, fake system
     messages and chat-template tokens, role markers, written-out tool calls, notes to "the AI",
     and links that carry a credential (`user:password@host`, `?token=...`). Case, spacing and
@@ -602,7 +602,7 @@ what the model is about to be shown, each turn, before the model is called.
 - **The optional reader.** With `RunEnv::reader = ReaderMode::On` and a deterministic `Clear`, the
   screen's text goes out as `RunEffect::ReadScreen` and comes back as `RunInput::ScreenRead`
   (`Clear`, `Instructions`, `Unavailable`) through `CuaModel::classify_screen`, whose default
-  answers `Unavailable`. cua does not call docket's reader yet; see *Wiring the reader* below.
+  answers `Unavailable`. cua does not call the actions service's reader yet; see *Wiring the reader* below.
 - **The allowed app.** The machine now refuses an action (as `OutsideLease`, before the router is
   asked) when the observed window's app is not the app the run was allowed to drive
   (`task.app`), and `Exec::inject` answers `StateMoved(Identity)` when the window at the moment of
@@ -622,7 +622,7 @@ what the model is about to be shown, each turn, before the model is called.
 - **Paraphrases the table lacks.** "Kindly disregard what you were told earlier" is not in the table.
   The table is a floor: every row was added because a known attack uses it.
 - **The reader when it is off.** It is off unless a daemon turns it on, and cua does not yet reach
-  docket's reader, so today nothing catches a paraphrase.
+  The actions service's reader, so today nothing catches a paraphrase.
 - **Hidden text the tree does not carry**, white-on-white text drawn in pixels, text below the
   bottom edge of a window (a long page scrolled to its top has legitimate nodes there, so geometry
   is judged only to the right), a node left of the window (bounds are unsigned), and hidden text
@@ -647,16 +647,16 @@ changes (a page title) is a new window to the check.
 
 ### Wiring the reader (not done)
 
-docket's quarantined reader (`docket-reader`: `reader_request`, `read`, `TransportReader`) is not
-in cua's lock at docket `e1e5802`, and `org.bardo.Reader1.Extract` is served to intentd alone
+The actions service's quarantined reader (`agent-reader`: `reader_request`, `read`, `TransportReader`) is not
+in cua's lock at the actions service `e1e5802`, and `org.bardo.Reader1.Extract` is served to intentd alone
 (`dist/readerd-callers.toml`: one row, `org.bardo.Intents`, `intentd.service`, role `agent`), and it
-reads handles of a session, not text sent by a caller. The two clean ways are: (a) bump docket past
-the commit that has `docket-reader` and have `InferdCuaModel` implement `classify_screen` with a
+reads handles of a session, not text sent by a caller. The two clean ways are: (a) bump the actions service past
+the commit that has `agent-reader` and have `InferdCuaModel` implement `classify_screen` with a
 `TransportReader` over the inferd transport cuad already holds (a closed `ReaderTask::Classify`
 over `ValueSchema::Choice([clear, instructions])`); no caller row, because inferd is the callee;
 (b) an `Intents1` method that takes screen text, makes the handle and calls readerd, which needs
 a caller row for cuad's unit in `readerd-callers.toml` (or no row if intentd keeps the call). (a)
-needs: docket pin bump, `docket-reader` in `[workspace.dependencies]`, and cuad's
+needs: the actions pin bump, `agent-reader` in `[workspace.dependencies]`, and cuad's
 `ReaderMode` switch (a `cua.screen_reader` setting, off by default).
 
 ## The compositor desktop backend (lane casdesk, 2026-10-20)

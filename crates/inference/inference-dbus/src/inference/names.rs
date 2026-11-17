@@ -22,7 +22,7 @@ pub const OPTION_USAGE: &str = "usage";
 /// The key, in the same `options` vardict, of the places a call may run: an `as` of place ids
 /// (`this-computer`, `computer:<name>`, `account:<account id>`) in the caller's order of preference.
 ///
-/// Only docket's companion, reader and intents daemons may send it (by unit); any other caller is
+/// Only the actions service's companion, reader and intents daemons may send it (by unit); any other caller is
 /// refused `AccessDenied`, not ignored. With it inferd routes inside the set and never outside it;
 /// the data class's floor and the local-only switch still apply.
 pub const OPTION_PLACES: &str = "places";
@@ -32,14 +32,14 @@ pub const OPTION_PLACE_MODELS: &str = "place_models";
 /// The key of whose turn the session carries: a string, `person` or `helper:<id>`
 /// (`inference_core::Asker::to_text`).
 ///
-/// Absent means the person. Only docket's companion, reader and intents daemons may send it; any
+/// Absent means the person. Only the actions service's companion, reader and intents daemons may send it; any
 /// other caller is refused `AccessDenied`, not ignored.
 pub const OPTION_ASKER: &str = "asker";
 /// The key of the session's own named model: a string, `<account>/<model>`
 /// (`inference_core::ModelRef`).
 ///
 /// It is treated like a model the person named: never overridden, a refusal names it, no other model
-/// stands in. Only docket's daemons may send it, as for [`OPTION_ASKER`].
+/// stands in. Only the actions service's daemons may send it, as for [`OPTION_ASKER`].
 pub const OPTION_MODEL: &str = "model";
 /// The keys of one row of `Inference1.HardwareNotes` (`a(sa{sv})`: the note's kind slug, then
 /// these).

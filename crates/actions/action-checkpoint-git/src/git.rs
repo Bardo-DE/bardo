@@ -43,10 +43,10 @@ const HARDENING: [(&str, &str); 5] = [
     ("GIT_TERMINAL_PROMPT", "0"),
 ];
 
-/// Restore points of a folder that is in a git repository, kept in a repository of docket's own.
+/// Restore points of a folder that is in a git repository, kept in a repository of the actions service's own.
 ///
 /// Every point is a commit with no parent, made from a private index (a file under `index_dir`,
-/// one set per session), kept under `refs/docket/checkpoints/<session>/<n>` in `shadow.git`
+/// one set per session), kept under `refs/actions/checkpoints/<session>/<n>` in `shadow.git`
 /// under `index_dir`. The folder's own `.git` is never read by git: its config, hooks and
 /// attributes belong to whoever can write the folder. The person's own index, HEAD, branches and
 /// stash are never named; only `apply` writes files of the folder.
@@ -60,7 +60,7 @@ pub struct GitStore {
 
 impl GitStore {
     /// A store that runs the `git` on `PATH` and keeps its private indexes in `index_dir`, a folder
-    /// of docket's own (never inside a repository's `.git`).
+    /// of the actions service's own (never inside a repository's `.git`).
     #[must_use]
     pub fn new(index_dir: AbsPath) -> Self {
         Self {
@@ -163,7 +163,7 @@ impl GitStore {
         self.report.tell(&GitProblem { command, cause });
     }
 
-    /// The repository docket keeps every point in: under `index_dir`, never the folder's `.git`.
+    /// The repository the actions service keeps every point in: under `index_dir`, never the folder's `.git`.
     fn shadow(&self) -> String {
         format!("{}/shadow.git", self.index_dir.as_str())
     }

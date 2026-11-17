@@ -8,8 +8,8 @@ demo's private bus), so the companion pane answers. It is the acceptance `World`
 ## Build and find it
 
 ```sh
-cd ~/docket && cargo build -p action-accept -p action-live --bins   # the daemons must sit beside agent-bringup
-~/docket/target/debug/agent-bringup ...                            # or: cargo run -p action-live --bin agent-bringup -- ...
+cd ~/actions && cargo build -p action-accept -p action-live --bins   # the daemons must sit beside agent-bringup
+~/actions/target/debug/agent-bringup ...                            # or: cargo run -p action-live --bin agent-bringup -- ...
 ```
 
 `cargo run --bin agent-bringup` alone does not build the sibling daemons (`accept-actiond`, `accept-companiond`);

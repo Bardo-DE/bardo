@@ -129,8 +129,8 @@ fn a_turn_takes_a_point_unless_there_is_no_workspace_or_the_agent_keeps_its_own(
     let stepping = Workspace::parse("/work/../app").expect("workspace");
     let rows: [(&str, Rewind, Option<&Workspace>, Decision); 5] = [
         (
-            "docket keeps",
-            Rewind::Docket,
+            "actions keeps",
+            Rewind::Actions,
             Some(&work),
             Decision::Take(root),
         ),
@@ -141,8 +141,8 @@ fn a_turn_takes_a_point_unless_there_is_no_workspace_or_the_agent_keeps_its_own(
             Decision::Skip(SkipReason::AgentKeepsOwn),
         ),
         (
-            "no workspace, docket",
-            Rewind::Docket,
+            "no workspace, actions",
+            Rewind::Actions,
             None,
             Decision::Nothing,
         ),
@@ -154,7 +154,7 @@ fn a_turn_takes_a_point_unless_there_is_no_workspace_or_the_agent_keeps_its_own(
         ),
         (
             "a workspace that cannot be normalised",
-            Rewind::Docket,
+            Rewind::Actions,
             Some(&stepping),
             Decision::Skip(SkipReason::Failed),
         ),

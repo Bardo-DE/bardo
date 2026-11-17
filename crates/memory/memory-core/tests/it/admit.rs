@@ -18,7 +18,7 @@ fn named(id: &str, mut r: RememberRule) -> RememberRule {
 #[test]
 fn admit_table() {
     let mail = record(archived_body(), user());
-    let audit = record(area_body(AreaTag::Docket, "policy.ruled"), companion());
+    let audit = record(area_body(AreaTag::Actions, "policy.ruled"), companion());
     let paused = SpaceState::Paused {
         until: UnixSeconds(NOW.0 + 600),
     };

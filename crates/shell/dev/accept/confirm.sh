@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The confirmation sheet and the seat at intentd, end to end, with the REAL intentd and `bardo-do`
-# from docket and the real bardo-shell daemon, on a private headless KWin started and stopped by the
+# from the actions service and the real bardo-shell daemon, on a private headless KWin started and stopped by the
 # script (a private copy of layer-shell-host's scripts/dev, so nothing of another session's
 # `.kwin-env` is read or written). The chain under test is the one a login has:
 #
@@ -11,12 +11,12 @@
 # One private bus is the daemon's session AND system bus (start_compositor refuses anything else);
 # intentd, bardo-do and bardo-shell all run in a scratch HOME and scratch XDG directories, with an
 # XDG_DATA_DIRS that names nothing, so the only manifests are the two the script copies in
-# (`dist/intents/org.bardo.Shell.toml`, and docket's `org.bardo.Memory.toml` for a hidden action).
+# (`dist/intents/org.bardo.Shell.toml`, and the actions service's `org.bardo.Memory.toml` for a hidden action).
 # The person's answers are `bardo-shell debug key SURFACE KEY`: layer-shell-host's Inject::Key, which enters
 # the sheet where an xkb key does, whether or not the compositor gave it the keyboard.
 #
-# docket is built from $BARDO_ACTIONS_DIR (default crates/actions of this tree) into its own target
-# directory, $OUT_DIR/docket-target (override with BARDO_ACTIONS_TARGET), never docket's own.
+# The actions service is built from $BARDO_ACTIONS_DIR (default crates/actions of this tree) into its own target
+# directory, $OUT_DIR/actions-target (override with BARDO_ACTIONS_TARGET), never the actions service's own.
 #
 #   1. `bardo-do apps` lists `shell`, and `bardo-do shell --list` its actions.
 #   2. A read (`shell launcher.open`) runs with no sheet: exit 0.
@@ -49,7 +49,7 @@ OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-confirm"
 SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 BARDO_ACTIONS_DIR="${BARDO_ACTIONS_DIR:-$BARDO_SHELL_REPO/../actions}"
-BARDO_ACTIONS_TARGET="${BARDO_ACTIONS_TARGET:-$OUT_DIR/docket-target}"
+BARDO_ACTIONS_TARGET="${BARDO_ACTIONS_TARGET:-$OUT_DIR/actions-target}"
 INTENTD="$BARDO_ACTIONS_TARGET/debug/accept-actiond"
 BARDO_DO="$BARDO_ACTIONS_TARGET/debug/bardo-do"
 BARDO_ACTIOND_PID=
@@ -73,11 +73,11 @@ as_terminal() {
 }
 
 # intentd and the daemon each know the other by its systemd unit: intentd gives the sheet host's
-# role only to the main process of bardo-shell.service (the system's callers file, docket
+# role only to the main process of bardo-shell.service (the system's callers file, the actions service
 # dist/actiond-callers.toml, handed over as BARDO_ACTIOND_SYSTEM_CALLERS), and the daemon's provider
 # answers only bardo-actiond.service's main process. Each judges the other at its first call, at the
 # start, so each is started through `as_unit UNIT`, which names its own process in the scratch proc
-# root as docket's own harness does (world.rs `place`): its cgroup, and it as the unit's main
+# root as the actions service's own harness does (world.rs `place`): its cgroup, and it as the unit's main
 # process. It then execs the program, which keeps the pid. The daemon reads that root
 # (`--proc-root`), intentd too (BARDO_ACTIOND_PROC_ROOT).
 as_unit() {
@@ -368,19 +368,19 @@ cleanup() {
 }
 trap cleanup EXIT
 
-build_docket() {
+build_actions() {
   if [ -n "${BARDO_SHELL_PREBUILT:-}" ]; then
-    # dev/accept.sh built docket outside the jail (BARDO_ACTIONS_TARGET); only check it is there.
+    # dev/accept.sh built the actions service outside the jail (BARDO_ACTIONS_TARGET); only check it is there.
     [ -x "$INTENTD" ] && [ -x "$BARDO_DO" ] || { echo "$INTENTD or $BARDO_DO is missing: run dev/accept.sh --build" >&2; return 1; }
     return 0
   fi
   {
     (cd "$BARDO_ACTIONS_DIR" && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-accept --bin accept-actiond && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-cli --bins)
-  } >"$OUT_DIR/docket-build.log" 2>&1 || { echo "docket build failed (see $OUT_DIR/docket-build.log)" >&2; return 1; }
+  } >"$OUT_DIR/actions-build.log" 2>&1 || { echo "actions build failed (see $OUT_DIR/actions-build.log)" >&2; return 1; }
 }
 
 build || exit 1
-build_docket || exit 1
+build_actions || exit 1
 start_compositor --default kwin || exit 1
 IN_ENV_EXTRA=(XDG_DATA_DIRS="$DATA/none" XDG_CONFIG_DIRS="$CONFIG/none")
 cp "$BARDO_SHELL_REPO/dist/intents/org.bardo.Shell.toml" "$DATA/bardo/intents/"

@@ -33,7 +33,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | The model layer (new) | the model layer: provider trait, backends, computer-use action and parse, vision prep, catalogue, engine supervisor | yes |
 | porter | the account and capability layer, plus `prov` (labels and the shared who and what vocabulary), `SpaceId`, streaming inference, inferd | yes |
 | The memory service (new) | memory: event log, memory files, recall, the memory daemon | yes (daemon Linux) |
-| docket (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter Bardo apps use | core yes; daemons Linux |
+| The actions service (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter Bardo apps use | core yes; daemons Linux |
 | cua (new) | computer use: accessibility tree, agent seat, masked capture, leases, run machine, the daemon, the compositor protocol | core yes; daemon Linux |
 | The compositor (new, GPL) | the compositor's agent seat, masked source, trusted surface, glow, kill chord | no |
 | Bardo | `ui-intents`, the companion components and vocabulary, design docs | yes |
@@ -41,7 +41,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | The Settings app | the Intelligence page row and icon | no |
 
 Direction, acyclic and enforced per repo by each `check-boundary.sh`: the model layer, then porter, then
-The memory service, then docket, then cua, then the shell. Bardo depends on none of them; docket's adapter depends
+The memory service, then the actions service, then cua, then the shell. Bardo depends on none of them; the actions service's adapter depends
 on the UI kit's `ui-intents`.
 
 ## 4. Where the shared types live
@@ -52,7 +52,7 @@ The spec's section 2 holds the whole table; the ones the UI kit's part touches:
   `prov`. The UI kit's `EffectMark` and `ActorMark` are views of them, converted in the shell.
 - Presence: `ui-core::vocab::CompanionPresence`, derived only by the shell's `presence_of`.
 - Memory verb: `ui-core::vocab::MemoryVerb`, used by the shell's launcher too.
-- Confirmation: the wire request is docket's; the UI kit's `ConfirmView`, `ConfirmChoice` (was
+- Confirmation: the wire request is the actions service's; the UI kit's `ConfirmView`, `ConfirmChoice` (was
   `ConfirmAnswer`), `TaintLine` (was `TaintNote`) and `GestureMark` are the card's own view.
 - Glow: the protocol values are the compositor's; the UI kit's `GlowLook` (was `GlowState`) feeds
   `glow_spec`.
@@ -64,9 +64,9 @@ The spec's section 2 holds the whole table; the ones the UI kit's part touches:
 | Daemon | Repo | Serves | Calls |
 | --- | --- | --- | --- |
 | inferd | porter | `org.bardo.Inference1`: availability, open and prepare a model session, usage; engines over Unix sockets in transient units | engines |
-| intentd | docket | `org.bardo.Intents1`: registry, search, run, context, session, the computer-use gate, control, request | apps' providers, the confirm surface, the reader, memory, inferd |
-| companiond | docket | `org.bardo.Companion1`: prepare, open, ask, close, and an answer object per task | intentd, inferd |
-| readerd | docket | `org.bardo.Reader1`: the quarantined reader, a separate process | intentd, inferd |
+| intentd | the actions service | `org.bardo.Intents1`: registry, search, run, context, session, the computer-use gate, control, request | apps' providers, the confirm surface, the reader, memory, inferd |
+| companiond | the actions service | `org.bardo.Companion1`: prepare, open, ask, close, and an answer object per task | intentd, inferd |
+| readerd | the actions service | `org.bardo.Reader1`: the quarantined reader, a separate process | intentd, inferd |
 | memoryd | the memory service | `org.bardo.Memory1`: record, recall, control | inferd |
 | cuad | cua | `org.bardo.ComputerUse1`, and a provider as `org.bardo.ComputerUse` | intentd's gate, inferd, memory, the compositor |
 | The shell's daemon | the shell | `org.bardo.Confirm1` and a provider as `org.bardo.Shell` | all of the above as a client |
@@ -109,7 +109,7 @@ prompt props (Bardo fill), or anything in the other repos.
 
 ## 9. The freeze plan
 
-The spec's section 6 orders the agents (dependency list, the model layer, Bardo, porter, the memory service and docket,
+The spec's section 6 orders the agents (dependency list, the model layer, Bardo, porter, the memory service and the actions service,
 cua and the compositor fork, the shell and the Settings app), the spikes that block fills, and the fill waves.
 Every repo's gate is format, clippy with warnings denied, tests, the boundary script and the
 licence check, and the UI kit's adds the consumer check; each exit code is checked and nothing is piped.

@@ -10,7 +10,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   libraries pinned by rev.** Forks of other projects: vello (five crates, `[patch.crates-io]`; ends when the
   changes are released upstream), anyrender (five; the same), dioxus (five; the dirty-task fix, ends when a
   dioxus release has it) and blitz (with taffy reached through it; ends when its changes are released upstream).
-  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, the plugin host, docket, porter
+  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, the plugin host, the actions service, porter
   (with the memory service, the model layer and the caller-identity library), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
   each git source by name. A source build is reproducible while those repositories keep the revs (`Cargo.lock` is
   committed, CI builds with `--locked`). The tag workflow (`.github/workflows/release.yml`) builds the Linux
@@ -1189,26 +1189,26 @@ on. It is a reference, not a log: how each was found lives in git history.
   the directories it made; `uninstall.sh` removes exactly those, directories only when empty. An install from
   before the receipt is removed by file names, as it was.
 
-## The agent layer (docket)
+## The agent layer (the actions service)
 
-- **docket is a git dependency** at 30aa26b8, with porter (`prov`, `porter-core`) at 260a14d, the rev docket
-  itself pins, spelled the same way so Cargo keeps one copy; docket's own the memory service and the model pins come through it.
-  docket, the memory service and the model layer are public, so a plain checkout of anyview builds. Owner: docket.
-- **The action is `anyview.file.open`, not `file.open`.** docket's `validate` requires the action name to start with the
+- **The actions service is a git dependency** at 30aa26b8, with porter (`prov`, `porter-core`) at 260a14d, the rev the actions service
+  itself pins, spelled the same way so Cargo keeps one copy; the actions service's own the memory service and the model pins come through it.
+  The actions service, the memory service and the model layer are public, so a plain checkout of anyview builds. Owner: the actions service.
+- **The action is `anyview.file.open`, not `file.open`.** the actions service's `validate` requires the action name to start with the
   app's last element lowercased (`ActionOutsideApp`).
-- **docket has no parser in `docket-core`.** The manifest TOML is read in `docket-router::registry::parse`, which
-  brings cedar. anyview reads it with `toml` and `docket_core::validate` (what `parse` does) and the test checks the
-  shipped file that way; `docket-eval --check-skills` is the check with docket's own code.
+- **The actions service has no parser in `action-core`.** The manifest TOML is read in `action-router::registry::parse`, which
+  brings cedar. anyview reads it with `toml` and `action_core::validate` (what `parse` does) and the test checks the
+  shipped file that way; `action-eval --check-skills` is the check with the actions service's own code.
 - **Only one intent.** `Request::Peek` (quick look) would fit a Read action but `Target::Files` cannot say "exactly
   one", so it is left out; revealing or focusing a document has no request today. Open with no files is not
   declared: the router refuses an empty `Files` target.
 - **Not offered yet:** the window context (what is open, the page) is reported private; a real snapshot waits for a
   ds context model.
 
-- **The viewer's package budget is 682 (was 670).** docket's app side brings twelve packages, all behind
-  `desktop`: docket-client, docket-core, docket-dbus, porter-core, porter-dbus, prov, memory-core, cua-action,
-  model-provider, genai-names, vision-prep and base64 0.22.1. Most are vocabulary crates docket-core names in its
-  signatures, not code the viewer runs. `anyview-peek` stays at 590. Ends when docket-core splits the app-facing
+- **The viewer's package budget is 682 (was 670).** the actions service's app side brings twelve packages, all behind
+  `desktop`: action-client, action-core, action-dbus, porter-core, porter-dbus, prov, memory-core, cua-action,
+  model-provider, genai-names, vision-prep and base64 0.22.1. Most are vocabulary crates action-core names in its
+  signatures, not code the viewer runs. `anyview-peek` stays at 590. Ends when action-core splits the app-facing
   types from the planner and reader vocabulary.
 
 - **The viewer's package budget is 683 (was 682).** The plugin host, the plugin library, is one package. The plugin

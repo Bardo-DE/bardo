@@ -3,7 +3,7 @@
 //! append order, found by the session thing they name as their `Subject`).
 //!
 //! Each entry is an `Area { Companion }` event of kind `companion.session.<slug>`; the memory service keeps
-//! those out of recall. The position (`Seq`) is docket's own count carried in the stored body,
+//! those out of recall. The position (`Seq`) is the actions service's own count carried in the stored body,
 //! because the memory service's sequence is the Space's and interleaves its own audit events. The log lives
 //! in one Space, named when it is built.
 

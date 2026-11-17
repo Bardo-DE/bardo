@@ -1,4 +1,4 @@
-//! docket's vocabulary above `action-vocab`, `action-manifest`, `permission-core` and
+//! The actions service's vocabulary above `action-vocab`, `action-manifest`, `permission-core` and
 //! `companion-model`, and the pure behaviour that is cheap to build with it: context and previews,
 //! calls and every way they end, the undo journal, confirmation and the brief, budgets, spending
 //! and the kill switch, the planner and reader contract, the roster, messages, restore points,

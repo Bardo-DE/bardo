@@ -1,6 +1,6 @@
 [package]
 name = "companion-daemon"
-description = "The companion daemon: one identity over many tasks, each its own docket session. Serves org.bardo.Companion1; the binary serves it on the session bus. It is the bus adapter and the daemon over companion-helpers (the helpers' hub and the routine timer); the decisions over values are companion-core's."
+description = "The companion daemon: one identity over many tasks, each its own the actions session. Serves org.bardo.Companion1; the binary serves it on the session bus. It is the bus adapter and the daemon over companion-helpers (the helpers' hub and the routine timer); the decisions over values are companion-core's."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

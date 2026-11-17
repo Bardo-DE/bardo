@@ -100,5 +100,5 @@ pub fn introspection(bus: Bus) -> String {
 
 /// The answer of every skeleton method: the interface is frozen, its behaviour not built.
 pub(crate) fn frozen() -> fdo::Error {
-    fdo::Error::NotSupported("docket: frozen interface, not implemented".into())
+    fdo::Error::NotSupported("actions: frozen interface, not implemented".into())
 }

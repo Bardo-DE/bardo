@@ -1,4 +1,4 @@
-//! Tasks: the companion is one identity over many tasks, and each task is its own docket
+//! Tasks: the companion is one identity over many tasks, and each task is its own the actions service
 //! `Session` (its own taint, budget and `TaskPolicy`). This is the vocabulary of opening one,
 //! spawning a worker, and the ledger the router keeps so a finished task becomes an episode.
 

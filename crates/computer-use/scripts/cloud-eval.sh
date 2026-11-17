@@ -10,7 +10,7 @@
 # --accountd  porter's accountd built with `--features test-proc-root,test-keys`.
 # --inferd    porter's inferd built with `--features test-proc-root`, at the porter rev cua pins.
 # --eval      the computer-use-eval-cloud binary.
-# --home      the filled accountd home (docket's dev/live/cloud-key.sh): `accountd.keys` (0600) is only
+# --home      the filled accountd home (the actions service's dev/live/cloud-key.sh): `accountd.keys` (0600) is only
 #             pointed at by accountd's BARDO_ACCOUNTD_KEYS, never read by this script or the eval.
 # --entry     the trial catalogue entry of the model (eval/cloud-catalog/<id>.toml).
 # --catalog   the directory whose entries inferd is given (default eval/cloud-catalog).

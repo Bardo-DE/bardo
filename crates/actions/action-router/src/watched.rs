@@ -1,4 +1,4 @@
-//! Watch sessions: a terminal sees a CLI agent in one of its panes that docket does not host,
+//! Watch sessions: a terminal sees a CLI agent in one of its panes that the actions service does not host,
 //! and wants the agent's file changes to be undoable. `Checkpoint.Watch` opens a session that
 //! holds restore points and nothing else (its log is a watch opening and `Checkpoint` notes),
 //! and `Checkpoint.Mark` says the agent started working: a point is saved as at a turn start
@@ -181,7 +181,7 @@ impl<S: Seams> Router<S> {
     }
 
     /// `.Checkpoint.WatchAgent`: `.Checkpoint.Watch` for a terminal that also names the agent app
-    /// and the app's own id for the conversation, so the shell can offer to bring it into docket.
+    /// and the app's own id for the conversation, so the shell can offer to bring it into the actions service.
     /// A conversation the companion handed over is already a watch session: that one is answered
     /// (`WatchOwner::Companion`, which the terminal never closes) and nothing is created.
     pub(crate) fn checkpoint_watch_agent(

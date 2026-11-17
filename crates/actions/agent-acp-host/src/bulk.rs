@@ -1,6 +1,6 @@
 //! Where the agent sandbox's types meet action-core's.
 //!
-//! The agent sandbox owns its sandbox-state and network types (it depends on no docket crate; the
+//! The agent sandbox owns its sandbox-state and network types (it depends on no actions crate; the
 //! path is its own, shared), and these are the conversions at the edge.
 
 use permission_core::{CannotSandbox, SandboxState};

@@ -12,7 +12,7 @@ publish.workspace = true
 # `bardo-shell run --dev-callers FILE`: callers named in a person's own rows file are let in at
 # `Proof::Dev` (the caller-identity library's `dev-rows`). Off by default; only the bardo-shell binary's `debug` feature turns
 # it on, so no shipped build has it (the desktop gate refuses `dev-rows` in any release shape).
-# It also lets `bardo-shell run --proc-root DIR` name callers by a stand-in `/proc` (docket's
+# It also lets `bardo-shell run --proc-root DIR` name callers by a stand-in `/proc` (the actions service's
 # `fixture-callers`), as a jail with no systemd must.
 dev-callers = ["caller-identity-dbus/dev-rows", "action-dbus/fixture-callers"]
 

@@ -85,7 +85,7 @@ never reaches the second half of that list (a bus, a compositor, a database, an 
 `engine-install` reaches a runtime and an HTTP client through it and nothing of that second half, and `engine-manifest` and
 `engine-probe` reach neither. No crate reaches a `porter-*` crate. No speech
 crate reaches an audio device crate (`pipewire`, `libpulse-binding`, `libpulse-simple-binding`,
-`cpal`: capture and playback belong to docket's `voiced`) or a TTS stack with a GPL grapheme
+`cpal`: capture and playback belong to the actions service's `voiced`) or a TTS stack with a GPL grapheme
 step (`espeak-rs`, `espeak-ng`, `espeak-ng-sys`, `piper-rs`): text to speech is a separate engine
 process (Kokoro-FastAPI), and `bardo-speech-host` links sherpa-onnx built without TTS. The two
 excluded crates are not workspace members; `check-boundary.sh` checks them from their own
@@ -93,8 +93,8 @@ manifests (their direct edges and the same lists), and they alone may reach `ort
 
 Downstream, porter's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
-`model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); docket's `voiced` takes
-`speech-vad`; inference-core takes `computer-use-action` only. cuad, the memory service, docket and the shell do not name
+`model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); the actions service's `voiced` takes
+`speech-vad`; inference-core takes `computer-use-action` only. cuad, the memory service, the actions service and the shell do not name
 The model layer.
 
 ## 2. Modules

@@ -183,7 +183,7 @@ fastembed = "7.1"
 # The minor the compositor stack resolves.
 reis = "0.7"
 atspi = "0.30"
-# voiced (docket): the capture device through pipewire-rs, MIT (libpipewire through bindgen;
+# voiced (the actions service): the capture device through pipewire-rs, MIT (libpipewire through bindgen;
 # agent-spec voice.md section 2.3, spike V-A).
 pipewire = "0.10"
 # Dev-dependencies.

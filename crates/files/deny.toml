@@ -76,8 +76,8 @@ allow-git = [
     "https://github.com/Bardo-DE/bayonet",
     "https://github.com/Bardo-DE/mpv-wgpu",
     "https://github.com/Bardo-DE/vello",
-    # The desktop's agent layer (anyview-platform, desktop): docket at the manifest's rev, and
-    # porter, the memory service and the model layer at the revs docket pins, and the caller-identity library (account-dbus's caller check,
+    # The desktop's agent layer (anyview-platform, desktop): the actions service at the manifest's rev, and
+    # porter, the memory service and the model layer at the revs the actions pins, and the caller-identity library (account-dbus's caller check,
     # at the tag porter pins). All MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/docket",
     "https://github.com/Bardo-DE/porter",
@@ -87,11 +87,11 @@ allow-git = [
     # syncd's bus vocabulary and its test fake (files-desktop, Storage1): the sync service at the rev that pins
     # the same porter. MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/ferry",
-    # The AI crates docket pins (the inference service) and the provenance types (prov), at the revs docket pins.
+    # The AI crates the actions pins (the inference service) and the provenance types (prov), at the revs the actions pins.
     # MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/steward",
     "https://github.com/Bardo-DE/prov",
-    # docket's sandbox wrapper (docket ff9d1b73 and later): MIT OR Apache-2.0, at the rev docket pins.
+    # The actions service's sandbox wrapper (the actions service ff9d1b73 and later): MIT OR Apache-2.0, at the rev the actions pins.
     "https://github.com/Bardo-DE/bulkhead",
     "https://github.com/DioxusLabs/taffy",
 ]

@@ -379,7 +379,7 @@ impl<P: Peers> InferdSettings<P> {
 }
 
 /// Whether `text` is the word of a coding agent (`agent/<program>`) in the one slot that takes
-/// one. Only the shape is checked here: which agents exist is `agents.toml`'s, docket's, and is
+/// one. Only the shape is checked here: which agents exist is `agents.toml`'s, the actions service's, and is
 /// checked where the assistant is handed the conversation and where Settings lists them.
 fn agent_word(kind: Slot, text: &str) -> bool {
     kind == Slot::Text && parse_model(text).is_some_and(|model| model.is_agent())

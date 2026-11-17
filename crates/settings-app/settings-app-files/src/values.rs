@@ -34,7 +34,7 @@ impl ConfigHome {
     }
 }
 
-/// `$XDG_DATA_HOME` (or a scratch directory standing in for it): where docket keeps the agents it
+/// `$XDG_DATA_HOME` (or a scratch directory standing in for it): where the actions service keeps the agents it
 /// installed and what each last offered.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DataHome(pub PathBuf);

@@ -936,7 +936,7 @@ async fn the_shells_own_rows_do_what_the_table_calls_cheap() {
     }
 }
 
-// ---- The shell's menu provider under docket's real router ---------------------------------
+// ---- The shell's menu provider under the actions service's real router ---------------------------------
 
 mod routed {
     use super::*;

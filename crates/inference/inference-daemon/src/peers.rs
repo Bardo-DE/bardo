@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{Mutex, PoisonError};
 
-/// The app docket's companion daemon is: with Settings and the shell, the callers of `Places`.
+/// The app the actions service's companion daemon is: with Settings and the shell, the callers of `Places`.
 const COMPANION_APP: &str = "org.bardo.Companion";
 
 /// Why a caller table's text was refused.

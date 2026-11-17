@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 # The compiler is the fence: the window names only the client (its one door to the computer), the
 # model (its facts, and the other crates' types they are made of) and bardo. Never settings-app-files,
-# settings-app-system, porter-*, memory-*, docket-* or zbus.
+# settings-app-system, porter-*, memory-*, actions-* or zbus.
 settings-app-client = {path = "../settings-app-client"}
 settings-app-model = {path = "../settings-app-model"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
@@ -56,7 +56,7 @@ zbus = {workspace = true, features = ["default", "tokio"]}
 # The Intelligence test's stand-in inferd answers with porter's kinds and inference types.
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
-# The Assistants test reads docket's places file.
+# The Assistants test reads the actions service's places file.
 action-settings = {path = "../../actions/action-settings"}
 # The lending test's service manager implements inferd's `UnitManager`.
 inference-client = {path = "../../inference/inference-client", features = ["lending"]}

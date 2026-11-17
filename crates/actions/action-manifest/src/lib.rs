@@ -1,4 +1,4 @@
-//! docket's manifest: what an app declares (its entities, relations and actions with their
+//! The actions service's manifest: what an app declares (its entities, relations and actions with their
 //! parameters), the validation that turns a [`Manifest`] into a [`ValidManifest`], a manifest
 //! file read as TOML (behind the `manifest-file` feature) and a tool call's JSON arguments read
 //! into typed ones (`args_from_json`).

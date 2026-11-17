@@ -83,7 +83,7 @@ impl<C: Clone> Clone for Serving<C> {
 }
 
 fn private_dir(run_dir: &std::path::Path) -> std::io::Result<PathBuf> {
-    let dir = run_dir.join(format!("docket-edge-{}", nonce()?));
+    let dir = run_dir.join(format!("actions-edge-{}", nonce()?));
     std::fs::DirBuilder::new().mode(0o700).create(&dir)?;
     Ok(dir)
 }

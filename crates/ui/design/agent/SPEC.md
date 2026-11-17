@@ -15,12 +15,12 @@ How to read this file:
 
 | Name used in a spec | Where it lives now |
 |---|---|
-| "context" | docket (`action-core::context`, `IntentProvider1.Context/Summon`), Bardo `ui-intents` (view shapes, seams), docket `action-ui-adapter` (the adapter) |
-| "agent", "planner", "agent-loop", "companion daemon" | docket: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
-| "security" | labels: porter `prov`; policy, review, breaker, budgets: docket; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (the model layer `model-http` already takes a proxy `HttpTarget`) |
+| "context" | the actions service (`action-core::context`, `IntentProvider1.Context/Summon`), Bardo `ui-intents` (view shapes, seams), the actions service `action-ui-adapter` (the adapter) |
+| "agent", "planner", "agent-loop", "companion daemon" | the actions service: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
+| "security" | labels: porter `prov`; policy, review, breaker, budgets: the actions service; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (the model layer `model-http` already takes a proxy `HttpTarget`) |
 | "compositor" | the compositor (cua repo owns the protocol crate; the compositor branch is shared with double-tap ⌘ later) and the shell (`shell-overlays` phase A) |
 | "launcher", "presence", "settings" | ux (the shell, the UI kit ds, the Settings app; design/22 rows by Bardo agent) |
-| "intents" | docket |
+| "intents" | the actions service |
 
 ---
 
@@ -38,7 +38,7 @@ Four new library repos plus one GPL fork. Every new repo copies porter's shape: 
 | `~/models` | new (name: Q-P1) | the model layer: provider trait, backends, CUA action/parse/session, vision prep, catalog, engine supervisor | yes, no porter dependency |
 | `~/porter` | existing | + `prov` (labels and shared who/what vocabulary), `SpaceId`, ComputerUse vocabulary, streaming inference, inferd engines | yes |
 | `~/memory` | new | memory: eventlog, memfiles, recall, memoryd | yes (memoryd Linux) |
-| `~/docket` | new | typed actions, router, policy, review, eval, MCP edge, **and the companion agent** (agent-loop, companiond, readerd), the ds adapter | core yes; daemons Linux |
+| `~/actions` | new | typed actions, router, policy, review, eval, MCP edge, **and the companion agent** (agent-loop, companiond, readerd), the ds adapter | core yes; daemons Linux |
 | `~/cua` | new (name: Q-P1) | computer-use runtime: a11y tree, agent seat, masked capture, desktop leases, run machine, cuad, `bardo-agent-v1` protocol | core yes; cuad Linux |
 | `~/bardo/compositor` | new fork, GPL-3.0-only | `src/bardo/**` only (agent seat, masked source, trusted surface, glow, kill chord, later double-tap) | no; nothing of ours depends on it |
 | `~/bardo` | existing | + `ui-intents` crate; companion components and vocab; design docs | yes |
@@ -47,18 +47,18 @@ Four new library repos plus one GPL fork. Every new repo copies porter's shape: 
 | `~/mailo` | existing | first real provider (fill wave only) | no |
 | `~/shell-host` | existing | nothing in the freeze; later the `bardo_sensitive_v1` client | no |
 
-Why the companion agent lives in docket and not its own repo: the planner never links cua or the memory service
-(it reaches CUA and memory as router actions, §4.2), so docket can host it without a repo cycle, and
-the planner/reader contract types are already docket's. This saves a repo.
+Why the companion agent lives in the actions service and not its own repo: the planner never links cua or the memory service
+(it reaches CUA and memory as router actions, §4.2), so the actions service can host it without a repo cycle, and
+the planner/reader contract types are already the actions service's. This saves a repo.
 
-Why `prov` lives in porter: memory (the memory service) needs labels, `Actor`, `Effect` and `EntityId`; docket's
-intentd needs the memory service's client. With `prov` in docket the repos would form a cycle. porter is already
+Why `prov` lives in porter: memory (the memory service) needs labels, `Actor`, `Effect` and `EntityId`; the actions service's
+intentd needs the memory service's client. With `prov` in the actions service the repos would form a cycle. porter is already
 the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`.
 
 ### 1.2 Repo dependency direction (acyclic; enforced per repo by `check-boundary.sh` rows)
 
 ```
-models  ←  porter  ←  memory  ←  docket  ←  cua  ←  shell
+models  ←  porter  ←  memory  ←  actions  ←  cua  ←  shell
    ↑          ↑          ↑          ↑   ↖Bardo(ui-intents only)
    └──────────┴──────────┴──────────┴── mailo, the Settings app (clients only)
 Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol only.
@@ -93,21 +93,21 @@ Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol on
 | 22 | `memory-client` | the memory service | per transport | memory-core, memory-service, memory-dbus (feature) |
 | 23 | `memory-fake` | the memory service | test | 13-19 |
 | 24 | `memoryd` | the memory service | daemon | all the memory service, **account-client** |
-| 25 | `action-core` | docket | pure, serde-only | **account-core, prov, computer-use-action** |
-| 26 | `permission-policy` | docket | pure (+ cedar-policy) | action-core, **prov** |
-| 27 | `action-review` | docket | pure (+ an `InferReviewer` over a seam) | action-core, **prov, inference-core** |
-| 28 | `action-router` | docket | pure over seams | action-core, permission-policy, action-review, **prov, account-core** |
-| 29 | `action-dbus` | docket | zbus | action-core |
-| 30 | `action-client` | docket | per transport | action-core, action-router (InProcess), action-dbus (feature) |
-| 31 | `action-fake` | docket | test | 25-30 |
-| 32 | `agent-eval` | docket | test + release script | action-fake and its deps, **inference-core** |
-| 33 | `bardo-actions-mcp` | docket | rmcp edge binary, off by default | action-core, action-client |
-| 34 | `intentd` | docket | daemon (also hosts the built-in `org.bardo.Memory` provider) | 25-30, **memory-core, memory-client, account-core** |
-| 35 | `companion-wire` | docket | pure, serde-only | action-core, **prov, inference-core** (`ServedBy`) |
-| 36 | `agent-loop` | docket | pure step machine | action-core, companion-wire, **prov** |
-| 37 | `companiond` | docket | daemon | agent-loop, companion-wire, action-client, **account-client** |
-| 38 | `readerd` | docket | daemon, separate process | action-core, action-client, **account-client** |
-| 39 | `action-ui-adapter` | docket | adapter used by Bardo apps | action-client, companion-wire, **ui-intents** |
+| 25 | `action-core` | the actions service | pure, serde-only | **account-core, prov, computer-use-action** |
+| 26 | `permission-policy` | the actions service | pure (+ cedar-policy) | action-core, **prov** |
+| 27 | `action-review` | the actions service | pure (+ an `InferReviewer` over a seam) | action-core, **prov, inference-core** |
+| 28 | `action-router` | the actions service | pure over seams | action-core, permission-policy, action-review, **prov, account-core** |
+| 29 | `action-dbus` | the actions service | zbus | action-core |
+| 30 | `action-client` | the actions service | per transport | action-core, action-router (InProcess), action-dbus (feature) |
+| 31 | `action-fake` | the actions service | test | 25-30 |
+| 32 | `agent-eval` | the actions service | test + release script | action-fake and its deps, **inference-core** |
+| 33 | `bardo-actions-mcp` | the actions service | rmcp edge binary, off by default | action-core, action-client |
+| 34 | `intentd` | the actions service | daemon (also hosts the built-in `org.bardo.Memory` provider) | 25-30, **memory-core, memory-client, account-core** |
+| 35 | `companion-wire` | the actions service | pure, serde-only | action-core, **prov, inference-core** (`ServedBy`) |
+| 36 | `agent-loop` | the actions service | pure step machine | action-core, companion-wire, **prov** |
+| 37 | `companiond` | the actions service | daemon | agent-loop, companion-wire, action-client, **account-client** |
+| 38 | `readerd` | the actions service | daemon, separate process | action-core, action-client, **account-client** |
+| 39 | `action-ui-adapter` | the actions service | adapter used by Bardo apps | action-client, companion-wire, **ui-intents** |
 | 40 | `computer-use-a11y-tree` | cua | pure; `atspi` feature | **computer-use-action, prov** |
 | 41 | `computer-use-seat-input` | cua | pure; `ei` feature | **computer-use-action** |
 | 42 | `maskcap` | cua | pure; `wayland` feature | **computer-use-action** |
@@ -170,21 +170,21 @@ crates; each pair gets a `*_total` conversion test in `shell-ui-kit::companion`.
 | `Effect {Read, UndoableWrite, Outbound, Destructive}` | action-core, memory-core (re-export), cua `EffectClass`, ux `EffectMark` | **prov** | cua uses `prov::Effect` (EffectClass deleted); ui-core `EffectMark` is the view |
 | `SpaceId`, `SpaceScope` | account-core (actions), prov (memory), the memory service | **account-core** | prov re-exports |
 | Coordinate-space trait `Space` | computer-use-action | **computer-use-action**, renamed `CoordSpace` | frees "Space" for desktop Spaces |
-| `Actor` | action-core, memory-core, cua (`Companion(CuaRun)`), ux view `Actor{You,Companion}` | **prov** (merged, §3.1) | ui-core `ActorMark` view; docket `GrantCaller` for grant keys |
+| `Actor` | action-core, memory-core, cua (`Companion(CuaRun)`), ux view `Actor{You,Companion}` | **prov** (merged, §3.1) | ui-core `ActorMark` view; the actions service `GrantCaller` for grant keys |
 | `AppName`, `AppId` | account-core | **account-core** | ux `AppMark` is a view (icon + name) |
 | `EntityKind/Key/Id`, `ActionName` | action-core; the memory service `ThingRef/ThingKind/ThingKey/ActionName` | **prov** | the memory service `pub type ThingRef = prov::EntityId` (and ThingKind/Key aliases) |
-| `SessionId`, `RunId` | docket (String), the memory service (String), cua `RunId(u64)` | **prov**, String slugs | cuad mints `r-<n>` |
+| `SessionId`, `RunId` | the actions service (String), the memory service (String), cua `RunId(u64)` | **prov**, String slugs | cuad mints `r-<n>` |
 | `TaskId`, `TurnId`, `UndoId`, `Handle`, `CallId` | action-core | **action-core** | ux `AnswerId`, the shell `AnswerKey`→ `TaskId`; `RunKey`→`RunId`; `ActivityKey`→`UndoId`; `MemoryKey`→`memory_core::MemoryItem` |
 | Tool-call id | model-provider `CallId(String)`, inference-core `CallId` | **model-provider** `ToolCallId` | inference-core wire mirrors (`ToolCallId`, bridged in `inferd::bridge`) |
 | `Label`, `Integrity`, `Confidentiality`, `Source`, `Labelled`, `Quarantined` | prov (actions), the memory service uses | **prov** | |
-| `ConfirmReceipt`, `ConfirmId`, `InputProof`, `Witness` | prov/docket-core; the memory service `Confirmation` | **prov** | the memory service `Settlement::Keep(ConfirmReceipt)` |
+| `ConfirmReceipt`, `ConfirmId`, `InputProof`, `Witness` | prov/action-core; the memory service `Confirmation` | **prov** | the memory service `Settlement::Keep(ConfirmReceipt)` |
 | `ConfirmRequest`, `ConfirmAnswer`, `TaintNote`, `ConfirmOffer`, `Gesture` | action-core; ui-shell `ConfirmView/ConfirmAnswer/TaintNote/ScopeOffer` | **action-core** (wire) | ui-shell: `ConfirmView`, `ConfirmChoice` (renamed), `TaintLine` (renamed), `ScopeOffer`, + `gesture: GestureMark` |
-| `Preview` (content vocabulary) | action-core; shell-launcher `Preview` (pane selector) | **action-core** for content | the shell `Preview::Intent(docket_core::Preview)`; ux `AnswerView` is a view |
-| `Fact` (label line) vs memory `Fact` | action-core `Fact`, the memory service `Fact`, ds `FactList` | the memory service `Fact` = a memory fact; docket's renamed **`FactLine`** | ui-shell `ConfirmView.facts` uses the UI kit's FactList items |
+| `Preview` (content vocabulary) | action-core; shell-launcher `Preview` (pane selector) | **action-core** for content | the shell `Preview::Intent(action_core::Preview)`; ux `AnswerView` is a view |
+| `Fact` (label line) vs memory `Fact` | action-core `Fact`, the memory service `Fact`, ds `FactList` | the memory service `Fact` = a memory fact; the actions service's renamed **`FactLine`** | ui-shell `ConfirmView.facts` uses the UI kit's FactList items |
 | `Count` | account-core `Count(u32)`; ui-settings `Count(u16)` | **account-core** on wires | ui-core gains view `Tally(u32)`; ui-settings Count stays settings-only |
 | `Fraction` | ui-core | **ui-core** (view) | |
 | `ServedBy` | inference-core; ux `ServedByView`; cua `ServedByNote` | **inference-core** | cua records `ServedBy`; ux view `ServedByView` |
-| Undo journal | docket `UndoEntry/UndoToken/UndoId`; ux `UndoKey`, Companion1 `Undo`, `ActivityAppended`; ds `toast_hub::UndoToken(u64)` | **action-core** journal + `Intents1.Run.Undo/UndoAll`, `Control.Journal/JournalChanged` | ux `UndoKey` deleted: views use ds `UndoToken(u64)` = `UndoId.0`; Companion1 has no undo or activity members |
+| Undo journal | the actions service `UndoEntry/UndoToken/UndoId`; ux `UndoKey`, Companion1 `Undo`, `ActivityAppended`; ds `toast_hub::UndoToken(u64)` | **action-core** journal + `Intents1.Run.Undo/UndoAll`, `Control.Journal/JournalChanged` | ux `UndoKey` deleted: views use ds `UndoToken(u64)` = `UndoId.0`; Companion1 has no undo or activity members |
 | Run state | cua `RunPhase`/`RunStateSlug`; ux `RunState`, `RunPlace` | **computer-use-bus** `RunStateSlug`, `CuaOutcome`; **action-core** `RunMode` | ux `RunState`/`RunPlace` are views; `shell-model::run_state_of(slug, outcome)` total |
 | `RunMode`, `WindowTrust` | computer-use-desktop | **action-core** (the gate contract needs them) | computer-use-desktop re-exports |
 | `GlowState` | computer-use-desktop, ui-shell, ux protocol sketch | **computer-use-desktop** (protocol values) | ui-shell renames to `GlowLook` (view input to `glow_spec`) |
@@ -194,16 +194,16 @@ crates; each pair gets a `*_total` conversion test in `shell-ui-kit::companion`.
 | Frame types | model-vision-prep `RawFrame`, cua `RawFrame/PixelBuf/PxSize`, inference-core `FrameLayout` | `PixelFormat`, `DeviceSize`, `Scale120` → **computer-use-action**; `PixelBuf` → maskcap; `RawFrame<'a>` → model-vision-prep | `PxSize` deleted (= `DeviceSize`) |
 | CUA model step | cua `CuaTurn/StepReply/StepEvent`, models `CuaStepRequest/Reply` | **inference-core::cua** | computer-use-run `turn(obs) -> CuaStepRequest` |
 | Event payloads (policy, consent, CUA, session) | the memory service re-declared each | **their owners** (`action-core::AuditRecord`, `computer-use-bus::CuaRecord`, `companion-wire::SessionRecord`) | the memory service stores them as `EventBody::Area` (§3.4) |
-| Budgets | docket `Budget/BudgetKind`, cua `Budget/BudgetKind` | session budget **action-core**; per-run budget **computer-use-run `RunBudget/RunBudgetKind`** | cua `denials` field removed: the router's breaker counts |
-| Denial reasons | docket `DenyReason` (internal), `DenyCode` (to agent); cua `DenyReason` | **action-core** `DenyCode`; `DenyReason` internal to permission-policy/audit | cua keeps only local pre-checks `LocalRefusal {OutsideLease, SecretField}` |
+| Budgets | the actions service `Budget/BudgetKind`, cua `Budget/BudgetKind` | session budget **action-core**; per-run budget **computer-use-run `RunBudget/RunBudgetKind`** | cua `denials` field removed: the router's breaker counts |
+| Denial reasons | the actions service `DenyReason` (internal), `DenyCode` (to agent); cua `DenyReason` | **action-core** `DenyCode`; `DenyReason` internal to permission-policy/audit | cua keeps only local pre-checks `LocalRefusal {OutsideLease, SecretField}` |
 | Verdict names | porter consent `Verdict`, action-review `Verdict`, the memory service `Verdict` | porter keeps `Verdict` | action-review → `ReviewVerdict`; the memory service → `Settlement {Keep(ConfirmReceipt), Discard}` |
 | Decision names | porter consent `Decision`; permission-policy `Decision` | porter keeps `Decision` | permission-policy → `Ruling {Deny, Ask, AllowJudged, AllowFinal}` |
-| `Need` | account-core `Need`; docket `Need` (param); ds `Need` (form) | account-core | docket → `ParamNeed`; ds → `FieldNeed` |
-| `Visibility<T>` (plain or handle) | docket | action-core, renamed **`Reveal<T>`** | computer-use-run's window `Visibility` keeps its name |
+| `Need` | account-core `Need`; the actions service `Need` (param); ds `Need` (form) | account-core | the actions service → `ParamNeed`; ds → `FieldNeed` |
+| `Visibility<T>` (plain or handle) | the actions service | action-core, renamed **`Reveal<T>`** | computer-use-run's window `Visibility` keeps its name |
 | `Usage` | porter consent `Usage`; model-provider `Usage` (tokens) | porter keeps `Usage` | model-provider → `TurnUsage`; inference-core `TokenUsage` unchanged |
 | `Role` | model-provider message `Role`; catalog `roles`; intentd caller roles | model-provider `Role` | catalog `roles: BTreeSet<AiKind>`; intentd `CallerRole` |
-| `Latency` | docket `Latency` (decl), addendum `Latency2` | docket `Latency` | → `StageLatency` |
-| `Repeat` | computer-use-action `Repeat` (key repeat), docket gate param | computer-use-action | docket gate → `RepeatState` |
+| `Latency` | the actions service `Latency` (decl), addendum `Latency2` | the actions service `Latency` | → `StageLatency` |
+| `Repeat` | computer-use-action `Repeat` (key repeat), the actions gate param | computer-use-action | the actions gate → `RepeatState` |
 | `Need::Cua` vs `Need::ComputerUse` | cua.md, models.md | **account-core `Need::ComputerUse(CuaNeed)`** | |
 | Authorization | actions §3.9 | **deleted** → action-core `TaskPolicy` (addendum A1) | |
 | `Summon` app method | ux ("context area") | **`IntentProvider1.Summon`**, answered by ds via `action-ui-adapter` | |
@@ -285,7 +285,7 @@ pub fn declassify<T>(v: Labelled<T>, to: Confidentiality, w: &Witness) -> Labell
 ```rust
 // request.rs (changes a frozen type; design/31 edited in step)
 pub struct ChatRequest { /* frozen fields */ pub tools: Vec<ToolDecl> }
-pub struct ToolDecl { pub name: ToolName, pub description: String, pub params: JsonSchemaText } // from docket tool_schema
+pub struct ToolDecl { pub name: ToolName, pub description: String, pub params: JsonSchemaText } // from actions tool_schema
 pub enum MessagePart { Text(String), Image(ImagePart), ToolCall(ToolCallPart), ToolResult(ToolResultPart) }
 pub struct ToolCallPart { pub id: ToolCallId, pub name: ToolName, pub args: JsonText }
 pub struct ToolResultPart { pub id: ToolCallId, pub status: ToolStatus, pub parts: Vec<MessagePart> }
@@ -387,7 +387,7 @@ pub enum EventBody {
 }
 pub struct AreaPayload { pub area: AreaTag, pub kind: KindTag, pub json: JsonText,  // the owner's serde form
                          pub things: Vec<(ThingView, ThingRole)> }                  // for cascade-forget
-pub enum AreaTag { Docket, Cua, Companion }    pub enum ThingRole { Subject, Source }
+pub enum AreaTag { Actions, Cua, Companion }    pub enum ThingRole { Subject, Source }
 pub struct EventRef { pub space: SpaceId, pub replica: ReplicaId, pub seq: Seq }
 pub enum MemoryItem { Fact(FactId), Event(EventRef) }               // shell's Subject key
 pub struct Fact { /* memory.md §3.3 */ pub label: prov::Label, pub by: prov::Actor, .. }
@@ -506,7 +506,7 @@ pub enum WindowClass { Ordinary, MailCompose, Terminal, Payments, Admin, Passwor
 pub struct NodeFacts { pub role: String, pub name: Labelled<String> }
 pub enum GateAnswer { Run, Refused(CallRefusal) }   // confirmations are resolved inside the router before answering
 
-// audit (stored by intentd as memory EventBody::Area{area: Docket})
+// audit (stored by intentd as memory EventBody::Area{area: Actions})
 pub enum AuditRecord { /* actions.md §3.11 + addendum: Review{stage}, Call{decided}, Confirm, Undo, Halt, TaskPolicy, Breaker */ }
 pub enum HaltCause { KillChord, ControlCentre, StopKey, Budget(BudgetKind), Breaker(BreakerTrip) }   // Esc -> StopKey (⌘.)
 
@@ -525,7 +525,7 @@ pub trait SummonTarget: Send + Sync { fn summon(&self, serial: SummonSerial, ori
 pub enum SummonAnswer { TookField, TookAnchored, Restored, Declined }
 ```
 
-### 3.6 docket `companion-wire` (new; the `org.bardo.Companion1` bodies)
+### 3.6 the actions service `companion-wire` (new; the `org.bardo.Companion1` bodies)
 
 ```rust
 pub struct AskWire { pub session: SessionId, pub turn: TurnId, pub parent_window: WindowKey }
@@ -560,7 +560,7 @@ pub enum EffectMark { Read, UndoableWrite, Outbound, Destructive }           // 
 pub enum ActorMark { You, Companion }                                         // was ds Actor
 pub struct Tally(pub u32);                                                    // view count
 
-// ui-intents (new crate): presentational context + the two app seams; no docket types
+// ui-intents (new crate): presentational context + the two app seams; no actions types
 pub struct ThingMark { pub kind: String, pub key: String, pub title: String, pub subtitle: String }
 pub trait ContextModel { /* thing props on Row/List, text targets on edit surfaces; ux/actions fill */ }
 pub trait CompanionPort: 'static { fn on_summon(&self, h: Callback<SummonSerial, SummonAnswerMark>);
@@ -581,9 +581,9 @@ pub struct SummonSerial(pub u64);
 ```rust
 // shell-launcher (closed enums gain variants; warn the shell session before landing)
 ProviderKind:  ... , Things, Companion, Runs, Memory            // ALL: [_; 13], this order
-Subject:  Entity(docket_core::EntityRef), Answer(TaskId), Run(RunId), Activity(UndoId), Memory(memory_core::MemoryItem)
-Preview:  Intent(docket_core::Preview), Answer(TaskId), Run(RunId), Memory(memory_core::MemoryItem)
-Activation: Intent(docket_core::CallRequest), Companion(CompanionAct)       // no Activation::Cua
+Subject:  Entity(action_core::EntityRef), Answer(TaskId), Run(RunId), Activity(UndoId), Memory(memory_core::MemoryItem)
+Preview:  Intent(action_core::Preview), Answer(TaskId), Run(RunId), Memory(memory_core::MemoryItem)
+Activation: Intent(action_core::CallRequest), Companion(CompanionAct)       // no Activation::Cua
 pub enum CompanionAct { Ask { prompt: String }, Card { task: TaskId, action: CardActionId }, Promote { task: TaskId },
     Run { run: RunId, control: RunControl }, Undo { scope: UndoScope }, Memory { item: MemoryItem, verb: MemoryVerb }, Mode(LauncherMode) }
 pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll }    // Replay: later (procedures)
@@ -598,8 +598,8 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
   `turn(&Observation) -> (CuaStepRequest, FrameAttachment)`; seam
   `trait CuaModel { fn begin(&mut self, b: CuaBegin) -> Future<Result<(), CuaModelError>>; fn step(&mut self, r: CuaStepRequest, a: FrameAttachment, sink: &mut impl StepSink) -> Future<Result<CuaStepReply, CuaModelError>>; }`
   with `CuaModelError { Transient, Parse, Fatal }`, impls `InferdCuaModel` (cuad, over account-client) and `ScriptedModel` (computer-use-fake, over model-replay).
-- `classify_effect(..) -> (prov::Effect, docket_core::EffectBasis)`; `EffectClass`, `CuaVerdict`, `ConfirmText`, `DenyReason` deleted.
-  Authorising sends `docket_core::CuaAsk` through `Intents1.Gate.Check`; `RunInput::Verdict(GateAnswer)`;
+- `classify_effect(..) -> (prov::Effect, action_core::EffectBasis)`; `EffectClass`, `CuaVerdict`, `ConfirmText`, `DenyReason` deleted.
+  Authorising sends `action_core::CuaAsk` through `Intents1.Gate.Check`; `RunInput::Verdict(GateAnswer)`;
   `RunInput::ConfirmPending(ConfirmId)` (from Request `Progress(Confirming)`) drives `SuspendLease(Consent)` on stock, then `Request.Proceed`.
   `Granting` calls `Intents1.Gate.Grant(app, space)`.
 - `RunBudget { steps, active, stall_frames, actions_per_min, model_failures, spend }` (no `denials`); `GateAnswer::Refused(Paused(_))` → `Finished(Blocked(PolicyDenials))`; `Refused(Halted(_))` → `Paused`.
@@ -617,13 +617,13 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
 | Daemon | Repo | Merges | Bus name / object | Serves | Calls |
 |---|---|---|---|---|---|
 | **inferd** (existing) | porter | models' engine host; 31's MCP host role removed (C16) | `org.bardo.Inference1` `/org/bardo/Inference1`; `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | `Availability`, `Open(need,class,tier)->h` (fd stream of ClientFrame/InferEvent, memfds), **`Prepare(need,class,tier)->s`**, `Usage`, `Rescan`; signal **`EnginesChanged()`**; property **`Gpu s`** | engines over Unix sockets (transient systemd units) |
-| **intentd** | docket | actions' router, ux's "security" checks, cua's per-step PDP, the planner's memory path | `org.bardo.Intents1` `/org/bardo/Intents1` | §4.2 | `IntentProvider1` on apps, `Confirm1` (the shell), `Reader1`, `Memory1` (Record; Recall for the built-in Memory provider), inferd (reviewer, policy writer) |
-| **companiond** | docket | ux's "agent daemon", actions' "companion", cua's "planner/router that calls Start", memory's "agent-loop" | `org.bardo.Companion1` `/org/bardo/Companion1` | §4.2 | `Intents1` (role companion), inferd (planner) |
-| **readerd** | docket | actions' quarantined reader | `org.bardo.Reader1` `/org/bardo/Reader1` | `Extract(session s, ask s) -> s` (caller must be intentd) | `Intents1.Session.Resolve`, inferd (reader: `Need::Llm{StructuredOutput}`, no tools) |
+| **intentd** | the actions service | actions' router, ux's "security" checks, cua's per-step PDP, the planner's memory path | `org.bardo.Intents1` `/org/bardo/Intents1` | §4.2 | `IntentProvider1` on apps, `Confirm1` (the shell), `Reader1`, `Memory1` (Record; Recall for the built-in Memory provider), inferd (reviewer, policy writer) |
+| **companiond** | the actions service | ux's "agent daemon", actions' "companion", cua's "planner/router that calls Start", memory's "agent-loop" | `org.bardo.Companion1` `/org/bardo/Companion1` | §4.2 | `Intents1` (role companion), inferd (planner) |
+| **readerd** | the actions service | actions' quarantined reader | `org.bardo.Reader1` `/org/bardo/Reader1` | `Extract(session s, ask s) -> s` (caller must be intentd) | `Intents1.Session.Resolve`, inferd (reader: `Need::Llm{StructuredOutput}`, no tools) |
 | **memoryd** | the memory service | ux's "memory daemon" | `org.bardo.Memory1` `/org/bardo/Memory1` (memory.md §3.10; ux's names mapped C27) | Record / Recall / Control | inferd (embed, consolidation) |
 | **cuad** | cua | cua-integration's cuad | `org.bardo.ComputerUse1` `/org/bardo/ComputerUse1` (+ `/run/<id>`); `IntentProvider1` as `org.bardo.ComputerUse` | cua.md §3.8 | `Intents1.Gate`, inferd (ComputerUse, class Screen), `Memory1.Record`, `the compositor's input service` (stock) or `bardo-agent-v1` (fork) |
 | The shell daemon (existing) | the shell | ux's confirm phase A and glow phase A | serves **`org.bardo.Confirm1`** `/org/bardo/Confirm1` and `IntentProvider1` as `org.bardo.Shell` | `Confirm(request s)->o`, `Cancel(id s)` | all of the above as a client |
-| bardo-actions-mcp | docket | — | not on the bus (stdio/unix socket), off by default | MCP tools generated from the registry | `Intents1` as role mcp |
+| bardo-actions-mcp | the actions service | — | not on the bus (stdio/unix socket), off by default | MCP tools generated from the registry | `Intents1` as role mcp |
 
 ### 4.2 Interfaces (bodies are JSON of the named type in `s`, envelope `{vocab, body}`; caller identity is always derived from the connection, never sent)
 
@@ -686,43 +686,43 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | # | Step | Owner |
 |---|---|---|
 | 1 | Toshy emits the chord → `bardo-shell companion tap` (route B) or `summon` (route A) → `ShowRequest::Companion` | ux (the shell), Toshy spike |
-| 2 | `Tap` machine → `Summon` machine: mailo focused, owns `org.bardo.Mail` with a manifest → `AskApp` → `IntentProvider1.Summon(serial)`; the shell calls `Companion1.Prepare()` in parallel | ux (the shell), docket (method) |
+| 2 | `Tap` machine → `Summon` machine: mailo focused, owns `org.bardo.Mail` with a manifest → `AskApp` → `IntentProvider1.Summon(serial)`; the shell calls `Companion1.Prepare()` in parallel | ux (the shell), the actions service (method) |
 | 3 | In mailo, action-ui-adapter asks ds's `CompanionPort`: the search field answers `TookField`; **ui-intents freezes the context at this moment** (query "lisbon receipts", 12 visible results, selection) before the field turns into a prompt; chips Query, Results(12) | Bardo ui-intents, action-ui-adapter |
-| 4 | User types and sends. action-ui-adapter: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.bardo.Mail)`) → `Companion1.Ask` | docket |
-| 5 | intentd: PolicyWriter derives a TaskPolicy from the turn only (Mail actions up to Outbound, kind mail.message, max 12; recipients unresolved); Field turns are capped to Mail + Read elsewhere | docket |
-| 6 | companiond/agent-loop: `PlannerView` (result titles are third-party → handles); planner calls `contacts.search("accounting")` (Read, AllowFinal; Contacts is a trusted store → the contact is a Trusted sink); if it must pick which results are receipts, `Session.Read(ReaderAsk{Classify, EntitiesAmong})` → plain entity ids, planner taint becomes Untrusted | docket (+ models for the planner/reader models) |
-| 7 | Plan card `Plan[forward 12 → Accounting]` streams to mailo's prompt (answer `Updated`); plans run at once, confirmations happen per call (C40) | docket, ux |
-| 8 | `Run.Perform(mail.message.forward, Many(12), {to: Entity(contact)})`: no halt, budget ok; consent first use Mail×Mail×Space; Ruling **Ask** (Outbound, tainted planner; Rule of Two also fires); `Previewing`: mailo `DryRun` → `Preview::Message`; `Progress(Confirming)` → answer phase `NeedsYou(Confirm)` → presence Waiting | docket, mailo |
+| 4 | User types and sends. action-ui-adapter: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.bardo.Mail)`) → `Companion1.Ask` | the actions service |
+| 5 | intentd: PolicyWriter derives a TaskPolicy from the turn only (Mail actions up to Outbound, kind mail.message, max 12; recipients unresolved); Field turns are capped to Mail + Read elsewhere | the actions service |
+| 6 | companiond/agent-loop: `PlannerView` (result titles are third-party → handles); planner calls `contacts.search("accounting")` (Read, AllowFinal; Contacts is a trusted store → the contact is a Trusted sink); if it must pick which results are receipts, `Session.Read(ReaderAsk{Classify, EntitiesAmong})` → plain entity ids, planner taint becomes Untrusted | the actions service (+ models for the planner/reader models) |
+| 7 | Plan card `Plan[forward 12 → Accounting]` streams to mailo's prompt (answer `Updated`); plans run at once, confirmations happen per call (C40) | the actions service, ux |
+| 8 | `Run.Perform(mail.message.forward, Many(12), {to: Entity(contact)})`: no halt, budget ok; consent first use Mail×Mail×Space; Ruling **Ask** (Outbound, tainted planner; Rule of Two also fires); `Previewing`: mailo `DryRun` → `Preview::Message`; `Progress(Confirming)` → answer phase `NeedsYou(Confirm)` → presence Waiting | the actions service, mailo |
 | 9 | `Confirm1.Confirm` → the shell sheet (phase A) / trusted surface (phase B): "Forward 12 messages to Accounting?", recipients from the DryRun, offer OnceOnly (taint), arm delay → Allow → `ConfirmReceipt` | ux (the shell), cua fork (phase B) |
-| 10 | Dispatched → mailo performs (actor Companion, undo entry labelled on mailo's own stack), returns `Undoable::Yes(token)` valid for mailo's undo-send window → `UndoEntry` in the journal, `JournalChanged`; AuditRecords → `Memory1.Record` (Area{Docket}, things = 12 messages + contact) | docket, mailo, the memory service |
-| 11 | Answer `Done`, card shows Undo; presence Idle | docket, ux |
-| 12 | Undo: card/strip → `Intents1.Run.Undo(entry)` (actor User) → `IntentProvider1.Undo` → mailo cancels the held send → `Undone{by: User}`. ⌘Z in mailo does the same through mailo's stack and `UndoChanged`. After the window: `Failed(Gone)` shown honestly | docket, mailo, ux |
+| 10 | Dispatched → mailo performs (actor Companion, undo entry labelled on mailo's own stack), returns `Undoable::Yes(token)` valid for mailo's undo-send window → `UndoEntry` in the journal, `JournalChanged`; AuditRecords → `Memory1.Record` (Area{Actions}, things = 12 messages + contact) | the actions service, mailo, the memory service |
+| 11 | Answer `Done`, card shows Undo; presence Idle | the actions service, ux |
+| 12 | Undo: card/strip → `Intents1.Run.Undo(entry)` (actor User) → `IntentProvider1.Undo` → mailo cancels the held send → `Undone{by: User}`. ⌘Z in mailo does the same through mailo's stack and `UndoChanged`. After the window: `Failed(Gone)` shown honestly | the actions service, mailo, ux |
 
 ### (b) Launcher prompt that needs a CUA run in a third-party app
 
 | # | Step | Owner |
 |---|---|---|
-| 1 | Launcher companion mode → the shell records `Session.Turn` (role launcher) → `Companion1.Ask` | ux, docket |
-| 2 | agent-loop tier rule: typed action → hook (D-Bus/portal/MPRIS) → CUA. No typed action for Firefox → `Run.Perform(org.bardo.ComputerUse: computeruse.run.start{goal, app, mode})` (Read, AllowFinal; Hidden unless `cua.enabled`) | docket |
-| 3 | cuad: `Gate.Grant(firefox, space)` → first use Ask (Confirm1, OnceOrAlways unless a sensitive class) → lease (AgentWorkspace on the fork; stock: in place, HandsOff) → `Cua1.RunAdded` → the shell run row | cua, docket, ux |
+| 1 | Launcher companion mode → the shell records `Session.Turn` (role launcher) → `Companion1.Ask` | ux, the actions service |
+| 2 | agent-loop tier rule: typed action → hook (D-Bus/portal/MPRIS) → CUA. No typed action for Firefox → `Run.Perform(org.bardo.ComputerUse: computeruse.run.start{goal, app, mode})` (Read, AllowFinal; Hidden unless `cua.enabled`) | the actions service |
+| 3 | cuad: `Gate.Grant(firefox, space)` → first use Ask (Confirm1, OnceOrAlways unless a sensitive class) → lease (AgentWorkspace on the fork; stock: in place, HandsOff) → `Cua1.RunAdded` → the shell run row | cua, the actions service, ux |
 | 4 | Observe: masked capture (the computer-use daemon on stock, compositor on fork), a11y snapshot, `Inference1.Open(ComputerUse, Screen, tier)` → `CuaBegin`, `CuaStep` (memfd frame, tree text) → `CuaStepReply` in WindowSpace; `ActionProposed` → glow | cua, models (the model layer in inferd) |
-| 5 | Each action: `classify_effect` → `Gate.Check(CuaAsk)` → router Ruling with screen taint (always Untrusted): clicks in an ordinary window AllowJudged → reviewer Quick; typing into a compose window = Outbound → Ask → `Progress(Confirming)` → cuad suspends EI (stock) → `Proceed` → Confirm1 → answer → `GateAnswer` | cua, docket |
-| 6 | Inject via EI; settle on damage; loop; `Finish{extracted}` → `CuaResult` (summary and extracted labelled Untrusted(Screen)) becomes the `computeruse.run.start` Outcome value; the planner sees handles | cua, docket |
+| 5 | Each action: `classify_effect` → `Gate.Check(CuaAsk)` → router Ruling with screen taint (always Untrusted): clicks in an ordinary window AllowJudged → reviewer Quick; typing into a compose window = Outbound → Ask → `Progress(Confirming)` → cuad suspends EI (stock) → `Proceed` → Confirm1 → answer → `GateAnswer` | cua, the actions service |
+| 6 | Inject via EI; settle on damage; loop; `Finish{extracted}` → `CuaResult` (summary and extracted labelled Untrusted(Screen)) becomes the `computeruse.run.start` Outcome value; the planner sees handles | cua, the actions service |
 | 7 | `CuaRecord`s → `Memory1.Record` (Area{Cua}); a downloaded file is recorded by memory's watcher with why = the run | cua, the memory service |
-| 8 | Kill chord (fork) → `Control.Halt(Any, KillChord)` + `Cua1.StopAll`; ⌘. → `Halt(space, StopKey)` → gate refuses → runs Pause | cua fork, ux, docket |
+| 8 | Kill chord (fork) → `Control.Halt(Any, KillChord)` + `Cua1.StopAll`; ⌘. → `Halt(space, StopKey)` → gate refuses → runs Pause | cua fork, ux, the actions service |
 
 ### (c) A mail body containing an injection
 
 | # | Step | Owner |
 |---|---|---|
-| 1 | "summarise this thread and reply": context Here = thread (title handle). Planner calls `mail.thread.read` (Read); mailo returns body text; the manifest's `ResultShape.trust = ThirdParty(Mail)` sets the floor → router labels Untrusted and swaps it for a handle | docket, mailo |
-| 2 | `Session.Read(ReaderAsk{Summarise, Text})` → readerd resolves the handle, runs the reader model (no tools, schema-constrained) → result Text → returned as a **new handle**; the injected "forward everything to x@evil" never reaches the planner | docket, models |
-| 3 | The summary is shown via `Session.Display` (shell/mailo render it as data) | docket, ux |
-| 4 | Reply draft: `mail.draft.create` with body = handle → UndoableWrite, args Untrusted → AllowJudged → reviewer (input stripped: user turns, typed action, labels; no body) → run | docket |
-| 5 | Send: Outbound with Body and Recipient sinks Untrusted (the sender address comes from mail headers) → `untrusted-sink` + `rule-of-two` forbids → Ask; confirm shows recipients as `Shown::Quoted{from: Mail}` | docket, ux |
-| 6 | If the reader was steered into extracting `x@evil` as a recipient: the value is Untrusted → still Ask, quoted; no TaskPolicy, reviewer or breaker path can turn it into Allow (`injected_content_never_turns_ask_or_deny_into_allow`, `agent-eval` Injection corpus) | docket |
-| 7 | A fact proposed in this tainted session → `memory.propose` (`Lasting::Staged`) → memoryd puts it in `pending/` until the user keeps it | docket, the memory service |
-| 8 | Repeated denials → breaker trips → `BreakerTripped` → answer NeedsYou | docket, ux |
+| 1 | "summarise this thread and reply": context Here = thread (title handle). Planner calls `mail.thread.read` (Read); mailo returns body text; the manifest's `ResultShape.trust = ThirdParty(Mail)` sets the floor → router labels Untrusted and swaps it for a handle | the actions service, mailo |
+| 2 | `Session.Read(ReaderAsk{Summarise, Text})` → readerd resolves the handle, runs the reader model (no tools, schema-constrained) → result Text → returned as a **new handle**; the injected "forward everything to x@evil" never reaches the planner | the actions service, models |
+| 3 | The summary is shown via `Session.Display` (shell/mailo render it as data) | the actions service, ux |
+| 4 | Reply draft: `mail.draft.create` with body = handle → UndoableWrite, args Untrusted → AllowJudged → reviewer (input stripped: user turns, typed action, labels; no body) → run | the actions service |
+| 5 | Send: Outbound with Body and Recipient sinks Untrusted (the sender address comes from mail headers) → `untrusted-sink` + `rule-of-two` forbids → Ask; confirm shows recipients as `Shown::Quoted{from: Mail}` | the actions service, ux |
+| 6 | If the reader was steered into extracting `x@evil` as a recipient: the value is Untrusted → still Ask, quoted; no TaskPolicy, reviewer or breaker path can turn it into Allow (`injected_content_never_turns_ask_or_deny_into_allow`, `agent-eval` Injection corpus) | the actions service |
+| 7 | A fact proposed in this tainted session → `memory.propose` (`Lasting::Staged`) → memoryd puts it in `pending/` until the user keeps it | the actions service, the memory service |
+| 8 | Repeated denials → breaker trips → `BreakerTripped` → answer NeedsYou | the actions service, ux |
 
 ### (d) The user forgets a mail → cascade-forget
 
@@ -732,7 +732,7 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | 1b | "Forget" on a memory row: the shell (ShellUi) `PlanForget(space, Thing(id))` → ForgetPlanView → Alert "Also forgets 3 facts and 1 routine" → `Forget(token)` | ux, the memory service |
 | 2 | Closure: events whose subjects/sources include the thing (including `Area` payloads by their `things` lists: router audit, CUA records), facts linked transitively, pending facts, procedures, kept CUA thumbnails, index docs | the memory service |
 | 3 | Apply: index → memfiles → event bodies (headers stay, Q-Me3) → `Memory.Forgot` → WAL truncate; signal `Forgotten` → the shell refreshes | the memory service, ux |
-| 4 | Outside memory: mailo pushes `Index.Push(removals)` to intentd's shadow index; undo journal holds no entity ids; inferd audit holds no content; intentd sessions keep no content after Close | mailo, docket, porter |
+| 4 | Outside memory: mailo pushes `Index.Push(removals)` to intentd's shadow index; undo journal holds no entity ids; inferd audit holds no content; intentd sessions keep no content after Close | mailo, the actions service, porter |
 | 5 | Forgetting a memory never deletes the mail itself (stated in the Alert) | ux |
 
 Gaps found by the walk and fixed above: who may record a turn (TurnSource); context captured before
@@ -759,7 +759,7 @@ JSON, step tables of the pure parts) pass.
 |---|---|---|---|
 | **S0 Holo-3.1-4B chat template** (read `chat_template.jinja`, `preprocessor_config.json`, `config.json` via WebFetch; read-only) | the model agent, step 0 | `ToolDialect` variants, `GridMax`/`PatchFactor` values, `catalog/holo-3.1-4b.toml`, computer-use-parse fixtures (W1b) | geometry and every other the model type |
 | **S-SQL** SQLCipher bundled build with FTS5 + `cargo deny` | scratch crate `~/rs-wt/spikes/sqlcipher` | wave 0's rusqlite line → the memory service freeze (eventlog/recall hold rusqlite types) | — |
-| **S-Cedar** `cargo deny` for cedar-policy 4.13 | wave 0 agent | wave 0 line → docket freeze | — |
+| **S-Cedar** `cargo deny` for cedar-policy 4.13 | wave 0 agent | wave 0 line → the actions service freeze | — |
 | **Spike A** a stock compositor nested: capture + EI inject (cua.md §6) | `~/rs-wt/spikes/cua-a/`, then moved to `~/cua/spike/` | cua fill 2 (computer-use-seat-input `ei`, maskcap `wayland`, computer-use-desktop `desktop`), stock `mode_support` values, Q-P2 | the cua freeze |
 | **Spike T** Toshy double-tap route (does a tap-vs-hold remap on ⌘ disturb ⌘-click/⌘-drag?) | manual check queued in `shell/docs/manual-checks.md` (needs the real keyboard) | the shell W4 wiring of `Tap` vs `Summon`, `dist/toshy/companion_tap.py`; default route A until it runs | the shell freeze (both variants frozen) |
 | models S1 (engines on Unix sockets under `PrivateNetwork`) | dev script, scratch user unit | the model layer W2b, inferd W3 | freeze |
@@ -775,13 +775,13 @@ JSON, step tables of the pure parts) pass.
 | 1 | **Bardo** | `ui-core/src/vocab.rs`, `ui-intents/**` (new), `ds/src/components/companion/**` + its `mod.rs` line, `ds/src/assembly/sheets.rs`, `ui-shell/src/{confirm,tokens/glow.rs}`, `ui-style` orb tokens (proposed values, marked), `ui-settings/src/schema/key.rs`; docs: `design/22` rows (all `ai.*`, `agent.*`, `memory.*`, `cua.*`, `companion.*` keys), `design/32-COMPANION.md` (from COMPANION.md), `design/33-AGENT.md` (this spec); **not** design/31, TextField or CommandPalette | Bardo gate incl. `check-consumer.sh`, `check-doc-paths.sh` |
 | 2 | **porter** | `crates/prov/**` (new), account-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), account-provider (`Discovery::Supervised`, `providers/local.toml`), inference-core (§3.2), account-dbus + `dbus/org.bardo.Inference1.xml`, account-client, account-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/bardo/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | porter gate |
 | 3 | **the memory service** (new) | everything in `~/memory` | porter-style gate, `--exclude recall-fastembed` |
-| 3 | **docket** (new) | everything in `~/docket` (including companion crates, `action-ui-adapter`, `manifests/org.bardo.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
+| 3 | **the actions service** (new) | everything in `~/actions` (including companion crates, `action-ui-adapter`, `manifests/org.bardo.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
 | 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to Bardo (reis/atspi landed in stage 0) | porter-style gate |
 | 4 | **fork-setup** | `~/bardo/compositor` at the 1.8 tag, branch `bardo`, `src/bardo/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
 | 5 | **the shell** | ux.md §6 F2 file list with §3.8 here; design/22 is Bardo agent's | the shell gate |
 | 5 | **The Settings app** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | the Settings app gate + `scripts/gen-fixtures.sh` |
 
-Porter-style gate (the model layer, porter, the memory service, docket, cua):
+Porter-style gate (the model layer, porter, the memory service, the actions service, cua):
 
 ```bash
 set -euo pipefail
@@ -803,9 +803,9 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | Wave | Parallel agents (repo: owned paths) | Source |
 |---|---|---|
-| F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. The memory service: eventlog; memfiles; recall (+fastembed); seal + watch. docket: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
-| F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. The memory service: memory-service + memory-fake. docket: intentd (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
-| F3 daemons | porter: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. The memory service: memory-dbus, memory-client, memoryd + unit. cua: cuad, computer-use-dbus codec, computer-use-fake harness, `dist/`. docket: action-ui-adapter against bardo. The shell W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
+| F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. The memory service: eventlog; memfiles; recall (+fastembed); seal + watch. The actions service: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
+| F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. The memory service: memory-service + memory-fake. The actions service: intentd (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
+| F3 daemons | porter: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. The memory service: memory-dbus, memory-client, memoryd + unit. cua: cuad, computer-use-dbus codec, computer-use-fake harness, `dist/`. The actions service: action-ui-adapter against bardo. The shell W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
 | F4 integration | mailo session (manifest, provider, actor on UndoStack, undo-send window); the shell W6 (replace fakes; nested compositor, private bus, scratch HOME); fork fill F1-F7 with acceptance scripts; acceptance `dev/cua-step-holo.sh` (GPU, by hand) | — |
 | Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `bardo_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
 
@@ -815,8 +815,8 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | # | Conflict | Resolution |
 |---|---|---|
-| C1 | Specs guessed crate/repo names (`docket-*`, `memory-*`, `bardo-intents`, two crates named `cua-wire`) | §1.3 names; models' `cua-wire` → `computer-use-vendors`; `bardo-intents` → `action-core` |
-| C2 | `prov` home: docket (actions) vs prov/memory (memory); docket↔memory repo cycle | `prov` in porter; the memory service stores other areas' payloads opaquely |
+| C1 | Specs guessed crate/repo names (`actions-*`, `memory-*`, `bardo-intents`, two crates named `cua-wire`) | §1.3 names; models' `cua-wire` → `computer-use-vendors`; `bardo-intents` → `action-core` |
+| C2 | `prov` home: the actions service (actions) vs prov/memory (memory); actions↔memory repo cycle | `prov` in porter; the memory service stores other areas' payloads opaquely |
 | C3 | `Effect` four homes | `prov::Effect`; ds `EffectMark` view |
 | C4 | Two `Actor` enums + cua's `Companion(CuaRun)` + ux view | merged `prov::Actor` (§3.1) |
 | C5 | `RunId(u64)` vs `RunId(String)` | String slugs in prov |
@@ -825,7 +825,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C8 | Float / i32 / physical-pixel coordinates (cua-integration, cua.md, research) | `Coord(u32)` window logical px + `Scale120` |
 | C9 | cua wanted `CuaModel` in model-provider with `dyn FnMut`; models runs the session in inferd | inferd hosts `computer-use-session`; cuad's `CuaModel` seam is in computer-use-run over `Inference1` |
 | C10 | cuad links `permission-policy` vs COMPANION "one decision point in the router" | `Intents1.Gate`; one PDP, one breaker, one audit |
-| C11 | CUA grant home | docket `ActionGrant` with caller Cua (both specs agreed) |
+| C11 | CUA grant home | the actions service `ActionGrant` with caller Cua (both specs agreed) |
 | C12 | cua per-run `denials` budget vs router breaker | breaker only |
 | C13 | Confirm1 served by the fork (actions) vs the shell sheet + trusted surface (ux) | the shell serves Confirm1 in both phases; the fork supplies `bardo_trusted_surface_v1` |
 | C14 | "CUA must not ship on SheetFallback" (actions C3) vs "stock first" (cua Q2) | on stock a CUA confirm shows only after cuad stops emulating (`Request.Proceed`); shipping call is Q-P2 |
@@ -843,7 +843,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C26 | Esc halts/pauses (actions, cua-integration) vs Esc closes one level (ux) | ux: ⌘. and Stop stop; `HaltCause::StopKey` |
 | C27 | ux's memory method names vs memory.md | memory.md: `PlanForget`/`Forget(token)`/`Settle`/`Consolidation`/`Export(options, h)` |
 | C28 | "context area" `Summon` method | `IntentProvider1.Summon` |
-| C29 | `ui-intents` using action-client (actions) vs "the UI kit never names daemon crates" (ux) | Bardo `ui-intents` is view-only; `action-ui-adapter` adapter in docket |
+| C29 | `ui-intents` using action-client (actions) vs "the UI kit never names daemon crates" (ux) | Bardo `ui-intents` is view-only; `action-ui-adapter` adapter in the actions service |
 | C30 | design/30 §3.4 defers companion work; new catalogue rows need the user | freeze types now; fills wait on Q-P7 |
 | C31 | Settings key duplicates | §2 last row |
 | C32 | Name collisions (Verdict, Decision, Need, Fact, Visibility, Usage, Role, Latency2, CallId, Repeat, Space, Budget, TaintNote, ConfirmAnswer, MemoryVerb, Actor) | §2 renames |

@@ -19,10 +19,10 @@ use provenance::{
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 
-/// The app whose things the conversations are. Must match docket's session log
+/// The app whose things the conversations are. Must match the actions service's session log
 /// (`companion-memory`'s `SESSION_APP`): the router reads a conversation's records by this thing.
 const CONVERSATION_APP: &str = "org.bardo.Companion";
-/// The kind of the thing a conversation names itself as. Must match docket's session log
+/// The kind of the thing a conversation names itself as. Must match the actions service's session log
 /// (`companion-memory`'s `SESSION_KIND`).
 const CONVERSATION_KIND: &str = "companion.session";
 /// The kind of the thing an app is, when a record names the app the run drives.
@@ -73,7 +73,7 @@ fn view_of(app: &str, kind: &str, key: &str) -> Result<ThingView, RecordError> {
     })
 }
 
-/// The things every record of a run names: the conversation (`Subject`, exactly as docket's
+/// The things every record of a run names: the conversation (`Subject`, exactly as the actions service's
 /// session log names it) and the app the run drives (`Source`; the memory service has no `Object` role).
 fn things_of(ctx: &RecordContext) -> Result<Vec<(ThingView, ThingRole)>, RecordError> {
     Ok(vec![

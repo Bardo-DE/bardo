@@ -26,7 +26,7 @@ pub struct OpenOptions {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub usage: Option<Usage>,
     /// The places the session may run, in the caller's order of preference (`places` on the bus).
-    /// Only docket's companion, reader and intents daemons may send it; inferd routes inside the
+    /// Only the actions service's companion, reader and intents daemons may send it; inferd routes inside the
     /// set and never outside it. Absent means routing as it always was; present and empty is a
     /// set with nothing in it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -35,13 +35,13 @@ pub struct OpenOptions {
     /// with no entry uses the usual choice.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub place_models: BTreeMap<PlaceId, ModelId>,
-    /// Whose turn the session carries (`asker` on the bus). Only docket's daemons may send it.
+    /// Whose turn the session carries (`asker` on the bus). Only the actions service's daemons may send it.
     /// Absent means the person ([`OpenOptions::asker_or_default`]).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub asker: Option<Asker>,
     /// This session's own named model (`model` on the bus, `<account>/<model>`): a helper's
     /// pick. It is treated exactly like a model the person named for the slot: never
-    /// overridden, a refusal names it, and no other model stands in. Only docket's daemons may
+    /// overridden, a refusal names it, and no other model stands in. Only the actions service's daemons may
     /// send it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub model: Option<ModelRef>,

@@ -1,4 +1,4 @@
-//! docket's D-Bus API: `org.bardo.Intents1` (the router, split into interfaces), the per-app
+//! The actions service's D-Bus API: `org.bardo.Intents1` (the router, split into interfaces), the per-app
 //! `org.bardo.IntentProvider1`, the shell's `org.bardo.Confirm1`, `org.bardo.Companion1` and
 //! `org.bardo.Reader1`. Each interface is declared twice from one table: a proxy trait for
 //! callers and a skeleton for the daemons, whose introspection is the checked-in `dbus/*.xml`

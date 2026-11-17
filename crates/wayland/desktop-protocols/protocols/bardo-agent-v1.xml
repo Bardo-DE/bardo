@@ -45,7 +45,7 @@
 
     <enum name="lease_mode">
       <description summary="where a run happens">
-        The same three values as docket-core's RunMode, in the same order.
+        The same three values as action-core's RunMode, in the same order.
       </description>
       <entry name="in_place" value="0" summary="the window stays where the person has it"/>
       <entry name="agent_workspace" value="1"

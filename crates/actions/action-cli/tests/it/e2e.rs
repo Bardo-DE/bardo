@@ -379,7 +379,7 @@ async fn with_intentd_stopped_every_call_exits_6_and_sends_nothing() {
     assert!(!desk.mail.0.is_archived("t2"));
 }
 
-/// What the terminal did reaches memoryd as the audit trail: one `docket.call` record, in the
+/// What the terminal did reaches memoryd as the audit trail: one `actions.call` record, in the
 /// Space the call ran in, acted by the terminal, naming the thing it read.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn what_the_terminal_did_is_in_memory_as_audit_records() {
@@ -390,7 +390,7 @@ async fn what_the_terminal_did_is_in_memory_as_audit_records() {
         desk.memoryd
             .stored()
             .into_iter()
-            .find(|r| r.body.kind().as_str() == "docket.call")
+            .find(|r| r.body.kind().as_str() == "actions.call")
     })
     .await;
     assert_eq!(record.actor, Actor::Cli);

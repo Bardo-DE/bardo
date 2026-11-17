@@ -158,7 +158,7 @@ impl<X: Seams> AcpBackend<X> {
         let caps = capabilities(self.performer.capabilities(ClientCapabilities::new()));
         let initialize = InitializeRequest::new(ProtocolVersion::V1)
             .client_capabilities(caps)
-            .client_info(Implementation::new("docket", env!("CARGO_PKG_VERSION")));
+            .client_info(Implementation::new("actions", env!("CARGO_PKG_VERSION")));
         let sent = self.link()?.ask(initialize);
         // The SDK refuses an answer that does not pick protocol version 1.
         let init = self

@@ -127,7 +127,7 @@ fn every_row_is_on_the_intelligence_page_in_the_section_it_names() {
     assert_eq!(
         advanced_keys,
         2 + 3 + 1,
-        "docket 2, the memory service 3, cua 1"
+        "actions 2, the memory service 3, cua 1"
     );
     let names: Vec<&str> = advanced.iter().map(|(title, _)| *title).collect();
     for section in ["Assistant", "Limits", "Memory", "History", "Run limits"] {

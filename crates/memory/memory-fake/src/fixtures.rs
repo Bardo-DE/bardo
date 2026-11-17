@@ -179,7 +179,7 @@ pub fn policy_ask() -> Option<Record> {
         Effect::Outbound,
         trusted_label(),
         area(
-            AreaTag::Docket,
+            AreaTag::Actions,
             "policy.ruled",
             r#"{"ruling":"ask","rule":"untrusted-sink"}"#,
         )?,
@@ -197,7 +197,7 @@ pub fn session_thing(session: &str) -> Option<ThingRef> {
     })
 }
 
-/// One entry of a companion session's durable log, as docket writes it: an `Area(Companion)`
+/// One entry of a companion session's durable log, as the actions service writes it: an `Area(Companion)`
 /// payload of kind `companion.session.<slug>` that names its session as the `Subject`.
 #[must_use]
 pub fn session_entry(session: &str, slug: &str, text: &str) -> Option<Record> {

@@ -1,5 +1,5 @@
 //! inferd's model picker, as the Intelligence page meets it: its live rows with the coding agents
-//! docket lists laid over them, the picks the person makes, and the reasons it gives for a pick.
+//! The actions service lists laid over them, the picks the person makes, and the reasons it gives for a pick.
 //! The steps are `settings-app-model`'s `step`.
 
 mod models;
@@ -27,7 +27,7 @@ use settings_app_model::{
 };
 use std::sync::Arc;
 
-/// Where the coding agents are looked for: docket's files and the programs on `PATH`.
+/// Where the coding agents are looked for: the actions service's files and the programs on `PATH`.
 #[derive(Debug, Clone)]
 pub(crate) struct AgentSearch {
     pub config_home: ConfigHome,
@@ -72,8 +72,8 @@ impl Picker {
         self.dispatch(input)
     }
 
-    /// inferd's rows with the coding agents docket lists laid over the text slot's: the module
-    /// knows no agent, and docket's files say which exist and whether they can be chosen now.
+    /// inferd's rows with the coding agents the actions service lists laid over the text slot's: the module
+    /// knows no agent, and the actions service's files say which exist and whether they can be chosen now.
     fn with_coding_agents(&self, described: Described) -> Described {
         let agents = load_agents(&self.search.config_home, &self.search.data_home);
         let found = programs_on(&self.search.programs_path);

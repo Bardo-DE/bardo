@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 slug_enum!(
     /// Which area owns a payload.
     AreaTag {
-        /// docket: policy decisions, consent, calls, undo, breaker (`AuditRecord`).
-        Docket => "docket",
+        /// The actions service: policy decisions, consent, calls, undo, breaker (`AuditRecord`).
+        Actions => "actions",
         /// cua: run steps (`CuaRecord`).
         Cua => "cua",
         /// The companion's session records (`SessionRecord`).

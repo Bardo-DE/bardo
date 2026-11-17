@@ -193,7 +193,7 @@ async fn a_command_line_a_terminal_saw_is_recognised_by_the_host_of_the_apps() {
 }
 
 #[tokio::test]
-async fn a_conversation_a_terminal_started_is_listed_and_brought_into_docket() {
+async fn a_conversation_a_terminal_started_is_listed_and_brought_into_actions_service() {
     let w = world(vec![]);
     let apps = Arc::new(Apps::default());
     let hub = hub(&w, &apps);
@@ -220,7 +220,7 @@ async fn a_conversation_a_terminal_started_is_listed_and_brought_into_docket() {
         .checkpoint_watch(
             Workspace::parse("/work/other").expect("workspace"),
             "something".to_owned(),
-            Rewind::Docket,
+            Rewind::Actions,
         )
         .await
         .expect("watching");

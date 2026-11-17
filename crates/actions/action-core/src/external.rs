@@ -31,7 +31,7 @@ pub struct ExternalAgent {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Who keeps the history of its file changes (`checkpoints` in `agents.toml`), as the host
-    /// that launched it says. Never read from the agent. Absent in older records: `Docket`.
+    /// that launched it says. Never read from the agent. Absent in older records: `Actions`.
     #[serde(default)]
     pub rewind: Rewind,
     /// The helper this agent app is, when it runs as one: its grants are that helper's alone.

@@ -1,4 +1,4 @@
-//! The Intelligence page over the schemas docket, the memory service and cua ship: each row in the section
+//! The Intelligence page over the schemas the actions service, the memory service and cua ship: each row in the section
 //! its own `section` names, a write in the program's own file, and rows that do not fit left alone.
 
 use crate::support::Sandbox;
@@ -114,13 +114,13 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
 
     // Top to bottom, because the page is only ever scrolled down: the Assistant section first.
     flip(&mut harness, "Other apps");
-    let docket = sandbox
+    let actions = sandbox
         .read("actions/settings.toml")
-        .expect("docket's file");
-    assert!(docket.contains("expose = true"), "{docket}");
+        .expect("actions's file");
+    assert!(actions.contains("expose = true"), "{actions}");
     assert!(
-        !docket.contains("autopause") && !docket.contains("when"),
-        "{docket}"
+        !actions.contains("autopause") && !actions.contains("when"),
+        "{actions}"
     );
     assert_eq!(sandbox.read("memory/settings.toml"), None);
     assert_eq!(sandbox.read("computer-use/settings.toml"), None);

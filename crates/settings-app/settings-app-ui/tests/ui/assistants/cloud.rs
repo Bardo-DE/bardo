@@ -147,13 +147,13 @@ fn an_assistant_that_signs_itself_in_keeps_its_own_row_apart_from_the_places() {
 }
 
 #[test]
-fn an_assistant_docket_and_accountd_both_know_is_one_row_with_both_facts() {
+fn an_assistant_actions_service_and_accountd_both_know_is_one_row_with_both_facts() {
     let claude = Held::new("claude", "Claude Code", "needs_login", &["agent"])
         .in_group("agent")
         .signing_in("agent");
     let mut w = world_with("assistants-joined", vec![claude], None, Some(AGENTS));
     let group = "[data-assistants=\"coding\"]";
-    // The row is there from docket's list; accountd's status joins it once its list arrives.
+    // The row is there from the actions service's list; accountd's status joins it once its list arrives.
     settle_on_threads(&mut w.harness, "the status", |h| {
         h.text_of(group)
             .is_some_and(|t| t.contains("Needs sign-in"))

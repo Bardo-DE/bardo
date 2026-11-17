@@ -1,10 +1,10 @@
 [package]
-name = "docket-fuzz"
+name = "actions-fuzz"
 version = "0.0.0"
 edition = "2024"
 publish = false
 
-# Not part of the docket workspace and not part of its gate: libFuzzer needs a nightly toolchain
+# Not part of the actions workspace and not part of its gate: libFuzzer needs a nightly toolchain
 # and `cargo-fuzz`. Run it with `dev/fuzz.sh`.
 [workspace]
 

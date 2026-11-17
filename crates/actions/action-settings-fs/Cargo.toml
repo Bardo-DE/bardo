@@ -1,6 +1,6 @@
 [package]
 name = "action-settings-fs"
-description = "docket's settings on disk: where settings.toml is, the agent records read from the agents directory, and the writes of agents.toml. The rules and the text edits are action-settings."
+description = "actions's settings on disk: where settings.toml is, the agent records read from the agents directory, and the writes of agents.toml. The rules and the text edits are action-settings."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

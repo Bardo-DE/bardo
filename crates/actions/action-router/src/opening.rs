@@ -183,7 +183,7 @@ impl<S: Seams> Router<S> {
             cwd: open.cwd.clone(),
             started_from: open.started_from.clone(),
             label: open.external.as_ref().and_then(|e| e.label.clone()),
-            rewind: open.external.as_ref().map_or(Rewind::Docket, |e| e.rewind),
+            rewind: open.external.as_ref().map_or(Rewind::Actions, |e| e.rewind),
         }));
         // A conversation's seat is kept in the log, so a restored session is still the helper's.
         // A job's is not: it is the companion's to give again when the job is asked again.

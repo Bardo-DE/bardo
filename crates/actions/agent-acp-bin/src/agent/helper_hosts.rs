@@ -1,6 +1,6 @@
 //! Where the hosts of one helper's agent processes come from on a live host: a new backend for
 //! the helper's program each time its process starts, made for this helper (its grants are its
-//! own, and so is the menu of actions its agent is offered), opening its session in a folder of the helper's own under docket's data directory.
+//! own, and so is the menu of actions its agent is offered), opening its session in a folder of the helper's own under the actions service's data directory.
 
 use super::host::Hosting;
 use super::live::Live;

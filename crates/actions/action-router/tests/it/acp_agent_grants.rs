@@ -1,5 +1,5 @@
 //! An external agent's grants and approvals through its host: an Always on a sheet is a grant for the
-//! program in docket's store, used and audited, listed and revoked over Control; a reviewer's no still
+//! program in the actions service's store, used and audited, listed and revoked over Control; a reviewer's no still
 //! refuses a call a grant let through; a string of refusals pauses the session; a permission the
 //! person allowed approves the matching call once.
 

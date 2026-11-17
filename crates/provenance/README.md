@@ -4,7 +4,7 @@ Provenance for the assistant: who acted (`Actor`, `AgentRef`), what an action do
 the labels that follow data (integrity, confidentiality, source) with the `Witness` that may raise
 them. Also the message shape and the OpenTelemetry names the program's daemons share.
 
-Used by docket, the memory service, the shell, the Settings app and files, each pinned by git rev. Its ids come from
+Used by the actions service, the memory service, the shell, the Settings app and files, each pinned by git rev. Its ids come from
 `account-core`, pinned at the same porter rev as every consumer (porter moves first, then prov).
 
 Moved out of porter on 2026-10-28, unchanged since porter dcc16ada.

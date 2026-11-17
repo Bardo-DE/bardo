@@ -54,7 +54,7 @@ done
 
 # DIRECT: what a crate may not NAME in its own [dependencies], though it reaches them through the
 # crate under it. The window reaches the computer only through settings-app-client, so the compiler
-# refuses a use of the files, the services, porter, the memory service, docket or the bus in a view
+# refuses a use of the files, the services, porter, the memory service, the actions service or the bus in a view
 # (ARCHITECTURE.md "The fence"). The EDGES row below is the exact list of what it may name.
 DIRECT=(
   "settings-app-ui: settings-app-files settings-app-link settings-app-system sync-bus account-client account-core account-dbus inference-core account-provider memory-core action-core action-settings action-dbus action-provider agent-install agent-registry account-ids account-capability account-match account-wire account-sheet inference-tailnet account-tailscale action-vocab action-manifest action-wire action-gate-wire permission-core companion-model zbus"

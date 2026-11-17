@@ -14,7 +14,7 @@ pub(crate) fn request(service: &str, spans: &[Span]) -> Json {
         "resourceSpans": [{
             "resource": { "attributes": [attribute("service.name", &Value::Text(service.to_owned()))] },
             "scopeSpans": [{
-                "scope": { "name": "docket-log", "version": env!("CARGO_PKG_VERSION") },
+                "scope": { "name": "action-log", "version": env!("CARGO_PKG_VERSION") },
                 "spans": spans.iter().map(span).collect::<Vec<_>>(),
             }],
         }],
@@ -92,7 +92,7 @@ mod tests {
                     { "key": "service.name", "value": { "stringValue": "intentd" } }
                 ] },
                 "scopeSpans": [{
-                    "scope": { "name": "docket-log", "version": env!("CARGO_PKG_VERSION") },
+                    "scope": { "name": "action-log", "version": env!("CARGO_PKG_VERSION") },
                     "spans": [{
                         "traceId": "0102030405060708090a0b0c0d0e0f10",
                         "spanId": "00000000000000ab",

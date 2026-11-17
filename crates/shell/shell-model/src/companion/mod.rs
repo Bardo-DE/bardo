@@ -65,7 +65,7 @@ pub use mode::{
 };
 pub use model::{AnswerFacts, Busy, Companion, Lookup, LookupPhase, Opener, RunFacts};
 pub use no_model::{CHOOSE_MODEL_LABEL, NO_MODEL_LINE, lacks_model};
-/// The conversation and mode words of the router, for the crates that name them without docket.
+/// The conversation and mode words of the router, for the crates that name them without the actions service.
 pub use permission_core::Mode;
 pub use presence::presence_of;
 pub use program_labels::ProgramLabels;

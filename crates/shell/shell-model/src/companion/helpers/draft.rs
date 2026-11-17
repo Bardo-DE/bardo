@@ -136,7 +136,7 @@ impl Draft {
     }
 }
 
-/// How a card's lines word each limit, as docket words them (`reach_lines`). A line in any other
+/// How a card's lines word each limit, as the actions service words them (`reach_lines`). A line in any other
 /// words is not one the form can read back.
 const LIMIT_PHRASES: [(&str, Ceiling); 3] = [
     ("look at things", Ceiling::Look),

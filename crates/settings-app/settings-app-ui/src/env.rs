@@ -31,7 +31,7 @@ pub struct Env {
     pub warnings: Vec<Warning>,
     /// The directory the settings files' paths are under.
     pub config_home: ConfigHome,
-    /// Where docket keeps the agents it installed and what each offered.
+    /// Where the actions service keeps the agents it installed and what each offered.
     pub data_home: DataHome,
     /// Whether the first run happened, kept under the state home.
     pub first_run: FirstRunMark,
@@ -70,7 +70,7 @@ pub struct Env {
 pub struct Homes {
     /// Where the settings files are.
     pub config: ConfigHome,
-    /// Where docket's agents and the added pictures are.
+    /// Where the actions service's agents and the added pictures are.
     pub data: DataHome,
     /// Where the first-run mark is.
     pub state: StateHome,

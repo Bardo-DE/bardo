@@ -6,14 +6,14 @@ use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// Who keeps the history of an agent's file changes. Said by the host from `agents.toml`
-/// (never by the agent); `Docket` is the default and over-saves rather than under-saves.
+/// (never by the agent); `Actions` is the default and over-saves rather than under-saves.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Rewind {
-    /// docket saves a restore point before each turn.
+    /// The actions service saves a restore point before each turn.
     #[default]
-    Docket,
-    /// The agent keeps its own history; docket saves nothing and says so.
+    Actions,
+    /// The agent keeps its own history; the actions service saves nothing and says so.
     Agent,
 }
 

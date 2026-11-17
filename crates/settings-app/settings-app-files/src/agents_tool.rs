@@ -52,7 +52,7 @@ fn candidate_of(line: &str) -> Option<Candidate> {
     })
 }
 
-/// `bardo-agents` over docket's agents folder.
+/// `bardo-agents` over the actions service's agents folder.
 #[derive(Debug, Clone)]
 pub struct AgentsTool {
     program: PathBuf,

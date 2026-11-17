@@ -50,7 +50,7 @@ doc is the authority on where each key actually lives, and supersedes those inli
 | --- | --- | --- |
 | `$XDG_CONFIG_HOME/bardo/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
 | `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`shell-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
-| `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (the memory service), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is porter's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
+| `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (the actions service), memoryd (the memory service), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: the actions service `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is porter's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
 | `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` | `mouse_gestures` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
 
@@ -427,9 +427,9 @@ The model layer: where data may go, which model fills each tier, how the engines
 | `ai.structured.repair_budget` | `Count` | `1` | `0..=3`; re-asks after a structured output fails its schema | inferd's structured-output limits (ask 143) | proposed (agent stack, 2026-10-06) |
 
 
-### 3.27 `agent` (docket)
+### 3.27 `agent` (the actions service)
 
-How far the companion may act on its own and what it may spend. Page Intelligence, section Privacy (`agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h`); the rest Advanced. Every value of the budget table is a key, never a constant (QUESTIONS S5); the person may lower a budget, and only the person may raise the false-negative targets of the evaluation gates, which are not keys. The keys live in `$XDG_CONFIG_HOME/actions/settings.toml`; the schema ships as docket's `dist/settings/actions.settings.toml` (hands-off for agents), and bardo-actions-mcp reads `agent.mcp.expose` from the same file (`bardo-actions-mcp --write-schema <dir>` writes its part).
+How far the companion may act on its own and what it may spend. Page Intelligence, section Privacy (`agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h`); the rest Advanced. Every value of the budget table is a key, never a constant (QUESTIONS S5); the person may lower a budget, and only the person may raise the false-negative targets of the evaluation gates, which are not keys. The keys live in `$XDG_CONFIG_HOME/actions/settings.toml`; the schema ships as the actions service's `dist/settings/actions.settings.toml` (hands-off for agents), and bardo-actions-mcp reads `agent.mcp.expose` from the same file (`bardo-actions-mcp --write-schema <dir>` writes its part).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |

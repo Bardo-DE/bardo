@@ -16,7 +16,7 @@ use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
 use provenance::{AgentRef, RunId, SessionId, SpaceId};
 use std::sync::Arc;
 
-/// `Intents1.Gate` over a docket transport (D-Bus in the daemon).
+/// `Intents1.Gate` over an actions transport (D-Bus in the daemon).
 #[derive(Debug)]
 pub struct IntentsGate<T: Transport> {
     transport: Arc<T>,

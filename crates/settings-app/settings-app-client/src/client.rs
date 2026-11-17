@@ -86,7 +86,7 @@ impl Client {
         self.agents_program.as_deref()
     }
 
-    /// The settings home and the data home the client reads docket's files from.
+    /// The settings home and the data home the client reads the actions service's files from.
     #[must_use]
     pub fn homes(&self) -> (&ConfigHome, &DataHome) {
         (&self.search.config_home, &self.search.data_home)

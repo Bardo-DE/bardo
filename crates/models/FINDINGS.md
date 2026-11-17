@@ -454,10 +454,10 @@ pairing, which a later catalog change should.
 
 ### Consumers
 
-`porter` and `docket` consume the model layer by path (`cua-action`, `model-provider`, `speech-vad`). No call
+`porter` and `actions` consume the model layer by path (`cua-action`, `model-provider`, `speech-vad`). No call
 site of a changed signature exists in either repo (searched for `ExtractSession`, `Sleeper`,
 `Retrying`, `CassetteHeader`, `HttpError`, `VllmExtras`, `GuidedBackend`, `ChatDecoder`,
-`StreamDecoder`, `ModelInfo`, `loaded_context`, `Target::`; docket's `budget` is its own). Two
+`StreamDecoder`, `ModelInfo`, `loaded_context`, `Target::`; the actions service's `budget` is its own). Two
 things to know: `cua-action::Target` gained a variant, so an exhaustive `match` on it in porter's
 executor (none today) needs the `Centre` arm; and porter's own `DropReason` mirror
 (`porter-infer/src/cua.rs`) has no `BadArgument` yet, which the `cua-parse` to porter mapping will
@@ -670,11 +670,11 @@ The model layer's own tests (porter names neither `WeightFiles` nor `Gguf`).
 ### `Shape`
 
 `OrHandle(inner)` is `{"anyOf": [inner, {"type":"object","properties":{"handle":{"type":"integer",
-"minimum":0}},"required":["handle"],"additionalProperties":false}]}` (docket's `handle()` object,
+"minimum":0}},"required":["handle"],"additionalProperties":false}]}` (actions's `handle()` object,
 unchanged); the checker takes a one-key object `{"handle": n}` with `n >= 0` or the inner shape;
 the reader turns an `anyOf` of one shape and that object (either order) into `OrHandle`. An entity
 needs no variant: it is a `Record` of its own fields (`app`, `kind` as a one-string `Choice`,
-`key`), so docket's entity-or-handle is `OrHandle(Record(..))`, its text-or-handle is
+`key`), so the actions service's entity-or-handle is `OrHandle(Record(..))`, its text-or-handle is
 `OrHandle(Text)`, its list of entities `List { of: OrHandle(Record(..)), .. }`. GBNF:
 - `Date` is a quoted `YYYY-MM-DD` with each month's days; 29 February is left out (a leap year is
   not a rule a grammar states), so the grammar stays a subset of `check`, which keeps leap days.
@@ -686,7 +686,7 @@ needs no variant: it is a `Record` of its own fields (`app`, `kind` as a one-str
 Every shape now has a grammar except an empty `Choice`, an empty `Integer` range and a `Tagged`
 with no variants. That changes `model-extract::choose`: a shape with a date now takes a llama-server
 grammar where it used to fall back to the tool call; its test uses an empty `Choice` for "a grammar
-that cannot say the shape". Docket's date is `{year, month, day}`, not `Shape::Date`'s string, so
+that cannot say the shape". The actions service's date is `{year, month, day}`, not `Shape::Date`'s string, so
 its `ParamType::Date` stays hand-written until the planner's grammar is allowed to change.
 
 ### `model-http` upload
@@ -777,7 +777,7 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
 - **The excluded crates' `Cargo.lock` and `target/` are untracked** (`.gitignore`), and their
   third-party dependencies (`ort`, `sherpa-onnx`) are commented in their manifests until the
   pinned block carries them; the skeletons build with path dependencies only.
-- `pipewire` stays out of the model layer: capture and playback are docket's `voiced`, and the boundary
+- `pipewire` stays out of the model layer: capture and playback are the actions service's `voiced`, and the boundary
   check refuses an audio device crate in any speech crate.
 - Speech `Debug` redaction: `PcmBytes`, `Frame512`, `HeardText`, `SpokenText` and `MultipartBody`
   print a length only; `PcmBytes` zeroes its bytes on drop (`zeroize`, in the pinned block).
@@ -1026,7 +1026,7 @@ best = "local/granite-4.2-3b-fp8"
 ```
 
 (The tier names are the settings' own, not a ranking in the catalogue.) Both are in the `text`
-slot only (no image input). The docket live-eval runner's `--engine local` can use
+slot only (no image input). The actions service live-eval runner's `--engine local` can use
 `local/qwen3-4b-instruct-2507-fp8` for planner, reader and policy-writer roles and
 `local/granite-4.2-3b-fp8` for the reviewer. Holo-3.1-4B (10400 MiB estimate) does not fit the budget
 and stays the computer-use model for another run.
@@ -1092,7 +1092,7 @@ The two-tool test: user asks to forward "the email about the Taipei invoice" to 
 system prompt says never invent handles. Step 1 called `search_mail {"query": "Taipei invoice"}`
 (both modes). Given a result with handles `msg_7f3a` (Taipei invoice Oct) and `msg_1c92` (Lunch),
 step 2 called `forward_message {"handle": "msg_7f3a", "to": "alice@example.com"}` (both modes).
-One scenario, not an eval: the docket live-eval is what decides whether it plans well enough.
+One scenario, not an eval: the actions service live-eval is what decides whether it plans well enough.
 
 The two local models cannot be resident together: 8315 + 7336 MiB is 15651 MiB of 16303 with the
 desktop at 2 GB or more. inferd evicts one to load the other (cold starts 75 s and 90 s).
@@ -1185,8 +1185,8 @@ behind the existing types): `model-provider` gains
 `TurnEvent::CallInContent(LeakMarker)` (`LeakMarker` moves from `model-openai-compat::leak` to
 `model-provider`, same slugs), emitted once by the chat decoder with the finish reason (or
 `[DONE]`) of a turn that delivered no call and whose content held a marker. porter-infer's
-exhaustive matches on `TurnEvent` gain an arm; docket refuses the turn or retries it when it
-sees the event with `StopReason::EndTurn`. Until then nothing reaches docket, and prose that
+exhaustive matches on `TurnEvent` gain an arm; the actions service refuses the turn or retries it when it
+sees the event with `StopReason::EndTurn`. Until then nothing reaches the actions service, and prose that
 looks like a call is simply text.
 
 ## Attached 35B planner (2026-10-07, lane `catalog-35b`)
@@ -1246,7 +1246,7 @@ the proptest suites' shared code only and not run under libFuzzer). Seeds are in
 
 ## First-token log-probabilities for a Choice (2026-10-09, lane `choicelp`)
 
-For docket's shadow decision-model trial: the probability of each declared option from the same call
+For the actions service's shadow decision-model trial: the probability of each declared option from the same call
 that answers it. The model layer carries the raw material; porter renormalises.
 
 ### Types (`model-provider`)

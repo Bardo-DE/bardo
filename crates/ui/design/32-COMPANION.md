@@ -176,7 +176,7 @@ and the consolidation switches are `memory.*` settings (`22-SETTINGS.md` section
 | `Page::Intelligence` | `ui-settings::schema::key` |
 
 `ui-intents` names no agent type. The adapter that converts the agent's wire to these marks
-(`action-ui-adapter`) lives in the docket repo, so the UI kit never links an agent crate.
+(`action-ui-adapter`) lives in the actions repo, so the UI kit never links an agent crate.
 
 ## 8. Confirmation
 

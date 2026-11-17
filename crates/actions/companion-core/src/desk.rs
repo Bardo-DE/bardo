@@ -279,7 +279,7 @@ pub fn routine_wish(
     Ok((form, why.to_owned()))
 }
 
-/// Whether the person may talk with `card` in a conversation of docket's: a helper that runs its
+/// Whether the person may talk with `card` in a conversation of the actions service's: a helper that runs its
 /// own app is talked with there.
 ///
 /// # Errors

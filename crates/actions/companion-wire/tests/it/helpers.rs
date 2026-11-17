@@ -221,7 +221,7 @@ fn a_sign_in_terminal_carries_the_resolved_command_and_an_older_request_still_re
         },
         run: Some(Box::new(TerminalRun {
             plain: line("/usr/bin/claude", &["/login"], &[("TERM", "xterm")]),
-            folder: Some("/home/p/.local/share/docket/helpers/h-2".to_owned()),
+            folder: Some("/home/p/.local/share/actions/helpers/h-2".to_owned()),
             confined: Some(line("/usr/bin/systemd-run", &["--scope", "bwrap"], &[])),
         })),
         handoff: None,
@@ -234,7 +234,7 @@ fn a_sign_in_terminal_carries_the_resolved_command_and_an_older_request_still_re
             r#"{"kind":"open_terminal","v":{"helper":"h-2","program":"claude-code","#,
             r#""login":{"args":["/login"]},"run":{"plain":{"program":"/usr/bin/claude","#,
             r#""args":["/login"],"env":{"TERM":"xterm"}},"#,
-            r#""folder":"/home/p/.local/share/docket/helpers/h-2","#,
+            r#""folder":"/home/p/.local/share/actions/helpers/h-2","#,
             r#""confined":{"program":"/usr/bin/systemd-run","args":["--scope","bwrap"]}}}}"#
         )
     );
@@ -252,7 +252,7 @@ fn a_sign_in_terminal_carries_the_resolved_command_and_an_older_request_still_re
 }
 
 #[test]
-fn a_conversation_in_a_terminal_pins_its_json_and_older_cards_read_as_in_docket() {
+fn a_conversation_in_a_terminal_pins_its_json_and_older_cards_read_as_in_actions_service() {
     let session = provenance::SessionId::parse("s-3").expect("session");
     // The request to open a conversation in a terminal names the session that keeps its points.
     let request = TerminalRequest {
@@ -271,7 +271,7 @@ fn a_conversation_in_a_terminal_pins_its_json_and_older_cards_read_as_in_docket(
         serde_json::from_str::<HelperReply>(&json).expect("reply"),
         HelperReply::OpenTerminal(request)
     );
-    // A card from before the move reads as one that runs in docket with nothing to do.
+    // A card from before the move reads as one that runs in the actions service with nothing to do.
     let (board, id) = board_with(HelperModel::Unset);
     let kept = board.card(&id).expect("card");
     let card = card_of(kept, &board, None, |_| JobWords::default());

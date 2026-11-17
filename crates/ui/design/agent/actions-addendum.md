@@ -369,7 +369,7 @@ pub struct Metrics { pub n: Count, pub fp: Count, pub fn_: Count, pub fpr: Rate9
 pub struct Rate95 { pub point: Permille, pub low: Permille, pub high: Permille }   // Wilson interval
 ```
 
-**Corpora** (`docket/eval/<corpus>/*.toml`):
+**Corpora** (`actions/eval/<corpus>/*.toml`):
 
 | Corpus | Contents |
 |---|---|
@@ -406,7 +406,7 @@ The coordinator's first message let the reviewer decide a grey zone, including A
 
 ## Work breakdown deltas (§6)
 
-- **Freeze wave (docket agent)** additionally writes: `task_policy.rs`, `breaker.rs`, `stage.rs`, the `agent-eval` types, `default.cedar` stubs with the ids `rule-of-two` and `untrusted-sink`, and the DryRun members in the XML.
+- **Freeze wave (the actions agent)** additionally writes: `task_policy.rs`, `breaker.rs`, `stage.rs`, the `agent-eval` types, `default.cedar` stubs with the ids `rule-of-two` and `untrusted-sink`, and the DryRun members in the XML.
 - **F1a** owns the new Cedar rules and grid tests.
 - **F1b** owns the cascade and the breaker.
 - **F1c** owns `covers`, `compare`, `SessionSaw` and Previewing.

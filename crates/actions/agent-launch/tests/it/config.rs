@@ -329,7 +329,7 @@ fn a_registry_agent_runs_from_its_install_with_a_home_of_its_own() {
 }
 
 #[test]
-fn a_registry_agent_added_in_settings_is_one_docket_starts() {
+fn a_registry_agent_added_in_settings_is_one_actions_service_starts() {
     let tmp = tempfile::tempdir().expect("tmp");
     let dir = installed_agy(tmp.path());
     let agent = action_settings::NewAgent {
@@ -365,14 +365,14 @@ fn a_registry_agent_that_is_not_installed_or_not_pinned_is_refused() {
 fn checkpoints_say_who_keeps_the_history_and_the_claude_code_profile_defaults_to_the_agent() {
     use action_core::Rewind;
     let rows = [
-        ("nothing written", "", Rewind::Docket),
-        ("docket", "checkpoints = \"docket\"", Rewind::Docket),
+        ("nothing written", "", Rewind::Actions),
+        ("actions", "checkpoints = \"actions\"", Rewind::Actions),
         ("agent", "checkpoints = \"agent\"", Rewind::Agent),
         ("the preset", "profile = \"claude-code\"", Rewind::Agent),
         (
             "the preset, overruled",
-            "profile = \"claude-code\"\ncheckpoints = \"docket\"",
-            Rewind::Docket,
+            "profile = \"claude-code\"\ncheckpoints = \"actions\"",
+            Rewind::Actions,
         ),
     ];
     for (name, extra, want) in rows {

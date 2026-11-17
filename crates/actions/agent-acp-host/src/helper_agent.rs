@@ -168,7 +168,7 @@ impl<H: Hosts> HelperAgent<H> {
 
     /// The same agent, its conversation already in a terminal: `session` is the watch session at
     /// the router and `agent` names the app and its id for it. [`HelperAgent::bring_back`] brings
-    /// it into docket.
+    /// it into the actions service.
     #[must_use]
     pub fn already_away(self, session: SessionId, agent: WatchedAgent) -> Self {
         Self {

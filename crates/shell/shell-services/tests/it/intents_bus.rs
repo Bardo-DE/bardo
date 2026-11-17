@@ -1,5 +1,5 @@
 //! bardo-shell's seat at intentd on a private bus: a stand-in intentd owns `org.bardo.Intents1`, asks the
-//! sheet through docket's own client (`ConfirmProxy` and `action_client::requested`, the calls
+//! sheet through the actions service's own client (`ConfirmProxy` and `action_client::requested`, the calls
 //! intentd's `SheetConfirmer` makes), serves `Control`, and calls the shell's `IntentProvider1`.
 //! Never the person's session bus; a test skips, saying so, without a `dbus-daemon`. The same chain
 //! against the real intentd binary is `dev/accept/confirm.sh`.

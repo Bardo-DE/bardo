@@ -1,6 +1,6 @@
 [package]
 name = "action-wire"
-description = "The wire of docket's `org.bardo.Intents1`: every request and reply and the bodies they carry, who is calling and the member a request is, where a conversation was started from, the opening of a session and the ledger of a task, and summoning the companion. Sits above action-core and action-gate-wire."
+description = "The wire of the actions service's `org.bardo.Intents1`: every request and reply and the bodies they carry, who is calling and the member a request is, where a conversation was started from, the opening of a session and the ledger of a task, and summoning the companion. Sits above action-core and action-gate-wire."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

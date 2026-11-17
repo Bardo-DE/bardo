@@ -87,7 +87,7 @@ impl<T: Transport> Intents<T> {
     }
 
     /// `checkpoint_watch` for a terminal that also names the agent app it watches and the app's
-    /// own id for the conversation, so the shell can offer to bring it into docket
+    /// own id for the conversation, so the shell can offer to bring it into the actions service
     /// (`Checkpoint.WatchAgent`). Answers the watch session and who closes it: the companion's
     /// own session when it handed this conversation over, else a new one. A terminal only.
     ///

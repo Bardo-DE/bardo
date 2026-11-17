@@ -219,7 +219,7 @@ pub struct ConfirmRequest {
 
 /// What every sheet must say.
 ///
-/// A consumer outside docket builds a request from this with [`ConfirmRequest::new`] rather than a
+/// A consumer outside the actions service builds a request from this with [`ConfirmRequest::new`] rather than a
 /// struct literal, so a field added with a default (like `always`) never breaks it; a new required
 /// field lands here, and breaking then is intended.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -407,7 +407,7 @@ pub enum ConfirmEnd {
     Cancelled,
 }
 
-/// The seam that draws confirmations. Drawing them is not docket's (the shell phase A, the trusted
+/// The seam that draws confirmations. Drawing them is not the actions service's (the shell phase A, the trusted
 /// surface phase B).
 pub trait Confirmer: Send + Sync {
     /// Asks the person.

@@ -116,7 +116,7 @@ pub async fn build(
     if places.data_dir().join("acp-agent-grants.json").exists() {
         eprintln!(
             "bardo-agent: ignoring the old acp-agent-grants.json in the data directory: \
-             an agent's grants are docket's now (Settings lists and revokes them); allow \
+             an agent's grants are actions's now (Settings lists and revokes them); allow \
              \"always\" again where you want one"
         );
     }

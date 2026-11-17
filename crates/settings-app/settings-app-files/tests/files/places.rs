@@ -1,5 +1,5 @@
-//! The assistant's places in docket's settings file: written one key at a time, read back as
-//! docket reads them, and every other key of the file keeps its text.
+//! The assistant's places in the actions service's settings file: written one key at a time, read back as
+//! The actions service reads them, and every other key of the file keeps its text.
 
 use action_settings::{CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places};
 use settings_app_files::{ConfigHome, load_places, save_places};
@@ -25,7 +25,7 @@ fn places() -> Places {
 }
 
 #[test]
-fn what_is_saved_reads_back_as_docket_reads_it() {
+fn what_is_saved_reads_back_as_actions_service_reads_it() {
     let scratch = Scratch::under(TMP, "places-round-trip");
     let home = ConfigHome(scratch.path().to_path_buf());
     save_places(&home, &places()).expect("saved");

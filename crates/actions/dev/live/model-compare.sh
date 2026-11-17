@@ -50,7 +50,7 @@ for model in $models; do
   esac
 done
 
-scratch=$(mktemp -d "${TMPDIR:-/tmp}/docket-compare.XXXXXX")
+scratch=$(mktemp -d "${TMPDIR:-/tmp}/actions-compare.XXXXXX")
 chmod 700 "$scratch"
 echo "model-compare: scratch $scratch (traces hold prompts; delete it when done)" >&2
 : >"$scratch/failures.tsv"

@@ -1,4 +1,4 @@
-//! A conversation with an agent app moving between docket and the app's own command-line program
+//! A conversation with an agent app moving between the actions service and the app's own command-line program
 //! in a terminal, as the shell sees it: where a helper's conversation is now, what the person can
 //! do about it, the conversations a terminal started that can be brought in, and what bringing
 //! one in came to. Every sentence is plain words.
@@ -15,14 +15,14 @@ pub enum Handover {
     Unavailable,
     /// "Open in Terminal" moves it to the app's own program.
     ToTerminal,
-    /// "Bring Back" moves it into docket.
+    /// "Bring Back" moves it into the actions service.
     BringBack,
 }
 
-/// A conversation that a terminal started with an agent app and the person can bring into docket.
+/// A conversation that a terminal started with an agent app and the person can bring into the actions service.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TerminalSession {
-    /// The session docket keeps its restore points on; bringing it back names this.
+    /// The session the actions service keeps its restore points on; bringing it back names this.
     pub session: SessionId,
     /// The app.
     pub program: AgentProgram,
@@ -32,16 +32,16 @@ pub struct TerminalSession {
     /// The folder it works in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub folder: Option<String>,
-    /// `BringBack`, or `Unavailable` when docket cannot start the app here.
+    /// `BringBack`, or `Unavailable` when the actions service cannot start the app here.
     #[serde(default)]
     pub handover: Handover,
 }
 
-/// What bringing a terminal's conversation into docket came to.
+/// What bringing a terminal's conversation into the actions service came to.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BroughtBack {
-    /// It is a conversation of docket's now, on this session.
+    /// It is a conversation of the actions service's now, on this session.
     Session(SessionId),
     /// It stayed where it was, and why, in plain words.
     Refused(String),

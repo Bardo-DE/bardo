@@ -1,6 +1,6 @@
 //! inferd with a replay engine: the real `Inference1` object on a private bus, a client opening
 //! a chat session through `account-client`, and an engine that plays a cassette instead of
-//! running a program. The cassette is the docket acceptance's flow (a): the policy writer's draft
+//! running a program. The cassette is the actions service acceptance's flow (a): the policy writer's draft
 //! and the planner's four steps.
 
 use crate::hosting;
@@ -21,7 +21,7 @@ use inference_core::{
 use std::path::PathBuf;
 
 fn cassette_file() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/cassettes/docket-flow-a.jsonl")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/cassettes/actions-flow-a.jsonl")
 }
 
 fn planner_need() -> Need {

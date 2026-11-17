@@ -86,7 +86,7 @@ A crate depends on its own tier or a lower one (P < C < A), never up; `dev-depen
 
 The script also reports source files over 500 lines (`--long-files`, report only) and seeds one violation per tier to prove the bans fire (`--self-test`). The `KNOWN` list names each violation that exists today and the plan lane (`~/rs-wt/agent-layers/PLAN.md`) that removes it; a row whose violation is gone fails, so the list only shrinks. It is empty today.
 
-The memory service never depends on the model layer, docket or cua: their payloads (policy, consent, computer-use
+The memory service never depends on the model layer, the actions service or cua: their payloads (policy, consent, computer-use
 steps, sessions) are `EventBody::Area` in their owners' serde form, and `check-boundary.sh`
 fails if any of their crates enters the tree. Other crates reach porter's names through
 `memory-core`'s re-exports, so the dependency tiers stay this exact.
@@ -330,7 +330,7 @@ log on restart. Both are `Router` or `ShellUi`, both audited as `Memory.Read`
 (`ReadScope::Inject`, `Recent`); `Timeline` stays the shell's alone.
 
 **A durable, resumable stream (the session log).** A writer that rebuilds its state from the log
-(docket's `companion.session.*` entries) uses three additions to the wire. `Entries(SpaceId,
+(the actions service's `companion.session.*` entries) uses three additions to the wire. `Entries(SpaceId,
 EntriesQuery)` pages one stream oldest first: `kinds` (patterns, so a prefix is `companion.session.*`),
 `about: Option<ThingRef>` (events whose body names that thing as `Subject`: the writer names its
 stream, for example the session, as the Subject of every payload it records), `after: Option<Cursor>`

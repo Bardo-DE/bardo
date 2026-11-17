@@ -123,7 +123,7 @@ impl<S: Seams> Router<S> {
                 SessionKind::Agent => record
                     .external
                     .as_ref()
-                    .map_or(Rewind::Docket, |agent| agent.rewind),
+                    .map_or(Rewind::Actions, |agent| agent.rewind),
             };
             (rewind, record.cwd.clone())
         };

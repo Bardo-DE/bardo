@@ -1,4 +1,4 @@
-//! The ids docket mints or names. Slug ids use `prov`'s grammar; numeric ids are minted by the
+//! The ids the actions service mints or names. Slug ids use `prov`'s grammar; numeric ids are minted by the
 //! router and mean nothing outside it.
 
 use account_core::{AppName, CoreError};
@@ -73,7 +73,7 @@ fn ident(text: &str) -> bool {
         && bytes.all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'_')
 }
 
-/// 1 to 128 bytes, no control characters: an id docket does not interpret.
+/// 1 to 128 bytes, no control characters: an id the actions service does not interpret.
 fn opaque(text: &str) -> bool {
     !text.is_empty() && text.len() <= 128 && !text.chars().any(char::is_control)
 }

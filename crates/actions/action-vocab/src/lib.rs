@@ -1,4 +1,4 @@
-//! docket's smallest vocabulary, the bottom of the stack: ids and units, values and the
+//! The actions service's smallest vocabulary, the bottom of the stack: ids and units, values and the
 //! arguments of a call, the call request and its class, RFC 3339 dates and instants, the
 //! workspace name, the text marks a name may not carry and the `Clock` seam.
 //!

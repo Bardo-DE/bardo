@@ -199,7 +199,7 @@ fn the_shipped_table_names_the_callers_the_design_calls_for() {
         let caller = callers
             .resolve(&format!("{exe}.service"))
             .unwrap_or_else(|| panic!("{exe}"));
-        // The three that docket's places reach through are placers: they open as an app does.
+        // The three that the actions service's places reach through are placers: they open as an app does.
         let want = match exe {
             "bardo-companiond" | "bardo-readerd" | "bardo-actiond" => CallerRole::Agent,
             _ => CallerRole::App,
@@ -380,7 +380,7 @@ fn the_test_proc_root_is_in_no_default_feature_and_no_unit() {
 /// The shipped table knows bardo-agent-acp in its scope by its program, so the editor-agent launcher's
 /// planner turns reach inferd on an installed desktop; a scope's name alone gives no program.
 #[test]
-fn the_shipped_table_names_docket_acps_programs() {
+fn the_shipped_table_names_actions_service_acps_programs() {
     let rows = shipped_callers().rows();
     let acp = rows
         .callers

@@ -3,7 +3,7 @@
 //!
 //! `Record` is fire and forget: a locked Space buffers the record, a paused Space or a rule drops
 //! it, and the answer is `Ok` or the event either way. A writer that must know the event is
-//! durable before it acts (docket writes a session's taint entry before it reveals untrusted
+//! durable before it acts (the actions service writes a session's taint entry before it reveals untrusted
 //! text) asks for `RecordDurable`: the Space is never buffered, a drop is a refusal, and the
 //! reply is returned after the log's commit, which `SqliteLog` makes with `synchronous=FULL`.
 

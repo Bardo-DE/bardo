@@ -38,7 +38,7 @@ fn roles(member: Member) -> &'static [CallerRole] {
         // and its turns are recorded as `Caller::terminal()`, never as the launcher's.
         Member::SessionTurn => &[Launcher, Field, Editor, Cli, AcpAgent],
         // The host that recorded a turn says when it ended: exactly the roles of `Session.Turn`,
-        // `AcpAgent` included (it is the role docket's external-agent host runs as, and it
+        // `AcpAgent` included (it is the role the actions service's external-agent host runs as, and it
         // records turns), never `Mcp`. Safe: it can only end the running-turn window; a restore
         // still needs the person's confirmation on the sheet.
         Member::SessionTurnEnded => &[Launcher, Field, Editor, Cli, AcpAgent],

@@ -105,7 +105,7 @@ and an optional `ApiKey` when its provider file names no endpoint.
 whole conversation to, not a model inferd runs. It is a choice of the text slot only: `Set` of it
 for another slot, or into `ai.auto.pool.*`, is a bad value, a file that says it is rejected and
 falls back (`resolve`), and `TierMap::pick` never returns it for another slot or in a pool. inferd
-checks only the word's shape; which agents exist is docket's (`agents.toml`), checked by Settings
+checks only the word's shape; which agents exist is the actions service's (`agents.toml`), checked by Settings
 (it lists them) and by the host that is handed the turn. A session whose pick names an agent ends
 `Unavailable` with a `Declined` event whose reason is `DeclinedBecause::AgentChosen`: the
 instruction to hand the turn to the agent, not a failure. The module groups a held agent word under

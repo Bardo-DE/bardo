@@ -6,7 +6,7 @@ pub struct Slug(String);
 
 /// Why a name was not accepted.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("{0:?} is not a name docket can keep an agent under")]
+#[error("{0:?} is not a name the actions service can keep an agent under")]
 pub struct SlugRefused(String);
 
 impl Slug {

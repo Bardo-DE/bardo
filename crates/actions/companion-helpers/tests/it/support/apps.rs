@@ -244,7 +244,7 @@ pub fn terminal_hand() -> TerminalHand {
     TerminalHand {
         run: TerminalRun {
             plain: line("/usr/bin/claude", &["--resume", "0a1b-2c3d"]),
-            folder: Some("/home/p/.local/share/docket/helpers/h-1".to_owned()),
+            folder: Some("/home/p/.local/share/actions/helpers/h-1".to_owned()),
             confined: Some(line(
                 "/usr/bin/bwrap",
                 &["--", "claude", "--resume", "0a1b-2c3d"],

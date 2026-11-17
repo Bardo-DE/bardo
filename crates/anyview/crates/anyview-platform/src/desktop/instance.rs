@@ -32,9 +32,9 @@ impl DbusInstance {
         }
     }
 
-    /// The same, finding docket's router in the fixture tree `root` instead of the system's
+    /// The same, finding the actions service's router in the fixture tree `root` instead of the system's
     /// `/proc`: `<root>/<pid>/cgroup` names a process's unit and `<root>/units/bardo-actiond.service`
-    /// holds the router's pid. How a test on a private bus stands in for `bardo-actiond.service`; docket
+    /// holds the router's pid. How a test on a private bus stands in for `bardo-actiond.service`; the actions service
     /// reads the tree only in a build with action-dbus's `fixture-callers` (a test build's), and
     /// any other build answers nobody, so a shipped viewer cannot be pointed at a fake `/proc`.
     #[must_use]
@@ -72,7 +72,7 @@ impl Instance for DbusInstance {
             .await;
         match built {
             Ok(connection) => {
-                // The agent layer is an extra: a viewer that cannot offer it (no docket on this
+                // The agent layer is an extra: a viewer that cannot offer it (no actions service on this
                 // desktop, its name taken) still is the viewer.
                 if let Err(error) =
                     intents::serve(&connection, sender, self.proc_root.as_deref()).await

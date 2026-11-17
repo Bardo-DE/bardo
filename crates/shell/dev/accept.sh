@@ -35,7 +35,7 @@ root=$(cd "$(dirname "$0")/.." && pwd)
 # shellcheck source=dev/lib/compositor.sh
 source "$root/dev/lib/compositor.sh"
 
-BARDO_ACTIONS_TARGET="${BARDO_ACTIONS_TARGET:-$BARDO_SHELL_TARGET/docket-target}"
+BARDO_ACTIONS_TARGET="${BARDO_ACTIONS_TARGET:-$BARDO_SHELL_TARGET/actions-target}"
 compositor="" parallel=4 build=no out="" bound=${BARDO_ACCEPT_SCRIPT_TIMEOUT:-900} names=()
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -87,7 +87,7 @@ prebuild() {
     echo "== layer-shell-host's probe_toplevel (the maximised-window probe)"
     (cd "$BARDO_SHELL_TREE" && CARGO_TARGET_DIR="$BARDO_SHELL_TARGET" cargo build --release -p layer-shell-host \
       --features debug-inject --example probe_toplevel) || return 1
-    echo "== docket (confirm.sh's accept-actiond and bardo-do), into its own target dir"
+    echo "== the actions service (confirm.sh's accept-actiond and bardo-do), into its own target dir"
     (cd "$BARDO_SHELL_TREE" && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-accept --bin accept-actiond && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-cli --bins) || return 1
     echo "== compositor's tools"
     (cd "$BARDO_COMPOSITOR_REPO" && CARGO_TARGET_DIR="${BARDO_COMPOSITOR_TARGET:-$BARDO_SHELL_TARGET}" dev/bootstrap.sh --build-only) || return 1

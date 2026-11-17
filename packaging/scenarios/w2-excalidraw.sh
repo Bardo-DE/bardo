@@ -80,7 +80,7 @@ harness/scenario-build.sh --w2
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
 (cd $SCEN_SIB/computer-use && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command (action-accept: test builds)
-(cd $SCEN_SIB/actions && CARGO_TARGET_DIR=$SCEN_BUILD/docket-target nice cargo build -p action-accept --bins)
+(cd $SCEN_SIB/actions && CARGO_TARGET_DIR=$SCEN_BUILD/actions-target nice cargo build -p action-accept --bins)
 # and, once, the offline drawing app (needs node and npm; changes nothing outside its folder):
 $WF/fixtures/w2/build-excalidraw.sh
 EOF
@@ -139,7 +139,7 @@ require_models() {
   [ -S "$SCREEN_SOCK" ] || die "the screen model's socket $SCREEN_SOCK does not exist (open the tunnel and start the bridge first)"
 }
 
-DK="$SCEN_BUILD/docket-target/debug"
+DK="$SCEN_BUILD/actions-target/debug"
 CUAD="$SCEN_BUILD/cua-target/debug/bardo-computer-use"
 BRINGUP="$DK/agent-bringup"
 BARDO_DO="$DK/accept-bardo-do"
@@ -150,7 +150,7 @@ DRAW_DIR=${W2_DRAW_DIR:-$REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0}
 require_models
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
   "$SCEN_BUILD/shell-target/debug/bardo-shell" "$CUAD" "$BRINGUP" "$BARDO_DO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
-scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" compositor-target shell-target cua-target docket-target
+scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" compositor-target shell-target cua-target actions-target
 [ -x "$BROWSER" ] || die "the browser $BROWSER is not there (set W2_BROWSER to Zen's program)"
 [ -s "$DRAW_DIR/main.js" ] || die "the drawing app is not built at $DRAW_DIR: run $WF/fixtures/w2/build-excalidraw.sh outside the jail"
 for tool in socat curl python3 busctl gdbus; do command -v "$tool" >/dev/null || die "$tool is missing"; done

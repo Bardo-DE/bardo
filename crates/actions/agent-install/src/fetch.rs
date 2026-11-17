@@ -14,10 +14,10 @@ use http_reqwest::blocking::{BlockingHttp, Patience};
 #[error("could not download {0}")]
 pub struct FetchFault(pub String);
 
-/// The largest archive docket takes, in bytes.
+/// The largest archive the actions service takes, in bytes.
 pub const MAX_BYTES: u64 = 1 << 30;
 
-/// The largest small document (the registry list) docket takes into memory, in bytes.
+/// The largest small document (the registry list) the actions service takes into memory, in bytes.
 pub const MAX_SMALL_BYTES: u64 = 16 << 20;
 
 /// The longest the connection may be silent in the middle of a download, in seconds.

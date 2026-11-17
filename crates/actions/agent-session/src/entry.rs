@@ -91,10 +91,10 @@ pub struct Opening {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
     /// Who keeps the history of the external agent's file changes (`checkpoints` in
-    /// `agents.toml`), which the host that launched it said. `Docket` for every other session,
+    /// `agents.toml`), which the host that launched it said. `Actions` for every other session,
     /// for a watch session (its `BackendKind` carries it) and for every log written before this
     /// field. Never the agent's own claim.
-    #[serde(default, skip_serializing_if = "keeps_docket")]
+    #[serde(default, skip_serializing_if = "keeps_actions")]
     pub rewind: Rewind,
 }
 
@@ -103,8 +103,8 @@ pub struct Opening {
     clippy::trivially_copy_pass_by_ref,
     reason = "serde's `skip_serializing_if` calls the function with a reference"
 )]
-fn keeps_docket(rewind: &Rewind) -> bool {
-    *rewind == Rewind::Docket
+fn keeps_actions(rewind: &Rewind) -> bool {
+    *rewind == Rewind::Actions
 }
 
 /// A call the router accepted, written before its end: a `Call` with no `Step` after it is a call
@@ -237,7 +237,7 @@ pub enum SessionEntry {
     /// The seat a helper has in the router, written right after the opening of a session that has
     /// one, so a restored session keeps it. Absent from every older log: no seat.
     Seat(HelperSeat),
-    /// The conversation moved between docket and the app's own terminal program, or a terminal
+    /// The conversation moved between the actions service and the app's own terminal program, or a terminal
     /// named the agent it watches. The latest one says where it is. Absent from every older log:
     /// the conversation is where the opening put it.
     Hand(HandNote),

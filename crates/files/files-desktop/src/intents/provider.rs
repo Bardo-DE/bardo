@@ -1,4 +1,4 @@
-//! Files as an app of docket: each action reads its call into an [`Ask`], hands it to the window
+//! Files as an app of the actions service: each action reads its call into an [`Ask`], hands it to the window
 //! and shapes the answer.
 
 use std::collections::BTreeSet;

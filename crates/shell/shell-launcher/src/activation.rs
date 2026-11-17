@@ -64,7 +64,7 @@ impl Activation {
             action,
             target: action_vocab::TargetValue::Nothing,
             args: action_vocab::Args::new(),
-            // docket has no corner origin; a corner is a configured shortcut.
+            // The actions service has no corner origin; a corner is a configured shortcut.
             origin: action_vocab::Origin::Shortcut,
         })))
     }

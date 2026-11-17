@@ -1,5 +1,5 @@
 //! Why an on-screen run did not finish what it was asked, as an enumerated fact. The run
-//! daemon says it in the `Finished` signal as a kind and, for some, a detail; docket reads only
+//! daemon says it in the `Finished` signal as a kind and, for some, a detail; the actions service reads only
 //! those enumerated names and says each in fixed plain words. What the run wrote in its report
 //! is an app's text and stays behind a handle: nothing here ever carries it.
 

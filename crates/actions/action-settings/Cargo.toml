@@ -1,6 +1,6 @@
 [package]
 name = "action-settings"
-description = "docket's settings file ($XDG_CONFIG_HOME/actions/settings.toml, design/22 section 3.27): the key table, the lenient reader that falls back per key, the schema the Settings app draws, and where the file is found. Pure: reading the file and the agents records beside it is action-settings-fs."
+description = "actions's settings file ($XDG_CONFIG_HOME/actions/settings.toml, design/22 section 3.27): the key table, the lenient reader that falls back per key, the schema the Settings app draws, and where the file is found. Pure: reading the file and the agents records beside it is action-settings-fs."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

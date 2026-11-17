@@ -1,8 +1,8 @@
 //! The git store of restore points.
 //!
 //! A restore point is a hidden commit of the workspace with no parent, made from a private index
-//! (a file docket owns, never the person's index) and kept under
-//! `refs/docket/checkpoints/<session>/<n>`, a ref family no branch or tag listing shows. Taking a
+//! (a file the actions service owns, never the person's index) and kept under
+//! `refs/actions/checkpoints/<session>/<n>`, a ref family no branch or tag listing shows. Taking a
 //! point writes only objects, that private index and the new ref. Applying one is the only thing
 //! that writes the workspace's files, after re-deriving the plan and checking its digest.
 //!
@@ -11,10 +11,10 @@
 //! The agent can write the whole work tree, its `.git` included: `config`, `hooks/`,
 //! `info/attributes` and every `.gitattributes`. git run against such a repository executes what
 //! those name (hooks, `filter.<x>.clean`, `core.fsmonitor`, `core.sshCommand`, `include.path`),
-//! and docket runs as the person, outside the agent's sandbox. So no git command here ever reads
-//! the folder's repository. Points live in a repository of docket's own (`shadow.git` under the
+//! and the actions runs as the person, outside the agent's sandbox. So no git command here ever reads
+//! the folder's repository. Points live in a repository of the actions service's own (`shadow.git` under the
 //! store's private folder, which the sandbox does not bind); every command names it with
-//! `--git-dir` and the folder with `--work-tree`. Its config is the one docket wrote, so it
+//! `--git-dir` and the folder with `--work-tree`. Its config is the one actions service wrote, so it
 //! defines no filter driver and no hook (a `.gitattributes` in the tree can name a driver, but
 //! nothing defines it). On top of that every command refuses hooks, attributes files, file-system
 //! monitors, pagers and network protocols, reads no system or user configuration, and drops the

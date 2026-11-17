@@ -95,7 +95,7 @@ RULES=(
   "computer-use-types: $EFFECTS computer-use-a11y-tree computer-use-seat-input computer-use-capture"
   "computer-use-bus: $EFFECTS computer-use-a11y-tree computer-use-seat-input computer-use-capture"
   "computer-use-run: $EFFECTS"
-  # The run executor as a library: a runtime and the docket/memory client traits, but no bus
+  # The run executor as a library: a runtime and the actions/memory client traits, but no bus
   # (their `dbus` features are the daemon's), no backend and no file watcher.
   "computer-use-host: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # zbus (with its tokio feature) lives in computer-use-dbus; no wayland, no EIS, no accessibility stack.
@@ -213,7 +213,7 @@ for row in "${LAYERS[@]}"; do
   bad=0
   for dep in $deps; do
     dep_tier=$(tier_of "$dep")
-    # A dependency from another repo (the model layer, porter, docket, the memory service) has no row here.
+    # A dependency from another repo (the model layer, porter, the actions service, the memory service) has no row here.
     [ -z "$dep_tier" ] && continue
     if [ "$(rank "$dep_tier")" -gt "$(rank "$tier")" ]; then
       echo "LAYER: $crate ($tier) depends on $dep ($dep_tier), which is above it"; bad=1; fail=1
@@ -299,7 +299,7 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# cua sits above docket and below the shell in the repo order (the model layer, porter, the memory service, docket, cua,
+# cua sits above the actions service and below the shell in the repo order (the model layer, porter, the memory service, the actions service, cua,
 # The shell), and the GPL compositors are separate processes: nothing of the shell's, and
 # nothing of theirs (smithay itself), may enter any tree of this workspace,
 # dev-dependencies included.

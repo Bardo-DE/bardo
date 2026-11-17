@@ -96,7 +96,7 @@ fn every_vocab_enum_round_trips() {
 
 #[test]
 fn consumers_stored_forms_are_unchanged() {
-    // docket stores RunMode and prov stores ActorKind in these forms today.
+    // The actions service stores RunMode and prov stores ActorKind in these forms today.
     assert_eq!(
         round_trips(&RunMode::AgentWorkspace),
         r#""agent_workspace""#

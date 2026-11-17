@@ -12,7 +12,7 @@
 //! - the supervisor, its drive loop and its event stream ([`SupervisorEvent`]);
 //! - the safety tables the supervisor applies to every start and every call ([`guard`],
 //!   [`CuadConfig`]);
-//! - the links over docket's and the memory service's transports: the router's gate ([`IntentsGate`]), the
+//! - the links over the actions service's and the memory service's transports: the router's gate ([`IntentsGate`]), the
 //!   message path and the record sink ([`DaemonLinks`], [`record_of`]);
 //! - the person's settings, read from text ([`read`], [`locator`] over the caller's
 //!   [`settings_store_fs::ReadText`]) and applied with `Supervisor::adopt` as the caller's watch reports each change.

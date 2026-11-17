@@ -3,8 +3,8 @@
 //! ready or greyed with a plain reason. Choosing one hands the assistant's whole conversation to
 //! that agent. Automatic never takes one: its list shows them greyed.
 //!
-//! inferd owns the model rows and knows nothing of `agents.toml`; docket owns the agents. So the
-//! agents are added here, to the rows the module described, from what docket's settings say of
+//! inferd owns the model rows and knows nothing of `agents.toml`; the actions service owns the agents. So the
+//! agents are added here, to the rows the module described, from what the actions service's settings say of
 //! them: [`offers`] makes the list, [`with_agents`] lays it over the rows. The words a person reads
 //! for them (the group's name, the reasons) come from the caller. Pure.
 

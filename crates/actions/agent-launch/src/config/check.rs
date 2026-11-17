@@ -309,7 +309,7 @@ pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFa
         rewind: raw.checkpoints.unwrap_or(if claude_code {
             Rewind::Agent
         } else {
-            Rewind::Docket
+            Rewind::Actions
         }),
         resume: resume_of(&at, raw.resume, claude_code)?,
     })

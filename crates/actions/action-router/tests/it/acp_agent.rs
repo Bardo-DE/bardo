@@ -2,7 +2,7 @@
 //! the person's turns, and makes each call the agent asks of it as a router call of the
 //! `org.bardo.AcpAgent` pseudo-app. The gate is the one every agent meets: the policy point, the
 //! reviewers, taint, the breaker, the budgets and the audit; a standing grant belongs to the
-//! program and is held in docket's store.
+//! program and is held in the actions service's store.
 
 use crate::support::*;
 use action_core::*;

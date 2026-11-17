@@ -26,7 +26,7 @@ pub trait Checkpoint {
 
     /// `Watch` for a terminal that also names the agent app it watches and the app's own id for
     /// the conversation (`agent` is `WatchedAgent` JSON), so the conversation can be brought into
-    /// docket. Answers `Watching` JSON: the watch session and who closes it (the companion's own
+    /// The actions service. Answers `Watching` JSON: the watch session and who closes it (the companion's own
     /// session when it handed this conversation over, else a new one).
     fn watch_agent(
         &self,

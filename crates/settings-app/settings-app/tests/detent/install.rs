@@ -52,7 +52,7 @@ fn the_manifest_is_installed_where_intentd_reads_it() {
     );
 }
 
-/// The only fields docket's `ShippedEntries::parse` takes in a row; it refuses any other.
+/// The only fields the actions service's `ShippedEntries::parse` takes in a row; it refuses any other.
 const ROW_FIELDS: [&str; 5] = ["kind", "key", "title", "subtitle", "keywords"];
 
 #[test]

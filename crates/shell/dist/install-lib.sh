@@ -36,7 +36,7 @@ set_dests() {
   # What the shell can be asked to do (`org.bardo.Shell`): intentd reads every manifest under
   # $XDG_DATA_DIRS/bardo/intents/, and /usr/local/share is in the default XDG_DATA_DIRS.
   INTENTS_DEST="$PREFIX/share/bardo/intents/org.bardo.Shell.toml"
-  # The skills bardo-shell teaches the companion (dist/skills/<id>/): docket's loader reads every directory
+  # The skills bardo-shell teaches the companion (dist/skills/<id>/): the actions service's loader reads every directory
   # under $XDG_DATA_DIRS/bardo/skills/.
   SKILLS_DEST="$PREFIX/share/bardo/skills"
   # bardo-shell's settings schema (every domain's keys, app `bardo-shell`): Settings (bardo-settings) reads every schema

@@ -139,7 +139,7 @@ impl Link {
     pub(super) async fn connect(transport: impl ConnectTo<Client>) -> Result<Self, Gone> {
         let (tx, rx) = mpsc::channel(DEPTH);
         let (up_tx, up_rx) = oneshot::channel();
-        let builder = Client.builder().name("docket");
+        let builder = Client.builder().name("actions");
         let builder = forward!(builder, tx, ReadTextFileRequest, Ruled, Work::Read);
         let builder = forward!(builder, tx, WriteTextFileRequest, Ruled, Work::Write);
         let builder = forward!(

@@ -1,4 +1,4 @@
-//! The setting `agent.mcp.expose` (Bardo design/22 section 3.27) read from docket's own settings
+//! The setting `agent.mcp.expose` (Bardo design/22 section 3.27) read from the actions service's own settings
 //! file, `$XDG_CONFIG_HOME/actions/settings.toml`, as `[agent.mcp] expose = true`. The schema the
 //! Settings app draws the row from is `dist/settings/actions.settings.toml`.
 //!

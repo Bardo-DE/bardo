@@ -1,4 +1,4 @@
-//! The viewer offered to docket, the agent layer: the shipped manifest is a valid one, and a
+//! The viewer offered to the actions service, the agent layer: the shipped manifest is a valid one, and a
 //! `Perform` from the router on a private bus reaches the viewer's own request channel. No real
 //! session bus, router or desktop is involved: a provider answers only intentd's main process, and
 //! a fixture `/proc` says the test's process is it.

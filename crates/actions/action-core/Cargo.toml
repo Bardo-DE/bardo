@@ -1,6 +1,6 @@
 [package]
 name = "action-core"
-description = "docket's vocabulary above action-vocab and action-manifest: context, previews, calls, refusals, undo, confirmation, budgets, the planner and reader contract, the roster, audit records, and the memory and event-log seams (`MemoryLink`, `EventSink`). Ids, units, values and the `Clock` seam are in action-vocab; the manifest, its validation and the JSON argument reader are in action-manifest."
+description = "actions's vocabulary above action-vocab and action-manifest: context, previews, calls, refusals, undo, confirmation, budgets, the planner and reader contract, the roster, audit records, and the memory and event-log seams (`MemoryLink`, `EventSink`). Ids, units, values and the `Clock` seam are in action-vocab; the manifest, its validation and the JSON argument reader are in action-manifest."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

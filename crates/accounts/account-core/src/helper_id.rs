@@ -5,7 +5,7 @@
 use base_ids::IdError;
 use serde::{Deserialize, Serialize};
 
-/// One of the person's helpers. Opaque to porter (docket mints and owns it): 1 to 128 bytes, no
+/// One of the person's helpers. Opaque to porter (the actions service mints and owns it): 1 to 128 bytes, no
 /// control characters.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]

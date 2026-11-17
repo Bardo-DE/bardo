@@ -10,7 +10,7 @@ use memory_core::{AppId, AppName, Isolation};
 /// Of the roles, four stand for the fixed callers of memoryd, and every other is a plain app for
 /// its own things:
 ///
-/// - `Agent`: docket's intentd, the router;
+/// - `Agent`: the actions service's intentd, the router;
 /// - `Cua`: cuad, for its run records;
 /// - `SheetHost`: the shell's own UI (the shell), the person;
 /// - `Settings`: the System Settings app (the Settings app), the person, saving a setting. Not an app with

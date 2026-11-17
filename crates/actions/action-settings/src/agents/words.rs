@@ -42,11 +42,11 @@ impl AgentRow {
         }
     }
 
-    /// Who keeps the history of the files it changes: "Restore points: kept by docket".
+    /// Who keeps the history of the files it changes: "Restore points: kept by actions".
     #[must_use]
     pub fn rewind_line(&self) -> &'static str {
         match self.rewind {
-            Rewind::Docket => "Restore points: kept by docket",
+            Rewind::Actions => "Restore points: kept by actions",
             Rewind::Agent => "Restore points: kept by the agent",
         }
     }

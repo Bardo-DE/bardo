@@ -1,5 +1,5 @@
-//! The one place the brief sheet meets docket's wire shapes. Everything else in bardo-shell reads
-//! [`BriefView`] and sends plain text; only these two functions name docket's types.
+//! The one place the brief sheet meets the actions service's wire shapes. Everything else in bardo-shell reads
+//! [`BriefView`] and sends plain text; only these two functions name the actions service's types.
 
 use action_core::{BriefText, BriefWhy, ConfirmAnswer, ConfirmRequest, GrantScope};
 use provenance::ConfirmReceipt;

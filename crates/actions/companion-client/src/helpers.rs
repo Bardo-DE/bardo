@@ -147,14 +147,14 @@ pub trait HelpersTransport: Send + Sync {
         async { Err(not_offered()) }
     }
 
-    /// The conversations a terminal started that can be brought into docket.
+    /// The conversations a terminal started that can be brought into the actions service.
     fn terminal_sessions(
         &self,
     ) -> impl Future<Output = Result<Vec<TerminalSession>, TransportError>> + Send {
         async { Err(not_offered()) }
     }
 
-    /// The person brings one of them into docket.
+    /// The person brings one of them into the actions service.
     fn bring_back_session(
         &self,
         session: &SessionId,

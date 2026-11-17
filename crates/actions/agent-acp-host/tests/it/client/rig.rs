@@ -127,7 +127,7 @@ pub struct Setup {
     pub terminal_fallback: bool,
     pub policy: Policy,
     pub reviewer: ScriptedReviewer,
-    /// Standing grants already held in docket's store.
+    /// Standing grants already held in the actions service's store.
     pub held: Vec<StandingGrant>,
     pub config: AgentConfig,
     /// The network the agent's commands run with.
@@ -234,7 +234,7 @@ impl<X: Seams<Court = TheCourt, Sandbox = FakeSandbox, Spawn = FakeSpawn>> Rig<X
             .count()
     }
 
-    /// The standing grants docket's store holds.
+    /// The standing grants the actions service's store holds.
     pub fn grants(&self) -> Vec<StandingGrant> {
         self.router.standing_grants()
     }

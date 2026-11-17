@@ -9,7 +9,7 @@
 #       ui-desktop is not a leak: it is the UI kit's probe, and without its `dbus` feature it has no bus.
 #   (c) anyview-peek compiles on its own, headless and with `media` (see below).
 #   (d) anyview-pane, the viewer as a pane another app hosts, compiles on its own and reaches no bus
-#       and no docket or porter: it asks the OS for nothing (abilities arrive as `PlatformAbilities`).
+#       and no actions service or porter: it asks the OS for nothing (abilities arrive as `PlatformAbilities`).
 #       The same with its `player` feature, which adds the player host over the person's own mpv.
 #
 #   scripts/check-portable.sh
@@ -30,7 +30,7 @@ for dep in zbus ashpd action-provider action-core account-core; do
   fi
 done
 # With its `player` feature the pane plays recordings through anyview-media-host (the person's own mpv, run
-# as a child process): it compiles alone and still reaches no bus, no docket or porter.
+# as a child process): it compiles alone and still reaches no bus, no actions service or porter.
 cargo check -p anyview-pane --features player --locked
 for dep in zbus ashpd action-provider action-core account-core; do
   if cargo tree -p anyview-pane --features player -e normal,build -i "$dep" 2>/dev/null | grep -q .; then

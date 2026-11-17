@@ -22,7 +22,7 @@ fn row(program: &str, source: Source) -> AgentRow {
         offers: Offers::NotSeenYet,
         sign_in: SignInState::NotSeenYet,
         way: None,
-        rewind: action_core::Rewind::Docket,
+        rewind: action_core::Rewind::Actions,
     }
 }
 
@@ -124,7 +124,7 @@ fn the_form_names_the_pick_after_itself_and_checks_the_name() {
 }
 
 #[test]
-fn a_name_docket_cannot_keep_is_refused_before_anything_is_written() {
+fn a_name_actions_service_cannot_keep_is_refused_before_anything_is_written() {
     let form = AddForm::offline(&[found("odd+name")], &[]);
     assert_eq!(form.request(), Err(AddRefusal::Fault(AddFault::BadName)));
 }

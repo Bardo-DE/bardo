@@ -117,7 +117,7 @@ text_id!(
 );
 
 text_id!(
-    /// One task: a docket `Session` for one prompt, worker or side conversation.
+    /// One task: an actions service `Session` for one prompt, worker or side conversation.
     ///
     /// A slug minted by the companion service. It moved here from action-core so
     /// [`AgentRole::Worker`] and [`AgentRef::Worker`] can name it.
@@ -142,14 +142,14 @@ text_id!(
     is_id
 );
 text_id!(
-    /// A reference to one action outcome, opaque to prov (docket owns the outcome and its
+    /// A reference to one action outcome, opaque to prov (the actions service owns the outcome and its
     /// handle): 1 to 128 bytes, no control characters.
     OutcomeRef,
     "outcome ref",
     opaque
 );
 text_id!(
-    /// A reference to one undo journal entry, opaque to prov (docket owns `UndoId`): 1 to 128
+    /// A reference to one undo journal entry, opaque to prov (the actions service owns `UndoId`): 1 to 128
     /// bytes, no control characters.
     UndoHandle,
     "undo handle",

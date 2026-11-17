@@ -169,7 +169,7 @@ pub struct Args {
     pub socket: Option<PathBuf>,
     /// The client name, over the configuration's.
     pub client: Option<provenance::ClientName>,
-    /// Write docket's settings schema into this directory and stop.
+    /// Write the actions service's settings schema into this directory and stop.
     pub write_schema: Option<PathBuf>,
     /// Be the bridge of an external agent's session: forward to the host's socket on stdio. The
     /// token is in the environment, never here.

@@ -34,7 +34,7 @@ use std::sync::Arc;
 pub struct ClientHomes {
     /// Where the settings files are.
     pub config: ConfigHome,
-    /// Where docket's agents and the added pictures are.
+    /// Where the actions service's agents and the added pictures are.
     pub data: DataHome,
 }
 

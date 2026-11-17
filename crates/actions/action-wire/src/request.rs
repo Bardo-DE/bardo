@@ -194,7 +194,7 @@ pub enum IntentsRequest {
         workspace: Workspace,
         /// What the person calls the agent here ("claude in pane 2"). Display text, never trusted.
         label: String,
-        /// Who keeps the agent's own history (`Agent`: docket saves nothing and says so).
+        /// Who keeps the agent's own history (`Agent`: the actions service saves nothing and says so).
         rewind: Rewind,
     },
     /// `.Checkpoint.Mark`: the watched agent started working. Takes a restore point (unless the
@@ -206,7 +206,7 @@ pub enum IntentsRequest {
     },
     /// `.Checkpoint.WatchAgent`: `Checkpoint.Watch` for a terminal that also knows which agent
     /// app it is and the app's own id for the conversation, so the person can bring the
-    /// conversation into docket later.
+    /// conversation into the actions service later.
     CheckpointWatchAgent {
         /// The folder the watched agent works in.
         workspace: Workspace,

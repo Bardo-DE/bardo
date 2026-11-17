@@ -307,11 +307,11 @@ fn the_script_runs_the_binary_and_passes_its_exit_code_on() {
         .arg(&script)
         .arg(good.path())
         .env_remove("BARDO_ACTIONS_EVAL")
-        .env("BARDO_ACTIONS_DIR", good.path().join("no-docket-here"))
+        .env("BARDO_ACTIONS_DIR", good.path().join("no-actions-here"))
         .output()
         .expect("runs");
     assert_eq!(nowhere.status.code(), Some(2));
-    assert!(String::from_utf8_lossy(&nowhere.stderr).contains("no docket checkout"));
+    assert!(String::from_utf8_lossy(&nowhere.stderr).contains("no actions checkout"));
 }
 
 // ---- --check-skills ----

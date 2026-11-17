@@ -1,4 +1,4 @@
-//! A conversation with an agent app moving between docket and the app's own command-line
+//! A conversation with an agent app moving between the actions service and the app's own command-line
 //! program in a terminal. The session at the router stays one session: it is a watch session
 //! (restore points only) while the person works in the terminal, and an agent session again when
 //! the conversation is brought back. These are the words for it that the router, the host of the
@@ -186,12 +186,12 @@ pub struct Watching {
 
 /// Where a conversation with an agent app is running, or goes.
 ///
-/// In docket, or in the app's own program in a terminal (a handover to the terminal makes the
+/// In the actions service, or in the app's own program in a terminal (a handover to the terminal makes the
 /// session a watch session; back to the desktop makes it an agent session again).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RunsIn {
-    /// In docket: the app runs here.
+    /// In the actions service: the app runs here.
     #[default]
     Desktop,
     /// In the app's own program, in a terminal window.

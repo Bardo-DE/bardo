@@ -21,7 +21,7 @@
 //! profile = "claude-code"            # optional: confine the program's own extras (see `managed`)
 //! sign_in = "oauth-personal"         # optional: the way the agent signs itself in at start
 //! model = "claude-sonnet-4"          # optional: the model to switch to, one the agent offers
-//! checkpoints = "agent"              # optional: docket | agent, who keeps the history of its file changes
+//! checkpoints = "agent"              # optional: the actions service | agent, who keeps the history of its file changes
 //! resume = ["--resume", "{session}"]  # optional: the app's own arguments to pick a conversation up in a terminal
 //! [agent.endpoint]
 //! kind = "account"
@@ -45,7 +45,7 @@
 //! key_env = "GEMINI_API_KEY"
 //! ```
 //!
-//! An agent from the agent registry names the registry instead of a command; docket installed it
+//! An agent from the agent registry names the registry instead of a command; the actions service installed it
 //! (`bardo-agents`) and gives it a home of its own, where it signs in:
 //!
 //! ```toml
@@ -85,7 +85,7 @@ pub enum Route {
     Endpoint,
     /// accountd hands the agent's process a key (P2), for an agent that cannot take a base URL.
     Handoff,
-    /// The agent signs itself in (a subscription, its own key): docket gives it nothing.
+    /// The agent signs itself in (a subscription, its own key): the actions service gives it nothing.
     Login,
 }
 
@@ -256,20 +256,20 @@ pub struct Entry {
     pub label: Option<String>,
     /// Whether the person named the `claude-code` preset, which confines what the program brings
     /// of its own (its account's connectors, skills and plugins, its own permission prompt for
-    /// the desktop's tools). Docket sends the settings in the `session/new` it writes and sets
+    /// the desktop's tools). The actions service sends the settings in the `session/new` it writes and sets
     /// the variables the preset names; the program cannot change either. See `managed`.
     pub claude_code: bool,
     /// The way the agent signs itself in before a session opens, one of the ids it advertises.
-    /// It signs in from the login it already holds; docket sends the id and nothing else.
+    /// It signs in from the login it already holds; the actions service sends the id and nothing else.
     pub sign_in: Option<SignIn>,
     /// The model to switch to after the session opens, one the agent offers.
     pub model: Option<ModelId>,
     /// The registry id it was installed under, when it came from the registry: its record of
     /// what it offered is kept under that name.
     pub registry: Option<String>,
-    /// Who keeps the history of the files it changes (`checkpoints`): `Docket` saves a restore
+    /// Who keeps the history of the files it changes (`checkpoints`): `Actions` saves a restore
     /// point before each turn, `Agent` leaves it to the agent's own. Unwritten, it is `Agent`
-    /// for the `claude-code` profile (whose own rewind the person expects) and `Docket` for any
+    /// for the `claude-code` profile (whose own rewind the person expects) and `Actions` for any
     /// other. The host passes it to the router when the session opens; the agent never says it.
     pub rewind: Rewind,
     /// The arguments that make the app's own command-line program pick one conversation up,

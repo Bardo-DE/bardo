@@ -63,7 +63,7 @@ pub(super) async fn take(
             intentd,
         )
         .await
-        .map_err(docket_trouble)?;
+        .map_err(actions_trouble)?;
         let confirm = ConfirmObject {
             calls,
             serials: Arc::new(AtomicU64::new(0)),
@@ -88,9 +88,9 @@ fn intentd_at(connection: &Connection, proc_root: &Path) -> Identity {
     Identity::on(connection.clone(), intentd_only(), fixture)
 }
 
-/// docket's `serve_on_with` says a taken name with a type, as everything bardo-shell claims itself does
+/// The actions service's `serve_on_with` says a taken name with a type, as everything bardo-shell claims itself does
 /// ([`serve::take_name`]); a bus that refused the name is taken too.
-fn docket_trouble(error: ServeError) -> ClaimError {
+fn actions_trouble(error: ServeError) -> ClaimError {
     match error {
         ServeError::Taken(name) => ClaimError::NameTaken(name),
         ServeError::Bus(zbus::Error::NameTaken) => ClaimError::NameTaken(CONFIRM_BUS.to_owned()),

@@ -8,7 +8,7 @@
 //! `CLAUDE_CODE_MANAGED_SETTINGS_PATH` is ignored), so the settings go the way its ACP adapter
 //! takes them: `_meta.claudeCode.options.settings` of `session/new`, an object the adapter hands
 //! the SDK as its `settings` option, the flag tier, which outranks the user's, the project's and
-//! the local settings. The object is sent inline: docket writes `session/new`, so the agent has
+//! the local settings. The object is sent inline: the actions service writes `session/new`, so the agent has
 //! no file to write and no path to shadow, and nothing is bound into the sandbox for it.
 //!
 //! The settings turn off the account's connectors, skills and plugins and allow the desktop's

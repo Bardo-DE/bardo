@@ -83,7 +83,7 @@ fn spawn_with(settings: Settings, window: Duration) -> io::Result<(SyncSender<Sp
         stats: Arc::clone(&stats),
     };
     thread::Builder::new()
-        .name("docket-log-otlp".to_owned())
+        .name("actions-log-otlp".to_owned())
         .spawn(move || worker.run())?;
     Ok((out, stats))
 }

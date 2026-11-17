@@ -92,7 +92,7 @@ run_scenario() {
 # bardo-shell's own acceptance suite on bardo-compositor (plan 20 §5.2: "bardo-shell's 19 minus listed WM-state steps"), from
 # this tree, every script in its own jail on a headless bardo-compositor. Everything is
 # built outside the jail first (accept.sh --build: bardo-shell, the testkit's examples, shell-services' bins,
-# docket's bardo-actiond, bardo-compositor's tools from this tree). Exit 0 and 2 (SKIP) are accepted; a SKIP
+# The actions service's bardo-actiond, bardo-compositor's tools from this tree). Exit 0 and 2 (SKIP) are accepted; a SKIP
 # only for a script listed in shell-accept-skips.txt whose phase has not closed; any FAIL is rerun once,
 # alone and one at a time (a loaded host starves the timing-sensitive scripts), and says so.
 shell_accept() {

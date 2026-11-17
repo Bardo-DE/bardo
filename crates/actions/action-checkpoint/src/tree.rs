@@ -49,7 +49,7 @@ pub fn plan_restore(now: &TreeListing, then: &TreeListing) -> RestorePlan {
 
 fn digest_of(now: &TreeListing, then: &TreeListing, lists: &[&Vec<WorkPath>; 3]) -> PlanDigest {
     let mut hash = Sha256::new();
-    hash.update(b"docket-restore-plan-v1");
+    hash.update(b"actions-restore-plan-v1");
     for list in lists {
         hash.update(b"\x00list");
         feed(&mut hash, list.len().to_string().as_bytes());

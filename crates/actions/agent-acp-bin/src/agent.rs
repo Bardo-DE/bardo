@@ -1,5 +1,5 @@
 //! `bardo-agent <program> [--cwd DIR] [--tty]`: runs one configured coding agent (Claude Code
-//! through its ACP adapter, say) as a docket session, with a prompt on the terminal. The host of
+//! through its ACP adapter, say) as an actions session, with a prompt on the terminal. The host of
 //! the agent: it launches the process under the launcher's sandbox, opens the agent's session at
 //! the router, records the person's prompts there (the task policy derives from them), and makes
 //! every call the agent asks of it as a router call, performing it only after the router allowed
@@ -9,7 +9,7 @@
 //! The person is asked the way every call is: the router's sheet, through intentd's confirmer
 //! (the shell's). `--tty` is a development fallback: the host asks intentd to hand it this session's
 //! sheets and puts them to you on the terminal, `y` once, `a` always (when offered), anything
-//! else no. Standing grants live in docket's store, listed and revoked in Settings, not here.
+//! else no. Standing grants live in the actions service's store, listed and revoked in Settings, not here.
 //!
 //! The router tells this process by its bus name, `org.bardo.AcpAgent`, which `actiond.toml`
 //! lists under `acp_agent` (it opens the agent's session, records its turns and makes its calls).

@@ -110,7 +110,7 @@ fn configure(dir: &Path, text: &str) {
     std::fs::write(config.join("actions-mcp.toml"), text).expect("config");
 }
 
-/// The person switches the edge on in docket's settings.
+/// The person switches the edge on in the actions service's settings.
 fn switch_on(dir: &Path) {
     let config = dir.join("config/bardo/actions");
     std::fs::create_dir_all(&config).expect("dirs");

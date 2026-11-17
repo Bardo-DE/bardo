@@ -154,7 +154,7 @@ fn reading_adds_known_places_off_and_never_turns_one_on() {
 }
 
 #[test]
-fn the_question_names_the_account_and_the_provider_in_dockets_words() {
+fn the_question_names_the_account_and_the_provider_in_actions_service_words() {
     let (asked, _) = places_step(
         state(),
         PlacesInput::CloudSwitched {

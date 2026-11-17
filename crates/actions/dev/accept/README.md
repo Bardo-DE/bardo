@@ -42,7 +42,7 @@ full view is `Record::On`'s output.
 | Piece | Why | File |
 |---|---|---|
 | `org.bardo.Confirm1` (the shell's sheet) | owns `org.bardo.Confirm1` and `org.bardo.Shell` (where bardo-actiond sends the sheet), and the test process is `bardo-shell.service`, so bardo-actiond derives the shell's `confirm`, `launcher` and `control` roles from `actiond.toml` as it would for the shell; answers Allow (with a receipt) or Refuse from a queue the test fills | `src/confirm.rs` |
-| `org.bardo.Mail` provider | `org.bardo.IntentProvider1` served with `docket_provider::serve_on` for the manifest `fixtures/org.bardo.Mail.toml`; holds a forward or send for an undo window like mailo | `src/provider.rs` |
+| `org.bardo.Mail` provider | `org.bardo.IntentProvider1` served with `action_provider::serve_on` for the manifest `fixtures/org.bardo.Mail.toml`; holds a forward or send for an undo window like mailo | `src/provider.rs` |
 
 ## What mailo's real provider must match
 

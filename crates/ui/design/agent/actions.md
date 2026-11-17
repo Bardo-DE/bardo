@@ -38,7 +38,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 
 ## 2. Repos, crates, dependency direction
 
-### 2.1 New repo `docket` (working name; question U1), at `~/docket`
+### 2.1 New repo `actions` (working name; question U1), at `~/actions`
 
 It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 
@@ -923,26 +923,26 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
    ./scripts/check-boundary.sh
    cargo deny check licenses
    ```
-3. **docket agent** (new repo; starts after 1 and 2 merge).
+3. **the actions agent** (new repo; starts after 1 and 2 merge).
    - Scaffolds the workspace by copying porter's `rust-toolchain.toml` (1.98.1), `deny.toml`, `rustfmt.toml` and lints.
    - Writes every crate in §2.1 with the types and traits of §3. Behaviour bodies are `todo!()`, each listed in `FINDINGS.md`.
    - Fully implemented in this wave: the pure, cheap parts (`prov::join`, `validate`, `combine`, `charge`, `halted`, `conforms`).
    - Also: the XML, the fixtures, all §5 shape tests (behaviour tests `#[ignore]` with a FINDINGS line), `ARCHITECTURE.md` and `CONVENTIONS.md`.
    - Verify: the same gate as porter, plus `cargo test -p permission-policy` (schema loads).
 
-### Fill wave 1 (docket, parallel by file ownership)
+### Fill wave 1 (the actions service, parallel by file ownership)
 
 - **F1a**: `prov` + `permission-policy` (Cedar evaluation, `default.cedar`, the grid test). Owns `crates/prov/**` and `crates/policy-point/**`.
-- **F1b**: `action-review` (render, parse, `InferReviewer` over `porter_infer::Model` with `FakeModel`, the injection corpus). Owns `crates/action-review/**` and `crates/docket-fake/fixtures/injection/**`.
-- **F1c**: `action-router` (call step, gate wiring, session and handles, journal, authorizations, index model). Owns `crates/docket-router/**`.
-- **F1d**: `action-dbus` codec and p2p tests, and `action-client` `InProcess`/`DbusTransport`. Owns `crates/docket-dbus/**`, `crates/docket-client/**` and `dbus/**`.
+- **F1b**: `action-review` (render, parse, `InferReviewer` over `porter_infer::Model` with `FakeModel`, the injection corpus). Owns `crates/action-review/**` and `crates/action-fake/fixtures/injection/**`.
+- **F1c**: `action-router` (call step, gate wiring, session and handles, journal, authorizations, index model). Owns `crates/action-router/**`.
+- **F1d**: `action-dbus` codec and p2p tests, and `action-client` `InProcess`/`DbusTransport`. Owns `crates/action-dbus/**`, `crates/action-client/**` and `dbus/**`.
 - `action-fake` belongs to F1c. Others request additions through it.
 - Verify per agent: `cargo test -p <crate>`, then the full gate.
 
 ### Fill wave 2 (cross-repo)
 
-- **docket F2a**: `intentd` serves the bus over the private bus, with seams wired: `AppLink` over zbus, `GrantStore` file, `EventSink` to the memory area's `eventlog` (or a JSONL stub until it exists).
-- **docket F2b**: `bardo-actions-mcp` over rmcp.
+- **The actions service F2a**: `intentd` serves the bus over the private bus, with seams wired: `AppLink` over zbus, `GrantStore` file, `EventSink` to the memory area's `eventlog` (or a JSONL stub until it exists).
+- **The actions service F2b**: `bardo-actions-mcp` over rmcp.
 - **The shell agent**: the `shell-launcher` variants, following the warn-before-lint-rules practice. Pinned wire tests for the new `Activation::Intent`/`Subject::Entity`/`Preview::Intent`. `ThingsProvider` in `shell-search` over `action-client`. `org.bardo.Shell` provider in `shell-services`. Verify with the shell's gate.
 - **Bardo agent**: `ui-intents` (`ContextModel`, a `thing` prop on `Row`/`List`, edit-surface text targets, a default `ContextSource`). Only after the user answers U6.
 - **mailo session**: the manifest, `IntentProvider`, and `actor` on `UndoStack`.
@@ -986,7 +986,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### 7.3 Questions only the user can answer
 
-- **U1.** Repo name and placement: a new `docket` repo (proposed), versus putting the router in porter or the shell. Also: must action names carry their app's prefix (`mail.…` only in Mail)?
+- **U1.** Repo name and placement: a new `actions` repo (proposed), versus putting the router in porter or the shell. Also: must action names carry their app's prefix (`mail.…` only in Mail)?
 - **U2.** Auto mode default strictness per Space: `Default` as defined (item 9 unless you state an Authorization), or something else?
 - **U3.** May the reviewer ever allow `Destructive` (proposed: only under `TrustMore` with an Authorization and untainted args), and may it ever allow tainted `Outbound` (proposed: only `TrustMore` with an Authorization)?
 - **U4.** Authorizations: is the reviewer's check of your own words enough, or should each one also get a one-time compositor confirm ("Let it archive newsletters in Work for an hour?")? Default length is 1 h, this session only.
@@ -1003,18 +1003,18 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 |---|---|
 | `Provider { kind, query(&Query, &mut dyn ResultSink), activate(&Item,&Choice) -> Activation }` | Stays the in-process seam. A new `ThingsProvider` implements it: `query` calls `Intents1.Search` with `Query.generation`, pushes index hits as one `Batch`, then late app hits from `Hits(gen)`; `is_cancelled` maps to `Search.Cancel(gen)`. |
 | `ProviderKind` (9, `Copy`, `ALL`) | `+ Things`, last in Tab order (C5) |
-| `Item.subject: Subject` | `+ Subject::Entity(docket_core::EntityRef)` |
+| `Item.subject: Subject` | `+ Subject::Entity(action_core::EntityRef)` |
 | `Item.actions: Vec<Action{id,label,keys}>` | From `ActionDecl`s whose `Target` fits the row's kind. `ActionId` = `ActionName` text; `keys` from `KeyHint` |
 | `activate` (pure) | Returns `Activation::Intent(CallRequest)`; the daemon sends `Run.Perform` with `Origin::Launcher`. A `NeedsParam` refusal makes the launcher draw a field from `ParamDecl` and re-perform. |
 | `Activation` (closed) | `+ Intent(CallRequest)` only. `Launch`, `Open`, `Copy` and the rest stay the host's own verbs and are also served as actions of `org.bardo.Shell` by the same executor, so the companion uses the path you use. |
-| `Preview` (pure from the row) | `+ Preview::Intent(docket_core::Preview)`, fetched lazily by `Run.Preview` after selection dwell (150 ms) |
+| `Preview` (pure from the row) | `+ Preview::Intent(action_core::Preview)`, fetched lazily by `Run.Preview` after selection dwell (150 ms) |
 | `Query.scope` | Later: `Scope::Kind(EntityKind)` for typed pickers |
 | `CuaRunProvider` (cua doc) | The cua area's; it uses the same seam |
 
 ### Critical files for implementation
 
 - /home/pohsuanlai/porter/crates/porter-core/src/consent/grant.rs and /home/pohsuanlai/porter/crates/porter-core/src/consent/decide.rs (the `GrantKey` Space dimension and generic `Grant<K>`)
-- /home/pohsuanlai/porter/ARCHITECTURE.md and /home/pohsuanlai/porter/scripts/check-boundary.sh (the template for docket's layout, gate and boundaries)
+- /home/pohsuanlai/porter/ARCHITECTURE.md and /home/pohsuanlai/porter/scripts/check-boundary.sh (the template for the actions service's layout, gate and boundaries)
 - /home/pohsuanlai/shell/crates/shell-launcher/src/activation.rs, /home/pohsuanlai/shell/crates/shell-launcher/src/ids.rs and /home/pohsuanlai/shell/crates/shell-launcher/src/subject.rs (the shell variants)
 - /home/pohsuanlai/bardo/docs/workspace-deps.toml (cedar-policy and rmcp must join first)
 - /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.5 and §5.5 edits), /home/pohsuanlai/rs-wt/companion/COMPANION.md and /home/pohsuanlai/rs-wt/intents-research/models.md (the sources this spec resolves)

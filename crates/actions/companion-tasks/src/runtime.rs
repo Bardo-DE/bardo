@@ -1,5 +1,5 @@
 //! The runtime: the entry points the bus calls and the state they share. The companion is one
-//! identity over many tasks; each task is its own docket session, run by the pure loop of
+//! identity over many tasks; each task is its own the actions session, run by the pure loop of
 //! `agent-loop` whose effects `drive` carries out.
 
 use crate::best_effort::best_effort;

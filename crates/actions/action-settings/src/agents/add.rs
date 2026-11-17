@@ -1,5 +1,5 @@
 //! Adds an agent from the agent registry to `agents.toml`, and takes an entry out. An added entry
-//! names the registry and the pinned version (docket installs it with `bardo-agents` and gives it
+//! names the registry and the pinned version (the actions service installs it with `bardo-agents` and gives it
 //! a home of its own), signs in the agent's own way, and reaches the host's network, which it
 //! needs to reach its provider: the Settings app says so before it adds one. An entry with a
 //! command of its own is the person's to write by hand. The file is edited in place, so comments
@@ -11,7 +11,7 @@ use toml_edit::{ArrayOfTables, DocumentMut, Item, Table, value};
 /// An agent to add from the registry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NewAgent {
-    /// The name docket lists it under (`program`).
+    /// The name the actions service lists it under (`program`).
     pub program: String,
     /// The registry's id for it.
     pub registry: String,
@@ -34,10 +34,10 @@ pub enum AddFault {
     #[error("an agent of that name is listed already")]
     Listed,
     /// The name, the registry id or the version has odd characters or is too long.
-    #[error("that isn't an agent name docket can keep")]
+    #[error("that isn't an agent name the actions service can keep")]
     BadName,
     /// The label is empty, too long or has control characters.
-    #[error("that isn't a name docket can show")]
+    #[error("that isn't a name the actions service can show")]
     BadLabel,
     /// The file could not be written.
     #[error("the agents file can't be written")]
@@ -85,7 +85,7 @@ fn entry_of(agent: &NewAgent) -> Table {
 /// # Errors
 ///
 /// [`AddFault`] when `text` is not readable TOML, an agent of that name is listed already, or the
-/// name, registry, version or label is not one docket can keep.
+/// name, registry, version or label is not one actions service can keep.
 pub fn edit_agent_add(text: &str, agent: &NewAgent) -> Result<String, AddFault> {
     let names = [&agent.program, &agent.registry, &agent.version];
     if !names.iter().all(|w| word_fine(w)) {

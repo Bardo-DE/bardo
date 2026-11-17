@@ -1,11 +1,11 @@
 //! The pure core of a computer-use run.
 //!
-//! [`Run`] is a state machine like docket's `agent-loop`: `Run::step(self, input, at)` returns the
+//! [`Run`] is a state machine like the actions service's `agent-loop`: `Run::step(self, input, at)` returns the
 //! next run and the [`RunEffect`]s to carry out; cuad carries them out and feeds back the
 //! [`RunInput`]s. Everything here is `Serialize + Eq`, so a run can be written to a trace and
 //! replayed, and nothing here touches a window, a socket or the clock.
 //!
-//! The phase table is `cua.md` section 4, changed where docket's gate changed it: a pixel step
+//! The phase table is `cua.md` section 4, changed where the actions service's gate changed it: a pixel step
 //! is authorised by `Intents1.Gate.Check` ([`RunEffect::Check`]); when the router will ask the
 //! person it says so first ([`RunInput::Confirming`]), the machine stops the lease on stock and
 //! calls `Proceed`, and the router's final answer arrives as [`RunInput::Verdict`].

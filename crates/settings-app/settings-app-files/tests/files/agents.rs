@@ -1,4 +1,4 @@
-//! The outside agents in docket's `agents.toml`: read with what each last offered, the menus the
+//! The outside agents in the actions service's `agents.toml`: read with what each last offered, the menus the
 //! row draws, and a choice written into its entry with every other line kept.
 
 use action_settings::NewAgent;

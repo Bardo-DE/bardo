@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fuzz docket's parsers of model and peer output with cargo-fuzz (libFuzzer). Not in the gate: it
+# Fuzz the actions service's parsers of model and peer output with cargo-fuzz (libFuzzer). Not in the gate: it
 # needs a nightly toolchain and `cargo-fuzz`, and it runs for as long as you give it.
 #
 #   dev/fuzz.sh                      # list the targets

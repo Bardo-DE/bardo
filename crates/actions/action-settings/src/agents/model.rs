@@ -98,7 +98,7 @@ pub struct AgentRow {
     /// The way of signing in the person chose, by id.
     pub way: Option<String>,
     /// Who keeps the history of the files it changes: what `checkpoints` says, else `Agent` for
-    /// the `claude-code` profile and `Docket` for any other.
+    /// the `claude-code` profile and `Actions` for any other.
     pub rewind: Rewind,
 }
 

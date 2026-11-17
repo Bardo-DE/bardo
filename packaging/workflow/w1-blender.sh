@@ -24,7 +24,7 @@
 #   W1_SCREEN_URL    the model that looks at the screen, the same way (a tunnel to the one on fatcat)
 # The script never starts a model. Start the screen model on fatcat yourself, only when you are ready, and stop it after.
 # Optional: W1_PLANNER_MODEL (default qwen3-4b-instruct-2507-fp8), W1_SCREEN_MODEL (default holo4-35b-a3b-fp8),
-# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SHELL / _CUA / _DOCKET
+# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SHELL / _CUA / _ACTIONS
 # (build folders, default /mnt/data/cargo/w1-*), W1_COMPOSITOR, W1_FAKE_LOGIND, W1_SHELL, W1_CUAD, W1_BRINGUP,
 # W1_BARDO_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding bardo-compositor, bardo-shell, ...),
 # W1_MODEL_CATALOG, W1_PROVIDERS, W1_SHOT_EVERY (seconds, default 120).
@@ -50,13 +50,13 @@ T_COMPOSITOR=${W1_TARGET_COMPOSITOR:-/mnt/data/cargo/w1-compositor}
 T_TOOLS=${W1_TARGET_COMPOSITOR_TOOLS:-/mnt/data/cargo/w1-compositor-tools}
 T_SHELL=${W1_TARGET_SHELL:-/mnt/data/cargo/w1-shell}
 T_CUA=${W1_TARGET_CUA:-/mnt/data/cargo/w1-cua}
-T_DOCKET=${W1_TARGET_DOCKET:-/mnt/data/cargo/w1-docket}
+T_ACTIONS=${W1_TARGET_ACTIONS:-/mnt/data/cargo/w1-actions}
 COMPOSITOR=${W1_COMPOSITOR:-$T_COMPOSITOR/debug/bardo-compositor}
 FAKE_LOGIND=${W1_FAKE_LOGIND:-$T_TOOLS/debug/fake-logind}
 SHELL=${W1_SHELL:-$T_SHELL/debug/bardo-shell}
 CUAD=${W1_CUAD:-$T_CUA/debug/bardo-computer-use}
-BRINGUP=${W1_BRINGUP:-$T_DOCKET/debug/agent-bringup}
-BARDO_DO=${W1_BARDO_DO:-$T_DOCKET/debug/accept-bardo-do}
+BRINGUP=${W1_BRINGUP:-$T_ACTIONS/debug/agent-bringup}
+BARDO_DO=${W1_BARDO_DO:-$T_ACTIONS/debug/accept-bardo-do}
 
 STARTED=()           # "name pid start-token", in start order
 BUS="" RT="" HOME_S="" AGENTS="" OUT="" DATA_DIRS="" PAGE_URL="" ASKED_NS=0 ASKED_EPOCH=0 ASK_PID="" WL_NAME="" TMP_RT=""
@@ -82,7 +82,7 @@ print_build() {
 # 4. the screen helper
 (cd $SIB/cua && CARGO_TARGET_DIR=$T_CUA nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command
-(cd $SIB/docket && CARGO_TARGET_DIR=$T_DOCKET nice cargo build -p action-accept --bins)
+(cd $SIB/actions && CARGO_TARGET_DIR=$T_ACTIONS nice cargo build -p action-accept --bins)
 EOF
 }
 

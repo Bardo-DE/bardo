@@ -1,4 +1,4 @@
-//! Standing grants: "allow always" as a scoped, revocable grant held in docket's own store
+//! Standing grants: "allow always" as a scoped, revocable grant held in the actions service's own store
 //! (acp-sessions.md section 12, R1). A grant replaces only the confirmation step; the whole gate
 //! still runs on every call. The types here are the key (who, which action, which arguments);
 //! `standing_match` decides whether a call is covered and `standing_offer` whether "always" may

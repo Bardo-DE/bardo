@@ -14,7 +14,7 @@ use std::path::{Component, Path, PathBuf};
 /// Why an archive was not unpacked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum UnpackFault {
-    /// Not a kind docket unpacks (`.tar.gz`, `.tgz` and `.zip` are).
+    /// Not a kind the actions service unpacks (`.tar.gz`, `.tgz` and `.zip` are).
     #[error("this kind of archive cannot be unpacked here")]
     Kind,
     /// An entry would land outside the directory, or is a link.

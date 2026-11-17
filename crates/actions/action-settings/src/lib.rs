@@ -1,4 +1,4 @@
-//! docket's settings (design/22 section 3.27): the `agent.*` keys the Settings app writes to
+//! The actions service's settings (design/22 section 3.27): the `agent.*` keys the Settings app writes to
 //! `$XDG_CONFIG_HOME/actions/settings.toml`, the schema it draws them from, and the lenient reader
 //! the daemons share. A bad value falls back per key and is reported; the file is never fatal.
 //! Everything here is a pure function of text (and of what a caller says about the records beside
@@ -27,7 +27,7 @@ pub use places::{
 };
 pub use read::read;
 
-/// The schema docket ships for its settings (design/22 section 9.2).
+/// The schema the actions service ships for its settings (design/22 section 9.2).
 pub const SCHEMA: &str = include_str!("../../dist/settings/actions.settings.toml");
 
 /// The file the settings live in, under the configuration directory.
@@ -54,7 +54,7 @@ pub struct AgentSettings {
     pub expose: bool,
     /// `agent.acp.expose`: whether a code editor may drive the companion over ACP.
     pub acp: bool,
-    /// `agent.acp.agents`: whether docket may run external coding agents as session backends.
+    /// `agent.acp.agents`: whether the actions service may run external coding agents as session backends.
     pub agents: bool,
 }
 

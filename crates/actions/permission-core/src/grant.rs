@@ -142,5 +142,5 @@ pub enum GrantTarget {
     Action(ActionName),
 }
 
-/// An action grant: porter's grant over docket's key.
+/// An action grant: porter's grant over the actions service's key.
 pub type ActionGrant = Grant<ActionGrantKey>;

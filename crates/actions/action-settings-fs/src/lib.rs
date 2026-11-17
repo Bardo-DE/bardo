@@ -1,4 +1,4 @@
-//! docket's settings on disk: where the settings file is, the records beside the agents, and the
+//! The actions service's settings on disk: where the settings file is, the records beside the agents, and the
 //! writes of `agents.toml`. What the settings mean, and every text edit, is `action-settings`.
 
 mod agents;

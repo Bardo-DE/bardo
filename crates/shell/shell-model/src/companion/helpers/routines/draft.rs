@@ -1,5 +1,5 @@
 //! The routine the person is filling in: raw words and choices, checked once when they confirm.
-//! The time is checked by docket's own reading of a schedule, so a sheet never offers one the
+//! The time is checked by the actions service's own reading of a schedule, so a sheet never offers one the
 //! companion would refuse.
 
 use companion_model::{routine::Missed, routine::Schedule};
@@ -63,7 +63,7 @@ impl RoutineDraft {
         }
     }
 
-    /// The schedule as docket reads it: "daily 08:00", "weekdays 08:00", "every 2 hours".
+    /// The schedule as the actions service reads it: "daily 08:00", "weekdays 08:00", "every 2 hours".
     fn words(&self) -> String {
         match self.repeat {
             Repeat::Daily => format!("daily {}", self.time.trim()),

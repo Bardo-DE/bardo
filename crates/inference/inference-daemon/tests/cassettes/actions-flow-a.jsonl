@@ -1,4 +1,4 @@
-{"vocab":1,"engine":{"kind":"replay","build":"docket-accept"},"model":"scripted","recorded":0,"context":{"loaded":32768,"trained":32768},"speech":null}
+{"vocab":1,"engine":{"kind":"replay","build":"action-accept"},"model":"scripted","recorded":0,"context":{"loaded":32768,"trained":32768},"speech":null}
 {"when":{"tools":"absent","contains":["You write a task policy"]},"reply":{"kind":"text","v":"{\"actions\":[\"org.bardo.Mail mail.thread.search\",\"org.bardo.Mail mail.thread.read\",\"org.bardo.Mail mail.contact.search\",\"org.bardo.Mail mail.message.forward\",\"org.bardo.Mail mail.message.send\"],\"apps\":[{\"app\":\"org.bardo.Mail\",\"up_to\":\"outbound\"}],\"kinds\":[\"mail.thread\",\"mail.contact\"],\"ceiling\":\"outbound\",\"max_count\":12,\"recipients\":[],\"destinations\":[],\"paths\":[]}"},"uses":"always"}
 {"when":{"tools":"present"},"reply":{"kind":"calls","v":[{"name":"org.bardo.Mail-mail.thread.search","arguments":{"query":"Lisbon"}}]}}
 {"when":{"tools":"present"},"reply":{"kind":"calls","v":[{"name":"org.bardo.Mail-mail.contact.search","arguments":{"query":"Accounting"}}]}}

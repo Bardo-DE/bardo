@@ -1,5 +1,5 @@
 //! `org.bardo.Companion1.Terminals`: the conversations with an agent app that a terminal started,
-//! which the person can bring into docket. Only the shell reads or acts on it. Every body is JSON
+//! which the person can bring into the actions service. Only the shell reads or acts on it. Every body is JSON
 //! of `companion-wire`'s handoff types, and every sentence in them is plain words.
 
 use zbus::fdo;
@@ -15,7 +15,7 @@ pub trait CompanionTerminals {
     /// The terminals' conversations that can be brought in (`TerminalSession` JSON list).
     fn sessions(&self) -> zbus::Result<String>;
 
-    /// Brings one into docket (`session` is the id a `TerminalSession` carries; answers
+    /// Brings one into the actions service (`session` is the id a `TerminalSession` carries; answers
     /// `BroughtBack` JSON).
     fn bring_back(&self, session: &str) -> zbus::Result<String>;
 

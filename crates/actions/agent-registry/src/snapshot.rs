@@ -1,11 +1,11 @@
-//! A registry snapshot, as the registry publishes it. Docket ships no agent list of its own: what
+//! A registry snapshot, as the registry publishes it. The actions service ships no agent list of its own: what
 //! can be installed is whatever the snapshot in hand says.
 
 use crate::platform::Platform;
 use serde::Deserialize;
 use std::collections::BTreeMap;
 
-/// The whole snapshot. Fields docket has no use for are ignored.
+/// The whole snapshot. Fields the actions service has no use for are ignored.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
 pub struct Snapshot {
     /// The agents on offer.

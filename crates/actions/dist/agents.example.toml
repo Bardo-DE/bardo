@@ -1,4 +1,4 @@
-# Agent programs docket may run as session backends (acp-sessions.md S4). Copy to
+# Agent programs the actions service may run as session backends (acp-sessions.md S4). Copy to
 # ~/.config/actions/agents.toml, fix the paths, and switch it on with
 #
 #   [agent.acp]
@@ -8,7 +8,7 @@
 # not listed here. Paths must be absolute.
 
 # Claude Code through its ACP adapter, signed in the way you sign it in today (a subscription or
-# its own key): docket gives it no key and never reads its login. The network is the host's,
+# its own key): the actions service gives it no key and never reads its login. The network is the host's,
 # because this agent has to reach its provider; that is weaker than the endpoint route below and
 # is on only because this entry says so.
 [[agent]]
@@ -20,7 +20,7 @@ network = "host"
 reads = ["/home/me/.local/share/node"]
 state = ["/home/me/.claude", "/home/me/.claude.json"]
 home = "/home/me"
-# What the audit and the journal call it. Yours to write: docket never takes it from the agent.
+# What the audit and the journal call it. Yours to write: the actions service never takes it from the agent.
 label = "Claude Code"
 # The agent's own login, run where you can see it (a terminal), when the Settings app asks.
 login = ["konsole", "-e", "claude", "login"]
@@ -29,11 +29,11 @@ login = ["konsole", "-e", "claude", "login"]
 # planner's. "off" keeps the agent to its own tools and the host's file and terminal methods.
 tools = true
 # Confines what Claude Code brings of its own (profile = "claude-code"). Claude Code ignores a managed-settings
-# file outside its hosted mode, so docket sends the settings the way the ACP adapter takes them: in the
+# file outside its hosted mode, so the actions service sends the settings the way the ACP adapter takes them: in the
 # `session/new` request it writes itself (`_meta.claudeCode.options.settings`, Claude Code's flag-settings tier,
 # which outranks your user, project and local settings). No file is written and the agent cannot change them.
 #   - your claude.ai account's connectors (cloud services), skills and plugins are turned off, which would
-#     otherwise reach tools and hooks that never pass docket's router;
+#     otherwise reach tools and hooks that never pass the actions service's router;
 #   - Claude Code may call the desktop's own tool server (`bardo`) without its own permission prompt, so the
 #     desktop's sheet is the only one you see; no other server is pre-allowed.
 # The variables of Claude Code's isolated mode are set too (no account connectors, no CLAUDE.md files, no
@@ -43,11 +43,11 @@ profile = "claude-code"
 
 # Google's Antigravity agent (agy) through its ACP server, a self-contained program that comes with a static
 # helper beside it (keep that helper executable; the program's own directory is visible to the sandbox, read-only).
-# Its login file is `.gemini/antigravity-acp/acp_token.json` under its home: docket never reads it. The live-eval
+# Its login file is `.gemini/antigravity-acp/acp_token.json` under its home: the actions service never reads it. The live-eval
 # harness copies it in per run (`--acp-credentials FILE --acp-credentials-at .gemini/antigravity-acp/acp_token.json`).
-# The agent signs itself in from that file when docket sends `sign_in`; the id must be one the agent offers when it
-# starts, or the session does not open and docket says the agent needs signing in. A way that needs a browser is not
-# one docket can run for you: sign in once with the agent's own tool, then use `oauth-personal`.
+# The agent signs itself in from that file when the actions service sends `sign_in`; the id must be one the agent offers when it
+# starts, or the session does not open and the actions service says the agent needs signing in. A way that needs a browser is not
+# one actions service can run for you: sign in once with the agent's own tool, then use `oauth-personal`.
 [[agent]]
 program = "agy"
 command = "/home/u/.local/share/agy-acp-server/agy_acp_server.par"

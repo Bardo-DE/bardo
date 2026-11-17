@@ -9,7 +9,7 @@
 //! - [`instance`]: [`claim`] the names, or [`forward`] a request to the app that has them;
 //! - [`launch`]: open files with the default app or a chosen one, per the Desktop Entry
 //!   Specification, through [`DesktopLauncher`];
-//! - [`intents`]: the app's actions for the assistant and the command line (docket's
+//! - [`intents`]: the app's actions for the assistant and the command line (the actions service's
 //!   `IntentProvider1`), answered through the [`Window`] trait the caller implements;
 //! - [`disks`]: the computer's disks from `UDisks2` on the system bus ([`Disks`]): list, open, eject
 //!   and a stream of changes, with the programs holding a disk open found by [`DiskUsers`].

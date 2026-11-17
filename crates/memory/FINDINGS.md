@@ -20,7 +20,7 @@ A9 (the macro states each slug once and tests use `ALL`), A10 (`change_for` bran
 
 ## Stubs behind frozen interfaces
 
-None. What still waits on other repos is under "Open" below (porter's transports, docket, cua).
+None. What still waits on other repos is under "Open" below (porter's transports, the actions service, cua).
 
 ## Built at the freeze (pinned by tests)
 
@@ -65,11 +65,11 @@ each part are pure functions of the body (`EventBody::index_texts`), so the inde
 from the log and the text cannot drift from the stored value; with an owner-supplied
 `AreaPayload.text` the owner could index text its JSON does not contain, and the label of that
 text would be unchecked; (3) cascade-forget gets the entities a message names
-(`EventBody::thing_refs`) with no extra field; (4) `AreaPayload` stays frozen, so docket's and
+(`EventBody::thing_refs`) with no extra field; (4) `AreaPayload` stays frozen, so the actions service's and
 cua's payloads are unaffected. The cost is a variant: `kind()` is `companion.message`, the
 `wire.rs` request/reply samples and the auth matrix gained rows, and `EventBody` boxes both new
 payloads (`Message`, `Episode`) to keep the enum small. `AreaPayload` has no searchable text; if
-docket later wants its own payloads searchable it adds a field then.
+The actions service later wants its own payloads searchable it adds a field then.
 
 **Episodes** (`episode.rs`): `Episode { id, agent: AgentRef, kind: EpisodeKind { Task, Side },
 parent, space, started, ended, outcome: EpisodeOutcome, skeleton, narrative }`. `Skeleton`
@@ -77,8 +77,8 @@ parent, space, started, ended, outcome: EpisodeOutcome, skeleton, narrative }`. 
 target things, effect, `StepOutcome`, undo handle), `touched` things (for cascade-forget) and
 typed `ResultLine`s (count, thing or outcome ref; text only by reference). `Narrative` is the
 model-written text with its own `Label` and the `ModelRole` that wrote it. The type is the memory service's
-(not docket's, as research C.2 first drew it) because the memory service stores and recalls it and may name
-only `prov` types; docket builds the skeleton and the idle pass writes the narrative. Events are
+(not the actions service's, as research C.2 first drew it) because the memory service stores and recalls it and may name
+only `prov` types; the actions service builds the skeleton and the idle pass writes the narrative. Events are
 immutable, so a narrated episode is a second `Episode` event with the same id and skeleton
 (`Episode::narrates`), and the service indexes only the newest event per id. Rollups stay plain
 topic files under `journal/` (Q10): no `Hunk`, no layer.
@@ -112,15 +112,15 @@ recorded in the receiving Space with the sender's label (it never grants a read;
 `Inject` over `Both` merges facts and event documents by `fuse_rrf`, then `fit_budget`; the
 `trust` filter applies to the document label, not the event's.
 
-### Docket-bound list (for the docket freeze brief)
+### Actions-bound list (for the actions service freeze brief)
 
-Everything `research-persistent-agent.md` section D assigns to docket, which does not exist yet.
+Everything `research-persistent-agent.md` section D assigns to the actions service, which does not exist yet.
 Nothing below is built; the interfaces it will use are.
 
 1. **Companion identity over tasks and Sessions** (G1). One identity (`AgentRef::Companion`),
-   many tasks, each its own docket `Session` for taint, budget and `TaskPolicy`; the launcher
+   many tasks, each its own the actions service `Session` for taint, budget and `TaskPolicy`; the launcher
    returns to the front task; companiond owns the front pointer; `parent` on
-   `SessionRecord::Opened`. `TaskId` now lives in `prov` (SPEC section 2 names docket-core).
+   `SessionRecord::Opened`. `TaskId` now lives in `prov` (SPEC section 2 names action-core).
 2. **Persisting the user's turns** (G2). `SessionRecord::Asked` carries the turn and the target
    agent; the user's direct turn to a subagent is a `prov::Message` from `AgentRef::User` recorded
    verbatim as `Trusted` by the router (retention row `companion.*`, 30 days, in design/22).
@@ -139,7 +139,7 @@ Nothing below is built; the interfaces it will use are.
    the subagent's typed steps since; a goal change narrows the subagent's `TaskPolicy` through
    the `PolicyWriter` path (widening confirms, S4).
 6. **Episode builder and idle pass** (G3, G6, G10). Deterministic skeleton at task end, recorded
-   by the router (option (a): a docket `Intents1.Session.Note(episode)` member, no new
+   by the router (option (a): an actions service `Intents1.Session.Note(episode)` member, no new
    `Caller`); the narrative at idle (`Usage::Background`, readerd when the task read untrusted
    content, `ModelRole::Consolidator`), as a second `Episode` event; fact candidates to `Propose`.
 7. **The task-spawn action** (G13). `companion.task.start { goal, kind }` in the built-in
@@ -170,7 +170,7 @@ Nothing below is built; the interfaces it will use are.
     moved to `Router`. Reads (`Search`, `Facts`, `Related`, `Provenance`, `Primer`) and `Propose`
     and `PlanForget` are `Router` or `ShellUi`; `Cuad` may only `Record` `Area(Cua)` bodies by a
     `Cua` run actor. There is no `Caller::Companion`, so `Refusal::OutsideSpace` and the
-    "companion cannot read another Space" test are the router's (docket's) check; memoryd keeps
+    "companion cannot read another Space" test are the router's (the actions service's) check; memoryd keeps
     the refusal for requests that name a Space the caller class may not use.
   - The Space is part of every request that names one. memory.md 3.9 writes `Related(ThingRef)` and
     `Provenance(SpacePath)` without it although the D-Bus members take `space`; the enum carries it
@@ -183,7 +183,7 @@ Nothing below is built; the interfaces it will use are.
     `EntityId/EntityKind/EntityKey`; `ActionName` is `prov`'s and not re-declared.
   - `EventBody` has no `Action`, `Session`, `Cua`, `Policy` or `Consent`: other areas' payloads are
     `Area(AreaPayload)` (an `AreaTag`, the owner's `KindTag`, `JsonText`, and the `things` for
-    cascade-forget). `UndoRef` stays on `TimelineEntry` (always `None` until docket supplies the token
+    cascade-forget). `UndoRef` stays on `TimelineEntry` (always `None` until the actions service supplies the token
     in a payload).
   - `RuleSet.defaults` is `Vec<KindRetention { kind, retention }>`, not `Vec<(KindPattern,
     Retention)>`: tuples of mixed types do not survive `memory.toml` readably.
@@ -482,7 +482,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   (the optional half of ask 77) is not done: the served objects equal them by test and the XML is
   generated from them.
 
-### Closed by the f4 fill (branch f4-memory; ask 115 and docket's `Spaces` ask)
+### Closed by the f4 fill (branch f4-memory; ask 115 and the actions service's `Spaces` ask)
 
 - **The key check listens** (115): `memoryd/src/keyring.rs`. `LockChanges::on(connection)` matches
   `org.freedesktop.DBus.Properties.PropertiesChanged` under `/org/freedesktop/secrets`;
@@ -496,19 +496,19 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   heard (what it opened with); when a request leaves it different (the embedder went away or came
   back, a rebuild finished) the service raises `StatusChanged` once. A `Rebuild` request also has its
   own follow-up signal, so a rebuild that changes the state says it twice (harmless).
-- **`Spaces` is the router's as well** (docket's ask): `allowed` gives `R::Spaces` to `Router` and
+- **`Spaces` is the router's as well** (the actions service's ask): `allowed` gives `R::Spaces` to `Router` and
   `ShellUi`; the caller matrix has its own row.
 - Checked and already closed by the w4 fill: asks 73, 74, 75, 76, 91 (Cli/Terminal bucket), 93, 94
   (Mcp bucket).
 
-### Closed by the f4-memory-2 lane (docket's acceptance asks 2 and 3)
+### Closed by the f4-memory-2 lane (the actions service's acceptance asks 2 and 3)
 
-- **`desktop` is always there** (docket FINDINGS "The f4-e2e acceptance" 2; SPEC 3.1, QUESTIONS P6):
+- **`desktop` is always there** (the actions service FINDINGS "The f4-e2e acceptance" 2; SPEC 3.1, QUESTIONS P6):
   the service never refused an unregistered Space (a Space is provisioned on first use), so a
   record for `desktop` already worked; what was missing was the guarantee. `PlanForget(desktop,
   Space)` is now refused (`Invalid`, "the desktop Space cannot be deleted"): it holds memory outside
   every Space and the final head of each deleted Space. Tests: `memoryd/tests/it/desktop.rs`.
-- **File keys for the packaged binary, TEST ONLY** (docket ask 3): feature `test-keys` (memoryd,
+- **File keys for the packaged binary, TEST ONLY** (the actions service ask 3): feature `test-keys` (memoryd,
   and the `memory-keyfile` crate that holds `FileKeys`, written through `atomic-write-file` so the key file is synced), off by default and never in a release or dist build.
   `MEMORYD_KEYS=file:<path>` selects a sealed file of Space keys; the daemon says so on standard
   error and adds the file's directory to its Landlock policy. The wrapping key is a constant in
@@ -526,7 +526,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   (`Policy::read_files`: `ReadFile`, no listing, no execute) and `/proc` is no longer a readable
   tree. The memory service now depends on `porter-dbus` (check-boundary row). `MEMORYD_SANDBOX=off` stays
   test-only, but `memoryd/tests/it/binary.rs` runs with the sandbox ON.
-- **`MEMORYD_PROC_ROOT=<dir>` for docket-accept (TEST ONLY, feature `test-proc-root`, separate from `test-keys`; the acceptance build enables both)**: memoryd reads
+- **`MEMORYD_PROC_ROOT=<dir>` for action-accept (TEST ONLY, feature `test-proc-root`, separate from `test-keys`; the acceptance build enables both)**: memoryd reads
   `<dir>/<pid>/cgroup` instead of `/proc/<pid>/cgroup`, and `<dir>` joins the sandbox's
   read-files rule. A startup line says `TEST BUILD: reading callers from the proc root <dir>, not /proc`. Without the
   feature the variable is ignored and a line says `ignoring it and reading /proc`. A harness
@@ -536,7 +536,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   `0::/user.slice/app.slice/app-org.example.Mail-1.scope` (an app), plus a callers file with
   `[[caller]]` rows for the units (the format above). Files may be written after the daemon
   starts: it reads at call time. Unit names checked: intentd, companiond, readerd, cuad,
-  voiced, actions-mcp (docket/cua `dist/*.service`), the shell (`shell/dist/shell.service`), inferd.
+  voiced, actions-mcp (actions/cua `dist/*.service`), the shell (`shell/dist/shell.service`), inferd.
   `~/desktop` has no unit files. `voiced.service` and `actions-mcp.service` have no row (neither
   calls memoryd yet).
 
@@ -595,7 +595,7 @@ reads them.
    (a rule can only name a path that exists when it is applied). memoryd never writes it.
 6. **`memoryd --write-schema DIR`** writes `memory.settings.toml` for a local install. `notify` is now a
    dependency of memoryd as well as memory-watch (`scripts/check-boundary.sh` comment updated); the watch
-   code has the same shape as docket's intentd and cua's cuad (`SettingsWatch`): one shared crate replaces the
+   code has the same shape as the actions service's intentd and cua's cuad (`SettingsWatch`): one shared crate replaces the
    three copies when porter has a place for it.
 7. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent` mark) and
    parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a scratch
@@ -767,23 +767,23 @@ Closed asks (memory-local follow-ups): a locked log or key store opening a Space
 `Recent` with `BodyMode::Json` returned an `Area` payload as the whole envelope
 (`{"kind":"area","v":{..,"json":"<owner form>"}}`), though `RecentEntry.body` documents the owner's form.
 It now returns `AreaPayload.json` unchanged; `Message` and `Episode` keep their serde form, as documented.
-No other read path carries bodies (search hits and recall carry text, not bodies). docket's master reads both
+No other read path carries bodies (search hits and recall carry text, not bodies). The actions service's master reads both
 forms, so the change is compatible. Tests: `recent_with_bodies_returns_an_area_payload_in_the_owners_form`
 in memory-fake (`service.rs`) and memory-local (`disk.rs`).
 
-## session-log: Entries, RecordDurable and not-for-recall (docket's asks A1, A3, A4)
+## session-log: Entries, RecordDurable and not-for-recall (the actions service's asks A1, A3, A4)
 
-docket's durable sessions (`agent-spec/acp-sessions.md` section 5) append `SessionEntry` events under
-`companion.session.*` and rebuild from them. Taint is a write-ahead entry, so docket must know an entry is
+The actions service's durable sessions (`agent-spec/acp-sessions.md` section 5) append `SessionEntry` events under
+`companion.session.*` and rebuild from them. Taint is a write-ahead entry, so the actions service must know an entry is
 durable before it reveals text, and must fail closed when the memory service cannot say so.
 
 **A1, paging one session.** New request `Entries(SpaceId, EntriesQuery)` and reply `Entries(EntriesPage)`; bus
 member `Recall.Entries`; client `Memory::entries`. `Recent` is untouched (its query is built by struct literal
-in docket, so a new field would not be additive, and it is newest-first by time, the wrong shape for a replay).
+in the actions service, so a new field would not be additive, and it is newest-first by time, the wrong shape for a replay).
 The stream is chosen by kind patterns plus `about: Option<ThingRef>` and not by a session id inside the body,
 because the log already indexes a payload's `things` (`LogRead::touching`): the lookup is by an indexed key,
 needs no JSON parsing of an owner-defined body, and the same key lets one forget of the thing erase a session
-as a unit (the base of ask A2). docket records each entry with the session as a `Subject` `ThingView`
+as a unit (the base of ask A2). The actions records each entry with the session as a `Subject` `ThingView`
 (app `org.bardo.Companion`, kind `companion.session`, key the session id). Order is append sequence; the cursor
 is the last event seen (`after`, exclusive), and `next` is set only when more matched, so a page boundary is
 exact. Without `about` the read scans from the cursor (every session's entries in order), and with it the read
@@ -808,13 +808,13 @@ session entry (an `Area` payload is audit class) in a paused Space or under a `N
 `Record` answers `Recorded` for it, which would have been a false ack of a lost taint entry. The pure
 `withheld(record, rules, state, marks) -> Option<DropReason>` (core, with a test that it agrees with `admit`)
 names the reason, `DropReason` gained `HeaderOnlyRule(RuleId)` for the rule mode that has no reason of its own,
-and `RecordDurable` answers `NotKept(reason)` for any of them. Finding for docket: a `Never` or `HeaderOnly`
-rule that covers `companion.session.*` (or a pause) stops session logging, and docket sees it as a refusal and
+and `RecordDurable` answers `NotKept(reason)` for any of them. Finding for the actions service: a `Never` or `HeaderOnly`
+rule that covers `companion.session.*` (or a pause) stops session logging, and the actions service sees it as a refusal and
 fails closed. `RecordBatch` has no durable form yet.
 
 **A4, not for recall, per kind and not per event.** `Recallable::{Yes, No}` with `Recallable::of_kind` and
 `of_body`: `companion.session.*` is `No`. A rule over the kind, not a field on `Record`, because (1) `Record` is
-built by struct literal in docket, so a field is a breaking change; (2) a per-event flag is a promise each writer
+built by struct literal in the actions service, so a field is a breaking change; (2) a per-event flag is a promise each writer
 must remember to make and a bug in one code path puts model-derived text into recall, while a kind rule is
 enforced by the memory service for every writer and every future `companion.session.<slug>`; (3) the index and consolidation
 are rebuilt from the log alone, and a function of the kind is the only classification the log already stores
@@ -1041,7 +1041,7 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
 - Every importer in the memory service now takes it from `memory_service::Caller` (client `InProcess`, fake,
   local, memoryd, tests). No re-export is left in `memory-core`.
 - Needs a change at the next re-pin (`use memory_core::Caller` becomes `use memory_service::Caller`):
-  docket (`docket-inapp` tests `audit_queue`, `multi`, `seams`; `docket-memory` tests `portable`,
+  The actions service (`agent-inapp` tests `audit_queue`, `multi`, `seams`; `companion-memory` tests `portable`,
   `session_log`; `intentd` test support only mentions it in a comment), cua (`cuad` tests
   `links.rs:102,223`). The shell, the Settings app, files, mailo and anyview do not name it. Those users already
   depend on `memory-service` for `MemoryService`, since `InProcess` takes one.
@@ -1060,9 +1060,9 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
   golden test `minted_fact_ids_keep_their_exact_text` pins seven ids computed with a line-for-line
   port of the old encoder before the swap. `is_fact_id` stays: it checks text read from files.
 - Other hand-written hex in the memory service: none (`{:02x}` and friends do not occur).
-- Users in other repos: none. `git grep` at origin/master of docket, cua, the shell and the Settings app finds no use of
-  `memory_core::hex_of` or `from_hex` (the Settings app has its own unrelated `settings-app-ui` `hex_of`). docket's
-  own `format!("{b:02x}")` copies are the docket lane's.
+- Users in other repos: none. `git grep` at origin/master of the actions service, cua, the shell and the Settings app finds no use of
+  `memory_core::hex_of` or `from_hex` (the Settings app has its own unrelated `settings-app-ui` `hex_of`). The actions service's
+  own `format!("{b:02x}")` copies are the actions service lane's.
 - Licences: MIT and MIT OR Apache-2.0 are in deny.toml's list. `ulid` pulls `web-time` only on wasm.
 
 ## Round B re-pin (2026-10-28)

@@ -171,7 +171,7 @@ fn written(places: Places, confirming: Option<PlaceName>) -> (PlacesState, Vec<P
 
 impl PlacesState {
     /// The question before a cloud account is turned on, as a title and the line under it: the
-    /// words are docket's, split where the question ends.
+    /// words are the actions service's, split where the question ends.
     #[must_use]
     pub fn question(&self) -> Option<(String, String)> {
         let name = self.confirming.as_ref()?;

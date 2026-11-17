@@ -1,4 +1,4 @@
-//! Installing coding agents from the agent registry. Docket ships no list of agents: it reads a
+//! Installing coding agents from the agent registry. The actions service ships no list of agents: it reads a
 //! registry snapshot (`agent-registry`), installs the version the person pinned (checked against the
 //! digest the registry gives) into a directory it owns, and says what is installed.
 //!

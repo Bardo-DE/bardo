@@ -204,8 +204,8 @@ fn a_call_is_an_area_payload_that_names_what_it_touched_and_reads_back_whole() {
     let EventBody::Area(payload) = &event.body else {
         panic!("{:?}", event.body)
     };
-    assert_eq!(payload.area, AreaTag::Docket);
-    assert_eq!(payload.kind.as_str(), "docket.call");
+    assert_eq!(payload.area, AreaTag::Actions);
+    assert_eq!(payload.kind.as_str(), "actions.call");
     let named: Vec<&EntityId> = payload.things.iter().map(|(t, _)| &t.thing).collect();
     assert_eq!(
         named,
@@ -416,11 +416,11 @@ async fn a_review_lands_in_the_space_of_its_call_and_a_breaker_where_the_router_
     let stored = memoryd.stored();
     let review = stored
         .iter()
-        .find(|r| r.body.kind().as_str() == "docket.review")
+        .find(|r| r.body.kind().as_str() == "actions.review")
         .expect("review");
     let breaker = stored
         .iter()
-        .find(|r| r.body.kind().as_str() == "docket.breaker")
+        .find(|r| r.body.kind().as_str() == "actions.breaker")
         .expect("breaker");
     assert_eq!(
         (review.space.clone(), breaker.space.clone()),
@@ -479,7 +479,7 @@ async fn a_record_memoryd_refuses_for_good_is_dropped_and_the_rest_are_kept() {
     let scratch = tempfile::tempdir().expect("scratch");
     let bus = PrivateBus::start(scratch.path());
     let memoryd = FakeMemoryd::with(|request| {
-        let bad = |r: &memory_core::Record| r.body.kind().as_str() == "docket.breaker";
+        let bad = |r: &memory_core::Record| r.body.kind().as_str() == "actions.breaker";
         match request {
             MemoryRequest::RecordBatch(rs) if rs.iter().any(bad) => {
                 Some(MemoryReply::Refused(Refusal::Invalid("no".into())))

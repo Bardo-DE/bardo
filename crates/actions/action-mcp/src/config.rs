@@ -1,5 +1,5 @@
 //! `$XDG_CONFIG_HOME/bardo/actions/actions-mcp.toml`: the name the edge's client goes by. Every key is
-//! optional. Whether the edge is on is not here: it is the setting `agent.mcp.expose` in docket's
+//! optional. Whether the edge is on is not here: it is the setting `agent.mcp.expose` in the actions service's
 //! own settings file (`settings.rs`), off when nothing says otherwise (QUESTIONS S7).
 
 use crate::settings;

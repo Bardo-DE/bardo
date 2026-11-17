@@ -127,7 +127,7 @@ async fn a_full_session_goes_through_the_router_call_by_call() {
     assert_eq!(rig.performer.undo_notes().len(), 1);
     assert_eq!(rig.performer.undo_notes()[0].before, None);
 
-    // Permission: the person's Always became a grant in docket's store, and the agent got
+    // Permission: the person's Always became a grant in the actions service's store, and the agent got
     // allow_once, twice (the second without a question).
     assert_eq!(
         selected(&rig.agent.reply("perm1")).as_deref(),

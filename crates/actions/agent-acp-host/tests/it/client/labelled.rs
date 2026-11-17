@@ -62,7 +62,7 @@ async fn the_agents_title_does_not_change_the_label() {
 
 #[tokio::test]
 async fn the_hosts_checkpoints_choice_is_what_the_router_is_told() {
-    for rewind in [Rewind::Docket, Rewind::Agent] {
+    for rewind in [Rewind::Actions, Rewind::Agent] {
         let (rig, _files) = Box::pin(started(Setup {
             rewind,
             ..Setup::default()

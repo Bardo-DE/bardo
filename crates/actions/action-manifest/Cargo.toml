@@ -1,6 +1,6 @@
 [package]
 name = "action-manifest"
-description = "docket's manifest: what an app declares (entities, actions, parameters), its validation (`validate`, `ValidManifest`, `fits`), a manifest file read as TOML (feature `manifest-file`) and a tool call's JSON arguments read into typed ones (`args_from_json`)."
+description = "actions's manifest: what an app declares (entities, actions, parameters), its validation (`validate`, `ValidManifest`, `fits`), a manifest file read as TOML (feature `manifest-file`) and a tool call's JSON arguments read into typed ones (`args_from_json`)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

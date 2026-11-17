@@ -42,8 +42,8 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOCKET="$(cd "$HERE/.." && pwd)"
-TREE="$(cd "$DOCKET/../.." && pwd)"   # the bardo tree
+ACTIONS="$(cd "$HERE/.." && pwd)"
+TREE="$(cd "$ACTIONS/../.." && pwd)"   # the bardo tree
 CRATES="$TREE/crates"
 PORTER="$CRATES/accounts"
 INFERENCE="$CRATES/inference"
@@ -85,15 +85,15 @@ MANIFEST="$STATE/bardo/dev/install-dev.manifest"
 
 # Binary -> the repo and package that builds it.
 BINARIES=(
-  "bardo-actiond docket action-daemon"
-  "bardo-companiond docket companion-daemon"
-  "bardo-readerd docket agent-reader-daemon"
-  "bardo-actions-mcp docket action-mcp"
-  "bardo-do docket action-cli"
-  "agent-eval docket action-eval"
-  "bardo-agent docket agent-acp-bin"
-  "bardo-agent-net-forward docket agent-acp-bin"
-  "bardo-agent-net-enter docket agent-acp-bin"
+  "bardo-actiond the actions service action-daemon"
+  "bardo-companiond the actions service companion-daemon"
+  "bardo-readerd the actions agent-reader-daemon"
+  "bardo-actions-mcp the actions service action-mcp"
+  "bardo-do the actions service action-cli"
+  "agent-eval the actions service action-eval"
+  "bardo-agent the actions agent-acp-bin"
+  "bardo-agent-net-forward the actions agent-acp-bin"
+  "bardo-agent-net-enter the actions agent-acp-bin"
   "bardo-memoryd the memory service memory-daemon"
   "bardo-inferd the inference service inference-daemon"
   "bardo-accountd porter account-daemon"
@@ -141,15 +141,15 @@ build_plan() {
     read -r name repo pkg <<<"$entry"
     plan bin "$(bin_source "$name" "$repo")" "$BIN/$name"
   done
-  plan_units "$DOCKET/dist"; plan_units "$PORTER/dist"; plan_units "$INFERENCE/dist"
+  plan_units "$ACTIONS/dist"; plan_units "$PORTER/dist"; plan_units "$INFERENCE/dist"
   plan unit "$MEMORY/dbus/bardo-memoryd.service" "$UNITS/bardo-memoryd.service"
   plan_sandbox "$MEMORY/dbus/bardo-memoryd.service"
-  plan_dbus "$DOCKET/dist/dbus"; plan_dbus "$PORTER/dist/dbus"; plan_dbus "$INFERENCE/dist/dbus"
+  plan_dbus "$ACTIONS/dist/dbus"; plan_dbus "$PORTER/dist/dbus"; plan_dbus "$INFERENCE/dist/dbus"
   plan dbus "$MEMORY/dbus/org.bardo.Memory1.service" "$DBUS/org.bardo.Memory1.service"
-  plan_tree data "$DOCKET/dist/skills" "$DATA/bardo/skills"
-  plan_tree data "$DOCKET/policy/presets" "$DATA/bardo/actions/permissions"
+  plan_tree data "$ACTIONS/dist/skills" "$DATA/bardo/skills"
+  plan_tree data "$ACTIONS/policy/presets" "$DATA/bardo/actions/permissions"
   local dir
-  for dir in "$DOCKET" "$MEMORY" "$PORTER" "$INFERENCE" "$CUA"; do
+  for dir in "$ACTIONS" "$MEMORY" "$PORTER" "$INFERENCE" "$CUA"; do
     plan_tree data "$dir/dist/intents" "$DATA/bardo/intents"
     plan_tree data "$dir/dist/settings" "$DATA/bardo/settings"
   done
@@ -158,7 +158,7 @@ build_plan() {
   plan_tree data "$PORTER/providers" "$DATA/bardo/accounts/providers"
   plan_tree data "$MODELS/catalog" "$DATA/bardo/models/catalog"
   local cfg
-  for cfg in "$DOCKET"/dist/*.toml; do
+  for cfg in "$ACTIONS"/dist/*.toml; do
     # The callers files are the system's (sudo_step prints them): a fixed role (the shell's sheet_host)
     # comes from /etc/bardo alone, and the one in the person's config is ignored.
     case "$(basename "$cfg")" in voiced.toml|*-callers.toml) continue ;; esac
@@ -346,10 +346,10 @@ The agent daemons name their callers the same way, by the unit behind a connecti
 rows of ~/.config/bardo/actions/<daemon>-callers.toml are laid over it, but never give that role). Read
 at startup, too:
 
-  sudo install -D -m644 $DOCKET/dist/actiond-callers.toml /etc/bardo/actiond-callers.toml
-  sudo install -D -m644 $DOCKET/dist/companiond-callers.toml /etc/bardo/companiond-callers.toml
-  sudo install -D -m644 $DOCKET/dist/readerd-callers.toml /etc/bardo/readerd-callers.toml
-  sudo install -D -m644 $DOCKET/dist/agent-acp-callers.toml /etc/bardo/agent-acp-callers.toml
+  sudo install -D -m644 $ACTIONS/dist/actiond-callers.toml /etc/bardo/actiond-callers.toml
+  sudo install -D -m644 $ACTIONS/dist/companiond-callers.toml /etc/bardo/companiond-callers.toml
+  sudo install -D -m644 $ACTIONS/dist/readerd-callers.toml /etc/bardo/readerd-callers.toml
+  sudo install -D -m644 $ACTIONS/dist/agent-acp-callers.toml /etc/bardo/agent-acp-callers.toml
   sudo install -D -m644 $MEMORY/dbus/memoryd-callers.toml /etc/bardo/memoryd-callers.toml
 
 Then:  systemctl --user daemon-reload

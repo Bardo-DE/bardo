@@ -148,7 +148,7 @@ pub struct HelperCardView {
     /// one we know the name of. The shell falls back to the program's own name when it is none.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub app_name: Option<String>,
-    /// For a helper that runs an app: whether the conversation is running in docket or in the
+    /// For a helper that runs an app: whether the conversation is running in the actions service or in the
     /// app's own program in a terminal.
     #[serde(default)]
     pub runs_in: RunsIn,

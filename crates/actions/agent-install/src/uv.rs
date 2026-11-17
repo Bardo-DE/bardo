@@ -1,7 +1,7 @@
 //! Python packages from the python package index, installed by `uv` into the agent's own directory:
 //! a virtual environment under `files`, the cache there too.
 //!
-//! The package manager checks its own packages; docket only names them and asks for nothing but the
+//! The package manager checks its own packages; the actions service only names them and asks for nothing but the
 //! index.
 
 use crate::install::InstallFault;

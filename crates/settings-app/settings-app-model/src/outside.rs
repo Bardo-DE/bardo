@@ -1,6 +1,6 @@
 //! The menus of an outside agent's row: the model it runs and the way it signs in, as the agent
 //! last offered them, and what a pick writes; and the one list of assistants that joins what
-//! docket records of each agent with what accountd knows of its sign-in.
+//! The actions records of each agent with what accountd knows of its sign-in.
 
 use crate::accounts::Account;
 use action_settings::{AgentChoice, AgentRow, Offers, Pick, SignInState, Source};
@@ -90,7 +90,7 @@ pub fn way_choice(word: &str) -> AgentChoice {
 pub struct Assistant {
     /// What the person reads.
     pub name: String,
-    /// What docket records of the agent: how it is installed, the model, the sign-in it saw.
+    /// What the actions records of the agent: how it is installed, the model, the sign-in it saw.
     pub agent: Option<AgentRow>,
     /// What accountd knows: how the sign-in stands now, and the way to its account.
     pub account: Option<Account>,
@@ -109,7 +109,7 @@ fn is_same(agent: &AgentRow, label: &str, key: &str, provider: Option<&str>) -> 
             .any(|id| id == agent.program || Some(id) == registry)
 }
 
-/// The assistants: each agent docket lists, joined with its account where there is one, then the
+/// The assistants: each agent the actions service lists, joined with its account where there is one, then the
 /// accounts no agent claims.
 #[must_use]
 pub fn assistants_of(agents: &[AgentRow], accounts: &[Account]) -> Vec<Assistant> {

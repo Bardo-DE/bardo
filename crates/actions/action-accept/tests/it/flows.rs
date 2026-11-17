@@ -130,10 +130,10 @@ async fn flow_a_prompt_plan_confirm_perform_journal_undo() {
     let recorded = recorded(
         &world,
         &[
-            "docket.call",
-            "docket.confirm",
-            "docket.undo",
-            "docket.task_policy",
+            "actions.call",
+            "actions.confirm",
+            "actions.undo",
+            "actions.task_policy",
         ],
     )
     .await;

@@ -21,8 +21,8 @@ const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
 /// companiond, the planner: the `agent` role of the app `org.bardo.Companion1`.
 pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", CallerRole::Agent);
 
-/// The standing each caller class needs, in the order they are tried. The shell is docket's
-/// [`SHELL`] and the router docket's [`INTENTD`], so cuad and the daemons beside it agree on who
+/// The standing each caller class needs, in the order they are tried. The shell is the actions service's
+/// [`SHELL`] and the router the actions service's [`INTENTD`], so cuad and the daemons beside it agree on who
 /// they are.
 const CLASSES: [(Standing, CuaCaller); 3] = [
     (INTENTD, CuaCaller::Router),

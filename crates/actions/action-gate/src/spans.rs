@@ -4,7 +4,7 @@
 //! A span carries ids, action names, the effect class, the ruling, token counts and the reported charge, and
 //! nothing a person wrote or an app returned: every builder takes typed values, never text of a
 //! prompt, an argument or a result, so there is nothing to leak. `tracing` needs field names
-//! as literals; they are the `model_genai_names::attr` keys (a `docket.` key where the conventions
+//! as literals; they are the `model_genai_names::attr` keys (a `actions.` key where the conventions
 //! have none, as for the charge).
 
 use crate::prepared::Prepared;
@@ -40,8 +40,8 @@ pub fn execute_tool(p: &Prepared) -> Span {
         gen_ai.tool.name = %action,
         gen_ai.tool.call.id = p.id.0,
         gen_ai.conversation.id = %session,
-        docket.effect = p.decl.effect.slug(),
-        docket.ruling = ruling_word(&p.ruling),
+        actions.effect = p.decl.effect.slug(),
+        actions.ruling = ruling_word(&p.ruling),
     )
 }
 
@@ -61,9 +61,9 @@ pub fn invoke_agent(session: &SessionId, task: &TaskId, report: &TurnReport) -> 
         gen_ai.conversation.id = %session,
         gen_ai.usage.input_tokens = tokens.input.0,
         gen_ai.usage.output_tokens = tokens.output.0,
-        docket.task = %task,
-        docket.cached_tokens = tokens.cached.0,
-        docket.charge = charge.as_deref(),
+        actions.task = %task,
+        actions.cached_tokens = tokens.cached.0,
+        actions.charge = charge.as_deref(),
     )
 }
 
@@ -122,8 +122,11 @@ mod tests {
         assert!(!names.is_empty(), "the span was made");
         for name in &names {
             let known = model_genai_names::attr::ALL.contains(&name.as_str())
-                || name.starts_with("docket.");
-            assert!(known, "{name} is neither a GenAI name nor a docket count");
+                || name.starts_with("actions.");
+            assert!(
+                known,
+                "{name} is neither a GenAI name nor an actions service count"
+            );
             assert!(
                 !name.contains("message") && !name.contains("content"),
                 "{name}"

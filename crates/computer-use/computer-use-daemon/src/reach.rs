@@ -6,8 +6,8 @@
 //! runs ([`follow_settings`]), so a change of `cua.enabled` is announced with `ReachChanged`.
 //!
 //! This mirrors action-dbus's `IntentReach1` (name, `Reach() -> s`, signal `ReachChanged`)
-//! because cua does not take docket's newer pin yet; it moves to action-dbus's `ReachServer` at
-//! the next docket pin.
+//! because cua does not take the actions service's newer pin yet; it moves to action-dbus's `ReachServer` at
+//! the next the actions pin.
 
 use action_dbus::PROVIDER_PATH;
 use computer_use_host::{CuaSettings, Supervisor};

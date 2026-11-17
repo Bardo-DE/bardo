@@ -1,4 +1,4 @@
-//! The built-in assistant's places: where its requests may run, as pure state over docket's
+//! The built-in assistant's places: where its requests may run, as pure state over the actions service's
 //! typed setting, and the accounts that make a cloud place.
 
 mod known;

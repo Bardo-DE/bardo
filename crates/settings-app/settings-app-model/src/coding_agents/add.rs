@@ -11,7 +11,7 @@ use action_settings::{AddFault, AgentRow, NewAgent, Source, edit_agent_add};
 pub enum AddRefusal {
     /// No installed assistant is waiting to be offered, so none is picked.
     NothingNew,
-    /// docket refused the entry, or could not write it.
+    /// The actions service refused the entry, or could not write it.
     Fault(AddFault),
     /// The download failed, and the downloader said this.
     DownloadSaid(String),
@@ -19,7 +19,7 @@ pub enum AddRefusal {
     DownloadFailed,
 }
 
-/// An installed assistant, as found in the folder docket keeps them in.
+/// An installed assistant, as found in the folder the actions service keeps them in.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FoundAgent {
     /// The id it is installed under.
@@ -239,11 +239,11 @@ impl AddForm {
         self
     }
 
-    /// What Add does, checked the way docket checks the entry; the refusal when it cannot.
+    /// What Add does, checked the way the actions checks the entry; the refusal when it cannot.
     ///
     /// # Errors
     ///
-    /// Returns an [`AddRefusal`] when nothing new is picked, or docket would refuse the entry.
+    /// Returns an [`AddRefusal`] when nothing new is picked, or the actions service would refuse the entry.
     pub fn request(&self) -> Result<Request, AddRefusal> {
         let found = self.picked().ok_or(AddRefusal::NothingNew)?;
         let new = NewAgent {

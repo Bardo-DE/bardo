@@ -13,17 +13,17 @@ pub fn world_dir(scratch: &Path) -> PathBuf {
     scratch.join("data/bardo/models/catalog")
 }
 
-/// The default source: `../models/catalog` beside the docket checkout whose `eval/` is
+/// The default source: `../models/catalog` beside the actions checkout whose `eval/` is
 /// `eval_dir`, made absolute. Pure: it joins and normalises, it opens nothing.
 #[must_use]
 pub fn default_source(eval_dir: &Path) -> PathBuf {
-    let docket = eval_dir.parent().unwrap_or(eval_dir);
-    let docket = if docket.as_os_str().is_empty() {
+    let actions = eval_dir.parent().unwrap_or(eval_dir);
+    let actions = if actions.as_os_str().is_empty() {
         Path::new(".")
     } else {
-        docket
+        actions
     };
-    let base = std::path::absolute(docket).unwrap_or_else(|_| docket.to_path_buf());
+    let base = std::path::absolute(actions).unwrap_or_else(|_| actions.to_path_buf());
     let mut parts: Vec<_> = base.components().collect();
     parts.pop();
     let mut out: PathBuf = parts.iter().collect();

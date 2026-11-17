@@ -1,5 +1,5 @@
 //! What the Settings app asks of the computer, and no more: one `Link` trait per service (the
-//! bus, the portal, NetworkManager, BlueZ, the compositor, accountd, inferd, docket, memory and
+//! bus, the portal, NetworkManager, BlueZ, the compositor, accountd, inferd, the actions service, memory and
 //! syncd), the facts they take and return (`settings-app-model`'s), the deadlines every call runs
 //! under and the ticks that say "look again".
 //!

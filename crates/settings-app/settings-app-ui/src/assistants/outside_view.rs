@@ -1,6 +1,6 @@
 //! The outside assistants (Claude Code and the like), one row each, whichever of the two sources
-//! know it: docket's (what it is, the model it runs, the way it signs in) and accountd's (how its
-//! sign-in stands, and the way to its account). What the agent offered is what docket recorded
+//! know it: the actions service's (what it is, the model it runs, the way it signs in) and accountd's (how its
+//! sign-in stands, and the way to its account). What the agent offered is what the actions service recorded
 //! when it last started; opening this page starts nothing.
 
 use super::add_flow;
@@ -31,7 +31,7 @@ fn items_of(menu: &[Entry]) -> Vec<MenuItem<String>> {
         .collect()
 }
 
-/// What docket's files say now: the assistants listed, and the installed ones not yet listed.
+/// What the actions service's files say now: the assistants listed, and the installed ones not yet listed.
 #[derive(Clone)]
 pub(super) struct Shown {
     pub(super) agents: Agents,
@@ -153,7 +153,7 @@ fn OutsideRow(
         agent,
         account,
     } = assistant;
-    // Docket's sign-in line is what the agent last said; once accountd knows the account, its
+    // The actions service's sign-in line is what the agent last said; once accountd knows the account, its
     // status says it live.
     let known = account.is_some();
     let help = agent.as_ref().map(|row| {

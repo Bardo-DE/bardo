@@ -1,4 +1,4 @@
-//! docket's disk and timers, the client/IO layer under the pure `action-core`:
+//! The actions service's disk and timers, the client/IO layer under the pure `action-core`:
 //!
 //! - [`write_atomic`] and [`read_optional`]: the one durable way to replace a file, and to read
 //!   one that may not exist yet;

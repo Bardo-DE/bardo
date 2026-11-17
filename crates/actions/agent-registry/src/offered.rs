@@ -1,4 +1,4 @@
-//! What an agent last offered, written by docket whenever a session with it opens (and when its
+//! What an agent last offered, written by the actions service whenever a session with it opens (and when its
 //! models are listed), kept at `state/<id>/offered.toml` for the Settings app to read.
 //!
 //! This is the record as a value and as text; reading and writing the file is up to the caller.
@@ -68,8 +68,8 @@ pub struct Offered {
 /// failure.
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum OfferedFault {
-    /// The id is not a name docket keeps agents under.
-    #[error("the agent's name is not one docket keeps records under")]
+    /// The id is not a name the actions service keeps agents under.
+    #[error("the agent's name is not one actions service keeps records under")]
     Name(#[source] SlugRefused),
     /// The file could not be read or written.
     #[error("the record could not be read or written")]

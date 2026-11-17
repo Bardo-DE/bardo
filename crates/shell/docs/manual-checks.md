@@ -332,7 +332,7 @@ The shell layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/ke
 
 ## The confirmation sheet and `bardo-do` on a real shell (the compositor) login
 
-Needs docket's `intentd` running (`systemctl --user start intentd` from docket's `dist/`) and
+Needs the actions service's `intentd` running (`systemctl --user start intentd` from the actions service's `dist/`) and
 `bardo-do` on the PATH; `dist/install.sh` has put `org.bardo.Shell.toml` where intentd reads it.
 `dev/accept/confirm.sh` runs the whole chain on a private headless KWin; these are the parts that
 need a person, a real compositor or real eyes.
@@ -542,11 +542,11 @@ the real daemons or a real keyboard.
 - [ ] **Bring Back**: with the window still open, press Bring Back: the card returns to Open in Terminal. If the companion cannot, its sentence shows under the buttons.
 - [ ] **Sessions started in a terminal**: start a coding-agent session by hand in a terminal. In the assistant's panel the row "In Terminal — <app>" shows the folder under it. When it can be brought back the row offers Bring Back (Enter does it); the conversation then sits at the top of the answers. A refused bring back shows the companion's sentence in place of the folder.
 - [ ] **Real Claude Code, end to end**: install Claude Code's agent app, add a helper that runs it, and Sign In (its own login, in the terminal window). Give it a short job ("say hello"): it finishes with Claude's answer. Then Open in Terminal: the window runs `claude --resume <id>` on the same conversation (the earlier job is in its history). Type one line there, close the window: Bring Back happens and the helper's next job sees that line. If the window starts a new conversation instead, the session id the agent app reports is not the one `claude --resume` takes; note which id it shows.
-- [ ] **Started in temor, brought back after quitting** (temor PR #24, docket 7c9b57c): in a temor tab in a project folder, run `claude --resume <id>` (or let Open in Terminal start it). The panel lists "In Terminal — Claude Code" for that folder. Quit Claude in the tab and leave the tab open: the row stays and offers Bring Back; press it and the helper's next job sees the conversation. Close the tab first instead: the row goes. A plain `claude` with no id is watched for restore points but is not offered (docket cannot know its conversation yet).
+- [ ] **Started in temor, brought back after quitting** (temor PR #24, the actions service 7c9b57c): in a temor tab in a project folder, run `claude --resume <id>` (or let Open in Terminal start it). The panel lists "In Terminal — Claude Code" for that folder. Quit Claude in the tab and leave the tab open: the row stays and offers Bring Back; press it and the helper's next job sees the conversation. Close the tab first instead: the row goes. A plain `claude` with no id is watched for restore points but is not offered (the actions service cannot know its conversation yet).
 - [ ] **A handed-over window keeps one session**: after Open in Terminal, work in the window, then close it. Restore points taken while it ran are on the helper's own conversation (the Restore list shows them) and Bring Back happens by itself, with no second "In Terminal" row left behind.
 - [ ] **Speaking in a helper's conversation from an editor**: in Zed (or another editor with the agent panel), the helpers' conversations are listed by helper name. Open one, type a line: the helper answers under its own name and model, and any sheet it raises appears on the desktop naming the helper, not in the editor. Starting a new job from the editor is refused with "A job is given to a helper from the Helpers window, in your own words."
 
-## The brief sheet (a login with companiond and a docket that sends brief sheets; the brief-confirm design)
+## The brief sheet (a login with companiond and an actions service that sends brief sheets; the brief-confirm design)
 
 - [ ] **The look**: have the assistant read a web page and check a brief. The sheet is titled "Check this before helpers use it", the line under it says who wrote it and what was read ("The assistant wrote this after reading a web page."), then "Edit it until it says what you want. Helpers will do what it says.", the whole brief in a field, the pieces beneath, and "Next: helpers will work from this." Buttons are Cancel and Use this brief. There is no Always, no Never and no tick to say it was read.
 - [ ] **The whole text, never cut**: a brief of about 3,000 characters shows in full; the field scrolls inside. Use this brief is dimmed, with "Scroll to the end to use it.", until the end has been in view; a short brief that fits has it enabled at once. Check the scroll reaches the sheet at all (a scroll inside a text field may not report to the sheet): if Use this brief never wakes on a long brief, note it.
@@ -554,7 +554,7 @@ the real daemons or a real keyboard.
 - [ ] **Remove**: Remove on a listed span deletes exactly those characters from the field; the other listed spans stay and still match their words. Typing into a listed span takes it off the list.
 - [ ] **Use this brief sends what is in the field**: edit a line, press Use this brief. The assistant's next step line says "You checked the brief (you changed it)", and a job posted from it uses the edited words. Nothing outside the edited text is accepted.
 - [ ] **Cancel and Escape**: Cancel, Escape and letting it time out each end it as "Not confirmed"; Escape while the caret is in the field cancels too. Return in the field adds a line and does not confirm.
-- [ ] **Old docket**: with a docket that does not send a brief, the sheet is the plain one it always was.
+- [ ] **Old the actions service**: with an actions service that does not send a brief, the sheet is the plain one it always was.
 - [ ] **Capture picker remembered sentence**: for an app whose choice is kept, the share sheet shows one quiet line under the choices ("Your choice is kept while {app} is open." or "...until you change it in Settings."); for an app asked every time it shows nothing.
 
 ## The structure audit (the shell 2026-10-20 to 2026-10-21, on a real login)
@@ -607,7 +607,7 @@ the real daemons or a real keyboard.
 - [ ] **Needs attention** (the Settings app d022958): an account that must sign in again, or that its provider signs out on a set day, shows a yellow banner with Sign In…, which starts the sign-in; its row's dot says "Sign-in ends soon" (or needs sign-in).
 - [ ] **Input shortcuts** (the Settings app 9d7f723): Settings > Keyboard Shortcuts lists an Input group with Next input language and Emoji & Symbols, and both keys work on the desktop.
 
-## Permissions mode (docket 3b)
+## Permissions mode (the actions service 3b)
 
 - [ ] **Switch in the box**: open the assistant (double tap). The input box shows an Auto / Manual control at its right end with the mode the conversation is in. Click Manual: the thumb slides and the next change the assistant makes asks first. Hovering shows "Permissions mode  ⇧⌘M".
 - [ ] **⇧⌘M**: with the assistant's box open, ⇧⌘M flips Auto and Manual, whether you are typing, an answer is thinking or one is showing. In the search box (not the assistant) it does nothing.

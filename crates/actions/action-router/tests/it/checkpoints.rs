@@ -602,7 +602,7 @@ fn not_allowed() -> IntentsReply {
 async fn a_watched_agent_gets_a_point_at_each_mark_and_its_files_can_be_restored() {
     let router = router();
     put(&router, "a.txt", "one");
-    let session = watch_in(&router, &terminal(), Rewind::Docket).await;
+    let session = watch_in(&router, &terminal(), Rewind::Actions).await;
     let before = listed(&router, &session).await;
     assert_eq!((before.rows.len(), before.turn), (0, TurnState::Idle));
     // The label the opener gave is shown in the list; other sessions have none.
@@ -667,7 +667,7 @@ async fn an_agent_that_keeps_its_own_history_is_watched_without_a_point() {
 #[tokio::test]
 async fn only_the_terminal_that_opened_a_watch_marks_ends_or_closes_it() {
     let router = router();
-    let session = watch_in(&router, &terminal(), Rewind::Docket).await;
+    let session = watch_in(&router, &terminal(), Rewind::Actions).await;
     let turn = marked(&router, &terminal(), &session).await;
     for who in [stranger(), launcher()] {
         for request in [
@@ -700,7 +700,7 @@ async fn only_the_terminal_that_opened_a_watch_marks_ends_or_closes_it() {
 #[tokio::test]
 async fn nothing_runs_in_a_watch_session() {
     let router = router();
-    let session = watch_in(&router, &terminal(), Rewind::Docket).await;
+    let session = watch_in(&router, &terminal(), Rewind::Actions).await;
     let words = IntentsRequest::SessionTurn {
         session: session.clone(),
         turn: TurnIn {
@@ -760,7 +760,7 @@ async fn nothing_runs_in_a_watch_session() {
 #[tokio::test]
 async fn an_agent_cannot_watch_mark_or_close_a_watch_session() {
     let router = router();
-    let session = watch_in(&router, &terminal(), Rewind::Docket).await;
+    let session = watch_in(&router, &terminal(), Rewind::Actions).await;
     let watch = IntentsRequest::CheckpointWatch {
         workspace: Workspace::parse(WORK).expect("workspace"),
         label: "a sneaky one".into(),
@@ -787,7 +787,7 @@ async fn an_agent_cannot_watch_mark_or_close_a_watch_session() {
     marked(&router, &terminal(), &session).await;
 }
 
-// ---- a conversation moving between docket and the app's terminal program ----
+// ---- a conversation moving between the actions service and the app's terminal program ----
 
 fn claude() -> WatchedAgent {
     WatchedAgent {
@@ -892,7 +892,7 @@ async fn a_terminal_that_names_its_agent_is_listed_for_the_companion_and_handed_
     };
     assert_eq!(owner, WatchOwner::Terminal);
     // The plain watch of an agent that is not named is not offered.
-    watch_in(&router, &terminal(), Rewind::Docket).await;
+    watch_in(&router, &terminal(), Rewind::Actions).await;
     let listed_for = ask(&router, &companion(), IntentsRequest::CheckpointWatched).await;
     assert_eq!(
         listed_for,

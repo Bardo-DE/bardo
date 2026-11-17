@@ -1,4 +1,4 @@
-//! The companion's pure machines. One identity over many tasks: each task is its own docket
+//! The companion's pure machines. One identity over many tasks: each task is its own the actions service
 //! session with its own taint, budget and task policy; the front thread is the task the
 //! launcher returns to. Everything here is `(state, input) -> (state, effects)` or a function of
 //! values; companiond carries the effects out. Inputs, states and effects are `Serialize` and

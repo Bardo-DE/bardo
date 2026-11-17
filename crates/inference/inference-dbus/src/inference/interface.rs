@@ -18,7 +18,7 @@ use zbus::zvariant::OwnedFd;
 pub trait Inference {
     /// Whether an AI need can be met for this class, revealing no identity. `options` is the
     /// call's vardict; the reserved keys are `traceparent` (`OPTION_TRACEPARENT`), `usage`
-    /// (`OPTION_USAGE`) and, for docket's daemons only, `places` and `place_models`
+    /// (`OPTION_USAGE`) and, for the actions service's daemons only, `places` and `place_models`
     /// (`OPTION_PLACES`, `OPTION_PLACE_MODELS`), `asker` and `model` (`OPTION_ASKER`,
     /// `OPTION_MODEL`). With `places`, when no allowed place can serve,
     /// the call fails with `org.bardo.Inference1.Error.NoAllowedPlace.<Reason>` (see

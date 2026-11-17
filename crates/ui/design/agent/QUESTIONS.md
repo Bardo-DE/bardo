@@ -10,7 +10,7 @@ Ids match the references in SPEC.md.
 
 | Id | Decision | Options | Rec |
 |---|---|---|---|
-| P1 | Repo names and placement | (a) `models` (models), `docket` (actions + the companion agent), `memory` (memory), `cua` (computer use), `prov` inside porter; (b) other names; (c) fold models into porter | (a); name the `cua` repo (placeholder). Also: must action names carry their app's prefix (`mail.…` only from Mail)? Rec: yes |
+| P1 | Repo names and placement | (a) `models` (models), `actions` (actions + the companion agent), `memory` (memory), `cua` (computer use), `prov` inside porter; (b) other names; (c) fold models into porter | (a); name the `cua` repo (placeholder). Also: must action names carry their app's prefix (`mail.…` only from Mail)? Rec: yes |
 | P2 | CUA on a stock compositor | (a) ship on stock (shared seat, in place = hands-off, masking in cuad, confirm only after cuad stops its input), fork in phase 2; (b) require the fork before any CUA release | (a) for opt-in use; the fork is required before "keep working while it acts" |
 | P3 | COMPANION item 4 ("no screen clicking") | (a) replace with "typed actions and hooks first; a CUA tier, off by default per app, inside the lease and consent stack"; (b) keep item 4, no CUA | (a); `cua.enabled = off` either way |
 | P4 | File capture | (a) inotify on Space roots for v1; (b) a small privileged fanotify helper | (a) |
@@ -81,7 +81,7 @@ Ids match the references in SPEC.md.
 | U12 | New catalogue rows and orb duration tokens (design/30) | approve CompanionOrb, ContextChips, AnswerCard family, PlanList, RunRow, ActivityStrip, MemoryTimeline, ConfirmCard and OrbListen/OrbWork/OrbAct | approve as "proposed" for the freeze |
 
 ## Answered (user, 2026-10-02)
-- P1: repos the model layer / docket / the memory service / cua (name kept); prov in porter.
+- P1: repos the model layer / the actions service / the memory service / cua (name kept); prov in porter.
 - P2: CUA ships on a stock compositor, opt-in per app (off by default); the fork adds the agent seat later.
 - S1: Outbound always asks under Default; two-reviewer auto only under TrustMore.
 - U9: inline replace shows the change and waits for Apply.

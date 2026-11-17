@@ -1,6 +1,6 @@
 [package]
 name = "action-checkpoint-git"
-description = "The git store of restore points: a hidden commit of the workspace per point, made through a private index and kept under a ref of docket's own. git runs as a process behind the GitRun seam; nothing here touches the person's index, branches or stash."
+description = "The git store of restore points: a hidden commit of the workspace per point, made through a private index and kept under a ref of the actions service's own. git runs as a process behind the GitRun seam; nothing here touches the person's index, branches or stash."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

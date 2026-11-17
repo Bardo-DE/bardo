@@ -1,5 +1,5 @@
 //! The files the window reads and writes, and the work on them that blocks: the settings files,
-//! docket's agents and places, the person's keymap and style sheets, and the installed apps'
+//! The actions service's agents and places, the person's keymap and style sheets, and the installed apps'
 //! desktop entries. The types are `settings-app-files`', named here so the window reaches the files only
 //! through this door; the commands that block run on a blocking thread, so the window keeps
 //! drawing.

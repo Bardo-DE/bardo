@@ -1,4 +1,4 @@
-//! A helper's conversation with its agent app moving between docket and the app's own
+//! A helper's conversation with its agent app moving between the actions service and the app's own
 //! command-line program in a terminal ("Open in Terminal", "Bring Back"), and the conversations
 //! a terminal started that the person can bring in. While a conversation is in the terminal its
 //! helper is paused, so no job reaches the app; the router keeps the session as a watch session
@@ -153,7 +153,7 @@ where
         terminal_sessions(watched, &away, handover)
     }
 
-    /// The person brings a terminal's conversation into docket: the app starts on the same
+    /// The person brings a terminal's conversation into the actions service: the app starts on the same
     /// session and picks up its own conversation.
     pub(super) async fn bring_in(&self, session: SessionId) -> BroughtBack {
         match self.try_bring_in(session).await {

@@ -1,4 +1,4 @@
-//! docket's client API, the caller side of `org.bardo.Intents1`: a caller (the shell, companiond, an
+//! The actions service's client API, the caller side of `org.bardo.Intents1`: a caller (the shell, companiond, an
 //! MCP edge) holds [`Intents`] over a [`Transport`] and asks the router. (The app side, the
 //! `IntentProvider` an app implements, is `action-provider`.) The transport is the only thing that changes between the desktop's D-Bus
 //! (`DbusTransport`, feature `dbus`) and a test or an embedding host (`InProcess`, feature

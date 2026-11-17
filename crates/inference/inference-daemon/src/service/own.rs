@@ -1,5 +1,5 @@
 //! The options that make a session its own: whose turn it carries (`asker`) and the model it
-//! names for itself (`model`). Only a caller that may choose places (docket's daemons) may send
+//! names for itself (`model`). Only a caller that may choose places (the actions service's daemons) may send
 //! either; from anyone else the call is refused, not ignored.
 
 use crate::peers::CallerMay;

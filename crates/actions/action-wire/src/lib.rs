@@ -1,4 +1,4 @@
-//! The wire of docket's `org.bardo.Intents1` and the shapes that ride on it: every request and
+//! The wire of the actions service's `org.bardo.Intents1` and the shapes that ride on it: every request and
 //! reply, the bodies they carry, who is calling (`CallerId`, over the roles of `action-vocab`) and which member a
 //! request is (`Member`), where a conversation was started from, the opening of a session and the
 //! ledger of a task, and summoning the companion into an app. Nothing here sends or receives: a

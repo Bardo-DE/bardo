@@ -101,7 +101,7 @@ async fn the_endpoint_route_gives_the_child_a_base_url_and_a_token_and_nothing_e
     assert_eq!(bind.port, 41999);
     assert_eq!(
         bind.forwarder.as_str(),
-        "/opt/docket/bardo-agent-net-forward"
+        "/opt/actions/bardo-agent-net-forward"
     );
 
     // The bridge's socket lives in a directory only the user can enter, for as long as the
@@ -204,7 +204,7 @@ async fn an_allowlist_agent_gets_a_filter_on_its_socket_for_the_life_of_the_sess
     rig.spawn = rig
         .spawn
         .with_resolver(std::sync::Arc::new(NoNames))
-        .with_landlock(super::support::abs("/opt/docket/bardo-agent-net-enter"));
+        .with_landlock(super::support::abs("/opt/actions/bardo-agent-net-enter"));
     let spawned = rig
         .spawn
         .spawn(&plan("claude-code", "s-6"))
@@ -220,7 +220,7 @@ async fn an_allowlist_agent_gets_a_filter_on_its_socket_for_the_life_of_the_sess
     assert_eq!(bind.port, 3128);
     assert_eq!(
         bind.forwarder.as_str(),
-        "/opt/docket/bardo-agent-net-forward"
+        "/opt/actions/bardo-agent-net-forward"
     );
     for name in ["HTTPS_PROXY", "HTTP_PROXY", "https_proxy", "http_proxy"] {
         assert_eq!(env_of(run, name), Some("http://127.0.0.1:3128"), "{name}");
@@ -232,7 +232,7 @@ async fn an_allowlist_agent_gets_a_filter_on_its_socket_for_the_life_of_the_sess
     );
     assert_eq!(
         run.enter.as_ref().map(base_path::AbsPath::as_str),
-        Some("/opt/docket/bardo-agent-net-enter")
+        Some("/opt/actions/bardo-agent-net-enter")
     );
 
     let dir = rig.dir.path().join("bardo-agent-acp-s-6");
@@ -268,7 +268,7 @@ async fn a_child_says_how_far_it_is_held_once_the_exec_stage_reported() {
         std::sync::Arc::new(rig.accounts.clone()),
         procs.reporting(sandbox::LandlockLevel::Full),
         rig.dir.path().to_owned(),
-        super::support::abs("/opt/docket/bardo-agent-net-forward"),
+        super::support::abs("/opt/actions/bardo-agent-net-forward"),
         rig.registry.clone(),
     )
     .with_resolver(std::sync::Arc::new(NoNames));

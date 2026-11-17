@@ -20,7 +20,7 @@ fn row(program: &str, label: &str, source: Source, sign_in: SignInState) -> Agen
         offers: Offers::NotSeenYet,
         sign_in,
         way: None,
-        rewind: action_core::Rewind::Docket,
+        rewind: action_core::Rewind::Actions,
     }
 }
 

@@ -11,8 +11,8 @@ async fn the_tool_edge_is_bound_in_the_bridge_read_only_and_its_socket_read_writ
     let mut rig = rig(LOGIN, Mood::Working, true);
     let mut with_edge = plan("claude-code", "s-1");
     with_edge.edge = Some(agent_acp_host::EdgeBind {
-        socket: super::support::abs("/run/user/1000/docket-edge-x/tools.sock"),
-        bridge: super::support::abs("/opt/docket/bardo-actions-mcp"),
+        socket: super::support::abs("/run/user/1000/actions-edge-x/tools.sock"),
+        bridge: super::support::abs("/opt/actions/bardo-actions-mcp"),
     });
     let mut spawned = rig.spawn.spawn(&with_edge).await.expect("spawned");
     let runs = rig.procs.runs();
@@ -22,11 +22,14 @@ async fn the_tool_edge_is_bound_in_the_bridge_read_only_and_its_socket_read_writ
         .map(|b| (b.path.as_str(), b.access))
         .collect();
     assert!(
-        binds.contains(&("/opt/docket/bardo-actions-mcp", Access::ReadOnly)),
+        binds.contains(&("/opt/actions/bardo-actions-mcp", Access::ReadOnly)),
         "{binds:?}"
     );
     assert!(
-        binds.contains(&("/run/user/1000/docket-edge-x/tools.sock", Access::ReadWrite)),
+        binds.contains(&(
+            "/run/user/1000/actions-edge-x/tools.sock",
+            Access::ReadWrite
+        )),
         "{binds:?}"
     );
     // Without an edge, neither is bound.
@@ -42,7 +45,7 @@ async fn the_tool_edge_is_bound_in_the_bridge_read_only_and_its_socket_read_writ
         runs[0]
             .binds
             .iter()
-            .all(|b| !b.path.as_str().contains("docket-edge"))
+            .all(|b| !b.path.as_str().contains("actions-edge"))
     );
     spawned.child.close().await;
 }
@@ -77,8 +80,8 @@ async fn no_network_mode_gives_the_agent_a_bus() {
         let mut rig = rig(toml, Mood::Working, true);
         let mut with_edge = plan(program, &format!("s-{n}"));
         with_edge.edge = Some(agent_acp_host::EdgeBind {
-            socket: super::support::abs("/run/user/1000/docket-edge-x/tools.sock"),
-            bridge: super::support::abs("/opt/docket/bardo-actions-mcp"),
+            socket: super::support::abs("/run/user/1000/actions-edge-x/tools.sock"),
+            bridge: super::support::abs("/opt/actions/bardo-actions-mcp"),
         });
         let mut spawned = rig.spawn.spawn(&with_edge).await.expect("spawned");
         let run = rig.procs.runs()[0].clone();

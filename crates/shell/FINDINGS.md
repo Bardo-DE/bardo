@@ -355,7 +355,7 @@ A settled item is deleted, not marked closed.
 - **One connection owns three roles.** intentd names a caller's role from the well-known names its
   connection owns (`dist/intentd.toml`: `org.bardo.Shell` is `launcher`, `confirm` and `control`;
   `Confirm1`'s owner is trusted only while it also owns that name). So `shell_services::intents`
-  claims `org.bardo.Shell` first (the provider, `docket_client::serve_on`), then
+  claims `org.bardo.Shell` first (the provider, `action_client::serve_on`), then
   `org.bardo.Confirm1`, and makes its `Control` calls from the same connection. It is passive until
   the daemon's `IntentsCommand::Serve`, like the polkit agent.
 - **Phase A, not unforgeable.** The sheet is a layer surface on a stock compositor; its receipt says
@@ -379,8 +379,8 @@ A settled item is deleted, not marked closed.
 - **"Resume the terminal" calls `Control.Resume(Only(desktop))`**, the terminal's Space, so it
   also lifts a halt of that Space; a global halt (`all`) stays. The Terminal module draws only
   while there is a grant or a pause to show.
-- **Checkouts.** docket's own path dependencies resolve beside it, so every checkout of the shell also
-  needs `../porter`, `../models` and `../memory` (and `../docket`); `~/shell-wt/gate` needs the
+- **Checkouts.** the actions service's own path dependencies resolve beside it, so every checkout of the shell also
+  needs `../porter`, `../models` and `../memory` (and `../actions`); `~/shell-wt/gate` needs the
   same links as its other siblings.
 
 ## Standing facts: the companion
@@ -424,7 +424,7 @@ A settled item is deleted, not marked closed.
   that stays an ellipsis too.
 - **A thing's Enter needs its app's `<kind>.open`.** The service reads `Intents1.Registry` (and
   again on `ManifestChanged`) into `Companion::openers` (`openers_of`: each declared entity kind
-  whose app declares `docket_core::open_name`); the things provider performs the open call as the
+  whose app declares `action_core::open_name`); the things provider performs the open call as the
   launcher with no session and no window, and a thing whose app declares none has no Enter action.
 - **A run is named by cuad's `Id` property**, read when its object is added; each path is kept with
   its id so `RunRemoved`, which comes after the object is gone, finds it.
@@ -432,7 +432,7 @@ A settled item is deleted, not marked closed.
   3.30): `double_tap_ms` and `app_wait_ms` (`Ms`, held to 150..=600 and 40..=500) and `in_field`
   reach the service as `CompanionParams` (`CompanionBridge`), whose times are `shell_model::units::Ms`.
 - **The assistant has no default model, and only Settings changes the setting.** A turn that finds
-  none comes back as `RefusalWire::NoModel` (`{"kind":"no_model"}`, docket's `companion-wire`); the
+  none comes back as `RefusalWire::NoModel` (`{"kind":"no_model"}`, the actions service's `companion-wire`); the
   card and the row say "Choose a model to use the assistant." with a "Choose Model…" button that
   opens Settings' `assistant-model` page (`Activation::OpenSettings`); nothing opens Settings
   without a press. The model is picked in the one-time OS setup (`bardo-settings --first-run`), not by the shell.
@@ -597,9 +597,9 @@ a source; `assumed` means not yet checked.
   `assistant-model`; if the Settings app names its pages differently, change the
   two `#[word(slug = ...)]` attributes and nothing else. Ends when the Settings app's pages are merged under
   those names.
-- **`RefusalWire::NoModel` must be in docket's `companion-wire` before the shell builds.** the shell matches
+- **`RefusalWire::NoModel` must be in the actions service's `companion-wire` before the shell builds.** the shell matches
   it in `shell_model::companion::words`, `shell_ui_kit::companion::answer` and `no_model`. Ends when
-  docket's variant is merged.
+  The actions service's variant is merged.
 - **anyview is taken by path.** The root `Cargo.toml` names `anyview-core`, `anyview-image`, `anyview-peek`,
   `anyview-platform` and `anyview-store` at `../anyview/crates/...`, a sibling checkout. Ends when
   anyview's integration branch is merged: the five become the git revision pinned in Bardo's
@@ -724,14 +724,14 @@ a source; `assumed` means not yet checked.
 - **Two `companion.*` keys have no reader.** `companion.summon` (off must stop the tap and the
   summon) and `companion.notify` (a notification when a task needs the person) are in the domain
   and the schema; nothing reads them. (`companion.confirm_arm_ms` is a constant now.) Ends when the tap machine, the notifications service and the confirmation
-  sheet each take theirs. `agent.undo.keep_h` is docket's file, not the shell's.
+  sheet each take theirs. `agent.undo.keep_h` is the actions service's file, not the shell's.
 - **The UI kit's companion components are placeholders.** `AnswerCard`, `ContextChips`, `RunRow`,
   `ActivityStrip`, `MemoryTimeline` draw an empty root, and `CommandPalette` has no `mode` or
   `chips` prop, so the prompt keeps the search text as state (`Session::kept`) and shows no chip.
   Ends with the UI kit's W1 to W3 fills; then the pane's slot draws the real card and the chip shows.
 - **A thing whose app declares no `<kind>.open` has no Enter action and no dimmed look.** A launcher
   `Item` has no way to say "not openable", so the row is shown as any other and Enter does nothing
-  (mailo declares `mail.thread.open` only once it adds it, docket FINDINGS f4-docket-3 section 2).
+  (mailo declares `mail.thread.open` only once it adds it, the actions service FINDINGS f4-actions-3 section 2).
   Ends when `Item` carries a dimmed state, or the row offers another action.
 - **Memory rows have no verbs.** `CompanionCommand::Memory` is accepted and does nothing: Forget
   needs the preview alert (design/32 section 4.9), Keep a `ConfirmReceipt` only the shell's own UI
@@ -876,7 +876,7 @@ a source; `assumed` means not yet checked.
   fetch is a single bounded GET.
 - **Link opener.** Body links are limited to http, https and mailto where the body is read; when an
   opener lands, a card shows the target's host beside the text.
-- **docket should refuse or summarise an oversize recipient list before it asks.** The sheet shows
+- **The actions service should refuse or summarise an oversize recipient list before it asks.** The sheet shows
   eight rows and counts the rest, but the router is the place that knows what a list means.
 - **`confirm.arm_ms` is still a constant** (500 ms of stillness before the sheet takes an answer).
 
@@ -890,7 +890,7 @@ Open items of the voice client (`shell_services::voice`, `shell_model::voice`, `
 - **The hold's edges come from a source that detects the hold itself** (`bardo-shell voice
   hold-start|hold-end|hold-cancel`). The raw-edge machine (`HoldKey`: command down, up, other key,
   pointer) is not built; it ends when the key remap daemon or the compositor sends raw edges.
-- **Cancel carries a cause** (docket a0c168a): Escape when the launcher is dismissed, OtherInput
+- **Cancel carries a cause** (the actions service a0c168a): Escape when the launcher is dismissed, OtherInput
   for `bardo-shell voice hold-cancel`, Shell for the service's own cancel after a broken stream.
   `FocusLost` is modelled but nothing sends it: the shell does not watch the focus leaving the prompt
   while a hold is on. A cancel voiced refuses as `Malformed` leaves its microphone open, so the
@@ -908,7 +908,7 @@ Open items of the voice client (`shell_services::voice`, `shell_model::voice`, `
   no session and its handles were never shown: the card kept "…" for good. A failed `Session.Display`
   also left the handle unresolved and marked as asked. Test: `companion_session_bus.rs`.
 - **Now.** The service reads `Answer.Session` once per answer when its object appears, keeps it in
-  `AnswerFacts.session`, and shows handles through it. An object without the property (older docket)
+  `AnswerFacts.session`, and shows handles through it. An object without the property (older actions service)
   is shown through the session the ask opened, if the shell asked it, and the service logs that once.
 - **After Close** `Session.Display` is refused: the handle reads as its plain fallback, `#n`, and is
   not asked again.
@@ -1566,7 +1566,7 @@ only in `shell-services`' dev-dependencies). `Cargo.lock` is the orchestrator's 
   shell reads the desktop's table once (`/etc/bardo/desktop-callers.toml`; a jail has none, so it is
   empty), and the caller-identity library judges an image the person can write `Unverified` before it looks at any row,
   so a stand-in built in a checkout is never a service: `dev/accept/accounts.sh` (the
-  `accountd_standin` example) and `dev/accept/confirm.sh` (docket's `accept-intentd`) were refused on
+  `accountd_standin` example) and `dev/accept/confirm.sh` (the actions service's `accept-intentd`) were refused on
   every call. The caller-identity library v0.1.4 added the seam (feature `dev-rows`: `Table::from_toml_dev`,
   `TableFiles::load_dev`, `RowOrigin::Dev`, `Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`).
   The shell's side: `bardo-shell run --dev-callers FILE` exists only in a build with the shell crate's `debug`
@@ -1602,7 +1602,7 @@ only in `shell-services`' dev-dependencies). `Cargo.lock` is the orchestrator's 
   connection is asked until they do. Clipboard, input-method and the toplevel list are not gated by
   The compositor yet, so today only the screen and the keys can ask.
 - **`org.bardo.Shell` is asked for without queueing, and the shell exits when it is taken
-  (PORTAL-10, the shell's half).** The name was already asked for with `DoNotQueue` (docket's
+  (PORTAL-10, the shell's half).** The name was already asked for with `DoNotQueue` (the actions service's
   `serve_on_with`); a taken name was only the seat's `NameTaken` trouble and the shell went on
   without a seat. `shell::name_guard` now ends the host and the daemon exits with a failure and
   one line. `dist/shell.service` restarts on failure every second with no start limit, so the line
@@ -1768,8 +1768,8 @@ pane has none.
   per-helper page, so nothing writes a model onto a helper's card yet. `HelpersMsg::ChooseModel` is the
   message that will, once Settings answers with a choice. "Same as the assistant" is not offered for the same reason.
 - **Open: the card cannot be read back into apps and a limit.** `HelperCardView` carries what a helper
-  may use as plain lines only, so `reach_of_lines` parses docket's three wordings. Lines it does not know
-  make the card unsavable until the person ticks the apps again. docket should send the apps and the limit
+  may use as plain lines only, so `reach_of_lines` parses the actions service's three wordings. Lines it does not know
+  make the card unsavable until the person ticks the apps again. The actions service should send the apps and the limit
   as data.
 - **Open: a new helper's Space is `desktop`.** The form needs a Space; the card has no Space choice.
 

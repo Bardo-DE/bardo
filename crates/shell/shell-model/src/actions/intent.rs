@@ -1,6 +1,6 @@
 //! Which action of `org.bardo.Shell` (`dist/intents/org.bardo.Shell.toml`) does what an action
 //! of the shell does. The match has no wildcard, so a new `ActionId` is a compile error until it
-//! is placed; a test holds the names to the manifest, so the file docket reads and the actions
+//! is placed; a test holds the names to the manifest, so the file the actions service reads and the actions
 //! the shell has cannot drift apart.
 
 use shell_launcher::actions::ActionId;

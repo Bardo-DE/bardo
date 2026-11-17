@@ -3,7 +3,7 @@
 desktop-protocols holds the desktop's private Wayland protocols, `bardo_*_v1`: the XML, the pure
 wire vocabulary every tier shares, and the wayland-scanner bindings for clients and the
 compositor. It is a leaf: it depends on nothing of ours, so the compositor (the compositor), the shell
-(the shell, layer-shell-host), the agent tier (cua, docket, porter's `prov`), the portal (the portal) and
+(the shell, layer-shell-host), the agent tier (cua, the actions service, porter's `prov`), the portal (the portal) and
 Bardo's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items.
 
@@ -80,7 +80,7 @@ desktop protocol names window, sensitive and agent enums; the shell protocol nam
 | `wl_output.transform` | `vocab::Transform` (`src/vocab/output.rs`), used by the compositor, the desktop client and the shell |
 | A vocab value's generated twin | `WireCode::to_wire` (`src/vocab/code.rs`) |
 | A tile zone as a target or a mark | `PlaceTarget::zone`, `From<TileZone>` for `PlaceTarget` and `PlacementMark` (`src/vocab/window.rs`) |
-| `RunMode` (docket re-exports it) | `vocab::RunMode` (`src/vocab/agent.rs`) |
+| `RunMode` (the actions service re-exports it) | `vocab::RunMode` (`src/vocab/agent.rs`) |
 | `ActorKind` (prov's wire projection) | `vocab::ActorKind` (`src/vocab/actor.rs`) |
 | Generated bindings | `client::<protocol>`, `server::<protocol>` (`src/client.rs`, `src/server.rs`) |
 

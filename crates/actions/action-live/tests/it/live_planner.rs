@@ -49,11 +49,11 @@ fn the_catalogue_paths() {
     use action_accept::catalog::{default_source, world_dir};
     use std::path::Path;
     assert_eq!(
-        default_source(Path::new("/home/me/docket/eval")),
+        default_source(Path::new("/home/me/actions/eval")),
         Path::new("/home/me/models/catalog")
     );
     assert_eq!(
-        default_source(Path::new("/home/me/rs-wt/x/docket/eval")),
+        default_source(Path::new("/home/me/rs-wt/x/actions/eval")),
         Path::new("/home/me/rs-wt/x/models/catalog")
     );
     assert_eq!(

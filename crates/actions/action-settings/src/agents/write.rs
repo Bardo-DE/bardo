@@ -37,10 +37,10 @@ pub enum ChoiceFault {
     #[error("that agent isn't listed")]
     NoSuchAgent,
     /// The model id has spaces or is too long.
-    #[error("that isn't a model name docket can keep")]
+    #[error("that isn't a model name the actions service can keep")]
     BadModel,
     /// The sign-in id has odd characters or is too long.
-    #[error("that isn't a way of signing in docket can keep")]
+    #[error("that isn't a way of signing in the actions service can keep")]
     BadWay,
     /// The file could not be read or written.
     #[error("the agents file can't be read or written")]
@@ -78,7 +78,7 @@ fn apply(entry: &mut toml_edit::Table, key: &str, pick: &Pick) {
 /// # Errors
 ///
 /// [`ChoiceFault`] when `text` is not readable TOML, no such agent is listed, or the model or the
-/// way of signing in is not one docket can keep.
+/// way of signing in is not one actions service can keep.
 pub fn edit_agent_choice(
     text: &str,
     program: &str,
@@ -123,7 +123,7 @@ pub fn edit_agent_rewind(text: &str, program: &str, rewind: Rewind) -> Result<St
     let mut doc: DocumentMut = text.parse().map_err(ChoiceFault::Syntax)?;
     let entry = entry_of(&mut doc, program)?;
     let word = match rewind {
-        Rewind::Docket => "docket",
+        Rewind::Actions => "actions",
         Rewind::Agent => "agent",
     };
     entry.insert("checkpoints", value(word));

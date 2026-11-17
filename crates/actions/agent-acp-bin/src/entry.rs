@@ -12,7 +12,7 @@ use std::process::ExitCode;
 /// line after the program's name, `here` the working directory and `env` the environment `main`
 /// hands in. A bad command line exits the process with clap's usage; a setting that is off or a
 /// configuration that is wrong ends with code 2.
-pub async fn docket_agent(
+pub async fn bardo_agent(
     argv: impl IntoIterator<Item = String>,
     here: PathBuf,
     env: impl Fn(&str) -> Option<String> + Send + Sync + 'static,

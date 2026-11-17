@@ -1,12 +1,12 @@
 //! The request to refresh what an agent offers: start it briefly in its sandbox, open a session,
-//! read the models and sign-in ways, write the record, close it. docket has no settings bus; the
+//! read the models and sign-in ways, write the record, close it. The actions service has no settings bus; the
 //! Settings app makes the request by running [`REFRESH_PROGRAM`] with [`RefreshRequest::arguments`],
 //! and reads the rows again when it exits (any exit status: a start that needed signing in is
 //! still written down). An agent starts only on this request, never when a page opens.
 
 use super::model::AgentRow;
 
-/// The program that does the refresh, found beside the other docket programs.
+/// The program that does the refresh, found beside the other actions service programs.
 pub const REFRESH_PROGRAM: &str = "bardo-agent";
 
 /// A request to refresh one agent.

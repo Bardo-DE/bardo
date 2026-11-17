@@ -190,7 +190,7 @@ A transcript reads top to bottom in the order it happened:
 
 It is built from what already exists and is not recorded twice: the router's audit records
 (`AuditRecord`: the rulings, the policy, the confirmations, the breaker), the sheet's requests, the
-runner's endings, and the tap on the daemons' inferd link (`docket_trace`, every chat request and its
+runner's endings, and the tap on the daemons' inferd link (`action_trace`, every chat request and its
 answer as the daemon that asked saw them). inferd's own audit never keeps content and its replay `record`
 sees requests only on a replay engine, so the tap is the one place a live answer can be read back. For a
 smoke run the tap's file is `model.jsonl` in the scratch root; the transcript prints every exchange in the
@@ -482,7 +482,7 @@ the scratch settings; it reads neither from the person's configuration.
 
 **Confining Claude Code (`--acp-profile claude-code`).** Signed in with a claude.ai login, Claude Code asks its own
 permission before each MCP tool call (a second sheet beside the router's), loads the account's claude.ai connectors and
-syncs its skills and plugins; none of that passes the router. The preset has docket send settings in the `session/new`
+syncs its skills and plugins; none of that passes the router. The preset has the actions service send settings in the `session/new`
 request (`_meta.claudeCode.options.settings`: connectors, skills and plugins off; `mcp__bardo` pre-allowed, which is the
 desktop's server and no other) and set the isolated-mode variables. A run with it:
 
@@ -497,7 +497,7 @@ dev/live-smoke.sh --engine scripted --agent acp \
 
 See `FINDINGS.md`, "acp-isolation".
 
-**An agent from the registry.** Docket ships no list of agents. `bardo-agents` reads the agent registry's snapshot,
+**An agent from the registry.** the actions service ships no list of agents. `bardo-agents` reads the agent registry's snapshot,
 installs the version you name (the archive is checked against the registry's SHA-256; when the registry gives none the
 install record says "first use") under the agents directory, and never updates by itself:
 `bardo-agents --dir DIR check ID` says what is on offer, `bardo-agents --dir DIR install ID VERSION` installs exactly

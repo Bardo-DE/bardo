@@ -1,6 +1,6 @@
 //! companiond: the companion as one identity over many tasks, on the session bus. The task model
 //! is `companion-tasks`' (the front pointer, the roster, the side-conversation tracker, the idle
-//! pass, restart, each task its own docket session); this crate is its adapter for the desktop:
+//! pass, restart, each task its own the actions session); this crate is its adapter for the desktop:
 //! the system clock, a [`Bell`] surface that fans changes out to the bus, `Companion1` served,
 //! the speaker (who is on the other end of a call) and the daemon. What is decided over values,
 //! with no clock, bus or file (the helper board's outcomes and refusals, the routines' due and

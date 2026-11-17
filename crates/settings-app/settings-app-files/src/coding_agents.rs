@@ -1,5 +1,5 @@
-//! The coding agents the assistant may be handed to, in docket's files: whether they are switched
-//! on (`agent.acp.agents` in docket's settings file), turning them on, and the known programs
+//! The coding agents the assistant may be handed to, in the actions service's files: whether they are switched
+//! on (`agent.acp.agents` in the actions service's settings file), turning them on, and the known programs
 //! that are already on this computer. Nothing is started: a program is looked for as a file.
 
 use crate::error::FilesError;

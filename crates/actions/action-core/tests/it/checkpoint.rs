@@ -126,9 +126,9 @@ fn a_work_path_refuses_what_could_leave_the_workspace() {
 }
 
 #[test]
-fn an_old_external_agent_record_reads_as_docket_keeping_the_history() {
+fn an_old_external_agent_record_reads_as_actions_service_keeping_the_history() {
     let old = r#"{"program":"claude-code","sheets":"desktop"}"#;
     let agent: ExternalAgent = serde_json::from_str(old).expect("old record");
-    assert_eq!(agent.rewind, Rewind::Docket);
-    assert_eq!(Rewind::default(), Rewind::Docket);
+    assert_eq!(agent.rewind, Rewind::Actions);
+    assert_eq!(Rewind::default(), Rewind::Actions);
 }

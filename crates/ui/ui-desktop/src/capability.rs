@@ -76,14 +76,14 @@ impl Capability {
     )]
     pub const fn service(self) -> Option<Service> {
         match self {
-            // design/33-AGENT.md section 5 (intentd, docket repo).
+            // design/33-AGENT.md section 5 (intentd, the actions repo).
             Capability::Intents => Some(session("org.bardo.Intents1")),
             // accountd, porter repo (porter/crates/accountd/src/lib.rs:2); also named by
             // ui-settings' live client docs.
             Capability::Accounts => Some(session("org.bardo.Accounts1")),
             // memoryd, design/33-AGENT.md section 5 (the memory repo).
             Capability::Memory => Some(session("org.bardo.Memory1")),
-            // companiond, design/33-AGENT.md section 5 (docket repo).
+            // companiond, design/33-AGENT.md section 5 (the actions repo).
             Capability::Companion => Some(session("org.bardo.Companion1")),
             // bardo-shell's `work_areas` service (bardo-shell/crates/shell-services/src/work_areas).
             Capability::Outputs => Some(session("org.bardo.Outputs1")),

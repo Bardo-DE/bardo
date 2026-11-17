@@ -9,7 +9,7 @@
 # letters do not matter.
 #
 # [injection]: text that reads as instructions aimed at an assistant, grouped by the style of
-# attack (the styles of docket's injection corpus, plus the shapes agents are known to be hijacked
+# attack (the styles of the actions service's injection corpus, plus the shapes agents are known to be hijacked
 # by). `how` says how a group is looked for:
 #   anywhere   the phrase anywhere
 #   addressed  the phrase anywhere, and the same text also names an assistant (`addressees`)

@@ -1,4 +1,4 @@
-//! Test fakes for docket: the fixture manifests of a mail and a files app and in-memory
+//! Test fakes for the actions service: the fixture manifests of a mail and a files app and in-memory
 //! providers behind them (`FakeMail`, `FakeFiles`, with real undo tokens), scripted stand-ins
 //! for everything that asks a person or a model (`ScriptedConfirmer`, `ScriptedReviewer`,
 //! `ScriptedWriter`, `ScriptedReader`, `FakeMemory`), a fixed clock, a recording sink, an

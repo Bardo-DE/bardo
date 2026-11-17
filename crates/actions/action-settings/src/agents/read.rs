@@ -79,11 +79,11 @@ fn seen(record: Option<Offered>) -> (Offers, SignInState) {
 /// What `checkpoints` says; unwritten (or not a word we know), the profile decides.
 fn rewind(entry: &toml::Table) -> Rewind {
     match text(entry, "checkpoints").as_deref() {
-        Some("docket") => Rewind::Docket,
+        Some("actions") => Rewind::Actions,
         Some("agent") => Rewind::Agent,
         _ => match text(entry, "profile").as_deref() {
             Some("claude-code") => Rewind::Agent,
-            _ => Rewind::Docket,
+            _ => Rewind::Actions,
         },
     }
 }

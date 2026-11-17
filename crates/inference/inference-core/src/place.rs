@@ -1,7 +1,7 @@
 //! Where the assistant may run: the ids of the places a person lets it use.
 //!
 //! A place is this computer, one of the person's own computers, or a signed-in cloud account.
-//! docket lets the person choose which are allowed and sends inferd the allowed set; inferd's
+//! The actions service lets the person choose which are allowed and sends inferd the allowed set; inferd's
 //! `Places` lists the ones known now. The id is one string, in three text forms:
 //!
 //! - `this-computer`;

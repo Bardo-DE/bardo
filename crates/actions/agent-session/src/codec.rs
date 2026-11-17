@@ -1,6 +1,6 @@
 //! The stored form: `{"version":1,"seq":n,"kind":"turn","v":{...}}`, written as an eventlog
 //! `Area { Companion }` body of kind `companion.session.<slug>`. The version is explicit and read
-//! first, so a body from a future docket is `Unreadable::UnknownVersion`, never a guess. A body
+//! first, so a body from a future the actions service is `Unreadable::UnknownVersion`, never a guess. A body
 //! with no version is `Unreadable::BadVersion`.
 
 use crate::entry::{Seq, SessionEntry, UnknownEntry};

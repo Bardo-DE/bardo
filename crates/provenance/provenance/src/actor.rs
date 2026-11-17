@@ -76,12 +76,12 @@ pub enum AgentRole {
         run: RunId,
     },
     /// A worker subagent other than a computer-use run (research, watch-for-X, a background
-    /// task): its own docket session, narrowed from its parent's policy, never wider.
+    /// task): its own the actions session, narrowed from its parent's policy, never wider.
     Worker {
         /// The task it runs as.
         task: TaskId,
     },
-    /// A job of one of the person's helpers: its own docket session, narrowed from the
+    /// A job of one of the person's helpers: its own the actions session, narrowed from the
     /// helper's ceiling, never wider.
     Helper {
         /// The helper.

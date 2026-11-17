@@ -144,7 +144,7 @@ pub async fn open_on<A: Accounts + 'static>(
     space: SpaceId,
 ) -> Result<Hosted<A>, HostError> {
     // Who keeps the agent's file history is the person's choice in `agents.toml`; a program the
-    // file does not list gets docket's own (it over-saves rather than under-saves).
+    // file does not list gets the actions service's own (it over-saves rather than under-saves).
     let (label, rewind, installed_as) = {
         let entry = live.entry(&program);
         (

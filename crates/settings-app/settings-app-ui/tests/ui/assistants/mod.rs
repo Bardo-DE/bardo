@@ -1,5 +1,5 @@
 //! The Intelligence page's assistants: where the built-in assistant may run (this computer, the
-//! person's computers, signed-in cloud accounts), written to docket's settings file, and the
+//! person's computers, signed-in cloud accounts), written to the actions service's settings file, and the
 //! assistants that sign themselves in; and "Your computers" (the computers the assistant may borrow
 //! models from, the Tailscale computers that can be added, the computers asking to borrow this
 //! one's) over a fake inferd.
@@ -32,7 +32,7 @@ fn intelligence() -> Opening {
     }
 }
 
-/// The page over a fake accountd module in memory holding `held`, in a world whose docket file holds `file`.
+/// The page over a fake accountd module in memory holding `held`, in a world whose the actions file holds `file`.
 struct World {
     sandbox: Sandbox,
     harness: Harness,
@@ -42,7 +42,7 @@ fn world(name: &str, held: Vec<Held>, file: Option<&str>) -> World {
     world_with(name, held, file, None)
 }
 
-/// The same, with docket's list of agents too.
+/// The same, with the actions service's list of agents too.
 fn world_with(name: &str, held: Vec<Held>, file: Option<&str>, agents: Option<&str>) -> World {
     let fake = Accountd::new(Verdict::Allow, held);
     let sandbox = Sandbox::new(name).with_modules(fake.hosted());
@@ -114,7 +114,7 @@ fn computers_with_models(name: &str, own: Vec<Own>) -> Computers {
     )
 }
 
-/// The same, in a world whose docket file holds `file`.
+/// The same, in a world whose the actions file holds `file`.
 fn computers_in(
     name: &str,
     file: Option<&str>,
@@ -170,7 +170,7 @@ fn press(harness: &mut Harness, aria: &str) {
     click(harness, &selector);
 }
 
-// ---- Coding assistants: the outside agents docket may start ----
+// ---- Coding assistants: the outside agents the actions service may start ----
 
 const AGENTS: &str = "# mine\n[[agent]]\nprogram = \"claude-code\"\nlabel = \"Claude Code\"\nregistry = \"claude-code\"\nversion = \"1.0.0\"\n";
 const OFFERED: &str = "seen = 1\nstart = \"signed_in\"\n\n[[model]]\nid = \"sonnet\"\nname = \"Sonnet 5.5\"\n\n[[model]]\nid = \"opus\"\nname = \"Opus\"\n";

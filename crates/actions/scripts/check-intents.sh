@@ -9,15 +9,15 @@
 # usage: scripts/check-intents.sh [repository dir]       (default: the repository this file is in)
 # environment:
 #   BARDO_ACTIONS_EVAL  a built agent-eval binary to run instead of building one
-#   BARDO_ACTIONS_DIR   the docket checkout to build it from (default: the bardo tree this repository folder is in)
+#   BARDO_ACTIONS_DIR   the actions checkout to build it from (default: the bardo tree this repository folder is in)
 set -euo pipefail
 repo=${1:-$(cd "$(dirname "$0")/.." && pwd)}
 if [ -n "${BARDO_ACTIONS_EVAL:-}" ]; then
   exec "$BARDO_ACTIONS_EVAL" --check-app "$repo"
 fi
-docket=${BARDO_ACTIONS_DIR:-$repo/../..}
-if [ ! -f "$docket/Cargo.toml" ]; then
-  echo "check-intents: no docket checkout at $docket (set BARDO_ACTIONS_DIR, or BARDO_ACTIONS_EVAL to a built agent-eval)" >&2
+actions=${BARDO_ACTIONS_DIR:-$repo/../..}
+if [ ! -f "$actions/Cargo.toml" ]; then
+  echo "check-intents: no actions checkout at $actions (set BARDO_ACTIONS_DIR, or BARDO_ACTIONS_EVAL to a built agent-eval)" >&2
   exit 2
 fi
-exec cargo run --quiet --manifest-path "$docket/Cargo.toml" -p action-eval --bin agent-eval -- --check-app "$repo"
+exec cargo run --quiet --manifest-path "$actions/Cargo.toml" -p action-eval --bin agent-eval -- --check-app "$repo"
