@@ -60,7 +60,7 @@ pub enum Purpose {
 }
 
 impl Purpose {
-    /// The `blake3::derive_key` context string. Pinned by `derive_is_stable_golden`.
+    /// The `blake3::derive_key` context string.
     #[must_use]
     pub const fn context(self) -> &'static str {
         match self {

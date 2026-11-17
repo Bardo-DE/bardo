@@ -18,7 +18,7 @@ use serde::{Deserialize, Serialize};
 
 /// The directory under the Space's vault.
 pub(crate) const DIR: &str = "consolidation";
-/// The record format (a bump is a format change; see the golden test).
+/// The record format (a bump is a format change).
 const FORMAT: u32 = 1;
 
 /// Where a run is, as a file records it.

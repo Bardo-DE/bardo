@@ -10,7 +10,7 @@ use memory_core::SpaceId;
 use std::collections::BTreeSet;
 use std::sync::{Mutex, PoisonError};
 
-/// Derivation context for a Space key from the master key. Pinned by a golden test.
+/// Derivation context for a Space key from the master key.
 const CONTEXT: &str = "bardo-memory 1 provided space key";
 
 /// The master key and the Spaces destroyed in this process.

@@ -125,7 +125,7 @@ const fn effect_byte(effect: Effect) -> u8 {
     }
 }
 
-/// The canonical bytes of a header. Pure, golden-tested.
+/// The canonical bytes of a header. Pure.
 #[must_use]
 pub fn header_bytes(h: &Header) -> Vec<u8> {
     let mut out = Vec::with_capacity(256);

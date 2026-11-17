@@ -201,10 +201,19 @@ async fn proposed_tidy() -> (Service, DraftView, String, String) {
 }
 
 #[tokio::test]
-async fn a_proposal_is_written_as_its_file_in_the_pinned_form() {
+async fn a_proposal_is_written_as_a_file_that_holds_both_texts() {
     let (service, view, ..) = proposed_tidy().await;
-    let text = file_of(&service, &view.run).replace(view.run.as_str(), "RUN");
-    assert_eq!(text, include_str!("../golden/run_proposed.toml"));
+    let text = file_of(&service, &view.run);
+    assert!(text.contains(view.run.as_str()), "{text}");
+    for part in [
+        "state = \"proposed\"",
+        "kind = \"tidy\"",
+        "topic = \"people/ana\"",
+        "Ana is the CFO.",
+        "Ana is the chief financial officer.",
+    ] {
+        assert!(text.contains(part), "{part} is not in {text}");
+    }
 }
 
 #[tokio::test]

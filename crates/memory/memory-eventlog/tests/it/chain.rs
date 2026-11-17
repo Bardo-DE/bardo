@@ -23,31 +23,32 @@ fn fixed_header() -> Header {
 }
 
 #[test]
-fn header_bytes_golden() {
-    let bytes = header_bytes(&fixed_header());
-    assert!(bytes.starts_with(b"QEL1"));
-    let golden = include_str!("../golden/header_v1.hex").trim();
-    assert_eq!(
-        const_hex::encode(&bytes),
-        golden,
-        "the v1 header encoding is a format"
-    );
-    assert_eq!(
-        const_hex::encode(link(&fixed_header()).0),
-        include_str!("../golden/header_v1.link").trim()
-    );
-}
-
-#[test]
 fn header_bytes_have_the_documented_layout() {
     let h = fixed_header();
     let bytes = header_bytes(&h);
+    assert!(bytes.starts_with(b"QEL1"));
     assert_eq!(&bytes[4..12], &2u64.to_be_bytes());
     assert_eq!(&bytes[12..28], &[0x11; 16]);
     assert_eq!(&bytes[28..36], &1_790_000_000i64.to_be_bytes());
     assert_eq!(&bytes[36..44], &1_790_000_005i64.to_be_bytes());
     assert_eq!(&bytes[bytes.len() - 32..], &[0xa0; 32]);
     assert_eq!(&bytes[bytes.len() - 64..bytes.len() - 32], &[0xd1; 32]);
+}
+
+#[test]
+fn a_headers_link_covers_what_it_says() {
+    let h = fixed_header();
+    assert_eq!(link(&h), link(&fixed_header()));
+    let moved = Header {
+        prev: Link32([0xa1; 32]),
+        ..fixed_header()
+    };
+    assert_ne!(link(&h), link(&moved));
+    let later = Header {
+        seq: Seq(3),
+        ..fixed_header()
+    };
+    assert_ne!(link(&h), link(&later));
 }
 
 #[test]

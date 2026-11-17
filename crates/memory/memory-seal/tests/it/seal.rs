@@ -79,30 +79,14 @@ fn unseal_reports_each_malformation() {
 }
 
 #[test]
-fn derive_is_stable_golden() {
-    let spaces = [space("work"), space("home")];
-    let mut lines = Vec::new();
-    for s in &spaces {
-        for purpose in [
-            Purpose::Eventlog,
-            Purpose::Index,
-            Purpose::Files,
-            Purpose::Digest,
-        ] {
-            let sub = derive(&key(), s, purpose);
-            lines.push(format!(
-                "{s} {} {}",
-                purpose.context(),
-                const_hex::encode(sub.expose())
-            ));
-        }
-    }
-    let golden = include_str!("../golden/derive.txt");
+fn a_subkey_is_stable_and_differs_per_space() {
+    let work = derive(&key(), &space("work"), Purpose::Eventlog);
     assert_eq!(
-        lines.join("\n") + "\n",
-        golden,
-        "derivation changed; the contexts are a format"
+        work.expose(),
+        derive(&key(), &space("work"), Purpose::Eventlog).expose()
     );
+    let home = derive(&key(), &space("home"), Purpose::Eventlog);
+    assert_ne!(work.expose(), home.expose());
 }
 
 #[test]

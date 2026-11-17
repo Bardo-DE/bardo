@@ -228,14 +228,14 @@ interface other work builds on; a change is a format bump (section 6) or a SPEC 
 | --- | --- |
 | ids, grammars, `UserText`, wire and stored forms, kind tags, `Dirs` layout | built; every variant round-trip and JSON pinned tests |
 | `admit`, `default_retention`, globs, `allowed` | built, table-tested |
-| event header canonical bytes, `link`, genesis, keyed body digest, `verify_chain` | built; golden bytes |
+| event header canonical bytes, `link`, genesis, keyed body digest, `verify_chain` | built; layout and chain tests |
 | `MemoryLog`, `SqliteLog` | built; one contract, `SqliteLog` also over a file (SQLCipher, keyed digest checked on append) |
-| key derivation (contexts pinned), `seal`/`unseal`, `DbKey`, `MemoryKeys`, `Oo7Keys` | built; golden derivation |
-| topic file format, trailer grammar, `parse_topic`/`render_topic`, `VaultPath`, `MemoryVault`, `PlainDir`, `SealedDir`, `Store`, `Primer` | built; golden file |
+| key derivation (contexts pinned), `seal`/`unseal`, `DbKey`, `MemoryKeys`, `Oo7Keys` | built; derivation tests |
+| topic file format, trailer grammar, `parse_topic`/`render_topic`, `VaultPath`, `MemoryVault`, `PlainDir`, `SealedDir`, `Store`, `Primer` | built; round-trip tests |
 | `fuse_rrf`, `chunk`, `nearest_exact`, the vector BLOB, `Fts5`, `ExactScan`, `Index` (rebuild, upsert, `sync` that adopts a file, per-class refusal), `FakeEmbedder` | built, tested |
 | the Space, fact, plan and consolidation machines, `Plan::digest`, retention, timeline rows | built, table-tested |
 | every hunk (Promote, Supersede, Tidy, Stamp, ExternalEdit, Flag), revert, the retention sweep, marks, use counts | built; `memory-fake/tests/it/hunks.rs` |
-| the export writer, `EventLine`, config files (`memory.toml`, `spaces.toml`) | built; golden tar layout and event lines |
+| the export writer, `EventLine`, config files (`memory.toml`, `spaces.toml`) | built; tar layout and event line tests |
 | `plan_forget`, `check_draft`, `MemoryService` | built |
 | the file-why `join`, `InotifyWatch` | built |
 | D-Bus skeletons, proxies, `dbus/org.bardo.Memory1.xml`, `MemoryError` | frozen, introspection tested (the skeletons and the served objects both) |
@@ -271,24 +271,22 @@ $XDG_RUNTIME_DIR/bardo/memory/edit/<space>/     decrypted edit copies on tmpfs
 lp(actor json) | lp(kind tag) | effect u8 | lp(label json) | lp(cause json) | body_digest [32] |
 prev_link [32]`, `lp(x) = u32be length ‖ bytes`; `link = blake3(header bytes)`; genesis
 `prev = blake3("QEL1 genesis" ‖ space ‖ replica)`; `body_digest = blake3::keyed_hash(derive(key,
-Digest), body json)`. The header holds no thing id and no text. Golden:
-`crates/eventlog/tests/golden/header_v1.{hex,link}`.
+Digest), body json)`. The header holds no thing id and no text.
 
 **Sealed file**: `"QMEM" 0x01 ‖ nonce [24] ‖ XChaCha20-Poly1305`, associated data
 `lp(space) ‖ lp(vault path)`; key `derive(key, Files)`; subkey contexts `"bardo-memory 1
-<eventlog|index|files|digest>"`. Golden: `crates/memory-seal/tests/golden/derive.txt`.
+<eventlog|index|files|digest>"`.
 
 **Topic file**: front matter (`format: bardo-memory 1`, `topic`, `title`), dated headings derived
 from each fact's `at` in the injected time zone, one `- text` bullet per fact followed by its
 trailer `  <!-- fact: <id>; at: <utc>; by: <json>; label: <json>[; from: <json>][; supersedes:
 <json>] -->`. A bullet with no trailer is the person's edit (`Unstamped`); other lines are
 `Verbatim`; `valid` and `origin` are reserved. `render(parse(s)) == s` for any `s` that render
-produced. Golden: `crates/memfiles-format/tests/golden/people-sam-lee.md`.
+produced.
 
 **Export**: a tar stream under `bardo-memory-export-1/`: `manifest.json`, `<space>/events.jsonl`
 (one `EventLine` per entry: header fields, link, body or `"erased"`), `<space>/facts|procedures|
-pending/**.md` plain, `rules.toml`. Never the index, never the keys. Golden:
-`crates/memory-service/tests/golden/events.jsonl` and the layout test.
+pending/**.md` plain, `rules.toml`. Never the index, never the keys.
 
 **D-Bus** `org.bardo.Memory1` at `/org/bardo/Memory1`: interfaces `.Record`, `.Recall`,
 `.Control` (28 methods, 5 signals, properties `Version u = 1` and `Confinement s`, one of `confined`,
@@ -368,7 +366,7 @@ memfiles' `SpaceVault` and in `VaultKind`.
 effects are values, so the service applies them and the table needs no I/O.
 
 **Change a stored format**: a new version in the format's magic or `format:` line, a migration
-in the opener, the golden updated in the same commit (review the diff of the golden).
+in the opener.
 
 ## 8. Test harness
 

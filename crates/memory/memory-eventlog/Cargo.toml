@@ -17,7 +17,6 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-const-hex = { workspace = true }
 memory-eventlog = { path = ".", features = ["testing"] }
 memory-seal = {path = "../memory-seal", features = ["testing"]}
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
