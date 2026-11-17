@@ -1,8 +1,9 @@
 //! Records the exchanges a `Transport` carries.
 
+use http_core::Progress;
 use model_http::{
-    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, NdjsonDecoder, Progress,
-    ResponseHead, SseDecoder, Transport, WaitMs,
+    BodyKind, BodySink, Exchange, Framing, HttpError, HttpStatus, NdjsonDecoder, ResponseHead,
+    SseDecoder, Transport, WaitMs,
 };
 use std::ops::ControlFlow;
 

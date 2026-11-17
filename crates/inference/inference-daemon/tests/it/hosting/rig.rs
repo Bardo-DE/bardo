@@ -584,7 +584,7 @@ impl World {
         };
         let probing = plan.probe.map(|config| {
             Watch::new(
-                account_http_reqwest::ReqwestHttp::new(),
+                http_reqwest::ReqwestHttp::new(),
                 config,
                 served.clone(),
                 reports,

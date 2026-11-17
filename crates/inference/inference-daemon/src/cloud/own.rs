@@ -31,7 +31,7 @@ use inference_core::Takes;
 use inference_router::catalog::{capabilities_of, parse_entry_text};
 use model_catalog::{Locality, ModelEntry, Reach};
 use model_http::{
-    AuthHeader, BodySink, Exchange, Framing, HostName, HttpClient, HttpEndpoint, HttpStatus,
+    AuthHeader, BodySink, Exchange, Framing, HostName, HttpEndpoint, HttpStatus,
     HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots, Transport, UrlPath, Verb,
     WaitMs,
 };
@@ -437,7 +437,7 @@ pub async fn list(place: &Place, key: &SecretText, roots: &TlsRoots) -> Option<V
         framing: Framing::Whole,
     };
     let mut reply = Reply::default();
-    let sent = HttpClient::with_roots(place.endpoint(key, LIST_WAIT), roots.clone())
+    let sent = model_http_reqwest::client_with_roots(place.endpoint(key, LIST_WAIT), roots.clone())
         .exchange(&exchange, &mut reply)
         .await;
     match sent {

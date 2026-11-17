@@ -4,7 +4,6 @@
 //!
 //! The server is a hand-written HTTP/1.1 peer on a Unix socket in a private directory or on
 //! `127.0.0.1` with an ephemeral port; nothing leaves the machine.
-#![cfg(feature = "client")]
 
 use base_secret::SecretText;
 use std::ops::ControlFlow;
@@ -13,10 +12,11 @@ use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use http_core::Progress;
 use model_http::{
     AuthHeader, BodyKind, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName,
-    HttpClient, HttpEndpoint, HttpError, HttpStatus, HttpTarget, JsonBody, Port, Progress, Proxy,
-    ResponseHead, RouteRoot, Timeouts, Transport, UrlPath, Verb, WaitMs,
+    HttpEndpoint, HttpError, HttpStatus, HttpTarget, JsonBody, Port, Proxy, ResponseHead,
+    RouteRoot, Timeouts, Transport, UrlPath, Verb, WaitMs,
 };
 use tokio::io::{AsyncReadExt, AsyncWrite, AsyncWriteExt};
 use tokio::net::{TcpListener, UnixListener};
@@ -45,7 +45,7 @@ struct Server {
 fn scratch_socket() -> PathBuf {
     static N: AtomicU32 = AtomicU32::new(0);
     let dir = std::env::temp_dir().join(format!(
-        "model-http-loopback-{}-{}",
+        "model-http-reqwest-loopback-{}-{}",
         std::process::id(),
         N.fetch_add(1, Ordering::SeqCst)
     ));
@@ -277,7 +277,7 @@ async fn run(
 ) -> Result<HttpStatus, HttpError> {
     tokio::time::timeout(
         Duration::from_secs(10),
-        HttpClient::new(endpoint).exchange(ex, seen),
+        model_http_reqwest::client(endpoint).exchange(ex, seen),
     )
     .await
     .expect("the exchange hung")
@@ -522,7 +522,7 @@ async fn a_sink_that_stops_closes_the_connection() {
 #[tokio::test(flavor = "current_thread")]
 async fn dropping_the_future_closes_the_connection() {
     let server = serve(Wire::Tcp, vec![sse_head(), Step::Flood]).await;
-    let client = HttpClient::new(endpoint(server.target.clone()));
+    let client = model_http_reqwest::client(endpoint(server.target.clone()));
     let ex = post("/chat/completions", Framing::Sse);
     let mut seen = Seen::default();
     // The server floods without end, so the exchange never finishes on its own: the window only has

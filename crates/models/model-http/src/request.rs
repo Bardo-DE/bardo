@@ -1,17 +1,17 @@
 //! The request a transport sends: the URL, the headers and the body of one exchange or upload
 //! against an endpoint. Nothing is connected here; a request that cannot be written is never sent.
 
-use reqwest::header::{
-    ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderName as WireName, HeaderValue,
+use http_core::http::header::{
+    ACCEPT, AUTHORIZATION, CONTENT_TYPE, HeaderName as WireName, HeaderValue,
 };
-use reqwest::{Method, Url};
+use http_core::http::{Method, Request, Uri};
 
 use crate::{
     AuthHeader, Exchange, Framing, HttpEndpoint, HttpError, HttpTarget, RouteRoot, Upload, Verb,
 };
 
 /// What a request is, whichever seam asked for it.
-pub struct Parts<'a> {
+pub(crate) struct Parts<'a> {
     pub method: Method,
     pub root: RouteRoot,
     pub path: &'a str,
@@ -21,7 +21,7 @@ pub struct Parts<'a> {
 }
 
 impl<'a> Parts<'a> {
-    pub fn of_exchange(ex: &'a Exchange) -> Self {
+    pub(crate) fn of_exchange(ex: &'a Exchange) -> Self {
         Self {
             method: match ex.verb {
                 Verb::Get => Method::GET,
@@ -38,7 +38,7 @@ impl<'a> Parts<'a> {
         }
     }
 
-    pub fn of_upload(up: &'a Upload) -> Self {
+    pub(crate) fn of_upload(up: &'a Upload) -> Self {
         Self {
             method: Method::POST,
             root: up.root,
@@ -48,14 +48,6 @@ impl<'a> Parts<'a> {
             body: up.body.bytes.clone(),
         }
     }
-}
-
-/// A request ready to hand to the client.
-pub struct Prepared {
-    pub method: Method,
-    pub url: Url,
-    pub headers: HeaderMap,
-    pub body: Vec<u8>,
 }
 
 /// Whether a key may go to a plain `Tcp` host on this machine.
@@ -85,20 +77,22 @@ fn is_loopback(host: &str) -> bool {
             .is_ok_and(|ip| ip.is_loopback())
 }
 
-/// The URL of `path` on `target`. A Unix socket has no host; reqwest ignores the name, and
-/// `localhost` is what the `Host` header says. A host that is not a name or an address is
-/// `HttpError::Tls` for a `Tls` target (found before anything is connected) and `Connect` for
-/// the others.
-fn url_of(target: &HttpTarget, path: &str) -> Result<Url, HttpError> {
+/// The URI of `path` on `target`. A Unix socket has no host; the client reaches the socket and
+/// ignores the name, and `localhost` is what the `Host` header says. A host that is not a name or
+/// an address is `HttpError::Tls` for a `Tls` target (found before anything is connected) and
+/// `Connect` for the others.
+fn url_of(target: &HttpTarget, path: &str) -> Result<Uri, HttpError> {
     let (scheme, authority, wrong) = match target {
         HttpTarget::Tcp { host, port } => ("http", authority(&host.0, port.0), HttpError::Connect),
         HttpTarget::Tls { host, port } => ("https", authority(&host.0, port.0), HttpError::Tls),
         HttpTarget::Unix(_) => ("http", "localhost".to_owned(), HttpError::Connect),
     };
-    Url::parse(&format!("{scheme}://{authority}{path}")).map_err(|error| {
-        tracing::warn!(%error, "the engine's address is not a URL");
-        wrong
-    })
+    format!("{scheme}://{authority}{path}")
+        .parse::<Uri>()
+        .map_err(|error| {
+            tracing::warn!(%error, "the engine's address is not a URL");
+            wrong
+        })
 }
 
 /// `host:port`, with a bare IPv6 address in brackets.
@@ -110,9 +104,12 @@ fn authority(host: &str, port: u16) -> String {
     }
 }
 
-/// The URL, headers and body of `parts` against `endpoint`. A header value that cannot be
+/// The request of `parts` against `endpoint`. A header value that cannot be
 /// written (a newline in a secret) is a request that is never sent.
-pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, HttpError> {
+pub(crate) fn prepare(
+    endpoint: &HttpEndpoint,
+    parts: Parts<'_>,
+) -> Result<Request<Vec<u8>>, HttpError> {
     let path = match parts.root {
         RouteRoot::Base => format!("{}{}", endpoint.base.0, parts.path),
         RouteRoot::Server => parts.path.to_owned(),
@@ -122,14 +119,16 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
         Framing::Ndjson => "application/x-ndjson",
         Framing::Whole => "application/json",
     };
-    let mut headers = HeaderMap::new();
-    headers.append(ACCEPT, HeaderValue::from_static(accept));
+    let mut builder = Request::builder()
+        .method(parts.method)
+        .uri(url_of(&endpoint.target, &path)?);
+    let mut headers = vec![(ACCEPT, HeaderValue::from_static(accept))];
     if let Some(content_type) = parts.content_type {
         let value = HeaderValue::from_str(content_type).map_err(|error| {
             tracing::warn!(error = %error, "the content type is not a header value");
             HttpError::Connect
         })?;
-        headers.append(CONTENT_TYPE, value);
+        headers.push((CONTENT_TYPE, value));
     }
     let secret = |name: WireName, value: &str| {
         HeaderValue::from_str(value)
@@ -174,13 +173,11 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
         })?;
         keyed.push(secret(name, extra.value.expose())?);
     }
-    for (name, value) in keyed {
-        headers.append(name, value);
+    for (name, value) in headers.into_iter().chain(keyed) {
+        builder = builder.header(name, value);
     }
-    Ok(Prepared {
-        method: parts.method,
-        url: url_of(&endpoint.target, &path)?,
-        headers,
-        body: parts.body,
+    builder.body(parts.body).map_err(|error| {
+        tracing::warn!(error = %error, "the request cannot be built");
+        HttpError::Connect
     })
 }

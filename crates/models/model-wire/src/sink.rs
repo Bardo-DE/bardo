@@ -2,9 +2,9 @@
 //! (a reply to decode, or an error to classify), and the framer the exchange named cuts the reply
 //! into frames for the decoder.
 
+use http_core::Progress;
 use model_http::{
-    BodySink, Framing, HttpError, HttpStatus, NdjsonDecoder, Progress, ResponseHead, SseDecoder,
-    WaitMs,
+    BodySink, Framing, HttpError, HttpStatus, NdjsonDecoder, ResponseHead, SseDecoder, WaitMs,
 };
 use model_provider::{
     ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport,

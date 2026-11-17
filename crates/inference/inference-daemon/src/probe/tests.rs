@@ -5,10 +5,10 @@ use account_capability::Locality;
 use account_capability::{Capability, LlmFeature, LlmWire};
 use account_core::AccountId;
 use account_fake_servers::{FakeModels, ModelDef, Wire};
-use account_http_reqwest::ReqwestHttp;
+use http_reqwest::ReqwestHttp;
 
 fn http() -> ReqwestHttp {
-    ReqwestHttp::new().with_limits(account_http_reqwest::Limits {
+    ReqwestHttp::new().with_limits(http_reqwest::Limits {
         timeout: Duration::from_secs(5),
         max_body: 1 << 20,
     })

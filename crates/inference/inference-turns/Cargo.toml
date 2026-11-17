@@ -24,7 +24,8 @@ computer-use-vendors = {path = "../../computer-use/computer-use-vendors"}
 engine-supervisor = {path = "../../engines/engine-supervisor"}
 model-extract = {path = "../../models/model-extract"}
 # The HTTP client to a local engine (`hyper`); a plain Unix socket or loopback, so no `tls`.
-model-http = {features = ["client"], path = "../../models/model-http"}
+model-http = {path = "../../models/model-http"}
+model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
 model-provider = {path = "../../models/model-provider"}
 # `pixels`: the frame resize of a computer-use step.

@@ -36,7 +36,7 @@ impl ShapedTransport {
     #[must_use]
     pub fn new(endpoint: HttpEndpoint, roots: TlsRoots, shape: BodyShape) -> Self {
         Self {
-            client: HttpClient::with_roots(endpoint, roots),
+            client: model_http_reqwest::client_with_roots(endpoint, roots),
             shape,
         }
     }

@@ -2,8 +2,5 @@
 
 mod head;
 mod hostile;
-mod loopback;
 mod shapes;
 mod sse_ndjson;
-mod tls;
-mod upload;

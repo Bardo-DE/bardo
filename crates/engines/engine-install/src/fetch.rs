@@ -12,7 +12,7 @@ use base_secret::SecretText;
 use engine_manifest::{Artifact, hex};
 use engine_probe::file_digest;
 use model_http::{
-    AuthHeader, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName, HttpClient,
+    AuthHeader, BodySink, Exchange, ExtraHeader, Framing, HeaderName, HostName,
     HttpEndpoint, HttpError, HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots,
     Transport, UrlPath, Verb, WaitMs,
 };
@@ -162,7 +162,7 @@ impl Fetcher {
         let mut url = PinnedUrl::parse(artifact.url).map_err(|NotPinned| FetchError::BadAddress)?;
         for _hop in 0..=MAX_REDIRECTS {
             let mut sink = Sink::resume(part, artifact.size, base, meter, cancel)?;
-            let client = HttpClient::with_roots(self.endpoint(&url, sink.have), self.roots.clone());
+            let client = model_http_reqwest::client_with_roots(self.endpoint(&url, sink.have), self.roots.clone());
             let asked = Exchange {
                 verb: Verb::Get,
                 root: RouteRoot::Server,

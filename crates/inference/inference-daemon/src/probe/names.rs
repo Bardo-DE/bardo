@@ -10,8 +10,8 @@
 use super::{Probed, Runtime, model_of};
 use account_capability::Claim;
 use account_capability::ModelId;
-use account_http::http::Method;
-use account_http::{Http, request};
+use http_core::http::Method;
+use http_core::{Http, request};
 use account_provider::Port;
 use base_url::WebUrl;
 use serde_json::Value;

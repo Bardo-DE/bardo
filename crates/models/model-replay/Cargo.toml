@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+http-core = {path = "../../network/http-core"}
 model-http = {path = "../model-http"}
 model-provider = {path = "../model-provider"}
 speech-provider = {path = "../../speech/speech-provider"}

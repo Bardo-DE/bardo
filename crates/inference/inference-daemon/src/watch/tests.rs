@@ -4,7 +4,7 @@ use account_capability::Claim;
 use account_capability::LlmFeature;
 use account_core::AccountId;
 use account_fake_servers::{FakeModels, ModelDef, Wire, net::Bind};
-use account_http_reqwest::ReqwestHttp;
+use http_reqwest::ReqwestHttp;
 use std::sync::Mutex;
 
 fn up(runtime: Runtime, port: u16) -> Found {
@@ -157,7 +157,7 @@ impl Reports for Arc<Recorder> {
 }
 
 fn http() -> ReqwestHttp {
-    ReqwestHttp::new().with_limits(account_http_reqwest::Limits {
+    ReqwestHttp::new().with_limits(http_reqwest::Limits {
         timeout: Duration::from_secs(5),
         max_body: 1 << 20,
     })
@@ -350,11 +350,11 @@ struct Slowed {
 impl Http for Slowed {
     async fn send(
         &self,
-        request: account_http::http::Request<Vec<u8>>,
-    ) -> Result<account_http::http::Response<Vec<u8>>, account_http::HttpError> {
+        request: http_core::http::Request<Vec<u8>>,
+    ) -> Result<http_core::http::Response<Vec<u8>>, http_core::HttpError> {
         if self.slow.load(std::sync::atomic::Ordering::Relaxed) {
             tokio::time::sleep(Duration::from_millis(20)).await;
-            Err(account_http::HttpError::TimedOut)
+            Err(http_core::HttpError::TimedOut)
         } else {
             self.inner.send(request).await
         }

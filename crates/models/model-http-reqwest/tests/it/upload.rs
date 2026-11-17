@@ -1,7 +1,6 @@
 //! `UploadTransport for HttpClient` against a hand-written HTTP/1.1 peer on a Unix socket in a
 //! private directory: the bytes of the body arrive exactly, the headers say what they are, the
 //! reply reaches the sink, and a refusal is `Rejected` with its body in the sink.
-#![cfg(feature = "client")]
 
 use base_secret::SecretText;
 use std::ops::ControlFlow;
@@ -11,9 +10,8 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, BodySink, ContentType, Framing, HttpClient, HttpEndpoint, HttpError, HttpStatus,
-    HttpTarget, Proxy, RawBody, ResponseHead, RouteRoot, Timeouts, Upload, UploadTransport,
-    UrlPath, WaitMs,
+    AuthHeader, BodySink, ContentType, Framing, HttpEndpoint, HttpError, HttpStatus, HttpTarget,
+    Proxy, RawBody, ResponseHead, RouteRoot, Timeouts, Upload, UploadTransport, UrlPath, WaitMs,
 };
 use proptest::prelude::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -137,7 +135,7 @@ async fn run(
 ) -> Result<HttpStatus, HttpError> {
     tokio::time::timeout(
         Duration::from_secs(10),
-        HttpClient::new(endpoint).upload(up, seen),
+        model_http_reqwest::client(endpoint).upload(up, seen),
     )
     .await
     .expect("the upload finished")

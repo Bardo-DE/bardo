@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, HttpClient, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs,
+    AuthHeader, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs,
 };
 use model_openai_compat::{KOKORO_FORMAT, KokoroSpeech, OpenAiTranscription};
 use model_provider::ModelName;
@@ -197,11 +197,11 @@ impl Drop for Fake {
 
 impl Fake {
     pub fn transcription(&self) -> OpenAiTranscription {
-        OpenAiTranscription::new(HttpClient::new(self.endpoint.clone()))
+        OpenAiTranscription::new(model_http_reqwest::client(self.endpoint.clone()))
     }
 
     pub fn kokoro(&self) -> KokoroSpeech {
-        KokoroSpeech::new(HttpClient::new(self.endpoint.clone()))
+        KokoroSpeech::new(model_http_reqwest::client(self.endpoint.clone()))
     }
 
     pub fn requests(&self) -> Vec<Seen> {

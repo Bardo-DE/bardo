@@ -3,7 +3,7 @@
 
 use crate::speech_fake;
 
-use model_http::{HttpClient, HttpTarget, WaitMs};
+use model_http::{HttpTarget, WaitMs};
 use model_openai_compat::{OpenAiTranscription, encode_transcription};
 use model_provider::{ProviderError, RetrySeconds, ServerStatus};
 use speech_fake::*;
@@ -129,7 +129,7 @@ async fn every_failure_of_a_transcription_is_the_error_it_means_and_names_no_tex
 
 #[tokio::test]
 async fn nobody_listening_is_unreachable_and_a_silent_server_times_out() {
-    let nowhere = OpenAiTranscription::new(HttpClient::new(endpoint(HttpTarget::Unix(scratch()))));
+    let nowhere = OpenAiTranscription::new(model_http_reqwest::client(endpoint(HttpTarget::Unix(scratch()))));
     let got = nowhere
         .transcribe(
             &stt(LangChoice::Auto),
@@ -145,7 +145,7 @@ async fn nobody_listening_is_unreachable_and_a_silent_server_times_out() {
     let mut slow = server.endpoint.clone();
     slow.timeouts.first_byte = WaitMs(50);
     slow.timeouts.idle = WaitMs(50);
-    let speech = OpenAiTranscription::new(HttpClient::new(slow));
+    let speech = OpenAiTranscription::new(model_http_reqwest::client(slow));
     let got = speech
         .transcribe(
             &stt(LangChoice::Auto),

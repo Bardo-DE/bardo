@@ -1,16 +1,15 @@
 //! `Transport for HttpClient` over TLS against an in-process rustls server on `127.0.0.1`, with a
 //! scratch CA made by rcgen. Nothing leaves the machine. The client trusts the scratch CA through
 //! `TlsRoots::Only`; every other case shows that the checks cannot be skipped.
-#![cfg(feature = "tls")]
 
 use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use model_http::{
-    AuthHeader, BodySink, DerCertificate, Exchange, Framing, HostName, HttpClient, HttpEndpoint,
-    HttpError, HttpStatus, HttpTarget, JsonBody, Port, Proxy, ResponseHead, RouteRoot, Timeouts,
-    TlsRoots, Transport, UrlPath, Verb, WaitMs,
+    AuthHeader, BodySink, DerCertificate, Exchange, Framing, HostName, HttpEndpoint, HttpError,
+    HttpStatus, HttpTarget, JsonBody, Port, Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots,
+    Transport, UrlPath, Verb, WaitMs,
 };
 use rcgen::{BasicConstraints, Certificate, CertificateParams, IsCa, KeyPair, date_time_ymd};
 use rustls_pki_types::{CertificateDer, PrivateKeyDer, PrivatePkcs8KeyDer};
@@ -191,7 +190,7 @@ impl BodySink for Seen {
 async fn run(ep: HttpEndpoint, roots: TlsRoots, seen: &mut Seen) -> Result<HttpStatus, HttpError> {
     tokio::time::timeout(
         Duration::from_secs(10),
-        HttpClient::with_roots(ep, roots).exchange(&post(), seen),
+        model_http_reqwest::client_with_roots(ep, roots).exchange(&post(), seen),
     )
     .await
     .expect("the exchange hung")

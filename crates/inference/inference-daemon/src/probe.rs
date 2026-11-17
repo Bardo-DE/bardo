@@ -18,7 +18,7 @@ pub mod names;
 
 use account_capability::ModelId;
 use account_capability::{Claim, Offer, Subject};
-use account_http::Http;
+use http_core::Http;
 use account_provider::Port;
 use inference_probe::probe_ports;
 use inference_router::local::LocalModel;
