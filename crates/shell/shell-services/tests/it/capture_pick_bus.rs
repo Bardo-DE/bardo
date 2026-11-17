@@ -11,6 +11,7 @@ use desktop_protocols::vocab::{
     Emphasis, LeaseState, Modality, PlacementMark, Responsiveness, SensitivityLevel, WindowRole,
     WindowStateKind,
 };
+use shell_dbus::Shell1Proxy;
 use shell_model::apps::AppIndex;
 use shell_model::capture_pick::{
     CaptureCommand, CaptureLink, CapturePicker, Picks, Plurality, Rgb8, Source, plan, toggle,
@@ -29,36 +30,6 @@ use zbus::connection::Builder;
 use crate::callers_support::{Introduced, Role, Who};
 
 const SETTLE: Duration = Duration::from_secs(5);
-const PORTAL: &str = "org.freedesktop.impl.portal.desktop.bardo";
-
-#[zbus::proxy(
-    interface = "org.bardo.Shell1",
-    default_service = "org.bardo.Shell",
-    default_path = "/org/bardo/Shell1",
-    gen_blocking = false
-)]
-pub(crate) trait Shell1 {
-    fn pick_capture_source(
-        &self,
-        app_label: &str,
-        kinds: u32,
-        multiple: u32,
-        cursor_modes: Vec<u32>,
-        remembered: u32,
-    ) -> zbus::Result<(Vec<(String, String)>, u32)>;
-
-    fn pick_color(&self, app_label: &str) -> zbus::Result<Vec<(f64, f64, f64)>>;
-
-    fn ask_permission(
-        &self,
-        app_label: &str,
-        title: &str,
-        subtitle: &str,
-        body: &str,
-        grant_label: &str,
-        deny_label: &str,
-    ) -> zbus::Result<u32>;
-}
 
 pub(crate) async fn wait_for<T>(
     receiver: &mut watch::Receiver<T>,
@@ -205,7 +176,7 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
         callers: std::sync::Arc::<Introduced>::clone(&callers),
         ..Env::isolated(scratch.path())
     };
-    let transom = connect(bus, Some(PORTAL)).await;
+    let transom = connect(bus, Some(portal_dbus::BUS_NAME)).await;
     callers.make(&transom, who);
     let shell = connect(bus, Some("org.bardo.Shell")).await;
     // The shell's connection already serves objects when the picker exports its own; without

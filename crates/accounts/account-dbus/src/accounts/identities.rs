@@ -15,8 +15,8 @@ use crate::Details;
 use crate::json_value::bad;
 use account_core::ProviderId;
 use account_core::{CoreError, Identity, IdentityAddress, IdentityId, IdentityKind, IdentityName};
-use dbus_kit::bus_interface;
 use base_ids::word::{from_word, word as word_of};
+use dbus_kit::bus_interface;
 use zbus::zvariant::{OwnedFd, OwnedValue, Value};
 
 /// The vardict key of an identity's address (`s`).

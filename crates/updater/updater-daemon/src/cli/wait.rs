@@ -1,7 +1,7 @@
 //! Waiting for the daemon to finish what it was asked to do.
 
-use updater_dbus::UpdatesProxy;
 use std::time::{Duration, Instant};
+use updater_dbus::UpdatesProxy;
 
 const POLL: Duration = Duration::from_millis(250);
 

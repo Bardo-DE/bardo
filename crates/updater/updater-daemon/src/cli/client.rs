@@ -90,10 +90,7 @@ async fn problem_reply(proxy: &UpdatesProxy<'_>) -> zbus::Result<Reply> {
     }))
 }
 
-async fn describe_available(
-    proxy: &UpdatesProxy<'_>,
-    config: &Config,
-) -> zbus::Result<Reply> {
+async fn describe_available(proxy: &UpdatesProxy<'_>, config: &Config) -> zbus::Result<Reply> {
     let available = proxy.available().await?;
     Ok(Reply::done(if available.is_empty() {
         "Your software is up to date.".to_owned()

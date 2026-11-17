@@ -6,8 +6,8 @@
 use crate::bus::{BusSource, because, connect, pinned, said, watch_on};
 use crate::deadline::{Deadline, answered, peer};
 use crate::ticks::Ticks;
-use shell_dbus::{DISPLAYS_BUS, Displays1Proxy};
 use settings_app_model::{Absence, Brightness, BrightnessList, OutputId};
+use shell_dbus::{DISPLAYS_BUS, Displays1Proxy};
 use zbus::Message;
 
 const COULD_NOT_SET: &str = "The brightness can\u{2019}t be changed right now.";

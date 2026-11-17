@@ -5,12 +5,12 @@ use super::engine::{Engine, Job};
 use super::gate::{Gate, peers_on};
 use super::notify::{self, RESTORED_TEXT};
 use super::object::Updates;
-use updater_dbus::{BUS_NAME, PATH};
 use crate::clock::now;
 use crate::health::{Health, on_start};
 use std::sync::Arc;
 use std::time::Duration;
 use updater_core::{Attempt, Due, Outcome, next_check};
+use updater_dbus::{BUS_NAME, PATH};
 
 /// The longest the scheduler sleeps before looking at the clock again.
 const LONGEST_SLEEP: Duration = Duration::from_secs(3600);

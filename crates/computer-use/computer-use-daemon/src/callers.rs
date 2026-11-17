@@ -17,7 +17,6 @@ pub const FILE: &str = "computer-use-callers.toml";
 
 const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
 
-
 /// companiond, the planner: the `agent` role of the app `org.bardo.Companion1`.
 pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", Role::Agent);
 

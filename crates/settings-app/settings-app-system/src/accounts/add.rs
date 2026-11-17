@@ -6,8 +6,8 @@ use crate::bus::{BusSource, pinned_starting};
 use crate::deadline::{Deadline, answered, peer};
 use account_client::AccountsError;
 use account_core::ProviderHint;
-use account_wire::{ParentWindow, Refusal};
 use account_wire::names::ACCOUNTS_BUS;
+use account_wire::{ParentWindow, Refusal};
 use settings_app_model::{AccountKey, AddEnd};
 
 /// Asks for the add sheet and waits for it to end.

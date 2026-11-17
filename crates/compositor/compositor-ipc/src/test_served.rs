@@ -6,10 +6,10 @@ use crate::dbus::{CallerSetup, ConnectAsk, ConnectCall, ConnectReply, serve_comp
 use crate::privacy::PrivacyLink;
 use crate::test_bus::{PrivateBus, name_of};
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table};
-use compositor_dbus::{BUS_NAME, INTERFACE, OBJECT_PATH};
 use caller_identity_dbus::caller_identity_linux::fake::introduced_service;
 use caller_identity_dbus::{BusPeers, ManagerCheck};
 use calloop::channel::Channel;
+use compositor_dbus::{BUS_NAME, INTERFACE, OBJECT_PATH};
 use std::os::unix::net::UnixStream;
 use std::sync::{Arc, Mutex, OnceLock};
 use std::thread::JoinHandle;

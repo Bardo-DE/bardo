@@ -4,6 +4,7 @@
 
 use std::time::Duration;
 
+use shell_dbus::Outputs1Proxy;
 use shell_model::serve::ClaimError;
 use shell_model::work_areas::{Rect, WorkArea, WorkAreaCommand, WorkAreaLink, WorkAreas};
 use shell_services::env::{BusRoute, Buses, Env, NameClaims};
@@ -11,10 +12,9 @@ use shell_services::service::{Handle, spawn};
 use shell_services::work_areas::WorkAreaService;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
+use zbus::Connection;
 use zbus::connection::Builder;
 use zbus::export::futures_core::Stream;
-use shell_dbus::Outputs1Proxy;
-use zbus::Connection;
 
 const SETTLE: Duration = Duration::from_secs(5);
 

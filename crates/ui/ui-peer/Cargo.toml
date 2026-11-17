@@ -12,7 +12,7 @@ publish.workspace = true
 thiserror = { workspace = true }
 # The bound itself: a wall-clock delay on its own timer thread, so the deadline works under any
 # executor (zbus's own, tokio, a test's block_on).
-dbus-kit = { path = "../../bus/dbus-kit" }
+dbus-kit = { path = "../../bus/dbus-kit", default-features = false }
 
 [dev-dependencies]
 # The tests' runtime; the crate itself names none.

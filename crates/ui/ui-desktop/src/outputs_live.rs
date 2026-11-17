@@ -2,11 +2,11 @@
 
 use crate::outputs::{Outputs, Wire};
 use crate::probe::bus::answered;
+use shell_dbus::Outputs1Proxy;
 use std::future::poll_fn;
 use std::pin::Pin;
-use zbus::export::futures_core::Stream;
-use shell_dbus::Outputs1Proxy;
 use zbus::Connection;
+use zbus::export::futures_core::Stream;
 use zbus::proxy::PropertyStream;
 
 impl Outputs {

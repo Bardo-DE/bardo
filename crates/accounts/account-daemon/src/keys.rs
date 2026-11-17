@@ -20,12 +20,12 @@ use crate::state::{Core, Standing, window};
 use account_callers::CallerRole;
 use account_core::DataClass;
 use account_core::consent::Usage;
+use account_dbus::Details;
 use account_dbus::accounts::KeysServer;
 use account_dbus::accounts::sheet::SheetKind;
-use account_dbus::Details;
-use dbus_kit::Call;
 use account_match::llm_need;
 use account_wire::AccountsRequest;
+use dbus_kit::Call;
 use std::sync::Arc;
 use zbus::zvariant::OwnedObjectPath;
 

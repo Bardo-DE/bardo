@@ -9,11 +9,11 @@ use zbus::Connection;
 
 use super::object::DisplaysObject;
 use super::{DisplaysBusLinks, DisplaysBusService};
-use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
 use crate::callers::CallerSource;
 use crate::env::{Bus, NameClaims};
 use crate::serve;
 use crate::service::ServiceIo;
+use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
 
 pub(super) async fn run(
     bus: Bus,

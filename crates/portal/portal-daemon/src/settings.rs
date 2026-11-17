@@ -16,8 +16,8 @@ use portal_core::{
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, StructureBuilder, Value};
 
-use crate::peers::RoleGuard;
 use crate::TransomError;
+use crate::peers::RoleGuard;
 use portal_dbus::PORTAL_PATH;
 
 /// The largest appearance document that is read. The real one is a few hundred bytes.

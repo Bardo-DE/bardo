@@ -26,11 +26,11 @@ use zbus::message::Header;
 use zbus::names::BusName;
 use zbus::{Connection, fdo};
 
+use crate::TransomError;
 use crate::inhibit::InhibitService;
 use crate::link::BusLink;
 use crate::remote_desktop::RemoteDesktopService;
 use crate::screencast::ScreenCastService;
-use crate::TransomError;
 use portal_dbus::PORTAL_PATH;
 
 /// How callers on the bus are told apart: their process, held by a pidfd, judged against the

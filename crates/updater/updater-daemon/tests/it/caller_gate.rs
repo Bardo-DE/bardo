@@ -11,8 +11,8 @@ use caller_identity_dbus::caller_identity_linux::fake::{
 };
 use updater_daemon::problem::Problem;
 use updater_daemon::service::{Gate, Updates, peers_on};
-use updater_dbus::{BUS_NAME, PATH};
 use updater_daemon::state::StateStore;
+use updater_dbus::{BUS_NAME, PATH};
 
 fn service(role: &str, proof: Proof) -> Standing {
     introduced_service("org.bardo.Test", role, proof, Pin::AtConnect).expect("a standing")
@@ -236,7 +236,9 @@ fn a_refused_caller_is_told_access_is_denied_in_plain_words() {
             dbus_kit::ready::serving(&server)
                 .await
                 .expect("the object server answers");
-            dbus_kit::name::claim(&server, BUS_NAME).await.expect("the name");
+            dbus_kit::name::claim(&server, BUS_NAME)
+                .await
+                .expect("the name");
             let reply = match method {
                 "Install" => {
                     client

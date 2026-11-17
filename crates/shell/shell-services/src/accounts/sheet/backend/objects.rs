@@ -121,11 +121,7 @@ impl AccountsSheetServer for SheetObject {
         .await
     }
 
-    async fn close(
-        &self,
-        BusCall { header, .. }: BusCall<'_>,
-        handle: String,
-    ) -> fdo::Result<()> {
+    async fn close(&self, BusCall { header, .. }: BusCall<'_>, handle: String) -> fdo::Result<()> {
         let from = from_service(&self.peers, &header).await?;
         let handle = handle_of(&handle)?;
         asked(&self.calls, |answer| Call::Close {

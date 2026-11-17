@@ -6,6 +6,7 @@
 use std::pin::Pin;
 use std::time::Duration;
 
+use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
 use shell_model::displays::brightness::{Backlight, BacklightKind, BacklightName};
 use shell_model::displays::ddc::{Controls, DdcDisplay, Endpoint, Level};
 use shell_model::displays::output::describe;
@@ -15,7 +16,6 @@ use shell_model::ids::{DdcId, OutputName};
 use shell_model::serve::ServeLink;
 use shell_model::units::Percent;
 use shell_services::control::Control;
-use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
 use shell_services::displays::bus::{DisplaysBusLinks, DisplaysBusService};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::{Handle, spawn};
@@ -122,7 +122,13 @@ async fn settings_of(bus: &PrivateBus, shell: &Shell) -> Connection {
 
 async fn levels(connection: &Connection) -> Vec<(String, u32)> {
     connection
-        .call_method(Some(DISPLAYS_BUS), DISPLAYS_PATH, Some(INTERFACE), "Brightness", &())
+        .call_method(
+            Some(DISPLAYS_BUS),
+            DISPLAYS_PATH,
+            Some(INTERFACE),
+            "Brightness",
+            &(),
+        )
         .await
         .unwrap_or_else(|e| panic!("{e}"))
         .body()

@@ -2,8 +2,8 @@
 //! properties.
 
 use super::{Serve, first, forward, none, text};
-use memory_core::WaitingSetting;
 use crate::{CallArg, Iface, MemoryError};
+use memory_core::WaitingSetting;
 use std::collections::HashMap;
 use std::os::fd::OwnedFd;
 use std::sync::Arc;

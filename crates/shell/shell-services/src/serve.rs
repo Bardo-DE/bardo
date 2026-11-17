@@ -28,7 +28,9 @@ pub(crate) async fn claim(
 ) -> Result<Connection, ClaimError> {
     let connection = bus.try_connect().await?;
     objects(&connection).await?;
-    dbus_kit::ready::serving(&connection).await.map_err(refused)?;
+    dbus_kit::ready::serving(&connection)
+        .await
+        .map_err(refused)?;
     take_name(&connection, name).await?;
     Ok(connection)
 }

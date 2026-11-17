@@ -23,8 +23,6 @@
 //! the failure of a bus call. The portal
 //! shape of a sheet's answer is [`accounts::sheet`]. Who is calling is `account-callers`.
 
-extern crate self as account_dbus;
-
 mod args;
 mod destination;
 mod failure;

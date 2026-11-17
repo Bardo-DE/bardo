@@ -32,7 +32,7 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 | `memory-host` | the files memory keeps beside its Spaces: `Locator` (finds `$XDG_CONFIG_HOME/memory/settings.toml`, then `$XDG_CONFIG_DIRS`; reads it through `memory-settings` and keeps the confirmations store), `write_private_atomic`, `read_config`. Used by memoryd and `memory-local` | the filesystem |
 | `memory-watch` | `FileWatch`, `WatchError`, the pure `join` of observed changes and app-supplied reasons; `InotifyWatch` (notify 8.2) behind the `linux` feature | inotify (feature `linux`) |
 | `memory-dbus` | the caller's half of `org.bardo.Memory1` (`Record`, `Recall`, `Control`): the zbus proxies, bus names, `MemoryError`, the argument codec (`encode_request`/`decode_request`, `encode_reply`/`decode_reply`) and `invoke` | zbus |
-| `memory-dbus-serve` | the daemon's half: the objects served over a `Serve` handler, `Signal` with `emit`/`emit_to`, and the frozen skeletons whose introspection is checked against `dbus/org.bardo.Memory1.xml`. Reaches `memory-dbus`, never the other way | `memory-dbus`, zbus |
+| `memory-dbus` | the daemon's half: the objects served over a `Serve` handler, `Signal` with `emit`/`emit_to`, and the frozen skeletons whose introspection is checked against `dbus/org.bardo.Memory1.xml`. Reaches `memory-dbus`, never the other way | `memory-dbus`, zbus |
 | `memory-client` | the app-facing `Memory` over a `Transport`: `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`), `InProcess` (feature `in_process`, off by default: only it links `memory-service`, which links no storage) | through its transport |
 | `memory-local` | the portable on-disk `Backend` for an app that hosts its own memory: `LocalBackend` (SQLCipher log and index, sealed or plain files, `ProvidedKeys`, `SystemClock` (the one real `Clock`) or an app-passed clock, embedder and consolidator, `NoEmbedder`/`NoConsolidator` by default), `Root` (the one directory the app gives), `open`, `create_space`, `save_spaces` (`spaces.toml`); no XDG, bus, inotify or Landlock | none (seams are passed in) |
 | `memory-fake` | test-only: `fake_service`, `FakeBackend`, `SteppedClock`, `SharedVault`, `ScriptedConsolidator`, `Scratch`, the five fixtures | none |
@@ -45,7 +45,7 @@ cross-platform, and the desktop's features are additive. For almanac:
 
 | Portable core (builds with `--no-default-features`) | Desktop extra |
 | --- | --- |
-| `memory-core`, `memory-seal` (`ProvidedKeys`), `memory-store`, `eventlog`, `memfiles`, `recall`, `memory-tidy`, `memory-search`, `memory-service`, `memory-local` (the app's disk `Backend`), `memory-client` with `in_process`, `memory-watch`'s seam and `join` | `memory-dbus`, `memory-dbus-serve`, `memoryd` (the one shared memory daemon: Secret Service keys, Landlock, the bus, file watching, the nightly timer), `memory-client`'s `dbus` feature, `memory-seal`'s `oo7` feature, `memory-watch`'s `linux` feature (`InotifyWatch`) |
+| `memory-core`, `memory-seal` (`ProvidedKeys`), `memory-store`, `eventlog`, `memfiles`, `recall`, `memory-tidy`, `memory-search`, `memory-service`, `memory-local` (the app's disk `Backend`), `memory-client` with `in_process`, `memory-watch`'s seam and `join` | `memory-dbus`, `memory-dbus`, `memoryd` (the one shared memory daemon: Secret Service keys, Landlock, the bus, file watching, the nightly timer), `memory-client`'s `dbus` feature, `memory-seal`'s `oo7` feature, `memory-watch`'s `linux` feature (`InotifyWatch`) |
 | test helpers: `memory-fake` | |
 
 An app on another desktop hosts the service itself: `Memory::over(InProcess::new(service,
@@ -61,7 +61,7 @@ keys), plus `in_process` (hosting the service in the app; off by default, though
 or OpenSSL: the app's `Backend` does). An **app-level desktop switch** says "this app is on the Quire desktop" and is
 `quire-desktop`; it is declared only by a crate that holds a D-Bus client, by implication, never as a
 rename: `memory-client` `quire-desktop = ["dbus"]`, default on. No other almanac crate needs the
-alias: `memory-dbus`, `memory-dbus-serve`, `memoryd` are the desktop itself, `memory-watch` and `memory-seal` hold no
+alias: `memory-dbus`, `memory-dbus`, `memoryd` are the desktop itself, `memory-watch` and `memory-seal` hold no
 D-Bus client (their platform features are what a non-Linux OS lacks). An app on macOS or Windows
 depends on `memory-client` with `default-features = false, features = ["in_process"]`. Default
 builds are unchanged. `scripts/check-portable.sh` checks the left column (including
@@ -81,7 +81,7 @@ A crate depends on its own tier or a lower one (P < C < A), never up; `dev-depen
 | Tier | Crates |
 | --- | --- |
 | P | `memory-core`, `memory-seal`, `memory-store`, `memory-files-format`, `memory-settings`, `memory-tidy`, `memory-search`, `memory-service` |
-| C | `memory-keyfile`, `memory-host`, `eventlog`, `memfiles`, `recall`, `memory-watch`, `memory-infer`, `memory-dbus`, `memory-dbus-serve`, `memory-client`, `memory-fake`, `memory-local` |
+| C | `memory-keyfile`, `memory-host`, `eventlog`, `memfiles`, `recall`, `memory-watch`, `memory-infer`, `memory-dbus`, `memory-dbus`, `memory-client`, `memory-fake`, `memory-local` |
 | A | `memoryd` |
 
 The script also reports source files over 500 lines (`--long-files`, report only) and seeds one violation per tier to prove the bans fire (`--self-test`). The `KNOWN` list names each violation that exists today and the plan lane (`~/rs-wt/agent-layers/PLAN.md`) that removes it; a row whose violation is gone fails, so the list only shrinks. It is empty today.
@@ -95,7 +95,7 @@ External boundaries (default features): `memory-core` never reaches `zbus zvaria
 reqwest hyper oo7 ort fastembed rusqlite notify toml`; `memory-seal`, `memfiles`, `memory-files-format`: the same
 minus `toml`/with `rusqlite` forbidden; `eventlog`, `recall`, `memory-fake`,
 `memory-client` (default features) never reach the effect list (`zbus ... fastembed`) or `notify`; `memory-store`, `memory-tidy`, `memory-search` and `memory-service` also never reach `rusqlite`, `libsqlite3-sys` (SQLCipher), `openssl-sys` or `openssl`; `memory-infer` reaches no bus, HTTP client, keyring, embedding runtime or storage (inferd is behind the `Transport` it is given); `memory-watch`
-may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus-serve` reach `tokio` only through zbus's
+may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus` reach `tokio` only through zbus's
 `tokio` feature. `oo7` is behind `memory-seal`'s `oo7` feature only; `zbus` behind
 `memory-client`'s `dbus` feature only; `memory-client` with `in_process` reaches no `rusqlite` or `openssl-sys` either.
 
@@ -118,7 +118,7 @@ may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus-serve` r
 | `memory-host` | `files` < `locate` |
 | `memory-watch` | `observed` < `join` < `inotify` |
 | `memory-dbus` | `names`, `error`, `record`, `recall`, `control` (proxies), `codec` (`request`, `reply`), `invoke` |
-| `memory-dbus-serve` | `skeleton` (`record`, `recall`, `control`), `introspect`, `serve` (`record`, `recall`, `control`, `signal`) |
+| `memory-dbus` | `skeleton` (`record`, `recall`, `control`), `introspect`, `serve` (`record`, `recall`, `control`, `signal`) |
 | `memory-client` | `transport` < `memory` |
 | `memory-fake` | `clock`, `consolidator`, `fixtures`, `scratch` < `backend` |
 | `memoryd` | `xdg`, `peers`, `signals` (`Change` to bus signal), `ledger` (`FileLedger`: `removals.toml` through `atomic-write-file`), `sandbox`, `settings_watch`, `consent`, `keysel` < `backend` < `daemon` < `main` |
@@ -148,7 +148,7 @@ may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus-serve` r
 | what memoryd may touch (Landlock) | `memoryd::sandbox` |
 | the export layout and event lines | `memory-service::export` |
 | the file-why join | `memory-watch::join` |
-| D-Bus names, members, error names | `memory-dbus::{names, record, recall, control, error}` (proxies); the served objects and skeletons in `memory-dbus-serve` |
+| D-Bus names, members, error names | `memory-dbus::{names, record, recall, control, error}` (proxies); the served objects and skeletons in `memory-dbus` |
 | the system clock | `memory-local` (`clock.rs`) |
 | the environment | `memoryd` (`main.rs`) |
 
@@ -295,7 +295,7 @@ pending/**.md` plain, `rules.toml`. Never the index, never the keys. Golden:
 `partial`, `not-available` or, in a test build only, `off`: how far memoryd's Landlock sandbox is in
 force); bodies are the serde JSON of
 `memory-core` types in `s` arguments; errors `org.bardo.Memory1.Error.<Refusal variant>`.
-`dbus/org.bardo.Memory1.xml` is checked against the skeletons by `memory-dbus-serve`'s
+`dbus/org.bardo.Memory1.xml` is checked against the skeletons by `memory-dbus`'s
 introspection test; the failure prints the new text.
 
 ## 7. Recipes
@@ -352,7 +352,7 @@ and every fact; `Recent`, `Entries`, `Timeline` and export return it. The member
 
 **Add a request**: the variant in `MemoryRequest` and its reply in `MemoryReply`; its arm in
 `MemoryRequest::space`, in `allowed` (the match is exhaustive) and in `MemoryService::handle`;
-the D-Bus member in `memory-dbus` (proxy) and `memory-dbus-serve` (skeleton and served object), then regenerate and review
+the D-Bus member in `memory-dbus` (proxy) and `memory-dbus` (skeleton and served object), then regenerate and review
 `dbus/org.bardo.Memory1.xml`; a method on `Memory`; the arms of `encode_request`, `decode_request`,
 `decode_reply`, `encode_reply` and `invoke`; the sample in `memory-core/tests/it/support/samples.rs`
 (the wire and codec tests read it); its queue claim in `almanac_service::claim_of`.

@@ -16,6 +16,7 @@ name = "bardo-compositorctl"
 path = "src/main.rs"
 
 [dependencies]
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
 base-xdg = { path = "../../base/base-xdg" }
 # The privacy book and the administrator's floor as casement reads them (`privacy list`).
 compositor-privacy = {path = "../compositor-privacy"}

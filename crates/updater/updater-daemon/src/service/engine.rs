@@ -3,7 +3,6 @@
 use super::context::Context;
 use super::notify::{self, Posted};
 use super::object::Updates;
-use updater_dbus::PATH;
 use super::status::{Phase, Status};
 use super::wanted::Wanted;
 use crate::clock::now;
@@ -14,6 +13,7 @@ use semver::Version;
 use std::sync::{Arc, Mutex, MutexGuard, OnceLock, PoisonError};
 use std::time::Instant;
 use updater_core::{Authenticator, Emit, Offer, Outcome, Pending, ProgressGate, offer};
+use updater_dbus::PATH;
 use updater_root::apply::Staged;
 use zbus::Connection;
 

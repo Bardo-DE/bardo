@@ -8,9 +8,9 @@ use crate::test_served::{Served, WHOLE_TEST, outcome, service};
 use caller_identity_dbus::caller_identity_core::Proof;
 use caller_identity_dbus::caller_identity_linux::fake::introduced_program;
 use calloop::channel::Channel;
-use compositor_dbus::BUS_NAME as COMPOSITOR_BUS_NAME;
 use compositor_core::policy::Power;
 use compositor_core::privilege::{Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict};
+use compositor_dbus::BUS_NAME;
 use ui_settings::live::LiveSchema;
 use ui_settings::schema::{KeyKind, KeySpec};
 use zbus::zvariant::{OwnedValue, Value};
@@ -46,7 +46,7 @@ fn served() -> (Served, Channel<Edit>) {
 async fn module(caller: &zbus::Proxy<'_>) -> zbus::Proxy<'static> {
     zbus::Proxy::new(
         caller.connection(),
-        COMPOSITOR_BUS_NAME,
+        BUS_NAME,
         PRIVACY_PATH,
         "org.bardo.SettingsModule1",
     )

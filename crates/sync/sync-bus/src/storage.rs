@@ -18,8 +18,8 @@
 //! its details rather than reading the file; an app that opens the file directly reads `url`.
 
 use account_dbus::Details;
-use dbus_kit::bus_interface;
 use base_ids::word::{from_word, word};
+use dbus_kit::bus_interface;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
