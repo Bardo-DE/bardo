@@ -10,10 +10,10 @@ use account_core::AccountId;
 use account_core::{Credential, SecretKey, SecretPurpose, SecretText};
 use account_secrets::{Oo7Secrets, Secrets, SecretsError};
 use base_testkit::Scratch;
-use futures_util::StreamExt;
 use base_time::UnixSeconds;
 use common::Proc;
 use common::bus::PrivateBus;
+use futures_util::StreamExt;
 use std::process::{Command, Stdio};
 
 const CHILD: &str = "RIG_OO7_CHILD";

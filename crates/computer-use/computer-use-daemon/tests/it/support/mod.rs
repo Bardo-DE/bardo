@@ -79,9 +79,7 @@ pub async fn until<S: computer_use_run::Seams>(
     wanted: impl Fn(&computer_use_run::RunPhase) -> bool,
 ) {
     base_testkit::eventually("the run reaches the phase", || {
-        supervisor
-            .view(run)
-            .is_some_and(|view| wanted(&view.phase))
+        supervisor.view(run).is_some_and(|view| wanted(&view.phase))
     })
     .await;
 }

@@ -14,7 +14,7 @@ use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::mpsc;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use tokio::sync::mpsc::{UnboundedReceiver, unbounded_channel};
 use ui_blitz::AppId;
 use ui_blitz::menus::{
@@ -90,6 +90,7 @@ fn handle(command: &Cmd, undone: &mut Signal<u32>) {
 #[allow(non_snake_case)]
 fn Notes() -> Element {
     let mut undone = use_signal(|| 0_u32);
+    let mut picked = use_signal(Vec::<String>::new);
     use_hook(|| {
         let Some(mut activations) = ACTIVATIONS.with(|slot| slot.borrow_mut().take()) else {
             return;
@@ -97,13 +98,24 @@ fn Notes() -> Element {
         let bar = bar(Availability::Enabled);
         spawn(async move {
             while let Some(id) = activations.recv().await {
+                picked.write().push(id.0.clone());
                 if let Some(command) = bar.command(&id) {
                     handle(command, &mut undone);
                 }
             }
         });
     });
-    rsx! { div { id: "undone", "data-count": "{undone}" } }
+    rsx! {
+        div { id: "undone", "data-count": "{undone}" }
+        div { id: "picked", "data-ids": "{picked.read().join(\" \")}" }
+    }
+}
+
+/// Whether the app has been handed the activation of `id` (every one, run or not).
+fn was_picked(harness: &Harness, id: &str) -> bool {
+    harness
+        .attr("#picked", "data-ids")
+        .is_some_and(|ids| ids.split(' ').any(|picked| picked == id))
 }
 
 fn undone(harness: &Harness) -> u32 {
@@ -246,13 +258,15 @@ impl MenuPermit for OnlyFrom {
     }
 }
 
-/// Run `harness` until `done`, in short real-time steps: the bus delivers on its own thread.
-fn settle(harness: &mut Harness, done: impl Fn(&Harness) -> bool, within: Duration) {
-    let until = Instant::now() + within;
-    while !done(harness) && Instant::now() < until {
+/// Run `harness` until `done`, in short steps: the bus delivers on its own thread.
+fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
+    base_testkit::eventually_blocking(what, || {
+        if done(harness) {
+            return true;
+        }
         harness.advance(Duration::from_millis(20));
-        std::thread::sleep(Duration::from_millis(10));
-    }
+        false
+    });
 }
 
 fn start(bus: &PrivateBus, tx: tokio::sync::mpsc::UnboundedSender<CommandId>) -> MenuExport {
@@ -313,11 +327,9 @@ fn the_edit_menu_is_served_and_a_click_on_undo_runs_the_apps_undo() {
 
     assert_eq!(undone(&harness), 0);
     client.click(undo.id).expect("Event");
-    settle(
-        &mut harness,
-        |harness| undone(harness) == 1,
-        Duration::from_secs(10),
-    );
+    settle(&mut harness, "the click runs the app's Undo", |harness| {
+        undone(harness) == 1
+    });
     assert_eq!(undone(&harness), 1, "the click ran the app's Undo");
     drop(export);
 }
@@ -366,8 +378,15 @@ fn disabling_an_item_announces_a_new_layout_and_refuses_its_click() {
         client.click(undo_id).is_err(),
         "a disabled item cannot be picked"
     );
-    // Give a (wrong) delivery time to arrive before checking that none did.
-    settle(&mut harness, |_| false, Duration::from_millis(400));
+    // A (wrong) delivery of the refused click would reach the app before the one that follows
+    // it, on the same channel: pick an enabled item next and wait for that, then look.
+    let archive_id = client.layout().1.child("File").child("Archive").id;
+    client.click(archive_id).expect("Event");
+    settle(
+        &mut harness,
+        "the app is handed the Archive pick",
+        |harness| was_picked(harness, "file.archive"),
+    );
     assert_eq!(undone(&harness), 0, "the app's Undo did not run");
 
     // The same bar again is no change: the revision stays.
