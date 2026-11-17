@@ -179,19 +179,32 @@ fn a_garbage_fake_writes_bytes_a_reader_refuses() {
     assert!(matches!(error, WireError::Malformed { .. }), "{error:?}");
 }
 
-/// Serves a ping, a cancel and a second ping; the first ping's handler polls `cancelled` for
-/// `wait` and the result is what it saw, with the pongs written.
-fn poll_for_cancel(fault: Option<Fault>, wait: Duration) -> (bool, Vec<Say>) {
+/// Serves a ping, a cancel and a second ping; the first ping's handler polls `cancelled` and the
+/// result is what it saw, with the pongs written. With `wait` of `None` it polls until the cancel
+/// is seen (the testkit's deadline fails a cancel that never comes); with `Some(for)` it polls for
+/// that long, for the fake that must never see one.
+fn poll_for_cancel(fault: Option<Fault>, wait: Option<Duration>) -> (bool, Vec<Say>) {
     let (mut out, mut err) = (Vec::new(), Vec::new());
     let asks = [Ask::Ping(1), Ask::Cancel, Ask::Ping(2)];
     let mut seen = false;
     fake(fault)
         .serve(requests(&asks), &mut out, &mut err, |ask, conversation| {
             if ask == Ask::Ping(1) {
-                let end = Instant::now() + wait;
-                while !seen && Instant::now() < end {
-                    seen = conversation.cancelled();
-                    std::thread::sleep(Duration::from_millis(5));
+                match wait {
+                    None => base_testkit::eventually_blocking("the cancel to be seen", || {
+                        seen = conversation.cancelled();
+                        seen
+                    }),
+                    // Best-effort absence check: the fake that ignores a cancel gives no sign
+                    // that it took one, so the poll runs for a while and the pongs after it
+                    // (the cancel was read off the queue, the next request kept) back it up.
+                    Some(wait) => {
+                        let end = Instant::now() + wait;
+                        while !seen && Instant::now() < end {
+                            seen = conversation.cancelled();
+                            std::thread::sleep(Duration::from_millis(5));
+                        }
+                    }
                 }
             }
             if let Ask::Ping(n) = ask {
@@ -205,18 +218,18 @@ fn poll_for_cancel(fault: Option<Fault>, wait: Duration) -> (bool, Vec<Say>) {
 
 #[test]
 fn a_cancel_is_seen_by_a_fake_that_listens_and_never_by_one_that_ignores_it() {
-    // name, the fault, how long the handler polls, whether it sees the cancel
+    // name, the fault, how long the handler polls (none: until it sees it), whether it sees it
     let cases = [
-        ("a cancel that arrives while working", None, 5_000, true),
+        ("a cancel that arrives while working", None, None, true),
         (
             "a fake that ignores cancel",
             Some(Fault::IgnoreCancel),
-            200,
+            Some(200),
             false,
         ),
     ];
     for (name, fault, wait_ms, want) in cases {
-        let (seen, pongs) = poll_for_cancel(fault, Duration::from_millis(wait_ms));
+        let (seen, pongs) = poll_for_cancel(fault, wait_ms.map(Duration::from_millis));
         assert_eq!(seen, want, "{name}: seen");
         // Either way the next request is kept.
         assert_eq!(pongs, vec![Say::Pong(1), Say::Pong(2)], "{name}: pongs");

@@ -46,6 +46,7 @@ path = "tests/bayonet/main.rs"
 required-features = ["host"]
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 tempfile.workspace = true
 
 [lints]

@@ -210,24 +210,23 @@ fn dropping_a_session_kills_what_the_plugin_started() {
         "the plugin's own child is alive while the session is"
     );
     drop(session);
-    let end = Instant::now() + Duration::from_secs(10);
-    while running(&pid) && Instant::now() < end {
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    assert!(!running(&pid), "the child died with the plugin's group");
+    base_testkit::eventually_blocking("the child to die with the plugin's group", || {
+        !running(&pid)
+    });
 }
 
 fn wait_for_pid(file: &Path) -> String {
-    let end = Instant::now() + Duration::from_secs(10);
-    while Instant::now() < end {
-        if let Ok(text) = std::fs::read_to_string(file)
-            && !text.is_empty()
-        {
-            return text;
+    let mut pid = String::new();
+    base_testkit::eventually_blocking("the plugin to write its child's pid", || {
+        match std::fs::read_to_string(file) {
+            Ok(text) if !text.is_empty() => {
+                pid = text;
+                true
+            }
+            _ => false,
         }
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("the plugin never wrote its child's pid");
+    });
+    pid
 }
 
 /// Whether a process with this pid is alive (a zombie awaiting its parent is not).
