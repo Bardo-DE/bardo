@@ -10,10 +10,10 @@
 //! `TextLine` (`Some(string)` must be written `Some(string.into())`: `None` could not be inferred if
 //! both `Option<String>` and `Option<TextLine>` were accepted).
 
+use base_words::Word;
 use dioxus::core::SuperFrom;
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// How one run is set.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

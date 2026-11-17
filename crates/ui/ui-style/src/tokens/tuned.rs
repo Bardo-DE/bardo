@@ -11,7 +11,7 @@
 mod tests {
     use crate::tokens::pixel::PixelToken;
     use crate::tokens::token::TokenScope;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn a_tuned_token_reads_its_input_with_the_default_behind_it() {

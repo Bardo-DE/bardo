@@ -2,7 +2,8 @@
 
 use crate::components::chrome::toolbar::model::ToolbarItem;
 use crate::components::controls::scrubber_model::BufferedRange;
-use ui_core::vocab::{Availability, Fraction};
+use base_ids::Fraction;
+use ui_core::vocab::Availability;
 use ui_motion::spring::Millis;
 
 /// A recording's progress bar in a capsule: it fills the width the buttons leave.

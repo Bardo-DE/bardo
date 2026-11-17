@@ -1,8 +1,8 @@
 //! What a `Slider` looks like and where it stops (design/30 section 2.1, `NSSlider`): data and
 //! the pure arithmetic of its tick marks.
 
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
+use base_ids::Fraction;
+use base_words::Word;
 
 /// How the slider is drawn, `data-look`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
@@ -64,8 +64,8 @@ pub(crate) fn key_step(ticks: Option<Fraction>) -> Option<Fraction> {
 #[cfg(test)]
 mod tests {
     use super::{SliderLook, key_step, marks, snap};
-    use ui_core::vocab::Fraction;
-    use ui_core::word::Word;
+    use base_ids::Fraction;
+    use base_words::Word;
 
     #[test]
     fn a_value_snaps_to_the_nearest_mark_and_halfway_goes_up() {

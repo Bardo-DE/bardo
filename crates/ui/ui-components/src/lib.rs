@@ -22,8 +22,12 @@ pub mod window;
 
 pub mod prelude;
 
-// The three crates under `ds`, as facades: a consumer names `ui_components::base::..`, `ui_components::style::..` and
-// `ui_components::motion::..` and depends on `ds` alone.
+// The crates under `ds`, as facades: a consumer names `ui_components::base::..`, `ui_components::style::..`,
+// `ui_components::motion::..` and the base layer's `words` (`Word` and its derive), `spawn`
+// (`Spawner`) and `ids` (`Fraction`), and depends on `ds` alone.
+pub use base_ids as ids;
+pub use base_spawn as spawn;
+pub use base_words as words;
 pub use ui_core as base;
 pub use ui_motion as motion;
 pub use ui_style as style;

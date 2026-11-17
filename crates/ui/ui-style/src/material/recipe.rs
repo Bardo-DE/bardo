@@ -233,7 +233,7 @@ mod tests {
     use crate::tokens::shape::Radius;
     use crate::tokens::tint::flat_tint;
     use crate::tokens::token::{Token, TokenScope};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn the_flat_tints_are_section_17_2() {

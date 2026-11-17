@@ -5,10 +5,10 @@ use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::Ident;
 
-/// The crate a derive names, as a path: `::ui_core` where the caller depends on `ui-core` (or is
-/// it), else `::ds::base`. Each crate declares `extern crate self` under its own name.
-pub(crate) fn base() -> TokenStream {
-    home("ui-core", "base")
+/// The crate a derive names, as a path: `::base_words` where the caller depends on `base-words`
+/// (or is it), else `::ds::words`. Each crate declares `extern crate self` under its own name.
+pub(crate) fn words() -> TokenStream {
+    home("base-words", "words")
 }
 
 /// The path to `ui-style`: `::ui_style` where the caller depends on it (or is it), else

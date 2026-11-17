@@ -1,6 +1,6 @@
 //! How a virtual table is dressed: the grid it has always been, or Finder's list view.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// How a `VirtualTable` looks. The rules (`column_rules`, `header_rule`) are drawn as they are
 /// asked for in every look.

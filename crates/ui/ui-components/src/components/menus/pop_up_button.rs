@@ -14,12 +14,12 @@ use crate::components::menus::menu::placement::MenuPlacement;
 use crate::host::measure::{Anchor, MountedRef, use_rect};
 use crate::root::common::Common;
 use crate::stack::typeahead::Typeahead;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::command::types_text;
 use ui_core::press::Press;
 use ui_core::time::clock::now;
 use ui_core::vocab::{Availability, Check};
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::tokens::control_size::ControlSize;
 

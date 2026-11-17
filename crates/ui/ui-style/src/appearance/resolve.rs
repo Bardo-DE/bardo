@@ -12,7 +12,7 @@ use crate::appearance::{
     theme::{Scheme, Theme},
     transparency::Transparency,
 };
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What a `.ds` root is drawn as.
 #[derive(Debug, Clone, PartialEq, Eq, Copy, Hash)]

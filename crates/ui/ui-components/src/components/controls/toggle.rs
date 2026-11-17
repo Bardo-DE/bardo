@@ -8,9 +8,9 @@
 
 use crate::components::controls::press::{ActivationKeys, activates, disabled, use_pressing};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::{Availability, Check};
-use ui_core::word::Word;
 use ui_motion::detail::touch::Touch;
 use ui_motion::{
     spring_spec::{SpringResponse, SpringSpec},

@@ -22,10 +22,10 @@ use crate::components::controls::progress::model::{Progress, ProgressStyle};
 use crate::components::controls::progress::view::ProgressIndicator;
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::press::Press;
 use ui_core::vocab::{Availability, Check, HasPopup, Shortcut, aria_word};
-use ui_core::word::Word;
 use ui_motion::detail::{morph::MorphStyle, morph_glyph::MorphGlyph};
 use ui_motion::symbol::effect::{LoopEffect, SymbolEffect};
 use ui_motion::symbol::use_symbol::use_symbol_attrs;
@@ -139,13 +139,13 @@ pub fn Button(
             "data-image": image.slug(),
             "data-availability": availability.slug(),
             "data-busy": turning.then_some(BusyLook::TurnIcon.slug()),
-            "data-state": value.map(ui_core::word::Word::slug),
+            "data-state": value.map(base_words::Word::slug),
             title: tip.native(),
             "aria-label": aria_label,
             "aria-description": tip.description(&name),
             "data-tip": tip.marker(&name),
             "aria-pressed": value.map(Check::aria),
-            "aria-haspopup": popup.map(ui_core::word::Word::slug),
+            "aria-haspopup": popup.map(base_words::Word::slug),
             "aria-expanded": shown.map(aria_word),
             "aria-disabled": availability.aria_disabled(),
             "aria-busy": availability.aria_busy(),

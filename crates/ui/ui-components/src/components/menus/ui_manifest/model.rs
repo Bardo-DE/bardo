@@ -1,9 +1,9 @@
 //! The conformance file as data. Its serde form is the file's schema, which the checker owns, so
 //! the names and tags here are its.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use ui_core::command::{ActionName, CommandId, IntentsApp, UiOnlyReason};
-use ui_core::word::Word;
 
 /// Where a command is declared.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

@@ -6,9 +6,9 @@
 
 use crate::components::content::text_runs::{TextLine, text};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::{Availability, Severity};
-use ui_core::word::Word;
 
 /// How much a label matters (`NSColor.labelColor` and its three secondary levels):
 /// `data-role`.

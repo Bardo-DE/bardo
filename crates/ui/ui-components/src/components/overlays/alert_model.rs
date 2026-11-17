@@ -2,9 +2,9 @@
 //! what its buttons are, which one Return presses and which one Escape does.
 
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::EventHandler;
 use ui_core::vocab::Check;
-use ui_core::word::Word;
 
 /// What an alert is about: `data-style` (`NSAlert.Style`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

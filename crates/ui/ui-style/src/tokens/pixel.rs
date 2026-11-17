@@ -12,8 +12,8 @@
 //! token is its design value verbatim: the stylesheet and every picture at 1x are unchanged.
 
 use crate::tokens::token::{Token, TokenScope};
+use base_words::Word;
 use ui_core::geometry::{scale::Scale, units::Px};
-use ui_core::word::Word;
 
 /// One pixel token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
@@ -170,8 +170,8 @@ fn decimal(numerator: u64, denominator: u64) -> String {
 #[cfg(test)]
 mod tests {
     use super::PixelToken;
+    use base_words::Word;
     use ui_core::geometry::{scale::Scale, units::Px};
-    use ui_core::word::Word;
 
     /// Each token's CSS at 1.25, 1.5, 1.75 and 2.
     const TABLE: &[(PixelToken, [&str; 4])] = &[

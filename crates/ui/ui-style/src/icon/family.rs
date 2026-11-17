@@ -7,7 +7,7 @@
 
 use crate::tokens::hex::Hex;
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One plate gradient family.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
@@ -78,7 +78,7 @@ pub enum PlateShare {
 #[cfg(test)]
 mod tests {
     use super::PlateFamily;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn white_glyphs_sit_on_red_blue_and_violet_and_ink_on_the_rest() {

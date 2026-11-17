@@ -23,12 +23,12 @@ use crate::components::lists::row::shape_view;
 use crate::components::lists::row::size::RowSize;
 use crate::focus::click::kept_click;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
 use ui_core::press::Press;
 use ui_core::vocab::RowState;
 use ui_core::vocab::{Availability, aria_word, emphasis_word};
-use ui_core::word::Word;
 
 /// Whether a row is part of an outline, and whether it opens one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

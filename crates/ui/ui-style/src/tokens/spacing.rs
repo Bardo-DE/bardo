@@ -11,7 +11,7 @@
 //! floating clamp margin and the card inset are both `--s-8`.
 
 use crate::tokens::token::{Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One step of the spacing scale.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Word, Token)]
@@ -118,7 +118,7 @@ impl SpacingToken {
 #[cfg(test)]
 mod tests {
     use super::SpacingToken;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn the_scale_ascends() {

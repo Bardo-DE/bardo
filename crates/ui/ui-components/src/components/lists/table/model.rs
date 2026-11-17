@@ -1,10 +1,10 @@
 //! What a `Table` is given: its columns, its rows and its sort (data, and the one rule of what a
 //! press on a header asks for).
 
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 
 /// Which way a column sorts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

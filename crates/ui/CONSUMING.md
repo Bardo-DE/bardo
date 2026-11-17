@@ -447,7 +447,7 @@ tint with the vibrancy boost off. The compositor reads `Appearance.transparency`
 it reads `theme` from.
 
 **Nothing here names a runtime.** The file watch and the portal watch are tasks handed to the
-`ds::base::spawner::Spawner` you pass (`ui-settings` may not depend on `tokio`, `scripts/check-boundary.sh`).
+`ds::spawn::Spawner` you pass (`ui-settings` may not depend on `tokio`, `scripts/check-boundary.sh`).
 On Blitz, `ds_blitz::TokioSpawner::current()` is the implementor: `ds_blitz::launch` enters a
 process-wide, lazily built Tokio runtime (multi-thread, two workers;
 `crates/ds-blitz/src/launch/runtime.rs`) and holds the guard for the process's life, and

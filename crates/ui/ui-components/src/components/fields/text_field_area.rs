@@ -2,9 +2,9 @@
 //! and Enter is a newline, never a commit. The caret leaving commits, as it does for a line.
 
 use crate::components::fields::text_field_parts::{Field, aria_placeholder, placeholder_shown};
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 
 /// Several lines of text, as tall as the field's `rows`.
 pub(crate) fn area(field: Field, value: &str) -> Element {

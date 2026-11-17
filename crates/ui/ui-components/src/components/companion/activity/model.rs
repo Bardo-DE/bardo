@@ -2,7 +2,8 @@
 
 use crate::components::companion::mark::AppMark;
 use crate::stack::toast_hub::UndoToken;
-use ui_core::vocab::{ActorMark, Fraction, Tally};
+use base_ids::Fraction;
+use ui_core::vocab::{ActorMark, Tally};
 
 /// Where an activity entry stands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

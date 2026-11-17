@@ -16,8 +16,8 @@ use crate::components::content::text_runs::{TextLine, text};
 use crate::components::controls::button::Button;
 use crate::components::forms::icon_tile::{TileFace, tile};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::icon::render::IconSize;
 

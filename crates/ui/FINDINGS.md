@@ -785,7 +785,7 @@ own caret and selection. The route needs no Blitz fork.
   `CaretHost`, `GeometryHost`, `ClickFocusHost`, `EditHost` (with `ImeHost`) and `FileDropHost`;
   the `FileDropBoard` and `Rc<dyn Clipboard>` beside it; `HostSignals` (modality, scale,
   activity); `WindowHost`. `ds` names none of Blitz's types.
-- **`use_environment` runs its watches on a `Spawner`** (`ds::base::spawner::Spawner`; the portal watch and
+- **`use_environment` runs its watches on a `Spawner`** (`ds::spawn::Spawner`; the portal watch and
   the file watch are tasks it hands over). `ds_blitz::TokioSpawner::current` is the one
   implementor; `ds_blitz::launch` and `Harness` enter a process-wide two-worker runtime for it.
   `ds` and `ds-settings` may not depend on a renderer, and `scripts/check-boundary.sh` forbids

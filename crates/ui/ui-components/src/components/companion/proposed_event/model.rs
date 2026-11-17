@@ -3,7 +3,7 @@
 use crate::components::companion::answer::action::CardAction;
 use crate::components::companion::answer::footer::CardFooter;
 use crate::components::companion::draft::model::PersonLine;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A stretch of a day, in minutes from midnight.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -4,7 +4,7 @@
 //! A tiled window squares the corners and drops the shadow on those sides, so a frame reads it; a
 //! host that cannot tell reports none.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One side of a window.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

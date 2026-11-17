@@ -1,6 +1,7 @@
 use super::*;
 use crate::components::chrome::capsule::model::{LevelSlot, ScrubSlot};
-use ui_core::vocab::{Availability, Fraction};
+use base_ids::Fraction;
+use ui_core::vocab::Availability;
 use ui_motion::spring::Millis;
 use ui_style::icon::Icon;
 

@@ -33,8 +33,8 @@ use crate::components::menus::palette::palette_stops::{
     Run, Travel, grid_spans, run_of, shown_groups, stops, travel,
 };
 use crate::root::pointer_trail::{moved_to, use_pointer_trail};
+use base_words::Word;
 use ui_core::vocab::{Dismiss, shown_word};
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 
 use crate::components::fields::text_field::TextField;

@@ -1,6 +1,7 @@
 //! Every closed vocabulary of the companion's components parses back from its own slug, and no
 //! two members share one.
 
+use base_words::Word;
 use ui_components::components::companion::answer::action::ActionRole;
 use ui_components::components::companion::answer::footer::ServedPlaceKind;
 use ui_components::components::companion::memory::model::{FactOrigin, FactStanding};
@@ -10,7 +11,6 @@ use ui_components::components::companion::prompt::host::PromptHost;
 use ui_components::components::companion::prompt::model::PromptPhase;
 use ui_components::components::companion::proposed_event::model::BusyKind;
 use ui_components::components::companion::run_row::model::{RunPlace, RunState};
-use ui_core::word::Word;
 
 fn round_trips<T: Word + std::fmt::Debug>() {
     for &word in T::ALL {

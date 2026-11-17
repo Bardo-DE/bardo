@@ -17,8 +17,8 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 
 | Crate | Purpose |
 | --- | --- |
-| `ui-core-derive` | proc macros: `#[derive(Word)]`, `#[derive(Token)]` |
-| `ui-core` | pure base: vocabulary, geometry units, colour, time, the `Spawner` trait, errors, text clip, PNG/base64, the `Word` trait |
+| `base-words-macros` (crates/base) | proc macros: `#[derive(Word)]`, `#[derive(Token)]` |
+| `ui-core` | pure base: vocabulary, geometry units, colour, time, errors, text clip, PNG/base64. `Word` lives in `base-words`, `Spawner` in `base-spawn`, `Fraction` in `base-ids` |
 | `ui-style` | appearance, tokens and the `Token` trait, material, Space palettes, fonts (bytes), icons, CSS emission, the `Kit` seam |
 | `ui-motion` | `Anim` and recipes, keyframes, `Presence`, `Timeline`, rosters, gestures, pulse, the details grammar; feature `dioxus` adds the hooks, timers and event conversions over Dioxus (`ds` turns it on) |
 | `ui-lint` | stylesheet and markup linter; reads its vocabulary from `Kits` |
@@ -43,9 +43,9 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 
 | Crate | May depend on |
 | --- | --- |
-| `ui-core-derive` | nothing of ours |
-| `ui-core` | `ui-core-derive` |
-| `ui-style` | `ui-core` |
+| `base-words-macros` | nothing of ours |
+| `ui-core` | `base-words` |
+| `ui-style` | `ui-core`, `base-words-macros`, `base-words`, `base-ids` |
 | `ui-motion` | `ui-style`, `ui-core` |
 | `ui-lint` | `ui-style`, `ui-core` |
 | `ui-intents` | `ui-core` |
@@ -76,7 +76,7 @@ anyview, `examples/consumer`) depend on `ds` (+ `ui-shell` for the account and h
 | --- | --- |
 | `ui-core`, `ui-intents`, `ui-style`, `ui-motion`, `ui-lint`, `ds`, `ui-shell` | `zbus`, `notify`, `tokio`, `winit`, every `blitz*`, `stylo_taffy`, `dioxus-native*`, every `anyrender*`, `wgpu`, `wgpu_context`, `pdfrum*`, `arboard` |
 | `ui-behaviour` | `zbus`, `notify`, `tokio`, `winit`, `dioxus`, every `blitz*`, `stylo_taffy`, `dioxus-native*`, every `anyrender*`, `wgpu`, `wgpu_context`, `pdfrum*` (a compositor links it, so like `ui-core` it is plain data and integer maths over `Stamp`) |
-| `ui-core`, `ui-intents`, `ui-lint`, `ui-core-derive` | `dioxus` (`ui-core` is plain data and maths, so sill's pure crates can use it; the linter reads strings; the derives generate paths: `::ds_core` or `::ds_style` where the caller's manifest names it, else `::ds::base` or `::ds::style`, found with `proc-macro-crate`) |
+| `ui-core`, `ui-intents`, `ui-lint`, `base-words-macros` | `dioxus` (`ui-core` is plain data and maths, so sill's pure crates can use it; the linter reads strings; the derives generate paths: `::base_words` or `::ui_style` where the caller's manifest names it, else `::ds::words` or `::ds::style`, found with `proc-macro-crate`) |
 | `ui-style` | `dioxus` unless feature `dioxus` (appearance, tokens, palettes, icons and CSS text are plain data, so a compositor links them without it) |
 | `ui-motion` | `dioxus` unless feature `dioxus` (recipes, keyframes, springs, throws, timelines, `Touch` as data; the hooks, timers and `Touch`'s event conversions are the feature) |
 | `ui-settings` | every `blitz*`, `dioxus-native*`, `anyrender*`, `wgpu`, `wgpu_context`; `tokio` (it takes a `Spawner`); `dioxus` unless feature `dioxus` |
@@ -97,7 +97,7 @@ declarations and re-exports. Directories group a concept; role files are named f
 
 | Crate | Modules, lowest first |
 | --- | --- |
-| `ui-core` | `word`, `vocab` (Availability, Switch, Expanded, Check, Fraction, Percent, StaggerIndex, ShortcutKey, Shortcut), `command` (names, `CommandFace`, `AppCommand`, a shortcut's chord text), `press`, `standard_action`, `geometry` (units, scale, scroll, placement), `colour` (srgb, oklab, fit, contrast), `time` (clock, virtual clock, `Stamp`, `FrameClock`), `machine` (the `Machine` trait, `Elapsed`), `selection` (`RowSelection`, `Pick`, `PickHow`), `spawner` (the `Spawner` trait), `error`, `text` (clip, `TypedText`), `codec` (png, base64) |
+| `ui-core` | `vocab` (Availability, Switch, Expanded, Check, Percent, StaggerIndex, ShortcutKey, Shortcut), `command` (names, `CommandFace`, `AppCommand`, a shortcut's chord text), `press`, `standard_action`, `geometry` (units, scale, scroll, placement), `colour` (srgb, oklab, fit, contrast), `time` (clock, virtual clock, `Stamp`, `FrameClock`), `machine` (the `Machine` trait, `Elapsed`), `selection` (`RowSelection`, `Pick`, `PickHow`), `error`, `text` (clip, `TypedText`), `codec` (png, base64) |
 | `ui-style` | `appearance` (theme, accent, motion, blur, material choice, peek, system prefs, resolve), `scope` (the enclosing `Scope`), `tokens` (one file per token family, `set.rs` = `TokenSet`, `tuned.rs`), `kit` (`Kit`, `Kits`, `Section`, `Vocabulary`), `material`, `space` (palette, look, presets, frame vars, store, and `list`: the pure list of an app's Spaces), `icon` (glyph tables by family, plate, classify, render, url), `fonts`, `scale`, `css` (emission per cascade section, `reset.css`, `utilities.css`), `emit` |
 | `ui-motion` | `anim` (`Anim`), `recipe` (the table), `keyframes` (generated CSS + `motion.css`), `settle` (settle, timers, wake, reduced), `presence`, `timeline` (`Timeline` + `use_timeline` + one file per implementor), `roster`, `pulse`, `gesture` (drag, swipe, velocity, hover intent), `machine` (the hooks that run a `Machine`: `use_machine`, `use_machine_in`, `use_machine_state`, `MachineRef`, `MachineState`), `details` (grammar, `Moment`, `Detailed`, cues, one-shots, glyph morphs) |
 | `ui-behaviour` | `dir` (`Dir`) < `switcher`, `hot_corner`, `modifier_tap` (`tap`, `hold`), `space_swipe` (`numbers`, `velocity`, `finish`; each concept holds `model`, `step`, `tests`) |
@@ -135,11 +135,11 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 | `ds/core/geometry/{units,scale,placement}.rs` | `ui-core::geometry::{units, scale, placement}` |
 | `ds/core/colour/*` | `ui-core::colour::*` (the one copy) |
 | `ds/core/time/*` | `ui-core::time::*`; the private `Timeline` struct in `clock/timeline.rs` becomes `VirtualQueue` |
-| `ds/core/error.rs`, `ds/core/text/clip.rs`, the `Spawner` half of `ds/core/task.rs` | `ui-core::{error, text::clip, spawner}` |
+| `ds/core/error.rs`, `ds/core/text/clip.rs`, the `Spawner` half of `ds/core/task.rs` | `ui-core::{error, text::clip}`, `base-spawn` |
 | `ds/core/{task,busy,guarded}.rs` (the Dioxus halves: scope-owned tasks, busy and guarded hooks) | `ui-style::task` (the lowest crate that uses Dioxus) |
 | the Dioxus event conversion in `ds/core/press.rs` | `ds::controls::press` (`ui-core::press` keeps the plain `Press`/`PointerButton` data) |
 | `ds/core/{png,base64}.rs` | `ui-core::codec::{png, base64}` |
-| new | `ui-core::word` (`Word`), `ui-core::spawner::Spawner` |
+| new | `base-words::Word`, `base-spawn::Spawner` |
 
 ### `ds` -> `ui-style`
 
@@ -237,7 +237,7 @@ The single place a concept lives. Extend it; never write a second one.
 
 | Concept | Home |
 | --- | --- |
-| Closed vocabulary (slug, label, ALL, parse) | `ui-core::word::Word` + `#[derive(Word)]` |
+| Closed vocabulary (slug, label, ALL, parse) | `base-words::Word` + `#[derive(Word)]` |
 | Colour maths (sRGB, linear, OKLab, OKLCH, contrast, gamut fit) | `ui-core::colour` |
 | Pixel units, points, rects, device scale | `ui-core::geometry` |
 | Scroll state (`Scroll`: offset, viewport, content) and what follows from it: clamp, by, reveal, the rows that show, near the end | `ui-core::geometry::scroll` |
@@ -261,8 +261,8 @@ The single place a concept lives. Extend it; never write a second one.
 | A word or state shown for one `DelayToken` and then gone ("Copied", "Sent") | `ds::components::app::hold_for` (`HoldFor`, `use_hold_for`) |
 | A recording's progress bar: loaded stretches, a time tooltip, a captured drag | `ds::components::controls::scrubber` (`Scrubber`; drawing in `scrubber_face`, machine in `scrubber_machine`, `BufferedRange`, `merged` and `time_text` in `scrubber_model`) |
 | A floating pill of controls, and its media slots (progress bar, level) | `ds::components::chrome::capsule` (`Capsule`, `CapsuleSlot::{Item, Readout, Divider, Scrub, Level}`, `ScrubEvent`, `SlotPriority`, `RankedSlot`, `fit`) |
-| Scope-owned tasks, spawning | `ui-style::task` (`spawn_in`); the `Spawner` trait in `ui-core::spawner` |
-| Base vocabulary (`Availability`, `Switch`, `Check`, `Fraction`) | `ui-core::vocab` |
+| Scope-owned tasks, spawning | `ui-style::task` (`spawn_in`); the `Spawner` trait in `base-spawn` |
+| Base vocabulary (`Availability`, `Switch`, `Check`) | `ui-core::vocab`; `Fraction` in `base-ids` |
 | Standard actions, app actions, chords, `Primary`, the keymap and its sources, shortcut display | chordkit (own repo); quire keeps none of it. `ui-core::standard_action` re-exports `StandardAction`, `SpaceNumber` and `Conflict`; a `Shortcut` is the design vocabulary over a chordkit `DefaultChord` (`ui-core::command::shortcut_chord`, `shortcut_text`) |
 | A key event becoming a chordkit key press, resolving to an action, and the type-ahead and wheel-zoom tests | `ui-core::command` (`key_input`, `resolve`, `types_text`, `holds_primary`); the one place a toolkit modifier is read |
 | The window's keymap: loading from the injected source, reload, registering apps' actions, `on_action`, drawing a shortcut for the platform | `ds::keys` (`Keys`, `KeySource`, `use_keys`, `on_action`); quire's own actions are in `keys::quire_actions`; the launch's source and the detected default are `ui-blitz` (`AppConfig::with_keymap_source`, `keymap_detect`) |
@@ -377,14 +377,14 @@ The single place a concept lives. Extend it; never write a second one.
 | `SettingsDoc` | `ui-settings` | `AppearanceFile`; each consumer's file | a new settings file | never |
 | `Machine` | `ui-core` | each consumer's timed pure state (sill's dock, OSD, banners, ...; anyview), `ds::menus::palette::machine::PaletteState`, `ds_behaviour::{Tap, HoldKey, Swipe, Phase (the switcher), Corner}`, `ds_motion::{Life (presence), RosterState, HoverIntent, SwipeState}`, `ds::stack::menu_track::MenuTrack` (the menu tracker), the components' own timers (the stepper's hold, the green light's hold, a pill's hold, a thread row's pointer, the voice orb's turn, an alert's arming delay), `ds_shell`'s widget follower, track position and emoji frames | a state that changes by input and by time | never |
 | `AppCommand` | `ui-core` | each app's command type (what its menu items yield and its shortcuts fire) | an app with menus or shortcuts | never |
-| `Spawner` | `ui-core` | `ds_blitz::TokioSpawner`, a test's inline spawner | a new runtime | never |
+| `Spawner` | `base-spawn` | `ds_blitz::TokioSpawner`, a test's inline spawner | a new runtime | never |
 | `Clipboard` | `ui-blitz` | `System`, `Memory` | never | never |
 | `SizedWindow` | `ui-blitz` | `WinitSized` (a winit window), the harness's `FakeWindow` | a host that is not winit | never |
 
 Exact signatures (bodies omitted; `...` marks provided methods):
 
 ```rust
-// ui-core::word
+// base-words
 pub trait Word: Copy + Eq + std::hash::Hash + 'static {
     const ALL: &'static [Self];
     fn slug(self) -> &'static str;            // kebab-case attribute value
@@ -553,7 +553,7 @@ impl<M: Machine> MachineRef<M> {
     pub fn set_params(&self, params: M::Params);
 }
 
-// ui-core::spawner
+// base-spawn
 pub trait Spawner: Send + Sync {
     fn spawn(&self, task: std::pin::Pin<Box<dyn std::future::Future<Output = ()> + Send>>);
 }
@@ -669,7 +669,7 @@ home module (`ds_style::css::grain`), one path, and absent from every prelude.
 `ds` re-exports its three lower crates as facade modules, `ds::base` (`ui-core`), `ds::style`
 (`ui-style`) and `ds::motion` (`ui-motion`), the only three root re-exports besides the stylesheet
 assembly. A consumer that needs a name outside the prelude writes its home path under a facade
-(`ds::style::tokens::shape::Radius`, `ds::base::word::Word`) and depends on `ds` alone, which is
+(`ds::style::tokens::shape::Radius`, `ds::words::Word`) and depends on `ds` alone, which is
 why consumers never name `ui-core`, `ui-style` or `ui-motion` in their manifests.
 
 `ds::prelude` (129 names) is what a consumer's `use ds::prelude::*` brings in; it re-exports

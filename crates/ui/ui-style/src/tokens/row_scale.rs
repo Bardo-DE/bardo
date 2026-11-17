@@ -9,7 +9,7 @@
 use crate::tokens::control_size::SidebarSize;
 use crate::tokens::size_scale::WholePx;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The settings-density row's measures.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

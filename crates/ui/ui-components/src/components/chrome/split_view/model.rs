@@ -1,9 +1,9 @@
 //! What a `SplitView` is given, and the pure rule of what a drag of a divider does to the pane
 //! before it.
 
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
-use ui_core::word::Word;
 
 /// The way the panes of a split view lie.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

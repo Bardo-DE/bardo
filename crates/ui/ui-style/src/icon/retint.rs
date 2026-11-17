@@ -22,9 +22,9 @@
 use super::tone_band::Tone;
 use crate::appearance::theme::Scheme;
 use crate::space::palette::{Dot, derive};
+use base_words::Word;
 use ui_core::colour::oklab::{Oklab, Oklch};
 use ui_core::colour::srgb::{LinearRgb, Srgb};
-use ui_core::word::Word;
 
 /// Which dialect our app icons are drawn in (`icons.style`, design/08-ICONS.md section 2.10).
 #[derive(

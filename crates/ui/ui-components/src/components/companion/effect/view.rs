@@ -1,9 +1,9 @@
 //! The effect tag component.
 
 use super::look::{effect_glyph, effect_words};
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::EffectMark;
-use ui_core::word::Word;
 use ui_style::icon::render::{Glyph, IconSize};
 
 /// An effect as a tag: its glyph and its words. The words are always written, so the mark never

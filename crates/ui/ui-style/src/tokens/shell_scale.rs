@@ -8,7 +8,7 @@
 
 use crate::tokens::size_scale::WholePx;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The bar and text menus' fixed sizes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

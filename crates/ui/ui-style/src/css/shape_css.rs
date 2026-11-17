@@ -17,7 +17,7 @@ use crate::icon::family::{NEUTRAL_DARK, PlateFamily};
 use crate::icon::plate::{Quadrant, fill_mask, plate_mask, quadrant_mask};
 use crate::icon::plate_tint::PLATE_TINT_VARS;
 use crate::tokens::{hex::Hex, layer::ZLayer, name::VarName};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What a squircle element writes inline (`Corner::squircle_style`): its extent and the circle
 /// its shadows follow.

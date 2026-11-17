@@ -14,7 +14,7 @@
 
 use super::name::VarName;
 use super::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The emoji face's custom property: the one member of its family.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

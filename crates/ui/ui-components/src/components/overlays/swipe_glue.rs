@@ -75,7 +75,7 @@ impl SwipeGlue {
     /// `data-swipe`: `live` while held, `rest`, or `gone`; nothing when the swipe is off.
     #[must_use]
     pub fn look(&self) -> Option<&'static str> {
-        use ui_core::word::Word;
+        use base_words::Word;
         self.live().map(|swiper| swiper.state().look().slug())
     }
 

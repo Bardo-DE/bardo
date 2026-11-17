@@ -4,8 +4,8 @@
 //! The settings portal has no key for it, so it is ours: `appearance.transparency`, one
 //! desktop-wide setting that the compositor reads from the same appearance file as `theme`.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// Whether materials may show what is behind them, as a person chooses it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default, Word)]
@@ -34,7 +34,7 @@ impl Transparency {
 #[cfg(test)]
 mod tests {
     use super::Transparency;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn words_attributes_and_the_default_agree() {

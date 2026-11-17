@@ -3,8 +3,8 @@
 
 use crate::components::content::icon_source::IconSource;
 use crate::components::content::text_runs::TextLine;
+use base_words::Word;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 use ui_style::appearance::accent::Accent;
 use ui_style::css::accents_css::swatch_var;
 

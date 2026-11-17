@@ -16,10 +16,10 @@ use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
 use crate::components::controls::press::{ActivationKeys, PressListeners};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::press::{PointerButton, Press};
 use ui_core::vocab::{DropState, aria_word, selected_word};
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::presence::{
     Exit,

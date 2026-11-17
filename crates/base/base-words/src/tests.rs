@@ -1,4 +1,4 @@
-use super::Word;
+use crate::Word;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Word)]

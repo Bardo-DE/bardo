@@ -8,9 +8,9 @@
 
 use crate::keys::use_keys;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::Shortcut;
-use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
 
 /// How the shortcut is drawn, `data-style`.

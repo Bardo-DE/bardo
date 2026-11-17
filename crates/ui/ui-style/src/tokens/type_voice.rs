@@ -7,7 +7,7 @@
 //! calendar month title needs 600 to hold the line.
 
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One value that follows the faces.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

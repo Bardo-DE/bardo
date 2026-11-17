@@ -4,9 +4,9 @@
 
 use super::palette_close::PaletteClose;
 use crate::components::overlays::popover::Float;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::shown_word;
-use ui_core::word::Word;
 use ui_style::tokens::shape::Corner;
 
 /// Where the palette draws.

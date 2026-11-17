@@ -3,8 +3,9 @@
 //! decides.
 
 use crate::components::controls::track::fraction_at;
+use base_ids::Fraction;
 use ui_core::geometry::units::{Px, Rect};
-use ui_core::vocab::{Fraction, PressPhase};
+use ui_core::vocab::PressPhase;
 
 /// The grids the keys step on: sixteen coarse steps (a volume key's), sixty-four fine ones
 /// (with Shift).

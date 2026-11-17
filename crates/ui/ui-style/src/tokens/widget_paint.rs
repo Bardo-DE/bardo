@@ -6,7 +6,7 @@
 //! when low, white day dials and dark night dials with an orange seconds hand.
 
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One widget paint token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
@@ -43,8 +43,8 @@ mod tests {
     use super::WidgetPaint;
     use crate::appearance::theme::Scheme;
     use crate::tokens::token::{Token, TokenScope};
+    use base_words::Word;
     use std::collections::HashSet;
-    use ui_core::word::Word;
 
     #[test]
     fn every_paint_has_its_own_name_and_a_value_in_both_schemes() {

@@ -6,8 +6,8 @@
 //! keyframe's `X`/`X--b` alias (`data-pulse`, design/05-MOTION.md section 9 rule 2) and restarting
 //! the settle timer, starts over from an empty query and the first choice, and takes the keyboard.
 
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::presence::Presence;
 use ui_motion::timer::{MotionTimer, TimerPhase, use_motion_timer};

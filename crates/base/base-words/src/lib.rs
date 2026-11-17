@@ -4,10 +4,14 @@
 //! it by `#[derive(Word)]`, which gives the list of variants, the attribute value or CSS word each
 //! one is written as, and the label a person reads.
 
+// The derive names the trait `::base_words::Word`, so inside this crate `base_words` is the
+// crate itself.
+extern crate self as base_words;
+
 #[cfg(test)]
 mod tests;
 
-pub use ui_core_derive::Word;
+pub use base_words_macros::Word;
 
 /// A closed set of words: an enum with no data in its variants.
 ///

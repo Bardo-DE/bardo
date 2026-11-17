@@ -16,7 +16,7 @@ use super::accent_table::accent_of;
 use super::hex::{Alpha, Colour, Hex};
 use crate::appearance::{accent::Accent, theme::Scheme};
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 const fn solid(rgb: u32) -> Colour {
     Colour::Solid(rgb_hex(rgb))

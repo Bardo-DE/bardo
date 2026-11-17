@@ -30,8 +30,8 @@ use crate::components::content::text_runs::TextLine;
 use crate::components::controls::progress::model::{Progress, ProgressStyle};
 use crate::components::controls::progress::view::ProgressIndicator;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::detail::{
     detailed::Detailed, level::use_level, moment::Moment, once::use_cross_fade,

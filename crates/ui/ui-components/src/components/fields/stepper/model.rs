@@ -1,7 +1,7 @@
 //! What a `Stepper` steps through: its range and step, and the direction of a press (data and
 //! pure arithmetic only).
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// Which half of the pair, or which arrow key, asks for the change.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

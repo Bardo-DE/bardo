@@ -21,9 +21,9 @@ use crate::components::fields::field_help::{HelpButton, help_id};
 use crate::components::forms::icon_tile::{TileFace, tile};
 use crate::components::lists::section_header::SectionHeader;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 
 /// How a row lays its label and control out.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

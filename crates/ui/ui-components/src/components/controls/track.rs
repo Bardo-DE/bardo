@@ -2,8 +2,8 @@
 //! the one piece of their machines that is the same.
 
 use crate::host::narrow;
+use base_ids::Fraction;
 use ui_core::geometry::units::{Px, Rect};
-use ui_core::vocab::Fraction;
 
 /// The value under the pointer at `x` on a track occupying `rect`, clamped to its ends.
 pub(crate) fn fraction_at(rect: Rect, x: Px) -> Fraction {

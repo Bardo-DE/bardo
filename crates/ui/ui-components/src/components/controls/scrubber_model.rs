@@ -3,8 +3,8 @@
 //!
 //! Data and the pure arithmetic only.
 
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
+use base_ids::Fraction;
+use base_words::Word;
 use ui_motion::spring::Millis;
 
 /// A stretch of the length that is already loaded, in thousandths of the length.

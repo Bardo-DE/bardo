@@ -23,4 +23,4 @@ pub mod word;
 
 pub use error::IdError;
 pub use id::{is_id, object_segment};
-pub use units::{Bytes, Count, Dims, Permille, Px, Tokens, TurnCount};
+pub use units::{Bytes, Count, Dims, Fraction, Permille, Px, Tokens, TurnCount};

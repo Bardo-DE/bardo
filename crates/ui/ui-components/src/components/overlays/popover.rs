@@ -15,6 +15,7 @@ use crate::host::measure::{Anchor, MountedRef, RectProbe};
 use crate::root::common::Common;
 use crate::stack::host::{OverlayId, Overlays, use_overlays};
 use crate::stack::layer_stack::{Dismissal, LayerId, LayerStack};
+use base_words::Word;
 use dioxus::core::{current_scope_id, queue_effect};
 use dioxus::prelude::*;
 use std::rc::Rc;
@@ -23,7 +24,6 @@ use ui_core::geometry::{
     units::{Point, Px, Rect, Size},
 };
 use ui_core::vocab::Dismiss;
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::presence::{
     Exit,
