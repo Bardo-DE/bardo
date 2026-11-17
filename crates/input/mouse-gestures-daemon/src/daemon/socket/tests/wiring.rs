@@ -78,12 +78,14 @@ fn hello_fanout_filters_and_claims() {
         Ok(FromSocket::Pointer(true))
     );
 
-    // What b says after its Subscribe is heard after it: once the reader hears b's lock, the
-    // Subscribe has landed and the fan-out below meets the filter.
-    send(&b, &ToDaemon::SessionLock { locked: true });
+    // What b says after its Subscribe is heard after it, so b's next word is the marker that the
+    // Subscribe has landed and the fan-out below meets the filter. The session counts as locked
+    // until the shell says otherwise, so the word that changes something (and is passed on) is
+    // b, standing for the shell here, saying unlocked.
+    send(&b, &ToDaemon::SessionLock { locked: false });
     assert_eq!(
         claims.recv_timeout(Duration::from_secs(2)),
-        Ok(FromSocket::Session(true))
+        Ok(FromSocket::Session(false))
     );
     let touches = ToHost::Touches { active: true };
     let tap = ToHost::Tap {

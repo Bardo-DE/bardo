@@ -208,6 +208,11 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
     let transom = connect(bus, Some(PORTAL)).await;
     callers.make(&transom, who);
     let shell = connect(bus, Some("org.bardo.Shell")).await;
+    // The shell's connection already serves objects when the picker exports its own; without
+    // this, a look sent before zbus's object server runs is dropped unanswered (see zbus-ready).
+    zbus_ready::serving(&shell)
+        .await
+        .unwrap_or_else(|e| panic!("the shell's connection takes calls: {e}"));
     let (publisher, view) = seat();
     publisher.publish(shell);
     let (_displays_tx, displays) = watch::channel(Displays::default());
@@ -231,7 +236,7 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
         .await
     );
     // The object is exported a moment after the link says serving, and nothing announces it:
-    // look for it by introspection, up to the generous deadline.
+    // look for it by introspection (each look answered at once now), up to the generous deadline.
     let deadline = base_testkit::Deadline::generous();
     loop {
         let introspect = zbus::fdo::IntrospectableProxy::builder(&transom)
