@@ -1,5 +1,4 @@
-//! Every synthesised fixture, by name. The committed `.bin` files are these, byte for byte
-//! (`tests/mouse_gestures/fixtures_current.rs` checks it; `BARDO_MOUSE_GESTURES_REGEN_FIXTURES=1` rewrites them).
+//! Every synthesised fixture, by name: the recordings the tests replay.
 //!
 //! Coordinates are the kernel frame (+x right, +y toward the user) unless a scenario is a
 //! reference case (`case_*`), which states its points in the unsigned reading.
@@ -15,19 +14,19 @@ use mouse_gestures_daemon::recording::Record;
 use mouse_gestures_daemon::sensor::magic_mouse::encode::encode_double;
 use mouse_gestures_daemon::sensor::magic_mouse::report::Buttons;
 
-/// Header of the decoder goldens: left button, dx 5, dy -3, ticks 3147.
-pub const GOLDEN_HEADER: [u8; 14] = [
+/// Header of the decoder samples: left button, dx 5, dy -3, ticks 3147.
+pub const SAMPLE_HEADER: [u8; 14] = [
     0x12, 0x01, 0x05, 0x00, 0xfd, 0xff, 0, 0, 0, 0, 0, 0xc0, 0x12, 0x03,
 ];
 /// id 6 at (1100, 1217), major 64, minor 48, size 12, orientation -15, Touching.
-pub const GOLDEN_A: [u8; 8] = [0x4c, 0xf4, 0xb3, 0x40, 0x30, 0x8c, 0x45, 0x40];
+pub const SAMPLE_A: [u8; 8] = [0x4c, 0xf4, 0xb3, 0x40, 0x30, 0x8c, 0x45, 0x40];
 /// id 0 at (-2048, 2048), major 16, minor 16, size 5, orientation 0, `MakeTouch`.
-pub const GOLDEN_B: [u8; 8] = [0x00, 0x08, 0x80, 0x10, 0x10, 0x05, 0x80, 0x30];
+pub const SAMPLE_B: [u8; 8] = [0x00, 0x08, 0x80, 0x10, 0x10, 0x05, 0x80, 0x30];
 /// id 12 at (-1, -487), major 5, minor 4, size 63, orientation 30, `OutOfRange`.
-pub const GOLDEN_C: [u8; 8] = [0xff, 0x7f, 0x1e, 0x05, 0x04, 0x3f, 0xfb, 0x70];
+pub const SAMPLE_C: [u8; 8] = [0xff, 0x7f, 0x1e, 0x05, 0x04, 0x3f, 0xfb, 0x70];
 
-fn golden(touches: &[[u8; 8]]) -> Vec<u8> {
-    let mut b = GOLDEN_HEADER.to_vec();
+fn sample(touches: &[[u8; 8]]) -> Vec<u8> {
+    let mut b = SAMPLE_HEADER.to_vec();
     for touch in touches {
         b.extend(touch);
     }
@@ -95,28 +94,28 @@ pub fn all() -> Vec<(&'static str, Vec<Record>)> {
         40,
     );
     let fine = drag(|i| vec![unsigned_finger(1, 1000, 1000 + i * 6)], 40);
-    let double = encode_double(&golden(&[GOLDEN_A]), &golden(&[GOLDEN_A, GOLDEN_B]));
+    let double = encode_double(&sample(&[SAMPLE_A]), &sample(&[SAMPLE_A, SAMPLE_B]));
     let fixtures: Vec<(&'static str, Script)> = vec![
-        ("decode_n0", s().raw(0.0, golden(&[]))),
-        ("decode_n1", s().raw(0.0, golden(&[GOLDEN_A]))),
-        ("decode_n2", s().raw(0.0, golden(&[GOLDEN_A, GOLDEN_B]))),
+        ("decode_n0", s().raw(0.0, sample(&[]))),
+        ("decode_n1", s().raw(0.0, sample(&[SAMPLE_A]))),
+        ("decode_n2", s().raw(0.0, sample(&[SAMPLE_A, SAMPLE_B]))),
         (
             "decode_n3",
-            s().raw(0.0, golden(&[GOLDEN_A, GOLDEN_B, GOLDEN_C])),
+            s().raw(0.0, sample(&[SAMPLE_A, SAMPLE_B, SAMPLE_C])),
         ),
         (
             "decode_header_only",
             s().raw(0.0, vec![0x12, 0x02, 0xff, 0xff, 0x01, 0x00, 0x00, 0x00]),
         ),
         ("decode_double", s().raw(0.0, double)),
-        ("decode_len13", s().raw(0.0, GOLDEN_HEADER[..13].to_vec())),
+        ("decode_len13", s().raw(0.0, SAMPLE_HEADER[..13].to_vec())),
         (
             "decode_len15",
-            s().raw(0.0, golden(&[GOLDEN_A])[..15].to_vec()),
+            s().raw(0.0, sample(&[SAMPLE_A])[..15].to_vec()),
         ),
         (
             "decode_len29",
-            s().raw(0.0, golden(&[GOLDEN_A, GOLDEN_B])[..29].to_vec()),
+            s().raw(0.0, sample(&[SAMPLE_A, SAMPLE_B])[..29].to_vec()),
         ),
         ("feel_slow", feel_slow()),
         ("feel_fast", feel_fast()),

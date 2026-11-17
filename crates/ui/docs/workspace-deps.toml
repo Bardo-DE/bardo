@@ -92,7 +92,7 @@ notify = "8.2"
 zbus = { version = "5.19", default-features = false, features = ["tokio"] }
 dirs = "6"
 toml = "1"
-# SSR renders for component goldens and markup lint (dev-dependency in consumers).
+# SSR renders for component specimens and markup lint (dev-dependency in consumers).
 dioxus-ssr = "0.7"
 # Named directly for image paints in custom widgets (blitz re-exports nothing).
 peniko = "0.6"

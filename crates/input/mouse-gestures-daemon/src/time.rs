@@ -51,7 +51,7 @@ impl Mono {
     }
 
     /// `self - earlier` as a difference of float seconds. The scroll feel uses this wherever a
-    /// result is truncated, because the reference-feel goldens were computed this way and a
+    /// result is truncated, because the reference feel was computed this way and a
     /// differently rounded `dt` moves a truncation by one unit.
     #[must_use]
     pub fn float_since(self, earlier: Mono) -> f64 {

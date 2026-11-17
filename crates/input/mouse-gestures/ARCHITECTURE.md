@@ -212,7 +212,7 @@ tests above as the guard that it cannot drift from `Config`.
 | Codecs, feel, gestures, config, protocol | table tests beside the code |
 | Whole-core behaviour | replay: a recording through `replay::replay` with `RecordingEmitter`, asserting `Out`s and `Emitted`; strokes and fixtures from `tests/support` |
 | Another sensor | the same recording re-expressed as evdev events, replayed to identical outputs (`tests/evdev_parity.rs`) |
-| Decoder | goldens in `tests/fixtures/reference/`, frozen; the reference gesture cases in `tests/mouse_gestures/reference_cases.rs` |
+| Decoder | recorded reports in `tests/fixtures/` decoded to exact fields; the reference gesture cases in `tests/mouse_gestures/reference_cases.rs` |
 | Socket | decisions as pure `Subscribers::step` tests over events (`daemon/socket/tests/{step, packet, aggregate}.rs`); a private socket in a temp dir for the wiring (`tests/{wiring, passes}.rs`) |
 | Latency | ignored release test beside `daemon/latency.rs` |
 
@@ -244,7 +244,6 @@ node for writing, or reads a real config directory or a running daemon.
   layer-shell-host, in one change.
 - **Device ids are parsed, never searched:** `HID_ID` is read as `bus:vendor:product`.
 - **No `bool` in a field, parameter or key.** A key is an enum.
-- **The decoder is pinned by frozen goldens**; nothing regenerates them.
 - **Tests never create an input device:** every test writes through `RecordingEmitter` or
   `input_broker_client::fake::FakeSource`, and no test reads a real config directory, opens the
   service's socket or touches a running daemon (README, "Safety rules").

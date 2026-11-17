@@ -136,9 +136,7 @@ pub fn fixture_path(name: &str) -> PathBuf {
 
 /// A committed fixture, parsed.
 pub fn load(name: &str) -> Vec<Record> {
-    let bytes = std::fs::read(fixture_path(name)).unwrap_or_else(|e| {
-        panic!("fixture {name}: {e}; run BARDO_MOUSE_GESTURES_REGEN_FIXTURES=1 cargo test")
-    });
+    let bytes = std::fs::read(fixture_path(name)).unwrap_or_else(|e| panic!("fixture {name}: {e}"));
     recording::parse(&bytes).unwrap_or_else(|e| panic!("fixture {name}: {e}"))
 }
 

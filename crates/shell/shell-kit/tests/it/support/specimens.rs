@@ -20,17 +20,17 @@ pub enum Checks {
 #[derive(Debug, Clone)]
 pub struct Specimen {
     /// The specimen's name, `dir/name.html`.
-    pub golden: String,
+    pub name: String,
     /// The markup as rendered, which is linted.
     pub html: String,
     pub checks: Checks,
 }
 
 impl Specimen {
-    /// The specimen named `golden` (`dir/name.html`), rendered as `html`.
-    pub fn of(golden: &str, html: String) -> Specimen {
+    /// The specimen named `name` (`dir/name.html`), rendered as `html`.
+    pub fn of(name: &str, html: String) -> Specimen {
         Specimen {
-            golden: golden.to_owned(),
+            name: name.to_owned(),
             html,
             checks: Checks::Both,
         }
@@ -48,7 +48,7 @@ pub fn offences(set: &[Specimen]) -> Vec<String> {
     let config = LintConfig::new(&shell_kit::kits());
     let mut failures = Vec::new();
     for specimen in set {
-        let name = &specimen.golden;
+        let name = &specimen.name;
         if specimen.checks != Checks::Styled {
             for offence in markup(&specimen.html, sheet, &config) {
                 failures.push(format!("{name}: {:?} {}", offence.rule, offence.text));

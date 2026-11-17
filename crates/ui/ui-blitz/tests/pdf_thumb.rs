@@ -4,7 +4,7 @@
 //! old modification time and still getting the old page), and a new modification time misses;
 //! a file that is not a PDF, a missing one, and one locked with a password fail to a plate; an
 //! empty file and a document with no pages are a blank sheet; and on a Blitz document the page
-//! read on the worker lands and paints (the loading and pending states are `ds`'s SSR goldens).
+//! read on the worker lands and paints (the loading and pending states are `ds`'s SSR specimens).
 
 #[path = "support/worker.rs"]
 mod worker;

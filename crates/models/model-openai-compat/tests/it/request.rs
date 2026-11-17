@@ -1,4 +1,4 @@
-//! `encode_request`: golden bodies, the messages, and the flavor table, as parsed JSON.
+//! `encode_request`: the request bodies, the messages, and the flavor table, as parsed JSON.
 
 use crate::support;
 
@@ -19,7 +19,7 @@ const ALL: [Flavor; 4] = [
 ];
 
 #[test]
-fn a_plain_turn_is_the_golden_body() {
+fn a_plain_turn_encodes_to_the_openai_body() {
     let mut r = base();
     r.messages = vec![msg(Role::System, vec![text("be brief")]), user("hi")];
     assert_eq!(
@@ -50,7 +50,7 @@ fn the_text_of_the_body_is_deterministic_and_streams() {
 }
 
 #[test]
-fn a_full_request_is_the_golden_body() {
+fn a_full_request_encodes_to_the_openai_body_of_each_flavor() {
     let mut r = base();
     r.messages = vec![user("open it")];
     r.tools = vec![function("click", r#"{"type":"object","properties":{}}"#)];

@@ -15,7 +15,7 @@
 #   crisp    `bardo-compositorctl shot --output`: the capture is the output's 2880x1620 physical pixels and the
 #            window's sidebar edge (a known element: a 240-logical-pixel sidebar, white against the
 #            content grey, with its 1-logical-pixel rule) is on physical column 360 exactly, with no
-#            smeared pixels around it, on every row of the sidebar. A tier-P byte golden is not used:
+#            smeared pixels around it, on every row of the sidebar. No stored picture is compared:
 #            the page's text and icons move with every Bardo pin; the geometry is what scale 1.5 decides.
 #
 # budget: 180

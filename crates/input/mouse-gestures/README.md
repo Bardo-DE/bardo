@@ -233,7 +233,7 @@ to the same outputs through `EvdevMultitouch`), against the fixtures in
 (`BARDO_MOUSE_GESTURES_REGEN_FIXTURES=1 cargo test --test fixtures_current` rewrites them).
 
 The reference cases (`reference_cases.rs`) check the axis lock and the workspace swipe against
-the cases of the retired Python daemon. The decoder goldens in `tests/fixtures/reference/` are
-frozen: they were produced once by that daemon, and nothing regenerates them.
+the cases of the retired Python daemon. The decoder reads the recorded
+reports in `tests/fixtures/` into exact fields or errors.
 
 The latency measurement is `cargo test --release -p mouse-gestures-daemon --lib latency -- --ignored --nocapture`.

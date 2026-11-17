@@ -498,7 +498,7 @@ rsx! {
 | `radius` | `Option<Corner>` | `None` | the material's corner (`--m-radius`), overridden: `Corner::Px(Px(f32::from(dock.pill_radius_px.0)))` or `Corner::Token(Radius::Panel)` |
 
 Each `None` inherits, so the common case is the material alone (`crates/ds/tests/it/surface.rs`
-has a golden per override).
+asserts each override).
 
 ## 5. The four coherence rules
 

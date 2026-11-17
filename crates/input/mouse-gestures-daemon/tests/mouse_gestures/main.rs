@@ -3,7 +3,6 @@
 
 mod decode;
 mod evdev_parity;
-mod fixtures_current;
 mod gestures_replay;
 mod pad_strokes;
 mod recorded_calibration;

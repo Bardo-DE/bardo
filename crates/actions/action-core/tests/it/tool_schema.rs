@@ -121,7 +121,7 @@ fn handle_schema() -> serde_json::Value {
 }
 
 #[test]
-fn tool_schema_snapshot() {
+fn a_tool_schema_describes_each_parameter_type() {
     let cases = [
         (
             "an outbound send: an entity, many-line text, a one-line optional",

@@ -362,7 +362,7 @@ the compositor for the acceptance scripts. Handlers become table-testable by str
 | Flush order, op queueing, visibility | `tests/core.rs` against the recording `Flush` fake |
 | Handler decisions | table tests of `decide.rs` |
 | Hooks and documents | `handle/tests.rs` and `dom/*/tests.rs`: a real `SurfaceDocument` built from a component, driven with published values and `poll`, no compositor |
-| Rendering | `headless` feature (`render_png` through vello_cpu) and the golden PNGs in `tests/snapshots/` |
+| Rendering | `headless` feature (`render_png` through vello_cpu); tests assert on pixels, not on stored pictures |
 | Blitz repairs | in `blitz-embed`, against a `BaseDocument` |
 | Synthetic input on a live host | `HostCtx::inject` on the headless KWin through the demos and `accept-*.sh` |
 | The mouse gestures daemon messages | `mouse-gestures-proto` round-trip tests; `input/mouse_gestures/route` table tests; `input/mouse_gestures` fake-daemon tests (pointer and session lock sent on change and on connect) |
@@ -370,7 +370,7 @@ the compositor for the acceptance scripts. Handlers become table-testable by str
 Integration tests in `tests/` use only the public root, `headless` and `inject`; a test that
 needs an internal module is a unit test beside that module. The one harness is the headless
 document plus the `Flush` fake; no test connects to a real Wayland display or to the person's
-session. Goldens change only with a reason in the commit message.
+session.
 
 ## 9. Repo rules
 

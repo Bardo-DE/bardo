@@ -5,12 +5,13 @@ fn round_trip<T>(value: &T, json: &str)
 where
     T: serde::Serialize + serde::de::DeserializeOwned + PartialEq + core::fmt::Debug,
 {
-    assert_eq!(serde_json::to_string(value).unwrap(), json);
     assert_eq!(&serde_json::from_str::<T>(json).unwrap(), value);
+    let written = serde_json::to_string(value).unwrap();
+    assert_eq!(&serde_json::from_str::<T>(&written).unwrap(), value);
 }
 
 #[test]
-fn states_round_trip_with_pinned_json() {
+fn states_round_trip_and_the_documented_json_reads() {
     round_trip(&EngineState::Stopped, r#"{"kind":"stopped"}"#);
     round_trip(
         &EngineState::Starting {

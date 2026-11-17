@@ -194,7 +194,7 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 ### Moved to the shell (2026-10-07: `ui-shell` -> the shell's `shell-kit`)
 
 The UI kit's `ui-shell` kept what an app on any platform takes: `accounts`, `helpers`, `confirm`. The
-surfaces only our desktop shell draws moved, with their tokens, sheets, goldens, behaviour tests
+surfaces only our desktop shell draws moved, with their tokens, sheets, specimens, behaviour tests
 and emoji assets, to `crates/shell-kit` in the shell workspace under the same module names:
 `bar`, `battery`, `catalog`, `clock`, `control_center`, `date_picker`, `dock`, `emoji`,
 `idle_dim`, `lock`, `month_grid`, `notifications`, `now_playing`, `osd`, `switcher`, `thumbs`,
@@ -207,7 +207,7 @@ one) next to `ds_shell::KIT`. The gallery drops the pages and sections for the m
 widget, lock and emoji pages, the notification and thumbnail overlays, the date picker and the
 Settings window's Date & Time pane, the control center, player and status-item details, and the
 `--level-sheet` mode); the shell's
-`shell-kit/tests` holds their SSR goldens and behaviour tests, and `examples/sizing_audit.rs`
+`shell-kit/tests` holds their SSR specimens and behaviour tests, and `examples/sizing_audit.rs`
 (the sizing audit's specimen sheet) lives there too.
 
 ### `ui-settings`, `ds-native`, tests
@@ -340,7 +340,7 @@ The single place a concept lives. Extend it; never write a second one.
 | Live (D-Bus) settings modules: schema, skeleton, proxy | `ui-settings::live` (feature `live`; the daemon owns the state) |
 | Desktop preferences (portal) | `ui-settings::portal::SystemPrefsSource` |
 | Test driver, document queries | `ui-harness::Harness` |
-| SSR rendering and golden files in tests | `crates/ds/tests/it/support/` (`golden.rs`, `scoped.rs`); `dioxus_ssr` |
+| SSR rendering and markup lint in tests | `crates/ds/tests/it/support/` (`specimen.rs`, `scoped.rs`); `dioxus_ssr` |
 | Clipboard | `ui-blitz::clipboard::Clipboard` |
 | A GPU texture inside the document, the window's wgpu device, CPU pixels uploaded to it | `ui-blitz::texture_layer::{TextureLayer, use_gpu, Gpu, TextureHandle}`; headless device `ui-harness::Harness::gpu` |
 | Net policy, `data:` URLs | `blitz-embed::net`, `blitz-embed::data_url` |
@@ -727,8 +727,8 @@ are reached as `ds::components::app::X`, not through the prelude.
    state `aria-*`.
 5. Add the name to `ds::prelude` only if a consumer draws it; otherwise it is reached by its
    group path.
-6. Tests: `crates/ds/tests/<name>_ssr.rs` (a `VirtualDom` rendered with `dioxus_ssr`, a golden through
-   `ds/tests/it/support/golden.rs`, then `ds_lint::markup` filtered to the rule under test), and
+6. Tests: `crates/ds/tests/<name>_ssr.rs` (a `VirtualDom` rendered with `dioxus_ssr`, linted through
+   `ds/tests/it/support/specimen.rs`, then `ds_lint::markup` filtered to the rule under test), and
    `crates/ds-conformance/tests/<name>.rs` when it responds to input or time (through `Driver`).
 7. Gallery: `crates/ds-gallery/src/pages/<group>/<name>.rs`, one `Page` registered in
    `registry.rs`. Add the `DESIGN.md` row that names the design section.
@@ -838,12 +838,12 @@ Add a variant to `ds_extensions::Capability` (its word is the manifest's capabil
 | --- | --- | --- |
 | Pure function or step | table test: `const CASES: &[(Input, Expected)]`, one loop | beside the code |
 | Word, Token, Timeline, Detailed | table over `ALL` / sample instants / `moment_table` | the owning crate |
-| Component markup | SSR render, golden, `ds_lint::markup` | `crates/<crate>/tests/it/<component>_ssr.rs` |
+| Component markup | SSR render, `ds_lint::markup` | `crates/<crate>/tests/it/<component>_ssr.rs` |
 | Stylesheet | `ds_lint::assert_clean(css, &LintConfig::new(kits))` (`self_lint`) | `ui-shell/tests/it/self_lint.rs` (the shell: shell-kit/tests/self_lint.rs) |
 | Component behaviour (pointer, keys, focus, time, paint) | `Harness` through `Driver` and `Query` | `ui-conformance/tests/<component>.rs` |
 | Host behaviour (frames, clipboard, edit, drop, spell, PDF) | `Harness` on the real `BlitzHost` | `ui-blitz/tests/<topic>.rs` |
 | Settings | `Store` on `ConfigRoot::Scratch`, `SystemPrefsSource::Fixed` | `ui-settings/tests` |
-| Pixels | `Harness::render`, golden in `tests/snapshots/`, re-blessed only with a reason in the commit message | the owning crate |
+| Pixels | `Harness::render`, probed pixel by pixel; no stored pictures | the owning crate |
 | Content inset (text, glyphs, images 8 px off a painted box edge) | `ds_harness::inset::assert_insets(&harness, &Policy::bardo())` | `ds-gallery/src/inset_tests.rs` (every page, light and dark); `ui-harness/tests/it/inset.rs` (the detector) |
 | A consumer | `examples/consumer/tests/it/coherence.rs` | `examples/consumer` |
 

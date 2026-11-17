@@ -1,9 +1,9 @@
-//! The table format: a golden reading and the files it refuses.
+//! The table format: a sample reading and the files it refuses.
 
 use caller_identity_core::{ExePath, RoleName, Table, TableError, UnitName};
 use std::fmt::Write as _;
 
-const GOLDEN: &str = r#"
+const SAMPLE: &str = r#"
 # A comment.
 [[peer]]
 app  = "org.bardo.Shell"
@@ -29,8 +29,8 @@ fn row(unit: &str) -> String {
 }
 
 #[test]
-fn the_golden_table_reads_into_typed_rows() {
-    let table = Table::from_toml(GOLDEN).expect("the golden table reads");
+fn the_sample_table_reads_into_typed_rows() {
+    let table = Table::from_toml(SAMPLE).expect("the sample table reads");
     let rows = table.rows();
     assert_eq!(rows.len(), 2);
     assert_eq!(rows[0].app.as_str(), "org.bardo.Shell");

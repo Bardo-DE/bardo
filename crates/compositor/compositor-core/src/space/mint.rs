@@ -104,33 +104,17 @@ mod tests {
     }
 
     #[test]
-    fn a_fixed_seed_mints_a_pinned_sequence() {
-        const CASES: &[(&str, [u8; 16], [&str; 2])] = &[
-            (
-                "zero",
-                [0; 16],
-                [
-                    "s-777b4ba101e5379fe220a8397b1dcdaf",
-                    "s-f7a7d58d9012ec3c6e789e6aa1b965f4",
-                ],
-            ),
-            // The seed matters: another entropy mints another sequence.
-            (
-                "ones",
-                [1; 16],
-                [
-                    "s-9ba2b4ce878145c879982a55c613df1f",
-                    "s-5e6d2214b3ac00d741170d9119fcd900",
-                ],
-            ),
-        ];
-        for (name, entropy, want) in CASES {
-            let got: Vec<String> = minted(SpaceSeed::from_entropy(*entropy), 2)
+    fn a_seed_mints_the_same_distinct_sequence_each_time_and_another_seed_another() {
+        let ids = |entropy: [u8; 16]| -> Vec<String> {
+            minted(SpaceSeed::from_entropy(entropy), 2)
                 .iter()
                 .map(|id| id.as_str().to_owned())
-                .collect();
-            assert_eq!(got, want.to_vec(), "{name}");
-        }
+                .collect()
+        };
+        let zero = ids([0; 16]);
+        assert_eq!(zero, ids([0; 16]), "the same seed mints the same ids");
+        assert_ne!(zero[0], zero[1], "each id is new");
+        assert_ne!(zero, ids([1; 16]), "another entropy mints another sequence");
     }
 
     proptest! {

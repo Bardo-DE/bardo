@@ -146,7 +146,7 @@ fn embed_body(flavor: Flavor, turn: &EmbedTurn) -> Value {
 }
 
 #[test]
-fn the_embedding_request_is_the_golden_body() {
+fn the_embedding_request_encodes_to_the_openai_body() {
     assert_eq!(
         embed_body(Flavor::Vllm, &turn(&["search_query: a", "b"], Knob::Off)),
         json!({"model": "nomic", "input": ["search_query: a", "b"], "encoding_format": "float"})

@@ -2,7 +2,7 @@
 //!
 //! The recogniser truncates centroids in the Magic Mouse 2's own units and the axis lock
 //! compares integer sums, so computing them on floats in millimetres would move truncations
-//! and break the reference-feel goldens. The core
+//! and break the reference feel. The core
 //! therefore keeps its integer arithmetic, on a grid fixed in millimetres: the Magic Mouse 2's,
 //! 26 units/mm across and 70 units/mm along (the resolution its kernel driver advertises). Every
 //! sensor's millimetres are projected onto it, so a finger that moves 10 mm scrolls the same on
