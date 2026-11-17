@@ -206,9 +206,8 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
         .await
     );
     // The object is exported a moment after the link says serving, and nothing announces it:
-    // look for it by introspection (each look answered at once now), up to the generous deadline.
-    let deadline = base_testkit::Deadline::generous();
-    loop {
+    // look for it by introspection (each look answered at once now).
+    base_testkit::eventually_some_async("the picker object to be exported", || async {
         let introspect = zbus::fdo::IntrospectableProxy::builder(&portal)
             .destination("org.bardo.Shell")
             .and_then(|builder| builder.path("/org/bardo/Shell1"))
@@ -218,12 +217,11 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
             .unwrap_or_else(|e| panic!("{e}"))
             .introspect()
             .await;
-        if introspect.is_ok_and(|xml| xml.contains("org.bardo.Shell1")) {
-            break;
-        }
-        assert!(!deadline.passed(), "the picker object was never exported");
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
+        introspect
+            .is_ok_and(|xml| xml.contains("org.bardo.Shell1"))
+            .then_some(())
+    })
+    .await;
     Rig {
         service,
         portal,

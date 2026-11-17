@@ -5,7 +5,7 @@
 //! id, desktop actions and every other field `App` carries.
 //!
 //! No fixture sets `Icon=`, so every entry's icon resolves to `AppIcon::None` regardless of
-//! this machine's installed themes: icon resolution itself is `tests/icons.rs`'s job.
+//! this machine's installed themes: icon resolution itself is tested in `shell-desktop-fs`.
 
 use std::path::{Path, PathBuf};
 

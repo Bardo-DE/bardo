@@ -129,11 +129,10 @@ mod tests {
     use std::path::PathBuf;
     use std::sync::atomic::{AtomicU32, Ordering};
 
-    // SVG-vs-raster preference against a real fixture theme directory is `tests/icons.rs` (an
-    // integration test): `freedesktop_icons`' theme table is a process-wide lazy static seeded
-    // from `$HOME`/XDG env once, and this workspace denies `unsafe_code`, so
-    // there is no sound way to repoint it from inside this binary's own unit tests. See that
-    // file's doc comment.
+    // SVG-vs-raster preference against a fixture theme directory is not tested: `freedesktop_icons`'
+    // theme table is a process-wide lazy static seeded from `$HOME`/XDG env once, and this
+    // workspace denies `unsafe_code`, so there is no sound way to repoint it from a test, and a
+    // test must never write the real `~/.icons`.
 
     /// A fresh directory under the system temp dir, removed on drop (no `tempfile`: not in the
     /// pinned block; same pattern as `shell-settings/tests/common`).

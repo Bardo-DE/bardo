@@ -305,16 +305,10 @@ async fn sign_in_again(world: &World, id: &AccountId) {
         .await
         .expect("the action is accepted");
     world
-        .person(async {
-            let deadline = base_testkit::Deadline::generous();
-            while !deadline.passed() {
-                if world.account().state == AccountState::Ok {
-                    return;
-                }
-                tokio::time::sleep(Duration::from_millis(25)).await;
-            }
-            panic!("not signed in again: {:?}", world.account().state);
-        })
+        .person(base_testkit::eventually(
+            "the account signs in again",
+            || world.account().state == AccountState::Ok,
+        ))
         .await;
 }
 
