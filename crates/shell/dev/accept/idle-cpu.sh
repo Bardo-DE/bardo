@@ -12,12 +12,17 @@
 #      bound. The nested daemon has no GPU adapter and renders on Mesa's llvmpipe, which starts
 #      one thread pool per core per device: LP_NUM_THREADS=2 keeps those out of the count.
 #   3. RSS: reported only (MAX_RSS_MB, when set, makes it a limit).
+#   4. Frames: over FRAMES_WINDOW seconds (at most 10, inside one minute, so the bar's clock owes
+#      no frame) more of the same idle, no surface draws a frame. Every
+#      frame of a still shell is GPU work for nothing (on a small integrated GPU at 4K a wallpaper
+#      frame alone is tens of megabytes); the step names each surface that drew, and how often.
 #
 # SAFETY: the daemon gets its own XDG_RUNTIME_DIR/HOME/XDG_*, the private bus as both buses, the
 # fake DDC; it only touches processes it started itself (kill by its own pid).
 #
 # Usage: dev/accept/idle-cpu.sh
-#   DURATION=60 WARMUP=20 MAX_CPU_PCT=1.0 MAX_THREADS=120 BARDO_SHELL_PROFILE=release|debug (default release)
+#   DURATION=60 WARMUP=20 MAX_CPU_PCT=1.0 MAX_THREADS=120 FRAMES_WINDOW=10
+#   BARDO_SHELL_PROFILE=release|debug (default release)
 set -uo pipefail
 # Idle cost is a release measurement (a debug build's CPU says nothing): release unless asked.
 export BARDO_SHELL_PROFILE="${BARDO_SHELL_PROFILE:-release}"
@@ -31,6 +36,7 @@ INTERVAL="${INTERVAL:-5}"
 MAX_CPU_PCT="${MAX_CPU_PCT:-1.0}"
 MAX_THREADS="${MAX_THREADS:-120}"
 MAX_RSS_MB="${MAX_RSS_MB:-}"
+FRAMES_WINDOW="${FRAMES_WINDOW:-10}"
 CSV="$OUT_DIR/idle.csv"
 
 # utime+stime in clock ticks of every thread of $1 (the process's own stat line).
@@ -71,6 +77,34 @@ print(f"{100.0 * (b - a) / hz / (t1 - t0):.2f}")' "$hz" "$t0" "$t1" "$ticks0" "$
   return "$result"
 }
 
+# Every surface's frame count, one "surface frames" line each.
+all_frames() {
+  bardo-shell debug stats | python3 -c '
+import json, sys
+for row in json.loads(sys.stdin.read())["v"]:
+    print(row["surface"], row["frames"])'
+}
+
+step_idle_frames() {
+  local before after drew
+  # The bar's clock turns over once a minute, which is a frame it owes: stay inside one minute.
+  clear_of_the_minute
+  before=$(all_frames) || { echo "could not read the surfaces' frame counts" >&2; return 1; }
+  sleep "$FRAMES_WINDOW"
+  after=$(all_frames) || { echo "could not read the surfaces' frame counts" >&2; return 1; }
+  drew=$(python3 -c '
+import sys
+before = dict(line.split() for line in sys.argv[1].splitlines())
+for line in sys.argv[2].splitlines():
+    surface, frames = line.split()
+    drawn = int(frames) - int(before.get(surface, 0))
+    if drawn:
+        print(f"{surface} {drawn}")' "$before" "$after")
+  echo "idle frames over ${FRAMES_WINDOW}s on $(echo "$after" | wc -l) surfaces: ${drew:-none drew}" | tr '\n' ' '
+  echo
+  [ -z "$drew" ] || { echo "FAIL surfaces drew while idle (surface frames): $(echo "$drew" | tr '\n' ';')" >&2; return 1; }
+}
+
 cleanup() {
   local result=0
   stop_daemon || result=1
@@ -88,7 +122,7 @@ IN_ENV_EXTRA+=(LP_NUM_THREADS=2)
 scratch_new
 start_private_bus || { scratch_drop; exit 1; }
 launch_daemon || { cleanup; exit 1; }
-run_steps step_idle_cost
+run_steps step_idle_cost step_idle_frames
 status=$STATUS
 cleanup || status=1
 echo "logs in $OUT_DIR"
