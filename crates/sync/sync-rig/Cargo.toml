@@ -40,7 +40,7 @@ account-core = {path = "../../accounts/account-core"}
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 
 [lints]
 workspace = true

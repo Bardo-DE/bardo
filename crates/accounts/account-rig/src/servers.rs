@@ -124,16 +124,12 @@ impl Ollama {
             .take()
             .is_some();
         if was_running {
-            let deadline = base_testkit::Deadline::generous();
-            while !deadline.passed() {
-                if tokio::net::TcpStream::connect(("127.0.0.1", self.port))
-                    .await
-                    .is_err()
-                {
-                    break;
-                }
-                tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-            }
+            // Nothing announces the port closing, so poll the connect (a loopback connect
+            // answers at once, so the blocking form does not hold the runtime).
+            base_testkit::eventually("the port refuses connections", || {
+                std::net::TcpStream::connect(("127.0.0.1", self.port)).is_err()
+            })
+            .await;
         }
         was_running
     }

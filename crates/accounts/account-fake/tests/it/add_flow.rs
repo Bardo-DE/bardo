@@ -1947,7 +1947,7 @@ async fn one_more_access_that_cannot_be_saved_leaves_the_account_as_it_was() {
 /// A look at the account again holds its turn at the issuer from reading the credential to
 /// storing the one the session renewed. A sign-in again that finishes in the middle of it must
 /// not be written over by what the look read before it.
-#[tokio::test]
+#[tokio::test(start_paused = true)]
 async fn a_sign_in_again_during_a_look_at_the_account_is_not_written_over() {
     let mail = app("org.bardo.Mail");
     let script = Script::answering(vec![SignInStep::Done(signed_with("ada", "new"))]);
@@ -1969,6 +1969,8 @@ async fn a_sign_in_again_during_a_look_at_the_account_is_not_written_over() {
         hold.entered.notified().await;
         service.handle(&mail, reauth_request()).await
     };
+    // The paused clock moves on only when every task is idle: the sign-in is then waiting for
+    // the look's turn, and the look is held.
     let letting_go = async {
         tokio::time::sleep(std::time::Duration::from_millis(150)).await;
         hold.release.notify_one();

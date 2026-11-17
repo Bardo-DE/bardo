@@ -10,6 +10,7 @@ use account_core::AccountId;
 use account_core::{Credential, SecretKey, SecretPurpose, SecretText};
 use account_secrets::{Oo7Secrets, Secrets, SecretsError};
 use base_testkit::Scratch;
+use futures_util::StreamExt;
 use base_time::UnixSeconds;
 use common::Proc;
 use common::bus::PrivateBus;
@@ -104,16 +105,18 @@ async fn accountds_oo7_secrets_stores_and_reads_back_through_the_fake_and_it_end
     let probe = bus.connect().await;
     let dbus = zbus::fdo::DBusProxy::new(&probe).await.expect("proxy");
     let name: zbus::names::BusName<'_> = "org.freedesktop.secrets".try_into().expect("name");
-    let mut taken = false;
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if dbus.name_has_owner(name.clone()).await.unwrap_or(false) {
-            taken = true;
-            break;
+    // Subscribe before looking, so an owner that appears in between is not missed.
+    let mut owners = dbus
+        .receive_name_owner_changed_with_args(&[(0, "org.freedesktop.secrets")])
+        .await
+        .expect("owner changes");
+    tokio::time::timeout(base_testkit::GENEROUS, async {
+        while !dbus.name_has_owner(name.clone()).await.unwrap_or(false) {
+            owners.next().await.expect("the bus stays up");
         }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-    assert!(taken, "the service takes org.freedesktop.secrets");
+    })
+    .await
+    .expect("the service takes org.freedesktop.secrets");
 
     let exe = std::env::current_exe().expect("this test binary");
     let output = tokio::task::spawn_blocking({

@@ -59,7 +59,7 @@ fn claim(model: &str) -> Claim {
 /// the second snapshot is written first and the first (older) one lands on top of it, so the
 /// file ends one change behind the registry; with it, the second save waits and takes its
 /// snapshot afterwards.
-#[tokio::test]
+#[tokio::test(start_paused = true)]
 async fn the_last_save_to_finish_carries_the_last_state() {
     let memory = MemoryStore::default();
     let service = AccountService::new(

@@ -9,7 +9,6 @@ pub mod bus;
 
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
-use std::time::Duration;
 
 /// A child process, killed by its PID when the guard goes.
 #[derive(Debug)]
@@ -55,14 +54,4 @@ impl Drop for Proc {
     }
 }
 
-/// Polls `check` every 20 ms until `base_testkit::GENEROUS` has passed by the clock.
-pub async fn eventually<T>(what: &str, mut check: impl FnMut() -> Option<T>) -> T {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if let Some(found) = check() {
-            return found;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    deadline.fail(what);
-}
+pub use base_testkit::eventually_some as eventually;
