@@ -4811,6 +4811,7 @@ dependencies = [
 name = "computer-use-session"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "base64 0.22.1",
  "computer-use-action",
  "computer-use-parse",
@@ -6097,6 +6098,7 @@ dependencies = [
 name = "engine-supervisor"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "engine-spec",
  "model-catalog",
  "proptest",
@@ -9930,6 +9932,7 @@ dependencies = [
 name = "model-catalog"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "model-provider",
  "serde",
  "serde_json",
@@ -9942,6 +9945,7 @@ dependencies = [
 name = "model-extract"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "computer-use-action",
  "model-provider",
  "model-vision-prep",
@@ -9985,6 +9989,7 @@ dependencies = [
 name = "model-openai-compat"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "base-testkit",
  "base64 0.22.1",
  "log",
@@ -10007,6 +10012,7 @@ dependencies = [
 name = "model-provider"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "base64 0.22.1",
  "computer-use-action",
  "iso_currency",
@@ -10025,6 +10031,7 @@ dependencies = [
 name = "model-replay"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "blake3",
  "http-core",
  "model-http",
@@ -10055,6 +10062,7 @@ dependencies = [
 name = "model-wire"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "http-core",
  "model-http",
  "model-provider",
