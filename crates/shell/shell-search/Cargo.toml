@@ -37,6 +37,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 computer-use-bus = {path = "../../computer-use/computer-use-bus"}
 shell-testkit = {path = "../shell-testkit"}
 serde_json = { workspace = true }

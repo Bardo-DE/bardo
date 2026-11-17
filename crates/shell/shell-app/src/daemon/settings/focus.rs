@@ -81,12 +81,13 @@ mod tests {
 
         assert_eq!(link.set(true), Delivery::Queued);
         // The write lands in the file; the daemon's watch would then publish it.
-        let stored = (0..50).find_map(|_| {
-            std::thread::sleep(Duration::from_millis(20));
+        let mut stored = None;
+        base_testkit::eventually_blocking("the set to reach settings.toml", || {
             let file = load(&store);
-            file.notifications.dnd.then_some(file)
+            stored = file.notifications.dnd.then_some(file);
+            stored.is_some()
         });
-        let stored = stored.unwrap_or_else(|| panic!("the set never reached settings.toml"));
+        let stored = stored.unwrap_or_else(|| panic!("the set reached settings.toml"));
         assert!(!*mode.borrow(), "not before the feed settles");
 
         feed_tx.send_replace(stored);

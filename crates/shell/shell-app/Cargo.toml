@@ -42,6 +42,9 @@ serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+# `start_paused` for the lock-file watch's tests (src/door_guard.rs).
+tokio = {version = "1", features = ["test-util"]}
 tempfile.workspace = true
 serde_json = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}

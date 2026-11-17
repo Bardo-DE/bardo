@@ -149,14 +149,9 @@ fn a_stopped_server_ends_its_accept_loop_and_serves_no_more() {
     });
     assert_eq!(round_trip(&agent, &Request::Ping), Response::Pong);
     let thread = serving.stop(&agent);
-    let waited = Instant::now();
-    while !thread.is_finished() {
-        assert!(
-            waited.elapsed() < Duration::from_secs(5),
-            "the accept loop was still blocked 5 s after it was stopped"
-        );
-        std::thread::sleep(Duration::from_millis(10));
-    }
+    base_testkit::eventually_blocking("the accept loop to end after it was stopped", || {
+        thread.is_finished()
+    });
     thread
         .join()
         .unwrap_or_else(|_| panic!("the accept thread panicked"));

@@ -80,12 +80,12 @@ mod tests {
         (agent, Door::from(listening))
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn a_removed_lock_file_ends_the_watch_with_the_line() {
         let dir = TempDir::new("door-guard-removed");
         let (agent, door) = held_in(&dir);
         let watching = tokio::spawn(until_displaced(door, QUICK));
-        // Several looks go by while the file is there: the watch keeps going.
+        // Several looks go by (on the paused clock) while the file is there: the watch keeps going.
         tokio::time::sleep(QUICK * 5).await;
         assert!(
             !watching.is_finished(),
@@ -99,7 +99,7 @@ mod tests {
         assert_eq!(said, line());
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn a_lock_file_replaced_by_another_ends_the_watch() {
         let dir = TempDir::new("door-guard-replaced");
         let (agent, door) = held_in(&dir);

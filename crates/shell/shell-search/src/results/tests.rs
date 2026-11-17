@@ -229,17 +229,11 @@ async fn a_choice_is_counted_saved_and_shown_under_recent() {
         Some(1)
     );
 
-    let saved = tokio::time::timeout(PATIENCE, async {
-        loop {
-            let on_disk = load_frecency(dir.path());
-            if on_disk.entries.contains_key(&files) {
-                return on_disk;
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
+    let saved = base_testkit::eventually_some("frecency.json to be written", || {
+        let on_disk = load_frecency(dir.path());
+        on_disk.entries.contains_key(&files).then_some(on_disk)
     })
-    .await
-    .unwrap_or_else(|_| panic!("frecency.json never written"));
+    .await;
     assert_eq!(saved, history.read(Clone::clone));
 }
 
