@@ -88,9 +88,8 @@ fn file(text: &str) -> FilePath {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_file_chosen_in_the_launcher_reaches_the_viewer_with_the_results_it_came_from() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("launch-viewer-handoff");
     let mut viewer = viewer(&bus, &scratch).await;
     let (control, _children) = launcher(&bus, &scratch);
@@ -139,9 +138,8 @@ async fn a_file_chosen_in_the_launcher_reaches_the_viewer_with_the_results_it_ca
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_play_control_asks_the_viewer_to_play_the_file() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("launch-viewer-play");
     let mut viewer = viewer(&bus, &scratch).await;
     let (control, _children) = launcher(&bus, &scratch);
@@ -157,9 +155,8 @@ async fn the_play_control_asks_the_viewer_to_play_the_file() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn without_a_viewer_on_the_bus_the_file_goes_to_the_default_handler() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("launch-viewer-absent");
     let (control, children) = launcher(&bus, &scratch);
 

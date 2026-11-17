@@ -69,10 +69,8 @@ async fn client(bus: &PrivateBus) -> Connection {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_property_answers_and_a_change_is_announced() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let (mut shell, _scratch) = start(&bus);
     let _ = shell
         .control
@@ -125,10 +123,8 @@ async fn the_property_answers_and_a_change_is_announced() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_taken_name_is_reported() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let _owner = Builder::address(bus.address.as_str())
         .and_then(|b| b.name("org.bardo.Workspaces1"))
         .unwrap_or_else(|e| panic!("{e}"))

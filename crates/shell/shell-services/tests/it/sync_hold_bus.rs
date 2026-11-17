@@ -186,9 +186,8 @@ async fn until(what: &str, done: impl FnMut() -> bool) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_hold_is_told_opens_settings_at_the_account_and_is_withdrawn_when_it_ends() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let _accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let syncd = FakeSyncd::start(&bus, None).await;
     let mut shell = shell(&bus).await;
@@ -258,9 +257,8 @@ async fn a_hold_is_told_opens_settings_at_the_account_and_is_withdrawn_when_it_e
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_hold_already_on_is_told_at_start_and_a_new_syncd_is_joined_again() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let _accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let syncd = FakeSyncd::start(&bus, Some(counts(40, 40))).await;
     let mut shell = shell(&bus).await;

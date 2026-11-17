@@ -121,9 +121,8 @@ async fn viewer(bus: &PrivateBus, proc_root: &Path) -> Primary {
 
 #[tokio::test]
 async fn a_file_open_from_the_router_reaches_the_viewers_open_path() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = tempfile::tempdir().unwrap();
     router_proc(&scratch.path().join("proc"));
     let mut primary = viewer(&bus, &scratch.path().join("proc")).await;
@@ -143,9 +142,8 @@ async fn a_file_open_from_the_router_reaches_the_viewers_open_path() {
 
 #[tokio::test]
 async fn a_missing_file_refuses_the_whole_call_and_opens_nothing() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = tempfile::tempdir().unwrap();
     router_proc(&scratch.path().join("proc"));
     let mut primary = viewer(&bus, &scratch.path().join("proc")).await;
@@ -169,9 +167,8 @@ async fn a_missing_file_refuses_the_whole_call_and_opens_nothing() {
 
 #[tokio::test]
 async fn only_the_router_may_call_the_provider() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     // In intentd's unit, but not its main process: a process that moved itself in.
     let scratch = tempfile::tempdir().unwrap();
     let proc_root = scratch.path().join("proc");

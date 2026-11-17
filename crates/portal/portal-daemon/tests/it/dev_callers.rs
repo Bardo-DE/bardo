@@ -75,9 +75,7 @@ fn only_the_persons_own_plain_unshared_file_that_parses_adds_rows() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_frontend_named_in_the_persons_rows_is_let_in_at_dev_proof_and_only_as_its_own_role() {
-    let Some(portal) = start_portal().await else {
-        return;
-    };
+    let portal = start_portal().await;
     let body = |session: &str| {
         (
             path(REQUEST_PATH),

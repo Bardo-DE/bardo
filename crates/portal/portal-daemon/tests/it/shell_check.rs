@@ -90,9 +90,7 @@ async fn ask(asker: &ShellAsker) -> Result<Answer, ShellError> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_the_shell_is_asked_and_a_squatter_is_not() {
-    let Some(portal) = start_portal().await else {
-        return;
-    };
+    let portal = start_portal().await;
     let asker = ShellAsker::new(portal.link.clone());
 
     // Nobody owns the shell's name: nobody is asked, and that is a no.
@@ -152,9 +150,7 @@ async fn only_the_shell_is_asked_and_a_squatter_is_not() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_question_ends_as_a_no_when_the_shell_changes_while_it_is_open() {
-    let Some(portal) = start_portal().await else {
-        return;
-    };
+    let portal = start_portal().await;
     let asker = Arc::new(ShellAsker::new(portal.link.clone()));
 
     let (shell, asking) = stand_in(&portal, Answers::Never).await;
@@ -182,9 +178,7 @@ async fn a_question_ends_as_a_no_when_the_shell_changes_while_it_is_open() {
 #[cfg(feature = "debug")]
 #[tokio::test(flavor = "multi_thread")]
 async fn a_shell_named_in_the_persons_rows_is_asked() {
-    let Some(portal) = start_portal().await else {
-        return;
-    };
+    let portal = start_portal().await;
     let asker = ShellAsker::new(portal.link.clone());
     let (shell, asked) = stand_in(&portal, Answers::Yes).await;
     crate::guard::as_shell_at(

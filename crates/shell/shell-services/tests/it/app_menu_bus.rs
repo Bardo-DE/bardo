@@ -214,9 +214,8 @@ fn outline(served: &ServedMenu) -> (Vec<String>, Vec<(String, Vec<String>)>) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_followed_apps_titles_clicks_and_changes_reach_the_bar_and_back() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-follow");
     let callers = Introduced::new();
     let app = FakeApp::start(&bus, scratch.path(), "test.app", &callers);
@@ -284,9 +283,8 @@ async fn a_followed_apps_titles_clicks_and_changes_reach_the_bar_and_back() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_with_no_owner_has_no_menu_until_one_appears_and_none_after_it_leaves() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-owner");
     let callers = Introduced::new();
     let handle = service(&bus, scratch.path(), &callers);
@@ -498,9 +496,8 @@ impl Agent {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_listing_names_every_row_and_carries_the_apps_commands() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-list");
     let callers = Introduced::new();
     let _app = FakeApp::start(&bus, scratch.path(), "test.app", &callers);
@@ -549,9 +546,8 @@ async fn the_listing_names_every_row_and_carries_the_apps_commands() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_unverified_apps_items_are_destructive_whatever_their_titles_or_commands_say() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-spoof");
     let callers = Introduced::new();
     let app = FakeApp::start(&bus, scratch.path(), "test.app", &callers);
@@ -608,9 +604,8 @@ fn notes(name: &str) -> ActionRef {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_verified_apps_own_command_is_handed_back_as_the_next_call_and_never_clicked() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-verified");
     let callers = Introduced::new();
     let app = FakeApp::start(&bus, scratch.path(), "dev.notes", &callers);
@@ -669,9 +664,8 @@ fn destructive() -> CallClass {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn classify_answers_read_destructive_or_delegates_as_the_table_says() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     // Verified: a declared command delegates; a spoof and a View item are destructive.
     let scratch = TempDir::new("app-menu-classify-verified");
     let callers = Introduced::new();
@@ -728,9 +722,8 @@ async fn classify_answers_read_destructive_or_delegates_as_the_table_says() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn perform_refuses_an_item_that_changed_since_it_was_gated_and_always_takes_destructive() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-changed");
     let callers = Introduced::new();
     let app = FakeApp::start(&bus, scratch.path(), "dev.notes", &callers);
@@ -802,9 +795,8 @@ async fn perform_refuses_an_item_that_changed_since_it_was_gated_and_always_take
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_menu_served_by_another_program_than_the_apps_is_neither_listed_nor_clicked() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-squatter");
     let callers = Introduced::new();
     // The program that owns dev.notes's menu name is the system's, and was launched as dev.other.
@@ -842,9 +834,8 @@ fn reporting(app: &str, subject: &str) -> Subjects {
 /// compared with it, not with the scope name its launcher claimed.
 #[tokio::test(flavor = "multi_thread")]
 async fn the_bar_shows_the_menu_of_the_program_the_compositor_reports_whatever_its_scope_says() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-reported");
     let callers = Introduced::new();
     // Launched under another app's scope name, but it is the image the compositor reports.
@@ -865,9 +856,8 @@ async fn the_bar_shows_the_menu_of_the_program_the_compositor_reports_whatever_i
 /// compositor says the window belongs to another program.
 #[tokio::test(flavor = "multi_thread")]
 async fn the_bar_shows_no_menu_for_a_program_other_than_the_one_the_compositor_reports() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-reported-other");
     let callers = Introduced::new();
     let _squatter = FakeApp::start(&bus, scratch.path(), "test.app", &callers);
@@ -889,9 +879,8 @@ async fn the_bar_shows_no_menu_for_a_program_other_than_the_one_the_compositor_r
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_shells_own_rows_do_what_the_table_calls_cheap() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("app-menu-own");
     let callers = Introduced::new();
     let mut agent = agent(&bus, scratch.path(), &callers, &["foot", "files"], None).await;
@@ -1317,9 +1306,8 @@ mod routed {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn a_read_row_asks_nothing_and_a_verified_delegate_asks_once_for_its_own_action() {
-        let Some(bus) = PrivateBus::start() else {
-            return;
-        };
+        let bus = PrivateBus::start()
+            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
         let scratch = TempDir::new("app-menu-routed");
         let callers = Introduced::new();
         let app = FakeApp::start(&bus, scratch.path(), "dev.notes", &callers);

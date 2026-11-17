@@ -275,9 +275,8 @@ async fn until(what: &str, done: impl FnMut() -> bool) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_computer_asking_is_asked_about_and_allow_reaches_inferd_as_a_word() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let inferd = FakeInferd::start(&bus, vec![row("old", "Studio", "approved")]).await;
     let mut shell = shell(&bus).await;
     until("the service never read Guests", || inferd.reads() == 1).await;
@@ -317,9 +316,8 @@ async fn a_computer_asking_is_asked_about_and_allow_reaches_inferd_as_a_word() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_question_already_waiting_is_told_at_start_and_one_answered_elsewhere_is_withdrawn() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let inferd = FakeInferd::start(
         &bus,
         vec![

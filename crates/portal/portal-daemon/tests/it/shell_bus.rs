@@ -123,9 +123,8 @@ fn request() -> ChoiceRequest {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_portal_asks_the_shell_from_the_connection_that_owns_its_name() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let shell = shell_on(&bus).await;
     let scratch = tempfile::tempdir().expect("scratch");
     let parts = Parts::real(

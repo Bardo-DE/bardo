@@ -28,8 +28,8 @@ struct Bench {
 
 /// The stand-ins are up and the shell holds its seat. The answers companiond makes have a
 /// `Routing` property that starts as `first` (`None`: an older companion, no such property).
-async fn bench(first: Option<&str>) -> Option<Bench> {
-    let mut desk = companion_support::desk().await?;
+async fn bench(first: Option<&str>) -> Bench {
+    let mut desk = companion_support::desk().await;
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Thinking, "first"))));
     let routing = Arc::new(Mutex::new(first.unwrap_or_default().to_owned()));
     let companiond = desk.peer(COMPANION_BUS).await;
@@ -53,22 +53,13 @@ async fn bench(first: Option<&str>) -> Option<Bench> {
     )
     .await;
     desk.seated().await;
-    Some(Bench {
+    Bench {
         desk,
         companiond,
         view,
         routing,
         _intentd: intentd,
-    })
-}
-
-macro_rules! bench {
-    ($routing:expr) => {
-        match bench($routing).await {
-            Some(bench) => bench,
-            None => return,
-        }
-    };
+    }
 }
 
 impl Bench {
@@ -134,7 +125,7 @@ impl Bench {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_routing_read_as_the_answer_appears_prints_the_footer_line() {
-    let bench = bench!(Some(&json(&haiku_notes())));
+    let bench = bench(Some(&json(&haiku_notes()))).await;
     bench.ask();
     bench.routing_is(haiku_notes()).await;
     assert_eq!(footer_line(&haiku_notes()), HAIKU_LINE);
@@ -142,7 +133,7 @@ async fn the_routing_read_as_the_answer_appears_prints_the_footer_line() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_footer_updates_when_the_routing_changes() {
-    let bench = bench!(Some("[]"));
+    let bench = bench(Some("[]")).await;
     bench.ask();
     assert_eq!(bench.notes_after_view("one").await, Vec::new());
     bench.routes(&json(&haiku_notes())).await;
@@ -161,21 +152,21 @@ async fn the_footer_updates_when_the_routing_changes() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn no_notes_means_no_footer() {
-    let bench = bench!(Some("[]"));
+    let bench = bench(Some("[]")).await;
     bench.ask();
     assert_eq!(bench.notes_after_view("later").await, Vec::new());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_older_companion_without_the_property_has_no_footer() {
-    let bench = bench!(None);
+    let bench = bench(None).await;
     bench.ask();
     assert_eq!(bench.notes_after_view("later").await, Vec::new());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_declined_named_model_fails_the_task_with_its_reason() {
-    let bench = bench!(Some("[]"));
+    let bench = bench(Some("[]")).await;
     bench.ask();
     let why = "Kimi K2.6 cannot answer: it is not installed on this computer.";
     let failed = AnswerWire {
@@ -199,7 +190,7 @@ async fn a_declined_named_model_fails_the_task_with_its_reason() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_turn_that_meets_no_model_opens_nothing_by_itself() {
-    let mut bench = bench!(Some("[]"));
+    let mut bench = bench(Some("[]")).await;
     bench.ask();
     let refused = AnswerWire {
         phase: AnswerPhase::Failed,

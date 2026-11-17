@@ -154,9 +154,8 @@ const MENU: &str = "Open#1 Devices#2(Ping#3 Share#4) -#5 Refresh#6 Quit#7";
 
 #[test]
 fn a_submenu_row_click_reaches_the_item_and_its_context_menu_and_layout_updates_follow() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("tray-bus");
     let mut fixture = Fixture::start(&bus, scratch.path());
 

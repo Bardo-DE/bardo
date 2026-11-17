@@ -106,10 +106,8 @@ async fn only_the_portal_backend_that_owns_its_name_asks_the_picker() {
         ),
     ];
     for (name, owner, caller, want) in cases {
-        let Some(bus) = PrivateBus::start() else {
-            eprintln!("skipped: no dbus-daemon");
-            return;
-        };
+        let bus = PrivateBus::start()
+            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
         let scratch = TempDir::new("callers-picker");
         let rig = rig_as(&bus, &scratch, owner).await;
         let calling = match caller {
@@ -169,10 +167,8 @@ async fn a_stand_in_named_in_the_persons_rows_is_let_in_only_as_its_own_role() {
         ),
     ];
     for (name, owner, want) in cases {
-        let Some(bus) = PrivateBus::start() else {
-            eprintln!("skipped: no dbus-daemon");
-            return;
-        };
+        let bus = PrivateBus::start()
+            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
         let scratch = TempDir::new("callers-dev-rows");
         let rig = rig_as(&bus, &scratch, owner).await;
         let proxy = Shell1Proxy::new(&rig.portal)
@@ -251,10 +247,8 @@ async fn only_an_account_service_that_owns_its_own_name_drives_the_accounts_shee
         ),
     ];
     for (name, held, owner, caller, want) in cases {
-        let Some(bus) = PrivateBus::start() else {
-            eprintln!("skipped: no dbus-daemon");
-            return;
-        };
+        let bus = PrivateBus::start()
+            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
         let mut shell = sheet_shell(&bus);
         serve_sheet(&mut shell).await;
         let owning = standing_in(&bus, &shell, held, owner).await;
@@ -317,11 +311,7 @@ async fn only_intentd_that_owns_its_name_asks_the_confirmation_sheet() {
         ),
     ];
     for (name, owner, caller, want) in cases {
-        let Some(desk) = desk_as(no_menus(), watch::channel(Shots::default()).1, owner).await
-        else {
-            eprintln!("skipped: no dbus-daemon");
-            return;
-        };
+        let desk = desk_as(no_menus(), watch::channel(Shots::default()).1, owner).await;
         desk.serving().await;
         let calling: Connection = match caller {
             Caller::Owner => desk.intentd.clone(),

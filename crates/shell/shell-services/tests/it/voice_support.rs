@@ -316,15 +316,15 @@ pub async fn connect(address: &str) -> Connection {
         .unwrap_or_else(|e| panic!("connecting to the private bus: {e}"))
 }
 
-/// A desk whose stand-in voiced answers `Begin` as `answer` says; `None` (announced) without a
-/// `dbus-daemon`.
-pub async fn desk(answer: BeginAnswer) -> Option<Desk> {
+/// A desk whose stand-in voiced answers `Begin` as `answer` says.
+pub async fn desk(answer: BeginAnswer) -> Desk {
     desk_with(answer, VoicedIs::TheVoiceService).await
 }
 
 /// [`desk`], with the program behind the stand-in's connection being `is` to the shell.
-pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
-    let bus = PrivateBus::start()?;
+pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Desk {
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let script = Script::new(answer);
     let voiced = connect(&bus.address).await;
     let callers = VoicedCallers::new(&voiced, is);
@@ -376,7 +376,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
         },
     );
     let shell = connect(&bus.address).await;
-    Some(Desk {
+    Desk {
         bus,
         voice,
         seat: seat_publisher,
@@ -386,7 +386,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
         shell,
         voiced,
         callers,
-    })
+    }
 }
 
 impl Desk {
@@ -452,14 +452,3 @@ impl Desk {
             .unwrap_or_else(|| panic!("the companion link closed"))
     }
 }
-
-macro_rules! desk_or_return {
-    ($answer:expr) => {
-        match $crate::voice_support::desk($answer).await {
-            Some(desk) => desk,
-            None => return,
-        }
-    };
-}
-
-pub(crate) use desk_or_return;

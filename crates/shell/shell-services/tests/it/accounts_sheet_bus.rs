@@ -204,10 +204,8 @@ async fn inputs_of(connection: &Connection) -> zbus::MessageStream {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn accountd_opens_updates_and_closes_and_hears_what_the_person_does() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -309,10 +307,8 @@ async fn opened(shell: &mut Shell, count: usize) -> Vec<LaunchCommand> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -357,10 +353,8 @@ async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_forged_caller_is_refused_and_draws_nothing() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -414,10 +408,8 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn what_the_person_typed_reaches_accountd_and_nobody_else() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -444,10 +436,8 @@ async fn what_the_person_typed_reaches_accountd_and_nobody_else() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_bad_call_is_refused_and_accountd_leaving_takes_the_sheets_down() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -483,10 +473,8 @@ async fn a_bad_call_is_refused_and_accountd_leaving_takes_the_sheets_down() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_passive_environment_claims_nothing_and_a_taken_name_is_never_fought_over() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let _passive = shell_claiming(&bus, NameClaims::Passive);
     tokio::time::sleep(QUIET).await;
     let stranger = connect(&bus, None).await;
@@ -514,10 +502,8 @@ async fn a_passive_environment_claims_nothing_and_a_taken_name_is_never_fought_o
 
 #[tokio::test(flavor = "multi_thread")]
 async fn each_account_service_is_served_and_its_sheets_go_when_it_leaves() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     serving(&mut shell).await;
     let owners = [

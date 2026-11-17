@@ -42,8 +42,9 @@ async fn client(bus: &PrivateBus) -> Connection {
 }
 
 /// A portal whose book holds one grant of `APP`.
-async fn portal_with_a_grant() -> Option<Portal> {
-    let bus = PrivateBus::start()?;
+async fn portal_with_a_grant() -> Portal {
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = tempfile::tempdir().expect("scratch");
     let path = scratch.path().join("restore");
     let mut book = RestoreBook::new();
@@ -61,20 +62,18 @@ async fn portal_with_a_grant() -> Option<Portal> {
     let link = parts.link();
     let connection = serve_on(bus.builder(), parts).await.expect("serves");
     let peers = link.peers().expect("served");
-    Some(Portal {
+    Portal {
         bus,
         peers,
         store: FileStore::new(path),
         _scratch: scratch,
         _connection: connection,
-    })
+    }
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_settings_lists_and_takes_back_what_is_remembered() {
-    let Some(portal) = portal_with_a_grant().await else {
-        return;
-    };
+    let portal = portal_with_a_grant().await;
     let settings = client(&portal.bus).await;
     as_settings_at(&portal, &settings, Proof::Full);
 
@@ -153,9 +152,7 @@ async fn only_settings_lists_and_takes_back_what_is_remembered() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_settings_lets_an_app_in_for_good_and_it_is_listed_and_taken_back_like_the_rest() {
-    let Some(portal) = portal_with_a_grant().await else {
-        return;
-    };
+    let portal = portal_with_a_grant().await;
     let settings = client(&portal.bus).await;
     as_settings_at(&portal, &settings, Proof::Full);
     let stranger = client(&portal.bus).await;

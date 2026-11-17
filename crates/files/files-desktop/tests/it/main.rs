@@ -1,5 +1,5 @@
 //! files-desktop's one test binary: every file below is a module of it. The bus tests run on a
-//! private `dbus-daemon` with a scratch config and skip, saying why, when there is none; nothing
+//! private `dbus-daemon` with a scratch config and fail, saying how to install it, when there is none; nothing
 //! touches the person's session bus or home folder.
 
 mod bus;

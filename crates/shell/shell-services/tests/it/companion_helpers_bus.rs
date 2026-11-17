@@ -3,7 +3,7 @@
 //! card, and sends what the person confirms. Every wait is on the service's published state or on
 //! the stand-in's record, never on a clock. Never the person's session bus.
 
-use crate::companion_support::{self, Desk, desk_or_return};
+use crate::companion_support::{self, Desk};
 
 use std::sync::{Arc, Mutex};
 
@@ -222,7 +222,7 @@ fn said(held: &Held, text: &str) {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_list_is_read_when_the_shell_is_seated_and_again_at_each_change() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let view = HelpersView {
         helpers: vec![line("h-1", "Research", Some(HelperNeeds::Answer))],
         told: vec![ToldWire {
@@ -256,7 +256,7 @@ async fn the_list_is_read_when_the_shell_is_seated_and_again_at_each_change() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_card_is_read_and_a_helper_the_companion_lacks_is_gone() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     // The companion lists the helper whose card is read: a list that lacks the open helper
     // closes its card, so a list arriving after the card must not lack it.
     let (_companion, held) = companion_with(
@@ -293,7 +293,7 @@ async fn a_card_is_read_and_a_helper_the_companion_lacks_is_gone() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_saved_card_goes_to_the_companion_and_its_refusal_is_shown_as_it_came() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let (_companion, held) = companion_with(&desk, HelpersView::default()).await;
     said(&held, "There is already a helper called Research.");
     desk.seated().await;
@@ -320,7 +320,7 @@ async fn a_saved_card_goes_to_the_companion_and_its_refusal_is_shown_as_it_came(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn pausing_removing_and_giving_a_job_reach_the_companion_and_removal_waits_for_the_yes() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let (_companion, held) = companion_with(
         &desk,
         HelpersView {
@@ -357,7 +357,7 @@ async fn pausing_removing_and_giving_a_job_reach_the_companion_and_removal_waits
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn signing_in_and_out_and_the_routines_reach_the_companion() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let (_companion, _held) = companion_with(&desk, HelpersView::default()).await;
     desk.seated().await;
     desk.log_has("routines").await;

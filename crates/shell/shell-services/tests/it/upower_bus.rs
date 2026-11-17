@@ -176,9 +176,8 @@ async fn until<T>(rx: &mut watch::Receiver<T>, what: &str, ok: impl FnMut(&T) ->
 
 #[test]
 fn the_three_follow_a_upower_that_starts_late_and_leaves() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("upower");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {

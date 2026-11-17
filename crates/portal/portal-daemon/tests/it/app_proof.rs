@@ -220,9 +220,7 @@ fn the_app_of_a_session_is_read_from_the_handle_the_frontend_made() {
 /// session handle.
 #[tokio::test(flavor = "multi_thread")]
 async fn the_real_prover_asks_who_is_on_the_other_end_of_the_session() {
-    let Some(portal) = start_portal().await else {
-        return;
-    };
+    let portal = start_portal().await;
     let (_dir, names) = names_with("org.mozilla.firefox", FIREFOX);
     let prover = PeerProver::with_root(portal.link.clone(), names, TrustAll);
     portal.peers.introduce(":1.42", program("/usr/bin/python3"));

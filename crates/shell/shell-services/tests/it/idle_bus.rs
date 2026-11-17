@@ -22,19 +22,25 @@ use shell_services::service::spawn;
 use shell_testkit::PrivateBus;
 use tokio::sync::watch;
 
-/// The nested compositor's socket, or `None` (the test then says so and passes).
-fn nested() -> Option<PathBuf> {
-    let path = match std::env::var_os("BARDO_SHELL_NESTED_WAYLAND") {
-        Some(path) => PathBuf::from(path),
-        None => PathBuf::from(std::env::var_os("XDG_RUNTIME_DIR")?).join("wayland-1"),
-    };
+/// The nested compositor's socket. The live test that asks for it fails, saying so, where there
+/// is none.
+fn nested() -> PathBuf {
+    let path =
+        match std::env::var_os("BARDO_SHELL_NESTED_WAYLAND") {
+            Some(path) => PathBuf::from(path),
+            None => PathBuf::from(std::env::var_os("XDG_RUNTIME_DIR").expect(
+                "XDG_RUNTIME_DIR or BARDO_SHELL_NESTED_WAYLAND names the nested compositor",
+            ))
+            .join("wayland-1"),
+        };
     assert_ne!(
         path.file_name().and_then(|n| n.to_str()),
         Some("wayland-0"),
         "never the real session"
     );
-    std::os::unix::net::UnixStream::connect(&path).ok()?;
-    Some(path)
+    std::os::unix::net::UnixStream::connect(&path)
+        .unwrap_or_else(|e| panic!("no nested compositor at {}: {e}", path.display()));
+    path
 }
 
 fn policy() -> IdlePolicy {
@@ -79,14 +85,9 @@ async fn until(idle: &mut watch::Receiver<Idle>, want: impl Fn(&Idle) -> bool) -
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "live: the nested compositor and a dbus-daemon"]
 async fn idle_locks_at_screen_off_and_a_screensaver_inhibit_holds_it() {
-    let Some(socket) = nested() else {
-        eprintln!("no nested compositor: skipped");
-        return;
-    };
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("no private bus: skipped");
-        return;
-    };
+    let socket = nested();
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let (_lock_tx, lock) = watch::channel(Lock::default());
     let (_battery_tx, battery) = watch::channel(Battery::default());
     let (locker, mut locker_rx) = Control::<LockerCommand>::channel();

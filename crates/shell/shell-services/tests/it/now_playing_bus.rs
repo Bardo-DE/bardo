@@ -126,9 +126,8 @@ async fn serve_player(
 #[test]
 fn a_player_that_never_answers_does_not_hide_the_others_and_long_titles_are_cut() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("now-playing");
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),

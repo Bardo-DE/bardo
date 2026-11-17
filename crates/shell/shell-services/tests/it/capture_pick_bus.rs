@@ -84,10 +84,8 @@ fn desktop_with_notes() -> DesktopView {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn portal_asks_the_person_picks_and_the_answer_comes_back() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("capture-pick-bus");
     let Rig {
         mut service,
@@ -237,10 +235,8 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_colour_request_is_cancelled_at_once_while_nothing_draws_the_eyedropper() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("capture-pick-colour-absent");
     let (service, portal) = serving(&bus, &scratch).await;
     let proxy = Shell1Proxy::new(&portal)
@@ -267,10 +263,8 @@ async fn draw_eyedropper(service: &mut shell_model::service::Handle<CaptureServi
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_colour_is_asked_one_at_a_time_and_the_click_comes_back_as_floats() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("capture-pick-colour");
     let (mut service, portal) = serving(&bus, &scratch).await;
     draw_eyedropper(&mut service).await;
@@ -319,10 +313,8 @@ async fn a_colour_is_asked_one_at_a_time_and_the_click_comes_back_as_floats() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_colour_request_from_anyone_but_the_portal_backend_is_refused() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("capture-pick-colour-forged");
     let (mut service, _portal) = serving(&bus, &scratch).await;
     draw_eyedropper(&mut service).await;

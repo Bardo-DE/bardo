@@ -161,10 +161,8 @@ fn pair(name: &str, percent: u32) -> (String, u32) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_levels_are_listed_and_settings_sets_one() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let settings = settings_of(&bus, &shell).await;
     serving(&mut shell).await;
@@ -187,10 +185,8 @@ async fn the_levels_are_listed_and_settings_sets_one() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_stranger_or_a_bad_request_changes_nothing() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let settings = settings_of(&bus, &shell).await;
     let stranger = standing_in(&bus, &shell, "org.example.Stranger", Who::Program).await;
@@ -205,10 +201,8 @@ async fn a_stranger_or_a_bad_request_changes_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_change_of_the_levels_is_announced() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut shell = shell(&bus);
     let settings = settings_of(&bus, &shell).await;
     serving(&mut shell).await;

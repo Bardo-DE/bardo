@@ -155,8 +155,9 @@ pub fn ask_input(prompt: &str) -> AskInput {
     }
 }
 
-pub async fn desk() -> Option<Desk> {
-    let bus = PrivateBus::start()?;
+pub async fn desk() -> Desk {
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
         ..Env::isolated(Path::new("/nonexistent/shell-companion-bus"))
@@ -174,7 +175,7 @@ pub async fn desk() -> Option<Desk> {
         },
     );
     let shell = connect(&bus.address).await;
-    Some(Desk {
+    Desk {
         bus,
         companion,
         summons,
@@ -182,7 +183,7 @@ pub async fn desk() -> Option<Desk> {
         seat: seat_publisher,
         shell,
         log: Log::default(),
-    })
+    }
 }
 
 impl Desk {
@@ -258,17 +259,6 @@ pub fn fast() -> CompanionParams {
         },
     }
 }
-
-macro_rules! desk_or_return {
-    () => {
-        match $crate::companion_support::desk().await {
-            Some(desk) => desk,
-            None => return,
-        }
-    };
-}
-
-pub(crate) use desk_or_return;
 
 impl Desk {
     /// Resolves once a stand-in has logged exactly `line`.

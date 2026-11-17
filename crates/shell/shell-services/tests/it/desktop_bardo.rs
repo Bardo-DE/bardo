@@ -835,9 +835,8 @@ impl Compositor {
 
 #[tokio::test]
 async fn the_compositor_on_the_bus_hands_the_shell_a_connected_socket() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let route = Bus::session(BusRoute::Address(bus.address.clone()));
     assert!(
         shell_connection(&route).await.is_none(),

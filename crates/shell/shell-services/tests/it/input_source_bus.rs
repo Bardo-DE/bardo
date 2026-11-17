@@ -110,9 +110,8 @@ async fn until(rx: &mut watch::Receiver<InputSwitch>, ok: impl FnMut(&InputSwitc
 
 #[test]
 fn next_input_source_tells_fcitx5_the_entry_after_the_current_one_or_refuses() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("input-source");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
@@ -145,9 +144,10 @@ fn next_input_source_tells_fcitx5_the_entry_after_the_current_one_or_refuses() {
 
 #[test]
 fn next_input_source_tells_ibus_the_engine_after_the_current_one() {
-    let (Some(session), Some(ibus_bus)) = (PrivateBus::start(), PrivateBus::start()) else {
-        return;
-    };
+    let session = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let ibus_bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("input-source-ibus");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
@@ -174,9 +174,8 @@ fn next_input_source_tells_ibus_the_engine_after_the_current_one() {
 
 #[test]
 fn an_ibus_address_that_connects_to_nothing_is_no_framework() {
-    let Some(session) = PrivateBus::start() else {
-        return;
-    };
+    let session = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("input-source-no-ibus");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {

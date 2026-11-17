@@ -84,8 +84,9 @@ pub struct Portal {
     pub peers: Arc<Peers>,
 }
 
-pub async fn start_portal() -> Option<Portal> {
-    let bus = PrivateBus::start()?;
+pub async fn start_portal() -> Portal {
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = tempfile::tempdir().expect("scratch");
     let parts = Parts::real(
         FileStore::new(scratch.path().join("restore")),
@@ -96,12 +97,12 @@ pub async fn start_portal() -> Option<Portal> {
         .await
         .expect("the portal serves");
     let peers = link.peers().expect("callers can be told apart once served");
-    Some(Portal {
+    Portal {
         bus,
         _connection: connection,
         link,
         peers,
-    })
+    }
 }
 
 impl Portal {
@@ -271,9 +272,7 @@ async fn every_method(who: &Connection) -> Vec<(&'static str, zbus::Result<Messa
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_the_portal_frontend_may_call_any_method() {
-    let Some(portal) = start_portal().await else {
-        return;
-    };
+    let portal = start_portal().await;
     // The control: the frontend is let through, so the refusals below are the check.
     let frontend = portal.frontend().await;
     let created = call(
@@ -321,9 +320,7 @@ async fn only_the_portal_frontend_may_call_any_method() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_session_is_closed_and_changed_only_by_the_peer_that_opened_it() {
-    let Some(portal) = start_portal().await else {
-        return;
-    };
+    let portal = start_portal().await;
     let (opener, other) = (portal.frontend().await, portal.frontend().await);
     let (handle, none) = (path(REQUEST_PATH), Dict::new());
     let cast = "/org/freedesktop/portal/desktop/session/x/cast";

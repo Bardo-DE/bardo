@@ -177,22 +177,20 @@ pub(crate) async fn connect(address: &str) -> Connection {
 }
 
 /// A private bus, the seat started on it (claiming its names), and the stand-in intentd owning its name.
-async fn desk() -> Option<Desk> {
+async fn desk() -> Desk {
     desk_with(no_menus(), watch::channel(Shots::default()).1).await
 }
 
 /// As [`desk`], with `menus` for the windows and `shots` for the screenshots the shell has seen.
-async fn desk_with(menus: MenuLinks, shots: watch::Receiver<Shots>) -> Option<Desk> {
+async fn desk_with(menus: MenuLinks, shots: watch::Receiver<Shots>) -> Desk {
     desk_as(menus, shots, Who::Service(Role::Router)).await
 }
 
 /// As [`desk_with`], the owner of intentd's name being `who` to the seat.
-pub(crate) async fn desk_as(
-    menus: MenuLinks,
-    shots: watch::Receiver<Shots>,
-    who: Who,
-) -> Option<Desk> {
-    Some(desk_on(PrivateBus::start()?, menus, shots, who, NameClaims::Claim).await)
+pub(crate) async fn desk_as(menus: MenuLinks, shots: watch::Receiver<Shots>, who: Who) -> Desk {
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    desk_on(bus, menus, shots, who, NameClaims::Claim).await
 }
 
 /// As [`desk_as`], on `bus` (a test may arrange the bus first) and with `claims` for the seat.
@@ -303,9 +301,8 @@ pub(crate) fn no_menus() -> MenuLinks {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_seat_in_a_passive_environment_owns_no_name() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let shots = watch::channel(Shots::default()).1;
     let desk = desk_on(
         bus,
@@ -334,7 +331,7 @@ async fn a_seat_in_a_passive_environment_owns_no_name() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_persons_answer_goes_back_as_the_request_objects_response() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     let mut state = desk.serving().await;
     let control = desk.seat.control.clone();
     let mut watching = state.clone();
@@ -369,7 +366,7 @@ async fn the_persons_answer_goes_back_as_the_request_objects_response() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn allow_from_the_terminal_is_answered_and_the_grants_are_read_again() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     let mut state = desk.serving().await;
     until(&mut state, "the first read of the grants", |s| {
         s.terminal.reach == ControlReach::Reached
@@ -422,7 +419,7 @@ fn limited_request(id: &str, hex: &str) -> ConfirmRequest {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn never_goes_back_as_never_with_the_sheets_receipt() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     let state = desk.serving().await;
     let (control, mut watching) = (desk.seat.control.clone(), state.clone());
     let answerer = tokio::spawn(async move {
@@ -447,7 +444,7 @@ async fn never_goes_back_as_never_with_the_sheets_receipt() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn undo_reaches_intentd_and_only_then_the_sheet_loses_its_line() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     let mut state = desk.serving().await;
     let proxy = ConfirmProxy::new(&desk.intentd)
         .await
@@ -484,7 +481,7 @@ async fn undo_reaches_intentd_and_only_then_the_sheet_loses_its_line() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_question_nobody_answers_expires_and_a_cancel_withdraws_it() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     desk.serving().await;
     let (code, body) = desk.ask(request("c-1", ConfirmOffer::OnceOnly, 1)).await;
     assert_eq!(code, 0);
@@ -509,7 +506,7 @@ async fn a_question_nobody_answers_expires_and_a_cancel_withdraws_it() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn only_intentd_may_ask_or_cancel() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     desk.serving().await;
     let stranger = connect(&desk.bus.address).await;
     let proxy = ConfirmProxy::new(&stranger)
@@ -533,7 +530,7 @@ async fn only_intentd_may_ask_or_cancel() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn intentd_leaving_drops_the_questions_nobody_waits_for() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     let mut state = desk.serving().await;
     let proxy = ConfirmProxy::new(&desk.intentd)
         .await
@@ -554,7 +551,7 @@ async fn intentd_leaving_drops_the_questions_nobody_waits_for() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal() {
-    let Some(desk) = desk().await else { return };
+    let desk = desk().await;
     desk.held.lock().unwrap_or_else(|e| panic!("{e}")).grants =
         vec![grant("mail.thread.archive"), grant("mail.thread.read")];
     let mut state = desk.serving().await;
@@ -610,9 +607,8 @@ async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal(
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_name_somebody_else_owns_is_the_links_trouble() {
     for taken in ["org.bardo.Shell", CONFIRM_BUS] {
-        let Some(bus) = PrivateBus::start() else {
-            return;
-        };
+        let bus = PrivateBus::start()
+            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
         let squatter = connect(&bus.address).await;
         squatter
             .request_name(taken)
@@ -702,7 +698,7 @@ async fn provider(connection: &Connection) -> action_dbus::IntentProviderProxy<'
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn intentd_performs_a_shell_action_through_the_provider() {
-    let Some(mut desk) = desk().await else { return };
+    let mut desk = desk().await;
     desk.serving().await;
     let proxy = provider(&desk.intentd).await;
     // The daemon's side: do what is asked and say how it went.
@@ -757,7 +753,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_failed_action_is_the_providers_refusal_with_the_daemons_words() {
-    let Some(mut desk) = desk().await else { return };
+    let mut desk = desk().await;
     desk.serving().await;
     let proxy = provider(&desk.intentd).await;
     let doer = tokio::spawn(async move {
@@ -839,9 +835,7 @@ async fn performed(
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_window_list_is_the_compositors_windows_labelled_untrusted() {
     let (links, _windows, _commands) = compositor();
-    let Some(desk) = desk_with(links, watch::channel(Shots::default()).1).await else {
-        return;
-    };
+    let desk = desk_with(links, watch::channel(Shots::default()).1).await;
     desk.serving().await;
     let proxy = provider(&desk.intentd).await;
     let outcome = performed(&proxy, &invocation("shell.window.list"))
@@ -884,9 +878,7 @@ async fn the_window_list_is_the_compositors_windows_labelled_untrusted() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn window_actions_reach_the_compositor_and_an_unknown_id_is_refused() {
     let (links, _windows, mut commands) = compositor();
-    let Some(desk) = desk_with(links, watch::channel(Shots::default()).1).await else {
-        return;
-    };
+    let desk = desk_with(links, watch::channel(Shots::default()).1).await;
     desk.serving().await;
     let proxy = provider(&desk.intentd).await;
     let sent = [
@@ -932,9 +924,7 @@ async fn window_actions_reach_the_compositor_and_an_unknown_id_is_refused() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_screenshot_answers_with_the_path_the_watch_saw() {
     let (shots_tx, shots) = watch::channel(Shots::default());
-    let Some(mut desk) = desk_with(no_menus(), shots).await else {
-        return;
-    };
+    let mut desk = desk_with(no_menus(), shots).await;
     desk.serving().await;
     let proxy = provider(&desk.intentd).await;
     let doer = tokio::spawn(async move {

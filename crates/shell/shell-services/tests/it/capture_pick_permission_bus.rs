@@ -21,10 +21,8 @@ async fn portal_asks_and_each_button_comes_back_as_its_number() {
         (PermissionOutcome::Deny, 1),
         (PermissionOutcome::Closed, 2),
     ];
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("capture-pick-permission");
     let (mut service, portal) = serving(&bus, &scratch).await;
     let proxy = Shell1Proxy::new(&portal)
@@ -100,10 +98,8 @@ fn grim() -> Consent {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_portals_question_and_the_compositors_wait_in_one_line_one_sheet_at_a_time() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("capture-pick-consent-line");
     let mut rig = rig(&bus, &scratch).await;
     let proxy = Shell1Proxy::new(&rig.portal)
@@ -184,10 +180,8 @@ async fn the_portals_question_and_the_compositors_wait_in_one_line_one_sheet_at_
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_withdrawn_question_comes_down_unanswered_and_a_dismissal_is_told_as_one() {
-    let Some(bus) = PrivateBus::start() else {
-        eprintln!("skipped: no dbus-daemon");
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("capture-pick-consent-withdrawn");
     let mut rig = rig(&bus, &scratch).await;
     let _ = rig.service.control.send(CaptureCommand::Consent(grim()));

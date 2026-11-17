@@ -292,9 +292,8 @@ async fn calls_include(shared: &Shared, wanted: &str) {
 
 #[test]
 fn the_network_follows_the_primary_wifi_connection() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("nm-network");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
@@ -318,9 +317,8 @@ fn the_network_follows_the_primary_wifi_connection() {
 
 #[test]
 fn wifi_reads_the_device_and_carries_out_commands() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("nm-wifi");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
@@ -361,9 +359,8 @@ fn wifi_reads_the_device_and_carries_out_commands() {
 
 #[test]
 fn wifi_follows_networkmanager_that_starts_after_the_shell() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("nm-wifi-late");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {

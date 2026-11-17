@@ -158,14 +158,12 @@ fn rig(system: BusRoute) -> Rig {
     }
 }
 
-/// A private bus and the stand-in on it, or `None` (said on stderr) to skip.
-async fn with_systemd(
-    loaded: bool,
-    active_state: &str,
-) -> Option<(PrivateBus, zbus::Connection, Shared)> {
-    let bus = PrivateBus::start()?;
+/// A private bus and the stand-in on it.
+async fn with_systemd(loaded: bool, active_state: &str) -> (PrivateBus, zbus::Connection, Shared) {
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let (connection, shared) = serve(&bus, loaded, active_state).await;
-    Some((bus, connection, shared))
+    (bus, connection, shared)
 }
 
 async fn until(state: &mut watch::Receiver<KeyRemapState>, want: KeyRemapState) {
@@ -181,9 +179,7 @@ async fn until(state: &mut watch::Receiver<KeyRemapState>, want: KeyRemapState) 
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_failed_unit_is_failed_and_the_person_is_told() {
-    let Some((bus, _systemd, _shared)) = with_systemd(true, "failed").await else {
-        return;
-    };
+    let (bus, _systemd, _shared) = with_systemd(true, "failed").await;
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
     until(&mut rig.state, KeyRemapState::Failed).await;
     let posted = tokio::time::timeout(LONG, rig.notices.recv())
@@ -201,9 +197,7 @@ async fn a_failed_unit_is_failed_and_the_person_is_told() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_unit_is_not_asked_about_within_the_grace_period() {
-    let Some((bus, _systemd, shared)) = with_systemd(true, "failed").await else {
-        return;
-    };
+    let (bus, _systemd, shared) = with_systemd(true, "failed").await;
     let scratch = TempDir::new("key-remap-grace");
     let env = Env {
         key_remap_socket: Some(scratch.path().join("key-remap.sock")),
@@ -236,9 +230,7 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_unit_the_manager_has_not_loaded_is_not_installed_and_silent() {
-    let Some((bus, _systemd, shared)) = with_systemd(false, "inactive").await else {
-        return;
-    };
+    let (bus, _systemd, shared) = with_systemd(false, "inactive").await;
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
     until(&mut rig.state, KeyRemapState::NotInstalled).await;
     tokio::time::sleep(SHORT).await;
@@ -254,9 +246,7 @@ async fn a_unit_the_manager_has_not_loaded_is_not_installed_and_silent() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_activating_unit_is_restarting_and_silent() {
-    let Some((bus, _systemd, _shared)) = with_systemd(true, "activating").await else {
-        return;
-    };
+    let (bus, _systemd, _shared) = with_systemd(true, "activating").await;
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
     until(&mut rig.state, KeyRemapState::Restarting).await;
     tokio::time::sleep(SHORT).await;
@@ -266,9 +256,7 @@ async fn an_activating_unit_is_restarting_and_silent() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_unit_is_read_again_and_a_later_failure_is_seen() {
-    let Some((bus, _systemd, shared)) = with_systemd(true, "activating").await else {
-        return;
-    };
+    let (bus, _systemd, shared) = with_systemd(true, "activating").await;
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
     until(&mut rig.state, KeyRemapState::Restarting).await;
     rig.notices.try_recv().unwrap_err();
@@ -283,9 +271,7 @@ async fn the_unit_is_read_again_and_a_later_failure_is_seen() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn retry_resets_the_failure_then_restarts_the_unit() {
-    let Some((bus, _systemd, shared)) = with_systemd(true, "inactive").await else {
-        return;
-    };
+    let (bus, _systemd, shared) = with_systemd(true, "inactive").await;
     let rig = rig(BusRoute::Address(bus.address.clone()));
     rig.control
         .send(KeyRemapCommand::Retry)
@@ -311,9 +297,7 @@ async fn retry_resets_the_failure_then_restarts_the_unit() {
 #[tokio::test(flavor = "multi_thread")]
 async fn without_a_system_bus_nothing_is_asked_and_the_state_stays_unknown() {
     // A bus with a stand-in exists, but the service is not told of it.
-    let Some((_bus, _systemd, shared)) = with_systemd(true, "failed").await else {
-        return;
-    };
+    let (_bus, _systemd, shared) = with_systemd(true, "failed").await;
     let mut rig = rig(BusRoute::Absent);
     rig.control
         .send(KeyRemapCommand::Retry)

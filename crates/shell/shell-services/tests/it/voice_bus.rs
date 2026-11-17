@@ -3,7 +3,7 @@
 //! service's published state or on the stand-in's record, never on a clock; a test skips, saying
 //! so, without a `dbus-daemon`. Never the person's session bus.
 
-use crate::voice_support::{self, BeginAnswer, CancelAnswer, desk_or_return};
+use crate::voice_support::{self, BeginAnswer, CancelAnswer};
 use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use action_core::{Keep, TurnVia};
@@ -53,7 +53,7 @@ fn line_of(desk: &voice_support::Desk) -> Option<String> {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_hold_begins_hears_partials_releases_and_asks_the_companion_what_it_heard() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     desk.seated().await;
     desk.send(start());
     let begin = desk
@@ -126,7 +126,7 @@ async fn a_hold_begins_hears_partials_releases_and_asks_the_companion_what_it_he
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_end_signal_that_beats_the_reply_to_begin_is_not_lost() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     *desk
         .script
         .early_end
@@ -150,7 +150,8 @@ async fn needs_consent_opens_the_sheet_and_each_answer_is_the_consent_to_write()
         (ConsentAnswer::NotNow, VoiceConsent::Declined),
         (ConsentAnswer::Allow, VoiceConsent::Given(UnixSeconds(0))),
     ] {
-        let mut desk = desk_or_return!(BeginAnswer::Refuse(VoiceRefusedError::NeedsConsent));
+        let mut desk =
+            voice_support::desk(BeginAnswer::Refuse(VoiceRefusedError::NeedsConsent)).await;
         desk.seated().await;
         desk.send(start());
         desk.state(|v| v.sheet.then_some(())).await;
@@ -180,7 +181,7 @@ async fn needs_consent_opens_the_sheet_and_each_answer_is_the_consent_to_write()
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_declined_consent_never_calls_begin() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     desk.seated().await;
     desk.send(VoiceCommand::Params(VoiceParams {
         consent: VoiceConsent::Declined,
@@ -211,7 +212,8 @@ async fn a_declined_consent_never_calls_begin() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_missing_microphone_is_said_plainly() {
-    let mut desk = desk_or_return!(BeginAnswer::Refuse(VoiceRefusedError::MicUnavailable));
+    let mut desk =
+        voice_support::desk(BeginAnswer::Refuse(VoiceRefusedError::MicUnavailable)).await;
     desk.seated().await;
     desk.send(start());
     let notice = desk
@@ -234,7 +236,7 @@ async fn a_missing_microphone_is_said_plainly() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn cancel_tells_voiced_and_discards_what_was_heard() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     desk.seated().await;
     desk.send(start());
     desk.state(|v| matches!(v.phase, Phase::Live(_)).then_some(()))
@@ -263,7 +265,7 @@ async fn cancel_tells_voiced_and_discards_what_was_heard() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn without_the_seat_a_hold_says_voice_is_not_running() {
-    let desk = desk_or_return!(BeginAnswer::Open);
+    let desk = voice_support::desk(BeginAnswer::Open).await;
     desk.send(start());
     desk.state(|v| matches!(v.notice, Notice::Unreachable).then_some(()))
         .await;
@@ -278,7 +280,7 @@ async fn cancel_carries_the_cause_of_each_trigger() {
         (CancelCause::FocusLost, "focus_lost"),
         (CancelCause::Shell, "shell"),
     ] {
-        let mut desk = desk_or_return!(BeginAnswer::Open);
+        let mut desk = voice_support::desk(BeginAnswer::Open).await;
         desk.seated().await;
         desk.send(start());
         desk.state(|v| matches!(v.phase, Phase::Live(_)).then_some(()))
@@ -296,7 +298,7 @@ async fn cancel_carries_the_cause_of_each_trigger() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_malformed_frame_is_skipped_and_the_frames_after_it_arrive() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     desk.seated().await;
     desk.send(start());
     desk.state(|v| matches!(v.phase, Phase::Live(_)).then_some(()))
@@ -322,7 +324,7 @@ async fn a_malformed_frame_is_skipped_and_the_frames_after_it_arrive() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_frame_over_the_cap_closes_the_stream_and_says_so_plainly() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     desk.seated().await;
     desk.send(start());
     desk.state(|v| matches!(v.phase, Phase::Live(_)).then_some(()))
@@ -345,7 +347,7 @@ async fn a_frame_over_the_cap_closes_the_stream_and_says_so_plainly() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_cancel_voiced_refuses_as_malformed_is_told_and_the_next_hold_still_begins() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     *desk
         .script
         .cancel_answer
@@ -373,7 +375,7 @@ async fn a_too_long_end_is_told_and_a_superseded_one_is_not() {
         (CancelCause::TooLong, Notice::TooLong),
         (CancelCause::Superseded, Notice::None),
     ] {
-        let mut desk = desk_or_return!(BeginAnswer::Open);
+        let mut desk = voice_support::desk(BeginAnswer::Open).await;
         desk.seated().await;
         desk.send(start());
         desk.state(|v| matches!(v.phase, Phase::Live(_)).then_some(()))
@@ -389,11 +391,8 @@ async fn a_too_long_end_is_told_and_a_superseded_one_is_not() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_program_that_only_owns_the_voice_name_is_not_asked() {
-    let desk =
+    let mut desk =
         voice_support::desk_with(BeginAnswer::Open, voice_support::VoicedIs::OnlyOwnsTheName).await;
-    let Some(mut desk) = desk else {
-        return;
-    };
     desk.seated().await;
     desk.send(start());
     desk.state(|v| matches!(v.notice, Notice::Unreachable).then_some(()))
@@ -407,7 +406,7 @@ async fn a_program_that_only_owns_the_voice_name_is_not_asked() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_end_signal_from_a_program_that_is_not_voiced_ends_nothing() {
-    let mut desk = desk_or_return!(BeginAnswer::Open);
+    let mut desk = voice_support::desk(BeginAnswer::Open).await;
     desk.seated().await;
     desk.send(start());
     desk.state(|v| matches!(v.phase, Phase::Live(_)).then_some(()))

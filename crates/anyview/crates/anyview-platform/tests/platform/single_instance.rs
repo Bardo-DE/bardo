@@ -15,9 +15,8 @@ fn path(text: &str) -> FilePath {
 
 #[tokio::test]
 async fn a_second_launch_forwards_open_peek_and_play_to_the_first() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let first = DbusInstance::new(bus.env());
     let mut primary = match first.claim(&Request::Open(Vec::new())).await.unwrap() {
         Claim::Primary(primary) => primary,
@@ -42,9 +41,8 @@ async fn a_second_launch_forwards_open_peek_and_play_to_the_first() {
 
 #[tokio::test]
 async fn a_request_naming_a_relative_path_is_refused_by_the_running_viewer() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let _primary = DbusInstance::new(bus.env())
         .claim(&Request::Open(Vec::new()))
         .await
@@ -94,9 +92,8 @@ fn handed(place: Resume) -> Handoff {
 
 #[tokio::test]
 async fn a_handoff_arrives_with_its_place_and_the_results_it_came_from() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let mut primary = match DbusInstance::new(bus.env())
         .claim(&Request::Open(Vec::new()))
         .await
@@ -135,9 +132,8 @@ async fn a_handoff_arrives_with_its_place_and_the_results_it_came_from() {
 
 #[tokio::test]
 async fn a_handoff_whose_file_is_not_among_its_results_is_refused_by_the_viewer() {
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let _primary = DbusInstance::new(bus.env())
         .claim(&Request::Open(Vec::new()))
         .await

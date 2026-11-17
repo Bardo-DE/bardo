@@ -4,7 +4,7 @@
 //! names; every wait is on the service's published state or on a stand-in's record, never on a
 //! clock. Never the person's session bus.
 
-use crate::companion_support::{self, desk_or_return};
+use crate::companion_support::{self};
 
 use std::sync::{Arc, Mutex};
 
@@ -90,8 +90,8 @@ struct Bench {
     view: Arc<Mutex<String>>,
 }
 
-async fn bench(acts: ActsAs, first: &AnswerWire) -> Option<Bench> {
-    let mut desk = companion_support::desk().await?;
+async fn bench(acts: ActsAs, first: &AnswerWire) -> Bench {
+    let mut desk = companion_support::desk().await;
     let view = Arc::new(Mutex::new(json(first)));
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
@@ -124,12 +124,12 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Option<Bench> {
             .map(|_| ())
     })
     .await;
-    Some(Bench {
+    Bench {
         desk,
         companiond,
         _intentd: intentd,
         view,
-    })
+    }
 }
 
 impl Bench {
@@ -161,19 +161,10 @@ impl Bench {
     }
 }
 
-macro_rules! bench {
-    ($acts:expr, $first:expr) => {
-        match bench($acts, $first).await {
-            Some(bench) => bench,
-            None => return,
-        }
-    };
-}
-
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_card_press_is_busy_until_its_step_leaves_running() {
     let first = draft_wire(AnswerPhase::Done);
-    let bench = bench!(ActsAs::Accepts, &first);
+    let bench = bench(ActsAs::Accepts, &first).await;
     bench.desk.send(CompanionCommand::Card {
         task: task(),
         action: send_id(),
@@ -218,7 +209,7 @@ async fn a_card_press_is_busy_until_its_step_leaves_running() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_second_press_while_one_is_going_is_not_sent() {
     let first = draft_wire(AnswerPhase::Done);
-    let bench = bench!(ActsAs::Accepts, &first);
+    let bench = bench(ActsAs::Accepts, &first).await;
     for _ in 0..2 {
         bench.desk.send(CompanionCommand::Card {
             task: task(),
@@ -247,7 +238,7 @@ async fn a_second_press_while_one_is_going_is_not_sent() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_confirmation_the_answer_waits_on_is_followed_and_ends() {
     let first = draft_wire(AnswerPhase::Done);
-    let bench = bench!(ActsAs::Accepts, &first);
+    let bench = bench(ActsAs::Accepts, &first).await;
     bench.desk.send(CompanionCommand::Card {
         task: task(),
         action: send_id(),
@@ -285,7 +276,7 @@ async fn the_confirmation_the_answer_waits_on_is_followed_and_ends() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_step_that_fails_is_shown_as_failed_while_the_task_is_done() {
     let first = draft_wire(AnswerPhase::Done);
-    let bench = bench!(ActsAs::Accepts, &first);
+    let bench = bench(ActsAs::Accepts, &first).await;
     bench.desk.send(CompanionCommand::Card {
         task: task(),
         action: send_id(),
@@ -321,7 +312,7 @@ async fn a_step_that_fails_is_shown_as_failed_while_the_task_is_done() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_press_the_companion_refuses_is_kept_and_the_button_is_offered_again() {
     let first = draft_wire(AnswerPhase::Done);
-    let bench = bench!(ActsAs::Refuses, &first);
+    let bench = bench(ActsAs::Refuses, &first).await;
     bench.desk.send(CompanionCommand::Card {
         task: task(),
         action: send_id(),
@@ -350,7 +341,7 @@ async fn a_press_the_companion_refuses_is_kept_and_the_button_is_offered_again()
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_handle_in_an_answer_is_shown_through_session_display_once() {
     let first = draft_wire(AnswerPhase::Done);
-    let bench = bench!(ActsAs::Accepts, &first);
+    let bench = bench(ActsAs::Accepts, &first).await;
     let with_handle = |phase| AnswerWire {
         body: AnswerBody::Text {
             lines: vec![Reveal::Plain("Found".to_owned()), Reveal::Handle(Handle(7))],
@@ -440,7 +431,7 @@ fn mail_manifest() -> action_manifest::ValidManifest {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_apps_that_declare_an_open_action_are_known_and_a_perform_is_the_launchers() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let intentd = desk.peer(INTENTS_BUS).await;
     for object in [
         intentd
@@ -505,7 +496,7 @@ async fn the_apps_that_declare_an_open_action_are_known_and_a_perform_is_the_lau
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Done, ""))));
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(

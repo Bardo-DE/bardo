@@ -187,9 +187,8 @@ fn answer(control: &shell_model::service::Control<PolkitCommand>, cookie: &str, 
 )]
 fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
     let helper = helper_program();
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let (heard_tx, mut heard_rx) = mpsc::unbounded_channel();

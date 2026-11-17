@@ -54,13 +54,13 @@ enum Router {
 
 /// The stand-ins are up and the shell holds its seat. The answers companiond makes name `session`
 /// (`None`: an older companion, no such property).
-async fn bench(session: Option<&str>) -> Option<Bench> {
+async fn bench(session: Option<&str>) -> Bench {
     bench_on(session, Router::Labelled, HANDLE).await
 }
 
 /// `bench`, on `router`, with an answer that holds `handle`.
-async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Option<Bench> {
-    let mut desk = companion_support::desk().await?;
+async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Bench {
+    let mut desk = companion_support::desk().await;
     let view = Arc::new(Mutex::new(json(&holding(handle))));
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
@@ -91,21 +91,12 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
         .await
         .expect("the object server answers");
     desk.seated().await;
-    Some(Bench {
+    Bench {
         desk,
         companiond,
         view,
         _intentd: intentd,
-    })
-}
-
-macro_rules! bench {
-    ($session:expr) => {
-        match bench($session).await {
-            Some(bench) => bench,
-            None => return,
-        }
-    };
+    }
 }
 
 impl Bench {
@@ -186,7 +177,7 @@ impl Bench {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_session_property_is_the_session_a_handle_is_shown_through() {
-    let bench = bench!(Some("s-9"));
+    let bench = bench(Some("s-9")).await;
     bench.ask();
     assert_eq!(bench.line().await, "the text of handle 7");
     assert_eq!(
@@ -198,7 +189,7 @@ async fn the_session_property_is_the_session_a_handle_is_shown_through() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_answer_somebody_else_started_shows_its_handle_not_an_ellipsis() {
-    let bench = bench!(Some("s-9"));
+    let bench = bench(Some("s-9")).await;
     bench.appears("s-9").await;
     assert_eq!(bench.line().await, "the text of handle 7");
     assert_eq!(bench.displays(), vec!["display s-9 7"]);
@@ -206,7 +197,7 @@ async fn an_answer_somebody_else_started_shows_its_handle_not_an_ellipsis() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_older_companion_without_the_property_falls_back_to_the_session_the_ask_opened() {
-    let bench = bench!(None);
+    let bench = bench(None).await;
     bench.ask();
     assert_eq!(bench.line().await, "the text of handle 7");
     assert_eq!(bench.displays(), vec!["display s-1 7"]);
@@ -214,7 +205,7 @@ async fn an_older_companion_without_the_property_falls_back_to_the_session_the_a
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_handle_refused_after_close_reads_plainly_and_is_not_asked_again() {
-    let bench = bench!(Some("s-9"));
+    let bench = bench(Some("s-9")).await;
     // The answer was dismissed (`Close`) before its handle was first shown.
     bench.desk.log.push("close s-9");
     bench.ask();
@@ -239,9 +230,7 @@ async fn a_handle_refused_after_close_reads_plainly_and_is_not_asked_again() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn somebody_elses_words_are_quoted_and_the_persons_own_are_not() {
     let mail = Handle(MAIL_HANDLE);
-    let Some(bench) = bench_on(Some("s-9"), Router::Labelled, mail).await else {
-        return;
-    };
+    let bench = bench_on(Some("s-9"), Router::Labelled, mail).await;
     bench.ask();
     assert_eq!(
         bench.line_of(mail).await,
@@ -253,9 +242,7 @@ async fn somebody_elses_words_are_quoted_and_the_persons_own_are_not() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_router_without_labels_is_read_plainly_and_everything_is_quoted() {
-    let Some(bench) = bench_on(Some("s-9"), Router::Older, HANDLE).await else {
-        return;
-    };
+    let bench = bench_on(Some("s-9"), Router::Older, HANDLE).await;
     bench.ask();
     assert_eq!(
         bench.line().await,

@@ -5,7 +5,7 @@
 //! These are the summon, the ask, the lookups, the journal, the runs and the timeline; the cards,
 //! the handles, the openers and what is said to a subagent are `companion_cards_bus.rs`.
 
-use crate::companion_support::{self, desk_or_return};
+use crate::companion_support::{self};
 
 use std::sync::{Arc, Mutex};
 
@@ -38,7 +38,7 @@ use companion_support::{
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn two_taps_with_no_serving_app_open_the_launcher_in_companion_mode() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     desk.send(CompanionCommand::Params(fast()));
     let input = focus(None, None);
     desk.send(CompanionCommand::Tap(input.clone()));
@@ -56,7 +56,7 @@ async fn two_taps_with_no_serving_app_open_the_launcher_in_companion_mode() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     desk.seated().await;
     let mail = desk.peer("org.bardo.Mail").await;
     serve(
@@ -117,7 +117,7 @@ async fn a_serving_app_takes_the_summon_and_the_launcher_stays_shut() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn summon_falls_back_to_launcher_after_app_wait() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     desk.seated().await;
     let mail = desk.peer("org.bardo.Mail").await;
     serve(
@@ -146,7 +146,7 @@ async fn summon_falls_back_to_launcher_after_app_wait() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let intentd = desk.peer(INTENTS_BUS).await;
     serve(
         &intentd,
@@ -244,7 +244,7 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let intentd = desk.peer(INTENTS_BUS).await;
     let search = StandInSearch {
         log: desk.log.clone(),
@@ -296,7 +296,7 @@ async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_lookup_without_the_seat_fails_instead_of_waiting() {
-    let desk = desk_or_return!();
+    let desk = companion_support::desk().await;
     desk.send(CompanionCommand::Things {
         text: "receipt".to_owned(),
         generation: Generation(2),
@@ -316,7 +316,7 @@ async fn a_lookup_without_the_seat_fails_instead_of_waiting() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it_again() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let rows = Arc::new(Mutex::new(vec![entry(
         1,
         "Archived 3 threads",
@@ -370,7 +370,7 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn runs_follow_computer_use_daemon_and_are_steered_through_their_objects() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let computer_use_daemon = desk.peer("org.bardo.ComputerUse1").await;
     let sight = Arc::new(Mutex::new("No model here can see the screen.".to_owned()));
     serve(
@@ -453,7 +453,7 @@ async fn runs_follow_computer_use_daemon_and_are_steered_through_their_objects()
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_at() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let computer_use_daemon = desk.peer("org.bardo.ComputerUse1").await;
     // A path that says nothing about the run's id: the object's `Id` is the only name.
     let path = run_path("object_nine");
@@ -497,7 +497,7 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let computer_use_daemon = desk.peer("org.bardo.ComputerUse1").await;
     serve(
         &computer_use_daemon,
@@ -532,7 +532,7 @@ async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_timeline_is_read_for_the_generation_that_asked() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let memoryd = desk.peer("org.bardo.Memory1").await;
     serve(
         &memoryd,
@@ -577,7 +577,7 @@ fn waiting_fact(last: char) -> FactView {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn keeping_sends_the_shells_receipt_and_not_keeping_sends_a_discard() {
-    let mut desk = desk_or_return!();
+    let mut desk = companion_support::desk().await;
     let memoryd = desk.peer("org.bardo.Memory1").await;
     let (kept, dropped) = (waiting_fact('1'), waiting_fact('2'));
     serve(

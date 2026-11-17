@@ -22,8 +22,8 @@ struct Bench {
     _intentd: Connection,
 }
 
-async fn bench() -> Option<Bench> {
-    let mut desk = companion_support::desk().await?;
+async fn bench() -> Bench {
+    let mut desk = companion_support::desk().await;
     let view = Arc::new(Mutex::new(json(&wire(AnswerPhase::Done, "Done."))));
     let companiond = desk.peer(COMPANION_BUS).await;
     serve(
@@ -50,12 +50,12 @@ async fn bench() -> Option<Bench> {
     )
     .await;
     desk.seated().await;
-    Some(Bench {
+    Bench {
         desk,
         answer,
         _companiond: companiond,
         _intentd: intentd,
-    })
+    }
 }
 
 impl Bench {
@@ -71,7 +71,7 @@ impl Bench {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_switch_reaches_the_router_and_the_next_turn_carries_it() {
-    let Some(bench) = bench().await else { return };
+    let bench = bench().await;
     bench.ask();
     let opened = bench
         .desk
@@ -106,7 +106,7 @@ async fn a_switch_reaches_the_router_and_the_next_turn_carries_it() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_refused_switch_locks_the_box_in_manual() {
-    let Some(bench) = bench().await else { return };
+    let bench = bench().await;
     bench.ask();
     bench.desk.state(|c| c.mode.known.then_some(())).await;
     *bench.answer.lock().unwrap_or_else(|e| panic!("{e}")) = SwitchAnswer::Locked;
@@ -136,7 +136,7 @@ async fn a_refused_switch_locks_the_box_in_manual() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_probe_switches_any_conversation_and_only_a_change_of_the_boxs_own_reaches_it() {
-    let Some(bench) = bench().await else { return };
+    let bench = bench().await;
     bench.ask();
     bench.desk.state(|c| c.mode.known.then_some(())).await;
     let probe = |session: &str, mode| CompanionCommand::SessionMode {

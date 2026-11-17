@@ -98,9 +98,8 @@ fn own() -> NotificationsPolicy {
 #[test]
 fn the_private_bus_starts_empty_and_activates_nothing() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     runtime.block_on(async {
         let connection = connect(&bus).await;
         assert_eq!(owner(&connection).await, None, "nobody holds the name");
@@ -123,9 +122,8 @@ fn the_private_bus_starts_empty_and_activates_nothing() {
 #[test]
 fn a_passive_service_never_asks_for_the_name_but_reports_its_holder() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("notes-passive");
     let (mut notes, control) = start(&runtime, &bus, &scratch);
     let seen = runtime.block_on(wait_for(&mut notes, SETTLE, |n: &NotesState| {
@@ -148,9 +146,8 @@ fn a_passive_service_never_asks_for_the_name_but_reports_its_holder() {
 #[test]
 fn owning_serves_notify_and_close_with_their_signal() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("notes-own");
     let (mut notes, control) = start(&runtime, &bus, &scratch);
     control
@@ -249,9 +246,8 @@ pub(crate) fn owning(
 #[test]
 fn capabilities_and_server_information_answer_as_the_spec_says() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("notes-capabilities");
     let _service = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
@@ -280,9 +276,8 @@ fn capabilities_and_server_information_answer_as_the_spec_says() {
 #[test]
 fn an_action_is_invoked_then_closed_and_a_swipe_keeps_the_history() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("notes-action");
     let (mut notes, control) = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
@@ -347,9 +342,8 @@ fn an_action_is_invoked_then_closed_and_a_swipe_keeps_the_history() {
 #[test]
 fn the_history_survives_a_restart() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("notes-restart");
     let (mut notes, control) = owning(&runtime, &bus, &scratch);
     let first = runtime.block_on(async {
@@ -377,9 +371,8 @@ fn the_history_survives_a_restart() {
 #[test]
 fn notify_send_and_gdbus_reach_the_server() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let scratch = TempDir::new("notes-notify-send");
     let (mut notes, control) = owning(&runtime, &bus, &scratch);
     // Only the child's environment names the private bus; this process never uses it.
@@ -442,9 +435,8 @@ fn notify_send_and_gdbus_reach_the_server() {
 #[test]
 fn another_holder_is_never_replaced_and_the_name_is_taken_when_free() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let Some(bus) = PrivateBus::start() else {
-        return;
-    };
+    let bus = PrivateBus::start()
+        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
     let other = runtime.block_on(async {
         let other = connect(&bus).await;
         other
