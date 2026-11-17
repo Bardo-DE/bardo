@@ -15,7 +15,7 @@ ui-peer = {path = "../ui-peer"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 toml = { workspace = true }
-zbus = {version = "5.19", optional = true}
+zbus = {workspace = true, features = ["default"], optional = true}
 
 # `update_atomic` locks a sidecar file between programs.
 
@@ -23,11 +23,11 @@ zbus = {version = "5.19", optional = true}
 base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
 base-time = { path = "../../base/base-time" }
 # The tests' runtime; the crate itself names none (zbus brings its own executor).
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 # The tests run zbus on that runtime (the fake PackageKit sleeps with tokio inside a zbus
 # handler). Named here so `cargo test -p ui-helpers` alone builds it so, not only when another
 # workspace member happens to turn the feature on.
-zbus = {version = "5.19", features = ["tokio"]}
+zbus = {workspace = true, features = ["default", "tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [features]

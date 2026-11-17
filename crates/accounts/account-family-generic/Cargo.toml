@@ -18,7 +18,7 @@ account-provider = {path = "../account-provider"}
 account-http = {path = "../account-http"}
 account-discover = {path = "../account-discover"}
 account-proxy = {path = "../account-proxy", features = ["tls"]}
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 
 [lints]
 workspace = true

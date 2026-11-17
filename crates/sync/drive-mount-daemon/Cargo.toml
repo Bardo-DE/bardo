@@ -16,7 +16,7 @@ path = "src/main.rs"
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
 listenfd = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}

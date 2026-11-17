@@ -11,10 +11,10 @@ publish.workspace = true
 [dependencies]
 ui-peer = {path = "../ui-peer"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
-zbus = {version = "5.19", optional = true}
+zbus = {workspace = true, features = ["default"], optional = true}
 
 [dev-dependencies]
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [features]

@@ -21,7 +21,7 @@ thiserror = { workspace = true }
 hickory-resolver = { workspace = true, optional = true }
 
 [dev-dependencies]
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 toml = { workspace = true }
 
 [features]

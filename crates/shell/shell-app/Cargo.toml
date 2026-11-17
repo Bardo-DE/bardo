@@ -12,7 +12,7 @@ publish.workspace = true
 base-xdg = { path = "../../base/base-xdg" }
 shell-model = {path = "../shell-model"}
 provenance = {path = "../../provenance/provenance"}
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 ui-lint = {path = "../../ui/ui-lint"}
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-components = {path = "../../ui/ui-components"}
@@ -36,18 +36,18 @@ shell-dock = {path = "../shell-dock"}
 shell-notify-ui = {path = "../shell-notify-ui"}
 shell-overlays = {path = "../shell-overlays"}
 thiserror = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 # `start_paused` for the lock-file watch's tests (src/door_guard.rs).
-tokio = {version = "1", features = ["test-util"]}
+tokio = {workspace = true, features = ["test-util"]}
 tempfile.workspace = true
 serde_json = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 speech-wire = {path = "../../speech/speech-wire"}
 zbus-ready = {path = "../../zbus-ready"}
 ui-harness = {path = "../../ui/ui-harness"}
@@ -55,7 +55,7 @@ shell-testkit = {path = "../shell-testkit"}
 # `tests/lint.rs` mounts every surface on the harness and lints its markup and stylesheet.
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 # The key a `debug key` request parses to (dispatch/debug/inject.rs tests).
-keyboard-types = {version = "0.7"}
+keyboard-types = {workspace = true}
 # A Space's id in the full-screen rows (edge_reveal.rs tests).
 account-core = {path = "../../accounts/account-core"}
 # The voice bench shared with shell-services' tests names who its stand-in voiced is.

@@ -20,11 +20,11 @@ base-ids = { path = "../../base/base-ids" }
 inference-core = {path = "../inference-core"}
 account-match = {path = "../../accounts/account-match"}
 account-rig = {path = "../../accounts/account-rig"}
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [lints]
 workspace = true

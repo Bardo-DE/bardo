@@ -14,9 +14,9 @@ desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["serv
 desktop-client = {path = "../../wayland/desktop-client"}
 account-core = {path = "../../accounts/account-core"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
-smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["desktop", "wayland_frontend"]}
+smithay = {workspace = true, features = ["desktop", "wayland_frontend"]}
 # The seat's keymap as text for the EIS keyboards (`seat_keymap::keymap_text`).
-xkbcommon = {version = "0.9", features = ["wayland"]}
+xkbcommon = {workspace = true, features = ["wayland"]}
 thiserror = { workspace = true }
 tracing = { workspace = true }
 

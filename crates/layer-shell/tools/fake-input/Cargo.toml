@@ -9,8 +9,8 @@ license = "MIT OR Apache-2.0"
 publish = false
 
 [dependencies]
-wayland-client = "0.31"
-wayland-protocols-plasma = { version = "0.3", features = ["client"] }
+wayland-client = {workspace = true}
+wayland-protocols-plasma = {workspace = true, features = ["client"]}
 xkbcommon = { version = "0.8", default-features = false }
 
 # Its own workspace, so the layer-shell-host workspace neither builds it nor lists it.

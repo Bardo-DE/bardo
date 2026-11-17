@@ -27,14 +27,14 @@ base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 portal-core = {path = "../portal-core"}
 thiserror = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
 # Named now so the fill lanes edit no manifest (P2-T1: image; P2-T2: the other three).
 wayland-client = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "process"]}
 wayland-protocols = { workspace = true, features = ["client", "staging"] }
 pipewire = { workspace = true }
 image = { workspace = true, features = ["png"] }

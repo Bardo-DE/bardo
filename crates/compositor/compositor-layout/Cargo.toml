@@ -14,7 +14,7 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 account-core = {path = "../../accounts/account-core"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
 ui-style = {path = "../../ui/ui-style", default-features = false}
-taffy = {git = "https://github.com/DioxusLabs/taffy", rev = "4863877b9cab21645b160d7f247901f90214fe27", default-features = false, features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]}
+taffy = {workspace = true, features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]}
 
 [dev-dependencies]
 proptest = { workspace = true }

@@ -24,12 +24,12 @@ account-dbus = {optional = true, path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../inference-dbus", optional = true}
 base-fs = {optional = true, path = "../../base/base-fs"}
 base-xdg = {optional = true, path = "../../base/base-xdg"}
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"], optional = true}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"], optional = true}
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
-zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
+zbus = {workspace = true, features = ["tokio"], optional = true}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
@@ -39,9 +39,9 @@ computer-use-action = {path = "../../computer-use/computer-use-action"}
 inference-core = {path = "../inference-core", features = ["testing"]}
 account-dbus = {path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../inference-dbus"}
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {workspace = true, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 # The daemon the bus tests start (Linux only, as the transport is).

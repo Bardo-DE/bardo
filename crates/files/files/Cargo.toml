@@ -23,7 +23,7 @@ files-trash = {path = "../files-trash"}
 files-ui = {path = "../files-ui"}
 tracing = { workspace = true }
 freedesktop-icons = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
 
 [dev-dependencies]
 tempfile = { workspace = true }

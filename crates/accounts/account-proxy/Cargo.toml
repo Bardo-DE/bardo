@@ -16,7 +16,7 @@ account-capability = {path = "../account-capability"}
 base-url = { path = "../../base/base-url" }
 rustls-native-certs = { workspace = true, optional = true }
 rustls-pki-types = { workspace = true, optional = true }
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"], optional = true}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"], optional = true}
 tokio-rustls = { workspace = true, features = ["ring", "tls12", "logging"], optional = true }
 webpki-roots = { workspace = true, optional = true }
 
@@ -25,7 +25,7 @@ base-testkit = {path = "../../base/base-testkit"}
 account-fake-servers = {path = "../account-fake-servers"}
 account-proxy = {path = ".", features = ["tls"]}
 account-fake = {path = "../account-fake"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tokio-rustls = { workspace = true, features = ["ring", "tls12", "logging"] }
 
 [features]

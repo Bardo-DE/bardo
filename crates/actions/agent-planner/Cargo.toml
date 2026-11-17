@@ -36,7 +36,7 @@ tracing = { workspace = true }
 [dev-dependencies]
 agent-planner = {path = ".", features = ["testing"]}
 action-fake = {path = "../action-fake"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

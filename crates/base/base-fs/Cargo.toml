@@ -13,10 +13,10 @@ base-time = { path = "../base-time" }
 thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
 
 [target.'cfg(unix)'.dependencies]
-rustix = { version = "1", default-features = false, features = ["std", "fs"] }
+rustix = {workspace = true, features = ["std", "fs"]}
 
 [features]
 # `book::commit`: a document saved off the async runtime's threads. A host that keeps a document
@@ -25,7 +25,7 @@ book = ["dep:serde", "dep:serde_json", "dep:tokio"]
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

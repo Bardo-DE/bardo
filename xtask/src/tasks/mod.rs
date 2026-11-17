@@ -5,6 +5,7 @@ pub mod gate;
 pub mod install;
 pub mod legacy;
 pub mod test_modules;
+pub mod workspace_deps;
 
 use std::path::Path;
 use std::process::Command;

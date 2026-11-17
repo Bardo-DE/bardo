@@ -26,8 +26,8 @@ serde_json = { workspace = true }
 
 [dev-dependencies]
 memory-settings = {path = "../memory-settings"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-tar = {version = "0.4"}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tar = {workspace = true, features = ["default"]}
 toml = { workspace = true }
 
 [lints]

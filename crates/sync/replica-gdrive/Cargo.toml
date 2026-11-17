@@ -23,7 +23,7 @@ base-testkit = {path = "../../base/base-testkit"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 account-http-relay = {path = "../../accounts/account-http-relay"}
 sync-core = {path = "../sync-core", features = ["testing"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

@@ -70,8 +70,8 @@ model-replay = {path = "../../models/model-replay"}
 model-wire = {path = "../../models/model-wire"}
 speech-provider = {path = "../../speech/speech-provider"}
 speech-host-client = {path = "../../speech/speech-host-client"}
-clap = {version = "4", features = ["derive"]}
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+clap = {workspace = true, features = ["default", "derive"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 # The stable short hash that names a computer written in a script with no letters or digits of
@@ -85,9 +85,9 @@ subtle = { workspace = true }
 thiserror = { workspace = true }
 # `signal` is the one feature this crate adds to the pinned line: SIGTERM and SIGINT end the daemon
 # gracefully (`shutdown`).
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 toml = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
@@ -105,7 +105,7 @@ account-fake = {path = "../../accounts/account-fake"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 # The scratch directory, the test catalog entries and the models they make.
 inference-router = {path = "../inference-router", features = ["testing"]}
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 
 [lints]
 workspace = true

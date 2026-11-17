@@ -47,9 +47,9 @@ account-dbus = {path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../../inference/inference-dbus"}
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["macros", "net", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["macros", "net", "rt-multi-thread", "sync", "time"]}
 toml = { workspace = true }
-zbus = {version = "5.19", features = ["tokio"]}
+zbus = {workspace = true, features = ["default", "tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]

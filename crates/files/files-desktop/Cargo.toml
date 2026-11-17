@@ -29,9 +29,9 @@ account-dbus = {path = "../../accounts/account-dbus"}
 sync-bus = {path = "../../sync/sync-bus"}
 provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
 toml = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]

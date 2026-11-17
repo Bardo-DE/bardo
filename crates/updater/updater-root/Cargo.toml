@@ -27,8 +27,8 @@ updater-core = {path = "../updater-core"}
 thiserror = { workspace = true }
 semver = { workspace = true, features = ["serde"] }
 toml = { workspace = true }
-rustix = {version = "1", default-features = false, features = ["std", "fs", "process"]}
-tar = {version = "0.4.46"}
+rustix = {workspace = true, features = ["std", "fs", "process"]}
+tar = {workspace = true, features = ["default"]}
 zstd = { workspace = true }
 
 [dev-dependencies]

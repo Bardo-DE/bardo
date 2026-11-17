@@ -1,4 +1,4 @@
-//! `cargo xtask gate`: fmt, clippy and tests on the affected set.
+//! `cargo xtask gate`: the workspace-deps check, then fmt, clippy and tests on the affected set.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -13,6 +13,10 @@ use crate::workspace::Workspace;
 
 /// Runs the gate. `base` defaults to `origin/master`, else `HEAD~1`.
 pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
+    // Reads the manifests only, so it runs on every gate whatever the affected set.
+    if !super::workspace_deps::run()? {
+        return Ok(finish("gate", false));
+    }
     let ws = Workspace::load()?;
     let scope = if all {
         Scope::All

@@ -18,7 +18,7 @@ account-wire = {path = "../../accounts/account-wire"}
 account-dbus = {path = "../../accounts/account-dbus"}
 # `#[bus_interface]`; its expansion names `::porter_dbus::Call` and `::porter_dbus::Unserved`.
 account-dbus-macros = {path = "../../accounts/account-dbus-macros"}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

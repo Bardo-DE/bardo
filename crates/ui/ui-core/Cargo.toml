@@ -13,7 +13,7 @@ ui-core-derive = {path = "../ui-core-derive"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 futures-timer = { workspace = true }
-keyboard-types = {version = "0.7"}
+keyboard-types = {workspace = true}
 # The keymap nouns (actions, chords, platforms) and the resolver; pure, no source crates.
 keymap = {path = "../../keymap/keymap"}
 # `testing::word_matches_serde`, for the tests of crates that store a `Word`.

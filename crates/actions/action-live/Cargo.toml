@@ -28,7 +28,7 @@ action-review = {path = "../action-review"}
 agent-registry = {path = "../agent-registry"}
 base-path = { path = "../../base/base-path" }
 sandbox = {path = "../../sandbox/sandbox"}
-clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 companion-wire = {path = "../companion-wire"}
 action-accept = {path = "../action-accept"}
 agent-acp-bin = {path = "../agent-acp-bin", features = ["testing"]}
@@ -61,9 +61,9 @@ inference-core = {path = "../../inference/inference-core"}
 provenance = {path = "../../provenance/provenance"}
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 toml = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 action-settings = {path = "../action-settings"}

@@ -14,7 +14,7 @@ anyview-core = {path = "../anyview-core"}
 # The capped whole-file read the desktop's apps share (no UI, bus or runtime).
 
 [target.'cfg(unix)'.dependencies]
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 
 [dev-dependencies]
 tempfile = { workspace = true }

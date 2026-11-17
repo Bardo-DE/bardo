@@ -29,10 +29,10 @@ rmcp = { workspace = true, features = ["server", "transport-io"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 toml = { workspace = true }
 tracing = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 permission-core = {path = "../permission-core"}
@@ -45,7 +45,7 @@ action-client = {path = "../action-client", default-features = false, features =
 action-fake = {path = "../action-fake"}
 action-router = {path = "../action-router"}
 rmcp = { workspace = true, features = ["client", "server", "transport-io"] }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 action-wire = {path = "../action-wire"}
 
 [lints]

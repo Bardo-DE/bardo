@@ -23,9 +23,9 @@ serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 semver = { workspace = true, features = ["serde"] }
 ureq = { workspace = true, features = ["rustls", "json"] }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "fs", "signal"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "fs", "signal"]}
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
 zbus-ready = { path = "../../zbus-ready" }
@@ -34,7 +34,7 @@ zbus-ready = { path = "../../zbus-ready" }
 base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 tempfile = { workspace = true }
-tar = {version = "0.4.46"}
+tar = {workspace = true, features = ["default"]}
 zstd = { workspace = true }
 
 [lints]

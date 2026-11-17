@@ -30,7 +30,7 @@ model-provider = {path = "../../models/model-provider"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 
-keyboard-types = {version = "0.7", features = ["serde"]}
+keyboard-types = {workspace = true, features = ["serde"]}
 blake3 = { workspace = true }
 
 [dev-dependencies]

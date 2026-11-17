@@ -17,7 +17,7 @@ account-provider = {path = "../../accounts/account-provider"}
 serde_json = { workspace = true }
 
 [dev-dependencies]
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

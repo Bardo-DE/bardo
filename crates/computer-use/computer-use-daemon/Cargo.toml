@@ -53,8 +53,8 @@ serde_json = { workspace = true }
 toml = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+zbus = {workspace = true, features = ["tokio"]}
 futures-util = { workspace = true, features = ["std"] }
 
 [dev-dependencies]
@@ -72,7 +72,7 @@ model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 computer-use-seat-input = {path = "../computer-use-seat-input"}
 computer-use-capture = {path = "../computer-use-capture"}
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 tempfile = { workspace = true }
 serde_json = { workspace = true }
 action-daemon = {path = "../../actions/action-daemon"}

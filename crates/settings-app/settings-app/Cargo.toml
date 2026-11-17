@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 settings-app-callers = {path = "../settings-app-callers", optional = true}
 settings-app-client = {path = "../settings-app-client"}
 settings-app-files = {path = "../settings-app-files"}
@@ -18,7 +18,7 @@ settings-app-model = {path = "../settings-app-model"}
 settings-app-ui = {path = "../settings-app-ui"}
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-settings = {path = "../../ui/ui-settings"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [features]
 # `bardo-settings --dev-callers FILE`: the stand-ins a checkout built, named in the person's own rows file,

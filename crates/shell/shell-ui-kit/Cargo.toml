@@ -37,7 +37,7 @@ action-core = {path = "../../actions/action-core"}
 ui-core = {path = "../../ui/ui-core"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 # App icons in the icon style (`app_icons`): decode and encode rasters, rasterise theme SVGs
 # (resvg is the renderer usvg/tiny-skia already in the tree belong to; MIT OR Apache-2.0),
 # and find `$XDG_CACHE_HOME`.

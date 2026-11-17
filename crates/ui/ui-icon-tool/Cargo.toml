@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 image = { workspace = true, features = ["png", "jpeg"] }
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }

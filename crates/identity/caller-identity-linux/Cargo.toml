@@ -12,7 +12,7 @@ publish.workspace = true
 base-fs = { path = "../../base/base-fs" }
 caller-identity-core = {path = "../caller-identity-core"}
 nix = { workspace = true, features = ["socket"] }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "net", "process"]}
+rustix = {workspace = true, features = ["std", "event", "net", "process"]}
 thiserror = { workspace = true }
 
 [features]

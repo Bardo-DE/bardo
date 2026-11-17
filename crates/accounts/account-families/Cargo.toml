@@ -30,7 +30,7 @@ thiserror = { workspace = true, optional = true }
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 account-http-reqwest = {path = "../account-http-reqwest"}
 account-secrets = {path = "../account-secrets", features = ["testing"]}
 account-service = {path = "../account-service"}

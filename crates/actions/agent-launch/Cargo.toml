@@ -46,10 +46,10 @@ provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
 toml = { workspace = true }
 tracing = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+zbus = {workspace = true, features = ["tokio"], optional = true}
 
 [dev-dependencies]
 action-manifest = {path = "../action-manifest"}

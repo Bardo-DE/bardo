@@ -15,13 +15,13 @@ ui-blitz = {path = "../ui-blitz", default-features = false, features = ["testing
 # `AdapterPref`, the GPU ranking and device request the hybrid painter opens its device with.
 blitz-embed = {features = ["adapter"], path = "../../blitz-embed/blitz-embed"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
-blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
-blitz-paint = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"]}
-blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
-blitz-html = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
+blitz-dom = {workspace = true, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
+blitz-paint = {workspace = true, features = ["custom-widget"]}
+blitz-traits = {workspace = true}
+blitz-html = {workspace = true}
 # The inline layouts' glyph runs: where each line of text is ink (`inset`).
 parley = { workspace = true, features = ["std", "complex-scripts"] }
-dioxus-native-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "accessibility"]}
+dioxus-native-dom = {workspace = true, features = ["svg", "system-fonts", "accessibility"]}
 anyrender = { workspace = true }
 anyrender_vello_hybrid = { workspace = true }
 anyrender_vello_cpu = { workspace = true, features = ["multithreading", "filters"] }
@@ -32,7 +32,7 @@ vello_hybrid = { workspace = true }
 wgpu_context = { workspace = true }
 rustc-hash = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg"] }
-keyboard-types = {version = "0.7"}
+keyboard-types = {workspace = true}
 # `HarnessConfig::with_platform`: the fixed-platform keymap tests run under.
 keymap = {path = "../../keymap/keymap"}
 peniko = { workspace = true }
@@ -41,9 +41,9 @@ thiserror = { workspace = true }
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 # The virtual-clock ask test wakes the document from a watch channel.
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 # `menu_export`: a client of the app's exported menu, on a private bus.
-zbus = {version = "5.19"}
+zbus = {workspace = true, features = ["default"]}
 serde = { workspace = true, features = ["derive"] }
 
 [features]

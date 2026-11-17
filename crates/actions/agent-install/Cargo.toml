@@ -18,12 +18,12 @@ path = "src/main.rs"
 
 [dependencies]
 agent-registry = {path = "../agent-registry"}
-clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 action-store = {path = "../action-store"}
-flate2 = {version = "1"}
+flate2 = {workspace = true, features = ["default"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-tar = {version = "0.4"}
+tar = {workspace = true, features = ["default"]}
 thiserror = { workspace = true }
 zip = { workspace = true, features = ["deflate-flate2"] }
 

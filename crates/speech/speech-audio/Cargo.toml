@@ -20,7 +20,7 @@ testing = []
 [dev-dependencies]
 # The tests play the fake device, so they build the crate with its `testing` feature on.
 speech-audio = {path = ".", features = ["testing"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

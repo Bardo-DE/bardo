@@ -55,7 +55,7 @@ agent-native = {path = "../agent-native"}
 agent-planner = {path = "../agent-planner"}
 agent-session = {path = "../agent-session"}
 action-settings = {path = "../action-settings"}
-clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 base-path = { path = "../../base/base-path" }
 sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}
 companion-tasks = {path = "../companion-tasks"}
@@ -65,8 +65,8 @@ account-callers = {path = "../../accounts/account-callers"}
 serde_json = { workspace = true }
 provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
+zbus = {workspace = true, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]

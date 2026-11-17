@@ -42,21 +42,21 @@ account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav
 account-http = {path = "../../accounts/account-http"}
 account-http-relay = {path = "../../accounts/account-http-relay"}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 chrono = { workspace = true, features = ["alloc"] }
 hex = { workspace = true }
-mime_guess = {version = "2", default-features = false}
+mime_guess = {workspace = true}
 nanohtml2text = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
 # `signal`: SIGTERM unmounts the drives before the process ends.
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 toml = { workspace = true }
 toml_edit = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
@@ -80,7 +80,7 @@ sync-core = {path = "../sync-core", features = ["testing"]}
 # The words the fake of Storage1 gives are held to the live ones (tests/it/fake_words.rs).
 sync-fakes = {path = "../sync-fakes"}
 # A paused clock for the stop wait's timing test.
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 
 [features]
 # Test builds only, never default and never in dist: `BARDO_SYNCD_PROC_ROOT=<dir>` makes the binary

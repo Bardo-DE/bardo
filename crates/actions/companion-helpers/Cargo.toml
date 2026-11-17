@@ -26,7 +26,7 @@ companion-tasks = {path = "../companion-tasks"}
 futures-util = { workspace = true, features = ["std"] }
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
 tracing = { workspace = true }
 
 [features]
@@ -47,7 +47,7 @@ inference-client = {path = "../../inference/inference-client"}
 inference-core = {path = "../../inference/inference-core"}
 serde_json = { workspace = true }
 tempfile = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

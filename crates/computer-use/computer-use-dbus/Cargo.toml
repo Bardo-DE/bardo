@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 computer-use-bus = {path = "../computer-use-bus"}
 provenance = {path = "../../provenance/provenance"}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 thiserror = { workspace = true }
 
 [lints]

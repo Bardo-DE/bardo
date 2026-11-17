@@ -27,10 +27,10 @@ inference-client = {features = ["dbus"], path = "../../inference/inference-clien
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 toml = { workspace = true }
 model-vision-prep = {path = "../../models/model-vision-prep"}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 rust_decimal = { workspace = true, features = ["std", "serde"] }

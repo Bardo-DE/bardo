@@ -22,7 +22,7 @@ interprocess.workspace = true
 # socket is, and `O_NOFOLLOW`. Checking the owner of the directory and of the peer is what makes
 # "the directory is the authentication" true rather than hoped.
 [target.'cfg(unix)'.dependencies]
-rustix = { version = "1.1", default-features = false, features = ["std", "fs", "net", "process"] }
+rustix = {workspace = true, features = ["std", "fs", "net", "process"]}
 # Only for the `guard` feature: the caller check (who is on the other end of a socket) is
 # peephole's, by git tag like every consumer of it.
 caller-identity-linux = {optional = true, path = "../../identity/caller-identity-linux"}

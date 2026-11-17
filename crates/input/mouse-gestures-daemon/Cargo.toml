@@ -17,7 +17,7 @@ thiserror = { workspace = true }
 serde_json = { workspace = true }
 toml = { workspace = true }
 notify = { workspace = true }
-rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 input-linux = { workspace = true }
 input-broker-client = {path = "../input-broker-client"}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}

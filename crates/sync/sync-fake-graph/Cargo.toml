@@ -17,7 +17,7 @@ base-url = { path = "../../base/base-url" }
 account-provider = {path = "../../accounts/account-provider"}
 quickxorhash = {path = "../quickxorhash"}
 serde_json = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}

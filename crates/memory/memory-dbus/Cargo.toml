@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 memory-core = {path = "../memory-core"}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

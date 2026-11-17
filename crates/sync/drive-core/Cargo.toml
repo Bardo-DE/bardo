@@ -17,19 +17,19 @@ base-fs = {path = "../../base/base-fs"}
 sync-core = {path = "../sync-core"}
 quickxorhash = {path = "../quickxorhash"}
 md-5 = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 hex = { workspace = true }
 rangemap = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 drive-core = { path = ".", features = ["testing"] }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]
 # `MemoryListing` and `MemorySource`: a drive held in memory, for the tests of this crate, the

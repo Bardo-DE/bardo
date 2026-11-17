@@ -20,7 +20,7 @@ ui-blitz = {path = "../../ui/ui-blitz"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 ui-lint = {path = "../../ui/ui-lint"}
 ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "live", "tokio"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [dev-dependencies]
 account-capability = {path = "../../accounts/account-capability"}
@@ -46,7 +46,7 @@ sync-bus = {path = "../../sync/sync-bus"}
 account-dbus = {path = "../../accounts/account-dbus"}
 account-wire = {path = "../../accounts/account-wire"}
 inference-dbus = {path = "../../inference/inference-dbus"}
-zbus = {version = "5.19", features = ["tokio"]}
+zbus = {workspace = true, features = ["default", "tokio"]}
 # The Intelligence test's stand-in inferd answers with porter's kinds and inference types.
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}

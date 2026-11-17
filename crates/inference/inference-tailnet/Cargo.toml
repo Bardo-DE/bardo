@@ -19,7 +19,7 @@ toml = { workspace = true, optional = true }
 hyper = { workspace = true, optional = true, features = ["client", "http1"] }
 hyper-util = { workspace = true, optional = true, features = ["tokio"] }
 http-body-util = { workspace = true, optional = true }
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"], optional = true}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"], optional = true}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
@@ -27,7 +27,7 @@ base-testkit = {path = "../../base/base-testkit"}
 inference-tailnet = {path = ".", features = ["io", "persist"]}
 account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 
 [features]
 # `Guests::open`: the records kept in a file the owner reads, written with base-fs. Off by default,

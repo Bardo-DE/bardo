@@ -32,11 +32,11 @@ png = { workspace = true }
 serde_json = { workspace = true }
 tempfile = { workspace = true, optional = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 # Only a Linux build has a session bus and the freedesktop entries; `quire-desktop` names them.
 [target.'cfg(target_os = "linux")'.dependencies]
-zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+zbus = {workspace = true, features = ["tokio"], optional = true}
 action-provider = {features = ["dbus"], optional = true, path = "../../../actions/action-provider"}
 action-core = {optional = true, path = "../../../actions/action-core"}
 action-dbus = {optional = true, path = "../../../actions/action-dbus"}

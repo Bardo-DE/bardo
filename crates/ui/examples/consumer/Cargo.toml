@@ -24,11 +24,11 @@ ui-blitz = { path = "../../ui-blitz" }
 # workspace (crates/ds/Cargo.toml has no [workspace] of its own, so it joins whichever ancestor
 # has one: quire's root, not this one) — this package only needs to name what it writes rsx!
 # and cargo test against itself.
-dioxus = { version = "0.7", default-features = false, features = ["macro", "html", "hooks", "signals"] }
+dioxus = {workspace = true, features = ["macro", "html", "hooks", "signals"]}
 
 [dev-dependencies]
-serde = { version = "1", features = ["derive"] }
-dioxus-ssr = "0.7"
+serde = {workspace = true, features = ["derive"]}
+dioxus-ssr = {workspace = true}
 # The test driver: a real Blitz document on a fast-forwarded clock (CONSUMING.md section 5, rule 4).
 ui-harness = { path = "../../ui-harness" }
 # The linter: a consumer's own tests call it (CONSUMING.md section 5).

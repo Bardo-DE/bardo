@@ -8,11 +8,11 @@ description = "Wait until a zbus connection's object server is listening before 
 publish.workspace = true
 
 [dependencies]
-zbus = { version = "5.19", default-features = false, features = ["tokio"] }
-tokio = { version = "1", features = ["time", "macros"] }
+zbus = {workspace = true, features = ["tokio"]}
+tokio = {workspace = true, features = ["time", "macros"]}
 
 [dev-dependencies]
-tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "io-util", "test-util"] }
+tokio = {workspace = true, features = ["macros", "rt-multi-thread", "process", "io-util", "test-util"]}
 tempfile.workspace = true
 
 [lints]

@@ -41,7 +41,7 @@ rust_decimal = { workspace = true, features = ["std", "serde"] }
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-fake = {path = "../action-fake"}
 action-provider = {path = "../action-provider"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 proptest = { workspace = true }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 

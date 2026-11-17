@@ -26,9 +26,9 @@ speech-pipewire = {path = "../speech-pipewire", optional = true}
 futures-util = { workspace = true, features = ["std"] }
 speech-vad = {path = "../speech-vad"}
 speech-provider = {path = "../speech-provider"}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+zbus = {workspace = true, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 toml = { workspace = true }

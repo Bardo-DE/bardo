@@ -42,13 +42,13 @@ keymap = {path = "../../keymap/keymap"}
 key-remap-client = {path = "../../input/key-remap-client"}
 # A14's feature list, the union the binary links (xwayland off until the Q-C5 gate). The device
 # backends (drm, gbm, libinput, udev, libseat) come with the `tty` and `libinput` features below.
-smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "backend_libei", "backend_vulkan", "backend_winit", "desktop", "renderer_gl", "renderer_multi", "renderer_pixman", "use_system_lib", "wayland_frontend"]}
+smithay = {workspace = true, features = ["backend_egl", "backend_libei", "backend_vulkan", "backend_winit", "desktop", "renderer_gl", "renderer_multi", "renderer_pixman", "use_system_lib", "wayland_frontend"]}
 calloop = { workspace = true }
 jiff = { workspace = true }
 x11rb = { workspace = true, features = ["res"] }
 nix = { workspace = true, features = ["socket"] }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 tracing = { workspace = true }

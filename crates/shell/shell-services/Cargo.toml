@@ -63,17 +63,17 @@ account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
 toml = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 nix = { workspace = true, features = ["user"] }
 async-trait = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+zbus = {workspace = true, features = ["tokio"]}
 networkmanager-proxy = {default-features = false, features = ["tokio"], path = "../../network/networkmanager-proxy"}
 bluez-proxy = {default-features = false, features = ["tokio"], path = "../../network/bluez-proxy"}
 smithay-client-toolkit = { workspace = true, features = ["calloop", "xkbcommon"] }
 wayland-client = { workspace = true }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
-upower_dbus = {git = "https://github.com/pop-os/dbus-settings-bindings", rev = "eed01dd3609e90e3c8cd043656734c500956c793"}
+upower_dbus = {workspace = true}
 libpulse-binding = { workspace = true }
 system-tray = { workspace = true }
 freedesktop-icons = { workspace = true }
@@ -106,7 +106,7 @@ action-checkpoint = {path = "../../actions/action-checkpoint"}
 permission-policy = {path = "../../actions/permission-policy"}
 tracing = { workspace = true }
 # `start_paused` and `advance` for the tests of timers.
-tokio = {version = "1", features = ["test-util"]}
+tokio = {workspace = true, features = ["test-util"]}
 
 [lints]
 workspace = true

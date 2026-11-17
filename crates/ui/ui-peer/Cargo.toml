@@ -16,7 +16,7 @@ futures-timer = { workspace = true }
 
 [dev-dependencies]
 # The tests' runtime; the crate itself names none.
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [lints]
 workspace = true

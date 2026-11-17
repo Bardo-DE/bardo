@@ -18,7 +18,7 @@ futures-util = { workspace = true, features = ["std"] }
 provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [lints]
 workspace = true

@@ -17,7 +17,7 @@ key-remap-evdev = { path = "../key-remap-evdev" }
 keymap = {path = "../../keymap/keymap"}
 thiserror = { workspace = true }
 notify = { workspace = true }
-rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 service-locator = {features = ["guard"], path = "../../platform/service-locator"}
 caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}

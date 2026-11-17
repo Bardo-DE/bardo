@@ -13,7 +13,7 @@ publish.workspace = true
 fake = []
 
 [dependencies]
-rustix = {version = "1.1", default-features = false, features = ["event", "net", "std"]}
+rustix = {workspace = true, features = ["event", "net", "std"]}
 input-broker-wire = {path = "../input-broker-wire"}
 thiserror = { workspace = true }
 

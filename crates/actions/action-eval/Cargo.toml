@@ -30,7 +30,7 @@ action-context = {path = "../action-context"}
 action-router = {path = "../action-router"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
-clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 toml = { workspace = true }

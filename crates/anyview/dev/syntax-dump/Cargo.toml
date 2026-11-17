@@ -13,6 +13,6 @@ publish = false
 # Cargo.toml (anyview-text): a dump made by another version or engine fails to load, and then every
 # file is shown plain. The `> 90 syntaxes` test in anyview-text (code/tests.rs) is the guard.
 [dependencies]
-syntect = { version = "5", default-features = false, features = ["parsing", "default-syntaxes", "yaml-load", "dump-create", "regex-fancy"] }
+syntect = {workspace = true, features = ["parsing", "default-syntaxes", "yaml-load", "dump-create", "regex-fancy"]}
 
 [workspace]

@@ -10,7 +10,7 @@ repository.workspace = true
 
 [dependencies]
 thiserror = { workspace = true }
-rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 input-linux = { workspace = true }
 
 [lints]

@@ -9,8 +9,8 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 # The stand-ins in `examples/` speak bardo-shell's own protocols and reuse its types. Only examples
 # name these: the library reaches no bardo-shell crate (scripts/check-boundary.sh).
@@ -23,7 +23,7 @@ shell-search = {path = "../shell-search"}
 shell-services = {path = "../shell-services"}
 wayland-client = { workspace = true }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 

@@ -19,7 +19,7 @@ tracing = { workspace = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 
 [lints]
 workspace = true

@@ -21,7 +21,7 @@ action-dbus = {path = "../action-dbus", optional = true}
 futures-util = { workspace = true, features = ["std"], optional = true }
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+zbus = {workspace = true, features = ["tokio"], optional = true}
 provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
 
@@ -29,7 +29,7 @@ thiserror = { workspace = true }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-fake = {path = "../action-fake"}
 account-core = {path = "../../accounts/account-core"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]
 # The app-level desktop switch (quire design/36): on by default so a consumer outside the

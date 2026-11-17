@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-clap = {version = "4", features = ["derive"], optional = true}
+clap = {workspace = true, features = ["default", "derive"], optional = true}
 ui-core = {path = "../../ui/ui-core"}
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}

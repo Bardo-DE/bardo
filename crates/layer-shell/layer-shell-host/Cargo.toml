@@ -20,16 +20,16 @@ wayland-protocols = { workspace = true, features = ["client", "staging", "unstab
 calloop = { workspace = true }
 calloop-wayland-source = { workspace = true }
 raw-window-handle = { workspace = true }
-keyboard-types = {version = "0.7"}
+keyboard-types = {workspace = true}
 cursor-icon = { workspace = true }
 # `bardo_window_v1`'s client bindings and the wire vocab (`handlers::quire_window`).
 desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
 # Documents and rendering
 blitz-embed = {features = ["adapter", "settings"], path = "../../blitz-embed/blitz-embed"}
-blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
-blitz-paint = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"]}
-blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
-dioxus-native-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "accessibility"]}
+blitz-dom = {workspace = true, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
+blitz-paint = {workspace = true, features = ["custom-widget"]}
+blitz-traits = {workspace = true}
+dioxus-native-dom = {workspace = true, features = ["svg", "system-fonts", "accessibility"]}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 dioxus-document = { workspace = true }
 anyrender = { workspace = true }
@@ -40,7 +40,7 @@ wgpu = { workspace = true }
 wgpu_context = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg"] }
 # Common
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 # The per-device image cache (`gpu::context`).
@@ -56,7 +56,7 @@ mouse-gestures-proto = {path = "../../input/mouse-gestures-proto"}
 peniko = { workspace = true }
 # SOCK_SEQPACKET for the palmrest socket (std has no seqpacket, and unsafe is not allowed
 # here); in the pinned block since quire b45282a.
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 # `SO_PEERPIDFD` for the palmrest socket's peer (rustix has no safe wrapper for it).
 nix = { workspace = true, features = ["socket"] }
 

@@ -19,7 +19,7 @@ provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
 thiserror = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
+zbus = {workspace = true, features = ["tokio"], optional = true}
 zbus-ready = {path = "../../zbus-ready", optional = true}
 
 [features]

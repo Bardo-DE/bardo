@@ -13,13 +13,13 @@ compositor-core = {path = "../compositor-core"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
 compositor-render = {path = "../compositor-render"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
-smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "backend_session", "backend_winit", "renderer_gl", "renderer_multi", "renderer_pixman"]}
+smithay = {workspace = true, features = ["backend_egl", "backend_session", "backend_winit", "renderer_gl", "renderer_multi", "renderer_pixman"]}
 # The KMS fixtures (`KmsResources` and its parts) are serde values, recorded and replayed by the
 # test kit's FakeKms.
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 tracing = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 
 [features]
 # Headless tests only (B10): the dummy renderer, minting Physical/Virtual/Test origins.

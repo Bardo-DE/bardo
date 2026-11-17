@@ -13,12 +13,12 @@ base-url = { path = "../../base/base-url" }
 account-http = {path = "../account-http"}
 reqwest = { workspace = true, features = ["rustls-no-provider"] }
 rustls = { workspace = true, features = ["ring", "std", "tls12"] }
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
 
 [dev-dependencies]
 account-core = {path = "../account-core"}
 account-fake-servers = {path = "../account-fake-servers"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

@@ -24,7 +24,7 @@ account-service-core = {path = "../account-service-core"}
 [dev-dependencies]
 account-service-accounts = {path = "../account-service-accounts"}
 base-testkit = {path = "../../base/base-testkit"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "test-util"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "test-util"]}
 account-match = {path = "../account-match"}
 serde_json = { workspace = true }
 

@@ -20,12 +20,12 @@ engine-spec = {path = "../engine-spec"}
 model-catalog = {path = "../../models/model-catalog"}
 model-http = {path = "../../models/model-http", features = ["client", "tls"]}
 # The archives are unpacked in process (`extract`), never by the system's `tar`.
-flate2 = {version = "1.1.10"}
-tar = {version = "0.4.46", default-features = false}
-rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
+flate2 = {workspace = true, features = ["default"]}
+tar = {workspace = true}
+rustix = {workspace = true, features = ["std", "fs"]}
 sha2 = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 url = { workspace = true }
 
 [dev-dependencies]
@@ -33,7 +33,7 @@ base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 rcgen = { workspace = true, features = ["ring", "pem"] }
 rustls-pki-types = { workspace = true }
 tempfile = { workspace = true }
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 tokio-rustls = { workspace = true, features = ["ring", "logging", "tls12"] }
 
 [lints]

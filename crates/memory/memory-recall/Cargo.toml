@@ -16,7 +16,7 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 memory-recall = { path = ".", features = ["testing"] }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tempfile = { workspace = true }
 
 [features]

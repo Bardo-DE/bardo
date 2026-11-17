@@ -15,17 +15,17 @@ account-wire = {path = "../account-wire"}
 account-dbus-macros = {path = "../account-dbus-macros"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 # The caller's runtime (`accounts::pending`); zbus already runs on tokio here.
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
 proptest = { workspace = true }
 # The test runtime.
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
 account-capability = {path = "../account-capability"}
 
 [lints]

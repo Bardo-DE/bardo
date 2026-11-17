@@ -39,7 +39,7 @@ tracing = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
 action-fake = {path = "../action-fake"}
 agent-planner = {path = "../agent-planner", features = ["testing"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

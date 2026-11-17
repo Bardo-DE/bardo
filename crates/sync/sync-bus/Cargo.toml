@@ -13,7 +13,7 @@ account-dbus = {path = "../../accounts/account-dbus"}
 account-dbus-macros = {path = "../../accounts/account-dbus-macros"}
 base-ids = { path = "../../base/base-ids" }
 serde = { workspace = true, features = ["derive"] }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [features]
 # The Photos Picker's proxy and interface (`org.bardo.Photos1.Picker`). Off by default: no Photos

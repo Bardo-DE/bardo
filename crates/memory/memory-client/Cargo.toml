@@ -17,7 +17,7 @@ thiserror = { workspace = true }
 [dev-dependencies]
 memory-fake = {path = "../memory-fake"}
 memory-seal = {path = "../memory-seal"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]
 # The app-level desktop switch (design/36): on by default, an app on macOS or Windows builds with

@@ -29,7 +29,7 @@ memory-settings = {path = "../memory-settings"}
 memory-client = {path = "../memory-client", default-features = false, features = ["in_process"]}
 memory-fake = {path = "../memory-fake"}
 tempfile = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

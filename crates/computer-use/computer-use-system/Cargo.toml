@@ -28,11 +28,11 @@ inference-core = {path = "../../inference/inference-core"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 memory-client = {default-features = false, features = ["dbus"], path = "../../memory/memory-client"}
 wayland-client = { workspace = true }
-rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
+rustix = {workspace = true, features = ["std", "fs"]}
 thiserror = { workspace = true }
 tracing = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 computer-use-action = {path = "../computer-use-action"}

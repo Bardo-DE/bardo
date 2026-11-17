@@ -38,14 +38,14 @@ account-sheets = {path = "../account-sheets"}
 account-store = {path = "../account-store"}
 account-tailscale = {path = "../account-tailscale", features = ["io"]}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 toml = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 # The client crates are tested against this daemon (tests/it/client), not the other way round.
@@ -58,8 +58,8 @@ account-fake-servers = {path = "../account-fake-servers"}
 account-http = {path = "../account-http"}
 account-http-reqwest = {path = "../account-http-reqwest"}
 account-oauth = {path = "../account-oauth"}
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]
 # Test builds only, never default and never in dist: `BARDO_ACCOUNTD_PROC_ROOT=<dir>` makes the binary

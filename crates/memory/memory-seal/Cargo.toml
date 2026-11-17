@@ -20,7 +20,7 @@ oo7 = { workspace = true, optional = true }
 
 [dev-dependencies]
 memory-seal = { path = ".", features = ["testing", "oo7"] }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tempfile = { workspace = true }
 
 [features]

@@ -30,11 +30,11 @@ ui-settings = {path = "../../ui/ui-settings", features = ["tokio"]}
 emojis = { workspace = true }
 fend-core = { workspace = true }
 jiff = { workspace = true }
-mime_guess = {version = "2.0"}
+mime_guess = {workspace = true, features = ["default"]}
 nucleo-matcher = { workspace = true }
 percent-encoding = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}

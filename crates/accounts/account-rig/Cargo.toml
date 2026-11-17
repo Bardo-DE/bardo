@@ -34,12 +34,12 @@ account-client-dbus = {path = "../account-client-dbus"}
 account-callers = {path = "../account-callers", features = ["test-proc-root"]}
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 # `signal` is what this crate adds to the pinned line: SIGTERM ends the servers cleanly.
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 futures-util = { workspace = true }
@@ -48,8 +48,8 @@ account-provider = {path = "../account-provider"}
 account-secrets = {path = "../account-secrets", features = ["oo7"]}
 account-service = {path = "../account-service"}
 account-service-core = {path = "../account-service-core"}
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

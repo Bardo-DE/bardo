@@ -30,8 +30,8 @@ inference-client = {features = ["dbus"], path = "../../inference/inference-clien
 thiserror = { workspace = true }
 serde_json = { workspace = true }
 futures-util = { workspace = true, features = ["std"] }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {workspace = true, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tracing = { workspace = true }
 action-log = {path = "../action-log"}
 zbus-ready = { path = "../../zbus-ready" }

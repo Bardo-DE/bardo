@@ -16,8 +16,8 @@ thiserror = { workspace = true }
 wayland-client = { workspace = true }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
 desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
-rustix = {version = "1.1", default-features = false, features = ["std", "fs"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+rustix = {workspace = true, features = ["std", "fs"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
 base-ids = { path = "../../base/base-ids" }
@@ -26,7 +26,7 @@ wayland-server = { workspace = true }
 # The compositor side of quire-agent-v1, for the fake compositor in the tests.
 desktop-protocols = {features = ["server"], path = "../../wayland/desktop-protocols"}
 wayland-protocols = { workspace = true, features = ["client", "server", "staging", "unstable"] }
-rustix = {version = "1.1", default-features = false, features = ["event", "fs", "std"]}
+rustix = {workspace = true, features = ["event", "fs", "std"]}
 
 [lints]
 workspace = true

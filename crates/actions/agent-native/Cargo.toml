@@ -38,7 +38,7 @@ account-core = {path = "../../accounts/account-core"}
 inference-client = {path = "../../inference/inference-client"}
 inference-core = {path = "../../inference/inference-core"}
 serde_json = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

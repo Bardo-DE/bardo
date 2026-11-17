@@ -13,7 +13,7 @@ compositor-core = {path = "../compositor-core"}
 compositor-motion = {path = "../compositor-motion"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
-smithay = {git = "https://github.com/Bardo-DE/smithay", rev = "919d8dcf7fe0b9ad03f3de53bc178dad30823631", default-features = false, features = ["backend_egl", "desktop", "renderer_gl", "renderer_pixman", "wayland_frontend"]}
+smithay = {workspace = true, features = ["backend_egl", "desktop", "renderer_gl", "renderer_pixman", "wayland_frontend"]}
 thiserror = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg"], optional = true }
 

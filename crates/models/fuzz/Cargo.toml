@@ -12,8 +12,8 @@ publish = false
 cargo-fuzz = true
 
 [dependencies]
-libfuzzer-sys = "0.4"
-serde_json = "1"
+libfuzzer-sys = {workspace = true}
+serde_json = {workspace = true}
 model-http = { path = "../model-http" }
 model-openai-compat = { path = "../model-openai-compat" }
 model-provider = { path = "../model-provider" }

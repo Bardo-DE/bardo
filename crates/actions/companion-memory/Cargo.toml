@@ -31,7 +31,7 @@ memory-service = {path = "../../memory/memory-service"}
 action-fake = {path = "../action-fake"}
 action-context = {path = "../action-context"}
 action-router = {path = "../action-router"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 action-wire = {path = "../action-wire"}
 
 [lints]

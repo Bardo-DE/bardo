@@ -28,7 +28,7 @@ toml = { workspace = true, optional = true }
 
 # Process groups and polling are Unix; the wire, manifests and the registry build everywhere.
 [target.'cfg(unix)'.dependencies]
-rustix = { version = "1.1", default-features = false, features = ["std", "event", "process", "time"], optional = true }
+rustix = {workspace = true, features = ["std", "event", "process", "time"], optional = true}
 
 # The tests and the demo plugin they run need the host half, and the process handling is Unix.
 [[example]]

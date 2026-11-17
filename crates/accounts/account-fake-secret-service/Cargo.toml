@@ -14,12 +14,12 @@ repository.workspace = true
 base-time = { path = "../../base/base-time" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
 # The example waits for Ctrl-C.
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 
 [lints]
 workspace = true

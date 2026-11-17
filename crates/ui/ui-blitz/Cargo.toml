@@ -21,21 +21,21 @@ ui-emoji = {path = "../ui-emoji"}
 # fonts, pixel snap, adapter choice. `adapter`: `AdapterPref`, the GPU ranking.
 blitz-embed = {features = ["adapter"], path = "../../blitz-embed/blitz-embed"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
-blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
-blitz-paint = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", features = ["custom-widget"]}
-blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
-blitz-html = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8"}
-dioxus-native-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "accessibility"]}
+blitz-dom = {workspace = true, features = ["svg", "system-fonts", "custom-widget", "accessibility"]}
+blitz-paint = {workspace = true, features = ["custom-widget"]}
+blitz-traits = {workspace = true}
+blitz-html = {workspace = true}
+dioxus-native-dom = {workspace = true, features = ["svg", "system-fonts", "accessibility"]}
 # `html`: an `<iframe srcdoc>` in the window parses into a real sub-document (G4). `clipboard`:
 # copy and paste in every text field, and `ds_blitz::clipboard` (G5).
-dioxus-native = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["accessibility", "clipboard", "html", "svg", "system-fonts", "vello-hybrid"]}
+dioxus-native = {workspace = true, features = ["accessibility", "clipboard", "html", "svg", "system-fonts", "vello-hybrid"]}
 # A deadline for each call to the print portal (the `print` feature).
 ui-peer = {path = "../ui-peer", optional = true}
 # `open_window`: a second window on the same event loop, each with its own VirtualDom
 # (`crate::windows`), and the two providers dioxus-native keeps private (`crate::native_providers`).
 # `custom-widget`: the shell hands a texture layer's widget the renderer when it resumes and
 # unregisters a removed layer's texture from the renderer (`crate::texture_layer`).
-blitz-shell = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["custom-widget"]}
+blitz-shell = {workspace = true, features = ["custom-widget"]}
 dioxus-asset-resolver = { workspace = true, features = ["native"] }
 webbrowser = { workspace = true }
 # `text/html` from the system clipboard for an edit surface's paste.
@@ -47,7 +47,7 @@ wgpu_context = { workspace = true }
 parley = { workspace = true, features = ["std", "complex-scripts"] }
 wgpu = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg"] }
-keyboard-types = {version = "0.7"}
+keyboard-types = {workspace = true}
 # The keymap (`AppConfig::with_keymap_source`) and the sources the detected default reads:
 # kdeglobals and a GNOME dconf dump. Only this I/O crate links the source crates.
 keymap = {path = "../../keymap/keymap"}
@@ -61,7 +61,7 @@ thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"], optional = true }
 # The window's display and surface handles, for the activation token (Linux: `wayland_surface`).
 raw-window-handle = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 # PDF thumbnails (part of the `pdf` feature): pdfrum's reader and CPU rasteriser.
 pdfrum = { workspace = true, features = ["vello-cpu"], optional = true }
 # A bitmap colour emoji glyph's PNG and bearings, for a printout (the `pdf` feature).
@@ -76,7 +76,7 @@ ui-helpers = {path = "../ui-helpers", default-features = false, optional = true}
 [target.'cfg(target_os = "linux")'.dependencies]
 # The print portal (the `print` feature): zbus with quire's async-io default (no executor is
 # forced on the app), and a sealed memfd for the PDF's file descriptor.
-zbus = {version = "5.19", optional = true}
+zbus = {workspace = true, features = ["default"], optional = true}
 memfd = { workspace = true, optional = true }
 # `WindowHandle::focus_with_token`: xdg-activation on the app's own Wayland connection, with the
 # window's `wl_surface` borrowed (`wayland_surface`, the one `unsafe`).

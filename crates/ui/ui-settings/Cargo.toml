@@ -23,7 +23,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 notify = { workspace = true }
 futures-timer = { workspace = true }
-zbus = {version = "5.19", optional = true}
+zbus = {workspace = true, features = ["default"], optional = true}
 toml = { workspace = true }
 # Save merges into the parsed file, keeping unknown keys and comments.
 toml_edit = { workspace = true }
@@ -37,7 +37,7 @@ objc2-core-foundation = { workspace = true, features = ["std", "CFBase", "CFStri
 tempfile.workspace = true
 ui-components = {path = "../ui-components"}
 # The tests' runtime and the `Spawner` they hand the watches; the crate itself names no runtime.
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [features]

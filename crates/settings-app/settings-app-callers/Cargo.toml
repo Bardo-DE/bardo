@@ -12,9 +12,9 @@ publish.workspace = true
 # `OwnerCheck`, `SenderName` and `Verdict`: the check this crate answers.
 ui-settings = {path = "../../ui/ui-settings", features = ["live"]}
 caller-identity-dbus = {default-features = false, features = ["desktop", "tokio"], path = "../../identity/caller-identity-dbus"}
-rustix = {version = "1.1", default-features = false, features = ["std", "process"], optional = true}
+rustix = {workspace = true, features = ["std", "process"], optional = true}
 thiserror = { workspace = true, optional = true }
-zbus = {version = "5.19", features = ["tokio"]}
+zbus = {workspace = true, features = ["default", "tokio"]}
 
 [dev-dependencies]
 settings-app-testkit = {path = "../settings-app-testkit"}

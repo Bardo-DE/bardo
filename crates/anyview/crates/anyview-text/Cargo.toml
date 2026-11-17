@@ -30,7 +30,7 @@ tempfile = { workspace = true }
 
 # Makes the named pipe the image reader must refuse.
 [target.'cfg(target_os = "linux")'.dev-dependencies]
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 
 [lints]
 workspace = true

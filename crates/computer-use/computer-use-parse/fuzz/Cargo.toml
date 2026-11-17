@@ -11,7 +11,7 @@ publish = false
 cargo-fuzz = true
 
 [dependencies]
-libfuzzer-sys = "0.4"
+libfuzzer-sys = {workspace = true}
 computer-use-action = { path = "../../computer-use-action" }
 computer-use-parse = { path = ".." }
 model-provider = { path = "../../../models/model-provider" }

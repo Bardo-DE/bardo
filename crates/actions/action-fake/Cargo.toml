@@ -35,7 +35,7 @@ tracing = { workspace = true }
 
 [dev-dependencies]
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-gate-wire = {path = "../action-gate-wire"}
 action-wire = {path = "../action-wire"}

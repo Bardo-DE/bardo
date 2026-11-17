@@ -18,7 +18,7 @@ percent-encoding = { workspace = true }
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tracing = { workspace = true }
 
 [dev-dependencies]

@@ -16,8 +16,8 @@ computer-use-desktop = {path = "../computer-use-desktop"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 atspi = { workspace = true, features = ["connection", "proxies", "tokio"] }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [lints]
 workspace = true

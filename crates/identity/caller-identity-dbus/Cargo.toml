@@ -11,10 +11,10 @@ publish.workspace = true
 [dependencies]
 caller-identity-linux = {path = "../caller-identity-linux"}
 caller-identity-core = {path = "../caller-identity-core"}
-zbus = {version = "5.19", default-features = false}
+zbus = {workspace = true}
 futures-timer = { workspace = true }
 thiserror = { workspace = true }
-tokio = {version = "1", default-features = false, features = ["rt"], optional = true}
+tokio = {workspace = true, features = ["rt"], optional = true}
 
 [features]
 # zbus runs on its own executor by default. A tokio program turns `default-features` off and

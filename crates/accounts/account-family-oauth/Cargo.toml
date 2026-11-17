@@ -23,12 +23,12 @@ account-http-reqwest = {path = "../account-http-reqwest"}
 account-oauth = {path = "../account-oauth", features = ["io"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 tracing = { workspace = true }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 
 [lints]
 workspace = true

@@ -26,7 +26,7 @@ hex = { workspace = true }
 http = { workspace = true }
 md-5 = { workspace = true }
 sha2 = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tokio-rustls = { workspace = true, features = ["ring", "tls12", "logging"] }
 
 [lints]

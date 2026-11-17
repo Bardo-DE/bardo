@@ -17,7 +17,7 @@ resvg = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process", "pipe"]}
 tempfile = { workspace = true }
 
 [lints]

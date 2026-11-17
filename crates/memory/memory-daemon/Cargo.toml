@@ -45,14 +45,14 @@ account-daemon-support = {path = "../../accounts/account-daemon-support"}
 account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 getrandom = { workspace = true }
 landlock = { workspace = true }
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+zbus = {workspace = true, features = ["tokio"]}
 serde_json = { workspace = true }
 blake3 = { workspace = true }
 
@@ -69,7 +69,7 @@ memory-client = {path = "../memory-client", default-features = false, features =
 memory-fake = {path = "../memory-fake"}
 memory-seal = {path = "../memory-seal", features = ["oo7", "testing"]}
 memory-recall = {path = "../memory-recall", features = ["testing"]}
-tar = {version = "0.4"}
+tar = {workspace = true, features = ["default"]}
 tempfile = { workspace = true }
 zbus-ready = { path = "../../zbus-ready" }
 

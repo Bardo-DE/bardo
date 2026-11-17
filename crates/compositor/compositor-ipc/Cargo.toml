@@ -22,8 +22,8 @@ account-dbus = {path = "../../accounts/account-dbus"}
 ui-settings = {path = "../../ui/ui-settings", default-features = false, features = ["live", "quire-desktop"]}
 ui-style = {path = "../../ui/ui-style", default-features = false}
 calloop = { workspace = true }
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
+zbus = {workspace = true, features = ["tokio"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
 thiserror = { workspace = true }
 toml = { workspace = true }
 # Which program is calling: every Compositor1 call and every Privacy call is checked with it.
@@ -33,7 +33,7 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 # The refusal of a call is logged once, with the role asked and the standing found.
 tracing = { workspace = true }
 # Keysym names in the inject grammar (`key Return down`).
-xkbcommon = {version = "0.9", features = ["wayland"]}
+xkbcommon = {workspace = true, features = ["wayland"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]

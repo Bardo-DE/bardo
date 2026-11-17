@@ -25,12 +25,12 @@ account-fake-servers = {path = "../../accounts/account-fake-servers"}
 # The rig's shared pieces: the identity fixture the daemons read, the planted secrets and the
 # shapes of rig.json.
 account-rig = {path = "../../accounts/account-rig"}
-clap = {version = "4", features = ["derive"]}
+clap = {workspace = true, features = ["default", "derive"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 # `signal` is what this crate adds to the pinned line: SIGTERM ends the servers cleanly.
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
+zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 sync-core = {path = "../sync-core"}
@@ -39,7 +39,7 @@ account-callers = {features = ["test-proc-root"], path = "../../accounts/account
 account-core = {path = "../../accounts/account-core"}
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 
 [lints]

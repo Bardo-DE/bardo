@@ -23,7 +23,7 @@ log = { workspace = true }
 [dev-dependencies]
 base64 = { workspace = true }
 model-http = {path = "../model-http", features = ["client"]}
-tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
+tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 model-replay = {path = "../model-replay"}
 proptest = { workspace = true }
 # The wait for the server to see the close is bounded by the one generous limit.

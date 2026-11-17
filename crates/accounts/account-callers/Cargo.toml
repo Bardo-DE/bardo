@@ -14,7 +14,7 @@ account-core = {path = "../account-core"}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 caller-identity-core = {default-features = false, features = ["toml"], path = "../../identity/caller-identity-core"}
 caller-identity-dbus = {default-features = false, features = ["tokio"], path = "../../identity/caller-identity-dbus"}
-zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -32,7 +32,7 @@ test-proc-root = ["caller-identity-linux/fake"]
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]
 workspace = true

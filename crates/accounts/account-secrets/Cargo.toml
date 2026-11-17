@@ -21,7 +21,7 @@ keyring-core = { workspace = true, optional = true }
 account-keyring-chunked = {path = "../account-keyring-chunked", optional = true}
 
 [target.'cfg(any(target_os = "linux", target_os = "android"))'.dependencies]
-rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 
 [target.'cfg(target_os = "macos")'.dependencies]
 apple-native-keyring-store = { workspace = true, features = ["keychain"], optional = true }
@@ -35,7 +35,7 @@ base-testkit = {path = "../../base/base-testkit"}
 # crate of the workspace that builds with this one, and accountd's shipped-build test needs the
 # file store absent. Run the file store tests with `--features test-keys`.
 account-secrets = { path = ".", features = ["testing", "keyring"] }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 account-secrets = { path = ".", features = ["oo7"] }

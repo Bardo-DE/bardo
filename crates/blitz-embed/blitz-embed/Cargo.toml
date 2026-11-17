@@ -10,13 +10,13 @@ publish.workspace = true
 
 [dependencies]
 # Feature `blitz` (default): the modules that work on a Blitz document.
-blitz-dom = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false, features = ["svg", "system-fonts", "custom-widget", "accessibility"], optional = true}
-blitz-traits = {git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", optional = true}
+blitz-dom = {workspace = true, features = ["svg", "system-fonts", "custom-widget", "accessibility"], optional = true}
+blitz-traits = {workspace = true, optional = true}
 parley = { workspace = true, features = ["std"], optional = true }
 # `scroll::keys` names the keys a scroll responds to.
-keyboard-types = {version = "0.7", optional = true}
+keyboard-types = {workspace = true, optional = true}
 # `net::LocalNet` reads files on the caller's blocking pool.
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"], optional = true}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"], optional = true}
 # Feature `adapter`: the ranking of GPU adapters, and `AdapterPref` (a shell's serialized setting).
 wgpu = { workspace = true, optional = true }
 serde = { workspace = true, features = ["derive"], optional = true }

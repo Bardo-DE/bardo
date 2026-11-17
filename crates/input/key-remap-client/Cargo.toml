@@ -14,7 +14,7 @@ key-remap-proto = { path = "../key-remap-proto" }
 keymap = {path = "../../keymap/keymap"}
 base-fs = { path = "../../base/base-fs" }
 base-xdg = { path = "../../base/base-xdg" }
-rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
+rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 
 [dev-dependencies]

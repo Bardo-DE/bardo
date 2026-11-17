@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-zbus = {version = "5.19", default-features = false}
+zbus = {workspace = true}
 
 [features]
 # zbus runs on its own executor by default. A tokio program turns `default-features` off and

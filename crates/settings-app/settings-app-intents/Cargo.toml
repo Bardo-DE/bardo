@@ -26,7 +26,7 @@ account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
 toml = { workspace = true }
-zbus = {version = "5.19", features = ["tokio"]}
+zbus = {workspace = true, features = ["default", "tokio"]}
 
 [dev-dependencies]
 account-sheet = {path = "../../accounts/account-sheet"}
@@ -35,7 +35,7 @@ action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"
 settings-app-testkit = {path = "../settings-app-testkit"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
+tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [lints]
 workspace = true
