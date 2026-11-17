@@ -2,7 +2,8 @@ use super::*;
 use crate::entries;
 use account_capability::{Capability, LlmFeature};
 use account_core::consent::GrantScope;
-use inference_router::catalog::{CatalogDirs, parse_entry_text, read_catalog};
+use inference_fs::read_catalog;
+use inference_router::catalog::{CatalogDirs, parse_entry_text};
 use std::path::PathBuf;
 
 fn catalogue() -> Vec<ModelEntry> {

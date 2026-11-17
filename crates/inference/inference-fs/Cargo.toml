@@ -1,0 +1,23 @@
+[package]
+name = "inference-fs"
+description = "The files and descriptors the inference router and bridge are given as plain values: the model catalogue directories, an attached engine's key file, a stale engine socket and the descriptors that ride with a frame. Standard-library file io only: no bus, no runtime."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-secret = { path = "../../base/base-secret" }
+inference-bridge = {path = "../inference-bridge"}
+inference-router = {path = "../inference-router"}
+model-catalog = {path = "../../models/model-catalog"}
+rustix = {workspace = true, features = ["std", "process"]}
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+inference-router = {path = "../inference-router", features = ["testing"]}
+
+[lints]
+workspace = true

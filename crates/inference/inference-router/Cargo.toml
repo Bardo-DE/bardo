@@ -1,6 +1,6 @@
 [package]
 name = "inference-router"
-description = "Who answers an inference session and what runs on this computer: the router over a list of models, what loading a model would cost, the catalogue and the local model book, the attached engines the person runs, the session machine and the seams a session server leans on. A library: no bus, no runtime, no daemon."
+description = "Who answers an inference session and what runs on this computer: the router over a list of models, what loading a model would cost, the catalogue and the local model book, the attached engines the person runs, the session machine and the seams a session server leans on. A pure library: no bus, no runtime, no daemon, no file or socket io (`inference-fs` reads what it is given)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -33,7 +33,6 @@ model-openai-compat = {path = "../../models/model-openai-compat"}
 model-provider = {path = "../../models/model-provider"}
 speech-provider = {path = "../../models/speech-provider"}
 model-vision-prep = {path = "../../models/model-vision-prep"}
-rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 

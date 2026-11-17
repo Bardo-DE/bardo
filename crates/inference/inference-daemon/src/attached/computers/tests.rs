@@ -111,7 +111,7 @@ fn a_computer_is_added_to_the_file_the_keys_and_the_book_and_reads_back_as_the_s
         & 0o777;
     assert_eq!(mode, 0o600);
     // The engine reads that key, as a hand-written key file is read.
-    target.key.as_ref().expect("key").read().unwrap();
+    inference_fs::read_key(target.key.as_ref().expect("key")).unwrap();
 
     // At the next start the file gives the same engine, and nothing is refused.
     let file = AddedFile::read(&rig.file()).expect("reads");

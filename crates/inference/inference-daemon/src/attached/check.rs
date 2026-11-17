@@ -89,7 +89,9 @@ pub async fn probe(target: &Target, served: &str) -> Result<(), NotReady> {
         first_byte: wait,
         idle: wait,
     };
-    let endpoint = target.endpoint("", timeouts).map_err(NotReady::KeyFile)?;
+    let endpoint = target
+        .endpoint("", timeouts, inference_fs::read_key)
+        .map_err(NotReady::KeyFile)?;
     let exchange = Exchange {
         verb: Verb::Get,
         root: RouteRoot::Server,

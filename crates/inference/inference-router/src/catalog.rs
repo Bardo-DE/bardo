@@ -1,9 +1,9 @@
-//! The model catalog as porter sees it.
+//! The model catalog as the router sees it.
 //!
-//! Stoker's `catalog/*.toml` files, read from the system and user directories, become `Claim`s at
-//! `Provenance::Curated` for the `local` provider (`Discovery::Supervised`). The parsing and the
-//! merge are stoker's `model-catalog`; this module reads the directories and maps an entry's
-//! capabilities to porter's vocabulary.
+//! The catalog's `catalog/*.toml` entries become `Claim`s at `Provenance::Curated` for the `local`
+//! provider (`Discovery::Supervised`). The parsing and the merge are `model-catalog`'s; this module
+//! maps an entry's capabilities to the router's vocabulary. Reading the directories is
+//! `inference-fs`'s (`read_catalog`); this module holds the value they produce ([`Catalog`]).
 //!
 //! An entry that gives vectors makes a claim from its `vector_out` table (the vector length, the
 //! batch and input limits, the query and document prefixes). inferd keeps no override of its own: the catalog is
@@ -20,7 +20,7 @@ use base_ids::{Count, Dims, Px, Tokens};
 use computer_use_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
 use model_catalog::{
-    CatalogError, Modality as CatalogModality, ModelEntry, merge_catalogs, parse_entry,
+    CatalogError, Modality as CatalogModality, ModelEntry, parse_entry,
 };
 use model_provider::{
     Caps, Constraint, CuaSupport, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
@@ -28,7 +28,7 @@ use model_provider::{
 use model_vision_prep::ResizeRule;
 use speech_provider::{LangSet, SpeechDir};
 use std::collections::BTreeSet;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 /// Where the catalog files live.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -77,61 +77,6 @@ pub fn parse_entry_text(text: &str) -> Result<ModelEntry, EntryError> {
     let entry = parse_entry(text)?;
     check_entry(&entry)?;
     Ok(entry)
-}
-
-/// Reads the system and user directories and merges them (a user file replaces the system file
-/// of the same id). A missing directory is empty; a file that does not parse is skipped.
-#[must_use]
-pub fn read_catalog(dirs: &CatalogDirs) -> Catalog {
-    let (system, mut skipped) = read_dir(&dirs.system);
-    let (user, more) = read_dir(&dirs.user);
-    skipped.extend(more);
-    Catalog {
-        entries: merge_catalogs(system, user),
-        skipped,
-    }
-}
-
-fn read_dir(dir: &Path) -> (Vec<ModelEntry>, Vec<Skipped>) {
-    let mut files: Vec<PathBuf> = std::fs::read_dir(dir)
-        .into_iter()
-        .flatten()
-        .flatten()
-        .map(|entry| entry.path())
-        .filter(|path| path.extension().is_some_and(|ext| ext == "toml"))
-        .collect();
-    files.sort();
-    let mut entries = Vec::new();
-    let mut skipped = Vec::new();
-    for path in files {
-        let parsed = std::fs::read_to_string(&path)
-            .map_err(|e| e.to_string())
-            .and_then(|text| parse_entry_text(&text).map_err(|e| e.to_string()));
-        match parsed {
-            Ok(entry) => entries.push(entry),
-            Err(why) => skipped.push(Skipped {
-                what: path.display().to_string(),
-                why,
-            }),
-        }
-    }
-    (entries, skipped)
-}
-
-/// The claims the catalog makes for the local account.
-///
-/// One per model and capability of an entry that runs on this computer, at the provenance the
-/// catalog gives (`Curated`); a hosted entry is not the local account's.
-pub fn local_claims(dirs: &CatalogDirs) -> Vec<Claim> {
-    read_catalog(dirs)
-        .entries
-        .iter()
-        // An attached entry is the catalogue's word that an engine exists somewhere; where it is
-        // is the person's (`where`), so it makes no claim until inferd attaches it, and then its
-        // card says where the data goes.
-        .filter(|entry| entry.locality.is_on_device() && entry.serving.is_launched())
-        .flat_map(claims_of)
-        .collect()
 }
 
 /// The claims of one entry: a language model, a computer-use model, a speech model, an

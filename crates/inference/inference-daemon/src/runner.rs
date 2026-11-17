@@ -281,7 +281,7 @@ impl Job {
         else {
             return InferReply::Failed(ModelError::Unreachable);
         };
-        let Ok(frames) = Frames::read(attachments) else {
+        let Ok(frames) = inference_fs::read_frames(attachments) else {
             return InferReply::Failed(ModelError::Unreadable);
         };
         match request {

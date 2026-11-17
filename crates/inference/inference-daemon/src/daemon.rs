@@ -35,7 +35,7 @@ use dbus_kit::connect::BusTarget;
 use engine_supervisor::EngineId;
 use http_reqwest::{Limits, ReqwestHttp};
 use inference_dbus::inference::INFERENCE_BUS;
-use inference_router::catalog::read_catalog;
+use inference_fs::read_catalog;
 use inference_router::local::{Lengths, LocalModel, build};
 use inference_tailnet::{Config as TailnetConfig, Guests, Timing};
 use inference_turns::audit::JsonLines;
@@ -314,7 +314,7 @@ fn attached_models(
             .attached
             .as_ref()
             .and_then(|target| target.key.as_ref());
-        if let Some(Err(why)) = key.map(crate::attached::KeyFile::read) {
+        if let Some(Err(why)) = key.map(inference_fs::read_key) {
             eprintln!("inferd: attached engine {}: {why}", model.spec.id.0);
         }
     }

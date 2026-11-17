@@ -40,6 +40,8 @@ account-provider = {path = "../../accounts/account-provider"}
 inference-tailnet = {path = "../inference-tailnet", features = ["io", "persist"]}
 account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
 inference-core = {path = "../inference-core"}
+# The files and descriptors the pure router and bridge are given as values.
+inference-fs = {path = "../inference-fs"}
 # Routing and the session machine: the router, the plan, the catalogue, the local model book, the
 # attached engines as values, the seams.
 inference-router = {path = "../inference-router"}

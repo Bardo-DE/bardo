@@ -2,6 +2,7 @@
 
 use super::config::{Attached, Place, Reach};
 use super::key::{KeyFile, KeyFileProblem};
+use base_secret::SecretText;
 use inference_core::ComputerName;
 use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath};
 use std::path::PathBuf;
@@ -47,17 +48,23 @@ impl Target {
         self.reach.is_tailnet()
     }
 
-    /// The endpoint of one connect: the key file is read now (so a token that was rotated is the
-    /// one sent), and a file that is refused is why there is no endpoint.
+    /// The endpoint of one connect: the key file is read now through `read_key` (so a token that
+    /// was rotated is the one sent; reading a file is the caller's, `inference_fs::read_key`), and
+    /// a file that is refused is why there is no endpoint.
     ///
     /// # Errors
-    /// `KeyFileProblem` when the key file cannot be read.
-    pub fn endpoint(&self, base: &str, timeouts: Timeouts) -> Result<HttpEndpoint, KeyFileProblem> {
+    /// `KeyFileProblem` when `read_key` refuses the key file.
+    pub fn endpoint(
+        &self,
+        base: &str,
+        timeouts: Timeouts,
+        read_key: impl FnOnce(&KeyFile) -> Result<SecretText, KeyFileProblem>,
+    ) -> Result<HttpEndpoint, KeyFileProblem> {
         let auth = match (&self.key, &self.reach) {
             // Plain http on this machine's loopback: the key goes only because it is opted in, and
             // the client still refuses any host that is not loopback.
-            (Some(key), Reach::Loopback { .. }) => AuthHeader::LoopbackBearer(key.read()?),
-            (Some(key), _) => AuthHeader::Bearer(key.read()?),
+            (Some(key), Reach::Loopback { .. }) => AuthHeader::LoopbackBearer(read_key(key)?),
+            (Some(key), _) => AuthHeader::Bearer(read_key(key)?),
             (None, _) => AuthHeader::None,
         };
         Ok(self.endpoint_with(auth, base, timeouts))

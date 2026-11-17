@@ -1,6 +1,6 @@
 [package]
 name = "inference-bridge"
-description = "The one mapping between porter's wire types (inference-core) and stoker's provider types (model-provider): a chat, task or embedding request as a turn, a turn's events and end as porter's, a provider error as a ModelError. Pure: no runtime, no socket, no HTTP. inferd and inference-client's in-process engine host share it."
+description = "The one mapping between porter's wire types (inference-core) and stoker's provider types (model-provider): a chat, task or embedding request as a turn, a turn's events and end as porter's, a provider error as a ModelError. Pure: no runtime, no socket, no file, no HTTP. inferd and inference-client's in-process engine host share it."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

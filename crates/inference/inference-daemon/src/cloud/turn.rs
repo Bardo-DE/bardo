@@ -131,7 +131,7 @@ impl<'a> CloudModel<'a> {
         if cloud.spend(pin.line, &pin.app, &pin.model) == SpendVerdict::Stop {
             return Err(InferRefusal::OverBudget.into());
         }
-        let frames = Frames::read(attachments).map_err(|error| {
+        let frames = inference_fs::read_frames(attachments).map_err(|error| {
             tracing::warn!(%error, "could not read the attached frames");
             ModelError::Unreadable
         })?;
