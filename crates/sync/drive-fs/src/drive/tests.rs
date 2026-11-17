@@ -25,7 +25,7 @@ fn config(dir: &Scratch, chunk: u64) -> DriveConfig {
 }
 
 async fn rig(chunk: u64) -> Rig {
-    let dir = Scratch::new("ferry-drive");
+    let dir = Scratch::new("drive-core");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
     let drive = Drive::open(
@@ -312,7 +312,7 @@ async fn keeping_everything_off_leaves_the_files_here_but_evictable_and_keeps_wh
 
 #[tokio::test]
 async fn keeping_everything_past_the_free_space_fetches_nothing_and_removes_nothing() {
-    let dir = Scratch::new("ferry-drive-room");
+    let dir = Scratch::new("sync-drive-room");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
     let drive = Drive::open(
@@ -365,7 +365,7 @@ async fn keeping_everything_past_the_free_space_fetches_nothing_and_removes_noth
 
 #[tokio::test]
 async fn a_free_space_that_is_not_known_is_never_short_and_everything_downloads() {
-    let dir = Scratch::new("ferry-drive-unknown-room");
+    let dir = Scratch::new("sync-drive-unknown-room");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
     let drive = Drive::open(
@@ -915,7 +915,7 @@ async fn reached_again_a_file_that_failed_offline_is_in_the_cloud_again() {
 
 #[tokio::test]
 async fn a_stalled_fetch_fails_its_reader_at_its_deadline() {
-    let dir = Scratch::new("ferry-drive");
+    let dir = Scratch::new("drive-core");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
     let drive = Drive::open(

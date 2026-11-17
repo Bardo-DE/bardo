@@ -4,7 +4,7 @@
 #   - every files* crate is in the table below (a new crate must be placed in a layer);
 #   - a crate names only workspace crates of its own layer or below, and files-core names none;
 #   - the pure crates (files-core, files-model) name no I/O crate;
-#   - only files-desktop names zbus, docket, porter (and its `prov`), ferry or peephole;
+#   - only files-desktop names zbus, docket, porter (and its `prov`), the sync service or peephole;
 #   - only files-ui and the binary name dioxus or Bardo's
 #     UI crates (ds, ui-blitz, ui-settings, ...); ui-helpers is UI-free and allowed lower.
 # Prints each violation as `crate -> dep (rule)` and exits 1 when there is any.

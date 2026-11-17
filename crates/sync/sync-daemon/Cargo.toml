@@ -1,6 +1,6 @@
 [package]
 name = "sync-daemon"
-description = "ferry's sync daemon: org.bardo.Sync1 over sync-core replicas. The program: it wires the engine (sync-engine, sync-driver), the datasets (sync-pim-mirror, sync-storage with Photos) and the journal (sync-journal-sqlite) together, serves the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client), and resolves its paths and starts."
+description = "sync's sync daemon: org.bardo.Sync1 over sync-core replicas. The program: it wires the engine (sync-engine, sync-driver), the datasets (sync-pim-mirror, sync-storage with Photos) and the journal (sync-journal-sqlite) together, serves the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client), and resolves its paths and starts."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

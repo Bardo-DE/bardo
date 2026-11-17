@@ -3,8 +3,8 @@
 //! whose `Response` signal carries the answer). No bus carries a token or a grant: the app that
 //! wants an identity asks `Identities1`, the one that wants an AI key asks accountd's `Keys` for
 //! a permit, and the key itself goes only to inferd, which sends it to the AI company (accountd's
-//! `Broker`), on a sealed descriptor. The interfaces of ferry's syncd (`Sync1`, `Storage1`, the
-//! Photos Picker) are in the ferry repo, written under the same `#[bus_interface]`.
+//! `Broker`), on a sealed descriptor. The interfaces of the sync service's syncd (`Sync1`, `Storage1`, the
+//! Photos Picker) are in the sync repo, written under the same `#[bus_interface]`.
 //!
 //! Each interface is written once, as the trait its callers use, under `#[bus_interface]`
 //! (`dbus-kit`). The same trait gives the caller's `<Name>Proxy`, the `<Name>Server`

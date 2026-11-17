@@ -315,7 +315,7 @@ impl Mounted {
     fn let_go(&mut self) {
         if let Some(session) = self.session.take() {
             let _ = std::thread::Builder::new()
-                .name("ferry-drive-fuse-end".to_owned())
+                .name("sync-drive-fuse-end".to_owned())
                 .spawn(move || drop(session.join()));
         }
     }
@@ -325,7 +325,7 @@ impl Drop for Mounted {
     fn drop(&mut self) {
         if let Err(why) = self.take_away() {
             eprintln!(
-                "ferry-drive-fuse: {} was not unmounted: {why}",
+                "drive-fuse: {} was not unmounted: {why}",
                 self.path.display()
             );
         }

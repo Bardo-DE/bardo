@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The feature sets ferry's crates are built in, each one clippy with -D warnings.
+# The feature sets the sync service's crates are built in, each one clippy with -D warnings.
 #
 # The workspace gate builds `--workspace --all-features`, which unifies every feature into one
 # build and so never sees the build a program makes on its own. Each set below is checked here,

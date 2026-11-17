@@ -1,11 +1,11 @@
-# What the accounts-* scenarios share: porter's real bardo-accountd, ferry's bardo-syncd, steward's bardo-inferd, porter's test rig
-# (account-rig-servers: the fakes, account-rig-secrets: a fake Secret Service, account-rig-client: an app), ferry's test rig
+# What the accounts-* scenarios share: porter's real bardo-accountd, the sync service's bardo-syncd, steward's bardo-inferd, porter's test rig
+# (account-rig-servers: the fakes, account-rig-secrets: a fake Secret Service, account-rig-client: an app), the sync service's test rig
 # (sync-rig-servers: the OAuth issuer and the Graph fake, sync-rig-client: an app talking to bardo-syncd) and inference-rig-client (an app opening an bardo-inferd session) on the
 # private bus bardo-compositor's dev/up.sh made, with bardo-shell drawing the sheets. Sourced after harness/lib/all.sh,
 # harness/lib/scenario.sh and bardo-shell's dev/lib/all.sh (it uses their in_env, bardo-shell, surface_named, capture ...).
 #
 # Identity. The daemons (bardo-inferd is steward's, from build/steward-target) are test-proc-root builds: they name the process behind a bus connection from
-# $PROC/<pid>/cgroup (BARDO_ACCOUNTD_PROC_ROOT, BARDO_SYNCD_PROC_ROOT, BARDO_INFERD_PROC_ROOT; bardo-syncd is ferry's, from build/ferry-target), because nothing in the jail runs
+# $PROC/<pid>/cgroup (BARDO_ACCOUNTD_PROC_ROOT, BARDO_SYNCD_PROC_ROOT, BARDO_INFERD_PROC_ROOT; bardo-syncd is the sync service's, from build/sync-target), because nothing in the jail runs
 # in a systemd scope; the role of each is the system caller table, porter's dist copy at $ACC_SYSTEM_CALLERS
 # (BARDO_ACCOUNTD_SYSTEM_CALLERS: the jail cannot write /etc/bardo/accountd-callers.toml, and a person's own file gives no fixed role);
 # bardo-inferd's is $BARDO_INFERD_SYSTEM_CALLERS (BARDO_INFERD_CALLERS, in place of /etc/bardo/inferd-callers.toml: porter
@@ -19,7 +19,7 @@
 ACC_LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARIG="$SCEN_BUILD/porter-target/debug"
 ASTW="$SCEN_BUILD/steward-target/debug"
-AFER="$SCEN_BUILD/ferry-target/debug"
+AFER="$SCEN_BUILD/sync-target/debug"
 ACC_PIDS=()
 ACC_BG=()
 
@@ -128,17 +128,17 @@ rig_start() {
   RIG_PID=$ACC_LAST
   acc_wait 20 test -s "$RIG_DIR/servers/rig.json" || { echo "account-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/rig-servers.log" >&2; return 1; }
 }
-# ferry_rig_start [FLAGS...]: sync-rig-servers --dir $RIG_DIR/ferry FLAGS (--token-lifetime-s N); it always starts the OAuth
+# sync_rig_start [FLAGS...]: sync-rig-servers --dir $RIG_DIR/sync FLAGS (--token-lifetime-s N); it always starts the OAuth
 # issuer and the Graph fake, and writes its own rig.json. It runs beside account-rig-servers (rig_start) when a scenario
 # needs both; frigj and frigctl read and drive this one.
-ferry_rig_start() {
-  mkdir -p "$RIG_DIR/ferry"
-  acc_bg "$OUT_DIR/sync-rig-servers.log" "$AFER/sync-rig-servers" --dir "$RIG_DIR/ferry" "$@"
+sync_rig_start() {
+  mkdir -p "$RIG_DIR/sync"
+  acc_bg "$OUT_DIR/sync-rig-servers.log" "$AFER/sync-rig-servers" --dir "$RIG_DIR/sync" "$@"
   BARDO_SYNC_RIG_PID=$ACC_LAST
-  acc_wait 20 test -s "$RIG_DIR/ferry/rig.json" || { echo "sync-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/sync-rig-servers.log" >&2; return 1; }
+  acc_wait 20 test -s "$RIG_DIR/sync/rig.json" || { echo "sync-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/sync-rig-servers.log" >&2; return 1; }
 }
 # rigj PATH: a value of rig.json (a dotted path, `imap.port`), or the planted secrets with `secrets`. It reads porter's rig
-# (RIG_JSON_DIR, default $RIG_DIR/servers); frigj reads ferry's (oauth.*, graph.url, secrets).
+# (RIG_JSON_DIR, default $RIG_DIR/servers); frigj reads the sync service's (oauth.*, graph.url, secrets).
 rigj() {
   python3 -I -c '
 import json, sys
@@ -146,14 +146,14 @@ v = json.load(open(sys.argv[1]))
 for k in sys.argv[2].split("."): v = v[k]
 print("\n".join(v) if isinstance(v, list) else v)' "${RIG_JSON_DIR:-$RIG_DIR/servers}/rig.json" "$1"
 }
-frigj() { RIG_JSON_DIR="$RIG_DIR/ferry" rigj "$@"; }
-# rigctl METHOD TARGET [BODY]: a lever of porter's rig control endpoint; the JSON answer. frigctl: the same on ferry's rig
+frigj() { RIG_JSON_DIR="$RIG_DIR/sync" rigj "$@"; }
+# rigctl METHOD TARGET [BODY]: a lever of porter's rig control endpoint; the JSON answer. frigctl: the same on the sync service's rig
 # (/graph/..., /issuer/...).
 rigctl() {
   local ctl; ctl=$(rigj control) || return 1
   curl -sS -X "$1" --data-binary "${3:-}" "$ctl$2"
 }
-frigctl() { RIG_JSON_DIR="$RIG_DIR/ferry" rigctl "$@"; }
+frigctl() { RIG_JSON_DIR="$RIG_DIR/sync" rigctl "$@"; }
 
 secrets_start() {
   acc_bg "$OUT_DIR/secrets.log" "$ARIG/account-rig-secrets"
@@ -170,7 +170,7 @@ acc_config() {
 }
 
 # acc_clients_for_issuer: the shipped clients.toml (/usr/share/bardo/accounts, the jail's throwaway overlay) pointing the
-# Microsoft client at the fake issuer of ferry's rig (the one its Graph fake accepts tokens from; ferry_rig_start first): porter takes endpoints that leave the issuer only from the shipped file, never
+# Microsoft client at the fake issuer of the sync service's rig (the one its Graph fake accepts tokens from; sync_rig_start first): porter takes endpoints that leave the issuer only from the shipped file, never
 # from the person's own (sec-4).
 acc_clients_for_issuer() {
   mkdir -p /usr/share/bardo/accounts
@@ -187,7 +187,7 @@ device = "$(frigj oauth.device)"
 EOF
 }
 
-# acc_provider_microsoft_on_rig: the shipped microsoft.toml with Graph at ferry's rig drive.
+# acc_provider_microsoft_on_rig: the shipped microsoft.toml with Graph at the sync service's rig drive.
 acc_provider_microsoft_on_rig() {
   sed -e "s#https://graph.microsoft.com#$(frigj graph.url)#g" "$SCEN_SIB/accounts/providers/microsoft.toml" >"$PROV/microsoft.toml"
 }
@@ -205,7 +205,7 @@ acc_providers_only() {
 # Since porter's step 5c bardo-accountd holds every account: the identities, the AI keys with their permits and switches (its
 # Keys interface), and the local runtimes bardo-inferd's probe reports to it (Broker.ReportLocal, a call only the `ai_broker`
 # role may make: bardo-inferd.service in dist/callers.toml). bardo-inferd (org.bardo.Inference1) holds no key; it serves the models
-# and the spend rows (`accounts.<id>.spend.*`) of the accounts bardo-accountd lists. bardo-syncd (ferry's) has no accounts of
+# and the spend rows (`accounts.<id>.spend.*`) of the accounts bardo-accountd lists. bardo-syncd (the sync service's) has no accounts of
 # its own: it uses bardo-accountd's through account-client over org.bardo.Grants1. A page that reads a daemon never starts it (bardo-settings's live/io.rs answers NotRunning), so a scenario
 # starts every daemon its page reads before opening the page.
 # Each daemon reads its caller table at startup only: acc_config installs callers.toml before bardo-accountd and bardo-syncd start,
@@ -398,7 +398,7 @@ as_app() {
 # settings_describe_at BUS PATH / settings_get_at BUS PATH KEY: a daemon's settings module (org.bardo.SettingsModule1), read
 # as the Settings app. Three daemons serve one: bardo-accountd (every account: identities, AI keys with their permits and
 # switches, local runtimes; /org/bardo/Accounts1/settings), bardo-inferd (only the spend rows, `accounts.<id>.spend.*`, of the
-# accounts bardo-accountd lists; /org/bardo/Inference1/settings) and bardo-syncd (ferry's: what it keeps of bardo-accountd's accounts, /org/bardo/Sync1/settings).
+# accounts bardo-accountd lists; /org/bardo/Inference1/settings) and bardo-syncd (the sync service's: what it keeps of bardo-accountd's accounts, /org/bardo/Sync1/settings).
 settings_describe_at() {
   as_app org.bardo.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
     org.bardo.SettingsModule1 Describe | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["data"][0])'
@@ -534,7 +534,7 @@ scan_end() {
   while read -r s; do
     [ -n "$s" ] || continue
     case "$s" in *ACCESS-TOKEN*) args+=(--access-secret "$s") ;; *) args+=(--secret "$s") ;; esac
-  done < <(rigj secrets 2>/dev/null; [ ! -f "$RIG_DIR/ferry/rig.json" ] || frigj secrets 2>/dev/null)
+  done < <(rigj secrets 2>/dev/null; [ ! -f "$RIG_DIR/sync/rig.json" ] || frigj secrets 2>/dev/null)
   local f
   for f in "$OUT_DIR"/*.log; do
     case "$(basename "$f")" in keys.log|input.log|rig-servers.log|sync-rig-servers.log) ;; *) files+=(--file "$f") ;; esac
@@ -560,7 +560,7 @@ sheet_add_fake_mail() {
 }
 
 # sheet_add_microsoft: the whole browser sign-in through the sheet as an app asks for it (accounts-oauth-browser checks
-# the steps one by one); needs ferry's rig started (ferry_rig_start), acc_clients_for_issuer and
+# the steps one by one); needs the sync service's rig started (sync_rig_start), acc_clients_for_issuer and
 # acc_provider_microsoft_on_rig. Sets ACCOUNT to the account's id.
 sheet_add_microsoft() {
   : >"$RIG_DIR/opened.log"

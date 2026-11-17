@@ -156,7 +156,7 @@ async fn the_rig_starts_lists_what_it_planted_serves_its_levers_and_ends_on_sigt
 
 #[tokio::test(flavor = "multi_thread")]
 async fn post_stop_ends_the_rig_cleanly() {
-    let dir = Scratch::new("ferry-rig-servers-stop");
+    let dir = Scratch::new("sync-rig-servers-stop");
     let mut rig = Proc::spawn(
         env!("CARGO_BIN_EXE_sync-rig-servers"),
         &["--dir", dir.to_str().expect("utf-8")],

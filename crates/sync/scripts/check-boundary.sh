@@ -6,7 +6,7 @@
 # we want. Checking the exit status would therefore fail whenever the boundary holds, so we
 # check for OUTPUT instead: any line naming the dependency is a leak.
 #
-# ferry reaches accounts through porter's crates, taken by git rev. The pure crates below (the
+# The sync service reaches accounts through porter's crates, taken by git rev. The pure crates below (the
 # sync contract, the engine, the replicas, the drive, the mount helper) reach no bus, no service and no secret
 # store of porter's; only syncd, the bus crate and the test tooling name those, and syncd names no
 # account crate at all (see ACCOUNTS ONLY THROUGH PORTER-CLIENT below).
@@ -16,7 +16,7 @@ cd "$(dirname "$0")/.."
 # RULES: what a crate reaches through ANY path (transitive, default features). The pure crates
 # never reach a bus, a runtime, an HTTP client or a keyring. drive-fs and drive-fuse reach
 # tokio (a drive fetches in the background) but never a bus or a client. drive-mount-daemon, the mount
-# helper outside syncd's sandbox, reaches no effect crate and none of porter's or ferry's own:
+# helper outside syncd's sandbox, reaches no effect crate and none of porter's or the sync service's own:
 # std, rustix and listenfd only (no network, keyring or account data). sync-bus is the interface
 # definitions: zbus and tokio (through account-dbus), nothing that shows or fetches.
 EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
@@ -118,7 +118,7 @@ else
   echo "boundary holds: accounts are reached only through account-client"
 fi
 
-# The allowed edges between our own crates (ferry's, and porter's by git): each crate's DIRECT
+# The allowed edges between our own crates (the sync service's, and porter's by git): each crate's DIRECT
 # normal and build dependencies (all features), and nothing else. A dependency not listed is a
 # leak; so is one the crate no longer has, so the table stays exact. Dev dependencies are outside
 # it.

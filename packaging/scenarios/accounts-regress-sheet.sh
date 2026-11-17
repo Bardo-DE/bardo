@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scenario `accounts-regress-sheet`: the add-account sheet and the consent window, as accounts-hunt found them
 # wrong (probes 1, 2, 3 and 6) and bardo-shell 245cc25 fixed them. Each step fails when its bug comes back. Real bardo-accountd,
-# bardo-shell drawing the sheets, the rigs' fake mail and Graph (porter's and ferry's); no probe of bardo-shell's surfaces exists (see harness/lib/regress.sh),
+# bardo-shell drawing the sheets, the rigs' fake mail and Graph (porter's and the sync service's); no probe of bardo-shell's surfaces exists (see harness/lib/regress.sh),
 # so a check reads the bus record (what bardo-accountd shows the sheet, what the keys made it send) or compares captures.
 #
 #   boot      bardo-compositor, recorded bus, rig, bardo-accountd with 14 filler providers (at least 24 rows: the shipped providers

@@ -2,7 +2,7 @@
 //! differs between them: the bus name, the root of the Request objects' paths and the prefix of
 //! the errors. The Request interface itself (`org.bardo.Accounts1.Request`: `Close`, the signal
 //! `Response`) is one shape for all of them. accountd is the one now: a daemon that wants a sheet
-//! asks accountd for it, and the sync daemon (ferry's) is such a daemon.
+//! asks accountd for it, and the sync daemon (the sync service's) is such a daemon.
 
 use account_wire::names::ACCOUNTS_BUS;
 

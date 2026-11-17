@@ -352,7 +352,7 @@ pub(crate) struct Inner {
 impl Drop for Inner {
     fn drop(&mut self) {
         if let Err(why) = self.flush_now() {
-            eprintln!("ferry-drive: the cache's index could not be written: {why}");
+            eprintln!("drive-core: the cache's index could not be written: {why}");
         }
         self.flush.notify_one();
         self.wake.notify_one();
@@ -497,7 +497,7 @@ fn now_secs() -> i64 {
 /// cause, so the cause is written to the log here.
 fn unlisted(reason: Reason) -> impl FnOnce(DriveError) -> Reason {
     move |why| {
-        eprintln!("ferry-drive: the listing could not be read: {why}");
+        eprintln!("drive-core: the listing could not be read: {why}");
         reason
     }
 }
@@ -1036,7 +1036,7 @@ async fn flusher(weak: Weak<Inner>, flush: Arc<Notify>) {
         // Syncing files waits on the disk: off the runtime's threads.
         let flushed = tokio::task::spawn_blocking(move || inner.flush_now()).await;
         if let Ok(Err(why)) = flushed {
-            eprintln!("ferry-drive: the cache's index could not be written: {why}");
+            eprintln!("drive-core: the cache's index could not be written: {why}");
         }
     }
 }

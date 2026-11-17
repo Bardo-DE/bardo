@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scenario `accounts-oauth-browser` (design 31 §7.1): a Microsoft-shaped account is added through the browser
-# sign-in against the ferry rig's fake OAuth issuer, the identity is stored, and Graph (the rig's fake drive, which takes only
-# the access tokens the issuer minted) is reached by bardo-syncd (ferry's), which has no accounts of its own: it uses bardo-accountd's
+# sign-in against the sync service rig's fake OAuth issuer, the identity is stored, and Graph (the rig's fake drive, which takes only
+# the access tokens the issuer minted) is reached by bardo-syncd (the sync service's), which has no accounts of its own: it uses bardo-accountd's
 # account through account-client over org.bardo.Grants1, after one consent sheet for that account.
 #
 # The browser is the scenario's own `xdg-open` first on bardo-shell's PATH (harness/lib/accounts.sh sill_start): bardo-shell opens
@@ -10,7 +10,7 @@
 # code. The person's consent is the issuer's default (grant); the Microsoft client and its endpoints are the
 # shipped clients.toml (the jail's /usr/share overlay), Graph is the shipped microsoft.toml with its host pointed at the fake.
 #
-#   boot      bardo-compositor, recorded bus, ferry's rig (issuer + Graph), fake Secret Service, bardo-accountd, bardo-shell
+#   boot      bardo-compositor, recorded bus, the sync service's rig (issuer + Graph), fake Secret Service, bardo-accountd, bardo-shell
 #   sign-in   AddAccount, "Micro" filters, Return picks Microsoft: the sheet shows the browser wait (capture); bardo-shell
 #             opens the issuer's authorize URL (PKCE S256 and the loopback redirect); the sign-in finishes on its own
 #             and the review step shows (capture); Return is Done; add-account answers `added`
@@ -18,7 +18,7 @@
 #             the registry (and, by the scan below, no token is in any file)
 #   graph     the files switch of the account in bardo-syncd's rows is turned on (accounts.<id>.sync.files, as Settings sets it): bardo-accountd's
 #             consent sheet shows once, for that one account (capture, Always Allow; no chooser, no second sign-in), and bardo-syncd reaches
-#             Graph with the issuer's access token (GET /v1.0/me/drive...: the ferry rig's hits lever lists a request with a
+#             Graph with the issuer's access token (GET /v1.0/me/drive...: the sync service rig's hits lever lists a request with a
 #             bearer); bardo-accountd lists bardo-syncd's permit (org.bardo.Sync, always) under the account
 #   scan      the secret scan
 #
@@ -43,7 +43,7 @@ step_boot() {
   scratch_new; acc_dirs
   build || return 1
   scan_begin
-  ferry_rig_start || return 1
+  sync_rig_start || return 1
   secrets_start || return 1
   acc_config; acc_clients_for_issuer; acc_provider_microsoft_on_rig
   accountd_start || return 1

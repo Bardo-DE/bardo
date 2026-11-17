@@ -28,7 +28,7 @@ allow = [
     "MPL-2.0",
     # bzip2-1.0.6: the bzip2 library's own permissive licence (anyview-archive's bzip2 crate).
     "bzip2-1.0.6",
-    # webpki-roots: the Mozilla CA list as data, attribution only (porter, steward, ferry had this as a
+    # webpki-roots: the Mozilla CA list as data, attribution only (porter, steward, the sync service had this as a
     # per-crate exception; the updater and the others allowed it globally).
     "CDLA-Permissive-2.0",
 ]

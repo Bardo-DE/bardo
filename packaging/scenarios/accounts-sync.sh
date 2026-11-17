@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Scenario `accounts-sync` (design 31 §6, porter 5fdeafa Sync1.Resolve): bardo-syncd mirrors a OneDrive app folder from the
 # rig's fake Graph, a two-sided edit makes a Conflict signal with its number, and the owning app settles it with
-# Sync1.Resolve keep_remote: the next cycle takes the remote. bardo-syncd (ferry's) has no accounts of
+# Sync1.Resolve keep_remote: the next cycle takes the remote. bardo-syncd (the sync service's) has no accounts of
 # its own: it uses the bardo-accountd account the person signed in with, through account-client over org.bardo.Grants1, and keeps
-# only its own sync switches and mirrors. Real bardo-accountd and bardo-syncd (bardo-syncd runs Storage over Graph), ferry's rig (issuer and
+# only its own sync switches and mirrors. Real bardo-accountd and bardo-syncd (bardo-syncd runs Storage over Graph), the sync service's rig (issuer and
 # Graph), bardo-shell as sheet host, bardo-settings for the Sync row. No network.
 #
 #   boot      as accounts-oauth-browser: a Microsoft-shaped identity added through the browser sign-in; bardo-syncd runs before
@@ -64,7 +64,7 @@ step_boot() {
   scratch_new; acc_dirs
   build || return 1
   scan_begin
-  ferry_rig_start || return 1
+  sync_rig_start || return 1
   secrets_start || return 1
   acc_config; acc_clients_for_issuer; acc_provider_microsoft_on_rig
   accountd_start || return 1

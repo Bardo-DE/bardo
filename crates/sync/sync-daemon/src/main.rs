@@ -23,7 +23,7 @@ use std::process::ExitCode;
 use sync_daemon::{Config, Daemon};
 use sync_engine::scheduler::Network;
 
-/// ferry's sync service (`org.bardo.Sync1`).
+/// The sync service (`org.bardo.Sync1`).
 #[derive(Debug, Parser)]
 #[command(name = "bardo-syncd", version)]
 struct Args;

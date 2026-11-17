@@ -271,7 +271,7 @@ mod tests {
 
     #[test]
     fn content_is_read_a_span_at_a_time_and_stops_at_its_size() {
-        let dir = base_testkit::Scratch::new("ferry-sync-content");
+        let dir = base_testkit::Scratch::new("sync-content");
         let path = dir.join("f");
         std::fs::write(&path, b"0123456789").expect("write");
         let content = Content::new(path, 8);

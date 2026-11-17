@@ -2,7 +2,7 @@
 # Scenario `accounts-regress-settings`: bardo-settings's Accounts pane, as accounts-hunt found it wrong (probes 4, 5 and 6) and
 # bardo-settings 06f5829 fixed it. bardo-settings runs with ui-blitz's debug probe (BARDO_DEBUG_PROBE), so its controls are read by role and
 # name; what is only text (the line under a row) is measured in the capture. Real bardo-accountd, bardo-shell (the sheet host), bardo-settings at
-# its pin, the rigs' fake mail and Graph (porter's and ferry's).
+# its pin, the rigs' fake mail and Graph (porter's and the sync service's).
 #
 #   boot      a password account (Fake Mail) and a browser account (Microsoft) added through bardo-accountd's sheet, an OpenAI key
 #             added through the same sheet, a permit for an app on the key (the permits and their Revoke are the AI keys', and

@@ -1,10 +1,10 @@
-# ferry
+# The sync service
 
-Ferry keeps the copies of your calendars, contacts, tasks, files and photos on your computer in
+The sync service keeps the copies of your calendars, contacts, tasks, files and photos on your computer in
 step with the services your accounts reach, and shows an account's whole drive as a folder
 (`~/Cloud/OneDrive`, `~/Cloud/Google Drive`) whose files come down when they are opened. It is the
 sync half of what began as porter; [porter](https://github.com/Bardo-DE/porter) is the accounts
-half (sign-in, consent, the keyring), and ferry depends on it by git rev.
+half (sign-in, consent, the keyring), and the sync service depends on it by git rev.
 
 ## What runs
 
@@ -29,7 +29,7 @@ half (sign-in, consent, the keyring), and ferry depends on it by git rev.
 
 ## Accounts
 
-The accounts are accountd's (porter). ferry reaches them only through porter's client crates
+The accounts are accountd's (porter). The sync service reaches them only through porter's client crates
 (`account-client` over `account-client-dbus`): syncd lists the accounts, asks accountd for the grant
 it needs (accountd's consent sheet shows the first time a sync switch is turned on for an account,
 and its answer is kept), reads its own grants, and opens the streams to an account's servers that
@@ -49,7 +49,7 @@ It can be run again at any time and never writes into a home folder. `--bin-dir 
 binaries you built yourself, and `--help` lists the rest. [docs/drive-files.md](docs/drive-files.md)
 checks the real folder by hand.
 
-## Working on ferry
+## Working on the sync service
 
     cargo test --workspace        # the tests that start a private session bus are meant to run in a jail; .github/workflows/ci.yml says which packages
     scripts/check-boundary.sh     # the crate boundaries, mechanically

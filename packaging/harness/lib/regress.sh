@@ -55,7 +55,7 @@ provider_copy() {
   sed -e "s/^id = .*/id = \"$1\"/" -e "s/^label = .*/label = \"$2\"/" "$PROV/$3.toml" >"$PROV/$1.toml"
 }
 
-# regress_boot: bardo-compositor, the recorded bus, porter's rig (mail, the LLM API for an AI key) and ferry's (the issuer and Graph for Microsoft), Secret Service, the
+# regress_boot: bardo-compositor, the recorded bus, porter's rig (mail, the LLM API for an AI key) and the sync service's (the issuer and Graph for Microsoft), Secret Service, the
 # provider files. The scenario starts the daemons itself.
 regress_boot() {
   start_compositor || return 1
@@ -64,7 +64,7 @@ regress_boot() {
   [ -z "${REGRESS_THEME:-}" ] || printf '[appearance]\ntheme = "%s"\n' "$REGRESS_THEME" >"$CONFIG/bardo/appearance.toml"
   scan_begin
   rig_start --imap --smtp --tls implicit --llm-api || return 1
-  ferry_rig_start || return 1
+  sync_rig_start || return 1
   secrets_start || return 1
   acc_config; acc_fake_mail_provider; acc_provider_openai_on_rig
 }

@@ -50,14 +50,14 @@ impl Drive {
         let folder = inner
             .parent_of(id)
             .map_err(|why| {
-                eprintln!("ferry-drive: the folder of a document to copy is unknown: {why}");
+                eprintln!("drive-core: the folder of a document to copy is unknown: {why}");
                 Reason::CopyFailed
             })?
             .ok_or(Reason::NotADocument)?;
         let taken: Vec<String> = inner
             .children(&folder)
             .map_err(|why| {
-                eprintln!("ferry-drive: the folder of a copy could not be listed: {why}");
+                eprintln!("drive-core: the folder of a copy could not be listed: {why}");
                 Reason::CopyFailed
             })?
             .into_iter()
@@ -69,7 +69,7 @@ impl Drive {
         AtomicWrite::PRIVATE
             .write(&inner.local_file(n), &bytes)
             .map_err(|why| {
-                eprintln!("ferry-drive: a copy of a document could not be written: {why}");
+                eprintln!("drive-core: a copy of a document could not be written: {why}");
                 Reason::CopyFailed
             })?;
         let made = now_secs();

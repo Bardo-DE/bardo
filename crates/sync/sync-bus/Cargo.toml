@@ -1,6 +1,6 @@
 [package]
 name = "sync-bus"
-description = "ferry's D-Bus interfaces, each written once under account-dbus's `#[bus_interface]`: org.bardo.Sync1 (syncd's datasets), org.bardo.Storage1 (the drives shown in Files) and, behind the `photos-picker` feature, org.bardo.Photos1.Picker, with their bus names, object paths, option keys and row codecs."
+description = "sync's D-Bus interfaces, each written once under account-dbus's `#[bus_interface]`: org.bardo.Sync1 (syncd's datasets), org.bardo.Storage1 (the drives shown in Files) and, behind the `photos-picker` feature, org.bardo.Photos1.Picker, with their bus names, object paths, option keys and row codecs."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

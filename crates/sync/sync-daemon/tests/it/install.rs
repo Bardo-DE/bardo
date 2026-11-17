@@ -107,7 +107,7 @@ fn program(line: &str) -> &str {
 
 #[test]
 fn every_file_a_unit_or_an_activation_file_names_is_installed_at_the_path_it_names() {
-    for prefix in ["/usr", "/opt/ferry-try"] {
+    for prefix in ["/usr", "/opt/sync-try"] {
         let run = Run::new(&format!("names{}", prefix.replace('/', "-")));
         run.install(&["--prefix", prefix]);
         let units = run.at(&format!("{prefix}/lib/systemd/user"));
@@ -188,7 +188,7 @@ fn a_second_run_changes_nothing_and_a_home_directory_is_never_written() {
 #[test]
 fn no_unit_has_a_live_drop_in_but_the_sandbox_one() {
     let run = Run::new("tailnet");
-    run.install(&["--prefix", "/opt/ferry"]);
+    run.install(&["--prefix", "/opt/sync"]);
     // Nothing is written under the home folder, and no unit has a drop-in but the sandbox one.
     assert!(files_under(&run.home).is_empty());
     for path in files_under(&run.destdir) {
@@ -207,9 +207,9 @@ fn no_unit_has_a_live_drop_in_but_the_sandbox_one() {
 fn the_sandbox_drop_in_lands_next_to_its_unit_without_a_probe_when_staging() {
     let run = Run::new("sandbox");
     // With a destdir the script does not ask this computer whether it allows mount namespaces.
-    let out = run.install(&["--prefix", "/opt/ferry"]);
+    let out = run.install(&["--prefix", "/opt/sync"]);
     assert!(!out.contains("without their extra sandbox"), "{out}");
-    let installed = run.at("/opt/ferry/lib/systemd/user/bardo-syncd.service.d/sandbox.conf");
+    let installed = run.at("/opt/sync/lib/systemd/user/bardo-syncd.service.d/sandbox.conf");
     assert_eq!(
         fs::read(&installed).expect("the drop-in is installed"),
         fs::read(repo().join("dist/bardo-syncd.service.d/sandbox.conf")).expect("shipped")
@@ -224,8 +224,8 @@ fn the_sandbox_drop_in_lands_next_to_its_unit_without_a_probe_when_staging() {
 #[test]
 fn the_drive_folder_helper_is_installed_with_its_socket_enabled_for_everyone() {
     let run = Run::new("mountd");
-    run.install(&["--prefix", "/opt/ferry"]);
-    let units = run.at("/opt/ferry/lib/systemd/user");
+    run.install(&["--prefix", "/opt/sync"]);
+    let units = run.at("/opt/sync/lib/systemd/user");
     for unit in ["bardo-drive-mount.service", "bardo-drive-mount.socket"] {
         assert!(units.join(unit).is_file(), "{unit}");
     }
@@ -240,7 +240,7 @@ fn the_drive_folder_helper_is_installed_with_its_socket_enabled_for_everyone() {
     assert!(files_under(&run.home).is_empty());
     // It has no sandbox drop-in: its unit says what it may not have.
     assert!(!units.join("bardo-drive-mount.service.d").exists());
-    let again = run.install(&["--prefix", "/opt/ferry"]);
+    let again = run.install(&["--prefix", "/opt/sync"]);
     assert_eq!(again.trim(), "nothing to change");
 }
 

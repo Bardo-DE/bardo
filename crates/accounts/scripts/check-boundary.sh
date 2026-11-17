@@ -438,18 +438,18 @@ done
 
 # THE SYNC REPO IS NOT A DEPENDENCY: porter is accounts only. syncd and everything that is sync
 # (the storage replicas, the drive, the mount helper, the Graph fake, the bus interfaces of
-# Sync1 and Storage1) are ferry's, in a repo of its own that pins porter by git rev. No manifest
-# here names one of ferry's crates, and no dependency tree of the workspace (normal, build or dev)
+# Sync1 and Storage1) are the sync service's, in a repo of its own that pins porter by git rev. No manifest
+# here names one of the sync service's crates, and no dependency tree of the workspace (normal, build or dev)
 # reaches one.
 BARDO_SYNC_CRATES='sync-daemon|sync-fakes|replica-[a-z]+|sync-[a-z-]+|drive-[a-z-]+'
 named=$(grep -lE "^($BARDO_SYNC_CRATES)[ .=]" */Cargo.toml || true)
 reached=$(cargo tree --workspace -e normal,build,dev --prefix none 2>/dev/null \
   | awk '{print $1}' | grep -xE "$BARDO_SYNC_CRATES" | sort -u | tr '\n' ' ')
 if [ -n "$named" ] || [ -n "$reached" ]; then
-  echo "LEAK: a manifest names [$(echo $named)] or the workspace reaches [${reached% }], which are ferry's"
+  echo "LEAK: a manifest names [$(echo $named)] or the workspace reaches [${reached% }], which are the sync service's"
   fail=1
 else
-  echo "boundary holds: nothing in this workspace names or reaches syncd, a storage replica or a ferry crate"
+  echo "boundary holds: nothing in this workspace names or reaches syncd, a storage replica or a sync crate"
 fi
 
 # Every workspace member has a row above, so a new crate cannot slip in unchecked.

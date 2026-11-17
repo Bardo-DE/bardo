@@ -1,4 +1,4 @@
-//! The rig a jailed scenario drives ferry with (test tooling: `publish = false`, never installed,
+//! The rig a jailed scenario drives the sync service with (test tooling: `publish = false`, never installed,
 //! never in `dist/`).
 //!
 //! Two binaries, built on the modules here:

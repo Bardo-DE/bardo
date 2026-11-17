@@ -13,7 +13,7 @@
 //!
 //! The rig for the sync daemon (the Graph fake behind porter's issuer, the client for
 //! `org.bardo.Sync1`) and `sync-rig-storage`, the fake `org.bardo.Storage1` for building Files,
-//! are ferry's: `sync-rig` and `sync-fakes`.
+//! are the sync service's: `sync-rig` and `sync-fakes`.
 
 pub mod client;
 pub mod control;

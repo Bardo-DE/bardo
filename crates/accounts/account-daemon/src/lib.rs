@@ -4,7 +4,7 @@
 //! accountd holds identities (the accounts a person signs in to: OAuth, a password, an app
 //! password), Spaces and Tailscale, and the AI keys with the grants that let an app use them:
 //! one registry, one secret namespace, one grant store. The agent logins and the local runtimes
-//! the AI broker reports are accounts of it too. An app, or a daemon such as ferry's syncd, finds
+//! the AI broker reports are accounts of it too. An app, or a daemon such as the sync service's syncd, finds
 //! the accounts it holds a grant for, asks for one and opens a signed-in stream to an account's
 //! server through `org.bardo.Grants1` (`grants_object`, `relay`): the credential stays here.
 //!

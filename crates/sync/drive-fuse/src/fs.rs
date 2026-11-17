@@ -78,7 +78,7 @@ pub fn errno_of(error: ReadError) -> Errno {
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
 fn listing_errno(error: DriveError) -> Errno {
-    eprintln!("ferry-drive-fuse: the listing could not be read: {error}");
+    eprintln!("drive-fuse: the listing could not be read: {error}");
     Errno::EIO
 }
 

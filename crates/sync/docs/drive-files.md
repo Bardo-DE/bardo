@@ -10,10 +10,10 @@ they run the drive in memory and mount nothing.
 
 ## What the computer needs
 
-- The `fuse3` package (`fusermount3` on `PATH`, and `/dev/fuse`). ferry does not link libfuse:
+- The `fuse3` package (`fusermount3` on `PATH`, and `/dev/fuse`). The sync service does not link libfuse:
   it runs `fusermount3` as a process of its own. Without it the drive still lists, and Files says
   "Files can't show this drive on this computer."
-- ferry installed with `scripts/install.sh`, which puts in `bardo-drive-mount` with its socket
+- The sync service installed with `scripts/install.sh`, which puts in `bardo-drive-mount` with its socket
   enabled for every user. syncd's unit cannot mount: `NoNewPrivileges=yes` refuses the setuid
   `fusermount3`, `PrivateDevices=yes` hides `/dev/fuse`, and its mount namespace of its own would
   hide the mount from the session. So syncd asks bardo-drive-mount, a small user service outside that

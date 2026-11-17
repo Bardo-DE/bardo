@@ -42,7 +42,7 @@ fn config(dir: &Scratch) -> DriveConfig {
 }
 
 async fn rig() -> Rig {
-    let dir = Scratch::new("ferry-drive-write");
+    let dir = Scratch::new("sync-drive-write");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
     let sink = Arc::new(MemorySink::new(
@@ -445,7 +445,7 @@ async fn opened_and_closed_with_nothing_written_is_left_as_the_drive_has_it() {
 
 #[tokio::test]
 async fn a_read_only_drive_refuses_every_change() {
-    let dir = Scratch::new("ferry-drive-ro");
+    let dir = Scratch::new("sync-drive-ro");
     let listing = Arc::new(MemoryListing::default());
     let source = Arc::new(MemorySource::default());
     let drive = Drive::open(config(&dir), listing, source)

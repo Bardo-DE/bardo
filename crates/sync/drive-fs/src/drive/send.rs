@@ -190,7 +190,7 @@ impl Progress for Told {
         let writer = Arc::clone(&inner);
         drop(inner.runtime.spawn_blocking(move || {
             if let Err(why) = writer.flush_now() {
-                eprintln!("ferry-drive: the cache's index could not be written: {why}");
+                eprintln!("drive-core: the cache's index could not be written: {why}");
             }
         }));
     }
@@ -723,7 +723,7 @@ async fn snapshot(inner: &Arc<Inner>, mut op: Op) -> Option<Op> {
         }
         Ok(Ok(None)) => None,
         Ok(Err(why)) => {
-            eprintln!("ferry-drive: a file to send could not be copied: {why}");
+            eprintln!("drive-core: a file to send could not be copied: {why}");
             if why.kind() == std::io::ErrorKind::StorageFull {
                 held(&inner.waiting).insert(op.id().clone(), Reason::NoRoomHere);
                 inner.emit(vec![op.id().clone()]);
@@ -1002,7 +1002,7 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
                 let writer = Arc::clone(&inner);
                 if let Ok(Err(why)) = tokio::task::spawn_blocking(move || writer.flush_now()).await
                 {
-                    eprintln!("ferry-drive: the cache's index could not be written: {why}");
+                    eprintln!("drive-core: the cache's index could not be written: {why}");
                 }
             }
             Err(PutRefused::Transient(after) | PutRefused::Failed(after, _)) => {

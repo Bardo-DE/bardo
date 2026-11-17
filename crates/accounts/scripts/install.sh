@@ -1,6 +1,6 @@
 #!/bin/sh
 # Install porter: its daemon, its systemd user unit and D-Bus activation file, the provider files
-# and the caller table. The sync daemon, and the helper that shows drives in ~/Cloud, are ferry's
+# and the caller table. The sync daemon, and the helper that shows drives in ~/Cloud, are the sync service's
 # (its scripts/install.sh).
 #
 #   scripts/install.sh [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--bin-dir DIR] [--no-build]

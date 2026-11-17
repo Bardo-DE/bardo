@@ -1,8 +1,8 @@
 # Scenario `accounts-reauth` (design 31 §7.1): the issuer stops honouring the refresh token, the account needs the person,
 # and signing it in again through the sheet makes it work again. Since porter's accounts split (Phase B) the tokens are held
-# by whoever uses them, so the refusal is met by bardo-syncd (ferry's; it has no accounts of its own and uses bardo-accountd's through
+# by whoever uses them, so the refusal is met by bardo-syncd (the sync service's; it has no accounts of its own and uses bardo-accountd's through
 # org.bardo.Grants1), and the account it shows needs the person. Real bardo-accountd and bardo-syncd, bardo-shell (the sheet host) on bardo-compositor,
-# ferry's rig (the issuer and Graph) (harness/lib/accounts.sh). Internet Accounts (bardo-accountd) owns Sign in again: bardo-syncd's rows
+# The sync service's rig (the issuer and Graph) (harness/lib/accounts.sh). Internet Accounts (bardo-accountd) owns Sign in again: bardo-syncd's rows
 # have no such row.
 #
 #   boot      as accounts-oauth-browser: a Microsoft-shaped identity added through the browser sign-in; the files switch of
@@ -54,7 +54,7 @@ step_boot() {
   scratch_new; acc_dirs
   build || return 1
   scan_begin
-  ferry_rig_start --token-lifetime-s 4 || return 1
+  sync_rig_start --token-lifetime-s 4 || return 1
   secrets_start || return 1
   acc_config; acc_clients_for_issuer; acc_provider_microsoft_on_rig
   accountd_start || return 1

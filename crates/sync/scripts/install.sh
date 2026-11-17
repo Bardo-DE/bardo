@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install ferry: the sync daemon, its systemd user unit and D-Bus activation file, and the helper
+# Install the sync service: the sync daemon, its systemd user unit and D-Bus activation file, and the helper
 # that shows drives in ~/Cloud with its socket. porter's accountd, the provider files and the caller
 # table (which names syncd) are installed by porter's own scripts/install.sh.
 #
@@ -166,12 +166,12 @@ else
         fi
         for tool in git cargo; do
             if ! command -v "$tool" >/dev/null 2>&1; then
-                echo "install.sh: $tool is needed to build ferry; install $tool and run this again" >&2
+                echo "install.sh: $tool is needed to build the sync service; install $tool and run this again" >&2
                 exit 1
             fi
         done
         # Linked by this system's own linker. The source tree's .cargo/config.toml links with
-        # clang and mold, which is how ferry is worked on, not something an install may ask the
+        # clang and mold, which is how the sync service is worked on, not something an install may ask the
         # person to have. Cargo reads that file (and rustup the toolchain file) from the
         # directory it runs in, so the build runs from / with the manifest named, the pinned
         # toolchain passed on, and the one setting an install wants from that file given again.

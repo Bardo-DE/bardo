@@ -26,12 +26,12 @@ BUILDS=(
   "accountd (default) :: -p account-daemon"
 
   # account-client and its two transports, in the sets their consumers name. No feature is on by
-  # default: mailo takes the hosted transport alone, ferry's syncd the hosted transport with its relays,
+  # default: mailo takes the hosted transport alone, the sync service's syncd the hosted transport with its relays,
   # The Settings app, sill, docket and almanac the bus transport.
   "account-client :: -p account-client"
   "account-client-dbus :: -p account-client-dbus"
   "account-client-inproc (no features: mailo) :: -p account-client-inproc --no-default-features"
-  "account-client-inproc (relays: ferry syncd) :: -p account-client-inproc --features relays"
+  "account-client-inproc (relays: the sync service syncd) :: -p account-client-inproc --features relays"
 
   # The other porter crates a consumer takes with default-features = false (mailo's workspace
   # block, which mail-core, mail-app and mail-runtime name), in the features each one turns on.

@@ -1,6 +1,6 @@
 [package]
 name = "sync-fake-graph"
-description = "Test-only fake of the part of Microsoft Graph that ferry's replicas use: a drive (`/v1.0/me/drive`: items, content with ranges and redirects, simple and session uploads, delta, quota) and the calendars of `/v1.0/me/calendars`, behind a bearer token the fake issuer of account-fake-servers minted. Never a dependency of a non-test crate."
+description = "Test-only fake of the part of Microsoft Graph that the sync service's replicas use: a drive (`/v1.0/me/drive`: items, content with ranges and redirects, simple and session uploads, delta, quota) and the calendars of `/v1.0/me/calendars`, behind a bearer token the fake issuer of account-fake-servers minted. Never a dependency of a non-test crate."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
