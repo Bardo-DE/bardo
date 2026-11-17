@@ -16,6 +16,7 @@ use shell_model::input_source::InputSourceService;
 use shell_model::service::ServiceIo;
 
 impl Run for InputSourceService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

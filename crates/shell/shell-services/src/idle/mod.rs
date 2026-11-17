@@ -26,6 +26,7 @@ use shell_model::service::ServiceIo;
 pub use backend::IdleLinks;
 
 impl Run for IdleService {
+    type Kind = Self;
     type Deps = IdleLinks;
 
     fn run(

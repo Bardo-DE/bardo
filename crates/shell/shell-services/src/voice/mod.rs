@@ -36,6 +36,7 @@ pub struct VoiceLinks {
 }
 
 impl Run for VoiceService {
+    type Kind = Self;
     type Deps = VoiceLinks;
 
     fn run(

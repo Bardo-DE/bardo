@@ -9,6 +9,7 @@ use shell_model::service::ServiceIo;
 use shell_model::volume::VolumeService;
 
 impl Run for VolumeService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

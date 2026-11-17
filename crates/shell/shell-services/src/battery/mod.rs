@@ -9,6 +9,7 @@ use shell_model::battery::BatteryService;
 use shell_model::service::ServiceIo;
 
 impl Run for BatteryService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

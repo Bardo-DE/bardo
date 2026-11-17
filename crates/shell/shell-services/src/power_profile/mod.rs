@@ -14,6 +14,7 @@ use shell_model::power_profile::PowerProfileService;
 use shell_model::service::ServiceIo;
 
 impl Run for PowerProfileService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

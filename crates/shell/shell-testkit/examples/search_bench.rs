@@ -19,7 +19,6 @@ use shell_launcher::{
     ProviderKind, Query, RankWeights, ResultSink, Score, matching::matcher, rank_text,
 };
 use shell_model::apps::{AppIndex, AppsEvent, Listing};
-use shell_model::results::ResultsService;
 use shell_model::results::SearchCommand;
 use shell_search::results;
 use shell_services::apps::scan;
@@ -107,7 +106,7 @@ fn measure(rt: &tokio::runtime::Runtime, name: &str, index: AppIndex) {
     // A scratch state folder: the bench's choices never reach the person's launcher history.
     let scratch = std::env::temp_dir().join(format!("shell-search-bench-{}", std::process::id()));
     let env = Env::isolated(&scratch);
-    let search = spawn::<ResultsService>(
+    let search = spawn::<results::ResultsRun>(
         rt.handle(),
         &env,
         results::Sources::Providers(vec![Arc::new(IndexApps(index))]),

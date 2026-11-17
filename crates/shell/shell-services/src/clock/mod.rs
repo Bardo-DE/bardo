@@ -13,6 +13,7 @@ use shell_model::clock::ClockService;
 use shell_model::service::ServiceIo;
 
 impl Run for ClockService {
+    type Kind = Self;
     type Deps = ();
 
     fn initial(env: &Env, (): &()) -> ClockMinute {

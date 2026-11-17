@@ -27,6 +27,7 @@ use shell_model::service::ServiceIo;
 pub use backend::AccountsLinks;
 
 impl Run for AccountsService {
+    type Kind = Self;
     type Deps = AccountsLinks;
 
     fn run(

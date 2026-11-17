@@ -20,6 +20,7 @@ use shell_model::sync_hold::SyncHoldService;
 pub use backend::SyncHoldLinks;
 
 impl Run for SyncHoldService {
+    type Kind = Self;
     type Deps = SyncHoldLinks;
 
     fn run(

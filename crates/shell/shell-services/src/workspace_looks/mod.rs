@@ -28,6 +28,7 @@ pub const BUS_NAME: &str = "org.bardo.Workspaces1";
 pub const PATH: &str = "/org/bardo/Workspaces1";
 
 impl Run for WorkspaceLooksService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

@@ -22,6 +22,7 @@ use shell_model::service::ServiceIo;
 use shell_model::wallpaper::WallpaperService;
 
 impl Run for WallpaperService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

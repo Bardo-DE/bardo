@@ -37,7 +37,6 @@ use shell_model::now_playing::NowPlayingService;
 use shell_model::pins::PinsService;
 use shell_model::polkit_agent::PolkitAgentService;
 use shell_model::power_profile::PowerProfileService;
-use shell_model::results::ResultsService;
 use shell_model::screenshots::ScreenshotsService;
 use shell_model::serve::DisplaysBusService;
 use shell_model::session::SessionService;
@@ -127,6 +126,10 @@ impl fmt::Debug for Wiring {
 /// The final struct literal names every field of `Services`: a service added to the kit's registry
 /// and not started here does not compile.
 #[must_use]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one flat line per service, in start order; splitting it would hide the order"
+)]
 pub fn start(rt: &tokio::runtime::Handle, env: &Env, wiring: Wiring) -> Services {
     let apps = spawn::<AppsService>(rt, env, ());
     let notifications = spawn::<NotificationsService>(rt, env, wiring.answers.clone());
@@ -198,7 +201,7 @@ pub fn start(rt: &tokio::runtime::Handle, env: &Env, wiring: Wiring) -> Services
             notifications: notifications.control.clone(),
         },
     );
-    let results = spawn::<ResultsService>(
+    let results = spawn::<shell_search::results::ResultsRun>(
         rt,
         env,
         Sources::Services(ResultsLinks {

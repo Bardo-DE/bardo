@@ -15,6 +15,7 @@ use shell_model::badges::BadgesService;
 use shell_model::service::ServiceIo;
 
 impl Run for BadgesService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

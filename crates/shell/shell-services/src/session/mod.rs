@@ -20,6 +20,7 @@ use shell_model::service::ServiceIo;
 use shell_model::session::SessionService;
 
 impl Run for SessionService {
+    type Kind = Self;
     type Deps = SessionLinks;
 
     fn run(

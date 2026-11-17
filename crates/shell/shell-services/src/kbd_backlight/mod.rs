@@ -16,6 +16,7 @@ use shell_model::kbd_backlight::KbdBacklightService;
 use shell_model::service::ServiceIo;
 
 impl Run for KbdBacklightService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

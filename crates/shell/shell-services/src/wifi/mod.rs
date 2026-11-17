@@ -14,6 +14,7 @@ use shell_model::service::ServiceIo;
 use shell_model::wifi::WifiService;
 
 impl Run for WifiService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

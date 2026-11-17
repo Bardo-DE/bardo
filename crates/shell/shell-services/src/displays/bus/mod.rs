@@ -36,6 +36,7 @@ pub struct DisplaysBusLinks {
 }
 
 impl Run for DisplaysBusService {
+    type Kind = Self;
     type Deps = DisplaysBusLinks;
 
     fn run(

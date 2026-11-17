@@ -33,6 +33,7 @@ const HICOLOR: &str = "hicolor";
 
 /// The path [`icon_theme`] reads under the config directory `config`, which the apps service
 /// also watches for a live theme change.
+#[must_use]
 pub fn icon_theme_path(config: &Path) -> PathBuf {
     config.join("gtk-3.0").join("settings.ini")
 }

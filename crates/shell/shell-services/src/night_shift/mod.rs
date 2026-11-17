@@ -25,6 +25,7 @@ use shell_model::night_shift::NightShiftService;
 use shell_model::service::ServiceIo;
 
 impl Run for NightShiftService {
+    type Kind = Self;
     /// The displays, whose DDC monitors casement is told to leave alone where bardo-shell warms them.
     type Deps = watch::Receiver<Displays>;
 

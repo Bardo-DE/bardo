@@ -16,6 +16,7 @@ use shell_model::bluetooth::BluetoothService;
 use shell_model::service::ServiceIo;
 
 impl Run for BluetoothService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

@@ -34,6 +34,7 @@ use shell_model::displays::DisplaysService;
 use shell_model::service::ServiceIo;
 
 impl Run for DisplaysService {
+    type Kind = Self;
     type Deps = watch::Receiver<Volume>;
 
     fn run(

@@ -41,6 +41,7 @@ pub struct AccountsSheetLinks {
 }
 
 impl Run for AccountsSheetService {
+    type Kind = Self;
     type Deps = AccountsSheetLinks;
 
     fn run(

@@ -42,6 +42,7 @@ pub use backend::{
 };
 
 impl Run for PolkitAgentService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

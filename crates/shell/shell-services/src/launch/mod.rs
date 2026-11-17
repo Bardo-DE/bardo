@@ -29,6 +29,7 @@ pub(crate) use backend::{
 };
 
 impl Run for LaunchService {
+    type Kind = Self;
     type Deps = LaunchLinks;
 
     fn run(

@@ -2,8 +2,9 @@
 //! against [`Env`]'s seams.
 //!
 //! What a service publishes and is told, and the [`Handle`] its readers hold, are
-//! `shell_model::service` (a surface needs no effects). A service is a marker type implementing
-//! [`Run`] here; [`spawn`] starts it and hands back its handle. The pure half of a service is its
+//! `shell_model::service` (a surface needs no effects). A runner implements [`Run`] for the
+//! service it runs (most services run themselves: `type Kind = Self`; a crate outside this one
+//! names a local runner type); [`spawn`] starts it and hands back the service's handle. The pure half of a service is its
 //! `step` function (one per state machine, always that name, a free function beside the state it
 //! steps); `run` is the effectful half that feeds it and publishes.
 
@@ -17,16 +18,18 @@ use crate::error::ServiceError;
 use crate::restart::{Ending, Next, Tries, ending_of};
 
 /// How a service is run: what it needs from other services, and the task that does the work.
-pub trait Run: Service {
+pub trait Run: 'static {
+    /// The service this runs: what it publishes and is told.
+    type Kind: Service;
     /// Other services' receivers and controls it reads or drives; `()` when none. It is cloned for
     /// each restart of the service.
     type Deps: Clone + Send + 'static;
 
     /// The value published before `run` starts (the default, unless the service can know better
     /// at once, as the clock and the dock pins can).
-    fn initial(env: &Env, deps: &Self::Deps) -> Self::State {
+    fn initial(env: &Env, deps: &Self::Deps) -> <Self::Kind as Service>::State {
         let _ = (env, deps);
-        Self::State::default()
+        <Self::Kind as Service>::State::default()
     }
 
     /// The service's task, spawned on the runtime by [`spawn`]. It takes from `env` what it
@@ -37,7 +40,7 @@ pub trait Run: Service {
     fn run(
         env: &Env,
         deps: Self::Deps,
-        io: ServiceIo<Self>,
+        io: ServiceIo<Self::Kind>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static;
 }
 
@@ -52,8 +55,8 @@ const WIND_DOWN: Duration = Duration::from_secs(5);
 /// `Control`s are still held, is started again after a growing wait, up to `RESTARTS_MAX`
 /// times in a row (`restart.rs`), and each ending is logged with the service's name. A restarted service starts from the state it last
 /// published; commands sent while it was down wait for it.
-pub fn spawn<S: Run>(rt: &tokio::runtime::Handle, env: &Env, deps: S::Deps) -> Handle<S> {
-    spawn_with(rt, env, deps, Tries::default())
+pub fn spawn<S: Run>(rt: &tokio::runtime::Handle, env: &Env, deps: S::Deps) -> Handle<S::Kind> {
+    spawn_with::<S>(rt, env, deps, Tries::default())
 }
 
 /// [`spawn`] with the given restart waits.
@@ -62,8 +65,8 @@ pub(crate) fn spawn_with<S: Run>(
     env: &Env,
     deps: S::Deps,
     tries: Tries,
-) -> Handle<S> {
-    let (handle, outer) = Handle::<S>::channel(S::initial(env, &deps));
+) -> Handle<S::Kind> {
+    let (handle, outer) = Handle::<S::Kind>::channel(S::initial(env, &deps));
     rt.spawn(keep_running::<S>(env.clone(), deps, outer, tries));
     handle
 }
@@ -72,13 +75,18 @@ pub(crate) fn spawn_with<S: Run>(
 ///
 /// `S::run` consumes the channel halves it is given, so each run gets a fresh pair and this task
 /// carries commands in and state out between that pair and `outer`.
-async fn keep_running<S: Run>(env: Env, deps: S::Deps, mut outer: ServiceIo<S>, mut tries: Tries) {
+async fn keep_running<S: Run>(
+    env: Env,
+    deps: S::Deps,
+    mut outer: ServiceIo<S::Kind>,
+    mut tries: Tries,
+) {
     loop {
         let started = Instant::now();
         let Some(ending) = run_once::<S>(&env, deps.clone(), &mut outer).await else {
             return;
         };
-        match tries.after(S::NAME, &ending, started.elapsed()) {
+        match tries.after(<S::Kind as Service>::NAME, &ending, started.elapsed()) {
             Next::Restart { wait, line } => {
                 eprintln!("{line}");
                 tokio::time::sleep(wait).await;
@@ -95,8 +103,12 @@ async fn keep_running<S: Run>(env: Env, deps: S::Deps, mut outer: ServiceIo<S>, 
 
 /// One run of `S`, from the state `outer` holds. `None` when every `Control` has gone: the run
 /// is told so by closing its own commands, and is waited for.
-async fn run_once<S: Run>(env: &Env, deps: S::Deps, outer: &mut ServiceIo<S>) -> Option<Ending> {
-    let (mut inner, io) = Handle::<S>::channel(outer.state.borrow().clone());
+async fn run_once<S: Run>(
+    env: &Env,
+    deps: S::Deps,
+    outer: &mut ServiceIo<S::Kind>,
+) -> Option<Ending> {
+    let (mut inner, io) = Handle::<S::Kind>::channel(outer.state.borrow().clone());
     let mut work = tokio::spawn(S::run(env, deps, io));
     loop {
         tokio::select! {
@@ -174,6 +186,7 @@ mod tests {
     }
 
     impl Run for Flaky {
+        type Kind = Self;
         type Deps = Arc<AtomicU32>;
 
         #[allow(
@@ -209,6 +222,7 @@ mod tests {
     }
 
     impl Run for Broken {
+        type Kind = Self;
         type Deps = Arc<AtomicU32>;
 
         #[allow(

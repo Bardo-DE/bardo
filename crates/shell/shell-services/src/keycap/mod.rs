@@ -30,6 +30,7 @@ use shell_model::service::ServiceIo;
 pub use backend::KeycapLinks;
 
 impl Run for KeycapService {
+    type Kind = Self;
     type Deps = KeycapLinks;
 
     fn run(

@@ -40,6 +40,7 @@ use shell_model::service::ServiceIo;
 pub use backend::{PamHelper, pam};
 
 impl Run for AuthService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

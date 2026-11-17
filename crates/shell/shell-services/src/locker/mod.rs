@@ -18,6 +18,7 @@ use shell_model::locker::LockerService;
 use shell_model::service::ServiceIo;
 
 impl Run for LockerService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

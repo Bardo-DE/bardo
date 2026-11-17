@@ -40,6 +40,7 @@ use shell_model::service::ServiceIo;
 pub use backend::{IcsProvider, ProviderRead, provider_for};
 
 impl Run for EventsService {
+    type Kind = Self;
     type Deps = ();
 
     fn initial(env: &Env, (): &()) -> Agenda {

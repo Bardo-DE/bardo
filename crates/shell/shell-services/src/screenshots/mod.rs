@@ -26,6 +26,7 @@ use shell_model::screenshots::ScreenshotsService;
 use shell_model::service::ServiceIo;
 
 impl Run for ScreenshotsService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

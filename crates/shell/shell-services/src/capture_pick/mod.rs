@@ -70,6 +70,7 @@ pub struct CaptureLinks {
 }
 
 impl Run for CaptureService {
+    type Kind = Self;
     type Deps = CaptureLinks;
 
     fn run(

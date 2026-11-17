@@ -16,6 +16,7 @@ use shell_model::pins::PinsService;
 use shell_model::service::ServiceIo;
 
 impl Run for PinsService {
+    type Kind = Self;
     /// The installed apps, which a fresh account's dock starts from.
     type Deps = watch::Receiver<AppIndex>;
 

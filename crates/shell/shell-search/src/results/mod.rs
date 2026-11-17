@@ -84,13 +84,21 @@ pub struct ResultsLinks {
     pub wl: Control<WlCommand>,
 }
 
-impl Run for ResultsService {
+/// What runs [`ResultsService`].
+///
+/// `spawn::<ResultsRun>` starts it and hands back the service's handle. It is a runner of its own
+/// because the service's marker lives in `shell-model` and [`Run`] in `shell-services`.
+#[derive(Debug)]
+pub struct ResultsRun;
+
+impl Run for ResultsRun {
+    type Kind = ResultsService;
     type Deps = Sources;
 
     fn run(
         env: &Env,
         deps: Sources,
-        io: ServiceIo<Self>,
+        io: ServiceIo<ResultsService>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
         let dir = env.dirs.sill_state();
         let history = History::new(load_frecency(&dir));

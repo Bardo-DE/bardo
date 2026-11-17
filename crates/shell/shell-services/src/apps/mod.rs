@@ -16,6 +16,7 @@ use shell_model::service::ServiceIo;
 pub use backend::{parse_entry, scan};
 
 impl Run for AppsService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

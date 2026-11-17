@@ -20,6 +20,7 @@ use shell_model::service::ServiceIo;
 use shell_model::work_areas::WorkAreaService;
 
 impl Run for WorkAreaService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

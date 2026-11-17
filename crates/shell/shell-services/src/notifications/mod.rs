@@ -49,6 +49,7 @@ pub use answers::Answers;
 pub use backend::{BUS_NAME, OBJECT_PATH};
 
 impl Run for NotificationsService {
+    type Kind = Self;
     type Deps = Answers;
 
     fn run(

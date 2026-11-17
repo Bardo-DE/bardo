@@ -10,6 +10,7 @@ use shell_model::network::NetworkService;
 use shell_model::service::ServiceIo;
 
 impl Run for NetworkService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

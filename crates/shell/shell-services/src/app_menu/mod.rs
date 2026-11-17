@@ -44,6 +44,7 @@ pub struct AppMenuDeps {
 }
 
 impl Run for AppMenuService {
+    type Kind = Self;
     type Deps = AppMenuDeps;
 
     fn run(

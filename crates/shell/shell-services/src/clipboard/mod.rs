@@ -19,6 +19,7 @@ use shell_model::clipboard::ClipboardService;
 use shell_model::service::ServiceIo;
 
 impl Run for ClipboardService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

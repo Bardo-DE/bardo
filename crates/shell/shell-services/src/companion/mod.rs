@@ -42,6 +42,7 @@ pub struct CompanionLinks {
 }
 
 impl Run for CompanionService {
+    type Kind = Self;
     type Deps = CompanionLinks;
 
     fn run(

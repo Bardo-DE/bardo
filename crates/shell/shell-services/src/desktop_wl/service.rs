@@ -21,6 +21,7 @@ pub struct WindowsLinks {
 }
 
 impl Run for WindowsService {
+    type Kind = Self;
     type Deps = WindowsLinks;
 
     fn run(

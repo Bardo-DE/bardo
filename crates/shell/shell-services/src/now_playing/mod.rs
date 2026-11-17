@@ -17,6 +17,7 @@ use shell_model::now_playing::NowPlayingService;
 use shell_model::service::ServiceIo;
 
 impl Run for NowPlayingService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(

@@ -20,6 +20,7 @@ use shell_model::service::ServiceIo;
 pub use backend::GuestAsksLinks;
 
 impl Run for GuestAsksService {
+    type Kind = Self;
     type Deps = GuestAsksLinks;
 
     fn run(

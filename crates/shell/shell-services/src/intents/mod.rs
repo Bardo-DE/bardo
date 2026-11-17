@@ -55,6 +55,7 @@ pub struct IntentsLinks {
 }
 
 impl Run for IntentsService {
+    type Kind = Self;
     type Deps = IntentsLinks;
 
     fn run(

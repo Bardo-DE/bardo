@@ -16,6 +16,7 @@ use shell_model::service::ServiceIo;
 use shell_model::tray::TrayService;
 
 impl Run for TrayService {
+    type Kind = Self;
     type Deps = ();
 
     fn run(
