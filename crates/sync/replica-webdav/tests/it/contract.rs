@@ -10,8 +10,9 @@ use base_ids::Bytes;
 use base_time::UnixSeconds;
 use common::{Flavor, Replica, Server};
 use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, MemoryReplica, More, PutItem,
-    PutRefused, PutTarget, Quota, RemoteId, RemoteSide, Replica as _, ReplicaError, Tombstone,
+    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, MemoryReplica, More,
+    PutError, PutItem, PutTarget, Quota, RemoteId, RemoteSide, Replica as _, ReplicaError,
+    Tombstone,
 };
 
 /// A replica under test, its server, and the two knobs the contract needs from a server: an

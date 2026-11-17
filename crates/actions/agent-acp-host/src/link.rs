@@ -188,7 +188,7 @@ impl Link {
         });
         let cx = up_rx.await.map_err(|error| {
             tracing::debug!(%error, "the connection ended before it was up");
-            Gone
+            LinkGoneError
         })?;
         Ok(Self { cx, rx, tx, task })
     }
@@ -233,7 +233,7 @@ impl Link {
             })
             .map_err(|error| {
                 tracing::debug!(%error, "the prompt could not be sent");
-                Gone
+                LinkGoneError
             })
     }
 
@@ -243,7 +243,7 @@ impl Link {
             .send_notification(CancelNotification::new(session.clone()))
             .map_err(|error| {
                 tracing::debug!(%error, "the cancel could not be sent");
-                Gone
+                LinkGoneError
             })
     }
 

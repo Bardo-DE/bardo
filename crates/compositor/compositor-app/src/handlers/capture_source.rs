@@ -22,7 +22,7 @@ use compositor_wayland::capture_source::{
     self, FrameVerdict, ToplevelCaptureRequest, ToplevelSessionId, ToplevelSourceId,
 };
 use compositor_wayland::foreign_toplevel_list::window_of_identifier;
-use compositor_wayland::image_capture::CaptureFailure;
+use compositor_wayland::image_capture::CaptureError;
 use render::draw_window;
 pub(crate) use render::{body_on_gpu, window_rgba, window_texture};
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
@@ -117,17 +117,17 @@ pub(super) fn new_session(state: &mut State, session: Session, source: ToplevelS
 /// window is rendered into the client's buffer and the frame is `ready`, or `failed`.
 pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: ToplevelSessionId) {
     let Some(window) = state.wl.capture_source.book.sessions.get(&id).copied() else {
-        return frame.fail(CaptureFailure::OutputGone.reason());
+        return frame.fail(CaptureError::OutputGone.reason());
     };
     let Some(wanted) = window_constraints(state, window) else {
         // The window cannot be drawn (it closed, or has no output): the session is over.
         let _ = capture_source::apply_failed(
             &mut state.wl.capture_source.book,
             id,
-            CaptureFailure::OutputGone,
+            CaptureError::OutputGone,
         );
         state.wl.capture_source.stop(&[id]);
-        return frame.fail(CaptureFailure::OutputGone.reason());
+        return frame.fail(CaptureError::OutputGone.reason());
     };
     // The window or its output's scale changed since the session announced its constraints:
     // announce the new ones and fail this frame (the client allocates again, and its next
@@ -136,15 +136,15 @@ pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: T
         tracing::debug!(size = ?wanted.size, "a window capture session changed size");
         session.update_constraints(wanted);
         state.wl.capture_source.book.forget_delivered(id);
-        return fail(state, id, frame, CaptureFailure::BufferMismatch);
+        return fail(state, id, frame, CaptureError::BufferMismatch);
     }
     let Some(size) = super::image_capture::buffer_size(&frame.buffer()) else {
-        return fail(state, id, frame, CaptureFailure::BufferMismatch);
+        return fail(state, id, frame, CaptureError::BufferMismatch);
     };
     if (i64::from(size.w), i64::from(size.h))
         != (i64::from(wanted.size.w), i64::from(wanted.size.h))
     {
-        return fail(state, id, frame, CaptureFailure::BufferMismatch);
+        return fail(state, id, frame, CaptureError::BufferMismatch);
     }
     let book = &mut state.wl.capture_source.book;
     let content = book.content_of(window);
@@ -153,7 +153,7 @@ pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: T
         Ok(FrameVerdict::Hold) => state.wl.capture_source.hold_frame(id, frame),
         Err(fault) => {
             tracing::debug!(%fault, "a frame on a window capture session that is gone");
-            frame.fail(CaptureFailure::OutputGone.reason());
+            frame.fail(CaptureError::OutputGone.reason());
         }
     }
 }
@@ -183,7 +183,7 @@ pub(super) fn committed(state: &mut State, surface: &WlSurface) {
             let _ = capture_source::apply_failed(
                 &mut state.wl.capture_source.book,
                 *id,
-                CaptureFailure::OutputGone,
+                CaptureError::OutputGone,
             );
         }
         state.wl.capture_source.stop(&sessions);
@@ -207,7 +207,7 @@ pub(super) fn committed(state: &mut State, surface: &WlSurface) {
         }
         state.wl.capture_source.book.forget_delivered(id);
         if let Some(frame) = state.wl.capture_source.take_frame(id) {
-            fail(state, id, frame, CaptureFailure::BufferMismatch);
+            fail(state, id, frame, CaptureError::BufferMismatch);
         }
     }
     let released = capture_source::on_commit(&mut state.wl.capture_source.book, window);
@@ -227,7 +227,7 @@ fn answer(state: &mut State, request: &ToplevelCaptureRequest, frame: Frame) {
         let _ = capture_source::apply_failed(
             &mut state.wl.capture_source.book,
             id,
-            CaptureFailure::Renderer,
+            CaptureError::Renderer,
         );
         return;
     }
@@ -257,7 +257,7 @@ fn answer(state: &mut State, request: &ToplevelCaptureRequest, frame: Frame) {
 }
 
 /// Fails `frame` with `why` and clears what the book noted of it.
-fn fail(state: &mut State, id: ToplevelSessionId, frame: Frame, why: CaptureFailure) {
+fn fail(state: &mut State, id: ToplevelSessionId, frame: Frame, why: CaptureError) {
     if let Err(fault) = capture_source::apply_failed(&mut state.wl.capture_source.book, id, why) {
         tracing::debug!(%fault, "a window capture frame was not pending");
     }

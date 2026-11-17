@@ -8,7 +8,7 @@ use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
 use compositor_core::{DeviceId, Event, OutputName};
 use compositor_testclient::capture::{
-    BufferAsk, CaptureFailure, CursorEvent, CursorMode, OutputCapture, Size,
+    BufferAsk, CaptureError, CursorEvent, CursorMode, OutputCapture, Size,
 };
 use compositor_testkit::fakes::callers;
 use compositor_testkit::{
@@ -92,7 +92,7 @@ fn a_mismatched_buffer_fails_the_frame() {
     settle(&mut fixture, &mut capture);
     assert_eq!(
         capture.take().expect("answered").expect_err("a failure"),
-        CaptureFailure::BufferConstraints
+        CaptureError::BufferConstraints
     );
     assert!(
         !capture.is_stopped(),
@@ -549,7 +549,7 @@ fn a_refused_frame_fails_and_the_session_stops() {
     settle(&mut fixture, &mut capture);
     assert_eq!(
         capture.take().expect("answered").expect_err("a failure"),
-        CaptureFailure::Stopped
+        CaptureError::Stopped
     );
     assert!(capture.is_stopped(), "the session was told `stopped`");
     assert_eq!(

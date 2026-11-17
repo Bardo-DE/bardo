@@ -6,7 +6,7 @@ use crate::support::{display, headless, mode, ms};
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::output::{
     GammaRamp, GammaTable, Kelvin, MinuteOfDay, NightLight, OutputChangeSet, OutputConfig,
-    OutputRefusal, Requester, Schedule, keeps_one_lit, resolve_change,
+    OutputError, Requester, Schedule, keeps_one_lit, resolve_change,
 };
 use compositor_core::settings::{CompositorSettings, NightLightSettings};
 use compositor_core::space::SpaceSeed;

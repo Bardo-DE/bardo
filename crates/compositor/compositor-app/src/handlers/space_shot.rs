@@ -21,7 +21,7 @@ use compositor_render::pass::{CapturedFrame, ThumbLayer, compose_thumb, thumb_de
 use compositor_wayland::bardo::space_shot::{
     Look, SpaceSessionId, SpaceShot, SpaceSourceId, look_of,
 };
-use compositor_wayland::image_capture::CaptureFailure;
+use compositor_wayland::image_capture::CaptureError;
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
 use smithay::utils::{Buffer, Rectangle, Size, Transform};
 use smithay::wayland::image_copy_capture::{BufferConstraints, Frame, Session, SessionRef};
@@ -115,11 +115,11 @@ pub(super) fn new_session(state: &mut State, session: Session, source: SpaceSour
 /// Answers one frame request of `id`: held until the Space changes, or drawn now, or failed.
 pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: SpaceSessionId) {
     let Some(shot) = state.wl.bardo_shell.shots.book.session(id).cloned() else {
-        return frame.fail(CaptureFailure::OutputGone.reason());
+        return frame.fail(CaptureError::OutputGone.reason());
     };
     if !exists(state, &shot) {
         state.wl.bardo_shell.shots.stop(&[id]);
-        return frame.fail(CaptureFailure::OutputGone.reason());
+        return frame.fail(CaptureError::OutputGone.reason());
     }
     let sized = super::image_capture::buffer_size(&frame.buffer());
     if sized != Some(shot.size) {
@@ -127,13 +127,13 @@ pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: S
         if let Some(wanted) = constraints_of(state, &shot) {
             session.update_constraints(wanted);
         }
-        return frame.fail(CaptureFailure::BufferMismatch.reason());
+        return frame.fail(CaptureError::BufferMismatch.reason());
     }
     let now = look(state, &shot);
     match state.wl.bardo_shell.shots.book.request(id, now) {
         Some(true) => answer(state, id, &shot, now, frame),
         Some(false) => state.wl.bardo_shell.shots.hold_frame(id, frame),
-        None => frame.fail(CaptureFailure::Renderer.reason()),
+        None => frame.fail(CaptureError::Renderer.reason()),
     }
 }
 
@@ -222,7 +222,7 @@ fn answer(state: &mut State, id: SpaceSessionId, shot: &SpaceShot, now: Look, fr
 }
 
 /// The picture of the Space: its windows drawn alone, shrunk into place.
-fn picture(state: &mut State, shot: &SpaceShot) -> Result<Vec<u8>, CaptureFailure> {
+fn picture(state: &mut State, shot: &SpaceShot) -> Result<Vec<u8>, CaptureError> {
     let output = state
         .core
         .model
@@ -230,7 +230,7 @@ fn picture(state: &mut State, shot: &SpaceShot) -> Result<Vec<u8>, CaptureFailur
         .0
         .get(&shot.output)
         .map(|plugged| plugged.config.logical_rect())
-        .ok_or(CaptureFailure::OutputGone)?;
+        .ok_or(CaptureError::OutputGone)?;
     let mut drawn = Vec::new();
     for (window, rect) in windows_of(state, shot) {
         // A window that cannot be drawn (no buffer yet) is left out of the picture.
@@ -251,7 +251,7 @@ fn write(
     size: PhysicalSize,
     rgba: &[u8],
     frame: &Frame,
-) -> Result<(), CaptureFailure> {
+) -> Result<(), CaptureError> {
     let area = PhysicalRect {
         x: 0,
         y: 0,
@@ -261,6 +261,6 @@ fn write(
     let captured = CapturedFrame::from_rgba(area, rgba);
     super::image_capture::deliver(state, &frame.buffer(), &captured).map_err(|error| {
         tracing::warn!(%error, "a Space picture was not written");
-        CaptureFailure::BufferMismatch
+        CaptureError::BufferMismatch
     })
 }

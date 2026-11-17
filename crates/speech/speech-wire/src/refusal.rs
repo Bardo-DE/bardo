@@ -8,7 +8,7 @@ pub const ERROR_PREFIX: &str = "org.bardo.Voice1.Error.";
 /// Why a call was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "snake_case")]
-pub enum VoiceError {
+pub enum VoiceRefusedError {
     /// Voice is off.
     #[error("voice is disabled")]
     Disabled,
@@ -29,34 +29,34 @@ pub enum VoiceError {
     MicUnavailable,
 }
 
-impl VoiceError {
+impl VoiceRefusedError {
     /// Every refusal.
-    pub const ALL: [VoiceError; 6] = [
-        VoiceError::Disabled,
-        VoiceError::NeedsConsent,
-        VoiceError::Busy,
-        VoiceError::NotAllowed,
-        VoiceError::NoModel,
-        VoiceError::MicUnavailable,
+    pub const ALL: [VoiceRefusedError; 6] = [
+        VoiceRefusedError::Disabled,
+        VoiceRefusedError::NeedsConsent,
+        VoiceRefusedError::Busy,
+        VoiceRefusedError::NotAllowed,
+        VoiceRefusedError::NoModel,
+        VoiceRefusedError::MicUnavailable,
     ];
 
     /// The full D-Bus error name.
     #[must_use]
     pub fn error_name(self) -> String {
         let variant = match self {
-            VoiceError::Disabled => "Disabled",
-            VoiceError::NeedsConsent => "NeedsConsent",
-            VoiceError::Busy => "Busy",
-            VoiceError::NotAllowed => "NotAllowed",
-            VoiceError::NoModel => "NoModel",
-            VoiceError::MicUnavailable => "MicUnavailable",
+            VoiceRefusedError::Disabled => "Disabled",
+            VoiceRefusedError::NeedsConsent => "NeedsConsent",
+            VoiceRefusedError::Busy => "Busy",
+            VoiceRefusedError::NotAllowed => "NotAllowed",
+            VoiceRefusedError::NoModel => "NoModel",
+            VoiceRefusedError::MicUnavailable => "MicUnavailable",
         };
         format!("{ERROR_PREFIX}{variant}")
     }
 
     /// The refusal a D-Bus error name stands for.
     #[must_use]
-    pub fn from_error_name(name: &str) -> Option<VoiceError> {
+    pub fn from_error_name(name: &str) -> Option<VoiceRefusedError> {
         Self::ALL.into_iter().find(|r| r.error_name() == name)
     }
 }

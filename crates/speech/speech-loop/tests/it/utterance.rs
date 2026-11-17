@@ -67,14 +67,14 @@ fn utterance_table() {
             S::Idle,
             begin(VoiceUse::NeedsConsent),
             S::Idle,
-            vec![E::Refuse(VoiceError::NeedsConsent)],
+            vec![E::Refuse(VoiceRefusedError::NeedsConsent)],
         ),
         (
             "begin while off refuses",
             S::Idle,
             begin(VoiceUse::Off),
             S::Idle,
-            vec![E::Refuse(VoiceError::Disabled)],
+            vec![E::Refuse(VoiceRefusedError::Disabled)],
         ),
         (
             "mic opened announces and sounds",
@@ -400,7 +400,10 @@ fn the_refusal_for_a_setting_matches_what_the_table_refuses() {
 fn a_second_begin_while_off_keeps_the_state_and_refuses() {
     let (state, effects) = utterance_step(UtteranceState::Listening, begin(VoiceUse::Off));
     assert_eq!(state, UtteranceState::Listening);
-    assert_eq!(effects, vec![UtteranceEffect::Refuse(VoiceError::Disabled)]);
+    assert_eq!(
+        effects,
+        vec![UtteranceEffect::Refuse(VoiceRefusedError::Disabled)]
+    );
 }
 
 #[test]

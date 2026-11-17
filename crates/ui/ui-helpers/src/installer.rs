@@ -5,8 +5,8 @@
 
 mod fake;
 // The D-Bus backend, or its stand-in that reports every install `Unsupported`.
-#[cfg_attr(feature = "desktop", path = "packagekit.rs")]
-#[cfg_attr(not(feature = "desktop"), path = "packagekit_absent.rs")]
+#[cfg_attr(feature = "desktop", path = "installer/packagekit.rs")]
+#[cfg_attr(not(feature = "desktop"), path = "installer/packagekit_absent.rs")]
 mod packagekit;
 
 #[cfg(feature = "desktop")]

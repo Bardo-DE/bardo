@@ -375,7 +375,7 @@ pub fn on_session(book, source) -> Result<ToplevelSessionId, WaylandFault>;
 pub fn on_frame_request(book, session, buffer: PhysicalSize, content: ContentStamp) -> Result<FrameVerdict, WaylandFault>;
 pub fn apply_content(book, window, content: ContentStamp) -> Vec<ToplevelCaptureRequest>;
 pub fn apply_ready(book, session, content, at: Mono) -> Result<(), WaylandFault>;
-pub fn apply_failed(book, session, why: CaptureFailure) -> Result<(), WaylandFault>;
+pub fn apply_failed(book, session, why: CaptureError) -> Result<(), WaylandFault>;
 pub fn apply_window_gone(book, window) -> Vec<ToplevelSessionId>;
 pub fn capture_size(logical: LogicalSize, scale: Scale) -> PhysicalSize;  // implemented: round(l x s)
 

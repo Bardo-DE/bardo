@@ -8,6 +8,7 @@ use serde_json::{Value, json};
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, MutexGuard};
 
+#[path = "agent/play.rs"]
 mod play;
 
 pub const AGENT_SESSION: &str = "agent-s1";

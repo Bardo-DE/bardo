@@ -9,7 +9,7 @@ use compositor_core::geometry::{LogicalSize, PhysicalSize};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
 use compositor_core::{Event, OutputName, WindowId};
-use compositor_testclient::capture::toplevel_source::{CaptureFailure, CursorMode, WindowCapture};
+use compositor_testclient::capture::toplevel_source::{CaptureError, CursorMode, WindowCapture};
 use compositor_testclient::surface::lock::Locker;
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testclient::{Pattern, shm_buffer};
@@ -126,7 +126,7 @@ fn a_window_capture_is_sized_at_the_output_scale() {
         settle(&mut fixture, &mut capture);
         assert_eq!(
             capture.take().expect("answered").expect_err("a failure"),
-            CaptureFailure::BufferConstraints,
+            CaptureError::BufferConstraints,
             "the old size no longer fits"
         );
         assert_eq!(capture.size(), Some((801, 601)), "at 1x after {scale}/120");
@@ -347,7 +347,7 @@ fn a_refused_window_frame_fails_and_the_session_stops() {
     settle(&mut fixture, &mut capture);
     assert_eq!(
         capture.take().expect("answered").expect_err("a failure"),
-        CaptureFailure::Stopped
+        CaptureError::Stopped
     );
     assert!(capture.is_stopped(), "the session was told `stopped`");
     assert_eq!(

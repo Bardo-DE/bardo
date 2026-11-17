@@ -71,7 +71,7 @@ pub use models::{ModelId, ModelIdError, Models};
 pub use performer::{Performer, UndoNote};
 pub use spawn::{
     AgentChild, FaultSource, LaunchPlan, SandboxStepError, SessionMeta, SignIn, SignInError, Spawn,
-    SpawnFault, Spawned,
+    SpawnError, Spawned,
 };
 pub use terminals::Terminals;
 pub use workdir::{Workdir, WorkdirError};

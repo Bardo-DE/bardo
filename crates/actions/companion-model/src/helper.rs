@@ -54,7 +54,7 @@ pub use card::{
 };
 pub use hand::{BackOutcome, BroughtOutcome, HandFault, TerminalHand, ToTerminalOutcome};
 pub use job::{
-    GoalFault, GoalOrigin, GoalSource, GoalText, Job, JobFault, JobId, JobStatus, ResultHandle,
+    GoalError, GoalOrigin, GoalSource, GoalText, Job, JobFault, JobId, JobStatus, ResultHandle,
 };
 pub use notice::{Notice, owned_sentence};
 pub use post::{Post, PostId, PostPart, PostTo};

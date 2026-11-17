@@ -30,7 +30,7 @@ pub use actor::{Actor, ActorKind, AgentRole, Channel, SystemPart};
 pub use agent::{Address, AgentRef};
 pub use base_time::UnixSeconds;
 pub use consent::{
-    BeyondReceipt, ConfirmId, ConfirmReceipt, InputProof, Witness, declassify, endorse,
+    BeyondReceiptError, ConfirmId, ConfirmReceipt, InputProof, Witness, declassify, endorse,
 };
 pub use effect::Effect;
 pub use ids::{

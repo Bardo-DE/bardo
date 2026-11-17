@@ -3,9 +3,10 @@
 
 use std::path::{Path, PathBuf};
 
-/// Fails when a `*.rs` file in the crate's `tests/it` is not declared by `mod <name>;` in
-/// `main.rs` or by another file there (a support module that tests include by path). Pass
-/// `env!("CARGO_MANIFEST_DIR")`.
+/// Fails when a `*.rs` file in the crate's `tests/it` is declared nowhere.
+///
+/// A file is declared by `mod <name>;` in `main.rs` or in another file there (a support module
+/// that tests include by path). Pass `env!("CARGO_MANIFEST_DIR")`.
 ///
 /// # Panics
 ///

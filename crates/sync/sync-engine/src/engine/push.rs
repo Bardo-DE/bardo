@@ -6,9 +6,8 @@ use crate::dataset::{Dataset, replica_hash};
 use crate::journal::Op;
 use base_time::Clock;
 use sync_core::{
-    Acknowledgement, BaseVersion, Conflict, ItemState, JournalItem, LocalChange, PutItem,
-    PutRefused, PutTarget, RemoteId, RemoteSide, RemoteVersion, Replica, TombstoneOrigin,
-    local_changes,
+    Acknowledgement, BaseVersion, Conflict, ItemState, JournalItem, LocalChange, PutError, PutItem,
+    PutTarget, RemoteId, RemoteSide, RemoteVersion, Replica, TombstoneOrigin, local_changes,
 };
 
 impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {

@@ -15,7 +15,7 @@ use inference_client::{OpenOptions, Transport, TransportError};
 use inference_core::{
     AttachIndex, ClientFrame, ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply,
     ComputerUseStepRequest, Declined, DeclinedBecause, FrameLayout, ImageSource, InferEvent,
-    InferRefusal, InferReply, InferRequest, InferSession, NO_MODEL_SEES_SCREEN, PlaceRow,
+    InferRefusedError, InferReply, InferRequest, InferSession, NO_MODEL_SEES_SCREEN, PlaceRow,
     PlaceState, Readiness, ServedBy, SessionError, Sight, TurnUsage, cannot_see_screen,
 };
 use std::collections::BTreeSet;

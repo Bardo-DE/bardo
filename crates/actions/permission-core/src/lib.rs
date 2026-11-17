@@ -66,8 +66,8 @@ pub use review::{
 pub use rules::{RuleFile, generated_rules, rule_ids, rule_text, with_rule, without_rule};
 pub use space_access::{SpaceAccess, SpaceError, space_access};
 pub use standing::{
-    AddressFault, CommandError, CommandPrefix, Domain, DomainError, Recipient, ScopeKind,
-    StandingFileFault, StandingGrant, StandingGrantId, StandingIdError, StandingScope,
+    AddressError, CommandError, CommandPrefix, Domain, DomainError, Recipient, ScopeKind,
+    StandingFileError, StandingGrant, StandingGrantId, StandingIdError, StandingScope,
     decode_standing, encode_standing, held_with, held_without,
 };
 pub use standing_match::{ArgFacts, CallFacts, find_standing_for};

@@ -268,20 +268,16 @@ where
                 match shell_permission::on_answer(state.bardo_shell_part(), ask, answer, now, wall)
                 {
                     Ok(events) => state.feed(events),
-                    Err(fault) => resource.post_error(
-                        bardo_shell_v1::Error::AnsweredTooSoonError,
-                        fault.to_string(),
-                    ),
+                    Err(fault) => resource
+                        .post_error(bardo_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
                 }
             }
             bardo_shell_v1::Request::DisplaysTrialAnswer { trial, answer } => {
                 let now = state.bardo_shell_now();
                 match shell_trial::on_answer(state.bardo_shell_part(), trial, answer, now) {
                     Ok(events) => state.feed(events),
-                    Err(fault) => resource.post_error(
-                        bardo_shell_v1::Error::AnsweredTooSoonError,
-                        fault.to_string(),
-                    ),
+                    Err(fault) => resource
+                        .post_error(bardo_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
                 }
             }
             bardo_shell_v1::Request::SetFullScreenBar { mode } => {

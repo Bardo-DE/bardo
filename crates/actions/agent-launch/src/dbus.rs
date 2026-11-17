@@ -7,7 +7,7 @@
 //! a value.
 
 use crate::accounts::{
-    AccountFault, Accounts, AskKind, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish,
+    AccountError, Accounts, AskKind, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish,
 };
 use crate::config::EndpointKind;
 use account_capability::LoginOutcome;

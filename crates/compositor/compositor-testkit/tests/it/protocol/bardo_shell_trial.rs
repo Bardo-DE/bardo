@@ -157,7 +157,7 @@ fn an_answer_that_comes_too_soon_is_the_protocol_error_and_the_trial_stays() {
     shell.answer_trial_at_once(&mut fixture, trial, TrialAnswer::Keep);
     let error = fixture.client(shell.id).protocol_error().expect("too soon");
     assert_eq!(error.interface, "bardo_shell_v1");
-    assert_eq!(error.code, wire::Error::AnsweredTooSoonError as u32);
+    assert_eq!(error.code, wire::Error::AnsweredTooSoon as u32);
     assert!(shell.trial_ends().is_empty(), "the trial is still open");
 }
 

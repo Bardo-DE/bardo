@@ -4,7 +4,7 @@ use core::marker::PhantomData;
 
 use model_provider::{
     Extract, JsonError, JsonText, Message, OutputShape, Part, Role, SchemaDialect, Shape,
-    ShapeFault, StopReason, ToolCall, ToolChoice, ToolName, ToolSpec, TurnEnd, TurnRequest,
+    ShapeError, StopReason, ToolCall, ToolChoice, ToolName, ToolSpec, TurnEnd, TurnRequest,
 };
 
 use crate::ExtractMode;

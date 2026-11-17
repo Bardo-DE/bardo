@@ -3,7 +3,7 @@
 //! decision here never carries words.
 
 use companion_model::helper::{
-    GoalFault, HandFault, HelperName, HelperTextError, JobFault, JobRefusal, ReachError,
+    GoalError, HandFault, HelperName, HelperTextError, JobFault, JobRefusal, ReachError,
 };
 use companion_model::routine::ScheduleError;
 

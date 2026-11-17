@@ -45,7 +45,7 @@ pub use args::{ReadCall, planner_label, read_call};
 pub use catalogue::{Catalogue, CatalogueTool, TARGET};
 pub use choices::ParamChoices;
 pub use planner::{
-    PlanFault, PlannerModel, PlannerReply, TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ,
+    PlanError, PlannerModel, PlannerReply, TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ,
     TOOL_RELATED,
 };
 pub use prefix::{CacheBreak, StablePrefix};

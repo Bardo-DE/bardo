@@ -12,7 +12,7 @@ use compositor_core::time::Mono;
 use compositor_render::pass::{CapturedFrame, window_capture_size, window_tree};
 use compositor_render::{Compositor, SceneElement};
 use compositor_wayland::capture_source::ToplevelCaptureRequest;
-use compositor_wayland::image_capture::CaptureFailure;
+use compositor_wayland::image_capture::CaptureError;
 use smithay::backend::renderer::gles::{GlesRenderer, GlesTexture};
 use smithay::backend::renderer::pixman::PixmanRenderer;
 #[cfg(feature = "testing")]
@@ -54,16 +54,16 @@ impl FrameSource for WindowSource {
 fn window_source(
     state: &State,
     window: WindowId,
-) -> Result<(WindowSource, PhysicalSize), CaptureFailure> {
+) -> Result<(WindowSource, PhysicalSize), CaptureError> {
     let (content, scale) =
-        super::content_and_scale(state, window).ok_or(CaptureFailure::OutputGone)?;
+        super::content_and_scale(state, window).ok_or(CaptureError::OutputGone)?;
     let size = window_capture_size(content, scale);
     let root = state
         .render
         .textures
         .window(&window)
         .map(|entry| entry.root.clone())
-        .ok_or(CaptureFailure::OutputGone)?;
+        .ok_or(CaptureError::OutputGone)?;
     Ok((
         WindowSource {
             root,
@@ -77,10 +77,7 @@ fn window_source(
 /// `window` drawn alone at the scale of its output: its content size, RGBA rows top first,
 /// transparent where it does not draw. What window capture sends and `bardo-compositorctl shot
 /// --window` writes. `OutputGone` when the window is not drawn or has no output.
-pub(crate) fn window_rgba(
-    state: &mut State,
-    window: WindowId,
-) -> Result<RgbaFrame, CaptureFailure> {
+pub(crate) fn window_rgba(state: &mut State, window: WindowId) -> Result<RgbaFrame, CaptureError> {
     let (source, size) = window_source(state, window)?;
     let drawn = state
         .backend
@@ -88,7 +85,7 @@ pub(crate) fn window_rgba(
         .render_offscreen(size, source.scale, &source);
     drawn.map_err(|error| {
         tracing::warn!(%error, "a window was not drawn for capture");
-        CaptureFailure::Renderer
+        CaptureError::Renderer
     })
 }
 
@@ -109,16 +106,16 @@ pub(crate) fn window_texture(
     state: &mut State,
     window: WindowId,
     radius: u32,
-) -> Result<(GlesTexture, PhysicalSize), CaptureFailure> {
+) -> Result<(GlesTexture, PhysicalSize), CaptureError> {
     let (source, size) = window_source(state, window)?;
     let BackendKind::Tty(tty) = &mut state.backend else {
-        return Err(CaptureFailure::Renderer);
+        return Err(CaptureError::Renderer);
     };
     tty.render_window_texture(size, source.scale, radius, &source)
         .map(|texture| (texture, size))
         .map_err(|error| {
             tracing::info!(%error, "a closing window was not copied on the GPU; reading it back");
-            CaptureFailure::Renderer
+            CaptureError::Renderer
         })
 }
 
@@ -129,10 +126,10 @@ pub(super) fn draw_window(
     state: &mut State,
     request: &ToplevelCaptureRequest,
     buffer: &WlBuffer,
-) -> Result<Mono, CaptureFailure> {
+) -> Result<Mono, CaptureError> {
     let (source, size) = window_source(state, request.window)?;
     if size != request.size {
-        return Err(CaptureFailure::BufferMismatch);
+        return Err(CaptureError::BufferMismatch);
     }
     // A dma-buf the GPU can draw into gets the window rendered straight into it; anything else,
     // or a draw that failed, goes through the read-back.
@@ -141,7 +138,7 @@ pub(super) fn draw_window(
     }
     let drawn = window_rgba(state, request.window)?;
     if drawn.size != request.size {
-        return Err(CaptureFailure::BufferMismatch);
+        return Err(CaptureError::BufferMismatch);
     }
     let area = PhysicalRect {
         x: 0,
@@ -152,7 +149,7 @@ pub(super) fn draw_window(
     let captured = CapturedFrame::from_rgba(area, &drawn.bytes);
     crate::handlers::image_capture::deliver(state, buffer, &captured).map_err(|error| {
         tracing::warn!(%error, "a window capture frame was not written");
-        CaptureFailure::BufferMismatch
+        CaptureError::BufferMismatch
     })?;
     Ok(state.clock.now())
 }

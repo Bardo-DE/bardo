@@ -7,8 +7,8 @@ use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Scheme, send};
 use account_fake_servers::{Consent, FakeIssuer, IssuerEvent, Running, TokenResult, follow};
 use account_oauth::{
-    ExchangeFault, LoopbackError, LoopbackServer, Pkce, RenewOutcome, authorize_url, exchange_code,
-    renew, revoke,
+    ExchangeCauseError, LoopbackError, LoopbackServer, Pkce, RenewOutcome, authorize_url,
+    exchange_code, renew, revoke,
 };
 use account_provider::{ClientChannel, ClientEntry, ClientId, Issuer, IssuerEndpoints};
 use base_time::UnixSeconds;

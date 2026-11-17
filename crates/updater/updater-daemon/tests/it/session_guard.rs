@@ -123,7 +123,7 @@ impl Elevate for Helper {
 }
 
 fn failure() -> ApplyError {
-    ApplyFailure {
+    ApplyError {
         code: Some(1),
         detail: "no".into(),
     }

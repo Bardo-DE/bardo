@@ -69,8 +69,8 @@ impl Pending {
     ///
     /// # Errors
     ///
-    /// Returns [`Crowded::User`] when `uid` already holds its share of identifications, and another
-    /// [`Crowded`] when the daemon-wide cap is reached.
+    /// Returns [`CrowdedError::User`] when `uid` already holds its share of identifications, and another
+    /// [`CrowdedError`] when the daemon-wide cap is reached.
     pub fn enter(&self, uid: Uid) -> Result<Ticket, CrowdedError> {
         let mut counts = self.counts();
         if counts.0.count(uid) >= self.caps.per_user {

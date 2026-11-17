@@ -24,7 +24,7 @@ commands:
   check domain-order            a library crate depends only on its own domain folder or a lower one
   check product-words           no retired product name in a .rs file, a file name or a Cargo.toml feature or description
   check error-names             a type that implements std::error::Error has a name ending in Error
-  check no-mod-rs               no mod.rs file and no #[path] attribute
+  check no-mod-rs               no mod.rs file
   check no-prefs                no identifier ending in Prefs
   check renderer-edges          only the renderer crates and the programs depend on the renderer
   check shear                   no crate declares a dependency it does not use (needs cargo-shear)

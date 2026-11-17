@@ -1,6 +1,6 @@
 //! What the person reads about voice: the line for a refusal and the placeholder while listening.
 
-use speech_wire::{VoiceError, VoiceFault};
+use speech_wire::{VoiceFault, VoiceRefusedError};
 
 use super::model::{Notice, Phase};
 
@@ -9,16 +9,16 @@ use super::model::{Notice, Phase};
 pub fn notice_line(notice: Notice) -> &'static str {
     match notice {
         Notice::None => "",
-        Notice::Refused(VoiceError::MicUnavailable)
+        Notice::Refused(VoiceRefusedError::MicUnavailable)
         | Notice::Failed(VoiceFault::MicUnavailable) => "No microphone is available.",
         Notice::Failed(VoiceFault::MicDenied) => "Microphone access was denied.",
-        Notice::Refused(VoiceError::Disabled) => "Voice is turned off in Settings.",
-        Notice::Refused(VoiceError::NoModel) | Notice::Failed(VoiceFault::NoModel) => {
+        Notice::Refused(VoiceRefusedError::Disabled) => "Voice is turned off in Settings.",
+        Notice::Refused(VoiceRefusedError::NoModel) | Notice::Failed(VoiceFault::NoModel) => {
             "No speech model is installed."
         }
-        Notice::Refused(VoiceError::Busy) => "Voice is busy.",
-        Notice::Refused(VoiceError::NotAllowed) => "Voice is not allowed here.",
-        Notice::Refused(VoiceError::NeedsConsent) => "Voice needs your permission first.",
+        Notice::Refused(VoiceRefusedError::Busy) => "Voice is busy.",
+        Notice::Refused(VoiceRefusedError::NotAllowed) => "Voice is not allowed here.",
+        Notice::Refused(VoiceRefusedError::NeedsConsent) => "Voice needs your permission first.",
         Notice::Unreachable => "Voice is not running.",
         Notice::NothingHeard => "Didn't catch that.",
         Notice::TooLong => "That took too long.",

@@ -144,7 +144,7 @@ pub struct VolumeCauseError(Arc<dyn std::error::Error + Send + Sync>);
 impl VolumeCauseError {
     /// The report `source` made.
     pub fn new(source: impl std::error::Error + Send + Sync + 'static) -> Self {
-        Cause(Arc::new(source))
+        VolumeCauseError(Arc::new(source))
     }
 }
 

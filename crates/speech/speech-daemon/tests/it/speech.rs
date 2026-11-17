@@ -10,7 +10,7 @@ use action_wire::VoiceIntent;
 use futures_util::{FutureExt, StreamExt};
 use inference_core::{ClientFrame, InferRequest};
 use speech_daemon::{SpeechProxy, VoiceProxy};
-use speech_wire::{SpeechEnd, VoiceError, VoiceEvent};
+use speech_wire::{SpeechEnd, VoiceEvent, VoiceRefusedError};
 use std::collections::BTreeSet;
 
 fn tts_need() -> Need {
@@ -92,7 +92,7 @@ async fn only_the_shell_or_the_attached_app_may_speak() {
             .speak(&speak_wire(FIRST, utterance))
             .await
             .expect_err("refused");
-        assert_eq!(refusal(refused), VoiceError::NotAllowed);
+        assert_eq!(refusal(refused), VoiceRefusedError::NotAllowed);
     }
     assert!(world.seen.opens().is_empty());
 }
@@ -172,7 +172,7 @@ async fn hush_stops_speech_for_the_shell_alone() {
         .hush()
         .await
         .expect_err("refused");
-    assert_eq!(refusal(refused), VoiceError::NotAllowed);
+    assert_eq!(refusal(refused), VoiceRefusedError::NotAllowed);
     world.voice.hush().await.expect("hush");
     assert_eq!(
         speech_end_of(&next_text(&mut finished).await),
@@ -201,7 +201,7 @@ async fn the_requester_may_stop_its_own_speech_and_a_stranger_may_not() {
         .await
         .expect("proxy");
     let refused = theirs.stop().await.expect_err("refused");
-    assert_eq!(refusal(refused), VoiceError::NotAllowed);
+    assert_eq!(refusal(refused), VoiceRefusedError::NotAllowed);
     let ours = SpeechProxy::builder(&world.shell)
         .path(path)
         .expect("path")

@@ -58,6 +58,6 @@ pub use trashed::{TrashId, TrashedItem};
 pub use ui_helpers::mime::{FileName, MimeError, MimeType, NameError};
 pub use view::{FolderSettings, Sort, SortKey, SortOrder, ViewMode};
 pub use volume::{
-    Cause, EjectError, MountError, ProgramName, Volume, VolumeId, VolumeKind, VolumeName,
-    VolumeTrouble,
+    EjectError, MountError, ProgramName, Volume, VolumeCauseError, VolumeId, VolumeKind,
+    VolumeName, VolumeTrouble,
 };

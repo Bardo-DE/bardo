@@ -1,6 +1,6 @@
 //! The launcher on a real compositor with fake services, for manual runs and the acceptance
 //! (`dev/accept/launcher.sh`): a catcher and a panel per output, spawned hidden as the
-//! daemon spawns them, over a fake search runner (`tests/launcher_support`), driven by lines
+//! daemon spawns them, over a fake search runner (`tests/it/launcher_harness/launcher_support`), driven by lines
 //! on stdin:
 //!
 //! - `toggle`, `open [QUERY]`, `close`: what `bardo-shell launcher ...` does;
@@ -14,7 +14,7 @@
 //! `cargo run -p shell-launcher-ui --example launcher_demo`
 
 #[allow(dead_code, reason = "the demo uses part of the test bench")]
-#[path = "../tests/it/launcher_support.rs"]
+#[path = "../tests/it/launcher_harness/launcher_support.rs"]
 mod launcher_support;
 
 use std::fmt::Debug;

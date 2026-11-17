@@ -3,8 +3,8 @@
 
 use base_ids::Count;
 use model_provider::{
-    CharCount, ChoiceText, Field, FieldName, JsonText, SchemaDialect, SchemaKeywordError,
-    SchemaLimits, SchemaRefusal, SchemaText, Shape, Variant, VariantName,
+    CharCount, ChoiceText, Field, FieldName, JsonText, SchemaDialect, SchemaError,
+    SchemaKeywordError, SchemaLimits, SchemaText, Shape, Variant, VariantName,
 };
 use proptest::prelude::*;
 use serde_json::{Value, json};

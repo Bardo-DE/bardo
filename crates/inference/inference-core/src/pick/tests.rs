@@ -355,7 +355,7 @@ fn a_named_model_that_cannot_serve_refuses_and_says_why_without_a_fallback() {
         Vec<PickCandidate>,
         Policy,
         DeclinedBecause,
-        InferRefusal,
+        InferRefusedError,
     )> = vec![
         (
             "not offered",

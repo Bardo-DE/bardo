@@ -5,6 +5,7 @@
     reason = "each test binary uses a different part of the shared samples"
 )]
 
+#[path = "support/samples.rs"]
 mod samples;
 #[allow(unused_imports, reason = "a test binary may not use every sample")]
 pub use samples::*;

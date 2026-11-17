@@ -9,8 +9,8 @@ use anyhow::{Context, Result};
 use super::{finish, git_lines};
 use crate::workspace::Workspace;
 
-/// This file shows the word in its tests, so its own text is not read.
-const THIS_FILE: &str = "xtask/src/tasks/no_prefs.rs";
+/// Files that name the word itself: this check's tests and xtask's usage text.
+const SKIPPED: [&str; 2] = ["xtask/src/tasks/no_prefs.rs", "xtask/src/main.rs"];
 
 /// The identifiers of `line` that end in `Prefs`.
 fn prefs_names(line: &str) -> Vec<&str> {
@@ -26,7 +26,7 @@ pub fn run() -> Result<bool> {
         git_lines(&ws.root, &["ls-files", "crates", "xtask"])?.context("git ls-files failed")?;
     let mut green = true;
     for file in files.iter().filter(|file| {
-        file.as_str() != THIS_FILE
+        !SKIPPED.contains(&file.as_str())
             && std::path::Path::new(file.as_str())
                 .extension()
                 .is_some_and(|ext| ext == "rs")

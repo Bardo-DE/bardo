@@ -164,7 +164,7 @@ impl Node {
     }
 
     fn refuse(&self, why: SchemaKeywordError) -> SchemaError {
-        SchemaRefusal {
+        SchemaError {
             at: SchemaPath(self.at.clone()),
             why,
             cause: None,

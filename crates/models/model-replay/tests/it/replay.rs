@@ -14,7 +14,7 @@ use model_replay::{
     BuildLabel, Cassette, CassetteError, CassetteHeader, CassetteSink, CassetteVersion,
     ContextStamp, EngineLabel, EngineStamp, Interaction, InteractionId, PartPrint, RecordedAt,
     RecordingProvider, ReplayError, ReplayMode, ReplayProvider, RequestPrint, SinkError,
-    StreamFault, check_sequence,
+    StreamError, check_sequence,
 };
 use model_vision_prep::MediaType;
 

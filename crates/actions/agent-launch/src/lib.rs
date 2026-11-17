@@ -38,7 +38,7 @@ pub mod supervise;
 mod terminal;
 
 pub use accounts::{
-    AccountFault, Accounts, AskKind, FaultSource, Heard, Issued, LoginAsk, OpenedEndpoint,
+    AccountError, Accounts, AskKind, FaultSource, Heard, Issued, LoginAsk, OpenedEndpoint,
     RouteWish,
 };
 pub use child::{Child, Registry};

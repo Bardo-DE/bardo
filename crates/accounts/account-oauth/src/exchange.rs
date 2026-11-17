@@ -331,7 +331,7 @@ fn unreached(error: HttpError) -> ExchangeError {
         | HttpError::Malformed(..) => ExchangeCauseError::Unreachable,
         HttpError::TooLarge => ExchangeCauseError::Unreadable,
     };
-    ExchangeFailure {
+    ExchangeError {
         fault,
         says: None,
         cause: Some(Arc::new(error)),

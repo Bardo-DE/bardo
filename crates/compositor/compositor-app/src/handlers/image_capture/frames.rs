@@ -8,7 +8,7 @@ use compositor_core::geometry::PhysicalRect;
 use compositor_core::time::Mono;
 use compositor_core::{OutputKey, OutputName};
 use compositor_render::pass::CapturedFrame;
-use compositor_wayland::image_capture::{self, CaptureFailure, CaptureSessionId};
+use compositor_wayland::image_capture::{self, CaptureError, CaptureSessionId};
 use smithay::reexports::wayland_server::protocol::wl_buffer::WlBuffer;
 use smithay::utils::{Buffer, Rectangle, Size, Transform};
 use smithay::wayland::image_copy_capture::{Frame, SessionRef};
@@ -17,7 +17,7 @@ use smithay::wayland::image_copy_capture::{Frame, SessionRef};
 /// with the reason.
 pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame) {
     let Some(id) = session.user_data().get::<CaptureSessionId>().copied() else {
-        return frame.fail(CaptureFailure::OutputGone.reason());
+        return frame.fail(CaptureError::OutputGone.reason());
     };
     match capture(state, session, id, &frame) {
         // No frame has been presented for the output yet (a first capture on a real seat waits
@@ -54,21 +54,21 @@ fn capture(
     session: &SessionRef,
     id: CaptureSessionId,
     frame: &Frame,
-) -> Result<Option<Written>, CaptureFailure> {
+) -> Result<Option<Written>, CaptureError> {
     let buffer = frame.buffer();
-    let size = buffer_size(&buffer).ok_or(CaptureFailure::BufferMismatch)?;
+    let size = buffer_size(&buffer).ok_or(CaptureError::BufferMismatch)?;
     let request = image_capture::on_frame_request(&mut state.wl.image_capture.book, id, size)
         .map_err(|error| {
             tracing::debug!(%error, "the capture session names no output");
-            CaptureFailure::OutputGone
+            CaptureError::OutputGone
         })?;
-    let wanted = constraints_of(state, &request.output).ok_or(CaptureFailure::OutputGone)?;
+    let wanted = constraints_of(state, &request.output).ok_or(CaptureError::OutputGone)?;
     // The mode changed since the session announced its constraints: announce the new ones and
     // fail this frame (the client allocates again).
     if session.current_constraints().map(|c| c.size) != Some(wanted.size) {
         tracing::debug!(size = ?wanted.size, "a capture session's output changed size");
         session.update_constraints(wanted);
-        return Err(CaptureFailure::BufferMismatch);
+        return Err(CaptureError::BufferMismatch);
     }
     let cursor = session.draw_cursor();
     let Some(shown) = last_shown(state, &request.output)? else {
@@ -115,14 +115,14 @@ pub(in crate::handlers) struct Shown {
 pub(in crate::handlers) fn last_shown(
     state: &State,
     output: &OutputKey,
-) -> Result<Option<Shown>, CaptureFailure> {
+) -> Result<Option<Shown>, CaptureError> {
     let Some(presented) = presented(state, output)? else {
         return Ok(None);
     };
     let size = match &presented.pixels {
         FramePixels::Rgba(frame) => frame.size,
         FramePixels::Resident(size) => *size,
-        FramePixels::Dummy => return Err(CaptureFailure::Renderer),
+        FramePixels::Dummy => return Err(CaptureError::Renderer),
     };
     Ok(Some(Shown {
         at: presented.at,
@@ -144,7 +144,7 @@ pub(in crate::handlers) fn last_frame(
     output: &OutputKey,
     cursor: bool,
     area: PhysicalRect,
-) -> Result<Option<(CapturedFrame, Mono)>, CaptureFailure> {
+) -> Result<Option<(CapturedFrame, Mono)>, CaptureError> {
     let Some(shown) = last_shown(state, output)? else {
         return Ok(None);
     };
@@ -157,7 +157,7 @@ pub(in crate::handlers) fn last_frame(
     } else {
         read_shadow(state, output, cursor)?
             .cropped(area)
-            .ok_or(CaptureFailure::BufferMismatch)?
+            .ok_or(CaptureError::BufferMismatch)?
     };
     Ok(Some((captured, shown.at)))
 }
@@ -167,10 +167,10 @@ fn read_shadow(
     state: &State,
     output: &OutputKey,
     cursor: bool,
-) -> Result<CapturedFrame, CaptureFailure> {
-    let presented = presented(state, output)?.ok_or(CaptureFailure::Renderer)?;
+) -> Result<CapturedFrame, CaptureError> {
+    let presented = presented(state, output)?.ok_or(CaptureError::Renderer)?;
     let FramePixels::Rgba(shown) = &presented.pixels else {
-        return Err(CaptureFailure::Renderer);
+        return Err(CaptureError::Renderer);
     };
     // A frame without the cursor is kept beside the one shown; if the renderer made none, the
     // one shown is the best there is.
@@ -193,14 +193,14 @@ fn read_resident(
     output: &OutputKey,
     cursor: bool,
     area: PhysicalRect,
-) -> Result<CapturedFrame, CaptureFailure> {
+) -> Result<CapturedFrame, CaptureError> {
     let name = output_name(state, output)?;
     let BackendKind::Tty(tty) = &mut state.backend else {
-        return Err(CaptureFailure::Renderer);
+        return Err(CaptureError::Renderer);
     };
     tty.read_output(&name, cursor, area).map_err(|error| {
         tracing::warn!(%error, "the capture frame was not read back from the GPU");
-        CaptureFailure::Renderer
+        CaptureError::Renderer
     })
 }
 
@@ -212,7 +212,7 @@ pub(in crate::handlers) fn write_output(
     output: &OutputKey,
     cursor: bool,
     area: PhysicalRect,
-) -> Result<(), CaptureFailure> {
+) -> Result<(), CaptureError> {
     let name = output_name(state, output)?;
     if direct::is_direct(state, buffer, Subject::Output(&name)) {
         match direct::output(state, buffer, &name, cursor, area) {
@@ -222,15 +222,15 @@ pub(in crate::handlers) fn write_output(
             }
         }
     }
-    let (part, _) = last_frame(state, output, cursor, area)?.ok_or(CaptureFailure::Renderer)?;
+    let (part, _) = last_frame(state, output, cursor, area)?.ok_or(CaptureError::Renderer)?;
     deliver(state, buffer, &part).map_err(|error| {
         tracing::warn!(%error, "a capture frame was not written");
-        CaptureFailure::BufferMismatch
+        CaptureError::BufferMismatch
     })
 }
 
 /// The connector name of `output`.
-fn output_name(state: &State, output: &OutputKey) -> Result<OutputName, CaptureFailure> {
+fn output_name(state: &State, output: &OutputKey) -> Result<OutputName, CaptureError> {
     state
         .core
         .model
@@ -238,21 +238,21 @@ fn output_name(state: &State, output: &OutputKey) -> Result<OutputName, CaptureF
         .0
         .get(output)
         .map(|plugged| plugged.facts.name.clone())
-        .ok_or(CaptureFailure::OutputGone)
+        .ok_or(CaptureError::OutputGone)
 }
 
 /// The frame `output` last presented, as its backend kept it.
 fn presented<'a>(
     state: &'a State,
     output: &OutputKey,
-) -> Result<Option<&'a PresentedFrame>, CaptureFailure> {
+) -> Result<Option<&'a PresentedFrame>, CaptureError> {
     let name = output_name(state, output)?;
     // The headless backend kept the frame it presented; a tty seat kept the shadow it drew
     // while this output was watched (the first frame of a session waits for the next vblank).
     match &state.backend {
         BackendKind::Headless(backend) => Ok(backend.last_frame(&name)),
         BackendKind::Tty(tty) => Ok(tty.last_frame(&name)),
-        BackendKind::Winit(_) => Err(CaptureFailure::Renderer),
+        BackendKind::Winit(_) => Err(CaptureError::Renderer),
     }
 }
 

@@ -12,7 +12,7 @@ use computer_use_run::{ComputerUseModel, ComputerUseModelError, ModelReach, Step
 use computer_use_system::InferdComputerUseModel;
 use inference_core::{
     AttachIndex, ClientFrame, ComputerUseStepReply, FrameLayout, ImageSource, InferEvent,
-    InferRefusal, InferReply, InferRequest, ModelError, Readiness,
+    InferRefusedError, InferReply, InferRequest, ModelError, Readiness,
 };
 use rustix::fs::SealFlags;
 use std::collections::BTreeSet;

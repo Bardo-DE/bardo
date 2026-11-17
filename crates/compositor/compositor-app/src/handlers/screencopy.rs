@@ -11,7 +11,7 @@ use super::image_capture;
 use crate::state::State;
 use compositor_core::privilege::PowerOutcome;
 use compositor_core::{ClientKey, OutputKey};
-use compositor_wayland::image_capture::CaptureFailure;
+use compositor_wayland::image_capture::CaptureError;
 use compositor_wayland::screencopy::{
     self, PendingCopy, ScreencopyHandler, ScreencopyOutput, ScreencopyPart,
 };
@@ -121,7 +121,7 @@ fn answer(state: &mut State, copy: &PendingCopy) -> bool {
 }
 
 /// Tells the client `failed`; the copy is over.
-fn failed(copy: &PendingCopy, why: CaptureFailure) -> bool {
+fn failed(copy: &PendingCopy, why: CaptureError) -> bool {
     tracing::debug!(?why, "a screencopy frame failed");
     screencopy::apply_failed(copy);
     false

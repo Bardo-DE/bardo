@@ -3,7 +3,7 @@
 //! The chord keymap's registration. The chord keymap's own tests cover that no two actions share a chord.
 
 use ui_components::prelude::*;
-use ui_core::standard_action::{Conflict, SpaceNumber, StandardAction};
+use ui_core::standard_action::{ConflictError, SpaceNumber, StandardAction};
 
 #[test]
 fn every_action_has_keys_on_this_desktop_in_the_macs_order() {
@@ -32,7 +32,7 @@ enum Verdict {
 fn verdict(keys: Vec<ShortcutKey>) -> Verdict {
     match Shortcut::custom(keys) {
         Ok(_) => Verdict::Free,
-        Err(Conflict::Standard { action, .. }) => Verdict::Standard(action),
+        Err(ConflictError::Standard { action, .. }) => Verdict::Standard(action),
         Err(_) => Verdict::Kept,
     }
 }

@@ -334,7 +334,7 @@ fn an_answer_that_comes_too_soon_cuts_the_shell_only() {
     shell.answer_at_once(&mut fixture, ask, Answer::Allow);
     let error = fixture.client(shell.id).protocol_error().expect("too soon");
     assert_eq!(error.interface, "bardo_shell_v1");
-    assert_eq!(error.code, wire::Error::AnsweredTooSoonError as u32);
+    assert_eq!(error.code, wire::Error::AnsweredTooSoon as u32);
     assert_eq!(kept(&fixture, ASKED_PROGRAM, Power::Keys), None);
     assert!(fixture.client(client).protocol_error().is_none());
     assert_eq!(fixture.model().privilege().asks().len(), 1, "still open");

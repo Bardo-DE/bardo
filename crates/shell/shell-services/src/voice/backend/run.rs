@@ -15,7 +15,8 @@ use shell_model::companion::CompanionCommand;
 use shell_model::voice::{ConsentAnswer, Voice, VoiceConsent, VoiceEffect, VoiceEvent, step};
 use speech_dbus::{UtteranceProxy, VoiceProxy};
 use speech_wire::{
-    CancelCause, UtteranceEnd, VoiceBegin, VoiceError, VoiceEvent as Frame, VoiceTrigger, seal,
+    CancelCause, UtteranceEnd, VoiceBegin, VoiceEvent as Frame, VoiceRefusedError, VoiceTrigger,
+    seal,
 };
 use tokio::net::UnixStream;
 use tokio::sync::{mpsc, watch};
@@ -358,8 +359,10 @@ async fn ask_begin(
         .map_err(unreachable_because("cannot reach voiced"))?;
     match voice.begin(&body).await {
         Ok((path, fd)) => Ok((path, stream_of(fd.into())?)),
-        Err(zbus::Error::MethodError(name, ..)) => Err(VoiceError::from_error_name(name.as_str())
-            .map_or(VoiceEvent::Unreachable, VoiceEvent::Refused)),
+        Err(zbus::Error::MethodError(name, ..)) => {
+            Err(VoiceRefusedError::from_error_name(name.as_str())
+                .map_or(VoiceEvent::Unreachable, VoiceEvent::Refused))
+        }
         Err(_) => Err(VoiceEvent::Unreachable),
     }
 }

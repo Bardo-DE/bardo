@@ -1,6 +1,8 @@
 //! What tells the voice service things, what happens in it, and what that asks of the outside.
 
-use speech_wire::{CancelCause, UtteranceEnd, VoiceError, VoiceEvent as Frame, VoiceTrigger};
+use speech_wire::{
+    CancelCause, UtteranceEnd, VoiceEvent as Frame, VoiceRefusedError, VoiceTrigger,
+};
 
 use super::model::{AskScope, ConsentAnswer, VoiceParams};
 use crate::companion::AskInput;
@@ -37,7 +39,7 @@ pub enum VoiceEvent {
     /// `Begin` returned: the utterance exists.
     Began,
     /// `voiced` refused `Begin`.
-    Refused(VoiceError),
+    Refused(VoiceRefusedError),
     /// `Begin` could not be asked.
     Unreachable,
     /// A frame of the utterance's stream.

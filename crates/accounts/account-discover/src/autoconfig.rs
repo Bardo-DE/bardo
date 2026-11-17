@@ -17,7 +17,7 @@
 
 use crate::config::{self, AuthMethod, ClientConfig, Server, ServerProtocol, SocketType};
 use crate::found::{
-    DiscoverFault, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source,
+    DiscoverError, Found, OAuthOffer, OAuthServer, Pop3Server, SearchOptions, Source,
 };
 use crate::mail::{imap_claim, imap_endpoint, smtp_endpoint};
 use account_core::{Direction, LoginName, ServiceEndpoint, Tls};

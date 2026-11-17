@@ -107,7 +107,7 @@ struct Finished {
 }
 
 fn failure(why: &impl ToString) -> ApplyError {
-    ApplyFailure {
+    ApplyError {
         code: None,
         detail: why.to_string(),
     }
@@ -201,7 +201,7 @@ fn refused(finished: &Finished) -> ApplyError {
         .find(|l| !l.trim().is_empty())
         .unwrap_or_default()
         .to_owned();
-    ApplyFailure {
+    ApplyError {
         code: finished.status.code(),
         detail,
     }

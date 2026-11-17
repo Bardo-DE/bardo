@@ -4,7 +4,7 @@
 
 use crate::plain::without_ids;
 use crate::planner::{
-    PlanFault, TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ, TOOL_RELATED, log_unreadable,
+    PlanError, TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ, TOOL_RELATED, log_unreadable,
 };
 use crate::read_ask::read_output;
 use account_core::AppName;

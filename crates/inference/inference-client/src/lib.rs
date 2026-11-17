@@ -42,7 +42,7 @@ pub use tailnet_lending::SessionUnits;
 #[cfg(feature = "lending")]
 pub use tailnet_lending::{
     INFERD_UNIT, LendingConfig, LendingError, LendingState, SHIPPED_NAME, TailnetLending,
-    UnitFailure, UnitManager,
+    UnitError, UnitManager,
 };
 pub use transport::{Brokered, InProcessSession, NoBroker, SessionHost, Transport};
 #[cfg(feature = "dbus")]

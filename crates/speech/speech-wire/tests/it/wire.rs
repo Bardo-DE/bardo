@@ -118,28 +118,28 @@ fn begin_target_and_speak_round_trip() {
 #[test]
 fn voice_refusal_maps_errors_1to1() {
     let mut names = std::collections::BTreeSet::new();
-    for r in VoiceError::ALL {
+    for r in VoiceRefusedError::ALL {
         let name = r.error_name();
         assert!(name.starts_with("org.bardo.Voice1.Error."), "{name}");
-        assert_eq!(VoiceError::from_error_name(&name), Some(r));
+        assert_eq!(VoiceRefusedError::from_error_name(&name), Some(r));
         assert!(names.insert(name), "duplicate name for {r:?}");
         // The slug is the variant in snake_case.
         round(&r);
     }
     assert_eq!(names.len(), 6);
     assert_eq!(
-        VoiceError::from_error_name("org.bardo.Voice1.Error.Nope"),
+        VoiceRefusedError::from_error_name("org.bardo.Voice1.Error.Nope"),
         None
     );
     // ALL is exhaustive: this match fails to compile when a variant is added.
-    for r in VoiceError::ALL {
+    for r in VoiceRefusedError::ALL {
         match r {
-            VoiceError::Disabled
-            | VoiceError::NeedsConsent
-            | VoiceError::Busy
-            | VoiceError::NotAllowed
-            | VoiceError::NoModel
-            | VoiceError::MicUnavailable => {}
+            VoiceRefusedError::Disabled
+            | VoiceRefusedError::NeedsConsent
+            | VoiceRefusedError::Busy
+            | VoiceRefusedError::NotAllowed
+            | VoiceRefusedError::NoModel
+            | VoiceRefusedError::MicUnavailable => {}
         }
     }
 }

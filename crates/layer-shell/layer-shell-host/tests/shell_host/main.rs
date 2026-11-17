@@ -18,6 +18,7 @@ mod dock;
     dead_code,
     reason = "the module is shared with the demo; the tests use part of it"
 )]
+#[path = "../../examples/demo_lock/guard.rs"]
 mod guard;
 
 /// Fails when a test file is added but not included above, or left as its own binary beside

@@ -6,7 +6,7 @@ use inference_core::{Readiness, ServedBy};
 use serde::{Deserialize, Serialize};
 use speech_wire::{
     CancelCause, HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent, VoiceFault,
-    VoiceRefusal, VoiceTarget, VoiceUse,
+    VoiceRefusedError, VoiceTarget, VoiceUse,
 };
 
 /// How long the mic stays open after release, so the last syllable is not clipped.
@@ -38,11 +38,11 @@ impl UtteranceState {
 
 /// Why a `Begin` is refused whatever the state, or `None` when voice is on.
 #[must_use]
-pub fn refusal_for(enabled: VoiceUse) -> Option<VoiceError> {
+pub fn refusal_for(enabled: VoiceUse) -> Option<VoiceRefusedError> {
     match enabled {
         VoiceUse::On => None,
-        VoiceUse::NeedsConsent => Some(VoiceError::NeedsConsent),
-        VoiceUse::Off => Some(VoiceError::Disabled),
+        VoiceUse::NeedsConsent => Some(VoiceRefusedError::NeedsConsent),
+        VoiceUse::Off => Some(VoiceRefusedError::Disabled),
     }
 }
 
@@ -153,7 +153,7 @@ pub enum UtteranceEffect {
     /// Wipe the buffers.
     Zeroize,
     /// Refuse the call.
-    Refuse(VoiceError),
+    Refuse(VoiceRefusedError),
     /// Remember who may attach.
     StoreRoute(VoiceTarget),
     /// Replay the committed segments and the last partial to the attached app.
@@ -228,14 +228,14 @@ pub fn utterance_step(
                 enabled: VoiceUse::NeedsConsent,
                 ..
             },
-        ) => (s, vec![E::Refuse(VoiceError::NeedsConsent)]),
+        ) => (s, vec![E::Refuse(VoiceRefusedError::NeedsConsent)]),
         (
             s,
             V::Begin {
                 enabled: VoiceUse::Off,
                 ..
             },
-        ) => (s, vec![E::Refuse(VoiceError::Disabled)]),
+        ) => (s, vec![E::Refuse(VoiceRefusedError::Disabled)]),
         (S::Opening, V::MicOpened) => (
             S::Listening,
             vec![E::Emit(VoiceEvent::Opened), E::Earcon(Earcon::Begin)],

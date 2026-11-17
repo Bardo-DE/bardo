@@ -16,7 +16,7 @@ use action_vocab::{Caller, Millis};
 use base_ids::Dims;
 use inference_core::{
     ChatControl, ChatMessage, ChatRequest, ChatSink, EmbedRequest, EmbedRole, InferEvent,
-    InferRefusal, InferReply, Knob, MessagePart, Model, ModelCard, ModelError, ReplyShape,
+    InferRefusedError, InferReply, Knob, MessagePart, Model, ModelCard, ModelError, ReplyShape,
     RequestKind, Role, StopReason, ToolChoice, ToolDecl, ToolParallelism, TurnError,
 };
 use permission_core::{ReviewError, Stage};

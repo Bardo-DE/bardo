@@ -57,7 +57,7 @@ pub use builtin_companion::{CompanionPort, CompanionProvider};
 pub use companion_memory::MemoryServiceLink;
 pub use config::{ConfigError, IntentdConfig};
 pub use daemon::{
-    DaemonFault, HarnessSeams, Running, Setup, SystemFiles, data_dirs, run, run_with, start,
+    DaemonError, HarnessSeams, Running, Setup, SystemFiles, data_dirs, run, run_with, start,
 };
 pub use defaults::{DEFAULT_GRANTS_FILE, default_grants_file, revoking};
 pub use floor::{FLOOR_FILE, FloorError, read_floor};

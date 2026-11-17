@@ -3,7 +3,6 @@
 //! on the virtual clock and the runner as a task on its thread, so what a test sees
 //! depends only on what it did, never on how loaded the machine is.
 
-#[path = "launcher_support.rs"]
 pub mod launcher_support;
 
 use std::cell::RefCell;

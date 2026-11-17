@@ -25,7 +25,7 @@ use std::io::{BufRead, Write};
 
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostCtx, HostEvent};
-use layer_shell_types::{KeyboardFocus, LockOptions, LockId, LockState, OutputInfo, SurfaceId};
+use layer_shell_types::{KeyboardFocus, LockId, LockOptions, LockState, OutputInfo, SurfaceId};
 
 use screen::{Screen, TYPED, lock_screen};
 

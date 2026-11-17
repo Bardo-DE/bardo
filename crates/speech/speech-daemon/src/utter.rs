@@ -34,7 +34,7 @@ use speech_loop::{
 };
 use speech_wire::{
     CancelCause, HeardText, MicState, UtteranceEnd, VoiceBegin, VoiceEvent, VoiceFault,
-    VoiceRefusal, VoiceStatus, VoiceTarget,
+    VoiceRefusedError, VoiceStatus, VoiceTarget,
 };
 use std::os::fd::OwnedFd;
 use zbus::object_server::SignalEmitter;
@@ -101,7 +101,7 @@ where
         begin: VoiceBegin,
     ) -> Result<(String, OwnedFd), VoiceError> {
         if !caller.is_shell() {
-            return Err(VoiceError::NotAllowed.into());
+            return Err(VoiceRefusedError::NotAllowed.into());
         }
         let enabled = self.usage.now();
         let probe = UtteranceEvent::Begin {
@@ -113,7 +113,7 @@ where
         }
         let Ok(found) = snapshot_before(&*self.device, tokio::time::sleep(SNAPSHOT_BUDGET)).await
         else {
-            return Err(VoiceError::MicUnavailable.into());
+            return Err(VoiceRefusedError::MicUnavailable.into());
         };
         let Some(node) = choose_capture(
             &found.sources,
@@ -121,7 +121,7 @@ where
             self.input.as_deref(),
         )
         .map(|chosen| chosen.node.clone()) else {
-            return Err(VoiceError::MicUnavailable.into());
+            return Err(VoiceRefusedError::MicUnavailable.into());
         };
         let (sink, fd) = EventSink::open().map_err(|e| VoiceError::Malformed(e.to_string()))?;
         let leaving = Leaving::of(&self.conn, &caller.unique).await;
@@ -194,16 +194,16 @@ where
 
     pub(crate) async fn attach(&mut self, n: u64, caller: &Caller) -> Result<OwnedFd, VoiceError> {
         let Some(utt) = self.utt.as_ref().filter(|u| u.n == n) else {
-            return Err(VoiceError::NotAllowed.into());
+            return Err(VoiceRefusedError::NotAllowed.into());
         };
         let Some(VoiceTarget::App { app, .. }) = utt.route.clone() else {
-            return Err(VoiceError::NotAllowed.into());
+            return Err(VoiceRefusedError::NotAllowed.into());
         };
         if !self.peers.is_app(&caller.unique, &app).await {
-            return Err(VoiceError::NotAllowed.into());
+            return Err(VoiceRefusedError::NotAllowed.into());
         }
         if utt.attached.is_some() {
-            return Err(VoiceError::Busy.into());
+            return Err(VoiceRefusedError::Busy.into());
         }
         let (sink, fd) = EventSink::open().map_err(|e| VoiceError::Malformed(e.to_string()))?;
         if let Some(utt) = self.utt.as_mut() {
@@ -226,14 +226,14 @@ where
         cause: CancelCause,
     ) -> Result<(), VoiceError> {
         let Some(utt) = self.utt.as_ref().filter(|u| u.n == n) else {
-            return Err(VoiceError::NotAllowed.into());
+            return Err(VoiceRefusedError::NotAllowed.into());
         };
         let attached = utt
             .attached
             .as_ref()
             .is_some_and(|(who, _)| *who == caller.unique);
         if utt.caller != caller.unique && !attached {
-            return Err(VoiceError::NotAllowed.into());
+            return Err(VoiceRefusedError::NotAllowed.into());
         }
         self.utt_event(UtteranceEvent::Cancel(cause)).await;
         Ok(())

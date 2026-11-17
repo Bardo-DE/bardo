@@ -19,8 +19,7 @@ use compositor_render::pass::{ArgbImage, CapturedFrame, DrawnView, SourceRect};
 use compositor_render::{ChromeLayer, CursorDraw, CursorShape, cursor_face, cursor_pixels};
 use compositor_wayland::consent::{self, Admission};
 use compositor_wayland::image_capture::{
-    CaptureFailure, CaptureSourceId, CursorSessionId, CursorView, image_size, place,
-    sent_image_size,
+    CaptureError, CaptureSourceId, CursorSessionId, CursorView, image_size, place, sent_image_size,
 };
 use desktop_protocols::vocab::Power;
 use desktop_protocols::vocab::Transform as CoreTransform;
@@ -177,7 +176,7 @@ pub(crate) fn sync(state: &mut State, output: &OutputKey) {
 /// waits while they are the ones the client already has.
 pub(super) fn serve(state: &mut State, session: &CursorSessionRef, frame: Frame) {
     let Some(id) = session.user_data().get::<CursorSessionId>().copied() else {
-        return frame.fail(CaptureFailure::OutputGone.reason());
+        return frame.fail(CaptureError::OutputGone.reason());
     };
     match image(state, session, id) {
         Ok(Image::Fresh(argb, size)) => {
@@ -190,7 +189,7 @@ pub(super) fn serve(state: &mut State, session: &CursorSessionRef, frame: Frame)
             let captured = CapturedFrame::from_argb(area, argb.clone());
             if let Err(error) = deliver(state, &frame.buffer(), &captured) {
                 tracing::warn!(%error, "a cursor frame was not written");
-                return frame.fail(CaptureFailure::BufferMismatch.reason());
+                return frame.fail(CaptureError::BufferMismatch.reason());
             }
             if let Some(hold) = state.wl.image_capture.cursors.get_mut(id) {
                 hold.shown = Some(argb);
@@ -220,14 +219,14 @@ fn image(
     state: &mut State,
     session: &CursorSessionRef,
     id: CursorSessionId,
-) -> Result<Image, CaptureFailure> {
+) -> Result<Image, CaptureError> {
     let output = state
         .wl
         .image_capture
         .cursors
         .get(id)
         .map(|hold| hold.output.clone())
-        .ok_or(CaptureFailure::OutputGone)?;
+        .ok_or(CaptureError::OutputGone)?;
     let config = state
         .core
         .model
@@ -235,16 +234,16 @@ fn image(
         .0
         .get(&output)
         .map(|plugged| plugged.config)
-        .ok_or(CaptureFailure::OutputGone)?;
-    let wanted = constraints_for(state, &output).ok_or(CaptureFailure::OutputGone)?;
+        .ok_or(CaptureError::OutputGone)?;
+    let wanted = constraints_for(state, &output).ok_or(CaptureError::OutputGone)?;
     // The cursor grew or the scale changed since the session announced its size: announce the
     // new one and fail this frame (the client allocates again).
     if session.current_constraints().map(|c| c.size) != Some(wanted.size) {
         session.update_constraints(wanted);
-        return Err(CaptureFailure::BufferMismatch);
+        return Err(CaptureError::BufferMismatch);
     }
-    let face = cursor_face(&state.render.chrome, &state.render.textures)
-        .ok_or(CaptureFailure::Renderer)?;
+    let face =
+        cursor_face(&state.render.chrome, &state.render.textures).ok_or(CaptureError::Renderer)?;
     let upright = image_size(face.size, config.scale);
     let raw = raw_image(state, config.scale, upright)?;
     let argb = raw.fitted(upright, config.transform).argb;
@@ -267,18 +266,18 @@ fn raw_image(
     state: &mut State,
     scale: Scale,
     upright: PhysicalSize,
-) -> Result<ArgbImage, CaptureFailure> {
+) -> Result<ArgbImage, CaptureError> {
     match state.render.chrome.cursor {
         CursorDraw::Named(_) => cursor_pixels(&state.render.chrome, scale)
             .map(|argb| ArgbImage::new(upright, argb))
-            .ok_or(CaptureFailure::Renderer),
+            .ok_or(CaptureError::Renderer),
         CursorDraw::ClientSurface { .. } => {
             let surface = state
                 .render
                 .textures
                 .cursor()
                 .cloned()
-                .ok_or(CaptureFailure::Renderer)?;
+                .ok_or(CaptureError::Renderer)?;
             let (buffer, view) = with_states(&surface, |states| {
                 let held = states.data_map.get::<RendererSurfaceStateUserData>()?;
                 let held = held.lock().ok()?;
@@ -291,16 +290,16 @@ fn raw_image(
                 );
                 Some((held.buffer().cloned()?, drawn))
             })
-            .ok_or(CaptureFailure::Renderer)?;
+            .ok_or(CaptureError::Renderer)?;
             let read = read_cursor(state, &buffer).map_err(|error| {
                 tracing::warn!(%error, "a client's cursor was not read for capture");
-                CaptureFailure::Renderer
+                CaptureError::Renderer
             })?;
             // The buffer as the screen draws it: turned upright and cut to the viewport's
             // source; `fitted` then scales it to the drawn size.
             Ok(read.drawn(&view))
         }
-        CursorDraw::Hidden => Err(CaptureFailure::Renderer),
+        CursorDraw::Hidden => Err(CaptureError::Renderer),
     }
 }
 

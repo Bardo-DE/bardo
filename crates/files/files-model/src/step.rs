@@ -54,10 +54,7 @@ impl Browser {
             Input::Listed(at, result) if at == self.location => self.listed(result),
             Input::Changed(at, change) if at == self.location => self.changed(change),
             Input::FolderSettingsLoaded(at, prefs) if at == self.location => self.with_prefs(prefs),
-            #[expect(
-                clippy::match_same_arms,
-                reason = "a report for a folder no longer shown is dropped; the editing arm above holds input back for a different reason"
-            )]
+            // A report for a folder no longer shown is dropped.
             Input::Listed(..) | Input::Changed(..) | Input::FolderSettingsLoaded(..) => {
                 (self, Vec::new())
             }

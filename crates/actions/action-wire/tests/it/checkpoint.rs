@@ -1,7 +1,7 @@
 //! The checkpoint requests and replies of the wire.
 
 use action_core::{
-    CheckpointFault, CheckpointId, CheckpointList, RestorePlan, Retention, Rewind, TurnEnd,
+    CheckpointError, CheckpointId, CheckpointList, RestorePlan, Retention, Rewind, TurnEnd,
     TurnState,
 };
 use action_vocab::{Days, TurnId, Workspace};

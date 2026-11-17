@@ -21,9 +21,9 @@ use base_ids::Tokens;
 use base_testkit::Scratch;
 use inference_core::{
     Answer, AudioFrame, AudioRate, AutoPolicy, Base64Bytes, ChatMessage, ChatReply, InferEvent,
-    InferRefusal, InferReply, LangPick, LicenceClass, Modality, ModelCard, ModelError, ModelLabel,
-    ModelRef, Pipeline, Policy, Refusal, RequestShape, Role, Slot, StageRole, SwapCost, TierMap,
-    TranscribeBegin, TranscribeMode, TranscribeReply,
+    InferRefusedError, InferReply, LangPick, LicenceClass, Modality, ModelCard, ModelError,
+    ModelLabel, ModelRef, Pipeline, Policy, Refusal, RequestShape, Role, Slot, StageRole, SwapCost,
+    TierMap, TranscribeBegin, TranscribeMode, TranscribeReply,
 };
 use inference_router::audio::AudioIn;
 use inference_router::pipeline::{catalogue_of, plan};

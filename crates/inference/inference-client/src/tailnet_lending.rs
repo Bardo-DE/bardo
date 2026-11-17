@@ -321,7 +321,7 @@ mod session {
         reason = "used as a `map_err` function, which hands the error over by value"
     )]
     fn failure(error: zbus::Error) -> UnitError {
-        UnitFailure(error.to_string())
+        UnitError(error.to_string())
     }
 
     impl UnitManager for SessionUnits {

@@ -1,7 +1,7 @@
 //! Disks in the sidebar: the list, opening and ejecting, and what is told when it fails.
 
 use files_core::{
-    EjectFailure, FolderPath, Location, MountError, ProgramName, Volume, VolumeId, VolumeKind,
+    EjectError, FolderPath, Location, MountError, ProgramName, Volume, VolumeId, VolumeKind,
     VolumeName, VolumeTrouble,
 };
 use files_model::{BusyDisk, Effect, Input, Question};

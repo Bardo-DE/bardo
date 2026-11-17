@@ -187,7 +187,7 @@ where
     pub fn owned_utt(&self, n: u64, caller: &Caller) -> Result<&Utt, VoiceError> {
         match &self.utt {
             Some(utt) if utt.n == n && utt.caller == caller.unique => Ok(utt),
-            _ => Err(speech_wire::VoiceError::NotAllowed.into()),
+            _ => Err(speech_wire::VoiceRefusedError::NotAllowed.into()),
         }
     }
 }

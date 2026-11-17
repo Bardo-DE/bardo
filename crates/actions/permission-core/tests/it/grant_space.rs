@@ -57,7 +57,7 @@ fn an_app_space_is_open_to_its_owner_alone() {
         assert_eq!(space_access(&open, &theirs), SpaceAccess::Open, "{open}");
     }
     assert!(
-        SpaceRefusal {
+        SpaceError {
             space: space("app:org.bardo.Mail:3"),
             owner: mine,
         }

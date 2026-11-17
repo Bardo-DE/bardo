@@ -5,7 +5,9 @@
 //! `Activate` and `ActivateAction`. A call focuses the window, opens a page, and carries an
 //! activation token, so the door admits only the callers the desktop has a reason to expect.
 
-use settings_app_callers::{BusPeers, Proof, Refused, Requirement, access_denied, allowing, roles};
+use settings_app_callers::{
+    BusPeers, NotHeldError, Proof, Requirement, access_denied, allowing, roles,
+};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use zbus::fdo;
 use zbus::message::Header;
@@ -59,7 +61,7 @@ pub(crate) async fn admit(
     }
 }
 
-fn note(refusals: &Refusals, refused: Refused, sender: &str) {
+fn note(refusals: &Refusals, refused: NotHeldError, sender: &str) {
     if let Some(seen) = refusals.mention() {
         eprintln!(
             "bardo-settings: a call to show Settings from {sender} was dropped ({refused}); {seen} so far"

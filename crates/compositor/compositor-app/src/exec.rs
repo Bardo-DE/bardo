@@ -26,7 +26,7 @@ use compositor_core::{InputSerial, geometry::LogicalSize, lock::LockReply};
 use compositor_wayland::foreign_toplevel_list::disclosed;
 use compositor_wayland::output::OutputWire;
 use compositor_wayland::{
-    WaylandFault, bardo_window, foreign_toplevel_list, image_capture, layer_shell, output,
+    WaylandError, bardo_window, foreign_toplevel_list, image_capture, layer_shell, output,
     pointer_constraints, presentation, seat, session_lock, text_input, wlr_toplevel, xdg_shell,
 };
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;

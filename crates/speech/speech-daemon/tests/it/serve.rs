@@ -20,7 +20,8 @@ use inference_core::{
 use speech_audio::NodeKind;
 use speech_daemon::VoiceProxy;
 use speech_wire::{
-    CancelCause, HeardText, MicState, UtteranceEnd, VoiceError, VoiceEvent, VoiceFault, VoiceUse,
+    CancelCause, HeardText, MicState, UtteranceEnd, VoiceEvent, VoiceFault, VoiceRefusedError,
+    VoiceUse,
 };
 use std::collections::BTreeSet;
 
@@ -55,7 +56,7 @@ async fn only_the_shell_begins_and_nothing_opens_for_anyone_else() {
             .begin(&begin(VoiceIntent::Ask))
             .await
             .expect_err("refused");
-        assert_eq!(refusal(refused), VoiceError::NotAllowed);
+        assert_eq!(refusal(refused), VoiceRefusedError::NotAllowed);
     }
     assert_eq!(world.hand.opened(), 0, "no capture was ever opened");
     assert!(world.seen.opens().is_empty(), "no inferd session either");
@@ -66,8 +67,8 @@ async fn only_the_shell_begins_and_nothing_opens_for_anyone_else() {
 #[tokio::test]
 async fn consent_and_the_setting_gate_the_mic_before_it_opens() {
     for (usage, want) in [
-        (VoiceUse::NeedsConsent, VoiceError::NeedsConsent),
-        (VoiceUse::Off, VoiceError::Disabled),
+        (VoiceUse::NeedsConsent, VoiceRefusedError::NeedsConsent),
+        (VoiceUse::Off, VoiceRefusedError::Disabled),
     ] {
         let mut options = Options::new(ScriptedInfer::new(vec![]));
         options.usage = usage;
@@ -98,7 +99,7 @@ async fn a_monitor_is_never_captured_and_no_source_means_no_mic() {
         .begin(&begin(VoiceIntent::Ask))
         .await
         .expect_err("refused");
-    assert_eq!(refusal(refused), VoiceError::MicUnavailable);
+    assert_eq!(refusal(refused), VoiceRefusedError::MicUnavailable);
     assert_eq!(world.hand.opened(), 0);
 }
 
@@ -461,7 +462,7 @@ async fn prepare_is_the_shells_and_answers_a_readiness_slug() {
         .prepare()
         .await
         .expect_err("refused");
-    assert_eq!(refusal(refused), VoiceError::NotAllowed);
+    assert_eq!(refusal(refused), VoiceRefusedError::NotAllowed);
     assert_eq!(world.hand.opened(), 0, "prepare never opens the mic");
 }
 

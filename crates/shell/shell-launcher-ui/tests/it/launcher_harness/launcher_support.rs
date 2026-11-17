@@ -5,8 +5,11 @@
 //! that say what a fixed set of rows does.
 
 pub use shell_ui_kit::harness::fake;
+#[path = "launcher_support/companion.rs"]
 pub mod companion;
+#[path = "launcher_support/m9.rs"]
 pub mod m9;
+#[path = "launcher_support/runner.rs"]
 mod runner;
 
 use runner::Answer;

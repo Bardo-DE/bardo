@@ -5,7 +5,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use files_core::{
-    EjectFailure, FolderPath, ProgramName, Volume, VolumeId, VolumeKind, VolumeName, VolumeTrouble,
+    EjectError, FolderPath, ProgramName, Volume, VolumeId, VolumeKind, VolumeName, VolumeTrouble,
 };
 use files_model::{Effect, Input, TabId};
 use files_ui::edge::Heard;

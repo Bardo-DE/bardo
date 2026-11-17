@@ -4,8 +4,9 @@
 
 use sandbox::egress::request::MAX_LINE;
 use sandbox::egress::{
-    BadRequest, EgressHostError, EgressPolicy, EgressRefusedError, Entry, Gate, Host, HostPattern,
-    Journal, Outcome, PolicyFault, Ports, Request, Resolver, Target, parse_head, read_head,
+    BadRequestError, EgressHostError, EgressPolicy, EgressRefusedError, Entry, Gate, Host,
+    HostPattern, Journal, Outcome, PolicyError, Ports, Request, Resolver, Target, parse_head,
+    read_head,
 };
 use std::io::{self, Read, Write};
 use std::net::{IpAddr, TcpListener};

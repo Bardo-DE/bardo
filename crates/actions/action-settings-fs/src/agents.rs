@@ -3,7 +3,7 @@
 
 use action_core::Rewind;
 use action_settings::{
-    AddFault, AgentChoice, AgentRecords, Agents, ChoiceError, NewAgent, edit_agent_add,
+    AddError, AgentChoice, AgentRecords, Agents, ChoiceError, NewAgent, edit_agent_add,
     edit_agent_choice, edit_agent_remove, edit_agent_rewind, read_agents,
 };
 use action_store::write_atomic;

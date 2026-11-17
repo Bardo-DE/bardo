@@ -31,12 +31,12 @@ impl Shortcut {
     }
 
     /// A shortcut of the app's own, modifiers put in the Mac's order; refused with the chord keymap's
-    /// plain-words [`Conflict`] when this desktop keeps the combination for itself or a standard
+    /// plain-words [`ConflictError`] when this desktop keeps the combination for itself or a standard
     /// action has it (design/27 section 6.2: never repurpose one).
     ///
     /// # Errors
     ///
-    /// Returns the chord keymap's [`Conflict`] when this desktop keeps the combination for itself or a
+    /// Returns the chord keymap's [`ConflictError`] when this desktop keeps the combination for itself or a
     /// standard action has it.
     pub fn custom(keys: impl IntoIterator<Item = ShortcutKey>) -> Result<Shortcut, ConflictError> {
         let shortcut = Shortcut(normalized(keys));

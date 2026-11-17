@@ -10,7 +10,7 @@ use cli::Run;
 use settings_app_client::{ClientBuilder, ClientHomes};
 use settings_app_files::{FirstRunMark, KeymapFiles, discover, find_agents_program};
 use settings_app_intents::{
-    ServeFault, SettingsProvider, hand_over_session, search_entries, serve_session,
+    IntentServeError, SettingsProvider, hand_over_session, search_entries, serve_session,
 };
 use settings_app_link::bus::BusSource;
 use settings_app_model::{Catalogue, PageKind, PageSlug, inbox};

@@ -92,7 +92,7 @@ impl FileStore {
     /// restored on its own.
     pub fn refusal(&self, why: &impl std::fmt::Display) -> RegistryError {
         let backup = self.backup_path();
-        RegistryRefusal {
+        RegistryError {
             file: self.path(),
             backup: backup.exists().then_some(backup),
             cause: why.to_string(),

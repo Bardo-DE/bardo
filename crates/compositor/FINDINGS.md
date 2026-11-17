@@ -3982,7 +3982,7 @@ cancels on hardware; honour cursor-hidden in output captures") described the cod
   (`capture_scene_real.rs`, `Offscreen` + `render_output`) when the lender keeps scenes, else into the pixman shadow
   (`readback.rs`). A still desktop gets its first frame from `capture_first`. A shared-memory client is answered by reading the
   texture back (`ExportMem` through `pass::capture_output`), a dma-buf client by `blit_texture`; a refused GPU draw falls back to
-  the shadow, and a frame that cannot be had fails the request with `CaptureFailure::Renderer` (never a hang: a request before the
+  the shadow, and a frame that cannot be had fails the request with `CaptureError::Renderer` (never a hang: a request before the
   first frame waits only until `serve_captures` runs after the next present). `shell`'s eyedropper asks for an output source with
   the cursor hidden (`desktop-client` `CursorMode::Hidden`, `Options::empty()`), which is this path. The "no read-back" line in
   The shell's manual checks and `wave-6/colour-picker` is that older state.

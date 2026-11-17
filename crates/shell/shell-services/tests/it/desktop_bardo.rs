@@ -38,7 +38,7 @@ use shell_model::desktop::{
 use shell_services::desktop_wl::bardo::{
     ArmError, BardoArm, Handout, HandoutError, shell_connection,
 };
-use shell_services::desktop_wl::{CommandError, project_subjects};
+use shell_services::desktop_wl::{CommandError as WlCommandError, project_subjects};
 use shell_services::env::{Bus, BusRoute};
 use shell_testkit::PrivateBus;
 
@@ -471,9 +471,9 @@ fn a_command_for_something_gone_is_refused_before_anything_is_sent() {
             matches!(
                 refused,
                 Err(ArmError::Refused(
-                    CommandError::UnknownWindow(_)
-                        | CommandError::UnknownApp(_)
-                        | CommandError::UnknownSpace(_)
+                    WlCommandError::UnknownWindow(_)
+                        | WlCommandError::UnknownApp(_)
+                        | WlCommandError::UnknownSpace(_)
                 ))
             ),
             "{name}: {refused:?}"
@@ -492,7 +492,9 @@ fn a_minimise_target_names_the_docks_surface() {
     assert!(
         matches!(
             arm.execute(&target),
-            Err(ArmError::Refused(CommandError::NoSurface(ShellRole::Dock)))
+            Err(ArmError::Refused(WlCommandError::NoSurface(
+                ShellRole::Dock
+            )))
         ),
         "no dock surface is registered yet"
     );

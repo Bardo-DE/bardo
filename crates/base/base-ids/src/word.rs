@@ -57,7 +57,7 @@ impl std::error::Error for NotAWordError {}
 
 impl ser::Error for NotAWordError {
     fn custom<T: fmt::Display>(_: T) -> Self {
-        NotAWord
+        NotAWordError
     }
 }
 

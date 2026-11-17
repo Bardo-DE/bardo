@@ -38,7 +38,7 @@ use sync_driver::hub::{Access, Hub};
 use sync_engine::scheduler::{Network, Settings};
 use sync_pim_feed::{PimKind, is_complete};
 use sync_pim_mirror::{
-    AccountdUnavailable, ClientGrants, PimConfig, PimGrants, PimSupervisor, Wiring,
+    AccountdUnavailableError, ClientGrants, PimConfig, PimGrants, PimSupervisor, Wiring,
 };
 use sync_vdir::{COLOR, DISPLAYNAME, items_in};
 use sync_xdg::Paths;

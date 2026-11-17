@@ -15,7 +15,7 @@ mod tests;
 use action_core::AgentConfig;
 
 pub use agents::{
-    AddFault, AgentChoice, AgentRecords, AgentRow, Agents, Availability, ChoiceError, Found, KNOWN,
+    AddError, AgentChoice, AgentRecords, AgentRow, Agents, Availability, ChoiceError, Found, KNOWN,
     KnownAgent, ModelState, NewAgent, Offers, Pick, REFRESH_PROGRAM, RefreshRequest, SignInState,
     Source, dirs_of, edit_agent_add, edit_agent_choice, edit_agent_remove, edit_agent_rewind,
     find_known, read_agents, unlisted,

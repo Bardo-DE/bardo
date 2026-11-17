@@ -135,7 +135,7 @@ pub struct CaptureRequest {
 
 /// Why a capture frame failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum CaptureFailure {
+pub enum CaptureError {
     /// The output went away.
     OutputGone,
     /// The client's buffer does not match the session's constraints.
@@ -144,14 +144,14 @@ pub enum CaptureFailure {
     Renderer,
 }
 
-impl CaptureFailure {
+impl CaptureError {
     /// The reason the `failed` event carries.
     #[must_use]
     pub fn reason(self) -> CaptureFailureReason {
         match self {
-            CaptureFailure::OutputGone => CaptureFailureReason::Stopped,
-            CaptureFailure::BufferMismatch => CaptureFailureReason::BufferConstraints,
-            CaptureFailure::Renderer => CaptureFailureReason::Unknown,
+            CaptureError::OutputGone => CaptureFailureReason::Stopped,
+            CaptureError::BufferMismatch => CaptureFailureReason::BufferConstraints,
+            CaptureError::Renderer => CaptureFailureReason::Unknown,
         }
     }
 }
@@ -222,7 +222,7 @@ pub fn apply_ready(
 pub fn apply_failed(
     book: &mut CaptureBook,
     session: CaptureSessionId,
-    why: CaptureFailure,
+    why: CaptureError,
 ) -> Result<(), WaylandError> {
     book.frame_failed(session, why)
 }

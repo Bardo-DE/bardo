@@ -1,6 +1,6 @@
 use speech_wire::{
     HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent as Frame, VoiceFault,
-    VoiceRefusal,
+    VoiceRefusedError,
 };
 
 use super::*;
@@ -246,11 +246,11 @@ fn cancel_discards_the_words_and_asks_nobody() {
 
 #[test]
 fn a_refusal_names_itself_and_consent_opens_the_sheet() {
-    for refusal in VoiceError::ALL {
+    for refusal in VoiceRefusedError::ALL {
         let (state, _) = run(ready(), vec![started(), VoiceEvent::Refused(refusal)]);
         assert_eq!(state.phase, Phase::Idle, "{refusal:?}");
         match refusal {
-            VoiceError::NeedsConsent => {
+            VoiceRefusedError::NeedsConsent => {
                 assert!(state.sheet);
                 assert_eq!(state.notice, Notice::None);
             }
@@ -262,7 +262,7 @@ fn a_refusal_names_itself_and_consent_opens_the_sheet() {
         }
     }
     assert_eq!(
-        notice_line(Notice::Refused(VoiceError::MicUnavailable)),
+        notice_line(Notice::Refused(VoiceRefusedError::MicUnavailable)),
         "No microphone is available."
     );
 }
@@ -271,7 +271,10 @@ fn a_refusal_names_itself_and_consent_opens_the_sheet() {
 fn an_answered_sheet_closes_when_the_settings_say_so() {
     let (asking, _) = run(
         ready(),
-        vec![started(), VoiceEvent::Refused(VoiceError::NeedsConsent)],
+        vec![
+            started(),
+            VoiceEvent::Refused(VoiceRefusedError::NeedsConsent),
+        ],
     );
     let unchanged = VoiceParams::default();
     let (still, _) = step(asking.clone(), told(VoiceCommand::Params(unchanged)));
@@ -293,7 +296,10 @@ fn an_answered_sheet_closes_when_the_settings_say_so() {
 fn an_answer_closes_the_sheet_and_is_recorded_once() {
     let (asking, _) = run(
         ready(),
-        vec![started(), VoiceEvent::Refused(VoiceError::NeedsConsent)],
+        vec![
+            started(),
+            VoiceEvent::Refused(VoiceRefusedError::NeedsConsent),
+        ],
     );
     for answer in [ConsentAnswer::Allow, ConsentAnswer::NotNow] {
         let (closed, effects) = step(asking.clone(), told(VoiceCommand::Answer(answer)));

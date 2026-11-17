@@ -12,6 +12,6 @@ mod text;
 pub use begin::{VoiceBegin, VoiceTarget, VoiceTrigger};
 pub use event::{CancelCause, Level, UtteranceEnd, VoiceEvent, VoiceFault};
 pub use frame::{FrameError, MAX_FRAME, Unframed, frame, seal, unframe};
-pub use refusal::{ERROR_PREFIX, VoiceError};
+pub use refusal::{ERROR_PREFIX, VoiceRefusedError};
 pub use status::{MicState, Speaking, SpeechEnd, VoiceStatus, VoiceUse};
 pub use text::{Envelope, HeardSegment, HeardTail, HeardText, SpeakWire, SpokenText, VoiceVocab};

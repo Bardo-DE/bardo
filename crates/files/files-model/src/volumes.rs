@@ -1,7 +1,7 @@
 //! Disks in the sidebar: the list as told, opening one, ejecting one, and the answers.
 
 use files_core::{
-    EjectFailure, FolderPath, Location, MountError, Volume, VolumeId, VolumeName, VolumeTrouble,
+    EjectError, FolderPath, Location, MountError, Volume, VolumeId, VolumeName, VolumeTrouble,
 };
 
 use crate::browser::Browser;
