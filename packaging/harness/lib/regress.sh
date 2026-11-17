@@ -2,7 +2,7 @@
 # traffic read from the recorded bus, and measurements of a capture. Sourced after accounts.sh.
 #
 # How a sheet is observed. bardo-shell draws it through layer-shell-host, which never runs ui-blitz's debug probe (BARDO_DEBUG_PROBE
-# writes nothing for any bardo-shell surface: only a window of a quire app does), so there is no list of its controls. What is
+# writes nothing for any bardo-shell surface: only a window of a Bardo app does), so there is no list of its controls. What is
 # read instead: what bardo-accountd tells it (Open/Update, the SheetView) and what the person's keys made it send back (Input),
 # both in the bus record (sheet-bus.py); and the capture of its surface (pixels.py): where the card is, whether two
 # captures are the same pixels, where the dark text lies. Text is never read: a text check compares two captures that

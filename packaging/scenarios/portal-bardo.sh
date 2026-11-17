@@ -23,7 +23,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
 BARDO_PORTAL_DIR="$SCEN_SIB/portal"
-BARDO_PORTAL_BIN="$SCEN_BUILD/transom-target/debug/bardo-portal"
+BARDO_PORTAL_BIN="$SCEN_BUILD/portal-target/debug/bardo-portal"
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
   "$SCEN_SIB/shell/dev/lib/all.sh" "$BARDO_PORTAL_BIN" "$BARDO_PORTAL_DIR/dist/bardo.portal" "$BARDO_PORTAL_DIR/dist/bardo-portals.conf"
 for tool in pipewire wireplumber gdbus gst-launch-1.0 /usr/libexec/xdg-desktop-portal; do

@@ -22,7 +22,7 @@
 # Beyond the plan's command line: `--proc /proc` (so PID 1 of the namespace, bwrap, is visible
 # to require_jail, and the host's processes are not), and PATH, USER, LANG, TERM carried in.
 #
-# The person's keys and tokens (harness/secret-paths.list: ~/.ssh, ~/.gnupg, ~/.config/quire-release and others) are
+# The person's keys and tokens (harness/secret-paths.list: ~/.ssh, ~/.gnupg, ~/.config/bardo-release and others) are
 # covered by an empty folder or file, so code run here cannot read them and write them into a --bind dir.
 #
 # Exit codes (plan §6.1): the command's own; 3 = bubblewrap or /dev/udmabuf or a --bind dir missing, or the

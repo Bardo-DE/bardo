@@ -97,7 +97,7 @@ floor_image() {
   local path
   case "$1" in
     bardo-compositorctl | compositor-probe | compositor-shell-exec) path="${SCEN_TOOLS:?floor_image: scenario.sh is not sourced}/bin/$1" ;;
-    bardo-portal) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/transom-target/debug/bardo-portal" ;;
+    bardo-portal) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/portal-target/debug/bardo-portal" ;;
     bardo-shell) path="${FLOOR_SILL_TARGET:-${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/shell-target}/debug/bardo-shell" ;; # FLOOR_SILL_TARGET: the accounts rig runs bardo-shell at its pin
     bardo-accountd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/porter-target/debug/bardo-accountd" ;;
     bardo-syncd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/ferry-target/debug/bardo-syncd" ;; # ferry's, since sync left porter

@@ -72,7 +72,7 @@ print_build() {
 harness/scenario-build.sh --w2
 # which builds, one at a time, into $SCEN_BUILD:
 # 1. bardo-compositor with its test features (headless output, the test control), bardo-compositorctl and fake-logind
-(cd $SCEN_SIB/compositor && CARGO_TARGET_DIR=$SCEN_BUILD/casement-target BARDO_COMPOSITOR_TOOLS=$SCEN_BUILD/tools nice dev/bootstrap.sh --build-only)
+(cd $SCEN_SIB/compositor && CARGO_TARGET_DIR=$SCEN_BUILD/compositor-target BARDO_COMPOSITOR_TOOLS=$SCEN_BUILD/tools nice dev/bootstrap.sh --build-only)
 # 2. private checkouts of the shell and its host library (the scenarios run bardo-shell's scripts from there)
 #    bardo-shell (scenario-build.sh: checkouts) at $SCEN_SIB/shell
 # 3. the shell with its test features (the stand-in screen-brightness file)
@@ -142,15 +142,15 @@ require_models() {
 DK="$SCEN_BUILD/docket-target/debug"
 CUAD="$SCEN_BUILD/cua-target/debug/bardo-computer-use"
 BRINGUP="$DK/agent-bringup"
-QUIREDO="$DK/accept-bardo-do"
+BARDO_DO="$DK/accept-bardo-do"
 REAL_HOME=${JAIL_REAL_HOME:-$HOME}
 BROWSER=${W2_BROWSER:-$REAL_HOME/.local/opt/zen/zen}
 DRAW_DIR=${W2_DRAW_DIR:-$REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0}
 
 require_models
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/shell-target/debug/bardo-shell" "$CUAD" "$BRINGUP" "$QUIREDO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
-scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" casement-target shell-target cua-target docket-target
+  "$SCEN_BUILD/shell-target/debug/bardo-shell" "$CUAD" "$BRINGUP" "$BARDO_DO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
+scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" compositor-target shell-target cua-target docket-target
 [ -x "$BROWSER" ] || die "the browser $BROWSER is not there (set W2_BROWSER to Zen's program)"
 [ -s "$DRAW_DIR/main.js" ] || die "the drawing app is not built at $DRAW_DIR: run $WF/fixtures/w2/build-excalidraw.sh outside the jail"
 for tool in socat curl python3 busctl gdbus; do command -v "$tool" >/dev/null || die "$tool is missing"; done
@@ -330,7 +330,7 @@ step_boot() {
   mkdir -p "$AGENTS"
   build || return 1
   monitor_start
-  stamp casement_up
+  stamp compositor_up
   # bardo-shell takes the floor's caller rows as the person's own (peephole's Proof::Dev) and, with them, the assistant's router.
   { cat "$FLOOR_DIR/desktop-callers.toml"
     printf '\n[[peer]]\napp = "org.bardo.Intents"\nrole = "router"\nexe = ["%s"]\n' "$(readlink -f "$DK/accept-actiond")"
@@ -499,7 +499,7 @@ post_turn() {
   local fifo=$RUN/go pid
   mkfifo "$fifo"
   exec 9<>"$fifo"
-  in_env env -u WAYLAND_DISPLAY sh -c 'read _; exec "$@" </dev/null' _ "$QUIREDO" ask "$SENTENCE" \
+  in_env env -u WAYLAND_DISPLAY sh -c 'read _; exec "$@" </dev/null' _ "$BARDO_DO" ask "$SENTENCE" \
     <&9 >"$RUN/turn.txt" 2>"$RUN/turn.err" &
   ASK_PID=$!
   pid=$ASK_PID

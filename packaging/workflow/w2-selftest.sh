@@ -246,7 +246,7 @@ cp "$FIX/trace.jsonl" "$run/"
 # a row in the shape bardo-companiond writes (by, n, tier, class, shape, route, answer, took_ms, tokens, messages)
 echo '{"by":"bardo-companiond","n":10,"tier":"balanced","class":"prompt","shape":"text","route":["routed to local/x"],"messages":[{"role":"system","text":"You are the assistant of this desktop. Be brief."}],"answer":{"kind":"replied","v":{"text":"Starting.","calls":[{"name":"org_bardo_Companion-companion_task_start","args":"{\"goal\": \"Get the specs of the lamp on this page\", \"kind\": \"research\"}"}],"stop":"tool_use"}},"took_ms":1208,"input_tokens":3122,"output_tokens":41}' >>"$run/trace.jsonl"
 cp "$FIX/audit.jsonl" "$run/agents/.local/state/bardo/inference/audit.jsonl"
-printf 'start\t1000000000000\t1000\ncasement_up\t1005000000000\t1005\nstack_up\t1010000000000\t1010\npage_open\t1015000000000\t1015\nasked\t1020000000000\t1020\nfirst_turn\t1025000000000\t1025\nfirst_screen_step\t1030000000000\t1030\ndrawing_saved\t1100000000000\t1100\nsvg_saved\t1110000000000\t1110\nfinished\t1120000000000\t1120\n' >"$run/stamps.tsv"
+printf 'start\t1000000000000\t1000\ncompositor_up\t1005000000000\t1005\nstack_up\t1010000000000\t1010\npage_open\t1015000000000\t1015\nasked\t1020000000000\t1020\nfirst_turn\t1025000000000\t1025\nfirst_screen_step\t1030000000000\t1030\ndrawing_saved\t1100000000000\t1100\nsvg_saved\t1110000000000\t1110\nfinished\t1120000000000\t1120\n' >"$run/stamps.tsv"
 cp "$scratch/drawings/good.excalidraw" "$run/out/lamp.excalidraw"
 printf '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>\n' >"$run/out/lamp.svg"
 cp "$scratch/bus.jsonl" "$run/bus.jsonl"

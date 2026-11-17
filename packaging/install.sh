@@ -14,10 +14,10 @@
 #   --check        change nothing: look for what the desktop needs on this machine (Fedora, Ubuntu/Debian, Arch;
 #                  the family comes from /etc/os-release) and print the exact dnf, apt or pacman line for what
 #                  is missing; exit 1 when something needed is missing. --runtime-only leaves out the build tools
-#   --only NAMES   just these components (comma separated: old-layout, callers, accounts, inference, sync, models, memory, actions, computer-use, settings, compositor, shell,
+#   --only NAMES   just these components (comma separated: callers, accounts, inference, sync, models, memory, actions, computer-use, settings, compositor, shell,
 #                  portal, input-broker, key-remap, files, mouse-gestures, session, fonts)
 #
-# Order: old-layout (removes what an install of the earlier names left: old units disabled, old programs and /usr/libexec/quire gone), callers (the list of the desktop's own programs, /etc/bardo/desktop-callers.toml, this repo's dist/), accounts (the account daemon bardo-accountd and the caller table), inference (bardo-inferd, the AI broker, and its caller table), sync (the sync daemon bardo-syncd and the helper that shows drives in ~/Cloud, with their units), models (the model catalogue bardo-inferd reads), memory (the memory daemon and its caller table),
+# Order: callers (the list of the desktop's own programs, /etc/bardo/desktop-callers.toml, this repo's dist/), accounts (the account daemon bardo-accountd and the caller table), inference (bardo-inferd, the AI broker, and its caller table), sync (the sync daemon bardo-syncd and the helper that shows drives in ~/Cloud, with their units), models (the model catalogue bardo-inferd reads), memory (the memory daemon and its caller table),
 # actions (the action router, the companion, the reader and the tool server, with their caller tables; they read
 # the accounts), computer-use (the computer-use daemon bardo-computer-use, for apps that are not ours, and its caller table), settings (Settings), compositor (the compositor and
 # its user unit), shell (the shell), portal (the portal backend: screen sharing, screenshots; its
@@ -84,7 +84,7 @@ source "$HERE/install/rootheld.sh"
 source "$HERE/install/check.sh"
 # shellcheck source=install/fonts.sh
 source "$HERE/install/fonts.sh"
-ORDER=(old-layout callers accounts inference sync models memory actions computer-use settings compositor shell portal input-broker key-remap files mouse-gestures session)
+ORDER=(callers accounts inference sync models memory actions computer-use settings compositor shell portal input-broker key-remap files mouse-gestures session)
 
 prefix=${PREFIX:-/usr/local}
 destdir=${DESTDIR:-}
@@ -159,14 +159,6 @@ domain_of() {
 describe() {
   dir="$tree/crates/$(domain_of "$1")" args=() envs=() writes=() yourself="" blurb=""
   case "$1" in
-    old-layout)
-      # What an install of the earlier names left behind: old units disabled, old programs and /usr/libexec/quire removed.
-      dir="$HERE"
-      script=install/old-layout.sh
-      blurb="removes what an install of the earlier names left: old units disabled, old programs, units and files gone (it touches nothing named bardo-*)"
-      args=(--prefix "$prefix" --sysconfdir "$sysconfdir")
-      [ -z "$destdir" ] || args+=(--destdir "$destdir")
-      writes=("$destdir/usr/lib/systemd/system" "$destdir/usr/libexec" "$destdir$sysconfdir") ;;
     callers)
       # The list of the desktop's own programs, a file of this repo (dist/desktop-callers.toml), placed at the fixed
       # /etc/bardo/desktop-callers.toml, root-owned. First on purpose (see the header).

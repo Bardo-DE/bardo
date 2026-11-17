@@ -148,7 +148,7 @@ for name in step_boot step_windows step_dock step_set step_minimise step_clear; 
   STEP_BUDGET=45 step "$name" "$name" || break
 done
 if [ "$STEP_WORST" != 0 ]; then
-  for f in "$(casement_state_dir)"/probe/*.log "$(casement_state_dir)"/bardo-compositor.log; do
+  for f in "$(compositor_state_dir)"/probe/*.log "$(compositor_state_dir)"/bardo-compositor.log; do
     [ -f "$f" ] && { echo "--- $f (tail)" >&2; tail -25 "$f" >&2; }
   done
 fi

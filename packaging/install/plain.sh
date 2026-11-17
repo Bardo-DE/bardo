@@ -22,7 +22,7 @@ target=${CARGO_TARGET_DIR:-$tree/target}
 export CARGO_TARGET_DIR=$target
 log=${XDG_STATE_HOME:-$HOME/.local/state}/bardo/install.log
 
-all=(old-layout callers accounts inference sync models memory actions computer-use settings compositor shell portal input-broker key-remap files mouse-gestures session)
+all=(callers accounts inference sync models memory actions computer-use settings compositor shell portal input-broker key-remap files mouse-gestures session)
 
 [ "${1:-}" != parts ] || { echo "${all[*]}"; exit 0; }
 
@@ -32,7 +32,6 @@ all=(old-layout callers accounts inference sync models memory actions computer-u
 install_part() {
   local c=$tree/crates p=$prefix d=$desktop
   case $1 in
-    old-layout) sudo "$d/install/old-layout.sh" --prefix "$p" --sysconfdir /etc ;;
     callers) sudo "$d/install/system.sh" callers ;;
     accounts) sudo env CARGO_TARGET_DIR="$target" "$c/accounts/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
     inference) sudo env CARGO_TARGET_DIR="$target" "$c/inference/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;

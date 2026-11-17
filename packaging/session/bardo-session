@@ -20,7 +20,7 @@
 # (the backend args, --safe), which the unit's ExecStart reads as $BARDO_COMPOSITOR_SESSION_ARGS. The variable is unset again when
 # the session ends, on every way out. The unit restarts itself on a failure (Restart=on-failure); this script watches it
 # and stops it the moment it leaves the running state, before the restart fires, so the guard below stays the only
-# thing that decides. Where casement's socket is: the unit's STATUS= text ("listening on wayland-1"); its log is in the
+# thing that decides. Where compositor's socket is: the unit's STATUS= text ("listening on wayland-1"); its log is in the
 # journal (`journalctl --user -u bardo-compositor`), and the direct-child path keeps writing $STATE/bardo-compositor.log.
 # A drop-in left by an earlier version of this script ($XDG_RUNTIME_DIR/systemd/user/bardo-compositor.service.d/session.conf) is
 # removed once at the start, so it cannot shadow the unit.
@@ -72,7 +72,7 @@
 # Settings a person may change: ~/.config/bardo-session/session.env (lines NAME=VALUE, read as data first; only
 # BARDO_SESSION_QUICK_SECS, BARDO_SESSION_FIRST_RUN_DELAY and BARDO_SESSION_BACKEND_ARGS count). The same variables, and the
 # others below, are how the harness drives this script, through its environment:
-#   BARDO_SESSION_CASEMENT_CMD   the bardo-compositor command (default: bardo-compositor); words, no quoting. Only the nested,
+#   BARDO_SESSION_COMPOSITOR_CMD   the bardo-compositor command (default: bardo-compositor); words, no quoting. Only the nested,
 #                                  direct-child path uses it: the unit's program is fixed in bardo-compositor.service
 #   BARDO_SESSION_BACKEND_ARGS   its arguments before --safe (default: --backend tty); the unit gets them as
 #                                  BARDO_COMPOSITOR_SESSION_ARGS in the user manager's environment
@@ -166,7 +166,7 @@ guard_state="${BARDO_SESSION_STATE:-${XDG_STATE_HOME:-${HOME:?HOME is not set}/.
 # A log kept across logins must not grow without bound: past this size it is moved to guard.log.1 (one generation).
 guard_log_max=262144
 rollback_helper="${BARDO_SESSION_ROLLBACK_HELPER:-/usr/libexec/bardo/bardo-updater-rollback}"
-read -r -a casement_cmd <<<"${BARDO_SESSION_CASEMENT_CMD:-bardo-compositor}"
+read -r -a compositor_cmd <<<"${BARDO_SESSION_COMPOSITOR_CMD:-bardo-compositor}"
 read -r -a backend_args <<<"${BARDO_SESSION_BACKEND_ARGS---backend tty}"
 unit="${BARDO_SESSION_UNIT:-bardo-compositor.service}"
 # The arguments of this run, which bardo-compositor.service reads as $BARDO_COMPOSITOR_SESSION_ARGS from the user manager's environment.
@@ -212,7 +212,7 @@ elif command -v ibus-daemon >/dev/null; then
 fi
 
 component_pids=()
-casement_pid=
+compositor_pid=
 
 stop_components() {
     local pid
@@ -227,7 +227,7 @@ stop_components() {
 }
 
 on_term() {
-    [ -z "$casement_pid" ] || kill "$casement_pid" 2>/dev/null || true
+    [ -z "$compositor_pid" ] || kill "$compositor_pid" 2>/dev/null || true
     stop_components
     if [ -z "$nested" ]; then
         stop_unit
@@ -236,11 +236,11 @@ on_term() {
 }
 trap on_term TERM INT HUP
 
-# The socket name casement logs ("casement: listening on wayland-1"); empty if it has not yet.
-socket_of() { sed -n 's/^\(casement\|bardo-compositor\): listening on //p' "$1" | head -n 1; }
+# The socket name compositor logs ("compositor: listening on wayland-1"); empty if it has not yet.
+socket_of() { sed -n 's/^\(compositor\|bardo-compositor\): listening on //p' "$1" | head -n 1; }
 
-# The X11 display casement logs ("casement: X11 display :0", before the socket's line); empty when X11 is not served.
-display_of() { sed -n 's/^\(casement\|bardo-compositor\): X11 display //p' "$1" | head -n 1; }
+# The X11 display compositor logs ("compositor: X11 display :0", before the socket's line); empty when X11 is not served.
+display_of() { sed -n 's/^\(compositor\|bardo-compositor\): X11 display //p' "$1" | head -n 1; }
 
 # The environment D-Bus activation and systemd user units see (portals, autostart, Flatpak).
 publish_environment() {
@@ -410,7 +410,7 @@ first_run() {
     "$(bin bardo-settings)" --first-run || log "bardo-settings --first-run exited with $?"
 }
 
-# Start the components against the casement whose socket is $1 (a name in XDG_RUNTIME_DIR) and whose X11 display is
+# Start the components against the compositor whose socket is $1 (a name in XDG_RUNTIME_DIR) and whose X11 display is
 # $2 (empty when X11 apps are not served: then no DISPLAY is handed on, so X11 apps fail instead of finding another X).
 start_components() {
     export WAYLAND_DISPLAY="$1"
@@ -550,20 +550,20 @@ run_unit_to_end() {
 run_child_to_end() {
     local log_file="$state/compositor.log" socket="" tries=0
     # Standard error is bardo-compositor's log and where it names its socket; kept for the guard.
-    "${casement_cmd[@]}" "${backend_args[@]}" "$@" 2>"$log_file" &
-    casement_pid=$!
-    while [ -z "$socket" ] && kill -0 "$casement_pid" 2>/dev/null && [ "$tries" -lt 300 ]; do
+    "${compositor_cmd[@]}" "${backend_args[@]}" "$@" 2>"$log_file" &
+    compositor_pid=$!
+    while [ -z "$socket" ] && kill -0 "$compositor_pid" 2>/dev/null && [ "$tries" -lt 300 ]; do
         socket=$(socket_of "$log_file")
         [ -n "$socket" ] || { sleep 0.1; tries=$((tries + 1)); }
     done
     [ -z "$socket" ] || start_components "$socket" "$(display_of "$log_file")"
     run_status=0
-    wait "$casement_pid" || run_status=$?
-    casement_pid=
+    wait "$compositor_pid" || run_status=$?
+    compositor_pid=
 }
 
 # Run one bardo-compositor (extra args "$@") to its end; sets run_status and run_secs.
-run_casement() {
+run_compositor() {
     local started
     : >"$state/compositor.log"
     started=$(date +%s)
@@ -654,10 +654,10 @@ while :; do
     set_session_mode "$mode"
     if [ "$mode" = safe ]; then
         guard "starting bardo-compositor --safe (pixman, no effects, one output)"
-        run_casement --safe
+        run_bardo-compositor --safe
     else
         guard "starting bardo-compositor (quick exits so far: $quick)"
-        run_casement
+        run_compositor
     fi
     if [ "$run_status" = 0 ]; then
         guard "bardo-compositor ended cleanly after ${run_secs}s: the session is over"

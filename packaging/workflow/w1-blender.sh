@@ -24,9 +24,9 @@
 #   W1_SCREEN_URL    the model that looks at the screen, the same way (a tunnel to the one on fatcat)
 # The script never starts a model. Start the screen model on fatcat yourself, only when you are ready, and stop it after.
 # Optional: W1_PLANNER_MODEL (default qwen3-4b-instruct-2507-fp8), W1_SCREEN_MODEL (default holo4-35b-a3b-fp8),
-# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_CASEMENT / _SILL / _CUA / _DOCKET
-# (build folders, default /mnt/data/cargo/w1-*), W1_CASEMENT, W1_FAKE_LOGIND, W1_SILL, W1_CUAD, W1_BRINGUP,
-# W1_QUIRE_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding bardo-compositor, bardo-shell, ...),
+# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SILL / _CUA / _DOCKET
+# (build folders, default /mnt/data/cargo/w1-*), W1_COMPOSITOR, W1_FAKE_LOGIND, W1_SILL, W1_CUAD, W1_BRINGUP,
+# W1_BARDO_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding bardo-compositor, bardo-shell, ...),
 # W1_STOKER_CATALOG, W1_PROVIDERS, W1_SHOT_EVERY (seconds, default 120).
 #
 # Needs Blender, a browser (Zen, else Firefox), grim (optional, for pictures), python3 3.11+, curl, dbus-daemon and gdbus.
@@ -46,17 +46,17 @@ SHOT_EVERY=${W1_SHOT_EVERY:-120}
 PLANNER_MODEL=${W1_PLANNER_MODEL:-qwen3-4b-instruct-2507-fp8}
 SCREEN_MODEL=${W1_SCREEN_MODEL:-holo4-35b-a3b-fp8}
 
-T_CASEMENT=${W1_TARGET_CASEMENT:-/mnt/data/cargo/w1-casement}
-T_TOOLS=${W1_TARGET_CASEMENT_TOOLS:-/mnt/data/cargo/w1-casement-tools}
+T_COMPOSITOR=${W1_TARGET_COMPOSITOR:-/mnt/data/cargo/w1-compositor}
+T_TOOLS=${W1_TARGET_COMPOSITOR_TOOLS:-/mnt/data/cargo/w1-compositor-tools}
 T_SILL=${W1_TARGET_SILL:-/mnt/data/cargo/w1-sill}
 T_CUA=${W1_TARGET_CUA:-/mnt/data/cargo/w1-cua}
 T_DOCKET=${W1_TARGET_DOCKET:-/mnt/data/cargo/w1-docket}
-CASEMENT=${W1_CASEMENT:-$T_CASEMENT/debug/bardo-compositor}
+COMPOSITOR=${W1_COMPOSITOR:-$T_COMPOSITOR/debug/bardo-compositor}
 FAKE_LOGIND=${W1_FAKE_LOGIND:-$T_TOOLS/debug/fake-logind}
 SILL=${W1_SILL:-$T_SILL/debug/bardo-shell}
 CUAD=${W1_CUAD:-$T_CUA/debug/bardo-computer-use}
 BRINGUP=${W1_BRINGUP:-$T_DOCKET/debug/agent-bringup}
-QUIREDO=${W1_QUIRE_DO:-$T_DOCKET/debug/accept-bardo-do}
+BARDO_DO=${W1_BARDO_DO:-$T_DOCKET/debug/accept-bardo-do}
 
 STARTED=()           # "name pid start-token", in start order
 BUS="" RT="" HOME_S="" AGENTS="" OUT="" DATA_DIRS="" PAGE_URL="" ASKED_NS=0 ASKED_EPOCH=0 ASK_PID="" WL_NAME="" TMP_RT=""
@@ -74,7 +74,7 @@ print_build() {
   cat <<EOF
 # Run these one at a time, nice, from the folder holding the checkouts ($SIB).
 # 1. the desktop window (a plain build: a test build refuses to run outside the jail)
-(cd $SIB/bardo-compositor && CARGO_TARGET_DIR=$T_CASEMENT nice cargo build -p compositor-app -p compositor-ctl)
+(cd $SIB/bardo-compositor && CARGO_TARGET_DIR=$T_COMPOSITOR nice cargo build -p compositor-app -p compositor-ctl)
 # 2. the stand-in for the system's login service, in a folder of its own so test features do not reach step 1
 (cd $SIB/bardo-compositor && CARGO_TARGET_DIR=$T_TOOLS nice cargo build -p compositor-testkit --bin fake-logind)
 # 3. the shell (bar, dock, launcher)
@@ -160,7 +160,7 @@ pick_browser() {
 
 require_built() {
   local missing=0 path
-  for path in "$CASEMENT" "$FAKE_LOGIND" "$SILL" "$CUAD" "$BRINGUP" "$QUIREDO" \
+  for path in "$COMPOSITOR" "$FAKE_LOGIND" "$SILL" "$CUAD" "$BRINGUP" "$BARDO_DO" \
               "$(dirname "$BRINGUP")/accept-actiond" "$(dirname "$BRINGUP")/accept-companiond"; do
     [ -x "$path" ] || { note "Not built yet: $path"; missing=1; }
   done
@@ -300,14 +300,14 @@ write_floor() {
   note "A proposed permission folder is in $RUN/floor. To skip the questions, have the administrator copy it into a root-owned folder and run again with --floor-dir."
 }
 
-start_casement() {
+start_compositor() {
   local args=(--backend winit --clock wall --config-home "$RUN/bardo-compositor-config") waited=0 line
   [ -z "$FLOOR_DIR_GIVEN" ] || args+=(--system-dir "$FLOOR_DIR_GIVEN")
   mkdir -p "$RUN/bardo-compositor-config"
   env HOME="$HOME_S" XDG_RUNTIME_DIR="$RT" WAYLAND_DISPLAY="$PARENT_WL" DBUS_SESSION_BUS_ADDRESS="$BUS" \
     DBUS_SYSTEM_BUS_ADDRESS="$BUS" XDG_CONFIG_HOME="$HOME_S/.config" XDG_DATA_HOME="$HOME_S/.local/share" \
     XDG_STATE_HOME="$HOME_S/.local/state" XDG_CACHE_HOME="$HOME_S/.cache" \
-    "$CASEMENT" "${args[@]}" >"$RUN/bardo-compositor.log" 2>&1 </dev/null &
+    "$COMPOSITOR" "${args[@]}" >"$RUN/bardo-compositor.log" 2>&1 </dev/null &
   BARDO_COMPOSITOR_PID=$!
   record bardo-compositor "$BARDO_COMPOSITOR_PID"
   while [ "$waited" -lt 300 ]; do
@@ -320,7 +320,7 @@ start_casement() {
     sleep 0.1; waited=$((waited + 1))
   done
   [ -n "$WL_NAME" ] || die "the desktop window never opened a place for programs to join (see $RUN/bardo-compositor.log)"
-  stamp casement_up
+  stamp compositor_up
   note "The desktop window is up."
 }
 
@@ -469,7 +469,7 @@ post_turn() {
   local fifo=$RUN/go pid
   mkfifo "$fifo"
   exec 9<>"$fifo"
-  in_env env -u WAYLAND_DISPLAY sh -c 'read _; exec "$@" </dev/null' _ "$QUIREDO" ask "$SENTENCE" \
+  in_env env -u WAYLAND_DISPLAY sh -c 'read _; exec "$@" </dev/null' _ "$BARDO_DO" ask "$SENTENCE" \
     <&9 >"$RUN/turn.txt" 2>"$RUN/turn.err" &
   ASK_PID=$!
   pid=$ASK_PID
@@ -572,7 +572,7 @@ main() {
   prepare_models
   say "Starting"
   start_bus
-  start_casement
+  start_compositor
   start_sill
   start_assistant
   start_screen_helper

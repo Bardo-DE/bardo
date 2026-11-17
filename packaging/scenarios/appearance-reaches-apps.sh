@@ -2,10 +2,10 @@
 # Scenario `appearance-reaches-apps` (plan §4.14): an appearance change through ui-settings reaches
 # every running app, live, on a headless bardo-compositor in the jail.
 #
-# The apps are the bardo-shell daemon's surfaces (bar and Dock): each is a quire ds root that follows
+# The apps are the bardo-shell daemon's surfaces (bar and Dock): each is a Bardo ds root that follows
 # `bardo/appearance.toml` through ui-settings' watch. The change is made the way a settings app
 # makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one); the proof is each
-# surface's own capture (`bardo-shell debug capture`), compared by pixels. Quire apps outside bardo-shell need
+# surface's own capture (`bardo-shell debug capture`), compared by pixels. Bardo apps outside bardo-shell need
 # a screenshot of bardo-compositor (P1-C1): that is the scenario `appearance-reaches-bardo-apps`.
 #
 #   baseline  theme = "light": every surface captured

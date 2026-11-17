@@ -185,7 +185,7 @@ packages_debian() {
     xdg-open) echo xdg-utils ;;
     vulkan-loader) echo libvulkan1 ;;
     vulkan-driver) echo mesa-vulkan-drivers ;;
-    xwayland-satellite) echo "!xwayland-satellite (older X11 apps) is not in the Ubuntu archive; the prebuilt release includes it. To build it yourself you need Rust from rustup (Ubuntu's is too old). First: $XWAYLAND_SATELLITE_APT_LINE   Then, as yourself and never as root: $XWAYLAND_SATELLITE_CARGO_LINE   That puts it in ~/.cargo/bin, which the session's search path may not include; point casement at it with this line under [xwayland] in your own ~/.config/compositor/settings.toml, which you write yourself (the installer never touches it): $XWAYLAND_SATELLITE_CONFIG_LINE" ;;
+    xwayland-satellite) echo "!xwayland-satellite (older X11 apps) is not in the Ubuntu archive; the prebuilt release includes it. To build it yourself you need Rust from rustup (Ubuntu's is too old). First: $XWAYLAND_SATELLITE_APT_LINE   Then, as yourself and never as root: $XWAYLAND_SATELLITE_CARGO_LINE   That puts it in ~/.cargo/bin, which the session's search path may not include; point compositor at it with this line under [xwayland] in your own ~/.config/bardo/compositor/settings.toml, which you write yourself (the installer never touches it): $XWAYLAND_SATELLITE_CONFIG_LINE" ;;
     pipewire) echo pipewire ;;
     pipewire-pulse) echo pipewire-pulse ;;
     wireplumber) echo wireplumber ;;

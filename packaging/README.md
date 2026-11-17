@@ -7,7 +7,7 @@ cargo workspace with one target directory; there are no other repositories to ch
 | Path | What |
 |---|---|
 | `install/plain.sh` | `cargo xtask install`: builds every part as you and installs it with one sudo, a line per part (see Installing) |
-| `install.sh` | installs the desktop: builds what is selected in one cargo run, then runs each component's own installer (`crates/<name>/...`) in order (old-layout, callers, accounts, inference, sync, models, memory, actions, computer-use, settings, compositor, shell, portal, input-broker, key-remap, files, mouse-gestures, session; old-layout, callers, input-broker, key-remap and mouse-gestures are this folder's `install/old-layout.sh` and `install/system.sh`) and the colour emoji font; `--check` lists what the machine lacks with the exact dnf, apt or pacman line; see below and `docs/distros.md` |
+| `install.sh` | installs the desktop: builds what is selected in one cargo run, then runs each component's own installer (`crates/<name>/...`) in order (callers, accounts, inference, sync, models, memory, actions, computer-use, settings, compositor, shell, portal, input-broker, key-remap, files, mouse-gestures, session; callers, input-broker, key-remap and mouse-gestures are this folder's `install/system.sh`) and the colour emoji font; `--check` lists what the machine lacks with the exact dnf, apt or pacman line; see below and `docs/distros.md` |
 | `docs/distros.md` | Ubuntu 24.04+, Fedora and Arch: what is checked, the install lines, picking the session at login, the Ubuntu AppArmor note |
 | `docs/release-notes.md` | the notes for the release being prepared, in plain words (what a person sees change); the text for the release's notes |
 | `install/` (helpers) | `distro.sh` (family from os-release, sudo/doas/pkexec), `packages.sh` (the one package table), `check.sh`, `cargo.sh` (builds the tree from `/` with `--manifest-path`, so the system linker is used; the part to cargo-package table), `fonts.sh` |
@@ -25,7 +25,7 @@ cargo workspace with one target directory; there are no other repositories to ch
 | `release/` | signed release bundle of the whole desktop: `build.sh` (components built from this tree, staged under `/opt/bardo/current`), `pack.sh`, `verify.sh`, `system-files.list` (the system files a release may place, bardo-updater's list), `check-helpers.sh` (bardo-updater's three privileged programs and its polkit file are all in place), `health-scenarios.sh` (the start check: good logins keep a release, failed starts put the previous one back), `selftest.sh` (in `gate/desktop-gate.sh --self`), `README.md` (what to set up once and how to cut a release); built by `.github/workflows/release.yml` and published to the public PoHsuanLai/desktop-releases |
 | `install/` | `install.sh` and `uninstall.sh` for `session/` (`--dry-run`, `--prefix`, `--destdir`, `--sysconfdir`, `--sessions-dir`, `--tree`); it also puts `bardo-compositor.service` and `bardo-shell.service` (from the bardo-compositor and bardo-shell crates) root-held in `<sysconfdir>/systemd/user`, where the account service trusts them as the compositor and the shell; never sudo, never `$HOME`; the uninstall removes exactly the files the install wrote, and only while they are unchanged |
 | `gate/installer-check.sh` | `install.sh` against stub installers in a scratch dir: the dry-run plan and order, PREFIX/DESTDIR passed through, stop at the first failure, no sudo, nothing written to the home |
-| `gate/shell-accept-skips.txt` | the scripts of bardo-shell's `dev/accept.sh --compositor casement` that may SKIP in the phase gate, with the closing phase |
+| `gate/shell-accept-skips.txt` | the scripts of bardo-shell's `dev/accept.sh --compositor compositor` that may SKIP in the phase gate, with the closing phase |
 | `gate/expected-skips.toml` | scenarios not runnable yet, each with a finding id and the closing phase |
 | `scenarios/` | whole-desktop scenarios; each calls `require_jail` first and exits with the plan's codes |
 | `harness/lib/accounts.sh` | what the `accounts-*` scenarios share: the real bardo-accountd, bardo-syncd and bardo-inferd, the accounts' test rig (`account-rig-servers`, `-client`, `-secrets`) and ferry's (`sync-rig-servers`: the OAuth issuer and the Graph fake, `sync-rig-client`: an app talking to bardo-syncd) on bardo-compositor's private bus with bardo-shell drawing the sheets and bardo-settings as Settings; the caller identities (a fixture /proc for the daemons' `test-proc-root` builds); the secret scan (`secret-scan.py`) over a `busctl monitor` record |
@@ -55,9 +55,7 @@ set in the environment.
 `install.sh`, below, is the packaging path (`--destdir`, `--sysconfdir`, a staged tree) and `--check`.
 
 `./install.sh [--dry-run] [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--tree DIR] [--no-build] [--only NAME,...]`
-builds once, then runs each component's own installer (`crates/<name>/...`), in this order: old-layout
-(`install/old-layout.sh`: takes away what an install under the earlier names left, old units disabled, old programs and
-`/usr/libexec/quire` gone, so installing over the old layout is clean), callers
+builds once, then runs each component's own installer (`crates/<name>/...`), in this order: callers
 (`install/system.sh callers`: `/etc/bardo/desktop-callers.toml`, first because the update service and the portal backend read it when they start and refuse every caller without it), accounts
 (`scripts/install.sh`: the account daemon and the caller table), inference (`scripts/install.sh`: bardo-inferd, the AI broker, its unit and caller table), sync (`scripts/install.sh`: the sync daemon bardo-syncd, the helper that shows drives in `~/Cloud`, their units and the activation file; no `--sysconfdir`), models (`scripts/install.sh`: the model catalogue bardo-inferd reads and the engine installer's helper), memory (`scripts/install.sh`: the memory daemon, its unit
 and `/etc/bardo/memoryd-callers.toml`), actions (`scripts/install.sh`: the action router, the companion, the reader, the tool
@@ -74,7 +72,7 @@ installer takes; the first failure stops the run and names the component and wha
 It never runs sudo and never writes under `~/.config` or `/etc` itself. A component runs only when every place
 it writes is writable by you (a user prefix, or a `--destdir`); the rest are printed as "yourself", with the
 command, to run with the right privileges: a system prefix, shell (fixed destinations, its own
-sudo or home files), old-layout, callers, input-broker, key-remap and mouse-gestures outside a `--destdir` (`install/old-layout.sh` and `install/system.sh`, which you run with sudo), models outside a `--destdir` (its installer asks for sudo itself), and memory, actions and computer-use outside a `--destdir` (their caller tables go to the
+sudo or home files), callers, input-broker, key-remap and mouse-gestures outside a `--destdir` (`install/system.sh`, which you run with sudo), models outside a `--destdir` (its installer asks for sudo itself), and memory, actions and computer-use outside a `--destdir` (their caller tables go to the
 fixed `/etc/bardo`; their installers refuse to run as root and ask for sudo for just those steps, so the command is
 printed to run as yourself). Neither takes `--sysconfdir`. `gate/installer-check.sh` tests all of this against stub
 installers.

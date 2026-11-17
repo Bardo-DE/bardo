@@ -42,7 +42,7 @@ GUARD_WORDS = ["Couldn't do that", "I keep getting the same answer", "stopped:",
 # Stage marks the script records (stamps.tsv), in the order they happen, with their plain names.
 STAGES = [
     ("start", "run started"),
-    ("casement_up", "desktop window up"),
+    ("compositor_up", "desktop window up"),
     ("stack_up", "assistant services up"),
     ("page_open", "product page shown"),
     ("asked", "request given to the assistant"),

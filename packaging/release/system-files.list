@@ -12,7 +12,7 @@
 # fails against that pin, so this file and the pin move in the same step. /usr/lib/bardo/key-remap/key-remap.toml is the
 # desktop's vendor defaults for the keyboard daemon (bardo-updater's 18th rule); /etc/bardo/key-remap stays the administrator's and
 # no release places a file there. bardo-mouse-gestures.service is the touchpad daemon's system unit (owner decision 2026-10-17: a system
-# service like keycap), and the two /usr/lib/systemd/user rules are how a user unit named by a row of
+# service like key_remap), and the two /usr/lib/systemd/user rules are how a user unit named by a row of
 # dist/desktop-callers.toml, and the portal frontend's drop-in, reach the computer as plain root-owned files (a link into
 # /opt/bardo/current reads as writable to the unit manager's judge, so such a unit never proves `Full`; release/build.sh
 # `plain_units`). All three need a new bardo-updater helper on every computer, and bardo-updater's list changes with them, in this order.

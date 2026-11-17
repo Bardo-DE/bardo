@@ -35,9 +35,9 @@ export COMPOSITOR=bardo-compositor BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 # The demos that map the shell's surfaces are rows of the caller list as the shell; the ones that keep an exclusive keyboard
 # (accept-modifiers, accept-ime) start through compositor-shell-exec, which asks for the shell's connection and so holds the
 # role itself (harness/lib/compositor-floor.sh).
-floor_shim shell-host-on-casement fcitx5 compositor-shell-exec demo_lock demo_hover demo_scroll demo_ime demo_swipe demo_switcher demo_drag demo_popup_keys
+floor_shim shell-host-on-compositor fcitx5 compositor-shell-exec demo_lock demo_hover demo_scroll demo_ime demo_swipe demo_switcher demo_drag demo_popup_keys
 export BARDO_LAYER_SHELL_HOST_BACKEND=cpu FOOT="$SCEN_TOOLS/bin/foot"
-OUT_DIR=$(scenario_out shell-host-on-casement)
+OUT_DIR=$(scenario_out shell-host-on-compositor)
 
 # One script's verdict: its exit code, within a bound.
 accept() {

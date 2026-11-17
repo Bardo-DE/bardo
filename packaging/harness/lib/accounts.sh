@@ -708,9 +708,9 @@ import json, sys
 w = json.load(sys.stdin)
 print(*[int(v) for v in w[0]["frame"]])'
 }
-# casement_tap X Y: a left click at (X, Y) in the output (the pointer is moved first and given a moment: the app's hover
+# compositor_tap X Y: a left click at (X, Y) in the output (the pointer is moved first and given a moment: the app's hover
 # state must catch up before a press counts).
-casement_tap() {
+compositor_tap() {
   bardo-compositorctl debug inject "move $1 $2" >/dev/null || return 1
   bardo-compositorctl debug wait settled --timeout 10000 >/dev/null 2>&1
   sleep 0.3
@@ -725,12 +725,12 @@ detent_click() {
   read -r x y w h < <(detent_frame) || return 1
   local rx=$1
   [ "$rx" -ge 0 ] || rx=$((w + rx))
-  casement_tap $((x + rx)) $((y + $2))
+  compositor_tap $((x + rx)) $((y + $2))
 }
 
 # --- bardo-settings's controls by role and name ----------------------------------------------------------------------------
 # bardo-settings runs with BARDO_DEBUG_PROBE (detent_start), built with ui-blitz's `debug-probe` feature (scenario-build.sh):
-# its window lists every control by ARIA role and accessible name with its box (quire's ui-blitz probe). A scenario
+# its window lists every control by ARIA role and accessible name with its box (Bardo's ui-blitz probe). A scenario
 # presses "button Manage", never a place. The roles are the ones the markup has: button, switch, option (a sidebar row),
 # checkbox, textbox ...; the name is the aria-label, else the visible text.
 
@@ -769,7 +769,7 @@ detent_press() {
     read -r cx cy <<<"$c1"
   done
   [ "$cy" -lt $((h - 16)) ] || { echo "detent_press: $role \"$name\" stays below the window (y $cy of $h) after scrolling" >&2; return 1; }
-  casement_tap $((x + cx)) $((y + cy))
+  compositor_tap $((x + cx)) $((y + cy))
 }
 
 # detent_focus: the first press into a window only focuses it (bardo-settings's own grab zones take the next), so one harmless

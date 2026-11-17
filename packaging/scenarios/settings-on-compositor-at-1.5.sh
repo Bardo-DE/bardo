@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Scenario `bardo-settings-on-casement-at-1.5` (plan 20 §5.2, P0 exit): bardo-settings maps, resizes and is crisp at
+# Scenario `bardo-settings-on-compositor-at-1.5` (plan 20 §5.2, P0 exit): bardo-settings maps, resizes and is crisp at
 # output scale 1.5 on a headless bardo-compositor, in the jail.
 #
 # bardo-settings (the Settings app, built from this tree by harness/scenario-build.sh) runs against bardo-compositor's
@@ -16,7 +16,7 @@
 #            window's sidebar edge (a known element: a 240-logical-pixel sidebar, white against the
 #            content grey, with its 1-logical-pixel rule) is on physical column 360 exactly, with no
 #            smeared pixels around it, on every row of the sidebar. A tier-P byte golden is not used:
-#            the page's text and icons move with every quire pin; the geometry is what scale 1.5 decides.
+#            the page's text and icons move with every Bardo pin; the geometry is what scale 1.5 decides.
 #
 # budget: 180
 # Exit: 0 pass | 1 a step failed | 2 outside the jail | 3 artefacts missing (harness/scenario-build.sh).

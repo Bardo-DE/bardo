@@ -113,8 +113,8 @@ cargo install --locked --git https://github.com/Supreeeme/xwayland-satellite --t
 ```
 
 That puts `xwayland-satellite` in `~/.cargo/bin`, which the session's search path may not include. bardo-compositor has a
-setting for the program's place, so point it there with one line in your own `~/.config/compositor/settings.toml`
-(or `$XDG_CONFIG_HOME/compositor/settings.toml`), under the heading `[xwayland]`, with your own home folder written out
+setting for the program's place, so point it there with one line in your own `~/.config/bardo/compositor/settings.toml`
+(or `$XDG_CONFIG_HOME/bardo/compositor/settings.toml`), under the heading `[xwayland]`, with your own home folder written out
 in full (bardo-compositor does not expand `~`):
 
 ```

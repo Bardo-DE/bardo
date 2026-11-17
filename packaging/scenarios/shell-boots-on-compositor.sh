@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Scenario `bardo-shell-boots-on-casement` (plan §4.14): bardo-shell boots on bardo-compositor headless, in the jail.
+# Scenario `bardo-shell-boots-on-compositor` (plan §4.14): bardo-shell boots on bardo-compositor headless, in the jail.
 #
 # The jail, a headless bardo-compositor and the bardo-shell daemon on one private bus come up through bardo-shell's own
-# dev/lib (start_compositor, launch_daemon: what `dev/accept.sh --compositor casement` uses); this
+# dev/lib (start_compositor, launch_daemon: what `dev/accept.sh --compositor compositor` uses); this
 # script only asserts the boot. Steps, each waiting on what it needs (a socket, a ping, a frame
 # counter), never on a fixed sleep:
 #   boot      bardo-compositor up, the daemon answers `ping`
@@ -22,10 +22,10 @@ scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-composit
 
 export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-floor_shim bardo-shell-boots-on-casement bardo-shell   # bardo-shell takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
+floor_shim bardo-shell-boots-on-compositor bardo-shell   # bardo-shell takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
-OUT_DIR=$(scenario_out bardo-shell-boots-on-casement)
+OUT_DIR=$(scenario_out bardo-shell-boots-on-compositor)
 
 cleanup() {
   stop_daemon

@@ -163,7 +163,7 @@ build_shell() {
   put_system 644 "$d/dist/modules-load.d/bardo-shell-ddc.conf" /etc/modules-load.d/bardo-shell-ddc.conf
   # The shell's key-remap layer (the folder is named key-remap in the shell crate once it is renamed there).
   local layer="$d/dist/key-remap/key-remap.toml"
-  [ -f "$layer" ] || layer="$d/dist/keycap/keycap.toml"
+  [ -f "$layer" ] || layer="$d/dist/key_remap/key-remap.toml"
   put 644 "$layer" share/bardo/shell/key-remap.toml
   # The shell's unit, root-held like the compositor's (the account service trusts fixed roles only from such units; plain_units below).
   put 644 "$d/dist/bardo-shell.service" lib/systemd/user/bardo-shell.service

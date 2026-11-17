@@ -105,7 +105,7 @@ step_d1_names() {
   reg_verdict
 }
 
-# The line under Sign in again is inline help (quire's FieldRow shows its help under the label unless a page asks for an info
+# The line under Sign in again is inline help (Bardo's FieldRow shows its help under the label unless a page asks for an info
 # button, and bardo-settings does not). The row is a probed group named by its label, so the help line is measured where it is
 # drawn: the ink in the row's label column (the box of the row up to the Sign in again button, which is the same title for
 # both accounts), in the capture of the account's page. Text is not read, only how much of it there is.

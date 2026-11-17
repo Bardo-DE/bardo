@@ -75,7 +75,7 @@ inst_build() { env -u PREFIX -u DESTDIR -u SYSCONFDIR -u RUSTFLAGS -u CARGO_TARG
 plan=$(inst --dry-run --destdir "$dest") || fail "dry run failed"
 [ ! -s "$log" ] || fail "the dry run ran an installer: $(cat "$log")"
 order=$(printf '%s\n' "$plan" | grep -E '^[0-9]+\.' | awk '{print $2}' | tr '\n' ' ')
-[ "$order" = "old-layout callers accounts inference sync models memory actions computer-use settings compositor shell portal input-broker key-remap files mouse-gestures session " ] || fail "plan order is: $order"
+[ "$order" = "callers accounts inference sync models memory actions computer-use settings compositor shell portal input-broker key-remap files mouse-gestures session " ] || fail "plan order is: $order"
 printf '%s\n' "$plan" | grep -q 'callers .*runs .*install/system.sh callers --destdir' || fail "the callers table is not placed first, into the staging root: $plan"
 printf '%s\n' "$plan" | grep -q 'input-broker .*runs .*install/system.sh input-broker --prefix /usr/local --destdir' || fail "the input service does not run into a staging root: $plan"
 printf '%s\n' "$plan" | grep -q 'key-remap .*runs .*install/system.sh key-remap --prefix /usr/local --destdir' || fail "the keyboard map is not placed by the desktop's own script: $plan"

@@ -108,7 +108,7 @@ If the build is later split into parallel jobs, each job may supply only the pat
 `bin/bardo-input-broker` or `bardo-input-broker.service`, say), anything that is not a plain file or folder, or a path that two jobs both supply. A component
 that starts to install a new file needs a line for it in that list. The job is taken from the artifact, not from a file name: the pack job
 downloads each `stage-JOB` artifact into a folder of its own (no `merge-multiple`) and the check refuses a folder that holds anything but
-exactly its own `stage-JOB.tar`, so an artifact `stage-x` holding a file `stage-turnstile.tar` is not bardo-input-broker's.
+exactly its own `stage-JOB.tar`, so an artifact `stage-x` holding a file `stage-input-broker.tar` is not bardo-input-broker's.
 
 ## First install on a machine
 
@@ -155,7 +155,7 @@ at the version it has: the release is refused whole and says why. `release/syste
 the same step; until then `release/check-system-list.sh` fails against the old pin, on purpose.
 
 Carried by a release: `/usr/lib/bardo/key-remap/key-remap.toml` (Caps Lock switches the input method), bardo-key-remap's vendor file. `/etc/bardo/key-remap/key-remap.toml` stays the
-administrator's and no release or install writes it; bardo-key-remap lays it over the vendor file. Slipway's list gained the rule after the first release that
+administrator's and no release or install writes it; bardo-key-remap lays it over the vendor file. The updater's list gained the rule after the first release that
 carries the input service, so a computer whose helper is older than that rule must re-run bardo-updater's install by hand before the release that lists it
 (an older helper refuses that release whole). `./install.sh` places the same file (`install/system.sh bardo-key-remap`, replacing it each time).
 

@@ -61,7 +61,7 @@ contains debian-note "$(family_notes debian xwayland-satellite)" "not in the Ubu
 expect no-note "$(family_notes arch xwayland-satellite)" ""
 contains debian-note-cargo "$(family_notes debian xwayland-satellite)" "cargo install --locked --git https://github.com/Supreeeme/xwayland-satellite --tag $XWAYLAND_SATELLITE_TAG"
 contains debian-note-config "$(family_notes debian xwayland-satellite)" 'satellite = "'
-contains debian-note-config-file "$(family_notes debian xwayland-satellite)" "~/.config/compositor/settings.toml"
+contains debian-note-config-file "$(family_notes debian xwayland-satellite)" "~/.config/bardo/compositor/settings.toml"
 ! family_notes debian xwayland-satellite | grep -q "sudo cargo" || fail "the note offers sudo cargo"
 # the source-install tag and the release bundle's tag are the same.
 expect satellite-tag "$(sed -n 's/^SATELLITE_TAG=//p' "$HERE/../release/build.sh")" "$XWAYLAND_SATELLITE_TAG"

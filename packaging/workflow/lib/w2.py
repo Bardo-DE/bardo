@@ -44,7 +44,7 @@ SENTENCE = ("Get the specs of the lamp on this page, then draw its front view wi
 # Stage marks the scenario records (stamps.tsv), in the order they happen, with their plain names.
 STAGES = [
     ("start", "run started"),
-    ("casement_up", "desktop window up"),
+    ("compositor_up", "desktop window up"),
     ("stack_up", "assistant services up"),
     ("page_open", "lamp page and drawing app shown"),
     ("asked", "request given to the assistant"),

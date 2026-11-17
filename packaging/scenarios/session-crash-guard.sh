@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scenario `session-crash-guard` (plan P1-SESS): session/bardo-session's crash-loop guard, in the jail.
 #
-# bardo-session runs a stand-in for bardo-compositor (this script's `--fake-casement` mode) that starts the
+# bardo-session runs a stand-in for bardo-compositor (this script's `--fake-compositor` mode) that starts the
 # real headless bardo-compositor with two outputs and, unless it was given --safe, injects
 # `bardo-compositorctl debug fault panic-after-frames 1` so it panics at once. The session must then:
 #   guard       start bardo-compositor three times, each ending in a quick exit, then start `bardo-compositor --safe`
@@ -29,35 +29,35 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SELF="$HERE/$(basename "${BASH_SOURCE[0]}")"
 
 # A stand-in bardo-compositor that serves X11: it names a display, then its socket, and stays up.
-if [ "${1:-}" = --x11-casement ]; then
+if [ "${1:-}" = --x11-compositor ]; then
   echo "bardo-compositor: X11 display :7" >&2
   echo "bardo-compositor: listening on wayland-x11" >&2
   exec sleep 300
 fi
 
 # The stand-in bardo-compositor the session runs. Inside the jail's scenario environment (bus, tools).
-if [ "${1:-}" = --fake-casement ]; then
+if [ "${1:-}" = --fake-compositor ]; then
   shift
-  real="${FAKE_CASEMENT_TOOLS:?}/bin/bardo-compositor"
+  real="${FAKE_COMPOSITOR_TOOLS:?}/bin/bardo-compositor"
   # What the session told its children about the kind of run (NEW-ROOT-4): one line per start.
-  [ -z "${FAKE_CASEMENT_MODE_LOG:-}" ] || echo "${BARDO_SESSION_MODE:-unset}" >>"$FAKE_CASEMENT_MODE_LOG"
+  [ -z "${FAKE_COMPOSITOR_MODE_LOG:-}" ] || echo "${BARDO_SESSION_MODE:-unset}" >>"$FAKE_COMPOSITOR_MODE_LOG"
   safe=0
   for arg in "$@"; do [ "$arg" != --safe ] || safe=1; done
-  if [ "$safe" = 1 ] && [ "${FAKE_CASEMENT_ALWAYS_PANIC:-}" != 1 ]; then
+  if [ "$safe" = 1 ] && [ "${FAKE_COMPOSITOR_ALWAYS_PANIC:-}" != 1 ]; then
     exec "$real" "$@"
   fi
   "$real" "$@" &
   pid=$!
   trap 'kill "$pid" 2>/dev/null' TERM INT
   for _ in $(seq 100); do
-    "$FAKE_CASEMENT_TOOLS/bin/bardo-compositorctl" debug fault panic-after-frames 1 >/dev/null 2>&1 && break
+    "$FAKE_COMPOSITOR_TOOLS/bin/bardo-compositorctl" debug fault panic-after-frames 1 >/dev/null 2>&1 && break
     kill -0 "$pid" 2>/dev/null || break
     sleep 0.1
   done
   # Pointer moves keep frames coming, so the injected panic fires even on an idle output.
   ( x=10; while kill -0 "$pid" 2>/dev/null; do
       x=$(( x % 700 + 10 ))
-      "$FAKE_CASEMENT_TOOLS/bin/bardo-compositorctl" debug inject "move $x 100" >/dev/null 2>&1
+      "$FAKE_COMPOSITOR_TOOLS/bin/bardo-compositorctl" debug inject "move $x 100" >/dev/null 2>&1
       sleep 0.1
     done ) &
   nudger=$!
@@ -108,8 +108,8 @@ start_session() {
   STATE="$OUT_DIR/state-$name"
   rm -rf "$STATE"
   env XDG_RUNTIME_DIR="$RUN" BARDO_SESSION_NESTED=1 BARDO_SESSION_STATE="$STATE" \
-    BARDO_SESSION_QUICK_SECS=30 FAKE_CASEMENT_TOOLS="$SCEN_TOOLS" FAKE_CASEMENT_MODE_LOG="$OUT_DIR/modes-$name.log" \
-    BARDO_SESSION_CASEMENT_CMD="$SELF --fake-casement" \
+    BARDO_SESSION_QUICK_SECS=30 FAKE_COMPOSITOR_TOOLS="$SCEN_TOOLS" FAKE_COMPOSITOR_MODE_LOG="$OUT_DIR/modes-$name.log" \
+    BARDO_SESSION_COMPOSITOR_CMD="$SELF --fake-compositor" \
     BARDO_SESSION_BACKEND_ARGS="--backend headless --clock wall --outputs A-1:800x600@60000:120:0,0;B-1:800x600@60000:120:800,0 --system-dir $FLOOR_DIR" \
     "$@" "$HERE/../session/bardo-session" >"$OUT_DIR/session-$name.log" 2>&1 &
   SESSION_PID=$!
@@ -158,7 +158,7 @@ safe_stays_up_on_one_output() {
 
 safe_failing_ends_the_session() {
   local rc=0
-  start_session ends FAKE_CASEMENT_ALWAYS_PANIC=1 BARDO_SESSION_ROLLBACK_HELPER="$(type -P true)"
+  start_session ends FAKE_COMPOSITOR_ALWAYS_PANIC=1 BARDO_SESSION_ROLLBACK_HELPER="$(type -P true)"
   wait_for 600 bash -c "! kill -0 $SESSION_PID" || { echo "the session did not end" >&2; return 1; }
   wait "$SESSION_PID" || rc=$?
   SESSION_PID=
@@ -215,7 +215,7 @@ components_start_and_end_with_the_session() {
   local d="$OUT_DIR/stubs" log="$OUT_DIR/stubs.log" want
   stub_components
   start_session comps PAM_KWALLET5_LOGIN=1 BARDO_SESSION_STUBS="$d" BARDO_SESSION_FIRST_RUN_DELAY=1 \
-    BARDO_SESSION_CASEMENT_CMD="$SCEN_TOOLS/bin/bardo-compositor"
+    BARDO_SESSION_COMPOSITOR_CMD="$SCEN_TOOLS/bin/bardo-compositor"
   wait_for 300 grep -q 'bardo-settings --first-run' "$log" || { echo "no first run:" >&2; cat "$log" >&2; return 1; }
   [ "$(count '^bardo-shell run' "$log")" -ge 2 ] || { sleep 3; [ "$(count '^bardo-shell run' "$log")" -ge 2 ]; } \
     || { echo "bardo-shell was not started again after it exited:" >&2; cat "$log" >&2; return 1; }
@@ -234,7 +234,7 @@ components_start_and_end_with_the_session() {
 the_x11_display_reaches_the_shell() {
   local d="$OUT_DIR/stubs"
   stub_components
-  start_session x11 BARDO_SESSION_STUBS="$d" BARDO_SESSION_FIRST_RUN_DELAY=1 BARDO_SESSION_CASEMENT_CMD="$SELF --x11-casement"
+  start_session x11 BARDO_SESSION_STUBS="$d" BARDO_SESSION_FIRST_RUN_DELAY=1 BARDO_SESSION_COMPOSITOR_CMD="$SELF --x11-compositor"
   wait_for 300 test -s "$OUT_DIR/bardo-shell-display" || { echo "bardo-shell never started:" >&2; cat "$OUT_DIR/stubs.log" >&2; return 1; }
   stop_session
   [ "$(head -n 1 "$OUT_DIR/bardo-shell-display")" = :7 ] || { echo "bardo-shell's DISPLAY was: $(head -n 1 "$OUT_DIR/bardo-shell-display")" >&2; return 1; }

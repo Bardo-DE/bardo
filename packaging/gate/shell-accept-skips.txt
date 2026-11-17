@@ -1,4 +1,4 @@
-# The scripts of bardo-shell's dev/accept.sh --compositor casement that may exit SKIP (2) in the phase gate:
+# The scripts of bardo-shell's dev/accept.sh --compositor the compositor that may exit SKIP (2) in the phase gate:
 # "<script> <closes> <why>". `closes` is the phase whose exit needs the skip gone (P<n>), or `never`
 # for a limit of the jail itself. A script that skips without a line here fails the gate; so does a
 # line whose phase has closed and whose script still skips (desktop-gate.sh --phase P<n>).

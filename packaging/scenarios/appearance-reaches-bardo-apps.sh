@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Scenario `appearance-reaches-bardo-apps` (plan §4.14, the second half of appearance-reaches-apps; FD-08, P1):
-# an appearance change written to `bardo/appearance.toml` reaches a quire app that is not bardo-shell,
+# an appearance change written to `bardo/appearance.toml` reaches a Bardo app that is not bardo-shell,
 # running on the jailed headless bardo-compositor.
 #
-# The app is bardo-settings (the Settings app, built from this tree by harness/scenario-build.sh): a quire ds
+# The app is bardo-settings (the Settings app, built from this tree by harness/scenario-build.sh): a Bardo ds
 # root that follows `bardo/appearance.toml` through ui-settings' watch. The change is made the way a
 # settings app makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one). The proof is
 # pixels: `bardo-compositorctl shot --output` (P1-C1: the output's last frame through the debug bus), cropped to the
@@ -28,10 +28,10 @@ scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-composit
 
 export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-floor_shim appearance-quire bardo-compositorctl bardo-settings bardo-compositor   # bardo-compositorctl shot watches the screen; bardo-settings is the Settings app (both run from build/)
+floor_shim appearance-bardo bardo-compositorctl bardo-settings bardo-compositor   # bardo-compositorctl shot watches the screen; bardo-settings is the Settings app (both run from build/)
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
-OUT_DIR=$(scenario_out appearance-quire)
+OUT_DIR=$(scenario_out appearance-bardo)
 BARDO_SETTINGS_PID=
 BASE_LUM=
 

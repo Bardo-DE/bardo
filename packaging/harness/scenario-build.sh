@@ -7,9 +7,9 @@
 #   build/tools/bin/{bardo-compositor,bardo-compositorctl,compositor-probe,compositor-shell-exec,fake-logind} bardo-compositor's dev/bootstrap.sh --build-only
 #   build/tools/bin/foot                                                 the host's (install foot from your distro), else, on Fedora only, its rpm (dnf download, unpacked)
 #   build/shell-target/debug/bardo-shell                                         bardo-shell with --features debug (the fake DDC)
-#   build/transom-target/debug/bardo-portal                                  bardo-portal (the portal backend), for portal-bardo; needs libpipewire-devel and clang
+#   build/portal-target/debug/bardo-portal                                  bardo-portal (the portal backend), for portal-bardo; needs libpipewire-devel and clang
 #   build/shell-host-target/debug/examples/demo_*                        layer-shell-host's real-input demos
-#   build/detent-target/debug/bardo-settings                                     bardo-settings with ui-blitz/debug-probe, for the accounts-* and bardo-settings-on-casement-at-1.5 scenarios
+#   build/detent-target/debug/bardo-settings                                     bardo-settings with ui-blitz/debug-probe, for the accounts-* and bardo-settings-on-compositor-at-1.5 scenarios
 #   build/shell-probe-target/debug/bardo-shell                                   bardo-shell with --features debug,ui-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for bardo-shell's surfaces)
 #   build/porter-target/debug/bardo-accountd                                   porter's bardo-accountd, a test-proc-root build
 #   build/ferry-target/debug/bardo-syncd                                       ferry's bardo-syncd, a test-proc-root build (the sync daemon left porter)
@@ -60,9 +60,9 @@ built_at() {
   printf 'bardo %s\n' "$(git -C "$SCEN_TREE" rev-parse HEAD)" >"$target/BUILT_AT"
 }
 
-build_casement() {
-  (cd "$SCEN_SIB/compositor" && CARGO_TARGET_DIR="$SCEN_BUILD/casement-target" BARDO_COMPOSITOR_TOOLS="$SCEN_BUILD/tools" \
-    dev/bootstrap.sh --build-only) && built_at casement-target
+build_compositor() {
+  (cd "$SCEN_SIB/compositor" && CARGO_TARGET_DIR="$SCEN_BUILD/compositor-target" BARDO_COMPOSITOR_TOOLS="$SCEN_BUILD/tools" \
+    dev/bootstrap.sh --build-only) && built_at compositor-target
 }
 
 fetch_foot() {
@@ -82,7 +82,7 @@ fetch_foot() {
   chmod +x "$bin"
 }
 
-# bardo-settings is built with quire's ui-blitz `debug-probe` feature (a feature of a direct dependency, so bardo-settings's own manifest
+# bardo-settings is built with Bardo's ui-blitz `debug-probe` feature (a feature of a direct dependency, so bardo-settings's own manifest
 # is untouched): with BARDO_DEBUG_PROBE=<dir> set it lists its controls by role and name (harness/lib/accounts.sh,
 # detent_press). Never a release build.
 build_detent() {
@@ -95,8 +95,8 @@ build_sill() {
 }
 
 # bardo-portal, --locked (the tree's Cargo.lock is never changed).
-build_transom() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/transom-target" cargo build -p portal-daemon --features debug --locked)
+build_portal() {
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/portal-target" cargo build -p portal-daemon --features debug --locked)
 }
 
 # The demos layer-shell-host's accept scripts run, built the way those scripts build them (two cargo
@@ -161,7 +161,7 @@ if [ "$only_accounts" = 0 ] && [ "$only_w2" = 0 ] && [ ! -x "$SCEN_BUILD/tools/b
   exit 3
 fi
 
-stage "bardo-compositor (bootstrap --build-only)" build_casement
+stage "bardo-compositor (bootstrap --build-only)" build_compositor
 if [ "$only_w2" = 1 ]; then
   stage "bardo-shell (--features debug)" build_sill
   stage "bardo-computer-use (--features fixture-callers)" build_cuad
@@ -173,7 +173,7 @@ if [ "$only_accounts" = 0 ]; then
   stage "foot" fetch_foot
   stage "bardo-shell (--features debug)" build_sill
   stage "layer-shell-host demos" build_shell_host
-  stage "bardo-portal" build_transom
+  stage "bardo-portal" build_portal
 fi
 stage "bardo-settings (with the debug probe)" build_detent
 stage "bardo-shell with the debug probe" build_sill_probe

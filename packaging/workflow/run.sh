@@ -54,7 +54,7 @@ wants() { [ "$PART" = all ] || [ "$PART" = "$1" ]; }
 require_session() {
   [ -z "${JAIL_SCRATCH:-}" ] || die "this is the test jail; run it on your real login"
   [ -n "${WAYLAND_DISPLAY:-}" ] || die "no Wayland display: run it in a terminal inside the bardo-shell (bardo-compositor) session"
-  [ "${XDG_CURRENT_DESKTOP:-}" = quire ] || [ -n "${BARDO_COMPOSITOR_SOCKET:-}" ] || pgrep -u "$USER" -x bardo-compositor >/dev/null \
+  [ "${XDG_CURRENT_DESKTOP:-}" = bardo ] || [ -n "${BARDO_COMPOSITOR_SOCKET:-}" ] || pgrep -u "$USER" -x bardo-compositor >/dev/null \
     || die "this is not the bardo-shell (bardo-compositor) session; log in to it first"
   command -v python3 >/dev/null || die "python3 is missing"
   python3 -c 'import tomllib' 2>/dev/null || die "python3 is older than 3.11 (no tomllib)"

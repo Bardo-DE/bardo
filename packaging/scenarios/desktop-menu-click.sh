@@ -4,7 +4,7 @@
 # A deliberate press-drag-release onto the item still picks it (the menu is not just broken).
 #
 # The jail, a headless bardo-compositor and the bardo-shell daemon on one private bus come up as in
-# bardo-shell-boots-on-casement. Nothing owns org.bardo.Settings on the private bus, so a pick of
+# bardo-shell-boots-on-compositor. Nothing owns org.bardo.Settings on the private bus, so a pick of
 # "Change Wallpaper…" shows as bardo-shell's log line "opening Settings".
 #   boot      bardo-compositor up, the daemon answers `ping`, the wallpaper has drawn
 #   jitter    right press, a 2 px drift down-right, release: no Settings
