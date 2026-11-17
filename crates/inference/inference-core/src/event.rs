@@ -3,8 +3,8 @@
 use crate::pick::{Declined, Why};
 use crate::pipeline::StageRole;
 use crate::readiness::Readiness;
-use crate::reply::{InferReply, ServedBy, TokenUsage};
-use crate::request::{InferRequest, ToolCallPart};
+use crate::reply::{InferReply, ServedBy, TurnUsage};
+use crate::request::{InferRequest, ToolCall};
 use crate::speech::{AudioFrame, AudioFrameOut, HeardDelta};
 use base_ids::Count;
 use computer_use_action::{CuaAction, WindowSpace};
@@ -66,11 +66,11 @@ pub enum InferEvent {
     /// Reasoning so far.
     ThoughtDelta(String),
     /// A function call the model made.
-    ToolCall(ToolCallPart),
+    ToolCall(ToolCall),
     /// A computer-use action as parsed, for the acting-here glow preview.
     ActionProposed(CuaAction<WindowSpace>),
     /// Tokens spent so far.
-    Usage(TokenUsage),
+    Usage(TurnUsage),
     /// What the recogniser has heard.
     Heard(HeardDelta),
     /// A piece of synthesised speech.

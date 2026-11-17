@@ -2,30 +2,16 @@
 //! call, how many at once, how long the reply may be, whether it reasons, how it samples, where
 //! it stops. All typed: there is no untyped parameter bag, so a knob is a field here or it does
 //! not exist. The vocabulary (`Knob`, `ToolChoice`, `Reasoning`, ...) is stoker's `model-provider`
-//! one, re-exported; only the sampling numbers keep porter's units.
+//! one, re-exported; sampling included.
 
 use crate::scores::ScoreOptions;
-use base_ids::{Count, Permille, Tokens};
+use base_ids::Tokens;
 use serde::{Deserialize, Serialize};
 
 pub use model_provider::{
-    Effort, Knob, Reasoning, Seed, StopReason, ThoughtSeal, ToolChoice, ToolParallelism,
+    Effort, Knob, Milli, Reasoning, Sampling, Seed, StopReason, ThoughtSeal, ToolChoice,
+    ToolParallelism,
 };
-
-/// How a model samples its next token. Thousandths: `Permille(700)` is a temperature of 0.7.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct Sampling {
-    /// Temperature.
-    pub temperature: Permille,
-    /// Nucleus cut-off.
-    pub top_p: Knob<Permille>,
-    /// Keep the k likeliest tokens.
-    pub top_k: Knob<Count>,
-    /// Drop tokens under this share of the likeliest.
-    pub min_p: Knob<Permille>,
-    /// For a repeatable reply.
-    pub seed: Knob<Seed>,
-}
 
 /// Everything a chat turn asks beyond its messages and shape.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

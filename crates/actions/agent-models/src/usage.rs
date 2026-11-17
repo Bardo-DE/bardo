@@ -2,13 +2,13 @@
 //! and the charge the provider reported.
 
 use action_core::{TokenTotals, TurnReport};
-use inference_core::TokenUsage;
+use inference_core::TurnUsage;
 
 /// The ledger's report for a turn that used `usage`. The charge is whatever the provider
 /// reported, passed through as it came: never worked out from a price, and `None` when the
 /// provider said nothing.
 #[must_use]
-pub fn report_of(usage: TokenUsage) -> TurnReport {
+pub fn report_of(usage: TurnUsage) -> TurnReport {
     TurnReport {
         tokens: TokenTotals {
             input: usage.input,
@@ -26,12 +26,13 @@ mod tests {
     use model_provider::Money;
     use rust_decimal::Decimal;
 
-    fn usage(input: u32, output: u32, cached: u32, charge: Option<Money>) -> TokenUsage {
-        TokenUsage {
+    fn usage(input: u32, output: u32, cached: u32, charge: Option<Money>) -> TurnUsage {
+        TurnUsage {
             input: Tokens(input),
             output: Tokens(output),
             cached: Tokens(cached),
             charge,
+            ..TurnUsage::default()
         }
     }
 

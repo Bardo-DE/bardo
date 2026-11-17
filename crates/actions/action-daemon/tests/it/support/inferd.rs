@@ -13,7 +13,7 @@ use inference_client::{Transport, TransportError};
 use inference_core::testing::{FakeInferSession, Script, ScriptStep};
 use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferReply, InferSession, OpenOptions, RequestKind,
-    ServedBy, SessionError, StopReason, TokenUsage,
+    ServedBy, SessionError, StopReason, TurnUsage,
 };
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
@@ -124,12 +124,13 @@ pub fn served() -> ServedBy {
     }
 }
 
-pub fn usage() -> TokenUsage {
-    TokenUsage {
+pub fn usage() -> TurnUsage {
+    TurnUsage {
         input: base_ids::Tokens(1),
         output: base_ids::Tokens(1),
         cached: base_ids::Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 

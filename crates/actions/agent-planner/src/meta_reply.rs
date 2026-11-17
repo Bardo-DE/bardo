@@ -12,7 +12,7 @@ use action_core::{HandleShape, OneOf, PlannerView, ReplyFault};
 use action_manifest::{ArgsFault, RELATION_ARG, Why};
 use action_vocab::{Args, CallRequest, Handle, Origin, ParamName, TargetValue, Value};
 use agent_loop::{Availability, ModelOutput, PlannedCall, choose_tier, leaked_call};
-use inference_core::ToolCallPart;
+use inference_core::ToolCall;
 use provenance::{EntityId, EntityKey, EntityKind};
 use serde_json::Value as Json;
 
@@ -80,8 +80,8 @@ pub(crate) fn is_meta(name: &str) -> bool {
 
 /// The words of a `quire_answer`: plain, not empty, and not a call written as words. A reply
 /// that is none of these is unreadable, like a question that is none of them.
-pub(crate) fn answer_text(call: &ToolCallPart) -> Result<String, PlanFault> {
-    let args: Json = serde_json::from_str(call.args.as_str()).map_err(|error| {
+pub(crate) fn answer_text(call: &ToolCall) -> Result<String, PlanFault> {
+    let args: Json = serde_json::from_str(call.input.as_str()).map_err(|error| {
         log_unreadable("an answer's arguments", &error);
         PlanFault::Unreadable
     })?;
@@ -97,11 +97,8 @@ pub(crate) fn answer_text(call: &ToolCallPart) -> Result<String, PlanFault> {
     }
 }
 
-pub(crate) fn meta_output(
-    call: &ToolCallPart,
-    view: &PlannerView,
-) -> Result<ModelOutput, PlanFault> {
-    let args = match serde_json::from_str::<Json>(call.args.as_str()) {
+pub(crate) fn meta_output(call: &ToolCall, view: &PlannerView) -> Result<ModelOutput, PlanFault> {
+    let args = match serde_json::from_str::<Json>(call.input.as_str()) {
         Ok(args) => args,
         Err(error) => {
             log_unreadable("a meta call's arguments", &error);

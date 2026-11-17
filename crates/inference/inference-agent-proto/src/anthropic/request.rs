@@ -6,7 +6,7 @@ use account_core::consent::Usage;
 use inference_core::{
     Base64Bytes, ChatControl, ChatMessage, ChatRequest, ImagePart, ImageSource, JsonText,
     MessagePart, OpaqueText, Reasoning, ReplyShape, Role, SchemaText, SignatureText, ThoughtPart,
-    ThoughtSeal, ToolCallId, ToolCallPart, ToolChoice, ToolDecl, ToolName, ToolParallelism,
+    ThoughtSeal, ToolCall, ToolCallId, ToolChoice, ToolDecl, ToolName, ToolParallelism,
     ToolResultPart, ToolStatus,
 };
 use serde_json::Value;
@@ -75,10 +75,10 @@ fn block(block: &Value) -> Result<MessagePart, Unmapped> {
                 .get("input")
                 .cloned()
                 .unwrap_or(Value::Object(serde_json::Map::default()));
-            Ok(MessagePart::ToolCall(ToolCallPart {
+            Ok(MessagePart::ToolCall(ToolCall {
                 id: ToolCallId(text_of(block, "id").unwrap_or_default().to_owned()),
                 name,
-                args: JsonText::new(input.to_string()).map_err(|error| {
+                input: JsonText::new(input.to_string()).map_err(|error| {
                     Unmapped::of(format!("a tool_use whose input is not JSON: {error}"))
                 })?,
             }))

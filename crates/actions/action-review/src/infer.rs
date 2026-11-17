@@ -16,10 +16,10 @@ use account_core::DataClass;
 use account_core::consent::Usage;
 use action_core::ReviewTimeouts;
 use action_vocab::Millis;
-use base_ids::{Permille, Tokens};
+use base_ids::Tokens;
 use inference_core::{
     ChatControl, ChatMessage, ChatReply, ChatRequest, ChatSink, InferEvent, Knob, MessagePart,
-    Model, ModelError, Reasoning, ReplyShape, Role, Sampling, StopReason, ToolChoice,
+    Milli, Model, ModelError, Reasoning, ReplyShape, Role, Sampling, StopReason, ToolChoice,
     ToolParallelism, TurnError,
 };
 use permission_core::{ReviewError, Stage};
@@ -119,10 +119,11 @@ fn control(stage: Stage) -> ChatControl {
         .with_max_output(Knob::Set(max_output))
         .with_reasoning(Reasoning::Off)
         .with_sampling(Knob::Set(Sampling {
-            temperature: Permille(0),
+            temperature: Milli(0),
             top_p: Knob::Off,
             top_k: Knob::Off,
             min_p: Knob::Off,
+            repeat_penalty: Knob::Off,
             seed: Knob::Off,
         }))
 }

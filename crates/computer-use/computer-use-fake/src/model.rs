@@ -8,7 +8,7 @@ use computer_use_run::{
 };
 use inference_core::{
     CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, SafetyHint, ServedBy,
-    TokenUsage,
+    TurnUsage,
 };
 use model_provider::{ProviderError, SafetySignal, ToolCall, TurnEvent};
 use model_replay::{Cassette, Interaction};
@@ -148,12 +148,13 @@ impl CuaModel for ScriptedModel {
         self.script.pop_front().unwrap_or(Err(CuaModelError::Fatal))
     }
 
-    fn usage(&self) -> TokenUsage {
-        TokenUsage {
+    fn usage(&self) -> TurnUsage {
+        TurnUsage {
             input: Tokens(0),
             output: Tokens(0),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         }
     }
 

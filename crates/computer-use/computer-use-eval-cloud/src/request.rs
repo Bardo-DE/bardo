@@ -6,7 +6,6 @@
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use base_ids::{Count, Permille, Tokens};
 use inference_core as pi;
 use model_provider as sp;
 use model_vision_prep::MediaType;
@@ -49,11 +48,7 @@ fn part(one: &sp::Part) -> Result<pi::MessagePart, RequestFault> {
             text: text.clone(),
             seal: seal.clone(),
         }),
-        sp::Part::ToolCall(call) => pi::MessagePart::ToolCall(pi::ToolCallPart {
-            id: pi::ToolCallId(call.id.0.clone()),
-            name: call.name.clone(),
-            args: call.input.clone(),
-        }),
+        sp::Part::ToolCall(call) => pi::MessagePart::ToolCall(call.clone()),
         sp::Part::ToolResult(result) => pi::MessagePart::ToolResult(pi::ToolResultPart {
             id: pi::ToolCallId(result.id.0.clone()),
             status: result.status,
@@ -87,27 +82,6 @@ fn tool(spec: &sp::ToolSpec) -> Result<pi::ToolDecl, RequestFault> {
             params: parameters.clone(),
         }),
         sp::ToolSpec::Native(_) => Err(RequestFault::Wire("a vendor's own tool".to_owned())),
-    }
-}
-
-fn knob<T, U>(knob: sp::Knob<T>, map: impl Fn(T) -> U) -> pi::Knob<U> {
-    match knob {
-        sp::Knob::Off => pi::Knob::Off,
-        sp::Knob::Set(value) => pi::Knob::Set(map(value)),
-    }
-}
-
-fn permille(value: sp::Milli) -> Permille {
-    Permille(u32::from(value.0))
-}
-
-fn sampling(sampling: &sp::Sampling) -> pi::Sampling {
-    pi::Sampling {
-        temperature: permille(sampling.temperature),
-        top_p: knob(sampling.top_p, permille),
-        top_k: knob(sampling.top_k, |count| Count(count.0)),
-        min_p: knob(sampling.min_p, permille),
-        seed: sampling.seed,
     }
 }
 
@@ -147,10 +121,10 @@ pub fn chat(
     let control = pi::ChatControl::new()
         .with_tool_choice(turn.tool_choice.clone())
         .with_tool_calls(turn.tool_calls)
-        .with_max_output(pi::Knob::Set(Tokens(turn.limits.max_output.0)))
+        .with_max_output(pi::Knob::Set(turn.limits.max_output))
         .with_reasoning(turn.reasoning)
         .with_sampling(match from {
-            SamplingFrom::Entry => pi::Knob::Set(sampling(&turn.sampling)),
+            SamplingFrom::Entry => pi::Knob::Set(turn.sampling),
             SamplingFrom::Provider => pi::Knob::Off,
         })
         .with_stop(turn.limits.stop.clone());
@@ -220,7 +194,7 @@ mod tests {
             })
         ));
         assert!(matches!(request.control.sampling, pi::Knob::Set(_)));
-        assert_eq!(request.control.max_output, pi::Knob::Set(Tokens(512)));
+        assert_eq!(request.control.max_output, pi::Knob::Set(sp::Tokens(512)));
     }
 
     #[test]

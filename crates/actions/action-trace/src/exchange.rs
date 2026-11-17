@@ -21,7 +21,7 @@ fn words(part: &MessagePart) -> Option<String> {
         MessagePart::Text(text) => Some(text.clone()),
         MessagePart::Image(_) => Some("[image]".to_owned()),
         MessagePart::ToolCall(call) => {
-            Some(format!("[call {} {}]", slug(&call.name), slug(&call.args)))
+            Some(format!("[call {} {}]", slug(&call.name), slug(&call.input)))
         }
         MessagePart::ToolResult(result) => {
             let inner: Vec<String> = result.parts.iter().filter_map(words).collect();
@@ -106,7 +106,7 @@ pub(crate) fn finish(mut open: ModelExchange, reply: &InferReply, took_ms: u32) 
                     .iter()
                     .map(|c| ExchangeCall {
                         name: slug(&c.name),
-                        args: slug(&c.args),
+                        args: slug(&c.input),
                     })
                     .collect(),
                 stop: slug(&chat.stop),

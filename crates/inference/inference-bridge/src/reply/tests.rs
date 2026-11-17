@@ -48,11 +48,7 @@ fn only_what_the_client_sees_becomes_an_event() {
         ),
         (
             sp::TurnEvent::ToolCallDone(call("lookup")),
-            Some(pi::InferEvent::ToolCall(pi::ToolCallPart {
-                id: pi::ToolCallId("c1".into()),
-                name: pi::ToolName::new("lookup").expect("name"),
-                args: pi::JsonText::new(r#"{"a":1}"#).expect("json"),
-            })),
+            Some(pi::InferEvent::ToolCall(call("lookup"))),
         ),
         (sp::TurnEvent::ThoughtSealed(sp::ThoughtSeal::None), None),
         (
@@ -99,15 +95,7 @@ fn a_reply_is_gathered_from_the_events_in_order() {
     assert_eq!(reply.thought.as_deref(), Some("let me think"));
     assert_eq!(reply.tool_calls.len(), 1);
     assert_eq!(reply.stop, pi::StopReason::ToolUse);
-    assert_eq!(
-        reply.usage,
-        pi::TokenUsage {
-            input: base_ids::Tokens(10),
-            output: base_ids::Tokens(4),
-            cached: base_ids::Tokens(3),
-            charge: Some(sp::Money::usd(Decimal::new(95, 5))),
-        }
-    );
+    assert_eq!(reply.usage, end(sp::StopReason::ToolUse).usage);
     assert_eq!(reply.served, served());
     // No thought, no `thought`.
     assert_eq!(

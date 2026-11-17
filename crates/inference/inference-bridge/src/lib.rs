@@ -1,7 +1,7 @@
-//! The seam between porter's wire types and stoker's provider types (`model-provider`):
-//! `ChatRequest` to `TurnRequest`, `ToolCallPart` to `ToolCall`, stoker's `TurnEvent` to
-//! `InferEvent`, `ProviderError` to `ModelError`, `StopReason` both ways. `request` is the way
-//! in and `reply` the way out; the mapping of the served name to a `ModelId` is here.
+//! The seam between the app's wire types (`inference-core`) and the engine's turn types
+//! (`model-provider`): `ChatRequest` to `TurnRequest`, `TurnEvent` to `InferEvent`,
+//! `ProviderError` to `ModelError`. Tool calls, usage, sampling and the controls' words are one type
+//! on both sides and are not mapped. `request` is the way in and `reply` the way out; the mapping of the served name to a `ModelId` is here.
 //!
 //! Moved out of inferd so that every host of engines speaks to them with the same mapping the daemon does. Pure: no runtime, no socket.
 
@@ -9,7 +9,7 @@ mod reply;
 mod request;
 mod scores;
 
-pub use reply::{Gathered, event, model_error, usage};
+pub use reply::{Gathered, event, model_error};
 pub use request::{
     BridgeError, DefaultSampling, Frames, JsonReply, MAX_ATTACHMENT, Target, chat_turn_for,
     embed_turns_for, extras, image_input, task_turn_for,

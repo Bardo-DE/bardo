@@ -3,7 +3,6 @@ use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_match::DimsNeed;
-use base_ids::Permille;
 use base_testkit::Scratch;
 use inference_router::testkit::models;
 use std::io::Write;
@@ -66,11 +65,12 @@ fn reasoning_picks_the_catalog_sampling_set_and_an_explicit_sampling_wins() {
     assert_eq!(turn.sampling.temperature, sp::Milli(600));
 
     let mut own = request(vec![user(vec![text("hi")])]);
-    own.control.sampling = pi::Knob::Set(pi::Sampling {
-        temperature: Permille(300),
-        top_p: pi::Knob::Set(Permille(900)),
+    own.control.sampling = pi::Knob::Set(sp::Sampling {
+        temperature: sp::Milli(300),
+        top_p: pi::Knob::Set(sp::Milli(900)),
         top_k: pi::Knob::Set(base_ids::Count(40)),
         min_p: pi::Knob::Off,
+        repeat_penalty: pi::Knob::Off,
         seed: pi::Knob::Set(pi::Seed(7)),
     });
     own.control.max_output = pi::Knob::Set(base_ids::Tokens(1));
@@ -165,10 +165,10 @@ fn tools_shapes_and_tool_choices_map_one_to_one() {
 #[test]
 fn history_with_calls_results_thoughts_and_roles_maps_part_by_part() {
     let (_scratch, model) = chat_model();
-    let call = pi::ToolCallPart {
+    let call = pi::ToolCall {
         id: pi::ToolCallId("c1".into()),
         name: pi::ToolName::new("lookup").expect("name"),
-        args: pi::JsonText::new(r#"{"q":"x"}"#).expect("json"),
+        input: pi::JsonText::new(r#"{"q":"x"}"#).expect("json"),
     };
     let messages = vec![
         pi::ChatMessage {

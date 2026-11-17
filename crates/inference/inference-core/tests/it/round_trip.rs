@@ -30,21 +30,22 @@ fn served() -> ServedBy {
 
 #[test]
 fn a_usage_writes_a_charge_only_when_the_provider_reported_one() {
-    let counted = TokenUsage {
+    let counted = TurnUsage {
         input: Tokens(1),
         output: Tokens(2),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     };
     let json = serde_json::to_value(counted).expect("serializes");
     assert!(json.get("charge").is_none(), "{json}");
     // A payload written before the field decodes as one with no charge.
     let old = serde_json::json!({"input": 1, "output": 2, "cached": 0});
     assert_eq!(
-        serde_json::from_value::<TokenUsage>(old).expect("old"),
+        serde_json::from_value::<TurnUsage>(old).expect("old"),
         counted
     );
-    let charged = TokenUsage {
+    let charged = TurnUsage {
         charge: Some(Money::usd(Decimal::new(95, 5))),
         ..counted
     };
@@ -59,11 +60,12 @@ fn plain_chat_reply() -> ChatReply {
     ChatReply::new(
         "ok".into(),
         StopReason::EndTurn,
-        TokenUsage {
+        TurnUsage {
             input: Tokens(1),
             output: Tokens(1),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         },
         served(),
     )

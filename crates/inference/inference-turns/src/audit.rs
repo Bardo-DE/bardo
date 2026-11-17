@@ -12,7 +12,7 @@
 use account_core::AppId;
 use base_ids::{Bytes, Tokens};
 use base_time::Clock;
-use inference_core::{AuditEntry, InferReply, ServedBy, TokenUsage, Why};
+use inference_core::{AuditEntry, InferReply, ServedBy, TurnUsage, Why};
 use inference_router::carried::Carried;
 use inference_router::seams::AuditSink;
 use inference_router::session::SessionSpec;
@@ -99,15 +99,16 @@ impl<T: AuditOut> AuditOut for Arc<T> {
 
 /// The tokens a reply spent (none for a refusal, a failure or a cancel).
 #[must_use]
-pub fn usage_of(reply: &InferReply) -> TokenUsage {
+pub fn usage_of(reply: &InferReply) -> TurnUsage {
     match reply {
         InferReply::Chat(chat) => chat.usage,
         InferReply::Embed(embed) => embed.usage,
-        _ => TokenUsage {
+        _ => TurnUsage {
             input: Tokens(0),
             output: Tokens(0),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         },
     }
 }

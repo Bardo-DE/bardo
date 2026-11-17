@@ -13,7 +13,7 @@ use inference_client::{
 use inference_core::testing::{FakeInferSession, Script, ScriptStep};
 use inference_core::{
     ChatControl, ChatReply, ClientFrame, InferEvent, InferReply, InferRequest, OpenOptions,
-    RequestKind, ServedBy, StopReason, TokenUsage, ToolParallelism, Traceparent,
+    RequestKind, ServedBy, StopReason, ToolParallelism, Traceparent, TurnUsage,
 };
 use std::sync::{Arc, Mutex};
 
@@ -55,11 +55,12 @@ fn reply() -> InferReply {
     InferReply::Chat(ChatReply::new(
         "hello".into(),
         StopReason::EndTurn,
-        TokenUsage {
+        TurnUsage {
             input: Tokens(1),
             output: Tokens(1),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         },
         served(),
     ))

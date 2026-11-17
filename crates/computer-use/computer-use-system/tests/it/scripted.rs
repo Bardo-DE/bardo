@@ -18,7 +18,7 @@ use inference_client::{Transport, TransportError};
 use inference_core::{
     AttachIndex, ClientFrame, CuaBegin, CuaStepReply, CuaStepRequest, FrameImage, FrameLayout,
     ImageSource, InferEvent, InferReply, InferSession, MaskedRegions, NoteFrom, OpenOptions,
-    PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote, TokenUsage, WindowGeometry,
+    PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote, TurnUsage, WindowGeometry,
 };
 use rustix::fs::{SealFlags, fcntl_get_seals};
 use std::collections::{BTreeSet, VecDeque};
@@ -246,12 +246,13 @@ pub(crate) fn ack() -> Vec<InferEvent> {
     ]
 }
 
-pub(crate) fn usage(n: u32) -> TokenUsage {
-    TokenUsage {
+pub(crate) fn usage(n: u32) -> TurnUsage {
+    TurnUsage {
         input: Tokens(n),
         output: Tokens(1),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 

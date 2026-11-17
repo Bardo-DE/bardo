@@ -1,6 +1,6 @@
 //! The wire types the rig amendment added: pinned JSON, round trips, and the redaction rules.
 
-use base_ids::{Count, Permille, Tokens};
+use base_ids::{Count, Tokens};
 use inference_core::*;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -23,16 +23,17 @@ fn chat_control_has_pinned_json() {
         .with_max_output(Knob::Set(Tokens(1)))
         .with_reasoning(Reasoning::On(Effort::Low))
         .with_sampling(Knob::Set(Sampling {
-            temperature: Permille(700),
+            temperature: Milli(700),
             top_p: Knob::Off,
             top_k: Knob::Set(Count(20)),
             min_p: Knob::Off,
+            repeat_penalty: Knob::Off,
             seed: Knob::Set(Seed(7)),
         }))
         .with_stop(vec!["END".into()]);
     pinned(
         &control,
-        r#"{"tool_choice":{"kind":"named","v":"mail.search"},"tool_calls":"one","max_output":{"kind":"set","v":1},"reasoning":{"kind":"on","v":"low"},"sampling":{"kind":"set","v":{"temperature":700,"top_p":{"kind":"off"},"top_k":{"kind":"set","v":20},"min_p":{"kind":"off"},"seed":{"kind":"set","v":7}}},"stop":["END"]}"#,
+        r#"{"tool_choice":{"kind":"named","v":"mail.search"},"tool_calls":"one","max_output":{"kind":"set","v":1},"reasoning":{"kind":"on","v":"low"},"sampling":{"kind":"set","v":{"temperature":700,"top_p":{"kind":"off"},"top_k":{"kind":"set","v":20},"min_p":{"kind":"off"},"repeat_penalty":{"kind":"off"},"seed":{"kind":"set","v":7}}},"stop":["END"]}"#,
     );
 }
 

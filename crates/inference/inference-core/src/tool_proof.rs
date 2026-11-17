@@ -70,7 +70,7 @@ pub fn judge(reply: &ChatReply) -> ToolProof {
         return ToolProof::Failed;
     }
     let args: Result<serde_json::Map<String, serde_json::Value>, _> =
-        serde_json::from_str(call.args.as_str());
+        serde_json::from_str(call.input.as_str());
     match args {
         Ok(map)
             if map.len() == 1 && map.get(PROBE_ARG).is_some_and(serde_json::Value::is_string) =>

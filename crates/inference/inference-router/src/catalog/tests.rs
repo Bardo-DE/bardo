@@ -1,4 +1,5 @@
 use super::*;
+use base_ids::{Dims, Tokens};
 use crate::testkit::entries;
 
 #[test]

@@ -5,7 +5,7 @@
 //! the verdict the caps (`ai.spend.*`) give one more request.
 //!
 //! The meter adds what each reply's usage reports: its tokens, and its charge when the provider
-//! reported one (`TokenUsage::charge`). A reply with no charge is counted as an unpriced turn and
+//! reported one (`TurnUsage::charge`). A reply with no charge is counted as an unpriced turn and
 //! never as money: there is no price table to work one out from and no hold before a turn, so a
 //! cap compares the reported total and can stop the next turn but never the current one. The
 //! ledger keeps only the current day and month, in memory and, when it was given a [`Persist`], in
@@ -17,7 +17,7 @@ use crate::SpendLine;
 use account_core::AccountId;
 use account_core::AppId;
 use base_time::UnixSeconds;
-use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TokenUsage, spend_verdict};
+use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TurnUsage, spend_verdict};
 use model_provider::Money;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -36,7 +36,7 @@ pub struct Spent {
 
 impl Spent {
     /// Counts one reply.
-    fn count(&mut self, usage: TokenUsage) {
+    fn count(&mut self, usage: TurnUsage) {
         self.charges = self.charges.counting(usage.charge);
         self.tokens_in = self.tokens_in.saturating_add(u64::from(usage.input.0));
         self.tokens_out = self.tokens_out.saturating_add(u64::from(usage.output.0));
@@ -269,7 +269,7 @@ impl Ledger {
     /// Counts one reply: its tokens and its charge (`usage.charge`, or an unpriced turn when it
     /// has none) against the app and the account, in the day and the month `now` is in; periods
     /// that have ended are forgotten.
-    pub fn record(&self, app: &AppId, account: &AccountId, usage: TokenUsage, now: UnixSeconds) {
+    pub fn record(&self, app: &AppId, account: &AccountId, usage: TurnUsage, now: UnixSeconds) {
         let mut rows = self.rows.lock().unwrap_or_else(PoisonError::into_inner);
         rows.retain(|key, _| key.bucket >= bucket_of(key.period, now));
         let scopes = [

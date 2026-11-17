@@ -4,9 +4,9 @@
 use account_core::DataClass;
 use account_core::consent::Usage;
 use action_core::{ReaderAsk, ReaderTask, ValueSchema};
-use base_ids::{Permille, Tokens};
+use base_ids::Tokens;
 use inference_core::{
-    ChatControl, ChatMessage, ChatRequest, Knob, MessagePart, Reasoning, ReplyShape, Role,
+    ChatControl, ChatMessage, ChatRequest, Knob, MessagePart, Milli, Reasoning, ReplyShape, Role,
     Sampling, ToolChoice, ToolParallelism,
 };
 use provenance::{Label, Labelled};
@@ -171,10 +171,11 @@ pub fn reader_request(ask: &ReaderAsk, inputs: &[Labelled<String>]) -> ChatReque
             .with_max_output(Knob::Set(output_cap(&ask.want)))
             .with_reasoning(Reasoning::Off)
             .with_sampling(Knob::Set(Sampling {
-                temperature: Permille(0),
+                temperature: Milli(0),
                 top_p: Knob::Off,
                 top_k: Knob::Off,
                 min_p: Knob::Off,
+                repeat_penalty: Knob::Off,
                 seed: Knob::Off,
             })),
     )

@@ -36,8 +36,7 @@ use companion_wire::{RouteLog, RouteNote};
 use inference_client::Transport;
 use inference_core::{
     ChatReply, ChatRequest, ClientFrame, Declined, InferEvent, InferRefusal, InferReply,
-    InferRequest, InferSession, OpenOptions, ReplyShape, ServedBy, StopReason, ToolCallPart,
-    ToolDecl,
+    InferRequest, InferSession, OpenOptions, ReplyShape, ServedBy, StopReason, ToolCall, ToolDecl,
 };
 use serde_json::Value as Json;
 use std::collections::BTreeSet;
@@ -381,12 +380,12 @@ impl<P: Transport> PlannerModel<P> {
 
     /// One action call, if the model named a tool of the catalogue and its arguments fit; else
     /// what was wrong with it.
-    fn planned(&self, call: &ToolCallPart, view: &PlannerView) -> Result<PlannedCall, ReplyFault> {
+    fn planned(&self, call: &ToolCall, view: &PlannerView) -> Result<PlannedCall, ReplyFault> {
         let tool = self
             .catalogue
             .named(call.name.as_str())
             .ok_or_else(|| ReplyFault::NoSuchTool(plain_name(call.name.as_str())))?;
-        let json: Json = serde_json::from_str(call.args.as_str()).map_err(|error| {
+        let json: Json = serde_json::from_str(call.input.as_str()).map_err(|error| {
             log_unreadable("a call's arguments", &error);
             ReplyFault::NotJson
         })?;

@@ -1,8 +1,8 @@
 use super::*;
 use crate::control::StopReason;
 use crate::ids::ToolCallId;
-use crate::reply::{ServedBy, TokenUsage};
-use crate::request::ToolCallPart;
+use crate::reply::{ServedBy, TurnUsage};
+use crate::request::ToolCall;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
@@ -14,19 +14,20 @@ fn reply(calls: &[(&str, &str)]) -> ChatReply {
         model: ModelId::parse("m").expect("model"),
         locality: Locality::OnDevice,
     };
-    let usage = TokenUsage {
+    let usage = TurnUsage {
         input: Tokens(1),
         output: Tokens(1),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     };
     ChatReply::new(String::new(), StopReason::ToolUse, usage, served).with_tool_calls(
         calls
             .iter()
-            .map(|(name, args)| ToolCallPart {
+            .map(|(name, args)| ToolCall {
                 id: ToolCallId("c".to_owned()),
                 name: ToolName::new(*name).expect("name"),
-                args: JsonText::new(*args).expect("json"),
+                input: JsonText::new(*args).expect("json"),
             })
             .collect(),
     )

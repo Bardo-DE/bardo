@@ -3,7 +3,7 @@
 
 use crate::control::{ChatControl, ThoughtSeal};
 use crate::cua::{CuaBegin, CuaStepRequest};
-use crate::ids::{AttachIndex, Base64Bytes, JsonText, SchemaText, ToolCallId, ToolName};
+use crate::ids::{AttachIndex, Base64Bytes, SchemaText, ToolCallId, ToolName};
 use crate::speech::{SpeakRequest, TranscribeBegin};
 use account_capability::Tier;
 use account_core::DataClass;
@@ -11,7 +11,7 @@ use account_core::consent::Usage;
 use account_match::DimsNeed;
 use serde::{Deserialize, Serialize};
 
-pub use model_provider::{EmbedRole, ToolStatus};
+pub use model_provider::{EmbedRole, ToolCall, ToolStatus};
 
 /// One request to inferd.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -204,7 +204,7 @@ pub enum MessagePart {
     /// An image.
     Image(ImagePart),
     /// A function call the model made.
-    ToolCall(ToolCallPart),
+    ToolCall(ToolCall),
     /// What a function returned.
     ToolResult(ToolResultPart),
     /// Reasoning the model produced, handed back with its seal. Apps never construct one;
@@ -219,17 +219,6 @@ pub struct ThoughtPart {
     pub text: String,
     /// What the provider attached to hand back with it.
     pub seal: ThoughtSeal,
-}
-
-/// A function call in a message.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct ToolCallPart {
-    /// The model's id for the call, echoed by its result.
-    pub id: ToolCallId,
-    /// The function.
-    pub name: ToolName,
-    /// Its arguments, as JSON text.
-    pub args: JsonText,
 }
 
 /// A function's result in a message.

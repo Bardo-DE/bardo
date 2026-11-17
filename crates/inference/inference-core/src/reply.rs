@@ -7,9 +7,7 @@ use crate::scores::OptionScores;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
-use base_ids::Tokens;
-pub use model_provider::EmbedVector;
-use model_provider::Money;
+pub use model_provider::{EmbedVector, TurnUsage};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -41,13 +39,13 @@ pub struct ChatReply {
     /// The text (JSON text for `ReplyShape::Json`).
     pub text: String,
     /// The function calls the model made, in order.
-    pub tool_calls: Vec<crate::request::ToolCallPart>,
+    pub tool_calls: Vec<crate::request::ToolCall>,
     /// Why it ended.
     pub stop: StopReason,
     /// What it reasoned, when the request allowed reasoning and the engine returned it.
     pub thought: Option<String>,
     /// Tokens spent.
-    pub usage: TokenUsage,
+    pub usage: TurnUsage,
     /// Who answered: the "sent to <provider>" indicator reads it.
     pub served: ServedBy,
     /// How likely each declared option was, when the request asked (`ChatControl::scores`) for
@@ -61,7 +59,7 @@ impl ChatReply {
     /// An answer with this text, ended for this reason, that cost `usage` and was given by
     /// `served`: no function calls, no reasoning and no scores until the `with_*` methods say so.
     #[must_use]
-    pub fn new(text: String, stop: StopReason, usage: TokenUsage, served: ServedBy) -> Self {
+    pub fn new(text: String, stop: StopReason, usage: TurnUsage, served: ServedBy) -> Self {
         Self {
             text,
             tool_calls: Vec::new(),
@@ -75,7 +73,7 @@ impl ChatReply {
 
     /// The same answer with the function calls the model made.
     #[must_use]
-    pub fn with_tool_calls(mut self, tool_calls: Vec<crate::request::ToolCallPart>) -> Self {
+    pub fn with_tool_calls(mut self, tool_calls: Vec<crate::request::ToolCall>) -> Self {
         self.tool_calls = tool_calls;
         self
     }
@@ -101,7 +99,7 @@ pub struct EmbedReply {
     /// The vectors, in input order.
     pub vectors: Vec<EmbedVector>,
     /// Tokens spent.
-    pub usage: TokenUsage,
+    pub usage: TurnUsage,
     /// Who answered.
     pub served: ServedBy,
 }
@@ -109,7 +107,7 @@ pub struct EmbedReply {
 impl EmbedReply {
     /// These vectors, in input order, that cost `usage` and were given by `served`.
     #[must_use]
-    pub fn new(vectors: Vec<EmbedVector>, usage: TokenUsage, served: ServedBy) -> Self {
+    pub fn new(vectors: Vec<EmbedVector>, usage: TurnUsage, served: ServedBy) -> Self {
         Self {
             vectors,
             usage,
@@ -167,21 +165,6 @@ impl SpeakReply {
     pub fn new(audio_ms: u32, served: ServedBy) -> Self {
         Self { audio_ms, served }
     }
-}
-
-/// Tokens in and out, and what the provider said the reply cost when it said.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TokenUsage {
-    /// Prompt tokens.
-    pub input: Tokens,
-    /// Reply tokens.
-    pub output: Tokens,
-    /// Prompt tokens the engine served from its cache; a share of `input`.
-    pub cached: Tokens,
-    /// The charge the provider reported for the reply; `None` when it reported none (a model on
-    /// this computer, a provider that reports tokens only). Never worked out from a price.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub charge: Option<Money>,
 }
 
 /// The account and model that answered, and where it ran.

@@ -23,7 +23,7 @@ use inference_core::{
     AttachIndex, ChatControl, ChatMessage, ChatReply, ChatRequest, ClientFrame, ImagePart,
     ImageSource, InferEvent, InferRefusal, InferReply, InferRequest, Knob, MessagePart,
     OpenOptions, OptionScore, OptionScores, ReplyShape, RequestKind, Role, ScoreOptions, ServedBy,
-    StopReason, TokenUsage, ToolParallelism, Traceparent,
+    StopReason, ToolParallelism, Traceparent, TurnUsage,
 };
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};
@@ -44,12 +44,13 @@ fn served() -> ServedBy {
     }
 }
 
-fn usage() -> TokenUsage {
-    TokenUsage {
+fn usage() -> TurnUsage {
+    TurnUsage {
         input: Tokens(2),
         output: Tokens(1),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 

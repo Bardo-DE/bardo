@@ -25,16 +25,17 @@ fn served() -> ServedBy {
     }
 }
 
-fn usage(input: u32, output: u32) -> TokenUsage {
-    TokenUsage {
+fn usage(input: u32, output: u32) -> TurnUsage {
+    TurnUsage {
         input: Tokens(input),
         output: Tokens(output),
         cached: Tokens(1),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 
-fn chat(usage: TokenUsage) -> InferReply {
+fn chat(usage: TurnUsage) -> InferReply {
     InferReply::Chat(ChatReply::new(
         "secret words".into(),
         StopReason::EndTurn,

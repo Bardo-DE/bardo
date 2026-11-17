@@ -8,7 +8,7 @@ use action_core::{HandleShape, PlannerView, ReplyFault};
 use action_manifest::{ArgsFault, Why};
 use action_vocab::{Handle, ParamName};
 use agent_loop::ModelOutput;
-use inference_core::ToolCallPart;
+use inference_core::ToolCall;
 use serde_json::Value as Json;
 
 /// The most handles one finish may show.
@@ -55,10 +55,10 @@ fn shown(args: &Json, view: &PlannerView) -> Result<Vec<Handle>, ReplyFault> {
 /// A `quire_finish` as the end of the task and the handles to show; a `show` that names anything
 /// but text handles of the view is told to the model, and the task does not end.
 pub(crate) fn finish_output(
-    call: &ToolCallPart,
+    call: &ToolCall,
     view: &PlannerView,
 ) -> Result<(ModelOutput, Vec<Handle>), PlanFault> {
-    let args: Json = serde_json::from_str(call.args.as_str()).map_err(|error| {
+    let args: Json = serde_json::from_str(call.input.as_str()).map_err(|error| {
         log_unreadable("a finish's arguments", &error);
         PlanFault::Unreadable
     })?;

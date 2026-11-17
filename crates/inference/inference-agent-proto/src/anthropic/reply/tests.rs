@@ -3,7 +3,7 @@ use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
 use base_ids::Tokens;
-use inference_core::{JsonText, ServedBy, TokenUsage, ToolCallId, ToolName};
+use inference_core::{JsonText, ServedBy, ToolCallId, ToolName, TurnUsage};
 
 fn reply(
     text: &str,
@@ -14,11 +14,12 @@ fn reply(
     let made = ChatReply::new(
         text.into(),
         stop,
-        TokenUsage {
+        TurnUsage {
             input: Tokens(12),
             output: Tokens(7),
             cached: Tokens(2),
             charge: None,
+            ..TurnUsage::default()
         },
         ServedBy {
             account: AccountId::parse("local").expect("id"),
@@ -29,10 +30,10 @@ fn reply(
     .with_tool_calls(
         calls
             .iter()
-            .map(|(id, name, args)| ToolCallPart {
+            .map(|(id, name, args)| ToolCall {
                 id: ToolCallId((*id).into()),
                 name: ToolName::new(*name).expect("name"),
-                args: JsonText::new(*args).expect("json"),
+                input: JsonText::new(*args).expect("json"),
             })
             .collect(),
     );

@@ -15,11 +15,11 @@ use account_core::consent::Usage;
 use account_match::LlmNeed;
 use account_match::Need;
 use action_core::{ActionCard, Derived, PolicyWriter, UserTurn};
-use base_ids::{Permille, Tokens};
+use base_ids::Tokens;
 use inference_client::Transport;
 use inference_core::{
-    ChatControl, ChatMessage, ChatRequest, InferRequest, Knob, MessagePart, ModelError, Reasoning,
-    ReplyShape, Role, Sampling, ToolChoice, ToolParallelism,
+    ChatControl, ChatMessage, ChatRequest, InferRequest, Knob, MessagePart, Milli, ModelError,
+    Reasoning, ReplyShape, Role, Sampling, ToolChoice, ToolParallelism,
 };
 use permission_core::ReviewError;
 use provenance::{SpaceId, TaskId};
@@ -89,10 +89,11 @@ pub(crate) fn request(turns: &[UserTurn], catalogue: &[ActionCard]) -> ChatReque
             .with_max_output(Knob::Off)
             .with_reasoning(Reasoning::Off)
             .with_sampling(Knob::Set(Sampling {
-                temperature: Permille(0),
+                temperature: Milli(0),
                 top_p: Knob::Off,
                 top_k: Knob::Off,
                 min_p: Knob::Off,
+                repeat_penalty: Knob::Off,
                 seed: Knob::Off,
             })),
     )

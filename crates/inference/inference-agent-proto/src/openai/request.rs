@@ -5,8 +5,8 @@ use account_core::DataClass;
 use account_core::consent::Usage;
 use inference_core::{
     Base64Bytes, ChatControl, ChatMessage, ChatRequest, Effort, ImagePart, ImageSource, JsonText,
-    Knob, MessagePart, Reasoning, ReplyShape, Role, SchemaText, ScoreOptions, ToolCallId,
-    ToolCallPart, ToolChoice, ToolDecl, ToolName, ToolParallelism, ToolResultPart, ToolStatus,
+    Knob, MessagePart, Reasoning, ReplyShape, Role, SchemaText, ScoreOptions, ToolCall, ToolCallId,
+    ToolChoice, ToolDecl, ToolName, ToolParallelism, ToolResultPart, ToolStatus,
 };
 use serde_json::Value;
 
@@ -69,14 +69,14 @@ fn call(call: &Value) -> Result<MessagePart, Unmapped> {
         Some("") | None => "{}",
         Some(text) => text,
     };
-    Ok(MessagePart::ToolCall(ToolCallPart {
+    Ok(MessagePart::ToolCall(ToolCall {
         id: ToolCallId(text_of(call, "id").unwrap_or_default().to_owned()),
         name: ToolName::new(text_of(function, "name").unwrap_or_default()).map_err(|error| {
             Unmapped::of(format!(
                 "a tool call whose name is not a tool name: {error}"
             ))
         })?,
-        args: JsonText::new(arguments).map_err(|error| {
+        input: JsonText::new(arguments).map_err(|error| {
             Unmapped::of(format!("a tool call whose arguments are not JSON: {error}"))
         })?,
     }))

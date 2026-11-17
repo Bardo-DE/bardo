@@ -16,7 +16,7 @@ use super::wire::{BodyShape, Temperature, flavor_of};
 use account_core::AppId;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferRefusal, Knob, Model,
-    ModelCard, ModelError, ServedBy, SpendVerdict, TaskRequest, TokenUsage, TurnError,
+    ModelCard, ModelError, ServedBy, SpendVerdict, TaskRequest, TurnError, TurnUsage,
 };
 use inference_settings::SpendLine;
 use inference_turns::bridge::{self, DefaultSampling, Frames, JsonReply, Target};
@@ -303,13 +303,13 @@ impl<P: Provider> Provider for Billed<'_, P> {
 /// when the server gave a count, nothing when no model ran, and what was seen (an unpriced turn,
 /// unless the provider had already said the charge) when the model may have run and no count
 /// came. No charge is ever estimated.
-fn counted(report: Option<sp::UsageReport>) -> Option<TokenUsage> {
+fn counted(report: Option<sp::UsageReport>) -> Option<TurnUsage> {
     match report {
-        Some(sp::UsageReport::Known(used)) => Some(bridge::usage(used)),
-        Some(sp::UsageReport::Unknown { seen }) => Some(bridge::usage(seen)),
+        Some(sp::UsageReport::Known(used)) => Some(used),
+        Some(sp::UsageReport::Unknown { seen }) => Some(seen),
         Some(sp::UsageReport::Nothing) => None,
         // No report at all, or one a later stoker adds: a model may have run.
-        _ => Some(bridge::usage(sp::TurnUsage::default())),
+        _ => Some(sp::TurnUsage::default()),
     }
 }
 
@@ -332,7 +332,7 @@ mod tests {
             ..sp::TurnUsage::default()
         };
         let known = counted(Some(sp::UsageReport::Known(used))).expect("counted");
-        assert_eq!(known, bridge::usage(used));
+        assert_eq!(known, used);
         assert_eq!(known.charge, Some(charge));
         assert_eq!(counted(Some(sp::UsageReport::Nothing)), None);
         let seen = sp::TurnUsage {

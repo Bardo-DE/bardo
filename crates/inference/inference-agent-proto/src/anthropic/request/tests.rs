@@ -8,10 +8,10 @@ fn read(body: &Value) -> Result<Parsed, Unmapped> {
 }
 
 fn call(id: &str, name: &str, args: &str) -> MessagePart {
-    MessagePart::ToolCall(ToolCallPart {
+    MessagePart::ToolCall(ToolCall {
         id: ToolCallId(id.into()),
         name: ToolName::new(name).expect("name"),
-        args: JsonText::new(args).expect("json"),
+        input: JsonText::new(args).expect("json"),
     })
 }
 
@@ -204,7 +204,7 @@ fn defaults_and_dropped_hints_change_nothing() {
     let Knob::Set(sampling) = chat.control.sampling else {
         panic!("a sampling");
     };
-    assert_eq!(sampling.temperature, base_ids::Permille(250));
+    assert_eq!(sampling.temperature, inference_core::Milli(250));
     assert_eq!(sampling.top_k, Knob::Set(base_ids::Count(20)));
     assert_eq!(chat.messages.len(), 1);
 }

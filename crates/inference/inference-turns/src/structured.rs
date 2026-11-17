@@ -94,7 +94,7 @@ pub struct Validated {
     /// What it thought, when it did.
     pub thought: Option<String>,
     /// What every attempt used.
-    pub usage: pi::TokenUsage,
+    pub usage: pi::TurnUsage,
     /// The first answer token's candidates, from the attempt whose reply passed (a repaired
     /// attempt's are not the answer's), when the turn asked and the engine gave them.
     pub first_token: Option<model_provider::FirstTokenLogprobs>,
@@ -133,11 +133,12 @@ pub async fn run<P: Provider>(
 ) -> Result<Validated, ModelError> {
     let Checked { mut session, kind } = checked;
     let mut request = session.request(base);
-    let mut usage = pi::TokenUsage {
+    let mut usage = pi::TurnUsage {
         input: Tokens(0),
         output: Tokens(0),
         cached: Tokens(0),
         charge: None,
+        ..pi::TurnUsage::default()
     };
     // The attempts' charges: the reply's charge is their sum when every attempt reported one, and
     // none when any did not (a sum of some would be a charge the provider never reported).
@@ -154,12 +155,13 @@ pub async fn run<P: Provider>(
             return Err(ModelError::Unreachable);
         }
         let said = tee.finish(end);
-        let used = bridge::usage(said.end.usage);
-        usage = pi::TokenUsage {
+        let used = said.end.usage;
+        usage = pi::TurnUsage {
             input: add(usage.input, used.input),
             output: add(usage.output, used.output),
             cached: add(usage.cached, used.cached),
             charge: None,
+            ..pi::TurnUsage::default()
         };
         charges = charges.counting(used.charge);
         usage.charge = (charges.unpriced.0 == 0).then_some(charges.reported);

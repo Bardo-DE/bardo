@@ -13,7 +13,7 @@ use computer_use_bus::QuestionId;
 use computer_use_capture::{CaptureError, DamageAt};
 use computer_use_desktop::{DesktopError, DesktopEvent, LeaseGrant};
 use computer_use_seat_input::{InputReceipt, SeatError};
-use inference_core::{CuaStepReply, ServedBy, TokenUsage};
+use inference_core::{CuaStepReply, ServedBy, TurnUsage};
 use model_provider::Money;
 use provenance::{ConfirmId, Labelled};
 use serde::{Deserialize, Serialize};
@@ -36,7 +36,7 @@ pub struct ModelReply {
     /// The reply, in window space.
     pub reply: CuaStepReply,
     /// Tokens used.
-    pub usage: TokenUsage,
+    pub usage: TurnUsage,
     /// What the provider said the reply cost; `None` when it said nothing (a local model).
     pub charge: Option<Money>,
     /// Whether the reply was served from a provider's servers. A run whose spend cap is zero

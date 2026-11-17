@@ -16,7 +16,7 @@ use inference_core::{
     AttachIndex, ClientFrame, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, Declined,
     DeclinedBecause, FrameLayout, ImageSource, InferEvent, InferRefusal, InferReply, InferRequest,
     InferSession, NO_MODEL_SEES_SCREEN, PlaceRow, PlaceState, Readiness, ServedBy, SessionError,
-    Sight, TokenUsage, cannot_see_screen,
+    Sight, TurnUsage, cannot_see_screen,
 };
 use std::collections::BTreeSet;
 
@@ -38,7 +38,7 @@ pub struct InferdCuaModel<T: Transport> {
     tier: Tier,
     session: Option<T::Session>,
     served: Option<ServedBy>,
-    usage: Option<TokenUsage>,
+    usage: Option<TurnUsage>,
     /// What inferd said about the screen when it refused to serve: the model the person named
     /// cannot read images, or no model can. It is the sentence the person reads.
     blind: Option<String>,
@@ -104,12 +104,13 @@ fn failed_turn(reply: &InferReply, blind: Option<&str>) -> CuaModelError {
     }
 }
 
-fn zero() -> TokenUsage {
-    TokenUsage {
+fn zero() -> TurnUsage {
+    TurnUsage {
         input: Tokens(0),
         output: Tokens(0),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 
@@ -212,7 +213,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
         }
     }
 
-    fn usage(&self) -> TokenUsage {
+    fn usage(&self) -> TurnUsage {
         self.usage.unwrap_or_else(zero)
     }
 

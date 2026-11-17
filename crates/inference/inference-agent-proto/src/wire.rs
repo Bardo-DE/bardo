@@ -1,9 +1,10 @@
 //! What both protocol readers share: the parsed request, the words of a refusal to map a feature,
 //! the stop and usage vocabularies, and the event-stream writer both renderers implement.
 
-use base_ids::{Permille, Tokens};
+use base_ids::Tokens;
 use inference_core::{
-    ChatReply, ChatRequest, Effort, Knob, Reasoning, Sampling, StopReason, TokenUsage, ToolCallPart,
+    ChatReply, ChatRequest, Effort, Knob, Milli, Reasoning, Sampling, StopReason, ToolCall,
+    TurnUsage,
 };
 use serde_json::Value;
 
@@ -47,8 +48,8 @@ pub fn text_of<'a>(value: &'a Value, field: &str) -> Option<&'a str> {
     clippy::cast_sign_loss,
     reason = "at least 0 and at most `u32::MAX` before rounding"
 )]
-fn permille(value: f64) -> Permille {
-    Permille((value.max(0.0) * 1000.0).round().min(f64::from(u32::MAX)) as u32)
+fn milli(value: f64) -> Milli {
+    Milli((value.max(0.0) * 1000.0).round().min(f64::from(u16::MAX)) as u16)
 }
 
 /// The sampling a request names: `Off` when it names none of temperature, `top_p` or `top_k`.
@@ -64,12 +65,13 @@ pub fn sampling_of(
         return Knob::Off;
     }
     Knob::Set(Sampling {
-        temperature: permille(temperature.unwrap_or(default_temperature)),
-        top_p: top_p.map_or(Knob::Off, |p| Knob::Set(permille(p))),
+        temperature: milli(temperature.unwrap_or(default_temperature)),
+        top_p: top_p.map_or(Knob::Off, |p| Knob::Set(milli(p))),
         top_k: top_k.map_or(Knob::Off, |k| {
             Knob::Set(base_ids::Count(u32::try_from(k).unwrap_or(u32::MAX)))
         }),
         min_p: Knob::Off,
+        repeat_penalty: Knob::Off,
         seed: Knob::Off,
     })
 }
@@ -102,15 +104,15 @@ pub fn only_thought(reply: &ChatReply) -> Option<(StopReason, u32)> {
 
 /// The tokens of a reply in the units both protocols count: uncached input, output, cached.
 #[must_use]
-pub fn counted(usage: TokenUsage) -> (u32, u32, u32) {
+pub fn counted(usage: TurnUsage) -> (u32, u32, u32) {
     let cached = usage.cached.0.min(usage.input.0);
     (usage.input.0 - cached, usage.output.0, cached)
 }
 
 /// A tool call's arguments as JSON (the text was checked JSON where it entered).
 #[must_use]
-pub fn args_value(call: &ToolCallPart) -> Value {
-    serde_json::from_str(call.args.as_str()).unwrap_or(Value::Null)
+pub fn args_value(call: &ToolCall) -> Value {
+    serde_json::from_str(call.input.as_str()).unwrap_or(Value::Null)
 }
 
 /// What a renderer writes as a stream: the text of each piece, in order.
@@ -122,7 +124,7 @@ pub trait SseOut: Send {
     /// Reply text so far.
     fn text(&mut self, text: &str) -> String;
     /// A finished function call.
-    fn tool(&mut self, call: &ToolCallPart) -> String;
+    fn tool(&mut self, call: &ToolCall) -> String;
     /// The end of a reply that finished.
     fn finish(&mut self, reply: &ChatReply) -> String;
     /// The end of a stream that failed after it began.
@@ -138,11 +140,12 @@ mod tests {
         let made = ChatReply::new(
             text.into(),
             StopReason::EndTurn,
-            TokenUsage {
+            TurnUsage {
                 input: Tokens(10),
                 output: Tokens(3),
                 cached: Tokens(4),
                 charge: None,
+                ..TurnUsage::default()
             },
             ServedBy {
                 account: account_core::AccountId::parse("local").expect("id"),
@@ -152,10 +155,10 @@ mod tests {
         )
         .with_tool_calls(
             (0..calls)
-                .map(|n| ToolCallPart {
+                .map(|n| ToolCall {
                     id: inference_core::ToolCallId(format!("c{n}")),
                     name: inference_core::ToolName::new("t").expect("name"),
-                    args: inference_core::JsonText::new("{}").expect("json"),
+                    input: inference_core::JsonText::new("{}").expect("json"),
                 })
                 .collect(),
         );
@@ -190,12 +193,12 @@ mod tests {
         let Knob::Set(sampling) = sampling_of(Some(0.2), Some(0.9), Some(40), 1.0) else {
             panic!("a sampling");
         };
-        assert_eq!(sampling.temperature, Permille(200));
-        assert_eq!(sampling.top_p, Knob::Set(Permille(900)));
+        assert_eq!(sampling.temperature, Milli(200));
+        assert_eq!(sampling.top_p, Knob::Set(Milli(900)));
         let Knob::Set(sampling) = sampling_of(None, Some(0.5), None, 1.0) else {
             panic!("a sampling");
         };
-        assert_eq!(sampling.temperature, Permille(1000));
+        assert_eq!(sampling.temperature, Milli(1000));
     }
 
     #[test]

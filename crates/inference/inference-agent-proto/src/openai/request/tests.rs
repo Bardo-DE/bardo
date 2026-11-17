@@ -47,7 +47,7 @@ fn a_tool_conversation_maps_calls_and_joins_parallel_results() {
         panic!("a call");
     };
     assert_eq!(
-        second.args.as_str(),
+        second.input.as_str(),
         "{}",
         "empty arguments are an empty object"
     );

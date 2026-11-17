@@ -92,7 +92,7 @@ async fn a_chat_session_is_answered_from_the_cassette() {
         first.tool_calls[0].name.as_str(),
         "org.bardo.Mail-mail.thread.search"
     );
-    assert_eq!(first.tool_calls[0].args.as_str(), r#"{"query":"Lisbon"}"#);
+    assert_eq!(first.tool_calls[0].input.as_str(), r#"{"query":"Lisbon"}"#);
     // Entries are played in order: the next planner request gets the next step.
     let InferReply::Chat(second) = finished(&mut session, request("go on", vec![tool()])).await
     else {

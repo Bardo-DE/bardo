@@ -2,6 +2,7 @@
 
 use serde::{Deserialize, Serialize};
 
+pub use base_ids::{Count, Dims, Tokens};
 pub use model_http::WaitMs;
 
 macro_rules! unit {
@@ -15,10 +16,6 @@ macro_rules! unit {
     };
 }
 
-unit!(
-    /// A number of model tokens.
-    Tokens(u32)
-);
 unit!(
     /// Thousandths: a sampling temperature of 0.7 is `Milli(700)`.
     Milli(u16)
@@ -36,16 +33,8 @@ unit!(
     CallIndex(u16)
 );
 unit!(
-    /// A plain count of things (documents, list items, a top-k).
-    Count(u32)
-);
-unit!(
     /// A random seed. 32 bits, so it fits a TOML integer.
     Seed(u32)
-);
-unit!(
-    /// The length of an embedding vector.
-    Dims(u32)
 );
 unit!(
     /// The most texts one embedding call takes.

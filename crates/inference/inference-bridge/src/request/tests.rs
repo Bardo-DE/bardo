@@ -2,7 +2,6 @@ use super::*;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use base_ids::Permille;
 
 fn target(sampling: DefaultSampling) -> Target {
     Target {
@@ -25,12 +24,6 @@ fn chat(parts: Vec<pi::MessagePart>) -> pi::ChatRequest {
         Usage::Interactive,
     )
     .with_control(pi::ChatControl::new().with_tool_calls(pi::ToolParallelism::Many))
-}
-
-#[test]
-fn a_temperature_past_what_a_milli_holds_saturates() {
-    assert_eq!(milli(Permille(70_000)), sp::Milli(u16::MAX));
-    assert_eq!(milli(Permille(700)), sp::Milli(700));
 }
 
 #[test]

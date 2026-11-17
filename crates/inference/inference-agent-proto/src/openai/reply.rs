@@ -4,7 +4,7 @@
 use crate::fail::{Failure, Shape};
 use crate::wire::{SseOut, counted};
 use base_ids::Permille;
-use inference_core::{ChatReply, StopReason, ToolCallPart};
+use inference_core::{ChatReply, StopReason, ToolCall};
 use serde_json::{Value, json};
 
 /// `OpenAI`'s word for why a reply ended.
@@ -29,12 +29,12 @@ fn usage_json(reply: &ChatReply) -> Value {
     })
 }
 
-fn call_json(index: usize, call: &ToolCallPart) -> Value {
+fn call_json(index: usize, call: &ToolCall) -> Value {
     json!({
         "index": index,
         "id": call.id.0,
         "type": "function",
-        "function": { "name": call.name.as_str(), "arguments": call.args.as_str() },
+        "function": { "name": call.name.as_str(), "arguments": call.input.as_str() },
     })
 }
 
@@ -221,7 +221,7 @@ impl SseOut for Stream {
         self.delta(&json!({ "content": text }))
     }
 
-    fn tool(&mut self, call: &ToolCallPart) -> String {
+    fn tool(&mut self, call: &ToolCall) -> String {
         let out = self.delta(&json!({ "tool_calls": [call_json(self.calls, call)] }));
         self.calls += 1;
         out

@@ -3,7 +3,7 @@
 
 use crate::fail::{Failure, Shape};
 use crate::wire::{SseOut, args_value, counted};
-use inference_core::{ChatReply, StopReason, ToolCallPart};
+use inference_core::{ChatReply, StopReason, ToolCall};
 use serde_json::{Value, json};
 
 /// Anthropic's word for why a reply ended.
@@ -161,7 +161,7 @@ impl SseOut for Stream {
         out
     }
 
-    fn tool(&mut self, call: &ToolCallPart) -> String {
+    fn tool(&mut self, call: &ToolCall) -> String {
         let mut out = self.close();
         out.push_str(&event(
             "content_block_start",
@@ -177,7 +177,8 @@ impl SseOut for Stream {
             }),
         ));
         out.push_str(
-            &self.delta(&json!({ "type": "input_json_delta", "partial_json": call.args.as_str() })),
+            &self
+                .delta(&json!({ "type": "input_json_delta", "partial_json": call.input.as_str() })),
         );
         out.push_str(&event(
             "content_block_stop",

@@ -22,17 +22,18 @@ use inference_agent_proto::fail::{Cause, Failure, Shape};
 use inference_agent_proto::wire::{Parsed, SseOut, only_thought};
 use inference_agent_proto::{anthropic, openai};
 use inference_core::{
-    ChatReply, InferEvent, InferReply, InferRequest, ModelError, Readiness, ServedBy, TokenUsage,
+    ChatReply, InferEvent, InferReply, InferRequest, ModelError, Readiness, ServedBy, TurnUsage,
 };
 use inference_router::seams::{EngineHost, RunningTurn, TurnRunner, TurnStep};
 use tokio::io::AsyncWrite;
 
-fn no_usage() -> TokenUsage {
-    TokenUsage {
+fn no_usage() -> TurnUsage {
+    TurnUsage {
         input: Tokens(0),
         output: Tokens(0),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 
@@ -55,7 +56,7 @@ fn outcome(reply: InferReply) -> Result<ChatReply, Failure> {
     }
 }
 
-fn audit(ctx: &Ctx, served: ServedBy, usage: TokenUsage) {
+fn audit(ctx: &Ctx, served: ServedBy, usage: TurnUsage) {
     Line {
         ctx,
         served,

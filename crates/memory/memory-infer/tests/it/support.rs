@@ -7,7 +7,7 @@ use account_match::Need;
 use inference_client::{Transport, TransportError};
 use inference_core::{
     ChatReply, ClientFrame, EmbedReply, EmbedVector, InferEvent, InferReply, InferSession,
-    OpenOptions, ServedBy, SessionError, StopReason, TokenUsage,
+    OpenOptions, ServedBy, SessionError, StopReason, TurnUsage,
 };
 use memory_core::DataClass;
 use memory_recall::FakeEmbedder;
@@ -144,12 +144,13 @@ pub fn served() -> ServedBy {
     }
 }
 
-pub fn usage() -> TokenUsage {
-    TokenUsage {
+pub fn usage() -> TurnUsage {
+    TurnUsage {
         input: base_ids::Tokens(3),
         output: base_ids::Tokens(0),
         cached: base_ids::Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 

@@ -5,7 +5,9 @@ use serde::{Deserialize, Serialize};
 macro_rules! unit {
     ($(#[$doc:meta])* $name:ident($inner:ty)) => {
         $(#[$doc])*
-        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+        #[derive(
+            Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default, Serialize, Deserialize,
+        )]
         #[serde(transparent)]
         pub struct $name(pub $inner);
     };

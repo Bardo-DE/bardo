@@ -16,7 +16,7 @@ use account_capability::{
     LlmCap, LlmFeature, LlmWire, Modality, SpeechCap, SpeechMode,
 };
 use account_capability::{Claim, Offer, Provenance, Subject};
-use base_ids::{Count, Dims, Px, Tokens};
+use base_ids::{Count, Px};
 use computer_use_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
 use model_catalog::{CatalogError, Modality as CatalogModality, ModelEntry, parse_entry};
@@ -155,8 +155,8 @@ fn llm_cap(caps: &Caps, entry: &ModelEntry) -> LlmCap {
             .into_iter()
             .filter_map(|(has, feature)| has.then_some(feature))
             .collect(),
-        context: Tokens(caps.context.0),
-        max_output: Tokens(caps.max_output.0),
+        context: caps.context,
+        max_output: caps.max_output,
         wire: LlmWire::ChatCompletions,
     }
 }
@@ -224,9 +224,9 @@ fn speech_cap(entry: &ModelEntry) -> Option<Capability> {
 
 fn embed_cap(embed: &EmbedCaps) -> EmbedCap {
     EmbedCap {
-        dims: Dims(embed.dims.0),
+        dims: embed.dims,
         modalities: BTreeSet::from([Modality::Text]),
-        max_input: Tokens(embed.max_input.0),
+        max_input: embed.max_input,
         max_batch: Count(embed.max_batch.0),
         prompts: Box::new(EmbedPrompts {
             query: embed.prompts.query.0.clone(),

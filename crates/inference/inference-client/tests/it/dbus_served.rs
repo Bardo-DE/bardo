@@ -23,7 +23,7 @@ use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     AttachIndex, ClientFrame, CuaBegin, CuaStepReply, EmbedReply, EmbedRequest, EmbedRole,
     EmbedVector, ImageSource, InferEvent, InferRefusal, InferReply, InferRequest, Readiness,
-    RequestKind, ServedBy, TokenUsage,
+    RequestKind, ServedBy, TurnUsage,
 };
 use inference_router::session::RouteDecision;
 use std::sync::Arc;
@@ -44,12 +44,13 @@ fn decision(readiness: Readiness) -> Route {
     }))
 }
 
-fn usage() -> TokenUsage {
-    TokenUsage {
+fn usage() -> TurnUsage {
+    TurnUsage {
         input: Tokens(1),
         output: Tokens(0),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 

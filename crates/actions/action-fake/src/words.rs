@@ -8,7 +8,7 @@ use base_ids::Tokens;
 use inference_client::{Transport, TransportError};
 use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferReply, InferRequest, InferSession, OpenOptions,
-    ServedBy, SessionError, StopReason, TokenUsage,
+    ServedBy, SessionError, StopReason, TurnUsage,
 };
 
 /// The model transport that answers every chat with `says`.
@@ -31,11 +31,12 @@ impl WordsModel {
         Ok(InferEvent::Finished(InferReply::Chat(ChatReply::new(
             self.says.clone(),
             StopReason::EndTurn,
-            TokenUsage {
+            TurnUsage {
                 input: Tokens(0),
                 output: Tokens(0),
                 cached: Tokens(0),
                 charge: None,
+                ..TurnUsage::default()
             },
             ServedBy {
                 account: AccountId::parse("local")

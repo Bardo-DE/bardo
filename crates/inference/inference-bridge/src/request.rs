@@ -1,4 +1,4 @@
-//! Porter's requests as stoker's turns: `ChatRequest` to `TurnRequest`, `TaskRequest` to a chat,
+//! The app's requests as the engine's turns: `ChatRequest` to `TurnRequest`, `TaskRequest` to a chat,
 //! `EmbedRequest` to `EmbedTurn`. A pure mapping over the model's catalog entry (its default
 //! sampling and output limit), the descriptors that rode with the frame, and the engine's
 //! flavor. The only place the two vocabularies meet on the way in.
@@ -94,11 +94,7 @@ fn part(one: &pi::MessagePart, frames: &Frames) -> Result<sp::Part, BridgeError>
             text: thought.text.clone(),
             seal: thought.seal.clone(),
         },
-        pi::MessagePart::ToolCall(call) => sp::Part::ToolCall(sp::ToolCall {
-            id: call.id.clone(),
-            name: call.name.clone(),
-            input: call.args.clone(),
-        }),
+        pi::MessagePart::ToolCall(call) => sp::Part::ToolCall(call.clone()),
         pi::MessagePart::ToolResult(result) => sp::Part::ToolResult(sp::ToolResult {
             id: result.id.clone(),
             status: result.status,
@@ -131,28 +127,6 @@ fn shape(shape: &pi::ReplyShape, json: JsonReply) -> Result<sp::OutputShape, Bri
         }
         pi::ReplyShape::Choice(choices) => sp::OutputShape::Choice(choices.clone()),
     })
-}
-
-fn milli(permille: base_ids::Permille) -> sp::Milli {
-    sp::Milli(u16::try_from(permille.0).unwrap_or(u16::MAX))
-}
-
-fn knob<T, U>(knob: sp::Knob<T>, map: impl Fn(T) -> U) -> sp::Knob<U> {
-    match knob {
-        sp::Knob::Off => sp::Knob::Off,
-        sp::Knob::Set(value) => sp::Knob::Set(map(value)),
-    }
-}
-
-fn sampling(sampling: pi::Sampling) -> sp::Sampling {
-    sp::Sampling {
-        temperature: milli(sampling.temperature),
-        top_p: knob(sampling.top_p, milli),
-        top_k: knob(sampling.top_k, |count| sp::Count(count.0)),
-        min_p: knob(sampling.min_p, milli),
-        repeat_penalty: sp::Knob::Off,
-        seed: sampling.seed,
-    }
 }
 
 /// What the engine's flavor understands beyond the shared fields.
@@ -256,12 +230,12 @@ pub fn chat_turn_for(
     let control = &request.control;
     let reasoning = control.reasoning;
     let sampling = match control.sampling {
-        sp::Knob::Set(own) => Some(sampling(own)),
+        sp::Knob::Set(own) => Some(own),
         sp::Knob::Off => default_sampling(target, reasoning),
     }
     .ok_or(BridgeError::Unsupported)?;
     let max_output = match control.max_output {
-        sp::Knob::Set(tokens) => sp::Tokens(tokens.0),
+        sp::Knob::Set(tokens) => tokens,
         sp::Knob::Off => target.max_output,
     };
     let output = shape(&request.shape, target.json)?;
@@ -396,7 +370,7 @@ pub fn embed_turns_for(
     };
     let dims = match request.dims {
         DimsNeed::Any => sp::Knob::Off,
-        DimsNeed::Exactly(dims) => sp::Knob::Set(sp::Dims(dims.0)),
+        DimsNeed::Exactly(dims) => sp::Knob::Set(dims),
     };
     let batches = sp::plan_batches(request.inputs.len(), embed.max_batch);
     batches

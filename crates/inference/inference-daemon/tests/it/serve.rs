@@ -15,8 +15,8 @@ use base_ids::{Count, Tokens};
 use inference_core::{
     AttachIndex, AudioFrame, AudioRate, Base64Bytes, ChatControl, ChatMessage, ChatReply,
     ChatRequest, ClientFrame, CuaBegin, CuaStepReply, ImagePart, ImageSource, InferEvent,
-    InferRefusal, InferReply, InferRequest, MessagePart, ModelError, Role, StopReason, TokenUsage,
-    ToolParallelism, TranscribeBegin, TranscribeMode, TranscribeReply,
+    InferRefusal, InferReply, InferRequest, MessagePart, ModelError, Role, StopReason,
+    ToolParallelism, TranscribeBegin, TranscribeMode, TranscribeReply, TurnUsage,
 };
 use inference_daemon::serve_session;
 use inference_router::carried::Carried;
@@ -68,12 +68,13 @@ fn start(router: FixedRouter, engines: Engines, spec: SessionSpec) -> Rig {
     }
 }
 
-fn usage() -> TokenUsage {
-    TokenUsage {
+fn usage() -> TurnUsage {
+    TurnUsage {
         input: Tokens(1),
         output: Tokens(1),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 

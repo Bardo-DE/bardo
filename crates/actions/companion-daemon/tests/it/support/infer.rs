@@ -8,8 +8,8 @@ use base_ids::Tokens;
 use inference_client::{Transport, TransportError};
 use inference_core::{
     ChatReply, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
-    InferSession, JsonText, OpenOptions, ServedBy, SessionError, StopReason, TokenUsage,
-    ToolCallId, ToolCallPart, ToolName,
+    InferSession, JsonText, OpenOptions, ServedBy, SessionError, StopReason, ToolCall, ToolCallId,
+    ToolName, TurnUsage,
 };
 use serde_json::Value as Json;
 use std::collections::VecDeque;
@@ -139,13 +139,13 @@ pub fn served() -> ServedBy {
 }
 
 fn reply(text: String, calls: Vec<(String, Json)>) -> InferEvent {
-    let tool_calls: Vec<ToolCallPart> = calls
+    let tool_calls: Vec<ToolCall> = calls
         .into_iter()
         .enumerate()
-        .map(|(i, (name, args))| ToolCallPart {
+        .map(|(i, (name, args))| ToolCall {
             id: ToolCallId(format!("c{i}")),
             name: ToolName::new(&name).expect("tool name"),
-            args: JsonText::new(args.to_string()).expect("json"),
+            input: JsonText::new(args.to_string()).expect("json"),
         })
         .collect();
     let stop = if tool_calls.is_empty() {
@@ -157,11 +157,12 @@ fn reply(text: String, calls: Vec<(String, Json)>) -> InferEvent {
         ChatReply::new(
             text,
             stop,
-            TokenUsage {
+            TurnUsage {
                 input: Tokens(0),
                 output: Tokens(0),
                 cached: Tokens(0),
                 charge: None,
+                ..TurnUsage::default()
             },
             served(),
         )

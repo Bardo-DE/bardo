@@ -2,7 +2,7 @@
 
 use computer_use_action::{CuaAction, WindowSpace};
 use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink};
-use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage};
+use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TurnUsage};
 use std::time::Instant;
 
 /// Whether a run's steps are timed.
@@ -89,7 +89,7 @@ impl<M: CuaModel> CuaModel for Timed<M> {
         reply
     }
 
-    fn usage(&self) -> TokenUsage {
+    fn usage(&self) -> TurnUsage {
         self.inner.usage()
     }
 

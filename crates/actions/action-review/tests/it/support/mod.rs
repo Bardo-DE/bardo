@@ -13,7 +13,7 @@ use action_vocab::{Caller, LabelText, Millis, TurnId};
 use base_ids::Tokens;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
-    ModelCard, ModelError, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
+    ModelCard, ModelError, ServedBy, StopReason, TaskRequest, TurnError, TurnUsage,
 };
 use permission_core::{ArgLabels, SessionSaw, Strictness};
 use provenance::{ActionName, Effect, Integrity, SpaceId};
@@ -99,11 +99,12 @@ pub fn reply(card: &ModelCard, text: &str, stop: StopReason) -> ChatReply {
     ChatReply::new(
         text.to_owned(),
         stop,
-        TokenUsage {
+        TurnUsage {
             input: Tokens(1),
             output: Tokens(1),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         },
         served(card),
     )

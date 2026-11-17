@@ -61,8 +61,8 @@ pub use choice::{
     TierRow, picker_rows, tier_choice, tier_label,
 };
 pub use control::{
-    ChatControl, Effort, Knob, Reasoning, Sampling, Seed, StopReason, ThoughtSeal, ToolChoice,
-    ToolParallelism,
+    ChatControl, Effort, Knob, Milli, Reasoning, Sampling, Seed, StopReason, ThoughtSeal,
+    ToolChoice, ToolParallelism,
 };
 pub use cua::{
     CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, FrameImage,
@@ -93,13 +93,13 @@ pub use place::{
 pub use policy::{ClassFloor, Floor, Policy};
 pub use readiness::Readiness;
 pub use reply::{
-    ChatReply, EmbedReply, EmbedVector, InferReply, ServedBy, SpeakReply, TokenUsage,
-    TranscribeReply,
+    ChatReply, EmbedReply, EmbedVector, InferReply, ServedBy, SpeakReply, TranscribeReply,
+    TurnUsage,
 };
 pub use request::{
     ChatMessage, ChatRequest, EmbedRequest, EmbedRole, ImagePart, ImageSource, InferRequest,
-    MessagePart, ReplyShape, RequestKind, Role, Task, TaskRequest, ThoughtPart, ToolCallPart,
-    ToolDecl, ToolResultPart, ToolStatus,
+    MessagePart, ReplyShape, RequestKind, Role, Task, TaskRequest, ThoughtPart, ToolCall, ToolDecl,
+    ToolResultPart, ToolStatus,
 };
 pub use route::{Chosen, Permit, RouteAsk, RouteCandidate, TierChoice, admit, route};
 pub use scores::{MOST_CANDIDATES, OptionScore, OptionScores, ScoreOptions, ScoresError};

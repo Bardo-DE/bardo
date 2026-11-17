@@ -17,7 +17,7 @@ use computer_use_action::{
     ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs, WindowSpace,
 };
 use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepSink};
-use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage};
+use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TurnUsage};
 use keyboard_types::Key;
 use std::collections::{BTreeSet, VecDeque};
 use std::str::FromStr;
@@ -326,12 +326,13 @@ impl CuaModel for ScriptModel {
         Ok(CuaStepReply::new(vec![action]))
     }
 
-    fn usage(&self) -> TokenUsage {
-        TokenUsage {
+    fn usage(&self) -> TurnUsage {
+        TurnUsage {
             input: Tokens(0),
             output: Tokens(0),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         }
     }
 

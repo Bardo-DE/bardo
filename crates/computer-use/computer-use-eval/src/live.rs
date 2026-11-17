@@ -20,7 +20,7 @@ use computer_use_session::{
 use computer_use_vendors::StepResult;
 use inference_core::{
     CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, NoteFrom, PrevResult,
-    ServedBy, StepNote, TokenUsage,
+    ServedBy, StepNote, TurnUsage,
 };
 use model_catalog::{ModelEntry, parse_entry};
 use model_provider::{
@@ -134,7 +134,7 @@ pub struct ProviderModel<P> {
     plan: Plan,
     session: Option<CuaSession>,
     served: ServedBy,
-    usage: TokenUsage,
+    usage: TurnUsage,
 }
 
 impl<P: Provider> ProviderModel<P> {
@@ -145,11 +145,12 @@ impl<P: Provider> ProviderModel<P> {
             plan,
             session: None,
             served,
-            usage: TokenUsage {
+            usage: TurnUsage {
                 input: Tokens(0),
                 output: Tokens(0),
                 cached: Tokens(0),
                 charge: None,
+                ..TurnUsage::default()
             },
         }
     }
@@ -293,11 +294,11 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
                     return Err(model_error(&error));
                 }
             };
-            self.usage = TokenUsage {
-                input: Tokens(end.usage.input.0),
-                output: Tokens(end.usage.output.0),
-                cached: Tokens(0),
+            self.usage = TurnUsage {
+                input: end.usage.input,
+                output: end.usage.output,
                 charge: end.usage.charge,
+                ..TurnUsage::default()
             };
             let turn = collect.finish(end);
             sink.event(StepEvent::ThoughtDelta(ThoughtText(said_in(&turn))));
@@ -325,7 +326,7 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
         }
     }
 
-    fn usage(&self) -> TokenUsage {
+    fn usage(&self) -> TurnUsage {
         self.usage
     }
 

@@ -7,7 +7,7 @@ use crate::structured::{self, Checked, Shaping};
 use account_capability::Tier;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
-    ModelCard, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
+    ModelCard, ServedBy, StopReason, TaskRequest, TurnError, TurnUsage,
 };
 use inference_router::local::LocalModel;
 use inference_settings::structured::Limits;
@@ -154,23 +154,21 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
         };
         let provider = OpenAiCodec::new(flavor).provider(client(model));
         let mut vectors = Vec::new();
-        let mut input = sp::Tokens(0);
+        let mut input = base_ids::Tokens(0);
         for turn in &turns {
             let end = provider
                 .embed(turn)
                 .await
                 .map_err(|error| bridge::model_error(&error))?;
-            input = sp::Tokens(input.0.saturating_add(end.usage.input.0));
+            input = base_ids::Tokens(input.0.saturating_add(end.usage.input.0));
             vectors.extend(end.vectors);
             self.engines.used(&model.spec.id);
         }
         Ok(EmbedReply::new(
             vectors,
-            TokenUsage {
-                input: base_ids::Tokens(input.0),
-                output: base_ids::Tokens(0),
-                cached: base_ids::Tokens(0),
-                charge: None,
+            TurnUsage {
+                input,
+                ..TurnUsage::default()
             },
             self.served.clone(),
         ))

@@ -4,7 +4,7 @@ use crate::screen::{ScreenRead, ScreenText};
 use crate::turn::FrameAttachment;
 use computer_use_action::{CuaAction, WindowSpace};
 use inference_core::{
-    CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError, ServedBy, TokenUsage,
+    CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError, ServedBy, TurnUsage,
 };
 use serde::{Deserialize, Serialize};
 
@@ -143,7 +143,7 @@ pub trait CuaModel: Send {
     ) -> impl Future<Output = Result<CuaStepReply, CuaModelError>> + Send;
 
     /// Tokens used by the last step.
-    fn usage(&self) -> TokenUsage;
+    fn usage(&self) -> TurnUsage;
 
     /// Which account and model answered, once inferd has routed the session.
     fn served(&self) -> Option<ServedBy>;

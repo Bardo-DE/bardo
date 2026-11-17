@@ -11,7 +11,7 @@ use account_wire::{decode_frame, encode_frame};
 use base_ids::Tokens;
 use inference_core::{
     ChatReply, ClientFrame, EmbedReply, EmbedVector, InferEvent, InferRefusal, InferReply,
-    InferRequest, ServedBy, StopReason, TokenUsage,
+    InferRequest, ServedBy, StopReason, TurnUsage,
 };
 use inference_dbus::inference::NeedArg;
 use memory_recall::FakeEmbedder;
@@ -106,12 +106,13 @@ fn served() -> ServedBy {
     }
 }
 
-fn usage() -> TokenUsage {
-    TokenUsage {
+fn usage() -> TurnUsage {
+    TurnUsage {
         input: Tokens(1),
         output: Tokens(0),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 

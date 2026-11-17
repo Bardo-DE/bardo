@@ -1,8 +1,6 @@
-//! Stoker's answers as porter's: `TurnEvent` to `InferEvent`, a turn's end to a `ChatReply`,
-//! `ProviderError` to `ModelError`, `StopReason` both ways. The only place the two vocabularies
-//! meet on the way out.
+//! The engine's answers as the app's: `TurnEvent` to `InferEvent`, a turn's end to a `ChatReply`,
+//! `ProviderError` to `ModelError`. The only place the two vocabularies meet on the way out.
 
-use base_ids::Tokens;
 use inference_core as pi;
 use model_provider as sp;
 
@@ -13,7 +11,7 @@ use crate::scores::{NoScores, option_scores};
 pub struct Gathered {
     text: String,
     thought: String,
-    calls: Vec<pi::ToolCallPart>,
+    calls: Vec<sp::ToolCall>,
     /// The options whose shares the turn asked for; none when it did not ask.
     options: Option<Vec<String>>,
 }
@@ -25,21 +23,12 @@ pub fn event(event: &sp::TurnEvent) -> Option<pi::InferEvent> {
     match event {
         sp::TurnEvent::TextDelta(text) => Some(pi::InferEvent::TextDelta(text.clone())),
         sp::TurnEvent::ThoughtDelta(text) => Some(pi::InferEvent::ThoughtDelta(text.clone())),
-        sp::TurnEvent::ToolCallDone(call) => Some(pi::InferEvent::ToolCall(call_part(call))),
+        sp::TurnEvent::ToolCallDone(call) => Some(pi::InferEvent::ToolCall(call.clone())),
         sp::TurnEvent::ThoughtSealed(_)
         | sp::TurnEvent::ToolCallStarted { .. }
         | sp::TurnEvent::ToolCallDelta { .. }
         | sp::TurnEvent::Safety(_)
         | sp::TurnEvent::Usage(_) => None,
-    }
-}
-
-/// A finished call as the wire has it: the same checked id, name and arguments.
-fn call_part(call: &sp::ToolCall) -> pi::ToolCallPart {
-    pi::ToolCallPart {
-        id: call.id.clone(),
-        name: call.name.clone(),
-        args: call.input.clone(),
     }
 }
 
@@ -49,7 +38,7 @@ impl Gathered {
         match event {
             sp::TurnEvent::TextDelta(text) => self.text.push_str(text),
             sp::TurnEvent::ThoughtDelta(text) => self.thought.push_str(text),
-            sp::TurnEvent::ToolCallDone(call) => self.calls.push(call_part(call)),
+            sp::TurnEvent::ToolCallDone(call) => self.calls.push(call.clone()),
             _ => {}
         }
     }
@@ -86,8 +75,8 @@ impl Gathered {
                 Err(why) => (None, Some(why)),
             },
         };
-        let mut reply = pi::ChatReply::new(self.text, end.stop, usage(end.usage), served)
-            .with_tool_calls(self.calls);
+        let mut reply =
+            pi::ChatReply::new(self.text, end.stop, end.usage, served).with_tool_calls(self.calls);
         if !self.thought.is_empty() {
             reply = reply.with_thought(self.thought);
         }
@@ -95,18 +84,6 @@ impl Gathered {
             reply = reply.with_scores(scores);
         }
         (reply, why)
-    }
-}
-
-/// What a turn used, in the units the wire has, with the charge the provider reported for it
-/// (none when it reported none).
-#[must_use]
-pub fn usage(usage: sp::TurnUsage) -> pi::TokenUsage {
-    pi::TokenUsage {
-        input: Tokens(usage.input.0),
-        output: Tokens(usage.output.0),
-        cached: Tokens(usage.cached.0),
-        charge: usage.charge,
     }
 }
 

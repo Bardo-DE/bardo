@@ -2,7 +2,7 @@
 
 use crate::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, EmbedVector, InferEvent,
-    MessagePart, Model, ModelCard, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
+    MessagePart, Model, ModelCard, ServedBy, StopReason, TaskRequest, TurnError, TurnUsage,
 };
 use account_capability::Capability;
 use account_capability::ModelId;
@@ -68,11 +68,12 @@ impl Model for FakeModel {
             .next_back()
             .unwrap_or_default()
             .to_owned();
-        let usage = TokenUsage {
+        let usage = TurnUsage {
             input: Tokens(1),
             output: Tokens(1),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         };
         let _ = sink.event(InferEvent::TextDelta(text.clone()));
         let _ = sink.event(InferEvent::Usage(usage));
@@ -94,11 +95,12 @@ impl Model for FakeModel {
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
         let text = request.input.clone();
-        let usage = TokenUsage {
+        let usage = TurnUsage {
             input: Tokens(1),
             output: Tokens(1),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         };
         let _ = sink.event(InferEvent::TextDelta(text.clone()));
         let _ = sink.event(InferEvent::Usage(usage));
@@ -124,11 +126,12 @@ impl Model for FakeModel {
             .iter()
             .map(|input| EmbedVector(vec![input.len() as f32]))
             .collect();
-        let usage = TokenUsage {
+        let usage = TurnUsage {
             input: Tokens(1),
             output: Tokens(0),
             cached: Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         };
         Ok(EmbedReply::new(vectors, usage, self.served()))
     }

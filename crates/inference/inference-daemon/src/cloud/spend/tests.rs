@@ -3,7 +3,7 @@ use account_core::{AccountId, AppId};
 use account_core::{AppName, Isolation};
 use base_ids::{Tokens, TurnCount};
 use base_testkit::Scratch;
-use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TokenUsage};
+use inference_core::{ChargeTotal, Period, SpendScope, SpendVerdict, TurnUsage};
 use inference_settings::Spent;
 use inference_settings::{ScopeLimits, SpendLimits, SpendLine, cents_to_limit};
 use model_provider::Money;
@@ -20,19 +20,20 @@ fn account(id: &str) -> AccountId {
     AccountId::parse(id).expect("id")
 }
 
-fn used(input: u32, output: u32) -> TokenUsage {
-    TokenUsage {
+fn used(input: u32, output: u32) -> TurnUsage {
+    TurnUsage {
         input: Tokens(input),
         output: Tokens(output),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     }
 }
 
 /// A reply of `input` and `output` tokens that its provider said cost `milli` thousandths of a
 /// US dollar.
-fn charged(input: u32, output: u32, milli: i64) -> TokenUsage {
-    TokenUsage {
+fn charged(input: u32, output: u32, milli: i64) -> TurnUsage {
+    TurnUsage {
         charge: Some(Money::usd(Decimal::new(milli, 3))),
         ..used(input, output)
     }

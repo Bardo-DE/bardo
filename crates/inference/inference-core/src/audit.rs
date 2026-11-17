@@ -1,7 +1,7 @@
 //! The audit record of one request: who, through what, how much; never the content.
 
 use crate::pick::Why;
-use crate::reply::TokenUsage;
+use crate::reply::TurnUsage;
 use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
@@ -26,7 +26,7 @@ pub struct AuditEntry {
     /// Where it ran.
     pub locality: Locality,
     /// Tokens spent, and the charge the provider reported for them, when it reported one.
-    pub usage: TokenUsage,
+    pub usage: TurnUsage,
     /// Bytes that left the machine (zero on device).
     pub bytes_out: Bytes,
     /// Frames sent to the model: "a frame was sent", never the frame.

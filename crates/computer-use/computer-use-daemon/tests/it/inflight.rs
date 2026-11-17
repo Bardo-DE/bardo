@@ -10,7 +10,7 @@ use computer_use_fake::{FakePdp, FakeSeams};
 use computer_use_run::{
     CuaModel, CuaModelError, FrameAttachment, Parts, RunPhase, Seams, StepSink,
 };
-use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage};
+use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TurnUsage};
 
 /// A model that never answers, and counts the sessions it was begun for.
 struct Mute {
@@ -36,12 +36,13 @@ impl CuaModel for Mute {
         std::future::pending().await
     }
 
-    fn usage(&self) -> TokenUsage {
-        TokenUsage {
+    fn usage(&self) -> TurnUsage {
+        TurnUsage {
             input: base_ids::Tokens(0),
             output: base_ids::Tokens(0),
             cached: base_ids::Tokens(0),
             charge: None,
+            ..TurnUsage::default()
         }
     }
 

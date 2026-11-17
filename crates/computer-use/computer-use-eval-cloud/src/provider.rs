@@ -90,18 +90,6 @@ fn model_fault(error: ModelError) -> ProviderError {
     }
 }
 
-fn call_of(part: &inference_core::ToolCallPart) -> Result<sp::ToolCall, ProviderError> {
-    let unreadable = |what: &str, why: &dyn std::fmt::Display| {
-        ProviderError::Unreadable(format!("{what}: {why}"))
-    };
-    Ok(sp::ToolCall {
-        id: sp::ToolCallId(part.id.0.clone()),
-        name: sp::ToolName::new(part.name.as_str()).map_err(|e| unreadable("a tool name", &e))?,
-        input: sp::JsonText::new(part.args.as_str())
-            .map_err(|e| unreadable("tool arguments", &e))?,
-    })
-}
-
 fn fault(error: &RequestFault) -> ProviderError {
     ProviderError::BadRequest(error.to_string())
 }
@@ -159,7 +147,7 @@ impl<T: Transport> Provider for InferdProvider<T> {
                 }
                 InferEvent::ToolCall(part) => {
                     seen.calls = true;
-                    let _ = sink.event(TurnEvent::ToolCallDone(call_of(&part)?));
+                    let _ = sink.event(TurnEvent::ToolCallDone(part));
                 }
                 InferEvent::Finished(reply) => return self.finish(reply, &seen, sink),
                 _ => {}
@@ -182,7 +170,7 @@ impl<T> InferdProvider<T> {
                 }
                 if !seen.calls {
                     for part in &chat.tool_calls {
-                        let _ = sink.event(TurnEvent::ToolCallDone(call_of(part)?));
+                        let _ = sink.event(TurnEvent::ToolCallDone(part.clone()));
                     }
                 }
                 self.watch.answered(
@@ -192,13 +180,7 @@ impl<T> InferdProvider<T> {
                 );
                 Ok(sp::TurnEnd {
                     stop: chat.stop,
-                    usage: sp::TurnUsage {
-                        input: sp::Tokens(chat.usage.input.0),
-                        output: sp::Tokens(chat.usage.output.0),
-                        cached: sp::Tokens(chat.usage.cached.0),
-                        images: sp::ImageCount(0),
-                        charge: chat.usage.charge,
-                    },
+                    usage: chat.usage,
                     served: sp::ModelName(chat.served.model.to_string()),
                     first_token: None,
                 })

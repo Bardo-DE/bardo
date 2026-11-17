@@ -11,7 +11,7 @@ use crate::cloud::Cloud;
 use account_capability::Locality;
 use base_ids::{Bytes, Count, Tokens};
 use inference_agent_proto::fail::Shape;
-use inference_core::{AuditEntry, ServedBy, TokenUsage, Why};
+use inference_core::{AuditEntry, ServedBy, TurnUsage, Why};
 use inference_turns::audit::AuditOut;
 use model_http::SseDecoder;
 use model_openai_compat::read_charge;
@@ -30,13 +30,14 @@ pub struct Seen {
 impl Seen {
     /// The figures, when the provider gave any.
     #[must_use]
-    pub fn usage(self) -> Option<TokenUsage> {
+    pub fn usage(self) -> Option<TurnUsage> {
         let given = self.input.is_some() || self.output.is_some() || self.charge.is_some();
-        given.then(|| TokenUsage {
+        given.then(|| TurnUsage {
             input: Tokens(self.input.unwrap_or(0)),
             output: Tokens(self.output.unwrap_or(0)),
             cached: Tokens(self.cached.unwrap_or(0)),
             charge: self.charge,
+            ..TurnUsage::default()
         })
     }
 
@@ -187,17 +188,18 @@ pub enum End {
 /// of no tokens when the model may have run and no figure came, and nothing (`None`) when no model
 /// ran.
 #[must_use]
-pub fn counted(end: End, seen: Seen) -> Option<TokenUsage> {
+pub fn counted(end: End, seen: Seen) -> Option<TurnUsage> {
     match end {
         End::Answered | End::Unknown => Some(seen.usage().unwrap_or(NO_TOKENS)),
         End::NotRun => None,
     }
 }
 
-const NO_TOKENS: TokenUsage = TokenUsage {
+const NO_TOKENS: TurnUsage = TurnUsage {
     input: Tokens(0),
     output: Tokens(0),
     cached: Tokens(0),
+    images: model_provider::ImageCount(0),
     charge: None,
 };
 
@@ -209,7 +211,7 @@ pub struct Line<'a> {
     /// The account, the model and where it ran.
     pub served: ServedBy,
     /// The tokens, and the charge when the provider reported one.
-    pub usage: TokenUsage,
+    pub usage: TurnUsage,
     /// Bytes that left this computer (the request body, for a cloud route).
     pub sent: u64,
 }
@@ -239,7 +241,7 @@ impl Line<'_> {
 
 /// Counts a request in the ledger (`counted`, from [`counted`]: nothing when no model ran) against
 /// the program and the account, and writes its audit line with what was counted.
-pub fn settle(ctx: &Ctx, cloud: &Cloud, served: ServedBy, counted: Option<TokenUsage>, sent: u64) {
+pub fn settle(ctx: &Ctx, cloud: &Cloud, served: ServedBy, counted: Option<TurnUsage>, sent: u64) {
     if let Some(usage) = counted {
         cloud
             .ledger()

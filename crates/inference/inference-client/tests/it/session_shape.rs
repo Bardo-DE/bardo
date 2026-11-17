@@ -11,7 +11,7 @@ use inference_core::testing::{FakeInferSession, Script, ScriptStep};
 use inference_core::{ChatControl, ToolParallelism};
 use inference_core::{
     ChatReply, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, RequestKind,
-    ServedBy, StopReason, TokenUsage,
+    ServedBy, StopReason, TurnUsage,
 };
 use std::sync::Mutex;
 
@@ -75,11 +75,12 @@ fn accounts(script: Script) -> Inference<Scripted> {
 
 #[tokio::test]
 async fn infer_reads_to_the_finished_event() {
-    let usage = TokenUsage {
+    let usage = TurnUsage {
         input: Tokens(1),
         output: Tokens(1),
         cached: Tokens(0),
         charge: None,
+        ..TurnUsage::default()
     };
     let reply = InferReply::Chat(ChatReply::new(
         "hi".into(),

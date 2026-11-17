@@ -52,6 +52,7 @@ pub struct TurnUsage {
     /// Input tokens the server served from its prompt cache (llama.cpp `cache_n`); a subset of
     /// `input`.
     pub cached: Tokens,
+    #[serde(default)]
     pub images: ImageCount,
     /// What the provider said this reply cost; `Some` only when the reply carried it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
