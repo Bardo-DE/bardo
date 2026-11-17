@@ -65,21 +65,21 @@ fn spawn(bus: &PrivateBus, home: &Path, keys: Option<&str>) -> Daemon {
 async fn serving(bus: &PrivateBus, daemon: &mut Daemon) -> bool {
     let probe = bus.connect().await;
     let dbus = zbus::fdo::DBusProxy::new(&probe).await.expect("proxy");
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if dbus
-            .name_has_owner(account_wire::names::ACCOUNTS_BUS.try_into().expect("name"))
-            .await
-            .unwrap_or(false)
-        {
-            return true;
+    base_testkit::eventually_some_async("accountd to own its name or end", || {
+        let exited = daemon.child.try_wait().ok().flatten().is_some();
+        let dbus = dbus.clone();
+        async move {
+            if dbus
+                .name_has_owner(account_wire::names::ACCOUNTS_BUS.try_into().expect("name"))
+                .await
+                .unwrap_or(false)
+            {
+                return Some(true);
+            }
+            exited.then_some(false)
         }
-        if daemon.child.try_wait().ok().flatten().is_some() {
-            return false;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-    false
+    })
+    .await
 }
 
 #[cfg(feature = "test-keys")]

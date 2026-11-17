@@ -286,19 +286,9 @@ async fn a_second_sheet_of_a_kind_while_one_is_open_is_refused_until_it_ends() {
         .expect("another app's sheet");
 
     sheet.closer(Some(path)).expect("closer").close().await;
-    let mut asked = None;
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        match ask(client.clone()).await {
-            Ok(path) => {
-                asked = Some(path);
-                break;
-            }
-            Err(_) => tokio::time::sleep(Duration::from_millis(10)).await,
-        }
-    }
-    assert!(
-        asked.is_some(),
-        "the app may ask again once its sheet ended"
-    );
+    // The app may ask again once its sheet ended.
+    let _path = base_testkit::eventually_some_async("the app to be let ask again", || async {
+        ask(client.clone()).await.ok()
+    })
+    .await;
 }

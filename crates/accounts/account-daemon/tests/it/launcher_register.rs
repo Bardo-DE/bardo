@@ -69,23 +69,22 @@ async fn a_program_has_one_launcher_first_wins_and_a_departed_connection_frees_i
 
     // The first connection leaves: its programs are free, once the bus says so.
     drop(first);
-    let deadline = base_testkit::Deadline::generous();
-    loop {
-        match second.proxy.register_launcher(&[PROGRAM]).await {
-            Ok(()) => break,
-            Err(error) => {
-                assert_eq!(
-                    error_name(error),
-                    fault_name(LauncherFault::AlreadyRegistered)
-                );
-                assert!(
-                    !deadline.passed(),
-                    "the departed launcher's program stays held"
-                );
-                tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+    base_testkit::eventually_some_async("the departed launcher's program to be free", || {
+        let proxy = second.proxy.clone();
+        async move {
+            match proxy.register_launcher(&[PROGRAM]).await {
+                Ok(()) => Some(()),
+                Err(error) => {
+                    assert_eq!(
+                        error_name(error),
+                        fault_name(LauncherFault::AlreadyRegistered)
+                    );
+                    None
+                }
             }
         }
-    }
+    })
+    .await;
 }
 
 #[tokio::test(flavor = "multi_thread")]

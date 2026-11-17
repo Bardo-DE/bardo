@@ -9,7 +9,7 @@ use account_daemon::paths::Paths;
 use account_daemon::{Config, Daemon};
 use account_dbus::BusTarget;
 use account_wire::names::ACCOUNTS_BUS;
-use base_testkit::{Deadline, GENEROUS};
+use base_testkit::GENEROUS;
 use std::path::Path;
 use std::time::Duration;
 
@@ -94,11 +94,8 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
         .expect("run ends within the generous wait")
         .expect("run's task");
 
-    let deadline = Deadline::generous();
-    while dbus.name_has_owner(name.clone()).await.expect("ask") {
-        if deadline.passed() {
-            deadline.fail("accountd lets go of its name");
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually_some_async("accountd to let go of its name", || async {
+        (!dbus.name_has_owner(name.clone()).await.expect("ask")).then_some(())
+    })
+    .await;
 }
