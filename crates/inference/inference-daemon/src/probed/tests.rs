@@ -8,6 +8,7 @@ use account_core::DataClass;
 use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::Tokens;
+use caller_role_types::CallerRole;
 use inference_core::{AutoMode, AutoRow, InferRefusal, Policy, Slot, TierMap, TierRow};
 use inference_router::seams::EngineHost;
 use inference_router::session::SessionSpec;

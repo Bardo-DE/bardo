@@ -11,6 +11,7 @@ use action_core::*;
 use action_dbus::CompanionHelpers2Proxy;
 use action_vocab::{CallerRole, Origin};
 use action_wire::SessionOpen;
+use caller_role_types::CallerRole as HeldRole;
 use companion_daemon::serve_with_routines;
 use companion_helpers::RoutineDesk;
 use companion_model::helper::{Ceiling, HelperModel, HelperName, Role};
@@ -88,11 +89,7 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(
-        &editor,
-        "org.bardo.Acp",
-        caller_role_types::CallerRole::Agent,
-    );
+    who.introduce_app(&editor, "org.bardo.Acp", HeldRole::Agent);
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),
@@ -223,11 +220,7 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(
-        &editor,
-        "org.bardo.Acp",
-        caller_role_types::CallerRole::Agent,
-    );
+    who.introduce_app(&editor, "org.bardo.Acp", HeldRole::Agent);
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),

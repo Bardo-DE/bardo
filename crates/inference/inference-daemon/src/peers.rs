@@ -295,6 +295,7 @@ impl CallerTable {
     }
 
     /// The caller that is the unit `unit`, through [`CallerTable::rows`].
+    #[must_use]
     pub fn resolve(&self, unit: &str) -> Option<Caller> {
         self.rows().resolve_unit(unit)
     }

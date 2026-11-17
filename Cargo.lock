@@ -907,6 +907,7 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
+ "caller-role-types",
  "companion-client",
  "companion-wire",
  "dbus-kit",

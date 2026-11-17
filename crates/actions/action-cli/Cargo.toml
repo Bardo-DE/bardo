@@ -36,6 +36,8 @@ url = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
+# action-daemon's test support, which these tests share, names the caller roles.
+caller-role-types = {path = "../../identity/caller-role-types"}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
 permission-core = {path = "../permission-core"}

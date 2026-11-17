@@ -32,15 +32,10 @@ async fn two_requests_at_once_for_one_space_queue_instead_of_meeting_busy() {
     // The embedder gives the executor back mid-request, as a call to inferd does, so the second
     // request meets the first while its Space is out: it waits instead of being answered Busy.
     let queued = service(&dirs_in(&scratch.path().join("queued")), &keys);
+    let router = Caller::router();
     let (a, b) = tokio::join!(
-        queued.handle(
-            &Caller::router(),
-            MemoryRequest::Record(record_in("work", "a1"))
-        ),
-        queued.handle(
-            &Caller::router(),
-            MemoryRequest::Record(record_in("work", "a2"))
-        ),
+        queued.handle(&router, MemoryRequest::Record(record_in("work", "a1"))),
+        queued.handle(&router, MemoryRequest::Record(record_in("work", "a2"))),
     );
     let (MemoryReply::Recorded(first), MemoryReply::Recorded(second)) = (&a, &b) else {
         panic!("both are stored: {a:?} {b:?}")

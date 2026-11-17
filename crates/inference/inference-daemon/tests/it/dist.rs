@@ -1,6 +1,7 @@
 //! The files under `dist/` agree with the code: the activation file and the unit name the bus name
 //! the daemon claims, and the sample configuration reads.
 
+use caller_role_types::CallerRole;
 use inference_daemon::CallerTable;
 use inference_daemon::InferdConfig;
 use inference_settings::{self as settings, CLASSES};
@@ -68,7 +69,6 @@ fn the_shipped_table_names_settings_by_its_unit() {
 /// runs (by unit, as placers), gives the shell its scope, and leaves the other apps plain.
 #[test]
 fn the_shipped_table_names_the_placers_and_the_shell_by_unit() {
-    use caller_role_types::CallerRole;
     let callers = shipped_callers();
     let role = |unit: &str| {
         callers
