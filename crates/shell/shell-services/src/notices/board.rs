@@ -4,10 +4,9 @@
 use std::hash::Hash;
 
 use shell_model::notifications::{
-    NotesState, Notices, NotificationId, NotificationsCommand, Posting,
+    ActionKey, NotesState, Notices, NotificationId, NotificationsCommand, Posting,
 };
 use tokio::sync::watch;
-use tokio::sync::watch::error::RecvError;
 
 use crate::control::Control;
 
@@ -37,18 +36,16 @@ impl<K: Eq + Hash + Clone> Board<K> {
         }
     }
 
-    /// Resolves when the notifications service's state changed; an error when it is gone.
-    pub(crate) async fn changed(&mut self) -> Result<(), RecvError> {
-        self.notes.changed().await
-    }
-
-    /// Keep the id of each notice the notes now hold for one of `keys`.
-    pub(crate) fn learn<'a>(&mut self, keys: impl IntoIterator<Item = &'a K>)
-    where
-        K: 'a,
-    {
-        self.posted
-            .learn(&self.notes.borrow(), keys, self.shown_for);
+    /// The server said it posted `id` with buttons `actions` (`Said::Posted`): keep it as the
+    /// notice of each key `read` finds in them.
+    pub(crate) fn posted<R>(
+        &mut self,
+        id: NotificationId,
+        actions: &[ActionKey],
+        read: impl Fn(&ActionKey) -> Option<R>,
+        key_of: impl Fn(&R) -> &K,
+    ) {
+        self.posted.posted(id, actions, read, key_of);
     }
 
     /// Post the notice for `key`, in place of the one held when there is one. `posting` is given
@@ -58,15 +55,16 @@ impl<K: Eq + Hash + Clone> Board<K> {
         key: &K,
         posting: impl FnOnce(Option<NotificationId>) -> Posting,
     ) {
+        let replaces = self.held(key);
         self.posted.forget(key);
-        let replaces = (self.shown_for)(&self.notes.borrow(), key);
         self.send(NotificationsCommand::Post(Box::new(posting(replaces))));
     }
 
     /// Take the notice for `key` back, when one is held.
     pub(crate) fn withdraw(&mut self, key: &K) {
+        let held = self.held(key);
         self.posted.forget(key);
-        if let Some(id) = (self.shown_for)(&self.notes.borrow(), key) {
+        if let Some(id) = held {
             self.send(NotificationsCommand::Dismiss(id));
         }
     }
@@ -89,6 +87,14 @@ impl<K: Eq + Hash + Clone> Board<K> {
     /// The notifications service itself, for a notice that is not tied to a key.
     pub(crate) fn notifications(&self) -> Control<NotificationsCommand> {
         self.notifications.clone()
+    }
+
+    /// The notification held for `key`: the one said as posted, else one the notes hold from
+    /// before (banner or history).
+    fn held(&self, key: &K) -> Option<NotificationId> {
+        self.posted
+            .id_of(key)
+            .or_else(|| (self.shown_for)(&self.notes.borrow(), key))
     }
 
     fn send(&self, command: NotificationsCommand) {

@@ -135,7 +135,6 @@ impl Live {
                 },
                 Some(event) = events.recv() => self.apply(event),
                 Ok(said) = answers.recv() => self.heard_server(said),
-                Ok(()) = self.board.changed() => self.learn(),
                 command = commands.recv() => match command {
                     Some(AccountsCommand::SignInAgain(account)) => self.sign_in(&account),
                     None => return Met::Ended(Ended::Commands),
@@ -144,25 +143,14 @@ impl Live {
         }
     }
 
-    /// Keep the id of each notice the notes now hold for an account that needs the person.
-    fn learn(&mut self) {
-        let accounts: Vec<AccountKey> = self
-            .machine
-            .state()
-            .needing
-            .iter()
-            .map(|n| n.account.clone())
-            .collect();
-        self.board.learn(&accounts);
-    }
-
     /// The notifications server's word: a press of a notice bardo-shell posted signs the account in
-    /// again; a close ends the notice's claim.
+    /// again; a close ends the notice's claim. The server says each post before any press of it.
     fn heard_server(&mut self, said: Said) {
-        // The notes may already have let go of a notice just pressed: what they held is learnt
-        // before the press is weighed.
-        self.learn();
         match said {
+            Said::Posted { id, actions } => {
+                self.board
+                    .posted(id, &actions, account_of, |account| account);
+            }
             Said::Pressed { id, key } => {
                 if let Some(account) = self.board.answers(id, account_of(&key), |account| account) {
                     self.sign_in(&account);
