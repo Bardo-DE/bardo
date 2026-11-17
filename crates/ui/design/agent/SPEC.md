@@ -779,7 +779,7 @@ JSON, step tables of the pure parts) pass.
 | 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to Bardo (reis/atspi landed in stage 0) | porter-style gate |
 | 4 | **fork-setup** | `~/compositor` at the 1.8 tag, branch `bardo`, `src/bardo/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
 | 5 | **sill** | ux.md §6 F2 file list with §3.8 here; design/22 is Bardo agent's | sill gate |
-| 5 | **the Settings app** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | the Settings app gate + `scripts/gen-fixtures.sh` |
+| 5 | **The Settings app** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | the Settings app gate + `scripts/gen-fixtures.sh` |
 
 Porter-style gate (stoker, porter, almanac, docket, cua):
 

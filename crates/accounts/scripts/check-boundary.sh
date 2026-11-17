@@ -15,7 +15,7 @@ cd "$(dirname "$0")/.."
 # only through their named I/O feature (`io`). reqwest is named by one crate, http-reqwest
 # (see ONE CLIENT below), and reached through it by the families that send directly. account-families reaches none with default features;
 # each of its family features is checked on its own in FAMILY_FORBIDS below.
-EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
 RULES=(
   "account-ids: $EFFECTS toml"
   "account-capability: $EFFECTS toml"
@@ -30,14 +30,14 @@ RULES=(
   "account-service-accounts: $EFFECTS"
   "account-service-grants: $EFFECTS"
   "account-service: $EFFECTS"
-  "account-identities: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
-  "account-spaces: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
-  "account-settings: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey"
-  "account-store: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-identities: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
+  "account-spaces: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
+  "account-settings: reqwest hyper ureq oo7 keyring secret-service interprocess service-locator"
+  "account-store: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
   "account-client: $EFFECTS account-dbus account-callers account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider base-fs"
-  "account-client-dbus: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider base-fs"
-  "account-client-inproc: zbus zvariant hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings account-dbus"
-  "account-sheets: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-client-dbus: reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider base-fs"
+  "account-client-inproc: zbus zvariant hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings account-dbus"
+  "account-sheets: reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
   "account-fake: $EFFECTS"
   "base-testkit: $EFFECTS"
   "http-core: $EFFECTS"
@@ -53,8 +53,8 @@ RULES=(
   "account-families: $EFFECTS"
   "account-family-kit: $EFFECTS"
   "account-family-nextcloud: $EFFECTS"
-  "account-family-generic: zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess latchkey ui-settings"
-  "account-family-oauth: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  "account-family-generic: zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess service-locator ui-settings"
+  "account-family-oauth: zbus zvariant ureq oo7 keyring secret-service interprocess service-locator ui-settings"
   "account-dbus: reqwest hyper ureq oo7 keyring secret-service ui-settings"
   "account-callers: reqwest hyper ureq oo7 keyring secret-service ui-settings"
 )
@@ -126,11 +126,11 @@ done
 #                       reach together), with the system resolver (account-discover's `io`)
 # Every feature in account-families' Cargo.toml must have a row, so a new family cannot slip in
 # unchecked; the direct porter-* edges of each feature are exact too (FAMILY_EDGES).
-MS_FORBIDS="zbus zvariant reqwest ureq oo7 keyring secret-service interprocess latchkey ui-settings"
-DIRECT_FORBIDS="zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+MS_FORBIDS="zbus zvariant reqwest ureq oo7 keyring secret-service interprocess service-locator ui-settings"
+DIRECT_FORBIDS="zbus zvariant ureq oo7 keyring secret-service interprocess service-locator ui-settings"
 declare -A FAMILY_FORBIDS=(
   [nextcloud]="$EFFECTS"
-  [generic]="zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+  [generic]="zbus zvariant hyper reqwest ureq oo7 keyring secret-service interprocess service-locator ui-settings"
   [oauth]="$DIRECT_FORBIDS"
   [api_key]="$DIRECT_FORBIDS"
   [agent_login]="$EFFECTS"

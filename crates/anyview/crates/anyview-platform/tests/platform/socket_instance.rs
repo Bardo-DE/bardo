@@ -1,11 +1,11 @@
-//! `Instance` over the per-user socket (latchkey), built on every platform: the first claim
+//! `Instance` over the per-user socket (the service locator), built on every platform: the first claim
 //! listens, later ones hand their request over and leave, and a socket a killed viewer left
 //! behind is taken over. Every socket and lock lives in a scratch directory under `TMPDIR`
-//! (`LatchkeyInstance::under`): nothing here reads `XDG_RUNTIME_DIR`, so the person's runtime
+//! (`SingleInstance::under`): nothing here reads `XDG_RUNTIME_DIR`, so the person's runtime
 //! directory is never touched.
 
 use anyview_core::{FilePath, LineIndex, NonEmpty, Resume, Sequence, SequenceOrigin};
-use anyview_platform::portable::LatchkeyInstance;
+use anyview_platform::portable::SingleInstance;
 use anyview_platform::{Claim, Handoff, Instance, Primary, Request};
 #[cfg(unix)]
 use std::path::{Path, PathBuf};
@@ -20,7 +20,7 @@ fn scratch() -> tempfile::TempDir {
     tempfile::Builder::new().prefix("lk").tempdir().unwrap()
 }
 
-async fn primary(instance: &LatchkeyInstance) -> Primary {
+async fn primary(instance: &SingleInstance) -> Primary {
     match instance.claim(&Request::Open(Vec::new())).await.unwrap() {
         Claim::Primary(primary) => primary,
         Claim::Forwarded => panic!("nobody was running: this launch must be the viewer"),
@@ -34,9 +34,9 @@ fn next(primary: &mut Primary) -> Request {
 #[tokio::test]
 async fn the_first_launch_listens_and_a_second_hands_its_files_over() {
     let dir = scratch();
-    let mut first = primary(&LatchkeyInstance::under(dir.path().to_owned())).await;
+    let mut first = primary(&SingleInstance::under(dir.path().to_owned())).await;
 
-    let second = LatchkeyInstance::under(dir.path().to_owned());
+    let second = SingleInstance::under(dir.path().to_owned());
     let sent = [
         Request::Open(vec![path("/pics/a.png"), path("/pics/b b.png")]),
         Request::Peek(path("/docs/c.pdf")),
@@ -55,7 +55,7 @@ async fn the_first_launch_listens_and_a_second_hands_its_files_over() {
 #[tokio::test]
 async fn a_handoff_keeps_its_results_and_its_place() {
     let dir = scratch();
-    let mut first = primary(&LatchkeyInstance::under(dir.path().to_owned())).await;
+    let mut first = primary(&SingleInstance::under(dir.path().to_owned())).await;
 
     let entries = NonEmpty::from_vec(vec![path("/a/1.pdf"), path("/a/2.pdf")]).unwrap();
     let sequence =
@@ -67,7 +67,7 @@ async fn a_handoff_keeps_its_results_and_its_place() {
         },
         sequence: Some(sequence),
     };
-    let claim = LatchkeyInstance::under(dir.path().to_owned())
+    let claim = SingleInstance::under(dir.path().to_owned())
         .claim(&Request::Handoff(handed.clone()))
         .await
         .unwrap();
@@ -78,11 +78,11 @@ async fn a_handoff_keeps_its_results_and_its_place() {
 #[tokio::test]
 async fn two_scratch_directories_are_two_viewers() {
     let (one, two) = (scratch(), scratch());
-    let _first = primary(&LatchkeyInstance::under(one.path().to_owned())).await;
-    let _second = primary(&LatchkeyInstance::under(two.path().to_owned())).await;
+    let _first = primary(&SingleInstance::under(one.path().to_owned())).await;
+    let _second = primary(&SingleInstance::under(two.path().to_owned())).await;
 }
 
-/// The socket latchkey binds under `runtime`.
+/// The socket the service locator binds under `runtime`.
 #[cfg(unix)]
 fn socket_under(runtime: &Path) -> PathBuf {
     runtime.join("anyview").join("agent.sock")
@@ -99,8 +99,8 @@ async fn a_socket_left_by_a_killed_viewer_is_taken_over() {
     drop(std::os::unix::net::UnixListener::bind(&socket).unwrap());
     assert!(socket.exists(), "the stale socket is on disk");
 
-    let mut first = primary(&LatchkeyInstance::under(dir.path().to_owned())).await;
-    let claim = LatchkeyInstance::under(dir.path().to_owned())
+    let mut first = primary(&SingleInstance::under(dir.path().to_owned())).await;
+    let claim = SingleInstance::under(dir.path().to_owned())
         .claim(&Request::Peek(path("/docs/c.pdf")))
         .await
         .unwrap();
@@ -113,12 +113,12 @@ async fn a_socket_left_by_a_killed_viewer_is_taken_over() {
 async fn closing_the_viewer_removes_its_socket_and_the_next_launch_is_the_viewer() {
     let dir = scratch();
     let socket = socket_under(dir.path());
-    let first = primary(&LatchkeyInstance::under(dir.path().to_owned())).await;
+    let first = primary(&SingleInstance::under(dir.path().to_owned())).await;
     assert!(socket.exists());
     drop(first);
     assert!(!socket.exists(), "the socket goes with the viewer");
 
-    let _again = primary(&LatchkeyInstance::under(dir.path().to_owned())).await;
+    let _again = primary(&SingleInstance::under(dir.path().to_owned())).await;
 }
 
 #[cfg(unix)]
@@ -126,7 +126,7 @@ async fn closing_the_viewer_removes_its_socket_and_the_next_launch_is_the_viewer
 async fn a_line_that_is_not_a_request_is_refused_and_the_viewer_carries_on() {
     use std::io::{BufRead, BufReader, Write};
     let dir = scratch();
-    let mut first = primary(&LatchkeyInstance::under(dir.path().to_owned())).await;
+    let mut first = primary(&SingleInstance::under(dir.path().to_owned())).await;
     let socket = socket_under(dir.path());
 
     let refused = tokio::task::spawn_blocking(move || {
@@ -143,7 +143,7 @@ async fn a_line_that_is_not_a_request_is_refused_and_the_viewer_carries_on() {
     .unwrap();
     assert!(refused.contains("\"ok\":false"), "{refused}");
 
-    let claim = LatchkeyInstance::under(dir.path().to_owned())
+    let claim = SingleInstance::under(dir.path().to_owned())
         .claim(&Request::Play(path("/music/d.flac")))
         .await
         .unwrap();

@@ -16,7 +16,7 @@ use inference_core::{
 use std::collections::BTreeSet;
 use std::ops::ControlFlow;
 
-/// A chat model reached through a inference-client session (inferd over D-Bus, the latchkey socket
+/// A chat model reached through a inference-client session (inferd over D-Bus, the service locator socket
 /// or `InProcess`: the transport is the caller's choice).
 #[derive(Debug)]
 pub struct TransportModel<T: Transport> {

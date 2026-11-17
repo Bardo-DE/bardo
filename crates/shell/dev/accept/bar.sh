@@ -142,7 +142,7 @@ step_ping() {
   bardo-shell ping >"$OUT_DIR/ping.log" 2>&1
 }
 
-# 2. A second `bardo-shell run` finds the lock held and exits 0 without touching Wayland (latchkey
+# 2. A second `bardo-shell run` finds the lock held and exits 0 without touching Wayland (the service locator
 #    `AlreadyRunning`), and does so fast: `daemon::run` checks the lock before it does anything
 #    slow, so a live daemon never lets a rival get far enough to matter.
 step_single_instance() {

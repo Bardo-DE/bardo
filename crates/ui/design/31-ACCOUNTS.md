@@ -310,7 +310,7 @@ AI providers:
 | `inferd` | the AI broker: routing, policy, spend, audit, wire adapters, engine supervision, GPU queue, streaming sessions | streams and big payloads; restartable alone | P |
 | sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws Bardo's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to the compositor's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
 
-All are user-session services, D-Bus activated on Linux, single-instance through latchkey
+All are user-session services, D-Bus activated on Linux, single-instance through the service locator
 ([R] §1). syncd gets tokens and authenticated streams from accountd like any client; inferd also
 uses accountd's `Peer` interface (§4.4) for verdicts on behalf of the calling app, API-key
 resolution and reporting probed local runtimes.
@@ -326,7 +326,7 @@ agents keep inferd.
 
 ### 4.2 Crates and the extraction from mailo
 
-The core comes out of mailo the way latchkey did, coordinated with the mailo session: mailo
+The core comes out of mailo the way the service locator did, coordinated with the mailo session: mailo
 moves to depending on it in the same change (no alias left behind).
 
 Frozen as the porter repo (`porter-*` crates; section 11). **[2026-10-05]** The proposal's
@@ -343,9 +343,9 @@ and by mailo in process), `porter-dav` (mailo's WebDAV reply parsing, moved) and
 | `account-provider` | `ProviderSpec` and the file parser, `ProviderSet`, `Family`, `Issuer`, the `Provider`/`ProviderSession` traits | `presets/` become provider files | none | yes |
 | `account-secrets` | `Secrets` trait (get, put, delete, delete_account) + backends: `Oo7Secrets` (Linux; oo7 0.6 is in the pinned block), `KeyringSecrets` over keyring-core's native stores with mailo's chunking (macOS, Windows), `MemorySecrets` for tests | `mail-runtime/src/secrets.rs` + `secrets/chunks.rs` | keyring | yes |
 | `account-service` | accountd's core over its seams (providers, secrets, `Sheets`, `RegistryStore`, audit, `Clock`): answers every request; hosted by accountd or in process | new | none | yes |
-| `account-client` | the app-facing API (§5.1); trait `Transport` with `DbusTransport`, `SocketTransport` (latchkey), `InProcess` | new | per transport | yes |
+| `account-client` | the app-facing API (§5.1); trait `Transport` with `DbusTransport`, `SocketTransport` (the service locator), `InProcess` | new | per transport | yes |
 | `account-dbus` | the three buses as zbus proxies and skeletons, `dbus/*.xml` | new | D-Bus | Linux |
-| `accountd` | zbus front end, consent store, probes; also serves the latchkey front end where D-Bus is absent | new | yes | Linux first |
+| `accountd` | zbus front end, consent store, probes; also serves the service locator front end where D-Bus is absent | new | yes | Linux first |
 | `porter-sync`, `syncd` | `Replica` contract (§6.1), dataset kinds; journal and scheduler in syncd | new | SQLite | core yes |
 | `storage-*` (later) | one per family: `webdav`, `graph`, `gdrive`, `dropbox`, `s3` | new (mailo's CardDAV WebDAV code reused) | HTTP | yes |
 | `inference-core`, `inferd` | typed request model, routing, policy, spend, audit, `Model` trait; adapters later (`ChatCompletions`, `Responses`, `Messages`, `GenerateContent`, `OllamaNative`, `ComfyWorkflow`) | new | HTTP (adapters) | core yes |
@@ -366,11 +366,11 @@ deployment config, never in the account (as mailo's `AuthPlan` comment already s
 | Platform | Link | Who hosts the core | St |
 | --- | --- | --- | --- |
 | Linux, our desktop | `DbusTransport` to `org.bardo.Accounts1` | accountd | P |
-| Linux, another desktop; macOS; Windows | `SocketTransport` (framed messages over latchkey's socket / named pipe) | accountd built without zbus, or mailo's own agent hosting the core | P |
+| Linux, another desktop; macOS; Windows | `SocketTransport` (framed messages over the service locator's socket / named pipe) | accountd built without zbus, or mailo's own agent hosting the core | P |
 | mailo standalone, tests | `InProcess` (in process) | the app | P |
 
 The request and reply types are one serde enum each in `account-core` (`AccountsRequest`,
-`AccountsReply` with `Refusal`); D-Bus and latchkey both carry them, so there is one protocol
+`AccountsReply` with `Refusal`); D-Bus and the service locator both carry them, so there is one protocol
 with two carriers. A socket frame is a 4-byte big-endian length and a JSON envelope
 `{ vocab, body }` (16 MiB at most). The caller's identity is never in a request: each transport
 derives it from the connection.
@@ -729,7 +729,7 @@ stores elsewhere. Items 4-13 stand as recommended.
 11. **GNOME Online Accounts compatibility.** **Recommend** defer to v3 and verify GOA's
     interfaces first.
 12. **Repos and boundaries.** (a) one new repo holding `accounts-*`, accountd, accounts-ui,
-    syncd, inferd and the provider files, mailo depending on it by path like latchkey; (b) split
+    syncd, inferd and the provider files, mailo depending on it by path like the service locator; (b) split
     AI (inferd) into its own repo. **Recommend (a)** now, split later if inferd grows. Name
     candidates: `porter` (holds the keys, forwards the deliveries), `lanyard`. **Recommend
     `porter`.**
@@ -757,7 +757,7 @@ stores elsewhere. Items 4-13 stand as recommended.
 <!-- paths: skip -->
 - Code (read-only): `~/mailo/crates/mail-domain/src/account.rs` (`AuthPlan`, `OAuthIssuer`,
   `AccountCaps`, `SecretKey`, `SecretPurpose`, `Credential`), `mail-runtime/src/{oauth,signin,renewal,secrets}.rs`,
-  `latchkey/src/lib.rs`.
+  `service_locator/src/lib.rs`.
 <!-- paths: end -->
 - Our docs: 20 §1.17, §2.1, §2.3, §2.8, §2.9; 22 §9.4; 30 §2; Bardo `CONVENTIONS.md`.
 

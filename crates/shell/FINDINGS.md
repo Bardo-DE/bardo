@@ -7,7 +7,7 @@ A settled item is deleted, not marked closed.
 
 ## Standing facts: compositors
 
-- **the compositor is the product target; KWin is a test compositor only.** Headless KWin (shell-host's
+- **The compositor is the product target; KWin is a test compositor only.** Headless KWin (shell-host's
   `kwin-virtual.sh` plus `fake-input.sh`) is where real pointer and keyboard input is scripted
   where the compositor cannot yet. Nothing in sill is specific to
   KWin: on any compositor that lacks a protocol sill asks for, the matching service stays at its
@@ -193,7 +193,7 @@ A settled item is deleted, not marked closed.
   typed word begins a word of its name, keywords or shortcodes. A 300-cell grid scrolls inside
   a 60 Hz frame at p95 on vello_cpu and vello_hybrid at 100-200 %.
 
-- **the key remap daemon**: the daemon's socket is `SOCK_SEQPACKET` (`key-remap-protocol`), held by one thread
+- **The key remap daemon**: the daemon's socket is `SOCK_SEQPACKET` (`key-remap-protocol`), held by one thread
   (`poll` on the socket and an eventfd), reconnecting after 1 s doubling to 30 s. Each connection
   starts with the current `Focus` and the text of `~/.config/key_remap/key-remap.toml`, whatever was sent
   before. Unit state comes from systemd's `GetUnit` and `ActiveState` on the system bus after the
@@ -1439,7 +1439,7 @@ confirmation).
 - **Not mine, not touched.** Notifications, consent-sheet caps, media fetches, inhibitors, tray caps
   and log escaping belong to pa-sillnote.
 
-## pa-sillif: production audit fixes (sill's side of shell-host, notifications, the portal and latchkey, 2026-10-16)
+## pa-sillif: production audit fixes (sill's side of shell-host, notifications, the portal and the service locator, 2026-10-16)
 
 Fixed by reading, not built: the gate run is the first compile.
 
@@ -1521,26 +1521,26 @@ Fixed by reading, not built: the gate run is the first compile.
   `permission_sheet` looks the name up in the app index (case-insensitive) and falls back to the
   Window glyph. Two installed apps with one name get the first by id. An id from the portal in the
   call would make this exact.
-- **latchkey at 99cc9de.** The pin moved from ef0117a. `Error::Unsafe` and `Error::WrongOwner` need no
+- **The service locator at 99cc9de.** The pin moved from ef0117a. `Error::Unsafe` and `Error::WrongOwner` need no
   code: `take_door` prints the library's own words for any error other than `AlreadyRunning`, and the
   command line prints `ClientError::Agent` as it is. `is_running` is not called by sill. An empty
   connection (what a knock is) reaches `serve_one_with`, fails to read a request and writes an
   error line to a socket that is already closed; nothing is dispatched or logged. Bardo's
-  `docs/workspace-deps.toml` still pins latchkey at 335d7a7, so the pinned block in this
+  `docs/workspace-deps.toml` still pins the service locator at 335d7a7, so the pinned block in this
   `Cargo.toml` no longer matches it; Bardo's file takes the new revision when this lands.
 - **The daemon polls `Listening::standing()`.** `sill::door_guard` asks every
-  `STANDING_EVERY` (60 s, latchkey's "once a minute is plenty") on the daemon's runtime; a lock file
+  `STANDING_EVERY` (60 s, the service locator's "once a minute is plenty") on the daemon's runtime; a lock file
   that is gone or replaced (a cache cleaner ran; the fallback under `$HOME/.cache` is the case that
   matters) ends the host with a failure and one line, through the channel `name_guard` already
   uses. A failure, not a clean exit: `dist/sill.service` restarts on failure only, so the unit
   starts the shell again a second later and it takes the lock file that is there now; a clean exit
   would leave the session with no shell. A shell started by hand (not under the unit) simply ends.
   The IPC thread owns no timer and the `Listening` is shared as `ipc::door::Door` (an `Arc`): a
-  `Door` dropped while displaced is leaked on purpose, because latchkey's `Listening` unlinks its
+  `Door` dropped while displaced is leaked on purpose, because the service locator's `Listening` unlinks its
   socket path on drop and that path may now be a second daemon's. The accept loop ends on
   `Serving::stop`: a flag read after each accept and a knock to wake the blocked one. The knock
   is skipped while displaced (the path is not ours), so a displaced daemon's loop ends with the
-  process. *Ask of latchkey:* `Listening::set_nonblocking` (or a `wake`) would let a displaced
+  process. *Ask of the service locator:* `Listening::set_nonblocking` (or a `wake`) would let a displaced
   daemon's accept loop end without the process ending; not needed while the daemon exits.
 
 ## pa2-sill: who calls the shell's bus objects, and the compositor's permission question (2026-10-16)
@@ -1790,7 +1790,7 @@ The line is built by the pure `sill_model::launch::launch_line`.
   journal holds it under the identifier `bardo-shell`, always, with no level filter. The line is therefore written as
   `timing: launch ...` (what a tracing fmt layer prints after the level, so a script's match on `timing: launch`
   works for both). Moving the daemon onto `tracing` would need `tracing` and `tracing-subscriber` in
-  Cargo.toml; not done. A shell that `latchkey` started on demand (not the unit) has stderr on `/dev/null`:
+  Cargo.toml; not done. A shell that `service_locator` started on demand (not the unit) has stderr on `/dev/null`:
   the workflow scripts need the unit.
 - **`bardo-shell launch <desktop-id> [--print-timing]`** is `Act(Launch(AppId))` answered `Launched(LaunchTiming)`. The
   host loop asks the first dock's surface for the activation token (as a dock click does), then `launch::serve`

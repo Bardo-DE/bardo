@@ -247,7 +247,7 @@ pub fn spawn(args: &[&str]) -> Result<(), Error> {
 /// zombie, so it is not an error.
 fn reap(mut child: std::process::Child) {
     let _ = std::thread::Builder::new()
-        .name("latchkey-reap".to_owned())
+        .name("service-locator-reap".to_owned())
         .spawn(move || {
             let _ = child.wait();
         });

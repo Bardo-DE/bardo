@@ -18,10 +18,10 @@ more: the extras are additive, never a different program.
    must build and pass its tests with `--no-default-features`; that build is a gate check.
 4. **One client seam per service, two kinds of transport.** A service's client crate owns a
    `Transport` seam: D-Bus on our desktop (activation, portals, one instance per session,
-   intentd routing), and elsewhere either in-process (the app hosts the service) or latchkey
+   intentd routing), and elsewhere either in-process (the app hosts the service) or the service locator
    (a per-user agent over a Unix socket / named pipe, connect-or-start). account-client and
    memory-client already have this shape; it becomes the pattern for every service.
-   latchkey itself stays a byte-stream lifecycle library: it does not grow a D-Bus side.
+   The service locator itself stays a byte-stream lifecycle library: it does not grow a D-Bus side.
 
 ## 2. Who is what
 
@@ -30,7 +30,7 @@ more: the extras are additive, never a different program.
 | Bardo | components, tokens, motion, ui-blitz windows, scrolling, ui-helpers (PackageKit is Linux; elsewhere `Unsupported`) | `ui-desktop` capability probe; appearance broadcast; compositor blur/materials; Space tint |
 | mailo | mail, contacts, rules, keys, settings window; its own sign-in | system accounts and consent (accountd); intents for the companion; memory shared across apps |
 | anyview | viewing, thumbnails, plugins with the helper installer | Quick Look peek from the shell; intents; share sheet |
-| porter | accounts engine and providers, hosted in-process or as a latchkey agent | accountd as the session's one account store; system consent sheet; syncd |
+| porter | accounts engine and providers, hosted in-process or as a service locator agent | accountd as the session's one account store; system consent sheet; syncd |
 | almanac | memory files, event log, search, sealing, in-process `Memory` | memoryd: one memory for every app, file watching, consolidation on a timer |
 | docket | an in-app agent: router, policy point, reviewer, agent loop, skills over the app's own intents, confirm sheet drawn in-app | companiond and intentd: one companion across all apps; `bardo do`; cua (computer use); voiced; readerd quarantine |
 | desktop only | | sill, layer-shell-host, the compositor, the Settings app, the key remap daemon, the mouse gestures daemon |
@@ -46,7 +46,7 @@ more: the extras are additive, never a different program.
   (`desktop/` directory by convention) and the service clients' D-Bus transports. Core
   modules never import from `desktop/`; the boundary script checks it.
 - **Transports:** a client picks D-Bus when `Desktop::probe()` says the service is here,
-  otherwise its portable transport (in-process or latchkey). The choice happens once at start
+  otherwise its portable transport (in-process or the service locator). The choice happens once at start
   and again when the capability changes.
 - **UI:** an extra's entry point (a menu item, a toolbar button, a settings pane) renders only
   under `Presence::Here`. No "requires Bardo desktop" placeholders.

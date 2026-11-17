@@ -141,7 +141,7 @@ RULES=(
 # texture is made through `ui-blitz`'s `TextureLayer`, a page through its `PdfFileThumb` cache, and
 # nothing here spawns.
 DIRECT=(
-  "anyview: cpal symphonia zbus ashpd freedesktop-desktop-entry latchkey interprocess wgpu pdfrum pdfrum-edit mpv-wgpu-player rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next image anyrender anyrender_vello_hybrid vello_hybrid blitz-dom blitz-paint blitz-html blitz-shell dioxus-native"
+  "anyview: cpal symphonia zbus ashpd freedesktop-desktop-entry service-locator interprocess wgpu pdfrum pdfrum-edit mpv-wgpu-player rsmpv rsmpv-sys ffmpeg-next ffmpeg-sys-next image anyrender anyrender_vello_hybrid vello_hybrid blitz-dom blitz-paint blitz-html blitz-shell dioxus-native"
   "anyview-peek: wgpu pdfrum pdfrum-anyrender pdfrum-edit tokio mpv-wgpu-player rsmpv ffmpeg-next ffmpeg-sys-next anyrender anyrender_vello_hybrid vello_hybrid blitz-dom blitz-paint blitz-html blitz-shell dioxus-native"
   "anyview-ui: pdfrum pdfrum-anyrender pdfrum-edit"
   "anyview-pane: wgpu tokio pdfrum pdfrum-anyrender pdfrum-edit"
@@ -165,7 +165,7 @@ DIRECT=(
 # (four packages; the decoders are the symphonia crates the peek already links, and libasound is an audio
 # device library, not a codec). The missing-tool prompt adds two: ui-shell (the install sheet, drawn by the views) and
 # ui-helpers (the catalog and PackageKit install, named by the binary); everything else they use was already in the tree.
-# Single instance without D-Bus adds three: latchkey, interprocess (its Unix socket and named pipe
+# Single instance without D-Bus adds three: the service locator, interprocess (its Unix socket and named pipe
 # transport) and doctest-file (interprocess's proc macro), which the portable build needs and the Linux
 # desktop build links as well. Hiding what the platform cannot do adds one: ui-desktop (Bardo's capability
 # probe: whether PackageKit answers, so an Install... is offered only where it can work; it has no
@@ -203,7 +203,7 @@ DIRECT=(
 # viewer 696, two packages more: those two crates, with every dependency they name already in its tree.
 # anyview-runtime is 34 (anyview-core's tree and nothing else). anyview-media-host is 606: anyview-ui's tree
 # and the player (anyview-media with mpv-wgpu-player's subprocess host, anyview-platform's portable half
-# with bayonet and latchkey, and what those bring). The pane with its `player` feature is 607: the pane's 590
+# with bayonet and the service locator, and what those bring). The pane with its `player` feature is 607: the pane's 590
 # and the media host's extra packages, which are the player's alone.
 # Both ratchet down when a change drops a dependency and are never raised without the reason.
 # chardetng (the legacy-encoding guess of anyview-text, MIT OR Apache-2.0, its own dependencies already in

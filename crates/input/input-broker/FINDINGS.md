@@ -16,7 +16,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    alone cannot open it. Opening it would take `CAP_DAC_READ_SEARCH` (every file) or reading the
    process's memory (every process's); only root can set a system unit's environment, and the unit's
    root-owned files must unset every loader variable, so the check is dropped instead.
-2. **the key remap daemon's identity is the strong one, the keyboard is handed over, the pad is proxied (owner,
+2. **The key remap daemon's identity is the strong one, the keyboard is handed over, the pad is proxied (owner,
    2026-10-16).** A uinput descriptor cannot be made write-only (the holder can destroy the device and
    set it up again with any capabilities), so a handed descriptor is only as safe as its holder.
    The key remap daemon is a system service with a control group a user cannot enter, so it gets the fd. The mouse gestures daemon

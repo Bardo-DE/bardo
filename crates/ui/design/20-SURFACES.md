@@ -264,7 +264,7 @@ Photos, Files/Drive, Notes, Contacts) uses that account; several accounts side b
 | Services per account | mail, calendar, contacts, files, photos, notes; each switchable per account (the reference's per-service toggles) | P |
 | Secrets | OAuth refresh tokens and passwords in the Secret Service (keyring), never in config files; apps get short-lived access tokens from the service, scoped to what they asked for | P |
 | Compatibility | also answer GNOME Online Accounts' D-Bus API if cheap, so foreign apps that read it see the same accounts (research) | P |
-| Seeds | mailo already has account discovery (autoconfig), OAuth, IMAP/SMTP/JMAP and CalDAV/CardDAV (`mail-domain`, `mail-proto`, `mail-pim`): extract the account core from mailo the way latchkey was extracted, coordinated with the mailo session | P |
+| Seeds | mailo already has account discovery (autoconfig), OAuth, IMAP/SMTP/JMAP and CalDAV/CardDAV (`mail-domain`, `mail-proto`, `mail-pim`): extract the account core from mailo the way the service locator was extracted, coordinated with the mailo session | P |
 | UI | a Settings pane (accounts list, add account sheet, per-service toggles, sign-out), and the first-run "sign in" step | P |
 | Risk | Google's restricted scopes (Gmail, Drive) need a verified OAuth client and a security assessment; decide per provider whether we ship our own client ID or ask the user for one | P |
 | Milestone | before the app pass's first sync-using app; the design doc `31-ACCOUNTS.md` | P |

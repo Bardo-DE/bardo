@@ -1,6 +1,6 @@
 //! Find this user's background agent, or start one. One logic, three platforms.
 //!
-//! A *latchkey* is the key to your own front door: it lets you in, and it tells you whether
+//! A *service locator* is the key to your own front door: it lets you in, and it tells you whether
 //! anyone is already home. That is the whole of this crate.
 //!
 //! ```no_run

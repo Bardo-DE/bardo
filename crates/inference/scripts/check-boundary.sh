@@ -13,7 +13,7 @@ cd "$(dirname "$0")/.."
 # default (empty) feature set; inference-tailnet reaches tokio and hyper only through its `io`
 # feature; inference-dbus is the bus vocabulary, so it reaches zbus but no client, keyring or
 # settings library.
-EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
 RULES=(
   "inference-core: $EFFECTS"
   "inference-bridge: $EFFECTS"
@@ -21,7 +21,7 @@ RULES=(
   "inference-settings: $EFFECTS"
   "inference-agent-proto: $EFFECTS"
   "inference-router: $EFFECTS inference-daemon"
-  "inference-turns: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings inference-daemon"
+  "inference-turns: zbus zvariant ureq oo7 keyring secret-service interprocess service-locator ui-settings inference-daemon"
   "inference-tailnet: $EFFECTS"
   "inference-client: $EFFECTS"
   "inference-probe: $EFFECTS"

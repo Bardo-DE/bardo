@@ -1,4 +1,4 @@
-//! Single instance without D-Bus: the first viewer is the user's `anyview` agent (latchkey: an
+//! Single instance without D-Bus: the first viewer is the user's `anyview` agent (the service locator: an
 //! advisory lock plus a Unix socket or a named pipe), and a later launch connects, hands over
 //! its request as one line (`frame`) and leaves. Where the person has no session bus (macOS,
 //! Windows, a desktop with none) this is the whole of single instance.
@@ -45,17 +45,17 @@ enum Place {
     Under(PathBuf),
 }
 
-/// [`Instance`] over latchkey's per-user socket.
+/// [`Instance`] over the service locator's per-user socket.
 #[derive(Debug, Clone)]
-pub struct LatchkeyInstance {
+pub struct SingleInstance {
     place: Place,
 }
 
-impl LatchkeyInstance {
+impl SingleInstance {
     /// The viewer's agent where the platform puts one.
     #[must_use]
     pub fn new() -> Self {
-        LatchkeyInstance {
+        SingleInstance {
             place: Place::Process,
         }
     }
@@ -64,7 +64,7 @@ impl LatchkeyInstance {
     /// tests, which must never touch the person's runtime directory.
     #[must_use]
     pub fn under(runtime: PathBuf) -> Self {
-        LatchkeyInstance {
+        SingleInstance {
             place: Place::Under(runtime),
         }
     }
@@ -94,9 +94,9 @@ impl LatchkeyInstance {
     }
 }
 
-impl Default for LatchkeyInstance {
+impl Default for SingleInstance {
     fn default() -> Self {
-        LatchkeyInstance::new()
+        SingleInstance::new()
     }
 }
 
@@ -104,7 +104,7 @@ fn failed(call: &'static str, error: &dyn std::fmt::Display) -> PlatformError {
     PlatformError::bus(call, error)
 }
 
-impl Instance for LatchkeyInstance {
+impl Instance for SingleInstance {
     async fn claim(&self, request: &Request) -> Result<Claim, PlatformError> {
         let agent = self.agent()?;
         let request = request.clone();

@@ -324,7 +324,7 @@ sill layer `dist/key_remap/key-remap.toml` to `~/.config/key_remap/key-remap.tom
 
 ## The focused app's menus in the bar (a sill login, a Bardo app that exports its menu)
 
-- [ ] **the Settings app's Edit menu shows in the bar**: focus the Settings app (built with the menu export on); the bar
+- [ ] **The Settings app's Edit menu shows in the bar**: focus the Settings app (built with the menu export on); the bar
   reads the Settings app's name in bold, then File, Edit, View, Window and Help. Press Edit: Undo and Redo list
   with their Cmd keys; hover across File, a tray item and Sound switches the one popup with no gap;
   pick a row and the Settings app runs it. A window that is not a Bardo app shows only its name's menu (Hide,

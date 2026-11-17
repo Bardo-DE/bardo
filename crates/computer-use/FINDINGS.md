@@ -145,7 +145,7 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
 - **almanac `Memory1`:** `HandedBack.user_events` needs a read of the person's events between two
   instants for the cua caller; `Caller::Cuad` records `Area(Cua)` only. Ask: a bounded `Recent`
   for `Caller::Cuad`, limited to events of the window's app after a given `Seq`.
-- **the compositor:** serve `bardo_agent_manager_v1` from `~/desktop-protocols/protocols/bardo-agent-v1.xml` (the XML left cua at S0-CU2); the
+- **The compositor:** serve `bardo_agent_manager_v1` from `~/desktop-protocols/protocols/bardo-agent-v1.xml` (the XML left cua at S0-CU2); the
   `mask_reason`, `glow_state`, `suspend_reason`, `revoke_reason`, `lease_mode` values are pinned by
   tests here.
 

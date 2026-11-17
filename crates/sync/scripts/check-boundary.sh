@@ -19,8 +19,8 @@ cd "$(dirname "$0")/.."
 # helper outside syncd's sandbox, reaches no effect crate and none of porter's or ferry's own:
 # std, rustix and listenfd only (no network, keyring or account data). sync-bus is the interface
 # definitions: zbus and tokio (through account-dbus), nothing that shows or fetches.
-EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
-NO_BUS="zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
+EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
+NO_BUS="zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
 BARDO_ACCOUNT_HIDDEN="account-dbus account-callers account-service account-service-core account-service-accounts account-secrets account-store account-sheets account-client account-client-dbus account-client-inproc"
 RULES=(
   "quickxorhash: $EFFECTS"

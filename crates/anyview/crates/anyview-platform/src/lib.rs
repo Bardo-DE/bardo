@@ -10,11 +10,11 @@
 //!
 //! A viewer claims the name once at start; a second launch forwards its request and leaves:
 //! ```no_run
-//! use anyview_platform::portable::LatchkeyInstance;
+//! use anyview_platform::portable::SingleInstance;
 //! use anyview_platform::{Claim, Instance, PlatformError, Request};
 //!
 //! # async fn start() -> Result<(), PlatformError> {
-//! match LatchkeyInstance::new().claim(&Request::Open(Vec::new())).await? {
+//! match SingleInstance::new().claim(&Request::Open(Vec::new())).await? {
 //!     Claim::Primary(primary) => {
 //!         // Blocks; an async program reads it on a thread of its own.
 //!         for request in primary {

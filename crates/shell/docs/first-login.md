@@ -69,7 +69,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    `xdg-utils` (opening links), the same package name on all
    three. External monitor brightness needs the `i2c-dev` module and an ACL on `/dev/i2c-*`: the install
    adds both unless a ddcutil package already does (`ddcutil` on all three).
-5. **the key remap daemon** replaces Toshy; the sill session has no Mac layout without it (Cmd stays Cmd). It is
+5. **The key remap daemon** replaces Toshy; the sill session has no Mac layout without it (Cmd stays Cmd). It is
    installed and running on this machine; if not, `~/key_remap/install.sh --dry-run`, then
    `~/key_remap/install.sh` (it builds and installs with sudo; see `~/key_remap/README.md`, "Install").
    Check `systemctl status key_remap` and Cmd+C / Cmd+V in a text field in Plasma.

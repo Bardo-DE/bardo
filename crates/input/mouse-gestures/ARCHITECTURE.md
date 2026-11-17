@@ -104,7 +104,7 @@ out the effects it gets back.
 | Threads, sockets, discovery, backoff, nodes | `daemon` |
 | Subscribers of the socket: ids, admission, caps, the joint claim and lock, what the reader is told and when | `daemon::socket::{model, step}` (the pure `Subscribers::step`; `admit`, `packet`, `deliver`, `publish`, `aggregate` hold its parts), `limits` (the caps and budgets) |
 | The socket thread: polling, reading, the peer facts (uid, vouch, seat file), carrying out effects | `daemon::socket::{io, conn}` |
-| Who has the seat, and what a connection is to the daemon (shell, other program, stranger) | `daemon::socket::seat` (`peer_of`), `daemon::socket::shell` (`Steering`, the mouse gestures daemon's shell table); the shell check, the seat file and the accept failures are `latchkey::guard`, shared with the key remap daemon |
+| Who has the seat, and what a connection is to the daemon (shell, other program, stranger) | `daemon::socket::seat` (`peer_of`), `daemon::socket::shell` (`Steering`, the mouse gestures daemon's shell table); the shell check, the seat file and the accept failures are `service_locator::guard`, shared with the key remap daemon |
 | Actions that need the person's session (asked of the shell, never run here) | `action::plan` (the tracker's `Out::Deferred(Action)` becomes an `Option<HostAction>`), `mouse_gestures_protocol::HostAction`, `ToHost::Run` |
 | The person's settings laid over the machine's | `config::layer`, `ToDaemon::UserConfig` |
 | What the shell says about the lock screen | `mouse_gestures_protocol::ToDaemon::SessionLock`, `Tracker::with_session_lock` |
@@ -221,7 +221,7 @@ node for writing, or reads a real config directory or a running daemon.
 
 ## 7. Repo rules
 
-- **the mouse gestures daemon is a system service** (a dynamic user, `dist/bardo-mouse-gestures.service`; owner decision 2026-10-17, as
+- **The mouse gestures daemon is a system service** (a dynamic user, `dist/bardo-mouse-gestures.service`; owner decision 2026-10-17, as
   The key remap daemon): its socket is `/run/bardo/mouse-gestures/events.sock`, mode 0666, and `daemon::socket` serves only the person
   at the seat. A connection is a `Peer`: the `Shell` (the process in `bardo-shell.service` under that person's own
   manager, held by pidfd and judged by peephole), another program of the person (`Plain`: subscribes, may

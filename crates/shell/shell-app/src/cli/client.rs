@@ -66,7 +66,7 @@ pub enum ClientError {
     /// No daemon, and this request does not start one.
     #[error("no daemon is running")]
     NotRunning,
-    /// latchkey could not find or start the daemon.
+    /// The service locator could not find or start the daemon.
     #[error("{0}")]
     Agent(#[from] service_locator::Error),
     /// The reply could not be read.

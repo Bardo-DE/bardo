@@ -11,7 +11,7 @@ is the map of the code that freezes those interfaces. `CONVENTIONS.md` holds the
 
 **It ships on a stock compositor**, opt-in per app and off by default: the seat is shared (input
 moves the person's cursor and steals focus), masking is bardo-computer-use's, and a confirmation shows only
-after bardo-computer-use has stopped its own input. **the compositor adds the agent seat later**; the protocol it
+after bardo-computer-use has stopped its own input. **The compositor adds the agent seat later**; the protocol it
 implements is the `desktop-protocols` repo's `bardo-agent-v1.xml`, which computer-use-desktop and computer-use-capture-wayland
 name directly.
 

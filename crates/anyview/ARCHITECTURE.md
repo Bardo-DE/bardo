@@ -206,7 +206,7 @@ built only with the opt-in feature `desktop` on Linux (the code is also gated on
 
 | Ability | With `desktop` (Linux) | Without it |
 | --- | --- | --- |
-| Single instance | `DbusInstance`: the name `org.bardo.Anyview1`, with bus activation | `LatchkeyInstance`: the first launch listens on `$XDG_RUNTIME_DIR/anyview/agent.sock`, a later one forwards one line of JSON and leaves |
+| Single instance | `DbusInstance`: the name `org.bardo.Anyview1`, with bus activation | `SingleInstance`: the first launch listens on `$XDG_RUNTIME_DIR/anyview/agent.sock`, a later one forwards one line of JSON and leaves |
 | Thumbnails | `FreedesktopThumbnails`, re-exported from `linux` | the same, from `portable` |
 
 Nothing reads `std::env`, `dirs` or a bus address outside `env`: a program builds an `Env`
@@ -220,7 +220,7 @@ Nothing reads `std::env`, `dirs` or a bus address outside `env`: a program build
 | `instance` | `Instance`, `Request` (`Open`, `Peek`, `Play`, `Handoff`), `Handoff`, `Claim`, `Primary` |
 | `handoff` (private) | a `Handoff` as the fields both wires carry, encoded and parsed once, for the bus and the socket |
 | `thumbnail` | `ThumbnailCache`, `ThumbSize`, `ThumbPixels` |
-| `portable` | `LatchkeyInstance` (the `frame` module is its line of JSON), `FreedesktopThumbnails` |
+| `portable` | `SingleInstance` (the `frame` module is its line of JSON), `FreedesktopThumbnails` |
 | `desktop` (feature `desktop`), public as `linux` | `DbusInstance` (and `forward_over`, `BUS_NAME`), the agent intents (`AGENT_BUS_NAME`, `OPEN_FILES`) |
 | `testing` (feature `testing`) | `FakeInstance`, `FakeThumbnails`, and `PrivateBus` (a private `dbus-daemon` with `desktop`) |
 

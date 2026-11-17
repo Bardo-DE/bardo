@@ -2,7 +2,7 @@
 //!
 //! The lock belongs to a file, and a cache cleaner or a tidy-minded person can delete that file:
 //! the next `bardo-shell` would lock a new one and start a second daemon beside this one, which
-//! then unlinks this daemon's socket for its own. latchkey's rule for a daemon is to ask
+//! then unlinks this daemon's socket for its own. The service locator's rule for a daemon is to ask
 //! `displaced()` now and then and to stop when it is displaced; [`spawn`] is that question, asked
 //! on the daemon's async runtime every [`STANDING_EVERY`].
 //!
@@ -21,7 +21,7 @@ use tokio::time::MissedTickBehavior;
 use crate::daemon::msg::ShellMsg;
 use crate::ipc::door::Door;
 
-/// How often the lock file is looked at: latchkey says once a minute is plenty, and a second
+/// How often the lock file is looked at: the service locator says once a minute is plenty, and a second
 /// daemon that starts in the gap is found within the minute and ends this one.
 pub const STANDING_EVERY: Duration = Duration::from_secs(60);
 

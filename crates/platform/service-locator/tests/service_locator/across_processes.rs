@@ -15,7 +15,7 @@ use std::process::{Command, Stdio};
 /// extracted somewhere else, so nextest sets `NEXTEST_BIN_EXE_` at run time to the remapped path;
 /// that wins when present. A binary that is not where either says fails loudly, not skips.
 fn the_example() -> std::path::PathBuf {
-    let built = std::env::var_os("NEXTEST_BIN_EXE_latchkey-test-agent").map_or_else(
+    let built = std::env::var_os("NEXTEST_BIN_EXE_service-locator-test-agent").map_or_else(
         || env!("CARGO_BIN_EXE_service-locator-test-agent").into(),
         std::path::PathBuf::from,
     );

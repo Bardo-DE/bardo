@@ -127,7 +127,7 @@ The mouse gestures daemon drives the user's only pointing device, so:
 - **Tests never create an input device.** Every test writes through `RecordingEmitter`, or
   through the input service's fake (`input_broker_client::fake::FakeSource`) for the code that
   talks to the service. The real service and the real uinput node are never opened by a test.
-- **the mouse gestures daemon cannot type.** The virtual keyboard comes from the input service, which sends
+- **The mouse gestures daemon cannot type.** The virtual keyboard comes from the input service, which sends
   The mouse gestures daemon's key presses on only while ctrl, alt or super is held for a letter, digit,
   punctuation, Enter, Space, Tab, Backspace, Delete or Escape. A gesture mapped to such a key
   on its own (`enter`, `shift+t`) is warned about in the log when the settings are read and does

@@ -37,7 +37,7 @@ Allowed direct edges (checked by `scripts/check-boundary.sh`; dev-dependencies a
 
 External boundaries (default features, measured by `cargo tree`, enforced by check-boundary): `inference-core`,
 `inference-bridge`, `inference-fs`, `inference-settings`, `inference-agent-proto`, `inference-tailnet`, `inference-client` and `inference-probe` never reach `zbus`, `zvariant`, `tokio`,
-`reqwest`, `hyper`, `ureq`, `oo7`, `keyring`, `secret-service`, `interprocess`, `latchkey` or `ui-settings`
+`reqwest`, `hyper`, `ureq`, `oo7`, `keyring`, `secret-service`, `interprocess`, `service_locator` or `ui-settings`
 (`inference-tailnet` reaches `tokio` and `hyper` only through its `io` feature; `inference-client` through `dbus`,
 `engines` and `lending`). `inference-router` is the same and never reaches `inferd`; `inference-turns` may reach
 `tokio` and `hyper` (its local-engine client) and nothing of the bus. `inference-dbus` reaches `zbus` and no

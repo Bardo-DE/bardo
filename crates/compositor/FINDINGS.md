@@ -381,7 +381,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
   not a nested table; an entry whose chord or words do not parse is dropped with a warning.
 - **compositor-core's settings enums derive `Word`** (P0-F1-output): the ds-settings derive gives
   each its document spelling; the serde derives stay for the model's own stores.
-- **the compositor takes a `toml` dev-dependency** (P0-F1-output): `tests/config.rs` writes and reads
+- **The compositor takes a `toml` dev-dependency** (P0-F1-output): `tests/config.rs` writes and reads
   documents through it.
 - **`serve_debug_at` takes Debug1's name with replacement off** (P0-debug-dbus): a second the compositor
   on the same bus fails with `IpcError::Bus` and the first keeps the name. The bus thread is
@@ -5080,7 +5080,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   (ydotool, a `uinput` group member) and one with any other label (a label that merely starts with `input_broker/`) is `Origin::Virtual`.
   Every device off the virtual bus is physical, as before. The compositor links nothing of the input broker, so `Maker::parse` is its own copy of
   input-broker-wire's `Maker`; `origin.rs` and `maker.rs` tests pin the same strings as the input broker's `maker` test: change one side and change both.
-  **the mouse gestures daemon stays `Virtual`** (`Maker::origin`). Read in the mouse gestures daemon (origin/master): its gesture actions press synthetic key chords
+  **The mouse gestures daemon stays `Virtual`** (`Maker::origin`). Read in the mouse gestures daemon (origin/master): its gesture actions press synthetic key chords
   (`action.rs:129` `key_of`, `tracker/out.rs:45`, `daemon/dispatch.rs:25`, `outputs/events.rs:81`), `Back` is Alt+Left by default, and the shell's
   `UserConfig` (`socket/client.rs:137`) can map a gesture to any chord with ctrl, alt or super, `Ctrl+Alt+F3` included (`keys.rs:125`); as a
   physical keyboard that would switch the VT and answer a consent sheet. Its pad is two-contact scroll strokes at the pad's centre, never a click or a

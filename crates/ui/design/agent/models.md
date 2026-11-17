@@ -53,7 +53,7 @@ Neither the Holo-3.1-4B card nor that page gives the action schema or the coordi
 ### 2.1 Placement decision
 
 All model-layer crates go in **a new portable repo** (working name **`stoker`**: it feeds the
-engines; it sits beside porter, latchkey, sill and the Settings app; the user names it, Q1).
+engines; it sits beside porter, the service locator, sill and the Settings app; the user names it, Q1).
 `MIT OR Apache-2.0`, same CONVENTIONS text, its own ARCHITECTURE.md and FINDINGS.md.
 
 Why a new repo rather than inside porter:
@@ -746,7 +746,7 @@ Fakes and fixtures:
 
 **Wave 0: deps (one agent, shared with the other areas).** Edit `~/bardo/docs/workspace-deps.toml`:
 - add the crates in §2.4 and the keyboard-types `serde` and tokio `net, io-util, process` features;
-- add `stoker` crates as git deps pinned by rev, the way latchkey is;
+- add `stoker` crates as git deps pinned by rev, the way the service locator is;
 - add design/22 rows for every `ai.*` key named here.
 
 Verify with Bardo's gate.

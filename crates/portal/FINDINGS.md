@@ -245,7 +245,7 @@ side (`restore_data` and `persist_mode` in its Start results) was already right.
 ## Production audit, area PORTAL (2026-10-16, lane pa-portal)
 
 Written without a build or a run: nothing here has been compiled. Fixed in the portal: PORTAL-01, 04, 05, 06, 07, 08, 09,
-11, 12 (caps), 13 (memfd, node name), 16, 17, 18, 19, 20, 21. Fixed in latchkey: PORTAL-22 to 26.
+11, 12 (caps), 13 (memfd, node name), 16, 17, 18, 19, 20, 21. Fixed in the service locator: PORTAL-22 to 26.
 
 **Decisions recorded**
 

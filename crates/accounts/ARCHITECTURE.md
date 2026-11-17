@@ -130,7 +130,7 @@ root, or its graph holds two copies of `ds-*` (the git one through porter, its p
 
 External boundaries: every crate but `account-dbus` and the daemons never reaches `zbus`,
 `zvariant`, `tokio`, `reqwest`, `hyper`, `ureq`, `oo7`, `keyring`, `secret-service`,
-`interprocess` or `latchkey` (default features); `account-core` and `account-ids` also never reach `toml`.
+`interprocess` or `service_locator` (default features); `account-core` and `account-ids` also never reach `toml`.
 `http-core` is the pure seam and reaches none of them (check-boundary checks it). Every `crates/*-proto` crate is sans-IO: check-boundary fails when one depends on `http-core`, `tokio` or `reqwest`, or has an `async fn` (a new one is found by its name). `reqwest` is named by one crate, `http-reqwest`, and no other crate may name it
 (check-boundary checks that too); `account-proxy` and
 `account-oauth` reach `tokio` only through their feature `io`. `account-families` reaches none with

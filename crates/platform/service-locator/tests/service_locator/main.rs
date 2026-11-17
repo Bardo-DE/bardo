@@ -1,4 +1,4 @@
-//! latchkey's integration tests, as one binary.
+//! The service locator's integration tests, as one binary.
 //!
 //! Each former `tests/*.rs` file is a module here, so the crate links once instead of once per
 //! file. `helpers` holds what the modules share. Nothing here needs its own process: no test sets
@@ -14,7 +14,7 @@ mod lifecycle;
 
 /// Fails if a test file is not part of this binary.
 ///
-/// Cargo finds `tests/latchkey/main.rs` and nothing else in that directory, so a new file that
+/// Cargo finds `tests/service_locator/main.rs` and nothing else in that directory, so a new file that
 /// nobody declares would have its tests silently never run. A stray `tests/*.rs` would be picked
 /// up as a binary of its own, which is the cost this binary exists to remove, so it fails too.
 #[test]
@@ -22,7 +22,7 @@ fn every_test_file_is_declared_here() {
     use std::ffi::OsStr;
 
     let tests = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests");
-    let folder = tests.join("latchkey");
+    let folder = tests.join("service_locator");
     let main = std::fs::read_to_string(folder.join("main.rs")).unwrap();
     let declared: Vec<String> = main
         .lines()
@@ -49,7 +49,7 @@ fn every_test_file_is_declared_here() {
     }
     assert!(
         undeclared.is_empty(),
-        "not declared as `mod` in tests/latchkey/main.rs: {undeclared:?}"
+        "not declared as `mod` in tests/service_locator/main.rs: {undeclared:?}"
     );
 
     let mut stray = Vec::new();
@@ -61,6 +61,6 @@ fn every_test_file_is_declared_here() {
     }
     assert!(
         stray.is_empty(),
-        "a test file sits outside tests/latchkey/, where it is its own binary: {stray:?}"
+        "a test file sits outside tests/service_locator/, where it is its own binary: {stray:?}"
     );
 }

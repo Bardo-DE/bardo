@@ -2424,9 +2424,9 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   `input/route.rs` `is_command_form` go: resolve with `Context::Terminal`, where Primary is Super on
   our desktop and Ctrl+Shift elsewhere and plain Ctrl never matches, so everything unresolved goes to
   the pty. A terminal keeps `SwitchChord::Unbound`.
-- **the Settings app.** No key handling today. Settings › Keyboard needs a shortcut-capture control: it will
+- **The Settings app.** No key handling today. Settings › Keyboard needs a shortcut-capture control: it will
   show `Keys::with_keymap(|k| k.bindings(Context::Normal))` and read a new chord with
   `ds_core::command::key_input`; `KeyKind::Shortcut` stays file-only until that lands.
-- **the compositor** (compositor) reads shell bindings from the same keymap with `Keymap::resolve` and
+- **The compositor** (compositor) reads shell bindings from the same keymap with `Keymap::resolve` and
   `ds_core::command::{key_input, resolve}`, which need no dioxus.
 <!-- paths: end -->

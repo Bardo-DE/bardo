@@ -1,12 +1,12 @@
-# latchkey
+# The service locator
 
 Find this user's background agent, or start one. One logic, three platforms.
 
-A *latchkey* is the key to your own front door: it lets you in, and it tells you whether anyone
+A *service locator* is the key to your own front door: it lets you in, and it tells you whether anyone
 is already home.
 
 ```rust
-let agent = latchkey::Agent::new("mailo")?;
+let agent = service_locator::Agent::new("mailo")?;
 
 // In the agent process:
 let door = agent.listen()?;              // or Err(Error::AlreadyRunning)
@@ -16,7 +16,7 @@ for client in door.incoming() {
 
 // In the client process:
 let mut agent = agent.connect_or_start(
-    || latchkey::spawn(&["daemon"]),     // how to launch one; yours to decide
+    || service_locator::spawn(&["daemon"]),     // how to launch one; yours to decide
     Duration::from_secs(5),
 )?;
 ```

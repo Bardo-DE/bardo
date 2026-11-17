@@ -1566,7 +1566,7 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
    portable broker, the routing of a `Need` and `DataClass` to a model account and a local or HTTP
    engine, is inferd's brain as a library without the bus. Owner: porter (a `porter-infer-host` or
    `inferd-core` crate with a `SessionHost`). Until it exists an app reaches a model only by running
-   inferd and the latchkey socket (`SocketTransport`, feature `socket`); the Windows named pipe is not
+   inferd and the service locator socket (`SocketTransport`, feature `socket`); the Windows named pipe is not
    built there either (porter).
 2. DONE. Reviewer and policy writer over a model. `docket-models` (portable) holds `TransportModel<T>`,
    `TransportWriter<T>` and `reviewer_over`; intentd's `InferdModel` and `InferdWriter` are thin adapters

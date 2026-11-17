@@ -11,7 +11,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   changes are released upstream), anyrender (five; the same), dioxus (five; the dirty-task fix, ends when a
   dioxus release has it) and blitz (with taffy reached through it; ends when its changes are released upstream).
   The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, chordkit, bayonet, docket, porter
-  (with almanac, stoker and peephole), latchkey and mpv-wgpu (each ends when it is published). `deny.toml` allows
+  (with almanac, stoker and peephole), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
   each git source by name. A source build is reproducible while those repositories keep the revs (`Cargo.lock` is
   committed, CI builds with `--locked`). The tag workflow (`.github/workflows/release.yml`) builds the Linux
   tarball from that lock and drafts a GitHub release; it never publishes to crates.io, which refuses a git
@@ -151,9 +151,9 @@ on. It is a reference, not a log: how each was found lives in git history.
   bayonet runner for Windows (a job object and overlapped pipes) exists, and the video player has a
   portable frame transport.
 - **Single instance without the bus starts nothing.** The bus starts the viewer for a call to its name
-  (`dist/org.bardo.Anyview1.service`); the per-user socket (latchkey) does not, so a launcher cannot call a
+  (`dist/org.bardo.Anyview1.service`); the per-user socket (the service locator) does not, so a launcher cannot call a
   viewer that is not running. Linux with `desktop` keeps the bus for that, and `forward_over` stays the
-  launcher's call. Ends if a launcher without the bus needs it: `latchkey::spawn` is the closure it would pass.
+  launcher's call. Ends if a launcher without the bus needs it: `service_locator::spawn` is the closure it would pass.
 - **Bardo's `PdfPage::Ready` carries a PNG `data:` URL.** The PDF peek goes through `ds_blitz::pdf_thumb_blocking`
   (the cache the launcher already uses), whose page is `ImageSource`, so a PDF's first page is the one
   picture here that is not a `TextureLayer`. Ends when Bardo's `PdfPage::Ready` can hold pixels for a
@@ -738,7 +738,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   manifest from `MPV_WGPU_MPV` and `MPV_WGPU_CPLUGIN`). The same checks run against a private bus in
   `crates/anyview/tests/anyview/mpris_bus.rs`.
 - **The viewer links `anyview-peek` for header facts.** The binary's tree is now the launcher's plus the window:
-  667 packages against a budget of 667 (660 before the built-in audio player and 664 before single instance over a socket: latchkey, interprocess and its proc macro doctest-file), with no libmpv or libav in it. Ends if the header readers move to a crate
+  667 packages against a budget of 667 (660 before the built-in audio player and 664 before single instance over a socket: the service locator, interprocess and its proc macro doctest-file), with no libmpv or libav in it. Ends if the header readers move to a crate
   of their own that the binary and the peek both link.
 - **Audio plays with no mpv, in a built-in player; video and Opus still need mpv.** `anyview-media`'s `audio`
   feature (on for the binary through its own `audio` feature) decodes with symphonia 0.6 and plays through cpal,
