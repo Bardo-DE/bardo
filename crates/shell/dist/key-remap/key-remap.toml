@@ -11,7 +11,7 @@
 rules = [
   # Cmd+Space is bardo-shell's launcher: Super+Space (the overlay says Alt+Space, KRunner's key).
   { when = "command+space", then = "super+space" },
-  # Cmd+Tab, Shift+Cmd+Tab: casement's app switcher (Super+Tab), with Super held while Cmd is held so the panel stays up; the built-in mapping would send Ctrl+Tab to the focused app.
+  # Cmd+Tab, Shift+Cmd+Tab: the compositor's app switcher (Super+Tab), with Super held while Cmd is held so the panel stays up; the built-in mapping would send Ctrl+Tab to the focused app.
   { when = "command+tab", then = "super+tab", hold = "while_held" },
   { when = "command+shift+tab", then = "super+shift+tab", hold = "while_held" },
   # Shift+Cmd+Q: the power menu (Super+Shift+Q). Plain Cmd+Q stays Ctrl+Q: quit is the app's.

@@ -435,7 +435,7 @@ fn channels(ramp: &GammaRamp, size: usize) -> [Vec<u16>; 3] {
     }
 }
 
-/// A mode as casement reads it: size, refresh in millihertz from the timings (the kernel's
+/// A mode as the compositor reads it: size, refresh in millihertz from the timings (the kernel's
 /// own rounded `vrefresh` when they are zero), preferred as the display marks it.
 fn mode_of(raw: &control::Mode) -> Mode {
     let (w, h) = raw.size();
@@ -488,7 +488,7 @@ fn probe(device: &DrmDevice) -> Result<KmsResources, KmsError> {
     Ok(KmsResources::new(connectors, crtcs, planes))
 }
 
-/// One connector's facts; none for a connector whose name casement cannot spell.
+/// One connector's facts; none for a connector whose name the compositor cannot spell.
 fn connector_facts(
     device: &DrmDevice,
     handles: &control::ResourceHandles,

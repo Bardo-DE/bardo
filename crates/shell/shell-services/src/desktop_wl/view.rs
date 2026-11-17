@@ -66,7 +66,7 @@ fn window(toplevel: &Toplevel) -> WindowView {
     }
 }
 
-/// The casement vocabulary's one word for minimised, full screen, filled or floating.
+/// The compositor vocabulary's one word for minimised, full screen, filled or floating.
 fn window_state(toplevel: &Toplevel) -> WindowStateKind {
     match (toplevel.minimized, toplevel.sizing) {
         (true, _) => WindowStateKind::Minimised,

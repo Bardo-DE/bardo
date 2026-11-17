@@ -1,7 +1,7 @@
 //! `touchpad.*`.
 
 use crate::config::convert;
-use compositor_core::settings::{AccelProfile, CasementSettings};
+use compositor_core::settings::{AccelProfile, CompositorSettings};
 use serde::{Deserialize, Serialize};
 use settings_types::Fraction;
 use settings_types::schema::Page;
@@ -51,6 +51,6 @@ pub struct TouchpadSection {
 
 impl Default for TouchpadSection {
     fn default() -> Self {
-        convert::touchpad_doc(CasementSettings::defaults().pointer.touchpad)
+        convert::touchpad_doc(CompositorSettings::defaults().pointer.touchpad)
     }
 }

@@ -103,7 +103,7 @@ fn consumers_stored_forms_are_unchanged() {
     );
     assert_eq!(round_trips(&ActorKind::ThirdParty), r#""third_party""#);
     assert_eq!(round_trips(&MaskReason::A11ySecret), r#""a11y_secret""#);
-    // casement's privacy book stores the power and the answer in these forms.
+    // The compositor's privacy book stores the power and the answer in these forms.
     assert_eq!(round_trips(&Power::TypingHelp), r#""typing_help""#);
     assert_eq!(round_trips(&Answer::Deny), r#""deny""#);
 }

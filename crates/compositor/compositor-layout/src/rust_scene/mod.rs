@@ -26,7 +26,7 @@ pub use tile_zone::zone_rect;
 
 use crate::{Arrangement, LayoutKnobs, SceneLayout, SceneSpec};
 
-/// casement's own layout.
+/// The compositor's own layout.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct RustScene;
 

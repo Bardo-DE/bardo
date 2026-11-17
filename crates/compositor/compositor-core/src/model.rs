@@ -63,7 +63,7 @@ use crate::lock::LockState;
 use crate::output::{OutputConfig, OutputFacts};
 use crate::overview::Overview;
 use crate::reveal::FullScreenBar;
-use crate::settings::CasementSettings;
+use crate::settings::CompositorSettings;
 use crate::space::{SpaceBook, SpaceFile, SpaceSeed};
 use crate::time::{Mono, TimerBook, TimerKey};
 use moved::Moved;
@@ -74,7 +74,7 @@ pub use spaces::MAX_DESKTOPS_PER_OUTPUT;
 use std::collections::{BTreeMap, BTreeSet};
 pub use swipe::SpaceStrip;
 
-/// Everything casement knows, as one value.
+/// Everything the compositor knows, as one value.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Model {
     windows: BTreeMap<WindowId, crate::window::Window>,
@@ -121,7 +121,7 @@ pub struct Model {
     display_trial: Option<display_trial::Trial>,
     /// The last display trial id minted.
     trial_ids: u32,
-    settings: CasementSettings,
+    settings: CompositorSettings,
     /// The night light's ramps and holds (`model/night_light.rs`).
     night: night_light::NightDrive,
     /// Which programs may use the powers that need the person's consent (`model/privilege`).
@@ -151,7 +151,7 @@ pub struct OutputState {
 impl Model {
     /// An empty desktop at `epoch` under `settings`, minting Space ids from `seed`.
     #[must_use]
-    pub fn new(settings: CasementSettings, epoch: Mono, seed: SpaceSeed) -> Model {
+    pub fn new(settings: CompositorSettings, epoch: Mono, seed: SpaceSeed) -> Model {
         Model {
             windows: BTreeMap::new(),
             apps: BTreeMap::new(),
@@ -403,7 +403,7 @@ impl Model {
 
     /// The settings.
     #[must_use]
-    pub fn settings(&self) -> &CasementSettings {
+    pub fn settings(&self) -> &CompositorSettings {
         &self.settings
     }
 

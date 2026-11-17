@@ -1,4 +1,4 @@
-//! The [`Compositor`] behind the seam: casement's own base-testkit [`Fixture`], the real `State` on
+//! The [`Compositor`] behind the seam: the compositor's own base-testkit [`Fixture`], the real `State` on
 //! the headless backend (pixman, virtual clock), driven from one thread.
 //!
 //! wlcs' clients live in another thread and talk at their own pace, so the loop alternates
@@ -15,8 +15,8 @@ use compositor_core::input::{ButtonCode, DeviceClass, TouchStep};
 use compositor_core::policy::ConnectionRole;
 use compositor_core::window::WindowState;
 use compositor_core::{DeviceId, WindowId};
-use desktop_protocols::vocab::PressEdge;
 use compositor_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
+use desktop_protocols::vocab::PressEdge;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::ops::ControlFlow;
 use std::sync::mpsc::{Receiver, Sender, TryRecvError};
@@ -99,7 +99,7 @@ impl Host {
     }
 
     /// Activates each window that has mapped since the last turn. wlcs takes a newly mapped
-    /// window to be the active one; casement does not key a window nobody asked for (A7), so
+    /// window to be the active one; the compositor does not key a window nobody asked for (A7), so
     /// the shim asks as the person would (a valid token).
     fn activate_new(&mut self) {
         let fresh: Vec<WindowId> = self
@@ -118,7 +118,7 @@ impl Host {
     }
 
     /// Whether `window` mapped again after wlcs put it somewhere: a toplevel that unmaps (a null
-    /// buffer) keeps its id and maps as a fresh window, one casement has not placed yet, while
+    /// buffer) keeps its id and maps as a fresh window, one the compositor has not placed yet, while
     /// wlcs takes it to be where it left it.
     fn remapped(&self, window: WindowId) -> bool {
         let fresh = matches!(

@@ -1,9 +1,9 @@
 //! `org.freedesktop.impl.portal.RemoteDesktop`: an app drives the keyboard, pointer and touch.
 //!
 //! Input goes to the compositor over EIS (`ConnectToEIS`), where it arrives tagged as remote so
-//! it can never pass for the person's own keystrokes. The compositor half is casement's
+//! it can never pass for the person's own keystrokes. The compositor half is the compositor's
 //! `compositor-agent/src/eis.rs`; the socket comes from `org.bardo.Compositor1.ConnectEis`
-//! ([`CasementEis`]). The `Notify*` methods are accepted and dropped: the only way in is the
+//! ([`CompositorEis`]). The `Notify*` methods are accepted and dropped: the only way in is the
 //! EIS socket, which the person's consent opens.
 //!
 //! The person is asked in a question of its own that names the input the app would take over
@@ -29,7 +29,7 @@ use zbus::message::Header;
 use zbus::zvariant::{ObjectPath, OwnedValue, Value};
 
 pub use self::consent::remote_control_question;
-pub use self::eis::{CasementEis, EisError, EisHandout, FakeEis};
+pub use self::eis::{CompositorEis, EisError, EisHandout, FakeEis};
 use self::object::SessionObject;
 pub use self::sessions::ConnectError;
 use self::sessions::{Asking, Core, Settled, Verdict, Wanted};

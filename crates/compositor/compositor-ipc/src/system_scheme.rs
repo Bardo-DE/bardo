@@ -75,7 +75,7 @@ impl SchemeWatch {
             .map_err(SchemeError::Thread)?;
         let (stop, stopped) = oneshot::channel();
         let thread = std::thread::Builder::new()
-            .name("casement-scheme".to_owned())
+            .name("compositor-scheme".to_owned())
             .spawn(move || runtime.block_on(follow(source, tell, stopped)))
             .map_err(SchemeError::Thread)?;
         Ok(SchemeWatch {

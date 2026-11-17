@@ -1,4 +1,4 @@
-//! A window casement frames is clipped at its two bottom corners on every renderer: GLES (here
+//! A window the compositor frames is clipped at its two bottom corners on every renderer: GLES (here
 //! llvmpipe) with the shader for a texture and the piecewise draw for a single-pixel buffer, and
 //! pixman by pieces. The window is one solid colour that nothing else on the desktop has, so its
 //! extent can be read back from the shot.

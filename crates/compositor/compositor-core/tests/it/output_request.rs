@@ -8,7 +8,7 @@ use compositor_core::output::{
     GammaRamp, GammaTable, Kelvin, MinuteOfDay, NightLight, OutputChangeSet, OutputConfig,
     OutputRefusal, Requester, Schedule, keeps_one_lit, resolve_change,
 };
-use compositor_core::settings::{CasementSettings, NightLightSettings};
+use compositor_core::settings::{CompositorSettings, NightLightSettings};
 use compositor_core::space::SpaceSeed;
 use compositor_core::{Effect, Event, Model, OutputKey};
 use desktop_protocols::vocab::Transform;
@@ -232,16 +232,16 @@ fn gamma_for_a_plugged_output_becomes_an_effect_and_for_a_gone_one_nothing() {
 }
 
 /// Night light all day (no fade) leaving `skipping` alone.
-fn night(skipping: &[&str]) -> CasementSettings {
+fn night(skipping: &[&str]) -> CompositorSettings {
     let light = NightLightSettings::new(NightLight {
         schedule: Schedule::Always,
         warmth: Kelvin::NIGHT,
         fade_minutes: 0,
     })
     .skipping(skipping.iter().map(|name| (*name).to_owned()).collect());
-    CasementSettings {
+    CompositorSettings {
         night_light: light,
-        ..CasementSettings::defaults()
+        ..CompositorSettings::defaults()
     }
 }
 

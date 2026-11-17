@@ -1,4 +1,4 @@
-//! The tty backend (P1-Z declares it; P1-D1 to D3 fill it; P1-T joins the lanes): casement on a
+//! The tty backend (P1-Z declares it; P1-D1 to D3 fill it; P1-T joins the lanes): the compositor on a
 //! real seat, over injected seams.
 //!
 //! * [`TtySession`], [`DeviceSource`], [`KmsOpener`], [`Kms`] and [`ScanoutSurface`] are the

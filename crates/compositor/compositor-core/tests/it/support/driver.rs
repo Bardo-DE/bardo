@@ -6,7 +6,7 @@ use compositor_core::app::AppKey;
 use compositor_core::focus::{HitPart, Press, TokenCheck};
 use compositor_core::geometry::LogicalSize;
 use compositor_core::input::{DesktopCommand, DeviceClass, Origin};
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::space::SpaceSeed;
 use compositor_core::window::{SizeLimits, WindowOrigin};
 use compositor_core::{ClientKey, Effect, Event, MappedToplevel, Model, ToplevelRequest, WindowId};
@@ -48,7 +48,7 @@ impl From<Event> for Op {
 /// An empty desktop with the default settings.
 pub fn fresh() -> Model {
     Model::new(
-        CasementSettings::defaults(),
+        CompositorSettings::defaults(),
         ms(0),
         SpaceSeed::from_entropy([9; 16]),
     )

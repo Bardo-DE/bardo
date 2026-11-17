@@ -96,7 +96,7 @@ impl SleepWatch {
         let (stop, stopped) = oneshot::channel();
         let (ready_tx, ready) = mpsc::channel();
         let thread = std::thread::Builder::new()
-            .name("casement-sleep".to_owned())
+            .name("compositor-sleep".to_owned())
             .spawn(move || run(address, handler, stopped, ready_tx))
             .map_err(SleepError::Thread)?;
         match ready.recv_timeout(CONNECT_WITHIN) {

@@ -397,7 +397,7 @@ fn settle_capture(fixture: &mut Fixture, capture: &mut OutputCapture) {
 /// profile, and not a keyboard; an unrelated change tells nobody; a device that left is not told.
 #[test]
 fn a_settings_change_reaches_a_device_already_present() {
-    use compositor_app::config::{CasementDoc, PointerSection, TouchpadSection};
+    use compositor_app::config::{CompositorDoc, PointerSection, TouchpadSection};
     let mut seat = seat_with(two_monitors(), FixtureSpec::desktop());
     let (mouse, touchpad, gone) = (DeviceId(3), DeviceId(4), DeviceId(5));
     seat.world.input.plug(mouse, DeviceClass::Pointer, "mouse");
@@ -415,12 +415,12 @@ fn a_settings_change_reaches_a_device_already_present() {
     seat.fixture.pump();
     let before = seat.world.input.applied().len();
 
-    let doc = CasementDoc {
+    let doc = CompositorDoc {
         pointer: PointerSection {
             natural_scroll: false,
             ..PointerSection::default()
         },
-        ..CasementDoc::default()
+        ..CompositorDoc::default()
     };
     seat.fixture.settings_file_changed(&doc);
     let applied = seat.world.input.applied();
@@ -436,7 +436,7 @@ fn a_settings_change_reaches_a_device_already_present() {
         "the same file again changes nothing"
     );
 
-    let doc = CasementDoc {
+    let doc = CompositorDoc {
         touchpad: TouchpadSection {
             tap: false,
             ..TouchpadSection::default()

@@ -1,4 +1,4 @@
-//! The one `unsafe` module of the casement workspace (row B18, 21-FREEZE-AMENDMENTS A17).
+//! The one `unsafe` module of the compositor workspace (row B18, 21-FREEZE-AMENDMENTS A17).
 //!
 //! smithay marks two constructors `unsafe fn`: `EGLDisplay::new` and `GlesRenderer::new`. This
 //! module owns exactly those two calls, plus the two slices made from the raw pointer smithay
@@ -44,7 +44,7 @@ pub fn surfaceless_gles() -> Result<GlesRenderer, RenderError> {
 pub fn gles_on<N: EGLNativeDisplay + 'static>(native: N) -> Result<GlesRenderer, RenderError> {
     // SAFETY: `EGLDisplay::new` is unsafe because a display obtained elsewhere through
     // `eglGetPlatformDisplay` with the same parameters could be terminated behind smithay's
-    // back. Nothing in casement creates an EGL display except this function, and casement links
+    // back. Nothing in the compositor creates an EGL display except this function, and the compositor links
     // no other EGL user, so smithay's instance tracking holds.
     let display = unsafe { EGLDisplay::new(native) }
         .map_err(|error| RenderError::Renderer(format!("EGL display: {error}")))?;

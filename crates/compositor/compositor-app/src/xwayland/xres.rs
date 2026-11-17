@@ -1,6 +1,6 @@
 //! The X server's answer to "which windows are there and whose are they".
 //!
-//! A short-lived X11 connection to the display casement serves, one `QueryTree` of the root, and
+//! A short-lived X11 connection to the display the compositor serves, one `QueryTree` of the root, and
 //! for each child its `WM_CLASS` and the X-Resource extension's `XResQueryClientIds` with
 //! `LocalClientPID` (the pid the server read from the window's connection itself, which the client
 //! cannot forge). The connection is made on a thread the loop waits on for a short while only:

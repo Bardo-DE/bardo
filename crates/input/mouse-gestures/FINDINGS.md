@@ -53,7 +53,7 @@ such a touch never counts, so no tap. As specified; tune on the device.
 stroke is the recogniser's `SpaceSwipe` (`gestures/stroke`), and while both two-finger rows of
 `[gestures.gesture_action_map]` are the workspace defaults (`workspace_next`, `workspace_prev`) the
 pad session puts four contacts 12 mm apart on the virtual touchpad that follow the fingers 1:1 in
-x; casement's four-finger touchpad swipe moves the Spaces live and commits or returns on the lift.
+x; the compositor's four-finger touchpad swipe moves the Spaces live and commits or returns on the lift.
 palmrest decides nothing about the Space. Any other mapping keeps a one-shot action fired on
 7.7 mm of travel with a 500 ms cooldown. The scroll pad lands two contacts 20 mm apart on the side
 opposite the motion and moves 1:1, so a 45 mm stroke is one stroke (it re-lands only when truly out
@@ -74,7 +74,7 @@ unchanged device time of 11 ms (not a lost packet). 80 such steps in 36 recorded
 session now writes a swipe's row at the mean of its two latest positions and catches up before
 the lift (`outputs/pad`, `shown_after`): on the recording, step unevenness (mean change of step
 over mean step) fell from 0.37 to 0.29 for about 5 ms of lag, with the travel unchanged. The rest
-is casement's: it drives the Spaces with libinput's accelerated swipe delta, which enlarges what
+is the compositor's: it drives the Spaces with libinput's accelerated swipe delta, which enlarges what
 is left (an unaccelerated 37.6 became 57.9); the shell brief asks for the unaccelerated delta.
 
 **Right clicks while scrolling (measured 2026-11-15).** Tap-to-click is on for touchpads, and
@@ -104,13 +104,13 @@ Spaces swipe, so those were one-finger strokes, and a quick one-finger flick is 
 **Device checks for the pad strokes (open).**
 - libinput's scroll ratio in numbers: screen px per mm of finger for a slow and a fast stroke
   (a real trackpad gives about 12 px/mm); `scroll.speed` is the only knob.
-- The four-finger swipe's page distance: how many mm of finger casement counts as one Space, and
+- The four-finger swipe's page distance: how many mm of finger the compositor counts as one Space, and
   whether the swipe's 12 mm spacing and 49 mm of room (centre 28 to 77 mm) are enough.
 - The flick's velocity: a swipe now lifts at the report that ends it, with no 200 ms hold, so a
-  flick should keep the speed it had; check that casement's commit sees it (a held lift added
+  flick should keep the speed it had; check that compositor's commit sees it (a held lift added
   stationary time before).
 - DWT: libinput's disable-while-typing is on for the virtual pad, which may swallow a scroll or a
-  swipe right after typing. casement-side; recorded for the shell brief.
+  swipe right after typing. compositor-side; recorded for the shell brief.
 - `ToHost::Swipe` is no longer sent and the shell ignores it: delete the variant (and `Topic::Swipe`)
   from `palmrest-protocol` in lockstep with shell-host.
 - The shell stream's px is `raw / rate * detent / hi-res` per sample (`feel/shell.rs`); the old
@@ -177,7 +177,7 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 - *Shell side of the lock (INPUT-09).* palmrest drops gesture keys and actions while a
   subscriber says the session is locked (`SessionLock`). Nothing sends it yet: shell-host must
   send `ToDaemon::SessionLock` when the lock service reports Locked or Unlocked (interface ask in
-  the lane report). Neither casement nor sill publishes a lock state a daemon outside the session
+  the lane report). Neither the compositor nor sill publishes a lock state a daemon outside the session
   can read, and logind's `LockedHint` is not set by sill's locker.
 - *Settings and actions after the move to a system service (2026-10-17): done.* The service
   (a dynamic user with `ProtectHome=yes`) reads `/etc/palmrest/gestures.toml`; the person's

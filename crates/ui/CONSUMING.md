@@ -2427,6 +2427,6 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
 - **detent.** No key handling today. Settings › Keyboard needs a shortcut-capture control: it will
   show `Keys::with_keymap(|k| k.bindings(Context::Normal))` and read a new chord with
   `ds_core::command::key_input`; `KeyKind::Shortcut` stays file-only until that lands.
-- **casement** (compositor) reads shell bindings from the same keymap with `Keymap::resolve` and
+- **the compositor** (compositor) reads shell bindings from the same keymap with `Keymap::resolve` and
   `ds_core::command::{key_input, resolve}`, which need no dioxus.
 <!-- paths: end -->

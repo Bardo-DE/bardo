@@ -9,11 +9,11 @@ use compositor_core::window::FrameHint;
 use compositor_core::{Cause, OutputKey, OutputName, WindowId};
 use compositor_layout::{Arrangement, ConfigureNeed, OverviewSlot, SlotKind, WindowTarget};
 use compositor_motion::*;
-use casement_perf::{Options, time_row};
+use compositor_perf::{Options, time_row};
 use desktop_protocols::vocab::{Emphasis, FrameMode};
-use ui_motion::velocity as casement_motion_velocity;
-use ui_style::appearance::motion::MotionLevel;
 use std::time::Duration;
+use ui_motion::velocity as compositor_motion_velocity;
+use ui_style::appearance::motion::MotionLevel;
 
 fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
     LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })
@@ -125,7 +125,7 @@ fn main() {
             ));
         });
         let swipe = Cause::Swipe(SwipeRelease {
-            velocity: casement_motion_velocity::Velocity(900),
+            velocity: compositor_motion_velocity::Velocity(900),
         });
         let thrown = retarget(
             known.clone(),

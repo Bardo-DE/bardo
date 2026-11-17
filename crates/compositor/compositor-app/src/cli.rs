@@ -30,7 +30,7 @@ use std::path::PathBuf;
 /// The output a run gets when `--outputs` names none.
 pub const DEFAULT_OUTPUT: &str = "HEADLESS-1:1920x1080@60000:120:0,0";
 
-/// How casement starts.
+/// How the compositor starts.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StartConfig {
     /// The backend.
@@ -179,7 +179,7 @@ pub enum Command {
 /// Why the command line was refused.
 #[derive(Debug, thiserror::Error)]
 pub enum CliError {
-    /// A flag casement does not know.
+    /// A flag the compositor does not know.
     #[error("unknown argument {0}")]
     Unknown(String),
     /// A flag without its value.

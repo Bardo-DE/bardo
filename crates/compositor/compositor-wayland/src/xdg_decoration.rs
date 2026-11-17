@@ -1,4 +1,4 @@
-//! `zxdg_decoration_manager_v1`: who draws a toplevel's frame. casement prefers to draw it (the
+//! `zxdg_decoration_manager_v1`: who draws a toplevel's frame. The compositor prefers to draw it (the
 //! Mac titlebar, lights and shadow) and honours a client that insists on drawing its own.
 
 use crate::states::{GlobalFilter, WaylandFault};

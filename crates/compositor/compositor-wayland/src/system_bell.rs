@@ -57,7 +57,7 @@ mod tests {
     use compositor_core::focus::TokenCheck;
     use compositor_core::geometry::LogicalSize;
     use compositor_core::policy::ConnectionRole;
-    use compositor_core::settings::CasementSettings;
+    use compositor_core::settings::CompositorSettings;
     use compositor_core::space::SpaceSeed;
     use compositor_core::time::Mono;
     use compositor_core::window::{SizeLimits, WindowOrigin};
@@ -104,7 +104,7 @@ mod tests {
     #[test]
     fn the_bell_rings_for_the_surfaces_app_else_the_active_one() {
         let empty = Model::new(
-            CasementSettings::defaults(),
+            CompositorSettings::defaults(),
             Mono(Duration::ZERO),
             SpaceSeed::from_entropy([7; 16]),
         );

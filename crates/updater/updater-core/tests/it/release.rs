@@ -10,7 +10,7 @@ fn a_good_release_parses_with_everything_in_it() {
     assert_eq!(release.notes, "Faster start.");
     assert_eq!(release.bundle.name, "bundle.tar.zst");
     assert_eq!(release.bundle.size, 123);
-    assert_eq!(release.components["casement"], "e616a79");
+    assert_eq!(release.components["compositor"], "e616a79");
     assert_eq!(release.files.len(), 2);
     assert_eq!(
         release.file("bin/bardo-compositor").map(|f| f.mode),

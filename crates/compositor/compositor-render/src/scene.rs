@@ -5,13 +5,13 @@ mod row;
 
 use crate::compositor::Compositor;
 use crate::element::{
-    BlurFinish, CasementElement, ClientRound, ClipAsk, ClipShape, ClosingFrame, FlightDraw,
-    FrameDraw, GenieWindow, LockCoverElement, OverviewIcon, OverviewLook, PopupRide, Rgba8,
-    Rounding, TilePreview, choose, client_shadow_elements, closing_elements, cursor_elements,
-    dim_elements, drawn_content, frame_elements, genie_window, icon_element, icon_place,
-    label_element, layer_elements, layer_elements_faded, lift_last, popup_elements,
-    popup_elements_riding, ring_elements, shown_length, shown_outline, surface_origin_logical,
-    tile_preview_elements, under_finish, window_content, window_elements,
+    BlurFinish, ClientRound, ClipAsk, ClipShape, ClosingFrame, FlightDraw, FrameDraw, GenieWindow,
+    LockCoverElement, OverviewIcon, OverviewLook, PopupRide, Rgba8, Rounding, SceneElement,
+    TilePreview, choose, client_shadow_elements, closing_elements, cursor_elements, dim_elements,
+    drawn_content, frame_elements, genie_window, icon_element, icon_place, label_element,
+    layer_elements, layer_elements_faded, lift_last, popup_elements, popup_elements_riding,
+    ring_elements, shown_length, shown_outline, surface_origin_logical, tile_preview_elements,
+    under_finish, window_content, window_elements,
 };
 use crate::element::{alpha, flight_ratio};
 use crate::texture_book::TextureBook;
@@ -66,10 +66,10 @@ pub struct LayerDraw {
     /// Where each of them is arranged: the one placement the hit test reads too
     /// (`LayerBook::arrange`). `None` when there are no layers.
     pub arranged: Option<Arranged>,
-    /// The windows whose frame casement draws (server-side decoration), and how it looks. A
+    /// The windows whose frame the compositor draws (server-side decoration), and how it looks. A
     /// window not in it is drawn as its client made it.
     pub frames: BTreeMap<WindowId, FrameStyle>,
-    /// The windows that draw their own frame and whose corners casement clips, and the shadow
+    /// The windows that draw their own frame and whose corners the compositor clips, and the shadow
     /// it casts for them. A window in `frames` is not in it, nor is one that is full screen.
     pub rounds: BTreeMap<WindowId, ClientRound>,
     /// The title pixels laid over each framed window's titlebar (made by `compositor-chrome`). A
@@ -211,37 +211,36 @@ pub fn output_elements<R: Compositor>(
     book: &TextureBook,
     chrome: &ChromeLayer,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let mut elements = cursor_elements(chrome, view, book, renderer);
     let lock = book.lock(&frame.output);
     if lock.is_some() || chrome.covers.contains(&frame.output) {
         if let Some(entry) = lock {
             elements.extend(tree(&entry.root, sub_of(view.area.origin), view, renderer));
         }
-        elements.push(CasementElement::Cover(cover(view, book, COVER)));
+        elements.push(SceneElement::Cover(cover(view, book, COVER)));
         return elements;
     }
-    let draw_level =
-        |keys: &[LayerKey], elements: &mut Vec<CasementElement<R>>, renderer: &mut R| {
-            for key in keys.iter().rev() {
-                if layers.raised.iter().any(|raised| raised.layer == *key) {
-                    continue;
-                }
-                let Some(entry) = book.layer(key) else {
-                    continue;
-                };
-                let Some(area) = layers
-                    .arranged
-                    .as_ref()
-                    .and_then(|arranged| arranged.place(key, entry.committed))
-                else {
-                    continue;
-                };
-                elements.extend(popup_elements(&entry.root, area.origin, view, renderer));
-                let strength = layers.blur_strengths.get(key).copied().unwrap_or_default();
-                elements.extend(layer_elements(key, area, strength, view, book, renderer));
+    let draw_level = |keys: &[LayerKey], elements: &mut Vec<SceneElement<R>>, renderer: &mut R| {
+        for key in keys.iter().rev() {
+            if layers.raised.iter().any(|raised| raised.layer == *key) {
+                continue;
             }
-        };
+            let Some(entry) = book.layer(key) else {
+                continue;
+            };
+            let Some(area) = layers
+                .arranged
+                .as_ref()
+                .and_then(|arranged| arranged.place(key, entry.committed))
+            else {
+                continue;
+            };
+            elements.extend(popup_elements(&entry.root, area.origin, view, renderer));
+            let strength = layers.blur_strengths.get(key).copied().unwrap_or_default();
+            elements.extend(layer_elements(key, area, strength, view, book, renderer));
+        }
+    };
     let in_row: Vec<PlacedWindow>;
     let windows: &[PlacedWindow] = match &layers.row {
         Some(row) => {
@@ -266,7 +265,7 @@ pub fn output_elements<R: Compositor>(
         book.cache().drop_icons();
     }
     let draw_windows =
-        |placed: &[&PlacedWindow], elements: &mut Vec<CasementElement<R>>, renderer: &mut R| {
+        |placed: &[&PlacedWindow], elements: &mut Vec<SceneElement<R>>, renderer: &mut R| {
             for placed in placed.iter().rev() {
                 let title = layers.titles.get(&placed.window);
                 let Some(entry) = book.window(&placed.window) else {
@@ -286,14 +285,14 @@ pub fn output_elements<R: Compositor>(
                 let flight = choose(effect, placed.flight);
                 let style = layers.frames.get(&placed.window);
                 let covers = layers.full_screen.contains(&placed.window);
-                // A window with its own frame that casement shapes: all four corners, and
+                // A window with its own frame that compositor shapes: all four corners, and
                 // the shadow when the client has not drawn one.
                 let round = layers
                     .rounds
                     .get(&placed.window)
                     .filter(|_| style.is_none() && !covers);
                 let cast = round.and_then(|round| round.cast.as_ref());
-                // A window casement frames is clipped at its bottom corners, unless it
+                // A window the compositor frames is clipped at its bottom corners, unless it
                 // covers the screen (macOS drops the radius in full screen; a zoomed
                 // window keeps it).
                 let clip_ask = match (style, round) {
@@ -442,7 +441,7 @@ pub fn output_elements<R: Compositor>(
     }
     draw_windows(&covering, &mut elements, renderer);
     if let Some(colour) = layers.backdrop {
-        elements.push(CasementElement::Cover(cover(view, book, colour)));
+        elements.push(SceneElement::Cover(cover(view, book, colour)));
     }
     draw_level(&layers.top, &mut elements, renderer);
     let (held, others): (Vec<&PlacedWindow>, Vec<&PlacedWindow>) =
@@ -528,7 +527,7 @@ fn tree<R: Compositor>(
     origin: SubPoint,
     view: &OutputView,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     render_elements_from_surface_tree(
         renderer,
         root,

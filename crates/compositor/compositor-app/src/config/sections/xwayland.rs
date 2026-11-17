@@ -20,7 +20,7 @@ pub enum XwaylandUse {
 
 /// `xwayland.*`: how older X11 apps are served.
 ///
-/// Unlike the other sections it has no part in the model's `CasementSettings` (it is read once, at
+/// Unlike the other sections it has no part in the model's `CompositorSettings` (it is read once, at
 /// start, by `main`), so its `Default` is written here and `crate::xwayland::resolve` is its
 /// conversion.
 #[derive(

@@ -74,7 +74,7 @@ pub fn on_resolved<D: WlrToplevelHandler>(state: &mut D, client: ClientKey, outc
     }
 }
 
-/// The client a manager belongs to, when casement inserted it.
+/// The client a manager belongs to, when the compositor inserted it.
 fn owner_of(manager: &ZwlrForeignToplevelManagerV1) -> Option<ClientKey> {
     manager.client().as_ref().and_then(consent::key_of)
 }

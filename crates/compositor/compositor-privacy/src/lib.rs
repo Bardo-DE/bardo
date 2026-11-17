@@ -1,18 +1,18 @@
-//! casement's privacy files: where the person's book (which program may use which power) and
+//! The compositor's privacy files: where the person's book (which program may use which power) and
 //! the administrator's floor are kept, how they are read and written safely, and the list of
 //! both that `bardo-compositorctl privacy list` prints. The consent machine itself is pure and lives in
 //! `compositor_core::privilege`; the composition root (`compositor_app::privacy`) feeds it what this
 //! crate reads and writes what it asks to keep.
 //!
-//! It also holds the structural jail check ([`breach`]) that the compositor's test builds and
+//! It also holds the structural jail check ([`breach`]) that compositor's test builds and
 //! `bardo-compositorctl` both run, because `bardo-compositorctl` links this crate and not the compositor.
 //!
 //! ```text
-//! $XDG_STATE_HOME/bardo/compositor/privacy.toml        the person's book; casement alone writes it
-//! /etc/bardo/privacy.toml, privacy.d/*.toml    the administrator's floor; casement only reads it
+//! $XDG_STATE_HOME/bardo/compositor/privacy.toml        the person's book; the compositor alone writes it
+//! /etc/bardo/privacy.toml, privacy.d/*.toml    the administrator's floor; the compositor only reads it
 //! ```
 //!
-//! The book is read when casement starts and never again: the model's copy is the authority and
+//! The book is read when the compositor starts and never again: the model's copy is the authority and
 //! the file is rewritten after every change (atomically, in a folder only the person can enter,
 //! mode 0600). A damaged book is kept under another name and an empty one used. A floor file is
 //! believed only when it and its folder belong to the administrator alone.
@@ -36,10 +36,10 @@ pub use system_dir::SystemDir;
 
 use std::path::{Path, PathBuf};
 
-/// The book's file name, in casement's state folder.
+/// The book's file name, in the compositor's state folder.
 pub const BOOK_FILE: &str = "privacy.toml";
 
-/// The person's book in casement's state folder `dir` (`$XDG_STATE_HOME/bardo/compositor`).
+/// The person's book in the compositor's state folder `dir` (`$XDG_STATE_HOME/bardo/compositor`).
 #[must_use]
 pub fn book_in(dir: &Path) -> PathBuf {
     dir.join(BOOK_FILE)

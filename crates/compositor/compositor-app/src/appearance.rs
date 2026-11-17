@@ -1,5 +1,5 @@
 //! The person's light or dark scheme and their Reduce transparency choice, read from Bardo's
-//! `appearance.toml` through ui-settings and followed while casement runs.
+//! `appearance.toml` through ui-settings and followed while the compositor runs.
 //!
 //! The transparency is Bardo's `appearance.transparency` (`system` or `reduced`; a file without it
 //! is `system`), the one desktop-wide setting the shell reads too: `reduced` draws every blur as
@@ -48,7 +48,7 @@ fn store_for(home: Option<&Path>) -> Store {
 /// use compositor_layout::Scheme;
 /// use std::path::Path;
 ///
-/// let nowhere = Path::new("/nonexistent/casement-doc-home");
+/// let nowhere = Path::new("/nonexistent/compositor-doc-home");
 /// assert_eq!(scheme_in(Some(nowhere)), Scheme::Light);
 /// ```
 #[must_use]
@@ -56,7 +56,7 @@ pub fn scheme_in(home: Option<&Path>) -> Scheme {
     scheme_of(stored_in(home).theme)
 }
 
-/// What `home`'s appearance file stores that casement follows: the defaults when there is no file
+/// What `home`'s appearance file stores that compositor follows: the defaults when there is no file
 /// or a key is bad.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct Stored {
@@ -243,14 +243,14 @@ pub(crate) fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate
 }
 
 /// Runs each task on a thread of its own, parked between wake-ups: ui-settings' watch is an
-/// async task and casement runs no async runtime.
+/// async task and the compositor runs no async runtime.
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct ThreadSpawner;
 
 impl Spawner for ThreadSpawner {
     fn spawn(&self, task: Pin<Box<dyn Future<Output = ()> + Send>>) {
         let started = std::thread::Builder::new()
-            .name("casement-settings-watch".to_owned())
+            .name("compositor-settings-watch".to_owned())
             .spawn(move || block_on(task));
         if let Err(error) = started {
             tracing::warn!(%error, "a settings file is read once: it could not be watched");
@@ -428,7 +428,7 @@ mod tests {
         reason = "compositor-app has no dependency on ui-style, so `SystemPrefs` cannot be named here"
     )]
     fn a_stand_in_home_never_reaches_a_bus() {
-        let jail = Path::new("/nonexistent/casement-jail");
+        let jail = Path::new("/nonexistent/compositor-jail");
         assert_eq!(
             system_source(Some(jail)),
             SystemPrefsSource::Fixed(Default::default())

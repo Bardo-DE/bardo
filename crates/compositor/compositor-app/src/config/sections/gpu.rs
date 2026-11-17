@@ -1,7 +1,7 @@
 //! `gpu.*`.
 
 use crate::config::convert;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::Page;
 
@@ -23,6 +23,6 @@ pub struct GpuSection {
 
 impl Default for GpuSection {
     fn default() -> Self {
-        convert::gpu_doc(&CasementSettings::defaults().gpu)
+        convert::gpu_doc(&CompositorSettings::defaults().gpu)
     }
 }

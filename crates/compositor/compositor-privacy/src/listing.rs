@@ -4,7 +4,7 @@
 
 use super::store::PrivacyStore;
 use compositor_core::privilege::{Book, Floor, PrivacyRow, Subject, Verdict};
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::space::SpaceSeed;
 use compositor_core::time::Mono;
 use compositor_core::{Event, Model};
@@ -140,7 +140,7 @@ pub fn list(store: &mut dyn PrivacyStore) -> Listing {
 fn rows_of(book: Book, floor: Floor) -> Vec<PrivacyRow> {
     let now = Mono(Duration::ZERO);
     let model = Model::new(
-        CasementSettings::defaults(),
+        CompositorSettings::defaults(),
         now,
         SpaceSeed::from_entropy([0; 16]),
     );

@@ -1,4 +1,4 @@
-//! The direct-open seams (`casement --backend tty --drm-node PATH`, P1-V2): a test-only way to
+//! The direct-open seams (`bardo-compositor --backend tty --drm-node PATH`, P1-V2): a test-only way to
 //! run the tty backend on one named DRM node, the kernel's virtual `vkms` device, with no
 //! libseat, no logind session and no VT.
 //!

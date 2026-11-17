@@ -74,7 +74,7 @@ impl UdmabufSource {
     pub fn new(size: PhysicalSize, pattern: Pattern) -> Result<UdmabufSource, UdmabufError> {
         let layout = Layout::of(size);
         let memfd = memfd_create(
-            "casement-udmabuf",
+            "compositor-udmabuf",
             MemfdFlags::CLOEXEC | MemfdFlags::ALLOW_SEALING,
         )?;
         ftruncate(&memfd, layout.length)?;

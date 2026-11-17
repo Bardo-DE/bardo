@@ -1,5 +1,5 @@
 //! `xdg_decoration` (P0-H2): server-side is preferred (the Mac titlebar, lights and shadow are
-//! casement's own), and a client that insists on client-side keeps its frame.
+//! The compositor's own), and a client that insists on client-side keeps its frame.
 
 use crate::protocol::xdg_shell::{boot, check_golden, golden, lines_of};
 use compositor_core::policy::ConnectionRole;

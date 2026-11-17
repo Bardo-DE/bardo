@@ -5,7 +5,7 @@
 //! ```
 //!
 //! Locks the compositor, gives every output a lock surface (one plain colour, as a real locker
-//! does: a compositor such as casement sends `locked` only once each output shows one), prints
+//! does: a compositor such as the compositor sends `locked` only once each output shows one), prints
 //! `locked` on stdout once the compositor says so, holds the lock for `hold-ms`, then unlocks and
 //! exits 0. `0` is the recovery form: a locker killed without unlocking leaves the compositor
 //! locked until another client locks and unlocks (its session-lock handler accepts a new lock

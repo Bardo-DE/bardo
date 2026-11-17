@@ -1,4 +1,4 @@
-//! How many `org.bardo.Compositor1` calls casement takes: a rate per caller, and a queue of a
+//! How many `org.bardo.Compositor1` calls the compositor takes: a rate per caller, and a queue of a
 //! few into the event loop. A caller that asks too often, or a loop that is behind, is told so
 //! at once; nothing waits without bound (CASW-05).
 

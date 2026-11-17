@@ -1,7 +1,7 @@
 //! What draws an output: the GPU, or the CPU alone (CASB-07). Pure; the real surfaces are
 //! `surface_real.rs` (GLES) and `soft_real.rs` (pixman over dumb buffers).
 //!
-//! `casement --safe` has to survive a broken GPU driver, so in [`RenderMode::Software`] no GBM
+//! `bardo-compositor --safe` has to survive a broken GPU driver, so in [`RenderMode::Software`] no GBM
 //! device, EGL display or GLES context is ever opened: every output is drawn by pixman into dumb
 //! buffers the kernel scans out. In [`RenderMode::Gpu`] each output asks for a GLES surface; one
 //! the driver cannot make is drawn by the CPU instead, that output alone, and the log says so

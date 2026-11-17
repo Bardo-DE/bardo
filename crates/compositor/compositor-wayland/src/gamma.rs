@@ -38,7 +38,7 @@ use std::fs::File;
 use std::os::fd::OwnedFd;
 use std::os::unix::fs::FileExt;
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 1;
 
 /// How many steps per channel an output's gamma table has (`gamma_size`).

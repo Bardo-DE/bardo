@@ -19,7 +19,7 @@ pub struct Env {
     /// Whether differing goldens are replaced.
     pub bless: bool,
     /// Where actual and diff images go (`$BARDO_COMPOSITOR_GOLDEN_OUT`, else the system temp dir's
-    /// `casement-golden`).
+    /// `compositor-golden`).
     pub out_dir: PathBuf,
 }
 
@@ -37,7 +37,7 @@ impl Env {
     pub fn of(bless: Option<&str>, out: Option<PathBuf>) -> Env {
         Env {
             bless: bless == Some("1"),
-            out_dir: out.unwrap_or_else(|| std::env::temp_dir().join("casement-golden")),
+            out_dir: out.unwrap_or_else(|| std::env::temp_dir().join("compositor-golden")),
         }
     }
 }

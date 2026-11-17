@@ -1,4 +1,4 @@
-//! casement's integration tests: the settings document and the virtual clock.
+//! The compositor's integration tests: the settings document and the virtual clock.
 //!
 //! One integration binary: every former `tests/*.rs` is a module here, and `support` is shared.
 

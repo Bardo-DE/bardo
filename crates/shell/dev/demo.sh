@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A demo session: today's bardo-shell inside a headless casement, left running between commands.
+# A demo session: today's bardo-shell inside a headless the compositor, left running between commands.
 #
 #   dev/demo.sh start            build, seed a scratch desktop, leave it up
 #   dev/demo.sh tour             play the tour and write a frame of each beat to dev/out/demo-*.png
@@ -15,16 +15,16 @@
 # for the power menu. A made-up NetworkManager, BlueZ and MPRIS player (shell-testkit's
 # `mpris_player` example) are the only services on that bus. The terminal and the mail app it
 # opens get the same scratch environment. ~/.config, ~/.cache, the real buses, wayland-0 and the
-# host session are not touched: casement runs headless on its own socket and bus (the casement
+# host session are not touched: the compositor runs headless on its own socket and bus (the compositor
 # checkout's dev/up.sh, so this runs where that does: inside the jail).
 #
 # Every process `start` creates is recorded in target/demo/procs with its start time; `stop`
 # (and a failed `start`) ends exactly those, by PID, and never anything matched by name, and
-# then the casement `start` brought up (dev/down.sh, by the pids in its env file).
+# then the compositor `start` brought up (dev/down.sh, by the pids in its env file).
 #
 # DEMO_SIZE sets the output (default 1440x900, a 13-inch Mac's).
 #
-# Needs: the casement checkout's tools (dev/bootstrap.sh), grim, ffmpeg (video), python3 with PIL and dbus, dbus-daemon, fd (the
+# Needs: the compositor checkout's tools (dev/bootstrap.sh), grim, ffmpeg (video), python3 with PIL and dbus, dbus-daemon, fd (the
 # launcher's file search). foot and mailo are opened when installed.
 #
 # Usage: dev/demo.sh start | tour | video [out.mp4] | shot [out.png] | stop
@@ -270,7 +270,7 @@ write_env() {
     printf 'BUS=%q\n' "$BUS"
     printf 'WL=%q\n' "$WL"
     printf 'NAME=%q\n' "$NAME"
-    printf 'COMPOSITOR=%q\nCASEMENT_ENV=%q\nCASEMENT_BUS=%q\n' "$COMPOSITOR" "$BARDO_COMPOSITOR_ENV" "$BARDO_COMPOSITOR_BUS"
+    printf 'COMPOSITOR=%q\nCOMPOSITOR_ENV=%q\nCOMPOSITOR_BUS=%q\n' "$COMPOSITOR" "$BARDO_COMPOSITOR_ENV" "$BARDO_COMPOSITOR_BUS"
   } >"$ENV_FILE"
   write_client
 }
@@ -327,7 +327,7 @@ cmd_start() {
 
   trap abort_start EXIT
   SIZE="${DEMO_SIZE:-1440x900}"
-  start_compositor --default casement || exit 1
+  start_compositor --default compositor || exit 1
   await_compositor || exit 1
 
   scratch_new
@@ -369,7 +369,7 @@ cmd_start() {
   trap - EXIT
   cat <<EOF
 
-The demo is up, in a headless casement ($WL).
+The demo is up, in a headless compositor ($WL).
 
   1. Rest. Wallpaper, menu bar, dock, a terminal and the mail app.
   2. Move the pointer along the dock.

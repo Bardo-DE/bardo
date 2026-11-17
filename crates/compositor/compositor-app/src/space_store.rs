@@ -1,7 +1,7 @@
 //! The Space ids file's I/O seam (A1, P1-Z; filled by P1-M2).
 //!
 //! The codec is pure and lives in core (`compositor_core::space::SpaceFile`); reading and writing
-//! `$XDG_STATE_HOME/casement/spaces.toml` is this seam. The path comes from an injected
+//! `$XDG_STATE_HOME/compositor/spaces.toml` is this seam. The path comes from an injected
 //! [`StateDirs`] that `main` resolves from the environment; the library reads none. A write is
 //! atomic (a temporary file in the same directory, then a rename), so a crash never leaves half
 //! a file. `compositor-testkit` exports `MemorySpaceStore`.
@@ -28,11 +28,11 @@ use std::path::{Path, PathBuf};
 /// is not ours (a FIFO or a device at the path is refused too, so start-up cannot hang on it).
 const SPACES_FILE_CAP: ReadCap = ReadCap::kib(512);
 
-/// The directory casement keeps its state files in (`$XDG_STATE_HOME/casement`).
+/// The directory the compositor keeps its state files in (`$XDG_STATE_HOME/compositor`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct StateDirs {
-    casement: PathBuf,
-    /// casement's directory in the session's runtime directory (the session lock's marker
+    compositor: PathBuf,
+    /// The compositor's directory in the session's runtime directory (the session lock's marker
     /// lives there, so a reboot clears it); none keeps no marker.
     runtime: Option<PathBuf>,
 }
@@ -42,7 +42,7 @@ impl StateDirs {
     #[must_use]
     pub fn at(dir: PathBuf) -> StateDirs {
         StateDirs {
-            casement: dir,
+            compositor: dir,
             runtime: None,
         }
     }
@@ -65,19 +65,19 @@ impl StateDirs {
     /// The directory.
     #[must_use]
     pub fn dir(&self) -> &Path {
-        &self.casement
+        &self.compositor
     }
 
     /// The Space ids file (C52).
     #[must_use]
     pub fn spaces_file(&self) -> PathBuf {
-        self.casement.join("spaces.toml")
+        self.compositor.join("spaces.toml")
     }
 
     /// The person's privacy book: which program may use which power (`compositor_app::privacy`).
     #[must_use]
     pub fn privacy_file(&self) -> PathBuf {
-        compositor_privacy::book_in(&self.casement)
+        compositor_privacy::book_in(&self.compositor)
     }
 }
 

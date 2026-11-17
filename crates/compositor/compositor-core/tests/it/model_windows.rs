@@ -703,7 +703,7 @@ fn a_client_framed_window_is_rounded_by_what_it_said_and_what_it_drew() {
     for (name, choice, margin, desktop, want) in cases {
         let want = want.map(|(radius, shadow)| Round {
             radius,
-            casement_shadow: shadow,
+            compositor_shadow: shadow,
         });
         assert_eq!(round_of(choice, margin, desktop), want, "{name}");
     }

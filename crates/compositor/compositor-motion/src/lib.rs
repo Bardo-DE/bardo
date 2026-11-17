@@ -1,4 +1,4 @@
-//! casement's motion: one ui-motion spring leg per moving quantity, retargeted from one
+//! The compositor's motion: one ui-motion spring leg per moving quantity, retargeted from one
 //! [`compositor_layout::Arrangement`] to the next with position and velocity kept, and sampled at
 //! a frame's instant into a [`FrameScene`] of whole sub-pixels (1/120 px).
 //!

@@ -5,7 +5,7 @@
 //!
 //! - Ids are minted here from a counter (`space-<n>`), never from the name, so a rename keeps
 //!   the id. An id that is taken (an adopted or a registered one) is skipped.
-//! - On casement the compositor mints the id of each workspace's Space itself and `Register`s it
+//! - On the compositor the compositor mints the id of each workspace's Space itself and `Register`s it
 //!   (decision D8); registering an id that is there already changes nothing, so it registers
 //!   every workspace again at each start.
 //! - `Create` is limited per app to [`CREATES_PER_WINDOW`] within [`CREATE_WINDOW`], so a

@@ -43,13 +43,13 @@ impl Model {
     /// ```
     /// use compositor_core::Model;
     /// use compositor_core::overview::Overview;
-    /// use compositor_core::settings::CasementSettings;
+    /// use compositor_core::settings::CompositorSettings;
     /// use compositor_core::space::SpaceSeed;
     /// use compositor_core::time::Mono;
     /// use std::time::Duration;
     ///
     /// let epoch = Mono(Duration::ZERO);
-    /// let model = Model::new(CasementSettings::defaults(), epoch, SpaceSeed::from_entropy([7; 16]));
+    /// let model = Model::new(CompositorSettings::defaults(), epoch, SpaceSeed::from_entropy([7; 16]));
     /// assert_eq!(model.overview(), Overview::Closed);
     /// // With no output there is nothing to spread: opening changes nothing.
     /// let (model, effects) = model.toggle_overview(epoch);

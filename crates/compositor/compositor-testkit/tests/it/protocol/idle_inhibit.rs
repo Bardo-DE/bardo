@@ -63,7 +63,7 @@ fn an_input_idle_notification_ignores_inhibitors() {
 }
 
 /// A client that hangs up with its inhibitor standing (a crashed video player) stops holding
-/// idleness off: smithay never calls `uninhibit` for it, so casement reads the inhibitors back
+/// idleness off: smithay never calls `uninhibit` for it, so the compositor reads the inhibitors back
 /// when the disconnect reaches the model, and the count restarts there.
 #[test]
 fn a_client_that_disconnects_stops_inhibiting() {

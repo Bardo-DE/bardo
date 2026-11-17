@@ -1,5 +1,5 @@
 //! The administrator's floor: what an unlisted program gets, programs that are never
-//! remembered, and pre-approvals or refusals by program. Read-only for casement; the text
+//! remembered, and pre-approvals or refusals by program. Read-only for the compositor; the text
 //! codec is in `floor_codec.rs`.
 
 use super::book::Verdict;

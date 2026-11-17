@@ -105,7 +105,7 @@ async fn connect_is_decided_by_who_the_caller_proves_to_be() {
             DENIED,
         ),
         (
-            "a role casement does not hand out",
+            "a role compositor does not hand out",
             service("shell", Proof::Full),
             "public",
             BAD_ARGS,

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bardo-shell's idle-cost acceptance, on casement ONLY (brought up and ended by start_compositor). A release+debug build is started on a private bus (both session and system
+# bardo-shell's idle-cost acceptance, on the compositor ONLY (brought up and ended by start_compositor). A release+debug build is started on a private bus (both session and system
 # bus, nothing else on it) with scratch HOME/XDG and the fake DDC, left alone for WARMUP seconds,
 # then sampled over DURATION seconds from /proc/<pid>:
 #

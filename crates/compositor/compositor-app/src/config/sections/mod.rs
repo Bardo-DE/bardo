@@ -1,4 +1,4 @@
-//! The document's sections: one file per `CasementSettings` part. Each key has a
+//! The document's sections: one file per `CompositorSettings` part. Each key has a
 //! `#[settings(...)]` row (ui-settings' `SettingsSchema` derive), which is the schema detent and
 //! the Settings app read; each section's `Default` is the model's own default through
 //! `convert`, so no default is written twice.

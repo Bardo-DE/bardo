@@ -96,7 +96,7 @@ impl<S: Seams> Exec<'_, S> {
     }
 
     /// Keys for a leased window that does not have the focus: the desktop is first asked to
-    /// focus it (casement allows that for a live lease, as the person's own run), and the window
+    /// focus it (the compositor allows that for a live lease, as the person's own run), and the window
     /// is read again. A backend that cannot, or refuses, leaves the window as it was and the
     /// short wait of [`Self::settled`] and its refusal stand.
     pub(super) async fn refocused(

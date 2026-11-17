@@ -1,4 +1,4 @@
-//! The seam the person's book and the administrator's floor are stored through: casement reads
+//! The seam the person's book and the administrator's floor are stored through: the compositor reads
 //! the floor, reads and writes the book, and nothing else touches either file. The real store
 //! is [`FilePrivacyStore`]; a run that keeps nothing between runs has [`FloorOnlyStore`]: no book,
 //! and the floor still read, because what the administrator set holds for every run.

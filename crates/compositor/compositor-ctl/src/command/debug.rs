@@ -8,7 +8,7 @@ use std::io::BufRead;
 const SUCCESS: u8 = 0;
 /// The exit code of a wait that timed out (its scene dump goes to stderr).
 const TIMED_OUT: u8 = 1;
-/// The exit code of a call the bus or casement refused.
+/// The exit code of a call the bus or the compositor refused.
 const REFUSED: u8 = 1;
 
 /// Makes `call` and prints what it answered: exit 0 on success, 1 on a timed-out wait or a
@@ -43,7 +43,7 @@ async fn answer_one(connection: &zbus::Connection, call: Call) -> u8 {
 }
 
 /// Each command line on stdin (blank lines and `#` comments skipped) as its own `Inject`. A line
-/// casement refuses is answered `err <line>: <why>` and the stream goes on, as fake-input.sh does;
+/// The compositor refuses is answered `err <line>: <why>` and the stream goes on, as fake-input.sh does;
 /// the exit status is 1 if any was refused. A lost bus ends the stream at once.
 async fn stream_stdin(connection: &zbus::Connection) -> u8 {
     let mut refused = 0_u32;
@@ -72,7 +72,7 @@ async fn stream_stdin(connection: &zbus::Connection) -> u8 {
     if refused == 0 { SUCCESS } else { REFUSED }
 }
 
-/// Why casement refused a call, when the bus carried the refusal back (a lost bus is not one).
+/// Why the compositor refused a call, when the bus carried the refusal back (a lost bus is not one).
 fn refusal(error: &BusError) -> Option<String> {
     match error {
         BusError::Zbus(zbus::Error::MethodError(_, why, _)) => {

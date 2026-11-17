@@ -1,5 +1,5 @@
 //! Night light: the screen warms toward a colour temperature on a schedule. Time is an argument
-//! (minutes since local midnight, which `casement/src/time/` reads); everything here is integers.
+//! (minutes since local midnight, which `compositor/src/time/` reads); everything here is integers.
 //! The result is a [`GammaRamp`] for `Effect::SetGamma`, the same path `zwlr_gamma_control_v1`
 //! clients use.
 

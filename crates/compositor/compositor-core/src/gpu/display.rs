@@ -1,6 +1,6 @@
 //! Which display devices are worth driving: a firmware framebuffer (simpledrm and its kin) is a
 //! boot-time stand-in for a GPU and must not become an output while a real display GPU is there,
-//! and a virtual test display (vkms) is never an output of a session casement.
+//! and a virtual test display (vkms) is never an output of a session compositor.
 //!
 //! Detection (the backend's sysfs adapter) turns a device into a [`DisplayKind`]; [`keep_displays`]
 //! is the pure rule over what was found.

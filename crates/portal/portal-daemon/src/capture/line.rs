@@ -2,23 +2,23 @@
 //!
 //! A program on the compositor's public socket can be shown to be no more than a program, so its
 //! first screenshot or share would raise the compositor's own question on top of the portal's
-//! chooser. casement hands the portal a connection of its own instead, over the session bus
+//! chooser. The compositor hands the portal a connection of its own instead, over the session bus
 //! (`org.bardo.Compositor1.Connect("portal")`), where the portal is proven all the way; that
 //! connection is trusted for the screen and the windows and for nothing else. [`PortalLine`] is
-//! the seam that asks for it, [`CasementLine`] the real one and [`FakeLine`] a test's. When no such
-//! connection can be had (another compositor, an older casement) the capture connects the way any
+//! the seam that asks for it, [`CompositorLine`] the real one and [`FakeLine`] a test's. When no such
+//! connection can be had (another compositor, an older the compositor) the capture connects the way any
 //! Wayland client does, and the portal's own sheet is the only question ([`super::DisplayName`]).
 //! The compositor limits how often one caller may ask, so a capture job asks once and runs all its
 //! steps on the connection it gets ([`super::Job`]).
 
-mod casement;
+mod compositor;
 mod fake;
 
 use std::fmt;
 use std::os::fd::OwnedFd;
 use std::time::Duration;
 
-pub use self::casement::CasementLine;
+pub use self::compositor::CompositorLine;
 pub use self::fake::FakeLine;
 
 /// How long the compositor has to hand out the connection before the attempt is dropped: it is a

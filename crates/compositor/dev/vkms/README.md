@@ -1,6 +1,6 @@
 # dev/vkms
 
-`accept.sh` is P1's exit criterion 1: casement's tty backend on a **vkms** device (the kernel's
+`accept.sh` is P1's exit criterion 1: the compositor's tty backend on a **vkms** device (the kernel's
 virtual display driver), with no real display involved. It is yours to run: no agent runs it,
 no gate runs it, and nothing in it uses sudo (20-FREEZE-PLAN C3). The one-time setup below is
 the only part that needs root, and you type it.
@@ -11,7 +11,7 @@ it creates (kept when a run fails) plus the status of one vkms connector.
 
 ## One-time setup (you type these)
 
-The device is made through configfs with its own name (`casement`), so the module's default
+The device is made through configfs with its own name (`compositor`), so the module's default
 device is not created. Check first that your kernel has vkms and configfs support:
 `modinfo vkms | grep -E 'enable_writeback|create_default_dev'`.
 
@@ -24,7 +24,7 @@ sudo modprobe vkms enable_writeback=1 create_default_dev=0
 #    disconnected and is what the hotplug step connects and disconnects).
 sudo bash -c '
 set -euo pipefail
-d=/sys/kernel/config/vkms/casement
+d=/sys/kernel/config/vkms/compositor
 mkdir "$d"
 mkdir "$d/planes/plane0" "$d/planes/cursor0" "$d/crtcs/crtc0" "$d/encoders/encoder0"
 mkdir "$d/connectors/connector0" "$d/connectors/hotplug1"
@@ -43,12 +43,12 @@ chown -R '"$USER"' "$d"
 
 # 3. Let your user open the card node, and keep your desktop from adopting it as a screen.
 #    Older kernels put a vkms device on the platform bus (driver vkms); newer ones (7.x) put a
-#    configfs device on the faux bus under its own name, so the last two rules match `casement`.
-sudo tee /etc/udev/rules.d/99-casement-vkms.rules >/dev/null <<'RULE'
+#    configfs device on the faux bus under its own name, so the last two rules match `compositor`.
+sudo tee /etc/udev/rules.d/99-compositor-vkms.rules >/dev/null <<'RULE'
 SUBSYSTEM=="drm", KERNEL=="card[0-9]*", SUBSYSTEMS=="platform", DRIVERS=="vkms", GROUP="video", MODE="0660", TAG-="uaccess", TAG-="seat", TAG-="master-of-seat"
 SUBSYSTEM=="drm", KERNEL=="renderD[0-9]*", SUBSYSTEMS=="platform", DRIVERS=="vkms", GROUP="video", MODE="0660", TAG-="uaccess"
-SUBSYSTEM=="drm", KERNEL=="card[0-9]*", SUBSYSTEMS=="faux", KERNELS=="casement", GROUP="video", MODE="0660", TAG-="uaccess", TAG-="seat", TAG-="master-of-seat"
-SUBSYSTEM=="drm", KERNEL=="renderD[0-9]*", SUBSYSTEMS=="faux", KERNELS=="casement", GROUP="video", MODE="0660", TAG-="uaccess"
+SUBSYSTEM=="drm", KERNEL=="card[0-9]*", SUBSYSTEMS=="faux", KERNELS=="the compositor", GROUP="video", MODE="0660", TAG-="uaccess", TAG-="seat", TAG-="master-of-seat"
+SUBSYSTEM=="drm", KERNEL=="renderD[0-9]*", SUBSYSTEMS=="faux", KERNELS=="the compositor", GROUP="video", MODE="0660", TAG-="uaccess"
 RULE
 sudo udevadm control --reload
 sudo udevadm trigger --subsystem-match=drm --action=change
@@ -56,44 +56,44 @@ id -nG | grep -qw video || { sudo usermod -aG video "$USER"; echo "log out and i
 ```
 
 Check: `ls -l /dev/dri/` shows a `card*` with group `video` mode `crw-rw----` for the vkms one,
-and `readlink -f /sys/class/drm/card*/device` lists `/sys/devices/faux/casement` (newer kernels) or a
+and `readlink -f /sys/class/drm/card*/device` lists `/sys/devices/faux/compositor` (newer kernels) or a
 platform device whose `driver` is `..` (older ones) for exactly one card. `udevadm info
 /dev/dri/<that card>` must not list the `seat` tag: if your desktop shows an extra screen (KDE calls
 it `Virtual-1`), the rule did not match.
 
 To undo: `sudo rmmod vkms` (remove the configfs device first with `sudo rmdir` of its items, or
-reboot) and `sudo rm /etc/udev/rules.d/99-casement-vkms.rules`.
+reboot) and `sudo rm /etc/udev/rules.d/99-compositor-vkms.rules`.
 
 ## Run
 
 ```bash
-dev/bootstrap.sh          # outside the jail: builds casement and writeback-compare into dev/out/tools/bin
+dev/bootstrap.sh          # outside the jail: builds the compositor and writeback-compare into dev/out/tools/bin
 dev/vkms/accept.sh        # a terminal; type "vkms only"; takes a little over 10 minutes
 ```
 
 Needs `jq` and `wlopm` (Fedora `sudo dnf install jq wlopm`; Debian or Ubuntu `sudo apt install jq wlopm`; Arch `sudo pacman -S jq wlopm`). `BARDO_COMPOSITOR_VKMS_IDLE_SECONDS=30` shortens
 the idle step for a try-out; such a run ends with exit 5 (`VKMS PARTIAL`) even if every step
-passed. `BARDO_COMPOSITOR_VKMS_DEVICE` names the configfs device if you did not call it `casement`.
+passed. `BARDO_COMPOSITOR_VKMS_DEVICE` names the configfs device if you did not call it `compositor`.
 
 Exit codes: 0 all passed, 1 a step failed (scratch dir kept), 2 refused, 3 vkms or a tool is
-absent (a gate script prints `SKIP-VKMS` for this one), 4 the casement binary has no vkms
+absent (a gate script prints `SKIP-VKMS` for this one), 4 the compositor binary has no vkms
 hooks yet, 5 a short run.
 
 ## What each step asserts
 
 | Step | Asserts |
 |---|---|
-| modeset | casement, started with `--backend tty --drm-node <vkms card>`, reports one lit output with a mode and a flip count above zero within 30 s |
-| idle | for 600 s with no clients: casement stays up, **missed vblanks do not increase**, and flips advance at least 90% of `seconds x refresh` |
-| hotplug | connecting the `hotplug1` connector (configfs `status` = 1) gives two outputs within 15 s, disconnecting it (2) gives one again, casement alive |
-| writeback | SIGHUP makes casement read one frame back through the vkms writeback connector; `writeback-compare` holds it to `crates/compositor/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768.png` (pixman, empty desktop at 1024x768) within 3 steps per channel on all but 2000 pixels per million |
+| modeset | the compositor, started with `--backend tty --drm-node <vkms card>`, reports one lit output with a mode and a flip count above zero within 30 s |
+| idle | for 600 s with no clients: the compositor stays up, **missed vblanks do not increase**, and flips advance at least 90% of `seconds x refresh` |
+| hotplug | connecting the `hotplug1` connector (configfs `status` = 1) gives two outputs within 15 s, disconnecting it (2) gives one again, the compositor alive |
+| writeback | SIGHUP makes the compositor read one frame back through the vkms writeback connector; `writeback-compare` holds it to `crates/compositor/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768.png` (pixman, empty desktop at 1024x768) within 3 steps per channel on all but 2000 pixels per million |
 | dpms | `wlopm --off` reports the output `off` and the flips stop for 3 s; `wlopm --on` reports `on` and the flips restart |
 | vt | SIGUSR1 (session paused) reports the seat `lent` and the flips stop; SIGUSR2 (activated) reports the seat `held`, the one output back on, flips running |
 
-## casement's side (what this script needs from the binary)
+## the compositor's side (what this script needs from the binary)
 
-The script talks to casement through three tty-backend options that are not part of the normal
-CLI, and two signals. `casement --help` describes them as a test mode, which the script probes
+The script talks to the compositor through three tty-backend options that are not part of the normal
+CLI, and two signals. `bardo-compositor --help` describes them as a test mode, which the script probes
 for (exit 4 when missing). The full contract is at the top of `accept.sh`.
 
 - `--drm-node PATH` opens only that node, directly (no libseat, no logind), after the DRM version
@@ -103,7 +103,7 @@ for (exit 4 when missing). The full contract is at the top of `accept.sh`.
 - `--kms-report FILE` appends one JSON line a second: `flips`, `missed`, `seat` (`held`/`lent`)
   and `outputs` (name, mode `WxH@millihertz`, power).
 - `--writeback-raw PATH` makes SIGHUP read one frame back through the vkms writeback connector
-  (a dumb buffer attached with an atomic commit; no fence, so casement lets three flips pass) and
+  (a dumb buffer attached with an atomic commit; no fence, so the compositor lets three flips pass) and
   write the raw buffer to `PATH`, then `WIDTH HEIGHT PITCH FOURCC` (`XR24`) to `PATH.meta`.
 - SIGUSR1 is the session paused and SIGUSR2 the session activated: the VT switch, simulated.
 

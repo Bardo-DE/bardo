@@ -16,19 +16,19 @@
 #   probe_log NAME              print the log
 #   probe_stop NAME | probe_stop_all
 #
-# Owner: P0-accept. Sourceable; needs dev/lib/bus.sh (casement_state_dir, casement_tool).
+# Owner: P0-accept. Sourceable; needs dev/lib/bus.sh (compositor_state_dir, compositor_tool).
 
 # shellcheck source=dev/lib/bus.sh
 source "$(dirname "${BASH_SOURCE[0]}")/bus.sh"
 
-_probe_dir() { local dir; dir="$(casement_state_dir)/probe"; mkdir -p "$dir"; echo "$dir"; }
+_probe_dir() { local dir; dir="$(compositor_state_dir)/probe"; mkdir -p "$dir"; echo "$dir"; }
 _probe_log() { echo "$(_probe_dir)/$1.log"; }
 
 probe_start() {
   require_jail
   local name=${1:?probe_start NAME} dir tool pid
   dir=$(_probe_dir)
-  tool=$(casement_tool compositor-probe) || return 3
+  tool=$(compositor_tool compositor-probe) || return 3
   rm -f "$dir/$name.in" "$dir/$name.log"
   mkfifo "$dir/$name.in"
   # <> keeps the fifo open read-write: the client never sees an end of file between commands.

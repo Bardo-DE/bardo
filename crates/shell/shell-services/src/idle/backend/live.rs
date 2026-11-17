@@ -212,7 +212,7 @@ impl Live {
             self.wire_epoch = Epoch(self.wire_epoch.0 + 1);
             let tell = Tell::new(self.wire_epoch, self.heard.clone());
             // The shell's own connection where the compositor hands one out: an app's idle
-            // watches are held to the compositor's minimum (casement's is 5 s, so a short watch
+            // watches are held to the compositor's minimum (the compositor's is 5 s, so a short watch
             // cannot time another window's keystrokes); the shell's are not.
             let route = match shell_connection(&self.setup.session).await {
                 Some(fd) => WaylandRoute::Handed(HandedSocket::new(fd)),

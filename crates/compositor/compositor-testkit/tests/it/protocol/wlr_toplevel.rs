@@ -285,7 +285,7 @@ fn the_minimise_rectangle_is_stored() {
             .minimise_target(window)
             .map(|target| target.rect),
         Some(want),
-        "a surface casement did not place sits at the origin"
+        "a surface compositor did not place sits at the origin"
     );
     assert!(matches!(
         fixture.model().windows()[&window].state,

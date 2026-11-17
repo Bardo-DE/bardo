@@ -205,7 +205,7 @@ impl RawPool {
         let shm: WlShm = client
             .bind(version..=version, H1Data)
             .expect("the compositor advertises wl_shm");
-        let fd = memfd_create("casement-test-pool", MemfdFlags::CLOEXEC)
+        let fd = memfd_create("compositor-test-pool", MemfdFlags::CLOEXEC)
             .expect("a memfd is available in the jail");
         ftruncate(&fd, bytes as u64).expect("a memfd can be sized");
         let pool = shm.create_pool(

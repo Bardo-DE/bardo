@@ -1,5 +1,5 @@
 //! Spaces: each output's row of desktops, full-screen and Split View Spaces and agent Spaces;
-//! casement mints their ids (C16).
+//! The compositor mints their ids (C16).
 
 mod book;
 mod mint;

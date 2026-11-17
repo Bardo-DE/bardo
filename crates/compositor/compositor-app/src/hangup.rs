@@ -41,7 +41,7 @@ pub fn watch() -> Result<Channel<ReloadRequested>, HangupError> {
     let (sender, channel) = channel::channel();
     let (ready_tx, ready) = mpsc::channel();
     std::thread::Builder::new()
-        .name("casement-reload".to_owned())
+        .name("compositor-reload".to_owned())
         .spawn(move || run(&sender, &ready_tx))
         .map_err(HangupError::Thread)?;
     match ready.recv_timeout(INSTALL_WITHIN) {

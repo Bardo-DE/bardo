@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # USER ONLY. Never run by an agent, never part of any gate, never with sudo (20-FREEZE-PLAN C3).
-# P1's exit criterion 1: casement's tty backend on a vkms (virtual KMS) device. Read README.md
+# P1's exit criterion 1: the compositor's tty backend on a vkms (virtual KMS) device. Read README.md
 # first: the person's one-time setup (typed by the person, with sudo) comes before this.
 #
 # It refuses unless: a terminal is attached, vkms is the only DRM driver it will touch (the card
 # node is picked by driver name; any other card is never opened), exactly one vkms card exists
-# and the user can open it, the tools it needs are installed, the casement binary has the vkms
-# hooks (see "casement contract"), and the person types the confirmation.
+# and the user can open it, the tools it needs are installed, the compositor binary has the vkms
+# hooks (see "the compositor contract"), and the person types the confirmation.
 #
 # Steps (each prints STEP-PASS or STEP-FAIL; the run ends 0 only if all pass):
-#   modeset    casement lights the vkms output and flips pages
+#   modeset    the compositor lights the vkms output and flips pages
 #   idle       10 minutes of an idle scene: flips advance at the refresh rate, zero missed vblanks
 #   hotplug    a configfs connector connected appears as a second output, disconnected it goes
 #   writeback  a frame read back through the writeback connector matches the pixman golden
@@ -18,10 +18,10 @@
 #
 # Exit: 0 all passed; 1 a step failed; 2 refused (not a terminal, not confirmed, wrong driver,
 # run as root); 3 the vkms device or a tool is absent (the gate convention: SKIP-VKMS);
-# 4 the casement binary lacks the hooks below; 5 a short run (BARDO_COMPOSITOR_VKMS_IDLE_SECONDS under 600).
+# 4 the compositor binary lacks the hooks below; 5 a short run (BARDO_COMPOSITOR_VKMS_IDLE_SECONDS under 600).
 #
-# casement contract (the hooks need --backend tty; --kms-report and --writeback-raw need --drm-node;
-# none is a general feature, and casement --help says so):
+# The compositor contract (the hooks need --backend tty; --kms-report and --writeback-raw need --drm-node;
+# none is a general feature, and bardo-compositor --help says so):
 #   --drm-node PATH         open only this node, directly (no libseat, no logind), after checking
 #                           that its driver is vkms; the real GPU is never opened or enumerated,
 #                           and no input device is opened. Hotplug is found by looking at the
@@ -47,7 +47,7 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../compositor" && pwd)
 source "$root/dev/lib/packages.sh"
 tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}/bin"
 idle_seconds="${BARDO_COMPOSITOR_VKMS_IDLE_SECONDS:-600}"
-device_name="${BARDO_COMPOSITOR_VKMS_DEVICE:-casement}"
+device_name="${BARDO_COMPOSITOR_VKMS_DEVICE:-compositor}"
 cfs="/sys/kernel/config/vkms/$device_name"
 golden="$root/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768"
 extra_connector="hotplug1"
@@ -69,7 +69,7 @@ for dir in /sys/class/drm/card[0-9]*; do
   driver=$(basename "$(readlink -f "$dir/device/driver" 2>/dev/null || echo none)")
   device=$(readlink -f "$dir/device" 2>/dev/null || echo none)
   # Older kernels: a platform device bound to the vkms driver. Newer ones (7.x): the configfs
-  # device on the faux bus, named after its configfs directory (casement checks the DRM driver
+  # device on the faux bus, named after its configfs directory (the compositor checks the DRM driver
   # name itself before it builds anything).
   if [ "$driver" = vkms ] || [ "$device" = "/sys/devices/faux/$device_name" ]; then
     vkms_cards+=("$(basename "$dir")")
@@ -90,35 +90,35 @@ fi
 for tool in jq wlopm; do
   command -v "$tool" >/dev/null || absent "$tool is not installed: $(pkg_hint "$tool")"
 done
-casement="$tools/bardo-compositor"
+compositor="$tools/bardo-compositor"
 compare="$tools/writeback-compare"
-[ -x "$casement" ] && [ -x "$compare" ] || absent "build the tools first: dev/bootstrap.sh (needs $casement and $compare)"
-usage=$("$casement" --help 2>&1 || true)
+[ -x "$compositor" ] && [ -x "$compare" ] || absent "build the tools first: dev/bootstrap.sh (needs $compositor and $compare)"
+usage=$("$compositor" --help 2>&1 || true)
 for hook in --drm-node --kms-report --writeback-raw; do
   case "$usage" in *"$hook"*) ;; *)
-    echo "vkms/accept.sh: this casement has no $hook; the vkms hooks are not built in yet (see the header, casement contract)" >&2
+    echo "vkms/accept.sh: this compositor has no $hook; the vkms hooks are not built in yet (see the header, compositor contract)" >&2
     exit 4 ;;
   esac
 done
 [ -f "$golden.png" ] || absent "the writeback golden $golden.png is missing (bless it: BARDO_COMPOSITOR_BLESS=1 cargo test, see FINDINGS p1-v)"
 
-printf 'This drives casement on the vkms device %s (%s) only. Your real displays are not touched.\nType "vkms only" to continue: ' "$card" "$node"
+printf 'This drives compositor on the vkms device %s (%s) only. Your real displays are not touched.\nType "vkms only" to continue: ' "$card" "$node"
 read -r answer
 [ "$answer" = "vkms only" ] || refuse "not confirmed"
 
 # ---- scratch, and the cleanup that kills only what this script started --------------------
-scratch=$(mktemp -d "${TMPDIR:-/tmp}/casement-vkms.XXXXXX")
+scratch=$(mktemp -d "${TMPDIR:-/tmp}/compositor-vkms.XXXXXX")
 chmod 700 "$scratch"
 mkdir -p "$scratch/run" "$scratch/config" "$scratch/state"
 chmod 700 "$scratch/run"
-casement_pid=""
+compositor_pid=""
 added_connector=no
 cleanup() {
   local code=$?
-  if [ -n "$casement_pid" ] && kill -0 "$casement_pid" 2>/dev/null; then
-    kill -TERM "$casement_pid" 2>/dev/null || true
-    for _ in 1 2 3 4 5 6 7 8 9 10; do kill -0 "$casement_pid" 2>/dev/null || break; sleep 0.5; done
-    kill -0 "$casement_pid" 2>/dev/null && kill -KILL "$casement_pid" 2>/dev/null || true
+  if [ -n "$compositor_pid" ] && kill -0 "$compositor_pid" 2>/dev/null; then
+    kill -TERM "$compositor_pid" 2>/dev/null || true
+    for _ in 1 2 3 4 5 6 7 8 9 10; do kill -0 "$compositor_pid" 2>/dev/null || break; sleep 0.5; done
+    kill -0 "$compositor_pid" 2>/dev/null && kill -KILL "$compositor_pid" 2>/dev/null || true
   fi
   if [ "$added_connector" = yes ]; then remove_connector || true; fi
   # A failed run keeps its scratch directory (log, report, writeback images) for a look.
@@ -129,18 +129,18 @@ trap cleanup EXIT
 
 report="$scratch/report.jsonl"
 raw="$scratch/writeback.raw"
-log="$scratch/casement.log"
+log="$scratch/compositor.log"
 
 # ---- helpers ------------------------------------------------------------------------------
 last() { tail -n 1 "$report" 2>/dev/null || echo '{}'; }
 field() { last | jq -r "$1 // empty"; }
-alive() { kill -0 "$casement_pid" 2>/dev/null; }
+alive() { kill -0 "$compositor_pid" 2>/dev/null; }
 
 # wait_for SECONDS DESCRIPTION JQ_TEST: the last report line satisfies the test.
 wait_for() {
   local limit=$1 what=$2 test=$3 n=0
   while [ "$n" -lt $((limit * 2)) ]; do
-    alive || { echo "  casement exited while waiting for: $what" >&2; return 1; }
+    alive || { echo "  compositor exited while waiting for: $what" >&2; return 1; }
     if last | jq -e "$test" >/dev/null 2>&1; then return 0; fi
     sleep 0.5; n=$((n + 1))
   done
@@ -169,14 +169,14 @@ set_status() { echo "$1" >"$cfs/connectors/$extra_connector/status"; }
 add_connector() { set_status 1; added_connector=yes; }
 remove_connector() { set_status 2; added_connector=no; }
 
-# ---- start casement on the vkms node ------------------------------------------------------
+# ---- start the compositor on the vkms node ------------------------------------------------------
 echo "vkms/accept.sh: scratch $scratch; node $node"
 env -i PATH="$PATH" HOME="$scratch" XDG_RUNTIME_DIR="$scratch/run" XDG_STATE_HOME="$scratch/state" \
   XDG_CONFIG_HOME="$scratch/config" \
-  "$casement" --backend tty --drm-node "$node" --config-home "$scratch/config" \
+  "$compositor" --backend tty --drm-node "$node" --config-home "$scratch/config" \
   --kms-report "$report" --writeback-raw "$raw" >"$log" 2>&1 </dev/null &
-casement_pid=$!
-echo "vkms/accept.sh: casement pid $casement_pid, log $log"
+compositor_pid=$!
+echo "vkms/accept.sh: compositor pid $compositor_pid, log $log"
 
 socket=""
 for _ in $(seq 1 60); do
@@ -189,7 +189,7 @@ for _ in $(seq 1 60); do
   sleep 0.5
 done
 if [ -z "$socket" ]; then
-  echo "vkms/accept.sh: casement did not come up; $log:" >&2; tail -20 "$log" >&2
+  echo "vkms/accept.sh: compositor did not come up; $log:" >&2; tail -20 "$log" >&2
   exit 1
 fi
 wl() { env -i PATH="$PATH" XDG_RUNTIME_DIR="$scratch/run" WAYLAND_DISPLAY="$socket" "$@"; }
@@ -212,7 +212,7 @@ sleep "$idle_seconds"
 t1=$(date +%s)
 flips1=$(field .flips); missed1=$(field .missed)
 elapsed=$((t1 - t0)); expected=$((elapsed * refresh_hz))
-if ! alive; then fail idle "casement died"
+if ! alive; then fail idle "compositor died"
 elif [ $((missed1 - missed0)) -ne 0 ]; then fail idle "$((missed1 - missed0)) missed vblanks in ${elapsed}s"
 elif [ $(( (flips1 - flips0) * 100 )) -lt $((expected * 90)) ]; then
   fail idle "only $((flips1 - flips0)) flips in ${elapsed}s, expected about $expected at ${refresh_hz} Hz"
@@ -227,7 +227,7 @@ else fail hotplug "the connected connector never appeared"; remove_connector 2>/
 
 # ---- 4 writeback --------------------------------------------------------------------------
 rm -f "$raw" "$raw.meta"
-kill -HUP "$casement_pid"
+kill -HUP "$compositor_pid"
 n=0; while [ ! -s "$raw.meta" ] && [ "$n" -lt 40 ]; do sleep 0.5; n=$((n + 1)); done
 if [ ! -s "$raw.meta" ]; then fail writeback "no writeback frame within 20s"
 else
@@ -248,13 +248,13 @@ if wl wlopm --off "$out_name" >/dev/null && wait_for 10 "power off" '.outputs[0]
 else fail dpms "off did not stop the flips"; wl wlopm --on "$out_name" >/dev/null 2>&1 || true; fi
 
 # ---- 6 vt (session pause and resume, simulated) ---------------------------------------------
-kill -USR1 "$casement_pid"
+kill -USR1 "$compositor_pid"
 if wait_for 10 "seat lent" '.seat == "lent"' && stalled 3; then
-  kill -USR2 "$casement_pid"
+  kill -USR2 "$compositor_pid"
   if wait_for 15 "seat held again with output lit" '.seat == "held" and (.outputs | length == 1) and .outputs[0].power == "on"' && running 3 && alive; then
     pass "vt (pause stops the flips, resume lights the output)"
   else fail vt "resume did not light the output"; fi
-else fail vt "pause did not lend the seat and stop the flips"; kill -USR2 "$casement_pid" 2>/dev/null || true; fi
+else fail vt "pause did not lend the seat and stop the flips"; kill -USR2 "$compositor_pid" 2>/dev/null || true; fi
 
 echo "vkms/accept.sh: final report: $(last)"
 if [ "$failed" -ne 0 ]; then echo "VKMS ACCEPT FAILED (log and images are kept in $scratch)"; exit 1; fi

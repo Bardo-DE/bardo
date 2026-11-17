@@ -17,7 +17,7 @@ impl Mortal for PendingCopy {
 /// The copies that wait for the person, by client.
 pub type WaitingCopies = Held<PendingCopy>;
 
-/// The client a copy belongs to, when casement inserted it.
+/// The client a copy belongs to, when the compositor inserted it.
 fn owner_of(copy: &PendingCopy) -> Option<ClientKey> {
     copy.frame.client().as_ref().and_then(consent::key_of)
 }

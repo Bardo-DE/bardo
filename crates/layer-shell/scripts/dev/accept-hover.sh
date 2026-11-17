@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Real-input hover acceptance: examples/demo_hover's two stacked cards on a
-# headless KWin (kwin-virtual.sh), driven by fake-input.sh. Never the user's session. COMPOSITOR=casement runs it on casement in
+# headless KWin (kwin-virtual.sh), driven by fake-input.sh. Never the user's session. COMPOSITOR=the compositor runs it on the compositor in
 # the jail instead (lib/compositor.sh).
 #
 #   scripts/dev/accept-hover.sh          builds demo_hover, runs the steps, stops everything
 #   HOVER_TRACE=1 scripts/dev/accept-hover.sh   the same with WAYLAND_DEBUG=1 on demo_hover
-#   COMPOSITOR=casement scripts/dev/accept-hover.sh   the same on casement, in a jail
-#   BARDO_LAYER_SHELL_HOST_BACKEND=gpu COMPOSITOR=casement scripts/dev/accept-hover.sh
+#   COMPOSITOR=the compositor scripts/dev/accept-hover.sh   the same on the compositor, in a jail
+#   BARDO_LAYER_SHELL_HOST_BACKEND=gpu COMPOSITOR=the compositor scripts/dev/accept-hover.sh
 #                      the same with the demo on the GPU backend (lavapipe in the jail) and a
-#                      casement that offers no dma-buf: one more step, f80_fallback
+#                      The compositor that offers no dma-buf: one more step, f80_fallback
 #
 # Steps (the cards are 320 x 120, centred on a 1920 x 1080 output: 800..1120 x 480..600):
 #   enter_one_motion  one motion from the desktop onto `top`: `top enter`
@@ -134,9 +134,9 @@ else
 fi
 
 # F80 (the adapter follows the compositor's GPU) must fall back cleanly when the compositor
-# offers no dma-buf at all: casement started with --dmabuf none (the default here), the demo on
+# offers no dma-buf at all: the compositor started with --dmabuf none (the default here), the demo on
 # the GPU backend (BARDO_LAYER_SHELL_HOST_BACKEND=gpu): it picks the adapter by wgpu's own order and paints.
-if [ "$COMPOSITOR" = casement ] && [ "${BARDO_LAYER_SHELL_HOST_BACKEND:-}" = gpu ] \
+if [ "$COMPOSITOR" = compositor ] && [ "${BARDO_LAYER_SHELL_HOST_BACKEND:-}" = gpu ] \
   && [ "${BARDO_COMPOSITOR_DMABUF:-none}" = none ]; then
   adapter=$(grep '^layer-shell-host: adapter ' "$LOG" | head -n 1)
   offered=$( (comp_source; wayland-info 2>/dev/null) | grep -c "interface: 'zwp_linux_dmabuf_v1'")

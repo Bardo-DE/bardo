@@ -1,4 +1,4 @@
-//! The KMS report (P1-V2): what `casement --kms-report FILE` appends once a second. A pure
+//! The KMS report (P1-V2): what `bardo-compositor --kms-report FILE` appends once a second. A pure
 //! value built from the backend's state ([`TtyBackend::report`]), written as one JSON line;
 //! `dev/vkms/accept.sh` reads it with `jq`.
 //!

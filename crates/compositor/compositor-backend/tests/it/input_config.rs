@@ -3,7 +3,7 @@
 use compositor_backend::input::{AccelProfile, PresentDevices, device_settings, xkb_of};
 use compositor_core::DeviceId;
 use compositor_core::input::DeviceClass;
-use compositor_core::settings::{CasementSettings, PointerSettings};
+use compositor_core::settings::{CompositorSettings, PointerSettings};
 
 #[test]
 fn a_touchpad_gets_the_touchpad_profile_and_a_mouse_the_mouse_profile() {
@@ -31,7 +31,7 @@ fn a_changed_profile_reaches_the_device_as_applied() {
 
 #[test]
 fn the_xkb_names_are_the_stored_ones() {
-    let mut settings = CasementSettings::defaults();
+    let mut settings = CompositorSettings::defaults();
     settings.keyboard.layout.layout = "us,de".to_owned();
     settings.keyboard.layout.options = "grp:alt_shift_toggle".to_owned();
     let names = xkb_of(&settings.keyboard);

@@ -1,6 +1,6 @@
 [package]
 name = "compositor-chrome"
-description = "casement's window title text: parley lays the title out with fontique's system fonts, vello_cpu rasterises it to premultiplied RGBA at the output's native scale. The only crate that reaches the text stack (boundary row B15)."
+description = "The compositor's window title text: parley lays the title out with fontique's system fonts, vello_cpu rasterises it to premultiplied RGBA at the output's native scale. The only crate that reaches the text stack (boundary row B15)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

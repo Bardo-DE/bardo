@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# casement's gate (20-FREEZE-PLAN §6.2): `dev/gate.sh fast -p <crate>… | merge | phase`.
+# The compositor's gate (20-FREEZE-PLAN §6.2): `dev/gate.sh fast -p <crate>… | merge | phase`.
 # Every exit code checked; never piped, never tailed.
 set -euo pipefail
 cd "$(dirname "$0")/.."

@@ -106,7 +106,7 @@ impl VirtualOutputSpec {
             .ok_or_else(|| bad(SpecError::Position))?;
         let base = VirtualOutputSpec {
             edid: EdidSource::Synthetic(EdidFacts {
-                make: "Casement".to_owned(),
+                make: "Compositor".to_owned(),
                 model: "Virtual".to_owned(),
                 serial: EdidSerial::Unknown,
             }),

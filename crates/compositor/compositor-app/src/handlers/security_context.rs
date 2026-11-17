@@ -23,7 +23,7 @@ impl SecurityContextHandler for State {
         let role = ConnectionRole::Sandboxed(facts.clone());
         // Only the desktop's sandbox launcher can give a context's clients an app, and its own
         // proof caps what the facts may prove (CASW-04); a creator that is gone, or was not
-        // inserted by casement, is no launcher and proves nothing.
+        // inserted by the compositor, is no launcher and proves nothing.
         let (creator, maker) = self
             .display
             .backend_handle()

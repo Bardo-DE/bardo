@@ -1,4 +1,4 @@
-//! The page over a fake publication: the rows casement lists, as they are named and typed. The
+//! The page over a fake publication: the rows the compositor lists, as they are named and typed. The
 //! fixture is here; the panes, the changes and the names are in the files beside it.
 
 mod pane;

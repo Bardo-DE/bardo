@@ -1,6 +1,6 @@
 //! Test builds only (`testing`, `debug-inject`): the desktop's list of its own programs gains the
 //! rows of `desktop-callers.toml` in the injected folder (`--system-dir`), owned by the person
-//! running the test. The desktop harness runs casement in a jail with no `/etc/bardo`, so without
+//! running the test. The desktop harness runs the compositor in a jail with no `/etc/bardo`, so without
 //! it nobody is the shell, Settings or the portal and none of them can connect; the harness
 //! names its build-folder programs here instead. The rows are the library's developer rows
 //! (`Proof::Dev`, below every real proof): the system table still wins where both name a

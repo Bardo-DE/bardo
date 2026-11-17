@@ -1,6 +1,6 @@
-# First login: the sill (casement) session, with KDE as the fallback
+# First login: the sill (the compositor) session, with KDE as the fallback
 
-Written 2026-10-03 for the first real login, rewritten 2026-10-14 for the casement session. Plasma stays installed and stays in the login
+Written 2026-10-03 for the first real login, rewritten 2026-10-14 for the compositor session. Plasma stays installed and stays in the login
 screen's session list the whole time. Nothing below changes Plasma's files.
 
 ## 1. Before you log out (about 30 minutes, in Plasma)
@@ -28,7 +28,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    advice and run it again. Install only when `bardo-shell` and `bardo` are both on a merged master (a
    Bardo merge breaks sill until sill follows it).
 3. **Remove a stale binary that would shadow the install:** `rm -f ~/.cargo/bin/bardo-shell`.
-4. **Install sill and the session.** The login entry "sill (casement)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, detent, sill, keycap and the rest, then the session files). sill's own part, from `~/sill`:
+4. **Install sill and the session.** The login entry "sill (the compositor)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, detent, sill, keycap and the rest, then the session files). sill's own part, from `~/sill`:
 
    ```sh
    dist/install.sh --dry-run        # read it: every step is printed, nothing is changed
@@ -46,11 +46,11 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    `/usr/local/share/bardo/intents/org.bardo.Shell.toml`, the skills and the settings schema; it also
    copies the keycap layer to `~/.config/keycap/keycap.toml` when you have none (an existing file is
    never touched). It is safe to run again. Then install the session from `~/desktop` (it writes
-   `bardo-session` and the `sill (casement)` entry in `wayland-sessions`). Confirm:
+   `bardo-session` and the `sill (compositor)` entry in `wayland-sessions`). Confirm:
 
    ```sh
    ls /usr/local/bin/bardo-shell /etc/pam.d/bardo-shell ~/.config/keycap/keycap.toml
-   ls /usr/share/wayland-sessions/ | grep -i casement
+   ls /usr/share/wayland-sessions/ | grep -i the compositor
    ```
    **System services sill uses (all optional).** Each feature below works only while its service runs
    on the system bus, and hides quietly when the service is absent (no error, the item is just not
@@ -106,7 +106,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    (the LINE and Teams wrappers in `~/.local/bin`, Chrome's launcher, Cursor); that reads the same
    wallet Plasma used. `--password-store=gnome-libsecret` also works through the Secret Service but
    is a different store (you sign in once more).
-8. **Mouse settings.** Plasma's per-mouse settings are not copied. casement's settings
+8. **Mouse settings.** Plasma's per-mouse settings are not copied. The compositor's settings
    (`~/.config/compositor/settings.toml`, `[pointer] natural_scroll`) hold the mouse options, and natural
    scroll is on by default. Change it there if you want the other direction.
 9. Do not install `dist/bardo-shell.service` yourself (the desktop repo's installer puts it under `/etc/systemd/user`, root-held, and the session starts it; a copy under `~/.config` is not trusted) and do not enable `bardo-voiced.service` (see "The agent stack" in
@@ -116,7 +116,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 
 ## 2. At the login screen
 
-Pick **sill (casement)** from the session list (the plasmalogin menu), then log in as usual. Your
+Pick **sill (the compositor)** from the session list (the plasmalogin menu), then log in as usual. Your
 password also unlocks the wallet (`pam_kwallet`). The next login preselects it; to go back,
 pick **Plasma (Wayland)** (section 5). The keyboard works here over Bluetooth, mapped by keycap.
 
@@ -133,7 +133,7 @@ journalctl -b --no-pager | grep -E 'bardo-session|guard' | tail     # no quick e
 #   (Cmd+Space does nothing: Alt+Space is being sent, so ~/.config/keycap/keycap.toml is missing; section 1, item 5)
 # 3 GPU (B3): which device did it pick, is sill quiet
 journalctl -b --no-pager | grep -iE 'render device|adapter|vulkan|llvmpipe' | tail
-top -b -n1 | head -12                                    # sill and casement not busy at idle
+top -b -n1 | head -12                                    # sill and the compositor not busy at idle
 # 4 keyboard: Cmd+C/Cmd+V in foot, Zen, Chrome; Ctrl+C still interrupts in the terminal; hold a key (400 ms / 10 per s)
 keycap status; sill keycap status                        # grabbed; connected
 # 5 polkit
@@ -180,21 +180,21 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 - No Toshy: the Mac layout is keycap's. Without keycap running, Cmd is Cmd. A lone Cmd tap has no sender yet (the assistant's
   Cmd double-tap); use `bardo-shell companion summon`.
 - `bardo-shell workspace next` and `prev` stop at the first and last workspace (no wrap).
-- Option+Cmd+Esc (Force Quit Applications) does nothing until casement runs `bardo-shell force-quit toggle`
+- Option+Cmd+Esc (Force Quit Applications) does nothing until the compositor runs `bardo-shell force-quit toggle`
   for its Force Quit chord (today the chord is swallowed by a command that does nothing). Run
   `bardo-shell force-quit toggle` from a terminal to see the panel.
 - No sink list in the control centre (G352): switch audio in Settings > Sound or `wpctl set-default <id>`.
-- Mouse settings are casement's (`~/.config/compositor/settings.toml`, section 1, item 8), or per device in
+- Mouse settings are the compositor's (`~/.config/compositor/settings.toml`, section 1, item 8), or per device in
   Settings > Mouse (the "palmrest" devices).
-- Night Shift: the control centre's Display module switches casement's software night light on until
-  tomorrow and sets its warmth; the schedule (times, "always") is casement's `[night_light]`, set in
+- Night Shift: the control centre's Display module switches the compositor's software night light on until
+  tomorrow and sets its warmth; the schedule (times, "always") is the compositor's `[night_light]`, set in
   Settings. Sunset to Sunrise is not offered (sill has no location). Where `display.night_warmth` is
-  `hardware` the monitors are warmed over DDC/CI instead and casement's night light is kept off.
+  `hardware` the monitors are warmed over DDC/CI instead and the compositor's night light is kept off.
 - No colour management, no screen recording app, no printer applet, no weather.
 - Escape does not close the control centre after a pointer press on empty space (G400; waits on Bardo's
   shell-surface click focus).
 - fcitx5 starts from XDG autostart; `GTK_IM_MODULE` and `QT_IM_MODULE` are deliberately unset.
-- More in `FINDINGS.md` ("What casement still has to provide").
+- More in `FINDINGS.md` ("What the compositor still has to provide").
 
 ## 5. Back to KDE, and a black screen
 
@@ -221,12 +221,12 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 ## 6. Where the logs are
 
 ```sh
-journalctl -b --no-pager | grep -iE 'sill|casement|bardo-session' | tail -100   # the session script, compositor, shell
+journalctl -b --no-pager | grep -iE 'sill|the compositor|bardo-session' | tail -100   # the session script, compositor, shell
 journalctl --user -b -u bardo-compositor.service -u bardo-session.target -u xdg-desktop-portal
 journalctl --user -b -u palmrest -u 'app-org.fcitx.Fcitx5@autostart'
 journalctl -b -u keycap                                              # system unit
 cat "$XDG_RUNTIME_DIR"/bardo-session/guard.log                     # the crash-loop guard's decisions
 ```
 
-The session script runs casement as a user unit and gives up after three quick exits (then
-`casement --safe`, then it ends the session); see the desktop repo's `session/bardo-session`.
+The session script runs the compositor as a user unit and gives up after three quick exits (then
+`bardo-compositor --safe`, then it ends the session); see the desktop repo's `session/bardo-session`.

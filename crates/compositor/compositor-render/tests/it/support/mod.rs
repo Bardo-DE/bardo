@@ -2,7 +2,7 @@
 //! GLES, one render through `render_output`, the read-back, and the golden environment.
 
 use compositor_render::golden::{Env, Golden, GoldenOutcome, GoldenTier, compare};
-use compositor_render::{CasementElement, Compositor, Rendered, render_output, surfaceless_gles};
+use compositor_render::{Compositor, Rendered, SceneElement, render_output, surfaceless_gles};
 use image::RgbaImage;
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::renderer::damage::OutputDamageTracker;
@@ -25,7 +25,7 @@ pub trait Offscreen1: Compositor + ExportMem {
         target: &mut Self::Target,
         tracker: &mut OutputDamageTracker,
         size: (i32, i32),
-        elements: &[CasementElement<Self>],
+        elements: &[SceneElement<Self>],
         age: usize,
     ) -> (Rendered, Vec<u8>);
 }
@@ -45,7 +45,7 @@ macro_rules! offscreen {
                 target: &mut $target,
                 tracker: &mut OutputDamageTracker,
                 size: (i32, i32),
-                elements: &[CasementElement<Self>],
+                elements: &[SceneElement<Self>],
                 age: usize,
             ) -> (Rendered, Vec<u8>) {
                 let size = Size::from(size);
@@ -69,7 +69,7 @@ offscreen!(GlesRenderer, GlesRenderbuffer);
 pub fn output_key(name: &str) -> compositor_core::OutputKey {
     use compositor_core::output::{EdidFacts, EdidSerial};
     let facts = EdidFacts {
-        make: "casement".to_owned(),
+        make: "compositor".to_owned(),
         model: "headless".to_owned(),
         serial: EdidSerial::Unknown,
     };
@@ -97,7 +97,7 @@ pub fn render_once<R: Offscreen1>(
     renderer: &mut R,
     size: (i32, i32),
     scale: f64,
-    elements: &[CasementElement<R>],
+    elements: &[SceneElement<R>],
 ) -> Vec<u8> {
     let mut target = renderer.target(size);
     let mut tracker = tracker(size, scale);

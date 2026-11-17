@@ -4,7 +4,7 @@
 //! the layout's rectangle at rest, and leaves the same way.
 
 use super::frame::{element, to_buffer, whole};
-use super::{CasementElement, Raster};
+use super::{Raster, SceneElement};
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::texture_book::TextureBook;
@@ -115,7 +115,7 @@ pub fn icon_element<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Option<CasementElement<R>> {
+) -> Option<SceneElement<R>> {
     view.area.intersection(&place.at)?;
     let pixels = buffer_size(icon.rest.size, view.scale);
     let draw = &icon.draw;
@@ -140,7 +140,7 @@ pub fn icon_element<R: Compositor>(
         place.alpha,
         &buffer,
     )
-    .map(CasementElement::Memory)
+    .map(SceneElement::Memory)
 }
 
 #[cfg(test)]

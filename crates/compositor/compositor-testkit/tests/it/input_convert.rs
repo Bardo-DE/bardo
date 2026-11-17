@@ -15,7 +15,7 @@ use compositor_core::input::{
     AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, InputKind, KeyCode, Origin,
     PinchDelta, SwipeDelta, SwitchStep, TouchStep,
 };
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::time::Mono;
 use desktop_protocols::vocab::PressEdge;
 use smithay::backend::input::InputEvent;
@@ -28,7 +28,7 @@ fn stamp() -> EventStamp {
             spec: compositor_backend::DeviceSpec {
                 class: DeviceClass::Pointer,
                 origin: Origin::Physical(DeviceClass::Pointer),
-                layout: CasementSettings::defaults().keyboard.layout,
+                layout: CompositorSettings::defaults().keyboard.layout,
                 name: DeviceName("test".to_owned()),
             },
         },

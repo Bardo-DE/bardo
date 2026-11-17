@@ -5,7 +5,7 @@ use crate::support;
 
 use compositor_core::geometry::PhysicalRect;
 use compositor_render::pass::{CaptureFormat, CaptureRequest, CapturedFrame};
-use compositor_render::{CasementElement, Rgba8, solid_rect};
+use compositor_render::{Rgba8, SceneElement, solid_rect};
 use smithay::backend::renderer::Bind;
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::pixman::PixmanRenderer;
@@ -23,8 +23,8 @@ fn captured(area: PhysicalRect) -> (Vec<u8>, CapturedFrame) {
     let mut renderer = pixman();
     let mut target = renderer.target(SIZE);
     let mut tracker = tracker(SIZE, 1.0);
-    let elements: Vec<CasementElement<PixmanRenderer>> = vec![
-        CasementElement::Solid(solid_rect(
+    let elements: Vec<SceneElement<PixmanRenderer>> = vec![
+        SceneElement::Solid(solid_rect(
             Id::new(),
             rect(8, 6, 20, 10),
             Rgba8 {
@@ -35,7 +35,7 @@ fn captured(area: PhysicalRect) -> (Vec<u8>, CapturedFrame) {
             },
             CommitCounter::default(),
         )),
-        CasementElement::Solid(solid_rect(
+        SceneElement::Solid(solid_rect(
             Id::new(),
             rect(0, 0, 64, 48),
             Rgba8 {

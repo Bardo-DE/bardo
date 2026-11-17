@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Every window's frame (window geometry) and buffer geometry as JSON lines, from the compositor
 # of lib/compositor.sh: kwin-windows.sh on KWin, `bardo-compositorctl debug windows` (the same fields)
-# on casement. `--class APP_ID` keeps one app's windows. Needs COMP_ENV (comp_start exports it).
+# on compositor. `--class APP_ID` keeps one app's windows. Needs COMP_ENV (comp_start exports it).
 #
 #   scripts/dev/lib/windows.sh --class demo_window    {"class":"demo_window","frame":[400,240,480,320],...}
 set -euo pipefail
@@ -10,7 +10,7 @@ LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$LIB/compositor.sh"
 case "$COMPOSITOR" in
   kwin) exec "$LIB/../kwin-windows.sh" "$@" ;;
-  casement)
+  compositor)
     tools="$(comp_tools)"
     class=""
     case "${1:-}" in

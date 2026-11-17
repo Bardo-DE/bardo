@@ -188,7 +188,7 @@ impl Debug {
             Job::PanicAt { goal } => {
                 assert!(
                     dump::frames_presented(state, None) < goal,
-                    "casement: the injected fault panic-after-frames fired"
+                    "compositor: the injected fault panic-after-frames fired"
                 );
                 Some(Job::PanicAt { goal })
             }

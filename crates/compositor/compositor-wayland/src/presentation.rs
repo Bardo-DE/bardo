@@ -20,7 +20,7 @@ use smithay::wayland::presentation::{
 };
 use std::collections::BTreeMap;
 
-/// The `clk_id` casement advertises: `CLOCK_MONOTONIC`. [`Presented::at`] is on it (the caller
+/// The `clk_id` the compositor advertises: `CLOCK_MONOTONIC`. [`Presented::at`] is on it (the caller
 /// adds the session's monotonic epoch; the virtual clock stands in for it in tests).
 pub const CLOCK_MONOTONIC: u32 = 1;
 

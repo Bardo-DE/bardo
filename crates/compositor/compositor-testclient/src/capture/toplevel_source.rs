@@ -166,7 +166,7 @@ impl WindowCapture {
         let stride = width.saturating_mul(4);
         let length = u64::from(stride) * u64::from(height);
         let file = File::from(
-            memfd_create("casement-window-capture", MemfdFlags::CLOEXEC)
+            memfd_create("compositor-window-capture", MemfdFlags::CLOEXEC)
                 .map_err(|error| ClientError::Dispatch(error.to_string()))?,
         );
         ftruncate(&file, length).map_err(|error| ClientError::Dispatch(error.to_string()))?;

@@ -35,7 +35,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | almanac (new) | memory: event log, memory files, recall, the memory daemon | yes (daemon Linux) |
 | docket (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter Bardo apps use | core yes; daemons Linux |
 | cua (new) | computer use: accessibility tree, agent seat, masked capture, leases, run machine, the daemon, the compositor protocol | core yes; daemon Linux |
-| casement (new, GPL) | the compositor's agent seat, masked source, trusted surface, glow, kill chord | no |
+| The compositor (new, GPL) | the compositor's agent seat, masked source, trusted surface, glow, kill chord | no |
 | Bardo | `ui-intents`, the companion components and vocabulary, design docs | yes |
 | sill | launcher companion mode, the companion service, providers, overlays, settings domain | no |
 | detent | the Intelligence page row and icon | no |

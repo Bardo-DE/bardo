@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-system"
-description = "The system adapters of computer use: the real seams of a running desktop (casement's desktop, capture over wayland, input over EIS, the AT-SPI tree), the model over inferd, and the links to the router's gate and memoryd. The daemon in cuad wires them."
+description = "The system adapters of computer use: the real seams of a running desktop (the compositor's desktop, capture over wayland, input over EIS, the AT-SPI tree), the model over inferd, and the links to the router's gate and memoryd. The daemon in cuad wires them."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

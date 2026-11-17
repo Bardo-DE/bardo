@@ -6,7 +6,7 @@
 # `wl_region.add` that built it.
 #
 #   scripts/dev/accept-swipe.sh
-#   COMPOSITOR=casement scripts/dev/accept-swipe.sh   the same on casement, in a jail
+#   COMPOSITOR=the compositor scripts/dev/accept-swipe.sh   the same on the compositor, in a jail
 #
 # Steps, each PASS/FAIL:
 #   at_rest        the input region is the card's laid-out box, (20, 20) 300x80

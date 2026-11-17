@@ -7,9 +7,9 @@ A settled item is deleted, not marked closed.
 
 ## Standing facts: compositors
 
-- **casement is the product target; KWin is a test compositor only.** Headless KWin (shell-host's
+- **the compositor is the product target; KWin is a test compositor only.** Headless KWin (shell-host's
   `kwin-virtual.sh` plus `fake-input.sh`) is where real pointer and keyboard input is scripted
-  where casement cannot yet. Nothing in sill is specific to
+  where the compositor cannot yet. Nothing in sill is specific to
   KWin: on any compositor that lacks a protocol sill asks for, the matching service stays at its
   default ("protocol absent") and one line goes to stderr.
 - **The window service has its own Wayland connection** (a protocol object cannot cross
@@ -250,7 +250,7 @@ A settled item is deleted, not marked closed.
 
 ## Standing facts: displays
 
-- **sill has no scale policy**: the compositor (casement's `ScalePolicy`) picks a display's
+- **sill has no scale policy**: the compositor (the compositor's `ScalePolicy`) picks a display's
   scale on first sight, before any client draws; sill reads the heads and shows the scale. There
   are no `display.scale*` or `display.density_target_ppi` keys, and no `displays.json`. Density
   (EDID millimetres over the native mode, 40-600 ppi) still feeds the font-rendering default.
@@ -361,7 +361,7 @@ A settled item is deleted, not marked closed.
 - **Phase A, not unforgeable.** The sheet is a layer surface on a stock compositor; its receipt says
   `InputProof::SheetFallback`, never `HardwareSeat`. Anything that can type into the session
   (uinput, an injected key) can answer it. Phase B is the same surface on the compositor's
-  trusted surface ("What casement still has to provide" below).
+  trusted surface ("What the compositor still has to provide" below).
 - **The answer is a signal to the asker alone.** `Confirm` returns `/org/bardo/Confirm1/request/<n>`
   and the person's answer goes back as `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer
   JSON>)` to the caller's unique name (a withdrawn question: code 1). Only the owner of
@@ -549,9 +549,9 @@ A settled item is deleted, not marked closed.
 
 ## Open items
 
-### What casement still has to provide
+### What the compositor still has to provide
 
-Wants for the compositor, kept so casement's lanes see them. `verified` means observed or read from
+Wants for the compositor, kept so the compositor's lanes see them. `verified` means observed or read from
 a source; `assumed` means not yet checked.
 
 | Want | Why sill needs it | Status |
@@ -571,14 +571,14 @@ a source; `assumed` means not yet checked.
 | A lone modifier tap as a shortcut | Double-tap Cmd summons the companion; today a unique chord (`Ctrl+Alt+Shift+Super F19`) is sent by the keyboard remapper, and the `Tap` machine in the companion service decides which tap is the second | assumed: the remap's effect on Cmd-click and Cmd-drag is the open spike (docs/manual-checks.md "The companion") |
 | Timely frame callbacks for fullscreen layer surfaces | Delayed callbacks stall the lock screen; shell-host has a watchdog | upstream reports on stock compositors |
 | Background blur that also boosts saturation (about x1.8) with a tunable sigma (22 logical px for widget cards) | macOS vibrancy behind widgets and panels (Bardo design/23) | blur only elsewhere |
-| A locker that dies while locked: policy | A compositor that keeps the lock until another client locks and unlocks is secure but strands the person; sill relocks from its crash marker | design choice for casement |
-| An Inhibit portal | Flatpak apps' "keep the screen on" | casement's portal at P2 |
+| A locker that dies while locked: policy | A compositor that keeps the lock until another client locks and unlocks is secure but strands the person; sill relocks from its crash marker | design choice for the compositor |
+| An Inhibit portal | Flatpak apps' "keep the screen on" | the compositor's portal at P2 |
 | Synthetic input that counts as idle activity | So an idle test can wake the seat (`bardo-shell debug idle-wake` stands in) | test harness only |
 | A virtual-keyboard path that reaches clients in a headless session | Key tests on the headless compositor | test harness only |
 
 - **Surfaces read the windows model, not `DesktopView`.** The Wlr arm publishes through the compositor
   service's existing state (`sill_model::windows`), so the dock, switcher, bar, corners and keycap's focus
-  feed run on casement unchanged; `desktop_wl::desktop_view` builds the frozen `DesktopView` from
+  feed run on the compositor unchanged; `desktop_wl::desktop_view` builds the frozen `DesktopView` from
   the same state and nothing reads it yet. Ends when the surfaces take `DesktopView` and
   `DesktopCommand`.
 - **Bardo arm.** `backend_for` returns `Bardo` when `bardo_desktop_manager_v1` is offered and
@@ -629,7 +629,7 @@ a source; `assumed` means not yet checked.
 - **The pane's picture is a `TextureLayer`, unseen on a real surface.** The harness's CPU painter draws
   none (a picture's pane is blank there), and no one has looked at it on a shell-host surface, whose
   renderer must hand its device to Bardo's `Gpu` for the texture to draw. Ends when
-  `docs/manual-checks.md` "A file from the launcher in the viewer" is ticked on casement; if the picture is
+  `docs/manual-checks.md` "A file from the launcher in the viewer" is ticked on the compositor; if the picture is
   blank there, the pane needs the PNG fallback its FINDINGS names.
 - **Each file peek writes the pane's stylesheet.** `anyview_peek::Card` draws its own `AppStyle`, one
   `<style>` per pane. Ends when the launcher draws `anyview_peek::STYLE` once at its root.
@@ -653,7 +653,7 @@ a source; `assumed` means not yet checked.
 - **G367** A secondary press on a widget opens the desktop's menu, not the widget's own
   (design/28 4.1: Edit "<widget>", Remove, sizes).
 - **G368** The menu opens only when none is up: a second popup made while one holds the grab is
-  a protocol error that ends the connection. A secondary press that the compositor does not
+  a protocol error that ends the connection. A secondary press that compositor does not
   treat as ending the grab (KWin sends no `popup_done` for a press on the popup's own client)
   does nothing until the menu is dismissed.
 - **G369** Tray menus: a radio row is drawn with the check mark a toggle has (the menu has no radio
@@ -662,7 +662,7 @@ a source; `assumed` means not yet checked.
   open menu to the next item's; `ItemIsMenu` is not read (an item with a dbusmenu always opens it
   on the primary press); a dbusmenu row's disposition (informative, warning, alert) is not drawn.
 - **G370** App menus: the foreign Qt and GTK menus are not shown, because the compositor has no
-  appmenu protocol (`org_kde_kwin_appmenu`) to hand a toplevel's address over; casement P3-MN
+  appmenu protocol (`org_kde_kwin_appmenu`) to hand a toplevel's address over; the compositor P3-MN
   (`menu_source`) adds the server side, then sill reads the address it gives per toplevel instead of
   deriving it from the `app_id`, which also makes the menu per window. Until then only apps that serve
   `org.bardo.AppMenu.<app_id>` (Bardo apps) have menus in the bar.
@@ -948,7 +948,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
   the arm's `DesktopView` or sends it commands yet (`ShellSeat` has no `command` method until a surface
   needs one); the toplevels and workspaces the dock and switcher draw still come from the windows thread's
   environment connection (which on a Bardo offer is the standard arm over the projected flags).
-- **Waits for casement's server lanes.** The whole path is unrun against a compositor: the handed
+- **Waits for the compositor's server lanes.** The whole path is unrun against a compositor: the handed
   connection, `bardo_shell_v1` on it, `SetShellRole`, the notes. Activation sends serial 0 (desktop-client's
   decision). A window with no ext handle is invisible.
 - **Deviations to confirm.** (1) `supports(Wlr, SetMinimiseTarget)` stays `No`: the Wlr arm runs on its
@@ -999,7 +999,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
   A window therefore takes the rectangle of the icon filed under its `WindowView::app`: the icon's
   desktop-entry id and the raw app id of each of the icon's windows. If Bardo's app key differs
   from both (a proven name unlike the entry id), that app's windows get no target.
-- **Only a live casement run proves.** That the rectangle is in the coordinates
+- **Only a live the compositor run proves.** That the rectangle is in the coordinates
   `bardo_shell_v1.set_minimise_target` expects (surface-local logical px, top-left origin) and
   that the genie lands on the icon rather than offset by the pill's gutter or the autohide slide
   (the rectangle ignores the slide); that a target sent before the dock's `SetShellRole` is
@@ -1025,9 +1025,9 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
   `org.freedesktop.impl.portal.desktop.bardo` may call (a forged caller is `AccessDenied`).
 - **Candidates.** Screens: the displays service's outputs, quoted by connector name (`DP-1`).
   Windows: Bardo arm's `DesktopView` pushed by the daemon on every `ShellMsg::Desktop`
-  (documents that are not minimised and not `CaptureHidden`), quoted by the identifier casement
+  (documents that are not minimised and not `CaptureHidden`), quoted by the identifier the compositor
   publishes. **No fallback on the other arms**: the wlr toplevels carry no ext
-  identifier (`desktop_wl::identifier` would make one up, `toplevel-N`, which casement would not
+  identifier (`desktop_wl::identifier` would make one up, `toplevel-N`, which compositor would not
   know), so the Windows tab is empty there rather than wrong. Reading the ext identifier on
   the windows thread would fix it.
 - **UI.** A centred Bardo `Sheet` over an Overlay layer (keyboard exclusive) on the banners'
@@ -1045,7 +1045,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 
 ## winwire: a window's menu (the green light)
 
-- **The route.** casement sends `bardo_shell_v1.window_menu(toplevel, x, y, enabled)` when the pointer rests on a
+- **The route.** the compositor sends `bardo_shell_v1.window_menu(toplevel, x, y, enabled)` when the pointer rests on a
   window's green light; `desktop-client` folds it into `ShellEvent::WindowMenu`; `sill-services` `note_of` makes
   `ShellNote::WindowMenu { window, at, enabled }`; `daemon::compositor::apply` opens it on
   `Links::window_menu` (`WindowMenuLink`); each output's `sill_overlays::WindowMenu` surface (Overlay, whole
@@ -1057,13 +1057,13 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
   (default `Hide`) lets this menu ask for `Dim`, so the menu is always the same set of entries.
 - **Submenus are Bardo's own** ("Move & Resize", "Full Screen Tile"); no section headers were needed.
 - **Open, only a real run proves:** the popup is opened by a hover, not by a press on the shell's own surface, so it
-  has no input serial. If casement refuses or immediately dismisses the grab, give the popup `PopupGrab::Ungrabbed`
+  has no input serial. If the compositor refuses or immediately dismisses the grab, give the popup `PopupGrab::Ungrabbed`
   and close it on the next pointer press outside (the compositor knows the press; add a `window_menu_close` event).
-  The menu opens `Full Screen Tile` entries dimmed until casement has a Split View command.
+  The menu opens `Full Screen Tile` entries dimmed until the compositor has a Split View command.
 
 ## splitwire: the Split View picker and divider
 
-- **The route.** casement offers the other half of a Split View with `bardo_shell_v1.split_choose(first, side)` and one
+- **The route.** the compositor offers the other half of a Split View with `bardo_shell_v1.split_choose(first, side)` and one
   `split_candidate(toplevel)` per candidate, and ends it with `split_choice_end(first)`; `desktop-client` folds them
   into `Shell::split_choice` and `ShellEvent::{SplitChoose, SplitCandidate, SplitChoiceEnd}`; `sill-services` `note_of`
   makes `ShellNote::{SplitChoose, SplitCandidate, SplitChoiceEnd}` (one note per event: the wire has no "list complete"
@@ -1075,16 +1075,16 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
   `DesktopCommand::PickSplit` / `CancelSplit`, and Bardo arm sends `split_pick` / `split_cancel`.
 - **No window previews.** sill has no window previews (Mission Control and the switcher are the compositor's or app
   tiles), so each card is the window's app icon with its title under the selected tile: Bardo's `AppSwitcher` with the
-  window identifier as the tile key. A thumbnail needs a per-window capture (casement has `ext-image-copy-capture`
+  window identifier as the tile key. A thumbnail needs a per-window capture (the compositor has `ext-image-copy-capture`
   for toplevels); when the shell asks for those, the tile's `IconSource` is where the picture goes.
 - **Shared with the switcher.** The icon source (`TileIcons`) and the tile sizes (`icon_side`, `metrics_of`) moved
   from the switcher to `sill_ui_kit::app_icons` so both surfaces draw the same tiles from `switcher.*`.
 - **An offer with no output named** (the desktop did not say which output the first window is on) shows on every output.
 - **The divider is not built.** The wire is complete (`DesktopCommand::DivideSplit(window, thousandths)` ->
   `split_divide`), but sill has no handle. A handle would be a second overlay surface whose input region is one 8 px
-  element at the strip between the halves (`DIVIDER_WIDTH` in casement's `rust_scene/split.rs`), dragged with the
+  element at the strip between the halves (`DIVIDER_WIDTH` in the compositor's `rust_scene/split.rs`), dragged with the
   pointer held (Wayland keeps the grab on the surface while a button is down, so the drag can leave the region); its
-  share is `(pointer x - 4) / (output width - 8)` in thousandths. What stops it: (1) casement has no hit test or pointer
+  share is `(pointer x - 4) / (output width - 8)` in thousandths. What stops it: (1) the compositor has no hit test or pointer
   grab on the strip and the full-screen windows are drawn above Top layers, so whether an Overlay surface gets pointer
   events over a full-screen window's pair is only proven by a real run; (2) `DesktopView` carries neither which
   windows are a pair nor the share, so the handle would take the strip's place from the two windows' geometry; (3) the
@@ -1121,7 +1121,7 @@ Mission Control's Spaces bar (lane `spacesbar`, written without a build: nothing
      keyframes: the lint rejects unknown animation names). The windows settle in about 350 ms, so the bar finishes first.
   3. *Every output.* The overview note names no output, so the bar shows on all outputs; the Spaces on each are its own.
   4. *Drag and drop of windows onto a Space is not done.* There is no drag from the compositor's window tiles to this surface
-     (the tiles are the compositor's, not ours); `DesktopCommand::ToSpace` exists for when casement reports a drop on the strip.
+     (the tiles are the compositor's, not ours); `DesktopCommand::ToSpace` exists for when the compositor reports a drop on the strip.
   5. *Space reorder, remove and the Space menu are not done* (`MoveSpace`, `RemoveSpace` exist as commands; nothing in the bar sends them).
   6. *`Tracking` shows the bar at once,* at full strength, not scaled by `progress`; the progress field is ignored.
 - **Interface asks.**
@@ -1129,7 +1129,7 @@ Mission Control's Spaces bar (lane `spacesbar`, written without a build: nothing
     `use_presence`; today the bar borrows the sheet pair.
   - Bardo: a `SpacesBar` component (pills with a thumbnail slot that expands on hover, the Space add plus, drop target highlight)
     once the wire has thumbnails; `WorkspacePills` is the menu bar's segmented group, near enough for a collapsed bar.
-  - casement: say which output Mission Control is open on (a per-output `overview_state`), report a Space thumbnail, and report a
+  - The compositor: say which output Mission Control is open on (a per-output `overview_state`), report a Space thumbnail, and report a
     window dropped on the strip.
 - **Open, only a real run proves.** Whether the strip lies where the compositor leaves it (the Top layer, anchored at y 0, with
   the menu bar drawn over its top; if the compositor places the strip below the menu bar's reserve the padding doubles); whether
@@ -1139,7 +1139,7 @@ Mission Control's Spaces bar (lane `spacesbar`, written without a build: nothing
 ## mc2
 
 Lane `mc2`, written without a build: nothing here has been compiled or run, so the gate decides. Adopts Bardo's `SpacesBar`
-and casement's `bardo_shell_v1` version 2 (casement-protocols `ea171a1`).
+and the compositor's `bardo_shell_v1` version 2 (desktop-protocols `ea171a1`).
 
 - **What landed.**
   1. *Bardo's bar.* `sill-overlays/src/spaces_bar/` now hangs `SpacesBar { label, spaces, shown, on_pick, on_add, on_hidden,
@@ -1167,11 +1167,11 @@ and casement's `bardo_shell_v1` version 2 (casement-protocols `ea171a1`).
      empty set clears: sent as soon as the bar goes down) and the `CaptureSpace` requests.
   7. *Drop highlight.* `BarDrops::state_of` gives `DropState::Target` to the tile named by `DropTarget` (`SpaceTile::in_drag`).
 - **Surface height and input (record asked for).** The layer surface is `--shell-bar-h` plus `BAR_EXPANDED_PX` (150) tall
-  (`layer::surface_px`), more than the compositor's 112 px reserve (`STRIP_PX`, kept: casement still keeps 112 free for the collapsed
+  (`layer::surface_px`), more than the compositor's 112 px reserve (`STRIP_PX`, kept: the compositor still keeps 112 free for the collapsed
   bar). The expanded bar therefore lies over the top (about 62 px with a 24 px menu bar) of the windows' layout, as the Mac's does.
   Input is `RegionSpec::Element { id: "spaces-bar" }`, Bardo bar's own element (its `Common::id`), so the transparent rest of
   the surface passes the pointer to the compositor's window tiles; the menu-bar padding above the bar is not input either (the menu
-  bar's own surface covers it). Ask for casement: reserve at least the bar's real height if the windows should not be overlapped.
+  bar's own surface covers it). Ask for the compositor: reserve at least the bar's real height if the windows should not be overlapped.
 - **Departures.**
   1. *Always expanded.* The bar is given `expansion: Some(Expanded)`: while the compositor holds the pointer for a window drag the
      bar gets no pointer events, so a hover-driven expansion could never happen during the one gesture the targets exist for; and
@@ -1181,7 +1181,7 @@ and casement's `bardo_shell_v1` version 2 (casement-protocols `ea171a1`).
      `--s-8` top padding). A harness test compares the first card with the drawn `.ds-spaces-bar-thumb`, which catches drift when
      Bardo changes. Interface ask to Bardo: `SpaceTile::common` (or `on_layout(Vec<(BarSpaceKey, Rect)>)`) so the host measures the
      cards.
-  3. *Only the Space on show is pictured* (casement: "first version: only the Space the output shows now"). A tile keeps the last
+  3. *Only the Space on show is pictured* (the compositor: "first version: only the Space the output shows now"). A tile keeps the last
      picture it got in the session (the feed holds them per output and Space; they go stale), else the quiet blank card.
   4. *No wallpaper under the picture.* The picture has none (windows over transparency) and the card is Bardo's blank colour. The
      wallpaper images exist (`WallpaperService`) but drawing one under Bardo's `<img>` needs a layer in Bardo's card or compositing
@@ -1210,8 +1210,8 @@ and casement's `bardo_shell_v1` version 2 (casement-protocols `ea171a1`).
 
 ## mc4
 
-Lane `mc4`, written without a build: nothing here has been compiled or run, so the gate decides. Adopts casement's `bardo_shell_v1`
-version 3 (casement-protocols `0f7afcb`, casement `3eaf1f7`) and completes the Spaces bar of `mc2`.
+Lane `mc4`, written without a build: nothing here has been compiled or run, so the gate decides. Adopts the compositor's `bardo_shell_v1`
+version 3 (desktop-protocols `0f7afcb`, the compositor `3eaf1f7`) and completes the Spaces bar of `mc2`.
 
 - **What landed.**
   1. *Version 3.* sill pins no version: desktop-client's `bind_all` binds `bardo_shell_v1` at `1..=3` already, so nothing changed
@@ -1243,7 +1243,7 @@ version 3 (casement-protocols `0f7afcb`, casement `3eaf1f7`) and completes the S
      control height needs `BAR_SIDE`, `ADD_PX` in `bar_layout.rs` changed with it. It is the button itself, 28 px: small to hit.
   3. *`Accepts` is still never set.* The protocol gives no event when a drag begins: `drop_target` and `drop_target_new` fire only on
      entering or leaving a rectangle (and at the end), so the shell cannot know a drag is in progress before the pointer reaches a
-     tile. Ask for casement: an event at drag start and end (or the dragged window) would let the tiles that take it show the outline.
+     tile. Ask for the compositor: an event at drag start and end (or the dragged window) would let the tiles that take it show the outline.
   4. *The wallpaper may not line up with the windows.* The picture is the output's size squeezed into 160 x 100 by `object-fit:
      cover`, the wallpaper by `background-size: cover`; they agree only when the output is 16:10. The file URL is read by the
      renderer's net layer as the wallpaper surface's `img` is; a CSS background through a custom property is what is unproven.
@@ -1293,7 +1293,7 @@ The Spaces bar shows its accepting state during a Mission Control window drag. `
 (from `ShellEvent::WindowDragBegin` / `WindowDragEnd`, bardo_shell_v1 version 4) go through `spaces_bar::apply_note` to
 `SpacesBarLink::set_dragging`; `BarDrops` keeps the outputs with a drag under way and answers `DropState::Accepts` for every
 Space tile and the plus there, `DropState::Target` still wins for the tile under the window. No Bardo change: `SpacesBar`
-already draws `DropState::Accepts` through `SpaceTile::in_drag` and `add_drop`. Needs casement-protocols `08bcc62`; against a
+already draws `DropState::Accepts` through `SpaceTile::in_drag` and `add_drop`. Needs desktop-protocols `08bcc62`; against a
 compositor older than version 4 nothing is sent and the bar behaves as before.
 
 ## wave-6/colour-picker: `PickColor` and the eyedropper
@@ -1326,7 +1326,7 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
 - **Pixel under the pointer.** `pixel_under` scales each axis by (picture size / surface size), so a
   fractional scale and the rounding of the logical size are exact; it floors. The picture is read
   as the compositor composed it (sRGB), which is what an app asked for on a wide-gamut panel.
-- **Known limits, only a live casement run proves.** (1) casement's capture is "the last presented
+- **Known limits, only a live the compositor run proves.** (1) the compositor's capture is "the last presented
   frame"; its tty backend reads it back since P1-T (GLES capture scenes), and cas34 reads only the
   asked region, so the eyedropper works on real hardware (manual check in docs/manual-checks.md). (2) A frame whose transform is not `Normal` is refused (`shot_of`), not turned, so a
   rotated monitor has no eyedropper. (3) Two data-URI copies of one multi-megabyte PNG are decoded
@@ -1338,40 +1338,40 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
   `Present` while a surface is up and `Absent` when the last one goes; until then every call is
   answered with an empty array at once and nothing is asked of the person (`CapturePicker::eyedropper`).
 
-## wave-6/night-shift: Night Shift on casement's night light
+## wave-6/night-shift: Night Shift on the compositor's night light
 
 - **What it is.** The control center's Display module gains a Night Shift row (a switch, a line
   saying what it is doing, and a Less Warm to More Warm slider while it warms or will). The
-  switch is macOS's "Turn On Until Tomorrow": casement's `night_light.mode` becomes `always` and
+  switch is macOS's "Turn On Until Tomorrow": the compositor's `night_light.mode` becomes `always` and
   the previous table is kept in `$XDG_STATE_HOME/bardo/shell/night-shift.json` with the end (the next
   time the clock reads `night_light.to`); the service puts it back at the end, and at start if
   the end passed while sill was away. Off ends a manual turn-on, else sets the mode off. A change
   made in Settings ends a manual turn-on. Only the `night_light` keys are written; the rest of
-  casement's `settings.toml` is merged around (comments in that file are lost on a write, since
+  The compositor's `settings.toml` is merged around (comments in that file are lost on a write, since
   it is rewritten from its parsed table).
-- **Schedule.** Off/Custom are casement's `mode` and `from`/`to`, edited in Settings (casement's
+- **Schedule.** Off/Custom are the compositor's `mode` and `from`/`to`, edited in Settings (the compositor's
   schema page); the row shows "Scheduled, 22:00 to 07:00" read-only. **Sunset to Sunrise is not
-  offered**: sill has no location, and casement's schema help mentions the Clock settings writing
+  offered**: sill has no location, and the compositor's schema help mentions the Clock settings writing
   sunset, which do not exist yet. When a location exists, the writer belongs in
   `sill_services::night_shift` (compute sunrise and sunset daily, write `from`/`to`).
 - **Not doubled.** Where `display.night_warmth` is `hardware` the displays service warms the DDC
-  monitors that have RGB gains itself, and Night Shift lists their connectors in casement's
+  monitors that have RGB gains itself, and Night Shift lists their connectors in the compositor's
   `night_light.skip_outputs` (`sill_model::night_shift::skip_outputs`, kept current as monitors
   come and go; nothing is written before the policy has said who warms them, so a start does not
-  undo the last run's list). casement keeps warming every other output, and the switch works as
+  undo the last run's list). The compositor keeps warming every other output, and the switch works as
   anywhere. Entries with a colon (`edid:...`, `connector:...`) are the person's own and are kept;
   a plain connector name the person typed there is sill's to replace. A DDC monitor whose
-  connector sill could not match to a bus is not listed, so casement warms it too
+  connector sill could not match to a bus is not listed, so the compositor warms it too
   (`sill_model::night_shift::unmatched`; logged once per bus). Open: this
-  needs casement's `skip_outputs` to be in the casement sill runs against (branch
-  `lane/cas28-daily`), and an older casement ignores the key, which leaves every output warmed by
-  casement as well.
-- **The warmth.** The slider spans 6500 K (Less Warm) to 2700 K (More Warm); casement accepts 1000
+  needs the compositor's `skip_outputs` to be in the compositor sill runs against (branch
+  `lane/cas28-daily`), and an older the compositor ignores the key, which leaves every output warmed by
+  The compositor as well.
+- **The warmth.** The slider spans 6500 K (Less Warm) to 2700 K (More Warm); the compositor accepts 1000
   to 6500 K, so a value set below 2700 K in Settings sits at the slider's end.
-- **No Settings page of ours.** The Settings app is detent's; casement's `[night_light]` section is
+- **No Settings page of ours.** The Settings app is detent's; the compositor's `[night_light]` section is
   already in its schema (page Appearance), so Mode, Starts at, Ends at, Warmth and Fade are there.
 - **Check at the gate.** `toml` 1's `Table::entry`/`Value::as_table_mut`; `jiff::Zoned::offset().seconds()`;
-  whether casement re-reads `settings.toml` when it changes (the lane that drives the night light
+  whether the compositor re-reads `settings.toml` when it changes (the lane that drives the night light
   watches the file).
 
 ## wave-6/force-quit: Force Quit Applications
@@ -1390,10 +1390,10 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
   opened, not by use; this one is by recency (`AppView::mru`), which keeps the app that just hung
   near the top. Windowless apps (background helpers) and launching apps are not listed.
 - **The key.** chordkit has the action (`StandardAction::ForceQuit`, Option+Command+Escape on the
-  Mac convention; keycap writes it as Alt+Super+Esc). casement binds the action to
+  Mac convention; keycap writes it as Alt+Super+Esc). The compositor binds the action to
   `DesktopCommand::ForceQuitPanel`, which does nothing and swallows the chord
-  (`crates/casement/src/keymap/shell.rs`, `ROWS`) and the shell protocol has no event for
-  it. **Ask of casement:** run `bardo-shell force-quit toggle` for that row (`Does::Sill(&["force-quit",
+  (`crates/compositor/src/keymap/shell.rs`, `ROWS`) and the shell protocol has no event for
+  it. **Ask of the compositor:** run `bardo-shell force-quit toggle` for that row (`Does::Sill(&["force-quit",
   "toggle"])`), as it does for the launcher and the screenshots; nothing else is needed on sill's
   side. Until then the chord does nothing and the panel is opened from a terminal.
 - **Consolidated.** The capture, confirm, Force Quit, polkit and voice consent sheets share
@@ -1587,20 +1587,20 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   passes `--dev-callers`. `dev/demo.sh` still runs with the table empty: a `mailo` built in a
   checkout is `Unverified`, so its menu is not in the bar. Not verified here (no compile, no run):
   the two scripts end to end, and the `Cargo.lock` move from peephole v0.1.2 to v0.1.4.
-- **Dev sessions start casement with a floor.** casement asks before a program captures the screen,
-  reads the clipboard, types and so on. `dev/lib/compositor.sh`'s `start_casement` writes a floor
-  (`casement-floor/privacy.toml` in the script's output folder, mode 600 in a 700 folder) with an
+- **Dev sessions start the compositor with a floor.** the compositor asks before a program captures the screen,
+  reads the clipboard, types and so on. `dev/lib/compositor.sh`'s `start_compositor` writes a floor
+  (`compositor-floor/privacy.toml` in the script's output folder, mode 600 in a 700 folder) with an
   allow row for `grim` (screen) and `wl-copy` and `wl-paste` (clipboard), resolved to their images, and
-  passes `--system-dir`. casement reads a folder given that way as the user's own only in a build with
-  `testing` or `debug-inject` (the jail's); a release casement would not believe it. Limit: a
-  floor row cannot name an image the person can write (casement's `Identity::Unnamed`), so the
+  passes `--system-dir`. The compositor reads a folder given that way as the user's own only in a build with
+  `testing` or `debug-inject` (the jail's); a release the compositor would not believe it. Limit: a
+  floor row cannot name an image the person can write (the compositor's `Identity::Unnamed`), so the
   programs these scripts build (the daemon on a public connection, `secret_source`, `mailo` in
-  `demo.sh`) are asked, not allowed. The daemon avoids that as the shell: casement hands it the shell
+  `demo.sh`) are asked, not allowed. The daemon avoids that as the shell: the compositor hands it the shell
   connection when the bus peer's unit is `sill.service`, which in the jail is
-  `CASEMENT_DEBUG_PEER_UNITS="sill=sill.service"` before `start_compositor`; the scripts do not set it
+  `COMPOSITOR_DEBUG_PEER_UNITS="sill=sill.service"` before `start_compositor`; the scripts do not set it
   (it changes which arm the scripts exercise), so a power the daemon takes over a public
   connection is asked until they do. Clipboard, input-method and the toplevel list are not gated by
-  casement yet, so today only the screen and the keys can ask.
+  The compositor yet, so today only the screen and the keys can ask.
 - **`org.bardo.Shell` is asked for without queueing, and the shell exits when it is taken
   (PORTAL-10, sill's half).** The name was already asked for with `DoNotQueue` (docket's
   `serve_on_with`); a taken name was only the seat's `NameTaken` trouble and the shell went on
@@ -1653,7 +1653,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   `AskPermission` and the compositor's `permission_ask`) are one component, Bardo's `Alert` with
   `arm_after: Some(PERMISSION_ARM_AFTER)` (600 ms, `sill_overlays::permission_sheet`): the buttons
   are disabled and Return, Escape and clicks do nothing until it has been up that long, and each
-  question in the line starts its own wait when drawn. casement may refuse an answer sooner than
+  question in the line starts its own wait when drawn. The compositor may refuse an answer sooner than
   500 ms after its question; it does not enforce that yet. The confirmation sheet (intentd's
   questions) is a different component with its own gate (`ARM_MS`, 500 ms) and is unchanged.
 - **Caps Lock.** Neither Caps Lock rule is in `dist/keycap/keycap.toml`: keycap's user layer
@@ -1675,7 +1675,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
 
 ## pa3-sill/display-trial: the display trial (`bardo_shell_v1` version 6, 2026-10-17)
 
-- **What it is.** When a program other than the shell changes the displays, casement applies the
+- **What it is.** When a program other than the shell changes the displays, the compositor applies the
   change, sends `displays_trial(trial, seconds)` and reverts by itself when the time runs out;
   sill shows "Keep these display settings?" and answers `displays_trial_answer`. The wire is
   `ShellNote::DisplaysTrial` / `DisplaysTrialEnd` and `DesktopCommand::AnswerTrial`; the Wlr arm
@@ -1692,7 +1692,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   stray key can never leave a screen the person cannot see. The Mac's own alert makes Keep
   Changes the default; this is a decision of this brief, recorded here. No icon.
 - **Same wait as the permission sheet.** The alert is armed after `QUESTION_ARM_AFTER` (600 ms),
-  now defined once in `sill_overlays::arming` and re-exported as `PERMISSION_ARM_AFTER`. casement
+  now defined once in `sill_overlays::arming` and re-exported as `PERMISSION_ARM_AFTER`. The compositor
   may refuse an answer sooner than 500 ms after the question (`answered_too_soon`); 600 ms stays
   above that.
 - **Restarts.** A `displays_trial` for a trial that is already shown (same number or another) is a
@@ -1705,20 +1705,20 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   to each whole second, `seconds_left` / `until_next_second` in `sill-model`). It is a display of the
   time given, not the compositor's clock: the card mounts a frame after the event, so it can lag the
   compositor's own deadline by a frame or two. It decides nothing: the compositor reverts.
-- **A shell that binds while a trial is open** is told at once with the time left (casement's
+- **A shell that binds while a trial is open** is told at once with the time left (the compositor's
   replay); the sheet shows that time and counts from there.
 - **Not done / open.** The sheet draws on the banners' output only (the compositor does not name the
   output a change was made on); a person with the sheet on another monitor than the one that went
   blank sees it on the banners' output, not the blank one. The exit animation of a restarted card
   is not played (a remount is immediate). The `dev/accept` scripts have no step for it: it needs
-  a program that changes the displays under casement (`docs/manual-checks.md`, "The display trial").
+  a program that changes the displays under the compositor (`docs/manual-checks.md`, "The display trial").
 - **Could not be checked by reading.** That `ds::base::time::clock::sleep` and `FrameClock::now().0`
   behave under the harness's virtual clock the way the OSD's use of them does (the tests assume the
   countdown line is changed by the time the harness has advanced a whole second, and that the card
   mounts less than a second after `begin`); that `use_future` accepts an `async move` block over a
   `Signal` written with `set`; that the lint's `display_trial` row passes `Profile::Strict` with
   `css: ""` as the permission sheet's does; that `desktop_client::bardo::DisplayTrial::new` is public
-  and `FakeDesktop::script` takes the two new `ShellEvent` variants (read from casement-protocols
+  and `FakeDesktop::script` takes the two new `ShellEvent` variants (read from desktop-protocols
   8cebc9b, not compiled).
 
 ## dfile: .desktop files are read with ds_helpers::DesktopFile (2026-10-17)
@@ -1810,6 +1810,6 @@ The line is built by the pure `sill_model::launch::launch_line`.
 - **The reveal note names no output.** `reveal(edge, shown)` is applied to the focused window's output
   (`sill::edge_reveal`), a hide to every output; ends when the note carries the output.
 - **Full screen with `desktop_only` or `never`.** The bar should stay in full screen there; sill has no
-  request to tell casement the mode yet (the compositor owner's), so casement still hides it.
+  request to tell the compositor the mode yet (the compositor owner's), so the compositor still hides it.
 - **The bar reuses the dock's hide numbers** (constants now) and does not follow the desktop's own reduce-motion preference, only
   `appearance.motion_level` (the dock follows neither).

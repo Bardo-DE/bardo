@@ -25,7 +25,7 @@ impl Mono {
     }
 
     /// This instant in ui-core's whole milliseconds, truncated: the one conversion, made when
-    /// casement feeds a ui-behaviour machine (C56).
+    /// The compositor feeds a ui-behaviour machine (C56).
     #[must_use]
     pub fn stamp(self) -> Stamp {
         Stamp(u64::try_from(self.0.as_millis()).unwrap_or(u64::MAX))

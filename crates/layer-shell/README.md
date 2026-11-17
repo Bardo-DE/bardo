@@ -91,7 +91,7 @@ headless KWin and reads the regions from its `WAYLAND_DEBUG` trace.
 `examples/demo_lock/` is the session lock's acceptance (FINDINGS F65): on `lock` it locks with
 `HostCtx::lock_session`, one document per output with a password field; "letmein" + Enter
 unlocks through `use_lock().unlock()`; `stats` prints JSON. It refuses to lock anything but the
-throwaway compositor `scripts/dev/accept-lock.sh` starts (casement in a jail,
+throwaway compositor `scripts/dev/accept-lock.sh` starts (the compositor in a jail,
 in a runtime directory of its own); never run it against your session.
 
 ## Consuming: the session lock

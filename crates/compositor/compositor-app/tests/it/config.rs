@@ -1,17 +1,17 @@
 //! The settings document (P0-F1-output): defaults when absent, one conversion into the model's
-//! settings, and the schema detent reads (`casement --write-schema`). Every document lives in a
+//! settings, and the schema detent reads (`bardo-compositor --write-schema`). Every document lives in a
 //! scratch directory standing in for `$XDG_CONFIG_HOME`; nothing here reads the real one.
 
 use base_ids::Fraction;
 use compositor_app::config::{
-    ActionWords, BindingsSection, CasementDoc, load, schema, to_core, write_schema,
+    ActionWords, BindingsSection, CompositorDoc, load, schema, to_core, write_schema,
 };
 use compositor_core::input::{
     Argv, Binding, BindingAction, Bindings, Chord, DbusCall, DesktopCommand, SpaceStep,
 };
 use compositor_core::output::{Kelvin, ScalePolicy, Schedule};
 use compositor_core::settings::{
-    AccelProfile, CasementSettings, FirstClick, MinimiseEffect, RepeatRate, TitleDoubleClick,
+    AccelProfile, CompositorSettings, FirstClick, MinimiseEffect, RepeatRate, TitleDoubleClick,
 };
 use desktop_protocols::vocab::{PlaceTarget, SplitSide};
 use std::collections::BTreeMap;
@@ -23,14 +23,14 @@ use ui_core::geometry::scale::Scale;
 /// A scratch config home holding `text` as `compositor/settings.toml`.
 fn home_with(text: &str) -> (tempfile::TempDir, PathBuf) {
     let dir = tempfile::tempdir().expect("temp dir");
-    let casement = dir.path().join("bardo/compositor");
-    std::fs::create_dir_all(&casement).expect("create");
-    std::fs::write(casement.join("settings.toml"), text).expect("write");
+    let compositor = dir.path().join("bardo/compositor");
+    std::fs::create_dir_all(&compositor).expect("create");
+    std::fs::write(compositor.join("settings.toml"), text).expect("write");
     let home = dir.path().to_path_buf();
     (dir, home)
 }
 
-fn settings_of(text: &str) -> CasementSettings {
+fn settings_of(text: &str) -> CompositorSettings {
     let (_dir, home) = home_with(text);
     to_core(&load(Some(&home)).expect("load"))
 }
@@ -38,14 +38,14 @@ fn settings_of(text: &str) -> CasementSettings {
 /// Each row: where the settings come from, and that they are the defaults.
 #[test]
 fn the_defaults_come_from() {
-    type Source = fn() -> CasementSettings;
+    type Source = fn() -> CompositorSettings;
     const CASES: &[(&str, Source)] = &[
         ("a missing document", || {
             let home = tempfile::tempdir().expect("temp dir");
             let doc = load(Some(home.path())).expect("load");
             assert_eq!(
                 doc,
-                CasementDoc::default(),
+                CompositorDoc::default(),
                 "a missing document is the default one"
             );
             to_core(&doc)
@@ -55,11 +55,11 @@ fn the_defaults_come_from() {
         }),
         ("an empty document", || settings_of("")),
         ("the serialised default document", || {
-            settings_of(&toml::to_string(&CasementDoc::default()).expect("serialises"))
+            settings_of(&toml::to_string(&CompositorDoc::default()).expect("serialises"))
         }),
     ];
     for (name, source) in CASES {
-        assert_eq!(source(), CasementSettings::defaults(), "{name}");
+        assert_eq!(source(), CompositorSettings::defaults(), "{name}");
     }
 }
 
@@ -92,7 +92,7 @@ first_sight_scale = "fixed"
 fixed_scale = 150
 "#,
         );
-        let defaults = CasementSettings::defaults();
+        let defaults = CompositorSettings::defaults();
         assert_eq!(settings.windows.minimise_effect, MinimiseEffect::Scale);
         assert_eq!(settings.windows.double_click_title, TitleDoubleClick::Fill);
         assert!(!settings.windows.tile_margins);
@@ -127,7 +127,7 @@ tap = false
 disable_while_typing = false
 "#,
         );
-        let defaults = CasementSettings::defaults();
+        let defaults = CompositorSettings::defaults();
         assert_eq!(settings.pointer.mouse.accel, AccelProfile::Flat);
         assert!(settings.pointer.mouse.natural_scroll);
         assert_eq!(settings.pointer.mouse.scroll_factor, Fraction(2000));
@@ -148,7 +148,7 @@ spaces = "three"
 natural = false
 "#,
         );
-        let defaults = CasementSettings::defaults();
+        let defaults = CompositorSettings::defaults();
         assert_eq!(settings.gestures.spaces, SwipeFingers::Three);
         assert!(!settings.gestures.natural);
         assert_eq!(
@@ -188,7 +188,7 @@ repeat_rate = "fast"
 repeat_delay_ms = 300
 "#,
     );
-    let defaults = CasementSettings::defaults();
+    let defaults = CompositorSettings::defaults();
     assert_eq!(
         settings.windows.minimise_effect,
         defaults.windows.minimise_effect
@@ -202,7 +202,7 @@ repeat_delay_ms = 300
 fn a_document_that_is_not_toml_gives_the_defaults() {
     assert_eq!(
         settings_of("[windows\nminimise_effect = "),
-        CasementSettings::defaults()
+        CompositorSettings::defaults()
     );
 }
 
@@ -210,7 +210,7 @@ fn a_document_that_is_not_toml_gives_the_defaults() {
 fn an_unknown_key_is_ignored() {
     assert_eq!(
         settings_of("[windows]\nbounce = 3\n[dock]\nsize = 1\n"),
-        CasementSettings::defaults()
+        CompositorSettings::defaults()
     );
 }
 
@@ -347,9 +347,9 @@ fn every_kind_of_binding_survives_the_document() {
         .zip(&actions)
         .map(|(key, action)| (format!("cmd+{key}"), ActionWords::of(action)))
         .collect();
-    let doc = CasementDoc {
+    let doc = CompositorDoc {
         bindings: BindingsSection(table),
-        ..CasementDoc::default()
+        ..CompositorDoc::default()
     };
     let (_dir, home) = home_with(&toml::to_string(&doc).expect("serialises"));
     let loaded = load(Some(&home)).expect("load");
@@ -375,7 +375,7 @@ const NOT_DRAWN: [&str; 2] = ["spaces.per_display", "spaces.auto_rearrange"];
 /// settings key a person could not set or one the Settings app would draw for nothing.
 #[test]
 fn the_schema_and_the_document_name_the_same_keys() {
-    let doc = toml::Value::try_from(CasementDoc::default()).expect("serialises");
+    let doc = toml::Value::try_from(CompositorDoc::default()).expect("serialises");
     let mut in_document = Vec::new();
     for (section, value) in doc.as_table().expect("a table") {
         if section == "bindings" {
@@ -437,18 +437,18 @@ fn the_binary_answers_help() {
         .arg("--help")
         .env_clear()
         .status()
-        .expect("the casement binary runs");
+        .expect("the compositor binary runs");
     assert!(status.success());
 }
 
-/// Each row: what a change in the file does to the settings casement runs with. Only the
+/// Each row: what a change in the file does to the settings the compositor runs with. Only the
 /// pointer, the key repeat, the keyboard layout and the night light follow (sill rewrites the
 /// night light's keys when Night Shift is switched); the bindings the keymap gave stay.
 #[test]
 fn the_file_changes_the_pointer_the_repeat_the_layout_and_the_night_light_and_nothing_else() {
     use compositor_app::settings_live::followed;
-    let current = CasementSettings::defaults();
-    let doc = |text: &str| -> CasementDoc {
+    let current = CompositorSettings::defaults();
+    let doc = |text: &str| -> CompositorDoc {
         let (_dir, home) = home_with(text);
         load(Some(&home)).expect("load")
     };
@@ -473,7 +473,7 @@ fn the_file_changes_the_pointer_the_repeat_the_layout_and_the_night_light_and_no
     assert_eq!(next.night_light.skip_outputs, ["DP-1", "edid:ACME/M1/S1"]);
     assert_eq!(
         followed(&next, &doc("")).night_light,
-        CasementSettings::defaults().night_light,
+        CompositorSettings::defaults().night_light,
         "a file without the section is the defaults again, the skip list included"
     );
     assert!(next.pointer.mouse.tap);

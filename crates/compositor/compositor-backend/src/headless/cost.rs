@@ -6,7 +6,7 @@ use std::time::Duration;
 /// How long a frame's rendering takes.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RenderCostModel {
-    /// The time it really took (the wall clock, read only in `casement/src/time/`).
+    /// The time it really took (the wall clock, read only in `compositor/src/time/`).
     Measured,
     /// Every frame takes this long.
     Fixed(Duration),

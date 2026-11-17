@@ -32,7 +32,7 @@ use smithay::wayland::compositor::{Cacheable, with_states};
 use smithay::wayland::shell::xdg::XdgShellHandler;
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 1;
 
 /// The icon edges (in surface-local pixels) the compositor prefers, announced at every bind

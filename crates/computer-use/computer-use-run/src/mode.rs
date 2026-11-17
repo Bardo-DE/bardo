@@ -63,7 +63,7 @@ mod tests {
         want: ModeSupport,
     }
 
-    /// A compositor with an agent seat of its own; no backend is one until casement lands.
+    /// A compositor with an agent seat of its own; no backend is one until the compositor lands.
     fn agent_seat() -> BackendCaps {
         BackendCaps {
             seat: SeatIsolation::AgentSeat,
@@ -84,23 +84,23 @@ mod tests {
     fn mode_support_table() {
         let fork = agent_seat();
         let stock = BackendCaps::of(BackendKind::KwinStock);
-        let casement = BackendCaps::of(BackendKind::Casement);
+        let compositor = BackendCaps::of(BackendKind::Compositor);
         let rows = [
             Row {
-                name: "casement in place",
-                caps: casement,
+                name: "compositor in place",
+                caps: compositor,
                 mode: RunMode::InPlace,
                 want: HandsOff,
             },
             Row {
-                name: "casement workspace: another Space is not rendered",
-                caps: casement,
+                name: "compositor workspace: another Space is not rendered",
+                caps: compositor,
                 mode: RunMode::AgentWorkspace,
                 want: Unsupported(HiddenCaptureWithheld),
             },
             Row {
-                name: "casement nested",
-                caps: casement,
+                name: "compositor nested",
+                caps: compositor,
                 mode: RunMode::NestedSession,
                 want: Unsupported(NoNestedHost),
             },

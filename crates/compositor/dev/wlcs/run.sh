@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs wlcs against the wlcs-casement shim inside the jail (built outside first, by
+# Runs wlcs against the wlcs-compositor shim inside the jail (built outside first, by
 # dev/wlcs/build.sh).
 #   --merge  smithay's four CI filters (SelfTest*:FrameSubmission*, XdgOutputV1Test*,
 #            */SurfacePointerMotionTest*:RelativePointer*, BadBufferTest*) plus every test in
@@ -23,7 +23,7 @@ esac
 
 tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}"
 wlcs="$tools/wlcs/wlcs"
-shim="$tools/libwlcs_casement.so"
+shim="$tools/libwlcs_compositor.so"
 for f in "$wlcs" "$shim"; do
   [ -x "$f" ] || [ -f "$f" ] || { echo "run.sh: $f is missing" >&2; echo "fix: run dev/wlcs/build.sh outside the jail" >&2; exit 3; }
 done

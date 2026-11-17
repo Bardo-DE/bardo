@@ -18,7 +18,7 @@ How to read this file:
 | "context" | docket (`action-core::context`, `IntentProvider1.Context/Summon`), Bardo `ui-intents` (view shapes, seams), docket `action-ui-adapter` (the adapter) |
 | "agent", "planner", "agent-loop", "companion daemon" | docket: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
 | "security" | labels: porter `prov`; policy, review, breaker, budgets: docket; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (stoker `model-http` already takes a proxy `HttpTarget`) |
-| "compositor" | the casement (cua repo owns the protocol crate; the casement branch is shared with double-tap ⌘ later) and sill (`shell-overlays` phase A) |
+| "compositor" | the compositor (cua repo owns the protocol crate; the compositor branch is shared with double-tap ⌘ later) and sill (`shell-overlays` phase A) |
 | "launcher", "presence", "settings" | ux (sill, Bardo ds, detent; design/22 rows by Bardo agent) |
 | "intents" | docket |
 
@@ -40,7 +40,7 @@ Four new library repos plus one GPL fork. Every new repo copies porter's shape: 
 | `~/almanac` | new | memory: eventlog, memfiles, recall, memoryd | yes (memoryd Linux) |
 | `~/docket` | new | typed actions, router, policy, review, eval, MCP edge, **and the companion agent** (agent-loop, companiond, readerd), the ds adapter | core yes; daemons Linux |
 | `~/cua` | new (name: Q-P1) | computer-use runtime: a11y tree, agent seat, masked capture, desktop leases, run machine, cuad, `bardo-agent-v1` protocol | core yes; cuad Linux |
-| `~/casement` | new fork, GPL-3.0-only | `src/bardo/**` only (agent seat, masked source, trusted surface, glow, kill chord, later double-tap) | no; nothing of ours depends on it |
+| `~/compositor` | new fork, GPL-3.0-only | `src/bardo/**` only (agent seat, masked source, trusted surface, glow, kill chord, later double-tap) | no; nothing of ours depends on it |
 | `~/bardo` | existing | + `ui-intents` crate; companion components and vocab; design docs | yes |
 | `~/sill` | existing | launcher companion mode, companion service, providers, overlays (confirm and glow phase A), settings domain | no |
 | `~/detent` | existing | `Page::Intelligence` row and icon | no |
@@ -61,7 +61,7 @@ the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`
 stoker  ←  porter  ←  almanac  ←  docket  ←  cua  ←  sill
    ↑          ↑          ↑          ↑   ↖Bardo(ui-intents only)
    └──────────┴──────────┴──────────┴── mailo, detent (clients only)
-Bardo depends on none of them.  casement → cua's bardo-agent-protocol only.
+Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol only.
 ```
 
 ### 1.3 Every crate (final names)
@@ -777,7 +777,7 @@ JSON, step tables of the pure parts) pass.
 | 3 | **almanac** (new) | everything in `~/almanac` | porter-style gate, `--exclude recall-fastembed` |
 | 3 | **docket** (new) | everything in `~/docket` (including companion crates, `action-ui-adapter`, `manifests/org.bardo.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
 | 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to Bardo (reis/atspi landed in stage 0) | porter-style gate |
-| 4 | **fork-setup** | `~/casement` at the 1.8 tag, branch `bardo`, `src/bardo/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
+| 4 | **fork-setup** | `~/compositor` at the 1.8 tag, branch `bardo`, `src/bardo/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
 | 5 | **sill** | ux.md §6 F2 file list with §3.8 here; design/22 is Bardo agent's | sill gate |
 | 5 | **detent** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | detent gate + `scripts/gen-fixtures.sh` |
 

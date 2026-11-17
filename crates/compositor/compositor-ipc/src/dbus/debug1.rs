@@ -35,12 +35,12 @@ impl Debug1 {
         let (reply, answer) = tokio::sync::oneshot::channel();
         self.calls
             .send(DebugCall { request, reply })
-            .map_err(|_| fdo::Error::Failed("casement's event loop is gone".to_owned()))?;
+            .map_err(|_| fdo::Error::Failed("compositor's event loop is gone".to_owned()))?;
         match answer.await {
             Ok(DebugReply::Refused(why)) => Err(fdo::Error::Failed(why)),
             Ok(reply) => Ok(reply),
             Err(_) => Err(fdo::Error::Failed(
-                "casement's event loop dropped the call".to_owned(),
+                "compositor's event loop dropped the call".to_owned(),
             )),
         }
     }
@@ -188,7 +188,7 @@ impl Debug1 {
     }
 
     /// `Shot(area: s, path: s) -> s`: writes the last frame an output presented (the whole
-    /// output, or a logical region of it) as a PNG at `path` (inside the jail, which the compositor
+    /// output, or a logical region of it) as a PNG at `path` (inside the jail, which compositor
     /// and the caller share) and answers its size as JSON (`{"width":W,"height":H,"scale":S120}`).
     /// A stand-in for ext-image-copy-capture until P1-C1.
     async fn shot(&self, area: String, path: String) -> fdo::Result<String> {

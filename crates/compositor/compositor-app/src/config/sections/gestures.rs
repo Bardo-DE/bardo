@@ -1,7 +1,7 @@
 //! `gestures.*`.
 
 use crate::config::convert;
-use compositor_core::settings::{CasementSettings, SwipeFingers};
+use compositor_core::settings::{CompositorSettings, SwipeFingers};
 use serde::{Deserialize, Serialize};
 use settings_types::schema::Page;
 
@@ -35,6 +35,6 @@ pub struct GesturesSection {
 
 impl Default for GesturesSection {
     fn default() -> Self {
-        convert::gestures_doc(CasementSettings::defaults().gestures)
+        convert::gestures_doc(CompositorSettings::defaults().gestures)
     }
 }

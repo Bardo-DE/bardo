@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# casement's boundary rows (20-FREEZE-PLAN §2.4, B1..B20; 21-FREEZE-AMENDMENTS A1, A4),
+# The compositor's boundary rows (20-FREEZE-PLAN §2.4, B1..B20; 21-FREEZE-AMENDMENTS A1, A4),
 # mechanically. ARCHITECTURE.md section 1 is the table; this is its mechanical form.
 #
 # "Reaches" rows read each crate's normal-edge dependency graph once (`cargo tree -e normal`)
@@ -73,7 +73,7 @@ names_only "B4 compositor-render names no drm/udev/session/libinput backend" \
 reaches_none compositor-render "B4 compositor-render reaches no second graphics stack" \
   'wgpu|vello[a-z_]*|anyrender[a-z_]*|blitz[a-z-]*|stylo|parley|fontique'
 
-# B5 compositor-backend names no casement_wayland and no smithay::wayland module but dmabuf.
+# B5 compositor-backend names no compositor_wayland and no smithay::wayland module but dmabuf.
 names_only "B5 compositor-backend names no compositor_wayland" '\bcompositor_wayland\b' '$^' compositor-backend
 hits=$(grep -rnE --include='*.rs' 'smithay::wayland::[a-z_]+' compositor-backend 2>/dev/null \
   | grep -vE '^[^:]+:[0-9]+:[[:space:]]*//' | grep -oE 'smithay::wayland::[a-z_]+' | grep -v 'smithay::wayland::dmabuf' || true)
@@ -88,7 +88,7 @@ ADAPTERS='compositor-backend/src/tty/(kms_real|surface_real|session_real|udev_re
 # The test kit's soft GPU (the SP4 route behind the `RenderNodes` fake) names DrmNode too: test
 # support, not shipped, and not counted as adapter lines.
 SOFT_GPU='compositor-testkit/src/gpu/[a-z_]+\.rs|compositor-testkit/tests/it/topology/[a-z_]+\.rs'
-# The libinput crate is named `input`, as are casement's own `input` modules: its uses are
+# The libinput crate is named `input`, as are the compositor's own `input` modules: its uses are
 # caught by the crate's own items (`input::Libinput`, `input::event::`, ...), not the bare name.
 names_only "B7 only the thin adapters name the device crates" \
   'smithay::backend::(drm|libinput|session::libseat|udev|egl::EGLDevice)|(^|[^:[:alnum:]_])(drm|gbm|libseat)::|(^|[^:[:alnum:]_])input::(Libinput|LibinputInterface|event|Device|DeviceCapability|AccelProfile)\b' "$ADAPTERS|$SOFT_GPU"
@@ -108,24 +108,24 @@ reaches_none compositor-testclient "B9 compositor-testclient reaches no smithay"
 # B10 test and debug-inject code never reaches the release binary.
 if is_member compositor-app; then
   features=$(cargo tree -p compositor-app -e features --prefix none 2>/dev/null | grep -E 'feature "(testing|debug-inject)"' || true)
-  if [ -n "$features" ]; then bad "B10 the release casement enables testing or debug-inject"; else ok "B10 the release binary enables neither testing nor debug-inject"; fi
+  if [ -n "$features" ]; then bad "B10 the release compositor enables testing or debug-inject"; else ok "B10 the release binary enables neither testing nor debug-inject"; fi
 else
-  ok "B10 (casement is not a member yet)"
+  ok "B10 (compositor is not a member yet)"
 fi
 
 # B11 the binary graph reaches no UI or second graphics stack (vello_cpu only via compositor-chrome).
-reaches_none compositor-app "B11 the casement binary reaches no UI stack" \
+reaches_none compositor-app "B11 the compositor binary reaches no UI stack" \
   'blitz[a-z-]*|stylo|selectors|html5ever|dioxus|dioxus-[a-z-]+|wgpu|anyrender[a-z_]*|vello|vello_hybrid'
 
-# B12 no crate but casement-intents reaches the agent tier or the shell.
+# B12 no crate but compositor-intents reaches the agent tier or the shell.
 TIERS='action-[a-z-]+|agent-[a-z-]+|companion-[a-z-]+|permission-[a-z-]+|computer-use-[a-z-]+|memory-[a-z-]+|shell-(app|bar|dock|ipc|kit|launcher|launcher-ui|model|notify-ui|overlays|search|services|settings|testkit|ui-kit)|layer-shell-host|model-[a-z-]+|engine-supervisor|model-vision-prep|speech-provider'
 for crate in $members; do
-  [ "$crate" = casement-intents ] && continue
+  [ "$crate" = compositor-intents ] && continue
   reaches_none "$crate" "B12 $crate reaches no agent tier or shell crate" "$TIERS"
 done
 
-# B13 ui-settings only in compositor-ipc and casement (the test kit reaches it only through the
-# `casement` crate it drives; it names no ui-settings item itself, checked below).
+# B13 ui-settings only in compositor-ipc and the compositor (the test kit reaches it only through the
+# `compositor` crate it drives; it names no ui-settings item itself, checked below).
 for crate in $members; do
   case "$crate" in compositor-ipc|compositor-app|compositor-testkit) continue ;; esac
   reaches_none "$crate" "B13 $crate reaches no ui-settings" 'ui-settings'
@@ -137,8 +137,8 @@ names_only "B13 the test kit names no ui-settings" '\bds_settings::' '$^' compos
 names_only "B14 only compositor-agent names reis or the privileged hand-out" \
   '\breis::|ConnectionRole::(Shell|Agent)\b.*(hand_out|socket)|\bEisFd\b' 'compositor-agent/'
 
-# B15 only compositor-chrome reaches the text stack. Its one consumer, `casement`, reaches it
-# through the crate's dependency (so does the test kit, which drives `casement`); no other crate
+# B15 only compositor-chrome reaches the text stack. Its one consumer, `compositor`, reaches it
+# through the crate's dependency (so does the test kit, which drives `compositor`); no other crate
 # does, and no source outside compositor-chrome names it.
 for crate in $members; do
   case "$crate" in compositor-chrome|compositor-app|compositor-testkit) continue ;; esac
@@ -159,8 +159,8 @@ names_only "B17 no HashMap/HashSet in wayland, render, layout, motion" '\bHash(M
 # B18 no unsafe outside the reserved module (the workspace also denies unsafe_code).
 names_only "B18 no unsafe outside compositor-render/src/gl_raw.rs" '\bunsafe\b' 'compositor-render/src/gl_raw\.rs'
 
-# B19 casement-intents reaches no compositor stack.
-reaches_none casement-intents "B19 casement-intents reaches no smithay, wayland or calloop" 'smithay|wayland-[a-z-]+|calloop'
+# B19 compositor-intents reaches no compositor stack.
+reaches_none compositor-intents "B19 compositor-intents reaches no smithay, wayland or calloop" 'smithay|wayland-[a-z-]+|calloop'
 
 # B20 clean-room tripwire: no use, file name or comment naming a GPL compositor.
 TRIP='\b(niri|jay|pinnacle)\b'

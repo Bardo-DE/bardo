@@ -70,7 +70,7 @@ mod tests {
 
     #[test]
     fn capture_follows_who_masks() {
-        for kind in [BackendKind::KwinStock, BackendKind::Casement] {
+        for kind in [BackendKind::KwinStock, BackendKind::Compositor] {
             assert!(!compositor_masks(kind), "{kind:?}");
         }
     }

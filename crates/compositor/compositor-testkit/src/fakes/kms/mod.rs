@@ -1,7 +1,7 @@
 //! The fake KMS (P1-Z; filled by P1-D2): `Kms` over recorded and synthetic topologies.
 //!
 //! The
-//! recorded fixtures live in `crates/casement-testkit/fixtures/kms/` (the person's optional
+//! recorded fixtures live in `crates/compositor-testkit/fixtures/kms/` (the person's optional
 //! `dev/hw/smoke.sh` records them; an agent never does); the synthetic ones are built by
 //! [`SyntheticTopology`] (a laptop panel, a dock with two monitors, a monitor that retrains its
 //! link, a connector with no modes).

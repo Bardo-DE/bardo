@@ -25,7 +25,7 @@ impl TestBuffer {
         let stride = (w * 4).next_multiple_of(256);
         let size = (u64::from(stride) * u64::from(h)).next_multiple_of(4096);
         let fd = rustix::fs::memfd_create(
-            "casement-topology",
+            "compositor-topology",
             rustix::fs::MemfdFlags::ALLOW_SEALING | rustix::fs::MemfdFlags::CLOEXEC,
         )?;
         rustix::fs::ftruncate(&fd, size)?;

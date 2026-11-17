@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bardo-shell's own idle acceptance, on casement ONLY (brought up and ended by start_compositor). Its
+# bardo-shell's own idle acceptance, on the compositor ONLY (brought up and ended by start_compositor). Its
 # "displays" are headless outputs, so powering them off darkens nothing real.
 #
 # SAFETY. Nothing here reaches logind, the session bus's org.freedesktop.ScreenSaver, PAM, a
@@ -7,8 +7,8 @@
 # - one private dbus-daemon (dev/private-bus.conf) is the daemon's system bus;
 #   examples/logind_standin.rs owns org.freedesktop.login1 there and only RECORDS Suspend,
 #   SetIdleHint and Inhibit (it sends PrepareForSleep and Lock on command). The session bus is
-#   casement's own private one (dev/up.sh), where org.bardo.Compositor1 hands the daemon the
-#   shell's connection: idle's watches are the shell's, under no app minimum (casement holds an
+#   The compositor's own private one (dev/up.sh), where org.bardo.Compositor1 hands the daemon the
+#   shell's connection: idle's watches are the shell's, under no app minimum (the compositor holds an
 #   app's to 5 s);
 # - the daemon gets its own XDG_RUNTIME_DIR, XDG_CONFIG_HOME, XDG_STATE_HOME and XDG_CACHE_HOME,
 #   the nested socket as an absolute WAYLAND_DISPLAY (the script refuses wayland-0), and
@@ -36,7 +36,7 @@
 #      captured twice while dimmed: early in the fade and once `--t-idle-dim` (2 s) has run.
 #      Both must be the black scrim (every pixel RGB 0), the early one lighter than the late
 #      one, and the late one at 50 % (alpha 128 +- 12). The late capture is kept as
-#      dev/out/idle-dim.png, with the nested screen at that moment as dev/out/idle-dim-casement.png
+#      dev/out/idle-dim.png, with the nested screen at that moment as dev/out/idle-dim-compositor.png
 #      (non-fatal). Once the displays are off the surface is unmapped again. The power-off order
 #      is looked for in the WAYLAND_DEBUG=client log (set_mode(off) before
 #      ext_session_lock_v1.locked, and no `failed`); the nested winit outputs refuse power
@@ -80,7 +80,7 @@ TIMES="6,0"
 DAEMON_LOG="$OUT_DIR/daemon.log"
 # The daemon resolves a bardo-shell session (Host::SillSession) and owns idle only as the bardo-shell session's desktop (Bardo, as bardo-session sets it).
 SESSION_ENV=(XDG_CURRENT_DESKTOP=bardo)
-# The session bus: casement's (set by start_compositor), so the daemon reaches org.bardo.Compositor1.
+# The session bus: the compositor's (set by start_compositor), so the daemon reaches org.bardo.Compositor1.
 session_bus() { echo "${BARDO_COMPOSITOR_BUS:-$BUS}"; }
 IN_ENV_EXTRA=("${SESSION_ENV[@]}")
 
@@ -235,7 +235,7 @@ step_dim_off_lock() {
   capture_dim "$OUT_DIR/dim-early.png" && early=$(scrim_of "$OUT_DIR/dim-early.png")
   late=$(capture_dim_at_level "$OUT_DIR/dim-late.png" 4000)
   local late_at=$(( $(now_ms) - start ))
-  shot "$SHOTS/idle-dim-casement.png" >>"$log" 2>&1 \
+  shot "$SHOTS/idle-dim-compositor.png" >>"$log" 2>&1 \
     || echo "nested screenshot failed (non-fatal)" >&2
   cp "$OUT_DIR/dim-late.png" "$SHOTS/idle-dim.png" 2>/dev/null
   off=$(until_match "$start" idle_state ' displays_off ' 25000)
@@ -464,8 +464,8 @@ recover() {
     open_lock >/dev/null 2>&1
     stop_daemon
   fi
-  if [ "$COMPOSITOR" = casement ]; then
-    echo "recovery: casement is private to this jail (it goes with it), no stand-in locker needed" >&2
+  if [ "$COMPOSITOR" = compositor ]; then
+    echo "recovery: compositor is private to this jail (it goes with it), no stand-in locker needed" >&2
   elif nested_locker 0 >"$OUT_DIR/recovery.log" 2>&1; then
     echo "recovery: the stand-in locked and unlocked the nested session (it is unlocked)" >&2
   else

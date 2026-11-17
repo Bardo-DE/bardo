@@ -47,7 +47,7 @@ impl Doc {
             bundle_sha: Sha256Hex::of(b"bundle").to_string(),
             bundle_size: "123".into(),
             files: vec![
-                f("bin/bardo-compositor", "casement"),
+                f("bin/bardo-compositor", "compositor"),
                 f("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
             ],
             exports: vec![(
@@ -60,7 +60,7 @@ impl Doc {
 
     pub fn render(&self) -> String {
         let mut text = format!(
-            "format = {}\nversion = \"{}\"\ndate = {}\nnotes = \"{}\"\nbundle = {{ name = \"{}\", sha256 = \"{}\", size = {} }}\n[components]\ncasement = \"e616a79\"\n",
+            "format = {}\nversion = \"{}\"\ndate = {}\nnotes = \"{}\"\nbundle = {{ name = \"{}\", sha256 = \"{}\", size = {} }}\n[components]\ncompositor = \"e616a79\"\n",
             self.format,
             self.version,
             self.date,

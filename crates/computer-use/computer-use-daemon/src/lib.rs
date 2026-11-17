@@ -7,7 +7,7 @@
 //! ([`CuaProvider`]).
 //!
 //! On a stock compositor masking is cuad's (`MaskReport::applied_by = Cuad`) and the consent
-//! guard is cuad stopping its own input; casement P4 moves both into the compositor.
+//! guard is cuad stopping its own input; the compositor P4 moves both into the compositor.
 //!
 //! A run's progress and result go to the requester as `provenance::Message` reports through the
 //! router. A message that arrives carries no authority.
@@ -16,7 +16,7 @@
 //! [`CuadConfig::from_toml`]), the supervisor ([`Supervisor`]: a task per run over
 //! [`computer_use_run::Exec`], with the person's controls, the desktop's events and the clock racing
 //! whatever the run waits on), the bus ([`serve`], [`serve_on`]) and the start-up ([`run`]). The
-//! adapters to the system (input over EIS, window capture, the casement desktop, the model over
+//! adapters to the system (input over EIS, window capture, the compositor desktop, the model over
 //! inferd, the links to the router and memoryd) are in `computer-use-system`; this crate wires them. With
 //! no compositor it still starts and reports the backend as unavailable (`Backend = none`).
 

@@ -146,7 +146,7 @@ impl GammaControls {
             .chain(blue)
             .flat_map(|step| step.to_ne_bytes())
             .collect();
-        let fd: OwnedFd = memfd_create("casement-gamma", MemfdFlags::CLOEXEC)
+        let fd: OwnedFd = memfd_create("compositor-gamma", MemfdFlags::CLOEXEC)
             .map_err(|error| ClientError::Dispatch(format!("memfd: {error}")))?;
         rustix::io::write(&fd, &bytes)
             .map_err(|error| ClientError::Dispatch(format!("ramp write: {error}")))?;

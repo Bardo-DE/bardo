@@ -1,6 +1,6 @@
 use input_broker_wire::Maker;
 
-/// casement keeps its own copy of the parser and pins these same strings (its `origin.rs` test).
+/// The compositor keeps its own copy of the parser and pins these same strings (its `origin.rs` test).
 /// Change one side and the other must change with it.
 #[test]
 fn the_labels_are_these_exact_strings_and_parse_back() {

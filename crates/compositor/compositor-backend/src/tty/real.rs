@@ -19,7 +19,7 @@ use compositor_core::gpu::{GpuChoice, plan_for};
 use smithay::backend::session::libseat::LibSeatSession;
 use smithay::reexports::calloop::LoopHandle;
 
-/// The seams of the machine casement runs on, with `root` as its `/sys` and `/dev`, `choice` as the
+/// The seams of the machine the compositor runs on, with `root` as its `/sys` and `/dev`, `choice` as the
 /// `gpu.render` setting, `mode` as how outputs are drawn.
 ///
 /// And `handle`'s loop reading the seat, the udev monitor, the display devices and the input

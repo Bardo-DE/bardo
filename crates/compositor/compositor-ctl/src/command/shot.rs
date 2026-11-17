@@ -60,7 +60,7 @@ pub fn parse_shot(args: &[String]) -> Result<ShotArgs, CommandError> {
 
 /// Why a shot cannot be taken yet (exit 2: could not run), or the Debug1 call that takes it.
 /// A named output is captured over ext-image-copy-capture (`capture.rs`); the default output and
-/// a region of one are still written by casement's debug object, from inside the compositor.
+/// a region of one are still written by the compositor's debug object, from inside the compositor.
 /// A window is drawn alone by the same debug object (P2-Q3); a masked shot (P4) waits for its
 /// pass.
 pub fn call(

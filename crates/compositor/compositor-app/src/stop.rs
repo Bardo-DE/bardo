@@ -45,7 +45,7 @@ pub fn watch() -> Result<Channel<StopRequested>, StopError> {
     let (sender, channel) = channel::channel();
     let (ready_tx, ready) = mpsc::channel();
     std::thread::Builder::new()
-        .name("casement-stop".to_owned())
+        .name("compositor-stop".to_owned())
         .spawn(move || run(&sender, &ready_tx))
         .map_err(StopError::Thread)?;
     match ready.recv_timeout(INSTALL_WITHIN) {

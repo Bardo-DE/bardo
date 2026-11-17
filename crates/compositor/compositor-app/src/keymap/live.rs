@@ -51,7 +51,7 @@ pub fn load_bindings(source: &KeycapSource) -> (Bindings, Vec<String>) {
     (bindings_of(&keymap), problems)
 }
 
-/// What a reload needs: the source, casement's own bindings (which stay first) and the watch
+/// What a reload needs: the source, the compositor's own bindings (which stay first) and the watch
 /// that tells the loop the keymap changed.
 #[derive(Debug)]
 struct Live {
@@ -61,11 +61,11 @@ struct Live {
 }
 
 impl Live {
-    /// The bindings the model runs with: casement's own, then the keymap's.
+    /// The bindings the model runs with: the compositor's own, then the keymap's.
     fn bindings(&self) -> Bindings {
         let (from_keymap, problems) = load_bindings(&self.source);
         for problem in problems {
-            tracing::warn!(%problem, "the keymap has a line casement could not use");
+            tracing::warn!(%problem, "the keymap has a line compositor could not use");
         }
         merge(&self.explicit, &from_keymap)
     }
@@ -73,7 +73,7 @@ impl Live {
 
 /// Reads the keymap into the model's settings now, and again whenever it changes.
 ///
-/// The bindings already in the settings (casement's own `[bindings]`) stay first. A watch that
+/// The bindings already in the settings (the compositor's own `[bindings]`) stay first. A watch that
 /// cannot start is logged and the keymap read once is kept.
 ///
 /// # Errors

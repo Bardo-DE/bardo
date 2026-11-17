@@ -2,7 +2,7 @@
 
 desktop-protocols holds the desktop's private Wayland protocols, `bardo_*_v1`: the XML, the pure
 wire vocabulary every tier shares, and the wayland-scanner bindings for clients and the
-compositor. It is a leaf: it depends on nothing of ours, so the compositor (casement), the shell
+compositor. It is a leaf: it depends on nothing of ours, so the compositor (the compositor), the shell
 (sill, layer-shell-host), the agent tier (cua, docket, porter's `prov`), the portal (transom) and
 Bardo's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items.
@@ -26,25 +26,25 @@ Allowed edges (checked by `scripts/check-boundary.sh`):
 - `src/vocab/` and `src/lib.rs` name no wayland crate.
 
 Consumers take the layer they need: pure crates (compositor-core, shell-model, computer-use-desktop,
-action-core, prov) take default features; Wayland clients take `client`; casement takes `server`.
+action-core, prov) take default features; Wayland clients take `client`; the compositor takes `server`.
 
 ## 2. The six protocols
 
 | File | Interfaces | Advertised on | Server | Clients |
 | --- | --- | --- | --- | --- |
-| `protocols/bardo-desktop-v1.xml` | `bardo_desktop_manager_v1` (version 2), `bardo_desktop_app_v1` (version 2: `subject`, the program behind the app as the compositor established it), `bardo_desktop_window_v1`, `bardo_desktop_space_v1` | Shell and Agent connections (management requests are `not_permitted` on Agent) | casement | sill (full), cuad (read-only) |
-| `protocols/bardo-shell-v1.xml` | `bardo_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | casement | sill through layer-shell-host |
-| `protocols/bardo-window-v1.xml` | `bardo_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `bardo_window_v1` | every connection | casement | layer-shell-host, ui-blitz, any app |
+| `protocols/bardo-desktop-v1.xml` | `bardo_desktop_manager_v1` (version 2), `bardo_desktop_app_v1` (version 2: `subject`, the program behind the app as the compositor established it), `bardo_desktop_window_v1`, `bardo_desktop_space_v1` | Shell and Agent connections (management requests are `not_permitted` on Agent) | the compositor | sill (full), cuad (read-only) |
+| `protocols/bardo-shell-v1.xml` | `bardo_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | the compositor | sill through layer-shell-host |
+| `protocols/bardo-window-v1.xml` | `bardo_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `bardo_window_v1` | every connection | the compositor | layer-shell-host, ui-blitz, any app |
 | `protocols/bardo-sensitive-v1.xml` | `bardo_sensitive_manager_v1`, `bardo_sensitive_surface_v1` | every connection, once served | not served yet | layer-shell-host, ui-blitz, any app |
 | `protocols/bardo-agent-v1.xml` | `bardo_agent_manager_v1`, `bardo_agent_lease_v1` | Agent connections, once served | not served yet | cuad |
 | `protocols/bardo-trusted-surface-v1.xml` | `bardo_trusted_manager_v1`, `bardo_trusted_surface_v1` | Shell connections, once served | not served yet | sill |
 
-A protocol whose Server cell says "not served yet" has no server in casement: it is not
+A protocol whose Server cell says "not served yet" has no server in the compositor: it is not
 advertised, a client finds no global, and nothing may rely on what its XML promises (PORTAL-14).
 Its XML says so in its first description (`Not served yet:`), and `tests/it/xml_introspection.rs`
 fails when the table and the XML disagree, or a file has no row. When a server lands, the same
-change turns the cell to `casement` and deletes the sentence. The masking `bardo_sensitive_v1`
-promises applies to every capture casement makes, the portal's and the shell's included, from the
+change turns the cell to `compositor` and deletes the sentence. The masking `bardo_sensitive_v1`
+promises applies to every capture the compositor makes, the portal's and the shell's included, from the
 day its server lands.
 
 Objects never cross connections, so the shell and trusted-surface protocols name windows by
@@ -77,7 +77,7 @@ desktop protocol names window, sensitive and agent enums; the shell protocol nam
 | A wire value's code and its Rust type | `src/vocab/<area>.rs`, one `wire_enum!` per XML enum |
 | Code conversion (`code`, `from_code`, `ALL`) | `vocab::WireCode`, written by `wire_enum!` (`src/vocab/code.rs`) |
 | The held modifier keys | `vocab::HeldMods` (`src/vocab/held_mods.rs`); the XML bitfield is still named `mac_mods` |
-| `wl_output.transform` | `vocab::Transform` (`src/vocab/output.rs`), used by casement, the desktop client and sill |
+| `wl_output.transform` | `vocab::Transform` (`src/vocab/output.rs`), used by the compositor, the desktop client and sill |
 | A vocab value's generated twin | `WireCode::to_wire` (`src/vocab/code.rs`) |
 | A tile zone as a target or a mark | `PlaceTarget::zone`, `From<TileZone>` for `PlaceTarget` and `PlacementMark` (`src/vocab/window.rs`) |
 | `RunMode` (docket re-exports it) | `vocab::RunMode` (`src/vocab/agent.rs`) |
@@ -120,7 +120,7 @@ reads the same as the protocol.
    `enum=`, naming the owning interface when it is another one.
 2. Update the interface's row in `tests/it/support/frozen.rs` `INTERFACES` (order is opcode
    order).
-3. The server (casement) and every client are updated in the same change (see section 7).
+3. The server (the compositor) and every client are updated in the same change (see section 7).
 
 **Add a protocol.**
 1. `protocols/bardo-<name>-v1.xml` with the copyright block every file carries.
@@ -133,7 +133,7 @@ reads the same as the protocol.
 
 | File | Proves |
 | --- | --- |
-| `tests/it/xml_introspection.rs` | every file parses and is named after itself; every file has a row in section 2 that says `casement` or `not served yet`, and its XML says `Not served yet:` exactly when the row does; every interface is `bardo_*_v1` at version 1 (the shell's global at 5 and the window manager at 2, their newer messages last and saying `since=`); every request and event with its arguments, in opcode order, as frozen; error enums; codes dense from 0 (bitfields: single bits); every vocab enum has its XML enum's names and codes and every XML enum has a vocab type; cross-references resolve; the licence notice; `bardo-agent-v1.xml`'s pinned bytes; with both features, the generated interfaces' names, versions and messages |
+| `tests/it/xml_introspection.rs` | every file parses and is named after itself; every file has a row in section 2 that says `compositor` or `not served yet`, and its XML says `Not served yet:` exactly when the row does; every interface is `bardo_*_v1` at version 1 (the shell's global at 5 and the window manager at 2, their newer messages last and saying `since=`); every request and event with its arguments, in opcode order, as frozen; error enums; codes dense from 0 (bitfields: single bits); every vocab enum has its XML enum's names and codes and every XML enum has a vocab type; cross-references resolve; the licence notice; `bardo-agent-v1.xml`'s pinned bytes; with both features, the generated interfaces' names, versions and messages |
 | `tests/it/vocab_codes.rs` | (features `client,server`) every vocab enum accepts exactly the codes the generated enum accepts, with the same variant names, on both sides; `HeldMods` bits and `Transform` against `wl_output` |
 | `tests/it/round_trip.rs` | every vocab value round-trips through serde and its code; pinned JSON for stored forms |
 
@@ -236,21 +236,21 @@ and the testclient use `DesktopCommand::CaptureOutput` and `Frame::to_rgba8`.
 
 ## 9. Consent: `bardo_shell_v1` version 5
 
-casement asks the shell, over this global, whether a program may use one of seven `Power`s; the
+The compositor asks the shell, over this global, whether a program may use one of seven `Power`s; the
 shell puts the question to the person and answers. The design (who is trusted, the book, the
 words) is in the production-audit wave-2 design, section 3; this repo owns the wire.
 
 | Message | Direction | Meaning |
 | --- | --- | --- |
-| `permission_ask(ask, power, subject_kind, subject, memory)` | casement to shell | one open question; `ask` is unique in a compositor run and never reused; `subject` is a path or an app id, at most 4096 bytes |
-| `permission_withdraw(ask)` | casement to shell | the answer is no longer needed (time ran out, screen locked, settled elsewhere); nothing is remembered |
-| `permission_answer(ask, answer)` | shell to casement | `allow`, `deny` or `dismissed`; the first answer to an open ask settles it, any other is ignored |
+| `permission_ask(ask, power, subject_kind, subject, memory)` | the compositor to shell | one open question; `ask` is unique in a compositor run and never reused; `subject` is a path or an app id, at most 4096 bytes |
+| `permission_withdraw(ask)` | the compositor to shell | the answer is no longer needed (time ran out, screen locked, settled elsewhere); nothing is remembered |
+| `permission_answer(ask, answer)` | shell to the compositor | `allow`, `deny` or `dismissed`; the first answer to an open ask settles it, any other is ignored |
 
 Rules the XML states and the consumers rely on:
 
 - **Version gate.** All three say `since="5"`; a shell that bound an older version never sees an
-  ask, and casement refuses the program unremembered (fail closed).
-- **Allow Once is not an answer.** casement decides what an answer is kept as (`memory`); the
+  ask, and the compositor refuses the program unremembered (fail closed).
+- **Allow Once is not an answer.** the compositor decides what an answer is kept as (`memory`); the
   shell answers `allow` to an ask whose `memory` is `this_time_only` and that is Allow Once.
 - **Replay.** An ask stays open until answered or withdrawn, with or without a shell. A shell that
   binds sees every open ask again, in first-sent order, with the same ids, right after the bind
@@ -258,7 +258,7 @@ Rules the XML states and the consumers rely on:
 - **Denial.** `deny` and `dismissed` both refuse the power, with the refusal of the protocol the
   program used; only `deny` on a `remembered` ask is kept. No shell for the grace period, a locked
   screen, too many open asks and an unanswered ask all refuse unremembered.
-- **One at a time.** casement keeps at most one ask open toward the shell; a shell may still
+- **One at a time.** the compositor keeps at most one ask open toward the shell; a shell may still
   queue.
 
 `desktop-client`: `ShellEvent::{PermissionAsk(PermissionAsk), PermissionWithdraw(AskId)}` (moments,
@@ -268,21 +268,21 @@ no state: the shell keeps its queue by id, because an answered ask is not echoed
 
 ## 10. Display trial: `bardo_shell_v1` version 6
 
-When a program other than the shell changes the displays, casement applies the change, asks the
+When a program other than the shell changes the displays, the compositor applies the change, asks the
 person whether to keep it, and goes back to the previous setup if the person does not say so in
 time. A bad mode can blank the screen, so the timeout is the safety net, not the answer.
 
 | Message | Direction | Meaning |
 | --- | --- | --- |
-| `displays_trial(trial, seconds)` | casement to shell | the shell shows "Keep these display settings?" with Keep and Revert and a countdown of `seconds`; at most one trial is open, and a further change restarts the time (same or new id) |
-| `displays_trial_end(trial)` | casement to shell | take the question down without answering: answered, timed out (reverted), the shell itself changed the displays, or replaced |
-| `displays_trial_answer(trial, answer)` | shell to casement | `keep` or `revert` (`TrialAnswer`); the first answer settles it, an answer for an ended or unknown trial is ignored (not an error) |
+| `displays_trial(trial, seconds)` | the compositor to shell | the shell shows "Keep these display settings?" with Keep and Revert and a countdown of `seconds`; at most one trial is open, and a further change restarts the time (same or new id) |
+| `displays_trial_end(trial)` | the compositor to shell | take the question down without answering: answered, timed out (reverted), the shell itself changed the displays, or replaced |
+| `displays_trial_answer(trial, answer)` | shell to the compositor | `keep` or `revert` (`TrialAnswer`); the first answer settles it, an answer for an ended or unknown trial is ignored (not an error) |
 
 - **Version gate.** All three say `since="6"`; a shell that bound an older version is never asked
   and the change is reverted when the time runs out.
 - **`answered_too_soon`** (error 4, `since="6"`): an answer that comes less than half a second after
   the question could have been read is a protocol error on that shell object. It covers
-  `permission_answer` and `displays_trial_answer`. The delay itself (500 ms) is casement's
+  `permission_answer` and `displays_trial_answer`. The delay itself (500 ms) is the compositor's
   constant; the XML states the half second.
 - **Escape or the sheet going away answers `revert`.**
 
@@ -300,6 +300,6 @@ Quit, the three screenshots, the four switcher steps, control centre, notificati
 `ALL`, `ShellVerb::argv` (the words after the shell's program name) and `ShellVerb::parse` (its
 exact inverse). It has no dependencies at all and is not `#[non_exhaustive]`: a new verb is a
 compile error at every match site on both sides. Mission Control, Spaces, full screen and
-window placement are the compositor's own commands and are not verbs. casement's keymap rows
+window placement are the compositor's own commands and are not verbs. The compositor's keymap rows
 hold a `ShellVerb`; the shell's command line parses into one. The unit tests in the crate pin
 the round trip, distinct argvs and that `ALL` covers every variant.

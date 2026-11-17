@@ -1,6 +1,6 @@
 [package]
 name = "compositor-backend"
-description = "casement's backends: the headless backend (virtual outputs, vblank source, render-cost model, VirtualInput), winit, and the tty seams (session, udev, KMS, scanout, GPU nodes, libinput settings) with their thin real adapters behind the features tty and libinput."
+description = "The compositor's backends: the headless backend (virtual outputs, vblank source, render-cost model, VirtualInput), winit, and the tty seams (session, udev, KMS, scanout, GPU nodes, libinput settings) with their thin real adapters behind the features tty and libinput."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -29,7 +29,7 @@ testing = ["compositor-render/testing"]
 debug-inject = []
 # The real tty adapters (`tty/*_real.rs`, `gpu/render_nodes_real.rs`): libseat, udev, DRM, GBM
 # (A2). Off by default so headless consumers (the test kit, cua's tests, a harness) build with
-# no system libraries; the `casement` binary turns it on. Only smithay's own features, which
+# no system libraries; the `compositor` binary turns it on. Only smithay's own features, which
 # bring the device crates, so no crate is added beyond the union the binary already links.
 tty = [
   "smithay/backend_drm",

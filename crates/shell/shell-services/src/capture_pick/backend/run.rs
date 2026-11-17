@@ -244,7 +244,7 @@ impl Live {
         self.command(CaptureCommand::Outputs(outputs), None);
     }
 
-    /// The desktop's windows as the ones the picker offers, by the identifiers casement gave.
+    /// The desktop's windows as the ones the picker offers, by the identifiers the compositor gave.
     fn windows(&mut self, desktop: &DesktopView) {
         let mut candidates = self.state.candidates.clone();
         candidates.windows = windows_of(desktop);

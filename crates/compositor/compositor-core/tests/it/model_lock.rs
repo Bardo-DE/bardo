@@ -279,7 +279,7 @@ fn only_the_shells_lock_is_remembered() {
     }
 }
 
-/// CASB-06: casement started with the marker found comes back covered, whatever outputs it
+/// CASB-06: the compositor started with the marker found comes back covered, whatever outputs it
 /// plugs afterwards; only the shell takes the lock over, and only an unlock lifts it.
 #[test]
 fn a_restored_lock_covers_until_the_shell_locks_and_unlocks() {

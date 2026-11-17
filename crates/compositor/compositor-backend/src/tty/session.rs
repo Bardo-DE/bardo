@@ -21,7 +21,7 @@ pub enum SessionNote {
     Lost,
 }
 
-/// The session casement runs in. Real: `session_real.rs` over libseat; fake:
+/// The session the compositor runs in. Real: `session_real.rs` over libseat; fake:
 /// `compositor_testkit::fakes::FakeSession`.
 pub trait TtySession: std::fmt::Debug {
     /// Opens a device through the session (a revoked session refuses).

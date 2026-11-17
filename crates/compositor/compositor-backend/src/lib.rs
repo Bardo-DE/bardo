@@ -1,4 +1,4 @@
-//! casement's backends and device seams.
+//! The compositor's backends and device seams.
 //!
 //! P0 has the headless backend (virtual outputs at any mode and scale, a vblank source on the
 //! session clock, a render-cost model, [`VirtualInput`]) and winit (nested, for the user's own
@@ -6,7 +6,7 @@
 //! [`tty::ScanoutSurface`], [`tty::TtySession`], [`tty::DeviceSource`], [`input::InputFeed`],
 //! [`gpu::RenderNodes`]) and their thin real adapters, the only files that name the device
 //! crates (row B7). The adapters compile only under the features `tty` and `libinput` (off by
-//! default; the `casement` binary turns them on), so headless consumers build with no system
+//! default; the `compositor` binary turns them on), so headless consumers build with no system
 //! libraries.
 //!
 //! Nothing here names `compositor_wayland` or a `smithay::wayland` module but dmabuf (row B5).

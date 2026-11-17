@@ -10,7 +10,7 @@ impl WlrToplevelHandler for State {
         &mut self.wl.wlr_toplevel
     }
 
-    /// Only a layer surface (a dock's tile) has a place casement chose: where it is arranged.
+    /// Only a layer surface (a dock's tile) has a place the compositor chose: where it is arranged.
     fn surface_origin(&self, surface: &WlSurface) -> Option<LogicalPoint> {
         let layer = self.wl.layer_shell.key_of(surface)?;
         let model = &self.core.model;

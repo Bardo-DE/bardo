@@ -6,12 +6,12 @@ Open items and standing facts. An entry names the condition that closes it.
 
 Every `todo!()` in the workspace's sources (270, all from P0-Z2 below), its fill lane and the
 ignored test that proves it. Un-ignoring the test is part of the fill. The 27 the P0-Z1
-freeze left in casement-core, casement-layout and casement-motion are filled (the P0-F1 lanes
+freeze left in compositor-core, compositor-layout and compositor-motion are filled (the P0-F1 lanes
 and P0-F1b-model).
 
 ### P0-Z1: the pure crates
 
-No stub is left. Ignored tests by lane: P3-Z 1 (`crates/casement-layout/tests/it/spread.rs`, the
+No stub is left. Ignored tests by lane: P3-Z 1 (`crates/compositor-layout/tests/it/spread.rs`, the
 Mission Control spread's properties from SP8, for the P3 freeze to inherit).
 
 P0-F1-ids had no stub: ids, geometry and time are implemented at the freeze, with their
@@ -23,89 +23,89 @@ without drift, `buffer_size` at 1, 1.25, 1.5 and 2).
 `todo!()` by lane (267): P0-R-scene 23, P0-H1 18, P0-H2 51, P0-H3 15, P0-H4 11, P0-H5 6, P0-H6 3, P0-H7 12, P0-H8 12, P0-B-headless 79, P0-B-loop 14, P0-T-client 6, P0-T-dev 11, P1-D1 1, P1-F2 2, P2-Q2 2, P3-Z 1. Seventy-six more sit in ignored test bodies (the protocol
 tests' client steps, the scene builder, the fuzz box), each naming the same lane: the fixture
 setup and the assertion are written, the client steps wait for the helper the lane writes in
-`casement-testclient`. The excluded crates add 20 (`wlcs-casement`: 16 for P0-T-wlcs in
-`src/lib.rs`, `src/adapter.rs` and `src/ffi.rs`, checked to compile; `casement-scene-css`: 4 for
+`compositor-testclient`. The excluded crates add 20 (`wlcs-compositor`: 16 for P0-T-wlcs in
+`src/lib.rs`, `src/adapter.rs` and `src/ffi.rs`, checked to compile; `compositor-scene-css`: 4 for
 P3-CSS, three in `src/` and its ignored parity test, never built at P0-Z2).
 
 | File | Items | Lane | Proven by |
 | --- | --- | --- | --- |
-| `crates/casement-wayland/src/commit_timing.rs` | on_barrier, apply_presented (2) | P0-H1 | `crates/casement-testkit/tests/it/protocol/commit_timing.rs` |
-| `crates/casement-wayland/src/compositor.rs` | on_commit, on_destroyed (2) | P0-H1 | `crates/casement-testkit/tests/it/protocol/compositor.rs` |
-| `crates/casement-wayland/src/content_type.rs` | on_content_type (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/content_type.rs` |
-| `crates/casement-wayland/src/fifo.rs` | on_barrier, apply_presented (2) | P0-H1 | `crates/casement-testkit/tests/it/protocol/fifo.rs` |
-| `crates/casement-wayland/src/fractional_scale.rs` | on_preferred, apply_scale (2) | P0-H1 | `crates/casement-testkit/tests/it/protocol/fractional_scale.rs` |
-| `crates/casement-wayland/src/output.rs` | apply_plug, apply_change, apply_unplug (3) | P0-H1 | `crates/casement-testkit/tests/it/protocol/output.rs` |
-| `crates/casement-wayland/src/presentation.rs` | on_feedback, apply_presented (2) | P0-H1 | `crates/casement-testkit/tests/it/protocol/presentation.rs` |
-| `crates/casement-wayland/src/shm.rs` | on_buffer_destroyed (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/shm.rs` |
-| `crates/casement-wayland/src/subcompositor.rs` | on_new_subsurface (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/subcompositor.rs` |
-| `crates/casement/src/handlers/compositor.rs` | CompositorHandler::commit (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/compositor.rs` |
-| `crates/casement/src/handlers/shm.rs` | BufferHandler::buffer_destroyed (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/shm.rs` |
-| `crates/casement-wayland/src/bardo_window.rs` | Dispatch2::request, Dispatch2::destroyed, on_get_window, on_set_first_mouse, on_set_frame, on_set_role, on_set_a11y_root, on_set_edited, on_request_placement, apply_emphasis, apply_placement (12) | P0-H2 | `crates/casement-testkit/tests/it/protocol/bardo_window.rs` |
-| `crates/casement-wayland/src/system_bell.rs` | on_bell (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/system_bell.rs` |
-| `crates/casement-wayland/src/xdg_activation.rs` | on_token_request, on_activate (2) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_activation.rs` |
-| `crates/casement-wayland/src/xdg_decoration.rs` | on_decoration_mode, apply_mode (2) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_decoration.rs` |
-| `crates/casement-wayland/src/xdg_dialog.rs` | on_modal (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_dialog.rs` |
-| `crates/casement-wayland/src/xdg_shell.rs` | on_new_toplevel, on_toplevel_commit, on_move, on_resize, on_maximise, on_minimise, on_full_screen, on_window_menu, on_title, on_app_id, on_parent, on_limits, on_toplevel_destroyed, on_new_popup, on_popup_grab, on_reposition, on_pong, apply_configure, apply_close, apply_ping, apply_popup_done (21) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_shell.rs` |
-| `crates/casement-wayland/src/xdg_toplevel_icon.rs` | on_icon (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_toplevel_icon.rs` |
-| `crates/casement-wayland/src/xdg_toplevel_tag.rs` | on_tag (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_toplevel_tag.rs` |
-| `crates/casement/src/handlers/bardo_window.rs` | BardoWindowHandler::window_of_toplevel (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/bardo_window.rs` |
-| `crates/casement/src/handlers/system_bell.rs` | XdgSystemBellHandler::ring (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/system_bell.rs` |
-| `crates/casement/src/handlers/xdg_activation.rs` | XdgActivationHandler::request_activation (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_activation.rs` |
-| `crates/casement/src/handlers/xdg_decoration.rs` | XdgDecorationHandler::new_decoration, XdgDecorationHandler::request_mode, XdgDecorationHandler::unset_mode (3) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_decoration.rs` |
-| `crates/casement/src/handlers/xdg_shell.rs` | XdgShellHandler::new_toplevel, XdgShellHandler::new_popup, XdgShellHandler::grab, XdgShellHandler::reposition_request (4) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_shell.rs` |
-| `crates/casement-wayland/src/layer_shell.rs` | on_new_layer, on_layer_commit, on_layer_destroyed, on_layer_popup, apply_layer_configure (5) | P0-H3 | `crates/casement-testkit/tests/it/protocol/layer_shell.rs` |
-| `crates/casement-wayland/src/session_lock.rs` | on_lock, on_lock_surface, on_unlock, on_locker_gone, apply_locked, apply_lock_configure (6) | P0-H3 | `crates/casement-testkit/tests/it/protocol/session_lock.rs` |
-| `crates/casement/src/handlers/layer_shell.rs` | WlrLayerShellHandler::new_layer_surface (1) | P0-H3 | `crates/casement-testkit/tests/it/protocol/layer_shell.rs` |
-| `crates/casement/src/handlers/session_lock.rs` | SessionLockHandler::lock, SessionLockHandler::unlock, SessionLockHandler::new_surface (3) | P0-H3 | `crates/casement-testkit/tests/it/protocol/session_lock.rs` |
-| `crates/casement-wayland/src/pointer_constraints.rs` | on_constraint (1) | P0-H4 | `crates/casement-testkit/tests/it/protocol/pointer_constraints.rs` |
-| `crates/casement-wayland/src/seat.rs` | on_cursor_image, apply_keyboard_focus, apply_pointer, apply_key, apply_axis, apply_gesture, apply_touch (7) | P0-H4 | `crates/casement-testkit/tests/it/protocol/seat.rs` |
-| `crates/casement-wayland/src/serial.rs` | SerialBook::record, SerialBook::answers (2) | P0-H4 | `crates/casement-testkit/tests/it/protocol/seat.rs` |
-| `crates/casement-wayland/src/shortcuts_inhibit.rs` | on_inhibit (1) | P0-H4 | `crates/casement-testkit/tests/it/protocol/shortcuts_inhibit.rs` |
-| `crates/casement-wayland/src/data_device.rs` | on_selection, on_drag_start, on_drop, apply_selection_focus (4) | P0-H5 | `crates/casement-testkit/tests/it/protocol/data_device.rs` |
-| `crates/casement-wayland/src/ext_data_control.rs` | on_control_selection (1) | P0-H5 | `crates/casement-testkit/tests/it/protocol/ext_data_control.rs` |
-| `crates/casement-wayland/src/wlr_data_control.rs` | on_control_selection (1) | P0-H5 | `crates/casement-testkit/tests/it/protocol/wlr_data_control.rs` |
-| `crates/casement-wayland/src/dmabuf.rs` | on_import, apply_offer (2) | P0-H6 | `crates/casement-testkit/tests/it/protocol/dmabuf.rs` |
-| `crates/casement/src/handlers/dmabuf.rs` | DmabufHandler::dmabuf_imported (1) | P0-H6 | `crates/casement-testkit/tests/it/protocol/dmabuf.rs` |
-| `crates/casement-wayland/src/input_method.rs` | on_im_commit, on_im_popup (2) | P0-H7 | `crates/casement-testkit/tests/it/protocol/input_method.rs` |
-| `crates/casement-wayland/src/text_input.rs` | on_enable, on_commit_state, apply_text_focus, apply_preedit, apply_commit_string (5) | P0-H7 | `crates/casement-testkit/tests/it/protocol/text_input.rs` |
-| `crates/casement-wayland/src/virtual_keyboard.rs` | on_vk_key (1) | P0-H7 | `crates/casement-testkit/tests/it/protocol/virtual_keyboard.rs` |
-| `crates/casement/src/handlers/input_method.rs` | InputMethodHandler::new_popup, InputMethodHandler::dismiss_popup, InputMethodHandler::popup_repositioned, InputMethodHandler::parent_geometry (4) | P0-H7 | `crates/casement-testkit/tests/it/protocol/input_method.rs` |
-| `crates/casement-wayland/src/background_effect.rs` | on_blur_region (1) | P0-H8 | `crates/casement-testkit/tests/it/protocol/background_effect.rs` |
-| `crates/casement-wayland/src/foreign_toplevel_list.rs` | apply_toplevel, apply_closed (2) | P0-H8 | `crates/casement-testkit/tests/it/protocol/foreign_toplevel_list.rs` |
-| `crates/casement-wayland/src/idle_inhibit.rs` | on_inhibit, on_uninhibit (2) | P0-H8 | `crates/casement-testkit/tests/it/protocol/idle_inhibit.rs` |
-| `crates/casement-wayland/src/idle_notify.rs` | on_notification, apply_idle, apply_resumed (3) | P0-H8 | `crates/casement-testkit/tests/it/protocol/idle_notify.rs` |
-| `crates/casement-wayland/src/security_context.rs` | on_create_listener (1) | P0-H8 | `crates/casement-testkit/tests/it/protocol/security_context.rs` |
-| `crates/casement/src/handlers/idle_inhibit.rs` | IdleInhibitHandler::inhibit, IdleInhibitHandler::uninhibit (2) | P0-H8 | `crates/casement-testkit/tests/it/protocol/idle_inhibit.rs` |
-| `crates/casement/src/handlers/security_context.rs` | SecurityContextHandler::context_created (1) | P0-H8 | `crates/casement-testkit/tests/it/protocol/security_context.rs` |
-| `crates/casement-backend/src/headless/cost.rs` | RenderCostModel::cost_of (1) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-backend/src/headless/input.rs` | HeadlessInput::drain (1) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-backend/src/headless/mod.rs` | HeadlessBackend::start, HeadlessBackend::plug, HeadlessBackend::unplug, HeadlessBackend::set, HeadlessBackend::last_frame, HeadlessBackend::input (6) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-backend/src/headless/renderer.rs` | HeadlessRenderer::start (1) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-backend/src/input/virtual_events.rs` | Event::time, Event::device, KeyboardKeyEvent::key_code, KeyboardKeyEvent::state, KeyboardKeyEvent::count, PointerMotionEvent::delta_x, PointerMotionEvent::delta_y, PointerMotionEvent::delta_x_unaccel, PointerMotionEvent::delta_y_unaccel, AbsolutePositionEvent::x, AbsolutePositionEvent::y, AbsolutePositionEvent::x_transformed, AbsolutePositionEvent::y_transformed, PointerButtonEvent::button_code, PointerButtonEvent::state, PointerAxisEvent::amount, PointerAxisEvent::amount_v120, PointerAxisEvent::source, PointerAxisEvent::relative_direction, GestureBeginEvent::fingers, GestureEndEvent::cancelled, GestureSwipeUpdateEvent::delta_x, GestureSwipeUpdateEvent::delta_y, GesturePinchUpdateEvent::delta_x, GesturePinchUpdateEvent::delta_y, GesturePinchUpdateEvent::scale, GesturePinchUpdateEvent::rotation, TouchEvent::slot, SwitchToggleEvent::switch, SwitchToggleEvent::state (34) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-backend/src/input/virtual_input.rs` | VirtualInput::plug, VirtualInput::unplug, VirtualInput::push, Device::id, Device::name, Device::has_capability, Device::usb_id, Device::syspath (8) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-testkit/src/fakes/session.rs` | Session::open, Session::close, Session::change_vt, Session::is_active, Session::seat (5) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-testkit/src/fakes/udev.rs` | FakeUdev::next_event (1) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-testkit/src/fixture.rs` | Fixture::start, Fixture::connect, Fixture::client, Fixture::pump, Fixture::advance, Fixture::frames, Fixture::run_until, Fixture::shot, Fixture::scene, Fixture::model (10) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-testkit/src/input.rs` | FixtureInput::plug, FixtureInput::key, FixtureInput::pointer_to, FixtureInput::button, FixtureInput::axis, FixtureInput::swipe, FixtureInput::pinch, FixtureInput::hold, FixtureInput::touch, FixtureInput::switch (10) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-testkit/src/output.rs` | Fixture::plug, Fixture::unplug (2) | P0-B-headless | `crates/casement-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
-| `crates/casement-backend/src/winit.rs` | WinitBackend::start (1) | P0-B-loop | builds only (never run by an agent; the user's nested-winit check) |
-| `crates/casement/src/core_loop.rs` | feed, frame (2) | P0-B-loop | `crates/casement/tests/it/time.rs`; frames through `crates/casement-testkit/tests/it/fixture.rs` |
-| `crates/casement/src/display.rs` | attach_display, flush (2) | P0-B-loop | `crates/casement/tests/it/time.rs`; frames through `crates/casement-testkit/tests/it/fixture.rs` |
-| `crates/casement/src/exec.rs` | exec (1) | P0-B-loop | `crates/casement/tests/it/time.rs`; frames through `crates/casement-testkit/tests/it/fixture.rs` |
-| `crates/casement/src/run.rs` | run (1) | P0-B-loop | `crates/casement/tests/it/time.rs`; frames through `crates/casement-testkit/tests/it/fixture.rs` |
-| `crates/casement/src/time/calloop.rs` | arm (1) | P0-B-loop | `crates/casement/tests/it/time.rs`; frames through `crates/casement-testkit/tests/it/fixture.rs` |
-| `crates/casement/src/time/source.rs` | ClockSource::start, ClockSource::now (2) | P0-B-loop | `crates/casement/tests/it/time.rs`; frames through `crates/casement-testkit/tests/it/fixture.rs` |
-| `crates/casement/src/time/virtual_clock.rs` | SharedClock::update, SharedClock::advance_to, EventSource::process_events, EventSource::before_sleep (4) | P0-B-loop | `crates/casement/tests/it/time.rs`; frames through `crates/casement-testkit/tests/it/fixture.rs` |
-| `crates/casement-testclient/src/bin/probe.rs` | main (1) | P0-T-client | `crates/casement-testclient/tests/infra.rs`; `crates/casement-testkit/tests/it/globals.rs`; `crates/casement-testkit/tests/fuzz/main.rs` |
-| `crates/casement-testclient/src/conn.rs` | TestClient::over, TestClient::connect_env, TestClient::pump (3) | P0-T-client | `crates/casement-testclient/tests/infra.rs`; `crates/casement-testkit/tests/it/globals.rs`; `crates/casement-testkit/tests/fuzz/main.rs` |
-| `crates/casement-testclient/src/shm.rs` | shm_buffer (1) | P0-T-client | `crates/casement-testclient/tests/infra.rs`; `crates/casement-testkit/tests/it/globals.rs`; `crates/casement-testkit/tests/fuzz/main.rs` |
-| `crates/casement-testkit/src/fuzz/ops.rs` | run_ops (1) | P0-T-client | `crates/casement-testclient/tests/infra.rs`; `crates/casement-testkit/tests/it/globals.rs`; `crates/casement-testkit/tests/fuzz/main.rs` |
-| `crates/casement-ipc/src/dbus/debug1.rs` | Debug1::inject, Debug1::wait, Debug1::clock, Debug1::output, Debug1::windows, Debug1::scene, Debug1::fault (7) | P0-T-dev | `crates/casement-ipc/src/inject.rs`, `wait.rs` tests; `crates/casementctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
-| `crates/casement-ipc/src/inject.rs` | parse_inject (1) | P0-T-dev | `crates/casement-ipc/src/inject.rs`, `wait.rs` tests; `crates/casementctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
-| `crates/casement-ipc/src/wait.rs` | parse_wait (1) | P0-T-dev | `crates/casement-ipc/src/inject.rs`, `wait.rs` tests; `crates/casementctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
-| `crates/casementctl/src/command.rs` | parse, run (2) | P0-T-dev | `crates/casement-ipc/src/inject.rs`, `wait.rs` tests; `crates/casementctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
-| `crates/casement-testkit/src/fixture.rs` | Fixture::session (1) | P1-D1 | P1-Z's session suite |
-| `crates/casement-testkit/src/fixture.rs` | Fixture::palmrest (1) | P3-Z | P3-Z's palmrest tests |
+| `crates/compositor-wayland/src/commit_timing.rs` | on_barrier, apply_presented (2) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/commit_timing.rs` |
+| `crates/compositor-wayland/src/compositor.rs` | on_commit, on_destroyed (2) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/compositor.rs` |
+| `crates/compositor-wayland/src/content_type.rs` | on_content_type (1) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/content_type.rs` |
+| `crates/compositor-wayland/src/fifo.rs` | on_barrier, apply_presented (2) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/fifo.rs` |
+| `crates/compositor-wayland/src/fractional_scale.rs` | on_preferred, apply_scale (2) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/fractional_scale.rs` |
+| `crates/compositor-wayland/src/output.rs` | apply_plug, apply_change, apply_unplug (3) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/output.rs` |
+| `crates/compositor-wayland/src/presentation.rs` | on_feedback, apply_presented (2) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/presentation.rs` |
+| `crates/compositor-wayland/src/shm.rs` | on_buffer_destroyed (1) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/shm.rs` |
+| `crates/compositor-wayland/src/subcompositor.rs` | on_new_subsurface (1) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/subcompositor.rs` |
+| `crates/compositor/src/handlers/compositor.rs` | CompositorHandler::commit (1) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/compositor.rs` |
+| `crates/compositor/src/handlers/shm.rs` | BufferHandler::buffer_destroyed (1) | P0-H1 | `crates/compositor-testkit/tests/it/protocol/shm.rs` |
+| `crates/compositor-wayland/src/bardo_window.rs` | Dispatch2::request, Dispatch2::destroyed, on_get_window, on_set_first_mouse, on_set_frame, on_set_role, on_set_a11y_root, on_set_edited, on_request_placement, apply_emphasis, apply_placement (12) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/bardo_window.rs` |
+| `crates/compositor-wayland/src/system_bell.rs` | on_bell (1) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/system_bell.rs` |
+| `crates/compositor-wayland/src/xdg_activation.rs` | on_token_request, on_activate (2) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_activation.rs` |
+| `crates/compositor-wayland/src/xdg_decoration.rs` | on_decoration_mode, apply_mode (2) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_decoration.rs` |
+| `crates/compositor-wayland/src/xdg_dialog.rs` | on_modal (1) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_dialog.rs` |
+| `crates/compositor-wayland/src/xdg_shell.rs` | on_new_toplevel, on_toplevel_commit, on_move, on_resize, on_maximise, on_minimise, on_full_screen, on_window_menu, on_title, on_app_id, on_parent, on_limits, on_toplevel_destroyed, on_new_popup, on_popup_grab, on_reposition, on_pong, apply_configure, apply_close, apply_ping, apply_popup_done (21) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_shell.rs` |
+| `crates/compositor-wayland/src/xdg_toplevel_icon.rs` | on_icon (1) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_toplevel_icon.rs` |
+| `crates/compositor-wayland/src/xdg_toplevel_tag.rs` | on_tag (1) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_toplevel_tag.rs` |
+| `crates/compositor/src/handlers/bardo_window.rs` | BardoWindowHandler::window_of_toplevel (1) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/bardo_window.rs` |
+| `crates/compositor/src/handlers/system_bell.rs` | XdgSystemBellHandler::ring (1) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/system_bell.rs` |
+| `crates/compositor/src/handlers/xdg_activation.rs` | XdgActivationHandler::request_activation (1) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_activation.rs` |
+| `crates/compositor/src/handlers/xdg_decoration.rs` | XdgDecorationHandler::new_decoration, XdgDecorationHandler::request_mode, XdgDecorationHandler::unset_mode (3) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_decoration.rs` |
+| `crates/compositor/src/handlers/xdg_shell.rs` | XdgShellHandler::new_toplevel, XdgShellHandler::new_popup, XdgShellHandler::grab, XdgShellHandler::reposition_request (4) | P0-H2 | `crates/compositor-testkit/tests/it/protocol/xdg_shell.rs` |
+| `crates/compositor-wayland/src/layer_shell.rs` | on_new_layer, on_layer_commit, on_layer_destroyed, on_layer_popup, apply_layer_configure (5) | P0-H3 | `crates/compositor-testkit/tests/it/protocol/layer_shell.rs` |
+| `crates/compositor-wayland/src/session_lock.rs` | on_lock, on_lock_surface, on_unlock, on_locker_gone, apply_locked, apply_lock_configure (6) | P0-H3 | `crates/compositor-testkit/tests/it/protocol/session_lock.rs` |
+| `crates/compositor/src/handlers/layer_shell.rs` | WlrLayerShellHandler::new_layer_surface (1) | P0-H3 | `crates/compositor-testkit/tests/it/protocol/layer_shell.rs` |
+| `crates/compositor/src/handlers/session_lock.rs` | SessionLockHandler::lock, SessionLockHandler::unlock, SessionLockHandler::new_surface (3) | P0-H3 | `crates/compositor-testkit/tests/it/protocol/session_lock.rs` |
+| `crates/compositor-wayland/src/pointer_constraints.rs` | on_constraint (1) | P0-H4 | `crates/compositor-testkit/tests/it/protocol/pointer_constraints.rs` |
+| `crates/compositor-wayland/src/seat.rs` | on_cursor_image, apply_keyboard_focus, apply_pointer, apply_key, apply_axis, apply_gesture, apply_touch (7) | P0-H4 | `crates/compositor-testkit/tests/it/protocol/seat.rs` |
+| `crates/compositor-wayland/src/serial.rs` | SerialBook::record, SerialBook::answers (2) | P0-H4 | `crates/compositor-testkit/tests/it/protocol/seat.rs` |
+| `crates/compositor-wayland/src/shortcuts_inhibit.rs` | on_inhibit (1) | P0-H4 | `crates/compositor-testkit/tests/it/protocol/shortcuts_inhibit.rs` |
+| `crates/compositor-wayland/src/data_device.rs` | on_selection, on_drag_start, on_drop, apply_selection_focus (4) | P0-H5 | `crates/compositor-testkit/tests/it/protocol/data_device.rs` |
+| `crates/compositor-wayland/src/ext_data_control.rs` | on_control_selection (1) | P0-H5 | `crates/compositor-testkit/tests/it/protocol/ext_data_control.rs` |
+| `crates/compositor-wayland/src/wlr_data_control.rs` | on_control_selection (1) | P0-H5 | `crates/compositor-testkit/tests/it/protocol/wlr_data_control.rs` |
+| `crates/compositor-wayland/src/dmabuf.rs` | on_import, apply_offer (2) | P0-H6 | `crates/compositor-testkit/tests/it/protocol/dmabuf.rs` |
+| `crates/compositor/src/handlers/dmabuf.rs` | DmabufHandler::dmabuf_imported (1) | P0-H6 | `crates/compositor-testkit/tests/it/protocol/dmabuf.rs` |
+| `crates/compositor-wayland/src/input_method.rs` | on_im_commit, on_im_popup (2) | P0-H7 | `crates/compositor-testkit/tests/it/protocol/input_method.rs` |
+| `crates/compositor-wayland/src/text_input.rs` | on_enable, on_commit_state, apply_text_focus, apply_preedit, apply_commit_string (5) | P0-H7 | `crates/compositor-testkit/tests/it/protocol/text_input.rs` |
+| `crates/compositor-wayland/src/virtual_keyboard.rs` | on_vk_key (1) | P0-H7 | `crates/compositor-testkit/tests/it/protocol/virtual_keyboard.rs` |
+| `crates/compositor/src/handlers/input_method.rs` | InputMethodHandler::new_popup, InputMethodHandler::dismiss_popup, InputMethodHandler::popup_repositioned, InputMethodHandler::parent_geometry (4) | P0-H7 | `crates/compositor-testkit/tests/it/protocol/input_method.rs` |
+| `crates/compositor-wayland/src/background_effect.rs` | on_blur_region (1) | P0-H8 | `crates/compositor-testkit/tests/it/protocol/background_effect.rs` |
+| `crates/compositor-wayland/src/foreign_toplevel_list.rs` | apply_toplevel, apply_closed (2) | P0-H8 | `crates/compositor-testkit/tests/it/protocol/foreign_toplevel_list.rs` |
+| `crates/compositor-wayland/src/idle_inhibit.rs` | on_inhibit, on_uninhibit (2) | P0-H8 | `crates/compositor-testkit/tests/it/protocol/idle_inhibit.rs` |
+| `crates/compositor-wayland/src/idle_notify.rs` | on_notification, apply_idle, apply_resumed (3) | P0-H8 | `crates/compositor-testkit/tests/it/protocol/idle_notify.rs` |
+| `crates/compositor-wayland/src/security_context.rs` | on_create_listener (1) | P0-H8 | `crates/compositor-testkit/tests/it/protocol/security_context.rs` |
+| `crates/compositor/src/handlers/idle_inhibit.rs` | IdleInhibitHandler::inhibit, IdleInhibitHandler::uninhibit (2) | P0-H8 | `crates/compositor-testkit/tests/it/protocol/idle_inhibit.rs` |
+| `crates/compositor/src/handlers/security_context.rs` | SecurityContextHandler::context_created (1) | P0-H8 | `crates/compositor-testkit/tests/it/protocol/security_context.rs` |
+| `crates/compositor-backend/src/headless/cost.rs` | RenderCostModel::cost_of (1) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-backend/src/headless/input.rs` | HeadlessInput::drain (1) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-backend/src/headless/mod.rs` | HeadlessBackend::start, HeadlessBackend::plug, HeadlessBackend::unplug, HeadlessBackend::set, HeadlessBackend::last_frame, HeadlessBackend::input (6) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-backend/src/headless/renderer.rs` | HeadlessRenderer::start (1) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-backend/src/input/virtual_events.rs` | Event::time, Event::device, KeyboardKeyEvent::key_code, KeyboardKeyEvent::state, KeyboardKeyEvent::count, PointerMotionEvent::delta_x, PointerMotionEvent::delta_y, PointerMotionEvent::delta_x_unaccel, PointerMotionEvent::delta_y_unaccel, AbsolutePositionEvent::x, AbsolutePositionEvent::y, AbsolutePositionEvent::x_transformed, AbsolutePositionEvent::y_transformed, PointerButtonEvent::button_code, PointerButtonEvent::state, PointerAxisEvent::amount, PointerAxisEvent::amount_v120, PointerAxisEvent::source, PointerAxisEvent::relative_direction, GestureBeginEvent::fingers, GestureEndEvent::cancelled, GestureSwipeUpdateEvent::delta_x, GestureSwipeUpdateEvent::delta_y, GesturePinchUpdateEvent::delta_x, GesturePinchUpdateEvent::delta_y, GesturePinchUpdateEvent::scale, GesturePinchUpdateEvent::rotation, TouchEvent::slot, SwitchToggleEvent::switch, SwitchToggleEvent::state (34) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-backend/src/input/virtual_input.rs` | VirtualInput::plug, VirtualInput::unplug, VirtualInput::push, Device::id, Device::name, Device::has_capability, Device::usb_id, Device::syspath (8) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-testkit/src/fakes/session.rs` | Session::open, Session::close, Session::change_vt, Session::is_active, Session::seat (5) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-testkit/src/fakes/udev.rs` | FakeUdev::next_event (1) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-testkit/src/fixture.rs` | Fixture::start, Fixture::connect, Fixture::client, Fixture::pump, Fixture::advance, Fixture::frames, Fixture::run_until, Fixture::shot, Fixture::scene, Fixture::model (10) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-testkit/src/input.rs` | FixtureInput::plug, FixtureInput::key, FixtureInput::pointer_to, FixtureInput::button, FixtureInput::axis, FixtureInput::swipe, FixtureInput::pinch, FixtureInput::hold, FixtureInput::touch, FixtureInput::switch (10) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-testkit/src/output.rs` | Fixture::plug, Fixture::unplug (2) | P0-B-headless | `crates/compositor-testkit/tests/it/fixture.rs`; input through `tests/it/protocol/seat.rs` |
+| `crates/compositor-backend/src/winit.rs` | WinitBackend::start (1) | P0-B-loop | builds only (never run by an agent; the user's nested-winit check) |
+| `crates/compositor/src/core_loop.rs` | feed, frame (2) | P0-B-loop | `crates/compositor/tests/it/time.rs`; frames through `crates/compositor-testkit/tests/it/fixture.rs` |
+| `crates/compositor/src/display.rs` | attach_display, flush (2) | P0-B-loop | `crates/compositor/tests/it/time.rs`; frames through `crates/compositor-testkit/tests/it/fixture.rs` |
+| `crates/compositor/src/exec.rs` | exec (1) | P0-B-loop | `crates/compositor/tests/it/time.rs`; frames through `crates/compositor-testkit/tests/it/fixture.rs` |
+| `crates/compositor/src/run.rs` | run (1) | P0-B-loop | `crates/compositor/tests/it/time.rs`; frames through `crates/compositor-testkit/tests/it/fixture.rs` |
+| `crates/compositor/src/time/calloop.rs` | arm (1) | P0-B-loop | `crates/compositor/tests/it/time.rs`; frames through `crates/compositor-testkit/tests/it/fixture.rs` |
+| `crates/compositor/src/time/source.rs` | ClockSource::start, ClockSource::now (2) | P0-B-loop | `crates/compositor/tests/it/time.rs`; frames through `crates/compositor-testkit/tests/it/fixture.rs` |
+| `crates/compositor/src/time/virtual_clock.rs` | SharedClock::update, SharedClock::advance_to, EventSource::process_events, EventSource::before_sleep (4) | P0-B-loop | `crates/compositor/tests/it/time.rs`; frames through `crates/compositor-testkit/tests/it/fixture.rs` |
+| `crates/compositor-testclient/src/bin/probe.rs` | main (1) | P0-T-client | `crates/compositor-testclient/tests/infra.rs`; `crates/compositor-testkit/tests/it/globals.rs`; `crates/compositor-testkit/tests/fuzz/main.rs` |
+| `crates/compositor-testclient/src/conn.rs` | TestClient::over, TestClient::connect_env, TestClient::pump (3) | P0-T-client | `crates/compositor-testclient/tests/infra.rs`; `crates/compositor-testkit/tests/it/globals.rs`; `crates/compositor-testkit/tests/fuzz/main.rs` |
+| `crates/compositor-testclient/src/shm.rs` | shm_buffer (1) | P0-T-client | `crates/compositor-testclient/tests/infra.rs`; `crates/compositor-testkit/tests/it/globals.rs`; `crates/compositor-testkit/tests/fuzz/main.rs` |
+| `crates/compositor-testkit/src/fuzz/ops.rs` | run_ops (1) | P0-T-client | `crates/compositor-testclient/tests/infra.rs`; `crates/compositor-testkit/tests/it/globals.rs`; `crates/compositor-testkit/tests/fuzz/main.rs` |
+| `crates/compositor-ipc/src/dbus/debug1.rs` | Debug1::inject, Debug1::wait, Debug1::clock, Debug1::output, Debug1::windows, Debug1::scene, Debug1::fault (7) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
+| `crates/compositor-ipc/src/inject.rs` | parse_inject (1) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
+| `crates/compositor-ipc/src/wait.rs` | parse_wait (1) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
+| `crates/bardo-compositorctl/src/command.rs` | parse, run (2) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
+| `crates/compositor-testkit/src/fixture.rs` | Fixture::session (1) | P1-D1 | P1-Z's session suite |
+| `crates/compositor-testkit/src/fixture.rs` | Fixture::palmrest (1) | P3-Z | P3-Z's palmrest tests |
 
 Ignored tests by lane (P0-Z2): P0-H1 17, P0-H2 16, P0-H3 7, P0-H4 10, P0-H5 7, P0-H6 3,
 P0-H7 5, P0-H8 7, P0-B-headless 7, P0-B-loop 4, P0-R-scene 2, P0-T-client 5, P0-T-dev 6,
@@ -129,17 +129,17 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 | --- | --- |
 | `taffy` (git rev `4863877b`, A14/A24) is declared here outside the block copied from Bardo's `docs/workspace-deps.toml` | Bardo's pinned block carries the line and this workspace copies it verbatim |
 | ds-core's `Scale` has no serde, so stored types write it through `geometry::scale_serde` | ds-core derives `Serialize, Deserialize` (transparent) on `Scale` (interface ask to Bardo); the helper module is deleted |
-| ds-style without dioxus still pulls `image` (png, jpeg, moxcms) into casement-core's graph (A22, SP8) | Bardo makes `image` an optional ds-style feature |
-| ds-behaviour: the switcher and hot-corner machines have no caller yet (the Space-swipe machine runs since lane cas21-gesture, `model/swipe.rs`, fed through `Mono::stamp`) | the switcher and hot-corner machines run in casement (C41, P3-Z), with their `*Params` in `CasementSettings` |
-| `CasementSettings::defaults` carries no bindings (C30 says the settings document holds the defaults) | the shell's chords are not defaults of the settings document: c17 reads them from the desktop keymap (`casement::keymap`, see the c17 rows below); `settings/bindings.rs` stays empty and a `[bindings]` entry is only an addition or a win over the keymap for one chord |
-| The smithay fork `Bardo-DE/smithay` (branch `casement`, C2) exists (P0-fork) and the pin names its commit; it carries two patches, listed below | a further patch is one more commit on the fork and a new rev in the root Cargo.toml and `wlcs-casement/Cargo.toml` |
+| ds-style without dioxus still pulls `image` (png, jpeg, moxcms) into compositor-core's graph (A22, SP8) | Bardo makes `image` an optional ds-style feature |
+| ds-behaviour: the switcher and hot-corner machines have no caller yet (the Space-swipe machine runs since lane cas21-gesture, `model/swipe.rs`, fed through `Mono::stamp`) | the switcher and hot-corner machines run in the compositor (C41, P3-Z), with their `*Params` in `CompositorSettings` |
+| `CompositorSettings::defaults` carries no bindings (C30 says the settings document holds the defaults) | the shell's chords are not defaults of the settings document: c17 reads them from the desktop keymap (`compositor::keymap`, see the c17 rows below); `settings/bindings.rs` stays empty and a `[bindings]` entry is only an addition or a win over the keymap for one chord |
+| The smithay fork `Bardo-DE/smithay` (branch `compositor`, C2) exists (P0-fork) and the pin names its commit; it carries two patches, listed below | a further patch is one more commit on the fork and a new rev in the root Cargo.toml and `wlcs-compositor/Cargo.toml` |
 | Workspace pins outside Bardo's pinned block: smithay, wayland-protocols-wlr, wayland-protocols-misc, xkbcommon 0.9 (Bardo's block says 0.8 through sctk 0.20, A14), libseat, tracing, tracing-subscriber | Bardo's `docs/workspace-deps.toml` carries them (with the xkbcommon note) and this workspace copies the block verbatim |
 | `reis` and `pipewire` are pinned (A14) and named by no crate | P2-Z (capture source) and P4-Z (EIS) name them |
 | wlcs attaches buffers before acking the first configure; smithay refuses (about 260 failures, A6) | the orchestrator decides: a wlcs-only relaxation under a debug feature, or a newer wlcs pin |
 | smithay's `IdleNotifierState` arms calloop timers on the wall clock, which the virtual clock cannot stop | P0-H8 times idleness with the model's `TimerKey::IdleNotify` and drives smithay's notifier objects only (test `idle_is_notified_at_virtual_time`) |
 | smithay's virtual keyboard hands keys straight to the focused client, past the model (I8 wants `Origin::Virtual` and idle activity) | P0-H7 routes them through `virtual_keyboard::on_vk_key` (test `virtual_keys_are_origin_virtual_and_count_as_activity`), or files an interface ask if smithay offers no hook |
 | smithay stamps xdg-activation tokens with `Instant::now` | P0-H2 judges token age by `XdgActivationPart::issued` (session `Mono`) only |
-| The model has no tablet input kind, so `VirtualInput` maps tablet events to smithay's `UnusedEvent` | a delta freeze adds tablet input to `casement_core::input::InputKind` |
+| The model has no tablet input kind, so `VirtualInput` maps tablet events to smithay's `UnusedEvent` | a delta freeze adds tablet input to `compositor_core::input::InputKind` |
 | `SoftPixman` and `FixedUdmabuf` (A4) have constructors only; their renderer and allocator trait impls (pure delegation) and the `GraphicsApi` over the jail's fabricated nodes are P1-D4's | P1-D4's soft topology suite ("display on A, client buffers from B", counters asserted, A5) |
 | Protocol tests carry `todo!()` client steps: the fixture setup and the scenario are written, the testclient helpers are not | each H lane writes its helper module and the steps in the same change |
 | `taffy_bridge` (`new_tree`, `solve`, `rect_of`, `fixed_size`) has no caller outside its test | DONE for Split View (wave-2026-10-15/split: `taffy_bridge/split.rs`, called by `rust_scene/split.rs`); the `expect` on the module is removed. Exposé is the next caller but needs none of it to compile |
@@ -170,7 +170,7 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
   `LayerBook::empty`, `with_layer`, `without_layer`; `Focus::none`; `WindowHints::unset`.
 - `GlobalKind` is filled with the P0 globals now (the sketch left it to P0-Z2) so the I7 table
   can be written.
-- casement-layout follows SP8 (A20): `WindowSpec.app`, `SceneMode::Overview { shown, kind }`,
+- compositor-layout follows SP8 (A20): `WindowSpec.app`, `SceneMode::Overview { shown, kind }`,
   `Arrangement.space_thumbs` and `reports` (`LayoutReport`), `OverviewSlot.kind`
   (`SlotKind`), `WindowPlacement::Minimised` without a target (motion takes the tile from
   `Cause::Minimise`). `WindowTarget` and `SpaceTarget` carry their `output`, which motion and
@@ -191,7 +191,7 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
   without_shown, iter, shown}`, `LayerBook::{get, iter}`, `OutputConfig::logical_rect` (the one
   logical rectangle of an output, replacing layout's private copy), `FocusView::is_visible`
   public.
-- casement-motion's `sample` takes `WindowLooks` (emphasis and frame per window): emphasis,
+- compositor-motion's `sample` takes `WindowLooks` (emphasis and frame per window): emphasis,
   corner radius and shadow had no source in the sketch's inputs. `FrameScene::text` is the
   golden form.
 
@@ -201,7 +201,7 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
   global's and object's user data implements `GlobalDispatch2`/`Dispatch2`, and
   `delegates.rs` is the one line `delegate_dispatch2!(State)`. `bardo_window` carries its own
   `GlobalDispatch2`/`Dispatch2` impls and reaches `State` through `BardoWindowHandler`.
-- **casement-wayland.** `Part::new` is generic (`new::<D>`) with smithay's constructor bounds;
+- **compositor-wayland.** `Part::new` is generic (`new::<D>`) with smithay's constructor bounds;
   filtered globals (decoration, layer shell, session lock, primary selection, data control,
   input method, virtual keyboard, foreign toplevel list, security context, bardo_window) pass
   `GlobalFilter::for_global`, the rest ignore the filter (I7 shows them to everyone).
@@ -217,39 +217,39 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
   take the seat and the whole state (smithay's input handles need `&mut D`); no
   `apply_modifiers` (smithay sends modifiers with enter and keys); `on_create_listener` returns
   the listener's `SandboxFacts` with its events.
-- **casement-render.** `Compositor` has no `ExportMem` supertrait (smithay's `DummyRenderer`
+- **compositor-render.** `Compositor` has no `ExportMem` supertrait (smithay's `DummyRenderer`
   has none); `output_elements` takes an `OutputView` (the frame has no output geometry);
   `CursorDraw::ClientSurface { hotspot }` replaces `Surface(WindowId)` and `ChromeLayer` gains
   `cursor_at`; `TextureBook` has builders; `Rgba8` is the quantised colour (A18); the unsafe
   module exists (`gl_raw.rs`, A17: `surfaceless_gles`).
-- **casement-backend.** `BackendKind` has no `Tty` variant until P1-Z; `FramePixels` is
+- **compositor-backend.** `BackendKind` has no `Tty` variant until P1-Z; `FramePixels` is
   renderer-neutral (`Rgba(RgbaFrame) | Dummy`, Abgr8888 read-back, SP2); the virtual output
   grammar gains optional `transform=`, `gpu=`, `vrr=`, `edid=` fields and `text()`;
   `VirtualInput::{plug, unplug, push}` exist only under `testing`/`debug-inject`; event types
   are one struct per family (`VirtualKey`, ..., `VirtualTouch` for every touch step);
   `HeadlessRenderer` boxes its renderers; `gpu/soft.rs` holds `SoftPixman` and `FixedUdmabuf`.
-- **casement.** `State` gains `display` and `event_loop`; `CoreState` gains `mint: IdMint`;
-  `IpcState` holds `casement_ipc::IpcHandles` (so Debug1's lane changes casement-ipc, not
+- **compositor.** `State` gains `display` and `event_loop`; `CoreState` gains `mint: IdMint`;
+  `IpcState` holds `compositor_ipc::IpcHandles` (so Debug1's lane changes compositor-ipc, not
   `state.rs`); `ClockSource::{Virtual, Stepped}` hold a `SharedClock` (the calloop source shares
   it, A1) and `time/virtual_clock.rs` holds `VirtualTimerSource`. `StartConfig` gains `renderer`,
   `cost` and `entropy`; `ConfigHome` is `Xdg | At(path)`; `ClockChoice` gains `Virtual` (the
   fixture's, never on the command line); `Command` gains `Help`; `JailCheck::Outside` names the
   first breach found. New files: `clients.rs` (`insert_client`) and `display.rs` (the display on
   the loop without `unsafe`, SP3).
-- **casement-ipc, casementctl, test kit.** `IpcHandles` and `DebugCall`/`DebugRequest`/
-  `DebugReply` added; casementctl is a library plus binary (its table is tested);
+- **compositor-ipc, bardo-compositorctl, test kit.** `IpcHandles` and `DebugCall`/`DebugRequest`/
+  `DebugReply` added; bardo-compositorctl is a library plus binary (its table is tested);
   `FixtureSpec::{desktop, with_outputs, with_renderer}`, `Env`, `SessionFixture`, `UdevEvent`,
   `LogindCall`, `gpu::fabricated_nodes` added; testclient's `GlobalList` is wayland-client's.
 - **`dev/gate.sh`.** §6.2's `jail` was a shell function, which `step.sh` (its own process)
   cannot call; it is an array. `scripts/check-boundary.sh` skips comment lines in its "names"
-  rows (B20 still reads comments), matches the libinput crate by its items (casement has its own
-  `input` modules), and lets the test kit reach ds-settings through `casement` while naming none
+  rows (B20 still reads comments), matches the libinput crate by its items (the compositor has its own
+  `input` modules), and lets the test kit reach ds-settings through `compositor` while naming none
   of it.
 
 ## Departures in the P0-R-scene fill
 
-P0-R-scene filled its 23 stubs with no `todo!()` left in `crates/casement-render`. Renderer-only
-goldens in `crates/casement-render/tests/golden/` (ten tier P, `blur-v0-1x` tier L) and a tier X
+P0-R-scene filled its 23 stubs with no `todo!()` left in `crates/compositor-render`. Renderer-only
+goldens in `crates/compositor-render/tests/golden/` (ten tier P, `blur-v0-1x` tier L) and a tier X
 check cover what draws without a client surface; the fixture scenes are P0-shoot's (below).
 
 1. **`Compositor` grows, additively.** Its textures are bounded `Clone + Send + 'static`
@@ -267,26 +267,26 @@ check cover what draws without a client surface; the fixture scenes are P0-shoot
    P3-Z adds the wrapper with its effect elements.
 4. **`OutputFrame.strip` is not applied.** (Closed by cas33-strip.) A `PlacedWindow` does not say which Space it is on,
    so the renderer cannot shift windows per Space; P3-Z.
-5. **Layer placement has one home (closed by P0-reserve).** `casement_core::layer::LayerBook::arrange`
-   (`crates/casement-core/src/layer/arrange.rs`) arranges layer surfaces once (exclusive zones,
+5. **Layer placement has one home (closed by P0-reserve).** `compositor_core::layer::LayerBook::arrange`
+   (`crates/compositor-core/src/layer/arrange.rs`) arranges layer surfaces once (exclusive zones,
    overlay down to background, then the rest inside what they leave); the renderer, the hit test
    and the configure sizes all read it.
-6. **Named cursors are casement's own rasters** (signed-distance shapes, 16 samples a pixel,
+6. **Named cursors are the compositor's own rasters** (signed-distance shapes, 16 samples a pixel,
    at the output's native scale, cached per shape and scale); no Xcursor theme is read yet.
    A locked output draws only the cursor, its lock surface and an opaque cover under it. The
    cover's id is thread-local and the cover's and blur's commits are content fingerprints, so a
-   still frame has empty damage. The renderer tests read `CASEMENT_BLESS` with `Env`'s rule in
-   `tests/support/mod.rs`, since casement-render cannot depend on the test kit.
+   still frame has empty damage. The renderer tests read `COMPOSITOR_BLESS` with `Env`'s rule in
+   `tests/support/mod.rs`, since compositor-render cannot depend on the test kit.
 
 ## Departures in the P0-shoot fill
 
-P0-shoot wrote the fixture scenes (`crates/casement-testkit/tests/it/scene/`: `the_ten_base_scenes_match_their_pixman_goldens`,
+P0-shoot wrote the fixture scenes (`crates/compositor-testkit/tests/it/scene/`: `the_ten_base_scenes_match_their_pixman_goldens`,
 tier P; `blur_v0_matches_its_llvmpipe_golden`, tier L), the three surface-adjunct pixel tests
 (viewporter crop, single pixel, alpha multiplier) and the fractional-scale ordering test. Real
 code the scenes found missing or wrong, fixed here:
 
 1. **No window was ever drawn.** Nothing filled `TextureBook`'s window map, so a mapped toplevel
-   showed as black. `casement::core_loop::windows` follows `ToplevelMapped`, `ToplevelCommitted`
+   showed as black. `compositor::core_loop::windows` follows `ToplevelMapped`, `ToplevelCommitted`
    and `ToplevelUnmapped`.
 2. **A layer surface's committed size was stale.** `LayerMapped` fires on the first commit (no
    buffer yet) and the buffer's commit changes nothing the model hears, so the book kept 0 x 0
@@ -294,7 +294,7 @@ code the scenes found missing or wrong, fixed here:
    tree's size again (`TextureBook::with_layers_sized`).
 3. **GLES frames read back upside down.** `GlesMapping::flipped()` is a constant `true`, but the
    damage tracker's framebuffer is already y-inverted, so reversing the rows turned the frame
-   over (the tier X check in casement-render never read through the backend). The headless
+   over (the tier X check in compositor-render never read through the backend). The headless
    backend no longer reverses rows; pixman and llvmpipe agree.
 4. **Read-back was a per-byte iterator** (about 4 s a 4K scene in a debug build); it copies rows.
 5. **The scenes settle two virtual seconds** before the shot (a window opens with motion); the
@@ -302,7 +302,7 @@ code the scenes found missing or wrong, fixed here:
    at the pointer.
 
 Test-support notes: `tests/scene.rs` became `tests/scene/main.rs`; the layer-shell and
-session-lock client helpers (`casement-testclient/src/surface/{layer,lock}.rs`) are the P0-H3
+session-lock client helpers (`compositor-testclient/src/surface/{layer,lock}.rs`) are the P0-H3
 helpers verbatim from `~/rs-wt/p0-h3/pending/p0-h3-protocol-tests.patch` (apply that patch
 without those two files); `BlurAsk::surface()` is a new accessor so a blur region can sit on a
 toplevel's own surface; `tests/it/protocol/shoot.rs` holds the helper the adjunct tests share.
@@ -336,12 +336,12 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
   KeyboardShortcutsInhibit, Selection, DataDevice, WaylandDndGrab, DndGrab, PrimarySelection,
   ext and wlr DataControl, Dmabuf, InputMethod, IdleNotifier, IdleInhibit,
   ForeignToplevelList, SecurityContext, ExtBackgroundEffect. Global versions are in
-  `crates/casement-testkit/tests/golden/globals.txt`.
-- **smithay reads the wall clock in three places casement must not depend on**: the idle
+  `crates/compositor-testkit/tests/golden/globals.txt`.
+- **smithay reads the wall clock in three places the compositor must not depend on**: the idle
   notifier's calloop timers, xdg-activation token stamps, and the times it invents for
   synthesised touch and tablet events (FINDINGS open items above).
 - **The jail's PID 1 is `bwrap`** (`--unshare-pid` with `--proc /proc`), which both
-  `require_jail` checks (shell and `casement::jail_check`) rely on.
+  `require_jail` checks (shell and `compositor::jail_check`) rely on.
 - **Layout reads the usable area, not the output** (A26): `spec_of` fills `OutputSpec.usable`
   from `LayerBook::usable_area`, so maximised and filled windows respect exclusive zones.
   `pick_mode` returns a 0x0 mode for a display with no modes; the model leaves such an output
@@ -375,15 +375,15 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
 - **A parent is its own app's window**: a sheet or a dialog names a mapped window of the same
   app; any other parent is dropped to none, so a sheet cannot pull focus into another app.
 - **`ConfigHome::At(DIR)` is a config home** (P0-F1-output): it stands in for `$XDG_CONFIG_HOME`,
-  so the document is `DIR/casement/settings.toml`, not `DIR/settings.toml`.
+  so the document is `DIR/compositor/settings.toml`, not `DIR/settings.toml`.
 - **Bindings are word lists** (P0-F1-output): a `[bindings]` entry is chord text to a list of
   words (`"cmd+q" = ["desktop", "quit_active"]`, `"ctrl+option+t" = ["spawn", "foot", ...]`),
   not a nested table; an entry whose chord or words do not parse is dropped with a warning.
-- **casement-core's settings enums derive `Word`** (P0-F1-output): the ds-settings derive gives
+- **compositor-core's settings enums derive `Word`** (P0-F1-output): the ds-settings derive gives
   each its document spelling; the serde derives stay for the model's own stores.
-- **casement takes a `toml` dev-dependency** (P0-F1-output): `tests/config.rs` writes and reads
+- **the compositor takes a `toml` dev-dependency** (P0-F1-output): `tests/config.rs` writes and reads
   documents through it.
-- **`serve_debug_at` takes Debug1's name with replacement off** (P0-debug-dbus): a second casement
+- **`serve_debug_at` takes Debug1's name with replacement off** (P0-debug-dbus): a second the compositor
   on the same bus fails with `IpcError::Bus` and the first keeps the name. The bus thread is
   not joinable: it lives as long as the process.
 
@@ -408,10 +408,10 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
   seat holds a dead surface or is ungrabbed and out of step (`exec::resync_keyboard`).
 - **ext-session-lock waits at most `LOCK_WAIT` (1 s) for a lock surface**: the protocol lets the
   compositor wait for the first surface before `locked` but says it "must impose a reasonable time
-  limit"; casement had none. `TimerKey::LockWait`; a surface that arrives later is still taken in.
-- **`casementctl output ...` is `casementctl debug output ...`** (the Debug1 verb table holds
+  limit"; the compositor had none. `TimerKey::LockWait`; a surface that arrives later is still taken in.
+- **`bardo-compositorctl output ...` is `bardo-compositorctl debug output ...`** (the Debug1 verb table holds
   `output`; the plan spells it both ways).
-- **`casement-probe` rejects unknown flags** (exit 64) and `toplevel --maximised` prints
+- **`compositor-probe` rejects unknown flags** (exit 64) and `toplevel --maximised` prints
   `maximised` in its configure line. `Debug1::Inject` answers `ok <line>` as written.
 - **Popups get frame callbacks**: `drawn_roots` lists the popups of every drawn root (windows, layers,
   lock surface), so a menu that animates is told `done` on each frame.
@@ -420,7 +420,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
 
 ### P0-fork: the smithay fork
 
-`Bardo-DE/smithay` branch `casement` starts at upstream `118e34ff` (the rev casement had pinned) and carries
+`Bardo-DE/smithay` branch `compositor` starts at upstream `118e34ff` (the rev the compositor had pinned) and carries
 two commits, one per patch, each local to its bug; patches live only there and nothing goes upstream (A13).
 
 - `87c4f4df` xdg_shell: destroying an `xdg_surface` before its role object posts `xdg_surface.defunct_role_object`
@@ -430,13 +430,13 @@ two commits, one per patch, each local to its bug; patches live only there and n
 - `576cfd95` wl_region: `add`/`subtract` with a negative width or height is ignored (treated as empty; wl_region's XML
   defines no error) instead of reaching `Size::new`'s `debug_assert`.
 
-The root and `wlcs-casement` pins (and both `Cargo.lock`s) named the fork's tip `576cfd954b6bd5badbd5f15d1708cafc941a0522` here; P0-smithay moved them (see its section below). The
+The root and `wlcs-compositor` pins (and both `Cargo.lock`s) named the fork's tip `576cfd954b6bd5badbd5f15d1708cafc941a0522` here; P0-smithay moved them (see its section below). The
 `[profile.dev.package.smithay] debug-assertions = false` override is removed: smithay's debug assertions are on in
 every dev build and the fuzz box (24 cases) passes with them.
 
 ### P0-smithay: the fork's text-input, W3 and popup-grab patches
 
-The fork branch is now `casement-textinput` (from `casement` at `576cfd95`; the `casement` branch is untouched). The pins (root
+The fork branch is now `compositor-textinput` (from `compositor` at `576cfd95`; the `compositor` branch is untouched). The pins (root
 `Cargo.toml`, both `Cargo.lock`s) name its tip `dc7ca684e0a75b2c889718e5e97cc49bc94760ba`. Nine commits, each its own protocol rule:
 
 - `579ac4b7` text_input: `enter`/`leave` follow keyboard focus with or without an input method; a text input created while its
@@ -452,11 +452,11 @@ The fork branch is now `casement-textinput` (from `casement` at `576cfd95`; the 
 - `999aac58` renderer utils: buffer scale and transform apply at every commit, not only with a new buffer.
 - `66dd1e8e` viewporter: `ensure_viewport_valid` checks `out_of_buffer` and then `bad_size` at each commit (a source both fractional
   and outside the buffer is `out_of_buffer`, as wlcs expects); the hook covers commits before a buffer.
-- `dc7ca684` popup grab: `PopupPointerGrab::unset` leaves a keyboard grab that another popup grab owns (grab ids). casement's
+- `dc7ca684` popup grab: `PopupPointerGrab::unset` leaves a keyboard grab that another popup grab owns (grab ids). The compositor's
   workaround (lift the keyboard grab before replacing the pointer grab) is gone: `handlers/xdg_shell/popups.rs` now sets the
   keyboard grab, then the pointer grab.
 
-casement side: `apply_text_focus` sends `leave`/`enter` without the input-method condition; the test kit's `ImeSession` can start
+The compositor side: `apply_text_focus` sends `leave`/`enter` without the input-method condition; the test kit's `ImeSession` can start
 without an input method (`start_field`, `bind_method`, `destroy_method`, `enable_with_state`) and sees `content_type`. Tests added,
 each failing against the old pin: `text_input::an_input_method_that_starts_after_the_field_is_enabled_gets_the_field`,
 `text_input::a_field_stays_enabled_when_its_input_method_goes_away`, `popup_input::a_popup_may_anchor_to_a_point`,
@@ -475,14 +475,14 @@ a buffer, and attaching to an unconfigured surface is the A37 relaxation).
 ### P0-accept: the seven acceptance scripts
 
 `dev/accept/*.sh` are all real (map-resize, scale-crisp, popup-grab, lock-blocks-input, ime-commit,
-drag-selection, exclusive-layer-focus; globals was already). Their client is `casement-probe session`,
-a test client driven from stdin (`probe/command.rs`); frames come from `casementctl shot`, which
+drag-selection, exclusive-layer-focus; globals was already). Their client is `compositor-probe session`,
+a test client driven from stdin (`probe/command.rs`); frames come from `bardo-compositorctl shot`, which
 until P1-C1 asks Debug1 (`Shot`) for the PNG of the last presented frame. Found by them and fixed:
 an interactive resize changed the frame but never configured the client (floating layout asks
 nothing when the rect is its own size): `core_loop::configure_size`, test
 `a_resize_configures_the_client_to_the_dragged_size`; `debug wait settled` did not step the stepped
-clock. Open: `scale-crisp` uses casement's own test client, not a Bardo or shell-host window (those
-are the consumer scripts'); after a drop casement sent `wl_data_device.leave` at once (fixed by
+clock. Open: `scale-crisp` uses the compositor's own test client, not a Bardo or shell-host window (those
+are the consumer scripts'); after a drop the compositor sent `wl_data_device.leave` at once (fixed by
 P0-dead-focus); pointer motion while a dead locker's cover stands did not move the
 cursor (not asserted).
 
@@ -492,7 +492,7 @@ cursor (not asserted).
   `send_event` InvalidId, wlcs `Layer/LayerSurfaceLayerTest.surface_can_be_moved_to_layer/7`) happens while
   libwayland tears a client down: the backend has already forgotten the client, so any event that names one
   of its objects (leave and enter carry the surface) panics. The cause is not a stale focus alone, so
-  the guard lives where the event is sent: `casement_wayland::seat::Live`, the type of `PointerFocus` and
+  the guard lives where the event is sent: `compositor_wayland::seat::Live`, the type of `PointerFocus` and
   `TouchFocus` (was a bare `WlSurface`), forwards every smithay target call but sends `leave` and `enter`
   only when the surface is alive and its client is known (`Live::reachable`). The keyboard needs no guard
   (smithay's focus-destroy hook clears it). The in-process Fixture cannot reproduce the C-level panic (a
@@ -518,7 +518,7 @@ cursor (not asserted).
 
 ### P0-output-enter: wl_surface.enter and leave, preferred buffer scale
 
-- **W5**: `casement/src/core_loop/presence.rs` (new). After every `feed` and at the start of every
+- **W5**: `compositor/src/core_loop/presence.rs` (new). After every `feed` and at the start of every
   `frame`, it walks the hit-test stack (`scene::stack`: lock surfaces, layer surfaces, windows, each
   with its popups, at the origins the stack gives) and tells each tree which outputs it is on. A root
   is on an output when a surface of its tree has a view that overlaps the output's logical rectangle
@@ -550,7 +550,7 @@ cursor (not asserted).
 - **W2, window geometry.** A toplevel's place and size are its `xdg_surface.set_window_geometry` rect's
   (the model already took the size from it); the buffer is drawn offset so the geometry origin lands at
   the window's place, and the hit test and the pointer-local coordinates use the same origin.
-  `casement_render::surface_origin` / `surface_origin_logical` are the one conversion (the renderer's
+  `compositor_render::surface_origin` / `surface_origin_logical` are the one conversion (the renderer's
   `window_elements` and `output_elements`, and `core_loop::scene::stack`, call them); popups already
   added the root's geometry offset, so they now hang off the same origin. A window's committed size
   in the surface book is the geometry's when it declared one (`windows::tree_size`).
@@ -609,7 +609,7 @@ W13 8 to 0.
   the release: GTK). A stale serial, a forged one and another client's are refused. Qt opens its context
   menus on the release. A release proves no move or resize (`grab_proven`, `GrabUse::Drag`).
 - **W8, the second cause behind `popup_gives_up_pointer_focus_when_gone`.** The client destroys its
-  `xdg_popup`, then the `wl_surface`. casement refocused only when the surface was gone, and smithay sends
+  `xdg_popup`, then the `wl_surface`. The compositor refocused only when the surface was gone, and smithay sends
   no `leave` to a dead surface, so the client was told of an `enter` with no `leave` before it. The
   handler now refocuses the pointer when the popup is destroyed (`popup_destroyed`), while the surface
   still lives.
@@ -631,12 +631,12 @@ W13 8 to 0.
 - **W10.** xdg_toplevel.move/resize: "the surface will lose the focus of the device used for the move".
   `grab::start` ends the press's implicit pointer grab and leaves the surface; `refocus` does nothing
   while a grab holds the pointer; the release gives the pointer back (after the release is delivered).
-  The shim also lets a dropped window glide to rest (1 s at each release): casement springs a dragged
+  The shim also lets a dropped window glide to rest (1 s at each release): the compositor springs a dragged
   window after the pointer by design.
-- **W13.** casement was right (a null buffer returns the toplevel to its initial state, xdg-shell's
+- **W13.** the compositor was right (a null buffer returns the toplevel to its initial state, xdg-shell's
   "Unmapping"; the lenient policy already maps a buffer without an ack). The test
-  (`tests/relax.rs`) passes without a casement change. A toplevel that maps again keeps its id and is a
-  fresh window (`WindowState::New`) where casement puts it; wlcs takes it to be where it was. The shim
+  (`tests/relax.rs`) passes without a compositor change. A toplevel that maps again keeps its id and is a
+  fresh window (`WindowState::New`) where the compositor puts it; wlcs takes it to be where it was. The shim
   remembers where wlcs put each toplevel and puts a window that maps again there.
 - **W12, pointer constraints (5 fixed).** A confined pointer is pinned to the last pixel of its room
   (the surface tree's extent cut to the region's added rectangles) instead of not moving when the
@@ -648,13 +648,13 @@ W13 8 to 0.
   in its next request, right after its roundtrip, can be ahead of that, and smithay ignores a
   selection from a client without the keyboard. 11 failures in 300 runs under 12-way load before;
   0 in 300 after. Now the lenient policy activates the window in the commit that maps it.
-- **Diagnosed, not casement bugs** (rows W3, W4, W9, W12 in `dev/wlcs/expected-failures.txt`): the
+- **Diagnosed, not the compositor bugs** (rows W3, W4, W9, W12 in `dev/wlcs/expected-failures.txt`): the
   zero-size anchor rectangle (smithay rejects 0, the XML only negative), the error objects of
   fractional-scale and viewporter, the viewporter's missing `bad_size` hook and `out_of_buffer` check,
   the decoration configure and orphaned tests (wlcs-side), set_selection from an unfocused source
   (smithay policy), text-input `enter` without an input method (smithay's rule, and wlcs' unflushed
   `get_input_method`), and the touch at y = -5 (a placement rule).
-- Interface asks for the smithay fork (`Bardo-DE/smithay`, branch `casement`): set_anchor_rect to accept
+- Interface asks for the smithay fork (`Bardo-DE/smithay`, branch `compositor`): set_anchor_rect to accept
   a zero size; `fractional_scale_exists` and `viewport_exists` raised on the manager object; the
   viewporter pre-commit hook added when `ViewporterSurfaceState` exists but is `None`; `out_of_buffer`
   checked when only `set_source` changes; `PopupPointerGrab::unset` not to unset a keyboard grab that a
@@ -667,18 +667,18 @@ W13 8 to 0.
   another does not; a reposition at the ack; a window in a move loses the pointer and gets it back),
   `tests/it/protocol/pointer_constraints.rs` (stops at the edge; released and held again with the
   keyboard), `tests/relax.rs` (remap), unit tests in `serial.rs`, `xdg_shell/requests.rs`,
-  `seat/hold.rs`. Each failed with the fix disabled, except the remap test (casement needed no change).
+  `seat/hold.rs`. Each failed with the fix disabled, except the remap test (the compositor needed no change).
 
 ## c17: shell bindings from the keymap (2026-10-11)
 - **Bindings come from the keymap, not a file or a table** (AUDIT (e)3): before, `settings.bindings` was empty by default
-  and held only what a `[bindings]` entry in `settings.toml` said, so a fresh casement bound nothing.
-  `casement::keymap::attach` (called from `main.rs` after the outputs are announced) loads
+  and held only what a `[bindings]` entry in `settings.toml` said, so a fresh the compositor bound nothing.
+  `compositor::keymap::attach` (called from `main.rs` after the outputs are announced) loads
   `KeycapSource::load_reporting(Linux/Ours)` (chordkit conventions, the desktop's own bindings, the machine
   keymap, the person's keymap), maps each standard action the compositor carries out (`keymap/shell.rs`
   `ROWS`: force quit, Space left/right/1-9,
   and sill's launcher, switcher, screenshots and power menu as `sill ...` spawns) to a `BindingAction`, converts
   each chord (`keymap/chord.rs`: Super is Command, Alt is Option; chordkit's `+` and `?` become shifted `=` and
-  `/`) and appends the result after the document's own bindings. No `dist/casement/bindings.toml` ships:
+  `/`) and appends the result after the document's own bindings. No `dist/compositor/bindings.toml` ships:
   the action vocabulary is chordkit's `StandardAction`, so the contract with keycap is action names already.
 - **Reload**: `KeycapSource::watch` (daemon message, or the keymap files polled) sends on a calloop channel; the
   handler recomputes the bindings and feeds `Event::SettingsChanged` only when they differ. The watch lives in
@@ -686,7 +686,7 @@ W13 8 to 0.
   (`keycap/keymap` for the person, `keycap-machine/keymap` for the machine, a socket path that does not exist).
 - **Known gaps**: `Spawn` and `Call` bindings are still only logged by `carry_out` ("from P2"), so the launcher,
   switcher, screenshot and power-menu chords resolve and are swallowed but do nothing yet. LockScreen,
-  MissionControl, AppWindows, NextWindow, NextInputSource and EmojiAndSymbols have no casement or sill command
+  MissionControl, AppWindows, NextWindow, NextInputSource and EmojiAndSymbols have no compositor or sill command
   and are not bound. `ScreenshotTools` runs `sill screenshot area`.
 - **Mac semantics (follow-up)**: Cmd+W, Cmd+M, Cmd+H, Cmd+Opt+H, Cmd+Q and Ctrl+Cmd+F are app menu commands on macOS,
   not window-server ones, so the focused app must receive them. Close, Minimise, Hide, HideOthers, Quit and FullScreen
@@ -694,7 +694,7 @@ W13 8 to 0.
   for full screen and used by nothing else, is dropped. ForceQuit (Cmd+Opt+Esc, system-level), Space switching and
   the sill hand-offs stay.
 - **Dependencies**: `chordkit` (rev ba094c62) and `keycap-client` (rev 31e21db1) are git dependencies of the
-  workspace and of `casement`; `Cargo.lock` must be regenerated (`cargo metadata`) with network access.
+  workspace and of `compositor`; `Cargo.lock` must be regenerated (`cargo metadata`) with network access.
 - Caps Lock no longer blocks bindings: `deliver::chord_mods` leaves it out of the chord (Num Lock was never in `MacMods`).
 
 ## c17: idle-inhibit and a client that hangs up (2026-10-11)
@@ -709,12 +709,12 @@ W13 8 to 0.
   wayland-backend), and the fix is to call `sync_inhibitors` from `exec::resync_keyboard`'s caller in `turn`.
 
 ## c18: library shape, Step L (2026-10-11)
-- F4: `casement::run(RunConfig) -> Result<(), RunError>` holds the startup and the loop; `RunError` is typed
+- F4: `compositor::run(RunConfig) -> Result<(), RunError>` holds the startup and the loop; `RunError` is typed
   (`StartError`, `calloop::Error`, wayland `InitError`, `BindError`, `IpcError`, `JailRefusal`) and maps to the exit
   code with `RunError::exit_code` (5 for a jail breach). The Debug1 server (`debug.rs`) moved into the lib behind
-  `debug-inject`. `main.rs` reads `CASEMENT_LOG` and `DBUS_SESSION_BUS_ADDRESS` and nothing else.
+  `debug-inject`. `main.rs` reads `COMPOSITOR_LOG` and `DBUS_SESSION_BUS_ADDRESS` and nothing else.
 - F3: `serve_debug` is gone (callers use `serve_debug_at`); `log::init(filter)` takes the filter.
-- F2: `casement-ipc`'s `casement-backend` is optional and comes with `debug-inject`.
+- F2: `compositor-ipc`'s `compositor-backend` is optional and comes with `debug-inject`.
 - F1, F9: `BackendError` has typed sources (`SpecError`, smithay's window, swap, gles and pixman errors,
   `RenderError`, `DeniedOpen { path, source }`); the test kit returns `FuzzFailure` (one variant per oracle) and
   `LogindError`.
@@ -727,13 +727,13 @@ W13 8 to 0.
 - F8: `Pull` (grab resize sides), `TreeKind` (presence), `Visibility` (layout) and `fate_of(Option<_>)` replace the
   listed bools. `convert::toggle_of(bool)` stays: it is the one place a smithay `bool` becomes `Toggle`,
   and `DndGrabHandler::dropped(_validated: bool)` is smithay's own signature.
-- F12, F13: crate docs with a doc test on core, layout, motion, render, backend and wayland; the `casement` lib doc
+- F12, F13: crate docs with a doc test on core, layout, motion, render, backend and wayland; the `compositor` lib doc
   says how to embed the compositor.
 - Raster `expect`s: they sat in `raster.rs`'s `#[cfg(test)]` module, not on a library path; they are checked
   conversions now anyway.
 - Unverified (no builds this lane): none of this has compiled. First places to look: `run.rs` (the `cfg` arms and the
-  `#[from]` set), `casement-backend/src/backend.rs` (the `#[from]` error types' paths) and `headless/renderer.rs`
-  (`Into<BackendError>` bound on `draw_with`), `casement-testkit/src/fuzz/*`.
+  `#[from]` set), `compositor-backend/src/backend.rs` (the `#[from]` error types' paths) and `headless/renderer.rs`
+  (`Into<BackendError>` bound on `draw_with`), `compositor-testkit/src/fuzz/*`.
 
 ## p1z: the P1 delta freeze (2026-10-11)
 
@@ -748,16 +748,16 @@ C1 3, F2 3, plus I1 3 and X1 3 whose bodies are `todo!()` after a first assertio
 
 | Lane | Source files | Fake and test files |
 | --- | --- | --- |
-| P1-D1 session, udev, VT | `crates/casement-backend/src/tty/{session,session_real,udev,udev_real,vt,real}.rs`, `TtyBackend::{start, dispatch}` in `tty/mod.rs` | `crates/casement-testkit/src/fakes/{session,udev}.rs`, `crates/casement-testkit/tests/it/tty/session.rs` |
-| P1-D2 KMS, hotplug, modes | `crates/casement-backend/src/tty/{kms,kms_real,device,connector,hotplug}.rs`, `TtyBackend::announce`; core `output/{mode_pick,arrangement}.rs` are already filled | `crates/casement-testkit/src/fakes/kms/`, `crates/casement-testkit/fixtures/kms/`, `crates/casement-testkit/tests/it/tty/kms.rs`, `dev/hw/` |
-| P1-D3 scheduler, scanout | `crates/casement-backend/src/tty/{surface,surface_real,flip}.rs`, `TtyBackend::present`; `crates/casement-core/src/frame/` | `crates/casement-testkit/src/fakes/scanout.rs`, `crates/casement-testkit/tests/it/tty/scanout.rs`, `crates/casement-core/tests/it/frame.rs` |
-| P1-D4 GPU plan, multi-GPU | `crates/casement-core/src/gpu/`, `crates/casement-backend/src/gpu/{render_nodes,render_nodes_real,manager,import,feedback}.rs`, `crates/casement-wayland/src/dmabuf.rs` and its handler (tag with `set_node`, A5) | `crates/casement-testkit/src/gpu/{soft_api,sys_tree,topology}.rs`, `crates/casement-testkit/tests/it/topology/mod.rs`, `crates/casement-core/tests/it/gpu.rs` |
-| P1-M1 output management, power, gamma | `crates/casement-wayland/src/{output_management,output_power,gamma}.rs`, `crates/casement/src/handlers/{output_management,output_power,gamma}.rs`, `crates/casement/src/exec/gamma.rs`, `crates/casement-core/src/model/output_requests.rs`, `crates/casement-core/src/output/request.rs` | `crates/casement-testkit/tests/it/protocol/{output_management,output_power,gamma}.rs`, `crates/casement-core/tests/it/output_request.rs`, `crates/casement-testclient/src/manage/{output_management,output_power,gamma}.rs` |
-| P1-M2 wlr toplevel, workspaces, Space ids | `crates/casement-wayland/src/{wlr_toplevel,workspace}.rs`, `crates/casement/src/handlers/{wlr_toplevel,workspace}.rs`, `crates/casement/src/exec/publish.rs`, `crates/casement/src/space_store.rs`, `crates/casement-core/src/space/{persist,request}.rs`, `crates/casement-core/src/model/{wlr_requests,workspace_requests,space_persist}.rs` | `crates/casement-testkit/tests/it/protocol/{wlr_toplevel,workspace}.rs`, `crates/casement-core/tests/it/space_persist.rs`, `crates/casement/tests/it/space_store.rs`, `crates/casement-testclient/src/manage/{wlr_toplevel,workspace}.rs` |
-| P1-I1 input, bindings | `crates/casement-backend/src/input/{devices,config,libinput_real}.rs`, `crates/casement-ipc/src/shell_calls.rs`, `crates/casement/src/exec/{call,spawn}.rs`, `crates/casement/src/spawn.rs` (the real `ProcessSpawner`), `settings/pointer.rs` wiring | `crates/casement-testkit/tests/it/bindings.rs`, `crates/casement-backend/tests/it/input_config.rs` |
-| P1-X1 XWayland | `crates/casement/src/xwayland.rs` | `crates/casement-testclient/src/bin/x11probe.rs`, `crates/casement-testkit/tests/it/xwayland.rs` |
-| P1-C1 output capture | `crates/casement-wayland/src/image_capture.rs`, `crates/casement/src/handlers/image_capture.rs`, `crates/casement-render/src/pass/capture.rs` | `crates/casement-testkit/tests/it/protocol/image_capture.rs`, `crates/casement-testclient/src/capture/` |
-| P1-F2 fake logind | `crates/casement-testkit/src/fakes/logind/` (mod, manager, session, seat), `crates/casement-testkit/src/bin/fake_logind.rs` | `crates/casement-testkit/tests/it/logind.rs` |
+| P1-D1 session, udev, VT | `crates/compositor-backend/src/tty/{session,session_real,udev,udev_real,vt,real}.rs`, `TtyBackend::{start, dispatch}` in `tty/mod.rs` | `crates/compositor-testkit/src/fakes/{session,udev}.rs`, `crates/compositor-testkit/tests/it/tty/session.rs` |
+| P1-D2 KMS, hotplug, modes | `crates/compositor-backend/src/tty/{kms,kms_real,device,connector,hotplug}.rs`, `TtyBackend::announce`; core `output/{mode_pick,arrangement}.rs` are already filled | `crates/compositor-testkit/src/fakes/kms/`, `crates/compositor-testkit/fixtures/kms/`, `crates/compositor-testkit/tests/it/tty/kms.rs`, `dev/hw/` |
+| P1-D3 scheduler, scanout | `crates/compositor-backend/src/tty/{surface,surface_real,flip}.rs`, `TtyBackend::present`; `crates/compositor-core/src/frame/` | `crates/compositor-testkit/src/fakes/scanout.rs`, `crates/compositor-testkit/tests/it/tty/scanout.rs`, `crates/compositor-core/tests/it/frame.rs` |
+| P1-D4 GPU plan, multi-GPU | `crates/compositor-core/src/gpu/`, `crates/compositor-backend/src/gpu/{render_nodes,render_nodes_real,manager,import,feedback}.rs`, `crates/compositor-wayland/src/dmabuf.rs` and its handler (tag with `set_node`, A5) | `crates/compositor-testkit/src/gpu/{soft_api,sys_tree,topology}.rs`, `crates/compositor-testkit/tests/it/topology/mod.rs`, `crates/compositor-core/tests/it/gpu.rs` |
+| P1-M1 output management, power, gamma | `crates/compositor-wayland/src/{output_management,output_power,gamma}.rs`, `crates/compositor/src/handlers/{output_management,output_power,gamma}.rs`, `crates/compositor/src/exec/gamma.rs`, `crates/compositor-core/src/model/output_requests.rs`, `crates/compositor-core/src/output/request.rs` | `crates/compositor-testkit/tests/it/protocol/{output_management,output_power,gamma}.rs`, `crates/compositor-core/tests/it/output_request.rs`, `crates/compositor-testclient/src/manage/{output_management,output_power,gamma}.rs` |
+| P1-M2 wlr toplevel, workspaces, Space ids | `crates/compositor-wayland/src/{wlr_toplevel,workspace}.rs`, `crates/compositor/src/handlers/{wlr_toplevel,workspace}.rs`, `crates/compositor/src/exec/publish.rs`, `crates/compositor/src/space_store.rs`, `crates/compositor-core/src/space/{persist,request}.rs`, `crates/compositor-core/src/model/{wlr_requests,workspace_requests,space_persist}.rs` | `crates/compositor-testkit/tests/it/protocol/{wlr_toplevel,workspace}.rs`, `crates/compositor-core/tests/it/space_persist.rs`, `crates/compositor/tests/it/space_store.rs`, `crates/compositor-testclient/src/manage/{wlr_toplevel,workspace}.rs` |
+| P1-I1 input, bindings | `crates/compositor-backend/src/input/{devices,config,libinput_real}.rs`, `crates/compositor-ipc/src/shell_calls.rs`, `crates/compositor/src/exec/{call,spawn}.rs`, `crates/compositor/src/spawn.rs` (the real `ProcessSpawner`), `settings/pointer.rs` wiring | `crates/compositor-testkit/tests/it/bindings.rs`, `crates/compositor-backend/tests/it/input_config.rs` |
+| P1-X1 XWayland | `crates/compositor/src/xwayland.rs` | `crates/compositor-testclient/src/bin/x11probe.rs`, `crates/compositor-testkit/tests/it/xwayland.rs` |
+| P1-C1 output capture | `crates/compositor-wayland/src/image_capture.rs`, `crates/compositor/src/handlers/image_capture.rs`, `crates/compositor-render/src/pass/capture.rs` | `crates/compositor-testkit/tests/it/protocol/image_capture.rs`, `crates/compositor-testclient/src/capture/` |
+| P1-F2 fake logind | `crates/compositor-testkit/src/fakes/logind/` (mod, manager, session, seat), `crates/compositor-testkit/src/bin/fake_logind.rs` | `crates/compositor-testkit/tests/it/logind.rs` |
 | P1-SESS | none in this repo | none |
 
 Already implemented at this freeze, not stubs: `MemorySpaceStore`, `FakeShellCalls`, `FakeSpawner`,
@@ -792,40 +792,40 @@ the `--xwayland` flags, `VendorFact::from_pci_vendor`, `GammaTable::new`, `Outpu
   interface. The plan's "LibseatSlot filled from `session_real.rs`" is therefore moot: P1-D1 may delete the slot.
 - **Real adapters are opaque at the freeze** (`RealKms { fd }`, `RealScanout { connector, crtc }`, …): they name no
   device-crate type, so nothing here depends on an API this lane could not check; each lane adds the fields.
-- **Features (A2).** `casement-backend`: `tty` (forwards smithay's `backend_drm`, `backend_gbm`, `backend_udev`,
+- **Features (A2).** `compositor-backend`: `tty` (forwards smithay's `backend_drm`, `backend_gbm`, `backend_udev`,
   `backend_session_libseat`) and `libinput` (`backend_libinput`), both off by default; `renderer_multi` is now always on
-  there. `casement`: `tty` and `libinput` forward to those, are the default, and the binary has `required-features =
-  ["tty", "libinput"]`; the casement dependency of the workspace and of `wlcs-casement` has `default-features =
+  there. `compositor`: `tty` and `libinput` forward to those, are the default, and the binary has `required-features =
+  ["tty", "libinput"]`; the compositor dependency of the workspace and of `wlcs-compositor` has `default-features =
   false`. No optional crate was added: smithay's features bring the device crates, already in the lock through the
-  union the `casement` crate carried. The device features left `casement`'s own smithay list.
-- **Cargo.lock needs regenerating** (nothing here could): `casement-core` gains `serde_json` and `toml` as normal
-  dependencies (the Space file codec; they were dev-dependencies), `casement-backend` gains `serde` (KMS fixtures are
-  serde values), `casement-testkit` gains `casement-ipc`. `casement-testclient` gains only a bin target.
+  union the `compositor` crate carried. The device features left `compositor`'s own smithay list.
+- **Cargo.lock needs regenerating** (nothing here could): `compositor-core` gains `serde_json` and `toml` as normal
+  dependencies (the Space file codec; they were dev-dependencies), `compositor-backend` gains `serde` (KMS fixtures are
+  serde values), `compositor-testkit` gains `compositor-ipc`. `compositor-testclient` gains only a bin target.
 - **`SpaceFile`'s sill import** reads `by_id` keys of the interim `bardo/spaces.json`, because sill has no concrete writer yet
   (`sill-ui-kit/src/look.rs` says so); the shape is a guess P1-M2 pins against whatever sill wrote by then.
 - **Settings.** `PointerSettings` (mouse and touchpad profiles) exists in core and is not yet a field of
-  `CasementSettings` nor a section of the document: P1-I1 adds both with the "Add a settings key" recipe.
+  `CompositorSettings` nor a section of the document: P1-I1 adds both with the "Add a settings key" recipe.
   The Xwayland mode and satellite path are `StartConfig` fields set by `--xwayland` and `--xwayland-satellite`
   (A5: configuration, never the environment); they move to the document if the Settings app should draw them.
 - **`StartConfig` gained `state_home` and `xwayland`; `State` gained `seams` and `xwayland`.** `State::new` builds the
   real seams, `State::with_seams` takes injected ones. `main` resolves `$XDG_STATE_HOME` (or `$HOME/.local/state`) for
   every backend but headless. Loading the Spaces file at start (`Event::SpacesLoaded`) is P1-M2's, in `run.rs`.
 - **The test kit.** `FixtureSpec` gained `space_store`; `Fixture` exposes `space_store()`, `shell_calls()` and
-  `spawner()`; `fakes/udev.rs` now speaks `casement_backend::tty::DeviceEvent`; `gpu::VendorFact` is core's type;
+  `spawner()`; `fakes/udev.rs` now speaks `compositor_backend::tty::DeviceEvent`; `gpu::VendorFact` is core's type;
   `SoftGpu` is `#[non_exhaustive]` with `SoftGpu::new` and a `drives` field.
-- **Unverified (no builds this lane).** First places to look if it does not compile: `casement-core/src/space/persist.rs`
-  (toml 1 error type paths), `casement-backend/src/tty/kms.rs` and `hotplug.rs` (serde derives over `Mode`,
-  `PhysicalMm`, `OutputName`), `casement-backend/src/backend.rs` (the three new `#[from]` sources),
-  `casement/src/state.rs` and `exec.rs` (module and import names `gamma`, `workspace`, `spawn`), the doc tests (all
-  `no_run`), `casement-testkit/src/fixture.rs`, `fakes/session.rs` (`TtySession` over smithay's `Session`), and
-  `casement-render/src/pass/capture.rs` (the `ExportMem` bound with `R::Framebuffer<'_>`).
+- **Unverified (no builds this lane).** First places to look if it does not compile: `compositor-core/src/space/persist.rs`
+  (toml 1 error type paths), `compositor-backend/src/tty/kms.rs` and `hotplug.rs` (serde derives over `Mode`,
+  `PhysicalMm`, `OutputName`), `compositor-backend/src/backend.rs` (the three new `#[from]` sources),
+  `compositor/src/state.rs` and `exec.rs` (module and import names `gamma`, `workspace`, `spawn`), the doc tests (all
+  `no_run`), `compositor-testkit/src/fixture.rs`, `fakes/session.rs` (`TtySession` over smithay's `Session`), and
+  `compositor-render/src/pass/capture.rs` (the `ExportMem` bound with `R::Framebuffer<'_>`).
 
 ## p1-c1: output capture (ext-image-copy-capture-v1 with output sources)
 
 Nothing here compiled (no builds this lane). `ext_output_image_capture_source_manager_v1` and
 `ext_image_copy_capture_manager_v1` are advertised at version 1 to every non-sandboxed connection
 (`GlobalKind::ImageCapture` was already `Advertise::No` for sandboxes); `globals.txt` has both rows and the
-globals test's `KINDS` lists `ImageCapture`; `sandbox.rs` checks that both are hidden. `casementctl shot
+globals test's `KINDS` lists `ImageCapture`; `sandbox.rs` checks that both are hidden. `bardo-compositorctl shot
 --output NAME OUT.png` captures over the wire; `--window` and `--masked` stay exit 2 (P2, P4); the default
 output and `--region` still go through Debug1.
 
@@ -841,11 +841,11 @@ output and `--region` still go through Debug1.
   read-back since P1-T and the display GPU's scenes since `wave-2026-10-15/dmabuf`; see cas34 below.)
 - **No dma-buf.** Constraints are shm only (`argb8888`, `xrgb8888`, the output's mode size, `dma: None`). dma-buf
   capture follows with P1-D4's GPU manager (the render node to announce). `BufferConstraints { dma }` exists because
-  `casement-backend` always builds smithay with `renderer_multi`, which brings `backend_drm`; a build of
-  `casement-wayland` alone does not construct it.
+  `compositor-backend` always builds smithay with `renderer_multi`, which brings `backend_drm`; a build of
+  `compositor-wayland` alone does not construct it.
 - **The cursor option is carried and ignored.** The frame is scanout's, with whatever cursor scanout draws. A
   `paint_cursors`-off capture of a frame with a software cursor needs the cursor-free render P4's mask pass brings.
-- **One unsafe function.** smithay lends a shm pool as `*mut u8`, so `casement-render/src/pass/capture/shm.rs` is
+- **One unsafe function.** smithay lends a shm pool as `*mut u8`, so `compositor-render/src/pass/capture/shm.rs` is
   `#![allow(unsafe_code)]` for one `slice::from_raw_parts_mut` (its SAFETY comment says why); the row copy beside it is
   safe and unit-tested. This breaks the "no unsafe" style rule; the alternative is not to write the client's buffer.
 - **A mode change fails the next frame.** If the output's mode size differs from the session's constraints, the
@@ -856,10 +856,10 @@ output and `--region` still go through Debug1.
   (it drops the held `Session`s, whose `Drop` is the `stopped` event). `CaptureBook::sessions` maps to the output, not
   the source, because a client may destroy a source right after creating its session. `WaylandFault` gained
   `UnknownCapture(u64)`.
-- **The test client is not `DesktopClient`.** `casement_testclient::capture::OutputCapture` has its own wire on a
+- **The test client is not `DesktopClient`.** `compositor_testclient::capture::OutputCapture` has its own wire on a
   side queue (the `misc::idle` pattern) and folds events with `desktop_client::reduce`, reading `desktop_client::Frame`
   (`to_rgba8`). `DesktopClient::new` and `roundtrip` block on the compositor, which the fixture serves on the same
-  thread, so they cannot be driven there. `casementctl shot` uses the full `DesktopClient` (feature `client`). One
+  thread, so they cannot be driven there. `bardo-compositorctl shot` uses the full `DesktopClient` (feature `client`). One
   `OutputCapture` is one session and one frame (the reducer's `take_ready` ends the capture).
 - **`desktop-client` is not in the sibling checkout this lane saw.** `../wayland/desktop-client` exists on
   that repo's `lane/dc-fill` branch only (a0ca174 master lacks it), so the workspace does not load here until it
@@ -868,9 +868,9 @@ output and `--region` still go through Debug1.
 ### Spots a real build checks first
 
 `handlers/image_capture.rs` and `frames.rs` (smithay's `Session`/`SessionRef`/`Frame` paths, `insert_if_missing_threadsafe`,
-`BufferConstraints { dma }`), `casement-wayland/src/image_capture.rs` (`new_with_filter` bounds with the concrete
-`Clone` closure), `casement-testclient/src/capture/copy_session.rs` (wayland-client signatures: `create_session`
-options type, `Format::try_from`), `casementctl/src/command/capture.rs` (desktop-client's paths), `shm.rs` (the closure
+`BufferConstraints { dma }`), `compositor-wayland/src/image_capture.rs` (`new_with_filter` bounds with the concrete
+`Clone` closure), `compositor-testclient/src/capture/copy_session.rs` (wayland-client signatures: `create_session`
+options type, `Format::try_from`), `bardo-compositorctl/src/command/capture.rs` (desktop-client's paths), `shm.rs` (the closure
 returning `Result` through `with_buffer_contents_mut(..)?`).
 ## p1-m2: wlr toplevel, workspaces, Space id persistence (2026-10-11)
 
@@ -920,12 +920,12 @@ Nothing here compiled (no builds this lane). Both globals are advertised: `zwlr_
   the layer surface's rectangle; a restart on the tty backend with two outputs keeps each Space on its connector.
 - **Goldens written by hand.** `transcripts/wlr_toplevel-list.txt` and `workspace-publish.txt` are predicted from the
   code, with ids numbered by first appearance (`normalised`) and the `state` / `id` arguments masked; re-bless once with
-  `CASEMENT_BLESS=1` and read the diff.
-- **Unverified (first places to look if it does not compile).** `casement-wayland/src/workspace.rs` (bitflags types of
+  `COMPOSITOR_BLESS=1` and read the diff.
+- **Unverified (first places to look if it does not compile).** `compositor-wayland/src/workspace.rs` (bitflags types of
   the enum arguments: `State`, `GroupCapabilities`, `WorkspaceCapabilities`; `Resource::data`, `Client::create_resource`
-  generics), `casement-wayland/src/wlr_toplevel.rs` (the `make` fn-pointer closures; `Output::client_outputs` in an
-  edition-2024 closure), `casement-core/src/model/space_persist.rs` (`is_none_or`, borrows in `adopt_ids`),
-  `casement-core/src/model/published.rs`, `casement/src/exec/publish.rs`, and the toml 1 paths in `space/persist.rs`.
+  generics), `compositor-wayland/src/wlr_toplevel.rs` (the `make` fn-pointer closures; `Output::client_outputs` in an
+  edition-2024 closure), `compositor-core/src/model/space_persist.rs` (`is_none_or`, borrows in `adopt_ids`),
+  `compositor-core/src/model/published.rs`, `compositor/src/exec/publish.rs`, and the toml 1 paths in `space/persist.rs`.
 ## p1-m1: output management, output power, gamma control (2026-10-11)
 
 P1-M1 advertises `zwlr_output_manager_v1` (4), `zwlr_output_power_manager_v1` (1) and `zwlr_gamma_control_manager_v1` (1);
@@ -961,7 +961,7 @@ P1-M1 advertises `zwlr_output_manager_v1` (4), `zwlr_output_power_manager_v1` (1
 
 Nothing here compiled (no builds this lane).
 
-- **Settings.** `CasementSettings` gained `pointer: PointerSettings`; the document gained `[pointer]` (mice and
+- **Settings.** `CompositorSettings` gained `pointer: PointerSettings`; the document gained `[pointer]` (mice and
   trackballs) and `[touchpad]` sections (`accel`, `natural_scroll`, `tap`, `scroll_factor` per-mille, `disable_while_typing`),
   on the Mouse & Gestures page. `AccelProfile` now derives `Serialize`, `Deserialize` and `Word`.
 - **xkb and repeat.** `SeatPart::new` already compiled the keymap from `KeyboardSettings`; `xkb_of` is the names the seat
@@ -987,22 +987,22 @@ Nothing here compiled (no builds this lane).
 
 Nothing here compiled (no builds this lane). `todo!()` left for the lane: 0.
 
-- **Shape.** `casement::xwayland`: `Listening` (binds `<dir>/X<n>` and the abstract `@<dir>/X<n>`, first free `n` up to 63,
+- **Shape.** `compositor::xwayland`: `Listening` (binds `<dir>/X<n>` and the abstract `@<dir>/X<n>`, first free `n` up to 63,
   removes the path socket on drop), `XwaylandState::{Off, Listening, Running}`, `bind` (config to state), `serve` (a client
   waiting on a socket starts satellite once, through the `Spawner` seam), `reap` (a satellite child that exited returns the
   state to `Listening`, so the next client restarts it), `env` (`DISPLAY`, exported from the moment the sockets are bound, so
   satellite is started on demand, not at login). `Xwayland::start` changed from the freeze signature: it takes the bound
   `Listening` and the `WaylandSocket` name and hands the sockets back on failure; a failed start is retried next turn.
 - **Satellite's command line** is `<binary> :N -listenfd <fd> -listenfd <fd>` with `WAYLAND_DISPLAY` in its environment; the
-  fds are `try_clone`d so casement keeps the sockets across restarts. `-listenfd` is from satellite's README (v0.8.3): a real
+  fds are `try_clone`d so the compositor keeps the sockets across restarts. `-listenfd` is from satellite's README (v0.8.3): a real
   run must confirm it takes both the path and the abstract socket this way. `-glamor none` (SP6: `off` panics satellite) is
   not in the argv; `dev/lib/x11probe.sh` adds it through a wrapper script for the jail.
 - **Wiring (shared `run.rs`, three lines):** `xwayland::attach` after the Wayland socket exists, `xwayland::turn` each loop
-  turn. `attach` prints `casement: X11 display :N` on stderr; `x11_compositor` reads it from casement.log.
+  turn. `attach` prints `compositor: X11 display :N` on stderr; `x11_compositor` reads it from compositor.log.
 - **For P1-I1:** `exec/spawn.rs::spawn_program` should add `state.xwayland.env()` to the program's environment (its doc
   says so; nothing here edits it). `reap` uses `waitpid(WNOHANG)`, which sees only a child of this process, so P1-I1's
   `ProcessSpawner` must keep the satellite as a plain child (no double fork, SIGCHLD not ignored).
-- **`casement-x11probe`** (x11rb 0.13, new workspace dependency, already in the lock via smithay/winit): `session` reads
+- **`compositor-x11probe`** (x11rb 0.13, new workspace dependency, already in the lock via smithay/winit): `session` reads
   commands on stdin (`map`, `unmap`, `close`, `focus`, `activate`, `info`, `own-clipboard`, `paste`, `sync`, `quit`), prints
   `x11: ...` lines. The loop polls the connection every 10 ms (a stdin thread feeds a channel) because `RustConnection`'s
   `AsFd` could not be checked.
@@ -1027,7 +1027,7 @@ Nothing here compiled (no builds this lane). `todo!()` left: 0. Shared files tou
   (2) mixed scale: whether `Xft.dpi` is one value per screen and how a window moved between outputs looks and is sized
   (`xwayland-scale.sh` records it; judge sharpness by eye); (3) clipboard with large (INCR) and image content, and
   `PRIMARY`; (4) drag and drop between an X11 and a Wayland window; (5) whether `_NET_ACTIVE_WINDOW` from an X11 app
-  reaches casement as an activation request with a valid token, and whether a focus-stealing X11 window is refused;
+  reaches the compositor as an activation request with a valid token, and whether a focus-stealing X11 window is refused;
   (6) that a satellite which exits at start is held after four starts and a waiting client is served after the window
   (kill it in a loop); (7) that the held state logs nothing at `warn` (a person sees only that the program waits; check the
   wording is enough or promote it).
@@ -1046,10 +1046,10 @@ Nothing here compiled (no builds this lane). `todo!()` left: 0. Shared files tou
   the release (`InhibitReleased`). Every mode counts as held; `wait_released` is how a test sees the sleep may go on.
 - **`PauseDevice` and `ResumeDevice` are signals** in real logind (the brief calls them recorders): the fake sends them
   (`pause_device`, `resume_device`) and records the session's answer, `PauseDeviceComplete`.
-- **Control interface** `org.bardo.Casement.FakeLogind1` at `/org/bardo/Casement/FakeLogind1` (Lock, Unlock,
+- **Control interface** `org.bardo.Compositor.FakeLogind1` at `/org/bardo/Compositor/FakeLogind1` (Lock, Unlock,
   PrepareForSleep(b), Calls, HeldInhibitors) lets a jailed scenario drive the `fake-logind` binary with `busctl`; the binary
   takes the address from argv[1] or `DBUS_SYSTEM_BUS_ADDRESS` and refuses to start without one.
-- **`PrivateBus`** (testkit, `fakes::PrivateBus`) is the casement-ipc test helper made public: dbus-daemon on
+- **`PrivateBus`** (testkit, `fakes::PrivateBus`) is the compositor-ipc test helper made public: dbus-daemon on
   `dev/private-bus.conf`, cleared environment, killed on drop. D1's session tests use it with `FakeLogind::serve`.
 - **Tests** use `zbus::export::futures_core::Stream` (doc-hidden re-export) to poll signal streams, to avoid a new dependency.
 - **Unverified (no builds this lane).** `fakes/logind/signals.rs` (`SignalEmitter::emit` bounds, `Fd::from(&OwnedFd)`),
@@ -1131,14 +1131,14 @@ Nothing here compiled (no builds this lane). `todo!()` left for the lane: none.
 
 Nothing here compiled (no builds this lane).
 
-- **Scheduler** (`casement-core/src/frame/`): `predict` is the worst of the last 8 render costs (8 ms when empty): a
+- **Scheduler** (`compositor-core/src/frame/`): `predict` is the worst of the last 8 render costs (8 ms when empty): a
   missed vblank costs more than rendering a little early. `next_deadline` takes the first vblank after `now` whose
   `vblank - (predicted + slack) >= now`, looking at most 600 vblanks ahead. `judge` counts `presented - wanted`
   vblanks (early is on time).
 - **Cursor plane policy: hardware when the output has a cursor plane and the logical cursor size scaled to physical
   pixels (rounded up) fits the plane's largest size; composited otherwise.** No downscaling to fit. The real
   compositor (smithay `DrmCompositor`) promotes or composites the cursor element itself; `cursor_plane_for` is what
-  casement uses to pick the cursor image size and to report the choice. A hardware run must check: plane size caps
+  The compositor uses to pick the cursor image size and to report the choice. A hardware run must check: plane size caps
   (`DRM_CAP_CURSOR_WIDTH/HEIGHT`) are read into `CursorPlaneCaps` by P1-D2's `kms_real`, the pointer stays one frame
   fresh when it moves with no other damage, and VRR panels do not stutter with the cursor on a plane.
 - **Seam changes** (`tty/surface.rs`): `QueuedFrame<'a>` gained `Draw(&dyn FrameSource)` (the surface draws with the
@@ -1161,14 +1161,14 @@ Nothing here compiled (no builds this lane).
   else the lowest node; with none driving a monitor the same rule over all GPUs. `gpu.render = <by-path id>` picks that
   GPU (an id detection does not list is `PlanRefusal::UnknownGpu`, also with an empty list). Scanout stays on the GPU
   that drives each connector. The owner's machine (AMD iGPU on the panel, NVIDIA dGPU) is a table case in
-  `casement-core/tests/it/gpu.rs`; no code names it.
+  `compositor-core/tests/it/gpu.rs`; no code names it.
 - **Feedback** (`core/gpu/feedback.rs`): a Render tranche (render GPU), then one Import tranche per other GPU that scans
   an output out, each format-and-modifier only at its first tranche, empty tranches left out. There is **no Scanout
   tranche yet**: it needs the KMS planes' formats, which `FormatTable` does not carry (P1-D2/D3 add them).
 - **Tagging (A5).** The linux-dmabuf protocol does not tell the server which tranche a client allocated from, so
   `DmabufPart::source_device(format)` answers with the target of the tranche that offers the buffer's format and
   modifier (unambiguous because `feedback_for` offers each pair once; the main device for a pair nobody offers). The
-  handler in `casement/src/handlers/dmabuf.rs` still does the `DrmNode` conversion (B6 keeps drm out of the protocol
+  handler in `compositor/src/handlers/dmabuf.rs` still does the `DrmNode` conversion (B6 keeps drm out of the protocol
   crate); it was not moved into the render-node adapter. `backend::gpu::tag_node` is the same rule on the plan.
 - **Departures.** (1) `SysRenderNodes` is no longer behind the `tty` feature: it only reads files, and the test kit
   must run it over the fabricated tree. (2) `GpuStack` gained `handles` (open render and scanout nodes; `#[non_exhaustive]`)
@@ -1186,9 +1186,9 @@ Nothing here compiled (no builds this lane).
 - **Counters asserted** (`tests/it/topology`): Direct is B `bind_dmabuf` 1, no `copy_texture`, no A `import_memory`,
   A `import_dmabuf` >= 1 (SP4 saw 2; the exact figure is unexplained, so it is a lower bound); CopyOnly is B
   `copy_texture` 1, A `import_memory` 1, B `bind_dmabuf` 0.
-- **Most likely not to compile:** `casement-backend/src/gpu/soft.rs` (the `Frame`/`Renderer` delegation against smithay
-  dc7ca68; SP4 ran e3d461a), `casement-testkit/src/gpu/soft_api.rs` (`GraphicsApi` bounds), `tests/it/topology/support.rs`
-  (generic `draw` over `MultiRenderer`), `casement-wayland/src/dmabuf.rs` (`add_preference_tranche` fold).
+- **Most likely not to compile:** `compositor-backend/src/gpu/soft.rs` (the `Frame`/`Renderer` delegation against smithay
+  dc7ca68; SP4 ran e3d461a), `compositor-testkit/src/gpu/soft_api.rs` (`GraphicsApi` bounds), `tests/it/topology/support.rs`
+  (generic `draw` over `MultiRenderer`), `compositor-wayland/src/dmabuf.rs` (`add_preference_tranche` fold).
 - **Real hardware must check:** that `/sys/dev/char/226:N/device/drm/card*/card*-*/status` exists on the target kernel
   (connector status is read from there, not from `/sys/class/drm`); that the by-path link set matches the `gpu.render`
   ids Settings shows; a hybrid laptop with the NVIDIA proprietary driver (its render node may list no connectors, and
@@ -1197,7 +1197,7 @@ Nothing here compiled (no builds this lane).
 ## p1-t: tty integration (2026-10-11)
 
 Nothing here compiled (no builds this lane). P1-T joins what D1 to D4, I1, M1 and C1 each left loose, so that
-`casement --backend tty` is one path. The definition of done is `tests/it/tty/integration.rs`: the real `State` over
+`bardo-compositor --backend tty` is one path. The definition of done is `tests/it/tty/integration.rs`: the real `State` over
 `TtyWorld`'s fakes (session, udev, KMS, input, GPUs) starts with two outputs, presents frames, switches VT away and
 back, hotplugs, goes dark and lit (DPMS), loads a gamma ramp, captures an output, takes input and suspends and resumes
 through the fake logind on a private bus.
@@ -1206,7 +1206,7 @@ through the fake logind on a private bus.
 
 - **Input.** `input::InputFeed` (a seam beside `InputDevices`) is the seat's input: `poll(&PollContext)` returns
   `FedInput::{Appeared, Gone, Event}`, `suspend`/`resume` follow the seat. It lives in **`TtySeams::input`, not in
-  `casement::Seams`**: the real feed needs the libseat handle `real_seams` builds, so the slot sits with the session it
+  `compositor::Seams`**: the real feed needs the libseat handle `real_seams` builds, so the slot sits with the session it
   must share. `RealInputFeed` opens libinput through smithay's `LibinputSessionInterface` over a libseat handle (never
   direct opens), reads it as an event source and queues raw events; `poll` converts them with `input_kind_of`, one
   generic conversion over smithay's input traits (round-tripped against the virtual backend in
@@ -1216,9 +1216,9 @@ through the fake logind on a private bus.
   and the bindings), which calls `TtyBackend::request_vt` and takes the press (its release is swallowed too).
   `modified_syms()` is what is read, because the chord's raw symbol is `F3`. The **scroll factor** (I1's open item) is
   applied where the tty loop takes the event in (`scaled_scroll`, per profile by the event's origin class).
-- **Suspend.** `casement_ipc::sleep::SleepWatch` is a thread (current-thread tokio runtime, like `ZbusShellCalls`) that
+- **Suspend.** `compositor_ipc::sleep::SleepWatch` is a thread (current-thread tokio runtime, like `ZbusShellCalls`) that
   subscribes to `PrepareForSleep` on the system bus (or the private bus a test gives) and holds a `sleep` delay
-  inhibitor while awake. `casement::suspend::watch` joins it to the session's `SleepLink` (`tty::sleep_channel`): on
+  inhibitor while awake. `compositor::suspend::watch` joins it to the session's `SleepLink` (`tty::sleep_channel`): on
   `true` it sends `Paused` and **waits (2 s at most) until the backend acted on it** (`TtySession::settled`, called by
   `dispatch` after the devices were paused), then releases the inhibitor; on `false` it sends `Activated` and takes the
   inhibitor again. `RunConfig::sleep_bus` (`SleepBus::System` by default) names the bus; `run` attaches it for a tty
@@ -1257,7 +1257,7 @@ through the fake logind on a private bus.
   noted for the next tick. `Scanout::deadline` (the scheduler) is not used by the loop. The real surface counts vblanks
   itself (`RealScanout::next`), not the kernel's sequence, so a missed vblank is **not measured on hardware** (the fake
   presents on time by construction; the scheduler is covered by the D3 virtual-clock suite).
-- **One GLES renderer per KMS device**, shared by its outputs, made with `casement_render::gles_on(gbm)`. The cross-GPU
+- **One GLES renderer per KMS device**, shared by its outputs, made with `compositor_render::gles_on(gbm)`. The cross-GPU
   copy (render GPU draws, another scans out) is not wired to real devices: a second GPU's outputs are drawn by that
   GPU. `gles_on` generalizes `surfaceless_gles`'s two `unsafe` calls over any native display; **no new `unsafe` block**,
   but the signature of the one unsafe module changed.
@@ -1299,45 +1299,45 @@ through the fake logind on a private bus.
 (`RunConfig::sleep_bus`, `suspend::attach`), `core_loop.rs` (the tty arm of `frame`), `core_loop/deliver.rs` (the VT
 chord in the key filter), `lib.rs` (`suspend`), `ARCHITECTURE.md` (seam signatures), `scripts/check-boundary.sh`,
 `FINDINGS.md`. No `Cargo.toml` or `Cargo.lock` changed; `tokio`'s `sync` feature (workspace) is used by
-`casement-ipc::sleep`.
+`compositor-ipc::sleep`.
 
 ### Spots most likely not to compile
 
-`casement-backend/src/tty/{kms_real,surface_real}.rs` (`DrmCompositor::new`'s argument types: `Size<u32, Buffer>` for
+`compositor-backend/src/tty/{kms_real,surface_real}.rs` (`DrmCompositor::new`'s argument types: `Size<u32, Buffer>` for
 the cursor size, `Some(gbm)`; `OutputModeSource::Static`; `DrmEvent` arms; `gbm::Device::new(DrmDeviceFd)`),
 `input/libinput_real.rs` (`Event::<LibinputInputBackend>::device`, `LibinputInputBackend::new(context.clone())`,
 `insert_source` error type), `gpu/formats_real.rs` (`ImportDma::dmabuf_formats().iter()` items, `Format::code as u32`),
-`input/convert.rs` (the generic helpers' bounds: `placed::<B, _>`), `casement-ipc/src/sleep.rs` (`MatchRule` builder
+`input/convert.rs` (the generic helpers' bounds: `placed::<B, _>`), `compositor-ipc/src/sleep.rs` (`MatchRule` builder
 errors, `Message::body().deserialize`, `tokio::select!` with `&mut oneshot::Receiver`), `core_loop/deliver.rs` (the
-filter closure now takes `state`), `casement-testkit/tests/it/tty/integration.rs` (client helper signatures).
+filter closure now takes `state`), `compositor-testkit/tests/it/tty/integration.rs` (client helper signatures).
 
 ## smithay fork 9c8f762a (2026-10-11)
 
 The typed fuzz box (seed 8, once P1-C1's globals shifted object ids) panicked smithay: `wl_subsurface.place_above`
 or `place_below` with the sub-surface itself as the reference removed it from its parent's list and inserted past
 the end. The protocol makes that reference a `bad_surface` error; the fork's `PrivateSurfaceData::reorder` now
-refuses it (branch `casement`, 9c8f762a on dc7ca684). An upstream PR waits for the owner's word (upstream PRs on
+refuses it (branch `compositor`, 9c8f762a on dc7ca684). An upstream PR waits for the owner's word (upstream PRs on
 hold).
 ## p1-v: vkms acceptance and writeback goldens (2026-10-11)
 
 Nothing here compiled or run (no builds, no vkms). User-run only (C3).
 
 - **Delivered:** `dev/vkms/accept.sh` and `README.md` (the person's setup commands, what each step asserts);
-  `casement-testkit/src/writeback.rs` (pure: `decode`, `tolerance`, `compare_raw`, `PixelFormat`, `RawFrame`), the
+  `compositor-testkit/src/writeback.rs` (pure: `decode`, `tolerance`, `compare_raw`, `PixelFormat`, `RawFrame`), the
   `writeback-compare` binary (copied by `dev/bootstrap.sh` next to the other tools), tests in `tests/it/writeback.rs`
   (run in the normal gate), and a scene `empty-desktop-1024x768` in `tests/it/scene`.
 - **The golden PNG does not exist yet.** `tests/golden/scenes/empty-desktop-1024x768.png` is created by one
-  `CASEMENT_BLESS=1` run of the scene test (the lane could not render). Until it is blessed the scene test fails with
+  `COMPOSITOR_BLESS=1` run of the scene test (the lane could not render). Until it is blessed the scene test fails with
   "differs (golden missing)"; bless, review the image, commit. The scene assumes output spec
   `HEADLESS-1:1024x768@60000:120:0,0` (120 = 1x) and the pointer at the middle.
-- **Departure: the script cannot run end to end today.** casement has no way to run the tty backend on one named
+- **Departure: the script cannot run end to end today.** the compositor has no way to run the tty backend on one named
   node: the real seams use libseat and `GpuChoice::Auto`, which would take the person's real VT and GPU. So the script
-  needs four hooks on casement, listed in its header ("casement contract") and probed with `casement --help`
+  needs four hooks on the compositor, listed in its header ("the compositor contract") and probed with `bardo-compositor --help`
   (exit 4 when missing): `--drm-node PATH` (direct fd on that node, checks driver `vkms`), `--kms-report FILE` (JSON
   lines: flips, missed, seat, outputs with name/mode/power), `--writeback-raw PATH` (on SIGHUP, one writeback frame as a
   raw buffer plus `PATH.meta` "W H PITCH FOURCC"), SIGUSR1/SIGUSR2 as session Paused/Activated. KMS writeback is not in
   the backend at all (`Kms` has no writeback connector); a follow-up lane (P1-D2/D3 owners) adds it behind
-  `--drm-node` mode only. `casementctl` is jail-only, so the script cannot use it; DPMS goes through `wlopm`
+  `--drm-node` mode only. `bardo-compositorctl` is jail-only, so the script cannot use it; DPMS goes through `wlopm`
   (wlr-output-power-management, P1-M1).
 - **Hotplug is a status flip, not mkdir/rmdir.** Connector subitems created by the kernel after the setup are
   root-owned in configfs, so a user cannot link `possible_encoders` or write `status` on a connector it created. The
@@ -1356,20 +1356,20 @@ Nothing here compiled or run (no builds, no vkms). User-run only (C3).
 Nothing here compiled or run (no builds, no vkms). `dev/vkms/accept.sh` can now run end to end in principle; it is
 still user-run only (C3).
 
-- **Built.** `casement --backend tty --drm-node PATH [--kms-report FILE] [--writeback-raw PATH]`, a test mode that
+- **Built.** `bardo-compositor --backend tty --drm-node PATH [--kms-report FILE] [--writeback-raw PATH]`, a test mode that
   `--help` says is one. `--drm-node` needs `--backend tty` and the other two need `--drm-node` (`CliError::Needs`).
   `StartConfig::tty: TtyMode::{Seat, Direct(DirectTty)}`; `state.rs` picks `direct_seams` for `Direct` (the file's
   FROZEN header notwithstanding: the same interface ask P1-T made).
-  - *Direct seams* (`casement-backend/src/tty/direct.rs`, pure; `direct_real.rs`, adapter): the node is opened once by
+  - *Direct seams* (`compositor-backend/src/tty/direct.rs`, pure; `direct_real.rs`, adapter): the node is opened once by
     path, as the user, and `DrmDeviceFd::get_driver()` (the DRM version ioctl) must say `vkms` (`require_vkms`) or
     startup fails before anything else is built. `DirectSession` (a `TtySession`) opens nothing and refuses VT
     switches; its notes come only from its `SleepLink`. `FixedNode` is the one `DeviceSource`. `NoGpus` is the
     `RenderNodes` (nothing enumerated, so no render plan and no dma-buf feedback: clients get shm). No `InputFeed`: no
     libinput, so no other device is opened. libseat and logind are not touched; `run` skips `suspend::attach`.
-  - *Signals.* `casement-ipc/src/signals.rs`: a thread with a current-thread tokio runtime waits for SIGUSR1, SIGUSR2
+  - *Signals.* `compositor-ipc/src/signals.rs`: a thread with a current-thread tokio runtime waits for SIGUSR1, SIGUSR2
     and SIGHUP. **New feature on an existing dependency**: tokio's `signal` (workspace `Cargo.toml`); no new crate and
     no lock change (`signal-hook-registry` is already there through tokio's `process`). calloop's `signals` needs `nix`,
-    which is not in the lock; signal-hook-registry's `register` is `unsafe`. `casement/src/test_mode.rs` maps SIGUSR1 to
+    which is not in the lock; signal-hook-registry's `register` is `unsafe`. `compositor/src/test_mode.rs` maps SIGUSR1 to
     `SleepLink::paused` and SIGUSR2 to `SleepLink::activated`, the path a suspend takes, so a simulated VT switch runs
     the same `TtyBackend::dispatch` code as a real pause.
   - *Hotplug.* There is no udev monitor in this mode, so `FixedNode::next_event` reports the node `Changed` once every
@@ -1404,17 +1404,17 @@ still user-run only (C3).
 
 ## p1-sh
 
-Added `casement --state-home DIR` (an explicit directory always wins, headless included; without it headless stays
-ephemeral and the others use `$XDG_STATE_HOME/casement`, else `$HOME/.local/state/casement`) and
-`casement-probe workspaces` (one JSON line per workspace: `id`, `name`, `group`, `active`). The placement decision is
-a pure function in `casement/src/main.rs` over (flag, backend, env). `State::new` builds its store from
+Added `bardo-compositor --state-home DIR` (an explicit directory always wins, headless included; without it headless stays
+ephemeral and the others use `$XDG_STATE_HOME/compositor`, else `$HOME/.local/state/compositor`) and
+`compositor-probe workspaces` (one JSON line per workspace: `id`, `name`, `group`, `active`). The placement decision is
+a pure function in `compositor/src/main.rs` over (flag, backend, env). `State::new` builds its store from
 `Seams::real(&config.state_home)` for every backend, so headless needed no wiring to save and load `spaces.toml`.
 Surprise: `cargo fmt -p` needs the sibling checkouts, absent in this worktree, so the files were formatted with
 `rustfmt --edition 2024`; nothing was compiled by the lane.
 
 ## p1-sh follow-up: the probe's tap (2026-10-11)
 
-- `casement-probe workspaces` timed out in the desktop scenario: a `TestClient` talks through its tap, which relays
+- `compositor-probe workspaces` timed out in the desktop scenario: a `TestClient` talks through its tap, which relays
   bytes only when the client is pumped. The verb pumped only the side-queue watch, so the binds never left the tap.
   Fixtures pump the client every round, which is why the in-process tests never saw it. Any probe verb built on a
   side-queue watch must pump the client too.
@@ -1423,19 +1423,19 @@ Surprise: `cargo fmt -p` needs the sibling checkouts, absent in this worktree, s
 
 Nothing here compiled or run (the lane does not build).
 
-- **Verbs** (`casement-probe session`, one `probe: {json}` note each; a failure is `{"error": "..."}`):
+- **Verbs** (`compositor-probe session`, one `probe: {json}` note each; a failure is `{"error": "..."}`):
   `shell-connect` calls `org.bardo.Compositor1.Connect("shell")` on `$DBUS_SESSION_BUS_ADDRESS`, runs the first roundtrip on the
   returned fd and makes it the session's client (surfaces made earlier go with the old connection; the session rebinds
   its seat, wm_base and clipboard on the new one); `shell-role ROLE LAYER` (bar, dock, launcher, switcher, overview,
   notifications, osd, control-centre, wallpaper, widget) calls `set_role` on a layer surface made after `shell-connect`;
   `minimise-target TOPLEVEL X Y W H` sets the target local to the surface that last got the dock role;
   `minimise-clear TOPLEVEL` clears it. TOPLEVEL is a window identifier (`w<id>`): the session cannot map its own toplevel
-  names to identifiers (they are on another connection), so read the identifier from `casementctl debug windows`.
-- **Environment.** The scenario starts casement with `CASEMENT_DEBUG_PEER_UNITS="casement-probe=sill.service"` (see
-  debug-role; comm is cut to 15 bytes and `casement-probe` is 14), so the jailed probe's unit reads as `sill.service`.
-- **Dependency.** `casement-testclient` gained `zbus` and `tokio` (the bus call, on a throwaway current-thread runtime);
+  names to identifiers (they are on another connection), so read the identifier from `bardo-compositorctl debug windows`.
+- **Environment.** The scenario starts the compositor with `COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=sill.service"` (see
+  debug-role; comm is cut to 15 bytes and `compositor-probe` is 14), so the jailed probe's unit reads as `sill.service`.
+- **Dependency.** `compositor-testclient` gained `zbus` and `tokio` (the bus call, on a throwaway current-thread runtime);
   `Cargo.lock` was edited by hand. B9 (no smithay) is unaffected.
-- **Debug windows.** `casementctl debug windows` rows gained `identifier` (`w<id>`) and `minimise_target` (`[x, y, w, h]`
+- **Debug windows.** `bardo-compositorctl debug windows` rows gained `identifier` (`w<id>`) and `minimise_target` (`[x, y, w, h]`
   global, or `null`), so a scenario can assert the stored rectangle.
 - Every verb pumps nothing itself: the session loop pumps the client each turn, so requests leave the tap on the next
   turn (wait for the `done N` note, then for the next turn, before asserting on `debug windows`).
@@ -1445,18 +1445,18 @@ Nothing here compiled or run (the lane does not build).
 Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.16 over 22. Fill lanes:
 `~/rs-wt/compositor-scope/23-P2-FILL-LANES.md`. The stubs and ignored tests are in the P2-Z table above.
 
-- **Built (implemented).** `casement-core`: `desktop` (`DesktopRequest`, `AppAsk`, `WindowAsk`, `SpaceAsk`,
+- **Built (implemented).** `compositor-core`: `desktop` (`DesktopRequest`, `AppAsk`, `WindowAsk`, `SpaceAsk`,
   `DesktopNote`, `DesktopRef`) and `shell` (`ShellRequest`, `ShellNote`); `Event::{Desktop, Shell}`, `Effect::{Desktop,
   Shell}`, `CoreNote::Deferred(Deferred)`; `GlobalKind::{ToplevelCapture, BardoDesktop, BardoShell}` with their I7 rows
   (a `Tier` beside the sandbox table); `LayerBook::role_holder`; the model's routing of both new events
   (`model/desktop_requests.rs`, `model/shell_requests.rs`: roles, dock-local minimise targets, and every desktop ask that
   an existing machine already carries, reached through `wlr_request`, `place`, `workspace_request`, `activation`,
-  `hide_app`, `hide_others`, `close_all_of`). `casement-wayland`: feature `shell-protocols` (A8), `bardo::{desktop, shell}`
+  `hide_app`, `hide_others`, `close_all_of`). `compositor-wayland`: feature `shell-protocols` (A8), `bardo::{desktop, shell}`
   with the part, handler trait, global and object dispatch, the refusal of management on an agent connection
   (`Standing`), the object makers, and `capture_source` (types, the book, `capture_size`, the part);
-  `window_of_identifier`. `casement-agent`: `Handed`, `RefuseWhy::NoSocket`. `casement-ipc`: `Compositor1` (object, types,
+  `window_of_identifier`. `compositor-agent`: `Handed`, `RefuseWhy::NoSocket`. `compositor-ipc`: `Compositor1` (object, types,
   `parse_connect_role`, `ConnectRefusal::to_error`), `serve_compositor_at`, the `PeerCgroups` seam, `IpcHandles::compositor`.
-  `casement`: `connect::attach`, `CompositorBus`, `RunConfig::with_compositor_bus`, the handler files, the exec arms,
+  `compositor`: `connect::attach`, `CompositorBus`, `RunConfig::with_compositor_bus`, the handler files, the exec arms,
   `AgentState::handed`, the state fields and constructor calls. The test kit: `FakeCgroups`.
 - **Departure: the two `bardo` globals and the window-capture global are declared, not created.** The task wanted the
   globals behind the filter. `bardo::{desktop, shell}::GLOBAL` is a constant (`Advertised::Not`) in front of the
@@ -1471,11 +1471,11 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
   only for both; 20 §4.2 (`advertised on Shell and Agent connections only`), 03 and the XML (`not_permitted` on an agent
   connection) say the agent tier reads the desktop. `bardo_shell_v1` is `Shell` only. The agent's management requests are
   refused in the dispatch (`Standing::ReadOnly`), before any event is made.
-- **Departure: `hand_out` no longer takes a `DisplayHandle`.** `casement-agent` cannot build a client's data (its key and
-  its gone queue live in `casement-wayland`'s `ClientState`), so it makes the decision and the socket pair
-  (`Handed { role, server, client }`) and `casement::connect::answer` inserts the server end with
+- **Departure: `hand_out` no longer takes a `DisplayHandle`.** `compositor-agent` cannot build a client's data (its key and
+  its gone queue live in `compositor-wayland`'s `ClientState`), so it makes the decision and the socket pair
+  (`Handed { role, server, client }`) and `compositor::connect::answer` inserts the server end with
   `clients::insert_client`. `CallerUnit::of_cgroup` is new: the unit comes from the peer's `/proc/<pid>/cgroup`, read by
-  casement-ipc through the `PeerCgroups` seam (fake `FakeCgroups`), because the question must reach the loop as data.
+  compositor-ipc through the `PeerCgroups` seam (fake `FakeCgroups`), because the question must reach the loop as data.
 - **Departure: `ShellNote::MinimiseTarget` carries a `WindowId`, not the identifier string.** The wire layer turns the
   `ext_foreign_toplevel_list` identifier (`w<id>`, `window_of_identifier`) into the id; the model keys everything by
   `WindowId`. `ShellRequest::MinimiseTarget` carries the dock `LayerKey` and the rectangle local to it; the model makes it
@@ -1491,40 +1491,40 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
   `Model::step` had to grow two arms; 04's wording ("`bardo_toplevel`, `bardo_space`") is superseded by `bardo_desktop_v1` (C6).
 - **A8 is partial.** The `shell-protocols` feature gates the two new servers and their `WaylandStates` fields. `bardo_window` stays
   outside it: every app and shell-host's identity probe use it, and moving it needs a conditional field in the P0 aggregate for
-  no consumer yet. `casement` names the feature explicitly; the workspace dependency keeps the default.
+  no consumer yet. `compositor` names the feature explicitly; the workspace dependency keeps the default.
 - **Open items this freeze adds.** (1) A dock's `set_minimise_target` and a window-list client's `set_rectangle` write one
   table; the shell's target should win while a dock is bound (decide in P2-Q2). (2) `ContentStamp` needs a commit counter
   per window surface tree: P2-Q3 counts commits in `handlers/compositor.rs` (every commit, subsurfaces included, enters
   `CompositorHandler::commit` there) and calls `apply_content`. (3) The testclient helpers (`bardo/desktop.rs`, `bardo/shell.rs`, `capture/toplevel_source.rs`)
   are still one-line stubs: each lane writes its own, on `desktop_client`'s reducers where it can (as `capture/` does).
-  (4) `Compositor1` is served on the session bus whenever `$DBUS_SESSION_BUS_ADDRESS` is set, so a casement started before
+  (4) `Compositor1` is served on the session bus whenever `$DBUS_SESSION_BUS_ADDRESS` is set, so a compositor started before
   P2-Q2 owns the name and `Connect` never answers; harmless (nothing calls it), and a name clash only logs.
-- **Shared files touched** (outside the new modules): `casement-core` `event.rs`, `effect.rs`, `lib.rs`, `model.rs`,
+- **Shared files touched** (outside the new modules): `compositor-core` `event.rs`, `effect.rs`, `lib.rs`, `model.rs`,
   `model/commands.rs` and `model/wlr_requests.rs` (three methods `pub(super)`), `layer/book.rs`, `policy/globals.rs`;
-  `casement-wayland` `Cargo.toml`, `lib.rs`, `states.rs`, `foreign_toplevel_list.rs`; `casement` `Cargo.toml`, `lib.rs`,
+  `compositor-wayland` `Cargo.toml`, `lib.rs`, `states.rs`, `foreign_toplevel_list.rs`; `compositor` `Cargo.toml`, `lib.rs`,
   `main.rs`, `run.rs`, `state.rs`, `exec.rs`, `handlers/mod.rs`, `handlers/image_capture.rs` (four early returns for window
-  sources), `casement-ipc` `error.rs`, `handles.rs`, `dbus/mod.rs`; the test kit's `fakes/mod.rs`, `fuzz/oracles.rs`,
+  sources), `compositor-ipc` `error.rs`, `handles.rs`, `dbus/mod.rs`; the test kit's `fakes/mod.rs`, `fuzz/oracles.rs`,
   `tests/it/globals.rs`, `tests/it/protocol/mod.rs`, `tests/it/protocol/bardo_window.rs`; `ARCHITECTURE.md`.
-- **Spots most likely not to compile.** `casement-wayland/src/bardo/desktop.rs` (`Makers`' non-capturing closures coerced to
+- **Spots most likely not to compile.** `compositor-wayland/src/bardo/desktop.rs` (`Makers`' non-capturing closures coerced to
   `fn` pointers over a generic `D`; `Output::from_resource`; `ForeignToplevelHandle::from_resource`; the borrows of
   `DesktopParts` in the dispatch arms), `bardo/shell.rs` (`post_error` on `BardoShellV1`; the `Request::SetRole` field
-  types `WEnum<ShellRole>`), `casement-ipc/src/dbus/compositor1.rs` (`#[zbus::interface]` with a `todo!()` body and the
-  `zbus::zvariant::OwnedFd` return), `casement-core/src/model/shell_requests.rs` (`Arranged::place`, the partial moves
-  out of `self`), `casement/src/handlers/image_capture.rs` (`return capture_source::new_session(self, session, window)` moves
-  `session` after `session.source()`), `casement/src/exec.rs` (the new `ShellNote` import beside `mod shell`),
-  `casement-wayland/src/capture_source.rs` (`ImageCaptureSourceHandler` as the bound of `new`), and
-  `casement/src/state.rs` (the three `::<State>` constructor bounds through the blanket `delegate_dispatch2!`).
+  types `WEnum<ShellRole>`), `compositor-ipc/src/dbus/compositor1.rs` (`#[zbus::interface]` with a `todo!()` body and the
+  `zbus::zvariant::OwnedFd` return), `compositor-core/src/model/shell_requests.rs` (`Arranged::place`, the partial moves
+  out of `self`), `compositor/src/handlers/image_capture.rs` (`return capture_source::new_session(self, session, window)` moves
+  `session` after `session.source()`), `compositor/src/exec.rs` (the new `ShellNote` import beside `mod shell`),
+  `compositor-wayland/src/capture_source.rs` (`ImageCaptureSourceHandler` as the bound of `new`), and
+  `compositor/src/state.rs` (the three `::<State>` constructor bounds through the blanket `delegate_dispatch2!`).
 
 ## p2-q1: the desktop manager (2026-10-11)
 
 Nothing here compiled or run (the lane does not build). Plan: 23 §1. The eleven `todo!()` of the lane and the nine
 ignored tests are gone; their rows left the P2-Z table.
 
-- **Built.** `casement-wayland::bardo::desktop`: `on_bind`, `on_get_window_for`, `on_create_space`, `on_stop`, `on_app`,
+- **Built.** `compositor-wayland::bardo::desktop`: `on_bind`, `on_get_window_for`, `on_create_space`, `on_stop`, `on_app`,
   `on_window`, `on_space`, `apply_note`, and two child files (`desktop/facts.rs`, `desktop/bound.rs`). An object's
   state is a value (`AppFacts`, `WindowFacts`, `SpaceFacts`, `ActiveFacts`); each bound manager keeps what each of its
   objects was last told (`Told`) and sends only the events whose value differs, so the same note twice sends nothing
-  the second time and a new object gets every event. `casement-core`: `WindowAsk::ToSpace`, `WindowAsk::Assign`,
+  the second time and a new object gets every event. `compositor-core`: `WindowAsk::ToSpace`, `WindowAsk::Assign`,
   `SpaceAsk::MoveTo` (`model/desktop_places.rs`) and the emission of `Effect::Desktop` (`model/desktop_notes.rs`, a
   snapshot before and after each step beside `Published`), in the order Spaces, apps, windows, active, then what went.
   The test client: `bardo::desktop::DesktopWatch` (a side queue, like `WorkspaceWatch`; it also binds the window list so
@@ -1549,7 +1549,7 @@ ignored tests are gone; their rows left the P2-Z table.
 - **Departure: bind order.** Spaces, apps, then a `window` event for every window, then each window's burst, `active`,
   `done`. The XML says "an app, window and space event for each"; a window's burst names its app, Space and parent, so
   those objects exist first. The golden `bardo_desktop-bind.txt` was written by hand from the code and may need one
-  `CASEMENT_BLESS=1` run; check the diff by eye (the masked events are the ones that depend on the run).
+  `COMPOSITOR_BLESS=1` run; check the diff by eye (the masked events are the ones that depend on the run).
 - **Departure: the refusal is raised on the object the request was made on** (the frozen glue's `refused`), with the
   manager's `not_permitted` code (0). The XML says the manager's; a client reads an error code in the object's own
   interface. Fixing it means finding the manager from an app, window or Space object (a lookup in `part.bound`); the tests
@@ -1564,22 +1564,22 @@ ignored tests are gone; their rows left the P2-Z table.
   cross-protocol enum paths `bardo_window_v1::bardo_window_v1::{Emphasis, PlacementMark, WindowRole}`,
   `bardo_sensitive_v1::bardo_sensitive_surface_v1::SensitivityLevel`, `bardo_agent_v1::bardo_agent_lease_v1::GlowState`;
   `Output::client_outputs(..).next()`), `bardo/desktop/bound.rs` (the field-by-field borrows in `window()`; `Told` and
-  `Asked` public in a private module), `casement-core/src/model/desktop_places.rs` (`window_to_space`'s borrows),
-  `casement-testclient/src/bardo/desktop/roster.rs` (client event field names and `event_created_child!`), and the
+  `Asked` public in a private module), `compositor-core/src/model/desktop_places.rs` (`window_to_space`'s borrows),
+  `compositor-testclient/src/bardo/desktop/roster.rs` (client event field names and `event_created_child!`), and the
   `[(&str, fn); 19]` table in the agent test.
 
 ## p2-q3: window capture and full placement (2026-10-11)
 
 Nothing here compiled or run (the lane does not build). `ext_foreign_toplevel_image_capture_source_manager_v1`
 is advertised at version 1 to every non-sandboxed connection (`globals.txt` row, the sandbox `HIDDEN` table, the
-I7 table in casement-core's `input.rs`, the globals test's `KINDS`, the test client's catalogue line).
+I7 table in compositor-core's `input.rs`, the globals test's `KINDS`, the test client's catalogue line).
 `bardo_window`'s `PLACEMENT_POLICY` is `Act`. Re-run the fuzz seeds that failed before: the catalogue line adds an
 interface, which shifts the typed fuzz box's object ids (as P1-C1's globals did).
 
 ### The decision: an offscreen pass, not a crop of the output's last frame
 
 A window's capture is its surface tree drawn alone into a fresh image the size of its content
-(`casement_render::pass::{window_tree, render_window}`), read back like `capture_output` reads a framebuffer.
+(`compositor_render::pass::{window_tree, render_window}`), read back like `capture_output` reads a framebuffer.
 Cropping the output's last frame is wrong in three cases the brief names and right in none that matters: a
 window under another window shows the other window's pixels; a window off the screen (or partly) has no pixels
 in the frame; and an output at 1.5x shows the window at the output's scale, but a crop cannot honour any other
@@ -1588,9 +1588,9 @@ size. The offscreen draw is right for all three by construction (the test
 frame, paid only when the damage gate lets a frame through (a static window pays none). The image is transparent
 where the window draws nothing, so a translucent window or a rounded client corner keeps its alpha.
 The backend owns the renderer, so `HeadlessBackend::render_offscreen` and `TtyBackend::render_offscreen` (the
-latter through the capture shadow's pixman renderer, started on the first call) run the pass; the casement
+latter through the capture shadow's pixman renderer, started on the first call) run the pass; the compositor
 crate only builds the elements (`handlers/capture_source/render.rs`). No golden image was written (a golden needs
-a run); `casement-render/tests/it/window_pass.rs` pins the pass on pixman with solid elements instead.
+a run); `compositor-render/tests/it/window_pass.rs` pins the pass on pixman with solid elements instead.
 
 ### Departures
 
@@ -1613,23 +1613,23 @@ a run); `casement-render/tests/it/window_pass.rs` pins the pass on pixman with s
 - **`shot --window ID` has no end-to-end test.** `ShotArea::Window` (grammar `window:ID`), the planner and the
   debug object's `window_shot` are covered by the grammar table and the planner test; the debug object needs a
   private bus, so the pixels are proved through the same `window_rgba` by the capture tests.
-- **Shared files touched:** `casement/src/exec.rs` (one line in `UnlistWindow`), `handlers/mod.rs`
-  (`pub(crate) mod capture_source`), `handlers/compositor.rs` (one hook), `casement-ipc/src/shot.rs`,
-  `casement-backend` (`headless/{mod,renderer}.rs`, `tty/{mod,readback}.rs`: the offscreen entry),
-  `casementctl/src/command{,/shot}.rs`, `casement-testclient` (`conn/catalogue.rs`,
-  `manage/foreign_toplevel_list.rs::handle_of`), `casement-core/tests/it/input.rs`.
+- **Shared files touched:** `compositor/src/exec.rs` (one line in `UnlistWindow`), `handlers/mod.rs`
+  (`pub(crate) mod capture_source`), `handlers/compositor.rs` (one hook), `compositor-ipc/src/shot.rs`,
+  `compositor-backend` (`headless/{mod,renderer}.rs`, `tty/{mod,readback}.rs`: the offscreen entry),
+  `bardo-compositorctl/src/command{,/shot}.rs`, `compositor-testclient` (`conn/catalogue.rs`,
+  `manage/foreign_toplevel_list.rs::handle_of`), `compositor-core/tests/it/input.rs`.
 - **The test client is its own session.** `WindowCapture` does not use `OutputCapture`: `desktop_client`'s reducer
   ends a capture at its first frame and ignores events after a failure, and these tests take many frames and
   watch the constraints change.
 
 ### Spots a real build checks first
 
-`casement-render/src/pass/window.rs` (`render_window`'s bounds with `Bind<T> + ExportMem`, `tracker.render_output`
-over `&[CasementElement<R>]` without `Routed`), `casement-backend/src/headless/renderer.rs::offscreen` (the pixman
-image type inferred from `create_buffer`, as `canvas` does), `casement/src/handlers/capture_source.rs` and
+`compositor-render/src/pass/window.rs` (`render_window`'s bounds with `Bind<T> + ExportMem`, `tracker.render_output`
+over `&[SceneElement<R>]` without `Routed`), `compositor-backend/src/headless/renderer.rs::offscreen` (the pixman
+image type inferred from `create_buffer`, as `canvas` does), `compositor/src/handlers/capture_source.rs` and
 `.../render.rs` (smithay's `ToplevelCaptureSourceHandler`, `ForeignToplevelHandle::identifier`, the borrows in
-`serve` and `committed`), `casement-wayland/src/capture_source.rs` (`new_with_filter` with the concrete closure),
-`casement-testclient/src/capture/toplevel_source{,/wire}.rs` (wayland-client signatures, `u32::from(Format)`).
+`serve` and `committed`), `compositor-wayland/src/capture_source.rs` (`new_with_filter` with the concrete closure),
+`compositor-testclient/src/capture/toplevel_source{,/wire}.rs` (wayland-client signatures, `u32::from(Format)`).
 
 ## p2-q2: the shell protocol, Compositor1 and the hand-out (2026-10-11)
 
@@ -1654,48 +1654,48 @@ ignored tests of this lane; two tests were rewritten (below).
   is ignored (`Model::with_window_list_rect`, one call site in `wlr_requests.rs`); the dock's target is the only writer.
   With no dock the window-list client's rectangle works as before.
 - **`hand_out` sets the server end non-blocking** (the display reads it from the loop). A failed socket pair is logged by
-  `casement::connect::answer` (`casement-agent` has no `tracing` dependency and Cargo files are frozen).
+  `compositor::connect::answer` (`compositor-agent` has no `tracing` dependency and Cargo files are frozen).
 - **`ProcCgroups` read errors are `IpcError::Bus(String)`**, not a typed I/O source: `error.rs` is not this lane's. A
   variant `IpcError::Proc { pid, source: std::io::Error }` would be the typed form (interface ask).
 - **`ConnectAsk::new`** was added: the struct is `#[non_exhaustive]`, so the test kit could not build one.
 - **Test kit:** `Fixture::connect_through_handout(&dyn PeerCgroups, pid, role)` (`src/fixture/handout.rs`) runs
   `connect::answer` with the cgroup text from the fake table and pumps the granted client in. It does not keep the
   compositor's `Client` handle, so `toplevel_of` and friends are for `Fixture::connect` clients.
-- **Private-bus test:** `casement-ipc/src/dbus/compositor_serve/tests.rs` carries its own `PrivateBus` copy (the Debug1
+- **Private-bus test:** `compositor-ipc/src/dbus/compositor_serve/tests.rs` carries its own `PrivateBus` copy (the Debug1
   one lives under the `debug-inject` feature) and a local cgroup table (`FakeCgroups` is in the test kit, which depends on
-  casement-ipc). It needs `dbus-daemon` on PATH and `GetConnectionUnixProcessID` allowed by `dev/private-bus.conf`.
+  compositor-ipc). It needs `dbus-daemon` on PATH and `GetConnectionUnixProcessID` allowed by `dev/private-bus.conf`.
 - **Not proven by a test:** that a minimised window travels to the dock's rectangle (the model test for the stored target
   and `space_persist.rs` for the genie target together cover it); the `hot_corner` and `reveal` emitters are P3's.
 - **Fuzz:** `bardo_shell_v1` is advertised and its interface is in the test client catalogue, so the typed fuzz box's
   object ids shifted: re-run every seed that failed before the P2-Q2 merge, and the role fuzz (`PrivilegedOffered`,
   `GlobalNotForRole`) for all four roles.
-- **Spots most likely not to compile.** `casement-wayland/src/bardo/shell.rs` (`bardo_shell_v1::MacMods::from_bits_truncate`,
+- **Spots most likely not to compile.** `compositor-wayland/src/bardo/shell.rs` (`bardo_shell_v1::MacMods::from_bits_truncate`,
   `Corner`/`ScreenEdge`/`Shown` `TryFrom<u32>` from the scanner's enums, `shell.client() == holder.surface.client()`),
-  `casement-ipc/src/dbus/compositor1.rs` (`#[zbus(header)]` and `#[zbus(connection)]` together, `BusName::from(sender.clone())`,
+  `compositor-ipc/src/dbus/compositor1.rs` (`#[zbus(header)]` and `#[zbus(connection)]` together, `BusName::from(sender.clone())`,
   `DBusProxy::get_connection_unix_process_id`, `OwnedFd::from`), `compositor_serve/tests.rs`,
-  `casement/src/connect.rs` (partial moves out of `handed`), `casement-testkit/tests/it/protocol/bardo_shell.rs`
+  `compositor/src/connect.rs` (partial moves out of `handed`), `compositor-testkit/tests/it/protocol/bardo_shell.rs`
   (the key code 125 reaching `logo` -> Command; `Anchor::Bottom` dock placement; `fixture.client(id).create_surface()`).
 
 
 ## csvc
 
-casement as a systemd service, and its Spaces registered with accountd. Nothing here was compiled or run.
+The compositor as a systemd service, and its Spaces registered with accountd. Nothing here was compiled or run.
 
 - **New dependency.** `porter-dbus = { path = "../accounts/account-dbus" }` in the workspace table (beside
-  `porter-core`, the same layout), named by `casement-ipc` only; `casement-ipc` also names `porter-core` (`SpaceId`).
+  `porter-core`, the same layout), named by `compositor-ipc` only; `compositor-ipc` also names `porter-core` (`SpaceId`).
   `Cargo.lock` needs `cargo update -w`/a build to gain porter-dbus and whatever it adds (its `zbus`, `serde_json`,
   `tokio` are already in the graph). porter must be at 71f779a2 or later (`SpacesProxy::register`). B1's allowed list
   covers core only, so no boundary row changes; check-boundary was not run.
-- **Readiness.** `Notify` seam (`casement::notify`), real `SocketNotify` over std's `UnixDatagram` (a path or `@abstract`
+- **Readiness.** `Notify` seam (`compositor::notify`), real `SocketNotify` over std's `UnixDatagram` (a path or `@abstract`
   `$NOTIFY_SOCKET`), no-op when unset, no new crate. `run` sends `Ready { status: "listening on wayland-N" }` after
   `keymap::attach` (socket listening, outputs announced, Spaces loaded and the first registration queued) and `Stopping`
   after the loop returns, error or not. `main` reads `NOTIFY_SOCKET`, `WATCHDOG_USEC` and `WATCHDOG_PID` once
   (`Watchdog::from_env`: half the period; off when the pid names another process).
   The ping is a calloop timer in `time/watchdog.rs` (B8 keeps timers there); it fires only while the loop turns.
   `RunConfig` gained `notify` and `watchdog` (builders `with_notify`, `with_watchdog`).
-- **Registration.** `SpaceRegistry` seam in `casement-ipc` (a background thread with its own runtime, one call at a time,
+- **Registration.** `SpaceRegistry` seam in `compositor-ipc` (a background thread with its own runtime, one call at a time,
   queue of 64, `Pace`: eight calls then a 60 s wait, no clock read; the service allows ten new a minute). `SpaceSync`
-  (`casement::space_sync`) registers each Desktop-content Space once, named `Space::plain_name()` ("Desktop N", a new core
+  (`compositor::space_sync`) registers each Desktop-content Space once, named `Space::plain_name()` ("Desktop N", a new core
   method now also used by `workspace.rs`), look `""` (porter: empty is the default look). Triggered by
   `Effect::PublishWorkspaces` (creation, renumbering) and once at startup; `poll()` runs every turn.
   Full Screen, Split View and Agent Spaces are not registered (transient, nothing to link to).
@@ -1706,52 +1706,52 @@ casement as a systemd service, and its Spaces registered with accountd. Nothing 
   `with_notify`, so the test kit's `Seams::new` call compiles unchanged. `run` installs the real ones: the registry only
   when `RunConfig::compositor_bus` is `At(address)` (the session bus), so a run without a bus registers nothing.
   A jail run with `DBUS_SESSION_BUS_ADDRESS` set to its private bus registers there and logs a "later" at debug.
-- **Tests.** Private-bus: `casement-ipc/src/space_registry/tests.rs` (stand-in `org.bardo.Accounts1` serving
+- **Tests.** Private-bus: `compositor-ipc/src/space_registry/tests.rs` (stand-in `org.bardo.Accounts1` serving
   `Spaces1.Register`: arrival with the default look, refusal once and then silence, no service -> `Later`; needs
   `dbus-daemon`). Pure: `Pace`, the datagram text, a real datagram socket in a tempdir (path and abstract), `Watchdog`,
-  `Space::plain_name`, `FakeNotify`; `casement-testkit/tests/it/space_sync.rs` over `FakeSpaceRegistry`.
+  `Space::plain_name`, `FakeNotify`; `compositor-testkit/tests/it/space_sync.rs` over `FakeSpaceRegistry`.
   Not tested: `run` ordering (ready after the outputs), the timer.
-- **Unit.** `dist/casement.service` (Type=notify, NotifyAccess=main, PartOf and After the graphical-session targets,
+- **Unit.** `dist/compositor.service` (Type=notify, NotifyAccess=main, PartOf and After the graphical-session targets,
   WatchdogSec=30, Restart=on-failure with a start limit). The expected ExecStart and environment are in its header.
 - **Only a real login proves:** that accountd's cgroup check gives the `compositor` role to the unit's main process (the
   Register then succeeds and `Changed(id, "created")` goes out once per new Space); that systemd accepts READY=1 within
   TimeoutStartSec on the tty backend; the watchdog under `WatchdogSec=30` over a long session; that the session bus is
   reachable from the unit (`DBUS_SESSION_BUS_ADDRESS` imported into the user manager), else registration and Compositor1
   are skipped silently.
-- **Spots most likely not to compile.** `casement-ipc/src/space_registry/worker.rs` (`zbus::Error::FDO(inner)` with
+- **Spots most likely not to compile.** `compositor-ipc/src/space_registry/worker.rs` (`zbus::Error::FDO(inner)` with
   `&**inner`, `fdo::Error::{AccessDenied, ServiceUnknown, NameHasNoOwner}` tuple variants, `MethodError(name, _, _)` arity,
   `tokio::sync::mpsc::error::TrySendError`, `Builder::address(..)?.build()`); `space_registry/tests.rs` (`#[zbus::interface]`
-  on a struct with `fdo::Result`, `.name(..)?.serve_at(..)?` chain order); `casement/src/notify.rs`
+  on a struct with `fdo::Result`, `.name(..)?.serve_at(..)?` chain order); `compositor/src/notify.rs`
   (`SocketAddrExt::from_abstract_name`, `UnixDatagram::{bind_addr, send_to_addr}`, the `wrap` closure used three times,
   `Option::is_none_or`); `run.rs` (`ran` result after the borrow by the loop closure, `Ok(ran?)`); the doctests in
-  `notify.rs`; `casement-core/src/space/space.rs` test imports (`crate::ids::OutputName`).
+  `notify.rs`; `compositor-core/src/space/space.rs` test imports (`crate::ids::OutputName`).
 
 
 ## debug-role
 
 Test unit overrides for jailed desktop scenarios (no systemd, so no unit in `/proc/<pid>/cgroup`). Not compiled or run.
 
-- **Contract.** Environment variable `CASEMENT_DEBUG_PEER_UNITS="<program-or-pid>=<unit>[,<program-or-pid>=<unit>...]"`.
+- **Contract.** Environment variable `COMPOSITOR_DEBUG_PEER_UNITS="<program-or-pid>=<unit>[,<program-or-pid>=<unit>...]"`.
   Left side all digits: a process id; anything else: a program name compared with `/proc/<pid>/comm` (the kernel keeps
   15 bytes, so a longer name is cut to 15 before comparing; sill and cuad fit). Right side: a service unit name
   (`name.service`, no slash). Entries are comma-separated, spaces around them are trimmed, the first matching entry
-  wins. Example for "sill is sill.service": `CASEMENT_DEBUG_PEER_UNITS="sill=sill.service"`; with the agent tier too:
-  `"sill=sill.service,cuad=cuad.service"`. A malformed value makes casement exit 64 with the reason on stderr.
-- **Only with `debug-inject`.** `crates/casement/src/debug_peer_units.rs` (the only place the variable is named) is a
+  wins. Example for "sill is sill.service": `COMPOSITOR_DEBUG_PEER_UNITS="sill=sill.service"`; with the agent tier too:
+  `"sill=sill.service,cuad=cuad.service"`. A malformed value makes the compositor exit 64 with the reason on stderr.
+- **Only with `debug-inject`.** `crates/compositor/src/debug_peer_units.rs` (the only place the variable is named) is a
   module of the binary compiled under `cfg(feature = "debug-inject")`; `main.rs` reads it there and passes the typed
   `PeerUnitTable` through `RunConfig::with_debug_peer_units` (the field exists only under the feature). A build without the
   feature does not contain the name, so the variable has no effect; `main.rs` has a test that the module is gated and that
   the name appears nowhere else in `main.rs`.
-- **Mechanism.** `casement-ipc/src/dbus/debug_units.rs` (same feature): `PeerUnitTable::parse` (pure), `ProcComm`
+- **Mechanism.** `compositor-ipc/src/dbus/debug_units.rs` (same feature): `PeerUnitTable::parse` (pure), `ProcComm`
   (`/proc/<pid>/comm`), and `DebugPeerUnits`, a `PeerCgroups` that answers a matching peer with a
   synthesised cgroup text ending in the unit, else asks the real `ProcCgroups`. `run.rs::with_debug_units` wraps it
   around `ProcCgroups` for Compositor1 and logs once at warn level "TEST ONLY: test unit overrides are active" (only when
   the table is non-empty). `role_for` and `CallerUnit::of_cgroup` are untouched, so a peer still needs a unit the plan names.
-- **Pid namespace.** `GetConnectionUnixProcessID` returns the pid in casement's namespace; the jail runs casement and
+- **Pid namespace.** `GetConnectionUnixProcessID` returns the pid in the compositor's namespace; the jail runs the compositor and
   sill in one, so `comm` is readable. The wrapper never trusts a peer's own claim, only the table the compositor's own
   environment gave it.
 - **Desktop-facing.** `dev/lib/compositor.sh` header documents how a scenario sets it (the variable is inherited by the
-  casement child).
+  The compositor child).
 - **Tests.** Table parsing, precedence over a fake inner seam, pid rules, first match and the comm cut
   (`debug_units.rs`); env wrapper (`debug_peer_units.rs`); the gate test in `main.rs`. Nothing proves a real Connect from a
   bubblewrapped sill: that needs the scenario run.
@@ -1763,12 +1763,12 @@ Test unit overrides for jailed desktop scenarios (no systemd, so no unit in `/pr
 
 ## p2-t3: remote input over EIS (2026-10-11)
 
-Lane P2-T3, casement half (not compiled; the orchestrator gates). No `todo!()` was in `eis.rs` (it did not exist).
+Lane P2-T3, the compositor half (not compiled; the orchestrator gates). No `todo!()` was in `eis.rs` (it did not exist).
 
 - **Crate.** `reis` 0.7.1 (MIT), already pinned in the workspace table and in `Cargo.lock` through smithay. The only manifest
-  edit: `reis = { workspace = true, features = ["calloop"] }` in `casement-agent` (the event-loop source), plus the matching
-  `"reis"` line under `casement-agent` in `Cargo.lock`. No other crate was added; calloop is smithay's re-export.
-- **Shape.** `casement-agent/src/eis.rs`: `open(session, kinds, extent) -> RemoteGrant { source, client }`. The source is a
+  edit: `reis = { workspace = true, features = ["calloop"] }` in `compositor-agent` (the event-loop source), plus the matching
+  `"reis"` line under `compositor-agent` in `Cargo.lock`. No other crate was added; calloop is smithay's re-export.
+- **Shape.** `compositor-agent/src/eis.rs`: `open(session, kinds, extent) -> RemoteGrant { source, client }`. The source is a
   calloop `EventSource` (`RemoteEisSource`) yielding `RemoteEvent::{Input(RemoteInput), Ended}`; `RemoteInput` carries
   `Origin::Remote(PortalSessionId)`, a virtual `DeviceId` (high bit set) and the `InputKind`; the root stamps the time with
   `RemoteInput::at`. Devices: keyboard, relative pointer, absolute pointer and touchscreen, each only if the portal's `types`
@@ -1776,14 +1776,14 @@ Lane P2-T3, casement half (not compiled; the orchestrator gates). No `todo!()` w
   back onto the desktop (the extent is not updated if outputs change during a session). An app that asks to receive input gets
   no devices. Keys and buttons still held when the app goes are released before `Ended`.
 - **Hand-out.** `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> (h)`. `ConnectAsk` gained `remote:
-  Option<RemoteAsk>` (and `ConnectAsk::remote_eis`); `casement::connect::answer` branches to `answer_remote`, which checks
+  Option<RemoteAsk>` (and `ConnectAsk::remote_eis`); `compositor::connect::answer` branches to `answer_remote`, which checks
   `portal_may_connect` (`transom.service`; `role_for` is unchanged, the portal has no Wayland role: sill gets
   `RoleNotAllowed`, an unknown unit `UnknownUnit`) and inserts the source into `state.event_loop`. `State` is not edited.
 - **Visibility changes.** `core_loop::tty` is `pub(crate)` and `desktop_extent` is `pub(crate)` (the extent for absolute devices).
 - **Tests.** Pure: the translation functions, the device bits, the origin tag, release on end, `open` in `eis.rs`. Private
   bus: `connect_eis_reaches_the_loop_as_a_remote_ask_with_the_callers_unit`. Fixture: `tests/it/remote_eis.rs` (the unit check
   through `Fixture::connect_remote_eis`; remote keys of a bound chord fire nothing, through `Fixture::deliver_remote`).
-  Not tested: a real EIS client talking to the source (no crate outside `casement-agent` may name `reis`, B14); the transom
+  Not tested: a real EIS client talking to the source (no crate outside `compositor-agent` may name `reis`, B14); the transom
   acceptance script remote-desktop.sh (in the transom repo, dev/accept) does that against a real compositor.
 - **Spots most likely not to compile.** `eis.rs`: `inner.process_events(...)` closure types against reis' `EisRequestSource`,
   `smithay::reexports::calloop::Result`, `caps.into_iter().collect()` into `BitFlags`, the `before_done_cb` closure typed as
@@ -1798,14 +1798,14 @@ Lane `session` (not compiled; the orchestrator gates). Three findings from the f
 - **VT switch.** The existing path (`core_loop::tty::vt_chord`, before bindings and clients) only matched
   `XF86Switch_VT_n`, which xkb gives `Ctrl+Alt+Fn` only when the layout carries the server-control group
   and the F-row sends real F-keys. A keyboard in Mac mode sends media keys on the F-row (Fn held gives F1..F12),
-  and a layout without the group gives no such symbol. New pure `casement_backend::tty::vt_of_chord(VtHeld,
+  and a layout without the group gives no such symbol. New pure `compositor_backend::tty::vt_of_chord(VtHeld,
   modified, raw) -> Option<VtNumber>`: the keymap's `XF86Switch_VT_n` wins; with Ctrl and Alt both held, an F1..F12
   symbol (modified or raw) also asks for that VT. `TtyBackend::switch_to(VtNumber)` carries it out. Table test
   `ctrl_alt_and_a_function_key_ask_for_that_vt_when_the_keymap_names_none`. Only a real run proves the session
   accepts the switch (libseat `change_vt`) and that the chord is swallowed. A Mac-mode keyboard needs Fn held to
   produce F1..F12 at all; that is the keyboard's, not ours.
 - **Multi-GPU.** Not wired. Landed: pure `RenderPlan::route_of` / `routes` and `OutputRoute::{Direct, Copy}`
-  (`casement-core/src/gpu/route.rs`, table test `each_output_is_drawn_on_the_render_gpu_and_copied_...`), and
+  (`compositor-core/src/gpu/route.rs`, table test `each_output_is_drawn_on_the_render_gpu_and_copied_...`), and
   `TtyBackend::route_of`. Still open (large, needs a compiler and a second GPU): smithay's `GpuManager`/
   `MultiRenderer` through `DrmCompositor` (a `MultiRenderer` is not a `GlesRenderer`, so `FrameSource::gles`,
   `RealScanout` and `RealKms::renderer` need a generic or boxed renderer type); one `GlesRenderer` per
@@ -1834,7 +1834,7 @@ Lane `session` (not compiled; the orchestrator gates). Three findings from the f
   took input there. `Candidate` now carries `clip: Option<LogicalRect>`; a layer's root is clipped to its
   placed box, popups and windows are not. Needs a real run: a sill panel with a shadow margin must not
   swallow a click on the window beside it, and its shadow must still draw.
-- **Shadows are not clipped by casement.** `layer_elements` renders the whole surface tree
+- **Shadows are not clipped by compositor.** `layer_elements` renders the whole surface tree
   (`render_elements_from_surface_tree`) from the placed origin with no crop to the configured size, and
   `committed` is the bbox of the tree. A transparent margin therefore renders. If sill's shadows look cut
   off, check the buffer sill commits (size vs the layer size it was configured to) before suspecting us.
@@ -1845,7 +1845,7 @@ Lane `session` (not compiled; the orchestrator gates). Three findings from the f
   The binding takes only the chord's final key (and its release); the modifier's press and release are
   forwarded, so the switcher hears the Cmd release. Test:
   `a_chord_fires_while_an_exclusive_layer_holds_the_keyboard_and_it_hears_the_modifier_release`
-  (casement-testkit tests/it/bindings.rs).
+  (compositor-testkit tests/it/bindings.rs).
 ## wave-2026-10-15/wlcs
 
 Written without a build or a wlcs run (wave rules); every claim below is from reading the wlcs tests,
@@ -1853,7 +1853,7 @@ smithay's source at fork rev 9c8f762 and our code. The orchestrator's run settle
 
 | Finding | Root cause | What changed |
 |---|---|---|
-| Text-input `enter` must precede the toplevel's first configure (2 tests) | The lenient policy sent a bare initial configure at the first commit and mapped (keyed) at a second pass, so every configure was ahead of the keyboard enter. | `casement_wayland::xdg_shell::keyed` (`map_keyed_on_first_buffer`, `send_initial_configure`), used by `handlers/compositor.rs` under `testing` + `Lenient`: a first commit that carries a buffer maps the window with a valid token, the model keys it and queues its state, then the one configure goes out. Test: `casement-testkit/tests/relax.rs`. |
+| Text-input `enter` must precede the toplevel's first configure (2 tests) | The lenient policy sent a bare initial configure at the first commit and mapped (keyed) at a second pass, so every configure was ahead of the keyboard enter. | `compositor_wayland::xdg_shell::keyed` (`map_keyed_on_first_buffer`, `send_initial_configure`), used by `handlers/compositor.rs` under `testing` + `Lenient`: a first commit that carries a buffer maps the window with a valid token, the model keys it and queues its state, then the one configure goes out. Test: `compositor-testkit/tests/relax.rs`. |
 | Decoration `configure` expected after `set_mode` with no commit (3 tests) | The reply rides on an `xdg_surface.configure`, and none is due before the first commit. The decoration XML allows a configure at any time. | `handlers/xdg_decoration.rs`: under `Lenient` (`testing` only) the initial configure goes out with the decoration's answer. Production is unchanged. |
 | W9: window at y = -5 | Layout pushes a floating window inside the usable area (the person-facing rule). A test-requested position is not the person's drag. | `Event::WindowPlaced`, `WindowPlacement::Placed`, `Model::is_placed_by_hand`: a hand placement is kept as given (size still fitted) until a drag or the unmap; the shim uses `Fixture::place_window_by_hand`. The drag rule is unchanged. Tests: `rust_scene.rs`, `model/tests.rs`. |
 
@@ -1863,7 +1863,7 @@ Kept, with reasons (also in `dev/wlcs/expected-failures.txt`):
 - W4 `wm_capabilities_are_sent`, decoration `orphaned`: smithay's send point and error object; a configure at creation would break the text-input order. Fork patches.
 - W7 (6 tests): four are smithay's subsurface position model (applied at the child's commit and by `commit_sync_surface_tree`, not at the parent's state); two (`place_above/below_simple`) assert a focus no compositor can give. Fork patch described in the file.
 - W12 primary selection (5): kept policy, a program that is not used cannot replace the selection.
-- `#[ignore]`: `casement-layout/tests/it/spread.rs` (P3-Z) and `casement-scene-css/tests/parity.rs` (P3-CSS) wait for code that is not written (`rust_scene/spread.rs` does not exist; CssScene bodies are `todo!`); they stay ignored. (Both are now filled: spread.rs by P3-Z, parity.rs by P3-CSS, `#[ignore]` removed.)
+- `#[ignore]`: `compositor-layout/tests/it/spread.rs` (P3-Z) and `compositor-scene-css/tests/parity.rs` (P3-CSS) wait for code that is not written (`rust_scene/spread.rs` does not exist; CssScene bodies are `todo!`); they stay ignored. (Both are now filled: spread.rs by P3-Z, parity.rs by P3-CSS, `#[ignore]` removed.)
 
 To check in a real run: wlcs counts (expect 6 more passes, no new failures; the first configure of every
 lenient toplevel now carries its final state, so a wlcs test that counts configures could move); that
@@ -1873,8 +1873,8 @@ lenient toplevel now carries its final state, so a wlcs test that counts configu
 Nothing here compiled or ran (the lane does not build). Real session finding: `grim` failed with "failed to copy
 output".
 
-- **Cause 1: no `zwlr_screencopy_manager_v1`.** casement served only ext-image-copy-capture. Added
-  `casement_wayland::screencopy` (version 3; smithay has no plumbing for it, so the wire is ours on
+- **Cause 1: no `zwlr_screencopy_manager_v1`.** the compositor served only ext-image-copy-capture. Added
+  `compositor_wayland::screencopy` (version 3; smithay has no plumbing for it, so the wire is ours on
   `wayland-protocols-wlr`'s server side, through smithay's re-export): `capture_output`, `capture_output_region`,
   `copy`, `copy_with_damage`, shm `argb8888` (and `xrgb8888` from version 3, with `buffer_done`). The frame is the one
   `ext_image_copy_capture` serves (`handlers/image_capture/frames.rs::last_frame`), so the two paths agree byte for byte.
@@ -1905,7 +1905,7 @@ output".
 - **Tests.** `tests/it/protocol/screencopy.rs` (whole output equals the scanout frame; region crops at 1x and at 2x
   logical pixels; region off the output fails; `copy_with_damage` reports the whole area first; other output unaffected),
   `sandbox.rs` row, the globals golden row `zwlr_screencopy_manager_v1 3 screencopy`, the fuzz oracle's interface map;
-  unit tests for `physical_region` and `CapturedFrame::cropped`; client `casement_testclient::capture::ScreenCopy`.
+  unit tests for `physical_region` and `CapturedFrame::cropped`; client `compositor_testclient::capture::ScreenCopy`.
   Not covered here (needs a real seat): the tty first-frame hold.
 ## wave-2026-10-15/capture2
 
@@ -1931,9 +1931,9 @@ Nothing here compiled or ran (the lane does not build). Follow-ups to `wave-2026
   `handlers/image_capture/cursor.rs` the content). Only output sources have one: a window source is stopped. After
   every frame the output presents (`serve_captures`) and when the session is made, `sync` tells each session on the
   output `enter`, `hotspot` and `position`, or `leave`. Position is the hotspot in the frame's pixels and the
-  hotspot event the offset inside the image, both at the output's scale (`casement_wayland::image_capture::place`,
+  hotspot event the offset inside the image, both at the output's scale (`compositor_wayland::image_capture::place`,
   pure and table-tested at 1x, 1.5x, 2x, under every transform and across two outputs). The image is the compositor's
-  own cursor raster at the output's scale (`casement_render::{cursor_face, cursor_pixels}`, the same raster the
+  own cursor raster at the output's scale (`compositor_render::{cursor_face, cursor_pixels}`, the same raster the
   element draws), announced as the session's buffer size and re-announced (the frame fails with
   `buffer_constraints`) when the scale changes. A request is answered once and held until the pixels differ.
   Departures: (1) a cursor a client drew itself (`CursorDraw::ClientSurface`) is placed and sized from its surface
@@ -1986,13 +1986,13 @@ without a compiler (wave rule); the orchestrator builds.
   (`XdgDecorationPart::mode_of`, dropped in `toplevel_destroyed`); the model is not told (departure from the handler recipe:
   the answer is a protocol-edge fact only drawing and hit-testing read, so no `Event`). A window whose client never bound
   the manager draws its own frame. Golden `xdg_decoration-mode.txt` now says `configure(2)`; the protocol test was rewritten.
-- **Where the code is.** Pure and tested: `casement-core/src/window/frame.rs` (titlebar and lights geometry, hit map, edges),
+- **Where the code is.** Pure and tested: `compositor-core/src/window/frame.rs` (titlebar and lights geometry, hit map, edges),
   `frame_press.rs` (double-click tracker, `chrome_action`), `frame_draw.rs` (resolved colours as data);
-  `casement-layout/src/frame.rs` (chrome lengths from `ChromeToken`, colours from `ColourToken`, `light_state`'s reveal rule);
-  `casement-render/src/element/frame{.rs,/raster.rs}` (titlebar and shadow rasters, analytic coverage, no text);
-  `casement/src/core_loop/frames.rs` (which windows, hover, press glue). No new crate and no Cargo edit: casement-core has no
-  ds-style, so the lengths travel as `FrameMetrics` data, filled in layout; casement reaches ds-style types through
-  `casement_layout::{Scheme, GroupHover}` re-exports.
+  `compositor-layout/src/frame.rs` (chrome lengths from `ChromeToken`, colours from `ColourToken`, `light_state`'s reveal rule);
+  `compositor-render/src/element/frame{.rs,/raster.rs}` (titlebar and shadow rasters, analytic coverage, no text);
+  `compositor/src/core_loop/frames.rs` (which windows, hover, press glue). No new crate and no Cargo edit: compositor-core has no
+  ds-style, so the lengths travel as `FrameMetrics` data, filled in layout; the compositor reaches ds-style types through
+  `compositor_layout::{Scheme, GroupHover}` re-exports.
 - **Geometry choice.** The titlebar is drawn just above the window's content rectangle (the model rect stays the client's
   size), so a window at the top of the usable area has its bar under the menu bar. The resize zones are 4 px strips outside
   the outline plus 12 px corner squares from the outer corners (so 8 px reach inside the content at each corner).
@@ -2004,25 +2004,25 @@ without a compiler (wave rule); the orchestrator builds.
 - **Unreachable from Bardo's pure crates, so written here (asks below):** the window radius 10 (`--r-window` is a CSS string,
   and still 26 until Bardo's batch), `--shadow-window` (CSS string, hand-copied as two `ShadowLayer`s), the three light hues
   and their mark inks (stylesheet candy colours), and (until chrome2) the colour scheme.
-- **Not done.** (1) Title text: casement had no
-  text stack (`casement-chrome`, B15), so the titlebar title was empty. (Done by chrome3: `casement-chrome` draws it.) (2) The green light has no Move and Resize menu, and
+- **Not done.** (1) Title text: the compositor had no
+  text stack (`compositor-chrome`, B15), so the titlebar title was empty. (Done by chrome3: `compositor-chrome` draws it.) (2) The green light has no Move and Resize menu, and
   the minimise animation target is untouched. (3) The frame is not drawn in the Mission Control and Space-slide passes (they
   go through `output_elements` with the same `LayerDraw`, so it follows there only if `frames` is filled, which
   `core_loop::frame` does for every output frame). (4) The shadow is a square-cornered blur at one raster pixel per logical
-- **Not done.** (1) Title text: casement has no
-  text stack (`casement-chrome`, B15), so the titlebar title is empty. (2) and (3) are done by winmenu (see `wave-2026-10-15/winmenu`: the green light's window menu, built up to the wire; the minimise target already
+- **Not done.** (1) Title text: the compositor has no
+  text stack (`compositor-chrome`, B15), so the titlebar title is empty. (2) and (3) are done by winmenu (see `wave-2026-10-15/winmenu`: the green light's window menu, built up to the wire; the minimise target already
   existed and is tested; the frame in the moving passes). (4) The shadow is a square-cornered blur at one raster pixel per logical
   pixel, scaled up; cost on a window being resized is a new raster per frame (cache limit 64 entries). (Done by
   chrome2: layout reserves the titlebar, lights act on release, Option-click zoom, the colour scheme from settings; done by
   clip: the rounded bottom corners.)
 - **Interface asks for Bardo** (exact):
   1. `ds-style/src/tokens/shape.rs`: `impl Radius { pub fn px(self) -> u16 }` returning the number `value()` writes (Window
-     10 in the next batch), so casement stops hard-coding `WINDOW_RADIUS`.
+     10 in the next batch), so the compositor stops hard-coding `WINDOW_RADIUS`.
   2. `ds-style/src/tokens/elevation.rs`: numeric `Shadow::layers(self, scheme: Scheme) -> &'static [ShadowLayer { dx, dy, blur,
      spread, rgba }]` for `Window`.
   3. `ds-style/src/tokens/chrome/light.rs`: `pub fn light_hue(light: Light, scheme: Scheme) -> (Hex, Hex)` (disc, mark ink)
      for close, minimise and zoom; the candy colours are stylesheet-only today.
-  4. A title font family and size token reachable as numbers (`--fs-control` 13/600) for the future `casement-chrome`.
+  4. A title font family and size token reachable as numbers (`--fs-control` 13/600) for the future `compositor-chrome`.
 - **Gate and real run.** Gate: everything here is uncompiled; likeliest compile faults are `frames.rs` (let-chain over
   `(styles.get, contents.get)`, `Over` visibility through `FrameOver`), `frame.rs` raster (`MemoryRenderBuffer::from_slice`
   and `from_buffer` argument types copied from the cursor), `light_state`/`LightFill`/`Shown` matches (a `non_exhaustive`
@@ -2039,31 +2039,31 @@ orchestrator builds.
   minus its top `reserve` rows, so the outer frame (content plus bar) is what fill, first placement (centre and cascade),
   the size fit and the keep-inside clamp hold inside the usable area; a hand-placed (`Placed`) window keeps its position and
   only its size is fitted. The model's rect stays the client's content size. The model does not know who draws a frame (the
-  decoration answer is an edge fact), so `casement_layout::spec_of_framed(model, &BTreeMap<WindowId, u32>)` takes the
+  decoration answer is an edge fact), so `compositor_layout::spec_of_framed(model, &BTreeMap<WindowId, u32>)` takes the
   reserves and `spec_of` is `spec_of_framed` with none; `core_loop::relayout` passes `frames::reserves(state)`. The xdg
   decoration handler now runs a relayout when a window already in the model is answered server-side (the answer can arrive
   after the first placement). Tiled windows now have a desktop target (P3-TL, `rust_scene/tile_zone.rs`): the zone is cut from the usable area and the
   content sits in `below_chrome(zone, reserve)`, so the frame is inside the zone.
   A drag in flight is not held by the reserve (the grab follows the pointer); layout clamps it when the drag ends.
-- **Lights act on release.** `casement_core::window::LightArm` (`frame_arm.rs`) is the pure machine: `Press` arms and shows
+- **Lights act on release.** `compositor_core::window::LightArm` (`frame_arm.rs`) is the pure machine: `Press` arms and shows
   pressed, `Release` over the same light fires (`ArmOutcome::Fire`), `Move` off it cancels, back on re-arms, a release of
   another button leaves it held, `Lost` forgets. `frames::press` arms on a light and does nothing else; `frames::released`
   (called from `deliver::press_edge` where the swallowed release is recognised) steps the machine at the pointer's place and
-  carries out what fires. `casement_layout::pressed(style, light)` draws the held light darker with its mark.
+  carries out what fires. `compositor_layout::pressed(style, light)` draws the held light darker with its mark.
 - **The green light.** A plain click is `ChromeAction::FullScreen(Toggle)` -> `ToplevelRequest::FullScreen { toggle, output:
   None }` (it exists). Option held at release is zoom (`Maximise`), today's behaviour. `chrome_action` takes the `MacMods`.
   Double click on the title still follows `windows.double_click_title`. The hover menu of the Mac's green light (Move and Resize,
   tile) is not built. A full-screen window draws no frame, so leaving full screen is by the app, its key or the shell.
-- **The colour scheme.** `casement::appearance` reads Bardo's `appearance.toml` (`AppName::BARDO`, the file ds-settings owns)
-  through a `Store`, puts `casement_layout::scheme_of(appearance.theme)` in `RenderState::scheme`, and follows the file with
-  `Store::watch` (ds-settings' task runs on a small thread-per-task `Spawner`, `block_on` by parking; casement runs no async
+- **The colour scheme.** `compositor::appearance` reads Bardo's `appearance.toml` (`AppName::BARDO`, the file ds-settings owns)
+  through a `Store`, puts `compositor_layout::scheme_of(appearance.theme)` in `RenderState::scheme`, and follows the file with
+  `Store::watch` (ds-settings' task runs on a small thread-per-task `Spawner`, `block_on` by parking; the compositor runs no async
   runtime). The watch forwards the scheme over a calloop channel; the next vblank draws the frame in it (`styles` reads it each
   frame). `theme = "system"` paints Light: following the desktop needs the settings portal, which is ds-settings' `desktop`
   feature and is off in the workspace's `ds-settings` dependency. Ask for the orchestrator: if `system` should follow the
   desktop, enable that feature (a Cargo edit) and read `SystemPrefsSource::Portal` once at startup and on its watch.
-  Only the frame follows the scheme; the cursor and everything else casement draws is scheme-free.
-- **Departures.** `LightArm` lives in `casement-core::window` with the other frame machines, and the scheme reader is
-  `casement::appearance` (not `config`, which is the casement document). New public items: `spec_of_framed`, `scheme_of`,
+  Only the frame follows the scheme; the cursor and everything else the compositor draws is scheme-free.
+- **Departures.** `LightArm` lives in `compositor-core::window` with the other frame machines, and the scheme reader is
+  `compositor::appearance` (not `config`, which is the compositor document). New public items: `spec_of_framed`, `scheme_of`,
   `pressed`, `Theme` (re-export), `LightArm` and friends, `appearance::scheme_in`; each has a doc test.
 - **Goldens and expectations.** None edited by hand. A real-frame golden or a testkit scenario that maps a server-side window at
   a `Floating` rect whose top is within 28 px of the usable area now moves that window down by the difference; the xdg
@@ -2071,14 +2071,14 @@ orchestrator builds.
 - **Gate and real run.** Likeliest compile faults: `frames.rs` `decorated()` (returned `impl Iterator` over the model's
   `BTreeMap` iter, edition 2024 capture), `appearance.rs` (the `Watch<AppearanceFile>` moved into a `Send` future; `Loaded`
   field names; `ds_core::spawner` reachable without a feature), `LightArm` being `non_exhaustive` (matched only through
-  `==`/`step`), `casement_layout::Theme` re-export. Real run: press a light and drag off it (it un-darkens), back on (darkens),
+  `==`/`step`), `compositor_layout::Theme` re-export. Real run: press a light and drag off it (it un-darkens), back on (darkens),
   release off it (nothing happens), release on it (acts); green click goes full screen, Option-click zooms and a second one
   restores; a window opened at the top of the screen has its bar under the menu bar's exclusive zone, not beneath it; fill
   leaves the bar visible; set `appearance.theme = "dark"` in `~/.config/bardo/appearance.toml` and the frames turn dark
   without a restart; windows with client-side frames are unchanged.
 ## wave-2026-10-15/clip
 
-Rounded bottom corners for the windows casement decorates (chrome2's design, built). Written without a compiler (wave rule);
+Rounded bottom corners for the windows the compositor decorates (chrome2's design, built). Written without a compiler (wave rule);
 the orchestrator builds.
 
 - **What is clipped.** A window in `LayerDraw::frames` (its client was answered server-side and it is not full screen or in the
@@ -2086,7 +2086,7 @@ the orchestrator builds.
   window keeps the radius, as on the Mac; full screen has square corners. A window with its own frame is not in `frames`, so it
   draws its own corners. The radius is the frame's (`FrameLook::radius`, `WINDOW_RADIUS` 10), times the output scale, rounded.
   Only the two bottom corners round: the titlebar above rounds its own top corners and meets the content square.
-- **The element.** `RoundedClipElement<R>` (variant `Clip` of `CasementElement`, `element/rounded_clip.rs`) owns the
+- **The element.** `RoundedClipElement<R>` (variant `Clip` of `SceneElement`, `element/rounded_clip.rs`) owns the
   window's `WaylandSurfaceRenderElement` and a `ClipShape` (the content rectangle in output pixels plus the physical radius,
   `rounded_clip/shape.rs`, pure). `window_elements` takes `Option<ClipShape>` and wraps every surface of the window's tree, so
   subsurfaces are clipped to the same rounded rectangle. Popups come from `popup_elements` and are never wrapped. `id` is the
@@ -2126,7 +2126,7 @@ the orchestrator builds.
 The green light's window menu, the minimise target, and the frame in the moving passes (ssd's "Not done" 2 and 3). Written
 without a compiler (wave rule); the orchestrator builds.
 
-- **The menu, pure.** `casement_core::window::menu`: `MenuEntry` (15, `ALL` in menu order, `label()` in Mac words, `group()`
+- **The menu, pure.** `compositor_core::window::menu`: `MenuEntry` (15, `ALL` in menu order, `label()` in Mac words, `group()`
   Top / Move & Resize / Full Screen Tile, `action()` -> `MenuAction::{FullScreen(Toggle), Place(PlaceTarget), SplitTile(SplitSide)}`,
   `code()` / `from_code()` the wire numbers), `menu_for(&WindowState, SplitSupport) -> Vec<MenuItem>` (which entries are enabled:
   full screen offers only Exit Full Screen, a window in the dock nothing, a tile zone it already fills and Fill when zoomed are
@@ -2147,7 +2147,7 @@ without a compiler (wave rule); the orchestrator builds.
   `request(FullScreen)`, and only when the entry is enabled for the window's state now (a stale pick changes nothing). Tests:
   `tests/it/model_window_menu.rs`.
 - **Departure: the wire step is not built.** The XML has no event for "show the window menu" or request for a pick, and
-  `casement-protocols` is not this lane's. `casement_wayland::bardo::shell::apply_note` has an explicit empty arm for
+  `desktop-protocols` is not this lane's. `compositor_wayland::bardo::shell::apply_note` has an explicit empty arm for
   `ShellNote::WindowMenu` naming this section; until the protocol lands the menu is asked for and nothing shows. No new
   interface, so nothing was added to the test client catalogue (the ask below adds the event and the request; the catalogue's
   `bardo_shell_v1` root already binds the object).
@@ -2157,7 +2157,7 @@ without a compiler (wave rule); the orchestrator builds.
 - **Minimise target (item 2).** It was already built: sill sends `set_minimise_target` (dock-local rectangle per toplevel,
   `sill-services` `DesktopCommand::SetMinimiseTarget`), the model stores it in global pixels (`with_dock_target`; a window-list
   client's `set_rectangle` only counts with no dock), `minimise_destination` picks the tile else a point at the bottom centre of
-  the window's output, and `casement-motion` flies a minimising window to it (`Cause::Minimise`, the `Move` spring, 380 ms
+  the window's output, and `compositor-motion` flies a minimising window to it (`Cause::Minimise`, the `Move` spring, 380 ms
   response; the window shrinks to the tile's size and fades). New: a table test of the choice
   (`model_shell.rs::a_window_minimises_toward_its_tile_else_the_bottom_centre_of_its_output`). Not done: the setting
   `windows.minimise_effect` (Genie / Scale) is stored but motion has one effect; and the renderer draws a surface at its
@@ -2210,7 +2210,7 @@ Departures and edges:
 - Locking: `Placed::place` takes the child's surface lock while the parent's is held (inside `Transaction::apply`); that is the parent-then-child order the rest of the tree code uses.
 - A fresh get_xdg_surface on a wl_surface whose earlier xdg_surface was destroyed (role already xdg_toplevel/popup) was `xdg_wm_base.role`, and that disconnected real clients: GTK 4 reshows a popover on the same wl_surface, so Ghostty died the second time a menu opened (2026-11-15). wl_surface lets a surface take the same role again, so it is not "another role": fork `919d8dcf` raises `role` only for a non-xdg role (wlcs uses a subsurface), and `get_toplevel`/`get_popup` still refuse a different xdg role. Test: `protocol::popup_reuse`.
 
-To check in a real run: wlcs counts (expect 8 more passes, 9 listed); the casement-testkit protocol tests (`xdg_shell` goldens filter `wm_capabilities`; `subcompositor-tree.txt` has no positions); the fuzz box (`get_xdg_surface` on a surface with a role or buffer now disconnects the client; the fuzz oracle should treat it as a clean protocol error); a real client with subsurfaces (a video player, a browser) still moves its subsurfaces after the parent's commit.
+To check in a real run: wlcs counts (expect 8 more passes, 9 listed); the compositor-testkit protocol tests (`xdg_shell` goldens filter `wm_capabilities`; `subcompositor-tree.txt` has no positions); the fuzz box (`get_xdg_surface` on a surface with a role or buffer now disconnects the client; the fuzz oracle should treat it as a clean protocol error); a real client with subsurfaces (a video player, a browser) still moves its subsurfaces after the parent's commit.
 
 ### capture2 gate fixes (orchestrator)
 
@@ -2226,12 +2226,12 @@ To check in a real run: wlcs counts (expect 8 more passes, 9 listed); the caseme
 
 ## wave-2026-10-15/winwire
 
-The window menu's wire, end to end (casement-protocols `lane/winwire`, casement, sill). Written without a compiler.
+The window menu's wire, end to end (desktop-protocols `lane/winwire`, the compositor, sill). Written without a compiler.
 
 - **Protocol.** `bardo_shell_v1` (version 1, changed in place as the draft allows; no pinned bytes touched): enum
   `window_entry` (15, codes = `MenuEntry::code`), event `window_menu(toplevel, x, y, enabled)`, request
-  `window_menu_pick(toplevel, entry)`. casement-protocols also has vocab `WindowEntry` and the desktop-client
-  `ShellEvent::WindowMenu` / `DesktopCommand::PickWindowMenu`. Land casement-protocols first.
+  `window_menu_pick(toplevel, entry)`. desktop-protocols also has vocab `WindowEntry` and the desktop-client
+  `ShellEvent::WindowMenu` / `DesktopCommand::PickWindowMenu`. Land desktop-protocols first.
 - **apply_note.** `ShellNote::WindowMenu` sends `window_menu(identifier_of(window), at.x, at.y, show.enabled())` to
   every bound shell object. **Dispatch.** `window_menu_pick` resolves `window_of_identifier` (and the model knowing the
   window) and `MenuEntry::from_code`; `on_window_menu_pick` feeds `ShellRequest::WindowMenuPick`. An unknown window or
@@ -2249,41 +2249,41 @@ The window menu's wire, end to end (casement-protocols `lane/winwire`, casement,
 
 Title text, Bardo's numbers, `theme = "system"`. Written without a compiler (wave rule); the orchestrator builds.
 
-- **casement-chrome (new crate, a workspace member).** `TitleRaster::system(Margins)` reads Bardo's `title_font(Typeface::System)`
+- **compositor-chrome (new crate, a workspace member).** `TitleRaster::system(Margins)` reads Bardo's `title_font(Typeface::System)`
   (Inter 13 px, weight 600), shapes with parley (`FontContext` made once, kept; fontique scans the system fonts on the first
   title, never per frame), rasterises with vello_cpu to premultiplied RGBA8 as big as the titlebar at the output's native scale
   (`device`: half-up, the rounding of `buffer_size`). The family is `Inter, system-ui, sans-serif`, so a missing Inter falls to any
-  sans (no bundled face; the spike bundled ds-style's `FACES`, casement does not). Ink: `ColourToken::Ink` for the key window,
+  sans (no bundled face; the spike bundled ds-style's `FACES`, the compositor does not). Ink: `ColourToken::Ink` for the key window,
   `InkSoft` otherwise, in the frame's scheme (`ink(scheme, activity)`). Layout (`place`): the title is centred in the bar, pushed
   off the lights (left margin 73 = inset 13 + three 12 px lights + two 8 px gaps + one gap) and off a 13 px right margin, and
   when even that room is too little it is cut with an ellipsis (binary search over the characters, `longest_fit`). Not the CSS's
   84 px each side (`TitleInset`): that cut a title on a narrow window that has room beside the lights. Titles are tidied
   (`tidy`: control characters become spaces, 256 characters) because a client's title is untrusted. Cache: `TitleKey`
   (title, logical size, scale, scheme, activity), 32 entries, least recently used out; each raster has a unique `id`.
-- **Wiring.** `casement-render` takes the pixels as data: `TitleDraw { id, width, height, rgba }` in `LayerDraw::titles`,
+- **Wiring.** `compositor-render` takes the pixels as data: `TitleDraw { id, width, height, rgba }` in `LayerDraw::titles`,
   `frame_elements` gets `Option<&TitleDraw>` and puts a memory element over the titlebar's (same size and place, so one pixel to
   one pixel); a title not the titlebar's size is not drawn. The draw cache key gained a trailing `u64` stamp (the title's id; 0
-  for the titlebar and the shadow). `casement::core_loop::titles::of` makes them per frame from the model's title, the emphasis
+  for the titlebar and the shadow). `compositor::core_loop::titles::of` makes them per frame from the model's title, the emphasis
   and `RenderState::scheme`; `RenderState::titles` is `Option<TitleRaster>`, made on the first server-side frame so a session
   without one never scans fonts. A raster is made only when the key changes, so a window being resized makes one per frame as
   its titlebar already does. The titlebar's own raster still has no text, so a golden of a framed window changes (title only).
-- **Departures.** (1) `check-boundary.sh` B15 exempted nothing, yet `casement` must depend on the crate: the graph rule now skips
-  `casement-chrome`, `casement` (the consumer) and `casement-testkit` (reaches it through `casement`), and a new source rule
-  says only `crates/casement-chrome/` names `parley::`, `fontique::` or `vello_cpu::`. B11 is unchanged (its pattern is `vello`,
-  not `vello_cpu`). (2) `ShadowLayer` (casement-core) gained `dx` because Bardo's layers have one; the shadow raster honours it.
-  (3) `casement_layout::pressed` takes the scheme (the pressed hue is `light_hue`'s for it).
+- **Departures.** (1) `check-boundary.sh` B15 exempted nothing, yet `compositor` must depend on the crate: the graph rule now skips
+  `compositor-chrome`, `compositor` (the consumer) and `compositor-testkit` (reaches it through `compositor`), and a new source rule
+  says only `crates/compositor-chrome/` names `parley::`, `fontique::` or `vello_cpu::`. B11 is unchanged (its pattern is `vello`,
+  not `vello_cpu`). (2) `ShadowLayer` (compositor-core) gained `dx` because Bardo's layers have one; the shadow raster honours it.
+  (3) `compositor_layout::pressed` takes the scheme (the pressed hue is `light_hue`'s for it).
 - **Bardo's numbers.** `WINDOW_RADIUS`, the two hand-written `ShadowLayer`s and `HUES` are deleted; `frame_style` reads
-  `Radius::Window.px()`, `Shadow::Window.layers(scheme)` and `light_hue(light, scheme)`. Tests in `casement-layout/src/frame.rs`
+  `Radius::Window.px()`, `Shadow::Window.layers(scheme)` and `light_hue(light, scheme)`. Tests in `compositor-layout/src/frame.rs`
   pin the agreement for both schemes (radius, every shadow field and colour, every disc and mark ink, pressed). The light hues
-  change from the macOS candy values casement copied (`#FF5F57`...) to Bardo's (`#e8483c`...; dark `#ff6b60`...): that is
+  change from the macOS candy values the compositor copied (`#FF5F57`...) to Bardo's (`#e8483c`...; dark `#ff6b60`...): that is
   Bardo's token, the point of the lane. FrameLook holds two shadow layers; a test pins Bardo's count at two.
-- **theme = system.** `casement_ipc::system_scheme::SchemeWatch` is the follower: a thread with a current-thread tokio runtime
-  (the pattern of `sleep` and `signals`; the portal's zbus needs a runtime and casement has none), `SystemPrefsWatch::start` on
-  it, the first answer and each change passed to a callback. `casement::appearance` starts it the first time the stored theme is
+- **theme = system.** `compositor_ipc::system_scheme::SchemeWatch` is the follower: a thread with a current-thread tokio runtime
+  (the pattern of `sleep` and `signals`; the portal's zbus needs a runtime and the compositor has none), `SystemPrefsWatch::start` on
+  it, the first answer and each change passed to a callback. `compositor::appearance` starts it the first time the stored theme is
   `system` (at start, or when the file changes to it), and its answers join the file's over the same calloop channel
   (`Input::Theme`/`Input::System`); `resolve(theme, system)` picks the scheme. Until it answers, and with no portal, `system`
   paints Light. The seam is `ConfigHome`: `Xdg` reads the portal, `At(dir)` a fixed default answer, so no test reaches a bus
-  (`SystemPrefsSource::Fixed`). `casement-ipc` has no ds-style dependency, so its callback takes its own `DesktopScheme`
+  (`SystemPrefsSource::Fixed`). `compositor-ipc` has no ds-style dependency, so its callback takes its own `DesktopScheme`
   (it compares the portal's scheme with `scheme_from_portal(1)` rather than naming `Scheme`); if a ds-style line is added to its
   manifest, `DesktopScheme` can become `Scheme`. A custom `--config-home` therefore does not follow the desktop (a jail).
 - **Tests.** Table: `place` (device rounding, room, left edge, longest fit, margins), `key` (tidy, device size, key fields),
@@ -2294,10 +2294,10 @@ Title text, Bardo's numbers, `theme = "system"`. Written without a compiler (wav
   `TitleRaster::system`, `TitleDraw::argb`, `pressed`, `appearance::{system_source, resolve}`, `SchemeWatch`, `DesktopScheme`.
   No golden was blessed.
 - **Gate and real run.** Likeliest compile faults: `raster.rs` against parley 0.11.1 and the vello_cpu fork (copied from
-  `spikes/casement-sp8/chrome`: `ranged_builder(.., scale, true)`, `FontFamily::Source(String.into())`, `Pixmap` into `render`,
+  `spikes/compositor-sp8/chrome`: `ranged_builder(.., scale, true)`, `FontFamily::Source(String.into())`, `Pixmap` into `render`,
   `Level::try_detect`), `ColourToken::Ink.value(scheme)` shape, the non-exhaustive `TitleFont` held by value, `Cargo.lock` (a new
   package, no `--locked`), `core_loop/titles.rs` field-wise borrow of `state.render` beside `state.core.model`, `FrameKey` now
-  seven wide, `prefs.scheme = ...` assignment on a `non_exhaustive` struct in casement-ipc's test, `Light::ALL.map`. Real run on
+  seven wide, `prefs.scheme = ...` assignment on a `non_exhaustive` struct in compositor-ipc's test, `Light::ALL.map`. Real run on
   foot: the title sits centred in the bar in Inter 13/600 (or the system sans), dim on a window that is not key, ellipsis on
   a narrow window with the start of the title left of the right margin and clear of the lights; sharp at 1x, 1.5x and 2x; changes
   with the window's title with no flash; with `theme = "system"` in `~/.config/bardo/appearance.toml`, the frame follows the
@@ -2310,7 +2310,7 @@ Title text, Bardo's numbers, `theme = "system"`. Written without a compiler (wav
 Minimising looks like macOS: the Scale effect, the Genie effect, chosen by `windows.minimise_effect` (Genie is the default, as
 on a Mac). Written without a compiler (wave rule); the orchestrator builds.
 
-- **Motion knows the flight.** `casement_motion::Flight { window, tile, progress }` is a new field on `PlacedWindow`
+- **Motion knows the flight.** `compositor_motion::Flight { window, tile, progress }` is a new field on `PlacedWindow`
   (`flight: Option<Flight>`). `retarget` stores the two ends on the window's legs for a `Cause::Minimise` that travels (the
   window's rectangle when it left, or the goal rectangle when it comes back, and the dock tile); `sample` reports a flight
   only while the window still moves and `progress` (thousandths, 1000 = in the tile) is read off the pose against the two
@@ -2319,7 +2319,7 @@ on a Mac). Written without a compiler (wave rule); the orchestrator builds.
   duration and curve are unchanged and the genie follows the same progress. Reduced motion has no flight (it snaps).
   `FrameScene::text` adds ` flight <permille>` to a window's line only while it flies, so no existing golden changes (the
   two motion goldens are Mission Control entries).
-- **Genie geometry, pure.** `casement_motion::genie::strips(window, tile, progress, count) -> Vec<Strip>` (`STRIPS = 48`).
+- **Genie geometry, pure.** `compositor_motion::genie::strips(window, tile, progress, count) -> Vec<Strip>` (`STRIPS = 48`).
   Row `v` (0 top, 1 bottom) has gone `ease(clamp(1.6 p - 0.6 (1 - v)))` of the way to the tile, so the bottom leads by `LAG =
   0.6` of the flight; centre, width and top edge are linear in that. Strips share their edges by construction, a running
   maximum keeps rows from folding when the tile is above the window. Table tests: ends at 0 and 1, shared edges at 21
@@ -2341,7 +2341,7 @@ on a Mac). Written without a compiler (wave rule); the orchestrator builds.
   the flight's window end), shares each surface element and the frame's memory elements (`SharedElement`, an `Rc`, because
   smithay's elements are not `Clone`), and for each strip makes `StripElement` = `Relocate(Crop(Rescale(element)))` with
   its own id (`Id::namespaced(64 + strip)`). `strip_plans` turns `genie::strips` into the physical numbers (origin, per-axis
-  scale, crop band, shift) and is pure with table tests. Two new `CasementElement` variants: `SurfaceStrip`, `MemoryStrip`.
+  scale, crop band, shift) and is pure with table tests. Two new `SceneElement` variants: `SurfaceStrip`, `MemoryStrip`.
   Departures: during a genie the rounded clip is not applied (the strips draw plain surfaces), the shadow is not drawn
   (the strips are cut to the frame's outline), popups are not drawn, blur v0 is not drawn. Each of these is also dropped
   for a Scale flight except the clip and the shadow, which scale with the window (popups and blur are left out there too).
@@ -2352,13 +2352,13 @@ on a Mac). Written without a compiler (wave rule); the orchestrator builds.
   pointer input while it flies, and the hit test elsewhere keeps the real geometry.
 - **Settings.** `MinimiseEffect` derives `Default` (Genie) so `LayerDraw` stays `Default`; `LayerDraw.minimise_effect` is set
   in `core_loop::frame` from `model.settings().windows.minimise_effect`.
-- **Tests added.** `casement-motion`: `genie.rs` (6 table/property tests + a doc test), `flight.rs` (2),
+- **Tests added.** `compositor-motion`: `genie.rs` (6 table/property tests + a doc test), `flight.rs` (2),
   `tests/it/behaviour.rs::a_minimise_flies_as_a_flight_out_and_back_and_other_causes_do_not`, `Flight::new` doc test.
-  `casement-render`: `element/flight.rs` (6: the effect choice, the size ratio, scaled content, strip plans at rest, no
+  `compositor-render`: `element/flight.rs` (6: the effect choice, the size ratio, scaled content, strip plans at rest, no
   gap at 21 progress values at three scales, an empty window, rest place; plus a `scale_ratio` doc test) and `element/strip.rs`
   (3, with a solid element: where a strip lands, an unreached band, distinct ids). No golden changed.
 - **Gate and real run.** Likeliest compile faults: `element/strip.rs` and `shared.rs` (the generic `Element` and
-  `RenderElement` impls over smithay's wrappers, and the two new `CasementElement` variants through `render_elements!`),
+  `RenderElement` impls over smithay's wrappers, and the two new `SceneElement` variants through `render_elements!`),
   `flight.rs`'s `Point`/`Rectangle` conversions with `.into()`, `window.rs` (`Scale::from((f64, f64))`,
   `scaled_origin`), `retarget.rs` (`toward` borrows `known` then consumes it), `scene.rs` (the genie branch with
   `continue` in the closure). Only a real run proves: frame time on a large window with 48 strips x (titlebar, title, surface
@@ -2404,17 +2404,17 @@ compiler (wave rule); the orchestrator builds.
 - **Departure: whole output, not the usable area.** The task said "usable area"; both windows are `FullScreen` and are drawn
   above the top layers (`full_screen_windows`), so a halves-in-usable-area layout would leave the bar's strip uncovered. Layout
   uses `OutputSpec::full`. Changing it is one line (`let area = output.full;` in `rust_scene/split.rs`).
-- **Departure: the picker has no wire.** The XML has no event or request for it and `casement-protocols` is not this lane's.
-  `casement_wayland::bardo::shell::apply_note` has an explicit empty arm for `SplitChoose` and `SplitChoiceEnd` naming this
+- **Departure: the picker has no wire.** The XML has no event or request for it and `desktop-protocols` is not this lane's.
+  `compositor_wayland::bardo::shell::apply_note` has an explicit empty arm for `SplitChoose` and `SplitChoiceEnd` naming this
   section. Until the protocol lands the menu entry makes the window full screen and the model waits for a pick that cannot
   come (it ends when the window leaves full screen or closes). No test client catalogue entry (no new interface).
 - **Departures.** A window's maximum size is not honoured by a half (it is as wide as the half, like a full-screen window);
   windows on other desktops of the output are candidates, not only the desktop the first came from (the model does not record
   which desktop that was); switching Space while choosing does not cancel it; the divider share is not persisted.
-- **Tests.** `casement-core/tests/it/model_split.rs` (enter, candidates, pick both sides, cancel, stale picks, first leaving,
-  exit from either window, close either window, divider clamp); `casement-layout/tests/it/split.rs` (widths table, unmet
+- **Tests.** `compositor-core/tests/it/model_split.rs` (enter, candidates, pick both sides, cancel, stale picks, first leaving,
+  exit from either window, close either window, divider clamp); `compositor-layout/tests/it/split.rs` (widths table, unmet
   minimums, the output's place, a missing window); in-file test of `taffy_bridge/split.rs`. Changed: `model_window_menu.rs`
-  ("a Full Screen Tile entry ..." now ends full screen), `casement-testkit/tests/it/protocol/bardo_shell.rs`
+  ("a Full Screen Tile entry ..." now ends full screen), `compositor-testkit/tests/it/protocol/bardo_shell.rs`
   (`resting_on_the_green_light...` expects both Full Screen Tile entries enabled).
 - **Gate.** Likeliest compile faults: `model/split.rs` (the `restore.filter(..)` let-else in `split_pick`, `Moved::then(Model::choice_over)`,
   `with_all(Option<Effect>)`), `invariants.rs` (the tuple match), `requests.rs` `leave_full_screen` closures, `desktop.rs`
@@ -2424,13 +2424,13 @@ compiler (wave rule); the orchestrator builds.
   fills the left half and (once the wire lands) the shell offers the second; today Left of Screen only goes full screen.
 ## wave-2026-10-15/splitwire
 
-The Split View picker and divider on the wire (casement-protocols `lane/splitwire`, casement, sill). Written without a compiler.
+The Split View picker and divider on the wire (desktop-protocols `lane/splitwire`, the compositor, sill). Written without a compiler.
 
 - **Protocol.** `bardo_shell_v1` (still version 1): enum `split_side`, events `split_choose(first, side)` +
   one `split_candidate(toplevel)` per candidate + `split_choice_end(first)`, requests `split_pick`, `split_cancel`,
-  `split_divide(toplevel, share)`. Land casement-protocols first. This closes the "picker has no wire" departure of
+  `split_divide(toplevel, share)`. Land desktop-protocols first. This closes the "picker has no wire" departure of
   `## wave-2026-10-15/split`.
-- **Dispatch.** `casement_wayland::bardo::shell_split` (new file; `shell.rs` was at 400 lines): `send_choose`,
+- **Dispatch.** `compositor_wayland::bardo::shell_split` (new file; `shell.rs` was at 400 lines): `send_choose`,
   `send_choice_end`, `on_split_pick`, `on_split_cancel`, `on_split_divide`. A pick/divide naming an unknown window is
   ignored, no protocol error. `share` above 1000 is cut to 1000; the model clamps to 200..800.
 - **Test client.** `ShellHandle::{split_pick, split_cancel, split_divide, split_choices, split_ends}`
@@ -2439,7 +2439,7 @@ The Split View picker and divider on the wire (casement-protocols `lane/splitwir
   `a_cancelled_choice_leaves_the_first_window_alone`; doc tests on the three `on_split_*`. No golden or `globals.txt` changed.
 - **Check at the gate.** The tests assume both toplevels (no app id) are candidates of each other and that
   `windows()` is in id order; the second window must not be hidden or in the dock.
-- **Divider drag: still open (model side).** The wire carries `split_divide`, but casement has no hit test on the 8 px
+- **Divider drag: still open (model side).** The wire carries `split_divide`, but the compositor has no hit test on the 8 px
   strip and no pointer grab, and no divider rectangle in `Arrangement`. sill draws the handle only if a shell surface
   can receive the drag; see sill's findings. A real drag needs: (1) the gap between the two halves routed to a shell
   layer surface or a compositor grab, (2) a resize cursor, (3) persistence of the share if wanted.
@@ -2479,7 +2479,7 @@ key command. Written without a compiler (wave rule); the orchestrator builds.
   choosing and sends `SplitChoiceEnd(first)`; the first window stays full screen.
 - **Key command.** `DesktopCommand::SplitTile(SplitSide)`, `SplitSide` now `Hash + Serialize + Deserialize` (`left` / `right`),
   words `["desktop", "split_tile", "left"]` in the bindings document (`config/action.rs`, header comment updated), no default
-  chord. It runs `split_view` on the key window. casementctl exposes no binding command list (its `DesktopCommand` is the
+  chord. It runs `split_view` on the key window. bardo-compositorctl exposes no binding command list (its `DesktopCommand` is the
   desktop client's, a different type), so nothing changed there; the bindings document is the list.
 - **Tests.** Layout table tests: `tests/it/divider.rs` (strip hit, share from pointer x with limits and minimums),
   `tests/it/split.rs` (divider strip per share, centred maximum widths and the backdrop). Model (`model_split.rs`): the key
@@ -2489,7 +2489,7 @@ key command. Written without a compiler (wave rule); the orchestrator builds.
 - **Gate.** Likeliest compile faults: `core_loop/divider.rs` (borrow of `state.render.divider` before `feed(state, ..)` in
   `moved`; `bool::then` returning a clone), `deliver.rs` (`press_on_divider`, the early return in `motion`), `model/split.rs`
   (`can_share` as a free fn over private `Model` fields, `Option::is_none_or`), `spaces.rs` (`move` closure after `then`),
-  `casement-render/src/scene.rs` (`cover(.., colour)`). The test that needs the most from reality is
+  `compositor-render/src/scene.rs` (`cover(.., colour)`). The test that needs the most from reality is
   `dragging_the_strip_sets_the_share_...`: it assumes the fixture's two test clients' buffers do not reach the strip and that
   `pointer_to` then `button` hit the compositor path above (a test client that committed a larger buffer would block the strip).
   `desktop_filter` test assumes a window mapped while desktop 2 is shown lands on desktop 2.
@@ -2545,7 +2545,7 @@ The window shadow stops re-rastering per frame. Written without a compiler (wave
 Mission Control, Sonoma style: the shown Space's windows fly to scaled slots below a strip for the Spaces bar, a click picks
 one, Escape or the same key leaves. Written without a compiler (the lane rules); the gate is the first build.
 
-- **Spread (`casement-layout/src/rust_scene/spread.rs`, `spread_fit.rs`, `overview.rs`).** A21's recipe in whole numbers (no
+- **Spread (`compositor-layout/src/rust_scene/spread.rs`, `spread_fit.rs`, `overview.rs`).** A21's recipe in whole numbers (no
   float): one common scale in parts per million; the start is the largest scale whose cells (box plus gap) fill at most 55 % of the
   area and fit it, replaced by 1 when within a fifth of it; per trial each axis's centres are mapped monotonically onto the area,
   then a greedy pairwise push in canonical order (position, then id), at most 24 passes, each pair separated along its smaller
@@ -2560,7 +2560,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   unless overflow reported, deterministic). `.proptest-regressions` kept. Table tests beside the code: `spread.rs` (empty, one
   window keeps its size below the strip, order kept, the frame's reserve, a crowd shrinks every window the same, 60 windows at the
   floor report overflow) and `spread_fit.rs` (overlap, push, hold inside, shelf, start order).
-- **Model (`casement-core`).** `Overview { Closed, Entering, Open, Leaving }` (`overview.rs`), `Model::overview()`,
+- **Model (`compositor-core`).** `Overview { Closed, Entering, Open, Leaving }` (`overview.rs`), `Model::overview()`,
   `toggle_overview`, `open_overview`, `close_overview(Option<OverviewPick>)` (`model/overview.rs`). Entering and leaving each
   `Relayout(Cause::Overview)`, arm `TimerKey::OverviewSettle` (350 ms: the windows' spring settles, then open or closed) and tell
   the shell (`ShellNote::Overview`). A leave with a pick feeds `FocusIn::Press` on the window first, so it is raised and keyed as
@@ -2577,7 +2577,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   (or leaves from the picture) and its release is swallowed, scrolls, gestures and touches are dropped, Escape (no modifiers,
   entering or open) is turned into the toggle command. Keys are otherwise delivered to the key window. A press while leaving
   does nothing.
-- **Drawing (`casement-render`).** `LayerDraw.overview: OverviewDraw` (`Off`, `On { hover }`). While on, a window not in a
+- **Drawing (`compositor-render`).** `LayerDraw.overview: OverviewDraw` (`Off`, `On { hover }`). While on, a window not in a
   minimise flight is drawn as a `Scale` flight of zero progress, so the existing rescaling path does everything: surfaces at
   `placed.size` over the window geometry, the frame and its clip round `drawn_content`, no popups, no blur. `titles::of` makes the
   title for the scaled bar by the same rule. New: a dimming layer (premultiplied black, alpha 64, behind the windows and in front of
@@ -2591,15 +2591,15 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   motion goals, settle time and the spring are the `Overview` cause's `Move` response; 350 ms is a guess to confirm in a real
   run. (6) Windows of other Spaces, full-screen and Split View Spaces: the overview of such a Space has no slots (the
   windows just fly to nothing: they are not in `overview`, so they stay put), where macOS shows the Spaces bar only.
-  (7) `casement-scene-css/tests/parity.rs` (P3-CSS) stays ignored: its bodies are `todo!` for the whole CSS scene (every layout
+  (7) `compositor-scene-css/tests/parity.rs` (P3-CSS) stays ignored: its bodies are `todo!` for the whole CSS scene (every layout
   of 500 specs), none of which this lane's code touches.
-- **Tests.** casement-core `model_overview.rs` (state walks for the command and the shell request, relayout and timer effects, no
+- **Tests.** compositor-core `model_overview.rs` (state walks for the command and the shell request, relayout and timer effects, no
   output, a pick raises and keys, a leave without a pick, picks while closed or leaving); `model_props.rs` gets the command in its
-  generator. casement-testkit `protocol/bardo_shell_overview.rs` (shell opens it and hears Entering then Open with progress, a
+  generator. compositor-testkit `protocol/bardo_shell_overview.rs` (shell opens it and hears Entering then Open with progress, a
   click on a slot picks, a click on the picture leaves with nothing picked, Escape leaves, the shell closes it and App Expose is
-  ignored). `casement/src/core_loop/overview.rs` (the reach of a slot with its frame), `keymap/shell.rs` (Ctrl+Up),
+  ignored). `compositor/src/core_loop/overview.rs` (the reach of a slot with its frame), `keymap/shell.rs` (Ctrl+Up),
   `tests/it/config.rs` (the word round-trips), `element/overview.rs` (physical rectangles at 1x and 2x).
-  Ignored test un-ignored: `casement-layout/tests/it/spread.rs`. No golden changed.
+  Ignored test un-ignored: `compositor-layout/tests/it/spread.rs`. No golden changed.
 - **Gate and real run.** Likeliest compile faults: `core_loop/deliver.rs` (the Escape check in the `apply_key` filter closure reads
   `state` as `&State` while the closure may hold `&mut`), `scene.rs` (`in_overview` and the let-chain in `draw_windows`, the
   closure passing `renderer` into `and_then`), `spread_fit.rs::start` (a closure taking a `fn` pointer), `model/overview.rs`
@@ -2614,7 +2614,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
 Nothing here compiled or ran (the lane does not build). Closes the four "Capture limits" of `capture` and `capture2`.
 
 - **dma-buf capture (offer).** An ext output session, an ext window session, a cursor session and a `zwlr_screencopy`
-  frame now offer dma-buf beside shm. The set is `casement_wayland::image_capture::dma_offer(renderable, accepted)` (pure,
+  frame now offer dma-buf beside shm. The set is `compositor_wayland::image_capture::dma_offer(renderable, accepted)` (pure,
   table-tested): the formats the backend's renderer can draw a capture into (`HeadlessRenderer::capture_formats`: `Argb8888`
   and `Xrgb8888` of the set `Bind<Dmabuf>::supported_formats` reports; pixman is linear only) among the formats the dma-buf
   global accepts (`DmabufPart::accepted`), so a client can always create the buffer it allocates. ext sends
@@ -2623,7 +2623,7 @@ Nothing here compiled or ran (the lane does not build). Closes the four "Capture
   `DrmNode`, made with `DrmNode::from_dev_id` (reads no file): in a jail without `--fabricate-gpus` the node cannot be typed
   and the ext offer is shm only (the tests allow both); wlr needs no node. No dma-buf global (`--dmabuf none`, the default
   in the jail) means no dma-buf offer at all.
-- **dma-buf capture (drawing).** `casement_render::pass::write_dmabuf<R: Renderer + ImportMem + Bind<Dmabuf>>` uploads the
+- **dma-buf capture (drawing).** `compositor_render::pass::write_dmabuf<R: Renderer + ImportMem + Bind<Dmabuf>>` uploads the
   frame as a texture, binds the client's dma-buf as the framebuffer, clears it, draws the texture 1:1 at the corner and waits
   for the fence. The composition root's `handlers/image_capture/dma.rs::deliver` writes shm directly and sends a dma-buf to
   `{HeadlessBackend, TtyBackend}::write_dmabuf`; all four ways to answer a frame (ext output, ext window, ext cursor, wlr)
@@ -2643,17 +2643,17 @@ Nothing here compiled or ran (the lane does not build). Closes the four "Capture
   with the output. Departures: the surface's viewport crop and `buffer_transform` are not applied (a cursor with a cropped
   viewport or a rotated buffer is read as its whole buffer); a single-pixel or other non-shm, non-dma buffer fails the frame
   (`Renderer`). The one new `unsafe` is `gl_raw::with_shm_pool`, the read-only twin of the capture write's slice.
-- **Rotated outputs.** The image is sent turned with the frame (`ArgbImage::turned`, `casement_core::geometry::turn_point`,
+- **Rotated outputs.** The image is sent turned with the frame (`ArgbImage::turned`, `compositor_core::geometry::turn_point`,
   the rule of smithay's `Transform::transform_point_in`, now one home with `turn_size`), the announced buffer size is
   `sent_image_size` (width and height swapped under a quarter turn), and the hotspot is turned inside the image so that
   `position - hotspot` is the turned image's corner. The frame's transform event stays `normal` (the image is already turned),
   as the capture frames' do. Pixel (x, y) moves with the index rule: `turn_point(t, (x, y), (w - 1, h - 1))`.
 - **Fractional scales.** `place` now finds the image's corner as the element does: `round((at - hotspot - origin) x scale)` once
-  (`on_output` in `casement-render/src/scene/convert.rs`, the rule of `to_physical`), the hotspot offset is `round(hotspot x
+  (`on_output` in `compositor-render/src/scene/convert.rs`, the rule of `to_physical`), the hotspot offset is `round(hotspot x
   scale)` and the position is their sum. Before, position and hotspot were rounded separately, which put the corner a pixel
   off whenever both fractions round the same way (the arrow at (100, 50) and 1.5x was at (142, 70); the screen draws it at
   (143, 71)). Changed values: the 1.5x protocol test now expects `Position(151, 76)`; the hotspot is still `(8, 5)`.
-- **Tests.** Table: `turn_point`/`turn_size` (casement-core); `place` (1x, 1.5x, 2x, the corner equals the element's for scales
+- **Tests.** Table: `turn_point`/`turn_size` (compositor-core); `place` (1x, 1.5x, 2x, the corner equals the element's for scales
   130 to 270 and three origins, every transform's position and turned hotspot, the turned corner equals the turned box, scaled
   plus turned, the sent size); `dma_offer`; `ArgbImage` (strided unpack, xrgb opaque, short pool, nearest resampling up and
   down, an empty source, all eight turns, rgba order). Protocol (`capture_dma.rs`, `capture_cursor.rs`): an ext session's
@@ -2701,7 +2701,7 @@ at once"). Written without a compiler (wave rule); the orchestrator builds.
   can only carry what lies inside the window's rows, and a menu hangs outside; macOS closes menus before a window minimises.
   The popup surface itself is not dismissed (the client is not told); it comes back when the window has landed. If the owner wants
   the client told, that is a `popup_done` on minimise (core change, not this lane).
-- **Genie silhouette.** `casement_motion::genie::strips_fine`: the 48 base strips, each cut at equal heights into up to 6 pieces
+- **Genie silhouette.** `compositor_motion::genie::strips_fine`: the 48 base strips, each cut at equal heights into up to 6 pieces
   when the curve's edge moves more than `2 x TOLERANCE` (1 px) across it, with a total budget of `MAX_STRIPS` (120); when the wish
   passes the budget the extra cuts are shared in proportion. At rest it is exactly 48. A strip is still a rectangle (its edges are
   the mean of its rows' edges), so the stepped silhouette stays within about 1 px only where the budget allows; a 1600 px window
@@ -2724,11 +2724,11 @@ at once"). Written without a compiler (wave rule); the orchestrator builds.
   about 380 ms. Whether that reads better than vanishing is a real-run call. To fade the body too the loop must keep a
   texture of the window (render it into an offscreen texture on the frame before the unmap), a separate piece of work. To turn the
   ghost frame off: build `LayerDraw::closing` empty in `core_loop.rs::frame`.
-- **Tests added.** `casement-motion` `genie.rs`: at rest exactly the base strips, limit == base is the plain strips, steep part
-  finer within the limit with shared edges, edges within tolerance with room (+ doc test). `casement-render`: `genie.rs` (6: at
+- **Tests added.** `compositor-motion` `genie.rs`: at rest exactly the base strips, limit == base is the plain strips, steep part
+  finer within the limit with shared edges, edges within tolerance with room (+ doc test). `compositor-render`: `genie.rs` (6: at
   rest/shared edges, exact meeting at progress x scale, finer halfway, short window, source rows cover once, no area; halo; solid
   strips never overlap), `strip.rs` (widened band, mapped rectangle), `shape.rs` (`touches`), `popup.rs` (corner by ratio),
-  `closing.rs` (+ doc test), doc tests on `strips_fine`, `with_alpha`, `faded`. `casement`: `closing.rs` (2). The old strip tests moved
+  `closing.rs` (+ doc test), doc tests on `strips_fine`, `with_alpha`, `faded`. `compositor`: `closing.rs` (2). The old strip tests moved
   from `flight.rs` to `genie.rs`; the overlap assertion became "end equals next start". No golden, no `expected-failures.txt` change.
   No doc test on `StripPlan` methods (the struct is `non_exhaustive`, a doc test cannot build one).
 - **Gate and real run.** Likeliest compile faults: `clip_strip.rs` (`Element`/`RenderElement` bounds on `ClipStripElement<R>`, `Mask`
@@ -2794,18 +2794,18 @@ Rounded corners and shadows right everywhere (wave 5). Written without a compile
 
 Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted, not changed" of `session`.
 
-- **Live apply.** casement watched no `settings.toml` before (only Bardo's `appearance.toml`). New
-  `casement::settings_live` watches the document through ds-settings (the appearance watch's thread
+- **Live apply.** the compositor watched no `settings.toml` before (only Bardo's `appearance.toml`). New
+  `compositor::settings_live` watches the document through ds-settings (the appearance watch's thread
   spawner, now `pub(crate)`), and `settings_live::apply` tells the model `followed(current, doc)`:
   the file's pointer and touchpad profiles and the key repeat; everything else (bindings from the
   keymap, the layout, windows, outputs) stays as running. `core_loop::note_settings` now also calls
   `tty::reconfigure_pointers` on every `SettingsChanged`, whatever its source. The seam side:
-  `casement_backend::input::PresentDevices` (pure; remembers each device's class and what it was last
+  `compositor_backend::input::PresentDevices` (pure; remembers each device's class and what it was last
   configured with; `changes(&PointerSettings)` is the diff), held by `TtyBackend`, which records
   appearances, departures and every successful `configure_device`; `TtyBackend::reconfigure_pointers`
   applies the diff through `InputDevices::apply`. The fake (`FakeInputFeed`) needed no change.
   Tests: table `a_settings_change_reaches_exactly_the_devices_it_changes` and three more in
-  `casement-backend/tests/it/input_config.rs`; fixture test `a_settings_change_reaches_a_device_already_present`
+  `compositor-backend/tests/it/input_config.rs`; fixture test `a_settings_change_reaches_a_device_already_present`
   (`Fixture::settings_file_changed`); table `the_file_changes_the_pointer_and_the_repeat_and_nothing_else`.
 - **Departures.** (1) The keymap layout (`keyboard.xkb_*`) does not follow the file: the seat's keymap is
   compiled at start, and putting the new names in the model without recompiling would make them disagree;
@@ -2814,7 +2814,7 @@ Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted
   stored value per event, so it was already live). (3) Windows, spaces, outputs, GPU settings are still read
   at start only.
 - **Old files.** `settings.toml` has a top-level `version` (`config::Version`, none in old files, current 2).
-  `config::load` returns `CasementDoc::migrated()`: from no version or an older one, a key that still holds a
+  `config::load` returns `CompositorDoc::migrated()`: from no version or an older one, a key that still holds a
   retired default (only `pointer.natural_scroll = "off"`, the old mouse default) takes today's default;
   any other value, and all of a file at version 2 or newer, is kept. `touchpad.natural_scroll` is untouched
   (its default never changed). A migrated read is in memory only; `settings_live::attach` runs
@@ -2825,10 +2825,10 @@ Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted
   and this change, in a file with no version, loses it once. Tests: `an_old_file_drops_the_retired_default_and_keeps_what_the_person_set`
   (table), `migration_touches_only_the_retired_default`, `a_migrated_document_is_written_at_the_current_version`,
   `stamping_writes_only_the_version_and_only_once`, `stamping_a_missing_file_writes_nothing`. Two existing tests
-  now compare with `.migrated()` (a missing file loads at the current version). The schema (`casement.settings.toml`)
+  now compare with `.migrated()` (a missing file loads at the current version). The schema (`compositor.settings.toml`)
   does not list `version`, as `[bindings]` is not listed: the schema test skips nothing because a default
   document serialises without it.
-- **Only a real run proves.** Editing `~/.config/casement/settings.toml` (or a Settings app save) while a mouse
+- **Only a real run proves.** Editing `~/.config/compositor/settings.toml` (or a Settings app save) while a mouse
   and a touchpad are in use: the next scroll/tap follows within the 30 ms debounce and no replug; libinput accepts
   re-applying `set_scroll_natural_scroll_enabled`/tap/accel on a live device (RealInputFeed::apply is the same call
   as at appearance); the watcher thread starts under the compositor's real config home; our own stamp write does
@@ -2866,17 +2866,17 @@ Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours
   Departures: (1) the overview is global, so a Space switch on any output closes it on all; (2) the last-window rule reads the
   output of the closing window, so a close on output B with output A's windows gone does not close it; (3) which relayout cause
   the switch sends first (`SpaceSwitch`, then `Overview`) is moot: exec keeps the first and both travel on the Move spring.
-- **Themed colours.** Boundary: `scripts/check-boundary.sh` has no row against `ds-style` in `casement-layout` (B1 limits only
-  `casement-core`'s own dependencies; B13 limits only ds-settings), and `frame.rs` already reads ColourToken there. So the values
-  are read in a new `casement-layout/src/look.rs` and reach the renderer through the loop: `overview_ring(scheme)` is
-  `ColourToken::Accent` (Bardo's accent fill, Blue until the person's accent is carried to casement; casement has no accent setting
+- **Themed colours.** Boundary: `scripts/check-boundary.sh` has no row against `ds-style` in `compositor-layout` (B1 limits only
+  `compositor-core`'s own dependencies; B13 limits only ds-settings), and `frame.rs` already reads ColourToken there. So the values
+  are read in a new `compositor-layout/src/look.rs` and reach the renderer through the loop: `overview_ring(scheme)` is
+  `ColourToken::Accent` (Bardo's accent fill, Blue until the person's accent is carried to the compositor; the compositor has no accent setting
   today), `overview_dim(scheme)` is `ColourToken::Scrim` (black at .22: alpha 56 where 64 was written), `split_backdrop()` is
   `ColourToken::Paper` in its Dark value (#1E1E1E) in both schemes (was 28/28/30), because the Mac's backdrop stays dark on a
   light desktop and Bardo has no separate backdrop token. `OverviewDraw::On` carries an `OverviewLook { dim, ring }` (premultiplied
   `Rgba8`, made by `From<FrameColour>`). The ring is the light scheme's accent fill rather than the dark #0A84FF
   that was written: the colour changes slightly in light. No golden pinned any of these.
-- **App icon in the hover label: not done (departure).** casement can resolve an app's icon only when the client sets
-  `xdg_toplevel_icon` (`casement_wayland::xdg_toplevel_icon::icon_of(root)` returns the shm buffers or a theme name, nothing reads it
+- **App icon in the hover label: not done (departure).** the compositor can resolve an app's icon only when the client sets
+  `xdg_toplevel_icon` (`compositor_wayland::xdg_toplevel_icon::icon_of(root)` returns the shm buffers or a theme name, nothing reads it
   yet); the usual source (`.desktop` -> icon theme lookup) needs an icon loader, which this lane does not add. To finish: pick the
   buffer nearest 16 px x scale from `icon_of`, read it with the capture's `ArgbImage::from_shm`, and lay it left of the title in
   `label_element` (the label's raster has no left margin to make room: widen `LABEL_MIN`).
@@ -2891,7 +2891,7 @@ Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours
   is `pub(crate)` in a private module and used in a `pub fn` body only), `scene.rs` (the `at_rest` local shadows nothing but `shrunk`
   must be computed before `placed` is shadowed; the `if let ... && ...` with a struct pattern), `windows.rs` (`outputs.clone()` in a
   non-move closure, then `outputs` moved into the next), `model/overview.rs` (`WindowRole` is `PartialEq`), `solid.rs` (the `From`
-  impl names `casement_core::window::FrameColour`). The test most likely to need a tweak: `a_space_switch_closes_the_overview_with_no_pick`
+  impl names `compositor_core::window::FrameColour`). The test most likely to need a tweak: `a_space_switch_closes_the_overview_with_no_pick`
   assumes `SwitchSpace(Previous)` after a full-screen request lands on the desktop and `Next` goes back (as `model_spaces.rs` does).
 - **Real run.** Ctrl+Up with framed windows: titlebar, lights, title and shadow shrink with the window as they fly in, the ring sits
   just outside the shrunk titlebar, no title is missing or blurry at 1x and 2x (the title is stretched from the full-size raster, so
@@ -2903,7 +2903,7 @@ Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours
 
 Nothing here compiled or ran (the lane does not build). Closes the two gaps `capture3` left. No new `unsafe`, no Cargo edit.
 
-- **GPU formats and modifiers in the dma-buf offer (tty).** New seam `casement_backend::tty::CaptureGpu` (`capture_gpu.rs`),
+- **GPU formats and modifiers in the dma-buf offer (tty).** New seam `compositor_backend::tty::CaptureGpu` (`capture_gpu.rs`),
   lent by a display device through `Kms::capture_gpu` (default none; `TtyDevices::capture_gpu` takes the first open device that
   lends one). The real lender (`capture_gpu_real.rs`) wraps the device's `Rc<RefCell<GlesRenderer>>`, the renderer that draws the
   scanout, with `try_borrow` so a busy renderer is an error and an empty offer, never a panic. `TtyBackend::capture_formats` is now
@@ -2961,7 +2961,7 @@ A closing window fades and shrinks as one: the body now goes with the frame (the
 and the "Not solved: the content of a closed window" row of flight2). Written without a compiler (wave rule); the orchestrator builds.
 
 - **What is kept.** The window's last image, drawn alone through the pass window capture uses (`window_rgba` ->
-  `render_offscreen`, content size at its output's scale), read back as RGBA and baked into a `ClosingBody` (casement-render
+  `render_offscreen`, content size at its output's scale), read back as RGBA and baked into a `ClosingBody` (compositor-render
   `element/closing_body.rs`): the bottom corners are cut by `ClipShape::coverage` at the kept radius, the channels are put in
   Argb8888 order, and it is a `MemoryRenderBuffer`. `ClosingFrame` gained `body: Option<ClosingBody>` (and lost `Copy`).
   `closing_elements` draws front (titlebar, lights, title), then the body as one `MemoryRenderBufferRenderElement` stretched over the
@@ -2991,9 +2991,9 @@ and the "Not solved: the content of a closed window" row of flight2). Written wi
   window without one (winit, too big, the read-back failed) has no frame either, as before flight2.
 - **Per output.** One image at the scale of the output the window was on, stretched to the sampled rectangle on every output the
   window is drawn on (a window straddling two outputs of different scales is slightly soft on the other).
-- **Tests added.** casement-render: `closing_body.rs` unit (bake: channel order, square top, cut bottom corners, bad length/empty;
+- **Tests added.** compositor-render: `closing_body.rs` unit (bake: channel order, square top, cut bottom corners, bad length/empty;
   equality by id), doc test on `ClosingBody::from_rgba`; `tests/it/closing_body.rs` on pixman (stretched over the content, outside
-  stays black; half opacity is half over black). casement: `core_loop/bodies.rs` (verdict table; scale counts in the weight; oldest
+  stays black; half opacity is half over black). The compositor: `core_loop/bodies.rs` (verdict table; scale counts in the weight; oldest
   dropped past the count; re-admit replaces; finished windows freed). No golden and no `expected-failures.txt` change were made by
   hand; a testkit scene that closes a framed window mid-fade (pixman, the dummy renderer reads back zeros) may now show the frame
   where it showed nothing: bless with a reason if one exists.
@@ -3012,9 +3012,9 @@ Lane `kbdlive` (not compiled; the orchestrator gates). Closes input2's departure
 
 - **What changed.** `settings_live::followed` now also takes `keyboard.xkb_*` from the file. `settings_live::apply`
   first calls `switch_keymap`: if the wanted names differ from the ones the seat's keymap was compiled from, it
-  calls smithay `KeyboardHandle::set_xkb_config` (through `casement_wayland::seat_keymap::switch_layout`), and the
+  calls smithay `KeyboardHandle::set_xkb_config` (through `compositor_wayland::seat_keymap::switch_layout`), and the
   model is told the names the keyboard runs with afterwards (the new ones, or the old ones on failure). Repeat
-  rate and delay already followed (`apply_repeat_info`). New pure `casement_wayland::seat_keymap`: `KeymapBook`
+  rate and delay already followed (`apply_repeat_info`). New pure `compositor_wayland::seat_keymap`: `KeymapBook`
   (on `SeatPart.keymap`; the running names and the last refused ones), `plan` -> `KeymapStep::{Unchanged, Refused,
   Compile}`, `refuse` -> `Report::{Say, Quiet}`; `xkb_config(&XkbNames)` is shared with `SeatPart::new`.
 - **Bad keymap.** `set_xkb_config` compiles before touching anything, so a failure leaves the keyboard as it was;
@@ -3038,20 +3038,20 @@ Lane `kbdlive` (not compiled; the orchestrator gates). Closes input2's departure
   refusing an unknown layout name (it does with the stock xkeyboard-config); if the gate's data lets it through,
   pick another bad name (a bad `xkb_rules`, say). Windows, spaces, outputs stay read at start.
 - **Only a real run proves.** Editing `keyboard.xkb_layout` (e.g. `us` to `de`, or `us,de` with
-  `grp:alt_shift_toggle` options) in `~/.config/casement/settings.toml` while a terminal has focus: the next key
+  `grp:alt_shift_toggle` options) in `~/.config/compositor/settings.toml` while a terminal has focus: the next key
   types the new layout at once with no restart; a held modifier key still releases cleanly; Caps Lock is cleared by
   the switch; a typo in the layout leaves typing unchanged and one warning in the log; `cmd+space` still works.
   Toolkits that cache the keymap (GTK, Qt, Xwayland through xwayland-satellite) must take the new `keymap` event.
 
 ## wave-2026-10-15/mcwire
 
-The three asks of sill's Spaces bar (`## spacesbar`), as `bardo_shell_v1` **version 2** (casement-protocols `lane/cas9-mcwire`,
+The three asks of sill's Spaces bar (`## spacesbar`), as `bardo_shell_v1` **version 2** (desktop-protocols `lane/cas9-mcwire`,
 FINDINGS `## wave-2026-10-15/mcwire` there). Written without a compiler (the lane rules); the gate is the first build. Land
-casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not merged here; the files both touch are
+desktop-protocols first. Built on the compositor 79456e1: `ovpolish` (6cb6035) is not merged here; the files both touch are
 `core_loop/overview.rs` (the `press`, `hover` and `leave` bodies; `window_at`, `draw` and the colours are ovpolish's) and
 `model/overview.rs` (untouched here).
 
-- **1. Which output (`overview_output`).** casement's overview is global (one `Overview` in the model, every output flies its
+- **1. Which output (`overview_output`).** the compositor's overview is global (one `Overview` in the model, every output flies its
   windows), and that is the Mac's behaviour with separate Spaces: Mission Control opens on every display at once. So the event is
   sent for every output, `shown` while the overview is not closed and `hidden` when it is, just before each `overview_state`
   (`exec/shell.rs`, `shell_space::send_overview_outputs`, only to objects bound at version 2 or later, through
@@ -3059,11 +3059,11 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
   Control is open is not told until the next state change; a shell that binds while it is open hears nothing until then.
 - **2. Space pictures (`get_space_capture_source(source, output, space_id, width, height)`).** Reuses ext-image-copy-capture: the
   request makes an `ImageCaptureSource` (smithay's custom-source path) whose user data is a `SpaceSourceId`
-  (`casement_wayland::bardo::space_shot`, a pure book like the toplevel one); `handlers/image_capture.rs` hands such sessions to
+  (`compositor_wayland::bardo::space_shot`, a pure book like the toplevel one); `handlers/image_capture.rs` hands such sessions to
   `handlers/space_shot.rs`. The constraints are exactly the size asked for (each side clamped to 1..=1024), shm and the usual
   dma-buf offer. A picture is the windows of the Space the output shows, each drawn alone with `capture_source::window_rgba`
   (no frame, no popups), shrunk to where `arrangement.windows` puts it on the output and composed back to front by
-  `casement_render::pass::compose_thumb` (integer box average, premultiplied over, `thumb_dest` rounds both edges), over a
+  `compositor_render::pass::compose_thumb` (integer box average, premultiplied over, `thumb_dest` rounds both edges), over a
   **transparent** background (the shell draws the wallpaper). Damage: a request is held until the Space's `Look` changed (an FNV
   fingerprint of each window's id, rectangle and commit count; commits are counted only while a session exists), checked after
   every commit (`capture_source::committed` calls `space_shot::committed`) and every relayout (`core_loop::relayout` calls
@@ -3074,7 +3074,7 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
   draws every window of the Space again through the software path (one CPU read-back per window): fine for a few small pictures,
   to be measured with many windows. (4) A window moving during a spring (a Space switch) changes `arrangement` only at its end
   state, so the picture jumps to the end. (5) Stacking is `arrangement.windows` order, not the focus stack.
-- **3. Dropping a window on a Space.** Pure parts in `casement_core::overview_drag` (table-tested): `SpaceTargets` (per output
+- **3. Dropping a window on a Space.** Pure parts in `compositor_core::overview_drag` (table-tested): `SpaceTargets` (per output
   rectangles, last added in front, only plugged outputs hit), `Drag` (`Idle`, `Pressed`, `Dragging`; threshold `DRAG_THRESHOLD`
   = 8 logical px, the distance squared compared) and `Released` (`Pick`, `Drop`, `FlyBack`). The loop (`core_loop/overview_drag.rs`):
   a press on a slot no longer picks at once, it starts a `Drag`; the release picks (as the press did) when it never moved past the
@@ -3089,7 +3089,7 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
   output or Space id is kept out silently); the table lives on `BardoShellPart::space_targets` and is cleared when the last shell
   object goes. **Departures:** (1) the dragged window is drawn in the usual window stacking, so it can pass under another window's
   slot (the slot list is reordered for hits, the scene is not); raising it in the model would change focus order. (2) The drag
-  starts only from entering or open, as a pick did. (3) The target highlight is the shell's: casement draws nothing for it.
+  starts only from entering or open, as a pick did. (3) The target highlight is the shell's: the compositor draws nothing for it.
   (4) A window dragged to the Space it is already on is moved to it again, which the model ignores (no change). (5) The fly-back
   is the `Overview` spring (350 ms settle timer unchanged), not a dedicated animation.
 - **Not asked, not done.** Dragging a window between outputs in Mission Control; dropping on a "new desktop" tile (the Mac adds a
@@ -3098,10 +3098,10 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
   (a bound `wl_output` with its connector name), `OutputCapture::open_space`. No catalogue change: `BardoShellV1` is a root and
   its new messages' interfaces (`ext_image_capture_source_v1`, `wl_output`) are reached from it. No `globals.txt` change (the
   private globals are not listed), no golden changed, `expected-failures.txt` untouched.
-- **Tests.** casement-core `overview_drag.rs` (hit order and live outputs, clear, threshold table, the window keeps its place, target
-  changes reported, release picks/drops/flies back, doc tests); casement-render `pass/thumb.rs` (placement table, box average,
-  over blending, clipping, half off the picture, doc tests); casement-wayland `bardo/space_shot.rs` (size clamp, damage gate,
-  forget, destroyed source, fingerprint) and doc tests on `target_rect`, `clamp_side`, `look_of`; casement-testkit
+- **Tests.** compositor-core `overview_drag.rs` (hit order and live outputs, clear, threshold table, the window keeps its place, target
+  changes reported, release picks/drops/flies back, doc tests); compositor-render `pass/thumb.rs` (placement table, box average,
+  over blending, clipping, half off the picture, doc tests); compositor-wayland `bardo/space_shot.rs` (size clamp, damage gate,
+  forget, destroyed source, fingerprint) and doc tests on `target_rect`, `clamp_side`, `look_of`; compositor-testkit
   `protocol/bardo_shell_spaces.rs` (two outputs hear `overview_output` and a version 1 shell does not; a press that hardly moves
   picks; drag, hover event, drop and stays open; release elsewhere flies back; an empty target is a protocol error and a cleared
   one is not hit; a picture on first request, held, sent on commit, background transparent; a picture of a Space not shown stops).
@@ -3116,7 +3116,7 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
   tweak: `a_space_picture_is_sent_on_damage_only` (assumes the output is `HEADLESS-1` from `small()` and that the second
   `request` is held; the opaque-pixel bounds assume windows do not cover the whole 640x480), the drag tests (the target at
   (10,10) 100x90 must be clear of every slot: slots start below a 112 px strip).
-- **Real run (sill (casement)).** Ctrl+Up: the bar appears on every output; hovering a thumbnail shows its picture within a frame
+- **Real run (sill (the compositor)).** Ctrl+Up: the bar appears on every output; hovering a thumbnail shows its picture within a frame
   or two of a change; press a window, move a few pixels (nothing yet), more (the window follows, the closed hand, the Space tile
   under it lights); release on the tile (the window leaves the grid, Mission Control stays); release elsewhere (the window glides
   home); a plain click still picks. With two outputs, each shows its own bar and a window dropped on the other output's tile moves
@@ -3124,22 +3124,22 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
 
 ## wave-2026-10-15/mc3
 
-The four "Not done" items of `mcwire` and the dragged window's stacking, as `bardo_shell_v1` **version 3** (casement-protocols
+The four "Not done" items of `mcwire` and the dragged window's stacking, as `bardo_shell_v1` **version 3** (desktop-protocols
 `lane/cas10-mc3`, FINDINGS `## wave-2026-10-15/mc3` there; land it first). Written without a compiler (wave rule); the gate is the
-first build. Built on casement 78b3152.
+first build. Built on the compositor 78b3152.
 
 - **1. Pictures of every Space.** The premise in `mcwire` ("`Arrangement` carries no places for windows on hidden Spaces") was
-  wrong: `casement-layout`'s `arrange_output` already arranges **every** Space of an output as a desktop (the targets are "as if
+  wrong: `compositor-layout`'s `arrange_output` already arranges **every** Space of an output as a desktop (the targets are "as if
   shown"; motion adds the strip origin), and `spec_of` already puts each Space's windows in its `SpaceSpec`. What was missing was
   the question "which windows does this Space hold", which `space_shot` answered by filtering `arrangement.windows` with
-  `Model::shows` (only the shown Space). So no layout change: `Model::pictured(&SpaceId)` (`casement-core/src/model/picture.rs`) is
+  `Model::shows` (only the shown Space). So no layout change: `Model::pictured(&SpaceId)` (`compositor-core/src/model/picture.rs`) is
   the windows on the Space, plus those on every Space homed on its output, minus the dock and hidden apps, back first by stack rank;
   `handlers/space_shot.rs` draws those at their `arrangement.windows` rectangles. A session is stopped only when its Space is gone
   or no longer on the output (it used to be stopped on every Space switch, so the bar need not ask again). Cost is bounded by the
   sessions: `poll` returns at once with none, a look is made only for a Space with a session, and a frame is drawn only when a
   window of that Space committed, moved or came or went (the look carries each window's commit count). Stacking is now the
   model's order (it was `arrangement.windows` order), which also fixes mcwire's departure 5 for the pictures. Layout tests pin the
-  premise: `casement-layout/tests/it/hidden_space.rs`.
+  premise: `compositor-layout/tests/it/hidden_space.rs`.
   Departures: (1) a hidden Space's windows are not asked to redraw (their frame callbacks are not sent), so the picture is as
   live as the client's last commit; (2) a window moved while its Space is hidden shows at its end state; (3) every refresh still
   draws each window of the Space through the software path, one CPU read-back per window; (4) a full-screen or Split View Space
@@ -3168,12 +3168,12 @@ first build. Built on casement 78b3152.
 - **5. The dragged window on top.** `OverviewDraw::On` gains `lift: Option<WindowId>` (the window of a `Drag::Dragging`);
   `output_elements` moves it last in the back-first list of ordinary windows (`lift_last`, doc- and table-tested), so it is
   drawn above every other slot and its frame, ring and label go with it. It stays below layers that are above windows.
-- **Tests added.** casement-core: `overview_drag.rs` (tile priority, per-output tiles, clear/clear_all, release remembers the
-  pointer), `model_drop.rs` (pictured, new Space, gone output, cross-output shift), `desktop_places.rs::shifted`. casement-layout:
-  `hidden_space.rs`. casement-render: `lift_last`. casement-testkit: `bardo_shell_drop.rs` (hidden picture follows its own
+- **Tests added.** compositor-core: `overview_drag.rs` (tile priority, per-output tiles, clear/clear_all, release remembers the
+  pointer), `model_drop.rs` (pictured, new Space, gone output, cross-output shift), `desktop_places.rs::shifted`. compositor-layout:
+  `hidden_space.rs`. compositor-render: `lift_last`. compositor-testkit: `bardo_shell_drop.rs` (hidden picture follows its own
   windows only, tile lights/unlights/creates, tile beats a Space target, empty rectangle removes and clear keeps it, version 2
   shell hears nothing, three cross-output drags); `bardo_shell_spaces.rs` (the "not shown stops" test became "empty Space picture
-  is transparent" and "a Space not on the output stops"; the desk now binds version 3). casement-testclient: `space_target_new`,
+  is transparent" and "a Space not on the output stops"; the desk now binds version 3). compositor-testclient: `space_target_new`,
   `drop_targets_new`. No golden and no `expected-failures.txt` changed; no `globals.txt` change (private global).
 - **What sill must do.** Bind `bardo_shell_v1` at 3 (`desktop-client` binds `1..=3`). Ask for a picture of each Space tile on
   each output (`CaptureRequest::of_space`), not only the shown one, and keep the sessions across Space switches (they now live
@@ -3199,13 +3199,13 @@ first build. Built on casement 78b3152.
 Nothing here compiled or ran (the lane does not build). Closes the departure of `capgpu`: a capture into a client's dma-buf is drawn
 by the GPU with no CPU read-back, for an output, a window and `zwlr_screencopy` (so `grim` and OBS). No Cargo edit, no new `unsafe`.
 
-- **The choice.** `casement_backend::capture_path::capture_path(BufferKind, RendererClass) -> CapturePath` (`Direct` or `ReadBack`), pure
+- **The choice.** `compositor_backend::capture_path::capture_path(BufferKind, RendererClass) -> CapturePath` (`Direct` or `ReadBack`), pure
   and table-tested, is the one place that decides; `handlers/image_capture/direct.rs::path_of` feeds it (the buffer from
   `get_dmabuf` and `placement(main device, drawing device)`, the renderer from `HeadlessBackend::capture_class` /
   `TtyBackend::{capture_class, output_class}`). `Direct` only for a dma-buf on the renderer's own device that a GL renderer binds
   (format and modifier listed). Shared memory, a software renderer (pixman, dummy, winit), a refused import and a buffer on another
   GPU are `ReadBack`. A direct draw that fails logs one `info` line and falls back to `ReadBack` for that frame; every caller has it.
-- **Output capture (ext output, `zwlr_screencopy`).** The frame stays a GPU image and is blitted: `casement_render::pass::blit_texture`
+- **Output capture (ext output, `zwlr_screencopy`).** The frame stays a GPU image and is blitted: `compositor_render::pass::blit_texture`
   (a part of a texture into the bound dma-buf over a cleared buffer, then a wait on the GPU: ext-image-copy-capture has no fence on the
   wire, so "ready" follows a GPU finish). Headless GL: the output's own canvas (or the cursor-less layer's) is the texture
   (`HeadlessBackend::blit_output_dmabuf`); the headless backend still reads each damaged frame back when it presents (goldens, `shot`),
@@ -3216,7 +3216,7 @@ by the GPU with no CPU read-back, for an output, a window and `zwlr_screencopy` 
   for that output (the 4K CPU cost of the old shadow), and a shared-memory client is served by `CaptureGpu::read_scene` (a read-back
   of the GPU image, only for the frames it asks for). `Readback::last_frame` prefers the resident frame; a draw the GPU refuses or a
   busy renderer logs an `info` line and the pixman shadow draws that frame instead.
-- **Window capture.** `casement_render::pass::render_window_dmabuf` renders the window's surface tree straight into the bound dma-buf
+- **Window capture.** `compositor_render::pass::render_window_dmabuf` renders the window's surface tree straight into the bound dma-buf
   (fresh tracker at age 0, transparent where nothing draws, wait). `handlers/capture_source/render.rs::draw_window` tries it first
   (`HeadlessBackend` GL renderer, or `CaptureGpu::render_window` on the display GPU, which also draws windows whose buffers are dma-bufs
   the pixman shadow could not import), then falls back to `window_rgba` + `deliver`.
@@ -3226,7 +3226,7 @@ by the GPU with no CPU read-back, for an output, a window and `zwlr_screencopy` 
 - **Departure: cursor sessions stay a read-back.** The cursor image is a client surface (or a theme image) of at most a few tens of
   pixels, already on the CPU after `ArgbImage::drawn`; `deliver` uploads it. A client's dma-buf cursor is still read back through the
   renderer (`read_dmabuf`).
-- **Departure: no multi-GPU renderer.** casement has none for captures (`RenderPlan` routes outputs, the lender is the first device's
+- **Departure: no multi-GPU renderer.** the compositor has none for captures (`RenderPlan` routes outputs, the lender is the first device's
   renderer). `placement(main device, drawing device)` is `Foreign` when both numbers are known and differ, and a foreign buffer is
   `ReadBack` (uploaded by the lender or the shadow, as in `capgpu`). The drawing device is `RealKms::node` (the render node of the open
   device, `DrmNode::from_file` then `node_with_type(Render)`); the fakes and headless report none, so `Local`.
@@ -3248,13 +3248,13 @@ by the GPU with no CPU read-back, for an output, a window and `zwlr_screencopy` 
   and `Offscreen` inference in `capture_scene_real.rs` (`create_buffer` with the annotated `GlesTexture`); `DrmNode::from_file(&OwnedFd)`
   and `node_with_type(...).and_then(Result::ok)` in `kms_real.rs`; `Cursorless` made `pub(crate)` (its `cfg(feature = "tty")` re-export);
   the `matches!(presented(..)?.map(|f| &f.pixels), Some(FramePixels::Resident(_)))` in `frames.rs`; exhaustive matches on `FramePixels`
-  (only `casement-testkit/src/output.rs` was one); `MainDevice(pub u64)` against `dev_id()`'s type; `RealCaptureGpu::{store, renderer}`
+  (only `compositor-testkit/src/output.rs` was one); `MainDevice(pub u64)` against `dev_id()`'s type; `RealCaptureGpu::{store, renderer}`
   `RefMut` lifetimes. Test tweaks: the first `present`s of `watched()` in `tty/capture_gpu.rs` assume the fake scanout answers `Flipped`
   (if it waits for a vblank, step a `presented` between frames); the llvmpipe case of the backend test may skip on every host.
-- **Real run.** Per the user's rule the manual-checks queue is `sill/docs/manual-checks.md` (casement has no `docs/manual-checks`):
+- **Real run.** Per the user's rule the manual-checks queue is `sill/docs/manual-checks.md` (the compositor has no `docs/manual-checks`):
   on the tty session start OBS through the pipewire portal and `grim` / `wf-recorder`, with `RUST_LOG=info`: no
   `reading it back` / `using the software shadow` line in steady state, and on a 4K output the frame time of the capture is a blit
-  (compare `casementctl` frame times with capture open before and after: the pixman shadow's per-frame render is gone, GPU time
+  (compare `bardo-compositorctl` frame times with capture open before and after: the pixman shadow's per-frame render is gone, GPU time
   rises by two extra scene draws); the picture is right way up, not green or black (if upside down, the lever is `flipped` on the
   bind in `blit_texture` and `write_dmabuf`); `grim -c` and a cursor-less OBS source show/hide the pointer; a window capture
   (OBS window source) of a dma-buf client (a browser, a game) is not blank; with two GPUs a buffer on the second GPU logs the
@@ -3287,12 +3287,12 @@ Lane cas12-winit: the winit backend usable for hands-on testing in a host deskto
 - **Not wired.** Touch (a host touchscreen) and tablet events: `device_of` drops them, the window announces no touch
   device. Gestures from a host touchpad are pointer-class and pass through `input_kind_of` as it converts them.
 - **Keys the host eats.** The host desktop keeps its own shortcuts: Super alone, Super+key, Alt+Tab, Alt+F4, Ctrl+Alt+F-keys,
-  media keys never reach the window, so casement's Super-based chords cannot be pressed nested, and the key-up of a key
+  media keys never reach the window, so the compositor's Super-based chords cannot be pressed nested, and the key-up of a key
   whose press the host took never arrives either. Chords on keys the host lets through (Ctrl, Alt, Shift combinations) work as
   on the tty, because modifiers come from the same key events. A host that grabs the keyboard shortcut inhibit protocol
   (KDE: hold the shortcut-inhibit toggle) gives the window everything; winit does not request it. A chord for nested use
   that avoids the host's keys is the owner's call. The tty's VT chords do nothing here (not a tty).
-- **Tests.** casement-backend `tests/it/winit.rs`: the spec table, the kept fields, the transform choice, focus release.
+- **Tests.** compositor-backend `tests/it/winit.rs`: the spec table, the kept fields, the transform choice, focus release.
   `docs/manual-checks.md` gains the winit entry (new file).
 - **Likeliest first-compile faults.** (smithay rev 90efde4) `winit.rs`: `dispatch_new_events(|event| seen.push(event))`
   needs the closure to be `FnMut(WinitEvent)`; `WinitInput` is re-exported from `smithay::backend::winit` through
@@ -3308,8 +3308,8 @@ Lane cas12-winit: the winit backend usable for hands-on testing in a host deskto
 
 ## cas13-mcicons: the app icon under each window in Mission Control (2026-10-15)
 
-`casement-icons` finds the icon, `casement-layout` places it (`OverviewSlot::icon`), `casement-render` draws it
-(`OverviewIcon`, `icon_place`, `icon_element`), `casement::icons` (`IconSearch`, `IconBook`) and
+`compositor-icons` finds the icon, `compositor-layout` places it (`OverviewSlot::icon`), `compositor-render` draws it
+(`OverviewIcon`, `icon_place`, `icon_element`), `compositor::icons` (`IconSearch`, `IconBook`) and
 `core_loop/overview.rs` join them. Departures from the Mac:
 
 - **The spread makes room for the icons** (cas14-mcfit). Each cell keeps `icon_rect::below(scale)` under its slot: the
@@ -3333,7 +3333,7 @@ Lane cas12-winit: the winit backend usable for hands-on testing in a host deskto
 - **No icons without a person.** `IconSearch::Off` (the default, and the headless backend in `main`) looks for and draws
   nothing, so no golden and no jail run changes. The test kit passes `Off`.
 - **The plate.** An app with no icon gets a plain rounded plate in Bardo's raised ground (`overview_plate`), drawn by
-  `casement_icons::plate`; no letter or glyph.
+  `compositor_icons::plate`; no letter or glyph.
 - **Not looked at.** An `Icon=` with an extension-less absolute path, `.xpm` icons and animated icons are skipped
   (the next place in the order is tried). `Icon=` keys with a locale are ignored.
 
@@ -3341,13 +3341,13 @@ Spots a real build checks first: `resvg::render(&tree, transform, &mut pixmap.as
 `usvg::Tree::from_data(bytes, &usvg::Options::default())` (resvg 0.48.1 with its default features off: no text, so no
 fontdb needed); `tree.size().width()`; `Pixmap::take()` (premultiplied RGBA); `image::DynamicImage::resize` with
 `FilterType::Lanczos3`; `freedesktop_icons::lookup(name).with_size(u16).with_theme(&str).find()`; `ArgbImage::from_shm`
-for the toplevel's own buffers (`casement_render::pass`); the borrow split in `icons_of` (`icons` and `textures` out of
+for the toplevel's own buffers (`compositor_render::pass`); the borrow split in `icons_of` (`icons` and `textures` out of
 `state.render` while `state.core` is read); `scripts/check-boundary.sh` rows B4/B15 (resvg without `text` must not pull
 parley or fontique into the graph).
 
 ## wave-2026-10-15/dragstart
 
-`bardo_shell_v1` is served at **version 4** (lane `cas17-dragstart`, written without a compiler; needs casement-protocols
+`bardo_shell_v1` is served at **version 4** (lane `cas17-dragstart`, written without a compiler; needs desktop-protocols
 `08bcc62`). `window_drag_begin(output, toplevel)` goes out once per output when a press on a Mission Control slot passes the
 drag threshold (`Drag` goes from `Pressed` to `Dragging`), before any `drop_target`. `window_drag_end(output, toplevel,
 outcome)` goes out once per output after the highlight is cleared: `dropped_on_space` (a target, or the Space the other
@@ -3360,12 +3360,12 @@ Follow-up to closesnap: the closing body stays on the GPU. Written without a com
 on hardware**: nothing was timed; whether the 4K read-back stall is gone is for a real run to say.
 
 - **What changed.** `ClosingBody` holds `Pixels`: `Memory` (closesnap's baked buffer, every renderer) or `Gpu { texture, element }` (a
-  `GlesTexture` the display GPU drew at close, bottom corners already cut). `casement_render::pass::render_window_texture` draws the
+  `GlesTexture` the display GPU drew at close, bottom corners already cut). `compositor_render::pass::render_window_texture` draws the
   window tree into a scratch texture, then once into the kept texture through the existing corner-mask shader
   (`rounded_clip/gles.rs::bake_corners`, the same coverage formula as the CPU bake), over transparent, and waits on the sync point. The
-  frame draws it as a `TextureRenderElement` (new `CasementElement::Texture`, stable element id, alpha and stretch as the memory
+  frame draws it as a `TextureRenderElement` (new `SceneElement::Texture`, stable element id, alpha and stretch as the memory
   element had). No CPU read and no upload.
-- **The typed choice.** `casement_backend::tty::BodyCopy { Gpu, ReadBack }` from `body_copy(devices, lending)` (pure, table test): `Gpu`
+- **The typed choice.** `compositor_backend::tty::BodyCopy { Gpu, ReadBack }` from `body_copy(devices, lending)` (pure, table test): `Gpu`
   only on a seat with exactly one open device and that device lends its renderer. `core_loop/bodies.rs::make_body` takes `Gpu` first and
   falls back to the read-back when the GPU copy errs. Headless (GLES on llvmpipe included), winit, pixman and the dummy renderer always
   read back.
@@ -3376,7 +3376,7 @@ on hardware**: nothing was timed; whether the 4K read-back stall is gone is for 
 - **Released when.** The body is dropped with `Bodies::release_finished` (every frame, `closing::forget`): the window is back in the
   model or its fade left the motion scene. The cap (6 images, 192 MiB) counts a texture at `w x h x 4` like a memory image.
   `GlesTexture`'s drop queues the GL delete for the renderer's next use.
-- **Tests.** `body_copy` table + doctest (casement-backend), `release_finished` table (casement `bodies.rs`, replaces the older
+- **Tests.** `body_copy` table + doctest (compositor-backend), `release_finished` table (the compositor `bodies.rs`, replaces the older
   `retain`-only test). The memory path's existing unit and `it` tests are unchanged and still cover the fallback. The GPU path has no
   automated test (no GL in the jail): real run, close a framed window on the tty seat; the fade and shrink must look as before (bottom
   corners round, not flipped, not blank), then `grim` after the fade.
@@ -3426,7 +3426,7 @@ Built, uncompiled (wave 6 lanes do not build): `input/gesture_route.rs` (finger-
 | Mission Control progress | DONE in cas33-strip (below): the windows are laid out at `overview_progress()` while the fingers are down; the lift continues from there. Same numbers as the Space swipe: 400 px for a full travel, commit past half unless a reverse 1.5 flick, or under half on a forward flick. |
 | App Exposé | Not built: the model has no App Exposé (`shell_request` ignores every mode but Mission Control), so a swipe down on a closed Mission Control does nothing. |
 | Space strip drawing | DONE in cas33-strip (below): the renderer draws every window in its Space's column at `Model::space_strip(now)`; motion's own Space slide is suppressed while a swipe drives the row. |
-| Reduced motion | casement has no reduced-motion setting, so the machine always runs `Reduced::No`. |
+| Reduced motion | the compositor has no reduced-motion setting, so the machine always runs `Reduced::No`. |
 | Finish timer | The finish reuses `TimerKey::SpaceFinish(output)` (its doc: a Space change animation finishes), which nothing armed before. |
 | Client delivery | The model steps an input event before the loop delivers it; `Model::swipe_owner()` right after says whether the desktop took that swipe step. It holds for one input event per `feed` (what every caller does). A taken swipe is not delivered to clients (`core_loop/deliver.rs`); other finger counts still are. |
 | Origins | Physical, test and trusted-feed swipes count; virtual, agent and remote ones never do (I2: system gestures are physical only). |
@@ -3436,7 +3436,7 @@ Built, uncompiled (wave 6 lanes do not build): `input/gesture_route.rs` (finger-
 Built, uncompiled (the lane does not build). Closes the cas21 rows "Space strip drawing" and "Mission Control progress", and
 the old renderer departure 4 (`OutputFrame.strip` was not applied).
 
-- **The row is drawn (`casement-render/src/scene/row.rs`, `RowDraw`).** Layout arranges every window as if its Space were
+- **The row is drawn (`compositor-render/src/scene/row.rs`, `RowDraw`).** Layout arranges every window as if its Space were
   shown; `RowDraw { offset, page, columns }` is the one place that moves a window to its Space's column: shift =
   `offset + column * page`, in sub-pixels. `offset` is the first Space's x minus the usable origin. `LayerDraw.row` carries it;
   `output_elements` shifts the frame's windows before it draws them, so frames, titles, shadows, popups and icons follow. A
@@ -3448,7 +3448,7 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   included); otherwise it is the strip motion sampled (`frame.strip`), which is how a keyboard Space switch now slides on the
   `SpaceSwitch` spring (it did not show before). Columns are `Model::row_columns(output)` (`model/row.rs`; a window on every
   Space has none).
-- **No second slide (`casement_motion::retarget_driven`).** `retarget` is `retarget_driven` with no driven output. `relayout`
+- **No second slide (`compositor_motion::retarget_driven`).** `retarget` is `retarget_driven` with no driven output. `relayout`
   passes the output `space_strip(now)` names: its strip leg snaps to the new target (`Travel::Snap`), so the commit's
   `show` -> `Relayout(SpaceSwitch)` does not slide the row again; the model's finish draws it, and when it settles the
   sampled strip is already at the same place (no jump). Windows and other outputs travel as before.
@@ -3476,13 +3476,13 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   (5) Windows of a hidden Space still get frame callbacks (`drawn_roots` reads the unshifted frame). (6) Swiping vertically
   while Mission Control is entering jumps from the flight to the followed pose. (7) The Spaces bar (sill) hears nothing of the
   progress.
-- **Tests.** casement-core `gestures.rs` (the row's first x, a short swipe up snaps back and ends closed, a swipe that never moved
-  the windows changes nothing, a short swipe down returns them to their slots), `model_spaces.rs` (`row_columns`); casement-layout
+- **Tests.** compositor-core `gestures.rs` (the row's first x, a short swipe up snaps back and ends closed, a swipe that never moved
+  the windows changes nothing, a short swipe down returns them to their slots), `model_spaces.rs` (`row_columns`); compositor-layout
   `spread.rs` (`spread_at` at 0, 500, 1000 and past; the old `mission_control` helper became `SceneSpec::in_mission_control`);
-  casement-motion `behaviour.rs` (no slide while driven, other outputs slide, commit and snap-back continue from the followed
-  progress without a jump); casement-render `scene/row.rs` (rest, half-way, rubber band, a window on every Space; doc tests),
-  `OverviewLook::opened` doc test; casement `core_loop/fingers.rs` (`openness`).
-- **Goldens worth adding (not added; needs a blessed run).** Pixman scenes in `casement-testkit/tests/it/scene/`: (a) two
+  compositor-motion `behaviour.rs` (no slide while driven, other outputs slide, commit and snap-back continue from the followed
+  progress without a jump); compositor-render `scene/row.rs` (rest, half-way, rubber band, a window on every Space; doc tests),
+  `OverviewLook::opened` doc test; the compositor `core_loop/fingers.rs` (`openness`).
+- **Goldens worth adding (not added; needs a blessed run).** Pixman scenes in `compositor-testkit/tests/it/scene/`: (a) two
   Spaces, a window on each, mid-swipe at position 500 (both windows half on screen, wallpaper static); (b) one Space shown,
   another with a window: only the shown window is drawn (pins the standing fault above); (c) Mission Control held at 500: windows
   half-way scaled, half dim; (d) rubber band at -250 past the first Space.
@@ -3499,7 +3499,7 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
 - **Global menus: the transport is blocked on a dependency.** The recorded address, the model and the shell path are done and tested:
   `MenuSource` (`core/app/menu.rs`) on `WindowHints.menu`, `WindowHintChange::Menu`, `Model::app_menu` (the key window's address, else the
   app's first window that declared one), and the existing `bardo_desktop_app_v1.menu_source` and `bardo_desktop_window_v1.menu_path`
-  events now carry it (no new `bardo_shell` event, no change to casement-protocols). `casement-wayland/src/{appmenu,gtk_shell}.rs` are
+  events now carry it (no new `bardo_shell` event, no change to desktop-protocols). `compositor-wayland/src/{appmenu,gtk_shell}.rs` are
   the meaning of the requests as pure functions (validation of bus names and object paths, staging until the window maps). What is
   missing is the generated server code, which needs a dependency edit (a Cargo.toml change is outside a lane): for
   `org_kde_kwin_appmenu` the crate `wayland-protocols-plasma` 0.3.12 (already in Cargo.lock, client only) with feature `server`, whose
@@ -3572,33 +3572,33 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
 
 - **Which material.** ext-background-effect carries no parameters and no protocol was added. A layer surface's strength comes from
   the shell role sill already gave it through `bardo_shell_v1` (`LayerSpec::role`): `BlurStrength::of(ShellRoleTag)` in
-  `casement-core::layer` (pure, table-tested over every `ShellRole`). Osd is `Light` (`BlurLook::LIGHT`, sigma 12, saturation 1.6),
+  `compositor-core::layer` (pure, table-tested over every `ShellRole`). Osd is `Light` (`BlurLook::LIGHT`, sigma 12, saturation 1.6),
   Launcher and ControlCentre are `Strong` (sigma 32, saturation 1.8), everything else, and any layer with no role, is `Regular`, which is
   `BlurLook::MATERIAL`, today's look. UNMEASURED: design/23 fixes only the widget's look (sigma 22, saturation 1.8, the Regular one); Light
-  and Strong are a judgement, one table row each, to be tuned by eye. A window's blur (xdg toplevel) is always `Regular`: casement
+  and Strong are a judgement, one table row each, to be tuned by eye. A window's blur (xdg toplevel) is always `Regular`: the compositor
   knows a window's app, not its material. If the shell later wants a per-region material, the protocol is an addition to
   `bardo_shell_v1` (a `set_blur_strength` on a shell surface), not a change to ext-background-effect.
 - **Plumbing.** `LayerDraw::blur_strengths` (per layer, filled by `layers_on` from the model) reaches `layer_elements` as an argument;
   `behind`/`behind_scaled` take the `BlurLook`.
 - **Reduce transparency.** One desktop-wide setting, Bardo's `appearance.transparency` (`system` or `reduced`; a file without the key
   is `system`), read from Bardo's `appearance.toml` the way `theme` is: `appearance::stored_in` at start, an `Input::Transparency` from
-  the file watch (live), `state.render.transparency` beside `state.render.scheme`. casement has no key of its own (an earlier cut of
+  the file watch (live), `state.render.transparency` beside `state.render.scheme`. The compositor has no key of its own (an earlier cut of
   this lane added `accessibility.reduce_transparency`; it is gone). `appearance::blur_finish(transparency, scheme)` makes the typed
   `BlurFinish { Frosted, Solid(Rgba8) }`; `LayerDraw::finish` carries it and `under_finish` (applied to the frame's elements at the
   end of `output_elements`) makes every `BlurV0Element` solid. A solid blur is not a framebuffer effect (no capture, no passes), and on
   GLES its draw is `draw_stand_in` (the path `EffectSupport::Plain` takes on pixman). The colour is per scheme:
-  `casement_layout::reduced_stand_in(scheme)`, Bardo's `Paper` token (the Window material has no tint; its solid fallback is the page,
+  `compositor_layout::reduced_stand_in(scheme)`, Bardo's `Paper` token (the Window material has no tint; its solid fallback is the page,
   `#ECECEC` light, `#1E1E1E` dark) at alpha 245/255 (0.96, above Bardo's .94 floor, design/03 17.1). The element's commit includes the
   colour, so a scheme change repaints. DEPENDS ON BARDO: `ds_style::appearance::transparency::Transparency` (re-exported by
-  `casement-layout`) and `Appearance::transparency` do not exist until Bardo lane lands, so casement-layout and casement do not
-  compile before then (the path follows `appearance::theme::Theme`; adjust the one `pub use` in `casement-layout/src/lib.rs` if Bardo
+  `compositor-layout`) and `Appearance::transparency` do not exist until Bardo lane lands, so compositor-layout and the compositor do not
+  compile before then (the path follows `appearance::theme::Theme`; adjust the one `pub use` in `compositor-layout/src/lib.rs` if Bardo
   re-exports it elsewhere).
-- **Not done here.** The shell reads the same Bardo key itself for its own tints (`--m-tint-solid`); nothing for it lives in casement.
+- **Not done here.** The shell reads the same Bardo key itself for its own tints (`--m-tint-solid`); nothing for it lives in compositor.
 - **Goldens.** None changes: `Regular` is the old look and `Frosted` the old behaviour; no scene sets a role or the finish. Nothing
   compiled or run in this lane (no builds allowed): the tests added are `a_strength_picks_its_look_and_a_stronger_one_blurs_wider` and
-  `a_solid_blur_is_its_colour_and_a_new_commit` (`casement-render/tests/it/blur.rs`),
-  `a_shell_role_picks_the_strength_of_the_blur_behind_it` (`casement-core/tests/it/model_shell.rs`), the stand-in colours
-  (`casement-layout/src/look.rs`), and the file and `blur_finish` tests in `casement/src/appearance.rs`.
+  `a_solid_blur_is_its_colour_and_a_new_commit` (`compositor-render/tests/it/blur.rs`),
+  `a_shell_role_picks_the_strength_of_the_blur_behind_it` (`compositor-core/tests/it/model_shell.rs`), the stand-in colours
+  (`compositor-layout/src/look.rs`), and the file and `blur_finish` tests in `compositor/src/appearance.rs`.
   The GLES half (a solid blur drawing the stand-in on llvmpipe) has no golden; a `blur-kawase-reduced-1x` golden is the follow-up
   for the orchestrator to bless.
 
@@ -3610,7 +3610,7 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   hung app is found only when the person types or clicks into its key window (macOS finds it on
   any click on its window). The model mirrors the timers it arms (`TimerKey::Ping`, new
   `TimerKey::PingGap`) in its own book so the next input can see them.
-- The busy cursor over a not-responding app's windows is NOT drawn: casement does not draw
+- The busy cursor over a not-responding app's windows is NOT drawn: the compositor does not draw
   cursors per surface yet. The state is in the model (`AppLife::NotResponding`) and published to
   `bardo_desktop_v1` (app life and window responsiveness).
 - Quit (Cmd+Q, `desktop_app.quit`): asks every window to close, shows the app as quitting for
@@ -3627,7 +3627,7 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   is in another namespace), the shell's and agent connections, and a connection that carries
   windows of several apps (xwayland-satellite: killing it would end every X11 app). X11 apps are
   therefore not force-quittable until XWayland windows carry `_NET_WM_PID`.
-- casement does not launch apps in a transient scope (spawn.rs starts a plain child), so there
+- The compositor does not launch apps in a transient scope (spawn.rs starts a plain child), so there
   is no app scope to signal; the credential pid is the only handle.
 
 ## p3-cm: colour management, the colour pass, night light (2026-10-15)
@@ -3637,13 +3637,13 @@ the pinned sources, none was built. Look here first when it fails to compile.
 
 ### What landed
 
-- `casement-core/src/output/{gamut,tag,night_light}.rs`, `settings/night_light.rs`: EDID
+- `compositor-core/src/output/{gamut,tag,night_light}.rs`, `settings/night_light.rs`: EDID
   primaries (bytes 25..35 of the base block, ten-thousandths) and `Gamut::{Srgb, Wide}`; a
   surface's `ColorTag`; the night-light schedule, tint table and gamma ramp (integers only).
-- `casement-render/src/pass/{color_matrix,color,color_gles}.rs`: sRGB-to-panel matrix, the CPU
+- `compositor-render/src/pass/{color_matrix,color,color_gles}.rs`: sRGB-to-panel matrix, the CPU
   transform (pixman, tests) and the GLES shader (`draw_converted`). `ColorTransform::for_gamut`
   gives none for an sRGB panel, so the pass is skipped.
-- `casement-wayland/src/color_management/`: `wp_color_manager_v1` version 2, parametric subset.
+- `compositor-wayland/src/color_management/`: `wp_color_manager_v1` version 2, parametric subset.
 - `settings.toml` gains `night_light.{mode,from,to,kelvin,fade_minutes}`.
 
 ### Departures and limits
@@ -3670,7 +3670,7 @@ the pinned sources, none was built. Look here first when it fails to compile.
    some, and per-surface `ColorTransform::for_gamut(output).with_source(tag.transfer.into())` when
    `surface_tag` is some (a tagged P3 surface on an sRGB panel needs the inverse matrix; the maths
    is `srgb_to_panel` composed with the tag's own `rgb_to_xyz`, not written yet).
-3. Night light driver: a timer in `casement/src/time/` reads the local minute, calls
+3. Night light driver: a timer in `compositor/src/time/` reads the local minute, calls
    `NightLight::ramp_at(minute, gamma_size)` per output and feeds `Effect::SetGamma`; a gamma
    control client (`zwlr_gamma_control_v1`) wins while it holds the output. Interface for sill: the
    `night_light.*` keys in settings.toml (mode off/always/scheduled; sill writes sunset and sunrise
@@ -3678,13 +3678,13 @@ the pinned sources, none was built. Look here first when it fails to compile.
    there.
 ## P3-TL: window tiling by drag (cas22-tile)
 
-- **What landed.** `casement_layout::zone_rect(zone, usable, margin)` (`rust_scene/tile_zone.rs`) cuts a half or quarter out of the
+- **What landed.** `compositor_layout::zone_rect(zone, usable, margin)` (`rust_scene/tile_zone.rs`) cuts a half or quarter out of the
   usable area, `margin` from the area's edges and between halves (an odd length gives the extra pixel to the second half; a margin
   over a quarter of the span is held to it); `RustScene` now gives `WindowPlacement::Tiled` a target (content below the frame's
   reserve, size held to the limits, a `MinUnmet` report, always a `Resize`). Before this lane "Tiled has no target in layout" was true (the reserve note and
   the scene-css `TILED` row said so; both are updated; the Open-items table has no row for it). Split View still
-  arranges its own pair (`split.rs`, untouched). `casement_core::window::TileDrag` (`window/tile_drag.rs`) is the pure machine
-  (Idle, Moving, Previewing); `target_at` is the zone table. `casement::core_loop::tile` is the glue: `grab::start` begins it for
+  arranges its own pair (`split.rs`, untouched). `compositor_core::window::TileDrag` (`window/tile_drag.rs`) is the pure machine
+  (Idle, Moving, Previewing); `target_at` is the zone table. `compositor::core_loop::tile` is the glue: `grab::start` begins it for
   a Move grab (never a Resize), `grab::follow` steps it after each `WindowDragged`, `grab::end` places the window
   (`ToplevelRequest::Place`, the same path as the window menu, so menu, drag and the `desktop place` bindings share one set of
   zones) and the frame draws `LayerDraw::tile_preview` (`element/tile_preview.rs`: three solid bands and four corner rasters).
@@ -3702,13 +3702,13 @@ the pinned sources, none was built. Look here first when it fails to compile.
   the pointer still does not re-evaluate until the next motion. (8) `rust_scene/fill.rs` was not made: Fill is `filled_target`
   already, and the plan's file would only repeat it.
 - **Keys (D12) are an interface ask, not built.** chordkit 55a62b2 has no `StandardAction` for tiling (no left/right/top/bottom/
-  quarters/fill/centre/return), so casement's `keymap/shell.rs` has no row to bind: the keymap module holds action names only.
+  quarters/fill/centre/return), so the compositor's `keymap/shell.rs` has no row to bind: the keymap module holds action names only.
   Ask to chordkit (and keycap for the layers): add `TileLeft`, `TileRight`, `TileTop`, `TileBottom`, `TileTopLeft`,
   `TileTopRight`, `TileBottomLeft`, `TileBottomRight`, `TileFill`, `TileCentre`, `TileReturn` with the Sequoia chords (Globe/Fn+Ctrl
   plus arrows, F, C, R) and, because Fn is often invisible to the OS (D12), the reachable set Ctrl+Option plus the same keys. Then
-  casement adds eleven rows to `ROWS` mapping to `DesktopCommand::Place(..)`, which already exists. Until then a person can bind
-  them in casement's own `[bindings]` (`["desktop", "place", "left"]`).
-- **Goldens to bless.** `tile-preview-1x`, `tile-preview-1.5x`, `tile-preview-2x` (casement-render `tests/it/scenes.rs`,
+  The compositor adds eleven rows to `ROWS` mapping to `DesktopCommand::Place(..)`, which already exists. Until then a person can bind
+  them in the compositor's own `[bindings]` (`["desktop", "place", "left"]`).
+- **Goldens to bless.** `tile-preview-1x`, `tile-preview-1.5x`, `tile-preview-2x` (compositor-render `tests/it/scenes.rs`,
   `the_tile_preview_matches_its_pixman_goldens`).
 - **Unverified API guesses.** `super::frame::{element, to_buffer, whole, Raster}` reached from the sibling `tile_preview.rs`
   (`pub(super)` in `frame.rs` makes them visible in `element`); `Scale::numerator()`/`Scale::DENOMINATOR` as `raster.rs` uses them;
@@ -3722,7 +3722,7 @@ the pinned sources, none was built. Look here first when it fails to compile.
   hung app is found only when the person types or clicks into its key window (macOS finds it on
   any click on its window). The model mirrors the timers it arms (`TimerKey::Ping`, new
   `TimerKey::PingGap`) in its own book so the next input can see them.
-- The busy cursor over a not-responding app's windows is NOT drawn: casement does not draw
+- The busy cursor over a not-responding app's windows is NOT drawn: the compositor does not draw
   cursors per surface yet. The state is in the model (`AppLife::NotResponding`) and published to
   `bardo_desktop_v1` (app life and window responsiveness).
 - Quit (Cmd+Q, `desktop_app.quit`): asks every window to close, shows the app as quitting for
@@ -3739,7 +3739,7 @@ the pinned sources, none was built. Look here first when it fails to compile.
   is in another namespace), the shell's and agent connections, and a connection that carries
   windows of several apps (xwayland-satellite: killing it would end every X11 app). X11 apps are
   therefore not force-quittable until XWayland windows carry `_NET_WM_PID`.
-- casement does not launch apps in a transient scope (spawn.rs starts a plain child), so there
+- The compositor does not launch apps in a transient scope (spawn.rs starts a plain child), so there
   is no app scope to signal; the credential pid is the only handle.
 ## wave-2026-10-15/wlcs5
 
@@ -3749,7 +3749,7 @@ Written without a build or a wlcs run (rule of the lane); the orchestrator's run
 |---|---|---|
 | `ForeignToplevelHandleTest.gets_unminimized_when_maximized`, `gets_unminimized_when_fullscreened` | `wlr_requests` mapped `set_maximized` / `set_fullscreen` straight to the window's own request, which leaves a minimised window alone. | `Model::wlr_request`: a window-list client's maximise-on / full-screen-on first brings a minimised window back from the dock (the activation path, so the restore animation plays), then applies the request. Test: `wlr_toplevel.rs` `a_state_asked_of_a_minimised_window_...`. |
 | `can_maximize_foreign_while_fullscreen` | `place` returned early for a full-screen window, so the fill was dropped. | `place`: Fill on a full-screen window replaces the state it returns to with Filled (xdg-shell: `set_maximized` while full screen takes effect when full screen ends); the window stays full screen. Same test. This also applies to the window's own `xdg_toplevel.set_maximized`. |
-| `text_input_enters_grabbing_popup`, `..._after_child_destroyed` | gmock `InSequence` chains the xdg helpers' `AnyNumber` expectations; a later call retires every earlier link, and the protocol's wire order (toplevel/popup configure, then xdg_surface.configure; wm_capabilities at creation) is the reverse of the chain. The keyboard `enter` was already in order. | Nothing in casement can fix it without dropping configures; the two rows are back on the expected-failures list as W14 with the reasoning. |
+| `text_input_enters_grabbing_popup`, `..._after_child_destroyed` | gmock `InSequence` chains the xdg helpers' `AnyNumber` expectations; a later call retires every earlier link, and the protocol's wire order (toplevel/popup configure, then xdg_surface.configure; wm_capabilities at creation) is the reverse of the chain. The keyboard `enter` was already in order. | Nothing in the compositor can fix it without dropping configures; the two rows are back on the expected-failures list as W14 with the reasoning. |
 
 ## wave-2026-10-15/cas27-ignored: five scene tests that were ignored
 
@@ -3759,7 +3759,7 @@ Written without a build or a run (rule of the lane); the orchestrator's run sett
   `activate_window`). A window brought back by an activation (a click on its dock tile, `unset_minimized`,
   xdg-activation) relaid out with `Cause::Configure`, which motion snaps (no travel, no flight), so the
   window jumped back. It now relays out with `Cause::Minimise(target)` (the same tile it left for), which
-  motion already reverses (`retarget::Step::toward`, tested in `casement-motion`). macOS plays the genie in
+  motion already reverses (`retarget::Step::toward`, tested in `compositor-motion`). macOS plays the genie in
   reverse on restore; this is the plan's behaviour, not a departure.
 - The shadow and hover tests were wrong, not the code: the bare desktop is black and the shadow is black, so
   a probe on the shadow read 0 against 0 (the scene tests now put a light wallpaper layer under the
@@ -3775,7 +3775,7 @@ Written without a build or a run (rule of the lane).
   argument only places the subsurfaces, a surface element's size always comes from the scale the damage tracker
   asks with (the output's). Fixed in `element/window.rs`: the tree is laid out at its real size and each surface
   is wrapped in smithay's `RescaleRenderElement` about the window geometry's corner (new variant
-  `CasementElement::Stretched`); a clipped window's `RoundedClipElement` carries the same stretch (`.stretched`).
+  `SceneElement::Stretched`); a clipped window's `RoundedClipElement` carries the same stretch (`.stretched`).
   `popup_elements_riding` does the same for menus (its `ridden_corner` arithmetic is gone: the rescale about the
   corner moves the popup by the ratio). `window_surfaces` lost its `ratio` argument.
 - **Edge strips of the shadow fade at their ends on pixman.** A strip was one pixel across and drawn stretched along
@@ -3797,19 +3797,19 @@ Written without a build or a run (rule of the lane).
   `Processes::record` now takes the running satellite's pid (`XwaylandState::satellite_pid`) and
   records nothing for it; `exec::quit::pids_of` removes it again at signal time (the satellite
   can be started after a record on a restart, so both). Tests: `clients/processes.rs`
-  `the_satellites_connection_is_never_recorded`, `casement-testkit/tests/it/xwayland.rs`
+  `the_satellites_connection_is_never_recorded`, `compositor-testkit/tests/it/xwayland.rs`
   `satellite_starts_with_its_listen_sockets` (the pid is spared once running).
-- **Why X11 apps still cannot be force quit.** Nothing on casement's side of the wire carries an
+- **Why X11 apps still cannot be force quit.** Nothing on the compositor's side of the wire carries an
   X11 window's process: satellite creates an ordinary `xdg_toplevel` per X11 window with the
   `WM_CLASS` as its app id and forwards no window id, no `_NET_WM_PID`, no pid. The pid lives in
   the X server: `_NET_WM_PID` on the window (set by the client, self-declared) or the X-Resource
   extension's `XResQueryClientIds` with `LOCAL_CLIENT_PID` (the server's own peer credential
   read, which cannot be forged by the client). Reading either needs an X11 connection from
-  casement to the display it serves (`XwaylandState::display`; casement holds the listening
-  sockets, so the connect succeeds even before satellite accepts it). `casement` has no X11
+  The compositor to the display it serves (`XwaylandState::display`; the compositor holds the listening
+  sockets, so the connect succeeds even before satellite accepts it). `compositor` has no X11
   client dependency; `x11rb` 0.13 is already a workspace dependency and in `Cargo.lock`
-  (used by `casement-testclient`'s `casement-x11probe`), so the route is one line in
-  `crates/casement/Cargo.toml`: `x11rb = { workspace = true, features = ["res"] }` (`res` for
+  (used by `compositor-testclient`'s `compositor-x11probe`), so the route is one line in
+  `crates/compositor/Cargo.toml`: `x11rb = { workspace = true, features = ["res"] }` (`res` for
   XRes; `_NET_WM_PID` needs no feature). The mapping app to pids would be: list the root's
   children, match each window's `WM_CLASS` class to the app's claimed id (the same match
   satellite made for the app id), take `XResQueryClientIds` per matching window (fall back to
@@ -3824,8 +3824,8 @@ Written without a build or a run (rule of the lane).
 
 Written without a build or a run (rule of the lane).
 
-- **The marker.** `casement_core::window::WindowOrigin` (`Wayland`, `X11`) is carried on
-  `MappedToplevel` and on `Window`. `casement_wayland::ClientState` has the origin of its
+- **The marker.** `compositor_core::window::WindowOrigin` (`Wayland`, `X11`) is carried on
+  `MappedToplevel` and on `Window`. `compositor_wayland::ClientState` has the origin of its
   connection (`with_origin`); `clients::insert_client` sets it from `Processes::origin_of`, which is
   `X11` for the connection whose peer pid is the running satellite (the same test that already
   kept the satellite out of the recorded pids). `xdg_shell::commit::mapped_events` copies it to
@@ -3863,7 +3863,7 @@ Written without a build or a run (rule of the lane).
   (`Event::GammaSet` with a table) holds its output: night light does not touch it until the client
   gives it back (identity), when night light takes it up again.
 - **Still missing: the producer of the tick.** Nothing in the session reads the local minute:
-  `casement/src/time/` has only the monotonic session clock, and the local time of day needs the
+  `compositor/src/time/` has only the monotonic session clock, and the local time of day needs the
   time zone (a tz-aware crate such as `jiff`, as sill uses; `chrono`/`time` would do; there is no
   safe route in std or rustix). Needed: a one-shot timer in `time/` re-armed every minute that
   feeds `Event::NightLightTick`, and one tick at start. Until then night light does nothing in a
@@ -3896,7 +3896,7 @@ Written without a build or a run (rule of the lane).
   the served display, on a thread the loop waits 750 ms for) for the root's children with their
   `WM_CLASS` and `XResQueryClientIds` / `LocalClientPID`; `xwayland/owners.rs` is the pure
   decision (class or instance equals the app's claimed id, case-insensitively; never the
-  satellite, casement, init, pid 0 or a negative pid). `Processes` now remembers the satellite's
+  satellite, the compositor, init, pid 0 or a negative pid). `Processes` now remembers the satellite's
   connection as an X11 carrier (`carries_x11`), and `exec::quit::pids_of` adds the X11 pids when
   a terminated connection is that one.
 - **Not done: more than one X11 app.** `Model::sole_clients_of` names a connection only when all
@@ -3924,7 +3924,7 @@ Written without a build or a run (rule of the lane); the orchestrator's run sett
   "Reads black instead of wallpaper" is `the shadow darkens the probe: 0 against 0` in cas18's `qtest.log`: the bare
   desktop is black and so is the shadow, so the probe could not move. cas27 put a light wallpaper layer under the
   window (`Desk::wallpaper`) and made `Desk::close` destroy the decoration first (a closing client lost its wallpaper
-  layer when casement dropped the connection). The "2x seam" was the same log's `the shadow is darker at the edge than
+  layer when the compositor dropped the connection). The "2x seam" was the same log's `the shadow is darker at the edge than
   away from it` plus the pixman filtering of the one-pixel strips (8413b3a, `STRIP_ACROSS`). The blessed golden
   `shadow-1600x1000-2x` is smooth along the bottom and right edges (read from its pixels: no step above 1 level on rows
   4 and 14 logical pixels below the edge, nor on columns beside the right edge); the gradient into the corner tiles is
@@ -3945,7 +3945,7 @@ Written without a build or a run (rule of the lane); the orchestrator's run sett
 
 ## cas35-quitevent: `quit` for apps that listen, the macOS applicationShouldTerminate path (2026-10-16)
 
-Written without a build or a run (rule of the lane); the orchestrator's gate settles it. Needs casement-protocols
+Written without a build or a run (rule of the lane); the orchestrator's gate settles it. Needs desktop-protocols
 `bardo_window_manager_v1` version 2 (branch `lane/cas35-quitevent`, land it first).
 
 - **Wire.** `bardo_window_manager_v1` is version 2 and gains the event `quit()`. It sits on the manager (the object an app
@@ -3959,7 +3959,7 @@ Written without a build or a run (rule of the lane); the orchestrator's gate set
   asked to quit when a client of it listens (the client stays tied to its app after its last window unmaps).
 - **Unchanged.** The app shows as `Quitting(Asked)`, `QuitGrace` is armed for 3 s, and an app still here after it is `Running`
   again. The app answers by acting (exit, or a sheet and stay); there is no reply request.
-- **Edge.** `casement-wayland` `bardo_window`: `VERSION` 2, `QUIT_VERSION`, `BardoWindowPart::quit_managers`,
+- **Edge.** `compositor-wayland` `bardo_window`: `VERSION` 2, `QUIT_VERSION`, `BardoWindowPart::quit_managers`,
   `on_quit_manager_bound` / `on_quit_manager_gone` (feed the event), `apply_quit` (the effect; an error if none is alive);
   `exec.rs` maps `Effect::SendQuit`. `golden/globals.txt` row is version 2.
 - **Tests.** `model_input.rs`: listening app gets `SendQuit` and no `SendClose` (and the grace still returns it to running);
@@ -3986,7 +3986,7 @@ cancels on hardware; honour cursor-hidden in output captures") described the cod
   first frame waits only until `serve_captures` runs after the next present). `sill`'s eyedropper asks for an output source with
   the cursor hidden (`desktop-client` `CursorMode::Hidden`, `Options::empty()`), which is this path. The "no read-back" line in
   sill's manual checks and `wave-6/colour-picker` is that older state.
-- **The cursor is explicit already.** `casement_render::pass::CursorInclusion { Include, Exclude }` is the typed choice every backend
+- **The cursor is explicit already.** `compositor_render::pass::CursorInclusion { Include, Exclude }` is the typed choice every backend
   takes (`CursorPaint` from the wire maps to it in `handlers/image_capture/direct.rs::inclusion`); a second enum `CursorInCapture`
   would only rename it, so none was added. The element-list builder is `headless/bare.rs::without_cursor` (elements whose `Kind`
   is `Cursor`), used by the headless backend's cursor-less layer, the tty shadow (a headless backend) and the GPU scenes' `bare`
@@ -4004,25 +4004,25 @@ cancels on hardware; honour cursor-hidden in output captures") described the cod
   own (needs a device; llvmpipe in `capture_direct.rs` covers only the blit).
 - **Unsure it compiles.** `capture_scene_real.rs::read` (calls `capture_output` with the bound `GlesTarget`; `BackendError: From<
   RenderError>` is relied on, as `blit` does), the unused imports I removed there (`ExportMem`, `Rectangle`), and the `bare.rs` test
-  (`SolidColorRenderElement::new` with `Kind::Cursor`, `CasementElement::<PixmanRenderer>::Solid`). The testkit's `FakeCaptureGpu`
+  (`SolidColorRenderElement::new` with `Kind::Cursor`, `SceneElement::<PixmanRenderer>::Solid`). The testkit's `FakeCaptureGpu`
   does not override `read_scene` (the default, unchanged but for its arguments).
 - **By hand.** `docs/manual-checks.md` "Capture on a real seat (KMS)": the eyedropper on hardware, `grim -c` / no `-c`, a 1 x 1
   region. Queue the first in `sill/docs/manual-checks.md` too, whose last line still says the tty has no read-back.
 
-## cas36-castframe: the screencast "EPIPE after the first frame" is not casement (2026-10-16)
+## cas36-castframe: the screencast "EPIPE after the first frame" is not the compositor (2026-10-16)
 
-Read from `evidence/` (casement, transom and scenario logs of the `portal-bardo` screencast chain) and the code; nothing was
-built or run. Report: casement does not close the client, panic, or hang. No casement source changed; two regression tests and a
+Read from `evidence/` (the compositor, transom and scenario logs of the `portal-bardo` screencast chain) and the code; nothing was
+built or run. Report: the compositor does not close the client, panic, or hang. No compositor source changed; two regression tests and a
 test-client helper pin the wire behaviour transom relies on.
 
-- **What casement does.** The first `capture()` of a session is answered from the last presented frame (whole damage, `ready`;
+- **What the compositor does.** The first `capture()` of a session is answered from the last presented frame (whole damage, `ready`;
   about 85 ms in the debug build, the CPU conversion of an 8 MB frame in `CapturedFrame::from_rgba`). The next `capture()` finds
   `damage.since(output, last)` empty on a still output and is parked by `ImageCapturePart::wait_frame`
   (`handlers/image_capture/frames.rs::capture`, "the first frame of a session is whole; the next waits for something to change").
-  That is what ext-image-copy-capture asks for (a frame is sent only when something changed), so casement logs nothing after it:
+  That is what ext-image-copy-capture asks for (a frame is sent only when something changed), so the compositor logs nothing after it:
   there is no later request to log. A headless output with no moving pointer and no client damage never presents damage, so the
-  parked frame stays parked. Nothing in casement posts a protocol error or kills a client for this path: `grep` for
-  `kill_client`/`post_error` in `casement-wayland/src/image_capture*` and `handlers/image_capture*` finds none; smithay's only
+  parked frame stays parked. Nothing in the compositor posts a protocol error or kills a client for this path: `grep` for
+  `kill_client`/`post_error` in `compositor-wayland/src/image_capture*` and `handlers/image_capture*` finds none; smithay's only
   error there is `DuplicateFrame` (a `create_frame` while the previous frame is not destroyed), which transom's order
   (`frame.destroy()` before `create_frame`) never triggers, and which would show as `wl_display.error` in `WAYLAND_DEBUG`.
 - **Where the EPIPE comes from.** transom's `Share::drop` (screencast/run.rs in the transom repo) calls
@@ -4032,8 +4032,8 @@ test-client helper pin the wire behaviour transom relies on.
   1442123.6 ms, 19.96 s later. A connection the compositor had closed would have ended the pump thread (and dropped the
   `Copier`) at once. The 20 s is `timeout 20` in `frames_of` in the transom repo's dev/lib/cast_check.sh plus `stop_cast`, after which the next cast
   starts (the "later connection", 61 ms after the drop). That second connection's `capture()` is followed by the same
-  `Share::drop` 48 ms later (end of the script, `down.sh`), before casement's 85 ms answer could come: its log stops at
-  `capture()` for that reason, not because casement hung. `casement-wldebug.log` shows casement accepting the connection and
+  `Share::drop` 48 ms later (end of the script, `down.sh`), before the compositor's 85 ms answer could come: its log stops at
+  `capture()` for that reason, not because the compositor hung. `compositor-wldebug.log` shows the compositor accepting the connection and
   serving globals throughout, so the main thread was never blocked.
 - **The real failures, both on transom's side (not edited).** (1) `FAIL 3`: `pipewiresrc path=<node>` says "target not found",
   so no consumer ever links to the node `Start` returned (`screencast/pipewire.rs` reads `stream.node_id()` at the first
@@ -4049,11 +4049,11 @@ test-client helper pin the wire behaviour transom relies on.
   request replaces it or damage arrives; `release_waiting` then serves the dead frame once, which records `delivered` and so
   swallows that damage for the session's next frame. Implementing `ImageCopyCaptureHandler::frame_aborted` to drop the parked
   frame would close it; transom destroys a frame only after its outcome, so it does not hit this.
-- **Tests added** (`crates/casement-testkit/tests/it/protocol/image_capture.rs`): `a_session_serves_frame_after_frame_into_one_buffer`
+- **Tests added** (`crates/compositor-testkit/tests/it/protocol/image_capture.rs`): `a_session_serves_frame_after_frame_into_one_buffer`
   (a whole first frame, then three frames each into the same buffer after a pointer move, the session and connection alive, the last
   equal to the scanout) and `a_waiting_frame_does_not_hold_up_a_second_session` (a parked frame on one session; a second session
   opened meanwhile gets a whole first frame; both are answered when the pointer moves; closing the first leaves the second
-  working). The test client gained `BufferAsk::Reuse` (`casement-testclient/src/capture/copy_session.rs`): the buffer of the
+  working). The test client gained `BufferAsk::Reuse` (`compositor-testclient/src/capture/copy_session.rs`): the buffer of the
   last request attached to the next frame, as transom does. **Unsure it compiles or passes** (written without a build): the
   `Kept` refactor of `OutputCapture::request`, and the two tests' pump sequencing.
 
@@ -4061,14 +4061,14 @@ test-client helper pin the wire behaviour transom relies on.
 
 Fixed in this lane (no compile was run; the gate run is the first):
 
-- CASB-01, CASB-09: an icon name from a toplevel or an app id is a plain theme name (`casement_icons::IconName`), never a path;
+- CASB-01, CASB-09: an icon name from a toplevel or an app id is a plain theme name (`compositor_icons::IconName`), never a path;
   only a desktop entry's `Icon=` may be a path. Every icon and desktop-entry read is `read::plain_file` (non-blocking open, `fstat`
-  must say regular file, capped read). usvg gets a resolver that loads no outside file. Lookups run on the `casement-icons` thread
+  must say regular file, capped read). usvg gets a resolver that loads no outside file. Lookups run on the `compositor-icons` thread
   (`icons/worker.rs`); the plate is drawn until the answer comes.
 - CASB-02, CASC-08: EDID text is printable ASCII only. `attached_outputs` keys two displays with one EDID key apart: the connector
   that sorts first keeps `edid:...`, the others get `connector:<name>`, so stored settings stay valid. **Done in pa-caslim (CASC-08 remainder):** escaping `/`
   inside EDID text (a make `a/b` + model `c` still equals make `a` + model `b/c`; the text is now printable ASCII, and `/` is
-  printable). It needs a change to `OutputKey::of` in casement-core (pa-cassec's crate): see the interface ask in the report.
+  printable). It needs a change to `OutputKey::of` in compositor-core (pa-cassec's crate): see the interface ask in the report.
 - CASB-03, CASB-08, CASB-16, CASB-22: `ProcessSpawner` keeps its children and reaps them in `Spawner::exited` (polled each loop turn);
   `XwaylandState::reap` reads that list, so a dead satellite is noticed. Binding programs run under `systemd-run --user --scope`
   when the user manager's socket exists, plain child otherwise. Children get `WAYLAND_DISPLAY` and lose `NOTIFY_SOCKET`,
@@ -4085,23 +4085,23 @@ Fixed in this lane (no compile was run; the gate run is the first):
 - CASB-15: the Spaces file is written by `BackgroundSpaceStore` (latest text wins, folder fsync).
 - CASB-17: a stale `X<n>` socket nobody listens on is removed; a socket folder others may write in (without the sticky bit) is refused.
   The abstract-socket access question is still unverifiable from this code.
-- CASB-19: the draw caches evict the least recently used entry (`casement-render/src/lru.rs`).
+- CASB-19: the draw caches evict the least recently used entry (`compositor-render/src/lru.rs`).
 - CASB-23: `prune` also frees the capture images of an output that went away.
 - CASB-27: SIGTERM and SIGINT stop the loop in order (`stop.rs`, a tokio signal thread into a calloop channel).
 
 Deferred:
 
-- CASB-26 (test mode behind a cargo feature): the vkms flags are parsed in `cli.rs`, used by `casement-testkit` tests and by
+- CASB-26 (test mode behind a cargo feature): the vkms flags are parsed in `cli.rs`, used by `compositor-testkit` tests and by
   `dev/vkms/accept.sh`; a feature needs those three to turn it on, which cannot be checked without a build. Reachable only by whoever
   builds the command line.
 - CASB-25 (keymap fetch on a worker thread): bounded to about 2 s per keymap change by keycap-client's own timeout; low.
-- CASB-27, `OOMScoreAdjust=-500` in `dist/casement.service`: an unprivileged user manager cannot lower a unit's OOM score, so the
+- CASB-27, `OOMScoreAdjust=-500` in `dist/compositor.service`: an unprivileged user manager cannot lower a unit's OOM score, so the
   unit would fail to start. Needs a system-level grant (a drop-in installed as root); not added.
-- CASB-12, the `unwrap`s in smithay's libseat session: fixed in the fork (`lane/libseat-errors` 30e544aa, which casement pins). A failed
+- CASB-12, the `unwrap`s in smithay's libseat session: fixed in the fork (`lane/libseat-errors` 30e544aa, which compositor pins). A failed
   dispatch pauses the session and removes the source, a refused disable is logged, and the fd and token paths return errors.
 - CASB-13, CASB-14: Bardo's ds-settings (bounded reader, hardened writer): interface ask, not this repo.
 - CASB-20, CASB-21, CASB-28: left, as decided.
-## pa-cassec: production-audit fixes in casement-core, casement-layout, casement-wayland and casement-ipc (2026-10-16)
+## pa-cassec: production-audit fixes in compositor-core, compositor-layout, compositor-wayland and compositor-ipc (2026-10-16)
 
 Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10/11/13/14/17 and CASB-06 (audit files in
 `~/rs-wt/prod-audit-de/`). Written without a build: the gate run is the first compile.
@@ -4147,16 +4147,16 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   clients (the ext list in smithay), so the blanking is for every list client, the shell included. The shell reads windows through
   the desktop protocol, which is not blanked. Tests: `a_locked_session_stops_window_capture_and_withholds_titles` (fixture),
   `locking_and_unlocking_list_every_window_again` (core), `a_locked_session_withholds_what_is_open`.
-- **CASB-06: casement keeps its own lock marker; a restart while the shell's lock is held comes back covered.**
-  `$XDG_RUNTIME_DIR/casement/locked` (runtime directory, so a reboot clears it), through the new `LockMarker` seam
-  (`casement::lock_marker`; a file in production, `MemoryLockMarker` in the test kit). The model asks `LockReply::Remember` when
+- **CASB-06: the compositor keeps its own lock marker; a restart while the shell's lock is held comes back covered.**
+  `$XDG_RUNTIME_DIR/compositor/locked` (runtime directory, so a reboot clears it), through the new `LockMarker` seam
+  (`compositor::lock_marker`; a file in production, `MemoryLockMarker` in the test kit). The model asks `LockReply::Remember` when
   the shell's lock reaches `Locked` and `Forget` when it ends (`LockHolder` records whether the shell or another client asked);
   at start, `announce_outputs` feeds `LockEvent::Restored` when the marker is there, so the model is `LockedWithoutSurface`
   (holder `Shell(None)`) before any output plugs and every output comes up under the cover. Only the shell's new connection
   can take it over (CASW-02) and only an unlock lifts it. **How it agrees with sill:** sill's own marker
   (`$XDG_RUNTIME_DIR/sill/locked`, `sill-services/src/locker/backend/marker.rs`) is written when its own lock is `Locked`
   and removed at unlock, and a sill that starts in `Own` mode with the marker present locks again at once; `desktop-session`
-  restarts sill after every casement exit, so the shell locks again within a second of the new compositor going live and
+  restarts sill after every compositor exit, so the shell locks again within a second of the new compositor going live and
   both markers end together at the unlock. No sill change is needed. **Decision recorded:** a lock held by a non-shell
   client (a locker run from a terminal) is deliberately not remembered: after a restart only the shell can take a held lock
   over, so remembering a lock the shell would never re-lock would leave a cover nobody lifts; a restart then comes back open,
@@ -4164,18 +4164,18 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   with `--state-home DIR`). Tests: `a_restart_while_locked_comes_back_covered_until_the_shell_locks_again` (fixture, two
   compositors on one marker), `only_the_shells_lock_is_remembered` and `a_restored_lock_covers_until_the_shell_locks_and_unlocks`
   (core), the `FileLockMarker` unit test and the `main` placement test.
-- **CASW-03: `PrepareForSleep` is believed only from logind.** The match rule in `casement-ipc/src/sleep.rs` names the sender
+- **CASW-03: `PrepareForSleep` is believed only from logind.** The match rule in `compositor-ipc/src/sleep.rs` names the sender
   `org.freedesktop.login1` (the bus resolves it to the current owner), and every signal that arrives is checked again against
   `GetNameOwner(org.freedesktop.login1)` before the handler runs (resolved per signal rather than cached, so there is no
   `NameOwnerChanged` bookkeeping; a signal with no sender or an unresolvable owner is dropped). zbus does not filter on a
   well-known sender locally (`MatchRule::matches` accepts it), so the second check is what holds if a bus ignored the rule. It
-  is the only match rule in casement. Test: `a_prepare_for_sleep_from_anyone_but_logind_is_not_acted_on` (private bus, a
+  is the only match rule in compositor. Test: `a_prepare_for_sleep_from_anyone_but_logind_is_not_acted_on` (private bus, a
   second connection spoofs the signal; fake logind's own signal that follows is heard and the spoofed one is not).
 - **CASW-04 (decided): a security context carries at most its creator's own proof.** The handler reads the creating client's
   `PeerIdentity` (`SecurityContext::creator_client_id`, through the backend handle as `xdg_activation` reads client keys) and
-  `casement_wayland::security_context::identity_for_clients` lets the engine's facts count only when that creator is proven; a
+  `compositor_wayland::security_context::identity_for_clients` lets the engine's facts count only when that creator is proven; a
   context made by an unproven client leaves every client of its socket unproven. A cgroup that cannot be read now leaves the
-  peer unproven instead of standing in for the root. **Consequence to know:** every connection casement accepts today is
+  peer unproven instead of standing in for the root. **Consequence to know:** every connection the compositor accepts today is
   `PeerIdentity::Unproven` (the public socket, hand-outs), so until a creator can be proven no security-context client is
   `Proven(Flatpak)`; sandboxed apps are known by their claimed app id until then. **Still open (porter):** a proven creator can
   still claim any Flatpak app id, and a native process can name its own `app-<id>-<rand>.scope`; porter's `identity_of` should
@@ -4193,7 +4193,7 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   context's facts count only for a launcher whose own peer is `Proven` (`peer_of` gives a launcher row's app at `Exe`); every other
   creator, however well proven, and an unproven one, leaves the clients with no app, an unknown one. The creator's cap is
   unchanged for the launcher. No table change was needed (the row and `roles::SANDBOX_LAUNCHER` already existed). Tests: in
-  `casement-wayland/src/security_context.rs` `only_the_sandbox_launcher_gives_a_contexts_clients_an_app` (launcher, another
+  `compositor-wayland/src/security_context.rs` `only_the_sandbox_launcher_gives_a_contexts_clients_an_app` (launcher, another
   proven program, an unproven creator; facts proving an app or nothing) and in `clients/standing.rs`
   `only_the_launcher_row_makes_contexts_that_carry_an_app` (launcher by image, by control group alone, another row, a root-owned
   program, one in a scope it named for a Flatpak app, a sandboxed app) and `the_launcher_is_a_proven_program_with_no_extra_power`
@@ -4255,16 +4255,16 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
 - **CASC-07 (decided 2026-10-16, see pa-caslim; was deferred):** a full-screen request from a window that is not key or active: deferred until the window is
   next visible, or refused. Video players ask on their own, so the owner picks. The change belongs in
   `model/requests.rs::enter_full_screen`.
-- **CASW-19 (done in pa-caslim; was deferred):** `casement-agent/src/eis.rs::device_id` masks the portal session id to 28 bits; two sessions that differ only
+- **CASW-19 (done in pa-caslim; was deferred):** `compositor-agent/src/eis.rs::device_id` masks the portal session id to 28 bits; two sessions that differ only
   above bit 28 would share a device. Session ids come only from transom (a counter), so it needs over 268 million sessions. The
-  fix is a per-session device counter minted where the remote link is opened (`casement/src/connect.rs`), outside the four
+  fix is a per-session device counter minted where the remote link is opened (`compositor/src/connect.rs`), outside the four
   crates this lane was given.
 
 ## pa-caslim: production-audit limits and the decisions taken for the lane (2026-10-16)
 
 Rows for CASC-03/04/05/07/08/16/18, CASW-06/07/08/09/10/13/15/16/17/19/20 and the transom ask PORTAL-05 (audit files in
 `~/rs-wt/prod-audit-de/`). Written without a build: the gate run is the first compile. Every cap is a named constant with its
-reason beside it; a peer that goes past one is cut with `wl_display.no_memory` (`casement-wayland::limits`), refused, or
+reason beside it; a peer that goes past one is cut with `wl_display.no_memory` (`compositor-wayland::limits`), refused, or
 dropped, never waited for.
 
 - **CASC-03: a client cannot make the model, the loop or Mission Control grow without end.** Toplevels (`MAX_TOPLEVELS` 1024,
@@ -4302,7 +4302,7 @@ dropped, never waited for.
   already capped (`A11Y_MAX_LEN`).
 - **CASC-18: the Spaces file is read trimmed.** A second Space of an id, a second "shown" entry of an output and anything past
   `MAX_STORED_SPACES` (256) / `MAX_STORED_SHOWN` (32) are dropped (the first wins), and `load_spaces` logs how many.
-  Test: `a_damaged_file_is_trimmed_to_what_casement_would_have_written`.
+  Test: `a_damaged_file_is_trimmed_to_what_compositor_would_have_written`.
 - **CASW-06: per-client caps** on waiting screen copies (16; and the last-delivery notes are bounded at 256, oldest first), window
   list managers (4), icon buffers (256), exports (256); the `SerialBook` forgets the latest input of clients none of whose
   presses is remembered. Tests: one fixture test per cap (`a_client_with_copies_piled_up_is_cut`,
@@ -4343,7 +4343,7 @@ dropped, never waited for.
   buffers are checked for size only (their layout is the driver's). Tests: `a_buffer_larger_than_its_file_or_the_limit_is_refused`,
   `plane_arithmetic_cannot_overflow_into_a_fit`; the unit test's buffers now sit in sized memfds instead of `/dev/null`.
   **Unverified:** that every real exporter answers `lseek(SEEK_END)` with the buffer size (the kernel's `dma_buf_llseek` does).
-- **CASW-19: a device slot per remote connection.** `casement::connect` mints a `RemoteSlot` for each `ConnectEis`
+- **CASW-19: a device slot per remote connection.** `compositor::connect` mints a `RemoteSlot` for each `ConnectEis`
   (`RemoteSessions::mint`, 28 bits, refused when spent); `remote_device_id(slot, class)` replaces the id squeezed from the portal
   session id, so two sessions never share a device. The held-key sets are shared with the connection's `RemoteHandle`, capped at
   `MAX_HELD` (256) keys and buttons. Tests: `two_connections_never_share_a_device_id`, `a_full_held_set_drops_new_presses_and_releases_empty_it`.
@@ -4360,12 +4360,12 @@ dropped, never waited for.
 Not covered by a test here (no way to reach it without hardware or a second process): the tty VT chord, the `lseek` on a real
 GPU buffer, and the x11 satellite at the toplevel cap.
 
-## pa2-ccore: per-app consent in casement-core (CASW-01, CASC-01, PORTAL-02; 2026-10-16)
+## pa2-ccore: per-app consent in compositor-core (CASW-01, CASC-01, PORTAL-02; 2026-10-16)
 
 Wave 2's core half (design: `~/rs-wt/prod-audit-de/WAVE2-DESIGN.md` section 3). Written without a compile; the gate run is the
 first. The contract with the composition root and the protocol layer is in ARCHITECTURE.md ("Consent for the privileged globals").
 The owner decisions it carries out: per-app consent for seven powers, remembered per program and listed in Settings > Privacy;
-the shell, the portal and our own services trusted by identity; the book written only by casement; the administrator's floor
+the shell, the portal and our own services trusted by identity; the book written only by the compositor; the administrator's floor
 read-only; a program whose image the person can write gets Allow Once and is never remembered; no "Rules" system.
 
 - **Decided here (not in the design).**
@@ -4383,7 +4383,7 @@ read-only; a program whose image the person can write gets Allow Once and is nev
   - Eviction: a full book (512) drops its oldest answer for a new one.
 - **Deviations from the design text, with reasons.**
   - `policy::advertised(global, role)` keeps its two arguments (nothing hidden) and `policy::advertised_to(global, role, &PowerSet)`
-    takes the hide-on-deny decision. Changing `advertised` in place would break `casement-wayland::GlobalFilter` and the test
+    takes the hide-on-deny decision. Changing `advertised` in place would break `compositor-wayland::GlobalFilter` and the test
     kit's oracle in the same commit; the wayland lane switches `GlobalFilter` to `advertised_to` and may then delete the old name.
   - More events than the design lists, each with a reason: `PrivilegeGranted` and `PrivilegeForgotten` (the Settings switch on, and
     "Ask Again"; the design names only `PrivilegeRevoked`), `ShellReady` (without it core cannot tell a shell that can be asked from
@@ -4392,9 +4392,9 @@ read-only; a program whose image the person can write gets Allow Once and is nev
     clock.
   - `Effect::Resolve` has three outcomes (`Allowed`, `Denied`, `Revoked`) so the protocol layer can tell "refuse this request" from
     "end a use that was allowed".
-  - The globals golden is casement-core's own `tests/golden/globals.txt` (kind, power, public, agent, sandbox), generated from the
+  - The globals golden is compositor-core's own `tests/golden/globals.txt` (kind, power, public, agent, sandbox), generated from the
     policy table. The test kit's `tests/golden/globals.txt` (interface, version, module) is untouched: it is the wayland lane's.
-  - The machine lives in `model/privilege/` and is public as `casement_core::privilege` (the design says both).
+  - The machine lives in `model/privilege/` and is public as `compositor_core::privilege` (the design says both).
 - **Property tests** (`tests/it/privilege_decide.rs`, `privilege_step.rs`): precedence over every combination; rows about other
   programs or powers change nothing; an unnamed program is never let in and never remembered; an interpreter's book rows are not
   read; the book and floor text round trip and fail as documented; over arbitrary sequences of uses, answers, waits, timer fires,
@@ -4421,7 +4421,7 @@ read-only; a program whose image the person can write gets Allow Once and is nev
   bind-time refusal must do the same.
 
 Wave 2's wayland half (design: `~/rs-wt/prod-audit-de/WAVE2-DESIGN.md` section 3). Written without a compile; the gate run is the
-first. The contract it implements is ARCHITECTURE.md "Consent at the wire". The mechanism is `casement_wayland::consent`
+first. The contract it implements is ARCHITECTURE.md "Consent at the wire". The mechanism is `compositor_wayland::consent`
 (`admit`, `Ledger`, `Held`); the effect arms are in `exec.rs` and `handlers/consent.rs`.
 
 - **Decided here (not in the design).**
@@ -4464,24 +4464,24 @@ first. The contract it implements is ARCHITECTURE.md "Consent at the wire". The 
 
 ## pa2-cipc: caller identity on Compositor1, the Privacy list, the accessibility owner check (CASW-05, PORTAL-15, CASW-01 Settings side; 2026-10-16)
 
-Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rules); the gate run is the first build.
+Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane rules); the gate run is the first build.
 
 - **CASW-05 (fixed).** `Compositor1` no longer reads `/proc/<pid>/cgroup`. `caller_cgroup`, `PeerCgroups`, `ProcCgroups`,
-  `casement_agent::{CallerUnit, role_for, PORTAL_UNIT}` are deleted. On the bus thread, before anything reaches the loop, a call is
+  `compositor_agent::{CallerUnit, role_for, PORTAL_UNIT}` are deleted. On the bus thread, before anything reaches the loop, a call is
   (1) counted against its caller (`RateLimit`: 4 calls per fixed 1 s window per unique bus name, at most `TRACKED_CALLERS` (1024)
   names at once, the table cleared by a timer task so no clock is read; `LimitsExceeded` beyond), (2) proven through
   `peephole-bus` (`CallerCheck::who`, `Proof::Full` and either pin, because a socket pin is `Reopened` today): `Connect("shell")` needs role
   `shell`, `Connect("agent")` `agent_tier`, `ConnectEis` and `EndEis` `portal`; a refusal is `AccessDenied("not the caller this
   method answers")` and one `tracing::warn` with the roles asked and the standing found, (3) put in a `sync_channel` of
   `CONNECT_QUEUE` (8): a full queue drops the call (`LimitsExceeded`), a loop that does not answer in `ANSWER_WAIT` (10 s) is
-  `Unavailable`. `ConnectAsk` carries `caller: Proven { app, role }` instead of a cgroup text; `casement_agent::hand_out(wanted,
+  `Unavailable`. `ConnectAsk` carries `caller: Proven { app, role }` instead of a cgroup text; `compositor_agent::hand_out(wanted,
   held: &RoleName)` and `portal_may_connect(&RoleName)` check the proven role again (second line).
   Tests: `dbus/compositor_serve/tests.rs` (private bus, `BusPeers::introduce`: the user-unit-override/drop-in standing (`Exe`), a
   cgroup-only standing, a copied binary (`Program`), a moved cgroup running a user-writable image, a vanished peer, another
   role, the portal's two calls, the one refusal sentence, the rate limit (4 then `LimitsExceeded`), nine calls into a stalled loop
-  (8 wait, 1 dropped)); `dbus/intake.rs` (100k calls from 100k names: the queue holds 8, the counts stop at 1024); `casement-agent`
+  (8 wait, 1 dropped)); `dbus/intake.rs` (100k calls from 100k names: the queue holds 8, the counts stop at 1024); `compositor-agent`
   socket and eis tables. The three old cgroup-based serve tests are replaced by these.
-- **Settings > Privacy (served).** `casement_ipc::privacy`: `org.bardo.SettingsModule1` at `/org/bardo/Compositor1/privacy` on
+- **Settings > Privacy (served).** `compositor_ipc::privacy`: `org.bardo.SettingsModule1` at `/org/bardo/Compositor1/privacy` on
   Compositor1's own connection (`CallerSetup::with_privacy(PrivacyLink)`). Read by `settings` and `shell`, written by `settings`
   only, each `Proof::Full`; `permit` refuses everyone else, who then also hear no `Changed`. A section per power
   (`Power::title()`, help `Power::blurb()`), `privacy.<power>.<n>` a two-word switch (`on`/`off`, labelled Allowed/Not allowed) and
@@ -4493,11 +4493,11 @@ Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rul
   `Changed` is sent for each key whose value moved (a key that went away says `removed`; a pane reads the schema again on any
   `Changed`). Tests: `privacy/tests.rs` (administrator rows read-only; shell reads and cannot write; a stranger cannot read;
   `settings` at `Exe` cannot write; the edit reaches the queue), `keys.rs`, `write.rs`, `edit.rs`, `board.rs` tables.
-- **PORTAL-15 (verification worker written, not wired).** `casement_ipc::a11y::{A11yWorker, A11yAsk, A11yVerdict, verify}`:
+- **PORTAL-15 (verification worker written, not wired).** `compositor_ipc::a11y::{A11yWorker, A11yAsk, A11yVerdict, verify}`:
   `GetConnectionUnixProcessID(bus_name)` (unique or well-known, 2 s bound) must equal the client's pid, else the root stays
   `A11yRoot::Unknown`; a sandboxed client's connection is its proxy's, a different process, so it never verifies. Queue and answers
   are bounded (`A11Y_QUEUE` 32). The design says `Pinned::same_process` (pid and start time); peephole v0.1.1 has no such method, and
-  casement holds the client by its pidfd, so the pid cannot be reused while the client is held: the pid compare is equivalent.
+  The compositor holds the client by its pidfd, so the pid cannot be reused while the client is held: the pid compare is equivalent.
   Test: `a11y.rs` on a private bus.
 - **Debug units (`debug-inject`).** `DebugPeerUnits` is now a `CallerCheck`: a peer the test table matches stands as the role of
   `sill.service` (shell), `cuad.service` (agent_tier) or `transom.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
@@ -4513,13 +4513,13 @@ Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rul
   - `Page::Apps` was the interim page of the Privacy keys (ds-settings had no `Privacy` page); closed in pa2-cwl2: they are on `Page::Privacy`.
   - A person's row shadowed by an administrator's refusal is still listed (core's `rows()` lists both and `decide` lets the person
     switch off an administrator's allow), so a program can show twice, once read-only.
-- **Needed from the root lane (`pa2-croot`, the `casement` crate; the build breaks there until done).**
+- **Needed from the root lane (`pa2-croot`, the `compositor` crate; the build breaks there until done).**
   - `run.rs::attach_compositor`: `CallerSetup::desktop(table)` with `table = TableFiles::desktop().load(&RealProc::system())` (all re-
-    exported from `casement_ipc::dbus`; a failed load runs with `CallerTable::empty()`, where nobody is a service and the shell cannot
+    exported from `compositor_ipc::dbus`; a failed load runs with `CallerTable::empty()`, where nobody is a service and the shell cannot
     connect: say so loudly); under `debug-inject` `.with_test_units(table)` replaces `with_debug_units`; `.with_privacy(link)` with
     `let (link, edits) = PrivacyLink::new()`.
   - `connect.rs`: `answer` reads `ask.caller` (`hand_out(&ask.role, &ask.caller.role)`, `portal_may_connect(&ask.caller.role)`);
-    `AgentState::handed` becomes `BTreeMap<ClientKey, AppKey>` (`casement_agent::AppKey`) from `ask.caller.app`.
+    `AgentState::handed` becomes `BTreeMap<ClientKey, AppKey>` (`compositor_agent::AppKey`) from `ask.caller.app`.
   - The loop reads `edits: Channel<PrivacyEdit>` and feeds `edit.into_event(UnixSeconds(now))`; after every step that can change the
     book or floor it calls `link.board().publish(model.privilege().rows())` (a no-op when equal) and once at start.
   - The test kit (`FakeCgroups`, `fixture/handout.rs`, `tests/it/remote_eis.rs`, `bardo_shell.rs`) builds `Proven` instead of cgroup
@@ -4527,7 +4527,7 @@ Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rul
   - `set_a11y_root`: the handler leaves `A11yRoot::Unknown` and the root queues `A11yWorker::check(A11yAsk { window, client_pid, .. })`
     (the client's pinned pid), feeding the `Channel<A11yVerdict>` back as `WindowHintChange::A11y(verdict.root)`.
 - **Interface asks.** Bardo `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
-  `PRIVACY_PAGE` in `casement-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
+  `PRIVACY_PAGE` in `compositor-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
   the rows `shell` (sill.service), `agent_tier` (cuad.service), `portal` (transom.service), `settings` (detent) and `manager`
   (systemd, `Exe`) with `exe` lists.
 - **Not verified by reading (the gate run looks here).** That `BusPeers::who`'s future is `Send` (the boxed `WhoFuture` and zbus
@@ -4537,11 +4537,11 @@ Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rul
 
 ## pa2-croot: the composition root for per-app consent (CASW-01, CASW-05, PORTAL-02, PORTAL-15; 2026-10-17)
 
-Crates `casement`, `casement-testkit`, `casementctl`, a new `casement-privacy`, and the small seams named below in `casement-ipc`.
+Crates `compositor`, `compositor-testkit`, `bardo-compositorctl`, a new `compositor-privacy`, and the small seams named below in `compositor-ipc`.
 Written without a compiler (lane rules); the gate run is the first build of this branch, which merges the consent gates (`pa2-cwl`)
 and the caller identity (`pa2-cipc`). The contract is ARCHITECTURE.md "Consent for the privileged globals" ("The composition
-root's half"). Owner decisions carried out: per-app consent; the book is `$XDG_STATE_HOME/casement/privacy.toml`, written only by
-casement; the administrator's floor is `/etc/bardo/privacy.toml` and `privacy.d/*.toml`, believed only when root-owned and not
+root's half"). Owner decisions carried out: per-app consent; the book is `$XDG_STATE_HOME/compositor/privacy.toml`, written only by
+The compositor; the administrator's floor is `/etc/bardo/privacy.toml` and `privacy.d/*.toml`, believed only when root-owned and not
 group/world writable; a user-writable program or an interpreter gets Allow Once and is never written to the book.
 
 - **What was done.**
@@ -4551,23 +4551,23 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     `fakes::callers` (a `Proven` per caller); `connect_through_handout`, `connect_remote_eis`, `end_remote_eis` take a `&Proven`.
   - `clients::insert_client(state, stream, role, peer, Standing)`; `Fixture::insert` calls it. `clients::Judge` holds, probes and judges
     the process on the public socket at accept; `PinnedImage` is the `ImageWatch`.
-  - The files: new crate `casement-privacy` (store, floor files, load policy, `list`), `casement::privacy` (the model side: `start`,
+  - The files: new crate `compositor-privacy` (store, floor files, load policy, `list`), `compositor::privacy` (the model side: `start`,
     `keep`, `edited`, `reload_floor`, `publish`), `seams.privacy`, `seams.wall` (`time::WallClock`), `seams.a11y`.
-  - `casementctl privacy list | reload`; `casement` hears `SIGHUP` (`hangup.rs`).
-  - Tests: `casement-privacy` (floor trust table, drop-ins, link refused, folder 0700, file 0600, damaged/oversized/non-text book set
+  - `bardo-compositorctl privacy list | reload`; `compositor` hears `SIGHUP` (`hangup.rs`).
+  - Tests: `compositor-privacy` (floor trust table, drop-ins, link refused, folder 0700, file 0600, damaged/oversized/non-text book set
     aside whole, the load policy), `clients` (standing conversion table, scope name, a real probe of the test process, the image
-    watch), `consent_store.rs` end to end over real files in a scratch folder, `bardo_window.rs` (the accessibility claim), `casementctl`
+    watch), `consent_store.rs` end to end over real files in a scratch folder, `bardo_window.rs` (the accessibility claim), `bardo-compositorctl`
     (the subcommand table), `wall.rs`.
 - **Decided here (not in the design).**
-  - *A new crate, `casement-privacy`.* `casementctl privacy list` has to read the two files the way casement does, and a dependency
-    on `casement` would make casementctl reach ds-settings and the text stack (boundary rows B13, B15). The crate has casement-core,
-    casement-protocols and ds-helpers (no features, no bus); the date and every folder are arguments (B8). Cargo.lock was edited by hand
+  - *A new crate, `compositor-privacy`.* `bardo-compositorctl privacy list` has to read the two files the way the compositor does, and a dependency
+    on `compositor` would make bardo-compositorctl reach ds-settings and the text stack (boundary rows B13, B15). The crate has compositor-core,
+    desktop-protocols and ds-helpers (no features, no bus); the date and every folder are arguments (B8). Cargo.lock was edited by hand
     for the new package and the new edges; the first cargo run normalises it.
   - *A floor that cannot be believed is "ask for everything", the same as no floor.* A floor file that exists but does not parse, or is
     not the administrator's alone (owner, group/other write bit, a link, or its folder), is skipped; the files that are believed are still
     merged; one error line lists the files and reasons; every power is then explicitly `Fallback::Ask` at the most (`load_floor`). It is
     not "deny": a broken floor must not lock the person out of their own programs, and an administrator's `deny` in the broken file is
-    lost until the file is fixed and `casementctl privacy reload` is run. Flip `asking_about_everything` to `Fallback::Deny` if the owner
+    lost until the file is fixed and `bardo-compositorctl privacy reload` is run. Flip `asking_about_everything` to `Fallback::Deny` if the owner
     prefers failing closed.
   - *Ownership is checked on the open descriptor, plus the folder.* The file is judged by `fstat` of what is then read (no second open),
     and so is its folder (`/etc/bardo`, `privacy.d`). The whole path to `/` is not walked (a scratch folder under `/tmp` could never pass);
@@ -4575,10 +4575,10 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     in a build with `testing` or `debug-inject`), so the tests make a floor they own and also try a wrong owner.
   - *`--system-dir DIR`* (`StartConfig::system_dir`, `RunConfig::with_system_dir`) is the injected place for a jail's floor, never an
     environment variable. A build without `testing`/`debug-inject` still wants the administrator to own the files there.
-  - *`casementctl privacy list` reads the files; `reload` sends `SIGHUP`.* The list is the book and floor as stored (the book is
+  - *`bardo-compositorctl privacy list` reads the files; `reload` sends `SIGHUP`.* The list is the book and floor as stored (the book is
     rewritten after every change, so it is current), computed with the same `Privilege::rows()` the Settings page shows; it never sets
     a damaged book aside and says in a sentence what it could not read. `reload` asks the bus who holds `org.bardo.Compositor1`, checks
-    `/proc/<pid>/comm` is `casement`, and sends `SIGHUP`. No new `Compositor1` method and no role for casementctl was needed. `SIGHUP` is
+    `/proc/<pid>/comm` is `compositor`, and sends `SIGHUP`. No new `Compositor1` method and no role for bardo-compositorctl was needed. `SIGHUP` is
     not heard in the vkms test mode (`--drm-node`), where it already means "read one frame back".
   - *Pruning:* a book that is full (512 rows) forgets answers about programs no longer on disk when it is read (`Book::retained`); a
     book with room forgets nothing, so a program on a disk that is not mounted at start keeps its answer.
@@ -4593,28 +4593,28 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     board's optimistic list never outlives the model's.
   - *The test kit's public clients now record their process* (`insert_client` does for every public client; the mirrored insert did
     not). Force quit never signals this process (`signal_all` spares `own`).
-- **Seams touched outside the named crates.** `casement-ipc/src/dbus/mod.rs`: a `pub mod peer` re-exporting the caller-identity library
+- **Seams touched outside the named crates.** `compositor-ipc/src/dbus/mod.rs`: a `pub mod peer` re-exporting the caller-identity library
   items the root needs to hold, probe and judge a peer (`Pinned`, `Prober`, `Facts`, `Exe`, `Standing`, `judge`, `roles`, ...), the same
   reason `LoadError`/`TableFiles` are re-exported there; no other file. Workspace `Cargo.toml`: members and `ds-helpers`,
-  `casement-privacy`. Nothing in casement-core, casement-wayland or casement-agent.
+  `compositor-privacy`. Nothing in compositor-core, compositor-wayland or compositor-agent.
 - **Deleted/replaced tests.** `FakeCgroups` and its unit test; the cases "a process nobody knows" in `remote_eis.rs` and
-  `bardo_shell.rs` (the bus thread refuses it before the loop hears of it; `casement-ipc` tests that); the unit-name wording of the
+  `bardo_shell.rs` (the bus thread refuses it before the loop hears of it; `compositor-ipc` tests that); the unit-name wording of the
   hand-out tests. `bardo_window::hints_apply_on_commit_and_are_forgotten_on_destroy` now expects an unverified root and then drives the
   verdict.
 - **Not verified by reading (the gate run looks here).**
-  - Cargo: the hand-edited `Cargo.lock` (new package `casement-privacy`; `casementctl` gains `casement-privacy` and `rustix`);
+  - Cargo: the hand-edited `Cargo.lock` (new package `compositor-privacy`; `bardo-compositorctl` gains `compositor-privacy` and `rustix`);
     `ds-helpers` with `default-features = false` resolving beside ds-settings' default one.
-  - `casement-ipc::dbus::peer` names: `Alive`, `PinError`, `Pinned`, `ProbeError`, `Prober` (peephole) and `AppKey`, `Engine`, `Exe`,
+  - `compositor-ipc::dbus::peer` names: `Alive`, `PinError`, `Pinned`, `ProbeError`, `Prober` (peephole) and `AppKey`, `Engine`, `Exe`,
     `ExePath`, `Facts`, `FileTrust`, `Pin`, `Proof`, `RoleName`, `Standing`, `Table`, `WhyNot`, `judge`, `roles` (peephole-core v0.1.1,
     read from the checkout, not compiled). Tests build `Standing::Service/Program/Sandboxed/Unverified` and `Exe::Read` from outside
     the defining crate (non-exhaustive enums; the variants are plain).
   - `clients/standing.rs`: the match on a `#[non_exhaustive]` `Standing` with a guard (`*proof >= Proof::Exe`) falling through to `_`.
-  - `casement-privacy/store.rs`: `ReadError::NotText { path, source }` built by hand; `DirBuilder::mode(0o700).recursive(true)`
+  - `compositor-privacy/store.rs`: `ReadError::NotText { path, source }` built by hand; `DirBuilder::mode(0o700).recursive(true)`
     applying the mode to every folder it makes.
-  - `run.rs`: the `Channel<PrivacyEdit>` and `Channel<A11yVerdict>` made in casement-ipc inserted with smithay's calloop re-export
+  - `run.rs`: the `Channel<PrivacyEdit>` and `Channel<A11yVerdict>` made in compositor-ipc inserted with smithay's calloop re-export
     (the same assumption `connect::attach` already makes); `RunConfig::with_system_dir`'s struct update after a partial move.
   - `state.rs`: `wl.bardo_shell.wall = Box::new(seams.wall)` before the model is built.
-  - `casementctl`: `zbus::Connection::session()` with the workspace's feature set; `DBusProxy::get_connection_unix_process_id`.
+  - `bardo-compositorctl`: `zbus::Connection::session()` with the workspace's feature set; `DBusProxy::get_connection_unix_process_id`.
   - Tests that read real files assume a non-root user (they own their scratch folders); the `Judge` and `PinnedImage` tests read
     `/proc/self` (a sandbox that hides it makes the second one fail: `moved()` needs a successful probe).
   - A full book of long program paths can pass 64 KiB (the model's limit for the file, `MAX_FILE_BYTES`) before it holds 512 rows;
@@ -4623,8 +4623,8 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
   - release lane: `desktop-callers.toml` rows (`shell`, `agent_tier`, `portal`, `settings`, `manager`) as pa2-cipc listed; no
     `/etc/bardo/privacy.toml` is shipped. The release notes and the user docs get the sentence from the design: "Programs that watch
     the screen, type for you or read the clipboard now ask the first time; a program that exits before you answer (wtype) works the next
-    time you run it" (casement has no README to carry it).
-  - the desktop harness: scenarios that run `grim`/`wl-copy` start casement with `--system-dir` and a floor of `allow` rows
+    time you run it" (the compositor has no README to carry it).
+  - the desktop harness: scenarios that run `grim`/`wl-copy` start the compositor with `--system-dir` and a floor of `allow` rows
     (design 3.8); the flag exists, the scenarios are theirs.
   - sill: nothing new (the question is `bardo_shell_v1` version 5, as cwl built it).
   - closed by pa2-cgate: the four globals smithay serves whole (clipboard, input method, `ext_foreign_toplevel_list`) are gated.
@@ -4634,8 +4634,8 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
 - Closed: the clipboard managers, the input method and `ext_foreign_toplevel_list` ask `consent::gate` (see ARCHITECTURE.md "Consent at
   the wire"). smithay is pinned at the fork's `6d813694` (branch `lane/consent-gates`). `InputMethodManagerState::new` now needs
   `Dispatch<ZwpInputMethodManagerV2, InputMethodManagerUserData>` (the manager's user data is no longer `GlobalData`), which
-  `casement-wayland/src/input_method.rs` states.
-- The held-object cap is smithay's (`MAX_HELD_PER_CLIENT` = 16 per client and protocol); casement keeps no count of its own for these
+  `compositor-wayland/src/input_method.rs` states.
+- The held-object cap is smithay's (`MAX_HELD_PER_CLIENT` = 16 per client and protocol); the compositor keeps no count of its own for these
   and relies on it. The `Ledger` also parks each waiting client's `ClientId` so `Effect::Resolve` can call `release`; the entry goes with
   the client's ledger rows.
 - No refusal event here is a destructor (checked in the XML: ext/wlr data control `finished`/`cancelled`, input method `unavailable`,
@@ -4643,7 +4643,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
 - Not done: a power taken back (`Revoked`) does not end a device, an input method or a list that smithay already registered; the next
   use asks again and objects made after the revocation are refused. Closing it needs a smithay hook to end registered objects
   (pa2-cwl2 below has the exact fork change and three ignored tests).
-- BARDO-12: `bardo_desktop_app_v1.subject` (see casement-protocols FINDINGS). The subject is read when an app is published, from the
+- BARDO-12: `bardo_desktop_app_v1.subject` (see desktop-protocols FINDINGS). The subject is read when an app is published, from the
   standing the model holds for the client of the app's first nameable window; a security-context sandbox connection has no standing in the
   model, so its apps get no subject yet.
 
@@ -4654,11 +4654,11 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
 - **CASW-10 (decided: a display change by anyone but the shell is kept only if the person confirms): built in cas11 (this was the
   state at pa2-cwl2: NOT built, waiting for the shell protocol).** The question needs "Keep these display settings?" with Keep and Revert, and `bardo_shell_v1` (version 5) has no event or
   request that fits: `permission_ask` is about a program and a power with Allow and Don't Allow, remembered per program, not a trial of
-  a setup with a countdown. A new event and request are an interface ask on `casement-protocols` (a read-only sibling here), below. Nothing was
+  a setup with a countdown. A new event and request are an interface ask on `desktop-protocols` (a read-only sibling here), below. Nothing was
   written against a protocol that does not exist. What exists today and stays: the refusals in `resolve_change`/`keeps_one_lit` (at least one
   display lit, positions within 100 000 px, a known mode and scale), and the per-app consent for `Displays` (`zwlr_output_manager`
   `apply`, `zwlr_output_power`, `zwlr_gamma_control` are asked).
-  - *The casement side, for the lane that gets the protocol* (decided here so it is not redesigned): `casement-core::output` gets
+  - *The compositor side, for the lane that gets the protocol* (decided here so it is not redesigned): `compositor-core::output` gets
     `DISPLAY_CONFIRM_WITHIN: Duration = 15 s` ("a bad mode can blank the screen: long enough to read the sheet and press a key, short enough
     that a person staring at a black screen is back in a quarter of a minute"). `Event::OutputRequested` gains `by: Requester` (two-state
     enum `Shell | Program`; the wire layer knows the connection's `ConnectionRole`, `on_configuration` and `output_power`'s events get it
@@ -4668,12 +4668,12 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
     arms `TimerKey::DisplayTrial` for `DISPLAY_CONFIRM_WITHIN` and emits `Effect::AskKeepDisplays { trial, within }`. `Event::DisplaysAnswered
     { trial, answer: Keep | Revert }` (an unknown trial is ignored) and the timer firing: Keep clears the trial; Revert and the timer emit
     `Effect::ApplyOutput` with `before` for each output and `configure_output`. A `Shell` request is applied and never asked (it settles a
-    trial in flight as Keep: the person is at the desk). casement's own hotplug (`plug`, `unplug`, `reconfigure` after a mode change from the
+    trial in flight as Keep: the person is at the desk). The compositor's own hotplug (`plug`, `unplug`, `reconfigure` after a mode change from the
     tty) does not go through `OutputRequested` and is never asked. Power: `Off` by a program is a change like any other (the shell asks;
     a revert lights the display again). The shell going away mid-trial reverts at the timer, which is the fail-safe. Tests (core, table +
     timer): a timed-out trial reverts; Keep keeps; a shell's own change is not asked; a second change keeps the first `before`; the testkit
     does the same through `zwlr_output_manager` with the virtual clock.
-  - *Interface ask 1 (casement-protocols, `protocols/bardo-shell-v1.xml`, version 5 to 6, plus the vocab and `desktop-client`):*
+  - *Interface ask 1 (desktop-protocols, `protocols/bardo-shell-v1.xml`, version 5 to 6, plus the vocab and `desktop-client`):*
 
     ```diff
     -  <interface name="bardo_shell_v1" version="5">
@@ -4736,11 +4736,11 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
   question's first stamp (the delay protects a sheet that was on screen; a replay is the lenient direction). The testkit's
   `ScriptedShell::answer` now waits `ANSWER_NOT_BEFORE` on the virtual clock first, like a person; `answer_at_once` is the fast one. Tests:
   `an_answer_that_comes_too_soon_cuts_the_shell_only`, `an_answer_at_the_margin_is_taken`.
-  - *Deviation:* the XML's `error` enum has no entry for it yet (FINDINGS in casement-protocols already named `answered_too_soon` as the
+  - *Deviation:* the XML's `error` enum has no entry for it yet (FINDINGS in desktop-protocols already named `answered_too_soon` as the
     later addition), so the code is a named constant, `4`, the next free value, and `Connection::error_is_documented` would say `false` for it
     until interface ask 1 lands (the fuzz oracle "a documented protocol error or nothing" would flag a fuzzed fast answer: the fuzzer does
     not answer questions, but watch it at the gate). When the entry lands, replace the constant with `bardo_shell_v1::Error::AnsweredTooSoon`.
-- **The Privacy page.** `casement-ipc/src/privacy/keys.rs`: `PRIVACY_PAGE` is `Page::Privacy` (Bardo v0.3.30). Test: `every_key_is_on_the_privacy_page`.
+- **The Privacy page.** `compositor-ipc/src/privacy/keys.rs`: `PRIVACY_PAGE` is `Page::Privacy` (Bardo v0.3.30). Test: `every_key_is_on_the_privacy_page`.
   The note in pa2-cipc ("interim `Page::Apps`") is closed.
 - **Rows for programs nobody has answered.** `keys::listed` adds, for each program in the rows (the person's first, then the administrator's, at
   most `MAX_GRANTS` = 512 programs) and each power it has no row for, a `Toggle` switch whose value is the word `ask` (`keys::ASK`), at the same
@@ -4749,7 +4749,7 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
   row, so a `Set` of `on`/`off` is a `PrivacyEdit::Allow`/`Deny`, which the model keeps as the person's first answer (`Input::Granted` on a
   subject and power with no row, `Privilege::keep`); `PrivacyEdit::applied` adds the person's row for the readback. The published size is
   bounded by seven switches per program, 512 programs (the actions of answered rows come on top, at most the book's own rows). The
-  model's `PrivacyRow` is unchanged: the completion is a pure function in casement-ipc, so `casementctl privacy list` still shows only real answers.
+  model's `PrivacyRow` is unchanged: the completion is a pure function in compositor-ipc, so `bardo-compositorctl privacy list` still shows only real answers.
   Tests: `a_program_has_a_switch_for_every_power_and_the_unanswered_ones_stand_at_ask`, `answering_a_power_gives_the_row_the_path_it_had_while_unanswered`,
   `the_programs_with_a_switch_for_every_power_are_capped_and_the_persons_come_first`, `the_first_answer_for_a_power_adds_the_persons_row`,
   `a_power_nobody_answered_can_be_switched_on` (private bus: the key reads `ask`, a `Set` of `on` reaches the model as `Allow`, reads back `on`).
@@ -4759,7 +4759,7 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
     and the page shows no switch for a program that has not asked. The `Asking` cell kind ("the compositor lists no row to change") is then only
     for a compositor that lists none.
 - **Revoke ends live objects where smithay allows: it did not allow, so the change was an interface ask (landed in the fork and wired in cas11).** Read at the fork's `6d813694`
-  (`lane/consent-gates`; the checkout at `~/rs-wt/p0-fork/smithay` is on branch `casement`, so use `git show 6d813694:<path>`). The registries of
+  (`lane/consent-gates`; the checkout at `~/rs-wt/p0-fork/smithay` is on branch `compositor`, so use `git show 6d813694:<path>`). The registries of
   the four objects are private: the data devices live in `SeatData` (`pub(crate)`, seat user data), the input method in `InputMethodHandle.inner`
   (`pub(crate)` field; public methods are `has_instance` and `keyboard_grabbed` only), the lists in `ForeignToplevelListState.list_instances` (private).
   No public method sends `finished`/`unavailable` to a registered object, and the compositor never holds the resources (the device and the list are
@@ -4901,7 +4901,7 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
   +    }
   ```
 
-  *Wiring in casement once the fork carries it* (not written: it would not compile): `handlers/consent.rs::settle_served` gains a `PowerOutcome::Revoked`
+  *Wiring in the compositor once the fork carries it* (not written: it would not compile): `handlers/consent.rs::settle_served` gains a `PowerOutcome::Revoked`
   arm per power: `ext_data_control.state.revoke::<State>(&id)` and the wlr twin for `Clipboard`; `foreign_toplevel_list.state.revoke(&id)` for `Windows`;
   the seat's `input_method().revoke(state, &id)` for `TypingHelp` (clone the handle first: it needs `&mut State`). `settle_served` today returns early
   when `ledger().parked(client)` is empty, and only a client that waited is parked: the revoke needs the `ClientId` of a client that was allowed at
@@ -4911,7 +4911,7 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
   client had already set stays until another client replaces it; sources are not ended.
 - **Not verified by reading (the gate run looks here).**
   - `Resource::post_error(u32, String)` takes `impl Into<u32>`: a plain `u32` is accepted (wayland-server 0.31.10 `lib.rs:203`).
-  - `casement_core::privilege::MAX_GRANTS` is re-exported (it is: `model/privilege/mod.rs`); `BTreeSet::difference` over `&Subject` items and `.copied()`.
+  - `compositor_core::privilege::MAX_GRANTS` is re-exported (it is: `model/privilege/mod.rs`); `BTreeSet::difference` over `&Subject` items and `.copied()`.
   - The testkit: `Fixture::advance(500 ms)` before every `ScriptedShell::answer` moves the virtual clock only that far and no existing test relies on the
     clock standing still between the question and its answer; the second shell in `an_answer_that_comes_too_soon_cuts_the_shell_only` binds after the
     first was cut (`ShellGone`, the question re-sent by `pump` on `ShellReady`).
@@ -4923,8 +4923,8 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
 
 Written without a compile (lane rules); the gate run is the first. Branch `cas11` from `origin/master` 5cbb0da, one commit per item. Pins:
 smithay moves to the fork's `005eebf1` (branch `lane/revoke`: `revoke` on both data-control states, the input method handle and the
-foreign toplevel list state); `casement-protocols` is a path dependency (no rev to move) and its sibling stands at `8cebc9b`
-(`bardo_shell_v1` version 6). casement serves `bardo_shell_v1` at version 6. The lock files are the orchestrator's.
+foreign toplevel list state); `desktop-protocols` is a path dependency (no rev to move) and its sibling stands at `8cebc9b`
+(`bardo_shell_v1` version 6). The compositor serves `bardo_shell_v1` at version 6. The lock files are the orchestrator's.
 
 - **`answered_too_soon` is the generated `bardo_shell_v1::Error::AnsweredTooSoon`;** the hand-written `ANSWERED_TOO_SOON = 4` is gone (the
   deviation recorded at pa2-cwl2 is closed). `displays_trial_answer` follows the same 500 ms rule (`ANSWER_NOT_BEFORE`), measured from the
@@ -4940,21 +4940,21 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
     twice with the same id (the second restarts the time); the shell treats an id it shows as the same question.
   - **Decided (orchestrator, 2026-10-17): a change by a program that only lights or darkens a display is not a trial.** It is applied
     like the compositor's own restoring (`output_requests.rs::trial_of` maps it to `Requester::Restore`): no setting is lost, the program
-    lights the display again (casement does not wake it on input: pa3-cas NEW-CAS-6), and an idle daemon's blank must not come back after 15 s. Mode, scale, transform and position changes stay
+    lights the display again (the compositor does not wake it on input: pa3-cas NEW-CAS-6), and an idle daemon's blank must not come back after 15 s. Mode, scale, transform and position changes stay
     trials. Test `a_program_that_only_darkens_a_display_is_never_asked`. Unchanged: `keeps_one_lit` still refuses a program darkening
-    the last lit display, so an outside idle daemon cannot blank a single-display desktop through `zwlr_output_power` (casement's own
+    the last lit display, so an outside idle daemon cannot blank a single-display desktop through `zwlr_output_power` (the compositor's own
     idle policy does that).
   - The model is told nothing about a shell being able to carry the question; a shell older than 6, or none, simply never answers and
     the timer reverts.
   - A locked session: the trial still runs and the previous setup comes back at the timer (the shell's sheet is not shown under the lock).
-- **Revoke wiring.** See ARCHITECTURE.md "Consent at the wire". The `Ledger` now also knows the `ClientId` of every client casement inserted
+- **Revoke wiring.** See ARCHITECTURE.md "Consent at the wire". The `Ledger` now also knows the `ClientId` of every client the compositor inserted
   (`Ledger::connection`, written by `clients::insert_client` after the insert, forgotten with the client), because `parked` only has clients that waited. The
   held-connections count of the tests is unchanged (`parked` is untouched). Input methods still on hold are refused by the existing
   `release(.., Gate::Refuse)` that `settle_served` runs for every outcome before the `revoke`. The three ignored tests are real and
   `a_manager_the_person_switches_off_is_finished` has a wlr twin; both clipboard tests also check that a copy made afterwards does not
   reach the manager.
 - **Not verified by reading (the gate run looks here).**
-  - Found at the gate: `ClientData::initialized` is never called, because casement's wayland-backend has `server_system` (the C
+  - Found at the gate: `ClientData::initialized` is never called, because the compositor's wayland-backend has `server_system` (the C
     libwayland server), which calls only `disconnected`. The connection is recorded by `clients::insert_client` instead.
   - `bardo_shell_v1::Request::DisplaysTrialAnswer { trial: u32, answer: WEnum<TrialAnswer> }` and `BardoShellV1::displays_trial(u32, u32)` /
     `displays_trial_end(u32)` are named as wayland-scanner names them from the XML at `8cebc9b`; the client side takes the enum itself
@@ -4968,8 +4968,8 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
 
 ## cas12: a floor row may name a program run from a build folder, in test builds only (2026-10-17)
 
-- **What.** The desktop harness starts casement with `--system-dir` and a floor of `allow` rows, but the programs it runs from `build/`
-  (transom's screenshot and screencast, `casement-probe workspaces`, shell-host's `demo_lock`) are judged `Unverified` (`ImageWritable`) and
+- **What.** The desktop harness starts the compositor with `--system-dir` and a floor of `allow` rows, but the programs it runs from `build/`
+  (transom's screenshot and screencast, `compositor-probe workspaces`, shell-host's `demo_lock`) are judged `Unverified` (`ImageWritable`) and
   are asked every time, so those steps waited on a question. Now, under `cfg(any(feature = "testing", feature = "debug-inject"))` only,
   `privacy::writable_image` (`privacy/injected.rs`, next to `injected_owner`, the floor's other test-only exception) turns that judgement
   into `ClientStanding::Program { exe }` when the run's `SystemDir` is `At(..)` and a row of the model's floor (read from that folder) names
@@ -4983,18 +4983,18 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
 - **Known limit, test builds only.** Once vouched the program is a plain `Program`: an answer a person gives about a power the floor does
   not mention is remembered in the book like any program's, and a book row for another power of that image then applies. Making these
   `Memory::ThisTimeOnly` needs the floor's `never` list to learn the image at load, which is not worth a second exception.
-- **Desktop harness.** `harness/lib/casement-floor.sh` can now list build-folder programs in `floor_powers` and `floor_rows` (the
+- **Desktop harness.** `harness/lib/compositor-floor.sh` can now list build-folder programs in `floor_powers` and `floor_rows` (the
   `readlink -f` path of the image, as for installed tools); the header comment saying a floor cannot name them is out of date once this lands
-  and the harness pins a casement with it.
+  and the harness pins a compositor with it.
 - **Not verified by reading (the gate run looks here).** That `peer::WhyNot::ImageWritable` and `Standing::Unverified { why, .. }` match
   as written in `injected.rs` (non-exhaustive peephole v0.1.1 types); that `Exe::Read` path from `/proc/<pid>/exe` is the same text a
   `readlink -f` floor row has; the `judge.rs` test's use of `std::env::current_exe` as the connecting image.
 
 ## cas13: test caller rows in the injected folder, test builds only (2026-10-17)
 
-- **What.** The desktop harness runs casement in a jail with no `/etc/bardo/desktop-callers.toml`, so `clients::desktop_table` was an empty
+- **What.** The desktop harness runs the compositor in a jail with no `/etc/bardo/desktop-callers.toml`, so `clients::desktop_table` was an empty
   table, nobody was a desktop service, and the shell (sill), Settings (detent) and the portal (transom) could not connect. Now, in a build
-  with `testing` or `debug-inject` and a run with `SystemDir::At(dir)`, casement also reads `dir/desktop-callers.toml` (`clients/dev_callers.rs`)
+  with `testing` or `debug-inject` and a run with `SystemDir::At(dir)`, the compositor also reads `dir/desktop-callers.toml` (`clients/dev_callers.rs`)
   as developer rows of peephole v0.1.4 (`TableFiles::load_dev`, `Table::from_toml_dev`; `Proof::Dev`, `RowOrigin::Dev`) and merges them after
   the system table (the system table still wins where both name a program: the library judges an image a shipped row claims by shipped rows
   alone). `desktop_table` takes the `SystemDir` and is the one place the table is made; `Judge::desktop` and `run.rs` pass it.
@@ -5003,7 +5003,7 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
   `Requirement::dev(role)`: that one means "this role at any proof", which would also admit a service known by its image or control group
   alone in a test build, and the existing refusal tests (`Proof::Exe`, `Proof::Cgroup` are denied) run with `--all-features`. The Wayland side
   (`clients::client_standing`, `peer_of`) takes `Proof::Dev` as shown, in `testing`/`debug-inject` builds only.
-- **Feature chain.** `casement/testing` and `casement/debug-inject` -> `casement-ipc/dev-rows` -> `peephole-bus/dev-rows` (-> `peephole`,
+- **Feature chain.** `compositor/testing` and `compositor/debug-inject` -> `compositor-ipc/dev-rows` -> `peephole-bus/dev-rows` (-> `peephole`,
   `peephole-core`). Off by default; no other feature turns it on. Pins of `peephole-bus` and `peephole-core` moved to tag v0.1.4 (needed for
   `dev-rows`); this brought `Standing::Unverified { scope_app }` (v0.1.2), so the test constructions of it say `scope_app: None`.
 - **The file.** `desktop-callers.toml` in the folder given to `--system-dir`; peephole's row format: `[[peer]]` with `app`, `role` (`shell`,
@@ -5021,9 +5021,9 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
 - **Known limit, test builds only.** A developer row makes any program the person can write a service of its role at `Proof::Dev`, and
   `client_standing` then gives it the role's powers; that is the point of the file and why a release build compiles it out.
 - **Not verified by reading (the gate run looks here).** That `Proof::Dev`, `TableFiles::load_dev` and `peer::Uid` resolve through
-  `casement_ipc::dbus` as written (`casement-ipc` re-exports `Uid`; `Proof` already); that `LoadError::Unreadable { source, .. }` in
+  `compositor_ipc::dbus` as written (`compositor-ipc` re-exports `Uid`; `Proof` already); that `LoadError::Unreadable { source, .. }` in
   `dev_callers.rs` matches as a pattern (non-exhaustive enum, struct variant); that the Cargo.lock refresh to v0.1.4 brings no
-  other API change into casement-agent/casement-ipc; the `dev_callers.rs` tests under the jail check (a test binary that pins its own
+  other API change into compositor-agent/compositor-ipc; the `dev_callers.rs` tests under the jail check (a test binary that pins its own
   socket peer); that `--all-features` workspace tests still deny `Proof::Exe`/`Cgroup` callers.
 
 ## pa3-cas: the re-audit fixes (2026-10-17)
@@ -5035,8 +5035,8 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   so `EMFILE` never reaches calloop's `run`. `clients/roster.rs` caps live connections at `MAX_CONNECTIONS` 384 in all and
   `MAX_PER_HOLDER` 48 per holder (the proven app, else the process by pid), checked at accept before the program is looked at (session) and
   after (holder); refusals are logged at each doubling. `open_files::raise` lifts the soft `RLIMIT_NOFILE` to 8192 or the hard limit if lower
-  (not to the hard limit itself: every program casement starts inherits the soft limit, and a huge one slows programs that close every
-  descriptor up to it); `dist/casement.service` sets `LimitNOFILE=65536`. Tests: `accept.rs` (an `EMFILE` three times, the loop keeps going,
+  (not to the hard limit itself: every program the compositor starts inherits the soft limit, and a huge one slows programs that close every
+  descriptor up to it); `dist/compositor.service` sets `LimitNOFILE=65536`. Tests: `accept.rs` (an `EMFILE` three times, the loop keeps going,
   the connection behind it is taken), `roster.rs` (per-holder and session caps), `open_files.rs`.
 - **NEW-CAS-2.** Idle notifications are capped at 32 per client and idle inhibitors at 16 per client and 128 in all (`limits::Limit`); a client
   over its cap is cut. `IdleBook` keeps one `active_at` and the set of idle watches, so an input event touches nothing unless a watch is idle;
@@ -5049,25 +5049,25 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   socket `Full` is not reachable today; that is the point (no cgroup-and-image-only trust). Table test per proof level in `standing.rs`.
 - **NEW-FA-2 (fixed: a portal connection handed out over the bus).** transom captured on the public socket, where a peer is shown at
   most as `Proof::Exe` (`Judge::arrival` probes without the unit manager), so after NEW-PI-3 it was a `Program` and its first
-  screenshot or share raised casement's own Screen sheet over the portal's chooser. The fix does not need a `Full` proof on the
+  screenshot or share raised the compositor's own Screen sheet over the portal's chooser. The fix does not need a `Full` proof on the
   public socket: `org.bardo.Compositor1.Connect("portal")` hands the caller proven `Full` as the `portal` role (peephole-bus and the
   unit manager, the same proof as the shell's and the agent tier's) a connection of its own, `ConnectionRole::Portal`
-  (`casement-agent::connection_role`, `casement-ipc::parse_connect_role`). Its model class is the standing a `Full` portal has on the
+  (`compositor-agent::connection_role`, `compositor-ipc::parse_connect_role`). Its model class is the standing a `Full` portal has on the
   public socket (`ClientStanding::portal()`): trusted for the screen and the windows and nothing else (`trusted_powers`), asked about
   the rest. It is shown the globals every client is shown and not the shell's or the agent tier's (`globals.rs`). A portal role at
   `Exe` or less is refused on the bus thread like any other role. Tests: `socket.rs` (role table), `compositor_serve/tests.rs`
   (Full is granted, Exe refused), `globals.rs` and `privilege_step.rs` (core), `bardo_shell.rs` (hand-out, globals) and
   `image_capture.rs` (a frame with no sheet). transom asks for this connection first and falls back to the public socket when there
-  is no casement to ask. `desktop/harness/lib/casement-floor.sh` `floor_powers` can drop its allow row for transom once both land.
+  is no compositor to ask. `desktop/harness/lib/compositor-floor.sh` `floor_powers` can drop its allow row for transom once both land.
 - **NEW-CASB-7 (closed, 2026-10-17).** `Processes::handle_of` takes the kernel's own pidfd of the connector
   (`SO_PEERPIDFD`, Linux 6.5) through nix, which the owner allowed (rustix 1.1 has no safe wrapper and every
   crate forbids `unsafe`): force quit signals the very process that connected, never one that took its pid. A
   connector that has exited (`ESRCH`) gets no handle; a kernel before 6.5 gets the old reopen-and-recheck.
   The same handle now guards the security-context client's cgroup read (`handlers/security_context.rs`
   `peer_of`): the cgroup counts only if the held process still runs after it is read. peephole 0.1.6 has the
-  same pin (`Pinned::of_stream`, `Pinned::pidfd`); casement moves to it with porter's next peephole bump
+  same pin (`Pinned::of_stream`, `Pinned::pidfd`); the compositor moves to it with porter's next peephole bump
   (porter-dbus pins 0.1.4, and one lock carries one peephole).
-- **NEW-PI-4 (casement half), as replaced by NEW-FA-4 below.** A virtual-bus device is `Origin::Virtual` unless the device service made it
+- **NEW-PI-4 (the compositor half), as replaced by NEW-FA-4 below.** A virtual-bus device is `Origin::Virtual` unless the device service made it
   for keycap (`Origin::of_kernel_device`). A virtual device still moves the pointer, fires bindings and drives swipes (`Origin::is_pad`),
   but trusted surfaces, the lock surface and VT switching never hear it.
 - **NEW-FA-4 (decided by the owner, 2026-10-17): a virtual device is trusted by who turnstile made it for, not by a guess.** The old rule
@@ -5075,10 +5075,10 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   requiring `BUS_VIRTUAL`); the vendor is gone from the decision. turnstile is the only process that can create a uinput device
   (`dist/72-turnstile.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `turnstile/pad_daemon` (palmrest)
   or `turnstile/keymap_daemon` (keycap) into the device's `phys`. `RealInputFeed` reads `/sys/class/input/<sysname>/device/phys` next to the bus
-  type (`maker_of`; unreadable reads as unlabelled) and `Maker::parse` (`casement-core/src/input/maker.rs`) reads it. A virtual-bus device
+  type (`maker_of`; unreadable reads as unlabelled) and `Maker::parse` (`compositor-core/src/input/maker.rs`) reads it. A virtual-bus device
   labelled for keycap is `Origin::Physical` (keycap only replays the person's own keyboard and mouse); one labelled for palmrest, one with no label
   (ydotool, a `uinput` group member) and one with any other label (a label that merely starts with `turnstile/`) is `Origin::Virtual`.
-  Every device off the virtual bus is physical, as before. casement links nothing of turnstile, so `Maker::parse` is its own copy of
+  Every device off the virtual bus is physical, as before. The compositor links nothing of turnstile, so `Maker::parse` is its own copy of
   turnstile-wire's `Maker`; `origin.rs` and `maker.rs` tests pin the same strings as turnstile's `maker` test: change one side and change both.
   **palmrest stays `Virtual`** (`Maker::origin`). Read in palmrest (origin/master): its gesture actions press synthetic key chords
   (`action.rs:129` `key_of`, `tracker/out.rs:45`, `daemon/dispatch.rs:25`, `outputs/events.rs:81`), `Back` is Alt+Left by default, and the shell's
@@ -5088,12 +5088,12 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   not arise from this: palmrest only reads the mouse and never grabs it (`daemon/evdev.rs:11,140`), so the mouse's own clicks and motion come from its
   kernel device, a non-virtual one, and are physical. Closes if palmrest stops pressing key chords, or the owner decides they are the person's hand:
   then `Maker::PadDaemon` maps to `Origin::Physical` in `Maker::origin` and its test row flips.
-- **NEW-PI-8 (casement half).** `ConnectEis` records the asking bus connection's unique name; `portal_watch.rs` listens for the bus's
+- **NEW-PI-8 (the compositor half).** `ConnectEis` records the asking bus connection's unique name; `portal_watch.rs` listens for the bus's
   `NameOwnerChanged` and asks the loop (`ConnectAsk::owner_gone`) to close every socket that connection asked for. Transom half: seed
-  session numbers from the clock so a restarted portal does not reuse ids (not casement's).
+  session numbers from the clock so a restarted portal does not reuse ids (not the compositor's).
 - **CASC-03 (rest).** `MAX_WINDOWS` 4096 bounds the per-step walk; key-repeat, idle and IME timers and the night-light tick skip the two
   snapshots. A real delta publish (no clone per window per step) is not done: it needs dirty tracking in every transition.
-- **CASW-08.** The cursor cap measures the bounding box of the whole surface tree. No separate drag-icon size cap exists in casement (the
+- **CASW-08.** The cursor cap measures the bounding box of the whole surface tree. No separate drag-icon size cap exists in the compositor (the
   DnD icon is drawn by the scene, not capped here); not changed.
 - **CASC-11, NEW-CAS-5, NEW-CAS-4, NEW-CAS-7, NEW-CAS-6, CASC-12, CASC-19 (profile).** As the commit messages say. CASC-19 lints
   (`unwrap_used`, `indexing_slicing`) are not added: tests use `expect` throughout and the lane cannot run clippy.
@@ -5115,24 +5115,24 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **CASB-25** (`keymap::live::load_bindings` is synchronous, bounded by keycap-client's 2 s), **CASB-26** (`test_mode` is compiled in: gating
   it by a feature needs the desktop's vkms scripts to build with it), **CASB-28** (no vkms fault-injection gate for the real adapters): lane
   deferrals; no owner decision needed, work not done.
-- **CASC-15.** `Origin::Test` is used by tests in five crates and a doctest; gating it needs a `testing` feature on casement-core enabled by each.
+- **CASC-15.** `Origin::Test` is used by tests in five crates and a doctest; gating it needs a `testing` feature on compositor-core enabled by each.
 - **CASC-17.** The model does not know the pointer's output.
-- **CASW-04 (2): closed in casement, see "CASW-04 (3)" below.** The residual that stays is the launcher's own, named there.
-- **NEW-QDH-4 (checked, nothing to cap in casement).** casement never writes selection or drag data itself, so there is no write slot
-  for a client's unread pipes to hold. `SelectionHandler for State` (`crates/casement/src/handlers/data_device.rs`) implements only
+- **CASW-04 (2): closed in the compositor, see "CASW-04 (3)" below.** The residual that stays is the launcher's own, named there.
+- **NEW-QDH-4 (checked, nothing to cap in the compositor).** the compositor never writes selection or drag data itself, so there is no write slot
+  for a client's unread pipes to hold. `SelectionHandler for State` (`crates/compositor/src/handlers/data_device.rs`) implements only
   `new_selection`; `send_selection`, the one hook that hands the compositor a client's fd to write into, is left at smithay's default, which
-  drops the fd. It is reached only for a compositor-owned selection (fork `wayland/selection/offer.rs:185-186`), and casement sets none:
+  drops the fd. It is reached only for a compositor-owned selection (fork `wayland/selection/offer.rs:185-186`), and the compositor sets none:
   no `set_data_device_selection`, `set_primary_selection` or data-control `set_selection` call exists in `crates/`, and XWayland, the one
   bridge that would write for a window, is off until the Q-C5 gate. For a client-owned selection `wl_data_offer.receive`, the primary
   selection offer and both data-control offers pass the reader's fd straight to the source client (fork `data_device/mod.rs:285`,
-  `offer.rs:182`), so an unread pipe is held by the client that made it and by the source client's own queue, never by a casement slot or
+  `offer.rs:182`), so an unread pipe is held by the client that made it and by the source client's own queue, never by a compositor slot or
   thread. Drag and drop uses the same offer path (`dnd_requested` only starts the grab). When XWayland or a server-side clipboard lands,
   its `send_selection` must go through a per-client limiter (a small typed cap, about 4 open writes, the write timeout); add it with that
   change.
 
 ## fc1-safe-scanout: `--safe` draws with the CPU alone on a seat (CASB-07; 2026-10-17)
 
-Owner decision 2026-10-17: build it. `casement --safe` on a seat opens no GBM device, no EGL display and no GLES context, so a GPU
+Owner decision 2026-10-17: build it. `bardo-compositor --safe` on a seat opens no GBM device, no EGL display and no GLES context, so a GPU
 driver that crashes does not take the safe session with it. Nothing was compiled or run by the lane (it may not build).
 
 - **Built.** `RenderMode::{Gpu, Software}` (`tty/render_mode.rs`, pure) says how a session draws; `Routes` holds it with the set of
@@ -5140,7 +5140,7 @@ driver that crashes does not take the safe session with it. Nothing was compiled
   failed before go to the CPU; otherwise GLES is tried first and, if the driver cannot make the surface, the CPU draws that output (a
   `warn` line, once per output; the other outputs keep the GPU). An output that failed is not asked again for the rest of the run: a
   driver that refused once is not retried at every mode change or VT switch. `ScanoutMaker` is the two-method seam (`gpu`, `software`);
-  `Opened { surface, drawing }`, `Drawing::{Gpu, Pixman}` say what came out. `casement/src/state.rs::render_mode_of` maps
+  `Opened { surface, drawing }`, `Drawing::{Gpu, Pixman}` say what came out. `compositor/src/state.rs::render_mode_of` maps
   `StartMode::Safe` to `Software` and is passed through `tty_seams` to `real_seams(root, choice, mode, handle)` and
   `direct_seams(node, writeback, mode, handle)` (so `--safe --drm-node` also draws on the CPU).
 - **The software surface** (`tty/soft_real.rs`, `SoftScanout`, feature `tty`): smithay's own `DrmCompositor<DumbAllocator, DrmDeviceFd,
@@ -5169,7 +5169,7 @@ driver that crashes does not take the safe session with it. Nothing was compiled
   and lost. `state.rs`: `render_mode_of`. No existing test was redundant.
 - **Boundary script.** `scripts/check-boundary.sh` B7 allow-list gained `soft_real.rs` and `kms_real/makers.rs` (a child module of
   `kms_real.rs`, so it can read the device's private state).
-- **Only a real run proves.** `casement --safe --backend tty` on a VT with the GPU driver blacklisted shows the desktop. The likeliest first
+- **Only a real run proves.** `bardo-compositor --safe --backend tty` on a VT with the GPU driver blacklisted shows the desktop. The likeliest first
   failures: that `DrmDeviceFd::buffer_to_prime_fd` on a dumb buffer and `PixmanRenderer`'s
   mmap of it work on the target driver (every driver with prime and a mappable dumb buffer; `simpledrm`/`efifb`-class devices are the
   least certain); that `DrmCompositor::new` finds a primary-plane format in `[Xrgb8888, Argb8888]` the dumb allocator accepts (linear
@@ -5178,7 +5178,7 @@ driver that crashes does not take the safe session with it. Nothing was compiled
 - **Not covered.** The hardware cursor plane and overlay planes in software mode (above). Window and output captures are unchanged
   (pixman shadow). A GPU crash that is a process crash (a segfault inside the driver at `gbm_create_device`) in `Gpu` mode is not
   survivable by the fallback, which only sees errors: that is what `--safe` is for, and what the crash guard's three-strikes rule starts
-  it for (`dist/casement.service`).
+  it for (`dist/compositor.service`).
 
 ## wave-2026-10-15/wlcs: the shim's clients are consented, and the one policy wlcs cannot know (2026-10-17)
 
@@ -5187,7 +5187,7 @@ wlcs went from 5 to 16 failures after two deliberate policy commits (bisected: b
 - **Per-app consent (edf6e55: CASW-01, CASC-01, PORTAL-02).** wlcs' clients were adopted as unjudged public clients, so every gated power
   (the window list, typing help, virtual keys) waited on a question nothing answers: eight `ForeignToplevelHandleTest.*`,
   `ForeignToplevelManagerTest.detects_toplevel_closed` and `TextInputV3WithInputMethodV2Test.input_method_can_be_enabled` failed. wlcs tests
-  protocol conformance, not consent (casement's own tests cover consent). `Fixture::adopt_socket` (casement-testkit, a test crate) now gives
+  protocol conformance, not consent (the compositor's own tests cover consent). `Fixture::adopt_socket` (compositor-testkit, a test crate) now gives
   an adopted public client the standing `Fixture::connect` gives it (`trusted_standing`, a desktop service the table trusts), through the
   same `insert` door; nothing in the compositor changed and no switch exists outside the test kit. All ten pass again (run 2026-10-17).
 - **Layer keyboard (b5ab695: CASC-02), six expected failures.** Only the shell's own layer surfaces take the keyboard by mapping or by an
@@ -5202,12 +5202,12 @@ wlcs went from 5 to 16 failures after two deliberate policy commits (bisected: b
 ## wave-2026-10-17/timing: the four workflow timing lines
 
 `window-ready`, `key-window`, `xwayland-ready` and `session-ready`, as `~/rs-wt/workflow-spec.md` fixes them (field names unchanged).
-Code: `crates/casement/src/timing/` (pure records, table-tested; `Sink` is the one effect), clock read in `time/monotonic.rs` (B8).
+Code: `crates/compositor/src/timing/` (pure records, table-tested; `Sink` is the one effect), clock read in `time/monotonic.rs` (B8).
 
 - **Log.** Plain `tracing` at INFO, target `timing`, message text `<name> key=value ...` (no structured fields, so the formatter
   prints them as written). `log::init` is `tracing_subscriber::fmt` to stderr without the `ansi` feature; the default filter `info,...`
   lets the target through, and `log::tests` asserts it. A real install's stderr is the session log file or the journal (`StandardError=`).
-  `CASEMENT_LOG=warn` (or `timing=off`) turns the lines off. Sample as printed:
+  `COMPOSITOR_LOG=warn` (or `timing=off`) turns the lines off. Sample as printed:
   `2026-10-17T12:00:00.123456Z  INFO timing: window-ready app_id=foot pid=4321 connected_at=... settled_at=...`.
 - **Clock.** The session's `Mono` counts from an `Instant` epoch; `Instant` is `CLOCK_MONOTONIC` on Linux, so `WallClock::start` reads
   `CLOCK_MONOTONIC` once, minus the time since the epoch, and `Stamp = epoch + Mono` (a sum, no second clock). Virtual clocks have
@@ -5219,12 +5219,12 @@ Code: `crates/casement/src/timing/` (pure records, table-tested; `Sink` is the o
   first presented frame after which `MotionBook::window_is_moving` is false for the window (frame granularity). `key-window`: the
   `Effect::Emphasis` that makes a window `Key`, in `exec`; `presented_at` is the next `Flipped` or `Unchanged` frame.
   `xwayland-ready`: `requested_at` is the loop turn that started satellite (`xwayland::turn`); `ready_at` is satellite's Wayland
-  connection arriving, the nearest thing casement can see (satellite's own readiness is not visible to it). `session-ready`:
-  `started_at` is the clock epoch (casement's `State::new`, a few ms after exec), `shell_connected_at` the `Shell` connection,
+  connection arriving, the nearest thing the compositor can see (satellite's own readiness is not visible to it). `session-ready`:
+  `started_at` is the clock epoch (the compositor's `State::new`, a few ms after exec), `shell_connected_at` the `Shell` connection,
   `shell_ready_at` the first frame by which both a `Bar` and a `Dock` layer surface of the shell have been shown.
 - **Cause and `input_at`.** `Event::Input` presses are remembered (key, button). A change in a turn with a window or client arriving or
   leaving is `other`; in a turn with an activation, shell, window-list or workspace request it is `request` (and `input_at` is the last
-  press within 2 s, else 0: a chord the shell took reaches casement a round trip later); otherwise a press within 250 ms is
+  press within 2 s, else 0: a chord the shell took reaches the compositor a round trip later); otherwise a press within 250 ms is
   `keyboard` or `pointer`. A switcher that commits on key release reports the earlier press only inside the 2 s.
 - **Departures from the spec.** `pid` is 0 for X11 windows (they share satellite's connection) and for non-public connections; an
   empty app id prints as `-`. Pid and X11 identity are not improved here.
@@ -5238,11 +5238,11 @@ Code: `crates/casement/src/timing/` (pure records, table-tested; `Sink` is the o
   a holder" cannot be built. Every refusal is as before: a `Requested` that is not the first lock, or a takeover by a client that
   is neither the shell nor the former holder, is `LockReply::Finished`; a lock marker is written only for a shell holder.
 - **Night light settings.** `NightLightSettings { light: NightLight, skip_outputs }`; the file keys (`night_light.mode/from/to`)
-  are unchanged and `NightLightMode` now lives in `casement/src/config/sections/night_light.rs`, which converts it and the two
+  are unchanged and `NightLightMode` now lives in `compositor/src/config/sections/night_light.rs`, which converts it and the two
   times to a `Schedule`. A schedule that is off or always has no times, so the document written from the defaults offers 22:00 to
   07:00.
-- **One raster type.** `casement_core::raster::RasterImage` (premultiplied RGBA8 plus a `RasterId`) replaces
-  `casement_chrome::TitlePixels` and `casement_render::TitleDraw`; chrome now depends on `casement-core`. `casement_icons::Pixels`
+- **One raster type.** `compositor_core::raster::RasterImage` (premultiplied RGBA8 plus a `RasterId`) replaces
+  `compositor_chrome::TitlePixels` and `compositor_render::TitleDraw`; chrome now depends on `compositor-core`. `compositor_icons::Pixels`
   stays: an icon has no id of its own (the cache's slot has).
 
 ## Agent leases (interim P4 input, 2026-10-20)
@@ -5270,13 +5270,13 @@ Code: `crates/casement/src/timing/` (pure records, table-tested; `Sink` is the o
 Built, uncompiled (the lane does not build). The two full-screen rows of 03 section 1.6, owner OK 2026-10-22: in full screen the
 pointer resting at the top edge brings the surface with the role `bar` over the window, and at the bottom edge the `dock`'s.
 
-- **Pure machine.** `casement_core::reveal`: one `Reveal` per output and edge in a `RevealBook` (`Hidden`, `Pending`, `Showing`,
+- **Pure machine.** `compositor_core::reveal`: one `Reveal` per output and edge in a `RevealBook` (`Hidden`, `Pending`, `Showing`,
   `Shown`, `Hiding`; typed inputs `Cover`, `Pointer(Place)`, `Popup`, `Tick`; outputs `Arm`, `Cancel`, `Tell(Shown)`). Table tests
   in `reveal/*_tests.rs`. The loop (`core_loop/reveal.rs`) feeds it and carries out the timer (`TimerKey::Reveal(output, edge)`) and
   the `reveal` note; the dwell is the same shape as the green light's (`window::Dwell`).
 - **Numbers.** Bar: rest 450 ms (design/27 section 4.5), slide 200 ms (`--t-move`, `DurationToken::Move`), out curve in, exit curve
   out. Dock: rest 200 ms, slide 500 ms, the settled defaults of `dock.autohide_delay_ms` / `dock.autohide_slide_ms` (design/10
-  section 10.3.11); casement reads neither key, they are constants in `reveal/timing.rs` (a test pins the bar's to the token table).
+  section 10.3.11); the compositor reads neither key, they are constants in `reveal/timing.rs` (a test pins the bar's to the token table).
   The trigger strip is 4 px on both edges. Reduced motion keeps the rest and cross-fades for `--t-quick` (120 ms) in place; the
   setting is the shell's `set_motion` (v7, below), kept in the model (`Model::motion`, default `Reduced::No`).
 - **What counts.** The output shows a `SpaceContent::FullScreen` Space and a layer surface holds the edge's role on that output.
@@ -5301,7 +5301,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   away with `hidden` at once, and nothing reveals); the Bottom edge, the dock, is unchanged. Table tests in `reveal/machine_tests.rs`.
 - **Keep, layout.** The rectangle comes from the model, the pure way: `LayerBook::full_screen_area(mode, output, full)` is `full` in
   reveal mode and, in keep mode, `usable_area` of a book holding only the bar-role layers of that output (the bar's exclusive zone,
-  and not the dock's). `casement_layout::of_model` puts it in the new `OutputSpec::covered`, and `rust_scene/desktop.rs` hands it to
+  and not the dock's). `compositor_layout::of_model` puts it in the new `OutputSpec::covered`, and `rust_scene/desktop.rs` hands it to
   `full_screen_target` in place of `OutputSpec::full`. Split View halves still use `full` (the bar is not kept over them: not decided by the
   protocol, which names only a full-screen window).
 - **Keep, stacking.** Today a bar is a `Top` layer, behind full-screen windows. In keep mode `core_loop/reveal.rs::raised_on` returns
@@ -5316,7 +5316,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   the holder the reveal uses; the minimise target of a window uses the dock of the window's home output, falling back to any dock
   (`role_holder_near`). `role_holder(role)` remains for "any holder".
 - **Hot corners.** Nothing armed `TimerKey::HotCorner` and nothing sent `ShellNote::HotCorner`, so both are gone, with the
-  `hot_corner` send in `bardo/shell.rs`. The XML event `hot_corner` stays in the protocol; casement just never sends it.
+  `hot_corner` send in `bardo/shell.rs`. The XML event `hot_corner` stays in the protocol; the compositor just never sends it.
 
 ## Settings schema and launch tokens (wh-csset, 2026-10-23)
 
@@ -5325,7 +5325,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   window only asks for attention, A7); an app activated from the switcher, dock or launcher becomes active where the person is.
   `spaces.per_display` and `spaces.auto_rearrange` are `#[settings(skip)]`: nothing reads them yet (D4), so the Settings app
   draws no row that changes nothing; the document still holds them (`NOT_DRAWN` in the schema test).
-- **Installer.** `scripts/install.sh` step 4/5 writes `casement --write-schema` into `P/share/bardo/settings`, where detent
+- **Installer.** `scripts/install.sh` step 4/5 writes `bardo-compositor --write-schema` into `P/share/bardo/settings`, where detent
   scans; the schema existed but no installer put it there, so the row never showed.
 - **Launch tokens.** A token asked for naming an `app_id` (a launcher's) is good for `LAUNCH_LIFETIME` (60 s, = `TOKEN_MEMORY`)
   instead of `TOKEN_LIFETIME` (5 s): a slow app's first window (a cold browser, Blender) mapped with a stale token, so it
@@ -5335,7 +5335,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
 
 ## Corners and shadow for windows that draw their own frame (wh-ccorner, 2026-10-24)
 
-- **The bug.** Only a window casement frames (`LayerDraw::frames`) was clipped and shadowed, so every Bardo app, GTK headerbar
+- **The bug.** Only a window the compositor frames (`LayerDraw::frames`) was clipped and shadowed, so every Bardo app, GTK headerbar
   window and Electron window had square corners and no shadow. `FrameHint.corner_radius` was stored and sampled
   (`PlacedWindow::corner`) but nothing in the scene read it.
 - **`LayerDraw::rounds`.** `core_loop/frames.rs::rounds` lists the windows that are not server-side framed, not full screen
@@ -5346,11 +5346,11 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   and the two must differ: one is a GTK app that never heard of us, the other a window that says it draws its own corners.
   `FrameSaid` records whether the call came; `WindowHintChange::FrameForgotten` (the object's destroy) puts it back to
   `Silent`. `WindowHints::frame_choice()` reads both as `FrameChoice::{Silent, Own, Shadowed}`.
-- **The rule, `window::round_of(choice, margin, desktop)`.** `Shadowed { r }`: corners of `r` and casement's shadow. `Own`:
+- **The rule, `window::round_of(choice, margin, desktop)`.** `Shadowed { r }`: corners of `r` and the compositor's shadow. `Own`:
   nothing. `Silent`: the desktop's window radius (`frame_style(..).look.radius`, Bardo's `Radius::Window`), and the shadow by
   `Margin`: a buffer larger than the xdg window geometry (`margin_of`) means the toolkit has drawn its shadow in the margin (GTK),
-  and a second one on top of it would look heavy, so casement casts none; a geometry equal to the buffer (Electron, most
-  frameless windows) has no shadow of its own, so casement casts one. The shadow uses the framed window's look for the same
+  and a second one on top of it would look heavy, so the compositor casts none; a geometry equal to the buffer (Electron, most
+  frameless windows) has no shadow of its own, so the compositor casts one. The shadow uses the framed window's look for the same
   activity (key or main: active), at the window's radius, round the geometry rectangle with no titlebar.
 - **`Rounding::Frameless`.** The clip shader was written for a titled window: two bottom corners, nothing drawn outside the
   rectangle. A client window has no titlebar, so all four corners round (`ClipShape::rounded`). It also leaves every pixel outside
@@ -5406,33 +5406,33 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
 ## wh-cdrm (2026-10-25): no rounded corners on real hardware
 
 - The owner saw square windows on the real login (tty, GLES, NVIDIA) while every headless picture had rounded ones. The tty
-  surfaces (`surface_real.rs` direct, `bridge_real.rs` copy paint, `soft_real.rs` pixman) handed the bare `CasementElement`s to
+  surfaces (`surface_real.rs` direct, `bridge_real.rs` copy paint, `soft_real.rs` pixman) handed the bare `SceneElement`s to
   smithay (`DrmCompositor::render_frame`, the bridge's damage tracker), which draws a `Clip`, `ClipStrip` or `Blur` as its plain
-  surface: only `render_output`'s `Routed` sends them through the `Compositor` hooks. `casement_render::routed` is now public and
+  surface: only `render_output`'s `Routed` sends them through the `Compositor` hooks. `compositor_render::routed` is now public and
   every tty surface draws through it. The jail never runs `surface_real.rs`, so no test here could see it; a hardware run checks.
 - Left as they were: `pass/window.rs` and `pass/window_texture.rs` (one window alone, for a capture or a closing image, which
   bakes its own corners).
 
 ## wh-croute (2026-10-27): a bare draw is a compile error
 
-- After wh-cdrm (4e769bf), shell asked (owner-approved) that drawing without `Routed` be impossible. `CasementElement` was smithay's
+- After wh-cdrm (4e769bf), shell asked (owner-approved) that drawing without `Routed` be impossible. `SceneElement` was smithay's
   `render_elements!`, so smithay could draw it directly, and a clip, strip or blur then fell back to its plain surface. It is now a
-  hand-written enum (`element/casement_element.rs`) that implements smithay's `Element` only; its plain draw, storage and capture
+  hand-written enum (`element/scene_element.rs`) that implements smithay's `Element` only; its plain draw, storage and capture
   are crate-private, called by `Routed` alone. Anything that hands bare elements to a damage tracker or `DrmCompositor` fails to
   build.
 - The compiler then found three more bare draws: `pass/window.rs` (twice) and `pass/window_texture.rs`. They draw one window's
   plain surfaces, so routing them changes nothing; they route like everything else, and no opt-out exists.
-- `FrameSource` still hands out `CasementElement`s: with no `RenderElement` on them, a backend can do nothing with them but route.
+- `FrameSource` still hands out `SceneElement`s: with no `RenderElement` on them, a backend can do nothing with them but route.
 
 ## wh-tcas (2026-10-28): type rules, plain Rust first
 
 - Type rules, plain Rust first: bool is fine for fields, returns, locals and private fns; mirror enums,
   two-arm Option/Result lookalikes and one-variant enums are removed. Done per audit findings C-1..C-20 (not C-17's Maker,
-  not C-21, C-22); see the commit message and `~/rs-wt/enum-audit/casement.md`.
+  not C-21, C-22); see the commit message and `~/rs-wt/enum-audit/compositor.md`.
 
-## wh-cpro (2026-10-28): casement-protocols rule-4 follow-up
+## wh-cpro (2026-10-28): desktop-protocols rule-4 follow-up
 
-- casement-core's `geometry::Transform` is gone: `casement_protocols::vocab::Transform` (same variants, same snake_case
+- compositor-core's `geometry::Transform` is gone: `desktop-protocols::vocab::Transform` (same variants, same snake_case
   JSON) is the one `wl_output.transform` type for the model, the backend and the testclient.
 - `MacMods` is `HeldMods`; the compositor's fn `mac_mods` is `held_mods`. The generated `bardo_shell_v1::MacMods` keeps the
   XML name.

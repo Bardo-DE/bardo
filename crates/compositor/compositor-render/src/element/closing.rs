@@ -7,7 +7,7 @@
 //! inside the frame, shrinking and fading with it; a window kept without one is not drawn.
 
 use super::flight::{FlightDraw, scaled_content};
-use super::{CasementElement, ClosingBody, FrameDraw, frame_elements};
+use super::{ClosingBody, FrameDraw, SceneElement, frame_elements};
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::texture_book::TextureBook;
@@ -74,7 +74,7 @@ pub fn closing_elements<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let content = closing_content(placed.at, placed.size);
     let draw = FrameDraw {
         style: &closing.style,

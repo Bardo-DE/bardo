@@ -9,27 +9,27 @@
 # real session bus's org.freedesktop.Notifications (the person's own daemon), another bardo-shell's IPC
 # socket, the real ~/.config or ~/.cache, or the user's session (wayland-0).
 #
-# Default: the banners, on casement (brought up and ended by start_compositor). Every notification comes from `bardo-shell debug notify` (the service's own
+# Default: the banners, on the compositor (brought up and ended by start_compositor). Every notification comes from `bardo-shell debug notify` (the service's own
 # reducer, no D-Bus). Another bardo-shell daemon drawing on the same nested output would be in the
 # screenshots, so the script waits for it to finish first.
 #
 #   1. Warm: `shell-banners-<out>` exists from the start, hidden (no capture).
 #   2. A notification shows it within 300 ms (a capture with the card's pixels);
-#      dev/out/banners-casement.png.
+#      dev/out/banners-compositor.png.
 #   3. It hides between the hold (the banner hold, 5200) and the hold plus the exit
 #      (--t-move) plus 400 ms; `status` then says banners 0, kept 1.
 #   4. Hovered once up (`bardo-shell debug pointer` on the card) it is still up 6.7 s later, and gone by
 #      1500 ms plus the exit plus 400 ms after `bardo-shell debug leave`.
 #   5. Three from one app within 2 s make one card (one card's height, `status` banners 3); five
 #      from five apps make three cards (three cards' height). Then three from one app and two
-#      others: dev/out/banners-stack-casement.png, a stack with a group.
+#      others: dev/out/banners-stack-compositor.png, a stack with a group.
 #   6. notifications.dnd = true and `bardo-shell reload`: a normal one shows no banner but kept rises;
 #      so does an app's critical one (only the shell's own notices pass Do Not Disturb).
 #   7. `bardo-shell debug click` on the body of one sent with `--action default=Open`: the card leaves
 #      and kept falls by one.
 #   8. 5 s after the last card leaves: 0 frames on the column.
 #
-# --bus: the notifications server, on casement. The daemon, notify-send, gdbus and
+# --bus: the notifications server, on compositor. The daemon, notify-send, gdbus and
 # the holder example (examples/notifications_holder.rs) get the private bus's address.
 #
 #   1. `sill notifications status` says holder sill, mode own.
@@ -287,7 +287,7 @@ step_shows_holds_hides() {
     sleep 0.01
   done
   sleep 0.6
-  shot "$SHOTS/banners-casement.png" >>"$OUT_DIR/shot.log" 2>&1 \
+  shot "$SHOTS/banners-compositor.png" >>"$OUT_DIR/shot.log" 2>&1 \
     || echo "screenshot failed" >&2
   while [ "$(since "$start")" -lt $((HOLD_MS - 300)) ]; do sleep 0.05; done
   t=$(await_hidden 8000)
@@ -358,7 +358,7 @@ step_grouping() {
   notify "Lunch on Thursday?" --app mail --body "Are you free at noon on Thursday?" \
     --action default=Open --action reply=Reply || return 1
   sleep 0.8
-  shot "$SHOTS/banners-stack-casement.png" >>"$OUT_DIR/shot.log" 2>&1 \
+  shot "$SHOTS/banners-stack-compositor.png" >>"$OUT_DIR/shot.log" 2>&1 \
     || echo "stack screenshot failed" >&2
   clear_banners
 }
@@ -1317,7 +1317,7 @@ main() {
   cleanup || status=1
   trap - EXIT
   echo "logs in $OUT_DIR"
-  [ "$MODE" != banners ] || echo "screenshots $SHOTS/banners-casement.png, $SHOTS/banners-stack-casement.png"
+  [ "$MODE" != banners ] || echo "screenshots $SHOTS/banners-compositor.png, $SHOTS/banners-stack-compositor.png"
   exit "$status"
 }
 

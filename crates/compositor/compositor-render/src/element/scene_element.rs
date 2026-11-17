@@ -1,9 +1,9 @@
-//! Every element casement draws, as one enum that smithay cannot draw on its own.
+//! Every element the compositor draws, as one enum that smithay cannot draw on its own.
 //!
 //! It is smithay's [`Element`] (where it is, what changed), not its `RenderElement`: a
 //! clipped window, a genie strip or a blur drawn by smithay directly falls back to its plain
 //! surface, which is how windows lost their rounded corners on real hardware while every
-//! headless picture had them (casement 4e769bf). The only drawable form is
+//! headless picture had them (the compositor 4e769bf). The only drawable form is
 //! [`crate::Routed`] (see [`crate::routed`]), which sends those variants to the renderer's
 //! [`crate::Compositor`] hooks; the plain draws below are crate-private, for it alone.
 
@@ -22,8 +22,8 @@ use smithay::backend::renderer::{ImportAll, ImportMem, Renderer, RendererSuper, 
 use smithay::utils::user_data::UserDataMap;
 use smithay::utils::{Buffer as BufferCoords, Physical, Point, Rectangle, Scale, Transform};
 
-/// Every element casement draws.
-pub enum CasementElement<R>
+/// Every element the compositor draws.
+pub enum SceneElement<R>
 where
     R: Renderer + ImportAll + ImportMem,
     R::TextureId: Texture + 'static,
@@ -57,17 +57,17 @@ where
 macro_rules! each {
     ($value:expr, $e:ident => $body:expr) => {
         match $value {
-            CasementElement::Surface($e) => $body,
-            CasementElement::Solid($e) => $body,
-            CasementElement::Memory($e) => $body,
-            CasementElement::Texture($e) => $body,
-            CasementElement::Blur($e) => $body,
-            CasementElement::Cover($e) => $body,
-            CasementElement::Clip($e) => $body,
-            CasementElement::SurfaceStrip($e) => $body,
-            CasementElement::MemoryStrip($e) => $body,
-            CasementElement::ClipStrip($e) => $body,
-            CasementElement::Stretched($e) => $body,
+            SceneElement::Surface($e) => $body,
+            SceneElement::Solid($e) => $body,
+            SceneElement::Memory($e) => $body,
+            SceneElement::Texture($e) => $body,
+            SceneElement::Blur($e) => $body,
+            SceneElement::Cover($e) => $body,
+            SceneElement::Clip($e) => $body,
+            SceneElement::SurfaceStrip($e) => $body,
+            SceneElement::MemoryStrip($e) => $body,
+            SceneElement::ClipStrip($e) => $body,
+            SceneElement::Stretched($e) => $body,
         }
     };
 }
@@ -76,13 +76,13 @@ macro_rules! each {
 macro_rules! from {
     ($($variant:ident: $inner:ty),* $(,)?) => {
         $(
-            impl<R> From<$inner> for CasementElement<R>
+            impl<R> From<$inner> for SceneElement<R>
             where
                 R: Renderer + ImportAll + ImportMem,
                 R::TextureId: Texture + 'static,
             {
-                fn from(element: $inner) -> CasementElement<R> {
-                    CasementElement::$variant(element)
+                fn from(element: $inner) -> SceneElement<R> {
+                    SceneElement::$variant(element)
                 }
             }
         )*
@@ -103,30 +103,30 @@ from! {
     Stretched: RescaleRenderElement<WaylandSurfaceRenderElement<R>>,
 }
 
-impl<R> std::fmt::Debug for CasementElement<R>
+impl<R> std::fmt::Debug for SceneElement<R>
 where
     R: Renderer + ImportAll + ImportMem,
     R::TextureId: Texture + 'static,
 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let variant = match self {
-            CasementElement::Surface(_) => "Surface",
-            CasementElement::Solid(_) => "Solid",
-            CasementElement::Memory(_) => "Memory",
-            CasementElement::Texture(_) => "Texture",
-            CasementElement::Blur(_) => "Blur",
-            CasementElement::Cover(_) => "Cover",
-            CasementElement::Clip(_) => "Clip",
-            CasementElement::SurfaceStrip(_) => "SurfaceStrip",
-            CasementElement::MemoryStrip(_) => "MemoryStrip",
-            CasementElement::ClipStrip(_) => "ClipStrip",
-            CasementElement::Stretched(_) => "Stretched",
+            SceneElement::Surface(_) => "Surface",
+            SceneElement::Solid(_) => "Solid",
+            SceneElement::Memory(_) => "Memory",
+            SceneElement::Texture(_) => "Texture",
+            SceneElement::Blur(_) => "Blur",
+            SceneElement::Cover(_) => "Cover",
+            SceneElement::Clip(_) => "Clip",
+            SceneElement::SurfaceStrip(_) => "SurfaceStrip",
+            SceneElement::MemoryStrip(_) => "MemoryStrip",
+            SceneElement::ClipStrip(_) => "ClipStrip",
+            SceneElement::Stretched(_) => "Stretched",
         };
         f.debug_tuple(variant).field(self.id()).finish()
     }
 }
 
-impl<R> Element for CasementElement<R>
+impl<R> Element for SceneElement<R>
 where
     R: Renderer + ImportAll + ImportMem,
     R::TextureId: Texture + 'static,
@@ -180,7 +180,7 @@ where
     }
 }
 
-impl<R> CasementElement<R>
+impl<R> SceneElement<R>
 where
     R: Renderer + ImportAll + ImportMem,
     R::TextureId: Texture + 'static,

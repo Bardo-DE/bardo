@@ -1,7 +1,7 @@
 //! The Night Shift row under the Display module on the real control center: absent while
-//! casement's settings are out of reach, a switch that asks for "until tomorrow" or off, a line
+//! The compositor's settings are out of reach, a switch that asks for "until tomorrow" or off, a line
 //! that says what Night Shift is doing, and the warmth slider while it warms or will. Fake
-//! services on `Clock::Virtual`; nothing here writes casement's file.
+//! services on `Clock::Virtual`; nothing here writes the compositor's file.
 
 use crate::cc_support;
 
@@ -37,7 +37,7 @@ fn by_hand() -> Manual {
 }
 
 #[test]
-fn nothing_is_drawn_while_casements_settings_cannot_be_reached() {
+fn nothing_is_drawn_while_compositor_settings_cannot_be_reached() {
     let running = center(|_| {});
     assert_eq!(running.harness.count(ROW), 0);
 }

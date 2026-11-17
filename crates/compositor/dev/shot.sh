@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Takes a screenshot of a running jailed casement, through `bardo-compositorctl shot`
+# Takes a screenshot of a running jailed the compositor, through `bardo-compositorctl shot`
 # (ext-image-copy-capture):
 #
 #   dev/shot.sh [--output NAME | --window ID | --region X,Y,W,H] [--masked] OUT.png
 #
-# A bare file name goes to the run's shots/ directory ($JAIL_SCRATCH/casement/<run>/shots/), where
+# A bare file name goes to the run's shots/ directory ($JAIL_SCRATCH/compositor/<run>/shots/), where
 # the review gates look; a path with a directory is used as given. Calls require_jail first.
 # Exit 2 until the compositor serves the capture protocols (P1-C1).
 #
@@ -26,6 +26,6 @@ while [ $# -gt 0 ]; do
   esac
 done
 [ -n "$out" ] || { echo "usage: dev/shot.sh [--output NAME | --window ID | --region X,Y,W,H] [--masked] OUT.png" >&2; exit 64; }
-case "$out" in */*) ;; *) out="$(casement_state_dir)/shots/$out" ;; esac
+case "$out" in */*) ;; *) out="$(compositor_state_dir)/shots/$out" ;; esac
 shot "$masked$target" "$out"
 echo "shot: $out"

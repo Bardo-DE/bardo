@@ -90,7 +90,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     does not have).
 
 13. **Every device carries the label of the service it was made for (owner, 2026-10-17, NEW-FA-4).**
-    casement used to guess whether input is the person's own hand from a device's bus type and
+    The compositor used to guess whether input is the person's own hand from a device's bus type and
     vendor id, which wrongly caught a laptop's keyboard and kept palmrest's Magic Mouse clicks off
     the lock screen and consent sheets. turnstile is the only process that can create a uinput
     device (`dist/72-turnstile.rules`) and it already proves which service each device is for
@@ -99,7 +99,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     `turnstile/keymap_daemon` for keycap's two. The kernel shows it in
     `/sys/class/input/<event>/device/phys`. The format is `turnstile_wire::Maker` (format and
     `parse`); every plan sets `DeviceSpec::maker` and a test pins the exact strings and the label of
-    each kind. casement links nothing of turnstile, so it keeps its own copy of the parser and pins the
+    each kind. The compositor links nothing of turnstile, so it keeps its own copy of the parser and pins the
     same strings in its `origin.rs` test: change a string here and change it there. The label is
     not a secret and not signed: it is trusted because only root can create the device. A device made
     some other way (a `uinput` group member on a standalone install, ydotool) has none.

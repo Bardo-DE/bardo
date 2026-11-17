@@ -1,5 +1,5 @@
 //! `ext_workspace_manager_v1`: the Spaces as workspaces, one group per output, with ids that are
-//! casement's minted `SpaceId`s and so stable across a restart (C16).
+//! The compositor's minted `SpaceId`s and so stable across a restart (C16).
 //!
 //! Its requests become `Event::Workspace`.
 //!
@@ -39,7 +39,7 @@ use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{Arc, Mutex, PoisonError};
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 1;
 
 /// What a client asked since its last `commit`.

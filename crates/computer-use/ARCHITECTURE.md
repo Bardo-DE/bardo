@@ -11,7 +11,7 @@ is the map of the code that freezes those interfaces. `CONVENTIONS.md` holds the
 
 **It ships on a stock compositor**, opt-in per app and off by default: the seat is shared (input
 moves the person's cursor and steals focus), masking is bardo-computer-use's, and a confirmation shows only
-after bardo-computer-use has stopped its own input. **casement adds the agent seat later**; the protocol it
+after bardo-computer-use has stopped its own input. **the compositor adds the agent seat later**; the protocol it
 implements is the `desktop-protocols` repo's `bardo-agent-v1.xml`, which computer-use-desktop and computer-use-capture-wayland
 name directly.
 
@@ -37,7 +37,7 @@ picture), section 6 (copy the recipe).
 | `computer-use-capture-wayland` | the capture backend of `maskcap`: `StockToplevelCapture`, `BardoMaskedCapture`, `WaylandSession`, `StampClock`, and the `Pump` that drives one wayland connection from async code (with `ObjectKey`, `Rounds`, `SyncTag`) | wayland-client, tokio, rustix |
 | `computer-use-seat-ei` | the EI client of the agent's seat: `EiSeat`, an `AgentSeat` over reis (the connection lives on a thread of its own) | reis, tokio |
 | `computer-use-a11y-atspi` | the AT-SPI backend of `computer-use-a11y-tree`: `AtspiSource`, `AtspiTree`, `read_window` (the walk, over any `AtspiTree`) | zbus, atspi, tokio |
-| `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CasementDesktop` (casement's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdCuaModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
+| `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CompositorDesktop` (the compositor's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdCuaModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
 | `bardo-computer-use` | the daemon and its library: `run` (the start-up: `main` passes the arguments and environment in), `CuaProvider` (`org.bardo.ComputerUse`), `reach_json` and `follow_settings` (`org.bardo.IntentReach1` beside the provider: `Reach()` says `{"computeruse.run.start": "offered"}` while `cua.enabled` is on, else `hidden`, and `ReachChanged` is emitted when the settings watch changes it; bardo-actiond lays that over the installed manifest, which declares the action hidden; a local mirror of action-dbus's interface until the next docket pin), `serve`, `serve_on` and `serve_on_with` (who is calling is the process behind the connection, named by `computer-use-callers.toml` through action-dbus's `Identity`; never a bus name), `classify`, `desktop_keymap` (the keymap built once at start: chordkit's conventions, plus the person's keycap overrides with the `keycap` feature). The binary serves both bus names; the person's settings: `SettingsWatch` (the directory watch on `computer-use/settings.toml`), `computer-use-host`'s names re-exported, `SCHEMA` (`dist/settings/computer-use.settings.toml`), and `--write-schema` | everything |
 
 Tiers (the LAYERS table of `scripts/check-boundary.sh`; a crate depends on its own tier or a
@@ -111,7 +111,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | `computer-use-capture-wayland` | `pump`, `key`, `state`, `lease`, `shm`, `session` |
 | `computer-use-seat-ei` | `conn` (the reis connection), `actor` (the thread that owns it) |
 | `computer-use-a11y-atspi` | `bus`, `tree`, `walk`, `map` |
-| `computer-use-system` | `system`, `backend`, `a11y`, `model`, `frame_fd`, `connect`, `casement/{leases, map, proxy, watch}` |
+| `computer-use-system` | `system`, `backend`, `a11y`, `model`, `frame_fd`, `connect`, `compositor/{leases, map, proxy, watch}` |
 | `computer-use-bus` | `ids`, `budget`, `state`, `action`, `task`, `report`, `record`, `bodies`, `control`, `screen` |
 | `computer-use-run` | `config`, `observation`, `effect_class`, `window_class`, `commit`, `sensitivity`, `rules`, `mode`, `turn`, `lease_book`, `stall`, `model`, `seams`, `screen/{phrases, hidden, unseen, link, excerpt, reader, track}`, `machine/{phase, input, effect, run, track, step, control, finish, ops}` (`step/screen`: the screen check's rows), `exec/{observe, session}` |
 | `computer-use-dbus` | `names`, `error`, `manager`, `run`, `introspect` |
@@ -142,7 +142,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | the screen check: the phrase tables (`dist/screen-rules.toml`, passed in as `cua_run::Rules`), hidden text and unseen nodes (`split_unseen` makes the model's tree), the verdict and its reasons | `cua_run::screen` (`PatternCheck`, `ScreenVerdict`, `Reason`); the closed kinds the log keeps are `cua_bus::ScreenKind` |
 | the proposed values | `cua_run::CuaConfig`; the keys are in `computer-use-host`'s key table and `dist/settings/computer-use.settings.toml` |
 | the D-Bus interface | `computer-use-dbus` and `dbus/org.bardo.ComputerUse1.xml` |
-| the Wayland protocol | `bardo-agent-v1.xml` in `~/casement-protocols` (the one home), used by computer-use-desktop and computer-use-capture-wayland; the server side is the fork's, later casement's |
+| the Wayland protocol | `bardo-agent-v1.xml` in `~/desktop-protocols` (the one home), used by computer-use-desktop and computer-use-capture-wayland; the server side is the fork's, later the compositor's |
 | the `computeruse.run.start` action | `manifests/org.bardo.ComputerUse.toml`, served by `bardo-computer-use::CuaProvider` |
 | what the screen model is told about the task and the earlier attempts | `CuaTask.asked` (the person's latest sentence) and `CuaTask.earlier` (this provider's stored records of the conversation, oldest first), both filled by the router from the `asked` and `earlier` parameters of `computeruse.run.start` (`Filled::PersonWords`, `Filled::OwnHistory { kinds: "cua.*" }`; the planner never sees or sends them) and read by `bardo-computer-use::provider::start_of` (an element that is not a record is skipped, bad JSON is none). `cua_run::briefing` builds the session's opening: the task line is `asked` when present, else `goal`; the hints, in order, are "The assistant's plan for this run: <goal>" (only when `asked` is present and differs), then "Earlier attempts at this (check the screen before trusting them):" and the digest lines, then the desktop's shared hints. `cua_run::attempts` is the digest: the last three runs in the task's app (the current run left out), each as `Attempt k:`, a `Tried:` line of verbs with repeats collapsed and a mark when not plainly done ("no visible change", "refused", "failed", "not run"; a stored input is "no visible change" when the `cua.step.seen` after it says so), and the end in the words of the planner's report (`said_of`); at most twelve lines. Never a coordinate, typed text or thought. A stalled run's report uses the same step words (`RunTrack.tried`, `stall_words`). The run's taint is the join of the goal's, `asked`'s and `earlier`'s labels |
 | the event-log record | `cua_bus::CuaRecord`; `bardo-computer-use::record_of` makes the almanac `EventBody::Area { area: Cua }`, naming the conversation (`CuaTask.conversation`, the thing docket's session log uses) as `Subject` and the run's app as `Source`, so the router reads a conversation's earlier runs by `Entries { about }` |
@@ -152,7 +152,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 
 | Trait | Home | Implemented by |
 | --- | --- | --- |
-| `Desktop`, `LeaseControl` | `computer-use-desktop` | `CasementDesktop`, `FakeDesktop`; `Option<D>` (no desktop) |
+| `Desktop`, `LeaseControl` | `computer-use-desktop` | `CompositorDesktop`, `FakeDesktop`; `Option<D>` (no desktop) |
 | `WindowCapture`, `CaptureSession` | `maskcap` | `StockToplevelCapture`, `BardoMaskedCapture` (through `CaptureBackend`; `Option<C>` is the absent one), `FakeCapture` |
 | `AgentSeat` | `computer-use-seat-input` | `seat_ei::EiSeat`, `FakeSeat` |
 | `A11ySource` | `computer-use-a11y-tree` | `LoggedAtspi` (over `AtspiSource`), `FakeA11y`; `Option<S>` (no tree) |
@@ -214,11 +214,11 @@ observation, so no effect of a look follows it.
 **Add a backend.** A `BackendKind` variant and its row in `BackendCaps::of`; its rows in the
 `mode_support` table test; its capture choice in `CaptureBackend::over`; the `Desktop` and
 `LeaseControl` implementation in a C crate beside `computer-use-capture-wayland`, or, for a compositor with a
-bus door of its own, a module of `computer-use-system` (`casement`) whose desktop type goes in `SystemSeams::Desktop`.
+bus door of its own, a module of `computer-use-system` (`compositor`) whose desktop type goes in `SystemSeams::Desktop`.
 
-**The casement backend** (`BackendKind::Casement`, `cua_system::CasementDesktop`) is the interim one.
+**The compositor backend** (`BackendKind::Compositor`, `cua_system::CompositorDesktop`) is the interim one.
 `Reached::find` takes it when `org.bardo.Compositor1` has an owner on the session bus (or when
-`BackendChoice::Only(Casement)` forces it, and then fails if the name is absent). bardo-computer-use asks
+`BackendChoice::Only(Compositor)` forces it, and then fails if the name is absent). bardo-computer-use asks
 `Connect("agent")` twice: one Wayland connection feeds `desktop-client` (windows, geometry,
 Spaces; on its own thread, published to the async side), the other is capture's (stock toplevel
 source, masked in bardo-computer-use). A lease is `LeaseWindow(identifier, 7)`: the reply's socket is an EIS
@@ -226,16 +226,16 @@ socket (`EiOrigin::SenderSocket`: its region is the desktop's extent) whose inpu
 `EndLease` gives it back. It is a shared seat (`SeatIsolation::SharedSeat`): the person's cursor
 and focus are still the one set, so in-place runs only, and the agent workspace is refused with
 `HiddenCaptureWithheld`. The agent seat of its own, compositor masking and the agent Space are
-casement P4.
+The compositor P4.
 
 **The focus check before keys.** Before an action is injected the leased window is read again
 (`exec/fit.rs`, `exec/observe.rs`). On a shared seat an action that sends keys (`takes()` is
 `Keys`: typing, key chords, a click with modifiers) needs the window to be the key window;
 otherwise it is `Fit::NotFocused`. Before that refusal the run asks the desktop to focus the
-leased window (`LeaseControl::focus`; on casement `Compositor1.FocusLease(lease)`, which
-casement allows only for a live lease and answers as the person's own run, so its rule A7 for
+leased window (`LeaseControl::focus`; on the compositor `Compositor1.FocusLease(lease)`, which
+The compositor allows only for a live lease and answers as the person's own run, so its rule A7 for
 apps is unchanged), reads the window again, then does the short focus wait as before. A
-backend that cannot (any but casement) or that refuses (locked screen, window in the dock)
+backend that cannot (any but the compositor) or that refuses (locked screen, window in the dock)
 keeps the `NotFocused` refusal, and the model is told to click the window. A focus the run
 asked for is not a change to look again for (`Refocus::Asked`); one that came by itself still
 is (`Moved::Focus`). A pointer action asks for no focus: a click is how a window gets it.

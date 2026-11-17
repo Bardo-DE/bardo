@@ -273,7 +273,7 @@ mod tests {
         assert!(Proof::Cgroup < Proof::Exe && Proof::Exe < Proof::Full);
     }
 
-    /// NEW-FA-2: the portal's own capture is trusted (no sheet of casement's) only when the
+    /// NEW-FA-2: the portal's own capture is trusted (no sheet of the compositor's) only when the
     /// library proves it at `Full` as the portal's row; a lesser proof is a program the person is
     /// asked about, and a control group alone is nobody. Which powers the portal role is trusted
     /// with is `trusted_powers`' to say (the screen and the windows, nothing more).

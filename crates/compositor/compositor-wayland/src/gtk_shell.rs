@@ -1,7 +1,7 @@
 //! `gtk_shell1` (only `gtk_surface1.set_dbus_properties`, P3-MN): a GTK 3 client tells the
 //! compositor where its `org.gtk.Menus` and `org.gtk.Actions` objects are.
 //!
-//! casement records them on the window and the shell hears them through
+//! The compositor records them on the window and the shell hears them through
 //! `bardo_desktop_app_v1.menu_source`. Every other request of the protocol is the glue's to accept
 //! and ignore.
 //!

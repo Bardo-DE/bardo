@@ -1,11 +1,11 @@
-//! `compositor-shell-exec -- PROGRAM [ARGS...]`: runs PROGRAM as the shell. It asks casement for
-//! the shell connection (`org.bardo.Compositor1.Connect("shell")`, which casement gives only to
+//! `compositor-shell-exec -- PROGRAM [ARGS...]`: runs PROGRAM as the shell. It asks the compositor for
+//! the shell connection (`org.bardo.Compositor1.Connect("shell")`, which compositor gives only to
 //! a caller holding the shell role) and leaves the socket to PROGRAM in `WAYLAND_SOCKET`, which
 //! libwayland reads before `WAYLAND_DISPLAY`. Scenarios run layer-shell-host's demos through it: an
 //! exclusive-keyboard layer keeps the keyboard only on the shell's connection (CASC-02).
 //!
 //! Runs only inside the jail, like `compositor-probe`. Exit codes: 2 outside the jail, 64 usage,
-//! 69 casement handed out no connection, 126 PROGRAM could not be run; else PROGRAM's own.
+//! 69 the compositor handed out no connection, 126 PROGRAM could not be run; else PROGRAM's own.
 
 use std::os::fd::{AsFd, IntoRawFd};
 use std::os::unix::process::CommandExt;

@@ -269,7 +269,7 @@ impl ScreenCopy {
             .map_err(|()| ClientError::Dispatch(format!("shm format {}", offer.format)))?;
         let length = u64::from(offer.stride) * u64::from(offer.size.h);
         let file = File::from(
-            memfd_create("casement-screencopy", MemfdFlags::CLOEXEC)
+            memfd_create("compositor-screencopy", MemfdFlags::CLOEXEC)
                 .map_err(|error| ClientError::Dispatch(error.to_string()))?,
         );
         ftruncate(&file, length).map_err(|error| ClientError::Dispatch(error.to_string()))?;

@@ -1,4 +1,4 @@
-//! `org.bardo.SettingsModule1` at [`PRIVACY_PATH`] on casement's session-bus connection: the
+//! `org.bardo.SettingsModule1` at [`PRIVACY_PATH`] on the compositor's session-bus connection: the
 //! Privacy list Settings shows, from the model's rows, and the changes Settings makes to it.
 //!
 //! The model owns the answers. This module reads the board the event loop publishes to, and a

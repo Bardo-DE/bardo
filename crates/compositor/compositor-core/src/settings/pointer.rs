@@ -1,6 +1,6 @@
 //! Pointing-device settings (`pointer.*`, `touchpad.*`): what the libinput seam applies to
 //! each device (P1-I1). The stored keys (`pointer.*`, `touchpad.*`) and their conversion are in
-//! `casement/src/config/`.
+//! `compositor/src/config/`.
 
 use base_ids::Fraction;
 use base_words::Word;

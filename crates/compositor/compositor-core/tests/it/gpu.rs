@@ -333,7 +333,7 @@ fn display_kind_reads_firmware_and_virtual_drivers() {
     let pci = Some("pci");
     let platform = Some("platform");
     let table = [
-        (Some("faux_driver"), Some("casement"), faux, Virtual),
+        (Some("faux_driver"), Some("compositor"), faux, Virtual),
         (None, None, faux, Virtual),
         (Some("vkms"), None, None, Virtual),
         (Some("simpledrm"), None, platform, Firmware),

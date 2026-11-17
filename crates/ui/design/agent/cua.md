@@ -4,7 +4,7 @@
 
 Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, Bardo design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
 
-I also checked the installed binaries on this machine (Fedora 44: the compositor, kwin 6.7.5) and the the nested compositor globals the harness recorded (`~/shell-host/scripts/dev/out/globals.txt`):
+I also checked the installed binaries on this machine (Fedora 44: the compositor, kwin 6.7.5) and the nested compositor globals the harness recorded (`~/shell-host/scripts/dev/out/globals.txt`):
 
 - **Window capture on a stock compositor.** It advertises `ext_image_copy_capture_manager_v1`, `ext_foreign_toplevel_image_capture_source_manager_v1`, `ext_foreign_toplevel_list_v1`, a private toplevel-info global (its `geometry` event exists since v2), a private toplevel manager (`move_to_ext_workspace` since v4), `ext_workspace_manager_v1`, `zwp_virtual_keyboard_manager_v1`, `zwp_text_input_manager_v3`, a private accessibility manager and `wp_security_context_manager_v1`. It has **no** `zwlr_virtual_pointer` and **no** `ext_transient_seat`.
 - **Input on a stock compositor.** The EIS server is reached over D-Bus as a private D-Bus input service, method `GetSenderSocket(device_types)`. reis is vendored in the binary. The exact argument types and who may call it are [unverified]; Spike A settles them.
@@ -24,7 +24,7 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 - **`maskcap`**: masked per-window capture over ext-image-copy-capture (stock) or the fork's masked source, plus damage-based settling and stall digests.
 - **`computer-use-desktop`**: windows, geometry, leases, workspaces, glow, the kill chord, and the stock consent guard.
 - **Run modes**: in place, agent workspace, nested session; which backend supports which.
-- **The casement**: what must change, against what works on stock protocols.
+- **The compositor**: what must change, against what works on stock protocols.
 - **Event-log records and procedures**: the run → event-log record types (written through the memory area's `eventlog`), and the learned-procedure file format (later).
 - **Spikes first**, each with acceptance criteria.
 
@@ -80,7 +80,7 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, B
 
 **External boundary.** Every crate except `computer-use-dbus`, `cuad` and the backend features never reaches `zbus`, `zvariant`, `tokio`, `wayland-client`, `wayland-backend`, `reis`, `atspi`, `reqwest` or `hyper` (default features). `computer-use-run` additionally never reaches `cedar-policy` or `rusqlite`: verdicts and records cross as data.
 
-### Fork repo `~/casement` (GPL-3.0-only, branch `bardo`, rebased on upstream release tags)
+### Fork repo `~/compositor` (GPL-3.0-only, branch `bardo`, rebased on upstream release tags)
 
 All Bardo code goes in `src/bardo/` (agent seat, masked source, lease and glow globals, input-origin gate, kill chord), with small hook calls into upstream files. The fork depends on `bardo-agent-protocol` (feature `server`) by git rev. The double-tap ⌘ detection (COMPANION item 7) also lands here later; whoever owns it shares the branch. Ownership: Q11.
 
@@ -306,7 +306,7 @@ pub enum RevokeReason { KillChord, WindowClosed, SpaceChanged, Compositor }
 
 pub struct BackendCaps { pub kind: BackendKind, pub seat: SeatIsolation, pub masking: MaskWhere,
     pub consent: ConsentGuard, pub hidden: HiddenCapture, pub glow: GlowDraw }
-pub enum BackendKind { Casement, StockCompositor, KwinStock }
+pub enum BackendKind { The compositor, StockCompositor, KwinStock }
 pub enum ConsentGuard { CompositorOrigin, CuadSuspendsInput }
 pub enum HiddenCapture { Renders, Withheld }
 pub enum GlowDraw { Compositor, ShellOnly }
@@ -490,7 +490,7 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
   <method name="Start"><arg name="task" type="s" direction="in"/><arg name="run" type="o" direction="out"/></method>
   <method name="Runs"><arg type="ao" direction="out"/></method>
   <method name="StopAll"/>                              <!-- control-centre kill switch -->
-  <property name="Backend" type="s" access="read"/>     <!-- casement | stock_compositor | kwin_stock | none -->
+  <property name="Backend" type="s" access="read"/>     <!-- the compositor | stock_compositor | kwin_stock | none -->
   <property name="Modes" type="a{ss}" access="read"/>   <!-- mode -> full | hands_off | unsupported:<gap> -->
   <signal name="RunAdded"><arg type="o"/></signal>
   <signal name="RunRemoved"><arg type="o"/></signal>
@@ -720,7 +720,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
   - all shape tests in §5 that need no behaviour: wire round-trips, slugs, introspection, fixtures load;
   - `scripts/check-boundary.sh`;
   - joining reis and atspi into Bardo's `docs/workspace-deps.toml` first (a Bardo edit, coordinated).
-- **Agent `fork-setup`** owns `~/casement`: fork at the upstream 1.8 tag, branch `bardo`, an empty `src/bardo/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
+- **Agent `fork-setup`** owns `~/compositor`: fork at the upstream 1.8 tag, branch `bardo`, an empty `src/bardo/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
 
 ### Fill waves (disjoint file ownership)
 
@@ -735,7 +735,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
   3. `crates/a11y-tree/src/atspi/**`
   4. `crates/cua-desktop/src/wayland/**`
 - **Fill 3 (1 agent):** `crates/cuad/**`, `crates/cua-dbus/src/codec.rs`, `crates/cua-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
-- **Fill 4 (1 agent, `~/casement` `src/bardo/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/casement/target/release/the compositor`).
+- **Fill 4 (1 agent, `~/compositor` `src/bardo/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/compositor/target/release/the compositor`).
 - **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `bardo_sensitive_v1` client in layer-shell-host.
 
 ### Fork changes (the compositor) against stock
@@ -764,7 +764,7 @@ cargo deny check licenses
 
 Spikes and acceptance (dev only, never in CI): `scripts/dev/spike-{a,b,e}.sh`, `scripts/dev/accept-{agent-seat,masking}.sh`.
 
-Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` acceptance scripts against it.
+Fork: `cargo build --release && cargo test` in `~/compositor`, then the `~/cua` acceptance scripts against it.
 
 ---
 
@@ -831,7 +831,7 @@ Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` ac
 8. Browser grants: Once/per-session only, or is "Always" allowed?
 9. CJK and Unicode typing: may the agent use the virtual-keyboard keymap trick on stock (it targets the user's focus), or only the fork's agent text-input?
 10. Procedures: auto-propose promotion to a typed action, or only on an explicit "save as routine"?
-11. Is KWin a product target (portable CUA) or only the nested-session host and spike reference? And who owns the casement overall (cua, or a compositor area shared with the double-tap ⌘ work)?
+11. Is KWin a product target (portable CUA) or only the nested-session host and spike reference? And who owns the compositor overall (cua, or a compositor area shared with the double-tap ⌘ work)?
 12. Keep screenshots off by default with no thumbnails? Recommended: yes.
 
 ### Critical files for implementation

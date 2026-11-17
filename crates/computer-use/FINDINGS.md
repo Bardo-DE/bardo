@@ -2,7 +2,7 @@
 
 Open items and standing facts. An entry names the condition that closes it. `cua-bus`,
 `cua-dbus` has no `todo!()`: its behaviour is serde and tables. `bardo-agent-protocol` is gone
-(S0-CU2): cua-desktop and maskcap name `casement-protocols` directly.
+(S0-CU2): cua-desktop and maskcap name `desktop-protocols` directly.
 
 ## Stubs behind frozen interfaces
 
@@ -14,7 +14,7 @@ files (`a11y-tree` fixtures and golden renders).
 | Where | Count | Closes when |
 | --- | --- | --- |
 
-Per crate: none; total 0. `maskcap_wayland::BardoMaskedCapture::open` is built over a lease (`create_lease`, `get_capture_source`, `create_session`, `set_mask_hints` before each frame) and tested against a fake `bardo_agent_manager_v1`; casement master does not serve that global yet, so against it `open` answers `BackendUnavailable`. cua-desktop has none: the stock half is built, and the casement half (`Backend::Casement`, `bardo_agent_v1` leases, suspend, resume and glow in the compositor, the agent workspace) is P4-Z-cua. There is no `BackendKind` for it yet, so no arm could hold a `todo!()` that is reachable; KWin (`KwinStock`) refuses every lease with `ModeUnsupported` until Spike B. (`EiSeat`, `FakeEis::serve` and `ScriptedModel::from_cassette` are built: see "The f4-cua-seat fill".)
+Per crate: none; total 0. `maskcap_wayland::BardoMaskedCapture::open` is built over a lease (`create_lease`, `get_capture_source`, `create_session`, `set_mask_hints` before each frame) and tested against a fake `bardo_agent_manager_v1`; the compositor master does not serve that global yet, so against it `open` answers `BackendUnavailable`. cua-desktop has none: the stock half is built, and the compositor half (`Backend::Compositor`, `bardo_agent_v1` leases, suspend, resume and glow in the compositor, the agent workspace) is P4-Z-cua. There is no `BackendKind` for it yet, so no arm could hold a `todo!()` that is reachable; KWin (`KwinStock`) refuses every lease with `ModeUnsupported` until Spike B. (`EiSeat`, `FakeEis::serve` and `ScriptedModel::from_cassette` are built: see "The f4-cua-seat fill".)
 
 What is built, not stubbed (all behind the frozen signatures): `BackendCaps::of`, `LeaseRequest::check`,
 glow, revoke, suspend and mode wire codes (pinned against the generated protocol enums under the
@@ -145,7 +145,7 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
 - **almanac `Memory1`:** `HandedBack.user_events` needs a read of the person's events between two
   instants for the cua caller; `Caller::Cuad` records `Area(Cua)` only. Ask: a bounded `Recent`
   for `Caller::Cuad`, limited to events of the window's app after a given `Seq`.
-- **casement:** serve `bardo_agent_manager_v1` from `~/casement-protocols/protocols/bardo-agent-v1.xml` (the XML left cua at S0-CU2); the
+- **the compositor:** serve `bardo_agent_manager_v1` from `~/desktop-protocols/protocols/bardo-agent-v1.xml` (the XML left cua at S0-CU2); the
   `mask_reason`, `glow_state`, `suspend_reason`, `revoke_reason`, `lease_mode` values are pinned by
   tests here.
 
@@ -319,7 +319,7 @@ the machine under it. What was decided:
 ## The f4-cua-capture fill (2026-10-06): the stock wayland backends and the daemon's seams
 
 - **S0 done.** `crates/bardo-agent-protocol` is deleted and
-  cua-desktop and maskcap-wayland depend on `casement-protocols` (client) by sibling
+  cua-desktop and maskcap-wayland depend on `desktop-protocols` (client) by sibling
   path; the glow, revoke, suspend, mode and mask-reason tables are pinned against its generated
   enums. check-boundary rows follow.
 - **One pump per connection (`maskcap_wayland::Pump`, public).** A wayland
@@ -331,7 +331,7 @@ the machine under it. What was decided:
 - **Facts the protocols do not give.** `ToplevelInfo.pid` is `Pid(0)` ("unknown"); `app` is the
   app id, folded into `app.<id>` when it is not reverse-DNS; `trust` is from the app id alone
   (`org.bardo.Shell*`, `Sill*`, `Desktop*` are `Shell`, other `org.bardo.*` `Bardo`, the rest
-  `Native`; Flatpak cannot be told). Ask: a pid and a sandbox id on the toplevel (casement's
+  `Native`; Flatpak cannot be told). Ask: a pid and a sandbox id on the toplevel (the compositor's
   `bardo_desktop_v1` can carry them).
 - **maskcap stock capture.** `StockToplevelCapture::open` finds the toplevel by identifier,
   `create_source`, `create_session`, waits for the constraints and picks `ABGR8888`, `XBGR8888`,
@@ -353,7 +353,7 @@ the machine under it. What was decided:
   `maskcap/tests/it/wayland.rs` (8), `cuad/tests/it/binary.rs` (4: env cleared, no compositor).
 - **Dependencies added** (not in Bardo's block): `wayland-scanner`, `wayland-backend` for
   cua-desktop (generation) and `wayland-server` as a dev-dependency of maskcap
-  (the fake compositor; MIT, already in the lock through casement-protocols); `tokio` and
+  (the fake compositor; MIT, already in the lock through desktop-protocols); `tokio` and
   `rustix` become optional deps under the `wayland` features; `tokio`'s `signal` feature in cuad.
   `wayland-protocols` gains `server` as a dev-dependency.
 
@@ -410,7 +410,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-stoker, porter, almanac, docket and casement-protocols are git dependencies at pinned revs in the root
+stoker, porter, almanac, docket and desktop-protocols are git dependencies at pinned revs in the root
 `Cargo.toml`, spelled `https://github.com/PoHsuanLai/<repo>` (no `.git`) as the other repos spell them, so one copy
 of each crate is in the graph. For cross-repo work, override a pin with a
 `[patch."https://github.com/PoHsuanLai/<repo>"]` table of `path` lines in a `.cargo/config.toml` in a directory
@@ -659,21 +659,21 @@ a caller row for cuad's unit in `readerd-callers.toml` (or no row if intentd kee
 needs: docket pin bump, `docket-reader` in `[workspace.dependencies]`, and cuad's
 `ReaderMode` switch (a `cua.screen_reader` setting, off by default).
 
-## The casement desktop backend (lane casdesk, 2026-10-20)
+## The compositor desktop backend (lane casdesk, 2026-10-20)
 
-- `BackendKind::Casement` is an interim backend: lease-scoped input on a shared seat over
+- `BackendKind::Compositor` is an interim backend: lease-scoped input on a shared seat over
   `Compositor1.LeaseWindow` (agent tier: window identifier and device set 7 in, lease number and
   EIS socket out; `EndLease` gives it back; the lease ends with the window or with cuad's bus
   connection). Windows come from `desktop-client` on an agent connection (`Connect("agent")`).
-  Its row: masking `Cuad` (casement does not mask yet), consent `CuadSuspendsInput`, hidden
+  Its row: masking `Cuad` (the compositor does not mask yet), consent `CuadSuspendsInput`, hidden
   capture `Withheld` (a window on another Space is not rendered), glow `ShellOnly`, seat
   `SharedSeat`; so `in_place` is `hands_off` and the agent workspace is
   `unsupported:hidden_capture_withheld`.
-- Not built, and still casement P4: the agent seat of its own (own cursor and focus, so
+- Not built, and still the compositor P4: the agent seat of its own (own cursor and focus, so
   `AgentSeat` and `Full` in place), masking in the compositor (`BardoMasked`), the agent Space,
   suspend, resume and glow in the compositor. The pid of a window is unknown (`Pid(0)`): no
   protocol read here says which process owns it.
-- casement's lease socket offers the desktop's whole extent as its absolute region (the same
+- The compositor's lease socket offers the desktop's whole extent as its absolute region (the same
   region as the portal's remote sockets), so the grant says `EiOrigin::SenderSocket` and
   seat-input offsets window points by the window's geometry.
 

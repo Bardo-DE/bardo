@@ -4,7 +4,7 @@
 //! The kernel keeps a free-text `phys` on every input device (`/sys/class/input/<event>/device/phys`).
 //! Only a process that can open `/dev/uinput` can set it, and on this desktop that is turnstile
 //! alone (its udev rule makes the node root-only), which makes a device only for the services it
-//! has proven. casement links nothing of turnstile, so this is its own copy of turnstile's
+//! has proven. The compositor links nothing of turnstile, so this is its own copy of turnstile's
 //! `input_broker_wire::Maker::parse`; the test below and turnstile's pin the same strings.
 
 use super::origin::{DeviceClass, Origin};

@@ -2,7 +2,7 @@
 
 use crate::config::action::ActionWords;
 use crate::config::convert;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
@@ -16,6 +16,6 @@ pub struct BindingsSection(pub BTreeMap<String, ActionWords>);
 
 impl Default for BindingsSection {
     fn default() -> Self {
-        convert::bindings_doc(&CasementSettings::defaults().bindings)
+        convert::bindings_doc(&CompositorSettings::defaults().bindings)
     }
 }

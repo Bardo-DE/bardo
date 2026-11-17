@@ -4,9 +4,9 @@
 # NetworkManager, BlueZ, UPower and the rest are simply absent), with a scratch HOME and XDG tree
 # of its own, its own XDG_RUNTIME_DIR and the fake DDC; nothing reaches the user's session.
 #
-# Default: the daemon's basics and the bar's own, on casement (brought up and ended by
+# Default: the daemon's basics and the bar's own, on the compositor (brought up and ended by
 # start_compositor), then the bar demo's steps on a headless KWin:
-#   Daemon (casement):
+#   Daemon (the compositor):
 #     1. ping: the daemon answers.
 #     2. single instance: a second `bardo-shell run` exits 0 fast without touching Wayland.
 #     3. reload: `bardo-shell reload` answers Done.
@@ -14,9 +14,9 @@
 #     5. exclusive zone: a maximised probe window is output_h - bar_h (less the dock's 68 when
 #        the daemon runs one).
 #     6. idle: 5 s with the pointer still, the bar's commit counter does not move; shoots
-#        dev/out/bar-casement.png over the test wallpaper.
+#        dev/out/bar-compositor.png over the test wallpaper.
 #     7. menus: a press on the control center's item opens its menu popup, an outside press
-#        dismisses it (`bardo-shell debug click`); shoots dev/out/bar-casement-menu.png.
+#        dismisses it (`bardo-shell debug click`); shoots dev/out/bar-compositor-menu.png.
 #     8. clock: a click toggles the notification center and opens no bar menu, a second click
 #        closes it.
 #     9. quit: `bardo-shell quit` ends the daemon and a `ping` after it finds nobody home. Runs last.
@@ -35,9 +35,9 @@
 #     5. a screenshot with the control center open, dev/out/bar.png (reviewed by eye).
 #   The demo's logs and result JSON: target/accept-bar/. It passes only when 1-4 pass.
 #
-# --ui: only the bar demo's steps, on the headless KWin (no casement needed).
-# --ui-nested: the bar demo's steps 3-4 on the running casement (`bardo-shell run` may already
-#   reserve a bar there, so no exclusive-zone or idle step); screenshot dev/out/bar-casement-menu.png.
+# --ui: only the bar demo's steps, on the headless KWin (no compositor needed).
+# --ui-nested: the bar demo's steps 3-4 on the running the compositor (`bardo-shell run` may already
+#   reserve a bar there, so no exclusive-zone or idle step); screenshot dev/out/bar-compositor-menu.png.
 #
 # --real-input [STEP...]: the bar's menus and the keyboard of the control center and the
 # notification center under REAL input, on layer-shell-host's private headless KWin (scripts/dev/
@@ -198,7 +198,7 @@ step_exclusive_zone() {
 }
 
 # 6. Idle: 5 s with the pointer still, the bar's commit counter does not move.
-#    Also shoots the screen to dev/out/bar-casement.png, over the test wallpaper
+#    Also shoots the screen to dev/out/bar-compositor.png, over the test wallpaper
 #    (dev/lib/backdrop.sh).
 step_idle() {
   local before after
@@ -226,7 +226,7 @@ bar_status_items() {
 #    center, step 8); the bar's empty middle stands in for an outside press (a compositor-level
 #    outside press cannot be synthesized). Whether the popup is up is whether `bardo-shell debug capture
 #    <bar>/popup` succeeds: `debug stats` lists bars only. Shoots the nested screen with the menu
-#    open to dev/out/bar-casement-menu.png.
+#    open to dev/out/bar-compositor-menu.png.
 step_menus() {
   local log="$OUT_DIR/menus.log" bar width y popup opened=no closed=no items
   : >"$log"
@@ -306,9 +306,9 @@ step_quit() {
 }
 
 
-# The daemon steps, on casement. Sets STATUS.
+# The daemon steps, on compositor. Sets STATUS.
 run_daemon_steps() {
-  start_compositor --default casement || return 1
+  start_compositor --default compositor || return 1
   nested wayland-info >/dev/null 2>&1 || { echo "no compositor to run on (start_compositor failed)" >&2; stop_compositor; return 1; }
   await_no_process || return 1
   scratch_new
@@ -321,15 +321,15 @@ run_daemon_steps() {
 }
 
 # Runs the bar demo's checks in the world of the daemon (in_env: $WL, the private bus, the scratch
-# tree): $1 is `kwin` or `casement` (which compositor takes the screenshot and which steps run), $2
+# tree): $1 is `kwin` or `compositor` (which compositor takes the screenshot and which steps run), $2
 # the screenshot's path. Exit 0 only when every check passed.
 run_bar_demo() {
-  in_env env CASEMENTCTL="$BARDO_COMPOSITOR_TOOLS/bin/bardo-compositorctl" BARDO_ACCEPT_OUT="$OUT_DIR" BARDO_ACCEPT_PNG="$2" BARDO_ACCEPT_MODE="$1" BAR_DEMO="$BAR_DEMO" \
+  in_env env BARDO_COMPOSITORCTL="$BARDO_COMPOSITOR_TOOLS/bin/bardo-compositorctl" BARDO_ACCEPT_OUT="$OUT_DIR" BARDO_ACCEPT_PNG="$2" BARDO_ACCEPT_MODE="$1" BAR_DEMO="$BAR_DEMO" \
     PROBE="$PROBE" BARDO_ACCEPT_COMPOSITOR="$COMPOSITOR" python3 - <<'PY'
 import json, os, queue, re, subprocess, sys, threading, time
 
 OUT, PNG, MODE = os.environ["BARDO_ACCEPT_OUT"], os.environ["BARDO_ACCEPT_PNG"], os.environ["BARDO_ACCEPT_MODE"]
-CASEMENT = os.environ.get("BARDO_ACCEPT_COMPOSITOR") == "casement"
+COMPOSITOR = os.environ.get("BARDO_ACCEPT_COMPOSITOR") == "compositor"
 SKIPS = {}
 LOG = open(f"{OUT}/accept-{MODE}.log", "w")
 PROCS = []
@@ -426,10 +426,10 @@ def status_items(path):
     return [(left + right) // 2 for left, right in runs]
 
 def bar_click(x, y):
-    """A click on the bar at its local (x, y): the demo's own `click` command, or, on casement,
+    """A click on the bar at its local (x, y): the demo's own `click` command, or, on compositor,
     a real pointer press through bardo-compositorctl (a popup's grab needs a real serial there)."""
-    if CASEMENT:
-        r = subprocess.run([os.environ["CASEMENTCTL"], "debug", "inject", f"move {x} {y}", "sleep 60",
+    if COMPOSITOR:
+        r = subprocess.run([os.environ["BARDO_COMPOSITORCTL"], "debug", "inject", f"move {x} {y}", "sleep 60",
                             "press left", "sleep 40", "release left", "sleep 200"],
                            capture_output=True, text=True, timeout=30)
         log(f"bardo-compositorctl click {x},{y}: exit {r.returncode} {r.stdout.strip()!r} {r.stderr.strip()!r}")
@@ -438,10 +438,10 @@ def bar_click(x, y):
 
 def screenshot(path):
     if os.path.exists(path): os.remove(path)
-    if CASEMENT:
+    if COMPOSITOR:
         # bardo-compositorctl's `shot` needs ext-image-copy-capture (P1-C1): an expected skip, not a failure
         # (the checks do not depend on the screenshot).
-        r = subprocess.run([os.environ["CASEMENTCTL"], "shot", path], capture_output=True, text=True)
+        r = subprocess.run([os.environ["BARDO_COMPOSITORCTL"], "shot", path], capture_output=True, text=True)
         if r.returncode != 0:
             log("expected skip: screenshot:", r.stderr.strip() or "bardo-compositorctl shot failed")
             SKIPS["screenshot"] = "bardo-compositorctl shot is not built yet (P1-C1)"
@@ -456,10 +456,10 @@ result = {}
 try:
     if MODE == "kwin":
         info = output_info()
-        if CASEMENT:
-            # A maximised toplevel to measure needs casement's window management (P1/P2): P0
+        if COMPOSITOR:
+            # A maximised toplevel to measure needs the compositor's window management (P1/P2): P0
             # windows are floating and compositor-probe toplevel has no --maximised.
-            SKIPS["exclusive_zone"] = "casement P0 windows are floating: no maximised configure until P1/P2 (compositor-probe toplevel --maximised)"
+            SKIPS["exclusive_zone"] = "compositor P0 windows are floating: no maximised configure until P1/P2 (compositor-probe toplevel --maximised)"
             log("expected skip: exclusive_zone:", SKIPS["exclusive_zone"])
         else:
             base, v0 = probe_maximized(); time.sleep(0.3); base.quit()
@@ -469,7 +469,7 @@ try:
     width = rows[name]["logical"]["width"]
     time.sleep(0.5)
     if MODE == "kwin":
-        if not CASEMENT:
+        if not COMPOSITOR:
             probe, v1 = probe_maximized(); time.sleep(1.0); probe.quit(); time.sleep(0.5)
             result["exclusive_zone"] = dict(output=info, baseline=v0["height"], with_bar=v1["height"],
                                             bar_height=height,
@@ -531,7 +531,7 @@ PY
 }
 
 step_demo_kwin() { run_bar_demo kwin "$SHOTS/bar.png"; }
-step_demo_nested() { run_bar_demo casement "$SHOTS/bar-casement-menu.png"; }
+step_demo_nested() { run_bar_demo compositor "$SHOTS/bar-compositor-menu.png"; }
 
 # The demo and layer-shell-host's probe, built (a no-op when up to date). Under dev/accept.sh
 # (BARDO_SHELL_PREBUILT) they were built outside the jail: only checked here.
@@ -552,15 +552,15 @@ build_demo() {
 # The bar demo on the headless KWin. Sets STATUS.
 run_demo_kwin() {
   scratch_new
-  start_compositor --default kwin || { echo "the compositor did not start (see $OUT_DIR/kwin.log, casement-up.log)" >&2; scratch_drop; return 1; }
+  start_compositor --default kwin || { echo "the compositor did not start (see $OUT_DIR/kwin.log, compositor-up.log)" >&2; scratch_drop; return 1; }
   run_steps step_demo_kwin
   stop_compositor
   scratch_drop
 }
 
-# The bar demo on casement. Sets STATUS.
+# The bar demo on compositor. Sets STATUS.
 run_demo_nested() {
-  start_compositor --default casement || return 1
+  start_compositor --default compositor || return 1
   nested wayland-info >/dev/null 2>&1 || { echo "no compositor to run on (start_compositor failed)" >&2; stop_compositor; return 1; }
   scratch_new
   run_steps step_demo_nested
@@ -988,7 +988,7 @@ run_real_input() {
   printf '[Keyboard]\nKeyRepeat=nothing\nRepeatDelay=5000\n' >"$SCRATCH/kwin-seed/kcminputrc"
   export KWIN_VIRTUAL_CONFIG_SEED="$SCRATCH/kwin-seed"
   start_compositor --default kwin || {
-    echo "the compositor did not start (see $OUT_DIR/kwin.log, casement-up.log)" >&2
+    echo "the compositor did not start (see $OUT_DIR/kwin.log, compositor-up.log)" >&2
     rm -rf "$RUNTIME"; scratch_drop; return 1; }
   trap real_cleanup EXIT
   : >"$OUT_DIR/capture.log"

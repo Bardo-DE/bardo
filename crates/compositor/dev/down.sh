@@ -13,4 +13,4 @@ source "$root/dev/lib/compositor.sh"
 require_jail
 if [ $# -ge 1 ]; then BARDO_COMPOSITOR_STATE=$(dirname "$1"); export BARDO_COMPOSITOR_STATE; fi
 stop_compositor
-echo "casement is down"
+echo "compositor is down"

@@ -8,9 +8,9 @@
 use crate::adapter::{
     Button, Fixed, FixedPoint, Position, WlcsClient, WlcsEvent, WlcsSurface, WlcsTouchId,
 };
-use desktop_protocols::vocab::PressEdge;
 use crate::descriptor::DESCRIPTOR;
 use crate::host::{Host, Request};
+use desktop_protocols::vocab::PressEdge;
 use std::io::{Error, ErrorKind};
 use std::os::fd::OwnedFd;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -33,7 +33,7 @@ unsafe extern "C" {
 
 /// The handle wlcs creates once per test: the compositor thread and the channel into it.
 #[derive(Debug)]
-pub struct CasementHandle {
+pub struct CompositorHandle {
     server: Option<(Sender<Request>, JoinHandle<()>)>,
 }
 
@@ -49,7 +49,7 @@ fn call(sender: &Sender<Request>, event: WlcsEvent) -> Result<(), Error> {
         .map_err(|e| Error::new(ErrorKind::ConnectionReset, e))
 }
 
-wlcs::wlcs_server_integration!(CasementHandle);
+wlcs::wlcs_server_integration!(CompositorHandle);
 
 /// Touch points are numbered across the process, so two handles never share a slot.
 static TOUCH_IDS: AtomicU32 = AtomicU32::new(0);
@@ -68,12 +68,12 @@ fn whole_point(x: wl_fixed_t, y: wl_fixed_t) -> FixedPoint {
     point(x.saturating_mul(256), y.saturating_mul(256))
 }
 
-impl wlcs::Wlcs for CasementHandle {
+impl wlcs::Wlcs for CompositorHandle {
     type Pointer = PointerHandle;
     type Touch = TouchHandle;
 
     fn new() -> Self {
-        CasementHandle { server: None }
+        CompositorHandle { server: None }
     }
 
     fn start(&mut self) {

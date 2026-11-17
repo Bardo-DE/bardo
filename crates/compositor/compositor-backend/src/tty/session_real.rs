@@ -27,13 +27,13 @@ use std::rc::Rc;
 /// get one. The group is `seat` on some distributions and `video` on others.
 fn seat_refused(reason: &dyn std::fmt::Display) -> String {
     format!(
-        "{reason}. casement needs a seat to draw on the screen and read the keyboard: log in from \
+        "{reason}. compositor needs a seat to draw on the screen and read the keyboard: log in from \
          a display manager or from a text console (logind then gives the login one), or run seatd \
          and join the seat or video group (log in again after joining)"
     )
 }
 
-/// The libseat session casement runs in.
+/// The libseat session the compositor runs in.
 #[derive(Debug)]
 pub struct RealSession {
     seat: LibSeatSession,

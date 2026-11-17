@@ -1,4 +1,4 @@
-//! The fake account service: `FakeSpaceRegistry` records the Spaces casement registers and
+//! The fake account service: `FakeSpaceRegistry` records the Spaces the compositor registers and
 //! answers failures a test scripts. A clone shares the record.
 
 use compositor_ipc::space_registry::{

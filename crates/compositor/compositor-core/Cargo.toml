@@ -1,6 +1,6 @@
 [package]
 name = "compositor-core"
-description = "casement's pure model: ids, geometry, time data, apps, windows, Spaces, focus, press routing, input origins and bindings, output policy, settings, Model::step and its invariants."
+description = "The compositor's pure model: ids, geometry, time data, apps, windows, Spaces, focus, press routing, input origins and bindings, output policy, settings, Model::step and its invariants."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

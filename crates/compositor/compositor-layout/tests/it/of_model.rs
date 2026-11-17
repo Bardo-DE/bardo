@@ -8,7 +8,7 @@ use compositor_core::layer::{
     Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins, ShellRoleTag,
 };
 use compositor_core::output::{EdidFacts, EdidSerial, Mode, OutputFacts, PhysicalMm};
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::space::SpaceSeed;
 use compositor_core::time::{Millihertz, Mono};
 use compositor_core::window::{SizeLimits, WindowOrigin};
@@ -45,7 +45,7 @@ fn headless(name: &str) -> OutputFacts {
 fn one_output_one_space_one_window() {
     let at = |ms| Mono(Duration::from_millis(ms));
     let model = Model::new(
-        CasementSettings::defaults(),
+        CompositorSettings::defaults(),
         at(0),
         SpaceSeed::from_entropy([7; 16]),
     );
@@ -130,7 +130,7 @@ fn mapped(n: u64, app: &AppKey, token: TokenCheck) -> Event {
 /// The model after `events`, one millisecond apart.
 fn model_after(events: Vec<Event>) -> Model {
     let empty = Model::new(
-        CasementSettings::defaults(),
+        CompositorSettings::defaults(),
         at(0),
         SpaceSeed::from_entropy([7; 16]),
     );

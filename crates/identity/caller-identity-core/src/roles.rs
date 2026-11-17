@@ -11,7 +11,7 @@ pub const SHELL: RoleName = RoleName::from_static("shell");
 pub const PORTAL: RoleName = RoleName::from_static("portal");
 /// The portal frontend (`xdg-desktop-portal`): the only caller of the portal backend.
 pub const PORTAL_FRONTEND: RoleName = RoleName::from_static("portal_frontend");
-/// The compositor (`casement`).
+/// The compositor (`compositor`).
 pub const COMPOSITOR: RoleName = RoleName::from_static("compositor");
 /// The agent tier (`cuad`): the process that drives other programs for an assistant.
 pub const AGENT_TIER: RoleName = RoleName::from_static("agent_tier");

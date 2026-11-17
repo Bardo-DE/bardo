@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Acceptance script 'globals' (20-FREEZE-PLAN §4.3, P0): the globals a public client sees on
-# casement's headless session are exactly the golden list
+# The compositor's headless session are exactly the golden list
 # crates/compositor/compositor-testkit/tests/golden/globals.txt: one output, two outputs (wl_output once each),
 # and with --dmabuf soft (the extra zwp_linux_dmabuf_v1 row). Prints PASS|SKIP|FAIL per step and
 # exits with the plan's codes. Calls require_jail first.
@@ -35,7 +35,7 @@ expected() {
 # when it answers, else wayland-info's text.
 actual() {
   local rows=""
-  if probe=$(casement_tool compositor-probe 2>/dev/null) && out=$(timeout 20 "$probe" globals 2>/dev/null); then
+  if probe=$(compositor_tool compositor-probe 2>/dev/null) && out=$(timeout 20 "$probe" globals 2>/dev/null); then
     rows=$(printf '%s\n' "$out" | python3 -c '
 import json, sys
 for line in sys.stdin:

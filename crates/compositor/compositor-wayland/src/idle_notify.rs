@@ -1,7 +1,7 @@
 //! `ext_idle_notifier_v1`: idle and resumed notifications.
 //!
 //! smithay's notifier arms calloop timers on the wall clock, which the virtual clock cannot stop,
-//! and hands the handler no hook when a client asks for one, so casement serves the protocol itself
+//! and hands the handler no hook when a client asks for one, so the compositor serves the protocol itself
 //! (A36): the global and both object types are ours, and idleness is timed on the session's timers
 //! (`TimerKey::IdleNotify`, armed through `Effect::ArmTimer`) by the pure [`IdleBook`].
 //!
@@ -36,7 +36,7 @@ use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::BTreeMap;
 use std::time::Duration;
 
-/// The version casement serves (2 adds `get_input_idle_notification`).
+/// The version the compositor serves (2 adds `get_input_idle_notification`).
 pub const VERSION: u32 = 2;
 
 /// The shortest idle timeout a sandboxed or unproven peer is served (CASW-07, decided 2026-10-16).

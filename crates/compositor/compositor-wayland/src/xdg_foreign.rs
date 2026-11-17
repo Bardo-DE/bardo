@@ -37,7 +37,7 @@ use smithay::wayland::shell::is_valid_parent;
 use smithay::wayland::shell::xdg::{XDG_TOPLEVEL_ROLE, XdgShellHandler, XdgToplevelSurfaceData};
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 
-/// The version casement serves, of both globals.
+/// The version the compositor serves, of both globals.
 pub const VERSION: u32 = 1;
 
 /// `zxdg_exporter_v2` and `zxdg_importer_v2`.

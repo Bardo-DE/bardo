@@ -285,7 +285,7 @@ fn the_portal_is_trusted_for_the_screen_and_windows_and_asked_for_the_rest() {
     assert_eq!(asked[0].2.text, "/usr/libexec/bardo/bardo-portal");
 }
 
-/// NEW-FA-2: the connection casement hands the bus-proven portal is trusted for the screen and the
+/// NEW-FA-2: the connection the compositor hands the bus-proven portal is trusted for the screen and the
 /// windows at once, with no question, and for nothing else.
 #[test]
 fn a_handed_out_portal_connection_has_the_portals_standing_and_no_more() {

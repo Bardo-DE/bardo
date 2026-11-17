@@ -1,7 +1,7 @@
 //! `zwp_idle_inhibit_manager_v1` as a client (P0-H8).
 //!
 //! A surface of its own holds idleness off until the inhibitor is destroyed. The surface has no role and no buffer, so it is alive but
-//! not shown; casement counts it all the same until the shown-Space lookup exists (the limit
+//! not shown; the compositor counts it all the same until the shown-Space lookup exists (the limit
 //! `IdleInhibitPart::inhibited` documents).
 //!
 //! Self-contained like `misc::idle`, whose side queue it reuses.

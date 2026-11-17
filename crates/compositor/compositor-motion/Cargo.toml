@@ -1,6 +1,6 @@
 [package]
 name = "compositor-motion"
-description = "casement's pure motion: the MotionBook of ui-motion spring legs, retargeting with velocity kept, and sampling into an Eq FrameScene in 1/120 px."
+description = "The compositor's pure motion: the MotionBook of ui-motion spring legs, retargeting with velocity kept, and sampling into an Eq FrameScene in 1/120 px."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

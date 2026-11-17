@@ -1,4 +1,4 @@
-//! The winit backend: casement in a window of the user's own session, for the user's manual
+//! The winit backend: the compositor in a window of the user's own session, for the user's manual
 //! feel checks (P0 exit, "nested winit feel"). Agents build it and never run it (§3.2); a
 //! binary built with `testing` or `debug-inject` refuses it.
 //!
@@ -89,7 +89,7 @@ impl WinitBackend {
         );
         let attributes = WindowAttributes::default()
             .with_surface_size(logical)
-            .with_title("casement")
+            .with_title("compositor")
             .with_visible(true);
         let (graphics, events) =
             winit::init_from_attributes::<GlesRenderer>(attributes).map_err(BackendError::from)?;
@@ -252,8 +252,12 @@ fn seat_devices() -> Vec<FedInput> {
         FedInput::Appeared(FedDevice::new(id, class, DeviceName(name.to_owned())))
     };
     vec![
-        device(KEYBOARD, DeviceClass::Keyboard, "casement window keyboard"),
-        device(POINTER, DeviceClass::Pointer, "casement window pointer"),
+        device(
+            KEYBOARD,
+            DeviceClass::Keyboard,
+            "compositor window keyboard",
+        ),
+        device(POINTER, DeviceClass::Pointer, "compositor window pointer"),
     ]
 }
 

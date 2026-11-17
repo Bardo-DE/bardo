@@ -41,7 +41,7 @@ pub enum HostEvent<M> {
     /// logging out): the app's should-terminate path. Save or ask ("Save changes?"), then
     /// `HostCtx::exit`, or stay open by doing nothing. There is no reply to send; the compositor
     /// takes the app for running again if it is still there after a short grace. Raised only on a
-    /// compositor that offers it (casement, from `bardo_window_manager_v1` version 2); elsewhere
+    /// compositor that offers it (the compositor, from `bardo_window_manager_v1` version 2); elsewhere
     /// the windows are closed one by one and `SurfaceClosed` is all the app sees.
     QuitAsked,
     /// palmrest asks for an action that needs the person's session, and the host carries none of it

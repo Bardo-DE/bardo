@@ -1,7 +1,7 @@
 //! Drawing one output's elements through smithay's damage tracker.
 
 use crate::compositor::Compositor;
-use crate::element::{CasementElement, Rgba8, pixman_can_draw};
+use crate::element::{Rgba8, SceneElement, pixman_can_draw};
 use crate::scene::convert::ours;
 use compositor_core::geometry::PhysicalRect;
 use smithay::backend::renderer::damage::{Error as DamageError, OutputDamageTracker};
@@ -64,7 +64,7 @@ pub fn render_output<R: Compositor>(
     renderer: &mut R,
     target: &mut R::Framebuffer<'_>,
     tracker: &mut OutputDamageTracker,
-    elements: &[CasementElement<R>],
+    elements: &[SceneElement<R>],
     age: usize,
 ) -> Result<Rendered, RenderError> {
     let routed = routed(renderer, elements);
@@ -94,7 +94,7 @@ pub fn render_output<R: Compositor>(
 /// headless picture had them.
 pub fn routed<'a, R: Compositor>(
     renderer: &mut R,
-    elements: &'a [CasementElement<R>],
+    elements: &'a [SceneElement<R>],
 ) -> Vec<Routed<'a, R>> {
     let shaders = renderer.runs_shaders();
     elements
@@ -107,7 +107,7 @@ pub fn routed<'a, R: Compositor>(
 /// [`Compositor`] hooks (shaders on GLES, stand-ins elsewhere), everything else as it is.
 /// Made by [`routed`].
 pub struct Routed<'a, R: Compositor> {
-    element: &'a CasementElement<R>,
+    element: &'a SceneElement<R>,
     shaders: bool,
 }
 
@@ -168,7 +168,7 @@ impl<R: Compositor> Element for Routed<'_, R> {
     /// A blur reads the framebuffer only where shaders run; its stand-in reads nothing.
     fn is_framebuffer_effect(&self) -> bool {
         match (self.element, self.shaders) {
-            (CasementElement::Blur(_), false) => false,
+            (SceneElement::Blur(_), false) => false,
             (element, _) => element.is_framebuffer_effect(),
         }
     }
@@ -185,18 +185,18 @@ impl<R: Compositor> RenderElement<R> for Routed<'_, R> {
         cache: Option<&UserDataMap>,
     ) -> Result<(), R::Error> {
         match self.element {
-            CasementElement::MemoryStrip(_)
-            | CasementElement::SurfaceStrip(_)
-            | CasementElement::ClipStrip(_)
+            SceneElement::MemoryStrip(_)
+            | SceneElement::SurfaceStrip(_)
+            | SceneElement::ClipStrip(_)
                 if !self.shaders && !pixman_can_draw(src, dst) =>
             {
                 Ok(())
             }
-            CasementElement::Blur(blur) => R::draw_blur_v0(frame, blur, dst, damage, cache),
-            CasementElement::Clip(clip) => {
+            SceneElement::Blur(blur) => R::draw_blur_v0(frame, blur, dst, damage, cache),
+            SceneElement::Clip(clip) => {
                 R::draw_rounded_clip(frame, clip, src, dst, damage, opaque_regions, cache)
             }
-            CasementElement::ClipStrip(clip) => {
+            SceneElement::ClipStrip(clip) => {
                 R::draw_clip_strip(frame, clip, src, dst, damage, opaque_regions, cache)
             }
             element => element.draw_plain(frame, src, dst, damage, opaque_regions, cache),
@@ -215,7 +215,7 @@ impl<R: Compositor> RenderElement<R> for Routed<'_, R> {
         cache: &UserDataMap,
     ) -> Result<(), R::Error> {
         match self.element {
-            CasementElement::Blur(blur) => R::capture_blur_v0(frame, blur, dst, cache),
+            SceneElement::Blur(blur) => R::capture_blur_v0(frame, blur, dst, cache),
             element => element.capture_plain(frame, src, dst, cache),
         }
     }

@@ -3,7 +3,7 @@
 #
 #   COMPOSITOR=kwin       (default) a headless KWin on the host (kwin-virtual.sh), input through
 #                         fake-input.sh. Runs on the host, never the user's session.
-#   COMPOSITOR=casement   casement (our compositor) started by its dev/up.sh inside
+#   COMPOSITOR=the compositor   the compositor (our compositor) started by its dev/up.sh inside
 #                         packaging/harness/jail.sh, input through `bardo-compositorctl debug inject`.
 #                         The script re-executes itself in the jail (`comp_enter`) after its
 #                         cargo builds, which never happen inside the jail.
@@ -11,10 +11,10 @@
 # A script uses, in this order: `comp_build` (cargo, outside any jail), `comp_enter`, `comp_out`
 # (its scratch directory for logs and fifos), `comp_start WxH` ... `comp_stop`, and
 # `comp_source` before it starts a client (`comp_as_shell` for one that stands in for the shell). Input is `lib/input.sh`, a window's frame
-# `lib/windows.sh`. State (A8) never goes into the checkout under casement: it lives in the
-# jail's scratch directory, scripts/dev/out/casement-<script>/ (git-ignored, kept after the run).
+# `lib/windows.sh`. State (A8) never goes into the checkout under the compositor: it lives in the
+# jail's scratch directory, scripts/dev/out/compositor-<script>/ (git-ignored, kept after the run).
 #
-# Environment (casement): BARDO_COMPOSITOR_DIR the casement checkout (default: ../compositor beside this
+# Environment (the compositor): BARDO_COMPOSITOR_DIR the compositor checkout (default: ../compositor beside this
 # repo), BARDO_COMPOSITOR_TOOLS its dev/out/tools (built by dev/bootstrap.sh --build-only outside the jail),
 # BARDO_LAYER_SHELL_HOST_BACKEND the demos' backend (default cpu: no GPU in the jail; `gpu` runs the F80
 # adapter fallback instead), BARDO_COMPOSITOR_DMABUF none|soft (default none), BARDO_COMPOSITOR_CLOCK wall|stepped
@@ -27,15 +27,15 @@ COMP_DEV_DIR="$(dirname "$COMP_LIB_DIR")"
 COMP_ROOT="$(cd "$COMP_DEV_DIR/../.." && pwd)"
 COMPOSITOR="${COMPOSITOR:-kwin}"
 case "$COMPOSITOR" in
-  kwin | casement) ;;
-  *) echo "COMPOSITOR must be kwin or casement, not '$COMPOSITOR'" >&2; exit 64 ;;
+  kwin | compositor) ;;
+  *) echo "COMPOSITOR must be kwin or compositor, not '$COMPOSITOR'" >&2; exit 64 ;;
 esac
 BARDO_COMPOSITOR_DIR="${BARDO_COMPOSITOR_DIR:-$COMP_ROOT/../compositor}"
 export COMPOSITOR BARDO_COMPOSITOR_DIR
 COMP_ENV="${COMP_ENV:-}"
 
 # Whether this process is inside packaging/harness/jail.sh (its PID 1 is bwrap, its scratch set).
-# The jail's own structural check (require_jail) still runs in every casement script of ours.
+# The jail's own structural check (require_jail) still runs in every compositor script of ours.
 comp_in_jail() { [ "$(cat /proc/1/comm 2>/dev/null)" = bwrap ] && [ -n "${JAIL_SCRATCH:-}" ]; }
 
 # comp_build CARGO_ARGS...: `cargo build`, except inside the jail (no cargo, no network there:
@@ -45,7 +45,7 @@ comp_build() {
   (cd "$COMP_ROOT/../.." && cargo build "$@") >&2
 }
 
-# comp_tools: the casement tools directory, or exit 3 saying how to build it.
+# comp_tools: the compositor tools directory, or exit 3 saying how to build it.
 comp_tools() {
   local tools="${BARDO_COMPOSITOR_TOOLS:-$BARDO_COMPOSITOR_DIR/dev/out/tools}" tool
   for tool in bardo-compositor bardo-compositorctl fake-logind; do
@@ -58,7 +58,7 @@ comp_tools() {
 }
 
 # comp_as_shell PROGRAM ARGS...: runs PROGRAM in place of this shell (exec) as the desktop's
-# shell. casement keeps an exclusive keyboard only for the shell's own connection (its CASC-02),
+# shell. The compositor keeps an exclusive keyboard only for the shell's own connection (its CASC-02),
 # so a demo that stands in for the launcher or the switcher asks for that connection through the
 # tools' compositor-shell-exec (call comp_source first: the request goes over the private bus).
 # KWin gives every client the keyboard it asks for, and PROGRAM runs as it is.
@@ -66,7 +66,7 @@ comp_as_shell() {
   local tools
   case "$COMPOSITOR" in
     kwin) exec "$@" ;;
-    casement)
+    compositor)
       tools="$(comp_tools)" || exit 3
       if [ ! -x "$tools/bin/compositor-shell-exec" ]; then
         echo "comp: $tools/bin/compositor-shell-exec is missing: run $BARDO_COMPOSITOR_DIR/dev/bootstrap.sh --build-only outside the jail" >&2
@@ -77,10 +77,10 @@ comp_as_shell() {
   esac
 }
 
-# comp_enter SCRIPT ARGS...: COMPOSITOR=casement outside the jail runs SCRIPT ARGS in a new jail
+# comp_enter SCRIPT ARGS...: COMPOSITOR=the compositor outside the jail runs SCRIPT ARGS in a new jail
 # (and exits with its code); anything else returns at once. Call it after the script's builds.
 comp_enter() {
-  [ "$COMPOSITOR" = casement ] || return 0
+  [ "$COMPOSITOR" = compositor ] || return 0
   if comp_in_jail; then return 0; fi
   local script=$1 name tools jail scratch var envs=()
   shift
@@ -88,10 +88,10 @@ comp_enter() {
   tools="$(comp_tools)" || exit 3
   jail="${BARDO_LAYER_SHELL_HOST_JAIL:-$COMP_ROOT/../../packaging/harness/jail.sh}"
   [ -x "$jail" ] || { echo "comp: no jail at $jail (packaging/harness/jail.sh of this tree)" >&2; exit 3; }
-  scratch="$COMP_DEV_DIR/out/casement-${name#accept-}"
+  scratch="$COMP_DEV_DIR/out/compositor-${name#accept-}"
   rm -rf "$scratch"
   mkdir -p "$scratch"
-  envs=(--env "COMPOSITOR=casement" --env "BARDO_COMPOSITOR_DIR=$BARDO_COMPOSITOR_DIR" --env "BARDO_COMPOSITOR_TOOLS=$tools"
+  envs=(--env "COMPOSITOR=compositor" --env "BARDO_COMPOSITOR_DIR=$BARDO_COMPOSITOR_DIR" --env "BARDO_COMPOSITOR_TOOLS=$tools"
     --env "BARDO_LAYER_SHELL_HOST_BACKEND=${BARDO_LAYER_SHELL_HOST_BACKEND:-cpu}")
   # The scripts' own knobs, passed through the jail's cleared environment when set.
   for var in BARDO_COMPOSITOR_DMABUF BARDO_COMPOSITOR_CLOCK BARDO_COMPOSITOR_START_TENTHS FOOT FOOT_LIBS DRAG_ICON \
@@ -103,7 +103,7 @@ comp_enter() {
 
 # comp_out: the directory for the script's logs, fifos and captures.
 comp_out() {
-  if [ "$COMPOSITOR" = casement ]; then
+  if [ "$COMPOSITOR" = compositor ]; then
     echo "$JAIL_SCRATCH/out"
   else
     echo "$COMP_DEV_DIR/out"
@@ -111,7 +111,7 @@ comp_out() {
 }
 
 # comp_start WIDTHxHEIGHT: starts the compositor with one output of that size at scale 1 and
-# sets COMP_ENV, the env file a client sources (`comp_source`). Under casement COMP_RUNTIME
+# sets COMP_ENV, the env file a client sources (`comp_source`). Under the compositor COMP_RUNTIME
 # (a directory that exists) puts its socket there instead of in the jail's XDG_RUNTIME_DIR.
 comp_start() {
   local size="${1:-1920x1080}"
@@ -120,7 +120,7 @@ comp_start() {
       "$COMP_DEV_DIR/kwin-virtual.sh" start "$size" >&2 || return 1
       COMP_ENV="$COMP_DEV_DIR/.kwin-env"
       ;;
-    casement)
+    compositor)
       local up out
       up="$BARDO_COMPOSITOR_DIR/dev/up.sh"
       out="$(unset BARDO_COMPOSITOR_STATE; XDG_RUNTIME_DIR="${COMP_RUNTIME:-$XDG_RUNTIME_DIR}" \
@@ -136,7 +136,7 @@ comp_start() {
 comp_stop() {
   case "$COMPOSITOR" in
     kwin) "$COMP_DEV_DIR/kwin-virtual.sh" stop >&2 ;;
-    casement) [ -z "$COMP_ENV" ] || "$BARDO_COMPOSITOR_DIR/dev/down.sh" "$COMP_ENV" >&2 ;;
+    compositor) [ -z "$COMP_ENV" ] || "$BARDO_COMPOSITOR_DIR/dev/down.sh" "$COMP_ENV" >&2 ;;
   esac
 }
 
@@ -148,7 +148,7 @@ comp_source() {
       # shellcheck source=/dev/null
       source "$COMP_ENV"
       ;;
-    casement)
+    compositor)
       set -a
       # shellcheck source=/dev/null
       source "$COMP_ENV"

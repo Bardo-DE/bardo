@@ -12,7 +12,7 @@ fn a_first_install_unpacks_switches_and_links() {
     assert_eq!(sandbox.current(), Some(v("0.1.0")));
     assert_eq!(sandbox.previous(), None);
     let current = sandbox.layout.current();
-    assert_eq!(read(&current.join("bin/bardo-compositor")), "casement 1");
+    assert_eq!(read(&current.join("bin/bardo-compositor")), "compositor 1");
     assert_eq!(
         std::fs::metadata(current.join("bin/bardo-compositor"))
             .expect("meta")

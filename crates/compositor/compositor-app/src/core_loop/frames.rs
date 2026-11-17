@@ -51,9 +51,9 @@ pub(super) fn drawn(state: &State) -> BTreeMap<WindowId, FrameStyle> {
     styles_where(state, drawn_state)
 }
 
-/// The windows that draw their own frame and that casement shapes: the corners clipped at the
+/// The windows that draw their own frame and that compositor shapes: the corners clipped at the
 /// radius `round_of` gives, and the shadow of a framed window's activity where it casts one. Not
-/// the windows casement frames, not a full-screen window (square, as a framed one is), not the
+/// the windows the compositor frames, not a full-screen window (square, as a framed one is), not the
 /// desktop's own shell windows; a window in the dock stays so its genie is cut the same.
 pub(super) fn rounds(state: &State) -> BTreeMap<WindowId, ClientRound> {
     let book = &state.render.textures;
@@ -75,7 +75,7 @@ pub(super) fn rounds(state: &State) -> BTreeMap<WindowId, ClientRound> {
                 margin_of(&entry.root),
                 style.look.radius,
             )?;
-            let cast = round.casement_shadow.then_some(FrameStyle {
+            let cast = round.compositor_shadow.then_some(FrameStyle {
                 look: FrameLook {
                     radius: round.radius,
                     ..style.look

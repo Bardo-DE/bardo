@@ -40,7 +40,7 @@ impl ToplevelCaptureSourceHandler for State {
         &mut self.wl.capture_source.sources
     }
 
-    /// A source of a window casement lists. A handle whose window is gone (or never was ours)
+    /// A source of a window the compositor lists. A handle whose window is gone (or never was ours)
     /// leaves the source without an id, and a source without an id has no constraints: its
     /// session is stopped at once.
     fn toplevel_source_created(

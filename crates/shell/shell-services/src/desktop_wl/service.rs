@@ -40,7 +40,7 @@ impl Run for WindowsService {
             });
         // The run lasts as long as the thread: a run that ended at once would be taken for a
         // service with nothing to do, its commands dropped and the thread stopped, so the
-        // windows stayed empty for good (casement, 2026-10-20).
+        // windows stayed empty for good (the compositor, 2026-10-20).
         async move {
             started.map_err(ServiceError::Thread)?;
             let _thread_ended_or_dropped_its_sender = ended.await;

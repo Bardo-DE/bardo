@@ -1,4 +1,4 @@
-//! casement's layout seam: given what the model holds ([`SceneSpec`]), where every window,
+//! The compositor's layout seam: given what the model holds ([`SceneSpec`]), where every window,
 //! Space and overview slot belongs ([`Arrangement`]). Pure and time-free; motion animates
 //! between arrangements, the renderer draws what motion samples.
 //!
@@ -7,10 +7,10 @@
 //! grid (Split View, Exposé, from P3).
 //!
 //! ```
-//! use compositor_core::settings::CasementSettings;
+//! use compositor_core::settings::CompositorSettings;
 //! use compositor_layout::{Arrangement, LayoutKnobs, RustScene, SceneLayout, SceneSpec};
 //!
-//! let knobs = LayoutKnobs::of(&CasementSettings::defaults());
+//! let knobs = LayoutKnobs::of(&CompositorSettings::defaults());
 //! let arrangement = RustScene.arrange(&SceneSpec { outputs: Vec::new() }, &knobs);
 //! assert_eq!(arrangement, Arrangement::default());
 //! ```

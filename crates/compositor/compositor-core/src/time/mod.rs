@@ -1,7 +1,7 @@
 //! Time as data: the session's monotonic instant ([`Mono`]), refresh rates, vblank clocks, the
 //! timer book and the virtual clock that steps them in order.
 //!
-//! Nothing here reads a clock. The composition root's `casement/src/time/` is the only reader
+//! Nothing here reads a clock. The composition root's `compositor/src/time/` is the only reader
 //! (boundary row B8) and wraps [`VirtualClock`] in a calloop event source for headless runs
 //! (21-FREEZE-AMENDMENTS A1).
 

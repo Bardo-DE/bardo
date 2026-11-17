@@ -140,7 +140,7 @@ fn hints_apply_on_commit_and_are_forgotten_on_destroy() {
             asked[0].client_pid
         ),
         (window, ":1.5", std::process::id()),
-        "queued with the pid casement holds the client by"
+        "queued with the pid compositor holds the client by"
     );
     let verified = Some(A11yRoot {
         bus_name: ":1.5".to_owned(),

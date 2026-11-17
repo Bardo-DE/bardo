@@ -6,7 +6,7 @@ use crate::support;
 use compositor_core::app::AppVisibility;
 use compositor_core::focus::TokenCheck;
 use compositor_core::input::DesktopCommand;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::{CoreNote, Effect, Event, ToplevelRequest, WindowId};
 use desktop_protocols::vocab::{ActorKind, Attention, Toggle};
 use support::driver::{Op, Run, last, map, plug, request, run, run_from};
@@ -170,7 +170,7 @@ fn with_switching_off_the_app_is_active_and_keyless_and_the_space_stays() {
         .expect("shown")
         .id
         .clone();
-    let mut settings = CasementSettings::defaults();
+    let mut settings = CompositorSettings::defaults();
     settings.spaces.switch_on_activate = false;
     let run = run_from(
         before.model,
@@ -208,7 +208,7 @@ fn a_window_activating_itself_on_another_space_follows_the_setting_too() {
     );
     assert_eq!(on.model.focus().key, Some(WindowId(1)));
 
-    let mut settings = CasementSettings::defaults();
+    let mut settings = CompositorSettings::defaults();
     settings.spaces.switch_on_activate = false;
     let off = run_from(
         before.model,

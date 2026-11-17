@@ -5,7 +5,7 @@ mod raster;
 
 pub use face::{CursorFace, MAX_CLIENT_CURSOR, cursor_face, cursor_pixels, drawn};
 
-use super::CasementElement;
+use super::SceneElement;
 use crate::compositor::Compositor;
 use crate::scene::convert::{on_output, sub_of};
 use crate::scene::{ChromeLayer, CursorDraw, CursorShape, OutputView};
@@ -21,17 +21,17 @@ use smithay::utils::{Logical, Rectangle, Size, Transform};
 use ui_core::geometry::scale::Scale;
 
 /// The cursor `chrome` describes, on `view` (nothing when it is hidden or off this output).
-/// Named shapes are casement's own rasters at the output's native scale (A18), drawn 1:1.
+/// Named shapes are the compositor's own rasters at the output's native scale (A18), drawn 1:1.
 pub fn cursor_elements<R: Compositor>(
     chrome: &ChromeLayer,
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     match drawn(chrome.cursor, book) {
         CursorDraw::Hidden => Vec::new(),
         CursorDraw::Named(shape) => named(shape, chrome.cursor_at, view, book, renderer)
-            .map(CasementElement::Memory)
+            .map(SceneElement::Memory)
             .into_iter()
             .collect(),
         CursorDraw::ClientSurface { hotspot } => match book.cursor() {

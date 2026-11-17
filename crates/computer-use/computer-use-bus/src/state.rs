@@ -351,7 +351,7 @@ mod tests {
             Some("unsupported:no_hidden_input")
         );
         assert_eq!(backend_wire(Some(BackendKind::KwinStock)), "kwin_stock");
-        assert_eq!(backend_wire(Some(BackendKind::Casement)), "casement");
+        assert_eq!(backend_wire(Some(BackendKind::Compositor)), "compositor");
         assert_eq!(backend_wire(None), "none");
     }
 }

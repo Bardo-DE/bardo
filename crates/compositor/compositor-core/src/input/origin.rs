@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Origin {
-    /// A kernel input device casement opened itself, not a virtual one.
+    /// A kernel input device the compositor opened itself, not a virtual one.
     Physical(DeviceClass),
     /// A user-writable virtual device (uinput, `virtual_keyboard`): never physical (I8).
     Virtual(DeviceClass),
@@ -37,7 +37,7 @@ pub struct KernelIds {
 }
 
 impl Origin {
-    /// The origin of events from a kernel input device casement opened itself, by the bus type it
+    /// The origin of events from a kernel input device the compositor opened itself, by the bus type it
     /// reports and the label of its maker (NEW-PI-4, INPUT-02, NEW-FA-4). Every device that is not on
     /// the virtual bus is physical, the laptop's built-in keyboard among them. A virtual-bus
     /// device is the person's hand only when the device service labelled it for a service that
@@ -85,7 +85,7 @@ impl Origin {
     }
 
     /// Whether a key from this origin may switch the virtual terminal (CASW-13, decided
-    /// 2026-10-16): only a kernel keyboard casement opened itself. A virtual keyboard, a remote
+    /// 2026-10-16): only a kernel keyboard the compositor opened itself. A virtual keyboard, a remote
     /// session, the agent seat and a feed never do, so no client can send the compositor to a
     /// text console, the lock included.
     #[must_use]

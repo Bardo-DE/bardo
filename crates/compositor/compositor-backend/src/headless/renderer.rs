@@ -13,7 +13,7 @@ use compositor_render::pass::{
     ArgbImage, CapturedFrame, blit_texture, read_dmabuf, render_window, render_window_dmabuf,
     write_dmabuf,
 };
-use compositor_render::{CasementElement, Compositor, render_output};
+use compositor_render::{Compositor, SceneElement, render_output};
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::allocator::{Format, Fourcc, Modifier};
 use smithay::backend::renderer::damage::OutputDamageTracker;
@@ -399,7 +399,7 @@ fn draw_with<R, T>(
     renderer: &mut R,
     target: &mut T,
     tracker: &mut OutputDamageTracker,
-    elements: &[CasementElement<R>],
+    elements: &[SceneElement<R>],
     age: Age,
     size: PhysicalSize,
 ) -> Result<Drawn, BackendError>

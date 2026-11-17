@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Wallpaper acceptance (design/20 §1.4), against a casement
+# Wallpaper acceptance (design/20 §1.4), against a compositor
 # (brought up and ended by start_compositor) with a real `bardo-shell run`, which spawns a `Wallpaper` per output
 # (`spawn_surface::<Wallpaper>` in `daemon/surfaces.rs`) and sends the
 # wallpaper service a `Prepare` (`prepare_wallpapers`) at the output's buffer size, so this
@@ -13,7 +13,7 @@
 # Checks: a wallpaper surface exists per output and presents at least one frame; its capture's
 # centre pixel matches the marked source image's own centre pixel (cover-fit keeps the crop
 # centred, `geometry.rs`); five idle seconds add zero frames. Screenshot:
-# `dev/out/wallpaper-casement.png` (the nested screen, `shot.sh`); the pixel check itself reads
+# `dev/out/wallpaper-compositor.png` (the nested screen, `shot.sh`); the pixel check itself reads
 # `bardo-shell debug capture`'s own file, not the screenshot.
 #
 # Usage: dev/accept/wallpaper.sh
@@ -138,10 +138,10 @@ step_idle() {
   sleep 5
   after=$(wallpaper_counters) || return 1
   printf 'before:\n%s\nafter:\n%s\n' "$before" "$after" | tee "$OUT_DIR/idle.log" >&2
-  shot "$BARDO_SHELL_SHOTS/wallpaper-casement.png" >&2 || true
+  shot "$BARDO_SHELL_SHOTS/wallpaper-compositor.png" >&2 || true
   [ "$before" = "$after" ]
 }
 
 run_steps step_ping step_surfaces_exist step_centre_pixel step_idle
-echo "output dir: $OUT_DIR; screenshot: $BARDO_SHELL_SHOTS/wallpaper-casement.png" >&2
+echo "output dir: $OUT_DIR; screenshot: $BARDO_SHELL_SHOTS/wallpaper-compositor.png" >&2
 exit "$STATUS"

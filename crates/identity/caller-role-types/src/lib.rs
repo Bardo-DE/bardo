@@ -50,7 +50,7 @@ pub enum CallerRole {
     /// (`Machines`) and nothing else of accountd. Given by the unit that is the terminal, as the
     /// systemd manager says its main process is, never by an app scope's name.
     Terminal,
-    /// The compositor (casement): mints a desktop-wide Space id for each workspace and
+    /// The compositor (the compositor): mints a desktop-wide Space id for each workspace and
     /// registers it with `org.bardo.Spaces1` (`Register`); it may `List` the Spaces and nothing
     /// else of accountd. Given by the compositor's unit, never by an app scope's name.
     Compositor,

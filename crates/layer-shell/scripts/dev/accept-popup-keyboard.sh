@@ -5,7 +5,7 @@
 # KWin (kwin-virtual.sh) driven by fake-input.sh. Never the user's session.
 #
 #   scripts/dev/accept-popup-keyboard.sh
-#   COMPOSITOR=casement scripts/dev/accept-popup-keyboard.sh   the same on casement, in a jail
+#   COMPOSITOR=the compositor scripts/dev/accept-popup-keyboard.sh   the same on the compositor, in a jail
 #
 # Steps, each PASS/FAIL:
 #   app_focused      a real click on the window gives it the keyboard (its wl_keyboard.enter)

@@ -606,7 +606,7 @@ fn destroying_the_base_first_is_defunct_surfaces() {
 /// Upstream smithay (118e34ff, `shell/xdg/handlers/surface.rs`) posts `xdg_wm_base.role` for the
 /// first and does not refuse the second (`give_role` with the same role succeeds, so a surface
 /// got two toplevels). Both are decided inside smithay's request handler, where the compositor
-/// has no hook, so the casement fork carries the fix (QUIRKS row).
+/// has no hook, so the compositor fork carries the fix (QUIRKS row).
 #[test]
 fn destruction_order_and_double_roles_are_errors() {
     let (mut fixture, id) = boot();

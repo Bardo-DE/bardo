@@ -5,7 +5,7 @@ use super::stamp::Stamp;
 /// The first satellite start of a session, complete: what the `xwayland-ready` line says.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct XwaylandReady {
-    /// When casement decided to start satellite: the turn it saw the first X11 client waiting.
+    /// When the compositor decided to start satellite: the turn it saw the first X11 client waiting.
     pub requested_at: Stamp,
     /// When satellite answered: its connection to the compositor arrived.
     pub ready_at: Stamp,

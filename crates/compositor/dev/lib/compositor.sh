@@ -1,18 +1,18 @@
 # start_compositor [--outputs SPEC] [--clock wall|stepped] [--dmabuf none|soft] [--renderer R]
-#                  [casement ARGS...]
+#                  [the compositor ARGS...]
 #   A fresh run: the private bus (bus_up), fake-logind on it as the system bus, then
-#   `casement --backend headless` in the current jail, waiting for its socket. Exports and records
+#   `bardo-compositor --backend headless` in the current jail, waiting for its socket. Exports and records
 #   in the run's env file: WAYLAND_DISPLAY (an absolute path in the jail's /run/user/$UID),
 #   DBUS_SESSION_BUS_ADDRESS, DBUS_SYSTEM_BUS_ADDRESS, XDG_RUNTIME_DIR, BARDO_COMPOSITOR_PID,
 #   BARDO_COMPOSITOR_LOGIND_PID, BARDO_COMPOSITOR_BUS_PID, BARDO_COMPOSITOR_STATE. Defaults: one 1920x1080 output at
 #   scale 1, the stepped clock (virtual time: `bardo-compositorctl debug clock`), no dma-buf.
-#   Test unit overrides: casement is started with this shell's environment, so a scenario with no
+#   Test unit overrides: the compositor is started with this shell's environment, so a scenario with no
 #   systemd sets BARDO_COMPOSITOR_DEBUG_PEER_UNITS="<program-or-pid>=<unit>[,...]" before start_compositor,
 #   e.g. BARDO_COMPOSITOR_DEBUG_PEER_UNITS="bardo-shell=bardo-shell.service" start_compositor. Then a bus peer whose
 #   program name (/proc/<pid>/comm, 15 bytes) is `bardo-shell` is taken to run in bardo-shell.service, and
 #   org.bardo.Compositor1.Connect("shell") hands it the shell connection. An all-digit left side is
 #   a pid. Only the jail's debug-inject build reads it; any other build ignores it. A bad value
-#   makes casement exit 64 (start_compositor then prints the log). See FINDINGS "## debug-role".
+#   makes the compositor exit 64 (start_compositor then prints the log). See FINDINGS "## debug-role".
 # stop_compositor: stops what start_compositor started, each by the pid in the env file (never by
 #   name), the bus last.
 #
@@ -44,14 +44,14 @@ start_compositor() {
       --clock) clock=${2:?--clock needs a value}; shift 2 ;;
       --dmabuf) dmabuf=${2:?--dmabuf needs a value}; shift 2 ;;
       --renderer) renderer=${2:?--renderer needs a value}; shift 2 ;;
-      # Anything else (e.g. --state-home DIR, to keep Space ids across a restart) goes to casement.
+      # Anything else (e.g. --state-home DIR, to keep Space ids across a restart) goes to compositor.
       *) extra+=("$1"); shift ;;
     esac
   done
-  bin=$(casement_tool bardo-compositor) || return 3
-  logind=$(casement_tool fake-logind) || return 3
-  if [ -z "${BARDO_COMPOSITOR_STATE:-}" ]; then casement_new_state; _CASEMENT_STATE_OWNED=1; fi
-  state=$(casement_state_dir)
+  bin=$(compositor_tool bardo-compositor) || return 3
+  logind=$(compositor_tool fake-logind) || return 3
+  if [ -z "${BARDO_COMPOSITOR_STATE:-}" ]; then compositor_new_state; _COMPOSITOR_STATE_OWNED=1; fi
+  state=$(compositor_state_dir)
   : "${XDG_RUNTIME_DIR:?start_compositor: XDG_RUNTIME_DIR is not set}"
   env_set XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
   bus_up || return $?
@@ -71,7 +71,7 @@ start_compositor() {
   local tenths=0 socket=""
   while [ "$tenths" -lt "$BARDO_COMPOSITOR_START_TENTHS" ]; do
     if ! _alive "$BARDO_COMPOSITOR_PID"; then
-      echo "start_compositor: casement exited before its socket appeared; $state/bardo-compositor.log:" >&2
+      echo "start_compositor: compositor exited before its socket appeared; $state/bardo-compositor.log:" >&2
       tail -20 "$state/bardo-compositor.log" >&2
       stop_compositor
       return 1
@@ -88,7 +88,7 @@ start_compositor() {
     return 1
   fi
   env_set WAYLAND_DISPLAY "$socket"
-  echo "casement is up: WAYLAND_DISPLAY=$socket (env: $state/env)" >&2
+  echo "compositor is up: WAYLAND_DISPLAY=$socket (env: $state/env)" >&2
 }
 
 # _alive PID: the process exists and is not a zombie waiting to be reaped.
@@ -112,10 +112,10 @@ _stop_pid() {
 stop_compositor() {
   require_jail
   local file state
-  state=$(casement_state_dir)
+  state=$(compositor_state_dir)
   file="$state/env"
   if [ -f "$file" ]; then
-    casement_env_load "$file"
+    compositor_env_load "$file"
     _stop_pid "${BARDO_COMPOSITOR_PID:-}"
     _stop_pid "${BARDO_COMPOSITOR_LOGIND_PID:-}"
     _stop_pid "${BARDO_COMPOSITOR_BUS_PID:-}"
@@ -124,5 +124,5 @@ stop_compositor() {
   fi
   unset BARDO_COMPOSITOR_PID BARDO_COMPOSITOR_LOGIND_PID BARDO_COMPOSITOR_BUS_PID
   # A run dir start_compositor made is finished with; one the caller named stays theirs.
-  if [ -n "${_CASEMENT_STATE_OWNED:-}" ]; then unset BARDO_COMPOSITOR_STATE _CASEMENT_STATE_OWNED; fi
+  if [ -n "${_COMPOSITOR_STATE_OWNED:-}" ]; then unset BARDO_COMPOSITOR_STATE _COMPOSITOR_STATE_OWNED; fi
 }

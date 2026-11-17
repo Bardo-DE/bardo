@@ -38,7 +38,7 @@ trap accept_cleanup EXIT
 
 command -v jq >/dev/null || { echo "accept: jq is not installed: $(pkg_hint jq)" >&2; exit 2; }
 
-ctl() { "$(casement_tool bardo-compositorctl)" "$@"; }
+ctl() { "$(compositor_tool bardo-compositorctl)" "$@"; }
 
 step() { ctl debug clock step "${1:-1}"; }
 

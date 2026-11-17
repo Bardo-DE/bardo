@@ -58,7 +58,7 @@ pub struct LocalSpace(pub u64);
 
 /// A desktop-wide Space's id: a slug of the id grammar, never `desktop`.
 ///
-/// On casement the compositor mints it for each workspace (`s-` and 32 lowercase hex digits), sends
+/// On the compositor the compositor mints it for each workspace (`s-` and 32 lowercase hex digits), sends
 /// it as the ext-workspace id, keeps it across restarts and registers it with accountd's
 /// `org.bardo.Spaces1`; sill and apps read it from the workspace protocol. On a compositor without
 /// stable workspace ids, accountd mints it when the Space is made. Never derived from the name, so

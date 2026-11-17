@@ -1,4 +1,4 @@
-//! `serve_debug_at` over a private dbus-daemon: a casementctl-style client call reaches the
+//! `serve_debug_at` over a private dbus-daemon: a bardo-compositorctl-style client call reaches the
 //! calloop channel and the answer the loop sends comes back.
 
 use super::*;
@@ -8,8 +8,8 @@ use crate::{InjectLine, WaitPredicate};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 
-/// A calloop loop on its own thread standing in for casement's: it records each request and
-/// answers each call the way casement would in shape.
+/// A calloop loop on its own thread standing in for the compositor's: it records each request and
+/// answers each call the way the compositor would in shape.
 struct StandInLoop {
     seen: Arc<Mutex<Vec<DebugRequest>>>,
     stop: calloop::LoopSignal,
@@ -138,6 +138,6 @@ fn a_second_server_on_the_same_bus_is_refused_and_a_dead_bus_is_an_error() {
     let second = serve_debug_at(&bus.address);
     assert!(matches!(second, Err(IpcError::Bus(_))), "{second:?}");
     drop(first);
-    let nowhere = serve_debug_at("unix:path=/nonexistent/casement-debug1-test");
+    let nowhere = serve_debug_at("unix:path=/nonexistent/compositor-debug1-test");
     assert!(matches!(nowhere, Err(IpcError::Bus(_))), "{nowhere:?}");
 }

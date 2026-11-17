@@ -1,5 +1,5 @@
 //! A window that draws its own frame is shaped by what its client said about it: `set_frame`
-//! (`compositor_shadow`) clips its four corners and casts casement's shadow, saying nothing does
+//! (`compositor_shadow`) clips its four corners and casts the compositor's shadow, saying nothing does
 //! the same (without the shadow when the buffer holds a margin the toolkit drew its own in), and
 //! `set_frame(client)` and full screen leave it as it is. The window is one solid colour that
 //! nothing else on the desktop has, over a light wallpaper a shadow darkens.
@@ -72,7 +72,7 @@ type Rect = (u32, u32, u32, u32);
 const RENDERERS: [SoftRenderer; 2] = [SoftRenderer::Pixman, SoftRenderer::Llvmpipe];
 
 #[test]
-fn a_window_that_asks_for_a_shadow_gets_round_corners_and_casements_shadow() {
+fn a_window_that_asks_for_a_shadow_gets_round_corners_and_compositor_shadow() {
     for renderer in RENDERERS {
         let shots = shoot(
             renderer,
@@ -110,7 +110,7 @@ fn a_window_with_a_margin_in_its_buffer_is_clipped_at_its_geometry_and_gets_no_s
         assert_eq!(
             shots.shot.get_pixel(left - 4, u32::midpoint(top, bottom)),
             shots.bare.get_pixel(left - 4, u32::midpoint(top, bottom)),
-            "casement adds no shadow beside the toolkit's own on {renderer:?}"
+            "compositor adds no shadow beside the toolkit's own on {renderer:?}"
         );
     }
 }

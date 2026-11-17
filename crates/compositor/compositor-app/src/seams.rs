@@ -33,7 +33,7 @@ pub struct Seams {
     pub child_env: ChildEnv,
     /// The Spaces registered with the account service (none until `run` is given a bus).
     pub space_sync: SpaceSync,
-    /// How the service manager is told casement is ready (nothing until `run` is given a socket).
+    /// How the service manager is told the compositor is ready (nothing until `run` is given a socket).
     pub notify: Box<dyn Notify>,
     /// The tty backend's seams, when they are injected (a test); none builds the real ones.
     pub tty: Option<TtySeams>,

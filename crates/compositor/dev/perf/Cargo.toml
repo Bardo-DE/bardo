@@ -1,9 +1,9 @@
 # The perf benches (A30). They read a clock, which boundary row B8 keeps out of crates/, so they
 # live here as their own workspace: `dev/perf/run.sh` builds and runs them (outside the jail, on
 # the release profile) and compares each p95 with the last green run. Never a member of the
-# casement workspace.
+# The compositor workspace.
 [package]
-name = "casement-perf"
+name = "compositor-perf"
 version = "0.0.0"
 edition = "2024"
 publish = false

@@ -30,7 +30,7 @@
     unobscured, for its arming time. The decision itself travels from the shell to its caller
     over D-Bus; this protocol only tells the shell when an answer is trustworthy.
 
-    Not served yet: casement does not advertise this global today, so the shell cannot rely on it
+    Not served yet: compositor does not advertise this global today, so the shell cannot rely on it
     to tell a person's answer from a program's. Nothing may rely on a promise made here until the
     server lands.
 

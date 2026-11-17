@@ -42,7 +42,7 @@ impl CompositorHandler for State {
             Some(state) => &state.compositor,
             // Every client is inserted through `clients::insert_client` with a ClientState;
             // a client without one cannot exist, and smithay's signature leaves no error path.
-            None => unreachable!("a client inserted without casement's ClientState"),
+            None => unreachable!("a client inserted without compositor's ClientState"),
         }
     }
 
@@ -149,7 +149,7 @@ impl State {
                                 surface,
                                 state,
                             ));
-                            // wlcs takes a window that maps to be the active one; casement keys
+                            // wlcs takes a window that maps to be the active one; the compositor keys
                             // none nobody asked for (A7), so the ask is made here, in the commit
                             // that maps it: the client's next request (a selection set right
                             // after it created its window) finds the window already keyed.

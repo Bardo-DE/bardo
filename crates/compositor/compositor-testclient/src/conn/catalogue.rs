@@ -1,4 +1,4 @@
-//! Every interface the clients may meet, by name: the roots below (each global casement
+//! Every interface the clients may meet, by name: the roots below (each global the compositor
 //! advertises, plus the core ones) and everything their messages create or name. The tap decodes
 //! with it and the fuzz generator picks requests from it; an interface not listed here still
 //! passes through, it is only shown undecoded.

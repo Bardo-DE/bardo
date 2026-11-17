@@ -6,7 +6,7 @@ use base_time::UnixSeconds;
 use compositor_app::icons::IconSearch;
 use compositor_app::privacy::PrivacyFiles;
 use compositor_backend::{RenderCostModel, SoftRenderer, VirtualOutputSpec};
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use std::time::Duration;
 
 /// A fixture's outputs, renderer, GPUs, settings and frame cost.
@@ -19,7 +19,7 @@ pub struct FixtureSpec {
     /// The fake GPUs (bodies at P1).
     pub gpus: GpuTopology,
     /// The settings.
-    pub settings: CasementSettings,
+    pub settings: CompositorSettings,
     /// What a frame costs.
     pub cost: RenderCostModel,
     /// Whether `zwp_linux_dmabuf_v1` is offered (a fake main device over `/dev/udmabuf`).
@@ -58,7 +58,7 @@ impl FixtureSpec {
             ],
             renderer: SoftRenderer::Pixman,
             gpus: GpuTopology::single(),
-            settings: CasementSettings::defaults(),
+            settings: CompositorSettings::defaults(),
             cost: RenderCostModel::Fixed(Duration::from_millis(4)),
             dmabuf: false,
             lenient_acks: false,

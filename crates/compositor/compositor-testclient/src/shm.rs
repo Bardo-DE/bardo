@@ -72,7 +72,7 @@ pub fn shm_buffer(client: &mut TestClient, size: PhysicalSize, pattern: Pattern)
 
 /// An empty memfd of `len` bytes.
 fn memfd_sized(len: usize) -> OwnedFd {
-    let fd = memfd_create("casement-shm", MemfdFlags::CLOEXEC).expect("shm_buffer: memfd_create");
+    let fd = memfd_create("compositor-shm", MemfdFlags::CLOEXEC).expect("shm_buffer: memfd_create");
     ftruncate(&fd, len as u64).expect("shm_buffer: size the memfd");
     fd
 }

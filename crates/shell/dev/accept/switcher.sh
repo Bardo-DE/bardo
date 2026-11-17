@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# App switcher acceptance (design/13 §13.3.5, design/20 §1.11), on casement
+# App switcher acceptance (design/13 §13.3.5, design/20 §1.11), on the compositor
 # (brought up and ended by start_compositor). Starts `bardo-shell run`
 # from this checkout's build (BARDO_SHELL_PROFILE, debug by default; `--features debug`) with its own XDG_RUNTIME_DIR
 # (WAYLAND_DISPLAY as an absolute socket path) and a scratch XDG_CONFIG_HOME, and three windows of
@@ -17,7 +17,7 @@
 # `use_modifiers`); its release is the release. The keys pressed while Alt is held are `bardo-shell debug
 # key SURFACE KEY` too, and nothing reaches the user's session: every key goes to the switcher
 # surface of this run's own daemon. The show delay is 400 ms (`switcher.show_delay_ms`). Right and
-# Left step as Tab and Shift+Tab do. The script needs casement for the windows
+# Left step as Tab and Shift+Tab do. The script needs the compositor for the windows
 # (toplevel activation), which the headless KWin does not offer.
 #
 #   1. Warm: `shell-switcher-<out>` exists from the start, hidden (its capture fails).
@@ -27,7 +27,7 @@
 #      reports a modifier held at the focus (the host session can leave it with Alt down; the
 #      line then says NOT PROVEN and the injected Alt's release commits it).
 #   3. Alt held, `next` shows the panel after the show delay, not before, on the three apps
-#      (screenshot dev/out/switcher-casement.png); `next` and `prev` move the selection (the
+#      (screenshot dev/out/switcher-compositor.png); `next` and `prev` move the selection (the
 #      panel's pixels change, and come back); `cancel` hides it, and no window's activation
 #      changed, then or at Alt's release.
 #   4. Alt held, `next`, then past the delay `next` and `commit`: the third app in MRU order is
@@ -50,12 +50,12 @@ DEMO="$HOST_TARGET/debug/examples/demo_window"
 SHOW_DELAY_MS=400
 
 start_compositor || exit 1
-if [ "$COMPOSITOR" = casement ]; then
+if [ "$COMPOSITOR" = compositor ]; then
   # The switcher lists real toplevels (foot, layer-shell-host's demo_window, kcalc) through the
-  # compositor's toplevel protocols and a held Alt; casement's window management (activation, the
+  # compositor's toplevel protocols and a held Alt; the compositor's window management (activation, the
   # toplevel list, a focused app's modifiers) is P1/P2 work, and the apps themselves are not in
   # the jail's tools. Nothing here can be proven before that.
-  expected_skip "the app switcher needs real windows and casement's window management (P1/P2), and foot/kcalc are not jail tools"
+  expected_skip "the app switcher needs real windows and compositor's window management (P1/P2), and foot/kcalc are not jail tools"
   stop_compositor
   exit 2
 fi
@@ -280,7 +280,7 @@ step_show_move_cancel() {
   panel_to "$OUT_DIR/early.png" && early=panel
   shown=$(wait_panel 2000) || { echo "the panel never showed" >&2; wait "$HOLD"; return 1; }
   sleep 0.3
-  shot "$SHOTS/switcher-casement.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
+  shot "$SHOTS/switcher-compositor.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
   panel_to "$OUT_DIR/a.png"
   bardo-shell switcher next >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/b.png"
   bardo-shell switcher prev >>"$log" 2>&1; sleep 0.4; panel_to "$OUT_DIR/c.png"
@@ -387,5 +387,5 @@ start_windows || exit 1
 run_steps step_warm step_quick_tap step_show_move_cancel step_commit_third step_real_keys \
   step_quit step_idle
 status=$STATUS
-echo "logs in $OUT_DIR; screenshot $SHOTS/switcher-casement.png"
+echo "logs in $OUT_DIR; screenshot $SHOTS/switcher-compositor.png"
 exit "$status"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Screenshot thumbnail acceptance (design/20 §1.13), on casement (brought up and ended by start_compositor), and with --real-input the drag of the thumbnail
+# Screenshot thumbnail acceptance (design/20 §1.13), on the compositor (brought up and ended by start_compositor), and with --real-input the drag of the thumbnail
 # out (layer-shell-host's `SurfaceHandle::start_drag`) on layer-shell-host's private headless KWin
 # (scripts/dev/kwin-virtual.sh) driven by ONE fake-input client (scripts/dev/fake-input.sh).
 #
@@ -13,7 +13,7 @@
 #
 #   1. `shell-screenshot-thumb-<out>` exists from the start, hidden (no capture).
 #   2. `bardo-shell debug screenshot <temp>/Screenshot_a.png` shows it within 500 ms; screenshot
-#      dev/out/screenshot-thumb-casement.png while it holds.
+#      dev/out/screenshot-thumb-compositor.png while it holds.
 #   3. It hides after the hold (the thumbnail hold, 5200) plus the exit, and the file
 #      is still there.
 #   4. `bardo-shell screenshot screen` runs the portal stand-in, whose file the watch shows.
@@ -179,7 +179,7 @@ step_debug_shot_shows_then_hides() {
   bardo-shell debug screenshot "$ELSEWHERE/Screenshot_a.png" >>"$log" 2>&1 || { cat "$log" >&2; return 1; }
   shown=$(until_shown "$start" 1500)
   sleep 0.5
-  nested_shot "$SHOTS/screenshot-thumb-casement.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
+  nested_shot "$SHOTS/screenshot-thumb-compositor.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
   cp "$OUT_DIR/probe.png" "$OUT_DIR/thumb-shown.png" 2>/dev/null
   gone=$(until_gone "$start" 9000)
   limit=$(( HOLD_MS + 800 + 400 ))
@@ -346,7 +346,7 @@ main() {
   cleanup || status=1
   trap - EXIT
   echo "logs in $OUT_DIR"
-  [ "$MODE" = real ] || echo "screenshot $SHOTS/screenshot-thumb-casement.png"
+  [ "$MODE" = real ] || echo "screenshot $SHOTS/screenshot-thumb-compositor.png"
   exit "$status"
 }
 

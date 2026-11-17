@@ -8,6 +8,6 @@ use compositor_core::time::{Millihertz, VblankClock};
 pub enum VblankSource {
     /// Vblanks on the session clock (virtual in tests), at the output's phase.
     Virtual(VblankClock),
-    /// A timer at this rate (winit; the timer lives in `casement/src/time/`).
+    /// A timer at this rate (winit; the timer lives in `compositor/src/time/`).
     Timer(Millihertz),
 }

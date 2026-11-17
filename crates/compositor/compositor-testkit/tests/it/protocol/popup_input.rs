@@ -408,7 +408,7 @@ fn a_popup_gets_its_frame_callbacks() {
 }
 
 /// The shell dies with its menu open: smithay drops the grab before the popup's destruction
-/// reaches casement, and the keyboard must still go back to the app the model says holds it.
+/// reaches the compositor, and the keyboard must still go back to the app the model says holds it.
 #[test]
 fn a_client_that_disconnects_with_its_popup_open_returns_the_keyboard_to_the_app() {
     let mut desk = Desk::open();

@@ -74,7 +74,7 @@ pub(crate) fn display_health(state: &State) -> Health {
 }
 
 /// Whether the session holds its seat. Only the tty backend can lose one; any other is taken as
-/// holding it. Once it is [`SeatState::Gone`] the loop stops and casement exits with an error, so
+/// holding it. Once it is [`SeatState::Gone`] the loop stops and the compositor exits with an error, so
 /// the service manager or the display manager starts a new session (NEW-CASB-6).
 pub(crate) fn seat(state: &State) -> SeatState {
     match &state.backend {

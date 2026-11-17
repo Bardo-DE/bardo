@@ -1450,7 +1450,7 @@ main_real() {
   build "-p shell-testkit --example file_manager_stub" || { scratch_drop; exit 1; }
   seed_documents "$HOME_DIR" 300 list
   start_compositor --default kwin || {
-    echo "the compositor did not start (see $OUT_DIR/kwin.log, casement-up.log)" >&2
+    echo "the compositor did not start (see $OUT_DIR/kwin.log, compositor-up.log)" >&2
     scratch_drop
     exit 1
   }
@@ -1497,7 +1497,7 @@ main_keys() {
   local total=0 group
   OUT_DIR="$OUT_ROOT"
   mkdir -p "$OUT_ROOT" "$SHOTS"
-  start_compositor --default kwin || { echo "the compositor did not start (see $OUT_DIR/kwin.log, casement-up.log)" >&2; exit 1; }
+  start_compositor --default kwin || { echo "the compositor did not start (see $OUT_DIR/kwin.log, compositor-up.log)" >&2; exit 1; }
   trap cleanup_keys EXIT
   echo "$COMPOSITOR at $WL" >&2
   for group in toggle ui palette files; do

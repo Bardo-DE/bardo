@@ -381,7 +381,7 @@ impl OutputCapture {
         let stride = size.w.saturating_mul(4);
         let length = u64::from(stride) * u64::from(size.h);
         let file = File::from(
-            memfd_create("casement-capture", MemfdFlags::CLOEXEC)
+            memfd_create("compositor-capture", MemfdFlags::CLOEXEC)
                 .map_err(|error| ClientError::Dispatch(error.to_string()))?,
         );
         ftruncate(&file, length).map_err(|error| ClientError::Dispatch(error.to_string()))?;

@@ -1,7 +1,7 @@
 //! The composition root's state (FROZEN: lanes never edit it; a change is an interface ask).
 
 use crate::cli::{DirectTty, StartConfig, StartMode, TtyMode};
-use crate::config::{self, CasementDoc, ConfigError};
+use crate::config::{self, CompositorDoc, ConfigError};
 use crate::seams::Seams;
 use crate::time::ClockSource;
 use crate::xwayland::XwaylandState;
@@ -13,7 +13,7 @@ use compositor_backend::{
 use compositor_core::frame::RepeatGate;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::gpu::GpuChoice;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::space::SpaceSeed;
 use compositor_core::{IdMint, Model, OutputKey, OutputName, WindowId};
 use compositor_layout::{Arrangement, LayoutKnobs, RustScene};
@@ -38,7 +38,7 @@ use std::collections::BTreeMap;
 /// How often a fault that repeats at every frame is logged again.
 const FAULT_LOG_EVERY: std::time::Duration = std::time::Duration::from_secs(30);
 
-/// Everything casement holds, as typed sub-states.
+/// Everything the compositor holds, as typed sub-states.
 #[derive(Debug)]
 pub struct State {
     /// The model, the layout and motion.
@@ -176,7 +176,7 @@ pub struct IpcState {
     pub board: Option<compositor_ipc::privacy::PrivacyBoard>,
 }
 
-/// Why casement could not start.
+/// Why the compositor could not start.
 #[derive(Debug, thiserror::Error)]
 pub enum StartError {
     /// The backend refused.
@@ -200,7 +200,7 @@ pub enum StartError {
 }
 
 impl State {
-    /// casement as `config` describes it, with the real seams for its state home: the settings
+    /// The compositor as `config` describes it, with the real seams for its state home: the settings
     /// document read, every global created behind the I7 filter, the backend started, the clock
     /// attached to `event_loop`, an empty model at the clock's now. Outputs are plugged
     /// afterwards through the core loop, the same path hotplug takes.
@@ -237,7 +237,7 @@ impl State {
         // `--safe` ignores the settings file altogether: a start that keeps failing must not
         // depend on what a person or another program wrote there.
         let doc = match config.mode {
-            StartMode::Safe => CasementDoc::default(),
+            StartMode::Safe => CompositorDoc::default(),
             StartMode::Normal => config::load(config.config_home.as_deref())?,
         };
         let settings = safe_settings(config.mode, config::to_core(&doc));
@@ -418,17 +418,17 @@ impl State {
     }
 
     /// The settings the model runs with.
-    pub fn settings(&self) -> &CasementSettings {
+    pub fn settings(&self) -> &CompositorSettings {
         self.core.model.settings()
     }
 }
 
 /// `settings` as a run in `mode` uses them: unchanged, or for `--safe` with the cheapest minimise
 /// animation (the settings are the defaults already, so nothing a person chose is in them).
-fn safe_settings(mode: StartMode, settings: CasementSettings) -> CasementSettings {
+fn safe_settings(mode: StartMode, settings: CompositorSettings) -> CompositorSettings {
     match mode {
         StartMode::Normal => settings,
-        StartMode::Safe => CasementSettings {
+        StartMode::Safe => CompositorSettings {
             windows: compositor_core::settings::WindowSettings {
                 minimise_effect: compositor_core::settings::MinimiseEffect::Scale,
                 ..settings.windows
@@ -552,7 +552,7 @@ mod tests {
 
     #[test]
     fn a_safe_run_minimises_the_plainest_way_and_a_normal_run_keeps_the_settings() {
-        let normal = CasementSettings::defaults();
+        let normal = CompositorSettings::defaults();
         assert_eq!(normal.windows.minimise_effect, MinimiseEffect::Genie);
         let kept = safe_settings(StartMode::Normal, normal.clone());
         assert_eq!(kept, normal);

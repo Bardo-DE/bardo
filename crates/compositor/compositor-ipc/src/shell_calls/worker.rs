@@ -1,4 +1,4 @@
-//! The thread that makes the calls: a current-thread tokio runtime of its own (casement itself
+//! The thread that makes the calls: a current-thread tokio runtime of its own (the compositor itself
 //! reaches neither zbus nor tokio), the session bus connected on the first call, and one task
 //! per call so a slow reply holds nobody up. A call waits for its reply at most
 //! [`CALL_TIMEOUT`], and at most [`MOST_IN_FLIGHT`] calls wait at once (CASW-16): a target that
@@ -37,7 +37,7 @@ impl Worker {
         let (calls, incoming) = unbounded_channel();
         let (report, failed) = mpsc::channel();
         std::thread::Builder::new()
-            .name("casement-shell-calls".to_owned())
+            .name("compositor-shell-calls".to_owned())
             .spawn(move || run(incoming, report))?;
         Ok(Worker { calls, failed })
     }

@@ -1,7 +1,7 @@
 //! `pointer.*`.
 
 use crate::config::convert;
-use compositor_core::settings::{AccelProfile, CasementSettings};
+use compositor_core::settings::{AccelProfile, CompositorSettings};
 use serde::{Deserialize, Serialize};
 use settings_types::Fraction;
 use settings_types::schema::Page;
@@ -51,6 +51,6 @@ pub struct PointerSection {
 
 impl Default for PointerSection {
     fn default() -> Self {
-        convert::mouse_doc(CasementSettings::defaults().pointer.mouse)
+        convert::mouse_doc(CompositorSettings::defaults().pointer.mouse)
     }
 }

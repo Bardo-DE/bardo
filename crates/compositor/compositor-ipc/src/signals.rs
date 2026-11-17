@@ -71,7 +71,7 @@ impl SignalWatch {
         let (stop, stopped) = oneshot::channel();
         let (ready_tx, ready) = mpsc::channel();
         let thread = std::thread::Builder::new()
-            .name("casement-signals".to_owned())
+            .name("compositor-signals".to_owned())
             .spawn(move || run(handler, stopped, ready_tx))
             .map_err(SignalError::Thread)?;
         match ready.recv_timeout(INSTALL_WITHIN) {

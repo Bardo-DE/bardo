@@ -58,7 +58,7 @@ pub struct Spared {
 }
 
 impl Spared {
-    /// Whether `pid` may be signalled: a real process (not 0, not init), not casement and not
+    /// Whether `pid` may be signalled: a real process (not 0, not init), not the compositor and not
     /// the satellite.
     fn allows(&self, pid: RawPid) -> bool {
         pid > 1 && pid != self.own && Some(pid) != self.satellite

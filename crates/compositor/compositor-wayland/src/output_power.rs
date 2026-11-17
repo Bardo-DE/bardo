@@ -33,7 +33,7 @@ use smithay::reexports::wayland_server::{
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 1;
 
 /// `zwlr_output_power_manager_v1` and the outputs a client holds a control on.

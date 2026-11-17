@@ -1,5 +1,5 @@
-//! casement's settings as typed values. The stored document and its schema live in the
-//! composition root (`casement/src/config/`, ui-settings); this is what it converts into.
+//! The compositor's settings as typed values. The stored document and its schema live in the
+//! composition root (`compositor/src/config/`, ui-settings); this is what it converts into.
 
 mod bindings;
 mod gestures;
@@ -22,9 +22,9 @@ pub use windows::{FirstClick, MinimiseEffect, TitleDoubleClick, WindowSettings};
 
 use crate::input::Bindings;
 
-/// Every setting casement reads.
+/// Every setting the compositor reads.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CasementSettings {
+pub struct CompositorSettings {
     /// Window management (03 §1.17).
     pub windows: WindowSettings,
     /// Spaces.
@@ -45,12 +45,12 @@ pub struct CasementSettings {
     pub night_light: NightLightSettings,
 }
 
-impl CasementSettings {
+impl CompositorSettings {
     /// The defaults: 03 §1.17's Mac defaults, a 400 ms key-repeat delay at 10 per second, the
     /// system's XKB defaults, and the Mac's first-sight scale.
     #[must_use]
-    pub fn defaults() -> CasementSettings {
-        CasementSettings {
+    pub fn defaults() -> CompositorSettings {
+        CompositorSettings {
             windows: WindowSettings::defaults(),
             spaces: SpaceSettings::defaults(),
             keyboard: KeyboardSettings::defaults(),

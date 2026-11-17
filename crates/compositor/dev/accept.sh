@@ -57,7 +57,7 @@ for tool in bardo-compositor bardo-compositorctl fake-logind; do
   fi
 done
 
-jail="${BARDO_COMPOSITOR_JAIL:-$_casement_desktop/harness/jail.sh}"
+jail="${BARDO_COMPOSITOR_JAIL:-$_compositor_desktop/harness/jail.sh}"
 [ -x "$jail" ] || { echo "accept.sh: the jail script $jail is missing" >&2; exit 3; }
 
 # The scripts to run, as names.

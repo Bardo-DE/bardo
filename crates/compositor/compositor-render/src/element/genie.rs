@@ -23,7 +23,7 @@ use super::soft_edge::Weight;
 use super::strip::{Margins, StripElement, StripPlan};
 use super::window::{alpha, window_blur, window_content, window_surfaces};
 use super::{
-    BlurV0Element, CasementElement, ClipAsk, ClipShape, FrameDraw, client_shadow_elements,
+    BlurV0Element, ClipAsk, ClipShape, FrameDraw, SceneElement, client_shadow_elements,
     frame_elements,
 };
 use crate::compositor::Compositor;
@@ -177,22 +177,22 @@ fn part_elements<R: Compositor>(
     plan: &StripPlan,
     scale: f64,
     clip: Option<ClipShape>,
-) -> Vec<CasementElement<R>> {
-    let mut elements: Vec<CasementElement<R>> = pieces
+) -> Vec<SceneElement<R>> {
+    let mut elements: Vec<SceneElement<R>> = pieces
         .front
         .iter()
         .filter_map(|piece| StripElement::new(piece.clone(), scale, plan))
-        .map(CasementElement::MemoryStrip)
+        .map(SceneElement::MemoryStrip)
         .collect();
     let clipped = clip.filter(|shape| shape.touches(plan.source));
     for piece in &pieces.surfaces {
         match clipped {
             Some(shape) => elements.extend(
                 ClipStripElement::new(piece.clone(), scale, plan, shape)
-                    .map(CasementElement::ClipStrip),
+                    .map(SceneElement::ClipStrip),
             ),
             None => elements.extend(
-                StripElement::new(piece.clone(), scale, plan).map(CasementElement::SurfaceStrip),
+                StripElement::new(piece.clone(), scale, plan).map(SceneElement::SurfaceStrip),
             ),
         }
     }
@@ -208,7 +208,7 @@ fn part_elements<R: Compositor>(
 pub fn genie_elements<R: Compositor>(
     parts: GenieParts<R>,
     view: &OutputView,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let progress = f64::from(parts.flight.progress.0.min(1000)) / 1000.0;
     let scale = view.scale.as_f64();
     let plans = strip_plans(parts.visual, parts.flight.tile, progress, view);
@@ -241,7 +241,7 @@ pub fn genie_elements<R: Compositor>(
                 .collect::<Vec<_>>()
         });
         if !cut.region().is_empty() {
-            elements.push(CasementElement::Blur(cut));
+            elements.push(SceneElement::Blur(cut));
         }
     }
     let reach = (f64::from(SHADOW_MARGIN) * scale).ceil() as i32;
@@ -252,7 +252,7 @@ pub fn genie_elements<R: Compositor>(
             shadow
                 .iter()
                 .filter_map(|piece| StripElement::new(piece.clone(), scale, &reaching))
-                .map(CasementElement::MemoryStrip),
+                .map(SceneElement::MemoryStrip),
         );
     }
     elements
@@ -281,9 +281,9 @@ pub struct GenieWindow<'a> {
     pub placed: &'a PlacedWindow,
     /// The flight.
     pub flight: Flight,
-    /// The window's frame, when casement decorates it.
+    /// The window's frame, when the compositor decorates it.
     pub style: Option<&'a FrameStyle>,
-    /// The shadow casement casts behind a window with no frame of ours, when it casts one.
+    /// The shadow the compositor casts behind a window with no frame of ours, when it casts one.
     pub cast: Option<&'a FrameStyle>,
     /// Its title raster.
     pub title: Option<&'a RasterImage>,
@@ -299,7 +299,7 @@ pub fn genie_window<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let GenieWindow {
         placed,
         flight,
@@ -375,12 +375,12 @@ pub fn genie_window<R: Compositor>(
 
 /// The raster pieces among `elements`.
 fn memory<R: Compositor>(
-    elements: Vec<CasementElement<R>>,
+    elements: Vec<SceneElement<R>>,
 ) -> Vec<MemoryRenderBufferRenderElement<R>> {
     elements
         .into_iter()
         .filter_map(|element| match element {
-            CasementElement::Memory(piece) => Some(piece),
+            SceneElement::Memory(piece) => Some(piece),
             _ => None,
         })
         .collect()

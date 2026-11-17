@@ -70,9 +70,9 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
 Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
 
 - **Shape.** The interface methods wrap public methods of `RemoteDesktopService` (`create`, `select`, `begin`, `connect`,
-  `close`) so tests run without a bus. Seams: `Asker` (the one `Parts.access`; the question is `remote_control_question`) and `EisHandout` (`CasementEis`,
+  `close`) so tests run without a bus. Seams: `Asker` (the one `Parts.access`; the question is `remote_control_question`) and `EisHandout` (`CompositorEis`,
   `FakeEis`); `Parts` gained `eis` (built inside `Parts::real`, whose signature is unchanged).
-- **EIS only.** `ConnectToEIS` asks `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> h` (casement; only
+- **EIS only.** `ConnectToEIS` asks `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> h` (the compositor; only
   `transom.service` may call it). The `Notify*` methods are accepted and dropped (debug log): there is no second way in.
   Checked against the installed `org.freedesktop.impl.portal.RemoteDesktop.xml`: all signatures match the skeleton; `ConnectToEIS`
   now returns `fdo::Result<h>` so a refusal is an error and not a panic.
@@ -89,7 +89,7 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
 - **Open: request objects.** `Start` waits for the person; the frontend cancels it with `Request.Close` on `handle`, which no
   interface here serves yet (same for ScreenCast and Screenshot).
 - **Open: acceptance.** `dev/accept/remote-desktop.sh` is still a skeleton: it needs a stub `org.bardo.Shell1` on the private
-  bus (for consent), the unit-check override in casement's debug peer table (so the jailed transom reads as
+  bus (for consent), the unit-check override in the compositor's debug peer table (so the jailed transom reads as
   `transom.service`), and a client that receives a file descriptor over D-Bus and speaks EIS. None exists in the jail.
 - **Spots most likely not to compile.** `OwnedValue::downcast_ref::<u32>()` on `&OwnedValue`; `#[zbus(object_server)]` as a
   parameter next to `ObjectPath` arguments; `server.at(session_handle, object)` and `server.remove::<SessionObject, _>(&str)`;
@@ -124,7 +124,7 @@ Not compiled; the orchestrator gates.
   portal's `interactive`, `modal` and `target` options stay ignored (nothing is asked; `AvailableTargets` says the whole
   screen), so an interactive request gets the same full-screen picture.
 - **Limit: fractional scales.** `xdg_output` (exact logical size and fractional scale) needs the `wayland-protocols`
-  feature `unstable`, which is a manifest edit this lane may not make. With `wl_output` alone casement's fractional scale
+  feature `unstable`, which is a manifest edit this lane may not make. With `wl_output` alone the compositor's fractional scale
   arrives as its ceiling (1.5 as 2), so such an output's logical size is under-estimated, the picture is a little small
   and the gap between neighbours is not exact. All-1x and all-2x layouts, and mixes of them, are exact. Ask for the
   orchestrator: enable `wayland-protocols` `unstable` for transom, then bind `zxdg_output_manager_v1` in
@@ -200,8 +200,8 @@ Not compiled; the orchestrator gates.
 ## transom-repush: a still screen still gives a stream (2026-10-16)
 
 Written without a build or a run: nothing here has been compiled or tried in the jail. Source of the symptoms:
-`screencast-output.sh` steps 3, 4 and 5 against casement's headless output; the casement lane's analysis
-(cas36) showed casement is correct (a still output has no damage, so the second capture is parked).
+`screencast-output.sh` steps 3, 4 and 5 against the compositor's headless output; the compositor lane's analysis
+(cas36) showed the compositor is correct (a still output has no damage, so the second capture is parked).
 
 **A. Frames from a still source (fixed in transom).**
 - `transom_core::pacing` decides: `Negotiated::repeat_gap_ns` (the stream's frame gap, within 1/60 s and 1 s; an
@@ -284,7 +284,7 @@ Written without a build or a run: nothing here has been compiled. Fixed in trans
 - **PORTAL-21, `ProtectSystem=strict`.** Not added: a user unit gets a mount namespace only where unprivileged user
   namespaces are allowed, and Ubuntu 24.04 restricts them (owner decision 2026-10-16: no AppArmor allowance there).
   Closes when that changes. `NoNewPrivileges`, `RestrictAddressFamilies=AF_UNIX`, `RestrictSUIDSGID`,
-  `LockPersonality` and `SystemCallArchitectures` are in `dist/transom.service`. Casement still trusts the unit name
+  `LockPersonality` and `SystemCallArchitectures` are in `dist/transom.service`. The compositor still trusts the unit name
   `transom.service`, which a user can override with a drop-in.
 - **Request objects.** `Request.Close` is still not served for Start, so a cancelled Start leaves the sheet up
   (PORTAL-04's extra).
@@ -296,7 +296,7 @@ Written without a build or a run: nothing here has been compiled. Fixed in trans
 
 **Interface asks**
 
-- casement: `org.bardo.Compositor1.EndEis(session: t)`: end every socket handed out for `session` (stop its input and
+- The compositor: `org.bardo.Compositor1.EndEis(session: t)`: end every socket handed out for `session` (stop its input and
   close the compositor's end), callable only by `transom.service` like `ConnectEis`. Until it exists a close logs a
   warning and the app keeps the socket it was given (PORTAL-05's other half).
 - sill: serve `org.bardo.Shell1.AskPermission` (item 4 above); remote control and interactive screenshots need it.
@@ -313,7 +313,7 @@ ARCHITECTURE section 3b-2.
   `portal_frontend` at `Full`, including the `Notify*` methods (accepted and dropped, still guarded) and Settings.
   The frontend's unit therefore has to be provable by the desktop's table (not ours), and
   `dist/transom.service` unsets the loader variables so transom's own `portal` standing can reach `Full` for the
-  casement and sill checks.
+  The compositor and sill checks.
 - **Opener only (PORTAL-03).** The frontend is one peer for every app, so the "creator" check separates a second
   frontend-role peer from the first and stops a session being driven by anything but its opener; it is not a
   per-app boundary (the frontend owns that).
@@ -392,19 +392,19 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   nanoseconds (`Book::starting_after`), so a number is never reused by a later run, and at start `serve_on` calls
   `RemoteDesktopService::forget_previous_run`, which asks the compositor to drop every socket handed to this portal
   before: `org.bardo.Compositor1.EndAllEis()`, tolerated when the method or the compositor is absent. The compositor's
-  half (the method, or ending a portal's sockets itself when the portal leaves the bus) is casement's; until it lands
-  an app of the earlier run keeps its input. Closes when casement has it.
+  half (the method, or ending a portal's sockets itself when the portal leaves the bus) is the compositor's; until it lands
+  an app of the earlier run keeps its input. Closes when the compositor has it.
 - **NEW-FA-2: the portal's own capture connection (transom half).** A capture on the session's display (an empty
-  `DisplayName`) first asks `org.bardo.Compositor1.Connect("portal")` over the session bus (`capture::CasementLine`, through the
+  `DisplayName`) first asks `org.bardo.Compositor1.Connect("portal")` over the session bus (`capture::CompositorLine`, through the
   connection that owns the portal's name, the way `ConnectEis` is asked, within `LINE_DEADLINE`) and speaks Wayland on the
-  descriptor it gets back (`DisplayName::route` gives `Route::Handed`). casement trusts that connection for the screen and the
+  descriptor it gets back (`DisplayName::route` gives `Route::Handed`). The compositor trusts that connection for the screen and the
   windows, so its own Screen sheet is no longer raised over the portal's chooser. When nobody owns the name, the call is refused
-  or it times out (another compositor, an older casement), the capture connects the way any Wayland client does (`Route::Env`)
+  or it times out (another compositor, an older the compositor), the capture connects the way any Wayland client does (`Route::Env`)
   and the log says so once. A display named by a socket path is used as given and the compositor is not asked. A call over
-  casement's rate (four a second) is asked once more after a pause. Closes when casement has `Connect("portal")`
-  (casement `fb1-portal-connect`); `desktop/harness/lib/casement-floor.sh` `floor_powers` can then drop its allow row for transom.
+  The compositor's rate (four a second) is asked once more after a pause. Closes when the compositor has `Connect("portal")`
+  (the compositor `fb1-portal-connect`); `desktop/harness/lib/compositor-floor.sh` `floor_powers` can then drop its allow row for transom.
 - **NEW-FA-2 follow-up: one handed connection per capture job.** The first cut asked for a connection at every step: a
-  screenshot asked once for the sources, once for the outputs and once per output captured, a share once per stream. casement
+  screenshot asked once for the sources, once for the outputs and once per output captured, a share once per stream. The compositor
   limits each bus caller to four `Connect` calls in a one-second window (`CALLS_PER_WINDOW`), so a screenshot of three or more
   outputs, or a second one straight after, was refused a handed connection part way, fell back to the public socket (where the
   portal holds no screen power on a real desktop) and failed. Now one capture job (`capture::Job`: a screenshot's grab, or one
@@ -415,7 +415,7 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   retry of a step does not ask again. A share's captures hold the connection open for as long as they run; the job may go.
   Outputs bound only to be listed are released at the end of the step, since the connection outlives it. Nothing else asks
   per frame or per retry: `DisplayName::route` is called from `Wire::open` only, and a frame that fails is asked for again on
-  the same session. The one remaining second ask is `CasementLine`'s own pause-and-retry when casement says it is busy, which
+  the same session. The one remaining second ask is `CompositorLine`'s own pause-and-retry when the compositor says it is busy, which
   is for separate jobs arriving together. `Canceller` now cuts the whole job's connection.
 
 ## Standing grants (RustDesk asked for the screen every time)

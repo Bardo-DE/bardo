@@ -1,6 +1,6 @@
 //! A layer-shell surface as elements.
 
-use super::CasementElement;
+use super::SceneElement;
 use super::blur_v0;
 use crate::compositor::Compositor;
 use crate::pass::BlurLook;
@@ -24,7 +24,7 @@ pub fn layer_elements<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     layer_elements_faded(layer, area, strength, Fraction(1000), view, book, renderer)
 }
 
@@ -38,13 +38,13 @@ pub fn layer_elements_faded<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let Some(entry) = book.layer(layer) else {
         return Vec::new();
     };
     let origin = sub_of(area.origin);
     let alpha = f32::from(opacity.clamped().0) / 1000.0;
-    let mut elements: Vec<CasementElement<R>> = render_elements_from_surface_tree(
+    let mut elements: Vec<SceneElement<R>> = render_elements_from_surface_tree(
         renderer,
         &entry.root,
         on_output(origin, view),
@@ -54,6 +54,6 @@ pub fn layer_elements_faded<R: Compositor>(
     );
     let look = BlurLook::of(strength);
     let blur = blur_v0::behind_scaled(&entry.root, origin, (1.0, 1.0), (alpha, look), view);
-    elements.extend(blur.map(CasementElement::Blur));
+    elements.extend(blur.map(SceneElement::Blur));
     elements
 }

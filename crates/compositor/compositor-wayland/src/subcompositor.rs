@@ -7,7 +7,7 @@
 use compositor_core::Event;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 
-/// What casement keeps about subsurfaces (nothing beyond smithay's tree at P0).
+/// What the compositor keeps about subsurfaces (nothing beyond smithay's tree at P0).
 #[derive(Debug, Default)]
 pub struct SubcompositorPart;
 

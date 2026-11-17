@@ -13,7 +13,7 @@
 //! sync | quit
 //! ```
 //!
-//! The shell verbs need `compositor-probe` to be the shell: the scenario starts casement with
+//! The shell verbs need `compositor-probe` to be the shell: the scenario starts the compositor with
 //! `BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service"`. ROLE is bar, dock, launcher, switcher,
 //! overview, notifications, osd, control-centre, wallpaper or widget; LAYER is a session layer name;
 //! TOPLEVEL is a window identifier (`w<id>`, as `bardo-compositorctl debug windows` lists it).

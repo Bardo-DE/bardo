@@ -591,7 +591,7 @@ fn every_protocol_is_served_or_says_it_is_not_served_yet() {
         let text = std::fs::read_to_string(support::protocols_dir().join(file)).expect("the XML");
         let says_not_served = text.contains("Not served yet:");
         match server.as_str() {
-            "casement" => assert!(
+            "compositor" => assert!(
                 !says_not_served,
                 "{file}: served, yet its XML says it is not"
             ),
@@ -599,7 +599,9 @@ fn every_protocol_is_served_or_says_it_is_not_served_yet() {
                 says_not_served,
                 "{file}: not served, yet its XML does not say so"
             ),
-            other => panic!("{file}: the Server cell is {other:?}, not casement or not served yet"),
+            other => {
+                panic!("{file}: the Server cell is {other:?}, not compositor or not served yet")
+            }
         }
     }
 }

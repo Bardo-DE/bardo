@@ -1,6 +1,6 @@
 //! Serving `org.bardo.Compositor1` on the session bus: a thread of its own with a
-//! current-thread tokio runtime (casement itself reaches neither zbus nor tokio), and a bounded
-//! calloop channel carrying the calls that passed the caller check into casement's event loop.
+//! current-thread tokio runtime (the compositor itself reaches neither zbus nor tokio), and a bounded
+//! calloop channel carrying the calls that passed the caller check into the compositor's event loop.
 //! The same shape as `serve_debug_at`.
 
 use super::callers::{CallerCheck, DesktopCallers};
@@ -105,7 +105,7 @@ impl CallerSetup {
 /// its environment), telling callers apart as `setup` says.
 ///
 /// The channel carries the calls for the event loop to answer, at most [`CONNECT_QUEUE`] at a time;
-/// the connection is casement's handle on the bus (keep it, or the name is released when the last
+/// the connection is the compositor's handle on the bus (keep it, or the name is released when the last
 /// clone goes). The thread behind it lives as long as the process.
 ///
 /// # Errors
@@ -119,7 +119,7 @@ pub fn serve_compositor_at(
     let (ready, started) = mpsc::channel::<Result<Connection, IpcError>>();
     let address = address.to_owned();
     std::thread::Builder::new()
-        .name("casement-compositor1".to_owned())
+        .name("compositor-compositor1".to_owned())
         .spawn(move || run(&address, calls, setup, &ready))
         .map_err(|error| IpcError::Bus(format!("the Compositor1 thread did not start: {error}")))?;
     let connection = started.recv().map_err(|error| {
@@ -184,7 +184,7 @@ async fn connect(
         }
     });
     // The object first, then the name: no call can arrive before it is answered. Without
-    // replacement and without a queue, two casements on one session is a misconfiguration: the
+    // replacement and without a queue, two compositor on one session is a misconfiguration: the
     // second must fail, not take over.
     let portals = Arc::new(PortalWatch::default());
     tokio::spawn(portal_watch::listen(

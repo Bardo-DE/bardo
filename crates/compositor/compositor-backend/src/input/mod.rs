@@ -6,7 +6,7 @@
 //! Physical, Virtual and Test origins are minted only under features `testing` or
 //! `debug-inject`: the functions that plug devices and push events exist only there, and a
 //! binary with either feature refuses every backend but headless and every run outside the
-//! jail (`casement/src/jail_check.rs`).
+//! jail (`compositor/src/jail_check.rs`).
 
 mod config;
 mod convert;

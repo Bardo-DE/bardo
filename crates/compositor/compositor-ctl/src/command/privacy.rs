@@ -1,10 +1,10 @@
 //! `bardo-compositorctl privacy list | reload`: which program may use which power, and the administrator's
 //! settings read again.
 //!
-//! `list` reads the two files the way casement does (the person's book, the administrator's
+//! `list` reads the two files the way the compositor does (the person's book, the administrator's
 //! floor) and prints each power with the programs it has an answer for, who set it, and what
-//! could not be read. `reload` asks the running casement to read the administrator's settings
-//! again; the person's answers are never read again, casement's copy is the one that counts.
+//! could not be read. `reload` asks the running the compositor to read the administrator's settings
+//! again; the person's answers are never read again, the compositor's copy is the one that counts.
 
 use super::CommandError;
 use base_xdg::Xdg;
@@ -22,14 +22,14 @@ const COMM: &str = "bardo-composito";
 pub enum Privacy {
     /// Print the list.
     List(Places),
-    /// Ask casement to read the administrator's settings again.
+    /// Ask the compositor to read the administrator's settings again.
     Reload,
 }
 
 /// Where the two files are, when not the usual places (a test or an unusual setup names them).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Places {
-    /// `--state-home DIR`: casement's state folder, as casement's own flag of that name.
+    /// `--state-home DIR`: the compositor's state folder, as the compositor's own flag of that name.
     pub state_home: Option<PathBuf>,
     /// `--system-dir DIR`: the administrator's folder instead of `/etc/bardo`.
     pub system_dir: Option<PathBuf>,
@@ -80,7 +80,7 @@ pub fn run(privacy: Privacy) -> u8 {
     }
 }
 
-/// Casement's state folder: `--state-home`, else `$XDG_STATE_HOME/bardo/compositor`, else
+/// The compositor's state folder: `--state-home`, else `$XDG_STATE_HOME/bardo/compositor`, else
 /// `$HOME/.local/state/bardo/compositor`.
 fn state_dir(places: &Places) -> Option<PathBuf> {
     places.state_home.clone().or_else(|| {
@@ -124,7 +124,7 @@ fn reload() -> u8 {
     };
     match runtime.block_on(compositor_pid()).and_then(signal_reload) {
         Ok(()) => {
-            println!("Asked casement to read your administrator's privacy settings again.");
+            println!("Asked compositor to read your administrator's privacy settings again.");
             0
         }
         Err(why) => {
@@ -134,10 +134,10 @@ fn reload() -> u8 {
     }
 }
 
-/// The process that holds casement's name on the session bus.
+/// The process that holds the compositor's name on the session bus.
 async fn compositor_pid() -> Result<i32, String> {
     let unreachable = |error: &dyn std::fmt::Display| {
-        format!("casement cannot be reached on the session bus ({error}); is it running?")
+        format!("compositor cannot be reached on the session bus ({error}); is it running?")
     };
     let connection = zbus::Connection::session()
         .await
@@ -150,19 +150,22 @@ async fn compositor_pid() -> Result<i32, String> {
         .get_connection_unix_process_id(name)
         .await
         .map_err(|error| unreachable(&error))?;
-    i32::try_from(pid).map_err(|error| format!("casement's process number is not usable: {error}"))
+    i32::try_from(pid)
+        .map_err(|error| format!("compositor's process number is not usable: {error}"))
 }
 
-/// Sends the reload signal to `pid`, once it is checked to be a casement.
+/// Sends the reload signal to `pid`, once it is checked to be a compositor.
 fn signal_reload(pid: i32) -> Result<(), String> {
     let comm = std::fs::read_to_string(format!("/proc/{pid}/comm")).unwrap_or_default();
     if comm.trim() != COMM {
-        return Err("the program serving casement's name on the bus is not casement".to_owned());
+        return Err(
+            "the program serving compositor's name on the bus is not compositor".to_owned(),
+        );
     }
     let target = rustix::process::Pid::from_raw(pid)
-        .ok_or_else(|| "casement's process number is not usable".to_owned())?;
+        .ok_or_else(|| "compositor's process number is not usable".to_owned())?;
     rustix::process::kill_process(target, rustix::process::Signal::HUP)
-        .map_err(|error| format!("casement could not be told: {error}"))
+        .map_err(|error| format!("compositor could not be told: {error}"))
 }
 
 #[cfg(test)]

@@ -11,23 +11,23 @@
 #                         fails when the client reported an error
 #   x11_wait NAME REGEX [MS] | x11_has NAME REGEX | x11_count NAME REGEX | x11_log NAME
 #                         probe_wait/has/count/log on the client
-#   x11_satellite_pid     the pid of casement's satellite child, or nothing
+#   x11_satellite_pid     the pid of the compositor's satellite child, or nothing
 #
 # Owner: P1-X1. Sourceable after dev/lib/accept.sh.
 
 x11_compositor() {
   local state wrapper satellite
-  satellite=$(casement_tool xwayland-satellite) || return 3
-  if [ -z "${BARDO_COMPOSITOR_STATE:-}" ]; then casement_new_state; _CASEMENT_STATE_OWNED=1; fi
-  state=$(casement_state_dir)
+  satellite=$(compositor_tool xwayland-satellite) || return 3
+  if [ -z "${BARDO_COMPOSITOR_STATE:-}" ]; then compositor_new_state; _COMPOSITOR_STATE_OWNED=1; fi
+  state=$(compositor_state_dir)
   wrapper="$state/xwayland-satellite-wrapper"
   # The wrapper keeps the inherited listening descriptors (exec) and adds the software flag.
   printf '#!/bin/sh\nexec %q "$@" -glamor none\n' "$satellite" >"$wrapper"
   chmod +x "$wrapper"
   start_compositor "$@" --xwayland satellite --xwayland-satellite "$wrapper" || return $?
-  X11_DISPLAY=$(sed -n 's/^casement: X11 display //p' "$state/bardo-compositor.log" | head -1)
+  X11_DISPLAY=$(sed -n 's/^compositor: X11 display //p' "$state/bardo-compositor.log" | head -1)
   if [ -z "$X11_DISPLAY" ]; then
-    echo "x11_compositor: casement did not name an X11 display; $state/bardo-compositor.log:" >&2
+    echo "x11_compositor: compositor did not name an X11 display; $state/bardo-compositor.log:" >&2
     tail -20 "$state/bardo-compositor.log" >&2
     return 1
   fi
@@ -38,7 +38,7 @@ x11_start() {
   require_jail
   local name=${1:?x11_start NAME} dir tool pid
   dir=$(_probe_dir)
-  tool=$(casement_tool compositor-x11probe) || return 3
+  tool=$(compositor_tool compositor-x11probe) || return 3
   rm -f "$dir/x11-$name.in" "$dir/x11-$name.log"
   mkfifo "$dir/x11-$name.in"
   DISPLAY=$X11_DISPLAY "$tool" session <>"$dir/x11-$name.in" >"$dir/x11-$name.log" 2>&1 &

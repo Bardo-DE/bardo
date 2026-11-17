@@ -1,4 +1,4 @@
-//! App icons for casement's own drawing (Mission Control's icon under each window): which icon an
+//! App icons for the compositor's own drawing (Mission Control's icon under each window): which icon an
 //! app has, found in the order the person would expect, and decoded to premultiplied RGBA at the
 //! exact pixel edge the output needs.
 //!

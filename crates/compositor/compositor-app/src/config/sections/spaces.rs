@@ -1,7 +1,7 @@
 //! `spaces.*`.
 
 use crate::config::convert;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::Page;
 
@@ -29,6 +29,6 @@ pub struct SpacesSection {
 
 impl Default for SpacesSection {
     fn default() -> Self {
-        convert::spaces_doc(CasementSettings::defaults().spaces)
+        convert::spaces_doc(CompositorSettings::defaults().spaces)
     }
 }

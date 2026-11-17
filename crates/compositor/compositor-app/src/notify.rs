@@ -21,7 +21,7 @@ use std::os::linux::net::SocketAddrExt;
 use std::os::unix::net::{SocketAddr, UnixDatagram};
 use std::time::Duration;
 
-/// What casement tells the service manager.
+/// What the compositor tells the service manager.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Notice {
     /// Startup is done; `status` says what it is now doing, in plain words.
@@ -170,7 +170,7 @@ mod tests {
 
     #[test]
     fn an_abstract_socket_is_named_with_an_at_sign() {
-        let name = format!("casement-notify-test-{}", std::process::id());
+        let name = format!("compositor-notify-test-{}", std::process::id());
         let address = SocketAddr::from_abstract_name(name.as_bytes()).expect("address");
         let listener = UnixDatagram::bind_addr(&address).expect("bind");
         let mut notify = SocketNotify::new(Endpoint::At(format!("@{name}")));

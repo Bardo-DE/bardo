@@ -1,6 +1,6 @@
 //! Serving `Debug1` on the private bus: a thread of its own with a current-thread tokio runtime
-//! (casement itself reaches neither zbus nor tokio), and a calloop channel carrying every call
-//! into casement's event loop.
+//! (the compositor itself reaches neither zbus nor tokio), and a calloop channel carrying every call
+//! into the compositor's event loop.
 
 use super::debug1::{Debug1, DebugCall, OBJECT_PATH};
 use crate::IpcError;
@@ -10,14 +10,14 @@ use zbus::Connection;
 
 /// Starts serving Debug1 on the bus at `address` (the jail's private one; the caller reads it
 /// from its environment). The channel carries the calls for the event loop to answer; the
-/// connection is casement's handle on the bus (keep it, or the name is released when the last
+/// connection is the compositor's handle on the bus (keep it, or the name is released when the last
 /// clone goes). The thread behind it lives as long as the process.
 pub fn serve_debug_at(address: &str) -> Result<(Channel<DebugCall>, Connection), IpcError> {
     let (calls, channel) = channel::<DebugCall>();
     let (ready, started) = mpsc::channel::<Result<Connection, IpcError>>();
     let address = address.to_owned();
     std::thread::Builder::new()
-        .name("casement-debug1".to_owned())
+        .name("compositor-debug1".to_owned())
         .spawn(move || run(&address, calls, &ready))
         .map_err(|error| IpcError::Bus(format!("the Debug1 thread did not start: {error}")))?;
     let connection = started
@@ -61,7 +61,7 @@ async fn connect(
     calls: calloop::channel::Sender<DebugCall>,
 ) -> zbus::Result<Connection> {
     zbus::connection::Builder::address(address)?
-        // Two casements on one bus is a misconfiguration: the second must fail, not take over.
+        // Two compositor on one bus is a misconfiguration: the second must fail, not take over.
         .allow_name_replacements(false)
         .replace_existing_names(false)
         .name(Debug1::BUS_NAME)?

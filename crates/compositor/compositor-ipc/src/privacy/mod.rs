@@ -1,5 +1,5 @@
 //! The Privacy list (Settings > Privacy): which program may use which power, served for
-//! Settings as a live settings module on casement's own bus connection.
+//! Settings as a live settings module on the compositor's own bus connection.
 //!
 //! The model owns the answers ([`Privilege`](compositor_core::privilege::Privilege)); the
 //! composition root creates a [`PrivacyLink`], gives the bus thread one half (through

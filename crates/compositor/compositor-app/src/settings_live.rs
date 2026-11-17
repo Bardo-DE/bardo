@@ -1,4 +1,4 @@
-//! The stored settings followed while casement runs.
+//! The stored settings followed while the compositor runs.
 //!
 //! When `compositor/settings.toml` changes, the pointer's settings reach the devices already
 //! present and the key repeat reaches the clients already bound, at once, as a change in System
@@ -15,10 +15,10 @@
 
 use crate::State;
 use crate::appearance::ThreadSpawner;
-use crate::config::{self, CasementDoc};
+use crate::config::{self, CompositorDoc};
 use base_spawn::Spawner;
 use compositor_core::Event;
-use compositor_core::settings::{CasementSettings, KeyboardSettings, XkbNames};
+use compositor_core::settings::{CompositorSettings, KeyboardSettings, XkbNames};
 use compositor_wayland::seat_keymap::{self, KeymapStep};
 use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
 use std::path::Path;
@@ -29,17 +29,17 @@ use std::path::Path;
 /// Everything else, the keymap's bindings among it, stays.
 ///
 /// ```
-/// use compositor_app::config::CasementDoc;
+/// use compositor_app::config::CompositorDoc;
 /// use compositor_app::settings_live::followed;
-/// use compositor_core::settings::CasementSettings;
+/// use compositor_core::settings::CompositorSettings;
 ///
-/// let current = CasementSettings::defaults();
-/// assert_eq!(followed(&current, &CasementDoc::default()), current);
+/// let current = CompositorSettings::defaults();
+/// assert_eq!(followed(&current, &CompositorDoc::default()), current);
 /// ```
 #[must_use]
-pub fn followed(current: &CasementSettings, doc: &CasementDoc) -> CasementSettings {
+pub fn followed(current: &CompositorSettings, doc: &CompositorDoc) -> CompositorSettings {
     let read = config::to_core(doc);
-    CasementSettings {
+    CompositorSettings {
         pointer: read.pointer,
         gestures: read.gestures,
         night_light: read.night_light,
@@ -58,11 +58,11 @@ pub fn followed(current: &CasementSettings, doc: &CasementDoc) -> CasementSettin
 ///
 /// Returns [`crate::StartError`] when the settings source cannot be inserted into the event loop.
 pub fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate::StartError> {
-    let (sender, receiver) = channel::channel::<CasementDoc>();
+    let (sender, receiver) = channel::channel::<CompositorDoc>();
     let mut watch = config::watch(home, &ThreadSpawner);
     ThreadSpawner.spawn(Box::pin(async move {
         while let Some(loaded) = watch.changed().await {
-            for line in loaded.diagnostics(<CasementDoc as settings_store::SettingsDoc>::FILE) {
+            for line in loaded.diagnostics(<CompositorDoc as settings_store::SettingsDoc>::FILE) {
                 tracing::warn!("{line}");
             }
             if sender.send(loaded.value).is_err() {
@@ -104,13 +104,13 @@ fn switch_keymap(state: &mut State, wanted: &XkbNames) -> XkbNames {
 ///
 /// ```no_run
 /// use compositor_app::State;
-/// use compositor_app::config::CasementDoc;
+/// use compositor_app::config::CompositorDoc;
 ///
-/// fn changed(state: &mut State, doc: &CasementDoc) {
+/// fn changed(state: &mut State, doc: &CompositorDoc) {
 ///     compositor_app::settings_live::apply(state, doc);
 /// }
 /// ```
-pub fn apply(state: &mut State, doc: &CasementDoc) {
+pub fn apply(state: &mut State, doc: &CompositorDoc) {
     let mut next = followed(state.settings(), doc);
     next.keyboard.layout = switch_keymap(state, &next.keyboard.layout);
     if *state.settings() == next {

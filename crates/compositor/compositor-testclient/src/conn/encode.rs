@@ -32,7 +32,7 @@ const LONG: usize = 4096;
 const MEMFD_MAX: i32 = 65_536;
 
 /// Builds the body of request `desc` from `ints`; with no description (an opcode the interface
-/// does not have) the integers go out as raw words, which the compositor must refuse.
+/// does not have) the integers go out as raw words, which compositor must refuse.
 pub(super) fn build(desc: Option<&MessageDesc>, ints: &[i32], cx: &mut Context<'_>) -> Built {
     let mut cursor = Cursor { ints, at: 0 };
     let mut payload = Vec::new();
@@ -216,7 +216,7 @@ fn descriptor(seed: i32) -> Option<OwnedFd> {
             .ok()
             .map(|(a, _b)| OwnedFd::from(a)),
         3 => {
-            let fd = memfd_create("casement-fuzz", MemfdFlags::CLOEXEC).ok()?;
+            let fd = memfd_create("compositor-fuzz", MemfdFlags::CLOEXEC).ok()?;
             ftruncate(&fd, u64::from((seed % MEMFD_MAX).unsigned_abs())).ok()?;
             Some(fd)
         }

@@ -1,16 +1,16 @@
-//! `org.bardo.Compositor1` on the session bus: casement's door for the agent tier.
+//! `org.bardo.Compositor1` on the session bus: the compositor's door for the agent tier.
 
 use compositor_dbus::{BUS_NAME, Compositor1Proxy};
 use std::os::fd::OwnedFd;
 
-// The calls cuad makes are casement's `Compositor1`. The role is the compositor's to check: a
+// The calls cuad makes are the compositor's `Compositor1`. The role is the compositor's to check: a
 // connection that is not allowed the agent role gets an access-denied error, which surfaces as
 // the call failing.
 
 /// The agent role's name in `Connect`.
 const AGENT: &str = "agent";
 
-/// Whether casement is on the bus, and how to reach it.
+/// Whether the compositor is on the bus, and how to reach it.
 #[derive(Debug, Clone)]
 pub struct Door {
     proxy: Compositor1Proxy<'static>,

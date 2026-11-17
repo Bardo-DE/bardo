@@ -1,4 +1,4 @@
-//! The hooks of the vkms test mode (P1-V2): what `casement --backend tty --drm-node PATH` adds for
+//! The hooks of the vkms test mode (P1-V2): what `bardo-compositor --backend tty --drm-node PATH` adds for
 //! `dev/vkms/accept.sh`, and nothing else.
 //!
 //! A test mode, not a feature: it is built only when `--drm-node` is given.

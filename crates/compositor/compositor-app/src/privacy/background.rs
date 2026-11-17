@@ -21,7 +21,7 @@ impl BackgroundPrivacyStore {
     pub fn new(files: PrivacyFiles) -> BackgroundPrivacyStore {
         let files = FilePrivacyStore::new(files);
         let sink = files.book_sink();
-        let writer = LatestWriter::start("casement-privacy", "the privacy book", move |text| {
+        let writer = LatestWriter::start("compositor-privacy", "the privacy book", move |text| {
             sink.write(text)
         });
         BackgroundPrivacyStore { files, writer }

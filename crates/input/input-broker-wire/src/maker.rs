@@ -6,7 +6,7 @@
 //! `input-broker/pad_daemon` there knows which proven service the device was made for. The form is
 //! `input-broker/<role>`, the role being the peephole role the service admitted the caller under.
 //!
-//! casement keeps its own copy of [`Maker::parse`] (it links nothing of turnstile); each repository
+//! The compositor keeps its own copy of [`Maker::parse`] (it links nothing of turnstile); each repository
 //! pins the exact strings in a test, so a change here fails both.
 
 use std::fmt;

@@ -1,4 +1,4 @@
-//! The fake service manager: `FakeNotify` records the notices casement sends, so a test asserts
+//! The fake service manager: `FakeNotify` records the notices the compositor sends, so a test asserts
 //! that ready came after the outputs and stopping on the way out. A clone shares the record.
 
 use compositor_app::notify::{Notice, Notify, NotifyError};

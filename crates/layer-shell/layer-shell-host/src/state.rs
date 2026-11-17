@@ -102,12 +102,12 @@ pub(crate) struct HostState {
     pub(crate) activation: Option<ActivationState>,
     pub(crate) fractional: Option<Fractional>,
     pub(crate) background_effect: Option<BackgroundEffect>,
-    /// `bardo_window_manager_v1`, only where the compositor advertises it (casement).
+    /// `bardo_window_manager_v1`, only where the compositor advertises it (the compositor).
     pub(crate) bardo_window: Option<BardoWindows>,
     /// The compositor's main render device, for the adapter that follows it.
     pub(crate) render_device: Option<RenderDevice>,
     /// This compositor gets a parent layer's keyboard lifted for a grabbing popup (not `KWin` or
-    /// casement), from the globals at bind time.
+    /// The compositor), from the globals at bind time.
     pub(crate) lifts_parent_keyboard: bool,
     pub(crate) text_input: Option<TextInputManager>,
     pub(crate) cursor: Cursor,

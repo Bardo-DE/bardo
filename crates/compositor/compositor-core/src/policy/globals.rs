@@ -23,7 +23,7 @@ pub enum ConnectionRole {
     Sandboxed(SandboxFacts),
 }
 
-/// Every global casement advertises, one variant per `delegates.rs` global.
+/// Every global the compositor advertises, one variant per `delegates.rs` global.
 ///
 /// Each delta
 /// freeze adds its own; P0-Z2 checks this list against the delegates). P1-Z declared the last

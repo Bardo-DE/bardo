@@ -1,4 +1,4 @@
-//! casement's protocol edge: one module per Wayland protocol.
+//! The compositor's protocol edge: one module per Wayland protocol.
 //!
 //! Every module has the same shape (ARCHITECTURE.md, "Add a protocol"): a `<Protocol>Part`
 //! holding smithay's state and our own tables (`BTreeMaps` only, row B17); `Part::new`, which

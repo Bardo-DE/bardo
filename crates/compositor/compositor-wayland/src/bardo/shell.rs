@@ -35,7 +35,7 @@ use smithay::wayland::image_capture_source::ImageCaptureSourceHandler;
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::BTreeMap;
 
-/// The version casement serves (7: the bar in full screen, reduced motion, `reveal_on_output`).
+/// The version the compositor serves (7: the bar in full screen, reduced motion, `reveal_on_output`).
 pub const VERSION: u32 = 7;
 
 /// The surface that holds a role.

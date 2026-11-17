@@ -2,7 +2,7 @@
 
 use crate::config::convert;
 use base_words::Word;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use serde::{Deserialize, Serialize};
 use settings_types::Count;
 use settings_types::schema::Page;
@@ -84,6 +84,6 @@ pub struct NightLightSection {
 
 impl Default for NightLightSection {
     fn default() -> Self {
-        convert::night_light_doc(&CasementSettings::defaults().night_light)
+        convert::night_light_doc(&CompositorSettings::defaults().night_light)
     }
 }

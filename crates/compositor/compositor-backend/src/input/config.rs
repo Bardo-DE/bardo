@@ -79,9 +79,9 @@ pub fn scaled_scroll(kind: InputKind, factor: Fraction) -> InputKind {
 ///
 /// ```
 /// use compositor_backend::input::xkb_of;
-/// use compositor_core::settings::CasementSettings;
+/// use compositor_core::settings::CompositorSettings;
 ///
-/// assert_eq!(xkb_of(&CasementSettings::defaults().keyboard).layout, "");
+/// assert_eq!(xkb_of(&CompositorSettings::defaults().keyboard).layout, "");
 /// ```
 #[must_use]
 pub fn xkb_of(keyboard: &KeyboardSettings) -> XkbNames {

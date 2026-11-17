@@ -3,7 +3,7 @@
 //! is the model's own default (a default is written once, in `compositor-core`).
 
 use super::action::ActionWords;
-use super::doc::CasementDoc;
+use super::doc::CompositorDoc;
 use super::sections::{
     BindingsSection, FirstSight, GesturesSection, GpuSection, KeyboardSection, NightLightMode,
     NightLightSection, OutputsSection, PointerSection, SpacesSection, TouchpadSection,
@@ -14,7 +14,7 @@ use compositor_core::gpu::{ByPathId, GpuChoice};
 use compositor_core::input::{Binding, Bindings, Chord};
 use compositor_core::output::{Kelvin, MinuteOfDay, NightLight, ScalePolicy, Schedule};
 use compositor_core::settings::{
-    CasementSettings, GestureSettings, GpuSettings, KeyboardSettings, NightLightSettings,
+    CompositorSettings, GestureSettings, GpuSettings, KeyboardSettings, NightLightSettings,
     OutputSettings, PointerProfile, PointerSettings, RepeatRate, SpaceSettings, WindowSettings,
     XkbNames,
 };
@@ -25,10 +25,10 @@ use ui_core::geometry::scale::Scale;
 /// The smallest and largest `outputs.fixed_scale`, in percent (the schema's range).
 const FIXED_SCALE: (u16, u16) = (100, 400);
 
-/// The settings `doc` says; every key it leaves out takes `CasementSettings::defaults`'s value.
+/// The settings `doc` says; every key it leaves out takes `CompositorSettings::defaults`'s value.
 #[must_use]
-pub fn to_core(doc: &CasementDoc) -> CasementSettings {
-    CasementSettings {
+pub fn to_core(doc: &CompositorDoc) -> CompositorSettings {
+    CompositorSettings {
         windows: windows(&doc.windows),
         spaces: spaces(&doc.spaces),
         keyboard: keyboard(&doc.keyboard),

@@ -19,7 +19,7 @@ fn a_changed_file_is_refused_and_nothing_is_installed() {
     let sandbox = Sandbox::new();
     let mut recipe = Recipe::new("0.1.0");
     recipe.packed = Some(vec![
-        ("bin/bardo-compositor", "casement EVIL"),
+        ("bin/bardo-compositor", "compositor EVIL"),
         ("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
     ]);
     let err = sandbox.install(&build(&recipe)).expect_err("tampered");
@@ -53,7 +53,7 @@ fn a_bundle_with_an_extra_file_is_refused() {
 fn a_bundle_missing_a_listed_file_is_refused() {
     let sandbox = Sandbox::new();
     let mut recipe = Recipe::new("0.1.0");
-    recipe.packed = Some(vec![("bin/bardo-compositor", "casement 1")]);
+    recipe.packed = Some(vec![("bin/bardo-compositor", "compositor 1")]);
     let err = sandbox.install(&build(&recipe)).expect_err("missing");
     assert!(
         matches!(err, ApplyError::Bundle(AuditError::Missing(_))),

@@ -4,9 +4,9 @@
 # session (every client here sources .kwin-env), no keyboard grab.
 #
 #   scripts/dev/accept-modifiers.sh
-#   COMPOSITOR=casement scripts/dev/accept-modifiers.sh   the same on casement, in a jail
+#   COMPOSITOR=the compositor scripts/dev/accept-modifiers.sh   the same on the compositor, in a jail
 #
-# Three cases, each its own compositor instance (kwin-virtual.sh; casement: its own dev/up.sh
+# Three cases, each its own compositor instance (kwin-virtual.sh; the compositor: its own dev/up.sh
 # run, so neither's modifier state leaks into the other) and its own demo_switcher, mapped only
 # after the modifier state is set up first. Every run prints a "modifiers" line at the panel's very first render, always the default (nothing
 # held or locked yet: it predates the surface's first configure, let alone a keyboard event) —

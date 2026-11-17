@@ -1,11 +1,11 @@
 # Where the sibling layer-shell-host checkout and this repo are, and the two compositors a script runs
-# on: casement (the sibling casement checkout's dev/up.sh, headless, INSIDE the jail: only
-# dev/accept.sh --compositor casement, or a script run under packaging/harness/jail.sh, can use
+# on: the compositor (the sibling the compositor checkout's dev/up.sh, headless, INSIDE the jail: only
+# dev/accept.sh --compositor the compositor, or a script run under packaging/harness/jail.sh, can use
 # it) and layer-shell-host's headless KWin (kwin-virtual.sh). The KWin harness belongs to layer-shell-host;
 # bardo-shell only wraps it.
 #
-# BARDO_SHELL_COMPOSITOR=casement|kwin picks the compositor for `start_compositor`; unset, each script
-# keeps its own choice: casement by default, kwin where it runs headless KWin (its
+# BARDO_SHELL_COMPOSITOR=the compositor|kwin picks the compositor for `start_compositor`; unset, each script
+# keeps its own choice: the compositor by default, kwin where it runs headless KWin (its
 # `start_compositor --default kwin ...`).
 # One set of helpers answers for both: start_compositor / stop_compositor, set_scale,
 # require_scale, output_scale, output_size, shot, maximised_height and nested (a command in the
@@ -50,17 +50,17 @@ KWIN_ENV="$BARDO_LAYER_SHELL_HOST_DEV/.kwin-env"
 SIZE="${SIZE:-1920x1080}"
 WL=
 BUS=
-# Casement: the casement crate of this tree and the
-# tools dev/bootstrap.sh built there OUTSIDE the jail (casement, bardo-compositorctl, compositor-probe,
+# The compositor: the compositor crate of this tree and the
+# tools dev/bootstrap.sh built there OUTSIDE the jail (the compositor, bardo-compositorctl, compositor-probe,
 # fake-logind in dev/out/tools/bin; nothing inside the jail calls cargo). BARDO_COMPOSITOR_ENV is the env
-# file of the session start_casement made.
+# file of the session start_compositor made.
 BARDO_COMPOSITOR_REPO="${BARDO_COMPOSITOR_REPO:-$BARDO_SHELL_TREE/crates/compositor}"
 BARDO_COMPOSITOR_TOOLS="${BARDO_COMPOSITOR_TOOLS:-$BARDO_COMPOSITOR_REPO/dev/out/tools}"
 BARDO_COMPOSITOR_ENV=
-# Casement's own bus (Debug1 lives on it): BUS is the script's, which a script that starts a bus per
+# The compositor's own bus (Debug1 lives on it): BUS is the script's, which a script that starts a bus per
 # group (launcher.sh) replaces, so bardo-compositorctl keeps its own address.
 BARDO_COMPOSITOR_BUS=
-# The compositor start_compositor started (casement or kwin).
+# The compositor start_compositor started (the compositor or kwin).
 COMPOSITOR=
 # Where a script's logs and captures go: the target directory and dev/out in a checkout, but the
 # jail's own scratch dir inside one (A8: state never lands in the checkout, so jails run in parallel).
@@ -165,23 +165,23 @@ await_no_process() {
 compositor_kind() {
   local kind="${BARDO_SHELL_COMPOSITOR:-$1}"
   case "$kind" in
-    casement|kwin) echo "$kind" ;;
-    *) echo "dev: BARDO_SHELL_COMPOSITOR must be casement or kwin, not '$kind'" >&2; return 1 ;;
+    compositor|kwin) echo "$kind" ;;
+    *) echo "dev: BARDO_SHELL_COMPOSITOR must be compositor or kwin, not '$kind'" >&2; return 1 ;;
   esac
 }
 
-# start_compositor [--default casement|kwin] [SIZE]: brings the compositor up and sets WL (its
+# start_compositor [--default the compositor|kwin] [SIZE]: brings the compositor up and sets WL (its
 # socket, absolute) and BUS (the private bus standing in for the session and the system bus).
 #   kwin      layer-shell-host's headless KWin at SIZE (default $SIZE) on its private bus;
-#   casement  dev/up.sh of the casement checkout in this jail: a headless casement on the
+#   The compositor  dev/up.sh of the compositor checkout in this jail: a headless the compositor on the
 #             wall clock at SIZE, its private bus (also fake-logind's), WL and BUS from its env file.
-# Needs OUT_DIR. Fails (exit code 2 for "not here") when casement is asked for outside the jail.
+# Needs OUT_DIR. Fails (exit code 2 for "not here") when the compositor is asked for outside the jail.
 start_compositor() {
-  local default=casement
+  local default=compositor
   if [ "${1:-}" = --default ]; then default="$2"; shift 2; fi
   COMPOSITOR=$(compositor_kind "$default") || return 1
   case "$COMPOSITOR" in
-    casement) start_casement "$@" ;;
+    compositor) start_compositor "$@" ;;
     kwin) start_kwin "$@" ;;
   esac
 }
@@ -189,34 +189,34 @@ start_compositor() {
 # Ends exactly what start_compositor started; a no-op when none is running.
 stop_compositor() {
   case "$COMPOSITOR" in
-    casement) stop_casement ;;
+    compositor) stop_compositor ;;
     kwin) stop_kwin ;;
   esac
   COMPOSITOR=
 }
 
-# The casement tool NAME in the bootstrapped tools directory.
-casement_bin() {
+# The compositor tool NAME in the bootstrapped tools directory.
+compositor_bin() {
   local path="$BARDO_COMPOSITOR_TOOLS/bin/$1"
-  [ -x "$path" ] || { echo "casement: $path is missing (run $BARDO_COMPOSITOR_REPO/dev/bootstrap.sh outside the jail)" >&2; return 3; }
+  [ -x "$path" ] || { echo "compositor: $path is missing (run $BARDO_COMPOSITOR_REPO/dev/bootstrap.sh outside the jail)" >&2; return 3; }
   echo "$path"
 }
 
-# A casement tool in the session's environment (its bus and its socket; usable before scratch_new).
-casement_run() {
+# A compositor tool in the session's environment (its bus and its socket; usable before scratch_new).
+compositor_run() {
   local tool="$1" bin
   shift
-  bin=$(casement_bin "$tool") || return 3
+  bin=$(compositor_bin "$tool") || return 3
   env WAYLAND_DISPLAY="$WL" XDG_RUNTIME_DIR="$(dirname "$WL")" DBUS_SESSION_BUS_ADDRESS="${BARDO_COMPOSITOR_BUS:-$BUS}" "$bin" "$@"
 }
-bardo-compositorctl() { casement_run bardo-compositorctl "$@"; }
+bardo-compositorctl() { compositor_run bardo-compositorctl "$@"; }
 
-# The programs these scripts run on casement's socket and the one power each takes, as
-# "POWER PROGRAM". casement asks before a program captures the screen, reads the clipboard, types
+# The programs these scripts run on the compositor's socket and the one power each takes, as
+# "POWER PROGRAM". The compositor asks before a program captures the screen, reads the clipboard, types
 # and so on, so the floor the session starts with allows exactly these (read off
 # accept/clipboard.sh, accept/screenshot.sh, accept/launcher.sh and demo.sh; dev/shot.sh shoots
-# KWin or the host, which casement does not judge). A floor row names a program by its image.
-# casement's test builds also take a row naming a program built under this checkout
+# KWin or the host, which compositor does not judge). A floor row names a program by its image.
+# The compositor's test builds also take a row naming a program built under this checkout
 # (privacy/injected.rs): BARDO_COMPOSITOR_FLOOR_BUILT below. The daemon itself is named as the shell by
 # desktop-callers.toml beside the floor instead.
 BARDO_COMPOSITOR_FLOOR_ROWS=(
@@ -231,17 +231,17 @@ BARDO_COMPOSITOR_FLOOR_BUILT=(
   "lock examples/session_locker"
 )
 
-# Where start_casement puts the floor: inside the script's own output directory, so it goes with
+# Where start_compositor puts the floor: inside the script's own output directory, so it goes with
 # the run and nothing is written anywhere else.
-casement_floor_dir() { echo "$OUT_DIR/casement-floor"; }
+compositor_floor_dir() { echo "$OUT_DIR/compositor-floor"; }
 
 # Writes the session's floor (privacy.toml in an empty folder only this user can enter, the shape
 # compositor-core's floor_codec reads) and prints the folder. A program that is not installed is left
 # out: the script that needs it says so itself. Defaults stay "ask".
-write_casement_floor() {
+write_compositor_floor() {
   local dir row power tool path
-  dir=$(casement_floor_dir)
-  [ -n "$OUT_DIR" ] || { echo "write_casement_floor: OUT_DIR is not set" >&2; return 1; }
+  dir=$(compositor_floor_dir)
+  [ -n "$OUT_DIR" ] || { echo "write_compositor_floor: OUT_DIR is not set" >&2; return 1; }
   rm -rf "$dir" && mkdir -m 700 "$dir" || return 1
   {
     echo "# The dev session's floor (bardo-shell dev/lib/compositor.sh): the programs the dev scripts run."
@@ -256,21 +256,21 @@ write_casement_floor() {
       path=$(readlink -f "$BARDO_SHELL_OUT/${row#* }" 2>/dev/null) && [ -x "$path" ] || continue
       printf '\n[[rule]]\npower = "%s"\nsubject = { program = "%s" }\nanswer = "allow"\n' "$power" "$path"
     done
-    # `shot` is casement's own bardo-compositorctl: once the daemon is the shell (desktop-callers.toml),
+    # `shot` is the compositor's own bardo-compositorctl: once the daemon is the shell (desktop-callers.toml),
     # an unnamed capture is put to it as a question, which nobody here answers.
-    path=$(casement_bin bardo-compositorctl 2>/dev/null) && path=$(readlink -f "$path") \
+    path=$(compositor_bin bardo-compositorctl 2>/dev/null) && path=$(readlink -f "$path") \
       && printf '\n[[rule]]\npower = "screen"\nsubject = { program = "%s" }\nanswer = "allow"\n' "$path"
   } >"$dir/privacy.toml" || return 1
   chmod 600 "$dir/privacy.toml" || return 1
-  write_casement_callers "$dir" || return 1
+  write_compositor_callers "$dir" || return 1
   echo "$dir"
 }
 
-# The daemons this checkout built, as the shell: the jail has no /etc/bardo, so a test casement
+# The daemons this checkout built, as the shell: the jail has no /etc/bardo, so a test the compositor
 # reads its list of the desktop's own programs from desktop-callers.toml in the injected folder
-# (casement clients/dev_callers.rs). Without it the shell is a stranger, and casement refuses its
+# (the compositor clients/dev_callers.rs). Without it the shell is a stranger, and the compositor refuses its
 # session lock. Both daemons are named: lock.sh runs the one built without `debug` too.
-write_casement_callers() {
+write_compositor_callers() {
   local dir="$1" bin path
   {
     echo "# The dev session's shell (bardo-shell dev/lib/compositor.sh): this checkout's daemons."
@@ -283,51 +283,51 @@ write_casement_callers() {
   chmod 600 "$dir/desktop-callers.toml"
 }
 
-# Starts casement through its own dev/up.sh and sets WL, BUS, BARDO_COMPOSITOR_ENV. $1 is a size "WxH"
+# Starts the compositor through its own dev/up.sh and sets WL, BUS, BARDO_COMPOSITOR_ENV. $1 is a size "WxH"
 # (default $SIZE); KWIN_VIRTUAL_OUTPUTS=2 (widgets.sh) means two outputs side by side. The clock
 # is the wall clock: bardo-shell's animations and timers run on real time, and a stepped clock would
 # stand still until a script advanced it. Refuses a bus that would be the session's.
-start_casement() {
+start_compositor() {
   local size="${1:-$SIZE}" spec up_out env_file floor
   mkdir -p "$OUT_DIR"
   spec="HEADLESS-1:$size@60000:120:0,0"
   if [ "${KWIN_VIRTUAL_OUTPUTS:-1}" = 2 ]; then
     spec="$spec;HEADLESS-2:$size@60000:120:${size%x*},0"
   fi
-  [ -z "$BARDO_COMPOSITOR_ENV" ] || { echo "start_casement: a casement session is already up ($BARDO_COMPOSITOR_ENV)" >&2; return 1; }
-  # --system-dir is read by casement's debug builds (the jail's) as a floor owned by this user.
-  floor=$(write_casement_floor) || { echo "start_casement: could not write the session's floor" >&2; return 1; }
-  up_out=$("$BARDO_COMPOSITOR_REPO/dev/up.sh" --clock wall --outputs "$spec" --system-dir "$floor" 2>"$OUT_DIR/casement-up.log")
+  [ -z "$BARDO_COMPOSITOR_ENV" ] || { echo "start_compositor: a compositor session is already up ($BARDO_COMPOSITOR_ENV)" >&2; return 1; }
+  # --system-dir is read by the compositor's debug builds (the jail's) as a floor owned by this user.
+  floor=$(write_compositor_floor) || { echo "start_compositor: could not write the session's floor" >&2; return 1; }
+  up_out=$("$BARDO_COMPOSITOR_REPO/dev/up.sh" --clock wall --outputs "$spec" --system-dir "$floor" 2>"$OUT_DIR/compositor-up.log")
   local rc=$?
   if [ "$rc" != 0 ]; then
-    cat "$OUT_DIR/casement-up.log" >&2
+    cat "$OUT_DIR/compositor-up.log" >&2
     rm -rf "$floor"
-    echo "start_casement: dev/up.sh exited $rc (2: not in the jail; 3: run dev/bootstrap.sh)" >&2
+    echo "start_compositor: dev/up.sh exited $rc (2: not in the jail; 3: run dev/bootstrap.sh)" >&2
     return "$rc"
   fi
   env_file=$(tail -n1 <<<"$up_out")
-  [ -f "$env_file" ] || { echo "start_casement: no env file '$env_file'" >&2; return 1; }
+  [ -f "$env_file" ] || { echo "start_compositor: no env file '$env_file'" >&2; return 1; }
   BARDO_COMPOSITOR_ENV="$env_file"
   WL=$(source "$env_file" && echo "$WAYLAND_DISPLAY")
   BUS=$(source "$env_file" && echo "$DBUS_SESSION_BUS_ADDRESS")
   BARDO_COMPOSITOR_BUS=$BUS
-  [ -S "$WL" ] && [ -n "$BUS" ] || { echo "no socket or bus in $env_file" >&2; stop_casement; return 1; }
-  [ "$BUS" != "${DBUS_SESSION_BUS_ADDRESS:-}" ] || { echo "casement's bus is the session's" >&2; stop_casement; return 1; }
-  require_private_system_bus "$BUS" || { stop_casement; return 1; }
-  # Casement's pointer starts on the output's corner (0, 0), where the hot corner and the bar's first
+  [ -S "$WL" ] && [ -n "$BUS" ] || { echo "no socket or bus in $env_file" >&2; stop_compositor; return 1; }
+  [ "$BUS" != "${DBUS_SESSION_BUS_ADDRESS:-}" ] || { echo "compositor's bus is the session's" >&2; stop_compositor; return 1; }
+  require_private_system_bus "$BUS" || { stop_compositor; return 1; }
+  # The compositor's pointer starts on the output's corner (0, 0), where the hot corner and the bar's first
   # item would take it as a dwell and a hover. Park it on the left edge, halfway down: clear of the
   # corners, the bar, the dock, the right-hand notification column and the centred panels and
   # sheets (a launcher row under a resting pointer takes the hover and moves the selection).
-  bardo-compositorctl debug inject "move $(( ${size%x*} / 8 )) $(( ${size#*x} / 2 ))" >>"$OUT_DIR/casement-up.log" 2>&1 \
-    || { echo "start_casement: could not park the pointer (bardo-compositorctl debug inject)" >&2; stop_casement; return 1; }
+  bardo-compositorctl debug inject "move $(( ${size%x*} / 8 )) $(( ${size#*x} / 2 ))" >>"$OUT_DIR/compositor-up.log" 2>&1 \
+    || { echo "start_compositor: could not park the pointer (bardo-compositorctl debug inject)" >&2; stop_compositor; return 1; }
 }
 
-# Ends exactly the casement start_casement started (dev/down.sh stops each process by the pid in
+# Ends exactly the compositor start_compositor started (dev/down.sh stops each process by the pid in
 # the env file, never by name); a no-op when none is running.
-stop_casement() {
+stop_compositor() {
   [ -n "$BARDO_COMPOSITOR_ENV" ] || return 0
-  "$BARDO_COMPOSITOR_REPO/dev/down.sh" "$BARDO_COMPOSITOR_ENV" >>"$OUT_DIR/casement-up.log" 2>&1
-  rm -rf "$(casement_floor_dir)"
+  "$BARDO_COMPOSITOR_REPO/dev/down.sh" "$BARDO_COMPOSITOR_ENV" >>"$OUT_DIR/compositor-up.log" 2>&1
+  rm -rf "$(compositor_floor_dir)"
   BARDO_COMPOSITOR_ENV=
   BARDO_COMPOSITOR_BUS=
 }
@@ -347,7 +347,7 @@ nested() {
 # The output's logical size, "W H".
 output_size() {
   case "$COMPOSITOR" in
-    casement)
+    compositor)
       bardo-compositorctl debug output list --json | python3 -c '
 import json, sys
 o = json.load(sys.stdin)[0]
@@ -359,7 +359,7 @@ print(*o["logical"])' ;;
 # The first output's name and scale (a decimal), by compositor.
 output_scale() {
   case "$COMPOSITOR" in
-    casement)
+    compositor)
       bardo-compositorctl debug output list --json | python3 -c '
 import json, sys
 print(json.load(sys.stdin)[0]["scale"] / 120)' ;;
@@ -370,12 +370,12 @@ print(json.load(sys.stdin)[0]["scale"] / 120)' ;;
 # Sets scale $1 on the one output.
 set_scale() {
   case "$COMPOSITOR" in
-    casement)
+    compositor)
       local name
       name=$(bardo-compositorctl debug output list --json | python3 -c '
 import json, sys
 print(json.load(sys.stdin)[0]["name"])') || return 1
-      bardo-compositorctl debug output set "$name" --scale "$1" >>"$OUT_DIR/casement-up.log" 2>&1 ;;
+      bardo-compositorctl debug output set "$name" --scale "$1" >>"$OUT_DIR/compositor-up.log" 2>&1 ;;
     *) set_kwin_scale "$1" ;;
   esac
 }
@@ -393,19 +393,19 @@ require_scale() {
   return 1
 }
 
-# Shoots the whole output into $1 (a PNG): `bardo-compositorctl shot --output NAME` for casement (the last
+# Shoots the whole output into $1 (a PNG): `bardo-compositorctl shot --output NAME` for the compositor (the last
 # presented frame of that output, the size answered as JSON; `--window` and `--masked` are P1-C1
-# and not used here). Returns 2 (expected skip) when this casement build has no capture at all;
+# and not used here). Returns 2 (expected skip) when this compositor build has no capture at all;
 # KWin's own scripts use spectacle themselves.
 shot() {
   case "$COMPOSITOR" in
-    casement)
+    compositor)
       mkdir -p "$(dirname "$1")"
       local rc
-      # The headless casement's first output (dev/up.sh) is HEADLESS-1.
+      # The headless the compositor's first output (dev/up.sh) is HEADLESS-1.
       bardo-compositorctl shot --output "${BARDO_COMPOSITOR_OUTPUT:-HEADLESS-1}" "$1" >/dev/null
       rc=$?
-      [ "$rc" != 2 ] || expected_skip "this casement build has no screenshot (bardo-compositorctl shot exits 2)"
+      [ "$rc" != 2 ] || expected_skip "this compositor build has no screenshot (bardo-compositorctl shot exits 2)"
       return "$rc" ;;
     *) nested wayland-info >/dev/null 2>&1 || { echo "no compositor" >&2; return 1; }
        mkdir -p "$(dirname "$1")"
@@ -416,12 +416,12 @@ shot() {
 # The height of a window that asks to be maximised on the output. KWin: layer-shell-host's
 # `probe_toplevel` (built on first use) stands in for foot, asks to be maximised and prints each
 # configure as JSON into $OUT_DIR/probe.log; prints the last maximised configure's height.
-# Casement: `compositor-probe toplevel --maximised`, which prints the same facts as JSON lines;
+# The compositor: `compositor-probe toplevel --maximised`, which prints the same facts as JSON lines;
 # returns 2 (an expected skip) while the probe has no such flag (it ignores unknown flags and
-# prints no `maximised` field) or casement's P0 floating windows are never configured maximised.
+# prints no `maximised` field) or the compositor's P0 floating windows are never configured maximised.
 PROBE="${BARDO_SHELL_PROBE:-$BARDO_SHELL_TARGET/release/examples/probe_toplevel}"
 maximised_height() {
-  [ "$COMPOSITOR" != casement ] || { maximised_height_casement; return; }
+  [ "$COMPOSITOR" != compositor ] || { maximised_height_compositor; return; }
   [ -x "$PROBE" ] || (cd "$BARDO_SHELL_TREE" && CARGO_TARGET_DIR="$BARDO_SHELL_TARGET" cargo build --release -p layer-shell-host --features debug-inject \
     --example probe_toplevel >&2) || return 1
   local log="$OUT_DIR/probe.log" probe
@@ -436,9 +436,9 @@ maximised_height() {
   grep '"maximized":true' "$log" | tail -1 | python3 -c 'import json,sys; print(json.loads(sys.stdin.read())["height"])'
 }
 
-maximised_height_casement() {
+maximised_height_compositor() {
   local log="$OUT_DIR/probe.log" height
-  in_env timeout 25 "$(casement_bin compositor-probe)" toplevel --maximised >"$log" 2>&1 </dev/null || true
+  in_env timeout 25 "$(compositor_bin compositor-probe)" toplevel --maximised >"$log" 2>&1 </dev/null || true
   height=$(grep -E '"maxim(ised|ized)":true' "$log" | tail -1 | python3 -c '
 import json, sys
 print(json.loads(sys.stdin.read())["height"])' 2>/dev/null)

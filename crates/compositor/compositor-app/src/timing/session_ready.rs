@@ -27,7 +27,7 @@ impl ShellSurface {
 /// The start of a session, complete: what the `session-ready` line says.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SessionReady {
-    /// When casement started (its clock's epoch).
+    /// When the compositor started (its clock's epoch).
     pub started_at: Stamp,
     /// When the shell's connection was taken in.
     pub shell_connected_at: Stamp,
@@ -51,7 +51,7 @@ impl SessionReady {
 pub enum SessionStage {
     /// Waiting for the shell.
     Waiting {
-        /// When casement started.
+        /// When the compositor started.
         started_at: Stamp,
         /// When the shell connected, once it has.
         shell_connected_at: Option<Stamp>,

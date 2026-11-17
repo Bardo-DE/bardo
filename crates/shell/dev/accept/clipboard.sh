@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Clipboard history acceptance, on casement (brought up and ended by start_compositor).
+# Clipboard history acceptance, on the compositor (brought up and ended by start_compositor).
 # Starts `bardo-shell run` from this checkout's debug build (`--features debug`) on a private bus (the
 # daemon's session AND system bus), with a scratch HOME and XDG directories, its own
 # XDG_RUNTIME_DIR and the nested socket as an absolute WAYLAND_DISPLAY. `wl-copy`,

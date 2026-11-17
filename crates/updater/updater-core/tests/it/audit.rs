@@ -17,7 +17,7 @@ fn a_complete_honest_bundle_passes() {
     audit.admit_dir("bin/").expect("bin");
     assert_eq!(
         audit
-            .admit_file("./bin/bardo-compositor", &digest("casement"))
+            .admit_file("./bin/bardo-compositor", &digest("compositor"))
             .expect("file")
             .mode,
         0o644
@@ -62,8 +62,8 @@ fn every_way_a_bundle_can_lie_is_caught() {
         (
             "file twice",
             |a| {
-                a.admit_file("bin/bardo-compositor", &digest("casement"))?;
-                a.admit_file("bin/bardo-compositor", &digest("casement"))
+                a.admit_file("bin/bardo-compositor", &digest("compositor"))?;
+                a.admit_file("bin/bardo-compositor", &digest("compositor"))
                     .map(drop)
             },
             |e| matches!(e, AuditError::Duplicate(_)),
@@ -130,7 +130,7 @@ fn every_way_a_bundle_can_lie_is_caught() {
         (
             "missing file",
             |a| {
-                a.admit_file("bin/bardo-compositor", &digest("casement"))?;
+                a.admit_file("bin/bardo-compositor", &digest("compositor"))?;
                 a.admit_dir("share")?;
                 Ok(())
             },
@@ -152,7 +152,7 @@ fn a_missing_file_is_named() {
     let release = release();
     let mut audit = Audit::new(&release);
     audit
-        .admit_file("bin/bardo-compositor", &digest("casement"))
+        .admit_file("bin/bardo-compositor", &digest("compositor"))
         .expect("file");
     assert_eq!(
         audit.finish(),

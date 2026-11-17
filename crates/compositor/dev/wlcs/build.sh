@@ -5,7 +5,7 @@
 #                                      sudo, about 26 s with make -j8). wlcs is GPL-3.0 (A6): a
 #                                      separate test program, never shipped, never linked into
 #                                      anything we ship.
-#   dev/out/tools/libwlcs_casement.so  our MIT shim (wlcs-casement, an excluded crate), the
+#   dev/out/tools/libwlcs_compositor.so  our MIT shim (wlcs-compositor, an excluded crate), the
 #                                      cdylib wlcs dlopens.
 # Plain cargo (the shim serialises builds); CARGO_TARGET_DIR is honoured, else the shim builds
 # into <tools>/shim-target. <tools> is $BARDO_COMPOSITOR_TOOLS, else dev/out/tools (the dir that
@@ -36,5 +36,5 @@ echo "wlcs built at $sha: $dir/wlcs"
 
 target="${CARGO_TARGET_DIR:-$tools/shim-target}"
 CARGO_TARGET_DIR="$target" cargo build --manifest-path wlcs-compositor/Cargo.toml
-cp "$target/debug/libwlcs_casement.so" "$tools/libwlcs_casement.so"
-echo "shim built: $tools/libwlcs_casement.so"
+cp "$target/debug/libwlcs_compositor.so" "$tools/libwlcs_compositor.so"
+echo "shim built: $tools/libwlcs_compositor.so"

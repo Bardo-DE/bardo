@@ -246,7 +246,7 @@ fn spec_of(output: &OutputName, config: &OutputConfig) -> VirtualOutputSpec {
         gpu: GpuId(0),
         vrr: false,
         edid: EdidSource::Synthetic(EdidFacts {
-            make: "Casement".to_owned(),
+            make: "Compositor".to_owned(),
             model: "Shadow".to_owned(),
             serial: EdidSerial::Unknown,
         }),

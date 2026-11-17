@@ -11,7 +11,7 @@ use compositor_core::app::{
 use compositor_core::desktop::{AppAsk, DesktopRequest};
 use compositor_core::focus::{HitPart, PressRoute, TokenCheck};
 use compositor_core::input::{DesktopCommand, DeviceClass, Origin};
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::shell::ShellNote;
 use compositor_core::time::{Due, TimerKey};
 use compositor_core::window::{WindowOrigin, WindowState};
@@ -274,13 +274,13 @@ fn settings_replace_and_lay_out_again_only_when_they_differ() {
     let same = run_from(
         base.model.clone(),
         vec![Op::Event(Event::SettingsChanged(Box::new(
-            CasementSettings::defaults(),
+            CompositorSettings::defaults(),
         )))],
     );
     assert_same_world(&same.model, &base.model, "unchanged");
     assert_eq!(last(&same), []);
 
-    let mut settings = CasementSettings::defaults();
+    let mut settings = CompositorSettings::defaults();
     settings.spaces.switch_on_activate = false;
     let changed = run_from(
         base.model,

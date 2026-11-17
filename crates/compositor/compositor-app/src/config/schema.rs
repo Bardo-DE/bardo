@@ -1,4 +1,4 @@
-//! `casement --write-schema DIR`: the schema detent and the Settings app read.
+//! `bardo-compositor --write-schema DIR`: the schema detent and the Settings app read.
 
 use super::ConfigError;
 use super::sections::{

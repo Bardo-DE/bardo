@@ -45,7 +45,7 @@ use smithay::reexports::wayland_server::{
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::BTreeMap;
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 3;
 
 /// `zwlr_foreign_toplevel_manager_v1`, the windows listed on it and the handle each client holds.
@@ -153,7 +153,7 @@ impl WlrToplevelPart {
 pub trait WlrToplevelHandler: ConsentHandler + OutputLookup {
     /// The part.
     fn wlr_toplevel_part(&mut self) -> &mut WlrToplevelPart;
-    /// Where `surface` sits in the global logical space, when casement placed it itself (a
+    /// Where `surface` sits in the global logical space, when the compositor placed it itself (a
     /// layer surface); `None` for a surface with no known place.
     fn surface_origin(&self, surface: &WlSurface) -> Option<LogicalPoint>;
 }
@@ -316,7 +316,7 @@ where
 }
 
 /// The rectangle a `set_rectangle` names, in global logical coordinates: `rect` is in the surface's
-/// own, `origin` is where the surface sits (the origin when casement does not know).
+/// own, `origin` is where the surface sits (the origin when the compositor does not know).
 ///
 /// `None` for a negative size, which the protocol makes an error.
 #[must_use]

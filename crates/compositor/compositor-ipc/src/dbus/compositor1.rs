@@ -1,4 +1,4 @@
-//! `org.bardo.Compositor1` at `/org/bardo/Compositor1` (the session bus; casement owns the
+//! `org.bardo.Compositor1` at `/org/bardo/Compositor1` (the session bus; the compositor owns the
 //! name): the way the shell, the agent tier and the portal get their privileged Wayland
 //! connections.
 //!
@@ -37,7 +37,7 @@
 //! for the shell, the agent tier for the agent tier, the portal for its connection and its two
 //! EIS calls) through
 //! the caller-identity library, and only then is the question put in a queue of
-//! [`CONNECT_QUEUE`](super::CONNECT_QUEUE) for casement's event loop, which makes the socket pair and inserts the
+//! [`CONNECT_QUEUE`](super::CONNECT_QUEUE) for the compositor's event loop, which makes the socket pair and inserts the
 //! server end into the display (`compositor_agent::hand_out`). A call beyond the rate or the
 //! queue is dropped with a plain error. P4-Z adds `Desktop() -> s`, `Perform(action: s) -> s`
 //! and the `Killed()` signal. Filled by P2-Q2.

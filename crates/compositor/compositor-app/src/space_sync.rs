@@ -1,8 +1,8 @@
-//! Keeping the account service told of the Spaces casement mints.
+//! Keeping the account service told of the Spaces the compositor mints.
 //!
 //! [`SpaceSync`] sits between the model and the [`SpaceRegistry`] seam: [`SpaceSync::sync`] sends
 //! the desktops it has not sent yet (all of them at the first call after the Spaces are loaded,
-//! one at a time as they are made), and [`SpaceSync::poll`] reads what came back. A refusal (casement
+//! one at a time as they are made), and [`SpaceSync::poll`] reads what came back. A refusal (the compositor
 //! is not yet the unit the service gives the compositor role to) is logged once and ends the
 //! asking for the run; a service that is not there, or a rate limit, takes the Space back out
 //! of the sent set so the next change asks again. Nothing here waits: the seam queues.

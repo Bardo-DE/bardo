@@ -1,6 +1,6 @@
 //! Where a window comes from: a Wayland client of its own, or an X11 program.
 
-/// How a toplevel reached casement.
+/// How a toplevel reached compositor.
 ///
 /// Every X11 program's windows arrive over the one Wayland
 /// connection xwayland-satellite holds, so a window of this origin says nothing about which

@@ -1,4 +1,4 @@
-//! The only clock readers in casement (row B8): `Instant::now`, smithay's `Clock::now` and
+//! The only clock readers in the compositor (row B8): `Instant::now`, smithay's `Clock::now` and
 //! calloop's `Timer` appear nowhere else.
 //!
 //! The model takes `Mono` as an argument; this module decides what `Mono` is.

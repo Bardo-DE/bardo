@@ -13,7 +13,7 @@ shot() {
   [ $# -eq 2 ] || { echo "usage: shot TARGET OUT.png   (output[:NAME] | window:ID | region:X,Y,W,H)" >&2; return 64; }
   _session || return 1
   local ctl target=$1 out=$2 flags=()
-  ctl=$(casement_tool bardo-compositorctl) || return 3
+  ctl=$(compositor_tool bardo-compositorctl) || return 3
   case "$target" in masked:*) flags+=(--masked); target=${target#masked:} ;; esac
   case "$target" in
     output) ;;

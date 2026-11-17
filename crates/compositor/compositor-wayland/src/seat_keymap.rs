@@ -65,10 +65,10 @@ impl KeymapBook {
     /// A seat whose keymap was compiled from `running`.
     ///
     /// ```
-    /// use compositor_core::settings::CasementSettings;
+    /// use compositor_core::settings::CompositorSettings;
     /// use compositor_wayland::seat_keymap::{KeymapBook, KeymapStep};
     ///
-    /// let names = CasementSettings::defaults().keyboard.layout;
+    /// let names = CompositorSettings::defaults().keyboard.layout;
     /// assert_eq!(KeymapBook::new(names.clone()).plan(&names), KeymapStep::Unchanged);
     /// ```
     #[must_use]
@@ -134,12 +134,12 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use compositor_core::settings::CasementSettings;
+    use compositor_core::settings::CompositorSettings;
 
     fn names(layout: &str) -> XkbNames {
         XkbNames {
             layout: layout.to_owned(),
-            ..CasementSettings::defaults().keyboard.layout
+            ..CompositorSettings::defaults().keyboard.layout
         }
     }
 

@@ -14,7 +14,7 @@ use compositor_backend::{BackendKind, ConnectorEvent, HeadlessBackend};
 use compositor_core::frame::Repeat;
 use compositor_core::lock::LockEvent;
 use compositor_core::output::OutputConfig;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::space::SpaceSeed;
 use compositor_core::time::{Mono, VblankSeq};
 use compositor_core::{Cause, Effect, Event, Model, OutputKey, OutputName, WindowId};
@@ -123,7 +123,7 @@ pub fn refocus_pointer(state: &mut State) {
 /// A model to hold the place of the real one while a step has it by value.
 pub(super) fn standing_in(now: Mono) -> Model {
     Model::new(
-        CasementSettings::defaults(),
+        CompositorSettings::defaults(),
         now,
         SpaceSeed::from_entropy([0; 16]),
     )

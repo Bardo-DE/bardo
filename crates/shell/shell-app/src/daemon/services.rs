@@ -74,7 +74,7 @@ pub(crate) fn follow_settings(
         DisplaysBridge,
         services.displays.control.clone(),
     );
-    // Night Shift tells casement to leave the monitors warmed over DDC/CI alone.
+    // Night Shift tells the compositor to leave the monitors warmed over DDC/CI alone.
     follow(
         rt,
         settings(),

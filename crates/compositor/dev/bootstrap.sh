@@ -12,12 +12,12 @@
 #                cargo install --git https://github.com/Supreeeme/xwayland-satellite at the pinned
 #                rev (it is not on crates.io, SP6). Run with `-glamor none` (A10: `off` panics it)
 #   wlcs/        wlcs and its shim, through dev/wlcs/build.sh (the P0-T-wlcs lane's script), into
-                $BARDO_COMPOSITOR_TOOLS too: wlcs/wlcs and libwlcs_casement.so
+                $BARDO_COMPOSITOR_TOOLS too: wlcs/wlcs and libwlcs_compositor.so
 #   bin/cargo-fuzz   only with --fuzz
 #
 #   dev/bootstrap.sh [--build-only | --tools-only | --foot-only] [--release] [--fuzz] [--force]
 #
-# --build-only builds just the four casement binaries (what dev/accept.sh --build runs);
+# --build-only builds just the four the compositor binaries (what dev/accept.sh --build runs);
 # --tools-only the rest; --foot-only just foot (no cargo, no network beyond dnf). Anything already present is kept unless --force. $BARDO_COMPOSITOR_TOOLS moves
 # the tools directory. Refuses inside the jail (exit 2). Exit 3: a host tool is missing.
 #
@@ -59,10 +59,10 @@ target="${CARGO_TARGET_DIR:-$root/../../target}"
 have() { [ "$force" = no ] && [ -e "$1" ]; }
 need() { command -v "$1" >/dev/null || { echo "bootstrap.sh: $1 is not installed: $2" >&2; exit 3; }; }
 
-build_casement() {
+build_compositor() {
   local flag=()
   [ "$profile" = debug ] || flag+=(--release)
-  # One invocation, so the features unify: the test kit builds casement with `testing` and the
+  # One invocation, so the features unify: the test kit builds the compositor with `testing` and the
   # binary gets `debug-inject` besides. Both refuse to run outside the jail.
   cargo build "${flag[@]}" --bins -p compositor-app -p compositor-ctl -p compositor-testclient -p compositor-testkit \
     --features compositor-app/debug-inject
@@ -127,7 +127,7 @@ install_fuzz() {
   cargo install --locked cargo-fuzz --root "$tools"
 }
 
-if [ "$want_build" = yes ]; then build_casement; fi
+if [ "$want_build" = yes ]; then build_compositor; fi
 if [ "$want_tools" = yes ]; then
   fetch_foot
   if [ "$want_satellite" = yes ]; then

@@ -142,7 +142,7 @@ struct Tally {
 }
 
 impl Fixture {
-    /// casement as `spec` describes it, pumped until it is quiet: outputs plugged, no client.
+    /// The compositor as `spec` describes it, pumped until it is quiet: outputs plugged, no client.
     ///
     /// # Errors
     ///
@@ -151,7 +151,7 @@ impl Fixture {
         Fixture::start_on(spec, BackendChoice::Headless, None)
     }
 
-    /// casement on the tty backend over `seams` (the fakes of a [`TtyWorld`](crate::TtyWorld)),
+    /// The compositor on the tty backend over `seams` (the fakes of a [`TtyWorld`](crate::TtyWorld)),
     /// pumped until it is quiet: the outputs the fake devices report are plugged, no client.
     /// `spec`'s outputs and renderer are the headless backend's and are ignored; its settings,
     /// space store and ack policy apply. The helpers that plug virtual outputs and inject
@@ -273,7 +273,7 @@ impl Fixture {
         &self.spawner
     }
 
-    /// The administrator's floor changed on disk and casement was told to read it again
+    /// The administrator's floor changed on disk and the compositor was told to read it again
     /// (`bardo-compositorctl privacy reload`).
     pub fn reload_floor(&mut self) {
         compositor_app::privacy::reload_floor(&mut self.state);
@@ -573,7 +573,7 @@ impl Fixture {
     }
 
     /// The settings file changed to `doc`, as the watch on it tells the loop.
-    pub fn settings_file_changed(&mut self, doc: &compositor_app::config::CasementDoc) {
+    pub fn settings_file_changed(&mut self, doc: &compositor_app::config::CompositorDoc) {
         compositor_app::settings_live::apply(&mut self.state, doc);
     }
 
@@ -601,11 +601,11 @@ impl Fixture {
 }
 
 /// The entropy Space ids are minted from: fixed, so two runs mint the same ids.
-const FIXTURE_ENTROPY: [u8; 16] = *b"casement-fixture";
+const FIXTURE_ENTROPY: [u8; 16] = *b"compositor-fixture";
 
 /// A settings directory that does not exist (the document is missing: the defaults).
 fn scratch_config_home() -> PathBuf {
     static NEXT: AtomicU32 = AtomicU32::new(0);
     let n = NEXT.fetch_add(1, Ordering::Relaxed);
-    std::env::temp_dir().join(format!("casement-fixture-{}-{n}", std::process::id()))
+    std::env::temp_dir().join(format!("compositor-fixture-{}-{n}", std::process::id()))
 }

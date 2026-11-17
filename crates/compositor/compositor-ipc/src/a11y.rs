@@ -3,7 +3,7 @@
 //! `bardo_window.set_a11y_root(bus_name, object_path)` names an object any program on the bus
 //! could own. The assistant tier reads that object to see the window, so a client must not be
 //! able to point it at someone else's. [`verify`] asks the bus which process owns the name and
-//! accepts the root only when that process is the client's own: the pid casement holds the client
+//! accepts the root only when that process is the client's own: the pid the compositor holds the client
 //! by. A sandboxed client's bus connection is its proxy's, a different process, so it never
 //! verifies; its tree is not offered to the assistant tier, which is the safe default.
 //!
@@ -32,7 +32,7 @@ pub const OWNER_WAIT: Duration = Duration::from_secs(2);
 pub struct A11yAsk {
     /// The window whose client set the root.
     pub window: WindowId,
-    /// The client's process id, as casement holds the client (its pinned peer).
+    /// The client's process id, as the compositor holds the client (its pinned peer).
     pub client_pid: u32,
     /// The bus name the client gave, unique or well known.
     pub bus_name: String,
@@ -94,7 +94,7 @@ impl A11yWorker {
         let (queue, incoming) = channel(A11Y_QUEUE);
         let (verdicts, answers) = sync_channel(A11Y_QUEUE);
         std::thread::Builder::new()
-            .name("casement-a11y".to_owned())
+            .name("compositor-a11y".to_owned())
             .spawn(move || run(&address, incoming, &verdicts))?;
         Ok((A11yWorker { queue }, answers))
     }

@@ -1,7 +1,7 @@
 //! The stored settings: `compositor/settings.toml` through ui-settings (lenient read, atomic write,
-//! a debounced watch), its schema for detent (`casement --write-schema`).
+//! a debounced watch), its schema for detent (`bardo-compositor --write-schema`).
 //!
-//! And the one conversion into the model's `CasementSettings` (ARCHITECTURE.md, "Add a settings
+//! And the one conversion into the model's `CompositorSettings` (ARCHITECTURE.md, "Add a settings
 //! key").
 
 mod action;
@@ -13,7 +13,7 @@ mod sections;
 pub use action::ActionWords;
 pub use convert::to_core;
 pub(crate) use doc::watch;
-pub use doc::{CasementDoc, load, xwayland_of};
+pub use doc::{CompositorDoc, load, xwayland_of};
 pub use schema::{schema, write_schema};
 pub use sections::{
     BindingsSection, FirstSight, GesturesSection, GpuSection, KeyboardSection, NightLightSection,

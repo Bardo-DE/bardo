@@ -1,7 +1,7 @@
 //! `bardo_window_manager_v1` (C50): what an app says about its toplevel (first-mouse regions,
 //! frame, role, accessibility root, edited) and what it learns back (emphasis, placement).
 //!
-//! Advertised from P0 so layer-shell-host can tell casement apart by this global; requests are
+//! Advertised from P0 so layer-shell-host can tell the compositor apart by this global; requests are
 //! stored in the model, `request_placement` is acted on from P2 (the model's `place`).
 //!
 //! smithay has no module for our protocol, so this one carries its own `GlobalDispatch2` and
@@ -47,7 +47,7 @@ use smithay::wayland::compositor::{add_post_commit_hook, get_region_attributes};
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 2;
 
 /// The first version that carries `quit`.

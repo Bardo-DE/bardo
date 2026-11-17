@@ -1,6 +1,6 @@
 # Architecture
 
-bardo-updater keeps Bardo desktop (the casement compositor, the sill shell and the apps) up to date
+bardo-updater keeps Bardo desktop (the compositor compositor, the sill shell and the apps) up to date
 from prebuilt, signed release bundles that CI builds from the desktop repository's manifest and
 publishes on the public releases repository `PoHsuanLai/desktop-releases`. It checks once a day,
 tells the person when something newer exists, shows it on the Software Update page of Settings, and

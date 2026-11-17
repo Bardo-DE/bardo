@@ -1,5 +1,5 @@
 //! The Space ids file: a pure codec between the model's Spaces and the text of
-//! `$XDG_STATE_HOME/casement/spaces.toml` (A1). Reading and writing that file is the
+//! `$XDG_STATE_HOME/compositor/spaces.toml` (A1). Reading and writing that file is the
 //! composition root's `SpaceStore` seam; nothing here touches a file (B1).
 //!
 //! What survives a restart is the Space ids (they are ext-workspace's `id`, so a client that
@@ -137,7 +137,7 @@ impl SpaceFile {
         Ok(toml::from_str::<SpaceFile>(text)?.trimmed())
     }
 
-    /// The file with what a file written by casement never has dropped (CASC-18): a second
+    /// The file with what a file written by the compositor never has dropped (CASC-18): a second
     /// Space under an id already seen (the first wins, so a duplicate cannot move windows onto
     /// another Space), a second "shown" entry for an output, and anything past
     /// [`MAX_STORED_SPACES`] / [`MAX_STORED_SHOWN`].

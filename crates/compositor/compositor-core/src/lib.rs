@@ -1,4 +1,4 @@
-//! casement's pure model: what the compositor knows and decides, as values.
+//! The compositor's pure model: what the compositor knows and decides, as values.
 //!
 //! Every input arrives as an [`Event`]; [`Model::step`] returns the next model and the
 //! [`Effect`]s the composition root carries out. Nothing here reads a clock, a device, a socket
@@ -6,7 +6,7 @@
 //! ([`output::OutputFacts`]), and randomness as a seed ([`space::SpaceSeed`]).
 //!
 //! ```
-//! use compositor_core::settings::CasementSettings;
+//! use compositor_core::settings::CompositorSettings;
 //! use compositor_core::space::SpaceSeed;
 //! use compositor_core::time::Mono;
 //! use compositor_core::{Event, Model};
@@ -14,8 +14,8 @@
 //!
 //! let epoch = Mono(Duration::ZERO);
 //! let seed = SpaceSeed::from_entropy([7; 16]);
-//! let model = Model::new(CasementSettings::defaults(), epoch, seed);
-//! let event = Event::SettingsChanged(Box::new(CasementSettings::defaults()));
+//! let model = Model::new(CompositorSettings::defaults(), epoch, seed);
+//! let event = Event::SettingsChanged(Box::new(CompositorSettings::defaults()));
 //! let (model, _effects) = model.step(event, epoch);
 //! assert_eq!(model.check_invariants(), Ok(()));
 //! ```

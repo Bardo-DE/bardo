@@ -120,7 +120,7 @@ fn healthy() -> Model {
     ];
     events.into_iter().enumerate().fold(
         Model::new(
-            CasementSettings::defaults(),
+            CompositorSettings::defaults(),
             at(0),
             SpaceSeed::from_entropy([3; 16]),
         ),

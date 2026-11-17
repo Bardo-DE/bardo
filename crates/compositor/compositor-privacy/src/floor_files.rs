@@ -1,5 +1,5 @@
 //! The administrator's floor on disk: `privacy.toml` and the `*.toml` files of `privacy.d`
-//! beside it, in `/etc/bardo`. casement only reads them, and believes a file only when it and
+//! beside it, in `/etc/bardo`. The compositor only reads them, and believes a file only when it and
 //! the folder it is in belong to the administrator alone: owned by them and not writable by
 //! the group or anyone else. A file that is not trusted is reported, never read.
 

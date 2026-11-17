@@ -5,7 +5,7 @@ use super::{MinuteOfDay, NightShift, Schedule, Warmth};
 /// What the Night Shift switch says.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Shown {
-    /// casement's settings could not be reached: the switch does nothing.
+    /// The compositor's settings could not be reached: the switch does nothing.
     Unavailable,
     Off,
     /// Turned on by hand, until the night ends.

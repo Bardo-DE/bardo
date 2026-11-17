@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 # The acceptance runner: every dev/accept/NAME.sh on a compositor, one verdict per script.
 #
-#   dev/accept.sh [--compositor casement|kwin] [--jobs N] [--build] [--out DIR]
+#   dev/accept.sh [--compositor the compositor|kwin] [--jobs N] [--build] [--out DIR]
 #                 [--timeout SECONDS] [NAME...]
 #
 # NAME is a script's name (`bar`, `bar.sh` or its path); with none, every dev/accept/*.sh.
 #
-#   --compositor casement   each script runs in its OWN jail (packaging/harness/jail.sh) on a headless
-#                           casement that the script starts itself (dev/lib/compositor.sh's
-#                           start_compositor, through casement's dev/up.sh): N jails at a
+#   --compositor the compositor   each script runs in its OWN jail (packaging/harness/jail.sh) on a headless
+#                           The compositor that the script starts itself (dev/lib/compositor.sh's
+#                           start_compositor, through the compositor's dev/up.sh): N jails at a
 #                           time (--jobs, default 4), each with its own scratch dir OUT/NAME/ for its
 #                           runtime dir, buses, logs and captures. The checkout is read-only in the jail,
 #                           and nothing in it calls cargo or the network (A7): the daemon, the examples
-#                           and casement's tools are built OUTSIDE first (--build does it; without it a
+#                           and the compositor's tools are built OUTSIDE first (--build does it; without it a
 #                           missing artefact is an error, exit 3).
 #   --compositor kwin       the scripts run directly, one at a time (they share the one headless
 #                           KWin), as before.
-#   (no --compositor)       each script keeps its own default (casement, or kwin where it ran
+#   (no --compositor)       each script keeps its own default (the compositor, or kwin where it ran
 #                           headless KWin).
 #
 # Each script's combined output is OUT/NAME.log (default OUT: $BARDO_SHELL_TARGET/accept-runs/<run>). The runner
@@ -28,7 +28,7 @@
 # (an artefact is missing: run with --build, outside the jail) | 4 a script overran its bound.
 #
 # Environment: BARDO_SHELL_PROFILE (debug, the default, or release), CARGO_TARGET_DIR, BARDO_COMPOSITOR_REPO (the
-# casement crate, default crates/compositor of this tree), BARDO_COMPOSITOR_TARGET (its cargo target dir, for --build),
+# The compositor crate, default crates/compositor of this tree), BARDO_COMPOSITOR_TARGET (its cargo target dir, for --build),
 # BARDO_COMPOSITOR_TOOLS, BARDO_SHELL_JAIL (the jail script).
 set -uo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -49,7 +49,7 @@ while [ $# -gt 0 ]; do
     *) names+=("$1"); shift ;;
   esac
 done
-case "$compositor" in ""|casement|kwin) ;; *) echo "accept.sh: --compositor is casement or kwin" >&2; exit 64 ;; esac
+case "$compositor" in ""|compositor|kwin) ;; *) echo "accept.sh: --compositor is compositor or kwin" >&2; exit 64 ;; esac
 case "$parallel" in ''|*[!0-9]*|0) echo "accept.sh: --jobs wants a positive number" >&2; exit 64 ;; esac
 
 # The scripts to run, as names.
@@ -62,7 +62,7 @@ else
   done
 fi
 [ "$parallel" -le ${#names[@]} ] || parallel=${#names[@]}
-if [ "$compositor" != casement ] && [ "$parallel" -gt 1 ]; then
+if [ "$compositor" != compositor ] && [ "$parallel" -gt 1 ]; then
   echo "accept.sh: scripts on ${compositor:-their own compositors} share one compositor: running them one at a time"
   parallel=1
 fi
@@ -89,15 +89,15 @@ prebuild() {
       --features debug-inject --example probe_toplevel) || return 1
     echo "== docket (confirm.sh's accept-actiond and bardo-do), into its own target dir"
     (cd "$BARDO_SHELL_TREE" && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-accept --bin accept-actiond && CARGO_TARGET_DIR="$BARDO_ACTIONS_TARGET" cargo build -p action-cli --bins) || return 1
-    echo "== casement's tools"
+    echo "== compositor's tools"
     (cd "$BARDO_COMPOSITOR_REPO" && CARGO_TARGET_DIR="${BARDO_COMPOSITOR_TARGET:-$BARDO_SHELL_TARGET}" dev/bootstrap.sh --build-only) || return 1
   } >"$out/build.log" 2>&1 || { echo "accept.sh: the build failed (see $out/build.log)" >&2; return 1; }
 }
 if [ "$build" = yes ]; then
-  [ "$compositor" = casement ] || echo "accept.sh: --build prepares the jailed (casement) run; building anyway"
+  [ "$compositor" = compositor ] || echo "accept.sh: --build prepares the jailed (compositor) run; building anyway"
   prebuild || exit 3
 fi
-if [ "$compositor" = casement ]; then
+if [ "$compositor" = compositor ]; then
   for tool in bardo-compositor bardo-compositorctl compositor-probe fake-logind; do
     [ -x "$BARDO_COMPOSITOR_TOOLS/bin/$tool" ] || { echo "accept.sh: $BARDO_COMPOSITOR_TOOLS/bin/$tool is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
   done
@@ -107,7 +107,7 @@ if [ "$compositor" = casement ]; then
   jail="${BARDO_SHELL_JAIL:-$BARDO_SHELL_TREE/packaging/harness/jail.sh}"
   [ -x "$jail" ] || { echo "accept.sh: the jail script $jail is missing" >&2; exit 3; }
   jail_env=(
-    --env BARDO_SHELL_COMPOSITOR=casement --env BARDO_SHELL_PREBUILT=1 --env "BARDO_SHELL_PROFILE=$BARDO_SHELL_PROFILE"
+    --env BARDO_SHELL_COMPOSITOR=bardo-compositor --env BARDO_SHELL_PREBUILT=1 --env "BARDO_SHELL_PROFILE=$BARDO_SHELL_PROFILE"
     --env "CARGO_TARGET_DIR=$BARDO_SHELL_TARGET" --env "BARDO_ACTIONS_TARGET=$BARDO_ACTIONS_TARGET"
     --env "BARDO_SHELL_PROBE=$BARDO_SHELL_TARGET/release/examples/probe_toplevel" --env "BARDO_COMPOSITOR_REPO=$BARDO_COMPOSITOR_REPO" --env "BARDO_COMPOSITOR_TOOLS=$BARDO_COMPOSITOR_TOOLS"
   )
@@ -115,12 +115,12 @@ if [ "$compositor" = casement ]; then
   [ -z "${BARDO_LAYER_SHELL_HOST_DEV:-}" ] || jail_env+=(--env "BARDO_LAYER_SHELL_HOST_DEV=$BARDO_LAYER_SHELL_HOST_DEV")
 fi
 
-# run_one NAME: one script, in its own jail on casement or directly otherwise; leaves
+# run_one NAME: one script, in its own jail on the compositor or directly otherwise; leaves
 # "<exit> <seconds>" in OUT/NAME.result.
 run_one() {
   local name=$1 start end rc
   start=$(date +%s)
-  if [ "$compositor" = casement ]; then
+  if [ "$compositor" = compositor ]; then
     timeout --kill-after=10 "$bound" "$jail" --scratch "$out/$name" "${jail_env[@]}" -- \
       "$root/dev/accept/$name.sh" >"$out/$name.log" 2>&1 </dev/null
   else

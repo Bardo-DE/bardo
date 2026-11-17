@@ -1,8 +1,8 @@
 # Step budgets in seconds per gate tier (20-FREEZE-PLAN §6.4), read by dev/lib/step.sh: a step
 # that passes but takes more than twice its budget fails with exit 4. Warm builds; a cold smithay
-# build (3-5 min) is excluded, so `archive` is generous. SP6 recalibrates these once on casement.
+# build (3-5 min) is excluded, so `archive` is generous. SP6 recalibrates these once on compositor.
 #
-# Not casement's steps, recorded for the desktop gate (21-FREEZE-AMENDMENTS A9): consumer smoke
+# Not the compositor's steps, recorded for the desktop gate (21-FREEZE-AMENDMENTS A9): consumer smoke
 # 240 s only with at least two parallel jails (else 360 s); full consumer suites 15 min; the wlcs
 # CI subset takes about 7 s.
 

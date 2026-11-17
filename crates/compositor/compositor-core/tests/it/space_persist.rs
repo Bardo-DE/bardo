@@ -5,7 +5,7 @@ use crate::support::driver::{Op, fresh, last, plug, run, run_from};
 use crate::support::{headless, ms, space_id};
 use account_core::SpaceId;
 use compositor_core::OutputKey;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::space::{
     Space, SpaceBook, SpaceContent, SpaceFile, SpaceIndex, SpaceSeed, StoredShown, StoredSpace,
     WorkspaceRequest,
@@ -79,9 +79,9 @@ fn an_imported_record_keeps_its_output_and_index() {
 }
 
 /// CASC-18: a duplicate id cannot overwrite the Space under it, and a file of far more Spaces
-/// than casement writes is cut, instead of making start-up slow.
+/// than the compositor writes is cut, instead of making start-up slow.
 #[test]
-fn a_damaged_file_is_trimmed_to_what_casement_would_have_written() {
+fn a_damaged_file_is_trimmed_to_what_compositor_would_have_written() {
     let output = output_key("connector:DP-1");
     let two = |id: &str, position: u32| {
         format!("[[spaces]]\nid = \"{id}\"\noutput = \"connector:DP-1\"\nposition = {position}\n")
@@ -167,7 +167,7 @@ fn shown_id(model: &Model, output: &OutputKey) -> SpaceId {
 
 fn model_with_seed(byte: u8) -> Model {
     Model::new(
-        CasementSettings::defaults(),
+        CompositorSettings::defaults(),
         ms(0),
         SpaceSeed::from_entropy([byte; 16]),
     )

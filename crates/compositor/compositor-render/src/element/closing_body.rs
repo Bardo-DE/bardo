@@ -8,7 +8,7 @@
 //! closes and one upload on its first frame. The texture is the display GPU's own, so it is
 //! drawn only by that renderer; dropping the body frees it.
 
-use super::{CasementElement, ClipShape, alpha};
+use super::{ClipShape, SceneElement, alpha};
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
@@ -139,7 +139,7 @@ impl ClosingBody {
         opacity: Fraction,
         view: &OutputView,
         renderer: &mut R,
-    ) -> Option<CasementElement<R>> {
+    ) -> Option<SceneElement<R>> {
         let side = |n: u32| i32::try_from(n).unwrap_or(i32::MAX);
         let whole = Rectangle::<f64, Logical>::from_size(
             (f64::from(self.size.w), f64::from(self.size.h)).into(),
@@ -157,11 +157,11 @@ impl ClosingBody {
                 Kind::Unspecified,
             )
             .ok()
-            .map(CasementElement::Memory),
+            .map(SceneElement::Memory),
             Pixels::Gpu { texture, element } => {
                 let any: &dyn Any = texture;
                 let texture = any.downcast_ref::<R::TextureId>()?.clone();
-                Some(CasementElement::Texture(
+                Some(SceneElement::Texture(
                     TextureRenderElement::from_static_texture(
                         element.clone(),
                         renderer.context_id(),

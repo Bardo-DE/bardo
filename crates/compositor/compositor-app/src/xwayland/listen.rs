@@ -1,7 +1,7 @@
-//! The X11 listening sockets casement holds while satellite is not running (P1-X1).
+//! The X11 listening sockets the compositor holds while satellite is not running (P1-X1).
 //!
 //! A display is a pair of sockets: the path socket `<dir>/X<n>` and the abstract socket
-//! `@<dir>/X<n>` (what `libxcb` tries first). casement binds both, so a client that connects
+//! `@<dir>/X<n>` (what `libxcb` tries first). The compositor binds both, so a client that connects
 //! finds a server before satellite exists; the connection waits in the backlog until satellite
 //! is started with the same descriptors and accepts it.
 
@@ -40,7 +40,7 @@ impl Listening {
     /// ```no_run
     /// use compositor_app::xwayland::{Listening, X11Dir};
     ///
-    /// let dir = std::env::temp_dir().join(format!("casement-doc-x11-{}", std::process::id()));
+    /// let dir = std::env::temp_dir().join(format!("compositor-doc-x11-{}", std::process::id()));
     /// let listening = Listening::bind(&X11Dir(dir.clone())).expect("a free display");
     /// assert!(listening.display().0.starts_with(':'));
     /// drop(listening);
@@ -91,7 +91,7 @@ impl Listening {
         matches!(poll(&mut fds, Some(&now)), Ok(n) if n > 0)
     }
 
-    /// Copies of the sockets, to hand to a program while casement keeps its own.
+    /// Copies of the sockets, to hand to a program while the compositor keeps its own.
     ///
     /// # Errors
     ///
@@ -134,7 +134,7 @@ fn check_dir(dir: &Path) -> Result<(), XwaylandError> {
 }
 
 /// Removes the socket at `path` when it is a leftover: a socket file that nothing listens on
-/// (a casement that was killed leaves its sockets behind), so that display number is taken
+/// (a compositor that was killed leaves its sockets behind), so that display number is taken
 /// again instead of the next one.
 fn clear_leftover(path: &Path) {
     let is_socket = std::fs::symlink_metadata(path).is_ok_and(|meta| meta.file_type().is_socket());

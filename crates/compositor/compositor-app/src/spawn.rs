@@ -37,7 +37,7 @@ use std::os::fd::OwnedFd;
 
 /// The variables a service manager sets for the service itself.
 ///
-/// A program casement starts is not that service, and one that kept them would talk to the manager
+/// A program the compositor starts is not that service, and one that kept them would talk to the manager
 /// as the compositor (`NOTIFY_SOCKET`, `WATCHDOG_*`) or take its descriptors (`LISTEN_*`).
 pub const SERVICE_VARS: [&str; 6] = [
     "NOTIFY_SOCKET",
@@ -68,7 +68,7 @@ pub enum Home {
     OwnScope,
 }
 
-/// The variables every program casement starts gets, set once the compositor knows them.
+/// The variables every program the compositor starts gets, set once the compositor knows them.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct ChildEnv(Vec<EnvVar>);
 

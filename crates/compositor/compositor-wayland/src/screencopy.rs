@@ -53,7 +53,7 @@ use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::sync::{Mutex, PoisonError};
 use ui_core::geometry::scale::Scale;
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 3;
 
 /// The most last-delivery notes kept. There is one per client and output that was ever given a

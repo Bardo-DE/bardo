@@ -14,8 +14,8 @@ use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 
 use shell_ui_kit::surface::{LayerPreset, PanelBlur};
 
-/// The strip casement reserves at the top of an output for this bar while Mission Control is
-/// open (casement FINDINGS, `wave-2026-10-15/overview`): the windows spread below it.
+/// The strip the compositor reserves at the top of an output for this bar while Mission Control is
+/// open (the compositor FINDINGS, `wave-2026-10-15/overview`): the windows spread below it.
 pub const STRIP_PX: u32 = 112;
 
 /// The `id` of the bar's element, which the input region follows.

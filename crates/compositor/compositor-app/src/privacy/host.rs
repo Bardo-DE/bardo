@@ -1,4 +1,4 @@
-//! The privacy files and the running compositor: the book and the floor are read when casement
+//! The privacy files and the running compositor: the book and the floor are read when the compositor
 //! starts, the floor again when asked to, the book is written whenever the model says it
 //! changed, and the Privacy list Settings reads is kept in step with the model.
 
@@ -47,7 +47,7 @@ pub fn edited(state: &mut State, edit: Edit) {
     publish(state);
 }
 
-/// The model's list of answers, to the board Settings reads (nothing when casement serves no
+/// The model's list of answers, to the board Settings reads (nothing when the compositor serves no
 /// bus; the board does nothing when the list is the one it has).
 pub fn publish(state: &State) {
     if let Some(board) = &state.ipc.board {

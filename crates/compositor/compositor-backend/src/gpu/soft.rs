@@ -371,7 +371,7 @@ impl Allocator for FixedUdmabuf {
         let stride = (width as usize * bytes).next_multiple_of(STRIDE_ALIGN);
         let size = (height as usize * stride).next_multiple_of(4096);
         let fd = rustix::fs::memfd_create(
-            "casement-soft-gpu",
+            "compositor-soft-gpu",
             MemfdFlags::ALLOW_SEALING | MemfdFlags::CLOEXEC,
         )?;
         rustix::fs::ftruncate(&fd, size as u64)?;

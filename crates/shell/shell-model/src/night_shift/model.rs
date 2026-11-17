@@ -1,10 +1,10 @@
-//! The state types: casement's night light as the shell reads and writes it, the manual
-//! turn-on, and whether the shell can reach casement's file.
+//! The state types: the compositor's night light as the shell reads and writes it, the manual
+//! turn-on, and whether the shell can reach the compositor's file.
 
 use crate::displays::NightWarmthMode;
 use base_words::Word;
 
-/// When casement warms the screen (`night_light.mode`).
+/// When the compositor warms the screen (`night_light.mode`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
 #[word(case = snake)]
 pub enum Schedule {
@@ -40,11 +40,11 @@ impl MinuteOfDay {
 pub struct Warmth(u16);
 
 impl Warmth {
-    /// The warmest casement takes.
+    /// The warmest the compositor takes.
     pub const WARMEST: u16 = 1000;
     /// A neutral screen.
     pub const NEUTRAL: u16 = 6500;
-    /// casement's default for the night.
+    /// The compositor's default for the night.
     pub const NIGHT: Warmth = Warmth(3400);
 
     /// `kelvin`, kept between the warmest and neutral.
@@ -61,7 +61,7 @@ impl Warmth {
     }
 }
 
-/// casement's `[night_light]` table.
+/// The compositor's `[night_light]` table.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct NightLight {
     pub schedule: Schedule,
@@ -73,7 +73,7 @@ pub struct NightLight {
 }
 
 impl Default for NightLight {
-    /// casement's defaults: off, 22:00 to 07:00, 3400 K, a half-hour fade.
+    /// The compositor's defaults: off, 22:00 to 07:00, 3400 K, a half-hour fade.
     fn default() -> Self {
         NightLight {
             schedule: Schedule::Off,
@@ -89,7 +89,7 @@ impl Default for NightLight {
 /// "until" and the shell's `Now` carry one).
 pub use base_time::UnixSeconds;
 
-/// "Turn On Until Tomorrow": casement is set to warm all day until `until`, then put back as
+/// "Turn On Until Tomorrow": the compositor is set to warm all day until `until`, then put back as
 /// `restore` says.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Manual {
@@ -100,13 +100,13 @@ pub struct Manual {
 /// What the shell knows of Night Shift.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct NightShift {
-    /// True once the shell has read casement's settings; false while they are not read yet or
+    /// True once the shell has read the compositor's settings; false while they are not read yet or
     /// the file could not be used.
     pub reached: bool,
     pub light: NightLight,
     pub manual: Option<Manual>,
-    /// Who warms the monitors that answer DDC/CI (`display.night_warmth`): casement in software
+    /// Who warms the monitors that answer DDC/CI (`display.night_warmth`): the compositor in software
     /// like every other display (`Off`), or bardo-shell over each monitor's own colour gains
-    /// (`Hardware`), casement then leaving those monitors alone (`night_light.skip_outputs`).
+    /// (`Hardware`), the compositor then leaving those monitors alone (`night_light.skip_outputs`).
     pub backend: NightWarmthMode,
 }

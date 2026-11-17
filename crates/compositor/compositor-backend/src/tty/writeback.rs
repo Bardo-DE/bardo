@@ -11,7 +11,7 @@
 //! ([`TtyBackend::request_writeback`], [`TtyBackend::take_writeback`]).
 //!
 //! The raw buffer is written to a file next to a one-line description, `W H PITCH FOURCC`
-//! ([`RawCapture::meta_line`]); `casement/src/test_mode.rs` does the writing.
+//! ([`RawCapture::meta_line`]); `compositor/src/test_mode.rs` does the writing.
 //!
 //! ```
 //! use compositor_backend::tty::RawCapture;

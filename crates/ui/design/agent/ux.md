@@ -13,7 +13,7 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 **In scope**
 - **Summon.** Double-tap ⌘. Toshy handles it now and the compositor later. In a Bardo field, the field becomes the prompt. Anywhere else, the launcher opens in companion mode. Double-tap again or Esc returns.
 - **Launcher companion mode** and its coupling with app actions: headless runs, previews, compact forms, promote into the app window.
-- **Presence.** One `CompanionPresence` vocabulary. `CompanionOrb` built on `VoiceOrb`. A bar item and a control-centre module. The acting-here glow is data that the compositor draws.
+- **Presence.** One `CompanionPresence` vocabulary. `CompanionOrb` built on `VoiceOrb`. A bar item and a control-centre module. The acting-here glow is data that compositor draws.
 - **Answer surfaces.** Native cards: text answer, draft reply, proposed event, plan list with run/edit, inline replace with undo, compact form, refusal. Every card has a footer showing which model served it, the sources and the scope.
 - **CUA run rows**: Watch, Take over, Resume, Hand back, Stop, Replay, Undo all.
 - **Compositor-drawn confirmation**: the visuals and the arming behaviour. The request type comes from "actions"/"security".
@@ -55,7 +55,7 @@ Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < u
 | Confirmation surface, phase A (no fork) | sill `shell-overlays::confirm/` | new surface | not unforgeable; see §7 Q7 |
 | Glow, phase A (no fork) | sill `shell-overlays::glow/` | new input-transparent layer surface | phase B: the compositor draws it |
 | `companion` settings domain | sill `shell-settings::companion.rs` | new domain | `Page::Intelligence` |
-| compositor binding + Toshy snippet | sill `dist/casement/.../custom`, `dist/toshy/companion_tap.py` | new rows/files | |
+| compositor binding + Toshy snippet | sill `dist/compositor/.../custom`, `dist/toshy/companion_tap.py` | new rows/files | |
 
 Adopted crates: nothing new. Existing pins only: dioxus, serde, `ui-core::word::Word` derive, zbus (shell-services only).
 
@@ -675,7 +675,7 @@ Fakes and fixtures:
   - `shell-settings/src/{companion.rs, control_center.rs (variant), lib.rs}`;
   - `shell-ui-kit/src/companion/**` (signatures);
   - `shell-launcher-ui/src/launcher/{mode.rs, companion_keys.rs}` (types only);
-  - `dist/casement/.../custom` (one row: unique chord to `bardo-shell companion tap`);
+  - `dist/compositor/.../custom` (one row: unique chord to `bardo-shell companion tap`);
   - `dist/toshy/companion_tap.py`;
   - design/22 §3 rows (doc edit in Bardo, coordinated).
 

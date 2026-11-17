@@ -45,7 +45,7 @@ pub trait ConsentHandler: EventSink + 'static {
     fn consent_ledger(&self) -> &Ledger;
 }
 
-/// What `client`'s request for `power` does now. A client casement did not insert is refused
+/// What `client`'s request for `power` does now. A client the compositor did not insert is refused
 /// (it has no standing).
 pub fn admit<D: ConsentHandler>(state: &mut D, client: &Client, power: Power) -> Admission {
     match ClientState::of(client) {
@@ -89,7 +89,7 @@ fn first_use(data: &ClientState, power: Power) -> Vec<Event> {
 /// A client that must wait is parked in the [`Ledger`] under its connection, so `Effect::Resolve`
 /// can settle what smithay holds for it ([`release_gate`]). smithay keeps at most
 /// [`MAX_HELD_PER_CLIENT`](smithay::wayland::gate::MAX_HELD_PER_CLIENT) objects per client and
-/// protocol and refuses the rest itself, so casement keeps no count of its own for them.
+/// protocol and refuses the rest itself, so the compositor keeps no count of its own for them.
 pub fn gate<D: ConsentHandler>(state: &mut D, client: &Client, power: Power) -> Gate {
     match admit(state, client, power) {
         Admission::Go => Gate::Open,
@@ -122,14 +122,14 @@ pub fn allowed<D: ConsentHandler>(state: &D, client: &Client, power: Power) -> A
     }
 }
 
-/// The key of `client`, when casement inserted it.
+/// The key of `client`, when the compositor inserted it.
 #[must_use]
 pub fn key_of(client: &Client) -> Option<ClientKey> {
     ClientState::of(client).map(|data| data.key)
 }
 
 /// Who a request from `client` is from: the shell's own connection, or a program. A client
-/// casement did not insert is a program.
+/// The compositor did not insert is a program.
 #[must_use]
 pub fn requester_of(client: &Client) -> Requester {
     ClientState::of(client).map_or(Requester::Program, |data| Requester::of(&data.role))

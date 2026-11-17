@@ -1,9 +1,9 @@
-//! Renderer-only golden scenes (P0-R-scene). Everything casement draws without a client
+//! Renderer-only golden scenes (P0-R-scene). Everything the compositor draws without a client
 //! surface: the named cursors at native scale, a cursor across two outputs, the lock cover,
 //! blur v0 (its pixman stand-in in tier P, its GLES blur in tier L on llvmpipe), and the clear
 //! output. Aligned scenes are also byte-identical between pixman and llvmpipe (tier X, A18).
 //! The client-surface scenes (windows, popups, layers, lock surfaces) are the fixture's, in
-//! `crates/casement-testkit/tests/it/scene/mod.rs`.
+//! `crates/compositor-testkit/tests/it/scene/mod.rs`.
 //!
 //! Goldens live in `tests/golden/<name>.png`, blessed with `BARDO_COMPOSITOR_BLESS=1`.
 #![cfg(feature = "testing")]
@@ -18,8 +18,8 @@ use compositor_motion::{OutputFrame, StripOffset};
 use compositor_render::golden::GoldenTier;
 use compositor_render::pass::BlurLook;
 use compositor_render::{
-    BlurV0Element, CasementElement, ChromeLayer, CursorDraw, CursorShape, LayerDraw, OutputView,
-    Rgba8, TextureBook, TilePreview, cursor_elements, output_elements, solid_rect,
+    BlurV0Element, ChromeLayer, CursorDraw, CursorShape, LayerDraw, OutputView, Rgba8,
+    SceneElement, TextureBook, TilePreview, cursor_elements, output_elements, solid_rect,
     tile_preview_elements,
 };
 use smithay::backend::renderer::element::Id;
@@ -110,9 +110,9 @@ fn size_of(view: &OutputView) -> (i32, i32) {
     (side(view.mode.w), side(view.mode.h))
 }
 
-fn page<R: Offscreen1>(view: &OutputView, colour: Rgba8) -> CasementElement<R> {
+fn page<R: Offscreen1>(view: &OutputView, colour: Rgba8) -> SceneElement<R> {
     let PhysicalSize { w, h } = view.mode;
-    CasementElement::Solid(solid_rect(
+    SceneElement::Solid(solid_rect(
         Id::new(),
         rect(0, 0, w, h),
         colour,
@@ -140,7 +140,7 @@ fn empty_frame(name: &str) -> OutputFrame {
 fn cursor_sheet<R: Offscreen1>(renderer: &mut R, scale: u32) -> image::RgbaImage {
     let view = view(0, 0, 240, 80, scale);
     let book = TextureBook::empty();
-    let mut elements: Vec<CasementElement<R>> = SHAPES
+    let mut elements: Vec<SceneElement<R>> = SHAPES
         .iter()
         .zip(0_i32..)
         .flat_map(|(shape, n)| {
@@ -206,14 +206,14 @@ const SCENE_LOOK: BlurLook = BlurLook {
 /// a ring-shaped region (two bands and two posts), a translucent pane above it.
 fn blur_scene<R: Offscreen1>(renderer: &mut R, scale: u32) -> image::RgbaImage {
     let view = view(0, 0, 320 * 120 / scale, 200 * 120 / scale, scale);
-    let mut elements: Vec<CasementElement<R>> = vec![
-        CasementElement::Solid(solid_rect(
+    let mut elements: Vec<SceneElement<R>> = vec![
+        SceneElement::Solid(solid_rect(
             Id::new(),
             rect(140, 20, 160, 60),
             PANE,
             CommitCounter::default(),
         )),
-        CasementElement::Blur(
+        SceneElement::Blur(
             BlurV0Element::new(
                 Id::new(),
                 vec![
@@ -234,7 +234,7 @@ fn blur_scene<R: Offscreen1>(renderer: &mut R, scale: u32) -> image::RgbaImage {
     ];
     elements.extend((0_i32..16).map(|n| {
         let colour = STRIPES[usize::try_from(n % 4).expect("small")];
-        CasementElement::Solid(solid_rect(
+        SceneElement::Solid(solid_rect(
             Id::new(),
             rect(n * 20, 0, 20, 200),
             colour,
@@ -388,9 +388,9 @@ fn a_blur_follows_what_moves_under_it() {
     let mut renderer = gles();
     let size = (320, 200);
     let (blur_id, moving, page) = (Id::new(), Id::new(), Id::new());
-    let frame = |x: i32| -> Vec<CasementElement<smithay::backend::renderer::gles::GlesRenderer>> {
+    let frame = |x: i32| -> Vec<SceneElement<smithay::backend::renderer::gles::GlesRenderer>> {
         vec![
-            CasementElement::Blur(BlurV0Element::new(
+            SceneElement::Blur(BlurV0Element::new(
                 blur_id.clone(),
                 vec![rect(60, 40, 200, 120)],
                 Rgba8 {
@@ -400,13 +400,13 @@ fn a_blur_follows_what_moves_under_it() {
                     a: 217,
                 },
             )),
-            CasementElement::Solid(solid_rect(
+            SceneElement::Solid(solid_rect(
                 moving.clone(),
                 rect(x, 70, 40, 60),
                 STRIPES[2],
                 CommitCounter::default(),
             )),
-            CasementElement::Solid(solid_rect(
+            SceneElement::Solid(solid_rect(
                 page.clone(),
                 rect(0, 0, 320, 200),
                 STRIPES[1],

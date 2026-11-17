@@ -38,7 +38,7 @@ pub enum FrameChoice {
     Silent,
     /// It draws its own frame, shadow and corners.
     Own,
-    /// It wants casement's shadow and its corners clipped at this radius, in logical pixels.
+    /// It wants the compositor's shadow and its corners clipped at this radius, in logical pixels.
     Shadowed {
         /// The corner radius.
         radius: u32,

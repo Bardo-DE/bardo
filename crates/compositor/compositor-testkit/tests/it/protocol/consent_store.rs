@@ -17,7 +17,7 @@ use std::path::{Path, PathBuf};
 /// The date every answer in these tests is stamped with.
 const TODAY: i64 = 1_760_000_000;
 
-/// A scratch home: casement's state folder and the administrator's folder.
+/// A scratch home: the compositor's state folder and the administrator's folder.
 struct Home {
     dir: tempfile::TempDir,
 }
@@ -57,7 +57,7 @@ impl Home {
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(mode)).expect("a mode");
     }
 
-    /// casement starting (again) on these files, with the shell bound to ask.
+    /// The compositor starting (again) on these files, with the shell bound to ask.
     fn start(&self) -> (Fixture, ScriptedShell) {
         self.start_owned_by(Home::me())
     }
@@ -157,7 +157,7 @@ fn the_floor_denies_and_cannot_be_overruled() {
     );
     assert!(shell.asked().is_empty(), "and nobody was asked");
 
-    // The administrator lifts it and asks casement to read the floor again.
+    // The administrator lifts it and asks the compositor to read the floor again.
     home.floor("# nothing\n", 0o644);
     fixture.reload_floor();
     assert!(!hidden_from_a_new_client(&mut fixture), "read again");

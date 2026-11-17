@@ -1,4 +1,4 @@
-//! What crosses from the bus thread to casement's event loop for `org.bardo.Compositor1`: the
+//! What crosses from the bus thread to the compositor's event loop for `org.bardo.Compositor1`: the
 //! question ([`ConnectAsk`], with the caller already proven), where the answer goes
 //! ([`ConnectCall`]) and the answer ([`ConnectReply`], [`ConnectRefusal`]).
 
@@ -71,7 +71,7 @@ pub struct ConnectAsk {
     /// Set for `ConnectEis`: the unique bus name of the portal connection that asked, so its
     /// sockets can be ended when that connection goes (NEW-PI-8).
     pub owner: Option<String>,
-    /// Set when a portal connection left the bus (made by casement's own bus thread, never by a
+    /// Set when a portal connection left the bus (made by the compositor's own bus thread, never by a
     /// caller): the question is to end every remote socket that connection asked for.
     pub gone: Option<GoneAsk>,
     /// Set for `LeaseWindow`: the question is for a lease on one window and the input socket
@@ -166,7 +166,7 @@ impl ConnectAsk {
     }
 
     /// The portal connection `owner` left the bus; `portal` is who it had proven to be. Only
-    /// casement's bus thread makes this.
+    /// The compositor's bus thread makes this.
     #[must_use]
     pub fn owner_gone(owner: &str, portal: Proven) -> ConnectAsk {
         ConnectAsk {
@@ -307,13 +307,13 @@ pub enum ConnectReply {
 /// Why a `Connect` was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ConnectRefusal {
-    /// The caller holds no role casement hands a connection to (the event loop's second check).
+    /// The caller holds no role the compositor hands a connection to (the event loop's second check).
     UnknownUnit,
     /// The caller's role may not have that kind of connection.
     RoleNotAllowed,
     /// The caller is not the one this method answers (the bus thread's check).
     NotTheCaller,
-    /// Too many calls: this caller asked again too soon, or casement has as many as it will
+    /// Too many calls: this caller asked again too soon, or the compositor has as many as it will
     /// take at once.
     TooMany,
     /// The connection could not be made.
@@ -336,17 +336,17 @@ impl ConnectRefusal {
     pub fn to_error(self) -> fdo::Error {
         match self {
             ConnectRefusal::UnknownUnit => fdo::Error::AccessDenied(
-                "casement does not recognise the program that asked".to_owned(),
+                "compositor does not recognise the program that asked".to_owned(),
             ),
             ConnectRefusal::RoleNotAllowed => fdo::Error::AccessDenied(
                 "this program may not have that kind of connection".to_owned(),
             ),
             ConnectRefusal::NotTheCaller => fdo::Error::AccessDenied(NOT_THE_CALLER.to_owned()),
             ConnectRefusal::TooMany => fdo::Error::LimitsExceeded(
-                "casement is answering other calls; ask again in a moment".to_owned(),
+                "compositor is answering other calls; ask again in a moment".to_owned(),
             ),
             ConnectRefusal::Unavailable => {
-                fdo::Error::Failed("casement could not make the connection".to_owned())
+                fdo::Error::Failed("compositor could not make the connection".to_owned())
             }
             ConnectRefusal::NoSuchWindow => {
                 fdo::Error::InvalidArgs("no window has that identifier".to_owned())

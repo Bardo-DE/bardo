@@ -1,4 +1,4 @@
-//! Running the compositor: [`run`] starts casement from a [`RunConfig`] and drives its event
+//! Running the compositor: [`run`] starts the compositor from a [`RunConfig`] and drives its event
 //! loop until it is asked to stop. The binary is only arguments, the environment and an exit
 //! code around this; a test harness or a second binary embeds the compositor the same way.
 
@@ -30,10 +30,10 @@ use std::time::Duration;
 #[cfg(any(feature = "testing", feature = "debug-inject"))]
 const JAIL_BREACH: u8 = 5;
 
-/// What [`run`] needs: how casement starts, and where the debug bus is.
+/// What [`run`] needs: how the compositor starts, and where the debug bus is.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RunConfig {
-    /// How casement starts.
+    /// How the compositor starts.
     pub start: cli::StartConfig,
     /// Where Debug1 is served.
     pub debug_bus: Endpoint,
@@ -42,7 +42,7 @@ pub struct RunConfig {
     pub sleep_bus: Option<String>,
     /// Where `org.bardo.Compositor1` is served.
     pub compositor_bus: Endpoint,
-    /// Where the service manager is told casement is ready (`$NOTIFY_SOCKET`).
+    /// Where the service manager is told the compositor is ready (`$NOTIFY_SOCKET`).
     pub notify: Endpoint,
     /// How often the service manager wants a ping, when it does.
     pub watchdog: Option<Duration>,
@@ -226,7 +226,7 @@ fn announce_test_units(table: &compositor_ipc::dbus::PeerUnitTable) {
 
 /// Starts serving `org.bardo.Compositor1` on the session bus, with the Privacy list for Settings
 /// on the same connection, and checking the accessibility roots clients claim. A bus that cannot
-/// be reached, or a name another casement holds, is logged and the compositor runs without a
+/// be reached, or a name another compositor holds, is logged and the compositor runs without a
 /// hand-out: the shell then has no way to get its connection, and nothing else is lost.
 fn attach_compositor(
     state: &mut State,
@@ -377,9 +377,9 @@ fn serve(config: RunConfig) -> Result<(), RunError> {
     }
     let wayland = crate::xwayland::WaylandSocket(socket_name);
     crate::xwayland::attach(&mut state, &xwayland_config);
-    // After the X11 line (`casement: X11 display :0`), so whoever waits for the socket's line
+    // After the X11 line (`compositor: X11 display :0`), so whoever waits for the socket's line
     // finds the display too; nothing is accepted before the loop runs.
-    eprintln!("casement: listening on {}", wayland.0);
+    eprintln!("compositor: listening on {}", wayland.0);
     // Held for the run: dropping it stops the thread that hears the machine go to sleep.
     // The vkms test mode has no logind: its pause and return are signals instead.
     let _sleep = match &tty_mode {
@@ -403,7 +403,7 @@ fn serve(config: RunConfig) -> Result<(), RunError> {
     state.seams.space_sync.sync(state.core.model.spaces());
     let status = ready_status(&wayland, state.xwayland.display());
     if let Err(error) = state.seams.notify.send(&Notice::Ready { status }) {
-        tracing::warn!(%error, "the service manager could not be told casement is ready");
+        tracing::warn!(%error, "the service manager could not be told compositor is ready");
     }
     if let Some(every) = watchdog {
         crate::time::ping_every(&handle, every);
@@ -448,7 +448,7 @@ fn serve(config: RunConfig) -> Result<(), RunError> {
         display::flush(&display);
     });
     if let Err(error) = state.seams.notify.send(&Notice::Stopping) {
-        tracing::warn!(%error, "the service manager could not be told casement is stopping");
+        tracing::warn!(%error, "the service manager could not be told compositor is stopping");
     }
     ran?;
     match core_loop::tty::seat(&state) {
@@ -457,7 +457,7 @@ fn serve(config: RunConfig) -> Result<(), RunError> {
     }
 }
 
-/// What the service manager shows once casement is ready: its Wayland socket, then its X11
+/// What the service manager shows once the compositor is ready: its Wayland socket, then its X11
 /// display when X11 apps are served. The session reads both from it and hands them to the shell
 /// and every program it starts (`listening on wayland-1 X11 display :0`).
 fn ready_status(

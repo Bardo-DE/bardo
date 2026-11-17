@@ -1,4 +1,4 @@
-//! The connection `org.bardo.Compositor1.Connect("shell")` hands out, asked of casement on the
+//! The connection `org.bardo.Compositor1.Connect("shell")` hands out, asked of the compositor on the
 //! session bus. The probe's `shell-connect` and `compositor-shell-exec` both take theirs here.
 
 use compositor_dbus::Compositor1Proxy;
@@ -12,7 +12,7 @@ const CALL_PATIENCE: Duration = Duration::from_secs(10);
 ///
 /// # Errors
 ///
-/// Returns a message when `DBUS_SESSION_BUS_ADDRESS` is not set, when the bus call fails, or when casement does not answer in time.
+/// Returns a message when `DBUS_SESSION_BUS_ADDRESS` is not set, when the bus call fails, or when the compositor does not answer in time.
 pub fn shell() -> Result<OwnedFd, String> {
     let address = std::env::var("DBUS_SESSION_BUS_ADDRESS")
         .map_err(|error| format!("DBUS_SESSION_BUS_ADDRESS is not set: {error}"))?;

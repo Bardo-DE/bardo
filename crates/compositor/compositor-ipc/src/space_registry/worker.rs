@@ -24,7 +24,7 @@ impl Worker {
         let (queue, incoming) = channel(QUEUE_LIMIT);
         let (report, failed) = mpsc::channel();
         std::thread::Builder::new()
-            .name("casement-spaces".to_owned())
+            .name("compositor-spaces".to_owned())
             .spawn(move || run(&address, incoming, &report))?;
         Ok(Worker { queue, failed })
     }

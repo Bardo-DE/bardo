@@ -1,10 +1,10 @@
 //! X11 clients through xwayland-satellite (A5, P1-Z; filled by P1-X1).
 //!
-//! Satellite is a separate process: casement opens the X11 listening sockets
+//! Satellite is a separate process: the compositor opens the X11 listening sockets
 //! ([`Listening`]), exports `DISPLAY` for the programs it starts, and starts satellite through
 //! the injected [`Spawner`](crate::spawn::Spawner) when the first X11 client connects
 //! ([`XwaylandState::serve`]). Satellite is handed the same sockets (`-listenfd`), so the
-//! waiting connection is its first. Satellite talks to casement as an ordinary Wayland client,
+//! waiting connection is its first. Satellite talks to the compositor as an ordinary Wayland client,
 //! so X11 windows are Wayland windows with their `WM_CLASS` as the app id. The mode and the
 //! satellite binary come from configuration, never from the environment.
 //!
@@ -341,7 +341,7 @@ pub fn attach(state: &mut State, config: &XwaylandConfig) {
     match XwaylandState::bind(config, &X11Dir(PathBuf::from(SYSTEM_X11_DIR))) {
         Ok(bound) => {
             if let Some(display) = bound.display() {
-                eprintln!("casement: X11 display {}", display.0);
+                eprintln!("compositor: X11 display {}", display.0);
             }
             state.xwayland = bound;
         }

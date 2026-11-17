@@ -10,7 +10,7 @@ use compositor_core::WindowId;
 use compositor_core::geometry::{LogicalSize, PhysicalRect, PhysicalSize};
 use compositor_core::time::Mono;
 use compositor_render::pass::{CapturedFrame, window_capture_size, window_tree};
-use compositor_render::{CasementElement, Compositor};
+use compositor_render::{Compositor, SceneElement};
 use compositor_wayland::capture_source::ToplevelCaptureRequest;
 use compositor_wayland::image_capture::CaptureFailure;
 use smithay::backend::renderer::gles::{GlesRenderer, GlesTexture};
@@ -29,22 +29,22 @@ struct WindowSource {
 }
 
 impl WindowSource {
-    fn elements<R: Compositor>(&self, renderer: &mut R) -> Vec<CasementElement<R>> {
+    fn elements<R: Compositor>(&self, renderer: &mut R) -> Vec<SceneElement<R>> {
         window_tree(&self.root, self.content, self.scale, renderer)
     }
 }
 
 impl FrameSource for WindowSource {
-    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<CasementElement<PixmanRenderer>> {
+    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<SceneElement<PixmanRenderer>> {
         self.elements(renderer)
     }
 
-    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<CasementElement<GlesRenderer>> {
+    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<SceneElement<GlesRenderer>> {
         self.elements(renderer)
     }
 
     #[cfg(feature = "testing")]
-    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<CasementElement<DummyRenderer>> {
+    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<SceneElement<DummyRenderer>> {
         self.elements(renderer)
     }
 }

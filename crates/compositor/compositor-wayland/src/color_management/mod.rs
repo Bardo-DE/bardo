@@ -36,7 +36,7 @@ use smithay::reexports::wayland_server::backend::GlobalId;
 use smithay::reexports::wayland_server::{DisplayHandle, GlobalDispatch};
 use std::collections::BTreeMap;
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 2;
 
 /// `wp_color_manager_v1` and what it knows about outputs.

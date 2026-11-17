@@ -16,7 +16,7 @@ use smithay::wayland::xdg_activation::{
 };
 
 impl State {
-    /// The key of the client behind a backend id, if casement inserted it.
+    /// The key of the client behind a backend id, if the compositor inserted it.
     fn client_key_of(&self, id: &ClientId) -> Option<ClientKey> {
         let data = self
             .display

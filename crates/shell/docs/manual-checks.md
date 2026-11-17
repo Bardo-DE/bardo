@@ -8,9 +8,9 @@ Add new ones at the end of their section.
 
 KWin is not a target, but a KWin session at the machine is the quickest place to try sill's
 surfaces with real devices: its own bar and dock over the desktop, BlueZ, MPRIS, the clipboard
-(`ext_data_control_manager_v1`) and real pointer and keyboard. KWin lacks casement's protocols
+(`ext_data_control_manager_v1`) and real pointer and keyboard. KWin lacks the compositor's protocols
 (toplevels, workspaces, output management, session lock), so the services that need them stay
-at their defaults there; anything about those, or about displays and scale, is in the casement
+at their defaults there; anything about those, or about displays and scale, is in the compositor
 sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 
 - [ ] **CJK input in the launcher, a short real-keyboard spot check.** Automated by layer-shell-host's
@@ -83,7 +83,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 - [ ] **Launcher with a Mac keyboard through keycap** (real typing, Down, Space, Ctrl+Y, → twice,
   Tab, Escape three times, Ctrl+R, Shift+Tab to Emoji and Enter on a clipboard row already pass
   under fake input through `dev/accept/launcher.sh --real-input`; this is the physical keys and
-  the look). Open the launcher with `bardo-shell launcher open` (Cmd+Space itself needs a sill (casement)
+  the look). Open the launcher with `bardo-shell launcher open` (Cmd+Space itself needs a sill (the compositor)
   login) and type part of a document's name: ⌘Y shows the preview, Space after an arrow toggles
   it and never types a space, → at the end of the text shows it and a second → puts the focus
   ring on its first button, Tab walks the buttons, Escape leaves the pane, hides it, then closes.
@@ -97,7 +97,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   `org.bardo.Anyview1.service` activation file, or already running). Type part of a document's
   name with other documents listed: the pane shows the viewer's own picture of it (a picture, a
   page, lines, a table, an archive's listing, a font's specimen); a picture and a PDF page must
-  show on casement, where the pane's picture is a `TextureLayer` that the headless harness cannot
+  show on the compositor, where the pane's picture is a `TextureLayer` that the headless harness cannot
   draw (a blank plate there is a finding). Enter, or ⌘O, opens the viewer on that file, and ← and →
   there walk the rows the launcher listed, in its order. On an audio file the pane's "Play"
   starts it and the launcher closes. A file the viewer opened yesterday is found by its name
@@ -140,7 +140,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   `bardo-shell debug screenshot <a copy of a PNG>`), drag it onto a file manager window: the file
   copies there, the card leaves, the original stays; onto a terminal it inserts the path.
 
-## Needs a real sill (casement) login (not the headless compositor)
+## Needs a real sill (the compositor) login (not the headless compositor)
 
 - [ ] **Cmd+Space through keycap** opens the launcher (keycap writes Super+Space from the sill layer
   `~/.config/keycap/keycap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
@@ -189,12 +189,12 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   - On a laptop with a keyboard backlight: the Keyboard Brightness module shows under Display,
     follows the laptop's own backlight keys, and a drag sets the nearest step.
 
-## Needs a sill (casement) login
+## Needs a sill (the compositor) login
 
 Install with `dist/install.sh` (`--dry-run` first; it builds and installs the binary, the PAM
 service, the intents manifest, the skills and the settings schema, and never touches Plasma or
 Toshy), then the session from the desktop repo. `docs/first-login.md` is the checklist for the
-first real login; the boxes below are what it proves. Then pick "sill (casement)" at the login
+first real login; the boxes below are what it proves. Then pick "sill (the compositor)" at the login
 screen.
 
 - [ ] **GPU choice**: the journal line `layer-shell-host: adapter <name> ...` names the GPU the
@@ -246,7 +246,7 @@ screen.
 ### Idle and the lock grace
 
 Set a short screen-off time in sill's idle settings (e.g. 60 s).
-`dev/accept/idle.sh` covers the rules on casement with made-up wakes, since the
+`dev/accept/idle.sh` covers the rules on the compositor with made-up wakes, since the
 headless compositor counts no synthetic input as activity.
 
 - [ ] `bardo-shell idle status` says `{"kind":"own"}`. After that
@@ -330,7 +330,7 @@ sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when miss
   pick a row and detent runs it. A window that is not a Bardo app shows only its name's menu (Hide,
   Quit, its windows).
 
-## The confirmation sheet and `bardo-do` on a real sill (casement) login
+## The confirmation sheet and `bardo-do` on a real sill (the compositor) login
 
 Needs docket's `intentd` running (`systemctl --user start intentd` from docket's `dist/`) and
 `bardo-do` on the PATH; `dist/install.sh` has put `org.bardo.Shell.toml` where intentd reads it.
@@ -401,7 +401,7 @@ the real daemons or a real keyboard.
   must work. While a sill surface holds the keyboard sill tells keycap `keymap-aware` (and the
   window's profile again when it lets go): check in keycap's log that the
   profile flips on open and back on close, and that Cmd+Tab still switches apps while the launcher is up.
-- [ ] **Next Input Source**: with fcitx5 running and two or more input methods in its group, `bardo-shell do next-input-source` (Control-Space once casement binds it) switches fcitx5 to the next input method, wrapping from the last to the first; the same with IBus running and two or more engines turned on (`ibus engine` shows the change). With no input-method framework running `bardo-shell do next-input-source` prints "No input sources to switch." and exits non-zero.
+- [ ] **Next Input Source**: with fcitx5 running and two or more input methods in its group, `bardo-shell do next-input-source` (Control-Space once the compositor binds it) switches fcitx5 to the next input method, wrapping from the last to the first; the same with IBus running and two or more engines turned on (`ibus engine` shows the change). With no input-method framework running `bardo-shell do next-input-source` prints "No input sources to switch." and exits non-zero.
 - [ ] **Dock Cmd/Alt+click**: Cmd+click on a running tile raises it with the other windows hidden as
   before; Alt+click hides the current one. The dock reads Command as the keymap's primary modifier,
   which is Super on our desktop; if keycap rewrites Cmd to Ctrl for the focused window the click
@@ -412,7 +412,7 @@ the real daemons or a real keyboard.
 - [ ] **Screen-sharing picker**: from an app that shares (a browser's "share screen"), the sheet
   appears centred on the main display with Screens and Windows when both are allowed; arrows move,
   Space picks, Return shares, Escape cancels; Share stays dim until something is picked; a second
-  request while one is open is refused; the window list matches the open windows (needs casement's
+  request while one is open is refused; the window list matches the open windows (needs the compositor's
   identifiers).
 - [ ] **Mac level sliders** (Bardo design/29 section 16): in the control center the Display, Sound and
   Keyboard Brightness sliders are a 22 high well under a round white knob that holds the glyph
@@ -423,12 +423,12 @@ the real daemons or a real keyboard.
 
 ## Owned by another repository
 
-- [ ] layer-shell-host spike item f at a fractional output (1.5): run on casement at
+- [ ] layer-shell-host spike item f at a fractional output (1.5): run on the compositor at
   1.5x; the KWin run at 2.0 left `screen_row_equals_buffer_row` false.
 
-## casement (tty session), first-login findings 2026-10-15
+## the compositor (tty session), first-login findings 2026-10-15
 
-- [ ] **VT switch**: in the casement session press Ctrl+Alt+F3. The screen goes to VT 3 (a login
+- [ ] **VT switch**: in the compositor session press Ctrl+Alt+F3. The screen goes to VT 3 (a login
   prompt). Switch back with Ctrl+Alt+F1 or F2 (whichever VT holds the session), and the desktop
   returns drawn and responsive. Try it on the Keychron both with Fn held (F-row as F-keys) and in
   its media-key mode, where plain Ctrl+Alt+F3 only works if the keyboard sends F3. The chord must not
@@ -446,7 +446,7 @@ the real daemons or a real keyboard.
 
 ## Mission Control's Spaces bar (lanes spacesbar, mc2 and mc4, not built or run when written)
 
-- [ ] **Spaces bar**: in the casement session open Mission Control (the key, the hot corner or the gesture). A row of the output's Spaces
+- [ ] **Spaces bar**: in the compositor session open Mission Control (the key, the hot corner or the gesture). A row of the output's Spaces
   drops in across the top, under the menu bar, over the spread windows: each Space is a 160 x 100 card with its name under it
   ("Desktop 1", "Desktop 2", and the apps' names for a full-screen Space), the current Space ringed in the accent, and a plus at the
   right edge. Every card, the hidden Spaces' too, has a picture of its Space's windows over the
@@ -470,7 +470,7 @@ the real daemons or a real keyboard.
 - [ ] **Picture refresh**: with Mission Control open, close a window on the current Space: the card's picture follows within a
   moment and the shell does not use a core while the bar sits still.
 
-## The colour picker's eyedropper (casement session, an app that asks for a colour)
+## The colour picker's eyedropper (the compositor session, an app that asks for a colour)
 
 - [ ] **Pick a colour**: in an app that asks for a colour from the screen (a colour well's eyedropper, a portal `PickColor`
   caller), the screen holds still and a round magnifier follows the pointer, the pixels around it enlarged with the one under
@@ -482,21 +482,21 @@ the real daemons or a real keyboard.
 - [ ] **A fractional scale** (150 %): the pixel picked is the one the middle of the magnifier shows, not a neighbour.
 - [ ] **No cursor over the magnifier**: the arrow is hidden while the magnifier is up (FINDINGS `wave-6/colour-picker`, if it is
   drawn over the middle cell layer-shell-host does not map `cursor: none`).
-- [ ] **On the tty session (KMS)**: casement reads the screen back on the tty backend, so on a real screen the picker opens. Start
+- [ ] **On the tty session (KMS)**: the compositor reads the screen back on the tty backend, so on a real screen the picker opens. Start
   a colour request (a portal `PickColor` caller) with the pointer over a known colour: the loupe appears, and a click returns
   exactly the colour under the pointer (compare with the same spot on a screenshot). Only the region asked for is read back, not
-  the whole output (casement `cas34`): the click still lands on the right pixel on a 4K output without a pause.
+  the whole output (the compositor `cas34`): the click still lands on the right pixel on a 4K output without a pause.
 
-## The dev scripts under casement's per-app consent (a casement jail)
+## The dev scripts under the compositor's per-app consent (a compositor jail)
 
-- [ ] **Run `dev/accept/{clipboard,screenshot,launcher}.sh` under casement**: `dev/accept.sh --compositor casement clipboard
-  screenshot launcher` in the jail. Each starts casement with the floor `start_casement` writes (`casement-floor/privacy.toml` in
+- [ ] **Run `dev/accept/{clipboard,screenshot,launcher}.sh` under the compositor**: `dev/accept.sh --compositor compositor clipboard
+  screenshot launcher` in the jail. Each starts compositor with the floor `start_compositor` writes (`compositor-floor/privacy.toml` in
   the script's output folder: `grim` the screen, `wl-copy` and `wl-paste` the clipboard). Look for: no permission sheet left on
-  screen, `grim`'s shot is not refused, `wl-copy`/`wl-paste` work, and `casement.log` has no line saying the floor was not
+  screen, `grim`'s shot is not refused, `wl-copy`/`wl-paste` work, and `compositor.log` has no line saying the floor was not
   believed. If a step is asked or refused, the program is probably one the floor cannot name (an image under the checkout):
-  FINDINGS pa2-sill, "Dev sessions start casement with a floor".
+  FINDINGS pa2-sill, "Dev sessions start the compositor with a floor".
 
-## The display trial (a program changes the displays under casement)
+## The display trial (a program changes the displays under the compositor)
 
 - [ ] **Keep or revert**: change a display's mode with a tool that is not the shell (`wlr-randr --output <name> --mode ...` in
   the jail). A sheet "Keep these display settings?" appears on the banners' output with "Reverting in 15 seconds" counting down
@@ -575,7 +575,7 @@ the real daemons or a real keyboard.
 - [ ] **Trash**: Open shows the Trash in the file manager. Empty Trash is dimmed while the Trash is empty. With something in it, Empty Trash asks "Are you sure you want to permanently erase the items in the Trash?" with "You can't undo this action." and Cancel (default, Escape) and Empty Trash. Cancel leaves everything. Empty Trash erases `files/` and `info/` of the home Trash; per-volume trash folders on other disks are left.
 - [ ] **The dock's own menu**: Turn Hiding On hides the dock and the item then reads Turn Hiding Off; Turn Magnification Off stops the icons growing and the item reads Turn Magnification On. Both change `settings.toml` and Settings shows the same state. Dock Settings… opens Settings on the Dock page. There is no Position on Screen or Minimise Windows Using row: the dock has no such setting yet.
 - [ ] **Order setting**: Settings, Dock, Menu order (Advanced) set to Windows first gives the flat app menu (no Options, no Show All Windows).
-- [ ] **A click outside closes it** (casement d32dc13): open a tile's menu, then click the desktop, the bar, and another tile in turn (reopening it each time). Each click only closes the menu: the other tile does not open its app, and the next click works as usual.
+- [ ] **A click outside closes it** (the compositor d32dc13): open a tile's menu, then click the desktop, the bar, and another tile in turn (reopening it each time). Each click only closes the menu: the other tile does not open its app, and the next click works as usual.
 
 ## files, the file manager (files 9ffce62..dcbd439; install the binary and dist/ files per its README, on a real login)
 
@@ -620,18 +620,18 @@ the real daemons or a real keyboard.
 
 - [ ] **The pictures show**: Settings, Wallpaper shows every system wallpaper as a picture, one tile per wallpaper (a KDE wallpaper folder is one tile under its own name, not one per size). The first opening fills the tiles in within a few seconds; the second shows them at once. A picture that cannot be shrunk is a tile with only its name. Clicking a tile changes the desktop's wallpaper. Fedora's own .jxl wallpaper is not offered yet (the desktop cannot draw .jxl).
 
-## Hiding the menu bar (lane barhide, not built or run when written; a real casement login)
+## Hiding the menu bar (lane barhide, not built or run when written; a real the compositor login)
 
 Settings > Appearance, "Automatically hide and show the menu bar" (`bar.autohide`): Always, On Desktop Only, In Full Screen Only (the default), Never. The slide uses the dock's delay and duration (the shared delay and slide constants) and the dock's edge strip height.
 
 - [ ] **Always hides it on the desktop**: set Always. The bar slides away; windows now use the full height (maximise one: it reaches the top edge). Rest the pointer at the top edge for about 0.2 s: the bar slides down over the windows. Move the pointer off it: it slides away. Pushing past the edge for a moment and back out before the delay does nothing.
 - [ ] **A menu keeps it**: with the bar down, open an app menu, then a status item's menu, then the Control Centre, one after the other. Each time, move the pointer off the bar into the menu and away from it: the bar stays down. Close the menu with the pointer off the bar: the bar slides away. With the pointer still on the bar when the menu closes, it stays.
 - [ ] **Control Centre by command**: with the bar hidden, run `bardo-shell control-center toggle`. The bar comes down with the panel; closing the panel lets it go.
-- [ ] **On Desktop Only and the desktop**: set On Desktop Only; the bar hides on the desktop exactly as in Always. Full screen an app: the bar is up at once, fixed, and the app's window starts below it (casement keeps it); leave full screen and it hides again.
+- [ ] **On Desktop Only and the desktop**: set On Desktop Only; the bar hides on the desktop exactly as in Always. Full screen an app: the bar is up at once, fixed, and the app's window starts below it (the compositor keeps it); leave full screen and it hides again.
 - [ ] **In Full Screen Only and Never fix it**: set either: the bar comes back at once, reserving its height again, with no blur gap or strip left behind; it never slides on the desktop.
 - [ ] **Live**: change the setting while the bar is up and while it is down: it applies without a restart.
 - [ ] **Reduced motion**: with appearance motion set to Reduced, the bar appears and goes without sliding.
-- [ ] **Full screen reveal (needs casement's `reveal` for the top and bottom edges)**: full screen an app. In Always and In Full Screen Only, rest the pointer at the top edge: casement slides the bar in over the app, its content drawn and clickable (open a menu from it); moving away hides it. On a second display showing the desktop, nothing moves. At the bottom edge the dock does the same. On Desktop Only and Never the bar stays up in full screen and the window is sized below it.
+- [ ] **Full screen reveal (needs the compositor's `reveal` for the top and bottom edges)**: full screen an app. In Always and In Full Screen Only, rest the pointer at the top edge: the compositor slides the bar in over the app, its content drawn and clickable (open a menu from it); moving away hides it. On a second display showing the desktop, nothing moves. At the bottom edge the dock does the same. On Desktop Only and Never the bar stays up in full screen and the window is sized below it.
 - [ ] **Two displays in full screen**: full screen an app on each display. Rest the pointer at the top edge of one: only that display's bar comes in; the other's stays away. The same for the docks at the bottom edges.
 - [ ] **Reduced motion in full screen**: turn on Reduce motion (Settings > Appearance, or the desktop's own setting). In full screen the bar and dock fade in and out in place instead of sliding; turn it off and they slide again, with no restart.
 

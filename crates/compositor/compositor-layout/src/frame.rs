@@ -1,4 +1,4 @@
-//! The window frame casement draws for a client that asked for a server-side one, read from
+//! The window frame the compositor draws for a client that asked for a server-side one, read from
 //! Bardo's tokens: the chrome lengths, the colour table, `light_state`'s reveal rule, the window
 //! radius (`Radius::px`), the shadow (`Shadow::layers`), the three light hues (`light_hue`).
 //! Pure; the renderer draws the [`FrameStyle`] this makes. Nothing here is a copy of a number
@@ -106,7 +106,7 @@ fn slot(light: Light) -> usize {
     }
 }
 
-/// Bardo's name for casement's `light`.
+/// Bardo's name for the compositor's `light`.
 fn hue_light(light: Light) -> HueLight {
     match light {
         Light::Close => HueLight::Close,

@@ -1,8 +1,8 @@
-//! casement's renderer seam: what the compositor draws and how.
+//! The compositor's renderer seam: what the compositor draws and how.
 //!
 //! [`Compositor`] is the renderer trait: smithay's [`Renderer`](smithay::backend::renderer::Renderer)
 //! with the imports every element needs, plus whether effect shaders run. [`output_elements`]
-//! turns one output's sampled [`compositor_motion::OutputFrame`] into [`CasementElement`]s, and
+//! turns one output's sampled [`compositor_motion::OutputFrame`] into [`SceneElement`]s, and
 //! [`render_output`] draws them through smithay's damage tracker. Feature `testing` adds
 //! smithay's `DummyRenderer` and [`golden`], the golden-image comparison the test kit uses.
 //!
@@ -34,16 +34,16 @@ pub mod golden;
 pub use compositor::Compositor;
 pub use damage::{RenderError, RenderSync, Rendered, Routed, render_output, routed};
 pub use element::{
-    BlurFinish, BlurV0Element, CasementElement, ClientRound, ClipAsk, ClipShape, ClipStripElement,
-    ClosingBody, ClosingFrame, CursorFace, FlightDraw, FrameDraw, GenieParts, GenieWindow,
-    LockCoverElement, MAX_CLIENT_CURSOR, Margins, Part, Pixels, PopupRide, Rgba8,
-    RoundedClipElement, Rounding, SharedElement, SoftParts, StripElement, StripPlan, Weight,
-    at_rest, choose, client_shadow_elements, closing_content, closing_elements, cursor_elements,
-    cursor_face, cursor_pixels, drawn_content, frame_elements, genie_elements, genie_window,
-    geometry_size, layer_elements, layer_elements_faded, margin_of, popup_elements,
-    popup_elements_riding, popup_surfaces, rest_place, scale_ratio, scaled_content, solid_rect,
-    strip_plans, surface_origin, surface_origin_logical, window_content, window_drawn,
-    window_elements, window_surfaces,
+    BlurFinish, BlurV0Element, ClientRound, ClipAsk, ClipShape, ClipStripElement, ClosingBody,
+    ClosingFrame, CursorFace, FlightDraw, FrameDraw, GenieParts, GenieWindow, LockCoverElement,
+    MAX_CLIENT_CURSOR, Margins, Part, Pixels, PopupRide, Rgba8, RoundedClipElement, Rounding,
+    SceneElement, SharedElement, SoftParts, StripElement, StripPlan, Weight, at_rest, choose,
+    client_shadow_elements, closing_content, closing_elements, cursor_elements, cursor_face,
+    cursor_pixels, drawn_content, frame_elements, genie_elements, genie_window, geometry_size,
+    layer_elements, layer_elements_faded, margin_of, popup_elements, popup_elements_riding,
+    popup_surfaces, rest_place, scale_ratio, scaled_content, solid_rect, strip_plans,
+    surface_origin, surface_origin_logical, window_content, window_drawn, window_elements,
+    window_surfaces,
 };
 pub use element::{
     IconPlace, OverviewIcon, OverviewLook, TilePreview, icon_element, icon_place, lift_last,

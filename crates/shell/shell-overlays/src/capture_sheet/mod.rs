@@ -11,7 +11,7 @@
 //! move, Return shares, Space picks the row under the keys, Escape cancels. Allow stays disabled
 //! until something is picked, so a stray Return shares nothing.
 //!
-//! Plain icons and names for now; thumbnails wait for casement's capture path. Like the other
+//! Plain icons and names for now; thumbnails wait for the compositor's capture path. Like the other
 //! sheets this is a layer surface on a stock compositor.
 
 mod io;

@@ -6,7 +6,7 @@ use crate::support;
 
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_render::pass::render_window;
-use compositor_render::{CasementElement, Rgba8, solid_rect};
+use compositor_render::{Rgba8, SceneElement, solid_rect};
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::pixman::PixmanRenderer;
 use smithay::backend::renderer::utils::CommitCounter;
@@ -15,14 +15,14 @@ use ui_core::geometry::scale::Scale;
 
 const SIZE: PhysicalSize = PhysicalSize { w: 8, h: 6 };
 
-fn solid(x: i32, y: i32, w: u32, h: u32) -> CasementElement<PixmanRenderer> {
+fn solid(x: i32, y: i32, w: u32, h: u32) -> SceneElement<PixmanRenderer> {
     let colour = Rgba8 {
         r: 200,
         g: 40,
         b: 90,
         a: 255,
     };
-    CasementElement::Solid(solid_rect(
+    SceneElement::Solid(solid_rect(
         Id::new(),
         PhysicalRect { x, y, w, h },
         colour,

@@ -1,4 +1,4 @@
-//! The accessibility-root checker as a test sees it: it records the claims casement queued and
+//! The accessibility-root checker as a test sees it: it records the claims the compositor queued and
 //! never asks a bus. The test then says what the check came to
 //! ([`Fixture::a11y_verdict`](crate::Fixture::a11y_verdict)).
 

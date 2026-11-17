@@ -50,7 +50,7 @@ type Rows = BTreeMap<(ClientKey, Power), Word>;
 /// `ext_foreign_toplevel_list`): smithay settles what it holds by connection, the model answers
 /// by client key.
 ///
-/// It also knows the connection of every client casement inserted ([`Ledger::connection`]), so a
+/// It also knows the connection of every client the compositor inserted ([`Ledger::connection`]), so a
 /// power taken back can end the objects smithay registered for a client that was allowed at once
 /// and never had anything on hold.
 #[derive(Debug, Clone, Default)]

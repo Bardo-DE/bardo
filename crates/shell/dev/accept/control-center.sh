@@ -5,18 +5,18 @@
 # the Sound and Battery bar items, so the status area reads, from the right: the clock, the
 # control center, Wi-Fi (the one module item left).
 #
-# Default: casement (brought up and ended by start_compositor). Nothing changes a real radio,
+# Default: the compositor (brought up and ended by start_compositor). Nothing changes a real radio,
 # level or profile: no switch or slider is ever pressed, and the only list the Wi-Fi pane asks for is a scan.
 #
 #   1. A debug click on the control center's item opens `shell-bar-<out>/popup` at the panel's
 #      size (320 + the shadow room), its card 8 px inside the output's right edge (read from a
-#      screenshot); a second click closes it. Screenshot dev/out/control-center-casement.png.
+#      screenshot); a second click closes it. Screenshot dev/out/control-center-compositor.png.
 #   2. An outside click (the bar's empty middle) closes it; Escape (`bardo-shell debug key`: layer-shell-host's
 #      `Inject::Key`, which needs no grab) closes it too, or the step says why it could not try.
 #   3. The Wi-Fi tile's chevron slides the Wi-Fi pane in: the popup takes the pane's size (a
 #      Wi-Fi pane with a long list of networks may be as tall as the grid; then it only has to
 #      change). Its only request is a scan.
-#      Screenshot dev/out/control-center-wifi-casement.png.
+#      Screenshot dev/out/control-center-wifi-compositor.png.
 #   4. The Wi-Fi bar item opens the Wi-Fi pane directly: its popup is about the pane's size from
 #      step 3 (within 24 px: no back header), not the grid's.
 #   5. `bardo-shell control-center toggle` opens it with no pointer event behind it, and again closes
@@ -105,7 +105,7 @@ PANEL_POPUP_MIN=$(( PANEL_CARD_W + 2 * PANEL_SIDE ))
 PANEL_POPUP_MAX=$(( PANEL_POPUP_MIN + 8 ))
 panel_width_ok() { [ "${1:-0}" -ge "$PANEL_POPUP_MIN" ] && [ "${1:-0}" -le "$PANEL_POPUP_MAX" ]; }
 # The output's scale: the headless KWin's is set (the user's BenQ MA270U: 3840 x 2160 at 2,
-# CC_SCALE=1 CC_SIZE=1920x1080 for 1x), casement's is read as 1.
+# CC_SCALE=1 CC_SIZE=1920x1080 for 1x), the compositor's is read as 1.
 SCALE=1
 if [ "$MODE" = real ]; then
   SIZE="${CC_SIZE:-3840x2160}"
@@ -188,7 +188,7 @@ click_bar() { # x y
 
 escape_key() {
   case "$COMPOSITOR" in
-    casement) bardo-compositorctl debug inject "key Escape down" "sleep 30" "key Escape up" "sleep 150" ;;
+    compositor) bardo-compositorctl debug inject "key Escape down" "sleep 30" "key Escape up" "sleep 150" ;;
     *) bardo-shell debug key "$POPUP" Escape ;;
   esac
 }
@@ -228,17 +228,17 @@ step_item_click() {
   # A screenshot taken before the compositor shows the popup has no card in it (gap = the whole
   # width): take it again, up to four times.
   for _ in 1 2 3 4; do
-    [ "$COMPOSITOR" != casement ] || break # no output screenshot there yet (below)
-    shot "$SHOTS/control-center-casement.png" >>"$log" 2>&1 \
+    [ "$COMPOSITOR" != compositor ] || break # no output screenshot there yet (below)
+    shot "$SHOTS/control-center-compositor.png" >>"$log" 2>&1 \
       || echo "screenshot failed" >&2
-    gap=$(card_right_gap "$SHOTS/control-center-casement.png")
+    gap=$(card_right_gap "$SHOTS/control-center-compositor.png")
     [ "$gap" -lt 100 ] && break
     sleep 0.5
   done
   # shellcheck disable=SC2086
   click_bar $CC_ITEM
   wait_surface "$POPUP" 20 down || { echo "a second click left it open" | tee -a "$log" >&2; return 1; }
-  if [ "$COMPOSITOR" = casement ]; then
+  if [ "$COMPOSITOR" = compositor ]; then
     echo "item click: popup ${width} wide (want $PANEL_POPUP_MIN to $PANEL_POPUP_MAX); a second click closed it" | tee -a "$log" >&2
     panel_width_ok "$width" || return 1
     expected_skip "the card's distance from the output's right edge is read off an output screenshot (bardo-compositorctl shot, P1-C1)"
@@ -262,7 +262,7 @@ step_dismiss() {
   click_bar $CC_ITEM
   wait_surface "$POPUP" 20 up || return 1
   sleep 0.3
-  # A real Escape on casement, through the seat as a person's: it closes the popup from inside,
+  # A real Escape on the compositor, through the seat as a person's: it closes the popup from inside,
   # and the next click on the item must open it again (a late end of the old popup once closed
   # the new one at once).
   if escape_key >>"$log" 2>&1; then
@@ -289,7 +289,7 @@ step_wifi_pane() {
   bardo-shell debug click "$POPUP" 171 47 >>"$log" 2>&1
   sleep 0.8
   after=$(popup_height)
-  shot "$SHOTS/control-center-wifi-casement.png" >>"$log" 2>&1 \
+  shot "$SHOTS/control-center-wifi-compositor.png" >>"$log" 2>&1 \
     || echo "screenshot failed" >&2
   close_popup
   PANE_H=$after
@@ -397,7 +397,7 @@ run_nested() {
   run_steps step_item_click step_dismiss step_wifi_pane step_module_item step_toggle step_idle
   status=$STATUS
   cleanup_nested || status=1
-  echo "logs in $OUT_DIR; screenshots $SHOTS/control-center-casement.png, $SHOTS/control-center-wifi-casement.png"
+  echo "logs in $OUT_DIR; screenshots $SHOTS/control-center-compositor.png, $SHOTS/control-center-wifi-compositor.png"
   exit "$status"
 }
 

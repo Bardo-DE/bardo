@@ -1,8 +1,8 @@
 //! `ext_background_effect_manager_v1`: a surface asks for the blur behind a region (C33: the
-//! only blur protocol casement serves). Stored at P0 and drawn by blur v0.
+//! only blur protocol the compositor serves). Stored at P0 and drawn by blur v0.
 //!
 //! The region is double-buffered: smithay keeps the pending region in the surface's cached
-//! state (the request writes it, the surface commit makes it current), so casement stores
+//! state (the request writes it, the surface commit makes it current), so the compositor stores
 //! nothing of its own. The renderer asks [`blur_region_of`] for the committed one; a surface
 //! that never asked, or asked to unset, has none. smithay hands the region over as a list of
 //! add and subtract rectangles; [`region_rects`] flattens it into disjoint rectangles.

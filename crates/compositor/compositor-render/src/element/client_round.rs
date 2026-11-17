@@ -1,4 +1,4 @@
-//! What casement draws for a window that draws its own frame: corners clipped at a radius and,
+//! What the compositor draws for a window that draws its own frame: corners clipped at a radius and,
 //! unless the client has drawn one, the shadow a framed window has. Which windows get which is
 //! decided in `compositor-core` (`window::round_of`); this is the data the scene draws from.
 
@@ -10,7 +10,7 @@ use compositor_core::window::FrameStyle;
 pub struct ClientRound {
     /// The corner radius, in logical pixels.
     pub radius: u32,
-    /// The style of the shadow casement casts (its radius is the window's); none when the
+    /// The style of the shadow the compositor casts (its radius is the window's); none when the
     /// client has drawn its own.
     pub cast: Option<FrameStyle>,
 }

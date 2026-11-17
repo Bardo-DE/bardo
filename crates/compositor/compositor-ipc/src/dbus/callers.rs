@@ -143,7 +143,7 @@ fn log_refusal(roles: &[RoleName], found: &dyn std::fmt::Display) {
     tracing::warn!(
         asked = ?roles,
         found = %found,
-        "a call to casement over the bus was refused: the caller does not hold a role the method answers"
+        "a call to compositor over the bus was refused: the caller does not hold a role the method answers"
     );
 }
 

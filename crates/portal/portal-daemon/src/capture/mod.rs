@@ -22,7 +22,7 @@ use portal_core::{CastSource, CursorMode, Extent};
 pub use display::{DisplayName, Route};
 pub use fake::FakeCapture;
 pub use job::Job;
-pub use line::{CasementLine, FakeLine, LINE_DEADLINE, LineError, PortalLine};
+pub use line::{CompositorLine, FakeLine, LINE_DEADLINE, LineError, PortalLine};
 pub use pool::{FramePool, POOL_KEEP, PixelBuffer};
 
 use wl::Copier;

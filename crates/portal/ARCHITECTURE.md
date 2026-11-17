@@ -28,7 +28,7 @@ crates/bardo-portal/src/{lib, main, error, link, peers, table, dev_rows (feature
                    remote_desktop/{mod, book, sessions, object, consent, eis}.rs
                    inhibit/{mod, hub, effect}.rs
                    screencast/{mod, flow, options, run, session, stream, pipewire, pixels, restore}.rs
-                   capture/{mod, display, fake, job, line, output, toplevel, wl}.rs  capture/line/{casement, fake}.rs  capture/wl/{outputs, wait, wire}.rs
+                   capture/{mod, display, fake, job, line, output, toplevel, wl}.rs  capture/line/{the compositor, fake}.rs  capture/wl/{outputs, wait, wire}.rs
 dist/   bardo.portal  bardo-portals.conf  org.freedesktop.impl.portal.desktop.bardo.service  bardo-portal.service
 scripts/install.sh   installs the binary, the unit, the D-Bus file and the portal file (standalone; --prefix, --destdir, --bin-dir)
 dev/    up.sh down.sh lib/{jail,chain}.sh accept/*.sh        (the jailed portal chain)
@@ -49,8 +49,8 @@ scripts/check-boundary.sh
 | `settings::AppearanceSource` | `DesktopAppearance` | (none: tests bring their own source) | P2-T1 |
 | `access::Asker` | `ShellAsker` (`org.bardo.Shell1.AskPermission`) | `FakeAsker` | bardo-portal-access |
 | `access::Asker` (remote control) | `ShellAsker` (its own `AskPermission` question naming the input, built by `remote_control_question`) | `FakeAsker` | P2-T3 |
-| `remote_desktop::EisHandout` | `CasementEis` (`org.bardo.Compositor1.ConnectEis` and `EndEis`) | `FakeEis` | P2-T3 |
-| `capture::PortalLine` | `CasementLine` (`org.bardo.Compositor1.Connect("portal")`: a Wayland connection of the portal's own, trusted for the screen and the windows; casement limits how often a caller may ask, so a capture job, `capture::Job`, asks once and runs every step on that connection) | `FakeLine` | NEW-FA-2 |
+| `remote_desktop::EisHandout` | `CompositorEis` (`org.bardo.Compositor1.ConnectEis` and `EndEis`) | `FakeEis` | P2-T3 |
+| `capture::PortalLine` | `CompositorLine` (`org.bardo.Compositor1.Connect("portal")`: a Wayland connection of the portal's own, trusted for the screen and the windows; the compositor limits how often a caller may ask, so a capture job, `capture::Job`, asks once and runs every step on that connection) | `FakeLine` | NEW-FA-2 |
 
 `Pump` (`screencast/stream.rs`) is the loop body between a `CaptureSource` and a `FrameSink`, and
 is implemented and tested against the fakes. A turn waits at most `QUIET_TURN` for a frame and reports

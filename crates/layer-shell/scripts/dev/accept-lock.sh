@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Session-lock acceptance: examples/demo_lock locks casement (it implements ext-session-lock-v1; KWin 6.7
+# Session-lock acceptance: examples/demo_lock locks the compositor (it implements ext-session-lock-v1; KWin 6.7
 # does not, so there is no KWin form of this script) in a jail, driven with lib/input.sh. Never the user's
 # session: the compositor's socket lives in a private runtime directory with a marker file, demo_lock's
 # guard refuses any other socket, the jail is the second wall, and every exit path unlocks and stops
 # the compositor.
 #
-#   COMPOSITOR=casement scripts/dev/accept-lock.sh   (the default here)
+#   COMPOSITOR=the compositor scripts/dev/accept-lock.sh   (the default here)
 #
 # There is no screenshot: bardo-compositorctl has no `shot` until P1-C1, so what a pixel check would prove (the
 # lock covers the session; the session shows again after the unlock) is read from the compositor's
@@ -23,10 +23,10 @@
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
-COMPOSITOR="${COMPOSITOR:-casement}"
+COMPOSITOR="${COMPOSITOR:-compositor}"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"
-[ "$COMPOSITOR" = casement ] || { echo "accept-lock.sh runs on casement only: KWin has no ext-session-lock-v1" >&2; exit 64; }
+[ "$COMPOSITOR" = compositor ] || { echo "accept-lock.sh runs on compositor only: KWin has no ext-session-lock-v1" >&2; exit 64; }
 comp_build -p layer-shell-host --example demo_lock || exit 1
 comp_build -p layer-shell-host --features debug-inject \
   --example probe_toplevel || exit 1
@@ -79,7 +79,7 @@ demo_env() {
     "${@:2}"
 }
 
-# casement is the compositor that locks.
+# The compositor is the compositor that locks.
 LOCK_SOCKET="$COMP_SOCKET"
 case "$(basename "$LOCK_SOCKET")" in
   wayland-0) echo "FAIL setup: refusing a socket named wayland-0" >&2; exit 1 ;;
@@ -139,7 +139,7 @@ stats() {
 }
 
 # --- what "the session is covered" means ---------------------------------------------------------
-# casement has no screenshot until P1-C1 (`bardo-compositorctl shot`), so the cover is read from its input: a
+# The compositor has no screenshot until P1-C1 (`bardo-compositorctl shot`), so the cover is read from its input: a
 # real click on the session's probe window must not activate it while the session is locked, and must
 # once it is not (`bardo-compositorctl debug windows`: active). Each check sets EVIDENCE.
 EVIDENCE=""
@@ -186,7 +186,7 @@ wait_for '^lock: ready' 100 || { echo "FAIL setup: demo_lock never became ready"
 grep -q '^lock: guard granted' "$LOG" || { echo "FAIL setup: guard refused on $LOCK_SOCKET" >&2; exit 1; }
 sleep 1
 # The probe maps unfocused: nothing activates it before the lock (the covered/uncovered
-# checks click it), and the frame is where casement put it.
+# checks click it), and the frame is where the compositor put it.
 for _ in $(seq 50); do [ -n "$(probe_frame)" ] && break; sleep 0.1; done
 [ -n "$(probe_frame)" ] || { echo "FAIL setup: the probe window never mapped" >&2; exit 1; }
 echo "probe window: $(probe_frame)" >&2

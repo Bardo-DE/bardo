@@ -2,8 +2,8 @@
 //!
 //! A switch that warms the screen until tomorrow, a line that says what it is doing, and, while it
 //! warms or will, the colour temperature from Less Warm to More Warm. It reads and commands the
-//! Night Shift service; the schedule (times, "Always") is casement's night light, set in Settings.
-//! Nothing is drawn while casement's settings cannot be reached.
+//! Night Shift service; the schedule (times, "Always") is the compositor's night light, set in Settings.
+//! Nothing is drawn while the compositor's settings cannot be reached.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
@@ -32,7 +32,7 @@ pub(crate) struct Face {
     pub warmth: Option<Fraction>,
 }
 
-/// The row for `night_shift`; none while casement's settings cannot be reached.
+/// The row for `night_shift`; none while the compositor's settings cannot be reached.
 pub(crate) fn face_of(night_shift: &NightShift, hours: ClockHours) -> Option<Face> {
     let level = Fraction(warmth_fraction(night_shift.light.warmth));
     let (line, switch, warmth) = match shown(night_shift) {
@@ -138,7 +138,7 @@ mod tests {
         Face {
             line: line.to_owned(),
             switch,
-            // casement's default 3400 K sits at 815 thousandths of the slider.
+            // The compositor's default 3400 K sits at 815 thousandths of the slider.
             warmth: warm.then_some(Fraction(815)),
         }
     }

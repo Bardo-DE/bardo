@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Acceptance script 'xwayland-app-id' (P1-X1): X11 clients through xwayland-satellite started on
-# demand. casement exports DISPLAY and holds the sockets with no satellite running; the first X11
+# demand. The compositor exports DISPLAY and holds the sockets with no satellite running; the first X11
 # client starts it; the client's window is a Wayland window whose app id is its WM_CLASS class
 # (not satellite's own name); closing it ends the window. Exit: 0 pass, 1 fail, 2 could not run,
 # 3 environment. Run by the user or the jailed accept runner, never by the gate.
@@ -16,7 +16,7 @@ source "$root/dev/lib/x11probe.sh"
 CLASS=XProbeAppId
 x11_compositor --clock stepped
 plug_devices
-assert_ok "casement exported an X11 display ($X11_DISPLAY)" test -n "$X11_DISPLAY"
+assert_ok "compositor exported an X11 display ($X11_DISPLAY)" test -n "$X11_DISPLAY"
 assert_eq "no satellite runs before the first X11 client" "" "$(x11_satellite_pid)"
 
 x11_start X

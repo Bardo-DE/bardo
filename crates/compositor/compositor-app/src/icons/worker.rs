@@ -49,7 +49,7 @@ impl Running {
         let (jobs, asked) = mpsc::channel::<Job>();
         let (answer, found) = mpsc::channel::<Found>();
         std::thread::Builder::new()
-            .name("casement-icons".to_owned())
+            .name("compositor-icons".to_owned())
             .spawn(move || {
                 for job in asked {
                     let pixels = job.finder.find(&job.want, job.edge);

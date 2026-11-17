@@ -258,7 +258,7 @@ implementations are swapped at a boundary.
 
 A `bardo_*` protocol is bound only where the compositor advertises it (`Option<..>` on
 `HostState`, bound with `.ok()`), and every request that needs it is a silent no-op without it,
-so the same binary runs on KWin, wlroots and casement. `handlers/bardo_window` binds
+so the same binary runs on KWin, wlroots and compositor. `handlers/bardo_window` binds
 `bardo_window_manager_v1` at version 1 or 2 and sends `request_placement` (`decide.rs` maps a
 `WindowPlacement` and the seat's latest input serial to the wire request, or refuses with no
 serial); it keeps the manager bound because version 2 adds the manager's `quit` event, which
@@ -351,7 +351,7 @@ the compositor for the acceptance scripts. Handlers become table-testable by str
    pixels (no redefinition); private session bus, scratch `HOME`/`XDG_*`; flags for variants
    (`--real-input`), not a second script.
 3. A row in `scripts/dev/README.md` and, for the render items, an entry in `accept-demo.sh`.
-4. Live acceptance runs on the headless KWin or a nested casement, never on the person's
+4. Live acceptance runs on the headless KWin or a nested the compositor, never on the person's
    session.
 
 ## 8. Test harness
@@ -396,7 +396,7 @@ session. Goldens change only with a reason in the commit message.
 - **Nothing reads the environment except `Host::connect`** (through `HostConfig` and the
   Wayland connection it makes); every other module gets values.
 - **Live acceptance** runs on the headless KWin (`scripts/dev/kwin-virtual.sh`) or a nested
-  casement, never on the person's session (`wayland-0`).
+  The compositor, never on the person's session (`wayland-0`).
 - **Gate:**
 
   ```bash

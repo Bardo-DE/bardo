@@ -1,9 +1,9 @@
-//! Night Shift: warming the screen at night. casement does the warming (its software night light,
+//! Night Shift: warming the screen at night. The compositor does the warming (its software night light,
 //! driven by `[night_light]` in its `settings.toml`).
 //!
 //! The shell is where the person asks for it ("Turn On Until Tomorrow", the warmth) and sees it,
-//! and it keeps the manual turn-on's end beside casement's own schedule. Where bardo-shell already
-//! warms a monitor over DDC/CI, casement is told to leave that one alone (`skip_outputs`) so the
+//! and it keeps the manual turn-on's end beside the compositor's own schedule. Where bardo-shell already
+//! warms a monitor over DDC/CI, the compositor is told to leave that one alone (`skip_outputs`) so the
 //! two do not double, and warms the rest. Pure; `shell-services` reads and writes the files.
 
 mod command;

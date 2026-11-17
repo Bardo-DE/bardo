@@ -41,7 +41,7 @@ pub struct StockToplevelCapture {
 ///
 /// The compositor masks before the buffer leaves, so frames are reported as masked by the
 /// compositor and the hints go to it. Needs the agent connection (`Compositor1.Connect("agent")`);
-/// a compositor that does not advertise `bardo_agent_manager_v1` (casement master does not yet)
+/// a compositor that does not advertise `bardo_agent_manager_v1` (the compositor master does not yet)
 /// makes `open` answer [`CaptureError::BackendUnavailable`].
 #[derive(Debug)]
 pub struct BardoMaskedCapture {

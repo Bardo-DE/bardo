@@ -1,6 +1,6 @@
 //! Knowing when the desktop portal's bus connection goes away (NEW-PI-8). The portal asks for a
 //! remote input socket per remote-control session (`ConnectEis`); if it is restarted or crashes,
-//! the book of sessions it kept is gone, but the sockets it asked for are casement's and would
+//! the book of sessions it kept is gone, but the sockets it asked for are the compositor's and would
 //! stay open for the app that holds them. Each connection that asks is remembered by its unique
 //! bus name, and when the bus says that name has no owner any more, the event loop is asked to
 //! end every socket that connection asked for.

@@ -13,7 +13,7 @@ use compositor_motion::{
     CommittedSizes, FrameScene, OutputFrame, StripOffset, WindowLook, WindowLooks, sample,
 };
 use compositor_render::{
-    CasementElement, ChromeLayer, Compositor, LayerDraw, OutputView, RowDraw, TextureBook,
+    ChromeLayer, Compositor, LayerDraw, OutputView, RowDraw, SceneElement, TextureBook,
     output_elements, popup_surfaces, surface_origin_logical,
 };
 use compositor_wayland::seat::{Candidate, SurfaceAt, surface_under};
@@ -191,7 +191,7 @@ pub(crate) struct SceneSource<'a> {
 }
 
 impl FrameElements for SceneSource<'_> {
-    fn elements<R: Compositor>(&self, renderer: &mut R) -> Vec<CasementElement<R>> {
+    fn elements<R: Compositor>(&self, renderer: &mut R) -> Vec<SceneElement<R>> {
         output_elements(
             self.frame,
             self.view,

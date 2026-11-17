@@ -1,6 +1,6 @@
-//! Registering the Spaces casement mints with the account service (`org.bardo.Spaces1.Register`).
+//! Registering the Spaces the compositor mints with the account service (`org.bardo.Spaces1.Register`).
 //!
-//! casement mints a Space's id (the ext-workspace id, kept in `spaces.toml`); the account service
+//! The compositor mints a Space's id (the ext-workspace id, kept in `spaces.toml`); the account service
 //! learns of it here, so an app's own Space can link to it. [`SpaceRegistry`] is the seam:
 //! [`SpaceRegistry::register`] hands a batch to a background thread and returns at once, and
 //! [`SpaceRegistry::failures`] tells what the service answered later. The real implementation,
@@ -8,7 +8,7 @@
 //! is given (the library reads no environment); `compositor-testkit` exports `FakeSpaceRegistry`.
 //!
 //! The service registers a known id again without changing it, so the caller registers every
-//! Space at each start. A refusal means casement is not yet the unit the service gives the
+//! Space at each start. A refusal means the compositor is not yet the unit the service gives the
 //! compositor role to ([`RegisterFault::Refused`]); the caller stops asking after the first.
 //! The service allows ten new Spaces a minute per caller: the thread asks at most [`PACE`]
 //! times, then waits [`PACE_WINDOW`] before the next, so a long batch finishes later and never
@@ -95,7 +95,7 @@ pub enum RegistryError {
     QueueFull,
 }
 
-/// Where the Spaces casement mints are registered.
+/// Where the Spaces the compositor mints are registered.
 pub trait SpaceRegistry: std::fmt::Debug {
     /// Queues `spaces` and returns; the answers come back through [`SpaceRegistry::failures`].
     ///

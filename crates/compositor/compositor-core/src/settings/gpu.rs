@@ -1,5 +1,5 @@
 //! GPU settings (`gpu.*`): which GPU renders (P1-T). The stored key and its conversion are in
-//! `casement/src/config/`.
+//! `compositor/src/config/`.
 
 use crate::gpu::GpuChoice;
 

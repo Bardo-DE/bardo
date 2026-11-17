@@ -18,7 +18,7 @@ impl BackgroundSpaceStore {
     pub fn new(dirs: &StateDirs) -> BackgroundSpaceStore {
         let file = FileSpaceStore::new(dirs);
         let path = file.path.clone();
-        let writer = LatestWriter::start("casement-spaces", "the Spaces file", move |text| {
+        let writer = LatestWriter::start("compositor-spaces", "the Spaces file", move |text| {
             write_atomic(&path, text)
         });
         BackgroundSpaceStore { file, writer }
@@ -42,7 +42,7 @@ mod tests {
     #[test]
     fn the_latest_text_is_on_disk_once_the_store_is_dropped() {
         let dir = tempfile::tempdir().expect("a scratch folder");
-        let dirs = StateDirs::at(dir.path().join("casement"));
+        let dirs = StateDirs::at(dir.path().join("compositor"));
         let mut store = BackgroundSpaceStore::new(&dirs);
         for n in 0..50 {
             store
@@ -63,7 +63,7 @@ mod tests {
     #[test]
     fn reading_sees_the_file_and_a_missing_one_is_nothing() {
         let dir = tempfile::tempdir().expect("a scratch folder");
-        let dirs = StateDirs::at(dir.path().join("casement"));
+        let dirs = StateDirs::at(dir.path().join("compositor"));
         let store = BackgroundSpaceStore::new(&dirs);
         assert_eq!(store.read().expect("no file is not an error"), None);
     }

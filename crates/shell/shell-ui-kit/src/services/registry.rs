@@ -103,8 +103,8 @@ services! {
         sync_hold: SyncHoldService;
         /// Computers of the person's asking to borrow this one's models, and the notices that ask.
         guest_asks: GuestAsksService;
-        /// casement's night light, asked for by the person (the control center's Night Shift); it
-        /// reads and writes casement's settings file, and tells casement which monitors the
+        /// The compositor's night light, asked for by the person (the control center's Night Shift); it
+        /// reads and writes the compositor's settings file, and tells the compositor which monitors the
         /// displays service warms itself.
         night_shift: NightShiftService;
         clock: ClockService => crate::harness::fake::clock();

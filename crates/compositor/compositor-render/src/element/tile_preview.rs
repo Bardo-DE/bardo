@@ -5,7 +5,7 @@
 
 use super::corner::{CORNERS, corner_sign};
 use super::frame::{Raster, element, to_buffer, whole};
-use super::{CasementElement, Rgba8, solid_rect};
+use super::{Rgba8, SceneElement, solid_rect};
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
@@ -37,7 +37,7 @@ pub fn tile_preview_elements<R: Compositor>(
     preview: &TilePreview,
     view: &OutputView,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let rect = preview.rect;
     if view.area.intersection(&rect).is_none() {
         return Vec::new();
@@ -47,7 +47,7 @@ pub fn tile_preview_elements<R: Compositor>(
         .into_iter()
         .filter(|band| band.size.w > 0 && band.size.h > 0)
         .map(|band| {
-            CasementElement::Solid(solid_rect(
+            SceneElement::Solid(solid_rect(
                 Id::new(),
                 physical(band, view),
                 preview.fill,
@@ -72,7 +72,7 @@ pub fn tile_preview_elements<R: Compositor>(
                 1.0,
                 &to_buffer(&raster),
             )
-            .map(CasementElement::Memory)
+            .map(SceneElement::Memory)
         });
     corners.chain(bands).collect()
 }

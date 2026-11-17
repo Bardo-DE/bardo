@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Hot corners acceptance (design/20 §1.16, design/13 §13.3.12), on casement
+# Hot corners acceptance (design/20 §1.16, design/13 §13.3.12), on the compositor
 # (brought up and ended by start_compositor).
 # Starts `bardo-shell run` from this checkout's debug build (`--features debug`) with a scratch HOME and
 # XDG tree, on a private bus (dev/private-bus.conf) that is both its session and its system bus,

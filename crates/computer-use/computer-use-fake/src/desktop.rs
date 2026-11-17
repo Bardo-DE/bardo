@@ -187,13 +187,13 @@ impl LeaseControl for FakeDesktop {
         Ok(())
     }
 
-    /// Only a casement desktop can be asked: the leased window becomes the activated one.
+    /// Only a compositor desktop can be asked: the leased window becomes the activated one.
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "LeaseControl declares `focus` async; the fake has nothing to await"
     )]
     async fn focus(&self, lease: LeaseId) -> Result<(), DesktopError> {
-        if self.caps.kind != BackendKind::Casement {
+        if self.caps.kind != BackendKind::Compositor {
             return Err(DesktopError::Unsupported);
         }
         let ident = {

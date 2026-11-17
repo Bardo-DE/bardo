@@ -2,7 +2,7 @@
 //! window the pointer is on. The windows themselves are drawn by the scene as scaled windows;
 //! the title under the hovered one is [`label_element`](super::label_element).
 
-use super::{CasementElement, Rgba8, solid_rect};
+use super::{Rgba8, SceneElement, solid_rect};
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
@@ -79,14 +79,14 @@ pub fn dim_elements<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     look: OverviewLook,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let area = PhysicalRect {
         x: 0,
         y: 0,
         w: view.mode.w,
         h: view.mode.h,
     };
-    vec![CasementElement::Solid(solid_rect(
+    vec![SceneElement::Solid(solid_rect(
         book.cache().dim_id(),
         area,
         look.dim,
@@ -100,7 +100,7 @@ pub fn ring_elements<R: Compositor>(
     inner: LogicalRect,
     view: &OutputView,
     look: OverviewLook,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let t = i32::try_from(THICKNESS).unwrap_or(3);
     let out = LogicalRect::new(
         LogicalPoint {
@@ -147,7 +147,7 @@ pub fn ring_elements<R: Compositor>(
     bars.into_iter()
         .filter(|bar| view.area.intersection(bar).is_some())
         .map(|bar| {
-            CasementElement::Solid(solid_rect(
+            SceneElement::Solid(solid_rect(
                 Id::new(),
                 physical(bar, view),
                 look.ring,

@@ -12,18 +12,18 @@ use settings_store_fs::{ConfigRoot, Store, Watch};
 use settings_types::AppName;
 use std::path::Path;
 
-/// `compositor/settings.toml`: one section per `CasementSettings` part. A key it does not read
+/// `compositor/settings.toml`: one section per `CompositorSettings` part. A key it does not read
 /// is reported on load and dropped on save (ui-settings).
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
-pub struct CasementDoc {
+pub struct CompositorDoc {
     /// `windows.*`.
     pub windows: WindowsSection,
     /// `spaces.*`.
     pub spaces: SpacesSection,
     /// `keyboard.*`.
     pub keyboard: KeyboardSection,
-    /// `[bindings]` (C30: casement's document carries the defaults).
+    /// `[bindings]` (C30: the compositor's document carries the defaults).
     pub bindings: BindingsSection,
     /// `outputs.*`.
     pub outputs: OutputsSection,
@@ -41,7 +41,7 @@ pub struct CasementDoc {
     pub xwayland: XwaylandSection,
 }
 
-impl SettingsDoc for CasementDoc {
+impl SettingsDoc for CompositorDoc {
     const FILE: FileName = FileName("settings.toml");
     const FORMAT: Format = Format::Toml;
 }
@@ -59,8 +59,8 @@ const APP: AppName = AppName::desktop("compositor");
 /// # Errors
 ///
 /// Returns [`ConfigError`] when the settings file exists but cannot be read.
-pub fn load(home: Option<&Path>) -> Result<CasementDoc, ConfigError> {
-    let loaded = store(home).load::<CasementDoc>();
+pub fn load(home: Option<&Path>) -> Result<CompositorDoc, ConfigError> {
+    let loaded = store(home).load::<CompositorDoc>();
     for key in &loaded.unknown {
         tracing::warn!("settings.toml: {key}");
     }
@@ -74,7 +74,7 @@ pub fn load(home: Option<&Path>) -> Result<CasementDoc, ConfigError> {
 /// settings are loaded, and reported, once more when the compositor starts).
 #[must_use]
 pub fn xwayland_of(home: Option<&Path>) -> XwaylandSection {
-    store(home).load::<CasementDoc>().value.xwayland
+    store(home).load::<CompositorDoc>().value.xwayland
 }
 
 /// `home` as the ui-settings store it names.
@@ -87,6 +87,6 @@ pub(crate) fn store(home: Option<&Path>) -> Store {
 
 /// A watch on `home`'s document: every settled change of the file arrives whole (ui-settings,
 /// debounced). It runs as a task on `spawn`.
-pub(crate) fn watch(home: Option<&Path>, spawn: &dyn base_spawn::Spawner) -> Watch<CasementDoc> {
-    store(home).watch::<CasementDoc>(spawn)
+pub(crate) fn watch(home: Option<&Path>, spawn: &dyn base_spawn::Spawner) -> Watch<CompositorDoc> {
+    store(home).watch::<CompositorDoc>(spawn)
 }

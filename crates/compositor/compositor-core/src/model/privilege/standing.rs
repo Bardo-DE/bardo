@@ -92,7 +92,7 @@ impl ClientStanding {
         ClientStanding::Unverified { exe_name: None }
     }
 
-    /// The desktop portal as the bus proved it, for the connection casement hands it: the
+    /// The desktop portal as the bus proved it, for the connection the compositor hands it: the
     /// standing a portal proven at `Full` has on the public socket, with no image to name it by.
     /// Trusted for the powers `trusted_powers` gives the `portal` role, asked about the rest.
     #[must_use]

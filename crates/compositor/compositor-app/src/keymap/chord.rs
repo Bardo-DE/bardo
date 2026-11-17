@@ -1,4 +1,4 @@
-//! A chordkit chord as a casement chord (pure).
+//! A chordkit chord as a compositor chord (pure).
 
 use compositor_core::input::{Chord, Keysym};
 use desktop_protocols::vocab::HeldMods;
@@ -37,10 +37,10 @@ const FUNCTION_KEYS: [NamedKey; 24] = [
 /// The first keysym of the Unicode range: `0x0100_0000 + code point`.
 const UNICODE_BASE: u32 = 0x0100_0000;
 
-/// The casement chord that `chord` means: Super is Command (the key arrives as the logo key), Alt
+/// The compositor chord that `chord` means: Super is Command (the key arrives as the logo key), Alt
 /// is Option.
 ///
-/// `None` for a chord casement cannot see as a key press (a tapped modifier, or a function key past
+/// `None` for a chord the compositor cannot see as a key press (a tapped modifier, or a function key past
 /// F24).
 ///
 /// chordkit writes `Shift+=` as `+` and `Shift+/` as `?`; the keyboard reports the unshifted
@@ -116,7 +116,7 @@ mod tests {
 
     type Case = (&'static str, &'static str, Option<&'static str>);
 
-    /// (case, chordkit text, casement text)
+    /// (case, chordkit text, the compositor text)
     const CASES: &[Case] = &[
         ("super is command", "Super+W", Some("cmd+w")),
         ("alt is option", "Alt+Super+H", Some("option+cmd+h")),
@@ -140,7 +140,7 @@ mod tests {
     ];
 
     #[test]
-    fn chords_read_as_casements_own() {
+    fn chords_read_as_compositor_own() {
         for (case, written, want) in CASES {
             let chord: keymap::Chord = written.parse().expect(case);
             let want = want.map(|text| Chord::parse(text).expect(case));

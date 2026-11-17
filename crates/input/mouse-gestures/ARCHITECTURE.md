@@ -259,12 +259,12 @@ node for writing, or reads a real config directory or a running daemon.
 
 ## 8. The live Spaces swipe
 
-palmrest does not model the swipe's progress, overshoot or commit: casement does, on any
+palmrest does not model the swipe's progress, overshoot or commit: the compositor does, on any
 touchpad. A two-finger sideways stroke (the recogniser's `SpaceSwipe`) lands four contacts on the
 virtual touchpad that follow the fingers' x 1:1 and lift the moment the fingers do (no minimum
-time down: libinput only taps with up to three fingers); casement decides to commit or return on
+time down: libinput only taps with up to three fingers); the compositor decides to commit or return on
 the lift. A pause does not end a swipe (only a scroll's lock times out), and a click or a palm
-during one moves the row back to where it landed before it lifts, so casement returns to the Space
+during one moves the row back to where it landed before it lifts, so the compositor returns to the Space
 it was on. It is live while both two-finger rows of
 `[gestures.gesture_action_map]` are the workspace defaults. Any other mapping fires its action once
 per 7.7 mm of travel (500 ms cooldown) from the same intent (`gestures::swipe`). The swipe runs

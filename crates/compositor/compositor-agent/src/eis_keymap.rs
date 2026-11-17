@@ -46,7 +46,7 @@ impl KeymapText {
             io::Error::new(io::ErrorKind::InvalidData, format!("keymap too large: {e}"))
         })?;
         let fd = memfd_create(
-            c"casement-eis-keymap",
+            c"compositor-eis-keymap",
             MemfdFlags::CLOEXEC | MemfdFlags::ALLOW_SEALING,
         )?;
         let mut file = File::from(fd);

@@ -1,7 +1,7 @@
 //! Which Wayland connection a host talks over.
 //!
 //! The default is the session's own (`WAYLAND_DISPLAY`). A compositor that hands a client a
-//! private connection (casement's `Compositor1.Connect("shell")`) gives the shell an fd
+//! private connection (the compositor's `Compositor1.Connect("shell")`) gives the shell an fd
 //! instead, and the host uses that one. The route is read in exactly one place,
 //! `Host::connect`.
 //!

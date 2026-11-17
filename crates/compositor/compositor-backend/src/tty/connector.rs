@@ -1,4 +1,4 @@
-//! A KMS connector as casement's output facts (P1-Z; filled by P1-D2): the EDID reader, the
+//! A KMS connector as the compositor's output facts (P1-Z; filled by P1-D2): the EDID reader, the
 //! facts of an attached connector, and the pure planning of what to commit for it (mode,
 //! CRTC, variable refresh).
 

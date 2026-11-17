@@ -66,11 +66,11 @@ impl<T: EisHandout + ?Sized> EisHandout for Arc<T> {
 /// The real hand-out: `org.bardo.Compositor1.ConnectEis` over the session bus, asked from the
 /// connection that owns the portal's name (the compositor tells its caller by that connection).
 #[derive(Debug)]
-pub struct CasementEis {
+pub struct CompositorEis {
     link: BusLink,
 }
 
-impl CasementEis {
+impl CompositorEis {
     /// A hand-out that asks through `link`.
     #[must_use]
     pub fn new(link: BusLink) -> Self {
@@ -89,7 +89,7 @@ impl CasementEis {
     }
 }
 
-impl EisHandout for CasementEis {
+impl EisHandout for CompositorEis {
     fn connect(
         &self,
         session: u64,

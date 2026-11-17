@@ -19,11 +19,11 @@ const BUSY_PAUSE: Duration = Duration::from_millis(1100);
 /// Asks through the connection that owns the portal's name (the compositor tells its caller by
 /// that connection, and proves it all the way), the same one the input sockets come through.
 #[derive(Debug)]
-pub struct CasementLine {
+pub struct CompositorLine {
     link: BusLink,
 }
 
-impl CasementLine {
+impl CompositorLine {
     /// A line that asks through `link`.
     #[must_use]
     pub fn new(link: BusLink) -> Self {
@@ -31,7 +31,7 @@ impl CasementLine {
     }
 }
 
-impl PortalLine for CasementLine {
+impl PortalLine for CompositorLine {
     /// Runs the call on the runtime that serves the bus and waits for its answer here, so it may
     /// be asked from a blocking thread (where captures connect) without starting a runtime.
     fn open(&self) -> Result<OwnedFd, LineError> {
@@ -89,7 +89,7 @@ fn classify(error: &zbus::Error) -> LineError {
 /// The errors the bus gives for a name nobody owns.
 const NOBODY: [&str; 2] = ["ServiceUnknown", "NameHasNoOwner"];
 
-/// The error casement gives a caller over its rate.
+/// The error the compositor gives a caller over its rate.
 const BUSY: [&str; 1] = ["LimitsExceeded"];
 
 fn ends_with_any(name: &str, tails: &[&str]) -> bool {

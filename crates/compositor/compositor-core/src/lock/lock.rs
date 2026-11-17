@@ -42,7 +42,7 @@ pub enum LockSurfaces {
 /// Who asked for the lock that is held now.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LockHolder {
-    /// The shell's own locker. `None` while the lock is one casement restored after a restart,
+    /// The shell's own locker. `None` while the lock is one the compositor restored after a restart,
     /// before the shell's new connection has locked again. Only the shell's locks are
     /// remembered across a restart.
     Shell(Option<ClientKey>),
@@ -84,7 +84,7 @@ pub enum LockEvent {
     Unlocked,
     /// The locker's connection went away while locked.
     LockerGone,
-    /// casement started and found the lock marker its last run left: the session was locked by
+    /// The compositor started and found the lock marker its last run left: the session was locked by
     /// the shell, and stays covered until the shell locks again and unlocks.
     Restored,
 }

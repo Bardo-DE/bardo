@@ -12,7 +12,7 @@ use compositor_core::input::{
     Origin, SwipeDelta,
 };
 use compositor_core::overview::Overview;
-use compositor_core::settings::{CasementSettings, GestureSettings, SwipeFingers};
+use compositor_core::settings::{CompositorSettings, GestureSettings, SwipeFingers};
 use compositor_core::space::{SpaceSeed, WorkspaceRequest};
 use compositor_core::time::TimerKey;
 use compositor_core::{Cause, DeviceId, Effect, Event, Model, PageMilli};
@@ -243,9 +243,9 @@ const T0: u64 = 1000;
 
 /// One output with three Spaces, the first shown.
 fn three_spaces(gestures: GestureSettings) -> Model {
-    let settings = CasementSettings {
+    let settings = CompositorSettings {
         gestures,
-        ..CasementSettings::defaults()
+        ..CompositorSettings::defaults()
     };
     let output = out();
     let made = |name: &str| {

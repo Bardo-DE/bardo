@@ -25,7 +25,7 @@ pub(crate) const WHOLE_TEST: Duration = Duration::from_secs(3600);
 /// The check the bus thread makes, reachable from the test to make senders stand as it likes.
 type Peers = BusPeers;
 
-/// A calloop loop on its own thread standing in for casement's: it records each ask and grants
+/// A calloop loop on its own thread standing in for the compositor's: it records each ask and grants
 /// a socket to every ask it is given (the bus thread has already refused the rest).
 struct StandInLoop {
     seen: Arc<Mutex<Vec<ConnectAsk>>>,

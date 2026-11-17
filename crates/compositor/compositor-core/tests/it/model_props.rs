@@ -11,7 +11,7 @@ use compositor_core::layer::{
     Anchors, ExclusiveZone, KeyboardInteractivity, LayerLevel, LayerSpec, Margins, ShellRoleTag,
 };
 use compositor_core::lock::LockEvent;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::time::TimerKey;
 use compositor_core::window::{SizeLimits, WindowTitle};
 use compositor_core::{
@@ -214,9 +214,9 @@ fn command() -> impl Strategy<Value = DesktopCommand> {
     ]
 }
 
-fn settings() -> impl Strategy<Value = CasementSettings> {
+fn settings() -> impl Strategy<Value = CompositorSettings> {
     prop_oneof![Just(true), Just(false)].prop_map(|follow| {
-        let mut settings = CasementSettings::defaults();
+        let mut settings = CompositorSettings::defaults();
         settings.spaces.switch_on_activate = follow;
         settings
     })

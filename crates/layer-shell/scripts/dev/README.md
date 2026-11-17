@@ -1,6 +1,6 @@
 # Dev harness
 
-Runs a throwaway headless compositor (KWin, or casement in a jail) so layer-shell-host surfaces and
+Runs a throwaway headless compositor (KWin, or the compositor in a jail) so layer-shell-host surfaces and
 layer-shell test clients can be developed, driven with synthetic input and screenshotted without
 touching the person's session.
 
@@ -57,8 +57,8 @@ touching the person's session.
   nothing (`Cancelled`) and onto a foot window in the same headless session (`Dropped`, foot's
   side of the trace, and the path foot typed). foot comes from `PATH`, `FOOT=`, or `dnf
   download` unpacked into `out/foot` (no root). `DRAG_ICON=root` adds the icon.
-- `accept-lock.sh` — the session lock's acceptance (FINDINGS F65), on casement only (KWin has no
-  ext-session-lock-v1): casement in a jail with its socket in a private runtime directory, a
+- `accept-lock.sh` — the session lock's acceptance (FINDINGS F65), on the compositor only (KWin has no
+  ext-session-lock-v1): the compositor in a jail with its socket in a private runtime directory, a
   `probe_toplevel` as the session's window, and `demo_lock`, whose guard refuses any other
   socket: lock, a second locker `Finished`, typing without a click,
   a wrong password, 0 idle frames, "letmein" unlocks, and a locker killed while locked.
@@ -72,29 +72,29 @@ touching the person's session.
 - `probe-modifiers.sh` — which `wl_keyboard.modifiers` a keyboard-less layer surface gets while
   Super is held (FINDINGS F61); prints, does not judge.
 
-## The same scripts on casement
+## The same scripts on the compositor
 
-`COMPOSITOR=casement scripts/dev/accept-<name>.sh` (hover, scroll, drag, ime, lock, modifiers,
-popup-keyboard, swipe; lock runs only there) runs a script against casement, our compositor, instead of a headless
+`COMPOSITOR=compositor scripts/dev/accept-<name>.sh` (hover, scroll, drag, ime, lock, modifiers,
+popup-keyboard, swipe; lock runs only there) runs a script against the compositor, our compositor, instead of a headless
 KWin. The script builds its demos outside the jail, then `lib/compositor.sh` re-executes it in
-`packaging/harness/jail.sh` (no GPU, no network, no `/dev/input`, no session), where casement's
-`dev/up.sh` starts `casement --backend headless` on a private bus and the script's input goes
+`packaging/harness/jail.sh` (no GPU, no network, no `/dev/input`, no session), where the compositor's
+`dev/up.sh` starts `bardo-compositor --backend headless` on a private bus and the script's input goes
 through `bardo-compositorctl debug inject` (`lib/input.sh`; a superset of `fake-input.sh`'s grammar). State
-lives in the jail's scratch directory `scripts/dev/out/casement-<name>/` (logs under `out/`,
-casement's under `casement/`), never in the checkout otherwise.
+lives in the jail's scratch directory `scripts/dev/out/compositor-<name>/` (logs under `out/`,
+The compositor's under `compositor/`), never in the checkout otherwise.
 
-- `BARDO_COMPOSITOR_DIR` (default `crates/casement` of this tree) is the casement crate; its tools must be built
+- `BARDO_COMPOSITOR_DIR` (default `crates/compositor` of this tree) is the compositor crate; its tools must be built
   first, outside the jail: `$BARDO_COMPOSITOR_DIR/dev/bootstrap.sh --build-only` (`BARDO_COMPOSITOR_TOOLS` moves
   the directory).
-- `BARDO_LAYER_SHELL_HOST_BACKEND` is `cpu` by default under casement (the demos paint into `wl_shm`);
+- `BARDO_LAYER_SHELL_HOST_BACKEND` is `cpu` by default under the compositor (the demos paint into `wl_shm`);
   `gpu` runs the library default (lavapipe in the jail), which with `BARDO_COMPOSITOR_DMABUF=none` (the
   default) is the F80 fallback; `accept-hover.sh` adds an `f80_fallback` step then.
-- `BARDO_COMPOSITOR_CLOCK` is `wall` by default (the demos run on the wall clock; `stepped` is for casement's
+- `BARDO_COMPOSITOR_CLOCK` is `wall` by default (the demos run on the wall clock; `stepped` is for the compositor's
   own tests).
 - `lib/input.sh` and `lib/windows.sh [--class APP_ID]` are the compositor-neutral forms of
   `fake-input.sh` and `kwin-windows.sh`.
-- `accept-ime.sh` starts fcitx5 as a client (input-method v2); `accept-lock.sh` locks casement
-  directly and reads "covered" from the compositor's input, since casement has no screenshot yet;
+- `accept-ime.sh` starts fcitx5 as a client (input-method v2); `accept-lock.sh` locks the compositor
+  directly and reads "covered" from the compositor's input, since the compositor has no screenshot yet;
   `accept-drag.sh` fetches foot before the jail is entered (`dnf download`, no root).
 
 ## Real input on a headless KWin

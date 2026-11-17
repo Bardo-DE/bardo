@@ -1,6 +1,6 @@
-//! Night light settings (`night_light.*`): the software warm-up casement drives outputs with
+//! Night light settings (`night_light.*`): the software warm-up the compositor drives outputs with
 //! when no DDC warmth is available, and the outputs it leaves alone because they warm themselves
-//! (`night_light.skip_outputs`). The stored keys and their conversion are in `casement/src/config/`.
+//! (`night_light.skip_outputs`). The stored keys and their conversion are in `compositor/src/config/`.
 
 use crate::ids::{OutputKey, OutputName};
 use crate::output::{GammaRamp, Kelvin, MinuteOfDay, NightLight, Schedule};
@@ -11,7 +11,7 @@ pub struct NightLightSettings {
     /// `night_light.mode`, `from`, `to`, `kelvin` and `fade_minutes`: when the screen warms, how
     /// warm and how slowly.
     pub light: NightLight,
-    /// `night_light.skip_outputs`: outputs casement does not warm, each a connector name
+    /// `night_light.skip_outputs`: outputs the compositor does not warm, each a connector name
     /// (`DP-1`) or an [`OutputKey`]'s text (`edid:<make>/<model>/<serial>`).
     pub skip_outputs: Vec<String>,
 }

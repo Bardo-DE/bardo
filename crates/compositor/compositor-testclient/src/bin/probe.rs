@@ -4,7 +4,7 @@
 //! safely") when a live session's sockets or `/dev/input` are visible.
 //!
 //! `session` also takes the shell verbs (`shell-connect`, `shell-role`, `minimise-target`, `minimise-clear`; see
-//! `probe/command.rs`), which need `BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service"` in casement's environment.
+//! `probe/command.rs`), which need `BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service"` in the compositor's environment.
 //!
 //! Exit codes: 0 passed, 1 the probe failed, 2 refused or unavailable, 64 usage.
 

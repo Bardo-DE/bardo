@@ -12,7 +12,7 @@ use compositor_core::OutputName;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_core::time::{Mono, VblankSeq};
 use compositor_render::pass::{ArgbImage, CapturedFrame};
-use compositor_render::{CasementElement, Compositor, Rgba8, solid_rect};
+use compositor_render::{Compositor, Rgba8, SceneElement, solid_rect};
 use smithay::backend::allocator::dmabuf::Dmabuf;
 use smithay::backend::allocator::{Allocator, Format, Fourcc, Modifier};
 use smithay::backend::renderer::element::Id;
@@ -26,10 +26,10 @@ const SIDE: u32 = 64;
 #[derive(Debug)]
 struct Scene;
 
-fn scene_elements<R: Compositor>() -> Vec<CasementElement<R>> {
+fn scene_elements<R: Compositor>() -> Vec<SceneElement<R>> {
     let rect = |x, y, w, h| PhysicalRect { x, y, w, h };
     let paint = |rect, r, g, b| {
-        CasementElement::Solid(solid_rect(
+        SceneElement::Solid(solid_rect(
             Id::new(),
             rect,
             Rgba8 { r, g, b, a: 255 },
@@ -43,7 +43,7 @@ fn scene_elements<R: Compositor>() -> Vec<CasementElement<R>> {
 }
 
 impl FrameElements for Scene {
-    fn elements<R: Compositor>(&self, _: &mut R) -> Vec<CasementElement<R>> {
+    fn elements<R: Compositor>(&self, _: &mut R) -> Vec<SceneElement<R>> {
         scene_elements()
     }
 }

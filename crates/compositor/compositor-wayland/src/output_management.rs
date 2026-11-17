@@ -40,7 +40,7 @@ use smithay::reexports::wayland_server::{
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 4;
 
 /// The manager's serial: it moves whenever the heads change, and a configuration made at an

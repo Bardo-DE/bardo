@@ -188,22 +188,28 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
     );
 }
 
-/// D8: on casement the compositor mints each workspace's id and registers it. Registering it
+/// D8: on the compositor the compositor mints each workspace's id and registers it. Registering it
 /// again (every start) changes nothing, not even a name the person gave it since; the counter
 /// skips a registered id; only a new id counts toward the per-app limit; a restart keeps it.
 #[tokio::test]
 async fn a_registered_id_is_kept_as_minted_and_registering_it_again_changes_nothing() {
     let scratch = Scratch::new("spaces");
     let (mut book, _) = SpaceBook::open(Some(&store(&scratch))).await;
-    let casement = app("org.bardo.Compositor");
+    let compositor = app("org.bardo.Compositor");
     let at = (Instant::now(), NOW);
     let workspace = DesktopSpace::parse("s-0123456789abcdef0123456789abcdef").expect("id");
     let taken = DesktopSpace::parse("space-1").expect("id");
     for id in [&workspace, &taken] {
         assert!(
-            book.register(&casement, id.clone(), name("One"), SpaceLook::default(), at)
-                .await
-                .unwrap()
+            book.register(
+                &compositor,
+                id.clone(),
+                name("One"),
+                SpaceLook::default(),
+                at
+            )
+            .await
+            .unwrap()
         );
     }
     book.rename(&workspace, name("Mine"))
@@ -214,7 +220,7 @@ async fn a_registered_id_is_kept_as_minted_and_registering_it_again_changes_noth
         assert!(
             !book
                 .register(
-                    &casement,
+                    &compositor,
                     workspace.clone(),
                     name("One"),
                     SpaceLook::default(),
@@ -230,7 +236,7 @@ async fn a_registered_id_is_kept_as_minted_and_registering_it_again_changes_noth
         "the person's name stays"
     );
     let made = book
-        .create(&casement, name("Two"), SpaceLook::default(), at)
+        .create(&compositor, name("Two"), SpaceLook::default(), at)
         .await
         .expect("made");
     assert_eq!(

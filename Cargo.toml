@@ -525,7 +525,7 @@ opt-level = 3
 [profile.release]
 strip = "debuginfo"
 
-# The compositor's arithmetic overflows loudly rather than wrapping (casement's release profile).
+# The compositor's arithmetic overflows loudly rather than wrapping (the compositor's release profile).
 [profile.release.package.compositor-app]
 overflow-checks = true
 

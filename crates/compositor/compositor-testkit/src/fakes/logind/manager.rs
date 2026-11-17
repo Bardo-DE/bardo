@@ -60,7 +60,7 @@ impl Manager {
         Ok(vec![(
             SESSION_ID.to_owned(),
             uid,
-            "casement".to_owned(),
+            "compositor".to_owned(),
             super::SEAT_ID.to_owned(),
             object_path(SESSION_PATH)?,
         )])

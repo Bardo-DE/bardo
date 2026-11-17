@@ -4,7 +4,7 @@
 #
 # Owner: P0-T-dev. Sourceable; every other dev/lib file sources this one first.
 #
-# State (A8): everything a script writes goes under $JAIL_SCRATCH/casement/<run>/ (a jail's
+# State (A8): everything a script writes goes under $JAIL_SCRATCH/compositor/<run>/ (a jail's
 # scratch is its own, so jails run in parallel and the checkout is never written). The run dir
 # holds env (a sourceable KEY=VALUE file), the daemons' logs and shots/. `latest` beside the run
 # dirs names the newest. $BARDO_COMPOSITOR_STATE overrides the run dir.
@@ -12,33 +12,33 @@
 # Tools (A7): built outside the jail by dev/bootstrap.sh into dev/out/tools/bin
 # ($BARDO_COMPOSITOR_TOOLS overrides the tools dir); nothing here calls cargo or the network.
 
-[ -z "${_CASEMENT_BUS_SH:-}" ] || return 0
-_CASEMENT_BUS_SH=1
+[ -z "${_COMPOSITOR_BUS_SH:-}" ] || return 0
+_COMPOSITOR_BUS_SH=1
 
 # shellcheck source=dev/lib/jail.sh
 source "$(dirname "${BASH_SOURCE[0]}")/jail.sh"
 
-# casement_root: the checkout.
-casement_root() { (cd "$(dirname "${BASH_SOURCE[0]}")/../../../compositor" && pwd); }
+# compositor_root: the checkout.
+compositor_root() { (cd "$(dirname "${BASH_SOURCE[0]}")/../../../compositor" && pwd); }
 
-# casement_tool NAME: the path of a bootstrapped tool; exit 3 (environment incomplete) says how
+# compositor_tool NAME: the path of a bootstrapped tool; exit 3 (environment incomplete) says how
 # to build it.
-casement_tool() {
-  local tools="${BARDO_COMPOSITOR_TOOLS:-$(casement_root)/dev/out/tools}" path
+compositor_tool() {
+  local tools="${BARDO_COMPOSITOR_TOOLS:-$(compositor_root)/dev/out/tools}" path
   for path in "$tools/bin/$1" "$tools/$1"; do
     if [ -x "$path" ]; then echo "$path"; return 0; fi
   done
-  echo "casement: tool '$1' is missing from $tools/bin: run dev/bootstrap.sh outside the jail" >&2
+  echo "compositor: tool '$1' is missing from $tools/bin: run dev/bootstrap.sh outside the jail" >&2
   return 3
 }
 
-# casement_state_dir: this run's state directory (created). $BARDO_COMPOSITOR_STATE wins; else the
+# compositor_state_dir: this run's state directory (created). $BARDO_COMPOSITOR_STATE wins; else the
 # newest under the jail's scratch; else a new one.
-casement_state_dir() {
+compositor_state_dir() {
   local base dir
   if [ -n "${BARDO_COMPOSITOR_STATE:-}" ]; then mkdir -p "$BARDO_COMPOSITOR_STATE"; echo "$BARDO_COMPOSITOR_STATE"; return 0; fi
-  : "${JAIL_SCRATCH:?casement: JAIL_SCRATCH is not set: run inside ~/desktop/harness/jail.sh}"
-  base="$JAIL_SCRATCH/casement"
+  : "${JAIL_SCRATCH:?compositor: JAIL_SCRATCH is not set: run inside ~/desktop/harness/jail.sh}"
+  base="$JAIL_SCRATCH/compositor"
   mkdir -p "$base"
   if [ -L "$base/latest" ]; then dir=$(readlink "$base/latest"); else
     dir="$base/run-$(date +%Y%m%dT%H%M%S)-$RANDOM"
@@ -48,10 +48,10 @@ casement_state_dir() {
   echo "$dir"
 }
 
-# casement_new_state: starts a fresh run dir (the next casement_state_dir returns it).
-casement_new_state() {
-  : "${JAIL_SCRATCH:?casement: JAIL_SCRATCH is not set: run inside ~/desktop/harness/jail.sh}"
-  local base="$JAIL_SCRATCH/casement" dir
+# compositor_new_state: starts a fresh run dir (the next compositor_state_dir returns it).
+compositor_new_state() {
+  : "${JAIL_SCRATCH:?compositor: JAIL_SCRATCH is not set: run inside ~/desktop/harness/jail.sh}"
+  local base="$JAIL_SCRATCH/compositor" dir
   mkdir -p "$base"
   dir="$base/run-$(date +%Y%m%dT%H%M%S)-$RANDOM"
   mkdir -p "$dir" && ln -sfn "$dir" "$base/latest"
@@ -62,17 +62,17 @@ casement_new_state() {
 # env_set KEY VALUE: records KEY in the run's env file (replacing an earlier value) and exports it.
 env_set() {
   local file tmp
-  file="$(casement_state_dir)/env"
+  file="$(compositor_state_dir)/env"
   tmp="$file.tmp.$$"
   { grep -v "^$1=" "$file" 2>/dev/null || true; printf '%s=%q\n' "$1" "$2"; } >"$tmp"
   mv "$tmp" "$file"
   export "$1=$2"
 }
 
-# casement_env_load [ENV_FILE]: exports the run's env (the newest run's, by default).
-casement_env_load() {
-  local file="${1:-$(casement_state_dir)/env}"
-  [ -f "$file" ] || { echo "casement: no session env at $file: start one with dev/up.sh" >&2; return 1; }
+# compositor_env_load [ENV_FILE]: exports the run's env (the newest run's, by default).
+compositor_env_load() {
+  local file="${1:-$(compositor_state_dir)/env}"
+  [ -f "$file" ] || { echo "compositor: no session env at $file: start one with dev/up.sh" >&2; return 1; }
   set -a
   # shellcheck source=/dev/null
   source "$file"
@@ -85,13 +85,13 @@ bus_up() {
   # A bus the caller started and recorded in this run's env file (a scenario with its own service
   # directory): its addresses come from that file, so the caller's shell need not export them.
   if [ -n "${BARDO_COMPOSITOR_BUS_PID:-}" ] && kill -0 "$BARDO_COMPOSITOR_BUS_PID" 2>/dev/null; then
-    casement_env_load
+    compositor_env_load
     return
   fi
   command -v dbus-daemon >/dev/null || { echo "bus_up: dbus-daemon is not installed" >&2; return 3; }
   local state out address pid
-  state=$(casement_state_dir)
-  out=$(dbus-daemon --config-file "$(casement_root)/dev/private-bus.conf" --fork --print-address=1 --print-pid=1 \
+  state=$(compositor_state_dir)
+  out=$(dbus-daemon --config-file "$(compositor_root)/dev/private-bus.conf" --fork --print-address=1 --print-pid=1 \
     2>"$state/dbus.log") || { echo "bus_up: dbus-daemon failed: $(cat "$state/dbus.log")" >&2; return 1; }
   address=$(printf '%s\n' "$out" | sed -n 1p)
   pid=$(printf '%s\n' "$out" | sed -n 2p)

@@ -44,7 +44,7 @@ pub(super) fn wait<D: WorkspaceHandler>(state: &mut D, client: &Client, waiting:
     consent::finish_later(consent::Farewell::Workspaces(refused.manager));
 }
 
-/// The client a manager belongs to, when casement inserted it.
+/// The client a manager belongs to, when the compositor inserted it.
 fn owner_of(manager: &ExtWorkspaceManagerV1) -> Option<ClientKey> {
     manager.client().as_ref().and_then(consent::key_of)
 }

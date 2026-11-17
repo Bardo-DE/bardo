@@ -1,6 +1,6 @@
 //! The popups of a window or layer surface as elements.
 
-use super::CasementElement;
+use super::SceneElement;
 use super::geometry::geometry_origin;
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
@@ -47,7 +47,7 @@ pub fn popup_elements<R: Compositor>(
     origin: LogicalPoint,
     view: &OutputView,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     popup_surfaces(root, origin)
         .into_iter()
         .flat_map(|(surface, corner)| {
@@ -97,7 +97,7 @@ pub fn popup_elements_riding<R: Compositor>(
     ride: PopupRide,
     view: &OutputView,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let about = on_output(sub_of(ride.about), view);
     popup_surfaces(root, origin)
         .into_iter()
@@ -112,7 +112,7 @@ pub fn popup_elements_riding<R: Compositor>(
             )
         })
         .map(|popup| {
-            CasementElement::Stretched(RescaleRenderElement::from_element(
+            SceneElement::Stretched(RescaleRenderElement::from_element(
                 popup,
                 about,
                 Scale::from(ride.ratio),

@@ -1,10 +1,10 @@
-//! The desktop on casement, our own compositor: windows from the agent connection's desktop
+//! The desktop on the compositor, our own compositor: windows from the agent connection's desktop
 //! client, and a lease per window from `Compositor1.LeaseWindow`.
 //!
 //! This is the interim backend. The compositor scopes the leased input to one window and its
 //! popups and refuses it anywhere else, but it is still the person's seat and cursor
 //! (`SeatIsolation::SharedSeat`) and cuad masks the frames. The agent seat of its own, the
-//! compositor's masking and the agent Space are casement P4.
+//! compositor's masking and the agent Space are the compositor P4.
 
 mod leases;
 mod map;
@@ -31,16 +31,16 @@ fn protocol(error: impl std::fmt::Display) -> DesktopError {
     DesktopError::Protocol(error.to_string())
 }
 
-/// The desktop casement reports and leases.
+/// The desktop the compositor reports and leases.
 #[derive(Debug)]
-pub struct CasementDesktop {
+pub struct CompositorDesktop {
     door: Door,
     windows: Arc<Mutex<Windows>>,
     leases: Arc<Mutex<Leases>>,
     events: AsyncMutex<mpsc::UnboundedReceiver<DesktopEvent>>,
 }
 
-impl CasementDesktop {
+impl CompositorDesktop {
     /// The desktop over `fd`, a connection with the agent role from `door`. It binds the
     /// client's globals and learns the first window list before it returns.
     ///
@@ -59,7 +59,7 @@ impl CasementDesktop {
             events,
         };
         std::thread::Builder::new()
-            .name("cuad-casement".into())
+            .name("cuad-compositor".into())
             .spawn(move || watch::run(fd, &shared, ready))
             .map_err(protocol)?;
         // The sender dropping unanswered says nothing more than that the thread is gone.
@@ -98,9 +98,9 @@ impl CasementDesktop {
     }
 }
 
-impl Desktop for CasementDesktop {
+impl Desktop for CompositorDesktop {
     fn caps(&self) -> BackendCaps {
-        BackendCaps::of(BackendKind::Casement)
+        BackendCaps::of(BackendKind::Compositor)
     }
 
     #[expect(
@@ -120,7 +120,7 @@ impl Desktop for CasementDesktop {
     }
 }
 
-impl LeaseControl for CasementDesktop {
+impl LeaseControl for CompositorDesktop {
     async fn lease(&self, req: LeaseRequest) -> Result<Leased, DesktopError> {
         // Only in place: another Space's window is not rendered for capture, and there is no
         // agent Space or nested host to run in.
@@ -158,8 +158,8 @@ impl LeaseControl for CasementDesktop {
     }
 
     async fn release(&self, lease: LeaseId) -> Result<(), DesktopError> {
-        // A lease whose window closed has ended here already, but casement still holds its socket
-        // until it is given back; ending a lease casement does not know is not an error.
+        // A lease whose window closed has ended here already, but the compositor still holds its socket
+        // until it is given back; ending a lease the compositor does not know is not an error.
         let _ = self.leases().end(lease);
         self.door.proxy().end_lease(lease.0).await.map_err(protocol)
     }

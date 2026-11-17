@@ -177,7 +177,7 @@ fn the_warmth_is_kept_through_a_manual_turn_on() {
 }
 
 #[test]
-fn nothing_is_written_while_casements_settings_are_out_of_reach() {
+fn nothing_is_written_while_compositor_settings_are_out_of_reach() {
     let lost = NightShift::default();
     assert!(!lost.reached);
     for command in [
@@ -214,7 +214,7 @@ fn a_change_made_in_settings_ends_the_manual_turn_on() {
             manual: Some(manual),
         },
     );
-    assert_eq!(kept.0.manual, Some(manual), "casement still says all day");
+    assert_eq!(kept.0.manual, Some(manual), "compositor still says all day");
     assert!(kept.1.is_empty());
     let changed = step(
         NightShift::default(),
@@ -290,7 +290,7 @@ fn names(connectors: &[&str]) -> Vec<OutputName> {
 }
 
 #[test]
-fn casement_leaves_the_monitors_sill_warms_over_ddc_alone() {
+fn compositor_leaves_the_monitors_sill_warms_over_ddc_alone() {
     let gain = Some(RgbGain::default());
     let monitors = [
         monitor(5, Some("HDMI-A-1"), gain),

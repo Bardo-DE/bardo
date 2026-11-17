@@ -128,7 +128,7 @@ impl<'a> Desk<'a> {
         self.window_framed(surface, app_id, None, logical, pattern, dpi)
     }
 
-    /// As [`Desk::window`], titled `title` and answered server-side: casement draws its frame
+    /// As [`Desk::window`], titled `title` and answered server-side: the compositor draws its frame
     /// (titlebar, lights, rounded corners and shadow) round the `logical`-sized content.
     pub fn framed_window(
         &mut self,

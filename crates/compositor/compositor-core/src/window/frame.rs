@@ -1,4 +1,4 @@
-//! The frame casement draws round a window whose client asked for a server-side one: where the
+//! The frame the compositor draws round a window whose client asked for a server-side one: where the
 //! titlebar, the three lights and the resize zones are, and which of them a point is on.
 //!
 //! The lengths are an argument ([`FrameMetrics`]): `compositor-layout` fills them from Bardo's

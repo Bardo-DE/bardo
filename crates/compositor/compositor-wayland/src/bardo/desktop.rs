@@ -45,7 +45,7 @@ use smithay::wayland::foreign_toplevel_list::ForeignToplevelHandle;
 use smithay::wayland::{Dispatch2, GlobalDispatch2};
 use std::collections::BTreeMap;
 
-/// The version casement serves. Version 2 adds `bardo_desktop_app_v1.subject`; the app objects
+/// The version the compositor serves. Version 2 adds `bardo_desktop_app_v1.subject`; the app objects
 /// take the manager's version, so only a client that bound the manager at 2 is sent it.
 pub const VERSION: u32 = 2;
 

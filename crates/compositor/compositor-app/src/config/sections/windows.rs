@@ -1,7 +1,7 @@
 //! `windows.*` (03 §1.17).
 
 use crate::config::convert;
-use compositor_core::settings::{CasementSettings, FirstClick, MinimiseEffect, TitleDoubleClick};
+use compositor_core::settings::{CompositorSettings, FirstClick, MinimiseEffect, TitleDoubleClick};
 use serde::{Deserialize, Serialize};
 use settings_types::Ms;
 use settings_types::schema::Page;
@@ -88,6 +88,6 @@ pub struct WindowsSection {
 
 impl Default for WindowsSection {
     fn default() -> Self {
-        convert::windows_doc(&CasementSettings::defaults().windows)
+        convert::windows_doc(&CompositorSettings::defaults().windows)
     }
 }

@@ -1,4 +1,4 @@
-//! casement's composition root: the one [`State`] smithay dispatches into, its handlers
+//! The compositor's composition root: the one [`State`] smithay dispatches into, its handlers
 //! (`impl <Smithay>Handler for State`, one file per protocol, C28), the core loop
 //! (`Model::step` → arrange → retarget → frames), the one place effects happen ([`exec`]),
 //! the only clock readers ([`time`]), the stored settings document ([`config`]) and the
@@ -14,7 +14,7 @@
 //! [`run`] is the whole startup: it builds the event loop and the Wayland display, makes the
 //! [`State`] with [`State::new`], listens for clients and drives the loop until it is asked to
 //! stop, so a second binary or a harness calls it with a [`RunConfig`] and gets what the
-//! `casement` binary gets. A host that wants its own loop does what `run` does: make a
+//! `compositor` binary gets. A host that wants its own loop does what `run` does: make a
 //! `calloop` event loop and a `Display<State>`, call `State::new(&config, &mut display, &handle)`,
 //! attach the display ([`display::attach_display`]) and call [`core_loop::turn`] once per
 //! loop turn. `State` is the one type smithay dispatches into, so the host builds with the union

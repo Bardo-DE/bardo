@@ -7,7 +7,7 @@ use crate::state::State;
 use compositor_core::input::Argv;
 
 /// What to start for a binding's `argv`: in a scope of its own, so a compositor restart leaves
-/// the program running; `x11` (DISPLAY, from the moment casement listens for X11 clients, not
+/// the program running; `x11` (DISPLAY, from the moment the compositor listens for X11 clients, not
 /// only once satellite runs) and then `child_env` (`WAYLAND_DISPLAY`: the socket this run bound,
 /// which is not `wayland-0` when that one is taken) as its environment.
 fn spec_for(argv: Argv, x11: Vec<EnvVar>, child_env: &ChildEnv) -> SpawnSpec {

@@ -98,7 +98,7 @@ impl Fixture {
         }
     }
 
-    /// The portal's bus connection `owner` left the bus: the decision casement's loop makes when
+    /// The portal's bus connection `owner` left the bus: the decision the compositor's loop makes when
     /// the bus thread says so (`Compositor1`'s name watch).
     pub fn portal_left(&mut self, portal: &Proven, owner: &str) {
         let _ = connect::answer(

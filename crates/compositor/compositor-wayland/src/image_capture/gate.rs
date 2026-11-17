@@ -39,7 +39,7 @@ impl Mortal for GatedFrame {
 /// The frame requests that wait for the person, by client.
 pub type GatedFrames = Held<GatedFrame>;
 
-/// The client a session belongs to, when casement inserted it.
+/// The client a session belongs to, when the compositor inserted it.
 pub fn owner_of(session: &Session) -> Option<ClientKey> {
     session.client().as_ref().and_then(consent::key_of)
 }

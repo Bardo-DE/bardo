@@ -1,14 +1,14 @@
 //! `org.bardo.Compositor1`: the way the shell, the agent tier and the portal get their
-//! privileged Wayland connections and input sockets from casement.
+//! privileged Wayland connections and input sockets from compositor.
 //!
-//! The name, the object and the proxy are written here once; casement's server (in
+//! The name, the object and the proxy are written here once; the compositor's server (in
 //! `compositor-ipc`) implements the same members and decides on the bus thread who may call
 //! which. Each caller holds the role its method answers: a call from a program without it gets an
 //! access-denied error.
 
 use zbus::zvariant::OwnedFd;
 
-/// The well-known name casement owns on the session bus.
+/// The well-known name the compositor owns on the session bus.
 pub const BUS_NAME: &str = "org.bardo.Compositor1";
 
 /// The object's path.
@@ -17,7 +17,7 @@ pub const OBJECT_PATH: &str = "/org/bardo/Compositor1";
 /// The interface's name.
 pub const INTERFACE: &str = "org.bardo.Compositor1";
 
-/// casement's door, as a caller sees it.
+/// The compositor's door, as a caller sees it.
 #[zbus::proxy(
     interface = "org.bardo.Compositor1",
     default_service = "org.bardo.Compositor1",

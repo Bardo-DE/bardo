@@ -9,7 +9,7 @@ use compositor_core::space::SpaceFile;
 #[test]
 fn a_write_is_atomic_and_reads_back() {
     let dir = tempfile::tempdir().expect("temp dir");
-    let dirs = StateDirs::at(dir.path().join("casement"));
+    let dirs = StateDirs::at(dir.path().join("compositor"));
     let mut store = FileSpaceStore::new(&dirs);
     assert_eq!(store.read().expect("read"), None, "no file yet");
     store.write("spaces = []\n").expect("write");

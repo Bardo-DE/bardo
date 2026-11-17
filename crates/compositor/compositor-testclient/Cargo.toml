@@ -1,6 +1,6 @@
 [package]
 name = "compositor-testclient"
-description = "Typed wayland-client helpers per protocol for casement's tests, the Transcript every client keeps, test patterns and shm buffers; the compositor-probe and compositor-shell-exec binaries. Reaches no smithay (B9)."
+description = "Typed wayland-client helpers per protocol for the compositor's tests, the Transcript every client keeps, test patterns and shm buffers; the compositor-probe and compositor-shell-exec binaries. Reaches no smithay (B9)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

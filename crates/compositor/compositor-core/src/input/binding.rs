@@ -12,7 +12,7 @@ pub enum BindingAction {
     Call(DbusCall),
     /// Start a program.
     Spawn(Argv),
-    /// A desktop command casement carries out itself.
+    /// A desktop command the compositor carries out itself.
     Desktop(DesktopCommand),
 }
 
@@ -36,7 +36,7 @@ pub struct DbusCall {
 #[serde(transparent)]
 pub struct Argv(pub Vec<String>);
 
-/// A command casement carries out itself.
+/// A command the compositor carries out itself.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum DesktopCommand {

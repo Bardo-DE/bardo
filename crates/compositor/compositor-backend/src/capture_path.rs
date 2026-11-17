@@ -19,7 +19,7 @@
 /// renderer that lists the pair; a CPU renderer or none never does) and a buffer on the device
 /// that draws: `wanted` is the device clients are told to allocate on, `drawing` the one the
 /// renderer draws on. A buffer is on another device only when both are known and differ;
-/// casement has no renderer that draws across two GPUs for a capture, so such a buffer is
+/// The compositor has no renderer that draws across two GPUs for a capture, so such a buffer is
 /// filled from a read-back (FINDINGS `wave-2026-10-15/dmabuf`). A failed direct draw always
 /// falls back to the read-back, which every buffer has.
 #[must_use]

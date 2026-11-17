@@ -1,6 +1,6 @@
 [package]
 name = "compositor-ctl"
-description = "bardo-compositorctl: drive a jailed casement over its private bus (debug inject, wait, clock, output, windows, scene, fault), take screenshots (P1) and print hardware reports (P5)."
+description = "bardo-compositorctl: drive a jailed compositor over its private bus (debug inject, wait, clock, output, windows, scene, fault), take screenshots (P1) and print hardware reports (P5)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -18,7 +18,7 @@ path = "src/main.rs"
 [dependencies]
 compositor-dbus = { path = "../compositor-dbus" }
 base-xdg = { path = "../../base/base-xdg" }
-# The privacy book and the administrator's floor as casement reads them (`privacy list`).
+# The privacy book and the administrator's floor as the compositor reads them (`privacy list`).
 compositor-privacy = {path = "../compositor-privacy"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["client"]}
 image = { workspace = true, features = ["png", "jpeg"] }

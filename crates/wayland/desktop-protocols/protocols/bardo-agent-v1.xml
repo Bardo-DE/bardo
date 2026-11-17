@@ -22,9 +22,9 @@
     being allow-listed is disconnected with `not_permitted`.
 
     Warning: this protocol is a draft and may change. The server side lives in the
-    compositor (casement); the client side is cuad's `cua-desktop`.
+    compositor (compositor); the client side is cuad's `cua-desktop`.
 
-    Not served yet: casement does not advertise this global on any connection today, so a client
+    Not served yet: compositor does not advertise this global on any connection today, so a client
     that looks for it finds nothing. Nothing may rely on a promise made here until the server lands.
   </description>
 

@@ -1,4 +1,4 @@
-//! Which outputs casement is told to leave alone: the monitors bardo-shell warms itself.
+//! Which outputs the compositor is told to leave alone: the monitors bardo-shell warms itself.
 
 use std::collections::BTreeSet;
 
@@ -6,7 +6,7 @@ use crate::displays::NightWarmthMode;
 use crate::displays::ddc::DdcDisplay;
 use crate::ids::{DdcId, OutputName};
 
-/// The connectors casement's night light must not warm (`night_light.skip_outputs`).
+/// The connectors the compositor's night light must not warm (`night_light.skip_outputs`).
 ///
 /// Where bardo-shell warms the monitors itself, each one that answers DDC/CI with RGB gains (the
 /// ones bardo-shell's warmth writes reach) and whose connector is known; otherwise none. Sorted,
@@ -25,7 +25,7 @@ pub fn skip_outputs(backend: NightWarmthMode, ddc: &[DdcDisplay]) -> Vec<OutputN
     }
 }
 
-/// The monitors bardo-shell warms whose connector it could not match: casement's software light warms
+/// The monitors bardo-shell warms whose connector it could not match: the compositor's software light warms
 /// them too (it cannot be told to skip what bardo-shell cannot name). Sorted by bus.
 #[must_use]
 pub fn unmatched(backend: NightWarmthMode, ddc: &[DdcDisplay]) -> Vec<DdcId> {

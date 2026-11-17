@@ -3,9 +3,9 @@
 //! `bardo_window.set_a11y_root(bus_name, object_path)` names an object any program on the bus
 //! could own, and the assistant tier reads the object it names. So a root a client sets is not
 //! adopted as it comes: the window keeps an unknown root, the claim is queued with the pid
-//! casement holds the client by, and the bus is asked which process owns the name
+//! The compositor holds the client by, and the bus is asked which process owns the name
 //! (`compositor_ipc::a11y`). Only when that process is the client's own does the window get the
-//! root. A client casement keeps no process for (the shell's and the agent tier's hand-outs, a
+//! root. A client the compositor keeps no process for (the shell's and the agent tier's hand-outs, a
 //! sandbox's) never verifies: its tree is not offered, the safe default.
 
 use crate::core_loop;
@@ -116,7 +116,7 @@ pub fn claimed(state: &State, events: Vec<Event>) -> Vec<Event> {
         .collect()
 }
 
-/// The pid of the process behind the client of `window`, when casement holds one.
+/// The pid of the process behind the client of `window`, when the compositor holds one.
 fn pid_of(state: &State, window: WindowId) -> Option<u32> {
     let client: ClientKey = state.core.model.windows().get(&window)?.client;
     state

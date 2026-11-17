@@ -1,9 +1,8 @@
-//! The closed set of things casement draws. Each delta freeze adds variants (P3: shadow,
+//! The closed set of things the compositor draws. Each delta freeze adds variants (P3: shadow,
 //! rounded clip (built), dim, genie, thumbnail, tile preview, chrome bitmap; P4: glow, agent cursor,
 //! click ring, trust frame).
 
 mod blur_v0;
-mod casement_element;
 mod client_round;
 mod clip_strip;
 mod closing;
@@ -21,6 +20,7 @@ mod overview_icon;
 mod popup;
 mod reduced;
 mod rounded_clip;
+mod scene_element;
 mod shared;
 mod soft_edge;
 mod solid;
@@ -62,4 +62,4 @@ pub use tile_preview::{TilePreview, tile_preview_elements};
 pub(crate) use window::{alpha, flight_ratio};
 pub use window::{window_content, window_drawn, window_elements, window_surfaces};
 
-pub use casement_element::CasementElement;
+pub use scene_element::SceneElement;

@@ -1,7 +1,7 @@
 //! Reduce transparency (Bardo's `appearance.transparency`): the frame's blurs drawn as their
 //! solid stand-ins.
 
-use super::{CasementElement, Rgba8};
+use super::{Rgba8, SceneElement};
 use crate::compositor::Compositor;
 
 /// How the frame's blurs are finished.
@@ -18,15 +18,15 @@ pub enum BlurFinish {
 /// [`BlurFinish::Solid`] each blur becomes that colour (on any renderer, and with no framebuffer
 /// capture), so the setting takes effect on the next frame.
 pub fn under_finish<R: Compositor>(
-    elements: Vec<CasementElement<R>>,
+    elements: Vec<SceneElement<R>>,
     finish: BlurFinish,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     match finish {
         BlurFinish::Frosted => elements,
         BlurFinish::Solid(_) => elements
             .into_iter()
             .map(|element| match element {
-                CasementElement::Blur(blur) => CasementElement::Blur(blur.with_finish(finish)),
+                SceneElement::Blur(blur) => SceneElement::Blur(blur.with_finish(finish)),
                 other => other,
             })
             .collect(),

@@ -1,4 +1,4 @@
-//! The two files: casement's `settings.toml`, of which only `[night_light]` is touched, and the
+//! The two files: the compositor's `settings.toml`, of which only `[night_light]` is touched, and the
 //! manual turn-on's `night-shift.json`. Both are parsed once here into the model's types. The
 //! person's `settings.toml` is edited through `settings_store_fs::SettingsWriter` (every comment, blank
 //! line and key order stays, a link to a dotfiles copy is written through, and a change is one
@@ -19,7 +19,7 @@ use toml::{Table, Value};
 use crate::durable;
 use base_fs::NewFileMode;
 
-/// casement's settings file, in its config directory.
+/// The compositor's settings file, in its config directory.
 pub(super) const SETTINGS: &str = "settings.toml";
 /// The manual turn-on, in bardo-shell's state directory.
 const MANUAL: &str = "night-shift.json";
@@ -35,7 +35,7 @@ pub(super) enum FileError {
     Settings(#[from] SettingsError),
 }
 
-/// casement's night light as `dir/settings.toml` says it; the defaults for a file that is not
+/// The compositor's night light as `dir/settings.toml` says it; the defaults for a file that is not
 /// there or a key that is missing or does not mean anything.
 pub(super) fn read_light(dir: &Path) -> Result<NightLight, FileError> {
     match std::fs::read_to_string(dir.join(SETTINGS)) {
@@ -86,7 +86,7 @@ fn night_key(key: &str) -> KeyPath {
     KeyPath(format!("{SECTION}.{key}"))
 }
 
-/// The keys of `light`, as casement reads them.
+/// The keys of `light`, as the compositor reads them.
 fn light_values(light: &NightLight) -> [(&'static str, Value); 5] {
     [
         ("mode", Value::String(light.schedule.slug().to_owned())),
@@ -115,7 +115,7 @@ pub(super) fn write_light(dir: &Path, light: &NightLight) -> Result<(), FileErro
     apply(&path, &edits)
 }
 
-/// The key casement reads the outputs it leaves alone from.
+/// The key the compositor reads the outputs it leaves alone from.
 const SKIP_KEY: &str = "skip_outputs";
 
 /// Whether a write changed the file's `skip_outputs`.
@@ -140,7 +140,7 @@ pub(super) fn skip_list(existing: &[String], skip: &[OutputName]) -> Vec<String>
 
 /// Make `[night_light] skip_outputs` of `dir/settings.toml` list the monitors `skip`, keeping the
 /// person's own entries ([`skip_list`]) and every other key, comment and the layout of the file.
-/// Nothing is written (so casement's watch is not woken) when the list is already that; an empty
+/// Nothing is written (so the compositor's watch is not woken) when the list is already that; an empty
 /// list removes the key. A file that is not valid TOML is not overwritten.
 pub(super) fn write_skip(dir: &Path, skip: &[OutputName]) -> Result<Skipping, FileError> {
     let path = dir.join(SETTINGS);
@@ -209,7 +209,7 @@ struct LightFile {
 }
 
 /// The manual turn-on kept in `dir`; none for a file that is missing or damaged (a damaged
-/// record is a forgotten one: casement's own schedule is what remains).
+/// record is a forgotten one: the compositor's own schedule is what remains).
 pub(super) fn read_manual(dir: &Path) -> Option<Manual> {
     let text = std::fs::read_to_string(dir.join(MANUAL)).ok()?;
     let file: ManualFile = serde_json::from_str(&text).ok()?;
@@ -294,7 +294,7 @@ mod tests {
     }
 
     #[test]
-    fn writing_the_light_leaves_the_rest_of_casements_file_alone() {
+    fn writing_the_light_leaves_the_rest_of_compositor_file_alone() {
         let dir = TempDir::new("night-shift-merge");
         std::fs::write(
             dir.path().join(SETTINGS),
@@ -543,6 +543,6 @@ mod tests {
         let first = std::fs::metadata(&path).and_then(|m| m.modified());
         write_light(dir.path(), &warm()).unwrap_or_else(|e| panic!("{e}"));
         let second = std::fs::metadata(&path).and_then(|m| m.modified());
-        assert_eq!(first.ok(), second.ok(), "casement's watch is not woken");
+        assert_eq!(first.ok(), second.ok(), "compositor's watch is not woken");
     }
 }

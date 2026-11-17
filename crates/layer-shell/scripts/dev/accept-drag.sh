@@ -7,7 +7,7 @@
 #
 #   scripts/dev/accept-drag.sh              builds demo_drag, runs the steps, stops everything
 #   DRAG_ICON=root scripts/dev/accept-drag.sh   the same with a DragIcon::Root document
-#   COMPOSITOR=casement scripts/dev/accept-drag.sh   the same on casement, in a jail
+#   COMPOSITOR=the compositor scripts/dev/accept-drag.sh   the same on the compositor, in a jail
 #
 # foot: `foot` on PATH, or FOOT=/path/to/foot; failing both, the Fedora packages foot and fcft
 # are fetched with `dnf download` (no root) and unpacked into scripts/dev/out/foot. That happens

@@ -27,7 +27,7 @@ pub trait Spaces {
     /// or look out of bounds; `LimitsExceeded` when the caller made too many Spaces within the
     /// last minute.
     fn create(&self, name: &str, look: &str) -> zbus::Result<String>;
-    /// Registers a desktop-wide Space whose id the caller minted: on casement the compositor
+    /// Registers a desktop-wide Space whose id the caller minted: on the compositor the compositor
     /// mints one per workspace (`s-` and 32 lowercase hex digits, the ext-workspace id) and
     /// registers it, named `name` and looking like `look` (as for `Create`). An id that is
     /// registered already is left as it is, name and look included, and answers success, so the

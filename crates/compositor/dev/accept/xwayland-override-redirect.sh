@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Acceptance script 'xwayland-override-redirect' (P1-X1): an override-redirect X11 window (a menu
 # or tooltip) is not managed: X reports the attribute, it keeps the position the client asked
-# for (a managed window is placed by casement), and it takes no keyboard focus from the managed
+# for (a managed window is placed by the compositor), and it takes no keyboard focus from the managed
 # window below it. Exit: 0 pass, 1 fail, 2 could not run, 3 environment.
 #
 # Owner: P1-X1.

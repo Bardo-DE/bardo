@@ -1,8 +1,8 @@
 //! The session lock's marker (CASB-06): a file that exists while the shell's lock is held.
 //!
 //! A compositor that restarts while the session is locked has no way to ask anyone whether it
-//! was: the lock lived in memory. The marker answers. casement writes it when the shell's lock is
-//! held and removes it when that lock ends; a casement that starts and finds it comes back
+//! was: the lock lived in memory. The marker answers. The compositor writes it when the shell's lock is
+//! held and removes it when that lock ends; a compositor that starts and finds it comes back
 //! covered until the shell locks again (sill keeps its own marker for the same case and locks
 //! again at once when it starts, so the two agree: both exist exactly while the shell's lock
 //! is held). It lives in the runtime directory, so a reboot clears it.
@@ -55,7 +55,7 @@ pub struct FileLockMarker {
 }
 
 impl FileLockMarker {
-    /// The marker `locked` inside `dir` (casement's directory in the runtime directory).
+    /// The marker `locked` inside `dir` (the compositor's directory in the runtime directory).
     #[must_use]
     pub fn in_dir(dir: &Path) -> FileLockMarker {
         FileLockMarker {
@@ -101,7 +101,7 @@ mod tests {
     #[test]
     fn the_marker_follows_what_was_set_and_a_missing_one_is_removed_quietly() {
         let scratch = tempfile::tempdir().expect("a scratch directory");
-        let dir = scratch.path().join("casement");
+        let dir = scratch.path().join("compositor");
         let mut marker = FileLockMarker::in_dir(&dir);
         assert!(!marker.marked());
         marker

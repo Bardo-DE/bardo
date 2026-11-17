@@ -503,7 +503,7 @@ placement capability. KWin 6.7.5 offers `xdg_toplevel_tag_manager_v1` (a name fo
 is D-Bus/scripting only. The host implements maximize (the menu's Fill) and nothing for
 Left/Right/Centre; Bardo's menu hides them until a compositor offers a request.
 Since p2-z-sh the host sends `bardo_window_v1.request_placement` where that global is advertised
-(casement).
+(the compositor).
 
 ## Input
 
@@ -759,7 +759,7 @@ process still runs). Only the system manager can put a process in that group. A 
 `SO_PEERCRED` pid and kept only if the credentials read again are the same. The fallback leaves one
 gap, a pid recycled between connect and the open; the primary path has none (closed 2026-10-17, final
 audit item "reopened pin": the owner allowed `nix` for it the same day). This is the proof route of
-peephole's `Pinned::of_stream` and casement's `handle_of` (shell-host has no peephole dependency, so the
+peephole's `Pinned::of_stream` and the compositor's `handle_of` (shell-host has no peephole dependency, so the
 same steps are done here), without the caller table: the group is the only judgement. A fake daemon in a test is
 believed only through `Palmrest::trusting`, which exists in test builds.
 
@@ -826,7 +826,7 @@ output never flashes the compositor's colour.
   new locker's lock is then granted and its unlock returns the session: sill's session script
   restarts the shell, which should lock at start when logind's `LockedHint` says so.
 - `examples/demo_lock` refuses any compositor but a throwaway one (`guard.rs`, table-tested);
-  `scripts/dev/accept-lock.sh` runs casement in a jail (KWin has no `ext-session-lock-v1`).
+  `scripts/dev/accept-lock.sh` runs the compositor in a jail (KWin has no `ext-session-lock-v1`).
 - **A lock surface that fails is made again** (`lock/retry.rs`, `ctx/lock.rs`): its presenter
   could not start, or it was closed after failing. The output shows the compositor's solid colour
   and takes no password meanwhile, so the failure is logged and the surface remade after 250 ms,
@@ -924,32 +924,32 @@ prints window geometry through a KWin script.
 - Fake input reaches KWin's own clients only; a compositor nested inside the headless KWin
   receives it as KWin input.
 
-### F82. casement is a second acceptance compositor
+### F82. The compositor is a second acceptance compositor
 
-`COMPOSITOR=casement scripts/dev/accept-<name>.sh` runs the real-input scripts on casement
-(`casement --backend headless`, started by casement's `dev/up.sh`) inside `~/desktop/harness/jail.sh`
+`COMPOSITOR=compositor scripts/dev/accept-<name>.sh` runs the real-input scripts on the compositor
+(`bardo-compositor --backend headless`, started by the compositor's `dev/up.sh`) inside `~/desktop/harness/jail.sh`
 instead of on a headless KWin; `scripts/dev/lib/compositor.sh` is the one place that knows the
 difference (the script re-executes itself in the jail after its cargo builds, `comp_start`,
 `comp_source`, `lib/input.sh`, `lib/windows.sh`). Facts the port found:
 
-- casement is recognised by `bardo_window_manager_v1`; it takes KWin's arm in
+- The compositor is recognised by `bardo_window_manager_v1`; it takes KWin's arm in
   `popup_keyboard` (a grabbing popup of a `None` layer is not lifted).
 - The jail has no GPU: the demos run `Backend::Cpu` (`SHELL_HOST_BACKEND=cpu`, set by the lib;
-  `examples/shared/harness.rs`). With `SHELL_HOST_BACKEND=gpu` and a casement that offers no
+  `examples/shared/harness.rs`). With `SHELL_HOST_BACKEND=gpu` and a compositor that offers no
   dma-buf the host takes wgpu's own order (llvmpipe through lavapipe) and paints (F80's
   fallback; `accept-hover.sh` asserts it).
-- casement's wheel is `axis_source` wheel with `value120`: one `axis vertical 15` is one detent
+- The compositor's wheel is `axis_source` wheel with `value120`: one `axis vertical 15` is one detent
   and the scroll engine's 60 px (design/11 §11.8) holds.
-- Input method: fcitx5 is a plain client of casement and binds `zwp_input_method_v2`
+- Input method: fcitx5 is a plain client of the compositor and binds `zwp_input_method_v2`
   (`WAYLANDIM V2`); there is no `--inputmethod`.
-- The lock needs no nested compositor: casement implements `ext_session_lock_v1`. It runs in a
-  private runtime directory with the guard's marker. casement has no screenshot yet
-  (`casementctl shot` is P1-C1), so "the session is covered" is read from its input (a click on the
+- The lock needs no nested compositor: the compositor implements `ext_session_lock_v1`. It runs in a
+  private runtime directory with the guard's marker. The compositor has no screenshot yet
+  (`bardo-compositorctl shot` is P1-C1), so "the session is covered" is read from its input (a click on the
   session's window does not activate it while locked, does after the unlock).
-- Open on casement: a popup of a layer surface gets no pointer (the hit test lists root surfaces
+- Open on the compositor: a popup of a layer surface gets no pointer (the hit test lists root surfaces
   only) and, once it is dismissed, the keyboard goes to the layer, not to the window it came from
   (smithay's popup grab returns it to the popup's root). `accept-popup-keyboard.sh` fails
-  `modality`, `bar_never_keyed` and `app_gets_it_back` until casement fixes both.
+  `modality`, `bar_never_keyed` and `app_gets_it_back` until the compositor fixes both.
 
 ### F54. `kwin-virtual.sh stop` stops the scope `start` made
 
@@ -994,13 +994,13 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   then `HostCtx::exit`s or stays open; there is no reply. A compositor at version 1 never sends
   it and closes the windows one by one (`SurfaceClosed`). The dispatch is for `HostState`
   itself, not generic, because it queues the event. Written without a build.
-- **Dependency.** `casement-protocols` (feature `client`), git rev
+- **Dependency.** `desktop-protocols` (feature `client`), git rev
   b59d1d7da33e0aa1f4460ea515e64d5e4f51f112, the pin sill and cua use (workspace root, outside the
   bardo-pinned block). Its `rust-version` is 1.92 against this workspace's 1.91.
-- **F50.** Closed on a compositor that advertises `bardo_window_manager_v1` (casement), as far as
+- **F50.** Closed on a compositor that advertises `bardo_window_manager_v1` (the compositor), as far as
   the host goes: the request exists and is sent. It stays open on KWin (nothing to
   send), where `placement_support()` is `Absent` and Bardo's menu keeps hiding Left, Right and
-  Centre. Whether casement acts on the request is its own lane (H lanes).
+  Centre. Whether the compositor acts on the request is its own lane (H lanes).
 - **Not run.** Written without a build; the orchestrator's gate is the first compile.
 
 ## Type rules (2026-10-28)
@@ -1024,7 +1024,7 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   host cannot count open writes per reading client. What it does: the selection's 6 slots and a
   drag's 2 are separate (`handlers/pipe_writes.rs`, `PipeUse`), so a client that never reads cannot
   fail a drop of ours; a client that does the same to the selection still holds its 6 slots for
-  10 s each. The per-client cap belongs to the compositor, which knows the requester: casement
+  10 s each. The per-client cap belongs to the compositor, which knows the requester: the compositor
   should refuse a `wl_data_offer.receive` from a client that already has a few unfinished reads
   of one source (interface ask in the lane report). Condition to close: that cap exists.
 
@@ -1047,7 +1047,7 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   method (fcitx5) is tried with a deletion in a real field.
 - **HOST-15.** `palmrest-protocol` is a path dependency (`../input/mouse-gestures-proto`)
   and the blitz-kit `[patch]` is a path, so a clone of this repo alone cannot build. Pinning
-  palmrest by git rev like `casement-protocols` would make sill (which takes shell-host by path)
+  palmrest by git rev like `desktop-protocols` would make sill (which takes shell-host by path)
   fetch palmrest from the network unless sill adds the same `[patch]`. Condition to close: the
   installer/CI lane decides the dev overlay for all consumers at once.
 - **A failing lock surface is not an event.** It is in the log only (F65). A `HostEvent` variant

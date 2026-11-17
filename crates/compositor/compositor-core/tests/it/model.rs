@@ -6,7 +6,7 @@ use crate::support;
 
 use compositor_core::focus::{Focus, TokenCheck};
 use compositor_core::lock::{LockEvent, LockHolder, LockReply, LockState};
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use compositor_core::space::{SpaceContent, SpaceSeed};
 use compositor_core::{ClientKey, Effect, Event, KeyboardTarget, Model, WindowId};
 use desktop_protocols::vocab::Attention;
@@ -18,7 +18,7 @@ use support::{headless, ms, proven};
 #[test]
 fn a_new_model_is_an_empty_desktop_that_keeps_its_invariants() {
     let model = Model::new(
-        CasementSettings::defaults(),
+        CompositorSettings::defaults(),
         ms(5),
         SpaceSeed::from_entropy([1; 16]),
     );
@@ -29,7 +29,11 @@ fn a_new_model_is_an_empty_desktop_that_keeps_its_invariants() {
     assert_eq!(model.lock(), &LockState::Unlocked, "unlocked");
     assert_eq!(model.focus(), &Focus::none(), "no focus");
     assert_eq!(model.timers().next(), None, "no timers");
-    assert_eq!(model.settings(), &CasementSettings::defaults(), "settings");
+    assert_eq!(
+        model.settings(),
+        &CompositorSettings::defaults(),
+        "settings"
+    );
     assert_eq!(model.now(), ms(5), "epoch");
 }
 

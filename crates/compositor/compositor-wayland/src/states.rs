@@ -158,7 +158,7 @@ impl GlobalFilter {
         GlobalFilter
     }
 
-    /// Whether `client` sees `global`. A client casement did not insert (no [`ClientState`])
+    /// Whether `client` sees `global`. A client the compositor did not insert (no [`ClientState`])
     /// is treated as arriving through the public socket, refused nothing: it cannot use a
     /// power anyway ([`crate::consent::admit`] refuses it).
     #[must_use]

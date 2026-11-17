@@ -5,14 +5,14 @@ use updater_root::apply::{ApplyError, ExitCode, rollback};
 fn rollback_swaps_back_and_forth_and_moves_the_links() {
     let sandbox = Sandbox::new();
     let mut first = Recipe::new("0.1.0");
-    first.listed[0] = ("bin/bardo-compositor", "casement one");
+    first.listed[0] = ("bin/bardo-compositor", "compositor one");
     sandbox.install(&build(&first)).expect("install");
     let mut second = Recipe::new("0.2.0");
-    second.listed[0] = ("bin/bardo-compositor", "casement two");
+    second.listed[0] = ("bin/bardo-compositor", "compositor two");
     sandbox.install(&build(&second)).expect("install");
     assert_eq!(
         read(&sandbox.layout.current().join("bin/bardo-compositor")),
-        "casement two"
+        "compositor two"
     );
 
     let back = rollback(&sandbox.layout, &Accept).expect("rollback");
@@ -21,7 +21,7 @@ fn rollback_swaps_back_and_forth_and_moves_the_links() {
     assert_eq!(sandbox.previous(), Some(v("0.2.0")));
     assert_eq!(
         read(&sandbox.layout.current().join("bin/bardo-compositor")),
-        "casement one"
+        "compositor one"
     );
     assert_eq!(
         read(&sandbox.link("/usr/share/wayland-sessions/bardo.desktop")),
@@ -32,7 +32,7 @@ fn rollback_swaps_back_and_forth_and_moves_the_links() {
     assert_eq!(forward.version, v("0.2.0"));
     assert_eq!(
         read(&sandbox.layout.current().join("bin/bardo-compositor")),
-        "casement two"
+        "compositor two"
     );
 }
 

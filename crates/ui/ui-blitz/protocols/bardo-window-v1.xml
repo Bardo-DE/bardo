@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Vendored copy of protocols/bardo-window-v1.xml from casement-protocols (a private repo), so
+  Vendored copy of protocols/bardo-window-v1.xml from desktop-protocols (a private repo), so
   public bardo does not depend on it. Our own protocol, licensed MIT or Apache-2.0 (see the
-  copyright below). Keep it identical to casement-protocols' file: change it there first, then
+  copyright below). Keep it identical to desktop-protocols' file: change it there first, then
   copy it here.
 -->
 <protocol name="bardo_window_v1">

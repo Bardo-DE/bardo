@@ -8,7 +8,7 @@ use smithay::reexports::wayland_protocols::wp::color_management::v1::server::wp_
 };
 use smithay::reexports::wayland_server::WEnum;
 
-/// The primaries a client named, when casement serves that name.
+/// The primaries a client named, when the compositor serves that name.
 pub(super) fn primaries_of_name(name: WEnum<NamedPrimaries>) -> Option<Primaries> {
     match name {
         WEnum::Value(NamedPrimaries::Srgb) => Some(SRGB),
@@ -17,7 +17,7 @@ pub(super) fn primaries_of_name(name: WEnum<NamedPrimaries>) -> Option<Primaries
     }
 }
 
-/// The curve a client named, when casement serves that name.
+/// The curve a client named, when the compositor serves that name.
 pub(super) fn curve_of_name(name: WEnum<TransferFunction>) -> Option<TransferCurve> {
     match name {
         WEnum::Value(TransferFunction::Gamma22) => Some(TransferCurve::Gamma22),

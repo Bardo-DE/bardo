@@ -184,7 +184,7 @@ impl TtySession for SharedSession {
 /// A memfd holding `bytes`, read position at the start.
 fn memfd_of(path: &Path, bytes: &[u8]) -> Result<OwnedFd, SessionFault> {
     let denied = |errno| SessionFault::DeniedOpen(format!("{}: {errno}", path.display()));
-    let fd = rustix::fs::memfd_create("casement-session-fixture", MemfdFlags::CLOEXEC)
+    let fd = rustix::fs::memfd_create("compositor-session-fixture", MemfdFlags::CLOEXEC)
         .map_err(denied)?;
     let mut rest = bytes;
     while !rest.is_empty() {

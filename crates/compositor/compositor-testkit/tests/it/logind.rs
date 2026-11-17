@@ -79,7 +79,7 @@ async fn next_signal(stream: &mut Pin<Box<MessageStream>>) -> (String, Message) 
 
 async fn inhibit(manager: &Proxy<'_>, what: &str) -> OwnedFd {
     manager
-        .call("Inhibit", &(what, "casement", "test", "delay"))
+        .call("Inhibit", &(what, "compositor", "test", "delay"))
         .await
         .expect("Inhibit")
 }

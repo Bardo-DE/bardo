@@ -14,7 +14,7 @@
 //! - **One at a time.** A sharing or colour call while a sheet is open gets a plain error at
 //!   once. A permission question waits its turn instead (below).
 //! - **Candidates.** Screens come from the displays service; windows from the desktop's view
-//!   ([`CaptureLinks::desktop`]), by the identifiers casement publishes. A call waits on the
+//!   ([`CaptureLinks::desktop`]), by the identifiers the compositor publishes. A call waits on the
 //!   person (Allow or Cancel on the sheet) and returns an empty list on cancel. The caller
 //!   leaving the bus takes the sheet down.
 //! - **Colours.** `PickColor` is checked and admitted the same way, one question of either

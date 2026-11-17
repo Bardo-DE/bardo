@@ -1,6 +1,6 @@
 [package]
 name = "compositor-dbus"
-description = "casement's D-Bus name and the one proxy of org.bardo.Compositor1, which the shell, the agent tier and the portal all call."
+description = "The compositor's D-Bus name and the one proxy of org.bardo.Compositor1, which the shell, the agent tier and the portal all call."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

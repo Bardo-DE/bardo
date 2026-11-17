@@ -2,7 +2,7 @@
 
 use crate::config::convert;
 use base_words::Word;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use serde::{Deserialize, Serialize};
 use settings_types::Count;
 use settings_types::schema::Page;
@@ -44,6 +44,6 @@ pub struct OutputsSection {
 
 impl Default for OutputsSection {
     fn default() -> Self {
-        convert::outputs_doc(CasementSettings::defaults().outputs)
+        convert::outputs_doc(CompositorSettings::defaults().outputs)
     }
 }

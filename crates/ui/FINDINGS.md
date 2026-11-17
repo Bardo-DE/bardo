@@ -919,7 +919,7 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
   or `Unavailable`. The harness keeps an in-memory clipboard with an HTML slot.
 - **No data-control (2026-10-16, BARDO-08).** Bardo reads and writes the clipboard as a client with
   a window, never through `zwlr`/`ext` data-control, which would let a background client read it:
-  so casement need not offer that protocol to every app for Bardo apps to paste. The cost is that
+  so the compositor need not offer that protocol to every app for Bardo apps to paste. The cost is that
   arboard reaches the Wayland selection through XWayland. The workspace `arboard` has no features;
   blitz-shell's arboard (in the blitz fork's workspace, `features = ["wayland-data-control"]`)
   still turns it on in the build, so **ask to the blitz fork:** drop `wayland-data-control` from
@@ -1668,12 +1668,12 @@ the decisions and what was verified:
 - **A bar is served per app, not per window.** The address is derived from the `app_id` alone, so
   every window of an app shows the one menu (the Mac's model). A per-window menu (a document's own
   File menu) needs the compositor to carry an address per toplevel: `org_kde_kwin_appmenu` or
-  casement's `menu_source` (compositor-scope 03 section 1.11, casement P3-MN).
+  The compositor's `menu_source` (compositor-scope 03 section 1.11, the compositor P3-MN).
 - **The client half of `org_kde_kwin_appmenu` is not built.** The object must outlive the call that
   creates it (the compositor drops the address when it is destroyed), and
   `wayland_surface::adopt` is a one-call borrow of winit's display and surface; a persistent
   adopted connection per window needs a design of its own (who drops it before winit closes the
-  display). No compositor offered such a global, so nothing could be tested; casement P3-MN adds the
+  display). No compositor offered such a global, so nothing could be tested; the compositor P3-MN adds the
   server side, then ds-blitz binds `org_kde_kwin_appmenu_manager` and sets the same address.
 - **zbus's default name flags replace a running owner.** `request_name_with_flags` with the default
   flags is `AllowReplacement | ReplaceExisting | DoNotQueue`, so a second process of the same
@@ -1948,9 +1948,9 @@ an editor is built with its value) all 12 pass. So the cause is Blitz's caret, n
 parked tasks only decided whether the editor was built, or its text set, after focus. Fix B stays as a
 second line (a focus that lands before layout owes the caret).
 
-## chrome numbers for casement (2026-10-15)
+## chrome numbers for the compositor (2026-10-15)
 
-casement draws window chrome itself and reaches Bardo only through the pure crates, so the numbers
+The compositor draws window chrome itself and reaches Bardo only through the pure crates, so the numbers
 the chrome stylesheet writes are now public as numbers, each from the table the CSS is written from:
 
 - `Radius::px() -> u16` (`--r-window` is 10). `Radius::value()` now returns a `String` formatted
@@ -2160,7 +2160,7 @@ apps (first detent's Settings, "install llama.cpp" with a copyable command) reus
   rule and now checks by hand.
 - **`use_environment` (BARDO-07).** The file is published and watched first; `SystemPrefsWatch::start` subscribes to `SettingChanged`
   before it reads, on one connection, and a portal that does not answer within `START` is the defaults. `start` still awaits its first
-  read (casement and anyview call it), so only `use_environment` stopped waiting.
+  read (the compositor and anyview call it), so only `use_environment` stopped waiting.
 - **Not done.** (BARDO-03 and BARDO-12's library side landed in wave 2: see Open items.) BARDO-25's owner check (is the holder
   of `org.bardo.Outputs1` sill?) belongs with sill; Bardo now drops rows with no size or no scale and caps the list at 16. The dbusmenu
   `RequestName` in `ds-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (BARDO-21) is still

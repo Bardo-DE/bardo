@@ -7,7 +7,7 @@ use crate::app::{AppKey, AppLife, PING_DEADLINE, PING_GAP, ping_due};
 use crate::cause::Cause;
 use crate::effect::{CoreNote, Effect};
 use crate::ids::ClientKey;
-use crate::settings::CasementSettings;
+use crate::settings::CompositorSettings;
 use crate::time::{Due, TimerKey};
 use ui_behaviour::space_swipe::SwipeIn;
 
@@ -151,7 +151,7 @@ impl Model {
     }
 
     /// The settings changed: windows are laid out again under them.
-    pub(super) fn change_settings(self, settings: CasementSettings) -> Moved {
+    pub(super) fn change_settings(self, settings: CompositorSettings) -> Moved {
         if settings == self.settings {
             return Moved::of(self);
         }

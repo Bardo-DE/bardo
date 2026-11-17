@@ -19,7 +19,7 @@
 
 use crate::compositor::Compositor;
 use crate::damage::RenderError;
-use crate::element::{CasementElement, surface_origin};
+use crate::element::{SceneElement, surface_origin};
 use crate::scene::OutputView;
 use crate::scene::convert::on_output;
 use compositor_core::geometry::{
@@ -52,7 +52,7 @@ pub fn window_tree<R: Compositor>(
     content: LogicalSize,
     scale: Scale,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let view = OutputView {
         area: LogicalRect::new(LogicalPoint { x: 0, y: 0 }, content),
         scale,
@@ -88,7 +88,7 @@ pub fn window_tree<R: Compositor>(
 pub fn render_window<R, T>(
     renderer: &mut R,
     target: &mut T,
-    elements: &[CasementElement<R>],
+    elements: &[SceneElement<R>],
     size: PhysicalSize,
     scale: Scale,
 ) -> Result<Vec<u8>, RenderError>
@@ -145,7 +145,7 @@ where
 pub fn render_window_dmabuf<R>(
     renderer: &mut R,
     target: &mut Dmabuf,
-    elements: &[CasementElement<R>],
+    elements: &[SceneElement<R>],
     size: PhysicalSize,
     scale: Scale,
 ) -> Result<(), RenderError>

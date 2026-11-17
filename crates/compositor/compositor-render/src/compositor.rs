@@ -1,4 +1,4 @@
-//! The renderer trait casement composites with.
+//! The renderer trait the compositor composites with.
 
 use crate::element::{BlurV0Element, ClipStripElement, RoundedClipElement};
 use smithay::backend::renderer::element::RenderElement;
@@ -8,12 +8,12 @@ use smithay::backend::renderer::{ImportAll, ImportMem, Renderer, RendererSuper};
 use smithay::utils::user_data::UserDataMap;
 use smithay::utils::{Buffer, Physical, Rectangle};
 
-/// The renderers casement composites with: smithay's traits plus what our effect passes need.
+/// The renderers the compositor composites with: smithay's traits plus what our effect passes need.
 ///
 /// `ExportMem` (reading a frame back) is not a supertrait: smithay's `DummyRenderer` has none,
 /// so capture and goldens ask for it where they read pixels (a departure from the plan's
 /// sketch, FINDINGS). Textures are `Clone + Send + 'static`, which smithay's surface and
-/// memory elements need (true of every renderer casement uses).
+/// memory elements need (true of every renderer the compositor uses).
 ///
 /// The effect hooks have default bodies, the solid stand-ins of a renderer without shaders; a
 /// renderer with shaders overrides them. [`crate::render_output`] routes effect elements

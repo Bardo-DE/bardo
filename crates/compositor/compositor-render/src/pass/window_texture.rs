@@ -4,7 +4,7 @@
 //! corners are cut as the window's are and the image can be drawn later as it is.
 
 use crate::damage::RenderError;
-use crate::element::{CasementElement, ClipShape, bake_corners};
+use crate::element::{ClipShape, SceneElement, bake_corners};
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::renderer::damage::{Error as DamageError, OutputDamageTracker};
@@ -24,7 +24,7 @@ use ui_core::geometry::scale::Scale;
 /// Returns a [`RenderError`] when the texture cannot be made or the draw is interrupted.
 pub fn render_window_texture(
     renderer: &mut GlesRenderer,
-    elements: &[CasementElement<GlesRenderer>],
+    elements: &[SceneElement<GlesRenderer>],
     size: PhysicalSize,
     (scale, radius): (Scale, u32),
 ) -> Result<GlesTexture, RenderError> {
@@ -61,7 +61,7 @@ pub fn render_window_texture(
 fn draw_elements(
     renderer: &mut GlesRenderer,
     target: &mut GlesTexture,
-    elements: &[CasementElement<GlesRenderer>],
+    elements: &[SceneElement<GlesRenderer>],
     (w, h): (i32, i32),
     scale: Scale,
 ) -> Result<(), RenderError> {

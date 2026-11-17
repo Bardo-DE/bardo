@@ -31,7 +31,7 @@ use compositor_core::geometry::{LogicalPoint, PhysicalRect, PhysicalSize};
 use compositor_core::output::{EdidFacts, EdidSerial, Mode, OutputConfig, OutputFacts, PhysicalMm};
 use compositor_core::time::{Mono, VblankSeq};
 use compositor_core::{OutputKey, OutputName};
-use compositor_render::{CasementElement, Compositor};
+use compositor_render::{Compositor, SceneElement};
 use renderer::{Canvas, Drawn, HeadlessRenderer};
 use smithay::backend::renderer::gles::GlesRenderer;
 use smithay::backend::renderer::pixman::PixmanRenderer;
@@ -60,12 +60,12 @@ pub struct HeadlessConfig {
 /// trait stays object-safe. Implement [`FrameElements`] instead where one generic method will do.
 pub trait FrameSource {
     /// The elements for pixman, front first.
-    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<CasementElement<PixmanRenderer>>;
+    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<SceneElement<PixmanRenderer>>;
     /// The elements for GLES on llvmpipe, front first.
-    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<CasementElement<GlesRenderer>>;
+    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<SceneElement<GlesRenderer>>;
     /// The elements for smithay's dummy renderer, front first.
     #[cfg(feature = "testing")]
-    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<CasementElement<DummyRenderer>>;
+    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<SceneElement<DummyRenderer>>;
 }
 
 /// What a frame is drawn from, written once for every renderer: the elements, front first, for any
@@ -75,20 +75,20 @@ pub trait FrameSource {
 /// (`Cursorless`) implements [`FrameSource`] by hand.
 pub trait FrameElements {
     /// The elements, front first, for `renderer`.
-    fn elements<R: Compositor>(&self, renderer: &mut R) -> Vec<CasementElement<R>>;
+    fn elements<R: Compositor>(&self, renderer: &mut R) -> Vec<SceneElement<R>>;
 }
 
 impl<T: FrameElements> FrameSource for T {
-    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<CasementElement<PixmanRenderer>> {
+    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<SceneElement<PixmanRenderer>> {
         self.elements(renderer)
     }
 
-    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<CasementElement<GlesRenderer>> {
+    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<SceneElement<GlesRenderer>> {
         self.elements(renderer)
     }
 
     #[cfg(feature = "testing")]
-    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<CasementElement<DummyRenderer>> {
+    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<SceneElement<DummyRenderer>> {
         self.elements(renderer)
     }
 }
@@ -530,7 +530,7 @@ fn respec(spec: &VirtualOutputSpec, change: OutputChange) -> VirtualOutputSpec {
 /// The EDID of an output nobody described: no serial, so its key is its connector.
 fn synthetic_edid() -> EdidFacts {
     EdidFacts {
-        make: "Casement".to_owned(),
+        make: "Compositor".to_owned(),
         model: "Virtual".to_owned(),
         serial: EdidSerial::Unknown,
     }

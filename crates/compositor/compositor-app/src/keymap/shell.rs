@@ -13,7 +13,7 @@ use shell_verbs::ShellVerb;
 /// How the compositor carries out one action.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Does {
-    /// A command casement runs itself.
+    /// A command the compositor runs itself.
     Itself(DesktopCommand),
     /// A verb for sill, the shell (its launcher, switcher, screenshots, power menu, Force Quit
     /// panel), sent as its command line.
@@ -181,7 +181,7 @@ fn spawn_of(verb: ShellVerb) -> BindingAction {
 /// Every binding `keymap` gives the compositor's actions, one per chord, actions in
 /// `StandardAction::all` order and each action's chords best first.
 ///
-/// A chord casement cannot see as a key press is left out.
+/// A chord the compositor cannot see as a key press is left out.
 #[must_use]
 pub fn bindings_of(keymap: &Keymap) -> Bindings {
     Bindings(
@@ -201,8 +201,8 @@ pub fn bindings_of(keymap: &Keymap) -> Bindings {
     )
 }
 
-/// `explicit` (casement's own `[bindings]`) then `from_keymap`: the first match wins, so a
-/// chord casement's document binds is not taken from it by the keymap.
+/// `explicit` (the compositor's own `[bindings]`) then `from_keymap`: the first match wins, so a
+/// chord the compositor's document binds is not taken from it by the keymap.
 #[must_use]
 pub fn merge(explicit: &Bindings, from_keymap: &Bindings) -> Bindings {
     Bindings(explicit.0.iter().chain(&from_keymap.0).cloned().collect())

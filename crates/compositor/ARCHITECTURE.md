@@ -1,6 +1,6 @@
 # Architecture
 
-casement is the desktop's Wayland compositor: smithay underneath, the Mac's window model on
+The compositor is the desktop's Wayland compositor: smithay underneath, the Mac's window model on
 top (03), agent-native from P4, testable completely headless. `CONVENTIONS.md` holds the rules,
 `FINDINGS.md` the open items and every frozen `todo!()`, `QUIRKS.md` the hardware facts. The
 plan this code freezes is `~/rs-wt/compositor-scope/20-FREEZE-PLAN.md` with
@@ -12,29 +12,29 @@ trait), section 4 (copy the recipe).
 ## 1. Crates and allowed edges
 
 The workspace holds the pure crates (P0-Z1), the smithay-facing crates, the composition root,
-the binaries and the test kit (P0-Z2). casement-intents joins at P4-Z, compositor-chrome at P3-Z.
-`wlcs-casement` (the wlcs shim, MIT, its own one unsafe module `src/ffi.rs`) is never a member: it has its own
+the binaries and the test kit (P0-Z2). compositor-intents joins at P4-Z, compositor-chrome at P3-Z.
+`wlcs-compositor` (the wlcs shim, MIT, its own one unsafe module `src/ffi.rs`) is never a member: it has its own
 `[workspace]` table and the root lists it under `exclude` (B16).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
 | `compositor-core` | the pure model: ids, geometry, time data (`Mono`, `VblankClock`, `TimerBook`, `VirtualClock`), apps, windows, Spaces, layers, the lock, focus and press routing, input origins, reach and bindings, output facts and policy, connection policy (I7), settings, `Event`, `Effect`, `Model::step`, invariants; from P1-Z the GPU plan (`gpu`), the frame scheduler's maths (`frame`) and the Space ids file's codec (`space::SpaceFile`) and, from P2-Z, the shell's and the desktop manager's requests and notes (`shell`, `desktop`) and, from wave 2, per-app consent for the privileged globals (`privilege`, `policy::{power_of, trusted_powers}`) | none |
-| `compositor-layout` | the `SceneLayout` seam: `SceneSpec`, `Arrangement`, `RustScene`, `spec_of(&Model)`; taffy only in `crates/casement-layout/src/taffy_bridge/` | none |
+| `compositor-layout` | the `SceneLayout` seam: `SceneSpec`, `Arrangement`, `RustScene`, `spec_of(&Model)`; taffy only in `crates/compositor-layout/src/taffy_bridge/` | none |
 | `compositor-motion` | `MotionBook` of ui-motion spring legs, `retarget`, `sample` into an `Eq` `FrameScene` in 1/120 px | none |
-| `compositor-render` | the `Compositor` renderer trait, `CasementElement`, `output_elements` (FrameScene to elements), `render_output` (damage-tracked), blur v0, the lock cover, output read-back (`pass::capture_output`, P1-Z), `golden` (feature `testing`); the workspace's one unsafe module `src/gl_raw.rs` (A17) | the GPU through smithay |
+| `compositor-render` | the `Compositor` renderer trait, `SceneElement`, `output_elements` (FrameScene to elements), `render_output` (damage-tracked), blur v0, the lock cover, output read-back (`pass::capture_output`, P1-Z), `golden` (feature `testing`); the workspace's one unsafe module `src/gl_raw.rs` (A17) | the GPU through smithay |
 | `compositor-wayland` | one module per protocol: a `<Protocol>Part` (smithay's state plus our BTreeMap tables), `Part::new` behind the I7 filter, `on_*` (request to `Event`s), `apply_*` (effect to wire); `WaylandStates`, `GlobalFilter`, `ClientState`, `convert`; from P2-Z `capture_source` (window capture) and, behind the feature `shell-protocols` (default on, A8), `bardo::{desktop, shell}` (the private `bardo_desktop_manager_v1` and `bardo_shell_v1` servers) | the wire |
 | `compositor-backend` | the headless backend (virtual outputs, vblank source, render-cost model, `VirtualInput: InputBackend`), winit (a window is one output at its own size and scale, drawn flipped, and one seat whose keyboard and pointer go through the generic input conversion; no touch), the session seam, the soft-GPU pieces (`SoftPixman`, `FixedUdmabuf`, A4); from P1-Z the tty seams (`tty::{Kms, KmsOpener, ScanoutSurface, TtySession, DeviceSource}`, `input::InputFeed`, `gpu::{RenderNodes, FormatSource}`), `TtyBackend` over them, and their thin real adapters (`*_real.rs`) compiled only under the features `tty` and `libinput` (off by default; A2) | devices under the features, none headless |
 | `compositor-agent` | the privileged-connection hand-out (`connection_role`, `hand_out`: the role check on what the bus thread proved, and the socket pair; P2-Z types, P2-Q2 bodies), agent seat, EIS, masked capture, trusted surface, kill (P4); from P2-T3 `eis` (the remote EIS server for the RemoteDesktop portal: `open`, `RemoteEisSource`, `RemoteInput`, `portal_may_connect`, by the role the caller proved; every event tagged `Origin::Remote`) | sockets |
 | `compositor-ipc` | the inject and wait grammars (its `compositor-backend` dependency is optional, on with `debug-inject`; `serve_debug_at(address)` takes the bus address, the library reads no environment); `org.bardo.Compositor.Debug1` (feature `debug-inject`), `org.bardo.Compositor1` (P2-Z: `Connect(role) -> (h)`, `serve_compositor_at(address, CallerSetup)`; every caller is rate counted and proven through the caller-identity library on the bus thread before a bounded queue of `CONNECT_QUEUE` into the loop: `CallerCheck`, `Intake`, `Proven`); `privacy::{PrivacyLink, PrivacyBoard, PrivacyModule}`, the Privacy list for Settings as a live settings module (`org.bardo.SettingsModule1` at `/org/bardo/Compositor1/privacy`); `a11y::{A11yWorker, verify}`, the accessibility-root owner check (PORTAL-15); `shell_calls::{ShellCalls, ZbusShellCalls}`, the one place a binding's D-Bus call is made (A4); `space_registry::{SpaceRegistry, ZbusSpaceRegistry, NoSpaceRegistry, Pace}`, `Spaces1.Register` through `porter_dbus::SpacesProxy` on a background thread (csvc; fake `FakeSpaceRegistry`); `IpcHandles` | D-Bus |
 | `compositor-privacy` | the privacy files: the person's book and the administrator's floor, read and written safely (`PrivacyStore`, `FilePrivacyStore`, `FloorFiles`: `ds_helpers::{read_capped, write_atomic, move_aside}`, a floor file believed only when it and its folder are the administrator's alone), the policy over them (`load_book` sets a damaged book aside and starts empty; `load_floor` never leaves a failed floor more permissive than none) and `list`, the list `bardo-compositorctl privacy list` prints; no bus, no UI, no clock | files |
-| `casement` | lib + bin: `State` (frozen), `delegates.rs` (frozen), `handlers/<protocol>.rs`, `core_loop`, `exec`, `clients`, `display`, `time/` (the only clock), `config/` (ui-settings), `cli`, `notify` (`Notify`, `SocketNotify`, `Notice`, `watchdog_period`: systemd's READY=1, STOPPING=1 and WATCHDOG=1; csvc; fake `FakeNotify`), `space_sync` (`SpaceSync`: registers the desktops it has not sent yet through `SpaceRegistry`; csvc), `run` (`casement::run(RunConfig) -> Result<(), RunError>`: the startup and the event loop; `main.rs` is only arguments, `$BARDO_COMPOSITOR_LOG`, `$DBUS_SESSION_BUS_ADDRESS` and the exit code), `debug` (Debug1 in the loop, feature `debug-inject`), `jail_check` (features `testing`, `debug-inject`), `log` (takes its filter as an argument); from P1-Z `seams` (the injected `SpaceStore`, `ShellCalls`, `Spawner` and `LockMarker`), `space_store`, `lock_marker` (the session lock's marker file in the runtime directory: a restart while the shell's lock is held comes back covered), `spawn`, `xwayland`; from P2-Z `connect` (`Compositor1.Connect` answered in the loop: the unit check through `compositor-agent`, the new client inserted with its role); from wave 2 (`pa2-croot`) `privacy` (the model's book and the files: `start`, `reload_floor`, `keep`, `edited`, `publish`), `a11y` (a claimed accessibility root is queued and adopted only when the bus says it is the client's own), `hangup` (`SIGHUP` reads the floor again), `clients::{Judge, Standing}` (who a public client's program is, judged on a thread of its own with a deadline: `clients::probes`), `clients::accept` (a listener that rests on a failed accept instead of ending the loop), `clients::roster` (the connection caps: 384 in all, 48 per app or process), `open_files` (the soft file limit raised at start), `latest_writer` (a file written off the loop, latest text wins: the Spaces file and the privacy book) and `time::WallClock` (the date); its features `tty` and `libinput` (default on) turn the backend's real adapters on | everything, through the crates above |
-| `bardo-compositorctl` | lib + bin: `debug` (Debug1), `shot` (P1), `report` (P5), `privacy list \| reload` (reads the two privacy files through `compositor-privacy`; `reload` sends `SIGHUP` to the process that holds `org.bardo.Compositor1`, after checking it is a casement) | D-Bus, the wire, files |
+| `compositor` | lib + bin: `State` (frozen), `delegates.rs` (frozen), `handlers/<protocol>.rs`, `core_loop`, `exec`, `clients`, `display`, `time/` (the only clock), `config/` (ui-settings), `cli`, `notify` (`Notify`, `SocketNotify`, `Notice`, `watchdog_period`: systemd's READY=1, STOPPING=1 and WATCHDOG=1; csvc; fake `FakeNotify`), `space_sync` (`SpaceSync`: registers the desktops it has not sent yet through `SpaceRegistry`; csvc), `run` (`compositor::run(RunConfig) -> Result<(), RunError>`: the startup and the event loop; `main.rs` is only arguments, `$BARDO_COMPOSITOR_LOG`, `$DBUS_SESSION_BUS_ADDRESS` and the exit code), `debug` (Debug1 in the loop, feature `debug-inject`), `jail_check` (features `testing`, `debug-inject`), `log` (takes its filter as an argument); from P1-Z `seams` (the injected `SpaceStore`, `ShellCalls`, `Spawner` and `LockMarker`), `space_store`, `lock_marker` (the session lock's marker file in the runtime directory: a restart while the shell's lock is held comes back covered), `spawn`, `xwayland`; from P2-Z `connect` (`Compositor1.Connect` answered in the loop: the unit check through `compositor-agent`, the new client inserted with its role); from wave 2 (`pa2-croot`) `privacy` (the model's book and the files: `start`, `reload_floor`, `keep`, `edited`, `publish`), `a11y` (a claimed accessibility root is queued and adopted only when the bus says it is the client's own), `hangup` (`SIGHUP` reads the floor again), `clients::{Judge, Standing}` (who a public client's program is, judged on a thread of its own with a deadline: `clients::probes`), `clients::accept` (a listener that rests on a failed accept instead of ending the loop), `clients::roster` (the connection caps: 384 in all, 48 per app or process), `open_files` (the soft file limit raised at start), `latest_writer` (a file written off the loop, latest text wins: the Spaces file and the privacy book) and `time::WallClock` (the date); its features `tty` and `libinput` (default on) turn the backend's real adapters on | everything, through the crates above |
+| `bardo-compositorctl` | lib + bin: `debug` (Debug1), `shot` (P1), `report` (P5), `privacy list \| reload` (reads the two privacy files through `compositor-privacy`; `reload` sends `SIGHUP` to the process that holds `org.bardo.Compositor1`, after checking it is a compositor) | D-Bus, the wire, files |
 | `compositor-testclient` | typed wayland-client helpers per protocol, `Transcript`, `Pattern`, shm buffers; bins `compositor-probe`, `compositor-shell-exec`; no smithay (B9) | the wire |
 | `compositor-testkit` | `Fixture` over the real `State`, `FixtureSpec`, `TestOrigin`, `FixtureInput`, fakes (session, udev, logind, palmrest, KMS, scanout, libinput settings, the Spaces file, sill's D-Bus methods, the process table), the soft GPU topology and the jail's fabricated nodes and sys tree, `Env` (goldens), typed fuzz ops; bin `fake-logind` | the jail's scratch only |
 
 Layers, bottom up: `compositor-core` ← `compositor-layout` ← `compositor-motion` (C24) ←
 `compositor-render`; `compositor-core` ← `compositor-wayland`; `compositor-core` + `compositor-render` ←
-`compositor-backend`; all of them ← `casement` (the composition root, C28: handlers live there
+`compositor-backend`; all of them ← `compositor` (the composition root, C28: handlers live there
 because smithay's traits and `State` meet only there) ← `compositor-testkit`. `compositor-testclient`
 sits beside the stack on the client side.
 
@@ -48,14 +48,14 @@ A1 and A4):
 | `compositor-motion` | core's list plus compositor-layout; its source never names taffy (B3) |
 | `compositor-render` | smithay's renderers; names no `smithay::backend::{drm, udev, session, libinput}`; reaches no wgpu, vello, anyrender, Blitz, Stylo, parley, fontique (B4) |
 | `compositor-wayland` | smithay's wayland frontend and desktop; names no device backend, reaches neither drm nor gbm (B6) |
-| `compositor-backend` | smithay's renderers, EGL, session and winit; names no `casement_wayland` and no `smithay::wayland` module but dmabuf (B5); only its thin adapters name the device crates (B7), and they compile only under the features `tty` and `libinput` (A2) |
+| `compositor-backend` | smithay's renderers, EGL, session and winit; names no `compositor_wayland` and no `smithay::wayland` module but dmabuf (B5); only its thin adapters name the device crates (B7), and they compile only under the features `tty` and `libinput` (A2) |
 | `compositor-testclient` | wayland-client and the protocol crates; no smithay (B9) |
-| `compositor-ipc`, `casement` | ui-settings (B13; the test kit reaches it only through `casement` and names none of it) |
+| `compositor-ipc`, `compositor` | ui-settings (B13; the test kit reaches it only through `compositor` and names none of it) |
 | `compositor-privacy` | compositor-core, desktop-protocols, ui-helpers (no features: no bus), thiserror, tracing; reads no clock (the date is an argument) and no environment (the folders are arguments) |
 
 Every crate: no agent-tier or shell crate (B12), no text stack outside compositor-chrome (B15), no
 `HashMap`/`HashSet` in wayland, render, layout and motion (B17), no `unsafe` outside
-`crates/casement-render/src/gl_raw.rs` (B18), no clock outside `crates/casement/src/time/` (B8,
+`crates/compositor-render/src/gl_raw.rs` (B18), no clock outside `crates/compositor/src/time/` (B8,
 A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Timer`), no
 `UdmabufAllocator::create_buffer` (A4), and the release binary enables neither `testing` nor
 `debug-inject` (B10). Comment lines are not code to these rows; B20 checks comments too.
@@ -71,39 +71,39 @@ A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Tim
 | conversion to ui-core's millisecond `Stamp` (for ui-behaviour machines) | `Mono::stamp` only (C56) |
 | an app's identity (proven or claimed) | `compositor-core::app::AppKey` over account-core's `identity_of` (C39) |
 | a window's state, limits (C51), hints | `compositor-core::window` |
-| Spaces and their ids (casement mints, C16) | `compositor-core::space` (`SpaceSeed`, `mint_space_id`) |
+| Spaces and their ids (the compositor mints, C16) | `compositor-core::space` (`SpaceSeed`, `mint_space_id`) |
 | the usable area after layer exclusive zones | `LayerBook::usable_area` |
 | focus, key and main windows, press routing | `compositor-core::focus` (03 §1.2) |
 | where input came from, and what it may reach | `compositor-core::input::{Origin, reach}` (C19, I3, I8); a virtual device is the person's hand only when turnstile labelled it (`phys`) for keycap (`Maker`, `Origin::of_kernel_device`; never by bus alone or vendor id) |
-| key bindings and their resolution | `compositor-core::input::{Bindings, resolve}`; the shell's own chords come from the desktop keymap, `casement::keymap` (chordkit layers through key-remap-client's `KeycapSource`), behind casement's `[bindings]` entries; a row that asks the shell holds a `shell_verbs::ShellVerb` (desktop-protocols' `shell-verbs`, the type sill's command line parses back), spelled as `sill <verb.argv()>` only where the binding is built |
+| key bindings and their resolution | `compositor-core::input::{Bindings, resolve}`; the shell's own chords come from the desktop keymap, `compositor::keymap` (chordkit layers through key-remap-client's `KeycapSource`), behind the compositor's `[bindings]` entries; a row that asks the shell holds a `shell_verbs::ShellVerb` (desktop-protocols' `shell-verbs`, the type sill's command line parses back), spelled as `sill <verb.argv()>` only where the binding is built |
 | first-sight scale, mode choice, output placement | `compositor-core::output` |
 | the ramp an output is driven with by night light, and which outputs it leaves alone (`night_light.skip_outputs`: a connector name or an output key) | `compositor-core::settings::NightLightSettings::{warming_of, ramp_for}` (pure); driven by `Model` (`model/night_light.rs`) from `Event::NightLightTick(MinuteOfDay)` as `Effect::SetGamma`; a gamma-control client that holds an output with a table of its own wins until it lets go |
-| how strongly the blur behind a layer surface frosts (its shell role picks `BlurStrength`, a surface with none is `Regular`), and Reduce transparency (Bardo's `appearance.transparency` from `appearance.toml`, live: every blur becomes the scheme's paper at 0.96) | `compositor-core::layer::BlurStrength::of` (pure); `compositor-layout::reduced_stand_in`; `casement::appearance::{stored_in, blur_finish}`; `compositor-render` `BlurLook::of`, `BlurFinish`, `BlurV0Element::with_finish`, `under_finish`; the frame carries both in `LayerDraw::{blur_strengths, finish}` |
+| how strongly the blur behind a layer surface frosts (its shell role picks `BlurStrength`, a surface with none is `Regular`), and Reduce transparency (Bardo's `appearance.transparency` from `appearance.toml`, live: every blur becomes the scheme's paper at 0.96) | `compositor-core::layer::BlurStrength::of` (pure); `compositor-layout::reduced_stand_in`; `compositor::appearance::{stored_in, blur_finish}`; `compositor-render` `BlurLook::of`, `BlurFinish`, `BlurV0Element::with_finish`, `under_finish`; the frame carries both in `LayerDraw::{blur_strengths, finish}` |
 | which connection sees which global (I7) | `compositor-core::policy::{advertised, advertised_to}`; a public client is not shown the globals of a power it was refused at connect time (`advertised_to` with `Privilege::hidden_for`) |
 | which global needs the person's consent (the seven `Power`s of the shell protocol's vocabulary), and which desktop service roles are trusted without asking | `compositor-core::policy::{power_of, trusted_powers}`; `power_of` reads the `GLOBALS` table, one row per `GlobalKind` (checked at compile time) |
 | whether a program may use a power: the administrator's floor and the person's book, first match wins (floor refusal, book refusal, floor pre-approval, book allow, the floor's default, a question) | `compositor-core::privilege::{decide, decide_trusted}` over `Floor` and `Book` (pure; the text codecs `Book::{from_toml, to_toml}` and `Floor::from_toml` cap rows, bytes and strings; the files themselves are the composition root's seam) |
 | the questions to the person: one per program and power, one on screen, at most `OPEN_ASKS` open, a deadline, a pause after a dismissal, a rate limit per client; what a use comes to; what a change in Settings ends | `compositor-core::privilege::Privilege`, a field of `Model` (`model/privilege/`), driven by `Event::{ClientStanding, PrivilegeUse, PermissionAnswered, PrivilegeEdited, ShellReady, ShellGone, BookLoaded, FloorLoaded}` and answering with `Effect::{Resolve, AskPermission, WithdrawAsk, SaveBook}`; its deadline timer is `TimerKey::AskDeadline` |
 | who a public client's program is, as the consent machine needs it (the seam to the caller-identity library) | `compositor-core::privilege::ClientStanding` (core's own vocabulary: `Service`, `Program`, `Sandboxed`, `Unverified`); the composition root converts the identity library's standing into it when the connection is accepted. Core depends on no identity library (B1) |
-| the person's privacy book and the administrator's floor on disk, and what a damaged or untrusted file comes to | `compositor-privacy::{PrivacyStore, FilePrivacyStore, FloorFiles, load_book, load_floor, save_book}` (the model's side is `compositor-core::privilege::{Book, Floor}`); the compositor feeds and writes them in `casement::privacy` |
-| the date a kept answer is stamped with | `casement::time::WallClock` (`seams.wall`; the only wall-clock reader besides the night light) |
-| typed settings | `compositor-core::settings::CasementSettings` (the stored document: `casement::config`) |
+| the person's privacy book and the administrator's floor on disk, and what a damaged or untrusted file comes to | `compositor-privacy::{PrivacyStore, FilePrivacyStore, FloorFiles, load_book, load_floor, save_book}` (the model's side is `compositor-core::privilege::{Book, Floor}`); the compositor feeds and writes them in `compositor::privacy` |
+| the date a kept answer is stamped with | `compositor::time::WallClock` (`seams.wall`; the only wall-clock reader besides the night light) |
+| typed settings | `compositor-core::settings::CompositorSettings` (the stored document: `compositor::config`) |
 | the closed sets of inputs and outputs of the model | `compositor-core::{Event, Effect}` |
 | what the shell asks of the desktop (apps, windows, Spaces) and what the model says back | `compositor-core::desktop::{DesktopRequest, AppAsk, WindowAsk, SpaceAsk, DesktopNote, DesktopRef}` (P2-Z) |
 | what the shell says of its surfaces and what it is told | `compositor-core::shell::{ShellRequest, ShellNote}` (P2-Z) |
-| who may have a `Shell`, `Agent` or `Portal` connection, and the socket pair | `compositor-ipc::dbus` proves the caller (role `shell`, `agent_tier` or `portal`, all the way: image and unit as the manager states it) before the loop hears of the call; `compositor-agent::{connection_role, hand_out}` (the only hand-out, B14) checks the proven role again; inserted by `casement::connect`. The `Portal` connection (NEW-FA-2, `Connect("portal")`, role `portal`) is how transom captures: it sees the globals the public socket sees (never `bardo_shell_v1` or `bardo_desktop_manager_v1`) and its model class is the standing of a `Full` portal on the public socket (`ClientStanding::portal()`), trusted for the screen and the windows (`trusted_powers`) and asked about the rest. Remote EIS socket for the portal (role `portal`): `compositor-agent::open_remote_eis`, `Compositor1.ConnectEis`, fed by `casement::connect::answer_remote`; each connection has its own device slot (`compositor-agent::RemoteSlots`, minted in `connect.rs`, CASW-19) and `Compositor1.EndEis(session)` (`connect::answer_end`, same caller check) closes every socket of a portal session through `casement::remote_sessions::RemoteSessions`. Agent leases (role `agent_tier`): `Compositor1.LeaseWindow(window, devices) -> (lease, h)` and `EndLease(lease)`, answered by `connect::answer_lease` / `answer_end_lease`; `Model::leasable` refuses the shell's windows, the model holds `Leases` (lease to window, dropped with the window), the socket's input is `Origin::Agent(lease)` (`compositor-agent::RemoteFor`), the reach table lets it reach only that window and its popups, and `core_loop::agent_gate` keeps it off the compositor's own interactions and other clients' grabs; at most `MAX_LEASES` per bus connection, ended with the connection. `Compositor1.FocusLease(lease)` (`connect::answer_focus_lease`, only from the connection that holds the lease) is how a run about to send keys keys its leased window: `Model::lease_focus` refuses a lease that is not open (`NoSuchLease`), a locked screen (`ScreenLocked`) and a window in the dock (`InTheDock`), otherwise `Event::LeaseFocus` shows the window's Space and app and `FocusIn::LeaseFocus` raises and keys exactly that window. It is the lease's own actor, not an app activation: rule A7 (an app, a third party or an unknown actor cannot move focus; it only asks for attention) is unchanged, and a live lease is the grant, since only the agent tier leases and only for apps the person allowed |
-| `org.bardo.Compositor1` | `compositor-ipc::dbus::Compositor1` (the object), answered by `casement::connect::answer` |
+| who may have a `Shell`, `Agent` or `Portal` connection, and the socket pair | `compositor-ipc::dbus` proves the caller (role `shell`, `agent_tier` or `portal`, all the way: image and unit as the manager states it) before the loop hears of the call; `compositor-agent::{connection_role, hand_out}` (the only hand-out, B14) checks the proven role again; inserted by `compositor::connect`. The `Portal` connection (NEW-FA-2, `Connect("portal")`, role `portal`) is how transom captures: it sees the globals the public socket sees (never `bardo_shell_v1` or `bardo_desktop_manager_v1`) and its model class is the standing of a `Full` portal on the public socket (`ClientStanding::portal()`), trusted for the screen and the windows (`trusted_powers`) and asked about the rest. Remote EIS socket for the portal (role `portal`): `compositor-agent::open_remote_eis`, `Compositor1.ConnectEis`, fed by `compositor::connect::answer_remote`; each connection has its own device slot (`compositor-agent::RemoteSlots`, minted in `connect.rs`, CASW-19) and `Compositor1.EndEis(session)` (`connect::answer_end`, same caller check) closes every socket of a portal session through `compositor::remote_sessions::RemoteSessions`. Agent leases (role `agent_tier`): `Compositor1.LeaseWindow(window, devices) -> (lease, h)` and `EndLease(lease)`, answered by `connect::answer_lease` / `answer_end_lease`; `Model::leasable` refuses the shell's windows, the model holds `Leases` (lease to window, dropped with the window), the socket's input is `Origin::Agent(lease)` (`compositor-agent::RemoteFor`), the reach table lets it reach only that window and its popups, and `core_loop::agent_gate` keeps it off the compositor's own interactions and other clients' grabs; at most `MAX_LEASES` per bus connection, ended with the connection. `Compositor1.FocusLease(lease)` (`connect::answer_focus_lease`, only from the connection that holds the lease) is how a run about to send keys keys its leased window: `Model::lease_focus` refuses a lease that is not open (`NoSuchLease`), a locked screen (`ScreenLocked`) and a window in the dock (`InTheDock`), otherwise `Event::LeaseFocus` shows the window's Space and app and `FocusIn::LeaseFocus` raises and keys exactly that window. It is the lease's own actor, not an app activation: rule A7 (an app, a third party or an unknown actor cannot move focus; it only asks for attention) is unchanged, and a live lease is the grant, since only the agent tier leases and only for apps the person allowed |
+| `org.bardo.Compositor1` | `compositor-ipc::dbus::Compositor1` (the object), answered by `compositor::connect::answer` |
 | Settings > Privacy (the list of programs and their powers) | `compositor-ipc::privacy` (keys from `Privilege::rows()`; writes are `Edit`s the root turns into `Event::PrivilegeEdited`); read by `settings` and `shell`, written by `settings` only |
 | whether a window's accessibility root is its own program's | `compositor-ipc::a11y::{A11yWorker, A11yAsk, A11yVerdict}` |
-| the window a foreign-toplevel identifier names | `casement_wayland::foreign_toplevel_list::{identifier_of, window_of_identifier}` |
-| what changed on an output since a capture client's last frame | `casement_wayland::image_capture::{DamageLogs, Since}` (fed by `casement::handlers::serve_captures` from `PresentedFrame::damage`) |
-| where the pointer is on an output's frame, and the cursor's image for capture | `casement_wayland::image_capture::place`; `casement_render::{cursor_face, cursor_pixels}` |
-| turning a point or a size with an output's transform (a cursor's position, hotspot and size in a capture) | `casement_core::geometry::{turn_point, turn_size}` |
-| a capture into or out of a client's dma-buf; a client-drawn cursor's pixels | `casement_render::pass::{write_dmabuf, read_dmabuf, ArgbImage}`, called through `{HeadlessBackend, TtyBackend}::{write_dmabuf, read_dmabuf}`; the offer is `casement_wayland::image_capture::dma_offer` |
-| which way a capture frame reaches a client's buffer (GPU draw into a dma-buf, or read back) | `casement_backend::capture_path::{capture_path, placement}` (pure, table-tested); the GPU draws are `casement_render::pass::{blit_texture, render_window_dmabuf}`, the output frames kept on the GPU are `casement_backend::tty::{CaptureGpu::draw_scene, TtyBackend::blit_output_dmabuf}` on a seat and the headless GL canvas in the jail; the composition root's call is `handlers/image_capture/{direct,frames}.rs` |
-| a window's capture size and when it is captured | `casement_wayland::capture_source::{capture_size, ToplevelCaptureBook}` (damage gate) |
+| the window a foreign-toplevel identifier names | `compositor_wayland::foreign_toplevel_list::{identifier_of, window_of_identifier}` |
+| what changed on an output since a capture client's last frame | `compositor_wayland::image_capture::{DamageLogs, Since}` (fed by `compositor::handlers::serve_captures` from `PresentedFrame::damage`) |
+| where the pointer is on an output's frame, and the cursor's image for capture | `compositor_wayland::image_capture::place`; `compositor_render::{cursor_face, cursor_pixels}` |
+| turning a point or a size with an output's transform (a cursor's position, hotspot and size in a capture) | `compositor_core::geometry::{turn_point, turn_size}` |
+| a capture into or out of a client's dma-buf; a client-drawn cursor's pixels | `compositor_render::pass::{write_dmabuf, read_dmabuf, ArgbImage}`, called through `{HeadlessBackend, TtyBackend}::{write_dmabuf, read_dmabuf}`; the offer is `compositor_wayland::image_capture::dma_offer` |
+| which way a capture frame reaches a client's buffer (GPU draw into a dma-buf, or read back) | `compositor_backend::capture_path::{capture_path, placement}` (pure, table-tested); the GPU draws are `compositor_render::pass::{blit_texture, render_window_dmabuf}`, the output frames kept on the GPU are `compositor_backend::tty::{CaptureGpu::draw_scene, TtyBackend::blit_output_dmabuf}` on a seat and the headless GL canvas in the jail; the composition root's call is `handlers/image_capture/{direct,frames}.rs` |
+| a window's capture size and when it is captured | `compositor_wayland::capture_source::{capture_size, ToplevelCaptureBook}` (damage gate) |
 | where windows go | `compositor-layout` (`SceneLayout`, `RustScene`) |
 | how they travel there; the drawn frame | `compositor-motion` (`retarget`, `sample`, `FrameScene`) |
-| the one float-to-unit step of motion | `casement_motion::quantise` |
+| the one float-to-unit step of motion | `compositor_motion::quantise` |
 | wire enums and codes | desktop-protocols `vocab` (never redefined here) |
 | springs, velocity, motion level | ui-motion and ui-style |
 | a renderer and what it can do | `compositor-render::Compositor`, `EffectSupport` |
@@ -112,13 +112,13 @@ A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Tim
 | golden comparison and its tiers | `compositor-render::golden` (feature `testing`); `BARDO_COMPOSITOR_BLESS` read only by `compositor-testkit::Env` |
 | a protocol's state and its request and effect functions | `compositor-wayland::<protocol>` |
 | which globals a client sees (the filter that wraps I7) | `compositor-wayland::GlobalFilter` |
-| a client's key, role and identity | `compositor-wayland::ClientState` (inserted by `casement::clients::insert_client`) |
+| a client's key, role and identity | `compositor-wayland::ClientState` (inserted by `compositor::clients::insert_client`) |
 | how many objects of each kind one client may hold, and the cut when it asks for more (`wl_display.no_memory`) | `compositor-wayland::limits::{Limit, admit, cut}`; each call site counts from the collection that owns the objects (toplevels in `XdgShellPart::records`, popups, layers, waiting screencopies, window-list managers, icon buffers, exports, a keyboard's keymaps) |
 | which client files may be read on the loop (a keymap, a gamma ramp) | `compositor-wayland::client_file` (memory files only: `fcntl(F_GET_SEALS)`, which asks the filesystem nothing) |
-| which keys may switch the VT | `compositor-core::input::Origin::switches_vt` (kernel keyboards only), asked in `casement::core_loop::deliver` before `vt_chord` |
+| which keys may switch the VT | `compositor-core::input::Origin::switches_vt` (kernel keyboards only), asked in `compositor::core_loop::deliver` before `vt_chord` |
 | the shortest idle timeout a peer is served | `compositor-wayland::idle_notify::timeout_floor` (5 s for unproven or sandboxed peers) |
 | who may take the keyboard, take over a dead locker's lock, or reserve room (shell versus another client) | `compositor-core`: `LayerSpec::owner` (`LayerOwner`) and `Model` (`shell_clients`, the `LockHolder` inside `LockState`), learned from `ConnectionRole::Shell`; a security context gives its clients an app only when its creator is the desktop's sandbox launcher (the table's `sandbox_launcher` row, `Maker::SandboxLauncher`, judged by `clients::maker_of`) and is itself proven; any other creator leaves them an unknown app (`compositor-wayland::security_context::identity_for_clients`) |
-| whether the session was locked when casement last ran | `casement::lock_marker::LockMarker` (injected; real `FileLockMarker` in `$XDG_RUNTIME_DIR/casement`; fake `MemoryLockMarker`), written and removed by `LockReply::{Remember, Forget}` |
+| whether the session was locked when the compositor last ran | `compositor::lock_marker::LockMarker` (injected; real `FileLockMarker` in `$XDG_RUNTIME_DIR/compositor`; fake `MemoryLockMarker`), written and removed by `LockReply::{Remember, Forget}` |
 | smithay's types becoming ours | `compositor-wayland::convert` and the handlers, never deeper |
 | which serials answer a press | `compositor-wayland::serial::SerialBook` |
 | a virtual output's spec and its text grammar (C27) | `compositor-backend::VirtualOutputSpec` |
@@ -127,22 +127,22 @@ A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Tim
 | which GPU renders and which scans out; the dma-buf feedback tranches | `compositor-core::gpu::{plan_for, feedback_for}` (pure); detection is `compositor-backend::gpu::RenderNodes` over an injected `SysRoot` (A6) |
 | when to render a frame; whether a frame made its vblank; the cursor plane choice | `compositor-core::frame` (pure; P1-Z) |
 | the Space ids file's bytes (parse, render, import of sill's `spaces.json`) | `compositor-core::space::SpaceFile` (pure codec, A1) |
-| reading and writing that file | `casement::space_store::SpaceStore` (injected; `StateDirs` from `main`; fake `MemorySpaceStore`) |
-| a binding's D-Bus call | `compositor-ipc::shell_calls::ShellCalls` (A4; fake `FakeShellCalls`); `casement::exec` names the call and never zbus |
-| telling systemd ready, stopping, alive | `casement::notify::Notify` (csvc; real `SocketNotify` over `$NOTIFY_SOCKET` as `main` reads it; fake `FakeNotify`); the ping timer is `casement::time::ping_every` (B8) |
-| registering a Space with the account service | `compositor-ipc::space_registry::SpaceRegistry` (csvc; real `ZbusSpaceRegistry` on the session bus address `run` is given; fake `FakeSpaceRegistry`), driven by `casement::space_sync::SpaceSync` from `Effect::PublishWorkspaces` and once after startup |
-| starting a program (a binding's, xwayland-satellite) | `casement::spawn::Spawner` (A5; fake `FakeSpawner`) |
-| X11 clients | `casement::xwayland` (`XwaylandConfig`: mode and satellite path from configuration, never read inside the crate: `main` resolves a flag, else `xwayland.*` in settings.toml, else `PATH`, through `xwayland::from_file`) |
+| reading and writing that file | `compositor::space_store::SpaceStore` (injected; `StateDirs` from `main`; fake `MemorySpaceStore`) |
+| a binding's D-Bus call | `compositor-ipc::shell_calls::ShellCalls` (A4; fake `FakeShellCalls`); `compositor::exec` names the call and never zbus |
+| telling systemd ready, stopping, alive | `compositor::notify::Notify` (csvc; real `SocketNotify` over `$NOTIFY_SOCKET` as `main` reads it; fake `FakeNotify`); the ping timer is `compositor::time::ping_every` (B8) |
+| registering a Space with the account service | `compositor-ipc::space_registry::SpaceRegistry` (csvc; real `ZbusSpaceRegistry` on the session bus address `run` is given; fake `FakeSpaceRegistry`), driven by `compositor::space_sync::SpaceSync` from `Effect::PublishWorkspaces` and once after startup |
+| starting a program (a binding's, xwayland-satellite) | `compositor::spawn::Spawner` (A5; fake `FakeSpawner`) |
+| X11 clients | `compositor::xwayland` (`XwaylandConfig`: mode and satellite path from configuration, never read inside the crate: `main` resolves a flag, else `xwayland.*` in settings.toml, else `PATH`, through `xwayland::from_file`) |
 | libinput device settings and their fake | `compositor-backend::input::{InputFeed::apply, DeviceSettings}`; `compositor-testkit::fakes::FakeInputDevices` |
 | reading an output's frame back | `compositor-render::pass::capture_output` (P1-Z) |
 | virtual input devices and their events | `compositor-backend::VirtualInput` |
 | the soft GPU pieces (A4) | `compositor-backend::gpu::{SoftPixman, FixedUdmabuf}` |
-| the timing lines (`window-ready`, `key-window`, `xwayland-ready`, `session-ready`: target `timing`, INFO, `CLOCK_MONOTONIC` ns; workflow spec) | `casement::timing` (pure records and formatters; `Timing` in `State`; `hear` functions called at each moment); the clock reading is `casement::time::monotonic_ns` and `ClockSource::monotonic_epoch_ns` |
-| the session clock and the virtual clock's event source (A1) | `casement::time::{ClockSource, SharedClock, VirtualTimerSource}` |
-| carrying out an effect | `casement::exec::exec` (the one place) |
-| the stored settings document and its schema | `casement::config` |
-| the command line | `casement::cli` (`StartConfig`) |
-| the jail check in Rust | `casement::jail_check` (features `testing`, `debug-inject`) |
+| the timing lines (`window-ready`, `key-window`, `xwayland-ready`, `session-ready`: target `timing`, INFO, `CLOCK_MONOTONIC` ns; workflow spec) | `compositor::timing` (pure records and formatters; `Timing` in `State`; `hear` functions called at each moment); the clock reading is `compositor::time::monotonic_ns` and `ClockSource::monotonic_epoch_ns` |
+| the session clock and the virtual clock's event source (A1) | `compositor::time::{ClockSource, SharedClock, VirtualTimerSource}` |
+| carrying out an effect | `compositor::exec::exec` (the one place) |
+| the stored settings document and its schema | `compositor::config` |
+| the command line | `compositor::cli` (`StartConfig`) |
+| the jail check in Rust | `compositor::jail_check` (features `testing`, `debug-inject`) |
 | the inject and wait grammars | `compositor-ipc::{parse_inject, parse_wait}` |
 | a test's compositor, clients and clock | `compositor-testkit::Fixture` |
 | the origins a test may mint | `compositor-testkit::TestOrigin` |
@@ -156,7 +156,7 @@ A program on the public socket may use seven powers only with the person's conse
 type, read and replace the clipboard, lock the screen, change the displays, see and manage the
 windows. The shell, the portal and the desktop's own services are trusted by identity and never
 asked. The portal gets that trust through its own connection: transom asks `org.bardo.Compositor1.Connect("portal")`
-on the session bus, where the bus proves it at `Full`, and captures on the connection casement hands back
+on the session bus, where the bus proves it at `Full`, and captures on the connection the compositor hands back
 (`ConnectionRole::Portal`: the public socket's globals, the screen and the windows trusted, nothing more). On
 the public socket a peer reaches at most `Proof::Exe`, so a portal that connects there is an ordinary program
 and is asked (NEW-FA-2). The consent machine is pure; this is the contract between it and the composition root and
@@ -193,7 +193,7 @@ the protocol layer (wave 2: `pa2-ccore` is this half, the others follow it).
   a wrong file is an error) and the person's `privacy.toml` in the state directory
   (`Book::from_toml`, lenient: an unreadable row is dropped) and sends `Event::FloorLoaded` and
   `Event::BookLoaded`. `Effect::SaveBook(book)` is the whole book as it now is, to be written
-  atomically. Settings changes arrive as `Event::PrivilegeEdited` (an `Edit`: `Allow`, `Deny` or `Forget`). `Privilege::rows()` is what Settings lists (the answers; `casement_ipc::privacy::listed` adds, for each program they name, a
+  atomically. Settings changes arrive as `Event::PrivilegeEdited` (an `Edit`: `Allow`, `Deny` or `Forget`). `Privilege::rows()` is what Settings lists (the answers; `compositor_ipc::privacy::listed` adds, for each program they name, a
   switch standing at `ask` for every power it has no row for, on Settings' Privacy page, at most `MAX_GRANTS` programs; a `Set`
   on one is the first answer, `Edit::Allow`/`Deny`).
 - **Hiding.** A refused power's globals are not advertised to a public client that connected
@@ -201,17 +201,17 @@ the protocol layer (wave 2: `pa2-ccore` is this half, the others follow it).
   `policy::advertised_to` consults it. `policy::advertised(global, role)` is the same with
   nothing hidden. Nothing is re-announced when an answer changes later.
 
-### Consent at the wire (compositor-wayland, `casement/src/handlers/consent.rs`)
+### Consent at the wire (compositor-wayland, `compositor/src/handlers/consent.rs`)
 
 How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
 
-- **One mechanism.** `casement_wayland::consent::admit(state, client, power)` is called at the first request that uses a power
+- **One mechanism.** `compositor_wayland::consent::admit(state, client, power)` is called at the first request that uses a power
   and answers `Go`, `Hold` or `Refuse` from the `Ledger` (the latest word per client and power, shared through `ClientMint` and
   forgotten when the client disconnects). A client with no word, or a refusal, is asked of the model: `admit` sends
   `Event::PrivilegeUse` (after `Event::ClientStanding` when `ClientState::image` says the program executed another image since
   accept) and reads the ledger again, because the model usually answers inside the same `feed`. `Effect::Resolve` writes the
   ledger and then calls each protocol's `on_resolved`: replay what was held on `Allowed`, give the protocol's own denial on
-  `Denied`, end the use on `Revoked`. A client casement did not insert is refused.
+  `Denied`, end the use on `Revoked`. A client the compositor did not insert is refused.
 - **Held requests.** `consent::Held<T>` keeps at most `HELD_REQUESTS` per client (`Pushed::Full` hands the item back to be
   refused) and drops what belongs to a gone client at the next push. What is held is the request that creates something: the
   `copy`, the frame request, the `lock`, the `apply`/`test`, the manager bind; for objects that cannot wait (a control, a manager)
@@ -226,12 +226,12 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
 - **Gated through smithay's hooks (it owns the dispatch).** Four globals are served entirely by smithay, which holds their
   state; our fork (`Bardo-DE/smithay`, rev `005eebf1`) asks the compositor before it acts, through a defaulted handler method
   that returns `smithay::wayland::Gate { Open, Hold, Refuse }`, and settles what it held with `release(&mut self, display,
-  &ClientId, Gate)` on the protocol's state. `consent::gate(state, client, power)` is the one place casement answers: it calls
+  &ClientId, Gate)` on the protocol's state. `consent::gate(state, client, power)` is the one place compositor answers: it calls
   `admit` and maps `Go` to `Open`, `Refuse` to `Refuse`, and `Hold` to `Hold` after parking the client's connection in the
   `Ledger` (`park`; forgotten when the client goes). `Effect::Resolve` then calls `handlers::consent::settle_served`, which
   releases the protocol's state with `consent::release_gate(outcome)` (`Allowed` opens, `Denied` and `Revoked` refuse).
 
-  | Global | Power | Hook (handler in `casement/src/handlers/`) | Held | Refused | Released on allow |
+  | Global | Power | Hook (handler in `compositor/src/handlers/`) | Held | Refused | Released on allow |
   |---|---|---|---|---|---|
   | `ext_data_control_manager_v1` | `Clipboard` | `data_control_gate` (`ext_data_control.rs`) | a device or a source, at `get_data_device` / `create_data_source` | device `finished`, source `cancelled`, registered nowhere | the device is registered and told the clipboard |
   | `zwlr_data_control_manager_v1` | `Clipboard` | `data_control_gate` (`wlr_data_control.rs`) | the same | the same | the same |
@@ -239,8 +239,8 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   | `ext_foreign_toplevel_list_v1` | `Windows` | `foreign_toplevel_list_gate` (`foreign_toplevel_list.rs`) | the list bound | `finished` | every window is listed, then each new one |
 
   A held object is inert: it receives no events and its requests are ignored except `destroy`. smithay keeps at most
-  `MAX_HELD_PER_CLIENT` (16) held objects per client and protocol and refuses the rest itself; casement keeps no count of its own
-  for these (the 256 of `HELD_REQUESTS` is for the queues casement holds). A client that disconnects while held is dropped by
+  `MAX_HELD_PER_CLIENT` (16) held objects per client and protocol and refuses the rest itself; the compositor keeps no count of its own
+  for these (the 256 of `HELD_REQUESTS` is for the queues the compositor holds). A client that disconnects while held is dropped by
   smithay at its next hold, and its parked connection is forgotten with its ledger rows. None of the refusal events is a
   destructor, so none needs `consent::finish_later` (the pa2-cwl lesson is about `finished` on the workspace and window-list
   managers, which are destructors). A power taken back (`Revoked`) ends what smithay already registered for the client: `settle_served`
@@ -277,11 +277,11 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   stays open. The same rule, with the trial's first-sent stamp, applies to `displays_trial_answer`.
 - **The composition root's half (`pa2-croot`).**
   - *Who is asking.* At accept `run.rs` holds the public client's process (`Pinned::of_stream`), reads its facts (`Prober`) and judges them against the desktop's caller table (`clients::Judge`; the table is `/etc/bardo/desktop-callers.toml`, one load at start through `clients::desktop_table(&SystemDir)`, the one place it is made; a failed load is an empty table and one error log: nobody privileged; in a `testing` or `debug-inject` build whose run has `SystemDir::At(dir)`, `clients/dev_callers.rs` adds the rows of `dir/desktop-callers.toml` after it as developer rows, see *Test caller rows* below). `clients::insert_client(state, stream, role, peer, standing)` takes `clients::Standing::{Unjudged, Judged { standing, watch, maker }}`: `Judged` builds `ClientState` with `with_standing_under(model.privilege(), standing)`, `with_image_watch(watch)` and `with_maker(maker)` (`Maker::SandboxLauncher` only for the table's `sandbox_launcher` row shown by its image; the security-context handler reads it from the creator, CASW-04: any other creator's context makes clients with no app id, a Flatpak scope name or app id in the context counting for nothing) and sends `Event::ClientStanding` right after `Event::ClientConnected`; the hand-out, a sandbox and a bare test socket are `Unjudged`. The watch (`PinnedImage`) holds the process by its descriptor and says `Unverified` when `/proc/<pid>/exe` names another image than at accept. The library's standing becomes core's `ClientStanding` in `clients::client_standing`: a service only with `Proof::Exe` or better (a control-group-only service is unverified), a root-owned image a `Program`, a user-writable or hidden one `Unverified`. The porter `PeerIdentity` (the Dock's `AppKey`) is `Proven` from a service's app, a sandbox's app or the launcher's scope name of a root-owned program (`clients::peer_of`); the scope name is a claim that only groups windows, a grant binds to `Subject`.
-  - *The files.* `seams.privacy: Box<dyn PrivacyStore>` (real: `FilePrivacyStore` over `$XDG_STATE_HOME/casement/privacy.toml`, from `StartConfig::state_home`; none for an ephemeral run) is read once before the first client (`privacy::start`: `Event::FloorLoaded`, `Event::BookLoaded`), written by `Effect::SaveBook` (`privacy::keep`), and the floor read again on `SIGHUP` (`privacy::reload_floor`). The floor is `/etc/bardo/privacy.toml` and `privacy.d/*.toml`, or `--system-dir` (`StartConfig::system_dir`, `RunConfig::with_system_dir`; in a build with `testing` or `debug-inject` the files of an injected folder belong to the running user, anywhere else to the administrator). Never an environment variable. The same two builds have a second exception beside the owner: `privacy::writable_image` (`privacy/injected.rs`, called from `clients::Judge::arrival`) takes a program whose image the person can write as a `Program` when the floor was read from an injected folder (`SystemDir::At`) and a row of it names that image, so a scenario's floor can pre-approve what it runs from `build/`; the book never names one, a floor in `/etc/bardo` never does, and a release build has the no-op body (the module is compiled out), so such a program stays `Unverified` and is asked every time.
-  - *Test caller rows (cas13).* The third test-only exception, same two features: `clients/dev_callers.rs` reads `desktop-callers.toml` from the injected folder (`SystemDir::At`) through peephole's `TableFiles::load_dev` (a plain file, not a link, owned by the person or root, not group- or world-writable, within the table size cap; anything else adds no row and logs one line, a missing file nothing) and merges it after the system table (`Table::merge`; the system table wins where both name a program). Its rows are `Proof::Dev`, the lowest proof. Two places accept exactly that proof and only in these builds: `dbus::require` (the roles of Compositor1 and the Privacy list: `Proof::Full`, or `Proof::Dev` of the role asked) and `clients::client_standing`/`peer_of` (a Dev service is a `ClientStanding::Service`/`Proven` app). The feature chain is `casement/testing` and `casement/debug-inject` -> `compositor-ipc/dev-rows` -> `caller-identity-dbus/dev-rows`; nothing else enables it and a release build has no `Proof::Dev` at all. Row format: `[[peer]]` with `app`, `role`, `exe = ["/abs/path"]` (no `unit`).
+  - *The files.* `seams.privacy: Box<dyn PrivacyStore>` (real: `FilePrivacyStore` over `$XDG_STATE_HOME/compositor/privacy.toml`, from `StartConfig::state_home`; none for an ephemeral run) is read once before the first client (`privacy::start`: `Event::FloorLoaded`, `Event::BookLoaded`), written by `Effect::SaveBook` (`privacy::keep`), and the floor read again on `SIGHUP` (`privacy::reload_floor`). The floor is `/etc/bardo/privacy.toml` and `privacy.d/*.toml`, or `--system-dir` (`StartConfig::system_dir`, `RunConfig::with_system_dir`; in a build with `testing` or `debug-inject` the files of an injected folder belong to the running user, anywhere else to the administrator). Never an environment variable. The same two builds have a second exception beside the owner: `privacy::writable_image` (`privacy/injected.rs`, called from `clients::Judge::arrival`) takes a program whose image the person can write as a `Program` when the floor was read from an injected folder (`SystemDir::At`) and a row of it names that image, so a scenario's floor can pre-approve what it runs from `build/`; the book never names one, a floor in `/etc/bardo` never does, and a release build has the no-op body (the module is compiled out), so such a program stays `Unverified` and is asked every time.
+  - *Test caller rows (cas13).* The third test-only exception, same two features: `clients/dev_callers.rs` reads `desktop-callers.toml` from the injected folder (`SystemDir::At`) through peephole's `TableFiles::load_dev` (a plain file, not a link, owned by the person or root, not group- or world-writable, within the table size cap; anything else adds no row and logs one line, a missing file nothing) and merges it after the system table (`Table::merge`; the system table wins where both name a program). Its rows are `Proof::Dev`, the lowest proof. Two places accept exactly that proof and only in these builds: `dbus::require` (the roles of Compositor1 and the Privacy list: `Proof::Full`, or `Proof::Dev` of the role asked) and `clients::client_standing`/`peer_of` (a Dev service is a `ClientStanding::Service`/`Proven` app). The feature chain is `compositor/testing` and `compositor/debug-inject` -> `compositor-ipc/dev-rows` -> `caller-identity-dbus/dev-rows`; nothing else enables it and a release build has no `Proof::Dev` at all. Row format: `[[peer]]` with `app`, `role`, `exe = ["/abs/path"]` (no `unit`).
   - *Settings.* `run.rs` creates `PrivacyLink::new()`, gives the bus thread `CallerSetup::desktop(table).with_privacy(link)` (`.with_test_units(...)` under `debug-inject`), reads the edit channel (`privacy::edited`: `edit.into_event(wall.now())`) and publishes `model.privilege().rows()` to the board at start, after every `SaveBook` and every edit.
   - *The date.* `seams.wall: time::WallClock` (`System` in a real run, `Fixed` in a test; the seam default is the epoch) stamps answers; `BardoShellPart::wall` is a copy of it.
-  - *The accessibility root.* `bardo_window.set_a11y_root` reaches the model as no root (`None`); the claim is queued on `seams.a11y` (`A11yChecks`, real: `casement_ipc::a11y::A11yWorker`, fake: `FakeA11y`) with the client's pid from `Processes`, and the verdict becomes `WindowHintChange::A11y` (`a11y::adopt`). A client casement keeps no process for (the hand-outs, a sandbox) never verifies.
+  - *The accessibility root.* `bardo_window.set_a11y_root` reaches the model as no root (`None`); the claim is queued on `seams.a11y` (`A11yChecks`, real: `compositor_ipc::a11y::A11yWorker`, fake: `FakeA11y`) with the client's pid from `Processes`, and the verdict becomes `WindowHintChange::A11y` (`a11y::adopt`). A client the compositor keeps no process for (the hand-outs, a sandbox) never verifies.
 
 - **Displays a program changed (CASW-10; the display trial).** A change to the displays made by a client other than the shell (mode,
   scale, position, on or off, through `zwlr_output_manager` `apply` or `zwlr_output_power`) is applied and then kept only if the
@@ -296,7 +296,7 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   displays itself (`Requester::Shell` applies and settles a trial in flight as kept; it is never asked). A further `Program` change while
   a trial is open keeps the stored configurations, restarts the time and asks again with the same id. `Requester::Restore` is the
   compositor putting back what a program changed (an output a program darkened is lit again when its control goes): applied, never asked,
-  a trial in flight untouched. casement's own hotplug and tty reconfiguration do not go through `OutputRequested` and are never asked.
+  a trial in flight untouched. The compositor's own hotplug and tty reconfiguration do not go through `OutputRequested` and are never asked.
   The part remembers the one open trial, so a shell that binds (version 6) while it is open is sent `displays_trial` at once with the
   seconds left; a shell older than 6 is never asked and the change is reverted when the time runs out, which is also the fail-safe when
   the shell goes away mid-trial. An answer for a trial that is not open is ignored; one less than `ANSWER_NOT_BEFORE` after the first
@@ -392,16 +392,16 @@ pub async fn require(check: &dyn CallerCheck, sender: Option<&str>, roles: &[Rol
 pub struct Proven { pub app: AppKey, pub role: RoleName }                  // what ConnectAsk carries instead of a cgroup text
 pub const CONNECT_QUEUE: usize = 8;  pub const CALLS_PER_WINDOW: u32 = 4;  pub const RATE_WINDOW: Duration = 1 s;
 
-// casement::connect: the loop's side of Compositor1.Connect
+// compositor::connect: the loop's side of Compositor1.Connect
 pub fn attach(handle: &LoopHandle<'static, State>, calls: Channel<ConnectCall>) -> Result<(), LoopError>;
 pub fn answer(state: &mut State, ask: ConnectAsk) -> ConnectReply;   // hand_out(&ask.role, &ask.caller.role); AgentState::handed: ClientKey -> AppKey
 
-// casement::clients (pa2-croot): every client enters here
+// compositor::clients (pa2-croot): every client enters here
 pub fn insert_client(state: &mut State, stream: UnixStream, role: ConnectionRole, peer: PeerIdentity, standing: Standing) -> io::Result<Client>;
 pub enum Standing { Unjudged, Judged { standing: ClientStanding, watch: Arc<dyn ImageWatch> } }
 pub struct Judge;   // ::desktop(), ::new(Table), .arrival(&UnixStream) -> Arrival { peer, standing }
 
-// compositor-privacy / casement::privacy / casement::a11y (pa2-croot): the seams the root injects
+// compositor-privacy / compositor::privacy / compositor::a11y (pa2-croot): the seams the root injects
 pub trait PrivacyStore: Debug {
     fn read_book(&mut self) -> Result<Option<String>, StoreError>;   fn write_book(&mut self, text: &str) -> Result<(), StoreError>;
     fn set_book_aside(&mut self, at: UnixSeconds) -> Result<(), StoreError>;   fn read_floor(&mut self) -> Vec<FloorText>;
@@ -482,7 +482,7 @@ pub trait ShellCalls: Debug {
     fn failures(&mut self) -> Vec<FailedCall>;
 }
 
-// casement (real: BackgroundSpaceStore (writes on a thread), ProcessSpawner (binding programs in their own systemd user scope); fakes: MemorySpaceStore, FakeSpawner)
+// The compositor (real: BackgroundSpaceStore (writes on a thread), ProcessSpawner (binding programs in their own systemd user scope); fakes: MemorySpaceStore, FakeSpawner)
 pub trait SpaceStore: Debug {
     fn read(&self) -> Result<Option<String>, SpaceStoreError>;
     fn write(&mut self, text: &str) -> Result<(), SpaceStoreError>;     // atomic
@@ -493,35 +493,35 @@ pub trait Spawner: Debug {
 }
 ```
 
-`casement::State::new` builds the real seams (`Seams::real`); `State::with_seams` takes injected
+`compositor::State::new` builds the real seams (`Seams::real`); `State::with_seams` takes injected
 ones, which is how the test kit's `Fixture` gets its fakes.
 
 ## 4. Recipes
 
 **Add a core event.**
-1. Add the variant to `Event` in `crates/casement-core/src/event.rs`, its data types beside the
+1. Add the variant to `Event` in `crates/compositor-core/src/event.rs`, its data types beside the
    concept they belong to.
-2. Route it in `Model::step` (`crates/casement-core/src/model.rs`) to the machine that owns it.
-3. Add a row to `crates/casement-core/tests/it/model.rs`; `check_invariants` runs after every row.
+2. Route it in `Model::step` (`crates/compositor-core/src/model.rs`) to the machine that owns it.
+3. Add a row to `crates/compositor-core/tests/it/model.rs`; `check_invariants` runs after every row.
 4. The edge that produces it (a handler, the backend, the clock) converts into it there.
 
 **Add an effect.**
-1. Add the variant to `Effect` in `crates/casement-core/src/effect.rs`.
+1. Add the variant to `Effect` in `crates/compositor-core/src/effect.rs`.
 2. Carry it out in the composition root's exec module (the one place effects happen).
 3. A model row asserts the step that emits it.
 
 **Add a settings key.**
-1. Add the typed field to the section in `crates/casement-core/src/settings/` with its default
+1. Add the typed field to the section in `crates/compositor-core/src/settings/` with its default
    in that section's `defaults()` (03 §1.17's value where one exists).
-2. Add the stored key to the ui-settings document and its conversion (casement's config module).
-3. Extend `crates/casement-core/src/settings/tests.rs`.
+2. Add the stored key to the ui-settings document and its conversion (the compositor's config module).
+3. Extend `crates/compositor-core/src/settings/tests.rs`.
 
 **Add a layout strategy.**
-1. One file under `crates/casement-layout/src/rust_scene/` per placement (P3-Z: tile_zone, fill,
+1. One file under `crates/compositor-layout/src/rust_scene/` per placement (P3-Z: tile_zone, fill,
    full_screen, split, spread, expose, space_row, show_desktop).
 2. If it is flex or grid, build it through `taffy_bridge` (new tree without Taffy's rounding,
    `solve`, `rect_of`); never name taffy elsewhere.
-3. Table rows in `crates/casement-layout/tests/it/rust_scene.rs`; anything it cannot honour goes to
+3. Table rows in `crates/compositor-layout/tests/it/rust_scene.rs`; anything it cannot honour goes to
    `Arrangement::reports`.
 
 1. A map in `MotionBook` (keyed by what moves), its legs beside `window_motion.rs` / `space_slide.rs`.
@@ -531,18 +531,18 @@ ones, which is how the test kit's `Fixture` gets its fakes.
 3. A golden in `FrameScene::text` form, blessed once with a reason.
 
 **Add a protocol.**
-1. A module `crates/casement-wayland/src/<p>.rs`: `<P>Part { pub state, ... BTreeMaps }`,
+1. A module `crates/compositor-wayland/src/<p>.rs`: `<P>Part { pub state, ... BTreeMaps }`,
    `Part::new::<D>(display, role_filter)` with smithay's constructor bounds copied (filtered
    constructors take `role_filter.for_global(GlobalKind::<P>)`), `on_*` and `apply_*`.
-2. Its field in `WaylandStates` (`states.rs`) and its `Part::new` in `casement/src/state.rs`
+2. Its field in `WaylandStates` (`states.rs`) and its `Part::new` in `compositor/src/state.rs`
    (both frozen: a freeze or an interface ask).
-3. `crates/casement/src/handlers/<p>.rs`: `impl <Smithay>Handler for State`, accessors returning
+3. `crates/compositor/src/handlers/<p>.rs`: `impl <Smithay>Handler for State`, accessors returning
    `&mut self.wl.<p>.state`, callbacks converting and calling `on_*`, then `core_loop::feed`.
    `delegates.rs` needs nothing more: `delegate_dispatch2!` routes every global.
 4. A `GlobalKind` variant and its row in the `GLOBALS` table (compositor-core: tier, sandbox
    yes or no, and a power or none, decided on purpose) and its row in compositor-core's own
    `tests/golden/globals.txt`, a `tests/golden/globals.txt` row in the test kit
-   (`<interface> <version> <module>`), `crates/casement-testkit/tests/it/protocol/<p>.rs` with its
+   (`<interface> <version> <module>`), `crates/compositor-testkit/tests/it/protocol/<p>.rs` with its
    `mod` line in `tests/it/protocol/mod.rs` (`scripts/check-protocol-coverage.sh`), a testclient
    helper module, and for a private request a fuzz op.
 
@@ -560,10 +560,10 @@ global in `Part::new`, adds the `globals.txt` row and un-ignores the tests.
    errors (thiserror, typed sources) and no `bool`s. Real I/O goes in a `*_real.rs` adapter, behind
    a feature when it needs system libraries (A2); a new adapter joins `ADAPTERS` in
    `scripts/check-boundary.sh`.
-2. The fake in `crates/casement-testkit/src/fakes/` as a cloneable shared handle (`Arc<Mutex<…>>`):
+2. The fake in `crates/compositor-testkit/src/fakes/` as a cloneable shared handle (`Arc<Mutex<…>>`):
    the compositor holds one clone, the test the other, and the test asserts on what the fake
    recorded. Export it from `fakes/mod.rs`.
-3. Inject it: a field of `casement::seams::Seams` (or of `TtySeams` for the tty backend), a real
+3. Inject it: a field of `compositor::seams::Seams` (or of `TtySeams` for the tty backend), a real
    default in `Seams::real`, the fake in `Fixture::start`.
 4. A doc test on the trait's use, and the behaviour test through the fake.
 
@@ -574,19 +574,19 @@ smithay's own features bring it (`tty = ["smithay/backend_drm", …]`).
 
 **Add a debug verb.**
 1. A `DebugRequest` variant and its `#[zbus::interface]` method in
-   `crates/casement-ipc/src/dbus/debug1.rs`; the event loop answers it with a `DebugReply`.
+   `crates/compositor-ipc/src/dbus/debug1.rs`; the event loop answers it with a `DebugReply`.
 2. Its `bardo-compositorctl debug` subcommand (`crates/bardo-compositorctl/src/command.rs`) and its `dev/lib`
    shell function if scripts use it.
 
 **Add a fake fixture.**
-1. Recorded bytes under `crates/casement-testkit/fixtures/<kind>/<name>` (from the user's
+1. Recorded bytes under `crates/compositor-testkit/fixtures/<kind>/<name>` (from the user's
    optional `dev/hw/smoke.sh` run only, never this machine by an agent).
 2. Served by the fake that owns the kind (`fakes/session.rs` for device files; FakeKms at P1).
 3. A QUIRKS row when the fixture records a behaviour fact.
 
 **Add a golden.**
 1. A scene built through the `Fixture` (or a renderer-only element test in compositor-render),
-   compared with `casement_render::golden::compare` under the right tier: `Exact` for pixman
+   compared with `compositor_render::golden::compare` under the right tier: `Exact` for pixman
    and aligned elements, `Soft { channel: 2, parts_per_million: 1000 }` for llvmpipe effects.
 2. Colours as `Rgba8`, chrome rasterised at the output's native scale, never
    `TextureFilter::Nearest` (A18).
@@ -603,18 +603,18 @@ properties (T0), integration tests under each crate's `tests/it/` (one binary pe
 guard test that fails when a file is not included) with shared builders in `tests/it/support/`.
 `fuzz/` and `relax.rs` in the test kit stay their own binaries (cost). The ack policy is no longer process-global: it is `State::ack_policy` (`testing` only), set from `FixtureSpec::with_ack_policy`.
 
-Everything else drives the real `State` through `casement_testkit::Fixture`: the headless backend, a `Display` whose poll fd sits in calloop as a duplicate
-(no `unsafe`, SP3), clients on non-blocking socket pairs (`casement_testclient::TestClient`),
+Everything else drives the real `State` through `compositor_testkit::Fixture`: the headless backend, a `Display` whose poll fd sits in calloop as a duplicate
+(no `unsafe`, SP3), clients on non-blocking socket pairs (`compositor_testclient::TestClient`),
 the virtual clock as a calloop event source (A1). `pump` runs until a round moves nothing;
 `advance` stops at every timer and vblank on the way, so how an advance is chopped never shows;
 transcripts carry virtual time only; no test sleeps. Protocol tests live in
-`crates/casement-testkit/tests/it/protocol/<p>.rs`, one per module; scene goldens in
-`crates/casement-testkit/tests/it/scene/` (`mod.rs`, `desk.rs`, `build.rs`) with PNGs under `tests/golden/scenes/`; the globals
+`crates/compositor-testkit/tests/it/protocol/<p>.rs`, one per module; scene goldens in
+`crates/compositor-testkit/tests/it/scene/` (`mod.rs`, `desk.rs`, `build.rs`) with PNGs under `tests/golden/scenes/`; the globals
 golden is `tests/golden/globals.txt`.
 
 Everything runs inside the jail (`~/desktop/harness/jail.sh`): built outside, archived with
 nextest, run inside. Binaries built with `testing` or `debug-inject` refuse to start outside it
-(`casement::jail_check`) and refuse every backend but headless. The jail can fabricate soft GPU
+(`compositor::jail_check`) and refuse every backend but headless. The jail can fabricate soft GPU
 nodes (`--fabricate-gpus N`: `/sys/dev/char/226:(128+n)`, A3) for the multi-GPU topology (P1).
 
 ## 6. Repo rules
@@ -630,29 +630,29 @@ nodes (`--fabricate-gpus N`: `/sys/dev/char/226:(128+n)`, A3) for the multi-GPU 
   `GATE GREEN (<tier>) <run>`; `dev/out/<run>/summary.json` records every step. Every exit code
   is checked, nothing is piped or tailed. `~/rs-wt/gate-lane-jailed.sh <checkout>` is the
   cross-repo form.
-- Features (A2): `compositor-backend` has `tty` and `libinput`, both off by default; `casement` has
+- Features (A2): `compositor-backend` has `tty` and `libinput`, both off by default; `compositor` has
   `tty` and `libinput`, on by default, and its binary requires both. The workspace dependency
-  `casement = { default-features = false }` keeps the test kit, `wlcs-casement` and any other
+  `compositor = { default-features = false }` keeps the test kit, `wlcs-compositor` and any other
   headless consumer free of system libraries. The gate builds both feature sets: `cargo build -p
   compositor-app` (everything) and `cargo build -p compositor-testkit` (headless only). Building the
-  whole workspace at once unifies `casement`'s default features into the test kit; build the test
+  whole workspace at once unifies `compositor`'s default features into the test kit; build the test
   kit's tests with `-p compositor-testkit` for the jail.
 - Features (A8): `compositor-wayland` has `bardo`, on by default: the private `bardo_*` servers
-  (`bardo::desktop`, `bardo::shell`) and their fields in `WaylandStates`. `casement` turns it on
+  (`bardo::desktop`, `bardo::shell`) and their fields in `WaylandStates`. `compositor` turns it on
   explicitly; a consumer that wants the standard protocol set alone takes the crate with
   `default-features = false`. `bardo_window` stays outside the feature for now (FINDINGS, p2-z).
 - `unsafe_code = "deny"` at the workspace. The one unsafe module is
-  `crates/casement-render/src/gl_raw.rs`: exactly `EGLDisplay::new` and `GlesRenderer::new`
+  `crates/compositor-render/src/gl_raw.rs`: exactly `EGLDisplay::new` and `GlesRenderer::new`
   (A17). Another `unsafe` block there needs a reviewed interface ask showing a GL pass smithay's
   safe API cannot express.
 - `missing_docs` warns at the workspace, so every public item says what it means.
 - Sibling repos are path dependencies (`../bardo`, `../porter`, `../wayland/desktop-protocols`); a lane
   worktree links them beside itself.
-- smithay is pinned by rev to our fork `Bardo-DE/smithay` branch `casement` (upstream
+- smithay is pinned by rev to our fork `Bardo-DE/smithay` branch `compositor` (upstream
   `118e34ff` plus the patches FINDINGS lists, A14) with no default features; each crate names the
-  features it uses and the `casement` binary carries A14's union. Nothing goes upstream to
+  features it uses and the `compositor` binary carries A14's union. Nothing goes upstream to
   smithay (DECISIONS, A13); patches live only in the fork.
-- Frozen files lanes never edit: `crates/casement/src/state.rs`, `crates/casement/src/delegates.rs`,
-  every `lib.rs`/`mod.rs`, `crates/casement-wayland/src/states.rs`, every `Cargo.toml`,
+- Frozen files lanes never edit: `crates/compositor/src/state.rs`, `crates/compositor/src/delegates.rs`,
+  every `lib.rs`/`mod.rs`, `crates/compositor-wayland/src/states.rs`, every `Cargo.toml`,
   `tests/golden/globals.txt`, `dev/gate/budgets.toml`, `dev/gate/expected-skips.toml`,
   `.config/nextest.toml`, and the docs; a change there is an interface ask.

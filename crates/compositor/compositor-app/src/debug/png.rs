@@ -1,5 +1,5 @@
 //! A PNG writer with no compression (stored deflate blocks): the debug `Shot` verb writes
-//! frames with it so casement's binary needs no image crate. Files are large and exact.
+//! frames with it so the compositor's binary needs no image crate. Files are large and exact.
 
 /// The 8-byte PNG signature.
 const SIGNATURE: [u8; 8] = [0x89, b'P', b'N', b'G', 0x0d, 0x0a, 0x1a, 0x0a];

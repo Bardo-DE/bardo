@@ -1,8 +1,8 @@
 //! A window's surface tree as elements.
 
 use super::BlurV0Element;
-use super::CasementElement;
 use super::RoundedClipElement;
+use super::SceneElement;
 use super::blur_v0;
 use super::flight::{drawn_content, scale_ratio};
 use super::geometry::{geometry_origin, geometry_size, surface_origin};
@@ -46,21 +46,21 @@ pub fn window_elements<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let Some(entry) = book.window(&placed.window) else {
         return Vec::new();
     };
     let ratio = flight_ratio(placed, &entry.root);
     let about = on_output(placed.at, view);
-    let mut elements: Vec<CasementElement<R>> = window_surfaces(placed, view, book, renderer)
+    let mut elements: Vec<SceneElement<R>> = window_surfaces(placed, view, book, renderer)
         .into_iter()
         .map(|surface| match (placed.flight, clip) {
-            (None, Some(shape)) => CasementElement::Clip(RoundedClipElement::new(surface, shape)),
-            (None, None) => CasementElement::Surface(surface),
-            (Some(_), Some(shape)) => CasementElement::Clip(
-                RoundedClipElement::new(surface, shape).stretched(about, ratio),
-            ),
-            (Some(_), None) => CasementElement::Stretched(RescaleRenderElement::from_element(
+            (None, Some(shape)) => SceneElement::Clip(RoundedClipElement::new(surface, shape)),
+            (None, None) => SceneElement::Surface(surface),
+            (Some(_), Some(shape)) => {
+                SceneElement::Clip(RoundedClipElement::new(surface, shape).stretched(about, ratio))
+            }
+            (Some(_), None) => SceneElement::Stretched(RescaleRenderElement::from_element(
                 surface,
                 about,
                 Scale::from(ratio),
@@ -71,8 +71,7 @@ pub fn window_elements<R: Compositor>(
         Some(_) => alpha(placed.opacity),
         None => 1.0,
     };
-    elements
-        .extend(window_blur(placed, &entry.root, (ratio, faded), view).map(CasementElement::Blur));
+    elements.extend(window_blur(placed, &entry.root, (ratio, faded), view).map(SceneElement::Blur));
     elements
 }
 

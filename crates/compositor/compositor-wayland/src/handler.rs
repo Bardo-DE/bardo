@@ -15,6 +15,6 @@ pub trait EventSink {
 
 /// The model's key for an output a client names.
 pub trait OutputLookup {
-    /// The output a client's `wl_output` is, when it is one casement advertises.
+    /// The output a client's `wl_output` is, when it is one the compositor advertises.
     fn output_key_of(&self, output: &WlOutput) -> Option<OutputKey>;
 }

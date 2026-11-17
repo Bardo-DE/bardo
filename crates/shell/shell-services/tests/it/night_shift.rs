@@ -1,7 +1,7 @@
-//! Night Shift on scratch directories (casement's config folder and bardo-shell's state folder under a
-//! temporary root, no bus): the switch writes casement's `[night_light]` and keeps the manual
-//! turn-on's end, turning it off puts casement back, a turn-on that ran out while bardo-shell was away
-//! is ended at start, and where bardo-shell warms monitors itself casement is told to leave those alone
+//! Night Shift on scratch directories (the compositor's config folder and bardo-shell's state folder under a
+//! temporary root, no bus): the switch writes the compositor's `[night_light]` and keeps the manual
+//! turn-on's end, turning it off puts the compositor back, a turn-on that ran out while bardo-shell was away
+//! is ended at start, and where bardo-shell warms monitors itself the compositor is told to leave those alone
 //! and keeps warming the rest.
 
 use std::time::Duration;
@@ -107,7 +107,7 @@ fn mode_in(settings: &std::path::Path) -> String {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn the_switch_warms_until_tomorrow_and_off_puts_casement_back() {
+async fn the_switch_warms_until_tomorrow_and_off_puts_compositor_back() {
     let scratch = TempDir::new("night-shift-switch");
     let (settings, manual) = files(&scratch);
     let mut service = start(&scratch);
@@ -150,7 +150,7 @@ async fn a_turn_on_that_ran_out_while_sill_was_away_is_ended_at_start() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn where_sill_warms_monitors_casement_is_told_to_leave_them_alone_and_warms_the_rest() {
+async fn where_sill_warms_monitors_compositor_is_told_to_leave_them_alone_and_warms_the_rest() {
     let scratch = TempDir::new("night-shift-hardware");
     let (settings, _) = files(&scratch);
     std::fs::create_dir_all(settings.parent().unwrap_or(scratch.path()))

@@ -2,7 +2,7 @@
 
 use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalSize};
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use ui_style::tokens::chrome::ChromeToken;
 
 /// The margin tiled windows keep from each other and from the edges, in logical pixels.
@@ -41,7 +41,7 @@ impl LayoutKnobs {
     /// gap and floor, and a floating window keeps a strip one titlebar tall and four wide on
     /// screen.
     #[must_use]
-    pub fn of(settings: &CasementSettings) -> LayoutKnobs {
+    pub fn of(settings: &CompositorSettings) -> LayoutKnobs {
         let step = i32::from(ChromeToken::TitlebarHeight.length().0);
         LayoutKnobs {
             cascade_step: LogicalPoint { x: step, y: step },

@@ -27,12 +27,12 @@ pub enum NightShiftCommand {
 /// One thing that happened.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NightShiftEvent {
-    /// casement's settings and the manual turn-on were read (again).
+    /// The compositor's settings and the manual turn-on were read (again).
     Loaded {
         light: NightLight,
         manual: Option<Manual>,
     },
-    /// casement's settings could not be read or written.
+    /// The compositor's settings could not be read or written.
     Unreachable,
     /// The person asked.
     Told(NightShiftCommand, Now),
@@ -43,7 +43,7 @@ pub enum NightShiftEvent {
 /// What the service must then do to the files.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NightShiftEffect {
-    /// Write casement's `[night_light]`.
+    /// Write the compositor's `[night_light]`.
     WriteLight(NightLight),
     /// Write the manual turn-on, or forget it.
     WriteManual(Option<Manual>),

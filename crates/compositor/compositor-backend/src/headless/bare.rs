@@ -7,7 +7,7 @@ use super::output_set::tracker_of;
 use super::renderer::{Canvas, Drawn, HeadlessRenderer};
 use super::{FrameSource, VirtualOutputSpec};
 use crate::backend::BackendError;
-use compositor_render::{CasementElement, Compositor};
+use compositor_render::{Compositor, SceneElement};
 use smithay::backend::renderer::damage::OutputDamageTracker;
 use smithay::backend::renderer::element::{Element, Kind};
 use smithay::backend::renderer::gles::GlesRenderer;
@@ -68,24 +68,24 @@ impl BareLayer {
 pub(crate) struct Cursorless<'a>(pub(crate) &'a dyn FrameSource);
 
 impl FrameSource for Cursorless<'_> {
-    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<CasementElement<PixmanRenderer>> {
+    fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<SceneElement<PixmanRenderer>> {
         without_cursor(self.0.pixman(renderer))
     }
 
-    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<CasementElement<GlesRenderer>> {
+    fn gles(&self, renderer: &mut GlesRenderer) -> Vec<SceneElement<GlesRenderer>> {
         without_cursor(self.0.gles(renderer))
     }
 
     #[cfg(feature = "testing")]
-    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<CasementElement<DummyRenderer>> {
+    fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<SceneElement<DummyRenderer>> {
         without_cursor(self.0.dummy(renderer))
     }
 }
 
 /// `elements` but the cursor's.
 pub(crate) fn without_cursor<R: Compositor>(
-    elements: Vec<CasementElement<R>>,
-) -> Vec<CasementElement<R>> {
+    elements: Vec<SceneElement<R>>,
+) -> Vec<SceneElement<R>> {
     elements
         .into_iter()
         .filter(|element| !matches!(element.kind(), Kind::Cursor))
@@ -102,9 +102,9 @@ mod tests {
     use smithay::utils::{Physical, Rectangle};
 
     /// A solid element of `kind`, on pixman's element type (no renderer is needed to hold it).
-    fn solid(kind: Kind) -> CasementElement<PixmanRenderer> {
+    fn solid(kind: Kind) -> SceneElement<PixmanRenderer> {
         let rect = Rectangle::<i32, Physical>::new((0, 0).into(), (4, 4).into());
-        CasementElement::Solid(SolidColorRenderElement::new(
+        SceneElement::Solid(SolidColorRenderElement::new(
             Id::new(),
             rect,
             CommitCounter::default(),
@@ -114,7 +114,7 @@ mod tests {
     }
 
     /// Which of `elements` are the cursor, in order.
-    fn cursors(elements: &[CasementElement<PixmanRenderer>]) -> Vec<bool> {
+    fn cursors(elements: &[SceneElement<PixmanRenderer>]) -> Vec<bool> {
         elements
             .iter()
             .map(|element| matches!(element.kind(), Kind::Cursor))

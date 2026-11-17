@@ -1,6 +1,6 @@
-//! The loop: load the two files, then feed the pure step the person's commands, casement's file
+//! The loop: load the two files, then feed the pure step the person's commands, the compositor's file
 //! changing under us, and the clock reaching the end of a manual turn-on; what the step asks
-//! (a write of either file) is carried out here. Beside it, casement's `skip_outputs` is kept to
+//! (a write of either file) is carried out here. Beside it, the compositor's `skip_outputs` is kept to
 //! the monitors bardo-shell warms (`shell_model::night_shift::skip_outputs`) as the displays come and go.
 
 use std::collections::BTreeSet;
@@ -27,7 +27,7 @@ use shell_model::service::ServiceIo;
 const RECHECK: Duration = Duration::from_secs(60);
 
 pub(crate) async fn run(
-    casement: PathBuf,
+    compositor: PathBuf,
     state: PathBuf,
     clock: Arc<dyn WallClock>,
     displays: watch::Receiver<Displays>,
@@ -37,12 +37,12 @@ pub(crate) async fn run(
         state: tx,
         mut commands,
     } = io;
-    let mut touched = match Debounced::file(&casement, SETTINGS) {
+    let mut touched = match Debounced::file(&compositor, SETTINGS) {
         Ok(touched) => Some(touched),
         Err(error) => {
             eprintln!(
                 "bardo-shell: night shift: watching {}: {error}",
-                casement.display()
+                compositor.display()
             );
             None
         }
@@ -53,7 +53,7 @@ pub(crate) async fn run(
         heard: Heard::Not,
         said: BTreeSet::new(),
         tx,
-        casement,
+        compositor,
         state,
         clock,
         displays,
@@ -104,7 +104,7 @@ pub(crate) async fn run(
     }
 }
 
-/// Whether the shell has said who warms the monitors. Until it has, casement's `skip_outputs`
+/// Whether the shell has said who warms the monitors. Until it has, the compositor's `skip_outputs`
 /// is left as it is, so a start does not undo the last run's list before the policy speaks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Heard {
@@ -118,8 +118,8 @@ struct Live {
     /// The buses already reported as unmatched, so each is said once.
     said: BTreeSet<DdcId>,
     tx: watch::Sender<NightShift>,
-    /// casement's config directory.
-    casement: PathBuf,
+    /// The compositor's config directory.
+    compositor: PathBuf,
     /// bardo-shell's state directory.
     state: PathBuf,
     clock: Arc<dyn WallClock>,
@@ -141,13 +141,13 @@ impl Live {
 
     /// Read the two files and feed what they say.
     fn reload(&mut self) {
-        let event = match read_light(&self.casement) {
+        let event = match read_light(&self.compositor) {
             Ok(light) => NightShiftEvent::Loaded {
                 light,
                 manual: read_manual(&self.state),
             },
             Err(error) => {
-                eprintln!("bardo-shell: night shift: casement's settings: {error}");
+                eprintln!("bardo-shell: night shift: compositor's settings: {error}");
                 NightShiftEvent::Unreachable
             }
         };
@@ -165,8 +165,8 @@ impl Live {
         self.sync_skip();
     }
 
-    /// Make casement's `skip_outputs` list the monitors bardo-shell warms, once the shell has said who
-    /// warms them and casement's settings are readable.
+    /// Make the compositor's `skip_outputs` list the monitors bardo-shell warms, once the shell has said who
+    /// warms them and the compositor's settings are readable.
     fn sync_skip(&mut self) {
         if self.heard == Heard::Not || !self.current.reached {
             return;
@@ -186,8 +186,8 @@ impl Live {
                 );
             }
         }
-        if let Err(error) = write_skip(&self.casement, &skip) {
-            eprintln!("bardo-shell: night shift: casement's skip list: {error}");
+        if let Err(error) = write_skip(&self.compositor, &skip) {
+            eprintln!("bardo-shell: night shift: compositor's skip list: {error}");
         }
     }
 
@@ -213,7 +213,7 @@ impl Live {
 
     fn carry(&self, effect: NightShiftEffect) -> Result<(), super::files::FileError> {
         match effect {
-            NightShiftEffect::WriteLight(light) => write_light(&self.casement, &light),
+            NightShiftEffect::WriteLight(light) => write_light(&self.compositor, &light),
             NightShiftEffect::WriteManual(manual) => write_manual(&self.state, manual.as_ref()),
         }
     }

@@ -1,7 +1,7 @@
 //! `keyboard.*`.
 
 use crate::config::convert;
-use compositor_core::settings::CasementSettings;
+use compositor_core::settings::CompositorSettings;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::Page;
 use settings_types::{Count, Ms};
@@ -72,6 +72,6 @@ pub struct KeyboardSection {
 
 impl Default for KeyboardSection {
     fn default() -> Self {
-        convert::keyboard_doc(&CasementSettings::defaults().keyboard)
+        convert::keyboard_doc(&CompositorSettings::defaults().keyboard)
     }
 }

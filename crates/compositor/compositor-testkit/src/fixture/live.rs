@@ -172,7 +172,7 @@ impl Fixture {
         self.pump();
     }
 
-    /// Where the layout puts `window`'s content when casement frames it (the server-side
+    /// Where the layout puts `window`'s content when the compositor frames it (the server-side
     /// decoration): the titlebar is reserved above it. The window must be arranged.
     ///
     /// # Panics

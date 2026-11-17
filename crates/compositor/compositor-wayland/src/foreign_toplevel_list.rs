@@ -1,5 +1,5 @@
 //! `ext_foreign_toplevel_list_v1`: every window, for docks, switchers and taskbars outside
-//! the shell. Hidden from sandboxed clients (I7). Identifiers are chosen by casement.
+//! the shell. Hidden from sandboxed clients (I7). Identifiers are chosen by compositor.
 
 use crate::states::{GlobalFilter, WaylandFault};
 use compositor_core::WindowId;
@@ -53,14 +53,14 @@ impl ForeignToplevelListPart {
     }
 }
 
-/// The identifier clients see for `window`: casement's own, stable for the window's life and
+/// The identifier clients see for `window`: the compositor's own, stable for the window's life and
 /// never reused in a session (window ids are not), printable ASCII of at most 32 bytes.
 #[must_use]
 pub fn identifier_of(window: WindowId) -> String {
     format!("w{}", window.0)
 }
 
-/// The window an identifier names: the inverse of [`identifier_of`] (`None` for text casement
+/// The window an identifier names: the inverse of [`identifier_of`] (`None` for text the compositor
 /// did not make). The desktop and shell protocols name windows by it across connections.
 #[must_use]
 pub fn window_of_identifier(identifier: &str) -> Option<WindowId> {

@@ -6,7 +6,7 @@
 # confirmation. It only reads: /sys/class/drm, `drm_info`, `lspci` and `libinput list-devices`
 # when they exist; it opens no DRM node, takes no master and changes nothing.
 #
-# Usage: dev/hw/smoke.sh [OUTPUT_DIR]   (default: ./casement-hw-<date>)
+# Usage: dev/hw/smoke.sh [OUTPUT_DIR]   (default: ./compositor-hw-<date>)
 # Nothing here is hardcoded to one machine: every card and connector found is recorded.
 set -euo pipefail
 if [ ! -t 0 ] || [ ! -t 1 ]; then
@@ -20,7 +20,7 @@ if [ "$answer" != "I am at the machine" ]; then
   exit 2
 fi
 
-out="${1:-./casement-hw-$(date +%Y%m%d-%H%M%S)}"
+out="${1:-./compositor-hw-$(date +%Y%m%d-%H%M%S)}"
 mkdir -p "$out/drm"
 
 # Every connector the kernel knows: its status, modes and raw EDID.
@@ -46,5 +46,5 @@ if command -v libinput >/dev/null 2>&1; then
 fi
 
 echo "smoke.sh: recorded into $out"
-echo "Hand the directory to a casement lane: it turns drm/ and drm_info.json into"
+echo "Hand the directory to a compositor lane: it turns drm/ and drm_info.json into"
 echo "crates/compositor/compositor-testkit/fixtures/kms/*.json (the shape of KmsResources)."

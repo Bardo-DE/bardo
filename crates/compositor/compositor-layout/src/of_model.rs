@@ -31,7 +31,7 @@ pub fn spec_of(model: &Model) -> SceneSpec {
 ///
 /// ```
 /// use compositor_core::Model;
-/// use compositor_core::settings::CasementSettings;
+/// use compositor_core::settings::CompositorSettings;
 /// use compositor_core::space::SpaceSeed;
 /// use compositor_core::time::Mono;
 /// use compositor_layout::spec_of_framed;
@@ -39,7 +39,7 @@ pub fn spec_of(model: &Model) -> SceneSpec {
 /// use std::time::Duration;
 ///
 /// let model = Model::new(
-///     CasementSettings::defaults(),
+///     CompositorSettings::defaults(),
 ///     Mono(Duration::ZERO),
 ///     SpaceSeed::from_entropy([7; 16]),
 /// );

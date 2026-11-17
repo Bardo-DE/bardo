@@ -2,7 +2,7 @@
 
 use crate::a11y::LoggedAtspi;
 use crate::backend::CaptureBackend;
-use crate::casement::{CasementDesktop, Door};
+use crate::compositor::{CompositorDesktop, Door};
 use crate::connect::Links;
 use crate::model::InferdCuaModel;
 use computer_use_a11y_atspi::AtspiSource;
@@ -20,7 +20,7 @@ use wayland_client::{ConnectError, Connection};
 
 /// The daemon's seams to the desktop, input, capture, the model and the router.
 ///
-/// They are the desktop of casement when it is running (else none), EI for input, stock toplevel
+/// They are the desktop of the compositor when it is running (else none), EI for input, stock toplevel
 /// capture with masking in cuad, AT-SPI for the tree, inferd for the model, `Intents1.Gate` for the
 /// router, memoryd and the router's message path for records and reports, and the system clock.
 /// With no compositor the desktop and capture are `None` and the daemon says so on the bus.
@@ -28,7 +28,7 @@ use wayland_client::{ConnectError, Connection};
 pub struct SystemSeams;
 
 impl Seams for SystemSeams {
-    type Desktop = Option<CasementDesktop>;
+    type Desktop = Option<CompositorDesktop>;
     type Seat = EiSeat;
     type Capture = Option<CaptureBackend>;
     type A11y = Option<LoggedAtspi>;
@@ -76,10 +76,10 @@ pub struct ReachError(pub String);
 /// What cuad reached of a compositor.
 #[derive(Debug)]
 pub enum Reached {
-    /// casement: its desktop, and a second agent connection for capture.
-    Casement {
+    /// The compositor: its desktop, and a second agent connection for capture.
+    Compositor {
         /// The windows and leases.
-        desktop: CasementDesktop,
+        desktop: CompositorDesktop,
         /// For capture sessions.
         capture: Connection,
     },
@@ -90,28 +90,28 @@ pub enum Reached {
 }
 
 impl Reached {
-    /// The compositor `config` asks for. `Detect` takes casement when `org.bardo.Compositor1`
-    /// has an owner on `bus`, else the environment's compositor, else none; `Only(Casement)`
-    /// fails when casement is not there.
+    /// The compositor `config` asks for. `Detect` takes the compositor when `org.bardo.Compositor1`
+    /// has an owner on `bus`, else the environment's compositor, else none; `Only(Compositor)`
+    /// fails when the compositor is not there.
     ///
     /// # Errors
     ///
-    /// `ReachError` when `config` asks for casement and it is not there, or no compositor can be
+    /// `ReachError` when `config` asks for the compositor and it is not there, or no compositor can be
     /// reached.
     pub async fn find(config: &CuadConfig, bus: &zbus::Connection) -> Result<Reached, ReachError> {
         match config.backend {
-            BackendChoice::Only(BackendKind::Casement) => {
+            BackendChoice::Only(BackendKind::Compositor) => {
                 let door = Door::find(bus).await.ok_or_else(|| {
                     ReachError("org.bardo.Compositor1 has no owner on the session bus".into())
                 })?;
-                Self::casement(door).await
+                Self::compositor(door).await
             }
             BackendChoice::Only(BackendKind::KwinStock) => Ok(Self::environment()),
             BackendChoice::Detect => match Door::find(bus).await {
-                Some(door) => match Self::casement(door).await {
+                Some(door) => match Self::compositor(door).await {
                     Ok(reached) => Ok(reached),
                     Err(error) => {
-                        eprintln!("cuad: casement is running but not usable ({error})");
+                        eprintln!("cuad: compositor is running but not usable ({error})");
                         Ok(Self::environment())
                     }
                 },
@@ -121,7 +121,7 @@ impl Reached {
     }
 
     /// Two agent connections from `door`: one for the desktop client, one for capture.
-    async fn casement(door: Door) -> Result<Reached, ReachError> {
+    async fn compositor(door: Door) -> Result<Reached, ReachError> {
         let fail =
             |what: &str, error: &dyn std::fmt::Display| ReachError(format!("{what}: {error}"));
         let for_desktop = door
@@ -134,10 +134,10 @@ impl Reached {
             .map_err(|e| fail("Compositor1.Connect(agent)", &e))?;
         let capture = Connection::from_socket(UnixStream::from(for_capture))
             .map_err(|e| fail("the capture connection", &e))?;
-        let desktop = CasementDesktop::start(door, for_desktop)
+        let desktop = CompositorDesktop::start(door, for_desktop)
             .await
             .map_err(|e| fail("the desktop client", &e))?;
-        Ok(Reached::Casement { desktop, capture })
+        Ok(Reached::Compositor { desktop, capture })
     }
 
     fn environment() -> Reached {
@@ -150,7 +150,9 @@ impl Reached {
     /// The one line the daemon logs about what it uses.
     pub fn describe(&self) -> String {
         match self {
-            Reached::Casement { .. } => "backend casement (Compositor1 agent connections)".into(),
+            Reached::Compositor { .. } => {
+                "backend compositor (Compositor1 agent connections)".into()
+            }
             Reached::Environment(_) => {
                 "backend kwin_stock (the environment's compositor, capture only)".into()
             }
@@ -174,9 +176,10 @@ impl SystemSeams {
             Some(CaptureBackend::over(kind, connection).with_clock(Arc::new(RunClock(clock))))
         };
         let (desktop, capture) = match reached {
-            Reached::Casement { desktop, capture } => {
-                (Some(desktop), capture_over(BackendKind::Casement, capture))
-            }
+            Reached::Compositor { desktop, capture } => (
+                Some(desktop),
+                capture_over(BackendKind::Compositor, capture),
+            ),
             Reached::Environment(pair) => {
                 (None, capture_over(BackendKind::KwinStock, pair.capture))
             }
@@ -184,8 +187,8 @@ impl SystemSeams {
         };
         Parts {
             desktop,
-            // One seat for everyone: casement's lease scopes the input, but the seat is the
-            // person's until casement's agent seat (P4).
+            // One seat for everyone: the compositor's lease scopes the input, but the seat is the
+            // person's until the compositor's agent seat (P4).
             seat: EiSeat::new(SeatIsolation::SharedSeat),
             capture,
             a11y: match config.a11y {

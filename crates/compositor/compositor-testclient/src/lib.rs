@@ -1,4 +1,4 @@
-//! casement's test clients: typed wayland-client helpers per protocol, the [`Transcript`] every
+//! The compositor's test clients: typed wayland-client helpers per protocol, the [`Transcript`] every
 //! client keeps (each event with its virtual instant), test [`Pattern`]s and shm buffers.
 //! Reaches no smithay (row B9): the clients speak only the wire.
 //!

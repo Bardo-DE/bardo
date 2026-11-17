@@ -1,4 +1,4 @@
-//! `wp_viewporter`: crop and scale. smithay applies viewports in its surface state; casement
+//! `wp_viewporter`: crop and scale. smithay applies viewports in its surface state; the compositor
 //! adds nothing at P0.
 
 use crate::states::GlobalFilter;

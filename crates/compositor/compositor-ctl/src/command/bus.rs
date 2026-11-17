@@ -17,14 +17,14 @@ const CALL_PATIENCE: Duration = Duration::from_secs(60);
 pub enum BusError {
     /// `$DBUS_SESSION_BUS_ADDRESS` is not set: not started through `dev/up.sh`.
     #[error(
-        "DBUS_SESSION_BUS_ADDRESS is not usable (start casement with dev/up.sh and source its env file)"
+        "DBUS_SESSION_BUS_ADDRESS is not usable (start compositor with dev/up.sh and source its env file)"
     )]
     NoBus(#[source] std::env::VarError),
     /// The bus or the call refused.
     #[error("{0}")]
     Zbus(#[from] zbus::Error),
     /// The call did not come back in time.
-    #[error("no answer from casement within {0:?}")]
+    #[error("no answer from compositor within {0:?}")]
     TimedOut(Duration, #[source] tokio::time::error::Elapsed),
 }
 

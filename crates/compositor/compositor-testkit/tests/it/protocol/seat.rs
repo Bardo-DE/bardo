@@ -135,7 +135,7 @@ fn repeat_info_comes_from_settings() {
 /// again, an unrelated change and a layout that does not compile send none.
 #[test]
 fn a_layout_change_in_the_settings_file_sends_a_new_keymap() {
-    use compositor_app::config::{CasementDoc, KeyboardSection, PointerSection};
+    use compositor_app::config::{CompositorDoc, KeyboardSection, PointerSection};
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");
     let id = fixture.connect(ConnectionRole::Public);
     fixture.pump();
@@ -148,12 +148,12 @@ fn a_layout_change_in_the_settings_file_sends_a_new_keymap() {
             .count()
     };
     assert_eq!(keymaps(&mut fixture), 1, "the first keymap, at bind");
-    let layout = |name: &str| CasementDoc {
+    let layout = |name: &str| CompositorDoc {
         keyboard: KeyboardSection {
             xkb_layout: name.to_owned(),
             ..KeyboardSection::default()
         },
-        ..CasementDoc::default()
+        ..CompositorDoc::default()
     };
 
     fixture.settings_file_changed(&layout("de"));
@@ -164,7 +164,7 @@ fn a_layout_change_in_the_settings_file_sends_a_new_keymap() {
     fixture.pump();
     assert_eq!(keymaps(&mut fixture), 2, "the same file again sends none");
 
-    let unrelated = CasementDoc {
+    let unrelated = CompositorDoc {
         pointer: PointerSection::default(),
         ..layout("de")
     };

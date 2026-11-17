@@ -42,7 +42,7 @@ read -r fx _ _ _ <<<"$(win_rect XProbeScaleOne)"
 first=left; [ "$fx" -lt 1920 ] || first=right
 echo "fact: the first window is on the $first output"
 
-# A second window: casement places it by its own rules; the check runs on whichever output it
+# A second window: the compositor places it by its own rules; the check runs on whichever output it
 # lands on, and the script says so when both landed on one.
 x11_do X map two class=XProbeScaleTwo size=300x200
 x11_wait X '^x11: event two mapped'

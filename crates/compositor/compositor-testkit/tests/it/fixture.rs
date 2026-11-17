@@ -76,7 +76,7 @@ fn chopping_an_advance_differently_changes_nothing() {
 #[test]
 fn two_fixtures_on_one_thread_keep_their_own_clocks() {
     // SP3: a thread-installed clock gave the first fixture 1 vblank in 1 s while a second was
-    // alive; casement's clocks are values.
+    // alive; the compositor's clocks are values.
     let mut first = Fixture::start(FixtureSpec::desktop()).expect("first");
     let mut second = Fixture::start(FixtureSpec::desktop()).expect("second");
     assert_eq!(first.advance(Duration::from_secs(1)).frames, 60);

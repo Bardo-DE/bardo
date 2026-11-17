@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Acceptance for the dock, on casement (brought up and ended by start_compositor). Starts `bardo-shell run` from this checkout's debug build (`--features debug`) with a
+# Acceptance for the dock, on the compositor (brought up and ended by start_compositor). Starts `bardo-shell run` from this checkout's debug build (`--features debug`) with a
 # scratch HOME and XDG tree (the pins, the appearance file and the icon cache it writes never touch
 # the real ones), its own XDG_RUNTIME_DIR (the nested socket as an absolute WAYLAND_DISPLAY) and a
 # private dbus-daemon as both its session and its system bus (refused if it would be the real one),
@@ -14,14 +14,14 @@
 #      (the dock's view of a mapped toplevel) shows within 3 s.
 #   4. `badge_emitter` for that app shows a count badge within 1 s.
 #   5. A secondary click on that tile (`surface_click --button secondary`: `bardo-shell debug click` on KWin,
-#      a real right press through casement's inject on casement) opens its context
+#      a real right press through the compositor's inject on the compositor) opens its context
 #      menu popup.
 #   6. The pill's corner is a squircle of `--shell-dock-pill-radius` (PILL_RADIUS, its shipped 22;
 #      the radius is a stylesheet token now, not a settings key): the pixel centred 6.5 px in from the
 #      pill's left edge and 1.5 px down from its top is the pill's (inside a 12 px squircle,
 #      whose edge crosses that row 5.4 px in, and outside a 22 px one, 7.7 px in: its extent is
 #      capped at half the 60 px pill).
-# Screenshots: dev/out/dock-casement.png (rest), dock-casement-magnified.png, dock-casement-menu.png,
+# Screenshots: dev/out/dock-compositor.png (rest), dock-compositor-magnified.png, dock-compositor-menu.png,
 # over the test wallpaper (dev/lib/backdrop.sh).
 #
 # --icons steps (the icon style on the dock, its own daemon and pins):
@@ -72,7 +72,7 @@ PAD=6
 TILE=48
 PILL_Y=0 BASELINE_Y=0 DOT_Y=0 SURFACE_H=0
 
-# Kill every foot running on casement's socket (never the host's).
+# Kill every foot running on the compositor's socket (never the host's).
 kill_nested_terms() {
   local pid
   for pid in $(pgrep -x foot); do
@@ -129,7 +129,7 @@ step_exclusive_zone() {
   local height
   height=$(maximised_height) || return $?
   echo "output ${OUT_H}, maximised window ${height}, bar ${BAR_H}, dock ${RESERVE}" | tee "$OUT_DIR/exclusive-zone.log" >&2
-  shot "$SHOTS/dock-casement.png" >/dev/null 2>&1 || true
+  shot "$SHOTS/dock-compositor.png" >/dev/null 2>&1 || true
   [ "$height" = "$(( OUT_H - BAR_H - RESERVE ))" ]
 }
 
@@ -153,7 +153,7 @@ EOF
   sleep 0.05
   bardo-shell debug pointer "$DOCK" $(( OUT_W / 2 )) "$PILL_Y" >/dev/null
   sleep 0.3
-  shot "$SHOTS/dock-casement-magnified.png" >/dev/null 2>&1 || true
+  shot "$SHOTS/dock-compositor-magnified.png" >/dev/null 2>&1 || true
   read -r f1 c1 < <(counters_of "$DOCK")
   frames=$(( f1 - f0 )); callbacks=$(( c1 - c0 ))
   echo "sweep: frames $frames callbacks $callbacks" | tee -a "$log" >&2
@@ -232,7 +232,7 @@ step_badge() {
 step_menu() {
   local log="$OUT_DIR/menu.log" x opened=no
   x=$(first_tile_x)
-  # A real right press at the tile's global point: casement dismisses a popup grabbed on a
+  # A real right press at the tile's global point: the compositor dismisses a popup grabbed on a
   # synthetic click's serial. The dock is anchored to the bottom of the output, full width.
   surface_click "$DOCK" "$x" "$PILL_Y" --button secondary --origin 0 $(( OUT_H - SURFACE_H )) >"$log" 2>&1 || return 1
   for _ in $(seq 40); do
@@ -240,7 +240,7 @@ step_menu() {
     sleep 0.05
   done
   sleep 0.5
-  shot "$SHOTS/dock-casement-menu.png" >/dev/null 2>&1 || true
+  shot "$SHOTS/dock-compositor-menu.png" >/dev/null 2>&1 || true
   echo "popup $DOCK/popup opened: $opened" | tee -a "$log" >&2
   [ "$opened" = yes ]
 }
@@ -249,9 +249,9 @@ step_menu() {
 step_radius() {
   local log="$OUT_DIR/radius.log"
   # Step 5 left the menu open with the real pointer on the dock, which keeps it magnified (the
-  # tiles then reach above the pill and the edge below is not the pill's): on casement a click
+  # tiles then reach above the pill and the edge below is not the pill's): on the compositor a click
   # far from the dock closes the menu and takes the pointer off it.
-  [ "$COMPOSITOR" = casement ] && bardo-compositorctl debug inject "move 10 10" "sleep 60" "press left" \
+  [ "$COMPOSITOR" = compositor ] && bardo-compositorctl debug inject "move 10 10" "sleep 60" "press left" \
     "sleep 40" "release left" "sleep 200" >/dev/null 2>&1
   bardo-shell debug leave "$DOCK" >/dev/null 2>&1
   sleep 1

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bardo-shell's own lock screen acceptance (design/20 §1.9), on casement ONLY (brought up and ended by start_compositor). Starts `bardo-shell run` from this
+# bardo-shell's own lock screen acceptance (design/20 §1.9), on the compositor ONLY (brought up and ended by start_compositor). Starts `bardo-shell run` from this
 # checkout's debug build (`--features debug`) with a scratch XDG_CONFIG_HOME, XDG_STATE_HOME and
 # XDG_CACHE_HOME, its own XDG_RUNTIME_DIR (the nested socket as an absolute WAYLAND_DISPLAY, so the
 # lock marker and the single-instance lock are the script's), under a private session bus.
@@ -15,12 +15,12 @@
 #      (`session_locker`) is refused (exit 3) while bardo-shell holds the lock.
 #   2. A capture of every output's lock surface (`shell-lock/<out>`; `debug stats` does not list
 #      lock surfaces); the prompt's output shows the clock and the field
-#      (dev/out/lock-casement.png), and its pixels differ from a clock-only surface's in the
+#      (dev/out/lock-compositor.png), and its pixels differ from a clock-only surface's in the
 #      prompt's band.
 #   3. `bardo-shell debug auth refuse`: the prompt spins then shakes (captures in the prompt's band
 #      differ from the idle one, and settle back to it), and the session stays locked.
 #   4. Five more refusals (six wrongs): no lockout, so the prompt settles back to the
-#      idle field every time (dev/out/lock-sixwrong-casement.png; the band matches the idle one, no
+#      idle field every time (dev/out/lock-sixwrong-compositor.png; the band matches the idle one, no
 #      "Try again at" line), still locked.
 #   5. 5 s idle while locked, after the caret's ten blinking seconds: 0 commits on the lock
 #      surfaces (counted from the daemon's WAYLAND_DEBUG=client log, since `debug stats` has no
@@ -201,9 +201,9 @@ EOF
     fi
   done
   bardo-shell debug stats | grep -c '"shell-lock/' | xargs -I{} echo "debug stats rows for lock surfaces: {}" | tee -a "$log" >&2
-  [ -n "$PROMPT_OUT" ] && cp "$OUT_DIR/lock-$PROMPT_OUT.png" "$SHOTS/lock-casement.png"
+  [ -n "$PROMPT_OUT" ] && cp "$OUT_DIR/lock-$PROMPT_OUT.png" "$SHOTS/lock-compositor.png"
   cp "$OUT_DIR/lock-$PROMPT_OUT.png" "$OUT_DIR/idle.png" 2>/dev/null
-  echo "the prompt is on $PROMPT_OUT: $SHOTS/lock-casement.png; backdrops written: $(find "$CACHE" -name '*-backdrop.png' | wc -l)" | tee -a "$log" >&2
+  echo "the prompt is on $PROMPT_OUT: $SHOTS/lock-compositor.png; backdrops written: $(find "$CACHE" -name '*-backdrop.png' | wc -l)" | tee -a "$log" >&2
   [ "$ok" = 0 ] && [ "$best" -gt 200 ]
 }
 
@@ -252,9 +252,9 @@ step_no_lockout() {
     sleep 0.9
   done
   sleep 0.5
-  capture_lock "$PROMPT_OUT" "$SHOTS/lock-sixwrong-casement.png"
-  diff=$(band_diff "$OUT_DIR/idle.png" "$SHOTS/lock-sixwrong-casement.png" 70 97)
-  echo "six wrongs: $diff pixels differ from the idle prompt (no 'Try again at' line: no lockout); status $(lock_phase); $SHOTS/lock-sixwrong-casement.png" \
+  capture_lock "$PROMPT_OUT" "$SHOTS/lock-sixwrong-compositor.png"
+  diff=$(band_diff "$OUT_DIR/idle.png" "$SHOTS/lock-sixwrong-compositor.png" 70 97)
+  echo "six wrongs: $diff pixels differ from the idle prompt (no 'Try again at' line: no lockout); status $(lock_phase); $SHOTS/lock-sixwrong-compositor.png" \
     | tee -a "$log" >&2
   [ "$diff" -lt 150 ] && [ "$(lock_phase)" = "locked" ]
 }
@@ -349,7 +349,7 @@ step_crash_relocks() {
   start_lock_daemon daemon-restarted.log || return 1
   start=$(now_ms)
   again=$(until_phase "$start" "locked" 3000)
-  capture_lock "$FIRST" "$OUT_DIR/relocked.png" && cp "$OUT_DIR/relocked.png" "$SHOTS/lock-relocked-casement.png"
+  capture_lock "$FIRST" "$OUT_DIR/relocked.png" && cp "$OUT_DIR/relocked.png" "$SHOTS/lock-relocked-compositor.png"
   start=$(now_ms)
   bardo-shell debug auth accept >>"$log" 2>&1
   took=$(until_phase "$start" "unlocked" 3000)
@@ -389,8 +389,8 @@ recover() {
     esac
     stop_daemon
   fi
-  if [ "$COMPOSITOR" = casement ]; then
-    echo "recovery: casement is private to this jail (it goes with it), no stand-in locker needed" >&2
+  if [ "$COMPOSITOR" = compositor ]; then
+    echo "recovery: compositor is private to this jail (it goes with it), no stand-in locker needed" >&2
   elif nested_locker 0 >"$OUT_DIR/recovery.log" 2>&1; then
     echo "recovery: the stand-in locked and unlocked the nested session (it is unlocked)" >&2
   else
@@ -415,5 +415,5 @@ fi
 recover
 trap - EXIT
 scratch_drop
-echo "logs in $OUT_DIR; screenshots $SHOTS/lock-casement.png, $SHOTS/lock-sixwrong-casement.png"
+echo "logs in $OUT_DIR; screenshots $SHOTS/lock-compositor.png, $SHOTS/lock-sixwrong-compositor.png"
 exit "$status"

@@ -41,7 +41,7 @@ fn machine() -> (tempfile::TempDir, SysRoot) {
     fabricate(dir.path(), 0, "simple-framebuffer.0", "simple-framebuffer");
     fabricate_on(dir.path(), 1, "0000:10:00.0", "amdgpu", "pci");
     fabricate_on(dir.path(), 2, "0000:01:00.0", "nvidia", "pci");
-    fabricate_on(dir.path(), 3, "faux/casement", "faux_driver", "faux");
+    fabricate_on(dir.path(), 3, "faux/compositor", "faux_driver", "faux");
     let root = SysRoot::under(dir.path());
     (dir, root)
 }
@@ -99,7 +99,7 @@ fn the_framebuffer_is_not_opened_beside_real_gpus() {
 #[test]
 fn a_virtual_display_is_not_opened_even_alone() {
     let dir = tempfile::tempdir().expect("temp dir");
-    fabricate_on(dir.path(), 0, "faux/casement", "faux_driver", "faux");
+    fabricate_on(dir.path(), 0, "faux/compositor", "faux_driver", "faux");
     let backend = backend(
         SysRoot::under(dir.path()),
         vec![card(0)],

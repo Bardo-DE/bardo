@@ -1,8 +1,8 @@
-//! casement's D-Bus servers (C55): `org.bardo.Compositor1` (P2-Z) and, under feature
+//! The compositor's D-Bus servers (C55): `org.bardo.Compositor1` (P2-Z) and, under feature
 //! `debug-inject`, `org.bardo.Compositor.Debug1`, which `bardo-compositorctl debug` drives on the jail's
 //! private bus. The inject and wait grammars are pure and always built, so their tables run
 //! in every gate. `shell_calls` is the seam bindings call sill through (A4); `space_registry` is
-//! the seam the Spaces casement mints are registered with the account service through.
+//! the seam the Spaces the compositor mints are registered with the account service through.
 //! `Compositor1` proves each caller through the caller-identity library before the event loop
 //! hears of the call; `privacy` serves the Privacy list for Settings; `a11y` checks that a
 //! window's accessibility root belongs to the window's own program.

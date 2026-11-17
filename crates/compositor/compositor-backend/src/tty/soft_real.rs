@@ -1,5 +1,5 @@
 //! The software scanout surface (feature `tty`): `ScanoutSurface` over smithay's `DrmCompositor`
-//! with a dumb-buffer allocator and pixman, a thin adapter (B7). CASB-07: `casement --safe` has
+//! with a dumb-buffer allocator and pixman, a thin adapter (B7). CASB-07: `bardo-compositor --safe` has
 //! to run on a machine whose GPU driver crashes, so nothing here opens a GBM device, an EGL
 //! display or a GLES context.
 //!

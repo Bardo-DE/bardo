@@ -209,7 +209,7 @@ impl DmabufOffer {
 }
 
 /// The largest a client dma-buf may be on either side: 16384 is the biggest texture the GPUs
-/// casement targets sample, so a buffer past it could only fail on every frame it is drawn.
+/// The compositor targets sample, so a buffer past it could only fail on every frame it is drawn.
 pub const MAX_DMABUF_SIDE: u32 = 16384;
 
 /// A client imported `dmabuf`: true (the renderer can sample it) when something is advertised and

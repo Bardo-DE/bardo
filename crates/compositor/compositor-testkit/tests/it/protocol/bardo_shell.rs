@@ -291,7 +291,7 @@ fn modifiers_reach_the_shell_without_focus() {
     assert_eq!(shell.modifiers_of(bar.surface()), [command, 0]);
 }
 
-/// Maps a window whose client was answered server-side (the Mac frame is casement's): the
+/// Maps a window whose client was answered server-side (the Mac frame is the compositor's): the
 /// toplevel is decorated before its first commit, then it maps at `size`.
 fn map_framed(fixture: &mut Fixture, id: ClientId, base: &WmBase, size: (u32, u32)) {
     let manager = DecorationManager::bind(fixture.client(id)).expect("xdg_decoration");

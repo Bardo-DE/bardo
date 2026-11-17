@@ -13,7 +13,7 @@ use crate::output::{
 };
 use crate::policy::ConnectionRole;
 use crate::privilege::{Book, ClientStanding, Edit, Floor, UnixSeconds};
-use crate::settings::CasementSettings;
+use crate::settings::CompositorSettings;
 use crate::shell::ShellRequest;
 use crate::space::{SpaceFile, WorkspaceRequest};
 use crate::time::TimerKey;
@@ -188,7 +188,7 @@ pub enum Event {
         toggle: Toggle,
     },
     /// The settings changed.
-    SettingsChanged(Box<CasementSettings>),
+    SettingsChanged(Box<CompositorSettings>),
     /// A client asked to change an output (`zwlr_output_manager_v1`, `zwlr_output_power_v1`);
     /// the model checks it against the display's facts and answers with `ApplyOutput` or a
     /// note (P1-M1). A change by a program is a trial the person keeps or reverts

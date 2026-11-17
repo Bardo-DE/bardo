@@ -55,7 +55,7 @@ impl<'a> Recipe<'a> {
         Self {
             version,
             listed: vec![
-                ("bin/bardo-compositor", "casement 1"),
+                ("bin/bardo-compositor", "compositor 1"),
                 ("share/wayland-sessions/bardo.desktop", "[Desktop Entry]"),
             ],
             packed: None,
@@ -136,7 +136,7 @@ pub fn describe(
     bundle: &[u8],
 ) -> String {
     let mut text = format!(
-        "format = 1\nversion = \"{version}\"\ndate = \"2026-10-20T08:00:00Z\"\nnotes = \"Notes for {version}\"\nbundle = {{ name = \"bundle.tar.zst\", sha256 = \"{}\", size = {} }}\n[components]\ncasement = \"e616a79\"\n",
+        "format = 1\nversion = \"{version}\"\ndate = \"2026-10-20T08:00:00Z\"\nnotes = \"Notes for {version}\"\nbundle = {{ name = \"bundle.tar.zst\", sha256 = \"{}\", size = {} }}\n[components]\ncompositor = \"e616a79\"\n",
         Sha256Hex::of(bundle),
         bundle.len()
     );

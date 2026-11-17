@@ -347,7 +347,7 @@ fn key_gesture(shell: &Shell, gesture: KeyGesture) {
     }
 }
 
-/// The kill chord: every run the companion has going is paused (casement-intents halts the
+/// The kill chord: every run the companion has going is paused (compositor-intents halts the
 /// agent runs themselves).
 fn companion_stop(shell: &Shell) {
     let _companion_may_be_gone = shell
@@ -366,7 +366,7 @@ fn option_variants() {}
 
 /// The compositor's switcher events (apps, shown, selected, hidden) will drive the switcher
 /// panel, answered with `PickSwitcher` and `CancelSwitcher`; the panel still follows its own
-/// machine. Lane P3-SW (casement side) and P3-SILL (the panel).
+/// machine. Lane P3-SW (the compositor side) and P3-SILL (the panel).
 fn switcher_panel() {}
 
 /// An edge reveal shows or hides the bar (top edge) or the dock (bottom edge) while a window is

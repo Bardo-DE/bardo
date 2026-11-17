@@ -1,5 +1,5 @@
 //! A server-side frame as elements: the titlebar with its lights in front of the window's
-//! surfaces, the shadow behind them. Both are casement's own rasters. The titlebar (`frame/raster.rs`)
+//! surfaces, the shadow behind them. Both are the compositor's own rasters. The titlebar (`frame/raster.rs`)
 //! is cached in the [`TextureBook`] per window, size, scale and look; the shadow is eight tiles
 //! (`frame/shadow.rs`) cached per scale, radius and layers, with no window size in the key; a window
 //! too small for the tiles has one raster of its own size, cached by size.
@@ -23,7 +23,7 @@ pub(crate) fn shadow_tiles(look: &FrameLook, scale: Scale) -> Tiles {
     shadow::tiles(&look.shadow, look.radius, scale)
 }
 
-use super::CasementElement;
+use super::SceneElement;
 use super::window::alpha;
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
@@ -72,7 +72,7 @@ pub fn frame_elements<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> (Vec<CasementElement<R>>, Vec<CasementElement<R>>) {
+) -> (Vec<SceneElement<R>>, Vec<SceneElement<R>>) {
     let FrameDraw {
         style,
         title,
@@ -89,7 +89,7 @@ pub fn frame_elements<R: Compositor>(
         bar: placed_about(shrink, content.origin, bar),
         outline: placed_about(shrink, content.origin, outline),
     };
-    let front: Vec<CasementElement<R>> = view
+    let front: Vec<SceneElement<R>> = view
         .area
         .intersection(&seen.bar)
         .and_then(|_| {
@@ -120,7 +120,7 @@ pub fn frame_elements<R: Compositor>(
                 &buffer,
             )
         })
-        .map(CasementElement::Memory)
+        .map(SceneElement::Memory)
         .into_iter()
         .collect();
     let front = title_element(
@@ -158,7 +158,7 @@ pub fn client_shadow_elements<R: Compositor>(
     opacity: Fraction,
     (view, book): (&OutputView, &TextureBook),
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let shrink = Shrink::of(full, content.size);
     let outline = LogicalRect::new(content.origin, full);
     shadow_elements(
@@ -249,7 +249,7 @@ fn title_element<R: Compositor>(
     view: &OutputView,
     book: &TextureBook,
     renderer: &mut R,
-) -> Option<CasementElement<R>> {
+) -> Option<SceneElement<R>> {
     let title = title?;
     view.area.intersection(drawn)?;
     let pixels = buffer_size(bar.size, view.scale);
@@ -284,7 +284,7 @@ fn title_element<R: Compositor>(
         faded,
         &buffer,
     )
-    .map(CasementElement::Memory)
+    .map(SceneElement::Memory)
 }
 
 /// A label (a text raster made like a title) laid over `at`, global logical pixels: the same
@@ -295,7 +295,7 @@ pub fn label_element<R: Compositor>(
     at: LogicalRect,
     view: &OutputView,
     renderer: &mut R,
-) -> Option<CasementElement<R>> {
+) -> Option<SceneElement<R>> {
     view.area.intersection(&at)?;
     let pixels = buffer_size(at.size, view.scale);
     if (label.width, label.height) != (pixels.w, pixels.h) {
@@ -315,7 +315,7 @@ pub fn label_element<R: Compositor>(
         1.0,
         &buffer,
     )
-    .map(CasementElement::Memory)
+    .map(SceneElement::Memory)
 }
 
 /// `made` as a buffer smithay can upload.
@@ -348,7 +348,7 @@ fn shadow_elements<R: Compositor>(
     faded: f32,
     (view, book): (&OutputView, &TextureBook),
     renderer: &mut R,
-) -> Vec<CasementElement<R>> {
+) -> Vec<SceneElement<R>> {
     let margin = i32::try_from(slices::MARGIN).unwrap_or(0);
     let reach = shrink.about(
         outline.origin,
@@ -384,7 +384,7 @@ fn shadow_elements<R: Compositor>(
             faded,
             set.buffer(),
         )
-        .map(CasementElement::Memory)
+        .map(SceneElement::Memory)
         .into_iter()
         .collect();
     }
@@ -414,7 +414,7 @@ fn shadow_elements<R: Compositor>(
             );
             let src = edge_inside(slice.piece, src);
             let at = shadow_place::exact(dest.origin, view);
-            element_at(renderer, at, dest.size, src, faded, buffer).map(CasementElement::Memory)
+            element_at(renderer, at, dest.size, src, faded, buffer).map(SceneElement::Memory)
         })
         .collect()
 }

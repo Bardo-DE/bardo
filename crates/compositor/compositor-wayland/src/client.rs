@@ -1,4 +1,4 @@
-//! What casement keeps per Wayland client: its key, the socket role it came through (I7) and
+//! What the compositor keeps per Wayland client: its key, the socket role it came through (I7) and
 //! smithay's per-client compositor state.
 
 use crate::consent::{ImageWatch, Ledger, Unwatched};
@@ -15,7 +15,7 @@ use smithay::wayland::compositor::CompositorClientState;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
 
-/// The key of the client that owns `surface`, when casement inserted that client.
+/// The key of the client that owns `surface`, when the compositor inserted that client.
 pub fn key_of_surface(surface: &WlSurface) -> Option<ClientKey> {
     surface
         .client()
@@ -31,7 +31,7 @@ pub fn key_of_surface(surface: &WlSurface) -> Option<ClientKey> {
 pub struct ClearedClients(BTreeMap<ClientKey, Client>);
 
 impl ClearedClients {
-    /// Notes `client`; one casement did not insert is not noted (it has no commits of ours).
+    /// Notes `client`; one the compositor did not insert is not noted (it has no commits of ours).
     pub fn note(&mut self, client: Client) {
         if let Some(key) = ClientState::of(&client).map(|data| data.key) {
             self.0.entry(key).or_insert(client);
@@ -189,7 +189,7 @@ impl ClientState {
         ClientState { gone, ..self }
     }
 
-    /// The state `client` was inserted with, if it was inserted by casement.
+    /// The state `client` was inserted with, if it was inserted by compositor.
     #[must_use]
     pub fn of(client: &Client) -> Option<&ClientState> {
         client.get_data::<ClientState>()

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build casement and install it: the compositor and its control tool, and the systemd user unit
+# Build the compositor and install it: the compositor and its control tool, and the systemd user unit
 # that starts the compositor in the desktop session (dist/bardo-compositor.service, with its ExecStart
 # rewritten to the installed binary). The login entry and the session script are the desktop
 # repo's (install/). Safe to run again: a file already in place and identical is left alone.
@@ -131,7 +131,7 @@ grep -q "^ExecStart=$prefix/bin/bardo-compositor\( \|\$\)" "$rendered" || die "$
 put 644 "$rendered" "$prefix/lib/systemd/user/bardo-compositor.service"
 
 step "4/5 the settings schema ($destdir$prefix/share/bardo/settings)"
-# The Settings app finds casement's keys (Spaces, pointer, keyboard...) by this file.
+# The Settings app finds the compositor's keys (Spaces, pointer, keyboard...) by this file.
 if [ "$dry" = yes ]; then
   note "would run: $target/bardo-compositor --write-schema and install compositor.settings.toml"
 else

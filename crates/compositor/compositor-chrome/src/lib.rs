@@ -1,7 +1,7 @@
 //! The text of a server-side window frame: the title, laid out with parley (fontique's system
 //! fonts), truncated with an ellipsis at its end, and rasterised by `vello_cpu` to premultiplied
 //! RGBA8 at the output's native scale. The only crate that reaches the text stack (boundary row
-//! B15); everything else in casement takes the pixels as data.
+//! B15); everything else in the compositor takes the pixels as data.
 //!
 //! The font comes from Bardo's `title_font` token (family, 13 px, weight 600), never from a number
 //! written here; the ink from Bardo's `Ink` and `InkSoft` colours, the secondary one for a window

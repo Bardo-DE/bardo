@@ -115,7 +115,7 @@ pub enum WlcsEvent {
 }
 
 /// The seam between wlcs and a compositor: one call per [`WlcsEvent`]. The implementation is
-/// [`host::Host`](crate::host::Host), casement's own `Fixture` (the real `State` on the headless
+/// [`host::Host`](crate::host::Host), the compositor's own `Fixture` (the real `State` on the headless
 /// backend).
 pub trait Compositor {
     /// Applies one request; `Break` once [`WlcsEvent::Exit`] arrived, `Continue` to keep serving.

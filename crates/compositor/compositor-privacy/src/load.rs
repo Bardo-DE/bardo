@@ -62,7 +62,7 @@ pub fn save_book(store: &mut dyn PrivacyStore, book: &Book) {
     match book.to_toml() {
         Ok(text) => {
             if let Err(error) = store.write_book(&text) {
-                tracing::warn!(%error, "the privacy book could not be saved; the answers last until casement stops");
+                tracing::warn!(%error, "the privacy book could not be saved; the answers last until compositor stops");
             }
         }
         Err(error) => tracing::warn!(%error, "the privacy book could not be written out"),

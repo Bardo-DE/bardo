@@ -1,4 +1,4 @@
-//! The D-Bus connections casement holds (`compositor_app::IpcState::handles`).
+//! The D-Bus connections the compositor holds (`compositor_app::IpcState::handles`).
 
 /// The live D-Bus connections: the Debug1 server under `debug-inject` (P0) and
 /// `org.bardo.Compositor1` on the session bus (P2-Z).

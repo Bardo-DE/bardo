@@ -35,7 +35,7 @@ pub enum DeviceEvent {
 /// }
 /// ```
 pub trait DeviceSource: std::fmt::Debug {
-    /// The display devices present when casement started.
+    /// The display devices present when the compositor started.
     fn present(&self) -> Vec<DevicePath>;
 
     /// The next event, if one is waiting.

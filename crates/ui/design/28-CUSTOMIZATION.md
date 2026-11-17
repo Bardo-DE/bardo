@@ -545,7 +545,7 @@ create keyboard shortcuts only for existing menu commands" (mchlp2271). HIG keyb
 standard shortcuts, custom ones only for frequent commands.
 
 **Today.** Global keys belong to the compositor. sill ships and writes the compositor's shortcut files,
-`the shortcut file` and `.../system_actions` (under `dist/casement`;
+`the shortcut file` and `.../system_actions` (under `dist/compositor`;
 sill FINDINGS: the launcher, screenshots, the switcher, brightness and lock are bound there).
 Bardo has `StandardAction` and `Shortcut::custom` refusing reserved chords (27 §6.2, H0).
 

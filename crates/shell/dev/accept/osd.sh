@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# OSD acceptance (design/20 §1.7), on casement (brought up and ended by start_compositor). Starts `bardo-shell run` from this checkout's debug build
+# OSD acceptance (design/20 §1.7), on the compositor (brought up and ended by start_compositor). Starts `bardo-shell run` from this checkout's debug build
 # (`--features debug`) with a scratch HOME and XDG tree, on a private bus that is both its session
 # and its system bus, and quits it at the end.
 #
@@ -11,14 +11,14 @@
 #
 #   1. Warm: the OSD surface exists from the start, hidden (no capture).
 #   2. `bardo-shell debug osd volume 60` shows it: a capture with the card's pixels within 200 ms.
-#      Screenshot dev/out/osd-casement.png while it holds.
+#      Screenshot dev/out/osd-compositor.png while it holds.
 #   3. It hides by itself about 1.5 s after the change: the capture fails between the hold
 #      (the OSD's constant hold, 1500) and the hold plus the fade (--t-move) plus 400 ms of slack.
 #   4. A change during the fade takes it back: shown again at 1.6 s, it is still up at 2.4 s.
 #   5. 5 s idle after it hides: 0 frames on the OSD surface.
 #
 # Then, not one of the four: `bardo-shell debug osd volume 60 --mute muted` for a second screenshot,
-# dev/out/osd-casement-muted.png, of Bardo's `Osd` card muted (non-fatal: it does not flip the
+# dev/out/osd-compositor-muted.png, of Bardo's `Osd` card muted (non-fatal: it does not flip the
 # script's exit status).
 #
 # Usage: dev/accept/osd.sh
@@ -70,7 +70,7 @@ step_shows_then_hides() {
     sleep 0.02
   done
   sleep 0.3
-  shot "$SHOTS/osd-casement.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
+  shot "$SHOTS/osd-compositor.png" >>"$log" 2>&1 || echo "screenshot failed" >&2
   cp "$OUT_DIR/osd.png" "$OUT_DIR/osd-shown.png" 2>/dev/null
   while [ $(( $(now_ms) - start )) -lt 4000 ]; do
     t=$(( $(now_ms) - start ))
@@ -126,7 +126,7 @@ step_muted_shot() {
     sleep 0.02
   done
   sleep 0.3
-  shot "$SHOTS/osd-casement-muted.png" >>"$log" 2>&1 || { echo "muted screenshot failed" >&2; return 1; }
+  shot "$SHOTS/osd-compositor-muted.png" >>"$log" 2>&1 || { echo "muted screenshot failed" >&2; return 1; }
 }
 
 cleanup() {
@@ -149,5 +149,5 @@ run_steps step_warm step_shows_then_hides step_retrigger step_idle
 status=$STATUS
 if step_muted_shot; then echo "PASS step_muted_shot"; else echo "FAIL step_muted_shot (non-fatal)"; fi
 cleanup || status=1
-echo "logs in $OUT_DIR; screenshots $SHOTS/osd-casement.png, $SHOTS/osd-casement-muted.png"
+echo "logs in $OUT_DIR; screenshots $SHOTS/osd-compositor.png, $SHOTS/osd-compositor-muted.png"
 exit "$status"

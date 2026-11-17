@@ -398,7 +398,7 @@ Banner duration is not a setting (R8: not user-changeable since Big Sur).
 | Bar, switcher, notifications, control center, launcher surfaces | sill `surfaces/{bar,switcher,notifications,control_center,launcher}` |
 | Notification server | shell-services (pattern: the desktop notification daemon subscriptions/notifications.rs) |
 | Toplevel activation / close / minimize | shell-services `toplevel_wl` (the toplevel client) |
-| Shortcuts | `dist/casement/.../system_actions` (Launcher, WindowSwitcher) |
+| Shortcuts | `dist/compositor/.../system_actions` (Launcher, WindowSwitcher) |
 | Sounds | shell-services `sound` (libpulse-binding) |
 | First-mouse filter | layer-shell-host layer-shell-host's input/pointer.rs (activation-time tracking) + ds `data-first-mouse` |
 
@@ -406,7 +406,7 @@ Platform limits:
 
 - `xdg_popup.grab` needs the serial of a recent user action; hover switch therefore reuses one
   popup with `reposition` (xdg_wm_base v3+). If a compositor lacks reposition, the fallback
-  is close + reopen with the last button serial, which the compositor may refuse (then the
+  is close + reopen with the last button serial, which compositor may refuse (then the
   menu closes and the next press opens the other one).
 - the nested compositor does not grab the keyboard: KDE eats Super and Cmd+Tab
   chords; switcher and launcher are tested through `bardo-shell` CLI/IPC in the nested session.

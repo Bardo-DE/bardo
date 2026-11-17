@@ -32,7 +32,7 @@ client = [
   "dep:bitflags",
   "wayland-protocols/client",
 ]
-# The compositor's side: casement.
+# The compositor's side: compositor.
 server = [
   "dep:wayland-server",
   "dep:wayland-backend",

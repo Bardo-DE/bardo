@@ -301,7 +301,7 @@ loads, the keys are ignored. The section number stays so later links hold.
 
 ### 3.15 `display` (shell/settings.toml)
 
-All Advanced (§5). The display service reads the EDID, classifies the panel's gamut, and drives DDC/CI. sill sets no scale: casement picks a display's first scale (`outputs.first_sight_scale`, 2026-10-19) and sill only shows it.
+All Advanced (§5). The display service reads the EDID, classifies the panel's gamut, and drives DDC/CI. sill sets no scale: the compositor picks a display's first scale (`outputs.first_sight_scale`, 2026-10-19) and sill only shows it.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -865,7 +865,7 @@ only in v1, no widget; a later wave may promote one if the user asks.
 | **Keyboard / Shortcuts** | proposed by `28-CUSTOMIZATION.md#411-keyboard-shortcuts`: `shortcuts.bindings` (the system list, toggle and chord per action) and `shortcuts.app_shortcuts`, rows added here after sill registers them (28 §6.0); sill writes them into the compositor's `system_actions` and `custom` shortcut files, and the chord the desktop already holds wins a clash, shown on the row (28 §7 decision 10) |
 | **Notifications** | `notifications.dnd`, `notifications.banner_style` (per app) |
 | **Spotlight** (sill M9, Q303) | `launcher.clipboard_history` (a privacy choice people should find), `launcher.web_search`, `launcher.emoji_skin_tone`; the rest of `launcher.*` stays Advanced |
-| **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows casement publishes through its settings module (one per app and permission); no keys of Bardo's own | 
+| **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows the compositor publishes through its settings module (one per app and permission); no keys of Bardo's own | 
 | **Power** (added Q445; sill's own idle service, section 3.24) | `idle.screen_off_ac_min`, `idle.screen_off_battery_min`, `idle.suspend_ac_min`, `idle.suspend_battery_min`, `idle.lock`, `session.lock_grace_s` (`Sill` under `idle.times` is what makes the `idle.screen_off_*`/`idle.suspend_*` sliders apply; under `Desktop` they still render, disabled, so the row explains itself) |
 | **Intelligence** (the companion, design/32; sill's `companion` domain and the daemons' schemas) | Companion: `companion.summon`, `companion.in_field`, `companion.notify`; Models: `ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>` (the live picker, section 9.4); Memory: `memory.files.at_rest`, `memory.consolidation.when`, `memory.consolidation.apply`, and the memory view (a live module); Computer use: `cua.enabled`, `cua.apps`, `cua.default_mode`, `cua.autopause`; Privacy: `agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h` |
 | **Viewer** (anyview, section 3.31) | Window: `viewer.chrome.hide_after`, `viewer.warm_for`; Viewing: `viewer.zoom.step`, `viewer.media.seek_step`; History: `viewer.history.cap`, `viewer.versions.keep`; Export: `viewer.export.jpeg_quality`, `viewer.export.avif_quality`, `viewer.export.paper`, `viewer.export.orientation`; `viewer.peek.*` and `viewer.image.*` are Advanced |

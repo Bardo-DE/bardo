@@ -1,6 +1,6 @@
 [package]
 name = "compositor-icons"
-description = "App icons for casement's own drawing (Mission Control): an app id to its desktop entry's Icon, the XDG icon-theme lookup, and PNG or SVG decoded to straight RGBA at a pixel size."
+description = "App icons for the compositor's own drawing (Mission Control): an app id to its desktop entry's Icon, the XDG icon-theme lookup, and PNG or SVG decoded to straight RGBA at a pixel size."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

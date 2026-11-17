@@ -1,4 +1,4 @@
-//! The book as text: `$XDG_STATE_HOME/casement/privacy.toml`. A pure codec: reading and
+//! The book as text: `$XDG_STATE_HOME/compositor/privacy.toml`. A pure codec: reading and
 //! writing the file is the composition root's seam. Rows that do not parse are dropped (an
 //! answer lost is a question asked again, never a program let in); a file that is not this
 //! version, too large or not text of this shape is an error, and the root sets it aside and
@@ -23,7 +23,7 @@ use serde::{Deserialize, Serialize};
 const VERSION: i64 = 1;
 
 /// A file read from text (a book, the Spaces file), and how many rows were dropped to make it
-/// one casement would have written.
+/// one the compositor would have written.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Loaded<T> {
     /// What was read.

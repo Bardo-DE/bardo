@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Calendar acceptance (design/20 §1.12 and §1.14), on casement (brought up and ended by start_compositor).
+# Calendar acceptance (design/20 §1.12 and §1.14), on the compositor (brought up and ended by start_compositor).
 # Starts `bardo-shell run` from this checkout's debug build (`--features debug`) on a private bus (the
 # daemon's session AND system bus), with a scratch HOME and XDG directories, its own
 # XDG_RUNTIME_DIR (the nested socket as an absolute WAYLAND_DISPLAY) and a fake DDC.
@@ -11,8 +11,8 @@
 # "up_next"]`. The daemon is quit at the end.
 #
 #   1. `bardo-shell notifications open`: a capture of `shell-notification-center-<out>` shows the month
-#      with today on the accent disc (dev/out/calendar-casement.png; the output with the center
-#      open, dev/out/calendar-widget-casement.png).
+#      with today on the accent disc (dev/out/calendar-compositor.png; the output with the center
+#      open, dev/out/calendar-widget-compositor.png).
 #   2. The center's Calendar tile is the Medium card (a today column beside the compact month): it
 #      shows the NEXT event of the agenda Up Next reads, one row (Bardo's `MonthFace.events`: Medium
 #      takes the first, only Large lists several). Then Up Next lists the fixture's next events in
@@ -200,9 +200,9 @@ step_month_and_up_next() {
   bardo-shell notifications open >>"$log" 2>&1 || return 1
   wait_surface "$CENTER" 20 up || { echo "the center never mapped" >&2; return 1; }
   sleep 1
-  bardo-shell debug capture "$CENTER" "$SHOTS/calendar-casement.png" >>"$log" 2>&1 || return 1
-  shot "$SHOTS/calendar-widget-casement.png" || echo "screenshot failed" >&2
-  seen=$(probe "$SHOTS/calendar-casement.png")
+  bardo-shell debug capture "$CENTER" "$SHOTS/calendar-compositor.png" >>"$log" 2>&1 || return 1
+  shot "$SHOTS/calendar-widget-compositor.png" || echo "screenshot failed" >&2
+  seen=$(probe "$SHOTS/calendar-compositor.png")
   echo "capture: $seen (work $WORK, team $TEAM, personal $PERSONAL)" | tee -a "$log" >&2
   if [ "$(bars_of "$seen")" = "" ] && [ "$(disc_of "$seen")" = none ]; then
     echo "the center draws no widgets: the widget slot (CenterWidgets) is not in this build" >&2
@@ -283,5 +283,5 @@ for step in step_month_and_up_next step_edit step_week_numbers_ignored step_idle
   esac
 done
 cleanup || status=1
-echo "logs in $OUT_DIR; screenshots $SHOTS/calendar-casement.png, $SHOTS/calendar-widget-casement.png"
+echo "logs in $OUT_DIR; screenshots $SHOTS/calendar-compositor.png, $SHOTS/calendar-widget-compositor.png"
 exit "$status"

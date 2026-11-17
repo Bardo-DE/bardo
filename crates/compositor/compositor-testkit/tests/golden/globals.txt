@@ -1,8 +1,8 @@
 # Every P0 global and its version, as the default fixture advertises them to a public client
 # (FixtureSpec::desktop(): pixman, no dma-buf). Frozen at P0-Z2; each delta freeze adds its
-# rows. Format: <interface> <version> <casement-wayland module> <power> (scripts/check-protocol-coverage.sh
+# rows. Format: <interface> <version> <compositor-wayland module> <power> (scripts/check-protocol-coverage.sh
 # reads the third column; the fourth is the power that gates the global's use, - for none:
-# casement_core::policy::power_of). wl_output appears once per plugged output.
+# compositor_core::policy::power_of). wl_output appears once per plugged output.
 wl_compositor 6 compositor -
 wl_subcompositor 1 subcompositor -
 wl_shm 2 shm -

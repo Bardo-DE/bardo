@@ -1,6 +1,6 @@
 //! What the debug object says about the session: the outputs, the windows, the scene, the
 //! wait predicates, and the output and fault verbs that change the outputs. JSON is written by
-//! hand (a few fixed shapes, escaped strings): casement's own dependencies carry no JSON crate.
+//! hand (a few fixed shapes, escaped strings): the compositor's own dependencies carry no JSON crate.
 
 use crate::{State, core_loop};
 use compositor_backend::{BackendKind, VirtualOutputSpec};

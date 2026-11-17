@@ -2,7 +2,7 @@
 //! with a white outline in the Mac manner, drawn from a few primitives by signed distance,
 //! sixteen samples a pixel. Pure integer output for a given scale, so a golden holds.
 //!
-//! The shapes are casement's own, drawn here: no cursor theme is read (themes arrive with the
+//! The shapes are the compositor's own, drawn here: no cursor theme is read (themes arrive with the
 //! settings that name one; FINDINGS).
 
 use crate::scene::CursorShape;

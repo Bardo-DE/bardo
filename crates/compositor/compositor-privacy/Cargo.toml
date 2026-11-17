@@ -1,6 +1,6 @@
 [package]
 name = "compositor-privacy"
-description = "casement's privacy files: the person's book (which program may use which power) and the administrator's floor, read and written safely, and the list of both that bardo-compositorctl prints."
+description = "The compositor's privacy files: the person's book (which program may use which power) and the administrator's floor, read and written safely, and the list of both that bardo-compositorctl prints."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -10,8 +10,8 @@ use compositor_core::geometry::{
 };
 use compositor_motion::{OutputFrame, StripOffset};
 use compositor_render::{
-    BlurV0Element, CasementElement, ChromeLayer, CursorDraw, CursorShape, LayerDraw,
-    LockCoverElement, OutputView, RenderSync, Rgba8, TextureBook, output_elements, solid_rect,
+    BlurV0Element, ChromeLayer, CursorDraw, CursorShape, LayerDraw, LockCoverElement, OutputView,
+    RenderSync, Rgba8, SceneElement, TextureBook, output_elements, solid_rect,
 };
 use proptest::prelude::*;
 use smithay::backend::renderer::element::{Element, Id};
@@ -60,15 +60,15 @@ fn a_lock_cover_is_opaque_over_its_whole_area() {
         vec![smithay::utils::Rectangle::from_size((640, 480).into())]
     );
     // Over a white page and a translucent band, so a cover that drew nothing would show.
-    let elements: Vec<CasementElement<PixmanRenderer>> = vec![
-        CasementElement::Cover(cover),
-        CasementElement::Solid(solid_rect(
+    let elements: Vec<SceneElement<PixmanRenderer>> = vec![
+        SceneElement::Cover(cover),
+        SceneElement::Solid(solid_rect(
             Id::new(),
             rect(100, 100, 200, 50),
             GLASS,
             CommitCounter::default(),
         )),
-        CasementElement::Solid(solid_rect(Id::new(), area, WHITE, CommitCounter::default())),
+        SceneElement::Solid(solid_rect(Id::new(), area, WHITE, CommitCounter::default())),
     ];
     let bytes = render_once(&mut pixman(), SIZE, 1.0, &elements);
     assert!(
@@ -147,7 +147,7 @@ fn mixed(
     ids: &Ids,
     step: Step,
     renderer: &mut PixmanRenderer,
-) -> Vec<CasementElement<PixmanRenderer>> {
+) -> Vec<SceneElement<PixmanRenderer>> {
     let output = support::output_key("HEADLESS-1");
     let view = OutputView {
         area: LogicalRect::new(LogicalPoint { x: 0, y: 0 }, LogicalSize { w: 640, h: 480 }),
@@ -186,8 +186,8 @@ fn mixed(
         GLASS,
     );
     elements.extend([
-        CasementElement::Blur(blur),
-        CasementElement::Solid(solid_rect(
+        SceneElement::Blur(blur),
+        SceneElement::Solid(solid_rect(
             ids.solid.clone(),
             {
                 let (x, y, w, h) = step.solid;
@@ -196,7 +196,7 @@ fn mixed(
             GLASS,
             CommitCounter::default(),
         )),
-        CasementElement::Solid(solid_rect(
+        SceneElement::Solid(solid_rect(
             ids.page.clone(),
             rect(40, 40, 560, 400),
             WHITE,

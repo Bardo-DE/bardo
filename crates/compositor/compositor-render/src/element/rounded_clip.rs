@@ -5,8 +5,8 @@
 //! (Pixman, the dummy renderer, a multi-GPU copy, and the GLES surfaces the shader leaves out)
 //! draws the surface in pieces by coverage (`bands.rs`; FINDINGS, `wave-2026-10-15/corners`).
 //!
-//! Only windows casement shapes are clipped: the ones it decorates (the bottom corners), and
-//! the ones that draw their own frame but asked for casement's corners or said nothing (all four,
+//! Only windows the compositor shapes are clipped: the ones it decorates (the bottom corners), and
+//! the ones that draw their own frame but asked for the compositor's corners or said nothing (all four,
 //! `Rounding::Frameless`). A window that said it draws its own corners, a full-screen window and
 //! popups are not wrapped.
 

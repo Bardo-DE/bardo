@@ -279,12 +279,12 @@ fn keys_need_the_focus_on_the_persons_seat_and_a_click_does_not() {
     assert_eq!(performed, 1, "the click went");
 }
 
-/// On casement the run asks for the focus of its leased window before keys, instead of waiting
+/// On the compositor the run asks for the focus of its leased window before keys, instead of waiting
 /// for a focus that never comes: the keys land, and a click (which needs no focus) asks nothing.
 #[test]
-fn keys_for_an_unfocused_leased_window_ask_casement_to_focus_it_and_land() {
+fn keys_for_an_unfocused_leased_window_ask_compositor_to_focus_it_and_land() {
     let (performed, steps, calls) =
-        on_an_unfocused_window(BackendKind::Casement, computer_use_fake::scene::ctrl_a());
+        on_an_unfocused_window(BackendKind::Compositor, computer_use_fake::scene::ctrl_a());
     assert!(
         calls.iter().any(|c| matches!(c, DesktopCall::Focused(_))),
         "the window was asked to take the focus: {calls:?}"
@@ -323,7 +323,7 @@ fn the_run_looks_at_and_clicks_in_the_dialog_its_window_opened() {
     other.ident = ToplevelIdent::parse("w2").unwrap();
     let mut behind = window();
     behind.state = BTreeSet::new();
-    world.desktop = FakeDesktop::new(BackendKind::Casement, vec![behind, dialog.clone(), other]);
+    world.desktop = FakeDesktop::new(BackendKind::Compositor, vec![behind, dialog.clone(), other]);
     let report = block_on(run_harness_answering(
         new_run(),
         &mut world,

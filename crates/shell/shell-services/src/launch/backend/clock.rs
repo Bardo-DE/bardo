@@ -3,7 +3,7 @@
 use rustix::time::{ClockId, clock_gettime};
 use shell_model::launch::Stamp;
 
-/// Now on `CLOCK_MONOTONIC`: the clock the casement and workflow scripts read too.
+/// Now on `CLOCK_MONOTONIC`: the clock the compositor and workflow scripts read too.
 #[must_use]
 pub fn monotonic_now() -> Stamp {
     let reading = clock_gettime(ClockId::Monotonic);

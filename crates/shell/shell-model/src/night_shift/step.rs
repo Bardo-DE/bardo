@@ -35,7 +35,7 @@ pub fn step(state: NightShift, event: NightShiftEvent) -> (NightShift, Vec<Night
     }
 }
 
-/// casement's settings were read. A manual turn-on lasts only while casement still says "all
+/// The compositor's settings were read. A manual turn-on lasts only while the compositor still says "all
 /// day": someone who changed the night light meanwhile (in Settings) has ended it.
 fn loaded(
     state: NightShift,
@@ -143,7 +143,7 @@ fn turned_off(state: NightShift) -> (NightShift, Vec<NightShiftEffect>) {
     }
 }
 
-/// A manual turn-on is over, by the person or by the clock: casement is put back as it was, with
+/// A manual turn-on is over, by the person or by the clock: the compositor is put back as it was, with
 /// the warmth the person has chosen since.
 fn ended(state: NightShift, manual: Manual) -> (NightShift, Vec<NightShiftEffect>) {
     let light = NightLight {

@@ -1,6 +1,6 @@
 [package]
 name = "compositor-layout"
-description = "casement's pure layout seam: SceneLayout, the scene spec, the Arrangement it yields and RustScene, the production layout; taffy only behind taffy_bridge."
+description = "The compositor's pure layout seam: SceneLayout, the scene spec, the Arrangement it yields and RustScene, the production layout; taffy only behind taffy_bridge."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

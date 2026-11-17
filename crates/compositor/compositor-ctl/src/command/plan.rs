@@ -29,11 +29,11 @@ pub enum Call {
     Scene,
     /// `Fault(verb, amount)`.
     Fault(String, u32),
-    /// `Shot(area, path)`: casement's PNG of its last frame.
+    /// `Shot(area, path)`: the compositor's PNG of its last frame.
     Shot {
         /// Debug1's area text (`output`, `output:NAME`, `region:X,Y,W,H`).
         area: String,
-        /// The absolute path casement writes to.
+        /// The absolute path the compositor writes to.
         path: String,
     },
 }
@@ -169,7 +169,7 @@ fn settings_of(words: &[String]) -> Result<Vec<String>, CommandError> {
     Ok(sent)
 }
 
-/// A scale written as a decimal (`1.5`) in 120ths, the unit casement's outputs use
+/// A scale written as a decimal (`1.5`) in 120ths, the unit the compositor's outputs use
 /// (`1.5` is `180`); a scale that is not a whole number of 120ths is refused.
 fn scale120(text: &str) -> Result<String, CommandError> {
     let (whole, fraction) = text.split_once('.').unwrap_or((text, ""));

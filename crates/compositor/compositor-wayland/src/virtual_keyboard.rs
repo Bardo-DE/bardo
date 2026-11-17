@@ -49,7 +49,7 @@ use std::fs::File;
 use std::os::fd::OwnedFd;
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
-/// The version casement serves.
+/// The version the compositor serves.
 pub const VERSION: u32 = 1;
 
 /// The first device id a virtual keyboard's events carry: far above the backend's own numbering
