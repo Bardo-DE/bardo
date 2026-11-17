@@ -1,6 +1,7 @@
 //! The completion files under `dist/completions` are thin: each hands what is typed to
-//! `bardo-do __complete` and offers what comes back. A shell that is installed checks the
-//! syntax; bash also runs the function against a stand-in `bardo-do`.
+//! `bardo-do __complete` and offers what comes back. Each shell checks the
+//! syntax (zsh and fish only where installed: their tests are `#[ignore]`d); bash also runs the
+//! function against a stand-in `bardo-do`.
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -13,10 +14,6 @@ fn dist(name: &str) -> PathBuf {
 
 fn read(name: &str) -> String {
     std::fs::read_to_string(dist(name)).unwrap_or_else(|e| panic!("{name}: {e}"))
-}
-
-fn has(shell: &str) -> bool {
-    Command::new(shell).arg("--version").output().is_ok()
 }
 
 #[test]
@@ -32,35 +29,39 @@ fn the_three_files_ask_bardo_do_what_to_offer() {
     assert!(read("_bardo-do").starts_with("#compdef bardo-do"));
 }
 
+/// `shell` reads `file` without running it. Fails, saying so, where `shell` is not installed.
+fn accepts_the_syntax(shell: &str, file: &str, flag: &str) {
+    let out = Command::new(shell)
+        .arg(flag)
+        .arg(dist(file))
+        .output()
+        .unwrap_or_else(|e| panic!("{shell} is a required test tool here: {e}"));
+    assert!(
+        out.status.success(),
+        "{shell} rejects {file}: {}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+}
+
 #[test]
-fn installed_shells_accept_the_syntax() {
-    for (shell, file, flag) in [
-        ("bash", "bardo-do.bash", "-n"),
-        ("zsh", "_bardo-do", "-n"),
-        ("fish", "bardo-do.fish", "--no-execute"),
-    ] {
-        if !has(shell) {
-            println!("{shell} is not installed here; its file is not syntax-checked");
-            continue;
-        }
-        let out = Command::new(shell)
-            .arg(flag)
-            .arg(dist(file))
-            .output()
-            .expect("shell runs");
-        assert!(
-            out.status.success(),
-            "{shell} rejects {file}: {}",
-            String::from_utf8_lossy(&out.stderr)
-        );
-    }
+fn bash_accepts_the_syntax() {
+    accepts_the_syntax("bash", "bardo-do.bash", "-n");
+}
+
+#[test]
+#[ignore = "needs zsh installed"]
+fn zsh_accepts_the_syntax() {
+    accepts_the_syntax("zsh", "_bardo-do", "-n");
+}
+
+#[test]
+#[ignore = "needs fish installed"]
+fn fish_accepts_the_syntax() {
+    accepts_the_syntax("fish", "bardo-do.fish", "--no-execute");
 }
 
 #[test]
 fn bash_hands_the_typed_words_to_bardo_do() {
-    if !has("bash") {
-        return;
-    }
     let script = format!(
         r#"
 bardo-do() {{ printf '%s\n' "$@"; }}
