@@ -13,7 +13,7 @@ const DEPTH: usize = 4;
 /// How many directory entries the search looks at, so a huge tree does not hold up the start.
 const LOOKED_AT: usize = 20_000;
 
-/// The workspace's own `.git` (kept even when it does not exist yet: bulkhead skips a missing
+/// The workspace's own `.git` (kept even when it does not exist yet: the agent sandbox skips a missing
 /// path, and a later one is still covered by a nested find on the next start) and every `.git`
 /// found below it, never following a link.
 pub fn git_dirs(cwd: &AbsPath) -> Vec<AbsPath> {

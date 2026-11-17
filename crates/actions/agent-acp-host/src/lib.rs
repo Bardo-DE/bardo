@@ -30,7 +30,7 @@
 //!   own sign-in and sign-out.
 //! - `helper_agents`: `HelperAgents`, the agent apps of every helper at once, one process each; a
 //!   panic in one helper's agent ends that helper's process and job and nobody else's (`isolate`).
-//! - `Terminals`: the `terminal/*` client methods over the sandboxed shell tool (`bulkhead`), ruled
+//! - `Terminals`: the `terminal/*` client methods over the sandboxed shell tool (`sandbox`), ruled
 //!   by the `Execute` rules. They run in our sandbox, never in an editor's terminal.
 //! - `fake` (feature `testing`): an in-memory pipe, a scripted spawner and the like, for tests.
 

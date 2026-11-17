@@ -233,7 +233,7 @@ DIRECT=(
 # Bardo v0.3.38 draws emoji through its own ui-emoji (the kit's, MIT OR Apache-2.0, over fontique,
 # already in every windowed tree): one more again: the peek 580, the viewer 700, the pane 592, the
 # media host 612 and the pane with its player 613.
-# docket ff9d1b73 (the desktop lockstep's wave 4) runs its commands through bulkhead (the owner's
+# docket ff9d1b73 (the desktop lockstep's wave 4) runs its commands through the agent sandbox (the owner's
 # bubblewrap sandbox, MIT OR Apache-2.0, its dependencies already in the tree): one more in the viewer
 # alone: 701.
 # Bardo v0.3.45's ui-extensions (the desktop's Extensions, MIT OR Apache-2.0, over the plugin host, already in

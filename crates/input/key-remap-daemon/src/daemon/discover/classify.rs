@@ -7,7 +7,7 @@ use crate::daemon::events::{ABS_MT_POSITION_X, ABS_X, EV_ABS, EV_KEY, EV_REL, RE
 use crate::daemon::{pointer, uinput};
 use std::path::{Path, PathBuf};
 
-/// Name prefix of the mouse gestures daemon's virtual devices, which key remap daemon must never grab.
+/// Name prefix of the mouse gestures daemon's virtual devices, which the key remap daemon must never grab.
 const MOUSE_GESTURES_PREFIX: &str = "mouse-gestures";
 
 /// Who a node says it is.

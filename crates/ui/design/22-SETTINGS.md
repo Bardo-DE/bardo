@@ -389,7 +389,7 @@ sill's own idle service, replacing the desktop idle daemon in a sill session (th
 
 ### 3.25 `keyboard` (shell/settings.toml)
 
-How sill treats the keyboard per app (the key remap daemon, the key-cap overlay: which key remap daemon profile an app's keys are drawn with). Page Keyboard and Shortcuts, Advanced (§5).
+How sill treats the keyboard per app (the key remap daemon, the key-cap overlay: which the key remap daemon profile an app's keys are drawn with). Page Keyboard and Shortcuts, Advanced (§5).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |

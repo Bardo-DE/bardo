@@ -41,7 +41,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    ceiling: only buttons (`BTN_MISC` to `BTN_GEAR_UP` and the `0x2c0` block, never a key), relative
    axes up to `REL_MAX`, absolute axes up to `ABS_MAX` with ranges within 2^24, properties up to
    `INPUT_PROP_POINTING_STICK`; the name is the label (at most 62 bytes) plus the fixed suffix
-   `(key_remap pointer)`, which key remap daemon never grabs. Because the descriptor is handed over, the ceiling
+   `(key_remap pointer)`, which the key remap daemon never grabs. Because the descriptor is handed over, the ceiling
    shapes the device the service makes and is not a boundary on what the holder can then do
    (decision 2). Closes if the key remap daemon stops cloning axis ranges.
 8. **The mouse gestures daemon's keyboard classes are stricter than the design's list.** Besides letters, digits, Enter,

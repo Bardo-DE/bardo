@@ -446,7 +446,7 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
   (`confined`, `confinement`), which a new list of waiting values leaves alone.
 - **The proxy.** The property is declared in `settings-app-system/src/memory_consent/proxy.rs`, the one declaration
   of `Memory1.Control` in the Settings app (almanac's `ControlProxy::confinement()` lives in `almanac-dbus`,
-  which Settings app does not depend on).
+  which the Settings app does not depend on).
 - **Tests.** `settings-app-model/tests/model/memory_consent.rs`: a table of words to values and lines,
   the state keeping the word, and which sections tell. `settings-app-ui/tests/ui/memory_consent.rs`
   over the fake memory, which now carries a `Confinement` word: confined, part enforced and not

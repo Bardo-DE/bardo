@@ -1,6 +1,6 @@
 //! The filter outside the sandbox of an `allowlist` agent: it listens on the socket the
 //! forwarder inside hands every connection to, and lets through only what the program's lists
-//! allow. The journal gets the site and the verdict, which are all bulkhead gives it: never a
+//! allow. The journal gets the site and the verdict, which are all the agent sandbox gives it: never a
 //! header or a body.
 
 use crate::reach::Reach;

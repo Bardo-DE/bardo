@@ -192,7 +192,7 @@ real machine's sysfs masks, and what stays open.
 - A Keychron's Mac/Windows switch is not visible to the host: the firmware (QMK) swaps the
   keycodes it sends, with the same vendor and product id, the same capability masks and the same
   HID descriptor in both positions (checked on the K5 Max node's masks; reading the switch would
-  need VIA's raw HID writes, which key remap daemon will not do). So such keyboards are `Pc` by default and
+  need VIA's raw HID writes, which the key remap daemon will not do). So such keyboards are `Pc` by default and
   a `[[device]]` entry in the config sets the layout by id or name.
 - **The `devices` suite cannot be run in a live desktop session.** Its "the key remap daemon keyboard" output
   reaches the compositor (a mapped Cmd+Q is Alt+F4), and before this review its daemon scanned

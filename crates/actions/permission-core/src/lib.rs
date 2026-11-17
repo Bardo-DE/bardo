@@ -4,7 +4,7 @@
 //! limits, the rule files and the admin floor, the agent's own actions and the commands it runs
 //! (`exec_*`, `execute`), and the per-task policy with its trusted patterns and the reach menu.
 //!
-//! Pure and portable: serde, `bulkhead` for path covers, `url` for host patterns, `action-vocab`
+//! Pure and portable: serde, `sandbox` for path covers, `url` for host patterns, `action-vocab`
 //! for ids and values, `action-manifest` for what an action declares, `account-core` for app names
 //! and consent and `prov` for who and what. No clock, no files.
 
