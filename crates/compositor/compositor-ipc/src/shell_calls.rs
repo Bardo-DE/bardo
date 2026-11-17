@@ -1,4 +1,4 @@
-//! Bindings that call sill (A4, P1-Z; filled by P1-I1): the `ShellCalls` seam and its D-Bus
+//! Bindings that call the shell (A4, P1-Z; filled by P1-I1): the `ShellCalls` seam and its D-Bus
 //! implementation.
 //!
 //! The composition root names the call (a `DbusCall` from a binding) and never zbus; this crate,

@@ -349,7 +349,7 @@ holds it: `--fs-nano`, `--fs-micro` and `--fs-dial` are 10 under System (`FontSi
 `--fs-help` is 11.5. One step stays under it: `--fs-pico` 7.5, the letter of an in-row provider
 mark, which is a drawing in an 11 px mark, not text (a reviewed exception in the UI kit's own lint).
 
-The lint `MinFontSize` (a warning under Strict until sill and mailo are swept, design/27 section
+The lint `MinFontSize` (a warning under Strict until the shell and mailo are swept, design/27 section
 7) flags a `font-size` or `font` literal under 10 px (`pt` counted as 4/3 px) and a
 `var(--fs-*)` whose System value is under 10. A drawing that needs a smaller size names its
 selector in an `Exception` with the reason. The 13 px shell density is H5's (design/27 section 8, decision 1).

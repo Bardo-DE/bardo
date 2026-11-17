@@ -130,7 +130,7 @@ pub const INTENTD: Standing = Standing::new("org.bardo.Intents", CallerRole::Age
 /// companiond, the assistant: the `agent` role of the app `org.bardo.Companion1`. It is the only
 /// caller of the agent host's `HandOver`.
 pub const COMPANIOND: Standing = Standing::new("org.bardo.Companion1", CallerRole::Agent);
-/// sill, the shell and the sheet host: the `sheet_host` role of the app `org.bardo.Shell`.
+/// The shell, the shell and the sheet host: the `sheet_host` role of the app `org.bardo.Shell`.
 pub const SHELL: Standing = Standing::new("org.bardo.Shell", CallerRole::SheetHost);
 
 /// The table of a process that answers intentd alone and reads no file: one row, intentd's unit.

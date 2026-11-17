@@ -35,7 +35,7 @@ preferences:
 3. **Per-workspace instance data is not a global default.** `21-SPACES.md#10-storage-settled-path-target-clean-up-phase-schema`'s
    `$XDG_CONFIG_HOME/bardo/spaces.json` stores each workspace's chosen `SpaceLook` (its hue, chroma
    factor, grain, theme; target (clean-up phase), 21 section 1) — that is saved *state*, like
-   the dock's pinned items (`[[dock]]` in `sill/layout.toml`), not a settings default. The *defaults* applied when a workspace has
+   the dock's pinned items (`[[dock]]` in `shell/layout.toml`), not a settings default. The *defaults* applied when a workspace has
    none (preset table, fallback grain) are keys in the `spaces` domain below.
 
 ## 2. Storage
@@ -49,7 +49,7 @@ doc is the authority on where each key actually lives, and supersedes those inli
 | File | Owner | Domains |
 | --- | --- | --- |
 | `$XDG_CONFIG_HOME/bardo/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
-| `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
+| `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`shell-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
 | `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (the memory service), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is porter's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
 | `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` | `mouse_gestures` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
@@ -137,7 +137,7 @@ sets them. A stored value is an unknown key: it is reported and kept in the file
 `appearance.look` (Settings > Look). A stored `appearance.typeface` is an unknown key: it is
 reported once and kept in the file, never read.
 
-Rows for keys that sill owns but this section names (they are stored under `appearance` for the
+Rows for keys that the shell owns but this section names (they are stored under `appearance` for the
 vocabulary they use):
 
 | Key | Type | Default | Range / Alt | Source | Status |
@@ -182,19 +182,19 @@ per-third-party-icon rendering values `bardo-shell`'s dock/launcher apply live (
 `icons.squircle_detect_iou` (0.90), `icons.plate_glyph_colour_policy` (Auto: white ink where it
 reads at 3:1 on the fill, the hue's deep ink otherwise) and `icons.dark_mode_variant` (the same
 icon in both schemes) are no longer settings. The three constants with no reader in Bardo
-(0.90, Auto, same-as-light) belong to the program that plates third-party icons (sill).
+(0.90, Auto, same-as-light) belong to the program that plates third-party icons (the shell).
 
 ### 3.4 `bar` (shell/settings.toml)
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
 | `bar.title_hit_height_px` | `Px` | `24` | | `13-BEHAVIOUR-menus-windows.md#13-3-1-bar-geometry` | RETIRING: no reader; a bar item's hit box is the item's own (`BarPointer`, design/30 section 2.10) |
-| `bar.battery_low_percent` | `Percent` | `20` | `5..=50`; at or under this charge, on battery, the fill turns `--battery-low` and the item nudges once per discharge | `26-DETAILS.md` §5.1.3 G10, G11; sill FINDINGS F822 | proposed (D1, 2026-09-27) |
-| `bar.autohide` | `BarAutohide::{Always,DesktopOnly,FullScreenOnly,Never}` | `FullScreenOnly` | TOML words `always`, `desktop_only`, `full_screen_only`, `never`; macOS's "Automatically hide and show the menu bar" (Always, On Desktop Only, In Full Screen Only, Never); Appearance › Bar | `28-CUSTOMIZATION.md` (menu bar auto-hide is a scalar key, not a placement); sill's bar auto-hide | settled (shell, 2026-10-22) |
+| `bar.battery_low_percent` | `Percent` | `20` | `5..=50`; at or under this charge, on battery, the fill turns `--battery-low` and the item nudges once per discharge | `26-DETAILS.md` §5.1.3 G10, G11; the shell FINDINGS F822 | proposed (D1, 2026-09-27) |
+| `bar.autohide` | `BarAutohide::{Always,DesktopOnly,FullScreenOnly,Never}` | `FullScreenOnly` | TOML words `always`, `desktop_only`, `full_screen_only`, `never`; macOS's "Automatically hide and show the menu bar" (Always, On Desktop Only, In Full Screen Only, Never); Appearance › Bar | `28-CUSTOMIZATION.md` (menu bar auto-hide is a scalar key, not a placement); the shell's bar auto-hide | settled (shell, 2026-10-22) |
 
 ### 3.5 `dock` (shell/settings.toml)
 
-Pinned items live in `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (design/28 §5.6, built in sill 848a20a7; the old `dock.json` is read once and carried over), not in this file (
+Pinned items live in `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (design/28 §5.6, built in the shell 848a20a7; the old `dock.json` is read once and carried over), not in this file (
 `10-BEHAVIOUR-dock.md#10-6-configuration`).
 
 | Key | Type | Default | Range / Alt | Source | Status |
@@ -217,10 +217,10 @@ Pinned items live in `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (des
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `launcher.clipboard_history` | `ClipboardHistory::{Memory,Off}` | `Memory` | memory only, forgotten when sill stops; password-manager copies never kept; Off watches nothing | `09-ARC-HEURISTICS.md` H4; sill M9 (Q301) | settled (user, 2026-09-27) |
-| `launcher.emoji_skin_tone` | `EmojiSkinTone::{Default,Light,MediumLight,Medium,MediumDark,Dark}` | `Default` | Unicode's five modifiers or the yellow default | `20-SURFACES.md` §1.3; sill M9 (Q301) | settled (user, 2026-09-27) |
-| `launcher.web_search` | `WebSearch::{On,Off}` | `On` | "Search the web for …" as the last result | `20-SURFACES.md` §1.3; sill M9 (Q301) | settled (user, 2026-09-27) |
-| `launcher.currency` | `CurrencyRates::{Off,Ecb}` | `Off` | Ecb fetches the ECB daily reference rates at most once a day | `20-SURFACES.md` §1.3; sill M9 (Q301) | proposed (2026-09-26) |
+| `launcher.clipboard_history` | `ClipboardHistory::{Memory,Off}` | `Memory` | memory only, forgotten when the shell stops; password-manager copies never kept; Off watches nothing | `09-ARC-HEURISTICS.md` H4; the shell M9 (Q301) | settled (user, 2026-09-27) |
+| `launcher.emoji_skin_tone` | `EmojiSkinTone::{Default,Light,MediumLight,Medium,MediumDark,Dark}` | `Default` | Unicode's five modifiers or the yellow default | `20-SURFACES.md` §1.3; the shell M9 (Q301) | settled (user, 2026-09-27) |
+| `launcher.web_search` | `WebSearch::{On,Off}` | `On` | "Search the web for …" as the last result | `20-SURFACES.md` §1.3; the shell M9 (Q301) | settled (user, 2026-09-27) |
+| `launcher.currency` | `CurrencyRates::{Off,Ecb}` | `Off` | Ecb fetches the ECB daily reference rates at most once a day | `20-SURFACES.md` §1.3; the shell M9 (Q301) | proposed (2026-09-26) |
 
 ### 3.7 `scroll` (shell/settings.toml)
 
@@ -262,7 +262,7 @@ that still has them loads, the keys are ignored. The section number stays so lat
 ### 3.11 `menus` (retired)
 
 Retired 2026-10-27: Settings keeps only what macOS offers, so the `menus.*` keys are
-constants at their old defaults or stylesheet tokens in sill; a file that still has them
+constants at their old defaults or stylesheet tokens in the shell; a file that still has them
 loads, the keys are ignored. The section number stays so later links hold.
 
 ### 3.12 `notifications` (shell/settings.toml)
@@ -275,7 +275,7 @@ loads, the keys are ignored. The section number stays so later links hold.
 | `notifications.dnd` | `Dnd::{On,Off}` | `Off` | | `13-BEHAVIOUR-menus-windows.md#13-6-configuration` | proposed |
 | `notifications.banner_style` | `BannerStyle::{Banner,Alert,None}` per app | `Banner` | | `13-BEHAVIOUR-menus-windows.md#13-6-configuration` | settled (preference), R8 |
 | `notifications.banner_entry_direction` | `BannerEntry::{FromRight,FromBelow}` | `FromRight` | | `05-MOTION.md#12-open-decisions` item 7 | RETIRING: no reader; a banner slides in from and out to the right (design/30 section 1.3) |
-| `notifications.swipe` | `NotificationSwipe::{KeepInCenter,Dismiss}` | `KeepInCenter` | macOS keeps a swiped banner in Notification Center (design/13 said dismiss); to be confirmed when M6 lane a reports | `20-SURFACES.md#1-6-notifications`; `13-BEHAVIOUR-menus-windows.md#13-3-6`; sill M6 freeze | proposed (M6 freeze, 2026-09-25) |
+| `notifications.swipe` | `NotificationSwipe::{KeepInCenter,Dismiss}` | `KeepInCenter` | macOS keeps a swiped banner in Notification Center (design/13 said dismiss); to be confirmed when M6 lane a reports | `20-SURFACES.md#1-6-notifications`; `13-BEHAVIOUR-menus-windows.md#13-3-6`; the shell M6 freeze | proposed (M6 freeze, 2026-09-25) |
 
 ### 3.13 `control_center` (shell/settings.toml)
 
@@ -296,58 +296,58 @@ until that comparison happens (see handback report).
 ### 3.14 `spaces` (retired)
 
 Retired 2026-10-27: Settings keeps only what macOS offers, so the `spaces.*` keys are
-constants at their old defaults or stylesheet tokens in sill; a file that still has them
+constants at their old defaults or stylesheet tokens in the shell; a file that still has them
 loads, the keys are ignored. The section number stays so later links hold.
 
 ### 3.15 `display` (shell/settings.toml)
 
-All Advanced (§5). The display service reads the EDID, classifies the panel's gamut, and drives DDC/CI. sill sets no scale: the compositor picks a display's first scale (`outputs.first_sight_scale`, 2026-10-19) and sill only shows it.
+All Advanced (§5). The display service reads the EDID, classifies the panel's gamut, and drives DDC/CI. The shell sets no scale: the compositor picks a display's first scale (`outputs.first_sight_scale`, 2026-10-19) and the shell only shows it.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `display.brightness_keys_target` | `BrightnessTarget::{PointerOutput,AllOutputs}` | `PointerOutput` | in practice the active window's output; DDC/CI | sill FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
-| `display.hardware_volume` | `HardwareVolume::{Off,WhenMonitorIsOutput}` | `WhenMonitorIsOutput` | DDC/CI volume when the monitor is the audio output | sill FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
-| `display.night_warmth` | `NightWarmth::{Off,Hardware}` | `Off` | warmth through the monitor's own DDC/CI controls | sill FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
-| `display.night_warmth_strength` | `Percent` | `50` | `0..=100` | sill FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
-| `display.font_rendering` | `FontRendering::{Auto,Off}` | `Auto` | `Auto` sets hinting and subpixel positioning from the output's ppi | sill FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
+| `display.brightness_keys_target` | `BrightnessTarget::{PointerOutput,AllOutputs}` | `PointerOutput` | in practice the active window's output; DDC/CI | the shell FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
+| `display.hardware_volume` | `HardwareVolume::{Off,WhenMonitorIsOutput}` | `WhenMonitorIsOutput` | DDC/CI volume when the monitor is the audio output | the shell FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
+| `display.night_warmth` | `NightWarmth::{Off,Hardware}` | `Off` | warmth through the monitor's own DDC/CI controls | the shell FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
+| `display.night_warmth_strength` | `Percent` | `50` | `0..=100` | the shell FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
+| `display.font_rendering` | `FontRendering::{Auto,Off}` | `Auto` | `Auto` sets hinting and subpixel positioning from the output's ppi | the shell FINDINGS "Displays" (display service, 2026-09-25); `13-BEHAVIOUR-menus-windows.md` | proposed (2026-09-25) |
 
 ### 3.16 `osd` (retired)
 
-Retired 2026-10-27: the on-screen display's margin is a stylesheet token in sill, and the
-`osd` domain is gone from sill's schema; a file that still has `osd.*` loads, the keys are
+Retired 2026-10-27: the on-screen display's margin is a stylesheet token in the shell, and the
+`osd` domain is gone from the shell's schema; a file that still has `osd.*` loads, the keys are
 ignored. The section number stays so later links hold.
 
 ### 3.17 `power_menu` (retired)
 
 Retired 2026-10-27: Settings keeps only what macOS offers, so the `power_menu.*` keys are
-constants at their old defaults or stylesheet tokens in sill; a file that still has them
+constants at their old defaults or stylesheet tokens in the shell; a file that still has them
 loads, the keys are ignored. The section number stays so later links hold.
 
 ### 3.18 `window` (retired)
 
 Retired 2026-10-27: Settings keeps only what macOS offers, so the `window.*` keys are
-constants at their old defaults or stylesheet tokens in sill; a file that still has them
+constants at their old defaults or stylesheet tokens in the shell; a file that still has them
 loads, the keys are ignored. The section number stays so later links hold.
 
 ### 3.19 `session` (shell/settings.toml)
 
-The parts a sill session borrows until M11 draws its own (design/20 §1.9 lock screen, §1.10 polkit prompt; sill FINDINGS "M7"): which lock screen and which polkit agent `dist/sill-session` starts. Both are a name from a fixed vocabulary or a command line, so a user can point at a program this list does not know. Page Accounts, all Advanced (§5), except `session.lock_grace_s`: it answers sill's own idle service (F863, F908), not the locker or the polkit agent, so it moved to the new Power page (§5) alongside `idle.*` (Q445). Idle timeouts are not sill's: the desktop idle daemon keeps them in the desktop's own config.
+The parts a shell session borrows until M11 draws its own (design/20 §1.9 lock screen, §1.10 polkit prompt; the shell FINDINGS "M7"): which lock screen and which polkit agent `dist/shell-session` starts. Both are a name from a fixed vocabulary or a command line, so a user can point at a program this list does not know. Page Accounts, all Advanced (§5), except `session.lock_grace_s`: it answers the shell's own idle service (F863, F908), not the locker or the polkit agent, so it moved to the new Power page (§5) alongside `idle.*` (Q445). Idle timeouts are not the shell's: the desktop idle daemon keeps them in the desktop's own config.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
 | `session.user_picture` | `PictureChoice::{Auto,Letter,Emoji(name),Photo}` written as a string | `auto` | `auto`, `letter`, `photo` or `emoji:<name>` (a stable name from the UI kit's 42, design/25). Auto: the photo if `~/.face` (or AccountsService's icon) exists, else the letter; Photo with no file falls back to the letter | design/25 (user picture), Bardo `PictureChoice::resolve` | RETIRING: no reader; the picture is wired to `resolve_picture` first |
-| `session.lock_grace_s` | `Secs` | `5` | `0..=60`; 0 always asks; only after sill's own idle screen-off lock (cause `IdleScreenOff`), never after a manual lock, the lid, suspend or resume | sill F863, F908 | proposed (Q441, 2026-09-27) |
+| `session.lock_grace_s` | `Secs` | `5` | `0..=60`; 0 always asks; only after the shell's own idle screen-off lock (cause `IdleScreenOff`), never after a manual lock, the lid, suspend or resume | the shell F863, F908 | proposed (Q441, 2026-09-27) |
 
 ### 3.20 `widgets` (retired)
 
-Retired 2026-10-20: sill has one widget host (the notification center's tile) and no desktop widget
+Retired 2026-10-20: the shell has one widget host (the notification center's tile) and no desktop widget
 layer, so the six `widgets.*` keys (`center`, `desktop`, `desktop_widgets`, `desktop_cell_px`,
 `desktop_gap_px`, `world_clocks`) are gone; a file that still has them loads, the keys are ignored.
 The section number stays so links to 3.21 and later hold.
 
 ### 3.21 `calendar` (shell/settings.toml)
 
-The calendar sources and the Calendar and Up Next widgets (design/20 §1.12; sill F401–F403): `.ics` files and vdir folders, watched; no CalDAV client of sill's own. Page Notifications, all Advanced.
+The calendar sources and the Calendar and Up Next widgets (design/20 §1.12; the shell F401–F403): `.ics` files and vdir folders, watched; no CalDAV client of the shell's own. Page Notifications, all Advanced.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -357,7 +357,7 @@ The calendar sources and the Calendar and Up Next widgets (design/20 §1.12; sil
 
 ### 3.22 `screenshot` (shell/settings.toml)
 
-The floating thumbnail after a screenshot and the tool that takes one (design/20 §1.13; sill F406, F408): the thumbnail holds `ToastHold` (5200 ms) and pauses under the pointer; dragging it out is a file drag once layer-shell-host has a drag source (G120). Page Keyboard and Shortcuts, all Advanced.
+The floating thumbnail after a screenshot and the tool that takes one (design/20 §1.13; the shell F406, F408): the thumbnail holds `ToastHold` (5200 ms) and pauses under the pointer; dragging it out is a file drag once layer-shell-host has a drag source (G120). Page Keyboard and Shortcuts, all Advanced.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -366,30 +366,30 @@ The floating thumbnail after a screenshot and the tool that takes one (design/20
 
 ### 3.23 `hot_corners` (shell/settings.toml)
 
-One invisible square per enabled corner (design/20 §1.16; design/13 §13.3.12 for the dwell, re-arm, modifier and action rules; sill F409). Page Dock; the four corner keys are drawn by one custom control (`corners`) and the timing and the hot spot's size (150 ms dwell, 500 ms re-arm, 2 px) are constants of the machine, not settings (2026-10-27).
+One invisible square per enabled corner (design/20 §1.16; design/13 §13.3.12 for the dwell, re-arm, modifier and action rules; the shell F409). Page Dock; the four corner keys are drawn by one custom control (`corners`) and the timing and the hot spot's size (150 ms dwell, 500 ms re-arm, 2 px) are constants of the machine, not settings (2026-10-27).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
 | `hot_corners.top_left` | `Text`, control `corners`: a list of bindings (`CornerBindings`) | `[]` | what the corner does; empty is inactive. Each binding is a table `{ keys, action, ... }`: `keys` is a list of `command`, `option`, `control`, `shift` held exactly (`[]` when absent), `action` is a `CornerAction` word (`launcher`, `notification_center`, `control_center`, `show_desktop`, `lock`, `workspaces`, `app_windows`, `display_sleep`, `assistant`), or `app_action` (with `app`, `intent`), `open` (with one of `app`, `path`, `url`) or `command` (with `command`, run by `/bin/sh -c`). At most one binding per set of keys; a bad or duplicate binding is dropped and reported. The older `top_left = "none"\|"lock"\|"command"` with `top_left_command` is read and never written back | `20-SURFACES.md#1-16-hot-corners-spec-integrated-experience`; F409; owner 2026-10-22 | proposed (hot corners beyond the Mac, 2026-10-22) |
 | `hot_corners.top_right` | as `top_left` | `[]` | as `top_left` | same | proposed (hot corners beyond the Mac, 2026-10-22) |
 | `hot_corners.bottom_left` | as `top_left` | `[]` | as `top_left` | same | proposed (hot corners beyond the Mac, 2026-10-22) |
-| `hot_corners.bottom_right` | as `top_left` | `[]` | as `top_left` (macOS ships Quick Note here; sill has none until M12) | same | proposed (hot corners beyond the Mac, 2026-10-22) |
+| `hot_corners.bottom_right` | as `top_left` | `[]` | as `top_left` (macOS ships Quick Note here; the shell has none until M12) | same | proposed (hot corners beyond the Mac, 2026-10-22) |
 
 ### 3.24 `idle` (shell/settings.toml)
 
-sill's own idle service, replacing the desktop idle daemon in a sill session (the user's pick, 2026-09-27): dim with an overlay (never real brightness), screen off through output power, lock as the displays go off, suspend through logind; `org.freedesktop.ScreenSaver.Inhibit`, Wayland idle-inhibit and logind inhibitors are honoured (sill FINDINGS "sill idle (Q420 B)", F900-F913). Page Power (§5, Q445; before that landed, "Page Accounts for now").
+The shell's own idle service, replacing the desktop idle daemon in a shell session (the user's pick, 2026-09-27): dim with an overlay (never real brightness), screen off through output power, lock as the displays go off, suspend through logind; `org.freedesktop.ScreenSaver.Inhibit`, Wayland idle-inhibit and logind inhibitors are honoured (the shell FINDINGS "shell idle (Q420 B)", F900-F913). Page Power (§5, Q445; before that landed, "Page Accounts for now").
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `idle.screen_off_ac_min` | `Mins` | `15` | `0..=240`, 0 never | sill FINDINGS "sill idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
-| `idle.screen_off_battery_min` | `Mins` | `15` | `0..=240`, 0 never | sill FINDINGS "sill idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
-| `idle.suspend_ac_min` | `Mins` | `30` | `0..=480`, 0 never | sill FINDINGS "sill idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
-| `idle.suspend_battery_min` | `Mins` | `15` | `0..=480`, 0 never | sill FINDINGS "sill idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
-| `idle.lock` | `IdleLockAt::{ScreenOff,Never}` | `ScreenOff` |  | sill FINDINGS "sill idle (Q420 B)", F904 | proposed (Q441, 2026-09-27) |
+| `idle.screen_off_ac_min` | `Mins` | `15` | `0..=240`, 0 never | the shell FINDINGS "shell idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
+| `idle.screen_off_battery_min` | `Mins` | `15` | `0..=240`, 0 never | the shell FINDINGS "shell idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
+| `idle.suspend_ac_min` | `Mins` | `30` | `0..=480`, 0 never | the shell FINDINGS "shell idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
+| `idle.suspend_battery_min` | `Mins` | `15` | `0..=480`, 0 never | the shell FINDINGS "shell idle (Q420 B)", F901 | proposed (Q441, 2026-09-27) |
+| `idle.lock` | `IdleLockAt::{ScreenOff,Never}` | `ScreenOff` |  | the shell FINDINGS "shell idle (Q420 B)", F904 | proposed (Q441, 2026-09-27) |
 
 ### 3.25 `keyboard` (shell/settings.toml)
 
-How sill treats the keyboard per app (the key remap daemon, the key-cap overlay: which the key remap daemon profile an app's keys are drawn with). Page Keyboard and Shortcuts, Advanced (§5).
+How the shell treats the keyboard per app (the key remap daemon, the key-cap overlay: which the key remap daemon profile an app's keys are drawn with). Page Keyboard and Shortcuts, Advanced (§5).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -567,7 +567,7 @@ shows a grid of pictures with "Add Picture...".
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `wallpaper.picture` | text, control `picture` | empty | a path to an image; empty means no picture, so the desktop paints `--paper` | sill wallpaper; §9.1 `picture` control | proposed (2026-10-20) |
+| `wallpaper.picture` | text, control `picture` | empty | a path to an image; empty means no picture, so the desktop paints `--paper` | the shell wallpaper; §9.1 `picture` control | proposed (2026-10-20) |
 
 ## 4. Rust shape
 
@@ -846,7 +846,7 @@ impl SettingsWatch {
 ```
 
 There is no change enum and no `apply`: each domain struct is `PartialEq`, and a surface or a
-policy compares the one domain it draws between two reads (sill's `Section`). Whole-struct
+policy compares the one domain it draws between two reads (the shell's `Section`). Whole-struct
 equality, not per-field: a domain is small enough (largest is `dock` at 35 fields) that "one
 field changed" and "recompute the domain" cost the same, and per-field diffing would need a
 second hand-written table per domain that section 6's "every key appears in the Rust schema"
@@ -862,12 +862,12 @@ only in v1, no widget; a later wave may promote one if the user asks.
 | **Appearance** | `appearance.theme`, `appearance.accent`, `appearance.look`, `appearance.file_icons`, `appearance.motion_level`, `appearance.transparency`, `appearance.custom_styles`, `icons.style`; under **Bar**: `bar.autohide` |
 | **Dock** | `dock.magnification`, `dock.tile_size_px`, `dock.autohide`, `dock.indicators`, `dock.trash` |
 | **Mouse & Gestures** | `scroll.natural`, `scroll.speed`, `gestures.gesture_action_map` (the remap table) |
-| **Keyboard / Shortcuts** | proposed by `28-CUSTOMIZATION.md#411-keyboard-shortcuts`: `shortcuts.bindings` (the system list, toggle and chord per action) and `shortcuts.app_shortcuts`, rows added here after sill registers them (28 §6.0); sill writes them into the compositor's `system_actions` and `custom` shortcut files, and the chord the desktop already holds wins a clash, shown on the row (28 §7 decision 10) |
+| **Keyboard / Shortcuts** | proposed by `28-CUSTOMIZATION.md#411-keyboard-shortcuts`: `shortcuts.bindings` (the system list, toggle and chord per action) and `shortcuts.app_shortcuts`, rows added here after the shell registers them (28 §6.0); the shell writes them into the compositor's `system_actions` and `custom` shortcut files, and the chord the desktop already holds wins a clash, shown on the row (28 §7 decision 10) |
 | **Notifications** | `notifications.dnd`, `notifications.banner_style` (per app) |
-| **Spotlight** (sill M9, Q303) | `launcher.clipboard_history` (a privacy choice people should find), `launcher.web_search`, `launcher.emoji_skin_tone`; the rest of `launcher.*` stays Advanced |
+| **Spotlight** (the shell M9, Q303) | `launcher.clipboard_history` (a privacy choice people should find), `launcher.web_search`, `launcher.emoji_skin_tone`; the rest of `launcher.*` stays Advanced |
 | **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows the compositor publishes through its settings module (one per app and permission); no keys of the UI kit's own | 
-| **Power** (added Q445; sill's own idle service, section 3.24) | `idle.screen_off_ac_min`, `idle.screen_off_battery_min`, `idle.suspend_ac_min`, `idle.suspend_battery_min`, `idle.lock`, `session.lock_grace_s` (`Sill` under `idle.times` is what makes the `idle.screen_off_*`/`idle.suspend_*` sliders apply; under `Desktop` they still render, disabled, so the row explains itself) |
-| **Intelligence** (the companion, design/32; sill's `companion` domain and the daemons' schemas) | Companion: `companion.summon`, `companion.in_field`, `companion.notify`; Models: `ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>` (the live picker, section 9.4); Memory: `memory.files.at_rest`, `memory.consolidation.when`, `memory.consolidation.apply`, and the memory view (a live module); Computer use: `cua.enabled`, `cua.apps`, `cua.default_mode`, `cua.autopause`; Privacy: `agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h` |
+| **Power** (added Q445; the shell's own idle service, section 3.24) | `idle.screen_off_ac_min`, `idle.screen_off_battery_min`, `idle.suspend_ac_min`, `idle.suspend_battery_min`, `idle.lock`, `session.lock_grace_s` (`Shell` under `idle.times` is what makes the `idle.screen_off_*`/`idle.suspend_*` sliders apply; under `Desktop` they still render, disabled, so the row explains itself) |
+| **Intelligence** (the companion, design/32; the shell's `companion` domain and the daemons' schemas) | Companion: `companion.summon`, `companion.in_field`, `companion.notify`; Models: `ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>` (the live picker, section 9.4); Memory: `memory.files.at_rest`, `memory.consolidation.when`, `memory.consolidation.apply`, and the memory view (a live module); Computer use: `cua.enabled`, `cua.apps`, `cua.default_mode`, `cua.autopause`; Privacy: `agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h` |
 | **Viewer** (anyview, section 3.31) | Window: `viewer.chrome.hide_after`, `viewer.warm_for`; Viewing: `viewer.zoom.step`, `viewer.media.seek_step`; History: `viewer.history.cap`, `viewer.versions.keep`; Export: `viewer.export.jpeg_quality`, `viewer.export.avif_quality`, `viewer.export.paper`, `viewer.export.orientation`; `viewer.peek.*` and `viewer.image.*` are Advanced |
 | **Advanced** (file only) | everything else in section 3: `bar.*` except `bar.autohide`, `menus.*`, `control_center.*`, `scrollbar.*`, `scroll.momentum_*`/`rubber_band_*`/`wheel_detent_px`, `dock.*` geometry beyond the Dock page's list above, `palm_rejection.*`, `gestures.g4_*`/`live_workspace_*`, `session.*` other than `lock_grace_s` (Accounts page, all Advanced) |
 
@@ -1244,7 +1244,7 @@ mark is written; a person never edits it, and a settings file cannot carry it.
 The list below is a **proposal for the user to accept or trim**, not a grant. It is conservative on
 purpose: each key is cosmetic or a convenience that one click undoes, and none touches data,
 accounts, spend or a lock. `ds_settings::schema::AGENT_SETTABLE_PROPOSED` holds the same list so
-Bardo's, sill's and the Settings app's tests check their schemas against one source.
+Bardo's, the shell's and the Settings app's tests check their schemas against one source.
 
 | Key | Owner | Why an agent may set it | Status |
 | --- | --- | --- | --- |
@@ -1253,11 +1253,11 @@ Bardo's, sill's and the Settings app's tests check their schemas against one sou
 | `appearance.look` | Bardo (`AppearanceSettings`) | "use the Paper look": the choice is among looks the person installed, and Standard undoes it in one click | proposed (2026-10-23) |
 | `appearance.file_icons` | Bardo (`AppearanceSettings`) | "use the paper icons": the choice is among sets the person installed, and Standard undoes it in one click | proposed (2026-10-24) |
 | `appearance.custom_styles` | Bardo (`AppearanceSettings`) | "turn my styles off": the way back from a style that broke a surface, one switch, undone in one click | proposed (2026-10-23) |
-| `dock.magnification` | sill (`DockSettings`) | on/off, cosmetic | proposed (2026-10-03) |
-| `dock.tile_size_px` | sill (`DockSettings`) | bounded slider, cosmetic | proposed (2026-10-03) |
-| `dock.magnified_size_px` | sill (`DockSettings`) | bounded slider, cosmetic | proposed (2026-10-03) |
-| `launcher.web_search` | sill (`LauncherSettings`) | on/off for a last "search the web" row; it sends nothing by itself | proposed (2026-10-03) |
-| `notifications.dnd` | sill (`NotificationsSettings`) | "do not disturb for the meeting": the one setting a person asks for by voice most | proposed (2026-10-03) |
+| `dock.magnification` | the shell (`DockSettings`) | on/off, cosmetic | proposed (2026-10-03) |
+| `dock.tile_size_px` | the shell (`DockSettings`) | bounded slider, cosmetic | proposed (2026-10-03) |
+| `dock.magnified_size_px` | the shell (`DockSettings`) | bounded slider, cosmetic | proposed (2026-10-03) |
+| `launcher.web_search` | the shell (`LauncherSettings`) | on/off for a last "search the web" row; it sends nothing by itself | proposed (2026-10-03) |
+| `notifications.dnd` | the shell (`NotificationsSettings`) | "do not disturb for the meeting": the one setting a person asks for by voice most | proposed (2026-10-03) |
 
 Never agent-settable, whatever a program writes: everything under `agent.*` (the companion's
 own strictness and budgets), `ai.*` (models, spend, local-only), `cua.*` (computer use),
@@ -1268,7 +1268,7 @@ a program's own schema still decides which other keys it marks settable.
 `AGENT_NEVER_SETTABLE` lists those prefixes and a test keeps the proposal clear of them. An
 agent that could raise its own budget or switch computer use on would be its own gatekeeper.
 
-The marks of sill's and the Settings app's own keys live in their schemas; Bardo marks only what
+The marks of the shell's and the Settings app's own keys live in their schemas; Bardo marks only what
 `bardo/appearance.toml` owns (`appearance.theme`, `appearance.accent`, `appearance.look`,
 `appearance.file_icons`, `appearance.custom_styles`).
 
@@ -1316,12 +1316,12 @@ program's own sections move onto the same markers when its schema is passed with
 
 ## 7. Open decisions
 
-1. **Whether the mouse gestures daemon and sill share one file.** This doc keeps them separate
+1. **Whether the mouse gestures daemon and the shell share one file.** This doc keeps them separate
    (`mouse-gestures/gestures.toml` vs `shell/settings.toml`) because `mouse_gestures` is a separate daemon
    that must start and apply its own config before `bardo-shell` or any compositor exists
    (`12-BEHAVIOUR-gestures.md#12-3-12-daemon-architecture`), and because `12.6`'s own doc text
    already assumes a `mouse_gestures/config.toml`. A merged file would need `mouse_gestures` to depend on
-   `bardo-shell`'s schema or vice versa, which sill's crate boundaries (its ARCHITECTURE.md, "Crates":
+   `bardo-shell`'s schema or vice versa, which the shell's crate boundaries (its ARCHITECTURE.md, "Crates":
    `shell-launcher`/`shell-ipc` must not reach several crates) argue against generalizing.
    Kept separate; revisit only if the two are shown to drift out of sync in practice.
 2. **`appearance.accent`'s set is settled (2026-09-30)**: macOS's eight, Blue the default; the

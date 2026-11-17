@@ -19,7 +19,7 @@ pub fn server_line(server: &ServerStatus) -> Option<String> {
             owner.command.as_deref().unwrap_or("another app")
         )),
         (_, ServerMode::Passive) => Some("Not receiving notifications from apps".to_owned()),
-        (NameHolder::NoBus | NameHolder::Nobody | NameHolder::Sill, ServerMode::Own) => None,
+        (NameHolder::NoBus | NameHolder::Nobody | NameHolder::Shell, ServerMode::Own) => None,
     }
 }
 
@@ -38,7 +38,7 @@ mod tests {
             })
         };
         let cases = [
-            (ServerMode::Own, NameHolder::Sill, None),
+            (ServerMode::Own, NameHolder::Shell, None),
             (ServerMode::Own, NameHolder::Nobody, None),
             (
                 ServerMode::Own,

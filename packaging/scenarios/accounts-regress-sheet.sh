@@ -54,7 +54,7 @@ step_boot() {
   accountd_start || return 1
   inferd_write_config </dev/null
   inferd_start || return 1
-  sill_start || return 1
+  shell_start || return 1
 }
 
 # S4: Cancel's place in a card of any height: 55 px from its right edge, 35 from its bottom (the form's and the list's alike).

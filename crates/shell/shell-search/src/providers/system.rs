@@ -17,7 +17,7 @@ use tokio::sync::watch;
 
 /// The Reload row's words: bardo-shell's own command, not a power action.
 const RELOAD_TITLE: &str = "Reload";
-const RELOAD_ALIASES: &[&str] = &["Reload Sill", "Refresh"];
+const RELOAD_ALIASES: &[&str] = &["Reload Shell", "Refresh"];
 
 /// One row's shape: its action, its id (the frecency key, kept from before the actions had one
 /// list), its title and search words, and its glyph (design/08-ICONS.md §1.6 has only `lock` and

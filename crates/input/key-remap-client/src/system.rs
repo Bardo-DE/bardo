@@ -12,7 +12,7 @@ type Row = (StandardAction, &'static [&'static str]);
 
 /// One row per action the desktop binds differently from the chord keymap's conventions.
 const ROWS: &[Row] = &[
-    // sill's launcher is also on Ctrl+Alt+Space, where a keyboard has no Command key.
+    // The shell's launcher is also on Ctrl+Alt+Space, where a keyboard has no Command key.
     (StandardAction::Launcher, &["Super+Space", "Ctrl+Alt+Space"]),
 ];
 

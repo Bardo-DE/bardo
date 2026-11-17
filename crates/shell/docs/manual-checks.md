@@ -6,7 +6,7 @@ Add new ones at the end of their section.
 
 ## On a KWin session (test compositor, real devices)
 
-KWin is not a target, but a KWin session at the machine is the quickest place to try sill's
+KWin is not a target, but a KWin session at the machine is the quickest place to try the shell's
 surfaces with real devices: its own bar and dock over the desktop, BlueZ, MPRIS, the clipboard
 (`ext_data_control_manager_v1`) and real pointer and keyboard. KWin lacks the compositor's protocols
 (toplevels, workspaces, output management, session lock), so the services that need them stay
@@ -14,7 +14,7 @@ at their defaults there; anything about those, or about displays and scale, is i
 sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 
 - [ ] **CJK input in the launcher, a short real-keyboard spot check.** Automated by layer-shell-host's
-  `SILL_DIR=~/sill ~/shell-host/scripts/dev/accept-ime.sh` (fcitx5 McBopomofo on a private headless
+  `SHELL_DIR=~/shell ~/shell-host/scripts/dev/accept-ime.sh` (fcitx5 McBopomofo on a private headless
   KWin; the field reads 你好). By hand, once: `bash dev/manual/ime-live.sh start`, click into
   the search field, switch fcitx5 to McBopomofo, type `su3cl3` and press **Return** to commit
   (Space opens the candidates): 你好 appears once, not doubled. Then `bash dev/manual/ime-live.sh
@@ -54,7 +54,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   already pass under fake input on a headless KWin through
   `dev/accept/notifications.sh --real-input`; this is the feel with a real mouse and touchpad):
   `bardo-shell debug notify "Hi" --body "..." --action default=Open` on a debug build. It posts straight
-  to sill's banners without D-Bus, so sill need not hold `org.freedesktop.Notifications`. The card
+  to the shell's banners without D-Bus, so the shell need not hold `org.freedesktop.Notifications`. The card
   follows a drag 1:1 to the right and damped to the left, springs back under 80 px and flies out
   past it or on a flick; after a click on one card, the next card under the pointer still pauses
   and shows its close button.
@@ -83,7 +83,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 - [ ] **Launcher with a Mac keyboard through the key remap daemon** (real typing, Down, Space, Ctrl+Y, → twice,
   Tab, Escape three times, Ctrl+R, Shift+Tab to Emoji and Enter on a clipboard row already pass
   under fake input through `dev/accept/launcher.sh --real-input`; this is the physical keys and
-  the look). Open the launcher with `bardo-shell launcher open` (Cmd+Space itself needs a sill (the compositor)
+  the look). Open the launcher with `bardo-shell launcher open` (Cmd+Space itself needs a shell (the compositor)
   login) and type part of a document's name: ⌘Y shows the preview, Space after an arrow toggles
   it and never types a space, → at the end of the text shows it and a second → puts the focus
   ring on its first button, Tab walks the buttons, Escape leaves the pane, hides it, then closes.
@@ -111,7 +111,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 - [ ] **Dragging a desktop widget with a real pointer**: with `bardo-shell widgets toggle-desktop` on,
   press the Calendar and drag it: it lifts under the pointer and follows it, and a quiet slot
   guide shows the cell it will land in; held over the Batteries, they step aside and go back
-  when you move on; released, the Calendar springs into its cell. Quit and restart sill: the
+  when you move on; released, the Calendar springs into its cell. Quit and restart the shell: the
   place is kept. Click the month arrows and Now Playing's buttons without moving: they work; a
   drag starting on a button presses nothing.
 - [ ] **The desktop's context menu with a real mouse** (2026-10-20, the menu now on the
@@ -140,9 +140,9 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   `bardo-shell debug screenshot <a copy of a PNG>`), drag it onto a file manager window: the file
   copies there, the card leaves, the original stays; onto a terminal it inserts the path.
 
-## Needs a real sill (the compositor) login (not the headless compositor)
+## Needs a real shell (the compositor) login (not the headless compositor)
 
-- [ ] **Cmd+Space through the key remap daemon** opens the launcher (the key remap daemon writes Super+Space from the sill layer
+- [ ] **Cmd+Space through the key remap daemon** opens the launcher (the key remap daemon writes Super+Space from the shell layer
   `~/.config/bardo/key-remap/key-remap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
   Plasma overlay, applies).
 - [ ] **Super shortcuts** reach the shell (the headless compositor never gets them).
@@ -152,10 +152,10 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   client must reach the daemon's socket; no injected key reaches a compositor's shortcut matcher.
 - [ ] **Brightness keys on the external monitor** (DDC/CI, with the brightness shortcuts bound to
   `bardo-shell display brightness up|down`): the keys (or `bardo-shell display brightness up|down`) move the BenQ MA270U's backlight
-  within about a quarter second, sill's OSD shows the level, no stuck value after fast repeats.
+  within about a quarter second, the shell's OSD shows the level, no stuck value after fast repeats.
 - [ ] **The Display capsule on the BenQ MA270U** (the pointer path passes headlessly at scale 2
   in `dev/accept/control-center.sh --real-input`): open the control center from the bar: within 2 s the
-  Display capsule shows the monitor's level (sill's log says "sill: ddc: 1 display(s) answer
+  Display capsule shows the monitor's level (the shell's log says "shell: ddc: 1 display(s) answer
   DDC/CI"); drag it: the backlight follows during the drag, not only at the release; click the
   track: it jumps there. Change the brightness with the monitor's own buttons with the control
   center open: the capsule follows within 2 s. Put it back where it was afterwards.
@@ -189,12 +189,12 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   - On a laptop with a keyboard backlight: the Keyboard Brightness module shows under Display,
     follows the laptop's own backlight keys, and a drag sets the nearest step.
 
-## Needs a sill (the compositor) login
+## Needs a shell (the compositor) login
 
 Install with `dist/install.sh` (`--dry-run` first; it builds and installs the binary, the PAM
 service, the intents manifest, the skills and the settings schema, and never touches Plasma or
 Toshy), then the session from the desktop repo. `docs/first-login.md` is the checklist for the
-first real login; the boxes below are what it proves. Then pick "sill (the compositor)" at the login
+first real login; the boxes below are what it proves. Then pick "shell (the compositor)" at the login
 screen.
 
 - [ ] **GPU choice**: the journal line `layer-shell-host: adapter <name> ...` names the GPU the
@@ -217,35 +217,35 @@ screen.
   question, then closes the panel.
 - [ ] **The session comes up**: bar, dock, wallpaper; `systemctl --user is-active
   graphical-session.target` says `active`; `bardo-shell polkit status` says `registered`.
-- [ ] **The power key** opens sill's power menu and does not power off (`systemd-inhibit --list`
-  shows a `handle-power-key` block held for sill).
+- [ ] **The power key** opens the shell's power menu and does not power off (`systemd-inhibit --list`
+  shows a `handle-power-key` block held for the shell).
 - [ ] **Log out** from the power menu ends the session back to the login screen (nothing left
   running: `loginctl list-sessions`).
 
 ### The lock screen
 
 - [ ] **Lock**: Super+Escape, ⌃⌘Q, the launcher's Lock row and `loginctl lock-session` each show
-  sill's lock screen once; the password unlocks it and the desktop is back as it was.
+  The shell's lock screen once; the password unlocks it and the desktop is back as it was.
 - [ ] **Lock before sleep**: `systemctl suspend`, wake: the lock screen is already up when the
   screen comes back (no flash of the desktop). While awake, `systemd-inhibit --list` shows
-  `sill ... lock before sleep ... delay`.
+  `shell ... lock before sleep ... delay`.
 - [ ] With several outputs: the password field is on the output under the pointer, every other
   output shows the clock only, and keyboard focus lands in the field. Clicking another output
   moves the field there, and typing goes to it.
 - [ ] **A real password**: a wrong one spins, shakes and empties the field (about 2 s:
   `pam_unix`'s delay); the right one fades the lock screen out. Nothing about the password
-  appears in `journalctl --user -t sill` or sill's stderr.
+  appears in `journalctl --user -t shell` or the shell's stderr.
 - [ ] **Caps Lock**: turn it on before locking; the mark shows in the field from the first
   frame, and goes when Caps Lock is turned off.
 - [ ] **Six wrong passwords, no lockout**: every wrong one spins, shakes and empties the field;
   the field never closes, and the right password on the seventh try unlocks at once.
 - [ ] At a fractional scale (1.5x): the lock surfaces are crisp and fill every output.
-- [ ] Kill the shell while locked (`pkill -f "sill run"` from a TTY): the session stays locked,
-  sill is started again, and sill re-locks at start so you can unlock normally.
+- [ ] Kill the shell while locked (`pkill -f "shell run"` from a TTY): the session stays locked,
+  The shell is started again, and the shell re-locks at start so you can unlock normally.
 
 ### Idle and the lock grace
 
-Set a short screen-off time in sill's idle settings (e.g. 60 s).
+Set a short screen-off time in the shell's idle settings (e.g. 60 s).
 `dev/accept/idle.sh` covers the rules on the compositor with made-up wakes, since the
 headless compositor counts no synthetic input as activity.
 
@@ -273,7 +273,7 @@ headless compositor counts no synthetic input as activity.
 `dev/accept/polkit.sh` covers the prompt on the nested compositor against a stand-in Authority
 and a stand-in helper; these need polkitd, polkit's own helper and a real password.
 
-- [ ] `pkexec true` shows sill's prompt naming the action and you; the right password returns
+- [ ] `pkexec true` shows the shell's prompt naming the action and you; the right password returns
   0 and the prompt hides.
 - [ ] A wrong password shakes the field and empties it; three wrong tries end the request
   (`pkexec` returns 127, "Not authorized").
@@ -286,8 +286,8 @@ and a stand-in helper; these need polkitd, polkit's own helper and a real passwo
 `cargo test -p shell-services --test it key_remap_socket` covers the socket against a fake daemon; these
 need the real daemon on a machine with a Mac keyboard (or a PC keyboard with the Mac layout) and
 root for the unit. Install the key remap daemon first (`install.sh` in the key remap daemon repo, with its unit, config
-folder and polkit rule `dist/bardo-key-remap.polkit.rules`), run sill's `dist/install.sh` (it copies the
-sill layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-remap.toml` when missing), then log in to a sill session.
+folder and polkit rule `dist/bardo-key-remap.polkit.rules`), run the shell's `dist/install.sh` (it copies the
+The shell layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-remap.toml` when missing), then log in to a shell session.
 
 - [ ] `bardo-shell key-remap status` says `connected` with your keyboard listed and `grab` `active`.
 - [ ] Cmd+Space opens the launcher and again closes it (Super+Space, not Alt+Space), and Cmd+Shift+4 starts
@@ -299,7 +299,7 @@ sill layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-rem
   desktop-entry id of an app that is open>"` and `profile = "<a profile in key-remap.toml>"`): within
   a second, that app's windows switch to the profile (a key the profile remaps behaves
   differently there) and other apps do not. Change the `profile`, then delete the row: each
-  switches again. A row with `profile = "Bad Name"` is dropped and a `sill: settings.toml:` line
+  switches again. A row with `profile = "Bad Name"` is dropped and a `shell: settings.toml:` line
   in the daemon's log says so; the other rows still apply.
 - [ ] Edit `~/.config/bardo/key-remap/key-remap.toml` (a rule on a key you can tell): the change applies
   within a second, no restart.
@@ -322,7 +322,7 @@ sill layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-rem
 - [ ] Log out and in again: the login screen already has the layout, and after login the terminal
   and the browser behave as in the second item.
 
-## The focused app's menus in the bar (a sill login, a Bardo app that exports its menu)
+## The focused app's menus in the bar (a shell login, a Bardo app that exports its menu)
 
 - [ ] **The Settings app's Edit menu shows in the bar**: focus the Settings app (built with the menu export on); the bar
   reads the Settings app's name in bold, then File, Edit, View, Window and Help. Press Edit: Undo and Redo list
@@ -330,7 +330,7 @@ sill layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-rem
   pick a row and the Settings app runs it. A window that is not a Bardo app shows only its name's menu (Hide,
   Quit, its windows).
 
-## The confirmation sheet and `bardo-do` on a real sill (the compositor) login
+## The confirmation sheet and `bardo-do` on a real shell (the compositor) login
 
 Needs docket's `intentd` running (`systemctl --user start intentd` from docket's `dist/`) and
 `bardo-do` on the PATH; `dist/install.sh` has put `org.bardo.Shell.toml` where intentd reads it.
@@ -362,7 +362,7 @@ need a person, a real compositor or real eyes.
   terminal again (the sheet's `Exclusive` keyboard is released when it leaves).
 - [ ] **Phase A is forgeable**: a key typed by uinput answers the sheet. Known; Phase B closes it.
 
-## The assistant (a sill session with intentd, companiond, cuad and memoryd installed)
+## The assistant (a shell session with intentd, companiond, cuad and memoryd installed)
 
 The service, the machines and the launcher's mode are tested on stand-ins and fakes; these need
 the real daemons or a real keyboard.
@@ -387,7 +387,7 @@ the real daemons or a real keyboard.
   stops the run. `bardo-shell companion stop-all` pauses every run that is going and leaves paused and ended
   ones alone.
 - [ ] **A run's row** (a real cua run): the row follows the run's phase; "Take Over" and "Hand Back"
-  change the state; "Watch" does nothing from sill (the compositor's) and must not close the panel.
+  change the state; "Watch" does nothing from the shell (the compositor's) and must not close the panel.
 - [ ] **Undo**: after an assistant action, the Assistant filter lists it under recent activity with
   "Undo"; Enter undoes it and the row reads "Undone".
 - [ ] **Memory filter**: Tab to Memory: the newest events read "You archived ...", newest first, each
@@ -398,7 +398,7 @@ the real daemons or a real keyboard.
 - [ ] **Launcher keys on a live session**: with a window focused whose the key remap daemon profile is `default`
   (Cmd written as Ctrl), open the launcher and press Cmd+K, Cmd+R, Cmd+Y, Cmd+B and Cmd+Backspace
   on rows that carry them. The launcher resolves Super (Command) through the keymap only, so each
-  must work. While a sill surface holds the keyboard sill tells the key remap daemon `keymap-aware` (and the
+  must work. While a shell surface holds the keyboard the shell tells the key remap daemon `keymap-aware` (and the
   window's profile again when it lets go): check in the key remap daemon's log that the
   profile flips on open and back on close, and that Cmd+Tab still switches apps while the launcher is up.
 - [ ] **Next Input Source**: with fcitx5 running and two or more input methods in its group, `bardo-shell do next-input-source` (Control-Space once the compositor binds it) switches fcitx5 to the next input method, wrapping from the last to the first; the same with IBus running and two or more engines turned on (`ibus engine` shows the change). With no input-method framework running `bardo-shell do next-input-source` prints "No input sources to switch." and exits non-zero.
@@ -494,7 +494,7 @@ the real daemons or a real keyboard.
   the script's output folder: `grim` the screen, `wl-copy` and `wl-paste` the clipboard). Look for: no permission sheet left on
   screen, `grim`'s shot is not refused, `wl-copy`/`wl-paste` work, and `compositor.log` has no line saying the floor was not
   believed. If a step is asked or refused, the program is probably one the floor cannot name (an image under the checkout):
-  FINDINGS pa2-sill, "Dev sessions start the compositor with a floor".
+  FINDINGS pa2-shell, "Dev sessions start the compositor with a floor".
 
 ## The display trial (a program changes the displays under the compositor)
 
@@ -510,7 +510,7 @@ the real daemons or a real keyboard.
 - [ ] **Blank screen**: set a mode the monitor cannot show; with no key pressed the screen comes back by itself.
 
 
-## Launcher ⌘K actions menu and memory rows (sill 01035ad3)
+## Launcher ⌘K actions menu and memory rows (the shell 01035ad3)
 
 - [ ] **The menu opens lit**: press ⌘K on a row with actions; the first action is lit, and Return runs it.
 - [ ] **A click stays in the menu**: click an action; it runs once and the row behind it does not run as well.
@@ -535,7 +535,7 @@ the real daemons or a real keyboard.
 - [ ] **App names**: a helper that runs an app shows the app's own name (from its entry in the list of coding agents), not the title-cased program name.
 - [ ] **Suggested routines**: when a helper suggests a routine, its Routines section shows "Suggested routine" with what it would do, when, "If your computer is off at that time, the run is skipped." and the suggester's reason in quotation marks. Accept makes the routine and the suggestion goes; Not Now removes the suggestion and makes nothing.
 
-## Terminal handover (a sill login with companiond, a coding-agent helper and at least one terminal)
+## Terminal handover (a shell login with companiond, a coding-agent helper and at least one terminal)
 
 - [ ] **The default terminal**: with no `xdg-terminals.list`, Sign In on an app helper opens temor. Put `foot.desktop` in `~/.config/xdg-terminals.list` and press it again: foot opens instead. With `~/.config/bardo-xdg-terminals.list` naming another terminal, that one wins. temor (PR #16 on) takes `-e <command>`, declares `X-TerminalArgExec=-e`, and its launch lives until that tab closes; with an older temor the close is seen at once and the work comes back immediately.
 - [ ] **Open in Terminal**: on an app helper's card whose work can move, Open in Terminal opens the terminal in the helper's folder running its session. The card now reads "In Terminal" with Bring Back. Close the window: the work comes back by itself and the card returns to Open in Terminal, with no sentence shown.
@@ -557,7 +557,7 @@ the real daemons or a real keyboard.
 - [ ] **Old docket**: with a docket that does not send a brief, the sheet is the plain one it always was.
 - [ ] **Capture picker remembered sentence**: for an app whose choice is kept, the share sheet shows one quiet line under the choices ("Your choice is kept while {app} is open." or "...until you change it in Settings."); for an app asked every time it shows nothing.
 
-## The structure audit (sill 2026-10-20 to 2026-10-21, on a real login)
+## The structure audit (the shell 2026-10-20 to 2026-10-21, on a real login)
 
 - [ ] **One theme watch**: change light/dark in the control centre. The bar, dock, launcher, notification centre, banners and an open sheet all change at once.
 - [ ] **Focus loss**: open the notification centre, the switcher and the split picker in turn, then click a window. Each closes. Force Quit and the display trial stay open when a window is clicked.

@@ -133,7 +133,7 @@ Nothing below is built; the interfaces it will use are.
 4. **The roster** (G12). `Roster { entries }`, `RosterLine { agent: AgentRef, space, state,
    goal: Reveal<String>, last: StepLine, told: Option<first 80 chars of the user's turn> }`,
    derived by companiond from its tasks, `Cua1` signals and `Recent` messages; a line for another
-   Space shows presence only, no goal text (Q8); exposed to sill's Runs filter.
+   Space shows presence only, no goal text (Q8); exposed to the shell's Runs filter.
 5. **Side-episode capture** (C.6). When the person's side conversation with a worker or run ends
    (row closed, or 2 minutes idle) write an `Episode { kind: Side }` from the user's turns and
    the subagent's typed steps since; a goal change narrows the subagent's `TaskPolicy` through
@@ -532,11 +532,11 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   feature the variable is ignored and a line says `ignoring it and reading /proc`. A harness
   writes, for each test process pid (the bus's pid of the connection), a file
   `<dir>/<pid>/cgroup` containing `0::/system.slice/intentd.service` (router),
-  `0::/system.slice/sill.service` (shell), `0::/system.slice/cuad.service` (cuad) or
+  `0::/system.slice/shell.service` (shell), `0::/system.slice/cuad.service` (cuad) or
   `0::/user.slice/app.slice/app-org.example.Mail-1.scope` (an app), plus a callers file with
   `[[caller]]` rows for the units (the format above). Files may be written after the daemon
   starts: it reads at call time. Unit names checked: intentd, companiond, readerd, cuad,
-  voiced, actions-mcp (docket/cua `dist/*.service`), sill (`sill/dist/sill.service`), inferd.
+  voiced, actions-mcp (docket/cua `dist/*.service`), the shell (`shell/dist/shell.service`), inferd.
   `~/desktop` has no unit files. `voiced.service` and `actions-mcp.service` have no row (neither
   calls memoryd yet).
 
@@ -589,7 +589,7 @@ reads them.
      (`Daemon::consolidate_all`, first run an hour after start, each Space, announced like a requested run),
      which reads the setting afresh each night. **The nightly run does not ask whether the desktop is idle or
      on AC power** (`RunEvent::Tick { Idle, Ac }` is not consulted): memoryd has no idle or power source yet.
-     Closes when sill's idle state reaches memoryd.
+     Closes when the shell's idle state reaches memoryd.
 5. **The sandbox names the settings directory** (`Policy.read_dirs`, `<config>/memory`): `prepare` makes it at
    start and Landlock gives it read rights only, so a settings file the Settings app writes later is covered
    (a rule can only name a path that exists when it is applied). memoryd never writes it.
@@ -1043,7 +1043,7 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
 - Needs a change at the next re-pin (`use memory_core::Caller` becomes `use memory_service::Caller`):
   docket (`docket-inapp` tests `audit_queue`, `multi`, `seams`; `docket-memory` tests `portable`,
   `session_log`; `intentd` test support only mentions it in a comment), cua (`cuad` tests
-  `links.rs:102,223`). sill, the Settings app, files, mailo and anyview do not name it. Those users already
+  `links.rs:102,223`). The shell, the Settings app, files, mailo and anyview do not name it. Those users already
   depend on `memory-service` for `MemoryService`, since `InProcess` takes one.
 
 ## Layering lane U0.9a: hex and ulid swaps (2026-10-28)
@@ -1060,7 +1060,7 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
   golden test `minted_fact_ids_keep_their_exact_text` pins seven ids computed with a line-for-line
   port of the old encoder before the swap. `is_fact_id` stays: it checks text read from files.
 - Other hand-written hex in the memory service: none (`{:02x}` and friends do not occur).
-- Users in other repos: none. `git grep` at origin/master of docket, cua, sill and the Settings app finds no use of
+- Users in other repos: none. `git grep` at origin/master of docket, cua, the shell and the Settings app finds no use of
   `memory_core::hex_of` or `from_hex` (the Settings app has its own unrelated `settings-app-ui` `hex_of`). docket's
   own `format!("{b:02x}")` copies are the docket lane's.
 - Licences: MIT and MIT OR Apache-2.0 are in deny.toml's list. `ulid` pulls `web-time` only on wasm.

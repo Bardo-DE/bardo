@@ -23,7 +23,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | gating research | `agent/research-action-gating.md` | the research behind the policy grid and the breaker |
 | memory | `agent/memory.md` | event log, memory files, recall, sealing, the memory daemon |
 | computer use | `agent/cua.md` | accessibility tree, agent seat, masked capture, leases, the run machine |
-| ux | `agent/ux.md` | The UI kit components, sill surfaces, the summon and double-tap machines |
+| ux | `agent/ux.md` | The UI kit components, the shell surfaces, the summon and double-tap machines |
 | consolidation | `agent/SPEC.md` | names, one home per type, frozen interfaces, flows, the freeze plan |
 
 ## 3. Repos
@@ -37,11 +37,11 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | cua (new) | computer use: accessibility tree, agent seat, masked capture, leases, run machine, the daemon, the compositor protocol | core yes; daemon Linux |
 | The compositor (new, GPL) | the compositor's agent seat, masked source, trusted surface, glow, kill chord | no |
 | Bardo | `ui-intents`, the companion components and vocabulary, design docs | yes |
-| sill | launcher companion mode, the companion service, providers, overlays, settings domain | no |
+| The shell | launcher companion mode, the companion service, providers, overlays, settings domain | no |
 | The Settings app | the Intelligence page row and icon | no |
 
 Direction, acyclic and enforced per repo by each `check-boundary.sh`: the model layer, then porter, then
-The memory service, then docket, then cua, then sill. Bardo depends on none of them; docket's adapter depends
+The memory service, then docket, then cua, then the shell. Bardo depends on none of them; docket's adapter depends
 on the UI kit's `ui-intents`.
 
 ## 4. Where the shared types live
@@ -49,9 +49,9 @@ on the UI kit's `ui-intents`.
 The spec's section 2 holds the whole table; the ones the UI kit's part touches:
 
 - `Effect`, `Actor`, labels (`Integrity`, `Confidentiality`, `Label`), ids and receipts: porter's
-  `prov`. The UI kit's `EffectMark` and `ActorMark` are views of them, converted in sill.
-- Presence: `ui-core::vocab::CompanionPresence`, derived only by sill's `presence_of`.
-- Memory verb: `ui-core::vocab::MemoryVerb`, used by sill's launcher too.
+  `prov`. The UI kit's `EffectMark` and `ActorMark` are views of them, converted in the shell.
+- Presence: `ui-core::vocab::CompanionPresence`, derived only by the shell's `presence_of`.
+- Memory verb: `ui-core::vocab::MemoryVerb`, used by the shell's launcher too.
 - Confirmation: the wire request is docket's; the UI kit's `ConfirmView`, `ConfirmChoice` (was
   `ConfirmAnswer`), `TaintLine` (was `TaintNote`) and `GestureMark` are the card's own view.
 - Glow: the protocol values are the compositor's; the UI kit's `GlowLook` (was `GlowState`) feeds
@@ -69,7 +69,7 @@ The spec's section 2 holds the whole table; the ones the UI kit's part touches:
 | readerd | docket | `org.bardo.Reader1`: the quarantined reader, a separate process | intentd, inferd |
 | memoryd | the memory service | `org.bardo.Memory1`: record, recall, control | inferd |
 | cuad | cua | `org.bardo.ComputerUse1`, and a provider as `org.bardo.ComputerUse` | intentd's gate, inferd, memory, the compositor |
-| sill's daemon | sill | `org.bardo.Confirm1` and a provider as `org.bardo.Shell` | all of the above as a client |
+| The shell's daemon | the shell | `org.bardo.Confirm1` and a provider as `org.bardo.Shell` | all of the above as a client |
 
 Caller identity is always derived from the connection, never sent. Every interface we own is
 `org.bardo.<Name>1`, at `/org/bardo/<Name>1`.
@@ -84,7 +84,7 @@ Caller identity is always derived from the connection, never sent. Every interfa
   is the person's own words; outbound asks; destructive asks. `TrustMore` is the only loosening.
 - Memory for the planner is a router action, so taint is computed in one place; a fact proposed in
   a tainted session lands pending until the person keeps it.
-- Confirmations are the sill sheet now (phase A) and the compositor's trusted surface later.
+- Confirmations are the shell sheet now (phase A) and the compositor's trusted surface later.
 - Typed actions come first, hooks second, computer use last, and computer use is off by default and
   on per app.
 
@@ -110,6 +110,6 @@ prompt props (Bardo fill), or anything in the other repos.
 ## 9. The freeze plan
 
 The spec's section 6 orders the agents (dependency list, the model layer, Bardo, porter, the memory service and docket,
-cua and the compositor fork, sill and the Settings app), the spikes that block fills, and the fill waves.
+cua and the compositor fork, the shell and the Settings app), the spikes that block fills, and the fill waves.
 Every repo's gate is format, clippy with warnings denied, tests, the boundary script and the
 licence check, and the UI kit's adds the consumer check; each exit code is checked and nothing is piped.

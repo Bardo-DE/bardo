@@ -30,7 +30,7 @@ python3-gobject`).
 Toshy is not touched. Note that `/etc/bardo/key-remap/key-remap.toml` is the machine file: every session
 shares it, so it holds the Plasma shortcuts (Cmd+Space is KRunner, Cmd+H minimises,
 Cmd+Shift+3/4 are Spectacle). If you also log in to a desktop that forwards
-`~/.config/bardo/key-remap/key-remap.toml` (sill does), that desktop's rules go in your own file, which
+`~/.config/bardo/key-remap/key-remap.toml` (the shell does), that desktop's rules go in your own file, which
 overrides the machine file in that session only; see
 [personal-config.md](personal-config.md#which-file-when-you-use-more-than-one-desktop).
 

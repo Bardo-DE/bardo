@@ -11,7 +11,7 @@ const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const MAGNIFICATION: &str = "dock.magnification";
 
 /// bardo-shell's real schema with `agent = "settable"` written under the key `path`.
-fn sill_marking(path: &str) -> String {
+fn shell_marking(path: &str) -> String {
     let text = std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let line = format!("path = \"{path}\"");
     assert!(text.contains(&line), "the fixture has {path}");
@@ -55,7 +55,7 @@ fn a_schema_without_marks_leaves_every_key_to_the_person() {
 #[test]
 fn only_the_marked_key_is_settable() {
     let scratch = Scratch::under(TMP, "marks-one");
-    let dir = schema_dir(&scratch, "d", &sill_marking(MAGNIFICATION));
+    let dir = schema_dir(&scratch, "d", &shell_marking(MAGNIFICATION));
     let found = catalogue(&[&dir], std::slice::from_ref(&dir));
     assert_eq!(setting_of(&found, MAGNIFICATION), AgentSetting::Settable);
     let settable = found
@@ -71,7 +71,7 @@ fn the_marks_come_from_the_schema_that_supplies_the_program() {
     let plain =
         std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let first = schema_dir(&scratch, "home", &plain);
-    let second = schema_dir(&scratch, "system", &sill_marking(MAGNIFICATION));
+    let second = schema_dir(&scratch, "system", &shell_marking(MAGNIFICATION));
     let found = catalogue(&[&first, &second], &[first.clone(), second.clone()]);
     assert_eq!(
         setting_of(&found, MAGNIFICATION),
@@ -103,7 +103,7 @@ fn a_user_schema_cannot_lend_its_marks_to_an_installed_one() {
     let plain =
         std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let system = schema_dir(&scratch, "system", &plain);
-    let user = schema_dir(&scratch, "user", &sill_marking(MAGNIFICATION));
+    let user = schema_dir(&scratch, "user", &shell_marking(MAGNIFICATION));
     // `settings_store_fs::data_dirs` lists the system's directories first.
     let found = catalogue(&[&system], &[system.clone(), user]);
     assert_eq!(setting_of(&found, MAGNIFICATION), AgentSetting::HandsOff);
@@ -115,7 +115,7 @@ fn a_stale_schema_that_marks_keys_lends_nothing_to_the_valid_one() {
     let plain =
         std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let system = schema_dir(&scratch, "system", &plain);
-    let stale = sill_marking(MAGNIFICATION).replacen("version = 1", "version = 99", 1);
+    let stale = shell_marking(MAGNIFICATION).replacen("version = 1", "version = 99", 1);
     let user = schema_dir(&scratch, "user", &stale);
     let found = discover_under(
         &[system.clone(), user],
@@ -132,7 +132,7 @@ fn a_stale_schema_that_marks_keys_lends_nothing_to_the_valid_one() {
 #[test]
 fn a_schema_that_marks_a_never_settable_key_is_not_a_program() {
     let scratch = Scratch::under(TMP, "marks-never");
-    let text = sill_marking(MAGNIFICATION).replacen(
+    let text = shell_marking(MAGNIFICATION).replacen(
         &format!("path = \"{MAGNIFICATION}\""),
         "path = \"ai.magnification\"",
         1,
@@ -148,7 +148,7 @@ fn a_file_that_is_not_a_schema_marks_nothing_even_if_it_says_settable() {
         std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let dir = schema_dir(&scratch, "d", &plain);
     // Not named for its program: the side reader that once took marks from any such file is gone.
-    std::fs::write(dir.join("evil.settings.toml"), sill_marking(MAGNIFICATION)).expect("write");
+    std::fs::write(dir.join("evil.settings.toml"), shell_marking(MAGNIFICATION)).expect("write");
     let found = catalogue(&[&dir], std::slice::from_ref(&dir));
     assert_eq!(setting_of(&found, MAGNIFICATION), AgentSetting::HandsOff);
 }
@@ -156,7 +156,7 @@ fn a_file_that_is_not_a_schema_marks_nothing_even_if_it_says_settable() {
 #[test]
 fn a_schema_from_a_folder_the_person_can_write_is_shown_but_marks_nothing() {
     let scratch = Scratch::under(TMP, "marks-person-writable");
-    let dir = schema_dir(&scratch, "home", &sill_marking(MAGNIFICATION));
+    let dir = schema_dir(&scratch, "home", &shell_marking(MAGNIFICATION));
     // The folder is not declared a system one, so it is judged as the person's.
     let found = catalogue(&[], std::slice::from_ref(&dir));
     let as_system = catalogue(&[&dir], std::slice::from_ref(&dir));
@@ -176,7 +176,7 @@ fn a_schema_from_a_folder_the_person_can_write_is_shown_but_marks_nothing() {
 #[test]
 fn ownership_decides_a_folder_when_nothing_is_declared() {
     let scratch = Scratch::under(TMP, "marks-ownership");
-    let open = schema_dir(&scratch, "open", &sill_marking(MAGNIFICATION));
+    let open = schema_dir(&scratch, "open", &shell_marking(MAGNIFICATION));
     std::fs::set_permissions(&open, std::fs::Permissions::from_mode(0o777)).expect("chmod");
     let found = discover(std::slice::from_ref(&open));
     assert_eq!(found.programs.len(), 1, "the schema is still a program");

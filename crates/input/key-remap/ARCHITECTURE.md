@@ -19,7 +19,7 @@ how to add the next thing. The key remap daemon depends on no desktop crate and 
 Edges: `key_remap` -> `key-remap-proto` and `key-remap-client` (the `status` verb's socket client), and `key-remap-client` -> `key-remap-proto` and `keymap`, never `key_remap`; `key_remap` also takes `keymap` for the keymap file's judgement. The key remap daemon defines no action, chord or keymap type: those are the chord keymap's. And `key_remap` dev-depends on `key-remap-devtest`, which
 depends on `key-remap-proto`, `key-remap-client` and `key-remap-evdev`, and never on `key_remap`. `key-remap-proto` depends on no other workspace
 crate, and has no `toml`, `notify` or `rustix`, so a desktop takes it without pulling the
-daemon. sill imports it as a path dependency. `scripts/check-boundary.sh` holds the edges
+daemon. The shell imports it as a path dependency. `scripts/check-boundary.sh` holds the edges
 (including the four above for `key_remap`); `cargo tree -p key-remap-proto` shows only serde, serde_json and thiserror.
 
 The library surface of `key_remap` is the pure core. The daemon and the CLI verbs are

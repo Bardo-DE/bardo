@@ -274,7 +274,7 @@ fn FolderTree() -> Element {
                             EventHandler::new(move |to| projects.set(to)), 4,
                             rsx! {
                                 {leaf("INBOX/Projects/Bardo", "Bardo")}
-                                {leaf("INBOX/Projects/Sill", "Sill")}
+                                {leaf("INBOX/Projects/Shell", "Shell")}
                             },
                         )),
                         ListItem::row("Archive", "Archive", branch(

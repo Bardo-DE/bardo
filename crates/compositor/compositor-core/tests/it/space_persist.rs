@@ -57,9 +57,9 @@ fn an_empty_text_is_an_empty_file() {
 }
 
 #[test]
-fn sills_interim_json_is_imported_once() {
+fn the_shells_interim_json_is_imported_once() {
     let json = r#"{"by_id": {"s-00000000000000000000000000000001": {"index": 0}}}"#;
-    let file = SpaceFile::import_sill_json(json).expect("import");
+    let file = SpaceFile::import_shell_json(json).expect("import");
     assert_eq!(file.spaces.len(), 1);
     assert_eq!(
         file.spaces[0].output, None,
@@ -70,7 +70,7 @@ fn sills_interim_json_is_imported_once() {
 #[test]
 fn an_imported_record_keeps_its_output_and_index() {
     let json = r#"{"by_id": {"s-a": {"output": "connector:DP-2", "index": 3}, "s-b": {}}}"#;
-    let file = SpaceFile::import_sill_json(json).expect("import");
+    let file = SpaceFile::import_shell_json(json).expect("import");
     let want = vec![
         StoredSpace::new(space_id("s-a"), output_key("connector:DP-2"), SpaceIndex(3)),
         StoredSpace::homeless(space_id("s-b"), SpaceIndex(1)),
@@ -123,8 +123,8 @@ fn a_damaged_file_is_trimmed_to_what_compositor_would_have_written() {
 #[test]
 fn bad_text_is_a_typed_error() {
     SpaceFile::parse("spaces = 3").unwrap_err();
-    SpaceFile::import_sill_json("{").unwrap_err();
-    SpaceFile::import_sill_json(r#"{"by_id": {"NOT AN ID": {}}}"#).unwrap_err();
+    SpaceFile::import_shell_json("{").unwrap_err();
+    SpaceFile::import_shell_json(r#"{"by_id": {"NOT AN ID": {}}}"#).unwrap_err();
 }
 
 #[test]

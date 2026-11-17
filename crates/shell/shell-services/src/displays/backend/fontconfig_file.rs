@@ -38,9 +38,9 @@ pub fn plan(
     rendering: Option<FontRendering>,
     files: &FontFiles,
 ) -> FontFileAction {
-    let ours_is_sills = files.ours.as_deref().is_some_and(is_ours);
+    let ours_is_the_shells = files.ours.as_deref().is_some_and(is_ours);
     let remove = || {
-        if ours_is_sills {
+        if ours_is_the_shells {
             FontFileAction::Remove
         } else {
             FontFileAction::Keep
@@ -51,7 +51,7 @@ pub fn plan(
         (FontRenderingMode::Off, _) => remove(),
         (FontRenderingMode::Auto, _) if contested => remove(),
         (FontRenderingMode::Auto, None) => FontFileAction::Keep,
-        (FontRenderingMode::Auto, Some(_)) if files.ours.is_some() && !ours_is_sills => {
+        (FontRenderingMode::Auto, Some(_)) if files.ours.is_some() && !ours_is_the_shells => {
             FontFileAction::Keep
         }
         (FontRenderingMode::Auto, Some(rendering)) => {

@@ -23,7 +23,7 @@ the keyframes, and `ui-motion/detail/`), `ui-lint` (the linter: strings in, offe
 `root/` and `components/`, and `assembly/` on top: the stylesheet's order, the one registration
 of every component sheet, and `Ds`), and `ui-shell` (the app-facing parts above `ds`: the account sheets,
 the consent alert, the missing-helper sheet and their sheets; the shell surfaces' parts, the widgets
-and their catalog and the shell's tokens are sill's `shell-kit`, see ARCHITECTURE.md section 3). Inside `ds` the layers are directories named in
+and their catalog and the shell's tokens are the shell's `shell-kit`, see ARCHITECTURE.md section 3). Inside `ds` the layers are directories named in
 that order. `lib.rs` names `ds`'s public surface: `ds::prelude` and `ds_shell::prelude` hold what a
 consumer draws with, `ds::base`, `ds::style` and `ds::motion` re-export the three lower crates,
 and every other name is at its home path (the root keeps only the stylesheet assembly).
@@ -122,7 +122,7 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 `ui-core/vocab.rs` is 30-CATALOGUE 1.5, the shared state vocabulary (`Check`, `Availability`, `PressPhase`, `Dismiss`, `RowState`; a yes/no state is a `bool`; with `ui-core/press.rs` and
 `ui-core/standard_action.rs`). Components sit in directories by concept: `components/{controls,
 fields,forms,menus,menus/palette,overlays,lists,content,chrome}` hold the general ones, `components/app`
-mail's own, and sill's `shell-kit/` the shell surfaces' parts (`lock`, `switcher`, `bar`, `control_center`,
+mail's own, and the shell's `shell-kit/` the shell surfaces' parts (`lock`, `switcher`, `bar`, `control_center`,
 `notifications`, `thumbs`, `now_playing`, `month_grid`, `clock`, `battery`, `emoji`,
 `user_picture`, `osd`, `idle_dim`, `dock`, `widget`). Every file is the
 section of 04-COMPONENTS with the same name, one `.rs` and `.css` pair each (the controls and fields of
@@ -188,7 +188,7 @@ Props added in the launcher gaps (FINDINGS "Launcher gaps"): `FieldFocus::Contro
 | `ds-gallery` | the plan's gallery (axes, `pages/<group>/<component>.rs`, `--snapshot`) |
 
 The shell-only settings of 22-SETTINGS (§3.4-3.14, `ShellFile`, `GesturesFile`, `Settings`,
-`SettingsWatch`, `apply`) belong to sill and the mouse gestures daemon, not to this workspace.
+`SettingsWatch`, `apply`) belong to the shell and the mouse gestures daemon, not to this workspace.
 
 ## `ds`: the widget interface and placements
 

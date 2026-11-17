@@ -92,12 +92,12 @@ mod tests {
 
     #[test]
     fn a_known_vector_matches_hand_computed_fnv1a() {
-        // FNV-1a over b"sill" alone (len 0, mtime 0 contribute nothing distinctive here, so
+        // FNV-1a over b"shell" alone (len 0, mtime 0 contribute nothing distinctive here, so
         // this pins the byte-feeding order against the published FNV-1a algorithm): computed
         // independently of this module, from the FNV-1a definition (offset basis
-        // 0xcbf29ce484222325, prime 0x100000001b3), one XOR-then-multiply per byte of "sill".
+        // 0xcbf29ce484222325, prime 0x100000001b3), one XOR-then-multiply per byte of "shell".
         let mut hash: u64 = 0xcbf2_9ce4_8422_2325;
-        for byte in b"sill" {
+        for byte in b"shell" {
             hash ^= u64::from(*byte);
             hash = hash.wrapping_mul(0x0000_0100_0000_01b3);
         }
@@ -107,6 +107,6 @@ mod tests {
         for _ in 0..(8 + 16) {
             want = want.wrapping_mul(0x0000_0100_0000_01b3);
         }
-        assert_eq!(source_hash(Path::new("sill"), 0, 0), want);
+        assert_eq!(source_hash(Path::new("shell"), 0, 0), want);
     }
 }

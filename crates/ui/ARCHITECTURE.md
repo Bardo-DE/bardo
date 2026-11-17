@@ -25,7 +25,7 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 | `ui-behaviour` | pure input machines a shell and a compositor both run: the app switcher, hot corners, the Command key's double tap and hold, the live Space swipe; no Dioxus, no clock |
 | `ui-intents` | pure presentational context for the companion: the marks an app reports (`ThingMark`, `ContextChip`, `FieldMode`, the summon values) and the `ContextModel` values; no agent type |
 | `ds` | generic components (among them `CommandLine`, a copyable command; the host writes the clipboard), the `DocumentHost` seam and its hooks, overlay stack, root, `Ds`, stylesheet assembly, `ds::prelude` |
-| `ui-shell` | app-facing parts above `ds`, cross-platform: the account sheets and consent alert, the missing-helper sheet (its `Unsupported` phase shows the install command for the person's distro as a selectable line with a Copy button), the confirm card, with their sheets and `KIT`. The surfaces only our desktop shell draws live in sill's `shell-kit` (see "Moved to sill" in section 3) |
+| `ui-shell` | app-facing parts above `ds`, cross-platform: the account sheets and consent alert, the missing-helper sheet (its `Unsupported` phase shows the install command for the person's distro as a selectable line with a Copy button), the confirm card, with their sheets and `KIT`. The surfaces only our desktop shell draws live in the shell's `shell-kit` (see "Moved to shell" in section 3) |
 | `ui-settings` | the look's settings I/O over `crates/settings` (`settings-types`, `settings-store`, `settings-store-fs`, `settings-dbus`, which services use without the toolkit): the appearance file, the settings portal, the icon-theme lookup, the Spaces and style files |
 | `ui-helpers` | the safe file reader and writer every UI kit crate shares (`files`: `read_capped`, `read_text_capped`, `write_atomic`, `update_atomic` (read, edit and write back under an in-process lock and a sidecar `flock`), `move_aside`; std plus `rustix` for the lock on Unix, no UI), and missing helpers: the helpers file (capability, probe, per-distro package alternatives), the PATH probe, the distro family and its install command, `OsRelease` (the `ID`, `ID_LIKE` and `VERSION_ID` of an os-release text, which `Family::detect` is built on), `DesktopFile` (a `.desktop` file's text as groups and keys: localized keys by `EntryLocale`, the value escapes, `;` lists, booleans, capped by `DESKTOP_ENTRY_CAP`; pure, the text comes from the caller; `Exec` field codes stay the caller's), the PackageKit installer (and a fake), the availability feed, and for a request nothing can install (no PackageKit, as on a stock Arch) the `Missing::install_lines` to copy |
 | `ui-extensions` | Extensions, as a library with no UI, runtime or bus: `Search` (explicit roots, or `from_env`) scans `<data>/bardo/extensions/<id>/extension.toml` through the plugin host's folder layout and returns every copy of every id unranked with the turned-off ones apart and named (`Found`, `Off`); `Found::resolve` checks and ranks the entries of this crate's words (`Capability`: `file_icons`, `look`; `Provision` is the plugin host `Provides` type and claims only those words, so another owner reparses the raw candidates itself); the checks (paths inside the folder, a stylesheet under `STYLESHEET_CAP_BYTES`) and the plain-words `Problem`; `Choices`/`choices_for`/`chosen` for a `Provided` settings key; `look::stylesheet_for`; the file-icon resolver `FileIcons` (`build` from a scan and the stored `appearance.file_icons`, then `of(&FileFacts)` answers `IconPick`: Your changes, then the chosen pack, then the standard set from `ui-style`'s `kind_for_mime`) and `YourChanges` (the person Extension `user.YourChanges` and its atomic writes); `ExtensionsFile` (`bardo/extensions.toml`, `extensions.off`) |
@@ -64,7 +64,7 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 | `tools/icons` | `ds`, `ui-style`, `ui-settings` (`ds` for the Space palette derivation) |
 
 Dev-dependencies follow the same table, plus: every crate may dev-depend on `ds` with feature
-`testing`; `ds`, `ui-shell` and `ui-style` may dev-depend on `ui-lint`. Consumers (sill, mailo,
+`testing`; `ds`, `ui-shell` and `ui-style` may dev-depend on `ui-lint`. Consumers (the shell, mailo,
 anyview, `examples/consumer`) depend on `ds` (+ `ui-shell` for the account and helper sheets,
 `ui-settings`, `ui-blitz`, and `ui-lint`,
 `ui-harness` as dev-dependencies); they never name `ui-core`, `ui-style` or `ui-motion` because
@@ -76,7 +76,7 @@ anyview, `examples/consumer`) depend on `ds` (+ `ui-shell` for the account and h
 | --- | --- |
 | `ui-core`, `ui-intents`, `ui-style`, `ui-motion`, `ui-lint`, `ds`, `ui-shell` | `zbus`, `notify`, `tokio`, `winit`, every `blitz*`, `stylo_taffy`, `dioxus-native*`, every `anyrender*`, `wgpu`, `wgpu_context`, `pdfrum*`, `arboard` |
 | `ui-behaviour` | `zbus`, `notify`, `tokio`, `winit`, `dioxus`, every `blitz*`, `stylo_taffy`, `dioxus-native*`, every `anyrender*`, `wgpu`, `wgpu_context`, `pdfrum*` (a compositor links it, so like `ui-core` it is plain data and integer maths over `Stamp`) |
-| `ui-core`, `ui-intents`, `ui-lint`, `base-words-macros` | `dioxus` (`ui-core` is plain data and maths, so sill's pure crates can use it; the linter reads strings; the derives generate paths: `::base_words` or `::ui_style` where the caller's manifest names it, else `::ds::words` or `::ds::style`, found with `proc-macro-crate`) |
+| `ui-core`, `ui-intents`, `ui-lint`, `base-words-macros` | `dioxus` (`ui-core` is plain data and maths, so the shell's pure crates can use it; the linter reads strings; the derives generate paths: `::base_words` or `::ui_style` where the caller's manifest names it, else `::ds::words` or `::ds::style`, found with `proc-macro-crate`) |
 | `ui-style` | `dioxus` unless feature `dioxus` (appearance, tokens, palettes, icons and CSS text are plain data, so a compositor links them without it) |
 | `ui-motion` | `dioxus` unless feature `dioxus` (recipes, keyframes, springs, throws, timelines, `Touch` as data; the hooks, timers and `Touch`'s event conversions are the feature) |
 | `ui-settings` | every `blitz*`, `dioxus-native*`, `anyrender*`, `wgpu`, `wgpu_context`; `tokio` (it takes a `Spawner`); `dioxus` unless feature `dioxus` |
@@ -146,7 +146,7 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 | --- | --- |
 | `ds/style/appearance/*` | `ui-style::appearance::*` |
 | `ds/style/env.rs` | `ui-style::scope` (`Env` -> `Scope`, `use_env` -> `use_scope`) |
-| `ds/style/tokens/*` except the files listed under `ui-shell` (now sill's `shell-kit/src/tokens`, except `dock_floor.rs`, which stays in `ui-style` because the shape section draws `.ds-dock-floor`) | `ui-style::tokens::*` (`status.rs`, `emoji_face.rs`, `person.rs`, `plate.rs`, `size_*.rs`, `control_size.rs` stay: their consumers are generic) |
+| `ds/style/tokens/*` except the files listed under `ui-shell` (now the shell's `shell-kit/src/tokens`, except `dock_floor.rs`, which stays in `ui-style` because the shape section draws `.ds-dock-floor`) | `ui-style::tokens::*` (`status.rs`, `emoji_face.rs`, `person.rs`, `plate.rs`, `size_*.rs`, `control_size.rs` stay: their consumers are generic) |
 | `ds/style/{material,space,icon,fonts.rs,scale.rs,css,emit.rs}` | same names in `ui-style` |
 | `ds/style/icon/geometry_shell.rs` | `ui-style::icon::glyphs::shell` (`Icon` is one closed enum owned here) |
 | `ds/assembly/stylesheet.rs` (the section list) | `ui-style::kit` (`Kits::stylesheet`); the ordered call site stays in `ds::assembly` |
@@ -191,22 +191,22 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 | `lib.rs` root re-exports | deleted; replaced by `ds::prelude` and each crate's curated root |
 | `detail.rs`, `icon.rs`, `time.rs`, `widget.rs`, `catalog.rs` (public shim modules) | deleted; their items are reached by the owning crate's root |
 
-### Moved to sill (2026-10-07: `ui-shell` -> sill's `shell-kit`)
+### Moved to the shell (2026-10-07: `ui-shell` -> the shell's `shell-kit`)
 
 The UI kit's `ui-shell` kept what an app on any platform takes: `accounts`, `helpers`, `confirm`. The
 surfaces only our desktop shell draws moved, with their tokens, sheets, goldens, behaviour tests
-and emoji assets, to `crates/sill-shell-kit` in the sill workspace under the same module names:
+and emoji assets, to `crates/shell-kit` in the shell workspace under the same module names:
 `bar`, `battery`, `catalog`, `clock`, `control_center`, `date_picker`, `dock`, `emoji`,
 `idle_dim`, `lock`, `month_grid`, `notifications`, `now_playing`, `osd`, `switcher`, `thumbs`,
 `user_picture`, `widget`, `tokens` (and the pieces they share: `kept`). The evidence is that
 mailo and anyview name only `ds_shell::stylesheet()`, `ds_shell::helpers::model::HelperPhase`
 and `ds_shell::prelude::HelperSheet`. `ui-style::tokens::dock_floor` stays here because the shape
-section draws `.ds-dock-floor`. The moved sheets are consumer CSS there: a `sill_shell_kit::KIT`
+section draws `.ds-dock-floor`. The moved sheets are consumer CSS there: a `shell_kit::KIT`
 of rank `Shell` (placed first among the shell-rank kits, so the cascade is byte for byte the old
 one) next to `ds_shell::KIT`. The gallery drops the pages and sections for the moved components (the shell, chrome targets, level,
 widget, lock and emoji pages, the notification and thumbnail overlays, the date picker and the
 Settings window's Date & Time pane, the control center, player and status-item details, and the
-`--level-sheet` mode); sill's
+`--level-sheet` mode); the shell's
 `shell-kit/tests` holds their SSR goldens and behaviour tests, and `examples/sizing_audit.rs`
 (the sizing audit's specimen sheet) lives there too.
 
@@ -268,7 +268,7 @@ The single place a concept lives. Extend it; never write a second one.
 | PNG, base64 | `ui-core::codec` |
 | The crate error | `ui-core::error::DsError`; settings: `ui-settings::error::SettingsError` |
 | Design tokens (colour, duration, easing, spacing, shape, type, layer) | `ui-style::tokens` (one file per family, `impl Token`) |
-| Shell metric tokens (dock, OSD, notifications, control center, widgets) | sill's `shell-kit::tokens` (`--dock-floor` is `ui-style::tokens::dock_floor`) |
+| Shell metric tokens (dock, OSD, notifications, control center, widgets) | the shell's `shell-kit::tokens` (`--dock-floor` is `ui-style::tokens::dock_floor`) |
 | The account sheets (consent alert, add-account steps, account picker, no-account state, badge, limited note) and the secret text they carry | `ui-shell::accounts` (`model` the props, `wording` every sentence, `hidden::Hidden`; `adapter` the one file that reaches the components R2 makes controlled) |
 | Window chrome geometry (titlebar, lights, resize edges) and the lights' state | `ui-style::tokens::chrome` (`ChromeToken`, `CHROME_SCALE`, `light_state`); `window_frame.css` reads the variables, `ds::components::chrome` draws |
 | What each crate adds to the stylesheet, and the lint vocabulary | `ui-style::kit::Kit`; ordered by `Kits` |
@@ -321,12 +321,12 @@ The single place a concept lives. Extend it; never write a second one.
 | Toasts | `ds::overlays::toast` + `ds::stack::toast_hub` |
 | The root component and stylesheet assembly | `ds::assembly::{Ds, stylesheet}` |
 | A status glyph and its state (Wi-Fi, battery, Bluetooth, volume) | `ds::content::status` |
-| The battery drawing | `ds::content::status::battery::BatteryGlyph`; device models in sill's `shell-kit::battery` |
-| Widget contract, registry, placement data | sill's `shell-kit::widget::{contract, registry}` and `catalog` |
-| Emoji: the grid / the picker sheet | `ds::lists::emoji_grid` / sill's `shell-kit::emoji` |
+| The battery drawing | `ds::content::status::battery::BatteryGlyph`; device models in the shell's `shell-kit::battery` |
+| Widget contract, registry, placement data | the shell's `shell-kit::widget::{contract, registry}` and `catalog` |
+| Emoji: the grid / the picker sheet | `ds::lists::emoji_grid` / the shell's `shell-kit::emoji` |
 | Reading a person's file with a size cap and writing it durably (unique temp, `sync_all`, rename, directory fsync, mode kept, symlink followed, per-path lock), and keeping a damaged file under `<name>.bad-<seconds>` | `ui-helpers::files` (UI-free; `ui-settings` and `SpacesStorage` call it, and so should every core crate) |
 | The text of a freedesktop `.desktop` file (groups, keys, `Name[de]`, escapes, `;` lists, booleans, the size cap) | `ui-helpers::DesktopFile` (pure; read the file with `read_text_capped`) |
-| Where desktop entries are (`XDG_DATA_HOME`, `XDG_DATA_DIRS`, Flatpak and Snap exports), the walk of `applications/` with ids (`kde/foo.desktop` is `kde-foo.desktop`), and which entry a window's `app_id` belongs to (exact, lowercase, `StartupWMClass`, reverse-DNS suffix, Flatpak id) | `ui-helpers`: `XdgEnv::applications_dirs`, `walk_applications` + `first_of_each_id`, `load_entries` + `entry_for_window` (`match_app` is the pure rule list); sill, the Settings app, compositor-icons and account-sheets call it, none keeps a walk or a match of its own |
+| Where desktop entries are (`XDG_DATA_HOME`, `XDG_DATA_DIRS`, Flatpak and Snap exports), the walk of `applications/` with ids (`kde/foo.desktop` is `kde-foo.desktop`), and which entry a window's `app_id` belongs to (exact, lowercase, `StartupWMClass`, reverse-DNS suffix, Flatpak id) | `ui-helpers`: `XdgEnv::applications_dirs`, `walk_applications` + `first_of_each_id`, `load_entries` + `entry_for_window` (`match_app` is the pure rule list); the shell, the Settings app, compositor-icons and account-sheets call it, none keeps a walk or a match of its own |
 | The names one app is known by (desktop id, window `app_id`, session-bus names, intents app) | `ui-helpers::AppIdentity`, read from the `X-Bardo-WindowId`, `X-Bardo-BusNames` and `X-Bardo-IntentsApp` keys of the app's desktop entry; nothing guesses one name from another |
 | Settings file I/O (lenient load, atomic save, watch) | `ui-settings::store::Store` |
 | Settings schema | `ui-settings::schema` (derived) |
@@ -350,14 +350,14 @@ The single place a concept lives. Extend it; never write a second one.
 | Serving that menu on the session bus (`com.canonical.dbusmenu`) | `ui-blitz::menus::MenuExport` (feature `menus`) |
 | Who may press an exported menu's items: the policy, its required argument, the shell-only implementation, the per-sender pace | `ui-blitz::menus` (`MenuPermit`, `Caller`, `Verdict`; `ShellOnly` behind feature `caller_identity`, Linux only; `AllowAnyCaller` behind `testing`; `pace` limits `EventGroup`) |
 | Whether the owner of a live module's bus name is the program the module belongs to, and what a module's replies may carry | `ui-settings::live` (`OwnerCheck`, a required argument of `LiveClient::new`, supplied by the consumer; `limits`; `AnyOwner` behind `testing`) |
-| The companion's presence (idle, listening, working, acting, waiting) | `ui-core::vocab::CompanionPresence`; derived only by sill's `presence_of` |
+| The companion's presence (idle, listening, working, acting, waiting) | `ui-core::vocab::CompanionPresence`; derived only by the shell's `presence_of` |
 | What an app tells the companion (a thing, a chip, a summon, a field's mode) | `ui-intents`; re-exported once from `ds::components::companion` |
 | The companion's components: orb, chips, answer cards, plan, replace, run row, activity, memory, served-by | `ds::components::companion` |
 | The mark of a result the person has not seen yet (still, ok or danger), on the orb and on a run row; the consumer passes `Some(Outcome)` and clears it with `None` | `ds::components::companion::outcome` (`Outcome`, `OutcomeMark`) |
 | A Space's look as compact JSON of at most 1024 bytes, both ways | `ds_style::space::look_json` (`SpaceLook::to_json`, `SpaceLook::from_json`) |
 | Text cut to a width in Rust, from the end (`clip_chars`) or the middle keeping an extension (`clip_middle`), chosen by `Truncate` | `ds_core::text::clip` |
 | The confirmation card | `ui-shell::confirm` |
-| The window glow's values (`GlowLook`, `GlowSpec`, `glow_spec`) | `ui-style::tokens::glow` (sill's `shell-kit::tokens::glow` re-exports them) |
+| The window glow's values (`GlowLook`, `GlowSpec`, `glow_spec`) | `ui-style::tokens::glow` (the shell's `shell-kit::tokens::glow` re-exports them) |
 | Mail-only components | `ds::components::app` |
 
 ## 5. Traits and closed enums
@@ -367,14 +367,14 @@ The single place a concept lives. Extend it; never write a second one.
 | Trait | Crate | Implementors | Add an implementor when | Add a trait when |
 | --- | --- | --- | --- | --- |
 | `Word` | `ui-core` | every closed vocabulary enum (derived) | a new closed set | never |
-| `Token` | `ui-style` | each token family; shell families in sill's `shell-kit` | a new family | never |
+| `Token` | `ui-style` | each token family; shell families in the shell's `shell-kit` | a new family | never |
 | `Timeline` | `ui-motion` | `Ease`, `Spring`, `Glide`, `Pending` | a Rust-driven animation | never |
 | `Detailed` | `ui-motion` | 13 component state enums | a component with moments | never |
-| `Widget` | sill's `shell-kit` | battery, world clock, month, and each widget kind | a new widget kind | never |
+| `Widget` | the shell's `shell-kit` | battery, world clock, month, and each widget kind | a new widget kind | never |
 | `DocumentHost` (+ parts) | `ds` | `ds_blitz::BlitzHost`, `ds::host::NoHost` | a new renderer | a new capability of the document a component needs |
-| `SpellService`, `HostWindow` | `ds` | `ds_blitz::spell::Hunspell`, a test fake; `ds_blitz::window::WinitWindow`, sill's layer-shell-host window, a test stub | a new platform | never |
+| `SpellService`, `HostWindow` | `ds` | `ds_blitz::spell::Hunspell`, a test fake; `ds_blitz::window::WinitWindow`, the shell's layer-shell-host window, a test stub | a new platform | never |
 | `SettingsDoc` | `ui-settings` | `AppearanceFile`; each consumer's file | a new settings file | never |
-| `Machine` | `ui-core` | each consumer's timed pure state (sill's dock, OSD, banners, ...; anyview), `ds::menus::palette::machine::PaletteState`, `ds_behaviour::{Tap, HoldKey, Swipe, Phase (the switcher), Corner}`, `ds_motion::{Life (presence), RosterState, HoverIntent, SwipeState}`, `ds::stack::menu_track::MenuTrack` (the menu tracker), the components' own timers (the stepper's hold, the green light's hold, a pill's hold, a thread row's pointer, the voice orb's turn, an alert's arming delay), `ds_shell`'s widget follower, track position and emoji frames | a state that changes by input and by time | never |
+| `Machine` | `ui-core` | each consumer's timed pure state (the shell's dock, OSD, banners, ...; anyview), `ds::menus::palette::machine::PaletteState`, `ds_behaviour::{Tap, HoldKey, Swipe, Phase (the switcher), Corner}`, `ds_motion::{Life (presence), RosterState, HoverIntent, SwipeState}`, `ds::stack::menu_track::MenuTrack` (the menu tracker), the components' own timers (the stepper's hold, the green light's hold, a pill's hold, a thread row's pointer, the voice orb's turn, an alert's arming delay), `ds_shell`'s widget follower, track position and emoji frames | a state that changes by input and by time | never |
 | `AppCommand` | `ui-core` | each app's command type (what its menu items yield and its shortcuts fire) | an app with menus or shortcuts | never |
 | `Spawner` | `base-spawn` | `ds_blitz::TokioSpawner`, a test's inline spawner | a new runtime | never |
 | `Clipboard` | `ui-blitz` | `System`, `Memory` | never | never |
@@ -419,10 +419,10 @@ pub enum KitRank { Style, Motion, Components, Shell, User }  // cascade order; f
 pub struct Kits { ... }
 impl Kits { pub fn of(kits: &[&'static Kit]) -> Kits; pub fn stylesheet(&self) -> String;
             pub fn vocabulary(&self) -> Vocabulary; }
-// Each crate exports `KIT`: ds_style::KIT, ds_motion::KIT, ds::KIT, ds_shell::KIT (and sill's
-// sill_shell_kit::KIT, which a shell lists before ds_shell's so the sheets keep their cascade).
+// Each crate exports `KIT`: ds_style::KIT, ds_motion::KIT, ds::KIT, ds_shell::KIT (and shell's
+// shell_kit::KIT, which a shell lists before ds_shell's so the sheets keep their cascade).
 // ds::kits() = style + motion + ds; ds_shell::kits() = ds::kits() + the app-facing parts;
-// sill_shell_kit::kits() = ds_shell's kits + the shell's own.
+// shell_kit::kits() = ds_shell's kits + the shell's own.
 
 // ui-motion::timeline
 pub trait Timeline: Clone + PartialEq + 'static {
@@ -692,7 +692,7 @@ from `ui-core`, `ui-style`, `ui-motion` and `ds`, one `pub use` per name:
 | Controls, menus and root pieces | `Label`, `Button`, `Choice`, `RadioGroup`, `SegmentedControl`, `Slider`, `Toggle`, `MenuItem`, `MenuImage`, `Menu`, `MenuPlacement`, `CommandPalette`, `CommandPaletteHost`, `PaletteClose`, `PaletteState`, `PaletteIn`, `PaletteOut`, `PaletteParams`, `PaletteIndex`, `PaletteMove`, `EmptyState`, `Flow`, `SidePanel`, `SpacesBar`, `SpaceTile`, `BarSpaceKey`, `BarExpansion`, `RootChrome`, `RootExtent`, `settle`, `use_motion_timer`, `resolve` |
 
 `ds_shell::prelude` (16 names) holds the account sheets' components and the missing-helper sheet.
-sill's `sill_shell_kit::prelude` holds the shell components' names and `Widget`, `WidgetKind`,
+The shell's `shell_kit::prelude` holds the shell components' names and `Widget`, `WidgetKind`,
 `WidgetRegistry`, `WidgetSize`, `WidgetHost`, `WidgetContext`. Mail-only components (`ds::components::app`)
 are reached as `ds::components::app::X`, not through the prelude.
 
@@ -738,20 +738,20 @@ are reached as `ds::components::app::X`, not through the prelude.
 1. Component: the same as above under `crates/ds-shell/src/<part>/{model.rs, step.rs, view.rs,
    style.css}`; its sheet goes in `crates/ds-shell/src/sheets.rs`; its tests in `crates/ds-shell/tests`.
 2. It must work on every platform (no D-Bus, no compositor). A surface only our desktop shell draws
-   (bar, dock, widgets, lock, notifications, OSD) is not added here: it goes in sill's
-   `shell-kit` (its recipe is in sill's ARCHITECTURE.md).
+   (bar, dock, widgets, lock, notifications, OSD) is not added here: it goes in the shell's
+   `shell-kit` (its recipe is in the shell's ARCHITECTURE.md).
 3. A component the shell and another app both draw is generic: it belongs in `ds`.
 
 ### Add a token
 
 1. Family exists: add the variant to its enum in `ui-style/src/tokens/<family>.rs` (shell
-   families: sill's `shell-kit/src/tokens/`); the `Word` derive gives its slug; add the value arm to
+   families: the shell's `shell-kit/src/tokens/`); the `Word` derive gives its slug; add the value arm to
    `Token::css_value` (an exhaustive `match`, one value per scope where it differs).
 2. New family: create the file, `#[derive(Word)]`, `impl Token`, and list `TokenSet::of::<T>()` in
    the crate's `KIT.tokens`. Nothing else: CSS emission and the lint vocabulary read `Kits`.
 3. A tuned token (a consumer writes its value inline) sets `KIND = Tuned` and its default is the
    settings key's default (`design/22-SETTINGS.md`).
-4. Tests: `ui-shell/tests/it/tokens.rs` and sill's shell-kit/tests/tokens.rs (every name a scheme or level block sets is declared on
+4. Tests: `ui-shell/tests/it/tokens.rs` and the shell's shell-kit/tests/tokens.rs (every name a scheme or level block sets is declared on
    `.ds`); a new token with a raw value fails `ui-lint` by design.
 
 ### Add a motion recipe or a Rust-driven animation
@@ -777,8 +777,8 @@ are reached as `ds::components::app::X`, not through the prelude.
    `LintConfig`, never from a hand list.
 3. Tests: `ui-lint/tests/<name>.rs` with a failing and a passing fixture; then
    `ds`, `ui-shell` and `examples/consumer` must still pass their own lint tests.
-4. Message the sill session before it lands: sill reads Bardo by path, so a new failing
-   rule breaks sill master at once.
+4. Message the shell session before it lands: the shell reads Bardo by path, so a new failing
+   rule breaks the shell master at once.
 
 ### Add a closed vocabulary (a `Word` enum)
 
@@ -839,7 +839,7 @@ Add a variant to `ds_extensions::Capability` (its word is the manifest's capabil
 | Pure function or step | table test: `const CASES: &[(Input, Expected)]`, one loop | beside the code |
 | Word, Token, Timeline, Detailed | table over `ALL` / sample instants / `moment_table` | the owning crate |
 | Component markup | SSR render, golden, `ds_lint::markup` | `crates/<crate>/tests/it/<component>_ssr.rs` |
-| Stylesheet | `ds_lint::assert_clean(css, &LintConfig::new(kits))` (`self_lint`) | `ui-shell/tests/it/self_lint.rs` (sill: shell-kit/tests/self_lint.rs) |
+| Stylesheet | `ds_lint::assert_clean(css, &LintConfig::new(kits))` (`self_lint`) | `ui-shell/tests/it/self_lint.rs` (the shell: shell-kit/tests/self_lint.rs) |
 | Component behaviour (pointer, keys, focus, time, paint) | `Harness` through `Driver` and `Query` | `ui-conformance/tests/<component>.rs` |
 | Host behaviour (frames, clipboard, edit, drop, spell, PDF) | `Harness` on the real `BlitzHost` | `ui-blitz/tests/<topic>.rs` |
 | Settings | `Store` on `ConfigRoot::Scratch`, `SystemPrefsSource::Fixed` | `ui-settings/tests` |
@@ -953,7 +953,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 - **The pinned dependency block's source of truth is `docs/workspace-deps.toml`**; the root
   `Cargo.toml` and every consumer copy it verbatim. `blitz-embed` copies it too. The block holds the
   `blitz-embed` line, a git dependency at a pinned rev (public repo). Each workspace root that
-  builds it from a sibling checkout (Bardo, layer-shell-host, sill) adds
+  builds it from a sibling checkout (Bardo, layer-shell-host, the shell) adds
   `[patch."https://github.com/Bardo-DE/blitz-kit"] blitz-embed = { path = "../blitz-embed/blitz-embed" }`,
   so local builds use one checkout while a git consumer of Bardo, whose `[patch]` is ignored,
   gets the pinned rev. A blitz-embed bump is a rev change in the block, in all three repos.
@@ -963,7 +963,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 ## 10. User styles
 
 A person tunes their desktop in real time by editing CSS files, and can change the whole look
-with one (customization design section 7). The UI kit owns the mechanism so every consumer (sill,
+with one (customization design section 7). The UI kit owns the mechanism so every consumer (the shell,
 mailo, any app on Bardo) gets it the same way.
 
 The cascade, lowest to highest:

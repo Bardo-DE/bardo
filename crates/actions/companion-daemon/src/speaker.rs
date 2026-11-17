@@ -1,4 +1,4 @@
-//! Who speaks for the person. Two callers may: the shell (sill: the process porter's callers
+//! Who speaks for the person. Two callers may: the shell (the shell: the process porter's callers
 //! table names as the shell's unit, `bardo-shell.service`, with the system's `sheet_host` role and the
 //! app `companiond.toml` gives it), and a terminal (`bardo-do ask`: a process in a terminal's scope
 //! that nothing else names, run by the same user), which may only open, ask and close, stop its
@@ -226,7 +226,7 @@ mod tests {
         for (pid, leaf, main) in [
             (1, "bardo-shell.service", true),
             (2, "bardo-shell.service", false),
-            (3, "shell-shell.scope", false),
+            (3, "bardo-shell.scope", false),
             (4, "app-org.bardo.Shell-1.scope", false),
             (5, "vte-spawn-abc.scope", false),
             (6, "tmux-spawn-abc.scope", false),

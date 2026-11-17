@@ -916,7 +916,7 @@ Circle icons (IoU ≥ 0.90 with a circle) keep the 72 % rule.
 No icon found, or the file fails to decode: the neutral plate with the Lucide `app-window`
 glyph at 56 % in ink. No letters: icons carry no text (3.3).
 
-### 4.4 Tinted plates (settled 2026-09-25, sill FINDINGS Q72)
+### 4.4 Tinted plates (settled 2026-09-25, the shell FINDINGS Q72)
 
 Under `icons.style` Muted or Monochrome the plate is re-coloured with the icon, so the dock is one
 hue plate and all: `IconView { plate, plate_tint: PlateTint::of(style, tint) }` runs the family's

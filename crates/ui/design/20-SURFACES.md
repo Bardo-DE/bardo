@@ -146,7 +146,7 @@ and `ds_shell::tokens::osd::OsdMetrics` (`osd.position`, `osd.margin_px`); CONSU
 | Motion | password error `use_shake` (`--t-shake`, `--e-shake`) once; unlock Fade `--t-move` `--e-exit` | S / P |
 | Behaviours | lock before sleep on logind `PrepareForSleep` (SPEC); 06 (Escape clears field) | S |
 | Keyboard | lock surfaces always receive keyboard | S |
-| Milestone | borrowed at M7 (`session.locker`, design/22 §3.19: the desktop greeter, else swaylock, else hyprlock); own at M11, and sill's own lock is the default since the user's pick of 2026-09-27 (`auto` keeps the borrowed order) | S |
+| Milestone | borrowed at M7 (`session.locker`, design/22 §3.19: the desktop greeter, else swaylock, else hyprlock); own at M11, and the shell's own lock is the default since the user's pick of 2026-09-27 (`auto` keeps the borrowed order) | S |
 
 ### 1.10 Polkit prompt (SPEC Tier 1)
 
@@ -390,7 +390,7 @@ recorder. The M10 screenshot thumbnail (1.13) becomes the shared after-capture s
 | Field | Value | St |
 | --- | --- | --- |
 | Repo | new (name open); MIT OR Apache-2.0, no GPL/AGPL code (libobs, Cap, gpu-screen-recorder are read for ideas only), no FFmpeg | S |
-| Capture | stills and windows through sill's privileged compositor capture (no prompt); portal + PipeWire (`ashpd`, `pipewire`) for other sessions | P |
+| Capture | stills and windows through the shell's privileged compositor capture (no prompt); portal + PipeWire (`ashpd`, `pipewire`) for other sessions | P |
 | Compose | scenes, webcam, overlays, cursor smoothing, click-following zoom, window backgrounds on our own wgpu/vello stack | P |
 | Encode | a **vendor-neutral encoder trait** (user: "not nvidia specific"). Primary backend `gpu-video` (MIT, Software Mansion; Vulkan Video, `wgpu::Texture` in, H.264 + HEVC encode, AV1 in progress; needs wgpu 30, ours is 29: take it at a toolchain bump; NOT the rest of smelter, whose real-time licence is restrictive). Fallbacks: VA-API (`cros-codecs`) where a driver has no Vulkan Video encode (this machine's RADV iGPU exposes the encode queue but no codec extension, 2026-09-26), `rav1e` software. The app never names a vendor; backend chosen by probing, overridable | P |
 | Frames | zero-copy: DMA-BUF in, GPU compose, GPU encode; no CPU copy on any backend | P |
@@ -412,7 +412,7 @@ recorder. The M10 screenshot thumbnail (1.13) becomes the shared after-capture s
 
 ## 4. Sources
 
-- PLAN "Design: `<shell>` repo (sill)" (bar, wallpaper, dock, launcher layer configs, regions,
+- PLAN "Design: `<shell>` repo (the shell)" (bar, wallpaper, dock, launcher layer configs, regions,
   keyboard modes), "Design: `layer-shell-host`" (`LayerConfig`, `KeyboardMode`, `RegionSpec`,
   `BlurSpec`, popups), "Design: `<ds>`" (Material enum, components, Anim), "UX decisions
   settled" (dock, gestures, Spaces), Appendix A4-A6.

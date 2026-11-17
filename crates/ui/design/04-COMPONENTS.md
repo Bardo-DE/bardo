@@ -220,7 +220,7 @@ Mapping: `.btn` -> `[data-variant=primary]`; `.btn.ghost` (C) -> `[data-variant=
 `mounted` is settled (Gallery fixes B): a menu or popover anchors to the button itself through
 `Anchor::Mounted(MountedRef(event.data()))`, with no wrapper to measure; it writes no attribute.
 
-Settled (tray gaps, sill Q6 and Q8): `icon` is an `IconSource` (08-ICONS §1.5: a glyph, a
+Settled (tray gaps, the shell Q6 and Q8): `icon` is an `IconSource` (08-ICONS §1.5: a glyph, a
 symbolic external icon painted in the text colour, or an external image as it is); `id` is
 written as the element's `id`; `onclick` reports which button pressed. A right-click arrives as
 `contextmenu` (its default prevented) and is reported as `Secondary`, the middle button's
@@ -379,8 +379,8 @@ takes the variant's size below.
 | Pin | aspect-ratio 1, fills a 4-column grid cell, gap 6 | 12px | `--f-ink`, bg `--f-pill-hover` | content (§27) | Space frame |
 | Status | `--bar-status-box` square (default 22) | `--r-item` | `--f-ink-soft`, transparent; hover `--f-ink` on `--f-pill-hover`; pressed/expanded `--f-pill` | `--bar-status-glyph` (default 16), sized in CSS | Space frame (the bar) |
 
-Status is settled (bar gaps, sill Q12; 13 §13.3.1): the two properties are stylesheet tokens
-(sill's sheet declares 22 and 16; `ds::style::tokens::status::{BOX_VAR, GLYPH_VAR}` name them), and
+Status is settled (bar gaps, the shell Q12; 13 §13.3.1): the two properties are stylesheet tokens
+(the shell's sheet declares 22 and 16; `ds::style::tokens::status::{BOX_VAR, GLYPH_VAR}` name them), and
 a look or the person's own sheet moves them; the settings keys are retired (2026-10-27).
 
 **The frame ground** (settled, bar gaps): the sidebar item's pattern (§19, `--f-*` inks on the
@@ -750,7 +750,7 @@ Verbatim, `S:781-786`:
 **Motion.** Border and ring `--t-quick --e-out`.
 
 **Behaviour.** Focus on open where the surface says so (palette input focused on open,
-`S:1661`). `Focus::Controlled(FocusRequest)` (settled 2026-09-24, FINDINGS "Launcher gaps", sill
+`S:1661`). `Focus::Controlled(FocusRequest)` (settled 2026-09-24, FINDINGS "Launcher gaps", the shell
 Q44) focuses on mount and again at every `request()`: a menu that took the keyboard hands it
 back when it closes, without remounting the field. Every focus change waits out a document the
 renderer holds (`ds::host::parts::FocusHost`, Q43). Recipient inputs: Enter or `,` adds, Backspace on empty removes the last chip
@@ -770,7 +770,7 @@ is required so the global focus ring does not double the accent ring.
   state, emits it only through `oninput` and `onchange`, and never writes a `value` attribute (the
   prop is ignored). `Password` still writes its `value`, unchanged since wave 2. mailo's secret
   field is `Secret`.
-- A masked field's caret (sill Q360b, 2026-09-27). Blitz measures a `Password` or `Secret`
+- A masked field's caret (the shell Q360b, 2026-09-27). Blitz measures a `Password` or `Secret`
   field's hidden text in its editor's face, untracked, so its caret drifts off the Inter dots.
   Where the host reads the selection (`ds::host::parts::CaretHost::selection`, ui-blitz's), the
   input carries `data-caret=drawn` (`caret-color: transparent`) and `.ds-input-mask` draws the
@@ -1246,7 +1246,7 @@ time. The plan's "spring underline" means this; there is no sliding underline be
     #[props(default)] action_selection: Selection) -> Element   // Selected: data-selected on the action
 ```
 
-`action_selection: Selected` (sill Q294, 2026-09-26) draws the action as a keyboard selection,
+`action_selection: Selected` (the shell Q294, 2026-09-26) draws the action as a keyboard selection,
 `data-selected="true"`: `--accent-soft` behind it, `--ink` words, `--r-tiny`. The palette sets it
 while its cursor rests on a group's "Show More" (section 49); nothing else changes.
 
@@ -1714,7 +1714,7 @@ Card: see §22.
 
 **Behaviour.** Warm window: for 400 ms after any hover card closes, flies open at once and the
 next card opens without the 450 ms wait (`S:1711-1712`). 06-INTERACTIONS "hover intent".
-Caller-driven (settled 2026-09-24, FINDINGS "Launcher gaps", sill Q17): `shown: Some(Visible)`
+Caller-driven (settled 2026-09-24, FINDINGS "Launcher gaps", the shell Q17): `shown: Some(Visible)`
 shows the label with no pointer on it and `Some(Hidden)` keeps it down under one, both at once
 with no delay of their own (`[data-shown]` on `.ds-fly-target`); the dock's label machine (hide
 on press, while a menu is open, while dragging) owns its timing. `None` is the hover behaviour.
@@ -1917,7 +1917,7 @@ Mapping: `.fmenu` -> `.ds-menu[data-kind=rich]`; `.fmenu.slim` -> `[data-kind=sl
     #[props(default)] on_release: Option<EventHandler<Press>>,        // settled: every release over the menu
     #[props(default)] entrance: MenuEntrance,                        // settled: Animated | Instant (bar menus)
 ) -> Element
-// Settled (bar gaps, sill Q11): a pick calls `onpick`, then `onclose`, once; Escape and an
+// Settled (bar gaps, shell Q11): a pick calls `onpick`, then `onclose`, once; Escape and an
 // outside click play `menu-out` (`--t-quick --e-exit`, 13 §13.3.2) before `onclose`; a
 // release over an enabled item after a press that began outside picks it (press-drag-release).
 pub enum MenuEntry<T> {
@@ -2435,12 +2435,12 @@ hit, Mail, People, Actions). Mail: Ctrl T / Ctrl K. Shell: the launcher.
     #[props(default = ASIDE_WIDTH)] aside_width: Px) -> Element   // 360
 ```
 
-`groups` is `#[props(into)] PaletteGroups<T>` since sill M9 (section 49): the older
+`groups` is `#[props(into)] PaletteGroups<T>` since the shell M9 (section 49): the older
 `Vec<(String, Vec<MenuEntry<T>>)>` still converts, so every existing call compiles unchanged;
 only a bare `groups: Vec::new()` needs `PaletteGroups::default()`, since two `Vec`s now
 convert.
 
-Hosts (settled 2026-09-24, FINDINGS "Launcher gaps", sill Q40-Q41): `Overlay` is the scrim and
+Hosts (settled 2026-09-24, FINDINGS "Launcher gaps", the shell Q40-Q41): `Overlay` is the scrim and
 the card 11 % down, as below. `Surface` is the shell launcher's: no wrap and no scrim, the card
 fills its container (`width:100%; height:100%`, the list taking the height under the field) and
 paints the enclosing material's tint and edge (`--m-tint`/`--m-tint-solid`, `--m-box`) at radius
@@ -3230,14 +3230,14 @@ image at `--plate-inset` 72 %. Families `Red`, `Amber`, `Green`, `Blue`, `Violet
 (the neutral plate turns `#2A2E28` to `#1D211B` in the dark scheme). `plate_tint:
 Some(PlateTint)` (`Muted`, or `Monochrome(Tint)`) re-colours the stops and the ink by `retint`'s
 rule for both schemes, written inline as `--plate-base-l`/`-deep-l`/`-ink-l` and `-d`, marked
-`data-icon-style`, and read by the sheet under `data-theme` (sill FINDINGS Q72; design/08 4.4).
+`data-icon-style`, and read by the sheet under `data-theme` (the shell FINDINGS Q72; design/08 4.4).
 
-### 39. MonthGrid (the calendar widget's month; sill Q180, 2026-09-26)
+### 39. MonthGrid (the calendar widget's month; the shell Q180, 2026-09-26)
 
 **Purpose.** One month of days in seven columns: the calendar widget of the notification center
 and the desktop (design/20 section 1.12, "month grid (new ds component `MonthGrid`)"; section
 1.14). The shell computes the month (which days, which column comes first, which day is today,
-which days have an event, the ISO week of each row); the UI kit only draws it (sill Q180). Its data
+which days have an event, the ISO week of each row); the UI kit only draws it (the shell Q180). Its data
 mirrors the shell's grid field for field, so the shell's mapping is a plain `From`.
 
 **Markup.**
@@ -3285,14 +3285,14 @@ without `onstep`; the days are `button`s only with `onpick`, which hears the day
 | Part | Value | Basis |
 | --- | --- | --- |
 | Day cell | 32 wide, 30 high; the number on a 24 round, `--fs-help` 11.5 / 500, tabular | proposed |
-| Event dot | 4 round, 2 under the number, centred | brief (sill Q180) |
+| Event dot | 4 round, 2 under the number, centred | brief (the shell Q180) |
 | Heads | the data face, `--fs-micro` 9.5, upper, tracked .14em as `.ds-section-header` (menu), `--ink-faint`, 18 high | design/02 section 4 ("calendar month and weekday") |
 | Title | the data face, `--fs-caption` 10 / 700, upper, tracked .12em, `--accent` | design/02 sections 4-5 ("calendar month", all upper) |
 | Header | 28 high, the title then the two `IconButton { Tool }` (28 x 26) at the end | design/20 section 1.12 |
 | Week number column | 24 wide, the data face `--fs-micro`, `--ink-faint` | proposed |
 | Rows | no gap; the grid is `7 x 32` (224) wide, `24 + 224` with week numbers | proposed |
 
-**Density (sill Q190, 2026-09-26).** A small desktop widget (`WidgetFrame { size: Small }`) is
+**Density (the shell Q190, 2026-09-26).** A small desktop widget (`WidgetFrame { size: Small }`) is
 one 164 cell padded 12, a 140 x 140 content box; the regular grid (224 wide, 254 tall for six
 weeks) overflows it, and a shell cannot restyle `.ds-month-*`, so the grid has a compact density
 of its own, as a small calendar widget has in the reference desktop (design/20 section 1.14).
@@ -3303,7 +3303,7 @@ content: `Small` draws compact; `Medium`, `Large` or no frame draws regular. `Re
 
 | Part (compact) | Value | Basis |
 | --- | --- | --- |
-| Whole grid | **fills the box** (compact-spacing pass, 2026-09-27): `.ds-month` is `flex:1` in the frame's body, so in a small frame it is the 140 x 140 content box; the header and heads keep their heights and the weeks share the rest. The user's report on sill's capture: the grid sat in the top two thirds of the tile, the heads were cramped against the header and the first row, rows (19) and columns (20) differed, the margins were unbalanced | design/23 section 5.1 (the reference's small Month widget fills its card) |
+| Whole grid | **fills the box** (compact-spacing pass, 2026-09-27): `.ds-month` is `flex:1` in the frame's body, so in a small frame it is the 140 x 140 content box; the header and heads keep their heights and the weeks share the rest. The user's report on the shell's capture: the grid sat in the top two thirds of the tile, the heads were cramped against the header and the first row, rows (19) and columns (20) differed, the margins were unbalanced | design/23 section 5.1 (the reference's small Month widget fills its card) |
 | Columns | seven, evenly across the width (`repeat(7, minmax(20px, 1fr))`, 20 each in 140; the disc is the floor) | fills the width |
 | Rows | the weeks share the height left under the header and heads, evenly (`flex: 1 1 20px`): six weeks 118 / 6 = 19.67, five weeks 118 / 5 = 23.6 (a five-week month has taller rows); 20 where the box sets no height | design/23 section 5.1, W16; measured on Blitz |
 | Optical foot | the weeks run 4 (`--s-4`) past the box's foot, so the last row's numbers end as far from the card's edge as the title's caps start from the top: ink insets measured on the 4x snapshots, top 15.2, left 16.5, right 15.8, bottom 16.8 (five weeks) and 14.8 (six); before the pass the five-week bottom was 38.8 | the 12 padding (design/23 M4) is to ink, not to line boxes; measured |
@@ -3313,7 +3313,7 @@ content: `Small` draws compact; `Medium`, `Large` or no frame draws regular. `Re
 | Title | the UI face at `--fs-micro` 9.5, `--fw-caps` (600), tracked, upper, `--accent`; its left edge 4 in (`--s-4`), where a two-digit first column's number starts | the reference: month name top left in the accent, small caps weight |
 | Header | 14 high, no gap under it; the step buttons are plain 14 px `button.ds-month-step` round an 11 px glyph (`--ink-faint`, `--surface-2` under the pointer, squish pressed), since the Tool button's 28 x 26 would take a fifth of the height | Q190 |
 | Week numbers | never drawn, whatever `weeks` says (`data-weeks=hide`): a column would not fit | Q190 |
-| Snapshots | `tools/progress/shots/gallery/calendar-compact-{before,after}-{5wk,6wk}-{light,dark}-{1x,4x}.png`, from sill's ui-conformance/tests/month_grid_shots.rs (`BARDO_CAL_SHOTS=<dir> BARDO_CAL_TAG=<tag>`) | |
+| Snapshots | `tools/progress/shots/gallery/calendar-compact-{before,after}-{5wk,6wk}-{light,dark}-{1x,4x}.png`, from the shell's ui-conformance/tests/month_grid_shots.rs (`BARDO_CAL_SHOTS=<dir> BARDO_CAL_TAG=<tag>`) | |
 
 **States.**
 
@@ -3341,8 +3341,8 @@ whatever its cells hold.
 ### 40. Widgets: WidgetFrame, WidgetMetrics, ClockFace and BatteryLevel (settled 2026-09-26; drawing proposed, design/23)
 
 **Purpose.** The card every widget is drawn on, on the desktop layer and in the notification
-center's widget column (design/20 section 1.14; design/22 section 3.20; sill FINDINGS Q182,
-Q183), and the two faces sill cannot draw from text alone: an analog world clock and a battery
+center's widget column (design/20 section 1.14; design/22 section 3.20; the shell FINDINGS Q182,
+Q183), and the two faces the shell cannot draw from text alone: an analog world clock and a battery
 glyph. Their drawing is the widget style "Flat, bright, measured" (design/23-WIDGETS.md
 sections 2 to 4), matched to the reference widgets measured in design/23 section 1.1. The card's corner, padding and title row are the frame's, so a widget writes no CSS
 for them.
@@ -3420,7 +3420,7 @@ digital time still plays `bump` on a new minute (`--t-move --e-spring`, the Coun
 
 ### 41. ShotThumbnail and ShotGhost (screenshot thumbnail, settled 2026-09-26)
 
-**Purpose.** The floating thumbnail after a screenshot (design/20 section 1.13; sill Q181): the
+**Purpose.** The floating thumbnail after a screenshot (design/20 section 1.13; the shell Q181): the
 picture, letterboxed in a card of the `Toast` material with its drop, at the bottom right of an
 Overlay surface. A click on the picture opens it; a drag past the threshold hands the host a
 drag start (the host does the drag, with `ShotGhost` as its icon); hovering shows a row of
@@ -3454,9 +3454,9 @@ pub struct DragStart { pub from: Point, pub at: Point }    // press point, and w
 
 | Part | Value | Basis |
 | --- | --- | --- |
-| Card width | `width`, 240 by default (sill's `THUMB_WIDTH`) | design/20 names none; about a sixth of a 1440 px screen |
+| Card width | `width`, 240 by default (the shell's `THUMB_WIDTH`) | design/20 names none; about a sixth of a 1440 px screen |
 | Mat | 4 (`--s-4`) round the picture | the material shows as a thin frame |
-| Picture box | the image's own ratio, held between 2:1 (widest) and 16:10 (tallest); outside that the picture is letterboxed (bars of the material) | sill sizes its surface for 16:10 |
+| Picture box | the image's own ratio, held between 2:1 (widest) and 16:10 (tallest); outside that the picture is letterboxed (bars of the material) | the shell sizes its surface for 16:10 |
 | Card radius | `--m-radius` (Toast, 16); the picture's `--m-radius` less the mat | design/20 section 1.13 |
 | Actions | a pill at the bottom right, 6 in, `--raise`, `--shadow-2`, strip buttons popping in by `--j` x `--stagger` | HoverStrip (section 17) |
 | Drag threshold | 8 px Manhattan (`DRAG_THRESHOLD`) | section 34 |
@@ -3651,7 +3651,7 @@ still (design/25 section 5). Reduced motion, or `playback: EmojiPlayback::Still`
 grid): still frames only.
 
 **Tests.** shell-kit/tests/emoji_ssr.rs (goldens, lint), `shell-kit/emoji/tests.rs` (sheets,
-manifest, the script's idle rule, the mood mapping), sill's ui-conformance/tests/emoji_animation.rs (frames
+manifest, the script's idle rule, the mood mapping), the shell's ui-conformance/tests/emoji_animation.rs (frames
 advance, rest at 21 s, idle's rests, the wince swap, each mood as a `UserPortrait`, Reduced).
 
 ### 44a. UserPicture, UserPortrait and UserPicturePicker (2026-09-26; design/25 section 7)
@@ -3696,10 +3696,10 @@ inside) calls `onpick` with the new choice; `choice` is the caller's and marks o
 
 **Tests.** shell-kit/tests/user_picture_ssr.rs (goldens of the letter, the emoji at rest, the photo
 and the picker; lint; the serde round trip; the `resolve_picture` table), `ds/src/components/
-user_picture/picker.rs` (cells and marks), sill's ui-conformance/tests/lock_switcher.rs (the emoji's moods
+user_picture/picker.rs` (cells and marks), shell's ui-conformance/tests/lock_switcher.rs (the emoji's moods
 in the lock prompt; the letter's beat).
 
-### 45. PdfThumb and PdfFileThumb (a PDF's first page; sill M9 launcher v2, 2026-09-26; values proposed)
+### 45. PdfThumb and PdfFileThumb (a PDF's first page; the shell M9 launcher v2, 2026-09-26; values proposed)
 
 **Purpose.** A PDF's first page as a thumbnail: the launcher's preview pane now, Quick Look
 (design/20 section 2.4) later, the same part in both. The consumer passes a path and a size and
@@ -3777,7 +3777,7 @@ its colour and aspect, the cache hit and the mtime miss, the failures, a documen
 page), `ui-blitz/tests/pdf_thumb_queue.rs` (20 quick requests run at most 4 rasters and show the
 last), `ui-blitz/pdf_thumb/cache.rs` (eviction).
 
-### 46. EmojiGrid (sill M9 launcher v2, Q291, 2026-09-26; values proposed)
+### 46. EmojiGrid (the shell M9 launcher v2, Q291, 2026-09-26; values proposed)
 
 **Purpose.** Emoji as a grid of cells moved through in two dimensions: the launcher's Emoji
 section, and later a character picker. On its own it takes the keyboard; in a `CommandPalette`
@@ -3834,7 +3834,7 @@ for cell 0.
 (entering and leaving in a palette), `ds/tests/it/launcher_parts_ssr.rs` (`grid-in-palette`,
 `grid-alone`), `ui-conformance/tests/it/palette_grid_pane.rs` (the palette walk and the grid on its own).
 
-### 47. PreviewPane (sill M9 launcher v2, Q292, 2026-09-26; values proposed)
+### 47. PreviewPane (the shell M9 launcher v2, Q292, 2026-09-26; values proposed)
 
 **Purpose.** A Quick-Look-style pane for one thing: its picture, page, text, icon or facts over
 a caption, and its actions with their keys. The launcher sets it beside its results with
@@ -3904,7 +3904,7 @@ itself and passes it the same way.
 
 | Part | Value | Basis |
 | --- | --- | --- |
-| Width | the palette's `aside_width`, 360 by default (`ASIDE_WIDTH`), past a `--hair` `--line-soft` divider | sill F654 (360 beside the 540 results) |
+| Width | the palette's `aside_width`, 360 by default (`ASIDE_WIDTH`), past a `--hair` `--line-soft` divider | the shell F654 (360 beside the 540 results) |
 | Card | over a window, `min(540 + aside, 96%)` wide; in a surface, its container's width (the host widens it) | design/13 section 13.3.9 "the card widens by the pane" |
 | Padding, gap | 16, 12 | proposed |
 | Media | 220 tall; a picture or page fitted at its own aspect (`sheet_rect` in `PANE_MEDIA`); text on `--surface` with a `--line-soft` edge, radius `--r-small`, `--fs-meta` (mono: `--font-code` at `--fs-help`); app icon 96, facts icon 64, web: the Globe glyph on a Blue plate at 64; an emoji at `--fs-emoji-preview` 96 in the colour face | proposed |
@@ -3914,7 +3914,7 @@ itself and passes it the same way.
 
 **Motion.** Mounted or turned `Visible`: `slide-r` over `--t-move`, restarted under its other
 name on each showing, at `--e-spring` (`Anim::PaneInR`) only when `cue` says a contact caused it,
-else at `--e-out` (`Anim::PaneInROut`; design/26 R5, sill Q370). Turned `Hidden`:
+else at `--e-out` (`Anim::PaneInROut`; design/26 R5, the shell Q370). Turned `Hidden`:
 `Anim::PaneOutR` (`pane-out-r`, `--t-move --e-exit`, held), then `on_hidden` at its settle, when
 the caller drops the pane and the palette's `aside`. The content's moments come from `cue:
 PaneCue` (the caller's `use_detail` cue, or a bare `Touch`): a Preview, Change or Failure fades
@@ -3933,7 +3933,7 @@ palette_grid_pane.rs` (the card widening over a window, the results narrowing in
 settling before `on_hidden`), `ui-blitz/tests/pdf_thumb.rs` (a pane drawing a PDF through
 `use_pdf_page`), `ui-conformance/tests/it/launcher_pane_cues.rs` (each moment, Reduced, 0 frames).
 
-### 48. RowShape: file and clipboard rows in the palette (sill M9 launcher v2, Q290, 2026-09-26; values proposed)
+### 48. RowShape: file and clipboard rows in the palette (the shell M9 launcher v2, Q290, 2026-09-26; values proposed)
 
 **Purpose.** The launcher's file and clipboard results, as palette rows rather than new markup.
 
@@ -3941,7 +3941,7 @@ settling before `on_hidden`), `ui-blitz/tests/pdf_thumb.rs` (a pane drawing a PD
 mail's thread row, with a dot, a star and a hover strip the launcher has no use for, and its
 selection is not the palette's. `MenuEntry::Row(MenuRow)` already carries runs, a trailing action
 and a constructor callers spread (`..MenuRow::new(value, title)`), so a new field is additive
-for every caller; a field on `MenuEntry::Item` would have broken every `Item` literal in sill,
+for every caller; a field on `MenuEntry::Item` would have broken every `Item` literal in the shell,
 mailo and bardo. The shape changes only what a row draws: it is picked, navigated and matched
 on its title as any row.
 
@@ -3968,7 +3968,7 @@ A plain row's markup is unchanged: no `data-shape`, no `ds-menu-when`.
 **Tests.** `ds/components/lists/row/shape.rs` (the picture's box, the line budget),
 `ds/tests/it/launcher_parts_ssr.rs` (`row-file`, `row-clip`).
 
-### 49. PaletteGroup, "Show More" and the key claim (sill M9 launcher v2, Q294 and Q299, 2026-09-26)
+### 49. PaletteGroup, "Show More" and the key claim (the shell M9 launcher v2, Q294 and Q299, 2026-09-26)
 
 **Groups.**
 
@@ -4002,7 +4002,7 @@ in the order is reachable with the keys a person is already pressing; the action
 header visually and last in its group in the order, the place Down reaches after the rows it
 would reveal.
 
-**Show More and Show Less motion** (design/26 section 5.6, sill Q373, 2026-09-27). The palette
+**Show More and Show Less motion** (design/26 section 5.6, the shell Q373, 2026-09-27). The palette
 plays them itself, from its own action: when the person runs a group's action (Enter on it, or a
 click) and the next results differ from the last only in that group keeping its first rows and
 gaining or losing rows after them, it is an expand or a collapse. Expand: the added rows carry
@@ -4036,7 +4036,7 @@ caret after the last character (an empty field too), `Inside` for any other plac
 selection. Blitz holds no borrow of the document while a handler runs, so the read is exact;
 without ui-blitz's `CaretHost` (a webview) it is `Unknown`. A verdict-returning callback was
 chosen over a declarative `KeyPolicy`: whether Space is the pane's depends on the caller's own
-state (browsing or typing, sill F654), which a policy would have to mirror into props every
+state (browsing or typing, the shell F654), which a policy would have to mirror into props every
 render; the callback asks at the moment with the caret in hand. It is a new prop beside
 `onkey`, so no existing `onkey` changes.
 
@@ -4167,7 +4167,7 @@ flow and sizes the box. A pulse (`a-shake-x`, `a-seal-out`) goes on the wrapper 
 **Values (proposed).** Faint parts at .25, a held loop at .45, a hidden part at 0 and scale .7; the
 fill's box is x 4.5, y 8.5, 11 by 7 units, corner 1, in 22 steps (half a unit: under a logical
 pixel at the bar's 22 px); the default low threshold is a fifth (`LowAt::default()`), which the
-shell reads from `bar.battery_low_percent` (design/26 G10, proposed; sill's key).
+shell reads from `bar.battery_low_percent` (design/26 G10, proposed; the shell's key).
 
 **Tests.** `ds/tests/it/status_tables.rs` (every catalogue row as a `moment_table`, the first frames,
 the quantising: bars by thirds, waves by thirds, the fill's steps, the low threshold);
@@ -4257,10 +4257,10 @@ Tab reaches the three lights in order.
 
 ### 53. IdleDim: the pre-screen-off dim overlay (Q447, 2026-09-27)
 
-**Purpose.** sill's own idle service dims the screen with a full-screen overlay before it goes
+**Purpose.** the shell's own idle service dims the screen with a full-screen overlay before it goes
 off, never real brightness (design/22-SETTINGS.md section 3.24 `idle.dim_level_pct` 10..90,
-`idle.dim_s`; sill FINDINGS "sill idle (Q420 B)"). `IdleDim` is that overlay: a scrim that
-ignores every pointer and key event (sill's idle service, not this component, wakes the
+`idle.dim_s`; the shell FINDINGS "shell idle (Q420 B)"). `IdleDim` is that overlay: a scrim that
+ignores every pointer and key event (the shell's idle service, not this component, wakes the
 display), black at the caller's own level, fading in as the lead time runs out and snapping to
 nothing the instant an input arrives, whatever it was doing.
 
@@ -4293,12 +4293,12 @@ never fades in either: it jumps straight to the level, the way `Sweep`'s own `St
 Ends at 0 frames once landed (R3).
 
 **Tests.** `shell-kit/idle_dim/model.rs` (the plan table: waking and a settings edit always snap,
-dimming fades except under Reduced); sill's ui-conformance/tests/idle_dim.rs on `Clock::Virtual` (the fade
+dimming fades except under Reduced); the shell's ui-conformance/tests/idle_dim.rs on `Clock::Virtual` (the fade
 lands on the level at `--t-idle-dim`, an input mid-fade snaps to zero at once, Reduced motion
 shows the level from its first frame, `assert_settles_to_zero_frames` once landed). CONSUMING.md
 "Idle dim".
 
-### 54. LeavingList: rows that leave in batches and heal by measured heights (sill Q510, 2026-09-28)
+### 54. LeavingList: rows that leave in batches and heal by measured heights (the shell Q510, 2026-09-28)
 
 **Purpose.** The notification center's column. `AnimatedList` + `use_roster` heals by one fixed
 pitch and is driven by `Roster::leave`, so a Clear there had no exit and rows of different
@@ -4359,7 +4359,7 @@ height and end exactly one row higher; a Clear of two non-adjacent rows is dropp
 the second row's settle and heals by 40 then 95; clearing everything settles at the fourth row's
 stagger; an arrival plays `row-in` until `settle(RowIn)`; a row listed again stays; Reduced).
 
-### 55. Alert: a question with Cancel and one action (sill Q490, 2026-09-28; values as the polkit sheet's)
+### 55. Alert: a question with Cancel and one action (the shell Q490, 2026-09-28; values as the polkit sheet's)
 
 **Purpose.** The Mac's alert before Liquid Glass (Sonoma/Sequoia `NSAlert`, design/27): a short
 question the shell asks before an action with consequences, "Turn Bluetooth off?" from the

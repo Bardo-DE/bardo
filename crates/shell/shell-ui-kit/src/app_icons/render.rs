@@ -358,7 +358,7 @@ mod tests {
 
     #[test]
     fn an_unreadable_source_is_an_error_not_a_panic() {
-        let missing = std::path::Path::new("/nonexistent/sill/icon.svg");
+        let missing = std::path::Path::new("/nonexistent/shell/icon.svg");
         let recolour = Recolour {
             style: IconStyle::Muted,
             tint: Tint::NEUTRAL,

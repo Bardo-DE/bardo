@@ -15,11 +15,11 @@ Ids match the references in SPEC.md.
 | P3 | COMPANION item 4 ("no screen clicking") | (a) replace with "typed actions and hooks first; a CUA tier, off by default per app, inside the lease and consent stack"; (b) keep item 4, no CUA | (a); `cua.enabled = off` either way |
 | P4 | File capture | (a) inotify on Space roots for v1; (b) a small privileged fanotify helper | (a) |
 | P5 | sqlite-vec needs one `unsafe` crate | (a) exact scan now, usearch only if scale demands; (b) allow one exemption crate | (a) |
-| P6 | Space identity | where `SpaceId` is minted (rec: sill's Space store beside SpaceLook) and whether a `desktop` scope exists for memory outside any Space | sill mints; `desktop` exists |
+| P6 | Space identity | where `SpaceId` is minted (rec: the shell's Space store beside SpaceLook) and whether a `desktop` scope exists for memory outside any Space | the shell mints; `desktop` exists |
 | P7 | design/30 §3.4 defers companion work | (a) lift it for types now (freeze wave adds ds vocab, ui-intents, companion components as "proposed"); (b) types only outside `ds` | (a) |
 | P8 | Engine confinement | (a) engines only as confined systemd transient units without network (unconfined child processes on other OSes); (b) also allow unconfined on Linux | (a) |
 | P9 | The fork | who owns it (rec: the cua repo's agent, shared branch with double-tap ⌘ later); which hardware kill chord it reserves; is KWin a product target or only the nested host | cua owns; chord: user picks; KWin = nested host + reference only |
-| P10 | Toshy route for double-tap ⌘ | (A) Toshy detects the double tap and emits one chord; (B) Toshy maps a lone ⌘ tap and sill's tested `Tap` machine decides | B if Spike T shows ⌘-click/⌘-drag unharmed, else A |
+| P10 | Toshy route for double-tap ⌘ | (A) Toshy detects the double tap and emits one chord; (B) Toshy maps a lone ⌘ tap and the shell's tested `Tap` machine decides | B if Spike T shows ⌘-click/⌘-drag unharmed, else A |
 | P11 | Fuzzing | nightly-only `cargo-fuzz` dev script beside the stable proptest suite | yes |
 
 ## Safety defaults
@@ -71,8 +71,8 @@ Ids match the references in SPEC.md.
 | U2 | Multiline and editor fields | anchored prompt at the selection (Writing Tools style) or fall through to the launcher | anchored |
 | U3 | Orb | home with the launcher closed (bar item on by default, or hidden while idle); Waiting look; size ladder; tint (orb colours or accent) | bar item on; sizes 14/16/20/40/192 |
 | U4 | Answers | card in the launcher's preview pane or replacing the list; headless "done" feedback as a toast with Undo or a line in the strip | preview pane; toast with Undo |
-| U5 | Glow | width, colours, acting spot; is phase A (sill overlay, forgeable) fine before the fork | phase A for development |
-| U6 | Confirmation | sheet on the target window or centred alert; 500 ms arm delay; phase A (sill sheet) shippable or dev only | sheet; 500 ms; dev only for CUA, typed actions may ship on it |
+| U5 | Glow | width, colours, acting spot; is phase A (the shell overlay, forgeable) fine before the fork | phase A for development |
+| U6 | Confirmation | sheet on the target window or centred alert; 500 ms arm delay; phase A (the shell sheet) shippable or dev only | sheet; 500 ms; dev only for CUA, typed actions may ship on it |
 | U7 | Memory UI home | launcher "Memory" filter + the Settings app page for export and the diff, or one dedicated window | launcher filter + the Settings app |
 | U8 | Settings page name | "Intelligence" (design/31) or "Companion" | Intelligence |
 | U9 | Inline replace in your field | run at once with Undo (COMPANION 9) or show the change and wait for Apply (agent-ux P1) | wait for Apply |

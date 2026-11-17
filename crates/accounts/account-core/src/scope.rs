@@ -1,7 +1,7 @@
 //! The name of the systemd scope a launcher starts an app in.
 //!
 //! Its form is `app-[<launcher>-]<app>-<run>.scope` (XDG "Desktop Entry / systemd integration").
-//! sill writes one for each launch, Flatpak writes one for each run, and porter reads them to learn
+//! The shell writes one for each launch, Flatpak writes one for each run, and porter reads them to learn
 //! which app a process is (`identity_of`), so the writer and the reader are one type,
 //! [`ScopeName`], and what one writes the other reads back.
 //!
@@ -78,7 +78,7 @@ impl ScopeName {
         ScopeName::new(launcher, &app, run).ok()
     }
 
-    /// The tag of the launcher that wrote it (`sill`, `flatpak`), if it wrote one.
+    /// The tag of the launcher that wrote it (`shell`, `flatpak`), if it wrote one.
     #[must_use]
     pub fn launcher(&self) -> Option<&str> {
         self.launcher.as_deref()

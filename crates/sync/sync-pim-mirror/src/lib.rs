@@ -4,7 +4,7 @@
 //! The vdir is `$XDG_DATA_HOME/bardo/sync/vdir/<account>/<collection>/`, `<account>` being
 //! `base_ids::object_segment(account)`: the segment `AccountRemoved` wipes. A collection holds
 //! one file per item, `<uid>.ics` or `<uid>.vcf`, and the files `displayname` and `color`
-//! (vdirsyncer's storage spec, which sill's `calendar.sources = auto` and khal read).
+//! (vdirsyncer's storage spec, which the shell's `calendar.sources = auto` and khal read).
 //!
 //! - `mirror`: [`PimMirror`], the `sync_engine::dataset::Dataset` of one collection, pull-only:
 //!   the engine never uploads or removes anything for it, so a file edited or deleted locally

@@ -89,7 +89,7 @@ build_detent() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/detent-target" cargo build -p settings-app --features ui-blitz/debug-probe,dev-callers)
 }
 
-build_sill() {
+build_shell() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" cargo build -p shell-app --features debug) &&
     built_at shell-target
 }
@@ -151,7 +151,7 @@ build_docket() {
 }
 
 # bardo-shell with the debug probe: the accounts-* scenarios read the accounts sheet through it.
-build_sill_probe() {
+build_shell_probe() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/shell-probe-target" cargo build -p shell-app --features debug,ui-blitz/debug-probe)
 }
 
@@ -163,7 +163,7 @@ fi
 
 stage "bardo-compositor (bootstrap --build-only)" build_compositor
 if [ "$only_w2" = 1 ]; then
-  stage "bardo-shell (--features debug)" build_sill
+  stage "bardo-shell (--features debug)" build_shell
   stage "bardo-computer-use (--features fixture-callers)" build_cuad
   stage "action-accept (the assistant's services, test builds)" build_docket
   echo "scenario-build: done for W2 ($SCEN_BUILD)"
@@ -171,12 +171,12 @@ if [ "$only_w2" = 1 ]; then
 fi
 if [ "$only_accounts" = 0 ]; then
   stage "foot" fetch_foot
-  stage "bardo-shell (--features debug)" build_sill
+  stage "bardo-shell (--features debug)" build_shell
   stage "layer-shell-host demos" build_shell_host
   stage "bardo-portal" build_portal
 fi
 stage "bardo-settings (with the debug probe)" build_detent
-stage "bardo-shell with the debug probe" build_sill_probe
+stage "bardo-shell with the debug probe" build_shell_probe
 stage "porter: bardo-accountd (test-proc-root) and account-rig" build_porter
 stage "sync: bardo-syncd (test-proc-root) and sync-rig" build_sync
 stage "inference: bardo-inferd (test-proc-root) and inference-rig-client" build_inference

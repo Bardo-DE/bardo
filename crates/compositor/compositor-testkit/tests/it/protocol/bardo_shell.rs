@@ -103,7 +103,7 @@ fn the_proven_role_decides_which_connection_a_program_is_handed() {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");
     let shell = fixture
         .connect_through_handout(&callers::shell(), ConnectionRole::Shell)
-        .expect("sill gets the shell");
+        .expect("shell gets the shell");
     let agent = fixture
         .connect_through_handout(&callers::agent_tier(), ConnectionRole::Agent)
         .expect("cuad gets the agent tier");
@@ -124,7 +124,7 @@ fn the_proven_role_decides_which_connection_a_program_is_handed() {
     // (case, the caller, the role asked, what comes back)
     let refused = [
         (
-            "sill asks for the agent tier",
+            "shell asks for the agent tier",
             callers::shell(),
             ConnectionRole::Agent,
             ConnectRefusal::RoleNotAllowed,
@@ -136,7 +136,7 @@ fn the_proven_role_decides_which_connection_a_program_is_handed() {
             ConnectRefusal::RoleNotAllowed,
         ),
         (
-            "sill asks for the portal connection",
+            "shell asks for the portal connection",
             callers::shell(),
             ConnectionRole::Portal,
             ConnectRefusal::RoleNotAllowed,

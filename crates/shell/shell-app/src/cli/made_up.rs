@@ -40,7 +40,7 @@ pub struct NotifyArgs {
 #[derive(Debug, Clone, PartialEq, Eq, Args)]
 pub struct PolkitArgs {
     /// The action id shown.
-    #[arg(long = "action", default_value = "org.sill.debug.prompt")]
+    #[arg(long = "action", default_value = "org.bardo.shell.debug.prompt")]
     pub action_id: String,
     /// The message shown.
     #[arg(long, default_value = "bardo-shell is testing its password prompt")]

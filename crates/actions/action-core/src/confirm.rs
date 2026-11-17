@@ -407,7 +407,7 @@ pub enum ConfirmEnd {
     Cancelled,
 }
 
-/// The seam that draws confirmations. Drawing them is not docket's (sill phase A, the trusted
+/// The seam that draws confirmations. Drawing them is not docket's (the shell phase A, the trusted
 /// surface phase B).
 pub trait Confirmer: Send + Sync {
     /// Asks the person.

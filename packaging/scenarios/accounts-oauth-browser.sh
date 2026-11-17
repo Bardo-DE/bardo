@@ -4,7 +4,7 @@
 # the access tokens the issuer minted) is reached by bardo-syncd (the sync service's), which has no accounts of its own: it uses bardo-accountd's
 # account through account-client over org.bardo.Grants1, after one consent sheet for that account.
 #
-# The browser is the scenario's own `xdg-open` first on bardo-shell's PATH (harness/lib/accounts.sh sill_start): bardo-shell opens
+# The browser is the scenario's own `xdg-open` first on bardo-shell's PATH (harness/lib/accounts.sh shell_start): bardo-shell opens
 # the page the sheet shows (BrowserWait), the opener records the address and follows it with curl, redirects
 # included, so the issuer's authorize page answers with a redirect to bardo-accountd's loopback listener, which takes the
 # code. The person's consent is the issuer's default (grant); the Microsoft client and its endpoints are the
@@ -47,7 +47,7 @@ step_boot() {
   secrets_start || return 1
   acc_config; acc_clients_for_issuer; acc_provider_microsoft_on_rig
   accountd_start || return 1
-  sill_start || return 1
+  shell_start || return 1
   syncd_start || return 1
 }
 

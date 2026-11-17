@@ -1,8 +1,8 @@
 # Manual checks queued for the user
 
 Things only a person at the machine can verify. While the user is away they are assumed to
-work; each is ticked off with the date and what was seen. sill keeps its own queue at
-sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there.
+work; each is ticked off with the date and what was seen. The shell keeps its own queue at
+The shell's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there.
 
 ## Keys as actions (queued 2026-10-10)
 
@@ -31,15 +31,15 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
   on or off (engine DuckDuckGo by default); the default emoji skin tone.
 - [ ] **Launcher v2 real-input look** (progress page "Launcher v2"): Space / Cmd+Y / Right-at-end
   open the preview, arrow keys wrap in the emoji grid, holding Down through PDFs stays smooth.
-- [x] **Lock decisions** (settled 2026-09-27: sill's own lock by default, 5 s grace after the screen sleeps, no lockout delay) (sill M11, done on nested): the lockout policy after failed passwords,
+- [x] **Lock decisions** (settled 2026-09-27: the shell's own lock by default, 5 s grace after the screen sleeps, no lockout delay) (the shell M11, done on nested): the lockout policy after failed passwords,
   `lock_grace` (how long after the screen sleeps the password is still not asked), and whether
-  sill's own lock becomes the default over the borrowed locker.
+  The shell's own lock becomes the default over the borrowed locker.
 - [x] **Widget follow-ups** (settled 2026-09-27: drag to move yes, dim under a window no): dim desktop widgets under a focused window (the reference
   does), drag-to-move desktop widgets.
-- [ ] **A real sill login** (`dist/sill-session`): the first run of the whole desktop on real
-  hardware; sill's queue lists what to look at (M7 login, M11 lock screen and polkit agent).
+- [ ] **A real shell login** (`dist/shell-session`): the first run of the whole desktop on real
+  hardware; the shell's queue lists what to look at (M7 login, M11 lock screen and polkit agent).
 - [ ] **Real-mouse and real-keyboard re-runs**: every live-input result before layer-shell-host F47
-  used injected input; sill's queue lists them.
+  used injected input; the shell's queue lists them.
 
 ## Bardo
 

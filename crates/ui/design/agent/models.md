@@ -53,7 +53,7 @@ Neither the Holo-3.1-4B card nor that page gives the action schema or the coordi
 ### 2.1 Placement decision
 
 All model-layer crates go in **a new portable repo** (working name **`models`**: it feeds the
-engines; it sits beside porter, the service locator, sill and the Settings app; the user names it, Q1).
+engines; it sits beside porter, the service locator, the shell and the Settings app; the user names it, Q1).
 `MIT OR Apache-2.0`, same CONVENTIONS text, its own ARCHITECTURE.md and FINDINGS.md.
 
 Why a new repo rather than inside porter:
@@ -288,7 +288,7 @@ pub struct Limits { pub max_output: Tokens, pub temperature: Milli, pub stop: Ve
 pub struct Milli(pub u16);   pub struct Tokens(pub u32);
 pub enum Reasoning { Off, On(Effort) }   pub enum Effort { Low, Medium, High }
 
-// Streaming: push events into a sink, as sill's ResultSink and cua-integration's StepSink do.
+// Streaming: push events into a sink, as shell's ResultSink and cua-integration's StepSink do.
 pub enum TurnEvent {
     TextDelta(String),
     ThoughtDelta(String),

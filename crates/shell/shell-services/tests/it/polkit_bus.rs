@@ -148,7 +148,7 @@ async fn begin(connection: Connection, agent: String, cookie: &str) -> Result<()
     )];
     let details = HashMap::from([("program".to_owned(), "/usr/bin/true".to_owned())]);
     let body = (
-        "org.sill.test.run".to_owned(),
+        "org.bardo.shell.test.run".to_owned(),
         "Authentication is required to run a test".to_owned(),
         String::new(),
         details,
@@ -242,7 +242,10 @@ fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
             .current
             .clone()
             .unwrap_or_else(|| panic!("shown"));
-        assert_eq!(shown.action_id, ActionId("org.sill.test.run".to_owned()));
+        assert_eq!(
+            shown.action_id,
+            ActionId("org.bardo.shell.test.run".to_owned())
+        );
         assert_eq!(
             shown.details,
             vec![("program".to_owned(), "/usr/bin/true".to_owned())]
@@ -327,7 +330,7 @@ fn a_made_up_request_takes_the_fake_secret_and_nothing_else() {
         });
         control
             .send(PolkitCommand::Fake(FakeRequest {
-                action_id: ActionId("org.sill.debug".to_owned()),
+                action_id: ActionId("org.bardo.shell.debug".to_owned()),
                 message: "Made up".to_owned(),
                 icon: String::new(),
             }))

@@ -1,4 +1,4 @@
-//! `bardo-do ask "<text>"`: the person at a terminal talks to the companion, the way sill's
+//! `bardo-do ask "<text>"`: the person at a terminal talks to the companion, the way the shell's
 //! launcher does. Open a conversation, record the turn with bardo-actiond (`Session.Turn`, which a
 //! terminal may make: it is recorded as `Caller::terminal()`), hand it to bardo-companiond, and
 //! follow the answer object until it settles.

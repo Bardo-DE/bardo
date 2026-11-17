@@ -4,7 +4,7 @@
 use action_vocab::UtteranceId;
 use serde::{Deserialize, Serialize};
 
-/// One summon, as sill numbers it so a late answer cannot be taken for a newer one.
+/// One summon, as the shell numbers it so a late answer cannot be taken for a newer one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SummonSerial(pub u64);

@@ -58,7 +58,7 @@ pub enum Workspace {
 pub enum HostAction {
     /// A step between the shell's workspaces.
     Workspace(Workspace),
-    /// A line of the shell's own command language (what follows `sill` on its command line).
+    /// A line of the shell's own command language (what follows `shell` on its command line).
     Shell { words: Vec<String> },
     /// A program of the person's, with its arguments (the program first); run without a shell.
     Command { argv: Vec<String> },

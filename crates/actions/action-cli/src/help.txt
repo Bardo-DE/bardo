@@ -24,7 +24,7 @@ no flag that skips the question.
 
 `ask` is the assistant's conversation from a terminal: it prints the answer, the plan steps and
 what the answer was made of. It never answers a confirmation: when one is waiting it says so and
-exits 8, and the confirmation is answered on sill's sheet.
+exits 8, and the confirmation is answered on the shell's sheet.
 
 Output is text on a terminal, and JSON with --json or when stdout is not a terminal:
   {vocab, outcome, undo, entities, handles}; a failure is {vocab, error}.

@@ -91,7 +91,7 @@ fn the_shipped_table_names_the_placers_and_the_shell_by_unit() {
         Some(("org.bardo.Shell".to_owned(), CallerRole::SheetHost))
     );
     assert_eq!(
-        role("shell-shell.scope"),
+        role("bardo-shell.scope"),
         None,
         "the old scope is no longer the shell"
     );

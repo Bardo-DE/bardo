@@ -1,4 +1,4 @@
-//! `ext_data_control_manager_v1`: clipboard managers (sill's clipboard history). Hidden from
+//! `ext_data_control_manager_v1`: clipboard managers (the shell's clipboard history). Hidden from
 //! sandboxed clients (I7).
 
 use crate::data_device::SelectionKind;

@@ -1,7 +1,7 @@
 //! The acceptance world: a private bus, the real daemons as processes (accountd, inferd and memoryd
 //! as the packaged binaries of their repos, intentd, readerd and companiond).
 //!
-//! And the fakes on the bus around them: sill's `Confirm1` and a mail provider. The model is
+//! And the fakes on the bus around them: the shell's `Confirm1` and a mail provider. The model is
 //! inferd's replay engine playing a cassette. Everything is scratch: HOME, every XDG directory and
 //! the bus.
 //!
@@ -250,14 +250,14 @@ pub enum Consent {
 pub struct World {
     // Declared first: the daemons are killed before anything they talk to goes.
     daemons: Vec<(&'static str, Reaped)>,
-    /// What sill's `Confirm1` was shown, and what the person will do with it.
+    /// What the shell's `Confirm1` was shown, and what the person will do with it.
     pub sheet: Sheet,
     /// The same, as a stream: one item per sheet shown.
     pub confirms: mpsc::UnboundedReceiver<ConfirmRequest>,
     /// What the app was asked and what it holds.
     pub app: AppLog,
-    /// A connection that owns `org.bardo.Shell` and `org.bardo.Confirm1`: sill.
-    pub sill: zbus::Connection,
+    /// A connection that owns `org.bardo.Shell` and `org.bardo.Confirm1`: the shell.
+    pub shell: zbus::Connection,
     _helpers: Vec<zbus::Connection>,
     /// The relays behind [`World::connect_as`]'s connections, ended with the world.
     relays: std::sync::Mutex<Vec<Reaped>>,

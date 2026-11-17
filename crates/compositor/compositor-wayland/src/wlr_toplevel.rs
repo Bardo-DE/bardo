@@ -1,5 +1,5 @@
 //! `zwlr_foreign_toplevel_manager_v1`: the window list for docks and switchers that speak the wlr
-//! protocol (sill's `desktop_wl` Wlr arm).
+//! protocol (the shell's `desktop_wl` Wlr arm).
 //!
 //! Every window is listed with its title, app id, state and the outputs it is on; the handle's
 //! requests become `Event::WlrToplevel`.

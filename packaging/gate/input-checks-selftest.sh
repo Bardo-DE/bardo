@@ -63,13 +63,13 @@ world; mutate 'text = text.replace("role = \"memory\"", "role = \"memry\"")'
 bad 1 callers; says "memry"; says "no row for the role memory"
 world; mutate 'text = text.replace("unit = \"bardo-shell.service\"\n", "")'
 bad 1 callers; says "no unit, and 'shell' is a service"
-world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"usr/bin/sill\"")'
+world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"usr/bin/shell\"")'
 bad 1 callers; says "is not an absolute path"
-world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"/usr/bin/../sill\"")'
+world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"/usr/bin/../shell\"")'
 bad 1 callers; says "empty, . or .. segment"
-world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"/usr/*/*/sill\"")'
+world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"/usr/*/*/shell\"")'
 ok callers
-world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"/usr/*x*/sill\"")'
+world; mutate 'text = text.replace("\"/usr/bin/bardo-shell\"", "\"/usr/*x*/shell\"")'
 bad 1 callers; says "more than one"
 world; mutate 'text = text.replace("unit = \"bardo-compositor.service\"", "unit = \"bardo-shell.service\"")'
 bad 1 callers; says "also in row"
@@ -77,8 +77,8 @@ world; mutate 'i = text.index("# ...and also by a launcher"); j = text.index("# 
 bad 1 callers; says "settings has no row without a unit"
 world; mutate 'text = text.replace("[[peer]]\napp  = \"org.bardo.Shell\"", "[[peer]]\nstray = 1\napp  = \"org.bardo.Shell\"")'
 bad 1 callers; says "unknown key"
-world; printf '[Service]\nExecStart=/srv/somewhere/sill run\n' >"$tmp/w/bardo/crates/shell/dist/bardo-shell.service"
-bad 1 callers; says "ExecStart /srv/somewhere/sill"
+world; printf '[Service]\nExecStart=/srv/somewhere/shell run\n' >"$tmp/w/bardo/crates/shell/dist/bardo-shell.service"
+bad 1 callers; says "ExecStart /srv/somewhere/shell"
 world; printf '[Service]\nExecStart=/usr/bin/bardo-shell run\n' >"$tmp/w/bardo/crates/shell/dist/bardo-shell.service"
 ok callers; says "2 unit(s) compared"
 world; rm -rf "$tmp/w/bardo/crates/identity"

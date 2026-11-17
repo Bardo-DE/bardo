@@ -56,7 +56,7 @@ step_boot() {
   start_compositor || return 1
   scratch_new
   build || return 1
-  floor_sill_callers
+  floor_shell_callers
   launch_daemon || return 1
   local wall
   wall=$(wait_for 300 surface_named bardo-shell-wallpaper-) || { echo "no wallpaper surface" >&2; return 1; }

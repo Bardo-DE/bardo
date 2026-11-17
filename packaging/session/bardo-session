@@ -373,36 +373,36 @@ wallet() {
 # manager's environment. This function runs as the respawn loop's child: it returns when the unit ends cleanly (the
 # loop restarts it with its exit guard; the unit restarts itself after a failure and is waited on through that),
 # and a TERM stops the unit.
-sill_unit=bardo-shell.service
-sill_ctl() { "$(bin systemctl)" --user "$@"; }
-sill_state() { sill_ctl show -p ActiveState --value "$sill_unit" 2>/dev/null || true; }
+shell_unit=bardo-shell.service
+shell_ctl() { "$(bin systemctl)" --user "$@"; }
+shell_state() { shell_ctl show -p ActiveState --value "$shell_unit" 2>/dev/null || true; }
 stop_shell() {
     [ -z "$nested" ] || [ -n "$stubs" ] || return 0
     have systemctl || return 0
-    sill_ctl stop "$sill_unit" 2>/dev/null || true
+    shell_ctl stop "$shell_unit" 2>/dev/null || true
 }
-sill_shell() {
-    case "$(sill_state)" in
+launch_shell() {
+    case "$(shell_state)" in
         "" | inactive) ;;
         *)
-            log "$sill_unit is still there from an earlier session; stopping it"
-            sill_ctl stop "$sill_unit" 2>/dev/null || true
-            sill_ctl reset-failed "$sill_unit" 2>/dev/null || true
+            log "$shell_unit is still there from an earlier session; stopping it"
+            shell_ctl stop "$shell_unit" 2>/dev/null || true
+            shell_ctl reset-failed "$shell_unit" 2>/dev/null || true
             ;;
     esac
-    if [ "$(sill_ctl show -p LoadState --value "$sill_unit" 2>/dev/null || true)" = not-found ]; then
-        log "$sill_unit is not installed (the desktop installer puts it beside bardo-compositor.service); the session stays up without a shell"
+    if [ "$(shell_ctl show -p LoadState --value "$shell_unit" 2>/dev/null || true)" = not-found ]; then
+        log "$shell_unit is not installed (the desktop installer puts it beside bardo-compositor.service); the session stays up without a shell"
         return 0
     fi
-    if ! sill_ctl start "$sill_unit"; then
-        log "could not start $sill_unit; the session stays up without a shell"
+    if ! shell_ctl start "$shell_unit"; then
+        log "could not start $shell_unit; the session stays up without a shell"
         return 0
     fi
     trap 'stop_shell; exit 0' TERM
-    until case "$(sill_state)" in active | activating | deactivating) false ;; *) true ;; esac; do
+    until case "$(shell_state)" in active | activating | deactivating) false ;; *) true ;; esac; do
         sleep 0.5 & wait $!
     done
-    log "$sill_unit ended"
+    log "$shell_unit ended"
 }
 
 first_run() {
@@ -422,7 +422,7 @@ start_components() {
         --why="the power key opens bardo-shell's power menu" --mode=block sleep infinity
     if [ -n "$ibus_daemon" ] && have ibus-daemon; then keep_running ibus "$(bin ibus-daemon)" --xim --replace; fi
     if have systemctl; then
-        keep_running bardo-shell sill_shell
+        keep_running bardo-shell launch_shell
     else
         keep_running bardo-shell "$(bin bardo-shell)" run
     fi

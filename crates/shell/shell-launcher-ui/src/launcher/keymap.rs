@@ -1,5 +1,5 @@
 //! A DOM key as the panel's [`LauncherKey`] (design/06 §20.2): arrows, Enter, Tab and Shift+Tab,
-//! Escape, and the shared action that opens the row's actions (`sill.show-actions`, ⌘K).
+//! Escape, and the shared action that opens the row's actions (`shell.show-actions`, ⌘K).
 //!
 //! The keymap resolves a key to an action first (`PanelCtx::resolved`); these read the action,
 //! never a modifier that means Command. Pure.
@@ -34,8 +34,8 @@ pub fn launcher_key(
 
 /// `key` with `modifiers` held, when it is one companion mode reads before the palette does.
 ///
-/// Escape, and the actions that send on (`sill.promote`, ⌘↵), cancel (Cancel, ⌘.) and switch the
-/// permissions mode (`sill.switch-mode`, ⇧⌘M).
+/// Escape, and the actions that send on (`shell.promote`, ⌘↵), cancel (Cancel, ⌘.) and switch the
+/// permissions mode (`shell.switch-mode`, ⇧⌘M).
 #[must_use]
 pub fn companion_key(
     key: &Key,

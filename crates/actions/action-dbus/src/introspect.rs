@@ -20,7 +20,7 @@ pub enum Bus {
     IntentProvider,
     /// `org.bardo.IntentReach1` (a provider whose actions' reach changes while it runs).
     IntentReach,
-    /// `org.bardo.Confirm1` (sill).
+    /// `org.bardo.Confirm1` (the shell).
     Confirm,
     /// `org.bardo.Companion1` (companiond).
     Companion,

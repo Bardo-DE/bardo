@@ -1,7 +1,7 @@
-//! A scripted `org.bardo.Confirm1` server: sill's role in the acceptance run.
+//! A scripted `org.bardo.Confirm1` server: the shell's role in the acceptance run.
 //!
-//! It owns the two names sill owns (`org.bardo.Confirm1` and `org.bardo.Shell`), so intentd derives
-//! the `confirm` role for it from `actiond.toml` exactly as it would for sill. Every request it is
+//! It owns the two names the shell owns (`org.bardo.Confirm1` and `org.bardo.Shell`), so intentd derives
+//! the `confirm` role for it from `actiond.toml` exactly as it would for the shell. Every request it is
 //! shown is kept for the test and handed out on a channel; the verdict comes from a queue the test
 //! fills (the sheet's answer: Allow with a receipt, or the person saying no).
 
@@ -222,7 +222,7 @@ impl ConfirmObject {
     }
 }
 
-/// Serves `Confirm1` on `connection` and claims sill's two names there. Returns the handle and
+/// Serves `Confirm1` on `connection` and claims the shell's two names there. Returns the handle and
 /// the channel on which each request shown arrives.
 ///
 /// # Errors

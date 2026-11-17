@@ -357,16 +357,16 @@ fn companion_stop(shell: &Shell) {
         .send(CompanionCommand::StopAll);
 }
 
-/// The hold overlay (a key held for its cheat sheet) has no surface yet. Lane P3-SILL.
+/// The hold overlay (a key held for its cheat sheet) has no surface yet. Lane P3-SHELL.
 fn hold_overlay() {}
 
 /// The modifiers over a shell surface will switch the dock's and bar's Option variants (they
-/// already pick a hot corner's binding, `Shell::held_mods`); the key remap daemon stays the source of truth for chords. Lane P3-SILL.
+/// already pick a hot corner's binding, `Shell::held_mods`); the key remap daemon stays the source of truth for chords. Lane P3-SHELL.
 fn option_variants() {}
 
 /// The compositor's switcher events (apps, shown, selected, hidden) will drive the switcher
 /// panel, answered with `PickSwitcher` and `CancelSwitcher`; the panel still follows its own
-/// machine. Lane P3-SW (the compositor side) and P3-SILL (the panel).
+/// machine. Lane P3-SW (the compositor side) and P3-SHELL (the panel).
 fn switcher_panel() {}
 
 /// An edge reveal shows or hides the bar (top edge) or the dock (bottom edge) while a window is
@@ -391,9 +391,9 @@ fn edge_reveal(shell: &Shell, output: Option<&str>, edge: ScreenEdge, shown: Sho
 /// A menu item activated by a key will flash in the bar's menu. Lane P3-MN.
 fn menu_flash() {}
 
-/// An app's bell will bounce its dock icon or play the alert sound. Lane P3-SILL.
+/// An app's bell will bounce its dock icon or play the alert sound. Lane P3-SHELL.
 fn bell() {}
 
 /// The compositor asks the dock to reopen an app with no windows; what reopening means (launch
-/// it again, or bring its last window back) is the dock's decision. Lane P3-SILL.
+/// it again, or bring its last window back) is the dock's decision. Lane P3-SHELL.
 fn reopen_in_dock() {}

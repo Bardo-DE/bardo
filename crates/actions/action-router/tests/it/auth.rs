@@ -162,24 +162,24 @@ fn every_member_is_reachable_by_some_role_and_the_registry_by_all() {
 #[test]
 fn a_caller_acts_in_the_first_of_its_roles_that_may_make_the_call() {
     use std::collections::BTreeSet;
-    let sill = BTreeSet::from([
+    let shell = BTreeSet::from([
         CallerRole::Launcher,
         CallerRole::Confirm,
         CallerRole::Control,
     ]);
     assert_eq!(
-        acting_role(&sill, Member::Perform),
+        acting_role(&shell, Member::Perform),
         Some(CallerRole::Launcher),
-        "sill performs as the person"
+        "shell performs as the person"
     );
     assert_eq!(
-        acting_role(&sill, Member::ControlResume),
+        acting_role(&shell, Member::ControlResume),
         Some(CallerRole::Control)
     );
     assert_eq!(
-        acting_role(&sill, Member::GateCheck),
+        acting_role(&shell, Member::GateCheck),
         None,
-        "sill is not cuad"
+        "shell is not cuad"
     );
     let plain = BTreeSet::new();
     assert_eq!(

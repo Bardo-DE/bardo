@@ -14,7 +14,7 @@ cua = ["bardo-computer-use.service"]
 # here (the old form, "org.bardo.Settings") stands for "<app>.service", never for an app scope of
 # that name, which any program can start.
 settings = ["org.bardo.Settings.service"]
-# The shell (sill): it may list the places the assistant can run (Inference1.Places) and ask for
+# The shell (the shell): it may list the places the assistant can run (Inference1.Places) and ask for
 # nothing else, as the unit the desktop session starts it in, and only that unit's main process.
 shell = ["bardo-shell.service"]
 # The units that may choose where the assistant runs (the `places` and `place_models` options of

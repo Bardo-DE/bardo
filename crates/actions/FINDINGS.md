@@ -162,11 +162,11 @@ Open, and the asks they make (nothing below was edited in the other repos):
    it is named by its executable: `org.bardo.Do`, role cli), calls `Router::end_terminal_sessions` when logind
    removes the person's session, and serves `Run.DryRun`, `Control.TerminalGrants` and
    `Control.RevokeTerminalGrant`.
-3. **sill** (ask): draw `ConfirmOffer::OnceOrFromTerminal` as a second button, "Allow from the terminal: this
+3. **the shell** (ask): draw `ConfirmOffer::OnceOrFromTerminal` as a second button, "Allow from the terminal: this
    action, until logout", answering `ConfirmAnswer::AllowedFromTerminal`; list the grants in the control centre
    through `Control.TerminalGrants` with a revoke through `Control.RevokeTerminalGrant`.
-4. **The launcher's natural-date parser** is sill's and docket cannot reach it, so a Date or DateTime parameter
-   takes RFC 3339 only and says so. Ask: the parser as a pure crate below sill (Bardo or porter), which
+4. **The launcher's natural-date parser** is the shell's and docket cannot reach it, so a Date or DateTime parameter
+   takes RFC 3339 only and says so. Ask: the parser as a pure crate below the shell (Bardo or porter), which
    `docket-cli::when` then calls ("tomorrow at nine").
 5. **ds menu commands and shortcuts carry no action id** (`ds::MenuItem::Item` has a `value: T` and a
    `Shortcut`), so rule three of cli.md section 6 cannot be read from the data an app has today. The shape
@@ -176,7 +176,7 @@ Open, and the asks they make (nothing below was edited in the other repos):
    Ask (Bardo, `ds`): `MenuItem::Item` and the shortcut table gain `action: Option<ActionName>` (or
    `UiOnly(reason)`), and the app's build writes the file from its menu bar and shortcut table (a test that
    walks `MenuBarModel` and the table). Until then the check passes an app with a manifest and prints a note.
-   Today `mailo`, `settings-app` and `sill` fail the check (a `.desktop` file, no manifest); `anyview` ships no
+   Today `mailo`, `settings-app` and `shell` fail the check (a `.desktop` file, no manifest); `anyview` ships no
    `.desktop` file yet.
 6. **A paused terminal session (ask 89), decided in F3: `Control.Resume` from the control centre.** The breaker
    pauses a session "until the person speaks", and a terminal has no turn to record. `Control.Resume` (the
@@ -184,7 +184,7 @@ Open, and the asks they make (nothing below was edited in the other repos):
    breaker (`Router::resume_terminals`, tests in `docket-router/tests/it/terminal.rs` and the end-to-end test). The
    alternative, a reset on the next `bardo-do` after a cool-down, was rejected: it lets the very process the
    breaker stopped go on by waiting, and each round costs the person a sheet. A paused terminal says "paused: too
-   many refusals in a row; the person has to resume it" (exit 7). Ask (sill): a "Resume the terminal" button
+   many refusals in a row; the person has to resume it" (exit 7). Ask (the shell): a "Resume the terminal" button
    in the control centre that calls `Control.Resume`; until it exists the person's ways back are `systemctl
    --user restart intentd` or logging out.
 7. **The terminal's session is in the `desktop` Space** (the implicit session of every role without a session
@@ -234,16 +234,16 @@ Built and tested on a private `dbus-daemon` (nothing of the real session is name
   progress itself); a timeout is `AppFault::TimedOut`. `docket_provider::serve_on` / `serve` serve a provider and
   answer only intentd (every member but `Summon`). The mail app of the tests is docket-fake's `FakeMail`
   behind it.
-- **The sheet** (`SheetConfirmer`): `Confirm1` is asked only when its owner plays the `confirm` role; no sill, an
-  untrusted owner, a sill that vanishes or never answers is a dismissal or an expiry, never an allow. The
-  Request object sill returns must send `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`.
+- **The sheet** (`SheetConfirmer`): `Confirm1` is asked only when its owner plays the `confirm` role; no shell, an
+  untrusted owner, a shell that vanishes or never answers is a dismissal or an expiry, never an allow. The
+  Request object the shell returns must send `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`.
 - **Logout** (`intentd/src/logout.rs`): `SessionRemoved` of logind on the system bus ends the terminal sessions
   (the session of `XDG_SESSION_ID`, any session when it is unknown); the unit is `PartOf=graphical-session.target`.
   Tested against a fake logind on the private bus.
 - **Files:** `FileGrants` (atomic, a damaged file is no grants), the manifests of `$XDG_DATA_HOME` and
   `$XDG_DATA_DIRS` (`bardo/intents/*.toml`, the first directory wins), `dist/intentd.service`, `dist/intentd.toml`.
 - **`bardo-do` end to end** (`docket-cli/tests/e2e.rs`): the real binary, intentd's `start`, a fake mail provider,
-  a fake sill `Confirm1`: a read exits 0, a write asks and the answer decides, "from the terminal" skips the next
+  a fake shell `Confirm1`: a read exits 0, a write asks and the answer decides, "from the terminal" skips the next
   ask until the control centre revokes it, a hidden action exits 3, three refusals pause it (exit 7) until
   `Control.Resume`, `undo --last` reaches the app, and with intentd stopped every call exits 6.
 
@@ -305,7 +305,7 @@ Built in the w4-docket fill (each with tests on a private bus, a scripted inferd
 Not built yet, and what each blocks:
 
 1. ~~`Reader::extract` carries no session~~: closed in w5-docket (see "The w5-docket fill").
-2. **sill** must serve `Confirm1` and draw `OnceOrFromTerminal` (ask 3), and `bardo-do` over a login needs the
+2. **the shell** must serve `Confirm1` and draw `OnceOrFromTerminal` (ask 3), and `bardo-do` over a login needs the
    `Control.Resume` button (item 6 above).
 3. ~~`Request.Proceed` answers `Malformed`~~: a watched `Gate.Check` implements it (w5-docket). On a request that is
    not a watched gate check it still answers `Malformed`: nothing waits for it.
@@ -412,7 +412,7 @@ Open, and the asks they make (nothing was edited in the other crates beyond the 
     the row, read by the hosting daemon). `McpFault` lost `Copy`.
 
 Seams served: companiond to intentd (`Session.*`, `Run.Perform`, `Message.*`) and to inferd
-(`Open` with `Need::Llm`), the shell and sill through `Companion1`; actions-mcp to intentd through
+(`Open` with `Need::Llm`), the shell and the shell through `Companion1`; actions-mcp to intentd through
 `Intents::perform`. Scenarios that prove them later (`~/rs-wt/integration/MAP.md`): the double-tap summon
 that reads mail and answers with a handle; a follow-up task an hour later seeing the last episode; the
 user redirecting a run and the front agent quoting them; two Spaces with a labelled message and a
@@ -609,8 +609,8 @@ Branch `f4-e2e-3`. Since porter W2c inferd and memoryd name callers by `/proc/<p
 test process cannot satisfy. Both daemons are built with their test-only `test-proc-root` feature (memoryd also
 `test-keys`) and run with `INFERD_PROC_ROOT` / `MEMORYD_PROC_ROOT` = `<scratch>/proc`. `World` writes
 `<scratch>/proc/<pid>/cgroup` for each daemon it spawns (`.../app.slice/<name>.service`) and for the test
-process as sill (`sill.service`). memoryd's sandbox is now ON (no `MEMORYD_SANDBOX=off`); its callers file
-(`memory-callers.toml`) has rows for intentd, sill, companiond and readerd; `inferd.toml` names memoryd, intentd,
+process as the shell (`shell.service`). memoryd's sandbox is now ON (no `MEMORYD_SANDBOX=off`); its callers file
+(`memory-callers.toml`) has rows for intentd, the shell, companiond and readerd; `inferd.toml` names memoryd, intentd,
 companiond and readerd by unit. The reader-class assertion is back (flow c: the reader's one audit entry is class
 `Mail`). `ACCEPT_RECORD=1` makes the replay engine record request bodies, printed when the world drops.
 - Mailo's real provider mode was not built: see the mailo ask below.
@@ -673,7 +673,7 @@ marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo'
   `options a{sv}` (the reserved `traceparent`) on every call that starts work.
 - **`Companion1`** gains `Roster()`, `Front()` and `RosterChanged()` beside the SPEC list; it still
   has no presence, undo, activity or pause member (asserted by a test).
-- **Caller roles are a set**: `CallerId.roles`, because sill is the launcher, the confirm server
+- **Caller roles are a set**: `CallerId.roles`, because the shell is the launcher, the confirm server
   and the control centre; a call acts in the first of its roles that may make it (`acting_role`).
 - **`tighten` takes the planned stages** (`tighten(ruling, planned, verdicts)`), so a partial
   verdict list can never run a call; **`note(breaker, decision, limits)`** takes the limits, and
@@ -755,7 +755,7 @@ builds the connection first and passes it here.
 ## f4-docket-2: edges and renames
 
 - **`agent.mcp.expose` and ds-settings.** docket's boundary table does not allow Bardo's `ds-settings` (the `agent`
-  key rows are `docket-core::SETTING_ROWS`, the keys are sill's). actions-mcp therefore reads
+  key rows are `docket-core::SETTING_ROWS`, the keys are the shell's). actions-mcp therefore reads
   `$XDG_CONFIG_HOME/docket/settings.toml` (`[agent.mcp] expose = "on"`) with a small lenient reader
   (`actions-mcp/src/settings.rs`) and docket ships a static design/22 schema, `dist/settings/docket.settings.toml`
   (`actions-mcp --write-schema <dir>` writes it). Question for Bardo: should docket depend on `ds-settings` (derive
@@ -802,7 +802,7 @@ builds the connection first and passes it here.
      (`ManifestError::OpenMissing(kind)`) and the shape of any `<kind>.open` of a kind the manifest declares
      (`ManifestError::BadOpen(action)`), so mailo's live-searched `mail.thread` (not_indexed) is not broken today; it must
      add `mail.thread.open` (and `mail.draft.open`) before the launcher offers Enter on a mail hit.
-   - sill: on Enter for a Things row of `Hit { entity }`, send `Run.Perform` as the launcher with
+   - The shell: on Enter for a Things row of `Hit { entity }`, send `Run.Perform` as the launcher with
      `CallRequest { action: ActionRef { app: entity.id.app, name: open_name(&entity.id.kind) }, target:
      TargetValue::Entities(vec![entity.id]), args: Args::new(), origin: Origin::Launcher }`, no session. Effect Read by
      the person: no sheet. If the app declares no `<kind>.open` (`Registry` has the manifests; `Manifest::open_of`),
@@ -838,7 +838,7 @@ builds the connection first and passes it here.
      the person. No callers file is read: intentd has no unit rows (porter's `CallerTable` is passed empty); a
      daemon that is a service owns a well-known name, which already names it.
    - Tests: `peer/tests.rs` (a table of names x cgroup facts; the cgroup leaves over a fixture proc tree),
-     `tests/it/identity.rs` (over a private bus with a fake proc root: sill's token goes through, a nameless
+     `tests/it/identity.rs` (over a private bus with a fake proc root: the shell's token goes through, a nameless
      connection is cli / plain app / nobody by its leaf).
 2. **`INTENTD_PROC_ROOT` / feature `test-proc-root`** (`intentd/src/procroot.rs`, the same three guards as memoryd and
    inferd): off by default; `scripts/check-boundary.sh` fails if `cargo tree -p action-daemon` shows a `test-` feature in a
@@ -863,10 +863,10 @@ builds the connection first and passes it here.
    Tests: `docket-router/tests/it/activation.rs` (launcher gets it through; cli, field, companion, mcp dropped; wire
    form), `intentd/tests/it/identity.rs` (launcher token crosses the real bus; the cli's is dropped),
    `intentd/tests/it/link.rs` (the token reaches a real provider through `DbusLink`).
-4. **The shell is `sill.service`.** porter's caller table names the shell by that service unit alone (a scope never
-   carries a fixed role; there is no `sill-shell.scope`). docket-accept's fake proc root puts the fake shell in
-   `sill.service` with its main pid registered (`proc/units/sill.service`), and memoryd's callers fixture has the one
-   `sill.service` row. The daemons' own caller checks move onto porter's `ProcCallers` (see the callers entry).
+4. **The shell is `shell.service`.** porter's caller table names the shell by that service unit alone (a scope never
+   carries a fixed role; there is no `bardo-shell.scope`). docket-accept's fake proc root puts the fake shell in
+   `shell.service` with its main pid registered (`proc/units/shell.service`), and memoryd's callers fixture has the one
+   `shell.service` row. The daemons' own caller checks move onto porter's `ProcCallers` (see the callers entry).
 
 ## f4-docket-skills: skills (agent-spec skills.md)
 
@@ -904,8 +904,8 @@ What landed: the skills format, discovery, validation and the three places they 
   shipped `desktop-basics` is under 1 KiB; owners should keep bodies far below the cap.
 - **`docket-eval --check-skills <dir>... [--manifests <dir>]...`** walks each directory for `skill.toml` files and for
   manifests (the `--check-app` rules, which include `dist/intents/*.toml`), also reads `dist/intents/*.toml` under
-  each directory and the `intents` directory beside a directory named `skills` (so naming `~/sill/dist/skills`
-  finds `~/sill/dist/intents`), adds every `*.toml` of each `--manifests` directory, and adds the two built-in
+  each directory and the `intents` directory beside a directory named `skills` (so naming `~/shell/dist/skills`
+  finds `~/shell/dist/intents`), adds every `*.toml` of each `--manifests` directory, and adds the two built-in
   manifests. A manifest reached twice is read once. Pass every repo whose actions the skills use. A missing
   action fails; an action Hidden from the companion is a note.
 - **`bardo-do skills`** lists the installed skills from `$XDG_DATA_*`, each marked offered, hidden (missing action,
@@ -959,7 +959,7 @@ section 9.2). docket's covers every `agent.*` key of section 3.27, and the daemo
    `SETTING_ROWS` still lists them under the older names (`agent.task_policy.max_s`, `agent.budget.wall_s`,
    no `spend_microusd`) and is read by no daemon; it closes when section 3.27 and the table are made one list
    (the new crate's table is the one the schema is held to).
-7. **Consumers' lockfiles** (cua, sill) gain `docket-settings` and `notify` when they next update docket:
+7. **Consumers' lockfiles** (cua, the shell) gain `docket-settings` and `notify` when they next update docket:
    `cargo update -p action-daemon` (cua also takes it through its dev-dependency on intentd).
 8. **Tests.** The schema parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand
    from a scratch project: a dev-dependency on ds-settings would unify zbus's executor features across this
@@ -968,14 +968,14 @@ section 9.2). docket's covers every `agent.*` key of section 3.27, and the daemo
    router and waits on the watch's own event; `docket-router/tests/it/live_settings.rs` changes strictness under
    a live router; actions-mcp's edge follows a changed file.
 
-## f4-docket-calleffect: per-call effect (sill G372)
+## f4-docket-calleffect: per-call effect (the shell G372)
 
 An action's declared effect is a **ceiling**; an action may opt in to a per-call effect, so one action
-(sill's `shell.menu.activate`) does not have to ask for every call.
+(the shell's `shell.menu.activate`) does not have to ask for every call.
 
 - **Manifest.** `per_call = "classified"` on an `[[actions]]` row (`ActionDecl::per_call: PerCall`, serde
   default `declared`, not written when it is the default; existing files and `..`-less Rust literals other than
-  docket's own test fixtures are unaffected, and no `ActionDecl` literal exists in sill, cua, the memory service or mailo).
+  docket's own test fixtures are unaffected, and no `ActionDecl` literal exists in the shell, cua, the memory service or mailo).
 - **Classify.** For an opted-in action called by an agent session, the router first asks the provider
   (`IntentProvider::classify`, `IntentProvider1.Classify(invocation s, options a{sv}) -> s`, the answer is a
   `Result<CallClass, AppRefusal>` in JSON; `CallClass` is `{"kind":"effect","v":"read"}` or
@@ -1041,7 +1041,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
   exits **8** (new code, `needs_you`) with "answered in the shell": `bardo-do` is not `Confirm1`, nothing answers
   it, and the conversation is left open for the sheet; a finished conversation is closed. A handle in the text is
   printed as `#n` (a terminal may not `Session.Display`). The seam is `companion_client::CompanionTransport`
-  (`DbusCompanion` over the bus; a new crate rather than a module of `docket-client`, so cua's and sill's lock files, which
+  (`DbusCompanion` over the bus; a new crate rather than a module of `docket-client`, so cua's and the shell's lock files, which
   list docket-client's dependencies, do not change); the whole program is `docket_cli::program::execute` over the process's `Process` and the `Buses`
   (`SessionBus`); `main.rs` only collects them, and `accept-bardo-do` builds the same `main.rs`. Tests: `docket-cli/tests/it/ask.rs` (scripted companion over the fake router), `docket-accept/tests/it/terminal.rs`
   (the real `bardo-do` against the real daemons: a read answered, a Forward left waiting for the sheet),
@@ -1060,14 +1060,14 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
   `bardo-do <app> <action>` one call at a time; it cannot answer a confirmation, press a card, or reach a
   subagent. The router's side: `Member::SessionTurn` now permits `Cli` (it was Launcher and Field only), because a
   turn the router did not record is not a turn; such a turn is recorded as the new `TurnSource::Terminal`, not as
-  the launcher's, so a later rule can treat it differently (nothing does yet; sill only constructs `TurnSource`,
+  the launcher's, so a later rule can treat it differently (nothing does yet; the shell only constructs `TurnSource`,
   so adding the variant breaks no match there). `COMPANIOND_PROC_ROOT` (feature `test-proc-root`, ignored with a
   line on stderr in any other build, and now checked by `check-boundary.sh` beside intentd's) lets the acceptance
   run present a process as a terminal; `serve_on_rooted` is the in-process seam.
-- **Cannot work yet, for the demo.** (1) A confirmation cannot be answered without sill's `Confirm1` sheet: a write
+- **Cannot work yet, for the demo.** (1) A confirmation cannot be answered without the shell's `Confirm1` sheet: a write
   (`memory.propose`) stops at "Waiting for your confirmation" (exit 8); reads and plain chat work. (2) The first use
   of a data class in a Space also asks; there is no way to give the standing grant without the sheet. (3) The
-  `desktop` Space may not exist in memoryd on a fresh install (nothing here creates it; sill does): recall and the
+  `desktop` Space may not exist in memoryd on a fresh install (nothing here creates it; the shell does): recall and the
   audit trail may fail softly. (4) A handle in an answer prints as `#n`. (5) Mail, calendar, files: not installed
   (mailo has its own installer). (6) `readerd` is installed but a cloud model is only reached for the classes
   whose floor you lowered. (7) accountd stores the key in the Secret Service: KWallet must be unlocked.
@@ -1091,7 +1091,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
    dismissed and not after.
 4. **How a surface finds an answer's session.** `org.bardo.Companion1.Answer` gained a read-only property
    `Session` (`s`, the `SessionId` text), set before `AnswerAdded` is signalled, so every answer object, whoever
-   started the task, names its session. `AnswerWire`, `FrontTask` and `AskWire` are unchanged. sill reads
+   started the task, names its session. `AnswerWire`, `FrontTask` and `AskWire` are unchanged. The shell reads
    `Session` from the answer object (the same proxy it reads `View` from), then calls `Intents1.Session.Display`
    with it for each handle; the object, and the session, go away on `AnswerRemoved`.
 
@@ -1134,9 +1134,9 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 1. **Routing property.** `org.bardo.Companion1.Answer` gained a read-only property `Routing` (`s`): JSON of
    `Vec<companion_wire::RouteNote { stage, served, why: Vec<WhyWord>, reached: Option<Reached> }>`, the last model turn
    that announced anything (`[]` before one did). Set before `AnswerAdded`, like `Session`. `AnswerWire`, `FooterWire`
-   and `AskWire` are unchanged, so no literal in sill, cua or the memory service breaks.
+   and `AskWire` are unchanged, so no literal in the shell, cua or the memory service breaks.
 2. **The line.** `companion_wire::footer_line(&[RouteNote]) -> String` prints "Heard by Whisper · Answered by Claude
-   Haiku 4.5 via OpenRouter (already loaded)"; sill and the Settings app both call it. Model names are made from the id
+   Haiku 4.5 via OpenRouter (already loaded)"; the shell and the Settings app both call it. Model names are made from the id
    (`model_name`: "claude-haiku-4-5" is "Claude Haiku 4.5"); a catalogue display name would be better when porter has one.
    Done: `RouteNote.name: Option<ModelLabel>` copies porter's `StageNote.name` (the catalogue label, sent on every
    answer's `Answer` note since porter 11651d4), and the line prefers it; the id-made name is the fallback for a model
@@ -1174,7 +1174,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
   `Audio/Source/Virtual` as `Monitor`; `choose_capture` takes `Source` with class `Audio/Source` only; `open_capture`
   refuses any node that is not a `Source` before it connects. A test per layer.
 - Unit file: the sandbox is unchanged except `ProtectHome=tmpfs` with read-only binds of `%t/bus`, `%t/pipewire-0`
-  and `%h/.config/sill` (the bus and PipeWire sockets would otherwise sit under the `/run/user` that `ProtectHome=yes`
+  and `%h/.config/shell` (the bus and PipeWire sockets would otherwise sit under the `/run/user` that `ProtectHome=yes`
   hides). `MemoryDenyWriteExecute=yes` and `LimitMEMLOCK=0` are kept; if PipeWire's client library needs either
   relaxed, the by-hand run will say (a failed `mlock` is logged, not fatal). Still no `[Install]`.
 
@@ -1204,7 +1204,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
 - **Bodies.** Voice1 bodies are `voice_wire::Envelope { vocab, body }` JSON in `s`; a foreign vocabulary or bad JSON
   is `org.bardo.Voice1.Error.Malformed`. The refusals are `VoiceRefusal`'s error names, one to one. The event fd frame
   is a 4-byte big-endian length then the envelope (porter-core's framing with `VoiceVocab`). `wire::{seal, frame,
-  unframe, Unframed, MAX_FRAME}` are exported for sill's client.
+  unframe, Unframed, MAX_FRAME}` are exported for shell's client.
 - Earcons: a two-note blip generated in integers (`earcon_samples`), played on its own stream at 24 kHz when
   `earcons = "on"`.
 
@@ -1216,21 +1216,21 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
    `Transport::prepare(stt_need, DataClass::Voice, tier, interactive options)`; a `Denied` or `Unreachable` reads as
    `Unavailable`, as before. voiced keeps `porter-dbus` only for `ProcCallers` (`peer.rs`); the raw `InferenceProxy`
    is gone. Nothing else is asked of porter.
-3. **sill, the consent source** (ask): voiced decides `VoiceUse` per call by reading sill's `settings.toml` (the
-   unit binds `%h/.config/sill` read-only). It reads the `[voice]` table: `hold_to_talk = "off"` is Off; `consent =
+3. **the shell, the consent source** (ask): voiced decides `VoiceUse` per call by reading the shell's `settings.toml` (the
+   unit binds `%h/.config/shell` read-only). It reads the `[voice]` table: `hold_to_talk = "off"` is Off; `consent =
    "given"` (or a `[voice.consent] given = <unix seconds>` table) is On; `"declined"` is Off; anything else, a missing
-   file included, is NeedsConsent. sill's settings crate should write exactly that (the encoding of `VoiceConsent`
-   was not frozen), or say another and voiced changes `use_of_settings`. If sill would rather push consent, the XML
+   file included, is NeedsConsent. The shell's settings crate should write exactly that (the encoding of `VoiceConsent`
+   was not frozen), or say another and voiced changes `use_of_settings`. If the shell would rather push consent, the XML
    needs a shell-only `SetUse` member: say so and it is added with its introspection test.
-4. **sill, the shell side of `Begin`** (ask): body is `Envelope<VoiceBegin>`; the reply is the utterance path and an
+4. **the shell, the shell side of `Begin`** (ask): body is `Envelope<VoiceBegin>`; the reply is the utterance path and an
    fd of length-prefixed `Envelope<VoiceEvent>` frames; the shell must hold a bus name listed under `shell` in
    `voiced.toml` (`org.bardo.Shell` in `dist/voiced.toml`). `Release` ends the hold; the daemon keeps the mic 250 ms
    of captured audio longer; the shell cancels with `Cancel(cause s)`, a sealed `CancelCause` (`escape`, `other_input`,
    `focus_lost` or `shell`; `superseded` and `too_long` are the daemon's own and are refused `Malformed`); the
    transcript is discarded whatever the cause. Refusals come as errors named `org.bardo.Voice1.Error.*`
    (`NeedsConsent` is the cue for the consent sheet; `MicUnavailable` before anything opens when there is no physical
-   source). sill must subscribe to `Ended` and `Finished` before calling (unicast, nothing is replayed).
-5. **The consent sheet** is sill's alone; voiced only refuses with `NeedsConsent` and never opens the mic first.
+   source). The shell must subscribe to `Ended` and `Finished` before calling (unicast, nothing is replayed).
+5. **The consent sheet** is the shell's alone; voiced only refuses with `NeedsConsent` and never opens the mic first.
 
 ### Decisions beyond the spec
 
@@ -1254,7 +1254,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
   is a physical `Audio/Source` (a monitor, a sink or a missing node is skipped, whatever the metadata says), else the first
   physical source. The PipeWire device reads the `default` metadata object (`default.configured.audio.source`, preferred,
   then `default.audio.source`; JSON `{"name": "<node.name>"}`) through `AudioDevice::default_source` (a provided method
-  returning none, so fakes need nothing). Voice1 XML is unchanged. Sill's settings could later carry `input` (a
+  returning none, so fakes need nothing). Voice1 XML is unchanged. The shell's settings could later carry `input` (a
   `voice.input` key by node name) and write it to `voiced.toml`; nothing asks for it yet.
 - On the owner's machine today the `default` metadata object names a default sink but **no default source** (neither
   key is set; `pw-metadata -n default` shows only the two sink keys), so voiced still falls to the first physical source,
@@ -1523,7 +1523,7 @@ desktop's extras are additive. docket's portable core is an in-app agent.
 - `docket-client` was already split: `dbus` (the transport) pulls zbus, nothing else
   does (`serve` and `serve_on` have since moved to `docket-provider`, see lane D0.15). It is now `default = ["desktop"]` with `desktop = ["dbus"]` (design/36: the app-level switch, implied by the D-Bus client; `dbus` stays the transport feature) so a consumer outside the
   workspace is unchanged, while the workspace declares it with `default-features = false` and each
-  desktop crate names `dbus` (as sill already does), so every in-workspace build is what it was.
+  desktop crate names `dbus` (as the shell already does), so every in-workspace build is what it was.
 - `docket-planner` (new, portable): companiond's `PlannerModel`, `Catalogue`, prompt rendering, `step_text` (loop-guard) and
   `read_call` moved out unchanged, generic over any `porter_client::Transport`. `PlannerModel::on_bus`
   is gone (an inherent impl cannot live in another crate); companiond writes
@@ -2364,7 +2364,7 @@ turn's updates and the app's calls equal in both.
   front pointer still rebuild after a restart from the old `companion.session.*` notes (`recover`),
   and its lock is tokio's, `NativeHost`'s a futures mutex. Moving the roster to `Session.Stored` and
   the lock across is the next lane; `Session.Stored` is the member it needed.
-- **Sheets for an editor session over the bus.** (Closed, see below.) The router in intentd asked sill's `Confirm1`; no
+- **Sheets for an editor session over the bus.** (Closed, see below.) The router in intentd asked the shell's `Confirm1`; no
   confirmer handed a request to the editor's host, so `LiveHost` uses `NoDesk` and the editor is
   told "waiting on the desktop" (the S3 behaviour). `EditorDesk` is the in-process half: an
   `InAppAgent`-style router can route an editor session's sheets to it today. The bus half needs a
@@ -2385,24 +2385,24 @@ Closed by "Editor sheets over the bus" below: the sheets-for-an-editor bullet, a
 
 ## Editor sheets over the bus (S2, second part)
 
-A sheet for a call in an editor's session no longer goes to sill.
+A sheet for a call in an editor's session no longer goes to the shell.
 
 - **The router names the route.** `ConfirmRequest.editor: Option<EditorRoute>` (`client`, the app behind the
   editor's connection as the router saw it, and `session`), set from `Who::editor` for a call and from the
   session record for the "Allow more for this task" sheet; absent for everything else and for a computer-use step.
-  It is skipped when absent, so sill's wire is unchanged.
+  It is skipped when absent, so the shell's wire is unchanged.
 - **intentd** (`SheetConfirmer`): a request with a route goes to `Confirm1` on the bus name `client`, trusted only
   while its owner plays the `editor` role (which, for `org.bardo.Acp`, is the `AcpGate` of the previous section).
   The surface of every open sheet is remembered by id so a withdrawal finds it.
 - **docket-acp-bin** serves `Confirm1` at the usual path under its own name (`ConfirmObject` over an
   `EditorDesk`); the answer is the usual `Response` signal. Only the owner of `org.bardo.Intents1` may ask or
   withdraw. The receipt is minted in the acp process (`SheetConfirmer` of docket-inapp, input proof
-  `SheetFallback`): the same trust as an in-app sheet, and the same as sill's, whose receipt also arrives over
+  `SheetFallback`): the same trust as an in-app sheet, and the same as the shell's, whose receipt also arrives over
   the bus.
-- **If the acp process is gone, or not trusted: the sheet ends `Expired`, and is not moved to sill.** The call
+- **If the acp process is gone, or not trusted: the sheet ends `Expired`, and is not moved to the shell.** The call
   is refused. Reasons: the editor that made the call has left, so nothing receives the answer, and a sheet on the
   desktop would ask the person about a call whose editor they cannot see; and with the setting off the name is
-  nobody, which must not turn into a desktop prompt. Never an allow. (A sill sheet is still a dismissal.)
+  nobody, which must not turn into a desktop prompt. Never an allow. (A shell sheet is still a dismissal.)
 - **The host shows a sheet when the desk is handed it** (`SheetDesk::next_sheet(session)`), not only when the
   router's `NeedsYou` signal arrives, because the two travel by different routes and the router can ask while it
   records a turn. `NativeHost::next_event` races the desk against the backend; a `NeedsYou` for a sheet the desk
@@ -2425,7 +2425,7 @@ A sheet for a call in an editor's session no longer goes to sill.
   before the change it failed about one run in five to eight.
 - Tests: `docket-accept/tests/it/acp_sheets.rs` (the editor sees the sheet as a permission request, allow_once
   performs, reject refuses, a sheet asked while a turn is recorded reaches the editor), `acp_confirm.rs` (the
-  bus half on a private bus: Once/Always/Refused, setting off, process gone and sill not asked, a stranger
+  bus half on a private bus: Once/Always/Refused, setting off, process gone and the shell not asked, a stranger
   refused), `docket-inapp` desk tests, `docket-router` `asked_widenings`.
 
 ## Editor policy (R8)
@@ -2822,10 +2822,10 @@ tests used them; the table's cases are covered by `standing.rs` and the router's
 `docket-agent`; it moved out of `docket-launch`, whose boundary may not reach Cedar through `docket-inapp`'s sheet). It owns
 `org.bardo.AcpAgent`, serves the pseudo-app's `IntentProvider1` (intentd is the only caller), and talks to intentd as
 `acp_agent`. By default the session asks for no route, so the router's sheet is the desktop's, through intentd's
-confirmer (sill's `Confirm1`), and the host sees nothing of it. With `--tty` (`Fallback::Terminal`) the host opens the
+confirmer (the shell's `Confirm1`), and the host sees nothing of it. With `--tty` (`Fallback::Terminal`) the host opens the
 session with `SheetSurface::Host`; the router sets `ConfirmRequest.editor` (the field name stays; it names whoever shows
 the session's sheets), intentd's `SheetConfirmer` sends the sheet to the host's `Confirm1` while the host's name plays
-`acp_agent` (an unreachable or unconfigured host expires the sheet; it is never moved to sill), the sheet comes out of
+`acp_agent` (an unreachable or unconfigured host expires the sheet; it is never moved to the shell), the sheet comes out of
 `AgentHost::next_event` as `BackendEvent::Confirm`, and the terminal answers through `answer_sheet`. Without the flag
 the process serves no `Confirm1` object, the host asks for no route (`SheetSurface::Desktop`) and its desk is never
 read; tests pin that the router names no route, that no sheet comes out of the host, and that the desktop's confirmer
@@ -2948,10 +2948,10 @@ The S4 hostile corpus ran unchanged and every case still ends safely.
 3. `~/.config/docket/agents.toml` as S4. Build with `cargo build -p agent-acp-bin` (the binary is now `docket-agent`
    of `docket-acp-bin`; `docket-net-forward` still sits beside it).
 4. A policy writer and, ideally, reviewer models should be configured (inferd), or every judged act asks.
-5. `docket-agent claude-code --cwd ~/some/scratch/project`. Type a request. Expect sill's sheet (not a terminal
+5. `docket-agent claude-code --cwd ~/some/scratch/project`. Type a request. Expect the shell's sheet (not a terminal
    prompt) for each write the task does not cover, each command and each permission request; "Always allow ..." appears
    where the rules allow it. Settings' standing-grant page lists the program's grants and revokes them.
-6. `--tty` only as a fallback if sill is not up: the sheets come to the terminal as before.
+6. `--tty` only as a fallback if the shell is not up: the sheets come to the terminal as before.
 7. Things to try: a write outside the project is refused with no sheet; read a file then ask it to run a command that
    uses a path or token from it (asks, no "always"), or `curl` (asks, never "always"), or `cargo test` (asks, "always"
    offered); allow "always" for an edit in `src/`, edit again (no sheet, `bardo-do` audit shows `StandingUsed`),
@@ -3473,7 +3473,7 @@ Evidence: `/tmp/docket-live.xYM2Fo/out/smoke/flow-c.run*of5.trace.txt` (Kimi K3,
 
 **Threat analysis.** The risk is laundering: an address written by an attacker reaching an outbound action as a trusted recipient. (1) The planner still never reads the address: it gets a handle and the sheet shows the address quoted as mail. (2) The label of the sender handle is untrusted whatever the app says: `third_party` relations are floored in the router, and every relation is joined with the labels of the handles it was found through, so a "trusted" relation cannot clean a thing found in untrusted content (tests: `what_a_relation_takes_from_somebody_elses_words_is_untrusted_whatever_the_app_says`, `a_thing_found_through_untrusted_content_is_untrusted_even_by_a_trusted_relation`). (3) The send meets the unchanged sink rules: `sink_integrity` reads the handle's label, so the recipient sink is untrusted, the task policy's `recipients` (which trace to the person) do not cover it, Cedar asks with `UntrustedSink(Recipient)` and the sheet is once-only with the address quoted (`a_recipient_chosen_through_a_relation_asks_like_any_untrusted_recipient`; accept gate `flow_c_a_reply_to_the_related_sender_is_a_handle_and_still_asks_quoted`). A reviewer is never consulted for it. (4) The resolve call is itself tainting: the untrusted answer is absorbed into the session like any untrusted result, so every later write in the session is `Tainted`. (5) An app that answers with the wrong kind or too many things is refused. (6) What this does not do: it cannot make the person's reply safe to send without asking, and does not try to; a sender who is also a saved contact is still named by the contact key but is still untrusted, because the choice of that contact came from the message. A relation the app declares `app_authored` over a trusted source gives a trusted handle (the owner of a file the person chose); that is the app's declaration and is as strong as its manifest.
 
-**Consumer impact.** All additive: `EntityDecl.relations` and `ActionCard.related` are `serde(default)` and skipped when empty; new public items `RelationDecl`, `Cardinality`, `RelationName`, `RELATION_ARG`, `related_name`, `Manifest::related_kind`, `EntityDecl::{related_action, relation}`, `ManifestError::{DuplicateRelation, RelatedDeclared}` (a new variant of an exhaustive enum: a consumer that matches `ManifestError` without a wildcard must add two arms), `TOOL_RELATED`. A consumer that builds `EntityDecl` or `ActionCard` as a struct literal (sill, anyview, cua, mailo) must add `relations: vec![]` / `related: vec![]` when it next moves its docket pin; none reads a field that changed. A manifest that validates now has more actions than it declares if it declares relations (`ValidManifest::manifest().actions`), and nothing else about validation changed for a manifest without them. No wire (`Intents1`, `IntentProvider1`, `Companion1`) change.
+**Consumer impact.** All additive: `EntityDecl.relations` and `ActionCard.related` are `serde(default)` and skipped when empty; new public items `RelationDecl`, `Cardinality`, `RelationName`, `RELATION_ARG`, `related_name`, `Manifest::related_kind`, `EntityDecl::{related_action, relation}`, `ManifestError::{DuplicateRelation, RelatedDeclared}` (a new variant of an exhaustive enum: a consumer that matches `ManifestError` without a wildcard must add two arms), `TOOL_RELATED`. A consumer that builds `EntityDecl` or `ActionCard` as a struct literal (the shell, anyview, cua, mailo) must add `relations: vec![]` / `related: vec![]` when it next moves its docket pin; none reads a field that changed. A manifest that validates now has more actions than it declares if it declares relations (`ValidManifest::manifest().actions`), and nothing else about validation changed for a manifest without them. No wire (`Intents1`, `IntentProvider1`, `Companion1`) change.
 
 **Open.** A provider's `Perform` of `<kind>.related` is still its own code; a helper that answers it from the declaration is possible when a second real app declares relations. `ResultShape::Entities` of the derived action names only the first relation's kind. `docket-inapp` and `docket-kit` use the same planner and so get the tool; neither has a relation to test with. The two `terminal::bardo_do_ask_*` tests of docket-accept fail in this sandbox with `only the shell or a terminal speaks for the person` (intentd ignores `INTENTD_PROC_ROOT` without its test feature): an access error on the bus, in code this change does not touch; not checked against the base commit.
 
@@ -3530,7 +3530,7 @@ Open, each needs an interface another repo or the wire owns:
 - The companion keeps the summary in `TaskRuntime`, not the log: writing a `Compacted` entry needs a
   router request (a `Session` note that the router checks, `covers` within what it logged and
   `taint` at least the session's, then appends with `wal.note`). The same request is the "summarise
-  up to here" the person can ask for; it is a new typed request on the sill-facing session API, so it
+  up to here" the person can ask for; it is a new typed request on the shell-facing session API, so it
   waits for that wire change. The router's `rebuild` still restores whole `turns` and `history`; it
   should keep `plan.summary` on the record and hand `live_*` to the view.
 - `CacheBreak` is not sent: porter's `ChatRequest` has no slot for it (the model layer's `TurnRequest` has
@@ -3547,7 +3547,7 @@ names the unit or app scope, the daemon's callers file names the role) and check
 owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
 
 - **Role map per daemon** (app, role, in `dist/<daemon>-callers.toml`):
-  - intentd (`intentd-callers.toml`): `org.bardo.Shell` `sheet_host` = `sill.service` (the roles `launcher`, `confirm`,
+  - intentd (`intentd-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` (the roles `launcher`, `confirm`,
     `control` need it); `org.bardo.Cua1` `cua` = `cuad.service` (`cua`); `org.bardo.Companion1`, `org.bardo.Reader1`,
     `org.bardo.ActionsMcp` `agent` = their `.service` units (`companion`, `reader`, `mcp`); `org.bardo.Acp`,
     `org.bardo.AcpAgent` `agent` = the scopes `docket-acp.scope`, `docket-agent.scope` (`editor`, `acp_agent`). `intentd.toml`
@@ -3557,9 +3557,9 @@ owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
   - readerd (`readerd-callers.toml`) and docket-acp's / docket-agent's `Confirm1` (`acp-callers.toml`): `org.bardo.Intents`
     `agent` = `intentd.service`, the only caller (`INTENTD`). Provider apps (`docket_provider::serve_on`) answer the same
     one-row table, built in (`docket_dbus::callers::INTENTD_ONLY`); `serve_on_with` takes another `Identity`.
-  - companiond (`companiond-callers.toml`): `org.bardo.Shell` `sheet_host` = `sill.service` speaks for the person; a
+  - companiond (`companiond-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` speaks for the person; a
     terminal's child that nothing names and that owns no name of its own may open, ask, close, cancel and read.
-  - voiced (`voiced-callers.toml`): `org.bardo.Shell` `sheet_host` = `sill.service` begins; an app attaches as the app its
+  - voiced (`voiced-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` begins; an app attaches as the app its
     scope or Flatpak metadata names (it was the owner of the routed name).
 - **Addressing, not trust** (kept): `docket-client`'s `awaiting.rs` and `watch_bus.rs` resolve the owner of the service
   they just called to accept its `Response` signal only from the connection the call went to; `intentd`'s
@@ -3670,9 +3670,9 @@ The planner's role (`RoleText`) is where the helper's role and the job's goal ar
 `with_model`).
 
 **Public API changes (who is affected).** `docket-core`: `helper` module; `SessionOpen::helper`
-(every literal gains `helper: None`); `DenyCode::OwnedByAnotherJob` (sill matches on
+(every literal gains `helper: None`); `DenyCode::OwnedByAnotherJob` (the shell matches on
 `DenyCode`: it must handle it); `NoteAsk::Helper`, `AuditRecord::Helper` (a consumer that matches
-`AuditRecord` exhaustively: sill, cua); `Roster::helpers`, `HelperRosterLine`; new dependency
+`AuditRecord` exhaustively: the shell, cua); `Roster::helpers`, `HelperRosterLine`; new dependency
 `porter-infer`. `docket-router`: `HELPER_POST_JOB`, `HELPER_PROPOSE`, `SessionRecord::helper`.
 `docket-planner`: `PlannerModel::{with_open_options, set_role}`, a "Helpers the person keeps"
 section. `docket-tasks`: `HelperDesk`, `Companion::{with_desk, set_desk, open_job, run_job}`,
@@ -3771,7 +3771,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lanes D0.3 and D0.23 (2026-10-28)
 
 - `docket-session`'s test code (`contract`, `fake`, `fake_host`) is behind the `testing` feature. Only dev-dependencies turn it on (docket-router, docket-memory, docket-tasks, docket-acp, and docket-session's own tests); `docket-fake` and `docket-accept`, which are test crates, turn it on in their dependencies. `docket-eval` links `docket-fake`, so a `docket-eval` build also enables it.
-- `docket-kit` is deleted. Nothing outside docket used it (checked in sill, the Settings app, files, mailo and cua on origin/master); `docket-inapp` named it only in a doc example, which is gone. `InAppAgent::companion_link`, `record_turn`, `end_recorded` and `RecordedTurn` existed only to feed it and are deleted with their test and the `person` link; no other repo called them.
+- `docket-kit` is deleted. Nothing outside docket used it (checked in the shell, the Settings app, files, mailo and cua on origin/master); `docket-inapp` named it only in a doc example, which is gone. `InAppAgent::companion_link`, `record_turn`, `end_recorded` and `RecordedTurn` existed only to feed it and are deleted with their test and the `person` link; no other repo called them.
 
 ## Layering lane D0.7 (2026-10-28)
 
@@ -3797,8 +3797,8 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lane D0.12: companion-core (2026-10-28)
 
 - `companion-core` (pure) is new. It holds what companiond decided over values: `conclude` and its types, the board's kept answers, sentences told and proposals as plain state (`Answers`, `ToldLog`, `Proposals`), the logins and terminal hand-over state (`Logins`, `Terminals`), the helper desk's decisions, the routines' scheduler rules (`ended_events`, `event_asks`, `EventWatch`, `Settle`, `new_routine`), the timer text (`units_of`), the zone text (`offset_of`) and the caller policy (`Speaker`, `Call`, `permits`). companiond keeps the tokio tasks, the bus, the disk writes, the `date` call and the sleep loop, and calls it.
-- `JobSpec`, `JobInput`, `OpenedJob`, `JobEnding` and `JobReport` moved from `docket-tasks` to `companion-core` (`docket-tasks` now depends on it). Nothing outside docket named them (checked in sill, the Settings app, files and cua on origin/master).
-- Typed refusals (H5): the desks now refuse with `companion_core::Refusal`, built from `JobRefusal`, `HandFault`, `ReachFault` and `ScheduleFault` where those exist. The plain sentence is made once, in `companiond/src/words.rs`, with the same words as before, so what sill shows is unchanged. Not done: `HelperReply::Refused(String)`, `SayReply::Refused(String)`, `BroughtBack::Refused(String)` and `RoutineReply::Refused(String)` are still sentences on the wire (companion-wire's lane), and `docket-tasks`' `HelperDesk` defaults still hold `NO_APPS` and `NO_TALK`.
+- `JobSpec`, `JobInput`, `OpenedJob`, `JobEnding` and `JobReport` moved from `docket-tasks` to `companion-core` (`docket-tasks` now depends on it). Nothing outside docket named them (checked in the shell, the Settings app, files and cua on origin/master).
+- Typed refusals (H5): the desks now refuse with `companion_core::Refusal`, built from `JobRefusal`, `HandFault`, `ReachFault` and `ScheduleFault` where those exist. The plain sentence is made once, in `companiond/src/words.rs`, with the same words as before, so what the shell shows is unchanged. Not done: `HelperReply::Refused(String)`, `SayReply::Refused(String)`, `BroughtBack::Refused(String)` and `RoutineReply::Refused(String)` are still sentences on the wire (companion-wire's lane), and `docket-tasks`' `HelperDesk` defaults still hold `NO_APPS` and `NO_TALK`.
 - `hub.rs` (993 lines) is now `hub.rs`, `jobs.rs` and `routine_link.rs`. `routines/units.rs` is `routines/unit_dir.rs` (the disk half). `companiond/src/serve.rs` was already 556 lines and is touched only for an import; its split is not done.
 - Not done: the hand-over types in `docket_core` (`helper`, `routine`, `hand`, `handover`) are still in `docket-core`; moving them is the later part of F1. `companiond::HostLink` (`handoff.rs`) is bus IO and stays. Not verified by a build in the lane that made the change.
 
@@ -3867,7 +3867,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `planner.rs` was 820 lines; the meta tools moved to `meta_tools.rs` and the reply reading to `meta_reply.rs`
   (planner.rs is now 463 lines). `Cargo.lock` was edited by hand (two `porter-client` edges out, the
   planner's dev self-dependency in).
-- sill, the Settings app, files, mailo and cua at origin/master: no use of `PlannerModel` or `docket-planner` (the Settings app's
+- The shell, the Settings app, files, mailo and cua at origin/master: no use of `PlannerModel` or `docket-planner` (the Settings app's
   FINDINGS.md names `PlannerModel::new` in prose only).
 - Not verified by a build in the lane that made the change.
 
@@ -3909,7 +3909,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lane D0.19: voice dedupe against the model layer (2026-10-28)
 
 - `voiced`'s own `Framer` is deleted. `frames::Frames` is a thin adapter over `speech_vad::Framer` (the model layer takes `AudioChunk` bytes and returns a `Vec`; voiced has `i16` chunks and must forget frames not yet stepped when the utterance is wiped, so `Frames` keeps a queue and `clear` empties it). Odd-byte cuts and the sample index are the model layer's. The tests for cutting and clearing moved with it.
-- One `Level`: `frames::wire_level(speech_vad::Level) -> voice_wire::Level` is the only conversion (a `From` is not possible, both types are foreign to voiced). The manual `Level(level_of(..).0)` in `hear.rs` is gone. `voice-wire::Level` is unchanged, so sill and the Settings app need no change.
+- One `Level`: `frames::wire_level(speech_vad::Level) -> voice_wire::Level` is the only conversion (a `From` is not possible, both types are foreign to voiced). The manual `Level(level_of(..).0)` in `hear.rs` is gone. `voice-wire::Level` is unchanged, so the shell and the Settings app need no change.
 - One rate: `voice_loop::CAPTURE_RATE` is now a `speech_provider::SampleRate` (voice-loop, P, depends on speech-provider, pure); `samples_in` and `BUFFER_SAMPLES` read `.0`. The frame size is `speech_provider::FRAME_SAMPLES`; `voiced`'s `FRAME` is deleted. The model layer keeps the 16 kHz rate private in `speech_vad::Framer`, so the constant is still written once here; `frames::tests::the_capture_rate_is_the_rate_the_framer_takes` fails if the two differ. Open: the model layer could export that rate, and `CAPTURE_RATE` would then be a re-use instead of a copy.
 - Callers of `CaptureFormat { rate }` and `AudioRate` pass `CAPTURE_RATE.0`.
 - Still open in the voice area (D4.6 to D4.8): voice seams, voice-client, voice-audio.
@@ -3934,7 +3934,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `UnitDir`, `SystemZone` (the `date +%z` call) and `Timers` moved with `HubHost`, which owns them. docket-helpers is not in `check-portable.sh`: it has no bus dependency, but the systemd timer directory and the `date` call are the desktop's. Its deny row in `check-boundary.sh` is `$EFFECTS`; `tokio` appears only with the feature.
 - `companiond/src/serve.rs` (557 lines) is split: `background` (the beat and the arrival listener) and `serve_entry` (`serve`, `serve_on`, `serve_on_rooted`) left it. The companiond test `serve.rs` (1004 lines) is split into `serve`, `serve_helpers` and `serve_routines`.
 - Tests: `helpers`, `helper_apps` and `routines` moved to `docket-helpers/tests/it` (the first two split into `helpers`, `helper_desk` and `helper_apps`, `helper_apps_terminal`, with their fixtures in `support/`). docket-helpers has its own copy of `support/infer.rs` and a trimmed `support/world.rs`, because companiond's world is built on `Bell` and the bus tests that stay there use it. Bus-level tests (`serve*`, `terminal`, `handoff`, ...) stay in companiond.
-- Users outside this repo: sill, the Settings app, files, mailo and cua name none of `Hub`, `HubHost`, `Routines`, `RoutineDesk`, `Host`, `UnitDir`, `SystemZone` or `Timers` of companiond (checked on origin/master), and none depends on companiond.
+- Users outside this repo: the shell, the Settings app, files, mailo and cua name none of `Hub`, `HubHost`, `Routines`, `RoutineDesk`, `Host`, `UnitDir`, `SystemZone` or `Timers` of companiond (checked on origin/master), and none depends on companiond.
 - Not verified by a build in the lane that made the change.
 
 ## Layering lane D0.21: docket-acp-bin off docket-inapp and docket-router; docket-host (2026-10-28)
@@ -3945,7 +3945,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `docket-acp-bin` reads no environment below `main`: `serve`, `serve_with`, `agent::run`, `serve::run` and `serve::run_with` take the environment closure. `agent::places::Places` reads the data and config directories, home, `PATH`, the runtime directory and the login variables once; `Wiring` carries it as `places`. The KNOWN row `docket-acp-bin env D0.21` is deleted.
 - `agent/serve.rs` (471 lines, not the 645 of the audit; `folders.rs` had already taken `plain_name` and `workspace_name`) is split into the service, `serve/watchdog.rs` (idle end, drain, caller gone) and `serve/object.rs` (the `AgentHost1` object).
 - Not changed: `sandbox::UserSession::from_env()` in `SandboxLimits::probe` reads the environment inside sandbox.
-- Users outside this repo: sill, the Settings app, files and mailo import none of `EditorDesk`, `SheetConfirmer`, `ConfirmSheet` (docket's), `SheetAnswer`, `docket_router::parse` or `RegistryError` (checked on origin/master).
+- Users outside this repo: the shell, the Settings app, files and mailo import none of `EditorDesk`, `SheetConfirmer`, `ConfirmSheet` (docket's), `SheetAnswer`, `docket_router::parse` or `RegistryError` (checked on origin/master).
 - Not verified by a build in the lane that made the change.
 
 ## Layering lane U0.4: dates on chrono (2026-10-28)
@@ -3968,7 +3968,7 @@ Two commits: the harness seams first, then the split.
 
 - `docket-acp-bin`: `agent` is a private module. The lib's entries are `serve`, `entry::docket_agent` (what `src/bin/docket-agent.rs` wires) and, behind the new `testing` feature, `harness`: `harness::acp` (`HarnessSeams`, `serve_with`, moved out of the lib root; `serve` calls a private `serve_on`), `harness::serve` (`HarnessSeams`, `run_with` of `docket-agent --serve`) and `harness::host` (`Hosted`, `Wiring`, `host`, `Places`, `SandboxLimits`, what `docket-live` hosts an agent from). The `remember` tests are unit tests in `agent/remember.rs` now (the module is no longer reachable from `tests/it`).
 - `docket-accept` takes no daemon type any more: `InferdModel`/`InferdWriter` are `docket_models::{TransportModel, TransportWriter}`, `Companiond` is `docket_tasks::Companion<_, _, _, Quiet>` over `docket_planner::PlannerModel` (in `docket-live`, where that code went). The daemons' own entry points (`run_with`, `HarnessSeams`, `ProcRoot`) stay as they were: their lib roots also serve their own `tests/it`, so intentd, companiond and readerd were not given a `testing` module or made private (not done: it would need those tests rewritten as unit tests).
-- `acp_confirm` moved to `intentd/tests/it/acp_desk.rs` (it needs `SheetConfirmer`, `AcpGate`, `IntentdConfig`, `ProcRoot`); it uses intentd's `FakeSill` instead of `docket-accept`'s `Sheet`. intentd gains dev-dependencies on `docket-acp-bin` and `docket-host`.
+- `acp_confirm` moved to `intentd/tests/it/acp_desk.rs` (it needs `SheetConfirmer`, `AcpGate`, `IntentdConfig`, `ProcRoot`); it uses intentd's `FakeShell` instead of `docket-accept`'s `Sheet`. intentd gains dev-dependencies on `docket-acp-bin` and `docket-host`.
 - No library of `docket-accept` or `docket-live` reads the environment: `seams::{trace, proc_root, system_callers, switched_on}` take the environment closure the mains hand in; `Binaries::beside(exe, env)` reads `DOCKET_LIVE_ENGINE_CACHE` into `Binaries::engine_cache` (passed to inferd as `world::InferdEnv`); `bringup::run_cli(args, exe, env)` and `Own::read(env)`. `ACCEPT_RECORD` is gone: `Options::record` (`Record::On`) turns the recording on, so `dev/accept/run.sh` no longer passes it. The KNOWN row `docket-accept env D0.22` is deleted.
 - New crate `docket-live` (A): `live/` (now the crate root: `flows`, `acp`, `corpus`, `attack_planner`, `cli`, ...), `bringup/`, the binaries `docket-live` and `docket-bringup`, and the tests of those (`live_*`, `acp_*`, `hostile`, `pattern_pure`, `bringup`, `warm_identity`). `cargo test -p action-accept` no longer builds them. `keys_home` and `catalog` moved from `live/` to the `docket-accept` root (`world` names them); `runlink` is public for `docket-live`.
 - The daemons `docket-live` and its tests start are `docket-accept`'s `accept-*` binaries, found beside the running program (`Binaries::beside`; the tests take them beside the test binary, `tests/it/support.rs`). `cargo build -p action-accept --bins` has to come first, or a workspace build; `dev/live-smoke.sh`, `scripts/eval-release.sh` and `docs/demo-bringup.md` build both packages. The nextest `hostile-worlds` group names `package(docket-live)`.
@@ -3995,7 +3995,7 @@ Two commits: the harness seams first, then the split.
 - New C crate `voice-pipewire`: `PipeWireDevice` out of `voiced/src/pipewire_device.rs` (598 lines) in `device`, `nodes`, `format`, `capture` and `playback`, plus `default_source` (`DefaultSources`, `name_in`, the two metadata keys). voiced's `pipewire` feature now means this crate.
 - voiced keeps the daemon wiring. The `testing` feature of voiced is gone with the fake. Every moved item has one copy; voiced's tests import the device types from `voice_audio`.
 - `dictate` stays in voiced: `voice-client` (D4.7) does not exist yet. It moves there when that crate lands.
-- sill does not use `FakeAudioDevice` or any voiced device item (grep of `~/sill`, read only); its stand-in voiced is a bus object.
+- The shell does not use `FakeAudioDevice` or any voiced device item (grep of `~/shell`, read only); its stand-in voiced is a bus object.
 - `scripts/check-boundary.sh`: LAYERS rows (`voice-audio` P, `voice-pipewire` C) and RULES rows; `scripts/check-portable.sh` lists `voice-audio`.
 - Not verified by a build in the lane that made the change.
 
@@ -4058,7 +4058,7 @@ Two commits: the harness seams first, then the split.
 - The type rules of this pass (plain Rust first) cover `ALL` lists and `dyn` too.
 - `Member`, `Member::ALL` and `IntentsRequest::member` now come from one `members!` list in `docket-wire` (was a 47-variant enum, a hand `ALL` and a 47-arm `member`). `Member` stays: the router table, intentd's bus-coverage test and the introspection count name it, and no strum-free derive reads simpler.
 - `RoutinePause` is gone: `RoutineState::Paused` holds `PauseWhy` (same JSON). `Reviewed` is `Cost::reviewed: bool`. `Awake` is a `bool`. `ReaderTask::tier()` replaces the reader's `tier_of`. `Refusal`'s five app/host variants are `NotAnApp(AppStep)` and `NoAppHost(AppStep)`.
-- Left alone: the two-arm answers on the bus or in the audit log (`GateAnswer`, `WidenAnswer`, `ClassifyAnswer`, `HandReply`, the helper-app outcomes, `SayReply`, `RoutineReply`, `BroughtBack`, `CallEnd`) and `JobEnd` (it rides in a traced event and reads better named); `KeyHint` and `DryRun` (their values are written in app manifests: `dry_run = "none"`); `GoalSource` (stored on a job), `HelperPhase` and `HelperNeeds` (sill), `HelperRecordKind` (the stored kind key); `CardRecord`/`RoutineRecord` (different JSON); `BudgetKind` (bus; the ladder has distinct conditions); view twins `Here`/`Selection`/`TextTarget` (generics would touch 100+ sites); `ValueSchema`/`ParamType` (different invariants).
+- Left alone: the two-arm answers on the bus or in the audit log (`GateAnswer`, `WidenAnswer`, `ClassifyAnswer`, `HandReply`, the helper-app outcomes, `SayReply`, `RoutineReply`, `BroughtBack`, `CallEnd`) and `JobEnd` (it rides in a traced event and reads better named); `KeyHint` and `DryRun` (their values are written in app manifests: `dry_run = "none"`); `GoalSource` (stored on a job), `HelperPhase` and `HelperNeeds` (the shell), `HelperRecordKind` (the stored kind key); `CardRecord`/`RoutineRecord` (different JSON); `BudgetKind` (bus; the ladder has distinct conditions); view twins `Here`/`Selection`/`TextTarget` (generics would touch 100+ sites); `ValueSchema`/`ParamType` (different invariants).
 
 ## E-D2: permissions, settings and launch (2026-10-28)
 - Done: the network-program table is data (`dist/network-programs.toml`, `NetPrograms`, same programs, wrappers and subcommands; `docket-router` embeds and parses it, `NetReach::of` and `ExecFacts::from_choices` take it); `BreakerState`, `BudgetState`, `NarrowState` and git's `IndexKind` are gone (bools, `StandingScope::is_narrow`, string stems); `GitCause` wraps `GitFault` instead of copying it; the `docket-settings` choice rows read their value by the type's serde name (`parse_into`) instead of a word list joined to a value array by index; `Style::choose` is the one place that picks JSON or text in `docket-cli`; `Bus` is a bool (`needs_bus`); the private `Sight` is a bool.
@@ -4072,10 +4072,10 @@ Two commits: the harness seams first, then the split.
 - F13: `judge_in` takes the ACP program (`Option<&str>`, none for the planner); the judge `Mode` is gone.
 - F16: `AskedPerson` (agent-loop; the only value used outside tests was `No`, so `attention_of` lost the parameter), `Replaced` (`ReachServer::replace` returns `bool`), `Handed`, `Gate`, `Owed`, `Health` (router wal: `Option<Seq>`; acp-bin: `bool`) are gone.
 - F11: the hand-written slugs of `AttackStyle` and `CarrierKind` are gone; the report uses the serde form (`trace::slug`).
-- F17: `MicNow` is `bool` (`UtteranceState::mic_open`, `SpeechState::mic_open`, `SpeechEvent::Mic { open }`); `EndOfAudio` is `SttLink::Cold { end_pending }`. `MicState` and `Speaking` are on the wire to sill and stay.
+- F17: `MicNow` is `bool` (`UtteranceState::mic_open`, `SpeechState::mic_open`, `SpeechEvent::Mic { open }`); `EndOfAudio` is `SttLink::Cold { end_pending }`. `MicState` and `Speaking` are on the wire to the shell and stay.
 - F22: the "which future won" enums `Woke`, `Listened`, `Heard` (docket-acp) and `Woke` (docket-native) are `futures_util::future::Either`.
 - F5: `intentd` answers Memory, Companion and Checkpoints through a `Builtins` trait (`builtin_chain.rs`; blanket over `IntentProvider`) and a `Chain<A, B>`. `Host`, `host_of` and the seven 4-arm matches are gone. No `dyn`. `is_builtin` stays: it also names the external agents' pseudo-app, which is no provider.
-- Skipped: F2 (acceptance apps, flows and cassettes to data: ~60 references across three crates, not safe to move without a build), F3 (`ReportStatus` has a fourth value, `Progress`, and the endings carry different payloads in persisted `LoopState`), F12 (needs the core owner), F19 (neither `action-review` nor `policy-point` may depend on the other; the twin needs a lower home, `docket-permissions-core`), F20 (`SessionEntry::slug` would serialise a whole entry for its tag; `Mode::id` is an ACP constant sill uses), F21 (needs a typed stop in `LoopEffect` read by `docket-tasks` and companiond, and about 15 guard tests), F13's `PlannerMode` (a different axis from `Engine`: `--planner live` with a scripted engine is a usage error).
+- Skipped: F2 (acceptance apps, flows and cassettes to data: ~60 references across three crates, not safe to move without a build), F3 (`ReportStatus` has a fourth value, `Progress`, and the endings carry different payloads in persisted `LoopState`), F12 (needs the core owner), F19 (neither `action-review` nor `policy-point` may depend on the other; the twin needs a lower home, `docket-permissions-core`), F20 (`SessionEntry::slug` would serialise a whole entry for its tag; `Mode::id` is an ACP constant the shell uses), F21 (needs a typed stop in `LoopEffect` read by `docket-tasks` and companiond, and about 15 guard tests), F13's `PlannerMode` (a different axis from `Engine`: `--planner live` with a scripted engine is a usage error).
 - Not verified by a build in the lane that made the change; `cargo fmt --all` ran. `Cargo.lock` was edited by hand for the new edges (policy-point, agent-loop, docket-accept on docket-session).
 
 ## Round B: spend is what the provider reports (2026-10-28)
@@ -4107,7 +4107,7 @@ Two commits: the harness seams first, then the split.
 - New P-tier crate `docket-gate`: the pure steps of a call's way through the router. It holds `facts`, `gate`, `call`, `classify`, `coverage`, `consent`, `prepared`, `standing_ctx`, `standing_facts`, `driven`, `spans`, `confirm`, `argcheck`, `may_make`, `policylog`, `turn_start`, plus `companion_names` and `brief_sheet` (named by `consent`, `may_make`, `confirm` and `prepared`). It depends on `docket-context` and the docket-core family, never on `docket-router`; the router depends on it. It is a separate crate from `docket-gate-wire` (the wire types above `docket-core`).
 - Pure parts split off the mixed files, each a module of the new crate: `terminal` (`held`, `kinds_of`, `grant_policy`, `Revoked`), `limits` (`text_arg`, `choice_arg`, `level_of`, `reach_of`, `rule_limit`), `messaging` (`receiving`, `send_refusal`) and the task entity helpers (`task_entity`, `task_of`) in `companion_names`. The router's files keep only `impl Router`.
 - Left in the router, on purpose: `screen_line` in `messaging` (it calls `messages::inbound_line`, and `messages` stays), `brief` (all `impl Router`; its one helper `plain` is a one-line private fn), `standing` (all `impl Router`), `companion`'s private helpers (`failed`, `param`, `text_arg`, `spawner`, `companion`), which build `AppRefusal`s for the router's own actions and have no other user.
-- No re-exports: the router's `lib.rs` no longer exports `call_step` and friends, `classify_step`, `RunFacts` and the fact builders, `gate`, `Pending`, `GateInputs`, `Revoked` or the companion action names. The importers are the router's modules and its tests (`brief`, `helpers`, `notes`, `terminal`); no other crate in docket named them, and sill, the Settings app, files, cua and mailo name only `Router`, `Seams`, `AppLink`, `GrantStore`, `NoLog` and `AppFault`.
+- No re-exports: the router's `lib.rs` no longer exports `call_step` and friends, `classify_step`, `RunFacts` and the fact builders, `gate`, `Pending`, `GateInputs`, `Revoked` or the companion action names. The importers are the router's modules and its tests (`brief`, `helpers`, `notes`, `terminal`); no other crate in docket named them, and the shell, the Settings app, files, cua and mailo name only `Router`, `Seams`, `AppLink`, `GrantStore`, `NoLog` and `AppFault`.
 - The `pub(crate)` items the router uses are `pub` with docs; `Run` and `Next` got `Debug`, `Run` got `Default`. Items only the new crate uses (`sheet_of`, the whole of `standing_facts`) stay crate-private.
 - Tests: `gate.rs` and `call_step.rs` moved to `docket-gate/tests/it`; the inline tests of `classify`, `spans` and `standing_facts` moved with their modules. Router tests that drive `Router` stay.
 - `docket-router` no longer depends on `url`, `genai-names`, `porter-capability` or `serde`; `sandbox`, `model-provider` and `toml` are dev-dependencies now. Rows added in `scripts/check-boundary.sh` (layers and rules) and `scripts/check-portable.sh`.

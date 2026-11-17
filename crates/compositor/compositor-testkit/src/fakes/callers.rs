@@ -21,7 +21,7 @@ pub fn proven(app: &str, role: &str) -> Proven {
     )
 }
 
-/// The shell (sill).
+/// The shell (the shell).
 ///
 /// # Panics
 ///

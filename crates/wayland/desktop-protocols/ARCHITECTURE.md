@@ -3,7 +3,7 @@
 desktop-protocols holds the desktop's private Wayland protocols, `bardo_*_v1`: the XML, the pure
 wire vocabulary every tier shares, and the wayland-scanner bindings for clients and the
 compositor. It is a leaf: it depends on nothing of ours, so the compositor (the compositor), the shell
-(sill, layer-shell-host), the agent tier (cua, docket, porter's `prov`), the portal (the portal) and
+(the shell, layer-shell-host), the agent tier (cua, docket, porter's `prov`), the portal (the portal) and
 Bardo's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items.
 
@@ -37,7 +37,7 @@ action-core, prov) take default features; Wayland clients take `client`; the com
 | `protocols/bardo-window-v1.xml` | `bardo_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `bardo_window_v1` | every connection | compositor | layer-shell-host, ui-blitz, any app |
 | `protocols/bardo-sensitive-v1.xml` | `bardo_sensitive_manager_v1`, `bardo_sensitive_surface_v1` | every connection, once served | not served yet | layer-shell-host, ui-blitz, any app |
 | `protocols/bardo-agent-v1.xml` | `bardo_agent_manager_v1`, `bardo_agent_lease_v1` | Agent connections, once served | not served yet | cuad |
-| `protocols/bardo-trusted-surface-v1.xml` | `bardo_trusted_manager_v1`, `bardo_trusted_surface_v1` | Shell connections, once served | not served yet | sill |
+| `protocols/bardo-trusted-surface-v1.xml` | `bardo_trusted_manager_v1`, `bardo_trusted_surface_v1` | Shell connections, once served | not served yet | the shell |
 
 A protocol whose Server cell says "not served yet" has no server in the compositor: it is not
 advertised, a client finds no global, and nothing may rely on what its XML promises (PORTAL-14).
@@ -77,7 +77,7 @@ desktop protocol names window, sensitive and agent enums; the shell protocol nam
 | A wire value's code and its Rust type | `src/vocab/<area>.rs`, one `wire_enum!` per XML enum |
 | Code conversion (`code`, `from_code`, `ALL`) | `vocab::WireCode`, written by `wire_enum!` (`src/vocab/code.rs`) |
 | The held modifier keys | `vocab::HeldMods` (`src/vocab/held_mods.rs`); the XML bitfield is still named `mac_mods` |
-| `wl_output.transform` | `vocab::Transform` (`src/vocab/output.rs`), used by the compositor, the desktop client and sill |
+| `wl_output.transform` | `vocab::Transform` (`src/vocab/output.rs`), used by the compositor, the desktop client and the shell |
 | A vocab value's generated twin | `WireCode::to_wire` (`src/vocab/code.rs`) |
 | A tile zone as a target or a mark | `PlaceTarget::zone`, `From<TileZone>` for `PlaceTarget` and `PlacementMark` (`src/vocab/window.rs`) |
 | `RunMode` (docket re-exports it) | `vocab::RunMode` (`src/vocab/agent.rs`) |
@@ -230,8 +230,8 @@ passes the `Connection`); a proxy never enters the state, a key does
 (`ToplevelKey` and the others in `keys.rs`), and `Handles` maps keys back to proxies; types are plain Rust (`bool` for a two-way fact: `Head::enabled`, `Mode::preferred`,
 `supports`); every growing public type is `non_exhaustive` with a constructor.
 
-Consumers: sill maps `DesktopState` into its `DesktopView` (app grouping, most-recently-used
-order and Spaces are sill's); cua's toplevel client moves onto it later; `bardo-compositorctl shot`
+Consumers: the shell maps `DesktopState` into its `DesktopView` (app grouping, most-recently-used
+order and Spaces are the shell's); cua's toplevel client moves onto it later; `bardo-compositorctl shot`
 and the testclient use `DesktopCommand::CaptureOutput` and `Frame::to_rgba8`.
 
 ## 9. Consent: `bardo_shell_v1` version 5

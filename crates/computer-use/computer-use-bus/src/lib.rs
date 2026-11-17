@@ -4,7 +4,7 @@
 //! states and outcomes ([`RunStateSlug`], [`CuaOutcome`], [`ModeSupport`]), the event-log record
 //! ([`CuaRecord`]), the control refusals and who may call which member ([`ControlRefusal`],
 //! [`permits`]). Serde bodies over the vocabulary crates (memory-core, action-core, account-core,
-//! inference-core, prov, computer-use-action) and no capability crate, so sill's models and the D-Bus codec
+//! inference-core, prov, computer-use-action) and no capability crate, so the shell's models and the D-Bus codec
 //! read the same types.
 //!
 //! **One message model.** A run's progress and final result are `provenance::Message`s of kind

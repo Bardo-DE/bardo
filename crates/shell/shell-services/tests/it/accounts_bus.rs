@@ -61,7 +61,7 @@ async fn shell(bus: &PrivateBus) -> Shell {
         }));
     assert!(
         wait_for(&mut notes.state, |n: &NotesState| n.live.server.holder
-            == shell_model::notifications::NameHolder::Sill)
+            == shell_model::notifications::NameHolder::Shell)
         .await,
         "{:?}",
         notes.state.borrow().live.server
@@ -360,7 +360,7 @@ fn shell_under(bus: &PrivateBus) -> (Shell, Voice) {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn the_server_naming_the_notice_sill_posted_signs_in_once() {
+async fn the_server_naming_the_notice_shell_posted_signs_in_once() {
     let Some(bus) = PrivateBus::start() else {
         return;
     };
@@ -376,7 +376,7 @@ async fn the_server_naming_the_notice_sill_posted_signs_in_once() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn an_id_sill_did_not_post_for_the_account_does_nothing() {
+async fn an_id_shell_did_not_post_for_the_account_does_nothing() {
     let Some(bus) = PrivateBus::start() else {
         return;
     };

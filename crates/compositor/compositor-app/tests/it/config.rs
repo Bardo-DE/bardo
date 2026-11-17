@@ -442,7 +442,7 @@ fn the_binary_answers_help() {
 }
 
 /// Each row: what a change in the file does to the settings the compositor runs with. Only the
-/// pointer, the key repeat, the keyboard layout and the night light follow (sill rewrites the
+/// pointer, the key repeat, the keyboard layout and the night light follow (the shell rewrites the
 /// night light's keys when Night Shift is switched); the bindings the keymap gave stay.
 #[test]
 fn the_file_changes_the_pointer_the_repeat_the_layout_and_the_night_light_and_nothing_else() {

@@ -1,4 +1,4 @@
-//! The sheets drawn by the sheet host (sill) over `org.bardo.AccountsSheet1`.
+//! The sheets drawn by the sheet host (the shell) over `org.bardo.AccountsSheet1`.
 //!
 //! The daemon (accountd) is the only caller of `Open`, `Update` and `Close`; the
 //! host answers with `Input` signals. Who counts:

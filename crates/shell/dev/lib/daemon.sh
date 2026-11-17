@@ -28,7 +28,7 @@ in_env() {
 bardo-shell() {
   case "$1 ${2:-}" in
     "debug stats"|"debug capture"|"debug launcher-rows"|"notifications status"|"idle status"|"lock status"|"ping ")
-      sill_patient "$@" ;;
+      shell_patient "$@" ;;
     *) in_env "$BARDO_SHELL_BIN" "$@" ;;
   esac
 }
@@ -36,7 +36,7 @@ bardo-shell() {
 # A call that changes something, made once: it passes when it succeeded or when the daemon only
 # failed to answer in time ("no reply within": the change may well have been made, and the caller
 # then waits for the state it needs); its output goes to stdout.
-sill_sent() {
+shell_sent() {
   local out rc
   out=$(bardo-shell "$@" 2>&1)
   rc=$?
@@ -45,7 +45,7 @@ sill_sent() {
 }
 
 # `bardo-shell ARGS` made up to 6 times while it ends with "no reply within"; stdout and stderr stay apart.
-sill_patient() {
+shell_patient() {
   local err out rc tries=0
   err=$(mktemp "${TMPDIR:-/tmp}/shell-patient.XXXXXX") || { in_env "$BARDO_SHELL_BIN" "$@"; return; }
   while :; do

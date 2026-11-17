@@ -18,7 +18,7 @@ the one check to do before step 2 lands.
 ## 1. Decision and scope
 
 Owner decision, 2026-10-07: the UI kit reads like macOS 10.x. Move the one Look in two steps; no
-Look switch, token-level so Bardo, sill, the Settings app, mailo and anyview move together.
+Look switch, token-level so Bardo, the shell, the Settings app, mailo and anyview move together.
 
 1. **Step 1, Sonoma/Sequoia (macOS 14-15) base.** Inset grouped rounded lists; borderless filled
    buttons and fields (no 1 px grey hairline); larger radii and spacing; a hero icon above a bold
@@ -244,7 +244,7 @@ Step 1: menu radius 10, border -> `--shadow-pop` hairline (shadow), pad 5 around
 Step 2: row 24 -> 28 (M-low), highlight r = menu r - pad = 14 - 6 = 8 (concentric), image
 column **filled when the menu has any icon** (symbols beside items; H: WWDC25 356 "populate
 menus with symbols ... use the symbol once to introduce a group"); font 13; menu r 14.
-The menu bar (sill `menu_bar`): transparent background (no fill, text on the wallpaper with a
+The menu bar (the shell `menu_bar`): transparent background (no fill, text on the wallpaper with a
 subtle scrim in dark) in step 2 (H qualitative: Tahoe menu bar transparent).
 `menus.item_height_px` setting default moves 22 -> 24 -> 28 (key keeps its meaning).
 
@@ -333,7 +333,7 @@ Goldens in Bardo (all must be re-recorded in the lane that changes them, never m
 ds-gallery `--snapshot` images; ui-conformance size-rule tests
 (`tokens/size_rules_tests.rs`, ladder values), `ui-style` token tests, `ui-lint` CSS rules
 that name tokens.
-Consumers: sill (`launcher_card.rs`, `osd.rs`, `switcher.rs`, `screenshot_thumb`, battery
+Consumers: the shell (`launcher_card.rs`, `osd.rs`, `switcher.rs`, `screenshot_thumb`, battery
 snapshot, any test asserting a px rect of a bar/menu/row; grep `row_h|menu_row|titlebar`),
 The Settings app (crates/settings-app-ui/tests/snapshots.rs - the settings window is the grouped-list
 poster child), anyview (`anyview-ui/tests/snapshots`, anyview-peek/tests/golden.rs,
@@ -344,7 +344,7 @@ anyview/mailo a re-pin and can break porter.
 
 API: additive unless noted.
 - `ControlSize::ExtraLarge` (additive variant; **breaking for exhaustive `match` in consumers**;
-  mitigate by `#[non_exhaustive]`-free grep in sill/settings-app/mailo/anyview first).
+  mitigate by `#[non_exhaustive]`-free grep in shell/settings-app/mailo/anyview first).
 - `RowScale` gains `icon_tile`, `compact_height`; `ROW_SCALE` const fields are public:
   adding fields breaks struct-literal users (only Bardo constructs it).
 - `CHROME_SCALE` values change in step 2 (compositor-visible; **breaking for compositor/the compositor
@@ -388,7 +388,7 @@ Step 2 (Tahoe): same four lanes, files as above plus:
 - **2B controls/menus** (capsule buttons, icons in menus, menu radius); **2C chrome**
   (window_frame.css, toolbar.css, sidebar.css, split_view, scroll-edge fade, transparent menu bar
   in `shell-kit/bar`); **2D overlays** radii, concentric sheet/alert. Verify per lane as above
-  plus `cargo test --workspace --all-features` and the sill gate.
+  plus `cargo test --workspace --all-features` and the shell gate.
 Step 2 starts only after step 1 is merged and the consumers are re-pinned and green.
 
 ## 6. Owner decisions (settled 2026-10-07)
@@ -411,7 +411,7 @@ The owner took every recommended default below; they are decisions, not open que
 5. **Per-app hero icon source**: apps pass their icon, or Bardo resolves it from the app id?
    Default: the caller passes it; the UI kit only lays it out.
 6. **Menu icons**: mandatory for built-in menus or optional? Default optional; the UI kit's own menus
-   (sill, the Settings app) get symbols in step 2 per HIG "where it helps recognition".
+   (the shell, the Settings app) get symbols in step 2 per HIG "where it helps recognition".
 7. **Keep the `inset` list style name?** Default: alias for one release, then remove.
 
 ## 7. Motion

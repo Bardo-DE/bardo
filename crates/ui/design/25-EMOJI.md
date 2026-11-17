@@ -20,7 +20,7 @@ moods, `Mood`, `UserPortrait`, the accept beat and the accept beat's file.
 
 `ds_shell::prelude::AnimatedEmoji` (the picture), `ds_shell::emoji::id::EmojiId` (which emoji, user data), `ds_shell::emoji::disc::EmojiDisc`
 (none, or a tinted disc on a `DiscHue`), `ds_shell::emoji::disc::EmojiPlayback` (awake or still),
-`ds_shell::emoji::EMOJI_ATTRIBUTION`, the sheets and manifest under `crates/sill-shell-kit/assets/emoji/`, and the
+`ds_shell::emoji::EMOJI_ATTRIBUTION`, the sheets and manifest under `crates/shell-kit/assets/emoji/`, and the
 pipeline that makes them, `tools/emoji`; and the user's picture (section 7): `UserPicture`,
 `UserPortrait`, `PictureChoice`, `resolve_picture`, `UserPicturePicker`, `Mood`, `WakeStamp`,
 `PictureSize` and the accept beat `Anim::PictureAccept`.
@@ -33,14 +33,14 @@ pipeline that makes them, `tools/emoji`; and the user's picture (section 7): `Us
 - **Licence: CC BY 4.0**, verified 2026-09-26 from the source site's own FAQ ("Can I use these
   animated assets commercially…?": "Animated Noto Emoji is licensed under CC BY 4.0. See the
   full license for all details.", linking https://creativecommons.org/licenses/by/4.0/legalcode).
-  The full legal code is committed as `crates/sill-shell-kit/assets/emoji/CC-BY-4.0.txt`.
+  The full legal code is committed as `crates/shell-kit/assets/emoji/CC-BY-4.0.txt`.
 - **Attribution** (required; `ds_shell::emoji::EMOJI_ATTRIBUTION` carries it, and a surface that shows these
   emoji puts it in its about box or credits):
 
   > Animated emoji: Noto Animated Emoji by Google, CC BY 4.0
   > (https://creativecommons.org/licenses/by/4.0/); frames resampled and packed.
 
-- `crates/sill-shell-kit/assets/emoji/ATTRIBUTION.txt` states the same beside the files, with what we
+- `crates/shell-kit/assets/emoji/ATTRIBUTION.txt` states the same beside the files, with what we
   changed (CC BY asks that changes be indicated). `docs/licensing-references.md` has the row.
 - **cargo deny**: `cargo deny check licenses` reads crate licences only. `ds`'s code stays
   MIT OR Apache-2.0; the sheets are data under their own licence, as the OFL fonts beside them
@@ -78,7 +78,7 @@ pre-rendered frames itself.
 `tools/emoji` (Python through uv, `pillow` only; never run by cargo):
 
 ```bash
-cd tools/emoji && uv run emojitool build --out ../../crates/sill-shell-kit/assets/emoji
+cd tools/emoji && uv run emojitool build --out ../../crates/shell-kit/assets/emoji
 ```
 
 1. **Fetch** each emoji's `512.webp` (the animation) and `512.png` (the still, used only to find
@@ -139,7 +139,7 @@ would have played, then the pick's.
 - **Idle rule** (design/CHECKLIST "Idle surface paints 0 frames"): the script plays whole loops
   only while they fit inside the 20 s window (`--t-awake`), so it ends on frame 0 with no jump,
   and then the task has ended: nothing is scheduled, no CSS animation or transition exists, and
-  the document asks for no frame. Tested in sill's ui-conformance/tests/emoji_animation.rs: frames advance
+  the document asks for no frame. Tested in the shell's ui-conformance/tests/emoji_animation.rs: frames advance
   within 2 s of the wake and (Attentive) are still advancing at 9 s; at 21 s the frame is 0,
   stays 0 for a further second, and `Harness::is_animating()` is false; Idle rests at least
   3.8 s between loops; as a `UserPortrait`, each mood shows its emoji and is at rest with no
@@ -174,7 +174,7 @@ pub enum UserPicture {
   --e-spring`: 420 ms at Standard, 300 Calm, 560 Extra, as the persona's hop it replaces): when
   the mood changes to Happy, the whole picture, of any kind, lifts 8 % and lands once; the pulse
   is taken off at its settle. A lock screen unlocks at `settle(Anim::PictureAccept, level, StaggerIndex::default())`
-  (sill times it with `use_motion_timer(Anim::PictureAccept)`). Not played on mount, and not
+  (the shell times it with `use_motion_timer(Anim::PictureAccept)`). Not played on mount, and not
   played at all under Reduced motion.
 - **Reduced motion.** The emoji shows still frames only (a reaction's rest frame for its
   length); the beat is not fired; the 20 s window and the idle rule are unchanged.
@@ -190,8 +190,8 @@ tagged, the emoji by its stable slug: `{"kind":"emoji","v":"heart-eyes"}`; defau
 | Emoji(id) | Emoji(id) | Emoji(id) |
 | Photo | Photo(src) | Face(letter) |
 
-The caller (sill's auth service) reads `~/.face` or AccountsService's icon; `resolve_picture`
-never touches the disk. Proposed settings row (design/22, once sill lists it):
+The caller (the shell's auth service) reads `~/.face` or AccountsService's icon; `resolve_picture`
+never touches the disk. Proposed settings row (design/22, once the shell lists it):
 `session.user_picture` | `PictureChoice` | `Auto` | Users page, first run.
 
 **The picker.** `UserPicturePicker { letter, choice, onpick, columns (8), label ("Picture") }`:
@@ -206,7 +206,7 @@ group. It reuses the grid's step rule and column style.
 
 ## 8. Built (Bardo)
 
-- `crates/sill-shell-kit/src/emoji/`: `id.rs` (`EmojiId`), `sheet.rs` (sheets, manifest, the
+- `crates/shell-kit/src/emoji/`: `id.rs` (`EmojiId`), `sheet.rs` (sheets, manifest, the
   frame position), `script.rs` (the wake script), `emoji/play.rs` (playing it), `disc.rs`
   (`EmojiDisc`), `mod.rs` (`AnimatedEmoji`, `EMOJI_ATTRIBUTION`); `emoji.css`.
 - Markup: `div.ds-emoji[data-size][data-mood][data-disc]` with `--em-disc` inline when tinted,
@@ -222,7 +222,7 @@ group. It reuses the grid's step rule and column style.
   mood, the sizes and the discs, and the credit line; every picture there is `Still`, so the
   snapshot shows rest frames (a snapshot lets 120 ms of timers run at mount).
 
-- The user's picture (section 7): `crates/sill-shell-kit/src/user_picture/`: `picture.rs`
+- The user's picture (section 7): `crates/shell-kit/src/user_picture/`: `picture.rs`
   (`UserPicture`), `user_picture/size.rs` (`Mood`, `PictureSize`, `WakeStamp`), portrait.rs
   (`UserPortrait` and the shared drawing), the accept beat's file (the accept beat), `choice.rs`
   (`PictureChoice`, `FaceFile`, `resolve_picture`), `picker.rs` (`UserPicturePicker`);
@@ -235,7 +235,7 @@ group. It reuses the grid's step rule and column style.
 
 1. Done 2026-09-26: `UserPicture::Emoji(EmojiId)` replaced `UserPicture::Persona` (section 7).
 2. **Settings key**: proposed `session.user_picture`, a `PictureChoice`, default `Auto`
-   (section 7); not in design/22 yet (sill lists its keys first). It supersedes the earlier
+   (section 7); not in design/22 yet (the shell lists its keys first). It supersedes the earlier
    `account.emoji` proposal; a tinted disc is not offered in the picture yet.
 3. **Frame rate**: 12.5 fps to fit 8 MB. Smoother means fewer emoji, 128 px only, or a larger
    budget: the user's call.

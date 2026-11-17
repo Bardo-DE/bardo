@@ -120,7 +120,7 @@ pub enum NameHolder {
     /// Nobody: notifications sent now are lost (or D-Bus-activate another daemon).
     Nobody,
     /// This service.
-    Sill,
+    Shell,
     /// Another connection.
     Other(NameOwner),
 }

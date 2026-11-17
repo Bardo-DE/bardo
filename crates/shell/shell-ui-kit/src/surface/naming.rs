@@ -1,8 +1,8 @@
-//! Layer namespaces: `sill-<surface>-<output>`, the name `bardo-shell debug` addresses a surface by.
+//! Layer namespaces: `shell-<surface>-<output>`, the name `bardo-shell debug` addresses a surface by.
 
 use layer_shell_types::OutputInfo;
 
-/// `sill-<surface>-<output name>`, or `sill-<surface>-<output id>` for an unnamed output.
+/// `shell-<surface>-<output name>`, or `shell-<surface>-<output id>` for an unnamed output.
 #[must_use]
 pub fn namespace(surface: &str, output: &OutputInfo) -> String {
     match &output.name {

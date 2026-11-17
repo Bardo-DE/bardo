@@ -228,7 +228,7 @@ fn a_change_made_in_settings_ends_the_manual_turn_on() {
 }
 
 #[test]
-fn where_sill_warms_the_monitors_the_software_light_stays_as_it_is() {
+fn where_shell_warms_the_monitors_the_software_light_stays_as_it_is() {
     let scheduled = ready(light(Schedule::Scheduled), None, NightWarmthMode::Off);
     let (told, effects) = step(
         scheduled,
@@ -290,7 +290,7 @@ fn names(connectors: &[&str]) -> Vec<OutputName> {
 }
 
 #[test]
-fn compositor_leaves_the_monitors_sill_warms_over_ddc_alone() {
+fn compositor_leaves_the_monitors_shell_warms_over_ddc_alone() {
     let gain = Some(RgbGain::default());
     let monitors = [
         monitor(5, Some("HDMI-A-1"), gain),
@@ -321,7 +321,7 @@ fn compositor_leaves_the_monitors_sill_warms_over_ddc_alone() {
 }
 
 #[test]
-fn a_monitor_sill_cannot_name_is_left_to_the_software_light() {
+fn a_monitor_shell_cannot_name_is_left_to_the_software_light() {
     let gain = Some(RgbGain::default());
     let monitors = [
         monitor(7, None, gain),

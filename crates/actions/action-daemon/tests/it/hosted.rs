@@ -2,7 +2,7 @@
 //! fake memoryd and `org.bardo.Companion` over the router itself. A companion calls them like
 //! any app, the manifests are listed, and what they do reaches memoryd as audit records.
 
-use crate::support::apps::{Answer, FakeSill};
+use crate::support::apps::{Answer, FakeShell};
 use crate::support::bus::PrivateBus;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::world::introduce;
@@ -28,7 +28,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 const COMPANIOND: &str = "org.bardo.Companion";
-const SILL: &str = "org.bardo.Shell";
+const SHELL: &str = "org.bardo.Shell";
 
 fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")
@@ -38,7 +38,7 @@ fn config() -> IntentdConfig {
     IntentdConfig {
         roles: BTreeMap::from([
             (CallerRole::Companion, vec![app(COMPANIOND)]),
-            (CallerRole::Confirm, vec![app(SILL)]),
+            (CallerRole::Confirm, vec![app(SHELL)]),
         ]),
         reviewers: None,
         agent: AgentConfig::default(),
@@ -49,7 +49,7 @@ struct Desk {
     dir: tempfile::TempDir,
     bus: PrivateBus,
     memoryd: Arc<FakeMemoryd>,
-    sill: FakeSill,
+    shell: FakeShell,
     companion: Intents<DbusTransport>,
     _connections: Vec<action_dbus::BusConnection>,
     _intentd: action_daemon::Running,
@@ -133,13 +133,13 @@ impl Desk {
         let intentd = start(&daemon_connection, None, setup)
             .await
             .expect("intentd");
-        let sill_connection = bus.connect().await;
-        let sill = FakeSill::start(&sill_connection, &["org.bardo.Confirm1", SILL]).await;
+        let shell_connection = bus.connect().await;
+        let shell = FakeShell::start(&shell_connection, &["org.bardo.Confirm1", SHELL]).await;
         introduce(
             &who,
-            &sill_connection,
+            &shell_connection,
             &config(),
-            &["org.bardo.Confirm1", SILL],
+            &["org.bardo.Confirm1", SHELL],
         );
         let companion_connection = bus.connect().await;
         companion_connection
@@ -152,13 +152,13 @@ impl Desk {
             dir,
             bus,
             memoryd,
-            sill,
+            shell,
             companion,
             _connections: vec![
                 memory_connection,
                 daemon_connection,
                 companion_connection,
-                sill_connection,
+                shell_connection,
             ],
             _intentd: intentd,
         }
@@ -332,7 +332,7 @@ async fn a_proposal_from_a_companion_asks_the_person_then_goes_to_memory_and_lan
             .all(|r| !matches!(r, MemoryRequest::Propose(..)))
     );
 
-    desk.sill.answer(vec![Answer::With(ConfirmAnswer::Allowed {
+    desk.shell.answer(vec![Answer::With(ConfirmAnswer::Allowed {
         written: None,
         scope: action_core::GrantScope::Once,
         receipt: provenance::ConfirmReceipt {

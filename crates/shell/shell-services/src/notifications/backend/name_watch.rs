@@ -68,7 +68,7 @@ impl Bus {
                 self.claim().await;
                 self.holder().await
             }
-            (ServerMode::Passive, NameHolder::Sill) => {
+            (ServerMode::Passive, NameHolder::Shell) => {
                 self.release().await;
                 self.holder().await
             }
@@ -87,7 +87,7 @@ impl Bus {
             Err(_) => return NameHolder::NoBus,
         };
         if self.connection.unique_name().map(|ours| ours.as_str()) == Some(unique.as_str()) {
-            return NameHolder::Sill;
+            return NameHolder::Shell;
         }
         let pid = match BusName::try_from(unique.as_str()) {
             Ok(name) => self.dbus.get_connection_unix_process_id(name).await.ok(),

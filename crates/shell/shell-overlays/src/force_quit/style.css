@@ -1,5 +1,5 @@
 /* The Force Quit Applications panel. The sheet, the list, the alert and the buttons are bardo's;
-   this lays out what sill puts in the sheet. Tokens only. */
+   this lays out what shell puts in the sheet. Tokens only. */
 
 .shell-fq{ display:flex; flex-direction:column; gap:var(--s-10); padding:var(--s-16); color:var(--ink); outline:none; }
 .shell-fq-title{ font-size:var(--fs-title); font-weight:700; }

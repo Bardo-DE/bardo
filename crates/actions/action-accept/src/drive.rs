@@ -1,4 +1,4 @@
-//! The launcher's side of the run, over the bus: what sill and the launcher do for the person.
+//! The launcher's side of the run, over the bus: what the shell and the launcher do for the person.
 //!
 //! Open a conversation, record the turn with intentd, hand it to companiond, and watch the answer
 //! object until it is done. Every step is a call or a signal on the private bus.
@@ -28,7 +28,7 @@ pub fn keep_nothing() -> ContextKeep {
     }
 }
 
-/// sill's calls into intentd and companiond.
+/// The shell's calls into intentd and companiond.
 ///
 /// The connection owns `org.bardo.Shell`, which `actiond.toml` gives the launcher, confirm and
 /// control roles and `companiond.toml` the right to speak for the person.
@@ -49,7 +49,7 @@ impl Launcher {
     ///
     /// Panics when the proxy to the bus cannot be made.
     pub async fn of(world: &World) -> Launcher {
-        let connection = world.sill.clone();
+        let connection = world.shell.clone();
         Launcher {
             intents: Intents::over(DbusTransport::new(connection.clone())),
             companion: within("the companion proxy", CompanionProxy::new(&connection))
@@ -264,7 +264,7 @@ impl Answer {
 }
 
 /// What memoryd holds of the Spaces `work` and `desktop` as the shell reads it (the shell's
-/// identity is this test process, placed in the fake proc root as sill).
+/// identity is this test process, placed in the fake proc root as the shell).
 ///
 /// The recent entries, polled until every kind in `kinds` is among them (the audit kinds of
 /// `intentd`'s `record.rs`). intentd drains its audit queue into memoryd on a timer, so there is no
@@ -276,7 +276,7 @@ impl Answer {
 pub async fn recorded(world: &World, kinds: &[&str]) -> Vec<memory_core::RecentEntry> {
     use memory_client::{DbusTransport, Memory};
     use memory_core::{BodyMode, RecentQuery, TrustFilter};
-    let memory = Memory::over(DbusTransport::new(world.sill.clone()));
+    let memory = Memory::over(DbusTransport::new(world.shell.clone()));
     let spaces = ["work", "desktop"].map(|s| SpaceId::parse(s).expect("space"));
     let seen = std::cell::RefCell::new(Vec::<String>::new());
     let poll = async {

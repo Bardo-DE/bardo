@@ -1,12 +1,12 @@
 //! The judgement, one row of the trust rules at a time.
 
-use crate::common::{facts, in_sill_unit, read, root_only, sill_unit, table, user_writable};
+use crate::common::{facts, in_shell_unit, read, root_only, shell_unit, table, user_writable};
 use caller_identity_core::{
     AppKey, DropIns, Engine, Exe, FileTrust, Fragment, LOADER_VARIABLES, Loader, Pin, Proof,
     RoleName, SandboxFacts, Standing, Transient, WhyNot, Writer, judge,
 };
 
-const SILL_IMAGE: &str = "/opt/bardo/releases/1.2.3/bin/bardo-shell";
+const SHELL_IMAGE: &str = "/opt/bardo/releases/1.2.3/bin/bardo-shell";
 
 fn service(role: &str, proof: Proof, pin: Pin) -> Standing {
     let app = match role {
@@ -30,8 +30,8 @@ fn unverified(name: Option<&str>, why: WhyNot) -> Standing {
 }
 
 fn with_unit(change: impl FnOnce(&mut caller_identity_core::UnitFacts)) -> Standing {
-    let mut f = facts(in_sill_unit(), root_only(SILL_IMAGE));
-    let mut unit = sill_unit();
+    let mut f = facts(in_shell_unit(), root_only(SHELL_IMAGE));
+    let mut unit = shell_unit();
     change(&mut unit);
     f.unit = Some(unit);
     judge(&f, &table())
@@ -120,7 +120,7 @@ fn a_unit_proves_full_only_when_it_unsets_every_loader_variable() {
 
 #[test]
 fn without_the_manager_a_service_is_at_most_exe() {
-    let f = facts(in_sill_unit(), root_only(SILL_IMAGE));
+    let f = facts(in_shell_unit(), root_only(SHELL_IMAGE));
     assert_eq!(
         judge(&f, &table()),
         service("shell", Proof::Exe, Pin::AtConnect)
@@ -129,7 +129,7 @@ fn without_the_manager_a_service_is_at_most_exe() {
 
 #[test]
 fn the_pin_is_carried_through() {
-    let mut f = facts(in_sill_unit(), root_only(SILL_IMAGE));
+    let mut f = facts(in_shell_unit(), root_only(SHELL_IMAGE));
     f.pin = Pin::Reopened;
     assert_eq!(
         judge(&f, &table()),
@@ -145,12 +145,12 @@ fn an_image_someone_can_write_is_never_remembered() {
         FileTrust::Writable(Writer::Owner(caller_identity_core::Uid::new(1000))),
     ] {
         // Even in the right unit, with the right name, a copied binary is nobody.
-        let f = facts(in_sill_unit(), read("/home/p/bin/bardo-shell", trust));
+        let f = facts(in_shell_unit(), read("/home/p/bin/bardo-shell", trust));
         assert_eq!(
             judge(&f, &table()),
             unverified(Some("bardo-shell"), WhyNot::ImageWritable)
         );
-        let f = facts(in_sill_unit(), read("/usr/bin/bardo-shell", trust));
+        let f = facts(in_shell_unit(), read("/usr/bin/bardo-shell", trust));
         assert_eq!(
             judge(&f, &table()),
             unverified(Some("bardo-shell"), WhyNot::ImageWritable)
@@ -162,8 +162,8 @@ fn an_image_someone_can_write_is_never_remembered() {
 type Change = fn(&mut caller_identity_core::UnitFacts);
 
 fn hidden_with_unit(change: impl FnOnce(&mut caller_identity_core::UnitFacts)) -> Standing {
-    let mut f = facts(in_sill_unit(), Exe::Hidden);
-    let mut unit = sill_unit();
+    let mut f = facts(in_shell_unit(), Exe::Hidden);
+    let mut unit = shell_unit();
     change(&mut unit);
     f.unit = Some(unit);
     judge(&f, &table())
@@ -209,7 +209,7 @@ fn a_hidden_image_in_a_real_unit_is_proved_by_the_unit() {
 
 #[test]
 fn a_hidden_image_is_a_service_only_at_the_cgroup() {
-    let f = facts(in_sill_unit(), Exe::Hidden);
+    let f = facts(in_shell_unit(), Exe::Hidden);
     assert_eq!(
         judge(&f, &table()),
         service("shell", Proof::Cgroup, Pin::AtConnect)
@@ -223,7 +223,7 @@ fn a_hidden_image_is_a_service_only_at_the_cgroup() {
 #[test]
 fn a_service_unit_name_alone_is_not_enough() {
     // A transient unit or a moved cgroup spelling bardo-shell.service, around some other program.
-    let f = facts(in_sill_unit(), root_only("/usr/bin/python3"));
+    let f = facts(in_shell_unit(), root_only("/usr/bin/python3"));
     assert_eq!(
         judge(&f, &table()),
         Standing::Program {
@@ -283,7 +283,7 @@ fn a_program_row_matches_by_image_alone_and_tops_out_at_exe() {
 
 #[test]
 fn an_empty_table_makes_nobody_a_service() {
-    let f = facts(in_sill_unit(), root_only(SILL_IMAGE));
+    let f = facts(in_shell_unit(), root_only(SHELL_IMAGE));
     assert!(matches!(
         judge(&f, &caller_identity_core::Table::empty()),
         Standing::Program { .. }
@@ -318,7 +318,7 @@ fn a_flatpak_app_is_sandboxed_only_when_its_scope_agrees() {
         ),
         disagree
     );
-    assert_eq!(flatpak(in_sill_unit(), "org.mozilla.firefox"), disagree);
+    assert_eq!(flatpak(in_shell_unit(), "org.mozilla.firefox"), disagree);
     assert_eq!(
         flatpak(
             "/user.slice/app.slice/app-org.mozilla.firefox-4242.scope",
@@ -336,7 +336,7 @@ fn a_flatpak_app_is_sandboxed_only_when_its_scope_agrees() {
 #[test]
 fn a_sandboxed_peer_never_holds_a_service_role() {
     // A Flatpak app whose metadata claims to be the shell, inside the shell's unit.
-    let standing = flatpak(in_sill_unit(), "org.bardo.Shell");
+    let standing = flatpak(in_shell_unit(), "org.bardo.Shell");
     assert!(!matches!(standing, Standing::Service { .. }));
 }
 

@@ -598,7 +598,7 @@ async fn a_caller_with_no_role_is_a_plain_app_and_an_unnamed_one_is_nobody() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_name_the_configuration_does_not_list_gets_no_roles_even_if_it_says_it_is_sill() {
+async fn a_name_the_configuration_does_not_list_gets_no_roles_even_if_it_says_it_is_shell() {
     // The role comes from the name the connection owns, never from anything in a body.
     let world = World::serving(mail_router(), everything_config()).await;
     let (impostor, _keep) = world.client(&["org.bardo.Shell"]).await;

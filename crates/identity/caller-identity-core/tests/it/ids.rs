@@ -38,7 +38,7 @@ fn a_pattern_matches_whole_segments_and_one_star_per_segment() {
             true,
         ),
         ("/usr/bin/bardo-shell-*", "/usr/bin/bardo-shell", false),
-        ("/usr/bin/*-sill", "/usr/bin/a-sill", true),
+        ("/usr/bin/*-shell", "/usr/bin/a-shell", true),
         ("/usr/bin/s*ll", "/usr/bin/shell", true),
         ("/usr/bin/s*ll", "/usr/bin/sl", false),
     ];
@@ -93,8 +93,8 @@ fn small_ids_check_their_alphabets() {
     UnitName::new("app-org.x.Y-123.scope").unwrap();
     UnitName::new("user@1000.service").unwrap();
     for bad in [
-        "sill",
-        "sill.timer",
+        "shell",
+        "shell.timer",
         ".service",
         "a/b.service",
         "a b.service",

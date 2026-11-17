@@ -8,11 +8,11 @@ CONSUMING.md "Details"), the tokens of 3.4, `Spinner` on `use_pending`, the harn
 `assert_settles_to_zero_frames`, the lint rules `InfiniteLoop` and `OffGrammarTiming`, and the
 gallery's Details page. D1's Bardo lane is built, 2026-09-27, branch `details-d1`: the layered
 status glyphs (`WifiGlyph`, `BatteryGlyph`, `BluetoothGlyph`, `VolumeGlyph`, `StatusGlyph`;
-design/04 section 51, CONSUMING.md "Status glyphs"); sill's bar wiring (D1's sill lane) is
+design/04 section 51, CONSUMING.md "Status glyphs"); the shell's bar wiring (D1's shell lane) is
 not started. D2's Bardo lane is built, 2026-09-27, branch `details-d2`: the control center
 modules' details (the tile disc's fill and morph, `SettingsRow` phases, `PlayPauseButton`,
 `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`; design/04
-section 52, CONSUMING.md "Control center details"); D2's sill lane and D3-D7 are not started. The catalogue (section 5) still describes the
+section 52, CONSUMING.md "Control center details"); D2's shell lane and D3-D7 are not started. The catalogue (section 5) still describes the
 state before D0. Status legend as in `13-BEHAVIOUR-menus-windows.md`:
 **settled** = decided with the user or already built; **proposed** = chosen here, the user
 judges. Reference confidence: **H** the vendor's own guidelines or documentation, **M** a
@@ -40,7 +40,7 @@ stateful element of the shell and its parts (section 5), with the gap against wh
 - The **primitives** in Bardo that play them (section 4) and how a component **declares** its
   moments so every component uses the same machinery (4.2).
 - The **catalogue**: every stateful element, its states, its moment-to-detail table, what the
-  reference does, what Bardo and sill do today, and the gap (section 5).
+  reference does, what Bardo and the shell do today, and the gap (section 5).
 - The **order** in which the gaps close (section 7).
 
 It does not change a keyframe, token or recipe in `05-MOTION.md`; it cites them. New tokens it
@@ -201,7 +201,7 @@ Existing tokens are used wherever they fit; five are new.
 | `--t-overview` | 350 ms | 350 ms | 350 ms | 120 ms (`--t-quick`) | duration | Mission Control's Spaces bar drops in and lifts out with the compositor's windows, which fly over this length (q-spacesbar) | proposed |
 
 None of these is a setting: durations are token-table data, not keys (design/22 §3.2). The
-operation timeouts are the services' (sill), not motion tokens.
+operation timeouts are the services' (the shell), not motion tokens.
 
 ## 4. The primitives
 
@@ -497,20 +497,20 @@ and every component with a `Detailed` state ships one harness test per moment th
 
 How to read an entry: **States** are the element's own enum. The table gives, per moment, **our
 detail** (primitive and tokens), **the reference** (with confidence and source key), **today**
-(Bardo `crates/ds`, sill's `crates/sill-bar`, `crates/sill-dock` and `crates/sill-overlays` at `ee9dd76`), and the **gap** (numbered `G#`,
+(Bardo `crates/ds`, the shell's `crates/shell-bar`, `crates/shell-dock` and `crates/shell-overlays` at `ee9dd76`), and the **gap** (numbered `G#`,
 section 6 counts them). A moment the element does not have is omitted. "none" under Today means
 the state is shown with no motion (a snap).
 
 ### 5.1 Bar status items
 
 Bardo side of this section is built (wave D1, `details-d1`): each item below has its glyph
-and `Detailed` state in `ds::components::status`; the Today column still describes sill's bar,
-which moves onto them in D1's sill lane (CONSUMING.md "Status glyphs" lists what it passes).
+and `Detailed` state in `ds::components::status`; the Today column still describes the shell's bar,
+which moves onto them in D1's shell lane (CONSUMING.md "Status glyphs" lists what it passes).
 
 #### 5.1.1 Wi-Fi item
-States: Off, Joining, Connected {bars 1-3, secured}, NoInternet, Failed. Today the sill glyph is a
+States: Off, Joining, Connected {bars 1-3, secured}, NoInternet, Failed. Today the shell glyph is a
 bucket of `WifiLow`/`Wifi`/`WifiHigh`/`WifiOff`, and `Link::Connecting` shows `WifiOff`
-(sill's `shell-bar/src/bar/status_item.rs`): the bar reads "Wi-Fi off" while it is connecting, a bug (G1's sill side:
+(the shell's `shell-bar/src/bar/status_item.rs`): the bar reads "Wi-Fi off" while it is connecting, a bug (G1's shell side:
 `Link::Connecting` must be `WifiState::Joining`). Built as `WifiState::{Off, Idle, Joining,
 Joined { bars, reach }, Failed}`: Idle (on, joined to nothing) is the faint fan, distinct from
 Off's slash; no internet is `Joined { reach: NoInternet }`; the lock is the menu's, not the
@@ -530,7 +530,7 @@ States: Off, On, Connecting(device), Connected(n devices), Failed.
 
 | Moment | Our detail | Reference | Today | Gap |
 | --- | --- | --- | --- | --- |
-| Unavailable ↔ On | `MorphGlyph{Slash}` | slashed glyph when off (L) | `Bluetooth`/`BluetoothOff` swap in sill's module | **G6** the bar item itself (none in sill today) |
+| Unavailable ↔ On | `MorphGlyph{Slash}` | slashed glyph when off (L) | `Bluetooth`/`BluetoothOff` swap in the shell's module | **G6** the bar item itself (none in the shell today) |
 | Pending (connecting a device) | `Pending{Breathe}` on the glyph | the glyph pulses while connecting (L) | none | **G7** |
 | Change (a device connects) | `MorphGlyph{CrossFade}` to `BluetoothConnected` | the connected variant (L) | not shown in the bar | part of **G6** |
 
@@ -695,14 +695,14 @@ States: Hidden, Shown(level, glyph), Muted.
 | Element / moment | Our detail | Reference | Today | Gap |
 | --- | --- | --- | --- | --- |
 | Open / close | `peek-in` / `fade` (built) | appears quickly (L) | built | none |
-| Results (Appear) | `Reveal` on the first result set after the panel opens; later result sets replace in place with **no** stagger (R1, R12: typing is frequent) | results update in place as you type (L) | Bardo side built (`CommandPalette { reveal: RevealCue }`, sill Q372); sill passes its cue | **G41** (sill adoption) |
-| Calculator result | the result row's value `RollDigits` as the expression grows; an invalid expression shows no row (no error motion) | inline answer as you type (L) | a calculator provider exists? (sill M9 providers) | **G42** |
+| Results (Appear) | `Reveal` on the first result set after the panel opens; later result sets replace in place with **no** stagger (R1, R12: typing is frequent) | results update in place as you type (L) | Bardo side built (`CommandPalette { reveal: RevealCue }`, the shell Q372); the shell passes its cue | **G41** (the shell adoption) |
+| Calculator result | the result row's value `RollDigits` as the expression grows; an invalid expression shows no row (no error motion) | inline answer as you type (L) | a calculator provider exists? (the shell M9 providers) | **G42** |
 | No results | a still "No results" line (`fade` `--t-quick`); no shake (typing is not a failure) | a "no results" state (L) | none | **G43** (words and fade) |
 | Selection (Select) | moves instantly (13.3.9, settled) | instant (L) | built | none |
-| Show More (a group's action) | the added rows `Reveal` downward from the last row kept, `rise` `--t-move --e-out`, `--stagger` from the first added (capped at 12); the rows already there do not move (section 5.4's group expand; decided 2026-09-27, sill Q373) | section "Show More" expands in place (L, sill F806) | built (`CommandPalette`, the palette plays it itself from its own action) | none |
+| Show More (a group's action) | the added rows `Reveal` downward from the last row kept, `rise` `--t-move --e-out`, `--stagger` from the first added (capped at 12); the rows already there do not move (section 5.4's group expand; decided 2026-09-27, the shell Q373) | section "Show More" expands in place (L, the shell F806) | built (`CommandPalette`, the palette plays it itself from its own action) | none |
 | Show Less (a group's action) | the removed rows go and everything after the last row kept `heal`s up by their measured height (`--dy`, `--t-move --e-spring`: the person ran the action, R5); with no height measured this opening, it closes up at once | collapses in place (L) | built | none |
-| Preview pane: showing (Appear) | `slide-r` `--t-move`, `--e-spring` only when the person's key or press showed it, else `--e-out` (R5) | the preview appears beside the results (L) | built (`PreviewPane { cue }`, sill Q370) | none |
-| Preview pane: another kind (Preview), a load landing (Change), a load failing (Failure) | the media `fade`s in at `--t-quick` in place; the entrance never replays; a failure does not shake (its still words carry it, R8: nobody asked for the load) | changes with the selection at once, the thumbnail replacing a generic icon when ready (L, sill F806) | built | none |
+| Preview pane: showing (Appear) | `slide-r` `--t-move`, `--e-spring` only when the person's key or press showed it, else `--e-out` (R5) | the preview appears beside the results (L) | built (`PreviewPane { cue }`, the shell Q370) | none |
+| Preview pane: another kind (Preview), a load landing (Change), a load failing (Failure) | the media `fade`s in at `--t-quick` in place; the entrance never replays; a failure does not shake (its still words carry it, R8: nobody asked for the load) | changes with the selection at once, the thumbnail replacing a generic icon when ready (L, the shell F806) | built | none |
 | Preview pane: waiting on a load (Pending) | nothing for `PendingGrace`, then the media box shows a dashed ring stepping a quarter per `--t-pending-step` over "Loading…", still from `PendingCap` and at once under Reduced | a generic icon until ready (L) | built (`PreviewPane { operation }`, Q371) | none |
 | Preview pane: hides (Dismiss) | `pane-out-r` (built) | goes (L) | built | none |
 
@@ -825,7 +825,7 @@ session ends: the button's label is replaced by `Pending{Spin}` after `PendingGr
 ## 7. Waves
 
 Lanes are agent-sized (one branch, one gate, about a day of agent work). **Q** = the UI kit only;
-**Q+S** = a Bardo lane and a sill lane after it (the sill lane wires services' states and stamps
+**Q+S** = a Bardo lane and a shell lane after it (the shell lane wires services' states and stamps
 into the new component states). The two lanes in flight (battery-fill, animated-emoji) should
 land on the primitives rather than beside them: battery-fill is the first consumer of `Sweep` and
 `CountUp`.
@@ -835,8 +835,8 @@ land on the primitives rather than beside them: battery-fill is the first consum
 | D0 | D0a primitives: time | `Moment`, `Touch`, `FirstShow`, `EventStamp`, `Operation`, `Detailed`, `use_detail`, `moment_table`; `Tween` on `CubicBezier::at` and a frame clock that stops at rest; `Sweep`, `CountUp`, `Reveal`; tokens `--t-sweep`, `--t-count-step`, `SettleHold` into design/05 and the token table; gallery page "Details" with a replay button per primitive; harness tests (idle after settle, Reduced jumps, retarget mid-flight) | Q | foundation. **Built 2026-09-27** (`details-d0b`) |
 | D0 | D0b primitives: state | `Pending` (+ `--t-pending-step`, `PendingGrace`, `PendingCap`), `Settle`, `Shake`, `MorphGlyph`, `RollDigits`, `Nudge`; `Spinner` rebuilt on `Pending` (its two infinite loops gone; `ModuleState::Busy` and `PromptState::Checking` inherit the bound; `SyncHalo`'s idle breathe, mailo's, goes as design/05 §12 item 4 proposes, so tell the mailo session before it lands) | Q | G15, G45 (Bardo side). **Built 2026-09-27** (`details-d0b`), with one change: `SyncHalo` keeps its loops (it is mail's; mailo decides, design/05 §12 item 4), listed in `ui-shell/tests/it/details_lint.rs` with the three other mail loops |
 | D1 | status glyphs | a layered `StatusGlyph` family: Wi-Fi (dot + 3 arcs, the "!" badge), battery (outline, fill layer, bolt, plug), Bluetooth (base, slash, connected dots), volume (on `LevelGlyph`), each with its `Detailed` state and moment table | Q | G1-G4, G8-G10, G12 (Bardo side), and the glyph side of G5-G7 (the failed-join shake, the Bluetooth glyph and its bounded breath). **Built 2026-09-27** (`details-d1`) |
-| D1 | bar wiring | sill's bar items on `StatusGlyph`: `Link::Connecting` → Joining with an op stamp from the network service, no-internet from connectivity, battery thresholds (`bar.battery_low_percent`), the Bluetooth bar item | S | G1-G12 |
-| D2 | control center modules | `ModuleTile` disc glyph on `MorphGlyph`/`Settle`; `SettingsRow` trailing `Pending`/`Settle{Check}`/`Shake`; Now Playing play/pause `MorphGlyph{OffUp}`, position bar, track cross-fade; Battery module rings on `Sweep`/`CountUp`; a keyboard-brightness module on `LevelControl` | Q+S | G14, G16-G18, G20, G21, G23, G25-G30. **Bardo lane built 2026-09-27** (`details-d2`): `ModuleTile { disc: DiscMotion }`, `SettingsRow { phase: RowPhase, work: RowWork, disc: RowDisc }` and `RowTrailing::Battery`, `PlayPauseButton`, `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`, `Icon::MoonFilled`, `Anim::MorphInSpring`; the sill lane is CONSUMING.md "Control center details" |
+| D1 | bar wiring | the shell's bar items on `StatusGlyph`: `Link::Connecting` → Joining with an op stamp from the network service, no-internet from connectivity, battery thresholds (`bar.battery_low_percent`), the Bluetooth bar item | S | G1-G12 |
+| D2 | control center modules | `ModuleTile` disc glyph on `MorphGlyph`/`Settle`; `SettingsRow` trailing `Pending`/`Settle{Check}`/`Shake`; Now Playing play/pause `MorphGlyph{OffUp}`, position bar, track cross-fade; Battery module rings on `Sweep`/`CountUp`; a keyboard-brightness module on `LevelControl` | Q+S | G14, G16-G18, G20, G21, G23, G25-G30. **Bardo lane built 2026-09-27** (`details-d2`): `ModuleTile { disc: DiscMotion }`, `SettingsRow { phase: RowPhase, work: RowWork, disc: RowDisc }` and `RowTrailing::Battery`, `PlayPauseButton`, `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`, `Icon::MoonFilled`, `Anim::MorphInSpring`; the shell lane is CONSUMING.md "Control center details" |
 | D3 | OSD | default `LevelLook::Segments` for the OSD (user confirms), nothing else | Q+S (a settings default) | G31 |
 | D4 | dock | badge appear and clear, running dot out, progress ring on `Sweep` + `Settle`, remove poof, Downloads stack tile's one bounce | S (the UI kit only if `ProgressRing` from D6 is not in yet) | G36-G40 |
 | D5 | notifications | group content cross-fade and chip bump, center group expand (`Reveal`) and collapse (`heal`), the X → Clear morph, action `Settle`/`Shake` | Q+S | G32-G35 |
@@ -899,5 +899,5 @@ D0a and D0b can run in parallel; D1's Bardo lane needs both.
   design/13 §13.2-13.3, design/20 §1, design/22 §3.2, design/23 §1.1.
 - Code read: Bardo `crates/ds/src/motion/*`, `components/{battery_level,battery_ring,count,bump_on,
   spinner,sync_halo,module_tile*,level/*,osd*,lock_*,app_switcher,shot_thumbnail,toggle,segmented,
-  traffic_lights,notification_card,banner_stack,menu}*`; sill `crates/sill-surfaces/src/surfaces/
+  traffic_lights,notification_card,banner_stack,menu}*`; shell `crates/shell-surfaces/src/surfaces/
   {bar/status.rs, control_center/**, dock/**}` at `ee9dd76`.

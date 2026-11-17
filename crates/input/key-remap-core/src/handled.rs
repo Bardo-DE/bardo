@@ -10,7 +10,7 @@ use shell_verbs::ShellVerb;
 /// Who carries out a handled action.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Handler {
-    /// sill, the shell, through this verb.
+    /// The shell, the shell, through this verb.
     Shell(ShellVerb),
     /// The compositor itself.
     Compositor,

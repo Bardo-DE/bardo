@@ -18,7 +18,7 @@ mod tests {
     use super::config;
 
     #[test]
-    fn the_lock_surfaces_are_named_sill_lock() {
+    fn the_lock_surfaces_are_named_shell_lock() {
         assert_eq!(config(&ShellFile::default()).namespace, "shell-lock");
     }
 }

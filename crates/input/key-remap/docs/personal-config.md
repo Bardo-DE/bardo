@@ -12,7 +12,7 @@ what a desktop ships and lies under both; leave it alone and override it here.
    the end of the file.
 2. `~/.config/bardo/key-remap/key-remap.toml`, if your desktop forwards it: this layer is yours alone and
    exists only while that desktop's session runs. The Plasma focus feed does not forward it, so
-   on Plasma use the machine file. sill does forward it.
+   on Plasma use the machine file. The shell does forward it.
 
 ## What your own file may say
 
@@ -32,10 +32,10 @@ sequences = true
 Put a rule in the machine file when every session should have it: a keyboard's `[[device]]`
 layout, Caps Lock as the input switch. Put it in `~/.config/bardo/key-remap/key-remap.toml` when it is about
 one desktop, because the machine file may be the Plasma overlay and the Plasma shortcuts are
-wrong elsewhere. Cmd+Space, for example, is Alt+Space on Plasma and Super+Space on sill:
+wrong elsewhere. Cmd+Space, for example, is Alt+Space on Plasma and Super+Space on the shell:
 
 ```toml
-# ~/.config/bardo/key-remap/key-remap.toml, read only by a desktop that forwards it (sill)
+# ~/.config/bardo/key-remap/key-remap.toml, read only by a desktop that forwards it (shell)
 [profile.default]
 rules = [
   { when = "command+space", then = "super+space" },    # the launcher, not KRunner
@@ -47,7 +47,7 @@ rules = [
 ```
 
 A layer overrides per trigger: only the chords it lists change, the rest of the machine file
-stays. Plasma never reads this file, so the same machine keeps `alt+space` there. sill ships
+stays. Plasma never reads this file, so the same machine keeps `alt+space` there. The shell ships
 these rules in its `dist/key_remap/key-remap.toml`; you only write the file yourself to change them.
 To see the result without touching a keyboard, `key_remap replay --config FILE script.txt` lays one
 file over the built-in mapping; to try both layers, paste the user file's rules after the machine
@@ -101,7 +101,7 @@ swapped, the layout is wrong.
 ## Caps Lock as the input-method switch
 
 As on macOS: Caps Lock switches input source (fcitx5's trigger is Ctrl+Space), Shift+Caps Lock is
-the real Caps Lock. A desktop that ships the key remap daemon's defaults (sill does) already has the first rule below in
+the real Caps Lock. A desktop that ships the key remap daemon's defaults (the shell does) already has the first rule below in
 `/usr/lib/bardo/key-remap/key-remap.toml`. To change it, or on a machine without that desktop, put this in the
 machine file, `/etc/bardo/key-remap/key-remap.toml`: a desktop that forwards
 your own file has it cut down on arrival, and a rule on Caps Lock alone, with no modifier held, is
@@ -136,8 +136,8 @@ temor and every Bardo app resolve Cmd through the chord keymap, so they must see
 could not tell a right split from a downward one. The `keymap-aware` profile writes Cmd as Super
 and leaves Cmd+letter alone. temor gets it by default. To give it to another app, have the desktop
 send that profile name for the app (on Plasma add its class to `OWN_PROFILES` in
-`dist/plasma/bardo-key-remap-focus`; on sill an app declares `X-Key-Remap-Profile=keymap-aware` in its
-desktop entry, or you override it in sill's settings). To change one chord for those apps:
+`dist/plasma/bardo-key-remap-focus`; on the shell an app declares `X-Key-Remap-Profile=keymap-aware` in its
+desktop entry, or you override it in the shell's settings). To change one chord for those apps:
 
 ```toml
 [profile.keymap-aware]

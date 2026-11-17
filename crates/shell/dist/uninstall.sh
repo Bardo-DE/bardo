@@ -23,13 +23,13 @@ parse_flags "$@"
 
 # Paths of earlier installs, cleaned up so they do not linger.
 LEGACY_FILES=(
-  /usr/local/bin/sill
-  /etc/pam.d/sill
-  /etc/udev/rules.d/60-sill-ddc.rules
-  /etc/modules-load.d/sill-ddc.conf
-  /usr/local/bin/sill-session
-  /usr/share/wayland-sessions/sill.desktop
-  /etc/systemd/user/sill-session.target
+  /usr/local/bin/shell
+  /etc/pam.d/shell
+  /etc/udev/rules.d/60-shell-ddc.rules
+  /etc/modules-load.d/shell-ddc.conf
+  /usr/local/bin/shell-session
+  /usr/share/wayland-sessions/shell.desktop
+  /etc/systemd/user/shell-session.target
 )
 LEGACY_SEED_DIR=/usr/local/share/bardo/shell
 

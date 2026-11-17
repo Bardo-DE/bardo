@@ -1,4 +1,4 @@
-//! The fake sill: `FakeShellCalls` records the D-Bus calls bindings make (A4), so a test asserts
+//! The fake shell: `FakeShellCalls` records the D-Bus calls bindings make (A4), so a test asserts
 //! that a binding called the method within one frame. A clone shares the record.
 
 use compositor_core::input::DbusCall;

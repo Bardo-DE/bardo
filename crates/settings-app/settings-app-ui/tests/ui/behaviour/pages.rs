@@ -96,7 +96,7 @@ fn a_gesture_action_menu_reads_in_the_schemas_words() {
 }
 
 #[test]
-fn saving_never_removes_a_key_from_sill_or_bardo_files() {
+fn saving_never_removes_a_key_from_shell_or_bardo_files() {
     let sandbox = Sandbox::new("keep-unknown");
     let shell_file = "[dock]\npuppy = true\nposition = \"sideways\"\n[mystery]\nx = 1\n";
     let bardo = "version = 1\n[appearance]\nold_key = 1\n";

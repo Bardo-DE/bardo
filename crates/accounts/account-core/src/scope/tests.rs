@@ -3,7 +3,7 @@ use super::{FLATPAK_LAUNCHER, ScopeName, escape, unescape};
 /// (case, launcher, app, run, the unit name written).
 const WRITTEN: &[(&str, Option<&str>, &str, &str, &str)] = &[
     (
-        "sill's launch",
+        "shell's launch",
         Some("bardo"),
         "org.bardo.Mail",
         "12",

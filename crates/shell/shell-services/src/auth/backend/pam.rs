@@ -14,7 +14,7 @@ use nonstick::{
 use shell_model::auth::{Attempt, AuthFault, Outcome, PamNote, PamService, Verdict};
 
 /// bardo-shell's own service (`dist/pam.d/bardo-shell`).
-pub const SILL_SERVICE: &str = "bardo-shell";
+pub const SHELL_SERVICE: &str = "bardo-shell";
 
 /// The fallback when bardo-shell's file is not installed: every distribution has `login`, and
 /// swaylock's own file is only `auth include login`.
@@ -23,14 +23,14 @@ pub const FALLBACK_SERVICE: &str = "login";
 /// Where PAM looks for a service's file (Linux-PAM: `/etc/pam.d`, then the vendor directories).
 pub const SERVICE_DIRS: [&str; 3] = ["/etc/pam.d", "/usr/lib/pam.d", "/usr/etc/pam.d"];
 
-/// Which service to run: [`SILL_SERVICE`] when a file for it exists in any of
+/// Which service to run: [`SHELL_SERVICE`] when a file for it exists in any of
 /// [`SERVICE_DIRS`] (`exists` answers for a path), else [`FALLBACK_SERVICE`].
 pub fn service(exists: impl Fn(&Path) -> bool) -> PamService {
     let installed = SERVICE_DIRS
         .iter()
-        .any(|dir| exists(&Path::new(dir).join(SILL_SERVICE)));
+        .any(|dir| exists(&Path::new(dir).join(SHELL_SERVICE)));
     let name = if installed {
-        SILL_SERVICE
+        SHELL_SERVICE
     } else {
         FALLBACK_SERVICE
     };
@@ -140,7 +140,7 @@ mod tests {
     use shell_model::auth::{AuthFault, Outcome};
 
     #[test]
-    fn sills_own_file_wins_else_login() {
+    fn the_shells_own_file_wins_else_login() {
         let cases: [(&[&str], &str); 4] = [
             (&["/etc/pam.d/bardo-shell"], "bardo-shell"),
             (&["/usr/lib/pam.d/bardo-shell"], "bardo-shell"),

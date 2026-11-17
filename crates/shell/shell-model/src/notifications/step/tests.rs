@@ -425,7 +425,7 @@ fn a_loaded_history_replaces_capped_and_keeps_ids_ahead() {
 fn the_server_status_is_published() {
     let status = ServerStatus {
         mode: ServerMode::Own,
-        holder: NameHolder::Sill,
+        holder: NameHolder::Shell,
     };
     let (state, effects) = run(
         NotesState::default(),

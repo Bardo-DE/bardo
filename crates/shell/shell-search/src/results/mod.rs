@@ -100,7 +100,7 @@ impl Run for ResultsRun {
         deps: Sources,
         io: ServiceIo<ResultsService>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
-        let dir = env.dirs.sill_state();
+        let dir = env.dirs.shell_state();
         let history = History::new(load_frecency(&dir));
         let installed = match &deps {
             Sources::Services(links) => Installed {

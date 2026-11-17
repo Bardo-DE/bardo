@@ -41,7 +41,7 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
         Some(("org.bardo.Mail", Isolation::Unsandboxed)),
     ),
     (
-        "sill's launcher scope",
+        "shell's launcher scope",
         "app-bardo-org.bardo.Mail-12.scope",
         Sandbox::Native,
         Some(("org.bardo.Mail", Isolation::Unsandboxed)),
@@ -71,7 +71,7 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
         None,
     ),
     (
-        "sill's scope for a non-reverse-DNS id",
+        "shell's scope for a non-reverse-DNS id",
         "app-bardo-foot-1.scope",
         Sandbox::Native,
         None,

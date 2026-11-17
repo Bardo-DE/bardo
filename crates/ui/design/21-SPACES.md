@@ -270,7 +270,7 @@ shows while Today is empty.
 ### 13.6 Desktop link (EXPERIMENT, off by default, not implemented)
 
 `SpacesSource::{Local, Desktop}` is the seam; only `Local` exists. Intended contract for a later
-lane: sill publishes each workspace's `id`, `name` and `SpaceLook` on a bus interface (and signals
+lane: the shell publishes each workspace's `id`, `name` and `SpaceLook` on a bus interface (and signals
 when they change); an app with `SpacesSource::Desktop` maps each of its Spaces to one workspace by
 that id (a new workspace is a new Space over the app's default payload; a deleted one drops its
 Space), and switching a workspace switches the app's Space. The look the app paints is then the

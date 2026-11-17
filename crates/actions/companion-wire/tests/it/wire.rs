@@ -1,4 +1,4 @@
-//! The Companion1 bodies and the session records survive JSON; the forms sill reads are pinned.
+//! The Companion1 bodies and the session records survive JSON; the forms the shell reads are pinned.
 
 use account_core::{AppName, DataClass};
 use action_core::*;

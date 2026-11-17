@@ -96,7 +96,7 @@ async fn the_binary_claims_the_name_and_a_name_alone_gives_no_role() {
     // The binary reads the system's `/proc` and the callers file under `/etc/bardo`, which no
     // test may move: which role the process behind a connection has is tested in process, over a
     // fake proc root (`identity.rs`, `bus_members.rs`). What holds whatever this test process is:
-    // owning sill's name makes it neither sill nor the control centre, and the same for a plain
+    // owning the shell's name makes it neither the shell nor the control centre, and the same for a plain
     // app's. Only the shell's unit, as the system's table names it, is the control centre.
     for name in ["org.bardo.Shell", "org.bardo.Mail"] {
         let connection = bus.connect().await;

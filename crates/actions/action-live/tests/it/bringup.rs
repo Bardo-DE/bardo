@@ -264,7 +264,7 @@ fn inferd_is_never_given_a_local_engine() {
 }
 
 #[test]
-fn the_shell_is_sill_in_the_fake_proc_root() {
+fn the_shell_is_bardo_shell_in_the_fake_proc_root() {
     let tmp = tempfile::tempdir().expect("tmp");
     let root = tmp.path();
     seed::layout(root).expect("layout");

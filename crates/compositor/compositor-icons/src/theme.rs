@@ -31,7 +31,7 @@ impl SystemTheme {
 const THEME_FILE_LIMIT: u64 = 64 * 1024;
 
 /// The file the desktop's icon theme is named in, under the config folder `config`: the GTK
-/// settings file, which sill reads too, so both follow one choice.
+/// settings file, which the shell reads too, so both follow one choice.
 #[must_use]
 pub fn theme_file(config: &Path) -> PathBuf {
     config.join("gtk-3.0").join("settings.ini")

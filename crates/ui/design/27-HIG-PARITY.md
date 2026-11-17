@@ -148,8 +148,8 @@ Most of this audit's motion and state rules fit that machinery without a second 
 | Reserved shortcuts | `Shortcut::custom(..)` returns an error for a combination in the standard table; `Shortcut::standard(StandardAction)` is the only way to bind one | `ds::components::vocab`, test |
 | Inner radius follows outer radius | `Radius::inner(outer, inset)`; the CSS lint rejects a raw radius on an element the markup marks as nested | `ds::geometry`, `ds::lint` |
 
-New CSS lint rules proposed (land as warnings first and tell the sill session: sill reads Bardo by path, so a new
-Strict rule breaks sill's master at once): `PointerCursor` (no `cursor:pointer` outside link and
+New CSS lint rules proposed (land as warnings first and tell the shell session: the shell reads Bardo by path, so a new
+Strict rule breaks the shell's master at once): `PointerCursor` (no `cursor:pointer` outside link and
 drag-handle rules), `MinFontSize` (no size token below `--fs-min` 10 px in UI text),
 `FocusRingShape` (a `:focus-visible` outline radius must be `calc(var(--r-*) + var(--focus-gap))`),
 `ReducedFormMissing` (data test over the motion primitives, not CSS). New markup lint rules: `UnnamedControl` (every
@@ -179,8 +179,8 @@ The page covers several settings; each has its own row.
 | Reduce Motion | "Tighten springs … or track 1:1", no z-axis depth animation, no animating into or out of blurs, "replace a slide with a fade" | Motion level `Reduced` (`appearance.motion`; the system preference resolves to it): slides, scales and springs become a cross-fade at `--t-quick`, springs critically damped with no overshoot, drags 1:1, the spinner keeps turning (design/30 §1.1) | Adopt | Every motion primitive declares its Reduced form (design/30 §1.3); a data test fails a primitive without one. Levels are Standard and Reduced only; a Look never sets the level. `ds::motion`; data test `every_primitive_has_a_reduced_form` |
 | Colour alone | "Avoid relying solely on color"; problem pairs: blue/orange, red/green, red/black, red or green with gray; example: red square for offline, green circle for online. Links may add an underline | 00 §3 "colour is a claim" says what a hue means, not that a second cue exists | Adopt | Every status carried by hue also carries a shape or a word: `StatusMark { hue, shape: Shape }` with no hue-only constructor; `appearance.differentiate_without_color = Off \| On` adds link underlines and the shapes in dots (unread dot, online dot). 03 §14; `ds::components::vocab`; type |
 | Text size | macOS has no Dynamic Type (typography page). The sidebar size setting (Small/Medium/Large, see 5.12) is the Mac's text-size lever; use Regular through Bold, avoid Light and thinner | `display.scale` only (22 §3.15); weights 400-800 already | Adapt | `appearance.sidebar_size = Small \| Medium \| Large` drives the 5.12 metrics; no free text scale (the Mac has none). 22 §3.1; `ds::tokens` |
-| VoiceOver (screen reader) | Every element reachable, labelled, grouped; decorative images hidden; announce layout and content changes; each page a unique title and headings | Components emit `role` and `aria-*` (04 shared vocabulary); Blitz's `accessibility` feature is on in the workspace; how shell surfaces (layer-shell through layer-shell-host) reach AT-SPI is not specified | Adopt | Markup lint `UnnamedControl`; a live-region contract for toasts, banners, OSD and progress (`aria-live="polite"`, critical banners `assertive`); layer-shell-host exports each surface's AccessKit tree over AT-SPI. 04 global rules; `ds::lint::markup`; layer-shell-host; test: Orca reads the launcher and a banner (manual check, queued in sill/docs/manual-checks.md) |
-| Full Keyboard Access | Keyboards page: with it on, every control is reachable; Ctrl+F1 toggles it; Ctrl+F2 menu bar, Ctrl+F3 Dock, Ctrl+F5 toolbar, Ctrl+F6 next panel, Ctrl+Tab next control group | Every control is in the Tab order (04 components, 13.3.11 "Tab reaches close, minimize, zoom") | Adapt | See 6.4: `appearance.keyboard_navigation = TextAndLists \| All` (default `All`, our Arc H5 stance); the Ctrl+F2/F3 shortcuts focus the bar and the dock. 06 §2; sill |
+| VoiceOver (screen reader) | Every element reachable, labelled, grouped; decorative images hidden; announce layout and content changes; each page a unique title and headings | Components emit `role` and `aria-*` (04 shared vocabulary); Blitz's `accessibility` feature is on in the workspace; how shell surfaces (layer-shell through layer-shell-host) reach AT-SPI is not specified | Adopt | Markup lint `UnnamedControl`; a live-region contract for toasts, banners, OSD and progress (`aria-live="polite"`, critical banners `assertive`); layer-shell-host exports each surface's AccessKit tree over AT-SPI. 04 global rules; `ds::lint::markup`; layer-shell-host; test: Orca reads the launcher and a banner (manual check, queued in shell/docs/manual-checks.md) |
+| Full Keyboard Access | Keyboards page: with it on, every control is reachable; Ctrl+F1 toggles it; Ctrl+F2 menu bar, Ctrl+F3 Dock, Ctrl+F5 toolbar, Ctrl+F6 next panel, Ctrl+Tab next control group | Every control is in the Tab order (04 components, 13.3.11 "Tab reaches close, minimize, zoom") | Adapt | See 6.4: `appearance.keyboard_navigation = TextAndLists \| All` (default `All`, our Arc H5 stance); the Ctrl+F2/F3 shortcuts focus the bar and the dock. 06 §2; the shell |
 | Hit targets | "Even when people use a pointer", too-small targets frustrate; 44 pt on touch | 22 px menu rows, 12 px traffic lights (the Mac's own) | Covered | Mac sizes are the Mac's; nothing to add |
 
 ### 3.2 App icons (2025-04-22)
@@ -288,7 +288,7 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 | **Apple** | Ask only for what a feature needs, at the moment it is used, never at launch unless required; a purpose string that is one active sentence ("The app records during the night to detect snoring sounds", not "needed for a better experience"); a pre-alert screen has one button that opens the system alert; macOS: sandboxing, signing, "avoid making assumptions about who is signed in". The page does not describe the menu-bar recording indicators; on macOS 14/15 an orange dot marks microphone use, green marks camera, and a purple glyph marks screen recording, with the app named in Control Center (L) |
 | **The UI kit today** | Nothing |
 | **Verdict** | Adopt |
-| **Rule** | (a) sill shows an in-use indicator in the bar for camera (PipeWire video capture nodes), microphone (capture streams) and screen cast (portal sessions): one dot per kind, in the kind's colour **and** a glyph (3.1 colour alone), the app names in the control center; the dot cannot be hidden by settings. (b) Portal permission dialogs (our polkit-style prompt) carry a purpose string from the requesting app, shown as one sentence. 20 new §1.18; sill `privacy` service; test: a fake capture node shows the dot within one frame of the node appearing |
+| **Rule** | (a) the shell shows an in-use indicator in the bar for camera (PipeWire video capture nodes), microphone (capture streams) and screen cast (portal sessions): one dot per kind, in the kind's colour **and** a glyph (3.1 colour alone), the app names in the control center; the dot cannot be hidden by settings. (b) Portal permission dialogs (our polkit-style prompt) carry a purpose string from the requesting app, shown as one sentence. 20 new §1.18; the shell `privacy` service; test: a fake capture node shows the dot within one frame of the node appearing |
 
 ### 3.14 Right to left, localization, CJK and input methods (2025-01-08; layout, inclusion)
 
@@ -372,7 +372,7 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 | **Apple** | Full screen when it serves the task; people choose when to leave; the Dock stays revealable; the toolbar can hide until the pointer reaches the top; Mission Control always reachable; resume where people left off |
 | **The UI kit today** | 05 §9 rule 12: fullscreen surfaces never animate; 13.3.11 zoom |
 | **Verdict** | Adopt: bar reveal in fullscreen |
-| **Rule** | In a fullscreen workspace, pointer at the top edge for the hover intent (450 ms) reveals the bar over the app; the dock reveals at the bottom edge with 10's auto-hide numbers. 13 §13.3.1; sill |
+| **Rule** | In a fullscreen workspace, pointer at the top edge for the hover intent (450 ms) reveals the bar over the app; the dock reveals at the bottom edge with 10's auto-hide numbers. 13 §13.3.1; the shell |
 
 ### 4.6 Launching, and state restoration (2023-11-02)
 
@@ -406,7 +406,7 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 | **Apple** | Interruption levels: Passive, Active (default), Time Sensitive, Critical; only Time Sensitive and Critical break through a Focus; Critical also through silence. Content: short title, sentence case, full punctuation, no app name (the icon is shown), no truncation by the app; up to **four** actions, title case, no "Open" action, prefer non-destructive; badges count unread notifications only; macOS notification sounds mix with other audio |
 | **The UI kit today** | 13.3.6: banners, 5 s, hover expand, actions as `Button` at `ControlSize::Mini`, swipe, grouping, Do Not Disturb passes only urgency Critical |
 | **Verdict** | Adapt |
-| **Rule** | Map freedesktop urgency and hints to levels: `low` → Passive (history only, no banner), `normal` → Active, `critical` → Critical; an `x-bardo-time-sensitive` hint → Time Sensitive, which passes a Focus. Cap actions at 4. 13.3.6; sill; test per level against DND on and off |
+| **Rule** | Map freedesktop urgency and hints to levels: `low` → Passive (history only, no banner), `normal` → Active, `critical` → Critical; an `x-bardo-time-sensitive` hint → Time Sensitive, which passes a Focus. Cap actions at 4. 13.3.6; the shell; test per level against DND on and off |
 
 ### 4.10 Modality (2024-03-25)
 
@@ -448,7 +448,7 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 | **Apple** | The system volume governs output; use the system volume view; respect headphone routing (pause on unplug); don't repurpose media keys; macOS notification sounds mix with other audio |
 | **The UI kit today** | 13.3.10: freedesktop sound theme, screenshot, trash, volume step (once per press), dock poof, banner, critical alert, `bell`; settings `sound.ui_sounds`, `sound.volume_feedback` |
 | **Verdict** | Covered; add pause-on-unplug |
-| **Rule** | Media player pauses when the default sink changes from headphones to speakers (the Mac does). 20 §2.6; sill audio service |
+| **Rule** | Media player pauses when the default sink changes from headphones to speakers (the Mac does). 20 §2.6; the shell audio service |
 
 ### 4.15 Printing (not retrieved)
 
@@ -510,7 +510,7 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 | **Apple** | Leading side: system menu, then the active app's menus in order **App (name in bold), File, Edit, Format, View, app-specific, Window, Help**; trailing side: menu bar extras, which open a **menu, not a popover**, unless the content is too complex. App menu: About, Settings… (Cmd+,), Services, Hide (Cmd+H), Hide Others (Opt+Cmd+H), Show All, Quit (Cmd+Q). Edit: Undo, Redo, Cut, Copy, Paste, Paste and Match Style, Delete, Select All, Find, Spelling, Substitutions, Transformations, Speech, Dictation, Emoji & Symbols. View: toolbar, sidebar, tab bar, Enter Full Screen. Window: Minimize, Zoom, tabs, Bring All to Front, window list. Help: search and the app's help. Every toolbar command also lives in a menu. Dynamic items change with Option. One-word menu titles |
 | **The UI kit today** | Bar left: app name and workspace indicator (00 §8.4, 20 §1.1); right: tray and status items; every status item opens a ds `Menu` or a popover (control center, calendar) |
 | **Verdict** | Adopt for our own apps; Adapt for foreign apps |
-| **Rule** | (a) `ds::commands::MenuModel`: the standard menus and items as data (`StandardMenu`, `StandardItem` with their reserved shortcuts, 6.2), plus app sections; ui-blitz apps export it over a session-bus interface (the `com.canonical.dbusmenu` format existing global-menu implementations read, so foreign Qt and GTK apps that export one also appear). (b) sill's bar renders the active window's model with the one menu machine (13.3.2 hover switch applies). (c) Foreign apps without a model show only the App menu (Hide, Quit, which sill performs through the toplevel protocol). (d) Status items open menus; the control center and calendar stay popovers (they are too complex for a menu, the page's exception). 13 new §13.3.13; `ds::commands`; sill bar; test: a harness app's Edit menu lists Undo with its title |
+| **Rule** | (a) `ds::commands::MenuModel`: the standard menus and items as data (`StandardMenu`, `StandardItem` with their reserved shortcuts, 6.2), plus app sections; ui-blitz apps export it over a session-bus interface (the `com.canonical.dbusmenu` format existing global-menu implementations read, so foreign Qt and GTK apps that export one also appear). (b) the shell's bar renders the active window's model with the one menu machine (13.3.2 hover switch applies). (c) Foreign apps without a model show only the App menu (Hide, Quit, which the shell performs through the toplevel protocol). (d) Status items open menus; the control center and calendar stay popovers (they are too complex for a menu, the page's exception). 13 new §13.3.13; `ds::commands`; the shell bar; test: a harness app's Edit menu lists Undo with its title |
 
 **Status 2026-10-06 (rule a, Bardo half).** Built. The model is `ds::components::menus::export`
 (pure: `MenuTree`, the `com.canonical.dbusmenu` layout and properties, an `Event` mapped back to a
@@ -526,12 +526,12 @@ The `ds::commands::MenuModel` named above is `MenuBarModel` (design/30 section 2
 well-known name derived from its Wayland `app_id` and nothing else: bus name
 `org.bardo.AppMenu.<app_id>` (each dot-separated element made legal: other characters become `_`, one
 starting with a digit gets a `_` first), object `/org/bardo/AppMenu`, interface
-`com.canonical.dbusmenu`. sill reads the focused toplevel's `app_id` (ext-foreign-toplevel or
+`com.canonical.dbusmenu`. The shell reads the focused toplevel's `app_id` (ext-foreign-toplevel or
 toplevel), calls `AppMenuAddress::for_app_id` (the same function the app used, in `ds`) and
 asks the bus (`NameHasOwner`, or `NameOwnerChanged` to follow it); if the name has an owner it fetches
 `GetLayout(0, -1, [])`, else the focused app has no menu (rule c). Why this and not a registration with
-`org.bardo.Shell`: it needs no running shell at app start, nothing is lost when sill restarts (the bus
-owns the name and clears it when the app exits, which also tells sill the menu is gone), an agent
+`org.bardo.Shell`: it needs no running shell at app start, nothing is lost when the shell restarts (the bus
+owns the name and clears it when the app exits, which also tells the shell the menu is gone), an agent
 discovers every menu with one `ListNames` filtered by `AppMenuAddress::SERVICE_PREFIX`, and the same
 address is what `org_kde_kwin_appmenu.set_address` takes later. Limits: one menu per app, not per
 window (the Mac's model); a second process with the same `app_id` is queued for the name
@@ -800,7 +800,7 @@ connection per window, binds `org_kde_kwin_appmenu_manager` when it is advertise
 
 ## 7. Proposed waves
 
-In priority order. Each wave is one Bardo lane (and a sill lane where named), gated as usual. Waves
+In priority order. Each wave is one Bardo lane (and a shell lane where named), gated as usual. Waves
 H0 and H1 can run in parallel; H2 needs H0's lint rules; H4 needs H1's springs for its sheets.
 
 **H0: Guardrails (Bardo; small). Built on `hig-h0` (2026-09-27): the five rules as
@@ -810,17 +810,17 @@ H0 and H1 can run in parallel; H2 needs H0's lint rules; H4 needs H1's springs f
 `Shortcut::{standard, custom}` and the ⌃⌥⇧⌘ order, the UI kit's cursors on the arrow, docs 02 §12-13,
 06 §2.0, CHECKLIST.** The cheap, mechanical rules that stop new drift before the
 larger waves: the CSS lint rules `PointerCursor`, `MinFontSize` and `FocusRingShape` (landing as
-warnings, with sill told first), the markup rules `UnnamedControl` and `ThreeDots`, the
+warnings, with the shell told first), the markup rules `UnnamedControl` and `ThreeDots`, the
 `StandardAction` table with `Shortcut::custom` refusing reserved keys, and the modifier render
 order. Fix the violations inside Bardo (cursor rules, "..." strings, prototype shortcuts
 Mod+S/Mod+T). Doc: 02 §13 writing rules, 06 §2 re-mapped keys, CHECKLIST lines for writing,
 pointer and shortcuts.
-sill's side (Whopper, 2026-09-26): 0 `cursor:pointer`, no literal font sizes (all `var(--fs-*)`),
+The shell's side (Whopper, 2026-09-26): 0 `cursor:pointer`, no literal font sizes (all `var(--fs-*)`),
 real ellipses already, no Mod+S/Mod+T bindings. So `MinFontSize` is a **token** rule in Bardo:
 `--fs-micro`, `--fs-nano`, `--fs-help` and `--fs-dial` must resolve to >= 10 px (fix in
-the token table, not in sill); the lint also rejects literal sizes below 10 in any stylesheet.
-`FocusRingShape` and `UnnamedControl` run as warnings over sill's surface markup tests and the
-list goes to sill before they turn Strict.
+the token table, not in the shell); the lint also rejects literal sizes below 10 in any stylesheet.
+`FocusRingShape` and `UnnamedControl` run as warnings over the shell's surface markup tests and the
+list goes to the shell before they turn Strict.
 
 **H1: Driven motion (Bardo). Built on `hig-h1` (2026-09-27): design/05 section 14; `ds::motion::{Spring, SpringSpec, use_spring, Throw, VelocityMeter, DragReturn, ReducedForm}`, the velocity inside `Contact`; converted as 05 section 14.6 lists.** `Spring { damping, response }`, `use_spring`, `Touch::Contact(Velocity)`
 extending 26's `Touch`, `SpringSpec::for_touch`, projection with the .998 rate, retargeting;
@@ -830,10 +830,10 @@ segmented and switcher indicator, slider release, dock drag return). Tests: inte
 continuity, throw endpoint, idle 0 frames, every motion primitive declares a Reduced form.
 Doc: 05 new §14.
 
-**H2: Accessibility settings (Bardo + sill).** High-contrast token set (with the colour page's
+**H2: Accessibility settings (Bardo + the shell).** High-contrast token set (with the colour page's
 Accessible variants as the pattern) and its 7:1 gate; `appearance.transparency`; "differentiate
 without colour" with `StatusMark`; `appearance.sidebar_size`; `appearance.keyboard_navigation`;
-AccessKit names and live regions on every component; sill: layer-shell-host exports surfaces over
+AccessKit names and live regions on every component; the shell: layer-shell-host exports surfaces over
 AT-SPI, Ctrl+F2/F3 focus the bar and dock. Manual checks queued (Orca on the launcher and a
 banner).
 
@@ -843,8 +843,8 @@ in accent with accent ink, text menus open without animation and blink on pick, 
 hide unavailable items (and show shortcuts, owner override 5.4), the one-popover rule, the arrow cursor everywhere
 but links. Gallery contact sheet reviewed beside macOS screenshots.
 
-**H4: Commands, undo, modality (Bardo + sill).** `MenuModel` with the standard menus and items;
-ui-blitz apps export it; sill's bar renders the active app's menus (App, File, Edit, View,
+**H4: Commands, undo, modality (Bardo + the shell).** `MenuModel` with the standard menus and items;
+ui-blitz apps export it; the shell's bar renders the active app's menus (App, File, Edit, View,
 Window, Help) and the App menu for foreign apps; toolbar items bound to commands; `UndoStack`
 in `ds::edit` with titled Undo/Redo and Cmd+Z / Shift+Cmd+Z; `ModalScope` focus trap;
 `Attach::{Window, Centre}` on `Sheet`; the `Alert` component and its button types; power menu buttons
@@ -855,15 +855,15 @@ title case), the 10 px floor, size-based tracking, glyph weight following text w
 `SymbolScale`. mailo keeps its own ramp. Gallery before and after, side by side with
 macOS.
 
-**H6: CJK and restoration (Bardo + sill).** CJK faces and fallback order per locale, CJK
+**H6: CJK and restoration (Bardo + the shell).** CJK faces and fallback order per locale, CJK
 tracking 0, cluster-safe clipping, preedit drawing and caret-anchored candidates, Escape
 cancelling a composition first; `Restorable` and the per-app restore file (window size, panes,
 sidebar expansion, scroll, last settings pane).
 
-**H7: Remaining components and the bar's privacy dots (Bardo + sill).** Checkbox, radio group,
+**H7: Remaining components and the bar's privacy dots (Bardo + the shell).** Checkbox, radio group,
 pop-up and pull-down buttons, stepper, disclosure, `Table` with sorting, resizing and middle
 truncation, `LevelIndicator`; `Radius::inner` and the `NestedRadius` lint with the radii table
-regenerated; drag threshold 3 px, return-to-source, count badge, drag cursors; sill's camera,
+regenerated; drag threshold 3 px, return-to-source, count badge, drag cursors; the shell's camera,
 microphone and screen-cast indicators with the portal purpose string; notification interruption
 levels.
 

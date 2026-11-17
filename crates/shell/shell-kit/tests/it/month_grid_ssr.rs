@@ -82,7 +82,7 @@ pub(crate) fn specimens() -> Vec<Specimen> {
 /// The sample is the month bardo-shell's own test pins: September 2026 from Monday is five rows from
 /// 31 August (ISO week 36) to 4 October; from Sunday it starts on 30 August, still week 36.
 #[test]
-fn the_sample_is_the_month_sill_pins() {
+fn the_sample_is_the_month_shell_pins() {
     let monday = sample(SEPTEMBER, First::Monday);
     assert_eq!(monday.weeks.len(), 5);
     assert_eq!(monday.weeks[0].number, IsoWeek(36));

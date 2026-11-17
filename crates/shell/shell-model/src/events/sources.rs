@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn auto_looks_at_sill_porter_and_vdirsyncer() {
+    fn auto_looks_at_shell_porter_and_vdirsyncer() {
         let env = AutoEnv {
             home: PathBuf::from(HOME),
             data_home: PathBuf::from("/home/ada/.local/share"),

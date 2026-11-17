@@ -19,7 +19,7 @@ pub const FILE_NAME: &str = "notifications.json";
 
 /// `notifications.json` in bardo-shell's folder of `dirs`' state directory.
 pub fn path_in(dirs: &shell_model::dirs::Dirs) -> PathBuf {
-    dirs.sill_state().join(FILE_NAME)
+    dirs.shell_state().join(FILE_NAME)
 }
 
 /// The file at `path`; empty when there is none, it cannot be read, or it is another version

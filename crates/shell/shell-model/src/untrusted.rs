@@ -124,8 +124,8 @@ mod tests {
     #[test]
     fn a_log_line_cannot_be_forged_or_flooded() {
         assert_eq!(
-            for_log("a\nsill: fake\u{1b}[2J"),
-            r#""a\nsill: fake\u{1b}[2J""#
+            for_log("a\nshell: fake\u{1b}[2J"),
+            r#""a\nshell: fake\u{1b}[2J""#
         );
         let long = "x".repeat(10_000);
         let shown = for_log(&long);

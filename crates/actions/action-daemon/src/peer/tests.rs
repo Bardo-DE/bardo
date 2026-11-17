@@ -21,7 +21,7 @@ fn who(found: &Found, acp: &AcpGate) -> Option<(String, Vec<CallerRole>)> {
     derive(&config(), acp, found).map(|c| (c.app.name.to_string(), c.roles.into_iter().collect()))
 }
 
-const SILL: &[CallerRole] = &[
+const SHELL: &[CallerRole] = &[
     CallerRole::Launcher,
     CallerRole::Confirm,
     CallerRole::Control,
@@ -59,7 +59,7 @@ fn a_table_of_callers_and_the_roles_their_standing_backs() {
         row(
             "the shell's unit, with the system's sheet_host role, plays the sheet roles",
             held("org.bardo.Shell", Role::SheetHost),
-            Some(("org.bardo.Shell", SILL)),
+            Some(("org.bardo.Shell", SHELL)),
         ),
         row(
             "a scope that claims the shell's app is a plain app and plays no sheet role",
@@ -173,7 +173,7 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
     let table = callers::shipped();
     for (pid, leaf, main) in [
         (1, "bardo-shell.service", Main::Yes),
-        (2, "shell-shell.scope", Main::No),
+        (2, "bardo-shell.scope", Main::No),
         (3, "bardo-shell.service", Main::No),
         (4, "bardo-companiond.service", Main::Yes),
         (5, "app-org.bardo.Companion1-1.scope", Main::No),
@@ -192,7 +192,7 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
     let on = AcpGate::new(true);
     // A row: what it is, its pid, and the app and roles it is taken for (none: refused).
     let rows: [Row<'_>; 12] = [
-        ("the shell's unit", 1, Some(("org.bardo.Shell", SILL))),
+        ("the shell's unit", 1, Some(("org.bardo.Shell", SHELL))),
         ("the shell's old scope is nobody", 2, None),
         (
             "a process of the shell's unit that is not its main process",

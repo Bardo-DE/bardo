@@ -11,11 +11,11 @@ use settings_types::schema::{
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
-struct Sill {
+struct Shell {
     hot_corners: HotCornerSettings,
 }
 
-impl SettingsDoc for Sill {
+impl SettingsDoc for Shell {
     const FILE: FileName = FileName("settings.toml");
     const FORMAT: Format = Format::Toml;
 }
@@ -27,13 +27,13 @@ fn bind(keys: &[CornerKey], action: CornerDo) -> CornerBinding {
     }
 }
 
-fn loaded(scratch: &Scratch, text: &str) -> Loaded<Sill> {
+fn loaded(scratch: &Scratch, text: &str) -> Loaded<Shell> {
     std::fs::create_dir_all(scratch.app_dir()).unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(scratch.app_dir().join("settings.toml"), text).unwrap_or_else(|e| panic!("{e}"));
-    scratch.store().load::<Sill>()
+    scratch.store().load::<Shell>()
 }
 
-fn saved(scratch: &Scratch, doc: &Sill) -> String {
+fn saved(scratch: &Scratch, doc: &Shell) -> String {
     scratch.store().save(doc).unwrap_or_else(|e| panic!("{e}"));
     std::fs::read_to_string(scratch.app_dir().join("settings.toml"))
         .unwrap_or_else(|e| panic!("{e}"))
@@ -106,7 +106,7 @@ fn the_list_form_loads_round_trips_and_writes_keys_in_a_stable_order() {
     );
     let text = saved(&scratch, &read.value);
     assert!(text.contains(r#"keys = ["option", "shift"]"#), "{text}");
-    assert_eq!(scratch.store().load::<Sill>(), Loaded::clean(read.value));
+    assert_eq!(scratch.store().load::<Shell>(), Loaded::clean(read.value));
 }
 
 #[test]
@@ -143,7 +143,7 @@ bottom_right_command = ""
     assert!(!text.contains("_command"), "{text}");
     assert!(!text.contains(r#"top_right = "lock""#), "{text}");
     assert!(text.contains(r#"command = "foot""#), "{text}");
-    assert_eq!(scratch.store().load::<Sill>(), Loaded::clean(read.value));
+    assert_eq!(scratch.store().load::<Shell>(), Loaded::clean(read.value));
 }
 
 #[test]

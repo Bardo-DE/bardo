@@ -1,7 +1,7 @@
 //! Bodies on the bus and frames on the fd: `speech-wire` types in an `Envelope`, JSON in `s`; the
 //! event fd carries a 4-byte big-endian length then one envelope (account-core's framing, with
 //! `VoiceVocab`). Audio never appears here. The framing itself is `speech-wire`'s, so a client
-//! such as sill needs no daemon crate.
+//! such as the shell needs no daemon crate.
 
 use crate::error::VoiceError;
 use serde::de::DeserializeOwned;

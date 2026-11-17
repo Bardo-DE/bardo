@@ -20,7 +20,7 @@ use shell_model::dirs::Dirs;
 
 /// `wallpaper` in bardo-shell's folder of `dirs`' cache directory.
 pub(crate) fn cache_directory(dirs: &Dirs) -> PathBuf {
-    dirs.sill_cache().join(CACHE_DIR)
+    dirs.shell_cache().join(CACHE_DIR)
 }
 
 /// Waits on `commands` while `listening`; parks forever once it is not (mirrors

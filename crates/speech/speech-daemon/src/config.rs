@@ -1,4 +1,4 @@
-//! `voiced.toml`: which bus names play which role. `shell` is sill; `app` is not listed: it is
+//! `voiced.toml`: which bus names play which role. `shell` is the shell; `app` is not listed: it is
 //! whoever owns the bus name a `Route` names, checked with `GetNameOwner`.
 
 use account_core::AppName;
@@ -9,7 +9,7 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum VoiceRole {
-    /// Opens utterances and speech; sill.
+    /// Opens utterances and speech; the shell.
     Shell,
     /// Attaches to an utterance it was routed.
     App,
@@ -34,7 +34,7 @@ pub struct VoicedConfig {
     /// Whether the begin and end sounds play.
     pub earcons: bool,
     /// `input = "<node.name>"`: capture from this physical source when it exists, instead of the
-    /// person's default source. Absent: follow the default. (Sill's settings could carry it later.)
+    /// person's default source. Absent: follow the default. (the shell's settings could carry it later.)
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub input: Option<String>,
     /// `max_hold_ms`: the longest the mic stays open on one `Begin`, in milliseconds. Past it the

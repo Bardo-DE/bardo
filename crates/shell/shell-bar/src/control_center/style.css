@@ -1,6 +1,6 @@
 /* The control center (design/20 §1.5, design/13 §13.3.7) and the module dropdowns, inside the
    bar popup's bardo Popover card. The grid, the tiles, the list rows and the pane slide are
-   bardo's (ModuleGrid, ModuleTile, ModulePanel, List, Row, PaneSwitcher); this sheet lays out what sill
+   bardo's (ModuleGrid, ModuleTile, ModulePanel, List, Row, PaneSwitcher); this sheet lays out what shell
    puts around and inside them. Its width and padding are `--cc-width` and `--cc-pad`, its cap is
    written inline; everything here is layout and tokens. Attribute selectors carry `*|`. */
 

@@ -1,6 +1,6 @@
 # Architecture
 
-bardo-updater keeps Bardo desktop (the compositor, the sill shell and the apps) up to date
+bardo-updater keeps Bardo desktop (the compositor, the shell and the apps) up to date
 from prebuilt, signed release bundles that CI builds from the desktop repository's manifest and
 publishes on the public releases repository `PoHsuanLai/desktop-releases`. It checks once a day,
 tells the person when something newer exists, shows it on the Software Update page of Settings, and
@@ -117,7 +117,7 @@ rule, a login service, the keyboard daemon's unit). The bundle carries them unde
 path>`, `release.toml` lists each destination in `[[system]]`, and `SyncSystem` copies the verified file
 from the new release's tree (atomic rename, the listed mode). The destination must be a path `ALLOWED_SYSTEM_FILES` names:
 a folder and either one exact name or any plain name with a given ending. Today that is `/etc/pam.d/bardo-shell`,
-`/etc/udev/rules.d/{60-sill-ddc,70-bardo-key-remap,70-bardo-mouse-gestures}.rules`, `/etc/modules-load.d/{sill-ddc,key_remap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/bardo/key-remap` is the administrator's and is not on the list),
+`/etc/udev/rules.d/{60-shell-ddc,70-bardo-key-remap,70-bardo-mouse-gestures}.rules`, `/etc/modules-load.d/{shell-ddc,key_remap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/bardo/key-remap` is the administrator's and is not on the list),
 `/etc/modprobe.d/99-bardo-mouse-gestures.conf`, `/usr/lib/systemd/system/{key_remap,input_broker,mouse_gestures}.service`,
 `/usr/lib/systemd/system/bardo-input-broker.socket`, `/etc/udev/rules.d/72-bardo-input-broker.rules`,
 `/etc/modules-load.d/input-broker.conf`, `/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules`, `/etc/porter/{callers,inferd-callers}.toml`,

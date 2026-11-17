@@ -6,7 +6,7 @@
 pub enum Host {
     /// bardo-shell's own session (`dist/shell-session`, or the desktop's own: `XDG_CURRENT_DESKTOP`
     /// names Bardo).
-    SillSession,
+    ShellSession,
     /// Another desktop's session, e.g. bardo-shell on a nested compositor during development:
     /// logind's signals belong to that desktop.
     Guest,
@@ -16,7 +16,7 @@ impl Host {
     /// From `XDG_CURRENT_DESKTOP` (colon-separated).
     pub fn of(current_desktop: &str) -> Host {
         if current_desktop.split(':').any(is_own_desktop) {
-            Host::SillSession
+            Host::ShellSession
         } else {
             Host::Guest
         }
@@ -25,7 +25,7 @@ impl Host {
     /// Whether logind's `Lock` and `PrepareForSleep` are ours to act on: a bardo-shell session only.
     #[must_use]
     pub fn follows_logind(self) -> bool {
-        self == Host::SillSession
+        self == Host::ShellSession
     }
 }
 
@@ -43,11 +43,11 @@ mod tests {
     use super::Host;
 
     #[test]
-    fn only_a_sill_session_follows_logind() {
+    fn only_a_shell_session_follows_logind() {
         let cases = [
-            ("bardo", Host::SillSession),
-            ("Bardo", Host::SillSession),
-            ("GNOME:bardo", Host::SillSession),
+            ("bardo", Host::ShellSession),
+            ("Bardo", Host::ShellSession),
+            ("GNOME:bardo", Host::ShellSession),
             ("bardoy", Host::Guest),
             ("KDE", Host::Guest),
             ("", Host::Guest),
@@ -55,7 +55,7 @@ mod tests {
         for (desktop, want) in cases {
             assert_eq!(Host::of(desktop), want, "{desktop:?}");
         }
-        assert!(Host::SillSession.follows_logind());
+        assert!(Host::ShellSession.follows_logind());
         assert!(!Host::Guest.follows_logind());
     }
 }

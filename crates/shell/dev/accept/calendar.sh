@@ -55,7 +55,7 @@ cal, review = sys.argv[1], sys.argv[2]
 now = dt.datetime.now().replace(second=0, microsecond=0)
 fmt = lambda t: t.strftime("%Y%m%dT%H%M%S")
 def write(name, body):
-    text = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//sill//accept-calendar//EN\r\n" \
+    text = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//shell//accept-calendar//EN\r\n" \
         + body + "END:VCALENDAR\r\n"
     open(f"{cal}/{name}.part", "w").write(text)
     import os; os.replace(f"{cal}/{name}.part", f"{cal}/{name}")

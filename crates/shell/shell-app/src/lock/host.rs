@@ -102,7 +102,7 @@ mod tests {
     use crate::daemon::msg::ShellMsg;
 
     #[test]
-    fn shell_hosts_words_map_onto_sills() {
+    fn shell_hosts_words_map_onto_the_shells() {
         assert_eq!(refusal_of(LockError::Unsupported), LockRefusal::Unsupported);
         assert_eq!(
             refusal_of(LockError::InProgress(LockId(3))),

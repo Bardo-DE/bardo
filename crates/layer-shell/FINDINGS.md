@@ -153,7 +153,7 @@ surface with `html { background }` for the same reason (F65).
 `wp_fractional_scale_v1.preferred_scale`, else `preferred_buffer_scale` / the output's integer
 scale. A surface starts at `Scale120::ONE`, a popup at its parent's. `HostConfig::prepaint`
 (`Prepaint::Hook`) is per host, not per document, so a popup opened from a component gets it
-too; sill passes the UI kit's device-pixel snapping.
+too; the shell passes the UI kit's device-pixel snapping.
 
 - **One resolve per frame.** Blitz's `resolve_layout` runs `taffy::round_layout` on every resolve,
   so a snap after one resolve is undone by the next. `SurfaceDocument::resolve` is the frame's
@@ -413,7 +413,7 @@ hand where a field has no `Debug`).
 
 design/10 §10.3.10 sets each dock tile as its app's minimize target
 (a compositor's minimize-rectangle request taking the toplevel handle and a `wl_surface`). The toplevel handle lives
-on sill's connection and the dock's `wl_surface` on the host's; a protocol object cannot cross
+on the shell's connection and the dock's `wl_surface` on the host's; a protocol object cannot cross
 connections, and the host may not name compositor-private protocols. Designed, not built: export the host's
 connection and a surface on it,
 
@@ -428,7 +428,7 @@ impl SurfaceHandle { pub fn wl_surface(&self) -> Option<WlSurfaceExport>; }
 ```
 
 valid until the surface is hidden or closed (a new `HostEvent::SurfaceMapped { id }` says when to
-re-export). sill then makes its own `EventQueue` on that connection, binds the toplevel manager
+re-export). The shell then makes its own `EventQueue` on that connection, binds the toplevel manager
 there and calls `set_rectangle` with the exported surface.
 
 ### F35. Open: drag and drop into shell surfaces
@@ -452,7 +452,7 @@ pub fn use_drop_event() -> ReadSignal<Option<DropEvent>>;
 ```
 
 The payload is read like the clipboard (F22) and `Drop` delivered when the read completes.
-Spring-loading stays in sill's dock machine.
+Spring-loading stays in the shell's dock machine.
 
 ## Toplevels
 
@@ -649,7 +649,7 @@ accepted when an injected key's flags become the seat's `logo` (`with_dom`), and
 (an actual Meta keysym) still holds `META`. shell-host does not depend on Bardo, so it does not
 fill the Blitz text-action resolver (`blitz_dom::DocumentConfig::text_action_resolver`): Blitz's
 default resolver, unchanged from before, treats SUPER (and META) as Command and CONTROL as
-Command off macOS. The embedder that links Bardo (sill) builds the `TextActionResolver` from
+Command off macOS. The embedder that links Bardo (the shell) builds the `TextActionResolver` from
 The UI kit's key resolution (ds-blitz) and passes it in the `DocumentConfig` it hands the host, so a
 chord the UI kit does not map to a text action (Ctrl+C on our desktop) is not a copy.
 
@@ -736,7 +736,7 @@ setting).
 - The viewport is rigid: `html`/`body` cannot carry `data-overscroll="band"` from Dioxus.
 - Not proven live: touchpad, keyboard, the mouse gestures daemon, hover expansion, the thumb on screen.
 - The one-finger page swipe (design/12 §12.3.6) and `Tap{One}` have no consumer; a new
-  `HostEvent` for them is an API change to agree with sill.
+  `HostEvent` for them is an API change to agree with the shell.
 
 ### F64. The mouse gestures daemon client and the double-scroll window
 
@@ -823,7 +823,7 @@ output never flashes the compositor's colour.
   pinned block does not enable, so a lock document focuses its field after mount.
 - **If the client dies while locked the session stays locked** (the protocol's secure failure;
   sctk's `Drop` sends `destroy`, which after `locked` is `invalid_destroy`). On such a compositor a
-  new locker's lock is then granted and its unlock returns the session: sill's session script
+  new locker's lock is then granted and its unlock returns the session: the shell's session script
   restarts the shell, which should lock at start when logind's `LockedHint` says so.
 - `examples/demo_lock` refuses any compositor but a throwaway one (`guard.rs`, table-tested);
   `scripts/dev/accept-lock.sh` runs the compositor in a jail (KWin has no `ext-session-lock-v1`).
@@ -831,7 +831,7 @@ output never flashes the compositor's colour.
   could not start, or it was closed after failing. The output shows the compositor's solid colour
   and takes no password meanwhile, so the failure is logged and the surface remade after 250 ms,
   doubling to 8 s; a frame shown on the output clears its count. When the lock covers one output
-  the fourth failure in a row ends the host with an error (exit non-zero), so sill's unit
+  the fourth failure in a row ends the host with an error (exit non-zero), so the shell's unit
   restarts it and it locks again from its marker. The marker is written at `locked`: a failure
   before that leaves nothing to restore, and the session is simply not locked. The shell is not
   told of a failing lock surface (no event); it is in the log only.
@@ -872,7 +872,7 @@ never allowed to wedge the single event-loop thread:
   inside wgpu.
 - A `wl_surface`'s fractional-scale, viewport and blur objects are destroyed when the surface is
   removed (`HostState::remove_surface`, the only way a surface leaves `surfaces`).
-- Not measured: the real restart-and-relock path after `GaveUp` (sill's `step_crash_relocks`
+- Not measured: the real restart-and-relock path after `GaveUp` (the shell's `step_crash_relocks`
   covers the SIGKILL case only), a real driver reset, and the 8192 limit on a 8K output at 2x
   (the buffer is cut to 8192 and the compositor scales it).
 
@@ -995,7 +995,7 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   it and closes the windows one by one (`SurfaceClosed`). The dispatch is for `HostState`
   itself, not generic, because it queues the event. Written without a build.
 - **Dependency.** `desktop-protocols` (feature `client`), git rev
-  b59d1d7da33e0aa1f4460ea515e64d5e4f51f112, the pin sill and cua use (workspace root, outside the
+  b59d1d7da33e0aa1f4460ea515e64d5e4f51f112, the pin the shell and cua use (workspace root, outside the
   bardo-pinned block). Its `rust-version` is 1.92 against this workspace's 1.91.
 - **F50.** Closed on a compositor that advertises `bardo_window_manager_v1` (the compositor), as far as
   the host goes: the request exists and is sent. It stays open on KWin (nothing to
@@ -1015,9 +1015,9 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   timer is a source of the loop, it beats while the loop is idle and stops when the loop thread is
   stuck in a blocking call, so a watchdog thread that notifies the service manager only when the
   count has moved restarts a hung shell and never one that is merely idle. The other half is
-  sill's and the unit's (`WatchdogSec` and the notify call) and is an interface ask in the lane
+  The shell's and the unit's (`WatchdogSec` and the notify call) and is an interface ask in the lane
   report. The probe's 5 s deadline and the device request's 10 s (above) stay. Condition to
-  close: sill calls `pulse` and pings from a thread that reads `beats`.
+  close: the shell calls `pulse` and pings from a thread that reads `beats`.
 
 - **NEW-QDH-4: the selection's write slots are not per client.** `wl_data_source.send(mime, fd)`
   does not say who holds the other end of the pipe (the compositor forwards the request), so the
@@ -1047,10 +1047,10 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   method (fcitx5) is tried with a deletion in a real field.
 - **HOST-15.** `mouse-gestures-protocol` is a path dependency (`../input/mouse-gestures-proto`)
   and the blitz-kit `[patch]` is a path, so a clone of this repo alone cannot build. Pinning
-  The mouse gestures daemon by git rev like `desktop-protocols` would make sill (which takes shell-host by path)
-  fetch the mouse gestures daemon from the network unless sill adds the same `[patch]`. Condition to close: the
+  The mouse gestures daemon by git rev like `desktop-protocols` would make the shell (which takes shell-host by path)
+  fetch the mouse gestures daemon from the network unless the shell adds the same `[patch]`. Condition to close: the
   installer/CI lane decides the dev overlay for all consumers at once.
 - **A failing lock surface is not an event.** It is in the log only (F65). A `HostEvent` variant
-  would break sill's exhaustive matches, so it waits for a sill change made with it.
-- **`HostConfig::file_roots` is empty by default** (F21): sill must pass the directories its
+  would break the shell's exhaustive matches, so it waits for a shell change made with it.
+- **`HostConfig::file_roots` is empty by default** (F21): the shell must pass the directories its
   documents draw from before the wallpaper and notification images show again.

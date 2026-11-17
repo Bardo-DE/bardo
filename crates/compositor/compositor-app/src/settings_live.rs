@@ -6,7 +6,7 @@
 //! `core_loop::feed`.)
 //!
 //! The night light follows as well (its mode, times, warmth, fade and the displays it leaves
-//! alone, which sill writes when it turns Night Shift on): the model re-drives every output.
+//! alone, which the shell writes when it turns Night Shift on): the model re-drives every output.
 //!
 //! The keyboard layout follows too: a changed `keyboard.xkb_*` is compiled and put on the seat's
 //! keyboard (every bound client gets the new keymap, as an input-source change does on the Mac).

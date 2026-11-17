@@ -3,7 +3,7 @@
 //! does for every session), records the person's turn there (the router derives the task policy
 //! from the person's words, as for a launcher), and runs the turn on an `AcpBackend`.
 //!
-//! **Sheets.** The router asks the person through its confirmer, like any call: sill's sheet, by
+//! **Sheets.** The router asks the person through its confirmer, like any call: the shell's sheet, by
 //! default, and the host sees nothing of it. In the development fallback (`true`,
 //! `bardo-agent --tty`) the host tells the router that it shows this session's sheets itself,
 //! and each one comes out of `next_event` as `BackendEvent::Confirm` and goes back through

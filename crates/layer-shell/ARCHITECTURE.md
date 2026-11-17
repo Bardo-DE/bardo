@@ -6,7 +6,7 @@ and its demos, `FINDINGS.md` holds the facts about Blitz, the compositors and th
 relies on, and `CONVENTIONS.md` names the style guides every repo follows. This file is the map: where
 each thing lives, what may depend on what, and how to add the next thing.
 
-layer-shell-host stands below Bardo and sill and is portable to any Wayland compositor with
+layer-shell-host stands below Bardo and the shell and is portable to any Wayland compositor with
 layer-shell: no compositor-specific crate, no D-Bus, no PulseAudio, no design-system crate, no mouse gestures daemon
 daemon.
 
@@ -37,11 +37,11 @@ and the programs) that names `layer-shell-host`, `ui-blitz`, `blitz-dom`, `blitz
 `[dependencies]` or `[dev-dependencies]` respectively.
 
 Forbidden for `layer-shell-host`: `zbus`,
-`libpulse-binding`, every UI kit crate, sill, and the `mouse_gestures` daemon crate.
+`libpulse-binding`, every UI kit crate, the shell, and the `mouse_gestures` daemon crate.
 `scripts/check-boundary.sh` checks this list, and that Blitz's own scrollbars stay off (the host
 paints the thumb). `blitz-embed` forbids `smithay-client-toolkit`, `wayland-*`, `dioxus*`, every
-The UI kit crate and sill; its own repo carries the same script. Sibling repos are path
-dependencies, as sill's are on layer-shell-host.
+The UI kit crate and the shell; its own repo carries the same script. Sibling repos are path
+dependencies, as the shell's are on layer-shell-host.
 
 ### Moves into other crates
 
@@ -143,7 +143,7 @@ Feature-gated public modules:
 | `shell_host::inject` | `debug-inject` | `Inject`, `Injected`, `PointerButton`, `KeyStroke`, `KeyAction`, `DebugCommand`, `DebugAction`, `CommandError`, `parse_command`, `parse_key`, `stdin::{install, apply}`; `HostCtx::inject` |
 | `shell_host::headless` | `headless` | `render_png`, `HeadlessConfig`, `PixelSize`, `Fonts`, `bundled_faces` |
 
-The debug command grammar is a `debug-inject` feature; a shipped shell contains no parser. sill
+The debug command grammar is a `debug-inject` feature; a shipped shell contains no parser. The shell
 calls `parse_key` and `stdin::{install, apply}` in debug builds only.
 
 `Inject` variants: `Pointer`, `PointerDown`, `PointerUp`, `Click`, `Leave`, `Capture`, and
@@ -409,7 +409,7 @@ session. Goldens change only with a reason in the commit message.
 
 ## 10. Migration order
 
-Each step keeps master green (the gate above), and callers in sill and Bardo change in the same
+Each step keeps master green (the gate above), and callers in the shell and Bardo change in the same
 step as an API they use.
 
 1. `blitz-embed` repo (done): create it with `hover`, `net`, `fonts`, `paint_rect`, `hit` and their tests
@@ -427,9 +427,9 @@ step as an API they use.
    `scroll/indicator`, `ctx/paint`, `resolve`, `csd`, `scroll/engine`, `inject`.
 6. `decide.rs` extractions (done) for the handlers listed in section 6, each with its table test.
 7. Add `Inject::Key`, `KeyStroke`, `KeyAction` and the `key` stdin verb (done); move `debug` command
-   parsing into `inject` behind `debug-inject`; sill's keyboard stand-in scripts switch to it.
+   parsing into `inject` behind `debug-inject`; the shell's keyboard stand-in scripts switch to it.
 8. Public-name renames (section 3) and the curated root (done): make every module private, list the
-   root exports, move `tests/*` that reach internals in-crate. Update sill and the demos in the
-   same change; sill's `debug`, `inject::stdin`, `scale`, `popup::offset_rect`,
+   root exports, move `tests/*` that reach internals in-crate. Update the shell and the demos in the
+   same change; the shell's `debug`, `inject::stdin`, `scale`, `popup::offset_rect`,
    `scroll::config` paths become root or `inject` paths.
 9. Fold `DESIGN.md` (done) into module docs and this file's tables; delete it.

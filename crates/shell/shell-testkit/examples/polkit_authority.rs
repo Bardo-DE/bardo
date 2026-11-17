@@ -171,7 +171,7 @@ async fn begin(connection: Connection, agent: AgentAt, cookie: String, action: O
         ("polkit.subject-pid".to_owned(), "4242".to_owned()),
     ]);
     let body = (
-        action.unwrap_or_else(|| "org.sill.test.run".to_owned()),
+        action.unwrap_or_else(|| "org.bardo.shell.test.run".to_owned()),
         "Authentication is required to run the bardo-shell test program".to_owned(),
         String::new(),
         details,

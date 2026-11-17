@@ -27,7 +27,7 @@ impl Run for NowPlayingService {
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
         backend::run(
             env.buses.session.clone(),
-            env.dirs.sill_cache().join("art"),
+            env.dirs.shell_cache().join("art"),
             io.state,
             io.commands,
         )

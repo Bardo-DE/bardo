@@ -155,7 +155,7 @@ pub enum Threshold {
 pub fn resolve_mode(host: Host) -> IdleMode {
     match host {
         Host::Guest => IdleMode::Off(OffReason::Guest),
-        Host::SillSession => IdleMode::Own,
+        Host::ShellSession => IdleMode::Own,
     }
 }
 

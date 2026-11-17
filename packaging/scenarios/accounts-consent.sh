@@ -64,7 +64,7 @@ files = "anywhere"
 fast = "openai-openai/gpt-6-luna"
 TOML
   inferd_start || return 1
-  sill_start || return 1
+  shell_start || return 1
   sheet_add_openai || return 1
 }
 

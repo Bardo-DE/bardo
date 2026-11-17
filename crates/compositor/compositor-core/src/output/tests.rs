@@ -1,4 +1,4 @@
-//! sill's whole `PreferWhole` table, ported to 120ths, and properties over modes and places.
+//! The shell's whole `PreferWhole` table, ported to 120ths, and properties over modes and places.
 
 use super::{
     EdidFacts, EdidSerial, Mode, ModeWish, OutputConfig, OutputFacts, PhysicalMm, SavedOutputs,
@@ -52,7 +52,7 @@ fn size_of(diagonal_in: f64, w: u32, h: u32) -> (u32, u32) {
     )
 }
 
-/// A label, the panel in pixels, its size in millimetres (None: unreported), the scale sill's
+/// A label, the panel in pixels, its size in millimetres (None: unreported), the scale the shell's
 /// `PreferWhole` gives in hundredths.
 type Row = (&'static str, (u32, u32), Option<(u32, u32)>, u16);
 
@@ -61,7 +61,7 @@ type Row = (&'static str, (u32, u32), Option<(u32, u32)>, u16);
     clippy::too_many_lines,
     reason = "a table of displays and the scale each gets"
 )]
-fn whole_like_mac_matches_sills_prefer_whole_table() {
+fn whole_like_mac_matches_the_shells_prefer_whole_table() {
     let rows: Vec<Row> = vec![
         (
             "27in 4K",

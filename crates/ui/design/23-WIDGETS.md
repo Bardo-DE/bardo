@@ -266,7 +266,7 @@ the shell passes the batteries):
 - **Medium**: four places on a fixed 80 pitch (a 64 ring and a 16 gap) from 20 in, the percentage
   18 under each in the display face 500 at `--fs-widget-figure`, the block centred vertically.
   Fewer than four batteries take the first places and each place left over is a bare track over
-  an empty figure line, so the pitch never stretches (sill Q522: one battery used to sit alone in
+  an empty figure line, so the pitch never stretches (the shell Q522: one battery used to sit alone in
   the middle and two at the card's ends).
 
 Motion, the fill (section 1.1, F1-F6): on mount and on each new `wake` (a host passes
@@ -334,14 +334,14 @@ across every gate, **.55** (was .67); it is unchanged but for the alpha and the 
 World Clock card of the reference is opaque `#1c1c1e` (M31); ours stays the material's and
 follows the scheme (settled, section 6 item 4).
 
-**The month's title over a see-through card (sill Q412, 2026-09-27; open, two options).**
+**The month's title over a see-through card (the shell Q412, 2026-09-27; open, two options).**
 The band's `--accent-text` (design/03-COLOR.md section 20) is derived against the opaque card
-grounds; on the desktop card, the .48 near-white over the wallpaper, sill measured the small
+grounds; on the desktop card, the .48 near-white over the wallpaper, the shell measured the small
 Calendar's month title at 3.7-3.9:1 over the default wallpaper's warm sand (5.3-5.7 before accent
 B). A first answer stepped the accent until it read (the old navy accent, `#001d48`): nearly black, the
 accent lost, heavier than band B; withdrawn. The two options, measured on the Space-tinted card
 (the tint over seven reference wallpapers, `accent_band::WALLPAPERS`: the default wallpaper's
-sand, warm sand, coral, teal, blue and violet as sill's capture shows them, and a near-black;
+sand, warm sand, coral, teal, blue and violet as the shell's capture shows them, and a near-black;
 under both stops of preset 1's gradient at the frame alpha .70), the old navy accent, worst case (history, the Space no longer tints the card):
 
 | Option | Light | Dark |
@@ -376,12 +376,12 @@ The battery's hero percentage (`--fs-widget-hero`, 47 px) and the digital clock'
 weight; the digital clock is drawn only on the notification center's tile (the unchanged
 Popover material), never on the desktop card.
 
-**Compositor blur, recommended (for sill and the compositor).** Blur behind a desktop widget
+**Compositor blur, recommended (for the shell and the compositor).** Blur behind a desktop widget
 with a Gaussian of **sigma 22 logical pixels** (M26): 44 device pixels at 2x. On a compositor that
 blurs by a dual-Kawase pass count or a "strength" (the compositor's `frosted` theme value), pick the
 setting whose blur of a sharp edge spreads 10-90 % over about 56 logical pixels (2.56 sigma). The
 reference also raises the saturation of what shows through by about 1.8 (M29, low confidence);
-the tint cannot do that (it only mixes), so it is a compositor gap: docs/compositor-gaps.md in sill
+the tint cannot do that (it only mixes), so it is a compositor gap: docs/compositor-gaps.md in the shell
 should carry "saturation x1.8 inside the widget's blur region". Blur on the desktop widget is a
 choice the shell may skip: the reference's desktop card in its editing mode shows no blur at all
 (M30), and the gallery's "Compositor blur" wall (the Widget reference page) shows the tint over
@@ -420,7 +420,7 @@ data face's caps (the current `--accent` caps title reads as a form label). Moti
 
 ### 5.1 The compact month's spacing (2026-09-27)
 
-The user's report on sill's capture (`widgets-desktop-desktop.png`, the small calendar tile):
+The user's report on the shell's capture (`widgets-desktop-desktop.png`, the small calendar tile):
 "looks weird". The compact grid was packed into the top of the 140 x 140 content box (a
 five-week month left 21 of it empty, the ink's bottom inset 38.8 against 15.2 at the top), the
 title and weekday heads sat tight on each other and on the first row, and the rows (19) ran
@@ -450,7 +450,7 @@ and 4x: `tools/progress/shots/gallery/calendar-compact-*.png`.
 
 ### 5.2 The month at each size: the reference's layouts (2026-09-27)
 
-sill's notification-center capture (`notification-center-open-desktop.png`, the right-hand
+The shell's notification-center capture (`notification-center-open-desktop.png`, the right-hand
 column): the Large tile drew the regular month at the top and left about 40 % of it empty under
 the last week, the fault section 5.1 fixed for the Small card. A first answer stretched the grid
 over the Medium and Large cards; reviewed, it read sparse (wide gaps between the days), the same
@@ -475,7 +475,7 @@ over the Medium and Large cards; reviewed, it read sparse (wide gaps between the
 
 The entry carries what these need: `MonthEntry::Month(Box<MonthFace { grid, weeks, today:
 Option<TodayLine { weekday, day }>, events: Vec<EventLine { time, title, hue: LabelHue }>,
-no_events }>)`, the new fields serde-defaulted. The Calendar app fills the events later; sill's
+no_events }>)`, the new fields serde-defaulted. The Calendar app fills the events later; shell's
 Up Next can feed them now. Snapshots before and after:
 `tools/progress/shots/widgets-final/{before,after}-calendar-{light,dark}.png`.
 
@@ -506,7 +506,7 @@ draws it.
 6. **Every widget card is tinted by the Space** (history: retired 2026-10-02, 1.0; neutral plates now): `CardTint::Space` is the
    default, laid by the UI kit's card and never by a widget; a notification-center tile lays no
    second gradient on the center's already tinted popover. The widget's own accent text takes a
-   title colour chosen for the see-through card (section 4.3, sill Q412: two options rendered,
+   title colour chosen for the see-through card (section 4.3, the shell Q412: two options rendered,
    the user picks). `CardTint::Material` stays for a comparison page.
 7. **The battery fill's timing** (section 1.1, F4-F6): unchanged, 800 ms at `--e-out`, the figure
    counting, the bolt after the fill; still our choice until a recording of the reference turns
@@ -683,7 +683,7 @@ pub struct WidgetContext<I> { pub size: WidgetSize, pub host: WidgetHost, pub wa
   with a timeline already due cannot spin the host. It wakes for nothing else: a pushed widget
   costs no frame between pushes (the idle-frame rule). A new timeline (by value) replaces the
   old at once; an equal one passed again changes nothing. Proven on the virtual clock
-  (sill's ui-conformance/tests/widget_timeline.rs).
+  (the shell's ui-conformance/tests/widget_timeline.rs).
 - **A size a widget does not draw** is never asked of it: `fit::<W>(size)` holds it to the first
   of `W::sizes()`.
 
@@ -706,7 +706,7 @@ Each `WidgetInfo` carries the kind, name, description and sizes, and draws the w
 with its preview entry at any size, lifted or not, without its type: what the gallery shows.
 Each also carries **one size per host** (`WidgetInfo::size_in(host)`, from `Widget::size_in`;
 the user's decision, 2026-09-28): Batteries Small on the desktop and Medium in the center, World
-Clock Medium in both, the month Small on the desktop and Large in the center (sill's `size_of`,
+Clock Medium in both, the month Small on the desktop and Large in the center (the shell's `size_of`,
 moved into the widgets as design/28 section 4.1 asked). A host narrows a kind to another size it
 draws with `WidgetRegistry::sized(&kind, host, size) -> Result<Self, UnsizedKind>`.
 
@@ -750,7 +750,7 @@ tracks and no number. World Clock: Small the large dial alone; Medium four dials
 (the day, the offset) under each; digits in the tile. Month: the reference's layout per size
 (section 5.2); the steps only when the host listens (`onintent`).
 
-Up Next and Now Playing are sill's widgets: they move onto the same trait in sill (9.9).
+Up Next and Now Playing are the shell's widgets: they move onto the same trait in the shell (9.9).
 
 ### 9.7 Edit Widgets (`WidgetGallery`) and the layout as data
 
@@ -762,12 +762,12 @@ notification center; beside it, what is placed on each surface, by name, and Rem
 sizes, just one". The gallery draws the widget looked at once, at its desktop size
 (`size_in(Desktop)`), and each Add button adds it at the size it takes on that surface
 (`size_in(Desktop)`, `size_in(Tile)`); no size is picked, nothing lifts in the gallery, and a
-placed row has no size control (sill Q520). `WidgetEdit::Resize` stays for a host's own use; the
+placed row has no size control (the shell Q520). `WidgetEdit::Resize` stays for a host's own use; the
 gallery never sends it. `GalleryWords::size` and `sizes` are kept for compatibility and unused.
 The gallery is three columns for a wide sheet (the list; the preview and the two buttons on
 `--surface-2`; the placed lists, which scroll on their own) and fills the height it is given.
 
-**The sheet (sill Q521, 2026-09-28).** The reference's Edit Widgets is a sheet along the bottom
+**The sheet (the shell Q521, 2026-09-28).** The reference's Edit Widgets is a sheet along the bottom
 of the screen with the desktop's widgets in view above it; the first gallery stood at the right
 edge, 720 wide, over the top-right columns where widgets gather and a new one lands. The host
 shows the gallery in `Panel { edge: PanelEdge::Bottom, width, height }`: centred `--s-8` above
@@ -779,7 +779,7 @@ that follows the sheet's spring (`--present-p`: fades and settles 12 px down at 
 only a fade under Reduced). The gallery inside fills it when it sits in a flex column
 (`flex:1; min-height:0`).
 
-**"Added" (sill Q523, 2026-09-28).** The user: "show that the thing is added". The gallery keeps
+**"Added" (the shell Q523, 2026-09-28).** The user: "show that the thing is added". The gallery keeps
 no layout, so it learns an Add landed by finding the new placement in the next layout the host
 hands back (a refused Add, a full desktop, lands nothing and shows nothing). Then:
 - the button that asked settles to a check (design/26's Success, `SettleStyle::Check`): its
@@ -802,13 +802,13 @@ passes the new layout back. Words are the host's (`GalleryWords`, English by def
 order, never the other. It serialises as
 `{"items":[{"id":1,"kind":"bardo.battery","size":"small","at":{"desktop":{"column":3,"row":0}}}],"next":2}`.
 `apply` adds a desktop widget at the first free cell scanning the columns from the right, each
-from the top (the widgets gather at the top right, as sill places them); refuses a move onto
+from the top (the widgets gather at the top right, as the shell places them); refuses a move onto
 another widget or off the grid (`LayoutError::Taken`), a desktop with no room (`Full`), and an
 unknown identity; keeps a resized widget's cell when the new footprint fits there and moves it
-to the first free cell when not. sill's `widgets.center` and `widgets.desktop_widgets` become
+to the first free cell when not. The shell's `widgets.center` and `widgets.desktop_widgets` become
 this list (9.9).
 
-### 9.8 Picking a widget up and dropping it (sill Q430, Q431)
+### 9.8 Picking a widget up and dropping it (the shell Q430, Q431)
 
 The reference, on the desktop in edit mode: a widget pressed and dragged grows slightly and its
 shadow deepens as it leaves the desktop; the others hold still; while it moves, a quiet rounded
@@ -817,7 +817,7 @@ use, no frame-accurate recording found).
 
 - **`Lift::{Rest, Lifted}`** on `WidgetFrame` and `WidgetCard` (`lift`, default `Rest`,
   `data-lift="lifted"`): the card scales by `--pickup` (a new motion scalar: 1.04 Standard and
-  Extra, 1.02 Calm, 1 Reduced; sill used 1.04), its resting drop is **replaced** by
+  Extra, 1.02 Calm, 1 Reduced; the shell used 1.04), its resting drop is **replaced** by
   `--shadow-drag` (the lifted rule restates the transparent root's card selector, so it wins
   over `--m-box` instead of stacking under it), and it rises to `--z-drag`; both ways over
   `--t-quick` at `--e-out` (no spring: the pick-up is a pointer press but the card is not
@@ -826,16 +826,16 @@ use, no frame-accurate recording found).
   (`--line` fill and hairline) in the card's corner, faded in (`a-fade`) as the drag reaches the
   cell, `aria-hidden`. The host places it at the snap cell; the UI kit draws it.
 
-Both settle to zero frames (sill's ui-conformance/tests/widget_edit.rs, on the virtual clock).
+Both settle to zero frames (the shell's ui-conformance/tests/widget_edit.rs, on the virtual clock).
 
-**Leaving (sill G423, 2026-09-28).** A desktop widget removed in Edit Widgets used to vanish in a
+**Leaving (the shell G423, 2026-09-28).** A desktop widget removed in Edit Widgets used to vanish in a
 frame. `WidgetCard { shown: Shown::Hidden, on_hidden }` (and `WidgetFrame`) plays the
 card's exit through `Presence` (design/30 section 1.3: a fade over `--t-quick`, `Exit::Fade`), takes no
 pointer (`data-presence="leaving"`), and calls `on_hidden` once at the exit's settle. The host keeps
 drawing the removed card until then and drops it there; passing `Shown::Visible` again before then takes
-the exit back and `on_hidden` never runs (sill's ui-conformance/tests/widget_card_presence.rs). `CardPresence` and
+the exit back and `on_hidden` never runs (the shell's ui-conformance/tests/widget_card_presence.rs). `CardPresence` and
 the `widget-out` shrink are gone.
 
-### 9.9 What sill changes
+### 9.9 What the shell changes
 
 See CONSUMING.md, "Widget interface (2026-09-27)", for the full list with call sites.

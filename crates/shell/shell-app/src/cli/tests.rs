@@ -383,7 +383,7 @@ fn every_command_line_sends_its_request() {
         (
             &["debug", "polkit"],
             debug(DebugRequest::Polkit(FakeRequest {
-                action_id: ActionId("org.sill.debug.prompt".to_owned()),
+                action_id: ActionId("org.bardo.shell.debug.prompt".to_owned()),
                 message: "bardo-shell is testing its password prompt".to_owned(),
                 icon: String::new(),
             })),

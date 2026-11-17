@@ -381,7 +381,7 @@ fn a_key_on_the_lock_screen_reaches_it_past_a_running_input_method() {
     );
 }
 
-/// The lock is another program than the app and its input method (sill's lock, fcitx5 and the
+/// The lock is another program than the app and its input method (the shell's lock, fcitx5 and the
 /// app the person was typing in): a key typed on the lock screen reaches the locker's keyboard
 /// and none reaches the app behind it, whether the method keeps its grab or lets it go when it
 /// is deactivated (fcitx5 lets it go at the `done` after `deactivate`).

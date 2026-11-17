@@ -23,7 +23,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 - The confirmation request and answer as values, plus the `Confirmer` seam. Drawing them is not ours.
 - Budgets, the per-Space kill switch, and the audit records handed to the event log.
 - `bardo-actions-mcp`: an MCP server generated from the registry, used at the edge only.
-- How sill's launcher `Provider` relates to all of this.
+- How the shell's launcher `Provider` relates to all of this.
 
 **Not in scope** (owner area in brackets)
 - The agent loop and planner prompting, session UX and the orb [planner/agent-loop, ux].
@@ -91,7 +91,7 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 | porter | `account-core`: new `space.rs` (`SpaceId`, `SpaceScope`); `GrantKey.space: SpaceScope`; consent generic over its key (`Grant<K = GrantKey>`, `decide<K: Eq>`). A design/31 §4.5 edit in step. | freeze |
 | Bardo | Add `cedar-policy` and `rmcp` to `docs/workspace-deps.toml`. Write `design/33-ACTIONS.md` from this file. Edit 31 §4.5 (Space in the key) and §5.5 (inferd is no longer the MCP host, see C4). | freeze |
 | Bardo | New crate `ui-intents`: the `ContextModel` gathered from components (`thing` prop on `Row`/`List`, edit surfaces as text targets), answered through `docker-client`. Blocked on question U6 (30 §3.4 defers companion work). | fill 2 |
-| sill | `shell-launcher` gains `ProviderKind::Things`, `Subject::Entity`, `Activation::Intent`, `Preview::Intent`. `shell-search`/`shell-services` gain a `ThingsProvider` over the router. sill serves `IntentProvider1` as `org.bardo.Shell` (launch, focus window, open file) by reusing its `Activation` executor. | fill 2 |
+| The shell | `shell-launcher` gains `ProviderKind::Things`, `Subject::Entity`, `Activation::Intent`, `Preview::Intent`. `shell-search`/`shell-services` gain a `ThingsProvider` over the router. The shell serves `IntentProvider1` as `org.bardo.Shell` (launch, focus window, open file) by reusing its `Activation` executor. | fill 2 |
 | mailo | First real provider (archive, move, label, draft, send). `UndoStack` entries gain `actor: Actor`. | fill 2 (mailo session) |
 
 Correction to the table above: the crate `ui-intents` uses `action-client`, not "docker-client".
@@ -233,7 +233,7 @@ pub enum UndoSupport { Token, NotUndoable }
 pub enum AgentReach { Hidden, Offered, AskAlways }
 pub enum Latency { Instant, Quick, Long }           // router timeouts: 250 ms, 5 s, progress Request
 pub enum ResultShape { Nothing, Value(ParamType), Entities(EntityKind) }
-pub enum KeyHint { None, Chord(String) }            // sill parses it into ActionKeys
+pub enum KeyHint { None, Chord(String) }            // shell parses it into ActionKeys
 pub enum Lasting { No, AgentMemory }
 
 pub struct ParamDecl { pub name: ParamName, pub label: LabelText, pub ty: ParamType, pub need: Need }
@@ -660,13 +660,13 @@ Note: `DecidedBy::Reviewer` carries `{ code: ReasonCode, under: Option<AuthId> }
 There is one protocol with two carriers, as in porter. `IntentsRequest`/`IntentsReply` are serde enums in `action-core::wire`. The socket frame reuses porter's `{ vocab, body }` frame. Over D-Bus, bodies travel as JSON in `s`. The caller's identity is derived from the connection (porter `AppId`) and is never sent.
 
 Caller roles are configured in `intentd`'s config:
-- `launcher`: sill. Gets Actor::User when `Origin::Launcher`/`InWindowField`.
+- `launcher`: the shell. Gets Actor::User when `Origin::Launcher`/`InWindowField`.
 - `companion`: the agent daemon. Actor::Companion.
 - `reader`: the reader process.
 - `cua`: cuad.
 - `mcp`: bardo-actions-mcp.
 - `compositor`: may call `Halt`.
-- `control`: sill's control centre. May call `Halt`/`Resume`.
+- `control`: the shell's control centre. May call `Halt`/`Resume`.
 - Any other app gets Actor::App: its own actions only, plus Search, Preview, Suggest.
 
 **`org.bardo.Intents1`** at `/org/bardo/Intents1` (served by intentd):
@@ -845,7 +845,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### 5.2 `action-core`
 
-- `every_wire_type_round_trips`: one pinned JSON string per enum variant, sill-style. Covers `Effect`, `Value`, `Selection`, `Preview`, `CallRefusal`, `Verdict`, `IntentsRequest`/`Reply`.
+- `every_wire_type_round_trips`: one pinned JSON string per enum variant, shell-style. Covers `Effect`, `Value`, `Selection`, `Preview`, `CallRefusal`, `Verdict`, `IntentsRequest`/`Reply`.
 - `manifest_files_parse_and_validate`: the fixtures `fixtures/manifests/org.bardo.Mail.intents.toml` and `org.bardo.Files.intents.toml`.
 - `validate_rejects`: a table test with one row per `ManifestError` variant.
 - `undoable_write_requires_token` and `read_has_no_undo`.
@@ -943,7 +943,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 - **docket F2a**: `intentd` serves the bus over the private bus, with seams wired: `AppLink` over zbus, `GrantStore` file, `EventSink` to the memory area's `eventlog` (or a JSONL stub until it exists).
 - **docket F2b**: `bardo-actions-mcp` over rmcp.
-- **sill agent**: the `shell-launcher` variants, following the warn-before-lint-rules practice. Pinned wire tests for the new `Activation::Intent`/`Subject::Entity`/`Preview::Intent`. `ThingsProvider` in `shell-search` over `action-client`. `org.bardo.Shell` provider in `shell-services`. Verify with sill's gate.
+- **The shell agent**: the `shell-launcher` variants, following the warn-before-lint-rules practice. Pinned wire tests for the new `Activation::Intent`/`Subject::Entity`/`Preview::Intent`. `ThingsProvider` in `shell-search` over `action-client`. `org.bardo.Shell` provider in `shell-services`. Verify with the shell's gate.
 - **Bardo agent**: `ui-intents` (`ContextModel`, a `thing` prop on `Row`/`List`, edit-surface text targets, a default `ContextSource`). Only after the user answers U6.
 - **mailo session**: the manifest, `IntentProvider`, and `actor` on `UndoStack`.
 
@@ -963,7 +963,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 | Area | What we need from it | What it needs from us |
 |---|---|---|
 | **cua** | Draws `org.bardo.Confirm1` and the acting-here glow; kill chord → `Control.Halt`; effect classification for pixel actions | `permission-policy::Decision`, `gate`, `Actor::Cua`, `Effect`, `ConfirmRequest`, `prov::Source::Screen` |
-| **ux** | Look of the confirmation and companion strip, Activity/"Undo all" UI, launcher companion mode | `Preview`, `UndoEntry`, `Journal`, `Control` signals, sill variants |
+| **ux** | Look of the confirmation and companion strip, Activity/"Undo all" UI, launcher companion mode | `Preview`, `UndoEntry`, `Journal`, `Control` signals, the shell variants |
 | **models** | inferd serving the reviewer and reader models (small local, no tools, grammar-constrained JSON), model latency | `ReviewRequest`/`render`/`parse_verdict`, `ValueSchema` → grammar, `tool_schema` |
 | **memory** | `eventlog` crate taking `AuditRecord`; `Actor` shared; memfiles' write action declared `Lasting::AgentMemory` | `AuditRecord`, `Actor`, `prov::Label`, `EntityId` |
 | **planner / agent loop** (name unknown) | Session driving (`Session.Open/Turn`), planner prompt from `PlannerView`, the reader process, proposing Authorizations, adapting to `Denied` reasons | §3.8, §3.9, `CallRefusal` |
@@ -979,14 +979,14 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
   - Taint's role (Security item 2): it voids `Always` grants and Authorizations, and gates `Lasting` writes.
 - **C3. Unforgeable consent.** COMPANION Security 4 requires compositor-drawn confirmations; the fork may be late. Resolution: until it lands, a separate sheet process serves `Confirm1` and receipts carry `InputProof::SheetFallback`. This is acceptable for tier 1 because typed actions inject no input. The CUA tier must not ship on the fallback.
 - **C4. MCP.** 31 §5.5 makes inferd the MCP host. The build map makes `bardo-actions-mcp` edge-only. Resolution: MCP in both directions lives in `bardo-actions-mcp`. Imported tools become router actions of a pseudo-app `mcp.<server>`, default `Outbound`, each in bubblewrap. inferd drops the role (an edit to 31).
-- **C5. Provider kinds.** models.md has `ProviderKind::App(AppName)`, which breaks sill's `Copy` + `ALL` Tab order. Resolution: one `ProviderKind::Things`, with per-kind scoping later (`Scope::Kind`).
+- **C5. Provider kinds.** models.md has `ProviderKind::App(AppName)`, which breaks the shell's `Copy` + `ALL` Tab order. Resolution: one `ProviderKind::Things`, with per-kind scoping later (`Scope::Kind`).
 - **C6. Companion work is deferred.** 30 §3.4 says "Deferred, map only: one-input/companion/AI work". Resolution: freeze types only; `ds` is untouched until U6.
 - **C7. Space identity.** 21-SPACES §11.3 says workspace ids may be unstable, yet Spaces are hard walls with their own key. Resolution: a bardo-minted `SpaceId`, mapped to workspaces by `SpaceStore`.
 - **C8. P1 inline replace.** agent-ux P1 ("nothing applies without the Apply keypress") differs from item 9 (`text.replace` is an UndoableWrite and runs). This is a UX call (U8).
 
 ### 7.3 Questions only the user can answer
 
-- **U1.** Repo name and placement: a new `docket` repo (proposed), versus putting the router in porter or sill. Also: must action names carry their app's prefix (`mail.…` only in Mail)?
+- **U1.** Repo name and placement: a new `docket` repo (proposed), versus putting the router in porter or the shell. Also: must action names carry their app's prefix (`mail.…` only in Mail)?
 - **U2.** Auto mode default strictness per Space: `Default` as defined (item 9 unless you state an Authorization), or something else?
 - **U3.** May the reviewer ever allow `Destructive` (proposed: only under `TrustMore` with an Authorization and untainted args), and may it ever allow tainted `Outbound` (proposed: only `TrustMore` with an Authorization)?
 - **U4.** Authorizations: is the reviewer's check of your own words enough, or should each one also get a one-time compositor confirm ("Let it archive newsletters in Work for an hour?")? Default length is 1 h, this session only.
@@ -997,9 +997,9 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - **U9.** Budget defaults (§3.7) and the reviewer timeout of 2 s. Is any of them yours to set rather than a setting?
 - **U10.** Should launcher actions you pick yourself skip policy entirely (proposed: yes, the app's own Alerts apply), given the launcher is a trusted shell process?
 
-### 7.4 How sill's launcher `Provider` relates
+### 7.4 How the shell's launcher `Provider` relates
 
-| sill today | With actions |
+| The shell today | With actions |
 |---|---|
 | `Provider { kind, query(&Query, &mut dyn ResultSink), activate(&Item,&Choice) -> Activation }` | Stays the in-process seam. A new `ThingsProvider` implements it: `query` calls `Intents1.Search` with `Query.generation`, pushes index hits as one `Batch`, then late app hits from `Hits(gen)`; `is_cancelled` maps to `Search.Cancel(gen)`. |
 | `ProviderKind` (9, `Copy`, `ALL`) | `+ Things`, last in Tab order (C5) |
@@ -1015,7 +1015,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 - /home/pohsuanlai/porter/crates/porter-core/src/consent/grant.rs and /home/pohsuanlai/porter/crates/porter-core/src/consent/decide.rs (the `GrantKey` Space dimension and generic `Grant<K>`)
 - /home/pohsuanlai/porter/ARCHITECTURE.md and /home/pohsuanlai/porter/scripts/check-boundary.sh (the template for docket's layout, gate and boundaries)
-- /home/pohsuanlai/sill/crates/sill-launcher/src/activation.rs, /home/pohsuanlai/sill/crates/sill-launcher/src/ids.rs and /home/pohsuanlai/sill/crates/sill-launcher/src/subject.rs (the sill variants)
+- /home/pohsuanlai/shell/crates/shell-launcher/src/activation.rs, /home/pohsuanlai/shell/crates/shell-launcher/src/ids.rs and /home/pohsuanlai/shell/crates/shell-launcher/src/subject.rs (the shell variants)
 - /home/pohsuanlai/bardo/docs/workspace-deps.toml (cedar-policy and rmcp must join first)
 - /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.5 and §5.5 edits), /home/pohsuanlai/rs-wt/companion/COMPANION.md and /home/pohsuanlai/rs-wt/intents-research/models.md (the sources this spec resolves)
 - /home/pohsuanlai/mailo/crates/mail-app/src/undo.rs (the first app-side undo stack to gain `actor`)

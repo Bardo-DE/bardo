@@ -115,7 +115,7 @@ pub enum Schedule {
     /// All day.
     Always,
     /// From one minute to another, across midnight when `to` is before `from`. This is also
-    /// sunset to sunrise: sill (which knows the place) writes those times in.
+    /// sunset to sunrise: the shell (which knows the place) writes those times in.
     Between {
         /// Warming starts.
         from: MinuteOfDay,

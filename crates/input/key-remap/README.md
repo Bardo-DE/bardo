@@ -82,13 +82,13 @@ Ctrl+Left/Right switch desktops. `key_remap --print-config` lists every rule.
 Those Plasma rules are the machine file, which every session on the machine shares, so they must
 not be the whole story on a desktop that is not Plasma. What a few chords do:
 
-| Chord | Built-in mapping | Plasma (`/etc/bardo/key-remap/key-remap.toml`) | sill session (its layer on top) |
+| Chord | Built-in mapping | Plasma (`/etc/bardo/key-remap/key-remap.toml`) | the shell session (its layer on top) |
 | --- | --- | --- | --- |
-| Cmd+Space | Super+Space | Alt+Space (KRunner) | Super+Space (sill's launcher) |
+| Cmd+Space | Super+Space | Alt+Space (KRunner) | Super+Space (the shell's launcher) |
 | Cmd+H | Ctrl+H | Super+PageDown (minimise) | Ctrl+H (nothing minimises) |
-| Cmd+Shift+3 / 4 / 5 | Ctrl+Shift+3 / 4 / 5 | Shift+Print / Alt+Print / Print (Spectacle) | Print (sill's screenshot flow) |
+| Cmd+Shift+3 / 4 / 5 | Ctrl+Shift+3 / 4 / 5 | Shift+Print / Alt+Print / Print (Spectacle) | Print (the shell's screenshot flow) |
 
-The sill column is the layer sill ships in its `dist/key_remap/key-remap.toml`; see "Desktops that
+The shell column is the layer the shell ships in its `dist/key_remap/key-remap.toml`; see "Desktops that
 forward a config" below.
 
 ## Configuration
@@ -96,7 +96,7 @@ forward a config" below.
 Settings are read in four layers, each overriding the one before:
 
 1. The built-in defaults.
-2. `/usr/lib/bardo/key-remap/key-remap.toml`, what a desktop ships (sill ships its Caps Lock rule here). Only
+2. `/usr/lib/bardo/key-remap/key-remap.toml`, what a desktop ships (the shell ships its Caps Lock rule here). Only
    root may own it; the key remap daemon ignores it, and says so in the log, if anyone else could change it.
    Leave it alone: put your changes in the next file, which overrides it.
 3. `/etc/bardo/key-remap/key-remap.toml`, for the whole machine; changes apply as soon as you save. **It is
@@ -121,10 +121,10 @@ Spectacle's Print variants, none of which another desktop binds. Editing the mac
 different desktop would break Plasma, because both desktops share it.
 
 A desktop that forwards `~/.config/bardo/key-remap/key-remap.toml` can instead override those rules for its
-own sessions only. sill does this: it reads the seat owner's file and sends it to the key remap daemon as the
-user layer, and Plasma never does. The layer wins over the machine file, so a sill session
+own sessions only. The shell does this: it reads the seat owner's file and sends it to the key remap daemon as the
+user layer, and Plasma never does. The layer wins over the machine file, so a shell session
 gets Cmd+Space as Super+Space, Cmd+Shift+3/4/5 as Print and Cmd+H as plain Ctrl+H, while a Plasma
-session on the same machine keeps the Plasma rules. sill ships that layer in its
+session on the same machine keeps the Plasma rules. The shell ships that layer in its
 `dist/key_remap/key-remap.toml` and its installer copies it to `~/.config/bardo/key-remap/key-remap.toml` when you
 have none. The key remap daemon cuts that layer down when it arrives: a rule on a key with no modifier held (Caps Lock alone, say), and
 a rule that types several keys or none, belong in the machine files (the one in `/usr/lib/bardo/key-remap` or the one in `/etc/bardo/key-remap`); so do more than 256 rules. The machine file can

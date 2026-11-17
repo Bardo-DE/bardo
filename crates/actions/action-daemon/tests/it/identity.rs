@@ -51,10 +51,10 @@ fn performed(world: &World) -> Vec<Option<ActivationToken>> {
 async fn the_launchers_token_crosses_the_bus_to_the_app_and_the_cli_loses_it() {
     let world = World::serving_in(mail_router(), shipped(), "vte-spawn-1.scope").await;
 
-    // sill owns org.bardo.Shell: the launcher. The token goes through D-Bus options.
-    let (sill, _keep_sill) = world.client(&["org.bardo.Shell"]).await;
-    let sill = Intents::over(sill);
-    let done = sill
+    // The shell owns org.bardo.Shell: the launcher. The token goes through D-Bus options.
+    let (shell, _keep_shell) = world.client(&["org.bardo.Shell"]).await;
+    let shell = Intents::over(shell);
+    let done = shell
         .perform_activated(read_t2(), None, None, Some(token()))
         .await
         .expect("a reply");

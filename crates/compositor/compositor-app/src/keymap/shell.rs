@@ -15,7 +15,7 @@ use shell_verbs::ShellVerb;
 enum Does {
     /// A command the compositor runs itself.
     Itself(DesktopCommand),
-    /// A verb for sill, the shell (its launcher, switcher, screenshots, power menu, Force Quit
+    /// A verb for the shell, the shell (its launcher, switcher, screenshots, power menu, Force Quit
     /// panel), sent as its command line.
     Shell(ShellVerb),
 }
@@ -25,7 +25,7 @@ type Row = (StandardAction, Does);
 /// The standard actions the compositor binds. The Space numbers are not rows (nine actions
 /// with one meaning each): see [`shell_action`].
 const ROWS: &[Row] = &[
-    // sill draws the panel from the desktop manager's app list (bardo_shell_v1 has no event for
+    // The shell draws the panel from the desktop manager's app list (bardo_shell_v1 has no event for
     // the panel yet).
     (
         StandardAction::ForceQuit,
@@ -67,12 +67,12 @@ const ROWS: &[Row] = &[
         Does::Shell(ShellVerb::DockToggleHide),
     ),
     (StandardAction::LockScreen, Does::Shell(ShellVerb::Lock)),
-    // The Mac's Character Viewer (Control+Command+Space): sill's launcher on emoji and symbols.
+    // The Mac's Character Viewer (Control+Command+Space): the shell's launcher on emoji and symbols.
     (
         StandardAction::EmojiAndSymbols,
         Does::Shell(ShellVerb::EmojiAndSymbols),
     ),
-    // The Mac's Select Next Source in Input Menu (Control+Space): sill steps the input method.
+    // The Mac's Select Next Source in Input Menu (Control+Space): the shell steps the input method.
     (
         StandardAction::NextInputSource,
         Does::Shell(ShellVerb::NextInputSource),
@@ -144,8 +144,8 @@ const ROWS: &[Row] = &[
     ),
 ];
 
-/// The program sill's commands run under.
-const SILL: &str = "bardo-shell";
+/// The program the shell's commands run under.
+const SHELL: &str = "bardo-shell";
 
 /// What the compositor does for `action`, or `None` when the action belongs to apps.
 #[must_use]
@@ -168,10 +168,10 @@ fn binding_action(does: Does) -> BindingAction {
     }
 }
 
-/// The command line that sends `verb` to sill.
+/// The command line that sends `verb` to the shell.
 fn spawn_of(verb: ShellVerb) -> BindingAction {
     BindingAction::Spawn(Argv(
-        std::iter::once(SILL)
+        std::iter::once(SHELL)
             .chain(verb.argv().iter().copied())
             .map(str::to_owned)
             .collect(),
@@ -235,7 +235,7 @@ mod tests {
     }
 
     #[test]
-    fn a_shell_verb_spawns_sill_with_its_argv() {
+    fn a_shell_verb_spawns_shell_with_its_argv() {
         assert_eq!(
             spawn_of(ShellVerb::DockToggleHide),
             BindingAction::Spawn(Argv(vec![
@@ -364,7 +364,7 @@ mod tests {
             ("hide is the app's menu", "cmd+h", None),
             ("hide others is the app's menu", "option+cmd+h", None),
             ("quit is the app's menu", "cmd+q", None),
-            // sill steps fcitx5 over its controller, as the Mac's input menu does.
+            // The shell steps fcitx5 over its controller, as the Mac's input menu does.
             (
                 "next input source",
                 "ctrl+space",

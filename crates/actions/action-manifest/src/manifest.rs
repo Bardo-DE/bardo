@@ -307,7 +307,7 @@ pub enum ResultShape {
 pub enum KeyHint {
     /// None.
     None,
-    /// This chord, as sill parses it.
+    /// This chord, as the shell parses it.
     Chord(String),
 }
 

@@ -25,7 +25,7 @@
 .shell-nc-list{ display:flex; flex-direction:column; flex:none; }
 .shell-nc-item{ display:flex; flex-direction:column; align-items:center; padding-top:var(--s-6); }
 
-/* Who else shows notifications, when sill does not. */
+/* Who else shows notifications, when shell does not. */
 .shell-nc-foot{ padding:var(--s-8) var(--s-4) 0; border-top:var(--hair) solid var(--line-soft); }
 
 /* The widgets slot (design/20 §1.14): bardo's widget tiles under the history, standing

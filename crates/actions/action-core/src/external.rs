@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SheetSurface {
-    /// The desktop's sheet (sill), like any other call: the normal confirm path.
+    /// The desktop's sheet (the shell), like any other call: the normal confirm path.
     #[default]
     Desktop,
     /// The host that launched the agent, which shows the sheet itself. Only a development

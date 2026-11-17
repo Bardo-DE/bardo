@@ -28,7 +28,7 @@
 //! - `fake` (feature): `fake::FakeDesktop` takes scripted events and records the commands, so
 //!   a consumer tests against the same [`Desktop`] trait without a compositor.
 //!
-//! A consumer maps this crate's state into its own model (sill's `DesktopView`); application
+//! A consumer maps this crate's state into its own model (the shell's `DesktopView`); application
 //! grouping, most-recently-used order and Spaces are consumer concerns, not protocol facts.
 //!
 //! # Example

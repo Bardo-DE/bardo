@@ -16,7 +16,7 @@ Colour: `RadioGroup` with `Arrangement::Swatches`). Two have none (and a third, 
   `TextField`, `PopUpButton` and `Button`: the UI kit has no rows-editor component of its own, so a
   component there would replace it. Rows the editor cannot hold (an unknown cell, a word outside
   a column) are shown read-only and kept byte for byte.
-- **List** (`List(Box<KeyKind>)`): the UI kit has no list editor. Today three sill keys
+- **List** (`List(Box<KeyKind>)`): the UI kit has no list editor. Today three the shell keys
   are lists (`control_center.modules`, `widgets.center`, `widgets.desktop_widgets`).
 
 Colour is drawn with what the UI kit has and it fits badly: a `Choice` swatch names a CSS custom property
@@ -62,9 +62,9 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
 - `deep_link` in `ds_settings::schema` answers only a unique match; the Settings app's search ranks (label,
   help, then every word) and highlights all hits. The launcher's provider still uses `deep_link`.
 - design/22 section 2 says every file has a top-level `version = 1`. `bardo/appearance.toml` has it
-  (`AppearanceFile::version`), `sill/settings.toml` does not. The Settings app carries `version` through a
+  (`AppearanceFile::version`), `shell/settings.toml` does not. The Settings app carries `version` through a
   save when the file has one and never adds it.
-- `Page` has no Spotlight page (design/22 section 5 lists one); sill's launcher keys are on
+- `Page` has no Spotlight page (design/22 section 5 lists one); the shell's launcher keys are on
   Appearance. `Apps` is a page nothing fills.
 
 ## The Intelligence page
@@ -73,9 +73,9 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
   (18 rows: Privacy basic; Review time, Session budgets and Task approvals Advanced), the memory service's
   (8 rows: Memory basic, Retention Advanced) and cua's (14 rows: Computer use basic; Run limits,
   Timing and Window detail Advanced). Each is installed to `$XDG_DATA_DIRS/bardo/settings/` and
-  writes its own `$XDG_CONFIG_HOME/<program>/settings.toml`. Not shipped anywhere yet: sill's
-  `companion.*` (sill's `dist/` has no companion schema); the Companion section appears when a
-  schema names it, and the layout test uses a stand-in. Closes when sill ships its schema.
+  writes its own `$XDG_CONFIG_HOME/<program>/settings.toml`. Not shipped anywhere yet: the shell's
+  `companion.*` (the shell's `dist/` has no companion schema); the Companion section appears when a
+  schema names it, and the layout test uses a stand-in. Closes when the shell ships its schema.
 - **cua's apps are rows, but "never `always` for a browser" is not enforced here.** The rows editor
   checks each cell against its column (the whole value matches the pattern, a choice is one of its
   words); which apps are browsers is cua's to decide when it reads the file.
@@ -155,8 +155,8 @@ Open items, each with its closing condition:
     (`a_power_nobody_answered_is_switched_on_as_the_first_answer`, over the fake's new `Unanswered` row).
   - The entries are read once when the page opens, with their unlocalised `Name`, and the icon
     theme is the default one (hicolor and the theme's inherits). A localised name and the person's
-    chosen theme need the locale and theme at the edge (`dirs.rs`) the way sill reads them; a
-    shared desktop-entry reader in Bardo would replace this copy of sill's matching.
+    chosen theme need the locale and theme at the edge (`dirs.rs`) the way the shell reads them; a
+    shared desktop-entry reader in Bardo would replace this copy of the shell's matching.
   - The owner check proves the compositor in full (the unit manager confirms its unit). If the
     compositor runs outside a unit the page reads "could not be confirmed" until the caller-identity table
     says otherwise; not tried on a real session.
@@ -242,8 +242,8 @@ Open items, each with its closing condition:
   (else `~/.local/state`), one line `done`, written when Done has written everything; a settings row
   would need a schema that owns it, and the first run is not a preference. `bardo-settings --first-run` exits
   at once, before reading anything, when the file exists. A window closed without Done leaves no
-  file, so it asks again at the next login. sill launches it once per session
-  (`~/rs-wt/accounts/ai1b-sill-first-run.diff`, an ask against `dist/sill-session`); until then it is
+  file, so it asks again at the next login. The shell launches it once per session
+  (`~/rs-wt/accounts/ai1b-shell-first-run.diff`, an ask against `dist/shell-session`); until then it is
   run by hand.
 - **Choosing a runtime writes one row.** The runtime menu sets the text slot's Balanced tier
   (`ai.model.text.balanced`, or `ai.model.llm.balanced` of an older inferd) to the first model of that
@@ -292,13 +292,13 @@ Open items, each with its closing condition:
 - The chord recorder is the UI kit's `ShortcutField`, named only in `settings-app-ui/src/shortcuts/field.rs`.
   Clearing is its Delete key; there is no separate Clear button.
 - `settings-app-files::KeymapFiles` wraps the key remap daemon's `KeyRemapSource` (key-remap-client, by git rev, as the compositor
-  and sill take it): this computer's layer (`machine()`, from the daemon or its file), the desktop's
+  and the shell take it): this computer's layer (`machine()`, from the daemon or its file), the desktop's
   own bindings (`system_bindings`, the base of "Standard") and `watch`. The person's file is read
   as text here, not through `person()`, so a save keeps its comments and unreadable lines.
   Tests use `KeymapFiles::under`, which points the source at a socket that does not exist.
 - The desktop's groups (Launcher, Apps and windows, Window tiling, Spaces, Screenshots, Input, System) list only what `key_remap_client::handled_actions()` says the desktop handles, so a shortcut that does nothing cannot be shown or rebound. Gone today: Emoji and symbols, Next input source (the whole Input group, so it is not drawn), App windows. The app-menu actions listed with app switching (Hide, Hide others, Minimize, Minimize all, Close, Close all, Quit) stay, as every app handles them itself; Text and Documents (the apps' own) are unchanged.
 - Actions of apps are not listed; a change to one in the person's file is kept as it is.
-- The page is listed only while some schema names it (sill's does); like Spaces it is not forced.
+- The page is listed only while some schema names it (the shell's does); like Spaces it is not forced.
 
 ## Software Update (`settings-app-model/src/updates/`, `settings-app-ui/src/updates/`)
 
@@ -319,14 +319,14 @@ Open items, each with its closing condition:
   service that starts later is followed (name changes and `PropertiesChanged` tick a re-read). The
   page says plainly that updates are not available when it is not there.
 - **Log Out opens the shell's power menu** (`bardo-shell power-menu open`, which asks before it logs out). There
-  is no bus method for logging out in the Settings app or sill. When the command is missing or fails, a toast says
-  to use the power menu of the desktop. Closes if sill offers a bus call for it.
+  is no bus method for logging out in the Settings app or the shell. When the command is missing or fails, a toast says
+  to use the power menu of the desktop. Closes if the shell offers a bus call for it.
 - **"Last checked" is not ticked.** It is worked out when the page draws (on each service change and each
   visit), so "5 minutes ago" does not turn into "6 minutes ago" on its own while the page sits idle.
 - **Rollback and the automatic-update options are not on the page** (owner: check daily, ask to install;
   the page states the daily check and has no switch). Nothing in the Settings app calls `Rollback()`. If the
   owner wants it on the page, what the updater (769704c) requires of the caller: the service answers
-  `Rollback()` only for a process whose cgroup leaf is `sill.service` or an app scope for
+  `Rollback()` only for a process whose cgroup leaf is `shell.service` or an app scope for
   `org.bardo.Settings` (`app-<launcher>-org.bardo.Settings-<n>.scope`), and the system then asks for
   the administrator's password before anything happens. A Settings app started by its bus activation runs as
   the unit `org.bardo.Settings.service` (`dist/systemd/`), whose leaf is not in the updater's default
@@ -354,11 +354,11 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
   companion's is Balanced"), and the planner's need is text. One constant, `ASSISTANT_ROWS`, names it
   for the page, the step and the welcome window's runtime choice. Question for docket: if the companion
   ever asks for another tier (`with_tier`), that constant changes with it; nothing tells the Settings app.
-- **How sill should know the step was offered once.** Recommend the shell keeps the mark, in its own
+- **How the shell should know the step was offered once.** Recommend the shell keeps the mark, in its own
   state directory, written when it opens the step (not when a button is pressed, so closing the window
   with its own close button still counts). The Settings app cannot know why the shell opened it; inferd's file
   must not hold it, because an unset model is the very signal that asks again, and `FirstRunMark`
-  (`$XDG_STATE_HOME/settings-app/first-run`) means "the welcome window ran". Recommend sill opens the step
+  (`$XDG_STATE_HOME/settings-app/first-run`) means "the welcome window ran". Recommend the shell opens the step
   for both the first run and a turn that needs a model with none set or the chosen one unavailable
   (the one dialogue), and the page only for browsing. Question for the owner if the second should be
   the page instead.
@@ -381,7 +381,7 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
   Closes when porter-infer exports that text or a typed reason, so the Settings app stops copying it.
 - **The welcome window (`bardo-settings --first-run`) still has a "Local model" row** that leaves the text slot
   to "Automatic" when untouched. It is a second place that picks the assistant's model and its
-  default wording claims one. Recommend removing the row (keeping the local-only switch) once sill
+  default wording claims one. Recommend removing the row (keeping the local-only switch) once the shell
   opens the step; left alone here because the welcome window is another flow with its own tests.
 - **The running window does not resize.** `bardo-settings --page assistant-model-setup` starts at the step's
   size (440 by 520); a Settings window already open keeps its size and centres the step in it.
@@ -505,7 +505,7 @@ The pages Bardo v0.3.36 declares (`wifi`, `bluetooth`, `displays`). Each is a pu
 - **Wi-Fi** reads and drives the network service on the system bus (the radio, the wireless device's access points, the saved connections; joining a new network adds a connection with the password and deletes it again when the network refuses it). A known network has Forget… (every kept connection of that name is deleted, after a question). Other Networks ends in an "Other…" row: a sheet for a network that does not announce its name (name, security: None, WPA2/WPA3 Personal, WPA3 Personal, WPA2/WPA3 Enterprise; a hidden connection is added with `hidden = true`, and a refusal is said in a sentence, not asked again, since the name, security or password may be what is wrong). A network that signs in with an account (access point flags say 802.1X) asks for a username and password and joins with PEAP and MSCHAPv2, the server's certificate checked against the computer's own authorities (`system-ca-certs`); other EAP methods, a certificate of its own and a trust prompt for an unknown server are not offered, so a campus network with a private authority fails with the generic join sentence. Not offered: "Ask to join networks" (the service has no such setting, so the page has no such control), forgetting the network the computer is on, a network's address details. Not tested against a real 802.1X network.
 - **Bluetooth** reads BlueZ's object tree in one answer and serves a pairing agent (yes or no on a number, allow, a number to type on the device, and a PIN or passkey typed here; the agent says `KeyboardDisplay`) while the page is open; discovery runs for as long as the page is shown. A device that reports `org.bluez.Battery1` `Percentage` shows it in its row (BlueZ's property-changed signal for the interface makes the page read again). Missing: a device's details sheet. A device nobody hears is listed only when paired (BlueZ remembers unpaired ones for a while).
 - **Displays** goes through `desktop-client`, so a change is a program's change to the compositor: applied at once, with the shell's own "Keep these display settings?" countdown (15 seconds, reverts by itself). Offered: the pixel size of the mode ("Display Mode", every size the display lists, the native one marked; the refresh rate stays when the new size has it, else the fastest), resolution as the scales 1, 1.25, 1.5, 1.75, 2, 2.5 and 3 over the display's current mode ("Default for display" is the scale that brings its density nearest 115 points per inch), refresh rate at the current size, rotation, which side of another display it sits on, and a Brightness slider under each display the shell lists one for (see below). Not offered, for lack of a protocol word or a decision: mirroring and flipping (a flipped display reads as its rotation), switching a display off, a main display (the compositor derives the primary output as the leftmost lit one; there is no word to choose it), colour, a freely dragged arrangement (the compositor takes any position, the page offers the four sides; the UI kit has no draggable-tiles component to draw it with), the compositor's own default scale (it is derived here from the density because the protocol does not carry it). The window reads the environment's Wayland display itself (`desktop_client::client::WaylandRoute::Environment`), since the route cannot be cloned into `Env`; the compositor hides output management from a program the person has refused.
-- **Displays brightness** is the shell's `org.bardo.Displays1` (sill): `Brightness() -> a(su)` lists only the displays whose brightness it can read (a built-in panel, a monitor that answers DDC/CI), `SetBrightness(s, u)` sets one (only Settings may), and `Changed` follows keys and the control centre. The page asks the owner of the name only after it holds role `shell`, and shows a Brightness slider under each listed display and none under another; with no shell on the bus there are no sliders. Ticked: brightness. A drag moves the slider at once and sends the percentage; the next list from the shell decides where it rests, and a refusal is said in a toast and the list read again.
+- **Displays brightness** is the shell's `org.bardo.Displays1` (the shell): `Brightness() -> a(su)` lists only the displays whose brightness it can read (a built-in panel, a monitor that answers DDC/CI), `SetBrightness(s, u)` sets one (only Settings may), and `Changed` follows keys and the control centre. The page asks the owner of the name only after it holds role `shell`, and shows a Brightness slider under each listed display and none under another; with no shell on the bus there are no sliders. Ticked: brightness. A drag moves the slider at once and sends the percentage; the next list from the shell decides where it rests, and a refusal is said in a toast and the list read again.
 
 ## Not in v1
 
@@ -513,7 +513,7 @@ The pages Bardo v0.3.36 declares (`wifi`, `bluetooth`, `displays`). Each is a pu
   model picker (Intelligence page, `settings-app-ui/src/picker/`) and accountd's Accounts pane
   (`settings-app-ui/src/accounts/`) are drawn, both over the one look-for-it-and-follow-it loop in
   `settings-app-ui/src/live/`. Wi-Fi, Bluetooth, sound and displays' live state have no page. Closes
-  when sill's services serve `Describe/Get/Set/Changed` and a page asks for them.
+  when the shell's services serve `Describe/Get/Set/Changed` and a page asks for them.
 - **External edits**: values are read once at start, and again when the intents provider tells the
   window it wrote a key (`Notice::Reload`). A change made by another program or an editor
   shows after a restart (only `bardo/appearance.toml` is watched, by `use_environment`, so the window
@@ -534,7 +534,7 @@ What the audit found and where each landed. A row marked deferred or needing a d
 | SETTINGS-01 | fixed | `settings-app-files/src/read.rs::text_of` is the one read: a missing file is empty, every other failure (no permission, not text, a directory, a pipe or device, over 1 MiB) is an error. `load` reports it as the file's one invalid key and shows the defaults; `save` returns `FilesError::Unreadable` and writes nothing. Test: `settings-app-files/tests/files/unreadable.rs`. The in-window notice for an unreadable file is still the stderr line plus the refusal toast on the first edit; a banner on the page is a UX item. |
 | SETTINGS-12 | fixed in `settings-app-files` | The same read caps a settings file at 1 MiB and refuses anything but a regular file (the keymap keeps its 32 KiB cap through the same helper). Reading off the UI task and coalescing `Reload` are not done (deferred: the cap bounds the stall to a megabyte read per file). |
 | SETTINGS-03 | fixed | `save`, `save_places`, `KeymapFiles::save_person` and `FirstRunMark::record` go through `ds_helpers::write_atomic`: a unique temporary name, `sync_all`, a directory sync, the file's mode kept and a symlink written through. Tests: `tests/files/writes.rs`. |
-| SETTINGS-04 | fixed in this process, open across programs | Saves of settings files take one process-wide turn around read and write (the window thread and the intents provider both save), and the temporary names are unique. A write by another program (sill) of the same file between the Settings app's read and rename is still lost: that needs a cross-process lock in `ds_helpers` (interface ask in the audit report: an `update_atomic` that holds the lock across the read). The keymap's `save_person` still writes the whole text it was given. |
+| SETTINGS-04 | fixed in this process, open across programs | Saves of settings files take one process-wide turn around read and write (the window thread and the intents provider both save), and the temporary names are unique. A write by another program (the shell) of the same file between the Settings app's read and rename is still lost: that needs a cross-process lock in `ds_helpers` (interface ask in the audit report: an `update_atomic` that holds the lock across the read). The keymap's `save_person` still writes the whole text it was given. |
 | SETTINGS-15 | fixed | `save_places` is one edit of the `assistant` table's keys and one rename; the arm that returned `Ok` without writing is an error. |
 | SETTINGS-02 | fixed here | The side reader is deleted and an agent mark is honoured only for a schema from a root-owned, closed folder (above). Tests: `settings-app-model/tests/model/agent_marks.rs` (a user-directory schema lends no marks to an installed one, a stale schema lends none, a never-settable mark drops the schema, a file not named for its program marks nothing, a schema from a folder the person can write is shown with every key hands-off, an open folder is the person's whoever owns it, `/usr` is system and a missing folder is not), `settings-app-model/src/origin.rs` (the owner and mode table). |
 | SETTINGS-07 | fixed in the Settings app, Bardo carries the live calls | Every call the Settings app makes to another process runs under a named Bardo `Deadline` (`settings-app-system/src/deadline.rs`: `answered`, plus `within` where the failure keeps its type; `peer::*` are the plain names a sentence uses): connecting to the bus, who owns a name, the Spaces, memory, sync, assistant, account and update calls, the service manager, the add sheets (the prompt deadline), the intents service's startup and a second `bardo-settings`'s hand-over (`serve_session`, `hand_over_session` in `settings-app-intents`), and the whole of `read_accounts` (one action deadline, so an agent's `settings.accounts.list` cannot hold the router for as long as every call could). `LiveClient` carries its own read and action deadlines (Bardo); a `LiveError::Timeout` is the words the module gives ("The service is not answering"), feeds `Failed` to the Accounts pane (which clears the row's pending latch) and `Absence::Failed` elsewhere. A refusal shown to the person is the module's own sentence (`live::plain`), not the error's bus name. Tests: `settings-app-system/src/deadline_tests.rs` (a call that never returns ends at its deadline). Not tested end to end: a module that never answers an action, because the deadlines are the UI kit's fixed values (a test would wait ten real seconds); the Accounts pane's `Failed` clearing `pending` is covered by the model tests. |
@@ -582,7 +582,7 @@ is given before it, so a jail with no manager does not stop it (read in the call
   reads "Memory keeps itself to its own folders"; with memory stopped there is no line. The tests
   use a stand-in service.
 - `bardo-settings` on a real session: opens, follows the desktop theme, a toggle on the Dock page changes
-  `~/.config/bardo/shell/settings.toml` and sill's dock reacts. Only the harness has run the window: a
+  `~/.config/bardo/shell/settings.toml` and the shell's dock reacts. Only the harness has run the window: a
   launch of the binary on scratch directories reached window creation and stopped with "no
   adapter found" (the build sandbox had no Vulkan device), so the real window is unchecked.
 - The Software Update page against the real updater service: Check for Updates, Update Now through the
@@ -622,7 +622,7 @@ is given before it, so a jail with no manager does not stop it (read in the call
 
 | Id | Standing | Notes |
 | --- | --- | --- |
-| NEW-QDH-1 | fixed here | The Privacy page no longer names a program by what a desktop entry says about itself. The program is the compositor's proven identity (image path, or the sandboxed app's id); an entry names it, and lends its icon, only when the entry is in a system folder (`SchemaOrigin::System`: the folder and every parent root-owned and closed, judged by `Env::entry_rule`) and its `Exec`/`TryExec` is the image's absolute path, or a bare name for an image in a system program folder (`/usr/bin`, `/usr/local/bin` and the like that are themselves closed), or its Flatpak or entry id is the app's id. An entry of a sandboxed app (`X-Flatpak`) no longer names a host program. Anything else shows the file name and, under it, "In <folder>"; names and folders have controls and direction overrides replaced and are cut (name 48, folder 60 characters, the tail kept). Consequence: an app installed in the person's own Flatpak or home folders shows its file name or id rather than its entry's name (the entry is the person's to write); a Debian `/usr/local` that is group-writable reads as the person's too. Tests: `settings-app-model` `privacy/tests.rs` (a planted `~/.local` entry named "Firefox" for `/tmp/evil` shows "evil"; the table over launch lines, bare names, sandboxed ids; a planted entry ahead of the system one), `settings-app-files/tests/files/programs.rs` (the scan judges folders; a person-owned folder names nobody), `settings-app-ui/tests/ui/privacy.rs` (the folder is on the row). sill's permission sheet looks an app up by the name the compositor sends (`sill-overlays/src/permission_sheet/words.rs::app_named`); that is a different rule and is sill's to review. |
+| NEW-QDH-1 | fixed here | The Privacy page no longer names a program by what a desktop entry says about itself. The program is the compositor's proven identity (image path, or the sandboxed app's id); an entry names it, and lends its icon, only when the entry is in a system folder (`SchemaOrigin::System`: the folder and every parent root-owned and closed, judged by `Env::entry_rule`) and its `Exec`/`TryExec` is the image's absolute path, or a bare name for an image in a system program folder (`/usr/bin`, `/usr/local/bin` and the like that are themselves closed), or its Flatpak or entry id is the app's id. An entry of a sandboxed app (`X-Flatpak`) no longer names a host program. Anything else shows the file name and, under it, "In <folder>"; names and folders have controls and direction overrides replaced and are cut (name 48, folder 60 characters, the tail kept). Consequence: an app installed in the person's own Flatpak or home folders shows its file name or id rather than its entry's name (the entry is the person's to write); a Debian `/usr/local` that is group-writable reads as the person's too. Tests: `settings-app-model` `privacy/tests.rs` (a planted `~/.local` entry named "Firefox" for `/tmp/evil` shows "evil"; the table over launch lines, bare names, sandboxed ids; a planted entry ahead of the system one), `settings-app-files/tests/files/programs.rs` (the scan judges folders; a person-owned folder names nobody), `settings-app-ui/tests/ui/privacy.rs` (the folder is on the row). The shell's permission sheet looks an app up by the name the compositor sends (`shell-overlays/src/permission_sheet/words.rs::app_named`); that is a different rule and is the shell's to review. |
 | NEW-PI-7 | fixed here (the portal serves the list and the revoke) | The Privacy page has a Screen sharing group: one row per app the screen-sharing portal lets share the screen without asking again, with when it was allowed and for how long, and Remove, which calls the portal's `Revoke` and reads the list again (`settings-app-ui/src/screen_sharing/`, `settings-app-model/src/screen_sharing/`). The portal is `org.bardo.Portal1` on `org.freedesktop.impl.portal.desktop.bardo`; its owner must hold role `portal` in the desktop's caller table, proved in full, and the call goes to that owner's unique name (`settings-app-callers::PORTAL_BUS`). An app is named by the id the portal proved it by, through `ProgramBook::look_of` (a system entry may lend its name, as NEW-QDH-1 says); the portal's own name for it, which is read from a desktop entry the app or the person may have written, is never read. The list is bounded (`GRANTS_MAX` 256 rows, ids up to 255 bytes, one row per app, a mode other than 1 or 2 or a date out of range leaves a row out). Showing the group starts the portal when nobody owns its name (`pinned_starting`: the bus starts it, then the owner must hold the role, then it is called), because the portal keeps its apps on disk across restarts and is bus-activatable, so a person who has shared before sees their remembered apps rather than a service that is not running; a portal that cannot be started (no activation file, start refused) is one line, "could not be started", and the rest of the page is as before. Remove never starts it. Tests: `settings-app-ui/tests/ui/screen_sharing.rs`, `confirmed_owner.rs::an_app_is_taken_back_at_the_portal_that_was_checked`, `settings-app-model/src/screen_sharing/tests.rs`, `settings-app-system/src/screen_sharing/proxy.rs`. |
 | SETTINGS-04 | fixed here | `save_keys` (every settings key, the assistant's places) is one `ds_helpers::update_atomic`: read, edit and rename under the file's lock, so another program that changes the same file through `update_atomic` is queued rather than overwritten (the process-wide `TURN` mutex is gone; the lock queues this process's writers too). `KeymapFiles::save_person(base, text)` writes only if the file still holds `base`, the text the list read; otherwise `FilesError::Changed`, the toast says another program changed the shortcuts, and the list re-reads. Tests: `settings-app-files/tests/files/writes.rs` (a save waits for a writer holding the lock and keeps its change), `keymap.rs` (a stale write is refused), `settings-app-model` shortcuts `a_save_carries_the_text_the_edit_started_from`. Residual: a program that writes the file without `update_atomic` is not held up; the lock file `.<name>.lock` is left beside the settings file (mode 0600). |
 | SETTINGS-05 | finished here | Every call to a service goes to the owner that was confirmed, by its unique name, so a name that changes hands between the check and the call is not called: the call reaches the program that was checked, or fails. `settings-app-system/src/bus/` (`Pinned`) holds the connection and the owner (`Pinned`): zbus proxies take it as their destination (`destination()`), and porter's carrier is aimed with it (`accounts()` is `DbusTransport::accounts_at`, `inference()` is `inference_at`; the Spaces list is `Spaces::connect_at` through `accounts()`). Reading and writing calls that never start a service ask `pinned` (sync holds, the Software Update page, memory's controls, inferd's computers and engines); the ones the person just asked for, or that a page is already starting, ask `pinned_starting` (the Spaces list and removal, memory's Space removal, the add sheets): a name nobody owns is asked to start, and the call goes to the owner that is then confirmed. Tests: `settings-app-ui/tests/ui/holds.rs::a_discard_goes_to_the_program_that_was_checked_even_when_the_name_changes_hands_after`, `confirmed_owner.rs` (the Spaces list is read from, and a removal sent to, the program that was checked while a second registry takes the name right after the check; `support/handover.rs`). Not covered by a hand-over test: inferd's computers and engines and the add sheet use the same `Pinned` aims and are exercised only for the program that owns the name. Whether the updater's session-bus proxy lets a sandboxed app own those names is still the owner's call. |
@@ -637,12 +637,12 @@ is given before it, so a jail with no manager does not stop it (read in the call
   squeezed, and the arrow keys move within one row only. A grid with a cover fit and one roving focus is
   The UI kit's to add.
 - The folders listed are `/usr/share/backgrounds`, `/usr/local/share/backgrounds` and `/usr/share/wallpapers`
-  (neither the Settings app nor sill knew any before), three levels deep, png and jpeg only (what sill's wallpaper
+  (neither the Settings app nor the shell knew any before), three levels deep, png and jpeg only (what the shell's wallpaper
   service decodes); an added picture is copied to `<data home>/settings-app/pictures/` under a name no other
   picture there has. The chooser is the file chooser portal (`chooser.rs`), with no file filter: a file that
   is not a picture is refused after the choice.
 - Not run: nothing was compiled. `tests/ui/wallpaper_page.rs` reads its selectors (`.ds-radio-group-item:nth-child(2)`,
-  `aria-checked`) from the code. The fixture `fixtures/schemas/sill.settings.toml` predates `wallpaper.picture`;
+  `aria-checked`) from the code. The fixture `fixtures/schemas/shell.settings.toml` predates `wallpaper.picture`;
   regenerate it with `scripts/gen-fixtures.sh`, after which `coherence.rs` lints the page's markup too.
 - The page's title and the sidebar names come from the UI kit's page table (`settings-app-model::page_title`), and the
   page is a declared page (`Page::declared("wallpaper")`), not a variant of the old enum.

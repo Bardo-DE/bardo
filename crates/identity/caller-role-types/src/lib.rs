@@ -19,7 +19,7 @@ pub enum CallerRole {
     App,
     /// The Settings app: may use `SettingsModule1` (remove, toggle, revoke, client ids).
     Settings,
-    /// sill, or a standalone sheet host: may serve `AccountsSheet1`. memoryd and inferd take the
+    /// The shell, or a standalone sheet host: may serve `AccountsSheet1`. memoryd and inferd take the
     /// one named `org.bardo.Shell` for the shell.
     SheetHost,
     /// syncd, as the peer of the desktop's daemons. accountd has no interface for it beyond the

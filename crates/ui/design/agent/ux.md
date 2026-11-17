@@ -1,8 +1,8 @@
 <!-- paths: skip -->
 <!-- Reference copy of ~/rs-wt/agent-spec/ux.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
-# Area "ux": the companion's user-facing surfaces (UI kit components, sill surfaces)
+# Area "ux": the companion's user-facing surfaces (UI kit components, the shell surfaces)
 
-Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, sill `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and the Settings app.
+Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, the shell `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and the Settings app.
 
 Other area names below ("actions", "context", "agent", "cua", "memory", "models", "security", "compositor") are my best guess at the sibling spec files. Map them to the real names when you merge.
 
@@ -33,7 +33,7 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 
 ## 2. Repos and crates
 
-Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < ui-shell`. The pure sill crates sit below the sill surface crates. The daemons' wire crates are leaves that sill depends on, the same way it depends on `key-remap-proto` today. The UI kit never names a companion daemon crate: its types are presentational, and sill converts wire types into props.
+Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < ui-shell`. The pure the shell crates sit below the shell surface crates. The daemons' wire crates are leaves that the shell depends on, the same way it depends on `key-remap-proto` today. The UI kit never names a companion daemon crate: its types are presentational, and the shell converts wire types into props.
 
 | Piece | Lives in | New / existing | Notes |
 |---|---|---|---|
@@ -44,18 +44,18 @@ Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < u
 | `ConfirmCard` (content of the trusted surface), `GlowState`/`GlowSpec`/`glow_spec` | Bardo `ui-shell::{confirm, tokens::glow}` | new | shell-only |
 | Orb period tokens `OrbListen`, `OrbWork`, `OrbAct` | Bardo `ui-style::tokens::duration` | new tokens | lint `RawDuration`. Needs design/30 §1.2 rows (user) |
 | `Page::Intelligence` | Bardo `ui-settings::schema::key::Page` | new variant | then the Settings app `page.rs` row + icon |
-| Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | sill `shell-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
-| Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | sill `shell-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
-| Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | sill `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
-| `bardo-shell companion summon\|tap\|dismiss\|stop-all` | sill `shell-ipc::show` (`ShowRequest::Companion`), `sill/src/cli` | new request | |
-| Providers `CompanionProvider`, `RunsProvider`, `MemoryProvider` | sill `shell-search::providers/{companion,runs,memory}/` | new | rows from the companion service state |
-| Wire to props conversions (`view_of_*`) | sill `shell-ui-kit::companion/` | new module | the only place wire types meet ds props |
-| Launcher companion mode | sill `shell-launcher-ui::launcher/{mode.rs, companion_keys.rs, companion_pane.rs}` | new files; `keys.rs`/`session.rs`/`panel.rs` gain a mode | |
-| Bar item + control-centre module | sill `shell-bar::control_center::modules::companion`, `shell-settings::control_center::ControlCenterModule::Companion` | new variant + module | `InMenuBar::Show` gives the bar orb |
-| Confirmation surface, phase A (no fork) | sill `shell-overlays::confirm/` | new surface | not unforgeable; see §7 Q7 |
-| Glow, phase A (no fork) | sill `shell-overlays::glow/` | new input-transparent layer surface | phase B: the compositor draws it |
-| `companion` settings domain | sill `shell-settings::companion.rs` | new domain | `Page::Intelligence` |
-| compositor binding + Toshy snippet | sill `dist/compositor/.../custom`, `dist/toshy/companion_tap.py` | new rows/files | |
+| Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | the shell `shell-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
+| Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | the shell `shell-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
+| Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | the shell `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
+| `bardo-shell companion summon\|tap\|dismiss\|stop-all` | the shell `shell-ipc::show` (`ShowRequest::Companion`), `shell/src/cli` | new request | |
+| Providers `CompanionProvider`, `RunsProvider`, `MemoryProvider` | the shell `shell-search::providers/{companion,runs,memory}/` | new | rows from the companion service state |
+| Wire to props conversions (`view_of_*`) | the shell `shell-ui-kit::companion/` | new module | the only place wire types meet ds props |
+| Launcher companion mode | the shell `shell-launcher-ui::launcher/{mode.rs, companion_keys.rs, companion_pane.rs}` | new files; `keys.rs`/`session.rs`/`panel.rs` gain a mode | |
+| Bar item + control-centre module | the shell `shell-bar::control_center::modules::companion`, `shell-settings::control_center::ControlCenterModule::Companion` | new variant + module | `InMenuBar::Show` gives the bar orb |
+| Confirmation surface, phase A (no fork) | the shell `shell-overlays::confirm/` | new surface | not unforgeable; see §7 Q7 |
+| Glow, phase A (no fork) | the shell `shell-overlays::glow/` | new input-transparent layer surface | phase B: the compositor draws it |
+| `companion` settings domain | the shell `shell-settings::companion.rs` | new domain | `Page::Intelligence` |
+| compositor binding + Toshy snippet | the shell `dist/compositor/.../custom`, `dist/toshy/companion_tap.py` | new rows/files | |
 
 Adopted crates: nothing new. Existing pins only: dioxus, serde, `ui-core::word::Word` derive, zbus (shell-services only).
 
@@ -209,7 +209,7 @@ pub struct CardFooter { pub served_by: ServedByView, pub sources: Vec<SourceChip
 pub struct ServedByView { pub model: String, pub place: ServedPlace }
 #[derive(Word)] pub enum ServedPlaceKind { ThisComputer, LocalNetwork, Cloud }
 pub struct ServedPlace { pub kind: ServedPlaceKind, pub provider: Option<String> }
-pub struct SourceChip { pub label: String, pub icon: IconSource, pub key: SourceKey } // key opaque, opened by sill
+pub struct SourceChip { pub label: String, pub icon: IconSource, pub key: SourceKey } // key opaque, opened by shell
 pub struct SourceKey(pub String);
 
 /// Mirrors the actions area's Effect for drawing only.
@@ -302,7 +302,7 @@ pub struct AppMark { pub icon: IconSource, pub name: String }
 pub struct RunRowView {
     pub goal: String, pub app: AppMark, pub step: Count, pub budget: Option<Count>,
     pub thought: Option<String>, pub place: RunPlace, pub state: RunState, pub served_by: ServedByView,
-    pub actions: Vec<CardAction>,   // labels and keys from sill (verbs are sill's, §3.7)
+    pub actions: Vec<CardAction>,   // labels and keys from shell (verbs are shell's, §3.7)
 }
 #[component] pub fn RunRow(view: RunRowView, #[props(default)] selection: Selection, on_action: EventHandler<CardActionId>) -> Element;
 
@@ -358,7 +358,7 @@ pub enum ConfirmAnswer { Allow { always: AlwaysChoice }, Deny }
 #[component] pub fn ConfirmCard(view: ConfirmView, on_answer: EventHandler<ConfirmAnswer>) -> Element;
 ```
 
-### 3.7 sill — freeze now
+### 3.7 the shell — freeze now
 
 **`shell-launcher`** (pure; extends the pinned wire test):
 
@@ -403,7 +403,7 @@ pub enum LauncherMode { Search, Companion }
 ```rust
 ShowRequest::Companion(CompanionRequest),
 pub enum CompanionRequest {
-    /// The double-tap fired (Toshy route B: a single tap; sill's DoubleTap machine decides).
+    /// The double-tap fired (Toshy route B: a single tap; shell's DoubleTap machine decides).
     Tap,
     /// A detected double-tap (Toshy route A, the compositor later).
     Summon,
@@ -626,7 +626,7 @@ Bardo:
   - `arm_state_disables_buttons`.
 - `ui-settings`: `page_intelligence_label_and_order`.
 
-sill:
+The shell:
 - `shell-launcher`: `every_activation_has_a_pinned_wire_form_and_round_trips` (extended with all `CompanionAct` forms); `provider_kind_all_order` (12); preview_for over the new subjects.
 - `shell-ipc`: request round-trip for `CompanionRequest`.
 - `shell-model::companion`:
@@ -668,7 +668,7 @@ Fakes and fixtures:
   - `ui-settings/src/schema/key.rs` (`Page::Intelligence`).
 
   It does **not** touch TextField or CommandPalette yet. Verify: Bardo gate (`cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --all-features; ./scripts/check-boundary.sh; ./scripts/check-consumer.sh; cargo deny check licenses`).
-- **F2 sill** (after F1's `Page` and vocab land, since these are path deps). Owns:
+- **F2 the shell** (after F1's `Page` and vocab land, since these are path deps). Owns:
   - `shell-launcher/src/{ids,subject,preview,activation}.rs` and the new `companion.rs`;
   - `shell-ipc/src/show.rs`;
   - `shell-model/src/companion/**`;
@@ -679,7 +679,7 @@ Fakes and fixtures:
   - `dist/toshy/companion_tap.py`;
   - design/22 §3 rows (doc edit in Bardo, coordinated).
 
-  Exhaustive matches that gain arms in the daemon return `Effect::Nothing` until W4. Verify: `cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --features sill/debug; ./scripts/check-boundary.sh; cargo deny check licenses`.
+  Exhaustive matches that gain arms in the daemon return `Effect::Nothing` until W4. Verify: `cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --features shell/debug; ./scripts/check-boundary.sh; cargo deny check licenses`.
 - **F3 the Settings app** (after F1). Owns `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures. Verify: the Settings app gate plus `scripts/gen-fixtures.sh`.
 
 **Fill waves** (file ownership is disjoint):
@@ -691,13 +691,13 @@ Fakes and fixtures:
   - conformance and gallery pages.
 - **W2 Bardo, cards.** companion `card/**`, `plan/**`, `replace/**`, `form/**`; `editor/` proposal marks (`editor/proposals.rs` plus one prop in `surface.rs`).
 - **W3 Bardo, rows.** companion `run_row/**`, `activity/**`, `memory/**`, `served_by.rs`; `ui-shell` confirm view, `glow_spec`.
-- **W4 sill.** Can start on fakes after F2; needs W1 for the field.
+- **W4 the shell.** Can start on fakes after F2; needs W1 for the field.
   - `shell-model/companion` step bodies;
   - `shell-services/companion/**` (fake plus zbus backend behind the areas' wire crates);
   - `shell-search/providers/{companion,runs,memory}/**`;
   - `shell-launcher-ui/launcher/{companion_pane.rs, keys.rs, session.rs, panel.rs}`;
-  - `sill/src/{cli,ipc,daemon}` companion arms.
-- **W5 sill.**
+  - `shell/src/{cli,ipc,daemon}` companion arms.
+- **W5 the shell.**
   - `shell-bar/control_center/modules/companion/**` and its bar item;
   - `shell-overlays/{confirm,glow}/**` (phase A);
   - `shell-notify-ui` (NeedsYou notification only).
@@ -731,21 +731,21 @@ Fakes and fixtures:
 3. Where does the orb live with the launcher closed? A bar item from the control-centre module ("Show in Menu Bar", on by default?) or hidden while Idle?
 4. What do the Waiting look and the orb ladder sizes look like? Should the orb tint be the orb colours or the accent?
 5. Does the answer card go in the launcher's preview pane or replace the results list? What does the "headless action done" feedback look like (toast with Undo vs a line in the strip)?
-6. Glow look: width, colours, the acting spot. Is phase A (a sill overlay around the window rect, not unforgeable) acceptable before the compositor fork exists?
-7. Confirmation: a sheet attached to the target window or a centred alert? Arm delay of 500 ms? Phase A (sill overlay, forgeable by uinput) only for development, or acceptable to ship?
+6. Glow look: width, colours, the acting spot. Is phase A (a shell overlay around the window rect, not unforgeable) acceptable before the compositor fork exists?
+7. Confirmation: a sheet attached to the target window or a centred alert? Arm delay of 500 ms? Phase A (the shell overlay, forgeable by uinput) only for development, or acceptable to ship?
 8. Memory UI home: a launcher "Memory" filter for the timeline and forget, plus the Settings app Intelligence page for export and the diff? Or one dedicated window?
 9. Settings page name: "Intelligence" (as in design/31) or "Companion"?
 10. Undo wording for agent actions in app menus: "Undo Archive (Companion)", or a plain "Undo Archive" with the actor shown only in the activity strip?
 11. Toshy route:
     - (A) Toshy detects the double-tap in Python and emits one unique chord to `bardo-shell companion summon`, which is the settled wording;
-    - (B) Toshy maps a lone ⌘ tap to a unique key, and sill's tested `Tap` machine detects the double. This needs a spike: does a tap-vs-hold remap on ⌘ disturb ⌘-click and ⌘-drag?
+    - (B) Toshy maps a lone ⌘ tap to a unique key, and the shell's tested `Tap` machine detects the double. This needs a spike: does a tap-vs-hold remap on ⌘ disturb ⌘-click and ⌘-drag?
 
     I recommend B if the spike passes, otherwise A.
 
 ### Critical Files for Implementation
 - /home/pohsuanlai/bardo/crates/ds/src/components/content/voice_orb/view.rs
 - /home/pohsuanlai/bardo/crates/ds/src/components/menus/palette/command_palette.rs
-- /home/pohsuanlai/sill/crates/sill-launcher/src/activation.rs
-- /home/pohsuanlai/sill/crates/sill-launcher-ui/src/launcher/keys.rs
+- /home/pohsuanlai/shell/crates/shell-launcher/src/activation.rs
+- /home/pohsuanlai/shell/crates/shell-launcher-ui/src/launcher/keys.rs
 - /home/pohsuanlai/bardo/crates/ds-settings/src/schema/key.rs
 <!-- paths: end -->

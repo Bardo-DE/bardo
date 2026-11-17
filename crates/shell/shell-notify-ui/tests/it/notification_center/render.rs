@@ -277,7 +277,7 @@ fn the_footer_names_the_daemon_holding_the_name() {
         n.live = Notifications {
             server: ServerStatus {
                 mode: ServerMode::Own,
-                holder: NameHolder::Sill,
+                holder: NameHolder::Shell,
             },
             banners: Vec::new(),
         }

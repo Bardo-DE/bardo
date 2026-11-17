@@ -30,7 +30,7 @@ const MAX_SENT: usize = 16;
 
 /// The least time between a question being sent and its answer arriving.
 ///
-/// The shell's sheet is disarmed for longer (sill's `PERMISSION_ARM_AFTER`, 600 ms) so a key held
+/// The shell's sheet is disarmed for longer (the shell's `PERMISSION_ARM_AFTER`, 600 ms) so a key held
 /// down or a click that was meant for the window behind cannot answer it; an answer faster than
 /// this did not come from a person looking at the sheet, so the shell connection that sent it is
 /// cut (the margin under the sheet's delay is for scheduling and the wire).

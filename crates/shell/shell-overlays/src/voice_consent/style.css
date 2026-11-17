@@ -1,5 +1,5 @@
 /* The voice consent sheet. The sheet and the buttons are bardo's (Sheet, Button); this lays out
-   what sill puts in the sheet: the title, the one sentence, the footer. Tokens only. */
+   what shell puts in the sheet: the title, the one sentence, the footer. Tokens only. */
 
 .shell-consent{ display:flex; flex-direction:column; gap:var(--s-10); padding:var(--s-16); color:var(--ink); outline:none; }
 .shell-consent-title{ font-size:var(--fs-title); font-weight:700; }

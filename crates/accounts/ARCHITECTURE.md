@@ -270,7 +270,7 @@ pub trait Secrets: Send + Sync {
     fn delete_account(&self, account: &AccountId) -> impl Future<Output = Result<(), SecretsError>> + Send;
 }
 
-// account-service: the sheet host (sill over AccountsSheet1, an app's own window) or
+// account-service: the sheet host (shell over AccountsSheet1, an app's own window) or
 // ScriptedSheets; the system or a fixed clock; a registry file or none; an audit file or none.
 pub trait Sheets: Send + Sync {
     type Link: SheetLink;
@@ -544,7 +544,7 @@ manager state what it is, and `judge` returns a `Standing`. `standing.rs` turns 
   the same app, unit and role (porter's own role spelling), its `exe` being the row's `exe` or, for a
   daemon unit named `<name>.service` (lower case, digits, dashes), `libexec/bardo/<name>` under `/usr`,
   `/usr/local` and `/opt/bardo/releases/*` (`images::installed`). Any other unit lists its `exe` in the row
-  (`dist/callers.toml` does for the Settings app and sill, in `bin`), and without one is nobody. Rows without a unit
+  (`dist/callers.toml` does for the Settings app and the shell, in `bin`), and without one is nobody. Rows without a unit
   are not translated. One row for the unit manager (`systemd`, role `manager`, `Exe`) is added, and the
   manager's answers are believed only while its owner holds it. A user row can name `exe` but only gets
   a non-fixed role, and only if the program is root-owned.

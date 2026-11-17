@@ -50,7 +50,7 @@ pub enum CuaCaller {
     Router,
     /// companiond: the planner.
     Companion,
-    /// sill: the launcher, the orb and the control centre.
+    /// The shell: the launcher, the orb and the control centre.
     Shell,
     /// Anything else on the bus.
     Other,

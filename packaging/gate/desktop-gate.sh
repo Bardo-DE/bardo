@@ -95,7 +95,7 @@ run_scenario() {
 # docket's bardo-actiond, bardo-compositor's tools from this tree). Exit 0 and 2 (SKIP) are accepted; a SKIP
 # only for a script listed in shell-accept-skips.txt whose phase has not closed; any FAIL is rerun once,
 # alone and one at a time (a loaded host starves the timing-sensitive scripts), and says so.
-sill_accept() {
+shell_accept() {
   local work="$ROOT/build/shell-accept" shell_dir="$TREE/crates/shell" log rc=0 name why closes
   local -a failed=() skipped=()
   rm -rf "$work"; mkdir -p "$work"; log="$work/accept.log"
@@ -171,7 +171,7 @@ if [ "$tier" != self ]; then
   step "lane gate of the whole tree" lane_gate || true
   # Whatever failed before, this check still runs: a phase gate names every failure.
   if [ "$tier" = phase ]; then
-    step "bardo-shell acceptance on bardo-compositor (dev/accept.sh --compositor bardo)" sill_accept || true
+    step "bardo-shell acceptance on bardo-compositor (dev/accept.sh --compositor bardo)" shell_accept || true
   fi
 fi
 

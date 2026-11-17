@@ -1,5 +1,5 @@
 //! The other processes on the private bus: a mail app (action-fake's `FakeMail` behind
-//! `action_provider::serve_on`, so the app side of `IntentProvider1` is the real one) and sill's
+//! `action_provider::serve_on`, so the app side of `IntentProvider1` is the real one) and the shell's
 //! `Confirm1` with scripted answers. Shared by intentd's tests and `bardo-do`'s end-to-end test.
 #![allow(
     dead_code,
@@ -212,15 +212,15 @@ struct Script {
 /// Asks somebody (blocking is fine: it runs off the async threads).
 type Asker = Arc<dyn Fn(&ConfirmRequest) -> Answer + Send + Sync>;
 
-/// sill's `Confirm1`: records every sheet and answers from a script, then dismisses; or, built
+/// The shell's `Confirm1`: records every sheet and answers from a script, then dismisses; or, built
 /// with `start_asking`, hands each sheet to a function (the example asks on the terminal).
 #[derive(Clone)]
-pub struct FakeSill {
+pub struct FakeShell {
     script: Arc<Mutex<Script>>,
     asker: Option<Asker>,
 }
 
-struct ConfirmServer(FakeSill);
+struct ConfirmServer(FakeShell);
 
 #[zbus::interface(name = "org.bardo.Confirm1")]
 impl ConfirmServer {
@@ -280,10 +280,10 @@ impl ConfirmServer {
     }
 }
 
-impl FakeSill {
+impl FakeShell {
     /// Serves `Confirm1` on `connection` and claims `names` (`org.bardo.Confirm1` and the name
-    /// the configuration gives sill's roles).
-    pub async fn start(connection: &BusConnection, names: &[&str]) -> FakeSill {
+    /// the configuration gives the shell's roles).
+    pub async fn start(connection: &BusConnection, names: &[&str]) -> FakeShell {
         Self::serve(connection, names, None).await
     }
 
@@ -292,18 +292,18 @@ impl FakeSill {
         connection: &BusConnection,
         names: &[&str],
         ask: impl Fn(&ConfirmRequest) -> Answer + Send + Sync + 'static,
-    ) -> FakeSill {
+    ) -> FakeShell {
         Self::serve(connection, names, Some(Arc::new(ask))).await
     }
 
-    async fn serve(connection: &BusConnection, names: &[&str], asker: Option<Asker>) -> FakeSill {
-        let sill = FakeSill {
+    async fn serve(connection: &BusConnection, names: &[&str], asker: Option<Asker>) -> FakeShell {
+        let shell = FakeShell {
             script: Arc::new(Mutex::new(Script::default())),
             asker,
         };
         connection
             .object_server()
-            .at("/org/bardo/Confirm1", ConfirmServer(sill.clone()))
+            .at("/org/bardo/Confirm1", ConfirmServer(shell.clone()))
             .await
             .expect("export Confirm1");
         dbus_kit::ready::serving(connection)
@@ -312,7 +312,7 @@ impl FakeSill {
         for name in names {
             connection.request_name(*name).await.expect("claim a name");
         }
-        sill
+        shell
     }
 
     /// The person's next answers, in order.

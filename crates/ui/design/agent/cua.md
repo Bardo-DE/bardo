@@ -32,7 +32,7 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 - Model choice, the model wire formats, action parsing, image resize/encode, and inferd routing. These belong to the **models** area. cua consumes `computer-use-action` and the `CuaModel` seam.
 - Cedar policy text, the typed-action registry, `prov` labels, and the confirmation wording. These belong to the **actions** area. cua builds the request and executes the verdict.
 - Event-log storage, hash chain, memfiles and recall. These belong to the **memory** area. cua defines its record payloads only.
-- The launcher's run strip and orb drawing. These belong to whoever owns sill's launcher and companion UX; cua provides the `Cua1` bus they subscribe to.
+- The launcher's run strip and orb drawing. These belong to whoever owns the shell's launcher and companion UX; cua provides the `Cua1` bus they subscribe to.
 - The planner and router tiering decision (typed action, then hook, then CUA). cua is called; it does not decide to be called.
 - uinput, in any form, ever.
 
@@ -528,7 +528,7 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
 
 **Who may call what:**
 - `Start`: only the companion planner/router's `AppId`.
-- `Cancel`, `Pause`, `Resume`, `TakeOver`, `HandBack`, `StopAll`: the planner and the shell (sill launcher/orb).
+- `Cancel`, `Pause`, `Resume`, `TakeOver`, `HandBack`, `StopAll`: the planner and the shell (the shell launcher/orb).
 - `Answer`: the shell only.
 
 CUA consent and effect confirmations never come through `Answer`. They are drawn by the compositor (fork) or accounts-ui (stock), and their answer arrives as `RunInput::ConsentAnswered` from cuad's own prompter seam.
@@ -790,7 +790,7 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 - `memfiles` folder `procedures/` (later).
 - Supplying the user's recent events for `HandedBack.user_events` and Handover starts.
 
-**launcher / companion UX (sill)**
+**launcher / companion UX (the shell)**
 - `CuaRunProvider` in shell-launcher; a new `Activation::Cua(RunControl)` variant (following the warn-before-lint-rules practice).
 - The orb presence mapping from §4.
 - The Ask form calls `Run.Answer`.
@@ -839,6 +839,6 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 - /home/pohsuanlai/porter/ARCHITECTURE.md (the repo shape, boundary script and frozen-trait conventions to copy)
 - /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.4 Inference1, §4.5 consent, §5.5 data-class floors)
 - /home/pohsuanlai/shell-host/scripts/dev/README.md (the nested compositor and headless KWin harness the spikes reuse)
-- /home/pohsuanlai/sill/crates/sill-launcher/src/activation.rs and provider.rs (where the run strip plugs in)
+- /home/pohsuanlai/shell/crates/shell-launcher/src/activation.rs and provider.rs (where the run strip plugs in)
 
 <!-- paths: end -->

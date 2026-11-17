@@ -122,7 +122,7 @@ case "${XDG_CURRENT_DESKTOP:-}" in
        { [[ ! -e "$MACHINE_CONFIG" && "$DESKTOP" == plasma ]]; }; then
       say "  note: /etc/bardo/key-remap/key-remap.toml is the Plasma overlay (or about to be) and every session shares it: Cmd+Space"
       say "  is KRunner's Alt+Space, Cmd+H and Cmd+Shift+3/4 are Plasma keys. A desktop that forwards"
-      say "  ~/.config/bardo/key-remap/key-remap.toml (sill does) overrides them in its own sessions only; nothing"
+      say "  ~/.config/bardo/key-remap/key-remap.toml (the shell does) overrides them in its own sessions only; nothing"
       say "  here changes for it. See README.md, \"Desktops that forward a config\"."
     fi ;;
 esac

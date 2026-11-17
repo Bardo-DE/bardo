@@ -139,7 +139,7 @@ step_sweep_and_idle() {
   read -r f0 c0 < <(counters_of "$DOCK")
   in_env python3 - "$BARDO_SHELL_BIN" "$DOCK" "$OUT_W" "$PILL_Y" <<'EOF' >"$log" 2>&1
 import subprocess, sys, time
-sill, dock, width, y = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
+shell, dock, width, y = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4]
 start, span, hz = width // 2 - 160, 320, 60
 t0 = time.monotonic()
 for i in range(hz):

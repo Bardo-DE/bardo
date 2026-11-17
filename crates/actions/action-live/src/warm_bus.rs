@@ -103,7 +103,7 @@ pub async fn as_intentd<T>(world: &World, work: impl std::future::Future<Output 
     done
 }
 
-/// Warms a smoke world's models. The harness process stands in for sill there; for the warm-up
+/// Warms a smoke world's models. The harness process stands in for the shell there; for the warm-up
 /// it is placed as intentd (the identity inferd serves a run's models to) and put back after.
 ///
 /// # Errors

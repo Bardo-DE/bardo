@@ -64,10 +64,10 @@ fn a_row_with_no_image_is_refused_because_a_unit_name_proves_nothing() {
 #[test]
 fn images_that_could_match_too_much_or_too_little_are_refused() {
     for exe in [
-        "/opt/**/sill",
-        "relative/sill",
-        "/opt/../sill",
-        "/opt/a*b*c/sill",
+        "/opt/**/shell",
+        "relative/shell",
+        "/opt/../shell",
+        "/opt/a*b*c/shell",
         "/",
     ] {
         let text = format!("[[peer]]\napp = \"org.x.A\"\nexe = [\"{exe}\"]\nrole = \"r\"\n");
@@ -80,7 +80,7 @@ fn bad_ids_and_unknown_keys_are_refused() {
     for line in [
         "role = \"Not A Role\"",
         "app = \"\"",
-        "unit = \"sill\"",
+        "unit = \"shell\"",
         "extra = 1",
         "name = \"\"",
     ] {

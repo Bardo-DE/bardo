@@ -1,4 +1,4 @@
-//! Bindings that call sill or start programs (P1-I1), through the fixture's fakes.
+//! Bindings that call the shell or start programs (P1-I1), through the fixture's fakes.
 
 use compositor_core::DeviceId;
 use compositor_core::input::{
@@ -47,7 +47,7 @@ fn press_cmd_space(fixture: &mut Fixture, device: DeviceId) {
 /// A chord bound to a D-Bus call makes that call through `ShellCalls` within the frame the key
 /// was pressed in.
 #[test]
-fn a_binding_calls_a_sill_method_within_one_frame() {
+fn a_binding_calls_a_shell_method_within_one_frame() {
     let mut fixture = bound_to(BindingAction::Call(toggle_launcher()));
     assert!(fixture.shell_calls().calls().is_empty());
     let keyboard = fixture.input().plug(
@@ -88,7 +88,7 @@ fn only_a_person_fires_a_binding() {
     assert!(fixture.shell_calls().calls().is_empty());
 }
 
-/// A bound chord fires over everything, as the Mac's does: while a layer surface (sill's
+/// A bound chord fires over everything, as the Mac's does: while a layer surface (the shell's
 /// switcher) holds the keyboard exclusively the binding is still carried out and its key is not
 /// delivered, but the chord's modifier is, and so is its release, because the switcher reads the
 /// release of the modifier to know the person let go.

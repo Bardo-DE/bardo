@@ -91,7 +91,7 @@ RULES=(
   "computer-use-capture-wayland: zbus zvariant reqwest hyper hyper-util rustls pipewire reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
   # The bus bodies: serde, plus the vocabulary crates named in ONLY below. The capability crates
   # (accessibility, input, capture) are not reachable, so a consumer that reads the bodies
-  # (sill, the D-Bus codec) links none of them; the leaf types they share live in computer-use-types.
+  # (the shell, the D-Bus codec) links none of them; the leaf types they share live in computer-use-types.
   "computer-use-types: $EFFECTS computer-use-a11y-tree computer-use-seat-input computer-use-capture"
   "computer-use-bus: $EFFECTS computer-use-a11y-tree computer-use-seat-input computer-use-capture"
   "computer-use-run: $EFFECTS"
@@ -299,8 +299,8 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# cua sits above docket and below sill in the repo order (the model layer, porter, the memory service, docket, cua,
-# sill), and the GPL compositors are separate processes: nothing of sill's, and
+# cua sits above docket and below the shell in the repo order (the model layer, porter, the memory service, docket, cua,
+# The shell), and the GPL compositors are separate processes: nothing of the shell's, and
 # nothing of theirs (smithay itself), may enter any tree of this workspace,
 # dev-dependencies included.
 THEIRS="smithay"
@@ -314,12 +314,12 @@ for name in $THEIRS; do
   fi
 done
 if printf '%s\n' "$workspace_tree" | grep -q '^shell-'; then
-  echo "LEAK: the workspace depends on a sill crate, which sits above cua"
+  echo "LEAK: the workspace depends on a shell crate, which sits above cua"
   theirs_found=1
   fail=1
 fi
 if [ "$theirs_found" -eq 0 ]; then
-  echo "boundary holds: no sill crate and nothing of the compositor enters the workspace"
+  echo "boundary holds: no shell crate and nothing of the compositor enters the workspace"
 fi
 
 # cuad's `fixture-callers` is a security switch: with it on, cuad takes who is calling from a

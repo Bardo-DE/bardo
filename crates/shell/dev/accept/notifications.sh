@@ -32,7 +32,7 @@
 # --bus: the notifications server, on compositor. The daemon, notify-send, gdbus and
 # the holder example (examples/notifications_holder.rs) get the private bus's address.
 #
-#   1. `sill notifications status` says holder sill, mode own.
+#   1. `shell notifications status` says holder the shell, mode own.
 #   2. GetServerInformation answers ('bardo-shell', 'bardo-shell', <version>, '1.2'); GetCapabilities the six
 #      words.
 #   3. `notify-send -a accept Hello`: status counts 1 banner and 1 kept.
@@ -52,7 +52,7 @@
 # serves the whole run (each client is a new input device, and KWin re-announces the seat's
 # pointer for each). The drag and the swipe are only here: debug injection has no drag.
 #
-#   1. `sill notifications status`: holder sill, mode own.
+#   1. `shell notifications status`: holder the shell, mode own.
 #   2. Hover: a real pointer on the card at 4000 ms keeps it past the hold (5200) at 7000 ms; it
 #      leaves 1500 ms (plus the exit and slack) after the pointer does; `kept` rises by one.
 #   3. A real click on the body of one sent with `--action default=Open`: the card leaves, kept
@@ -155,7 +155,7 @@ scratch_new
 mkdir -p "$CONFIG/bardo/shell"
 
 since() { echo $(( $(now_ms) - $1 )); }
-notify() { sill_sent debug notify "$@" >>"$OUT_DIR/notify.log" 2>&1; }
+notify() { shell_sent debug notify "$@" >>"$OUT_DIR/notify.log" 2>&1; }
 
 # One field of `bardo-shell notifications status`: mode, holder (its kind), pid, banners or kept.
 status_field() {
@@ -312,13 +312,13 @@ step_hover() {
   # The pointer comes the moment the card is up (not at a fixed time after the notify call, which
   # a loaded host can stretch past the hold), and the card must still be up well past its hold.
   await_shows "$OUT_DIR/hover-up.png" || { echo "the card never showed" >&2; return 1; }
-  sill_sent debug pointer "$BANNERS" "$BANNER_CARD_X" "$BANNER_CARD_Y" >>"$OUT_DIR/pointer.log" 2>&1 || return 1
+  shell_sent debug pointer "$BANNERS" "$BANNER_CARD_X" "$BANNER_CARD_Y" >>"$OUT_DIR/pointer.log" 2>&1 || return 1
   start=$(now_ms)
   while [ "$(since "$start")" -lt $((HOLD_MS + 1500)) ]; do sleep 0.02; done
   shows && up=yes
   local before slack
   before=$(now_ms)
-  sill_sent debug leave "$BANNERS" >>"$OUT_DIR/pointer.log" 2>&1 || return 1
+  shell_sent debug leave "$BANNERS" >>"$OUT_DIR/pointer.log" 2>&1 || return 1
   slack=$(( $(now_ms) - before ))
   gone=$(await_hidden 6000)
   local limit=$((1500 + EXIT_MS + SLACK_MS))
@@ -367,7 +367,7 @@ step_grouping() {
 step_dnd() {
   local kept
   dnd_setting true
-  sill_sent reload >>"$OUT_DIR/notify.log" 2>&1 || return 1
+  shell_sent reload >>"$OUT_DIR/notify.log" 2>&1 || return 1
   sleep 0.5
   kept=$(status_field kept)
   notify "Quiet" --app accept || return 1
@@ -380,7 +380,7 @@ step_dnd() {
   await_status kept $((kept + 2)) || return 1
   echo "DND: a normal and a critical one kept without a banner (kept $kept -> $((kept + 2)))" >&2
   dnd_setting false
-  sill_sent reload >>"$OUT_DIR/notify.log" 2>&1
+  shell_sent reload >>"$OUT_DIR/notify.log" 2>&1
 }
 
 # 7.
@@ -423,8 +423,8 @@ bus_holder_pid() {
 
 # 1.
 step_owns() {
-  await_status mode own && await_status holder sill || return 1
-  echo "status: mode own, holder sill" >&2
+  await_status mode own && await_status holder shell || return 1
+  echo "status: mode own, holder shell" >&2
 }
 
 # 2.
@@ -481,7 +481,7 @@ step_other_holder() {
   [ "$(bus_holder_pid)" = "$HOLDER" ] || { echo "bardo-shell replaced the holder" >&2; return 1; }
   echo "holder pid $HOLDER kept the name; status holder other, pid $HOLDER" >&2
   kill "$HOLDER"; wait "$HOLDER" 2>/dev/null; HOLDER=
-  await_status holder sill || return 1
+  await_status holder shell || return 1
   echo "the holder left; bardo-shell took the name" >&2
 }
 
@@ -659,9 +659,9 @@ recover_real() { clear_banners; rest; }
 
 # 1. and 12.
 step_real_holder() {
-  await_status holder sill || return 1
+  await_status holder shell || return 1
   await_status mode own || return 1
-  echo "status: holder sill, mode own" >&2
+  echo "status: holder the shell, mode own" >&2
 }
 
 # 2.

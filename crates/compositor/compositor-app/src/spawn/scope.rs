@@ -1,4 +1,4 @@
-//! A program in a scope of its own: `systemd-run --user --scope`, as sill launches apps.
+//! A program in a scope of its own: `systemd-run --user --scope`, as the shell launches apps.
 //!
 //! The compositor's service ends every process in its control group when it stops, which is
 //! right for its windows and wrong for a terminal's tmux server or a long build. A transient

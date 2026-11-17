@@ -1,4 +1,4 @@
-//! The default key bindings (C30: the compositor's settings document carries them; sill ships none).
+//! The default key bindings (C30: the compositor's settings document carries them; the shell ships none).
 
 use crate::input::Bindings;
 

@@ -48,7 +48,7 @@ use crate::links::Links;
 /// answers, and [`SurfaceHarness`](crate::harness::SurfaceHarness) mounts the same `root` in a
 /// test.
 pub trait Surface: 'static {
-    /// The surface's name: its layer namespace is `sill-<NAME>-<output>` (a slotted surface
+    /// The surface's name: its layer namespace is `shell-<NAME>-<output>` (a slotted surface
     /// adds its slot), and the stylesheet selectors a person writes name it.
     const NAME: &'static str;
     /// The link the daemon or another surface drives it through, a type in [`crate::links`];

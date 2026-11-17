@@ -19,8 +19,8 @@ fn fixture() -> String {
 #[test]
 fn the_fixture_parses_and_one_name_may_play_several_roles() {
     let config = IntentdConfig::parse(&fixture()).expect("a configuration");
-    let sill = AppName::parse("org.bardo.Shell").expect("app");
-    let roles = config.roles_of(&sill);
+    let shell = AppName::parse("org.bardo.Shell").expect("app");
+    let roles = config.roles_of(&shell);
     assert_eq!(
         roles.into_iter().collect::<Vec<_>>(),
         [

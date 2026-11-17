@@ -21,7 +21,7 @@ impl Run for PinsService {
     type Deps = watch::Receiver<AppIndex>;
 
     fn initial(env: &Env, _apps: &watch::Receiver<AppIndex>) -> DockPins {
-        backend::load(&env.dirs.sill_config())
+        backend::load(&env.dirs.shell_config())
     }
 
     fn run(
@@ -29,7 +29,7 @@ impl Run for PinsService {
         deps: watch::Receiver<AppIndex>,
         io: ServiceIo<Self>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
-        let dir = env.dirs.sill_config();
+        let dir = env.dirs.shell_config();
         async move {
             backend::run(dir, io.state, io.commands, deps).await;
             Ok(())

@@ -471,7 +471,7 @@ fn the_shells_commands_become_the_wire_requests_the_protocols_carry() {
 }
 
 #[test]
-fn what_sill_says_a_backend_supports_is_what_the_wire_client_accepts() {
+fn what_shell_says_a_backend_supports_is_what_the_wire_client_accepts() {
     let mut session = Session::new();
     session
         .say(group_with(

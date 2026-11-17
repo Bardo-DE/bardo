@@ -12,7 +12,7 @@
 #   app's to 5 s);
 # - the daemon gets its own XDG_RUNTIME_DIR, XDG_CONFIG_HOME, XDG_STATE_HOME and XDG_CACHE_HOME,
 #   the nested socket as an absolute WAYLAND_DISPLAY (the script refuses wayland-0), and
-#   XDG_CURRENT_DESKTOP=bardo so it resolves a bardo-shell session (Host::SillSession) and owns idle;
+#   XDG_CURRENT_DESKTOP=bardo so it resolves a bardo-shell session (Host::ShellSession) and owns idle;
 # - short idle times come from `bardo-shell run --idle-times`, which only a debug build takes;
 # - no password is typed: an asked lock is opened with `bardo-shell debug auth accept` (debug build);
 # - no input is typed anywhere: a wake is `bardo-shell debug idle-wake` (debug build), a made-up
@@ -78,7 +78,7 @@ mkdir -p "$CONFIG/bardo/shell"
 LOGIND=
 TIMES="6,0"
 DAEMON_LOG="$OUT_DIR/daemon.log"
-# The daemon resolves a bardo-shell session (Host::SillSession) and owns idle only as the bardo-shell session's desktop (Bardo, as bardo-session sets it).
+# The daemon resolves a bardo-shell session (Host::ShellSession) and owns idle only as the bardo-shell session's desktop (Bardo, as bardo-session sets it).
 SESSION_ENV=(XDG_CURRENT_DESKTOP=bardo)
 # The session bus: the compositor's (set by start_compositor), so the daemon reaches org.bardo.Compositor1.
 session_bus() { echo "${BARDO_COMPOSITOR_BUS:-$BUS}"; }

@@ -84,7 +84,7 @@ fn render(shown: Shown) -> String {
 }
 
 #[test]
-fn a_banner_is_bardo_card_with_sills_words() {
+fn a_banner_is_bardo_card_with_the_shells_words() {
     let html = render(Shown {
         note: note(&["default", "reply"]),
         count: 1,

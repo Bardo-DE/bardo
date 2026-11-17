@@ -1,7 +1,7 @@
 # The UI kit design docs
 
 These documents are the canonical UX specification for Bardo (design system), layer-shell-host
-and sill (the shell), mailo and every bundled app. Agents build from them; reviewers check
+and the shell (the shell), mailo and every bundled app. Agents build from them; reviewers check
 against them.
 
 ## 0. Current direction
@@ -52,7 +52,7 @@ clean-up phase has not changed yet, it says "target (clean-up phase)".
 | `26-DETAILS.md` | The grammar of small state details: the moments every stateful element passes through, the primitives that play them, and a per-element catalogue with the reference, today and the gap. |
 | `27-HIG-PARITY.md` | Audit against the pre-2025 (macOS 14/15) HIG: archived snapshots, gaps ranked, a verdict and rule per HIG page, proposed waves H0-H7. |
 | `28-CUSTOMIZATION.md` | What the person chooses and places: every surface where the reference lets people pick items, order and place (widgets, launcher categories, control center and bar, dock, toolbars, share, previewers, actions, sidebars, notifications), the shared Registry/Placement/Picker pattern, D-Bus registration, order of work. |
-| `29-SIZING.md` | Settled and built: an audit of control heights, spacing and radii (Bardo and sill's bar and control center), the reference numbers with confidence, three principled systems with mockups, a recommendation, and the dark Monochrome/Muted plate fix. |
+| `29-SIZING.md` | Settled and built: an audit of control heights, spacing and radii (Bardo and the shell's bar and control center), the reference numbers with confidence, three principled systems with mockups, a recommendation, and the dark Monochrome/Muted plate fix. |
 | `30-CATALOGUE.md` | The settled inventory: foundations (timing, motion and interaction primitives, state vocabulary, size ladder), every component with its AppKit counterpart, the one Look, the 2026-10-02 decisions, the drop list, the deferred items. The source of truth: wins over every other doc. |
 | `31-ACCOUNTS.md` | Proposed: the account and capability layer: the capability vocabulary, providers as data files, accountd/syncd/inferd, consent and secrets, Photos on Storage, the local-first AI broker, the sync contract, phasing and open decisions. |
 | `32-COMPANION.md` | Proposed: the companion: stance, the settled decisions, presence and the orb, the prompt and answer cards, runs, memory, confirmation, security, and where each piece lives. |

@@ -14,7 +14,7 @@ pub enum Leasable {
     Yes,
     /// No window has that id.
     NoSuchWindow,
-    /// The shell's own window (sill's menus, sheets and panels, or any window of a client that
+    /// The shell's own window (the shell's menus, sheets and panels, or any window of a client that
     /// came through the shell's connection): the agent never drives the desktop's own surfaces.
     Shell,
 }

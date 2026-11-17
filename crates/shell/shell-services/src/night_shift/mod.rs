@@ -35,7 +35,7 @@ impl Run for NightShiftService {
         io: ServiceIo<Self>,
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static {
         let compositor = env.dirs.config.join("bardo").join("compositor");
-        let state = env.dirs.sill_state();
+        let state = env.dirs.shell_state();
         let clock = std::sync::Arc::clone(&env.clock);
         async move {
             backend::run(compositor, state, clock, deps, io).await;

@@ -87,7 +87,7 @@ step_boot() {
   accountd_start || return 1
   inferd_write_config </dev/null
   inferd_start || return 1
-  sill_start || return 1
+  shell_start || return 1
 }
 
 step_api_key() {

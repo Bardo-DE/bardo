@@ -58,7 +58,7 @@ step_boot() {
   secrets_start || return 1
   acc_config; acc_clients_for_issuer; acc_provider_microsoft_on_rig
   accountd_start || return 1
-  sill_start || return 1
+  shell_start || return 1
   syncd_start || return 1
   sheet_add_microsoft || return 1
   acc_wait 30 sync_has_account "$ACCOUNT" || { echo "bardo-syncd lists no row for bardo-accountd's account $ACCOUNT: $(tail -5 "$OUT_DIR/bardo-syncd.log")" >&2; return 1; }

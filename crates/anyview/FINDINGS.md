@@ -84,7 +84,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   moves to a crate the exporter can name, or the host lends the kept bytes.
 - **`Resume::Book` is not written any more.** A book remembers a page and an offset as a PDF does
   (`Resume::Pdf`). The variant stays in `anyview-core` so an old store file still reads (and is ignored), and
-  because sill matches the enum exhaustively. Ends with sill's next release that drops it.
+  because the shell matches the enum exhaustively. Ends with the shell's next release that drops it.
 - **Times follow the zone the system reports when a file is opened.** File, PDF and EXIF times read as
   `2 Oct 2026 at 22:30` in the person's zone (`LocalZone::system`, over `jiff`, which added two packages to the dependency budgets, read when the facts are built), with no
   zone name. A camera time with no `OffsetTime` is taken as written, since a camera clock is the owner's own; a PDF
@@ -176,7 +176,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   has its own flag in the viewer but not in a peek), `calamine` reading a whole XLS or ODS, `symphonia`'s
   probe once it is inside a tag, `mp4parse` on a header already gathered, the `zip`, `sevenz-rust2` and
   codec crates inside one call, `syntect` inside one line, and `ds_blitz::pdf` laying out one EPUB chapter.
-  The launcher abandons such a peek's worker (`h3`'s `sill.patch`), and the viewer's pool thread holds until the
+  The launcher abandons such a peek's worker (`h3`'s `shell.patch`), and the viewer's pool thread holds until the
   call returns. Ends when those decoders run in a plugin process the host can kill.
 - **A peek refuses a picture, font, book or office file over the budget's bytes.** The check is in
   `anyview_peek::peek` (`look` runs it), ahead of the peeks that read the file whole; a very large camera RAW file shows
@@ -486,7 +486,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   compositor protocol (the shell's layer or a toplevel-management request) and the binary passes a
   window handle to `request`. The mini window asks for it and reports the refusal.
 - **MPRIS `Position` is not announced.** The spec says clients poll it, so `publish` emits no `Seeked`; a
-  position jump is visible only on the next read. Ends if a client (sill's now-playing) needs `Seeked`:
+  position jump is visible only on the next read. Ends if a client (the shell's now-playing) needs `Seeked`:
   `MediaState` then carries a position-jump marker.
 - **The thumbnail cache has no `fail/` directory and no `xx-large`.** A file that cannot be thumbnailed is
   retried every time, and the 1024-pixel size of spec 1.0 is not offered. Ends when the launcher's pane
@@ -534,7 +534,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **`mpv-wgpu-player` and `pollster` sit below the pinned block.** They are `anyview-media`'s, the player at
   mpv-wgpu `d017756` (master) with only its `subprocess` feature (the person's `mpv` as a child process: no
   `rsmpv`, no libmpv), which resolves the one `wgpu` 29.0.4 the tree already has, and neither is shared with Bardo,
-  shell-host or sill, so they stay outside the block like `jxl-oxide` (the block is for
+  shell-host or the shell, so they stay outside the block like `jxl-oxide` (the block is for
   what the repos share). Ends if another repo links either: they then move into the UI kit's `docs/workspace-deps.toml`
   first.
 - **The media crate carries its own fixtures.** `crates/anyview-media/tests/fixtures/` holds `clip.mkv`
@@ -639,7 +639,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   Linux, no bus) live in the binary because the crate is cross-platform. Ends if a platform needs its own: the trait
   then moves to `anyview-platform` beside the others.
 - **`trash` is below the pinned block.** It is `anyview`'s alone, MIT: it joins Bardo's
-  `docs/workspace-deps.toml` when sill needs to trash a file.
+  `docs/workspace-deps.toml` when the shell needs to trash a file.
 - **The cold launch is over its budget, and the GPU stack is the reason.** PLAN section 7 sets 150 ms from the
   process starting to the first content of a JPEG cold, and 50 ms warm. Measured 2026-10-03 on the release binary
   with a real window (KWin on Wayland, a 1058 x 618 JPEG, no bus, 8 runs, a machine other builds were also using,
@@ -931,7 +931,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   inflate and SIMD crates `exr` needs, and one more for `roxmltree`, the EPUB package reader, and five more for `calamine` and `quick-xml`, which read XLSX and ODS);
   `anyview-peek` is 605 today, of which `ds` and `ds-blitz` are about 530 and the container codecs of
   `anyview-archive`, `skrifa` and the media parsers the rest.
-- **The `[patch]` sections are copied from the UI kit's and sill's root manifests.** `blitz-kit` points at the
+- **The `[patch]` sections are copied from the UI kit's and the shell's root manifests.** `blitz-kit` points at the
   sibling checkout and the vello and anyrender crates at the `bardo-filters` forks, at the revs those
   manifests name; they apply only at a workspace root, so they live in this root. They were added with
   `anyview-peek`, the first crate here that names the renderer, since cargo warns about every unused patch.
@@ -958,13 +958,13 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **`FormatKind`'s labels are variant names** (`Pdf`, `PlainText` reads `Plain text`), so a folder's kinds read
   `2 plain text, 1 raster` and a facts-only kind with no format shows its media type, not a word. Ends if
   `FormatKind` gets `#[word(label = ..)]` attributes.
-- **What sill consumes in phase C.** `anyview_peek::look` on a worker (`PeekWorker::looking`; it probes the file and peeks at it as sniffed: the `Sniffed`
+- **What the shell consumes in phase C.** `anyview_peek::look` on a worker (`PeekWorker::looking`; it probes the file and peeks at it as sniffed: the `Sniffed`
   replaces `Preview`'s `Image`, `TextFile`, `Pdf` and file-facts variants: a picture is `Body::Picture`, a text
   file `Body::Plain` or `Body::Code`, a PDF `Body::Page`, any other file or a folder `Body::FactsOnly` or
   `Body::Folder`), `anyview_peek::Card` to draw the `Arc<AnyPeeked>` it gets back, and `PeekBudget` from
-  its settings. `App`, `Clipboard`, `Emoji` and `Web` stay sill's own. The card replaces
+  its settings. `App`, `Clipboard`, `Emoji` and `Web` stay the shell's own. The card replaces
   `use_pdf_page(path, PANE_MEDIA)` and the image `data:` URLs in
-  `sill-launcher-ui/src/launcher/preview/`; see the open item on `PreviewPane` for the frame around it.
+  `shell-launcher-ui/src/launcher/preview/`; see the open item on `PreviewPane` for the frame around it.
 
 - **`infer` has no signature for** TTC fonts, MPEG transport streams, ICNS, TGA, QOI and HDR; the
   extension names them, and only when the head is binary. A text head is never reclassified by a
@@ -999,7 +999,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   decoder applies its own), so nothing downstream reads the tag, and an encode that carries EXIF resets
   its orientation to upright.
 - **JPEG has no alpha.** An export to JPEG composites the picture onto white.
-- **The image stack matches Bardo and sill's locks.** `image` 0.25.10, `png`, `gif`, `zune-jpeg`,
+- **The image stack matches Bardo and the shell's locks.** `image` 0.25.10, `png`, `gif`, `zune-jpeg`,
   `weezl`, `image-webp`, `resvg` and `usvg` 0.48.1 and `tiny-skia` 0.12.0 resolve to the same versions;
   `thiserror` 2.0.21, `encoding_rs` 0.8.42 and a few others are patch releases newer in this lock. The
   crates added here introduce four duplicates inside this tree: `miniz_oxide` 0.8.9 (`img-parts`) beside

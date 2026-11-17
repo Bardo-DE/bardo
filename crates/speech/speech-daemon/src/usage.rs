@@ -1,6 +1,6 @@
 //! Whether voice may be used right now (`VoiceUse`): the person's choice, read when a call comes
 //! and never cached, so a change in Settings takes effect on the next hold. The shipped source
-//! reads sill's `settings.toml` (the `voice` table: `consent`, `hold_to_talk`); a test hands in
+//! reads the shell's `settings.toml` (the `voice` table: `consent`, `hold_to_talk`); a test hands in
 //! a fixed answer. An unreadable or unparseable file is `NeedsConsent`: voice never turns on by
 //! accident.
 
@@ -39,7 +39,7 @@ impl FileUse {
     /// `$XDG_CONFIG_HOME/bardo/shell/settings.toml`, or `~/.config/bardo/shell/settings.toml`.
     ///
     /// `env` answers a variable by name (a daemon's main passes `|k| std::env::var(k).ok()`).
-    pub fn sill_default(env: impl Fn(&str) -> Option<String>) -> Self {
+    pub fn shell_default(env: impl Fn(&str) -> Option<String>) -> Self {
         let base = env("XDG_CONFIG_HOME")
             .map(PathBuf::from)
             .or_else(|| env("HOME").map(|home| PathBuf::from(home).join(".config")))
@@ -119,7 +119,7 @@ mod tests {
                     .find(|(n, _)| *n == k)
                     .map(|(_, v)| (*v).to_owned())
             };
-            assert_eq!(FileUse::sill_default(env).path, PathBuf::from(want));
+            assert_eq!(FileUse::shell_default(env).path, PathBuf::from(want));
         }
     }
 

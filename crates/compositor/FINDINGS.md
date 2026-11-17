@@ -321,7 +321,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
   `connector:<name>`. `/` and `%` inside the make, model and serial are percent-encoded (`%2F`, `%25`)
   so the separators stay the only slashes (CASC-08, pa-caslim).
 - **`to_physical` rounds edges, not sizes**, so touching rectangles touch at every scale.
-- **The first-sight scale is sill's PreferWhole rule** (`sill-model` `displays/scale.rs`): 109
+- **The first-sight scale is the shell's PreferWhole rule** (`shell-model` `displays/scale.rs`): 109
   points per inch, whole scale from an ideal of 1.5 while at least 1280 points wide, capped at
   2x; quarter steps otherwise.
 - **`cargo fmt --all` reaches sibling workspaces** through path dependencies;
@@ -387,7 +387,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
   on the same bus fails with `IpcError::Bus` and the first keeps the name. The bus thread is
   not joinable: it lives as long as the process.
 
-### P0-asks: what sill's acceptance scripts found
+### P0-asks: what the shell's acceptance scripts found
 
 - **A zone-0 layer lives in the usable area** (wlr-layer-shell): `LayerBook::room_for` gives the
   rectangle a surface is sized and placed in: the whole output for `-1` and for a surface that
@@ -676,7 +676,7 @@ W13 8 to 0.
   `KeyRemapSource::load_reporting(Linux/Ours)` (the chord keymap conventions, the desktop's own bindings, the machine
   keymap, the person's keymap), maps each standard action the compositor carries out (`keymap/shell.rs`
   `ROWS`: force quit, Space left/right/1-9,
-  and sill's launcher, switcher, screenshots and power menu as `sill ...` spawns) to a `BindingAction`, converts
+  and the shell's launcher, switcher, screenshots and power menu as `shell ...` spawns) to a `BindingAction`, converts
   each chord (`keymap/chord.rs`: Super is Command, Alt is Option; the chord keymap's `+` and `?` become shifted `=` and
   `/`) and appends the result after the document's own bindings. No `dist/compositor/bindings.toml` ships:
   the action vocabulary is the chord keymap's `StandardAction`, so the contract with the key remap daemon is action names already.
@@ -686,13 +686,13 @@ W13 8 to 0.
   (`key_remap/keymap` for the person, `key-remap-machine/keymap` for the machine, a socket path that does not exist).
 - **Known gaps**: `Spawn` and `Call` bindings are still only logged by `carry_out` ("from P2"), so the launcher,
   switcher, screenshot and power-menu chords resolve and are swallowed but do nothing yet. LockScreen,
-  MissionControl, AppWindows, NextWindow, NextInputSource and EmojiAndSymbols have no compositor or sill command
-  and are not bound. `ScreenshotTools` runs `sill screenshot area`.
+  MissionControl, AppWindows, NextWindow, NextInputSource and EmojiAndSymbols have no compositor or the shell command
+  and are not bound. `ScreenshotTools` runs `shell screenshot area`.
 - **Mac semantics (follow-up)**: Cmd+W, Cmd+M, Cmd+H, Cmd+Opt+H, Cmd+Q and Ctrl+Cmd+F are app menu commands on macOS,
   not window-server ones, so the focused app must receive them. Close, Minimise, Hide, HideOthers, Quit and FullScreen
   are not in `ROWS` (a test asserts none of those chords is bound), and `DesktopCommand::ToggleFullScreenKey`, added
   for full screen and used by nothing else, is dropped. ForceQuit (Cmd+Opt+Esc, system-level), Space switching and
-  the sill hand-offs stay.
+  the shell hand-offs stay.
 - **Dependencies**: `keymap` (rev ba094c62) and `key-remap-client` (rev 31e21db1) are git dependencies of the
   workspace and of `compositor`; `Cargo.lock` must be regenerated (`cargo metadata`) with network access.
 - Caps Lock no longer blocks bindings: `deliver::chord_mods` leaves it out of the chord (Num Lock was never in `MacMods`).
@@ -801,8 +801,8 @@ the `--xwayland` flags, `VendorFact::from_pci_vendor`, `GammaTable::new`, `Outpu
 - **Cargo.lock needs regenerating** (nothing here could): `compositor-core` gains `serde_json` and `toml` as normal
   dependencies (the Space file codec; they were dev-dependencies), `compositor-backend` gains `serde` (KMS fixtures are
   serde values), `compositor-testkit` gains `compositor-ipc`. `compositor-testclient` gains only a bin target.
-- **`SpaceFile`'s sill import** reads `by_id` keys of the interim `bardo/spaces.json`, because sill has no concrete writer yet
-  (`sill-ui-kit/src/look.rs` says so); the shape is a guess P1-M2 pins against whatever sill wrote by then.
+- **`SpaceFile`'s shell import** reads `by_id` keys of the interim `bardo/spaces.json`, because the shell has no concrete writer yet
+  (`shell-ui-kit/src/look.rs` says so); the shape is a guess P1-M2 pins against whatever the shell wrote by then.
 - **Settings.** `PointerSettings` (mouse and touchpad profiles) exists in core and is not yet a field of
   `CompositorSettings` nor a section of the document: P1-I1 adds both with the "Add a settings key" recipe.
   The Xwayland mode and satellite path are `StartConfig` fields set by `--xwayland` and `--xwayland-satellite`
@@ -884,12 +884,12 @@ Nothing here compiled (no builds this lane). Both globals are advertised: `zwlr_
   book and a small record per window per step. Closing is `UnlistWindow`, whose exec arm now also calls
   `wlr_toplevel::apply_closed`. Core tests that assert an exact effect list on a step that changes a window's key flag
   (`model_lock.rs` 218-242 if a key window exists there) would see a `PublishToplevel` too.
-- **`import_sill_json`: sill writes no spaces file.** `sill-ui-kit/src/look.rs` still says Bardo has no `spaces.json`
-  store, and `sill-model` only reads the protocol's `id` as `stable_id`. The shape imported is the minimal one the codec
+- **`import_shell_json`: the shell writes no spaces file.** `shell-ui-kit/src/look.rs` still says Bardo has no `spaces.json`
+  store, and `shell-model` only reads the protocol's `id` as `stable_id`. The shape imported is the minimal one the codec
   pins: `{"by_id": {"<space id>": {"output": "<output key>", "index": 0}}}`, both record fields optional, unknown keys
   ignored. A record without an output is `StoredSpace::homeless` (so `StoredSpace::output` is now `Option<OutputKey>`;
   `StoredSpace::new` still takes one) and the first output plugged adopts it. Nothing reads the file at start: the path
-  is sill's to name; wire `import_sill_json` where `load_stored_spaces` (`core_loop.rs`) loads `spaces.toml` once sill
+  is the shell's to name; wire `import_shell_json` where `load_stored_spaces` (`core_loop.rs`) loads `spaces.toml` once the shell
   writes one.
 - **Loading.** `core_loop::announce_outputs` reads the file through the seam first and feeds `Event::SpacesLoaded` (the
   headless fixture and `run.rs` both call it once, so one edit covers both; FINDINGS p1z said `run.rs`). The model keeps
@@ -916,7 +916,7 @@ Nothing here compiled (no builds this lane). Both globals are advertised: `zwlr_
   next publish, not at once. A workspace client's requests are processed at `commit` in order, not atomically in the
   model (each is its own step). When the last output is unplugged the model drops its Spaces, and the file loses
   them once written (the remembered file only holds what was loaded).
-- **Hardware to check.** A real dock (sill-dock over `desktop_wl`'s Wlr arm) minimising to its tile: the genie goes to
+- **Hardware to check.** A real dock (shell-dock over `desktop_wl`'s Wlr arm) minimising to its tile: the genie goes to
   the layer surface's rectangle; a restart on the tty backend with two outputs keeps each Space on its connector.
 - **Goldens written by hand.** `transcripts/wlr_toplevel-list.txt` and `workspace-publish.txt` are predicted from the
   code, with ids numbered by first appearance (`normalised`) and the `state` / `id` arguments masked; re-bless once with
@@ -977,7 +977,7 @@ Nothing here compiled (no builds this lane).
 - **ZbusShellCalls.** One thread with a current-thread tokio runtime, the session bus connected on the first call, one task per
   call, failures returned by `failures()` and logged by `exec::call`. A call carries at most four string arguments
   (`ShellCallError::TooManyArgs`); names are validated before anything is queued. Real check: the default launcher binding
-  reaches sill once sill exports `org.bardo.Sill1` (the fake accepts anything).
+  reaches the shell once the shell exports `org.bardo.Shell1` (the fake accepts anything).
 - **ProcessSpawner.** `Command` with null stdin, its own process group, `spec.env` added, the `pass` descriptors' close-on-exec
   cleared with rustix, a thread reaping the child.
 - **Bindings.** `carry_out` sends `Effect::CallBinding` and `Effect::Spawn` through `exec::exec`; the stale "not reached"
@@ -1431,8 +1431,8 @@ Nothing here compiled or run (the lane does not build).
   `minimise-target TOPLEVEL X Y W H` sets the target local to the surface that last got the dock role;
   `minimise-clear TOPLEVEL` clears it. TOPLEVEL is a window identifier (`w<id>`): the session cannot map its own toplevel
   names to identifiers (they are on another connection), so read the identifier from `bardo-compositorctl debug windows`.
-- **Environment.** The scenario starts the compositor with `COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=sill.service"` (see
-  debug-role; comm is cut to 15 bytes and `compositor-probe` is 14), so the jailed probe's unit reads as `sill.service`.
+- **Environment.** The scenario starts the compositor with `COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=shell.service"` (see
+  debug-role; comm is cut to 15 bytes and `compositor-probe` is 14), so the jailed probe's unit reads as `shell.service`.
 - **Dependency.** `compositor-testclient` gained `zbus` and `tokio` (the bus call, on a throwaway current-thread runtime);
   `Cargo.lock` was edited by hand. B9 (no smithay) is unaffected.
 - **Debug windows.** `bardo-compositorctl debug windows` rows gained `identifier` (`w<id>`) and `minimise_target` (`[x, y, w, h]`
@@ -1636,7 +1636,7 @@ image type inferred from `create_buffer`, as `canvas` does), `compositor/src/han
 Lane P2-Q2 (not compiled; the orchestrator gates). Removed rows: the ten `todo!()` of the P2-Z table and the seven
 ignored tests of this lane; two tests were rewritten (below).
 
-- **Units are fixed, not configuration.** The plan names them (`sill.service` the shell, `cuad.service` the agent tier),
+- **Units are fixed, not configuration.** The plan names them (`shell.service` the shell, `cuad.service` the agent tier),
   so `role_for` is a `match`. Moving them to a typed list is a one-function change if porter's unit check wants it.
 - **Departure: `on_set_minimise_target` takes the window, not the identifier string.** The dispatch turns the identifier
   into a `WindowId` and keeps it only when `BardoShellHandler::window_known` says the model has it; the part gets
@@ -1733,10 +1733,10 @@ Test unit overrides for jailed desktop scenarios (no systemd, so no unit in `/pr
 
 - **Contract.** Environment variable `COMPOSITOR_DEBUG_PEER_UNITS="<program-or-pid>=<unit>[,<program-or-pid>=<unit>...]"`.
   Left side all digits: a process id; anything else: a program name compared with `/proc/<pid>/comm` (the kernel keeps
-  15 bytes, so a longer name is cut to 15 before comparing; sill and cuad fit). Right side: a service unit name
+  15 bytes, so a longer name is cut to 15 before comparing; the shell and cuad fit). Right side: a service unit name
   (`name.service`, no slash). Entries are comma-separated, spaces around them are trimmed, the first matching entry
-  wins. Example for "sill is sill.service": `COMPOSITOR_DEBUG_PEER_UNITS="sill=sill.service"`; with the agent tier too:
-  `"sill=sill.service,cuad=cuad.service"`. A malformed value makes the compositor exit 64 with the reason on stderr.
+  wins. Example for "shell is shell.service": `COMPOSITOR_DEBUG_PEER_UNITS="shell=shell.service"`; with the agent tier too:
+  `"shell=shell.service,cuad=cuad.service"`. A malformed value makes the compositor exit 64 with the reason on stderr.
 - **Only with `debug-inject`.** `crates/compositor/src/debug_peer_units.rs` (the only place the variable is named) is a
   module of the binary compiled under `cfg(feature = "debug-inject")`; `main.rs` reads it there and passes the typed
   `PeerUnitTable` through `RunConfig::with_debug_peer_units` (the field exists only under the feature). A build without the
@@ -1748,13 +1748,13 @@ Test unit overrides for jailed desktop scenarios (no systemd, so no unit in `/pr
   around `ProcCgroups` for Compositor1 and logs once at warn level "TEST ONLY: test unit overrides are active" (only when
   the table is non-empty). `role_for` and `CallerUnit::of_cgroup` are untouched, so a peer still needs a unit the plan names.
 - **Pid namespace.** `GetConnectionUnixProcessID` returns the pid in the compositor's namespace; the jail runs the compositor and
-  sill in one, so `comm` is readable. The wrapper never trusts a peer's own claim, only the table the compositor's own
+  The shell in one, so `comm` is readable. The wrapper never trusts a peer's own claim, only the table the compositor's own
   environment gave it.
 - **Desktop-facing.** `dev/lib/compositor.sh` header documents how a scenario sets it (the variable is inherited by the
   The compositor child).
 - **Tests.** Table parsing, precedence over a fake inner seam, pid rules, first match and the comm cut
   (`debug_units.rs`); env wrapper (`debug_peer_units.rs`); the gate test in `main.rs`. Nothing proves a real Connect from a
-  bubblewrapped sill: that needs the scenario run.
+  bubblewrapped the shell: that needs the scenario run.
 - **Spots most likely not to compile.** `run.rs` (`#[cfg]` on a function parameter and on a call argument; the `dyn
   PeerCgroups` coercions in `attach_compositor`); `main.rs` (the `return` inside the cfg'd `let ... = match` and the shadowed
   `config`; the `include_str!("main.rs")` gate string with escapes); `debug_units.rs` (`PeerMatch` closure borrow in
@@ -1777,7 +1777,7 @@ Lane P2-T3, the compositor half (not compiled; the orchestrator gates). No `todo
   no devices. Keys and buttons still held when the app goes are released before `Ended`.
 - **Hand-out.** `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> (h)`. `ConnectAsk` gained `remote:
   Option<RemoteAsk>` (and `ConnectAsk::remote_eis`); `compositor::connect::answer` branches to `answer_remote`, which checks
-  `portal_may_connect` (`bardo-portal.service`; `role_for` is unchanged, the portal has no Wayland role: sill gets
+  `portal_may_connect` (`bardo-portal.service`; `role_for` is unchanged, the portal has no Wayland role: the shell gets
   `RoleNotAllowed`, an unknown unit `UnknownUnit`) and inserts the source into `state.event_loop`. `State` is not edited.
 - **Visibility changes.** `core_loop::tty` is `pub(crate)` and `desktop_extent` is `pub(crate)` (the extent for absolute devices).
 - **Tests.** Pure: the translation functions, the device bits, the origin tag, release on end, `open` in `eis.rs`. Private
@@ -1832,12 +1832,12 @@ Lane `session` (not compiled; the orchestrator gates). Three findings from the f
   one edge (tests exist, plus `bars_stacked_on_one_edge_each_own_their_box`). The hit test, though, used only
   the surface's own input region, so a surface whose buffer outran its placed box (a drawn shadow margin)
   took input there. `Candidate` now carries `clip: Option<LogicalRect>`; a layer's root is clipped to its
-  placed box, popups and windows are not. Needs a real run: a sill panel with a shadow margin must not
+  placed box, popups and windows are not. Needs a real run: a shell panel with a shadow margin must not
   swallow a click on the window beside it, and its shadow must still draw.
 - **Shadows are not clipped by compositor.** `layer_elements` renders the whole surface tree
   (`render_elements_from_surface_tree`) from the placed origin with no crop to the configured size, and
-  `committed` is the bbox of the tree. A transparent margin therefore renders. If sill's shadows look cut
-  off, check the buffer sill commits (size vs the layer size it was configured to) before suspecting us.
+  `committed` is the bbox of the tree. A transparent margin therefore renders. If the shell's shadows look cut
+  off, check the buffer the shell commits (size vs the layer size it was configured to) before suspecting us.
   Note placement follows the configured size, so a client that draws a margin must ask for a layer size
   that includes it.
 - **A bound chord fires over an exclusive layer (intended).** `deliver_key` resolves bindings for every
@@ -2154,8 +2154,8 @@ without a compiler (wave rule); the orchestrator builds.
 - **Departure: Full Screen Tile is dimmed.** "Left of Screen" and "Right of Screen" put two windows in a Split View; the model
   has the Space kind (`SpaceContent::SplitView`) but no command that makes one. `window_menu.rs` passes
   `SplitSupport::Unavailable`, so both entries are sent dimmed and a pick of one does nothing. Flip the const when a command exists.
-- **Minimise target (item 2).** It was already built: sill sends `set_minimise_target` (dock-local rectangle per toplevel,
-  `sill-services` `DesktopCommand::SetMinimiseTarget`), the model stores it in global pixels (`with_dock_target`; a window-list
+- **Minimise target (item 2).** It was already built: the shell sends `set_minimise_target` (dock-local rectangle per toplevel,
+  `shell-services` `DesktopCommand::SetMinimiseTarget`), the model stores it in global pixels (`with_dock_target`; a window-list
   client's `set_rectangle` only counts with no dock), `minimise_destination` picks the tile else a point at the bottom centre of
   the window's output, and `compositor-motion` flies a minimising window to it (`Cause::Minimise`, the `Move` spring, 380 ms
   response; the window shrinks to the tile's size and fades). New: a table test of the choice
@@ -2174,7 +2174,7 @@ without a compiler (wave rule); the orchestrator builds.
   drawing only; hit, reserve and clip rules use `framed` as before). A window that closes still loses its frame at once (no
   model entry to style it).
 - **Interface asks.** In the lane report: the `bardo_shell_v1` XML (event `window_menu`, request `window_menu_pick`, enum
-  `window_entry`) and sill's side.
+  `window_entry`) and the shell's side.
 - **Gate and real run.** Likeliest compile faults: `window/menu.rs` (`Toggle`/`PlaceTarget`/`TileZone` imports and the match on
   `entry.action()` in `zone`), `menu_dwell.rs` or-pattern with bindings in `over`, `model/window_menu.rs` calling `self.request`
   / `self.place` (both `pub(super)` in `requests.rs`; `request` consumes `self`), the new `TimerKey::LightDwell` variant (only
@@ -2226,7 +2226,7 @@ To check in a real run: wlcs counts (expect 8 more passes, 9 listed); the compos
 
 ## wave-2026-10-15/winwire
 
-The window menu's wire, end to end (desktop-protocols `lane/winwire`, the compositor, sill). Written without a compiler.
+The window menu's wire, end to end (desktop-protocols `lane/winwire`, the compositor, the shell). Written without a compiler.
 
 - **Protocol.** `bardo_shell_v1` (version 1, changed in place as the draft allows; no pinned bytes touched): enum
   `window_entry` (15, codes = `MenuEntry::code`), event `window_menu(toplevel, x, y, enabled)`, request
@@ -2243,7 +2243,7 @@ The window menu's wire, end to end (desktop-protocols `lane/winwire`, the compos
   `frame_style(..).around(content)`; if the layout rectangle includes the titlebar, the expected point is off by the bar
   height and the test fails at the first `window_menus()` assert. `Fixture::advance` must fire `LightDwell` (the
   timer book). Multiple bound shell objects each get the event.
-- **Real run.** Rest the pointer half a second on the green light: sill's menu appears under it; a pick moves the window;
+- **Real run.** Rest the pointer half a second on the green light: the shell's menu appears under it; a pick moves the window;
   clicking away sends nothing.
 ## wave-2026-10-15/chrome3
 
@@ -2424,7 +2424,7 @@ compiler (wave rule); the orchestrator builds.
   fills the left half and (once the wire lands) the shell offers the second; today Left of Screen only goes full screen.
 ## wave-2026-10-15/splitwire
 
-The Split View picker and divider on the wire (desktop-protocols `lane/splitwire`, the compositor, sill). Written without a compiler.
+The Split View picker and divider on the wire (desktop-protocols `lane/splitwire`, the compositor, the shell). Written without a compiler.
 
 - **Protocol.** `bardo_shell_v1` (still version 1): enum `split_side`, events `split_choose(first, side)` +
   one `split_candidate(toplevel)` per candidate + `split_choice_end(first)`, requests `split_pick`, `split_cancel`,
@@ -2440,8 +2440,8 @@ The Split View picker and divider on the wire (desktop-protocols `lane/splitwire
 - **Check at the gate.** The tests assume both toplevels (no app id) are candidates of each other and that
   `windows()` is in id order; the second window must not be hidden or in the dock.
 - **Divider drag: still open (model side).** The wire carries `split_divide`, but the compositor has no hit test on the 8 px
-  strip and no pointer grab, and no divider rectangle in `Arrangement`. sill draws the handle only if a shell surface
-  can receive the drag; see sill's findings. A real drag needs: (1) the gap between the two halves routed to a shell
+  strip and no pointer grab, and no divider rectangle in `Arrangement`. The shell draws the handle only if a shell surface
+  can receive the drag; see the shell's findings. A real drag needs: (1) the gap between the two halves routed to a shell
   layer surface or a compositor grab, (2) a resize cursor, (3) persistence of the share if wanted.
 
 ## wave-2026-10-15/split2
@@ -2449,7 +2449,7 @@ The Split View picker and divider on the wire (desktop-protocols `lane/splitwire
 Split View finished the Mac way: the divider drag, maximum widths, candidates from one desktop, cancel on a Space switch and a
 key command. Written without a compiler (wave rule); the orchestrator builds.
 
-- **Divider drag, compositor-side (sill draws no handle).** `Arrangement` gains `dividers: Vec<DividerTarget>` (the 8 px strip,
+- **Divider drag, compositor-side (the shell draws no handle).** `Arrangement` gains `dividers: Vec<DividerTarget>` (the 8 px strip,
   the row it divides, both windows and their minimum widths; pure `hit(point)` and `share_at(x)`) and `backdrops`. In the loop,
   `core_loop/divider.rs` holds `RenderState::divider: DividerPointer { Away, Over, Dragging }`. Motion (`deliver::motion`, right
   after the window-grab follow) asks `divider::moved`: on a strip of the Space the output shows, the cursor is `ResizeEw` and the
@@ -2555,7 +2555,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   because the frame is drawn at full metrics round the scaled content. The strip is 112 px (a quarter of the area at most).
   Targets stay at their desktop rectangles, so the windows fly back when the mode returns to a desktop. `OverviewSlot` still has
   no `output` (A29): `Goals` finds the output in the target. Only Mission Control makes slots; App Expose and Show Desktop still
-  arrange as a desktop. `LayoutReport::RowsCrowded` is unused. No `SpaceThumb`s: sill draws the Spaces bar.
+  arrange as a desktop. `LayoutReport::RowsCrowded` is unused. No `SpaceThumb`s: the shell draws the Spaces bar.
 - **`tests/it/spread.rs` un-ignored.** It was P3-Z's property (`overview.len() == windows`, inside the usable area, a gap of 20
   unless overflow reported, deterministic). `.proptest-regressions` kept. Table tests beside the code: `spread.rs` (empty, one
   window keeps its size below the strip, order kept, the frame's reserve, a crowd shrinks every window the same, 60 windows at the
@@ -2571,7 +2571,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   `MissionControl` is bound to it: Ctrl+Up on our desktop) and the shell's own `bardo_shell_v1.overview(mode, toggle)` request
   (`ShellRequest::Overview`, `bardo/shell_overview.rs`): Mission Control on or off, the other modes change nothing. The wire
   event `overview_state(mode, state, progress)` is sent (progress 0 entering and closed, 1000 open and leaving). The wire
-  already had all of this; no protocol change. sill's `mission_control_chrome()` is still an empty function.
+  already had all of this; no protocol change. The shell's `mission_control_chrome()` is still an empty function.
 - **Input (`core_loop/overview.rs`, `deliver.rs`).** While the overview is not closed, the windows take no input: motion goes to
   the seat with no focus and sets the hovered window (the front-most slot with its frame above it), a press picks that window
   (or leaves from the picture) and its release is swallowed, scrolls, gestures and touches are dropped, Escape (no modifiers,
@@ -2605,7 +2605,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   closure passing `renderer` into `and_then`), `spread_fit.rs::start` (a closure taking a `fn` pointer), `model/overview.rs`
   (`Model { .. }.then_pick`), `shell_overview.rs` (`code_of` over the shell's enums), the testclient's `Toggle` re-export from
   the desktop protocol. Real run: Ctrl+Up opens it, the windows fly out in about a third of a second and keep their left/right
-  and top/bottom order; the Spaces strip at the top stays empty (sill draws it); hover rings a window and shows its title; a
+  and top/bottom order; the Spaces strip at the top stays empty (the shell draws it); hover rings a window and shows its title; a
   click raises and keys it and the windows fly back; Escape and Ctrl+Up leave; the pointer is an arrow; typing in the key window
   still works; the bar and dock are not dimmed; 1.5x and 2x scales have no seam in the ring; with 20 windows the scale is about 0.3
   and at 50 the overflow report is logged.
@@ -3045,7 +3045,7 @@ Lane `kbdlive` (not compiled; the orchestrator gates). Closes input2's departure
 
 ## wave-2026-10-15/mcwire
 
-The three asks of sill's Spaces bar (`## spacesbar`), as `bardo_shell_v1` **version 2** (desktop-protocols `lane/cas9-mcwire`,
+The three asks of the shell's Spaces bar (`## spacesbar`), as `bardo_shell_v1` **version 2** (desktop-protocols `lane/cas9-mcwire`,
 FINDINGS `## wave-2026-10-15/mcwire` there). Written without a compiler (the lane rules); the gate is the first build. Land
 desktop-protocols first. Built on the compositor 79456e1: `ovpolish` (6cb6035) is not merged here; the files both touch are
 `core_loop/overview.rs` (the `press`, `hover` and `leave` bodies; `window_at`, `draw` and the colours are ovpolish's) and
@@ -3116,7 +3116,7 @@ desktop-protocols first. Built on the compositor 79456e1: `ovpolish` (6cb6035) i
   tweak: `a_space_picture_is_sent_on_damage_only` (assumes the output is `HEADLESS-1` from `small()` and that the second
   `request` is held; the opaque-pixel bounds assume windows do not cover the whole 640x480), the drag tests (the target at
   (10,10) 100x90 must be clear of every slot: slots start below a 112 px strip).
-- **Real run (sill (the compositor)).** Ctrl+Up: the bar appears on every output; hovering a thumbnail shows its picture within a frame
+- **Real run (the shell (the compositor)).** Ctrl+Up: the bar appears on every output; hovering a thumbnail shows its picture within a frame
   or two of a change; press a window, move a few pixels (nothing yet), more (the window follows, the closed hand, the Space tile
   under it lights); release on the tile (the window leaves the grid, Mission Control stays); release elsewhere (the window glides
   home); a plain click still picks. With two outputs, each shows its own bar and a window dropped on the other output's tile moves
@@ -3147,7 +3147,7 @@ first build. Built on the compositor 78b3152.
   output.
 - **2. Wallpaper.** Confirmed, no code: the pictures are composed over a transparent background (`compose_thumb`, the test
   `a_space_picture_is_sent_on_damage_only` and the new hidden-Space test assert pixels with alpha 0 and some with alpha 255).
-  sill draws the wallpaper under each tile. The wire text says so.
+  The shell draws the wallpaper under each tile. The wire text says so.
 - **3. A drag to another output.** `SpaceTargets::hit` already finds the targets of any plugged output and `Over` names the
   output, so a drop on another output's tile reached `window_to_space` (the model's cross-output path) in mcwire. Added:
   (a) `window_to_space` carries the window's rectangles (`Floating`, and the `restore` of `Tiled` and `Filled`) by the difference
@@ -3175,7 +3175,7 @@ first build. Built on the compositor 78b3152.
   shell hears nothing, three cross-output drags); `bardo_shell_spaces.rs` (the "not shown stops" test became "empty Space picture
   is transparent" and "a Space not on the output stops"; the desk now binds version 3). compositor-testclient: `space_target_new`,
   `drop_targets_new`. No golden and no `expected-failures.txt` changed; no `globals.txt` change (private global).
-- **What sill must do.** Bind `bardo_shell_v1` at 3 (`desktop-client` binds `1..=3`). Ask for a picture of each Space tile on
+- **What the shell must do.** Bind `bardo_shell_v1` at 3 (`desktop-client` binds `1..=3`). Ask for a picture of each Space tile on
   each output (`CaptureRequest::of_space`), not only the shown one, and keep the sessions across Space switches (they now live
   until the Space is removed); draw the wallpaper under the pictures; send `SetNewSpaceTarget` for the "+" tile after
   `SetSpaceTargets`; light the tile on `ShellEvent::DropTargetNew` (`Overview::over_new_space`).
@@ -3251,7 +3251,7 @@ by the GPU with no CPU read-back, for an output, a window and `zwlr_screencopy` 
   (only `compositor-testkit/src/output.rs` was one); `MainDevice(pub u64)` against `dev_id()`'s type; `RealCaptureGpu::{store, renderer}`
   `RefMut` lifetimes. Test tweaks: the first `present`s of `watched()` in `tty/capture_gpu.rs` assume the fake scanout answers `Flipped`
   (if it waits for a vblank, step a `presented` between frames); the llvmpipe case of the backend test may skip on every host.
-- **Real run.** Per the user's rule the manual-checks queue is `sill/docs/manual-checks.md` (the compositor has no `docs/manual-checks`):
+- **Real run.** Per the user's rule the manual-checks queue is `shell/docs/manual-checks.md` (the compositor has no `docs/manual-checks`):
   on the tty session start OBS through the pipewire portal and `grim` / `wf-recorder`, with `RUST_LOG=info`: no
   `reading it back` / `using the software shadow` line in steady state, and on a 4K output the frame time of the capture is a blit
   (compare `bardo-compositorctl` frame times with capture open before and after: the pixman shadow's per-frame render is gone, GPU time
@@ -3325,7 +3325,7 @@ Lane cas12-winit: the winit backend usable for hands-on testing in a host deskto
   desktop size to its slot (`icon_place`), so it grows and fades in with the slot and leaves with it. On the way out the
   layout has no slots, so `IconBook::remembered` keeps the last ones.
 - **The theme** follows the desktop (cas14-mcfit): `gtk-icon-theme-name` in `gtk-3.0/settings.ini` under
-  `$XDG_CONFIG_HOME` (else `$HOME/.config`), the file sill reads too (Bardo has no icon-theme setting of its own;
+  `$XDG_CONFIG_HOME` (else `$HOME/.config`), the file the shell reads too (Bardo has no icon-theme setting of its own;
   `ds-settings::icon_assets` is Bardo's own app-icon set). `IconBook` reads it again each time Mission Control opens
   (a change while it is open shows at the next opening; no watcher), `hicolor` when the file names none.
   `freedesktop-icons` reads the process's own folders (`$XDG_DATA_DIRS`) and cannot be pointed elsewhere, so
@@ -3469,12 +3469,12 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   to their slots; closed, Mission Control shows as `Leaving` for the usual 350 ms settle, the windows fly home, then it is
   `Closed` (the shell hears `Closed` at the end, never `Entering`). A swipe that never moved the windows changes nothing.
   Keyboard and hot-corner opens are untouched: the timed flight.
-- **Departures.** (1) The wallpaper is not in the row: the background layer stays put under the sliding windows (sill owns
+- **Departures.** (1) The wallpaper is not in the row: the background layer stays put under the sliding windows (the shell owns
   one wallpaper; per-Space wallpapers need a shell protocol). (2) The release velocity does not feed the overview spring (it
   starts at rest from the followed pose). (3) The dim is not animated in the timed flight, so it pops to full at the lift. (4)
   A keyboard Space switch during a swipe's finish snaps its strip leg (the output is driven) and so shows no slide of its own.
   (5) Windows of a hidden Space still get frame callbacks (`drawn_roots` reads the unshifted frame). (6) Swiping vertically
-  while Mission Control is entering jumps from the flight to the followed pose. (7) The Spaces bar (sill) hears nothing of the
+  while Mission Control is entering jumps from the flight to the followed pose. (7) The Spaces bar (the shell) hears nothing of the
   progress.
 - **Tests.** compositor-core `gestures.rs` (the row's first x, a short swipe up snaps back and ends closed, a swipe that never moved
   the windows changes nothing, a short swipe down returns them to their slots), `model_spaces.rs` (`row_columns`); compositor-layout
@@ -3550,10 +3550,10 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   anything within reach of the region changes; drawing is still cut to the region's rectangles (the clip), and only the region is
   opaque. The blur reads the framebuffer beyond the region (as macOS does) and edge-clamps at the output edge.
 - **Region shape.** Clipped to ext-background-effect's rectangles exactly, with hard edges; a rounded region is whatever rectangle set
-  the client sends (no anti-aliased corner mask). A rounded mask is a P4 item if sill sends rounded regions as one rectangle.
+  the client sends (no anti-aliased corner mask). A rounded mask is a P4 item if the shell sends rounded regions as one rectangle.
 - **Fallback.** Renderers without shaders keep the solid stand-in (`EffectSupport::Plain`, unchanged). The Reduce Transparency setting
   is wired in cas31 (below).
-- **Departures.** Saturation 1.8 applies to every blur (window, panel, menu), not only widgets as sill asked for; macOS vibrancy
+- **Departures.** Saturation 1.8 applies to every blur (window, panel, menu), not only widgets as the shell asked for; macOS vibrancy
   saturates too. `Compositor::capture_blur_v0` gained a `blur` argument (the plan). Goldens: `blur-v0-1x` (tier L) is replaced by
   `blur-kawase-1x` and `blur-kawase-2x`; `blur-v0-stand-in-1x` (pixman) is unchanged. The scene's stripes are vertical and the region is
   symmetric, so the goldens cannot catch a vertical flip; a real-content check on the tty is still owed.
@@ -3571,7 +3571,7 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
 ## wave-2026-10-15/cas31-blurmat (blur strength per surface; Reduce transparency)
 
 - **Which material.** ext-background-effect carries no parameters and no protocol was added. A layer surface's strength comes from
-  the shell role sill already gave it through `bardo_shell_v1` (`LayerSpec::role`): `BlurStrength::of(ShellRoleTag)` in
+  the shell role the shell already gave it through `bardo_shell_v1` (`LayerSpec::role`): `BlurStrength::of(ShellRoleTag)` in
   `compositor-core::layer` (pure, table-tested over every `ShellRole`). Osd is `Light` (`BlurLook::LIGHT`, sigma 12, saturation 1.6),
   Launcher and ControlCentre are `Strong` (sigma 32, saturation 1.8), everything else, and any layer with no role, is `Regular`, which is
   `BlurLook::MATERIAL`, today's look. UNMEASURED: design/23 fixes only the widget's look (sigma 22, saturation 1.8, the Regular one); Light
@@ -3672,9 +3672,9 @@ the pinned sources, none was built. Look here first when it fails to compile.
    is `srgb_to_panel` composed with the tag's own `rgb_to_xyz`, not written yet).
 3. Night light driver: a timer in `compositor/src/time/` reads the local minute, calls
    `NightLight::ramp_at(minute, gamma_size)` per output and feeds `Effect::SetGamma`; a gamma
-   control client (`zwlr_gamma_control_v1`) wins while it holds the output. Interface for sill: the
-   `night_light.*` keys in settings.toml (mode off/always/scheduled; sill writes sunset and sunrise
-   into from/to). sill keeps DDC warmth for panels that take it and sets `night_light.mode = off`
+   control client (`zwlr_gamma_control_v1`) wins while it holds the output. Interface for the shell: the
+   `night_light.*` keys in settings.toml (mode off/always/scheduled; the shell writes sunset and sunrise
+   into from/to). The shell keeps DDC warmth for panels that take it and sets `night_light.mode = off`
    there.
 ## P3-TL: window tiling by drag (cas22-tile)
 
@@ -3851,7 +3851,7 @@ Written without a build or a run (rule of the lane).
 ### cas28-daily: night light per display (2026-10-16)
 
 - **`night_light.skip_outputs`** (list of text, page Appearance, "Displays left as they are"): outputs
-  night light does not warm. An entry is a connector name (`DP-1`, what sill knows of a DDC monitor:
+  night light does not warm. An entry is a connector name (`DP-1`, what the shell knows of a DDC monitor:
   `Endpoint::connector`) or an `OutputKey`'s text (`edid:<make>/<model>/<serial>`, or
   `connector:<name>` for a display without a serial); surrounding spaces are ignored. The one
   place it is honoured is `NightLightSettings::ramp_for` (identity for a skipped output).
@@ -3864,20 +3864,20 @@ Written without a build or a run (rule of the lane).
   gives it back (identity), when night light takes it up again.
 - **Still missing: the producer of the tick.** Nothing in the session reads the local minute:
   `compositor/src/time/` has only the monotonic session clock, and the local time of day needs the
-  time zone (a tz-aware crate such as `jiff`, as sill uses; `chrono`/`time` would do; there is no
+  time zone (a tz-aware crate such as `jiff`, as the shell uses; `chrono`/`time` would do; there is no
   safe route in std or rustix). Needed: a one-shot timer in `time/` re-armed every minute that
   feeds `Event::NightLightTick`, and one tick at start. Until then night light does nothing in a
   real session, skip list or not. Held back because the lane may not touch Cargo.toml/Cargo.lock.
 - **Live.** `settings_live::followed` now takes `night_light` from the file, so a rewrite of
-  `settings.toml` by sill reaches the model (`SettingsChanged`) within the watcher's debounce
+  `settings.toml` by the shell reaches the model (`SettingsChanged`) within the watcher's debounce
   and the outputs are re-driven in the same step. Before this change only the pointer, the key
   repeat and the keyboard layout followed.
-- **What sill writes.** `[night_light]` keys as before (`mode`, `from`, `to`, `kelvin`,
-  `fade_minutes`; sill's file merge keeps unknown keys, so `skip_outputs` survives its writes) plus
+- **What the shell writes.** `[night_light]` keys as before (`mode`, `from`, `to`, `kelvin`,
+  `fade_minutes`; the shell's file merge keeps unknown keys, so `skip_outputs` survives its writes) plus
   `skip_outputs = ["DP-1", ...]`: the connector of each monitor it warms over DDC
-  (`Endpoint::connector`), written by sill's Night Shift when `display.night_warmth = "hardware"`
+  (`Endpoint::connector`), written by the shell's Night Shift when `display.night_warmth = "hardware"`
   and the software light is on for the rest, and `[]` (or removed) otherwise. A DDC monitor whose
-  connector sill could not match to a bus is not listed (sill cannot name it either).
+  connector the shell could not match to a bus is not listed (the shell cannot name it either).
 
 ### cas28-daily: the night light tick and X11 force quit land (2026-10-16)
 
@@ -3983,9 +3983,9 @@ cancels on hardware; honour cursor-hidden in output captures") described the cod
   (`readback.rs`). A still desktop gets its first frame from `capture_first`. A shared-memory client is answered by reading the
   texture back (`ExportMem` through `pass::capture_output`), a dma-buf client by `blit_texture`; a refused GPU draw falls back to
   the shadow, and a frame that cannot be had fails the request with `CaptureFailure::Renderer` (never a hang: a request before the
-  first frame waits only until `serve_captures` runs after the next present). `sill`'s eyedropper asks for an output source with
+  first frame waits only until `serve_captures` runs after the next present). `shell`'s eyedropper asks for an output source with
   the cursor hidden (`desktop-client` `CursorMode::Hidden`, `Options::empty()`), which is this path. The "no read-back" line in
-  sill's manual checks and `wave-6/colour-picker` is that older state.
+  The shell's manual checks and `wave-6/colour-picker` is that older state.
 - **The cursor is explicit already.** `compositor_render::pass::CursorInclusion { Include, Exclude }` is the typed choice every backend
   takes (`CursorPaint` from the wire maps to it in `handlers/image_capture/direct.rs::inclusion`); a second enum `CursorInCapture`
   would only rename it, so none was added. The element-list builder is `headless/bare.rs::without_cursor` (elements whose `Kind`
@@ -4007,7 +4007,7 @@ cancels on hardware; honour cursor-hidden in output captures") described the cod
   (`SolidColorRenderElement::new` with `Kind::Cursor`, `SceneElement::<PixmanRenderer>::Solid`). The testkit's `FakeCaptureGpu`
   does not override `read_scene` (the default, unchanged but for its arguments).
 - **By hand.** `docs/manual-checks.md` "Capture on a real seat (KMS)": the eyedropper on hardware, `grim -c` / no `-c`, a 1 x 1
-  region. Queue the first in `sill/docs/manual-checks.md` too, whose last line still says the tty has no read-back.
+  region. Queue the first in `shell/docs/manual-checks.md` too, whose last line still says the tty has no read-back.
 
 ## cas36-castframe: the screencast "EPIPE after the first frame" is not the compositor (2026-10-16)
 
@@ -4153,11 +4153,11 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   the shell's lock reaches `Locked` and `Forget` when it ends (`LockHolder` records whether the shell or another client asked);
   at start, `announce_outputs` feeds `LockEvent::Restored` when the marker is there, so the model is `LockedWithoutSurface`
   (holder `Shell(None)`) before any output plugs and every output comes up under the cover. Only the shell's new connection
-  can take it over (CASW-02) and only an unlock lifts it. **How it agrees with sill:** sill's own marker
-  (`$XDG_RUNTIME_DIR/sill/locked`, `sill-services/src/locker/backend/marker.rs`) is written when its own lock is `Locked`
-  and removed at unlock, and a sill that starts in `Own` mode with the marker present locks again at once; `desktop-session`
-  restarts sill after every compositor exit, so the shell locks again within a second of the new compositor going live and
-  both markers end together at the unlock. No sill change is needed. **Decision recorded:** a lock held by a non-shell
+  can take it over (CASW-02) and only an unlock lifts it. **How it agrees with the shell:** the shell's own marker
+  (`$XDG_RUNTIME_DIR/shell/locked`, `shell-services/src/locker/backend/marker.rs`) is written when its own lock is `Locked`
+  and removed at unlock, and a shell that starts in `Own` mode with the marker present locks again at once; `desktop-session`
+  restarts the shell after every compositor exit, so the shell locks again within a second of the new compositor going live and
+  both markers end together at the unlock. No shell change is needed. **Decision recorded:** a lock held by a non-shell
   client (a locker run from a terminal) is deliberately not remembered: after a restart only the shell can take a held lock
   over, so remembering a lock the shell would never re-lock would leave a cover nobody lifts; a restart then comes back open,
   as before. The marker lives only when `main` resolves a state home with a runtime directory (not on the headless backend, not
@@ -4223,7 +4223,7 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   position further than 100 000 logical pixels from the origin. The power control remembers the outputs it darkened and asks
   for them lit again when its object goes (destroyed or the client died). Gamma was already restored on destroy. **Not done:**
   "outputs must touch" for management positions (a long row is legitimate and the pointer-reach rule needs the arrangement
-  code); the 100 000 bound stands in. A configuration (kanshi, sill) that darkens a display is deliberately not undone: it is
+  code); the 100 000 bound stands in. A configuration (kanshi, the shell) that darkens a display is deliberately not undone: it is
   the person's layout. Tests: `a_request_cannot_darken_the_last_lit_output`,
   `a_position_far_outside_any_arrangement_is_refused` (core); `the_last_lit_output_stays_lit`,
   `a_darkened_output_is_lit_again_when_the_control_goes` (fixture; the old single-output power test now uses two outputs).
@@ -4500,7 +4500,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
   The compositor holds the client by its pidfd, so the pid cannot be reused while the client is held: the pid compare is equivalent.
   Test: `a11y.rs` on a private bus.
 - **Debug units (`debug-inject`).** `DebugPeerUnits` is now a `CallerCheck`: a peer the test table matches stands as the role of
-  `sill.service` (shell), `cuad.service` (agent_tier) or `bardo-portal.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
+  `shell.service` (shell), `cuad.service` (agent_tier) or `bardo-portal.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
   every other peer goes to the real check. `CallerSetup::with_test_units(table)`; it logs nothing itself (the root's one "TEST ONLY"
   warning stays).
 - **Deviations from the design text.**
@@ -4528,7 +4528,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
     (the client's pinned pid), feeding the `Channel<A11yVerdict>` back as `WindowHintChange::A11y(verdict.root)`.
 - **Interface asks.** Bardo `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
   `PRIVACY_PAGE` in `compositor-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
-  the rows `shell` (sill.service), `agent_tier` (cuad.service), `portal` (bardo-portal.service), `settings` (the Settings app) and `manager`
+  the rows `shell` (shell.service), `agent_tier` (cuad.service), `portal` (bardo-portal.service), `settings` (the Settings app) and `manager`
   (systemd, `Exe`) with `exe` lists.
 - **Not verified by reading (the gate run looks here).** That `BusPeers::who`'s future is `Send` (the boxed `WhoFuture` and zbus
   interface methods need it); that `Arc::new(BusPeers)` coerces at the closure return in `CallerSetup::with`; `tokio::spawn` of
@@ -4626,7 +4626,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     time you run it" (the compositor has no README to carry it).
   - the desktop harness: scenarios that run `grim`/`wl-copy` start the compositor with `--system-dir` and a floor of `allow` rows
     (design 3.8); the flag exists, the scenarios are theirs.
-  - sill: nothing new (the question is `bardo_shell_v1` version 5, as cwl built it).
+  - The shell: nothing new (the question is `bardo_shell_v1` version 5, as cwl built it).
   - closed by pa2-cgate: the four globals smithay serves whole (clipboard, input method, `ext_foreign_toplevel_list`) are gated.
 
 ## pa2-cgate: the smithay-served globals gated, and the subject of an app (CASW-01, CASC-01, PORTAL-02, BARDO-12; 2026-10-17)
@@ -4728,7 +4728,7 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
     Version 6 also carries the `answered_too_soon` entry that item 2 below uses (the error entry may ship alone as version 5 `since="5"` if
     version 6 is not wanted yet).
 
-- **Answers that come too fast (WAVE2-DESIGN 3.4).** `bardo/shell_permission.rs`: `ANSWER_NOT_BEFORE = 500 ms` (sill's sheet is disarmed for
+- **Answers that come too fast (WAVE2-DESIGN 3.4).** `bardo/shell_permission.rs`: `ANSWER_NOT_BEFORE = 500 ms` (the shell's sheet is disarmed for
   `PERMISSION_ARM_AFTER` = 600 ms; the margin is for scheduling and the wire). `SentAsk` carries `sent_at: Mono` from the loop's clock
   (`BardoShellHandler::bardo_shell_now`, implemented by `State` with `clock.now()`; `apply_ask` takes `now`). `on_answer` returns
   `Err(AnsweredTooSoon)` for a known question answered sooner; the dispatch posts a protocol error on that shell object only
@@ -4993,7 +4993,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
 ## cas13: test caller rows in the injected folder, test builds only (2026-10-17)
 
 - **What.** The desktop harness runs the compositor in a jail with no `/etc/bardo/desktop-callers.toml`, so `clients::desktop_table` was an empty
-  table, nobody was a desktop service, and the shell (sill), Settings (the Settings app) and the portal (the portal) could not connect. Now, in a build
+  table, nobody was a desktop service, and the shell (the shell), Settings (the Settings app) and the portal (the portal) could not connect. Now, in a build
   with `testing` or `debug-inject` and a run with `SystemDir::At(dir)`, the compositor also reads `dir/desktop-callers.toml` (`clients/dev_callers.rs`)
   as developer rows of the caller-identity library v0.1.4 (`TableFiles::load_dev`, `Table::from_toml_dev`; `Proof::Dev`, `RowOrigin::Dev`) and merges them after
   the system table (the system table still wins where both name a program: the library judges an image a shipped row claims by shipped rows
@@ -5016,7 +5016,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
   `cfg!(any(testing, debug-inject))`), `dbus/callers.rs` (Full admitted, Exe/Cgroup refused, Dev admitted only for its own role, and only with
   `dev-rows`).
 - **Harness lane.** Write `desktop-callers.toml` next to `privacy.toml` in the folder passed as `--system-dir`, mode 0600, one `[[peer]]` per
-  stand-in with `exe` the `readlink -f` path of its build-folder image (sill: `shell`; the Settings app: `settings`; the portal: `portal`; cuad:
+  stand-in with `exe` the `readlink -f` path of its build-folder image (the shell: `shell`; the Settings app: `settings`; the portal: `portal`; cuad:
   `agent_tier`). `desktop/gate/check-no-fake.sh` must still see no `dev-rows` in a shipped build.
 - **Known limit, test builds only.** A developer row makes any program the person can write a service of its role at `Proof::Dev`, and
   `client_standing` then gives it the role's powers; that is the point of the file and why a release build compiles it out.
@@ -5066,7 +5066,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   The same handle now guards the security-context client's cgroup read (`handlers/security_context.rs`
   `peer_of`): the cgroup counts only if the held process still runs after it is read. The caller-identity library 0.1.6 has the
   same pin (`Pinned::of_stream`, `Pinned::pidfd`); the compositor moves to it with porter's next the caller-identity library bump
-  (porter-dbus pins 0.1.4, and one lock carries one the caller-identity library).
+  (porter-dbus pins 0.1.4, and one lock carries one caller-identity library).
 - **NEW-PI-4 (the compositor half), as replaced by NEW-FA-4 below.** A virtual-bus device is `Origin::Virtual` unless the device service made it
   for the key remap daemon (`Origin::of_kernel_device`). A virtual device still moves the pointer, fires bindings and drives swipes (`Origin::is_pad`),
   but trusted surfaces, the lock surface and VT switching never hear it.
@@ -5282,7 +5282,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
 - **What counts.** The output shows a `SpaceContent::FullScreen` Space and a layer surface holds the edge's role on that output.
   Split View halves do not reveal. A pop-up of the surface (`PopupManager`) keeps it up; the pointer on the surface, or still in
   the strip, keeps it up. It hides with no delay (the dock's 0 ms hide trigger); `reveal(edge, shown)` is sent when the slide
-  in starts and `reveal(edge, hidden)` when the slide away ends (sill drops the bar's content on `hidden`, so sent at the start
+  in starts and `reveal(edge, hidden)` when the slide away ends (the shell drops the bar's content on `hidden`, so sent at the start
   it would vanish from a surface still on screen); a pointer coming back mid-slide turns it round and the shell hears nothing.
 - **Stacking and hits.** A raised surface is drawn and hit between the overlay level and the full-screen windows
   (`LayerDraw::raised`, `scene::stack`), at the slid rectangle (`reveal::slid`: toward its edge until wholly off the output, or

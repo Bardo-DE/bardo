@@ -145,7 +145,7 @@ impl PanelCtx {
             .row(session.keys.selected)
     }
 
-    /// An action the keymap made of a key: Quick Look and `sill.focus-pane` are the pane's; any
+    /// An action the keymap made of a key: Quick Look and `shell.focus-pane` are the pane's; any
     /// other runs the selected row's action bound to it (H5), and nothing else hears it.
     fn run_action(&self, action: &keymap::Action) -> bool {
         if *action == keymap::Action::Standard(keymap::StandardAction::QuickLook) {

@@ -15,9 +15,9 @@ pub const INTENTS_BUS: &str = "org.bardo.Intents1";
 pub const INTENTS_PATH: &str = "/org/bardo/Intents1";
 /// The object every provider serves `org.bardo.IntentProvider1` at, on its own bus name.
 pub const PROVIDER_PATH: &str = "/org/bardo/IntentProvider1";
-/// sill's `Confirm1` bus name.
+/// The shell's `Confirm1` bus name.
 pub const CONFIRM_BUS: &str = "org.bardo.Confirm1";
-/// sill's `Confirm1` object.
+/// The shell's `Confirm1` object.
 pub const CONFIRM_PATH: &str = "/org/bardo/Confirm1";
 /// companiond's bus name.
 pub const COMPANION_BUS: &str = "org.bardo.Companion1";

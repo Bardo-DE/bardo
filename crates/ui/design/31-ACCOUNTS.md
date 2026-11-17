@@ -308,7 +308,7 @@ AI providers:
 | `accountd` | account registry, provider registry, token broker, secrets, consent store, discovery and probes, the Settings live module | the control plane; small, must never stall | P |
 | `syncd` | the sync journal, anchors, the polling scheduler, dataset plug-ins (Photos first) | a failing backend or a long upload cannot block sign-in ([R] §3) | P |
 | `inferd` | the AI broker: routing, policy, spend, audit, wire adapters, engine supervision, GPU queue, streaming sessions | streams and big payloads; restartable alone | P |
-| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws the UI kit's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to the compositor's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
+| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws the UI kit's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **the shell** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to the compositor's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
 
 All are user-session services, D-Bus activated on Linux, single-instance through the service locator
 ([R] §1). syncd gets tokens and authenticated streams from accountd like any client; inferd also
@@ -318,7 +318,7 @@ resolution and reporting probed local runtimes.
 **Caller roles [refines §4.5, 2026-10-05].** One caller table (`account-dbus` `ProcCallers`, shared
 by accountd and inferd) maps a connection's pid, through its cgroup scope or Flatpak info and
 `identity_of`, to an `AppId` and a role from a shipped table (`/etc/bardo/accountd-callers.toml`, the
-user file wins): `App`, `Settings` (the Settings app), `SheetHost` (sill), `PorterDaemon` (inferd, syncd),
+user file wins): `App`, `Settings` (the Settings app), `SheetHost` (the shell), `PorterDaemon` (inferd, syncd),
 `Agent` (intentd, companiond, readerd, cuad, bardo-do, bardo-actions-mcp), `Cua` (cuad, for inferd). A
 sender with no app scope and no Flatpak info is refused. accountd refuses every account call from
 the `Agent` role (`Choose`, `AddAccount`, `Reauthenticate`, `IssueToken`, `OpenAuthenticated`);
@@ -433,7 +433,7 @@ The full introspection is porter's `dbus/org.bardo.Inference1.xml`, checked by t
 | Identity of caller | `AppId { name: AppName (reverse DNS), isolation: Isolation {Flatpak, Unsandboxed, InProcess} }`, established by the transport, never sent by the caller. Flatpak: app id from the sandbox info of the caller's pid (`GetConnectionCredentials`, pidfd); native: the systemd `app-<id>-*.scope` cgroup, marked "unsandboxed" (R12) | P |
 | Flatpak reach | `--talk-name=org.bardo.Accounts1` finish arg; consent is enforced inside the daemon | P |
 | Storage | the consent store is accountd's own table, PermissionStore-shaped, so a portal can adopt it; persisted with the registry as `$XDG_STATE_HOME/porter/registry.json` (`Persisted { vocab, accounts, grants, toggles }`, atomic write; JSON, not SQLite: tens of rows, no SQLCipher in mailo); a vocabulary bump now needs a migration test [2026-10-05] | P |
-| Voice | the caller `org.bardo.Voice` with class `Voice` and an `OnDevice` route holds a shipped default grant, because the person's first-use voice consent (a sill sheet) is the grant; any other route for `Voice` needs `ai.local_only` off, a floor change and an explicit grant; an app transcribing its own files uses its own class and the normal grant | P |
+| Voice | the caller `org.bardo.Voice` with class `Voice` and an `OnDevice` route holds a shipped default grant, because the person's first-use voice consent (a shell sheet) is the grant; any other route for `Voice` needs `ai.local_only` off, a floor change and an explicit grant; an app transcribing its own files uses its own class and the normal grant | P |
 | Audit | grants, denials, revocations, token issues (with audience), proxy opens, sign-ins, re-auths, removals, adoptions: time, app, account, capability; never content; `$XDG_STATE_HOME/bardo/accountd/audit.jsonl`, the shape of inferd's [2026-10-05] | P |
 | Add and allow | when an app's `Choose` finds no fitting account and the person adds one from that sheet, the last step reads "Add, and allow Mail to use it": one grant, not a second prompt [refines, 2026-10-05] | P |
 | Audience | `IssueToken` refuses an audience outside the grant's kind (`AudienceNotGranted`) | P |
@@ -613,7 +613,7 @@ contract tests drive.
 | Settings, Spaces, dock, widgets, style CSS | encrypted item log with cursor (§6.4), LWW per key, HLC; lists as small CRDTs only where order matters (dock) | per key; dock order merges | syncd `KeyValue` | v2 (O) |
 | Keychain | encrypted items, LWW per item | conflict object shown in the Keychain UI | syncd | v3 (O) |
 | Mail, calendars, contacts, tasks | protocol-native (CONDSTORE/QRESYNC, JMAP state, CalDAV/CardDAV sync-token, Graph delta) | the protocol's | mailo, Calendar app | v1 (mail) |
-| Calendars and contacts until their apps exist | `PimMirror`: server to a local vdir, `$XDG_DATA_HOME/porter/vdir/<account>/<collection>`, read-only first; sill's calendar widget reads it (`calendar.sources = auto`) under its own grant [departs: placement, 2026-10-05] | the server wins | syncd | v1 |
+| Calendars and contacts until their apps exist | `PimMirror`: server to a local vdir, `$XDG_DATA_HOME/porter/vdir/<account>/<collection>`, read-only first; the shell's calendar widget reads it (`calendar.sources = auto`) under its own grant [departs: placement, 2026-10-05] | the server wins | syncd | v1 |
 | Notes | protocol-native where the provider has notes; else files | keep both | app | v2 |
 
 ### 6.3 Continuity (option)
@@ -646,7 +646,7 @@ those keys. v3, O.
 | Providers | Nextcloud, Microsoft (our own verified multi-tenant client), generic IMAP/SMTP + DAV; AI: Ollama, llama.cpp, the supervised `local`; Anthropic key, OpenAI key and OpenRouter once the model layer's cloud backends exist. Google: **TODO** (owner, 2026-10-05) | P |
 | syncd | journal, scheduler, `Replica` for WebDAV and Graph (Google Drive with the Google TODO); the `PimMirror` dataset (§6.2); the Photos dataset built and contract-tested | P |
 | inferd | routing, local-only default, data-class floors, per-app grants, spend caps, audit, GPU queue, streaming sessions; no MCP (an edge in docket) | P |
-| UI | the Settings app Accounts and Intelligence pages, sheets drawn by sill (Bardo `ui-shell::accounts` views), first-run steps | P |
+| UI | the Settings app Accounts and Intelligence pages, sheets drawn by the shell (Bardo `ui-shell::accounts` views), first-run steps | P |
 | Photos | the app is its own repo and starts after mail and calendar work end to end (owner, 2026-10-05); library on Storage, import from folders | P |
 
 Acceptance (each an automated test on private buses, scratch `XDG_*`/`HOME`, a fake Secret
@@ -697,7 +697,7 @@ Service and fake servers; the real system is never touched):
 **Answered 2026-10-05** (with the accounts plan's D1-D18, `~/rs-wt/accounts/PLAN.md` §7): 1 is
 left as a TODO (no Google work for now); 2 (a); 3 as recommended without Google, with the cloud
 AI keys after the model layer's cloud backends and ComfyUI when an ImageGen consumer exists; 14 departs:
-sill hosts the sheets on our desktop (§4.1). Also decided: `OpenAuthenticated` in v1 (§4.4);
+The shell hosts the sheets on our desktop (§4.1). Also decided: `OpenAuthenticated` in v1 (§4.4);
 syncd in v1 with `PimMirror`; JSON registry and jsonl audit; oo7 on Linux and keyring-core
 stores elsewhere. Items 4-13 stand as recommended.
 
@@ -776,7 +776,7 @@ stores elsewhere. Items 4-13 stand as recommended.
 11. GNOME Online Accounts compatibility: defer to v3.
 12. Repo: one new repo (`porter` suggested) for the account core, daemons and provider files.
 13. First-party apps also ask for consent once.
-14. Sign-in and consent sheets are drawn by a trusted sheet host that only accountd opens: sill on our desktop, the app hosting the core elsewhere.
+14. Sign-in and consent sheets are drawn by a trusted sheet host that only accountd opens: the shell on our desktop, the app hosting the core elsewhere.
 15. Passwords never leave accountd: `OpenAuthenticated` relays in v1.
 
 ## 11. Frozen interfaces (porter)

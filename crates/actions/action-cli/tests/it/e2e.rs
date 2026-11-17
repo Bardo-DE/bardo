@@ -1,6 +1,6 @@
 //! `bardo-do` end to end: the real binary, intentd's real `start` (the router over `DbusLink`,
 //! `SheetConfirmer` and `FileGrants`, serving `org.bardo.Intents1`), a mail app that is
-//! action-fake's `FakeMail` behind `action_provider::serve_on`, and sill's `Confirm1` as a fake
+//! action-fake's `FakeMail` behind `action_provider::serve_on`, and the shell's `Confirm1` as a fake
 //! that answers from a script. All of it on a private `dbus-daemon`, with a scratch HOME and
 //! XDG directories (the app's manifest is installed under the scratch `XDG_DATA_DIRS`): the
 //! person's real session bus and `~/.config` are never named.
@@ -23,7 +23,7 @@ use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmOffer, GrantScope};
 use action_daemon::{IntentdConfig, ProcRoot, Running, Setup, start};
 use action_dbus::callers::Identity;
 use action_vocab::ActionRef;
-use apps::{Answer, FakeSill, SharedMail, answering_intentd, introduce, serve_mail};
+use apps::{Answer, FakeShell, SharedMail, answering_intentd, introduce, serve_mail};
 use bus::PrivateBus;
 use memoryd::FakeMemoryd;
 use permission_core::AskReason;
@@ -55,16 +55,16 @@ fn refused() -> Answer {
     Answer::With(ConfirmAnswer::Ended(ConfirmEnd::Refused))
 }
 
-/// The world: a bus, intentd, a mail app, sill, and a scratch home for `bardo-do`.
+/// The world: a bus, intentd, a mail app, the shell, and a scratch home for `bardo-do`.
 struct Desk {
     dir: tempfile::TempDir,
     bus: PrivateBus,
     intentd: Option<Running>,
-    sill: FakeSill,
+    shell: FakeShell,
     mail: SharedMail,
     /// memoryd, as the audit trail reaches it.
     memoryd: std::sync::Arc<FakeMemoryd>,
-    /// The control centre, as sill plays it: a caller that owns sill's names.
+    /// The control centre, as the shell plays it: a caller that owns the shell's names.
     control: Intents<DbusTransport>,
     _connections: Vec<action_dbus::BusConnection>,
 }
@@ -98,9 +98,12 @@ impl Desk {
         let memory_connection = bus.connect().await;
         let memoryd = FakeMemoryd::recording();
         memoryd.serve(&memory_connection).await;
-        let sill_connection = bus.connect().await;
-        let sill =
-            FakeSill::start(&sill_connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+        let shell_connection = bus.connect().await;
+        let shell = FakeShell::start(
+            &shell_connection,
+            &["org.bardo.Confirm1", "org.bardo.Shell"],
+        )
+        .await;
 
         let home = dir.path().display().to_string();
         let env = |key: &str| match key {
@@ -116,7 +119,7 @@ impl Desk {
         setup.audit_every = std::time::Duration::from_millis(100);
         setup.signals.every = std::time::Duration::from_millis(30);
         setup.proc_root = ProcRoot::Honoured(dir.path().join("proc"));
-        // Every connection here is this process: the test says that the one that serves sill's
+        // Every connection here is this process: the test says that the one that serves the shell's
         // names is the shell's unit. `bardo-do` is told apart by its cgroup in the fake proc root.
         let who = std::sync::Arc::new(Identity::on_fixture(
             daemon_connection.clone(),
@@ -126,7 +129,7 @@ impl Desk {
         setup.identity = Some(std::sync::Arc::clone(&who));
         introduce(
             &who,
-            &sill_connection,
+            &shell_connection,
             &IntentdConfig::shipped().expect("the shipped configuration"),
             &["org.bardo.Confirm1", "org.bardo.Shell"],
         );
@@ -134,19 +137,19 @@ impl Desk {
             .await
             .expect("intentd starts");
 
-        let control = Intents::over(DbusTransport::new(sill_connection.clone()));
+        let control = Intents::over(DbusTransport::new(shell_connection.clone()));
         Desk {
             dir,
             bus,
             intentd: Some(intentd),
-            sill,
+            shell,
             mail,
             memoryd,
             control,
             _connections: vec![
                 mail_connection,
                 memory_connection,
-                sill_connection,
+                shell_connection,
                 daemon_connection,
             ],
         }
@@ -247,22 +250,22 @@ async fn the_real_bardo_do_reaches_the_real_intentd_on_a_private_bus() {
     // A read runs and asks nobody.
     let read = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&read), 0, "{}", say(&read));
-    assert!(desk.sill.shown().is_empty(), "a read is final: no sheet");
+    assert!(desk.shell.shown().is_empty(), "a read is final: no sheet");
 
     // A dry run shows the preview and asks nobody either.
     let dry = desk
         .bardo(&["mail", "thread.archive", "t1", "--dry-run"])
         .await;
     assert_eq!(code(&dry), 0, "{}", say(&dry));
-    assert!(desk.sill.shown().is_empty());
+    assert!(desk.shell.shown().is_empty());
     assert!(!desk.mail.0.is_archived("t1"));
 
     // A write asks. The person answers once, and it runs.
-    desk.sill.answer(vec![once()]);
+    desk.shell.answer(vec![once()]);
     let first = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&first), 0, "{}", say(&first));
     assert!(desk.mail.0.is_archived("t2"), "the app did it");
-    let shown = desk.sill.shown();
+    let shown = desk.shell.shown();
     assert_eq!(shown.len(), 1, "one sheet");
     assert_eq!(
         shown[0].actor,
@@ -274,22 +277,22 @@ async fn the_real_bardo_do_reaches_the_real_intentd_on_a_private_bus() {
 
     // The person says no: exit 4 as well. (Each denial is on a thread of its own: the same
     // action on the same thing, denied once, is refused outright the second time.)
-    desk.sill.answer(vec![refused()]);
+    desk.shell.answer(vec![refused()]);
     let no = desk.bardo(&["mail", "thread.archive", "t3"]).await;
     assert_eq!(code(&no), 4, "{}", say(&no));
     assert!(!desk.mail.0.is_archived("t3"));
-    assert_eq!(desk.sill.shown().len(), 2);
+    assert_eq!(desk.shell.shown().len(), 2);
 
     // "Allow from the terminal": this once runs, and the next one skips the ask.
-    desk.sill.answer(vec![from_terminal()]);
+    desk.shell.answer(vec![from_terminal()]);
     let granted = desk.bardo(&["mail", "thread.archive", "t4"]).await;
     assert_eq!(code(&granted), 0, "{}", say(&granted));
     assert!(desk.mail.0.is_archived("t4"));
-    assert_eq!(desk.sill.shown().len(), 3);
+    assert_eq!(desk.shell.shown().len(), 3);
     let skipped = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&skipped), 0, "{}", say(&skipped));
     assert_eq!(
-        desk.sill.shown().len(),
+        desk.shell.shown().len(),
         3,
         "the standing grant skipped the sheet"
     );
@@ -303,7 +306,7 @@ async fn the_real_bardo_do_reaches_the_real_intentd_on_a_private_bus() {
     assert_eq!(desk.control.terminal_grants().await, Ok(vec![]));
     let after = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&after), 4, "{}", say(&after));
-    assert_eq!(desk.sill.shown().len(), 4, "asked again");
+    assert_eq!(desk.shell.shown().len(), 4, "asked again");
 
     // The terminal undoes its own last act (the app's undo, through the router).
     assert!(desk.mail.0.is_archived("t2"));
@@ -312,11 +315,11 @@ async fn the_real_bardo_do_reaches_the_real_intentd_on_a_private_bus() {
     assert!(!desk.mail.0.is_archived("t2"), "undone in the app");
 
     // A hidden action is refused without asking anyone: exit 3.
-    let before = desk.sill.shown().len();
+    let before = desk.shell.shown().len();
     let hidden = desk.bardo(&["memory", "forget", "memory.fact:f1"]).await;
     assert_eq!(code(&hidden), 3, "{}", say(&hidden));
     assert_eq!(
-        desk.sill.shown().len(),
+        desk.shell.shown().len(),
         before,
         "nobody is asked about a hidden action"
     );
@@ -372,7 +375,7 @@ async fn with_intentd_stopped_every_call_exits_6_and_sends_nothing() {
         );
         assert_eq!(text(&out.stdout), "");
     }
-    assert!(desk.sill.shown().is_empty(), "no sheet was raised");
+    assert!(desk.shell.shown().is_empty(), "no sheet was raised");
     assert!(!desk.mail.0.is_archived("t2"));
 }
 
@@ -452,7 +455,7 @@ async fn an_undoable_change_is_a_journal_changed_signal_with_the_row_count() {
         .await
         .expect("proxy");
     let mut changed = control.receive_journal_changed().await.expect("subscribed");
-    desk.sill.answer(vec![once()]);
+    desk.shell.answer(vec![once()]);
     let archived = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&archived), 0, "{}", say(&archived));
     let signal = first(&mut changed).await;

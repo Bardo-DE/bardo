@@ -12,7 +12,7 @@ and `--locked` builds, the installed path (never the destdir-prefixed one) insid
 - The compositor: no installer at all. Needs one that installs `bin/compositor`, `bin/bardo-compositorctl` and
   `dist/bardo-compositor.service` with `ExecStart=<prefix>/bin/compositor` (the unit says `/usr/bin/compositor`; build.sh
   rewrites it).
-- sill (`dist/install.sh`): fixed `/usr/local`, `/etc/pam.d/sill`, `~/.config/bardo/key-remap`, sudo, and a build
+- The shell (`dist/install.sh`): fixed `/usr/local`, `/etc/pam.d/shell`, `~/.config/bardo/key-remap`, sudo, and a build
   inside the installer. Needs `--prefix/--destdir/--no-build/--bin`, no key remap daemon layer copy into the home
   (split the per-user copy into the session), and a place for the PAM service.
 - The key remap daemon (`install.sh`): stages under DESTDIR but at `/etc` and `/usr/local`, not under a prefix, and builds
@@ -43,14 +43,14 @@ lists as `release.py`'s):
   `share/porter` (providers, client tables), `share/models` (the model catalog) and `share/fonts` (the desktop
   lane ships `fonts/Noto-COLRv1.ttf` to `share/fonts/bardo/`). Commands are `exports.toml` links in `/usr/local/bin`.
   A distribution's own file at the same path is a conflict and is left alone.
-- Files (`[[system]]`, staged in `system/<absolute path>`): `/etc/pam.d/sill`, the key remap daemon's `bardo-key-remap.service` (at
+- Files (`[[system]]`, staged in `system/<absolute path>`): `/etc/pam.d/shell`, the key remap daemon's `bardo-key-remap.service` (at
   `/usr/lib/systemd/system`), `70-key-remap.rules`, `key_remap.polkit.rules` and `modules-load.d/key-remap.conf` (`uinput`,
   written by build.sh because the key remap daemon ships none), the mouse gestures daemon's `70-mouse-gestures.rules` and `modprobe.d/99-mouse-gestures.conf`,
   and porter's `/etc/porter/callers.toml` (porter's installer is pointed at `<prefix>/system/etc`).
-- Still data only (no home on the system): `share/sill/key-remap.toml` (the sill session's key remap daemon layer, which sill's
+- Still data only (no home on the system): `share/shell/key-remap.toml` (the shell session's key remap daemon layer, which the shell's
   installer copied into the home), `share/key_remap/key_remap.plasma.toml` (the Plasma overlay; not used by this
   desktop).
-- Not staged yet: sill's DDC/CI udev rule and `i2c-dev` module list (`dist/udev`, `dist/modules-load.d`; sill's own
+- Not staged yet: the shell's DDC/CI udev rule and `i2c-dev` module list (`dist/udev`, `dist/modules-load.d`; the shell's own
   installer leaves them out on purpose, ddcutil's package ships the rule on Fedora; audit D7 decides) and
   nothing of the key remap daemon's: its Caps Lock rule now ships as `/usr/lib/bardo/key-remap/key-remap.toml` (see pa2-desk).
 
@@ -98,7 +98,7 @@ What I found and decided:
   installers read the family from the machine, so Ubuntu, Fedora and Arch work. No linker is asked for.
 - They do not fit porter's "print the root command" path: both refuse to run as root ("Run this as yourself")
   and escalate (`$SUDO`, sudo, doas, pkexec) per step themselves. A root hint for them would fail. So without a
-  `--destdir` they are listed as "yourself" with the plain command (the same way sill and the key remap daemon are); with a
+  `--destdir` they are listed as "yourself" with the plain command (the same way the shell and the key remap daemon are); with a
   `--destdir` they run here and never escalate. A destdir that you cannot write stops them with their own message.
 - `release/build.sh` is not changed: it builds by name from a fixed list and neither is in it. Adding them
   needs the installers to stage `/etc/bardo` inside the prefix (a `--sysconfdir`, or put_system-style output for
@@ -116,7 +116,7 @@ What I found and decided:
   `<data dir>/fonts/bardo/Noto-COLRv1.ttf` over `XDG_DATA_DIRS` (default includes `/usr/share`), and fontconfig
   reads `/usr/share/fonts` too. The bundle ships the font on every distro (Fedora's own copy is byte-identical,
   harmless); `install.sh` skips it where fontconfig already has one, which a bundle cannot test.
-- sill ships both files (`dist/udev/60-sill-ddc.rules`, `dist/modules-load.d/sill-ddc.conf`), and the updater's system
+- The shell ships both files (`dist/udev/60-shell-ddc.rules`, `dist/modules-load.d/shell-ddc.conf`), and the updater's system
   folders (origin/master at b607414, `ALLOWED_SYSTEM_DIRS`) include `/etc/udev/rules.d` and `/etc/modules-load.d`, so
   both are staged with `put_system` at those paths (the same folders the key remap daemon uses). No updater follow-up needed. The
   local ~/bardo/updater checkout is five commits behind origin (its link list still has 7 folders); `release.py`'s lists
@@ -274,14 +274,14 @@ check first is listed under "Not verified" at the end of this section.
   stays in the runtime folder. The `updater recover` call itself is not testable there (it is skipped when nested, which is
   the only way that scenario runs); see the release scenarios below.
 
-### ROOT-02: the update service starts in every login; sill confirms the start
+### ROOT-02: the update service starts in every login; the shell confirms the start
 
 - `session/desktop-session.target` now has `Wants=bardo-updater.service`, so the daily check runs without anyone enabling the
   unit (the updater's `scripts/install.sh` deliberately does not enable it: that would write under the home folder). A computer
   without the updater has no such unit and the line is ignored. `gate/installer-check.sh` checks the staged target has the line.
-- The session does **not** run `updater confirm`: sill does, about 30 s after the shell answers (sill lane, landing
+- The session does **not** run `updater confirm`: the shell does, about 30 s after the shell answers (the shell lane, landing
   separately). **Landing order matters:** with `updater recover` in the session and no `updater confirm` anywhere, every
-  update would be put back after its third restart of the computer. Land (and pin in `manifest.toml`) the sill revision that
+  update would be put back after its third restart of the computer. Land (and pin in `manifest.toml`) the shell revision that
   confirms before or together with this commit. Nothing in this repo can check that; it is the release gate's job.
 - The updater also installs a D-Bus activation file for the update service, so a call to it (Settings, `updater status`)
   starts the unit in a login that does not have the target; the target line makes it deterministic.
@@ -301,7 +301,7 @@ check first is listed under "Not verified" at the end of this section.
 - Every file `build.sh` stages is on the list. porter, the memory service, docket and cua stage their caller tables through their own
   installers, so a name they write that the list does not cover is only found when `pack` runs in CI.
 - Superseded wording above: "allowed system folders" (this file and the README) now means the list; the stale line in
-  "Whether the release should write `/etc/pam.d` at all" is answered: one file, `/etc/pam.d/sill`, named.
+  "Whether the release should write `/etc/pam.d` at all" is answered: one file, `/etc/pam.d/shell`, named.
 
 ### Packaging: the updater's three programs and one polkit file
 
@@ -371,7 +371,7 @@ check first is listed under "Not verified" at the end of this section.
   full commit hash. The source-install line for people in `install/packages.sh` and `docs/distros.md` still says
   `--tag v0.8.3` (it is typed by a person, not by CI).
 - Cache: `restore-keys` is gone, so a cache is restored only for exactly this manifest. Cost: the first build after a
-  manifest change is cold (the compositor and sill take the longest).
+  manifest change is cold (the compositor and the shell take the longest).
 - Not verified: that `git fetch --depth 1 <url> <full sha>` is accepted by GitHub for that repository (it is for public
   repositories that allow reachable-sha fetches, as GitHub does), and that `cargo install --path` of the repository root
   installs only `xwayland-satellite` (its root `Cargo.toml` is a package that is also a workspace root; read from
@@ -422,7 +422,7 @@ check first is listed under "Not verified" at the end of this section.
 - **Interface ask for porter:** accountd should not accept a unit by name alone for the `compositor` and shell roles: check the
   unit's fragment path and drop-in paths (`systemctl --user show -p FragmentPath -p DropInPaths`), since the drop-in that
   decides what runs as `bardo-compositor.service` is written under `$XDG_RUNTIME_DIR/systemd/user/`, which any process of the person
-  can write. (Done on the session side, lane pa-units: bardo-compositor.service and sill.service are installed root-held in
+  can write. (Done on the session side, lane pa-units: bardo-compositor.service and shell.service are installed root-held in
   `/etc/systemd/user` and carry `UnsetEnvironment` for the loader variables; the session passes its arguments as
   `COMPOSITOR_SESSION_ARGS` in the user manager's environment, writes no drop-in, and removes the old runtime one at start.)
 
@@ -504,30 +504,30 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   `$JAIL_SCRATCH/compositor-floor/NAME/privacy.toml` with an `allow` row per power of each installed tool (`floor_powers` is the table: grim and
   wf-recorder `screen`, wl-copy/wl-paste/cliphist `clipboard`, wtype `keys`, fcitx5 `typing_help` and `keys`, wlr-randr `displays`, ...); an unknown
   tool is an error, so a new tool is added in one place. `floor_shim` does that and points `COMPOSITOR_REPO` and `COMPOSITOR_DIR` at a stand-in checkout
-  whose `dev/up.sh` appends `--system-dir` (the compositor's own `dev/up.sh` passes it on), for the scripts that start the compositor themselves: sill's library
+  whose `dev/up.sh` appends `--system-dir` (the compositor's own `dev/up.sh` passes it on), for the scripts that start the compositor themselves: the shell's library
   (its pin, `3fecef0`, has no floor of its own; its HEAD writes one with grim and wl-copy/wl-paste, which the appended flag overrides: no scenario here
   runs those) and shell-host's.
 - **Every scenario that starts the compositor passes the flag:** the eleven accounts scenarios (through `acc_env`), `detent-on-compositor-at-1.5`,
-  `launcher-p95-on-compositor`, `appearance-reaches-apps`, `appearance-reaches-bardo-apps`, `sill-boots-on-compositor`, `portal-bardo`,
+  `launcher-p95-on-compositor`, `appearance-reaches-apps`, `appearance-reaches-bardo-apps`, `shell-boots-on-compositor`, `portal-bardo`,
   `shell-host-on-compositor-and-kwin` (floor: fcitx5, which accept-ime runs), `minimise-target-round-trip`, `space-id-survives-restart` and
   `session-crash-guard` (through the session's backend arguments). `key-remap-yields-and-regrabs` starts nothing (a skip). Most floors are empty on
   purpose: the shell, the Settings app and the rig take no power a row can name.
 - **Programs run from `build/` (lane dharn, second pass).** The compositor judges a program by its image, and a program under `build/` is writable by the
-  person, so it is "unverified" and asked every time, whatever the floor says; and without `/etc/bardo/desktop-callers.toml` (the jail has none) sill,
+  person, so it is "unverified" and asked every time, whatever the floor says; and without `/etc/bardo/desktop-callers.toml` (the jail has none) the shell,
   The Settings app and the portal are nobody and the shell cannot connect. The compositor 679e93d (cas12) lets a debug-inject build's `--system-dir` floor name such a
   program by its `readlink -f` path; the cas13 lane makes the same build read `DIR/desktop-callers.toml` (owned by the person, not group or world
   writable, not a link) as test caller rows in the caller-identity library's format (`app`, `role`, `exe`, no `unit`). `floor_make NAME [TOOL...]` now writes both files,
-  mode 600, from one list of TOOLs: `floor_powers` (the powers a row allows), `floor_role` (the role in the caller list: sill and the shell-host demos that
+  mode 600, from one list of TOOLs: `floor_powers` (the powers a row allows), `floor_role` (the role in the caller list: the shell and the shell-host demos that
   map the shell's surfaces `shell`, the Settings app `settings`, the portal `portal`; the caller list keeps `dist/desktop-callers.toml`'s app ids) and `floor_image`
-  (where the harness built it: `build/tools/bin`, `build/portal-target`, `build/sill-target`, `build/detent-target`, `build/shell-host-target/debug/examples`,
+  (where the harness built it: `build/tools/bin`, `build/portal-target`, `build/shell-target`, `build/detent-target`, `build/shell-host-target/debug/examples`,
   else PATH; a program not built is left out and its step says so). The stale rule "a floor cannot name a `build/` program" is gone from the header.
   Per scenario: `detent-on-compositor-at-1.5` `bardo-compositorctl detent` (the `shot` is `screen`; the Settings app is `settings`); `portal-bardo` `portal` (`screen` and
   `portal`); `space-id-survives-restart` `compositor-probe` (`windows`); `shell-host-on-compositor-and-kwin` `fcitx5` (`typing_help keys`), `demo_lock` (`lock`)
   and the seven demos that take an exclusive keyboard or an overlay (hover, scroll, ime, swipe, switcher, drag, popup_keys) as `shell`: the compositor gives
   the exclusive keyboard only to the shell (CASC-02), which is why accept-modifiers and accept-ime failed. Not run (lane rules), and cas13 was not in
-  The compositor yet when this was written: the file name, the `[[peer]]` keys and the role names are from the lane brief. Not changed: `sill-boots-on-compositor`,
-  `launcher-p95-on-compositor`, `appearance-reaches-*` (they pass without the shell role; giving sill the row is the real shape and a later edit once this
-  one is green) and the accounts scenarios (they run sill and the Settings app at their pins, a different image from `build/sill-target`).
+  The compositor yet when this was written: the file name, the `[[peer]]` keys and the role names are from the lane brief. Not changed: `shell-boots-on-compositor`,
+  `launcher-p95-on-compositor`, `appearance-reaches-*` (they pass without the shell role; giving the shell the row is the real shape and a later edit once this
+  one is green) and the accounts scenarios (they run the shell and the Settings app at their pins, a different image from `build/shell-target`).
 - **Display confirmation.** A change by a program (wlr-randr and the like) is asked ("keep the new settings?", 15 s, reverts unless kept). No
   scenario changes outputs through a program: `set_scale` and the size changes go through `bardo-compositorctl debug output set`, which
   configures the output directly (`debug/dump.rs` calls `core_loop::configure_output`) and never opens a trial (checked in the compositor 377c937).
@@ -581,10 +581,10 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   is an exact rule in the updater's `system.rs` and `release/system-files.list` for that file name, and `check-helpers.py`'s test (no `allow_active=yes` on a privileged
   action) has to be applied to it first. Nothing to name today.
 - **NEW-ROOT-4: the shell is told when the run is the safe fallback.** `session/desktop-session` sets `BARDO_SESSION_MODE` to `normal` before each compositor start and to
-  `safe` before `bardo-compositor --safe`, in the user manager's environment (`systemctl --user set-environment`, the route `COMPOSITOR_SESSION_ARGS` takes; sill.service reads the
+  `safe` before `bardo-compositor --safe`, in the user manager's environment (`systemctl --user set-environment`, the route `COMPOSITOR_SESSION_ARGS` takes; shell.service reads the
   manager's environment when it starts, and so does a restart by the manager) and exported for the nested test path; both variables are unset at every way out
-  (`unset_session_args`). The reader is sill: it must skip `updater confirm` when the variable is `safe` (interface ask to the sill lane, below in the report: sill's `release.rs`).
-  Until sill lands that, nothing changes for the person. Test: `scenarios/session-crash-guard.sh` (the fake compositor logs the variable: three `normal`, then `safe`; the sill
+  (`unset_session_args`). The reader is the shell: it must skip `updater confirm` when the variable is `safe` (interface ask to the shell lane, below in the report: the shell's `release.rs`).
+  Until the shell lands that, nothing changes for the person. Test: `scenarios/session-crash-guard.sh` (the fake compositor logs the variable: three `normal`, then `safe`; the shell
   stand-in sees `normal`). The non-nested `set-environment` call is not covered by a test (the scenario runs without a user manager).
 - **NEW-PI-1: every trusted unit throws away the loader variables, and the portal frontend gets a drop-in.** the caller-identity library proves `Full` only when a unit's `UnsetEnvironment=`
   holds all 22 names of `LOADER_VARIABLES` (caller-identity-core `facts.rs`), and the compositor and the portal require `Full`; the distro's `xdg-desktop-portal.service` has none, so
@@ -608,10 +608,10 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   `COMPOSITOR_SESSION_ARGS` in the user manager is same-user writable and the compositor refuses a floor not owned by root, so no bypass.
 - **ROOT-18 (more places, still a deny-list).** `harness/secret-paths.list` grew by browser profiles, cloud and secret-manager tool folders and token files (43 lines).
   The allow-list (show only `/usr`, the worktree and scratch) still needs a pass over the scenarios to learn what each reads: left, as the plan says.
-- **ROOT-15 (sill's i2c `uaccess` rule): accepted by default, owner may overrule.** `sill/dist/udev/60-sill-ddc.rules` tags i2c-dev nodes `uaccess`, so the person at the
+- **ROOT-15 (the shell's i2c `uaccess` rule): accepted by default, owner may overrule.** `shell/dist/udev/60-shell-ddc.rules` tags i2c-dev nodes `uaccess`, so the person at the
   seat can talk to the monitor's controller: the same as every distro that ships ddcutil's rule. The alternative is a root broker for brightness like the input broker; that
-  is a design and an owner decision. Nothing changed here (the file is in sill).
-- **ROOT-16 (the key remap daemon's polkit rule allows `restart`): kept.** The shell restarts a failed keymap itself (`RestartUnit` in sill's `key_remap/backend`, tested in
+  is a design and an owner decision. Nothing changed here (the file is in the shell).
+- **ROOT-16 (the key remap daemon's polkit rule allows `restart`): kept.** The shell restarts a failed keymap itself (`RestartUnit` in the shell's `key_remap/backend`, tested in
   `key_remap_systemd_bus.rs`), so dropping the verb breaks recovery. Left as is: a same-user process can restart (not replace) the key remap daemon, bounded by the unit's
   `StartLimitBurst`; the rule lives in the key remap daemon's `dist/key_remap.polkit.rules`.
 - **ROOT-06 and ROOT-09: nothing new in code.** ROOT-06's remaining half is the per-file `size` in `[[file]]` (a format bump with a new helper on every machine, the updater
@@ -640,11 +640,11 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   `/usr/lib/systemd/user`; the unit manager's judge (`caller-identity-dbus` `fragment`, `trust_of_path` over `symlink_metadata`) reads a link
   (mode 0777) as `Writable`, so the unit never proves `Full` (the unverified note of NEW-PI-1 is now settled the other way for a link:
   it reads writable). `release/build.sh` `plain_units` stages every unit that a `unit =` row of `dist/desktop-callers.toml` names
-  (sill, the compositor, the portal, Settings, accountd, syncd, inferd, memoryd, intentd, companiond, cuad) as a system file at
+  (the shell, the compositor, the portal, Settings, accountd, syncd, inferd, memoryd, intentd, companiond, cuad) as a system file at
   `/usr/lib/systemd/user/X.service`, with its `sandbox.conf` drop-ins appended to its text (the same to systemd, and a drop-in that is
   a link would also read as writable), and the portal frontend's drop-in at `.../xdg-desktop-portal.service.d/10-bardo.conf`; it
   stops if a named unit is still staged where it would be exported. The paths are in `release/stage-owners.list` by exact name.
-  `install/install.sh` already copied bardo-compositor.service and sill.service as plain files to `/etc/systemd/user`; the other units of a
+  `install/install.sh` already copied bardo-compositor.service and shell.service as plain files to `/etc/systemd/user`; the other units of a
   source install are put in `<prefix>/lib/systemd/user` by their own installers and the printed hint for a prefix off the search
   paths still says `ln -sf`, which makes links that do not prove `Full` (left; change the hint to copy the named units when a
   source install is meant to run the services at `Full`). On a machine that already holds the old links, bardo-updater-apply must replace
@@ -653,4 +653,4 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   second `settings` row has no unit on purpose (a launcher; the updater asks for it at `Exe`). Nothing to change in the table beyond
   The mouse gestures daemon comment. `gate/check-callers-table.sh` and `gate/check-loader-unset.sh` pass.
 - **Shift+Caps Lock** (`dist/key-remap.toml`): `{ when = "shift+capslock", then = "capslock" }` next to the Caps Lock rule. It moved from
-  sill's user layer because the key remap daemon refuses a Shift trigger in a user layer (NEW-PI-5). sill must drop it from its forwarded layer.
+  The shell's user layer because the key remap daemon refuses a Shift trigger in a user layer (NEW-PI-5). The shell must drop it from its forwarded layer.

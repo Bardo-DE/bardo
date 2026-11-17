@@ -1,4 +1,4 @@
-//! The sheet that asks the person: `org.bardo.Confirm1`, served by sill. Only a process that
+//! The sheet that asks the person: `org.bardo.Confirm1`, served by the shell. Only a process that
 //! `actiond-callers.toml` names as the sheet host (the shell's unit, with the `sheet_host` role of
 //! the system's table) and that plays the `confirm` role in `actiond.toml` is trusted with a
 //! question: the well-known name only says where to send it, and a process nobody trusted answers
@@ -29,14 +29,14 @@ use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 
-/// How long past the sheet's own expiry intentd waits before it stops: sill that never answers
+/// How long past the sheet's own expiry intentd waits before it stops: the shell that never answers
 /// must not hold a call open for ever.
 const GRACE: Duration = Duration::from_secs(10);
 
 /// Where a sheet is drawn.
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum Surface {
-    /// sill's `Confirm1`.
+    /// The shell's `Confirm1`.
     Desktop,
     /// The process of the editor the person is speaking through, which serves `Confirm1` under its
     /// own bus name.
@@ -79,7 +79,7 @@ impl Surface {
     }
 }
 
-/// Asks through sill's `Confirm1` (a sheet in phase A, the trusted surface in phase B).
+/// Asks through the shell's `Confirm1` (a sheet in phase A, the trusted surface in phase B).
 ///
 /// For a call in a session an editor drives, it asks through the `Confirm1` the editor's process
 /// serves. The receipt's input proof says which; a spoken answer is never one.

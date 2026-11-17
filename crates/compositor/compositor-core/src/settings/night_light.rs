@@ -53,7 +53,7 @@ impl NightLightSettings {
     }
 
     /// Whether night light leaves the output on connector `name` with key `key` alone: when
-    /// `night_light.skip_outputs` lists either (sill lists the monitors it warms itself).
+    /// `night_light.skip_outputs` lists either (the shell lists the monitors it warms itself).
     ///
     /// ```
     /// use compositor_core::output::{EdidFacts, EdidSerial};

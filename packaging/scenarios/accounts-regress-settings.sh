@@ -58,7 +58,7 @@ step_boot() {
   accountd_start || return 1
   inferd_write_config </dev/null
   inferd_start || return 1
-  sill_start || return 1
+  shell_start || return 1
   sheet_add_fake_mail || return 1
   sheet_add_microsoft || return 1
   sheet_add_openai || return 1

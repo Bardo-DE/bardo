@@ -1,4 +1,4 @@
-//! The Up Next widget on the UI kit's widget contract (kind `sill.up-next`): macOS's Up Next, today's
+//! The Up Next widget on the UI kit's widget contract (kind `shell.up-next`): macOS's Up Next, today's
 //! weekday in the accent over the day's number, then the next events, each with its calendar's
 //! colour beside its title and time; the view keeps only the rows its card holds whole
 //! (`super::up_next::EVENT_ROWS`). Its entry is plain data (`up_next::up_next_entry`
@@ -65,7 +65,7 @@ impl Widget for UpNext {
     type Intent = NoIntent;
 
     fn kind() -> WidgetKind {
-        WidgetKind::fixed("sill.up-next")
+        WidgetKind::fixed("shell.up-next")
     }
 
     fn sizes() -> &'static [WidgetSize] {

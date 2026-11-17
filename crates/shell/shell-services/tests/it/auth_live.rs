@@ -187,7 +187,7 @@ fn the_pam_helper_against_the_stand_in() {
     println!("a hung helper was killed after {took:?}");
     assert_eq!(hung.outcome, Outcome::Unavailable(AuthFault::TimedOut));
     assert!(took < Duration::from_secs(2), "{took:?}");
-    let missing = helper(PathBuf::from("/nonexistent/sill"), &[], long).check(&attempt(RIGHT));
+    let missing = helper(PathBuf::from("/nonexistent/shell"), &[], long).check(&attempt(RIGHT));
     assert_eq!(missing.outcome, Outcome::Unavailable(AuthFault::NoHelper));
 }
 

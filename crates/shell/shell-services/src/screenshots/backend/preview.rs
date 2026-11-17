@@ -15,7 +15,7 @@ pub const PREVIEW_MAX: u32 = 480;
 
 /// Where previews go: `shots` in bardo-shell's folder of `dirs`' cache directory.
 pub(crate) fn cache_in(dirs: &Dirs) -> PathBuf {
-    dirs.sill_cache().join("shots")
+    dirs.shell_cache().join("shots")
 }
 
 /// `from`'s preview in `cache`.

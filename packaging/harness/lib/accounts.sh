@@ -40,8 +40,8 @@ acc_env() {
   # The rig's programs take no power; bardo-compositorctl's `shot` (acc_shot) takes the screen and the window list, so those are the
   # floor's only rows and nothing waits on a question (an unanswered ask stops the capture after ~29 s, and its dialog
   # covers the page). The caller list names bardo-shell (at its pin) as the shell, bardo-settings as Settings and the porter daemons by
-  # their roles, for bardo-compositor and for bardo-shell (floor_sill_callers before launch_daemon).
-  FLOOR_SILL_TARGET="$SCEN_BUILD/shell-probe-target" floor_shim accounts bardo-shell bardo-settings bardo-accountd bardo-inferd bardo-syncd bardo-compositor bardo-compositorctl || return 1
+  # their roles, for bardo-compositor and for bardo-shell (floor_shell_callers before launch_daemon).
+  FLOOR_SHELL_TARGET="$SCEN_BUILD/shell-probe-target" floor_shim accounts bardo-shell bardo-settings bardo-accountd bardo-inferd bardo-syncd bardo-compositor bardo-compositorctl || return 1
 }
 
 # Where the scenario keeps things; set by acc_dirs after scratch_new.
@@ -271,8 +271,8 @@ inferd_start() { # needs $CONFIG/bardo/inference/inferd.toml and $BARDO_INFERD_S
   acc_wait 20 bus_has_owner org.bardo.Inference1 || { echo "bardo-inferd never took org.bardo.Inference1:" >&2; cat "$OUT_DIR/bardo-inferd.log" >&2; return 1; }
 }
 
-# sill_start: bardo-shell (the sheet host) on the same bus; its pid is named bardo-shell.service (and is that unit's main pid), the sheet host's unit.
-sill_start() {
+# shell_start: bardo-shell (the sheet host) on the same bus; its pid is named bardo-shell.service (and is that unit's main pid), the sheet host's unit.
+shell_start() {
   cat >"$BIN_DIR/xdg-open" <<EOF
 #!/usr/bin/env bash
 # The scenario's browser: records the address, then follows it (redirects included) the way a person's
@@ -289,7 +289,7 @@ EOF
   # bardo-shell names itself to bardo-accountd within its first moments (its accounts service asks NeedingReauth as it connects, and a
   # refused first ask is not repeated), so its identity is written by the shell that execs it, before it exists.
   LAUNCH_PREFIX=(bash -c 'mkdir -p "$0/$$" "$0/units"; echo "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service" >"$0/$$/cgroup"; echo "$$" >"$0/units/bardo-shell.service"; exec "$@"' "$PROC")
-  floor_sill_callers
+  floor_shell_callers
   launch_daemon || return 1
   NAME=$(output_name) || return 1
   SHEET="bardo-shell-accounts-sheet-$NAME"

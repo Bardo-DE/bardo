@@ -16,7 +16,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 cargo check --workspace --no-default-features --locked
-# (c) anyview-peek alone, as sill and other embedders take it: a workspace build unifies features, so
+# (c) anyview-peek alone, as the shell and other embedders take it: a workspace build unifies features, so
 #     a peek that needs a feature only the viewer turns on (anyview-image's `encode`, 2026-10-10)
 #     compiles here but not in a launcher. Built headless, and with `media`, the launcher's set.
 cargo check -p anyview-peek --no-default-features --locked

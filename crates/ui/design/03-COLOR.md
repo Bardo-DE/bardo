@@ -353,7 +353,7 @@ Space gradient and `appearance.material_tint_alpha` describe the code that goes.
 | Bar | Bar | settled by name |
 | Dock | Dock | settled by name |
 | Bar and dock menus, tray menus | Popover | settled by name |
-| Launcher panel, control center | Sheet | proposed (`P:` sill design: launcher is a centred fixed-size panel) |
+| Launcher panel, control center | Sheet | proposed (`P:` the shell design: launcher is a centred fixed-size panel) |
 | Notification banners | Toast | proposed |
 | Notification center | Sheet | proposed |
 | OSD | Osd | settled by name |
@@ -380,9 +380,9 @@ white type reads on a pale picture. The lock screen takes no Space tint (21 sect
 
 ### 17.3.3 Idle dim scrim (Q447, 2026-09-27)
 
-sill's own idle service dims the screen with a full-screen overlay before it goes off, never
+The shell's own idle service dims the screen with a full-screen overlay before it goes off, never
 real brightness (design/22-SETTINGS.md section 3.24 `idle.dim_level_pct` 10..90,
-`idle.dim_s`; sill FINDINGS "sill idle (Q420 B)"). `--scrim-idle` (`ColourToken::ScrimIdle`) is
+`idle.dim_s`; the shell FINDINGS "shell idle (Q420 B)"). `--scrim-idle` (`ColourToken::ScrimIdle`) is
 that overlay's colour: opaque black, the same in both schemes, not `--scrim` (§17) or
 `--scrim-modal` (§17.3.1), whose alphas are the fixed strengths of a menu backdrop and a modal
 dialog. This one's strength is the person's own setting, not a fixed alpha the token can carry —
@@ -556,7 +556,7 @@ B's light fill stands 1.5-1.6:1 off white, so no state may rest on the fill's co
 | Selected list row (mailo's card) | `--raise`, `--shadow-1` and a border | the border moved to `--accent-text` |
 | Menu and launcher highlight, chip, selected row wash | a wash behind `--ink` text; the highlight is also the keyboard position | colour only by nature (the Mac's too); the wash is gated to show at 1.15:1 |
 | Primary button, disabled (the power menu's default Shut Down) | was the fill at .35 only | fixed: an `--accent-text` edge (20.6) |
-| sill's dock tile progress ring (`conic-gradient(var(--accent) …)`) | the arc's length | sill's; its arc stands 1.5:1 off a light track, see sill's list |
+| The shell's dock tile progress ring (`conic-gradient(var(--accent) …)`) | the arc's length | the shell's; its arc stands 1.5:1 off a light track, see the shell's list |
 
 ### 20.5 Blue moves to 215
 
@@ -568,17 +568,17 @@ holds every pair at 0.04 or more in both schemes (2026-09-30: the eight macOS ac
 unchanged; a stored `blue` now shows the sky blue. The hue strip at the foot of
 `accent-b-final-{light,dark}.png` shows the six.
 
-### 20.6 Text on the wash and on the materials (2026-09-27, sill Q410, Q411)
+### 20.6 Text on the wash and on the materials (2026-09-27, the shell Q410, Q411)
 
 The first cut gated the text accent on the card's four opaque grounds only. Two places it is
-read were not among them, and both fell under 4.5 in sill's captures:
+read were not among them, and both fell under 4.5 in the shell's captures:
 
 - **The wash.** A menu's or the launcher's match highlight (`.ds-menu mark`) sits on the
   selected row's `--accent-soft`. `#426aa2` on the wash over `--paper` (`#d5e3f5`) is 4.23:1
   (Q410).
 - **The materials.** PolkitPrompt's "Details" sits on a Sheet, 82 % tint over whatever lies
   behind. `#426aa2` is 4.28:1 on the on-screen composite (`#e5e3db`) and 3.53:1 over black
-  (`#cfcfcc`, sill's surface capture) (Q411).
+  (`#cfcfcc`, the shell's surface capture) (Q411).
 
 The gate now composites every ground a screen can show before measuring
 (`accent_band::text_grounds`): the card's four grounds; the wash over each; the three materials
@@ -629,7 +629,7 @@ The measured grounds, before and after:
 | Q411 | PolkitPrompt "Details", on screen | `#e5e3db` | 4.28 | 6.32 (`#295086`) |
 | Q411 | PolkitPrompt "Details", over black | `#cfcfcc` | 3.53 | 5.20 (`#295086`) |
 
-**A disabled default button** (sill Q413). The Mac keeps a disabled default button's shape and
+**A disabled default button** (the shell Q413). The Mac keeps a disabled default button's shape and
 edge at the reduced opacity. Band B's pastel fill at .35 was barely apart from the disabled
 Secondary beside it, the state carried by the fill's colour alone (20.4). A disabled Primary
 now keeps an `--accent-text` edge (`button.css`), as the pressed Mini and the armed toast tab

@@ -204,7 +204,7 @@ fn companion1_has_no_presence_undo_activity_or_pause_members() {
     for word in ["Presence", "Undo", "Activity", "PauseSpace"] {
         assert!(
             !xml.contains(word),
-            "Companion1 must not declare {word}: sill derives presence, the journal is Intents1's"
+            "Companion1 must not declare {word}: the shell derives presence, the journal is Intents1's"
         );
     }
 }

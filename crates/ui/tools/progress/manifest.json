@@ -13,7 +13,7 @@
     "Your pick (title-options pictures): (a) make the light desktop card nearly opaque (tint .96) so the title stays in the accent colour, or (b) keep the see-through card and draw the title in soft grey, with the accent kept for today's disc and the event dots. The branch uses (b) for now.",
     "The pattern is named for reuse: a registry, one trait, a picker, placements as data. Spotlight categories, control center modules and menu bar items can follow it.",
     "Other apps' widgets across processes are designed (a timeline sent as JSON over D-Bus, drawn with bardo's view templates) but the transport is not built.",
-    "sill has to adopt it: its widgets become providers, its two widget settings become one layout, and its drag uses bardo's lift and slot guide (listed in CONSUMING)."
+    "shell has to adopt it: its widgets become providers, its two widget settings become one layout, and its drag uses bardo's lift and slot guide (listed in CONSUMING)."
    ],
    "images": [
     {
@@ -55,7 +55,7 @@
    "date": "2026-09-27 · decision",
    "title": "A lighter accent, kept in bounds: you picked B (Airy)",
    "status": "done",
-   "lede": "Every accent now comes from one function that keeps it inside band B: light fills carrying dark ink, translucent washes for selections, menus and chips, a deeper blue for text and thin marks, and a focus ring drawn from it. The Space accents come from the same function, so mailo's frame and the shell match. Every hue is checked for legibility in both themes. Blue moved to a sky blue so it no longer duplicates Postmark. Landed in bardo and sill on 2026-09-27; the candidate sheets stay below as the record.",
+   "lede": "Every accent now comes from one function that keeps it inside band B: light fills carrying dark ink, translucent washes for selections, menus and chips, a deeper blue for text and thin marks, and a focus ring drawn from it. The Space accents come from the same function, so mailo's frame and the shell match. Every hue is checked for legibility in both themes. Blue moved to a sky blue so it no longer duplicates Postmark. Landed in bardo and shell on 2026-09-27; the candidate sheets stay below as the record.",
    "notes": [
     "Being fixed: the launcher's match highlight on a selected row, the password prompt's Details link and the desktop calendar's month label came out just under 4.5:1 on their real backgrounds; the band's checks now also measure against the translucent tints and materials.",
     "Being fixed: the notification center's large calendar tile leaves empty space under the month."
@@ -63,7 +63,7 @@
    "images": [
     {
      "path": "/home/pohsuanlai/bardo/tools/progress/shots/accent-b/launcher.png",
-     "caption": "The launcher on accent B (sill, nested)."
+     "caption": "The launcher on accent B (shell, nested)."
     },
     {
      "path": "/home/pohsuanlai/bardo/tools/progress/shots/accent-b/control-center.png",
@@ -92,10 +92,10 @@
    "date": "2026-09-27 · type",
    "title": "The whole shell now draws its text in Inter, the fonts bardo ships",
    "status": "done",
-   "lede": "Until today shell-host never registered bardo's own fonts, so the shell fell back to whatever the system had. Now every shell surface gets them from the host. sill re-ran every nested check under Inter and retook every capture: nothing new wraps, clips or shifts, and no failure came from a width that moved.",
+   "lede": "Until today shell-host never registered bardo's own fonts, so the shell fell back to whatever the system had. Now every shell surface gets them from the host. shell re-ran every nested check under Inter and retook every capture: nothing new wraps, clips or shifts, and no failure came from a width that moved.",
    "notes": [
     "Better on the way: the arrow key_remap are real arrows, times and shortcuts sit apart in the launcher, labels meant for Space Mono are now Space Mono, and the bar clock uses even-width digits so it stops jumping between minutes.",
-    "Found and being fixed: the password field puts its dots about 90 px in with the caret before them; the small calendar's today circle is tight around two digits; with all five widgets in the widget center, the on-screen frame stacks two widgets over the Calendar (sill's own capture of the same screen is correct)."
+    "Found and being fixed: the password field puts its dots about 90 px in with the caret before them; the small calendar's today circle is tight around two digits; with all five widgets in the widget center, the on-screen frame stacks two widgets over the Calendar (shell's own capture of the same screen is correct)."
    ],
    "images": [
     {
@@ -121,9 +121,9 @@
    "date": "2026-09-27 · milestone",
    "title": "Launcher v2: files, clipboard, colour emoji and a Quick-Look-style preview",
    "status": "done",
-   "lede": "The launcher now searches files (through a running indexer, else a fast name search under your home folder; it never starts an indexer on its own), keeps a memory-only clipboard history, and has a colour emoji grid with arrow keys that wrap like the character viewer. Results come in sections with Show More, and a preview pane opens beside the list: Space while browsing, Cmd+Y always, or Right at the end of the text. PDFs preview through pdfrum on one background worker, so holding Down through a folder of PDFs renders only the one you stop on. Everything shown is from sill running the real parts, with real keys.",
+   "lede": "The launcher now searches files (through a running indexer, else a fast name search under your home folder; it never starts an indexer on its own), keeps a memory-only clipboard history, and has a colour emoji grid with arrow keys that wrap like the character viewer. Results come in sections with Show More, and a preview pane opens beside the list: Space while browsing, Cmd+Y always, or Right at the end of the text. PDFs preview through pdfrum on one background worker, so holding Down through a folder of PDFs renders only the one you stop on. Everything shown is from shell running the real parts, with real keys.",
    "notes": [
-    "Found and fixed on the way: yesterday's colour-emoji change drew digits and spaces from the emoji font under sill (\"0 0 : 2 2\"); the text fonts are back to Inter and emoji-only content uses its own style.",
+    "Found and fixed on the way: yesterday's colour-emoji change drew digits and spaces from the emoji font under shell (\"0 0 : 2 2\"); the text fonts are back to Inter and emoji-only content uses its own style.",
     "Still open: a small gap between a row's time and its shortcut, the hybrid-renderer timing of the emoji grid, and three settings for you on the Spotlight page (clipboard history, web search, skin tone)."
    ],
    "images": [
@@ -256,9 +256,9 @@
   {
    "id": "m10-parts",
    "date": "2026-09-26 · widgets",
-   "title": "The shell's Milestone 10 gets its calendar, widgets, screenshot thumbnail and hot corners; sill's adoption is next",
+   "title": "The shell's Milestone 10 gets its calendar, widgets, screenshot thumbnail and hot corners; shell's adoption is next",
    "status": "proven",
-   "lede": "bardo cut the design parts for the shell's Milestone 10 today, on bardo master and shell-host master together. MonthGrid (design/04 §39) lays a month across seven columns with weekday initials, quiets the neighbouring month's days, seats today on the accent disc, marks busy days with a dot, offers an optional ISO week column, and slides the whole grid in from whichever side the new month came from on previous/next. WidgetFrame (design/04 §40) comes in small, medium and large on a 164 px cell with a 16 px gap: a card on the Widget material over the desktop, or a flat tile inside the notification center, sized by WidgetMetrics and pulsing once when its value bumps; inside sit ClockFace, analog with separate day and night faces and an accent second hand, or digital, and LevelRing for the battery with low and critical tones and a charging bolt. ShotThumbnail (design/04 §41) is the floating screenshot card, 240 px wide and letterboxed between 2:1 and 16:10 (pillarboxed for a portrait shot), rising in with a spring and sliding out on dismiss, with hover actions, swipe-to-dismiss riding the same swipe machine as a notification, a drag threshold that hands off to the host, a drag ghost, and reduced motion handled inside the component. On the shell-host side, a drag source (SurfaceHandle::start_drag, F60) is now proven by dropping a file onto a terminal on the virtual compositor; F61 found that a keyboard-less surface cannot portably learn whether a modifier key is held, so the shell retires the modifier-key variant of its hot corners and keeps dwell and screen-edge triggers only. Hot corners themselves follow design/13 §13.3.12 (a 150 ms dwell, a 500 ms re-arm, and an action table), and the whole set follows design/22 §3.19-§3.23 for session, widgets, calendar, screenshot and hot_corners. bardo's parts are proven; sill still has to adopt them.",
+   "lede": "bardo cut the design parts for the shell's Milestone 10 today, on bardo master and shell-host master together. MonthGrid (design/04 §39) lays a month across seven columns with weekday initials, quiets the neighbouring month's days, seats today on the accent disc, marks busy days with a dot, offers an optional ISO week column, and slides the whole grid in from whichever side the new month came from on previous/next. WidgetFrame (design/04 §40) comes in small, medium and large on a 164 px cell with a 16 px gap: a card on the Widget material over the desktop, or a flat tile inside the notification center, sized by WidgetMetrics and pulsing once when its value bumps; inside sit ClockFace, analog with separate day and night faces and an accent second hand, or digital, and LevelRing for the battery with low and critical tones and a charging bolt. ShotThumbnail (design/04 §41) is the floating screenshot card, 240 px wide and letterboxed between 2:1 and 16:10 (pillarboxed for a portrait shot), rising in with a spring and sliding out on dismiss, with hover actions, swipe-to-dismiss riding the same swipe machine as a notification, a drag threshold that hands off to the host, a drag ghost, and reduced motion handled inside the component. On the shell-host side, a drag source (SurfaceHandle::start_drag, F60) is now proven by dropping a file onto a terminal on the virtual compositor; F61 found that a keyboard-less surface cannot portably learn whether a modifier key is held, so the shell retires the modifier-key variant of its hot corners and keeps dwell and screen-edge triggers only. Hot corners themselves follow design/13 §13.3.12 (a 150 ms dwell, a 500 ms re-arm, and an action table), and the whole set follows design/22 §3.19-§3.23 for session, widgets, calendar, screenshot and hot_corners. bardo's parts are proven; shell still has to adopt them.",
    "notes": [
     "Earlier in the day, F59 found the host never re-dispatched pointer enter/leave after a layout-driven hover change, so a banner arriving under a resting pointer stayed unhovered; the shell's real-input repro confirmed the fix, bardo's own Harness got the same repair, and BannerStack learned an entry edge.",
     "F60 and F61 together settle the drag story: F60 proves the host can originate a drag (a file dropped onto a terminal on the virtual compositor); F61 closes off the modifier-held hot corner, since a surface with no keyboard cannot portably read a held modifier key.",
@@ -437,7 +437,7 @@
   },
   {
    "id": "m2-wallpaper",
-   "date": "2026-09-25 · sill Milestone 2 wallpaper, and pixel snapping wired through",
+   "date": "2026-09-25 · shell Milestone 2 wallpaper, and pixel snapping wired through",
    "title": "The shell draws its own wallpaper, after two bugs in two repos; every surface reads its scale and snaps to device pixels",
    "status": "proven",
    "lede": "The wallpaper service reads the desktop's background record, resizes with Lanczos into a per-output cache and cross-fades on light and dark; the surface is a background layer that takes no input. It was built and gated a day before it painted anything. The first cause was in the host: after every present it dropped the redraw request that the image loader raised from another thread mid-render, so a decoded image never got a second paint (found with a standalone host demo, fixed by keeping host-thread and loader-thread requests apart). The second was in the shell: Taffy placed the fixed-position root against a zero-height parent, so the page was zero pixels tall. With both fixed the wallpaper is on by default and its acceptance passes 4 of 4. The same push wires bardo's pixel snapping into every surface: each root reads the surface's live fractional scale and the host runs the snapping pass before each paint.",
@@ -448,7 +448,7 @@
    ],
    "images": [
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/wallpaper-nested.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/wallpaper-nested.png",
      "caption": "the shell's wallpaper surface painting the acceptance image (a blue field with a red marker whose centre pixel the script checks) under the bar and dock"
     }
    ]
@@ -533,7 +533,7 @@
   },
   {
    "id": "polish-adoption",
-   "date": "2026-09-25 · sill adopts the polish pass",
+   "date": "2026-09-25 · shell adopts the polish pass",
    "title": "The bar, dock and launcher take the polish pass on the nested compositor, over a real wallpaper",
    "status": "proven",
    "lede": "Every shell surface now writes the shell type scale and the material stack from the settings around its root. The bar's app name and clock sit in menu-bar pills and the workspaces form one segmented group; text menus are 22 px rows with a hairline separator and a rounded highlight. The dock pill is a squircle with bardo's dock metrics, every tile on a paper plate, running dots on the baseline through a bounce. The launcher's card is a squircle sized to its content, its measured rect drives the panel's input and blur and the catcher's hole, and the surface grew room for the card's shadow. Fourteen new settings keys, three moved defaults, and a generated test wallpaper behind every acceptance run.",
@@ -543,27 +543,27 @@
    ],
    "images": [
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/polish-bar-nested.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/polish-bar-nested.png",
      "caption": "the bar: bold app name, one workspace group, status glyphs, the clock"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/polish-bar-nested-menu.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/polish-bar-nested-menu.png",
      "caption": "the clock's menu open: the pill highlight, 22 px rows, hairline separator"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/polish-dock-nested-magnified.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/polish-dock-nested-magnified.png",
      "caption": "the dock magnified: squircle pill, paper plates, the separator"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/polish-dock-nested-menu.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/polish-dock-nested-menu.png",
      "caption": "a dock tile's context menu with a window, the running dot on the baseline"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/polish-launcher-nested.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/polish-launcher-nested.png",
      "caption": "the launcher: a content-sized squircle card with contact and ambient shadows"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/polish-launcher-nested-actions.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/polish-launcher-nested-actions.png",
      "caption": "the launcher's actions menu hanging from the selected row"
     }
    ]
@@ -604,7 +604,7 @@
   },
   {
    "id": "m4-launcher",
-   "date": "2026-09-24 · sill Milestone 4",
+   "date": "2026-09-24 · shell Milestone 4",
    "title": "The launcher opens in about 60 ms with apps, windows, settings and a calculator, on the same menu as everything else",
    "status": "proven",
    "lede": "The first delivery gate of the program. Two warm surfaces (a transparent catcher and the panel) are toggled through one shared link, so opening never spawns anything. The search core runs every provider on its own thread, stamps results by generation and drops stale ones; queries reach their first results in microseconds. Providers: applications (with desktop actions), open windows, system commands gated on what logind allows, a calculator on fend, and settings keys from the installed schemas plus the desktop's own pages. The panel is the design system's command palette, keyboard-first, with Ctrl+K opening a row's actions as the same menu the bar and dock use.",
@@ -616,18 +616,18 @@
    ],
    "images": [
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/launcher-nested.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/launcher-nested.png",
      "caption": "typing 'fi': top hit, applications, windows, settings"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/launcher-nested-actions.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/launcher-nested-actions.png",
      "caption": "Ctrl+K on Firefox: its desktop actions as a menu"
     }
    ]
   },
   {
    "id": "m3-dock",
-   "date": "2026-09-24 · sill Milestones 2 and 3",
+   "date": "2026-09-24 · shell Milestones 2 and 3",
    "title": "The dock launches, magnifies, badges and quits real apps on a nested compositor",
    "status": "proven",
    "page": "archive",
@@ -639,26 +639,26 @@
    ],
    "images": [
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/dock-nested.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/dock-nested.png",
      "caption": "the dock at rest under the bar, two tiles (a terminal pinned, Trash)"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/dock-nested-magnified.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/dock-nested-magnified.png",
      "caption": "pointer over the terminal tile: magnified, neighbour pushed aside"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/dock-nested-menu.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/dock-nested-menu.png",
      "caption": "after a click launched the terminal: running dot, and the right-click menu"
     }
    ]
   },
   {
    "id": "m1-bar",
-   "date": "2026-09-24 · sill Milestone 1",
+   "date": "2026-09-24 · shell Milestone 1",
    "title": "The bar runs as a real shell surface on a nested compositor: workspaces, status items, menus, zero idle frames",
    "status": "proven",
    "page": "archive",
-   "lede": "The first shell surface built on the design system. The sill daemon starts, takes its single-instance lock, spawns the services (UPower, NetworkManager, PipeWire, the status-notifier tray, the toplevel and workspace protocols on their own connection) and puts one bar per output on the nested compositor. The bar reserves its 32 px, sits idle at zero frames, and its clock and status menus are the design system's Menu opened as real popups. Every stylesheet and render passes the coherence lint, so it is the same menu mailo will get.",
+   "lede": "The first shell surface built on the design system. The shell daemon starts, takes its single-instance lock, spawns the services (UPower, NetworkManager, PipeWire, the status-notifier tray, the toplevel and workspace protocols on their own connection) and puts one bar per output on the nested compositor. The bar reserves its 32 px, sits idle at zero frames, and its clock and status menus are the design system's Menu opened as real popups. Every stylesheet and render passes the coherence lint, so it is the same menu mailo will get.",
    "notes": [
     "Updated after the design-system adoption pass: the bar is the Space gradient with grain, status items sit on the frame inks, the tray shows each app's own icon (coloured ones as images, the rest recoloured to the ink), and the popup is transparent around its card. The launcher panel in the first shot is the M4 work in progress on the same compositor.",
     "Acceptance on a nested compositor and on KWin: exclusive zone 32 px; five seconds idle adds 0 frames and 0 commits; the clock menu opens and dismisses; the popup is transparent around its card.",
@@ -667,15 +667,15 @@
    ],
    "images": [
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/bar-nested.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/bar-nested.png",
      "caption": "the daemon's bar on a nested compositor after adoption: Space gradient, real tray icons"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/bar-nested-menu.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/bar-nested-menu.png",
      "caption": "the clock menu as a transparent popup"
     },
     {
-     "path": "/home/pohsuanlai/bardo/tools/progress/shots/sill/bar.png",
+     "path": "/home/pohsuanlai/bardo/tools/progress/shots/shell/bar.png",
      "caption": "the bar on KWin at scale 1.5 (first version, Home Space tint)"
     }
    ]

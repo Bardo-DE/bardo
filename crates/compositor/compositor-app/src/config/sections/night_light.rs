@@ -22,7 +22,7 @@ pub enum NightLightMode {
 }
 
 /// `night_light.*`: the screen warms on a schedule. A display that takes warmth through its own
-/// controls is warmed by sill instead and listed in `skip_outputs`; this is for the rest.
+/// controls is warmed by the shell instead and listed in `skip_outputs`; this is for the rest.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "night_light", page = Page::Appearance)]

@@ -2,7 +2,7 @@
 //! typed into, the UI kit's `SegmentedControl` at the field's trailing edge. It shows the mode at all
 //! times; a switch made while a step runs says "From the next step" beside it, and when an
 //! administrator holds every conversation in Manual the control is shown but unavailable and the
-//! same place says why. The key is `sill.switch-mode` (⇧⌘M), run by the panel's key claim.
+//! same place says why. The key is `shell.switch-mode` (⇧⌘M), run by the panel's key claim.
 
 use dioxus::prelude::*;
 use permission_core::Mode;

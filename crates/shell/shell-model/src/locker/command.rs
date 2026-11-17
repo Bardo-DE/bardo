@@ -8,7 +8,7 @@ use ui_core::time::stamp::Stamp;
 pub enum LockerEvent {
     /// The mode resolved.
     Configured {
-        /// Sill's own lock screen does the locking.
+        /// The shell's own lock screen does the locking.
         own: bool,
         /// logind's `Lock` and `PrepareForSleep` start a lock.
         follow_logind: bool,

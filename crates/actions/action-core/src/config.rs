@@ -1,5 +1,5 @@
 //! The proposed values the specs name, as one typed configuration with the defaults, and the
-//! table of settings rows that carry them. docket never reads settings itself: sill's
+//! table of settings rows that carry them. docket never reads settings itself: the shell's
 //! Intelligence page owns the keys (design/22 rows), and the daemons receive an
 //! [`AgentConfig`].
 

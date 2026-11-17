@@ -102,7 +102,7 @@ pub enum Effect {
     },
     /// A diagnostic.
     Note(CoreNote),
-    /// A binding calls a method on the session bus (sill's launcher, the screenshot tool):
+    /// A binding calls a method on the session bus (the shell's launcher, the screenshot tool):
     /// carried out through the injected `ShellCalls` seam (P1-I1).
     CallBinding(DbusCall),
     /// A binding starts a program, through the injected `Spawner` seam (P1-I1).

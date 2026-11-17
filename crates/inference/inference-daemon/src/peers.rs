@@ -5,7 +5,7 @@
 //! caller table, the system file `/etc/bardo/inferd-callers.toml`
 //! (`account_callers::INFERD_CALLERS`, which a person cannot write; never `inferd.toml`), is rows of
 //! that shared table, keyed by systemd unit (the programs a unit runs are `account_callers::CallerRow::images`:
-//! daemons by convention, the Settings app and sill in `bin`): cuad's units with the `Cua` role,
+//! daemons by convention, the Settings app and the shell in `bin`): cuad's units with the `Cua` role,
 //! each app's with `App`. This is advisory for unsandboxed processes (porter R12): a
 //! process that can start an allowed unit or app scope can be that caller. cuad is a fixed unit and
 //! the only caller that may open a computer-use session; an app is whichever unit the table

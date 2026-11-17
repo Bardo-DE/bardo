@@ -100,9 +100,9 @@ pub enum SpaceFileError {
     /// The file could not be rendered.
     #[error("spaces.toml: {0}")]
     Render(#[from] toml::ser::Error),
-    /// An interim `spaces.json` from sill did not parse.
+    /// An interim `spaces.json` from the shell did not parse.
     #[error("spaces.json: {0}")]
-    SillJson(#[from] serde_json::Error),
+    ShellJson(#[from] serde_json::Error),
 }
 
 impl SpaceFile {
@@ -178,21 +178,21 @@ impl SpaceFile {
         Ok(toml::to_string(&sorted)?)
     }
 
-    /// The Spaces sill's interim minter wrote to `bardo/spaces.json`, read once (C16): its
+    /// The Spaces the shell's interim minter wrote to `bardo/spaces.json`, read once (C16): its
     /// `by_id` keys become Space ids, with the `output` and `index` a record carries when it
     /// has them. A record without an output is kept without a home and adopted by the first
     /// output plugged.
     ///
-    /// sill writes no such file yet (its `look.rs` says Bardo has no store), so the shape is
+    /// The shell writes no such file yet (its `look.rs` says Bardo has no store), so the shape is
     /// the minimal one the codec pins: `{"by_id": {"<space id>": {"output": "<output key>",
     /// "index": 0}}}`, both record fields optional, unknown keys ignored.
     ///
     /// # Errors
     ///
-    /// [`SpaceFileError::SillJson`] when the text is not JSON of that shape or a key is not a
+    /// [`SpaceFileError::ShellJson`] when the text is not JSON of that shape or a key is not a
     /// valid Space id.
-    pub fn import_sill_json(text: &str) -> Result<SpaceFile, SpaceFileError> {
-        let parsed: SillFile = serde_json::from_str(text)?;
+    pub fn import_shell_json(text: &str) -> Result<SpaceFile, SpaceFileError> {
+        let parsed: ShellFile = serde_json::from_str(text)?;
         let mut spaces = Vec::with_capacity(parsed.by_id.len());
         for (at, (key, record)) in parsed.by_id.into_iter().enumerate() {
             let id = SpaceId::parse(&key).map_err(|error| {
@@ -234,17 +234,17 @@ impl SpaceFile {
     }
 }
 
-/// The interim `spaces.json` of sill (read once).
+/// The interim `spaces.json` of the shell (read once).
 #[derive(Debug, Default, Deserialize)]
 #[serde(default)]
-struct SillFile {
-    by_id: BTreeMap<String, SillRecord>,
+struct ShellFile {
+    by_id: BTreeMap<String, ShellRecord>,
 }
 
 /// One record of it.
 #[derive(Debug, Default, Deserialize)]
 #[serde(default)]
-struct SillRecord {
+struct ShellRecord {
     output: Option<OutputKey>,
     index: Option<u32>,
 }

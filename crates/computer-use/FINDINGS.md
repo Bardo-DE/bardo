@@ -330,7 +330,7 @@ the machine under it. What was decided:
   cua-system opens one connection (`WaylandPair`) for capture.
 - **Facts the protocols do not give.** `ToplevelInfo.pid` is `Pid(0)` ("unknown"); `app` is the
   app id, folded into `app.<id>` when it is not reverse-DNS; `trust` is from the app id alone
-  (`org.bardo.Shell*`, `Sill*`, `Desktop*` are `Shell`, other `org.bardo.*` `Bardo`, the rest
+  (`org.bardo.Shell*`, `Shell*`, `Desktop*` are `Shell`, other `org.bardo.*` `Bardo`, the rest
   `Native`; Flatpak cannot be told). Ask: a pid and a sandbox id on the toplevel (the compositor's
   `bardo_desktop_v1` can carry them).
 - **maskcap stock capture.** `StockToplevelCapture::open` finds the toplevel by identifier,
@@ -730,4 +730,4 @@ one-micro-dollar charge for a cloud reply are gone.
   `--ledger` read of inferd's old `micro_usd` ledger rows are removed.
 - `BudgetUse::NONE` is `BudgetUse::none()` (`ChargeTotal::default()` is not const). The JSON of
   `RunBudget`, `BudgetUse`, `RunEnd` and `Finished` changes shape (`spend` and `charges` are
-  objects); sill reads `RunEnd` and `BudgetBody` at the same pin.
+  objects); the shell reads `RunEnd` and `BudgetBody` at the same pin.

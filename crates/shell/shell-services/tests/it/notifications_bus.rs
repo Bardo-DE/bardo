@@ -157,7 +157,7 @@ fn owning_serves_notify_and_close_with_their_signal() {
         .send(NotificationsCommand::Policy(own()))
         .unwrap_or_else(|e| panic!("{e}"));
     assert!(runtime.block_on(wait_for(&mut notes, SETTLE, |n| {
-        n.live.server.holder == NameHolder::Sill
+        n.live.server.holder == NameHolder::Shell
     })));
     runtime.block_on(async {
         let connection = connect(&bus).await;
@@ -241,7 +241,7 @@ pub(crate) fn owning(
         .send(NotificationsCommand::Policy(own()))
         .unwrap_or_else(|e| panic!("{e}"));
     assert!(runtime.block_on(wait_for(&mut notes, SETTLE, |n| {
-        n.live.server.holder == NameHolder::Sill
+        n.live.server.holder == NameHolder::Shell
     })));
     (notes, control)
 }
@@ -470,6 +470,6 @@ fn another_holder_is_never_replaced_and_the_name_is_taken_when_free() {
             .unwrap_or_else(|e| panic!("{e}"));
     });
     assert!(runtime.block_on(wait_for(&mut notes, SETTLE, |n| {
-        n.live.server.holder == NameHolder::Sill
+        n.live.server.holder == NameHolder::Shell
     })));
 }

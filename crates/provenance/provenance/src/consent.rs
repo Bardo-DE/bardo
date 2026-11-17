@@ -21,7 +21,7 @@ pub enum InputProof {
     HardwareSeat,
     /// The sheet's own pointer event with no compositor attestation (stock compositor).
     SheetFallback,
-    /// The shell's own UI called in (memory Keep from sill).
+    /// The shell's own UI called in (memory Keep from the shell).
     ShellCaller,
 }
 

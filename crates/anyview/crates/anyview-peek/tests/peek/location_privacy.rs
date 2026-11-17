@@ -45,7 +45,7 @@ fn the_peek_lists_the_camera_but_neither_the_place_nor_a_serial_number() {
                 row.label
             );
         }
-        // The whole value a worker hands to sill, mailo and temor: the body's picture and its
+        // The whole value a worker hands to the shell, mailo and temor: the body's picture and its
         // EXIF too, not only the rows.
         let everything = format!("{peeked:?}");
         for needle in WITHHELD {

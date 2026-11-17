@@ -12,7 +12,7 @@ use memory_core::{AppId, AppName, Isolation};
 ///
 /// - `Agent`: docket's intentd, the router;
 /// - `Cua`: cuad, for its run records;
-/// - `SheetHost`: the shell's own UI (sill), the person;
+/// - `SheetHost`: the shell's own UI (the shell), the person;
 /// - `Settings`: the System Settings app (the Settings app), the person, saving a setting. Not an app with
 ///   memory: it may only confirm a loosened memory setting and read the ones that wait for it.
 ///
@@ -59,7 +59,7 @@ impl Caller {
         Self::fixed(CallerRole::Cua, "org.bardo.ComputerUse")
     }
 
-    /// The shell's own UI (sill): the person.
+    /// The shell's own UI (the shell): the person.
     #[must_use]
     pub fn shell_ui() -> Self {
         Self::fixed(CallerRole::SheetHost, "org.bardo.Shell")

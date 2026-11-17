@@ -3,7 +3,7 @@
 use zbus::fdo;
 use zbus::zvariant::OwnedObjectPath;
 
-const UNIT_PATH: &str = "/org/freedesktop/systemd1/unit/sill_2eservice";
+const UNIT_PATH: &str = "/org/freedesktop/systemd1/unit/shell_2eservice";
 
 /// What the stand-in says of `bardo-shell.service`.
 #[derive(Debug, Clone)]

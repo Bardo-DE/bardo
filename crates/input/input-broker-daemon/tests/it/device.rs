@@ -1,5 +1,5 @@
 //! The one test that makes a real device. It needs `/dev/uinput` and is never run in the jail: it is
-//! on the owner's manual queue (`sill/docs/manual-checks.md`).
+//! on the owner's manual queue (`shell/docs/manual-checks.md`).
 
 use input_broker_daemon::backend::real::UinputBackend;
 use input_broker_daemon::backend::{Backend, Device};

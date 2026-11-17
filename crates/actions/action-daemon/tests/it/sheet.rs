@@ -1,9 +1,9 @@
-//! The sheet over a real bus: sill's `Confirm1` is asked only when its owner is the process the
+//! The sheet over a real bus: the shell's `Confirm1` is asked only when its owner is the process the
 //! configuration trusts with the `confirm` role; whatever goes wrong with the person's side (no
-//! sill, a sill nobody trusts, one that never answers, one that vanishes) is a dismissal or an
+//! The shell, a shell nobody trusts, one that never answers, one that vanishes) is a dismissal or an
 //! expiry, never an allow.
 
-use crate::support::apps::{Answer, FakeSill};
+use crate::support::apps::{Answer, FakeShell};
 use crate::support::bus::PrivateBus;
 use crate::support::world::{app, introduce};
 use action_core::*;
@@ -95,18 +95,18 @@ async fn desk() -> Desk {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn the_trusted_sill_is_asked_and_its_answer_is_the_answer() {
+async fn the_trusted_shell_is_asked_and_its_answer_is_the_answer() {
     let desk = desk().await;
     let connection = desk.bus.connect().await;
-    // The shipped configuration gives sill the name org.bardo.Shell and the confirm role.
-    let sill = FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+    // The shipped configuration gives the shell the name org.bardo.Shell and the confirm role.
+    let shell = FakeShell::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &desk.who,
         &connection,
         &desk.config,
         &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
-    sill.answer(vec![
+    shell.answer(vec![
         Answer::With(yes()),
         Answer::With(ConfirmAnswer::AllowedFromTerminal { receipt: receipt() }),
         Answer::With(ConfirmAnswer::Ended(ConfirmEnd::Refused)),
@@ -120,7 +120,7 @@ async fn the_trusted_sill_is_asked_and_its_answer_is_the_answer() {
         desk.sheet.confirm(request("c-3", 120)).await,
         ConfirmAnswer::Ended(ConfirmEnd::Refused)
     );
-    let shown = sill.shown();
+    let shown = shell.shown();
     assert_eq!(shown.len(), 3);
     assert_eq!(
         shown[0],
@@ -135,7 +135,7 @@ async fn the_trusted_sill_is_asked_and_its_answer_is_the_answer() {
     desk.sheet
         .cancel(&ConfirmId::parse("c-4").expect("id"))
         .await;
-    assert_eq!(sill.cancelled(), ["c-4"]);
+    assert_eq!(shell.cancelled(), ["c-4"]);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -143,7 +143,7 @@ async fn a_name_nobody_trusted_is_never_asked_and_never_allows() {
     let desk = desk().await;
     let connection = desk.bus.connect().await;
     // Owns org.bardo.Confirm1 but plays no role in the configuration.
-    let impostor = FakeSill::start(&connection, &["org.bardo.Confirm1"]).await;
+    let impostor = FakeShell::start(&connection, &["org.bardo.Confirm1"]).await;
     introduce(
         &desk.who,
         &connection,
@@ -154,7 +154,7 @@ async fn a_name_nobody_trusted_is_never_asked_and_never_allows() {
     assert_eq!(
         desk.sheet.confirm(request("c-1", 120)).await,
         ConfirmAnswer::Ended(ConfirmEnd::Dismissed),
-        "an answer from a process that is not sill is no answer"
+        "an answer from a process that is not the shell is no answer"
     );
     assert!(impostor.shown().is_empty(), "the request never reached it");
     desk.sheet
@@ -164,7 +164,7 @@ async fn a_name_nobody_trusted_is_never_asked_and_never_allows() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn no_sill_is_a_dismissal() {
+async fn no_shell_is_a_dismissal() {
     let desk = desk().await;
     assert_eq!(
         desk.sheet.confirm(request("c-1", 120)).await,
@@ -173,34 +173,35 @@ async fn no_sill_is_a_dismissal() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_sheet_nobody_answers_expires_and_a_sill_that_vanishes_dismisses() {
+async fn a_sheet_nobody_answers_expires_and_a_shell_that_vanishes_dismisses() {
     let desk = desk().await;
     let connection = desk.bus.connect().await;
-    let sill = FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+    let shell = FakeShell::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &desk.who,
         &connection,
         &desk.config,
         &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
-    sill.answer(vec![Answer::Never, Answer::Never]);
+    shell.answer(vec![Answer::Never, Answer::Never]);
     // Its own expiry (0 s) plus the grace: expired, not allowed.
     assert_eq!(
         desk.sheet.confirm(request("c-1", 0)).await,
         ConfirmAnswer::Ended(ConfirmEnd::Expired)
     );
-    // The sheet is up and sill goes away: dismissed, at once.
+    // The sheet is up and the shell goes away: dismissed, at once.
     let waiting = tokio::spawn({
         let sheet = desk.sheet.clone();
         async move { sheet.confirm(request("c-2", 120)).await }
     });
     base_testkit::eventually("the second sheet to be shown", || {
-        sill.shown()
+        shell
+            .shown()
             .iter()
             .any(|shown| shown.id.to_string() == "c-2")
     })
     .await;
-    connection.close().await.expect("close sill");
+    connection.close().await.expect("close shell");
     let ended = tokio::time::timeout(Duration::from_secs(5), waiting)
         .await
         .expect("it does not hang")
@@ -243,37 +244,37 @@ async fn gated_desk(agents: bool) -> Desk {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_sheet_the_agent_host_asked_for_goes_to_its_confirm1_and_not_to_sill() {
+async fn a_sheet_the_agent_host_asked_for_goes_to_its_confirm1_and_not_to_shell() {
     let desk = gated_desk(true).await;
     let (apart, other) = (desk.bus.connect().await, desk.bus.connect().await);
-    let sill = FakeSill::start(&apart, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+    let shell = FakeShell::start(&apart, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &desk.who,
         &apart,
         &desk.config,
         &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
-    let host = FakeSill::start(&other, &[ACP_AGENT_APP]).await;
+    let host = FakeShell::start(&other, &[ACP_AGENT_APP]).await;
     introduce(&desk.who, &other, &desk.config, &[ACP_AGENT_APP]);
     host.answer(vec![Answer::With(yes())]);
     assert_eq!(desk.sheet.confirm(hosted("c-1")).await, yes());
     assert_eq!(host.shown().len(), 1);
-    assert!(sill.shown().is_empty(), "the desktop was not asked");
+    assert!(shell.shown().is_empty(), "the desktop was not asked");
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_to_sill() {
+async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_to_shell() {
     // The setting is off: the name is nobody, whoever owns it.
     let off = gated_desk(false).await;
     let (apart, other) = (off.bus.connect().await, off.bus.connect().await);
-    let sill = FakeSill::start(&apart, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+    let shell = FakeShell::start(&apart, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &off.who,
         &apart,
         &off.config,
         &["org.bardo.Confirm1", "org.bardo.Shell"],
     );
-    let host = FakeSill::start(&other, &[ACP_AGENT_APP]).await;
+    let host = FakeShell::start(&other, &[ACP_AGENT_APP]).await;
     introduce(&off.who, &other, &off.config, &[ACP_AGENT_APP]);
     host.answer(vec![Answer::With(yes())]);
     assert_eq!(
@@ -284,7 +285,7 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
     // The setting is on and nobody owns the name.
     let on = gated_desk(true).await;
     let connection = on.bus.connect().await;
-    let sill_on = FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+    let shell_on = FakeShell::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
     introduce(
         &on.who,
         &connection,
@@ -295,7 +296,7 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
         on.sheet.confirm(hosted("c-2")).await,
         ConfirmAnswer::Ended(ConfirmEnd::Expired)
     );
-    assert!(sill.shown().is_empty() && sill_on.shown().is_empty());
+    assert!(shell.shown().is_empty() && shell_on.shown().is_empty());
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -311,7 +312,7 @@ async fn a_process_that_is_not_the_shells_unit_is_never_asked() {
         let desk = desk().await;
         let connection = desk.bus.connect().await;
         let claimant =
-            FakeSill::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+            FakeShell::start(&connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
         if let Some(role) = standing {
             desk.who.introduce_app(&connection, "org.bardo.Shell", role);
         }

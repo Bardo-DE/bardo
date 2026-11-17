@@ -107,7 +107,7 @@ pub fn toplevels_on(output: &str) -> Toplevels {
         outputs: vec![OutputName(output.to_owned())],
     };
     Toplevels {
-        windows: vec![window(10, "~/sill", true), window(11, "cargo test", false)],
+        windows: vec![window(10, "~/shell", true), window(11, "cargo test", false)],
     }
 }
 

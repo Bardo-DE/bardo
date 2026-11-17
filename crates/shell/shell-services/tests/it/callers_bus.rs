@@ -1,4 +1,4 @@
-//! Who may call the shell's bus objects (SILLS-07), on a private bus. Owning the name of a service
+//! Who may call the shell's bus objects (SHELL-S-07), on a private bus. Owning the name of a service
 //! proves nothing; the system's account of the caller does. Each object answers one role, and the
 //! caller must also own the name of the service whose role it holds:
 //!

@@ -3,7 +3,7 @@
 //! sheet, and answers. `Close` takes the check back, and the sheet with it. An unwatched check
 //! is as it was: no wait.
 
-use crate::support::apps::{Answer, FakeSill};
+use crate::support::apps::{Answer, FakeShell};
 use crate::support::bus::PrivateBus;
 use crate::support::world::introduce;
 use account_core::AppName;
@@ -21,7 +21,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 const CUAD: &str = "org.bardo.ComputerUse";
-const SILL: &str = "org.bardo.Shell";
+const SHELL: &str = "org.bardo.Shell";
 
 fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")
@@ -63,7 +63,7 @@ fn yes() -> ConfirmAnswer {
 struct Desk {
     _dir: tempfile::TempDir,
     _bus: PrivateBus,
-    sill: FakeSill,
+    shell: FakeShell,
     cuad: Intents<DbusTransport>,
     run: RunId,
     _connections: Vec<action_dbus::BusConnection>,
@@ -88,7 +88,7 @@ impl Desk {
         let config = IntentdConfig {
             roles: BTreeMap::from([
                 (CallerRole::Cua, vec![app(CUAD)]),
-                (CallerRole::Confirm, vec![app(SILL)]),
+                (CallerRole::Confirm, vec![app(SHELL)]),
             ]),
             reviewers: None,
             agent: AgentConfig::default(),
@@ -107,13 +107,13 @@ impl Desk {
         setup.identity = Some(Arc::clone(&who));
         setup.proc_root = action_daemon::ProcRoot::Honoured(dir.path().join("proc"));
         let intentd = start(&daemon, None, setup).await.expect("intentd");
-        let sill_connection = bus.connect().await;
-        let sill = FakeSill::start(&sill_connection, &["org.bardo.Confirm1", SILL]).await;
+        let shell_connection = bus.connect().await;
+        let shell = FakeShell::start(&shell_connection, &["org.bardo.Confirm1", SHELL]).await;
         introduce(
             &who,
-            &sill_connection,
+            &shell_connection,
             &config,
-            &["org.bardo.Confirm1", SILL],
+            &["org.bardo.Confirm1", SHELL],
         );
         let cuad_connection = bus.connect().await;
         cuad_connection.request_name(CUAD).await.expect("name");
@@ -135,10 +135,10 @@ impl Desk {
         Desk {
             _dir: dir,
             _bus: bus,
-            sill,
+            shell,
             cuad,
             run,
-            _connections: vec![daemon, sill_connection, cuad_connection],
+            _connections: vec![daemon, shell_connection, cuad_connection],
             _intentd: intentd,
         }
     }
@@ -153,7 +153,7 @@ async fn settle() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn the_sheet_waits_for_proceed_and_the_verdict_follows_the_answer() {
     let desk = Desk::start().await;
-    desk.sill.answer(vec![Answer::With(yes())]);
+    desk.shell.answer(vec![Answer::With(yes())]);
     let mut watch = desk
         .cuad
         .gate_check_watched(step(&desk.run))
@@ -164,13 +164,13 @@ async fn the_sheet_waits_for_proceed_and_the_verdict_follows_the_answer() {
     };
     settle().await;
     assert!(
-        desk.sill.shown().is_empty(),
+        desk.shell.shown().is_empty(),
         "no sheet before the daemon's input is suspended"
     );
     watch.proceed().await.expect("proceed");
     let verdict = watch.next().await.expect("the verdict");
     assert_eq!(verdict, GateEvent::Verdict(GateAnswer::Run));
-    let shown = desk.sill.shown();
+    let shown = desk.shell.shown();
     assert_eq!(shown.len(), 1);
     assert_eq!(shown[0].id, id, "the sheet is the one it announced");
 }
@@ -190,11 +190,11 @@ async fn closing_before_proceed_draws_no_sheet_and_closing_a_sheet_withdraws_it(
     early.close().await.expect("close");
     settle().await;
     assert!(
-        desk.sill.shown().is_empty(),
+        desk.shell.shown().is_empty(),
         "no sheet for a withdrawn check"
     );
 
-    desk.sill.answer(vec![Answer::Never]);
+    desk.shell.answer(vec![Answer::Never]);
     let mut late = desk
         .cuad
         .gate_check_watched(step(&desk.run))
@@ -204,15 +204,15 @@ async fn closing_before_proceed_draws_no_sheet_and_closing_a_sheet_withdraws_it(
         panic!("confirming")
     };
     late.proceed().await.expect("proceed");
-    base_testkit::eventually("the sheet to be shown", || !desk.sill.shown().is_empty()).await;
-    assert_eq!(desk.sill.shown().len(), 1, "the sheet is up");
+    base_testkit::eventually("the sheet to be shown", || !desk.shell.shown().is_empty()).await;
+    assert_eq!(desk.shell.shown().len(), 1, "the sheet is up");
     late.close().await.expect("close");
     base_testkit::eventually("the sheet to be withdrawn", || {
-        !desk.sill.cancelled().is_empty()
+        !desk.shell.cancelled().is_empty()
     })
     .await;
     assert_eq!(
-        desk.sill.cancelled(),
+        desk.shell.cancelled(),
         [id.to_string()],
         "the sheet came down"
     );
@@ -221,7 +221,7 @@ async fn closing_before_proceed_draws_no_sheet_and_closing_a_sheet_withdraws_it(
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn an_unwatched_check_does_not_wait_for_anybody() {
     let desk = Desk::start().await;
-    desk.sill.answer(vec![Answer::With(yes())]);
+    desk.shell.answer(vec![Answer::With(yes())]);
     let verdict = desk
         .cuad
         .gate_check(step(&desk.run))

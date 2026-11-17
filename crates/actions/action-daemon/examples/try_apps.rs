@@ -1,4 +1,4 @@
-//! A mail app and sill's sheet, for trying `bardo-do` by hand on a private bus
+//! A mail app and the shell's sheet, for trying `bardo-do` by hand on a private bus
 //! (`scripts/try-bardo-do.sh` runs it). The mail app is action-fake's `FakeMail` behind the real
 //! `action_provider::serve_on`; the sheet is `Confirm1` asking on this terminal. Nothing here is
 //! the person's real session: it serves whatever bus `DBUS_SESSION_BUS_ADDRESS` names.
@@ -7,7 +7,7 @@
 mod apps;
 
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmOffer, ConfirmRequest, GrantScope};
-use apps::{Answer, FakeSill, serve_mail};
+use apps::{Answer, FakeShell, serve_mail};
 use provenance::{ConfirmId, ConfirmReceipt, InputProof, UnixSeconds};
 use std::io::{BufRead, Write};
 
@@ -61,9 +61,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )),
     )
     .await;
-    let sill_connection = zbus::Connection::session().await?;
-    let _sill = FakeSill::start_asking(
-        &sill_connection,
+    let shell_connection = zbus::Connection::session().await?;
+    let _shell = FakeShell::start_asking(
+        &shell_connection,
         &["org.bardo.Confirm1", "org.bardo.Shell"],
         ask,
     )

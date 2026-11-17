@@ -37,9 +37,9 @@ fn watch(stage: Threshold, after: u32) -> Watch {
 }
 
 #[test]
-fn sill_owns_idle_only_in_its_own_session() {
+fn shell_owns_idle_only_in_its_own_session() {
     let cases = [
-        (Host::SillSession, IdleMode::Own),
+        (Host::ShellSession, IdleMode::Own),
         (Host::Guest, IdleMode::Off(OffReason::Guest)),
     ];
     for (host, want) in cases {

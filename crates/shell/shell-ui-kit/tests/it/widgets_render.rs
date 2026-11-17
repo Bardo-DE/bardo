@@ -101,7 +101,7 @@ fn in_the_center_the_frame_is_bardo_tile_with_no_header_row() {
 fn the_card_names_its_kind() {
     let cases = [
         (CenterWidget::Calendar, "bardo.month"),
-        (CenterWidget::UpNext, "sill.up-next"),
+        (CenterWidget::UpNext, "shell.up-next"),
     ];
     for (kind, name) in cases {
         let running = start(kind, ShellFile::default());

@@ -53,7 +53,7 @@ step_baseline() {
   write_theme light
   # The OSD is not among the surfaces: it hides after a fixed 1.5 s (the Settings prune made its hold a constant), so it
   # cannot stay up across the three captures. The bar and the Dock are drawn all the time.
-  floor_sill_callers
+  floor_shell_callers
   launch_daemon || return 1
   DAEMON_PID=$DAEMON
   name=$(output_name) || return 1

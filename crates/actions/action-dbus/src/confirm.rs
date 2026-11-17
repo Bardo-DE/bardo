@@ -1,4 +1,4 @@
-//! `org.bardo.Confirm1`: the sheet that asks the person, served by sill (a sheet in phase A, the trusted surface in phase B).
+//! `org.bardo.Confirm1`: the sheet that asks the person, served by the shell (a sheet in phase A, the trusted surface in phase B).
 
 use zbus::fdo;
 use zbus::zvariant::OwnedObjectPath;

@@ -2,7 +2,7 @@
 
 This is the guide for a program that draws with Bardo instead of hand-rolling its own CSS and
 markup: `examples/consumer` (a minimal, fully worked example — read its `Cargo.toml`,
-`src/lib.rs` and `tests/it/coherence.rs` alongside this doc), sill and mailo. It assumes you have read
+`src/lib.rs` and `tests/it/coherence.rs` alongside this doc), the shell and mailo. It assumes you have read
 `design/README.md`'s reading order at least through `04-COMPONENTS.md`; this doc does not repeat
 what a component looks like, only how to reach it from your own crate.
 
@@ -68,7 +68,7 @@ that never lints does not pull in `cssparser`. The app-facing parts are `ui-shel
 depends on next to `ds` and draws with `Ds { sheet: Some(ds_shell::stylesheet()) }`; it lints
 against `ds_shell::kits()` where an app that takes `ds` alone lints against `ds::kits()`. The
 surfaces only our desktop shell draws (bar, dock, control center, lock, switcher, OSD,
-notifications, widgets, emoji, month grid, date picker) are not Bardo's: they are sill's
+notifications, widgets, emoji, month grid, date picker) are not Bardo's: they are the shell's
 `shell-kit`, which adds its own kit and `stylesheet()` over these.
 
 **A git dependency** is how a program outside this checkout takes Bardo, pinned at a full revision,
@@ -93,7 +93,7 @@ from the UI kit's root `Cargo.toml` into its own workspace root. The same block 
 `subsecond-types`, all at one rev of github.com/Bardo-DE/dioxus): dioxus-core 0.7.10 can spin forever
 in `wait_for_work` when a task is cancelled before it is polled (a `use_resource` restart), fixed
 upstream only in 0.8 (DioxusLabs/dioxus#5554). Every consumer that runs a `VirtualDom` copies those
-five lines too, and drops them when Bardo moves to dioxus 0.8. layer-shell-host and sill add, for their
+five lines too, and drops them when Bardo moves to dioxus 0.8. layer-shell-host and the shell add, for their
 local checkouts, `[patch."https://github.com/Bardo-DE/blitz-kit"]` pointing at a sibling
 `blitz-embed` so every path-linked repo builds one copy.
 
@@ -283,7 +283,7 @@ does; `scripts/check-consumer.sh` builds, lints and tests that example in the ga
 **A bare document, with no `Ds` root** (a never-painted input catcher, a 2 px hot-corner
 surface) still carries Blitz's user-agent stylesheet, which sets `body { margin: 8px }`: its
 content never reaches the true (0, 0) corner, and `position: absolute`/`fixed` with `inset: 0`
-paints nothing on it (sill's hot corners). layer-shell-host injects `body { margin: 0 }`
+paints nothing on it (the shell's hot corners). layer-shell-host injects `body { margin: 0 }`
 into every document it hosts; a bare document elsewhere (`ds_blitz::launch`,
 a test) must cancel the margin itself or draw inside a `Ds`.
 
@@ -1234,7 +1234,7 @@ For a bar (FINDINGS "Bar gaps"):
   shadow on its own box (`data-chrome="transparent"`); the `.ds-popover`/`.ds-menu` and
   `.ds-sheet` cards inside paint the material's tint (`--m-tint` over blur, `--m-tint-solid`
   without), edge and drop (`--m-box`). A popup document keeps `Material::Popover` and its
-  spare room is alpha 0 (sill's shell-kit/tests/bar_frame.rs proves it over
+  spare room is alpha 0 (the shell's shell-kit/tests/bar_frame.rs proves it over
   `Harness::render_over(Backdrop::Clear)`).
 - **The frame ground (target (clean-up phase): removed with the frame model; the `--f-*` inks go).** Under `data-ground="frame"` (a Bar or Dock root, or `Surface { on:
   Some(Ground::Frame) }`) `--ink`, `--ink-soft`, `--ink-faint` are the Space's `--f-ink*`,
@@ -1242,11 +1242,11 @@ For a bar (FINDINGS "Bar gaps"):
   `--f-line`: `Button`, `Chip`, `Badge`, a menu's trigger and your text all draw in
   the frame inks with no variant of their own. Overlays opened from it (menus, popovers,
   tooltips) are paper again.
-- **Status items.** sill's `MenuBarItem { image: ImagePosition::Only, icon, label, .. }` (`sill_shell_kit::prelude`) is a square of
+- **Status items.** the shell's `MenuBarItem { image: ImagePosition::Only, icon, label, .. }` (`shell_kit::prelude`) is a square of
   `--bar-status-box` holding its glyph (or external icon) at `--bar-status-glyph`,
   `--f-ink-soft` at rest, `--f-ink` on `--f-pill-hover` under the pointer, `--f-pill` when
   `value` is `On` or `shown` is `Visible`. The two properties are stylesheet tokens (22 and 16 px
-  in sill's sheet; `ds::style::tokens::status::{BOX_VAR, GLYPH_VAR}` name them); a look or the
+  in the shell's sheet; `ds::style::tokens::status::{BOX_VAR, GLYPH_VAR}` name them); a look or the
   person's own sheet moves them, and your own element may set them:
 
   ```rust,ignore
@@ -1556,7 +1556,7 @@ Escape does nothing while `Installing`. `HelperBody` is the same column without 
 ### File types: `ds_helpers::mime`
 
 What type a file is, which apps open it, the default one and its icon name, per shared-mime-info,
-`mimeapps.list` and `mimeinfo.cache`. It moved here from the files app so sill, mailo, anyview and
+`mimeapps.list` and `mimeinfo.cache`. It moved here from the files app so the shell, mailo, anyview and
 the file dialogs do not depend on files. No renderer, no runtime, no feature flag; every parser
 takes text, and only `mime::loader` reads files, from the `XdgDirs` it is given (it never reads the
 environment).
@@ -2413,7 +2413,7 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   `action/spec.rs` `Binding::Own` rows are `AppAction`s. Cmd+1/9 as zoom conflicts with the app's
   Primary+1..9 Space chord: the chord keymap's registration refuses it, so pick one (the zoom is `Bigger` and
   `Smaller`; set the Space chord `Unbound` if the app has no Spaces).
-- **sill.** `shell-launcher/src/chord.rs:55-95` (`reveal`, `copy`, `search_web`, `quick_look`, `forget`)
+- **The shell.** `shell-launcher/src/chord.rs:55-95` (`reveal`, `copy`, `search_web`, `quick_look`, `forget`)
   and `launcher/chord_keys.rs:41-61` are `StandardAction::{Reveal, Copy, QuickLook}` plus `AppAction`s;
   `shell-dock/src/dock/pointer.rs:98` (own `SUPER|CONTROL|META`) uses `ds::base::command::holds_primary`
   or the action. The switcher's `command_keys` (Alt/Meta release) is a modifier *release*, which is

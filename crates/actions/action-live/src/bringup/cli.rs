@@ -21,7 +21,7 @@ pub struct UpArgs {
     pub bus: String,
     /// The scratch root: HOME, every XDG directory, the fake proc root, the logs.
     pub root: PathBuf,
-    /// The shell's process, which the fake proc root puts in sill's unit.
+    /// The shell's process, which the fake proc root puts in the shell's unit.
     pub shell_pid: u32,
     /// A durable home that already holds the cloud key.
     pub keys_home: Option<PathBuf>,

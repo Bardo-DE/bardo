@@ -42,7 +42,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     (it was 1 MiB, which allowed only about 5000 of the 100000 files the file limit promises), more than
     100000 files and more than 16 GiB unpacked are refused outright.
 11. **Notification senders are checked.** The "Details" action is honoured only when the `ActionInvoked`
-    signal came from the connection that owns `org.freedesktop.Notifications` (the pattern of sill's account
+    signal came from the connection that owns `org.freedesktop.Notifications` (the pattern of the shell's account
     notices). The owner is looked up per pressed button of one of our notifications, not per signal.
 12. **A rolled-back version is refused until a newer one is published.** After an automatic or a manual
     rollback the next checks leave `State` at `idle` and `Available` empty for that version and anything
@@ -266,7 +266,7 @@ Nothing from the second the updater lane was compiled or run (only `cargo fmt -p
 `scripts/install.sh` under a temporary `--destdir`). Guesses to check first when building:
 
 - `zbus` 5.19: `fdo::DBusProxy::new(&Connection)`, `get_name_owner(BusName)`, `Message::header().sender()`
-  with `.as_str()` (all copied from sill's `accounts/backend/actions.rs`, same zbus version).
+  with `.as_str()` (all copied from the shell's `accounts/backend/actions.rs`, same zbus version).
 - `Config::with_user` moves two fields out of `self` and then uses `..self`.
 - `Accept` coerces to `Arc<dyn Authenticator>` inside `Ok(...)` in the engine test.
 - The engine test runs `Engine::begin` on a current-thread runtime and polls `snapshot()`.
@@ -278,7 +278,7 @@ Production-audit lane pa-slip (2026-10-16) was also written without a compiler. 
 - `Cargo.lock`: `rustix` (features `std`, `fs`, `process`; already in the lock at 1.1.x) is a new direct dependency
   of `updater`; the lock file needs refreshing. `rustix::fs::statvfs`, `rustix::process::{umask, chdir,
   setrlimit, geteuid}` and `rustix::fs::mkfifoat` (tests) were read against rustix 1.1.5's source only.
-- `service/object.rs`: the `#[zbus(header)]` parameter on the methods (copied from sill's picker object).
+- `service/object.rs`: the `#[zbus(header)]` parameter on the methods (copied from the shell's picker object).
 - `fetch/ureq_fetch.rs`: `RequestBuilder::header("Range", String)`, `response.status().as_u16()`,
   `timeout_recv_response` / `timeout_recv_body` on the config builder (ureq 3.4.2).
 - `updater-root` `apply/step.rs` `Switch` / `Links` rewind, and the `Result<Result<..>, JoinError>` handling in

@@ -58,7 +58,7 @@ fn ids(pins: &DockPins) -> Vec<&str> {
 
 fn start(scratch: &TempDir) -> (Handle<PinsService>, watch::Sender<AppIndex>, PathBuf) {
     let env = Env::isolated(scratch.path());
-    let file = env.dirs.sill_config().join("layout.toml");
+    let file = env.dirs.shell_config().join("layout.toml");
     let (apps, index) = watch::channel(AppIndex::default());
     let pins = spawn::<PinsService>(&tokio::runtime::Handle::current(), &env, index);
     (pins, apps, file)

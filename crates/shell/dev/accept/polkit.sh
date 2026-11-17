@@ -38,7 +38,7 @@ AUTHORITY_BIN="$BARDO_SHELL_OUT/examples/polkit_authority"
 HELPER_BIN="$BARDO_SHELL_OUT/polkit_helper"
 AGENT_PATH=/org/bardo/Shell/PolicyKit1/AuthenticationAgent
 SESSION_ID=accept-polkit
-ACTION=org.sill.test.run
+ACTION=org.bardo.shell.test.run
 
 scratch_new
 mkdir -p "$CONFIG/bardo/shell"
@@ -243,10 +243,10 @@ step_escape_cancels() {
 
 # 7.
 step_debug_polkit() {
-  bardo-shell debug polkit --action org.sill.debug.made-up --message "A made-up request" \
+  bardo-shell debug polkit --action org.bardo.shell.debug.made-up --message "A made-up request" \
     >>"$OUT_DIR/debug.log" 2>&1 || return 1
   await_shown made-up || return 1
-  await_status showing org.sill.debug.made-up || return 1
+  await_status showing org.bardo.shell.debug.made-up || return 1
   sleep 0.4
   press Escape || return 1
   await_status showing "" && await_hidden || return 1

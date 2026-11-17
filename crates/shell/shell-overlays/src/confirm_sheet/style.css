@@ -1,5 +1,5 @@
 /* The confirmation sheet (design/32 section 8, phase A). The sheet, the fact list and the buttons
-   are bardo's (Sheet, FactList, Button); this lays out what sill puts in the sheet: the title,
+   are bardo's (Sheet, FactList, Button); this lays out what shell puts in the sheet: the title,
    who asks, the reasons, the limit's line, the footer. Tokens only. */
 
 .shell-confirm{ display:flex; flex-direction:column; gap:var(--s-10); padding:var(--s-16); color:var(--ink); outline:none; }

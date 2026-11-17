@@ -4,7 +4,7 @@
 //! router's answer. The roles are the shipped `actiond.toml`'s, read through the ACP gate. (The packaged `bardo-agent-acp`
 //! process is run by `action-accept`; this is the half that needs intentd's own types.)
 
-use crate::support::apps::FakeSill;
+use crate::support::apps::FakeShell;
 use crate::support::bus::PrivateBus;
 use account_core::AppName;
 use action_core::{
@@ -26,14 +26,14 @@ use std::sync::Arc;
 const ACP: &str = "org.bardo.Acp";
 
 /// Everything on a private bus: "intentd" (owns `Intents1`, asks), the acp process (owns its name
-/// and serves `Confirm1` over `desk`), and a scripted sill that would answer if it were asked.
+/// and serves `Confirm1` over `desk`), and a scripted the shell that would answer if it were asked.
 struct Fixture {
     _dir: tempfile::TempDir,
     _bus: PrivateBus,
     confirmer: SheetConfirmer,
     desk: EditorDesk,
     acp: Option<action_dbus::BusConnection>,
-    sill: FakeSill,
+    shell: FakeShell,
     stranger: action_dbus::BusConnection,
     _keep: Vec<action_dbus::BusConnection>,
 }
@@ -73,10 +73,13 @@ impl Fixture {
             .await
             .expect("the object server answers");
         acp.request_name(ACP).await.expect("name");
-        let sill_connection = bus.connect().await;
-        // A sill that would answer if it were asked.
-        let sill =
-            FakeSill::start(&sill_connection, &["org.bardo.Confirm1", "org.bardo.Shell"]).await;
+        let shell_connection = bus.connect().await;
+        // A shell that would answer if it were asked.
+        let shell = FakeShell::start(
+            &shell_connection,
+            &["org.bardo.Confirm1", "org.bardo.Shell"],
+        )
+        .await;
         let config = Arc::new(IntentdConfig::shipped().expect("shipped"));
         // intentd trusts the sheet host and the editor's process by the callers table.
         let who = Arc::new(Identity::on_fixture(
@@ -84,7 +87,7 @@ impl Fixture {
             action_daemon::callers::shipped(),
             proc.clone(),
         ));
-        who.introduce_app(&sill_connection, "org.bardo.Shell", CallerRole::SheetHost);
+        who.introduce_app(&shell_connection, "org.bardo.Shell", CallerRole::SheetHost);
         who.introduce_app(&acp, ACP, CallerRole::Agent);
         let confirmer = SheetConfirmer::trusting(intentd.clone(), config, who)
             .gated(gate, &ProcRoot::Honoured(proc));
@@ -95,9 +98,9 @@ impl Fixture {
             confirmer,
             desk,
             acp: Some(acp),
-            sill,
+            shell,
             stranger,
-            _keep: vec![intentd, sill_connection, lookups],
+            _keep: vec![intentd, shell_connection, lookups],
         }
     }
 
@@ -113,8 +116,8 @@ impl Fixture {
         }
     }
 
-    fn sill_was_asked(&self) -> usize {
-        self.sill.shown().len()
+    fn shell_was_asked(&self) -> usize {
+        self.shell.shown().len()
     }
 
     /// Whether a connection that is not intentd is refused when it asks the acp process.
@@ -211,8 +214,8 @@ async fn with_the_acp_process_gone_the_sheet_expires_and_is_not_moved_to_the_des
     let ask = request("c-3", ConfirmOffer::OnceOnly).for_editor(Some(route(&session())));
     let answer = fixture.confirmer.confirm(ask).await;
     assert_eq!(answer, ConfirmAnswer::Ended(ConfirmEnd::Expired));
-    // A sill that would say yes is on the bus, and was not asked.
-    assert_eq!(fixture.sill_was_asked(), 0);
+    // A shell that would say yes is on the bus, and was not asked.
+    assert_eq!(fixture.shell_was_asked(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

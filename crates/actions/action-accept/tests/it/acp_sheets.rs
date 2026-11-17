@@ -1,6 +1,6 @@
 //! The router's sheets for an editor's session go to the editor, over the bus: intentd hands them
 //! to the `bardo-agent-acp` process (which serves `Confirm1` under its own name), and the editor sees
-//! them as ACP permission requests. The desktop's sheet (sill) is never asked for these.
+//! them as ACP permission requests. The desktop's sheet (the shell) is never asked for these.
 
 use crate::acp::{editor_of, permissions, prompt, session, sheet_titles, titles};
 use crate::support::*;
@@ -63,7 +63,7 @@ async fn the_editor_sees_the_sheet_as_a_permission_request_and_its_allow_once_pe
     assert_eq!(offered.len(), 1, "{offered:?}");
     assert!(offered[0].contains(&"allow_once".to_owned()), "{offered:?}");
     assert_eq!(permissions(&editor), 2);
-    assert!(world.sheet.shown().is_empty(), "sill was not asked");
+    assert!(world.sheet.shown().is_empty(), "shell was not asked");
     assert_eq!(world.app.messages().len(), 1);
     assert!(titles(&editor.updates()).contains(&"mail.message.forward".to_owned()));
 }
@@ -89,7 +89,7 @@ async fn the_editors_reject_on_the_sheet_refuses_the_call() {
         "{performed:?}"
     );
     assert!(world.app.messages().is_empty());
-    assert!(world.sheet.shown().is_empty(), "sill was not asked");
+    assert!(world.sheet.shown().is_empty(), "shell was not asked");
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
@@ -117,5 +117,5 @@ async fn a_sheet_asked_while_the_router_records_a_turn_reaches_the_editor_and_th
         .await;
     assert_eq!(two["result"]["stopReason"], "end_turn", "{two}");
     assert_eq!(sheet_titles(&editor), ["Allow more for this task"]);
-    assert!(world.sheet.shown().is_empty(), "sill was not asked");
+    assert!(world.sheet.shown().is_empty(), "shell was not asked");
 }

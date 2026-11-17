@@ -14,7 +14,7 @@ fn schema_round_trip() {
 }
 
 #[test]
-fn every_domain_names_sills_file() {
+fn every_domain_names_the_shells_file() {
     for schema in schemas().into_iter().chain([schema()]) {
         assert_eq!(schema.app.0, "shell");
         assert_eq!(schema.file.0, "shell/settings.toml");

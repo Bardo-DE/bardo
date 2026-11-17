@@ -159,7 +159,7 @@ async fn a_second_settings_app_hands_over_the_page_it_was_asked_for() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn the_account_may_arrive_as_text_the_way_sill_sends_it() {
+async fn the_account_may_arrive_as_text_the_way_shell_sends_it() {
     let world = World::start("app-open-account-text", &[]).await;
     call(
         &world,

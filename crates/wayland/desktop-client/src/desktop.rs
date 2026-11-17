@@ -7,7 +7,7 @@ use crate::state::DesktopState;
 /// A desktop connection: state in, commands out.
 ///
 /// `client::DesktopClient` implements it over a Wayland connection and `fake::FakeDesktop`
-/// over a script, so sill and cua test against the second and run on the first.
+/// over a script, so the shell and cua test against the second and run on the first.
 pub trait Desktop {
     /// Why a command fails to send.
     type Error: std::error::Error + 'static;

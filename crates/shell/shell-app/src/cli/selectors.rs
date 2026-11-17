@@ -11,7 +11,7 @@ use ui_components::selectors::{AppSelectors, ComponentSelectors};
 use ui_settings::PublishedParts;
 
 /// The parts of the shell a stylesheet may name.
-pub const SILL_SELECTORS: AppSelectors = AppSelectors {
+pub const SHELL_SELECTORS: AppSelectors = AppSelectors {
     app: "shell",
     components: &[
         ComponentSelectors {
@@ -41,7 +41,7 @@ pub const SILL_SELECTORS: AppSelectors = AppSelectors {
 /// The table as data, the file Settings reads.
 #[must_use]
 pub fn parts() -> PublishedParts {
-    PublishedParts::new(APP.name(), SILL_SELECTORS.classes())
+    PublishedParts::new(APP.name(), SHELL_SELECTORS.classes())
 }
 
 /// Write `shell.toml` into `dir` (made if it is missing) and return its path.
@@ -57,11 +57,11 @@ pub fn write_to(dir: &Path) -> io::Result<PathBuf> {
 mod tests {
     use ui_settings::discover_parts;
 
-    use super::{SILL_SELECTORS, write_to};
+    use super::{SHELL_SELECTORS, write_to};
 
     #[test]
     fn every_root_carries_the_shells_prefix() {
-        assert_eq!(SILL_SELECTORS.misnamed_roots(), Vec::<&str>::new());
+        assert_eq!(SHELL_SELECTORS.misnamed_roots(), Vec::<&str>::new());
     }
 
     /// The file lands in the directory it was given (a scratch one) and the reader Settings uses
@@ -76,7 +76,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
         assert_eq!(found.len(), 1);
         assert_eq!(found[0].app, "shell");
-        assert_eq!(found[0].classes, SILL_SELECTORS.classes());
+        assert_eq!(found[0].classes, SHELL_SELECTORS.classes());
         assert!(
             found[0]
                 .classes

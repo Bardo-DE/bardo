@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BindingAction {
-    /// Call a D-Bus method (sill's launcher, the screenshot tool).
+    /// Call a D-Bus method (the shell's launcher, the screenshot tool).
     Call(DbusCall),
     /// Start a program.
     Spawn(Argv),

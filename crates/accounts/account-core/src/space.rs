@@ -60,7 +60,7 @@ pub struct LocalSpace(pub u64);
 ///
 /// On the compositor the compositor mints it for each workspace (`s-` and 32 lowercase hex digits), sends
 /// it as the ext-workspace id, keeps it across restarts and registers it with accountd's
-/// `org.bardo.Spaces1`; sill and apps read it from the workspace protocol. On a compositor without
+/// `org.bardo.Spaces1`; the shell and apps read it from the workspace protocol. On a compositor without
 /// stable workspace ids, accountd mints it when the Space is made. Never derived from the name, so
 /// a rename keeps it; an id stored before Spaces were per app is kept as it is.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

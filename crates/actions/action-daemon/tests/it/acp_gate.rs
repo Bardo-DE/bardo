@@ -92,8 +92,8 @@ async fn other_names_do_not_wait_on_the_setting() {
         AcpGate::shut(),
     )
     .await;
-    let (sill, _keep) = world.client(&["org.bardo.Shell"]).await;
-    assert!(!refused(&sill.call(open()).await.expect("a reply")));
+    let (shell, _keep) = world.client(&["org.bardo.Shell"]).await;
+    assert!(!refused(&shell.call(open()).await.expect("a reply")));
 }
 
 /// A turn, which the host of an agent may record and a plain app may not.

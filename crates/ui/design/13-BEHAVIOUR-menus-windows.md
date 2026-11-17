@@ -46,7 +46,7 @@ behaviour and numbers.
 | Open-title highlight | pill 24 high (`--shell-bar-item`), radius 4 (`--r-shell-bar-item`), `--f-pill` while its menu is open and `--f-pill-hover` under the pointer; no transition; ds `MenuBarItem` draws the same pill for text and glyph items | settled 2026-09-24 (the macOS polish pass) |
 | Title text | 13 px (`--fs-shell-bar`) at 500 (`--fw-shell-bar`), the app name 700 | settled 2026-09-24 (R5 13 pt) |
 | Workspace indicator | one segmented group on the frame (ds `WorkspacePills`): a `--f-pill-hover` track 24 high, radius 4, the current workspace on `--f-pill` with `--shadow-current` | settled 2026-09-24 |
-| Status item | max 22 px glyph box, Lucide glyph 16 px (`one weight, one colour`), gap 4 | proposed values (R2 H); `20-SURFACES.md` §1.1 proposes `IconSize::Bar` 22, see open decision 8. Mechanism settled (bar gaps): ds `MenuBarItem` reads `--bar-status-box`/`--bar-status-glyph`, stylesheet tokens since 2026-10-27 (sill's sheet declares 22 and 16; a look moves them) |
+| Status item | max 22 px glyph box, Lucide glyph 16 px (`one weight, one colour`), gap 4 | proposed values (R2 H); `20-SURFACES.md` §1.1 proposes `IconSize::Bar` 22, see open decision 8. Mechanism settled (bar gaps): ds `MenuBarItem` reads `--bar-status-box`/`--bar-status-glyph`, stylesheet tokens since 2026-10-27 (the shell's sheet declares 22 and 16; a look moves them) |
 | Disabled | opacity .35 | R2 (H) |
 | Material / tint | `Material::Bar` over compositor blur; the workspace SpaceLook's colour goes where the Look puts it (Mac: the backdrop layer behind the material; Arc: `--f-*` frame tokens; design/30 §3.3), cross-fade `--t-big` | settled (plan Spaces); drawn by `Ds` (bar gaps: `data-frame="tinted"`, the gradient at the bar's tint alpha, `data-ground="frame"`) |
 
@@ -196,8 +196,8 @@ Whether a swiped banner stays in the center is `notifications.swipe`, the caller
 | Visible rows | `floor((460 - 56 - 10) / 44)` = 8 | derived |
 | Open | `peek-in --t-big --e-spring` (s .95, y 12 -> 1, A5) | see 13.9 item 9 |
 | Close | `fade --t-quick --e-exit`; the catcher is never animated or dimmed (plan) | settled catcher, fade proposed |
-| Open latency | p95 < 100 ms over 20 toggles (sill's `dev/accept/launcher.sh`) | settled (plan) |
-| Sections | provider groups with a `SectionHeader`; a group longer than its share shows "Show More" as the header's trailing action, reachable by keyboard | proposed (sill M9, Q302) |
+| Open latency | p95 < 100 ms over 20 toggles (the shell's `dev/accept/launcher.sh`) | settled (plan) |
+| Sections | provider groups with a `SectionHeader`; a group longer than its share shows "Show More" as the header's trailing action, reachable by keyboard | proposed (the shell M9, Q302) |
 | Preview pane | a Quick-Look-style pane beside the list; the card widens by the pane | proposed (Q302) |
 | Preview keys | Space toggles the pane only while browsing (not while typing); Cmd+Y always toggles it; Right at the end of the text shows it, a second Right or Cmd+Right focuses it; Tab walks the pane's controls when it has focus, in the results Tab stays the provider filter; Esc closes one level at a time (pane focus, pane, query, launcher) | proposed (Q302) |
 | Row chords | Cmd+R reveal, Cmd+C copy, Cmd+Y Quick Look, through `StandardAction` (27 §6.2) | proposed (Q298) |
@@ -224,7 +224,7 @@ Played from the freedesktop sound theme (`sound.theme`, default `freedesktop`) b
 
 The frame the UI kit draws for a window that asks for no server decorations
 (`Ds { window: WindowFrame::Titlebar }`, design/04 "Window frame"). It acts through the host seam
-`ds::prelude::HostWindow`: ui-blitz over winit, sill over layer-shell-host's `SurfaceHandle`.
+`ds::prelude::HostWindow`: ui-blitz over winit, the shell over layer-shell-host's `SurfaceHandle`.
 
 | Behaviour | Specification | Status |
 | --- | --- | --- |
@@ -237,7 +237,7 @@ The frame the UI kit draws for a window that asks for no server decorations
 | Keyboard | Tab reaches close, minimize, zoom; Enter or Space presses; Escape closes the menu | settled |
 | Placement on Wayland | Left half, Right half and Centre are unavailable: a toplevel can neither read nor set its position (FINDINGS "Window frame") | limit |
 
-### 13.3.12 Hot corners (settled 2026-09-26 with sill's M10 freeze; keys in design/22 §3.23)
+### 13.3.12 Hot corners (settled 2026-09-26 with the shell's M10 freeze; keys in design/22 §3.23)
 
 The reference desktop fires a corner the moment the pointer touches it, which is why its users
 complain about accidental triggers; ours waits. One invisible surface per enabled corner
@@ -249,7 +249,7 @@ square (2 px; `1..=8`), input `Whole`, no material, no paint, never keyboard.
 | Dwell | the pointer rests inside the square for `dwell_ms` before the corner acts; leaving earlier cancels | `hot_corners.dwell_ms` 150 (`0..=2000`) |
 | Re-arm | after acting, the corner is disarmed until the pointer has left the square and `rearm_ms` has passed; a pointer parked in the corner acts once | `hot_corners.rearm_ms` 500 (`0..=5000`) |
 | Toggle | an action that opens a shell surface closes it when it is already open (Launcher, NotificationCenter, ControlCenter, Workspaces, ShowDesktop); Lock and Command never toggle | |
-| Corner | `top_left`, `top_right`, `bottom_left`, `bottom_right`, each its own list of bindings; the bottom right is free (the reference ships a note there; sill has none until M12) | `hot_corners.<corner>` |
+| Corner | `top_left`, `top_right`, `bottom_left`, `bottom_right`, each its own list of bindings; the bottom right is free (the reference ships a note there; the shell has none until M12) | `hot_corners.<corner>` |
 
 Action table (`CornerAction`, the desktop's own actions; a corner is a list of bindings, each
 holding exactly a set of modifier keys and one `CornerDo`: `Desktop(CornerAction)`,
@@ -272,18 +272,18 @@ parameters; `Open` opens an app (desktop id), a file or folder (`~` allowed) or 
 `Command` is `/bin/sh -c` of the text. Files that still hold one word per corner (and
 `<corner>_command`) are read, never written back.
 
-State machine (pure, table-tested in sill): `Idle` → pointer enters → `Dwelling { since }` →
+State machine (pure, table-tested in the shell): `Idle` → pointer enters → `Dwelling { since }` →
 leaves → `Idle`; `since + dwell_ms` elapses → act → `Disarmed { left: None }` → leaves →
 `Disarmed { left: Some(t) }` → `t + rearm_ms` elapses → `Idle`. A pointer that enters while
 `Disarmed` does nothing. Hover intent (design/06) is not used: the dwell is its own timer.
 
-Acceptance (sill `dev/accept/hot-corners.sh`, nested compositor, debug-inject or fake input):
+Acceptance (the shell `dev/accept/hot-corners.sh`, nested compositor, debug-inject or fake input):
 (1) enter and rest 150 ms → the action fires once; (2) enter and leave at 100 ms → nothing;
 (3) rest 2 s → exactly once; (4) leave and return within 500 ms → nothing, after 500 ms → again;
 (5) with `size_px` 2, a pointer at (1, 1) of the corner is inside and (2, 2) is outside;
 (6) `Launcher` twice from the same corner opens then closes it. There is no modifier option: a
 keyboard-less surface cannot learn a held key portably (layer-shell-host F61), so the reference
-desktop's modifier gating was retired on 2026-09-26; it is a compositor-fork item in sill's
+desktop's modifier gating was retired on 2026-09-26; it is a compositor-fork item in the shell's
 compositor-gaps list (send modifier state to the surface under the pointer).
 
 ## 13.4 State machines
@@ -291,7 +291,7 @@ compositor-gaps list (send modifier state to the surface under the pointer).
 Pure; `now` is an argument; effects are returned.
 
 Menu tracking: **settled** (implemented in Bardo `crates/ds/src/stack/menu_track/machine.rs`,
-2026-09-24, sill gap Q1; the table below is its test list). The shipped shape differs from the
+2026-09-24, the shell gap Q1; the table below is its test list). The shipped shape differs from the
 first sketch in names only: generic over the caller's menu key, timings carried in the machine.
 
 ```rust
@@ -337,7 +337,7 @@ impl<K: Clone + PartialEq> MenuTrack<K> {
 | Tracking | OutsidePress | Closed | Close |
 
 ```rust
-// sill: surfaces/switcher/machine.rs
+// shell: surfaces/switcher/machine.rs
 pub enum Switcher {
     Hidden,
     Armed   { since: Instant, sel: usize },     // chord seen, UI not shown (150 ms)
@@ -349,7 +349,7 @@ pub fn step(s: Switcher, ev: SwIn, now: Instant, apps: &[AppId]) -> (Switcher, V
 // Armed + ModifierReleased -> Hidden + Activate(apps[sel]); Armed + Tick >= 150 ms -> Shown + Show;
 // Shown + ModifierReleased -> Hidden + Activate; Esc -> Hidden (no Activate); Q/H act on sel and stay.
 
-// sill: surfaces/notifications/banner.rs
+// shell: surfaces/notifications/banner.rs
 pub enum Banner {
     Entering { since: Instant },
     Shown    { deadline: Deadline },              // Deadline::At(Instant) | Deadline::Never
@@ -395,7 +395,7 @@ Banner duration is not a setting (R8: not user-changeable since Big Sur).
 | --- | --- |
 | Menu tracking machine, safe triangle, `Menu` component | Bardo `ds/stack/menu_track/machine.rs` (settled, shipped), `ds/components/menus/menu/menu.rs` |
 | Popup surfaces, reposition, grabs | layer-shell-host `popup` (`PopupConfig`, `xdg_positioner`, `xdg_popup.reposition`) |
-| Bar, switcher, notifications, control center, launcher surfaces | sill `surfaces/{bar,switcher,notifications,control_center,launcher}` |
+| Bar, switcher, notifications, control center, launcher surfaces | the shell `surfaces/{bar,switcher,notifications,control_center,launcher}` |
 | Notification server | shell-services (pattern: the desktop notification daemon subscriptions/notifications.rs) |
 | Toplevel activation / close / minimize | shell-services `toplevel_wl` (the toplevel client) |
 | Shortcuts | `dist/compositor/.../system_actions` (Launcher, WindowSwitcher) |
@@ -476,7 +476,7 @@ Driven by `ds_harness::Harness` (pure menus) and `bardo-shell debug` in the nest
 
 ## 13.10 Sources
 
-- Plan Appendix C-D (all R rows), "Design: sill" (Bar, Launcher, notifications server,
+- Plan Appendix C-D (all R rows), "Design: shell" (Bar, Launcher, notifications server,
   shortcuts), "Design: layer-shell-host" (popups, keyboard modes), "Findings: compositors" (shortcuts,
   the desktop notification daemon, ), M0 spike item a.
 - Sibling docs: `03-COLOR.md` materials, `05-MOTION.md`, `30-CATALOGUE.md` §1 and §2.4-2.5,

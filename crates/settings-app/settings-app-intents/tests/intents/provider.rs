@@ -10,7 +10,7 @@ const MAGNIFICATION: &str = "dock.magnification";
 const TILE_SIZE: &str = "dock.tile_size_px";
 const HANDS_OFF: &str = "dock.autohide";
 const SOURCES: &str = "calendar.sources";
-const SILL: &str = "shell/settings.toml";
+const SHELL: &str = "shell/settings.toml";
 
 async fn world(test: &str) -> World {
     World::start(test, &[MAGNIFICATION, TILE_SIZE]).await
@@ -129,7 +129,7 @@ async fn reading_a_key_answers_the_file_then_the_default_and_trusts_neither() {
     assert_eq!(default.value, text("true"), "no file: the key's default");
     assert_eq!(default.label.integrity, Integrity::Untrusted);
 
-    world.write(SILL, "[dock]\nmagnification = false\ntile_size_px = 60\n");
+    world.write(SHELL, "[dock]\nmagnification = false\ntile_size_px = 60\n");
     assert_eq!(read(MAGNIFICATION).await.value, text("false"));
     assert_eq!(read(TILE_SIZE).await.value, text("60"));
 }
@@ -138,7 +138,7 @@ async fn reading_a_key_answers_the_file_then_the_default_and_trusts_neither() {
 async fn a_value_longer_than_the_manifest_allows_is_cut_to_one_line() {
     let world = world("read-a-huge-value").await;
     let huge = "word\\nand more words ".repeat(5000);
-    world.write(SILL, &format!("[calendar]\nsources = \"{huge}\"\n"));
+    world.write(SHELL, &format!("[calendar]\nsources = \"{huge}\"\n"));
     let out = world
         .perform("settings.key.read", &[("key", key(SOURCES))])
         .await
@@ -154,7 +154,7 @@ async fn a_value_longer_than_the_manifest_allows_is_cut_to_one_line() {
 #[tokio::test(flavor = "multi_thread")]
 async fn any_key_can_be_read_even_one_an_agent_may_not_set() {
     let world = world("read-hands-off").await;
-    world.write(SILL, "[dock]\nautohide = true\n");
+    world.write(SHELL, "[dock]\nautohide = true\n");
     let out = world
         .perform("settings.key.read", &[("key", key(HANDS_OFF))])
         .await
@@ -178,7 +178,7 @@ async fn a_key_nobody_describes_is_not_found() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_garbled_file_is_not_read_as_defaults() {
     let world = world("read-garbled").await;
-    world.write(SILL, "[dock\nmagnification = ");
+    world.write(SHELL, "[dock\nmagnification = ");
     let refusal = world
         .perform("settings.key.read", &[("key", key(MAGNIFICATION))])
         .await
@@ -197,7 +197,7 @@ async fn a_key_the_schema_does_not_mark_is_not_set() {
         .await
         .expect_err("refused");
     assert!(failed(refusal).contains("not a setting an assistant may change"));
-    assert_eq!(world.read(SILL), None, "nothing was written");
+    assert_eq!(world.read(SHELL), None, "nothing was written");
     assert_eq!(world.window.told(), []);
 }
 
@@ -205,7 +205,7 @@ async fn a_key_the_schema_does_not_mark_is_not_set() {
 async fn setting_a_key_writes_the_file_tells_the_window_and_hands_back_an_undo() {
     let world = world("set-a-key").await;
     let before = "# mine\n[dock]\nautohide = false # kept\n[mystery]\nx = 1\n";
-    world.write(SILL, before);
+    world.write(SHELL, before);
     let out = world
         .perform(
             "settings.key.set",
@@ -214,7 +214,7 @@ async fn setting_a_key_writes_the_file_tells_the_window_and_hands_back_an_undo()
         .await
         .expect("set");
     assert!(matches!(out.undo, Undoable::Yes(_)), "{:?}", out.undo);
-    let file = world.read(SILL).expect("written");
+    let file = world.read(SHELL).expect("written");
     assert!(file.contains("magnification = false"), "{file}");
     assert!(
         file.contains("autohide = false # kept"),
@@ -250,7 +250,7 @@ async fn a_value_the_control_cannot_hold_is_refused_with_what_it_takes() {
         let why = failed(refusal);
         assert!(why.contains(says), "{path} = {value}: {why}");
     }
-    assert_eq!(world.read(SILL), None, "no refusal wrote anything");
+    assert_eq!(world.read(SHELL), None, "no refusal wrote anything");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -263,14 +263,14 @@ async fn a_whole_number_argument_sets_a_number_key() {
         )
         .await
         .expect("set");
-    let file = world.read(SILL).expect("written");
+    let file = world.read(SHELL).expect("written");
     assert!(file.contains("tile_size_px = 64"), "{file}");
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn undo_puts_the_old_value_back_and_only_once() {
     let world = world("undo-restores").await;
-    world.write(SILL, "[dock]\ntile_size_px = 60\n");
+    world.write(SHELL, "[dock]\ntile_size_px = 60\n");
     let out = world
         .perform(
             "settings.key.set",
@@ -283,7 +283,7 @@ async fn undo_puts_the_old_value_back_and_only_once() {
     };
     assert!(
         world
-            .read(SILL)
+            .read(SHELL)
             .expect("file")
             .contains("tile_size_px = 40")
     );
@@ -291,7 +291,7 @@ async fn undo_puts_the_old_value_back_and_only_once() {
     world.undo(&token).await.expect("undone");
     assert!(
         world
-            .read(SILL)
+            .read(SHELL)
             .expect("file")
             .contains("tile_size_px = 60")
     );
@@ -337,9 +337,9 @@ async fn undo_does_not_overwrite_a_change_made_since() {
     let Undoable::Yes(token) = out.undo else {
         panic!("a setting is undoable")
     };
-    world.write(SILL, "[dock]\nmagnification = true\ntile_size_px = 33\n");
+    world.write(SHELL, "[dock]\nmagnification = true\ntile_size_px = 33\n");
     assert_eq!(world.undo(&token).await, Err(UndoFault::Conflict));
-    let file = world.read(SILL).expect("file");
+    let file = world.read(SHELL).expect("file");
     assert!(
         file.contains("tile_size_px = 33"),
         "the person's edit stays: {file}"
@@ -356,7 +356,7 @@ async fn a_token_settings_never_minted_is_gone() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_dry_run_shows_the_change_and_makes_none() {
     let world = world("dry-run").await;
-    world.write(SILL, "[dock]\ntile_size_px = 60\n");
+    world.write(SHELL, "[dock]\ntile_size_px = 60\n");
     let args = [("key", key(TILE_SIZE)), ("value", text("40"))];
     let Preview::TextChange { before, after } = world
         .dry_run("settings.key.set", &args)
@@ -373,7 +373,7 @@ async fn a_dry_run_shows_the_change_and_makes_none() {
     );
     assert!(
         world
-            .read(SILL)
+            .read(SHELL)
             .expect("file")
             .contains("tile_size_px = 60")
     );

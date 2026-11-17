@@ -64,7 +64,7 @@ fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    let usage = FileUse::sill_default(|name| std::env::var(name).ok());
+    let usage = FileUse::shell_default(|name| std::env::var(name).ok());
     tracing::info!("serving");
     match runtime.block_on(speech_daemon::serve(config, table, PipeWireDevice, usage)) {
         Ok(()) => ExitCode::SUCCESS,

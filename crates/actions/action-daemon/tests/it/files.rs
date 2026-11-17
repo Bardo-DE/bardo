@@ -112,7 +112,7 @@ fn the_environment_says_where_everything_is() {
 }
 
 #[test]
-fn the_shipped_configuration_gives_a_terminal_the_cli_role_and_sill_the_rest() {
+fn the_shipped_configuration_gives_a_terminal_the_cli_role_and_shell_the_rest() {
     use action_vocab::CallerRole as R;
     let config = action_daemon::IntentdConfig::shipped().expect("shipped");
     let roles = |name: &str| {

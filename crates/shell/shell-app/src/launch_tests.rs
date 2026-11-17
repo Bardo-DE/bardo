@@ -27,7 +27,7 @@ fn timing_at(requested_at: Stamp) -> LaunchTiming {
 }
 
 #[test]
-fn each_end_of_a_launch_is_the_answer_sill_launch_reads() {
+fn each_end_of_a_launch_is_the_answer_shell_launch_reads() {
     let cases = [
         (
             "spawned",

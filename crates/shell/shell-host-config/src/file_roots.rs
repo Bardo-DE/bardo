@@ -20,7 +20,7 @@ const ACCOUNT_PICTURES: &str = "/var/lib/AccountsService/icons";
 /// person's `~/.face` and the account pictures folder.
 fn file_root_paths(dirs: &Dirs) -> Vec<PathBuf> {
     let mut roots = dirs.icon_file_roots();
-    roots.push(dirs.sill_cache());
+    roots.push(dirs.shell_cache());
     roots.push(dirs.thumbnails());
     roots.extend(dirs.pictures.clone());
     roots.push(dirs.home.join(".face"));

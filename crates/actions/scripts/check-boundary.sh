@@ -7,7 +7,7 @@
 #      each tier has source bans; KNOWN lists the breaches that still stand and the lane that
 #      removes each. `--self-test` seeds two violations into a copy and asserts they fail.
 #   2. RULES: what a crate reaches through ANY path (cargo tree), the effect crates it must not.
-#   3. Repo-wide: nothing of cua or sill, no test switch in a shipped crate.
+#   3. Repo-wide: nothing of cua or the shell, no test switch in a shipped crate.
 #
 # `cargo tree -i <dep>` exits 101 when the dependency is absent, which is precisely the state
 # we want. Checking the exit status would therefore fail whenever the boundary holds, so we
@@ -470,7 +470,7 @@ done
 
 layers_check . || fail=1
 
-# docket sits below cua and sill in the repo order (the model layer, porter, the memory service, docket, cua, sill):
+# docket sits below cua and the shell in the repo order (the model layer, porter, the memory service, docket, cua, the shell):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
 THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture bardo-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)
@@ -483,12 +483,12 @@ for name in $THEIRS; do
   fi
 done
 if grep -q '^shell-' <<<"$workspace_tree"; then
-  echo "LEAK: the workspace depends on a sill crate, which sits above docket"
+  echo "LEAK: the workspace depends on a shell crate, which sits above docket"
   theirs_found=1
   fail=1
 fi
 if [ "$theirs_found" -eq 0 ]; then
-  echo "boundary holds: no cua or sill crate enters the workspace"
+  echo "boundary holds: no cua or the shell crate enters the workspace"
 fi
 
 # No shipped crate carries a test-only switch. The proc root of the callers and the model tap are

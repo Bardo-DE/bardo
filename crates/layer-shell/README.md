@@ -5,7 +5,7 @@ overlays), xdg popups and xdg toplevels, all sharing one GPU device and one rend
 blur (`ext-background-effect-v1`), fractional scale, input regions that follow DOM elements
 (where they paint, transforms included), IME, clipboard and a frame machine that is idle at zero
 wakeups. It is portable to any Wayland compositor with layer-shell; it never depends on
-compositor-specific crates (`scripts/check-boundary.sh`). The shell (sill) and every bundled app are built on it.
+compositor-specific crates (`scripts/check-boundary.sh`). The shell (the shell) and every bundled app are built on it.
 
 `FINDINGS.md` records the standing facts about Blitz, the compositors and the protocols that the
 code relies on and the items still open (module docs cite them by number), `ARCHITECTURE.md`
@@ -109,7 +109,7 @@ whole surface. If the process dies while locked the session stays locked (FINDIN
 
 ## Consuming: the window seam (client-decorated frames)
 
-What a design system's window frame (the UI kit's `ds::HostWindow`, implemented in sill's and mailo's
+What a design system's window frame (the UI kit's `ds::HostWindow`, implemented in the shell's and mailo's
 glue) calls. Open the window with `ToplevelConfig { decorations: Decorations::CLIENT, .. }`
 (or `Decorations::Client(ResizeMargin(n))`); `size`, `min_size` and `max_size` are the visible
 frame's. Inside the window's document, `let window = use_surface();`:
@@ -167,11 +167,11 @@ fn HostModalityBridge(children: Element) -> Element {
 }
 ```
 
-A consumer that wrapped a popup in its own modality frame (sill's `bar/modality.rs`
+A consumer that wrapped a popup in its own modality frame (the shell's `bar/modality.rs`
 `ModalityFrame`, which provided `ds::HostModality` from the frame's own `onkeydown` /
 `onpointerdown`) drops it: put the bridge in the shared root every surface renders through (or
 in each surface's root), replace `ModalityFrame { style, .. }` with a plain `div { class:
-"sill-popup-frame", style, .. }`, and delete `modality.rs`. The frame only saw keys that reached
+"shell-popup-frame", style, .. }`, and delete `modality.rs`. The frame only saw keys that reached
 its own subtree; the bridge sees every key the seat delivers to any surface.
 
 ## Consuming: fonts

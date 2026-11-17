@@ -20,7 +20,7 @@ role = "sheet_host"
 # A scope never carries a fixed role: this row is the shell's name as a plain app.
 [[caller]]
 app = "org.bardo.Shell"
-unit = "shell-shell.scope"
+unit = "bardo-shell.scope"
 role = "sheet_host"
 "#;
 
@@ -47,7 +47,7 @@ fn a_standing_is_held_by_the_unit_and_by_nothing_that_only_claims_it() {
     let root = root.path();
     put(root, 1, "bardo-actiond.service", true);
     put(root, 2, "bardo-shell.service", true);
-    put(root, 3, "shell-shell.scope", false);
+    put(root, 3, "bardo-shell.scope", false);
     put(root, 4, "bardo-actiond.service", false);
     put(root, 5, "app-org.bardo.Intents-1.scope", false);
     put(root, 6, "curl.service", true);

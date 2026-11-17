@@ -395,7 +395,7 @@ Settled for the port; the catalogue above is unchanged except where named.
 - `pane-out-l`: `from{ transform:none; opacity:1 } to{ transform:translateX(-26px); opacity:0 }`
   and `pane-out-r`, its mirror to `+26px`, at `--t-move --e-exit`, forwards: the outgoing pane
   leaves the other way from the one arriving, over the same duration, so the pair reads as one
-  push and one timer settles both (`PaneSwitcher`, sill Q80). An exit, so it does not spring
+  push and one timer settles both (`PaneSwitcher`, the shell Q80). An exit, so it does not spring
   (principle 2).
 
 ### 4.7 Added by Bardo (OSD parts, 2026-09-25)
@@ -438,7 +438,7 @@ Settled for the port; the catalogue above is unchanged except where named.
   it is not contact with it (principle 2), and an overshoot would lift it off its edge.
 - A swiped card springs back with a `transform` transition at `--t-move --e-spring` (principle
   2: it is the release of a touch), none under Reduced, where it snaps back.
-- The same panel at the bottom edge (`PanelEdge::Bottom`, Edit Widgets' sheet, sill Q521) moves
+- The same panel at the bottom edge (`PanelEdge::Bottom`, Edit Widgets' sheet, the shell Q521) moves
   as a sheet, not as an edge panel: its first showing plays `peek-in` at `--t-move --e-out`
   (`Anim::PeekFullIn`'s recipe), and every hide or show after it is the sheet's spring on
   `--present-p` (opacity, 12 px down, 95 %; Reduced: opacity only). No new keyframe.
@@ -471,7 +471,7 @@ The persona's five keyframes (`persona-blink`, `-breathe`, `-wince`, `-hop`, `-d
 change asking for it. Allowed because it is bounded: whole loops only, only for 20 s after a wake
 (mount, a new `WakeStamp`, a mood change), driven by a Rust task that then ends, never a CSS
 `infinite`; then the picture rests on frame 0 and paints 0 frames (the idle-frame rule wins;
-tested in sill's ui-conformance/tests/emoji_animation.rs with `Harness::is_animating`). Under Reduced only still
+tested in the shell's ui-conformance/tests/emoji_animation.rs with `Harness::is_animating`). Under Reduced only still
 frames are shown.
 
 ### 4.12 Added by Bardo (battery fill, 2026-09-26)
@@ -481,7 +481,7 @@ the fill is driven from Rust (`ds::use_level_run`, as the animated emoji drives 
 each new `WakeStamp` the arc sweeps from empty to the level over `--t-fill` (800 ms, a new token)
 at `--e-out`; on a new level, from the level drawn last. The path is recomputed on a 16 ms tick
 and written only when it changes; the task ends when the sweep and its tail are done, so a ring
-at rest re-renders nothing and paints 0 frames (tested in sill's ui-conformance/tests/battery_fill.rs
+at rest re-renders nothing and paints 0 frames (tested in the shell's ui-conformance/tests/battery_fill.rs
 with `Harness::is_animating`). Its tail: a charging bolt fades in over `--t-quick`, linear,
 after an entrance fill. `BatteryFigure` counts the percentage in step. Under Reduced there is no
 sweep at all (not a 60 ms one): the first frame is the final state. This replaces the ring's
@@ -509,13 +509,13 @@ transitions (`--t-pending-step`), not a keyframe.
   `--t-nudge --e-out` (`Anim::NudgeUp`): attention once per request (`use_nudge`, R6). `nudge`
   keeps the outbox pill's `translateX(-50%)` and so cannot move an element that is not centred
   that way.
-- `slide-r` at `--t-move --e-out` (`Anim::PaneInROut`, sill Q370): the preview pane's entrance
+- `slide-r` at `--t-move --e-out` (`Anim::PaneInROut`, the shell Q370): the preview pane's entrance
   when nothing the person touched showed it; `Anim::PaneInR` (the spring) plays only when a key
   or press did (design/26 R5).
 - `morph-in` at `--t-quick --e-spring` (`Anim::MorphInSpring`, design/26 D2): `MorphGlyph`'s
   incoming glyph when the person's own press caused the change (play/pause, a Focus disc); every
   other morph grows in at `--e-out` (`Anim::MorphIn`, design/26 R5).
-- Edit Widgets' "Added" (sill Q523, design/23 section 9.7) is built from these, with no new
+- Edit Widgets' "Added" (the shell Q523, design/23 section 9.7) is built from these, with no new
   keyframe: the Add button's check draws on (`SettleStyle::Check`) and grows in with
   `Anim::MorphInSpring` for the person's press (`Anim::MorphIn` otherwise); the placed row that
   arrives plays `Anim::RowIn` (`row-in`, `--t-big --e-spring`) for the press, `Anim::Rise`
@@ -524,13 +524,13 @@ transitions (`--t-pending-step`), not a keyframe.
 ### 4.14 Added by Bardo (a widget card's exit, 2026-09-28)
 
 - `widget-out`: `from{ opacity:1; transform:none } to{ opacity:0; transform:scale(.85) }` at
-  `--t-move --e-exit`, forwards (`Anim::WidgetOut`, sill G423): a desktop widget the person
+  `--t-move --e-exit`, forwards (`Anim::WidgetOut`, the shell G423): a desktop widget the person
   removes in Edit Widgets shrinks about its centre and fades (principle 3: exits accelerate;
   principle 4: removing is acting, so it gets an exit), holding its transparent last frame until
   the host drops the card at `settle(WidgetOut)` (principle 10). Played on the card's pulse class
   when its host passes `CardPresence::Leaving` to `WidgetCard`/`WidgetFrame`, which calls
   `on_gone` at that settle. Reduced: `CrossFade(Out)` (`menu-out`), over Reduced's settle. A
-  leave taken back plays `hold` so no half-faded value stays (sill G295). Not a roster row: a
+  leave taken back plays `hold` so no half-faded value stays (the shell G295). Not a roster row: a
   desktop card leaves nothing to heal.
 
 ## 11. Excluded keyframes

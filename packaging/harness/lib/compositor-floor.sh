@@ -98,7 +98,7 @@ floor_image() {
   case "$1" in
     bardo-compositorctl | compositor-probe | compositor-shell-exec) path="${SCEN_TOOLS:?floor_image: scenario.sh is not sourced}/bin/$1" ;;
     bardo-portal) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/portal-target/debug/bardo-portal" ;;
-    bardo-shell) path="${FLOOR_SILL_TARGET:-${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/shell-target}/debug/bardo-shell" ;; # FLOOR_SILL_TARGET: the accounts rig runs bardo-shell at its pin
+    bardo-shell) path="${FLOOR_SHELL_TARGET:-${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/shell-target}/debug/bardo-shell" ;; # FLOOR_SHELL_TARGET: the accounts rig runs bardo-shell at its pin
     bardo-accountd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/porter-target/debug/bardo-accountd" ;;
     bardo-syncd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/sync-target/debug/bardo-syncd" ;; # sync's, since sync left porter
     bardo-inferd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/inference-target/debug/bardo-inferd" ;;
@@ -159,12 +159,12 @@ floor_make() {
   FLOOR_DIR=$dir
 }
 
-# floor_sill_callers: bardo-shell (a `debug` build) takes the floor's desktop-callers.toml as the person's own rows
+# floor_shell_callers: bardo-shell (a `debug` build) takes the floor's desktop-callers.toml as the person's own rows
 # (`bardo-shell run --dev-callers FILE`, the caller-identity library's Proof::Dev), so the services and the portal it checks by role are known.
 # Call it after sourcing bardo-shell's dev/lib (which clears DEV_CALLERS_FLAGS) and before launch_daemon. bardo-settings (feature
 # dev-callers) takes the same file as `bardo-settings --dev-callers FILE` and bardo-portal (feature debug) as BARDO_PORTAL_DEV_CALLERS.
-floor_sill_callers() {
-  DEV_CALLERS_FLAGS=(--dev-callers "${FLOOR_DIR:?floor_sill_callers: call floor_make or floor_shim first}/desktop-callers.toml")
+floor_shell_callers() {
+  DEV_CALLERS_FLAGS=(--dev-callers "${FLOOR_DIR:?floor_shell_callers: call floor_make or floor_shim first}/desktop-callers.toml")
 }
 
 # floor_shim NAME [TOOL...]: floor_make, then the stand-in checkout (see the top of this file).

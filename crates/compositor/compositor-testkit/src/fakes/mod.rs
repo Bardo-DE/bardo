@@ -1,7 +1,7 @@
 //! The fakes.
 //!
 //! What stands in for the session, udev, logind, KMS, scanout, libinput's configuration, the Spaces
-//! file, sill's D-Bus methods, the service manager's notifications, the account service's Spaces,
+//! file, the shell's D-Bus methods, the service manager's notifications, the account service's Spaces,
 //! the process table, the callers of the bus, the accessibility-root checker and the mouse gestures daemon inside
 //! the jail.
 

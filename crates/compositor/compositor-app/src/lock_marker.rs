@@ -3,7 +3,7 @@
 //! A compositor that restarts while the session is locked has no way to ask anyone whether it
 //! was: the lock lived in memory. The marker answers. The compositor writes it when the shell's lock is
 //! held and removes it when that lock ends; a compositor that starts and finds it comes back
-//! covered until the shell locks again (sill keeps its own marker for the same case and locks
+//! covered until the shell locks again (the shell keeps its own marker for the same case and locks
 //! again at once when it starts, so the two agree: both exist exactly while the shell's lock
 //! is held). It lives in the runtime directory, so a reboot clears it.
 //!

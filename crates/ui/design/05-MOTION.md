@@ -391,7 +391,7 @@ proposed here; the rest are the plan's.
 | Undo toast hides | `setTimeout(hide, 5200)`, reset on every new undo | ToastHold 5200 ms | S:1552, C:1920 |
 | Row exit completes | `animationend` or fallback `setTimeout(finish, 900)` | `settle()` of Fold, FoldHeavy, Curl or Crumple | S:1545, C:1892-1893 |
 | Heal ripple class removed | `setTimeout(…, 600)` (S), 700 (C, and C has no heal CSS) | `settle(Heal, k)` per row | S:1544, C:1859 |
-| A batch of rows leaves (a Clear in the notification center) | none (S and C remove one row at a time) | the batch's longest `settle(exit, i)`, `i` its place in the batch capped at 12; then the rows drop together and the rows below heal by the dropped rows' summed measured heights (design/04 section 54, sill Q510) | Bardo |
+| A batch of rows leaves (a Clear in the notification center) | none (S and C remove one row at a time) | the batch's longest `settle(exit, i)`, `i` its place in the batch capped at 12; then the rows drop together and the rows below heal by the dropped rows' summed measured heights (design/04 section 54, the shell Q510) | Bardo |
 | Gulp class removed | `setTimeout(…, 460)` | `settle(Gulp)` = 454 ms | S:1520, C:1851 |
 | Today entry removed after close | `animationend` or `setTimeout(done, 400)` | `settle(TabOut)` = 284 ms | S:1485 |
 | List re-render after read toggle | `setTimeout(renderList, 260)` | *ReadReflow* 260 ms (the dot's transition is 170 ms) | S:1533 |
@@ -508,13 +508,13 @@ Behaviour (what triggers what) is in `06-INTERACTIONS.md#20-desktop-interactions
 | Dock magnification shrink on leave (`progress` 1 -> 0) | ~200 ms | not specified (proposed `--e-out`) | settled (user) for the duration; proposed for the easing | plan; Appendix C-A |
 | Dock bounce | none: the Dock does not bounce (design/10 §10.3.5, the owner 2026-10-20) | | settled | Appendix C-A (H), not followed |
 | Dock auto-hide (off by default) | 0.2 s delay after the pointer rests at the edge, ~0.5 s slide | not specified | settled (user) | plan; Appendix C-A (M) |
-| Launcher panel open | `peek-in`, `--t-big`, `--e-spring` (S's command menu); backdrop none (the catcher surface is never animated) | `--e-spring` | proposed for the keyframe; settled (plan) for "catcher never animated" | S:234; plan sill "Launcher v1" |
-| Launcher open latency budget | p95 < 100 ms from `launcher toggle` to first frame, over 20 toggles | n/a (a latency, not a duration) | settled (plan) | plan sill; sill's `dev/accept/launcher.sh` |
+| Launcher panel open | `peek-in`, `--t-big`, `--e-spring` (S's command menu); backdrop none (the catcher surface is never animated) | `--e-spring` | proposed for the keyframe; settled (plan) for "catcher never animated" | S:234; plan the shell "Launcher v1" |
+| Launcher open latency budget | p95 < 100 ms from `launcher toggle` to first frame, over 20 toggles | n/a (a latency, not a duration) | settled (plan) | plan the shell; the shell's `dev/accept/launcher.sh` |
 | Undo toast (in apps) | spring in from `translateX(-50%) translateY(160%)` over `--t-big`; hold ToastHold 5200 ms | `--e-spring` | settled (prototype) | S:360-364, S:1552 |
 | Notification banner | spring in (as the toast); hold ~5 s; top-right; swipe right dismisses | `--e-spring` | proposed; entry direction decided: from the right, `notifications.banner_entry_direction` selects from below (section 12 item 7) | Appendix C-D (M) |
 | Workspace switch: frame tint cross-fade | 380 ms (`--t-scene`) opacity cross-fade of two layers | `--e-out` | settled (user) | plan; S:86, S:1178-1186 |
-| Wallpaper light/dark cross-fade | `--t-big` | not specified | settled (plan) | plan sill "Wallpaper" |
-| Bar menus (tray, clock, volume, network, battery, workspace) | `menu-pop`, `--t-move`, `--e-spring` on first open | `--e-spring` | proposed; conflicts with macOS "no open animation" (section 12) | S:666; plan sill "every menu … with ds Menu"; Appendix C-D |
+| Wallpaper light/dark cross-fade | `--t-big` | not specified | settled (plan) | plan the shell "Wallpaper" |
+| Bar menus (tray, clock, volume, network, battery, workspace) | `menu-pop`, `--t-move`, `--e-spring` on first open | `--e-spring` | proposed; conflicts with macOS "no open animation" (section 12) | S:666; plan the shell "every menu … with ds Menu"; Appendix C-D |
 | Switching between open bar menus by hover | instant, no animation | | proposed (from macOS L) | Appendix C-D |
 | Bar menu close | fade | not specified (proposed `--t-quick` `--e-out`) | proposed | Appendix C-D (L) |
 | Dock context menu, dock hover label | not specified | | not specified | Appendix C-A: hover label delay/size UNKNOWN |
@@ -626,7 +626,7 @@ mount and, each time the target changes, starts a new leg from the exact positio
 the old leg has at that instant (retargeting; nothing restarts, nothing waits). A contact that
 carries a velocity (`Contact::with_velocity`, from a drag's `onpointerup`) starts the leg at that
 velocity instead. `use_spring_motion(at, PxPerUnit) -> SpringMotion` is the imperative form:
-`go(target, spec)`, `track(at)` (1:1 under a hand, no frames of its own), `snap(at)`. Two dimensions (sill Q432, a widget springing into
+`go(target, spec)`, `track(at)` (1:1 under a hand, no frames of its own), `snap(at)`. Two dimensions (the shell Q432, a widget springing into
 its snap cell): `use_spring_point(target: Point, spec)` and `use_spring_point_motion(at)`, one
 spring per axis, `go(target, touch, Release { x, y }, response)` handing each axis the hand's
 velocity along it; `PointThrow::landing` picks the cell nearest the projection. The frame
@@ -673,9 +673,9 @@ Reduced rule.
 | Sheet hide, show again | `--present-p` 0..1, Quick out, Move in | remote (1.0) | `sheet-out`; a re-show restarted `peek-in` |
 | Edge panel hide, show again | `--present-p` 0..1, Quick out, Move in | remote (1.0) | `panel-out`, `hold` on a taken-back hide |
 | Top-edge bar hide, show again | the same machine, `--t-overview` both ways | remote (1.0) | `lift-out`, `hold` on a taken-back hide |
-| Dock tile drag return (`DragReturnFrame`, sill wires the drag) | `--drag-dx`/`--drag-dy` px, Move | the release, per axis | none (sill had no return) |
+| Dock tile drag return (`DragReturnFrame`, the shell wires the drag) | `--drag-dx`/`--drag-dy` px, Move | the release, per axis | none (the shell had no return) |
 
 Not converted: the launcher's open and close (27 section 3.12 lists it last; it keeps its
 keyframes), the dock's magnification (27 section 8 decision 4), sheet and panel drag
-(neither takes a drag yet), workspace swipe (12 section 12.3.7, sill's). The swipe's dismiss
+(neither takes a drag yet), workspace swipe (12 section 12.3.7, the shell's). The swipe's dismiss
 decision keeps its settings-backed thresholds (80 px, 600 px/s) rather than the projection.

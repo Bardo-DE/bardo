@@ -1,7 +1,7 @@
 # cargo-deny gate for the whole workspace. Run: cargo xtask check deny (or cargo deny check).
 #
 # Starter file, merged on 2026-11-15 from the 28 per-repo deny.toml files under crates/ (find crates -name deny.toml).
-# Licence lists are the union; advisory ignores are the union (anyview, sill, airwaves, the caller-identity library, the updater);
+# Licence lists are the union; advisory ignores are the union (anyview, the shell, airwaves, the caller-identity library, the updater);
 # bans are only the ones every repo that had them agreed on (openssl). Per-repo bans that guarded one
 # library (the plugin host: no codec bindings, zbus, tokio) are NOT merged here; they belong to the layers check in phase 2.
 # GPL, AGPL and EUPL are not allowed for linked code: a dependency under one would change what the desktop may be

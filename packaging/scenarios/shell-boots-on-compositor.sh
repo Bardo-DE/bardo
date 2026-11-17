@@ -48,7 +48,7 @@ step_boot() {
   start_compositor || return 1
   scratch_new
   build || return 1
-  floor_sill_callers
+  floor_shell_callers
   launch_daemon
 }
 

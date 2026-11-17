@@ -24,8 +24,8 @@
 #   W1_SCREEN_URL    the model that looks at the screen, the same way (a tunnel to the one on fatcat)
 # The script never starts a model. Start the screen model on fatcat yourself, only when you are ready, and stop it after.
 # Optional: W1_PLANNER_MODEL (default qwen3-4b-instruct-2507-fp8), W1_SCREEN_MODEL (default holo4-35b-a3b-fp8),
-# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SILL / _CUA / _DOCKET
-# (build folders, default /mnt/data/cargo/w1-*), W1_COMPOSITOR, W1_FAKE_LOGIND, W1_SILL, W1_CUAD, W1_BRINGUP,
+# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SHELL / _CUA / _DOCKET
+# (build folders, default /mnt/data/cargo/w1-*), W1_COMPOSITOR, W1_FAKE_LOGIND, W1_SHELL, W1_CUAD, W1_BRINGUP,
 # W1_BARDO_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding bardo-compositor, bardo-shell, ...),
 # W1_MODEL_CATALOG, W1_PROVIDERS, W1_SHOT_EVERY (seconds, default 120).
 #
@@ -48,12 +48,12 @@ SCREEN_MODEL=${W1_SCREEN_MODEL:-holo4-35b-a3b-fp8}
 
 T_COMPOSITOR=${W1_TARGET_COMPOSITOR:-/mnt/data/cargo/w1-compositor}
 T_TOOLS=${W1_TARGET_COMPOSITOR_TOOLS:-/mnt/data/cargo/w1-compositor-tools}
-T_SILL=${W1_TARGET_SILL:-/mnt/data/cargo/w1-sill}
+T_SHELL=${W1_TARGET_SHELL:-/mnt/data/cargo/w1-shell}
 T_CUA=${W1_TARGET_CUA:-/mnt/data/cargo/w1-cua}
 T_DOCKET=${W1_TARGET_DOCKET:-/mnt/data/cargo/w1-docket}
 COMPOSITOR=${W1_COMPOSITOR:-$T_COMPOSITOR/debug/bardo-compositor}
 FAKE_LOGIND=${W1_FAKE_LOGIND:-$T_TOOLS/debug/fake-logind}
-SILL=${W1_SILL:-$T_SILL/debug/bardo-shell}
+SHELL=${W1_SHELL:-$T_SHELL/debug/bardo-shell}
 CUAD=${W1_CUAD:-$T_CUA/debug/bardo-computer-use}
 BRINGUP=${W1_BRINGUP:-$T_DOCKET/debug/agent-bringup}
 BARDO_DO=${W1_BARDO_DO:-$T_DOCKET/debug/accept-bardo-do}
@@ -78,7 +78,7 @@ print_build() {
 # 2. the stand-in for the system's login service, in a folder of its own so test features do not reach step 1
 (cd $SIB/bardo-compositor && CARGO_TARGET_DIR=$T_TOOLS nice cargo build -p compositor-testkit --bin fake-logind)
 # 3. the shell (bar, dock, launcher)
-(cd $SIB/bardo-shell && CARGO_TARGET_DIR=$T_SILL nice cargo build -p shell-app --features debug)
+(cd $SIB/bardo-shell && CARGO_TARGET_DIR=$T_SHELL nice cargo build -p shell-app --features debug)
 # 4. the screen helper
 (cd $SIB/cua && CARGO_TARGET_DIR=$T_CUA nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command
@@ -160,7 +160,7 @@ pick_browser() {
 
 require_built() {
   local missing=0 path
-  for path in "$COMPOSITOR" "$FAKE_LOGIND" "$SILL" "$CUAD" "$BRINGUP" "$BARDO_DO" \
+  for path in "$COMPOSITOR" "$FAKE_LOGIND" "$SHELL" "$CUAD" "$BRINGUP" "$BARDO_DO" \
               "$(dirname "$BRINGUP")/accept-actiond" "$(dirname "$BRINGUP")/accept-companiond"; do
     [ -x "$path" ] || { note "Not built yet: $path"; missing=1; }
   done
@@ -324,22 +324,22 @@ start_compositor() {
   note "The desktop window is up."
 }
 
-start_sill() {
+start_shell() {
   local flags=()
   printf '{"displays":[]}\n' >"$HOME_S/.config/ddc.json"
-  "$SILL" run --help 2>&1 | grep -q -- --fake-ddc && flags+=(--fake-ddc "$HOME_S/.config/ddc.json")
-  if "$SILL" run --help 2>&1 | grep -q -- --dev-callers; then
+  "$SHELL" run --help 2>&1 | grep -q -- --fake-ddc && flags+=(--fake-ddc "$HOME_S/.config/ddc.json")
+  if "$SHELL" run --help 2>&1 | grep -q -- --dev-callers; then
     printf '[[peer]]\napp = "org.bardo.Intents"\nrole = "router"\nexe = ["%s"]\n' \
       "$(readlink -f "$(dirname "$BRINGUP")/accept-actiond")" >"$RUN/dev-callers.toml"
     chmod 600 "$RUN/dev-callers.toml"
     flags+=(--dev-callers "$RUN/dev-callers.toml")
   fi
-  in_env "$SILL" run "${flags[@]}" >"$RUN/bardo-shell.log" 2>&1 </dev/null &
+  in_env "$SHELL" run "${flags[@]}" >"$RUN/bardo-shell.log" 2>&1 </dev/null &
   BARDO_SHELL_PID=$!
   record bardo-shell "$BARDO_SHELL_PID"
   local i
   for i in $(seq 200); do
-    in_env "$SILL" ping >/dev/null 2>&1 && return 0
+    in_env "$SHELL" ping >/dev/null 2>&1 && return 0
     kill -0 "$BARDO_SHELL_PID" 2>/dev/null || break
     sleep 0.1
   done
@@ -573,7 +573,7 @@ main() {
   say "Starting"
   start_bus
   start_compositor
-  start_sill
+  start_shell
   start_assistant
   start_screen_helper
   start_page
@@ -584,7 +584,7 @@ main() {
   else
     note "(The page's window was not seen in the timing lines; carrying on.)"
   fi
-  in_env "$SILL" companion summon >/dev/null 2>&1 || note "(The launcher did not open; open it yourself.)"
+  in_env "$SHELL" companion summon >/dev/null 2>&1 || note "(The launcher did not open; open it yourself.)"
   shot page-and-launcher
   say "Your turn"
   note "The product page is open in the window, on this computer only: $PAGE_URL"

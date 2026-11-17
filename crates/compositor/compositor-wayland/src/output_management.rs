@@ -1,5 +1,5 @@
 //! `zwlr_output_manager_v1`: lists the heads (outputs) and their modes and applies or tests a
-//! configuration a client built (wlr-randr, sill's displays page).
+//! configuration a client built (wlr-randr, the shell's displays page).
 //!
 //! A configuration is a list of per-head changes ([`HeadRequest`]) at a serial the client
 //! read; a stale serial is answered `cancelled`. `test` checks every head with

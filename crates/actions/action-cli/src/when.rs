@@ -1,7 +1,7 @@
 //! Dates, instants, durations and decimals as a terminal writes them.
 //!
 //! A date or an instant is RFC 3339 (`2026-10-03`, `2026-10-03T09:30:00+02:00`). The launcher's
-//! natural-date parser ("tomorrow at nine") is sill's and cannot be reached from here; that is an
+//! natural-date parser ("tomorrow at nine") is the shell's and cannot be reached from here; that is an
 //! interface ask, and until it lands a natural date is a usage error that says so.
 
 use action_vocab::{CivilDate, Decimal, Scale, Seconds};

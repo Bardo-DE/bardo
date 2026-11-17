@@ -24,7 +24,7 @@ const SECTIONS: &[(&str, &str)] = &[
 ];
 
 /// §3.1 rows that are bardo-shell's, not `AppearanceSettings`': the mirror image of ui-settings'
-/// `SILL_OWNED` list (its `tests/keys.rs`).
+/// `SHELL_OWNED` list (its `tests/keys.rs`).
 const FROM_APPEARANCE: &[&str] = &[];
 
 /// Keys bardo-shell ships that design/22 has no row for yet; the row is the UI kit's to add (FINDINGS: open

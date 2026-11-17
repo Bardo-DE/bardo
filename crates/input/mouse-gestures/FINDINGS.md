@@ -177,8 +177,8 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 - *Shell side of the lock (INPUT-09).* The mouse gestures daemon drops gesture keys and actions while a
   subscriber says the session is locked (`SessionLock`). Nothing sends it yet: shell-host must
   send `ToDaemon::SessionLock` when the lock service reports Locked or Unlocked (interface ask in
-  the lane report). Neither the compositor nor sill publishes a lock state a daemon outside the session
-  can read, and logind's `LockedHint` is not set by sill's locker.
+  the lane report). Neither the compositor nor the shell publishes a lock state a daemon outside the session
+  can read, and logind's `LockedHint` is not set by the shell's locker.
 - *Settings and actions after the move to a system service (2026-10-17): done.* The service
   (a dynamic user with `ProtectHome=yes`) reads `/etc/bardo/mouse-gestures/gestures.toml`; the person's
   `~/.config/bardo/mouse-gestures/gestures.toml` reaches it as `ToDaemon::UserConfig`, sent by the shell
@@ -191,7 +191,7 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   the machine's value (the merge happens before the lenient reading). The actions that need the
   session (`Workspace`, `ShellIpc`, `Command`) are a
   `ToHost::Run` to the shell's connection alone, whatever its filter; the shell runs them as the
-  person (sill: the workspace verbs and shell lines through its own request path, a program as a
+  person (the shell: the workspace verbs and shell lines through its own request path, a program as a
   child of the shell). With no shell connected the action is dropped and logged. Key actions still go
   through the input service. The protocol is version 2 (`Run`, `UserConfig`, 64 KiB packets).
 - *Fail safe without a shell (NEW-QDH-2, 2026-10-17).* The session counts as locked unless a subscriber has said

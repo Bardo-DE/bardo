@@ -12,8 +12,8 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
 
 1. **The shell side of the chooser.** `org.bardo.Shell1.PickCaptureSource` is the client in `chooser.rs` (the
    `Shell1` proxy): `(app_label: s, kinds: u, multiple: u, cursor_modes: au) -> (sources: a(ss), cursor: u)` on name
-   `org.bardo.Shell`, path `/org/bardo/Shell1`. sill serves it since its p2-ch lane (checked against sill's source on
-   2026-10-15, see "portal-shot" below). Closed on this side; the jailed chain's fake shell still stands in for sill.
+   `org.bardo.Shell`, path `/org/bardo/Shell1`. The shell serves it since its p2-ch lane (checked against the shell's source on
+   2026-10-15, see "portal-shot" below). Closed on this side; the jailed chain's fake shell still stands in for the shell.
 2. **Settings source.** `DesktopAppearance` reads `bardo/appearance.toml` with a small parser of its
    own (`settings::parse_appearance`: `theme` and `accent` in `[appearance]`; no contrast key exists
    in the document yet). Bardo's `ds-settings` (v0.3.16) was not added: it pulls `ds-core`, `ds-style`
@@ -102,7 +102,7 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
   The desktop installs the portal through it and ships its own `bardo-portals.conf` (same choices as `dist/`).
 - **Asks before the desktop can drop xdg-desktop-portal-wlr in earnest.** (a) Screenshot is answered as failed
   while `main.rs` passes an empty `FixedLayout` (open item 7): it needs an `OutputLayout` from the capture
-  side. (b) ScreenCast Start needs `org.bardo.Shell1.PickCaptureSource` served by sill (open item 1);
+  side. (b) ScreenCast Start needs `org.bardo.Shell1.PickCaptureSource` served by the shell (open item 1);
   without it a browser's share dialog never gets a source. (c) `PickColor` is cancelled until the shell offers
   a picker.
 
@@ -146,14 +146,14 @@ Not compiled; the orchestrator gates.
   D-Bus-activated process needs both: the session must run `dbus-update-activation-environment --systemd
   WAYLAND_DISPLAY XDG_RUNTIME_DIR` (or the unit must import them). The screencast path had the same need already.
 
-### Asks for sill
+### Asks for the shell
 
-1. **`org.bardo.Shell1.PickCaptureSource` is already served** by sill (`sill_services::capture_pick`, exported on the
+1. **`org.bardo.Shell1.PickCaptureSource` is already served** by the shell (`shell_services::capture_pick`, exported on the
    seat connection that owns `org.bardo.Shell`); its signature, caller check and `("output", name)` / `("window", id)`
    sources match the portal's client. Nothing to change. Two notes: (a) until the seat exists the object is absent and
    The portal now treats that as "nobody to ask" and cancels; (b) the call has no timeout on either side, it waits on the
    person.
-2. **`org.bardo.Shell1.PickColor` is not served and is not anywhere in sill.** The shell must serve, on the same object
+2. **`org.bardo.Shell1.PickColor` is not served and is not anywhere in the shell.** The shell must serve, on the same object
    (`/org/bardo/Shell1`, interface `org.bardo.Shell1`, name `org.bardo.Shell`):
 
    ```
@@ -169,7 +169,7 @@ Not compiled; the orchestrator gates.
      LimitsExceeded`. The caller leaving the bus takes the eyedropper down.
    - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.bardo` may call
      (`AccessDenied` otherwise).
-   - Until sill serves it, the portal answers every `PickColor` as cancelled when the object is absent
+   - Until the shell serves it, the portal answers every `PickColor` as cancelled when the object is absent
      (`UnknownObject`/`UnknownMethod`), so no app breaks.
 3. **Remote control consent (from p2-t3): closed 2026-10-16.** It goes through `AskPermission` (item 4); no
    `AskRemoteControl` is asked of the shell.
@@ -189,9 +189,9 @@ Not compiled; the orchestrator gates.
    - `answer`: 0 when the person pressed `grant_label`, 1 when they pressed `deny_label`, 2 when they dismissed the
      sheet (Escape, or it was replaced) without answering. Anything else is a bad answer and the portal call fails.
    - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.bardo`.
-   - Until sill serves it (it does not at sill 3fecef0), the portal answers every question as denied (response 1) when
+   - Until the shell serves it (it does not at the shell 3fecef0), the portal answers every question as denied (response 1) when
      the object is absent, so a screenshot is refused rather than taken unasked. Three things now ask it: the Access
-     portal, an `interactive` or unvouched Screenshot (PORTAL-06) and remote control (PORTAL-04). Until sill serves
+     portal, an `interactive` or unvouched Screenshot (PORTAL-06) and remote control (PORTAL-04). Until the shell serves
      it, remote control and those screenshots do not work; fail closed.
    - The Access portal's `icon` and `choices` options are not forwarded or answered; the reply carries no results.
    - The desktop's own `bardo-portals.conf` (desktop/session) must also route
@@ -299,7 +299,7 @@ Written without a build or a run: nothing here has been compiled. Fixed in the p
 - The compositor: `org.bardo.Compositor1.EndEis(session: t)`: end every socket handed out for `session` (stop its input and
   close the compositor's end), callable only by `bardo-portal.service` like `ConnectEis`. Until it exists a close logs a
   warning and the app keeps the socket it was given (PORTAL-05's other half).
-- sill: serve `org.bardo.Shell1.AskPermission` (item 4 above); remote control and interactive screenshots need it.
+- The shell: serve `org.bardo.Shell1.AskPermission` (item 4 above); remote control and interactive screenshots need it.
 
 ## Production audit wave 2, area PORTAL (2026-10-16, lane pa2-portal)
 
@@ -313,7 +313,7 @@ ARCHITECTURE section 3b-2.
   `portal_frontend` at `Full`, including the `Notify*` methods (accepted and dropped, still guarded) and Settings.
   The frontend's unit therefore has to be provable by the desktop's table (not ours), and
   `dist/bardo-portal.service` unsets the loader variables so the portal's own `portal` standing can reach `Full` for the
-  The compositor and sill checks.
+  The compositor and the shell checks.
 - **Opener only (PORTAL-03).** The frontend is one peer for every app, so the "creator" check separates a second
   frontend-role peer from the first and stops a session being driven by anything but its opener; it is not a
   per-app boundary (the frontend owns that).
@@ -330,8 +330,8 @@ ARCHITECTURE section 3b-2.
 
 - **Properties are not guarded.** zbus answers `Get`/`GetAll` for `version`, `AvailableSourceTypes`,
   `AvailableCursorModes`, `AvailableTargets` itself. They are constants. Closes if a property ever carries state.
-- **Sill `DoNotQueue`.** sill requesting `org.bardo.Shell` with `DoNotQueue` and failing loudly if it is taken is
-  sill's half of PORTAL-10 (not in this repo).
+- **The shell `DoNotQueue`.** the shell requesting `org.bardo.Shell` with `DoNotQueue` and failing loudly if it is taken is
+  The shell's half of PORTAL-10 (not in this repo).
 - **The jailed chain** (`dev/`) has no caller table and no `portal_frontend`, so its portal refused everything.
   Closed 2026-10-17: see "The jailed chain is let in" below.
 - **No test of the real `Full` path.** Tests introduce standings. Whether the unit manager confirms
@@ -340,14 +340,14 @@ ARCHITECTURE section 3b-2.
 **Asks**
 
 - The caller-identity library: none. The desktop table must name `portal_frontend` (unit `xdg-desktop-portal.service`) and `shell`
-  (`sill.service`); the sample table does.
-- sill: serve `org.bardo.Shell` with `DoNotQueue` (above).
+  (`shell.service`); the sample table does.
+- The shell: serve `org.bardo.Shell` with `DoNotQueue` (above).
 
 ## The jailed chain is let in (lane devc, 2026-10-17)
 
 The jail has no root-owned table and no unit manager, so every call from `xdg-desktop-portal` was refused as an
 unknown caller. The caller-identity library v0.1.4 adds developer rows (`dev-rows`: `Table::from_toml_dev`, `TableFiles::load_dev`,
-`Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`); the portal takes them the way sill does.
+`Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`); the portal takes them the way the shell does.
 
 - **Feature `debug`** on the portal crate turns on `caller-identity-dbus/dev-rows` and nothing else. It is off by default and
   in every shipped build (the desktop gate greps for `dev-rows`).
@@ -430,7 +430,7 @@ unknown caller. The caller-identity library v0.1.4 adds developer rows (`dev-row
   stand-alone test: it needs a live `capture::Job`; the real run covers it (dev/accept).
 - **Asks of other repos.** The Settings app (Privacy page): a row per remembered app with "Let <name> share this screen without
   asking" (screens: every display, or one by name; input on/off) calling `Allow`; the existing list and Remove button
-  already show and revoke it. sill (picker): for a proven app a "Don't ask again for <name>" box that makes the shell call
+  already show and revoke it. The shell (picker): for a proven app a "Don't ask again for <name>" box that makes the shell call
   `Allow` after the yes. Neither is done.
 - **Residual.** An unproven app is never let in by it (as for tokens): if the live log shows RustDesk unproven (its server
   runs under `sudo` in a logind session), the proof, not the grant, is what to fix next.

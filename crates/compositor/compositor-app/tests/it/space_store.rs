@@ -49,7 +49,7 @@ fn spaces_saved_through_a_store_load_back() {
         SpaceFile::empty(),
         "a missing file is no Spaces"
     );
-    let file = SpaceFile::import_sill_json(
+    let file = SpaceFile::import_shell_json(
         r#"{"by_id": {"s-00000000000000000000000000000001": {"index": 0}}}"#,
     )
     .expect("import");

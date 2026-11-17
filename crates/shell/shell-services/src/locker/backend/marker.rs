@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn a_marker_relocks_only_the_own_lock() {
-        let own = Some(Host::SillSession);
+        let own = Some(Host::ShellSession);
         let cases = [
             (own, LockMarker::Present, Restore::LockNow),
             (own, LockMarker::Absent, Restore::Nothing),

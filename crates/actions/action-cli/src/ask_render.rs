@@ -79,7 +79,7 @@ pub fn needs_you(needs: &NeedsYou) -> Vec<String> {
     match needs {
         NeedsYou::Confirm(id) => vec![
             format!("Waiting for your confirmation ({id})."),
-            "Confirmations are answered in the shell (sill's sheet); bardo-do cannot answer them."
+            "Confirmations are answered in the shell (the shell's sheet); bardo-do cannot answer them."
                 .to_owned(),
         ],
         NeedsYou::Question { text, choices } => {

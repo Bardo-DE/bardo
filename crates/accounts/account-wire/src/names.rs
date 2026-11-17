@@ -17,7 +17,7 @@ pub const GRANTS_PATH: &str = "/org/bardo/Grants1";
 /// The person's computers on their Tailscale network (`org.bardo.Tailnet1`), served on
 /// accountd's bus name.
 pub const TAILNET_PATH: &str = "/org/bardo/Tailnet1";
-/// The sheet host's bus name (`org.bardo.AccountsSheet1`, served by sill or a standalone host).
+/// The sheet host's bus name (`org.bardo.AccountsSheet1`, served by the shell or a standalone host).
 pub const SHEET_BUS: &str = "org.bardo.AccountsSheet1";
 /// The sheet host's object.
 pub const SHEET_PATH: &str = "/org/bardo/AccountsSheet1";

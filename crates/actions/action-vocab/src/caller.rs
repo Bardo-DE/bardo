@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CallerRole {
-    /// sill's launcher: acts as the person.
+    /// The shell's launcher: acts as the person.
     Launcher,
     /// A Bardo app recording a turn from its own prompt field.
     Field,
@@ -26,11 +26,11 @@ pub enum CallerRole {
     Mcp,
     /// Any process running `bardo-do`: connection-derived, like every role.
     Cli,
-    /// sill as the only `Confirm1` server the router trusts.
+    /// The shell as the only `Confirm1` server the router trusts.
     Confirm,
     /// The compositor fork: may halt.
     Compositor,
-    /// sill's control centre: may halt and resume.
+    /// The shell's control centre: may halt and resume.
     Control,
     /// Any other app: its own actions, plus search, preview and suggest.
     App,
@@ -79,7 +79,7 @@ pub struct Caller {
 }
 
 impl Caller {
-    /// The launcher (sill), acting as the person.
+    /// The launcher (the shell), acting as the person.
     #[must_use]
     pub fn launcher() -> Self {
         Self {

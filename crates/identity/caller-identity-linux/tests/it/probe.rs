@@ -8,7 +8,7 @@ use caller_identity_linux::{
 };
 
 const PID: u32 = 4242;
-const SILL_CGROUP: &str =
+const SHELL_CGROUP: &str =
     "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service\n";
 const IMAGE: &str = "/opt/bardo/releases/1/bin/bardo-shell";
 
@@ -52,7 +52,7 @@ fn writable_by_owner() -> FileTrust {
 #[test]
 fn a_root_owned_image_in_a_unit_reads_as_such() {
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Present(IMAGE, FileTrust::RootOnly),
     ));
     let facts = probe(tree).expect("the probe reads");
@@ -75,7 +75,7 @@ fn a_deleted_image_is_judged_by_the_running_inode_not_the_path() {
     // A package update replaced the file: the path now holds a root-owned file, the running
     // inode is the user's old copy. The link reads "<path> (deleted)".
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Deleted(IMAGE, writable_by_owner()),
     ));
     match exe_of(tree) {
@@ -86,7 +86,7 @@ fn a_deleted_image_is_judged_by_the_running_inode_not_the_path() {
         other => panic!("expected a read image, got {other:?}"),
     }
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Deleted(IMAGE, FileTrust::RootOnly),
     ));
     assert!(matches!(
@@ -104,7 +104,7 @@ fn the_walk_stops_at_the_first_directory_that_is_not_root_only() {
     let tree = FixtureProc::new()
         .dir("/opt/bardo/releases", writable_by_owner())
         .process(&process(
-            SILL_CGROUP,
+            SHELL_CGROUP,
             FixtureImage::Present(IMAGE, FileTrust::RootOnly),
         ));
     assert!(matches!(
@@ -118,7 +118,7 @@ fn the_walk_stops_at_the_first_directory_that_is_not_root_only() {
     let tree = FixtureProc::new()
         .dir("/opt", FileTrust::Writable(Writer::Group))
         .process(&process(
-            SILL_CGROUP,
+            SHELL_CGROUP,
             FixtureImage::Present(IMAGE, FileTrust::RootOnly),
         ));
     assert!(matches!(
@@ -133,7 +133,7 @@ fn the_walk_stops_at_the_first_directory_that_is_not_root_only() {
 #[test]
 fn a_writable_file_in_root_directories_is_writable() {
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Present(IMAGE, writable_by_owner()),
     ));
     assert!(matches!(
@@ -147,22 +147,24 @@ fn a_writable_file_in_root_directories_is_writable() {
 
 #[test]
 fn an_unreadable_image_link_is_hidden_not_an_error() {
-    let tree = FixtureProc::new().process(&process(SILL_CGROUP, FixtureImage::Hidden));
+    let tree = FixtureProc::new().process(&process(SHELL_CGROUP, FixtureImage::Hidden));
     assert_eq!(exe_of(tree), Exe::Hidden);
 }
 
 #[test]
 fn a_path_of_another_mount_namespace_is_hidden() {
     // The link reads a path this file system has no file for: the host cannot judge it.
-    let tree =
-        FixtureProc::new().process(&process(SILL_CGROUP, FixtureImage::Elsewhere("/app/bin/x")));
+    let tree = FixtureProc::new().process(&process(
+        SHELL_CGROUP,
+        FixtureImage::Elsewhere("/app/bin/x"),
+    ));
     assert_eq!(exe_of(tree), Exe::Hidden);
     // No exe link at all (a kernel thread).
-    let tree = FixtureProc::new().file("/proc/4242/cgroup", SILL_CGROUP, FileTrust::RootOnly);
+    let tree = FixtureProc::new().file("/proc/4242/cgroup", SHELL_CGROUP, FileTrust::RootOnly);
     assert_eq!(exe_of(tree), Exe::Hidden);
     // A target that is not an absolute plain path (an anonymous inode) names no image.
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Elsewhere("anon_inode:[pidfd]"),
     ));
     assert_eq!(exe_of(tree), Exe::Hidden);
@@ -219,7 +221,7 @@ fn malformed_files_are_errors_and_a_missing_cgroup_is_a_gone_process() {
 #[test]
 fn a_process_that_left_while_it_was_read_is_gone() {
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Present(IMAGE, FileTrust::RootOnly),
     ));
     let gone = Pinned::introduced_gone(pid(), Uid::new(1000), Pin::AtConnect);
@@ -243,7 +245,7 @@ fn a_process_that_left_while_it_was_read_is_gone() {
 fn stand_judges_without_the_manager_so_a_service_tops_out_at_exe() {
     let table = Table::from_toml(TABLE).expect("a table");
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Present(IMAGE, FileTrust::RootOnly),
     ));
     match Prober::new(tree).stand(&held(), &table) {
@@ -260,7 +262,7 @@ fn stand_judges_without_the_manager_so_a_service_tops_out_at_exe() {
     let tree = FixtureProc::new()
         .dir("/opt/bardo", writable_by_owner())
         .process(&process(
-            SILL_CGROUP,
+            SHELL_CGROUP,
             FixtureImage::Present(IMAGE, FileTrust::RootOnly),
         ));
     assert_eq!(
@@ -280,7 +282,7 @@ fn a_very_deep_path_is_refused_rather_than_walked() {
         vec!["d"; caller_identity_linux::WALK_MAX + 1].join("/")
     );
     let tree = FixtureProc::new().process(&process(
-        SILL_CGROUP,
+        SHELL_CGROUP,
         FixtureImage::Present(&deep, FileTrust::RootOnly),
     ));
     assert!(matches!(probe(tree), Err(ProbeError::Malformed { .. })));

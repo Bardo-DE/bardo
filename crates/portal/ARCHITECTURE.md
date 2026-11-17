@@ -211,7 +211,7 @@ the first one there is: nothing names this machine's hardware); `input` is the p
 keyed by the app's proven id, and it does not run out. `Start` consults it when there is no token or the token does not
 stand: `Shared::restored` for the screen, `restored_kinds` for input (an ask for more kinds than were allowed is asked).
 It is listed by `ListGrants` as "until taken back" and `Revoke` removes it with the rest. An unproven app is never let in
-by it, as for tokens. Settings (the Settings app) and the first-time picker (sill) are the person's way in; see FINDINGS.
+by it, as for tokens. Settings (the Settings app) and the first-time picker (the shell) are the person's way in; see FINDINGS.
 
 ## 5. Window capture
 

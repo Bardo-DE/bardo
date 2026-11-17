@@ -47,7 +47,7 @@ pub async fn until_owned(connection: &zbus::Connection, name: &str) {
 }
 
 impl World {
-    /// Starts everything, in dependency order: the bus, sill, accountd, inferd (replaying `cassette`),
+    /// Starts everything, in dependency order: the bus, the shell, accountd, inferd (replaying `cassette`),
     /// memoryd, intentd (with the mail manifest installed), the mail provider, readerd, companiond.
     pub async fn start(binaries: &Binaries, consent: Consent, cassette: Cassette) -> World {
         let model = ModelSource::Scripted(cassette.0.to_owned());
@@ -94,14 +94,14 @@ impl World {
         let bus = PrivateBus::start(root);
         let address = bus.address().to_owned();
 
-        // sill is on the bus before any daemon needs it.
-        let sill = within("a connection to the private bus", bus.connect()).await;
-        let (sheet, confirms) = within("sill's Confirm1 to be served", confirm::serve(&sill))
+        // The shell is on the bus before any daemon needs it.
+        let shell = within("a connection to the private bus", bus.connect()).await;
+        let (sheet, confirms) = within("shell's Confirm1 to be served", confirm::serve(&shell))
             .await
             .expect("Confirm1");
 
         // Files the daemons read: memoryd's callers, its Spaces, intentd's manifest and consent.
-        // The test process is the shell (sill): the fake proc root says so.
+        // The test process is the shell (the shell): the fake proc root says so.
         let record = options.record.then(|| root.join("record.jsonl"));
         place(root, std::process::id(), Cgroup::Unit("bardo-shell"));
         write(
@@ -148,7 +148,7 @@ impl World {
                 .expect("daemon starts");
             place(root, daemon.1.pid(), Cgroup::Unit(name));
             daemons.push(daemon);
-            until_owned(&sill, owns).await;
+            until_owned(&shell, owns).await;
         };
         if let Some(home) = &options.keys_home {
             home.seed(root).expect("the key home's records are copied");
@@ -216,7 +216,7 @@ impl World {
             sheet,
             confirms,
             app: log,
-            sill,
+            shell,
             _helpers: vec![provider_connection],
             relays: std::sync::Mutex::default(),
             dir,

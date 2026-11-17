@@ -13,7 +13,7 @@
 //!   formed and confined; `Ruled` is how the router ruled. `IntentsCourt` is the real one, over
 //!   `action-client`. The host decides nothing: not whether to ask the person, not whether a
 //!   standing grant stands in, not whether the breaker is tripped. Those are the router's, and
-//!   the sheet is whatever the router's confirmer is (sill's, or the host's own in the
+//!   the sheet is whatever the router's confirmer is (the shell's, or the host's own in the
 //!   development fallback).
 //! - `Performer`: what happens after the router said yes (read the file, write it, start the
 //!   command in the sandbox). Nothing in it runs unless the gate allowed the call; each call

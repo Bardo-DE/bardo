@@ -14,7 +14,7 @@ and how it follows the pointer, bounce, hover label, running indicator, badge an
 click, right-click, drag-to-reorder, drag-out-to-remove, file drops with spring-loading, the
 minimize target, auto-hide, exclusive zone, input region and blur region. It does not govern
 the icons themselves (`08-ICONS.md`), the menu component (`13-BEHAVIOUR-menus-windows.md` §13.3.2-13.3.3
-and `04-COMPONENTS.md`) or the launch mechanics (plan, "Design: sill", Launch).
+and `04-COMPONENTS.md`) or the launch mechanics (plan, "Design: shell", Launch).
 
 ## 10.2 Reference behaviour (macOS)
 
@@ -159,7 +159,7 @@ Opens on secondary **press** (press-drag-release selects, §13.3.2). ds `Menu` (
    minimize, this is the nearest compositor operation, proposed)
 5. `Quit` (close every toplevel via `ToplevelManager::close`), shown when running. With Option
    held while the menu is open the item reads `Force Quit` and sends SIGKILL to the app's
-   `app-sill-*` scope; hidden for apps we did not launch (no pid from the toplevel protocol).
+   `app-shell-*` scope; hidden for apps we did not launch (no pid from the toplevel protocol).
    (R22 M)
 
 `Show All Windows` is omitted in v1 (no per-app window overview in the compositor). Recent documents
@@ -221,7 +221,7 @@ API as used by the desktop applets).
 
 ## 10.4 State machine
 
-Pure, in sill's `shell-dock/src/dock/machine/mod.rs`; the component feeds events and applies
+Pure, in the shell's `shell-dock/src/dock/machine/mod.rs`; the component feeds events and applies
 effects. `now` is always an argument; no clocks inside.
 
 ```rust
@@ -299,7 +299,7 @@ Hover transitions (P = progress):
 | any | OpenMenu / drag leaves the dock / Reveal sliding | Frozen{cause} | |
 | Frozen | MenuClosed, drag ends, slide ends | Tracking if the pointer is inside, else Leaving | |
 
-Label (the `HoverIntent` Label profile; sill keeps no machine of its own): Idle -> Pending on hover of a tile (`hover.label_open_ms`, 100 ms) -> Shown on Frame after the delay;
+Label (the `HoverIntent` Label profile; the shell keeps no machine of its own): Idle -> Pending on hover of a tile (`hover.label_open_ms`, 100 ms) -> Shown on Frame after the delay;
 Shown -> Shown{other} immediately on tile change; Shown -> Warm{until: now + 400 ms} on leave;
 Warm -> Shown{tile} with 0 ms on hover; Warm -> Idle when `now >= until`. Press, drag, menu:
 -> Idle.
@@ -378,7 +378,7 @@ hiding:  y_off(t) = D * e_exit(t / 500 ms)
 ## 10.6 Configuration
 
 Settings app keys, stored in `~/.config/shell/settings.toml` under `dock` (`22-SETTINGS.md` is the full list) (pinned items stay in
-`~/.config/bardo/shell/layout.toml` `[[dock]]`, built in sill 848a20a7; the old `dock.json` is read once and carried over). Two-state values are enums, not bools.
+`~/.config/bardo/shell/layout.toml` `[[dock]]`, built in the shell 848a20a7; the old `dock.json` is read once and carried over). Two-state values are enums, not bools.
 
 | Key | Type | Default | Range | Status |
 | --- | --- | --- | --- | --- |
@@ -400,10 +400,10 @@ leave 200 ms, hold-to-menu (the `LongPress` delay), remove threshold 64 px.
 
 | Concern | Owner | Notes |
 | --- | --- | --- |
-| Dock surface, machine, `magnify` | `sill-surfaces/src/surfaces/dock/**`, pure helpers table-tested (plan names `magnify(centers, pointer_x, Params)`) | Top layer, anchor BOTTOM, `KeyboardMode::None` (OnDemand while a menu is open, layer-shell-host rule) |
+| Dock surface, machine, `magnify` | `shell-surfaces/src/surfaces/dock/**`, pure helpers table-tested (plan names `magnify(centers, pointer_x, Params)`) | Top layer, anchor BOTTOM, `KeyboardMode::None` (OnDemand while a menu is open, layer-shell-host rule) |
 | Layer surface, regions, blur, popups, frame pacing | `layer-shell-host` (`layer`, `region::rounded_strips`, `blur`, `popup`, `frame`) | input and blur regions via `RegionSpec::Element` resolved after layout each frame |
 | Toplevels, activation, minimize rects, workspaces | `shell-services` `toplevel_wl` thread (the toplevel client) | second Wayland connection (plan: orphan rule) |
-| Items, `match_app`, launch | `shell-services` apps + launch services | plan "Design: sill" |
+| Items, `match_app`, launch | `shell-services` apps + launch services | plan "Design: shell" |
 | Badges, progress, urgent | `use_launcher_entry` (zbus match on LauncherEntry) | |
 | Menu component | ds `Menu` (`Placement::Context`) | §13.3.2-13.3.4 behaviour |
 | Label | ds `DockLabel` over `HoverIntent` (Label profile) | |
@@ -480,7 +480,7 @@ headless renderer and pure table tests. Frame times refer to the output refresh 
 
 ## 10.10 Sources
 
-- Plan Appendix C-A (all R rows), "UX decisions settled with the user", "Design: sill" (Dock,
+- Plan Appendix C-A (all R rows), "UX decisions settled with the user", "Design: shell" (Dock,
   Launch), "Design: layer-shell-host" (`RegionSpec::Element`, `rounded_strips`, frame machine),
   "Findings: compositors" (the toplevel client),
   M0 spike item c.

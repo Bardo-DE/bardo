@@ -24,7 +24,7 @@ use std::sync::Arc;
 pub struct Seams {
     /// Where the Spaces file is stored.
     pub space_store: Box<dyn SpaceStore>,
-    /// How a binding calls sill.
+    /// How a binding calls the shell.
     pub shell_calls: Box<dyn ShellCalls>,
     /// How a program is started.
     pub spawner: Box<dyn Spawner>,

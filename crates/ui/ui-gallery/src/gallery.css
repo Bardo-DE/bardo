@@ -68,7 +68,7 @@
 /* The matrix: one cell per scheme and accent. */
 .g-matrix{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s-8)}
 .g-cell{display:flex;flex-direction:column;gap:var(--s-8);padding:var(--s-12);min-height:120px}
-/* The launcher panel's shape, for the embedded palette (sill's 540-wide card), and the dock
+/* The launcher panel's shape, for the embedded palette (shell's 540-wide card), and the dock
    pill's specimen box. A grid item stretches both ways, so the Surface inside fills the box; the
    pill, a flex item, is as wide as its tiles. */
 .g-launcher{display:grid;align-items:start;width:540px;height:330px}

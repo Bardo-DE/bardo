@@ -27,7 +27,7 @@ BUILDS=(
 
   # account-client and its two transports, in the sets their consumers name. No feature is on by
   # default: mailo takes the hosted transport alone, the sync service's syncd the hosted transport with its relays,
-  # The Settings app, sill, docket and the memory service the bus transport.
+  # The Settings app, the shell, docket and the memory service the bus transport.
   "account-client :: -p account-client"
   "account-client-dbus :: -p account-client-dbus"
   "account-client-inproc (no features: mailo) :: -p account-client-inproc --no-default-features"

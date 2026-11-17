@@ -133,7 +133,7 @@ impl Dirs {
     #[must_use]
     pub fn notification_image_dirs(&self) -> Vec<PathBuf> {
         let mut dirs = self.icon_dirs();
-        dirs.push(self.sill_cache().join("notifications"));
+        dirs.push(self.shell_cache().join("notifications"));
         dirs
     }
 
@@ -146,7 +146,7 @@ impl Dirs {
 
     /// `bardo-shell`'s own folder under the state directory.
     #[must_use]
-    pub fn sill_state(&self) -> PathBuf {
+    pub fn shell_state(&self) -> PathBuf {
         self.state.join("bardo").join("shell")
     }
 
@@ -159,13 +159,13 @@ impl Dirs {
 
     /// `bardo-shell`'s own folder under the cache directory.
     #[must_use]
-    pub fn sill_cache(&self) -> PathBuf {
+    pub fn shell_cache(&self) -> PathBuf {
         self.cache.join("bardo").join("shell")
     }
 
     /// `bardo-shell`'s own folder under the config directory (the settings file, the dock pins).
     #[must_use]
-    pub fn sill_config(&self) -> PathBuf {
+    pub fn shell_config(&self) -> PathBuf {
         self.config.join("bardo").join("shell")
     }
 
@@ -218,7 +218,7 @@ mod tests {
         }
         assert_eq!(dirs.runtime.as_deref(), Some(Path::new("/scratch/run")));
         assert_eq!(dirs.pictures, None);
-        assert_eq!(dirs.sill_state(), Path::new("/scratch/state/bardo/shell"));
+        assert_eq!(dirs.shell_state(), Path::new("/scratch/state/bardo/shell"));
         assert_eq!(
             dirs.key_remap_config(),
             Path::new("/scratch/config/bardo/key-remap")

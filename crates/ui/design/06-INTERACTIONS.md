@@ -573,7 +573,7 @@ outbox pill (C:2118-2186).
 | --- | --- | --- |
 | command menu opens | its input takes focus | S:1661 |
 | command menu closes | S: focus not restored (**gap**); C: the shell takes focus (C:2257). Rule: restore focus to the element that had it | S:1663 |
-| a menu opened from a field closes | the field takes the keyboard back (settled 2026-09-24): the caller passes the field `Focus::Controlled(request)` and calls `request.request()` from the menu's `onclose`; nothing is remounted (FINDINGS "Launcher gaps", sill Q44) | |
+| a menu opened from a field closes | the field takes the keyboard back (settled 2026-09-24): the caller passes the field `Focus::Controlled(request)` and calls `request.request()` from the menu's `onclose`; nothing is remounted (FINDINGS "Launcher gaps", the shell Q44) | |
 | any menu or the bubble is clicked | mouse down prevented; focus stays in the field that opened it | S:2099, S:1658, S:2135 |
 | recipient added or removed | the same input keeps focus | S:2280, S:2266 |
 | Cc shown | Cc input takes focus | S:2239 |
@@ -581,7 +581,7 @@ outbox pill (C:2118-2186).
 | hover card, link pill, toast | never take focus | |
 | focus ring | `:focus-visible` 2.5 px accent outline, offset 2, radius 4 | S:55 |
 | desktop launcher | keyboard-first: never depends on hover for its initial state | plan, shell risks |
-| an alert opens (`Alert`, sill Q490) | the default button takes focus: the action, or Cancel when the action is destructive (the HIG: never give the primary role to a destructive button); Tab and Shift+Tab move between its two buttons and never leave it (it is modal); Return presses the default wherever the focus is, Space the focused button | design/04 section 55 |
+| an alert opens (`Alert`, the shell Q490) | the default button takes focus: the action, or Cancel when the action is destructive (the HIG: never give the primary role to a destructive button); Tab and Shift+Tab move between its two buttons and never leave it (it is modal); Return presses the default wherever the focus is, Space the focused button | design/04 section 55 |
 
 ## 18. Escape by context
 
@@ -599,8 +599,8 @@ One Escape dismisses exactly one layer: the innermost. The table is the port's r
 | 7 | the peek | close it | S:1670 |
 | 8 | C: an open view menu | close it | C:2260 |
 | 9 | a hover card | not specified (proposed: close without warm) | |
-| 10 | desktop launcher | close | plan sill |
-| 11 | an alert (`Alert`) | Cancel (as a press on its scrim) | Bardo, sill Q490 |
+| 10 | desktop launcher | close | plan the shell |
+| 11 | an alert (`Alert`) | Cancel (as a press on its scrim) | Bardo, the shell Q490 |
 
 ## 19. Other list behaviours
 
@@ -622,7 +622,7 @@ One Escape dismisses exactly one layer: the innermost. The table is the port's r
 
 ## 20. Desktop interactions (settled)
 
-What the shell (sill, on layer-shell-host) must do. Status: **settled (user)** = decided with the user
+What the shell (the shell, on layer-shell-host) must do. Status: **settled (user)** = decided with the user
 (plan, "UX decisions settled with the user"); **settled (plan)** = in the approved plan's
 `<shell>` design; **proposed** = macOS behaviour from Appendix C adopted here, awaiting the
 user; **not specified**. Appendix C confidence (H primary source, M reliable secondary, L
@@ -633,17 +633,17 @@ observed) is kept.
 | Behaviour | Rule | Status | Source |
 | --- | --- | --- | --- |
 | Position, size | bottom; icons 48 px, magnified up to 96 px; magnification on by default; no auto-hide by default; all adjustable in Settings | settled (user) | plan |
-| Click an icon | not running: launch (activation token; D-Bus activation when the app supports it); running: activate | settled (plan); H | plan sill; C-A |
+| Click an icon | not running: launch (activation token; D-Bus activation when the app supports it); running: activate | settled (plan); H | plan the shell; C-A |
 | Click a running app with no open windows | re-open / un-minimize its most recent window | proposed (L for which window) | C-A |
-| Repeated clicks on a running app | cycle its windows | settled (plan) ("click launch/activate/cycle"); differs from macOS, which does not cycle | plan sill |
-| Right-click menu, order | the app's windows (and recent documents, not specified); Options > Keep in Dock, Open at Login, Show in Files; Show All Windows; Hide; Quit (Alt held: Force Quit) | proposed (Apple order, M); the plan's menu is "windows, desktop actions, Keep in Dock, Quit", so desktop actions (from the `.desktop` file) need a place: proposed after the windows | C-A; plan sill |
+| Repeated clicks on a running app | cycle its windows | settled (plan) ("click launch/activate/cycle"); differs from macOS, which does not cycle | plan the shell |
+| Right-click menu, order | the app's windows (and recent documents, not specified); Options > Keep in Dock, Open at Login, Show in Files; Show All Windows; Hide; Quit (Alt held: Force Quit) | proposed (Apple order, M); the plan's menu is "windows, desktop actions, Keep in Dock, Quit", so desktop actions (from the `.desktop` file) need a place: proposed after the windows | C-A; plan the shell |
 | Modifier clicks | macOS: Cmd-click reveals in Finder, Option-click switches and hides the current app, Option-Cmd-click hides the others. Mapping here (Cmd = Ctrl): Ctrl-click Show in Files, Alt-click switch and hide current, Ctrl+Alt-click hide others | proposed | C-A (H) |
 | Drag an icon out | shows "Remove" once far enough out; release removes it from the dock; running apps cannot be removed | proposed (H); distance not specified | C-A |
 | Drag a file onto an icon | opens the file with that app; the icon highlights while hovered | proposed (H) | C-A |
 | Spring-loading | a file held over an icon for ~0.5 s activates the app | proposed (M) | C-A |
 | Hover label | app name immediately above the icon in a rounded pill; delay and size not specified | proposed (L) | C-A |
-| Badges, progress | red capsule badge top-right (action needed); progress ring; source: `com.canonical.Unity.LauncherEntry` | settled (plan) | plan sill; C-A |
-| Running indicator | a dot ~4-5 pt below the icon | settled (plan) (indicator dots); geometry proposed (L) | plan sill; C-A |
+| Badges, progress | red capsule badge top-right (action needed); progress ring; source: `com.canonical.Unity.LauncherEntry` | settled (plan) | plan the shell; C-A |
+| Running indicator | a dot ~4-5 pt below the icon | settled (plan) (indicator dots); geometry proposed (L) | plan the shell; C-A |
 | Bounce | informational: 1 s; critical: until the app is active; launch: until launched | proposed (H) | C-A; motion in `05-MOTION.md#10-shell-motion` |
 | Auto-hide (when enabled) | shows when the pointer touches the edge and stays still for 0.2 s; ~0.5 s slide; a ~4 px strip stays | settled (user) for the numbers | plan; C-A |
 
@@ -651,12 +651,12 @@ observed) is kept.
 
 | Behaviour | Rule | Status | Source |
 | --- | --- | --- | --- |
-| Open / toggle | `bardo-shell launcher toggle` (compositor shortcut); `open --query` | settled (plan) | plan sill |
-| Close | Escape, focus lost, click on the catcher (the transparent full-screen surface), or toggle | settled (plan) | plan sill |
-| Navigate | Up / Down move the selection; Enter runs it | settled (plan) | plan sill |
-| Providers | Tab cycles providers (apps, calculator, settings, windows, system) | settled (plan) | plan sill |
-| Actions | Ctrl+K (Cmd+K via Toshy) and Alt+K open the selected result's actions | settled (plan) | plan sill |
-| Latency | p95 < 100 ms open over 20 toggles | settled (plan) | plan sill |
+| Open / toggle | `bardo-shell launcher toggle` (compositor shortcut); `open --query` | settled (plan) | plan the shell |
+| Close | Escape, focus lost, click on the catcher (the transparent full-screen surface), or toggle | settled (plan) | plan the shell |
+| Navigate | Up / Down move the selection; Enter runs it | settled (plan) | plan the shell |
+| Providers | Tab cycles providers (apps, calculator, settings, windows, system) | settled (plan) | plan the shell |
+| Actions | Ctrl+K (Cmd+K via Toshy) and Alt+K open the selected result's actions | settled (plan) | plan the shell |
+| Latency | p95 < 100 ms open over 20 toggles | settled (plan) | plan the shell |
 | Search behaviour | the command menu's fuzzy score and grouping (section 11) | proposed | S |
 
 ### 20.3 Menu bar
@@ -669,8 +669,8 @@ observed) is kept.
 | Open / close animation | open: none on macOS (conflicts with ds `menu-pop`; see `05-MOTION.md#12-open-decisions`); close: fade | proposed | C-D |
 | Submenus | "safe triangle": moving toward an open submenu does not close it; submenu delay not specified | proposed (H for the triangle) | C-D |
 | Geometry | bar 24 pt (macOS since Big Sur); status items up to 22 pt, icons 16 pt, disabled 35% opacity; item height ~22 pt, 13 pt font (L) | proposed | C-D |
-| Every menu | an `xdg_popup` anchored to its button with ds `Menu`, keyboard grab on the seat | settled (plan) | plan sill |
-| Workspace indicator | drag to reorder workspaces | settled (plan) | plan sill |
+| Every menu | an `xdg_popup` anchored to its button with ds `Menu`, keyboard grab on the seat | settled (plan) | plan the shell |
+| Workspace indicator | drag to reorder workspaces | settled (plan) | plan the shell |
 
 ### 20.4 Focus and click-through
 

@@ -49,7 +49,7 @@ step_boot() {
   secrets_start || return 1
   acc_config; acc_fake_mail_provider
   accountd_start || return 1
-  sill_start || return 1
+  shell_start || return 1
 }
 
 step_list() {

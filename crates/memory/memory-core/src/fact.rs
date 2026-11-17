@@ -84,7 +84,7 @@ pub struct FactDraft {
     pub on_behalf: Option<Actor>,
 }
 
-/// What the launcher's Memory rows are about: sill's subject key.
+/// What the launcher's Memory rows are about: the shell's subject key.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum MemoryItem {

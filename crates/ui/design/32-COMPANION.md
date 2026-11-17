@@ -60,7 +60,7 @@ how the agent works inside.
 ## 3. Presence, the orb and the glow
 
 `CompanionPresence` (`ui-core::vocab`) is the one vocabulary: Idle, Listening, Working, Acting,
-Waiting. It is derived in one place, sill's `presence_of`, with the priority Waiting, Acting,
+Waiting. It is derived in one place, the shell's `presence_of`, with the priority Waiting, Acting,
 Working, Listening, Idle. An app derives its in-field presence from its own prompt state.
 
 - **The orb.** `CompanionOrb` wraps `VoiceOrb`. `orb_look(presence, motion)` is pure: Idle and
@@ -77,7 +77,7 @@ Working, Listening, Idle. An app derives its in-field presence from its own prom
   | Acting | active, period Act, Bright | inactive, no period, Bright |
   | Waiting | inactive, no period, Held | the same |
 
-- **Deriving the presence** (sill's `presence_of`, pure): Waiting if any confirmation, question,
+- **Deriving the presence** (the shell's `presence_of`, pure): Waiting if any confirmation, question,
   needs-you answer or taken-over run is open; otherwise Acting if a run is running in place or a
   typed action targets a visible window; otherwise Working if a prompt is sent or something runs
   aside; otherwise Listening if a prompt is being composed; otherwise Idle.
@@ -144,14 +144,14 @@ Working, Listening, Idle. An app derives its in-field presence from its own prom
 
 ## 5. The summon seam and runs
 
-- **Summon.** sill's double-tap machine decides; if the focused app serves the companion, sill
+- **Summon.** the shell's double-tap machine decides; if the focused app serves the companion, the shell
   asks it. `CompanionPort` (installed by the app's companion client, `action-ui-adapter`) answers
   synchronously: `TookField`, `TookAnchored`, `Restored` or `Declined`. A declined summon opens the
   launcher in companion mode. `NoPort` stands in where the feature is absent.
 - **Runs.** A computer-use run is a row: goal, app, step against budget, the last thought, where it
   acts (in place, an agent workspace or a nested session), its state and the model that drives it.
   Controls are Watch, Take over, Hand back, Pause, Resume, Stop and Undo all; which are offered
-  follows a table in sill. Escape closes one level, as everywhere; stopping is Command-period, the
+  follows a table in the shell. Escape closes one level, as everywhere; stopping is Command-period, the
   Stop button, or the compositor's hardware kill chord.
 - **Activity.** The strip lists what was done, by whom, with Undo while the journal can undo it.
 
@@ -182,7 +182,7 @@ and the consolidation switches are `memory.*` settings (`22-SETTINGS.md` section
 
 Confirmations are drawn on a surface apps and the agent cannot draw over or imitate, and accept
 only real hardware input; synthetic input from the agent can never press Allow. Phase A is a
-sill sheet (forgeable, for development); phase B is the same surface placed on the compositor's
+The shell sheet (forgeable, for development); phase B is the same surface placed on the compositor's
 trusted surface. `ConfirmCard` is its content:
 
 - the asker and the target app as marks, a title the router generated from the action (never model

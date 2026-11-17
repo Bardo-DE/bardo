@@ -141,7 +141,7 @@ async fn shell(bus: &PrivateBus) -> Shell {
         }));
     assert!(
         wait_for(&mut notes.state, |n: &NotesState| n.live.server.holder
-            == NameHolder::Sill)
+            == NameHolder::Shell)
         .await
     );
     let (launch, launched) = Control::channel();

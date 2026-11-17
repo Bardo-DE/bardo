@@ -1,5 +1,5 @@
 //! The framing both ends share: a body in an [`Envelope`] as the text of an `s` argument, and the
-//! event fd's frames (a 4-byte big-endian length, then one envelope). A client such as sill reads
+//! event fd's frames (a 4-byte big-endian length, then one envelope). A client such as the shell reads
 //! the fd with [`unframe`] and never links the daemon.
 //!
 //! A reader loops on [`unframe`]: `Frame` and `Malformed` both say how many bytes to drop (a bad

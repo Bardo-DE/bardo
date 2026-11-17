@@ -21,7 +21,7 @@ that rev.
   is enforced at read time (a program's own schema still decides which other keys it marks
   settable; `AGENT_SETTABLE_PROPOSED` stays a proposal that tests check). A consumer whose schema
   marks a key under one of the three new prefixes agent-settable now fails to compile (derive) or
-  to load (`Schema::from_toml`, `LiveSchema::check`); sill and the Settings app must be told before they re-pin.
+  to load (`Schema::from_toml`, `LiveSchema::check`); the shell and the Settings app must be told before they re-pin.
 - **Menu export and owner check: what is not covered (BARDO-03, BARDO-12, SETTINGS-05; production audit
   wave 2, 2026-10-16).** `MenuExport::start` takes a required `MenuPermit` and `LiveClient::new` a required
   `OwnerCheck`; both policies belong to the consumer (the desktop's are the caller-identity roles: `ShellOnly`
@@ -30,7 +30,7 @@ that rev.
   gated: the layout is what the window already shows, and the shell's bar reads it; (2) a single
   `Event` is gated but not paced (the permit is what bounds it; only `EventGroup` has the 8-a-second
   limit the audit asked for); (3) the focused-app check (the menu's owner is the focused window's
-  app, BARDO-12 sill side) is sill's; (4) a second copy of an app no longer queues for the menu name
+  app, BARDO-12 the shell side) is the shell's; (4) a second copy of an app no longer queues for the menu name
   and shows no menu in the bar: its `start` fails with `NameTaken` and the app decides (run without a
   menu, or exit); (5) `LiveClient` caps `Describe`/`Snapshot`/`Get`/`Changed` replies
   (`ds_settings::live::limits`), but the Settings app's own `Holds`/`NeedsConfirmation` parsing (Sync1) is
@@ -130,7 +130,7 @@ Upstream (pinned around; re-check at every toolchain bump):
   shape as an ignored reproduction for an upstream report.
 - **Paint and hit order of `z-index: auto` positioned boxes** is ranked per parent, not across
   the stacking context as CSS 2.1 Appendix E step 8 says ("Hit testing"). The fix (hoist them
-  to the stacking-context root as a zero-z layer in tree order) is not written; sill's own CSS
+  to the stacking-context root as a zero-z layer in tree order) is not written; the shell's own CSS
   was not audited box by box for the trap.
   `blitz_orders_auto_positioned_boxes_among_siblings_only` flips when Blitz is fixed.
 - **Programmatic focus dispatches no focus or blur event** (dioxus-native-dom's `set_focus`
@@ -158,7 +158,7 @@ Upstream (pinned around; re-check at every toolchain bump):
 
 Not built, or limited, in Bardo:
 
-- **Other Blitz hosts get less than `launch` and the harness.** shell-host and sill call
+- **Other Blitz hosts get less than `launch` and the harness.** shell-host and the shell call
   `ds_blitz::provide_host()`, which installs every part of the document host, but do not
   forward IME events or pointer capture to an `EditSurface`, have no hand-back of a removed
   element's keyboard (no `FocusKeeper`; the click-focus part they do have), find no element by
@@ -167,7 +167,7 @@ Not built, or limited, in Bardo:
   `ds_blitz::snap_to_device` after each resolve themselves. Each needs a ds-blitz entry point
   the host calls.
 - **shell-host does not register the UI kit's faces.** `SharedFonts::system()` never calls
-  `SharedFonts::register`, and Inter is not installed system-wide, so sill draws system-ui
+  `SharedFonts::register`, and Inter is not installed system-wide, so the shell draws system-ui
   wherever it asks for Inter, Inter Display, Bricolage, Karla, Space Mono or Noto Serif (its
   headless `Fonts::Bundled` registers only the first `.ttf` in the UI kit's font folder). The fix is
   shell-host's: register `ds::style::fonts::FACES` (`ds_blitz::register_fonts`). Until then, never put the
@@ -257,7 +257,7 @@ Not built, or limited, in Bardo:
   partial opacity) while each row alone is right. Not chased; the level sheet renders row by row.
 - **Details**: the battery ring's fill (`use_level_run`, `--t-fill` 800 ms) predates
   `use_sweep` (`--t-sweep` 700 ms) and should move onto it, as should the Batteries widget
-  (whose `WakeStamp` contract sill's widgets use); until then `--t-fill` is outside the grammar's
+  (whose `WakeStamp` contract the shell's widgets use); until then `--t-fill` is outside the grammar's
   durations. `Touch::Contact` carries no velocity yet (design/27). `VolumeGlyph`'s slash fades
   rather than draws on; drawing it would change the capsule `Slider`, the `LevelIndicator` and the OSD too, left for the user
   to ask.
@@ -1557,7 +1557,7 @@ the decisions and what was verified:
   refusals are unit-tested on the expansion.
 - **Material tint alpha is a settings key**, so `recipe()` takes it as a parameter and the root
   writes it (`Ds { tint_alpha }`, thousandths) rather than the stylesheet baking it in.
-- **Material keys** for banners, the control center and the launcher live in sill's settings, not
+- **Material keys** for banners, the control center and the launcher live in the shell's settings, not
   `AppearanceSettings` (design/22 section 4.3).
 - **dioxus reserves the prop name `key`**, so `HoverTarget`'s is `hover_key`.
 - **Pages**: `Page::Power` holds `idle.*` and `session.lock_grace_s`.
@@ -1689,8 +1689,8 @@ the decisions and what was verified:
 - **Activations arrive on a bus thread.** The callback must hand the `CommandId` to the UI thread
   (a channel and `AppHandle::redraw`); `ds-blitz` has no such bridge of its own yet, so each app
   writes the four lines (CONSUMING.md "Exporting the menu bar").
-- **Consumers to wire:** an app turns it on in its own repo (mailo, the Settings app, anyview, sill's own
-  windows); the sill lane reads `AppMenuAddress::for_app_id` and `GetLayout`. Nothing else changes.
+- **Consumers to wire:** an app turns it on in its own repo (mailo, the Settings app, anyview, the shell's own
+  windows); the shell lane reads `AppMenuAddress::for_app_id` and `GetLayout`. Nothing else changes.
 
 ## Live settings modules (`ds-settings::live`, feature `live`; W1b)
 
@@ -1698,7 +1698,7 @@ Open:
 
 - `KeyKind::Live { action }` and `Widget::ActionButton` are new variants. The Settings app's
   `Control::of` matches `KeyKind` exhaustively and needs a `Live` arm (an interface ask: a button
-  that calls `LiveClient::invoke`, destructive weight behind `Alert{Critical}`); sill and the
+  that calls `LiveClient::invoke`, destructive weight behind `Alert{Critical}`); the shell and the
   other consumers only call `KeyKind::widget()`.
 - A live module's value keys use the ordinary kinds (`Toggle`, `Text`, ...); only action rows are
   `Live`. A toggle's value is a `Boolean` on the wire although its variants are words: the module
@@ -2001,7 +2001,7 @@ Lane `q-spacesbar`, written without a build: nothing here has been compiled or r
   surface hung from the top edge slides down from `--drop-dy` above (default `--s-48`) with a fade, and leaves by the
   reverse holding its last frame. New duration token `--t-overview` (`DurationToken::Overview`), 350 ms, Reduced
   `--t-quick` like every motion token. design/13 R7 records that the system's overview duration is not published;
-  350 ms is the windows' flight as sill's `spacesbar` lane reports it (and equals design/05's `--d-fly`, a
+  350 ms is the windows' flight as the shell's `spacesbar` lane reports it (and equals design/05's `--d-fly`, a
   different thing: a hover delay). Easing `--e-out` in, `--e-exit` out (arriving is not contact, so no spring). Reduced: `fade`
   / `menu-out`.
 - **`SpacesBar`** (`ds::components::overlays::spaces_bar`, design/04 section 57). Props are typed:
@@ -2010,7 +2010,7 @@ Lane `q-spacesbar`, written without a build: nothing here has been compiled or r
   its own `use_presence` with `DropIn` / `LiftOut`, so a host gets `on_hidden` at `settle(LiftOut)` and draws nothing
   once hidden. The drag highlight reuses `DropState` (`Target` lit, `Accepts` outlined, `Source` dimmed).
 - **Departures.**
-  1. WorkspacePills lives in sill's `sill-shell-kit`, not in Bardo, so `SpacesBar` draws its own Space buttons (the
+  1. WorkspacePills lives in the shell's `shell-kit`, not in Bardo, so `SpacesBar` draws its own Space buttons (the
      same look: the frame's `--f-pill` with `--shadow-current` for the current one) instead of reusing it.
   2. Hover is `onpointerenter` / `onpointerleave` on the bar with no intent delay; Sonoma expands as the pointer
      reaches the top edge, which only the host's layer-surface input region can decide.
@@ -2032,7 +2032,7 @@ Lane `q-spacesbar`, written without a build: nothing here has been compiled or r
 
 ## q-barasks
 
-Lane `q-barasks`, written without a build: nothing here has been compiled or run, so the gate decides. Answers sill's FINDINGS `mc2` /
+Lane `q-barasks`, written without a build: nothing here has been compiled or run, so the gate decides. Answers the shell's FINDINGS `mc2` /
 `mc4` asks for `SpacesBar`. All additive: existing callers compile unchanged.
 
 - **Added.** `SpacesBar::add_drop: DropState` (default `Idle`; written as `data-drop` on `.ds-spaces-bar-add`, CSS lights the button inside it
@@ -2041,7 +2041,7 @@ Lane `q-barasks`, written without a build: nothing here has been compiled or run
   `BarLayout { spaces: Vec<SpaceRects { key, tile, card: Option<Rect> }>, add: Option<Rect> }` (re-exported from `ds::prelude`).
 - **Why an `img` for the backdrop.** The thumbnail picture is already an `img` with `object-fit: cover` clipped by the card's `overflow:hidden`
   and radius, which Blitz draws (and an `img` takes `file:` and `data:` through the net provider). A CSS `background-image` through a custom
-  property is what sill called unproven; S8 (above) proves only `data:` backgrounds with a `data:` NetProvider.
+  property is what the shell called unproven; S8 (above) proves only `data:` backgrounds with a `data:` NetProvider.
 - **Why `on_layout` and not per-tile hooks.** Every UI kit component that exposes geometry does it with `use_rect` (the host's frame phase) and a
   callback or anchor (palette `on_rect`, menus' `Anchor::Mounted`), not ids for the caller to measure. One event with all rects lets the host
   send one update per change. Each part (`Tile`, `Card`, `Plus`) owns a probe and publishes into a book the bar shares by context; a `Reporter`
@@ -2059,12 +2059,12 @@ Lane `q-barasks`, written without a build: nothing here has been compiled or run
   looks unlit; the conformance test's `harness.rect` (the `Query` trait must be imported there; it already is for `centre`) and its coordinates
   matching the phase-published rects to the whole pixel; `SpaceTile` is `#[non_exhaustive]`, so the destructure in `view.rs` is only legal
   inside the crate.
-- **How sill switches over** (`crates/sill-overlays/src/spaces_bar/`). Delete `style.css`'s `data-add-drop` rule and its `--sill-bar-wallpaper`
+- **How the shell switches over** (`crates/shell-overlays/src/spaces_bar/`). Delete `style.css`'s `data-add-drop` rule and its `--shell-bar-wallpaper`
   / `data-backdrop` rule (the file goes if nothing else is in it), the wrapper's `data-add-drop` and `data-backdrop` attributes and the
   `css_url` / custom-property code in `view.rs`, and the arithmetic in `bar_layout.rs` (`BAR_SIDE`, `ADD_PX`, the card computation).
   Call instead: `SpacesBar { add_drop: bar.add_drop(), on_layout: move |l| publish(l), .. }` and
   `SpaceTile::new(..).backdrop(ImageSource::file(&wallpaper_path)?)` (or `ImageSource(url)` for the URL it has now); build the
-  `BarLayout` sill publishes from `l.spaces[i].card` (the cards) and `l.add` (the plus), adding the output's origin, in place of the
+  `BarLayout` the shell publishes from `l.spaces[i].card` (the cards) and `l.add` (the plus), adding the output's origin, in place of the
   computed rectangles. The `use_rect` on the bar element in `io.rs` is still needed for the bar's own box if the host wants it.
 
 ## q-d25
@@ -2162,7 +2162,7 @@ apps (first the Settings app's Settings, "install llama.cpp" with a copyable com
   before it reads, on one connection, and a portal that does not answer within `START` is the defaults. `start` still awaits its first
   read (the compositor and anyview call it), so only `use_environment` stopped waiting.
 - **Not done.** (BARDO-03 and BARDO-12's library side landed in wave 2: see Open items.) BARDO-25's owner check (is the holder
-  of `org.bardo.Outputs1` sill?) belongs with sill; Bardo now drops rows with no size or no scale and caps the list at 16. The dbusmenu
+  of `org.bardo.Outputs1` the shell?) belongs with the shell; Bardo now drops rows with no size or no scale and caps the list at 16. The dbusmenu
   `RequestName` in `ds-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (BARDO-21) is still
   unbounded. The Settings app's half of SETTINGS-07 (feeding `Failed` on `LiveError::Timeout`, awaiting `invoke` off the effect loop) and the same
   convention in porter-dbus are theirs.
@@ -2173,16 +2173,16 @@ apps (first the Settings app's Settings, "install llama.cpp" with a copyable com
   keys: `Name[de_DE@euro]` picked by `EntryLocale` variants (`lang_COUNTRY@MODIFIER`, `lang_COUNTRY`, `lang@MODIFIER`, `lang`, then the
   default), the value escapes (`\s \n \t \r \\`, and `\;` inside a list), `;` lists with empty items dropped, `true`/`false`
   booleans, comments, a byte order mark, CRLF. A group named twice is one group and a key given twice keeps its last value (GLib's key
-  file; the specification leaves both undefined; the `freedesktop-desktop-entry` crate sill and the Settings app use also keeps the last key but
+  file; the specification leaves both undefined; the `freedesktop-desktop-entry` crate the shell and the Settings app use also keeps the last key but
   refuses a repeated group). A malformed line or a pair before any group is skipped and counted
   (`skipped_lines`), never an error. The text is refused whole over the caller's `ReadCap` (`DESKTOP_ENTRY_CAP` is 256 KiB).
   `Exec` and `TryExec` come back after the value escapes only; field codes and command-line quoting stay the caller's.
-- **Not a merge of two copies.** Sill and the Settings app do not keep readers of their own: sill's
-  `sill-services::apps::backend::scan` and the Settings app's `settings-app-files::programs` both call the third-party `freedesktop-desktop-entry` 0.8.3
+- **Not a merge of two copies.** the shell and the Settings app do not keep readers of their own: the shell's
+  `shell-services::apps::backend::scan` and the Settings app's `settings-app-files::programs` both call the third-party `freedesktop-desktop-entry` 0.8.3
   (`DesktopEntry::from_str`, `Iter`), and anyview's mpris code uses it too; each reads the file with an uncapped
   `std::fs::read_to_string`. So `DesktopFile` is a new, second reader, not a merge of two copies. What moving onto it would buy: no
   `gettext-rs` (a C library) behind a pure parse, a size cap on every read, one tolerance for malformed lines (the crate fails the whole
-  entry on a repeated group or a localized key with no default), and the same locale rule in every app. What it costs: sill reads
+  entry on a repeated group or a localized key with no default), and the same locale rule in every app. What it costs: the shell reads
   more accessors than `DesktopFile` has (`only_show_in`, `not_show_in`, `flatpak`, `startup_wm_class`, `dbus_activatable`, `Iter`'s
   directory walk and app ids), which stay with the caller as plain `string`/`list`/`is_true` reads. Whether to move is the owner's call;
   the reader is additive and nothing in the UI kit uses it yet.

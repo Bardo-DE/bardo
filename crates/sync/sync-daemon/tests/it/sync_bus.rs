@@ -250,14 +250,14 @@ async fn progress_and_conflict_go_only_to_callers_who_may_see_the_dataset() {
         .hub
         .register(name("a1/pim"), owned_by("org.bardo.Shell"));
     let app = client(&rig.bus, &rig.known, "org.bardo.Photos", CallerRole::App).await;
-    let sill = client(&rig.bus, &rig.known, "org.bardo.Shell", CallerRole::App).await;
-    let (app_proxy, sill_proxy) = (proxy(&app).await, proxy(&sill).await);
+    let shell = client(&rig.bus, &rig.known, "org.bardo.Shell", CallerRole::App).await;
+    let (app_proxy, shell_proxy) = (proxy(&app).await, proxy(&shell).await);
     let mut app_progress = app_proxy.receive_progress().await.expect("stream");
-    let mut sill_progress = sill_proxy.receive_progress().await.expect("stream");
+    let mut shell_progress = shell_proxy.receive_progress().await.expect("stream");
     let mut app_conflict = app_proxy.receive_conflict().await.expect("stream");
     // Calling joins the roster: the daemon tells only connections it has heard from.
     app_proxy.datasets().await.expect("datasets");
-    sill_proxy.datasets().await.expect("datasets");
+    shell_proxy.datasets().await.expect("datasets");
 
     photos.tell(Event::Progress {
         dataset: name("a1/photos_originals"),
@@ -289,11 +289,11 @@ async fn progress_and_conflict_go_only_to_callers_who_may_see_the_dataset() {
         signal.args().expect("args").dataset(),
         &"a1/photos_originals"
     );
-    let signal = next(&mut sill_progress).await;
+    let signal = next(&mut shell_progress).await;
     assert_eq!(
         signal.args().expect("args").dataset(),
         &"a1/pim",
-        "Sill never hears of the Photos dataset"
+        "Shell never hears of the Photos dataset"
     );
     let conflict = next(&mut app_conflict).await;
     let args = conflict.args().expect("args");

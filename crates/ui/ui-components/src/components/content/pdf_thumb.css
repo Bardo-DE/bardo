@@ -1,4 +1,4 @@
-/* PdfThumb (design/04-COMPONENTS.md section 45; sill M9's launcher preview, design/20 section
+/* PdfThumb (design/04-COMPONENTS.md section 45; shell M9's launcher preview, design/20 section
    2.4's Quick Look). The room is sized inline from `size`; the sheet is placed inline at the
    page's aspect, centred (`sheet_rect`). The sheet is paper, `--foreign-ground` (white in both
    schemes: a PDF page is white whatever the desktop's scheme), with a hairline edge in `--line`

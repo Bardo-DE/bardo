@@ -24,7 +24,7 @@ quick-xml = { workspace = true }
 
 [features]
 default = []
-# The clients' side: sill, layer-shell-host, cua, the portal, Bardo's ui-blitz.
+# The clients' side: the shell, layer-shell-host, cua, the portal, Bardo's ui-blitz.
 client = [
   "dep:wayland-client",
   "dep:wayland-backend",

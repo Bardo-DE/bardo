@@ -3,7 +3,7 @@
 # bardo-shell serves them as `IntentProvider1` on that bus name; intentd gates every call. Installed by
 # dist/install.sh under $XDG_DATA_DIRS/bardo/intents/. Every field is written (porter's
 # provider-file rule); the action names carry the app's own prefix (`shell`). The parsed form is
-# held to `sill_model::intents::shell` by a test, so a name or an option cannot drift.
+# held to `shell_model::intents::shell` by a test, so a name or an option cannot drift.
 #
 # Effects. The effect classes were made for apps with data, so the shell's own picks are these:
 # changing what is on screen (the launcher, a workspace) only looks, so it is `read`; pinning to
@@ -345,7 +345,7 @@ params = []
 
 # The focused window's menus. The list only reads, but its words are the app's: the answer carries
 # an untrusted label naming that app (the floor here names the shell, the reader). An activation's
-# real effect comes from `sill_model::app_menu::effect_of` (the shell's own Hide, Hide Others,
+# real effect comes from `shell_model::app_menu::effect_of` (the shell's own Hide, Hide Others,
 # Show All, Minimise and raise are reads; a verified app's own command is that action, run through
 # intentd; every other item, and Quit, is destructive). The router gates on the effect declared
 # here, so the declaration is the worst case and every activation asks.

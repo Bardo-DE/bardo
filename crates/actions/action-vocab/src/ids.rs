@@ -120,7 +120,7 @@ text_id!(
     |t| !t.is_empty() && t.len() <= 256 && !t.chars().any(char::is_control)
 );
 text_id!(
-    /// A window, as sill names it for a confirmation anchor or a prompt's parent.
+    /// A window, as the shell names it for a confirmation anchor or a prompt's parent.
     WindowKey,
     "window key",
     opaque

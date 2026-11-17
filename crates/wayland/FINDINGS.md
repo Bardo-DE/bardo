@@ -64,8 +64,8 @@ the reducers, pairing, `supports`, validation, frame conversion and the fake are
 ## p2-z-dc
 
 Bardo arm of `desktop-client`, implemented in full (this crate is "everything" at its
-freeze). What it is, then what sill must change to adopt it (sill's adoption is a later lane;
-sill's `desktop_wl` is not touched here).
+freeze). What it is, then what the shell must change to adopt it (the shell's adoption is a later lane;
+The shell's `desktop_wl` is not touched here).
 
 ### What landed
 
@@ -98,10 +98,10 @@ sill's `desktop_wl` is not touched here).
 | `bardo_window_manager_v1` (an app's own say about its toplevels, `request_placement`) is not bound here | it belongs to the app's toolkit (shell-host, ds-blitz); `Protocol::BardoWindow` only records the offer | never |
 | No unit test of the wire layer (it needs a compositor), as before | Bardo dispatch and `bardo_commands` are untested except through the Linker, the reducer and the fake | the compositor P2 lands and the testkit can drive it |
 
-### What sill must change to adopt it
+### What the shell must change to adopt it
 
-1. **Dependencies.** `sill-services`: `desktop-client = { path = "desktop-client", features = ["client"] }`
-   (the shell-host/bardo pinned-block rules apply: batch the re-pin). `sill-model`:
+1. **Dependencies.** `shell-services`: `desktop-client = { path = "desktop-client", features = ["client"] }`
+   (the shell-host/bardo pinned-block rules apply: batch the re-pin). `shell-model`:
    `desktop-protocols` default features only (the vocab: `WindowStateKind`, `Emphasis`,
    `PlacementMark`, `PlaceTarget`, `SpaceKind`, `Shown`, `AppLifeKind`, `Attention`,
    `ProofKind`, `MacMods`, `Corner`, `ScreenEdge`, ...). Both are consumed by path; delete the
@@ -110,16 +110,16 @@ sill's `desktop_wl` is not touched here).
    `ProtocolSet::from_interfaces(offer.names())` and map `desktop_client::backend_for`:
    `Some(Bardo) -> DesktopBackend::Bardo`, `Some(Wlr | Ext) -> Wlr`, `None` -> no backend. Never from names or env.
 3. **Connection.** Where the shell connects: take the fd from
-   `org.bardo.Compositor1.Connect("shell")` (in `sill-services`, behind the existing zbus seam)
+   `org.bardo.Compositor1.Connect("shell")` (in `shell-services`, behind the existing zbus seam)
    and call `DesktopClient::connect(WaylandRoute::Handed(fd), DesktopConfig::holding_shell())`.
    Dock/bar/overlay surfaces live in shell-host's exported connection: build the
    `DesktopClient` on that `Connection` with `DesktopClient::with_config(&conn,
    DesktopConfig::holding_shell())`, and `register_surface(&host.wl_surface(id))` for each
    (the `SurfaceKey` goes into `SetShellRole` and `SetMinimiseTarget`). Keep the
-   environment route for `SILL_COMPOSITOR=kwin` runs and tests.
+   environment route for `SHELL_COMPOSITOR=kwin` runs and tests.
 4. **Pump.** Poll `client.connection()`'s fd in the existing reactor; on readable call
    `dispatch_pending()` and `drain_events()`; `Desktop::state()` is the picture.
-5. **Model mapping** (`DesktopView` from `DesktopState`, in `sill-services/src/desktop_wl/` and
+5. **Model mapping** (`DesktopView` from `DesktopState`, in `shell-services/src/desktop_wl/` and
    a pure `map.rs`):
    - `AppView` from `state.bardo.apps()`: `key = app.id`, `proof = app.proof`, `life`,
      `attention`, `mru = app.mru.unwrap_or(u32::MAX)`, `visibility`, `menu`.
@@ -131,20 +131,20 @@ sill's `desktop_wl` is not touched here).
    - `SpaceView` from `state.bardo.spaces()`: `id`, `kind`, `output`, `position`,
      `shown = state.space_shown(space.key)`.
    - `ActiveView`: `bardo.active().app` -> app id; `.key` -> the toplevel's identifier.
-   - Keep the string-keyed `sill-model` commands: resolve identifiers with
+   - Keep the string-keyed `shell-model` commands: resolve identifiers with
      `state.toplevels.by_identifier(&ToplevelIdentifier::new(s))`, apps with
      `bardo.app_by_id`, Spaces with `bardo.space_by_id`.
-6. **Command mapping** (sill's `DesktopCommand` -> `desktop_client::DesktopCommand`):
+6. **Command mapping** (the shell's `DesktopCommand` -> `desktop_client::DesktopCommand`):
    `Activate/Close/Minimise/Unminimise` -> the same names; `Place(id, target)` ->
    `Place { toplevel, target }`; `ToSpace(id, space)` -> `MoveToSpace`;
    `SwitchSpace(space)` -> `ActivateSpace`; `SetMinimiseTarget { toplevel, rect }` ->
    `SetMinimiseTarget { toplevel, surface: <the dock's SurfaceKey>, rect }` (the rect is local to
-   the dock surface); add sill commands for what is new: app hide/quit/force-quit/reopen, Space
+   the dock surface); add the shell commands for what is new: app hide/quit/force-quit/reopen, Space
    create/remove/move, overview and show-desktop, switcher pick/cancel, window assign.
    `supports(backend, command)`: delegate to `desktop_client::supports` with the live
    `state.protocols`, or keep a pure table that matches `requires_on` (Wlr: no Place, no
    Space or app command; `SetMinimiseTarget` works on wlr through a registered surface, unlike
-   sill's earlier table).
+   The shell's earlier table).
 7. **Events to wire** from `DesktopEvent::Shell(..)`:
    `Modifiers` -> hot corners and the Option-held dock/bar variants (the key remap daemon stays the source of
    truth for chords, `Modifiers` is the pointer-over-shell-surface view); `KeyGesture::Summon`
@@ -153,10 +153,10 @@ sill's `desktop_wl` is not touched here).
    `PickSwitcher`/`CancelSwitcher`); `Overview` + `OverviewSlot/Space/Done` -> Mission Control
    chrome (`state.bardo.shell().overview`); `HotCorner` -> the configured action; `Reveal` ->
    bar/dock edge reveal in full screen; `MenuFlash`, `Bell`, `Reopen` (the dock decides what
-   reopening means), `Killed` (companion state). Delete `sill-overlays` `switcher/step.rs` and
+   reopening means), `Killed` (companion state). Delete `shell-overlays` `switcher/step.rs` and
    `hot_corners/step.rs` consumers of the old modifier source as S0-SW already plans.
 8. **Retire.** `desktop_wl`'s own protocol code once the above passes;
-   sill's copy of the pairing heuristic never existed on Bardo arm.
+   The shell's copy of the pairing heuristic never existed on Bardo arm.
 9. **Tests.** Drive the same mapping with `FakeDesktop::with_config` and scripted
    Bardo events (no compositor); `Linker` needs no fake.
 
@@ -171,7 +171,7 @@ server updated together; no version bump, no pinned bytes: only `bardo-agent-v1.
   `destroy`, the event before `killed`; the frozen table in `tests/it/support/frozen.rs` follows.
 - `desktop-client`: `ShellEvent::WindowMenu { window, at, enabled }` (a moment, no state) and
   `DesktopCommand::PickWindowMenu { window, entry }` (Bardo arm, shell role).
-- Written without a compiler; check `cargo test` here before landing the compositor and sill.
+- Written without a compiler; check `cargo test` here before landing the compositor and the shell.
 
 ## wave-2026-10-15/splitwire
 
@@ -184,11 +184,11 @@ server updated together; no version bump, no pinned bytes: only `bardo-agent-v1.
 - `desktop-client`: `ShellEvent::{SplitChoose, SplitCandidate, SplitChoiceEnd}` fold into `Shell::split_choice`
   (`SplitChoice`: first, side, candidates); `DesktopCommand::{PickSplit, CancelSplit, DivideSplit}` (Bardo arm, shell
   role); 42 command kinds.
-- Written without a compiler; check `cargo test` here before landing the compositor and sill.
+- Written without a compiler; check `cargo test` here before landing the compositor and the shell.
 
 ## wave-2026-10-15/mcwire
 
-`bardo_shell_v1` is now **version 2** (desktop-protocols `lane/cas9-mcwire`, the compositor, sill). Written without a compiler.
+`bardo_shell_v1` is now **version 2** (desktop-protocols `lane/cas9-mcwire`, the compositor, the shell). Written without a compiler.
 Version 1's messages and opcodes are untouched: the new requests come after `destroy`, the new events after `killed`, every
 one says `since="2"`, and `compositor` serves version 2 while a client that binds 1 sees exactly the old interface. The draft
 rule "version 1 may change in place" is kept for the other five files; this file moves to 2 because a client of the old
@@ -276,7 +276,7 @@ compiler. Everything older is untouched; the new messages come last and say `sin
 
 | Item | Closes when |
 | --- | --- |
-| `desktop-client` keeps no state for asks (`ShellEvent` moments): an answered ask is not echoed back by the compositor | sill's sheet queue proves it wants a `Shell::open_asks()` view, which needs the compositor to send `permission_withdraw` after an answer too |
+| `desktop-client` keeps no state for asks (`ShellEvent` moments): an answered ask is not echoed back by the compositor | the shell's sheet queue proves it wants a `Shell::open_asks()` view, which needs the compositor to send `permission_withdraw` after an answer too |
 
 ### PORTAL-14 (same lane): unserved protocols say so
 
@@ -344,7 +344,7 @@ say `since="6"`.
   `EventQueue::poll_dispatch_pending`. It returns how many `DesktopEvent`s it queued for `drain_events`, not how many messages it
   dispatched (the queue call never finishes, so it gives no message count).
 - No test: it needs a live connection with a second reader, and the wire layer has no compositor harness here (see the table above).
-  sill's `desktop_bardo` thread is the first user.
+  The shell's `desktop_bardo` thread is the first user.
 
 ## Type audit wave 2 (2026-10-18)
 
@@ -369,7 +369,7 @@ say `since="6"`.
   `ALL` and `argv` come from one `shell_verbs!` table; `WireCode::to_wire` replaces the hand ladders to
   the generated enums; `PlaceTarget::zone` and `From<TileZone>` replace the zone ladders.
 - `MacMods` is `HeldMods` (`held_mods.rs`); its bits and the XML bitfield's name `mac_mods` are unchanged.
-- `vocab::receipt` (P-5) is deleted: no caller in the compositor, sill, the Settings app, cua, docket or key_remap.
+- `vocab::receipt` (P-5) is deleted: no caller in the compositor, the shell, the Settings app, cua, docket or key_remap.
 - Kept on purpose: `TrustedKind` and `TrustedAnchor` (the XML enums are frozen interface and
   `every_xml_enum_has_a_vocab_type` needs a vocab twin), `Withdrawn` (same file, same reason), and `GlowCode`
   (`desktop_client::bardo::Lease::glow` carries it). Closing them takes an owner call on the XML.

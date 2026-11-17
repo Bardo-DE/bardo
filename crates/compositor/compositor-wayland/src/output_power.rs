@@ -1,4 +1,4 @@
-//! `zwlr_output_power_manager_v1`: a client (an idle daemon, sill's lock) lights an output or turns
+//! `zwlr_output_power_manager_v1`: a client (an idle daemon, the shell's lock) lights an output or turns
 //! it dark.
 //!
 //! Works on virtual outputs too: power is part of `OutputConfig`, so a request is one

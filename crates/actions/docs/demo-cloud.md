@@ -1,6 +1,6 @@
 # Demo: the companion on a cloud model (OpenRouter)
 
-For the owner, on this machine, with sill not running. Everything is installed for your user; the one
+For the owner, on this machine, with the shell not running. Everything is installed for your user; the one
 root step is a copy of one file. The companion talks to inferd, inferd to OpenRouter with a key that only
 accountd holds (inferd asks it for the key when a turn needs it). About ten minutes.
 
@@ -101,7 +101,7 @@ bardo-do ask "What do you remember about me?"
 
 Mail, calendar and files are not installed here: the companion's actions are memory and its own (starting a task,
 loading a skill), plus mail if you install mailo (`~/mailo/dist/install.sh`). Reads run; anything that changes
-something asks, and **`bardo-do` cannot answer a confirmation** (only sill's sheet can). Try
+something asks, and **`bardo-do` cannot answer a confirmation** (only the shell's sheet can). Try
 `bardo-do ask "Remember that I like green tea"`: it prints the plan and "Waiting for your confirmation", exits 8,
 and nothing is saved. That is the gate working, not a failure.
 

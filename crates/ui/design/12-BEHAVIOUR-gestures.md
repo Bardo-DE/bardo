@@ -345,9 +345,9 @@ pub enum Action {
 | --- | --- | --- | --- | --- |
 | One-finger swipe right | Back | Alt+Left on O3 | Alt+Left on O3 | settled |
 | One-finger swipe left | Forward | Alt+Right | Alt+Right | settled |
-| Two-finger swipe right (fingers move right) | WorkspacePrev | `bardo-shell workspace prev` IPC (the toplevel client); without sill: the compositor shortcut keys from the user's shortcuts file | kglobalaccel `Switch One Desktop to the Left` (Python, H) | settled |
+| Two-finger swipe right (fingers move right) | WorkspacePrev | `bardo-shell workspace prev` IPC (the toplevel client); without the shell: the compositor shortcut keys from the user's shortcuts file | kglobalaccel `Switch One Desktop to the Left` (Python, H) | settled |
 | Two-finger swipe left | WorkspaceNext | `bardo-shell workspace next` | `Switch One Desktop to the Right` | settled |
-| Two-finger double-tap | WorkspaceOverview | the desktop `WorkspaceOverview` system action (sill IPC or its shortcut) | kglobalaccel `Overview` | settled mapping, backends L |
+| Two-finger double-tap | WorkspaceOverview | the desktop `WorkspaceOverview` system action (the shell IPC or its shortcut) | kglobalaccel `Overview` | settled mapping, backends L |
 | One-finger double-tap | SmartZoom | our surfaces: focused ds root; others: none | same | settled ("where supported") |
 
 ## 12.7 Integration

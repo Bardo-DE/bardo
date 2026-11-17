@@ -1,5 +1,5 @@
 //! Every wire and stored type survives serde, the record kinds are stable slugs, and the bodies
-//! pin the JSON that sill and the D-Bus codec read.
+//! pin the JSON that the shell and the D-Bus codec read.
 
 use account_capability::{Locality, ModelId};
 use account_core::{AccountId, AppName, DataClass};

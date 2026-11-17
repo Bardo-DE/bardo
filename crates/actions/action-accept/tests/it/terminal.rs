@@ -1,7 +1,7 @@
 //! `bardo-do ask` as the real binary against the real daemons on a private bus: a terminal's
 //! child (a `vte-spawn-*` scope of the fake proc root) opens a conversation with companiond, its
 //! turn is recorded by intentd, the replayed model searches and answers, and the answer is
-//! printed. A confirmation is shown on sill's sheet and never answered by `bardo-do`.
+//! printed. A confirmation is shown on the shell's sheet and never answered by `bardo-do`.
 
 use crate::support::*;
 use action_accept::world::{Cassette, Consent, World};
@@ -81,7 +81,7 @@ async fn bardo_do_ask_leaves_a_confirmation_to_the_shell() {
         "{}",
         said(&out)
     );
-    // The sheet is sill's: it arrives there (the event is waited for, not slept on), asks Forward,
+    // The sheet is the shell's: it arrives there (the event is waited for, not slept on), asks Forward,
     // and nobody answers it.
     let sheet = tokio::time::timeout(action_accept::world::GIVE_UP, world.confirms.recv())
         .await

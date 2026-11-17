@@ -1,4 +1,4 @@
-//! `org.bardo.AccountsSheet1` at `/org/bardo/AccountsSheet1`: the sheet host's side (sill on our
+//! `org.bardo.AccountsSheet1` at `/org/bardo/AccountsSheet1`: the sheet host's side (the shell on our
 //! desktop, a standalone host elsewhere). accountd calls `Open`, `Update` and `Close` with a
 //! `SheetView` as JSON; the host answers with `Input` signals carrying a `SheetInput` as JSON.
 //!

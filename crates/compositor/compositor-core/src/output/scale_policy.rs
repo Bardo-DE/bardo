@@ -1,5 +1,5 @@
 //! The scale a display gets the first time it is seen (12 §4: the compositor owns it, so a 4K
-//! output is right before any client draws; sill keeps no rule of its own).
+//! output is right before any client draws; the shell keeps no rule of its own).
 
 use super::density::{MilliPpi, density};
 use super::{ModeWish, OutputFacts, pick_mode};

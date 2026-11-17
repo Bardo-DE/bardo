@@ -650,7 +650,7 @@ step_palette_latency() {
   open_query ""; close_launcher # a cold opening first
   before=$(grep -c 'launcher\.open_to_frame_ms=' "$OUT_DIR/daemon.log")
   for _ in $(seq "$OPENINGS"); do
-    sill_sent launcher open --query "" >>"$OUT_DIR/keys.log" 2>&1
+    shell_sent launcher open --query "" >>"$OUT_DIR/keys.log" 2>&1
     sleep 0.6
     close_launcher
   done

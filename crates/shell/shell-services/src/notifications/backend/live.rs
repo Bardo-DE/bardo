@@ -81,7 +81,7 @@ pub(crate) async fn run(
     }
     core.saver.finish(|| for_disk(&core.state)).await;
     if let Some(bus) = &bus
-        && core.state.live.server.holder == NameHolder::Sill
+        && core.state.live.server.holder == NameHolder::Shell
     {
         bus.release().await;
     }
@@ -227,7 +227,7 @@ impl Core {
             (
                 Some(bus),
                 ServerStatus {
-                    holder: NameHolder::Sill,
+                    holder: NameHolder::Shell,
                     mode: ServerMode::Own,
                 },
             ) => Some(bus),

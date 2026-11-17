@@ -433,7 +433,7 @@ mod tests {
     }
 
     #[test]
-    fn the_monitors_sill_warms_are_written_once_beside_the_rest_of_the_file() {
+    fn the_monitors_shell_warms_are_written_once_beside_the_rest_of_the_file() {
         let dir = TempDir::new("night-shift-skip");
         std::fs::write(
             dir.path().join(SETTINGS),

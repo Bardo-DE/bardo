@@ -48,12 +48,12 @@ Wiring: temor's app id is `org.bardo.Temor` (its desktop entry, `StartupWMClass`
 `OWN_PROFILES` in `dist/plasma/key-remap-focus` maps it to `terminal`, not `keymap-aware` (changed
 2026-10-14): KWin binds Super+T, Super+W, Super+D and Super+V globally, so Command as Super never
 reached temor there, and the chord keymap's KDE keymap expects the Ctrl+Shift+letter forms `terminal`
-writes. The cost on Plasma is that Cmd+D and Cmd+Shift+D arrive as one chord. sill: temor lists `TerminalEmulator`, so
-sill's category table would give it `terminal`; sill's `DeclaredProfile` (`X-Key-Remap-Profile`) or
+writes. The cost on Plasma is that Cmd+D and Cmd+Shift+D arrive as one chord. The shell: temor lists `TerminalEmulator`, so
+The shell's category table would give it `terminal`; the shell's `DeclaredProfile` (`X-Key-Remap-Profile`) or
 `OwnProfiles` must name `keymap-aware` for it (both rank above the category table). Bardo apps
 are not `TerminalEmulator`, so they never get the terminal rewrite; they get `default` (Cmd as
 Ctrl) unless they too declare `keymap-aware`. A desktop-wide rule set in `[profile.default]` is
-inherited, but one the desktop restates for a chord (sill's Cmd+H to Ctrl+H) must be restated in
+inherited, but one the desktop restates for a chord (the shell's Cmd+H to Ctrl+H) must be restated in
 `[profile.keymap-aware]` too.
 
 ## Open items
@@ -95,7 +95,7 @@ no warning. Both files are capped at 64 KiB (`LAYER_FILE_CAP`). Consequences:
 
 **Who steers (INPUT-03, INPUT-14, wave 2).** The owner decided the key remap daemon gets a light identity check and a reduced
 user layer, and no root identity service and no new capability. The shell is the one connection obeyed for
-`Focus` and `UserConfig`: its process sits in `sill.service` (or, for the Plasma feed,
+`Focus` and `UserConfig`: its process sits in `shell.service` (or, for the Plasma feed,
 `key-remap-focus.service`) under `user@<active uid>.service`, held by pidfd (`Proof::Cgroup`; the caller-identity library's socket
 pin is `Reopened`, and any pin is accepted). Every other process of the active uid is `Plain`: it hears status,
 watches the keymap, registers actions and may `Resume`; any other request drops its connection. This is a speed bump,
@@ -107,7 +107,7 @@ A `Focus` naming a profile nobody defined writes as `default` and is logged once
 refusal for (d), because a defined profile is the only thing a name can select.
 - *Owner decision: `Resume` is allowed from `Plain`* (the active user's own processes, not `Observer`): it
   only re-grabs and types nothing, and `key_remap resume` from a terminal is the escape-chord recovery.
-- *Consequence: user rules on a bare key move to the machine file.* sill's shipped layer has `capslock` ->
+- *Consequence: user rules on a bare key move to the machine file.* the shell's shipped layer has `capslock` ->
   `ctrl+space`; it is reported and left out of the user layer, and the desktop's packaging now ships it in the vendor file
   `/usr/lib/bardo/key-remap/key-remap.toml` (see "Vendor layer"). `shift+capslock` moves with it (NEW-PI-5, 2026-10-17): Shift is held for every capital letter and every shifted symbol, so it is not a role that makes a key a shortcut. A user rule needs Command, Option or Control; `shift+a`, `shift+7`, `shift+;` and `shift+capslock` are left out of the user layer with a warning. The machine and vendor files may hold them.
 - *The user layer is cut when it arrives.* Changing `[user_layer]` in the machine file later does not re-cut a
@@ -178,7 +178,7 @@ keyboard needs only the `input` group's write access to the node. A device that 
 `BTN_TOUCH` or `BTN_TOOL_*` with no EV_ABS is carried by the keyboard as before. LED forwarding from the virtual keyboard to a grabbed one is covered by a CI device test once green.
 
 **Manual acceptance, waiting for the user and hardware.** What remains manual after CI is a real
-Apple or Bluetooth keyboard, a real compositor session (sill's `Focus`), and a logind
+Apple or Bluetooth keyboard, a real compositor session (the shell's `Focus`), and a logind
 user switch. The list is in docs/development.md, "Manual checks".
 
 **Pre-switch review of 2026-10-03 (the user's K5 Max over Bluetooth).** What was checked on the
@@ -256,7 +256,7 @@ Moving the desktop's own bindings (launcher, switcher) off the remap rules and o
 is not done.
 
 **Open.**
-- `system_bindings` has one row (the launcher also on Ctrl+Alt+Space, from sill's custom
+- `system_bindings` has one row (the launcher also on Ctrl+Alt+Space, from the shell's custom
   shortcuts). The chord keymap's conventions for our desktop already carry the rest; confirm no other
   desktop-owned chord differs from them.
 - A connection that connects and leaves without sending anything is still counted as an owner

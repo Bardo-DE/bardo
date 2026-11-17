@@ -493,12 +493,12 @@ fn responses() -> Vec<(Response, &'static str)> {
             Response::Status(StatusReport::Notifications(NotificationsStatus {
                 server: ServerStatus {
                     mode: ServerMode::Passive,
-                    holder: NameHolder::Sill,
+                    holder: NameHolder::Shell,
                 },
                 banners: 0,
                 kept: 0,
             })),
-            r#"{"kind":"status","v":{"kind":"notifications","v":{"server":{"mode":"passive","holder":{"kind":"sill"}},"banners":0,"kept":0}}}"#,
+            r#"{"kind":"status","v":{"kind":"notifications","v":{"server":{"mode":"passive","holder":{"kind":"shell"}},"banners":0,"kept":0}}}"#,
         ),
         (
             Response::Status(StatusReport::Lock(Lock {

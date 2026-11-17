@@ -48,7 +48,7 @@ pub fn user_writable(path: &str) -> Exe {
     read(path, FileTrust::Writable(Writer::Owner(Uid::new(1000))))
 }
 
-pub fn in_sill_unit() -> &'static str {
+pub fn in_shell_unit() -> &'static str {
     "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service"
 }
 
@@ -65,7 +65,7 @@ pub fn facts(cgroup: &str, exe: Exe) -> Facts {
 }
 
 /// What the manager says of a healthy bardo-shell.service.
-pub fn sill_unit() -> UnitFacts {
+pub fn shell_unit() -> UnitFacts {
     UnitFacts {
         name: UnitName::new("bardo-shell.service").expect("a unit"),
         main_pid: Some(pid()),

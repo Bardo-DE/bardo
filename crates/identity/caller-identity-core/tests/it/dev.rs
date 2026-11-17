@@ -20,7 +20,7 @@ fn writable_standing(path: &str, cgroup: &str, table: &Table) -> Standing {
 #[cfg(feature = "dev-rows")]
 mod with_feature {
     use super::*;
-    use crate::common::{in_sill_unit, table};
+    use crate::common::{in_shell_unit, table};
     use caller_identity_core::{
         AppKey, Engine, Exe, Pin, Refused, Requirement, RoleName, RowOrigin, SandboxFacts,
         TableError, UnitName,
@@ -60,7 +60,7 @@ mod with_feature {
             writable_standing(STANDIN, in_unit, &table),
             dev_service("org.bardo.Accounts", "accounts")
         );
-        for cgroup in [SCOPE, in_sill_unit()] {
+        for cgroup in [SCOPE, in_shell_unit()] {
             assert_eq!(
                 writable_standing(STANDIN, cgroup, &table),
                 Standing::Unverified {
@@ -127,7 +127,7 @@ mod with_feature {
         );
         // A process running the shipped image is judged by the shipped row, not as Dev.
         let standing = judge(
-            &facts(in_sill_unit(), root_only("/usr/bin/bardo-shell")),
+            &facts(in_shell_unit(), root_only("/usr/bin/bardo-shell")),
             &table,
         );
         assert_eq!(
@@ -150,7 +150,7 @@ mod with_feature {
     #[test]
     fn merging_the_other_way_round_still_puts_shipped_rows_first_and_keeps_their_units() {
         let dev = Table::from_toml_dev(
-            "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/home/p/sill\"]\nrole = \"shell\"\n",
+            "[[peer]]\napp = \"org.evil.Shell\"\nunit = \"bardo-shell.service\"\nexe = [\"/home/p/shell\"]\nrole = \"shell\"\n",
         )
         .expect("dev");
         let merged = dev.merge(table());
