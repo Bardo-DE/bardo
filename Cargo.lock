@@ -10800,6 +10800,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "outputs-dbus"
+version = "0.1.0"
+dependencies = [
+ "zbus",
+]
+
+[[package]]
 name = "outref"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13012,6 +13019,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-ids",
+ "base-time",
  "provenance",
  "serde",
  "serde_json",
@@ -13024,7 +13032,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-peer",
  "zbus",
 ]
 
@@ -13034,6 +13041,7 @@ version = "0.1.0"
 dependencies = [
  "account-tailscale",
  "account-wire",
+ "base-time",
  "compositor-dbus",
  "inference-dbus",
  "memory-core",
@@ -13044,7 +13052,6 @@ dependencies = [
  "sync-bus",
  "tokio",
  "toml",
- "ui-peer",
 ]
 
 [[package]]
@@ -13122,7 +13129,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-peer",
  "updater-dbus",
  "zbus",
 ]
@@ -13177,6 +13183,7 @@ dependencies = [
 name = "settings-dbus"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "dbus-kit",
  "serde",
  "serde_json",
@@ -13184,7 +13191,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-peer",
  "zbus",
 ]
 
@@ -13733,6 +13739,7 @@ dependencies = [
  "nix 0.31.3",
  "nonstick",
  "notify",
+ "outputs-dbus",
  "percent-encoding",
  "permission-core",
  "permission-policy",
@@ -15561,6 +15568,7 @@ dependencies = [
  "arboard",
  "base-fs",
  "base-testkit",
+ "base-time",
  "base-xdg",
  "blitz-dom",
  "blitz-embed",
@@ -15570,6 +15578,7 @@ dependencies = [
  "blitz-shell",
  "blitz-traits",
  "caller-identity-dbus",
+ "dbus-kit",
  "dioxus",
  "dioxus-asset-resolver",
  "dioxus-native",
@@ -15598,7 +15607,6 @@ dependencies = [
  "ui-emoji",
  "ui-harness",
  "ui-host-hooks",
- "ui-peer",
  "wayland-backend",
  "wayland-client",
  "wayland-protocols",
@@ -15663,11 +15671,11 @@ dependencies = [
 name = "ui-desktop"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "dbus-kit",
  "dioxus",
- "shell-dbus",
+ "outputs-dbus",
  "tokio",
- "ui-peer",
  "zbus",
 ]
 
@@ -15761,7 +15769,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-peer",
  "zbus",
 ]
 
@@ -15822,20 +15829,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "ui-peer"
-version = "0.1.0"
-dependencies = [
- "base-time",
- "thiserror 2.0.21",
- "tokio",
-]
-
-[[package]]
 name = "ui-settings"
 version = "0.1.0"
 dependencies = [
  "base-fs",
  "base-spawn",
+ "base-time",
  "base-words",
  "dioxus",
  "objc2-core-foundation",
@@ -15848,7 +15847,6 @@ dependencies = [
  "tokio",
  "toml",
  "ui-components",
- "ui-peer",
  "ui-style",
  "zbus",
 ]
