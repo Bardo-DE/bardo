@@ -16,7 +16,7 @@ use companion_model::{
 use companion_support::{Log, app, json, serve};
 use companion_wire::{
     Handover, HelperCardView, HelperLine, HelperNeeds, HelperReply, HelpersView, LoginShown,
-    RoutineForm, RoutineReply, RoutinesView, RunsIn, ToldWire,
+    RoutineForm, RoutineProposal, RoutineReply, RoutinesView, RunsIn, ToldWire,
 };
 use provenance::{HelperId, SpaceId};
 use shell_model::companion::{
@@ -156,6 +156,11 @@ impl StandInHelpers {
         Ok(json(&RoutinesView::default()))
     }
 
+    fn routine_proposals(&self) -> fdo::Result<String> {
+        self.log.push("routine_proposals".to_owned());
+        Ok(json(&Vec::<RoutineProposal>::new()))
+    }
+
     fn add_routine(&self, form: String) -> fdo::Result<String> {
         self.log.push(format!("add_routine {form}"));
         Ok(json(&RoutineReply::Done))
@@ -252,9 +257,20 @@ async fn the_list_is_read_when_the_shell_is_seated_and_again_at_each_change() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_card_is_read_and_a_helper_the_companion_lacks_is_gone() {
     let mut desk = desk_or_return!();
-    let (_companion, held) = companion_with(&desk, HelpersView::default()).await;
+    // The companion lists the helper whose card is read: a list that lacks the open helper
+    // closes its card, so a list arriving after the card must not lack it.
+    let (_companion, held) = companion_with(
+        &desk,
+        HelpersView {
+            helpers: vec![line("h-1", "Research", None)],
+            told: Vec::new(),
+        },
+    )
+    .await;
     *held.card.lock().unwrap_or_else(|e| panic!("{e}")) = Some(card("h-1", "Research"));
     desk.seated().await;
+    desk.state(|c| (!c.helpers.lines.is_empty()).then_some(()))
+        .await;
 
     desk.send(CompanionCommand::Helpers(HelpersMsg::OpenCard(id("h-1"))));
     let open = desk
@@ -266,14 +282,13 @@ async fn a_card_is_read_and_a_helper_the_companion_lacks_is_gone() {
     assert_eq!(open, "Reads the news each morning");
 
     desk.send(CompanionCommand::Helpers(HelpersMsg::OpenCard(id("h-9"))));
-    let notice = desk
-        .state(|c| {
-            matches!(c.helpers.open, Open::Reading(_) | Open::Nothing)
-                .then(|| c.helpers.notice.clone())
-                .flatten()
-        })
-        .await;
-    assert_eq!(notice, GONE);
+    // A notice is waited for by its words: the first one to appear is not always the one asked
+    // for.
+    desk.state(|c| {
+        (matches!(c.helpers.open, Open::Nothing) && c.helpers.notice.as_deref() == Some(GONE))
+            .then_some(())
+    })
+    .await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -295,8 +310,12 @@ async fn a_saved_card_goes_to_the_companion_and_its_refusal_is_shown_as_it_came(
     let sent = desk.log_starting("create ").await;
     assert!(sent.contains(r#""name":"Research""#), "{sent}");
     assert!(sent.contains(r#""model":{"kind":"unset"}"#), "{sent}");
-    let notice = desk.state(|c| c.helpers.notice.clone()).await;
-    assert_eq!(notice, "There is already a helper called Research.");
+    // By its words: the first notice to appear is not always the one asked for.
+    desk.state(|c| {
+        (c.helpers.notice.as_deref() == Some("There is already a helper called Research."))
+            .then_some(())
+    })
+    .await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
