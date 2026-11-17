@@ -2,8 +2,7 @@
 
 use super::Inset;
 use crate::input::pointer::PointerPos;
-use crate::region::Rect;
-use crate::scale::{Scale120, Size, logical_to_physical};
+use layer_shell_types::{Rect, Scale120, Size, logical_to_physical};
 
 /// The surface around a frame of `frame`.
 pub(crate) fn surface_of(frame: Size, inset: Inset) -> Size {

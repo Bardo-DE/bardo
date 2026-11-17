@@ -7,9 +7,8 @@
 //! when the last button comes up or the pointer leaves); unlike a move, the pointer need not
 //! still be on the surface, since the implicit grab keeps delivering to it.
 
-use crate::drag::outcome::DragRefused;
-use crate::grab::PointerFacts;
-use crate::id::SurfaceId;
+use layer_shell_hooks::PointerFacts;
+use layer_shell_types::{DragRefused, SurfaceId};
 
 /// The serial to start a drag from surface `id` with, or why none fits.
 pub(crate) fn drag_serial(facts: PointerFacts, id: SurfaceId) -> Result<u32, DragRefused> {
@@ -23,7 +22,7 @@ pub(crate) fn drag_serial(facts: PointerFacts, id: SurfaceId) -> Result<u32, Dra
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::grab::Press;
+    use layer_shell_hooks::Press;
 
     #[test]
     fn a_drag_starts_from_the_held_press_on_its_surface() {

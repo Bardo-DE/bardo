@@ -6,8 +6,7 @@ use std::path::PathBuf;
 
 use super::key_spec::parse_key;
 use super::{Inject, KeyAction, PointerButton};
-use crate::geometry::Point;
-use crate::id::SurfaceName;
+use layer_shell_types::{Point, SurfaceName};
 
 /// One line of the debug command language.
 #[derive(Debug, Clone, PartialEq, Eq)]

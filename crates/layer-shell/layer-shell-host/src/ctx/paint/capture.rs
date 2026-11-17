@@ -4,8 +4,8 @@ use std::time::Instant;
 
 use crate::error::{HostError, Result};
 use crate::gpu::presenter::FrameTarget;
-use crate::id::SurfaceId;
 use crate::state::HostState;
+use layer_shell_types::SurfaceId;
 
 /// Render surface `id` offscreen at its buffer size (debug `capture`).
 pub(crate) fn capture(state: &mut HostState, id: SurfaceId) -> Result<image::RgbaImage> {

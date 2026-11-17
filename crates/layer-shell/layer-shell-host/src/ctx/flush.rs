@@ -75,7 +75,7 @@ impl<M: 'static> Flush for HostCtx<M> {
     fn poll_woken(&mut self) {
         super::rescale::follow_all(&mut self.state);
         let state = &mut self.state;
-        let ping = state.requests.ping();
+        let ping = state.wake.clone();
         for id in state.woken.take() {
             let Some(surface) = state.surfaces.get_mut(&id) else {
                 continue;

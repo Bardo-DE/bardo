@@ -12,29 +12,23 @@ use calloop::timer::{TimeoutAction, Timer};
 use smithay_client_toolkit::compositor::Surface;
 use wayland_client::protocol::wl_output::WlOutput;
 
-use crate::blur::BlurSpec;
 use crate::csd::Inset;
 use crate::ctx::HostCtx;
 use crate::ctx::spawn::{Initial, insert, new_wl_surface};
 use crate::error::HostError;
 use crate::event::HostEvent;
 use crate::handlers::output::output_info;
-use crate::id::SurfaceName;
-use crate::id::{OutputId, SurfaceId};
 use crate::input::palmrest::lock_for;
-use crate::live::Live;
 use crate::lock::active::ActiveLock;
-use crate::lock::handle::LockHandle;
-use crate::lock::machine::{self, Ended, LockAction, LockInput, LockPhase};
+use crate::lock::machine::{self, LockAction, LockInput};
 use crate::lock::retry::{Failures, Retry, retry};
-use crate::lock::{LockConfig, LockError, LockId};
-use crate::msg::Request;
-use crate::output::OutputInfo;
-use crate::region::RegionSpec;
 use crate::role::Role;
-use crate::root::HostRoot;
-use crate::scale::Size;
 use crate::state::HostState;
+use layer_shell_hooks::{HostRoot, Live, LockHandle, Request};
+use layer_shell_types::{
+    BlurSpec, Ended, LockConfig, LockError, LockId, LockPhase, OutputId, OutputInfo, RegionSpec,
+    Size, SurfaceId, SurfaceName,
+};
 
 impl<M: 'static> HostCtx<M> {
     /// Lock the session (`ext_session_lock_manager_v1.lock`). A lock surface is made at once for
@@ -149,7 +143,7 @@ fn perform<M: 'static>(ctx: &mut HostCtx<M>, action: LockAction) {
                 // Told once the documents have been polled: at the next flush, whose first
                 // phase polls the ones this publish woke. The ping makes sure there is one.
                 active.inbox.push(LockInput::Told);
-                ctx.state.requests.ping().ping();
+                ctx.state.wake.ping();
             }
         }
         LockAction::UnlockAndDestroy => active.lock.unlock(),

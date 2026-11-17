@@ -1,15 +1,13 @@
 //! Toplevel windows: the request sequence that builds one and its first state.
 
-use crate::blur::BlurSpec;
 use crate::csd::{inset_for, surface_of};
-use crate::id::SurfaceId;
-use crate::id::SurfaceName;
-use crate::region::RegionSpec;
 use crate::role::Role;
-use crate::root::HostRoot;
-use crate::scale::Scale120;
 use crate::state::HostState;
-use crate::toplevel::{ToplevelConfig, ToplevelState, to_wire_decorations};
+use crate::toplevel::to_wire_decorations;
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::{
+    BlurSpec, RegionSpec, Scale120, SurfaceId, SurfaceName, ToplevelConfig, ToplevelState,
+};
 
 use super::rebuild::map;
 use super::size::wire_size;

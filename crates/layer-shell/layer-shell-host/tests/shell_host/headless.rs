@@ -12,8 +12,8 @@ use blitz_traits::shell::ColorScheme;
 use dioxus::core::Element;
 use dioxus::prelude::*;
 use image::RgbaImage;
-use layer_shell_host::Scale120;
 use layer_shell_host::headless::{Fonts, HeadlessConfig, PixelSize, render_png};
+use layer_shell_types::Scale120;
 
 const SIZE: (u32, u32) = (240, 160);
 

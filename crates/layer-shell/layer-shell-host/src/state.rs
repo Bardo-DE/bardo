@@ -52,8 +52,6 @@ use crate::error::{HostError, Result};
 use crate::event::ShellEvent;
 use crate::frame::{FrameInput, TimerCmd};
 use crate::gpu::context::GpuContext;
-use crate::grab::GrabRecord;
-use crate::handle::RequestQueue;
 use crate::handlers::activation::ActivationRequest;
 use crate::handlers::background_effect::BackgroundEffect;
 use crate::handlers::drag_source::Dragging;
@@ -63,7 +61,6 @@ use crate::handlers::quire_window::QuireWindows;
 use crate::handlers::render_device::RenderDevice;
 use crate::handlers::seat::SeatInput;
 use crate::handlers::text_input::TextInputManager;
-use crate::id::{SurfaceId, SurfaceIds};
 use crate::ime::{Ime, PendingIme, SentSurrounding};
 use crate::input::focus::PointerFocus;
 use crate::input::key::key_event;
@@ -79,6 +76,8 @@ use crate::timers::TimerRequest;
 use crate::wake::WokenSet;
 use blitz_embed::fonts::SharedFonts;
 use blitz_embed::net::FileRoots;
+use layer_shell_hooks::{GrabRecord, RequestQueue, SurfaceIds};
+use layer_shell_types::SurfaceId;
 
 /// `wl_keyboard.repeat_info` values until the compositor sends its own (X's defaults).
 const DEFAULT_REPEAT_DELAY: Duration = Duration::from_millis(600);
@@ -139,6 +138,8 @@ pub(crate) struct HostState {
     pub(crate) first_mouse_window: Duration,
     /// Requests from documents' `SurfaceHandle`s.
     pub(crate) requests: RequestQueue,
+    /// The ping that wakes the loop: the one every waker and shell provider shares.
+    pub(crate) wake: calloop::ping::Ping,
     /// Surfaces whose Dioxus tasks are ready.
     pub(crate) woken: WokenSet,
     /// Events for the shell's closure, raised by the handlers.
@@ -165,6 +166,7 @@ impl HostState {
         globals: &GlobalList,
         qh: QueueHandle<HostState>,
         requests: RequestQueue,
+        wake: calloop::ping::Ping,
         first_mouse_window: Duration,
     ) -> Result<HostState> {
         let missing = |global| move |_| HostError::MissingGlobal { global };
@@ -191,8 +193,8 @@ impl HostState {
                 keyboard_focus: None,
                 focused_at: None,
                 modifiers: Modifiers::empty(),
-                held_modifiers: crate::modifiers::Modifiers::default(),
-                modality: crate::live::Live::new(crate::modality::InputModality::default()),
+                held_modifiers: layer_shell_types::Modifiers::default(),
+                modality: layer_shell_hooks::Live::new(layer_shell_types::InputModality::default()),
                 last_serial: 0,
                 grab: GrabRecord::default(),
                 zone: Zone::Document,
@@ -238,6 +240,7 @@ impl HostState {
             file_roots: FileRoots::default(),
             first_mouse_window,
             requests,
+            wake,
             woken: WokenSet::default(),
             events: VecDeque::new(),
             timers: Vec::new(),

@@ -1,9 +1,6 @@
 //! What the host tells the shell.
 
-use crate::id::{OutputId, SurfaceId};
-use crate::lock::LockId;
-use crate::lock::machine::LockState;
-use crate::output::OutputInfo;
+use layer_shell_types::{KeyboardFocus, LockId, LockState, OutputId, OutputInfo, SurfaceId};
 
 /// What palmrest asks of the shell, and its workspace steps.
 pub use mouse_gestures_proto::{HostAction as PalmrestAction, Workspace as PalmrestWorkspace};
@@ -73,13 +70,6 @@ pub enum CloseReason {
     UserClose,
     /// The surface failed (its GPU surface could not be created or presented) and was removed.
     Failed,
-}
-
-/// Keyboard focus, gained or lost.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum KeyboardFocus {
-    Gained,
-    Lost,
 }
 
 /// An event raised inside the Wayland handlers, which never carry an app message. Widened to

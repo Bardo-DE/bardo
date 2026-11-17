@@ -19,8 +19,8 @@ use serde_json::json;
 use super::{DebugAction, DebugCommand, Inject, Injected, parse_command};
 use crate::ctx::HostCtx;
 use crate::error::{HostError, Result};
-use crate::id::SurfaceId;
 use crate::state::HostState;
+use layer_shell_types::SurfaceId;
 
 /// Add a stdin source to the loop that parses each line and applies it. EOF on stdin exits.
 ///
@@ -209,7 +209,7 @@ mod tests {
         let path = std::path::Path::new("/tmp/x.png");
         let ok: Result<Injected> = Ok(Injected::Captured {
             path: path.to_owned(),
-            size: crate::scale::Size {
+            size: layer_shell_types::Size {
                 width: 2,
                 height: 1,
             },

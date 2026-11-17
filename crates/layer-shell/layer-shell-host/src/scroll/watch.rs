@@ -1,61 +1,9 @@
-//! Scroll notification to components (design/11 §11.3.15): each frame the host publishes the
-//! offset, extent and phase of every scroller a component watches with [`use_scroll`]. Blitz's
-//! own `onscroll` never fires for the engine's raw writes, so this is the one way to follow a
-//! scroll. (design/11 §11.7 named it `ds-native::use_scroll`; it lives here, next to the engine
-//! that feeds it.)
+//! The phase the scroll engine gives a watched scroller. The watch itself (`ScrollBoard`,
+//! `use_scroll`) is `layer_shell_hooks`'s; the host publishes into it each frame.
 
-use std::cell::RefCell;
-use std::collections::HashMap;
-use std::rc::Rc;
-
-use dioxus::core::{spawn, use_hook};
-use dioxus::hooks::use_signal;
-use dioxus::signals::{ReadSignal, WritableExt};
-
-use crate::handle::use_surface;
-use crate::live::Live;
-use crate::region::ElementId;
 use blitz_embed::scroll::engine::Engine;
 use blitz_embed::scroll::geom::Scroller;
-
-/// A scroll position in logical px; raw, so out of range while rubber-banding.
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct ScrollPoint {
-    pub x: f64,
-    pub y: f64,
-}
-
-/// A scroller's content and viewport sizes, logical px.
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct ScrollExtent {
-    pub content_width: f64,
-    pub content_height: f64,
-    pub viewport_width: f64,
-    pub viewport_height: f64,
-}
-
-/// What is moving a scroller.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum ScrollPhase {
-    #[default]
-    Idle,
-    /// Fingers are down on it.
-    Tracking,
-    /// It glides after a flick.
-    Momentum,
-    /// It springs back from past an edge.
-    Rebound,
-    /// A key, wheel or command animates it.
-    Animating,
-}
-
-/// One scroller as a component sees it.
-#[derive(Debug, Clone, Copy, PartialEq, Default)]
-pub struct ScrollState {
-    pub offset: ScrollPoint,
-    pub extent: ScrollExtent,
-    pub phase: ScrollPhase,
-}
+use layer_shell_types::ScrollPhase;
 
 /// The phase `engine` gives `scroller`.
 pub(crate) fn phase_of(engine: &Engine, scroller: Scroller) -> ScrollPhase {
@@ -71,55 +19,6 @@ pub(crate) fn phase_of(engine: &Engine, scroller: Scroller) -> ScrollPhase {
     }
 }
 
-/// The scrollers a surface's components watch, by element id. Shared between the host (which
-/// publishes) and the surface's `SurfaceHandle`, on the main thread. An entry stays for the
-/// surface's life once watched.
-#[derive(Debug, Clone, Default)]
-pub(crate) struct ScrollBoard(Rc<RefCell<HashMap<ElementId, Live<ScrollState>>>>);
-
-impl ScrollBoard {
-    /// The live state of `id`, created on first watch.
-    pub(crate) fn watch(&self, id: &ElementId) -> Live<ScrollState> {
-        self.0
-            .borrow_mut()
-            .entry(id.clone())
-            .or_insert_with(|| Live::new(ScrollState::default()))
-            .clone()
-    }
-
-    /// Every watched id and its live state.
-    pub(crate) fn watched(&self) -> Vec<(ElementId, Live<ScrollState>)> {
-        self.0
-            .borrow()
-            .iter()
-            .map(|(id, live)| (id.clone(), live.clone()))
-            .collect()
-    }
-}
-
-/// The scroll state of the scroll container whose `id` attribute is `id` in this component's
-/// surface.
-///
-/// It is live state: re-rendered when its offset, extent or phase changes (at most once per frame).
-/// `ScrollState::default()` until the element has laid out.
-#[must_use]
-pub fn use_scroll(id: &ElementId) -> ReadSignal<ScrollState> {
-    let board = use_surface().scroll_board();
-    let live = use_hook(|| board.watch(id));
-    let mut latest = use_signal(|| live.get());
-    use_hook(move || {
-        let mut seen = live.changes();
-        spawn(async move {
-            loop {
-                let (count, state) = live.changed_after(seen).await;
-                seen = count;
-                latest.set(state);
-            }
-        });
-    });
-    ReadSignal::from(latest)
-}
-
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
@@ -132,21 +31,20 @@ mod tests {
     use crate::clipboard::SharedSelection;
     use crate::dom::document::{DocumentEnv, SurfaceDocument};
     use crate::dom::shell_provider::HostShellProvider;
-    use crate::grab::GrabRecord;
-    use crate::handle::{HandleParts, RequestQueue, SurfaceHandle};
-    use crate::id::{SurfaceId, SurfaceIds};
     use crate::prepaint::Prepaint;
-    use crate::role::RoleKind;
-    use crate::root::HostRoot;
-    use crate::scale::{LiveScale, Scale120};
     use crate::scroll::surface::SurfaceScroll;
     use crate::scroll::tuning::Tuning;
-    use crate::tick::FrameTicks;
-    use crate::toplevel::ToplevelState;
     use blitz_embed::fonts::SharedFonts;
     use blitz_embed::net::LocalNet;
     use blitz_embed::scroll::doc as dom;
     use blitz_embed::scroll::geom::ScrollAxis;
+    use layer_shell_hooks::{
+        FrameTicks, GrabRecord, HandleParts, HostRoot, Live, NativeCell, RequestQueue, RoleKind,
+        ScrollBoard, SurfaceHandle, SurfaceIds, WheelFeed, use_scroll,
+    };
+    use layer_shell_types::{
+        ElementId, InputModality, Modifiers, PlacementSupport, Scale120, SurfaceId, ToplevelState,
+    };
 
     /// Shows a scroll box's offset as text, through `use_scroll`.
     fn watcher() -> Element {
@@ -175,18 +73,21 @@ mod tests {
         let (ping, _source) = calloop::ping::make_ping().expect("eventfd ping");
         let board = ScrollBoard::default();
         let parts = HandleParts {
-            requests: RequestQueue::new(ping.clone()),
+            requests: RequestQueue::new({
+                let ping = ping.clone();
+                move || ping.ping()
+            }),
             ids: SurfaceIds::new(),
             ticks: FrameTicks::default(),
-            scale: LiveScale::new(Scale120::ONE),
+            scale: Live::new(Scale120::ONE),
             toplevel: Live::new(ToplevelState::default()),
             grab: GrabRecord::default(),
             scrolls: board.clone(),
-            wheels: crate::scroll::wheel_feed::WheelFeed::default(),
-            modifiers: Live::new(crate::modifiers::Modifiers::default()),
-            modality: Live::new(crate::modality::InputModality::default()),
-            wl: crate::handle::WlCell::detached(),
-            placement: crate::window_placement::PlacementSupport::Absent,
+            wheels: WheelFeed::default(),
+            modifiers: Live::new(Modifiers::default()),
+            modality: Live::new(InputModality::default()),
+            native: NativeCell::detached(),
+            placement: PlacementSupport::Absent,
         };
         let handle = SurfaceHandle::new(SurfaceId(3), RoleKind::Toplevel, parts);
         let env = DocumentEnv {
@@ -211,6 +112,6 @@ mod tests {
         let published = scroll.board().watch(&ElementId::new("box")).get();
         assert_eq!(published.extent.content_height, 500.0);
         assert_eq!(published.extent.viewport_height, 100.0);
-        assert_eq!(published.phase, ScrollPhase::Idle);
+        assert_eq!(published.phase, layer_shell_types::ScrollPhase::Idle);
     }
 }

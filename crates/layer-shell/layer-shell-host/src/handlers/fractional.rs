@@ -18,7 +18,7 @@ use wayland_protocols::wp::fractional_scale::v1::client::wp_fractional_scale_v1:
 use wayland_protocols::wp::viewporter::client::wp_viewport::{self, WpViewport};
 use wayland_protocols::wp::viewporter::client::wp_viewporter::{self, WpViewporter};
 
-use crate::scale::{Scale120, Size};
+use layer_shell_types::{Scale120, Size};
 
 /// State for `wp_fractional_scale_manager_v1` and `wp_viewporter`: the two bound managers, and
 /// the per-surface objects and last-reported scale created against them.

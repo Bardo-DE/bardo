@@ -9,10 +9,10 @@ use tokio::sync::oneshot;
 use wayland_client::protocol::wl_data_device_manager::DndAction;
 
 use crate::drag::offer::{Offered, bytes_for};
-use crate::drag::outcome::{DragAction, DragOutcome, outcome};
+use crate::drag::outcome::outcome;
 use crate::handlers::pipe_writes::PipeUse;
-use crate::id::SurfaceId;
 use crate::state::HostState;
+use layer_shell_types::{DragAction, DragOutcome, SurfaceId};
 
 /// The seat's drag, if one is under way.
 #[derive(Debug, Default)]
@@ -55,7 +55,7 @@ impl HostState {
     /// The compositor chose `action` (it may choose again as the pointer moves).
     pub(crate) fn drag_action(&mut self, action: DndAction) {
         if let Some(drag) = self.drag.active.as_mut() {
-            drag.chosen = DragAction::from_wire(action);
+            drag.chosen = crate::drag::outcome::action_from_wire(action);
         }
     }
 

@@ -12,8 +12,8 @@ use std::time::{Duration, Instant};
 
 use crate::frame::{FrameAction, FrameInput, FrameState, Pace, TimerCmd, step};
 use crate::stats::{FrameCounters, StatsWindow};
-use crate::tick::{FrameTicks, pacing};
 use blitz_embed::scroll::time::Elapsed;
+use layer_shell_hooks::{FrameTicks, pacing};
 
 /// A surface, the machine driving it, and what happened to it.
 struct Sim {
@@ -99,7 +99,7 @@ impl Sim {
             self.callbacks += 1;
             self.stats.callback();
             let at = Elapsed(Duration::from_millis(self.now_ms));
-            let animating = self.ticks.frame_due(self.animation, at);
+            let animating = self.ticks.frame_due(self.animation, at.0);
             if animating {
                 self.stats.ticked();
             }

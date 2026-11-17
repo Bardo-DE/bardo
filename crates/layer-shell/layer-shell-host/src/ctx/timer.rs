@@ -8,8 +8,8 @@ use calloop::timer::{TimeoutAction, Timer};
 
 use crate::ctx::HostCtx;
 use crate::frame::{FrameInput, TimerCmd};
-use crate::id::SurfaceId;
 use crate::timers::TimerRequest;
+use layer_shell_types::SurfaceId;
 
 /// Apply every queued timer request, oldest first.
 pub(super) fn arm_requested<M: 'static>(ctx: &mut HostCtx<M>) {

@@ -8,7 +8,8 @@ use std::sync::Mutex;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use layer_shell_host::{LockPhase, use_lock, use_lock_phase};
+use layer_shell_hooks::{use_lock, use_lock_phase};
+use layer_shell_types::LockPhase;
 
 use crate::say;
 

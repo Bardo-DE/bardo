@@ -6,10 +6,11 @@ use blitz_dom::BaseDocument;
 use super::{Moved, SurfaceScroll};
 use crate::input::pointer::PointerPos;
 use crate::scroll::indicator::{self, Metrics, ThumbPaint};
-use crate::scroll::watch::{ScrollExtent, ScrollPoint, ScrollState, phase_of};
+use crate::scroll::watch::phase_of;
 use blitz_embed::scroll::doc as dom;
 use blitz_embed::scroll::geom::ScrollAxis;
 use blitz_embed::scroll::time::Elapsed;
+use layer_shell_types::{ScrollExtent, ScrollPoint, ScrollState};
 
 impl SurfaceScroll {
     /// The pointer moved to `pos`: expand or collapse the thumb. `Moved` when that starts an

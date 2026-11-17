@@ -10,13 +10,13 @@ use blitz_dom::BaseDocument;
 
 use crate::scroll::indicator::{Indicator, Wake};
 use crate::scroll::tuning::{Env, Tuning};
-use crate::scroll::watch::ScrollBoard;
 pub(crate) use blitz_embed::scroll::driver::Moved;
 use blitz_embed::scroll::driver::{Claim, Moves, ScrollDriver};
 use blitz_embed::scroll::engine::{Engine, Motion, ScrollIn};
 use blitz_embed::scroll::geom::ScrollAxis;
 use blitz_embed::scroll::time::Elapsed;
 use blitz_embed::scroll::velocity::SampleTime;
+use layer_shell_hooks::ScrollBoard;
 
 /// A palmrest gesture whose axis is known but whose direction is not yet (palmrest drops the
 /// first delta at Began, design/12 §12.3.5).

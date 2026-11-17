@@ -4,7 +4,7 @@ use wayland_protocols::xdg::shell::client::xdg_positioner::{
     Anchor, ConstraintAdjustment, Gravity as WireGravity,
 };
 
-use super::config::{PopupAdjust, PopupEdge};
+use layer_shell_types::{PopupAdjust, PopupEdge};
 
 /// The `xdg_positioner` wire value for an anchor edge or gravity direction.
 pub(crate) fn to_wire_anchor(edge: PopupEdge) -> Anchor {

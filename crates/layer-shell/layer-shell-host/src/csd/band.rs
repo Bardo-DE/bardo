@@ -4,9 +4,7 @@ use cursor_icon::CursorIcon;
 
 use super::Inset;
 use crate::input::pointer::PointerPos;
-use crate::region::Rect;
-use crate::scale::Size;
-use crate::toplevel::ResizeEdge;
+use layer_shell_types::{Rect, ResizeEdge, Size};
 
 /// Where a pointer on the surface is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

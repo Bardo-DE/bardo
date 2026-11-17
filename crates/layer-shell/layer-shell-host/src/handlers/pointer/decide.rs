@@ -7,8 +7,8 @@ use blitz_traits::events::MouseEventButton;
 
 use crate::csd::Zone;
 use crate::input::pointer::first_mouse;
-use crate::role::RoleKind;
-use crate::toplevel::ResizeEdge;
+use layer_shell_hooks::RoleKind;
+use layer_shell_types::ResizeEdge;
 
 /// Where a press goes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

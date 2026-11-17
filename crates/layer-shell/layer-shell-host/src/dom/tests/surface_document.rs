@@ -14,10 +14,10 @@ use crate::clipboard::SharedSelection;
 use crate::dom::document::SurfaceDocument;
 use crate::dom::shell_provider::HostShellProvider;
 use crate::dom::tests::env::test_env;
-use crate::id::SurfaceId;
-use crate::root::HostRoot;
 use crate::use_watch;
 use crate::wake::{WokenSet, surface_waker};
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::SurfaceId;
 
 /// Every text node's content, concatenated, for a coarse "did the DOM render X" assertion.
 fn all_text(doc: &mut SurfaceDocument) -> String {
@@ -83,11 +83,15 @@ fn overlay_content_app() -> Element {
 /// measures the actual content element after it, including absolutely placed descendants (a
 /// menu adds nothing to its parent's size but paints where it paints).
 /// name, document, the measured size
-type Case = (&'static str, fn() -> Element, Option<crate::scale::Size>);
+type Case = (
+    &'static str,
+    fn() -> Element,
+    Option<layer_shell_types::Size>,
+);
 
 #[test]
 fn content_size_measures_the_content_where_it_paints() {
-    use crate::scale::Size;
+    use layer_shell_types::Size;
     let cases: &[Case] = &[
         (
             "the #card div, not the #main mount point (which fills the 200px-wide viewport)",

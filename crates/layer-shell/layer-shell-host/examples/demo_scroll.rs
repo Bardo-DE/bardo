@@ -18,10 +18,11 @@ use std::io::{BufRead, Write};
 use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ElementId, ExclusiveZone, Host, HostEvent, HostRoot, KeyboardMode,
-    LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId,
-    use_scroll,
+use layer_shell_hooks::{HostRoot, use_scroll};
+use layer_shell_host::{Host, HostEvent};
+use layer_shell_types::{
+    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
+    LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0;background:rgb(240,240,240)}\

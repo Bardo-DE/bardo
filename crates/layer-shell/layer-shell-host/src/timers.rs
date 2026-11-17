@@ -6,7 +6,7 @@
 use std::time::Duration;
 
 use crate::frame::TimerCmd;
-use crate::id::SurfaceId;
+use layer_shell_types::SurfaceId;
 
 /// A timer change a handler asked for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

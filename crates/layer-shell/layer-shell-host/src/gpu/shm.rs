@@ -14,7 +14,7 @@ use wayland_client::protocol::wl_surface::WlSurface;
 use crate::error::{HostError, Result};
 use crate::gpu::presenter::{FrameTarget, Overlay};
 use crate::gpu::swapchain::pixel_extent;
-use crate::scale::Size;
+use layer_shell_types::Size;
 
 /// A surface's shm buffer pool.
 #[derive(Debug)]

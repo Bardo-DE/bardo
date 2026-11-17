@@ -16,29 +16,8 @@
 
 #[cfg(feature = "debug-inject")]
 use keyboard_types::Key;
+use layer_shell_types::InputModality;
 use smithay_client_toolkit::seat::keyboard::Keysym;
-
-/// The kind of input the seat last saw that decides the modality.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum InputModality {
-    /// The last deciding input was a pointer press (and before any input at all): no focus
-    /// rings.
-    #[default]
-    Pointer,
-    /// The last deciding input was a key: focus rings show.
-    Keyboard,
-}
-
-impl InputModality {
-    /// The conventional attribute value: quire's `data-modality`.
-    #[must_use]
-    pub fn slug(self) -> &'static str {
-        match self {
-            InputModality::Pointer => "pointer",
-            InputModality::Keyboard => "keyboard",
-        }
-    }
-}
 
 /// One input event, as far as the modality cares.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

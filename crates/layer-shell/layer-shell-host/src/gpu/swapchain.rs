@@ -5,8 +5,8 @@ use blitz_embed::adapter::block_on;
 
 use crate::error::{HostError, Result};
 use crate::gpu::context::{GpuContext, SURFACE_FORMAT};
-use crate::scale::{MAX_SURFACE_EXTENT, Size};
 use crate::stats::{AlphaMode, PresentMode};
+use layer_shell_types::{MAX_SURFACE_EXTENT, Size};
 
 /// One surface's swapchain and scene. The wgpu surface is declared first so it drops first.
 pub(crate) struct Swapchain {

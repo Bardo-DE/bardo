@@ -4,11 +4,9 @@
 //! Building and committing the actual `xdg_positioner` object is an effect (a Wayland request
 //! against a live connection) and belongs to the caller; this module only computes what to send.
 
-use super::config::{PopupAdjust, PopupEdge};
-use super::config::{PopupConfig, PopupOffset, PopupSize};
-use crate::placement::PopupPlacement;
-use crate::region::Rect;
-use crate::scale::Size;
+use layer_shell_types::{
+    PopupAdjust, PopupConfig, PopupEdge, PopupPlacement, PopupSize, Rect, Size, offset_rect,
+};
 
 /// The resolved values an `xdg_positioner` should be configured with: `set_size`,
 /// `set_anchor_rect`, `set_anchor`, `set_gravity` and `set_constraint_adjustment`, all in one
@@ -47,16 +45,6 @@ pub(crate) fn positioner_params(
     }
 }
 
-/// `rect` moved by `offset`; its size is unchanged.
-#[must_use]
-pub fn offset_rect(rect: Rect, offset: PopupOffset) -> Rect {
-    Rect {
-        x: rect.x + offset.dx,
-        y: rect.y + offset.dy,
-        ..rect
-    }
-}
-
 /// Whether a `FitContent` popup's placement should change now that its document's `content`
 /// size is known, and what to (`SurfaceOp::Reposition`, applied by `ctx::paint::render` right
 /// after the layout that produced `content`). `None` for `PopupSize::Fixed` (nothing to fit),
@@ -87,7 +75,7 @@ pub(crate) fn refit(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::popup::config::{PopupAnchor, PopupGrab};
+    use layer_shell_types::{PopupAnchor, PopupGrab, PopupOffset};
 
     fn config(
         edge: PopupEdge,

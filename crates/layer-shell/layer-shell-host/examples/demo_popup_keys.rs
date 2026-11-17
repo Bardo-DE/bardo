@@ -15,13 +15,12 @@ mod harness;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ExclusiveZone, Host, HostEvent, HostRoot, KeyboardMode, LayerConfig,
-    LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, PopupPlacement, Rect, RegionSpec,
-    Size, use_input_modality, use_surface,
-};
-use layer_shell_host::{
-    PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupSize,
+use layer_shell_hooks::{HostRoot, use_input_modality, use_surface};
+use layer_shell_host::{Host, HostEvent};
+use layer_shell_types::{
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
+    Margin, OutputTarget, PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset,
+    PopupPlacement, PopupSize, Rect, RegionSpec, Size,
 };
 use serde_json::json;
 

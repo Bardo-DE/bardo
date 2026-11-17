@@ -33,8 +33,8 @@ use rustix::process::{PidfdFlags, pidfd_open};
 use base_xdg::Xdg;
 use mouse_gestures_proto::{Compat, MAX_PACKET, ToDaemon, ToHost, compat, decode, encode};
 
-use crate::lock::machine::LockState as HostLock;
 use backoff::Misses;
+use layer_shell_types::LockState as HostLock;
 
 /// The most datagrams one read takes: a daemon (or a process in its place) that sends faster
 /// than the host reads cannot hold the loop in one read. The source is level-triggered, so the

@@ -4,9 +4,9 @@
 //! every few seconds for weeks leaves nothing behind in the shell or in the compositor. A surface
 //! that is closed for good also gives back its widgets' textures.
 
-use crate::id::SurfaceId;
 use crate::state::HostState;
 use crate::surface::HostSurface;
+use layer_shell_types::SurfaceId;
 
 impl HostState {
     /// Take surface `id` out of the host, after destroying the objects made for its current

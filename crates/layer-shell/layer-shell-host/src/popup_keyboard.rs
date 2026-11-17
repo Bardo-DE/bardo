@@ -13,8 +13,7 @@
 //!
 //! See FINDINGS F72.
 
-use crate::layer::KeyboardMode;
-use crate::popup::PopupGrab;
+use layer_shell_types::{KeyboardMode, PopupGrab};
 
 /// Whether the host lifts a parent layer's keyboard for a grabbing popup on this compositor:
 /// everywhere except `KWin` and casement. `KWin` is recognised by `org_kde_plasma_shell` (wlroots

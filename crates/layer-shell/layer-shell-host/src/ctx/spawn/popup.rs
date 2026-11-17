@@ -5,25 +5,23 @@ use smithay_client_toolkit::shell::WaylandSurface;
 use smithay_client_toolkit::shell::xdg::popup::Popup;
 use smithay_client_toolkit::shell::xdg::{XdgPositioner, XdgSurface};
 
-use crate::blur::BlurSpec;
 use crate::csd::Inset;
 use crate::error::{HostError, Result};
-use crate::id::SurfaceId;
-use crate::id::SurfaceName;
-use crate::layer::{KeyboardMode, to_wire_keyboard};
-use crate::placement::PopupPlacement;
+use crate::layer::to_wire_keyboard;
 use crate::popup::{
-    PopupConfig, PopupGrab, PositionerParams, positioner_params, to_wire_anchor as edge,
-    to_wire_constraint_adjustment, to_wire_gravity,
+    PositionerParams, positioner_params, to_wire_anchor as edge, to_wire_constraint_adjustment,
+    to_wire_gravity,
 };
 use crate::popup_keyboard::parent_keyboard;
-use crate::region::RegionSpec;
 use crate::resolve::resolve_popup_anchor;
 use crate::role::Role;
-use crate::root::HostRoot;
-use crate::scale::Scale120;
 use crate::state::HostState;
 use crate::surface::HostSurface;
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::{
+    BlurSpec, KeyboardMode, PopupConfig, PopupGrab, PopupPlacement, RegionSpec, Scale120,
+    SurfaceId, SurfaceName,
+};
 
 use super::rebuild::map;
 use super::{Initial, insert};

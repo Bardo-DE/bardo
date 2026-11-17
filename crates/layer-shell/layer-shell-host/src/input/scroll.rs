@@ -13,8 +13,6 @@ use smithay_client_toolkit::seat::pointer::AxisScroll;
 use wayland_client::protocol::wl_pointer;
 
 use crate::event::HostEvent;
-use crate::geometry::{Point, px_of};
-use crate::id::SurfaceId;
 use crate::input::focus::PointerFocus;
 use crate::input::palmrest::route::{Route, route};
 use crate::input::pointer::{self, PointerPos};
@@ -30,6 +28,7 @@ use blitz_embed::scroll::driver::Claim;
 use blitz_embed::scroll::geom::ViewPoint;
 use blitz_embed::scroll::keys::scroll_key;
 use blitz_embed::scroll::time::Elapsed;
+use layer_shell_types::{Point, SurfaceId, px_of};
 use mouse_gestures_proto::ToHost;
 
 impl HostState {

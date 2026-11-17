@@ -17,9 +17,10 @@ use std::cell::RefCell;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Decorations, Fullscreen, GrabRefused, Host, HostEvent, HostRoot, Maximize, ResizeEdge, Size,
-    SurfaceHandle, SurfaceId, ToplevelConfig, use_surface, use_toplevel_state,
+use layer_shell_hooks::{GrabRefused, HostRoot, SurfaceHandle, use_surface, use_toplevel_state};
+use layer_shell_host::{Host, HostEvent};
+use layer_shell_types::{
+    Decorations, Fullscreen, Maximize, ResizeEdge, Size, SurfaceId, ToplevelConfig,
 };
 use serde_json::json;
 

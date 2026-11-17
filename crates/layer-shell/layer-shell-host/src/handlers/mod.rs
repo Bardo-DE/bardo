@@ -29,10 +29,9 @@ use wayland_client::protocol::wl_surface::WlSurface;
 
 use crate::event::{CloseReason, HostEvent};
 use crate::frame::TimerCmd;
-use crate::id::SurfaceId;
-use crate::scale::{BufferMapping, Scale120, Size, buffer_mapping};
 use crate::state::HostState;
 use crate::timers::TimerRequest;
+use layer_shell_types::{BufferMapping, Scale120, Size, SurfaceId, buffer_mapping};
 
 /// The id of the surface whose role owns `wl_surface`, if any is still live. Every handler that
 /// receives a bare `wl_surface::WlSurface` (there is no other way to name a surface at the

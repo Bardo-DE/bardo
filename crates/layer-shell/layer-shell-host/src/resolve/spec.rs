@@ -1,8 +1,8 @@
 //! Resolving a `RegionSpec` against a laid-out document.
 
-use crate::geometry::inflate;
-use crate::region::{ElementId, ElementRegion, Rect, RegionSpec, RoundedRect, rounded_strips};
-use crate::scale::Size;
+use layer_shell_types::{
+    ElementId, ElementRegion, Rect, RegionSpec, RoundedRect, Size, inflate, rounded_strips,
+};
 
 /// Resolve `spec` for a surface of logical `size`, finding element rectangles with `lookup`.
 /// `Some` is a region ready to send: the union of its rectangles, empty meaning "nothing".

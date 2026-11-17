@@ -11,17 +11,16 @@ use smithay_client_toolkit::seat::keyboard::{
 use wayland_client::protocol::{wl_keyboard, wl_surface};
 use wayland_client::{Connection, QueueHandle};
 
-use crate::event::{HostEvent, KeyboardFocus};
-use crate::id::SurfaceId;
+use crate::event::HostEvent;
 use crate::input::focus;
 use crate::input::key;
 use crate::input::modifiers::modifiers_from;
 use crate::modality::{Stroke, is_modifier};
-use crate::modifiers::Modifiers;
 use crate::state::HostState;
 use crate::timers::TimerRequest;
 use blitz_embed::scroll::driver::Claim;
 use decide::{RepeatRate, repeat_rate, stops_repeat};
+use layer_shell_types::{KeyboardFocus, Modifiers, SurfaceId};
 
 impl KeyboardHandler for HostState {
     /// `HostEvent::KeyboardFocus{Gained}`, remember the time for first-mouse.
@@ -163,7 +162,7 @@ impl KeyboardHandler for HostState {
         // `use_modifiers`: the seat-wide cache, and the focused surface's live copy of it.
         // The compositor may send this with no surface of ours focused, so only the
         // second write is conditional.
-        self.input.held_modifiers = Modifiers::from_sctk(modifiers);
+        self.input.held_modifiers = crate::modifiers::from_sctk(modifiers);
         if let Some(id) = self.input.keyboard_focus
             && let Some(surface) = self.surfaces.get_mut(&id)
         {
@@ -217,7 +216,7 @@ impl HostState {
     /// keyboard focus (`id` when none does, an injected key's target).
     pub(crate) fn set_modifiers(&mut self, id: SurfaceId, mods: keyboard_types::Modifiers) {
         self.input.modifiers = mods;
-        self.input.held_modifiers = self.input.held_modifiers.with_dom(mods);
+        self.input.held_modifiers = crate::modifiers::with_dom(self.input.held_modifiers, mods);
         let target = self.input.keyboard_focus.unwrap_or(id);
         if let Some(surface) = self.surfaces.get_mut(&target) {
             surface.live_modifiers.publish(self.input.held_modifiers);

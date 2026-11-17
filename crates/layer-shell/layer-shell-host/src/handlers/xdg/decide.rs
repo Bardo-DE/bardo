@@ -3,10 +3,9 @@
 use std::num::NonZeroU32;
 
 use crate::csd::{Inset, inset_for, surface_of, window_geometry};
-use crate::layer::KeyboardMode;
-use crate::region::{Px, Rect};
-use crate::scale::{MAX_SURFACE_EXTENT, Size, wire_extent};
-use crate::toplevel::{Decorations, ToplevelState};
+use layer_shell_types::{
+    Decorations, KeyboardMode, MAX_SURFACE_EXTENT, Px, Rect, Size, ToplevelState, wire_extent,
+};
 
 /// What a toplevel configure leaves the surface looking like.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -87,7 +86,7 @@ pub(super) fn keyboard_restore(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::toplevel::{Fullscreen, Maximize, ResizeMargin};
+    use layer_shell_types::{Fullscreen, Maximize, ResizeMargin};
 
     const CURRENT: Size = Size {
         width: 640,

@@ -25,7 +25,7 @@ use crate::dom::head::{HeadDocument, HeadElement, HeadQueue};
 use crate::dom::scheme;
 use crate::dom::shell_provider::HostShellProvider;
 use crate::prepaint::Prepaint;
-use crate::root::HostRoot;
+use layer_shell_hooks::HostRoot;
 
 /// The host's user-agent stylesheet, added to every document. A sized root is what lets Blitz
 /// hit-test into the content at all (with `html,body` at zero height, hover never reached

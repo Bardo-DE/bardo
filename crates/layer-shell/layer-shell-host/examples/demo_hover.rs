@@ -24,9 +24,11 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ExclusiveZone, Host, HostEvent, HostRoot, KeyboardMode, LayerConfig,
-    LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId, Visibility,
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostEvent};
+use layer_shell_types::{
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
+    Margin, OutputTarget, RegionSpec, SurfaceId, Visibility,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0}\

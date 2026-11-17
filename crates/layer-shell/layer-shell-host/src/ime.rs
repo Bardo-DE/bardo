@@ -5,7 +5,7 @@
 
 use blitz_traits::events::BlitzImeEvent;
 
-use crate::region::Rect;
+use layer_shell_types::Rect;
 
 mod surrounding;
 

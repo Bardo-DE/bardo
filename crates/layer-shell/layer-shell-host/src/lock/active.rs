@@ -6,13 +6,10 @@ use std::fmt;
 
 use smithay_client_toolkit::session_lock::SessionLock;
 
-use crate::id::{OutputId, SurfaceId};
-use crate::live::Live;
-use crate::lock::machine::{LockInput, LockMachine, LockPhase};
+use crate::lock::machine::{LockInput, LockMachine};
 use crate::lock::retry::Failures;
-use crate::lock::{LockConfig, LockId};
-use crate::output::OutputInfo;
-use crate::root::HostRoot;
+use layer_shell_hooks::{HostRoot, Live};
+use layer_shell_types::{LockConfig, LockId, LockPhase, OutputId, OutputInfo, SurfaceId};
 
 /// Builds one output's lock document.
 pub(crate) type LockFactory = Box<dyn Fn(OutputInfo) -> HostRoot>;

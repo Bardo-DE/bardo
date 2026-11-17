@@ -7,13 +7,13 @@
 use crate::dom::document::SurfaceDocument;
 use crate::dom::tests::env::test_env;
 use crate::input::pointer::{self, PointerPos};
-use crate::root::HostRoot;
 use blitz_dom::NodeId;
 use blitz_traits::events::{
     BlitzWheelDelta, BlitzWheelEvent, MouseEventButton, MouseEventButtons, Point, PointerCoords,
     UiEvent,
 };
 use dioxus::prelude::*;
+use layer_shell_hooks::HostRoot;
 
 /// The margin reset quire's `css/reset.css` brings; the host's UA sheet sizes the root
 /// but leaves margins to the design system.

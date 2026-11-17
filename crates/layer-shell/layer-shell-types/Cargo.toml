@@ -1,0 +1,21 @@
+[package]
+name = "layer-shell-types"
+description = "The layer-shell host's vocabulary as plain data: ids, geometry, regions, scale, surface configs and ops, modifiers, drags and the session lock."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+blitz-embed-types = { path = "../../blitz-embed/blitz-embed-types" }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+# The drag outcome's wire form in tests.
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

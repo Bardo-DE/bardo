@@ -4,9 +4,9 @@
 use calloop::ping::make_ping;
 
 use super::{Flush, ORDER, Phase, run};
-use crate::handle::RequestQueue;
-use crate::msg::{CommonOp, LayerOp, Request, SurfaceOp};
 use crate::{BlurSpec, ExclusiveZone, HostError, RegionSpec, SurfaceId};
+use layer_shell_hooks::{Request, RequestQueue};
+use layer_shell_types::{CommonOp, LayerOp, SurfaceOp};
 
 /// What the fake saw, in order.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -34,7 +34,7 @@ impl Fake {
         // A real ping: the queue wakes the loop on every push, and a ping needs no compositor.
         let (ping, _source) = make_ping().expect("an eventfd for the ping");
         Fake {
-            queue: RequestQueue::new(ping),
+            queue: RequestQueue::new(move || ping.ping()),
             ops_from_poll,
             applied: 0,
             seen: Vec::new(),

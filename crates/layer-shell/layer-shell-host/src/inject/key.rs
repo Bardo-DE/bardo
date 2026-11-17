@@ -6,10 +6,10 @@ use blitz_traits::events::{BlitzKeyEvent, KeyState};
 use keyboard_types::{Code, Key, Location, Modifiers};
 
 use super::{KeyAction, KeyStroke};
-use crate::id::SurfaceId;
 use crate::input::key::unshifted;
 use crate::modality::{Stroke, is_modifier_key};
 use crate::state::HostState;
+use layer_shell_types::SurfaceId;
 
 /// Do `action` with `stroke` on surface `id`. A press notes the modality as a real press
 /// does; a tap is a press then a release.
@@ -95,7 +95,7 @@ fn location_of(code: Code) -> Location {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::modifiers::{Modifier, Modifiers as HeldModifiers};
+    use layer_shell_types::{Modifier, Modifiers as HeldModifiers};
 
     fn stroke(key: Key, code: Code, mods: Modifiers) -> KeyStroke {
         KeyStroke { key, code, mods }
@@ -201,11 +201,11 @@ mod tests {
         for (name, before, stroke, action, want) in cases {
             assert_eq!(modifiers_after(*before, stroke, *action), *want, "{name}");
         }
-        let held = HeldModifiers::default().with_dom(Modifiers::ALT);
+        let held = crate::modifiers::with_dom(HeldModifiers::default(), Modifiers::ALT);
         assert_eq!(held.alt, Modifier::Held);
         assert_eq!(held.shift, Modifier::Released);
         assert_eq!(
-            HeldModifiers::default().with_dom(Modifiers::SUPER).logo,
+            crate::modifiers::with_dom(HeldModifiers::default(), Modifiers::SUPER).logo,
             Modifier::Held
         );
     }

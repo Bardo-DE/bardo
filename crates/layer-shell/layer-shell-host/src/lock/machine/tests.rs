@@ -1,4 +1,5 @@
 use super::*;
+use layer_shell_types::Ended;
 
 use LockAction::{CreateSurface, Destroy, DestroySurface, Report, Tell, UnlockAndDestroy};
 

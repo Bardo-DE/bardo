@@ -4,7 +4,7 @@
 use std::sync::Arc;
 
 use crate::clipboard::TEXT_MIME;
-use crate::drag::spec::DragPayload;
+use layer_shell_types::DragPayload;
 
 /// The mime type a `DragPayload::Uris` is offered under first.
 pub(crate) const URI_LIST_MIME: &str = "text/uri-list";
@@ -62,7 +62,7 @@ pub(crate) fn bytes_for(offered: &[Offered], mime: &str) -> Option<Arc<[u8]>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::drag::spec::Mime;
+    use layer_shell_types::Mime;
 
     fn mimes(payload: &DragPayload) -> Vec<String> {
         offers(payload)

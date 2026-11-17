@@ -23,10 +23,11 @@ use std::sync::Mutex;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, DragActions, DragIcon, DragOutcome, DragPayload, DragSpec, ExclusiveZone,
-    Host, HostEvent, HostRoot, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, RegionSpec, Size, use_surface,
+use layer_shell_hooks::{DragIcon, DragSpec, HostRoot, use_surface};
+use layer_shell_host::{Host, HostEvent};
+use layer_shell_types::{
+    Anchor, BlurSpec, DragActions, DragOutcome, DragPayload, ExclusiveZone, KeyboardMode,
+    LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec, Size,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0}\

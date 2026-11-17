@@ -11,11 +11,10 @@ use wayland_client::Proxy;
 
 use crate::ctx::HostCtx;
 use crate::drag::offer::offers;
-use crate::drag::outcome::{DragOutcome, DragRefused};
 use crate::drag::serial::drag_serial;
-use crate::drag::spec::DragSpec;
 use crate::handlers::drag_source::ActiveDrag;
-use crate::id::SurfaceId;
+use layer_shell_hooks::DragSpec;
+use layer_shell_types::{DragOutcome, DragRefused, SurfaceId};
 
 /// `wl_data_source.dnd_drop_performed`, `dnd_finished` and `action` exist from v3.
 const DND_EVENTS_SINCE: u32 = 3;
@@ -47,7 +46,7 @@ pub(super) fn start<M: 'static>(
     let source = manager.create_drag_and_drop_source(
         &state.qh,
         offered.iter().map(|offer| offer.mime.as_str()),
-        spec.actions.to_wire(),
+        crate::drag::spec::actions_to_wire(spec.actions),
     );
     let icon_surface = icon.and_then(|id| state.surfaces.get(&id));
     source.start_drag(

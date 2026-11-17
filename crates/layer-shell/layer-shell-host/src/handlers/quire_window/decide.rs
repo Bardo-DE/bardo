@@ -3,7 +3,7 @@
 
 use desktop_protocols::vocab::PlaceTarget;
 
-use crate::window_placement::WindowPlacement;
+use layer_shell_types::WindowPlacement;
 
 /// What `bardo_window_v1.request_placement` is sent with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

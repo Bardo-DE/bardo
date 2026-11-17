@@ -15,9 +15,11 @@ use std::io::{BufRead, Write};
 use std::sync::Mutex;
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ExclusiveZone, Host, HostEvent, HostRoot, KeyboardMode, LayerConfig,
-    LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec,
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostEvent};
+use layer_shell_types::{
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
+    Margin, OutputTarget, RegionSpec,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0;background:white}\

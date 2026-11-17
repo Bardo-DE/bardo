@@ -13,8 +13,8 @@ use dioxus::prelude::*;
 
 use crate::dom::document::SurfaceDocument;
 use crate::dom::tests::env::test_env;
-use crate::region::{ElementId, Rect};
-use crate::root::HostRoot;
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::{ElementId, Rect};
 
 const WIDTH: u32 = 120;
 const HEIGHT: u32 = 80;

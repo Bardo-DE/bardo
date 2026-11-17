@@ -5,10 +5,11 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, FrameDrive, FrameTick, HostCtx,
-    HostRoot, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget,
-    RegionSpec, use_frame_tick, use_surface,
+use layer_shell_hooks::{FrameDrive, HostRoot, use_frame_tick, use_surface};
+use layer_shell_host::HostCtx;
+use layer_shell_types::{
+    Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, FrameTick, KeyboardMode,
+    LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec,
 };
 
 /// Tiles, gaps and the room the magnified end tiles need.
@@ -299,7 +300,7 @@ fn TickDock(cards: Cards) -> Element {
 }
 
 /// Take a drive for `surface` unless one is held already.
-fn hold(mut drive: Signal<Option<FrameDrive>>, surface: &layer_shell_host::SurfaceHandle) {
+fn hold(mut drive: Signal<Option<FrameDrive>>, surface: &layer_shell_hooks::SurfaceHandle) {
     if drive.peek().is_none() {
         drive.set(Some(surface.drive_frames()));
     }

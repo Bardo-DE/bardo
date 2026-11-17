@@ -5,9 +5,7 @@ use blitz_embed::hit::is_content_element;
 use blitz_embed::paint_rect::painted_rect;
 
 use super::SurfaceDocument;
-use crate::geometry::enclosing_rect;
-use crate::region::{ElementId, Rect};
-use crate::scale::Size;
+use layer_shell_types::{ElementId, Rect, Size, enclosing_rect};
 
 impl SurfaceDocument {
     /// Where the element `id` names paints, in surface-local logical pixels: its layout box

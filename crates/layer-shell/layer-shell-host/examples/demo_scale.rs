@@ -12,10 +12,11 @@ use std::thread;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ExclusiveZone, Host, HostConfig, HostCtx, HostEvent, HostRoot, KeyboardMode,
-    LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, Prepaint, RegionSpec,
-    SurfaceId, use_surface_scale,
+use layer_shell_hooks::{HostRoot, use_surface_scale};
+use layer_shell_host::{Host, HostConfig, HostCtx, HostEvent, Prepaint};
+use layer_shell_types::{
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
+    Margin, OutputTarget, RegionSpec, SurfaceId,
 };
 
 /// How long the surface gets to settle before the first report, and how long it then idles.

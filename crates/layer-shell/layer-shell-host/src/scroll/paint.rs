@@ -86,10 +86,10 @@ mod tests {
     use crate::gpu::presenter::{FrameTarget, Overlay};
     use crate::gpu::shm::paint_cpu;
     use crate::prepaint::Prepaint;
-    use crate::root::HostRoot;
-    use crate::scale::{Scale120, Size};
     use blitz_embed::fonts::SharedFonts;
     use blitz_embed::net::LocalNet;
+    use layer_shell_hooks::HostRoot;
+    use layer_shell_types::{Scale120, Size};
 
     fn white() -> Element {
         rsx! { div { style: "width:100vw;height:100vh;background:white" } }

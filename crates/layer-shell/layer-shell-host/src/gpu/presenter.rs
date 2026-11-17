@@ -15,10 +15,9 @@ use crate::gpu::shm::paint_cpu;
 #[cfg(feature = "debug-inject")]
 use crate::gpu::swapchain::pixel_extent;
 use crate::gpu::swapchain::{Swapchain, alpha_mode_of, present_mode_of};
-use crate::region::Rect;
-use crate::scale::{Scale120, Size};
 use crate::scroll::indicator::ThumbPaint;
 use crate::stats::{AlphaMode, PresentMode};
+use layer_shell_types::{Rect, Scale120, Size};
 
 /// What the host paints over the document: the scroll thumbs (design/11 §11.3.12).
 #[derive(Debug, Clone, PartialEq, Default)]

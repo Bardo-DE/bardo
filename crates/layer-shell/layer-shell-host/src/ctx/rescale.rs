@@ -9,8 +9,8 @@
 //!
 //! See FINDINGS F43.
 
-use crate::id::SurfaceId;
 use crate::state::HostState;
+use layer_shell_types::SurfaceId;
 
 /// Follow every surface's preferred scale. Costs a map lookup per surface and wakes nothing
 /// unless a scale changed, so an idle host stays idle.

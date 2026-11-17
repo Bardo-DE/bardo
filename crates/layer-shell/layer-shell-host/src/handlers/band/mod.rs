@@ -13,13 +13,12 @@ use wayland_client::protocol::wl_pointer::WlPointer;
 use crate::csd::{Zone, to_document, zone_at};
 use crate::ctx::begin_resize;
 use crate::dom::shell_provider::CursorRequest;
-use crate::id::SurfaceId;
 use crate::input::focus::{Entered, PointerFocus};
 use crate::input::pointer::{self, PointerPos};
 use crate::role::Role;
 use crate::state::HostState;
-use crate::toplevel::ResizeEdge;
 use decide::MotionRoute;
+use layer_shell_types::{ResizeEdge, SurfaceId};
 
 impl HostState {
     /// The zone surface-local `pos` is in on surface `id` (always the document without a band).

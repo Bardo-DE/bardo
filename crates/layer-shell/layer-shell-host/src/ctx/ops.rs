@@ -7,16 +7,19 @@ use crate::ctx::{HostCtx, request_token};
 use crate::event::{CloseReason, HostEvent};
 use crate::frame::{FrameInput, FrameState};
 use crate::handlers::data_device::claim_selection;
-use crate::id::SurfaceId;
 use crate::layer::{
     to_wire_anchor, to_wire_exclusive, to_wire_keyboard, to_wire_layer, to_wire_size,
 };
-use crate::msg::{CommonOp, LayerOp, Repaint, Request, SurfaceOp, Visibility, WindowOp};
-use crate::placement::PopupPlacement;
-use crate::popup::{PopupGrab, positioner_params};
+use crate::popup::positioner_params;
 use crate::role::Role;
 use crate::state::HostState;
 use crate::surface::{AppliedRegions, VisibilityChange, visibility_change};
+use crate::surface_ext::ScrollRequest;
+use layer_shell_hooks::Request;
+use layer_shell_types::{
+    CommonOp, LayerOp, PopupGrab, PopupPlacement, Repaint, SurfaceId, SurfaceOp, Visibility,
+    WindowOp,
+};
 
 /// The `xdg_popup.reposition` token. The host never matches `repositioned` events to requests,
 /// so one value serves.
@@ -61,7 +64,12 @@ pub(super) fn request<M: 'static>(ctx: &mut HostCtx<M>, request: Request) {
             reply,
         } => request_token(&mut ctx.state, from, app_id, reply),
         Request::StartDrag { from, spec, reply } => super::drag::start(ctx, from, spec, reply),
-        Request::Scroll { id, cmd } => ctx.state.scroll_command(id, &cmd),
+        Request::Host(payload) => {
+            // A payload the host does not define has no one to answer it: dropped.
+            if let Ok(scroll) = payload.downcast::<ScrollRequest>() {
+                ctx.state.scroll_command(scroll.id, &scroll.cmd);
+            }
+        }
         Request::Unlock(lock) => super::lock::ask_unlock(&mut ctx.state, lock),
     }
 }

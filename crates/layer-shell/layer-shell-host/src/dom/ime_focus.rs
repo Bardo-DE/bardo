@@ -9,8 +9,7 @@
 
 use blitz_dom::{BaseDocument, LocalName};
 
-use crate::geometry::px_of;
-use crate::region::Rect;
+use layer_shell_types::{Rect, px_of};
 
 /// Whether the focused field is secret: a password field's text never goes to the input
 /// method, and the field is declared as one (`handlers::text_input`). An

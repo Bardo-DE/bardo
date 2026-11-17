@@ -16,55 +16,7 @@
 
 use std::collections::BTreeSet;
 
-use serde::{Deserialize, Serialize};
-
-use crate::id::OutputId;
-
-/// Where a session lock is, as its documents see it (`LockHandle::phase`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum LockPhase {
-    /// Asked for; the compositor has not answered yet.
-    Requested,
-    /// The compositor says the session is locked.
-    Locked,
-    /// An unlock was asked for; the documents are being told before the compositor is.
-    Unlocking,
-    /// `unlock_and_destroy` was sent (or the request was cancelled before `locked`).
-    Unlocked,
-    /// The compositor refused or ended the lock (`finished`).
-    Finished,
-}
-
-impl LockPhase {
-    /// Whether the lock is over: nothing moves it any more.
-    #[must_use]
-    pub fn ended(self) -> Ended {
-        match self {
-            LockPhase::Unlocked | LockPhase::Finished => Ended::Yes,
-            LockPhase::Requested | LockPhase::Locked | LockPhase::Unlocking => Ended::No,
-        }
-    }
-}
-
-/// Whether a lock has ended.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Ended {
-    Yes,
-    No,
-}
-
-/// What the host reports to the shell (`HostEvent::Lock`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum LockState {
-    /// The compositor locked the session: only lock surfaces are shown and get input.
-    Locked,
-    /// The host unlocked the session (or cancelled the request before it was locked).
-    Unlocked,
-    /// The compositor refused the lock (another locker holds it) or ended it by its own means.
-    Finished,
-}
+use layer_shell_types::{LockPhase, LockState, OutputId};
 
 /// Something that happened to the lock.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

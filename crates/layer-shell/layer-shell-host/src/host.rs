@@ -22,12 +22,12 @@ use crate::ctx::HostCtx;
 use crate::error::{HostError, Result};
 use crate::event::{HostEvent, widen};
 use crate::gpu::rebuild::Rebuilds;
-use crate::handle::RequestQueue;
 use crate::host_handle::HostHandle;
-use crate::msg::{HostMsg, Request};
+use crate::msg::HostMsg;
 use crate::pulse::Pulse;
 use crate::queue_wake::insert_wayland;
 use crate::state::HostState;
+use layer_shell_hooks::{Request, RequestQueue};
 
 /// Worker threads of the host's tokio runtime (plan "Event loop").
 const TOKIO_WORKERS: usize = 2;
@@ -60,13 +60,17 @@ impl<M: Send + 'static> Host<M> {
         handle
             .insert_source(ping_source, |(), (), _| {})
             .map_err(loop_error)?;
-        let requests = RequestQueue::new(ping);
+        let requests = RequestQueue::new({
+            let ping = ping.clone();
+            move || ping.ping()
+        });
         let first_mouse = config.first_mouse_window_ms.duration();
         let mut state = HostState::bind(
             conn.clone(),
             &globals,
             queue.handle(),
             requests,
+            ping,
             first_mouse,
         )?;
         state.prepaint = config.prepaint;

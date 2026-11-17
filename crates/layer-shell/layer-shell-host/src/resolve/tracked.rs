@@ -1,6 +1,6 @@
 //! Remembering what was last sent to the compositor.
 
-use crate::region::Rect;
+use layer_shell_types::Rect;
 
 /// Remembers the last resolved region for one region-following surface (an input region, or a
 /// blur region), so the caller only rebuilds and recommits a `wl_region` when the geometry

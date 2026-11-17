@@ -3,14 +3,12 @@
 use smithay_client_toolkit::compositor::{CompositorState, Region};
 use wayland_client::QueueHandle;
 
-use crate::blur::BlurSpec;
 use crate::csd::{Inset, band, to_surface};
 use crate::handlers::background_effect::BackgroundEffect;
-use crate::region::Rect;
 use crate::resolve::resolve;
-use crate::scale::Size;
 use crate::state::HostState;
 use crate::surface::HostSurface;
+use layer_shell_types::{BlurSpec, Rect, Size};
 
 /// Resolve the input and blur regions against the laid-out document and send whichever
 /// changed since they were last sent. Both are the document's, moved to surface coordinates;

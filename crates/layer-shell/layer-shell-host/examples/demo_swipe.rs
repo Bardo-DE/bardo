@@ -15,10 +15,11 @@ mod harness;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, Host, HostEvent, HostRoot,
-    KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget,
-    RegionSpec,
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostEvent};
+use layer_shell_types::{
+    Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, KeyboardMode, LayerConfig,
+    LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec,
 };
 use serde_json::json;
 

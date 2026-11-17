@@ -7,28 +7,21 @@ use std::sync::Arc;
 use calloop::RegistrationToken;
 use cursor_icon::CursorIcon;
 
-use crate::blur::BlurSpec;
 use crate::csd::{Inset, content_px, frame_of};
 use crate::dom::document::SurfaceDocument;
 use crate::dom::shell_provider::HostShellProvider;
 use crate::frame::{FrameAction, FrameInput, FrameState};
 use crate::gpu::presenter::Presenter;
-use crate::handle::WlCell;
-use crate::id::SurfaceId;
-use crate::id::SurfaceName;
-use crate::live::Live;
-use crate::modifiers::Modifiers;
-use crate::msg::{CommonOp, LayerOp, SurfaceOp, Visibility};
-use crate::region::{Px, Rect, RegionSpec};
 use crate::resolve::Tracked;
 use crate::role::Role;
-use crate::scale::{LiveScale, Scale120, Size, buffer_size};
 use crate::scroll::surface::SurfaceScroll;
-use crate::scroll::wheel_feed::WheelFeed;
 use crate::stats::{AlphaMode, Dimensions, FrameStats, PresentMode, StatsWindow};
-use crate::tick::{FrameTicks, pacing};
-use crate::toplevel::ToplevelState;
 use blitz_embed::scroll::time::Elapsed;
+use layer_shell_hooks::{FrameTicks, Live, NativeCell, WheelFeed, pacing};
+use layer_shell_types::{
+    BlurSpec, CommonOp, LayerOp, Modifiers, Px, Rect, RegionSpec, Scale120, Size, SurfaceId,
+    SurfaceName, SurfaceOp, ToplevelState, Visibility, buffer_size,
+};
 
 /// The size and scale the viewport, the document and the presenter were last set up for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -81,7 +74,7 @@ pub(crate) struct HostSurface {
     /// the first present after a map; reset when the role is rebuilt.
     pub(crate) mapped: bool,
     /// The current `wl_surface`, shared with this surface's `SurfaceHandle`.
-    pub(crate) wl: WlCell,
+    pub(crate) wl: NativeCell,
     pub(crate) visibility: Visibility,
     /// The surface's logical size, including a client-decorated toplevel's resize band.
     pub(crate) logical: Size,
@@ -98,7 +91,7 @@ pub(crate) struct HostSurface {
     /// Frame ticks and drives, shared with the surface's `SurfaceHandle`.
     pub(crate) ticks: FrameTicks,
     /// `scale`, published to the surface's document (`use_surface_scale`).
-    pub(crate) live_scale: LiveScale,
+    pub(crate) live_scale: Live<Scale120>,
     /// A toplevel's configure state, published to its document (`use_toplevel_state`); the
     /// default forever on any other surface.
     pub(crate) live_toplevel: Live<ToplevelState>,
@@ -150,7 +143,7 @@ impl HostSurface {
     /// tick if the surface is animating or driven, and return what the machine is told (the
     /// scroll engine's motion included).
     pub(crate) fn frame_due(&mut self, at: Elapsed) -> bool {
-        let ticked = self.ticks.frame_due(self.document.animation(), at);
+        let ticked = self.ticks.frame_due(self.document.animation(), at.0);
         if ticked {
             self.stats.ticked();
         }
@@ -233,8 +226,8 @@ impl HostSurface {
 /// popup has lifted a `None` layer to `OnDemand`, which the popup's close restores.
 fn record_layer(
     op: &LayerOp,
-    config: &mut crate::layer::LayerConfig,
-    keyboard: &mut crate::layer::KeyboardMode,
+    config: &mut layer_shell_types::LayerConfig,
+    keyboard: &mut layer_shell_types::KeyboardMode,
 ) {
     match op {
         LayerOp::SetKeyboard(mode) => {

@@ -1,7 +1,6 @@
 //! Resolving a popup's anchor rectangle.
 
-use crate::popup::PopupAnchor;
-use crate::region::{ElementId, Rect};
+use layer_shell_types::{ElementId, PopupAnchor, Rect};
 
 /// Resolve a popup's anchor rectangle: `PopupAnchor::Rect` uses `placement_rect` (the value
 /// carried alongside the config) unchanged; `PopupAnchor::Element` looks the

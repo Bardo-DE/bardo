@@ -9,13 +9,14 @@ use wayland_client::protocol::{wl_keyboard, wl_pointer, wl_seat};
 use wayland_client::{Proxy, QueueHandle};
 
 use crate::csd::Zone;
-use crate::event::{HostEvent, KeyboardFocus};
-use crate::grab::PointerFacts;
+use crate::event::HostEvent;
 use crate::input::capability::CapabilityChange;
 use crate::input::focus::PointerFocus;
 use crate::input::pointer::PointerPos;
 use crate::state::HostState;
 use crate::timers::TimerRequest;
+use layer_shell_hooks::PointerFacts;
+use layer_shell_types::KeyboardFocus;
 
 /// `wl_pointer.release` and `wl_keyboard.release` exist from `wl_seat` v3; before that the only
 /// way to let go of the object is to drop it.

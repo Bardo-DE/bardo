@@ -1,8 +1,6 @@
 //! Sizes as a role asks for them and as the wire wants them.
 
-use crate::layer::{LayerConfig, LayerExtent};
-use crate::region::Px;
-use crate::scale::Size;
+use layer_shell_types::{LayerConfig, LayerExtent, Px, Size};
 
 /// The size a layer asks for; a `Fill` axis is 0 until the compositor configures it.
 pub(super) fn requested_size(config: &LayerConfig) -> Size {

@@ -56,7 +56,7 @@ pub enum HostError {
     GaveUp(String),
     /// The id does not name a live surface.
     #[error("no surface {0:?}")]
-    NoSurface(crate::id::SurfaceId),
+    NoSurface(layer_shell_types::SurfaceId),
     /// The event loop or the tokio runtime could not be created or dispatched.
     #[error("event loop: {0}")]
     EventLoop(String),
@@ -95,7 +95,7 @@ pub type Result<T, E = HostError> = std::result::Result<T, E>;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::id::SurfaceId;
+    use layer_shell_types::SurfaceId;
 
     #[test]
     fn every_error_carries_its_decision() {

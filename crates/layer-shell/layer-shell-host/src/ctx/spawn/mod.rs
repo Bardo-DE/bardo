@@ -15,30 +15,23 @@ use std::sync::Arc;
 
 use wayland_client::protocol::wl_surface::WlSurface;
 
-use crate::blur::BlurSpec;
 use crate::csd::Inset;
 use crate::dom::document::DocumentEnv;
 use crate::dom::shell_provider::HostShellProvider;
 use crate::frame::FrameState;
-use crate::handle::{HandleParts, SurfaceHandle, WlCell};
-use crate::id::SurfaceId;
-use crate::id::SurfaceName;
-use crate::live::Live;
-use crate::modifiers::Modifiers;
-use crate::msg::Visibility;
-use crate::region::RegionSpec;
 use crate::role::Role;
-use crate::root::HostRoot;
-use crate::scale::{LiveScale, Scale120, Size};
 use crate::scroll::surface::SurfaceScroll;
-use crate::scroll::watch::ScrollBoard;
-use crate::scroll::wheel_feed::WheelFeed;
 use crate::state::HostState;
 use crate::stats::StatsWindow;
 use crate::surface::{AppliedRegions, HostSurface};
-use crate::tick::FrameTicks;
-use crate::toplevel::ToplevelState;
 use blitz_embed::net::LocalNet;
+use layer_shell_hooks::{
+    FrameTicks, HandleParts, HostRoot, Live, NativeCell, ScrollBoard, SurfaceHandle, WheelFeed,
+};
+use layer_shell_types::{
+    BlurSpec, Modifiers, RegionSpec, Scale120, Size, SurfaceId, SurfaceName, ToplevelState,
+    Visibility,
+};
 
 pub(super) use layer::layer;
 pub(super) use popup::{popup, positioner};
@@ -77,16 +70,16 @@ pub(super) fn insert(
     root: HostRoot,
 ) {
     let shell = Arc::new(HostShellProvider::new(
-        state.requests.ping(),
+        state.wake.clone(),
         state.clipboard.selection.clone(),
     ));
     let ticks = FrameTicks::default();
-    let live_scale = LiveScale::new(scale);
+    let live_scale = Live::new(scale);
     let live_toplevel = Live::new(ToplevelState::default());
     let live_modifiers = Live::new(Modifiers::default());
     let scrolls = ScrollBoard::default();
     let wheels = WheelFeed::default();
-    let wl = WlCell::new(role.wl_surface().clone());
+    let wl = NativeCell::new(role.wl_surface().clone());
     let parts = HandleParts {
         requests: state.requests.clone(),
         ids: state.ids.clone(),
@@ -98,7 +91,7 @@ pub(super) fn insert(
         wheels: wheels.clone(),
         modifiers: live_modifiers.clone(),
         modality: state.input.modality.clone(),
-        wl: wl.clone(),
+        native: wl.clone(),
         placement: state.placement_support(),
     };
     let handle = SurfaceHandle::new(id, role.kind(), parts);

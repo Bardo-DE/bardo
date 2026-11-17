@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 use super::percentile::Percentiles;
-use crate::id::SurfaceName;
+use layer_shell_types::SurfaceName;
 
 /// A width and height in pixels, logical or physical by field name.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]

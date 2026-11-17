@@ -46,7 +46,7 @@ pub(super) fn cursor_in(zone: Zone, document: Option<CursorIcon>) -> Option<Curs
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::toplevel::ResizeEdge;
+    use layer_shell_types::ResizeEdge;
 
     const EDGE: Zone = Zone::Edge(ResizeEdge::Left);
     const OTHER_EDGE: Zone = Zone::Edge(ResizeEdge::Top);

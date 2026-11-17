@@ -13,16 +13,13 @@ use wayland_client::{Connection, QueueHandle};
 use crate::event::CloseReason;
 use crate::frame::FrameInput;
 use crate::handlers::{close_surface_and_popups, follow_buffer_scale, surface_id_by_wl};
-use crate::id::SurfaceId;
-use crate::layer::{KeyboardMode, to_wire_keyboard};
-use crate::popup::PopupGrab;
-use crate::region::Px;
+use crate::layer::to_wire_keyboard;
 use crate::role::Role;
-use crate::scale::{self, Size};
 use crate::state::HostState;
 use crate::timers::TimerRequest;
 use crate::toplevel::state_of;
 use decide::{keyboard_restore, popup_size, toplevel_layout};
+use layer_shell_types::{KeyboardMode, PopupGrab, Px, Size, SurfaceId};
 
 impl WindowHandler for HostState {
     /// `HostEvent::SurfaceClosed{reason: UserClose}`.

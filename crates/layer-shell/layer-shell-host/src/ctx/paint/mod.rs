@@ -28,9 +28,8 @@ use crate::event::CloseReason;
 use crate::frame::FrameInput;
 use crate::handlers::surrounding;
 use crate::handlers::text_input::apply_ime_request;
-use crate::id::SurfaceId;
-use crate::msg::Visibility;
 use crate::state::HostState;
+use layer_shell_types::{SurfaceId, Visibility};
 
 use geometry::sync_geometry;
 use render::render;

@@ -11,10 +11,9 @@ use crate::gpu::raw_handle::create_surface;
 use crate::gpu::shm::ShmBuffers;
 use crate::gpu::swapchain::Swapchain;
 use crate::handlers::render_device::RenderDevice;
-use crate::id::SurfaceId;
 use crate::render_gpu::follow_compositor;
-use crate::scale::Size;
 use crate::state::HostState;
+use layer_shell_types::{Size, SurfaceId};
 
 /// Create surface `id`'s presenter if it has none: a swapchain on the one device (created and
 /// validated here on the first surface), or shm buffers on the CPU backend. Called eagerly at

@@ -4,19 +4,14 @@
 
 use smithay_client_toolkit::compositor::Surface;
 
-use crate::blur::BlurSpec;
 use crate::csd::Inset;
 use crate::ctx::HostCtx;
 use crate::ctx::spawn::{Initial, insert, new_wl_surface};
-use crate::drag::spec::DragIcon;
 use crate::error::{HostError, Result};
-use crate::id::SurfaceId;
-use crate::id::SurfaceName;
-use crate::region::RegionSpec;
 use crate::role::Role;
-use crate::root::HostRoot;
-use crate::scale::Size;
 use crate::state::HostState;
+use layer_shell_hooks::{DragIcon, HostRoot};
+use layer_shell_types::{BlurSpec, RegionSpec, Size, SurfaceId, SurfaceName};
 
 /// The icon surface for a drag from `origin`, or `None` for `DragIcon::None` or when it could
 /// not be made (the drag then goes ahead without one).

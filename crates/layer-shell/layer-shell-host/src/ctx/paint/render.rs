@@ -6,8 +6,6 @@ use crate::error::{Recovery, Result};
 use crate::event::HostEvent;
 use crate::frame::FrameInput;
 use crate::gpu::presenter::{FrameTarget, Overlay};
-use crate::id::SurfaceId;
-use crate::placement::PopupPlacement;
 use crate::popup::refit;
 use crate::role::Role;
 use crate::scroll::indicator::Wake;
@@ -15,6 +13,7 @@ use crate::state::HostState;
 use crate::stats::AlphaMode;
 use crate::surface::HostSurface;
 use crate::timers::TimerRequest;
+use layer_shell_types::{PopupPlacement, SurfaceId};
 
 use super::regions::send_regions;
 

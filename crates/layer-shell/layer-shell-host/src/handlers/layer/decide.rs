@@ -1,8 +1,6 @@
 //! The decisions behind the layer-surface configure handler, as values a table can assert on.
 
-use crate::layer::{LayerExtent, LayerSize};
-use crate::region::Px;
-use crate::scale::{Size, wire_extent};
+use layer_shell_types::{LayerExtent, LayerSize, Px, Size, wire_extent};
 
 /// The logical size to record from a `zwlr_layer_surface_v1.configure`: on each axis, the
 /// compositor's value when it sent one, or what `requested` asked for on that axis when it
@@ -29,7 +27,7 @@ pub(crate) fn configured_size(requested: LayerSize, wire: (u32, u32)) -> Size {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::scale::MAX_SURFACE_EXTENT;
+    use layer_shell_types::MAX_SURFACE_EXTENT;
 
     #[test]
     fn configured_size_matches_the_table() {

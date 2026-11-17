@@ -8,13 +8,13 @@ use wayland_client::protocol::wl_pointer::WlPointer;
 use wayland_client::{Connection, QueueHandle};
 
 use crate::csd::Zone;
-use crate::grab::Press;
-use crate::id::SurfaceId;
 use crate::input::focus::{self, PointerFocus};
 use crate::input::pointer::{self, PointerPos};
 use crate::modality::Stroke;
 use crate::state::HostState;
 use decide::PressRoute;
+use layer_shell_hooks::Press;
+use layer_shell_types::SurfaceId;
 
 impl PointerHandler for HostState {
     /// Enter: focus, zone, the move to its position (so `:hover` and `mouseenter` hold from the

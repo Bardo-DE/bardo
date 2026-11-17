@@ -34,16 +34,13 @@ use crate::frame::FrameInput;
 use crate::gpu::rebuild::Rebuilds;
 use crate::handlers::activation::ActivationRequest;
 use crate::handlers::output::output_info;
-use crate::id::SurfaceId;
-use crate::id::SurfaceName;
-use crate::layer::LayerConfig;
-use crate::msg::{SurfaceOp, Visibility};
-use crate::output::OutputInfo;
-use crate::root::HostRoot;
 use crate::state::HostState;
 use crate::stats::FrameStats;
-use crate::toplevel::ToplevelConfig;
 use blitz_embed::adapter::AdapterPref;
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::{
+    LayerConfig, OutputInfo, SurfaceId, SurfaceName, SurfaceOp, ToplevelConfig, Visibility,
+};
 
 /// The host, as the shell's event closure sees it.
 pub struct HostCtx<M> {
@@ -139,7 +136,7 @@ impl<M: 'static> HostCtx<M> {
     pub fn apply(&mut self, id: SurfaceId, op: impl Into<SurfaceOp>) {
         self.state
             .requests
-            .push(crate::msg::Request::Apply { id, op: op.into() });
+            .push(layer_shell_hooks::Request::Apply { id, op: op.into() });
     }
 
     /// Request an xdg-activation token on behalf of surface `id`, for launching `app_id`. The

@@ -14,9 +14,11 @@ mod dock;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    Anchor, BlurSpec, ExclusiveZone, Host, HostConfig, HostEvent, HostRoot, KeyboardMode,
-    LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec,
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostConfig, HostEvent};
+use layer_shell_types::{
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
+    Margin, OutputTarget, RegionSpec,
 };
 
 /// The margin and padding reset quire's `css/reset.css` would bring.

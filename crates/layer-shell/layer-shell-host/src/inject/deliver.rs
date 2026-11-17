@@ -10,13 +10,10 @@ use super::{Inject, Injected};
 use crate::ctx::HostCtx;
 use crate::error::{HostError, Result};
 use crate::frame::FrameInput;
-use crate::geometry::Point;
-use crate::id::SurfaceId;
 use crate::input::pointer::{PointerPos, buttons_after, move_event, press_events, release_event};
 use crate::modality::Stroke;
-use crate::region::Px;
-use crate::scale::Size;
 use crate::state::HostState;
+use layer_shell_types::{Point, Px, Size, SurfaceId};
 
 impl<M: 'static> HostCtx<M> {
     /// Deliver `inject` to surface `id`, through `HostState::deliver` — the same delivery a real

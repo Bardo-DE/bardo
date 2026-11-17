@@ -20,8 +20,7 @@ use calloop::ping::Ping;
 use cursor_icon::CursorIcon;
 
 use crate::clipboard::SharedSelection;
-use crate::geometry::px_of;
-use crate::region::Rect;
+use layer_shell_types::{Rect, px_of};
 
 /// A surface's shell provider.
 #[derive(Debug)]

@@ -10,11 +10,11 @@ use smithay_client_toolkit::shell::xdg::popup::Popup;
 use smithay_client_toolkit::shell::xdg::window::Window;
 use wayland_client::protocol::wl_surface::WlSurface;
 
-use crate::id::SurfaceId;
-use crate::layer::{KeyboardMode, LayerConfig};
-use crate::placement::PopupPlacement;
-use crate::popup::PopupConfig;
-use crate::toplevel::{ToplevelConfig, ToplevelState};
+use layer_shell_hooks::RoleKind;
+use layer_shell_types::{
+    KeyboardMode, LayerConfig, PopupConfig, PopupPlacement, SurfaceId, ToplevelConfig,
+    ToplevelState,
+};
 
 /// A surface's role.
 #[derive(Debug)]
@@ -45,16 +45,6 @@ pub(crate) enum Role {
     /// by the lock's machine only, never hidden, never committed before its configure, always
     /// given the keyboard by the compositor while the session is locked.
     Lock { surface: SessionLockSurface },
-}
-
-/// Which role a surface has, without its objects: what a `SurfaceHandle` knows of its surface.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub(crate) enum RoleKind {
-    Layer,
-    Popup,
-    Toplevel,
-    DragIcon,
-    Lock,
 }
 
 impl Role {

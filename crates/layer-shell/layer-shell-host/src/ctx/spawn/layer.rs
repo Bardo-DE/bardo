@@ -2,16 +2,13 @@
 
 use crate::csd::Inset;
 use crate::error::{HostError, Result};
-use crate::id::SurfaceName;
-use crate::id::{OutputId, SurfaceId};
 use crate::layer::{
-    LayerConfig, OutputTarget, to_wire_anchor, to_wire_exclusive, to_wire_keyboard, to_wire_layer,
-    to_wire_size,
+    to_wire_anchor, to_wire_exclusive, to_wire_keyboard, to_wire_layer, to_wire_size,
 };
 use crate::role::Role;
-use crate::root::HostRoot;
-use crate::scale::Scale120;
 use crate::state::HostState;
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::{LayerConfig, OutputId, OutputTarget, Scale120, SurfaceId, SurfaceName};
 
 use super::rebuild::map;
 use super::size::requested_size;

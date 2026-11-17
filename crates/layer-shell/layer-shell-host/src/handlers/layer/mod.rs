@@ -14,11 +14,10 @@ use wayland_client::{Connection, QueueHandle};
 use crate::event::CloseReason;
 use crate::frame::FrameInput;
 use crate::handlers::{close_surface_and_popups, follow_buffer_scale, surface_id_by_wl};
-use crate::id::SurfaceId;
 use crate::role::Role;
-use crate::scale::{self, Scale120, Size};
 use crate::state::HostState;
 use crate::timers::TimerRequest;
+use layer_shell_types::{Scale120, Size, SurfaceId};
 
 impl LayerShellHandler for HostState {
     /// `HostEvent::SurfaceClosed{reason: Compositor}`, closing its popups first.

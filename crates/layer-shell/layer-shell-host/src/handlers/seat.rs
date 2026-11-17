@@ -16,16 +16,14 @@ use wayland_client::{Connection, QueueHandle};
 
 use crate::csd::Zone;
 use crate::frame::{FrameInput, TimerCmd};
-use crate::grab::GrabRecord;
-use crate::id::SurfaceId;
 use crate::input::capability::capability_change;
 use crate::input::focus::PointerFocus;
 use crate::input::pointer::PointerPos;
-use crate::live::Live;
-use crate::modality::{self, InputModality, Stroke};
-use crate::modifiers::Modifiers as HeldModifiers;
+use crate::modality::{self, Stroke};
 use crate::state::HostState;
 use crate::timers::TimerRequest;
+use layer_shell_hooks::{GrabRecord, Live};
+use layer_shell_types::{InputModality, Modifiers as HeldModifiers, SurfaceId};
 
 /// The pointer and keyboard state of the (single, first) seat.
 #[derive(Debug)]

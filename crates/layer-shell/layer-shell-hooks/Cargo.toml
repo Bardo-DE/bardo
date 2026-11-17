@@ -1,0 +1,18 @@
+[package]
+name = "layer-shell-hooks"
+description = "What a component of a layer-shell surface calls: the surface handle, its hooks and the root it renders, with no renderer, GPU or Wayland type."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+layer-shell-types = { path = "../layer-shell-types" }
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
+tokio = { workspace = true, features = ["sync"] }
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

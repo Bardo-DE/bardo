@@ -16,8 +16,8 @@ use blitz_embed::adapter::Health;
 use crate::ctx::HostCtx;
 use crate::error::HostError;
 use crate::event::CloseReason;
-use crate::id::SurfaceId;
-use crate::role::RoleKind;
+use layer_shell_hooks::RoleKind;
+use layer_shell_types::SurfaceId;
 
 use super::ensure_presenter;
 

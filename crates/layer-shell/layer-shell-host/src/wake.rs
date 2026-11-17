@@ -6,7 +6,7 @@ use std::task::{Wake, Waker};
 
 use calloop::ping::Ping;
 
-use crate::id::SurfaceId;
+use layer_shell_types::SurfaceId;
 
 /// The surfaces whose documents have ready tasks, shared between every waker and the loop.
 #[derive(Debug, Clone, Default)]

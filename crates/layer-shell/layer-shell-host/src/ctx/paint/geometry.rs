@@ -4,10 +4,9 @@ use blitz_traits::shell::{ColorScheme, Viewport};
 
 use crate::csd::{Inset, content_px};
 use crate::frame::FrameInput;
-use crate::id::SurfaceId;
-use crate::scale::{Scale120, Size, buffer_size};
 use crate::state::HostState;
 use crate::surface::Geometry;
+use layer_shell_types::{Scale120, Size, SurfaceId, buffer_size};
 
 /// Follow a new preferred scale or configured size: the viewport destination (or the integer
 /// buffer scale without fractional-scale), the document's viewport, the presenter's size; then

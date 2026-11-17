@@ -10,8 +10,8 @@ use wayland_client::{Connection, QueueHandle};
 use crate::handlers::layer::follow_configure;
 use crate::handlers::surface_id_by_wl;
 use crate::lock::machine::LockInput;
-use crate::scale::{Size, wire_extent};
 use crate::state::HostState;
+use layer_shell_types::{Size, wire_extent};
 
 impl SessionLockHandler for HostState {
     fn locked(&mut self, _conn: &Connection, _qh: &QueueHandle<Self>, _lock: SessionLock) {

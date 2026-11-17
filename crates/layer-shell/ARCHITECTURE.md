@@ -14,7 +14,9 @@ daemon.
 
 | Crate | Repo | Purpose |
 |---|---|---|
-| `layer-shell-host` | layer-shell-host (`crates/shell-host`) | the host: Wayland plumbing, surfaces, frame loop, input, scroll, lock; the only crate in the workspace |
+| `layer-shell-types` | this workspace (`crates/layer-shell/layer-shell-types`) | the vocabulary as plain data: ids, geometry, regions, scale, the configs a surface is spawned with, the ops it is told, modifiers, modality, drags, the session lock; no renderer, GPU, Wayland or UI toolkit type |
+| `layer-shell-hooks` | this workspace (`crates/layer-shell/layer-shell-hooks`) | what a component calls: `SurfaceHandle`, `use_surface` and the other hooks, `HostRoot`, and the cells, queue and feeds the host publishes into; dioxus and tokio's `sync` only, no blitz, wgpu or wayland |
+| `layer-shell-host` | this workspace (`crates/layer-shell/layer-shell-host`) | the host: Wayland plumbing, surfaces, frame loop, input, scroll, lock; it drains the hooks' request queue and fills their cells |
 | `blitz-embed` | sibling repo `blitz-embed` | portable Blitz repairs and helpers, no Wayland, no Dioxus, no design system (section 4) |
 | `mouse-gestures-proto` | sibling repo `palmrest` (`crates/palmrest-protocol`) | the palmrest socket's messages, `ToHost` / `ToDaemon`, `PROTOCOL_VERSION` |
 
@@ -22,9 +24,17 @@ Allowed edges (everything else is forbidden):
 
 | From | May depend on |
 |---|---|
-| `layer-shell-host` | `blitz-embed`, `mouse-gestures-proto`, `desktop-protocols` (feature `client`: `bardo_window_v1`'s bindings and the wire vocab, git rev pin), and the pinned third-party block (blitz-*, dioxus, sctk, wayland-*, calloop, wgpu, vello, parley, rustix, `nix` (`socket` only, for `SO_PEERPIDFD`), tokio, serde) |
+| `layer-shell-types` | `blitz-embed-types` (`Scale120`, `ElementId`), `serde`, `thiserror` |
+| `layer-shell-hooks` | `layer-shell-types`, `dioxus`, `tokio` (feature `sync`), `thiserror` |
+| `layer-shell-host` | `layer-shell-types`, `layer-shell-hooks`, `blitz-embed`, `mouse-gestures-proto`, `desktop-protocols` (feature `client`: `bardo_window_v1`'s bindings and the wire vocab, git rev pin), and the pinned third-party block (blitz-*, dioxus, sctk, wayland-*, calloop, wgpu, vello, parley, rustix, `nix` (`socket` only, for `SO_PEERPIDFD`), tokio, serde) |
 | `blitz-embed` | `blitz-dom`, `blitz-traits`, `parley`, `wgpu` (feature `adapter`), `thiserror` |
 | `mouse-gestures-proto` | `serde`, `serde_json`, `thiserror` |
+
+A UI library depends on `layer-shell-types` and `layer-shell-hooks`, never on `layer-shell-host`:
+`cargo xtask check renderer-edges` fails a crate outside its short allowlist (the renderer crates
+and the programs) that names `layer-shell-host`, `ui-blitz`, `blitz-dom`, `blitz-traits`,
+`blitz-embed` or `wgpu` in `[dependencies]`. A program or a test harness reaches the host from
+`[dependencies]` or `[dev-dependencies]` respectively.
 
 Forbidden for `layer-shell-host`: `zbus`,
 `libpulse-binding`, every quire crate, sill, and the `palmrest` daemon crate.
@@ -49,6 +59,14 @@ dependencies, as sill's are on layer-shell-host.
 | the `Prepaint` hook's snapping helpers (in consumers today) | `blitz-embed::snap`; the `Prepaint` type stays here |
 
 ## 2. Modules and layers
+
+The pure vocabulary (`id`, `geometry`, `scale`, `region`, `blur`, `output`, `placement`,
+`modifiers`, `modality`'s `InputModality`, the data of `layer`, `toplevel`, `popup`, `drag`, `lock`,
+`msg`'s ops, `event`'s `KeyboardFocus`, `FrameTick`, the wheel and scroll-state data) lives in
+`layer-shell-types`, and the shared cells (`live`, `tick`'s `FrameTicks`, `grab`, `handle`, `bridge`,
+`root`, `lock/handle`, `scroll/watch`'s `ScrollBoard`, `wheel_feed`) in `layer-shell-hooks`; the
+layer table below names the modules by their old place, and the host keeps the wire mappings
+(`layer`, `toplevel`, `popup/wire`, `drag/{spec,outcome}`, `modifiers`, `modality`) beside them.
 
 All modules are private (`mod`, items `pub(crate)`). The public surface is the curated root list in
 section 3, plus two feature-gated public modules: `inject` (`debug-inject`) and `headless`
@@ -91,7 +109,16 @@ piece they test, never into a catch-all.
 
 ## 3. Public API
 
-The root of `layer-shell-host` exports exactly these names, each from one `pub use` in `lib.rs`.
+The names below are the roots of three crates, each from one `pub use` in its `lib.rs`.
+`layer-shell-types` exports the vocabulary (every row except the host's own names); `layer-shell-hooks`
+exports `SurfaceHandle`, `HostRoot`, `FrameDrive`, `DragSpec`, `DragIcon`, `GrabRefused`, `LockHandle`, and every
+`use_*` hook (`use_watch`, `use_scroll`, `use_lock`, `use_lock_phase`, ...); `layer-shell-host`
+exports `Host`, `HostCtx`, `HostHandle`, `HostConfig`, `HostEvent`, `CloseReason`, `HostError`,
+`Recovery`, `Result`, `Backend`, `Ms`, `registered_families`, `WaylandRoute`, `Prepaint`,
+`PrepaintFn`, `FrameStats`, `Percentiles`, the scroll settings (`ScrollConfig` and its units), the
+blitz-embed types a host config names (`AdapterPref`, `FontFaces`, `FileRoots`, `ScrollCmd`,
+`ScrollAxis`, `ScrollAnimate`, `Elapsed`, `ColorScheme`), and the two traits that reach the
+Wayland host from a handle: `SurfaceScroll::scroll` and `SurfaceWayland::wl_surface`.
 
 | Group | Names |
 |---|---|

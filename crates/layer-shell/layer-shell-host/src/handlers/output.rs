@@ -5,12 +5,9 @@ use wayland_client::protocol::wl_output;
 use wayland_client::{Connection, QueueHandle};
 
 use crate::event::HostEvent;
-use crate::id::OutputId;
 use crate::lock::machine::LockInput;
-use crate::output::OutputInfo;
-use crate::region::Rect;
-use crate::scale::Scale120;
 use crate::state::HostState;
+use layer_shell_types::{OutputId, OutputInfo, Rect, Scale120};
 
 impl OutputHandler for HostState {
     fn output_state(&mut self) -> &mut OutputState {

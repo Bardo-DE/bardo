@@ -15,8 +15,8 @@ use wayland_protocols::wp::text_input::zv3::client::zwp_text_input_v3::{
 
 use crate::handlers::surrounding;
 use crate::ime::{self, DeleteSurrounding, PendingIme, Preedit};
-use crate::region::Rect;
 use crate::state::HostState;
+use layer_shell_types::Rect;
 
 /// The bound manager and the seat's text input.
 #[derive(Debug)]

@@ -24,8 +24,7 @@ pub(crate) use geometry::{
     content_px, frame_of, surface_of, to_document, to_surface, window_geometry,
 };
 
-use crate::region::Px;
-use crate::toplevel::{Decorations, Fullscreen, Maximize, Tile, ToplevelState};
+use layer_shell_types::{Decorations, Fullscreen, Maximize, Px, Tile, ToplevelState};
 
 /// The band's width on each side, in logical pixels; [`Inset::NONE`] for every surface but a
 /// floating client-decorated toplevel.
@@ -50,7 +49,7 @@ pub(crate) fn inset_for(decorations: Decorations, state: ToplevelState) -> Inset
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::toplevel::{ResizeMargin, TileEdges};
+    use layer_shell_types::{ResizeMargin, TileEdges};
 
     #[test]
     fn only_a_floating_client_window_has_a_band() {

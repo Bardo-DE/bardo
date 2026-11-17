@@ -3,9 +3,9 @@
 use smithay_client_toolkit::compositor::Surface;
 
 use crate::error::{HostError, Result};
-use crate::popup::PopupGrab;
 use crate::role::Role;
 use crate::state::HostState;
+use layer_shell_types::PopupGrab;
 
 use super::layer::layer_role;
 use super::new_wl_surface;

@@ -10,7 +10,7 @@
 //! anything. The host therefore ends the stay itself at the unmap or close, while the surface is
 //! still known, and ignores the late leave, for the pointer and the keyboard alike.
 
-use crate::id::SurfaceId;
+use layer_shell_types::SurfaceId;
 
 /// The pointer is on `surface`, since the `enter` with `serial`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

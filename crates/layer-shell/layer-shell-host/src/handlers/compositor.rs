@@ -10,9 +10,9 @@ use wayland_client::{Connection, QueueHandle};
 
 use crate::frame::FrameInput;
 use crate::handlers::surface_id_by_wl;
-use crate::scale::Scale120;
 use crate::state::HostState;
 use crate::timers::TimerRequest;
+use layer_shell_types::Scale120;
 
 impl CompositorHandler for HostState {
     /// The integer fallback only (`preferred_buffer_scale`): with fractional-scale bound, the

@@ -4,8 +4,7 @@ use std::path::PathBuf;
 
 use keyboard_types::{Code, Key, Modifiers};
 
-use crate::geometry::Point;
-use crate::scale::Size;
+use layer_shell_types::{Point, Size};
 
 /// Something done to one surface as if the user had done it.
 ///

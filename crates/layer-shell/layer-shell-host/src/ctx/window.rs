@@ -5,11 +5,10 @@
 
 use smithay_client_toolkit::shell::xdg::window::Window;
 
-use crate::grab::GrabRefused;
-use crate::id::SurfaceId;
-use crate::msg::WindowOp;
 use crate::state::HostState;
-use crate::toplevel::{Fullscreen, Maximize, ResizeEdge, to_wire_edge};
+use crate::toplevel::to_wire_edge;
+use layer_shell_hooks::GrabRefused;
+use layer_shell_types::{Fullscreen, Maximize, ResizeEdge, SurfaceId, WindowOp};
 
 /// The `xdg_toplevel` request for `op` on toplevel `id`'s `window`. A move or resize the compositor would ignore is refused here with a log line (a
 /// `SurfaceHandle` caller already got the refusal as a value).

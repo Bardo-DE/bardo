@@ -5,8 +5,8 @@ use std::fmt;
 use calloop::channel::Sender;
 
 use crate::error::{HostError, Result};
-use crate::id::SurfaceId;
-use crate::msg::{HostMsg, SurfaceOp};
+use crate::msg::HostMsg;
+use layer_shell_types::{SurfaceId, SurfaceOp};
 
 /// A cheap, cloneable sender into the host's event loop. `Send` whenever `M` is.
 pub struct HostHandle<M> {

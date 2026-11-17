@@ -16,7 +16,6 @@ pub(crate) mod surface;
 pub(crate) mod tuning;
 pub(crate) mod watch;
 pub(crate) mod wheel;
-pub(crate) mod wheel_feed;
 
 #[cfg(test)]
 mod tests;

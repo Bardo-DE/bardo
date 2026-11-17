@@ -14,8 +14,13 @@ cd "$(dirname "$0")/.."
 # also stands below the design system and the gesture daemon: nothing of quire's or palmrest's
 # daemon. The palmrest socket's messages come from the `mouse-gestures-proto` crate, which is not the
 # daemon (`palmrest`, forbidden below) and depends on serde and thiserror only.
+#
+# layer-shell-types is plain data and layer-shell-hooks is what a component calls: neither may reach
+# the renderer, the GPU or Wayland, or a library that takes them would compile those.
 RULES=(
   "layer-shell-host: zbus libpulse-binding ds-native ui-settings ui-core mouse-gestures-daemon"
+  "layer-shell-types: dioxus tokio blitz-dom blitz-embed blitz-traits wgpu smithay-client-toolkit wayland-client calloop layer-shell-host"
+  "layer-shell-hooks: blitz-dom blitz-embed blitz-traits wgpu smithay-client-toolkit wayland-client calloop layer-shell-host"
 )
 fail=0
 

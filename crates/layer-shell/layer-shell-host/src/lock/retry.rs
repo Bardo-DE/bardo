@@ -6,7 +6,7 @@
 use std::collections::BTreeMap;
 use std::time::Duration;
 
-use crate::id::OutputId;
+use layer_shell_types::OutputId;
 
 /// The pause before the first retry.
 pub(crate) const FIRST_DELAY: Duration = Duration::from_millis(250);

@@ -28,10 +28,9 @@ use wayland_client::globals::{BindError, GlobalList};
 use wayland_client::{Connection, Dispatch, QueueHandle};
 use wayland_protocols::xdg::shell::client::xdg_toplevel::XdgToplevel;
 
-use crate::id::SurfaceId;
 use crate::role::Role;
 use crate::state::HostState;
-use crate::window_placement::{PlacementSupport, WindowPlacement};
+use layer_shell_types::{PlacementSupport, SurfaceId, WindowPlacement};
 
 /// The bound manager (kept for its `quit` event) and the extension object of every toplevel
 /// that asked for a placement.

@@ -19,17 +19,16 @@ use crate::dom::tests::env::test_env;
 use crate::input::palmrest::route::route;
 use crate::input::palmrest::{Palmrest, read_all};
 use crate::input::pointer::PointerPos;
-use crate::root::HostRoot;
 use crate::scratch::Dir;
 use crate::scroll::source::{AxisFrame, AxisSource, AxisValue};
 use crate::scroll::suppress::Suppress;
 use crate::scroll::surface::SurfaceScroll;
 use crate::scroll::tuning::Tuning;
-use crate::scroll::watch::ScrollBoard;
 use blitz_embed::scroll::doc as dom;
 use blitz_embed::scroll::engine::Motion;
 use blitz_embed::scroll::geom::{ScrollAxis, Scroller};
 use blitz_embed::scroll::time::Elapsed;
+use layer_shell_hooks::{HostRoot, ScrollBoard};
 use mouse_gestures_proto::{Axis as WireAxis, GestureId, Phase, ToHost};
 
 const FRAME: Duration = Duration::from_micros(8333);
