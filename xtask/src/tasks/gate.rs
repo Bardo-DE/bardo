@@ -1,4 +1,5 @@
-//! `cargo xtask gate`: the workspace-deps check, then fmt, clippy and tests on the affected set.
+//! `cargo xtask gate`: the workspace-deps and renderer-edges checks, then fmt, clippy and tests on
+//! the affected set.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -15,6 +16,9 @@ use crate::workspace::Workspace;
 pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
     // Reads the manifests only, so it runs on every gate whatever the affected set.
     if !super::workspace_deps::run()? {
+        return Ok(finish("gate", false));
+    }
+    if !super::renderer_edges::run()? {
         return Ok(finish("gate", false));
     }
     let ws = Workspace::load()?;

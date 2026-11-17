@@ -3176,6 +3176,7 @@ name = "blitz-embed"
 version = "0.1.0"
 dependencies = [
  "blitz-dom",
+ "blitz-embed-types",
  "blitz-traits",
  "keyboard-types 0.7.0",
  "parley",
@@ -3183,6 +3184,10 @@ dependencies = [
  "tokio",
  "wgpu",
 ]
+
+[[package]]
+name = "blitz-embed-types"
+version = "0.1.0"
 
 [[package]]
 name = "blitz-html"
@@ -6376,6 +6381,7 @@ dependencies = [
  "tempfile",
  "tokio",
  "tracing",
+ "ui-blitz",
  "ui-extensions",
  "ui-helpers",
 ]
@@ -6489,11 +6495,11 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-blitz",
  "ui-components",
  "ui-extensions",
  "ui-harness",
  "ui-helpers",
+ "ui-host-hooks",
  "ui-lint",
  "ui-settings",
 ]
@@ -8870,6 +8876,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "layer-shell-hooks"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "layer-shell-types",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
 name = "layer-shell-host"
 version = "0.1.0"
 dependencies = [
@@ -8892,6 +8908,8 @@ dependencies = [
  "dioxus-native-dom",
  "image",
  "keyboard-types 0.7.0",
+ "layer-shell-hooks",
+ "layer-shell-types",
  "mouse-gestures-proto",
  "nix 0.31.3",
  "peniko",
@@ -8910,6 +8928,16 @@ dependencies = [
  "wayland-protocols",
  "wgpu",
  "wgpu_context",
+]
+
+[[package]]
+name = "layer-shell-types"
+version = "0.1.0"
+dependencies = [
+ "blitz-embed-types",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -13187,6 +13215,7 @@ dependencies = [
  "ui-components",
  "ui-harness",
  "ui-helpers",
+ "ui-host-hooks",
  "ui-lint",
  "ui-settings",
  "zbus",
@@ -13335,7 +13364,9 @@ dependencies = [
  "clap",
  "dbus-kit",
  "keyboard-types 0.7.0",
+ "layer-shell-hooks",
  "layer-shell-host",
+ "layer-shell-types",
  "notify",
  "provenance",
  "rustix 1.1.6",
@@ -13347,6 +13378,7 @@ dependencies = [
  "settings-types",
  "shell-bar",
  "shell-dock",
+ "shell-host-config",
  "shell-ipc",
  "shell-kit",
  "shell-launcher",
@@ -13369,6 +13401,7 @@ dependencies = [
  "ui-components",
  "ui-extensions",
  "ui-harness",
+ "ui-host-hooks",
  "ui-lint",
  "ui-settings",
  "zbus",
@@ -13382,8 +13415,11 @@ dependencies = [
  "dioxus-ssr",
  "image",
  "jiff",
+ "layer-shell-hooks",
  "layer-shell-host",
+ "layer-shell-types",
  "serde_json",
+ "shell-host-config",
  "shell-kit",
  "shell-launcher",
  "shell-model",
@@ -13392,9 +13428,9 @@ dependencies = [
  "shell-testkit",
  "shell-ui-kit",
  "tokio",
- "ui-blitz",
  "ui-components",
  "ui-harness",
+ "ui-host-hooks",
  "ui-lint",
 ]
 
@@ -13412,7 +13448,10 @@ dependencies = [
  "desktop-client",
  "dioxus",
  "keymap",
+ "layer-shell-hooks",
  "layer-shell-host",
+ "layer-shell-types",
+ "shell-host-config",
  "shell-kit",
  "shell-launcher",
  "shell-model",
@@ -13421,11 +13460,22 @@ dependencies = [
  "shell-testkit",
  "shell-ui-kit",
  "tokio",
- "ui-blitz",
  "ui-components",
  "ui-harness",
+ "ui-host-hooks",
  "ui-lint",
  "ui-settings",
+]
+
+[[package]]
+name = "shell-host-config"
+version = "0.1.0"
+dependencies = [
+ "layer-shell-host",
+ "shell-services",
+ "shell-testkit",
+ "ui-blitz",
+ "ui-components",
 ]
 
 [[package]]
@@ -13459,6 +13509,7 @@ dependencies = [
  "ui-components",
  "ui-core",
  "ui-harness",
+ "ui-host-hooks",
  "ui-lint",
  "ui-shell",
 ]
@@ -13500,13 +13551,16 @@ dependencies = [
  "image",
  "jiff",
  "keymap",
+ "layer-shell-hooks",
  "layer-shell-host",
+ "layer-shell-types",
  "md-5 0.10.6",
  "memory-core",
  "permission-core",
  "png",
  "provenance",
  "serde_json",
+ "shell-host-config",
  "shell-kit",
  "shell-launcher",
  "shell-model",
@@ -13520,6 +13574,7 @@ dependencies = [
  "ui-blitz",
  "ui-components",
  "ui-harness",
+ "ui-host-hooks",
  "ui-lint",
 ]
 
@@ -13567,16 +13622,17 @@ version = "0.1.0"
 dependencies = [
  "dioxus",
  "image",
- "layer-shell-host",
+ "layer-shell-hooks",
+ "layer-shell-types",
  "shell-kit",
  "shell-model",
  "shell-services",
  "shell-settings",
  "shell-testkit",
  "shell-ui-kit",
- "ui-blitz",
  "ui-components",
  "ui-harness",
+ "ui-host-hooks",
  "ui-settings",
 ]
 
@@ -13594,8 +13650,11 @@ dependencies = [
  "image",
  "jiff",
  "keymap",
+ "layer-shell-hooks",
  "layer-shell-host",
+ "layer-shell-types",
  "serde_json",
+ "shell-host-config",
  "shell-kit",
  "shell-launcher",
  "shell-model",
@@ -13607,6 +13666,7 @@ dependencies = [
  "ui-behaviour",
  "ui-components",
  "ui-harness",
+ "ui-host-hooks",
  "ui-settings",
  "ui-shell",
 ]
@@ -13800,7 +13860,8 @@ dependencies = [
  "jiff",
  "key-remap-client",
  "keymap",
- "layer-shell-host",
+ "layer-shell-hooks",
+ "layer-shell-types",
  "permission-core",
  "provenance",
  "resvg",
@@ -13819,10 +13880,10 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "ui-behaviour",
- "ui-blitz",
  "ui-components",
  "ui-core",
  "ui-harness",
+ "ui-host-hooks",
  "ui-lint",
  "ui-settings",
 ]
@@ -15550,6 +15611,7 @@ dependencies = [
  "base-xdg",
  "blitz-dom",
  "blitz-embed",
+ "blitz-embed-types",
  "blitz-html",
  "blitz-paint",
  "blitz-shell",
@@ -15583,6 +15645,7 @@ dependencies = [
  "ui-emoji",
  "ui-harness",
  "ui-helpers",
+ "ui-host-hooks",
  "ui-peer",
  "wayland-backend",
  "wayland-client",
@@ -15626,6 +15689,7 @@ dependencies = [
  "ui-blitz",
  "ui-components",
  "ui-harness",
+ "ui-host-hooks",
  "ui-shell",
 ]
 
@@ -15726,6 +15790,7 @@ dependencies = [
  "ui-blitz",
  "ui-components",
  "ui-core",
+ "ui-host-hooks",
  "vello_hybrid",
  "wgpu",
  "wgpu_context",
@@ -15747,6 +15812,17 @@ dependencies = [
  "toml",
  "ui-peer",
  "zbus",
+]
+
+[[package]]
+name = "ui-host-hooks"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "dioxus",
+ "thiserror 2.0.21",
+ "tokio",
+ "ui-components",
 ]
 
 [[package]]

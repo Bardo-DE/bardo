@@ -17,10 +17,11 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps and renderer-edges, then fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
   check test-modules            every tests/it file is a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
+  check renderer-edges          only the renderer crates and the programs depend on the renderer
   check legacy [<repo>]         run the old per-repo check-*.sh scripts unchanged
   install [<part>...]           build and install the desktop (every part, or just these)
   install --build [<part>...]   build as you, install nothing
@@ -78,7 +79,7 @@ fn run() -> Result<bool> {
         "check" => {
             let which = parser
                 .value()
-                .context("`check` needs a name: deny, test-modules, workspace-deps or legacy")?
+                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges or legacy")?
                 .string()?;
             match which.as_str() {
                 "deny" => {
@@ -92,6 +93,10 @@ fn run() -> Result<bool> {
                 "workspace-deps" => {
                     reject_extra(&mut parser)?;
                     tasks::workspace_deps::run()
+                }
+                "renderer-edges" => {
+                    reject_extra(&mut parser)?;
+                    tasks::renderer_edges::run()
                 }
                 "legacy" => {
                     let mut only = None;
