@@ -1,10 +1,10 @@
 //! `icons install` run as a user runs it: the repository's set lands under
 //! `--to`, every app in every style and size, and `ui_settings`'s lookup finds a file there.
 
+use settings_types::Px;
 use std::path::Path;
 use std::process::Command;
 use ui_components::style::icon::retint::IconStyle;
-use ui_settings::Px;
 use ui_settings::icon_assets::{APP_ICON_PX, AppIconName, Presence, find_app_icon};
 
 #[test]

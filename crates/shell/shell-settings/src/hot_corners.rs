@@ -5,7 +5,7 @@
 //! (`schema/behaviour.rs`), beside the machine's timing in `ui-behaviour`, so the shell and the
 //! compositor read one definition; here it is re-exported.
 
-pub use ui_settings::schema::{
+pub use settings_types::schema::{
     CornerAction, CornerBinding, CornerBindings, CornerDo, CornerKey, CornerKeys,
     HotCornerSettings, OpenItem,
 };

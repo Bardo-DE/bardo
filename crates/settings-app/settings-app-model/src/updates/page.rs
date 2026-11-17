@@ -2,7 +2,7 @@
 //! catalogue holds it as the page of a program of that name: its label, its slug and its place in
 //! the sidebar are all decided here.
 
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// The name a person reads for the page.
 pub(crate) const SOFTWARE_UPDATE_NAME: &str = "Software Update";

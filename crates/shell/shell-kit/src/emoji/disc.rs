@@ -4,8 +4,8 @@
 
 use serde::{Deserialize, Serialize};
 use ui_components::base::colour::fit::oklch_hex;
-use ui_components::base::word::Word;
 use ui_components::style::appearance::theme::Scheme;
+use ui_components::words::Word;
 
 /// One of the icon palette's eight hues, for a tinted disc. Stored by its name (`"teal"`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

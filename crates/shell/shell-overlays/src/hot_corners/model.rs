@@ -1,7 +1,7 @@
 //! What the settings say about the corners: which do something, and what.
 
 use shell_settings::{CornerBindings, HotCornerSettings};
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 use shell_ui_kit::links::Corner;
 

@@ -2,7 +2,7 @@
 
 use super::{ImagePeek, PeekedFormat};
 use anyview_core::{FactLabel, FactValue, Facts};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// `PNG image`, `SVG image`.
 fn kind_text(format: PeekedFormat) -> String {

@@ -21,3 +21,10 @@ impl UserStyle {
         self.0.trim().is_empty()
     }
 }
+
+/// `style.css` as a settings document: the person's own stylesheet, raw text. A missing file is an empty
+/// style, and no text is refused at load.
+impl settings_store::SettingsDoc for UserStyle {
+    const FILE: settings_store::FileName = settings_store::FileName("style.css");
+    const FORMAT: settings_store::Format = settings_store::Format::Css;
+}

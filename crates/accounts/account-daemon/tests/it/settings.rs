@@ -12,8 +12,8 @@ use account_secrets::{Secrets, SecretsError};
 use account_service_core::audit::AuditEvent;
 use base_testkit::Scratch;
 use common::*;
-use ui_settings::live::{AnyOwner, LiveClient, LiveError, Snapshot};
-use ui_settings::schema::KeyPath;
+use settings_dbus::{AnyOwner, LiveClient, LiveError, Snapshot};
+use settings_types::schema::KeyPath;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_the_settings_role_may_read_or_set_anything() {
@@ -43,7 +43,7 @@ async fn only_the_settings_role_may_read_or_set_anything() {
     }
     // The stranger is refused too; nothing was removed.
     let stranger = rig.stranger().await;
-    let client = ui_settings::live::LiveClient::new(
+    let client = settings_dbus::LiveClient::new(
         &stranger,
         "org.bardo.Accounts1",
         &account_daemon::settings_path(),
@@ -512,7 +512,7 @@ async fn a_google_key_and_its_secret_set_in_settings_are_the_families_google_cli
 }
 
 /// The next word said on `row` (the action's own `Set` answers with a button's `false`).
-async fn word_on(changes: &mut ui_settings::live::Changes, row: &KeyPath) -> String {
+async fn word_on(changes: &mut settings_dbus::Changes, row: &KeyPath) -> String {
     use zbus::export::futures_core::Stream;
     loop {
         let change = tokio::time::timeout(

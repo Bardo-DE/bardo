@@ -2,7 +2,7 @@
 
 use super::FileAction;
 use super::spec::spec_of;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The surfaces an action may appear on: the launcher's row menu, the viewer, or both.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

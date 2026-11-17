@@ -39,12 +39,12 @@ use std::time::{Duration, Instant};
 
 use anyview_core::FileAction;
 use anyview_store::read_history;
+use base_words::Word;
 use shell_launcher::{
     ActionId, Activation, Choice, Frecency, Item, Needle, Provider, ProviderKind, Query,
     RankWeights, ResultSink, Subject, matching,
 };
 use tokio::sync::watch;
-use ui_core::word::Word;
 
 use crate::clock::{modified_of, unix_now};
 use crate::providers::locked::copy_of;

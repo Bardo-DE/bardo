@@ -20,7 +20,7 @@ pub struct TweenSpec {
 /// Under Reduced it jumps (R7). Asks for frames only while it moves (R3).
 #[cfg(feature = "dioxus")]
 #[must_use]
-pub fn use_tween(target: ui_core::vocab::Fraction, spec: TweenSpec) -> ui_core::vocab::Fraction {
+pub fn use_tween(target: base_ids::Fraction, spec: TweenSpec) -> base_ids::Fraction {
     use super::level::use_level;
     use crate::timeline::glide::Glide;
     use crate::timeline::use_timeline::use_timeline;
@@ -47,5 +47,5 @@ pub fn use_tween(target: ui_core::vocab::Fraction, spec: TweenSpec) -> ui_core::
     }
     let pose = use_timeline(plan.peek().1);
     drawn.set(pose.value);
-    ui_core::vocab::Fraction(u16::try_from(pose.value.max(0)).unwrap_or(u16::MAX))
+    base_ids::Fraction(u16::try_from(pose.value.max(0)).unwrap_or(u16::MAX))
 }

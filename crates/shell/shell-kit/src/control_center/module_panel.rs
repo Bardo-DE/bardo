@@ -11,12 +11,12 @@
 use crate::control_center::module_tile_kind::TileSpan;
 use dioxus::prelude::*;
 use ui_components::base::vocab::Availability;
-use ui_components::base::word::Word;
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::content::icon_view::IconView;
 use ui_components::components::content::text_runs::{TextLine, text};
 use ui_components::root::common::Common;
 use ui_components::style::icon::render::IconSize;
+use ui_components::words::Word;
 
 /// Whether the panel paints the tile's plate.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

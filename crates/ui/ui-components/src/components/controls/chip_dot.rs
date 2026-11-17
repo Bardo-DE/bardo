@@ -1,6 +1,6 @@
 //! The colour dot of a `Chip`: one of the person's tag colours, or any CSS colour.
 
-use ui_core::word::Word;
+use base_words::Word;
 use ui_style::tokens::system_hue::SystemHue;
 
 /// What a chip's dot is painted with.

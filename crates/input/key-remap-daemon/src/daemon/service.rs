@@ -15,7 +15,7 @@ use crate::config::{self, system, vendor};
 use crate::keymap;
 use key_remap_client::FileText;
 use key_remap_proto::{KeymapState, Warning};
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::mpsc;
 use std::time::Duration;
 
@@ -131,7 +131,7 @@ fn watch_keymap(dir: &Path, socket: &SocketHandle) -> Option<notify::Recommended
     let watcher = thread
         .map_err(|e| format!("keymap thread: {e}"))
         .and_then(|_| {
-            keymap::spawn(dir.to_path_buf(), tx)
+            keymap::spawn(dir, tx)
                 .map_err(|e| format!("not watching the keymap in {}: {e}", dir.display()))
         });
     watcher.map_err(|e| eprintln!("keycap: {e}")).ok()
@@ -139,7 +139,7 @@ fn watch_keymap(dir: &Path, socket: &SocketHandle) -> Option<notify::Recommended
 
 /// How a config file is watched: the function that starts the watch and the message its
 /// re-reads arrive as.
-type Watch = fn(PathBuf, mpsc::Sender<Reload>) -> notify::Result<notify::RecommendedWatcher>;
+type Watch = fn(&Path, mpsc::Sender<Reload>) -> notify::Result<notify::RecommendedWatcher>;
 
 /// A re-read config layer and what was wrong with it.
 type Reload = (ConfigLayer, Vec<Warning>);
@@ -153,7 +153,7 @@ fn watch_layer(
     wrap: fn(Reload) -> Message,
 ) -> Option<notify::RecommendedWatcher> {
     let (tx, rx) = mpsc::channel();
-    let watcher = start(dir.to_path_buf(), tx)
+    let watcher = start(dir, tx)
         .map_err(|e| format!("not watching {}: {e}", dir.display()))
         .and_then(|watcher| {
             forward("config", rx, inbox.clone(), wrap)

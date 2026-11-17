@@ -11,9 +11,9 @@
 
 use crate::icon::url::IconUrl;
 use crate::tokens::plate::EXPONENT;
+use base_words::Word;
 use std::f64::consts::FRAC_PI_2;
 use std::fmt::Write as _;
-use ui_core::word::Word;
 
 /// Samples per quadrant for a corner mask, and for each quadrant of the plate.
 const SAMPLES: u32 = 48;
@@ -126,7 +126,7 @@ pub fn plate_mask() -> IconUrl {
 mod tests {
     use super::{Quadrant, fill_mask, plate_mask, point, quadrant_mask};
     use crate::tokens::plate::{EXPONENT, shadow_radius_share};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     /// Whether `(x, y)`, measured from a corner of a squircle corner of extent `k`, lies inside the
     /// shape: the analytic test the pixel proofs compare against.

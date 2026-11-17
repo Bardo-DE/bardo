@@ -268,15 +268,15 @@ impl World {
     }
 
     /// Settings' client, as the Settings app.
-    async fn settings(&self) -> ui_settings::live::LiveClient {
+    async fn settings(&self) -> settings_dbus::LiveClient {
         let connection = self
             .connection_as("org.bardo.Settings", CallerRole::Settings)
             .await;
-        ui_settings::live::LiveClient::new(
+        settings_dbus::LiveClient::new(
             &connection,
             "org.bardo.Accounts1",
             &account_daemon::settings_path(),
-            ui_settings::live::AnyOwner,
+            settings_dbus::AnyOwner,
         )
         .expect("client")
     }

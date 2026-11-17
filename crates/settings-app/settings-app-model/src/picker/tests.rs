@@ -1,9 +1,9 @@
 use super::*;
 use crate::Absence;
-use std::collections::BTreeMap;
-use ui_settings::schema::{
+use settings_types::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
 };
+use std::collections::BTreeMap;
 
 pub(super) fn path(text: &str) -> KeyPath {
     KeyPath(text.to_owned())

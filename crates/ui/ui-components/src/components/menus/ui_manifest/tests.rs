@@ -1,12 +1,12 @@
 use super::*;
 use crate::components::menus::item::item::MenuItem;
 use crate::components::menus::menu_bar::{BarCommand, BarSection, MenuBarModel};
+use base_words::Word;
 use ui_core::command::{
     ActionName, AppCommand, CommandFace, CommandId, IntentsApp, ShortcutBinding, UiOnlyReason,
 };
 use ui_core::standard_action::StandardAction;
 use ui_core::vocab::{Shortcut, ShortcutKey};
-use ui_core::word::Word;
 
 /// An app's command type: the bar's standard items, and three of its own.
 #[derive(Debug, Clone, PartialEq)]

@@ -5,8 +5,8 @@
 
 use crate::user_picture::picture::UserPicture;
 use ui_components::base::vocab::Availability;
-use ui_components::base::word::Word;
 use ui_components::motion::detail::{detailed::Detailed, moment::Moment};
+use ui_components::words::Word;
 
 /// Where the current Space's colour reaches on the lock screen. The reference lock screen is
 /// white type and a white glass field over the wallpaper; Arc's colour may take the field.

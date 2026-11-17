@@ -2,9 +2,9 @@
 //! `quire-desktop`; `portal/absent.rs` answers the same two entry points elsewhere.
 
 use super::{SystemPrefs, contrast_from_portal, reduced_motion_from_portal, scheme_from_portal};
-use crate::latest::{self, Receiver, Sender};
+use base_spawn::Spawner;
+use settings_store::latest::{self, Receiver, Sender};
 use std::collections::HashMap;
-use ui_core::spawner::Spawner;
 use ui_peer::{Deadline, within};
 use zbus::export::ordered_stream::OrderedStreamExt;
 use zbus::proxy;

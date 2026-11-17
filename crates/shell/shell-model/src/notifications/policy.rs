@@ -7,8 +7,8 @@
 //! passive and presents with the defaults below: a test that spawns the service never asks for
 //! the bus name.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use super::content::{Expiry, Notification, NotifyUrgency, Residency, SoundHint};
 use super::origin::Origin;

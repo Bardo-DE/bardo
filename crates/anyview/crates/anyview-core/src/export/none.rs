@@ -2,7 +2,7 @@
 
 use super::choice::ExportChoice;
 use super::extension::ExportExtension;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A format with no export: uninhabited, so there is no value an export sheet could be opened
 /// on, and the type system says so where a sheet would be generic over it.

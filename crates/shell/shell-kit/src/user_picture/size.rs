@@ -1,6 +1,6 @@
 //! How large a user's picture is drawn (design/25-EMOJI.md section 7).
 
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 /// How large a picture is drawn (`data-size`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

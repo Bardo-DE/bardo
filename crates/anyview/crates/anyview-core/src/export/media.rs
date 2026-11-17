@@ -4,7 +4,7 @@ use super::choice::ExportChoice;
 use super::extension::ExportExtension;
 use super::target::{AudioTarget, RasterTarget};
 use crate::units::TimeRange;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// An export of a video or audio recording.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

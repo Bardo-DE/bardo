@@ -2,7 +2,7 @@
 //! turn-on, and whether the shell can reach casement's file.
 
 use crate::displays::NightWarmthMode;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// When casement warms the screen (`night_light.mode`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

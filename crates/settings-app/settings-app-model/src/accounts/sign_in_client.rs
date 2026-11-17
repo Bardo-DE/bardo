@@ -6,7 +6,7 @@ use super::module::ModuleId;
 use super::rows::{CLIENTS, PREFIX};
 use crate::picker::Described;
 use base_secret::SecretText;
-use ui_settings::schema::{KeyPath, KeySpec};
+use settings_types::schema::{KeyPath, KeySpec};
 
 /// What a secret row's path ends in, after the path of the key it belongs to.
 const SECRET_LEAF: &str = ".secret";

@@ -9,11 +9,14 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-ids = { path = "../../base/base-ids" }
+base-words = { path = "../../base/base-words" }
 base-time = { path = "../../base/base-time" }
 ui-core = {path = "../ui-core"}
-ui-core-derive = {path = "../ui-core-derive"}
+base-words-macros = { path = "../../base/base-words-macros" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 serde = { workspace = true, features = ["derive"] }
+settings-store = { path = "../../settings/settings-store" }
 serde_json = { workspace = true }
 # Decoding a status icon's PNG to decide symbolic or image (design/08-ICONS.md section 1.5), behind
 # `icon-classify`.

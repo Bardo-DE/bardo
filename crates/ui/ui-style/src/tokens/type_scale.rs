@@ -4,7 +4,7 @@
 //! here by role (design/02-TYPE.md open decision 3), one per distinct size in the ramp.
 
 use crate::tokens::token::{Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A type family, by job (design/02-TYPE.md section 2). A look may name other faces (the
 /// Editorial look Extension names mail's Bricolage Grotesque, Karla and Space Mono).

@@ -1,10 +1,6 @@
 //! The base layer of the design system: vocabulary, geometry, time, errors, colour and encodings,
 //! plain data and maths with no renderer and no Dioxus, so a crate that only reads settings or
-//! services can use it. `#[derive(Word)]` expands to paths in this crate alone.
-
-// The derive names the trait `::ui_core::word::Word`, so inside this crate `ui_core` is the
-// crate itself.
-extern crate self as ui_core;
+//! services can use it.
 
 pub mod base64;
 pub mod colour;
@@ -16,13 +12,10 @@ pub mod palette;
 pub mod png;
 pub mod press;
 pub mod selection;
-pub mod settings;
-pub mod spawner;
 pub mod standard_action;
 pub mod text;
 pub mod time;
 pub mod vocab;
-pub mod word;
 
 #[cfg(any(test, feature = "testing"))]
 pub mod testing;

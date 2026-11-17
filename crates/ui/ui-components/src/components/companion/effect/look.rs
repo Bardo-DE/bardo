@@ -32,8 +32,8 @@ pub fn effect_words(effect: EffectMark) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::{effect_glyph, effect_words};
+    use base_words::Word;
     use ui_core::vocab::EffectMark;
-    use ui_core::word::Word;
 
     #[test]
     fn every_effect_has_its_own_glyph_and_words() {

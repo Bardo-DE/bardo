@@ -6,7 +6,7 @@
 //! symbols are filled, and ours are drawn in our own geometry, not traced from its.
 
 use crate::battery::device_glyph::Device;
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 /// A rounded rectangle on the 24 grid.
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -256,7 +256,7 @@ pub(crate) fn path_of(form: Form) -> String {
 mod tests {
     use super::{Piece, Slab, form_of, num, path_of, slab_path};
     use crate::battery::device_glyph::Device;
-    use ui_components::base::word::Word;
+    use ui_components::words::Word;
 
     /// A piece's bounds on the grid: (left, top, right, bottom); a free path reports none.
     fn bounds(piece: Piece) -> Option<(f32, f32, f32, f32)> {

@@ -27,7 +27,7 @@ use crate::material::recipe::{DEFAULT_TINT_ALPHA, SOLID_ALPHA, layers};
 use crate::material::stack::VIBRANCY;
 use crate::tokens::tint::{flat_tint, tint};
 use crate::tokens::{hex::Hex, layer::ZLayer, name::VarName};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The token that scales every tint over blur, as a fraction (`.8` at the default, which is
 /// absent: every tint is section 17.2's own). A look or the person's own sheet sets it.
@@ -328,7 +328,7 @@ mod tests {
     use super::{materials_css, selector};
     use crate::appearance::{material::Material, theme::Scheme};
     use crate::material::recipe::{DEFAULT_TINT_ALPHA, recipe};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     /// Every alpha an `rgba(r,g,b,a)` in `value` names.
     fn alphas(value: &str) -> Vec<f32> {

@@ -9,8 +9,8 @@
 use crate::components::controls::choice::Choice;
 use crate::components::controls::segmented::{SegmentedControl, Tracking};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
 
 /// How many tabs a tab view holds: a strip of more is a sidebar's job.

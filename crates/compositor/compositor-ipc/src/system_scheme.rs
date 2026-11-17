@@ -27,10 +27,10 @@
 //! ```
 
 use crate::stop_on_drop::StopOnDrop;
+use base_spawn::Spawner;
 use std::ops::ControlFlow;
 use std::pin::Pin;
 use tokio::sync::oneshot;
-use ui_core::spawner::Spawner;
 use ui_settings::{SystemPrefsSource, SystemPrefsWatch};
 use ui_style::appearance::theme::Scheme;
 

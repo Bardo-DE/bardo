@@ -1,6 +1,6 @@
 //! A bounded number: where it sits on its slider and how it reads.
 
-use ui_settings::schema::KeyKind;
+use settings_types::schema::KeyKind;
 
 /// Whether a bounded key holds whole numbers or fractions, read off its default.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

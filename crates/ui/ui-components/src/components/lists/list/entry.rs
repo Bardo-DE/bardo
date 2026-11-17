@@ -5,10 +5,10 @@
 
 use crate::components::lists::list::reorder::Dragged;
 use crate::host::measure::client_rect;
+use base_words::Word;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 use std::rc::Rc;
-use ui_core::word::Word;
 use ui_motion::presence::Presence;
 use ui_motion::roster::{Heal, RosterEntry, RowPitch, presence_slug};
 use ui_motion::use_roster::Pitches;

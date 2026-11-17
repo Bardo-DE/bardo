@@ -22,9 +22,9 @@ use crate::components::content::text_runs::TextLine;
 use crate::components::controls::button::Button;
 use crate::components::controls::button_model::{Bezel, ImagePosition};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::Severity;
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::tokens::control_size::ControlSize;
 

@@ -9,7 +9,7 @@ use super::kind;
 use super::rule::{Offence, Rule};
 use super::tokenize::Located;
 use super::walk::{CollectedRule, Decl};
-use ui_core::word::Word;
+use base_words::Word;
 use ui_style::tokens::type_scale::FontSize;
 
 /// The pseudo-classes that mark a focus rule (`:focus-visible` and `:focus-within` are

@@ -19,8 +19,8 @@ avif = ["image/avif-native"]
 encode = ["dep:ravif", "dep:img-parts"]
 
 [dependencies]
+base-words = { path = "../../../base/base-words" }
 anyview-core = {path = "../anyview-core"}
-ui-core = {path = "../../../ui/ui-core"}
 # The pinned block enables png and jpeg; the other formats the viewer opens are added here.
 image = { workspace = true, features = ["bmp", "exr", "gif", "hdr", "ico", "jpeg", "png", "qoi", "tga", "tiff", "webp"] }
 img-parts = { workspace = true, optional = true }

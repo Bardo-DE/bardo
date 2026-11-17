@@ -2,10 +2,10 @@
 //! maps its sheet view to these in one table-tested file (design/31 section 5.1).
 
 use super::hidden::Hidden;
+use base_words::Word;
 use ui_components::components::content::mark_face::MarkFace;
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ui_core::vocab::Check;
-use ui_core::word::Word;
 
 /// One account in a chooser, named by the host.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

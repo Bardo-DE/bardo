@@ -5,12 +5,12 @@
 //! `session.lock_grace_s` (`crate::schema` moves that one key).
 
 use serde::{Deserialize, Serialize};
+use settings_types::Mins;
+use settings_types::schema::Page;
 use shell_model::idle::IdleLock;
-use ui_settings::Mins;
-use ui_settings::schema::Page;
 
 /// bardo-shell's idle service.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(
     file = "shell/settings.toml", domain = "idle", page = Page::Power,

@@ -903,7 +903,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
             .set(slot, &helper, models)
             .await
             .map_err(|e| match e {
-                ui_settings::live::LiveError::BadValue(why) => fdo::Error::InvalidArgs(why),
+                settings_dbus::LiveError::BadValue(why) => fdo::Error::InvalidArgs(why),
                 other => failed(other),
             })?;
         Ok(InferenceServed::<Self>::engines_changed(&emitter)

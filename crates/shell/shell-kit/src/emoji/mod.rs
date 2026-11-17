@@ -6,7 +6,7 @@
 //! from a Rust timer, once through when the emoji appears (design/30 section 2.10: the asset's
 //! own animation, no loop of quire's).
 
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 use {
     disc::{EmojiDisc, EmojiPlayback},
     id::EmojiId,

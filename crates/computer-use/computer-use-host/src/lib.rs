@@ -14,8 +14,8 @@
 //!   [`CuadConfig`]);
 //! - the links over docket's and almanac's transports: the router's gate ([`IntentsGate`]), the
 //!   message path and the record sink ([`DaemonLinks`], [`record_of`]);
-//! - the person's settings, read from text ([`read`], [`Locator`] over the caller's
-//!   [`ReadText`]) and applied with `Supervisor::adopt` as the caller's watch reports each change.
+//! - the person's settings, read from text ([`read`], [`locator`] over the caller's
+//!   [`settings_store_fs::ReadText`]) and applied with `Supervisor::adopt` as the caller's watch reports each change.
 //!
 //! `cuad` is the daemon over this crate: the system seams, the D-Bus service and the file watch.
 //!
@@ -62,7 +62,6 @@ pub use guard::guard;
 pub use links::{DaemonLinks, RecordContext, RecordError, record_of};
 pub use rules::{RULES_FILE, RulesError, SHIPPED_RULES, parse_rules, shipped_rules};
 pub use settings::{
-    AppAllow, AppRule, Apps, CuaSettings, Fallback, Loaded, Locator, ReadFailure, ReadText, SCHEMA,
-    SETTINGS_FILE, Why, is_browser, read,
+    AppAllow, AppRule, Apps, CuaSettings, SCHEMA, SETTINGS_FILE, is_browser, locator, read,
 };
 pub use supervisor::{Supervisor, mint_run_id};

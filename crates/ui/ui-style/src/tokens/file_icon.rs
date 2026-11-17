@@ -7,7 +7,7 @@
 use super::hex::Hex;
 use super::token::{CssValue, Token, TokenScope};
 use crate::appearance::theme::Scheme;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One colour of the file icon's own parts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

@@ -7,10 +7,10 @@
 
 use super::name::VarName;
 use crate::appearance::{motion::MotionLevel, theme::Scheme};
+use base_words::Word;
 use std::borrow::Cow;
-use ui_core::word::Word;
 
-pub use ui_core_derive::Token;
+pub use base_words_macros::Token;
 
 /// Whether the stylesheet alone owns a token's value, or a consumer may write it inline.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

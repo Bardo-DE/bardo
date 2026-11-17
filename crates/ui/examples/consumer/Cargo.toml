@@ -16,6 +16,8 @@ publish = false
 # quire, by path: this is what a consumer's own Cargo.toml looks like today, before quire has
 # a published version (CONSUMING.md "Adding quire").
 ui-components = { path = "../../ui-components" }
+settings-store-fs = { path = "../../../settings/settings-store-fs" }
+settings-types = { path = "../../../settings/settings-types" }
 ui-settings = { path = "../../ui-settings", features = ["dioxus"] }
 ui-blitz = { path = "../../ui-blitz" }
 
@@ -27,6 +29,8 @@ ui-blitz = { path = "../../ui-blitz" }
 dioxus = {workspace = true, features = ["macro", "html", "hooks", "signals"]}
 
 [dev-dependencies]
+base-words = { path = "../../../base/base-words" }
+settings-store = { path = "../../../settings/settings-store" }
 serde = {workspace = true, features = ["derive"]}
 dioxus-ssr = {workspace = true}
 # The test driver: a real Blitz document on a fast-forwarded clock (CONSUMING.md section 5, rule 4).

@@ -27,7 +27,6 @@ action-checkpoint-git = {path = "../action-checkpoint-git"}
 permission-core = {path = "../permission-core"}
 account-dbus = {path = "../../accounts/account-dbus"}
 account-callers = {path = "../../accounts/account-callers"}
-account-daemon-support = {default-features = false, features = ["watch"], path = "../../accounts/account-daemon-support"}
 action-core = {path = "../action-core"}
 action-wire = {path = "../action-wire"}
 action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
@@ -39,6 +38,8 @@ action-router = {path = "../action-router"}
 agent-skills = {path = "../agent-skills"}
 agent-skills-disk = {path = "../agent-skills-disk"}
 action-settings = {path = "../action-settings"}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
 action-provider = {path = "../action-provider"}
 action-dbus = {path = "../action-dbus", features = ["inferd"]}

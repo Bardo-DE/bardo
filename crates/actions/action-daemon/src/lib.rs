@@ -74,7 +74,7 @@ pub use reach::{LiveReach, follow as follow_reach, parse_reach};
 pub use reviewers::{placeholder_set, reviewer};
 pub use search_files::{search_dir, ship_search_files};
 pub use serve::{ServeFault, serve, serve_on, serve_on_gated, serve_on_with};
-pub use settings_watch::{DEBOUNCE, SettingsWatch, WatchState, apply, apply_next};
+pub use settings_watch::{apply, apply_next, watch_settings};
 pub use sheet::SheetConfirmer;
 pub use shipped::{ShippedEntries, ShippedFault};
 pub use signals::{Cadence, Changed, Marks, changes, emit, marks_of, pump, rescan, rescan_with};

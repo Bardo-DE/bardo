@@ -2,6 +2,7 @@
 //! do, in the order pushed, with the device's origin and our units converted (P0-B-headless).
 #![cfg(any(feature = "testing", feature = "debug-inject"))]
 
+use base_ids::Fraction;
 use compositor_backend::input::{SwipeUnaccelerated, VirtualInputEvent, VirtualKey};
 use compositor_backend::{DeviceName, DeviceSpec, VirtualInput};
 use compositor_core::DeviceId;
@@ -20,7 +21,6 @@ use smithay::backend::input::{
     PointerButtonEvent, PointerMotionEvent, Switch, SwitchState, SwitchToggleEvent, TouchEvent,
 };
 use std::time::Duration;
-use ui_core::vocab::Fraction;
 
 fn xkb() -> XkbNames {
     XkbNames {

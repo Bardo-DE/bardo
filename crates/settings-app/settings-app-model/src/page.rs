@@ -1,7 +1,7 @@
 //! Each page's slug (design/22 section 9.3) and where quire's page table puts it in the sidebar.
 
 use crate::page_kind::PageKind;
-use ui_settings::schema::{Page, PageOrder, PageTable};
+use settings_types::schema::{Page, PageOrder, PageTable};
 
 /// A page's stable name: what the sidebar keys on and `--page` takes.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
@@ -41,7 +41,7 @@ pub(crate) fn sidebar_order(table: &PageTable, a: &Page, b: &Page) -> std::cmp::
 #[cfg(test)]
 mod tests {
     use super::{PageSlug, sidebar_order};
-    use ui_settings::schema::{Page, PageTable};
+    use settings_types::schema::{Page, PageTable};
 
     #[test]
     fn pages_sort_in_the_documented_order() {

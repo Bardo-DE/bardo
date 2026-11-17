@@ -2,8 +2,8 @@
 //!
 //! A peek is Center or Full; a place in an app's own grid is not an overlay and stays the app's.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// Where an open peek sits.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default, Word)]

@@ -1,7 +1,9 @@
 //! The schema, the key table and the reader hold to one another.
 
 use super::*;
-use crate::keys::{Rule, table};
+use crate::keys::table;
+use settings_store::rules::Rule;
+use settings_store::{InvalidKey, Loaded, UnknownKey};
 use std::collections::BTreeSet;
 
 /// A spend cap of `n` millionths of a US dollar.
@@ -183,7 +185,7 @@ fn a_file_of_every_schema_default_changes_nothing() {
     }
     let loaded = read(&text.to_string(), AgentSettings::default());
     assert_eq!(loaded.value, AgentSettings::default());
-    assert_eq!((loaded.fallbacks, loaded.unknown), (vec![], vec![]));
+    assert_eq!((loaded.invalid, loaded.unknown), (vec![], vec![]));
 }
 
 fn merged(parts: &[(&str, toml::Value)]) -> String {
@@ -240,7 +242,7 @@ fn every_schema_key_is_read_by_the_daemon() {
     for row in rows() {
         let p = path(&row);
         let loaded = read(&doc(p, other_than_default(&row)), AgentSettings::default());
-        assert_eq!(loaded.fallbacks, vec![], "{p}");
+        assert_eq!(loaded.invalid, vec![], "{p}");
         assert_ne!(
             loaded.value,
             AgentSettings::default(),
@@ -349,8 +351,8 @@ fn a_bad_value_falls_back_for_that_key_alone() {
                 want.agent.start_mode = permission_core::Mode::Manual;
             }
             assert_eq!(loaded.value, want, "{p} = {value}");
-            assert_eq!(loaded.fallbacks.len(), 1, "{p} = {value}");
-            assert_eq!(loaded.fallbacks[0].key, p);
+            assert_eq!(loaded.invalid.len(), 1, "{p} = {value}");
+            assert_eq!(loaded.invalid[0].path, p);
         }
     }
 }
@@ -362,13 +364,10 @@ fn a_fallback_is_the_base_value_not_the_default() {
     let loaded = read("[agent.budget]\nspend_microusd = -1\n", base);
     assert_eq!(loaded.value, base);
     assert_eq!(
-        loaded.fallbacks,
-        vec![Fallback {
-            key: "agent.budget.spend_microusd".into(),
-            why: Why::OutOfRange {
-                min: 0,
-                max: 1_000_000_000
-            },
+        loaded.invalid,
+        vec![InvalidKey {
+            path: "agent.budget.spend_microusd".into(),
+            reason: "outside 0..=1000000000".into(),
         }]
     );
 }
@@ -377,8 +376,8 @@ fn a_fallback_is_the_base_value_not_the_default() {
 fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
     let loaded = read("[agent.mcp\nexpose = true", AgentSettings::default());
     assert_eq!(loaded.value, AgentSettings::default());
-    assert_eq!(loaded.fallbacks.len(), 1);
-    assert!(matches!(loaded.fallbacks[0].why, Why::NotToml(_)));
+    assert_eq!(loaded.invalid.len(), 1);
+    assert!(loaded.invalid[0].reason.starts_with("not TOML"));
 }
 
 #[test]
@@ -388,7 +387,13 @@ fn unknown_keys_are_reported_and_version_is_not_one() {
         AgentSettings::default(),
     );
     assert!(loaded.value.expose);
-    assert_eq!(loaded.unknown, ["agent.budget.bogus", "other.x"]);
+    assert_eq!(
+        loaded.unknown,
+        [
+            UnknownKey("agent.budget.bogus".to_owned()),
+            UnknownKey("other.x".to_owned())
+        ]
+    );
     assert_eq!(
         loaded.lines("intentd"),
         [
@@ -417,15 +422,15 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         "XDG_CONFIG_DIRS" => Some(etc.path().display().to_string()),
         _ => None,
     };
-    let locator = Locator::from_env(&env);
-    assert_eq!(locator.watch_dir(), Some(home.path().join("bardo/actions")));
-    let value = locator.read(AgentSettings::default()).value;
+    let found = locator(&env);
+    assert_eq!(found.watch_dir(), Some(home.path().join("bardo/actions")));
+    let value = found.read(AgentSettings::default(), read).value;
     assert_eq!(value.agent.budget.spend, Some(micro_usd(5)));
     // The first file wins whole: the later directory's other keys are not merged in.
     assert!(!value.expose);
-    let none = Locator::from_env(&|_: &str| None::<String>);
+    let none = locator(&|_: &str| None::<String>);
     assert_eq!(
-        none.read(AgentSettings::default()),
-        Loaded::of(AgentSettings::default())
+        none.read(AgentSettings::default(), read),
+        Loaded::clean(AgentSettings::default())
     );
 }

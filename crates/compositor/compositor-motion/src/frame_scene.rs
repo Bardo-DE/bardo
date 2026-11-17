@@ -1,10 +1,10 @@
 //! A sampled frame: `Eq` data in whole sub-pixels, what the renderer draws and what motion
 //! goldens compare.
 
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalRect, LogicalSize, SubPoint, SubPx, SubSize};
 use compositor_core::{OutputKey, WindowId};
 use desktop_protocols::vocab::Emphasis;
-use ui_core::vocab::Fraction;
 
 /// Every output's frame.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -129,7 +129,7 @@ impl Flight {
     /// ```
     /// use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
     /// use compositor_motion::Flight;
-    /// use ui_core::vocab::Fraction;
+    /// use base_ids::Fraction;
     ///
     /// let rect = |x| LogicalRect::new(LogicalPoint { x, y: 0 }, LogicalSize { w: 10, h: 10 });
     /// assert_eq!(Flight::new(rect(0), rect(90), Fraction(500)).progress, Fraction(500));

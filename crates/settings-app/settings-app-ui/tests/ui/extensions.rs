@@ -7,9 +7,9 @@ use settings_app_testkit::{
     install_file_icons, install_look, install_torn_look, install_your_changes,
 };
 use settings_app_ui::Opening;
+use settings_types::target::SettingsTarget;
 use std::time::Duration;
 use ui_harness::Harness;
-use ui_settings::target::SettingsTarget;
 
 const PAPER: &str = "org.example.Paper";
 const LOOK_MENU: &str = "#key-appearance-look .ds-popup .ds-button";

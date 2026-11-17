@@ -1,6 +1,6 @@
 //! The page a print or PDF export lays text out on.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A paper size.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

@@ -234,22 +234,18 @@ dependencies = [
  "rustix 1.1.6",
  "serde",
  "serde_json",
+ "settings-dbus",
+ "settings-types",
  "sha2 0.10.9",
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-settings",
  "zbus",
 ]
 
 [[package]]
 name = "account-daemon-support"
 version = "0.1.0"
-dependencies = [
- "base-testkit",
- "notify",
- "thiserror 2.0.21",
-]
 
 [[package]]
 name = "account-dav-proto"
@@ -729,8 +725,9 @@ dependencies = [
  "account-sheet",
  "base-ids",
  "base-time",
+ "settings-dbus",
+ "settings-types",
  "toml",
- "ui-settings",
 ]
 
 [[package]]
@@ -1031,7 +1028,6 @@ dependencies = [
  "account-client",
  "account-client-dbus",
  "account-core",
- "account-daemon-support",
  "account-dbus",
  "account-match",
  "account-wire",
@@ -1086,6 +1082,8 @@ dependencies = [
  "rust_decimal",
  "serde",
  "serde_json",
+ "settings-store",
+ "settings-store-fs",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -1463,6 +1461,8 @@ dependencies = [
  "permission-core",
  "rust_decimal",
  "serde",
+ "settings-store",
+ "settings-store-fs",
  "tempfile",
  "thiserror 2.0.21",
  "toml",
@@ -1637,6 +1637,7 @@ dependencies = [
  "provenance",
  "sandbox",
  "serde_json",
+ "settings-store-fs",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -2302,6 +2303,7 @@ version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
+ "base-words",
  "bzip2",
  "flate2",
  "lzma-rs",
@@ -2312,7 +2314,6 @@ dependencies = [
  "tar",
  "tempfile",
  "thiserror 2.0.21",
- "ui-core",
  "zip",
 ]
 
@@ -2334,6 +2335,7 @@ dependencies = [
 name = "anyview-core"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "infer",
  "jiff",
  "keymap",
@@ -2371,6 +2373,7 @@ version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
+ "base-words",
  "icns",
  "image",
  "img-parts",
@@ -2383,7 +2386,6 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tiff",
- "ui-core",
 ]
 
 [[package]]
@@ -2398,6 +2400,7 @@ dependencies = [
  "anyview-image",
  "anyview-text",
  "base-testkit",
+ "base-words",
  "dioxus",
  "dioxus-ssr",
  "log",
@@ -2429,6 +2432,7 @@ dependencies = [
  "anyview-platform",
  "base-fs",
  "base-ids",
+ "base-words",
  "dirs 6.0.0",
  "log",
  "md-5 0.10.6",
@@ -2441,7 +2445,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-core",
  "zbus",
 ]
 
@@ -2463,6 +2466,7 @@ version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
+ "base-words",
  "calamine",
  "chardetng",
  "csv",
@@ -2928,6 +2932,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-spawn"
+version = "0.1.0"
+
+[[package]]
 name = "base-testkit"
 version = "0.1.0"
 dependencies = [
@@ -2950,6 +2958,24 @@ dependencies = [
  "percent-encoding",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "base-words"
+version = "0.1.0"
+dependencies = [
+ "base-words-macros",
+ "serde",
+]
+
+[[package]]
+name = "base-words-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -4113,8 +4139,11 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "base-fs",
+ "base-ids",
+ "base-spawn",
  "base-testkit",
  "base-time",
+ "base-words",
  "base-xdg",
  "calloop",
  "compositor-agent",
@@ -4135,6 +4164,9 @@ dependencies = [
  "nix 0.31.3",
  "rustix 1.1.6",
  "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
  "shell-verbs",
  "smithay",
  "tempfile",
@@ -4152,6 +4184,7 @@ dependencies = [
 name = "compositor-backend"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "compositor-core",
  "compositor-render",
  "desktop-protocols",
@@ -4180,7 +4213,9 @@ name = "compositor-core"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-ids",
  "base-time",
+ "base-words",
  "desktop-protocols",
  "proptest",
  "serde",
@@ -4236,6 +4271,8 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "account-dbus",
+ "base-ids",
+ "base-spawn",
  "base-testkit",
  "caller-identity-dbus",
  "calloop",
@@ -4244,11 +4281,12 @@ dependencies = [
  "compositor-dbus",
  "dbus-kit",
  "desktop-protocols",
+ "settings-dbus",
+ "settings-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "tracing",
- "ui-core",
  "ui-settings",
  "ui-style",
  "xkbcommon 0.9.0",
@@ -4260,6 +4298,7 @@ name = "compositor-layout"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-ids",
  "compositor-core",
  "desktop-protocols",
  "proptest",
@@ -4273,6 +4312,7 @@ name = "compositor-motion"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-ids",
  "compositor-core",
  "compositor-layout",
  "desktop-protocols",
@@ -4298,6 +4338,7 @@ dependencies = [
 name = "compositor-render"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "compositor-core",
  "compositor-motion",
  "desktop-protocols",
@@ -4337,6 +4378,7 @@ name = "compositor-testkit"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-ids",
  "base-testkit",
  "base-time",
  "compositor-app",
@@ -4367,6 +4409,7 @@ name = "compositor-wayland"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-ids",
  "compositor-core",
  "desktop-client",
  "desktop-protocols",
@@ -4479,7 +4522,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-daemon-support",
  "action-client",
  "action-core",
  "action-daemon",
@@ -4520,6 +4562,7 @@ dependencies = [
  "rust_decimal",
  "serde",
  "serde_json",
+ "settings-store-fs",
  "shell-dbus",
  "tempfile",
  "thiserror 2.0.21",
@@ -4660,7 +4703,6 @@ dependencies = [
  "action-wire",
  "base-ids",
  "base-time",
- "base-xdg",
  "computer-use-a11y-tree",
  "computer-use-action",
  "computer-use-bus",
@@ -4677,6 +4719,8 @@ dependencies = [
  "rust_decimal",
  "serde",
  "serde_json",
+ "settings-store",
+ "settings-store-fs",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -6326,12 +6370,13 @@ dependencies = [
  "files-trash",
  "files-ui",
  "freedesktop-icons",
+ "settings-store-fs",
+ "settings-types",
  "tempfile",
  "tokio",
  "tracing",
  "ui-extensions",
  "ui-helpers",
- "ui-settings",
 ]
 
 [[package]]
@@ -6425,6 +6470,7 @@ dependencies = [
  "anyview-peek",
  "anyview-platform",
  "base-testkit",
+ "base-words",
  "chrono",
  "dioxus",
  "files-core",
@@ -6435,6 +6481,9 @@ dependencies = [
  "files-ui",
  "keymap",
  "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -7711,7 +7760,6 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
- "ui-settings",
  "zbus",
 ]
 
@@ -7806,6 +7854,8 @@ dependencies = [
  "rustix 1.1.6",
  "serde",
  "serde_json",
+ "settings-dbus",
+ "settings-types",
  "sha2 0.10.9",
  "speech-host-client",
  "speech-provider",
@@ -7814,7 +7864,6 @@ dependencies = [
  "tokio",
  "toml",
  "tracing",
- "ui-settings",
  "zbus",
 ]
 
@@ -8623,6 +8672,7 @@ dependencies = [
  "notify",
  "rustix 1.1.6",
  "service-locator",
+ "settings-store-fs",
  "thiserror 2.0.21",
 ]
 
@@ -9428,7 +9478,6 @@ dependencies = [
  "account-client",
  "account-client-dbus",
  "account-core",
- "account-daemon-support",
  "account-dbus",
  "account-wire",
  "base-fs",
@@ -9464,6 +9513,8 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "settings-store",
+ "settings-store-fs",
  "tar",
  "tempfile",
  "thiserror 2.0.21",
@@ -9556,9 +9607,10 @@ name = "memory-host"
 version = "0.1.0"
 dependencies = [
  "base-fs",
- "base-xdg",
  "memory-core",
  "memory-settings",
+ "settings-store",
+ "settings-store-fs",
  "tempfile",
 ]
 
@@ -9687,6 +9739,7 @@ version = "0.1.0"
 dependencies = [
  "memory-core",
  "serde",
+ "settings-store",
  "thiserror 2.0.21",
  "toml",
 ]
@@ -9994,6 +10047,7 @@ dependencies = [
  "serde",
  "serde_json",
  "service-locator",
+ "settings-store-fs",
  "thiserror 2.0.21",
  "toml",
 ]
@@ -12905,6 +12959,7 @@ name = "settings-app"
 version = "0.1.0"
 dependencies = [
  "base-testkit",
+ "base-xdg",
  "clap",
  "settings-app-callers",
  "settings-app-client",
@@ -12913,6 +12968,7 @@ dependencies = [
  "settings-app-model",
  "settings-app-testkit",
  "settings-app-ui",
+ "settings-store-fs",
  "tempfile",
  "tokio",
  "toml",
@@ -12931,10 +12987,10 @@ dependencies = [
  "portal-dbus",
  "rustix 1.1.6",
  "settings-app-testkit",
+ "settings-dbus",
  "shell-dbus",
  "sync-bus",
  "thiserror 2.0.21",
- "ui-settings",
  "updater-dbus",
  "zbus",
 ]
@@ -12950,9 +13006,10 @@ dependencies = [
  "settings-app-files",
  "settings-app-model",
  "settings-app-system",
+ "settings-dbus",
+ "settings-types",
  "tokio",
  "toml",
- "ui-settings",
 ]
 
 [[package]]
@@ -12970,6 +13027,8 @@ dependencies = [
  "serde_json",
  "settings-app-model",
  "settings-app-testkit",
+ "settings-store",
+ "settings-types",
  "thiserror 2.0.21",
  "toml",
  "toml_edit",
@@ -13000,11 +13059,11 @@ dependencies = [
  "settings-app-files",
  "settings-app-model",
  "settings-app-testkit",
+ "settings-types",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "ui-peer",
- "ui-settings",
  "zbus",
 ]
 
@@ -13031,9 +13090,10 @@ dependencies = [
  "regex",
  "serde_json",
  "settings-app-testkit",
+ "settings-store-fs",
+ "settings-types",
  "toml",
  "ui-helpers",
- "ui-settings",
 ]
 
 [[package]]
@@ -13075,13 +13135,14 @@ dependencies = [
  "settings-app-files",
  "settings-app-model",
  "settings-app-system",
+ "settings-dbus",
+ "settings-types",
  "shell-dbus",
  "sync-bus",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "ui-peer",
- "ui-settings",
  "updater-dbus",
  "zbus",
 ]
@@ -13115,6 +13176,9 @@ dependencies = [
  "settings-app-model",
  "settings-app-system",
  "settings-app-testkit",
+ "settings-dbus",
+ "settings-store-fs",
+ "settings-types",
  "sync-bus",
  "tokio",
  "toml",
@@ -13125,6 +13189,73 @@ dependencies = [
  "ui-lint",
  "ui-settings",
  "zbus",
+]
+
+[[package]]
+name = "settings-dbus"
+version = "0.1.0"
+dependencies = [
+ "dbus-kit",
+ "serde",
+ "serde_json",
+ "settings-types",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml",
+ "ui-peer",
+ "zbus",
+]
+
+[[package]]
+name = "settings-store"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "settings-types",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml",
+ "toml_edit",
+]
+
+[[package]]
+name = "settings-store-fs"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-spawn",
+ "base-time",
+ "base-xdg",
+ "futures-timer",
+ "notify",
+ "settings-store",
+ "settings-types",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "settings-types"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-words",
+ "serde",
+ "serde_json",
+ "settings-types-macros",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "settings-types-macros"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -13197,6 +13328,7 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "base-testkit",
+ "base-words",
  "base-xdg",
  "caller-identity-dbus",
  "clap",
@@ -13209,6 +13341,9 @@ dependencies = [
  "serde",
  "serde_json",
  "service-locator",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
  "shell-bar",
  "shell-dock",
  "shell-ipc",
@@ -13231,7 +13366,6 @@ dependencies = [
  "toml",
  "ui-blitz",
  "ui-components",
- "ui-core",
  "ui-extensions",
  "ui-harness",
  "ui-lint",
@@ -13261,7 +13395,6 @@ dependencies = [
  "ui-components",
  "ui-harness",
  "ui-lint",
- "ui-settings",
 ]
 
 [[package]]
@@ -13298,6 +13431,7 @@ dependencies = [
 name = "shell-ipc"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "clap",
  "key-remap-proto",
  "serde",
@@ -13306,13 +13440,13 @@ dependencies = [
  "shell-model",
  "shell-testkit",
  "thiserror 2.0.21",
- "ui-core",
 ]
 
 [[package]]
 name = "shell-kit"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "dioxus",
  "dioxus-ssr",
  "image",
@@ -13325,7 +13459,6 @@ dependencies = [
  "ui-core",
  "ui-harness",
  "ui-lint",
- "ui-settings",
  "ui-shell",
 ]
 
@@ -13335,12 +13468,14 @@ version = "0.1.0"
 dependencies = [
  "action-core",
  "action-vocab",
+ "base-words",
  "keymap",
  "memory-core",
  "nucleo-matcher",
  "provenance",
  "serde",
  "serde_json",
+ "settings-types",
  "ui-core",
 ]
 
@@ -13402,6 +13537,7 @@ dependencies = [
  "base-secret",
  "base-time",
  "base-url",
+ "base-words",
  "companion-model",
  "companion-wire",
  "computer-use-action",
@@ -13486,6 +13622,7 @@ dependencies = [
  "base-fs",
  "base-testkit",
  "base-time",
+ "base-words",
  "companion-model",
  "companion-wire",
  "computer-use-action",
@@ -13501,13 +13638,13 @@ dependencies = [
  "permission-core",
  "provenance",
  "serde_json",
+ "settings-types",
  "shell-launcher",
  "shell-model",
  "shell-services",
  "shell-testkit",
  "tokio",
  "ui-core",
- "ui-settings",
  "zbus",
 ]
 
@@ -13541,6 +13678,7 @@ dependencies = [
  "base-secret",
  "base-testkit",
  "base-time",
+ "base-words",
  "base-xdg",
  "bluez-proxy",
  "caller-identity-dbus",
@@ -13581,6 +13719,9 @@ dependencies = [
  "rustix 1.1.6",
  "serde",
  "serde_json",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
  "shell-dbus",
  "shell-launcher",
  "shell-model",
@@ -13596,7 +13737,6 @@ dependencies = [
  "tracing",
  "ui-core",
  "ui-helpers",
- "ui-settings",
  "upower_dbus",
  "wayland-client",
  "wayland-protocols",
@@ -13607,15 +13747,17 @@ dependencies = [
 name = "shell-settings"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "key-remap-proto",
  "provenance",
  "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
  "shell-launcher",
  "shell-model",
  "shell-testkit",
  "toml",
- "ui-core",
- "ui-settings",
 ]
 
 [[package]]
@@ -13647,6 +13789,7 @@ dependencies = [
  "action-manifest",
  "action-vocab",
  "base-fs",
+ "base-words",
  "companion-wire",
  "computer-use-action",
  "dioxus",
@@ -13662,6 +13805,8 @@ dependencies = [
  "resvg",
  "serde",
  "serde_json",
+ "settings-store-fs",
+ "settings-types",
  "shell-kit",
  "shell-launcher",
  "shell-model",
@@ -14677,6 +14822,8 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "settings-dbus",
+ "settings-types",
  "sha2 0.10.9",
  "sync-bus",
  "sync-core",
@@ -14688,7 +14835,6 @@ dependencies = [
  "tokio",
  "toml",
  "toml_edit",
- "ui-settings",
  "windows-zones",
  "zbus",
 ]
@@ -15399,6 +15545,7 @@ dependencies = [
  "arboard",
  "base-fs",
  "base-testkit",
+ "base-words",
  "base-xdg",
  "blitz-dom",
  "blitz-embed",
@@ -15451,6 +15598,9 @@ dependencies = [
 name = "ui-components"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
+ "base-spawn",
+ "base-words",
  "dioxus",
  "dioxus-ssr",
  "keymap",
@@ -15483,23 +15633,13 @@ name = "ui-core"
 version = "0.1.0"
 dependencies = [
  "base-testkit",
+ "base-words",
  "futures-timer",
  "keyboard-types 0.7.0",
  "keymap",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "ui-core-derive",
-]
-
-[[package]]
-name = "ui-core-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "syn 2.0.119",
 ]
 
 [[package]]
@@ -15527,10 +15667,13 @@ name = "ui-extensions"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-words",
  "plugin-host",
  "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
  "thiserror 2.0.21",
- "ui-core",
  "ui-helpers",
  "ui-settings",
  "ui-style",
@@ -15540,6 +15683,7 @@ dependencies = [
 name = "ui-gallery"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "dioxus",
  "dioxus-ssr",
  "image",
@@ -15611,6 +15755,7 @@ dependencies = [
  "clap",
  "image",
  "serde",
+ "settings-types",
  "thiserror 2.0.21",
  "toml",
  "ui-components",
@@ -15622,6 +15767,7 @@ dependencies = [
 name = "ui-intents"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "ui-core",
 ]
 
@@ -15629,9 +15775,9 @@ dependencies = [
 name = "ui-lint"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "cssparser",
  "ui-components",
- "ui-core",
  "ui-style",
 ]
 
@@ -15639,6 +15785,8 @@ dependencies = [
 name = "ui-motion"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
+ "base-words",
  "dioxus",
  "ui-components",
  "ui-core",
@@ -15659,41 +15807,30 @@ name = "ui-settings"
 version = "0.1.0"
 dependencies = [
  "base-fs",
- "base-time",
- "base-xdg",
- "dbus-kit",
+ "base-spawn",
+ "base-words",
  "dioxus",
- "futures-timer",
- "notify",
  "objc2-core-foundation",
  "serde",
  "serde_json",
+ "settings-dbus",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
  "tempfile",
- "thiserror 2.0.21",
  "tokio",
  "toml",
- "toml_edit",
  "ui-components",
- "ui-core",
  "ui-peer",
- "ui-settings-derive",
  "ui-style",
  "zbus",
-]
-
-[[package]]
-name = "ui-settings-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
 ]
 
 [[package]]
 name = "ui-shell"
 version = "0.1.0"
 dependencies = [
+ "base-words",
  "dioxus",
  "dioxus-ssr",
  "ui-components",
@@ -15708,15 +15845,18 @@ dependencies = [
 name = "ui-style"
 version = "0.1.0"
 dependencies = [
+ "base-ids",
  "base-time",
+ "base-words",
+ "base-words-macros",
  "dioxus",
  "dioxus-ssr",
  "image",
  "serde",
  "serde_json",
+ "settings-store",
  "skrifa 0.44.0",
  "ui-core",
- "ui-core-derive",
  "ui-style",
 ]
 

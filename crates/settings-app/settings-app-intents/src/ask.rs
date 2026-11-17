@@ -6,8 +6,8 @@ use account_core::AppName;
 use action_core::{AppRefusal, Invocation};
 use action_vocab::{ParamName, TargetValue, Value};
 use settings_app_model::PageSlug;
-use ui_settings::schema::KeyPath;
-use ui_settings::target::SettingsTarget;
+use settings_types::schema::KeyPath;
+use settings_types::target::SettingsTarget;
 
 /// What a call asks of Settings.
 #[derive(Debug, Clone, PartialEq, Eq)]

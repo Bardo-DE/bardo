@@ -1,8 +1,8 @@
 //! What a `List` is given: its style and its items (data only).
 
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 
 /// How a list is drawn (`NSTableView` styles, design/30 section 2.6).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

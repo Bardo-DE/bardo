@@ -2,6 +2,7 @@
 //! settings, and the schema detent reads (`casement --write-schema`). Every document lives in a
 //! scratch directory standing in for `$XDG_CONFIG_HOME`; nothing here reads the real one.
 
+use base_ids::Fraction;
 use compositor_app::config::{
     ActionWords, BindingsSection, CasementDoc, load, schema, to_core, write_schema,
 };
@@ -18,7 +19,6 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Duration;
 use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 
 /// A scratch config home holding `text` as `compositor/settings.toml`.
 fn home_with(text: &str) -> (tempfile::TempDir, PathBuf) {
@@ -408,7 +408,7 @@ fn the_schema_is_written_and_reads_back() {
     let read_back = |dir: &Path, step: &str| {
         let text = std::fs::read_to_string(dir.join("compositor.settings.toml"))
             .unwrap_or_else(|e| panic!("{step}: written: {e}"));
-        ui_settings::schema::Schema::from_toml(&text)
+        settings_types::schema::Schema::from_toml(&text)
             .unwrap_or_else(|e| panic!("{step}: parses: {e:?}"))
     };
     let dir = tempfile::tempdir().expect("temp dir");

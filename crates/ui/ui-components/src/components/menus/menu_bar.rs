@@ -9,10 +9,10 @@
 //! with [`MenuBarModel::with_items`].
 
 use crate::components::menus::item::item::{MenuImage, MenuItem};
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use ui_core::standard_action::StandardAction;
 use ui_core::vocab::{Availability, Shortcut};
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 
 /// A menu of the bar, in the order the bar draws them.
@@ -225,9 +225,9 @@ pub fn opens(pressed: &Shortcut) -> Option<BarSection> {
 mod tests {
     use super::{BarCommand, BarSection, MenuBarModel, opens};
     use crate::components::menus::item::item::MenuItem;
+    use base_words::Word;
     use ui_core::standard_action::StandardAction;
     use ui_core::vocab::{Availability, Shortcut};
-    use ui_core::word::Word;
 
     fn bar() -> MenuBarModel<BarCommand> {
         MenuBarModel::standard("Notes", |command| command)

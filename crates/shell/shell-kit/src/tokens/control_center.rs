@@ -6,10 +6,10 @@
 //! a 16 header, a 6 gap and a Regular capsule. bardo-shell sizes its popup from these (R9) rather than
 //! from its own copies.
 
-use ui_components::base::word::Word;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_components::style::tokens::size_scale::WholePx;
 use ui_components::style::tokens::token::{CssValue, Token, TokenScope};
+use ui_components::words::Word;
 
 /// The control center's sizes.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

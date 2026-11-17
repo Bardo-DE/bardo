@@ -10,7 +10,7 @@ use crate::page::PageSlug;
 use crate::updates::SOFTWARE_UPDATE_NAME;
 use crate::wallpaper::WALLPAPER_SLUG;
 use crate::wifi::WIFI_SLUG;
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// What a page is: one of quire's fixed pages, one of the pages the catalogue declares itself, or
 /// a third-party program's.

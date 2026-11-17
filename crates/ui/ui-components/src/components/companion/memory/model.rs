@@ -1,8 +1,8 @@
 //! The memory view's data.
 
 use crate::components::companion::answer::footer::SourceChip;
+use base_words::Word;
 use ui_core::vocab::Tally;
-use ui_core::word::Word;
 
 /// Who a fact came from, `data-origin`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

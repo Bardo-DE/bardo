@@ -35,9 +35,9 @@ use account_core::{Account, AccountId, AppName, GrantId};
 use account_service_core::registry::Registry;
 use account_sheet::ProviderGroup;
 use accounts::{Directory, UsedBy};
+use settings_dbus::LiveError;
+use settings_types::schema::KeySpec;
 use std::pin::Pin;
-use ui_settings::live::LiveError;
-use ui_settings::schema::KeySpec;
 
 /// What a write is: a future the daemon drives.
 pub type Boxed<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;

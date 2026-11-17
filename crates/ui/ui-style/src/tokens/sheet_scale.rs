@@ -2,7 +2,7 @@
 //! password prompt's, as tokens so the sheet's stylesheet reads them and a look can move them.
 
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One of the narrow sheets' widths, as a token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

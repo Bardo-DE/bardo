@@ -13,8 +13,8 @@ use crate::appearance::theme::Scheme;
 use crate::tokens::file_icon::FileIconColour;
 use crate::tokens::hex::Hex;
 use crate::tokens::name::VarName;
+use base_words::Word;
 use std::fmt::Write as _;
-use ui_core::word::Word;
 
 /// How a file icon is coloured.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]

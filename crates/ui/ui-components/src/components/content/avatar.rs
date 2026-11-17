@@ -7,8 +7,8 @@
 
 use crate::components::content::muted::muted;
 use crate::host::narrow;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::tokens::hex::{Colour, Hex};
 
 /// An avatar's size, in logical pixels (`data-size`).

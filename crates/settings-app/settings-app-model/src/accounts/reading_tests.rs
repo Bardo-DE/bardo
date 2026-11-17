@@ -5,7 +5,7 @@ use super::tests::{described, fixed, toggle};
 use super::*;
 use crate::picker::Described;
 use account_core::SignInWay;
-use ui_settings::schema::Help;
+use settings_types::schema::Help;
 
 #[test]
 fn rows_are_read_as_accounts_with_dotted_ids_kept_whole() {

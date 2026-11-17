@@ -1,6 +1,6 @@
 //! Turns and flips.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A clockwise rotation in whole quarter turns. Stored (it is part of an edit), so it is
 /// written as its slug.

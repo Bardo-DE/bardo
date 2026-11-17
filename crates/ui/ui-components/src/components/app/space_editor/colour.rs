@@ -16,8 +16,8 @@ use super::rows::EditorFrame;
 use super::{ActiveDot, DotIndex, Picker, active};
 use crate::components::lists::section_header::SectionHeader;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::appearance::theme::Scheme;
 use ui_style::space::look::SpaceLook;
 

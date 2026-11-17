@@ -2,8 +2,8 @@
 
 use crate::components::companion::answer::footer::CardFooter;
 use crate::components::content::icon_source::IconSource;
+use base_words::Word;
 use ui_core::vocab::EffectMark;
-use ui_core::word::Word;
 
 /// A step's id within its plan.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

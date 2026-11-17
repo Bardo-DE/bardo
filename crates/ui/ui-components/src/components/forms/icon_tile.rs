@@ -15,8 +15,8 @@
 //! an `Avatar`.
 
 use crate::components::content::avatar::{AvatarFace, face};
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::icon::family::PlateFamily;
 use ui_style::icon::render::{Glyph, IconSize};

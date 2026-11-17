@@ -14,7 +14,8 @@ anyview-platform = {path = "../../anyview/crates/anyview-platform"}
 dirs = { workspace = true }
 ui-extensions = {path = "../../ui/ui-extensions"}
 ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
-ui-settings = {path = "../../ui/ui-settings"}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
 files-core = {path = "../files-core"}
 files-desktop = {path = "../files-desktop"}
 files-fs = {path = "../files-fs"}

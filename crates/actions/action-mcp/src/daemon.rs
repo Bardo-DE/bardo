@@ -246,10 +246,13 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
     }
     let connection = dbus_kit::connect::session_from_env(env).await?;
     let listen = args.socket.map_or(Listen::Stdio, Listen::Socket);
-    let locator = action_settings::Locator::from_env(env);
+    let locator = action_settings::locator(env);
     let expose: ExposeRead = Arc::new(move || {
         locator
-            .read(action_settings::AgentSettings::default())
+            .read(
+                action_settings::AgentSettings::default(),
+                action_settings::read,
+            )
             .value
             .expose
     });

@@ -27,8 +27,8 @@ use crate::focus::select::Select;
 use crate::focus::selector::focus_by_selector;
 use crate::keys::{register_quire_actions, use_keys};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_motion::pane_slide::{Pane, PaneRole, PaneSlide};
 use ui_motion::use_pane_slide::use_pane_slide;
 

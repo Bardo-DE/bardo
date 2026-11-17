@@ -9,8 +9,8 @@ use account_dbus::Details;
 use account_dbus::accounts::{AccountProxy, Sheet};
 use account_sheet::SheetInput;
 use common::*;
+use settings_dbus::Changes;
 use std::time::Duration;
-use ui_settings::live::Changes;
 use zbus::export::futures_core::Stream;
 use zbus::zvariant::ObjectPath;
 

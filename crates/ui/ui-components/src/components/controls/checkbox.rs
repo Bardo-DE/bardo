@@ -7,9 +7,9 @@
 use crate::components::content::text_runs::{TextLine, text};
 use crate::components::controls::press::{ActivationKeys, activates, disabled, use_pressing};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::{Availability, Check};
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
 use ui_style::tokens::control_size::ControlSize;

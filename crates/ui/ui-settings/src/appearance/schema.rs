@@ -1,8 +1,8 @@
 //! The schema of `bardo/appearance.toml`, as quire ships it (design/22-SETTINGS.md section 9.2).
 
 use super::settings::{AppearanceSettings, IconsSettings};
-use crate::region::RegionSettings;
-use crate::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
+use settings_types::RegionSettings;
+use settings_types::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
 
 /// `bardo.settings.toml`: the keys of `appearance.toml`, the `appearance`, `icons` and `region`
 /// domains in one schema.
@@ -32,7 +32,7 @@ pub fn quire_schema() -> Schema {
 #[cfg(test)]
 mod tests {
     use super::quire_schema;
-    use crate::schema::Schema;
+    use settings_types::schema::Schema;
 
     #[test]
     fn the_quire_schema_holds_every_domain_and_round_trips() {

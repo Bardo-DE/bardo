@@ -6,9 +6,9 @@
 //! modifier and never draws a chord of its own: the keymap resolves the key and quire draws the
 //! shortcut. Pure.
 
+use base_words::Word;
 use keymap::{Action, AppAction, AppId, DefaultChord, Registration, StandardAction};
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use crate::ids::ActionId;
 use crate::item::Item;
@@ -132,8 +132,8 @@ mod tests {
     use crate::item::{Action, IconRef, Item};
     use crate::rank::Score;
     use crate::subject::Subject;
+    use base_words::Word;
     use keymap::{Action as Bound, AppId, Keymap, Platform, StandardAction};
-    use ui_core::word::Word;
 
     #[test]
     fn every_own_action_registers_on_our_desktop_without_a_conflict() {

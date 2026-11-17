@@ -1,8 +1,8 @@
 //! `xwayland.*`.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// Whether older X11 apps run (`xwayland.mode`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
@@ -24,7 +24,7 @@ pub enum XwaylandUse {
 /// start, by `main`), so its `Default` is written here and `crate::xwayland::resolve` is its
 /// conversion.
 #[derive(
-    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
+    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
 )]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "xwayland", page = Page::Apps)]

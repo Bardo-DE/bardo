@@ -1,7 +1,7 @@
 //! A card's buttons.
 
+use base_words::Word;
 use ui_core::vocab::{Availability, EffectMark, Shortcut};
-use ui_core::word::Word;
 
 /// One card action's id: opaque, the companion's own, handed back when the person picks it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

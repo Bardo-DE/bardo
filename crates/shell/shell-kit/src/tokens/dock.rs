@@ -9,9 +9,9 @@
 //! dock pieces (`RunningDot`, `DockFloor`, an `IconView` plate) share.
 
 use ui_components::base::geometry::units::Px;
-use ui_components::base::word::Word;
 use ui_components::style::tokens::dock_floor::DockFloorToken;
 use ui_components::style::tokens::token::Token;
+use ui_components::words::Word;
 
 /// One dock geometry token.
 ///

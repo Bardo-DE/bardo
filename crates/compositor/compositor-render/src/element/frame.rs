@@ -29,6 +29,7 @@ use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
 use crate::texture_book::TextureBook;
+use base_ids::Fraction;
 use compositor_core::WindowId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, buffer_size};
 use compositor_core::raster::RasterImage;
@@ -40,7 +41,6 @@ use smithay::backend::renderer::element::memory::{
 };
 use smithay::utils::{Logical, Physical, Point, Rectangle, Size, Transform};
 use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 
 /// One window's frame as it is drawn this frame.
 #[derive(Debug, Clone, Copy)]

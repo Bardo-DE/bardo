@@ -4,7 +4,9 @@
 use crate::support::Scratch;
 
 use serde::{Deserialize, Serialize};
-use ui_settings::{AppName, ConfigRoot, Fixup, Origin, SpacesLoad, SpacesStorage};
+use settings_store_fs::ConfigRoot;
+use settings_types::AppName;
+use ui_settings::{Fixup, Origin, SpacesLoad, SpacesStorage};
 use ui_style::space::list::{Epoch, IDLE, SpaceId, Spaces, Today};
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]

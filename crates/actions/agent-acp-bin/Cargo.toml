@@ -55,6 +55,7 @@ agent-native = {path = "../agent-native"}
 agent-planner = {path = "../agent-planner"}
 agent-session = {path = "../agent-session"}
 action-settings = {path = "../action-settings"}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 base-path = { path = "../../base/base-path" }
 sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}

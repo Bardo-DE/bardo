@@ -5,10 +5,10 @@
 
 use std::time::Duration;
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
+use settings_types::schema::Page;
 use shell_model::companion::{CompanionParams, SummonParams};
-use ui_core::word::Word;
-use ui_settings::schema::Page;
 
 pub use shell_model::companion::InField;
 
@@ -38,7 +38,7 @@ pub enum NotifyWhen {
 
 /// The companion's summon and confirmation.
 #[derive(
-    Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema,
+    Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema,
 )]
 #[serde(default)]
 #[settings(

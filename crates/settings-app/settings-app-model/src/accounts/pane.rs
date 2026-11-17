@@ -14,8 +14,8 @@ use super::spend::{AccountSpend, Cents};
 use crate::picker::Described;
 use account_core::SignInWay;
 use account_sheet::ProviderGroup;
+use settings_types::schema::{KeyKind, KeyPath};
 use std::collections::BTreeSet;
-use ui_settings::schema::{KeyKind, KeyPath};
 
 impl Account {
     /// Whether `path` is a row of this account that can be set or run.

@@ -3,9 +3,9 @@
 use crate::support;
 
 use serde::{Deserialize, Serialize};
+use settings_store::{FileName, Format, Loaded, SettingsDoc};
 use std::collections::BTreeMap;
 use support::Scratch;
-use ui_settings::{FileName, Format, Loaded, SettingsDoc};
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(default)]

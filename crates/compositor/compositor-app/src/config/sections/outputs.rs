@@ -1,11 +1,11 @@
 //! `outputs.*`.
 
 use crate::config::convert;
+use base_words::Word;
 use compositor_core::settings::CasementSettings;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
-use ui_settings::Count;
-use ui_settings::schema::Page;
+use settings_types::Count;
+use settings_types::schema::Page;
 
 /// How a display's first scale is chosen (`outputs.first_sight_scale`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
@@ -19,7 +19,7 @@ pub enum FirstSight {
 }
 
 /// `outputs.*`: what a display gets the first time it is seen.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "outputs", page = Page::Appearance)]
 pub struct OutputsSection {

@@ -12,7 +12,7 @@ publish.workspace = true
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-blitz = {path = "../../ui/ui-blitz"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 shell-kit = {path = "../shell-kit"}
 layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 shell-model = {path = "../shell-model"}

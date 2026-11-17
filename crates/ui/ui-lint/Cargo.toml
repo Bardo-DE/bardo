@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-ui-core = {path = "../ui-core"}
+base-words = { path = "../../base/base-words" }
 ui-style = {path = "../ui-style", default-features = false}
 cssparser = { workspace = true }
 

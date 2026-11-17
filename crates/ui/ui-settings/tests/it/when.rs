@@ -1,6 +1,6 @@
 //! A list cell's modified time: today with the time, yesterday, a short date.
 
-use ui_settings::{ResolvedHours, UnixSecs, UtcOffset, list_date};
+use settings_types::{ResolvedHours, UnixSecs, UtcOffset, list_date};
 
 /// 2026-10-22 14:05:00 UTC.
 const NOW: i64 = 1_792_677_900;

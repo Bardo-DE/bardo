@@ -35,12 +35,12 @@ use settings_app_system::spaces::SpacesLink;
 use settings_app_system::updates::{FakeLeaves, FakeUpdates};
 use settings_app_testkit::{Scratch, seed_schemas};
 use settings_app_ui::{App, Env, FirstRunApp, Homes, Opening};
+use settings_dbus::AnyOwner;
+use settings_types::schema::Schema;
 use std::sync::Arc;
 use ui_components::prelude::{Scheme, SystemPrefs};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use ui_settings::SystemPrefsSource;
-use ui_settings::live::AnyOwner;
-use ui_settings::schema::Schema;
 use wifi::Wifi;
 
 pub const TMP: &str = env!("CARGO_TARGET_TMPDIR");
@@ -389,8 +389,7 @@ impl Sandbox {
 
     /// Installs `schema` beside the real ones, as a program's package would.
     pub fn install_schema(&self, schema: &Schema) {
-        schema
-            .write_to(&self.scratch.join("data/bardo/settings"))
+        settings_store_fs::write_schema(schema, &self.scratch.join("data/bardo/settings"))
             .expect("write the schema");
     }
 

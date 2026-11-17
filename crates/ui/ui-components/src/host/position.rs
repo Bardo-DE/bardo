@@ -4,7 +4,7 @@
 //! The app renders `data-edit-node="{key}"` on every paragraph and object it can address (mailo's
 //! `data-n`), so a position is in the app's vocabulary, not the renderer's.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The attribute that makes an element addressable; its value is the element's [`EditNode`].
 pub const EDIT_NODE_ATTR: &str = "data-edit-node";
@@ -72,7 +72,7 @@ impl EditKind {
 #[cfg(test)]
 mod tests {
     use super::EditKind;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn a_kind_round_trips_through_its_slug() {

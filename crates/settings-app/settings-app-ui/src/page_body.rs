@@ -24,7 +24,7 @@ use crate::updates::SoftwareUpdatePane;
 use crate::wifi::WifiPane;
 use dioxus::prelude::*;
 use settings_app_model::{Block, LivePane, PageModel, advanced_sections, blocks};
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// The blocks of `page`, then a drill-in row for each advanced section; a press on a row hands
 /// the section's title to `on_open`.

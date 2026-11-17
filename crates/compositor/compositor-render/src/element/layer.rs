@@ -7,12 +7,12 @@ use crate::pass::BlurLook;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
 use crate::texture_book::TextureBook;
+use base_ids::Fraction;
 use compositor_core::LayerKey;
 use compositor_core::geometry::LogicalRect;
 use compositor_core::layer::BlurStrength;
 use smithay::backend::renderer::element::Kind;
 use smithay::backend::renderer::element::surface::render_elements_from_surface_tree;
-use ui_core::vocab::Fraction;
 
 /// `layer`'s surface tree at `area` (global logical) on `view`, front first, with its blur v0
 /// behind it when it asked for one, as strong as `strength` says. Empty when the book has no

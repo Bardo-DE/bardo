@@ -25,7 +25,7 @@ account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-daemon-support = {default-features = false, features = ["watch"], path = "../../accounts/account-daemon-support"}
+account-daemon-support = {path = "../../accounts/account-daemon-support"}
 base-fs = {path = "../../base/base-fs"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 account-callers = {path = "../../accounts/account-callers"}
@@ -49,7 +49,8 @@ inference-router = {path = "../inference-router"}
 # check, the audit trail and the stages of a pipeline.
 inference-turns = {path = "../inference-turns"}
 inference-bridge = {path = "../inference-bridge"}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 iso_currency = { workspace = true, features = ["with-serde"] }
@@ -93,7 +94,7 @@ zbus = {workspace = true, features = ["tokio"]}
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 futures-util = { workspace = true, features = ["std"] }
-ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 # The client side the tests drive inferd through.
 account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}

@@ -36,11 +36,12 @@ memory-service = {path = "../memory-service"}
 memory-infer = {path = "../memory-infer"}
 memory-tidy = {path = "../memory-tidy"}
 memory-settings = {path = "../memory-settings"}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 memory-watch = {path = "../memory-watch"}
 memory-dbus = {path = "../memory-dbus"}
 account-core = {path = "../../accounts/account-core"}
 account-callers = {features = ["file"], path = "../../accounts/account-callers"}
-account-daemon-support = {path = "../../accounts/account-daemon-support"}
 account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}

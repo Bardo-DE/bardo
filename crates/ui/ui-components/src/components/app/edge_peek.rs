@@ -11,8 +11,8 @@
 
 use crate::components::app::hover_open::use_hover_open;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::hover_intent::HoverProfile;
 use ui_motion::presence::spring::use_spring_presence;

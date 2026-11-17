@@ -106,7 +106,7 @@ fn a_user_kit_is_last_whatever_the_argument_order() {
 
 #[test]
 fn the_user_rank_sorts_after_every_other_rank() {
-    use ui_core::word::Word;
+    use base_words::Word;
     let others = KitRank::ALL.iter().filter(|rank| **rank != KitRank::User);
     for rank in others {
         assert!(*rank < KitRank::User, "{}", rank.slug());

@@ -2,7 +2,7 @@
 
 use super::FormatKind;
 use super::family::Family;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// An office document format.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

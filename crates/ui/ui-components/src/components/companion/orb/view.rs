@@ -4,9 +4,9 @@ use super::model::OrbSize;
 use crate::components::companion::outcome::model::Outcome;
 use crate::components::companion::outcome::view::OutcomeMark;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::CompanionPresence;
-use ui_core::word::Word;
 
 /// The companion's presence as an orb: a wrapper over the voice orb whose look follows the
 /// presence. `common.aria_label` defaults to the presence's words ("Assistant is working").

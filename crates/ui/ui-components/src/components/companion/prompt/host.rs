@@ -1,7 +1,7 @@
 //! Where a summon in a field of a given kind puts the prompt.
 
 use crate::components::fields::text_field_model::FieldKind;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// Where a summon in a field of this kind puts the prompt.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

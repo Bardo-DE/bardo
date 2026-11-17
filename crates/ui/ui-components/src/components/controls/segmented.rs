@@ -26,9 +26,9 @@ use crate::focus::press_focus::on_click;
 use crate::host::narrow;
 use crate::root::common::Common;
 use crate::stack::roving::{Rove, Roving};
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::{Availability, Check, Shortcut, selected_word};
-use ui_core::word::Word;
 use ui_motion::detail::touch::Touch;
 use ui_motion::{
     spring_spec::{SpringResponse, SpringSpec},

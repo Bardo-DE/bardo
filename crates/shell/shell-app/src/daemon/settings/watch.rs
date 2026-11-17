@@ -2,10 +2,10 @@
 //! thread, which publishes it.
 
 use layer_shell_host::HostHandle;
+use settings_store_fs::{Store, WatchState};
 use shell_settings::ShellFile;
 use tokio::runtime::Runtime;
 use ui_blitz::TokioSpawner;
-use ui_settings::{Store, WatchState};
 
 use super::store::report_shell;
 use crate::daemon::msg::ShellMsg;

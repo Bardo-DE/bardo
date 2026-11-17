@@ -7,9 +7,10 @@ use ui_style::appearance::accent::Accent;
 
 use ui_style::appearance::motion::Motion;
 
+use settings_store::Loaded;
 use std::path::Path;
 use support::Scratch;
-use ui_settings::{AppearanceFile, IconStyle, Loaded};
+use ui_settings::{AppearanceFile, IconStyle};
 use ui_style::appearance::theme::Theme;
 use ui_style::appearance::transparency::Transparency;
 

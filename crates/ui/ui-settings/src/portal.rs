@@ -7,8 +7,8 @@
 //! A desktop without the portal, or a build for a platform or feature set that has neither
 //! (`portal/absent.rs`), simply answers [`ui_components::prelude::SystemPrefs::default`].
 
-use crate::latest::{self, Receiver};
-use ui_core::spawner::Spawner;
+use base_spawn::Spawner;
+use settings_store::latest::{self, Receiver};
 use ui_style::appearance::system::Contrast;
 use ui_style::appearance::system::SystemPrefs;
 use ui_style::appearance::theme::Scheme;

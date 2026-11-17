@@ -1,12 +1,12 @@
 //! Reading rows when the module moves between the listing and the values.
 
 use super::read::{Rows, read};
-use std::cell::Cell;
-use std::collections::BTreeMap;
-use ui_settings::live::LiveError;
-use ui_settings::schema::{
+use settings_dbus::LiveError;
+use settings_types::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
 };
+use std::cell::Cell;
+use std::collections::BTreeMap;
 
 fn row(name: &str) -> KeySpec {
     KeySpec {

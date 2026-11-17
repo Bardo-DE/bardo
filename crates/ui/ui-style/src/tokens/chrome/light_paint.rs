@@ -12,7 +12,7 @@ use super::light_hue::Light;
 use crate::appearance::theme::Scheme;
 use crate::tokens::hex::Hex;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The three colours of one light in one scheme.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -142,7 +142,7 @@ mod tests {
     use crate::appearance::theme::Scheme;
     use crate::tokens::chrome::light_hue::Light;
     use crate::tokens::token::{Token, TokenScope};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn each_token_writes_its_property_and_the_macos_value() {

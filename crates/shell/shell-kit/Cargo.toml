@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-words = { path = "../../base/base-words" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-core = {path = "../../ui/ui-core"}
@@ -25,7 +26,6 @@ ui-blitz = {path = "../../ui/ui-blitz"}
 ui-core = {path = "../../ui/ui-core", features = ["testing"]}
 ui-harness = {path = "../../ui/ui-harness"}
 ui-lint = {path = "../../ui/ui-lint"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
 
 [lints]
 workspace = true

@@ -10,7 +10,7 @@
 use crate::appearance::theme::Scheme;
 use crate::tokens::elevation_layers::layers_css;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One shadow token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

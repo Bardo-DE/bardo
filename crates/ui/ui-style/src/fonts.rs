@@ -274,7 +274,7 @@ pub static FACES: &[Face] = &[
 mod tests {
     use super::{FACES, FaceStyle, Subset};
     use crate::tokens::type_scale::Family;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn every_family_ships_both_subsets() {

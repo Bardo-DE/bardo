@@ -1,4 +1,4 @@
-//! `shell/settings.toml`, whole (design/22 §2): a [`SettingsDoc`] that `ui_settings::Store` reads
+//! `shell/settings.toml`, whole (design/22 §2): a [`SettingsDoc`] that `settings_store_fs::Store` reads
 //! leniently (a bad value costs its own key), writes atomically and watches.
 //!
 //! A key this build does not know (a removed setting included) is reported in `Loaded::unknown` and
@@ -6,7 +6,8 @@
 //! watching.
 
 use serde::{Deserialize, Serialize};
-use ui_settings::{AppName, FileName, Format, SettingsDoc};
+use settings_store::{FileName, Format, SettingsDoc};
+use settings_types::AppName;
 
 use crate::bar::BarSettings;
 use crate::calendar::CalendarSettings;

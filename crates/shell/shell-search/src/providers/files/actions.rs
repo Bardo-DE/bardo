@@ -11,12 +11,12 @@
 use anyview_core::{
     FileAction, FormatKind, Mime as CoreMime, Reach, actions_for, kind_of_mime, reach,
 };
+use base_words::Word;
 use shell_launcher::{
     Action, ActionId, ActionKeys, Activation, FileFacts, Generation, Mime, OpenTarget, OwnAction,
     ViewerOpen,
 };
 use ui_core::standard_action::StandardAction;
-use ui_core::word::Word;
 
 /// What the launcher does for one action on one file.
 #[derive(Debug, Clone, PartialEq, Eq)]

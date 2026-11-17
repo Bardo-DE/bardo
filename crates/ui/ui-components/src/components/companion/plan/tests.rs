@@ -1,5 +1,5 @@
 use super::model::{PlanFinish, StopWhy};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// Every member of `T` parses back from its own slug, and no two share one.
 fn round_trips<T: Word + std::fmt::Debug>() {

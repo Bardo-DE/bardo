@@ -9,7 +9,7 @@ mod config;
 mod daemon;
 mod keymap;
 
-pub use config::{DEBOUNCE, FILE_NAME, spawn, system};
+pub use config::{FILE_NAME, spawn, system};
 pub use key_remap_core::{
     Backoff, ChordError, ConfigLayer, ConfigSource, DEFAULTS_TOML, Decision, DeviceId, Edge,
     Escape, Held, Hold, KEYS_DOWN_BYTES, Key, KeysDown, Layout, LayoutOverrides, Logical,

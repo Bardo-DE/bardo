@@ -6,8 +6,8 @@
 
 use crate::components::content::level_glyph::glyph::LevelGlyphView;
 use crate::components::content::level_glyph::vocab::LevelGlyph;
+use base_ids::Fraction;
 use dioxus::prelude::*;
-use ui_core::vocab::Fraction;
 use ui_style::icon::render::IconSize;
 
 /// How many squares the discrete look draws: a volume key's sixteen steps.
@@ -164,7 +164,7 @@ fn segments(drawn: &Drawn) -> Element {
 #[cfg(test)]
 mod tests {
     use super::{Shape, filled};
-    use ui_core::vocab::Fraction;
+    use base_ids::Fraction;
 
     #[test]
     fn a_level_fills_the_nearest_sixteenth() {

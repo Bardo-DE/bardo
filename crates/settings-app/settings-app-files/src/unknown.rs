@@ -1,7 +1,7 @@
 //! Keys a file sets that no schema describes.
 
-use ui_settings::UnknownKey;
-use ui_settings::schema::{ForeignTables, KeySpec};
+use settings_store::UnknownKey;
+use settings_types::schema::{ForeignTables, KeySpec};
 
 /// A leaf of a TOML table with its key path.
 fn leaves(table: &toml::Table, prefix: &[String]) -> Vec<Vec<String>> {
@@ -57,8 +57,8 @@ pub(crate) fn unknown_keys(
 #[cfg(test)]
 mod tests {
     use super::unknown_keys;
-    use ui_settings::UnknownKey;
-    use ui_settings::schema::ForeignTables;
+    use settings_store::UnknownKey;
+    use settings_types::schema::ForeignTables;
 
     fn tables(names: &[&str]) -> ForeignTables {
         ForeignTables(names.iter().map(|n| (*n).to_owned()).collect())

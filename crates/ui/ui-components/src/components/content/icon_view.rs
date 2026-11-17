@@ -7,8 +7,8 @@
 
 use crate::components::content::icon_source::{ExternalIcon, IconSource};
 use crate::components::content::status::family::{StatusGlyph, StatusState};
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::icon::family::PlateFamily;
 use ui_style::icon::plate_tint::{PlateTint, tint_style};
 use ui_style::icon::render::{Glyph, IconSize};

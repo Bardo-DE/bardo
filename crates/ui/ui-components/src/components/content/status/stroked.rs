@@ -3,9 +3,9 @@
 //! as `part`, with Lucide's 2 unit stroke, round caps and joins, and the slash drawn on by dash.
 
 use super::part::{Part, Pen, Show, shape_child};
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
 
 /// The slash's length on the 24 grid (`M2 2l20 20`), for its dash.
 const SLASH_LENGTH: f32 = 28.29;

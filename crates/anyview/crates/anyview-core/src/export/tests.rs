@@ -6,8 +6,8 @@ use crate::source::FilePath;
 use crate::units::{
     Dpi, PageIndex, PageRange, PageSelection, Percent, Permille, PixelLen, Quality, TimeRange,
 };
+use base_words::Word;
 use std::fmt::Debug;
-use ui_core::word::Word;
 
 /// Every implementation honours the same contract: the sheet lists every kind, a kind's default
 /// is that kind, and the default's extension is stable.

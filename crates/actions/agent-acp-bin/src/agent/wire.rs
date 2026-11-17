@@ -26,7 +26,9 @@ pub struct Allowed {
 
 /// Reads the setting and `agents.toml`. Off, or no file, or a file that is wrong, is a fault.
 pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
-    let loaded = places.locator().read(AgentSettings::default());
+    let loaded = places
+        .locator()
+        .read(AgentSettings::default(), action_settings::read);
     if !loaded.value.agents {
         return Err(AgentFault::Permit(
             "agent.acp.agents is off: no agent program starts".to_owned(),

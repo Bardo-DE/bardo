@@ -59,11 +59,11 @@ use crate::components::overlays::sheet_attach::Attach;
 use crate::components::overlays::sheet_width::SheetWidth;
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use std::time::Duration;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::machine::use_machine;
 use ui_motion::presence::{

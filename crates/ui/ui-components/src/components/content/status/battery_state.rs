@@ -1,7 +1,7 @@
 //! The battery item's state and what each change of it means (design/26-DETAILS.md 5.1.3).
 
+use base_ids::Fraction;
 use serde::{Deserialize, Serialize};
-use ui_core::vocab::Fraction;
 use ui_motion::detail::{detailed::Detailed, moment::Moment};
 
 /// Where the power comes from.
@@ -128,7 +128,7 @@ impl Detailed for BatteryState {
 #[cfg(test)]
 mod tests {
     use super::{BatteryPower, BatteryState, LowAt, STEPS, Tone};
-    use ui_core::vocab::Fraction;
+    use base_ids::Fraction;
 
     #[test]
     fn the_fill_is_drawn_in_steps_and_any_charge_shows() {

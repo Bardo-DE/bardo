@@ -5,8 +5,8 @@
 
 use crate::components::controls::scrubber_model::ScrubPose;
 use crate::components::controls::track::fraction_at;
+use base_ids::Fraction;
 use ui_core::geometry::units::{Px, Rect};
-use ui_core::vocab::Fraction;
 
 /// A key's step: a fiftieth of the length, a tenth with Shift.
 const SMALL: u16 = 20;

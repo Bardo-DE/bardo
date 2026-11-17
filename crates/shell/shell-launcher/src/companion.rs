@@ -34,7 +34,7 @@ pub enum LauncherMode {
     Ord,
     Serialize,
     Deserialize,
-    ui_core::word::Word,
+    base_words::Word,
 )]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]
@@ -67,7 +67,7 @@ pub enum RunControl {
     Ord,
     Serialize,
     Deserialize,
-    ui_core::word::Word,
+    base_words::Word,
 )]
 #[serde(rename_all = "snake_case")]
 #[word(case = snake)]

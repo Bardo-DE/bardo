@@ -1,7 +1,7 @@
 //! Delimited tables.
 
 use super::family::Family;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The character that separates a table's cells.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

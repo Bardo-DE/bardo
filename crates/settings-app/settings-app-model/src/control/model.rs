@@ -4,7 +4,7 @@
 use crate::hot_corners::{HOT_CORNERS_CONTROL, corner_admits};
 use crate::range::Range;
 use crate::rows::Columns;
-use ui_settings::schema::{Control as Named, KeyKind, KeySpec, STANDARD};
+use settings_types::schema::{Control as Named, KeyKind, KeySpec, STANDARD};
 
 /// A kind quire has no component for: shown read-only with an "Edit in file" note.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

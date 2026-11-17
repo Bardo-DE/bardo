@@ -11,13 +11,14 @@ use crate::components::controls::track::fraction_at;
 use crate::host::measure::client_rect;
 use crate::host::narrow;
 use crate::root::common::Common;
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::core::queue_effect;
 use dioxus::html::geometry::ClientPoint;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px, Rect};
-use ui_core::vocab::{Availability, Fraction, PressPhase};
-use ui_core::word::Word;
+use ui_core::vocab::{Availability, PressPhase};
 use ui_motion::detail::touch::{Contact, Touch};
 use ui_motion::drag::{DragPhase, use_drag};
 use ui_motion::{

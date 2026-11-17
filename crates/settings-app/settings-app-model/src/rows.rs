@@ -2,8 +2,8 @@
 //! every row a line of text per column, checked against the column's kind.
 
 use regex::Regex;
+use settings_types::schema::{Column, ColumnKind};
 use std::sync::Arc;
-use ui_settings::schema::{Column, ColumnKind};
 
 /// The columns of a rows key, in the order the schema gives them, with each pattern compiled
 /// once here and not each time a cell is checked.
@@ -131,7 +131,7 @@ impl Columns {
 #[cfg(test)]
 mod tests {
     use super::Columns;
-    use ui_settings::schema::{Column, ColumnKind, ColumnName, Label};
+    use settings_types::schema::{Column, ColumnKind, ColumnName, Label};
 
     fn column(name: &str, kind: ColumnKind) -> Column {
         Column {

@@ -1,6 +1,6 @@
 //! Which rows of inferd's module the picker reads with their value.
 
-use ui_settings::schema::KeyKind;
+use settings_types::schema::KeyKind;
 
 /// The rows whose value the picker reads: its menus, and the lists of choices from a menu (the
 /// models Automatic chooses among).

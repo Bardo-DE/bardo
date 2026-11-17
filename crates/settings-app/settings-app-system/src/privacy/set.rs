@@ -3,7 +3,7 @@
 use crate::bus::plain;
 use crate::modules::Module;
 use settings_app_model::{ALLOWED_WORD, DENIED_WORD};
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// Allows or denies at `path`; the module's own words when it refuses.
 pub async fn set(client: &Module, path: &KeyPath, to: bool) -> Result<(), String> {

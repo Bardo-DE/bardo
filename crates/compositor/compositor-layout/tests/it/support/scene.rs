@@ -1,6 +1,7 @@
 //! Spec builders shared by the layout tests.
 
 use account_core::{ClaimedId, SpaceId};
+use base_ids::Fraction;
 use compositor_core::app::AppKey;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::output::{EdidFacts, EdidSerial};
@@ -11,7 +12,6 @@ use compositor_layout::{
     WindowSpec,
 };
 use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 
 pub fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
     LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })

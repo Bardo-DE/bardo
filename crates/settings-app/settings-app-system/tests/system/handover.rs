@@ -3,9 +3,9 @@
 //! A call made by name from then on reaches the second program; a call made to the owner that was
 //! found reaches the first.
 
+use settings_dbus::{OwnerAnswer, OwnerCheck, SenderName, Verdict};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use ui_settings::live::{OwnerAnswer, OwnerCheck, SenderName, Verdict};
 use zbus::Connection;
 
 /// The check, and the switch that arms it. It hands the name over once, the first time it is asked

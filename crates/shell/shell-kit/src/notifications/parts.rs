@@ -4,9 +4,9 @@
 
 use dioxus::prelude::*;
 use ui_components::base::press::Press;
-use ui_components::base::word::Word;
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::content::text_runs::TextLine;
+use ui_components::words::Word;
 
 /// The app a notification came from: its icon (drawn at `--notifications-icon`, 32) and its
 /// name (read to assistive technology before the summary).

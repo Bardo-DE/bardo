@@ -18,7 +18,11 @@ fn main() -> ExitCode {
         eprintln!("usage: write_schema --write-schema <dir>");
         return ExitCode::FAILURE;
     };
-    match extensions_schema().write_part_to(&PathBuf::from(dir), "extensions") {
+    match settings_store_fs::write_schema_part(
+        &extensions_schema(),
+        &PathBuf::from(dir),
+        "extensions",
+    ) {
         Ok(_) => ExitCode::SUCCESS,
         Err(error) => {
             eprintln!("write_schema: {error}");

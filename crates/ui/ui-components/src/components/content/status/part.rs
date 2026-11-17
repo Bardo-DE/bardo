@@ -4,9 +4,9 @@
 //! recomputed per frame only while they move (design/26-DETAILS.md section 3.2). Every part is
 //! filled in the ink, no stroke (design/08-ICONS.md section 1.2).
 
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
 use ui_style::icon::posed::Thousandths;
 use ui_style::icon::shape::Shape;
 use ui_style::icon::slash::slash_mark;

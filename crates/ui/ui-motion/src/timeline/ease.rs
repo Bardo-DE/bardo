@@ -2,8 +2,8 @@
 //! move `length` long (design/26-DETAILS.md section 3.2, "Why Rust tweens").
 
 use super::Timeline;
+use base_ids::Fraction;
 use std::time::Duration;
-use ui_core::vocab::Fraction;
 use ui_style::tokens::easing::Easing;
 
 /// A move `length` long along `easing`.
@@ -50,8 +50,8 @@ fn through(elapsed: Duration, length: Duration) -> Fraction {
 #[cfg(test)]
 mod tests {
     use super::{Ease, Eased, Timeline};
+    use base_ids::Fraction;
     use std::time::Duration;
-    use ui_core::vocab::Fraction;
     use ui_style::tokens::easing::Easing;
 
     const MS: fn(u64) -> Duration = Duration::from_millis;

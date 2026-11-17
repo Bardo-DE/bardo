@@ -1,6 +1,6 @@
 //! How one glyph gives way to the next (design/26-DETAILS.md section 3.2, A5).
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The morph's component sheet, appended to the stylesheet by the assembly in its cascade slot.
 pub const CSS: &str = include_str!("morph.css");

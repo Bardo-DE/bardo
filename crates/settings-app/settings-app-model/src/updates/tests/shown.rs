@@ -12,7 +12,7 @@ use crate::layout::{Block, blocks};
 use crate::page::PageSlug;
 use crate::page_kind::PageKind;
 use crate::page_traits::LivePane;
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 #[test]
 #[expect(
@@ -297,7 +297,7 @@ fn the_page_has_its_own_slug_label_and_place_and_draws_only_its_pane() {
         Page::Viewer,
         Page::Power,
     ];
-    let table = ui_settings::schema::PageTable::built_in();
+    let table = settings_types::schema::PageTable::built_in();
     order.sort_by(|a, b| crate::page::sidebar_order(&table, a, b));
     let slugs: Vec<String> = order.iter().map(|p| PageSlug::of(p).0).collect();
     assert_eq!(slugs, ["power", "software-update", "viewer", "app:zed"]);

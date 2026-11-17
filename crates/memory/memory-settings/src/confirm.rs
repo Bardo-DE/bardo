@@ -9,12 +9,16 @@
 //! and writes the file.
 
 use crate::MemorySettings;
-use crate::keys::{Rule, table};
+use crate::keys::table;
 use crate::loosen::{loose, loosenable, shipped_text};
-use crate::read::{Fallback, Loaded, Why};
 use memory_core::WaitingSetting;
 use serde::{Deserialize, Serialize};
+use settings_store::rules::Rule;
+use settings_store::{InvalidKey, Loaded};
 use std::collections::BTreeMap;
+
+/// What follows the value in the reason of a setting that waits for the person's confirmation.
+const WAITS: &str = " waits for you to confirm it in Settings";
 
 /// The file the confirmations live in, in memoryd's data directory.
 pub const CONFIRMED_FILE: &str = "confirmed-settings.toml";
@@ -31,7 +35,7 @@ pub enum ConfirmError {
         /// The key.
         key: String,
         /// Why the value is refused.
-        why: Why,
+        why: String,
     },
     /// The store could not be read as a table or written.
     #[error("confirmed-settings.toml: {0}")]
@@ -62,20 +66,18 @@ fn canonical(key: &str, value: &str) -> Result<String, ConfirmError> {
         .ok_or_else(unknown)?;
     match found.rule {
         Rule::Number { range, .. } => match value.trim().parse::<i64>() {
-            Err(_) => Err(bad(Why::NotANumber)),
+            Err(_) => Err(bad("not a whole number".to_owned())),
             Ok(n) if range.contains(&n) => Ok(n.to_string()),
-            Ok(_) => Err(bad(Why::OutOfRange {
-                min: *range.start(),
-                max: *range.end(),
-            })),
+            Ok(_) => Err(bad(format!("outside {}..={}", range.start(), range.end()))),
         },
         Rule::Word { words, .. } => {
             if words.contains(&value) {
                 Ok(value.to_owned())
             } else {
-                Err(bad(Why::NotAWord { words }))
+                Err(bad(format!("not one of {}", words.join(", "))))
             }
         }
+        Rule::Toggle { .. } => Err(unknown()),
     }
 }
 
@@ -125,43 +127,42 @@ impl Confirmations {
 /// `loaded` with each unconfirmed loosened value put back to the shipped value.
 ///
 /// Each value looser than the shipped default that `confirmed` does not hold is put back, and
-/// reported as [`Why::NotConfirmed`]. A value that is not looser needs nothing; a confirmation for
+/// reported in [`Loaded::invalid`] as waiting for the person. A value that is not looser needs nothing; a confirmation for
 /// a value the file no longer has is not used.
 #[must_use]
-pub fn gate(loaded: Loaded, confirmed: &Confirmations) -> Loaded {
+pub fn gate(loaded: Loaded<MemorySettings>, confirmed: &Confirmations) -> Loaded<MemorySettings> {
     let shipped = MemorySettings::default();
     let mut value = loaded.value;
-    let mut fallbacks = loaded.fallbacks;
+    let mut invalid = loaded.invalid;
     for l in loose(&loaded.value) {
         if !confirmed.holds(l.key, &l.now) {
             (l.restore)(&mut value, &shipped);
-            fallbacks.push(Fallback {
-                key: l.key.to_owned(),
-                why: Why::NotConfirmed { value: l.now },
+            invalid.push(InvalidKey {
+                path: l.key.to_owned(),
+                reason: format!("{}{WAITS}", l.now),
             });
         }
     }
     Loaded {
         value,
-        fallbacks,
-        unknown: loaded.unknown,
+        invalid,
+        ..loaded
     }
 }
 
 /// The values of `gated` (a read already put through [`gate`]) that wait for the person's
 /// confirmation, each with the shipped value in force meanwhile, in key order.
 #[must_use]
-pub fn waiting(gated: &Loaded) -> Vec<WaitingSetting> {
+pub fn waiting(gated: &Loaded<MemorySettings>) -> Vec<WaitingSetting> {
     let mut waiting: Vec<WaitingSetting> = gated
-        .fallbacks
+        .invalid
         .iter()
-        .filter_map(|f| match &f.why {
-            Why::NotConfirmed { value } => Some(WaitingSetting {
-                key: f.key.clone(),
-                waiting: value.clone(),
-                shipped: shipped_text(&f.key)?,
-            }),
-            _ => None,
+        .filter_map(|f| {
+            Some(WaitingSetting {
+                key: f.path.clone(),
+                waiting: f.reason.strip_suffix(WAITS)?.to_owned(),
+                shipped: shipped_text(&f.path)?,
+            })
         })
         .collect();
     waiting.sort_by(|a, b| a.key.cmp(&b.key));

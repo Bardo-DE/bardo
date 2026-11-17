@@ -9,7 +9,7 @@
 use crate::appearance::theme::Scheme;
 use crate::emit::{attr_selector, declaration, rule};
 use crate::tokens::{colour::ColourToken, name::VarName};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// Each paper token a frame ground redirects, and the frame variable it reads instead: the text
 /// inks to the frame inks, the hover fill (`--surface`, Tool's hover) to `--f-pill-hover`, the

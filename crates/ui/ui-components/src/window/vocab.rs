@@ -4,7 +4,7 @@
 //! Closed sets, so a host that is not ui-blitz (layer-shell-host's `SurfaceHandle`) maps each one
 //! exhaustively.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The edge or corner an interactive resize grabs (the xdg-shell `resize_edge` set, winit's
 /// `ResizeDirection`).

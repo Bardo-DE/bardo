@@ -12,7 +12,7 @@
 use crate::appearance::{system::Contrast, theme::Scheme};
 use crate::tokens::hex::Hex;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One of the thirteen system hues, in the order the HIG lists them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
@@ -123,7 +123,7 @@ fn tag_css(token: SystemHue, scope: TokenScope) -> CssValue {
 mod tests {
     use super::SystemHue;
     use crate::appearance::{system::Contrast, theme::Scheme};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn the_thirteen_come_in_the_order_the_guidelines_list_them() {

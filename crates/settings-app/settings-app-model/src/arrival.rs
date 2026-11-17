@@ -8,8 +8,8 @@ use crate::page::PageSlug;
 use crate::page_kind::PageKind;
 use account_core::AccountId;
 use base_ids::object_segment;
-use ui_settings::schema::PageTable;
-use ui_settings::target::{ExtensionId, SettingsTarget};
+use settings_types::schema::PageTable;
+use settings_types::target::{ExtensionId, SettingsTarget};
 
 /// What the window does for a target.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -85,7 +85,7 @@ mod tests {
     use crate::accounts::{AccountSegment, AccountTarget};
     use crate::catalogue::Catalogue;
     use crate::page::PageSlug;
-    use ui_settings::target::{ExtensionId, SettingsTarget};
+    use settings_types::target::{ExtensionId, SettingsTarget};
 
     fn target(text: &str) -> SettingsTarget {
         text.parse().expect("a target")

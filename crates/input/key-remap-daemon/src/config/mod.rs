@@ -11,4 +11,4 @@ mod watch;
 
 pub use load::{FILE_NAME, system};
 pub use vendor::{VENDOR_DIR, vendor};
-pub use watch::{DEBOUNCE, spawn, spawn_reading, spawn_vendor};
+pub use watch::{spawn, spawn_reading, spawn_vendor};

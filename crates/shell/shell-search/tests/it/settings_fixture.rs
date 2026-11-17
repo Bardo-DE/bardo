@@ -11,10 +11,10 @@
 
 use std::path::PathBuf;
 
+use settings_types::schema::PageId;
+use settings_types::target::SettingsTarget;
 use shell_launcher::{Activation, Cancel, Choice, Provider, Query, VecSink};
 use shell_search::providers::SettingsProvider;
-use ui_settings::schema::PageId;
-use ui_settings::target::SettingsTarget;
 
 fn fixture_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/settings")

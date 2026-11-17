@@ -4,7 +4,7 @@
 use super::flow_tests::{ready_with, spec, state_of};
 use super::*;
 use base_secret::SecretText;
-use ui_settings::schema::{KeyKind, KeyPath, KeySpec};
+use settings_types::schema::{KeyKind, KeyPath, KeySpec};
 
 fn google_keys() -> Vec<KeySpec> {
     vec![

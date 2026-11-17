@@ -5,8 +5,8 @@
 
 use std::process::ExitCode;
 
+use settings_store_fs::maybe_write_schema;
 use ui_settings::quire_schema;
-use ui_settings::schema::maybe_write_schema;
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().collect();

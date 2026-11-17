@@ -5,6 +5,7 @@
 use crate::support;
 
 use account_core::SpaceId;
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalSize, SubPx};
 use compositor_core::{Cause, MinimiseTarget, SwipeRelease, WindowId};
 use compositor_layout::{Arrangement, SpaceTarget};
@@ -15,7 +16,6 @@ use desktop_protocols::vocab::{Emphasis, FrameMode};
 use std::collections::BTreeSet;
 use support::mc_entry::{arrangements, journeys};
 use support::{arranged, at, committed, drawn, look, output, placed, rect};
-use ui_core::vocab::Fraction;
 use ui_motion::velocity::Velocity;
 use ui_style::appearance::motion::MotionLevel;
 

@@ -18,7 +18,9 @@ action-settings = {path = "../../actions/action-settings"}
 ui-extensions = {path = "../../ui/ui-extensions"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 freedesktop-icons = { workspace = true }
-ui-settings = {path = "../../ui/ui-settings"}
+settings-store = { path = "../../settings/settings-store" }
+settings-types = { path = "../../settings/settings-types" }
+ui-settings = { path = "../../ui/ui-settings" }
 serde_json = { workspace = true }
 key-remap-client = {path = "../../input/key-remap-client"}
 thiserror = { workspace = true }

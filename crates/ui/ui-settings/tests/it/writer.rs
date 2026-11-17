@@ -2,8 +2,9 @@
 
 use crate::support::{Scratch, names};
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::KeyPath;
-use ui_settings::{Edit, FileName, Format, SettingsDoc, SettingsError, SettingsWriter};
+use settings_store::{Edit, FileName, Format, SettingsDoc};
+use settings_store_fs::{SettingsError, SettingsWriter};
+use settings_types::schema::KeyPath;
 
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(default)]

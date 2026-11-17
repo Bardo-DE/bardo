@@ -2,7 +2,7 @@
 
 use crate::bus::plain;
 use crate::modules::Module;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// Sets the row at `path` to `word`; the module answers when it has put it in force.
 pub async fn set(client: &Module, path: &KeyPath, word: &str) -> Result<(), String> {

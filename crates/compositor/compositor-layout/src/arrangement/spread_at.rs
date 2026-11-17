@@ -1,8 +1,8 @@
 //! The windows part-way into Mission Control: what the fingers show while they are still down.
 
 use super::{Arrangement, WindowTarget};
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
-use ui_core::vocab::Fraction;
 
 /// A full opening, in thousandths.
 const OPEN: i64 = 1000;
@@ -16,7 +16,7 @@ impl Arrangement {
     ///
     /// ```
     /// use compositor_layout::Arrangement;
-    /// use ui_core::vocab::Fraction;
+    /// use base_ids::Fraction;
     ///
     /// let none = Arrangement::default();
     /// assert_eq!(none.spread_at(Fraction(500)), Arrangement::default());

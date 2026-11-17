@@ -1,9 +1,9 @@
 //! What a confirmation shows and what the person can answer.
 
+use base_words::Word;
 use ui_components::components::companion::mark::AppMark;
 use ui_components::components::fields::fact_list::Fact;
 use ui_core::vocab::EffectMark;
-use ui_core::word::Word;
 
 /// What the confirmation says about what the companion read.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

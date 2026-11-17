@@ -4,20 +4,19 @@
 use crate::files::CONFIG_CAP;
 use base_fs::atomic::AtomicWrite;
 use base_fs::read_text_capped;
-use base_xdg::Xdg;
 use memory_core::WaitingSetting;
 use memory_settings::{
-    ConfirmError, Confirmations, Fallback, Loaded, MemorySettings, SETTINGS_FILE, Why, gate, read,
-    waiting,
+    ConfirmError, Confirmations, MemorySettings, SETTINGS_FILE, gate, read, waiting,
 };
+use settings_store::{InvalidKey, Loaded};
 use std::collections::BTreeMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 /// The configuration directories, in order of precedence, and the store of the person's
 /// confirmations (ALM-16) that gates what a read lets through.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Locator {
-    dirs: Vec<PathBuf>,
+    config: settings_store_fs::Locator,
     confirmations: Option<PathBuf>,
 }
 
@@ -25,14 +24,8 @@ impl Locator {
     /// The directories named by `XDG_CONFIG_HOME` (else `$HOME/.config`) and `XDG_CONFIG_DIRS`
     /// (else `/etc/xdg`).
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Self {
-        let xdg = Xdg::new(env);
         Self {
-            dirs: xdg
-                .config_home()
-                .into_iter()
-                .chain(xdg.config_dirs())
-                .map(|dir| dir.join("bardo"))
-                .collect(),
+            config: settings_store_fs::Locator::from_env(env, SETTINGS_FILE),
             confirmations: None,
         }
     }
@@ -48,30 +41,25 @@ impl Locator {
     /// The `bardo` folders of the configuration directories, the person's first.
     #[must_use]
     pub fn dirs(&self) -> &[PathBuf] {
-        &self.dirs
+        self.config.dirs()
     }
 
     /// The directory a live watch looks at: the person's own `bardo/memory` directory, where the
     /// Settings app writes.
     #[must_use]
     pub fn watch_dir(&self) -> Option<PathBuf> {
-        let person = self.dirs.first()?;
-        Path::new(SETTINGS_FILE)
-            .parent()
-            .map(|name| person.join(name))
+        self.config.watch_dir()
     }
 
-    /// The first settings file that can be read, as text.
-    fn text(&self) -> Option<String> {
-        self.dirs
-            .iter()
-            .map(|d| d.join(SETTINGS_FILE))
-            .find_map(|path| read_text_capped(&path, CONFIG_CAP).ok())
+    /// The directory and file name a live watch looks at, for [`settings_store_fs::LocatedWatch`].
+    #[must_use]
+    pub fn config(&self) -> &settings_store_fs::Locator {
+        &self.config
     }
 
     /// The confirmations as stored now; a store that is not there is nothing confirmed, a store
     /// that does not read is nothing confirmed and a report.
-    fn stored(&self) -> (Confirmations, Option<Fallback>) {
+    fn stored(&self) -> (Confirmations, Option<InvalidKey>) {
         let Some(file) = &self.confirmations else {
             return (Confirmations::default(), None);
         };
@@ -81,9 +69,9 @@ impl Locator {
                 Ok(found) => (found, None),
                 Err(e) => (
                     Confirmations::default(),
-                    Some(Fallback {
-                        key: file.display().to_string(),
-                        why: Why::NotToml(e.to_string()),
+                    Some(InvalidKey {
+                        path: file.display().to_string(),
+                        reason: format!("not TOML: {e}"),
                     }),
                 ),
             },
@@ -93,14 +81,11 @@ impl Locator {
     /// The file as it is now over `base`, with every value looser than the shipped default that
     /// the person has not confirmed put back; no file is `base`, nothing to report.
     #[must_use]
-    pub fn read(&self, base: MemorySettings) -> Loaded {
-        let loaded = match self.text() {
-            Some(text) => read(&text, base),
-            None => Loaded::of(base),
-        };
+    pub fn read(&self, base: MemorySettings) -> Loaded<MemorySettings> {
+        let loaded = self.config.read(base, read);
         let (confirmed, unreadable) = self.stored();
         let mut gated = gate(loaded, &confirmed);
-        gated.fallbacks.extend(unreadable);
+        gated.invalid.extend(unreadable);
         gated
     }
 

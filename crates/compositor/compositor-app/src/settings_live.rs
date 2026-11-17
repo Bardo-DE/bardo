@@ -16,12 +16,12 @@
 use crate::State;
 use crate::appearance::ThreadSpawner;
 use crate::config::{self, CasementDoc};
+use base_spawn::Spawner;
 use compositor_core::Event;
 use compositor_core::settings::{CasementSettings, KeyboardSettings, XkbNames};
 use compositor_wayland::seat_keymap::{self, KeymapStep};
 use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
 use std::path::Path;
-use ui_core::spawner::Spawner;
 
 /// `current` with the parts that follow the file taken from `doc`: the pointer's settings, the key
 /// repeat, the keyboard layout and the night light.
@@ -62,7 +62,7 @@ pub fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate::Start
     let mut watch = config::watch(home, &ThreadSpawner);
     ThreadSpawner.spawn(Box::pin(async move {
         while let Some(loaded) = watch.changed().await {
-            for line in loaded.diagnostics(<CasementDoc as ui_settings::SettingsDoc>::FILE) {
+            for line in loaded.diagnostics(<CasementDoc as settings_store::SettingsDoc>::FILE) {
                 tracing::warn!("{line}");
             }
             if sender.send(loaded.value).is_err() {

@@ -8,7 +8,7 @@
 //! surface and `Tooltip` read them, so a consumer gets them with no prop.
 
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One token of the shell type scale, each a tuned token a look or style sheet can move.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
@@ -79,7 +79,7 @@ pub enum ShellType {
 mod tests {
     use super::ShellType;
     use crate::tokens::token::{Token, TokenScope};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn every_input_reads_with_its_default_behind_it() {

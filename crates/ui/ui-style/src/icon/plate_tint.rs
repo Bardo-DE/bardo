@@ -14,8 +14,8 @@ use super::retint::{IconStyle, Tint, recolour};
 use super::tone_band::Tone;
 use crate::appearance::theme::Scheme;
 use crate::tokens::{hex::Hex, name::VarName};
+use base_words::Word;
 use std::fmt::Write as _;
-use ui_core::word::Word;
 
 /// How a plate is re-coloured: `icons.style` when it is not Colour.
 #[derive(Debug, Clone, Copy, PartialEq)]

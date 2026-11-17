@@ -5,8 +5,8 @@
 //! [`Motion`] is `appearance.motion`, [`MotionLevel`] is what a root is drawn at, and `Reduced`
 //! is macOS's "Reduce motion" with cross-fade transitions on.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// How much the window moves, as a person chooses it.
 ///

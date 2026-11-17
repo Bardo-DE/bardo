@@ -11,8 +11,8 @@ use crate::{
     anim::Anim,
     recipe::{Fill, Iteration, Recipe},
 };
+use base_words::Word;
 use std::fmt::Write as _;
-use ui_core::word::Word;
 use ui_style::appearance::motion::MotionLevel;
 use ui_style::emit::{attr_selector, property, rule};
 

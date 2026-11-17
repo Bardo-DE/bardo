@@ -6,12 +6,12 @@
 use crate::support::{Scratch, make_fifo, make_readable, make_unreadable, names};
 
 use serde::{Deserialize, Serialize};
+use settings_store_fs::{ConfigRoot, Saved};
+use settings_types::AppName;
+use settings_types::schema::Provided;
 use std::path::PathBuf;
 use std::sync::{Arc, Barrier};
-use ui_settings::schema::Provided;
-use ui_settings::{
-    AppName, AppearanceFile, ConfigRoot, Fixup, Origin, Saved, SpacesLoad, SpacesStorage,
-};
+use ui_settings::{AppearanceFile, Fixup, Origin, SpacesLoad, SpacesStorage};
 use ui_style::space::list::{Epoch, NoPark, Spaces, Today};
 
 const FILE: &str = "appearance.toml";

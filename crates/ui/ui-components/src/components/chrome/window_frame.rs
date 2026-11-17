@@ -19,11 +19,11 @@ use crate::window::grab::{Grab, GrabEffect};
 use crate::window::host::{WindowHost, use_window_host, use_window_state};
 use crate::window::timing::FrameTiming;
 use crate::window::vocab::Zoom;
+use base_words::Word;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ui_core::geometry::units::{Point, Px};
 use ui_core::vocab::activity_word;
-use ui_core::word::Word;
 
 /// Where a titlebar's title sits when the bar also carries a leading or trailing control.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

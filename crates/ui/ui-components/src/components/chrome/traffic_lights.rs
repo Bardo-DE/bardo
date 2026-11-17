@@ -18,10 +18,10 @@ use crate::window::hold::{Hold, HoldIn, HoldOut, HoldTiming, Wait};
 use crate::window::host::{WindowHost, use_window_host, use_window_state};
 use crate::window::timing::FrameTiming;
 use crate::window::vocab::{WindowTile, Zoom};
+use base_words::Word;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
 use ui_core::vocab::{Availability, aria_word};
-use ui_core::word::Word;
 use ui_motion::machine::use_machine;
 use ui_style::icon::Icon;
 

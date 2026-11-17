@@ -1,8 +1,8 @@
 //! Trackpad gesture settings (`gestures.*`): the multi-finger swipes that switch Spaces and
 //! open Mission Control (03 section 4.2; System Settings, Trackpad, More Gestures).
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// How many fingers a swipe takes to do something, or that it does nothing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

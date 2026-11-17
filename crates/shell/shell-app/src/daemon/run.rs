@@ -9,6 +9,7 @@ use std::process::ExitCode;
 use std::time::{Duration, Instant};
 
 use layer_shell_host::{Host, HostConfig, HostHandle};
+use settings_store_fs::Store;
 use shell_model::desktop::{DesktopView, HeldMods};
 use shell_model::locker::LockPhase;
 use shell_services::env::Dirs;
@@ -21,7 +22,6 @@ use shell_ui_kit::services::{Services, Wiring};
 use shell_ui_kit::settings::SettingsFeed;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
-use ui_settings::Store;
 
 use super::events::{Shell, handle};
 use super::msg::ShellMsg;

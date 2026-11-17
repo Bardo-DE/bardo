@@ -41,6 +41,7 @@ rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "pr
 proptest = { workspace = true }
 
 [dev-dependencies]
+base-ids = { path = "../../base/base-ids" }
 wayland-client = { workspace = true }
 tempfile = { workspace = true }
 

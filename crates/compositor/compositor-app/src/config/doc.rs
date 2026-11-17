@@ -7,8 +7,10 @@ use super::sections::{
     XwaylandSection,
 };
 use serde::{Deserialize, Serialize};
+use settings_store::{FileName, Format, SettingsDoc};
+use settings_store_fs::{ConfigRoot, Store, Watch};
+use settings_types::AppName;
 use std::path::Path;
-use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store, Watch};
 
 /// `compositor/settings.toml`: one section per `CasementSettings` part. A key it does not read
 /// is reported on load and dropped on save (ui-settings).
@@ -85,9 +87,6 @@ pub(crate) fn store(home: Option<&Path>) -> Store {
 
 /// A watch on `home`'s document: every settled change of the file arrives whole (ui-settings,
 /// debounced). It runs as a task on `spawn`.
-pub(crate) fn watch(
-    home: Option<&Path>,
-    spawn: &dyn ui_core::spawner::Spawner,
-) -> Watch<CasementDoc> {
+pub(crate) fn watch(home: Option<&Path>, spawn: &dyn base_spawn::Spawner) -> Watch<CasementDoc> {
     store(home).watch::<CasementDoc>(spawn)
 }

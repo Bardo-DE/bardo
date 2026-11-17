@@ -12,10 +12,10 @@ use dioxus::prelude::*;
 )]
 use settings_app_model::external::toml;
 use settings_app_model::word_label;
+use settings_types::schema::WordLabels;
 use ui_components::components::controls::radio_group::Arrangement;
 use ui_components::prelude::*;
 use ui_components::style::icon::render::IconPx;
-use ui_settings::schema::WordLabels;
 
 /// The order the choices are drawn in: light, dark, then the one that follows the desktop.
 const ORDER: [&str; 3] = ["light", "dark", "system"];

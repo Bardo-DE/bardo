@@ -3,7 +3,7 @@
 use super::choice::ExportChoice;
 use super::extension::ExportExtension;
 use super::layout::PrintLayout;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// An export of a text document: Markdown, source code or plain text.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

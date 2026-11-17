@@ -7,9 +7,9 @@ use crate::support::drive::page_of;
 use crate::support::drive::settle_on_threads;
 use settings_app_model::{AccountSegment, AccountTarget, Notice, PageSlug};
 use settings_app_ui::Opening;
+use settings_dbus::Verdict;
 use std::time::Duration;
 use ui_harness::Harness;
-use ui_settings::live::Verdict;
 
 fn detail(segment: &str) -> Notice {
     Notice::OpenAccount(AccountTarget::Detail(AccountSegment(segment.to_owned())))

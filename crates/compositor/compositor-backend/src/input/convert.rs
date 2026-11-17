@@ -3,6 +3,7 @@
 //! in a test (a round trip). The device, instant and origin are stamped by the caller, once, and
 //! never changed downstream (I8).
 
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, SubPoint, SubPx};
 use compositor_core::input::{
     AxisFrame, AxisSource as CoreSource, ButtonCode, GestureStep, InputKind, KeyCode, PinchDelta,
@@ -15,7 +16,6 @@ use smithay::backend::input::{
     KeyboardKeyEvent, PointerAxisEvent, PointerButtonEvent, PointerMotionEvent, Switch,
     SwitchState, SwitchToggleEvent, TouchEvent, UnusedEvent,
 };
-use ui_core::vocab::Fraction;
 
 /// Sub-pixels per logical pixel.
 const SUB_PER_LOGICAL: f64 = 120.0;

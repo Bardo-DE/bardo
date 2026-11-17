@@ -1,8 +1,8 @@
 //! The orb's data: its size ladder, the period a moving orb turns at, its tone, and the look a
 //! presence resolves to.
 
+use base_words::Word;
 use ui_core::geometry::units::Px;
-use ui_core::word::Word;
 use ui_style::tokens::timing::DurationToken;
 
 /// The orb's size ladder, `data-size` (proposed: design/32 section 3, the user reviews the pixel

@@ -11,9 +11,9 @@ use inference_core::{Declined, DeclinedBecause, InferEvent, ModelRef, Why};
 use settings_app_client::ReasonFeed;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
+use settings_dbus::Verdict;
 use std::time::Duration;
 use ui_harness::{Harness, Input};
-use ui_settings::live::Verdict;
 
 mod absent;
 mod picker;

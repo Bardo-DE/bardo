@@ -43,7 +43,7 @@ impl PictureDirs {
     pub fn standard(home: &DataHome) -> PictureDirs {
         PictureDirs::new(
             SYSTEM_FOLDERS.iter().map(PathBuf::from).collect(),
-            ui_settings::app_folder(&home.0, "settings").join(ADDED_FOLDER),
+            settings_types::app_folder(&home.0, "settings").join(ADDED_FOLDER),
         )
     }
 

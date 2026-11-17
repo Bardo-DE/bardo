@@ -1,9 +1,10 @@
 //! What every settings integration test shares: a scratch directory standing in for
 //! `$XDG_CONFIG_HOME`. No test reads or writes the real `~/.config`.
 
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU32, Ordering};
-use ui_settings::{AppName, ConfigRoot, Store};
 
 /// The program name every test's store uses.
 pub const APP: AppName = AppName::desktop("probe");

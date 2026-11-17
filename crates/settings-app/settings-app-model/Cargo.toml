@@ -23,7 +23,8 @@ keymap = {path = "../../keymap/keymap"}
 action-core = {path = "../../actions/action-core"}
 action-settings = {path = "../../actions/action-settings"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
-ui-settings = {path = "../../ui/ui-settings"}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
 key-remap-client = {path = "../../input/key-remap-client"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}

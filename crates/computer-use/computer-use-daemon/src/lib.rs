@@ -38,13 +38,13 @@ pub use callers::{
 };
 pub use computer_use_host::{
     A11yChoice, AppAllow, AppRule, Apps, BackendChoice, ConfigError, CuaSettings, CuadConfig,
-    DaemonLinks, Fallback, IntentsCheck, IntentsGate, Loaded, Locator, RecordContext, RecordError,
-    RunView, SCHEMA, SETTINGS_FILE, Supervisor, SupervisorEvent, SystemClock, Why, guard,
-    is_browser, mint_run_id, read, record_of,
+    DaemonLinks, IntentsCheck, IntentsGate, RecordContext, RecordError, RunView, SCHEMA,
+    SETTINGS_FILE, Supervisor, SupervisorEvent, SystemClock, guard, is_browser, locator,
+    mint_run_id, read, record_of,
 };
 pub use daemon::{Fatal, run};
 pub use keymap::desktop_keymap;
 pub use provider::{CuaProvider, ProviderError, StartRefusal, StartRequest, manifest_for};
 pub use reach::{follow_settings, reach_json};
 pub use serve::{ServeError, Serving, serve, serve_on, serve_on_as, serve_on_with};
-pub use watch::{DEBOUNCE, SettingsWatch, WatchState};
+pub use watch::watch_settings;

@@ -6,9 +6,9 @@
 
 use crate::window::host::{use_window_host, use_window_state};
 use crate::window::vocab::ResizeEdge;
+use base_words::Word;
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 
 /// The eight grab zones, or nothing while the window fills its output.
 #[component]

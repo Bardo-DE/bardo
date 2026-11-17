@@ -3,7 +3,7 @@
 //! does Software Update. The first-run step is the same page drawn as a short dialogue; it is
 //! reached by its slug and never listed.
 
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// The name a person reads for the page.
 pub(crate) const ASSISTANT_MODEL_NAME: &str = "Assistant Model";

@@ -3,11 +3,11 @@
 use crate::config::convert;
 use compositor_core::settings::{AccelProfile, CasementSettings};
 use serde::{Deserialize, Serialize};
-use ui_settings::Fraction;
-use ui_settings::schema::Page;
+use settings_types::Fraction;
+use settings_types::schema::Page;
 
 /// `pointer.*`: how mice and trackballs behave.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "pointer", page = Page::MouseAndGestures)]
 pub struct PointerSection {

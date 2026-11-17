@@ -2,7 +2,7 @@
 //! person's choice of file icons (`appearance.file_icons`) changes.
 
 use dioxus::prelude::*;
-use ui_settings::schema::Provided;
+use settings_types::schema::Provided;
 
 use crate::icons::Icons;
 use crate::launch::Launch;

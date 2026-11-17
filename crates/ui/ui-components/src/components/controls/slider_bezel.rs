@@ -12,11 +12,12 @@ use crate::components::controls::slider_model::SliderLook;
 use crate::host::measure::client_rect;
 use crate::host::narrow;
 use crate::root::common::Common;
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::geometry::units::{Point, Px, Rect, Size};
-use ui_core::vocab::{Availability, Fraction};
-use ui_core::word::Word;
+use ui_core::vocab::Availability;
 use ui_style::tokens::control_size::ControlSize;
 
 /// A level: the glyph that follows it and the capsule that shows it.

@@ -1,0 +1,18 @@
+[package]
+name = "base-words"
+description = "Word: a closed vocabulary (an enum of named things) with its list, slug, label and parse, and #[derive(Word)]."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-words-macros = { path = "../base-words-macros" }
+
+[dev-dependencies]
+serde = { workspace = true, features = ["derive"] }
+
+[lints]
+workspace = true

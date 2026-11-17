@@ -1,7 +1,7 @@
 //! The standard file-icon data: the lookup from a MIME type to a kind, the folders' emboss
 //! glyphs and the extension label rule.
 
-use ui_core::word::Word;
+use base_words::Word;
 use ui_style::icon::Icon;
 use ui_style::icon::file_kind::{ExtLabel, FileKind, FolderKind};
 use ui_style::icon::mime::{MimeFacts, kind_for_mime};

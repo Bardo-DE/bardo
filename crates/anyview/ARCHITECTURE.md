@@ -30,7 +30,7 @@ Layers go lowest first. A crate names only crates in a lower layer, and
 
 | Crate | May depend on |
 | --- | --- |
-| `anyview-core` | `ui-core` (its `#[derive(Word)]` is re-exported by `ui-core`, so `ui-core-derive` is not an edge) |
+| `anyview-core` | `ui-core` |
 | `anyview-store` | `anyview-core`, `base-fs` (`read_capped` for the history file) |
 | `anyview-fs` | `anyview-core`, `base-fs` (`read_capped` behind `read_whole`, the capped whole-file read every reader of the person's files uses) |
 | `anyview-image` | `anyview-core`, `ui-core` (`Word`, for the facts' labels) |

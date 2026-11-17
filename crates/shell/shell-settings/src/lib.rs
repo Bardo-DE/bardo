@@ -4,7 +4,7 @@
 //! `calendar`, `screenshot` and `hot_corners`; §3.24-3.25: `idle` and `keyboard`; §3.30: `companion`; `voice` and `wallpaper`, which design/22 does not list yet), and their schema (§9,
 //! `#[derive(SettingsSchema)]` with `file = "shell/settings.toml"`), all fields of a [`ShellFile`].
 //!
-//! Pure data: no I/O, no runtime, no dioxus. `ShellFile` is a `ui_settings::SettingsDoc`, and
+//! Pure data: no I/O, no runtime, no dioxus. `ShellFile` is a `settings_store::SettingsDoc`, and
 //! reading, saving, watching and publishing it belong to the daemon (`shell_app::daemon::settings`).
 
 pub mod bar;
@@ -55,4 +55,4 @@ pub use wallpaper::WallpaperSettings;
 
 pub use shell_model::displays::NightWarmthMode;
 
-pub use ui_settings::{Count, Fraction, Mins, Ms, Percent, Px, Scalar, Secs};
+pub use settings_types::{Count, Fraction, Mins, Ms, Percent, Px, Scalar, Secs};

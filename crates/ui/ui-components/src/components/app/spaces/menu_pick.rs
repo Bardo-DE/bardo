@@ -3,8 +3,8 @@
 use super::menu_link::{LinkChange, Linking, link_rows};
 use super::open_menu::Showing;
 use crate::components::menus::item::item::MenuItem;
+use base_words::Word;
 use ui_core::vocab::{Availability, Check};
-use ui_core::word::Word;
 use ui_style::appearance::theme::Theme;
 use ui_style::space::look::SpaceLook;
 

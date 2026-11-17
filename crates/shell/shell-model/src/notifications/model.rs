@@ -4,8 +4,8 @@
 //! `Network`: a banner's arrival and departure should not repaint a closed center, and a history
 //! clear should not repaint the banners.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use super::content::Notification;
 use super::ids::{AppKey, NotificationId};

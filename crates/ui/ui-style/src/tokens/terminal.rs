@@ -16,7 +16,7 @@ use crate::appearance::{accent::Accent, theme::Scheme};
 use crate::tokens::accent_table::accent_of;
 use crate::tokens::hex::{Colour, Hex};
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 const fn rgb(value: u32) -> Colour {
     let [_, red, green, blue] = value.to_be_bytes();
@@ -182,8 +182,8 @@ mod tests {
     use crate::appearance::{accent::Accent, theme::Scheme};
     use crate::tokens::hex::Hex;
     use crate::tokens::token::{Token, TokenScope};
+    use base_words::Word;
     use ui_core::colour::contrast::ratio;
-    use ui_core::word::Word;
 
     fn css(token: TerminalColour, scheme: Scheme) -> String {
         token.value(scheme, Accent::Blue).css()

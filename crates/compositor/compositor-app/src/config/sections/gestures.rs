@@ -3,10 +3,10 @@
 use crate::config::convert;
 use compositor_core::settings::{CasementSettings, SwipeFingers};
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// `gestures.*`: the trackpad's multi-finger swipes.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "gestures", page = Page::MouseAndGestures)]
 pub struct GesturesSection {

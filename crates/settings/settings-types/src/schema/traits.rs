@@ -1,0 +1,89 @@
+//! The seam `#[derive(SettingsSchema)]` codes against (design/22-SETTINGS.md section 9.1): the
+//! [`SettingsSchema`] a settings struct implements, and [`kind_of`], which reads a closed enum
+//! field's variant words off its own [`Word`] vocabulary.
+
+use base_words::Word;
+use serde::Serialize;
+
+use super::column::{Column, ColumnKind};
+use super::key::{KeyKind, kind_from_variants};
+use super::program::Schema;
+
+/// A settings domain struct: `AppearanceSettings`, `IconsSettings`, .... Implemented by
+/// `#[derive(SettingsSchema)]`, never by hand (`crates/ds-settings-derive`).
+pub trait SettingsSchema {
+    /// Every key this struct's fields describe, built from `Self::default()` and each field's
+    /// `#[settings(...)]` attributes.
+    fn schema() -> Schema;
+}
+
+/// The words a stored [`Word`] enum is written as, in declaration order: the same words its
+/// `Serialize` puts in the file, so a schema and a file always agree on the spelling.
+///
+/// # Panics
+/// Only if a variant serialises as something other than a bare word, which a fieldless enum
+/// never does.
+fn stored_words<T: Word + Serialize>() -> Vec<String> {
+    T::ALL
+        .iter()
+        .map(|variant| match toml::Value::try_from(variant) {
+            Ok(toml::Value::String(word)) => word,
+            other => panic!("a settings enum stores bare words, got {other:?}"),
+        })
+        .collect()
+}
+
+/// The `KeyKind` for a field whose type is the closed enum `T` (design/22-SETTINGS.md section 9.1's
+/// widget-by-arity rule, `super::key::kind_from_variants`).
+///
+/// The struct derive's only call for an enum-shaped field: a field type that is neither a shape the
+/// derive knows by name (text, a colour, a list, a number with `range`) nor a `Word` fails to
+/// compile here.
+#[must_use]
+pub fn kind_of<T: Word + Serialize>() -> KeyKind {
+    kind_from_variants(stored_words::<T>())
+}
+
+/// The column kind for a row field whose type is the closed enum `T`: its stored words.
+#[must_use]
+pub fn choice_of<T: Word + Serialize>() -> ColumnKind {
+    ColumnKind::Choice {
+        variants: stored_words::<T>(),
+    }
+}
+
+/// A struct that is one row of a list-of-tables key. Implemented by `#[derive(SettingsRow)]`,
+/// never by hand (`crates/ds-settings-derive`).
+pub trait SettingsRow {
+    /// One column per field, in declaration order.
+    fn columns() -> Vec<Column>;
+}
+
+/// What `Vec<Self>` is as a settings key: the one seam the struct derive codes against for any list
+/// whose element is not text.
+///
+/// A closed [`Word`] enum is a list of that enum's words; a `SettingsRow` struct is a list of
+/// tables. Implemented by `#[derive(SettingsRow)]` for rows and by the blanket impl for words,
+/// never by hand.
+pub trait ListElement {
+    /// The key kind of a `Vec<Self>` field.
+    fn list_kind() -> KeyKind;
+}
+
+impl<T: Word + Serialize> ListElement for T {
+    fn list_kind() -> KeyKind {
+        KeyKind::List(Box::new(kind_of::<T>()))
+    }
+}
+
+/// `value` as the `toml::Value` a `KeySpec::default` holds.
+///
+/// # Panics
+/// Only if `T`'s `Serialize` cannot reach TOML at all (a map with non-string keys, `NaN`, ...),
+/// which none of this workspace's settings types can produce
+/// (floats stay out of data, and `Scalar`'s `f32` is finite
+/// by construction).
+pub fn to_value<T: Serialize>(value: &T) -> toml::Value {
+    toml::Value::try_from(value)
+        .expect("a settings field's value always serialises to a TOML value")
+}

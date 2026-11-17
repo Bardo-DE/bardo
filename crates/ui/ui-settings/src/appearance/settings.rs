@@ -1,11 +1,11 @@
 //! The keys `appearance.toml` holds (design/22-SETTINGS.md sections 3.1-3.3 and 4.3-4.4).
 //!
-//! Every struct is `#[serde(default)]` and read through [`crate::Store`], so a bad value costs
+//! Every struct is `#[serde(default)]` and read through [`settings_store_fs::Store`], so a bad value costs
 //! only its own key; a key a struct does not read is reported on load and dropped on save.
 
-use crate::region::RegionSettings;
-use crate::schema::{Page, Provided};
 use serde::{Deserialize, Serialize};
+use settings_types::RegionSettings;
+use settings_types::schema::{Page, Provided};
 use ui_style::appearance::accent::Accent;
 use ui_style::appearance::appearance::Appearance;
 use ui_style::appearance::motion::Motion;
@@ -14,7 +14,7 @@ use ui_style::appearance::transparency::Transparency;
 pub use ui_style::icon::retint::IconStyle;
 
 /// `appearance.*`: what every surface resolves its look from.
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "bardo/appearance.toml", domain = "appearance", page = Page::Appearance)]
 pub struct AppearanceSettings {
@@ -120,7 +120,7 @@ impl AppearanceSettings {
 /// Only `style` is a setting. The plate's inset and glyph shares are the `--plate-*` tokens
 /// (`ui_style::icon::family::PlateShare`), the symbolic chroma limit is
 /// `ChromaLimit::PROPOSED`, and a Monochrome icon takes its hue from the Space (design/08).
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, crate::SettingsSchema)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "bardo/appearance.toml", domain = "icons", page = Page::Appearance)]
 pub struct IconsSettings {
@@ -174,7 +174,7 @@ mod tests {
     use serde::de::DeserializeOwned;
 
     /// Every stored or wire type has a round-trip test.
-    /// Raw `toml::to_string`/`from_str`, not through [`crate::Store`], so this
+    /// Raw `toml::to_string`/`from_str`, not through [`settings_store_fs::Store`], so this
     /// exercises the struct's own `Serialize`/`Deserialize` in isolation.
     fn round_trips<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug + Default>() {
         let default = T::default();

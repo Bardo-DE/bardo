@@ -1,7 +1,7 @@
 //! How a sign-in the person started from Settings ended, as the module announces it on the
 //! account's `reauth` row.
 
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// What the module says the sign-in came to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

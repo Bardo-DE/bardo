@@ -1,7 +1,7 @@
 //! A row's height (design/30 section 1.6): table and list rows are 24 tall, settings rows 44; a
 //! card row has the height of the content it lays out.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// How tall a row is drawn.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

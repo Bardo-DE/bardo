@@ -3,7 +3,7 @@
 
 use crate::error::PlatformError;
 use anyview_core::{FilePath, FileStamp, PixelLen, PixelSize};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The spec's sizes, named by the directory they live in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

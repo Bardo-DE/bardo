@@ -2,7 +2,7 @@
 //! `--z-raise` 1 and `--z-drag` 50; the layers between are named after what sits on them.
 
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One stacking layer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

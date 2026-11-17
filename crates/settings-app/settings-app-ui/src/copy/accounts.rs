@@ -159,7 +159,7 @@ pub(crate) fn removal(question: &RemovalQuestion, remove_name: &str) -> RemovalW
 mod tests {
     use super::*;
     use settings_app_model::{ModuleId, ModuleRow};
-    use ui_settings::schema::KeyPath;
+    use settings_types::schema::KeyPath;
 
     fn permission(
         label: &str,

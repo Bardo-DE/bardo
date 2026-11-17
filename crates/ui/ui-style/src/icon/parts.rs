@@ -7,7 +7,7 @@
 //! icon (Wi-Fi, volume, a battery) lists its layers in the order they step.
 
 use super::Icon;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A length on the 24 grid, in tenths of a unit: `Tenths(125)` is 12.5.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]

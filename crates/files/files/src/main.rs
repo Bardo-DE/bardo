@@ -30,8 +30,8 @@ use files_desktop::{Disks, ProcUsers};
 use files_trash::SystemTrash;
 use files_ui::settings;
 use files_ui::{IconSources, Launch};
+use settings_store_fs::ConfigRoot;
 use ui_extensions::Search;
-use ui_settings::ConfigRoot;
 
 use crate::apps::InstalledApps;
 use crate::args::{Args, Start};

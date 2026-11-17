@@ -9,8 +9,8 @@
 use crate::battery::device_forms::{form_of, path_of};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
-use ui_components::base::word::Word;
 use ui_components::style::icon::render::IconSize;
+use ui_components::words::Word;
 
 /// A device that reports a battery.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

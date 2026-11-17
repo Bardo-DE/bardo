@@ -5,7 +5,7 @@
 //! consumer writes the input (`--dock-floor-on`, 0 or 1) on any element around the dock.
 
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The floor's opacity token, which a settings key (`dock.floor`) moves.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

@@ -6,8 +6,8 @@
 //! `span.ds-badge[data-tone][data-size]` holding `span.ds-badge-label` (no label on a dot).
 
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
 
 /// The most a badge counts before it says so.

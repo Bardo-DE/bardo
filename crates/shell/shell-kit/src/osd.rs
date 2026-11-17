@@ -15,15 +15,16 @@
 //! surface to the card, its margins and the material's shadow, anchored to that edge.
 
 use dioxus::prelude::*;
-use ui_components::base::vocab::{Fraction, shown_word};
-use ui_components::base::word::Word;
+use ui_components::base::vocab::shown_word;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::components::controls::level_indicator::{LevelIndicator, LevelStyle};
+use ui_components::ids::Fraction;
 use ui_components::motion::anim::Anim;
 use ui_components::motion::presence::Exit;
 use ui_components::motion::presence::spec::PresenceSpec;
 use ui_components::motion::presence::use_presence::{Presented, use_presence};
 use ui_components::root::common::Common;
+use ui_components::words::Word;
 
 /// The level an OSD shows: the value and the glyph that follows it.
 #[derive(Debug, Clone, Copy, PartialEq)]

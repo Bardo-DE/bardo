@@ -9,10 +9,12 @@ use crate::view::View;
 use crate::window::Window;
 use dioxus::prelude::*;
 use settings_app_model::{Arrival, Notice, PageKind, arrival, assistant_model_page, opening_page};
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
 use std::sync::Arc;
 use ui_blitz::{TokioSpawner, use_window_handle};
 use ui_components::prelude::*;
-use ui_settings::{AppName, ConfigRoot, Store, use_environment};
+use ui_settings::use_environment;
 
 /// The Settings app. Reads its [`Env`] from the context the launcher provides.
 #[component]

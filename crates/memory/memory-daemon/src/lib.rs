@@ -32,7 +32,7 @@ pub use peers::{Peers, ProcPeers, TablePeers};
 pub use registry::{REGISTRY_WAIT, SpaceRegistry};
 pub use run::{Env, HONOURS_PROC_ROOT, PROC_ROOT_VAR, SYSTEM_CALLERS_VAR, StartError, start};
 pub use sandbox::{Confinement, Policy, SandboxError, bus_socket, enforce, policy_for, prepare};
-pub use settings_watch::{DEBOUNCE, SettingsWatch, WatchState, apply, apply_next};
+pub use settings_watch::{apply, apply_next, watch_settings};
 pub use signals::{Delivery, delivery_of};
 pub use xdg::{XdgError, dirs_from};
 

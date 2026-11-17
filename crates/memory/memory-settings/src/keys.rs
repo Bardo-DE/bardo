@@ -3,39 +3,10 @@
 
 use crate::{ConsolidateApply, ConsolidateWhen, MemorySettings};
 use memory_core::{DayCount, VaultKind};
-use std::ops::RangeInclusive;
-
-/// What a key's value may be and how it lands in the settings.
-#[derive(Clone)]
-pub(crate) enum Rule {
-    /// A whole number inside `range`, in the key's unit.
-    Number {
-        range: RangeInclusive<i64>,
-        set: fn(&mut MemorySettings, i64),
-    },
-    /// One of `words`, by position.
-    Word {
-        words: &'static [&'static str],
-        set: fn(&mut MemorySettings, usize),
-    },
-}
-
-/// One key of the table.
-#[derive(Clone)]
-pub(crate) struct Key {
-    pub path: &'static str,
-    pub rule: Rule,
-}
+use settings_store::rules::{RuleKey, number, word};
 
 fn days(v: i64) -> DayCount {
     DayCount(u32::try_from(v).unwrap_or(u32::MAX))
-}
-
-fn num(path: &'static str, range: RangeInclusive<i64>, set: fn(&mut MemorySettings, i64)) -> Key {
-    Key {
-        path,
-        rule: Rule::Number { range, set },
-    }
 }
 
 const AT_REST: [VaultKind; 2] = [VaultKind::Sealed, VaultKind::Plain];
@@ -47,34 +18,43 @@ const WHEN: [ConsolidateWhen; 3] = [
 
 const APPLY: [ConsolidateApply; 2] = [ConsolidateApply::Auto, ConsolidateApply::Review];
 
+const AT_REST_WORDS: &[&str] = &["sealed", "plain"];
+const WHEN_WORDS: &[&str] = &["nightly", "manual", "never"];
+const APPLY_WORDS: &[&str] = &["auto", "review"];
+
+/// The value of `values` whose word in `words` is `given`.
+fn pick<V: Copy>(words: &[&str], values: &[V], given: &str) -> Option<V> {
+    words
+        .iter()
+        .position(|word| *word == given)
+        .map(|at| values[at])
+}
+
 /// Every key, in the order the schema lists them.
-pub(crate) fn table() -> Vec<Key> {
+pub(crate) fn table() -> Vec<RuleKey<MemorySettings>> {
     vec![
-        Key {
-            path: "memory.files.at_rest",
-            rule: Rule::Word {
-                words: &["sealed", "plain"],
-                set: |s, i| s.at_rest = AT_REST[i],
-            },
-        },
-        Key {
-            path: "memory.consolidation.when",
-            rule: Rule::Word {
-                words: &["nightly", "manual", "never"],
-                set: |s, i| s.consolidate = WHEN[i],
-            },
-        },
-        Key {
-            path: "memory.consolidation.apply",
-            rule: Rule::Word {
-                words: &["auto", "review"],
-                set: |s, i| s.apply = APPLY[i],
-            },
-        },
-        num("memory.retention.search_days", 1..=3650, |s, v| {
+        word("memory.files.at_rest", AT_REST_WORDS, |s, w| {
+            pick(AT_REST_WORDS, &AT_REST, w).is_some_and(|v| {
+                s.at_rest = v;
+                true
+            })
+        }),
+        word("memory.consolidation.when", WHEN_WORDS, |s, w| {
+            pick(WHEN_WORDS, &WHEN, w).is_some_and(|v| {
+                s.consolidate = v;
+                true
+            })
+        }),
+        word("memory.consolidation.apply", APPLY_WORDS, |s, w| {
+            pick(APPLY_WORDS, &APPLY, w).is_some_and(|v| {
+                s.apply = v;
+                true
+            })
+        }),
+        number("memory.retention.search_days", 1..=3650, |s, v| {
             s.retention.search = days(v);
         }),
-        num("memory.retention.session_days", 1..=3650, |s, v| {
+        number("memory.retention.session_days", 1..=3650, |s, v| {
             s.retention.session = days(v);
         }),
     ]

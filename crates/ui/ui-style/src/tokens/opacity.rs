@@ -2,7 +2,7 @@
 //! agree.
 
 use crate::tokens::token::Token;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One resting opacity.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

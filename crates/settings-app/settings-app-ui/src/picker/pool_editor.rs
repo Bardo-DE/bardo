@@ -6,10 +6,10 @@ use crate::copy::picker as copy;
 use crate::key_row::row_id;
 use dioxus::prelude::*;
 use settings_app_model::{AutoPool, PickerInput, PoolEntry, PoolStanding};
+use settings_types::schema::KeyPath;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::prelude::*;
-use ui_settings::schema::KeyPath;
 
 /// The list, or nothing when the module offers no list for the slot.
 #[component]
