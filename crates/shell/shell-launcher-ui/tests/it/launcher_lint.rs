@@ -58,6 +58,8 @@ fn panel_html() -> String {
 
 /// The SSR pass of the panel: its root and the Ds, the palette not yet mounted.
 fn panel_ssr() -> String {
+    // A surface root with no window around it takes the renderer's own host, as a shell process does.
+    ui_blitz::use_standalone_host();
     render_ssr(VirtualDom::new_with_props(
         mount::<Launcher>,
         MountProps::<Launcher>::new(launcher_support::fake::output(), ()),
