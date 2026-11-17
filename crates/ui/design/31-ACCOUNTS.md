@@ -188,7 +188,7 @@ pub struct Restriction {
 }                                      // LimitReason: AppendOnly | PickerOnly | AppFolderOnly | ProviderOffersNone
 ```
 
-The detent page (§5.6) turns each variant into one secondary line. Limits are per kind: one
+The the Settings app page (§5.6) turns each variant into one secondary line. Limits are per kind: one
 Google account is `PickerOnly` for Photos and `AppFolderOnly` for Storage at once.
 
 ## 3. Providers
@@ -293,7 +293,7 @@ AI providers:
 | --- | --- | --- |
 | Probe | inferd (§4.1) probes the default ports above on `127.0.0.1` at start, on a D-Bus `Rescan`, and when a user unit named in settings starts; plus URLs the user listed | P |
 | Identify | the runtime's own endpoint names the runtime and its models (`/api/tags` + `/api/show`, `/props`, `/v1/models`) | P |
-| Account | each running runtime is an account with `Auth::None`, `Locality::OnDevice`, provenance `Discovered`; it appears in detent without a sign-in and disappears (state `Offline`, not deleted) when the process stops | P |
+| Account | each running runtime is an account with `Auth::None`, `Locality::OnDevice`, provenance `Discovered`; it appears in the Settings app without a sign-in and disappears (state `Offline`, not deleted) when the process stops | P |
 | Supervised | engines inferd runs itself (llama.cpp, vLLM, a speech host; confined, no network) are one account, `local` (`Discovery::Supervised`, `providers/local.toml`); its models come from the catalog at provenance `Curated`, and the account is present while an engine is stopped (readiness `Loadable`), unlike a probed runtime, which goes `Offline` | P |
 | LAN | a URL on another host is `LocalNetwork` (e.g. a Tailscale peer); never auto-probed | P |
 | GPU arbitration | one 16 GB GPU (RTX 5070 Ti): inferd serialises local LLM and ComfyUI jobs, asks Ollama to unload idle models (`keep_alive`), exposes the `Gpu` property (`idle`, `busy`, `loading`) so apps show a queue state; CPU engines (speech) cost no VRAM | P |
@@ -318,7 +318,7 @@ resolution and reporting probed local runtimes.
 **Caller roles [refines §4.5, 2026-10-05].** One caller table (`account-dbus` `ProcCallers`, shared
 by accountd and inferd) maps a connection's pid, through its cgroup scope or Flatpak info and
 `identity_of`, to an `AppId` and a role from a shipped table (`/etc/bardo/accountd-callers.toml`, the
-user file wins): `App`, `Settings` (detent), `SheetHost` (sill), `PorterDaemon` (inferd, syncd),
+user file wins): `App`, `Settings` (the Settings app), `SheetHost` (sill), `PorterDaemon` (inferd, syncd),
 `Agent` (intentd, companiond, readerd, cuad, bardo-do, bardo-actions-mcp), `Cua` (cuad, for inferd). A
 sender with no app scope and no Flatpak info is refused. accountd refuses every account call from
 the `Agent` role (`Choose`, `AddAccount`, `Reauthenticate`, `IssueToken`, `OpenAuthenticated`);
@@ -349,7 +349,7 @@ and by mailo in process), `porter-dav` (mailo's WebDAV reply parsing, moved) and
 | `porter-sync`, `syncd` | `Replica` contract (§6.1), dataset kinds; journal and scheduler in syncd | new | SQLite | core yes |
 | `storage-*` (later) | one per family: `webdav`, `graph`, `gdrive`, `dropbox`, `s3` | new (mailo's CardDAV WebDAV code reused) | HTTP | yes |
 | `inference-core`, `inferd` | typed request model, routing, policy, spend, audit, `Model` trait; adapters later (`ChatCompletions`, `Responses`, `Messages`, `GenerateContent`, `OllamaNative`, `ComfyWorkflow`) | new | HTTP (adapters) | core yes |
-| `account-oauth`, `account-discover` | OAuth PKCE, loopback, device code, client registry (shipped `/usr/share/bardo/accounts/clients.toml` per channel, a user-supplied override written only by detent), renewal, OpenRouter key mint; autoconfig, SRV, MX, `.well-known`, JMAP session, Nextcloud OCS, port probes | `mail-runtime/src/{oauth,signin,renewal,loopback,discover}.rs`, `mail-proto/src/discover` | HTTP | yes |
+| `account-oauth`, `account-discover` | OAuth PKCE, loopback, device code, client registry (shipped `/usr/share/bardo/accounts/clients.toml` per channel, a user-supplied override written only by the Settings app), renewal, OpenRouter key mint; autoconfig, SRV, MX, `.well-known`, JMAP session, Nextcloud OCS, port probes | `mail-runtime/src/{oauth,signin,renewal,loopback,discover}.rs`, `mail-proto/src/discover` | HTTP | yes |
 | `account-families` | `Provider` implementations (sign-in, discover, open, revoke) per family: Nextcloud (Login Flow v2), generic IMAP/SMTP + DAV, Microsoft; moved out of accountd so mailo builds the same families in process | new | HTTP | yes |
 | `porter-dav`, `account-proxy` | WebDAV PROPFIND/REPORT/sync-collection/quota parsing; the IMAP, SMTP and HTTP relays behind `OpenAuthenticated` | `mail-pim/src/dav` (vCard and iCal values stay in mail-pim) | HTTP, TLS | yes |
 | `mail-proto`, `mail-pim` | stay in mailo, now "family" crates for Mail, Calendar, Contacts | unchanged | none | yes |
@@ -394,7 +394,7 @@ proposal can reuse it ([R] §2 portals).
 | | `OpenAuthenticated(grant: s, endpoint: s) -> h` | a socket fd to a daemon-side authenticated relay. **v1 [departs §7.1/§7.2, owner 2026-10-05]**: IMAP (the relay logs in; the app sees a `* PREAUTH` greeting), SMTP (the relay does EHLO, STARTTLS and AUTH; the app sees a greeting and an EHLO reply without them), HTTP/1.1 for WebDAV, CalDAV, CardDAV and OCS (the relay adds `Authorization`, speaks TLS, reaches only the endpoint's origin and drops an app's own `Authorization`) | password protocols without releasing the password: a password never leaves accountd, to any app, sandboxed or not |
 | `.Request` (per sheet) | `Close()`; signal `Response(response: u, results: a{sv})` | 0 done, 1 cancelled, 2 other | the portal Request shape |
 | Signals on `.Manager` | `AccountAdded(o)`, `AccountRemoved(o)`, `CapabilityChanged(o)`, `NeedsReauth(o)`, `GrantChanged(s)` | sent only to holders of a relevant grant (unicast) | |
-| `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in Bardo's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | detent reads it; `Set` only from the `Settings` role |
+| `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in Bardo's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | the Settings app reads it; `Set` only from the `Settings` role |
 | `.Peer` | `Verdicts(app, need, class, usage)`, `ResolveKey(grant) -> h` (the key on a sealed memfd, never a string), `ReportLocal(provider, claims, state)` | only the `PorterDaemon` role [2026-10-05] | inferd asks with the app it derived from its own connection |
 | `org.bardo.AccountsSheet1` (served by the sheet host) | `Open(handle, parent_window, view: s)`, `Update(handle, view: s)`, `Close(handle)`, signal `Input(handle, input: s)` | only accountd's connection may `Open`; only the sheet owner's `Input` counts [refines §4.6: a typed password travels inward here, nothing outward] | the add, re-auth, device-code and consent conversations [2026-10-05] |
 | `.Manager` (mailo migration) | `Adopt(legacy)` | the daemon reads an app's own legacy keyring entries itself (gated by an `[adopt]` table, `org.bardo.Mail = "mailo"`), so no credential crosses a transport | [2026-10-05] |
@@ -429,7 +429,7 @@ The full introspection is porter's `dbus/org.bardo.Inference1.xml`, checked by t
 | Answers | "Allow" stores one grant for the account picked; "Don't Allow" stores an `Always` denial for every account offered, so the app is not prompted again until Settings changes it; closing the sheet stores nothing; a `Once` grant is spent by the first token issued under it | P |
 | Data classes | `AppOwn`, `Mail`, `Calendar`, `Contacts`, `Notes`, `Files`, `Photos`, `Clipboard`, `Screen`, `Voice`, `Public` (closed enum; `Voice` is the person's own voice audio) | P |
 | Prompt | by capability, not by provider: "Photos wants to keep its library in your Nextcloud files" (`Alert` on a `Sheet{Centre}` from the sheet host) | P |
-| First-party apps | Mail, Photos, Calendar, Notes, Files and the shell still get one prompt at first use; no silent pre-grant, so the per-app list in detent is complete | P |
+| First-party apps | Mail, Photos, Calendar, Notes, Files and the shell still get one prompt at first use; no silent pre-grant, so the per-app list in the Settings app is complete | P |
 | Identity of caller | `AppId { name: AppName (reverse DNS), isolation: Isolation {Flatpak, Unsandboxed, InProcess} }`, established by the transport, never sent by the caller. Flatpak: app id from the sandbox info of the caller's pid (`GetConnectionCredentials`, pidfd); native: the systemd `app-<id>-*.scope` cgroup, marked "unsandboxed" (R12) | P |
 | Flatpak reach | `--talk-name=org.bardo.Accounts1` finish arg; consent is enforced inside the daemon | P |
 | Storage | the consent store is accountd's own table, PermissionStore-shaped, so a portal can adopt it; persisted with the registry as `$XDG_STATE_HOME/porter/registry.json` (`Persisted { vocab, accounts, grants, toggles }`, atomic write; JSON, not SQLite: tens of rows, no SQLCipher in mailo); a vocabulary bump now needs a migration test [2026-10-05] | P |
@@ -550,10 +550,10 @@ Provider verdicts for the library home:
 | Audit | app, account, model, tokens, bytes, time; content never stored by default | P |
 | Tools | a chat request carries the functions a model may call (`ToolDecl`, from the companion's typed actions); the model's calls come back as `ToolCall` events and parts. inferd only passes them: the router (`docket`) gates every call, and MCP is an edge binary there (`bardo-actions-mcp`), not an inferd role | P |
 
-### 5.6 detent's Accounts page and first run
+### 5.6 the Settings app's Accounts page and first run
 
-detent renders the list through `org.bardo.SettingsModule1` (22 §9.4); flows that need a
-browser or a secret are sheet-host sheets that detent opens with `AddAccount` /
+The Settings app renders the list through `org.bardo.SettingsModule1` (22 §9.4); flows that need a
+browser or a secret are sheet-host sheets that Settings app opens with `AddAccount` /
 `Reauthenticate`.
 
 | Screen | Components (design/30) | St |
@@ -646,7 +646,7 @@ those keys. v3, O.
 | Providers | Nextcloud, Microsoft (our own verified multi-tenant client), generic IMAP/SMTP + DAV; AI: Ollama, llama.cpp, the supervised `local`; Anthropic key, OpenAI key and OpenRouter once stoker's cloud backends exist. Google: **TODO** (owner, 2026-10-05) | P |
 | syncd | journal, scheduler, `Replica` for WebDAV and Graph (Google Drive with the Google TODO); the `PimMirror` dataset (§6.2); the Photos dataset built and contract-tested | P |
 | inferd | routing, local-only default, data-class floors, per-app grants, spend caps, audit, GPU queue, streaming sessions; no MCP (an edge in docket) | P |
-| UI | detent Accounts and Intelligence pages, sheets drawn by sill (Bardo `ui-shell::accounts` views), first-run steps | P |
+| UI | the Settings app Accounts and Intelligence pages, sheets drawn by sill (Bardo `ui-shell::accounts` views), first-run steps | P |
 | Photos | the app is its own repo and starts after mail and calendar work end to end (owner, 2026-10-05); library on Storage, import from folders | P |
 
 Acceptance (each an automated test on private buses, scratch `XDG_*`/`HOME`, a fake Secret
@@ -736,7 +736,7 @@ stores elsewhere. Items 4-13 stand as recommended.
 13. **Consent for first-party apps.** (a) one prompt each; (b) silent pre-grant. **Recommend
     (a)**, so the per-app list is always the whole truth. (§4.5)
 14. **Where the add/consent sheets live.** (a) accounts-ui owned by accountd; (b) inside
-    detent. **Recommend (a)**: apps and detent both call it, and consent must not be drawn by
+    the Settings app. **Recommend (a)**: apps and the Settings app both call it, and consent must not be drawn by
     the asking app.
 
 ## 9. Sources

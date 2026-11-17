@@ -198,7 +198,7 @@ service's keeper and prover.
 (`screencast/grants.rs`). `ListGrants() -> a(ssut)` gives one entry per app that has a grant still in force: app id,
 the name to show, the persist mode (1 while it runs, 2 until taken back) and the date. `Revoke(app_id: s) -> u` forgets
 every grant of the app and says how many went. Neither names a token. Only the Settings app may call, proved `Full`
-like the frontend (`peers::RoleGuard`); the Privacy page of Settings (detent) is the person's way in (see the ask in
+like the frontend (`peers::RoleGuard`); the Privacy page of Settings (the Settings app) is the person's way in (see the ask in
 FINDINGS). A running share is not stopped by taking back its grant.
 
 ### Letting an app in for good (standing grants)
@@ -211,7 +211,7 @@ the first one there is: nothing names this machine's hardware); `input` is the p
 keyed by the app's proven id, and it does not run out. `Start` consults it when there is no token or the token does not
 stand: `Shared::restored` for the screen, `restored_kinds` for input (an ask for more kinds than were allowed is asked).
 It is listed by `ListGrants` as "until taken back" and `Revoke` removes it with the rest. An unproven app is never let in
-by it, as for tokens. Settings (detent) and the first-time picker (sill) are the person's way in; see FINDINGS.
+by it, as for tokens. Settings (the Settings app) and the first-time picker (sill) are the person's way in; see FINDINGS.
 
 ## 5. Window capture
 

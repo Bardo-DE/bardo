@@ -170,7 +170,7 @@ pub enum Command {
     /// Run the compositor.
     Run(Box<StartConfig>),
     /// Write the settings schema (`compositor.settings.toml`) into this directory and exit
-    /// (detent reads it).
+    /// (the Settings app reads it).
     WriteSchema(PathBuf),
     /// Print the usage and exit.
     Help,

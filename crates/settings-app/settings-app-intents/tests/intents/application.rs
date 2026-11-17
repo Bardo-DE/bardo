@@ -133,7 +133,7 @@ async fn open_page_shows_the_page_its_slug_names_and_raises() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn a_second_detent_hands_over_the_page_it_was_asked_for() {
+async fn a_second_settings_app_hands_over_the_page_it_was_asked_for() {
     let world = World::start("app-hand-over", &[]).await;
     let second = world.caller(roles::SETTINGS).await;
     let knows = peers_knowing(&second, &world.owner(), &roles::SETTINGS);
@@ -319,7 +319,7 @@ async fn a_program_in_no_row_of_the_table_cannot_raise_or_open_anything() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn a_second_detent_sends_nothing_to_an_owner_that_is_not_settings() {
+async fn a_second_settings_app_sends_nothing_to_an_owner_that_is_not_settings() {
     let world = World::start("app-hand-over-squatter", &[]).await;
     let second = world.caller(roles::SETTINGS).await;
     // The second bardo-settings's peers know the owner of the name as the shell, not as Settings.

@@ -1,5 +1,5 @@
 //! What the update service may make the page hold: the page keeps a short version, a few screens
-//! of notes and one sentence of problem, whatever the service sends (DETENT-06).
+//! of notes and one sentence of problem, whatever the service sends (SETTINGS-06).
 
 use settings_app_model::{Absence, ProblemKind, UpdateStatus, UpdateWire};
 

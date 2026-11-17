@@ -13,7 +13,7 @@ use memory_core::{AppId, AppName, Isolation};
 /// - `Agent`: docket's intentd, the router;
 /// - `Cua`: cuad, for its run records;
 /// - `SheetHost`: the shell's own UI (sill), the person;
-/// - `Settings`: the System Settings app (detent), the person, saving a setting. Not an app with
+/// - `Settings`: the System Settings app (the Settings app), the person, saving a setting. Not an app with
 ///   memory: it may only confirm a loosened memory setting and read the ones that wait for it.
 ///
 /// A library user picks the caller when it builds its transport (`memory-client`'s `InProcess`).
@@ -65,7 +65,7 @@ impl Caller {
         Self::fixed(CallerRole::SheetHost, "org.bardo.Shell")
     }
 
-    /// The System Settings app (detent).
+    /// The System Settings app (the Settings app).
     #[must_use]
     pub fn settings() -> Self {
         Self::fixed(CallerRole::Settings, "org.bardo.Settings")

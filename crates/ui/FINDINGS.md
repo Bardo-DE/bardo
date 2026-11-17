@@ -21,11 +21,11 @@ that rev.
   is enforced at read time (a program's own schema still decides which other keys it marks
   settable; `AGENT_SETTABLE_PROPOSED` stays a proposal that tests check). A consumer whose schema
   marks a key under one of the three new prefixes agent-settable now fails to compile (derive) or
-  to load (`Schema::from_toml`, `LiveSchema::check`); sill and detent must be told before they re-pin.
-- **Menu export and owner check: what is not covered (BARDO-03, BARDO-12, DETENT-05; production audit
+  to load (`Schema::from_toml`, `LiveSchema::check`); sill and the Settings app must be told before they re-pin.
+- **Menu export and owner check: what is not covered (BARDO-03, BARDO-12, SETTINGS-05; production audit
   wave 2, 2026-10-16).** `MenuExport::start` takes a required `MenuPermit` and `LiveClient::new` a required
   `OwnerCheck`; both policies belong to the consumer (the desktop's are peephole roles: `ShellOnly`
-  for menus, detent's `BusPeers` check for the live modules). Deferred or decided here:
+  for menus, the Settings app's `BusPeers` check for the live modules). Deferred or decided here:
   (1) reads of the menu (`GetLayout`, `GetGroupProperties`, `GetProperty`, `AboutToShow`) are not
   gated: the layout is what the window already shows, and the shell's bar reads it; (2) a single
   `Event` is gated but not paced (the permit is what bounds it; only `EventGroup` has the 8-a-second
@@ -33,8 +33,8 @@ that rev.
   app, BARDO-12 sill side) is sill's; (4) a second copy of an app no longer queues for the menu name
   and shows no menu in the bar: its `start` fails with `NameTaken` and the app decides (run without a
   menu, or exit); (5) `LiveClient` caps `Describe`/`Snapshot`/`Get`/`Changed` replies
-  (`ds_settings::live::limits`), but detent's own `Holds`/`NeedsConfirmation` parsing (Sync1) is
-  detent's to cap; (6) the first check after a name changes hands costs one `GetNameOwner` on every
+  (`ds_settings::live::limits`), but the Settings app's own `Holds`/`NeedsConfirmation` parsing (Sync1) is
+  The Settings app's to cap; (6) the first check after a name changes hands costs one `GetNameOwner` on every
   call (the owner is looked up each time so a name that moved is never trusted for one call), and a
   refused owner is asked again on every call, not cached; (7) `ShellOnly` has no test of its own in
   Bardo (peephole's `fake` seam would need a second feature); its logic is one `require` call. The
@@ -1689,14 +1689,14 @@ the decisions and what was verified:
 - **Activations arrive on a bus thread.** The callback must hand the `CommandId` to the UI thread
   (a channel and `AppHandle::redraw`); `ds-blitz` has no such bridge of its own yet, so each app
   writes the four lines (CONSUMING.md "Exporting the menu bar").
-- **Consumers to wire:** an app turns it on in its own repo (mailo, detent, anyview, sill's own
+- **Consumers to wire:** an app turns it on in its own repo (mailo, the Settings app, anyview, sill's own
   windows); the sill lane reads `AppMenuAddress::for_app_id` and `GetLayout`. Nothing else changes.
 
 ## Live settings modules (`ds-settings::live`, feature `live`; W1b)
 
 Open:
 
-- `KeyKind::Live { action }` and `Widget::ActionButton` are new variants. detent's
+- `KeyKind::Live { action }` and `Widget::ActionButton` are new variants. The Settings app's
   `Control::of` matches `KeyKind` exhaustively and needs a `Live` arm (an interface ask: a button
   that calls `LiveClient::invoke`, destructive weight behind `Alert{Critical}`); sill and the
   other consumers only call `KeyKind::widget()`.
@@ -2099,7 +2099,7 @@ way forward.
 ## q-cmdline
 
 Lane `q-cmdline`, written without a build: nothing here has been compiled or run, so the gate decides. Two small additive changes so other
-apps (first detent's Settings, "install llama.cpp" with a copyable command) reuse what ds-shell's helper sheet had.
+apps (first the Settings app's Settings, "install llama.cpp" with a copyable command) reuse what ds-shell's helper sheet had.
 
 - **`ds::components::controls::command_line::CommandLine`** (`command_line.rs` + `command_line.css`, sheet `command_line` registered in
   `assembly/sheets.rs`, 98 -> 99): props `text: String`, `copy: CopyState` (default `Idle`), `on_copy: EventHandler<String>`. The host writes
@@ -2136,7 +2136,7 @@ apps (first detent's Settings, "install llama.cpp" with a copyable command) reus
 - **Public items.** Added: `ds::components::controls::command_line::CommandLine`, `ds::components::controls::copy_state::CopyState`,
   `ds_helpers::OsRelease` (fields `id`, `id_like`, `version_id`; `parse`). Changed: `ds_shell::accounts::model::CopyState` is a re-export of
   the `ds` type (same path, same variants). Removed: nothing public.
-- **Open.** `Helpers` does not hand out its os-release text or `OsRelease`; detent reads the file itself or `Helpers` grows an accessor
+- **Open.** `Helpers` does not hand out its os-release text or `OsRelease`; the Settings app reads the file itself or `Helpers` grows an accessor
   (not asked for here).
 
 ## Peers: deadlines, who is believed, who hears (production audit, lane pa-qbus, 2026-10-16)
@@ -2164,7 +2164,7 @@ apps (first detent's Settings, "install llama.cpp" with a copyable command) reus
 - **Not done.** (BARDO-03 and BARDO-12's library side landed in wave 2: see Open items.) BARDO-25's owner check (is the holder
   of `org.bardo.Outputs1` sill?) belongs with sill; Bardo now drops rows with no size or no scale and caps the list at 16. The dbusmenu
   `RequestName` in `ds-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (BARDO-21) is still
-  unbounded. detent's half of DETENT-07 (feeding `Failed` on `LiveError::Timeout`, awaiting `invoke` off the effect loop) and the same
+  unbounded. The Settings app's half of SETTINGS-07 (feeding `Failed` on `LiveError::Timeout`, awaiting `invoke` off the effect loop) and the same
   convention in porter-dbus are theirs.
 
 ## One reader for desktop files (ds-helpers `DesktopFile`)
@@ -2173,12 +2173,12 @@ apps (first detent's Settings, "install llama.cpp" with a copyable command) reus
   keys: `Name[de_DE@euro]` picked by `EntryLocale` variants (`lang_COUNTRY@MODIFIER`, `lang_COUNTRY`, `lang@MODIFIER`, `lang`, then the
   default), the value escapes (`\s \n \t \r \\`, and `\;` inside a list), `;` lists with empty items dropped, `true`/`false`
   booleans, comments, a byte order mark, CRLF. A group named twice is one group and a key given twice keeps its last value (GLib's key
-  file; the specification leaves both undefined; the `freedesktop-desktop-entry` crate sill and detent use also keeps the last key but
+  file; the specification leaves both undefined; the `freedesktop-desktop-entry` crate sill and the Settings app use also keeps the last key but
   refuses a repeated group). A malformed line or a pair before any group is skipped and counted
   (`skipped_lines`), never an error. The text is refused whole over the caller's `ReadCap` (`DESKTOP_ENTRY_CAP` is 256 KiB).
   `Exec` and `TryExec` come back after the value escapes only; field codes and command-line quoting stay the caller's.
-- **Not a merge of two copies.** Sill and detent do not keep readers of their own: sill's
-  `sill-services::apps::backend::scan` and detent's `detent-files::programs` both call the third-party `freedesktop-desktop-entry` 0.8.3
+- **Not a merge of two copies.** Sill and the Settings app do not keep readers of their own: sill's
+  `sill-services::apps::backend::scan` and the Settings app's `settings-app-files::programs` both call the third-party `freedesktop-desktop-entry` 0.8.3
   (`DesktopEntry::from_str`, `Iter`), and anyview's mpris code uses it too; each reads the file with an uncapped
   `std::fs::read_to_string`. So `DesktopFile` is a new, second reader, not a merge of two copies. What moving onto it would buy: no
   `gettext-rs` (a C library) behind a pure parse, a size cap on every read, one tolerance for malformed lines (the crate fails the whole

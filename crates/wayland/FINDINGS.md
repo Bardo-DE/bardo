@@ -369,7 +369,7 @@ say `since="6"`.
   `ALL` and `argv` come from one `shell_verbs!` table; `WireCode::to_wire` replaces the hand ladders to
   the generated enums; `PlaceTarget::zone` and `From<TileZone>` replace the zone ladders.
 - `MacMods` is `HeldMods` (`held_mods.rs`); its bits and the XML bitfield's name `mac_mods` are unchanged.
-- `vocab::receipt` (P-5) is deleted: no caller in the compositor, sill, detent, cua, docket or keycap.
+- `vocab::receipt` (P-5) is deleted: no caller in the compositor, sill, the Settings app, cua, docket or keycap.
 - Kept on purpose: `TrustedKind` and `TrustedAnchor` (the XML enums are frozen interface and
   `every_xml_enum_has_a_vocab_type` needs a vocab twin), `Withdrawn` (same file, same reason), and `GlowCode`
   (`desktop_client::bardo::Lease::glow` carries it). Closing them takes an owner call on the XML.

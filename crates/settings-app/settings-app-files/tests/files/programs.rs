@@ -33,7 +33,7 @@ fn entries_are_read_in_the_order_of_their_folders_and_name_the_program_they_star
     entry(
         &first,
         "loupe.desktop",
-        "[Desktop Entry]\nType=Application\nName=Image Viewer\nExec=flatpak run org.gnome.Loupe\nX-Flatpak=org.gnome.Loupe\nIcon=no-such-icon-in-any-theme-detent\n",
+        "[Desktop Entry]\nType=Application\nName=Image Viewer\nExec=flatpak run org.gnome.Loupe\nX-Flatpak=org.gnome.Loupe\nIcon=no-such-icon-in-any-theme-settings-app\n",
     );
     entry(
         &second,

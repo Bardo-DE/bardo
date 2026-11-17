@@ -71,7 +71,7 @@ pub enum ServeFault {
 /// for as long as the app runs.
 ///
 /// A bus that does not answer inside the read deadline is [`ServeFault::Connect`]: Settings then
-/// opens without the service instead of never opening (audit DETENT-07).
+/// opens without the service instead of never opening (audit SETTINGS-07).
 ///
 /// # Errors
 ///

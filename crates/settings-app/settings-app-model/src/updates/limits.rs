@@ -1,4 +1,4 @@
-//! What the update service may make the page hold (audit DETENT-06). Its words are shown as they
+//! What the update service may make the page hold (audit SETTINGS-06). Its words are shown as they
 //! come, and a service that is not the real one (or a real one with a bug) must not be able to
 //! fill the window: a version is a short run of version characters, the notes are a few screens,
 //! the problem a sentence, its kind one short known word.

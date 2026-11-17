@@ -1,4 +1,4 @@
-//! A file's problems are said once, not on every read (audit DETENT-18). Every write the intents
+//! A file's problems are said once, not on every read (audit SETTINGS-18). Every write the intents
 //! provider makes reads each file again, and a hand edit's unknown keys would otherwise fill the
 //! journal once per agent call.
 

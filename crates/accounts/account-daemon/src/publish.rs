@@ -116,7 +116,7 @@ impl<H: Host, C: Callers> Core<H, C> {
     ///   later reaches its pane without a `Set`;
     /// - an account that appeared: its `state` row, and one that went: the same key with
     ///   `removed`, since the module has no signal for "the key set changed" and a pane reads
-    ///   the schema again on any `Changed` (detent's `Followed::Changed`);
+    ///   the schema again on any `Changed` (the Settings app's `Followed::Changed`);
     /// - a new label: `accounts.<id>.label`.
     async fn announce_states(&self, list: &[Event], before: &Registry, after: &Registry) {
         let Some(module) = self.settings.get() else {

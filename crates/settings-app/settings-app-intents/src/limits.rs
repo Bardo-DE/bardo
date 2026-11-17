@@ -1,4 +1,4 @@
-//! How much a read gives back (audit DETENT-10). The manifest promises the router a size for
+//! How much a read gives back (audit SETTINGS-10). The manifest promises the router a size for
 //! each value Settings returns; a key can hold anything the person or a program wrote, so the
 //! provider cuts what it returns to what the manifest declares and does not rely on the router
 //! to do it. A test holds the numbers equal to the manifest's.

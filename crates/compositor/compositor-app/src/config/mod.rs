@@ -1,5 +1,5 @@
 //! The stored settings: `compositor/settings.toml` through ui-settings (lenient read, atomic write,
-//! a debounced watch), its schema for detent (`bardo-compositor --write-schema`).
+//! a debounced watch), its schema for the Settings app (`bardo-compositor --write-schema`).
 //!
 //! And the one conversion into the model's `CompositorSettings` (ARCHITECTURE.md, "Add a settings
 //! key").

@@ -73,7 +73,7 @@ Ids match the references in SPEC.md.
 | U4 | Answers | card in the launcher's preview pane or replacing the list; headless "done" feedback as a toast with Undo or a line in the strip | preview pane; toast with Undo |
 | U5 | Glow | width, colours, acting spot; is phase A (sill overlay, forgeable) fine before the fork | phase A for development |
 | U6 | Confirmation | sheet on the target window or centred alert; 500 ms arm delay; phase A (sill sheet) shippable or dev only | sheet; 500 ms; dev only for CUA, typed actions may ship on it |
-| U7 | Memory UI home | launcher "Memory" filter + detent page for export and the diff, or one dedicated window | launcher filter + detent |
+| U7 | Memory UI home | launcher "Memory" filter + the Settings app page for export and the diff, or one dedicated window | launcher filter + the Settings app |
 | U8 | Settings page name | "Intelligence" (design/31) or "Companion" | Intelligence |
 | U9 | Inline replace in your field | run at once with Undo (COMPANION 9) or show the change and wait for Apply (agent-ux P1) | wait for Apply |
 | U10 | Undo wording for agent actions in app menus | "Undo Archive (Companion)" or plain, with the actor only in the strip | plain |

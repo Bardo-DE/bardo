@@ -297,7 +297,7 @@ error of its name, one to one. `DbusTransport::call` maps a missing daemon
 `ProcCallers` (bus pid, then `/proc/<pid>/cgroup` alone; no `exe`, which a Landlock domain cannot
 read) with `callers::caller_for` mapping porter's caller onto almanac's: role `cua` is `Cuad`,
 role `sheet_host` of app `org.bardo.Shell` is `ShellUi`, role `settings` of app `org.bardo.Settings`
-(the unit `org.bardo.Settings.service`, detent) is `Settings`, role `agent` of app
+(the unit `org.bardo.Settings.service`, the Settings app) is `Settings`, role `agent` of app
 `org.bardo.Intents` is `Router`, every other identified process is `App`. The table is `/etc/bardo/memoryd-callers.toml`
 with `<config>/bardo/memoryd/callers.toml` laid over it (user rows win; a missing file is empty, a
 bad one stops the daemon): porter's `[[caller]]` rows of `app`, optional `unit`, `role`.
@@ -551,7 +551,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
 
 ## f4-settings: the settings schema and its reader
 
-The Settings app (detent) builds its Intelligence page from the schema each daemon ships (design/22
+The Settings app (the Settings app) builds its Intelligence page from the schema each daemon ships (design/22
 section 9.2). almanac's covers the `memory.*` keys of section 3.28 that memoryd reads, and memoryd
 reads them.
 
@@ -914,7 +914,7 @@ confirmation is kept where the agent sandbox and the apps cannot write.
   (the old confirmation names the old value); a confirmation the file no longer uses stays in the
   store, unused. A store that does not read counts as nothing confirmed and is reported.
 - `Memory1.Control.ConfirmSettings(a{ss} values)` records confirmations. Only the System Settings
-  app (detent) may call it: it is the app that takes the person's agreement, and it runs as the unit
+  app (the Settings app) may call it: it is the app that takes the person's agreement, and it runs as the unit
   `org.bardo.Settings.service` (porter role `settings` and app `org.bardo.Settings`, mapped to
   `Caller::Settings`; the row is a unit row in `dbus/memory-callers.toml`, as a scope never
   carries a fixed role). `allowed` refuses every other caller, the shell included, with
@@ -938,7 +938,7 @@ confirmation is kept where the agent sandbox and the apps cannot write.
   again to the same number is not asked again); `Locator::read` is the only gated path, the bare
   reader `read_settings` is not.
 
-Interface note for the Settings app (detent): after the person saves a looser-than-shipped value
+Interface note for the Settings app (the Settings app): after the person saves a looser-than-shipped value
 on a page, the app writes it to `almanac/settings.toml` and calls
 `org.bardo.Memory1.Control.ConfirmSettings` with that key and value (`a{ss}`, for example
 `{"memory.retention.search_days": "7"}`; numbers in decimal, words as the file has them). The
@@ -988,7 +988,7 @@ are on only when `bardo-memoryd.service.d/sandbox.conf` is installed (`scripts/i
 where `systemd --user` cannot make namespaces, the Ubuntu 24.04+ default), and can be read from the
 manager (`systemctl --user show memoryd -p ProtectSystem`). `Confinement` says nothing about it.
 
-Interface note for the Settings app (detent): read `org.bardo.Memory1.Control.Confinement` (a
+Interface note for the Settings app (the Settings app): read `org.bardo.Memory1.Control.Confinement` (a
 string property; read it beside `Status`; it does not change while the daemon runs) and show one
 plain line: `confined` as "Memory keeps itself to its own folders"; `partial` as "Memory keeps
 itself to its own folders, though this computer's system can only enforce part of that";
@@ -1043,7 +1043,7 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
 - Needs a change at the next re-pin (`use almanac_core::Caller` becomes `use almanac_service::Caller`):
   docket (`docket-inapp` tests `audit_queue`, `multi`, `seams`; `docket-memory` tests `portable`,
   `session_log`; `intentd` test support only mentions it in a comment), cua (`cuad` tests
-  `links.rs:102,223`). sill, detent, files, mailo and anyview do not name it. Those users already
+  `links.rs:102,223`). sill, the Settings app, files, mailo and anyview do not name it. Those users already
   depend on `almanac-service` for `MemoryService`, since `InProcess` takes one.
 
 ## Layering lane U0.9a: hex and ulid swaps (2026-10-28)
@@ -1060,8 +1060,8 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
   golden test `minted_fact_ids_keep_their_exact_text` pins seven ids computed with a line-for-line
   port of the old encoder before the swap. `is_fact_id` stays: it checks text read from files.
 - Other hand-written hex in almanac: none (`{:02x}` and friends do not occur).
-- Users in other repos: none. `git grep` at origin/master of docket, cua, sill and detent finds no use of
-  `almanac_core::hex_of` or `from_hex` (detent has its own unrelated `detent-ui` `hex_of`). docket's
+- Users in other repos: none. `git grep` at origin/master of docket, cua, sill and the Settings app finds no use of
+  `almanac_core::hex_of` or `from_hex` (the Settings app has its own unrelated `settings-app-ui` `hex_of`). docket's
   own `format!("{b:02x}")` copies are the docket lane's.
 - Licences: MIT and MIT OR Apache-2.0 are in deny.toml's list. `ulid` pulls `web-time` only on wasm.
 

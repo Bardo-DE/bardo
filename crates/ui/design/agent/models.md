@@ -40,7 +40,7 @@ Neither the Holo-3.1-4B card nor that page gives the action schema or the coordi
 - The CUA step loop, the leases, capture, masking, injection and `org.bardo.ComputerUse1`. These belong to cuad and the compositor (area "cua"). Models hands cuad window-space actions and nothing else.
 - The planner's plan and session, the router, taint, Cedar policy and consent drawing (areas "agent" and "security").
 - The intents registry, and turning `ActionDecl` into a JSON schema (area "intents"). Models only carries the `ToolDecl`s it is given.
-- Picker UI pixels (detent's Intelligence page) and the orb (area "launcher"/"presence"). Models gives them data and events.
+- Picker UI pixels (the Settings app's Intelligence page) and the orb (area "launcher"/"presence"). Models gives them data and events.
 - Weight downloads (later: `hf` as a subprocess). For the first wave the user downloads weights by hand.
 - Benchmarks or a bake-off (user: one small open model is enough).
 - An in-process engine (mistral.rs is a spike, later).
@@ -53,7 +53,7 @@ Neither the Holo-3.1-4B card nor that page gives the action schema or the coordi
 ### 2.1 Placement decision
 
 All model-layer crates go in **a new portable repo** (working name **`stoker`**: it feeds the
-engines; it sits beside porter, latchkey, sill and detent; the user names it, Q1).
+engines; it sits beside porter, latchkey, sill and the Settings app; the user names it, Q1).
 `MIT OR Apache-2.0`, same CONVENTIONS text, its own ARCHITECTURE.md and FINDINGS.md.
 
 Why a new repo rather than inside porter:
@@ -604,9 +604,9 @@ pub fn picker_rows(kind: AiKind, cards: &[PickerInput], map: &TierMap) -> Vec<Pi
 | `Open` | unchanged | the fd is a Unix stream socket. Client writes `ClientFrame` frames (account-core framing: 4-byte length plus a `{vocab, body}` JSON envelope, 16 MiB cap). inferd writes `InferEvent` frames. `ImageSource::Attached(i)` names the i-th memfd received with SCM_RIGHTS on that frame. The route is chosen once per Open, so a session is pinned to one model (CUA history needs that). |
 | `Prepare(need: (sa{sv}), class: s, tier: s) -> s` | **new** | warms the engine the route would pick and returns a `Readiness` slug. Called on double-tap ⌘ so the first turn does not pay a cold start. Refusals answer with the refusal slug. |
 | `Usage`, `Rescan` | unchanged | |
-| signal `EnginesChanged()` | **new**, broadcast | engine state is not personal. Listeners re-read readiness through `Prepare` (callers) or the settings module (detent). |
+| signal `EnginesChanged()` | **new**, broadcast | engine state is not personal. Listeners re-read readiness through `Prepare` (callers) or the settings module (the Settings app). |
 | property `Gpu s` | **new** | `idle`, `busy`, `loading` (31 §3.3 "`GpuBusy`") |
-| `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | 22 §9.4 shape | detent's Intelligence page: `Describe` gives `PickerRow`s per kind as the choices of `ai.model.<kind>.<tier>`; `Set` writes the `TierMap` |
+| `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | 22 §9.4 shape | the Settings app's Intelligence page: `Describe` gives `PickerRow`s per kind as the choices of `ai.model.<kind>.<tier>`; `Set` writes the `TierMap` |
 
 **account-client (change).** `Transport::open(&self, need: &Need, class: DataClass, tier: Tier) -> impl Future<Output = Result<Self::Session, TransportError>> + Send`, with `type Session: InferSession`. `InferSession` has `send(ClientFrame)` and `next() -> InferEvent`. `Transport::infer` is removed. `Accounts::infer` and a new `Accounts::session` sit on top of it.
 
@@ -809,7 +809,7 @@ In Bardo, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not 
 | "intents" | carries `ToolDecl { name, description, params }` | `ActionDecl` → JSON Schema text (its home) |
 | "security" (policy, prov, egress) | `ActionClass`, `SafetyHint` (add-only), `ServedBy`/locality, audit `images` | the egress proxy for cloud backends (`model-http` takes a proxy `HttpTarget`); `Screen` floor stays OnDevice |
 | "memory" (eventlog, recall) | `Embed` requests unchanged; audit entries to eventlog | none |
-| "launcher" and "presence" | `InferEvent::{Routed, Waiting, ThoughtDelta, ActionProposed}` for orb states; `Prepare` on double-tap ⌘; `PickerRow` for detent | the Intelligence page draws `PickerRow`s |
+| "launcher" and "presence" | `InferEvent::{Routed, Waiting, ThoughtDelta, ActionProposed}` for orb states; `Prepare` on double-tap ⌘; `PickerRow` for the Settings app | the Intelligence page draws `PickerRow`s |
 | "settings" (design/22) | rows for `ai.model.<kind>.<tier>`, `ai.engine.*`, `ai.cua.history_frames` (3), `ai.cua.repair_attempts` (1) | |
 
 **Questions only the user can answer:**

@@ -45,9 +45,9 @@ impl PortalLink for OnPortal {
 /// Names the request, so its answer can be listened for before it is asked.
 fn token(want: Want) -> &'static str {
     match want {
-        Want::Folder => "detent_engine_folder",
-        Want::File => "detent_corner_file",
-        Want::Picture => "detent_wallpaper_picture",
+        Want::Folder => "settings_app_engine_folder",
+        Want::File => "settings_app_corner_file",
+        Want::Picture => "settings_app_wallpaper_picture",
     }
 }
 

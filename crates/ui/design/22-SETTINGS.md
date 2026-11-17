@@ -974,7 +974,7 @@ reads every key as hands-off (section 9.7).
 `labels` (`[key.labels]`, word = "Label") is optional and absent from older schemas; a word
 without a label is shown as its own words (`workspace_prev` as "Workspace prev").
 
-Explanations sit where the Mac puts them (2026-10-27, detent's style pass): a short grey line under
+Explanations sit where the Mac puts them (2026-10-27, the Settings app's style pass): a short grey line under
 the few rows that need one, a footnote under a section, and nothing on the rest.
 
 - `#[settings(note = "...")]` sets `KeySpec.note`, the line drawn under the row. `help` stays as
@@ -993,7 +993,7 @@ switch and segments from the words, so a program writes nothing extra. Two words
 pair when either is `off`, `hide`, `never`, `none` or `nothing` (the other is the on side), or
 when they are one of `natural`/`traditional` (natural on) or `reduced`/`standard` or `reduced`/`system` (reduced on: a
 switch labelled like macOS's "Reduce motion" or "Reduce transparency", on for the reduced value). Everything else is a
-choice between two things, not a switch. The rule and its table test live in detent's
+choice between two things, not a switch. The rule and its table test live in the Settings app's
 `settings-app-model` (`control.rs`). All widgets are from `04-COMPONENTS.md`; the Settings app has no
 widgets of its own.
 
@@ -1049,7 +1049,7 @@ install. Bardo's own schema (`bardo.settings.toml`: the `appearance` and `icons`
 A settings file can hold tables the program owns that are not settings (inferd's `[engines]`,
 `[probe]`, `[callers]`). The schema names them in an optional top-level `foreign = ["engines",
 "probe", "callers"]` (`Schema::foreign`, `ForeignTables`): the Settings app shows no rows for
-them and an unknown-key check (detent's) leaves every key under them alone. Absent means none.
+them and an unknown-key check (the Settings app's) leaves every key under them alone. Absent means none.
 
 A `Rows` key is one `[[key]]` table whose `kind` carries one `[[key.kind.v.columns]]` table
 per column (`kind` = `"text"` or `"choice"`; `pattern` is absent when there is none), and whose
@@ -1143,7 +1143,7 @@ them by unique name, and `Served::changed` the same. A peer `permit` refuses hea
 (`Timeouts`, 10 s for reads and 30 s for a `Set`) and a module that is silent is
 `LiveError::Timeout`; a client takes `Changed` only from the module's own unique name.
 
-Who owns the name (2026-10-16, production audit DETENT-05): a well-known name goes to whoever asks
+Who owns the name (2026-10-16, production audit SETTINGS-05): a well-known name goes to whoever asks
 first, so `LiveClient::new` takes an `OwnerCheck` that the consumer supplies (ui-settings knows no
 caller table). Before the first call, and whenever the name's owner is another connection, the
 client asks it whether that owner holds the module's role; a refusal is `LiveError::NotTheService`,
@@ -1233,7 +1233,7 @@ reads one entry. `Describe`, `Get`, `Set` and `Changed` keep their signatures.
 
 ### 9.7 Agent-settable keys (proposed)
 
-An agent (the companion, through detent's intents) may set a key only if the owning program's
+An agent (the companion, through the Settings app's intents) may set a key only if the owning program's
 schema marks it. The mark is `AgentSetting::Settable`: the field attribute
 `#[settings(agent_settable)]` on the settings struct, written into the schema file as
 `agent = "settable"` in the key's `[[key]]` table and read back by the schema loader. An
@@ -1244,7 +1244,7 @@ mark is written; a person never edits it, and a settings file cannot carry it.
 The list below is a **proposal for the user to accept or trim**, not a grant. It is conservative on
 purpose: each key is cosmetic or a convenience that one click undoes, and none touches data,
 accounts, spend or a lock. `ds_settings::schema::AGENT_SETTABLE_PROPOSED` holds the same list so
-Bardo's, sill's and detent's tests check their schemas against one source.
+Bardo's, sill's and the Settings app's tests check their schemas against one source.
 
 | Key | Owner | Why an agent may set it | Status |
 | --- | --- | --- | --- |
@@ -1268,7 +1268,7 @@ a program's own schema still decides which other keys it marks settable.
 `AGENT_NEVER_SETTABLE` lists those prefixes and a test keeps the proposal clear of them. An
 agent that could raise its own budget or switch computer use on would be its own gatekeeper.
 
-The marks of sill's and detent's own keys live in their schemas; Bardo marks only what
+The marks of sill's and the Settings app's own keys live in their schemas; Bardo marks only what
 `bardo/appearance.toml` owns (`appearance.theme`, `appearance.accent`, `appearance.look`,
 `appearance.file_icons`, `appearance.custom_styles`).
 

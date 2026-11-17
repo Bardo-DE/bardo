@@ -385,7 +385,7 @@ Platform limits:
    horizontal only, two fingers never horizontal, swipe right -> desktop left, long drag
    switches again after cooldown, vertical drag no switch, one finger never switches, two
    fingers scroll vertically, three fingers nothing, finger count change no jump, steps finer
-   than a tenth detent) passes against palmrest.
+   than a tenth the Settings app) passes against palmrest.
 4. **Swipe trigger**: synthetic 2-finger stroke of 200 units in 0.3 s: exactly one
    WorkspacePrev/Next; 199 units: none; 160 units vertical before 160 horizontal: none (re-
    anchored) then a further 200 horizontal fires once; 600 units in 0.4 s: one fire (cooldown).

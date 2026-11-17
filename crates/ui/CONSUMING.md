@@ -1019,7 +1019,7 @@ A few props worth knowing about before you read the signatures:
 - A settings enum key's menu is built by the caller from `KeySpec::grouped_choices()`: a
   `MenuItem::Header(group)` over each group's items, an unavailable choice as `MenuItem::new(..)
   .with_availability(Availability::Disabled)` with `MenuItem::Info { title: reason, detail: None }` right
-  under it (detent's `menu_items` is the worked example). ds does not depend on ui-settings, so Bardo
+  under it (the Settings app's `menu_items` is the worked example). ds does not depend on ui-settings, so Bardo
   has no converter. `KeySpec::place_of(word)` says where a choice's model runs (`ChoicePlace`: this
   computer, your computer, cloud, assistant) for the mark beside it, and `KeySpec::note` is the short
   line to show under the key (`help` stays behind the info button).
@@ -2424,7 +2424,7 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   `input/route.rs` `is_command_form` go: resolve with `Context::Terminal`, where Primary is Super on
   our desktop and Ctrl+Shift elsewhere and plain Ctrl never matches, so everything unresolved goes to
   the pty. A terminal keeps `SwitchChord::Unbound`.
-- **detent.** No key handling today. Settings › Keyboard needs a shortcut-capture control: it will
+- **the Settings app.** No key handling today. Settings › Keyboard needs a shortcut-capture control: it will
   show `Keys::with_keymap(|k| k.bindings(Context::Normal))` and read a new chord with
   `ds_core::command::key_input`; `KeyKind::Shortcut` stays file-only until that lands.
 - **the compositor** (compositor) reads shell bindings from the same keymap with `Keymap::resolve` and

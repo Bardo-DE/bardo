@@ -4528,7 +4528,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
     (the client's pinned pid), feeding the `Channel<A11yVerdict>` back as `WindowHintChange::A11y(verdict.root)`.
 - **Interface asks.** Bardo `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
   `PRIVACY_PAGE` in `compositor-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
-  the rows `shell` (sill.service), `agent_tier` (cuad.service), `portal` (transom.service), `settings` (detent) and `manager`
+  the rows `shell` (sill.service), `agent_tier` (cuad.service), `portal` (transom.service), `settings` (the Settings app) and `manager`
   (systemd, `Exe`) with `exe` lists.
 - **Not verified by reading (the gate run looks here).** That `BusPeers::who`'s future is `Send` (the boxed `WhoFuture` and zbus
   interface methods need it); that `Arc::new(BusPeers)` coerces at the closure return in `CallerSetup::with`; `tokio::spawn` of
@@ -4753,9 +4753,9 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
   Tests: `a_program_has_a_switch_for_every_power_and_the_unanswered_ones_stand_at_ask`, `answering_a_power_gives_the_row_the_path_it_had_while_unanswered`,
   `the_programs_with_a_switch_for_every_power_are_capped_and_the_persons_come_first`, `the_first_answer_for_a_power_adds_the_persons_row`,
   `a_power_nobody_answered_can_be_switched_on` (private bus: the key reads `ask`, a `Set` of `on` reaches the model as `Allow`, reads back `on`).
-  - *Interface ask 2 (detent, `detent-model/src/privacy/pane.rs`):* `standing_of` must accept the word `ask` (`PowerStanding::Ask`) and treat a `Toggle`
+  - *Interface ask 2 (the Settings app, `settings-app-model/src/privacy/pane.rs`):* `standing_of` must accept the word `ask` (`PowerStanding::Ask`) and treat a `Toggle`
     row at `ask` as `CellKind::Remembered { switch, forget: None }` (it is changeable to Allowed/Denied; picking Ask on it is a no-op because it already
-    stands there, and picking Ask on an answered row is the `forget` action as today). Today `standing_of("ask")` is `None`, so detent drops these rows
+    stands there, and picking Ask on an answered row is the `forget` action as today). Today `standing_of("ask")` is `None`, so the Settings app drops these rows
     and the page shows no switch for a program that has not asked. The `Asking` cell kind ("the compositor lists no row to change") is then only
     for a compositor that lists none.
 - **Revoke ends live objects where smithay allows: it did not allow, so the change was an interface ask (landed in the fork and wired in cas11).** Read at the fork's `6d813694`
@@ -4993,7 +4993,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
 ## cas13: test caller rows in the injected folder, test builds only (2026-10-17)
 
 - **What.** The desktop harness runs the compositor in a jail with no `/etc/bardo/desktop-callers.toml`, so `clients::desktop_table` was an empty
-  table, nobody was a desktop service, and the shell (sill), Settings (detent) and the portal (transom) could not connect. Now, in a build
+  table, nobody was a desktop service, and the shell (sill), Settings (the Settings app) and the portal (transom) could not connect. Now, in a build
   with `testing` or `debug-inject` and a run with `SystemDir::At(dir)`, the compositor also reads `dir/desktop-callers.toml` (`clients/dev_callers.rs`)
   as developer rows of peephole v0.1.4 (`TableFiles::load_dev`, `Table::from_toml_dev`; `Proof::Dev`, `RowOrigin::Dev`) and merges them after
   the system table (the system table still wins where both name a program: the library judges an image a shipped row claims by shipped rows
@@ -5016,7 +5016,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
   `cfg!(any(testing, debug-inject))`), `dbus/callers.rs` (Full admitted, Exe/Cgroup refused, Dev admitted only for its own role, and only with
   `dev-rows`).
 - **Harness lane.** Write `desktop-callers.toml` next to `privacy.toml` in the folder passed as `--system-dir`, mode 0600, one `[[peer]]` per
-  stand-in with `exe` the `readlink -f` path of its build-folder image (sill: `shell`; detent: `settings`; transom: `portal`; cuad:
+  stand-in with `exe` the `readlink -f` path of its build-folder image (sill: `shell`; the Settings app: `settings`; transom: `portal`; cuad:
   `agent_tier`). `desktop/gate/check-no-fake.sh` must still see no `dev-rows` in a shipped build.
 - **Known limit, test builds only.** A developer row makes any program the person can write a service of its role at `Proof::Dev`, and
   `client_standing` then gives it the role's powers; that is the point of the file and why a release build compiles it out.
@@ -5325,7 +5325,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   window only asks for attention, A7); an app activated from the switcher, dock or launcher becomes active where the person is.
   `spaces.per_display` and `spaces.auto_rearrange` are `#[settings(skip)]`: nothing reads them yet (D4), so the Settings app
   draws no row that changes nothing; the document still holds them (`NOT_DRAWN` in the schema test).
-- **Installer.** `scripts/install.sh` step 4/5 writes `bardo-compositor --write-schema` into `P/share/bardo/settings`, where detent
+- **Installer.** `scripts/install.sh` step 4/5 writes `bardo-compositor --write-schema` into `P/share/bardo/settings`, where the Settings app
   scans; the schema existed but no installer put it there, so the row never showed.
 - **Launch tokens.** A token asked for naming an `app_id` (a launcher's) is good for `LAUNCH_LIFETIME` (60 s, = `TOKEN_MEMORY`)
   instead of `TOKEN_LIFETIME` (5 s): a slow app's first window (a cold browser, Blender) mapped with a stale token, so it

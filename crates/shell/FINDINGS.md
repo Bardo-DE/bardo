@@ -589,13 +589,13 @@ a source; `assumed` means not yet checked.
   animates to the compositor's default place. Ends when shell-host exports the surface to a client
   that can register it with `DesktopClient::register_surface`.
 
-- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ds_shell::ProviderEntry` has no face (`gap(bardo)` at `mark_of`); Bardo v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.bardo.Settings` (`ActivateAction("open-account", [account path])` at `/org/bardo/Settings`), so it runs as `org.bardo.Settings.service`; detent must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: Bardo has no help line under a field for porter's full sentence.
+- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ds_shell::ProviderEntry` has no face (`gap(bardo)` at `mark_of`); Bardo v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.bardo.Settings` (`ActivateAction("open-account", [account path])` at `/org/bardo/Settings`), so it runs as `org.bardo.Settings.service`; the Settings app must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: Bardo has no help line under a field for porter's full sentence.
 
 ### sill
 
-- **The two Settings slugs wait on detent's names.** `SettingsPage` (`sill_model::launch`) writes
-  `assistant-model`; if detent names its pages differently, change the
-  two `#[word(slug = ...)]` attributes and nothing else. Ends when detent's pages are merged under
+- **The two Settings slugs wait on the Settings app's names.** `SettingsPage` (`sill_model::launch`) writes
+  `assistant-model`; if the Settings app names its pages differently, change the
+  two `#[word(slug = ...)]` attributes and nothing else. Ends when the Settings app's pages are merged under
   those names.
 - **`RefusalWire::NoModel` must be in docket's `companion-wire` before sill builds.** sill matches
   it in `sill_model::companion::words`, `sill_ui_kit::companion::answer` and `no_model`. Ends when
@@ -924,7 +924,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 
 ## Space removal: not a shell path
 
-- sill has no Space-removal path. Settings (detent) owns the removal sheet and calls
+- sill has no Space-removal path. Settings (the Settings app) owns the removal sheet and calls
   `org.bardo.Memory1 Control.RemoveSpace` before `Spaces1.Remove`. The shell neither removes Spaces nor shows the sheet.
 
 ## p2-sq: Bardo arm
@@ -1368,7 +1368,7 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
   The compositor as well.
 - **The warmth.** The slider spans 6500 K (Less Warm) to 2700 K (More Warm); the compositor accepts 1000
   to 6500 K, so a value set below 2700 K in Settings sits at the slider's end.
-- **No Settings page of ours.** The Settings app is detent's; the compositor's `[night_light]` section is
+- **No Settings page of ours.** The Settings app is the Settings app's; the compositor's `[night_light]` section is
   already in its schema (page Appearance), so Mode, Starts at, Ends at, Warmth and Fade are there.
 - **Check at the gate.** `toml` 1's `Table::entry`/`Value::as_table_mut`; `jiff::Zoned::offset().seconds()`;
   whether the compositor re-reads `settings.toml` when it changes (the lane that drives the night light

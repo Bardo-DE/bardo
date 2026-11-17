@@ -154,7 +154,7 @@ mod tests {
     }
 
     #[test]
-    fn every_daemon_detent_reads_is_named_by_some_page() {
+    fn every_daemon_settings_app_reads_is_named_by_some_page() {
         for module in ModuleId::ALL {
             assert!(
                 PageKind::ALL

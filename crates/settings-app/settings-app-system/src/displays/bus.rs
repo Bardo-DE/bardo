@@ -176,7 +176,7 @@ impl DisplaysLink for OnCompositor {
             reachable?;
             let (ticker, ticks) = Ticks::channel();
             let watching = std::thread::Builder::new()
-                .name("detent-displays-watch".to_owned())
+                .name("settings-app-displays-watch".to_owned())
                 .spawn(move || watch_blocking(&ticker));
             if let Err(fault) = watching {
                 eprintln!("bardo-settings: displays: no watch for changes: {fault}");

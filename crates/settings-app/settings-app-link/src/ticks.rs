@@ -1,5 +1,5 @@
 //! "Something changed, look again": a wake-up that cannot pile up and ends its producers when
-//! the one waiting for it goes (audit DETENT-09).
+//! the one waiting for it goes (audit SETTINGS-09).
 //!
 //! A page that follows a service by its signals keeps relay tasks that turn each signal into a
 //! tick. Before, the ticks queued without bound (a service that floods signals filled memory

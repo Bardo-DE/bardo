@@ -359,7 +359,7 @@ the machine under it. What was decided:
 
 ## f4-settings: the settings schema and its reader
 
-The Settings app (detent) builds its Intelligence page from the schema each daemon ships (design/22
+The Settings app (the Settings app) builds its Intelligence page from the schema each daemon ships (design/22
 section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and cuad reads them.
 
 1. **`dist/settings/cua.settings.toml` has 14 rows**, none `agent = "settable"` (`cua.*` is never

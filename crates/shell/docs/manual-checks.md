@@ -324,10 +324,10 @@ sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when miss
 
 ## The focused app's menus in the bar (a sill login, a Bardo app that exports its menu)
 
-- [ ] **detent's Edit menu shows in the bar**: focus detent (built with the menu export on); the bar
-  reads detent's name in bold, then File, Edit, View, Window and Help. Press Edit: Undo and Redo list
+- [ ] **the Settings app's Edit menu shows in the bar**: focus the Settings app (built with the menu export on); the bar
+  reads the Settings app's name in bold, then File, Edit, View, Window and Help. Press Edit: Undo and Redo list
   with their Cmd keys; hover across File, a tray item and Sound switches the one popup with no gap;
-  pick a row and detent runs it. A window that is not a Bardo app shows only its name's menu (Hide,
+  pick a row and the Settings app runs it. A window that is not a Bardo app shows only its name's menu (Hide,
   Quit, its windows).
 
 ## The confirmation sheet and `bardo-do` on a real sill (the compositor) login
@@ -598,14 +598,14 @@ the real daemons or a real keyboard.
 - [ ] **Go to Folder** (files 234a3f3): ⇧⌘G opens the sheet; type `~/Documents` and Return goes; Escape stays.
 - [ ] **Sheets take the keys** (files 234a3f3): right-click a file, Open With, Other…: arrows and Return work in the list at once, with no click first; ⌘I then Return closes Get Info.
 
-## Internet Accounts page (detent c4a69c2, a real login with porter running)
+## Internet Accounts page (the Settings app c4a69c2, a real login with porter running)
 
 - [ ] **List beside detail**: Settings > Internet Accounts shows the accounts on the left and the chosen one on the right; arrows and click choose. The split is tall enough and scrolls inside on a small window (`.accounts-split` is a fixed 40em).
 - [ ] **Sync line**: a synced account shows "Synced N minutes ago" and its storage under Sync now; a ring turns round its mark while items wait.
 - [ ] **Apps with access**: each app row reads "Allowed on <date>"; hovering shows Revoke on the row and a card naming what it uses.
 - [ ] **First run**: `bardo-settings --page accounts-setup` shows "Sign in to Your Accounts", Add Account… opens the provider list, Skip always works, Continue once an account is listed.
-- [ ] **Needs attention** (detent d022958): an account that must sign in again, or that its provider signs out on a set day, shows a yellow banner with Sign In…, which starts the sign-in; its row's dot says "Sign-in ends soon" (or needs sign-in).
-- [ ] **Input shortcuts** (detent 9d7f723): Settings > Keyboard Shortcuts lists an Input group with Next input language and Emoji & Symbols, and both keys work on the desktop.
+- [ ] **Needs attention** (the Settings app d022958): an account that must sign in again, or that its provider signs out on a set day, shows a yellow banner with Sign In…, which starts the sign-in; its row's dot says "Sign-in ends soon" (or needs sign-in).
+- [ ] **Input shortcuts** (the Settings app 9d7f723): Settings > Keyboard Shortcuts lists an Input group with Next input language and Emoji & Symbols, and both keys work on the desktop.
 
 ## Permissions mode (docket 3b)
 
@@ -616,7 +616,7 @@ the real daemons or a real keyboard.
 - [ ] **Locked by an administrator**: with the admin floor holding Manual, the first switch shows the control unavailable on Manual with "Your administrator keeps conversations in Manual."; ⇧⌘M does nothing.
 - [ ] **Follows other changes**: switch the same conversation from another shell or the control role (`bardo-do`); the box follows without reopening.
 
-## Wallpaper pictures (detent wallthumb lane, a real login)
+## Wallpaper pictures (the Settings app wallthumb lane, a real login)
 
 - [ ] **The pictures show**: Settings, Wallpaper shows every system wallpaper as a picture, one tile per wallpaper (a KDE wallpaper folder is one tile under its own name, not one per size). The first opening fills the tiles in within a few seconds; the second shows them at once. A picture that cannot be shrunk is a tile with only its name. Clicking a tile changes the desktop's wallpaper. Fedora's own .jxl wallpaper is not offered yet (the desktop cannot draw .jxl).
 
@@ -635,7 +635,7 @@ Settings > Appearance, "Automatically hide and show the menu bar" (`bar.autohide
 - [ ] **Two displays in full screen**: full screen an app on each display. Rest the pointer at the top edge of one: only that display's bar comes in; the other's stays away. The same for the docks at the bottom edges.
 - [ ] **Reduced motion in full screen**: turn on Reduce motion (Settings > Appearance, or the desktop's own setting). In full screen the bar and dock fade in and out in place instead of sliding; turn it off and they slide again, with no restart.
 
-## Cloud drives in Files (porter ae56db17 S2a, files 7b64cc4, detent 5c18e4d; a real login with the release installed)
+## Cloud drives in Files (porter ae56db17 S2a, files 7b64cc4, the Settings app 5c18e4d; a real login with the release installed)
 
 The first real mount: the test machines have no `/dev/fuse`. Steps from porter `docs/drive-files.md`
 "The check" (that page says how syncd and bardo-drive-mount fit). The drive is read-only in S2a.

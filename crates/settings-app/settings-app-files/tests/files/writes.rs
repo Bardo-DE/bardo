@@ -1,4 +1,4 @@
-//! How a save lands (DETENT-03, -04, -15): the file's mode and a link to it survive, writers
+//! How a save lands (SETTINGS-03, -04, -15): the file's mode and a link to it survive, writers
 //! take turns, and several keys arrive in one rename.
 
 use crate::round_trip::{home, read_file, save_key, spec, word, write_file};

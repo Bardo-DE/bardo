@@ -1,5 +1,5 @@
 //! The settings document (P0-F1-output): defaults when absent, one conversion into the model's
-//! settings, and the schema detent reads (`bardo-compositor --write-schema`). Every document lives in a
+//! settings, and the schema the Settings app reads (`bardo-compositor --write-schema`). Every document lives in a
 //! scratch directory standing in for `$XDG_CONFIG_HOME`; nothing here reads the real one.
 
 use base_ids::Fraction;

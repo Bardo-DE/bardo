@@ -43,7 +43,7 @@ pub struct Accel {
 impl Accel {
     /// A turn of `steps` detents (a magnitude; a high-resolution wheel reports fractions) at
     /// `now`, and the factor to scale it by: 1 at a reading pace, a quarter more for each
-    /// detent a second above 5, never over `max` (`max <= 1` is off).
+    /// The Settings app a second above 5, never over `max` (`max <= 1` is off).
     #[must_use]
     pub fn feed(self, steps: f64, now: Elapsed, max: f64) -> (Accel, f64) {
         let rate = match self.last {

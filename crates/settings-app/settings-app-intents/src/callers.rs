@@ -1,5 +1,5 @@
 //! Who may ask the running Settings to show itself, and whom a second `bardo-settings` may hand its
-//! activation token to (audit DETENT-16).
+//! activation token to (audit SETTINGS-16).
 //!
 //! `org.freedesktop.Application` is a public door on the session bus: any program can call
 //! `Activate` and `ActivateAction`. A call focuses the window, opens a page, and carries an

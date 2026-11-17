@@ -219,7 +219,7 @@ fn enter_runtime_block<T>(future: impl std::future::Future<Output = T>) -> T {
 /// was started with) and leave, so there is never a second window. `page` is the page this
 /// process was asked to open, which the running Settings shows. The token and the page go only to
 /// an owner of the name that holds the Settings role; to any other program nothing is sent and this
-/// process fails with the reason (DETENT-16).
+/// process fails with the reason (SETTINGS-16).
 fn hand_over_to_running(page: Option<PageSlug>) -> ExitCode {
     let token = std::env::var("XDG_ACTIVATION_TOKEN")
         .ok()

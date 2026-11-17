@@ -19,7 +19,7 @@ How to read this file:
 | "agent", "planner", "agent-loop", "companion daemon" | docket: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
 | "security" | labels: porter `prov`; policy, review, breaker, budgets: docket; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (stoker `model-http` already takes a proxy `HttpTarget`) |
 | "compositor" | the compositor (cua repo owns the protocol crate; the compositor branch is shared with double-tap ⌘ later) and sill (`shell-overlays` phase A) |
-| "launcher", "presence", "settings" | ux (sill, Bardo ds, detent; design/22 rows by Bardo agent) |
+| "launcher", "presence", "settings" | ux (sill, Bardo ds, the Settings app; design/22 rows by Bardo agent) |
 | "intents" | docket |
 
 ---
@@ -43,7 +43,7 @@ Four new library repos plus one GPL fork. Every new repo copies porter's shape: 
 | `~/compositor` | new fork, GPL-3.0-only | `src/bardo/**` only (agent seat, masked source, trusted surface, glow, kill chord, later double-tap) | no; nothing of ours depends on it |
 | `~/bardo` | existing | + `ui-intents` crate; companion components and vocab; design docs | yes |
 | `~/sill` | existing | launcher companion mode, companion service, providers, overlays (confirm and glow phase A), settings domain | no |
-| `~/detent` | existing | `Page::Intelligence` row and icon | no |
+| `~/settings-app` | existing | `Page::Intelligence` row and icon | no |
 | `~/mailo` | existing | first real provider (fill wave only) | no |
 | `~/shell-host` | existing | nothing in the freeze; later the `bardo_sensitive_v1` client | no |
 
@@ -60,7 +60,7 @@ the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`
 ```
 stoker  ←  porter  ←  almanac  ←  docket  ←  cua  ←  sill
    ↑          ↑          ↑          ↑   ↖Bardo(ui-intents only)
-   └──────────┴──────────┴──────────┴── mailo, detent (clients only)
+   └──────────┴──────────┴──────────┴── mailo, the Settings app (clients only)
 Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol only.
 ```
 
@@ -779,7 +779,7 @@ JSON, step tables of the pure parts) pass.
 | 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to Bardo (reis/atspi landed in stage 0) | porter-style gate |
 | 4 | **fork-setup** | `~/compositor` at the 1.8 tag, branch `bardo`, `src/bardo/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
 | 5 | **sill** | ux.md §6 F2 file list with §3.8 here; design/22 is Bardo agent's | sill gate |
-| 5 | **detent** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | detent gate + `scripts/gen-fixtures.sh` |
+| 5 | **the Settings app** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | the Settings app gate + `scripts/gen-fixtures.sh` |
 
 Porter-style gate (stoker, porter, almanac, docket, cua):
 

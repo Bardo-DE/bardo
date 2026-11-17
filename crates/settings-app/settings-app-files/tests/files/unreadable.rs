@@ -1,4 +1,4 @@
-//! A file that is there and cannot be used is never taken for a missing one (DETENT-01, -12):
+//! A file that is there and cannot be used is never taken for a missing one (SETTINGS-01, -12):
 //! it shows the defaults, is reported, and no save writes over it.
 
 use crate::round_trip::{home, read_file, save_key, spec, word, write_file};

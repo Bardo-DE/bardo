@@ -10,7 +10,7 @@ use std::path::PathBuf;
 /// A builder whose every service is the real one until a test replaces it; the bus is absent, so
 /// nothing it holds is ever reached.
 pub fn builder() -> ClientBuilder {
-    let nowhere = PathBuf::from("/nonexistent/detent-client-tests");
+    let nowhere = PathBuf::from("/nonexistent/settings-app-client-tests");
     let data = DataHome(nowhere.join("data"));
     let real = services::over(
         &BusSource::Absent,

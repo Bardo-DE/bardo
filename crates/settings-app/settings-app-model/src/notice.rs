@@ -14,7 +14,7 @@ use std::task::{Poll, Waker};
 /// How many notices wait for the window at most. Whoever the activation object admits (the shell,
 /// another Settings, the agent tier) can call it as often as it likes; past this the extra notices
 /// are dropped (the window is already behind on the ones that wait), so the queue cannot grow
-/// (DETENT-16). A person opens a page a second at most, so a few dozen is a long way behind.
+/// (SETTINGS-16). A person opens a page a second at most, so a few dozen is a long way behind.
 pub(crate) const NOTICE_INBOX: usize = 32;
 
 /// One thing the window is told.

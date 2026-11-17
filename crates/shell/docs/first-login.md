@@ -28,7 +28,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    advice and run it again. Install only when `bardo-shell` and `bardo` are both on a merged master (a
    Bardo merge breaks sill until sill follows it).
 3. **Remove a stale binary that would shadow the install:** `rm -f ~/.cargo/bin/bardo-shell`.
-4. **Install sill and the session.** The login entry "sill (the compositor)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, detent, sill, keycap and the rest, then the session files). sill's own part, from `~/sill`:
+4. **Install sill and the session.** The login entry "sill (the compositor)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, the Settings app, sill, keycap and the rest, then the session files). sill's own part, from `~/sill`:
 
    ```sh
    dist/install.sh --dry-run        # read it: every step is printed, nothing is changed

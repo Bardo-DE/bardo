@@ -56,7 +56,7 @@ fn toggling_a_switch_writes_the_file_and_the_value_round_trips() {
     // Read back the way the owning program reads it, and by a second run of the app.
     let spec = harness_spec(&sandbox);
     let loaded = load(&sandbox.config_home(), &spec);
-    let key = detent_model_key("dock.magnification");
+    let key = settings_app_model_key("dock.magnification");
     assert_eq!(loaded.value.get(&key), Some(&toml::Value::Boolean(false)));
     let again = sandbox.harness(opening("dock"));
     assert_eq!(

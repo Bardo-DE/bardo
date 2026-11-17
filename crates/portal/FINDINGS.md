@@ -379,11 +379,11 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   (d) Unverified: that xdg-dbus-proxy's connection reads as the sandboxed app through its own `.flatpak-info`. If it
   reads as a plain program, no Flatpak app is remembered until that is fixed; the failure is asking too often.
 - **NEW-PI-7: revoke path.** `org.bardo.Portal1.ListGrants` / `Revoke` (ARCHITECTURE "Taking a remembered share back").
-  The Settings page is detent's; the ask is in the lane report: a "Screen sharing" group on the Privacy page listing
+  The Settings page is the Settings app's; the ask is in the lane report: a "Screen sharing" group on the Privacy page listing
   `ListGrants` rows (name, date) with a Remove button calling `Revoke(app_id)`, on the name
   `org.freedesktop.impl.portal.desktop.bardo`, path `/org/freedesktop/portal/desktop`. Settings must run as
   `org.bardo.Settings.service` from a root-owned unit with the loader variables unset, or it is proved below `Full`
-  and refused. Closes when detent has the row.
+  and refused. Closes when the Settings app has the row.
 - **PORTAL-02 rest / NEW-PI-3, transom half.** Nothing in transom trusts a desktop service below `Full`: the frontend,
   the shell and Settings are all asked for at `Full` (`peers::need`). The one `Proof::Exe` left is the unit manager's
   own identity (`ManagerCheck::Verified`, role `manager`), which is a program row with no unit and so cannot be proved
@@ -428,7 +428,7 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   (`transom-core/tests/it/restore.rs`), the file (`restore_file.rs`), the bus method and its guard (`grants.rs`), and the
   no-ask path for input (`remote_desktop.rs`). The screen path in `Shared::restored` shares the lookup but has no
   stand-alone test: it needs a live `capture::Job`; the real run covers it (dev/accept).
-- **Asks of other repos.** detent (Privacy page): a row per remembered app with "Let <name> share this screen without
+- **Asks of other repos.** the Settings app (Privacy page): a row per remembered app with "Let <name> share this screen without
   asking" (screens: every display, or one by name; input on/off) calling `Allow`; the existing list and Remove button
   already show and revoke it. sill (picker): for a proven app a "Don't ask again for <name>" box that makes the shell call
   `Allow` after the yes. Neither is done.

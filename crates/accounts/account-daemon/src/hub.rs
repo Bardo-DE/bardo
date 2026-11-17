@@ -57,7 +57,7 @@ pub(crate) fn hears(role: CallerRole, _event: &Event) -> bool {
 
 /// What the settings module's listeners are told as `Changed(key, value)`, in order. The module
 /// has no signal for "the key set changed"; a pane reads the schema again on any `Changed`
-/// (detent's `Followed::Changed`), so an account that appeared or went, and a new label, are
+/// (the Settings app's `Followed::Changed`), so an account that appeared or went, and a new label, are
 /// said on a row of that account:
 ///
 /// - a new state, or an account that appeared: `accounts.<id>.state` with the state slug;

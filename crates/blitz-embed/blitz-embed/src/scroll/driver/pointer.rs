@@ -45,7 +45,7 @@ impl ScrollDriver {
     }
 
     /// `steps` wheel detents on `axis` (signed, positive toward the maximum): each adds the
-    /// detent distance to the target, which animates by the smooth rule (capped by
+    /// The Settings app distance to the target, which animates by the smooth rule (capped by
     /// `wheel_smooth_ms`) (design/11 §11.3.11).
     /// Detents less than the burst window apart keep their first scroller.
     pub fn detents(

@@ -233,7 +233,7 @@ Proposed; tune by feel.
 | Value | Number | Why |
 | --- | --- | --- |
 | Wheel rate | detents per second, smoothed: each event replaces 40% of it; a gap over 250 ms ends the burst (the next click is a first one, 60 px); events under 4 ms apart count as 4 ms | a burst is one spin; a coalesced pair must not read as infinite |
-| Wheel gain | 1 up to 5 detents/s, then +0.25 per detent/s, capped at `wheel_accel_max` (5; 1 is off) | 5/s is a fast read; 20/s reaches about 4x, a spin reaches the cap |
+| Wheel gain | 1 up to 5 detents/s, then +0.25 per settings-app/s, capped at `wheel_accel_max` (5; 1 is off) | 5/s is a fast read; 20/s reaches about 4x, a spin reaches the cap |
 | Wheel scope | a source `Wheel` without Control only; Control-wheel is a zoom, touchpad pixels are the fingers' own | fingers are tracked 1:1 whatever their speed |
 | Fling gain | 1 up to 1000 px/s, then +1 per 3000 px/s, capped at `fling_accel_max` (2; 1 is off), applied to the release speed before the cap | a fast lift carries further; a gentle one glides as it is |
 

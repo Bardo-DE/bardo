@@ -33,7 +33,7 @@ more: the extras are additive, never a different program.
 | porter | accounts engine and providers, hosted in-process or as a latchkey agent | accountd as the session's one account store; system consent sheet; syncd |
 | almanac | memory files, event log, search, sealing, in-process `Memory` | memoryd: one memory for every app, file watching, consolidation on a timer |
 | docket | an in-app agent: router, policy point, reviewer, agent loop, skills over the app's own intents, confirm sheet drawn in-app | companiond and intentd: one companion across all apps; `bardo do`; cua (computer use); voiced; readerd quarantine |
-| desktop only | | sill, layer-shell-host, the compositor, detent, keycap, palmrest |
+| desktop only | | sill, layer-shell-host, the compositor, the Settings app, keycap, palmrest |
 
 ## 3. In code
 

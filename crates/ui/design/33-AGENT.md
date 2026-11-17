@@ -38,7 +38,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | The compositor (new, GPL) | the compositor's agent seat, masked source, trusted surface, glow, kill chord | no |
 | Bardo | `ui-intents`, the companion components and vocabulary, design docs | yes |
 | sill | launcher companion mode, the companion service, providers, overlays, settings domain | no |
-| detent | the Intelligence page row and icon | no |
+| The Settings app | the Intelligence page row and icon | no |
 
 Direction, acyclic and enforced per repo by each `check-boundary.sh`: stoker, then porter, then
 almanac, then docket, then cua, then sill. Bardo depends on none of them; docket's adapter depends
@@ -110,6 +110,6 @@ prompt props (Bardo fill), or anything in the other repos.
 ## 9. The freeze plan
 
 The spec's section 6 orders the agents (dependency list, stoker, Bardo, porter, almanac and docket,
-cua and the compositor fork, sill and detent), the spikes that block fills, and the fill waves.
+cua and the compositor fork, sill and the Settings app), the spikes that block fills, and the fill waves.
 Every repo's gate is format, clippy with warnings denied, tests, the boundary script and the
 licence check, and Bardo's adds the consumer check; each exit code is checked and nothing is piped.

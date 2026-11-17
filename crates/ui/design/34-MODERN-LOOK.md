@@ -18,7 +18,7 @@ the one check to do before step 2 lands.
 ## 1. Decision and scope
 
 Owner decision, 2026-10-07: Bardo reads like macOS 10.x. Move the one Look in two steps; no
-Look switch, token-level so Bardo, sill, detent, mailo and anyview move together.
+Look switch, token-level so Bardo, sill, the Settings app, mailo and anyview move together.
 
 1. **Step 1, Sonoma/Sequoia (macOS 14-15) base.** Inset grouped rounded lists; borderless filled
    buttons and fields (no 1 px grey hairline); larger radii and spacing; a hero icon above a bold
@@ -335,7 +335,7 @@ ds-gallery `--snapshot` images; ui-conformance size-rule tests
 that name tokens.
 Consumers: sill (`launcher_card.rs`, `osd.rs`, `switcher.rs`, `screenshot_thumb`, battery
 snapshot, any test asserting a px rect of a bar/menu/row; grep `row_h|menu_row|titlebar`),
-detent (crates/detent-ui/tests/snapshots.rs - the settings window is the grouped-list
+The Settings app (crates/settings-app-ui/tests/snapshots.rs - the settings window is the grouped-list
 poster child), anyview (`anyview-ui/tests/snapshots`, anyview-peek/tests/golden.rs,
 `snapshots/pane`), mailo (`mail-app/src/ui/fixtures`; its mail list rows keep Table/List
 density, so only chrome moves). Run `cargo test --workspace` in each after a Bardo pin move.
@@ -344,7 +344,7 @@ anyview/mailo a re-pin and can break porter.
 
 API: additive unless noted.
 - `ControlSize::ExtraLarge` (additive variant; **breaking for exhaustive `match` in consumers**;
-  mitigate by `#[non_exhaustive]`-free grep in sill/detent/mailo/anyview first).
+  mitigate by `#[non_exhaustive]`-free grep in sill/settings-app/mailo/anyview first).
 - `RowScale` gains `icon_tile`, `compact_height`; `ROW_SCALE` const fields are public:
   adding fields breaks struct-literal users (only Bardo constructs it).
 - `CHROME_SCALE` values change in step 2 (compositor-visible; **breaking for compositor/the compositor
@@ -373,7 +373,7 @@ Step 1 (Sonoma):
   `UPDATE_GOLDENS=1`, see design/30 README) plus gallery Controls and Menus pages.
 - **Lane 1C lists + forms** (ds/components/lists, new `forms/`): `grouped` list style, Form,
   Section, IconTile, separator inset, chevron rule, Table header/row. Verify:
-  `cargo test -p ui-components lists` and gallery Lists page; detent snapshot in a scratch pin.
+  `cargo test -p ui-components lists` and gallery Lists page; the Settings app snapshot in a scratch pin.
 - **Lane 1D overlays** (ds/components/overlays alert/sheet/empty_state, ds/components/app
   consent pieces): hero alert, floating sheet card, accounts sheets (design/31), motion edits of
   section 7 for sheet/alert. Verify: gallery Accounts and Overlays pages vs
@@ -411,7 +411,7 @@ The owner took every recommended default below; they are decisions, not open que
 5. **Per-app hero icon source**: apps pass their icon, or Bardo resolves it from the app id?
    Default: the caller passes it; Bardo only lays it out.
 6. **Menu icons**: mandatory for built-in menus or optional? Default optional; Bardo's own menus
-   (sill, detent) get symbols in step 2 per HIG "where it helps recognition".
+   (sill, the Settings app) get symbols in step 2 per HIG "where it helps recognition".
 7. **Keep the `inset` list style name?** Default: alias for one release, then remove.
 
 ## 7. Motion

@@ -1,6 +1,6 @@
 //! Which standard actions our desktop handles, and who carries each out.
 //!
-//! One table for the desktop: detent lists only these actions on its Shortcuts page, and
+//! One table for the desktop: the Settings app lists only these actions on its Shortcuts page, and
 //! The compositor's tests check that the actions it binds are exactly these. An action not named here
 //! belongs to apps (copy, save, find, ...).
 

@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/ux.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "ux": the companion's user-facing surfaces (Bardo components, sill surfaces)
 
-Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, sill `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and detent.
+Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, sill `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and the Settings app.
 
 Other area names below ("actions", "context", "agent", "cua", "memory", "models", "security", "compositor") are my best guess at the sibling spec files. Map them to the real names when you merge.
 
@@ -19,7 +19,7 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 - **Compositor-drawn confirmation**: the visuals and the arming behaviour. The request type comes from "actions"/"security".
 - **Memory control UI**: timeline, forget (with cascade preview), keep or discard pending facts, the consolidation diff, export.
 - **Activity / undo strip.**
-- **Model picker**: the session chip in the launcher. detent's per-tier pickers come from schema and live modules.
+- **Model picker**: the session chip in the launcher. The Settings app's per-tier pickers come from schema and live modules.
 - **Settings**: the `companion` domain keys, a new `Page::Intelligence`, the control-centre module, and the page layout.
 
 **Non-goals**
@@ -43,7 +43,7 @@ Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < u
 | `EditSurface` proposal marks | Bardo `ds::editor` | existing, gains `proposals` prop | generic strike/insert spans (like `spell::marks`) |
 | `ConfirmCard` (content of the trusted surface), `GlowState`/`GlowSpec`/`glow_spec` | Bardo `ui-shell::{confirm, tokens::glow}` | new | shell-only |
 | Orb period tokens `OrbListen`, `OrbWork`, `OrbAct` | Bardo `ui-style::tokens::duration` | new tokens | lint `RawDuration`. Needs design/30 §1.2 rows (user) |
-| `Page::Intelligence` | Bardo `ui-settings::schema::key::Page` | new variant | then detent `page.rs` row + icon |
+| `Page::Intelligence` | Bardo `ui-settings::schema::key::Page` | new variant | then the Settings app `page.rs` row + icon |
 | Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | sill `shell-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
 | Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | sill `shell-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
 | Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | sill `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
@@ -651,7 +651,7 @@ Fakes and fixtures:
 - `FakeCompanionBackend` (shell-services env seam): presence, answers, runs, activity, memory.
 - One fixture JSON per `AnswerView` variant, run, memory day and diff, shared by goldens and gallery pages.
 - A stand-in app in `shell-testkit/examples/companion_app.rs` that owns a bus name and answers `Summon`.
-- detent fixture regenerated with `scripts/gen-fixtures.sh`.
+- The Settings app fixture regenerated with `scripts/gen-fixtures.sh`.
 
 ---
 
@@ -680,7 +680,7 @@ Fakes and fixtures:
   - design/22 §3 rows (doc edit in Bardo, coordinated).
 
   Exhaustive matches that gain arms in the daemon return `Effect::Nothing` until W4. Verify: `cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --features sill/debug; ./scripts/check-boundary.sh; cargo deny check licenses`.
-- **F3 detent** (after F1). Owns `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures. Verify: the detent gate plus `scripts/gen-fixtures.sh`.
+- **F3 the Settings app** (after F1). Owns `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures. Verify: the Settings app gate plus `scripts/gen-fixtures.sh`.
 
 **Fill waves** (file ownership is disjoint):
 
@@ -733,7 +733,7 @@ Fakes and fixtures:
 5. Does the answer card go in the launcher's preview pane or replace the results list? What does the "headless action done" feedback look like (toast with Undo vs a line in the strip)?
 6. Glow look: width, colours, the acting spot. Is phase A (a sill overlay around the window rect, not unforgeable) acceptable before the compositor fork exists?
 7. Confirmation: a sheet attached to the target window or a centred alert? Arm delay of 500 ms? Phase A (sill overlay, forgeable by uinput) only for development, or acceptable to ship?
-8. Memory UI home: a launcher "Memory" filter for the timeline and forget, plus the detent Intelligence page for export and the diff? Or one dedicated window?
+8. Memory UI home: a launcher "Memory" filter for the timeline and forget, plus the Settings app Intelligence page for export and the diff? Or one dedicated window?
 9. Settings page name: "Intelligence" (as in design/31) or "Companion"?
 10. Undo wording for agent actions in app menus: "Undo Archive (Companion)", or a plain "Undo Archive" with the actor shown only in the activity strip?
 11. Toshy route:

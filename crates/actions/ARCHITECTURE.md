@@ -429,7 +429,7 @@ holds one). The contract across the repos:
 - **docket owns the agents** (`agents.toml`, `agent.acp.agents`). Which `agent/<program>` words
   exist, and whether each can be chosen, is read by Settings from `action-settings`
   (`read_agents`, `Source::Own { installed }`, `SignInState`, `find_known`/`unlisted` for programs
-  found on `PATH` that no entry runs); detent lays those words over inferd's described rows
+  found on `PATH` that no entry runs); the Settings app lays those words over inferd's described rows
   (`coding_agents::with_agents`) in a group "Coding Agents", each greyed with a plain reason ("Not
   installed", "Sign in to X first", "Turned off", "Not set up yet"). Picking a turned-off one asks
   to turn coding agents on in the same dialogue. inferd's picker never needs docket's files.

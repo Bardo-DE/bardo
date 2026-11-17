@@ -916,7 +916,7 @@ What landed: the skills format, discovery, validation and the three places they 
 
 ## f4-settings: the settings schema and its reader
 
-The Settings app (detent) builds its Intelligence page from the schema each daemon ships (design/22
+The Settings app (the Settings app) builds its Intelligence page from the schema each daemon ships (design/22
 section 9.2). docket's covers every `agent.*` key of section 3.27, and the daemons read what it offers.
 
 1. **`dist/settings/docket.settings.toml` has 18 rows**, one per key of design/22 section 3.27, none
@@ -1136,7 +1136,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
    that announced anything (`[]` before one did). Set before `AnswerAdded`, like `Session`. `AnswerWire`, `FooterWire`
    and `AskWire` are unchanged, so no literal in sill, cua or almanac breaks.
 2. **The line.** `companion_wire::footer_line(&[RouteNote]) -> String` prints "Heard by Whisper · Answered by Claude
-   Haiku 4.5 via OpenRouter (already loaded)"; sill and detent both call it. Model names are made from the id
+   Haiku 4.5 via OpenRouter (already loaded)"; sill and the Settings app both call it. Model names are made from the id
    (`model_name`: "claude-haiku-4-5" is "Claude Haiku 4.5"); a catalogue display name would be better when porter has one.
    Done: `RouteNote.name: Option<ModelLabel>` copies porter's `StageNote.name` (the catalogue label, sent on every
    answer's `Answer` note since porter 11651d4), and the line prefers it; the id-made name is the fallback for a model
@@ -3771,7 +3771,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lanes D0.3 and D0.23 (2026-10-28)
 
 - `docket-session`'s test code (`contract`, `fake`, `fake_host`) is behind the `testing` feature. Only dev-dependencies turn it on (docket-router, docket-memory, docket-tasks, docket-acp, and docket-session's own tests); `docket-fake` and `docket-accept`, which are test crates, turn it on in their dependencies. `docket-eval` links `docket-fake`, so a `docket-eval` build also enables it.
-- `docket-kit` is deleted. Nothing outside docket used it (checked in sill, detent, files, mailo and cua on origin/master); `docket-inapp` named it only in a doc example, which is gone. `InAppAgent::companion_link`, `record_turn`, `end_recorded` and `RecordedTurn` existed only to feed it and are deleted with their test and the `person` link; no other repo called them.
+- `docket-kit` is deleted. Nothing outside docket used it (checked in sill, the Settings app, files, mailo and cua on origin/master); `docket-inapp` named it only in a doc example, which is gone. `InAppAgent::companion_link`, `record_turn`, `end_recorded` and `RecordedTurn` existed only to feed it and are deleted with their test and the `person` link; no other repo called them.
 
 ## Layering lane D0.7 (2026-10-28)
 
@@ -3797,7 +3797,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lane D0.12: companion-core (2026-10-28)
 
 - `companion-core` (pure) is new. It holds what companiond decided over values: `conclude` and its types, the board's kept answers, sentences told and proposals as plain state (`Answers`, `ToldLog`, `Proposals`), the logins and terminal hand-over state (`Logins`, `Terminals`), the helper desk's decisions, the routines' scheduler rules (`ended_events`, `event_asks`, `EventWatch`, `Settle`, `new_routine`), the timer text (`units_of`), the zone text (`offset_of`) and the caller policy (`Speaker`, `Call`, `permits`). companiond keeps the tokio tasks, the bus, the disk writes, the `date` call and the sleep loop, and calls it.
-- `JobSpec`, `JobInput`, `OpenedJob`, `JobEnding` and `JobReport` moved from `docket-tasks` to `companion-core` (`docket-tasks` now depends on it). Nothing outside docket named them (checked in sill, detent, files and cua on origin/master).
+- `JobSpec`, `JobInput`, `OpenedJob`, `JobEnding` and `JobReport` moved from `docket-tasks` to `companion-core` (`docket-tasks` now depends on it). Nothing outside docket named them (checked in sill, the Settings app, files and cua on origin/master).
 - Typed refusals (H5): the desks now refuse with `companion_core::Refusal`, built from `JobRefusal`, `HandFault`, `ReachFault` and `ScheduleFault` where those exist. The plain sentence is made once, in `companiond/src/words.rs`, with the same words as before, so what sill shows is unchanged. Not done: `HelperReply::Refused(String)`, `SayReply::Refused(String)`, `BroughtBack::Refused(String)` and `RoutineReply::Refused(String)` are still sentences on the wire (companion-wire's lane), and `docket-tasks`' `HelperDesk` defaults still hold `NO_APPS` and `NO_TALK`.
 - `hub.rs` (993 lines) is now `hub.rs`, `jobs.rs` and `routine_link.rs`. `routines/units.rs` is `routines/unit_dir.rs` (the disk half). `companiond/src/serve.rs` was already 556 lines and is touched only for an import; its split is not done.
 - Not done: the hand-over types in `docket_core` (`helper`, `routine`, `hand`, `handover`) are still in `docket-core`; moving them is the later part of F1. `companiond::HostLink` (`handoff.rs`) is bus IO and stays. Not verified by a build in the lane that made the change.
@@ -3867,7 +3867,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `planner.rs` was 820 lines; the meta tools moved to `meta_tools.rs` and the reply reading to `meta_reply.rs`
   (planner.rs is now 463 lines). `Cargo.lock` was edited by hand (two `porter-client` edges out, the
   planner's dev self-dependency in).
-- sill, detent, files, mailo and cua at origin/master: no use of `PlannerModel` or `docket-planner` (detent's
+- sill, the Settings app, files, mailo and cua at origin/master: no use of `PlannerModel` or `docket-planner` (the Settings app's
   FINDINGS.md names `PlannerModel::new` in prose only).
 - Not verified by a build in the lane that made the change.
 
@@ -3909,7 +3909,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lane D0.19: voice dedupe against stoker (2026-10-28)
 
 - `voiced`'s own `Framer` is deleted. `frames::Frames` is a thin adapter over `speech_vad::Framer` (stoker takes `AudioChunk` bytes and returns a `Vec`; voiced has `i16` chunks and must forget frames not yet stepped when the utterance is wiped, so `Frames` keeps a queue and `clear` empties it). Odd-byte cuts and the sample index are stoker's. The tests for cutting and clearing moved with it.
-- One `Level`: `frames::wire_level(speech_vad::Level) -> voice_wire::Level` is the only conversion (a `From` is not possible, both types are foreign to voiced). The manual `Level(level_of(..).0)` in `hear.rs` is gone. `voice-wire::Level` is unchanged, so sill and detent need no change.
+- One `Level`: `frames::wire_level(speech_vad::Level) -> voice_wire::Level` is the only conversion (a `From` is not possible, both types are foreign to voiced). The manual `Level(level_of(..).0)` in `hear.rs` is gone. `voice-wire::Level` is unchanged, so sill and the Settings app need no change.
 - One rate: `voice_loop::CAPTURE_RATE` is now a `speech_provider::SampleRate` (voice-loop, P, depends on speech-provider, pure); `samples_in` and `BUFFER_SAMPLES` read `.0`. The frame size is `speech_provider::FRAME_SAMPLES`; `voiced`'s `FRAME` is deleted. Stoker keeps the 16 kHz rate private in `speech_vad::Framer`, so the constant is still written once here; `frames::tests::the_capture_rate_is_the_rate_the_framer_takes` fails if the two differ. Open: stoker could export that rate, and `CAPTURE_RATE` would then be a re-use instead of a copy.
 - Callers of `CaptureFormat { rate }` and `AudioRate` pass `CAPTURE_RATE.0`.
 - Still open in the voice area (D4.6 to D4.8): voice seams, voice-client, voice-audio.
@@ -3934,7 +3934,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `UnitDir`, `SystemZone` (the `date +%z` call) and `Timers` moved with `HubHost`, which owns them. docket-helpers is not in `check-portable.sh`: it has no bus dependency, but the systemd timer directory and the `date` call are the desktop's. Its deny row in `check-boundary.sh` is `$EFFECTS`; `tokio` appears only with the feature.
 - `companiond/src/serve.rs` (557 lines) is split: `background` (the beat and the arrival listener) and `serve_entry` (`serve`, `serve_on`, `serve_on_rooted`) left it. The companiond test `serve.rs` (1004 lines) is split into `serve`, `serve_helpers` and `serve_routines`.
 - Tests: `helpers`, `helper_apps` and `routines` moved to `docket-helpers/tests/it` (the first two split into `helpers`, `helper_desk` and `helper_apps`, `helper_apps_terminal`, with their fixtures in `support/`). docket-helpers has its own copy of `support/infer.rs` and a trimmed `support/world.rs`, because companiond's world is built on `Bell` and the bus tests that stay there use it. Bus-level tests (`serve*`, `terminal`, `handoff`, ...) stay in companiond.
-- Users outside this repo: sill, detent, files, mailo and cua name none of `Hub`, `HubHost`, `Routines`, `RoutineDesk`, `Host`, `UnitDir`, `SystemZone` or `Timers` of companiond (checked on origin/master), and none depends on companiond.
+- Users outside this repo: sill, the Settings app, files, mailo and cua name none of `Hub`, `HubHost`, `Routines`, `RoutineDesk`, `Host`, `UnitDir`, `SystemZone` or `Timers` of companiond (checked on origin/master), and none depends on companiond.
 - Not verified by a build in the lane that made the change.
 
 ## Layering lane D0.21: docket-acp-bin off docket-inapp and docket-router; docket-host (2026-10-28)
@@ -3945,7 +3945,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `docket-acp-bin` reads no environment below `main`: `serve`, `serve_with`, `agent::run`, `serve::run` and `serve::run_with` take the environment closure. `agent::places::Places` reads the data and config directories, home, `PATH`, the runtime directory and the login variables once; `Wiring` carries it as `places`. The KNOWN row `docket-acp-bin env D0.21` is deleted.
 - `agent/serve.rs` (471 lines, not the 645 of the audit; `folders.rs` had already taken `plain_name` and `workspace_name`) is split into the service, `serve/watchdog.rs` (idle end, drain, caller gone) and `serve/object.rs` (the `AgentHost1` object).
 - Not changed: `bulkhead::UserSession::from_env()` in `SandboxLimits::probe` reads the environment inside bulkhead.
-- Users outside this repo: sill, detent, files and mailo import none of `EditorDesk`, `SheetConfirmer`, `ConfirmSheet` (docket's), `SheetAnswer`, `docket_router::parse` or `RegistryError` (checked on origin/master).
+- Users outside this repo: sill, the Settings app, files and mailo import none of `EditorDesk`, `SheetConfirmer`, `ConfirmSheet` (docket's), `SheetAnswer`, `docket_router::parse` or `RegistryError` (checked on origin/master).
 - Not verified by a build in the lane that made the change.
 
 ## Layering lane U0.4: dates on chrono (2026-10-28)
@@ -4062,7 +4062,7 @@ Two commits: the harness seams first, then the split.
 
 ## E-D2: permissions, settings and launch (2026-10-28)
 - Done: the network-program table is data (`dist/network-programs.toml`, `NetPrograms`, same programs, wrappers and subcommands; `docket-router` embeds and parses it, `NetReach::of` and `ExecFacts::from_choices` take it); `BreakerState`, `BudgetState`, `NarrowState` and git's `IndexKind` are gone (bools, `StandingScope::is_narrow`, string stems); `GitCause` wraps `GitFault` instead of copying it; the `docket-settings` choice rows read their value by the type's serde name (`parse_into`) instead of a word list joined to a value array by index; `Style::choose` is the one place that picks JSON or text in `docket-cli`; `Bus` is a bool (`needs_bus`); the private `Sight` is a bool.
-- Left on purpose: `Strictness` (used by action-review, router and docket-fake), the row `word()` methods and `AgentConfig::value` (`docket-core` `config.rs`), `ScopeKind`/`VerdictKind` (the audit in `docket-core`), `derives_choice`/`network_choice` (`acp-core`), `McpExpose`/`AcpExpose`/`AcpAgents` and `SignInState`/`Offers`/`Toggle`/`Places` (detent and `actions-mcp` name them), `Profile::ClaudeCode` (needs the registry snapshot to carry the preset), `Delivery` (porter's has a `child_fd` a file must not hold), `Buses` (the seam `program` runs over).
+- Left on purpose: `Strictness` (used by action-review, router and docket-fake), the row `word()` methods and `AgentConfig::value` (`docket-core` `config.rs`), `ScopeKind`/`VerdictKind` (the audit in `docket-core`), `derives_choice`/`network_choice` (`acp-core`), `McpExpose`/`AcpExpose`/`AcpAgents` and `SignInState`/`Offers`/`Toggle`/`Places` (the Settings app and `actions-mcp` name them), `Profile::ClaudeCode` (needs the registry snapshot to carry the preset), `Delivery` (porter's has a `child_fd` a file must not hold), `Buses` (the seam `program` runs over).
 - Not verified by a build; `docket-router` gains a `toml` dependency (Cargo.lock edited by hand).
 
 ## E-D3: harness, router and daemons (2026-10-28)
@@ -4107,7 +4107,7 @@ Two commits: the harness seams first, then the split.
 - New P-tier crate `docket-gate`: the pure steps of a call's way through the router. It holds `facts`, `gate`, `call`, `classify`, `coverage`, `consent`, `prepared`, `standing_ctx`, `standing_facts`, `driven`, `spans`, `confirm`, `argcheck`, `may_make`, `policylog`, `turn_start`, plus `companion_names` and `brief_sheet` (named by `consent`, `may_make`, `confirm` and `prepared`). It depends on `docket-context` and the docket-core family, never on `docket-router`; the router depends on it. It is a separate crate from `docket-gate-wire` (the wire types above `docket-core`).
 - Pure parts split off the mixed files, each a module of the new crate: `terminal` (`held`, `kinds_of`, `grant_policy`, `Revoked`), `limits` (`text_arg`, `choice_arg`, `level_of`, `reach_of`, `rule_limit`), `messaging` (`receiving`, `send_refusal`) and the task entity helpers (`task_entity`, `task_of`) in `companion_names`. The router's files keep only `impl Router`.
 - Left in the router, on purpose: `screen_line` in `messaging` (it calls `messages::inbound_line`, and `messages` stays), `brief` (all `impl Router`; its one helper `plain` is a one-line private fn), `standing` (all `impl Router`), `companion`'s private helpers (`failed`, `param`, `text_arg`, `spawner`, `companion`), which build `AppRefusal`s for the router's own actions and have no other user.
-- No re-exports: the router's `lib.rs` no longer exports `call_step` and friends, `classify_step`, `RunFacts` and the fact builders, `gate`, `Pending`, `GateInputs`, `Revoked` or the companion action names. The importers are the router's modules and its tests (`brief`, `helpers`, `notes`, `terminal`); no other crate in docket named them, and sill, detent, files, cua and mailo name only `Router`, `Seams`, `AppLink`, `GrantStore`, `NoLog` and `AppFault`.
+- No re-exports: the router's `lib.rs` no longer exports `call_step` and friends, `classify_step`, `RunFacts` and the fact builders, `gate`, `Pending`, `GateInputs`, `Revoked` or the companion action names. The importers are the router's modules and its tests (`brief`, `helpers`, `notes`, `terminal`); no other crate in docket named them, and sill, the Settings app, files, cua and mailo name only `Router`, `Seams`, `AppLink`, `GrantStore`, `NoLog` and `AppFault`.
 - The `pub(crate)` items the router uses are `pub` with docs; `Run` and `Next` got `Debug`, `Run` got `Default`. Items only the new crate uses (`sheet_of`, the whole of `standing_facts`) stay crate-private.
 - Tests: `gate.rs` and `call_step.rs` moved to `docket-gate/tests/it`; the inline tests of `classify`, `spans` and `standing_facts` moved with their modules. Router tests that drive `Router` stay.
 - `docket-router` no longer depends on `url`, `genai-names`, `porter-capability` or `serde`; `bulkhead`, `model-provider` and `toml` are dev-dependencies now. Rows added in `scripts/check-boundary.sh` (layers and rules) and `scripts/check-portable.sh`.

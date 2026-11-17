@@ -149,7 +149,7 @@ pub trait Inference {
     fn guests_changed(&self) -> zbus::Result<()>;
     /// Engine state changed, or a cloud AI account appeared, went or changed state. Broadcast:
     /// engine state is not personal. Listeners re-read readiness with `Prepare` (callers) or the
-    /// settings module (detent), and the places with `Places`.
+    /// settings module (the Settings app), and the places with `Places`.
     #[zbus(signal)]
     fn engines_changed(&self) -> zbus::Result<()>;
     /// A model's engine changed state: a listener reads `Running` again.

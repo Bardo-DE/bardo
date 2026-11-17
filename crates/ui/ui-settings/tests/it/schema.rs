@@ -156,11 +156,11 @@ fn use_my_styles_is_a_switch_on_the_appearance_page_that_defaults_to_on() {
 }
 
 #[test]
-fn a_mark_round_trips_derive_to_toml_to_loader_in_the_wire_form_detent_reads() {
+fn a_mark_round_trips_derive_to_toml_to_loader_in_the_wire_form_settings_app_reads() {
     let schema = bardo_schema();
     let text = schema.to_toml();
     assert_eq!(text.matches("agent = \"settable\"").count(), 5, "{text}");
-    // Detent reads the mark from the raw table; the same text must show it there.
+    // The Settings app reads the mark from the raw table; the same text must show it there.
     let table: toml::Table = text.parse().expect("the written schema is TOML");
     let marked: Vec<&str> = table["key"]
         .as_array()

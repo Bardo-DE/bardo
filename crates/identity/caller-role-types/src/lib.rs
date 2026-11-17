@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 pub enum CallerRole {
     /// Any identified app.
     App,
-    /// detent: may use `SettingsModule1` (remove, toggle, revoke, client ids).
+    /// The Settings app: may use `SettingsModule1` (remove, toggle, revoke, client ids).
     Settings,
     /// sill, or a standalone sheet host: may serve `AccountsSheet1`. memoryd and inferd take the
     /// one named `org.bardo.Shell` for the shell.
