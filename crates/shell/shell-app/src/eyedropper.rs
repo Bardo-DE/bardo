@@ -9,7 +9,7 @@
 use layer_shell_host::HostHandle;
 use shell_model::capture_pick::{CaptureCommand, CapturePicker, EyedropIn, EyedropOut};
 use shell_model::desktop::{DesktopCommand, OutputPicture, ShellNote};
-use shell_services::Control;
+use shell_model::service::Control;
 use shell_ui_kit::links::{EyedropperLink, Links};
 use shell_ui_kit::services::Services;
 use tokio::runtime::Handle;
@@ -139,7 +139,7 @@ mod tests {
         EyedropOut, OutputCandidate,
     };
     use shell_model::desktop::{DesktopCommand, OutputPicture, ShellNote};
-    use shell_services::Control;
+    use shell_model::service::Control;
     use shell_ui_kit::links::EyedropperLink;
 
     use super::{apply_note, asked_of, presence_of, refuse};

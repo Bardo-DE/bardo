@@ -306,7 +306,7 @@ mod tests {
         };
         assert_eq!(
             args.env().session_actions.reach(),
-            shell_services::env::ActionReach::DryRun
+            shell_model::session::ActionReach::DryRun
         );
     }
 

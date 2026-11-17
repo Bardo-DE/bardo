@@ -6,9 +6,11 @@
 use std::time::Duration;
 use ui_harness::Input;
 
+use dioxus::prelude::use_context_provider;
 use shell_bar::Bar;
 use shell_dock::Dock;
 use shell_launcher::WindowKey;
+use shell_launcher_ui::launcher::LauncherProviders;
 use shell_launcher_ui::{Launcher, LauncherCatcher};
 use shell_model::auth::UserName;
 use shell_model::idle::{DimLevel, DimShown, Idle, IdleMode, IdlePhase};
@@ -260,7 +262,12 @@ fn dock_states() -> Vec<(&'static str, String)> {
 /// The panel shut, then opened on the empty query (results over fake providers are
 /// `shell-ui-kit`'s `launcher_lint`).
 fn launcher_states() -> Vec<(&'static str, String)> {
-    let mut panel = SurfaceHarness::<Launcher>::setup(LauncherLink::new(), ()).start();
+    let mut panel = SurfaceHarness::<Launcher>::setup(LauncherLink::new(), ())
+        .in_root(|| {
+            // The daemon gives the panel its providers; this draws the empty query, which asks none.
+            use_context_provider(|| LauncherProviders(Vec::new()));
+        })
+        .start();
     panel.harness.advance(Duration::from_millis(40));
     let shut = panel.harness.html();
     panel.link.open(fake::output().id, String::new());

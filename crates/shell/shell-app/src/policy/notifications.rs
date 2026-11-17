@@ -84,7 +84,7 @@ mod tests {
     #[test]
     fn the_policy_is_sent_at_once_and_again_on_a_change() {
         use shell_model::notifications::NotificationsCommand;
-        use shell_services::Control;
+        use shell_model::service::Control;
         use shell_settings::ShellFile;
         use tokio::sync::watch;
 

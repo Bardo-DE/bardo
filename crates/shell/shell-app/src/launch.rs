@@ -13,7 +13,7 @@ use shell_launcher::AppId;
 use shell_model::launch::{
     FailureCause, LaunchCommand, LaunchDone, LaunchRequest, Launches, answer_to, failure_sentence,
 };
-use shell_services::Control;
+use shell_model::service::Control;
 use shell_services::launch::monotonic_now;
 use shell_ui_kit::services::Services;
 use shell_ui_kit::surface::token_within;

@@ -1,6 +1,6 @@
 //! [`follow`]: the one task that keeps a service told what its [`Policy`] answers.
 
-use shell_services::Control;
+use shell_model::service::Control;
 use shell_settings::ShellFile;
 use tokio::runtime::Handle;
 use tokio::sync::watch;
@@ -40,7 +40,7 @@ pub fn follow<P: Policy>(
 mod tests {
     use std::time::Duration;
 
-    use shell_services::Control;
+    use shell_model::service::Control;
     use shell_settings::ShellFile;
     use tokio::sync::mpsc::UnboundedReceiver;
     use tokio::sync::watch;

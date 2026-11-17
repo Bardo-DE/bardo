@@ -29,6 +29,8 @@ shell-verbs = {path = "../../wayland/shell-verbs"}
 shell-ipc = {path = "../shell-ipc", features = ["cli"]}
 shell-launcher = {path = "../shell-launcher"}
 shell-services = {path = "../shell-services"}
+shell-search = {path = "../shell-search"}
+shell-desktop-fs = {path = "../shell-desktop-fs"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
 shell-bar = {path = "../shell-bar"}
@@ -47,6 +49,8 @@ ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 shell-host-config = {path = "../shell-host-config"}
 
 [dev-dependencies]
+# `tests/it/lint.rs` gives the launcher panel a context.
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 base-testkit = {path = "../../base/base-testkit"}
 # `start_paused` for the lock-file watch's tests (src/door_guard.rs).
 tokio = {workspace = true, features = ["test-util"]}

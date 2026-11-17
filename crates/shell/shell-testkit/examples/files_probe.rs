@@ -185,14 +185,16 @@ async fn choose(provider: &FilesProvider, row: &Item, args: &Args) {
             let rt = tokio::runtime::Handle::current();
             let env = Env::from_process();
             let notifications = shell_services::service::spawn::<
-                shell_services::NotificationsService,
+                shell_model::notifications::NotificationsService,
             >(&rt, &env, shell_services::Answers::default())
             .control;
             let links = launch::LaunchLinks {
                 apps,
                 notifications,
             };
-            let launch = shell_services::service::spawn::<launch::LaunchService>(&rt, &env, links);
+            let launch = shell_services::service::spawn::<shell_model::launch::LaunchService>(
+                &rt, &env, links,
+            );
             launch
                 .control
                 .send(LaunchCommand::Open(OpenRequest {

@@ -153,7 +153,8 @@ pub(crate) fn spawn_hidden(
     }
 }
 
-/// `root` with the contexts every surface the daemon spawns is given: the services and the
+/// `root` with the contexts every surface the daemon spawns is given: the services, the launcher's
+/// providers and the
 /// settings feed. The links come with each surface (`Surface::link`, `Surface::needs`). quire's
 /// document host is not one of them: the root component installs it (`mount`, `mount_lock`),
 /// the same call a popup's root makes. Every spawn goes through here, so a new surface cannot
@@ -164,6 +165,7 @@ pub(crate) fn surface_root(
     settings_feed: &SettingsFeed,
 ) -> HostRoot {
     root.context(services.clone())
+        .context(crate::launcher_providers::launcher_providers(services))
         .context(settings_feed.clone())
 }
 

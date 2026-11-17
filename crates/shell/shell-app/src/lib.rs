@@ -16,6 +16,7 @@ pub mod idle_dim;
 pub mod intents;
 pub mod ipc;
 pub mod launch;
+pub mod launcher_providers;
 pub mod lock;
 pub mod name_guard;
 pub mod osd;

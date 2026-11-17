@@ -1,10 +1,10 @@
 //! The daemon's half of the Empty Trash question.
 //!
 //! The `EmptyTrash` action opens it on the link (`actions::panel::empty_trash`), the surface shows
-//! it, and a yes empties the home Trash on a thread of its own (`shell_services::trash`). Cancel
+//! it, and a yes empties the home Trash on a thread of its own (`shell_desktop_fs::trash`). Cancel
 //! sends nothing, so nothing is erased.
 
-use shell_services::env::Dirs;
+use shell_model::dirs::Dirs;
 use shell_ui_kit::links::EmptyTrashLink;
 use tokio::runtime::Handle;
 
@@ -14,7 +14,7 @@ pub fn spawn_follower(rt: &Handle, link: &EmptyTrashLink) {
     rt.spawn(async move {
         while yes.changed().await.is_ok() {
             if yes.borrow_and_update().is_some() {
-                shell_services::trash::empty_in_background(Dirs::from_process());
+                shell_desktop_fs::trash::empty_in_background(Dirs::from_process());
             }
         }
     });

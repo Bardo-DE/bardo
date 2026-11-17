@@ -1,5 +1,5 @@
 //! Query-to-first-batch latency of the launcher search, through the public
-//! `shell_search::results::ResultsService` given its providers.
+//! `shell_model::results::ResultsService` given its providers.
 //!
 //! `cargo run -p shell-testkit --example search_bench --release`
 //!
@@ -13,15 +13,16 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+use shell_desktop_fs::icons::{IconRoots, IconTheme};
 use shell_launcher::{
     Activation, AppId, Choice, FrecencyScore, IconRef, Item, ItemId, Needle, Provider,
     ProviderKind, Query, RankWeights, ResultSink, Score, matching::matcher, rank_text,
 };
 use shell_model::apps::{AppIndex, AppsEvent, Listing};
+use shell_model::results::ResultsService;
 use shell_model::results::SearchCommand;
-use shell_search::ResultsService;
 use shell_search::results;
-use shell_services::apps::{IconRoots, IconTheme, scan};
+use shell_services::apps::scan;
 use shell_services::env::Env;
 use shell_services::service::spawn;
 

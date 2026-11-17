@@ -16,6 +16,7 @@ zbus = {workspace = true, features = ["tokio"]}
 # name these: the library reaches no bardo-shell crate (scripts/check-boundary.sh).
 [dev-dependencies]
 account-dbus = {path = "../../accounts/account-dbus"}
+shell-desktop-fs = {path = "../shell-desktop-fs"}
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-search = {path = "../shell-search"}

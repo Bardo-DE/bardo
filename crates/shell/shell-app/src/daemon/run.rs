@@ -11,20 +11,21 @@ use std::time::{Duration, Instant};
 use layer_shell_host::{Host, HostConfig, HostHandle};
 use settings_store_fs::Store;
 use shell_model::desktop::{DesktopView, HeldMods};
+use shell_model::dirs::Dirs;
 use shell_model::locker::LockPhase;
-use shell_services::env::Dirs;
 use shell_ui_kit::links::{
     ActionLink, BannerLink, CenterLink, ControlCenterLink, CornerLink, DisplayTrialLink, EdgeLink,
     EmptyTrashLink, EyedropperLink, ForceQuitLink, LauncherLink, Links, LockLink, OsdLink, Outbox,
     PowerMenuLink, SheetLink, SpacesBarLink, SplitPickerLink, SwitcherLink, WindowMenuLink,
 };
-use shell_ui_kit::services::{Services, Wiring};
+use shell_ui_kit::services::Services;
 use shell_ui_kit::settings::SettingsFeed;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
 
 use super::events::{Shell, handle};
 use super::msg::ShellMsg;
+use super::start::{Wiring, start};
 use super::{services, settings};
 use crate::ipc::dispatch::quit::{Leaving, leaving_at};
 use crate::ipc::door::Door;
@@ -62,7 +63,7 @@ pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
     let (summons_tx, summons) = tokio::sync::mpsc::unbounded_channel();
     let (consents_tx, consents) = tokio::sync::mpsc::unbounded_channel();
     let (answers_tx, answers) = tokio::sync::mpsc::unbounded_channel();
-    let services = Services::start(
+    let services = start(
         runtime.handle(),
         &env,
         Wiring::new(shell_calls, summons_tx, consents_tx, answers_tx),

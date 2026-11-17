@@ -101,10 +101,10 @@ fn runtime() -> tokio::runtime::Runtime {
 /// The services started with no daemon behind the intents seat or the summon: nothing reads
 /// what they send.
 fn started(rt: &tokio::runtime::Runtime, scratch: &Scratch) -> shell_ui_kit::services::Services {
-    shell_ui_kit::services::Services::start(
+    crate::daemon::start::start(
         rt.handle(),
         &scratch.env(),
-        shell_ui_kit::services::Wiring::new(
+        crate::daemon::start::Wiring::new(
             tokio::sync::mpsc::unbounded_channel().0,
             tokio::sync::mpsc::unbounded_channel().0,
             tokio::sync::mpsc::unbounded_channel().0,

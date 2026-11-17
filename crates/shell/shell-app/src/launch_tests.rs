@@ -6,7 +6,7 @@ use shell_launcher::{AppId, DesktopAction};
 use shell_model::launch::{
     FailureCause, LaunchCommand, LaunchDone, LaunchTiming, Launches, Pid, ScopeUnit, Stamp,
 };
-use shell_services::Control;
+use shell_model::service::Control;
 use shell_services::launch::monotonic_now;
 use tokio::sync::{oneshot, watch};
 

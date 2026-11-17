@@ -1,5 +1,5 @@
 //! Telling the services that are passive until told what to do, once the settings are read.
-//! Starting them is `shell_ui_kit::services::Services::start`, declared in the kit's registry.
+//! Starting them is `daemon::start`; what they are is declared in the kit's registry.
 
 use shell_model::capture_pick::CaptureCommand;
 use shell_model::locker::LockerCommand;
@@ -118,9 +118,10 @@ pub(crate) fn follow_settings(
 
 #[cfg(test)]
 mod tests {
+    use crate::daemon::start::{Wiring, start};
     use shell_services::env::Env;
     use shell_testkit::TempDir;
-    use shell_ui_kit::services::{Services, Wiring};
+    use shell_ui_kit::services::Services;
 
     /// `start` must never panic — the daemon has to reach the host connect and the
     /// IPC server — and every passive service holds its default (a service without its bus or
@@ -135,7 +136,7 @@ mod tests {
         let (calls, _shell_calls) = tokio::sync::mpsc::unbounded_channel();
         let (summons, _launcher_effects) = tokio::sync::mpsc::unbounded_channel();
         let (consents, _written) = tokio::sync::mpsc::unbounded_channel();
-        let services = Services::start(
+        let services = start(
             rt.handle(),
             &Env::isolated(scratch.path()),
             Wiring::new(
