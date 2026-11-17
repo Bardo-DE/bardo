@@ -13,7 +13,6 @@ use common::{ACCESS_DENIED, INVALID_ARGS, Known, NO_FITTING, client, error_name,
 use std::collections::BTreeSet;
 use std::pin::Pin;
 use std::sync::Arc;
-use std::time::Duration;
 use sync_bus::SyncProxy;
 use sync_bus::{STATUS_KEY_QUOTA, SYNC_ERROR_PAUSED};
 use sync_core::{
