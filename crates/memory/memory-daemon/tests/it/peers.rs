@@ -55,7 +55,7 @@ role = "agent"
     reason = "used as the `Option<Caller>` a table row holds"
 )]
 fn app(name: &str, isolation: Isolation) -> Option<Caller> {
-    Some(Caller::App(AppId {
+    Some(Caller::app(AppId {
         name: AppName::parse(name).expect("app"),
         isolation,
     }))
@@ -140,9 +140,9 @@ fn a_process_is_identified_by_its_cgroup() {
     put_image(root, 21, "/usr/bin/bardo-shell");
     let flatpak = app("org.example.Mail", Isolation::Flatpak);
     for (pid, expected) in [
-        (10, Some(Caller::Router)),
-        (11, Some(Caller::Cuad)),
-        (12, Some(Caller::ShellUi)),
+        (10, Some(Caller::router())),
+        (11, Some(Caller::cuad())),
+        (12, Some(Caller::shell_ui())),
         (13, app("org.bardo.Companion", Isolation::Unsandboxed)),
         (14, None),
         (15, flatpak),
@@ -156,7 +156,7 @@ fn a_process_is_identified_by_its_cgroup() {
         (23, None),
         (24, None),
         (25, None),
-        (26, Some(Caller::Settings)),
+        (26, Some(Caller::settings())),
         (27, app("org.bardo.Settings", Isolation::Unsandboxed)),
     ] {
         assert_eq!(identify(root, pid, &table), expected, "pid {pid}");
@@ -180,10 +180,13 @@ fn an_empty_table_names_no_unit_and_an_app_is_still_an_app() {
 fn the_roles_map_onto_almanacs_callers() {
     let table = table_from_toml(TABLE).expect("table");
     let named = |unit: &str| table.resolve_unit(unit).map(caller_for);
-    assert_eq!(named("bardo-actiond.service"), Some(Caller::Router));
-    assert_eq!(named("bardo-shell.service"), Some(Caller::ShellUi));
-    assert_eq!(named("bardo-computer-use.service"), Some(Caller::Cuad));
-    assert_eq!(named("org.bardo.Settings.service"), Some(Caller::Settings));
+    assert_eq!(named("bardo-actiond.service"), Some(Caller::router()));
+    assert_eq!(named("bardo-shell.service"), Some(Caller::shell_ui()));
+    assert_eq!(named("bardo-computer-use.service"), Some(Caller::cuad()));
+    assert_eq!(
+        named("org.bardo.Settings.service"),
+        Some(Caller::settings())
+    );
     // The same shell app with the `app` role is an app: the role decides, not the name alone.
     let demoted = table_from_toml(
         "[[caller]]\napp = \"org.bardo.Shell\"\nunit = \"bardo-shell.service\"\nrole = \"app\"\n",

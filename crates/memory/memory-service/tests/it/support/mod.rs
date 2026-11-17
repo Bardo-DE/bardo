@@ -18,7 +18,7 @@ pub fn app(name: &str) -> AppName {
 }
 
 pub fn caller_app(name: &str) -> Caller {
-    Caller::App(AppId {
+    Caller::app(AppId {
         name: app(name),
         isolation: Isolation::Unsandboxed,
     })

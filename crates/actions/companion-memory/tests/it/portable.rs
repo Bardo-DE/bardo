@@ -49,7 +49,7 @@ async fn stored(memory: &impl MemoryLink) -> usize {
 #[tokio::test]
 async fn records_reach_in_process_memory_in_the_space_the_host_names() {
     let service = Arc::new(fake_service(ScriptedConsolidator::default()));
-    let memory = AlmanacMemory::over(InProcess::new(service, Caller::Router));
+    let memory = AlmanacMemory::over(InProcess::new(service, Caller::router()));
     let sink = queued(3);
     let mut state = AuditState::default();
     let report = state.flush(&memory, &sink, |_| Some(work())).await;
@@ -86,7 +86,7 @@ async fn no_memory_keeps_the_records_queued_and_the_next_flush_writes_them() {
     );
 
     let service = Arc::new(fake_service(ScriptedConsolidator::default()));
-    let back = AlmanacMemory::over(InProcess::new(service, Caller::Router));
+    let back = AlmanacMemory::over(InProcess::new(service, Caller::router()));
     let report = state.flush(&back, &sink, |_| Some(work())).await;
     assert_eq!(report.flushed.written, 2);
     assert_eq!(report.link, (Link::Down, Link::Up));

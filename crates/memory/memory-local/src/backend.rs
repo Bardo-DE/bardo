@@ -34,7 +34,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 /// let service = Arc::new(open(backend, RuleSet::standard())?);
 /// create_space(&service, SpaceId::parse("work")?, VaultKind::Sealed)?;
 ///
-/// let caller = Caller::App(AppId { name: mail(), isolation: Isolation::InProcess });
+/// let caller = Caller::app(AppId { name: mail(), isolation: Isolation::InProcess });
 /// let app = Memory::over(InProcess::new(service, caller));
 /// let record = mail_thread_archived().ok_or("fixture")?;
 /// assert!(matches!(app.record(record).await?, Recorded::Stored(_)));

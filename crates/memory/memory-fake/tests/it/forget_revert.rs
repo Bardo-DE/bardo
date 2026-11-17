@@ -78,7 +78,7 @@ fn service_drafting(hunks: Vec<Hunk>) -> MemoryService<FakeBackend> {
 }
 
 async fn shell(service: &MemoryService<FakeBackend>, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::ShellUi, request).await
+    service.handle(&Caller::shell_ui(), request).await
 }
 
 async fn run(service: &MemoryService<FakeBackend>) -> DraftView {
@@ -96,7 +96,7 @@ async fn found(service: &MemoryService<FakeBackend>, text: &str) -> bool {
         over: RecallOver::Facts,
     };
     match service
-        .handle(&Caller::Router, MemoryRequest::Search(query))
+        .handle(&Caller::router(), MemoryRequest::Search(query))
         .await
     {
         // The vector half returns its nearest whatever they say: a hit counts when it reads so.
@@ -270,7 +270,7 @@ async fn a_forgotten_event_whose_text_is_only_in_a_pre_image_stays_forgotten() {
         results: Count(1),
     };
     let MemoryReply::Recorded(event) = service
-        .handle(&Caller::Router, MemoryRequest::Record(record))
+        .handle(&Caller::router(), MemoryRequest::Record(record))
         .await
     else {
         panic!("recorded")

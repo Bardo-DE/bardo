@@ -40,7 +40,7 @@ fn reviewing(service: &Service) {
 }
 
 async fn ask(service: &Arc<Service>, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::ShellUi, request).await
+    service.handle(&Caller::shell_ui(), request).await
 }
 
 async fn proposed(root: &std::path::Path) -> (Arc<Service>, FactId, DraftView) {

@@ -18,13 +18,13 @@ async fn a_record_for_desktop_needs_no_registration() {
     let scratch = tempfile::tempdir().expect("scratch");
     let svc = service(&dirs_in(scratch.path()), &SharedKeys::default());
     let reply = svc
-        .handle(&Caller::Router, MemoryRequest::Record(desktop_record()))
+        .handle(&Caller::router(), MemoryRequest::Record(desktop_record()))
         .await;
     let MemoryReply::Recorded(event) = reply else {
         panic!("{reply:?}")
     };
     assert_eq!(event.space, SpaceId::desktop());
-    let MemoryReply::Spaces(spaces) = svc.handle(&Caller::ShellUi, MemoryRequest::Spaces).await
+    let MemoryReply::Spaces(spaces) = svc.handle(&Caller::shell_ui(), MemoryRequest::Spaces).await
     else {
         panic!("spaces")
     };
@@ -35,11 +35,11 @@ async fn a_record_for_desktop_needs_no_registration() {
 async fn desktop_cannot_be_deleted() {
     let scratch = tempfile::tempdir().expect("scratch");
     let svc = service(&dirs_in(scratch.path()), &SharedKeys::default());
-    svc.handle(&Caller::Router, MemoryRequest::Record(desktop_record()))
+    svc.handle(&Caller::router(), MemoryRequest::Record(desktop_record()))
         .await;
     let plan = svc
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::PlanForget(SpaceId::desktop(), ForgetScope::Space),
         )
         .await;
@@ -49,7 +49,7 @@ async fn desktop_cannot_be_deleted() {
     );
     // The Space is still there and still takes records.
     let again = svc
-        .handle(&Caller::Router, MemoryRequest::Record(desktop_record()))
+        .handle(&Caller::router(), MemoryRequest::Record(desktop_record()))
         .await;
     assert!(matches!(again, MemoryReply::Recorded(_)), "{again:?}");
 }

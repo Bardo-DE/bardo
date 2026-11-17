@@ -49,7 +49,7 @@ async fn fill_old(daemon: &TestDaemon) {
     let queue = daemon.service();
     let kept = queue
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::Propose(space("old"), draft("kept")),
         )
         .await;
@@ -59,7 +59,7 @@ async fn fill_old(daemon: &TestDaemon) {
     );
     let waiting = queue
         .handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Propose(space("old"), draft("waits")),
         )
         .await;
@@ -73,7 +73,7 @@ async fn fill_old(daemon: &TestDaemon) {
 async fn pending_in(daemon: &TestDaemon, space: SpaceId) -> usize {
     match daemon
         .service()
-        .handle(&Caller::ShellUi, MemoryRequest::Pending(space))
+        .handle(&Caller::shell_ui(), MemoryRequest::Pending(space))
         .await
     {
         MemoryReply::Pending(facts) => facts.len(),
@@ -136,7 +136,7 @@ async fn a_space_the_registry_does_not_know_is_settled_as_removed() {
     let kept = first
         .service()
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::Propose(space("work"), draft("stays")),
         )
         .await;
@@ -192,7 +192,7 @@ async fn record_in_old(daemon: &TestDaemon) {
     };
     let reply = daemon
         .service()
-        .handle(&Caller::Router, MemoryRequest::Record(record))
+        .handle(&Caller::router(), MemoryRequest::Record(record))
         .await;
     assert!(matches!(reply, MemoryReply::Recorded(_)), "{reply:?}");
 }
@@ -211,7 +211,7 @@ async fn archived_in(daemon: &TestDaemon, space: SpaceId) -> usize {
     };
     match daemon
         .service()
-        .handle(&Caller::ShellUi, MemoryRequest::Timeline(space, query))
+        .handle(&Caller::shell_ui(), MemoryRequest::Timeline(space, query))
         .await
     {
         MemoryReply::Timeline(page) => page.entries.len(),

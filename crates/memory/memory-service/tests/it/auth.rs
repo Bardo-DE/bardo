@@ -10,9 +10,9 @@ const MAIL: &str = "org.bardo.Mail";
 fn callers() -> [(&'static str, Caller); 4] {
     [
         ("app", caller_app(MAIL)),
-        ("router", Caller::Router),
-        ("cuad", Caller::Cuad),
-        ("shell", Caller::ShellUi),
+        ("router", Caller::router()),
+        ("cuad", Caller::cuad()),
+        ("shell", Caller::shell_ui()),
     ]
 }
 
@@ -117,7 +117,7 @@ fn recording_follows_the_caller_class() {
         }
     }
     assert_eq!(
-        allowed(&Caller::Router, &MemoryRequest::RecordBatch(vec![])),
+        allowed(&Caller::router(), &MemoryRequest::RecordBatch(vec![])),
         Err(Refusal::Invalid("empty batch".into()))
     );
 }
@@ -160,17 +160,20 @@ fn explaining_files_and_marking_things() {
     assert!(!yes(&allowed(&mail, &claim("org.bardo.Files", user(MAIL)))));
     assert!(!yes(&allowed(&mail, &claim(MAIL, planner()))));
     assert!(yes(&allowed(
-        &Caller::Router,
+        &Caller::router(),
         &claim("org.bardo.Files", planner())
     )));
-    assert!(yes(&allowed(&Caller::ShellUi, &claim(MAIL, user(MAIL)))));
-    assert!(!yes(&allowed(&Caller::Cuad, &claim(MAIL, user(MAIL)))));
-    assert!(!yes(&allowed(&Caller::Settings, &claim(MAIL, user(MAIL)))));
+    assert!(yes(&allowed(&Caller::shell_ui(), &claim(MAIL, user(MAIL)))));
+    assert!(!yes(&allowed(&Caller::cuad(), &claim(MAIL, user(MAIL)))));
+    assert!(!yes(&allowed(
+        &Caller::settings(),
+        &claim(MAIL, user(MAIL))
+    )));
     assert!(yes(&allowed(&mail, &mark(MAIL))));
     assert!(!yes(&allowed(&mail, &mark("org.bardo.Files"))));
-    assert!(!yes(&allowed(&Caller::Cuad, &mark(MAIL))));
-    assert!(!yes(&allowed(&Caller::Settings, &mark(MAIL))));
-    assert!(yes(&allowed(&Caller::ShellUi, &mark("org.bardo.Files"))));
+    assert!(!yes(&allowed(&Caller::cuad(), &mark(MAIL))));
+    assert!(!yes(&allowed(&Caller::settings(), &mark(MAIL))));
+    assert!(yes(&allowed(&Caller::shell_ui(), &mark("org.bardo.Files"))));
 }
 
 #[test]
@@ -255,7 +258,7 @@ fn confirming_a_setting_is_the_settings_apps_alone() {
     for (who, caller) in callers() {
         assert!(!yes(&allowed(&caller, &confirm())), "{who}");
     }
-    assert!(yes(&allowed(&Caller::Settings, &confirm())));
+    assert!(yes(&allowed(&Caller::settings(), &confirm())));
 }
 
 #[test]
@@ -268,7 +271,7 @@ fn the_waiting_settings_are_read_by_the_settings_app_and_the_shell_only() {
         );
     }
     assert!(yes(&allowed(
-        &Caller::Settings,
+        &Caller::settings(),
         &MemoryRequest::PendingSettings
     )));
 }
@@ -284,7 +287,7 @@ fn the_settings_app_is_refused_every_request_of_the_others() {
     ];
     for request in control_requests().iter().chain(&others) {
         assert!(
-            !yes(&allowed(&Caller::Settings, request)),
+            !yes(&allowed(&Caller::settings(), request)),
             "{request:?} by settings"
         );
     }
@@ -497,9 +500,9 @@ fn another_apps_space_is_refused_for_every_request_that_names_one() {
     );
     // The router, cuad and the shell are not apps: the Space rule is the app's alone.
     let request = MemoryRequest::Record(record_in("app:org.bardo.Files:0"));
-    assert_eq!(allowed(&Caller::Router, &request), Ok(()));
+    assert_eq!(allowed(&Caller::router(), &request), Ok(()));
     assert_eq!(
-        allowed(&Caller::ShellUi, &MemoryRequest::Status(other)),
+        allowed(&Caller::shell_ui(), &MemoryRequest::Status(other)),
         Ok(())
     );
 }
@@ -548,5 +551,5 @@ fn proposing_for_a_helper_is_the_routers_alone() {
             "{who}"
         );
     }
-    assert!(!yes(&allowed(&Caller::Router, &propose(planner()))));
+    assert!(!yes(&allowed(&Caller::router(), &propose(planner()))));
 }

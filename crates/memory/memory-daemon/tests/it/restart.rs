@@ -83,7 +83,7 @@ async fn fill(service: &MemoryService<Counted>) {
     for (title, key) in [("Lisbon receipts", "7f3a"), ("Porto invoices", "8b4c")] {
         let reply = ask(
             service,
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(titled(title, key)),
         )
         .await;
@@ -98,7 +98,7 @@ async fn fill(service: &MemoryService<Counted>) {
     };
     let reply = ask(
         service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Propose(space("work"), draft),
     )
     .await;
@@ -112,7 +112,7 @@ async fn search(service: &MemoryService<Counted>, text: &str) -> Vec<RecallHit> 
         limit: Count(10),
         over: RecallOver::Both,
     };
-    match ask(service, &Caller::Router, MemoryRequest::Search(query)).await {
+    match ask(service, &Caller::router(), MemoryRequest::Search(query)).await {
         MemoryReply::Hits(hits) => hits,
         other => panic!("{other:?}"),
     }
@@ -121,7 +121,7 @@ async fn search(service: &MemoryService<Counted>, text: &str) -> Vec<RecallHit> 
 async fn status(service: &MemoryService<Counted>) -> SpaceStatus {
     match ask(
         service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Status(space("work")),
     )
     .await

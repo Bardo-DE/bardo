@@ -82,7 +82,7 @@ async fn the_keyrings_lock_signal_closes_and_reopens_the_space() {
     let world = World::start(&bus, &dirs, &SharedKeys::default()).await;
     let fake_service = connect(&bus.address).await;
 
-    let watcher = world.client(Caller::ShellUi).await;
+    let watcher = world.client(Caller::shell_ui()).await;
     let control = ControlProxy::new(&watcher).await.expect("proxy");
     let mut status = control.receive_status_changed().await.expect("subscribe");
 
@@ -92,7 +92,7 @@ async fn the_keyrings_lock_signal_closes_and_reopens_the_space() {
     let task = tokio::spawn(async move { daemon.follow_keyring(changes).await });
 
     // A Space is open with a fact in it.
-    let app = Caller::App(AppId {
+    let app = Caller::app(AppId {
         name: memory_fake::mail(),
         isolation: Isolation::Unsandboxed,
     });
@@ -157,7 +157,7 @@ impl Embedder for Switch {
 
 async fn index_of<B: Backend>(service: &MemoryService<B>) -> IndexView {
     match service
-        .handle(&Caller::ShellUi, MemoryRequest::Status(space("work")))
+        .handle(&Caller::shell_ui(), MemoryRequest::Status(space("work")))
         .await
     {
         MemoryReply::Status(status) => status.index,
@@ -182,7 +182,7 @@ async fn an_index_that_changes_state_is_announced_once() {
     )
     .with_registry(listed_spaces());
     let service = MemoryService::new(backend, RuleSet::standard());
-    let app = Caller::App(AppId {
+    let app = Caller::app(AppId {
         name: memory_fake::mail(),
         isolation: Isolation::Unsandboxed,
     });
@@ -210,7 +210,7 @@ async fn an_index_that_changes_state_is_announced_once() {
     // It comes back and the person rebuilds: the state moves again, and the bus hears.
     up.store(true, Ordering::SeqCst);
     let rebuilt = service
-        .handle(&Caller::ShellUi, MemoryRequest::Rebuild(space("work")))
+        .handle(&Caller::shell_ui(), MemoryRequest::Rebuild(space("work")))
         .await;
     assert_eq!(rebuilt, MemoryReply::Ok);
     assert_eq!(

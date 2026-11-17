@@ -24,7 +24,7 @@ fn path(name: &str) -> VaultPath {
 type Service = MemoryService<FakeBackend>;
 
 async fn shell(service: &Service, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::ShellUi, request).await
+    service.handle(&Caller::shell_ui(), request).await
 }
 
 async fn propose(service: &Service, topic_name: &str, text: &str) -> FactId {
@@ -76,7 +76,7 @@ async fn lexically(service: &Service, text: &str) -> bool {
         over: RecallOver::Facts,
     };
     match service
-        .handle(&Caller::Router, MemoryRequest::Search(query))
+        .handle(&Caller::router(), MemoryRequest::Search(query))
         .await
     {
         MemoryReply::Hits(hits) => hits
@@ -356,7 +356,7 @@ async fn propose_pending(service: &Service, text: &str) -> FactId {
         on_behalf: None,
     };
     match service
-        .handle(&Caller::Router, MemoryRequest::Propose(work(), draft))
+        .handle(&Caller::router(), MemoryRequest::Propose(work(), draft))
         .await
     {
         MemoryReply::Proposed(id, FactState::Pending) => id,

@@ -71,7 +71,7 @@ impl<B: Backend> MemoryService<B> {
             .line
             .enter(Claim::Spaces(BTreeSet::from([id.clone()])))
             .await;
-        let caller = Caller::ShellUi;
+        let caller = Caller::shell_ui();
         let mut lease = self.checkout(&caller, id).await?;
         let cx = self.cx(&caller);
         let open = lease.open().ok_or(Refusal::Busy)?;

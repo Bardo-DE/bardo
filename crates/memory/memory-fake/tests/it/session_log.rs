@@ -16,7 +16,7 @@ fn work() -> SpaceId {
 }
 
 async fn ask(service: &MemoryService<FakeBackend>, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::Router, request).await
+    service.handle(&Caller::router(), request).await
 }
 
 async fn append(
@@ -189,7 +189,7 @@ async fn a_paused_space_refuses_a_durable_append_instead_of_dropping_it() {
     let service = service();
     let paused = service
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::Pause(work(), UnixSeconds(NOW.0 + 3600)),
         )
         .await;
@@ -268,7 +268,7 @@ async fn session_entries_never_reach_recall_but_recent_entries_and_export_return
 
     // Consolidation sees the mail event and not the session entry.
     let run = service
-        .handle(&Caller::ShellUi, MemoryRequest::RunConsolidation(work()))
+        .handle(&Caller::shell_ui(), MemoryRequest::RunConsolidation(work()))
         .await;
     assert!(matches!(run, MemoryReply::Consolidation(_)), "{run:?}");
     let kinds = consolidation_events(&service);
@@ -310,7 +310,9 @@ async fn session_entries_never_reach_recall_but_recent_entries_and_export_return
         spaces: vec![],
         verification_key: VerificationKey::Omit,
     };
-    let MemoryReply::Exported(_) = service.export(&Caller::ShellUi, &options, &mut tar).await
+    let MemoryReply::Exported(_) = service
+        .export(&Caller::shell_ui(), &options, &mut tar)
+        .await
     else {
         panic!("export")
     };

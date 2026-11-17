@@ -135,7 +135,7 @@ impl<B: Backend> Open<B> {
             id,
             text: fact_text,
             recorded: now,
-            by: caller_actor(&Caller::ShellUi),
+            by: caller_actor(&Caller::shell_ui()),
             label: Label::trusted_user(),
             links: Vec::new(),
             supersedes: Vec::new(),

@@ -4,6 +4,7 @@
 use crate::backend::Backend;
 use crate::caller::Caller;
 use crate::open::{Cx, Open, Stored};
+use caller_role_types::CallerRole;
 use memory_core::{
     Actor, BodyMode, Count, EventBody, EventRef, EventSummary, Fact, FactFilter, FactId, FactQuery,
     FactView, FileHistoryEntry, FileProvenance, InjectQuery, JsonText, Link, MemoryItem, MemoryOp,
@@ -20,21 +21,22 @@ fn count_of(n: usize) -> Count {
 
 /// The actor that stands for a caller in the audit.
 pub(crate) fn caller_actor(caller: &Caller) -> Actor {
-    match caller {
-        Caller::App(id) => Actor::App {
-            app: id.name.clone(),
-        },
-        Caller::Router => Actor::System {
+    match caller.role() {
+        CallerRole::Agent => Actor::System {
             part: SystemPart::Router,
         },
-        Caller::Cuad => Actor::System {
+        CallerRole::Cua => Actor::System {
             part: SystemPart::Cua,
         },
-        Caller::ShellUi => memory_core::AppName::parse("org.bardo.Shell")
-            .map_or(Actor::Unknown, |via| Actor::User { via }),
+        CallerRole::SheetHost => Actor::User {
+            via: caller.app_id().name.clone(),
+        },
         // The Settings app records and reads nothing, so no audit entry names it; unknown is the
         // actor that claims nothing.
-        Caller::Settings => Actor::Unknown,
+        CallerRole::Settings => Actor::Unknown,
+        _ => Actor::App {
+            app: caller.app_id().name.clone(),
+        },
     }
 }
 
@@ -96,8 +98,8 @@ impl<B: Backend> Open<B> {
         facts: Vec<FactId>,
         events: usize,
     ) -> Result<(), Refusal> {
-        match cx.caller {
-            Caller::Router => self
+        match cx.caller.role() {
+            CallerRole::Agent => self
                 .audit(
                     cx.now(),
                     MemoryOp::Read {
@@ -108,7 +110,7 @@ impl<B: Backend> Open<B> {
                     },
                 )
                 .map(drop),
-            Caller::App(_) | Caller::Cuad | Caller::ShellUi | Caller::Settings => Ok(()),
+            _ => Ok(()),
         }
     }
 

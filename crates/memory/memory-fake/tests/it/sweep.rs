@@ -10,7 +10,7 @@ fn work() -> SpaceId {
 }
 
 async fn shell(service: &MemoryService<FakeBackend>, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::ShellUi, request).await
+    service.handle(&Caller::shell_ui(), request).await
 }
 
 #[tokio::test]
@@ -18,7 +18,7 @@ async fn deleting_a_space_removes_it_and_anchors_its_final_head_in_the_desktop_l
     let service = fake_service(ScriptedConsolidator::default());
     let record = mail_thread_archived().expect("fixture");
     service
-        .handle(&Caller::Router, MemoryRequest::Record(record))
+        .handle(&Caller::router(), MemoryRequest::Record(record))
         .await;
     let MemoryReply::Plan(plan) = shell(
         &service,
@@ -105,7 +105,7 @@ const DAY: i64 = 86_400;
 #[tokio::test]
 async fn the_sweep_erases_expired_bodies_then_prunes_old_headers() {
     let service = fake_service(ScriptedConsolidator::default());
-    let router = Caller::Router;
+    let router = Caller::router();
     service
         .handle(&router, MemoryRequest::Record(search_event("lisbon", NOW)))
         .await;
@@ -171,7 +171,7 @@ async fn the_sweep_erases_expired_bodies_then_prunes_old_headers() {
 #[tokio::test]
 async fn a_body_that_lives_while_its_source_exists_goes_when_the_source_is() {
     let service = fake_service(ScriptedConsolidator::default());
-    let router = Caller::Router;
+    let router = Caller::router();
     service
         .handle(
             &router,

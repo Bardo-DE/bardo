@@ -3,7 +3,7 @@
 //! applies to the router's (`memory-service::auth` and `docs::record_fault`, copied here:
 //! the router may record anything but a `Memory` body, a message must be sent by its recording
 //! actor, an episode's skeleton must be trusted and in the record's Space, and a record's label
-//! must cover its documents'), and answers every caller as `Caller::Router`.
+//! must cover its documents'), and answers every caller as `Caller::router()`.
 #![allow(
     dead_code,
     reason = "helpers shared by the test files; each file uses some of them"

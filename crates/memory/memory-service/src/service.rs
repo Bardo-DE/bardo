@@ -15,6 +15,7 @@ use crate::record::Stored;
 use crate::registry::Listing;
 use crate::runtime::SpaceRuntime;
 use base_time::Clock;
+use caller_role_types::CallerRole;
 use memory_core::{
     AppName, ChainHealth, Count, PlanToken, Record, Refusal, RuleSet, RunState, SpaceId, SpaceKind,
     SpaceMeta, SpaceState, SpaceSummary,
@@ -153,7 +154,7 @@ impl<B: Backend> MemoryService<B> {
         let waiting: Vec<SpaceId> = locked(&self.locked).iter().cloned().collect();
         for id in waiting {
             if self.backend.keys().get(&id).await.is_ok() {
-                drop(self.checkout(&Caller::ShellUi, &id).await);
+                drop(self.checkout(&Caller::shell_ui(), &id).await);
             }
         }
     }
@@ -271,7 +272,7 @@ impl<B: Backend> MemoryService<B> {
     /// An app opens or provisions a desktop-wide Space only if the registry lists it; the
     /// registry failing is a refusal, never a yes. Anyone else (router, shell) is not asked.
     async fn require_listed(&self, caller: &Caller, id: &SpaceId) -> Result<(), Refusal> {
-        let asks = matches!(caller, Caller::App(_)) && matches!(id.kind(), SpaceKind::Linked(_));
+        let asks = caller.role() == CallerRole::App && matches!(id.kind(), SpaceKind::Linked(_));
         if !asks {
             return Ok(());
         }

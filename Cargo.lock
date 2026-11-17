@@ -9765,6 +9765,7 @@ version = "0.1.0"
 dependencies = [
  "base-time",
  "blake3",
+ "caller-role-types",
  "const-hex",
  "jiff",
  "memory-core",

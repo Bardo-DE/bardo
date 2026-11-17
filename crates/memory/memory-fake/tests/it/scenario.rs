@@ -42,7 +42,7 @@ async fn record_search_forget_cascade() {
     let thing = thing("mail.thread", "7f3a").expect("thing");
     let recorded = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Record(mail_thread_archived().expect("fixture")),
     )
     .await;
@@ -56,7 +56,7 @@ async fn record_search_forget_cascade() {
     };
     let proposed = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Propose(work(), draft),
     )
     .await;
@@ -67,7 +67,7 @@ async fn record_search_forget_cascade() {
 
     let MemoryReply::Hits(hits) = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         search("budget", RecallOver::Both),
     )
     .await
@@ -80,7 +80,7 @@ async fn record_search_forget_cascade() {
 
     let MemoryReply::Plan(plan) = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::PlanForget(work(), ForgetScope::Thing(thing)),
     )
     .await
@@ -91,7 +91,7 @@ async fn record_search_forget_cascade() {
     assert_eq!(plan.facts.len(), 1);
     let MemoryReply::Forgot(report) = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Forget(plan.token.clone()),
     )
     .await
@@ -102,7 +102,7 @@ async fn record_search_forget_cascade() {
 
     let MemoryReply::Hits(after) = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         search("budget", RecallOver::Both),
     )
     .await
@@ -112,7 +112,7 @@ async fn record_search_forget_cascade() {
     assert!(after.is_empty(), "nothing is left to find: {after:?}");
     let again = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Forget(plan.token),
     )
     .await;
@@ -134,7 +134,7 @@ async fn inject_fits_the_budget_and_the_trust_filter() {
     ] {
         ask(
             &service,
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(titled(title, key, label)),
         )
         .await;
@@ -151,7 +151,7 @@ async fn inject_fits_the_budget_and_the_trust_filter() {
     };
     let MemoryReply::Hits(hits) = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         inject(12, 10, TrustFilter::TrustedOnly),
     )
     .await
@@ -170,8 +170,12 @@ async fn inject_fits_the_budget_and_the_trust_filter() {
     );
     assert!(hits.iter().all(|h| h.label.integrity == Integrity::Trusted));
 
-    let MemoryReply::Hits(one) =
-        ask(&service, &Caller::Router, inject(1000, 1, TrustFilter::Any)).await
+    let MemoryReply::Hits(one) = ask(
+        &service,
+        &Caller::router(),
+        inject(1000, 1, TrustFilter::Any),
+    )
+    .await
     else {
         panic!("hits")
     };
@@ -200,7 +204,7 @@ async fn pending_facts_settle_and_keep_endorses() {
     };
     let MemoryReply::Proposed(id, FactState::Pending) = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Propose(work(), draft),
     )
     .await
@@ -209,14 +213,14 @@ async fn pending_facts_settle_and_keep_endorses() {
     };
     let kept = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Settle(id.clone(), Settlement::Keep(receipt())),
     )
     .await;
     assert_eq!(kept, MemoryReply::Ok);
     let MemoryReply::Facts(facts) = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Facts(FactQuery {
             space: work(),
             topic: None,
@@ -233,7 +237,7 @@ async fn pending_facts_settle_and_keep_endorses() {
     assert_eq!(facts[0].fact.label.integrity, Integrity::Trusted);
     let again = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Settle(id, Settlement::Discard),
     )
     .await;
@@ -253,7 +257,7 @@ async fn the_desktop_scope_refuses_what_the_person_did_not_state() {
     let desktop = SpaceId::desktop();
     let from_router = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Propose(desktop.clone(), draft("Prefers mornings.")),
     )
     .await;
@@ -263,7 +267,7 @@ async fn the_desktop_scope_refuses_what_the_person_did_not_state() {
     ));
     let from_person = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Propose(desktop, draft("Prefers mornings.")),
     )
     .await;
@@ -278,11 +282,11 @@ async fn the_chain_verifies_and_the_export_carries_it() {
     let service = fake_service(ScriptedConsolidator::default());
     ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Record(mail_thread_archived().expect("fixture")),
     )
     .await;
-    let verified = ask(&service, &Caller::ShellUi, MemoryRequest::Verify(work())).await;
+    let verified = ask(&service, &Caller::shell_ui(), MemoryRequest::Verify(work())).await;
     assert!(matches!(
         verified,
         MemoryReply::Verified(ChainReport::Intact { .. })
@@ -292,8 +296,9 @@ async fn the_chain_verifies_and_the_export_carries_it() {
         spaces: vec![],
         verification_key: VerificationKey::Omit,
     };
-    let MemoryReply::Exported(manifest) =
-        service.export(&Caller::ShellUi, &options, &mut tar).await
+    let MemoryReply::Exported(manifest) = service
+        .export(&Caller::shell_ui(), &options, &mut tar)
+        .await
     else {
         panic!("export")
     };
@@ -309,7 +314,7 @@ async fn the_chain_verifies_and_the_export_carries_it() {
     );
     assert!(!names.iter().any(|n| n.ends_with("digest.key")));
     let refused = service
-        .export(&Caller::Router, &options, &mut Vec::new())
+        .export(&Caller::router(), &options, &mut Vec::new())
         .await;
     assert_eq!(refused, MemoryReply::Refused(Refusal::NotAllowed));
 }
@@ -320,21 +325,21 @@ async fn a_paused_space_keeps_headers_only_for_audit_records_and_drops_the_rest(
     let until = UnixSeconds(NOW.0 + 3600);
     let paused = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Pause(work(), until),
     )
     .await;
     assert_eq!(paused, MemoryReply::Ok);
     let dropped = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Record(mail_thread_archived().expect("fixture")),
     )
     .await;
     assert_eq!(dropped, MemoryReply::Ok, "nothing was kept");
     let kept = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Record(policy_ask().expect("fixture")),
     )
     .await;

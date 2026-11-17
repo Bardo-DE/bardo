@@ -12,6 +12,7 @@ use crate::settings_watch::apply;
 use crate::signals::{Delivery, delivery_of};
 use account_core::SpaceChange;
 use base_fs::atomic::AtomicWrite;
+use caller_role_types::CallerRole;
 use memory_core::{
     DesktopSpace, Dirs, MemoryReply, MemoryRequest, PlanToken, Refusal, Removal, SpaceId, SpaceKind,
 };
@@ -232,7 +233,8 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
 
     async fn pending_changed(&self, space: SpaceId) {
         let asked = MemoryRequest::Pending(space.clone());
-        if let MemoryReply::Pending(pending) = self.service.handle(&Caller::ShellUi, asked).await {
+        if let MemoryReply::Pending(pending) = self.service.handle(&Caller::shell_ui(), asked).await
+        {
             let count = u32::try_from(pending.len()).unwrap_or(u32::MAX);
             let space = space.to_string();
             self.signal(Signal::PendingChanged { space, count }).await;
@@ -241,7 +243,7 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
 
     async fn status_changed(&self, space: SpaceId) {
         let asked = MemoryRequest::Status(space.clone());
-        if let MemoryReply::Status(status) = self.service.handle(&Caller::ShellUi, asked).await {
+        if let MemoryReply::Status(status) = self.service.handle(&Caller::shell_ui(), asked).await {
             let status = serde_json::to_string(&status).unwrap_or_default();
             let space = space.to_string();
             self.signal(Signal::StatusChanged { space, status }).await;
@@ -287,7 +289,10 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
         let mut out = Vec::with_capacity(spaces.len());
         for space in spaces {
             let request = MemoryRequest::RunConsolidation(space.clone());
-            let reply = self.service.handle(&Caller::ShellUi, request.clone()).await;
+            let reply = self
+                .service
+                .handle(&Caller::shell_ui(), request.clone())
+                .await;
             self.persist();
             self.follow(&request, &reply).await;
             out.push((space, reply));
@@ -315,7 +320,8 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
                 memory_core::Refusal::Invalid("Export needs the stream it writes to".into()),
             ),
             (MemoryRequest::RemoveSpace(space, removal), None)
-                if *caller == Caller::ShellUi && matches!(space.kind(), SpaceKind::Linked(_)) =>
+                if caller.role() == CallerRole::SheetHost
+                    && matches!(space.kind(), SpaceKind::Linked(_)) =>
             {
                 self.settle(space, *removal).await
             }
@@ -365,7 +371,10 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
     async fn settle(&self, space: &SpaceId, removal: Removal) -> MemoryReply {
         logged(self.removals.begin(space, removal));
         let request = MemoryRequest::RemoveSpace(space.clone(), removal);
-        let reply = self.service.handle(&Caller::ShellUi, request.clone()).await;
+        let reply = self
+            .service
+            .handle(&Caller::shell_ui(), request.clone())
+            .await;
         self.persist();
         if matches!(reply, MemoryReply::Relocated(_)) {
             logged(self.removals.finish(space));

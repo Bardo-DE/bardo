@@ -34,11 +34,11 @@ async fn two_requests_at_once_for_one_space_queue_instead_of_meeting_busy() {
     let queued = service(&dirs_in(&scratch.path().join("queued")), &keys);
     let (a, b) = tokio::join!(
         queued.handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(record_in("work", "a1"))
         ),
         queued.handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(record_in("work", "a2"))
         ),
     );
@@ -62,19 +62,19 @@ async fn a_crowd_of_mixed_requests_never_sees_busy() {
         tasks.push(tokio::spawn(async move {
             let (caller, request) = match n % 6 {
                 0 => (
-                    Caller::Router,
+                    Caller::router(),
                     MemoryRequest::Record(record_in("work", &format!("w{n}"))),
                 ),
                 1 => (
-                    Caller::Router,
+                    Caller::router(),
                     MemoryRequest::Record(record_in("home", &format!("h{n}"))),
                 ),
-                2 => (Caller::Router, search_in("work")),
-                3 => (Caller::ShellUi, MemoryRequest::Status(space("home"))),
+                2 => (Caller::router(), search_in("work")),
+                3 => (Caller::shell_ui(), MemoryRequest::Status(space("home"))),
                 // A request that names no Space holds every queue.
-                4 => (Caller::ShellUi, MemoryRequest::Spaces),
+                4 => (Caller::shell_ui(), MemoryRequest::Spaces),
                 _ => (
-                    Caller::ShellUi,
+                    Caller::shell_ui(),
                     MemoryRequest::Settle(FactId::mint(1, [7; 10]), Settlement::Discard),
                 ),
             };

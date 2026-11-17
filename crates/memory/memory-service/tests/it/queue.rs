@@ -113,11 +113,11 @@ fn a_request_the_service_will_refuse_holds_nothing() {
     let settle = || MemoryRequest::Settle(FactId::mint(1, [0; 10]), Settlement::Discard);
     let forget = || MemoryRequest::Forget(PlanToken::parse("p-1").expect("t"));
     let table = [
-        (Caller::ShellUi, settle(), Claim::Everything),
-        (Caller::Router, settle(), Claim::Nothing),
-        (Caller::Cuad, forget(), Claim::Nothing),
-        (Caller::ShellUi, forget(), Claim::Everything),
-        (Caller::Router, search_in("work"), spaces(&["work"])),
+        (Caller::shell_ui(), settle(), Claim::Everything),
+        (Caller::router(), settle(), Claim::Nothing),
+        (Caller::cuad(), forget(), Claim::Nothing),
+        (Caller::shell_ui(), forget(), Claim::Everything),
+        (Caller::router(), search_in("work"), spaces(&["work"])),
     ];
     for (caller, request, claim) in table {
         assert_eq!(

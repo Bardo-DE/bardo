@@ -20,7 +20,7 @@ async fn record_propose_and_search_through_the_in_process_client() {
     let service = fresh(dir.path(), 7, nothing());
     let app = client(
         &service,
-        Caller::App(AppId {
+        Caller::app(AppId {
             name: AppName::parse("org.bardo.Mail").expect("app"),
             isolation: Isolation::InProcess,
         }),
@@ -44,7 +44,7 @@ async fn everything_is_there_after_a_restart_and_forget_persists_too() {
     let dir = tempfile::tempdir().expect("dir");
     let service = fresh(dir.path(), 7, nothing());
     let shell1 = shell(&service);
-    client(&service, Caller::Router)
+    client(&service, Caller::router())
         .record(mail_thread_archived().expect("fixture"))
         .await
         .expect("record");
@@ -130,7 +130,7 @@ async fn a_space_is_created_once_and_listed_after_a_restart() {
 async fn recent_with_bodies_returns_an_area_payload_in_the_owners_form() {
     let dir = tempfile::tempdir().expect("dir");
     let service = fresh(dir.path(), 7, nothing());
-    let router = client(&service, Caller::Router);
+    let router = client(&service, Caller::router());
     router
         .record(memory_fake::policy_ask().expect("fixture"))
         .await
@@ -157,7 +157,7 @@ async fn recent_with_bodies_returns_an_area_payload_in_the_owners_form() {
 async fn an_acked_durable_append_survives_a_reopen_and_pages_back_in_order() {
     let dir = tempfile::tempdir().expect("dir");
     let service = fresh(dir.path(), 7, nothing());
-    let router = client(&service, Caller::Router);
+    let router = client(&service, Caller::router());
     let mut acked = Vec::new();
     for slug in ["opened", "turn", "taint"] {
         let record = session_entry("s-1", slug, "kept verbatim").expect("fixture");
@@ -172,7 +172,7 @@ async fn an_acked_durable_append_survives_a_reopen_and_pages_back_in_order() {
     drop(service);
 
     let service = service_again(dir.path());
-    let router = client(&service, Caller::Router);
+    let router = client(&service, Caller::router());
     let query = |after| EntriesQuery {
         kinds: vec![KindPattern::parse("companion.session.*").expect("pattern")],
         about: session_thing("s-1"),

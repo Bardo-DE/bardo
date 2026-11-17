@@ -146,11 +146,16 @@ async fn a_loosened_value_waits_until_the_settings_app_confirms_it_over_the_bus(
 
     // Nobody but the Settings app may confirm: not an app, not the router, not even the shell.
     let one = [("memory.retention.search_days", "3")];
-    let app = Caller::App(AppId {
+    let app = Caller::app(AppId {
         name: mail(),
         isolation: Isolation::Unsandboxed,
     });
-    for caller in [app.clone(), Caller::Router, Caller::Cuad, Caller::ShellUi] {
+    for caller in [
+        app.clone(),
+        Caller::router(),
+        Caller::cuad(),
+        Caller::shell_ui(),
+    ] {
         let client = world.client(caller.clone()).await;
         assert_eq!(
             confirm_over_bus(&client, &one).await,
@@ -161,7 +166,7 @@ async fn a_loosened_value_waits_until_the_settings_app_confirms_it_over_the_bus(
     assert!(!dirs.confirmed_settings_toml().exists());
 
     // The waiting list is read by the Settings app and the shell, and by no one else.
-    for caller in [app, Caller::Router, Caller::Cuad] {
+    for caller in [app, Caller::router(), Caller::cuad()] {
         let client = world.client(caller.clone()).await;
         assert_eq!(
             pending_over_bus(&client).await,
@@ -174,12 +179,12 @@ async fn a_loosened_value_waits_until_the_settings_app_confirms_it_over_the_bus(
         waiting: "3".to_owned(),
         shipped: MemorySettings::default().retention.search.0.to_string(),
     }];
-    let shell = world.client(Caller::ShellUi).await;
+    let shell = world.client(Caller::shell_ui()).await;
     assert_eq!(pending_over_bus(&shell).await, Ok(waiting.clone()));
 
     // From the Settings app, a key that cannot loosen anything and a value the key does not take
     // are refused, and a refused pair keeps the good one beside it out too.
-    let settings = world.client(Caller::Settings).await;
+    let settings = world.client(Caller::settings()).await;
     for bad in [
         vec![("memory.nonsense", "1")],
         vec![("memory.consolidation.when", "never")],

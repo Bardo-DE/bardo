@@ -88,14 +88,14 @@ async fn record_and_find(rig: &Rig) -> Vec<MemoryItem> {
     let recorded = rig
         .service
         .handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(mail_event("Lisbon receipts", "7f3a")),
         )
         .await;
     assert!(matches!(recorded, MemoryReply::Recorded(_)), "{recorded:?}");
     let reply = rig
         .service
-        .handle(&Caller::Router, search("receipts"))
+        .handle(&Caller::router(), search("receipts"))
         .await;
     let MemoryReply::Hits(hits) = reply else {
         panic!("{reply:?}")
@@ -220,7 +220,7 @@ async fn with_inferd_down_recall_is_lexical_only_and_consolidation_is_off() {
     let run = rig
         .service
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::RunConsolidation(space("work")),
         )
         .await;

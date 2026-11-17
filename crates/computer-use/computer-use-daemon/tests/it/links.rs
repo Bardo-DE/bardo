@@ -101,7 +101,7 @@ fn links(
     memory: Arc<memory_service::MemoryService<memory_fake::FakeBackend>>,
 ) -> DaemonLinks<InProcess<memory_fake::FakeBackend>, DbusTransport> {
     DaemonLinks::over(
-        Memory::over(InProcess::new(memory, Caller::Cuad)),
+        Memory::over(InProcess::new(memory, Caller::cuad())),
         Intents::over(DbusTransport::new(connection)),
     )
     .reading_time_from(|| base_time::UnixSeconds(1_700_000_000))

@@ -26,7 +26,7 @@ pub trait EventSink: Send + Sync {
     fn append(&self, record: AuditRecord);
 }
 
-/// Memory, reached as `Caller::Router` (the router acts for the companion's session, in the
+/// Memory, reached as `Caller::router()` (the router acts for the companion's session, in the
 /// Space of the invocation; the companion never calls memory itself).
 pub trait MemoryLink: Send + Sync {
     /// One memory request, answered by memoryd.

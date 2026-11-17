@@ -97,7 +97,7 @@ fn reviewing(hunks: Vec<Hunk>) -> Service {
 }
 
 async fn shell(service: &Service, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::ShellUi, request).await
+    service.handle(&Caller::shell_ui(), request).await
 }
 
 async fn run(service: &Service) -> DraftView {

@@ -10,6 +10,7 @@
 
 use crate::callers::caller_for;
 use account_callers::{Callers, ProcCallers};
+use caller_role_types::CallerRole;
 use memory_core::Refusal;
 use memory_service::Caller;
 use std::collections::BTreeMap;
@@ -34,7 +35,7 @@ pub trait Peers: Send + Sync + 'static {
 
 /// Whether the signals about memory go to `caller`.
 fn hears_signals(caller: &Caller) -> bool {
-    matches!(caller, Caller::Router | Caller::ShellUi)
+    matches!(caller.role(), CallerRole::Agent | CallerRole::SheetHost)
 }
 
 /// Peers by process: porter's [`ProcCallers`] over the connection, mapped onto almanac's callers.

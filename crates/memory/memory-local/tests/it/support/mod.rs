@@ -53,7 +53,7 @@ pub fn client(service: &Arc<Service>, caller: Caller) -> Client {
 }
 
 pub fn shell(service: &Arc<Service>) -> Client {
-    client(service, Caller::ShellUi)
+    client(service, Caller::shell_ui())
 }
 
 pub fn query(text: &str) -> RecallQuery {

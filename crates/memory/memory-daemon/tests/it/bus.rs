@@ -18,7 +18,7 @@ async fn next_item<S: Stream + Unpin>(stream: &mut S) -> Option<S::Item> {
 }
 
 fn app() -> Caller {
-    Caller::App(AppId {
+    Caller::app(AppId {
         name: mail(),
         isolation: Isolation::Unsandboxed,
     })
@@ -62,8 +62,8 @@ async fn record_search_inject_forget_over_the_bus() {
     let rig = rig().await;
     let (app, router, shell) = (
         rig.memory(app()).await,
-        rig.memory(Caller::Router).await,
-        rig.memory(Caller::ShellUi).await,
+        rig.memory(Caller::router()).await,
+        rig.memory(Caller::shell_ui()).await,
     );
 
     // An app records what happened in it.
@@ -142,8 +142,8 @@ async fn record_search_inject_forget_over_the_bus() {
 #[tokio::test]
 async fn a_refusal_crosses_the_bus_as_the_error_of_its_name() {
     let rig = rig().await;
-    let router = rig.memory(Caller::Router).await;
-    let shell = rig.memory(Caller::ShellUi).await;
+    let router = rig.memory(Caller::router()).await;
+    let shell = rig.memory(Caller::shell_ui()).await;
     let stranger = Memory::over(DbusTransport::new(connect(&rig.world.address).await));
 
     let token = PlanToken::parse("p-1").expect("token");
@@ -179,7 +179,7 @@ async fn a_refusal_crosses_the_bus_as_the_error_of_its_name() {
 async fn a_record_admission_dropped_is_no_memory_not_an_error() {
     let rig = rig().await;
     let app = rig.memory(app()).await;
-    let shell = rig.memory(Caller::ShellUi).await;
+    let shell = rig.memory(Caller::shell_ui()).await;
     shell
         .ask(MemoryRequest::Mark(MarkRequest {
             space: space("work"),
@@ -204,7 +204,7 @@ async fn a_record_admission_dropped_is_no_memory_not_an_error() {
 async fn a_batch_the_person_spaces_and_rules_travel_too() {
     let rig = rig().await;
     let app = rig.memory(app()).await;
-    let shell = rig.memory(Caller::ShellUi).await;
+    let shell = rig.memory(Caller::shell_ui()).await;
     let one = mail_thread_archived().expect("fixture");
     let mut two = one.clone();
     if let EventBody::Thing { verb, .. } = &mut two.body {
@@ -245,7 +245,7 @@ async fn without_a_daemon_the_transport_says_there_is_no_memory() {
 #[tokio::test]
 async fn the_signals_tell_the_bus_what_changed() {
     let rig = rig().await;
-    let watcher = rig.world.client(Caller::ShellUi).await;
+    let watcher = rig.world.client(Caller::shell_ui()).await;
     let control = ControlProxy::new(&watcher).await.expect("proxy");
     assert_eq!(
         control.version().await.expect("version"),
@@ -257,8 +257,8 @@ async fn the_signals_tell_the_bus_what_changed() {
     let mut status = control.receive_status_changed().await.expect("subscribe");
 
     let app = rig.memory(app()).await;
-    let router = rig.memory(Caller::Router).await;
-    let shell = rig.memory(Caller::ShellUi).await;
+    let router = rig.memory(Caller::router()).await;
+    let shell = rig.memory(Caller::shell_ui()).await;
     let wait = Duration::from_secs(10);
 
     app.record(mail_thread_archived().expect("fixture"))
@@ -331,7 +331,7 @@ async fn an_export_is_written_to_the_stream_the_caller_passes() {
     app.record(mail_thread_archived().expect("fixture"))
         .await
         .expect("record");
-    let shell = DbusTransport::new(rig.world.client(Caller::ShellUi).await);
+    let shell = DbusTransport::new(rig.world.client(Caller::shell_ui()).await);
     let target = tempfile::tempfile().expect("target");
     let reader = target.try_clone().expect("clone");
     let reply = shell
@@ -392,12 +392,12 @@ fn receipt() -> ConfirmReceipt {
 #[tokio::test]
 async fn settling_a_pending_fact_and_losing_a_key_are_signalled_too() {
     let rig = rig().await;
-    let watcher = rig.world.client(Caller::ShellUi).await;
+    let watcher = rig.world.client(Caller::shell_ui()).await;
     let control = ControlProxy::new(&watcher).await.expect("proxy");
     let mut pending = control.receive_pending_changed().await.expect("subscribe");
     let mut status = control.receive_status_changed().await.expect("subscribe");
-    let router = rig.memory(Caller::Router).await;
-    let shell = rig.memory(Caller::ShellUi).await;
+    let router = rig.memory(Caller::router()).await;
+    let shell = rig.memory(Caller::shell_ui()).await;
     let wait = Duration::from_secs(10);
 
     let (id, _) = router
@@ -468,7 +468,7 @@ fn session_query(after: Option<Cursor>, limit: u32) -> EntriesQuery {
 #[tokio::test]
 async fn a_durable_append_and_its_pages_cross_the_bus() {
     let rig = rig().await;
-    let router = rig.memory(Caller::Router).await;
+    let router = rig.memory(Caller::router()).await;
     let mut acks = Vec::new();
     for slug in ["turn", "tool", "done"] {
         let record = session_entry("s-1", slug, slug).expect("fixture");
@@ -502,8 +502,8 @@ async fn a_durable_append_and_its_pages_cross_the_bus() {
 #[tokio::test]
 async fn the_durable_members_refuse_as_the_error_of_their_name() {
     let rig = rig().await;
-    let router = rig.memory(Caller::Router).await;
-    let shell = rig.memory(Caller::ShellUi).await;
+    let router = rig.memory(Caller::router()).await;
+    let shell = rig.memory(Caller::shell_ui()).await;
     let app = rig.memory(app()).await;
     let record = || session_entry("s-1", "turn", "x").expect("fixture");
 
@@ -536,7 +536,7 @@ async fn an_app_hears_no_signals_about_memory() {
     let listener = rig.world.client(app()).await;
     let control = ControlProxy::new(&listener).await.expect("proxy");
     let mut recorded = control.receive_recorded().await.expect("subscribe");
-    let watcher = rig.world.client(Caller::ShellUi).await;
+    let watcher = rig.world.client(Caller::shell_ui()).await;
     let mut heard = ControlProxy::new(&watcher)
         .await
         .expect("proxy")
@@ -544,7 +544,7 @@ async fn an_app_hears_no_signals_about_memory() {
         .await
         .expect("subscribe");
 
-    let router = rig.memory(Caller::Router).await;
+    let router = rig.memory(Caller::router()).await;
     router
         .record(mail_thread_archived().expect("fixture"))
         .await
@@ -574,13 +574,13 @@ async fn the_confinement_property_reads_what_the_daemon_started_with() {
         let bus = PrivateBus::start(scratch.path());
         let dirs = dirs_in(&scratch.path().join("home"));
         let world = World::start_confined(&bus, &dirs, &SharedKeys::default(), confinement).await;
-        let client = world.client(Caller::ShellUi).await;
+        let client = world.client(Caller::shell_ui()).await;
         let control = ControlProxy::new(&client).await.expect("proxy");
         assert_eq!(control.confinement().await.expect("property"), word);
     }
     // A daemon nobody told (a test host) says it applied no sandbox.
     let rig = rig().await;
-    let client = rig.world.client(Caller::ShellUi).await;
+    let client = rig.world.client(Caller::shell_ui()).await;
     let control = ControlProxy::new(&client).await.expect("proxy");
     assert_eq!(control.confinement().await.expect("property"), "off");
 }

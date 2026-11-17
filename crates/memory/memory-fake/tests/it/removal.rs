@@ -97,7 +97,7 @@ fn service_with_work() -> Service {
 async fn remove(service: &Service, removal: Removal) -> MemoryReply {
     service
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::RemoveSpace(work(), removal),
         )
         .await
@@ -125,7 +125,7 @@ async fn record_history(service: &Service) -> Vec<EventRef> {
     let mut refs = Vec::new();
     for record in history() {
         let reply = service
-            .handle(&Caller::Router, MemoryRequest::Record(record))
+            .handle(&Caller::router(), MemoryRequest::Record(record))
             .await;
         let MemoryReply::Recorded(event) = reply else {
             panic!("{reply:?}")
@@ -150,7 +150,7 @@ async fn events_in(service: &Service, space: &SpaceId) -> Vec<TimelineEntry> {
     };
     let reply = service
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::Timeline(space.clone(), query),
         )
         .await;
@@ -303,7 +303,7 @@ async fn only_the_shell_removes_a_space_and_only_a_desktop_wide_one() {
     let service = service_with_work();
     let by_router = service
         .handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::RemoveSpace(work(), erase_all()),
         )
         .await;
@@ -311,7 +311,7 @@ async fn only_the_shell_removes_a_space_and_only_a_desktop_wide_one() {
     let own = home_of(FILES);
     let reply = service
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::RemoveSpace(own, erase_all()),
         )
         .await;
@@ -432,7 +432,7 @@ async fn a_history_move_that_stopped_half_way_finishes_without_duplicates() {
     let mut copied = mail_thread_archived().expect("fixture");
     copied.space = home_of("org.bardo.Mail");
     let reply = service
-        .handle(&Caller::Router, MemoryRequest::Record(copied))
+        .handle(&Caller::router(), MemoryRequest::Record(copied))
         .await;
     assert!(matches!(reply, MemoryReply::Recorded(_)), "{reply:?}");
     let reply = remove(&service, Removal::KEEP_ALL).await;

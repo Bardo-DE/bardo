@@ -40,7 +40,7 @@ fn clock() -> FixedClock {
 
 fn log_over(service: &Arc<Service>) -> AlmanacSessionLog<InProcess<FakeBackend>, FixedClock> {
     AlmanacSessionLog::over(
-        InProcess::new(Arc::clone(service), Caller::Router),
+        InProcess::new(Arc::clone(service), Caller::router()),
         work(),
         clock(),
     )
@@ -194,7 +194,7 @@ async fn an_acknowledgement_lost_on_the_way_is_not_written_twice() {
     let service = service();
     let log = AlmanacSessionLog::over(
         LosesOneAck {
-            inner: InProcess::new(Arc::clone(&service), Caller::Router),
+            inner: InProcess::new(Arc::clone(&service), Caller::router()),
             lose_at: 1,
             seen: AtomicU32::new(0),
         },

@@ -78,7 +78,7 @@ fn service_drafting(hunks: Vec<Hunk>) -> MemoryService<FakeBackend> {
 }
 
 async fn shell(service: &MemoryService<FakeBackend>, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::ShellUi, request).await
+    service.handle(&Caller::shell_ui(), request).await
 }
 
 async fn run(service: &MemoryService<FakeBackend>) -> DraftView {
@@ -96,7 +96,7 @@ async fn found(service: &MemoryService<FakeBackend>, text: &str) -> bool {
         over: RecallOver::Facts,
     };
     match service
-        .handle(&Caller::Router, MemoryRequest::Search(query))
+        .handle(&Caller::router(), MemoryRequest::Search(query))
         .await
     {
         // The vector half returns its nearest whatever they say: a hit counts when it reads so.
@@ -115,7 +115,7 @@ async fn lexically(service: &MemoryService<FakeBackend>, text: &str) -> bool {
         over: RecallOver::Facts,
     };
     match service
-        .handle(&Caller::Router, MemoryRequest::Search(query))
+        .handle(&Caller::router(), MemoryRequest::Search(query))
         .await
     {
         MemoryReply::Hits(hits) => hits
@@ -364,7 +364,7 @@ async fn marks_are_kept_in_the_vault() {
     assert!(marks.things.contains(&marked));
     let dropped = service
         .handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(mail_thread_archived().expect("fixture")),
         )
         .await;

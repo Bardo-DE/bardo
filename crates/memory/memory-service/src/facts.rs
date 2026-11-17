@@ -6,6 +6,7 @@ use crate::events::ServiceEvent;
 use crate::open::{Cx, Open, Stored, failed, files_refusal};
 use crate::readers::caller_actor;
 use crate::timeline::timeline_entry;
+use caller_role_types::CallerRole;
 use memory_core::{
     Confidentiality, Count, EventBody, Fact, FactDraft, FactId, FactState, FactView, Integrity,
     Label, Link, MemoryOp, ModelRole, PENDING_TTL_DAYS, Refusal, Settlement, Source, SourceView,
@@ -52,11 +53,11 @@ pub(crate) fn lands_for(label: &Label) -> memory_core::Lands {
 /// The label of a proposal: the person's own words when the shell proposes; text a planner wrote
 /// (untrusted, private to the Space) when the router does; joined with what it cites.
 fn proposal_label(caller: &Caller, space: &SpaceId, cited: &[Label]) -> Label {
-    let base = match caller {
-        Caller::ShellUi => Label::trusted_user(),
+    let base = match caller.role() {
+        CallerRole::SheetHost => Label::trusted_user(),
         // The Settings app cannot propose (auth refuses it); were it ever to get here, its text is
         // untrusted like any model's.
-        Caller::App(_) | Caller::Router | Caller::Cuad | Caller::Settings => Label {
+        _ => Label {
             integrity: Integrity::Untrusted,
             confidentiality: Confidentiality::Private(BTreeSet::from([space.clone()])),
             classes: BTreeSet::new(),

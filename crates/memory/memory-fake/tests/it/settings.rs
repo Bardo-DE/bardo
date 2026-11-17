@@ -19,7 +19,7 @@ fn settings(f: impl FnOnce(&mut MemorySettings)) -> MemorySettings {
 }
 
 async fn shell(service: &Service, request: MemoryRequest) -> MemoryReply {
-    service.handle(&Caller::ShellUi, request).await
+    service.handle(&Caller::shell_ui(), request).await
 }
 
 async fn propose_pending(service: &Service) {
@@ -31,7 +31,7 @@ async fn propose_pending(service: &Service) {
         on_behalf: None,
     };
     let reply = service
-        .handle(&Caller::Router, MemoryRequest::Propose(work(), draft))
+        .handle(&Caller::router(), MemoryRequest::Propose(work(), draft))
         .await;
     assert!(
         matches!(reply, MemoryReply::Proposed(_, FactState::Pending)),
@@ -60,7 +60,7 @@ async fn record_in(service: &Service, space: &str) {
     let mut record = mail_thread_archived().expect("fixture");
     record.space = SpaceId::parse(space).expect("space");
     let reply = service
-        .handle(&Caller::Router, MemoryRequest::Record(record))
+        .handle(&Caller::router(), MemoryRequest::Record(record))
         .await;
     assert!(matches!(reply, MemoryReply::Recorded(_)), "{reply:?}");
 }
@@ -100,7 +100,7 @@ async fn an_audit_event_keeps_its_body_ninety_days() {
     let service = fake_service(ScriptedConsolidator::default());
     service
         .handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(policy_ask().expect("fixture")),
         )
         .await;

@@ -82,7 +82,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     let queue = first.service();
     let recorded = queue
         .handle(
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(titled("Lisbon receipts", "7f3a")),
         )
         .await;
@@ -91,7 +91,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     };
     let proposed = queue
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::Propose(
                 space("work"),
                 draft("people/ana", "Ana is the CFO of Porto."),
@@ -104,7 +104,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     ));
     queue
         .handle(
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::Mark(MarkRequest {
                 space: space("work"),
                 thing: marked.clone(),
@@ -119,7 +119,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
         retention: Retention::Days(DayCount(5)),
     };
     queue
-        .handle(&Caller::ShellUi, MemoryRequest::SetRule(rule.clone()))
+        .handle(&Caller::shell_ui(), MemoryRequest::SetRule(rule.clone()))
         .await;
     first.persist();
     let rules_before = first.service().rules();
@@ -142,7 +142,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
 
     let MemoryReply::Timeline(page) = ask(
         &second,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(
             space("work"),
             TimelineQuery {
@@ -165,7 +165,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     assert!(page.entries.iter().any(|e| e.event == first_event));
     let MemoryReply::Facts(facts) = ask(
         &second,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Facts(FactQuery {
             space: space("work"),
             topic: None,
@@ -182,7 +182,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     assert_eq!(facts[0].fact.text.as_str(), "Ana is the CFO of Porto.");
     let MemoryReply::Hits(hits) = ask(
         &second,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Search(RecallQuery {
             space: space("work"),
             text: "Lisbon".into(),
@@ -205,7 +205,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     assert_eq!(
         ask(
             &second,
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(about_marked)
         )
         .await,
@@ -214,7 +214,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     // The log is the same chain, on the same replica, and still verifies.
     let MemoryReply::Recorded(next) = ask(
         &second,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Record(titled("Porto invoices", "9c01")),
     )
     .await
@@ -225,7 +225,7 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     assert!(next.seq > first_event.seq);
     let verified = ask(
         &second,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Verify(space("work")),
     )
     .await;
@@ -251,10 +251,10 @@ async fn sealed_spaces_are_unreadable_at_rest_and_plain_ones_are_markdown() {
     for id in ["work", "notebook"] {
         let mut record = titled("Quarterly zebra budget", "7f3a");
         record.space = space(id);
-        ask(&svc, &Caller::Router, MemoryRequest::Record(record)).await;
+        ask(&svc, &Caller::router(), MemoryRequest::Record(record)).await;
         ask(
             &svc,
-            &Caller::ShellUi,
+            &Caller::shell_ui(),
             MemoryRequest::Propose(space(id), draft("people/ana", "Ana is the CFO of Porto.")),
         )
         .await;
@@ -287,7 +287,7 @@ async fn deleting_a_space_destroys_its_key_removes_its_directories_and_anchors_i
     let svc = service(&dirs, &keys);
     ask(
         &svc,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Record(titled("Lisbon receipts", "7f3a")),
     )
     .await;
@@ -296,14 +296,14 @@ async fn deleting_a_space_destroys_its_key_removes_its_directories_and_anchors_i
 
     let MemoryReply::Plan(plan) = ask(
         &svc,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::PlanForget(space("work"), ForgetScope::Space),
     )
     .await
     else {
         panic!("plan")
     };
-    let report = ask(&svc, &Caller::ShellUi, MemoryRequest::Forget(plan.token)).await;
+    let report = ask(&svc, &Caller::shell_ui(), MemoryRequest::Forget(plan.token)).await;
     assert!(matches!(report, MemoryReply::Forgot(_)), "{report:?}");
 
     assert!(
@@ -319,7 +319,7 @@ async fn deleting_a_space_destroys_its_key_removes_its_directories_and_anchors_i
     // The desktop log kept where the deleted chain ended.
     let MemoryReply::Timeline(page) = ask(
         &svc,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(
             SpaceId::desktop(),
             TimelineQuery {

@@ -5,7 +5,7 @@ use memory_client::{ClientError, Memory, Transport};
 use memory_core::{HistoryFate, MemoryFate, MemoryReply, MemoryRequest, Removal};
 use provenance::SpaceId;
 
-/// Memory, as the router asks it (`Caller::Router`).
+/// Memory, as the router asks it (`Caller::router()`).
 #[derive(Debug, Clone)]
 pub struct AlmanacMemory<T: Transport> {
     memory: Memory<T>,

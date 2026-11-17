@@ -39,11 +39,11 @@ fn everyone() -> TimelineQuery {
 async fn record_then_timeline_shows_it() {
     let service = service();
     let record = mail_thread_archived().expect("fixture");
-    let reply = ask(&service, &Caller::Router, MemoryRequest::Record(record)).await;
+    let reply = ask(&service, &Caller::router(), MemoryRequest::Record(record)).await;
     assert!(matches!(reply, MemoryReply::Recorded(_)));
     let page = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(space("work"), everyone()),
     )
     .await;
@@ -61,14 +61,14 @@ async fn forget_thing_cascades() {
     for record in [mail_thread_archived(), companion_forwarded(), policy_ask()] {
         ask(
             &service,
-            &Caller::Router,
+            &Caller::router(),
             MemoryRequest::Record(record.expect("fixture")),
         )
         .await;
     }
     let plan = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::PlanForget(space("work"), ForgetScope::Thing(thing)),
     )
     .await;
@@ -82,7 +82,7 @@ async fn forget_thing_cascades() {
     );
     let report = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Forget(plan.token),
     )
     .await;
@@ -95,7 +95,7 @@ async fn forget_thing_cascades() {
     );
     let after = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(space("work"), everyone()),
     )
     .await;
@@ -116,13 +116,13 @@ async fn plan_goes_stale_when_new_derivation_appears() {
     let thing = thing("mail.thread", "7f3a").expect("thing");
     ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Record(mail_thread_archived().expect("fixture")),
     )
     .await;
     let plan = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::PlanForget(space("work"), ForgetScope::Thing(thing.clone())),
     )
     .await;
@@ -138,13 +138,13 @@ async fn plan_goes_stale_when_new_derivation_appears() {
     };
     ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Propose(space("work"), draft),
     )
     .await;
     let reply = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Forget(plan.token),
     )
     .await;
@@ -160,10 +160,10 @@ async fn router_reads_are_audited() {
         limit: Count(5),
         over: RecallOver::Both,
     };
-    ask(&service, &Caller::Router, MemoryRequest::Search(query)).await;
+    ask(&service, &Caller::router(), MemoryRequest::Search(query)).await;
     let page = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(space("work"), everyone()),
     )
     .await;
@@ -190,7 +190,7 @@ async fn an_untrusted_proposal_lands_in_pending() {
     };
     let reply = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::Propose(space("work"), draft),
     )
     .await;
@@ -226,7 +226,7 @@ fn proposal(on_behalf: Option<Actor>) -> MemoryRequest {
 async fn authors(service: &MemoryService<FakeBackend>) -> Vec<Actor> {
     let MemoryReply::Facts(facts) = ask(
         service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Facts(FactQuery {
             space: space("work"),
             topic: None,
@@ -245,7 +245,7 @@ async fn authors(service: &MemoryService<FakeBackend>) -> Vec<Actor> {
 #[tokio::test]
 async fn a_proposal_the_router_makes_for_a_helper_is_authored_by_it() {
     let service = service();
-    let reply = ask(&service, &Caller::Router, proposal(Some(helper_job()))).await;
+    let reply = ask(&service, &Caller::router(), proposal(Some(helper_job()))).await;
     assert!(matches!(reply, MemoryReply::Proposed(..)));
     assert_eq!(authors(&service).await, vec![helper_job()]);
 }
@@ -253,7 +253,7 @@ async fn a_proposal_the_router_makes_for_a_helper_is_authored_by_it() {
 #[tokio::test]
 async fn a_proposal_without_on_behalf_is_authored_by_the_router_as_before() {
     let service = service();
-    ask(&service, &Caller::Router, proposal(None)).await;
+    ask(&service, &Caller::router(), proposal(None)).await;
     let router = Actor::System {
         part: SystemPart::Router,
     };
@@ -265,7 +265,7 @@ async fn space_delete_destroys_key() {
     let service = service();
     ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Forget(PlanToken::parse("p-space").expect("t")),
     )
     .await;
@@ -274,7 +274,7 @@ async fn space_delete_destroys_key() {
 }
 
 fn mail_app() -> Caller {
-    Caller::App(AppId {
+    Caller::app(AppId {
         name: mail(),
         isolation: Isolation::InProcess,
     })
@@ -304,7 +304,7 @@ async fn an_app_opens_only_desktop_spaces_the_registry_lists() {
     service.backend().take_registry_down();
     let down = ask(&service, &mail_app(), mail_record_in("other")).await;
     assert_eq!(down, MemoryReply::Refused(Refusal::Unavailable));
-    let router = ask(&service, &Caller::Router, mail_record_in("other")).await;
+    let router = ask(&service, &Caller::router(), mail_record_in("other")).await;
     assert!(matches!(router, MemoryReply::Recorded(_)), "{router:?}");
 }
 
@@ -319,12 +319,12 @@ async fn a_full_space_refuses_and_an_oversize_record_is_invalid() {
         events: EventCap(3),
         ..Quota::default()
     });
-    let first = ask(&service, &Caller::Router, mail_record_in("work")).await;
+    let first = ask(&service, &Caller::router(), mail_record_in("work")).await;
     assert!(matches!(first, MemoryReply::Recorded(_)), "{first:?}");
     // The audit entries count too, so the cap is reached within a few records, never passed.
     let mut refused = None;
     for _ in 0..4 {
-        let reply = ask(&service, &Caller::Router, mail_record_in("work")).await;
+        let reply = ask(&service, &Caller::router(), mail_record_in("work")).await;
         if matches!(reply, MemoryReply::Refused(_)) {
             refused = Some(reply);
             break;
@@ -336,7 +336,7 @@ async fn a_full_space_refuses_and_an_oversize_record_is_invalid() {
     let mut quota = Quota::default();
     quota.fields.body = ByteCap(10);
     service.set_quota(quota);
-    let big = ask(&service, &Caller::Router, mail_record_in("home")).await;
+    let big = ask(&service, &Caller::router(), mail_record_in("home")).await;
     assert!(
         matches!(big, MemoryReply::Refused(Refusal::Invalid(_))),
         "{big:?}"
@@ -353,7 +353,7 @@ async fn an_app_cannot_claim_trusted_or_a_wider_audience() {
     assert!(matches!(reply, MemoryReply::Recorded(_)), "{reply:?}");
     let page = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(space("work"), everyone()),
     )
     .await;
@@ -372,13 +372,13 @@ async fn an_app_cannot_claim_trusted_or_a_wider_audience() {
 async fn a_locked_space_buffers_only_what_it_could_store_and_replays_it() {
     let service = service();
     service.backend().memory_keys().lock();
-    let kept = ask(&service, &Caller::Router, mail_record_in("work")).await;
+    let kept = ask(&service, &Caller::router(), mail_record_in("work")).await;
     assert_eq!(kept, MemoryReply::Ok, "buffered while locked");
 
     let mut tiny = Quota::default();
     tiny.fields.body = ByteCap(10);
     service.set_quota(tiny);
-    let oversize = ask(&service, &Caller::Router, mail_record_in("work")).await;
+    let oversize = ask(&service, &Caller::router(), mail_record_in("work")).await;
     assert!(
         matches!(oversize, MemoryReply::Refused(Refusal::Invalid(_))),
         "a record that could never be stored is refused now: {oversize:?}"
@@ -388,7 +388,7 @@ async fn a_locked_space_buffers_only_what_it_could_store_and_replays_it() {
     service.backend().memory_keys().unlock();
     let page = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(space("work"), everyone()),
     )
     .await;
@@ -419,7 +419,7 @@ async fn a_batch_with_a_malformed_record_stores_nothing() {
     malformed.space = space("work");
     let refused = ask(
         &service,
-        &Caller::Router,
+        &Caller::router(),
         MemoryRequest::RecordBatch(vec![first, malformed]),
     )
     .await;
@@ -429,7 +429,7 @@ async fn a_batch_with_a_malformed_record_stores_nothing() {
     );
     let page = ask(
         &service,
-        &Caller::ShellUi,
+        &Caller::shell_ui(),
         MemoryRequest::Timeline(space("work"), everyone()),
     )
     .await;

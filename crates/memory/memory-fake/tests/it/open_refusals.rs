@@ -63,7 +63,7 @@ fn work() -> SpaceId {
 
 async fn status(service: &MemoryService<Refusing>) -> MemoryReply {
     service
-        .handle(&Caller::ShellUi, MemoryRequest::Status(work()))
+        .handle(&Caller::shell_ui(), MemoryRequest::Status(work()))
         .await
 }
 
@@ -107,11 +107,11 @@ async fn a_durable_append_to_a_locked_space_is_refused_where_a_plain_record_is_b
     let service = refusing(LogError::Locked);
     let record = memory_fake::session_entry("s-1", "taint", "x").expect("fixture");
     let plain = service
-        .handle(&Caller::Router, MemoryRequest::Record(record.clone()))
+        .handle(&Caller::router(), MemoryRequest::Record(record.clone()))
         .await;
     assert_eq!(plain, MemoryReply::Ok, "buffered, nothing stored yet");
     let durable = service
-        .handle(&Caller::Router, MemoryRequest::RecordDurable(record))
+        .handle(&Caller::router(), MemoryRequest::RecordDurable(record))
         .await;
     assert_eq!(durable, MemoryReply::Refused(Refusal::SpaceLocked));
 }
@@ -123,7 +123,7 @@ async fn a_log_that_will_not_open_is_unavailable_to_a_durable_append() {
         let service = refusing(error);
         let reply = service
             .handle(
-                &Caller::Router,
+                &Caller::router(),
                 MemoryRequest::RecordDurable(record.clone()),
             )
             .await;

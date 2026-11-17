@@ -29,13 +29,13 @@ async fn a_space_is_written_recalled_and_forgotten_in_process() {
     let service = Arc::new(fake_service(ScriptedConsolidator::default()));
     let app = Memory::over(InProcess::new(
         Arc::clone(&service),
-        Caller::App(AppId {
+        Caller::app(AppId {
             name: mail(),
             isolation: Isolation::InProcess,
         }),
     ));
-    let reader = Memory::over(InProcess::new(Arc::clone(&service), Caller::Router));
-    let shell = Memory::over(InProcess::new(service, Caller::ShellUi));
+    let reader = Memory::over(InProcess::new(Arc::clone(&service), Caller::router()));
+    let shell = Memory::over(InProcess::new(service, Caller::shell_ui()));
 
     assert!(matches!(
         app.record(mail_thread_archived().expect("fixture")).await,

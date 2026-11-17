@@ -5,6 +5,7 @@ use crate::caller::Caller;
 use crate::docs::record_fault;
 use crate::open::{Cx, Open, failed};
 use crate::space::{SpaceEffect, SpaceEvent, step};
+use caller_role_types::CallerRole;
 use memory_core::{
     Admission, Confidentiality, Count, DataClass, DropReason, EventBody, EventRef, FileChange,
     FileView, FileWhy, FileWhyClaim, IndexPart, Integrity, KindPattern, Label, MarkKind,
@@ -34,7 +35,7 @@ pub(crate) fn land_in_receiver(record: &mut Record) {
 /// confidentiality, never claim `Trusted` or leave its Space. The router, cuad and the shell
 /// stamp their own labels.
 pub(crate) fn floored(caller: &Caller, mut record: Record) -> Record {
-    if let Caller::App(_) = caller {
+    if caller.role() == CallerRole::App {
         let floor = Label {
             integrity: Integrity::Untrusted,
             confidentiality: Confidentiality::Private(BTreeSet::from([record.space.clone()])),

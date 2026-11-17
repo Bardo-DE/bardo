@@ -26,23 +26,15 @@ pub const SETTINGS_APP: &str = "org.bardo.Settings";
 #[must_use]
 pub fn caller_for(found: account_callers::Caller) -> Caller {
     let name = found.app.name.as_str();
-    match found.role {
-        CallerRole::Cua => Caller::Cuad,
-        CallerRole::SheetHost if name == SHELL_APP => Caller::ShellUi,
-        CallerRole::Agent if name == ROUTER_APP => Caller::Router,
-        CallerRole::Settings if name == SETTINGS_APP => Caller::Settings,
-        // A terminal (temor) is no app and no fixed caller, but this file maps every identified
-        // process that is not a fixed caller to an app, as porter's lane did for `Terminal`; it
-        // gets no shell or router standing, only its own app's access.
-        CallerRole::App
-        | CallerRole::Terminal
-        | CallerRole::Settings
-        | CallerRole::SheetHost
-        | CallerRole::PorterDaemon
-        | CallerRole::AiBroker
-        | CallerRole::AgentLauncher
-        | CallerRole::Agent
-        // The compositor: its own app's access, no fixed standing.
-        | CallerRole::Compositor => Caller::App(found.app),
-    }
+    let role = match found.role {
+        CallerRole::Cua => CallerRole::Cua,
+        CallerRole::SheetHost if name == SHELL_APP => CallerRole::SheetHost,
+        CallerRole::Agent if name == ROUTER_APP => CallerRole::Agent,
+        CallerRole::Settings if name == SETTINGS_APP => CallerRole::Settings,
+        // Every other process is an app with its own access, whatever its role: a terminal
+        // (temor) is no app and no fixed caller, and gets no shell or router standing; the
+        // compositor, the porter daemons, the AI broker and the agent launcher likewise.
+        _ => CallerRole::App,
+    };
+    Caller::new(role, found.app)
 }

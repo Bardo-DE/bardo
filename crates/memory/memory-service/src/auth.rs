@@ -29,6 +29,7 @@
 //! (the fact machine), whoever sends them.
 
 use crate::caller::Caller;
+use caller_role_types::CallerRole;
 use memory_core::{
     Actor, AgentRef, AgentRole, AppName, AreaTag, EventBody, FileWhyClaim, MemoryRequest, Record,
     Refusal, SpaceId, SpaceScope,
@@ -100,11 +101,11 @@ fn router_may_record(record: &Record) -> bool {
 }
 
 fn may_record(caller: &Caller, record: &Record) -> bool {
-    match caller {
-        Caller::App(id) => app_may_record(&id.name, record),
-        Caller::Router => router_may_record(record),
-        Caller::Cuad => cuad_may_record(record),
-        Caller::ShellUi | Caller::Settings => false,
+    match caller.role() {
+        CallerRole::Agent => router_may_record(record),
+        CallerRole::Cua => cuad_may_record(record),
+        CallerRole::SheetHost | CallerRole::Settings => false,
+        _ => app_may_record(&caller.app_id().name, record),
     }
 }
 
@@ -137,26 +138,26 @@ pub fn allowed(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> 
 
 fn by_class(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> {
     use MemoryRequest as R;
-    let router_or_shell = matches!(caller, Caller::Router | Caller::ShellUi);
+    let router_or_shell = matches!(caller.role(), CallerRole::Agent | CallerRole::SheetHost);
     match request {
         R::Record(record) | R::RecordDurable(record) => yes_if(may_record(caller, record)),
         R::RecordBatch(records) if records.is_empty() => {
             Err(Refusal::Invalid("empty batch".to_owned()))
         }
         R::RecordBatch(records) => yes_if(records.iter().all(|r| may_record(caller, r))),
-        R::ExplainFile(claim) => match caller {
-            Caller::App(id) => yes_if(app_may_explain(&id.name, claim)),
-            Caller::Router | Caller::ShellUi => Ok(()),
-            Caller::Cuad | Caller::Settings => NO,
+        R::ExplainFile(claim) => match caller.role() {
+            CallerRole::Agent | CallerRole::SheetHost => Ok(()),
+            CallerRole::Cua | CallerRole::Settings => NO,
+            _ => yes_if(app_may_explain(&caller.app_id().name, claim)),
         },
-        R::Mark(mark) => match caller {
-            Caller::App(id) => yes_if(mark.thing.app == id.name),
-            Caller::Router | Caller::ShellUi => Ok(()),
-            Caller::Cuad | Caller::Settings => NO,
+        R::Mark(mark) => match caller.role() {
+            CallerRole::Agent | CallerRole::SheetHost => Ok(()),
+            CallerRole::Cua | CallerRole::Settings => NO,
+            _ => yes_if(mark.thing.app == caller.app_id().name),
         },
         R::Propose(_, draft) => match &draft.on_behalf {
             None => yes_if(router_or_shell),
-            Some(actor) => yes_if(matches!(caller, Caller::Router) && is_helper(actor)),
+            Some(actor) => yes_if(caller.role() == CallerRole::Agent && is_helper(actor)),
         },
         R::Search(_)
         | R::Facts(_)
@@ -187,11 +188,14 @@ fn by_class(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> {
         | R::Rebuild(_)
         | R::Sweep(_)
         | R::Export(_)
-        | R::RemoveSpace(..) => yes_if(matches!(caller, Caller::ShellUi)),
+        | R::RemoveSpace(..) => yes_if(caller.role() == CallerRole::SheetHost),
         // The person's confirmation comes from the Settings app that took it, never the shell.
-        R::ConfirmSettings(_) => yes_if(matches!(caller, Caller::Settings)),
+        R::ConfirmSettings(_) => yes_if(caller.role() == CallerRole::Settings),
         // What waits for that confirmation may be read by the app that confirms and by the shell.
-        R::PendingSettings => yes_if(matches!(caller, Caller::Settings | Caller::ShellUi)),
+        R::PendingSettings => yes_if(matches!(
+            caller.role(),
+            CallerRole::Settings | CallerRole::SheetHost
+        )),
         // A request kind this build does not know is not allowed to anyone.
         _ => NO,
     }
@@ -210,17 +214,20 @@ fn spaces_of(request: &MemoryRequest) -> Vec<&SpaceId> {
 /// Router, cuad, the shell and the Settings app are not apps and act across Spaces (the Settings
 /// app's two members name none, and every other request of it is refused by class).
 fn space_is_open(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> {
-    match caller {
-        Caller::App(id) => {
+    match caller.role() {
+        CallerRole::Agent | CallerRole::Cua | CallerRole::SheetHost | CallerRole::Settings => {
+            Ok(())
+        }
+        _ => {
+            let name = &caller.app_id().name;
             let open = spaces_of(request)
                 .into_iter()
-                .all(|space| SpaceScope::Only(space.clone()).open_to(&id.name));
+                .all(|space| SpaceScope::Only(space.clone()).open_to(name));
             if open {
                 Ok(())
             } else {
                 Err(Refusal::OutsideSpace)
             }
         }
-        Caller::Router | Caller::Cuad | Caller::ShellUi | Caller::Settings => Ok(()),
     }
 }

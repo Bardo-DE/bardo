@@ -48,7 +48,7 @@ mod in_process {
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// # tokio::runtime::Builder::new_current_thread().build()?.block_on(async {
     /// let service = Arc::new(fake_service(ScriptedConsolidator::default()));
-    /// let caller = Caller::App(AppId { name: mail(), isolation: Isolation::InProcess });
+    /// let caller = Caller::app(AppId { name: mail(), isolation: Isolation::InProcess });
     /// let app = Memory::over(InProcess::new(service, caller));
     /// let record = mail_thread_archived().ok_or("fixture")?;
     /// assert!(matches!(app.record(record).await?, Recorded::Stored(_)));

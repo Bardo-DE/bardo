@@ -246,7 +246,7 @@ fn in_memory_index(
 /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// # tokio::runtime::Builder::new_current_thread().build()?.block_on(async {
 /// let service = fake_service(ScriptedConsolidator::default());
-/// let reply = service.handle(&Caller::ShellUi, MemoryRequest::Spaces).await;
+/// let reply = service.handle(&Caller::shell_ui(), MemoryRequest::Spaces).await;
 /// assert!(matches!(reply, MemoryReply::Spaces(_)));
 /// # Ok::<(), Box<dyn std::error::Error>>(())
 /// # })
