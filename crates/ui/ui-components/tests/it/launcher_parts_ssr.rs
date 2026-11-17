@@ -347,7 +347,7 @@ fn pane_web() -> Element {
     pane(
         PaneContent::Web {
             host: "duckduckgo.com".to_owned(),
-            url: "https://duckduckgo.com/?q=quire".to_owned(),
+            url: "https://duckduckgo.com/?q=bardo".to_owned(),
         },
         None,
     )

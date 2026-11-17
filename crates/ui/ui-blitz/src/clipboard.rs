@@ -3,7 +3,7 @@
 //!
 //! The system clipboard is another program's, asked at the moment of the paste, so a read does
 //! not run on the UI thread: it runs on a worker with a short wait and a size cap (`read`), and
-//! an owner that is slow, silent or enormous is read as an empty clipboard. quire asks for the
+//! an owner that is slow, silent or enormous is read as an empty clipboard. Bardo asks for the
 //! selection with the window's own connection and does not use the privileged data-control
 //! protocol (FINDINGS "Clipboard"), which would let a client read the clipboard unfocused.
 

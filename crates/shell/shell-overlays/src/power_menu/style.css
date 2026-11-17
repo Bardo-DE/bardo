@@ -1,5 +1,5 @@
-/* The power menu (design/20 §1.8). Everything drawn is quire's `Alert` on its `Sheet`; this sheet
-   only sets the control sizes that alert reads. Its buttons are quire's Large; here Large is the
+/* The power menu (design/20 §1.8). Everything drawn is bardo's `Alert` on its `Sheet`; this sheet
+   only sets the control sizes that alert reads. Its buttons are bardo's Large; here Large is the
    ladder's Medium (design/29, 28), the height of a Mac alert's buttons, so the sheet's controls
    share the ladder with the rest of the shell. Tokens only. */
 [*|data-surface=power-menu]{

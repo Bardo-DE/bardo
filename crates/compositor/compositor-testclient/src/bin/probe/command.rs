@@ -21,7 +21,7 @@
 //! are gone, so make the layers after it. Each shell verb answers one `probe: {json}` note.
 
 use compositor_testclient::Pattern;
-use compositor_testclient::quire::shell::ShellRole;
+use compositor_testclient::bardo::shell::ShellRole;
 use compositor_testclient::surface::layer::{Anchor, KeyboardInteractivity, Layer};
 use compositor_testclient::surface::toplevel::ResizeEdge;
 

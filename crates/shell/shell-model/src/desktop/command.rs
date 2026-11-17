@@ -126,7 +126,7 @@ pub enum DesktopCommand {
     },
     /// The person answered a question the compositor asked
     /// ([`super::ShellNote::PermissionAsk`]), or its sheet went away unanswered
-    /// ([`Answer::Dismissed`]). Quire only, on the connection that holds the shell role.
+    /// ([`Answer::Dismissed`]). Bardo only, on the connection that holds the shell role.
     AnswerPermission {
         /// The question, by the number it came with.
         ask: AskId,
@@ -135,7 +135,7 @@ pub enum DesktopCommand {
     },
     /// The person kept or reverted a changed display setup
     /// ([`super::ShellNote::DisplaysTrial`]); a question taken down with no answer is
-    /// [`TrialAnswer::Revert`]. Quire only, on the connection that holds the shell role.
+    /// [`TrialAnswer::Revert`]. Bardo only, on the connection that holds the shell role.
     AnswerTrial {
         /// The trial, by the number it came with.
         trial: TrialId,
@@ -143,16 +143,16 @@ pub enum DesktopCommand {
         answer: TrialAnswer,
     },
     /// Say what the bar does in full screen: slide in at the top edge, or stay up with the
-    /// full-screen window sized below it. Quire only, sent at the start and on each change.
+    /// full-screen window sized below it. Bardo only, sent at the start and on each change.
     SetFullScreenBar(FullScreenBar),
     /// Say how much motion the person allows; reduced makes the full-screen bar and dock
-    /// cross-fade. Quire only, sent at the start and on each change.
+    /// cross-fade. Bardo only, sent at the start and on each change.
     SetMotion(Motion),
 }
 
 /// Whether `backend` can carry `command`; when it cannot, a surface leaves the control out.
 ///
-/// Quire carries every command (the shell ones only on a connection that holds the shell role;
+/// Bardo carries every command (the shell ones only on a connection that holds the shell role;
 /// the arm refuses them otherwise). Wlr cannot place a window or move it between Spaces (no
 /// standard protocol does), cannot hide or quit an app, and cannot take a minimise target on the
 /// connection the arm runs on: the protocol needs the dock's own `wl_surface`, which lives on
@@ -160,7 +160,7 @@ pub enum DesktopCommand {
 #[must_use]
 pub fn supports(backend: DesktopBackend, command: &DesktopCommand) -> bool {
     match backend {
-        DesktopBackend::Quire => true,
+        DesktopBackend::Bardo => true,
         DesktopBackend::Wlr => wlr_carries(command),
         DesktopBackend::Bare => false,
     }

@@ -1,11 +1,11 @@
 //! The published sections as the palette's groups.
 //!
-//! `shell_launcher::shown` decides which rows each section shows; this names them for quire's
+//! `shell_launcher::shown` decides which rows each section shows; this names them for Bardo's
 //! `CommandPalette` and says what each header's trailing action is ("Show More" or "Show Less",
-//! quire's `PaletteGroup::with_action`).
+//! Bardo's `PaletteGroup::with_action`).
 //!
 //! [`palette_groups`] is what the panel draws: each section a `PaletteGroup` with its header's
-//! action, the Emoji section quire's emoji grid, a file row quire's `RowShape::File` and a
+//! action, the Emoji section Bardo's emoji grid, a file row Bardo's `RowShape::File` and a
 //! clipboard row `RowShape::Clip`.
 
 use std::path::Path;
@@ -60,7 +60,7 @@ impl HeaderAction {
 /// What the rows are drawn with: each row's tile, a picture file's thumbnail
 /// ([`crate::launcher::row_thumb::RowThumbs`]), a clipboard image's pixels and the clock.
 ///
-/// The selection's chord is quire's to place (`RowChord::on_selected`).
+/// The selection's chord is Bardo's to place (`RowChord::on_selected`).
 pub struct Draw<'a> {
     pub tile_of: &'a dyn Fn(&Item) -> RowLeading,
     pub thumb_of: &'a dyn Fn(&str, &Path) -> Option<ImageSource>,
@@ -78,7 +78,7 @@ impl std::fmt::Debug for Draw<'_> {
     }
 }
 
-/// `shown` as quire's palette groups.
+/// `shown` as Bardo's palette groups.
 ///
 /// Rows (file and clipboard rows in their shapes) or, for Emoji, the grid; a capped or expanded
 /// section's header offering "Show More" or "Show Less", which runs `on_more(section)`.
@@ -136,7 +136,7 @@ fn emoji_cells(rows: &[Item]) -> EmojiCells<RowRef> {
 
 impl Draw<'_> {
     /// `item` as a plain row: title, detail, the trail (a file's date, a clip's age, else a
-    /// mixed section's kind) and its chord, which quire shows while it is the selection.
+    /// mixed section's kind) and its chord, which Bardo shows while it is the selection.
     fn plain(&self, item: &Item, mix: Mix) -> PaletteRow<RowRef> {
         let words = row_detail(item, self.now, self.hours);
         let trail = if words.trail.is_empty() {

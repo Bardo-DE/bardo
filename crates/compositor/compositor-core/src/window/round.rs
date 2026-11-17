@@ -1,4 +1,4 @@
-//! The corners and the shadow casement gives a window that draws its own frame (a quire app, a
+//! The corners and the shadow casement gives a window that draws its own frame (a Bardo app, a
 //! GTK headerbar window, an Electron one). A window casement frames itself has both from its
 //! frame; this is for the rest.
 

@@ -31,7 +31,7 @@ pub enum PageInput {
     Escape,
 }
 
-/// Which way the change slides (quire `Anim::SlideL` / `Anim::SlideR`).
+/// Which way the change slides (Bardo `Anim::SlideL` / `Anim::SlideR`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Slide {
     /// No page change.

@@ -1,4 +1,4 @@
-//! The glow's data: its looks are words the compositor and quire agree on.
+//! The glow's data: its looks are words the compositor and Bardo agree on.
 
 use ui_core::geometry::units::Px;
 use ui_style::tokens::glow::{GlowLook, GlowSpot};

@@ -1,4 +1,4 @@
-//! Quick Look: quire's `Peek` over the window, drawing anyview's card for the row the keyboard
+//! Quick Look: Bardo's `Peek` over the window, drawing anyview's card for the row the keyboard
 //! is on. The card is the one anyview's own pane and mailo's attachments draw; a folder is its
 //! icon, name and the number of items in it.
 

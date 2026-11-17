@@ -14,9 +14,9 @@ use ui_settings::{AppearanceFile, Environment, SystemPrefsSource, SystemPrefsWat
 use super::store::report;
 use crate::daemon::msg::ShellMsg;
 
-/// The store of `bardo/appearance.toml`, which every quire app shares.
+/// The store of `bardo/appearance.toml`, which every Bardo app shares.
 pub fn appearance_store() -> Store {
-    Store::new(ConfigRoot::Xdg, AppName::QUIRE)
+    Store::new(ConfigRoot::Xdg, AppName::BARDO)
 }
 
 /// The appearance as the file has it now, the desktop's preferences at their defaults until the

@@ -21,7 +21,7 @@ fn all() -> Vec<(&'static str, A11ySnapshot)> {
     vec![
         ("gtk4_dialog", crate::support::gtk4_dialog()),
         ("firefox_form", crate::support::firefox_form()),
-        ("quire_mail", crate::support::quire_mail()),
+        ("bardo_mail", crate::support::bardo_mail()),
     ]
 }
 
@@ -114,7 +114,7 @@ fn values_and_typed_hints_follow_the_bounds_and_a_range_shows_its_limits() {
     button.typed = TypedHint::Action(provenance::ActionName::parse("mail.thread.archive").unwrap());
     let snap = snapshot(
         "org.example.App",
-        computer_use_a11y_tree::TreeSource::QuireApp,
+        computer_use_a11y_tree::TreeSource::BardoApp,
         vec![
             Spec::new(0, Parent::Root, Role::Window, "Main", (0, 0, 100, 100)),
             slider,
@@ -147,7 +147,7 @@ fn a_pruned_tree_says_how_many_nodes_are_not_shown() {
 
 #[test]
 fn pruning_keeps_every_kept_node_under_a_kept_parent_and_adds_up_the_dropped() {
-    let mail = crate::support::quire_mail();
+    let mail = crate::support::bardo_mail();
     for budget in 1..=u32::try_from(mail.nodes.len()).expect("a mail tree has few nodes") {
         let pruned = prune(&mail, NodeBudget(budget));
         assert!(pruned.nodes.len() <= budget as usize, "budget {budget}");

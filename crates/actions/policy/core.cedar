@@ -28,7 +28,7 @@ when { principal.kind == "mcp" && context.target_space == "other" };
 forbid (principal, action, resource)
 when {
   (principal.kind == "mcp" || principal.kind == "acp") &&
-  resource in Quire::App::"org.bardo.Checkpoints"
+  resource in Bardo::App::"org.bardo.Checkpoints"
 };
 
 // The facts below are gathered by the router (the kill switch, the session's ledger, the
@@ -38,23 +38,23 @@ when {
 
 // The Space is stopped by the kill switch.
 @id("halted")
-forbid (principal, action == Quire::Action::"perform", resource)
+forbid (principal, action == Bardo::Action::"perform", resource)
 when { context.halt == "halted" };
 
 // A budget of the session would be over.
 @id("over-budget")
-forbid (principal, action == Quire::Action::"perform", resource)
+forbid (principal, action == Bardo::Action::"perform", resource)
 when { context.budget != "ok" };
 
 // The exact call was denied before.
 @id("repeated")
-forbid (principal, action == Quire::Action::"perform", resource)
+forbid (principal, action == Bardo::Action::"perform", resource)
 when { context.repeat == "repeated" };
 
 // A limit says never (the person's, the assistant's or the administrator's floor): refused
 // without asking, whatever is granted.
 @id("limit-never")
-forbid (principal, action == Quire::Action::"perform", resource)
+forbid (principal, action == Bardo::Action::"perform", resource)
 when { context.limit == "never" };
 
 // ---- Forbids that ask --------------------------------------------------------------------
@@ -64,7 +64,7 @@ when { context.limit == "never" };
 @id("rule-of-two")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {
@@ -79,7 +79,7 @@ when {
 @id("untrusted-sink")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {
@@ -94,7 +94,7 @@ when {
 @id("lasting-from-untrusted")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {
@@ -107,7 +107,7 @@ when {
 @id("limit-ask")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when { context.limit == "ask" };
@@ -120,7 +120,7 @@ when { context.limit == "ask" };
 @why("It read something you did not write, so it asks again before changing anything.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {

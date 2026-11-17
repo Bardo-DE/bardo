@@ -3,7 +3,7 @@
 //! While the capture service holds a request and the `SheetLink` names this output, the surface
 //! maps itself (`SurfaceHandle::set_visibility`) and a `Ds { material: Sheet, extent: Viewport }` holds
 //! one `Sheet` per request, keyed by its id: the title, who asks, a segmented control for the
-//! kinds the app accepts (only when both), quire's `List` of `Row`s for what can be shared, a
+//! kinds the app accepts (only when both), Bardo's `List` of `Row`s for what can be shared, a
 //! segmented control for the pointer (only when the app accepts more than one way), and the
 //! buttons. Nothing is styled under `.ds-sheet*`, `.ds-list*`, `.ds-row*` or `.ds-button*`.
 //!

@@ -1,4 +1,4 @@
-//! Who may call the shell's bus objects, and whose menu the bar believes (SILLS-07, QUIRE-12).
+//! Who may call the shell's bus objects, and whose menu the bar believes (SILLS-07, BARDO-12).
 //!
 //! Owning a well-known name proves nothing on the session bus: any process may claim a name that
 //! nobody owns yet. Every check here asks the system who the caller is ([`caller_identity_dbus`]: the

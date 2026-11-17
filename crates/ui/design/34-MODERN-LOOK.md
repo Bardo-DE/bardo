@@ -17,8 +17,8 @@ the one check to do before step 2 lands.
 
 ## 1. Decision and scope
 
-Owner decision, 2026-10-07: quire reads like macOS 10.x. Move the one Look in two steps; no
-Look switch, token-level so quire, sill, detent, mailo and anyview move together.
+Owner decision, 2026-10-07: Bardo reads like macOS 10.x. Move the one Look in two steps; no
+Look switch, token-level so Bardo, sill, detent, mailo and anyview move together.
 
 1. **Step 1, Sonoma/Sequoia (macOS 14-15) base.** Inset grouped rounded lists; borderless filled
    buttons and fields (no 1 px grey hairline); larger radii and spacing; a hero icon above a bold
@@ -122,7 +122,7 @@ form row inner pad 14 x 0, panel pad 20 (was 12-14), alert/sheet pad 24 (was 22/
 
 macOS built-in styles, H (HIG typography JSON, 2026-10-07): Large Title 26/32, Title 1 22/26,
 Title 2 17/22, Title 3 15/20, Headline 13 bold, Body 13/16, Callout 12/15, Subheadline 11/14,
-Footnote 10/13. The quire ramp already holds 13/15/16/20/21/22/24/26; what changes is *use*:
+Footnote 10/13. Bardo ramp already holds 13/15/16/20/21/22/24/26; what changes is *use*:
 
 | Role | Old | New | Source |
 |---|---|---|---|
@@ -289,7 +289,7 @@ top-rounded corners.
 ### 3.9 Window frame, Titlebar, Toolbar (`chrome/window_frame.css`, `chrome/toolbar/toolbar.css`, `tokens/chrome/scale.rs`)
 
 Now: titlebar 28 (`titlebar_height`), lights 12 / gap 8 / inset 13 (M: these are the
-Sonoma lights: 12 px, 8 gap, 20 from the left edge; quire has 13, small drift), title 13/600
+Sonoma lights: 12 px, 8 gap, 20 from the left edge; Bardo has 13, small drift), title 13/600
 centred; toolbar below with a hairline; `--r-window` 10.
 
 Step 1: `titlebar_height` 28 -> 28; window content margin 20; no behaviour change besides the
@@ -328,7 +328,7 @@ Segmented control, Stepper, Chip, Badge, Tooltip, HoverCard, Toast take radii/he
 
 ## 4. Consumer impact
 
-Goldens in quire (all must be re-recorded in the lane that changes them, never mixed):
+Goldens in Bardo (all must be re-recorded in the lane that changes them, never mixed):
 `crates/ds-shell/tests/snapshots/stylesheet.css` (3849 lines): every step changes them;
 ds-gallery `--snapshot` images; ui-conformance size-rule tests
 (`tokens/size_rules_tests.rs`, ladder values), `ui-style` token tests, `ui-lint` CSS rules
@@ -338,15 +338,15 @@ snapshot, any test asserting a px rect of a bar/menu/row; grep `row_h|menu_row|t
 detent (crates/detent-ui/tests/snapshots.rs - the settings window is the grouped-list
 poster child), anyview (`anyview-ui/tests/snapshots`, anyview-peek/tests/golden.rs,
 `snapshots/pane`), mailo (`mail-app/src/ui/fixtures`; its mail list rows keep Table/List
-density, so only chrome moves). Run `cargo test --workspace` in each after a quire pin move.
-Per memory: **batch the quire release and warn the consumer sessions first**; each move costs
+density, so only chrome moves). Run `cargo test --workspace` in each after a Bardo pin move.
+Per memory: **batch Bardo release and warn the consumer sessions first**; each move costs
 anyview/mailo a re-pin and can break porter.
 
 API: additive unless noted.
 - `ControlSize::ExtraLarge` (additive variant; **breaking for exhaustive `match` in consumers**;
   mitigate by `#[non_exhaustive]`-free grep in sill/detent/mailo/anyview first).
 - `RowScale` gains `icon_tile`, `compact_height`; `ROW_SCALE` const fields are public:
-  adding fields breaks struct-literal users (only quire constructs it).
+  adding fields breaks struct-literal users (only Bardo constructs it).
 - `CHROME_SCALE` values change in step 2 (compositor-visible; **breaking for casement/the compositor
   lane**: coordinate).
 - `SpacingToken` gains S20..S48 (additive).
@@ -408,9 +408,9 @@ The owner took every recommended default below; they are decisions, not open que
    17/700.
 4. **Sheet entry**: keep slide-from-top (macOS AppKit still does it, M) or the fade-and-scale
    card (section 7)? Default: card, 160 ms; the owner's observation is that slide is rare.
-5. **Per-app hero icon source**: apps pass their icon, or quire resolves it from the app id?
-   Default: the caller passes it; quire only lays it out.
-6. **Menu icons**: mandatory for built-in menus or optional? Default optional; quire's own menus
+5. **Per-app hero icon source**: apps pass their icon, or Bardo resolves it from the app id?
+   Default: the caller passes it; Bardo only lays it out.
+6. **Menu icons**: mandatory for built-in menus or optional? Default optional; Bardo's own menus
    (sill, detent) get symbols in step 2 per HIG "where it helps recognition".
 7. **Keep the `inset` list style name?** Default: alias for one release, then remove.
 
@@ -454,7 +454,7 @@ principle "brief".)
 | Popover `fade` | 150 ms | keep | fade 120 ms (+ scale .98 optional) | token |
 | `panel-in/out` (edge panel, toast, banner, thumbnail) | slide from past the right edge 250 / 150 | keep | Notification Center banners and panels do slide from the right edge in Sonoma/Tahoe (M); spring bounce 0, 280 ms in, 200 out; `out` keeps swipe | token |
 | Toast / banner | `panel-in` | keep | as above | token |
-| Window open/close | (host's compositor) | out of quire | macOS: scale .95 -> 1 + fade, ~200 ms; lights fade | casement lane note |
+| Window open/close | (host's compositor) | out of Bardo | macOS: scale .95 -> 1 + fade, ~200 ms; lights fade | casement lane note |
 | `row-in/out`, `heal` | fade + 8 px slide, 250/150 | **simplify** | NSTableView `.effectFade` only: fade 150 ms, rows below close with a spring (bounce 0, 260) | keyframe edit (drop the translate) |
 | `slide-r/l`, `pane-out-*` (pane push) | 26 px + fade, spring | keep | matches NavigationSplitView push (H-ish, M); spring bounce 0 | token |
 | `page-in` | 10 px + scale .985 | **drop** | fade 150 | keyframe edit |

@@ -180,7 +180,7 @@ pub enum ReplyFault {
         /// The values it may take.
         options: Vec<String>,
     },
-    /// A `quire_read` that could not be answered, or its arguments did not fit.
+    /// A `bardo_read` that could not be answered, or its arguments did not fit.
     Read(crate::reader::ReadFault),
 }
 

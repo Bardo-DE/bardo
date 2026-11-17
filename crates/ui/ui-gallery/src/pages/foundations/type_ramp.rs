@@ -43,7 +43,7 @@ pub fn TypePage() -> Element {
                         span {
                             class: "ds-truncate",
                             style: "font-family:{family.var().reference()};font-size:{size.var().reference()}",
-                            "Quire 0123"
+                            "Bardo 0123"
                         }
                     }
                 }

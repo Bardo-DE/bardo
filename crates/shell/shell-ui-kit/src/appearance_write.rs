@@ -10,7 +10,7 @@ use ui_settings::AppearanceFile;
 /// in the file. A file that cannot be written leaves the appearance as it was, which the picker
 /// then shows.
 pub fn write_appearance(next: Appearance) {
-    let store = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
+    let store = Store::new(ConfigRoot::Xdg, AppName::BARDO);
     let file = with_appearance(store.load::<AppearanceFile>().value, next);
     if let Err(error) = store.save(&file) {
         eprintln!("bardo-shell: writing the appearance: {error}");

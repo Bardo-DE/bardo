@@ -1,5 +1,5 @@
 //! What one output's indicator draws for a change: the level (the default sink's volume, or the
-//! brightness of the display this output drives), the card's level and glyph (quire's
+//! brightness of the display this output drives), the card's level and glyph (Bardo's
 //! `LevelControl` draws the waves or sun itself, from the fill and the mute), and the title above
 //! it: the sink's or monitor's real name where the services give one, else "Sound"/"Display".
 //! Pure.
@@ -45,7 +45,7 @@ pub fn level_of(
     }
 }
 
-/// The level quire's card draws: the fill (empty when muted or unknown) and the glyph
+/// The level Bardo's card draws: the fill (empty when muted or unknown) and the glyph
 /// `LevelControl` follows it with (a speaker's waves for volume, the sun for brightness).
 pub fn card_level(kind: OsdKind, level: Option<Level>) -> OsdLevel {
     OsdLevel {

@@ -26,8 +26,8 @@ use compositor_core::{InputSerial, geometry::LogicalSize, lock::LockReply};
 use compositor_wayland::foreign_toplevel_list::disclosed;
 use compositor_wayland::output::OutputWire;
 use compositor_wayland::{
-    WaylandFault, foreign_toplevel_list, image_capture, layer_shell, output, pointer_constraints,
-    presentation, quire_window, seat, session_lock, text_input, wlr_toplevel, xdg_shell,
+    WaylandFault, bardo_window, foreign_toplevel_list, image_capture, layer_shell, output,
+    pointer_constraints, presentation, seat, session_lock, text_input, wlr_toplevel, xdg_shell,
 };
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::utils::{IsAlive, SERIAL_COUNTER};
@@ -102,14 +102,14 @@ fn apply(state: &mut State, effect: Effect) {
             log(xdg_shell::apply_close(&mut state.wl.xdg_shell, window));
         }
         Effect::SendQuit { client } => {
-            log(quire_window::apply_quit(&mut state.wl.quire_window, client));
+            log(bardo_window::apply_quit(&mut state.wl.bardo_window, client));
         }
         Effect::Keyboard(target) => keyboard(state, &target),
         Effect::Emphasis(list) => {
             crate::timing::emphasis(state, &list);
             for (window, emphasis) in list {
-                log(quire_window::apply_emphasis(
-                    &mut state.wl.quire_window,
+                log(bardo_window::apply_emphasis(
+                    &mut state.wl.bardo_window,
                     window,
                     emphasis,
                 ));
@@ -162,11 +162,11 @@ fn apply(state: &mut State, effect: Effect) {
         } => crate::handlers::consent::ask(state, ask, power, &subject, memory),
         Effect::WithdrawAsk { ask } => crate::handlers::consent::withdraw(state, ask),
         // A display change a program made waits for the person to keep it
-        // (`handlers/quire_shell.rs`, `bardo_shell_v1` version 6).
+        // (`handlers/bardo_shell.rs`, `bardo_shell_v1` version 6).
         Effect::AskKeepDisplays { trial, within } => {
-            crate::handlers::quire_shell::trial_ask(state, trial, within);
+            crate::handlers::bardo_shell::trial_ask(state, trial, within);
         }
-        Effect::EndDisplaysTrial { trial } => crate::handlers::quire_shell::trial_end(state, trial),
+        Effect::EndDisplaysTrial { trial } => crate::handlers::bardo_shell::trial_end(state, trial),
         Effect::Resolve {
             client,
             power,

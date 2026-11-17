@@ -103,7 +103,7 @@ mod tests {
 
     #[test]
     fn a_wayland_window_carries_its_id_and_token() {
-        let id = AppId("dev.quire.Test".to_owned());
+        let id = AppId("dev.bardo.Test".to_owned());
         let attributes = with_platform_on(
             DisplayServer::Wayland,
             WindowAttributes::default(),
@@ -112,13 +112,13 @@ mod tests {
         );
         let text = platform_of(&attributes);
         assert!(text.contains("WindowAttributesWayland"), "{text}");
-        assert!(text.contains("dev.quire.Test"), "{text}");
+        assert!(text.contains("dev.bardo.Test"), "{text}");
         assert!(text.contains("wl-token-1"), "{text}");
     }
 
     #[test]
     fn an_x11_window_carries_its_id_and_token() {
-        let id = AppId("dev.quire.Test".to_owned());
+        let id = AppId("dev.bardo.Test".to_owned());
         let attributes = with_platform_on(
             DisplayServer::X11,
             WindowAttributes::default(),
@@ -127,7 +127,7 @@ mod tests {
         );
         let text = platform_of(&attributes);
         assert!(text.contains("WindowAttributesX11"), "{text}");
-        assert!(text.contains("dev.quire.Test"), "{text}");
+        assert!(text.contains("dev.bardo.Test"), "{text}");
         assert!(text.contains("x-startup-1"), "{text}");
     }
 

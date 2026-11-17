@@ -10,7 +10,7 @@
 //! A click whose default a component already took (an `EditSurface` focusing itself) is left to
 //! that component.
 //!
-//! **A click a quire control keeps (the rule).** A control that stops a click's propagation (a
+//! **A click a Bardo control keeps (the rule).** A control that stops a click's propagation (a
 //! strip button, a tree row's select button, its trailing slot, any stopped press) keeps
 //! it from the root, and one that prevents its default (a tree row's `summary`) makes the root
 //! pass it by. Every such control calls [`kept_click`] last in its click handler, so the root's
@@ -59,7 +59,7 @@ impl ClickRoot {
     }
 }
 
-/// A click a quire control keeps from the root (it stopped the click's propagation, or prevented
+/// A click a Bardo control keeps from the root (it stopped the click's propagation, or prevented
 /// its default): the control hands it to the host itself, as the root would have.
 ///
 /// Call it last in the click handler, after the control's own work, as the root is the last to hear

@@ -1,6 +1,6 @@
 //! The Viewer page: anyview's `viewer.*` keys, drawn when anyview's schema is installed.
 //!
-//! anyview does not write its schema yet (its FINDINGS wait for quire's `viewer.*` rows), so
+//! anyview does not write its schema yet (its FINDINGS wait for Bardo's `viewer.*` rows), so
 //! the test installs a scratch schema of the keys its FINDINGS name, on `Page::Viewer`.
 
 use crate::support::Sandbox;
@@ -145,7 +145,7 @@ fn the_viewer_sits_after_the_fixed_pages_and_edits_anyviews_own_file() {
     let last = html.rfind("data-page-row=\"").expect("a page row");
     assert!(
         html[last..].starts_with("data-page-row=\"viewer\""),
-        "a page quire does not declare comes after every declared one, as a Mac lists other makers' panes last"
+        "a page bardo does not declare comes after every declared one, as a Mac lists other makers' panes last"
     );
 
     assert_eq!(sandbox.read(FILE), None, "looking writes nothing");

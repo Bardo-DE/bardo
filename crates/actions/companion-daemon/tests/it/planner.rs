@@ -308,7 +308,7 @@ async fn the_planner_is_told_that_an_answer_in_words_comes_back_as_a_handle() {
         .tools
         .iter()
         .find(|t| t.name.as_str() == TOOL_READ)
-        .expect("quire_read");
+        .expect("bardo_read");
     let told = [RULES.to_owned(), read.description.clone()];
     for text in told {
         assert!(
@@ -444,7 +444,7 @@ fn tool_names(request: &inference_core::ChatRequest) -> Vec<String> {
 }
 
 #[tokio::test]
-async fn quire_related_is_offered_when_an_app_declares_a_relation_and_the_per_kind_action_is_not() {
+async fn bardo_related_is_offered_when_an_app_declares_a_relation_and_the_per_kind_action_is_not() {
     let (planner, infer) = planner(vec![words("a"), words("b")]);
     planner
         .converse(&view(catalogue().cards()))
@@ -455,7 +455,7 @@ async fn quire_related_is_offered_when_an_app_declares_a_relation_and_the_per_ki
     assert!(names.contains(&TOOL_RELATED.to_owned()), "{names:?}");
     assert!(
         !names.iter().any(|n| n.contains("mail.thread.related")),
-        "reached through quire_related, not as a tool of its own: {names:?}"
+        "reached through bardo_related, not as a tool of its own: {names:?}"
     );
     let tool = asked[0]
         .tools
@@ -477,7 +477,7 @@ async fn quire_related_is_offered_when_an_app_declares_a_relation_and_the_per_ki
 }
 
 #[tokio::test]
-async fn quire_related_is_read_into_the_call_of_the_related_action_of_the_things_kind() {
+async fn bardo_related_is_read_into_the_call_of_the_related_action_of_the_things_kind() {
     let (planner, _) = planner(vec![call(
         TOOL_RELATED,
         json!({ "of": { "handle": 1 }, "relation": "from" }),
@@ -503,7 +503,7 @@ async fn quire_related_is_read_into_the_call_of_the_related_action_of_the_things
 }
 
 #[tokio::test]
-async fn a_quire_related_that_cannot_be_a_call_is_told_what_was_wrong() {
+async fn a_bardo_related_that_cannot_be_a_call_is_told_what_was_wrong() {
     let (planner, _) = planner(vec![
         // A handle the view does not hold.
         call(
@@ -577,12 +577,12 @@ fn text_card(n: u64, from: Source) -> HandleCard {
     }
 }
 
-/// `quire_finish` may name text handles of the view to show the person: the reply carries them,
+/// `bardo_finish` may name text handles of the view to show the person: the reply carries them,
 /// in order and once, and the planner reads none. A handle the view does not hold (unknown, or
 /// another session's), a thing that is not text, and a malformed list are told to the model, and
 /// the task does not end.
 #[tokio::test]
-async fn quire_finish_shows_text_handles_of_the_view_and_refuses_the_rest() {
+async fn bardo_finish_shows_text_handles_of_the_view_and_refuses_the_rest() {
     let (planner, _) = planner(vec![
         call(TOOL_FINISH, json!({ "show": [1] })),
         call(TOOL_FINISH, json!({ "show": [2, 1, 2] })),
@@ -642,7 +642,7 @@ async fn the_rules_and_the_finish_tool_say_how_to_show_a_handle() {
         .tools
         .iter()
         .find(|t| t.name.as_str() == TOOL_FINISH)
-        .expect("quire_finish");
+        .expect("bardo_finish");
     assert!(RULES.contains("\"show\""));
     assert!(finish.description.contains("show"));
 }

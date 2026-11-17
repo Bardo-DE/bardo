@@ -5,7 +5,7 @@
 //!
 //! Two implementation modules. `portable` is built everywhere and calls no desktop service:
 //! single instance over a per-user socket and the thumbnail cache. `linux` is the Linux desktop's
-//! own D-Bus single instance and agent intents, built on Linux with the `quire-desktop` feature
+//! own D-Bus single instance and agent intents, built on Linux with the `desktop` feature
 //! (opt-in); without the feature this crate does not depend on zbus.
 //!
 //! A viewer claims the name once at start; a second launch forwards its request and leaves:
@@ -39,9 +39,9 @@ mod instance;
 mod thumbnail;
 mod uri;
 
-#[cfg(all(feature = "quire-desktop", target_os = "linux"))]
+#[cfg(all(feature = "desktop", target_os = "linux"))]
 mod desktop;
-#[cfg(all(feature = "quire-desktop", target_os = "linux"))]
+#[cfg(all(feature = "desktop", target_os = "linux"))]
 pub use desktop::linux;
 pub mod portable;
 #[cfg(any(test, feature = "testing"))]

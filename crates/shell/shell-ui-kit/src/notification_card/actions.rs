@@ -1,5 +1,5 @@
 //! A card's actions (design/13 §13.3.6 "Hover"): every action but `default` (the card's own
-//! press) as quire's `CardAction`, which the card draws as Mini buttons that open on hover and
+//! press) as Bardo's `CardAction`, which the card draws as Mini buttons that open on hover and
 //! keep their press.
 
 use dioxus::prelude::*;

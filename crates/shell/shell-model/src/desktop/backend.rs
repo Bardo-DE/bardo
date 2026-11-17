@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DesktopBackend {
     /// The desktop's own compositor and its `bardo_desktop_v1` protocol.
-    Quire,
+    Bardo,
     /// Standard protocols: ext toplevel list, wlr toplevel management, ext workspace.
     Wlr,
     /// No window protocol at all: no window list, the empty desktop.

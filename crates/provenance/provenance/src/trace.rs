@@ -1,4 +1,4 @@
-//! The names of our own span attributes, in the `quire.*` namespace.
+//! The names of our own span attributes, in the `bardo.*` namespace.
 //!
 //! Pure constants and slug functions: no `tracing` dependency here. Spans are created only in the
 //! daemons (inferd, companiond, readerd, cuad, memoryd, intentd), each in one `telemetry.rs`
@@ -8,7 +8,7 @@
 //!
 //! Privacy, hard: no prompt, completion, tool argument or result, screen text, title, recipient
 //! or `SpaceId` ever goes on a span or metric. Counts, sizes, hashed ids, slugs and enums only.
-//! `quire.space.hash` is a blake3 prefix of the id, keyed per install so it cannot be joined
+//! `bardo.space.hash` is a blake3 prefix of the id, keyed per install so it cannot be joined
 //! across machines, never the id itself.
 
 /// Span attribute keys.
@@ -26,30 +26,30 @@ pub mod attr {
 
     keys! {
         /// Who acted: a value of `ActorKind::slug()`.
-        ACTOR_KIND = "quire.actor.kind",
+        ACTOR_KIND = "bardo.actor.kind",
         /// The effect class of an action: a value of `Effect::slug()`.
-        EFFECT = "quire.effect",
+        EFFECT = "bardo.effect",
         /// A keyed hash prefix of the `SpaceId`, never the id.
-        SPACE_HASH = "quire.space.hash",
+        SPACE_HASH = "bardo.space.hash",
         /// The companion session.
-        SESSION = "quire.session.id",
+        SESSION = "bardo.session.id",
         /// The run.
-        RUN = "quire.run.id",
+        RUN = "bardo.run.id",
         /// The task.
-        TASK = "quire.task.id",
+        TASK = "bardo.task.id",
         /// Where a turn ran: `local`, `lan` or `cloud` (from `ServedBy`).
-        SERVED_LOCALITY = "quire.served.locality",
+        SERVED_LOCALITY = "bardo.served.locality",
         /// The code of a refusal.
-        DENY_CODE = "quire.deny.code",
+        DENY_CODE = "bardo.deny.code",
         /// The policy ruling.
-        RULING = "quire.policy.ruling",
+        RULING = "bardo.policy.ruling",
         /// How a confirmation ended.
-        CONFIRM_OUTCOME = "quire.confirm.outcome",
+        CONFIRM_OUTCOME = "bardo.confirm.outcome",
         /// The pipeline stage.
-        STAGE = "quire.pipeline.stage",
+        STAGE = "bardo.pipeline.stage",
         /// The computer-use step number.
-        CUA_STEP = "quire.cua.step",
+        CUA_STEP = "bardo.cua.step",
         /// The computer-use mode.
-        CUA_MODE = "quire.cua.mode",
+        CUA_MODE = "bardo.cua.mode",
     }
 }

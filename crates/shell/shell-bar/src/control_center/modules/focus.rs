@@ -1,4 +1,4 @@
-//! The Focus tile: Do Not Disturb as a quire `ModuleTile` (the `Moon` glyph), [`crate::control_center::focus_status`] as its line.
+//! The Focus tile: Do Not Disturb as a Bardo `ModuleTile` (the `Moon` glyph), [`crate::control_center::focus_status`] as its line.
 //!
 //! Reads `use_focus_mode`; a click asks for the shell's `ToggleFocus` action, which writes
 //! `settings.toml`.

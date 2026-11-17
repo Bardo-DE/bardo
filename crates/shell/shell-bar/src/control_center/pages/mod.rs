@@ -1,4 +1,4 @@
-//! The control center's detail pages (design/13 §13.3.7 "Detail"): each a quire `PaneHeader`
+//! The control center's detail pages (design/13 §13.3.7 "Detail"): each a Bardo `PaneHeader`
 //! (a back button, the title, the feature's switch) over its list and a `PaneFooter`, sliding in
 //! over the grid.
 

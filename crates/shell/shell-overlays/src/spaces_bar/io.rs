@@ -32,7 +32,7 @@ pub(super) struct Bar {
     name: Option<String>,
     /// Whether the bar is up on this output.
     pub up: Memo<BarShow>,
-    /// quire's `on_layout`: keeps where the bar drew its parts.
+    /// Bardo's `on_layout`: keeps where the bar drew its parts.
     pub on_layout: EventHandler<DrawnBar>,
     /// The `file://` URL of this output's wallpaper, once it has one.
     pub wallpaper: Memo<Option<String>>,
@@ -83,7 +83,7 @@ fn use_wallpaper_url(name: Option<String>) -> Memo<Option<String>> {
 }
 
 impl Bar {
-    /// quire's word for a bar that is up or down.
+    /// Bardo's word for a bar that is up or down.
     pub(super) fn shown(&self) -> bool {
         match (self.up)() {
             BarShow::Show => true,
@@ -162,7 +162,7 @@ fn whole(origin: (i32, i32), rect: Rect) -> Option<WholeRect> {
     })
 }
 
-/// What quire's bar drew, as the layout the link carries: the cards (a collapsed bar draws none)
+/// What Bardo's bar drew, as the layout the link carries: the cards (a collapsed bar draws none)
 /// and the plus, on a surface whose top-left is `origin` in the desktop's, with the size a
 /// picture is asked for at `scale`.
 fn published(drawn: &DrawnBar, origin: (i32, i32), scale: u32) -> BarLayout {
@@ -183,7 +183,7 @@ fn published(drawn: &DrawnBar, origin: (i32, i32), scale: u32) -> BarLayout {
 }
 
 /// Keep the link told where this output's cards and plus lie while the bar is up and has been
-/// laid out, and that there are none once it goes. Returns quire's `on_layout` handler.
+/// laid out, and that there are none once it goes. Returns Bardo's `on_layout` handler.
 fn use_publish_layout(
     link: &SpacesBarLink,
     up: Memo<BarShow>,

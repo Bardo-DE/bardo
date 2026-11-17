@@ -1,4 +1,4 @@
-//! A fake app that exports its menu bar as quire apps do (`org.bardo.AppMenu.<app_id>` at
+//! A fake app that exports its menu bar as Bardo apps do (`org.bardo.AppMenu.<app_id>` at
 //! `/org/bardo/AppMenu`, `com.canonical.dbusmenu`), for the app-menu tests and dev scripts. It
 //! owns the bus name it is given on the private bus at the address it is given, prints its pid,
 //! and logs every call it receives, one line each, to the file it is given. With `--handshake` it

@@ -464,7 +464,7 @@ fn after_a_pop_up_choice_by_keys_tab_and_typing_go_to_the_next_field() {
 }
 
 /// A layer-shell-host document has no focus keeper (`ui_host_hooks::provide_host` wires none): on
-/// `BlitzDefault` quire's pop-up gives the keyboard back to its button itself, so Tab and typing
+/// `BlitzDefault` Bardo's pop-up gives the keyboard back to its button itself, so Tab and typing
 /// reach the next field.
 #[test]
 fn after_a_pop_up_choice_by_keys_on_the_hosts_wiring_tab_and_typing_go_to_the_next_field() {
@@ -509,7 +509,7 @@ fn a_press_on_a_pop_up_item_once_it_has_settled_chooses_it() {
     assert_eq!(pressed_after(8), Some("pop3"));
 }
 
-/// Quire places a pop-up's menu at its button in the frame it opens (and hides and shields it
+/// Bardo places a pop-up's menu at its button in the frame it opens (and hides and shields it
 /// where the button is not measured yet), so a press at once chooses the item under it.
 #[test]
 fn a_press_on_a_pop_up_item_right_after_it_opens_chooses_it() {

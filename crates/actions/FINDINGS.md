@@ -18,7 +18,7 @@ Two levels beside "allow always", precedence never > always ask > always allow >
 ruling. They live in `limits.json` beside the grants file (the same disk rules, the same revoke
 path: a limit's id is a `StandingGrantId`, so Undo on the sheet calls the existing
 `ControlStandingRevoke`). The router applies them after the gate, so no grant, standing grant or
-approval lifts one; only agents meet them. The administrator's floor is `/etc/quire/docket-floor.toml`
+approval lifts one; only agents meet them. The administrator's floor is `/etc/bardo/docket-floor.toml`
 (`dist/docket-floor.example.toml`, not installed): a loosest strictness and locked entries; a
 missing file is no floor, a file that does not parse stops intentd. `Gate.Grant` takes the whole
 `GrantAsk` as JSON, so cua's allow level and the run it asks for cross the bus (CUA-14; before,
@@ -30,7 +30,7 @@ trait default holds none); Settings has no list of limits yet; adding a limit is
 
 | Where | Count | Closes when |
 | --- | --- | --- |
-| docket-ds `DsContextSource::snapshot` | 1 | fill wave 2 (quire apps): the `ContextModel` values to `Here`, `Selection`, `Visible` through `entity_ref`; a private window reports the app alone; password and PIN fields are never reported |
+| docket-ds `DsContextSource::snapshot` | 1 | fill wave 2 (Bardo apps): the `ContextModel` values to `Here`, `Selection`, `Visible` through `entity_ref`; a private window reports the app alone; password and PIN fields are never reported |
 
 | docket-eval runner and `scripts/eval-release.sh` | 0 | filled in live-eval (it was a script that exited 2, not a `todo!()`) |
 
@@ -124,7 +124,7 @@ parameter in `ArgsChecked` and `AppLink::perform` can say `AppFault::TimedOut`, 
    for `Millis(0)`, so a test that wants a timeout gives the stage no time and a reviewer that
    hangs (`ScriptedReviewer::hanging`).
 
-## The terminal: `quire-do` (cli.md)
+## The terminal: `bardo-do` (cli.md)
 
 Built, with tests against `docket-fake` (the router in process) and a private bus:
 
@@ -146,9 +146,9 @@ Built, with tests against `docket-fake` (the router in process) and a private bu
 - **`Run.DryRun`** (a new `Intents1` member, `IntentsRequest::DryRun`): the app's preview through the same
   arguments check, labels, consent and policy as `Perform`, asking nobody and charging nothing; what the gate
   would refuse is refused with the same refusal.
-- **`quire-do`** (`docket-cli`): commands, parameter mapping, `--dry-run`, `--json` (automatic when stdout is not
+- **`bardo-do`** (`docket-cli`): commands, parameter mapping, `--dry-run`, `--json` (automatic when stdout is not
   a terminal), stdin `-`, `describe` through `Shape::to_json_schema`, the exit-code table, `__complete` and the
-  completion files in `dist/completions`. `quire-do undo` and `undo --last` reach only the rows of the
+  completion files in `dist/completions`. `bardo-do undo` and `undo --last` reach only the rows of the
   terminal's own acts (the router cuts `Run.Undo` and `Control.Journal` for the role).
 - **Conformance.** `docket-eval --check-app <dir>` and `scripts/check-intents.sh` fail an app that ships a
   `.desktop` file and no valid intents manifest, and a menu command or shortcut in `<AppName>.ui.toml` that
@@ -157,23 +157,23 @@ Built, with tests against `docket-fake` (the router in process) and a private bu
 Open, and the asks they make (nothing below was edited in the other repos):
 
 1. **Closed by F3 (interface-asks 84, 89, 95):** `DbusTransport::call` and intentd's `serve` and `main` are built,
-   so `quire-do` reaches a real intentd on a D-Bus session bus (see "The bus path" below).
-2. **Closed by F3:** intentd derives the caller from the connection (a `quire-do` process owns no bus name, so
-   it is named by its executable: `org.quire.Do`, role cli), calls `Router::end_terminal_sessions` when logind
+   so `bardo-do` reaches a real intentd on a D-Bus session bus (see "The bus path" below).
+2. **Closed by F3:** intentd derives the caller from the connection (a `bardo-do` process owns no bus name, so
+   it is named by its executable: `org.bardo.Do`, role cli), calls `Router::end_terminal_sessions` when logind
    removes the person's session, and serves `Run.DryRun`, `Control.TerminalGrants` and
    `Control.RevokeTerminalGrant`.
 3. **sill** (ask): draw `ConfirmOffer::OnceOrFromTerminal` as a second button, "Allow from the terminal: this
    action, until logout", answering `ConfirmAnswer::AllowedFromTerminal`; list the grants in the control centre
    through `Control.TerminalGrants` with a revoke through `Control.RevokeTerminalGrant`.
 4. **The launcher's natural-date parser** is sill's and docket cannot reach it, so a Date or DateTime parameter
-   takes RFC 3339 only and says so. Ask: the parser as a pure crate below sill (quire or porter), which
+   takes RFC 3339 only and says so. Ask: the parser as a pure crate below sill (Bardo or porter), which
    `docket-cli::when` then calls ("tomorrow at nine").
 5. **ds menu commands and shortcuts carry no action id** (`ds::MenuItem::Item` has a `value: T` and a
    `Shortcut`), so rule three of cli.md section 6 cannot be read from the data an app has today. The shape
    `docket-eval --check-app` enforces the moment an app ships it is `<AppName>.ui.toml` beside the manifest
    (documented in `docket-eval/src/ui.rs`): `[[commands]] id, source = "menu" | "shortcut", chord?, action?` for
    every menu item and every shortcut binding, `[[ui_only]] id, reason` for the ones that are not an action.
-   Ask (quire, `ds`): `MenuItem::Item` and the shortcut table gain `action: Option<ActionName>` (or
+   Ask (Bardo, `ds`): `MenuItem::Item` and the shortcut table gain `action: Option<ActionName>` (or
    `UiOnly(reason)`), and the app's build writes the file from its menu bar and shortcut table (a test that
    walks `MenuBarModel` and the table). Until then the check passes an app with a manifest and prints a note.
    Today `mailo`, `detent` and `sill` fail the check (a `.desktop` file, no manifest); `anyview` ships no
@@ -182,7 +182,7 @@ Open, and the asks they make (nothing below was edited in the other repos):
    pauses a session "until the person speaks", and a terminal has no turn to record. `Control.Resume` (the
    `control` role's alone) now also reopens every terminal session the breaker paused in the scope, with a fresh
    breaker (`Router::resume_terminals`, tests in `docket-router/tests/it/terminal.rs` and the end-to-end test). The
-   alternative, a reset on the next `quire-do` after a cool-down, was rejected: it lets the very process the
+   alternative, a reset on the next `bardo-do` after a cool-down, was rejected: it lets the very process the
    breaker stopped go on by waiting, and each round costs the person a sheet. A paused terminal says "paused: too
    many refusals in a row; the person has to resume it" (exit 7). Ask (sill): a "Resume the terminal" button
    in the control centre that calls `Control.Resume`; until it exists the person's ways back are `systemctl
@@ -190,37 +190,37 @@ Open, and the asks they make (nothing below was edited in the other repos):
 7. **The terminal's session is in the `desktop` Space** (the implicit session of every role without a session
    of its own), so a terminal call's target counts as `Same` (ask 42 stands).
 8. **`--session`** is passed to `Run.Perform` and ignored by the router for every role but the companion.
-9. **`quire-do <app> context`** shows another party's words as handles (`#<n>`, held by the terminal's session
+9. **`bardo-do <app> context`** shows another party's words as handles (`#<n>`, held by the terminal's session
    and usable as an argument by a later command); `Session.Display` is not open to the `cli` role, so a person
    at a terminal cannot read a held title. Ask: say whether the terminal may display what it holds.
 
-## The bus path: `quire-do` to intentd to an app (F3)
+## The bus path: `bardo-do` to intentd to an app (F3)
 
 Built and tested on a private `dbus-daemon` (nothing of the real session is named):
 
 - **`DbusTransport::call`** (`docket-client/src/bus.rs`): one arm per `IntentsRequest` (all 32 members). Bodies
   are the JSON of the typed value the `docket-dbus` proxy documents. A request intentd refuses before it is a
-  call (`NotAllowed`, `NoSuchSession`, `Malformed`) is the bus error `org.quire.Intents1.Error.<Variant>` and
+  call (`NotAllowed`, `NoSuchSession`, `Malformed`) is the bus error `org.bardo.Intents1.Error.<Variant>` and
   comes back as `IntentsReply::Refused`; a refused *call* is an answer: the body of `Run.DryRun`, `Run.Preview`,
   `Run.Suggest` and `Context.Current` is `Result<T, CallRefusal>`, and `Message.Send`'s is `Result<Delivery,
   SendRefusal>`. Six members answer a Request object (`Run.Perform`, `Run.Undo`, `Run.UndoAll`,
-  `Session.Widen`, `Gate.Grant`, `Gate.Check`): the answer is the `org.quire.Intents1.Request.Response(code, body)`
+  `Session.Widen`, `Gate.Grant`, `Gate.Check`): the answer is the `org.bardo.Intents1.Request.Response(code, body)`
   signal at the returned path, sent to the caller alone; code 0 carries the typed answer, code 2 a `WireRefusal`.
   The signal is subscribed to before the call (`docket_client::requested`), counts only from the owner of
   intentd's name, and the wait ends `Closed` when intentd leaves the bus. `DbusTransport::connect` does not ask
   the bus to activate a name that already has an owner.
 - **intentd's side** (`intentd/src/bus/`): one struct per interface with the signatures of `docket-dbus`'s
-  skeletons (a test holds the served introspection to `dbus/org.quire.Intents1.xml`; no member may carry a doc
+  skeletons (a test holds the served introspection to `dbus/org.bardo.Intents1.xml`; no member may carry a doc
   comment, zbus copies it into the XML). `serve_on(connection, router, config)` exports them and claims the
   name with `DoNotQueue` (a second intentd stops); `serve(router, config)` is the same on the session bus. `tests/it/bus_members.rs` sends every member over the bus and in process and requires the
   same reply.
 - **Identity** (`intentd/src/peer.rs`): from the bus's own credentials for the connection: the same user, the
   well-known names it owns, and for a process that owns none, the cgroup behind its pid (f4-docket-ident: a
-  terminal's child is `org.quire.Do`, see "f4-docket-ident" below; `/proc/<pid>/exe` is no longer read). Roles are `intentd.toml`'s (`dist/intentd.toml` is the shipped default; a file in
-  `$XDG_CONFIG_HOME/quire` replaces it whole). An unknown connection is `NotAllowed`. This is advisory on a
+  terminal's child is `org.bardo.Do`, see "f4-docket-ident" below; `/proc/<pid>/exe` is no longer read). Roles are `intentd.toml`'s (`dist/intentd.toml` is the shipped default; a file in
+  `$XDG_CONFIG_HOME/bardo` replaces it whole). An unknown connection is `NotAllowed`. This is advisory on a
   desktop where every process runs as the person: the cli role asks for everything but a read, and the
   stronger binding (Flatpak, a systemd scope) is later.
-  **One narrowing (acp-gate):** `org.quire.Acp` is listed as an editor and a companion, but its owner exists only
+  **One narrowing (acp-gate):** `org.bardo.Acp` is listed as an editor and a companion, but its owner exists only
   while `agent.acp.expose = "on"`, so the name is usually unowned and any process of the person could take it.
   `AcpGate` (intentd) drops that name from a connection's facts unless the setting is on, read at each call
   (`Peers::facts`); the daemon sets it from the settings watch, so a flip applies to the next call and nothing is
@@ -236,20 +236,20 @@ Built and tested on a private `dbus-daemon` (nothing of the real session is name
   behind it.
 - **The sheet** (`SheetConfirmer`): `Confirm1` is asked only when its owner plays the `confirm` role; no sill, an
   untrusted owner, a sill that vanishes or never answers is a dismissal or an expiry, never an allow. The
-  Request object sill returns must send `org.quire.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`.
+  Request object sill returns must send `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`.
 - **Logout** (`intentd/src/logout.rs`): `SessionRemoved` of logind on the system bus ends the terminal sessions
   (the session of `XDG_SESSION_ID`, any session when it is unknown); the unit is `PartOf=graphical-session.target`.
   Tested against a fake logind on the private bus.
 - **Files:** `FileGrants` (atomic, a damaged file is no grants), the manifests of `$XDG_DATA_HOME` and
-  `$XDG_DATA_DIRS` (`quire/intents/*.toml`, the first directory wins), `dist/intentd.service`, `dist/intentd.toml`.
-- **`quire-do` end to end** (`docket-cli/tests/e2e.rs`): the real binary, intentd's `start`, a fake mail provider,
+  `$XDG_DATA_DIRS` (`bardo/intents/*.toml`, the first directory wins), `dist/intentd.service`, `dist/intentd.toml`.
+- **`bardo-do` end to end** (`docket-cli/tests/e2e.rs`): the real binary, intentd's `start`, a fake mail provider,
   a fake sill `Confirm1`: a read exits 0, a write asks and the answer decides, "from the terminal" skips the next
   ask until the control centre revokes it, a hidden action exits 3, three refusals pause it (exit 7) until
   `Control.Resume`, `undo --last` reaches the app, and with intentd stopped every call exits 6.
 
-By hand: `scripts/try-quire-do.sh` starts a scratch `dbus-daemon`, intentd, a fake mail app and a sheet that asks
+By hand: `scripts/try-bardo-do.sh` starts a scratch `dbus-daemon`, intentd, a fake mail app and a sheet that asks
 on the terminal (`intentd/examples/try_apps.rs`), all with a scratch HOME and XDG directories, and prints the
-`source` line for a second terminal where `quire-do` then works.
+`source` line for a second terminal where `bardo-do` then works.
 
 Built in the w4-docket fill (each with tests on a private bus, a scripted inferd or the fakes):
 
@@ -263,9 +263,9 @@ Built in the w4-docket fill (each with tests on a private bus, a scripted inferd
    and says how many records it had to drop; a record memoryd refuses for good is dropped and counted, never retried.
    `Setup.audit_every` (5 s) is the cadence. `Cause` is `None` on every record: a review names its call by id inside
    its payload, because the call's `EventRef` is memoryd's to make after the batch is written.
-2. **intentd hosts `org.quire.Memory` and `org.quire.Companion`.** `HostedLink` (the `AppLink` of `SystemSeams`) answers
+2. **intentd hosts `org.bardo.Memory` and `org.bardo.Companion`.** `HostedLink` (the `AppLink` of `SystemSeams`) answers
    those two names in process and every other app over D-Bus; their manifests are built in (`builtin_manifests`) and
-   inserted before the installed ones, so `quire-do apps` lists them, and a file that declares either name is skipped
+   inserted before the installed ones, so `bardo-do apps` lists them, and a file that declares either name is skipped
    with a reason. Memory: `recall` (a search of the session's Space, `RecallOver::Both`), `facts` and `propose`
    (`Staged`: memoryd labels the router's proposals untrusted, so they land pending), each result labelled with the join
    of the hits' labels; `memory.forget` is `Unsupported` (the router may plan a forget, only the shell's own UI may apply
@@ -293,7 +293,7 @@ Built in the w4-docket fill (each with tests on a private bus, a scripted inferd
    no longer sent (a search is answered whole from the index, see "Launcher search: one index" below). `Halted` and
    `Resumed` are as before.
 5. **A missing app is `AppFault::Unavailable`** (ask 105): `call_step` turns it into `CallRefusal::AppUnavailable`, and
-   `quire-do` exits 6 (the end-to-end test installs the Files manifest and runs no Files app). **`serve(router, config)`**
+   `bardo-do` exits 6 (the end-to-end test installs the Files manifest and runs no Files app). **`serve(router, config)`**
    takes the configuration (ask 106).
 6. **A computer-use run is rebuilt on restart** (ask 63): `companiond::recover` reads `cua.run.started`, `cua.asked`,
    `cua.confirmed`, `cua.taken_over`, `cua.handed_back` and `cua.run.finished` as `ReplayWhat::Run`, by the words of
@@ -305,7 +305,7 @@ Built in the w4-docket fill (each with tests on a private bus, a scripted inferd
 Not built yet, and what each blocks:
 
 1. ~~`Reader::extract` carries no session~~: closed in w5-docket (see "The w5-docket fill").
-2. **sill** must serve `Confirm1` and draw `OnceOrFromTerminal` (ask 3), and `quire-do` over a login needs the
+2. **sill** must serve `Confirm1` and draw `OnceOrFromTerminal` (ask 3), and `bardo-do` over a login needs the
    `Control.Resume` button (item 6 above).
 3. ~~`Request.Proceed` answers `Malformed`~~: a watched `Gate.Check` implements it (w5-docket). On a request that is
    not a watched gate check it still answers `Malformed`: nothing waits for it.
@@ -349,7 +349,7 @@ model and a private `dbus-daemon`; nothing real is touched.
 - **Serving.** `Roster()` and `Front()` read `Shared` (what the loop last wrote), so they answer while a
   planner turn waits on a confirmation; `Ask` answers the answer object's path at once and runs the loop
   behind it; answer objects have `View`, `Updated` and `Cancel`; `Act` answers `NotSupported` (the loop
-  produces text and refusals, no cards). The served interfaces equal `dbus/org.quire.Companion1.xml`.
+  produces text and refusals, no cards). The served interfaces equal `dbus/org.bardo.Companion1.xml`.
 - **Additive change in a frozen crate:** `agent_loop::LoopInput::Messaged` (a request landed in an idle
   task's inbox: plan, with no turn of the person's). docket-client gained `Intents::{session_recall,
   session_read, session_note, session_task_policy}` in a new file (`ask` became `pub(crate)`).
@@ -449,7 +449,7 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
 3. **The companion's asks (121), all but the scheduler and the settings row:**
    - `AskWire { session, turn: UserTurn, keep, parent_window, app }` (so a real `Companion1.Ask` works; `Companiond::heard`
      and `summoned_from` are gone, the summoning app is per task). companiond answers `Ask` and `Told` only to the
-     connection that owns the shell's name (`CompaniondConfig.shell`, `org.quire.Shell` shipped), because the turn it is
+     connection that owns the shell's name (`CompaniondConfig.shell`, `org.bardo.Shell` shipped), because the turn it is
      handed is the person's words and the router never recorded this copy. `Open` and `Close` are still open to any
      caller (see asks).
    - `NoteAsk` is `Episode(Episode) | Narrative { episode, narrative } | Record(SessionNote)`. `Record` is the serde JSON of
@@ -471,7 +471,7 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
      type stays `text` (there is no record `ParamType`). `docket_fake::host_companion(&router)` hosts the provider in the
      fakes. `companion.task.message` is still performed by companiond (`Message.Send`).
    - `InboundLine.to` (companiond places a line by where it was sent). `Undoable::Journaled(UndoId)`: the router answers its
-     caller the journal's row instead of the app's token (apps still answer `Yes(token)`); `quire-do` reads it, companiond's
+     caller the journal's row instead of the app's token (apps still answer `Yes(token)`); `bardo-do` reads it, companiond's
      steps carry it (`undo #n`). `Session.Handles` (companion role): the router's own `HandleCard`s with sizes, which replace
      the placeholders companiond kept.
    - `ActionCard.on`, and `docket_core::args_from_json(decl, arguments, label)` (with `ArgsFault`, `TargetFault`, `Why`
@@ -482,9 +482,9 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
      companiond sends it for a subagent's side conversation (`SideEffect::Rederive`), workers only: a run's session is cuad's.
    - `Companion1.Told(agent, space, turn)` (the shell tells the companion what the person said to a subagent; companiond cannot
      read a run's inbox).
-   - **`mcp.enabled` (ask, not done here):** quire's settings gain a row `mcp.enabled` (an on or off setting: off by default,
+   - **`mcp.enabled` (ask, not done here):** Bardo's settings gain a row `mcp.enabled` (an on or off setting: off by default,
      QUESTIONS S7), read by the daemon that hosts the MCP edge (`actions-mcp`'s binary), which passes
-     `McpAccess::On` to `McpEdge` and serves it over stdio or a socket; nothing was edited in quire.
+     `McpAccess::On` to `McpEdge` and serves it over stdio or a socket; nothing was edited in bardo.
 4. **128:** `BreakerTripped` is emitted (intentd `signals`, `tests/it/signals.rs`: said once, again after a resume and a second
    pause): closed. `Resume(Only(space))` also lifts a global halt for that Space (the global halt becomes a halt of every other
    Space the router has a session in; `tests/it/control.rs`). The effect classes **"changes only the view"** and **"file with no
@@ -502,7 +502,7 @@ Interface asks left after the w5 fill, as the f4-docket fill leaves them (the fu
 "The f4-docket fill" below):
 
 - porter: the two effect classes (item 4 of the w5 fill).
-- quire: `mcp.enabled` (item 3 of the w5 fill): until the settings row exists the edge reads its own
+- Bardo: `mcp.enabled` (item 3 of the w5 fill): until the settings row exists the edge reads its own
   `actions-mcp.toml`.
 - cuad: use `gate_check_watched`, open its run's session, and have `cua.run.start` answer the session it opened.
 - almanac: let `Caller::Router` ask `MemoryRequest::Spaces` (see the f4-docket fill, item 5).
@@ -514,9 +514,9 @@ Interface asks left after the w5 fill, as the f4-docket fill leaves them (the fu
 Branch `f4-docket`. Each item has tests on a private bus, in process, or over the fakes.
 
 1. **`actions-mcp` is a binary** (stdio by default, `--socket PATH` for a long-lived socket, `--client NAME`).
-   `McpConfig` (`$XDG_CONFIG_HOME/quire/actions-mcp.toml`, shipped as `dist/actions-mcp.toml`: `access = "off"`,
+   `McpConfig` (`$XDG_CONFIG_HOME/bardo/actions-mcp.toml`, shipped as `dist/actions-mcp.toml`: `access = "off"`,
    `client`): off by default, so an edge nobody switched on lists nothing and refuses every call (it still runs,
-   and says so on stderr). It claims `org.quire.ActionsMcp`, the name `intentd.toml` gives the `mcp` role, and a
+   and says so on stderr). It claims `org.bardo.ActionsMcp`, the name `intentd.toml` gives the `mcp` role, and a
    second edge stops (several clients share one edge through the socket; each connection gets its own `McpEdge`).
    The router names an MCP caller by that bus name, so consent grants are per edge process, while the `client`
    name labels the arguments (`Source::Mcp(client)`); per-client grants would need the client on the wire.
@@ -532,7 +532,7 @@ Branch `f4-docket`. Each item has tests on a private bus, in process, or over th
    `PerformEvent::{Progress, Done}`. Tests: `docket-router/tests/it/watching.rs`, `intentd/tests/it/perform_watch.rs`.
 4. **`Session.Resolve` answers the label** (ask 147): `IntentsReply::Resolved(Resolved { text, label })`
    (`Session.Display` still answers `Text`); the D-Bus out argument stays one string (now the JSON of
-   `Resolved`, so `org.quire.Intents1.xml` is unchanged). readerd classes a read by the handle's own label
+   `Resolved`, so `org.bardo.Intents1.xml` is unchanged). readerd classes a read by the handle's own label
    (`intentd/tests/it/reader_daemon.rs`: mail, not `Prompt`); `resolved_label` is gone.
 5. **A restart reads more Spaces than `companiond.toml`'s**: `RecallAsk::Spaces` / `RecallView::Spaces`
    (any session may ask): the router answers the open and paused Spaces memory lists, the Spaces it holds a session
@@ -553,7 +553,7 @@ Branch `f4-docket`. Each item has tests on a private bus, in process, or over th
    is still carried out in companiond, because the worker's loop runs there.
 10. **Ask 105**: the chain was already there (`AppFault::Unavailable` -> `CallRefusal::AppUnavailable` -> exit 6);
     what was missing was a test of it end to end: `Answering::Absent` in the fakes, a router test and
-    `quire-do`'s `an_app_that_is_not_installed_is_exit_6_not_5`.
+    `bardo-do`'s `an_app_that_is_not_installed_is_exit_6_not_5`.
 
 ## The f4-e2e acceptance
 
@@ -617,19 +617,19 @@ companiond and readerd by unit. The reader-class assertion is back (flow c: the 
 - Ask (mailo session), to run `mailo intents` as the provider in the gate: (1) a headless way to seed a store with
   an account and mail without network (today: `mailo watch` syncing from `scripts/live-imapd.py`, a Twisted IMAP
   server, so the account must be configured and synced before `mailo intents` has threads; a fixture store
-  builder, or `mailo intents --fixture <dir>`, would do); (2) `mail-app` builds only with quire and pdfrum git
+  builder, or `mailo intents --fixture <dir>`, would do); (2) `mail-app` builds only with Bardo and pdfrum git
   dependencies (network at build time) and the GUI stack (a ~900 MB debug build): a `--no-default-features`
   headless `mailo-intents` binary (or package) with no `ds`/blitz deps; (3) a caller check that accepts the
-  fake-proc-root router (it asks for the owner of `org.quire.Intents1`, which intentd is, so this may need nothing).
-  Mailo's manifest also differs from the stand-in's (`dist/intents/org.quire.Mail.toml`), so flows (a) and (c)
+  fake-proc-root router (it asks for the owner of `org.bardo.Intents1`, which intentd is, so this may need nothing).
+  Mailo's manifest also differs from the stand-in's (`dist/intents/org.bardo.Mail.toml`), so flows (a) and (c)
   need their own cassettes for it.
 
 ## Upstream asks
 
 Nothing below was edited in the other repos. Asks 1 to 4 of the freeze are cleared: almanac's
 `RecentEntry` carries `body` under `BodyMode::Json` (companiond reads it through `RecentSource`),
-almanac-client's `almanac-service` is behind `in_process`, quire's `ds-intents` has the voice
-marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and quire's
+almanac-client's `almanac-service` is behind `in_process`, Bardo's `ds-intents` has the voice
+marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo's
 `docs/workspace-deps.toml` has `pipewire = "0.10"`.
 
 1. **porter `prov` fills** are done (`Label::{trusted_user, untrusted, join}`); docket's tests and
@@ -754,11 +754,11 @@ builds the connection first and passes it here.
 
 ## f4-docket-2: edges and renames
 
-- **`agent.mcp.expose` and ds-settings.** docket's boundary table does not allow quire's `ds-settings` (the `agent`
+- **`agent.mcp.expose` and ds-settings.** docket's boundary table does not allow Bardo's `ds-settings` (the `agent`
   key rows are `docket-core::SETTING_ROWS`, the keys are sill's). actions-mcp therefore reads
   `$XDG_CONFIG_HOME/docket/settings.toml` (`[agent.mcp] expose = "on"`) with a small lenient reader
   (`actions-mcp/src/settings.rs`) and docket ships a static design/22 schema, `dist/settings/docket.settings.toml`
-  (`actions-mcp --write-schema <dir>` writes it). Question for quire: should docket depend on `ds-settings` (derive
+  (`actions-mcp --write-schema <dir>` writes it). Question for Bardo: should docket depend on `ds-settings` (derive
   and `write_schema`) for the whole `agent` domain, and is `docket/settings.toml` the file design/22 wants? The old
   `access` key of `actions-mcp.toml` is gone (a file that still has it is refused). `McpAccess` is now `McpExpose`.
 - **Rename `mail.thread.find` to `mail.thread.search`** in docket-accept (fixture, provider, planner scripts, tests,
@@ -770,11 +770,11 @@ builds the connection first and passes it here.
 
 1. **`Companion1.Answer.Act(action s) -> o`** is served (`companiond/src/act.rs`, `serve.rs`). `action` is a
    `CardActionId` (the bare id or its JSON string). Only the connection that owns the shell's bus name
-   (`org.quire.Shell`) may call it, the same guard as `Open`/`Ask`/`Close`/`Told` (`AccessDenied` for anyone else; an
+   (`org.bardo.Shell`) may call it, the same guard as `Open`/`Ask`/`Close`/`Told` (`AccessDenied` for anyone else; an
    id the answer does not offer is `InvalidArgs`). It finds the card in the answer's structured body
    (`AnswerBody::DraftReply` / `ProposedEvent` `actions`, held as `TaskRuntime::proposal`), starts its `CallRequest` as
    a watched `Run.Perform` through `Intents::perform_watched` as the companion role in the answer's session and window,
-   and returns at once with the request's object path (`/org/quire/Intents1/request/<n>`; the router in process has no
+   and returns at once with the request's object path (`/org/bardo/Intents1/request/<n>`; the router in process has no
    object and the path is only the task's call number). The call is a call like any other: gated, confirmed (the
    shell's own `Confirm1` sheet), journalled, audited. The answer follows it with `Updated` (`View` is always current):
    the body becomes `AnswerBody::Plan` with one step per pressed card, `Pending`, `Running` once dispatched,
@@ -813,7 +813,7 @@ builds the connection first and passes it here.
      `docket-router/tests/it/index.rs` (`a_hit_is_opened_by_its_kinds_open_action_performed_as_the_launcher`).
 
 3. **The other f4-docket-2 items** are not behaviour over fakes in docket's own paths: the `ds-settings` question is
-   quire's, the `mail.thread.find` rename is in docket-accept (lane f4-e2e-2's files), the `inferd` cassette is porter's;
+   Bardo's, the `mail.thread.find` rename is in docket-accept (lane f4-e2e-2's files), the `inferd` cassette is porter's;
    first-use consent was already tested. Nothing further closed.
 
 ## f4-docket-ident: cgroup identity and the activation token
@@ -821,19 +821,19 @@ builds the connection first and passes it here.
 1. **Caller identity moved off `/proc/<pid>/exe` onto the cgroup** (`intentd/src/peer.rs`). The bus still names the
    pid; `porter_dbus::ProcCallers::caller_of_pid` reads only `/proc/<pid>/cgroup` (no ptrace check, works in a
    Landlock domain). Order, unchanged for names: a connection that owns application-shaped well-known names is
-   those names, with `intentd.toml`'s roles (confirm = owner of `org.quire.Confirm1` through the `confirm` row).
+   those names, with `intentd.toml`'s roles (confirm = owner of `org.bardo.Confirm1` through the `confirm` row).
    A connection that owns no name is identified by its cgroup alone:
    - `app-[<launcher>-]<id>-<n>.scope` or `app-flatpak-<id>-<n>.scope`: that app, with the roles `intentd.toml`
      lists under `<id>` (none for almost every app: a plain app). This is also how a user whose terminal runs in
      an app scope (konsole in `app-org.kde.konsole-<n>.scope`) opts in: list `org.kde.konsole` under `cli`.
-   - **a terminal child: `vte-spawn-*.scope`, `tmux-spawn-*.scope`, a login `session-*.scope`: `org.quire.Do`, the
+   - **a terminal child: `vte-spawn-*.scope`, `tmux-spawn-*.scope`, a login `session-*.scope`: `org.bardo.Do`, the
      cli role.** porter-dbus returns nobody for these (they are no app scope), so the cli role has this rule of its
      own. **Security decision for the orchestrator to review:** the rule is same uid (checked as before) + a bus
      connection owning no name + a cgroup leaf in that short list. It is NOT "any unidentified process": a service
      unit (`foo.service`), `run-*.scope`, an unreadable or malformed cgroup are refused (`NotAllowed`). It is
      weaker than the old rule in one way: any process in a terminal scope is the cli, not only a binary named
-     `quire-do` (the old exe name was as forgeable by a copy of any binary); and stronger in another: a binary
-     named `quire-do` outside a terminal scope (a service, a cron job's scope) is no longer the cli. The cli role
+     `bardo-do` (the old exe name was as forgeable by a copy of any binary); and stronger in another: a binary
+     named `bardo-do` outside a terminal scope (a service, a cron job's scope) is no longer the cli. The cli role
      still asks for everything that is not a read, so it stays advisory on a desktop where every process runs as
      the person. No callers file is read: intentd has no unit rows (porter's `CallerTable` is passed empty); a
      daemon that is a service owns a well-known name, which already names it.
@@ -879,12 +879,12 @@ What landed: the skills format, discovery, validation and the three places they 
   only the planner-facing shapes (`SkillId`, `SkillVersion`, `SkillCard`, `SkillText`) and two `PlannerView`
   fields, `skills` and `skill_texts` (`agent-loop::Sources` has the same two).
 - **Only installed files.** `discover` takes `Roots` (directory paths) and nothing else; there is no way to give
-  it text. Roots are built from the environment only in a daemon's or quire-do's `main`
-  (`Roots::from_env`; intentd uses its own `data_dirs`). `$XDG_DATA_HOME/quire/skills/<id>/` wins over
+  it text. Roots are built from the environment only in a daemon's or bardo-do's `main`
+  (`Roots::from_env`; intentd uses its own `data_dirs`). `$XDG_DATA_HOME/bardo/skills/<id>/` wins over
   `$XDG_DATA_DIRS`; earlier data dirs win over later; a directory that fails does not shadow another of its id.
 - **Trust.** Shipped text is `SkillText` with integrity Trusted and `Source::App(owner)`; the person's own is
   `Source::User`. The prompt introduces each body as installed text for the planner that grants nothing.
-- **Load.** `companion.skill.load { id }` is in `manifests/org.quire.Companion.toml` (Read, no undo, instant) and
+- **Load.** `companion.skill.load { id }` is in `manifests/org.bardo.Companion.toml` (Read, no undo, instant) and
   served by the router's `companion_perform` (`docket-router/src/skills.rs`), so intentd's hosted provider and the
   fake world run the same code. A skill is loadable only if every action it uses is registered and not Hidden;
   the cap of three per session is `SessionRecord::skill_loads`; reloading one already loaded is free. intentd
@@ -908,7 +908,7 @@ What landed: the skills format, discovery, validation and the three places they 
   finds `~/sill/dist/intents`), adds every `*.toml` of each `--manifests` directory, and adds the two built-in
   manifests. A manifest reached twice is read once. Pass every repo whose actions the skills use. A missing
   action fails; an action Hidden from the companion is a note.
-- **`quire-do skills`** lists the installed skills from `$XDG_DATA_*`, each marked offered, hidden (missing action,
+- **`bardo-do skills`** lists the installed skills from `$XDG_DATA_*`, each marked offered, hidden (missing action,
   with which) or not offered (Hidden action), plus directories that did not load. It needs intentd for the manifests.
 - **voiced.service** lost its `[Install]` section: voiced was a skeleton that exits 2, so `systemctl --user enable`
   must not start it at login in beta. `serve` is filled now (v-voiced), but the section stays out until the owner
@@ -1001,18 +1001,18 @@ An action's declared effect is a **ceiling**; an action may opt in to a per-call
 - **Tests.** `docket-router/src/classify.rs` (table), `docket-router/tests/it/percall.rs` (docket-fake's `FakeMenu`),
   `intentd/tests/it/percall.rs` (a router over `DbusLink` and a real provider on a private bus).
 
-## f4-demo-install: the dev installer and `quire-do ask`
+## f4-demo-install: the dev installer and `bardo-do ask`
 
 For the owner's live demo of the companion on a cloud model (runbook: `docs/demo-cloud.md`).
 
 - **`dist/install-dev.sh`** installs the stack for one user from the sibling checkouts (`../porter`,
   `../almanac`, `../stoker`, this one), builds with `cargo build --release --locked`, never runs sudo, and
-  records what it wrote in `~/.local/state/quire-dev/install-dev.manifest` for `--uninstall` (a config the person
+  records what it wrote in `~/.local/state/bardo-dev/install-dev.manifest` for `--uninstall` (a config the person
   edited is kept; directories are removed only if the install made them and they are empty). Tested in a jail
   (`docket-cli/tests/it/install_dev.rs`: HOME, XDG and PREFIX in a tempdir, fake binaries through
   `INSTALL_DEV_BIN_DIR`, cleared environment).
   - memoryd has no unit in `almanac/dist`: `almanac/dbus/memoryd.service` is its unit, started by D-Bus
-    activation (`org.quire.Memory1.service` names it); that is what is installed.
+    activation (`org.bardo.Memory1.service` names it); that is what is installed.
   - Beyond the brief, because the demo does not work without them: porter's `providers/*.toml` (accountd cannot
     `add openrouter` without its provider file) to `$XDG_DATA_HOME/porter/providers`, and stoker's `catalog/*.toml`
     (inferd reads its model entries only from `$XDG_DATA_HOME/stoker/catalog` and `/usr/share/stoker/catalog`;
@@ -1021,11 +1021,11 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
     manifests are built into intentd, which logs "built into intentd" and skips a file of theirs). `intentd.toml`,
     `companiond.toml` and `actions-mcp.toml` are installed only if absent as asked, but note that each replaces the
     built-in default whole, so a later change to the shipped file does not reach a machine that has a copy.
-  - Skills land in `$XDG_DATA_HOME/quire/skills`, which docket-skills reads as the person's own (`Origin::Own`,
+  - Skills land in `$XDG_DATA_HOME/bardo/skills`, which docket-skills reads as the person's own (`Origin::Own`,
     source `User`), not as shipped (`Source::App`). Fine for a dev install; a package installs under `/usr/share`.
   - **Dev-only change to the packaged units** (f4-demo-install-2, after porter e7b8e35): `ProtectHome=yes` becomes
     `read-only` for companiond and readerd when the prefix is under `$HOME`; their units still say `yes`, and with it the
-    binary in `~/.local/bin` cannot be executed (and companiond could not read `~/.config/quire` or the skills). The
+    binary in `~/.local/bin` cannot be executed (and companiond could not read `~/.config/bardo` or the skills). The
     porter units need no drop-ins any more (they make their own directories). `--cloud` installs porter's
     `dist/inferd-cloud.conf` as `inferd.service.d/cloud.conf` (network on); opt-in because local engines share inferd's
     sandbox, so an on-device-only setup keeps none. An install made before this change has its `10-dev.conf` drop-ins
@@ -1033,21 +1033,21 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
   - The one root step (printed, never run): `sudo install -D -m644 <porter>/dist/callers.toml /etc/porter/callers.toml`.
     accountd and syncd read `/etc/porter/callers.toml` with `$XDG_CONFIG_HOME/porter/callers.toml` laid over it (user
     rows win); inferd's own caller table is `/etc/porter/inferd-callers.toml` (root's; a `[callers]` table in `inferd.toml` is ignored), and memoryd's is
-    `memory-callers.toml` (installed in the user config, which layers over `/etc/quire/`), so neither needs root.
-- **`quire-do ask [--space <id>] "<text>"`**: `Companion1.Open` in the Space (default `desktop`), `Session.Turn`
+    `memory-callers.toml` (installed in the user config, which layers over `/etc/bardo/`), so neither needs root.
+- **`bardo-do ask [--space <id>] "<text>"`**: `Companion1.Open` in the Space (default `desktop`), `Session.Turn`
   through intentd, `Companion1.Ask`, then the answer object is followed (its current `View`, then each `Updated`)
   until it is no longer Thinking or Streaming. Prints the text, the plan steps, what is waited for and the footer
   (model, where it ran); `--json` or a pipe prints the answer object. `NeedsYou(Confirm)` prints the request and
-  exits **8** (new code, `needs_you`) with "answered in the shell": `quire-do` is not `Confirm1`, nothing answers
+  exits **8** (new code, `needs_you`) with "answered in the shell": `bardo-do` is not `Confirm1`, nothing answers
   it, and the conversation is left open for the sheet; a finished conversation is closed. A handle in the text is
   printed as `#n` (a terminal may not `Session.Display`). The seam is `companion_client::CompanionTransport`
   (`DbusCompanion` over the bus; a new crate rather than a module of `docket-client`, so cua's and sill's lock files, which
   list docket-client's dependencies, do not change); the whole program is `docket_cli::program::execute` over the process's `Process` and the `Buses`
-  (`SessionBus`); `main.rs` only collects them, and `accept-quire-do` builds the same `main.rs`. Tests: `docket-cli/tests/it/ask.rs` (scripted companion over the fake router), `docket-accept/tests/it/terminal.rs`
-  (the real `quire-do` against the real daemons: a read answered, a Forward left waiting for the sheet),
+  (`SessionBus`); `main.rs` only collects them, and `accept-bardo-do` builds the same `main.rs`. Tests: `docket-cli/tests/it/ask.rs` (scripted companion over the fake router), `docket-accept/tests/it/terminal.rs`
+  (the real `bardo-do` against the real daemons: a read answered, a Forward left waiting for the sheet),
   `companiond/tests/it/terminal.rs` (the authority, below).
 - **Security: the cli role speaks for the person in three calls.** companiond used to accept only the owner of
-  `org.quire.Shell`. It now also accepts, for `Open`, `Ask` and `Close` only, a connection that (1) is the same
+  `org.bardo.Shell`. It now also accepts, for `Open`, `Ask` and `Close` only, a connection that (1) is the same
   user (`GetConnectionCredentials`), (2) is in a terminal's scope (`vte-spawn-*`, `tmux-spawn-*`, a login
   `session-*`: the same `docket_core::is_terminal_scope` intentd derives the cli role from, over the cgroup of the
   pid the bus names), and (3) owns no well-known name (a name makes it that app, as in intentd's `Peers`). `Told`
@@ -1057,7 +1057,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
   hand the companion words and a conversation, and every call the companion then makes still goes through
   intentd's gate in role `companion` with the sheet for the person. What it adds: a process in a terminal (an
   agent running shell commands, say) can now put words in the companion's mouth, which it could already do to
-  `quire-do <app> <action>` one call at a time; it cannot answer a confirmation, press a card, or reach a
+  `bardo-do <app> <action>` one call at a time; it cannot answer a confirmation, press a card, or reach a
   subagent. The router's side: `Member::SessionTurn` now permits `Cli` (it was Launcher and Field only), because a
   turn the router did not record is not a turn; such a turn is recorded as the new `TurnSource::Terminal`, not as
   the launcher's, so a later rule can treat it differently (nothing does yet; sill only constructs `TurnSource`,
@@ -1089,7 +1089,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 3. **`Session.Display` on a closed session is refused** (`NoSuchSession`, `docket-router/src/reading.rs`). Before,
    the router kept a closed session's handles and still showed them; now a handle shows until its answer is
    dismissed and not after.
-4. **How a surface finds an answer's session.** `org.quire.Companion1.Answer` gained a read-only property
+4. **How a surface finds an answer's session.** `org.bardo.Companion1.Answer` gained a read-only property
    `Session` (`s`, the `SessionId` text), set before `AnswerAdded` is signalled, so every answer object, whoever
    started the task, names its session. `AnswerWire`, `FrontTask` and `AskWire` are unchanged. sill reads
    `Session` from the answer object (the same proxy it reads `View` from), then calls `Intents1.Session.Display`
@@ -1098,9 +1098,9 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 ## f4-docket-defaults: shipped consent for the shell's own data, and `--check-skills` across repos
 
 1. **One shipped default.** `dist/intents/default-grants.json` holds two grants (Interactive and Background):
-   caller Companion, owner `org.quire.Shell`, target App, class `app_own`, every Space, `allow`, `always`. It is
+   caller Companion, owner `org.bardo.Shell`, target App, class `app_own`, every Space, `allow`, `always`. It is
    installed with the other `dist/intents` files (the installer on `f4-demo-install` copies that tree whole, so
-   it needs no change). intentd reads `quire/intents/default-grants.json` under every data directory at each
+   it needs no change). intentd reads `bardo/intents/default-grants.json` under every data directory at each
    consent lookup (`FileGrants::with_defaults`) and puts it under the person's `grants.json`.
    Why this is safe: the shell is the desktop itself. Its `app_own` data is window, menu, workspace and dock state,
    which the person already sees and drives from the same screen; nothing in it is mail, files, the screen or
@@ -1131,7 +1131,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 
 ## f4-docket-why: the answer says why
 
-1. **Routing property.** `org.quire.Companion1.Answer` gained a read-only property `Routing` (`s`): JSON of
+1. **Routing property.** `org.bardo.Companion1.Answer` gained a read-only property `Routing` (`s`): JSON of
    `Vec<companion_wire::RouteNote { stage, served, why: Vec<WhyWord>, reached: Option<Reached> }>`, the last model turn
    that announced anything (`[]` before one did). Set before `AnswerAdded`, like `Session`. `AnswerWire`, `FooterWire`
    and `AskWire` are unchanged, so no literal in sill, cua or almanac breaks.
@@ -1180,7 +1180,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
 
 ### What `serve` does
 
-- `voiced::start(connection, config, Seams)` registers `org.quire.Voice1` (root, then per-utterance and per-speech
+- `voiced::start(connection, config, Seams)` registers `org.bardo.Voice1` (root, then per-utterance and per-speech
   objects) and starts the loop; `serve(config, device)` is `start` over the session bus with `DbusTransport`,
   `BusWarm` and `FileUse`, and runs until the bus closes. `Seams` holds the device, the inferd transport, the
   warmer, the consent source and the `/proc` root: the tests serve the whole daemon on a private bus with a scripted
@@ -1202,7 +1202,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
 - **Dictation** ends by itself on 30 s of silence (`EnergyGate` + `endpoint` from speech-vad, `EndpointSilence`,
   the existing machine row); an Ask never does.
 - **Bodies.** Voice1 bodies are `voice_wire::Envelope { vocab, body }` JSON in `s`; a foreign vocabulary or bad JSON
-  is `org.quire.Voice1.Error.Malformed`. The refusals are `VoiceRefusal`'s error names, one to one. The event fd frame
+  is `org.bardo.Voice1.Error.Malformed`. The refusals are `VoiceRefusal`'s error names, one to one. The event fd frame
   is a 4-byte big-endian length then the envelope (porter-core's framing with `VoiceVocab`). `wire::{seal, frame,
   unframe, Unframed, MAX_FRAME}` are exported for sill's client.
 - Earcons: a two-note blip generated in integers (`earcon_samples`), played on its own stream at 24 kHz when
@@ -1224,10 +1224,10 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
    needs a shell-only `SetUse` member: say so and it is added with its introspection test.
 4. **sill, the shell side of `Begin`** (ask): body is `Envelope<VoiceBegin>`; the reply is the utterance path and an
    fd of length-prefixed `Envelope<VoiceEvent>` frames; the shell must hold a bus name listed under `shell` in
-   `voiced.toml` (`org.quire.Shell` in `dist/voiced.toml`). `Release` ends the hold; the daemon keeps the mic 250 ms
+   `voiced.toml` (`org.bardo.Shell` in `dist/voiced.toml`). `Release` ends the hold; the daemon keeps the mic 250 ms
    of captured audio longer; the shell cancels with `Cancel(cause s)`, a sealed `CancelCause` (`escape`, `other_input`,
    `focus_lost` or `shell`; `superseded` and `too_long` are the daemon's own and are refused `Malformed`); the
-   transcript is discarded whatever the cause. Refusals come as errors named `org.quire.Voice1.Error.*`
+   transcript is discarded whatever the cause. Refusals come as errors named `org.bardo.Voice1.Error.*`
    (`NeedsConsent` is the cue for the consent sheet; `MicUnavailable` before anything opens when there is no physical
    source). sill must subscribe to `Ended` and `Finished` before calling (unicast, nothing is replayed).
 5. **The consent sheet** is sill's alone; voiced only refuses with `NeedsConsent` and never opens the mic first.
@@ -1237,7 +1237,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
 - A `Begin` with no physical source is refused `MicUnavailable` before the machine runs; a source that fails to open
   is `Ended(Failed(MicUnavailable | MicDenied))` as the machine says.
 - `Cancel(cause)` takes the cause from the caller (Begin caller or attached app, as before) and `Ended` carries it
-  unchanged; the daemon's own causes are refused as a malformed body (`org.quire.Voice1.Error.Malformed`).
+  unchanged; the daemon's own causes are refused as a malformed body (`org.bardo.Voice1.Error.Malformed`).
 - The event fd's reader gets `Unframed::{Partial, Frame, Malformed, TooLong}`: a bad envelope costs one frame, an
   over-`MAX_FRAME` (1 MiB) length means close the stream; `frame` refuses a body over the cap (`FrameError::TooLong`).
 - An old utterance's object is removed from the bus when the next `Begin` happens, so a late `Release` on it is an
@@ -1365,7 +1365,7 @@ Where the stack did NOT fail safe, and the fix (each pinned by a test above).
 3. companiond: the model's words and questions were shown with bidirectional overrides and zero-width marks as written
    (a reversed `moc.live` for `live.com`). Fixed: `docket_core::{reorders, hides}` marks are removed from words, questions
    and choices.
-4. companiond `quire_ask`: the schema's limits (400 characters, six choices of 80) were advice to the model, and non-string
+4. companiond `bardo_ask`: the schema's limits (400 characters, six choices of 80) were advice to the model, and non-string
    choices were silently dropped. Fixed: past the limits, or with a non-string choice, the reply is unreadable.
 5. docket-core `args_from_json`: a one-line text accepted every control character but `\n` (a `\r`, a NUL) and any text
    accepted bidirectional overrides and zero-width marks, so a recipient on a sheet could read as another address.
@@ -1396,7 +1396,7 @@ Things to know.
   The three fenced cases therefore expect `one_of [step_asks 1, allow]`; trailing words outside the record are an ask on both paths.
 - The planner keeps the valid calls of a reply that also names an unknown tool (an existing test pins it); a reply whose
   calls are all unreadable fails the turn.
-- A model that outputs `quire_ask` or words repeatedly is bounded by the step budget (`agent.budget.calls`) and the
+- A model that outputs `bardo_ask` or words repeatedly is bounded by the step budget (`agent.budget.calls`) and the
   per-minute budget, not by anything in the planner.
 - Not looked at: the idle pass stores the model's narrative of an episode in memory (hostile words persist there as the
   episode's text, labelled by memoryd, not by docket); the reader's output is already a handle or a closed-set answer.
@@ -1437,7 +1437,7 @@ turn, as Failed with nothing for the person. It also named handles it was never 
   Constants: `HOLDS_BEFORE_STOP` = 1, `MOST_HOLDS_PER_TURN` = 4 (A,B,A,B and wider cycles: the fifth hold asks, "going
   round in circles"), `MOST_REMEMBERED` = 32 distinct calls. In a batch the stale call is held and the others go out.
 - What the model reads: a held call is `... not run: you already called it with these arguments and got nothing; change
-  the arguments, try another action, ask the person with quire_ask, or finish`. A refusal for arguments now says which
+  the arguments, try another action, ask the person with bardo_ask, or finish`. A refusal for arguments now says which
   argument and why, and for an unknown handle which `#n` it does hold ("argument "recipient" names a handle that does not
   exist; handles you hold: #3 #4"); the coarse code stays on the line, `Denied` stays a bare code (no oracle), and a
   roster line of another agent gets no handle list.
@@ -1465,11 +1465,11 @@ What a planner sees now (the router mints; the planner never reads):
   turns a handle into `Reveal::Handle`, and the cards come from `Session.Handles`.
 - `docket-planner` `step_text`: a step's handle value is `#3 mail.thread`, a list `[#3 mail.thread, #4 mail.thread]`;
   a step line reads `mail.thread.search done "Found threads" value [#1 mail.thread, #2 mail.thread]`. The "What you can
-  name but not read" section lists `- #1 a mail.thread from {"app":"org.quire.Mail"}` (no character count for a thing).
+  name but not read" section lists `- #1 a mail.thread from {"app":"org.bardo.Mail"}` (no character count for a thing).
   The rules say a thing is named as `{"handle": n}` in an argument, or in a list for `target`.
 - Only kind and handle are shown. An entity result carries ids only (titles never cross: `present` drops the app's
   preview), and a thread title is untrusted anyway, so the planner cannot tell two threads apart by name; it can forward
-  them all, or have the reader read one (`quire_read` on a text handle). A contact list is the person's own, but its
+  them all, or have the reader read one (`bardo_read` on a text handle). A contact list is the person's own, but its
   result is ids too. If a title is wanted later, the provider must return it as a labelled text beside the id.
 - A target may be a handle: `TargetValue::Handles(Vec<Handle>)` (`target_from_json` reads `{"handle": n}` or a list of
   them; the tool schema already offered it). The router resolves it before anything reads the target
@@ -1483,10 +1483,10 @@ A reply the planner cannot read is told, not fatal:
   arguments), where it used to be `PlanFault::Unreadable` and the turn Failed.
   The names the model wrote are repeated only if plain (`[A-Za-z0-9._-]`, at most 64). A reply with a readable call beside
   an unreadable one still runs the readable one (as before). `PlanFault::Unreadable` remains for no tool call and no words,
-  words cut by the length limit, a bad `quire_ask`, and unreadable `quire_read`.
+  words cut by the length limit, a bad `bardo_ask`, and unreadable `bardo_read`.
 - `agent-loop`: `LoopEffect::Unread(fault)` then `AskPlanner`; the host adds a history line (`StepLine::unread`,
   `StepEnd::Unread`): `your last reply could not be read as a call: argument "to" is required and was missing; write the
-  call again, ask the person with quire_ask, or finish`. The guard counts replies in a row (`MOST_UNREADABLE` = 3, kept
+  call again, ask the person with bardo_ask, or finish`. The guard counts replies in a row (`MOST_UNREADABLE` = 3, kept
   in `Guard.unread`, cleared when a call goes out): the third ends the turn by publishing `NeedsYou(Question)` and resting in
   `Idle` ("I keep writing steps I cannot get right ... How would you like me to go on?"). Hosts: companiond `held.rs`
   (`Companiond::unread`, one arm in `carry_out`, one in `plan.rs`) and docket-inapp (`OpenTask::unread`).
@@ -1515,13 +1515,13 @@ label), companiond `tests/it/hostile.rs` and `planner.rs` (unread replies are `U
 entries need the handle lines or the fault line in the planner's request) and `tests/it/live_pure.rs` (question at rest).
 Not run: a live model (the run that found this needs the local Qwen3 engine).
 
-## portable-core: an in-app agent that needs no desktop (quire design/36)
+## portable-core: an in-app agent that needs no desktop (Bardo design/36)
 
 What this lane built. The rule: everything except the desktop environment is cross-platform; the
 desktop's extras are additive. docket's portable core is an in-app agent.
 
 - `docket-client` was already split: `dbus` (the transport) pulls zbus, nothing else
-  does (`serve` and `serve_on` have since moved to `docket-provider`, see lane D0.15). It is now `default = ["quire-desktop"]` with `quire-desktop = ["dbus"]` (design/36: the app-level switch, implied by the D-Bus client; `dbus` stays the transport feature) so a consumer outside the
+  does (`serve` and `serve_on` have since moved to `docket-provider`, see lane D0.15). It is now `default = ["desktop"]` with `desktop = ["dbus"]` (design/36: the app-level switch, implied by the D-Bus client; `dbus` stays the transport feature) so a consumer outside the
   workspace is unchanged, while the workspace declares it with `default-features = false` and each
   desktop crate names `dbus` (as sill already does), so every in-workspace build is what it was.
 - `docket-planner` (new, portable): companiond's `PlannerModel`, `Catalogue`, prompt rendering, `step_text` (loop-guard) and
@@ -1598,8 +1598,8 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
 9. DONE (inapp-tasks lane). Skills. The host installs no skills (`Sources.skills` is empty). Owner: docket (`docket-inapp`
    takes `Vec<Skill>` and calls `router.install_skills`, as the companiond tests do).
 10. The capability probe. design/36 has the app choose in-app or desktop at run time (`Desktop::probe()`
-    of quire's `ds-desktop`). Nothing here chooses; an app builds `InAppAgent` or talks to intentd.
-    Owner: quire (`ds-desktop`, planned) and each app.
+    of Bardo's `ds-desktop`). Nothing here chooses; an app builds `InAppAgent` or talks to intentd.
+    Owner: Bardo (`ds-desktop`, planned) and each app.
 
 ## inapp-seams: the real parts behind docket-inapp's stubs
 
@@ -1622,7 +1622,7 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
 Interface asks.
 - porter: item 1 (a `SessionHost` that routes to a model without the bus) and the Windows named pipe.
 - almanac: none (item 3 is done over `almanac-client` `in_process`).
-- quire: `ds-desktop` for item 10; nothing else.
+- Bardo: `ds-desktop` for item 10; nothing else.
 - stoker: none.
 
 ## inapp-tasks: the in-app agent reaches parity with companiond's task model
@@ -1669,7 +1669,7 @@ Items 5, 8 and 9 of "portable-core" are done.
 
 Still missing for the in-app agent (none blocks the app):
 
-1. Workers. `companion.task.start` is the built-in `org.quire.Companion` provider, which the in-app
+1. Workers. `companion.task.start` is the built-in `org.bardo.Companion` provider, which the in-app
    registry does not hold (only the app's manifest), so the model cannot start a subagent in an app. Side
    conversations and restart recovery work for workers that exist (the tests open one session with
    `AgentRef::Worker`); starting one needs the built-in provider hosted over `ProviderLink` as intentd's
@@ -1683,17 +1683,17 @@ Still missing for the in-app agent (none blocks the app):
 Interface asks.
 - almanac: `RecentEntry::body` for an `Area` payload should be the payload's `json` (the owner's form), as
   documented (`almanac-service/src/search.rs` `recent_entry`). docket reads both until then.
-- quire / apps: none.
+- Bardo / apps: none.
 
-## A model's mistake on quire_read ended the turn (live smoke, Qwen3-8B, 2026-10-07)
+## A model's mistake on bardo_read ended the turn (live smoke, Qwen3-8B, 2026-10-07)
 
 Smoke `flow-a` and `flow-a-refused` (traces in the live-eval scratch dir) both ended
 `{"kind":"failed"}` right after the planner's third step, the identical call
-`quire_read {"inputs":[1,2],"task":"classify","want":{"handle":"thread with Lisbon receipts"}}`, and no
+`bardo_read {"inputs":[1,2],"task":"classify","want":{"handle":"thread with Lisbon receipts"}}`, and no
 reader exchange was recorded.
 
 Cause. The smoke world does have a reader (readerd is started and appears in the caller table), so
-nothing was missing there. The planner parsed `quire_read` with one `serde_json::from_value::<ReaderAsk>`
+nothing was missing there. The planner parsed `bardo_read` with one `serde_json::from_value::<ReaderAsk>`
 (`docket-planner` `meta_output`); `want` is a closed `ValueSchema` (`{"kind":"choice","v":[...]}`), the tool
 schema only said `{"type":"object"}`, the model wrote a handle-shaped object, the parse failed and the
 planner returned `PlanFault::Unreadable`, which the loop turns into `ModelFailed` and a failed turn. The
@@ -1714,13 +1714,13 @@ so, since a model that writes JSON Schema is the mistake we saw.
 ## Live smoke 13: entity handles read as "not held", and the cold start (read-entity-warm)
 
 Two findings of the Qwen3-8B smoke run. (1) In flow-a-refused the planner passed two thread handles to
-`quire_read`; the router resolves text only, so a held thing answered `NotHeld` ("not a handle you were
+`bardo_read`; the router resolves text only, so a held thing answered `NotHeld` ("not a handle you were
 shown"), and the planner gave up and asked the person. Fix: `ReadFault::NotText { handle, shape }` for a
 handle that is held but is a thing or a file. Its line names the handle and kind and says to read it with
 the app's read action first (`<kind>.read` is the manifests' convention; the wording says "such as"
 because the planner's line has no catalogue). `NotHeld` stays for handles the session never minted. The
 router does not read things for the planner: reading an app's thread is a call the policy must see.
-`RULES` says `quire_read` takes text handles and a thing is read first. (2) The first request of a local
+`RULES` says `bardo_read` takes text handles and a thing is read first. (2) The first request of a local
 model waited 180 s for its load and failed the turn. Fix in the harness, not the product timeouts:
 `docket-live` warms every routed model per world before the first flow or case (docs/live-eval.md,
 Warm-up). Not yet run against a live engine.
@@ -1789,7 +1789,7 @@ not to repeat a call whose answer is held, and to call an action once the handle
 
 **Model-side behaviour in flow-a, not fixed.** (1) The 35B called `thread.read` for both threads and
 `contact.search` again in one parallel batch on turn 3 instead of forwarding, and never passed the held
-`#3` contact as `to`. (2) It tried `quire_read` on the thread handles #1 and #2 (things, not text) right
+`#3` contact as `to`. (2) It tried `bardo_read` on the thread handles #1 and #2 (things, not text) right
 after reading them, although the rules say to read a thing with its app's action first. (3) The first
 turns issue three or four calls at once, so the loop guard sees repeats it would not see one at a time.
 (4) The `forward` call was never attempted: the policy the writer wrote ("ceiling read") would have refused
@@ -1862,9 +1862,9 @@ The `SessionLog` seam, and what docket-memory needs from almanac in S1 (lane ses
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-porter, almanac, stoker and quire are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
+porter, almanac, stoker and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
 `fuzz/Cargo.toml`): a plain `git clone` builds with no sibling. The URLs are spelled as porter and almanac spell
-them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match porter's pins of stoker and quire,
+them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match porter's pins of stoker and Bardo,
 so one copy of `cua-action` and `model-*` is in the graph.
 
 - **Override for cross-repo work**: a `[patch."https://github.com/PoHsuanLai/<repo>"]` table with `path` lines
@@ -2028,7 +2028,7 @@ the forward, was not affected.
 
 The step line now carries the instruction, rendered in one place (`docket-planner/src/unconfirmed.rs`,
 a typed cause per `ConfirmEnd`): `not confirmed: the person declined this; do not retry it or work around
-it; finish, saying what was not done, or ask the person with quire_ask`. An expiry reads "the person did
+it; finish, saying what was not done, or ask the person with bardo_ask`. An expiry reads "the person did
 not answer in time" with the same instruction; a dismissal reads as a decline, a withdrawn question as
 withdrawn. `RULES` gained one matching sentence. The line still starts `not confirmed`, so the
 `flow-a-refused` cassette (which matches `mail.message.forward not confirmed`) holds unchanged.
@@ -2337,7 +2337,7 @@ process with a real host.
   `SessionLog`. The router lists and pages only the sessions the caller `may_restore`; anything else is
   answered as a session the log does not hold. `SessionOpen.cwd` (`Workspace` moved to docket-core)
   carries the editor's directory into the `Opened` entry, which S3's load and list read.
-- **`docket-acp-bin`**: the process. It owns the bus name `org.quire.Acp`; `dist/intentd.toml` lists
+- **`docket-acp-bin`**: the process. It owns the bus name `org.bardo.Acp`; `dist/intentd.toml` lists
   it as an `editor` and a `companion`. One identity plays both because the router's role table gives
   the editor open/turn/close/stored and the companion everything the planner calls. Deployment
   consequence to read: whoever may own that name on the session bus gets the companion's
@@ -2369,7 +2369,7 @@ turn's updates and the app's calls equal in both.
   told "waiting on the desktop" (the S3 behaviour). `EditorDesk` is the in-process half: an
   `InAppAgent`-style router can route an editor session's sheets to it today. The bus half needs a
   `Confirm1` server for the acp process that intentd's confirmer prefers for editor sessions.
-- **quire-do / the shell: list, load, fork.** (`quire-do sessions` is built, see below.) The host side and the router member exist; a `quire-do
+- **bardo-do / the shell: list, load, fork.** (`bardo-do sessions` is built, see below.) The host side and the router member exist; a `bardo-do
   sessions` needs the `cli` role on `Session.Stored` and a renderer. Not built.
 - **A cancel does not interrupt a call or a model in flight**, and the router's pending sheet for
   it is withdrawn only when the router drops the watch; the S3 note on withdrawing confirmations stands.
@@ -2392,10 +2392,10 @@ A sheet for a call in an editor's session no longer goes to sill.
   session record for the "Allow more for this task" sheet; absent for everything else and for a computer-use step.
   It is skipped when absent, so sill's wire is unchanged.
 - **intentd** (`SheetConfirmer`): a request with a route goes to `Confirm1` on the bus name `client`, trusted only
-  while its owner plays the `editor` role (which, for `org.quire.Acp`, is the `AcpGate` of the previous section).
+  while its owner plays the `editor` role (which, for `org.bardo.Acp`, is the `AcpGate` of the previous section).
   The surface of every open sheet is remembered by id so a withdrawal finds it.
 - **docket-acp-bin** serves `Confirm1` at the usual path under its own name (`ConfirmObject` over an
-  `EditorDesk`); the answer is the usual `Response` signal. Only the owner of `org.quire.Intents1` may ask or
+  `EditorDesk`); the answer is the usual `Response` signal. Only the owner of `org.bardo.Intents1` may ask or
   withdraw. The receipt is minted in the acp process (`SheetConfirmer` of docket-inapp, input proof
   `SheetFallback`): the same trust as an in-app sheet, and the same as sill's, whose receipt also arrives over
   the bus.
@@ -2481,9 +2481,9 @@ An editor's typed turn is the person's words, so the task policy derives from it
 - Not done: companiond's task model (`TaskRuntime`, `Companiond::ask`) is not replaced by `NativeHost`; the front
   pointer still moves on `Companion::open`. The launcher's side conversations keep their own table.
 
-## quire-do sessions (S2, second part)
+## bardo-do sessions (S2, second part)
 
-`quire-do sessions` (list), `sessions load <id>` and `sessions fork <id> [--at <row>]`, all through
+`bardo-do sessions` (list), `sessions load <id>` and `sessions fork <id> [--at <row>]`, all through
 `Session.Stored`, in `docket-cli/src/sessions.rs`. Text is one line per session (`<id>  <space>  <agent>  <n> turns
 <open|paused|closed|unreadable>`) or the turns and calls of one; `--json` (or a pipe) is `{vocab, sessions}` for the
 list, the `docket-session` export document for `load`, and `{vocab, forked, session, at}` for a fork.
@@ -2492,7 +2492,7 @@ list, the `docket-session` export document for `load`, and `{vocab, forked, sess
   opening (`may_restore_opening`): a terminal brings back the sessions **its own app opened** and the conversations
   **a terminal started through the companion** (R9, below). Any other session is not listed, and `Rows` or `Fork` on
   it is answered as a session the log does not hold.
-- **R9: `quire-do ask` conversations are visible to `quire-do sessions`.** `quire-do ask` asks companiond to open the
+- **R9: `bardo-do ask` conversations are visible to `bardo-do sessions`.** `bardo-do ask` asks companiond to open the
   session (`companion.open`), so the router's opener is companiond and the old opener rule showed the cli nothing.
   Now `Opening::started_from: Option<StartedFrom>` (serde-defaulted and skipped when none, so old logs read as none;
   `StartedFrom::Terminal(TerminalScope)`, in `docket-core::started`) records the terminal. `TerminalScope` is the
@@ -2508,9 +2508,9 @@ list, the `docket-session` export document for `load`, and `{vocab, forked, sess
   Not visible to the cli: a companion session the launcher opened, an editor's, an app's, and any log written before
   the field (it reads as none); each gets the unknown-session refusal, as restore does. An editor, field, app or
   mcp client is unchanged (only its own app's sessions).
-- **Cost to know.** A terminal can now read the stored turns and calls of every `quire-do ask` conversation, whichever
+- **Cost to know.** A terminal can now read the stored turns and calls of every `bardo-do ask` conversation, whichever
   terminal wrote them. They are the person's own, and the terminal already could ask the companion as the person.
-  Sessions started before this change stay invisible to `quire-do sessions`.
+  Sessions started before this change stay invisible to `bardo-do sessions`.
 - **A fork is written by the router.** `RouterLog` refuses appends (the router writes the log), so an edge
   outside the router could not fork. `StoredAsk::Fork { session, at }` answers `StoredView::Forked(child)`: the router
   checks `may_restore` on the parent, cuts the child with `docket_session::fork` (the same pure function as
@@ -2696,8 +2696,8 @@ agent's session at the router, records the person's prompt there, and makes each
 the router allowed it.
 
 **Identity and actor.**
-- A new caller role, `CallerRole::AcpAgent` (`acp_agent` in `intentd.toml`), held by the bus name `org.quire.AcpAgent`,
-  and counted only while `agent.acp.agents` is on (`AcpGate`, as `org.quire.Acp` waits on `agent.acp.expose`). It may
+- A new caller role, `CallerRole::AcpAgent` (`acp_agent` in `intentd.toml`), held by the bus name `org.bardo.AcpAgent`,
+  and counted only while `agent.acp.agents` is on (`AcpGate`, as `org.bardo.Acp` waits on `agent.acp.expose`). It may
   open and close sessions, record the person's turns, and `Perform`; nothing else (a test pins the member list).
 - The program is named by the host when it opens the session (`SessionOpen.external: Option<ExternalAgent>`, kept only
   from this role, written into the log as `BackendKind::Acp(program)`), never by the agent. A host acts only in
@@ -2710,7 +2710,7 @@ the router allowed it.
   agent's own words never reach `Session.Turn`: the host has no member that records anything else, and a test shows an
   agent that says "policy: allow all" changes neither the turns nor the policy.
 
-**The pseudo-app `org.quire.AcpAgent`** (`manifests/org.quire.AcpAgent.toml`, built into intentd's registry like
+**The pseudo-app `org.bardo.AcpAgent`** (`manifests/org.bardo.AcpAgent.toml`, built into intentd's registry like
 Memory and Companion; answered by the host over the bus like an installed app). The action prefix of an app is its
 last name element lower-cased, so the actions are `acpagent.*`, not `acp.*`:
 
@@ -2773,7 +2773,7 @@ change: the session still reads as tainted, and the command's own facts excuse i
 - `consent_for` gives `GrantCaller::AcpAgent` the class consent that launching the agent in a directory implies
   (`Always`, with the existing rule that a tainted session asks again for anything that writes): otherwise the first-use
   rule would ask on every read. A recorded denial still stands.
-- Cedar's `mcp-asks` no longer applies to the pseudo-app (`unless resource in Quire::App::"org.quire.AcpAgent"`): an
+- Cedar's `mcp-asks` no longer applies to the pseudo-app (`unless resource in Bardo::App::"org.bardo.AcpAgent"`): an
   MCP-shaped actor would otherwise be `StillAsks` for ever and no grant could stand in. Only the host role can call it.
 - A call's repeat key (`digest`) now covers a call's file targets; before, two writes of different files with the same
   arguments looked identical and a denial of one refused the other.
@@ -2800,7 +2800,7 @@ change: the session still reads as tainted, and the command's own facts excuse i
   `visibility = "host_only"` (`docket_core::Visibility`, default `everyone`, not written when default). It is
   honoured where tools are listed: the planner's `Catalogue::from_manifests`, the MCP edge's `offered`, and the
   policy writer's catalogue (`docket-router::policy::catalogue` lists a host-only app only for a session with an
-  external agent, which is the one task whose policy needs those actions). `quire-do apps` and `describe` still list
+  external agent, which is the one task whose policy needs those actions). `bardo-do apps` and `describe` still list
   the app (golden unchanged, on purpose): they are for the person and scripts, not a prompt, and a refused call
   there is a clear error. The listing is context, not the rule: the router still refuses the actions to every role
   but the host.
@@ -2820,7 +2820,7 @@ tests used them; the table's cases are covered by `standing.rs` and the router's
 **Sheets, and the hosting shape.** The hosting shape is a sibling of `NativeHost`: `AgentHost<X, D>` over one
 `AcpBackend`, a `Court` (the router) and a `SheetDesk`. `docket-agent` is its process (`docket-acp-bin`, binary
 `docket-agent`; it moved out of `docket-launch`, whose boundary may not reach Cedar through `docket-inapp`'s sheet). It owns
-`org.quire.AcpAgent`, serves the pseudo-app's `IntentProvider1` (intentd is the only caller), and talks to intentd as
+`org.bardo.AcpAgent`, serves the pseudo-app's `IntentProvider1` (intentd is the only caller), and talks to intentd as
 `acp_agent`. By default the session asks for no route, so the router's sheet is the desktop's, through intentd's
 confirmer (sill's `Confirm1`), and the host sees nothing of it. With `--tty` (`Fallback::Terminal`) the host opens the
 session with `SheetSurface::Host`; the router sets `ConfirmRequest.editor` (the field name stays; it names whoever shows
@@ -2943,7 +2943,7 @@ The S4 hostile corpus ran unchanged and every case still ends safely.
 
 **Owner-run check for Claude Code, updated since S4.**
 1. As S4 (adapter installed, signed in). `~/.config/docket/settings.toml`: `[agent.acp]` `agents = "on"`.
-2. `intentd.toml` must list `org.quire.AcpAgent` under `acp_agent` (the shipped `dist/intentd.toml` does; a replaced file
+2. `intentd.toml` must list `org.bardo.AcpAgent` under `acp_agent` (the shipped `dist/intentd.toml` does; a replaced file
    needs the line). The setting is read live; intentd need not restart.
 3. `~/.config/docket/agents.toml` as S4. Build with `cargo build -p agent-acp-bin` (the binary is now `docket-agent`
    of `docket-acp-bin`; `docket-net-forward` still sits beside it).
@@ -2954,7 +2954,7 @@ The S4 hostile corpus ran unchanged and every case still ends safely.
 6. `--tty` only as a fallback if sill is not up: the sheets come to the terminal as before.
 7. Things to try: a write outside the project is refused with no sheet; read a file then ask it to run a command that
    uses a path or token from it (asks, no "always"), or `curl` (asks, never "always"), or `cargo test` (asks, "always"
-   offered); allow "always" for an edit in `src/`, edit again (no sheet, `quire-do` audit shows `StandingUsed`),
+   offered); allow "always" for an edit in `src/`, edit again (no sheet, `bardo-do` audit shows `StandingUsed`),
    revoke it in Settings, edit again (asks).
 
 **Deferred.** Resuming an agent session through the host (the router restores it, but `AgentHost::resume` is not
@@ -2976,8 +2976,8 @@ that connect to it; it also grew `--host-socket PATH`, the bridge (`BoundEdge`).
 host's side (`ToolsEdge`, `ToolsOffer`, `EdgeBind`). There is one mapping: the MCP edge and the agent's edge list the
 same tools because they call the same function.
 
-**The chain.** `session/new` carries one stdio server, `quire`: command = the `actions-mcp` program beside
-`docket-agent`, args `--host-socket <socket>`, env `QUIRE_EDGE_TOKEN=<token>`. The agent starts it itself, inside its
+**The chain.** `session/new` carries one stdio server, `bardo`: command = the `actions-mcp` program beside
+`docket-agent`, args `--host-socket <socket>`, env `BARDO_EDGE_TOKEN=<token>`. The agent starts it itself, inside its
 sandbox, where the launcher has bound the bridge program (read only) and the socket file (read and write); the bridge
 forwards `tools/list` and `tools/call` as one line each over the socket. The host answers: it lists
 `offered(registry)` (only `AgentReach::Offered`, never a host-only app, so never `acpagent.*`), and for a call it reads
@@ -3035,7 +3035,7 @@ behaviour) and an `actions-mcp` binary sits beside it.
 
 **What changed in the router.** (1) `may_make` above. (2) `consent_for` gave `GrantCaller::AcpAgent` the class consent
 that launching the agent in a directory implies (`Always`, for every class of every app). That is right for the
-pseudo-app and wrong for the person's mail: it applies now only to `org.quire.AcpAgent`; an action of another app asks the
+pseudo-app and wrong for the person's mail: it applies now only to `org.bardo.AcpAgent`; an action of another app asks the
 first time, as a planner's does. (3) `OpenAgent` carries the Space (`docket-agent --space NAME`, default `desktop` as
 before): a session in `desktop` reaches nothing of `work`; the harness opens its agent in `work`.
 
@@ -3055,7 +3055,7 @@ tool result is untrusted, the session is tainted, and a later send asks and offe
 - `docket-agent` still opens its session in the `desktop` Space unless `--space` says otherwise; which Space the shell's
   current one is, is not known to it.
 
-**quire_ask and quire_finish.** They are the planner's protocol, not actions. For an agent: finishing is the turn
+**bardo_ask and bardo_finish.** They are the planner's protocol, not actions. For an agent: finishing is the turn
 ending (`end_turn` is `Done`), as it already was. Asking the person something is the agent ending its turn with the
 question as its last words; the person's answer is the next turn, which re-derives the task policy from the person's
 words. A decision to run something is `session/request_permission` (the router's sheet) or a tool call that the router
@@ -3088,7 +3088,7 @@ answering the sheets), the same flows (`flows.rs`), the same outcome checks, the
 `--engine` still says where the policy writer and the reviewers get their answers (`scripted` uses `agent_cassette`: Mail
 up to outbound, the host's app up to read, the judges pass). The agent is hosted exactly as `docket-agent` hosts it
 (`docket_acp_bin::agent::host`, extracted from `run`): bubblewrap, `AgentSpawn`, the pseudo-app served on the bus under
-`org.quire.AcpAgent`, the per-session tool edge with the bridge program `accept-actions-mcp`. The one difference is the
+`org.bardo.AcpAgent`, the per-session tool edge with the bridge program `accept-actions-mcp`. The one difference is the
 accounts seam: the private bus has no accountd, so the host runs over `docket_launch::LoginOnly` (the `login` route
 works, every other route fails to start rather than run without what it was promised).
 
@@ -3120,7 +3120,7 @@ hold none of it).
 
 Two things were found in a real run of Claude Code over ACP (adapter `@agentclientprotocol/claude-agent-acp`, which runs
 the Claude Code CLI through the Claude Agent SDK) with `docket-live --agent acp`. The per-session MCP edge worked: the
-agent saw the `quire` server's tools and called mail actions through the router.
+agent saw the `bardo` server's tools and called mail actions through the router.
 
 1. **Double gating.** Before each MCP tool call Claude Code asks its own permission (`session/request_permission`). The host
    rules that as `acpagent.other` (Destructive, "Allow something unclassified", never grantable), so every desktop action
@@ -3149,7 +3149,7 @@ directory, the bind and the refusal of a place under `state` or the cwd are gone
 **What a run with the preset has.**
 
 - `session/new` carries `_meta = {"claudeCode": {"options": {"settings": {...}}}}` with `disableClaudeAiConnectors: true`,
-  `syncClaudeAiSkills: false`, `syncClaudeAiPlugins: false` and `permissions.allow: ["mcp__quire"]` (all tools of the server
+  `syncClaudeAiSkills: false`, `syncClaudeAiPlugins: false` and `permissions.allow: ["mcp__bardo"]` (all tools of the server
   named by `SERVER_NAME` in `docket-acp` `client/edge/offer.rs`, derived from that constant; never a wildcard over other
   servers). The client only carries it (`Spawned.meta`, `rpc::session_new`); with no preset there is no `_meta`.
 - The environment: `CLAUDE_CODE_DISABLE_CLAUDE_MDS=1`, `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1`,
@@ -3172,7 +3172,7 @@ holds, and that nothing of the preset is a file or a bind; they never start Clau
   would restrict servers and hooks do nothing at the flag tier. The way to a closed run is a scratch `state` (the harness's).
 - **A managed layer.** Restricting servers and hooks needs Claude Code's real managed settings (`/etc/claude-code/`, root-owned,
   outside docket's per-run reach), or the adapter passing `strictMcpConfig`. Open.
-- The pre-allow covers every `quire` tool, including ones that act (send, forward): they are still router calls with the
+- The pre-allow covers every `bardo` tool, including ones that act (send, forward): they are still router calls with the
   router's sheets; Claude's prompt was the duplicate, not the gate.
 
 ## agent-read-always: an external agent's "always" on a read-only action
@@ -3284,22 +3284,22 @@ code is the only signal for "authentication required"; an agent that answers a d
 
 **Observed (docket-live smoke, agy 1.3.0, signed in).** agy has its own tools (`view_file`, `run_command`,
 `call_mcp_tool`, `list_resources`, `invoke_subagent`, `client_view_file`) and sends `session/request_permission` before
-each one, including before every call to the per-session `quire` server. The host mapped that to `acpagent.other`
+each one, including before every call to the per-session `bardo` server. The host mapped that to `acpagent.other`
 (Destructive) and raised a sheet; then the real call reached the edge and was gated again: two sheets for one action.
 
 **The file rule is inert under ACP.** The first answer was a read-only `settings.json` overlay with
-`permissions.allow = ["mcp(quire/*)"]` (`profile = "agy"`). Measured live against agy 1.3.0: under ACP agy still asked for
-every `quire` call. The preset, `docket_launch::agy`, `Profile::Agy` and `--acp-profile agy` are removed. The
+`permissions.allow = ["mcp(bardo/*)"]` (`profile = "agy"`). Measured live against agy 1.3.0: under ACP agy still asked for
+every `bardo` call. The preset, `docket_launch::agy`, `Profile::Agy` and `--acp-profile agy` are removed. The
 `auth.type` line it also wrote is not needed: sign-in is the client's `authenticate` (see agy-sign-in), which opens the
 session without any file. `docket_shell::Overlay` stays, unused here, for other uses.
 
 **The rule now (`docket_acp::client`, `own_edge` and `handlers`).** A permission request is answered with the agent's
 `allow_once` option, with no sheet and no router ruling, when all of this holds:
 - `toolCall.kind` is `other` or `fetch`, and the request names no path (`locations` empty);
-- `toolCall._meta.mcp.server` equals `SERVER_NAME` (`quire`), `_meta.is_mcp_tool_call` is true when present, and
+- `toolCall._meta.mcp.server` equals `SERVER_NAME` (`bardo`), `_meta.is_mcp_tool_call` is true when present, and
   `_meta.mcp.tool` is a tool the edge offers in this session (`actions_tools::find` on the registry, the same lookup the
   edge's `tools/call` does);
-- or, for agy's resource listing: no `_meta.mcp`, kind `other`, and `rawInput` is exactly `{"ServerName": "quire"}`.
+- or, for agy's resource listing: no `_meta.mcp`, kind `other`, and `rawInput` is exactly `{"ServerName": "bardo"}`.
 
 The answer is never `allow_always`: with no `allow_once` option offered the request takes the usual path. The event is
 recorded as a started and ended step `acpagent.reported.other` (effect read: the answer changed nothing). Everything else
@@ -3311,10 +3311,10 @@ carries more than the server name (a `Uri`, say) goes to the router and the shee
 - Allowing the request only lets the call go on to our edge, and the edge gates it as any call: the token, the offered
   tool list, the router's ruling and the person's sheet (tested: a refused edge call after the door still fails, one sheet).
 - A request that lies about the server either goes on to our edge (gated) or to a server we never offered. What bounds
-  that: `session/new` offers agy exactly one server, `quire`; agy's sandbox holds only the entry's `state` and the
+  that: `session/new` offers agy exactly one server, `bardo`; agy's sandbox holds only the entry's `state` and the
   program's own directory, so a server it knows of besides ours can only come from the person's own agy settings in
-  `state`, and a request naming such a server is not `quire`, so it is not recognised and asks. The one lie that is
-  recognised, "server quire, a tool we offered", is dispatched to our edge by the runtime that sent it.
+  `state`, and a request naming such a server is not `bardo`, so it is not recognised and asks. The one lie that is
+  recognised, "server Bardo, a tool we offered", is dispatched to our edge by the runtime that sent it.
 - Listing resources: the edge serves tools only, so listing its resources reveals nothing beyond what `tools/list`
   already shows the agent. The shape is narrow (one key, our name), so `read_resource`-like requests with a `Uri` ask.
 - The `allow_once` answer is for this call only; docket holds no standing grant for it, and agy's own memory of an
@@ -3328,14 +3328,14 @@ same; with only `allow_always` offered it is not chosen and the request asks; an
 server, a missing `_meta` and kinds `execute` and `edit` all ask; our resource listing is answered, a foreign one or one
 with a `Uri` asks; a refused edge call after the door still fails with exactly one sheet. Unit tests pin the claim.
 
-**Claude Code.** `profile = "claude-code"` still sends `permissions.allow = ["mcp__quire"]` in `session/new` meta. The
+**Claude Code.** `profile = "claude-code"` still sends `permissions.allow = ["mcp__bardo"]` in `session/new` meta. The
 host rule might make it unnecessary if Claude Code's adapter sends `_meta.mcp` the way agy does, but this is not
 known: the adapter may not send it, and then its request would ask as `acpagent.other`. Left in place; check a live
 Claude Code request before removing it.
 
 **Open.** (1) The wire sample we had showed options without `name`; the schema requires it, so a real agy that omits it
 would fail to parse (`Bad`), not reach the rule. (2) Not run against a real agy since the change. (3) The two
-`quire_do_ask` terminal tests in docket-accept failed with a bus AccessDenied in runs outside the jailed gate; they
+`bardo_do_ask` terminal tests in docket-accept failed with a bus AccessDenied in runs outside the jailed gate; they
 passed inside it.
 
 ## harness-failclosed: a harness fault no longer reads as the router's ruling
@@ -3428,10 +3428,10 @@ by the large model on fatcat; the corpus must grow roughly tenfold before any pr
 
 ## readfix (2026-10-09): harness faults behind live run 5 (Qwen3.5-35B, flow-a)
 
-Evidence: `/tmp/docket-live.6dtrM0/out/smoke/flow-a.trace.txt`. The model found threads #1 #2 and contact #5, then spent the turn on `quire_read` calls that could not help and never called `mail.message.forward`; the loop guard finally asked the person. Four harness faults, each fixed in general terms:
+Evidence: `/tmp/docket-live.6dtrM0/out/smoke/flow-a.trace.txt`. The model found threads #1 #2 and contact #5, then spent the turn on `bardo_read` calls that could not help and never called `mail.message.forward`; the loop guard finally asked the person. Four harness faults, each fixed in general terms:
 
 - **A choice option written as words was refused with a message that repeated the shape it had sent.** The schema said "v: list of option strings"; `ChoiceId` is an id (`[a-z0-9][a-z0-9_.-]*`), so `"Lisbon receipts"` failed with the generic `"want" is not a shape of the answer` (twice in the trace). Now the schema says option ids, gives them a `pattern`, and the planner reads free-text options as the id they name (`ChoiceId::slug`: lowercase, spaces and `-_.` as `_`, other characters dropped). An option that names no id, or two that name the same one, is refused with `ReadFault::WantOption` / `WantClash` naming the option and the rule. The choice set stays closed.
-- **A text answer comes back as a handle and nothing said so.** `session_read` returns any answer holding text (text, or a record or list with text) as a handle, whatever its label; choice, integer, date, datetime and entities-among come back plain. Trace: `companion.read` returned #6 and #7 (44 characters each), which the model asked for twice. RULES, the `quire_read` description and the `want` schema now say so and point at choice, integer, date or datetime. `Handles::reveal` is unchanged.
+- **A text answer comes back as a handle and nothing said so.** `session_read` returns any answer holding text (text, or a record or list with text) as a handle, whatever its label; choice, integer, date, datetime and entities-among come back plain. Trace: `companion.read` returned #6 and #7 (44 characters each), which the model asked for twice. RULES, the `bardo_read` description and the `want` schema now say so and point at choice, integer, date or datetime. `Handles::reveal` is unchanged.
 - **A bare `#5 a mail.contact` did not say what takes it.** Handle cards of things now add `use as "to" in mail.message.forward, mail.message.send` (and `as target in ...`), from the offered action cards only; list results show their count.
 - **A held repeat restated nothing.** `mail.contact.search not run: you already called it ... got the same answer` told the model only to go elsewhere. When every earlier run of the call returned the same handles, the line now restates them and where they go next; a further repeat still ends in a question to the person (guard unchanged: one hold, then stop).
 
@@ -3439,19 +3439,19 @@ Still open: whether the stronger-model run on the same harness completes flow-a 
 
 ## texthandle (2026-10-09): what a text handle is for (live run 6, Qwen3.5-35B, flow-c)
 
-Evidence: `/tmp/docket-live.VGYlcT/out/smoke/flow-c.trace.txt` (the thread text in it is the deliberate injection fixture, data only). Asked to "summarise this thread and reply", the model ran `quire_read` summarise many times, got text handles it cannot read, and never put the summary into `mail.message.send`, whose `body` takes a handle. It also wrote `"want": {"kind": "text"}` and `{"kind":"text","v":{}}`, both refused with the generic `ReadFault::Want`.
+Evidence: `/tmp/docket-live.VGYlcT/out/smoke/flow-c.trace.txt` (the thread text in it is the deliberate injection fixture, data only). Asked to "summarise this thread and reply", the model ran `bardo_read` summarise many times, got text handles it cannot read, and never put the summary into `mail.message.send`, whose `body` takes a handle. It also wrote `"want": {"kind": "text"}` and `{"kind":"text","v":{}}`, both refused with the generic `ReadFault::Want`.
 
 - **A text handle now says where text goes.** `- #7 text from {...} (120 characters) — use as "body" in mail.message.send; as "subject" in mail.message.send`. Same 6-action cut and wording as the thing handles (`accepts::text_used_as`), from the action cards alone. A parameter is listed when its schema is a text with a place for `{"handle": n}` (the `anyOf [string with maxLength, handle]` that `tool_schema` writes for `ParamType::Text`; a file or a url has no `maxLength`, a dynamic parameter has no handle form) and the handle's character count fits its `maxLength`, which is what the router's `fits` check after label resolution would otherwise refuse. A text handle is never listed for `target` (the router refuses a text handle there). Nothing is said when no action in the view has such a parameter. The reader's answer handle is the same `HandleShape::Text` and reads the same.
 - **Not decided here, and so not advertised:** the declared type does not carry the parameter's sink (Body, Recipient, Destination, Inert), and whether the router lets a call through with an untrusted-labelled text in a given sink (taint, the sink-integrity facts in `labels::sink_integrity`, the policy and the person's confirmation) is a runtime ruling. The line therefore says where the type fits, not that the call will pass without a sheet. A recipient-sink text parameter would be listed too; the router, not the card, is where that is refused or confirmed.
 - **A text want without a length is read.** `{"kind":"text"}`, `{"kind":"text","v":{}}` and `v: null`, at any depth in a record or list, get `max` 2000 (`want::DEFAULT_TEXT_MAX`, named in the `want` schema). A `v` that is present but not `{"max": N}` with N a whole number of 1 or more is refused with the new `ReadFault::WantText`: `text needs v: {"max": N}, with N the most characters ..., such as {"kind": "text", "v": {"max": 500}}; leave v out for the default`. `ReadFault::Want` stays for a want that is not a shape at all. The new variant is a wire addition (`docket-core` `ReadFault`).
-- **Showing the person a summary without reading it: no path exists; an interface ask, nothing built.** `AnswerBody::Text` lines are `Reveal<String>` and the wire says "handles are resolved for the screen by `Session.Display`", but the planner has no way to put a handle in them: `quire_finish` takes no arguments, `ModelOutput::Say(String)` and the task's `said` are plain strings (`docket-tasks` `AnswerBody::Text { lines: said.map(Reveal::Plain) }`), and a model cannot write the text because it cannot read the handle. Interface ask (companiond / docket-tasks / planner): let `quire_finish` (or a `quire_say`) take `{"show": [handle, ...]}`, which the task puts in the answer as `Reveal::Handle` lines for the shell to render as quarantined text through `Session.Display`. Until then a summary reaches the person only by being sent (as a body argument), which is what the new line points at. RULES and the tool descriptions are left as they were.
+- **Showing the person a summary without reading it: no path exists; an interface ask, nothing built.** `AnswerBody::Text` lines are `Reveal<String>` and the wire says "handles are resolved for the screen by `Session.Display`", but the planner has no way to put a handle in them: `bardo_finish` takes no arguments, `ModelOutput::Say(String)` and the task's `said` are plain strings (`docket-tasks` `AnswerBody::Text { lines: said.map(Reveal::Plain) }`), and a model cannot write the text because it cannot read the handle. Interface ask (companiond / docket-tasks / planner): let `bardo_finish` (or a `bardo_say`) take `{"show": [handle, ...]}`, which the task puts in the answer as `Reveal::Handle` lines for the shell to render as quarantined text through `Session.Display`. Until then a summary reaches the person only by being sent (as a body argument), which is what the new line points at. RULES and the tool descriptions are left as they were.
 
 ## neutral (2026-10-10): the harness carries no app's shape
 
 Owner principle: the agent stack is a general-purpose harness; the mail app is only a test app. Nothing a model is shown, and nothing the harness judges, should be there because of one app.
 
-- **Wording.** The planner's `RULES`, the `quire_read` description and `want` schema, the read faults (`ReadFault::Want`, `WantOption`) and the docket-kit and CLI examples no longer use mail as the example. `RULES`: "A thing a tool returns (a mail thread, a contact)" became "A thing a tool returns (an item or record an app holds)". Choice examples: `{"kind":"choice","v":["forward","skip"]}` became `["yes","no"]`; the option-id example `"lisbon_receipts"` became `"option_a"`. The policy writer, reviewer and reader prompts already named no app (checked: `INSTRUCTION` in docket-models, action-review, readerd); a data class or window class that names mail (`DataClass::Mail`, `MailCompose`, exec_reach `sendmail`) is a generic category and stays. RULES is still one constant, byte-stable. Tests that pinned the old text were updated; none of the goldens did.
-- **Two more apps in the live harness.** Notes (`org.quire.Notes`: search, read, archive, create; no outbound) and files (`org.quire.Files`: search, read, share, create; the share is outbound to a typed address). They are served by `things::AcceptThings`, a provider driven by the manifest alone, so adding an app is a manifest and a few things. Eight flows (four patterns on each) with scripted cassettes: see `docs/live-eval.md`, "The flows". The judgement is `live::pattern` (a `Kit` per app), with a table test over both apps. `dev/live-smoke.sh --engine scripted`: 12 flows and the 31 hostile-model planner cases, 43 PASS.
+- **Wording.** The planner's `RULES`, the `bardo_read` description and `want` schema, the read faults (`ReadFault::Want`, `WantOption`) and the docket-kit and CLI examples no longer use mail as the example. `RULES`: "A thing a tool returns (a mail thread, a contact)" became "A thing a tool returns (an item or record an app holds)". Choice examples: `{"kind":"choice","v":["forward","skip"]}` became `["yes","no"]`; the option-id example `"lisbon_receipts"` became `"option_a"`. The policy writer, reviewer and reader prompts already named no app (checked: `INSTRUCTION` in docket-models, action-review, readerd); a data class or window class that names mail (`DataClass::Mail`, `MailCompose`, exec_reach `sendmail`) is a generic category and stays. RULES is still one constant, byte-stable. Tests that pinned the old text were updated; none of the goldens did.
+- **Two more apps in the live harness.** Notes (`org.bardo.Notes`: search, read, archive, create; no outbound) and files (`org.bardo.Files`: search, read, share, create; the share is outbound to a typed address). They are served by `things::AcceptThings`, a provider driven by the manifest alone, so adding an app is a manifest and a few things. Eight flows (four patterns on each) with scripted cassettes: see `docs/live-eval.md`, "The flows". The judgement is `live::pattern` (a `Kit` per app), with a table test over both apps. `dev/live-smoke.sh --engine scripted`: 12 flows and the 31 hostile-model planner cases, 43 PASS.
 - **Observed on the way, not a fault.** An undoable write (archive, a new note) raises a sheet when the planner has read untrusted content in the run (`taint: read_untrusted`, `offer: once_only`), not by its effect class alone, so "every held change had a sheet" holds for notes too. A cassette's closing line for a refusal cannot name the action: the step reads `<app>.<action> #1 #2 not confirmed: the person declined this`, so it matches on `not confirmed: the person declined`.
 - **Left as it was.** The mail flows keep their own judging for what is mail's (the two Lisbon threads to accounting; a reply refused); the hostile-model cases, the ACP fake agent and the eval corpora are still mail-shaped test data. `mail_manifest` stays the fixture of the router tests. The ACP agent cassettes play the mail flows only.
 
@@ -3466,21 +3466,21 @@ Evidence: `/tmp/docket-live.xYM2Fo/out/smoke/flow-c.run*of5.trace.txt` (Kimi K3,
 - Manifest: `[[entities.relations]]` after an entity, with `name`, `label`, `to` (an entity kind, checked by the registry like an action's kinds), `many = "one" | "many"`, `trust = { kind = "third_party", v = { kind = "mail" } } | { kind = "app_authored" }`. Absent means none; nothing is written when none, so every older file and every older reader is unchanged.
 - `docket_core::validate` derives `<kind>.related` for a kind with relations: `on` one thing of the kind, a required `relation` choice (the relation names), `effect = read`, `classes` = the kind's data class plus the class of every kind a relation names that the same manifest declares, `reach = offered`, `result` = the first relation's kind. A manifest that declares an action of that name itself is refused (`RelatedDeclared`), a duplicate relation name is refused (`DuplicateRelation`), and a validated manifest written out and read back is the same manifest (the action is not added twice). The app implements it in `Perform` like any action: no new D-Bus method, no new provider trait method, so mailo and every other provider build unchanged and simply have no relations until they declare some.
 - Router: a derived related action goes through the whole call pipeline unchanged (arguments, consent for its classes, Cedar, the audit record, the history step, handles for the result). The only addition is `related_outcome` at the point the app's answer is accepted (`docket-router/src/related.rs`): the answer must be things of the relation's kind and no more than `many` allows (else the app's answer is refused as unsupported), and the label of the answer is the join of the app's own label, the relation's declared trust (an untrusted label from the relation's source and the target kind's class when `third_party`) and the label of every handle the call was made from.
-- Planner: the tool `quire_related {"of": {"handle": n} | {"app","kind","key"}, "relation": "<name>"}`, offered only while some action in the view resolves a relation (so an app set with no relations sees exactly the tools and prompt it saw before), listed before `quire_ask` so the last three tools are unchanged. `of` takes a handle or a thing named in full, as `target` does, because the context shows the open thread by id, not as a handle (the trace shows the focused thread is only ever a pair of text handles). It is read into a call of the kind's related action (origin companion) and goes to the router like any call; a handle that is not a thing, a kind with no such relation, or a missing field comes back as the same coarse "argument ... has the wrong type / is out of its range / was missing" line as any bad call. The per-kind action is not also a tool (one way, not two), and is not named as a place a thing can be used.
+- Planner: the tool `bardo_related {"of": {"handle": n} | {"app","kind","key"}, "relation": "<name>"}`, offered only while some action in the view resolves a relation (so an app set with no relations sees exactly the tools and prompt it saw before), listed before `bardo_ask` so the last three tools are unchanged. `of` takes a handle or a thing named in full, as `target` does, because the context shows the open thread by id, not as a handle (the trace shows the focused thread is only ever a pair of text handles). It is read into a call of the kind's related action (origin companion) and goes to the router like any call; a handle that is not a thing, a kind with no such relation, or a missing field comes back as the same coarse "argument ... has the wrong type / is out of its range / was missing" line as any bad call. The per-kind action is not also a tool (one way, not two), and is not named as a place a thing can be used.
 - Handle cards: `- #3 a mail.thread from {"kind":"mail"} ... — related: from (mail.contact)`; a many relation reads `attendees (several mail.contact)`. From the cards alone: `ActionCard` gained `related`, filled from the manifest (`#[serde(default, skip_serializing_if = "Vec::is_empty")]`).
 - Policy: nothing to add. The derived action is an ordinary Read of Mail's and Contacts' classes, so first use asks for both classes like any read; Cedar's "a read is final" rule covers it; the policy writer's catalogue lists it like any action (it needs no task-policy entry to run, and `AppUpTo(app, Read)` covers it). There is no built-in to declare in the Cedar schema or the writer's list: the tool is the planner's spelling of a call.
-- Fixtures: the fake mail (`mail.thread` `from`, third_party mail, the app deliberately labels its answer as its own so the tests show the floor), the fake files (`files.file` `owner` to a new `files.person`, app_authored), the accept-world mail provider and `dev/accept/fixtures/org.quire.Mail.toml` (`mail.thread` `from`). The accept fixture's `mail.message.send` now takes `to` as a `mail.contact` (it was text), which is what lets a sender handle go to the existing send action; no new mail action. A sender who is nobody's contact is the contact whose key is the address, so a quoted address still reaches the sheet.
+- Fixtures: the fake mail (`mail.thread` `from`, third_party mail, the app deliberately labels its answer as its own so the tests show the floor), the fake files (`files.file` `owner` to a new `files.person`, app_authored), the accept-world mail provider and `dev/accept/fixtures/org.bardo.Mail.toml` (`mail.thread` `from`). The accept fixture's `mail.message.send` now takes `to` as a `mail.contact` (it was text), which is what lets a sender handle go to the existing send action; no new mail action. A sender who is nobody's contact is the contact whose key is the address, so a quoted address still reaches the sheet.
 
 **Threat analysis.** The risk is laundering: an address written by an attacker reaching an outbound action as a trusted recipient. (1) The planner still never reads the address: it gets a handle and the sheet shows the address quoted as mail. (2) The label of the sender handle is untrusted whatever the app says: `third_party` relations are floored in the router, and every relation is joined with the labels of the handles it was found through, so a "trusted" relation cannot clean a thing found in untrusted content (tests: `what_a_relation_takes_from_somebody_elses_words_is_untrusted_whatever_the_app_says`, `a_thing_found_through_untrusted_content_is_untrusted_even_by_a_trusted_relation`). (3) The send meets the unchanged sink rules: `sink_integrity` reads the handle's label, so the recipient sink is untrusted, the task policy's `recipients` (which trace to the person) do not cover it, Cedar asks with `UntrustedSink(Recipient)` and the sheet is once-only with the address quoted (`a_recipient_chosen_through_a_relation_asks_like_any_untrusted_recipient`; accept gate `flow_c_a_reply_to_the_related_sender_is_a_handle_and_still_asks_quoted`). A reviewer is never consulted for it. (4) The resolve call is itself tainting: the untrusted answer is absorbed into the session like any untrusted result, so every later write in the session is `Tainted`. (5) An app that answers with the wrong kind or too many things is refused. (6) What this does not do: it cannot make the person's reply safe to send without asking, and does not try to; a sender who is also a saved contact is still named by the contact key but is still untrusted, because the choice of that contact came from the message. A relation the app declares `app_authored` over a trusted source gives a trusted handle (the owner of a file the person chose); that is the app's declaration and is as strong as its manifest.
 
 **Consumer impact.** All additive: `EntityDecl.relations` and `ActionCard.related` are `serde(default)` and skipped when empty; new public items `RelationDecl`, `Cardinality`, `RelationName`, `RELATION_ARG`, `related_name`, `Manifest::related_kind`, `EntityDecl::{related_action, relation}`, `ManifestError::{DuplicateRelation, RelatedDeclared}` (a new variant of an exhaustive enum: a consumer that matches `ManifestError` without a wildcard must add two arms), `TOOL_RELATED`. A consumer that builds `EntityDecl` or `ActionCard` as a struct literal (sill, anyview, cua, mailo) must add `relations: vec![]` / `related: vec![]` when it next moves its docket pin; none reads a field that changed. A manifest that validates now has more actions than it declares if it declares relations (`ValidManifest::manifest().actions`), and nothing else about validation changed for a manifest without them. No wire (`Intents1`, `IntentProvider1`, `Companion1`) change.
 
-**Open.** A provider's `Perform` of `<kind>.related` is still its own code; a helper that answers it from the declaration is possible when a second real app declares relations. `ResultShape::Entities` of the derived action names only the first relation's kind. `docket-inapp` and `docket-kit` use the same planner and so get the tool; neither has a relation to test with. The two `terminal::quire_do_ask_*` tests of docket-accept fail in this sandbox with `only the shell or a terminal speaks for the person` (intentd ignores `INTENTD_PROC_ROOT` without its test feature): an access error on the bus, in code this change does not touch; not checked against the base commit.
+**Open.** A provider's `Perform` of `<kind>.related` is still its own code; a helper that answers it from the declaration is possible when a second real app declares relations. `ResultShape::Entities` of the derived action names only the first relation's kind. `docket-inapp` and `docket-kit` use the same planner and so get the tool; neither has a relation to test with. The two `terminal::bardo_do_ask_*` tests of docket-accept fail in this sandbox with `only the shell or a terminal speaks for the person` (intentd ignores `INTENTD_PROC_ROOT` without its test feature): an access error on the bus, in code this change does not touch; not checked against the base commit.
 
 ## Memory comes to the planner; the reply is a tool; progress is not the answer
 
 - **Turn-start memory read.** On a turn the person typed (`LoopInput::Asked`), `docket-tasks` `prefetch` makes one `memory.recall` call for their words (one line, at most 500 characters) before the first planner call, with `Origin::TurnStart`. The router (`turn_start`) lets it past the first-use question only for that action, for the main planner, in a session whose newest turn came from a launcher, a field or an editor; anything else claiming the origin is refused (`Denied(NotAllowed)`), never asked. Budget, audit, taint and the reader-only rule apply as to any call. The planner's own `memory.recall` and `memory.facts` are unchanged and still ask. A refusal, an absent memory or a failed read leaves the turn as it was (nothing is recorded); `companion.budget.recall = 0` turns the read off (there is no separate memory switch yet).
-- **`quire_answer {text}`** (planner meta tool, listed before `quire_ask`): the reply, bounded and plain like any words, a call written as words is `CallInText`, empty or non-string is `Unreadable`. Words beside it are dropped. Words alone and `quire_finish` still end a turn.
+- **`bardo_answer {text}`** (planner meta tool, listed before `bardo_ask`): the reply, bounded and plain like any words, a call written as words is `CallInText`, empty or non-string is `Unreadable`. Words beside it are dropped. Words alone and `bardo_finish` still end a turn.
 - **Progress.** Words the planner says beside calls, a read or an unreadable reply are `TaskRuntime::progress` and `AnswerWire.progress` (additive, `serde(default)`, not written when empty); words that end the turn, or come with a question, are `TaskRuntime::said`, the body's text lines. A turn that finishes done with no reply of its own shows its last progress words as the body.
 - **Open.** Not wired: the footer's `sources` still lists nothing for a memory read; terminal turns get no read; `docket-kit`'s driver keeps all words in `said`.
 
@@ -3508,7 +3508,7 @@ Likely cause: a wait in the harness with no deadline, on a peer that stopped ans
 - Candidate not changed: `place(root, pid, ...)` puts a daemon in the fake proc root only after
   `spawn` returns. A daemon that reaches intentd or memoryd first (a loaded machine can delay the
   harness thread) is seen as an unknown caller. If that shows up as a retry loop in a daemon, place
-  the pid before exec as `quire_do` does.
+  the pid before exec as `bardo_do` does.
 
 Changed: `world::within(what, wait)` (60 s, `GIVE_UP`) wraps every bus call and wait in the harness
 and panics naming what it waited for; `try_history_until` has a total of four patiences; the
@@ -3547,25 +3547,25 @@ names the unit or app scope, the daemon's callers file names the role) and check
 owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
 
 - **Role map per daemon** (app, role, in `dist/<daemon>-callers.toml`):
-  - intentd (`intentd-callers.toml`): `org.quire.Shell` `sheet_host` = `sill.service` (the roles `launcher`, `confirm`,
-    `control` need it); `org.quire.Cua1` `cua` = `cuad.service` (`cua`); `org.quire.Companion1`, `org.quire.Reader1`,
-    `org.quire.ActionsMcp` `agent` = their `.service` units (`companion`, `reader`, `mcp`); `org.quire.Acp`,
-    `org.quire.AcpAgent` `agent` = the scopes `docket-acp.scope`, `docket-agent.scope` (`editor`, `acp_agent`). `intentd.toml`
+  - intentd (`intentd-callers.toml`): `org.bardo.Shell` `sheet_host` = `sill.service` (the roles `launcher`, `confirm`,
+    `control` need it); `org.bardo.Cua1` `cua` = `cuad.service` (`cua`); `org.bardo.Companion1`, `org.bardo.Reader1`,
+    `org.bardo.ActionsMcp` `agent` = their `.service` units (`companion`, `reader`, `mcp`); `org.bardo.Acp`,
+    `org.bardo.AcpAgent` `agent` = the scopes `docket-acp.scope`, `docket-agent.scope` (`editor`, `acp_agent`). `intentd.toml`
     still says which app plays which role; the table says which process is that app. `Peers::backs` is the bridge: sheet
     roles need `sheet_host`, `cua` and `compositor` their own, the daemons' and editors' roles any role above a plain app.
     An app scope or Flatpak app is a plain app; a terminal's child (nothing names it) is the cli role.
-  - readerd (`readerd-callers.toml`) and docket-acp's / docket-agent's `Confirm1` (`acp-callers.toml`): `org.quire.Intents`
+  - readerd (`readerd-callers.toml`) and docket-acp's / docket-agent's `Confirm1` (`acp-callers.toml`): `org.bardo.Intents`
     `agent` = `intentd.service`, the only caller (`INTENTD`). Provider apps (`docket_provider::serve_on`) answer the same
     one-row table, built in (`docket_dbus::callers::INTENTD_ONLY`); `serve_on_with` takes another `Identity`.
-  - companiond (`companiond-callers.toml`): `org.quire.Shell` `sheet_host` = `sill.service` speaks for the person; a
+  - companiond (`companiond-callers.toml`): `org.bardo.Shell` `sheet_host` = `sill.service` speaks for the person; a
     terminal's child that nothing names and that owns no name of its own may open, ask, close, cancel and read.
-  - voiced (`voiced-callers.toml`): `org.quire.Shell` `sheet_host` = `sill.service` begins; an app attaches as the app its
+  - voiced (`voiced-callers.toml`): `org.bardo.Shell` `sheet_host` = `sill.service` begins; an app attaches as the app its
     scope or Flatpak metadata names (it was the owner of the routed name).
 - **Addressing, not trust** (kept): `docket-client`'s `awaiting.rs` and `watch_bus.rs` resolve the owner of the service
   they just called to accept its `Response` signal only from the connection the call went to; `intentd`'s
   `Peers::owner_of` finds the unique name of `Confirm1` to send the sheet to, and then identifies the process behind it.
 - **Open**: the harness cannot give the shell a fixed role at memoryd (its system file path is fixed at
-  `/etc/quire/memory-callers.toml`, the user's file may not carry `sheet_host`); the harness already writes the system file
+  `/etc/bardo/memory-callers.toml`, the user's file may not carry `sheet_host`); the harness already writes the system file
   to `<scratch>/system/memory-callers.toml` and sets `MEMORYD_SYSTEM_CALLERS`, which memoryd honours under its fixture-`/proc` gate
   (almanac 448f615); docket-acp and docket-agent need to be started in `docket-acp.scope` / `docket-agent.scope`
   (`systemd-run --user --scope --unit=...`) and inferd's and memoryd's tables need rows for them; the MCP bridge an
@@ -3600,19 +3600,19 @@ owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
 
 - **Evidence** (live run, Qwen3.8-Flash-Next, a 125B mixture-of-experts model, the attack suite's clean "summarise this
   thread" case; 37 steps, 116 model calls). Turn 1 read the thread (`mail.thread.read {"handle":3}` returned #10); turn 2
-  asked the reader (`quire_read {"inputs":[10],"task":"summarise",...}`) and the reader answered; the view then showed
-  `- org.quire.Companion.companion.read done value #11` and `#11 text (63 characters), returned by companion.read`. The model
+  asked the reader (`bardo_read {"inputs":[10],"task":"summarise",...}`) and the reader answered; the view then showed
+  `- org.bardo.Companion.companion.read done value #11` and `#11 text (63 characters), returned by companion.read`. The model
   then read the thread again, asked the reader again with other sizes and shapes, and never called
-  `quire_finish {"show":[11]}`. The same successful `mail.thread.read #3` ran about 25 times with the same arguments: the
+  `bardo_finish {"show":[11]}`. The same successful `mail.thread.read #3` ran about 25 times with the same arguments: the
   guard held only calls whose last answer was empty, unchanged or refused, and a handle answer was "cannot be compared",
   so it was never stale. The attack suite counted the task done because `mail.thread.read` ran, though the person never
   saw a summary.
 - **Cause, three generic gaps.** (1) Nothing in the view said #11 was the answer to the person's question or that the task
-  could now end by showing it. (2) A read returning a handle was never held, and `quire_read` bypassed the guard.
+  could now end by showing it. (2) A read returning a handle was never held, and `bardo_read` bypassed the guard.
   (3) Scoring read "done" from the calls alone.
 - **Fix, through structure.** The reader's step is named for its task and the handles it read, and reads as the reader's
-  (`quire_read summarise #10 → #11 (the reader's answer, text)`); the handle list says what #11 is; a short
-  `Ready to show: #11 (quire_finish {"show":[11]})` line is driven by handle provenance and `PlannerView::shown`. The guard
+  (`bardo_read summarise #10 → #11 (the reader's answer, text)`); the handle list says what #11 is; a short
+  `Ready to show: #11 (bardo_finish {"show":[11]})` line is driven by handle provenance and `PlannerView::shown`. The guard
   holds a read-only call that returned a handle, and an identical reader ask, with `not run: you already hold its answer #n`;
   after three holds the turn ends saying "I could not finish this." (`Stuck::Answered`); writes are never held this way and a
   write makes held reads stale. Attack scoring: `user_needs` (answer or actions, derived from the user steps' effects) and
@@ -3676,8 +3676,8 @@ The planner's role (`RoleText`) is where the helper's role and the job's goal ar
 `porter-infer`. `docket-router`: `HELPER_POST_JOB`, `HELPER_PROPOSE`, `SessionRecord::helper`.
 `docket-planner`: `PlannerModel::{with_open_options, set_role}`, a "Helpers the person keeps"
 section. `docket-tasks`: `HelperDesk`, `Companion::{with_desk, set_desk, open_job, run_job}`,
-`Change::HelpersChanged`. `docket-dbus`: `org.quire.Companion1.Helpers` (proxy, skeleton, the
-checked-in XML). `manifests/org.quire.Companion.toml`: `companion.helper.post_job`,
+`Change::HelpersChanged`. `docket-dbus`: `org.bardo.Companion1.Helpers` (proxy, skeleton, the
+checked-in XML). `manifests/org.bardo.Companion.toml`: `companion.helper.post_job`,
 `companion.helper.propose` (named under `companion.` because an action's first element must be
 its app's prefix; the brief said `helpers.*`).
 
@@ -3757,8 +3757,8 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 
 - A search is answered from the router's index alone and never asks an app, so typing in the launcher starts
   nothing. The index has two sources: what a running app pushes (`Index.Reset` / `Push`; intentd keeps each app's
-  entries in `quire/intents/index/<App>.json`, restores them at start and drops the file of an app with no manifest)
-  and what an app ships in `quire/search/<App>.toml` (read at start; a `Reset` never touches them). Hits are ranked:
+  entries in `bardo/intents/index/<App>.json`, restores them at start and drops the file of an app with no manifest)
+  and what an app ships in `bardo/search/<App>.toml` (read at start; a `Reset` never touches them). Hits are ranked:
   title starts with the text, title contains it, a keyword does, the subtitle does; ties newest first.
   `index = "not_indexed"` now means the launcher does not find the kind.
 - The built-in Memory and Companion kinds are `not_indexed`. Nothing is lost: their providers' `search` always
@@ -3766,7 +3766,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - Shipped files are read at start only; a manifest rescan that adds an app does not read its search file until the
   next start.
 - `IntentProvider1.Search`, `docket-client`'s `IntentProvider::search` and the `Search.Hits` signal are unused. They
-  go in the next batched quire release (the wire and proxy are quire's); the signal stays declared until then.
+  go in the next batched Bardo release (the wire and proxy are Bardo's); the signal stays declared until then.
 
 ## Layering lanes D0.3 and D0.23 (2026-10-28)
 
@@ -3838,7 +3838,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 
 - `docket-provider` (C) is new: the app side of Intents1. `IntentProvider`, `ContextSource` and `SummonTarget` (from `docket-client/src/provider.rs`), and behind its `dbus` feature `serve`, `serve_on` and `serve_on_with` (from `docket-client`'s `serve.rs` and `provider_bus.rs`, now `serve.rs` and `bus.rs`). `docket-client` is the caller side only (`Intents<Transport>`). Closes F11.
 - `serve_on` / `serve_on_with` / `serve` return the new `ServeError` (`Bus(String)`, `Taken(String)`) instead of `docket_client::TransportError`. A taken name used to be `TransportError::Bus("<name> is taken")`; it is now `ServeError::Taken(name)`, so callers can match it instead of reading text. Without the `dbus` feature `serve` no longer exists (it used to answer `Closed`).
-- `MemoryProvider` and `MEMORY_APP` moved from intentd's `builtin_memory.rs` to `docket-memory` (`provider.rs`), with their test (`tests/it/provider.rs`, which now parses `manifests/org.quire.Memory.toml` itself). intentd imports them for `HostedLink`. Closes the Memory half of F9.
+- `MemoryProvider` and `MEMORY_APP` moved from intentd's `builtin_memory.rs` to `docket-memory` (`provider.rs`), with their test (`tests/it/provider.rs`, which now parses `manifests/org.bardo.Memory.toml` itself). intentd imports them for `HostedLink`. Closes the Memory half of F9.
 - Not moved, needs a decision: `CompanionProvider` and `CheckpointsProvider` (with `CompanionPort`, `CheckpointsPort`). They hold no logic of their own; each forwards to `Router::companion_perform` / `checkpoints_perform` through a port attached to the router. A crate that holds them has to depend on `docket-router` (pure, with cedar below it), which `docket-provider` and `docket-memory` must not. They are router glue, so they stay in intentd with `HostedLink` until the plan names a home (for example a `docket-router` hook that the daemon registers, with the `IntentProvider` impl left to intentd).
 - Moved public items other repos name: `docket_client::{IntentProvider, ContextSource, SummonTarget, serve, serve_on, serve_on_with}` are now `docket_provider::...`; `intentd::{MemoryProvider, MEMORY_APP}` are `docket_memory::{MemoryProvider, MEMORY_APP}` (intentd no longer exports them).
 
@@ -4088,7 +4088,7 @@ Two commits: the harness seams first, then the split.
 - Not verified by a build.
 
 ## E-D4: one Caller (2026-10-28)
-- `docket_vocab::Caller` is the one caller type: a `CallerRole` and, for a field, an editor and an agent host, the app behind it. `CallerRole` moved from `docket-wire` to `docket-vocab` (same variants, same snake_case slugs, `CallerRole::ALL`); `TurnSource` (docket-core) and the router's `turn_source` mapper are gone, replaced by `Caller::{launcher, terminal, field, editor, agent}` and `Caller::of(role, app)`. A stored turn's `from` is unchanged (`{"kind":"launcher"}`, `{"kind":"field","v":"org.quire.Mail"}`, `terminal`, `editor`, `agent`); `docket-vocab/tests/it/caller.rs` pins it.
+- `docket_vocab::Caller` is the one caller type: a `CallerRole` and, for a field, an editor and an agent host, the app behind it. `CallerRole` moved from `docket-wire` to `docket-vocab` (same variants, same snake_case slugs, `CallerRole::ALL`); `TurnSource` (docket-core) and the router's `turn_source` mapper are gone, replaced by `Caller::{launcher, terminal, field, editor, agent}` and `Caller::of(role, app)`. A stored turn's `from` is unchanged (`{"kind":"launcher"}`, `{"kind":"field","v":"org.bardo.Mail"}`, `terminal`, `editor`, `agent`); `docket-vocab/tests/it/caller.rs` pins it.
 - Kept on purpose: `GrantCaller` (the key a grant is stored under; it names a client, a program or a helper the role does not, filled in one place by `Who::grant_caller`; `GrantCaller::kind` stays its one match onto prov's `ActorKind`), `Speaker` (companion-core: the policy subject of the companion's bus, with a terminal's scope; `companiond::helpers_bus::caller_of` makes the `Caller` of the turns it records), `Origin` (the provider-wire vocabulary: eight values that are not roles, set at 65 sites).
 - `docket-acp` no longer depends on `docket-wire` (it only used `CallerRole`); `Cargo.lock` was edited by hand for that.
 - Not verified by a build; rustfmt ran on the touched files.

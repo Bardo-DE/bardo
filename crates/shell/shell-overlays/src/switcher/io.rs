@@ -1,5 +1,5 @@
 //! The effects end of one switcher surface: follow the [`SwitcherLink`] for this output, run the
-//! [`Opening`] machine (quire's switcher, the one the compositor runs too) on quire's
+//! [`Opening`] machine (Bardo's switcher, the one the compositor runs too) on Bardo's
 //! `use_machine`, and carry out what it says. A chord maps the surface (keyboard `Exclusive`, so
 //! it sees the release) and snapshots the apps; the machine reads the apps and the modifiers'
 //! state as its context at every step, and the show delay is its own deadline, so there is no

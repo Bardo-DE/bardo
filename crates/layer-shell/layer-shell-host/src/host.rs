@@ -75,7 +75,7 @@ impl<M: Send + 'static> Host<M> {
         )?;
         state.prepaint = config.prepaint;
         state.file_roots = config.file_roots;
-        // The shell's bundled faces (e.g. quire's `ui_components::FACES`), registered once so every
+        // The shell's bundled faces (e.g. Bardo's `ui_components::FACES`), registered once so every
         // surface's, popup's and toplevel's document resolves them.
         for bytes in &config.fonts.0 {
             state.fonts.register(bytes);

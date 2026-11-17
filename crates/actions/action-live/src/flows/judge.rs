@@ -118,7 +118,7 @@ impl Evidence {
     }
 
     /// Whether the last answer puts content in front of the person (a shown handle,
-    /// `quire_finish {show}`), which answers without words of its own.
+    /// `bardo_finish {show}`), which answers without words of its own.
     pub(crate) fn shows_content(&self) -> bool {
         matches!(
             self.views().last().map(|v| &v.body),

@@ -10,6 +10,6 @@ use super::workspaces::Workspaces;
 pub struct WindowModel {
     pub workspaces: Workspaces,
     pub toplevels: Toplevels,
-    /// The program behind each app id on screen, where the compositor says (the Quire arm).
+    /// The program behind each app id on screen, where the compositor says (Bardo arm).
     pub subjects: Subjects,
 }

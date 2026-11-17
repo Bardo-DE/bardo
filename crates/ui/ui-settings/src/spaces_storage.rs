@@ -147,7 +147,7 @@ impl SpacesStorage {
             Origin::Stored => fixup == Fixup::Changed,
         };
         if write && let Err(error) = self.save_spaces(&spaces) {
-            eprintln!("quire settings: spaces.json was not saved: {error}");
+            eprintln!("bardo settings: spaces.json was not saved: {error}");
         }
         (spaces, origin)
     }
@@ -195,7 +195,7 @@ impl SpacesStorage {
         if today.prune(now) > 0
             && let Err(error) = self.save_today(&today)
         {
-            eprintln!("quire settings: today.json was not saved: {error}");
+            eprintln!("bardo settings: today.json was not saved: {error}");
         }
         today
     }

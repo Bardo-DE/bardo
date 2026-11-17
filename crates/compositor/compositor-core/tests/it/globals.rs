@@ -109,7 +109,7 @@ fn the_portal_is_shown_what_every_client_is_and_not_the_shell_or_agent_globals()
             "{kind:?}"
         );
     }
-    for kind in [GlobalKind::QuireShell, GlobalKind::QuireDesktop] {
+    for kind in [GlobalKind::BardoShell, GlobalKind::BardoDesktop] {
         assert!(!advertised(kind, &ConnectionRole::Portal), "{kind:?}");
     }
 }

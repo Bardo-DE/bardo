@@ -131,7 +131,7 @@ rules = [
 
 ## Apps that read the keymap themselves
 
-temor and every quire app resolve Cmd through chordkit, so they must see it unchanged: the
+temor and every Bardo app resolve Cmd through chordkit, so they must see it unchanged: the
 `terminal` profile writes Cmd+D and Cmd+Shift+D both as Ctrl+Shift+D, and a keymap-aware terminal
 could not tell a right split from a downward one. The `keymap-aware` profile writes Cmd as Super
 and leaves Cmd+letter alone. temor gets it by default. To give it to another app, have the desktop

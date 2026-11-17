@@ -4,7 +4,7 @@
 //! smithay hands a virtual keyboard's keys straight to the focused client, past the model
 //! (A36). It has no hook either, so this module carries its own global, manager and keyboard
 //! user data with their own `GlobalDispatch2` and `Dispatch2` impls (the way
-//! `quire_window` does); `delegate_dispatch2!` in the composition root routes to them and
+//! `bardo_window` does); `delegate_dispatch2!` in the composition root routes to them and
 //! they reach the root through [`VirtualKeyboardHandler`]. A key becomes an
 //! `Event::Input` stamped with the session clock (the client's own `time` is not trusted),
 //! and the model decides where it goes like any other key. Hidden from sandboxed clients (I7).

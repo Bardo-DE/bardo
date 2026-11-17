@@ -116,10 +116,10 @@ fn unread_text(fault: &ReplyFault) -> String {
         ReplyFault::Read(fault) => read_fault_text(fault),
     };
     let lead = match fault {
-        ReplyFault::Read(_) => "your quire_read gave no answer",
+        ReplyFault::Read(_) => "your bardo_read gave no answer",
         _ => "your last reply could not be read as a call",
     };
-    format!("{lead}: {why}; write the call again, ask the person with quire_ask, or finish")
+    format!("{lead}: {why}; write the call again, ask the person with bardo_ask, or finish")
 }
 
 fn target_text(fault: TargetFault) -> String {
@@ -150,7 +150,7 @@ fn arg_hint(param: &str, why: ArgFault, handles: &[HandleCard]) -> String {
             format!("argument \"{param}\" is from another Space; use only what this Space gave you")
         }
         ArgFault::HandleAsText => format!(
-            "argument \"{param}\" is words, and a #n is only the name of something you hold, not the words in it; you cannot put it in text. To learn what a text handle says, read it with quire_read; to act on a thing, name it as {{\"handle\": n}}"
+            "argument \"{param}\" is words, and a #n is only the name of something you hold, not the words in it; you cannot put it in text. To learn what a text handle says, read it with bardo_read; to act on a thing, name it as {{\"handle\": n}}"
         ),
     }
 }
@@ -210,7 +210,7 @@ fn refusal_hint(refusal: &CallRefusal, step: &StepLine, seen: &Seen<'_>) -> Opti
         }
         // The app's own words for why, so the same call is not made again blind.
         CallRefusal::App(AppRefusal::Failed(words)) => Some(format!(
-            "the app said: {}; a call with the same arguments is refused again, so change them, try another action, ask the person with quire_ask, or finish",
+            "the app said: {}; a call with the same arguments is refused again, so change them, try another action, ask the person with bardo_ask, or finish",
             words
                 .0
                 .trim()
@@ -227,12 +227,12 @@ fn refusal_hint(refusal: &CallRefusal, step: &StepLine, seen: &Seen<'_>) -> Opti
                 .collect();
             Some(if listed.is_empty() {
                 format!(
-                    "argument \"{}\" is needed; ask the person with quire_ask",
+                    "argument \"{}\" is needed; ask the person with bardo_ask",
                     param.as_str()
                 )
             } else {
                 format!(
-                    "argument \"{}\" must be one of {}; if none fits, ask the person with quire_ask",
+                    "argument \"{}\" must be one of {}; if none fits, ask the person with bardo_ask",
                     param.as_str(),
                     listed.join(", ")
                 )
@@ -328,7 +328,7 @@ fn held_line(head: &str, step: &StepLine, how: Held, seen: &Seen<'_>) -> String 
 }
 
 const INSTEAD: &str =
-    "change the arguments, try another action, ask the person with quire_ask, or finish";
+    "change the arguments, try another action, ask the person with bardo_ask, or finish";
 
 /// The most handles a masked line names in one place; the rest are counted, so a line stays short
 /// and the same every turn.
@@ -634,14 +634,14 @@ mod tests {
         );
         assert!(
             line.ends_with(
-                "refused needs_param: argument \"app\" must be one of \"app.draw\", \"app.web\"; if none fits, ask the person with quire_ask"
+                "refused needs_param: argument \"app\" must be one of \"app.draw\", \"app.web\"; if none fits, ask the person with bardo_ask"
             ),
             "{line}"
         );
         assert!(!line.contains("secret"), "{line}");
         let bare = step_line(&step(needs(Vec::new())), &[]);
         assert!(
-            bare.ends_with("argument \"app\" is needed; ask the person with quire_ask"),
+            bare.ends_with("argument \"app\" is needed; ask the person with bardo_ask"),
             "{bare}"
         );
     }
@@ -699,11 +699,11 @@ mod tests {
     fn a_held_call_tells_what_to_do_instead() {
         let line = step_line(&step(StepEnd::Held(Held::Empty)), &[]);
         assert!(line.contains("got nothing"));
-        assert!(line.contains("quire_ask"));
+        assert!(line.contains("bardo_ask"));
         let waiting = step_line(&step(StepEnd::Held(Held::Running)), &[]);
         assert!(waiting.contains("still going"), "{waiting}");
         assert!(
-            !waiting.contains("quire_ask"),
+            !waiting.contains("bardo_ask"),
             "no question to the person: {waiting}"
         );
     }
@@ -891,7 +891,7 @@ mod tests {
                 "{line}"
             );
             assert!(line.contains(want), "{fault:?}: {line}");
-            assert!(line.contains("quire_ask"), "{line}");
+            assert!(line.contains("bardo_ask"), "{line}");
         }
     }
 
@@ -922,7 +922,7 @@ mod tests {
                         provenance::EntityKind::parse("mail.thread").expect("kind"),
                     ),
                 },
-                "#1 is a mail.thread, not text: read it first with the action that reads a mail.thread (such as mail.thread.read) and give quire_read the handle that call returns",
+                "#1 is a mail.thread, not text: read it first with the action that reads a mail.thread (such as mail.thread.read) and give bardo_read the handle that call returns",
             ),
             (
                 ReadFault::NotText {
@@ -941,7 +941,7 @@ mod tests {
         for (fault, want) in table {
             let line = step_line(&step(StepEnd::Unread(ReplyFault::Read(fault.clone()))), &[]);
             assert!(
-                line.starts_with("your quire_read gave no answer: "),
+                line.starts_with("your bardo_read gave no answer: "),
                 "{line}"
             );
             assert!(line.contains(want), "{fault:?}: {line}");

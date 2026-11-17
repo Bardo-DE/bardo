@@ -2,7 +2,7 @@
 //! can do it.
 //!
 //! xdg-shell has no such request; `bardo_window_v1.request_placement` does, so the choices are
-//! offered only on a compositor that advertises it (`handlers::quire_window`).
+//! offered only on a compositor that advertises it (`handlers::bardo_window`).
 //!
 //! See FINDINGS F50, p2-z-sh.
 

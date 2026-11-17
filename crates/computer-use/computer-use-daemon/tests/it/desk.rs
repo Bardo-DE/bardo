@@ -165,7 +165,7 @@ pub(crate) fn step(effect: Effect) -> CuaAsk {
         run: run(),
         step: 1,
         app: mail(),
-        trust: WindowTrust::Quire,
+        trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: work(),
         action: CuaAction::<WindowSpace>::Observe,

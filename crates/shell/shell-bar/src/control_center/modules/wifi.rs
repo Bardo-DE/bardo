@@ -1,4 +1,4 @@
-//! The Wi-Fi tile: a quire `ModuleTile` whose press turns the radio on or off, [`crate::control_center::wifi_status`] as its line, and its chevron to the network list (`Detail::Wifi`).
+//! The Wi-Fi tile: a Bardo `ModuleTile` whose press turns the radio on or off, [`crate::control_center::wifi_status`] as its line, and its chevron to the network list (`Detail::Wifi`).
 //!
 //! Reads `use_service::<WifiService>` and `use_service::<NetworkService>`; sends
 //! `WifiCommand::Radio`.
@@ -70,7 +70,7 @@ pub(crate) fn radio_availability(wifi: &Wifi) -> Availability {
     }
 }
 
-/// The disc's Wi-Fi state: the bar item's (quire's `WifiGlyph`: searching while it joins, its
+/// The disc's Wi-Fi state: the bar item's (Bardo's `WifiGlyph`: searching while it joins, its
 /// bars and badge once joined), off with the radio off, and not connected over a wire or
 /// another link, which is not Wi-Fi.
 pub(crate) fn wifi_tile_state(wifi: &Wifi, network: &Network) -> WifiState {

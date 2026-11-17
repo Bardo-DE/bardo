@@ -6,12 +6,12 @@ use crate::range::Range;
 use crate::rows::Columns;
 use settings_types::schema::{Control as Named, KeyKind, KeySpec, STANDARD};
 
-/// A kind quire has no component for: shown read-only with an "Edit in file" note.
+/// A kind Bardo has no component for: shown read-only with an "Edit in file" note.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FileOnly {
-    /// A captured key chord: quire has no shortcut-capture field.
+    /// A captured key chord: Bardo has no shortcut-capture field.
     Shortcut,
-    /// A list of values: quire has no list editor.
+    /// A list of values: Bardo has no list editor.
     List,
     /// An action the owning program runs through its live settings module (a button): bardo-settings
     /// has no live client yet, so the row is read-only until the Accounts pane's lane wires one.

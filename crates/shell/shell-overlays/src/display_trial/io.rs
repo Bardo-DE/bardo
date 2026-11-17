@@ -1,6 +1,6 @@
 //! The effects end of the trial sheet: follow the [`DisplayTrialLink`] and the sheets' output
 //! onto the stage (which maps the surface), write the person's answer to the link, and count the
-//! seconds down on quire's one timer.
+//! seconds down on Bardo's one timer.
 
 use std::time::Duration;
 

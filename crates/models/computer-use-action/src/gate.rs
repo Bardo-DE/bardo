@@ -18,8 +18,8 @@ pub enum RunMode {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum WindowTrust {
-    /// A quire app: typed actions and a11y.
-    Quire,
+    /// A Bardo app: typed actions and a11y.
+    Bardo,
     /// A Flatpak: the sandbox names it.
     Flatpak,
     /// A native app.

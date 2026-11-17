@@ -20,8 +20,8 @@ fn layer(dx: i32, dy: i32, blur: u32, spread: i32, a: u8) -> ShadowLayer {
     }
 }
 
-/// Like quire's window shadow: a tight layer and a wide one, both falling.
-fn quire_like() -> [ShadowLayer; 2] {
+/// Like Bardo's window shadow: a tight layer and a wide one, both falling.
+fn bardo_like() -> [ShadowLayer; 2] {
     [layer(0, 2, 6, 0, 90), layer(0, 10, 24, -2, 70)]
 }
 
@@ -40,7 +40,7 @@ fn pixel(r: &Raster, x: u32, y: u32) -> [u8; 4] {
 )]
 #[test]
 fn a_corner_is_the_size_of_the_margin_and_reach_at_the_scale() {
-    let layers = quire_like();
+    let layers = bardo_like();
     for (scale, per) in [(Scale::ONE, 1), (Scale(240), 2)] {
         let made = tiles(&layers, 10, scale);
         let want = (MARGIN + made.inner) * per;
@@ -58,7 +58,7 @@ fn a_corner_is_the_size_of_the_margin_and_reach_at_the_scale() {
 fn the_tiles_hold_no_window_sized_buffer() {
     // The function takes no window size; the whole set is bounded by the margin, the reach and
     // the scale.
-    let made = tiles(&quire_like(), 10, Scale(240));
+    let made = tiles(&bardo_like(), 10, Scale(240));
     let bytes: usize = made
         .corners
         .iter()
@@ -87,7 +87,7 @@ fn without_an_offset_the_corners_are_mirror_images() {
 
 #[test]
 fn a_falling_shadow_is_stronger_below_than_above() {
-    let made = tiles(&quire_like(), 10, Scale::ONE);
+    let made = tiles(&bardo_like(), 10, Scale::ONE);
     let [tl, _, bl, _] = &made.corners;
     let near = MARGIN - 6;
     assert!(alpha(bl, 100, near) > alpha(tl, 100, near));
@@ -95,7 +95,7 @@ fn a_falling_shadow_is_stronger_below_than_above() {
 
 #[test]
 fn an_edge_strip_does_not_change_along_its_axis_and_meets_the_corner() {
-    let made = tiles(&quire_like(), 10, Scale::ONE);
+    let made = tiles(&bardo_like(), 10, Scale::ONE);
     // The strip is the same pixels along its length by construction; the corner's column at its
     // inner end is the same profile (no seam where they meet).
     let top = &made.edges[0];
@@ -324,7 +324,7 @@ fn the_pieces_add_up_to_the_old_raster_of_a_square_window() {
 /// the pieces' own rounding.
 #[test]
 fn the_whole_raster_agrees_with_the_pieces_of_a_large_window() {
-    let layers = quire_like();
+    let layers = bardo_like();
     let made = tiles(&layers, 10, Scale::ONE);
     let (w, h) = (300, 200);
     let whole = full(&layers, 10, LogicalSize { w, h }, Scale::ONE);
@@ -381,7 +381,7 @@ fn a_tiny_windows_whole_raster_is_lighter_than_its_cropped_tiles() {
 )]
 #[test]
 fn a_whole_raster_is_cut_out_and_sized_to_its_window_at_each_scale() {
-    let layers = quire_like();
+    let layers = bardo_like();
     let size = LogicalSize { w: 90, h: 60 };
     for (scale, per) in [(Scale::ONE, 1.0_f32), (Scale(180), 1.5), (Scale(240), 2.0)] {
         let r = full(&layers, 10, size, scale);

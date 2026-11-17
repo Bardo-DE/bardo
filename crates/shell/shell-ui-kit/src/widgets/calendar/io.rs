@@ -1,6 +1,6 @@
 //! The Calendar widget's view: reads `use_service::<EventsService>` (today, the events) and the
 //! `calendar` settings, keeps the month shown in a signal (today's month on mount, stepped by the
-//! card's `MonthIntent::Step`, back to today's month when the day turns), and hands quire's
+//! card's `MonthIntent::Step`, back to today's month when the day turns), and hands Bardo's
 //! `MonthWidget` one entry: the grid from [`super::grid::month_grid`] and
 //! [`super::grid::busy_days`], today's weekday and date, and today's events from the agenda Up Next
 //! reads ([`crate::widgets::up_next::today_events`]). Redrawn on the clock's minute tick.

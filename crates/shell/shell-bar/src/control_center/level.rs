@@ -1,11 +1,11 @@
 //! The one level control the Sound and Display modules share.
 //!
-//! Quire's `ModulePanel` headed by the title alone, as on the Mac (no glyph, no percentage: the
-//! knob carries the glyph and the slider says its value to assistive technology), over quire's
+//! Bardo's `ModulePanel` headed by the title alone, as on the Mac (no glyph, no percentage: the
+//! knob carries the glyph and the slider says its value to assistive technology), over Bardo's
 //! `Slider` in its `Mac` look: the Control Center's slider, a Regular well (22) under a 20 knob
-//! that carries the level's glyph, click to jump, drag the knob, arrows to step (quire design/29
+//! that carries the level's glyph, click to jump, drag the knob, arrows to step (Bardo design/29
 //! §16). The look is chosen here and nowhere else ([`LOOK`]). The OSD draws the same level through
-//! quire's `Osd`, as the bezel's sixteen squares.
+//! Bardo's `Osd`, as the bezel's sixteen squares.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
@@ -21,7 +21,7 @@ const LOOK: SliderLook = SliderLook::Level;
 /// `glyph` and `title` over the level at `level` (the percentage as the header's value), the
 /// knob carrying `level_glyph` (the sun, or the volume's state, the bar item's source);
 /// `on_change` hears every new level from a drag or a key. `Disabled` shows the level and takes
-/// nothing: quire dims the level and the panel's header with it, so both get it.
+/// nothing: Bardo dims the level and the panel's header with it, so both get it.
 #[component]
 pub fn LevelModule(
     #[props(into)] level_glyph: LevelSource,

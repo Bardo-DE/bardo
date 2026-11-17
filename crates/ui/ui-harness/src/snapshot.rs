@@ -17,7 +17,7 @@ const AT_REST: Duration = Duration::from_secs(10);
 
 /// The wall-clock time a snapshot lets pass before its first moment, so what a component
 /// starts on mount lands in the picture: a resource answered after the first resolve (an image
-/// lands one frame late, spike S7) and the one-frame waits quire starts on mount (`FRAME_SLACK`,
+/// lands one frame late, spike S7) and the one-frame waits Bardo starts on mount (`FRAME_SLACK`,
 /// 34 ms, after an effect's round: the toast and the send pill rise on it). Without it a posed
 /// toast was never drawn (gallery fix A).
 pub(crate) const MOUNT_SETTLE: Duration = Duration::from_millis(120);

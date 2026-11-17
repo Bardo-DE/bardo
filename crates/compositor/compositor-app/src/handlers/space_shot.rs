@@ -18,10 +18,10 @@ use super::capture_source::window_rgba;
 use crate::state::State;
 use compositor_core::geometry::{PhysicalRect, PhysicalSize};
 use compositor_render::pass::{CapturedFrame, ThumbLayer, compose_thumb, thumb_dest};
-use compositor_wayland::image_capture::CaptureFailure;
-use compositor_wayland::quire::space_shot::{
+use compositor_wayland::bardo::space_shot::{
     Look, SpaceSessionId, SpaceShot, SpaceSourceId, look_of,
 };
+use compositor_wayland::image_capture::CaptureFailure;
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
 use smithay::utils::{Buffer, Rectangle, Size, Transform};
 use smithay::wayland::image_copy_capture::{BufferConstraints, Frame, Session, SessionRef};
@@ -63,7 +63,7 @@ fn windows_of(
 
 /// The fingerprint of what the Space of `shot` shows now.
 pub(crate) fn look(state: &State, shot: &SpaceShot) -> Look {
-    let book = &state.wl.quire_shell.shots;
+    let book = &state.wl.bardo_shell.shots;
     look_of(
         windows_of(state, shot)
             .into_iter()
@@ -83,7 +83,7 @@ pub(crate) fn look(state: &State, shot: &SpaceShot) -> Look {
 /// What a client must allocate to capture the Space `source` shows: the size it asked for. None
 /// when the Space is gone: the session is stopped.
 pub(super) fn constraints(state: &State, source: SpaceSourceId) -> Option<BufferConstraints> {
-    let shot = state.wl.quire_shell.shots.book.source(source)?;
+    let shot = state.wl.bardo_shell.shots.book.source(source)?;
     if !exists(state, shot) {
         return None;
     }
@@ -102,7 +102,7 @@ fn constraints_of(state: &State, shot: &SpaceShot) -> Option<BufferConstraints> 
 /// A session started on `source`: noted in the book, given its id and held until its client
 /// destroys it or its Space stops showing.
 pub(super) fn new_session(state: &mut State, session: Session, source: SpaceSourceId) {
-    let shots = &mut state.wl.quire_shell.shots;
+    let shots = &mut state.wl.bardo_shell.shots;
     if let Some(id) = shots.book.on_session(source) {
         session.user_data().insert_if_missing_threadsafe(|| id);
         shots.hold(id, session);
@@ -114,11 +114,11 @@ pub(super) fn new_session(state: &mut State, session: Session, source: SpaceSour
 
 /// Answers one frame request of `id`: held until the Space changes, or drawn now, or failed.
 pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: SpaceSessionId) {
-    let Some(shot) = state.wl.quire_shell.shots.book.session(id).cloned() else {
+    let Some(shot) = state.wl.bardo_shell.shots.book.session(id).cloned() else {
         return frame.fail(CaptureFailure::OutputGone.reason());
     };
     if !exists(state, &shot) {
-        state.wl.quire_shell.shots.stop(&[id]);
+        state.wl.bardo_shell.shots.stop(&[id]);
         return frame.fail(CaptureFailure::OutputGone.reason());
     }
     let sized = super::image_capture::buffer_size(&frame.buffer());
@@ -130,36 +130,36 @@ pub(super) fn serve(state: &mut State, session: &SessionRef, frame: Frame, id: S
         return frame.fail(CaptureFailure::BufferMismatch.reason());
     }
     let now = look(state, &shot);
-    match state.wl.quire_shell.shots.book.request(id, now) {
+    match state.wl.bardo_shell.shots.book.request(id, now) {
         Some(true) => answer(state, id, &shot, now, frame),
-        Some(false) => state.wl.quire_shell.shots.hold_frame(id, frame),
+        Some(false) => state.wl.bardo_shell.shots.hold_frame(id, frame),
         None => frame.fail(CaptureFailure::Renderer.reason()),
     }
 }
 
 /// The client destroyed the session `id`.
 pub(super) fn release(state: &mut State, id: SpaceSessionId) {
-    state.wl.quire_shell.shots.release(id);
+    state.wl.bardo_shell.shots.release(id);
     state.wl.image_capture.copy.cleanup();
 }
 
 /// A window committed: its count moves, and a held request that this is news to is drawn.
 pub(crate) fn committed(state: &mut State, window: compositor_core::WindowId) {
-    state.wl.quire_shell.shots.note_commit(window);
+    state.wl.bardo_shell.shots.note_commit(window);
     poll(state);
 }
 
 /// Draws the held requests whose Space changed since their session's last frame, and stops the
 /// sessions whose Space is gone. Run after a commit and after a relayout.
 pub(crate) fn poll(state: &mut State) {
-    if !state.wl.quire_shell.shots.book.is_watching() {
+    if !state.wl.bardo_shell.shots.book.is_watching() {
         return;
     }
-    let ids = state.wl.quire_shell.shots.book.sessions();
+    let ids = state.wl.bardo_shell.shots.book.sessions();
     let shots: Vec<(SpaceSessionId, SpaceShot)> = ids
         .into_iter()
         .filter_map(|id| {
-            let shot = state.wl.quire_shell.shots.book.session(id)?.clone();
+            let shot = state.wl.bardo_shell.shots.book.session(id)?.clone();
             Some((id, shot))
         })
         .collect();
@@ -168,13 +168,13 @@ pub(crate) fn poll(state: &mut State) {
         .filter(|(_, shot)| !exists(state, shot))
         .map(|(id, _)| *id)
         .collect();
-    state.wl.quire_shell.shots.stop(&gone);
+    state.wl.bardo_shell.shots.stop(&gone);
     let looks: Vec<(SpaceShot, Look)> = shots
         .iter()
         .filter(|(id, _)| !gone.contains(id))
         .map(|(_, shot)| (shot.clone(), look(state, shot)))
         .collect();
-    let due = state.wl.quire_shell.shots.book.changed(|shot| {
+    let due = state.wl.bardo_shell.shots.book.changed(|shot| {
         looks
             .iter()
             .find(|(seen, _)| seen == shot)
@@ -186,7 +186,7 @@ pub(crate) fn poll(state: &mut State) {
                 .iter()
                 .find(|(s, _)| *s == id)
                 .map(|(_, shot)| shot.clone()),
-            state.wl.quire_shell.shots.take_frame(id),
+            state.wl.bardo_shell.shots.take_frame(id),
         ) else {
             continue;
         };
@@ -202,7 +202,7 @@ fn answer(state: &mut State, id: SpaceSessionId, shot: &SpaceShot, now: Look, fr
     }
     match picture(state, shot).and_then(|bytes| write(state, shot.size, &bytes, &frame)) {
         Ok(()) => {
-            state.wl.quire_shell.shots.book.delivered(id, now);
+            state.wl.bardo_shell.shots.book.delivered(id, now);
             let at = state.clock.now();
             let size = Size::from((
                 i32::try_from(shot.size.w).unwrap_or(i32::MAX),
@@ -215,7 +215,7 @@ fn answer(state: &mut State, id: SpaceSessionId, shot: &SpaceShot, now: Look, fr
             );
         }
         Err(why) => {
-            state.wl.quire_shell.shots.book.forget(id);
+            state.wl.bardo_shell.shots.book.forget(id);
             frame.fail(why.reason());
         }
     }

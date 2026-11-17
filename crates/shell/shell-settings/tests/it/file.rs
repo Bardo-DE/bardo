@@ -120,7 +120,7 @@ fn a_save_is_one_file_and_reads_back() {
         .unwrap_or_else(|e| panic!("{e}"))
         .filter_map(std::result::Result::ok)
         .map(|e| e.file_name().to_string_lossy().into_owned())
-        // The writers' lock stays beside the file (quire's update_atomic); no temp file does.
+        // The writers' lock stays beside the file (Bardo's update_atomic); no temp file does.
         .filter(|name| name != ".settings.toml.lock")
         .collect();
     assert_eq!(names, ["settings.toml"], "the temp file was renamed away");

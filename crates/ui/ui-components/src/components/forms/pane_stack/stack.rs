@@ -25,7 +25,7 @@ use super::path::PanePath;
 use super::track::PaneTrack;
 use crate::focus::select::Select;
 use crate::focus::selector::focus_by_selector;
-use crate::keys::{register_quire_actions, use_keys};
+use crate::keys::{register_bardo_actions, use_keys};
 use crate::root::common::Common;
 use base_words::Word;
 use dioxus::prelude::*;
@@ -49,7 +49,7 @@ pub fn PaneStack<K: Clone + PartialEq + 'static>(
 ) -> Element {
     let id = common.id.clone().unwrap_or_else(|| "ds-pane-stack".into());
     let keys = use_keys();
-    use_hook(|| register_quire_actions(&keys));
+    use_hook(|| register_bardo_actions(&keys));
     let track = use_track(&path, &id, opener);
     let (slide, frame) = use_pane_slide(track.slot, None);
     let arrival = arrival(track.slot, frame.position());

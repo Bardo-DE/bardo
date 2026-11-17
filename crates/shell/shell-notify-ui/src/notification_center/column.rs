@@ -1,6 +1,6 @@
 //! The column and its catcher. While the center is drawn: the transparent catcher under
 //! everything (a press on it closes the center, as a click beside macOS's Notification Center
-//! does) and quire's `Panel` at the right edge, `--notifications-center-width` wide, in the
+//! does) and Bardo's `Panel` at the right edge, `--notifications-center-width` wide, in the
 //! Popover material. The panel slides in as it
 //! mounts (keyed by the opening) and out when the link lets it go; its `on_hidden` unmaps the
 //! surface.

@@ -2,6 +2,7 @@
 //!
 //! One integration binary: every former `tests/*.rs` is a module here, and `support` is shared.
 
+mod bardo;
 mod display_trial;
 mod focus;
 mod focus_beyond;
@@ -32,7 +33,6 @@ mod output;
 mod output_request;
 mod privilege_decide;
 mod privilege_step;
-mod quire;
 mod round_trip;
 mod space_persist;
 mod support;

@@ -1,4 +1,4 @@
-//! The recipes of the keyframes quire added to design/05-MOTION.md's catalogue, each for a
+//! The recipes of the keyframes Bardo added to design/05-MOTION.md's catalogue, each for a
 //! state the catalogue has no motion for. The catalogue's own rows are in `recipe.rs`.
 
 use super::recipe::{Fill, Iteration, Recipe, recipe};

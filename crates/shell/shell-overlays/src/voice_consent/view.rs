@@ -1,6 +1,6 @@
-//! The consent sheet's root: one quire `Sheet` over the whole output while the voice service asks
+//! The consent sheet's root: one Bardo `Sheet` over the whole output while the voice service asks
 //! on the sheets' output. The title says what is being asked, one sentence says what listening
-//! means, and the buttons are quire's: Not Now (Escape) and Allow (the default). Nothing is styled
+//! means, and the buttons are Bardo's: Not Now (Escape) and Allow (the default). Nothing is styled
 //! under `.ds-sheet*` or `.ds-button*`.
 
 use dioxus::prelude::*;

@@ -28,7 +28,7 @@ impl Drop for Wish {
     }
 }
 
-/// Draws nothing. While it is part of a tile (quire mounts only the tiles near the viewport) the
+/// Draws nothing. While it is part of a tile (Bardo mounts only the tiles near the viewport) the
 /// thumbnail `thumb` is wanted; when the tile scrolls away, is replaced by one of another version
 /// or gets its picture, the wish ends and a thumbnail not yet made for it is not made.
 #[component]

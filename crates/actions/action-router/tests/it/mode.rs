@@ -266,7 +266,7 @@ fn step(run: &RunId, effect: Effect) -> CuaAsk {
         run: run.clone(),
         step: 1,
         app: mail_app(),
-        trust: WindowTrust::Quire,
+        trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space("work"),
         action: CuaAction::<WindowSpace>::Observe,

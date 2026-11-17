@@ -3,12 +3,12 @@
 //! Each fake is cheap to clone and its clones share their record, so a test hands one clone to the
 //! code under test and keeps the other to read what happened.
 
-#[cfg(all(feature = "quire-desktop", target_os = "linux"))]
+#[cfg(all(feature = "desktop", target_os = "linux"))]
 mod bus;
 mod instance;
 mod thumbnails;
 
-#[cfg(all(feature = "quire-desktop", target_os = "linux"))]
+#[cfg(all(feature = "desktop", target_os = "linux"))]
 pub use bus::PrivateBus;
 pub use instance::{FakeInstance, FakeRole};
 pub use thumbnails::FakeThumbnails;

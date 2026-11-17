@@ -5,7 +5,7 @@
 //! while *typing* it is a space in the query. ⌘Y (Quick Look's standard key) toggles it
 //! whenever the selected row has a preview. → with the caret at the field's end shows the pane
 //! and ⌘→ always does; either, with the pane shown, moves the keyboard into it, where Tab and
-//! Shift+Tab walk its controls (quire design/27 §6.4: every control in the Tab order; in the
+//! Shift+Tab walk its controls (Bardo design/27 §6.4: every control in the Tab order; in the
 //! results Tab stays the provider filter, design/06 §20.2). ← or Escape in the pane gives the
 //! keyboard back to the results; Escape with the pane shown hides it; only then does Escape
 //! close the launcher. A row with no preview (`Preview::None`) never opens the pane.
@@ -167,7 +167,7 @@ fn in_pane(
             },
             vec![PreviewOut::FocusField],
         ),
-        // Space presses the focused control (quire's button hears it); the rest do nothing here.
+        // Space presses the focused control (Bardo's button hears it); the rest do nothing here.
         PreviewKey::Typed
         | PreviewKey::Moved
         | PreviewKey::Space

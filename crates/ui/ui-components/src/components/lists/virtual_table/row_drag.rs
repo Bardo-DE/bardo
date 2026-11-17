@@ -6,7 +6,7 @@
 //! names its row (an index) and the rest of the drag is arithmetic on the pointer's height in the
 //! content (`drag_model`), so a drag over rows that are not mounted works the same. Like the
 //! rubber band, the list scrolls a little on each pointer move made near an edge, and a pointer
-//! held still near the edge does not scroll on its own, as quire keeps no timer for a gesture.
+//! held still near the edge does not scroll on its own, as Bardo keeps no timer for a gesture.
 
 use crate::components::controls::scroller::handle::ScrollerRef;
 use crate::components::lists::marquee::hook::Marquee;

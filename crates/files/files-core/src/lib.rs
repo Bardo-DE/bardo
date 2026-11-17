@@ -1,7 +1,7 @@
 //! The vocabulary of files: what a folder holds, how it is shown and what can be done to it, as
 //! plain data.
 //!
-//! `FileName` and `MimeType` (with their errors) are quire's, from `ui_helpers::mime`, so the file type
+//! `FileName` and `MimeType` (with their errors) are Bardo's, from `ui_helpers::mime`, so the file type
 //! database and this vocabulary speak the same types.
 //!
 //! Nothing here reads the disk, the clock or the environment, and nothing names a runtime, a bus

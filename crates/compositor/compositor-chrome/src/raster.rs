@@ -52,7 +52,7 @@ impl fmt::Debug for TitleRaster {
 }
 
 impl TitleRaster {
-    /// A rasteriser for quire's system title font, keeping `margins` clear on each side of the
+    /// A rasteriser for Bardo's system title font, keeping `margins` clear on each side of the
     /// title.
     ///
     /// ```

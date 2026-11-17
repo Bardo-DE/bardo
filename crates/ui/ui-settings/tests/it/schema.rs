@@ -88,7 +88,7 @@ fn keys_in_section(doc: &str, heading: &str, next_heading: &str) -> Vec<String> 
 // are actually marked Advanced.
 
 #[test]
-fn both_domains_resolve_to_quire_appearance_toml() {
+fn both_domains_resolve_to_bardo_appearance_toml() {
     for schema in schemas() {
         assert_eq!(schema.app.0, "bardo");
         assert_eq!(schema.file.0, "bardo/appearance.toml");
@@ -124,7 +124,7 @@ fn icons_keys_exposure() {
 // agent_settable (design/22-SETTINGS.md section 9.7)
 
 use settings_types::schema::{AGENT_NEVER_SETTABLE, AGENT_SETTABLE_PROPOSED, AgentSetting};
-use ui_settings::quire_schema;
+use ui_settings::bardo_schema;
 
 fn settable(schema: &Schema) -> Vec<&str> {
     schema
@@ -138,7 +138,7 @@ fn settable(schema: &Schema) -> Vec<&str> {
 #[test]
 fn use_my_styles_is_a_switch_on_the_appearance_page_that_defaults_to_on() {
     use settings_types::schema::{KeyKind, Page};
-    let schema = quire_schema();
+    let schema = bardo_schema();
     let key = schema
         .key
         .iter()
@@ -157,7 +157,7 @@ fn use_my_styles_is_a_switch_on_the_appearance_page_that_defaults_to_on() {
 
 #[test]
 fn a_mark_round_trips_derive_to_toml_to_loader_in_the_wire_form_detent_reads() {
-    let schema = quire_schema();
+    let schema = bardo_schema();
     let text = schema.to_toml();
     assert_eq!(text.matches("agent = \"settable\"").count(), 5, "{text}");
     // Detent reads the mark from the raw table; the same text must show it there.
@@ -186,7 +186,7 @@ fn a_mark_round_trips_derive_to_toml_to_loader_in_the_wire_form_detent_reads() {
 #[test]
 fn a_schema_file_from_before_the_mark_loads_every_key_hands_off() {
     // Strip every `agent` line from today's output: what an older program wrote.
-    let old: String = quire_schema()
+    let old: String = bardo_schema()
         .to_toml()
         .lines()
         .filter(|line| !line.starts_with("agent = "))
@@ -199,11 +199,11 @@ fn a_schema_file_from_before_the_mark_loads_every_key_hands_off() {
 }
 
 #[test]
-fn quire_marks_only_proposed_keys_it_owns() {
-    for path in settable(&quire_schema()) {
+fn bardo_marks_only_proposed_keys_it_owns() {
+    for path in settable(&bardo_schema()) {
         assert!(AGENT_SETTABLE_PROPOSED.contains(&path), "{path}");
     }
-    for key in quire_schema().key {
+    for key in bardo_schema().key {
         let never = AGENT_NEVER_SETTABLE
             .iter()
             .any(|prefix| key.path.0.starts_with(prefix));
@@ -232,16 +232,16 @@ fn the_design_doc_lists_exactly_the_proposed_keys() {
 
 mod provided {
     use settings_types::schema::{Control, KeyKind, Provided, Schema, WordLabels};
-    use ui_settings::{AppearanceFile, quire_schema};
+    use ui_settings::{AppearanceFile, bardo_schema};
 
     use crate::support::Scratch;
 
     fn look_key() -> settings_types::schema::KeySpec {
-        quire_schema()
+        bardo_schema()
             .key
             .into_iter()
             .find(|key| key.path.0 == "appearance.look")
-            .expect("appearance.look is in the quire schema")
+            .expect("appearance.look is in the bardo schema")
     }
 
     #[test]
@@ -255,7 +255,7 @@ mod provided {
         );
         assert_eq!(key.default, toml::Value::String("standard".to_owned()));
         assert_eq!(key.label.0, "Look");
-        let schema = quire_schema();
+        let schema = bardo_schema();
         let text = schema.to_toml();
         assert!(text.contains("kind = \"provided\""), "{text}");
         assert!(text.contains("capability = \"look\""), "{text}");

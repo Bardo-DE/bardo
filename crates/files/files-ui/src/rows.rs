@@ -1,4 +1,4 @@
-//! The model's rows as quire's table wants them: columns, the sort, the cursor and the selection,
+//! The model's rows as Bardo's table wants them: columns, the sort, the cursor and the selection,
 //! by row index. Pure.
 
 use std::collections::HashMap;

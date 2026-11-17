@@ -1,4 +1,4 @@
-//! `org.bardo.SettingsModule1` at `/org/bardo/Sync1/settings`, served through quire's `settings_dbus`: the accounts the person has (accountd's) and what syncd keeps of them.
+//! `org.bardo.SettingsModule1` at `/org/bardo/Sync1/settings`, served through Bardo's `settings_dbus`: the accounts the person has (accountd's) and what syncd keeps of them.
 //!
 //! Only the `Settings` role may `Get`, `Describe` or `Set`, as in accountd's module.
 //!

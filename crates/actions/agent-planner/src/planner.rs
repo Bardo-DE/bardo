@@ -45,16 +45,16 @@ use std::collections::BTreeSet;
 const CONTEXT: Tokens = Tokens(12_000);
 
 /// The tool that asks the person something.
-pub const TOOL_ASK: &str = "quire_ask";
+pub const TOOL_ASK: &str = "bardo_ask";
 /// The tool that has the quarantined reader answer a question about handles.
-pub const TOOL_READ: &str = "quire_read";
+pub const TOOL_READ: &str = "bardo_read";
 /// The tool that gives the person the reply and ends the turn.
-pub const TOOL_ANSWER: &str = "quire_answer";
+pub const TOOL_ANSWER: &str = "bardo_answer";
 /// The tool that ends the task.
-pub const TOOL_FINISH: &str = "quire_finish";
+pub const TOOL_FINISH: &str = "bardo_finish";
 /// The tool that asks for the thing related to a thing it holds (the sender of a thread), as a
 /// handle. Offered only when some app declares a relation.
-pub const TOOL_RELATED: &str = "quire_related";
+pub const TOOL_RELATED: &str = "bardo_related";
 
 /// Why the planner gave nothing usable.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
@@ -87,7 +87,7 @@ pub struct PlannerReply {
     pub said: Option<String>,
     /// What the loop does next: calls, a read, a question, or an end.
     pub then: ModelOutput,
-    /// The text handles the person is shown in the answer, as `quire_finish` named them: each
+    /// The text handles the person is shown in the answer, as `bardo_finish` named them: each
     /// one a text handle of the view, once. The planner never reads them.
     pub show: Vec<Handle>,
     /// Who answered, for the answer's footer.

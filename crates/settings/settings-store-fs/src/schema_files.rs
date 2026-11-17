@@ -95,7 +95,7 @@ pub fn discover(dirs: &[PathBuf]) -> Vec<Schema> {
             match admit(&path, &found) {
                 Ok(schema) => found.push(schema),
                 Err(why) => eprintln!(
-                    "quire settings: skipping stale schema {}: {why}",
+                    "bardo settings: skipping stale schema {}: {why}",
                     path.display()
                 ),
             }
@@ -114,7 +114,7 @@ fn admit(path: &Path, found: &[Schema]) -> Result<Schema, String> {
         .and_then(|name| name.to_str())
         .and_then(|name| name.strip_suffix(SCHEMA_SUFFIX));
     // `<app>.settings.toml`, or `<app>.<part>.settings.toml` for a second file the same program
-    // owns (quire's `extensions.toml` beside `appearance.toml`).
+    // owns (Bardo's `extensions.toml` beside `appearance.toml`).
     let named = named_for.is_some_and(|name| {
         name == app
             || name

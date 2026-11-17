@@ -3,7 +3,7 @@
 steward is the desktop's AI broker: `inferd` serves `org.bardo.Inference1` on the session bus, routes
 each session to a model on this computer, on another of the person's computers, or one they hold an
 account for, and runs the turns. This repository was cut from porter at `e9e7cdcd` (CHANGELOG.md).
-The design is quire's `design/31-ACCOUNTS.md` and the agent layering in `agent-layers/steward.md`;
+The design is Bardo's `design/31-ACCOUNTS.md` and the agent layering in `agent-layers/steward.md`;
 this file is the map of the code that exists today. `CONVENTIONS.md` holds the rules; `FINDINGS.md`
 the open items.
 
@@ -14,12 +14,12 @@ This cut only moves code. Crate names are porter's; renames and carving into the
 
 The edge rule: **steward depends on porter by git rev; porter never depends on steward.** Every
 `porter-*` crate that is not in the table is porter's, taken from `https://github.com/Bardo-DE/porter`
-at the one `rev` in the root `Cargo.toml` (`[workspace.dependencies]`). Stoker's crates and quire's
+at the one `rev` in the root `Cargo.toml` (`[workspace.dependencies]`). Stoker's crates and Bardo's
 `ui-settings` are git dependencies at their pinned revs in the same block.
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `inferd` | `account-daemon-support`, `account-callers` (`ProcRoot` and `choose_proc_root`), `account-client` and `account-client-dbus` (`AiAccounts<Bus>`, how `broker::AccountdBroker` asks accountd for the permits an app holds and the key behind one, reports a local runtime and hears the account news), `account-settings` (the spend rows' paths), `inference-router` (routing, the catalogue, the local model book, the session machine and the seams) `inference-fs`, `inference-settings`, `inference-agent-proto` (the files the pure libraries are given, the `[ai]` rows as values and the spend book, the agent endpoint's protocols) and `inference-turns` (a local model's turns, the structured-reply check, the audit trail, a pipeline's stages): inferd names both there, `account-core`, `account-match`, `account-capability`, `account-sheet`, `account-wire`, `account-ids`, `account-dbus`, `inference-tailnet` and `account-tailscale` (feature `io` of both: lending models to the person's other computers and calling theirs; `tailnet` is the wiring), `inference-probe` (the probe of local runtimes' ports), `http-core` and `http-reqwest` (the plain-HTTP client of that probe), `inference-core`, `account-provider` (`Port`), `computer-use-action`, quire's `ui-settings` (feature `live`, as accountd's, for the model picker), and stoker's `model-provider`, `model-catalog`, `engine-spec`, `engine-manifest` and `engine-probe` (the pinned manifest, where installs live, which engine is here and whether a person's own install is still the pinned one), `engine-supervisor`, `model-http` (features `client` and `tls`), `model-openai-compat`, `model-vision-prep` (feature `pixels`), `computer-use-parse`, `computer-use-session`, `computer-use-vendors`, `model-extract`, `model-replay`, `model-wire` (the `Driver` over inferd's body-shaping wrapper of `HttpClient`), `speech-provider`, `speech-host-client`, by git rev |
+| `inferd` | `account-daemon-support`, `account-callers` (`ProcRoot` and `choose_proc_root`), `account-client` and `account-client-dbus` (`AiAccounts<Bus>`, how `broker::AccountdBroker` asks accountd for the permits an app holds and the key behind one, reports a local runtime and hears the account news), `account-settings` (the spend rows' paths), `inference-router` (routing, the catalogue, the local model book, the session machine and the seams) `inference-fs`, `inference-settings`, `inference-agent-proto` (the files the pure libraries are given, the `[ai]` rows as values and the spend book, the agent endpoint's protocols) and `inference-turns` (a local model's turns, the structured-reply check, the audit trail, a pipeline's stages): inferd names both there, `account-core`, `account-match`, `account-capability`, `account-sheet`, `account-wire`, `account-ids`, `account-dbus`, `inference-tailnet` and `account-tailscale` (feature `io` of both: lending models to the person's other computers and calling theirs; `tailnet` is the wiring), `inference-probe` (the probe of local runtimes' ports), `http-core` and `http-reqwest` (the plain-HTTP client of that probe), `inference-core`, `account-provider` (`Port`), `computer-use-action`, Bardo's `ui-settings` (feature `live`, as accountd's, for the model picker), and stoker's `model-provider`, `model-catalog`, `engine-spec`, `engine-manifest` and `engine-probe` (the pinned manifest, where installs live, which engine is here and whether a person's own install is still the pinned one), `engine-supervisor`, `model-http` (features `client` and `tls`), `model-openai-compat`, `model-vision-prep` (feature `pixels`), `computer-use-parse`, `computer-use-session`, `computer-use-vendors`, `model-extract`, `model-replay`, `model-wire` (the `Driver` over inferd's body-shaping wrapper of `HttpClient`), `speech-provider`, `speech-host-client`, by git rev |
 | `inference-client` | `account-core`, `inference-tailnet`, `account-tailscale`, `account-match`, `account-capability`, `account-wire`, `account-ids`, `inference-core`; `account-dbus`, `account-callers` and zbus with feature `dbus`; `base-fs` with feature `lending` |
 | `inference-core` | `account-core`, `account-match`, `account-capability`, `account-ids`, `computer-use-action` (stoker's computer-use vocabulary, by git rev), and stoker's `model-provider` (`Money`, the type of a reported charge), `rust_decimal` |
 | `inference-bridge` | `account-core`, `account-capability`, `account-match`, `account-ids`, `inference-core`, and stoker's `model-provider`, `model-catalog`, `model-openai-compat`, `model-vision-prep` (pure, no file io: the one mapping between porter's wire types and stoker's turns, shared by inferd and account-client's `engines`; the bytes of a frame's descriptors come from `inference-fs`) |
@@ -33,7 +33,7 @@ at the one `rev` in the root `Cargo.toml` (`[workspace.dependencies]`). Stoker's
 | `inference-rig` | Test tooling, never installed and never in dist: `inference-rig-client --app-id <id> [--proc-root <dir>] open <need> [--class C] [--tier T] [--usage U] [--prompt TEXT]` opens an inferd session as an app and, with a prompt, runs one chat turn, printing JSON lines. Moved from `account-rig-client open` when inferd left porter; the identity fixture stays account-rig's | the scenario's session bus |
 | `inference-probe` | the port probe of local-engine discovery: which runtime (Ollama, llama.cpp, LM Studio, another OpenAI-compatible server) answers on a loopback port and what models it offers, over the `Http` seam. Cut from `porter_discover::probe_ports` | none (the `Http` seam) |
 
-Allowed direct edges (checked by `scripts/check-boundary.sh`; dev-dependencies are outside it) are the `EDGES` table in that script: one row per crate, the crates of ours, porter, stoker and quire it names directly, and nothing else.
+Allowed direct edges (checked by `scripts/check-boundary.sh`; dev-dependencies are outside it) are the `EDGES` table in that script: one row per crate, the crates of ours, porter, stoker and Bardo it names directly, and nothing else.
 
 External boundaries (default features, measured by `cargo tree`, enforced by check-boundary): `inference-core`,
 `inference-bridge`, `inference-fs`, `inference-settings`, `inference-agent-proto`, `inference-tailnet`, `inference-client` and `inference-probe` never reach `zbus`, `zvariant`, `tokio`,
@@ -45,7 +45,7 @@ client, keyring or settings library. Only `http-reqwest` (porter's) names `reqwe
 no environment variable; inferd reads it only in `from_env` functions.
 
 Working on a dependency locally: put a git-ignored `[patch]` in this repository's `.cargo/config.toml` (never
-commit it) pointing the porter, stoker or quire git URL at the checkout; a consumer that also takes them by path
+commit it) pointing the porter, stoker or Bardo git URL at the checkout; a consumer that also takes them by path
 needs the same `[patch]` in its own workspace root, or its graph holds two copies.
 
 ## 2. Who retries, who repairs

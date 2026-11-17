@@ -59,7 +59,7 @@ fn letter(rgb: [u8; 3]) -> Vec<u8> {
 
 /// Twenty PDFs: red, but the last blue.
 fn files() -> Vec<PathBuf> {
-    let dir = std::env::temp_dir().join(format!("quire-pdf-queue-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("bardo-pdf-queue-{}", std::process::id()));
     std::fs::create_dir_all(&dir).expect("temp dir");
     (0..FILES)
         .map(|i| {

@@ -1,5 +1,5 @@
 /* The widgets' content on the card (design/23-WIDGETS.md sections 3.3 and 9.6): the
-   compositions the reference measures, moved into quire with the widget contract so no host
+   compositions the reference measures, moved into bardo with the widget contract so no host
    lays out a widget's content. The card itself (corner, inset, material) is `widget_frame`'s.
    Attribute selectors carry `*|` (spike S2). */
 

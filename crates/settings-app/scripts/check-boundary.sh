@@ -76,7 +76,7 @@ for rule in "${DIRECT[@]}"; do
   fi
 done
 
-# The allowed edges between our own crates and quire (ARCHITECTURE.md section 1): each crate's
+# The allowed edges between our own crates and Bardo (ARCHITECTURE.md section 1): each crate's
 # DIRECT normal and build dependencies that are path dependencies, and nothing else. A
 # dependency on a crate not listed is a leak; so is one the crate no longer has, so the table
 # stays exact. Dev dependencies are outside it (a test may reach further than the crate does).

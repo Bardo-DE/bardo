@@ -10,21 +10,21 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
 
 ## Open items
 
-1. **The shell side of the chooser.** `org.quire.Shell1.PickCaptureSource` is the client in `chooser.rs` (the
+1. **The shell side of the chooser.** `org.bardo.Shell1.PickCaptureSource` is the client in `chooser.rs` (the
    `Shell1` proxy): `(app_label: s, kinds: u, multiple: u, cursor_modes: au) -> (sources: a(ss), cursor: u)` on name
-   `org.quire.Shell`, path `/org/quire/Shell1`. sill serves it since its p2-ch lane (checked against sill's source on
+   `org.bardo.Shell`, path `/org/bardo/Shell1`. sill serves it since its p2-ch lane (checked against sill's source on
    2026-10-15, see "transom-shot" below). Closed on this side; the jailed chain's fake shell still stands in for sill.
-2. **Settings source.** `DesktopAppearance` reads `quire/appearance.toml` with a small parser of its
+2. **Settings source.** `DesktopAppearance` reads `bardo/appearance.toml` with a small parser of its
    own (`settings::parse_appearance`: `theme` and `accent` in `[appearance]`; no contrast key exists
-   in the document yet). quire's `ds-settings` (v0.3.16) was not added: it pulls `ds-core`, `ds-style`
+   in the document yet). Bardo's `ds-settings` (v0.3.16) was not added: it pulls `ds-core`, `ds-style`
    (with an image decoder), `chordkit`, `toml` and `notify`, a graph far heavier than three keys. The
    eight accent colours are the macOS system values written into `settings.rs`; check them against
-   quire's token table. Changes are found by looking at the file every 2 seconds.
+   Bardo's token table. Changes are found by looking at the file every 2 seconds.
 3. **Restore data shape.** Checked against the installed interface XML (version 6): `restore_data`
-   is `(suv)`. transom writes `("quire", 1, <token as a string variant>)`; `RestoreToken` is the token.
+   is `(suv)`. transom writes `("bardo", 1, <token as a string variant>)`; `RestoreToken` is the token.
    Closed.
-4. **`UseIn=quire`** in `dist/quire.portal` matches `XDG_CURRENT_DESKTOP`; the session must set
-   it to `quire`.
+4. **`UseIn=bardo`** in `dist/bardo.portal` matches `XDG_CURRENT_DESKTOP`; the session must set
+   it to `bardo`.
 5. **PipeWire needs its development files** to build the `pipewire` crate (libpipewire and clang).
 6. **Interface XML re-read (P2-T1, portal 1.22).** Settings, Inhibit and the Screenshot methods match.
    Differences found: Screenshot is version 3 and has an `AvailableTargets` property (now served,
@@ -72,7 +72,7 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
 - **Shape.** The interface methods wrap public methods of `RemoteDesktopService` (`create`, `select`, `begin`, `connect`,
   `close`) so tests run without a bus. Seams: `Asker` (the one `Parts.access`; the question is `remote_control_question`) and `EisHandout` (`CasementEis`,
   `FakeEis`); `Parts` gained `eis` (built inside `Parts::real`, whose signature is unchanged).
-- **EIS only.** `ConnectToEIS` asks `org.quire.Compositor1.ConnectEis(session: t, devices: u) -> h` (casement; only
+- **EIS only.** `ConnectToEIS` asks `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> h` (casement; only
   `transom.service` may call it). The `Notify*` methods are accepted and dropped (debug log): there is no second way in.
   Checked against the installed `org.freedesktop.impl.portal.RemoteDesktop.xml`: all signatures match the skeleton; `ConnectToEIS`
   now returns `fdo::Result<h>` so a refusal is an error and not a panic.
@@ -88,7 +88,7 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
   combined session keeps its own token through ScreenCast.
 - **Open: request objects.** `Start` waits for the person; the frontend cancels it with `Request.Close` on `handle`, which no
   interface here serves yet (same for ScreenCast and Screenshot).
-- **Open: acceptance.** `dev/accept/remote-desktop.sh` is still a skeleton: it needs a stub `org.quire.Shell1` on the private
+- **Open: acceptance.** `dev/accept/remote-desktop.sh` is still a skeleton: it needs a stub `org.bardo.Shell1` on the private
   bus (for consent), the unit-check override in casement's debug peer table (so the jailed transom reads as
   `transom.service`), and a client that receives a file descriptor over D-Bus and speaks EIS. None exists in the jail.
 - **Spots most likely not to compile.** `OwnedValue::downcast_ref::<u32>()` on `&OwnedValue`; `#[zbus(object_server)]` as a
@@ -99,10 +99,10 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
 ## Install (desktop-transom lane, 2026-10-15)
 
 - `scripts/install.sh` added (binary, unit, D-Bus file, portal file; prefix and destdir aware, no home writes).
-  The desktop installs transom through it and ships its own `quire-portals.conf` (same choices as `dist/`).
+  The desktop installs transom through it and ships its own `bardo-portals.conf` (same choices as `dist/`).
 - **Asks before the desktop can drop xdg-desktop-portal-wlr in earnest.** (a) Screenshot is answered as failed
   while `main.rs` passes an empty `FixedLayout` (open item 7): it needs an `OutputLayout` from the capture
-  side. (b) ScreenCast Start needs `org.quire.Shell1.PickCaptureSource` served by sill (open item 1);
+  side. (b) ScreenCast Start needs `org.bardo.Shell1.PickCaptureSource` served by sill (open item 1);
   without it a browser's share dialog never gets a source. (c) `PickColor` is cancelled until the shell offers
   a picker.
 
@@ -131,10 +131,10 @@ Not compiled; the orchestrator gates.
   `capture/wl/outputs.rs` and prefer its logical position and size (and use `wp_fractional_scale` or the ratio of mode
   to logical size for the scale).
 - **ScreenCast without a shell.** When the shell is not on the bus, or is on it but has not exported
-  `/org/quire/Shell1` yet (`UnknownObject`, `UnknownInterface`, `UnknownMethod`), Start is answered as cancelled
+  `/org/bardo/Shell1` yet (`UnknownObject`, `UnknownInterface`, `UnknownMethod`), Start is answered as cancelled
   (response 1) and nothing is shared (`chooser::unavailable_is_cancel`). Any other failure of the question (access
   denied, a question already open, a malformed answer) stays response 2. Remote desktop consent keeps its refusal.
-- **PickColor.** The Screenshot interface calls `org.quire.Shell1.PickColor` (the `Shell1` proxy); the portal result is
+- **PickColor.** The Screenshot interface calls `org.bardo.Shell1.PickColor` (the `Shell1` proxy); the portal result is
   `color: (ddd)`. No shell, or a cancel, is response 1; a malformed answer is response 2.
 - **Acceptance scripts (not run).** `dev/accept/screenshot.sh` needs no shell (Screenshot never asks one) and needs no
   change: it joins the compositor session, so transom's session display is the compositor's; with scale 1 or 2 the
@@ -148,13 +148,13 @@ Not compiled; the orchestrator gates.
 
 ### Asks for sill
 
-1. **`org.quire.Shell1.PickCaptureSource` is already served** by sill (`sill_services::capture_pick`, exported on the
-   seat connection that owns `org.quire.Shell`); its signature, caller check and `("output", name)` / `("window", id)`
+1. **`org.bardo.Shell1.PickCaptureSource` is already served** by sill (`sill_services::capture_pick`, exported on the
+   seat connection that owns `org.bardo.Shell`); its signature, caller check and `("output", name)` / `("window", id)`
    sources match transom's client. Nothing to change. Two notes: (a) until the seat exists the object is absent and
    transom now treats that as "nobody to ask" and cancels; (b) the call has no timeout on either side, it waits on the
    person.
-2. **`org.quire.Shell1.PickColor` is not served and is not anywhere in sill.** The shell must serve, on the same object
-   (`/org/quire/Shell1`, interface `org.quire.Shell1`, name `org.quire.Shell`):
+2. **`org.bardo.Shell1.PickColor` is not served and is not anywhere in sill.** The shell must serve, on the same object
+   (`/org/bardo/Shell1`, interface `org.bardo.Shell1`, name `org.bardo.Shell`):
 
    ```
    PickColor(app_label: s) -> (color: a(ddd))
@@ -167,14 +167,14 @@ Not compiled; the orchestrator gates.
      macOS Digital Color Meter / the system colour well's eyedropper). Block until the person picks or cancels; no timeout
      (transom waits). One question at a time: a second call while one is open gets `org.freedesktop.DBus.Error.
      LimitsExceeded`. The caller leaving the bus takes the eyedropper down.
-   - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.quire` may call
+   - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.bardo` may call
      (`AccessDenied` otherwise).
    - Until sill serves it, transom answers every `PickColor` as cancelled when the object is absent
      (`UnknownObject`/`UnknownMethod`), so no app breaks.
 3. **Remote control consent (from p2-t3): closed 2026-10-16.** It goes through `AskPermission` (item 4); no
    `AskRemoteControl` is asked of the shell.
 4. **Yes-or-no question (transom-access).** The Access portal needs the person to answer through the shell. The shell
-   must serve, on the same object (`/org/quire/Shell1`, interface `org.quire.Shell1`, name `org.quire.Shell`):
+   must serve, on the same object (`/org/bardo/Shell1`, interface `org.bardo.Shell1`, name `org.bardo.Shell`):
 
    ```
    AskPermission(app_label: s, title: s, subtitle: s, body: s, grant_label: s, deny_label: s) -> (answer: u)
@@ -188,14 +188,14 @@ Not compiled; the orchestrator gates.
      sheet does, so a key typed for something else cannot answer it.
    - `answer`: 0 when the person pressed `grant_label`, 1 when they pressed `deny_label`, 2 when they dismissed the
      sheet (Escape, or it was replaced) without answering. Anything else is a bad answer and the portal call fails.
-   - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.quire`.
+   - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.bardo`.
    - Until sill serves it (it does not at sill 3fecef0), transom answers every question as denied (response 1) when
      the object is absent, so a screenshot is refused rather than taken unasked. Three things now ask it: the Access
      portal, an `interactive` or unvouched Screenshot (PORTAL-06) and remote control (PORTAL-04). Until sill serves
      it, remote control and those screenshots do not work; fail closed.
    - The Access portal's `icon` and `choices` options are not forwarded or answered; the reply carries no results.
-   - The desktop's own `quire-portals.conf` (desktop/session) must also route
-     `org.freedesktop.impl.portal.Access=quire`.
+   - The desktop's own `bardo-portals.conf` (desktop/session) must also route
+     `org.freedesktop.impl.portal.Access=bardo`.
 
 ## transom-repush: a still screen still gives a stream (2026-10-16)
 
@@ -296,10 +296,10 @@ Written without a build or a run: nothing here has been compiled. Fixed in trans
 
 **Interface asks**
 
-- casement: `org.quire.Compositor1.EndEis(session: t)`: end every socket handed out for `session` (stop its input and
+- casement: `org.bardo.Compositor1.EndEis(session: t)`: end every socket handed out for `session` (stop its input and
   close the compositor's end), callable only by `transom.service` like `ConnectEis`. Until it exists a close logs a
   warning and the app keeps the socket it was given (PORTAL-05's other half).
-- sill: serve `org.quire.Shell1.AskPermission` (item 4 above); remote control and interactive screenshots need it.
+- sill: serve `org.bardo.Shell1.AskPermission` (item 4 above); remote control and interactive screenshots need it.
 
 ## Production audit wave 2, area PORTAL (2026-10-16, lane pa2-transom)
 
@@ -317,7 +317,7 @@ ARCHITECTURE section 3b-2.
 - **Opener only (PORTAL-03).** The frontend is one peer for every app, so the "creator" check separates a second
   frontend-role peer from the first and stops a session being driven by anything but its opener; it is not a
   per-app boundary (the frontend owns that).
-- **The table is the deployment's (PORTAL-03, 10).** `main.rs` loads `/etc/quire/desktop-callers.toml`. A table that
+- **The table is the deployment's (PORTAL-03, 10).** `main.rs` loads `/etc/bardo/desktop-callers.toml`. A table that
   is missing, unreadable or not root-only leaves the portal running and refusing everything, with an error in the log.
   This is fail closed on purpose; it also means a machine without the table has no portal.
 - **The shell is asked by its unique name (PORTAL-10).** The owner is confirmed and the question is sent to that
@@ -330,7 +330,7 @@ ARCHITECTURE section 3b-2.
 
 - **Properties are not guarded.** zbus answers `Get`/`GetAll` for `version`, `AvailableSourceTypes`,
   `AvailableCursorModes`, `AvailableTargets` itself. They are constants. Closes if a property ever carries state.
-- **Sill `DoNotQueue`.** sill requesting `org.quire.Shell` with `DoNotQueue` and failing loudly if it is taken is
+- **Sill `DoNotQueue`.** sill requesting `org.bardo.Shell` with `DoNotQueue` and failing loudly if it is taken is
   sill's half of PORTAL-10 (not in this repo).
 - **The jailed chain** (`dev/`) has no caller table and no `portal_frontend`, so its portal refused everything.
   Closed 2026-10-17: see "The jailed chain is let in" below.
@@ -341,7 +341,7 @@ ARCHITECTURE section 3b-2.
 
 - peephole: none. The desktop table must name `portal_frontend` (unit `xdg-desktop-portal.service`) and `shell`
   (`sill.service`); the sample table does.
-- sill: serve `org.quire.Shell` with `DoNotQueue` (above).
+- sill: serve `org.bardo.Shell` with `DoNotQueue` (above).
 
 ## The jailed chain is let in (lane devc, 2026-10-17)
 
@@ -359,7 +359,7 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   `guard.rs`'s weak-proof case is part of the release-shaped build only; `dev_callers.rs` covers the `debug` build.
 - **The rows the harness writes** (one per stand-in; the frontend's image is the real `xdg-desktop-portal`):
   `[[peer]]` with `app = "org.freedesktop.portal.Desktop"`, `role = "portal_frontend"`, `exe = ["/usr/libexec/xdg-desktop-portal"]`,
-  and one with `app = "org.quire.Shell"`, `role = "shell"`, `exe = [<the stand-in shell's image>]`. A shipped row that
+  and one with `app = "org.bardo.Shell"`, `role = "shell"`, `exe = [<the stand-in shell's image>]`. A shipped row that
   claims the same image wins over a developer row.
 - **Dev scripts.** `dev/lib/chain.sh` passes `TRANSOM_DEV_CALLERS` to transom; no dev script builds transom (they take
   `TRANSOM_BIN`), so the caller builds it with `--features debug` (documented at the top of `chain.sh`).
@@ -378,11 +378,11 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   not shown to be its app, which was the point.
   (d) Unverified: that xdg-dbus-proxy's connection reads as the sandboxed app through its own `.flatpak-info`. If it
   reads as a plain program, no Flatpak app is remembered until that is fixed; the failure is asking too often.
-- **NEW-PI-7: revoke path.** `org.quire.Portal1.ListGrants` / `Revoke` (ARCHITECTURE "Taking a remembered share back").
+- **NEW-PI-7: revoke path.** `org.bardo.Portal1.ListGrants` / `Revoke` (ARCHITECTURE "Taking a remembered share back").
   The Settings page is detent's; the ask is in the lane report: a "Screen sharing" group on the Privacy page listing
   `ListGrants` rows (name, date) with a Remove button calling `Revoke(app_id)`, on the name
-  `org.freedesktop.impl.portal.desktop.quire`, path `/org/freedesktop/portal/desktop`. Settings must run as
-  `org.quire.Settings.service` from a root-owned unit with the loader variables unset, or it is proved below `Full`
+  `org.freedesktop.impl.portal.desktop.bardo`, path `/org/freedesktop/portal/desktop`. Settings must run as
+  `org.bardo.Settings.service` from a root-owned unit with the loader variables unset, or it is proved below `Full`
   and refused. Closes when detent has the row.
 - **PORTAL-02 rest / NEW-PI-3, transom half.** Nothing in transom trusts a desktop service below `Full`: the frontend,
   the shell and Settings are all asked for at `Full` (`peers::need`). The one `Proof::Exe` left is the unit manager's
@@ -391,11 +391,11 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
 - **NEW-PI-8: a restart strands handed-out sockets (transom half).** Session numbers now count up from the clock in
   nanoseconds (`Book::starting_after`), so a number is never reused by a later run, and at start `serve_on` calls
   `RemoteDesktopService::forget_previous_run`, which asks the compositor to drop every socket handed to this portal
-  before: `org.quire.Compositor1.EndAllEis()`, tolerated when the method or the compositor is absent. The compositor's
+  before: `org.bardo.Compositor1.EndAllEis()`, tolerated when the method or the compositor is absent. The compositor's
   half (the method, or ending a portal's sockets itself when the portal leaves the bus) is casement's; until it lands
   an app of the earlier run keeps its input. Closes when casement has it.
 - **NEW-FA-2: the portal's own capture connection (transom half).** A capture on the session's display (an empty
-  `DisplayName`) first asks `org.quire.Compositor1.Connect("portal")` over the session bus (`capture::CasementLine`, through the
+  `DisplayName`) first asks `org.bardo.Compositor1.Connect("portal")` over the session bus (`capture::CasementLine`, through the
   connection that owns the portal's name, the way `ConnectEis` is asked, within `LINE_DEADLINE`) and speaks Wayland on the
   descriptor it gets back (`DisplayName::route` gives `Route::Handed`). casement trusts that connection for the screen and the
   windows, so its own Screen sheet is no longer raised over the portal's chooser. When nobody owns the name, the call is refused
@@ -423,7 +423,7 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
 - **Cause.** RustDesk 1.5.0 reads and sends `restore_token` but never `persist_mode`, so the frontend issues it no token, and
   transom's book stayed empty for it. Checked from the strings of `librustdesk.so`; the live "asked every time" log line is
   still to be read on the real login (run with `RUST_LOG=info`, connect from RustDesk, look for it).
-- **Fix.** The person lets an app in for good, in Settings: `org.quire.Portal1.Allow(app_id, screens, input)`, see
+- **Fix.** The person lets an app in for good, in Settings: `org.bardo.Portal1.Allow(app_id, screens, input)`, see
   ARCHITECTURE "Letting an app in for good". Transom side done, with tests: core book and rules
   (`transom-core/tests/it/restore.rs`), the file (`restore_file.rs`), the bus method and its guard (`grants.rs`), and the
   no-ask path for input (`remote_desktop.rs`). The screen path in `Shared::restored` shares the lookup but has no

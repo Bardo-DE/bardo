@@ -17,7 +17,7 @@
 //! a lost print is not detected here.
 
 mod open;
-#[cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#[cfg(all(target_os = "linux", feature = "desktop"))]
 mod portal;
 
 use std::path::PathBuf;
@@ -50,7 +50,7 @@ pub enum PrintError {
 /// Show the system print dialog for `pdf`, titled `title`, and print it if the person accepts;
 /// where there is no dialog, open it in the system's viewer instead.
 pub fn print_dialog(pdf: &[u8], title: &str) -> Result<PrintOutcome, PrintError> {
-    #[cfg(all(target_os = "linux", feature = "quire-desktop"))]
+    #[cfg(all(target_os = "linux", feature = "desktop"))]
     match portal::print(pdf, title) {
         portal::Attempt::Answered(outcome) => return outcome,
         portal::Attempt::Unavailable => {}

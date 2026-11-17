@@ -1,6 +1,6 @@
 //! The banner column: one transparent Toast root as tall as the surface, the `--notifications-*`
-//! geometry tokens read from the sheet, holding quire's `BannerStack` of the
-//! deck's listed cards, each quire's `NotificationCard` (through [`NoteCard`]) that pauses the hold
+//! geometry tokens read from the sheet, holding Bardo's `BannerStack` of the
+//! deck's listed cards, each Bardo's `NotificationCard` (through [`NoteCard`]) that pauses the hold
 //! under the pointer and swipes away. It follows the notifications service's live banners and the
 //! [`BannerLink`] (only the output the link names shows cards), maps its surface while any card is
 //! drawn and unmaps it once the stack has played the last one out (`on_hidden`), and keeps the
@@ -109,7 +109,7 @@ fn ColumnView(output: layer_shell_types::OutputId) -> Element {
     }
 }
 
-/// One listed card as quire's banner.
+/// One listed card as Bardo's banner.
 fn banner(
     column: &Column,
     notes: &Notifications,

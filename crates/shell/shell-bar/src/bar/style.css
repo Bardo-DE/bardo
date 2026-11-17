@@ -1,5 +1,5 @@
 /* The bar (design/20 §1.1, design/13 §13.3.1, design/21 §3 and §5). Its height is
-   `--shell-bar-h` (quire's `SHELL_SCALE.bar`), the status items' box and glyph are
+   `--shell-bar-h` (bardo's `SHELL_SCALE.bar`), the status items' box and glyph are
    `--bar-status-box` and `--bar-status-glyph` (the `MenuBarItem` sheet's fallbacks, 22 and 16);
    everything here is a token. Attribute selectors carry `*|`. */
 
@@ -30,7 +30,7 @@
 
 /* The workspace group (ds WorkspacePills). */
 .shell-bar-spaces{ display:flex; align-items:center; margin-left:var(--s-6); }
-/* Mac-quiet: quire's pills are a segmented track with a raised current pill. The bar shows the
+/* Mac-quiet: bardo's pills are a segmented track with a raised current pill. The bar shows the
    workspaces as plain text: the track and the current pill's grounds are clear and the raise
    has no shadow (tokens only), so the current one is told by its full ink against the others'
    soft ink. */

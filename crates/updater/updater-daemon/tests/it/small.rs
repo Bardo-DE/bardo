@@ -23,13 +23,13 @@ fn the_configuration_has_defaults_and_overrides() {
         missing.settings_command,
         "bardo-settings --page software-update"
     );
-    assert_eq!(missing.name, "Quire");
+    assert_eq!(missing.name, "Bardo");
 
     let file = dir.path().join("config.toml");
-    std::fs::write(&file, "root = \"/srv/q\"\nname = \"Quire Beta\"\n").expect("write");
+    std::fs::write(&file, "root = \"/srv/q\"\nname = \"Bardo Beta\"\n").expect("write");
     let config = Config::load(&file).expect("load");
     assert_eq!(config.root, PathBuf::from("/srv/q"));
-    assert_eq!(config.name, "Quire Beta");
+    assert_eq!(config.name, "Bardo Beta");
     assert_eq!(config.index_url, Config::default().index_url);
 
     std::fs::write(&file, "root = [").expect("write");
@@ -45,7 +45,7 @@ fn the_system_file_decides_where_and_what_and_the_person_only_what_is_shown() {
     let (system, user) = (dir.path().join("system.toml"), dir.path().join("user.toml"));
     std::fs::write(
         &system,
-        "root = \"/srv/q\"\npubkey_path = \"/srv/q.pub\"\nname = \"Quire Lab\"\n",
+        "root = \"/srv/q\"\npubkey_path = \"/srv/q.pub\"\nname = \"Bardo Lab\"\n",
     )
     .expect("write");
     // The person's file tries every setting; only the two display ones count.
@@ -65,13 +65,13 @@ fn the_system_file_decides_where_and_what_and_the_person_only_what_is_shown() {
     assert_eq!(config.health_path, Config::default().health_path);
     assert_eq!(config.settings_command, "open-it now");
     assert_eq!(
-        config.name, "Quire Lab",
+        config.name, "Bardo Lab",
         "the system's name stands unless the person names it"
     );
 
-    std::fs::write(&user, "name = \"My Quire\"\nsettings_command = \"  \"\n").expect("write");
+    std::fs::write(&user, "name = \"My Bardo\"\nsettings_command = \"  \"\n").expect("write");
     let config = Config::load_layered(&system, &user).expect("layered");
-    assert_eq!(config.name, "My Quire");
+    assert_eq!(config.name, "My Bardo");
     assert_eq!(
         config.settings_command,
         Config::default().settings_command,

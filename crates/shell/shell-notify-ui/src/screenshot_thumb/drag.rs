@@ -1,7 +1,7 @@
-//! Dragging the thumbnail out as a file: quire's card says when a press crossed its drag
+//! Dragging the thumbnail out as a file: Bardo's card says when a press crossed its drag
 //! threshold (`ondrag`), and the thumbnail hands the file to layer-shell-host's drag source
 //! (`SurfaceHandle::start_drag`) while that press is still down: a `text/uri-list` of the
-//! screenshot's `file://` URI, copy or move as the target chooses, with quire's `ShotGhost` as
+//! screenshot's `file://` URI, copy or move as the target chooses, with Bardo's `ShotGhost` as
 //! the icon. The outcome comes back as a [`DragEnd`] for the machine: a copy keeps the file and
 //! dismisses the card, a move counts the file as the target's, a cancel or a refusal leaves the
 //! card and resumes the hold.

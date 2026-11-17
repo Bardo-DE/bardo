@@ -1,7 +1,7 @@
 //! Compositor blur behind a surface (`ext_background_effect_v1`). In-surface blur is impossible
 //! on every Vello backend (`backdrop-filter` is dropped), so this is the only blur there is.
 //!
-//! The region geometry is layer-shell-host's: quire exposes only the intent (`Material::blur()`), and
+//! The region geometry is layer-shell-host's: Bardo exposes only the intent (`Material::blur()`), and
 //! the shell turns it into a `BlurSpec`. Resolution to rectangles is `resolve::resolve`; binding
 //! the protocol is `handlers::background_effect`.
 

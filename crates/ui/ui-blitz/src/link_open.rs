@@ -97,7 +97,7 @@ impl LinkOpener {
         let worker = {
             let (scheme, failed) = (scheme.clone(), failed.clone());
             thread::Builder::new()
-                .name("quire-open-link".to_owned())
+                .name("bardo-open-link".to_owned())
                 .spawn(move || {
                     let opened = open(&href);
                     drop(claim);

@@ -1,17 +1,17 @@
-//! What a bardo-shell process hands layer-shell-host: quire's faces and the pre-paint pass.
+//! What a bardo-shell process hands layer-shell-host: Bardo's faces and the pre-paint pass.
 
 use shell_model::dirs::Dirs;
 use ui_components::style::fonts::FACES;
 
 use crate::file_roots::file_roots;
 
-/// The pre-paint pass the daemon installs on its host (`HostConfig::prepaint`): quire's
+/// The pre-paint pass the daemon installs on its host (`HostConfig::prepaint`): Bardo's
 /// device-pixel layout snap, a no-op at whole scales.
 pub fn prepaint() -> layer_shell_host::Prepaint {
     layer_shell_host::Prepaint::hook(ui_blitz::snap_to_device)
 }
 
-/// quire's bundled faces (Inter, Inter Display, Space Mono), for `HostConfig::fonts`.
+/// Bardo's bundled faces (Inter, Inter Display, Space Mono), for `HostConfig::fonts`.
 ///
 /// Without them every document under layer-shell-host falls back to the system face, since none of
 /// them is installed on the system.
@@ -20,7 +20,7 @@ pub fn faces() -> layer_shell_host::FontFaces {
     layer_shell_host::FontFaces(FACES.iter().map(|face| face.bytes).collect())
 }
 
-/// The host configuration every bardo-shell process starts from: quire's faces, the pre-paint pass
+/// The host configuration every bardo-shell process starts from: Bardo's faces, the pre-paint pass
 /// and the folders pictures may be read from ([`file_roots`], under `dirs`).
 ///
 /// It also registers the document host the surfaces' roots get from `ui_host_hooks::provide_host`

@@ -33,7 +33,7 @@ fn centre(harness: &Harness, selector: &str) -> Point {
     reason = "a Dioxus component function is named in CamelCase"
 )]
 fn Fields() -> Element {
-    let mut from = use_signal(|| "hello quire".to_owned());
+    let mut from = use_signal(|| "hello bardo".to_owned());
     let mut to = use_signal(String::new);
     let mut pasted = use_signal(String::new);
     let mut primary = use_signal(String::new);
@@ -80,16 +80,16 @@ fn ctrl_c_on_a_selection_then_ctrl_v_into_a_second_field() {
     harness.send(Input::chord(&[ShortcutKey::Ctrl], ShortcutKey::Char('a')));
     assert_eq!(
         harness.selected_text("#from input").as_deref(),
-        Some("hello quire")
+        Some("hello bardo")
     );
     harness.send(Input::chord(&[ShortcutKey::Ctrl], ShortcutKey::Char('c')));
-    assert_eq!(harness.clipboard_text().as_deref(), Some("hello quire"));
+    assert_eq!(harness.clipboard_text().as_deref(), Some("hello bardo"));
 
     let to = centre(&harness, "#to input");
     harness.send(Input::click(to));
     harness.send(Input::chord(&[ShortcutKey::Ctrl], ShortcutKey::Char('v')));
     harness.advance(ms(20));
-    assert_eq!(harness.text_of(".to").as_deref(), Some("hello quire"));
+    assert_eq!(harness.text_of(".to").as_deref(), Some("hello bardo"));
 }
 
 #[test]
@@ -212,7 +212,7 @@ mod files {
                 ["/tmp/a.txt", "/tmp/b c.txt"]
             ))
         );
-        shell.put("hello quire".to_owned());
+        shell.put("hello bardo".to_owned());
         assert_eq!(clipboard.read_files(), None);
     }
 

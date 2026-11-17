@@ -1,4 +1,4 @@
-//! Blitz glue for quire: launching an app and opening its windows, registering the faces, the
+//! Blitz glue for Bardo: launching an app and opening its windows, registering the faces, the
 //! clipboards and the document host (`use_standalone_host`), PDF output (feature `pdf`), printing
 //! (feature `print`), spellchecking (feature `spell`), the menu bar exported over D-Bus (feature
 //! `menus`), and the device-pixel layout snap (`snap`). The renderer: it names the blitz crates,
@@ -7,7 +7,7 @@
 //! driver lives in `ui-harness`, which builds its document from the parts in `seam` (feature
 //! `testing`).
 //!
-//! It is also the only quire crate that may depend on `tokio` (`scripts/check-boundary.sh`
+//! It is also the only Bardo crate that may depend on `tokio` (`scripts/check-boundary.sh`
 //! forbids it to `ds`): `launch` owns the process-wide runtime (`launch::runtime`), so the
 //! `ui_host_hooks::TokioSpawner` it hands `ui_settings::use_environment` has a runtime to run its
 //! portal and file-watch tasks on, and `enter_runtime` lends it to a test driver.
@@ -15,6 +15,8 @@
 mod app_handle;
 mod app_id;
 mod app_life;
+#[cfg(all(target_os = "linux", feature = "desktop"))]
+mod bardo_window;
 mod blitz_host;
 mod click_focus;
 pub mod clipboard;
@@ -75,8 +77,6 @@ mod phase;
 #[cfg(feature = "print")]
 mod print;
 mod probe;
-#[cfg(all(target_os = "linux", feature = "quire-desktop"))]
-mod quire_window;
 mod resolved;
 mod reveal;
 mod route;
@@ -95,7 +95,7 @@ mod startup_token;
 mod texture_layer;
 #[cfg(any(test, feature = "pdf", feature = "testing"))]
 mod wake;
-#[cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#[cfg(all(target_os = "linux", feature = "desktop"))]
 mod wayland_surface;
 pub mod window;
 mod window_activate;
@@ -112,7 +112,7 @@ mod window_scroll;
 mod window_shell;
 mod window_size;
 mod window_sizer;
-#[cfg(all(target_os = "linux", feature = "quire-desktop"))]
+#[cfg(all(target_os = "linux", feature = "desktop"))]
 mod xdg_activation;
 
 pub use app_handle::{AppHandle, AppHold, use_app_handle};

@@ -1,4 +1,4 @@
-//! `IconView`: any icon slot's content, a quire glyph or an external icon (design/08-ICONS.md
+//! `IconView`: any icon slot's content, a Bardo glyph or an external icon (design/08-ICONS.md
 //! section 1.5).
 //!
 //! A glyph draws as `Glyph` does; an external icon is a square `span`: `mask-image` over

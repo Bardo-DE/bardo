@@ -1,6 +1,6 @@
 //! Material stack v2 (the macOS polish pass, 2026-09-24; design/03-COLOR.md section 17.4).
 //!
-//! The layers macOS stacks on every chrome material and quire lacked, and the tokens that tune
+//! The layers macOS stacks on every chrome material and Bardo lacked, and the tokens that tune
 //! them. From the outside in: a 0.5 px dark outer hairline (`--m-hairline`), the tight contact
 //! shadow (`--m-shadow-contact`) and the wide ambient one (`--m-shadow-ambient`), then inside the 1
 //! px top highlight (`--m-highlight`) over the tint, whose colour carries the vibrancy boost

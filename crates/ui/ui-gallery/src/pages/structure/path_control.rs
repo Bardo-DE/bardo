@@ -41,7 +41,7 @@ pub fn PathControlSection() -> Element {
             div { class: "g-list", style: "width:520px",
                 PathControl {
                     label: "Long path",
-                    segments: folders(&["Macintosh HD", "Users", "pohsuan", "Documents", "Projects", "Quire", "Design", "Drafts"]),
+                    segments: folders(&["Macintosh HD", "Users", "pohsuan", "Documents", "Projects", "Bardo", "Design", "Drafts"]),
                     onpick: move |at: usize| said.set(format!("picked segment {at}")),
                 }
             }

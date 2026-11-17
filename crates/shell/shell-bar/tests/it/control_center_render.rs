@@ -1,7 +1,7 @@
 //! The control center's SSR render reads the frozen channels: its modules in
-//! `control_center.modules` order on quire's `ModuleGrid` (columns and gap from the settings),
-//! each tile's state and status line from the fake services, the full-width modules on quire's
-//! `ModulePanel` (bare in a module's dropdown), the levels on quire's `LevelControl`, and a fed
+//! `control_center.modules` order on Bardo's `ModuleGrid` (columns and gap from the settings),
+//! each tile's state and status line from the fake services, the full-width modules on Bardo's
+//! `ModulePanel` (bare in a module's dropdown), the levels on Bardo's `LevelControl`, and a fed
 //! value replacing the default.
 
 use crate::cc_support;
@@ -22,11 +22,11 @@ fn the_grid_shows_what_the_services_hold() {
     let (services, _feeds) = fake::services();
     let html = render(services, ShellFile::default());
     let cases = [
-        ("quire's module grid", "class=\"ds-module-grid\"", 1),
-        ("three quire tiles", "class=\"ds-module-tile\"", 3),
+        ("bardo's module grid", "class=\"ds-module-grid\"", 1),
+        ("three bardo tiles", "class=\"ds-module-tile\"", 3),
         ("each a column", "data-span=\"half\"", 3),
         (
-            "five full-width quire panels",
+            "five full-width bardo panels",
             "class=\"ds-module-panel\"",
             5,
         ),
@@ -57,7 +57,7 @@ fn the_grid_shows_what_the_services_hold() {
         ("no device named on the Bluetooth tile", ">Buds<", 0),
         ("Bluetooth and Do Not Disturb on", ">On<", 2),
         ("Do Not Disturb", ">Focus<", 1),
-        ("two quire capsule sliders", "class=\"ds-slider\"", 2),
+        ("two bardo capsule sliders", "class=\"ds-slider\"", 2),
         (
             "the sink as Sound's title",
             ">Built-in Audio Analog Stereo<",
@@ -125,7 +125,7 @@ fn a_modules_dropdown_draws_it_bare_on_the_card() {
     let (services, _feeds) = fake::services();
     let html = render_dropdown(services, ShellFile::default(), ControlCenterModule::Sound);
     let cases = [
-        ("one quire panel", "class=\"ds-module-panel\"", 1),
+        ("one bardo panel", "class=\"ds-module-panel\"", 1),
         ("bare: the card is its plate", "data-plate=\"bare\"", 1),
         ("headed", "class=\"ds-module-panel-head\"", 1),
     ];
@@ -190,7 +190,7 @@ fn a_chevron_slides_its_pane_in_and_escape_unwinds() {
         Some(WifiCommand::Radio(Radio::On))
     );
     running.harness.send(Input::click(chevron));
-    // quire's PaneSwitcher slides the detail in and drops the grid once it settles.
+    // Bardo's PaneSwitcher slides the detail in and drops the grid once it settles.
     running.harness.advance(Duration::from_millis(600));
     assert_eq!(
         running.harness.attr(".ds-panes", "data-shown").as_deref(),
@@ -269,7 +269,7 @@ fn the_wifi_pane_lists_networks_and_a_row_joins_one() {
         running.feeds.wifi_commands.try_recv().ok(),
         Some(WifiCommand::Scan)
     );
-    // home (joined, checked), office (saved, locked), cafe (new, open): quire SettingsRows.
+    // home (joined, checked), office (saved, locked), cafe (new, open): Bardo SettingsRows.
     assert_eq!(running.harness.count(".ds-row"), 3);
     assert_eq!(
         running.harness.text_of(".ds-row-title").as_deref(),

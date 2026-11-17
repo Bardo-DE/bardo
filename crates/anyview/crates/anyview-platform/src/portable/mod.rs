@@ -1,7 +1,7 @@
 //! What every platform has: no D-Bus and no freedesktop service is called from here.
 //!
 //! Single instance over the per-user socket (`LatchkeyInstance`) and the shared thumbnail cache (a
-//! file layout). `linux` (feature `quire-desktop`) replaces the single instance with the desktop's
+//! file layout). `linux` (feature `desktop`) replaces the single instance with the desktop's
 //! own.
 
 mod frame;

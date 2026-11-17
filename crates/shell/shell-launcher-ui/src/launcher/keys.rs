@@ -3,7 +3,7 @@
 //! closes one level. Pure.
 //!
 //! [`step`] knows counts, not ids, so an Enter inside the actions menu names the action it picks
-//! by its place in the row's list ([`LauncherOut::Action`]) and the panel finds the id. The quire
+//! by its place in the row's list ([`LauncherOut::Action`]) and the panel finds the id. Bardo
 //! `Menu` the panel draws owns that menu's keys when it has the keyboard and stops the Enter
 //! there; this one is for an Enter that reaches the field.
 

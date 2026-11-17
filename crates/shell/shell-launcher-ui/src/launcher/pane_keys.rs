@@ -3,7 +3,7 @@
 //! (`action_for_key`), and Enter on the pane's focused control.
 //!
 //! The field keeps the keyboard: the pane's focus is the machine's `focus: Some(n)`, drawn by
-//! quire's `PreviewPane` as `focused`. Keys reach the machine through quire's key claim:
+//! Bardo's `PreviewPane` as `focused`. Keys reach the machine through Bardo's key claim:
 //! [`PanelCtx::claim`] hears every key before the palette with the caret's place, and takes Space
 //! while browsing, → at the field's end (not on an emoji cell, where ← and → are the grid's:
 //! `claim_keys.rs`), and the pane's own keys, so the field never types that Space nor moves its
@@ -24,7 +24,7 @@ use crate::launcher::session::Session;
 use crate::launcher::view::Layout;
 
 impl PanelCtx {
-    /// quire's key claim: a key the field got, before the palette, the field or `onkey`.
+    /// Bardo's key claim: a key the field got, before the palette, the field or `onkey`.
     pub fn claim(&self, key: &FieldKey) -> bool {
         let (pressed, modifiers) = (key.event.key(), key.event.modifiers());
         let action = self.resolved(&pressed, modifiers);
@@ -169,7 +169,7 @@ impl PanelCtx {
     }
 }
 
-/// quire's caret as the pane's machine reads it: a caret nobody could read is not at the end
+/// Bardo's caret as the pane's machine reads it: a caret nobody could read is not at the end
 /// (→ moves it; ⌘Y and ⌘→ still reach the pane).
 fn caret_of(caret: ui_components::host::caret::Caret) -> Caret {
     match caret {

@@ -552,8 +552,8 @@ fn the_offered_protocols_choose_the_arm() {
         ),
         (
             "the desktop's own manager",
-            offer_of_protocols(&full_offer().with(Protocol::QuireDesktop)),
-            DesktopBackend::Quire,
+            offer_of_protocols(&full_offer().with(Protocol::BardoDesktop)),
+            DesktopBackend::Bardo,
         ),
         (
             "the desktop's own manager without the list",

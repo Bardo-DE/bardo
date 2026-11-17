@@ -1,5 +1,5 @@
-//! quire's coherence rules (CONSUMING.md section 5) on this app: layout-only CSS, and markup that
-//! is only quire's components. The markup is a server render of every page of the real schemas.
+//! Bardo's coherence rules (CONSUMING.md section 5) on this app: layout-only CSS, and markup that
+//! is only Bardo's components. The markup is a server render of every page of the real schemas.
 
 use crate::support::Sandbox;
 use dioxus::prelude::VirtualDom;

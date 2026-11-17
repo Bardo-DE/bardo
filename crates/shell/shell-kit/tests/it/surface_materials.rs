@@ -389,7 +389,7 @@ fn the_launcher_card_is_as_tall_as_its_content() {
     harness.advance(ms(600));
     let card = rect(&harness, ".ds-palette");
     assert_eq!(card.size.width, Px(600.0));
-    // About 160: field, header, one row and the list inset (12 since quire q20, concentric with
+    // About 160: field, header, one row and the list inset (12 since Bardo q20, concentric with
     // the card's 20 radius); the point is that it is nowhere near the 400 px container.
     assert!(card.size.height.0 < 172.0, "{card:?}");
     let glyph = rect(&harness, ".ds-text-field-icon .ds-ic");

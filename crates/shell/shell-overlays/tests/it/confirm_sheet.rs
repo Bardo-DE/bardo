@@ -1,5 +1,5 @@
 //! What the confirmation sheet draws and sends, on the harness over the fake intents service: nothing
-//! while the queue is empty or the sheets are elsewhere; with a question, quire's `Sheet` with the
+//! while the queue is empty or the sheets are elsewhere; with a question, Bardo's `Sheet` with the
 //! action's own label, who asks, the arguments and reasons the router formatted, and the buttons;
 //! the buttons disabled and Return ignored while it arms, Escape denying at any time; the offered
 //! second answer ("Allow from the terminal: this action, until logout"); a destructive action's

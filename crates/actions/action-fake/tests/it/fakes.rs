@@ -437,7 +437,7 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
         run,
         step: 1,
         app: AppName::parse("org.bardo.Mail").expect("app"),
-        trust: WindowTrust::Quire,
+        trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space(),
         action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,

@@ -1,5 +1,5 @@
 //! Why a path or an item is refused, in the words a person reads. (A name's and a type's errors are
-//! quire's, re-exported by the crate root.)
+//! Bardo's, re-exported by the crate root.)
 
 use ui_helpers::mime::NameError;
 

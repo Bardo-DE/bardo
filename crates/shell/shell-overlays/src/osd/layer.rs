@@ -1,6 +1,6 @@
 //! The indicator's layer surface (design/20 §1.7): Overlay, at the top right under the bar (as
 //! current macOS); no keyboard, no input, blurred
-//! behind the card (`Element("osd")`, quire's `Osd` root's `id`).
+//! behind the card (`Element("osd")`, Bardo's `Osd` root's `id`).
 //!
 //! Its exclusive zone is `Auto` (wire 0): it reserves nothing, and the compositor keeps it clear
 //! of what others reserve, so it sits below the bar's reserve without reading its geometry.
@@ -17,13 +17,13 @@ use layer_shell_types::{
 use super::tokens::OsdTokens;
 use shell_ui_kit::surface::namespace;
 
-/// The card's size: quire's `Osd` fixes the width at 296 (a control-center module spanning both
+/// The card's size: Bardo's `Osd` fixes the width at 296 (a control-center module spanning both
 /// columns); the height is the title line over the level, at the card's own padding and
 /// gap (design/20 §1.7 leaves it open; 01-LAYOUT "OSD: position, size: not specified").
 pub const CARD_WIDTH: u32 = 296;
 pub const CARD_HEIGHT: u32 = 80;
 
-/// The card's element id: quire's `Osd { id: .. }`, and the blur region.
+/// The card's element id: Bardo's `Osd { id: .. }`, and the blur region.
 pub const CARD_ID: &str = "osd";
 
 /// The Osd material's corner (`--r-tile`, design/03 §17: 12), which the card's `border-radius`

@@ -1,6 +1,6 @@
 //! What kind of thing an entry is, in the words of Finder's Kind column.
 //!
-//! A MIME type's own description ("PDF document") is quire's and the desktop's to give once a
+//! A MIME type's own description ("PDF document") is Bardo's and the desktop's to give once a
 //! lookup exists; until then a file's kind comes from its extension.
 
 use files_core::{Entry, EntryKind, LinkTo, Special};

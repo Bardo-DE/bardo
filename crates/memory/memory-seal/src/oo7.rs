@@ -10,7 +10,7 @@ use memory_core::SpaceId;
 use oo7::{Item, Keyring};
 
 /// The item schema of a Space key.
-pub const SCHEMA: &str = "org.quire.Memory.SpaceKey";
+pub const SCHEMA: &str = "org.bardo.Memory.SpaceKey";
 
 /// The Secret Service store: connects to the session's keyring on each call.
 #[derive(Debug, Default)]
@@ -88,7 +88,7 @@ pub async fn create_in(keyring: &Keyring, space: &SpaceId) -> Result<SpaceKey, K
     let key = SpaceKey::generate().map_err(|e| KeyError::Store(e.to_string()))?;
     keyring
         .create_item(
-            &format!("quire memory key for {}", space.as_str()),
+            &format!("bardo memory key for {}", space.as_str()),
             &attributes(space),
             key.expose().as_slice(),
             false,

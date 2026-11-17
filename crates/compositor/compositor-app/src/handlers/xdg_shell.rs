@@ -271,8 +271,8 @@ impl XdgShellHandler for State {
             // Its buffer may still be attached: the window's last image is kept before it goes.
             core_loop::keep_body_before_destroy(self, window);
             xdg_toplevel_tag::on_forgotten(&mut self.wl.xdg_toplevel_tag, window);
-            self.wl.quire_window.windows.remove(&window);
-            self.wl.quire_window.early.remove(&window);
+            self.wl.bardo_window.windows.remove(&window);
+            self.wl.bardo_window.early.remove(&window);
             self.wl.xdg_decoration.forget(window);
         }
         let events = on_toplevel_destroyed(&mut self.wl.xdg_shell, &surface);

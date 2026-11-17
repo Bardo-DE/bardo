@@ -15,7 +15,7 @@ fn all() -> Vec<(&'static str, A11ySnapshot)> {
     vec![
         ("gtk4_dialog", crate::support::gtk4_dialog()),
         ("firefox_form", crate::support::firefox_form()),
-        ("quire_mail", crate::support::quire_mail()),
+        ("bardo_mail", crate::support::bardo_mail()),
     ]
 }
 

@@ -23,9 +23,9 @@ pub fn store(config: &Path) -> Store {
 }
 
 /// The store of `bardo/style.css` under `config`: the person's desktop-wide style, which every
-/// quire app reads beside its own.
+/// Bardo app reads beside its own.
 pub fn desktop_store(config: &Path) -> Store {
-    Store::new(ConfigRoot::Scratch(config.to_path_buf()), AppName::QUIRE)
+    Store::new(ConfigRoot::Scratch(config.to_path_buf()), AppName::BARDO)
 }
 
 /// Print what `loaded` reports, one line per key.

@@ -6,7 +6,7 @@
 //!
 //! A press on an item is not a band: the item says so (`item_pressed`) before the press reaches
 //! the view, since a child hears it first. The band scrolls the content a little on each pointer
-//! move made near an edge; a pointer held still near the edge does not scroll on its own, as quire
+//! move made near an edge; a pointer held still near the edge does not scroll on its own, as Bardo
 //! keeps no timer for a gesture.
 
 use crate::components::controls::scroller::handle::ScrollerRef;

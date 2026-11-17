@@ -1,4 +1,4 @@
-//! The harness's input vocabulary: quire's keys and pointer buttons as the Blitz events a window
+//! The harness's input vocabulary: Bardo's keys and pointer buttons as the Blitz events a window
 //! would deliver for them.
 
 use crate::input::PasteChord;
@@ -11,7 +11,7 @@ use ui_components::prelude::*;
 use ui_core::command::modifiers_held;
 use ui_core::press::PointerButton;
 
-/// The Blitz button, and the held-buttons set while it is down, for a quire pointer button.
+/// The Blitz button, and the held-buttons set while it is down, for a Bardo pointer button.
 pub(crate) fn blitz_button(button: PointerButton) -> (MouseEventButton, MouseEventButtons) {
     match button {
         PointerButton::Primary => (MouseEventButton::Main, MouseEventButtons::Primary),
@@ -82,7 +82,7 @@ pub(crate) fn pointer(
     }
 }
 
-/// The DOM key and physical code for a quire key.
+/// The DOM key and physical code for a Bardo key.
 pub(crate) fn keyboard(key: ShortcutKey) -> (DomKey, Code) {
     match key {
         ShortcutKey::Ctrl => (DomKey::Control, Code::ControlLeft),
@@ -132,7 +132,7 @@ fn function_keyboard(n: u8) -> (DomKey, Code) {
         .unwrap_or((DomKey::Unidentified, Code::Unidentified))
 }
 
-/// The modifier flag a held quire key sets; any other key sets none.
+/// The modifier flag a held Bardo key sets; any other key sets none.
 pub(crate) fn modifier(key: ShortcutKey) -> Modifiers {
     match key {
         ShortcutKey::Ctrl => Modifiers::CONTROL,

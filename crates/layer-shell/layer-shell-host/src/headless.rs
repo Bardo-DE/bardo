@@ -1,6 +1,6 @@
 //! Render a Dioxus root component to `image::RgbaImage` buffers with no Wayland connection,
 //! no window and no GPU surface. This is the CI gate for every future surface: every
-//! `examples/demo_*.rs` and every quire component eventually gets a `render_png` snapshot
+//! `examples/demo_*.rs` and every Bardo component eventually gets a `render_png` snapshot
 //! test.
 //!
 //! Pipeline, per the plan's "Custom host" findings: build a [`DioxusDocument`] from a plain
@@ -160,7 +160,7 @@ fn build_font_context(fonts: Fonts) -> FontContext {
 /// A `Fonts::Bundled` face list for layer-shell-host's own examples and tests, which (unlike a real
 /// shell) bundle no design system of their own to pass through `HostConfig::fonts`.
 ///
-/// Prefers `~/quire/crates/ds/assets/fonts` (quire's own bundled faces); falls back to the first
+/// Prefers `~/bardo/crates/ds/assets/fonts` (Bardo's own bundled faces); falls back to the first
 /// TTF under `/usr/share/fonts` in sorted path order, deterministic on a given machine but not
 /// portable across machines with a different font package set. Panics if neither location has a
 /// usable font — a render with no glyphs at all is a broken environment, not a value this
@@ -168,8 +168,8 @@ fn build_font_context(fonts: Fonts) -> FontContext {
 /// one-time test/example fixture, not something a real host's hot path does.
 #[must_use]
 pub fn bundled_faces() -> FontFaces {
-    let quire_fonts = home_dir().join("quire/crates/ds/assets/fonts");
-    let path = first_ttf_sorted(&quire_fonts)
+    let bardo_fonts = home_dir().join("bardo/crates/ds/assets/fonts");
+    let path = first_ttf_sorted(&bardo_fonts)
         .or_else(|| first_ttf_sorted(Path::new("/usr/share/fonts")))
         .expect("at least one system TTF font is installed at /usr/share/fonts");
     let bytes = std::fs::read(&path).expect("bundled font file is readable");

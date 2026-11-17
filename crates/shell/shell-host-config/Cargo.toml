@@ -1,6 +1,6 @@
 [package]
 name = "shell-host-config"
-description = "What a bardo-shell process hands layer-shell-host: quire's faces, the pre-paint pass and the folders pictures may be read from."
+description = "What a bardo-shell process hands layer-shell-host: bardo's faces, the pre-paint pass and the folders pictures may be read from."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

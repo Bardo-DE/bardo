@@ -1,7 +1,7 @@
 //! Where one page ends and the next begins, as a pure function of the laid-out flow.
 //!
 //! Blitz cannot parse CSS fragmentation (stylo gates `break-before`/`break-inside` as
-//! gecko-only and ignores `@page`), so the rules are quire's, read from markers
+//! gecko-only and ignores `@page`), so the rules are Bardo's, read from markers
 //! (`crate::pdf::flow`):
 //!
 //! - a forced break (`data-break-before="page"`) ends the page at the marked box's top;

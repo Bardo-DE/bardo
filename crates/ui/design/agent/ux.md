@@ -1,8 +1,8 @@
 <!-- paths: skip -->
 <!-- Reference copy of ~/rs-wt/agent-spec/ux.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
-# Area "ux": the companion's user-facing surfaces (quire components, sill surfaces)
+# Area "ux": the companion's user-facing surfaces (Bardo components, sill surfaces)
 
-Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in quire `ds`/`ui-core`/`ui-settings`, sill `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and detent.
+Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, sill `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and detent.
 
 Other area names below ("actions", "context", "agent", "cua", "memory", "models", "security", "compositor") are my best guess at the sibling spec files. Map them to the real names when you merge.
 
@@ -11,7 +11,7 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 ## 1. Scope and non-goals
 
 **In scope**
-- **Summon.** Double-tap ⌘. Toshy handles it now and the compositor later. In a quire field, the field becomes the prompt. Anywhere else, the launcher opens in companion mode. Double-tap again or Esc returns.
+- **Summon.** Double-tap ⌘. Toshy handles it now and the compositor later. In a Bardo field, the field becomes the prompt. Anywhere else, the launcher opens in companion mode. Double-tap again or Esc returns.
 - **Launcher companion mode** and its coupling with app actions: headless runs, previews, compact forms, promote into the app window.
 - **Presence.** One `CompanionPresence` vocabulary. `CompanionOrb` built on `VoiceOrb`. A bar item and a control-centre module. The acting-here glow is data that the compositor draws.
 - **Answer surfaces.** Native cards: text answer, draft reply, proposed event, plan list with run/edit, inline replace with undo, compact form, refusal. Every card has a footer showing which model served it, the sources and the scope.
@@ -33,17 +33,17 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 
 ## 2. Repos and crates
 
-Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < ui-shell`. The pure sill crates sit below the sill surface crates. The daemons' wire crates are leaves that sill depends on, the same way it depends on `key-remap-proto` today. quire never names a companion daemon crate: its types are presentational, and sill converts wire types into props.
+Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < ui-shell`. The pure sill crates sit below the sill surface crates. The daemons' wire crates are leaves that sill depends on, the same way it depends on `key-remap-proto` today. Bardo never names a companion daemon crate: its types are presentational, and sill converts wire types into props.
 
 | Piece | Lives in | New / existing | Notes |
 |---|---|---|---|
-| `CompanionPresence` (5 states) | quire `ui-core::vocab` | new enum | the one home; shell-model and ds both name it |
-| `CompanionOrb`, `ContextChips`, prompt mode + `CompanionPort` seam, answer cards, `PlanList`, `ReplaceBar`, `CompactForm`, `RunRow`, `ActivityStrip`, `MemoryTimeline`, `ServedByChip` | quire `ds::components::companion/` | new group, layer order `… < editor < chrome < companion < app` | generic: both apps and the launcher draw them |
-| `TextField` / `CommandPalette` prompt props | quire `ds::components::fields`, `menus::palette` | existing, gains props | `mode: FieldMode` and `chips` only; default `Input` = today |
-| `EditSurface` proposal marks | quire `ds::editor` | existing, gains `proposals` prop | generic strike/insert spans (like `spell::marks`) |
-| `ConfirmCard` (content of the trusted surface), `GlowState`/`GlowSpec`/`glow_spec` | quire `ui-shell::{confirm, tokens::glow}` | new | shell-only |
-| Orb period tokens `OrbListen`, `OrbWork`, `OrbAct` | quire `ui-style::tokens::duration` | new tokens | lint `RawDuration`. Needs design/30 §1.2 rows (user) |
-| `Page::Intelligence` | quire `ui-settings::schema::key::Page` | new variant | then detent `page.rs` row + icon |
+| `CompanionPresence` (5 states) | Bardo `ui-core::vocab` | new enum | the one home; shell-model and ds both name it |
+| `CompanionOrb`, `ContextChips`, prompt mode + `CompanionPort` seam, answer cards, `PlanList`, `ReplaceBar`, `CompactForm`, `RunRow`, `ActivityStrip`, `MemoryTimeline`, `ServedByChip` | Bardo `ds::components::companion/` | new group, layer order `… < editor < chrome < companion < app` | generic: both apps and the launcher draw them |
+| `TextField` / `CommandPalette` prompt props | Bardo `ds::components::fields`, `menus::palette` | existing, gains props | `mode: FieldMode` and `chips` only; default `Input` = today |
+| `EditSurface` proposal marks | Bardo `ds::editor` | existing, gains `proposals` prop | generic strike/insert spans (like `spell::marks`) |
+| `ConfirmCard` (content of the trusted surface), `GlowState`/`GlowSpec`/`glow_spec` | Bardo `ui-shell::{confirm, tokens::glow}` | new | shell-only |
+| Orb period tokens `OrbListen`, `OrbWork`, `OrbAct` | Bardo `ui-style::tokens::duration` | new tokens | lint `RawDuration`. Needs design/30 §1.2 rows (user) |
+| `Page::Intelligence` | Bardo `ui-settings::schema::key::Page` | new variant | then detent `page.rs` row + icon |
 | Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | sill `shell-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
 | Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | sill `shell-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
 | Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | sill `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
@@ -63,7 +63,7 @@ Adopted crates: nothing new. Existing pins only: dioxus, serde, `ui-core::word::
 
 ## 3. Frozen interfaces
 
-### 3.1 quire `ui-core::vocab` — freeze now
+### 3.1 Bardo `ui-core::vocab` — freeze now
 
 ```rust
 /// The companion's one presence (COMPANION 8): a look of the orb and the window glow, never a panel.
@@ -84,7 +84,7 @@ pub enum CompanionPresence {
 }
 ```
 
-### 3.2 quire `ds::components::companion::orb` — types freeze now, view later
+### 3.2 Bardo `ds::components::companion::orb` — types freeze now, view later
 
 ```rust
 /// The orb's size ladder [design review: px values]. Inline 14, Bar 16, Field 20, Module 40, Hero 192.
@@ -323,19 +323,19 @@ pub struct ConsolidationDiff { pub night: String, pub lines: Vec<DiffLine> }
 #[component] pub fn MemoryTimeline(days: Vec<MemoryDay>, on_verb: EventHandler<(String, MemoryVerb)>) -> Element;
 #[component] pub fn ConsolidationView(diff: ConsolidationDiff) -> Element;
 
-/// The launcher's model chip; click opens a quire Menu of models (no new picker component).
+/// The launcher's model chip; click opens a Bardo Menu of models (no new picker component).
 pub struct ModelOption { pub key: String, pub label: String, pub place: ServedPlace, pub state: ModelState }
 pub enum ModelState { Ready, Loading, NeedsDownload { size: String }, Unavailable(String) }
 #[component] pub fn ServedByChip(current: ServedByView, options: Vec<ModelOption>, on_choose: EventHandler<String>) -> Element;
 ```
 
-### 3.6 quire `ui-shell` — GlowState freeze now, GlowSpec values later
+### 3.6 Bardo `ui-shell` — GlowState freeze now, GlowSpec values later
 
 ```rust
 pub enum GlowState { None, Working, Acting { spot: Option<GlowSpot> }, Waiting }
 pub struct GlowSpot { pub x: Px, pub y: Px, pub radius: Px }           // logical px inside the window
 pub struct GlowSpec { pub colours: [Srgb; 3], pub width: Px, pub blur: Px, pub period: Option<Duration>, pub strength: Fraction }
-/// From the orb tokens, so the compositor never links quire. None and Waiting have period None (zero frames).
+/// From the orb tokens, so the compositor never links bardo. None and Waiting have period None (zero frames).
 pub fn glow_spec(state: &GlowState, scheme: Scheme) -> GlowSpec;      // [design review: values]
 
 /// The content of the trusted confirmation surface.
@@ -603,7 +603,7 @@ Glow per window: `None` unless leased. A leased window glows Acting while a step
 
 ## 5. Tests that pin the shapes
 
-quire:
+Bardo:
 - `ui-core`: `companion_presence_words_round_trip` (Word ALL / slug / serde).
 - `ds/companion/orb`:
   - `orb_look_table`: every presence × motion level;
@@ -659,7 +659,7 @@ Fakes and fixtures:
 
 **Freeze wave** (parallel, one agent per repo; bodies `todo!()`, shape tests pass):
 
-- **F1 quire.** Owns:
+- **F1 bardo.** Owns:
   - `ui-core/src/vocab.rs` (+ test);
   - `ds/src/components/companion/**` (all `model.rs` types complete; `step` functions `todo!()`; views render a placeholder root `div.ds-<name>` so the lint passes);
   - `ds/src/components/companion/mod.rs` and the `components/mod.rs` line;
@@ -667,7 +667,7 @@ Fakes and fixtures:
   - `ui-shell/src/{confirm,tokens/glow.rs}`;
   - `ui-settings/src/schema/key.rs` (`Page::Intelligence`).
 
-  It does **not** touch TextField or CommandPalette yet. Verify: the quire gate (`cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --all-features; ./scripts/check-boundary.sh; ./scripts/check-consumer.sh; cargo deny check licenses`).
+  It does **not** touch TextField or CommandPalette yet. Verify: Bardo gate (`cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --all-features; ./scripts/check-boundary.sh; ./scripts/check-consumer.sh; cargo deny check licenses`).
 - **F2 sill** (after F1's `Page` and vocab land, since these are path deps). Owns:
   - `shell-launcher/src/{ids,subject,preview,activation}.rs` and the new `companion.rs`;
   - `shell-ipc/src/show.rs`;
@@ -677,20 +677,20 @@ Fakes and fixtures:
   - `shell-launcher-ui/src/launcher/{mode.rs, companion_keys.rs}` (types only);
   - `dist/casement/.../custom` (one row: unique chord to `bardo-shell companion tap`);
   - `dist/toshy/companion_tap.py`;
-  - design/22 §3 rows (doc edit in quire, coordinated).
+  - design/22 §3 rows (doc edit in Bardo, coordinated).
 
   Exhaustive matches that gain arms in the daemon return `Effect::Nothing` until W4. Verify: `cargo fmt --all --check; cargo clippy --workspace --all-targets --all-features -- -D warnings; cargo test --workspace --features sill/debug; ./scripts/check-boundary.sh; cargo deny check licenses`.
 - **F3 detent** (after F1). Owns `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures. Verify: the detent gate plus `scripts/gen-fixtures.sh`.
 
 **Fill waves** (file ownership is disjoint):
 
-- **W1 quire, prompt and orb.**
+- **W1 Bardo, prompt and orb.**
   - companion `orb*`, `chips*`, `prompt/**`;
   - `fields/text_field.rs` + `menus/palette/command_palette.rs` (prop pass-through only);
   - `ui-style/src/tokens/duration.rs` (OrbListen/OrbWork/OrbAct; values need user approval);
   - conformance and gallery pages.
-- **W2 quire, cards.** companion `card/**`, `plan/**`, `replace/**`, `form/**`; `editor/` proposal marks (`editor/proposals.rs` plus one prop in `surface.rs`).
-- **W3 quire, rows.** companion `run_row/**`, `activity/**`, `memory/**`, `served_by.rs`; `ui-shell` confirm view, `glow_spec`.
+- **W2 Bardo, cards.** companion `card/**`, `plan/**`, `replace/**`, `form/**`; `editor/` proposal marks (`editor/proposals.rs` plus one prop in `surface.rs`).
+- **W3 Bardo, rows.** companion `run_row/**`, `activity/**`, `memory/**`, `served_by.rs`; `ui-shell` confirm view, `glow_spec`.
 - **W4 sill.** Can start on fakes after F2; needs W1 for the field.
   - `shell-model/companion` step bodies;
   - `shell-services/companion/**` (fake plus zbus backend behind the areas' wire crates);
@@ -720,7 +720,7 @@ Fakes and fixtures:
 **Conflicts found, with proposed resolutions**
 1. **Esc on a run.** cua-integration §5 says Esc pauses a run and a second Esc cancels. The launcher rule is that Esc closes one level. Proposal: Esc keeps the launcher's meaning (the run continues, as on the Mac); stopping uses ⌘. or the Stop button, plus the compositor's hardware kill chord.
 2. **"In a field the field becomes the prompt"** does not fit multiline and editor fields, where it would replace the body being edited. Proposal: an anchored prompt there (`PromptHost::Anchored`, Writing-Tools style); Secure fields always decline.
-3. **R2 "one infinite loop".** design/30 allows the spinner and the Active orb. The compositor glow pulse while Working or Acting is a third loop, outside quire. Proposal: allow it only while a run is live, never in Idle or Waiting.
+3. **R2 "one infinite loop".** design/30 allows the spinner and the Active orb. The compositor glow pulse while Working or Acting is a third loop, outside bardo. Proposal: allow it only while a run is live, never in Idle or Waiting.
 4. **Only the user changes design/30.** New catalogue rows (CompanionOrb, ContextChips, AnswerCard family, PlanList, RunRow, ActivityStrip, MemoryTimeline, ConfirmCard) and the three orb duration tokens need user approval. Until then they are marked "proposed" in DESIGN.md.
 5. **agent-ux P6** (threads as windows) vs COMPANION ("no chat panel"). Promote opens the owning app's window. Threads stay deferred.
 6. **One home vs three layers.** A wire enum (daemon), a verb (shell-launcher) and a view (ds) each own a separate concept. The `*_total` tests keep them in step.
@@ -743,9 +743,9 @@ Fakes and fixtures:
     I recommend B if the spike passes, otherwise A.
 
 ### Critical Files for Implementation
-- /home/pohsuanlai/quire/crates/ds/src/components/content/voice_orb/view.rs
-- /home/pohsuanlai/quire/crates/ds/src/components/menus/palette/command_palette.rs
+- /home/pohsuanlai/bardo/crates/ds/src/components/content/voice_orb/view.rs
+- /home/pohsuanlai/bardo/crates/ds/src/components/menus/palette/command_palette.rs
 - /home/pohsuanlai/sill/crates/sill-launcher/src/activation.rs
 - /home/pohsuanlai/sill/crates/sill-launcher-ui/src/launcher/keys.rs
-- /home/pohsuanlai/quire/crates/ds-settings/src/schema/key.rs
+- /home/pohsuanlai/bardo/crates/ds-settings/src/schema/key.rs
 <!-- paths: end -->

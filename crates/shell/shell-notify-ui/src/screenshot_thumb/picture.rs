@@ -1,4 +1,4 @@
-//! What quire's `ShotThumbnail` is given to draw: the shot's picture as an `ImageSource` (the
+//! What Bardo's `ShotThumbnail` is given to draw: the shot's picture as an `ImageSource` (the
 //! 480 px preview, or the file itself when no preview could be made) and its size in pixels,
 //! read from the PNG's header, so the card takes the picture's shape. A picture that is not a
 //! PNG (a JPEG from another tool) is drawn in the 16:10 box, letterboxed.

@@ -1,7 +1,7 @@
 //! What a key press means in the window: files' own actions, the standard ones it answers, and
 //! typing a name to jump to it.
 //!
-//! The window never reads which modifier is held. quire's `Keys` turns a press into chordkit's
+//! The window never reads which modifier is held. Bardo's `Keys` turns a press into chordkit's
 //! `Action` (the keymap follows the system's own shortcut settings), and this file declares
 //! files' actions with portable chords written with `Primary` and answers the ones the window
 //! offers. Standard actions are handled, never declared.

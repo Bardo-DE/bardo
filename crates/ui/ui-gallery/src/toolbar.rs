@@ -1,4 +1,4 @@
-//! The toolbar: every axis the gallery sweeps, built from quire's own controls: segmented
+//! The toolbar: every axis the gallery sweeps, built from Bardo's own controls: segmented
 //! controls for theme, accent and motion level, menus for the material and the Space, a toggle
 //! for blur, tabs for the page.
 

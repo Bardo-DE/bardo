@@ -6,7 +6,7 @@
 //! same agenda feeds the month widget's events ([`today_events`]), in the same colours.
 //!
 //! The most events asked for is a ceiling, not a promise. The card's body is a fixed number of pixels
-//! (`--widget-cell`, `--widget-gap`; quire's card), so asking for more rows than it holds would
+//! (`--widget-cell`, `--widget-gap`; Bardo's card), so asking for more rows than it holds would
 //! draw the last one half off the bottom, clipped by the card's `overflow:hidden`. The view draws
 //! at most [`EVENT_ROWS`], measured once against a real render (`ui_harness::Harness`) rather
 //! than guessed.
@@ -25,7 +25,7 @@ use crate::widgets::calendar::shown::weekday_name;
 
 /// How many whole event rows the card's body holds at its one size (Medium.
 ///
-/// One 164 px cell tall, 16 px gap, quire's card inset, the title row and `.shell-un-day` column
+/// One 164 px cell tall, 16 px gap, Bardo's card inset, the title row and `.shell-un-day` column
 /// already drawn): two before a third would clip.
 pub const EVENT_ROWS: usize = 2;
 
@@ -91,7 +91,7 @@ const MONTHS: [&str; 12] = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
 
-/// A calendar's colour: one of quire's label hues, picked by the calendar's name, so a calendar
+/// A calendar's colour: one of Bardo's label hues, picked by the calendar's name, so a calendar
 /// keeps its colour everywhere (Up Next's bar, the month widget's events).
 #[must_use]
 pub fn calendar_hue(calendar: &CalendarName) -> LabelHue {
@@ -149,7 +149,7 @@ pub fn up_next_entry(
 }
 
 /// Today's events still to come, as the month widget lists them (its Medium card shows the
-/// first; quire caps the list at `shell_kit::widget::LARGE_EVENTS`): the same agenda and lines Up Next
+/// first; Bardo caps the list at `shell_kit::widget::LARGE_EVENTS`): the same agenda and lines Up Next
 /// draws.
 #[must_use]
 pub fn today_events(

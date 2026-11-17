@@ -1,14 +1,14 @@
-//! What a consumer may add to a quire control's own element: `data-*`
+//! What a consumer may add to a Bardo control's own element: `data-*`
 //! attributes of its own and classes of its own.
 //!
 //! mailo wrapped its buttons in a `span` to carry `data-folder` (its drag reads the drop place
 //! off the element under the pointer, and its tests find a folder's button by it) and to hang a
 //! class on for a hover reveal. A wrapper is a second box in the layout and a second target for
 //! the pointer. Letting the button carry them removes both, and the types below keep the one
-//! rule that matters: nothing a consumer adds can look like quire's own vocabulary. A name or a
-//! class that starts `ds-` is refused when it is built, and so is a `data-*` name quire writes
+//! rule that matters: nothing a consumer adds can look like Bardo's own vocabulary. A name or a
+//! class that starts `ds-` is refused when it is built, and so is a `data-*` name Bardo writes
 //! itself (`data-variant`, `data-size`) or reads on the root (`data-theme`, `data-accent`,
-//! `data-motion`, `data-material`), so no consumer attribute can restyle a quire element.
+//! `data-motion`, `data-material`), so no consumer attribute can restyle a Bardo element.
 
 use dioxus::core::Attribute;
 use std::collections::BTreeSet;
@@ -35,23 +35,23 @@ pub enum PassThroughError {
         /// The class list as given.
         class: String,
     },
-    /// The name or a class starts `ds-`, or the name is one quire writes or reads itself.
-    #[error("{given:?} is quire's own vocabulary; a consumer's name or class cannot use it")]
+    /// The name or a class starts `ds-`, or the name is one Bardo writes or reads itself.
+    #[error("{given:?} is bardo's own vocabulary; a consumer's name or class cannot use it")]
     Reserved {
         /// The name or class as given.
         given: String,
     },
 }
 
-/// `data-*` names quire writes on its controls or reads on the root: a consumer attribute of
-/// the same name would change how quire's stylesheet draws the element. `slot` is quire's seam
+/// `data-*` names Bardo writes on its controls or reads on the root: a consumer attribute of
+/// the same name would change how Bardo's stylesheet draws the element. `slot` is Bardo's seam
 /// name (`[data-slot=trailing]` on a tree row's trailing slot): a consumer button
 /// carrying it would be taken for the slot by the consumer's own seam rules.
 const RESERVED_DATA: &[&str] = &[
     "variant", "size", "theme", "accent", "motion", "material", "slot",
 ];
 
-/// The prefix of every quire class and of the names a consumer cannot take.
+/// The prefix of every Bardo class and of the names a consumer cannot take.
 const DS_PREFIX: &str = "ds-";
 
 /// A consumer's `data-*` attribute name, without the `data-` (`DataName::parse("folder")` is
@@ -70,7 +70,7 @@ pub struct DataName {
 
 impl DataName {
     /// The name, checked: lowercase ASCII letters, digits and `-`, starting with a letter; not
-    /// `ds-…`, and not a name quire uses itself.
+    /// `ds-…`, and not a name Bardo uses itself.
     ///
     /// # Errors
     /// [`PassThroughError`] when the name is not one a pass-through attribute may have.
@@ -124,7 +124,7 @@ fn intern(attribute: &str) -> &'static str {
     leaked
 }
 
-/// One `data-*` attribute a consumer puts on a quire control: `data-<name>="<value>"`.
+/// One `data-*` attribute a consumer puts on a Bardo control: `data-<name>="<value>"`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct DataAttr {
     /// The checked name.
@@ -150,11 +150,11 @@ pub(crate) fn attributes(data: &[DataAttr]) -> Vec<Attribute> {
         .collect()
 }
 
-/// A consumer's own class or classes on a quire control (`ExtraClass::parse("fold-more")`),
-/// appended after quire's.
+/// A consumer's own class or classes on a Bardo control (`ExtraClass::parse("fold-more")`),
+/// appended after Bardo's.
 ///
 /// For the consumer's own layout and reveal rules; it can never be a `ds-` class, so it cannot
-/// reach into quire's rules (ARCHITECTURE.md "Repo rules").
+/// reach into Bardo's rules (ARCHITECTURE.md "Repo rules").
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ExtraClass(String);
 
@@ -202,7 +202,7 @@ fn class_token(token: &str) -> bool {
             .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_')
 }
 
-/// quire's class list with the consumer's appended: `ds-button fold-more`.
+/// Bardo's class list with the consumer's appended: `ds-button fold-more`.
 pub(crate) fn class_list(own: &str, extra: Option<&ExtraClass>) -> String {
     match extra {
         Some(extra) => format!("{own} {extra}"),
@@ -278,7 +278,7 @@ mod tests {
     }
 
     #[test]
-    fn the_consumers_classes_follow_quires() {
+    fn the_consumers_classes_follow_bardo() {
         let extra = ExtraClass::parse("fold-more").ok();
         assert_eq!(
             class_list("ds-button", extra.as_ref()),

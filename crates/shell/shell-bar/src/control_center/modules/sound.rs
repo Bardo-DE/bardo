@@ -42,7 +42,7 @@ pub fn SoundModule(
     }
 }
 
-/// The Sound item in the bar: the volume glyph (quire's `VolumeGlyph` state, the Sound module's
+/// The Sound item in the bar: the volume glyph (Bardo's `VolumeGlyph` state, the Sound module's
 /// source too).
 #[component]
 fn SoundItem() -> Element {

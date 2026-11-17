@@ -1,6 +1,6 @@
 //! Coherence rules 1 and 2 for every surface, one loop over one table: its own stylesheet is
 //! clean under `Profile::Strict`, and the markup it draws in each state worth checking is clean
-//! against quire's classes and its own stylesheet. A surface's row names it; a failure names the
+//! against Bardo's classes and its own stylesheet. A surface's row names it; a failure names the
 //! row and the state.
 
 use std::time::Duration;
@@ -48,7 +48,7 @@ struct SurfaceCase {
     name: &'static str,
     /// The surface's name, the `data-surface` of its root: public selector surface.
     surface: &'static str,
-    /// The surface's own stylesheet; empty when quire's alone styles it.
+    /// The surface's own stylesheet; empty when Bardo's alone styles it.
     css: &'static str,
     /// The document the surface draws in each state, named: what the harness's `html` says.
     states: fn() -> Vec<(&'static str, String)>,
@@ -901,7 +901,7 @@ fn lock_states() -> Vec<(&'static str, String)> {
         lock.harness.advance(Duration::ZERO);
         lock.harness.html()
     };
-    // The document carries quire's stylesheet, which names every class; the markup follows it.
+    // The document carries Bardo's stylesheet, which names every class; the markup follows it.
     let drawn = |html: &str| {
         html.rsplit_once("</style>")
             .map_or(0, |(_, markup)| markup.matches("ds-lock-prompt").count())
@@ -958,7 +958,7 @@ fn the_banner_stack_names_no_motion_of_its_own() {
     for motion in ["@keyframes", "transition", "animation"] {
         assert!(
             !banners.css.contains(motion),
-            "{motion}: the stack's motion is quire's"
+            "{motion}: the stack's motion is bardo's"
         );
     }
 }

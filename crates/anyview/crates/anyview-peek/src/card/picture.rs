@@ -1,4 +1,4 @@
-//! A downscaled picture, shown through quire's `TextureLayer`: the pixels go to the window's own
+//! A downscaled picture, shown through Bardo's `TextureLayer`: the pixels go to the window's own
 //! device and are drawn from there, never encoded to a PNG `data:` URL.
 
 use anyview_image::ImagePeek;

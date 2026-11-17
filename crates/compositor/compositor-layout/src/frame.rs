@@ -1,8 +1,8 @@
 //! The window frame casement draws for a client that asked for a server-side one, read from
-//! quire's tokens: the chrome lengths, the colour table, `light_state`'s reveal rule, the window
+//! Bardo's tokens: the chrome lengths, the colour table, `light_state`'s reveal rule, the window
 //! radius (`Radius::px`), the shadow (`Shadow::layers`), the three light hues (`light_hue`).
 //! Pure; the renderer draws the [`FrameStyle`] this makes. Nothing here is a copy of a number
-//! quire owns.
+//! Bardo owns.
 
 use compositor_core::window::{
     FrameColour, FrameLook, FrameMetrics, FrameStyle, Light, LightDraw, ShadowLayer,
@@ -106,7 +106,7 @@ fn slot(light: Light) -> usize {
     }
 }
 
-/// quire's name for casement's `light`.
+/// Bardo's name for casement's `light`.
 fn hue_light(light: Light) -> HueLight {
     match light {
         Light::Close => HueLight::Close,
@@ -129,8 +129,8 @@ fn light(state: LightState, which: Light, scheme: Scheme) -> LightDraw {
     LightDraw { fill, ring, mark }
 }
 
-/// `--shadow-window`, from quire's numeric layers (contact shadow, then the wide one). A third
-/// layer would not be drawn: `FrameLook::shadow` holds two, and a test pins quire's count.
+/// `--shadow-window`, from Bardo's numeric layers (contact shadow, then the wide one). A third
+/// layer would not be drawn: `FrameLook::shadow` holds two, and a test pins Bardo's count.
 fn shadow(scheme: Scheme) -> [ShadowLayer; 2] {
     let layers = Shadow::Window.layers(scheme);
     [0, 1].map(|at| {
@@ -179,7 +179,7 @@ pub(crate) fn colour(value: Colour) -> FrameColour {
     }
 }
 
-/// An opaque colour from quire's hex.
+/// An opaque colour from Bardo's hex.
 fn rgb(value: Hex) -> FrameColour {
     FrameColour {
         r: value.0[0],
@@ -279,7 +279,7 @@ mod tests {
     const SCHEMES: [Scheme; 2] = [Scheme::Light, Scheme::Dark];
 
     #[test]
-    fn the_radius_is_quires_window_radius() {
+    fn the_radius_is_bardo_window_radius() {
         for scheme in SCHEMES {
             let look = frame_style(scheme, true, GroupHover::Away).look;
             assert_eq!(look.radius, u32::from(Radius::Window.px()), "{scheme:?}");
@@ -287,12 +287,12 @@ mod tests {
     }
 
     #[test]
-    fn the_shadow_is_quires_window_layers_in_both_schemes() {
+    fn the_shadow_is_bardo_window_layers_in_both_schemes() {
         for scheme in SCHEMES {
-            let quire = Shadow::Window.layers(scheme);
-            assert_eq!(quire.len(), 2, "{scheme:?}: FrameLook holds two layers");
+            let bardo = Shadow::Window.layers(scheme);
+            assert_eq!(bardo.len(), 2, "{scheme:?}: FrameLook holds two layers");
             let look = frame_style(scheme, true, GroupHover::Away).look;
-            for (ours, theirs) in look.shadow.iter().zip(quire) {
+            for (ours, theirs) in look.shadow.iter().zip(bardo) {
                 let [r, g, b, a] = theirs.rgba();
                 assert_eq!(
                     (ours.dx, ours.dy, ours.blur, ours.spread),
@@ -310,7 +310,7 @@ mod tests {
     }
 
     #[test]
-    fn the_lights_are_quires_hues_and_inks_in_both_schemes() {
+    fn the_lights_are_bardo_hues_and_inks_in_both_schemes() {
         for scheme in SCHEMES {
             let marked = frame_style(scheme, true, GroupHover::Over).look;
             for light in Light::ALL {

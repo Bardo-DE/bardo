@@ -18,8 +18,8 @@ use ui_components::prelude::*;
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(
         App,
-        AppConfig::new("quire: drop files here", WindowSize::new(520, 360))
-            .with_app_id(AppId("dev.quire.FileDrop".to_owned())),
+        AppConfig::new("bardo: drop files here", WindowSize::new(520, 360))
+            .with_app_id(AppId("dev.bardo.FileDrop".to_owned())),
     )
 }
 

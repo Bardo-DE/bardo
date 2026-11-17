@@ -18,7 +18,7 @@ use base_words::Word;
 pub enum Capability {
     /// A set of file-type pictures: one `dir` of them.
     FileIcons,
-    /// A stylesheet that restyles every quire surface.
+    /// A stylesheet that restyles every Bardo surface.
     Look,
 }
 

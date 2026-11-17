@@ -1,4 +1,4 @@
-//! Quire's `Osd` in a Blitz harness, on the virtual clock: a change fades it in with the live
+//! Bardo's `Osd` in a Blitz harness, on the virtual clock: a change fades it in with the live
 //! level and its real title, a new level moves the bar, the hold ends in the
 //! fade out and then the hidden look, a change during the fade takes it back, and a faked
 //! change shows its own level without touching the services.
@@ -153,7 +153,7 @@ fn a_faked_change_shows_its_own_level_and_another_outputs_does_not_show() {
     );
 }
 
-/// The Mac's volume and brightness keys draw sixteen squares, not the iOS pill (quire design/29
+/// The Mac's volume and brightness keys draw sixteen squares, not the iOS pill (Bardo design/29
 /// section 16).
 #[test]
 fn the_level_is_sixteen_squares() {
@@ -169,7 +169,7 @@ fn the_level_is_sixteen_squares() {
     assert!(tag.contains("data-style=\"discrete\""), "{tag}");
 }
 
-/// The card's presence: quire's `Osd` (`#osd`) is `"hidden"` while `data-shown="hidden"`, else
+/// The card's presence: Bardo's `Osd` (`#osd`) is `"hidden"` while `data-shown="hidden"`, else
 /// its `data-presence` (`"entering"`, `"present"` or `"leaving"`).
 fn look(harness: &Harness) -> Option<String> {
     let html = harness.html();
@@ -193,7 +193,7 @@ fn level(harness: &Harness) -> Option<u16> {
     rest[..rest.find('"')?].parse().ok()
 }
 
-/// The OSD's title (quire's `Osd { label }`, `#osd`'s own `aria-label`).
+/// The OSD's title (Bardo's `Osd { label }`, `#osd`'s own `aria-label`).
 fn label(harness: &Harness) -> Option<String> {
     let html = harness.html();
     let rest = &html[html.find("id=\"osd\"")?..];

@@ -45,7 +45,7 @@ impl<S: Surface> fmt::Debug for MountProps<S> {
     }
 }
 
-/// The root component of `S`: quire's document host and the seat's signals, then its `root`, in
+/// The root component of `S`: Bardo's document host and the seat's signals, then its `root`, in
 /// the component's scope.
 #[expect(
     clippy::missing_errors_doc,

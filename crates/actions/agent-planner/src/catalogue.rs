@@ -25,7 +25,7 @@ pub struct CatalogueTool {
     /// The declaration: the types its arguments are read by.
     pub decl: ActionDecl,
     /// For a kind's related action, the relations it resolves (from the manifest); empty for
-    /// every other action. Such an action is reached through `quire_related`, not as a tool.
+    /// every other action. Such an action is reached through `bardo_related`, not as a tool.
     pub related: Vec<RelationDecl>,
 }
 

@@ -15,7 +15,7 @@ use blitz_traits::events::{
 use dioxus::prelude::*;
 use layer_shell_hooks::HostRoot;
 
-/// The margin reset quire's `css/reset.css` brings; the host's UA sheet sizes the root
+/// The margin reset Bardo's `css/reset.css` brings; the host's UA sheet sizes the root
 /// but leaves margins to the design system.
 const RESET: &str = "html,body{margin:0}";
 

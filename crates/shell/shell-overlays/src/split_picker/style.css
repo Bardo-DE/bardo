@@ -1,4 +1,4 @@
-/* The Split View picker. The tiles are quire's `AppSwitcher`; this lays out the dimmed backdrop and
+/* The Split View picker. The tiles are bardo's `AppSwitcher`; this lays out the dimmed backdrop and
    the half of the screen the tiles are centred in. Tokens only. */
 .shell-split{ position:relative; width:100vw; height:100vh; outline:none; }
 .shell-split-scrim{ position:absolute; top:0; right:0; bottom:0; left:0; background:var(--scrim); }

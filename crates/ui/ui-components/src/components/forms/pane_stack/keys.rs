@@ -6,7 +6,7 @@ use keymap::{Action, Context, Keymap};
 use ui_core::command::resolve;
 
 /// Whether `key` with `modifiers` asks to go back under `keymap`: Escape, Alt+Left, and the
-/// chord quire's `quire.pane-back` action holds (Command and `[` by default).
+/// chord Bardo's `bardo.pane-back` action holds (Command and `[` by default).
 pub(crate) fn goes_back(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> bool {
     match key {
         Key::Escape => modifiers.is_empty(),
@@ -26,8 +26,8 @@ mod tests {
 
     fn registered(platform: Platform) -> Keymap {
         let mut keymap = Keymap::conventional(platform);
-        let app = AppId::new("quire").expect("an app name");
-        let back = AppAction::new("quire.pane-back").expect("an action id");
+        let app = AppId::new("bardo").expect("an app name");
+        let back = AppAction::new("bardo.pane-back").expect("an action id");
         let chord = "Primary+[".parse().expect("a chord");
         keymap.register(&app, &[(back, chord)]).expect("free");
         keymap

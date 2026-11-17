@@ -2,7 +2,7 @@
 //! `org.freedesktop.portal.Settings.ReadAll(["org.freedesktop.appearance"])` and
 //! `SettingChanged`, mapped to [`ui_components::prelude::SystemPrefs`]. The mappings are pure tables, tested
 //! against a fake `ReadAll`/`SettingChanged` payload with no bus involved; only
-//! [`SystemPrefsSource::Portal`] touches `zbus`, and only on Linux with feature `quire-desktop`
+//! [`SystemPrefsSource::Portal`] touches `zbus`, and only on Linux with feature `desktop`
 //! (`portal/bus.rs`). On macOS the same answers come from the user's defaults (`portal/macos.rs`).
 //! A desktop without the portal, or a build for a platform or feature set that has neither
 //! (`portal/absent.rs`), simply answers [`ui_components::prelude::SystemPrefs::default`].
@@ -14,16 +14,10 @@ use ui_style::appearance::system::SystemPrefs;
 use ui_style::appearance::theme::Scheme;
 
 // The half that reaches `zbus`, the Mac's defaults, or a stand-in, with the same two entry points.
-#[cfg_attr(
-    all(target_os = "linux", feature = "quire-desktop"),
-    path = "portal/bus.rs"
-)]
+#[cfg_attr(all(target_os = "linux", feature = "desktop"), path = "portal/bus.rs")]
 #[cfg_attr(target_os = "macos", path = "portal/macos.rs")]
 #[cfg_attr(
-    not(any(
-        all(target_os = "linux", feature = "quire-desktop"),
-        target_os = "macos"
-    )),
+    not(any(all(target_os = "linux", feature = "desktop"), target_os = "macos")),
     path = "portal/absent.rs"
 )]
 mod bus;

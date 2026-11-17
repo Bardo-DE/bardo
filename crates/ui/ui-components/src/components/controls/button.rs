@@ -4,7 +4,7 @@
 //! `data-state` and `aria-pressed` only for a toggle button; `aria-haspopup` only for a button that
 //! opens a menu, dialog or listbox; `data-answers` for a button that answers Return or Escape;
 //! `data-image=only` when the label is not drawn; `data-pressed` while a press is under way; the
-//! consumer's own `data-*` and classes after quire's.
+//! consumer's own `data-*` and classes after Bardo's.
 
 use crate::components::content::icon_source::IconSource;
 use crate::components::content::icon_view::IconView;
@@ -76,7 +76,7 @@ fn spinner_size(size: ControlSize) -> ControlSize {
 /// `aria-busy` written all the same).
 ///
 /// `cross_fade: true` fades a changed `icon` into the new one (design/30 section 1.3, Cross-fade: a
-/// play button that becomes a pause button fades one into the other, and never pulses); a quire
+/// play button that becomes a pause button fades one into the other, and never pulses); a Bardo
 /// glyph only, anything else swaps at once.
 ///
 /// `stop_propagation: true` keeps the press at the button: its ancestors never hear the
@@ -239,7 +239,7 @@ pub fn Button(
     }
 }
 
-/// `icon` at `size`; a quire glyph under `cross_fade` fades into the next one it is
+/// `icon` at `size`; a Bardo glyph under `cross_fade` fades into the next one it is
 /// given. A toggle's `value` picks the glyph's style: a star, heart, pin or bell is outline
 /// while off (`GlyphStyle::for_state`); any other glyph draws its own pick (`Icon::native`).
 fn icon_view(icon: IconSource, size: IconSize, cross_fade: bool, value: Option<Check>) -> Element {

@@ -49,7 +49,7 @@ pub enum Presence {
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct AssetsEnv {
     /// `$BARDO_ICON_ASSETS`.
-    pub quire_icon_assets: Option<OsString>,
+    pub bardo_icon_assets: Option<OsString>,
     /// `$XDG_DATA_HOME`.
     pub xdg_data_home: Option<OsString>,
     /// `$HOME`, for the data home's default.
@@ -63,7 +63,7 @@ impl AssetsEnv {
     #[must_use]
     pub fn current() -> AssetsEnv {
         AssetsEnv {
-            quire_icon_assets: std::env::var_os("BARDO_ICON_ASSETS"),
+            bardo_icon_assets: std::env::var_os("BARDO_ICON_ASSETS"),
             xdg_data_home: std::env::var_os("XDG_DATA_HOME"),
             home: std::env::var_os("HOME"),
             xdg_data_dirs: std::env::var_os("XDG_DATA_DIRS"),
@@ -87,7 +87,7 @@ pub fn candidates(env: &AssetsEnv) -> Vec<AssetsDir> {
     let shared = data_dirs_list_from(env.xdg_data_dirs.as_deref())
         .into_iter()
         .map(|dir| dir.join(SUBDIR));
-    set(env.quire_icon_assets.as_ref())
+    set(env.bardo_icon_assets.as_ref())
         .map(PathBuf::from)
         .map(at(AssetsOrigin::Override))
         .into_iter()
@@ -161,7 +161,7 @@ mod tests {
 
     fn env(assets: Option<&str>, home: Option<&str>, dirs: Option<&str>) -> AssetsEnv {
         AssetsEnv {
-            quire_icon_assets: assets.map(OsString::from),
+            bardo_icon_assets: assets.map(OsString::from),
             xdg_data_home: home.map(OsString::from),
             home: Some(OsString::from("/home/ada")),
             xdg_data_dirs: dirs.map(OsString::from),

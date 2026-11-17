@@ -1,7 +1,7 @@
-//! A notification as quire's `NotificationCard`: bardo-shell finds the app's icon and name, writes the
-//! age, turns the body's runs and the actions into quire's, and hears the card's presses as one
+//! A notification as Bardo's `NotificationCard`: bardo-shell finds the app's icon and name, writes the
+//! age, turns the body's runs and the actions into Bardo's, and hears the card's presses as one
 //! [`CardPress`]. The card's look (the plate, the clamp, hover, the close button, the group's
-//! layers, the swipe) is quire's.
+//! layers, the swipe) is Bardo's.
 
 use std::path::PathBuf;
 use std::time::SystemTime;
@@ -46,7 +46,7 @@ pub(super) struct CardWiring {
     pub on_press: EventHandler<CardPress>,
 }
 
-/// `note` as quire's card, standing for `count` notifications, drawn at `place`.
+/// `note` as Bardo's card, standing for `count` notifications, drawn at `place`.
 pub(super) fn card(
     note: &Notification,
     count: usize,
@@ -82,7 +82,7 @@ pub(super) fn card(
     }
 }
 
-/// Which app sent a notification, as quire names it: the icon (at `size`) and the name the card
+/// Which app sent a notification, as Bardo names it: the icon (at `size`) and the name the card
 /// and the center's group header show.
 #[must_use]
 pub fn use_app_mark(app: &AppRef, size: IconSize) -> AppMark {
@@ -137,7 +137,7 @@ fn theme_icon(name: &str, dirs: &Dirs) -> Option<PathBuf> {
     }
 }
 
-/// The card's icon at `size`: the file, else quire's bell.
+/// The card's icon at `size`: the file, else Bardo's bell.
 fn icon_source(art: Option<&IconFile>, size: IconSize) -> IconSource {
     let external = |path: &PathBuf| {
         IconUrl::file(path)

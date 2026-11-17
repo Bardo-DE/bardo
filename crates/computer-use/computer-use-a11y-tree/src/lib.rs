@@ -2,7 +2,7 @@
 //!
 //! A snapshot ([`A11ySnapshot`]) is an arena of nodes with window-local bounds. Names and text
 //! values are screen content and carry an `Untrusted(Screen)` label. The model sees the tree as
-//! text ([`render`]), cut to a budget ([`prune`]); secret nodes (password entries, quire-declared
+//! text ([`render`]), cut to a budget ([`prune`]); secret nodes (password entries, bardo-declared
 //! sensitive controls) are never rendered and their rectangles ([`secret_rects`]) become mask
 //! hints for `maskcap`.
 //!

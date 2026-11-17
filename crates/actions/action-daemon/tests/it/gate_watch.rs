@@ -36,7 +36,7 @@ fn step(run: &RunId) -> CuaAsk {
         run: run.clone(),
         step: 1,
         app: app("org.bardo.Mail"),
-        trust: WindowTrust::Quire,
+        trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space(),
         action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,

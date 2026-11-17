@@ -29,7 +29,7 @@ fn quoted_head() -> TextLine {
 pub fn LabelRunsAndMarks() -> Element {
     let mut open = use_signal(|| false);
     rsx! {
-        Section { title: "Button: a leading mark", note: "leading: Leading::Mark(element) puts a quire mark before the label: the From dropdown shows the account's provider inside its value. Leading::Glyph(icon) takes a glyph.",
+        Section { title: "Button: a leading mark", note: "leading: Leading::Mark(element) puts a bardo mark before the label: the From dropdown shows the account's provider inside its value. Leading::Glyph(icon) takes a glyph.",
             div { class: "g-row g-row-top",
                 Specimen { name: "mark",
                     div { class: "g-row",
@@ -40,7 +40,7 @@ pub fn LabelRunsAndMarks() -> Element {
                 }
             }
         }
-        Section { title: "ProviderMark: a face as data", note: "face: Some(MarkFace::new(letter, \"#RRGGBB\")) draws a letter of one or two characters on the colour; quire picks white or dark ink for the contrast. Two letters are set smaller. A colour that is not #RRGGBB draws the neutral mark.",
+        Section { title: "ProviderMark: a face as data", note: "face: Some(MarkFace::new(letter, \"#RRGGBB\")) draws a letter of one or two characters on the colour; bardo picks white or dark ink for the contrast. Two letters are set smaller. A colour that is not #RRGGBB draws the neutral mark.",
             div { class: "g-row g-row-top",
                 Specimen { name: "faces",
                     div { class: "g-row",

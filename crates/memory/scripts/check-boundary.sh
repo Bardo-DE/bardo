@@ -255,7 +255,7 @@ for rule in "${RULES[@]}"; do
     fail=1
     continue
   fi
-  # memory-client's default feature (`quire-desktop`, the app-level desktop switch) turns `dbus` on;
+  # memory-client's default feature (`desktop`, the app-level desktop switch) turns `dbus` on;
   # the rule is about what an app without it links, hosting the service in process, so that crate is
   # checked without defaults and with `in_process`.
   defaults=()

@@ -1,6 +1,6 @@
-/* The banner column (design/20 §1.6, design/13 §13.3.6): quire's `BannerStack` in the
+/* The banner column (design/20 §1.6, design/13 §13.3.6): bardo's `BannerStack` in the
    surface's corner, inside its transparent room for the Toast shadow (`--shell-banner-room`,
-   `layer::ROOM`). The stack, the cards and their motion are quire's; this only places the
+   `layer::ROOM`). The stack, the cards and their motion are bardo's; this only places the
    stack. */
 
 .shell-banners{ position:absolute; top:0; right:0; bottom:0; left:0; display:flex; flex-direction:column;

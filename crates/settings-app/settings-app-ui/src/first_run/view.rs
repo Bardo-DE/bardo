@@ -36,7 +36,7 @@ pub fn FirstRunApp() -> Element {
     let appearance = use_environment(
         Store::new(
             ConfigRoot::Scratch(env.config_home.0.clone()),
-            AppName::QUIRE,
+            AppName::BARDO,
         ),
         env.system.clone(),
         Arc::new(TokioSpawner::current()),

@@ -8,11 +8,11 @@ use crate::root::pass_through::{DataAttr, ExtraClass, attributes, class_list};
 use dioxus::prelude::*;
 use std::fmt;
 
-/// What a consumer may put on any quire component's own element.
+/// What a consumer may put on any Bardo component's own element.
 ///
 /// `data` and `extra_class` are checked when built ([`DataName::parse`], [`ExtraClass::parse`]):
-/// a `ds-` name or class, or a `data-*` name quire writes itself, is refused, so nothing added
-/// here can restyle the element through quire's rules.
+/// a `ds-` name or class, or a `data-*` name Bardo writes itself, is refused, so nothing added
+/// here can restyle the element through Bardo's rules.
 ///
 /// [`DataName::parse`]: crate::root::pass_through::DataName::parse
 /// [`ExtraClass::parse`]: crate::root::pass_through::ExtraClass::parse
@@ -22,7 +22,7 @@ pub struct Common {
     pub id: Option<String>,
     /// The consumer's own `data-*` attributes.
     pub data: Vec<DataAttr>,
-    /// The consumer's own classes, appended after quire's.
+    /// The consumer's own classes, appended after Bardo's.
     pub extra_class: Option<ExtraClass>,
     /// The accessible name, where the component's visible label does not give one.
     pub aria_label: Option<String>,
@@ -43,7 +43,7 @@ impl fmt::Debug for Common {
 }
 
 impl Common {
-    /// `own` (quire's class list) with the consumer's classes after it.
+    /// `own` (Bardo's class list) with the consumer's classes after it.
     #[must_use]
     pub fn class(&self, own: &str) -> String {
         class_list(own, self.extra_class.as_ref())
@@ -69,7 +69,7 @@ mod tests {
     use crate::root::pass_through::{DataAttr, DataName, ExtraClass};
 
     #[test]
-    fn the_class_list_puts_the_consumers_after_quires() {
+    fn the_class_list_puts_the_consumers_after_bardo() {
         let extra = ExtraClass::parse("fold-more");
         let cases = [
             (Common::default(), "ds-button"),

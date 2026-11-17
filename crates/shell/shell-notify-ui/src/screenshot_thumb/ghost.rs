@@ -1,4 +1,4 @@
-//! The drag icon: quire's `ShotGhost` (the card at 120 wide, .8 opaque) on layer-shell-host's
+//! The drag icon: Bardo's `ShotGhost` (the card at 120 wide, .8 opaque) on layer-shell-host's
 //! drag-icon surface. That surface is a document of its own, with none of the thumbnail's root
 //! contexts, so the appearance it is drawn in travels as its props ([`GhostLook`]).
 
@@ -12,10 +12,10 @@ use ui_settings::Environment;
 
 use super::picture::ThumbPicture;
 
-/// The ghost's width (quire's `ShotGhost`).
+/// The ghost's width (Bardo's `ShotGhost`).
 const GHOST_WIDTH: u32 = 120;
 
-/// The mat round the ghost's picture, and the picture box's tallest shape (16:10), as quire
+/// The mat round the ghost's picture, and the picture box's tallest shape (16:10), as Bardo
 /// draws the card: the icon surface is as tall as the tallest ghost.
 const GHOST_MAT: u32 = 4;
 

@@ -53,7 +53,7 @@ fn projects(open: bool, drop: DropState) -> Element {
             on_toggle: |_| {},
             accessory: Accessory::Slot(more("Projects")),
             onclick: |_| {},
-            Row { title: "Quire", leading: RowLeading::Icon(Icon::Folder), outline: Outline::Leaf }
+            Row { title: "Bardo", leading: RowLeading::Icon(Icon::Folder), outline: Outline::Leaf }
         } }
     }
 }

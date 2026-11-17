@@ -1,11 +1,11 @@
 //! The whole picture.
 
 use crate::backend::{DesktopBackend, backend_for};
+use crate::bardo::Bardo;
 use crate::capture::Captures;
 use crate::keys::SpaceKey;
 use crate::output::Outputs;
 use crate::protocol::ProtocolSet;
-use crate::quire::Quire;
 use crate::toplevel::Toplevels;
 use crate::workspace::Workspaces;
 use desktop_protocols::vocab::Shown;
@@ -24,9 +24,9 @@ pub struct DesktopState {
     pub outputs: Outputs,
     /// Captures in flight or waiting.
     pub captures: Captures,
-    /// The Quire arm: apps, windows, Spaces and the shell's state. Empty unless the compositor
+    /// Bardo arm: apps, windows, Spaces and the shell's state. Empty unless the compositor
     /// offers `bardo_desktop_v1`.
-    pub quire: Quire,
+    pub bardo: Bardo,
 }
 
 impl DesktopState {
@@ -59,7 +59,7 @@ impl DesktopState {
     #[must_use]
     pub fn space_shown(&self, space: SpaceKey) -> Shown {
         let active = self
-            .quire
+            .bardo
             .space(space)
             .and_then(|s| s.id.as_ref())
             .is_some_and(|id| {

@@ -7,7 +7,7 @@ use ui_core::geometry::units::Px;
 const ICON: f32 = 16.0;
 /// The gap between the icon and the name: `--s-6`.
 const GAP: f32 = 6.0;
-/// The body type's average advance in logical pixels. Blitz has no `text-overflow` and quire no
+/// The body type's average advance in logical pixels. Blitz has no `text-overflow` and Bardo no
 /// text measure for text it has not laid out, so a cut name is a budget of characters, not a
 /// measurement: a name of narrow letters is cut a little early, one of wide letters a little late.
 const ADVANCE: f32 = 7.0;

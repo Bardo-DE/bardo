@@ -1,5 +1,5 @@
 //! Mission Control's Spaces bar on the harness, following a `SpacesBarLink` the test writes (and
-//! the desktop it follows) as the daemon does. Down it draws nothing; up it draws quire's bar with a tile per Space of the
+//! the desktop it follows) as the daemon does. Down it draws nothing; up it draws Bardo's bar with a tile per Space of the
 //! output, the one on show marked, a picture on every tile that has one (a hidden Space's too), the
 //! output's wallpaper under the pictures, the tile a drag is over lit, and a plus that lights when
 //! the drag is over it; a click on a tile or on the plus writes the pick; the bar publishes where

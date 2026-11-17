@@ -1,5 +1,5 @@
-//! What the switcher hands quire's `AppSwitcher`: the tiles, the metrics, and the way between
-//! quire's `AppKey` and the machine's indices. Pure.
+//! What the switcher hands Bardo's `AppSwitcher`: the tiles, the metrics, and the way between
+//! Bardo's `AppKey` and the machine's indices. Pure.
 
 use super::apps::SwitcherApp;
 use shell_kit::switcher::app_switcher::AppKey;
@@ -47,7 +47,7 @@ fn readable(id: &str) -> String {
         .join(" ")
 }
 
-/// quire's key for `app`.
+/// Bardo's key for `app`.
 pub fn key_of(app: &AppId) -> AppKey {
     AppKey(app.0.clone())
 }
@@ -57,7 +57,7 @@ pub fn index_of(key: &AppKey, apps: &[SwitcherApp]) -> Option<usize> {
     apps.iter().position(|app| app.app.0 == key.0)
 }
 
-/// The output's width in logical pixels, for quire's overflow fit.
+/// The output's width in logical pixels, for Bardo's overflow fit.
 pub fn output_width(width: i32) -> Option<Px> {
     u16::try_from(width)
         .ok()

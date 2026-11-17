@@ -1,7 +1,7 @@
 //! A registered custom property (`@property`) animates on the pinned Blitz in the headless
 //! harness: `--angle` keyframed from 0 to 360deg turns a conic gradient exactly as a `rotate()`
 //! keyframe turns the same gradient, sampled on the virtual clock. The voice orb still drives its
-//! turn from Rust, because quire's rules allow no infinite CSS loop (lint `InfiniteLoop`), only a
+//! turn from Rust, because Bardo's rules allow no infinite CSS loop (lint `InfiniteLoop`), only a
 //! bounded Rust one that exists while its state holds (design/30 section 1.3); this test keeps
 //! the fact, measured only on the headless path, not in a window.
 

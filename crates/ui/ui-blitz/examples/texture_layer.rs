@@ -1,4 +1,4 @@
-//! A texture inside a quire window: a thread uploads a moving gradient every frame to a
+//! A texture inside a Bardo window: a thread uploads a moving gradient every frame to a
 //! `TextureLayer`, the way a player would hand over decoded frames. It reports the window's
 //! adapter and the frames it showed, and closes itself after three seconds.
 //!
@@ -21,8 +21,8 @@ const SIDE: u32 = 256;
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(
         App,
-        AppConfig::new("quire: ds-blitz texture layer", WindowSize::new(480, 320))
-            .with_app_id(AppId("dev.quire.TextureLayer".to_owned())),
+        AppConfig::new("bardo: ds-blitz texture layer", WindowSize::new(480, 320))
+            .with_app_id(AppId("dev.bardo.TextureLayer".to_owned())),
     )
 }
 

@@ -36,7 +36,7 @@ pub enum IconRef {
     None,
     /// A resolved icon file (the app index resolves theme names once).
     File(PathBuf),
-    /// A quire `Icon` by its kebab-case name (`calculator`, `settings`, `power`).
+    /// A Bardo `Icon` by its kebab-case name (`calculator`, `settings`, `power`).
     Glyph(String),
 }
 
@@ -45,7 +45,7 @@ pub enum IconRef {
 pub struct Action {
     pub id: ActionId,
     pub label: String,
-    /// The shared action that runs it straight from the results, drawn beside it (quire design/09 H5: every
+    /// The shared action that runs it straight from the results, drawn beside it (Bardo design/09 H5: every
     /// action has a key).
     #[serde(default)]
     pub keys: ActionKeys,

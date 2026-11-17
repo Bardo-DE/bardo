@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Vendored copy of protocols/bardo-window-v1.xml from casement-protocols (a private repo), so
-  public quire does not depend on it. Our own protocol, licensed MIT or Apache-2.0 (see the
+  public bardo does not depend on it. Our own protocol, licensed MIT or Apache-2.0 (see the
   copyright below). Keep it identical to casement-protocols' file: change it there first, then
   copy it here.
 -->

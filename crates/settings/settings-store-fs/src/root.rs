@@ -136,7 +136,7 @@ mod tests {
         for case in CASES {
             assert_eq!(
                 xdg_dir(
-                    AppName::QUIRE,
+                    AppName::BARDO,
                     case.xdg.map(OsStr::new),
                     case.home.map(OsStr::new)
                 ),
@@ -172,7 +172,7 @@ mod tests {
     fn a_scratch_root_stands_in_for_xdg_config_home() {
         let root = ConfigRoot::Scratch(PathBuf::from("/scratch"));
         assert_eq!(
-            root.dir(AppName::QUIRE),
+            root.dir(AppName::BARDO),
             Some(PathBuf::from("/scratch/bardo"))
         );
     }

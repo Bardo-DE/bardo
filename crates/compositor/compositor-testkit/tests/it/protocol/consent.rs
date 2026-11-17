@@ -13,10 +13,10 @@ use compositor_core::privilege::{
     ASK_TTL, Book, ClientStanding, Grant, ProgramPath, SHELL_WAIT, Subject, UnixSeconds, Verdict,
 };
 use compositor_testclient::ClientState;
+use compositor_testclient::bardo::shell::ShellHandle;
 use compositor_testclient::ime::virtual_keyboard::VirtualBoard;
-use compositor_testclient::quire::shell::ShellHandle;
 use compositor_testkit::{ASKED_PROGRAM, ClientId, Fixture, FixtureSpec, program_standing};
-use compositor_wayland::quire::shell_permission::ANSWER_NOT_BEFORE;
+use compositor_wayland::bardo::shell_permission::ANSWER_NOT_BEFORE;
 use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::{self as wire, BardoShellV1};
 use desktop_protocols::vocab::{Answer, Memory, Power, SubjectKind, TrialAnswer, WireCode};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};

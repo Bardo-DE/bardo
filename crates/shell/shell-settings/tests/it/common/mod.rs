@@ -30,7 +30,7 @@ impl Drop for TempDir {
     }
 }
 
-/// quire's `design/22-SETTINGS.md`, a sibling checkout of this repository.
+/// Bardo's `design/22-SETTINGS.md`, a sibling checkout of this repository.
 pub fn doc() -> String {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../ui/design/22-SETTINGS.md");
     std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))

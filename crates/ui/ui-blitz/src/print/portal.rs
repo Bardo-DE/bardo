@@ -274,7 +274,7 @@ fn handle_token(step: &str) -> String {
     use std::sync::atomic::{AtomicU64, Ordering};
     static NEXT: AtomicU64 = AtomicU64::new(0);
     format!(
-        "quire_{step}_{}_{}",
+        "bardo_{step}_{}_{}",
         std::process::id(),
         NEXT.fetch_add(1, Ordering::Relaxed)
     )
@@ -287,8 +287,8 @@ mod tests {
     #[test]
     fn the_request_path_follows_the_portal_rule() {
         assert_eq!(
-            request_path(":1.42", "quire_prepare_7_0"),
-            "/org/freedesktop/portal/desktop/request/1_42/quire_prepare_7_0"
+            request_path(":1.42", "bardo_prepare_7_0"),
+            "/org/freedesktop/portal/desktop/request/1_42/bardo_prepare_7_0"
         );
     }
 

@@ -5,12 +5,12 @@ Departures from the plan, standing facts and open items. An entry names the cond
 ## Decisions and departures
 
 1. **Polkit: installing is allow_active without a password; going back asks for one (owner, 2026-10-16).**
-   `org.quire.slipway.apply` has `allow_active=yes`, `allow_inactive=no`, `allow_any=no`. That is safe only because
+   `org.bardo.slipway.apply` has `allow_active=yes`, `allow_inactive=no`, `allow_any=no`. That is safe only because
    `slipway-apply` installs nothing that does not verify against the release key on the computer and refuses
    anything not newer than what runs; it cannot be pointed at another root or key (it reads
    `/etc/slipway/config.toml`, not the caller's configuration) and, since decision 23, it cannot go back at all.
-   Going back is `slipway-rollback` under `org.quire.slipway.rollback` (`auth_admin_keep`). The health program
-   `slipway-health` has `org.quire.slipway.health` (`yes`), see decision 22. Closes if the owner wants a password
+   Going back is `slipway-rollback` under `org.bardo.slipway.rollback` (`auth_admin_keep`). The health program
+   `slipway-health` has `org.bardo.slipway.health` (`yes`), see decision 22. Closes if the owner wants a password
    for installs: change `allow_active` of the first action to `auth_admin_keep`.
 2. **Test signature is a documentation example.** There is no way to run minisign here, so the real
    signature test (`slipway-core/tests/it/digest_sign.rs`) uses the key and prehashed signature of the
@@ -50,13 +50,13 @@ Departures from the plan, standing facts and open items. An entry names the cond
     back to it is a newer release, or deleting `refused` from the state file. Closes if the owner wants a
     "try again" button.
 13. **Bundle folders are `0755`.** The tar's folder modes were ignored and folders got the helper's umask,
-    so a restrictive umask under pkexec would have made `/opt/quire` unreadable to the person. Folders the
+    so a restrictive umask under pkexec would have made `/opt/bardo` unreadable to the person. Folders the
     unpack makes, and `<root>` and `<root>/releases` when they are new, are now set to `0755`. Since
     decision 18 the helper also sets its own umask, and a test runs the install under umask 0 and 077.
 14. **An export points at a file.** A link to a folder in the bundle was accepted; the pipeline never makes
     one and a folder link is not needed, so it is refused (`ExportTargetMissing`).
 
-15. **More export folders (lane distro-slip, 2026-10-16).** `ALLOWED_LINK_DIRS` gained `/usr/share/quire`,
+15. **More export folders (lane distro-slip, 2026-10-16).** `ALLOWED_LINK_DIRS` gained `/usr/share/bardo`,
     `/usr/share/porter`, `/usr/share/stoker` and `/usr/share/fonts`, so intents, skills, settings schemas,
     providers, the model catalog and the bundled colour-emoji font reach the places their readers look.
     The user-level systemd and D-Bus service folders were already listed. Each folder is named; a table test
@@ -65,7 +65,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     "System files"). Open question 5 is closed (ROOT-07).
 17. **SELinux labels (lane distro-slip).** `slipway-apply` runs `restorecon` on the root and on placed
     system files where SELinux is in use; `scripts/install.sh` adds the `semanage fcontext` rules.
-    Not run on a real SELinux computer: the first Fedora install should check `ls -Z /opt/quire/current/bin`
+    Not run on a real SELinux computer: the first Fedora install should check `ls -Z /opt/bardo/current/bin`
     and that `keycap.service` starts under the enforcing policy.
 
 18. **The helper does not trust what the caller can touch (audit ROOT-01, ROOT-05, ROOT-06).** It sets
@@ -117,12 +117,12 @@ Departures from the plan, standing facts and open items. An entry names the cond
     from a terminal, neither of which has a unit to prove); `Rollback` for `shell` and `settings`; `Check` for any
     caller peephole can identify at all (an unreadable or vanished sender is refused; an unverified one is not, since
     `Check` only looks). Replaced by the table: `DEFAULT_CALLERS`, `Config::callers`, `leaf_of`, `is_allowed`.
-    Consequences: (a) the table `/etc/quire/desktop-callers.toml` must be installed or every `Install` and `Rollback`
+    Consequences: (a) the table `/etc/bardo/desktop-callers.toml` must be installed or every `Install` and `Rollback`
     is refused, with a line in the service's log; the desktop's installer places it (lane pa2-desk), and until then
     the old open `Install` is closed on a machine without it. (b) `Settings` started by a launcher is `Program`, not
     `settings`, unless the table also has a row for it without a unit (interface ask to peephole's
-    `dist/desktop-callers.toml`: a second `settings` row, `app = "org.quire.Settings"`, no `unit`, the `detent` images).
-    (c) A refused `Install` is `org.quire.Updates1.Error.AccessDenied`, in the family of the other `Install` errors
+    `dist/desktop-callers.toml`: a second `settings` row, `app = "org.bardo.Settings"`, no `unit`, the `detent` images).
+    (c) A refused `Install` is `org.bardo.Updates1.Error.AccessDenied`, in the family of the other `Install` errors
     (the error type that carries them cannot name another family); a refused `Rollback` or `Check` is the bus's own
     `AccessDenied`. (d) The properties are not gated.
 25. **The input service's files are allowed, and the helper tells the system (wave 2, pa2-slip).** Four exact rules
@@ -179,8 +179,8 @@ Departures from the plan, standing facts and open items. An entry names the cond
    neither works as written (the script is `scripts/install.sh`, and there is no `slipway` binary yet).
    Closes when the first-install path is decided: `install.sh --with-cli` copying a built `slipway` to
    `PREFIX/bin`, or a `slipway-apply <staged dir>` run by hand with a release downloaded by `curl`.
-4. **A root other than `/opt/quire`.** `install.sh --root` retargets slipway's own unit and bus file, but the
-   units and files inside the bundle name `/opt/quire/current/...` (the pipeline hard-codes `PREFIX`), so a
+4. **A root other than `/opt/bardo`.** `install.sh --root` retargets slipway's own unit and bus file, but the
+   units and files inside the bundle name `/opt/bardo/current/...` (the pipeline hard-codes `PREFIX`), so a
    different root only works for a bundle built for it.
 
 5. **Closed (ROOT-07, 2026-10-16): the system files are named one by one.** The folder list is gone;
@@ -257,7 +257,7 @@ Notes for the pipeline lane that are not mismatches:
   from `install.sh`, deliberately not updated by a release (a release would replace a root-run binary).
   Keep `share/slipway/dist/` out of the auto-exported directories, as now: slipway's own unit and bus file are
   installed by `install.sh`, and an export onto the same path would be reported as a conflict and left alone.
-- Everything in `AUTO_EXPORT_DIRS` is exported as a link `/usr/<rel>` into `/opt/quire/current/<rel>`. systemd
+- Everything in `AUTO_EXPORT_DIRS` is exported as a link `/usr/<rel>` into `/opt/bardo/current/<rel>`. systemd
   and the bus follow such links; polkit's action directory is the one to confirm on a real machine.
 
 ## Not verified (no compiler in this lane)
@@ -286,7 +286,7 @@ Production-audit lane pa-slip (2026-10-16) was also written without a compiler. 
 - `slipway-root/tests/it/apply_hardening.rs` changes the process-wide umask for a moment (to 0 and 077) and puts it
   back to 022; a concurrent test would at worst see a different umask, and none asserts a mode that the code
   does not set explicitly.
-- The polkit file (`dist/org.quire.slipway.policy`) now holds three actions; `pkexec` finds the one for a
+- The polkit file (`dist/org.bardo.slipway.policy`) now holds three actions; `pkexec` finds the one for a
   program by the `exec.path` annotation, so the three programs must be installed at the paths it names.
 - Not covered by any test (needs a real polkit): the password prompt. The caller checks are tested on a private bus
   (`tests/it/caller_gate.rs`).
@@ -349,14 +349,14 @@ helper's reload step (decision 25). Look first at:
 - `service/gate.rs`: `BusPeers::new(..).with_offload(Tokio)` is the type `BusPeers<RealProc, Tokio>` (default third
   parameter); `Send` for the futures of `require`/`who` inside a zbus interface method; `Header::sender()` borrowed across an
   await.
-- `service/refusal.rs`: the derive names the new variant `org.quire.Updates1.Error.AccessDenied`.
+- `service/refusal.rs`: the derive names the new variant `org.bardo.Updates1.Error.AccessDenied`.
 - `slipway-root/src/apply/settle.rs`: the program lists are fixed paths; `Fake` in `system_applied.rs` answers by exact path.
 - Tests `caller_gate.rs` need `dbus-daemon` on `PATH` (as peephole's own tests do) and the `fake` feature of
   `peephole-bus` (dev-dependency); they start a private bus and never touch the session bus. `Settings` is introduced at
   `Exe` and the shell at `Full` there; the real judgement of a process is peephole's own tests.
 - Not covered by a test: the real table loader in `bootstrap.rs`, and the helper running the real `systemctl` and `udevadm`.
-- Interface ask to the desktop (pa2-desk): the installer places `/etc/quire/desktop-callers.toml` (the existing
-  `/etc/quire/*-callers.toml` rule already covers that name), with the `settings` row without a unit described in decision 24.
+- Interface ask to the desktop (pa2-desk): the installer places `/etc/bardo/desktop-callers.toml` (the existing
+  `/etc/bardo/*-callers.toml` rule already covers that name), with the `settings` row without a unit described in decision 24.
 
 ## Production-audit lane slw (2026-10-17): the root installer, the privileged tree and CI
 
@@ -391,7 +391,7 @@ the `--config` flag on the pinned 1.98.1; and the toolchain-install branch of th
 `ALLOWED_SYSTEM_FILES` grew to 21 rules, in the order the desktop's `release/system-files.list` has them (after
 `/etc/modprobe.d/99-palmrest.conf`): `/usr/lib/systemd/system/palmrest.service` (the touchpad daemon became a
 system service, as keycap is), `/usr/lib/systemd/user/*.service` and
-`/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-quire.conf`. The last two exist because a unit that has to
+`/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf`. The last two exist because a unit that has to
 prove its standing to its callers cannot be an export link: the unit manager's judge looks at the fragment with
 `lstat`, a link has mode 0777, and it reads as a file anyone could change. The desktop's `plain_units` therefore
 stages the units its caller table names under `system/`, with their drop-ins appended to their text.

@@ -104,7 +104,7 @@ pub fn discover_parts(dirs: &[PathBuf]) -> Vec<PublishedParts> {
         for path in paths {
             match admit(&path, &found) {
                 Ok(parts) => found.push(parts),
-                Err(why) => eprintln!("quire selectors: skipping {}: {why}", path.display()),
+                Err(why) => eprintln!("bardo selectors: skipping {}: {why}", path.display()),
             }
         }
     }

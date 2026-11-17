@@ -35,7 +35,7 @@ fn relation_names(actions: &[ActionCard]) -> Vec<String> {
     names
 }
 
-/// `quire_related`, when some action of the view resolves a relation.
+/// `bardo_related`, when some action of the view resolves a relation.
 fn related_tool(actions: &[ActionCard]) -> Option<ToolDecl> {
     let names = relation_names(actions);
     if names.is_empty() {
@@ -76,7 +76,7 @@ fn related_tool(actions: &[ActionCard]) -> Option<ToolDecl> {
     )
 }
 
-/// The tools every task has beside the actions (`quire_related` first, where it is offered, so
+/// The tools every task has beside the actions (`bardo_related` first, where it is offered, so
 /// the last four are always answer, ask, read and finish).
 pub(crate) fn meta_tools(actions: &[ActionCard]) -> Vec<ToolDecl> {
     let answer = json!({

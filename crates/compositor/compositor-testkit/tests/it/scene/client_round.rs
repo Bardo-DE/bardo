@@ -8,7 +8,7 @@ use crate::scene::desk::{Desk, Dpi};
 use compositor_backend::SoftRenderer;
 use compositor_core::input::ButtonCode;
 use compositor_testclient::Pattern;
-use compositor_testclient::quire::window::{FrameMode, WindowManager};
+use compositor_testclient::bardo::window::{FrameMode, WindowManager};
 use compositor_testkit::{Fixture, FixtureSpec};
 use desktop_protocols::vocab::PressEdge;
 

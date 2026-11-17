@@ -285,7 +285,7 @@ paper (`--paper`), flush with their sidebar (no inset card, 30 §3.4). A window'
 | Motion | design/30 §1.3 only; the A5 keyframe set is retired (design/30 Part 4); the sidebar tint cross-fades `--t-big` | S |
 | Behaviours | 06 (all), 11 (scroll), 12 (back/forward swipe) | S |
 | Launcher | compose and search actions; reports verification codes to the shell | S |
-| Milestone | after quire W2 (Phase A), Blitz Phase B | S |
+| Milestone | after Bardo W2 (Phase A), Blitz Phase B | S |
 
 ### 2.2 Settings
 
@@ -377,8 +377,8 @@ widget and popup read from it once it exists and stay local-only until then.
 
 | Field | Value | St |
 | --- | --- | --- |
-| Repo | new (name open), depends on quire; account and sync core modelled on mailo's | P |
-| Components | `MonthGrid` (04 §39), week/day views (new, quire first), `Row` events, `Sheet` editor | P |
+| Repo | new (name open), depends on Bardo; account and sync core modelled on mailo's | P |
+| Components | `MonthGrid` (04 §39), week/day views (new, Bardo first), `Row` events, `Sheet` editor | P |
 | Milestone | after M12's first apps; scoped on its own (research pass on calendar UIs first) | P |
 
 ### 2.11 Capture

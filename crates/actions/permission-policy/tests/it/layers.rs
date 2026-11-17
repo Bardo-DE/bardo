@@ -49,7 +49,7 @@ const PRESET_IDS: [&str; 17] = [
 
 const NO_READS: &str = r#"
     @id("no-reads")
-    forbid (principal, action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"], resource)
+    forbid (principal, action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"], resource)
     when { resource.effect == "read" };
 "#;
 const A_PERMIT: &str = r#"

@@ -1,4 +1,4 @@
-//! The page's place among the pages. Quire's fixed page list has no Software Update, so the
+//! The page's place among the pages. Bardo's fixed page list has no Software Update, so the
 //! catalogue holds it as the page of a program of that name: its label, its slug and its place in
 //! the sidebar are all decided here.
 

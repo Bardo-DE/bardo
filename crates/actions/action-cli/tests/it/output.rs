@@ -28,10 +28,10 @@ fn golden(name: &str, actual: &Value) {
 #[tokio::test]
 async fn json_goldens() {
     let desk = Desk::answering(vec![once()]);
-    golden("apps", &json(&desk.quire(&["apps"]).await));
+    golden("apps", &json(&desk.bardo(&["apps"]).await));
     // The list and describe documents were goldens; their `undo` word changed to a bool, so they
     // are checked on the fields that matter instead (no golden was re-blessed).
-    let list = json(&desk.quire(&["mail", "--list"]).await);
+    let list = json(&desk.bardo(&["mail", "--list"]).await);
     let undo_of = |action: &str| {
         list["actions"]
             .as_array()
@@ -44,24 +44,24 @@ async fn json_goldens() {
     assert_eq!(list["app"], "mail");
     assert_eq!(undo_of("thread.read"), serde_json::json!(false));
     assert_eq!(undo_of("thread.archive"), serde_json::json!(true));
-    let describe = json(&desk.quire(&["describe", "mail", "message.send"]).await);
+    let describe = json(&desk.bardo(&["describe", "mail", "message.send"]).await);
     assert_eq!(describe["name"], "mail.message.send");
     assert_eq!(describe["effect"], "outbound");
     assert_eq!(describe["undo"], serde_json::json!(true));
     assert!(describe["params"].as_array().is_some_and(|p| !p.is_empty()));
     golden(
         "outcome-read",
-        &json(&desk.quire(&["mail", "thread.read", "t2"]).await),
+        &json(&desk.bardo(&["mail", "thread.read", "t2"]).await),
     );
     golden(
         "outcome-archive",
-        &json(&desk.quire(&["mail", "thread.archive", "t2"]).await),
+        &json(&desk.bardo(&["mail", "thread.archive", "t2"]).await),
     );
     golden(
         "dry-run-forward",
         &json(
             &desk
-                .quire(&[
+                .bardo(&[
                     "mail",
                     "message.forward",
                     "t1",
@@ -74,13 +74,13 @@ async fn json_goldens() {
     );
     golden(
         "error-declined",
-        &json(&desk.quire(&["mail", "thread.archive", "t1"]).await),
+        &json(&desk.bardo(&["mail", "thread.archive", "t1"]).await),
     );
     golden(
         "error-usage",
         &json(
             &desk
-                .quire(&["mail", "thread.read", "t1", "--bogus", "x"])
+                .bardo(&["mail", "thread.read", "t1", "--bogus", "x"])
                 .await,
         ),
     );
@@ -106,7 +106,7 @@ async fn text_on_a_terminal_and_json_on_a_pipe_unless_asked() {
         "text is not JSON"
     );
 
-    let pipe = desk.quire(&["mail", "thread.read", "t1"]).await;
+    let pipe = desk.bardo(&["mail", "thread.read", "t1"]).await;
     assert_eq!(
         json(&pipe)["vocab"],
         1,
@@ -150,7 +150,7 @@ async fn text_piped_to_a_dash_reaches_the_app() {
 #[tokio::test]
 async fn nothing_piped_to_a_dash_is_a_usage_error() {
     let desk = Desk::new();
-    let report = desk.quire(&["mail", "draft.create", "--body", "-"]).await;
+    let report = desk.bardo(&["mail", "draft.create", "--body", "-"]).await;
     assert_eq!(report.exit, Exit::Usage);
     assert!(report.stdout.contains("nothing was piped in"), "{report:?}");
     assert_eq!(desk.sheets(), 0, "and nothing was sent to the router");
@@ -159,7 +159,7 @@ async fn nothing_piped_to_a_dash_is_a_usage_error() {
 #[tokio::test]
 async fn describe_prints_the_schema_stoker_renders() {
     let desk = Desk::new();
-    let described = json(&desk.quire(&["describe", "mail", "message.send"]).await);
+    let described = json(&desk.bardo(&["describe", "mail", "message.send"]).await);
     let schema = &described["schema"];
     assert_eq!(schema["type"], "object");
     assert_eq!(schema["additionalProperties"], false);
@@ -175,7 +175,7 @@ async fn describe_prints_the_schema_stoker_renders() {
 async fn search_prints_the_apps_things_and_context_prints_what_it_shows() {
     let desk = Desk::new();
     desk.index_mail().await;
-    let found = desk.quire(&["mail", "search", "receipts"]).await;
+    let found = desk.bardo(&["mail", "search", "receipts"]).await;
     assert_eq!(found.exit, Exit::Done, "{found:?}");
     let doc = json(&found);
     assert_eq!(doc["entities"][0]["key"], "t2", "{doc}");
@@ -186,7 +186,7 @@ async fn search_prints_the_apps_things_and_context_prints_what_it_shows() {
         text.stdout
     );
     // Another app's hits are not this app's.
-    let files = json(&desk.quire(&["files", "search", "receipts"]).await);
+    let files = json(&desk.bardo(&["files", "search", "receipts"]).await);
     assert_eq!(files["hits"], serde_json::json!([]));
 
     let mail = AppName::parse("org.bardo.Mail").expect("app");
@@ -226,7 +226,7 @@ async fn search_prints_the_apps_things_and_context_prints_what_it_shows() {
         text_target: TextTarget::None,
         privacy: WindowPrivacy::Normal,
     });
-    let view = desk.quire(&["mail", "context"]).await;
+    let view = desk.bardo(&["mail", "context"]).await;
     assert_eq!(view.exit, Exit::Done, "{view:?}");
     let doc = json(&view);
     // Somebody else's words come back as handles, usable by a later command as `#n`.
@@ -243,7 +243,7 @@ async fn search_prints_the_apps_things_and_context_prints_what_it_shows() {
     );
     // The held text feeds a later call, with the label it was held with.
     let draft = desk
-        .quire(&["mail", "draft.create", "--body", &format!("#{handle}")])
+        .bardo(&["mail", "draft.create", "--body", &format!("#{handle}")])
         .await;
     assert_eq!(
         draft.exit,
@@ -263,7 +263,7 @@ async fn completion_follows_the_installed_manifests() {
     async fn complete(desk: &Desk, words: &[&str]) -> Vec<String> {
         let mut all = vec!["__complete"];
         all.extend_from_slice(words);
-        let report = desk.quire(&all).await;
+        let report = desk.bardo(&all).await;
         assert_eq!(report.exit, Exit::Done, "{report:?}");
         report.stdout.lines().map(str::to_owned).collect()
     }

@@ -30,37 +30,37 @@ fn cases() -> Vec<(&'static str, ProtocolSet, Option<DesktopBackend>)> {
             Some(Wlr),
         ),
         (
-            "quire desktop without the ext list",
-            offering(&[QuireDesktop]),
+            "bardo desktop without the ext list",
+            offering(&[BardoDesktop]),
             None,
         ),
         (
-            "quire desktop and wlr without the ext list",
-            offering(&[QuireDesktop, WlrForeignToplevelManagement]),
+            "bardo desktop and wlr without the ext list",
+            offering(&[BardoDesktop, WlrForeignToplevelManagement]),
             Some(Wlr),
         ),
         (
-            "quire desktop and the ext list",
-            offering(&[QuireDesktop, ExtForeignToplevelList]),
-            Some(Quire),
+            "bardo desktop and the ext list",
+            offering(&[BardoDesktop, ExtForeignToplevelList]),
+            Some(Bardo),
         ),
         (
-            "quire wins over wlr",
+            "bardo wins over wlr",
             offering(&[
-                QuireDesktop,
+                BardoDesktop,
                 ExtForeignToplevelList,
                 WlrForeignToplevelManagement,
             ]),
-            Some(Quire),
+            Some(Bardo),
         ),
         (
             "the shell global alone chooses nothing",
-            offering(&[QuireShell]),
+            offering(&[BardoShell]),
             None,
         ),
         (
             "the window manager global does not choose the arm",
-            offering(&[QuireWindow, ExtForeignToplevelList]),
+            offering(&[BardoWindow, ExtForeignToplevelList]),
             Some(Ext),
         ),
     ]
@@ -82,6 +82,6 @@ fn the_choice_reads_interface_names_from_the_registry() {
         "bardo_desktop_manager_v1",
         "bardo_shell_v1",
     ]);
-    assert_eq!(backend_for(&offered), Some(DesktopBackend::Quire));
-    assert!(offered.contains(Protocol::QuireShell));
+    assert_eq!(backend_for(&offered), Some(DesktopBackend::Bardo));
+    assert!(offered.contains(Protocol::BardoShell));
 }

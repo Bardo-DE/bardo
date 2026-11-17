@@ -13,7 +13,7 @@ The user's intent (2026-09-27): "the reason to make the card an interface is to 
 what to be placed. please check what other thing should be like this, for example i think the
 spotlight item as well probably?"
 
-The widget card is being built as the first instance of that idea (quire branch
+The widget card is being built as the first instance of that idea (Bardo branch
 `widget-interface`, design/23 section 9, in progress): a **registry of kinds**, **one Rust trait
 per kind**, a **picker gallery with live previews**, and **placements stored as data** (kind,
 size, place, position). This document:
@@ -26,7 +26,7 @@ size, place, position). This document:
 3. defines the one shared pattern every such surface uses (section 5): `Registry<K>`, a trait
    per surface, the picker components, `Placement` data, persistence, and how an app in another
    process registers later (D-Bus, documented, not built);
-4. names the existing quire and sill parts that become generic (section 5.8), the order of work
+4. names the existing Bardo and sill parts that become generic (section 5.8), the order of work
    (section 6) and the open decisions with a recommendation each (section 7).
 
 Out of scope: the look of each picker beyond naming its components (04 owns components), the
@@ -82,12 +82,12 @@ Our own: `20-SURFACES.md`, `22-SETTINGS.md` (sections 2, 3, 9), `23-WIDGETS.md`,
 `desktop_widgets/{saved,placement,drag,arrange,view}.rs`, `widgets/mod.rs` `size_of`),
 `shell-services/src/{pins,tray,notifications}/`, `shell-launcher/src/rank/sections.rs`,
 shell-settings/tests/keys.rs,
-sill `FINDINGS.md` F270-F271; quire `crates/ds-settings/src/schema/key.rs`, and the in-progress
+sill `FINDINGS.md` F270-F271; Bardo `crates/ds-settings/src/schema/key.rs`, and the in-progress
 `crates/ds/src/widget/{contract,registry,wire}.rs` in the `widget-interface` worktree.
 
 ## 3. The surface table
 
-"Exists" = what sill (or quire) has today. "Third party" = whether the reference lets other apps
+"Exists" = what sill (or Bardo) has today. "Third party" = whether the reference lets other apps
 add items. "Before/during" = before the app pass or during it (section 6).
 
 | § | Surface | What the person picks | Reference picker | Third party | Exists in sill | Priority | When |
@@ -155,17 +155,17 @@ Desktop, In Stage Manager), Widget style (Automatic, Monochrome, Full-color), Us
 - Drag, always on: sill's sill-widgets-ui/src/desktop/drag.rs `Hold::{Idle, Pressed, Live}`; only Manhattan travel
   past `window.move_threshold_px` (4) makes a press `Live`, so a click still reaches a widget's
   control (F883, F887); `arrange.rs` `snap` and `make_room` push covered widgets to their nearest
-  free spot and back (F884); the motion is quire's `use_tween` in `placed.rs` (F885).
+  free spot and back (F884); the motion is Bardo's `use_tween` in `placed.rs` (F885).
 - Scalars: `widgets.desktop` (the layer on or off), `widgets.desktop_cell_px`,
   `widgets.desktop_gap_px`, `widgets.world_clocks` (the zones, `;`-separated, read by
   sill's `shell-ui-kit/src/widgets/world_clock`).
 
-quire (`widget-interface`, in progress): `ds::widget::Widget` trait (`Entry`, `Intent`, `kind`,
+Bardo (`widget-interface`, in progress): `ds::widget::Widget` trait (`Entry`, `Intent`, `kind`,
 `name`, `sizes`, `placeholder`, `view`, `title`), `WidgetKind` as a reverse-DNS string,
 `WidgetRegistry` with `WidgetInfo::of::<W>()` and a type-erased `preview`, `wire.rs` for
 timelines from another process.
 
-**Mapping.** Owner: quire (the trait, the card, the registry, the gallery), sill (the hosts:
+**Mapping.** Owner: Bardo (the trait, the card, the registry, the gallery), sill (the hosts:
 desktop layer and notification center; the providers that feed entries; the state file).
 
 - Trait: `Widget` as built; add `type Config: Default + Serialize + DeserializeOwned +
@@ -187,7 +187,7 @@ desktop layer and notification center; the providers that feed entries; the stat
   back to `size_in(host)`. Today every kind has one size per host, so no shape is ever written
   until a kind offers two.
 - **Instances**: two Batteries (one showing this computer, one the headphones) are two
-  placements of `quire.battery` with different `instance` ids and configs.
+  placements of `bardo.battery` with different `instance` ids and configs.
 - What becomes of today's keys: `widgets.desktop` stays a scalar key (the reference's "Show
   Widgets"); `widgets.desktop_cell_px` and `widgets.desktop_gap_px` stay scalar keys (the grid's
   geometry, not a placement); `widgets.world_clocks` becomes the World Clock instance's config
@@ -234,11 +234,11 @@ switch the user settled (22 §3.6): `launcher.web_search` (On/Off), `launcher.cl
 named this surface.
 
 **Mapping.** Owner: sill (`shell-launcher` keeps the trait; the registry of providers is sill's,
-non-UI); quire owns the `OrderedChecklist` picker and the `KindId` type. Trait change:
+non-UI); Bardo owns the `OrderedChecklist` picker and the `KindId` type. Trait change:
 `fn kind(&self) -> ProviderKind` becomes `fn info(&self) -> ProviderInfo { id: KindId, name,
 icon, section: SectionTitle, default_shown: Shown }`, so a provider from another process
 (section 5.7) is a row like ours; `ProviderKind` stays as the ids of the built-in nine
-(`quire.launcher.apps`, ...). Picker: `OrderedChecklist` on the Settings app's Spotlight page (22
+(`bardo.launcher.apps`, ...). Picker: `OrderedChecklist` on the Settings app's Spotlight page (22
 §5 already names the page), plus a "Search Privacy" `List` of folders.
 
 What the person orders (settled 2026-09-27, decision 2 B), and what stays fixed:
@@ -301,9 +301,9 @@ the bar's Sound and Display dropdowns); `power_profile.rs` is `PowerProfileContr
 `SegmentedControl` drawn inside the Battery module, not a module of its own. A keyboard-brightness
 module does not exist yet: it arrives with design/26's wave D2 (G25).
 
-**Mapping.** Owner: quire (the `ModuleTile`/`ModulePanel` contract as a trait, so a module's
+**Mapping.** Owner: Bardo (the `ModuleTile`/`ModulePanel` contract as a trait, so a module's
 tile, panel and bar glyph come from one implementation), sill (the modules, which need
-services). Trait (quire, UI side): `ControlModule { type State; fn info() -> ModuleInfo { id,
+services). Trait (Bardo, UI side): `ControlModule { type State; fn info() -> ModuleInfo { id,
 name, glyph, span: TileSpan, group: Option<ModuleGroup::{Core,Other}>, bar: BarPresence
 capabilities }; fn tile(state) -> Element; fn panel(state) -> Option<Element>; fn bar_glyph(state)
 -> Glyph; fn active(state) -> Active }` (`active` drives "When Active"). Groups: Core = Wi-Fi,
@@ -348,7 +348,7 @@ Clock is essential and fixed. Third party: yes, any app's status item.
 the SNI `Id` property today. Control center module items follow `MENU_BAR_ORDER`; the control
 center item and the clock sit at the right end.
 
-**Mapping.** Owner: sill (the bar and its item kinds), quire (the reorder machine, 5.8, and the
+**Mapping.** Owner: sill (the bar and its item kinds), Bardo (the reorder machine, 5.8, and the
 drag ghost). Trait: none new; a bar item is `BarItem { id: KindId, source: BarSource::{Module(ControlCenterModule),
 Tray(sni_id), Fixed(ControlCenter | Clock)} }`. **Order and hiding are keyed by the SNI `Id`**
 (the app's own stable name, e.g. `nm-applet`), prefixed `sni.`, never by `TrayItemId`; two items
@@ -383,16 +383,16 @@ reduce, save atomically, watch for outside edits); `bardo-shell dock pin` and Ke
 events. Drag reorder and drag-out remove live in the dock machine (`dock/machine/press.rs`),
 always on, no mode. Stacks deferred (`10-BEHAVIOUR-dock.md` R25).
 
-**Mapping.** Owner: sill (pins service, dock), quire (`DockParts`, drag ghost). It already is the
+**Mapping.** Owner: sill (pins service, dock), Bardo (`DockParts`, drag ghost). It already is the
 pattern with a fixed kind (an app). Change: pins become an ordered `Vec<Placement>` whose `kind`
-is `quire.dock.app` or `quire.dock.stack` and whose `config` carries the `AppId` or the folder
+is `bardo.dock.app` or `bardo.dock.stack` and whose `config` carries the `AppId` or the folder
 path and the stack's view options; `dock.json` migrates once (read old, write new, leave the old
 file, as the mailo appearance migration in 22 §2); `pins::run` stays its one writer (rule
 5.2.4). Picker: in place (drag), no gallery.
 
 | Layout entry (design/22 §10 when it lands) | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `[[dock]]` (`layout.dock`) | `Vec<Placement>`, ordered | the old `dock.json` pins (built: sill 848a20a7, rows `{ kind = "quire.dock.app", app = "<id>" }`) | kinds `quire.dock.app` (config `app`), `quire.dock.stack` (config `path`, `display: StackDisplay::{Stack,Folder}`, `view: StackView::{Automatic,Fan,Grid,List}`, `sort: StackSort::{Name,Added,Modified,Created,Kind}`) | mh35859; 10 §10.6 | proposed (design/28) |
+| `[[dock]]` (`layout.dock`) | `Vec<Placement>`, ordered | the old `dock.json` pins (built: sill 848a20a7, rows `{ kind = "bardo.dock.app", app = "<id>" }`) | kinds `bardo.dock.app` (config `app`), `bardo.dock.stack` (config `path`, `display: StackDisplay::{Stack,Folder}`, `view: StackView::{Automatic,Fan,Grid,List}`, `sort: StackSort::{Name,Added,Modified,Created,Kind}`) | mh35859; 10 §10.6 | proposed (design/28) |
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -414,7 +414,7 @@ Third party: per app; Finder's Quick Action extensions can appear as toolbar ite
 **Today.** No toolbars. 27 §5.11's rule: `ToolbarItem { command: CommandId }`, so no
 toolbar-only action exists (wave H4, `MenuModel`).
 
-**Mapping.** Owner: quire (the `Toolbar` component, the `ToolbarItem` registry, the customize
+**Mapping.** Owner: Bardo (the `Toolbar` component, the `ToolbarItem` registry, the customize
 sheet); each app registers its items. Trait: `ToolbarItem { fn id() -> KindId; fn label() ->
 Text; fn palette_label() -> Text; fn glyph() -> Icon; fn command() -> CommandId; fn width() ->
 ItemWidth::{Fixed,Flexible} }` plus built-ins `Space`, `FlexibleSpace`, `Separator`. Picker:
@@ -440,7 +440,7 @@ Third party: yes.
 **Today.** None. No freedesktop standard exists for share targets (KDE's Purpose framework is a
 library, not a protocol).
 
-**Mapping.** Owner: quire (the `ShareMenu` component and the `ShareTarget` trait, since every app
+**Mapping.** Owner: Bardo (the `ShareMenu` component and the `ShareTarget` trait, since every app
 shows the same menu), sill (none). Trait: `ShareTarget { fn info() -> ShareInfo { id, name,
 icon, accepts: Vec<Mime> }; fn share(items: &[ShareItem]) -> ShareOutcome }`; built-ins: Mail
 (compose with attachments), Copy, Open With (per `accepts`), Save to Files; apps in another
@@ -448,7 +448,7 @@ process register through the manifest (5.7). Picker: `OrderedChecklist` (on/off 
 system rows first) on the Settings app's Extensions page, and "Edit Extensions…" at the end of
 every Share menu.
 
-In `quire/layout.toml` (every app reads it):
+In `bardo/layout.toml` (every app reads it):
 
 | Layout entry (design/22 §10 when it lands) | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -466,10 +466,10 @@ type)"; "Customize" under Quick Actions opens Extensions settings (mchl1e4644c2,
 Third party: yes.
 
 **Today.** sill launcher: `Preview` closed enum (None, Image, Text, text file, PDF, ...) decided
-by `preview_for` from a row; quire `PreviewPane`, `PreviewContent`, `PdfThumb`. design/20 §2.4
+by `preview_for` from a row; Bardo `PreviewPane`, `PreviewContent`, `PdfThumb`. design/20 §2.4
 plans Quick Look as a standalone previewer service.
 
-**Mapping.** Owner: quire (the `Previewer` trait and the pane; the Quick Look app and the
+**Mapping.** Owner: Bardo (the `Previewer` trait and the pane; the Quick Look app and the
 launcher are both hosts), sill (the launcher host). Trait: `Previewer { fn id() -> KindId; fn
 accepts() -> &'static [MimePattern]; fn load(path) -> PreviewData (off the UI thread); fn
 view(&PreviewData, PreviewPlace) -> Element; fn fields() -> &'static [PreviewField] }`. The
@@ -479,7 +479,7 @@ the pane's own "Show Preview Options" checklist per type. Out of process: the fr
 **Thumbnail Managing Standard** (`.thumbnailer` files under `$XDG_DATA_DIRS/thumbnailers`) is
 read for thumbnails, which gives many file types without our own code.
 
-In `quire/layout.toml`:
+In `bardo/layout.toml`:
 
 | Layout entry (design/22 §10 when it lands) | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -547,10 +547,10 @@ standard shortcuts, custom ones only for frequent commands.
 **Today.** Global keys belong to the compositor. sill ships and writes the compositor's shortcut files,
 `the shortcut file` and `.../system_actions` (under `dist/casement`;
 sill FINDINGS: the launcher, screenshots, the switcher, brightness and lock are bound there).
-quire has `StandardAction` and `Shortcut::custom` refusing reserved chords (27 §6.2, H0).
+Bardo has `StandardAction` and `Shortcut::custom` refusing reserved chords (27 §6.2, H0).
 
 **Mapping.** Owner: sill (system shortcuts are `ShellAction` bindings, written to the compositor's two
-files), quire (`MenuModel` commands for App Shortcuts, `KeyKind::Shortcut` capture field). The
+files), Bardo (`MenuModel` commands for App Shortcuts, `KeyKind::Shortcut` capture field). The
 registry is the action registry of 4.9 plus every app's `MenuModel` commands. Picker: the
 Settings app's Keyboard Shortcuts page, a `SettingsRow` list per group with a toggle and a
 capture field; App Shortcuts as a `List` of `{app, menu_path, chord}` rows.
@@ -586,10 +586,10 @@ Favorites is added; "drag the icon for the item out of the sidebar until you see
 sign"; a section heading hides or shows its items (mchl83c9e8b8). Mail: Favorites bar and
 mailbox list (L). Third party: file providers add Locations (mtusr003's File Providers category).
 
-**Today.** quire `SidebarItem`, `TreeItem`; the Arc-lineage sidebar (01 §4, 09 H2) with pinned
+**Today.** Bardo `SidebarItem`, `TreeItem`; the Arc-lineage sidebar (01 §4, 09 H2) with pinned
 tiles. No app has a customizable sidebar yet.
 
-**Mapping.** Owner: quire (a `Sidebar` host with `SidebarSection` kinds and the drag-in/drag-out
+**Mapping.** Owner: Bardo (a `Sidebar` host with `SidebarSection` kinds and the drag-in/drag-out
 interaction), each app (its item kinds: Files places and tags; Mail mailboxes; Notes folders).
 Trait: `SidebarSource { fn id() -> KindId; fn section() -> SectionTitle; fn items(&self) ->
 Vec<SidebarEntry> }` so a file provider or an account adds a section. Picker: the app's Settings
@@ -610,7 +610,7 @@ users or name and password, Sleep/Restart/Shut Down buttons (mh11784, 14.0). **N
 the Mac lock screen in this era (the page names none; iPhone and iPad Lock Screen widgets and
 controls do not apply).
 
-**Today.** `session.user_picture` (22 §3.19); the clock follows `region.hours` (22 §3.32); quire `LockScreen`.
+**Today.** `session.user_picture` (22 §3.19); the clock follows `region.hours` (22 §3.32); Bardo `LockScreen`.
 
 **Mapping.** Scalar keys only; no registry. Owner: sill.
 
@@ -687,7 +687,7 @@ placement list per Focus). Recorded, not specified: it needs Focus modes first.
 | Word | Meaning |
 | --- | --- |
 | **Kind** | a thing the person can place: a widget, a launcher provider, a module, a toolbar item, a share target, a previewer, an action. Named by a `KindId`. |
-| **KindId** | a reverse-DNS string, unique across all apps: `quire.battery`, `quire.launcher.apps`, `org.example.weather.today`. Today's `ds::widget::WidgetKind`, generalised. |
+| **KindId** | a reverse-DNS string, unique across all apps: `bardo.battery`, `bardo.launcher.apps`, `org.example.weather.today`. Today's `ds::widget::WidgetKind`, generalised. |
 | **Host** | a surface that shows placed kinds: the desktop, the notification center, the bar, a toolbar. One host has one layout. |
 | **Registry** | every kind a host can place, with what a picker needs to show it without knowing its type. |
 | **Placement** | one placed instance of a kind in a host: kind, instance, shape (optional), shown, config. Membership, order and config; never a position. Data. |
@@ -762,7 +762,7 @@ Rules (all layouts):
 7. **Hosts with a slot per entry** (hot corners, gesture maps, shortcut bindings) do not use
    `Placement`: each slot is its own key naming an action id (4.9-4.11).
 
-### 5.3 `Registry<I>` and the per-surface traits (quire `ds::place`, UI)
+### 5.3 `Registry<I>` and the per-surface traits (Bardo `ds::place`, UI)
 
 ```rust
 pub trait KindInfo: Clone + PartialEq {
@@ -793,20 +793,20 @@ Each surface keeps its **own typed trait** (the thing an implementer writes) and
 
 | Surface | Typed trait | Erased info | Owner |
 | --- | --- | --- | --- |
-| widgets | `Widget` (Entry, Intent, Config, view) | `WidgetInfo` | quire `ds::widget` |
-| launcher | `Provider` (query, activate) + `ProviderInfo` | `ProviderInfo` (no preview: the checklist row shows icon and name) | sill `shell-launcher`; data types from quire |
-| control center | `ControlModule` (tile, panel, bar glyph, active) | `ModuleInfo` | quire contract, sill modules |
+| widgets | `Widget` (Entry, Intent, Config, view) | `WidgetInfo` | Bardo `ds::widget` |
+| launcher | `Provider` (query, activate) + `ProviderInfo` | `ProviderInfo` (no preview: the checklist row shows icon and name) | sill `shell-launcher`; data types from Bardo |
+| control center | `ControlModule` (tile, panel, bar glyph, active) | `ModuleInfo` | Bardo contract, sill modules |
 | bar | none (items are sources) | `BarItemInfo` | sill |
-| toolbar | `ToolbarItem` (command, glyph, width) | `ToolbarItemInfo` | quire |
-| share | `ShareTarget` (accepts, share) | `ShareInfo` | quire |
-| previewers | `Previewer` (accepts, load, view) | `PreviewerInfo` | quire |
+| toolbar | `ToolbarItem` (command, glyph, width) | `ToolbarItemInfo` | Bardo |
+| share | `ShareTarget` (accepts, share) | `ShareInfo` | Bardo |
+| previewers | `Previewer` (accepts, load, view) | `PreviewerInfo` | Bardo |
 | actions (corners, gestures, shortcuts) | `ShellAction` (run) | `ActionInfo` | sill |
-| sidebars | `SidebarSource` (section, items) | `SidebarInfo` | quire |
+| sidebars | `SidebarSource` (section, items) | `SidebarInfo` | Bardo |
 
 Launcher providers and actions live in non-UI crates; for them `preview` is not needed, so
 `KindInfo::preview` has a default that draws the icon and name as a `ListRow` (the checklist row).
 
-### 5.4 Picker components (quire, 04 new sections, proposed)
+### 5.4 Picker components (Bardo, 04 new sections, proposed)
 
 | Component | Shape | Used by | Built from |
 | --- | --- | --- | --- |
@@ -830,7 +830,7 @@ appear motion once when it scrolls into view (the wake stamp), never on a loop.
 - **Placements** (membership, order, per-instance config) live in a layout file per program,
   `$XDG_CONFIG_HOME/<program>/layout.toml` (decision 1, settled B), one `[[<host>]]` array of
   tables per host (`[[center_widgets]]`, `[[launcher_categories]]`, ...): `sill/layout.toml`,
-  `quire/layout.toml` (shared by every app: share menu, previewers), `<app>/layout.toml`
+  `bardo/layout.toml` (shared by every app: share menu, previewers), `<app>/layout.toml`
   (toolbar, sidebar).
 - **Positions stay state** under `$XDG_STATE_HOME`: `sill/desktop-widgets.json` (cells per
   output, F881; 22 §1 rule 3), and any later host whose items sit at coordinates. A position is
@@ -885,7 +885,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
    activation (`.service` file), never keeps it alive for a widget: a timeline is cached with its
    refresh policy, as design/23 §9.5 says.
 3. **Drawing another app's kind**: the host draws; an app never draws on a shell surface. A widget
-   from another process names a **template** from a fixed set in quire (`figure`, `gauge`,
+   from another process names a **template** from a fixed set in Bardo (`figure`, `gauge`,
    `list`, `month`, `image_caption`, `text`) and sends entries in that template's schema, so its
    card is our card (open decision 7.3).
 4. **Adopt existing Linux interfaces where they exist**, so apps already on the system appear
@@ -896,7 +896,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
    thumbnailer files; notifications = the `desktop-entry` hint for per-app rows. Share targets,
    control modules and widgets have no Linux standard; only ours applies.
 
-### 5.8 What in quire and sill becomes generic
+### 5.8 What in Bardo and sill becomes generic
 
 | Today | Becomes | Where |
 | --- | --- | --- |
@@ -907,13 +907,13 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 | `ds::components::widget_kind::WidgetSize`; sill `widgets::size_of(kind, host)` | `Shape`; `KindInfo::size_in(host)` | `ui-settings`; `ds::place` |
 | sill `desktop_widgets::saved::{SavedEntry, OutputKey}` | `Cell { instance, output: Option<OutputName>, column, row }` (`OutputKey::Any` is `None`) | `ui-settings`; sill keeps the file and `with_output` |
 | sill `desktop_widgets::placement::{GridSlot, clamp, nearest_free}` | stay sill's (the desktop grid is sill's); `clamp` keeps rule 5.2.6 | sill |
-| sill sill's sill-widgets-ui/src/desktop/drag.rs (`Hold::{Idle,Pressed,Live}`, threshold, grab offset) with `arrange.rs` (`snap`, `make_room`), and sill `dock/machine/press.rs` (press, threshold, drag reorder, drag-out) | `ds::motion::reorder`: one press-travel-lift-drop machine and the make-room rule for a grid and for a row, used by the desktop, the dock, the bar's Command-drag, toolbars and checklists | quire |
+| sill sill's sill-widgets-ui/src/desktop/drag.rs (`Hold::{Idle,Pressed,Live}`, threshold, grab offset) with `arrange.rs` (`snap`, `make_room`), and sill `dock/machine/press.rs` (press, threshold, drag reorder, drag-out) | `ds::motion::reorder`: one press-travel-lift-drop machine and the make-room rule for a grid and for a row, used by the desktop, the dock, the bar's Command-drag, toolbars and checklists | Bardo |
 | sill `pins::model::{DockPins, PinEvent, PinAt}` and `pins::run` | `Layout` plus the dock's own events; `pins::run` is the model for rule 5.2.4's writer task | sill, over the shared data |
-| sill `ControlCenterModule`, `MENU_BAR_ORDER`, `in_menu_bar` | `ModuleInfo` in a registry; presence from the `menu_bar_*` keys, bar order from `layout.bar_items` | sill, contract in quire |
+| sill `ControlCenterModule`, `MENU_BAR_ORDER`, `in_menu_bar` | `ModuleInfo` in a registry; presence from the `menu_bar_*` keys, bar order from `layout.bar_items` | sill, contract in Bardo |
 | sill `ProviderKind` closed enum and its `ALL` order | built-in `KindId`s; order from `layout.launcher_categories` (Web pinned last) | shell-launcher |
 | sill `CornerAction` closed enum; palmrest `Action` | `ShellAction` ids in one action registry | sill (palmrest reads ids) |
 | `ui-settings` `KeyKind::List` ("a rows editor") | its widget is `OrderedChecklist`; `KeyKind::Record` (P5) makes `List(Record)` a table editor | ui-settings + Settings app |
-| `SettingsRow`, `ds::motion::roster`, `DragGhost`, `DropPlace`, `ds::detail::use_tween` | reused unchanged by the pickers and the reorder machine | quire |
+| `SettingsRow`, `ds::motion::roster`, `DragGhost`, `DropPlace`, `ds::detail::use_tween` | reused unchanged by the pickers and the reorder machine | Bardo |
 | the appearance picker, `UserPicture` picker | stay single-value pickers (one choice, no placement) | unchanged |
 
 ## 6. Order of work
@@ -922,7 +922,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 
 sill's shell-settings/tests/keys.rs checks design/22 against sill's registered `KeySpec`s in
 both directions over §3.4-3.8 and §3.11 through `## 4. Rust shape` (that is, §3.4-3.23 less
-palmrest's §3.9-3.10), reading quire's doc by path from sill's own checkout. A row with no spec,
+palmrest's §3.9-3.10), reading Bardo's doc by path from sill's own checkout. A row with no spec,
 or a spec with no row, fails sill master at once, so a key is added, changed or retired in one change to both repos: the `KeySpec` and
 the design/22 row land together.
 
@@ -934,16 +934,16 @@ table cell anywhere in design/22 or here, since the parse takes any backticked f
 
 ### 6.1 Before the app pass
 
-Shell; each a quire lane plus a sill lane where named.
+Shell; each a Bardo lane plus a sill lane where named.
 
 1. **P0 Land the widget interface** (in progress on `widget-interface`) as the reference
    implementation. No generalisation inside that lane.
-2. **P1 Extract the pattern** (quire): `KindId`, `InstanceId`, `Shape`, `Shown`, `Placement`,
+2. **P1 Extract the pattern** (Bardo): `KindId`, `InstanceId`, `Shape`, `Shown`, `Placement`,
    `Layout`, `Cell` and `AppId` in `ui-settings` with the lenient loader and the atomic writer;
    `Registry<I>`/`KindInfo` (with `size_in`) in `ds::place`; `WidgetRegistry` becomes
    `Registry<WidgetInfo>`; `ds::motion::reorder` from sill's sill's sill-widgets-ui/src/desktop/drag.rs,
    `arrange.rs` and `dock/machine/press.rs`; `OrderedChecklist`; `KindGallery` from the widget
-   gallery; design/22 `## 10. Layouts`. Warn sill before any rename lands (sill reads quire by
+   gallery; design/22 `## 10. Layouts`. Warn sill before any rename lands (sill reads Bardo by
    path).
 3. **P2 Widgets on the shared shape** (sill): the hosts read `layout.center_widgets` and
    `layout.desktop_widgets` (membership) through one writer task in `shell-services`; cells stay
@@ -958,7 +958,7 @@ Shell; each a quire lane plus a sill lane where named.
    the person's hands), `InMenuBar::WhenActive`, the new `control_center.menu_bar_focus` key;
    the tray service reads the SNI `Id` property (`TrayItem.sni_id`), and `layout.bar_items` /
    `layout.bar_hidden` are keyed by it; Command-drag in the bar on `ds::motion::reorder`.
-6. **P5 Notifications per app** (quire + sill): quire adds a record kind to ui-settings'
+6. **P5 Notifications per app** (Bardo + sill): Bardo adds a record kind to ui-settings'
    `KeyKind` (`Record { fields: Vec<FieldSpec> }`, so `List(Box<Record>)` describes a
    `Vec<struct>` key and the Settings app draws it as a table editor; today `List` holds only
    scalar kinds); sill adds `notifications.apps` and `notifications.previews`,
@@ -972,7 +972,7 @@ Shell; each a quire lane plus a sill lane where named.
 
 ### 6.2 During the app pass (with each app)
 
-9. **A1 Toolbars** (quire, after H4 `MenuModel`): `Toolbar`, `ToolbarItem`, `CustomizePalette`;
+9. **A1 Toolbars** (Bardo, after H4 `MenuModel`): `Toolbar`, `ToolbarItem`, `CustomizePalette`;
    first in Files and Mail.
 10. **A2 Sidebars**: `SidebarSource`, the app's Sidebar settings; first in Files.
 11. **A3 Previewers**: `Previewer` registry shared by the launcher pane and the Quick Look app;
@@ -990,7 +990,7 @@ compositor fork reports held modifiers (4.9).
 
 ## 7. Open decisions (for the user; each has a recommendation)
 
-**Settled 2026-09-27.** The user picked 2 (B, reorderable), 3 (A, quire templates), 4 (add When Active) and 5 (A, membership only); 1, 6, 7, 8 and 9 follow the recommendations (1 B `layout.toml`, 6 A `ui-settings`, 7 consume KRunner and GNOME providers, 8 and 9 as recommended).
+**Settled 2026-09-27.** The user picked 2 (B, reorderable), 3 (A, Bardo templates), 4 (add When Active) and 5 (A, membership only); 1, 6, 7, 8 and 9 follow the recommendations (1 B `layout.toml`, 6 A `ui-settings`, 7 consume KRunner and GNOME providers, 8 and 9 as recommended).
 
 1. **Where placements live.** (A) as list keys in `settings.toml`; (B) a `layout.toml` per
    program beside `settings.toml`, schema'd the same way; (C) keep today's per-surface JSON files
@@ -1001,7 +1001,7 @@ compositor fork reports held modifiers (4.9).
    checklist plus drag to reorder. **Recommend B**: the order is already visible as the Tab order
    and the section order, and the user asked for the launcher to be placeable; the default order
    stays the reference-like one.
-3. **How another process's widget is drawn.** (A) the app sends entries for a quire template
+3. **How another process's widget is drawn.** (A) the app sends entries for a Bardo template
    (figure, gauge, list, month, image and caption, text), the host draws; (B) the app renders a
    buffer the host composites; (C) the app ships a sandboxed view (WASM). **Recommend A**: every
    card stays our card (design/23's whole point), no GPU or protocol work, and the reference's
@@ -1060,5 +1060,5 @@ config. Positions and cells stay state (`$XDG_STATE_HOME/bardo/shell/desktop-wid
   (2, 3.4-3.6, 3.12-3.13, 3.19-3.23, 5, 9), 23 (4.3, 6; section 9 on `widget-interface`), 27
   (0.2, 4.16, 5.2, 5.11, 5.12, 6.2).
 - Code (read-only): sill at `45f9af0`, re-read at master `0096872` for this revision (widget drag
-  F880-F892, sill's saved-layout file, `size_of`, the tray model, `rank/sections.rs`, the keys test); quire `master` at `a2cbcb7a` and the `widget-interface`
+  F880-F892, sill's saved-layout file, `size_of`, the tray model, `rank/sections.rs`, the keys test); Bardo `master` at `a2cbcb7a` and the `widget-interface`
   worktree's uncommitted `crates/sill-shell-kit/src/widget/`.

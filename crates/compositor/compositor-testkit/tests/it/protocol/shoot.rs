@@ -7,7 +7,7 @@ use compositor_core::input::DeviceClass;
 use compositor_core::policy::ConnectionRole;
 use compositor_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
 use compositor_testclient::TestClient;
-use compositor_testclient::quire::window::{FrameMode, Window, WindowManager};
+use compositor_testclient::bardo::window::{FrameMode, Window, WindowManager};
 use compositor_testclient::surface::subsurface::Surface;
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
 use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec, ShotTarget, TestOrigin};

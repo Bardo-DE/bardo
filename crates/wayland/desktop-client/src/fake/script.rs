@@ -3,6 +3,7 @@
 use std::collections::VecDeque;
 
 use crate::admit::admit;
+use crate::bardo::check_targets;
 use crate::command::{DesktopCommand, Ticket};
 use crate::config::DesktopConfig;
 use crate::desktop::Desktop;
@@ -10,7 +11,6 @@ use crate::error::CommandError;
 use crate::event::DesktopEvent;
 use crate::keys::{CaptureId, ConfigId, Mint};
 use crate::protocol::ProtocolSet;
-use crate::quire::check_targets;
 use crate::reduce::reduce;
 use crate::state::DesktopState;
 
@@ -19,7 +19,7 @@ use crate::state::DesktopState;
 /// Queue events with [`FakeDesktop::script`]; [`FakeDesktop::advance`] reduces the next one
 /// into the state (as the wire client does when a compositor speaks). Commands are checked
 /// with `admit` like the real client does (offered, and bound as the
-/// [`DesktopConfig`] says), the Quire commands' targets are looked up in the state, and then they
+/// [`DesktopConfig`] says), Bardo commands' targets are looked up in the state, and then they
 /// are recorded.
 #[derive(Debug)]
 pub struct FakeDesktop {
@@ -46,7 +46,7 @@ impl FakeDesktop {
     /// use desktop_client::{Desktop, DesktopCommand, DesktopConfig, Protocol, ProtocolSet};
     /// use desktop_protocols::vocab::{OverviewMode, Toggle};
     ///
-    /// let offered = ProtocolSet::empty().with(Protocol::QuireShell);
+    /// let offered = ProtocolSet::empty().with(Protocol::BardoShell);
     /// let command = DesktopCommand::Overview {
     ///     mode: OverviewMode::MissionControl,
     ///     toggle: Toggle::On,

@@ -12,7 +12,7 @@ use account_sheet::{
 
 use super::model::Draft;
 
-/// A row of the provider list: a provider, or the generic "Other" row quire's list adds.
+/// A row of the provider list: a provider, or the generic "Other" row Bardo's list adds.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum ListKey {
     /// A provider of the list.

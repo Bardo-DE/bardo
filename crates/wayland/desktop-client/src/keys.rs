@@ -53,11 +53,11 @@ key! {
     ToplevelKey
 }
 key! {
-    /// One app of the Quire arm (`bardo_desktop_app_v1`).
+    /// One app of Bardo arm (`bardo_desktop_app_v1`).
     AppKey
 }
 key! {
-    /// One Space of the Quire arm (`bardo_desktop_space_v1`).
+    /// One Space of Bardo arm (`bardo_desktop_space_v1`).
     SpaceKey
 }
 key! {

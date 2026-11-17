@@ -4,7 +4,7 @@
 //! output the [`shell_ui_kit::links::BannerLink`] names while a card is up. Cards stack at the top
 //! right under the bar, newest first, macOS-style.
 //!
-//! The motion and the card are quire's (`BannerStack`, `NotificationCard`): a card slides in from
+//! The motion and the card are Bardo's (`BannerStack`, `NotificationCard`): a card slides in from
 //! the right, opens its body, actions and close button under the pointer, swipes away, and
 //! slides out while the cards after it heal. bardo-shell keeps the life of each card: its hold
 //! (a constant in `step.rs`), paused while hovered (`step.rs`, pure, tested); which

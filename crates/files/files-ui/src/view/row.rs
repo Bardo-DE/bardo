@@ -12,7 +12,7 @@ use crate::menu::Over;
 use crate::state::Browse;
 
 /// The input for files let go from outside the window, on the folder row `onto` or, with `None`,
-/// on the folder shown. quire offers the drop as a copy to the source, so it is a copy.
+/// on the folder shown. Bardo offers the drop as a copy to the source, so it is a copy.
 pub(super) fn dropped(files: &FileDrop, onto: Option<FileName>) -> Input {
     let sources = files
         .paths

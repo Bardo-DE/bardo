@@ -40,7 +40,7 @@ impl SpaceName {
 
 base_ids::string_newtype!(SpaceName, CoreError);
 
-/// How a Space looks (a colour, a symbol), as quire's Spaces kit writes it (compact JSON of its
+/// How a Space looks (a colour, a symbol), as Bardo's Spaces kit writes it (compact JSON of its
 /// `SpaceLook`).
 ///
 /// Opaque to porter: kept and handed back as it came, never parsed; only its length is checked (at
@@ -76,7 +76,7 @@ pub struct DesktopSpaceRecord {
     pub id: DesktopSpace,
     /// What the person called it.
     pub name: SpaceName,
-    /// How it looks, for quire's kit.
+    /// How it looks, for Bardo's kit.
     pub look: SpaceLook,
     /// When it was made (or adopted).
     pub created: UnixSeconds,

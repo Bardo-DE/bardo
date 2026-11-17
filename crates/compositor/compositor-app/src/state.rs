@@ -21,14 +21,14 @@ use compositor_motion::MotionBook;
 use compositor_render::{ChromeLayer, CursorDraw, CursorShape, TextureBook};
 use compositor_wayland::{
     ClientMint, GlobalFilter, WaylandFault, WaylandStates, alpha_modifier, background_effect,
-    capture_source, color_management, commit_timing, compositor, content_type, cursor_shape,
-    data_device, dmabuf, ext_data_control, fifo, foreign_toplevel_list, fractional_scale, gamma,
-    idle_inhibit, idle_notify, image_capture, input_method, layer_shell, output, output_management,
-    output_power, pointer_constraints, pointer_gestures, presentation, primary_selection, quire,
-    quire_window, relative_pointer, seat, security_context, session_lock, shm, shortcuts_inhibit,
-    single_pixel, subcompositor, system_bell, tablet, text_input, viewporter, virtual_keyboard,
-    wlr_data_control, wlr_toplevel, workspace, xdg_activation, xdg_decoration, xdg_dialog,
-    xdg_foreign, xdg_shell, xdg_toplevel_icon, xdg_toplevel_tag,
+    bardo, bardo_window, capture_source, color_management, commit_timing, compositor, content_type,
+    cursor_shape, data_device, dmabuf, ext_data_control, fifo, foreign_toplevel_list,
+    fractional_scale, gamma, idle_inhibit, idle_notify, image_capture, input_method, layer_shell,
+    output, output_management, output_power, pointer_constraints, pointer_gestures, presentation,
+    primary_selection, relative_pointer, seat, security_context, session_lock, shm,
+    shortcuts_inhibit, single_pixel, subcompositor, system_bell, tablet, text_input, viewporter,
+    virtual_keyboard, wlr_data_control, wlr_toplevel, workspace, xdg_activation, xdg_decoration,
+    xdg_dialog, xdg_foreign, xdg_shell, xdg_toplevel_icon, xdg_toplevel_tag,
 };
 use smithay::backend::renderer::damage::OutputDamageTracker;
 use smithay::reexports::calloop::LoopHandle;
@@ -134,7 +134,7 @@ pub struct RenderState {
     pub reveal: compositor_core::reveal::RevealBook,
     /// The person's light or dark scheme, which the server-side frame is drawn in.
     pub scheme: compositor_layout::Scheme,
-    /// Whether the person reduced transparency (quire's `appearance.transparency`): every blur is
+    /// Whether the person reduced transparency (Bardo's `appearance.transparency`): every blur is
     /// drawn as its mostly opaque stand-in.
     pub transparency: compositor_layout::Transparency,
     /// The window titles' rasteriser (`compositor-chrome`), made when the first server-side frame
@@ -266,7 +266,7 @@ impl State {
             xdg_toplevel_tag: xdg_toplevel_tag::XdgToplevelTagPart::new::<State>(&dh, filter),
             xdg_foreign: xdg_foreign::XdgForeignPart::new::<State>(&dh, filter),
             system_bell: system_bell::SystemBellPart::new::<State>(&dh, filter),
-            quire_window: quire_window::QuireWindowPart::new::<State>(&dh, filter),
+            bardo_window: bardo_window::BardoWindowPart::new::<State>(&dh, filter),
             layer_shell: layer_shell::LayerShellPart::new::<State>(&dh, filter),
             session_lock: session_lock::SessionLockPart::new::<State>(&dh, filter),
             seat: seat::SeatPart::new(&dh, filter, &settings.keyboard)?,
@@ -307,8 +307,8 @@ impl State {
             // P2-Z declares these three; P2-Q1, P2-Q2 and P2-Q3 create their globals.
             capture_source: capture_source::ToplevelCapturePart::new::<State>(&dh, filter),
             screencopy: compositor_wayland::screencopy::ScreencopyPart::new::<State>(&dh, filter),
-            quire_desktop: quire::desktop::QuireDesktopPart::new::<State>(&dh, filter),
-            quire_shell: quire::shell::QuireShellPart::new::<State>(&dh, filter),
+            bardo_desktop: bardo::desktop::BardoDesktopPart::new::<State>(&dh, filter),
+            bardo_shell: bardo::shell::BardoShellPart::new::<State>(&dh, filter),
         };
         if config.dmabuf {
             dmabuf::apply_offer::<State>(&mut wl.dmabuf, &dh, &dmabuf::DmabufOffer::soft())?;

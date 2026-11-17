@@ -42,7 +42,7 @@ impl RuleFile {
     }
 }
 
-const HEADER: &str = "// Rules Quire wrote for you, one for each \"never\" or \"ask first\".\n\
+const HEADER: &str = "// Rules Bardo wrote for you, one for each \"never\" or \"ask first\".\n\
 // Remove one from Settings, or delete it here. Rules you add by hand stay as they are.";
 
 /// Every effect, weakest first.
@@ -68,7 +68,7 @@ fn caller_terms(caller: &LimitCaller) -> Vec<String> {
             match who {
                 GrantCaller::App(app) => vec![
                     kind,
-                    format!("principal == Quire::Caller::{}", quoted(app.as_str())),
+                    format!("principal == Bardo::Caller::{}", quoted(app.as_str())),
                 ],
                 _ => vec![kind],
             }
@@ -77,13 +77,13 @@ fn caller_terms(caller: &LimitCaller) -> Vec<String> {
 }
 
 fn scope_terms(scope: &LimitScope) -> Vec<String> {
-    let app = |app: &str| format!("resource in Quire::App::{}", quoted(app));
+    let app = |app: &str| format!("resource in Bardo::App::{}", quoted(app));
     match scope {
         LimitScope::Everything => Vec::new(),
         LimitScope::App(name) => vec![app(name.as_str())],
         LimitScope::Action(action) => vec![
             app(action.app.as_str()),
-            format!("resource == Quire::Act::{}", quoted(action.name.as_str())),
+            format!("resource == Bardo::Act::{}", quoted(action.name.as_str())),
         ],
     }
 }
@@ -123,9 +123,9 @@ fn terms(key: &LimitKey) -> String {
 #[must_use]
 pub fn rule_text(limit: &Limit) -> String {
     let action = match limit.key.level {
-        LimitLevel::Never => "action == Quire::Action::\"perform\"",
+        LimitLevel::Never => "action == Bardo::Action::\"perform\"",
         LimitLevel::AlwaysAsk => {
-            "action in [Quire::Action::\"perform_unasked\", Quire::Action::\"perform_unjudged\"]"
+            "action in [Bardo::Action::\"perform_unasked\", Bardo::Action::\"perform_unjudged\"]"
         }
     };
     format!(

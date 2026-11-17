@@ -1,4 +1,4 @@
-//! What the lock screen hands quire's `LockClock` and `LockPrompt`, from the auth service's
+//! What the lock screen hands Bardo's `LockClock` and `LockPrompt`, from the auth service's
 //! state, the keyboard and the clock: pure.
 
 use shell_kit::lock::vocab::{CapsLock, LockUser, PromptState};
@@ -19,8 +19,8 @@ pub fn caps_of(key: layer_shell_types::LockKey) -> CapsLock {
     }
 }
 
-/// quire's prompt state for `phase`: `Accepted` is quire's `Accepted` (its beat plays before the
-/// unlock), and `Unavailable` is `Idle` (the service's notes are the hint line). quire's
+/// Bardo's prompt state for `phase`: `Accepted` is Bardo's `Accepted` (its beat plays before the
+/// unlock), and `Unavailable` is `Idle` (the service's notes are the hint line). Bardo's
 /// `LockedOut` is never shown: there is no lockout.
 pub fn prompt_state(phase: &AuthPhase) -> PromptState {
     match phase {
@@ -31,7 +31,7 @@ pub fn prompt_state(phase: &AuthPhase) -> PromptState {
     }
 }
 
-/// The person as quire's prompt shows them: the real name (the login name when it is empty),
+/// The person as Bardo's prompt shows them: the real name (the login name when it is empty),
 /// and their picture ([`picture_of`]).
 pub fn lock_user(account: &Account) -> LockUser {
     let name = if account.name.0.trim().is_empty() {
@@ -44,7 +44,7 @@ pub fn lock_user(account: &Account) -> LockUser {
 }
 
 /// The person's picture: their photo when the account has one (`AccountsService`'s icon, else
-/// `$HOME/.face`, read by the auth service: `shell_services::auth::avatar_source`), which quire
+/// `$HOME/.face`, read by the auth service: `shell_services::auth::avatar_source`), which Bardo
 /// crops round; else the initial of `name` on their hue, at 64. The one place a picture is
 /// chosen.
 fn picture_of(account: &Account, name: &str) -> UserPicture {
@@ -70,7 +70,7 @@ fn face_of(name: &str, user: &UserName) -> AvatarFace {
     }
 }
 
-/// The clock's two lines, for quire's `LockClock`.
+/// The clock's two lines, for Bardo's `LockClock`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub struct ClockLines {
     /// `14:05` (24-hour) or `2:05` (12-hour, no AM/PM, macOS's lock screen).

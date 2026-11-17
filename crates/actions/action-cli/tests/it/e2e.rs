@@ -7,7 +7,7 @@
 //!
 //! The terminal's `AppId` (`org.bardo.Do`, role cli) comes from the cgroup of the pid behind its
 //! connection: the binary owns no bus name, so intentd names it by the scope it runs in. The test
-//! reads a fake proc root: `quire()` starts the binary through `sh`, which waits for a line on
+//! reads a fake proc root: `bardo()` starts the binary through `sh`, which waits for a line on
 //! its stdin, so the child's pid (kept by `exec`) is placed in a `vte-spawn-*.scope` before the
 //! binary exists, with no timing to rely on.
 
@@ -154,7 +154,7 @@ impl Desk {
 
     /// The real `bardo-do`, with only what is named here in its environment, running in a
     /// terminal's scope of the fake proc root.
-    async fn quire(&self, words: &[&str]) -> Output {
+    async fn bardo(&self, words: &[&str]) -> Output {
         use tokio::io::AsyncWriteExt;
         let scratch = self.dir.path();
         let mut child = tokio::process::Command::new("sh")
@@ -217,7 +217,7 @@ fn archive() -> ActionRef {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn the_real_quire_do_reaches_the_real_intentd_on_a_private_bus() {
+async fn the_real_bardo_do_reaches_the_real_intentd_on_a_private_bus() {
     let desk = Desk::start().await;
     for key in ["t3", "t4"] {
         desk.mail.0.add_thread(action_fake::MailThread {
@@ -229,7 +229,7 @@ async fn the_real_quire_do_reaches_the_real_intentd_on_a_private_bus() {
     }
 
     // The installed apps come from the scratch XDG_DATA_DIRS, through intentd's registry.
-    let apps = desk.quire(&["apps"]).await;
+    let apps = desk.bardo(&["apps"]).await;
     assert_eq!(code(&apps), 0, "{}", say(&apps));
     assert!(text(&apps.stdout).contains("mail"), "{}", say(&apps));
     // The two providers intentd hosts itself are listed without any file installed.
@@ -240,18 +240,18 @@ async fn the_real_quire_do_reaches_the_real_intentd_on_a_private_bus() {
             say(&apps)
         );
     }
-    let listed = desk.quire(&["mail", "--list"]).await;
+    let listed = desk.bardo(&["mail", "--list"]).await;
     assert_eq!(code(&listed), 0, "{}", say(&listed));
     assert!(text(&listed.stdout).contains("thread.archive"));
 
     // A read runs and asks nobody.
-    let read = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let read = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&read), 0, "{}", say(&read));
     assert!(desk.sill.shown().is_empty(), "a read is final: no sheet");
 
     // A dry run shows the preview and asks nobody either.
     let dry = desk
-        .quire(&["mail", "thread.archive", "t1", "--dry-run"])
+        .bardo(&["mail", "thread.archive", "t1", "--dry-run"])
         .await;
     assert_eq!(code(&dry), 0, "{}", say(&dry));
     assert!(desk.sill.shown().is_empty());
@@ -259,7 +259,7 @@ async fn the_real_quire_do_reaches_the_real_intentd_on_a_private_bus() {
 
     // A write asks. The person answers once, and it runs.
     desk.sill.answer(vec![once()]);
-    let first = desk.quire(&["mail", "thread.archive", "t2"]).await;
+    let first = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&first), 0, "{}", say(&first));
     assert!(desk.mail.0.is_archived("t2"), "the app did it");
     let shown = desk.sill.shown();
@@ -275,18 +275,18 @@ async fn the_real_quire_do_reaches_the_real_intentd_on_a_private_bus() {
     // The person says no: exit 4 as well. (Each denial is on a thread of its own: the same
     // action on the same thing, denied once, is refused outright the second time.)
     desk.sill.answer(vec![refused()]);
-    let no = desk.quire(&["mail", "thread.archive", "t3"]).await;
+    let no = desk.bardo(&["mail", "thread.archive", "t3"]).await;
     assert_eq!(code(&no), 4, "{}", say(&no));
     assert!(!desk.mail.0.is_archived("t3"));
     assert_eq!(desk.sill.shown().len(), 2);
 
     // "Allow from the terminal": this once runs, and the next one skips the ask.
     desk.sill.answer(vec![from_terminal()]);
-    let granted = desk.quire(&["mail", "thread.archive", "t4"]).await;
+    let granted = desk.bardo(&["mail", "thread.archive", "t4"]).await;
     assert_eq!(code(&granted), 0, "{}", say(&granted));
     assert!(desk.mail.0.is_archived("t4"));
     assert_eq!(desk.sill.shown().len(), 3);
-    let skipped = desk.quire(&["mail", "thread.archive", "t2"]).await;
+    let skipped = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&skipped), 0, "{}", say(&skipped));
     assert_eq!(
         desk.sill.shown().len(),
@@ -301,19 +301,19 @@ async fn the_real_quire_do_reaches_the_real_intentd_on_a_private_bus() {
         .await
         .expect("revoked");
     assert_eq!(desk.control.terminal_grants().await, Ok(vec![]));
-    let after = desk.quire(&["mail", "thread.archive", "t2"]).await;
+    let after = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&after), 4, "{}", say(&after));
     assert_eq!(desk.sill.shown().len(), 4, "asked again");
 
     // The terminal undoes its own last act (the app's undo, through the router).
     assert!(desk.mail.0.is_archived("t2"));
-    let undone = desk.quire(&["undo", "--last"]).await;
+    let undone = desk.bardo(&["undo", "--last"]).await;
     assert_eq!(code(&undone), 0, "{}", say(&undone));
     assert!(!desk.mail.0.is_archived("t2"), "undone in the app");
 
     // A hidden action is refused without asking anyone: exit 3.
     let before = desk.sill.shown().len();
-    let hidden = desk.quire(&["memory", "forget", "memory.fact:f1"]).await;
+    let hidden = desk.bardo(&["memory", "forget", "memory.fact:f1"]).await;
     assert_eq!(code(&hidden), 3, "{}", say(&hidden));
     assert_eq!(
         desk.sill.shown().len(),
@@ -323,7 +323,7 @@ async fn the_real_quire_do_reaches_the_real_intentd_on_a_private_bus() {
 
     // Nothing about the real session was touched.
     assert!(
-        !text(&desk.quire(&["apps"]).await.stderr).contains("/run/user"),
+        !text(&desk.bardo(&["apps"]).await.stderr).contains("/run/user"),
         "the private bus only"
     );
 }
@@ -333,27 +333,27 @@ async fn three_refusals_in_a_row_pause_the_terminal_until_the_control_centre_res
     let desk = Desk::start().await;
     for key in ["f1", "f2", "f3"] {
         let hidden = desk
-            .quire(&["memory", "forget", &format!("memory.fact:{key}")])
+            .bardo(&["memory", "forget", &format!("memory.fact:{key}")])
             .await;
         assert_eq!(code(&hidden), 3, "{}", say(&hidden));
     }
-    let paused = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let paused = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&paused), 7, "{}", say(&paused));
     // Item 89: the terminal cannot unpause itself, and nothing about asking again changes it.
-    let still = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let still = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&still), 7, "{}", say(&still));
     desk.control
         .resume(SpaceScope::Any)
         .await
         .expect("the control centre resumes");
-    let back = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let back = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&back), 0, "{}", say(&back));
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn with_intentd_stopped_every_call_exits_6_and_sends_nothing() {
     let mut desk = Desk::start().await;
-    let up = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let up = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&up), 0, "{}", say(&up));
     desk.stop_intentd().await;
     for words in [
@@ -363,7 +363,7 @@ async fn with_intentd_stopped_every_call_exits_6_and_sends_nothing() {
         vec!["mail", "thread.archive", "t2"],
         vec!["undo", "--last"],
     ] {
-        let out = desk.quire(&words).await;
+        let out = desk.bardo(&words).await;
         assert_eq!(code(&out), 6, "{words:?}: {}", say(&out));
         assert!(
             text(&out.stderr).contains("bardo-actiond is not running"),
@@ -381,7 +381,7 @@ async fn with_intentd_stopped_every_call_exits_6_and_sends_nothing() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn what_the_terminal_did_is_in_memory_as_audit_records() {
     let desk = Desk::start().await;
-    let read = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let read = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&read), 0, "{}", say(&read));
     let record = base_testkit::eventually_some("the call reached memoryd", || {
         desk.memoryd
@@ -430,7 +430,7 @@ async fn the_breaker_pausing_the_terminal_is_a_signal() {
     let mut tripped = control.receive_breaker_tripped().await.expect("subscribed");
     for key in ["f1", "f2", "f3"] {
         let hidden = desk
-            .quire(&["memory", "forget", &format!("memory.fact:{key}")])
+            .bardo(&["memory", "forget", &format!("memory.fact:{key}")])
             .await;
         assert_eq!(code(&hidden), 3, "{}", say(&hidden));
     }
@@ -453,7 +453,7 @@ async fn an_undoable_change_is_a_journal_changed_signal_with_the_row_count() {
         .expect("proxy");
     let mut changed = control.receive_journal_changed().await.expect("subscribed");
     desk.sill.answer(vec![once()]);
-    let archived = desk.quire(&["mail", "thread.archive", "t2"]).await;
+    let archived = desk.bardo(&["mail", "thread.archive", "t2"]).await;
     assert_eq!(code(&archived), 0, "{}", say(&archived));
     let signal = first(&mut changed).await;
     assert_eq!(*signal.args().expect("args").rows(), 1);
@@ -464,7 +464,7 @@ async fn an_undoable_change_is_a_journal_changed_signal_with_the_row_count() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn an_app_that_is_absent_is_exit_6() {
     let desk = Desk::start().await;
-    let out = desk.quire(&["files", "file.read", "f1"]).await;
+    let out = desk.bardo(&["files", "file.read", "f1"]).await;
     assert_eq!(code(&out), 6, "{}", say(&out));
     // Stdout is not a terminal here, so the error is the JSON one.
     assert!(
@@ -478,7 +478,7 @@ async fn an_app_that_is_absent_is_exit_6() {
 /// process that owns no name and is not `bardo-do` is nobody, and `bardo-do` run as the person's
 /// control centre would still be a terminal.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn a_process_that_is_not_quire_do_is_not_the_terminal() {
+async fn a_process_that_is_not_bardo_do_is_not_the_terminal() {
     let desk = Desk::start().await;
     // This test binary owns no name and has no cgroup in the fake proc root: intentd names it nobody.
     let stranger = DbusTransport::new(desk.bus.connect().await);

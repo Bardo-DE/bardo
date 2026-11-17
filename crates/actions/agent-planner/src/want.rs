@@ -1,4 +1,4 @@
-//! The `want` of a `quire_read`: the schema the model is shown, and the options of a `choice`
+//! The `want` of a `bardo_read`: the schema the model is shown, and the options of a `choice`
 //! read as ids. A model that writes an option as words ("Option A") has said what it
 //! meant, so the words become the id they name; when they name none, or two options name the
 //! same one, it is told which option and what an option looks like.

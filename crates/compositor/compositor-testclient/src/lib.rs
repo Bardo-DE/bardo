@@ -13,11 +13,11 @@ mod shm;
 mod transcript;
 pub mod udmabuf;
 
+pub mod bardo;
 pub mod capture;
 pub mod ime;
 pub mod manage;
 pub mod misc;
-pub mod quire;
 pub mod seat;
 pub mod selection;
 pub mod surface;

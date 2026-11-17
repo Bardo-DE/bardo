@@ -17,7 +17,7 @@ pub struct GpuRequest {
     pub features: Option<wgpu::Features>,
     /// Limits to request in place of the renderer's.
     pub limits: Option<wgpu::Limits>,
-    /// The backends to probe for an adapter. `None` leaves quire's choice, the platform's
+    /// The backends to probe for an adapter. `None` leaves Bardo's choice, the platform's
     /// primary backend. The `WGPU_BACKEND` environment variable wins
     /// over both.
     pub backends: Option<wgpu::Backends>,

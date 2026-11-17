@@ -8,7 +8,7 @@ use anyview_core::{Input, PeekBudget, PixelLen, PixelSize};
 use std::sync::Arc;
 
 /// The box, in pixels, that the pane fits a page or a picture into: a 360 px pane's width inside
-/// its 16 px padding by the height it gives its media. The pane pins it equal to quire's
+/// its 16 px padding by the height it gives its media. The pane pins it equal to Bardo's
 /// `PANE_MEDIA`.
 pub(crate) const PANE_FIT: PixelSize = PixelSize {
     width: PixelLen(328),

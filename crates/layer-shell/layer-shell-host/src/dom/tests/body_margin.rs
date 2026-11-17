@@ -1,11 +1,11 @@
 //! The host's body reset: Blitz's default stylesheet gives `<body>` an 8 px
-//! margin, and the host zeroes it with a user-agent sheet, so a bare document (no quire root,
+//! margin, and the host zeroes it with a user-agent sheet, so a bare document (no Bardo root,
 //! no stylesheet of its own) reaches its surface's (0, 0) corner, while a document's own body
 //! rule still wins.
 //!
 //! The reset fixes the corner, not the height: an `inset:0` box is placed against its parent,
 //! dioxus-native-dom's `height:auto` `#main`, which an all-positioned document leaves 0 px tall
-//! (quire's `RootExtent::Viewport`). A box sized in viewport units covers it all.
+//! (Bardo's `RootExtent::Viewport`). A box sized in viewport units covers it all.
 
 use std::task::Context;
 

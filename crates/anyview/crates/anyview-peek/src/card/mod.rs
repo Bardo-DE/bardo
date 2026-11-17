@@ -2,7 +2,7 @@
 //! [`AnyPeeked`]: a picture, a page, highlighted lines, a table, a tree's top level, a rendered
 //! Markdown start, a folder or a file's facts, over the file's name and its rows of facts.
 //!
-//! It is drawn with quire's components (`FactList`, `Table`, `PdfThumb`, `TextureLayer`,
+//! It is drawn with Bardo's components (`FactList`, `Table`, `PdfThumb`, `TextureLayer`,
 //! `InlineBanner`) and a small stylesheet of its own in the `app` layer, made of design-system
 //! tokens only. The card never takes the keyboard and holds no state of its own beyond the texture
 //! it shows: the actions under it are the host's (the launcher's rows, the viewer's capsule).

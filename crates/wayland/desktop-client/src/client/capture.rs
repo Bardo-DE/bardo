@@ -97,10 +97,10 @@ pub(super) fn start(wire: &mut Wire, request: &CaptureRequest) -> Result<Capture
         Some(shot) => {
             let shell = wire
                 .handles
-                .quire_shell
+                .bardo_shell
                 .as_ref()
                 .filter(|shell| shell.version() >= 2)
-                .ok_or_else(|| unsupported(Protocol::QuireShell))?;
+                .ok_or_else(|| unsupported(Protocol::BardoShell))?;
             shell.get_space_capture_source(
                 output,
                 shot.space.as_str().to_owned(),

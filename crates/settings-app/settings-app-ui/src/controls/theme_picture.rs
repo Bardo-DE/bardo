@@ -1,6 +1,6 @@
 //! The small drawn window each theme choice shows: a window on the desktop in the light palette,
 //! in the dark one, or half of each for the choice that follows the desktop. Every colour is a
-//! quire token read in the palette the picture stands for, so the picture keeps its own palette
+//! Bardo token read in the palette the picture stands for, so the picture keeps its own palette
 //! whichever one the Settings window is in.
 
 use ui_components::prelude::Scheme;

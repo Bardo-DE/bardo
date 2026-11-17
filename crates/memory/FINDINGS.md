@@ -198,11 +198,11 @@ Nothing below is built; the interfaces it will use are.
   - `NewHeader` carries the body digest (`NewHeader::of(&Record, recorded, &digest_key)`) so a
     header-only entry keeps the digest of the body it never stored.
   - The topic file's trailer carries the actor, label, links as JSON values (percent-escaped for
-    `%`, `;` and `>`) rather than memory.md's abbreviated `by: user/org.quire.Mail; trust: user`
+    `%`, `;` and `>`) rather than memory.md's abbreviated `by: user/org.bardo.Mail; trust: user`
     sketch: a `Fact` must round-trip losslessly, and `Label` and `Actor` have many forms. The keys
     `valid` and `origin` are refused, not interpreted (reserved).
   - D-Bus: `Refusal::{OutsideSpace, NoSuchFact, NotPending}` also have error names
-    (`org.quire.Memory1.Error.*`), so the mapping to `Refusal` is 1:1 (memory.md listed seven).
+    (`org.bardo.Memory1.Error.*`), so the mapping to `Refusal` is 1:1 (memory.md listed seven).
     `Export` is `(s options, h out) -> s manifest`; `RecordBatch` and `Propose` have two out
     arguments.
   - `memoryd` does not link `almanac-client` (it has no use for it); its porter edges are
@@ -226,8 +226,8 @@ Nothing below is built; the interfaces it will use are.
 - **Cross-repo dependencies are git deps at pinned revs** (`porter-core`, `prov`, `porter-client`,
   `porter-client-dbus`, `porter-dbus` from `https://github.com/Bardo-DE/porter`; `porter-infer`,
   `inferd-client`, `steward-dbus` from `https://github.com/Bardo-DE/steward`), so a plain `git clone`
-  builds with no sibling checkout (quire `CONSUMING.md` section 1). The URL spelling and the rev
-  match porter's own pins of stoker and quire, so cargo sees one copy of each crate. For work that
+  builds with no sibling checkout (Bardo `CONSUMING.md` section 1). The URL spelling and the rev
+  match porter's own pins of stoker and Bardo, so cargo sees one copy of each crate. For work that
   spans repos, override the pin locally with a `[patch]` that is never committed: put it in a
   `.cargo/config.toml` in a directory ABOVE the checkout (cargo merges the config of every parent
   directory; this repo's own `.cargo/config.toml` is tracked), for example
@@ -235,7 +235,7 @@ Nothing below is built; the interfaces it will use are.
   ```toml
   [patch."https://github.com/Bardo-DE/porter"]
   porter-core = { path = "/path/to/porter/crates/porter-core" }
-  # one line per porter crate almanac names; add the same for stoker/quire crates if the
+  # one line per porter crate almanac names; add the same for stoker/bardo crates if the
   # local porter checkout pins a different rev than the one in Cargo.lock
 
   [patch."https://github.com/Bardo-DE/prov"]
@@ -283,7 +283,7 @@ Decisions the fill made where the frozen text left room:
 `decode_reply`/`encode_reply` (`codec/`), `invoke` (the caller's half, over the proxies) and the
 served objects (`almanac-dbus-serve`'s `serve/`, the daemon's half, over a `Serve` handler). The frozen unit-struct
 skeletons stay as the introspection source; `almanac-dbus-serve/tests/it/served.rs` pins that the objects memoryd
-serves introspect the same, and both equal `dbus/org.quire.Memory1.xml`. The XML gained `Control.Sweep`
+serves introspect the same, and both equal `dbus/org.bardo.Memory1.xml`. The XML gained `Control.Sweep`
 (30 methods became 31). Conventions the codec fixes: a Space argument is its plain id and every other
 typed argument is JSON; a Space argument that differs from the Space inside the body is `Invalid`;
 `Primer` answers the markdown, `RecordBatch`'s count is a decimal, and a `Record` or `RecordBatch`
@@ -296,9 +296,9 @@ error of its name, one to one. `DbusTransport::call` maps a missing daemon
 **Who is calling.** `Peers` turns the sender's unique name into a `Caller`. `ProcPeers` is porter's
 `ProcCallers` (bus pid, then `/proc/<pid>/cgroup` alone; no `exe`, which a Landlock domain cannot
 read) with `callers::caller_for` mapping porter's caller onto almanac's: role `cua` is `Cuad`,
-role `sheet_host` of app `org.quire.Shell` is `ShellUi`, role `settings` of app `org.quire.Settings`
-(the unit `org.quire.Settings.service`, detent) is `Settings`, role `agent` of app
-`org.quire.Intents` is `Router`, every other identified process is `App`. The table is `/etc/bardo/memoryd-callers.toml`
+role `sheet_host` of app `org.bardo.Shell` is `ShellUi`, role `settings` of app `org.bardo.Settings`
+(the unit `org.bardo.Settings.service`, detent) is `Settings`, role `agent` of app
+`org.bardo.Intents` is `Router`, every other identified process is `App`. The table is `/etc/bardo/memoryd-callers.toml`
 with `<config>/bardo/memoryd/callers.toml` laid over it (user rows win; a missing file is empty, a
 bad one stops the daemon): porter's `[[caller]]` rows of `app`, optional `unit`, `role`.
 `dbus/memory-callers.toml` is the packaged system file. `TablePeers` is the test seam.
@@ -373,7 +373,7 @@ Nothing is called at start: inferd is found, and started by activation, at the f
 daemon that starts before inferd or without it still starts. While inferd is unreachable `open`
 answers `Unreachable`: the embedder answers `Unavailable` (recall is lexical-only and the index
 retries), and a consolidation run is refused as `Busy` and retried the next night. Both halves are
-tested on a private bus (`memoryd/tests/it/inferd_bus.rs`): a fake `org.quire.Inference1` up, none, and
+tested on a private bus (`memoryd/tests/it/inferd_bus.rs`): a fake `org.bardo.Inference1` up, none, and
 one that appears after the first failure. `NoInference` and `NoSession` are gone. `default_card()` is
 the card of the default embedding model (768 numbers, nomic prefixes) and must match what inferd
 serves.
@@ -467,7 +467,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   `StatusChanged` carries `locked_status()`. The Secret Service's own lock signal would be a
   better trigger than polling (built in the f4 fill).
 - **Landlock** (77): `memoryd/src/sandbox.rs`. The policy (`policy_for(dirs, bus_address)`, pure,
-  a table test) is read-write on the four memory directories (data, cache, `<config>/quire`,
+  a table test) is read-write on the four memory directories (data, cache, `<config>/bardo`,
   `<runtime>/bardo/memory`), read-only on `/usr /lib /lib64 /bin /etc /proc /sys /dev/urandom`,
   `ResolveUnix` on the session bus socket only (`unix:path=` of `DBUS_SESSION_BUS_ADDRESS`, else
   `<runtime>/bus`), and no TCP. `main` is no longer `#[tokio::main]`: it makes the directories,
@@ -516,7 +516,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   never a production downgrade. Without the feature the variable is ignored and, if set, a startup
   line says `ignoring it and using the Secret Service` (`memoryd/src/keysel.rs`, pure `select`;
   tests for both builds, `memoryd/tests/it/binary.rs` runs the feature-built binary on a private
-  bus with `env_clear` and scratch HOME/XDG, claims `org.quire.Memory1` and takes a `Record` into
+  bus with `env_clear` and scratch HOME/XDG, claims `org.bardo.Memory1` and takes a `Record` into
   `desktop`; the feature-off twin runs in a default-feature build).
 - **Landlock broke caller identity** (CLOSED by the f4-almanac-callers lane): under its own
   Landlock domain memoryd cannot read `/proc/<pid>/exe` of a process outside the domain, so the
@@ -542,9 +542,9 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
 
 ### Open after the f4 fill
 
-- **`landlock` is not in quire's pinned dependency block** (`docs/workspace-deps.toml`): almanac's
+- **`landlock` is not in Bardo's pinned dependency block** (`docs/workspace-deps.toml`): almanac's
   `Cargo.toml` names `landlock = "0.4"` (0.4.7 in the lockfile, MIT OR Apache-2.0) ahead of it. The
-  line joins quire's file first. Quire's session owns it.
+  line joins Bardo's file first. Bardo's session owns it.
 - **The lock signal against a real Secret Service** is unproven: gnome-keyring and KWallet differ in
   which object carries `Locked` (the collection is the documented one). Needs a real session.
 
@@ -614,7 +614,7 @@ f4-settings item 2. Closed here.
 
 | Item | State |
 |---|---|
-| `MemoryRequest::ApplyConsolidation(RunId)` (ShellUi only; codec, `org.quire.Memory1.ApplyConsolidation(run)`, introspection XML, proxy, serve, invoke, auth row, queue claim `Everything`) | done |
+| `MemoryRequest::ApplyConsolidation(RunId)` (ShellUi only; codec, `org.bardo.Memory1.ApplyConsolidation(run)`, introspection XML, proxy, serve, invoke, auth row, queue claim `Everything`) | done |
 | `memory.consolidation.apply` (`ConsolidateApply::{Auto,Review}`, words `auto`, `review`; schema row on the Intelligence page, key table, `MemorySettings.apply`) | done |
 | `Open::run_consolidation` under `Review` keeps the checked hunks, applies nothing, leaves the run `Proposed` and the cut where it was | done |
 | `Open::apply_consolidation` runs the machine's `Proceed` step (`ApplyHunks`, `LogConsolidated`) over the kept hunks | done |
@@ -656,7 +656,7 @@ The owner's four answers to the "consolidate-apply" questions, built. `todo!()` 
    to the file (they hold whole topic files; a later forget would have to scrub them, and a revert
    after a restart is not asked for): `Revert` still works only in the daemon run that applied.
 3. **`MemoryRequest::DiscardConsolidation(RunId)`**, shell only (ShellUi), queue claim `Everything`,
-   bus `org.quire.Memory1.DiscardConsolidation(run)` with `run` a `RunId` JSON, no output (the
+   bus `org.bardo.Memory1.DiscardConsolidation(run)` with `run` a `RunId` JSON, no output (the
    `Consolidation(space)` view then shows `state: discarded`). Anything but a still-proposed last run
    is `Invalid`.
 4. **A newer run marks a proposal `superseded`** in its file (written after the new file, so a crash
@@ -716,7 +716,7 @@ The earlier gap (a forgotten event whose text lives only in a pre-image) is clos
   portable key store (a master key the app provides); `scripts/check-portable.sh` gates the core crates
   with `--no-default-features` and cross-target checks. `almanac-seal`/`almanac-watch` `pure-hash` (off by
   default) builds blake3 without C for a cross check.
-- Built: `almanac-local` (below), the portable disk `Backend`; `almanac-client` `quire-desktop = ["dbus"]`
+- Built: `almanac-local` (below), the portable disk `Backend`; `almanac-client` `desktop = ["dbus"]`
   (default on) is the app-level desktop switch (ARCHITECTURE 1a names the two kinds of feature).
 - Open: `InotifyWatch` pairs renames by inotify cookie; a notify-backed watcher for macOS/Windows needs its
   own translation (FSEvents and ReadDirectoryChanges report renames differently).
@@ -784,7 +784,7 @@ The stream is chosen by kind patterns plus `about: Option<ThingRef>` and not by 
 because the log already indexes a payload's `things` (`LogRead::touching`): the lookup is by an indexed key,
 needs no JSON parsing of an owner-defined body, and the same key lets one forget of the thing erase a session
 as a unit (the base of ask A2). docket records each entry with the session as a `Subject` `ThingView`
-(app `org.quire.Companion`, kind `companion.session`, key the session id). Order is append sequence; the cursor
+(app `org.bardo.Companion`, kind `companion.session`, key the session id). Order is append sequence; the cursor
 is the last event seen (`after`, exclusive), and `next` is set only when more matched, so a page boundary is
 exact. Without `about` the read scans from the cursor (every session's entries in order), and with it the read
 touches only that session's rows. Bodies follow `BodyMode` and always travel with their label. Audited as the
@@ -873,7 +873,7 @@ app's own). What this adds, on porter 993c56b (`Spaces1`, `SpaceId::{kind, for_a
 - **Spaces the registry does not know.** At start, after subscribing, `Daemon::reconcile` settles every desktop-wide
   Space that memory holds and `Spaces1.List` does not (an id from before Spaces were per app that no grant made
   accountd adopt) as a removed one. It runs only once `List` answered.
-- **Gaps.** `LocalSpace(0)` is assumed to be an app's first Space (quire's kit numbers from 0). The event-history gap
+- **Gaps.** `LocalSpace(0)` is assumed to be an app's first Space (Bardo's kit numbers from 0). The event-history gap
   (a removed Space's events were erased with it) is closed by the history choice. A `cause` that points at an event
   recorded for another app's log and moved later in the same run is dropped (the log moves one app at a time). A Space an app records into that the registry
   never had is moved at the next start.
@@ -915,7 +915,7 @@ confirmation is kept where the agent sandbox and the apps cannot write.
   store, unused. A store that does not read counts as nothing confirmed and is reported.
 - `Memory1.Control.ConfirmSettings(a{ss} values)` records confirmations. Only the System Settings
   app (detent) may call it: it is the app that takes the person's agreement, and it runs as the unit
-  `org.quire.Settings.service` (porter role `settings` and app `org.quire.Settings`, mapped to
+  `org.bardo.Settings.service` (porter role `settings` and app `org.bardo.Settings`, mapped to
   `Caller::Settings`; the row is a unit row in `dbus/memory-callers.toml`, as a scope never
   carries a fixed role). `allowed` refuses every other caller, the shell included, with
   `NotAllowed`. `Caller::Settings` is not an app with memory: it may use only `ConfirmSettings`
@@ -940,14 +940,14 @@ confirmation is kept where the agent sandbox and the apps cannot write.
 
 Interface note for the Settings app (detent): after the person saves a looser-than-shipped value
 on a page, the app writes it to `almanac/settings.toml` and calls
-`org.quire.Memory1.Control.ConfirmSettings` with that key and value (`a{ss}`, for example
+`org.bardo.Memory1.Control.ConfirmSettings` with that key and value (`a{ss}`, for example
 `{"memory.retention.search_days": "7"}`; numbers in decimal, words as the file has them). The
 person's save is the agreement. Until the call is made, the value waits and the shipped value is in
 force. The call returns nothing and, once it has, the value is in force. The app must run as
-`org.quire.Settings.service` with porter's `settings` role (the row is in
+`org.bardo.Settings.service` with porter's `settings` role (the row is in
 `dbus/memory-callers.toml`); the shell can no longer confirm.
 For a value typed into the file by hand, the page shows "waits for you to confirm" with a Confirm
-button: read `org.quire.Memory1.Control.PendingSettings` (no arguments; answers `a(sss)`, each
+button: read `org.bardo.Memory1.Control.PendingSettings` (no arguments; answers `a(sss)`, each
 entry the key, the value waiting and the shipped value in force, in key order; an empty list
 means nothing waits). The button calls `ConfirmSettings` with that key and the waiting value. The
 list is read afresh on every call; read it again after a save or a confirm.
@@ -973,7 +973,7 @@ writes it to standard error (the journal keeps "this kernel has no Landlock"), a
 it: `memoryd::confinement_of` turns it into `memoryd::Confinement`, which `start` hands to
 `Daemon::with_confinement`; the served `Control` object asks its handler (`Serve::confinement`,
 which answers the word)
-and returns it. The read-only property is `org.quire.Memory1.Control.Confinement`, type `s`,
+and returns it. The read-only property is `org.bardo.Memory1.Control.Confinement`, type `s`,
 next to `Version`. Its words are a public contract (`Confinement::as_word`, pinned by a test):
 
 - `confined`: every restriction of the policy is in force (`Enforcement::Full`);
@@ -982,13 +982,13 @@ next to `Version`. Its words are a public contract (`Confinement::as_word`, pinn
 - `off`: a test build ran with `MEMORYD_SANDBOX=off`. Only test builds; before, that case wrongly
   counted as `Full`. A host that serves without telling the daemon (a test) also says `off`.
 
-`dbus/org.quire.Memory1.xml`, the skeleton, the `ControlProxy::confinement()` getter and the
+`dbus/org.bardo.Memory1.xml`, the skeleton, the `ControlProxy::confinement()` getter and the
 introspection test move together. Whether the unit's own protections are on is a separate fact: they
 are on only when `bardo-memoryd.service.d/sandbox.conf` is installed (`scripts/install.sh` leaves it out
 where `systemd --user` cannot make namespaces, the Ubuntu 24.04+ default), and can be read from the
 manager (`systemctl --user show memoryd -p ProtectSystem`). `Confinement` says nothing about it.
 
-Interface note for the Settings app (detent): read `org.quire.Memory1.Control.Confinement` (a
+Interface note for the Settings app (detent): read `org.bardo.Memory1.Control.Confinement` (a
 string property; read it beside `Status`; it does not change while the daemon runs) and show one
 plain line: `confined` as "Memory keeps itself to its own folders"; `partial` as "Memory keeps
 itself to its own folders, though this computer's system can only enforce part of that";

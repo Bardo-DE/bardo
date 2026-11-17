@@ -73,8 +73,8 @@ fn only_an_app_scope_is_read() {
         ),
         ("a run that is not a word", "app-org.bardo.Mail-1_2.scope"),
         ("too many parts", "app-a-b-c-d.scope"),
-        ("a broken escape", r"app-org\x2.quire-1.scope"),
-        ("a lone backslash", r"app-org\quire-1.scope"),
+        ("a broken escape", r"app-org\x2.bardo-1.scope"),
+        ("a lone backslash", r"app-org\bardo-1.scope"),
         ("an empty id", "app--1.scope"),
     ] {
         assert_eq!(ScopeName::parse(unit), None, "{case}: {unit}");

@@ -1,5 +1,5 @@
-//! Blitz limits: what Blitz cannot do and what quire draws instead (FINDINGS spike S1-S16), each shown
-//! working or visibly absent; and what the design names that quire does not draw yet, as the
+//! Blitz limits: what Blitz cannot do and what Bardo draws instead (FINDINGS spike S1-S16), each shown
+//! working or visibly absent; and what the design names that Bardo does not draw yet, as the
 //! gallery found it.
 
 use crate::axes::{Axes, Showcase};
@@ -14,7 +14,7 @@ use ui_components::style::icon::render::Glyph;
 use ui_core::text::clip::clip_chars;
 use ui_core::time::clock::sleep;
 
-/// Each spike finding: its id, what Blitz does, and what quire does about it.
+/// Each spike finding: its id, what Blitz does, and what Bardo does about it.
 const LIMITS: [(&str, &str, &str); 16] = [
     (
         "S1",
@@ -98,7 +98,7 @@ const LIMITS: [(&str, &str, &str); 16] = [
     ),
 ];
 
-/// What the gallery could not show with quire as it is, and is still open: each a component
+/// What the gallery could not show with Bardo as it is, and is still open: each a component
 /// that cannot express a documented state, a missing token, or a contract the code breaks,
 /// with the FINDINGS.md section that owns it.
 const DS_GAPS: [(&str, &str); 3] = [
@@ -120,7 +120,7 @@ const DS_GAPS: [(&str, &str); 3] = [
 #[component]
 pub fn BlitzLimitsPage() -> Element {
     rsx! {
-        Section { title: "Blitz limits, spike S1-S16", note: "What the renderer does, and what quire does about it. The demonstrations follow.",
+        Section { title: "Blitz limits, spike S1-S16", note: "What the renderer does, and what bardo does about it. The demonstrations follow.",
             div { class: "g-table g-cols5",
                 for (id , does , answer) in LIMITS {
                     span { class: "g-code", "{id}" }
@@ -134,7 +134,7 @@ pub fn BlitzLimitsPage() -> Element {
         BlurOff {}
         Icons {}
         Live {}
-        Section { title: "What quire does not draw yet", note: "Found while building this gallery.",
+        Section { title: "What bardo does not draw yet", note: "Found while building this gallery.",
             div { class: "g-col",
                 for (gap , owner) in DS_GAPS {
                     p { class: "g-note", "· {gap} (FINDINGS: {owner})" }

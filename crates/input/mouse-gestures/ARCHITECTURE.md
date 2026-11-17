@@ -3,7 +3,7 @@
 palmrest is the Magic Mouse 2 gesture daemon: it reads touch reports, turns them into scroll and
 gesture streams, and delivers them over a socket to layer-shell-host surfaces and, through virtual
 input devices, to every other client. `README.md` has the data flow, the socket protocol and
-the safety rules; quire's `design/12-BEHAVIOUR-gestures.md` is the specification;
+the safety rules; Bardo's `design/12-BEHAVIOUR-gestures.md` is the specification;
 `CONVENTIONS.md` points to the published Rust guides and gives three design directions (push IO to
 the edges, let types carry the facts, judgement over rules); `FINDINGS.md` holds the open items and
 standing facts. This file is the map: where each thing lives, what may depend on what, and how to add
@@ -198,11 +198,11 @@ behaviour choice; a tuning number is a named constant beside the code that uses 
 A key that is removed needs nothing in the reader: an unknown key in a stored file is ignored
 (`a_file_with_removed_keys_still_loads`).
 
-### The schema and quire
+### The schema and Bardo
 
-`palmrest --write-schema DIR` writes `palmrest.settings.toml`, the file quire's Settings app
-reads (quire `design/22-SETTINGS.md` section 9). palmrest takes no quire crate, so it does not use
-quire's `SettingsSchema` derive: `config::schema` writes the same format from a table, with the
+`palmrest --write-schema DIR` writes `palmrest.settings.toml`, the file Bardo's Settings app
+reads (Bardo `design/22-SETTINGS.md` section 9). palmrest takes no Bardo crate, so it does not use
+Bardo's `SettingsSchema` derive: `config::schema` writes the same format from a table, with the
 tests above as the guard that it cannot drift from `Config`.
 
 ## 6. Test harness

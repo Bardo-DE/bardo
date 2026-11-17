@@ -3,7 +3,7 @@
 //! column on `calendar.week_numbers = true`, the previous / next buttons (the card's
 //! `MonthIntent::Step`), the Medium card's today column and its next event from the agenda Up
 //! Next reads (the center's month is Medium), Up Next's rows in order with their calendar
-//! colour, its empty and quiet lines, and all through quire's markup lint (coherence rules 1
+//! colour, its empty and quiet lines, and all through Bardo's markup lint (coherence rules 1
 //! and 2).
 
 use shell_ui_kit::harness::fake;

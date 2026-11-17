@@ -75,7 +75,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   group's "N more" or invokes a lone card's default action, Backspace (the Mac keyboard's
   Delete) clears the focused row, Escape closes.
 - [ ] **The capsule level look on the light scheme** (the fill reads faintly on its track) when
-  picking the level look from quire's sheets.
+  picking the level look from Bardo's sheets.
 - [ ] **Drag icon follows the real pointer**: run layer-shell-host's `examples/demo_drag.rs
   --icon=root` and drag from its square: the icon follows the pointer the whole way (the
   headless KWin draws no cursor). The screenshot thumbnail's own drag is automated up to a drop
@@ -129,7 +129,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 
 - [ ] **Icon styles in dark mode**: Colour, Muted and Monochrome in the dock
   (`dev/out/dock-icons-*.png` are light-mode only). A third-party raster in Muted or Monochrome
-  goes through quire's dark tone band: check a black logo (Chrome's ring, a terminal) reads on
+  goes through Bardo's dark tone band: check a black logo (Chrome's ring, a terminal) reads on
   its plate in the dark, and that nothing looks washed out.
 - [ ] **The 24 bar and the control center by eye**: the bar at 24 with 22 items, 30-wide status
   slots with no gap, the control center's 22 capsule with its white knob, the 10/10 grid.
@@ -322,12 +322,12 @@ sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when miss
 - [ ] Log out and in again: the login screen already has the layout, and after login the terminal
   and the browser behave as in the second item.
 
-## The focused app's menus in the bar (a sill login, a quire app that exports its menu)
+## The focused app's menus in the bar (a sill login, a Bardo app that exports its menu)
 
 - [ ] **detent's Edit menu shows in the bar**: focus detent (built with the menu export on); the bar
   reads detent's name in bold, then File, Edit, View, Window and Help. Press Edit: Undo and Redo list
   with their Cmd keys; hover across File, a tray item and Sound switches the one popup with no gap;
-  pick a row and detent runs it. A window that is not a quire app shows only its name's menu (Hide,
+  pick a row and detent runs it. A window that is not a Bardo app shows only its name's menu (Hide,
   Quit, its windows).
 
 ## The confirmation sheet and `bardo-do` on a real sill (casement) login
@@ -377,11 +377,11 @@ the real daemons or a real keyboard.
   prompt: it closes.
 - [ ] **A summon over an app that serves the assistant**: with mailo focused,
   tap Cmd twice: mailo's own search field becomes the prompt and the launcher stays shut; with a
-  window that is not a quire app, the launcher opens instead, within a blink of `app_wait`.
+  window that is not a Bardo app, the launcher opens instead, within a blink of `app_wait`.
 - [ ] **Ask from the launcher** (flows (a) and (b), real companiond): ask "what is on my calendar
   today": the answer's card shows in the pane as it streams, the field empties, the selection moves to
   the answer; Escape returns to the Ask row; Command-Enter on a card with an "Open" button opens the
-  app and closes the panel. Needs quire's `AnswerCard` fill; until then the pane's card is an empty
+  app and closes the panel. Needs Bardo's `AnswerCard` fill; until then the pane's card is an empty
   placeholder and only the row's words and buttons show.
 - [ ] **Command-period** in the prompt: stops the answer being made; on a run's row (Tab to Runs) it
   stops the run. `bardo-shell companion stop-all` pauses every run that is going and leaves paused and ended
@@ -414,7 +414,7 @@ the real daemons or a real keyboard.
   Space picks, Return shares, Escape cancels; Share stays dim until something is picked; a second
   request while one is open is refused; the window list matches the open windows (needs casement's
   identifiers).
-- [ ] **Mac level sliders** (quire design/29 section 16): in the control center the Display, Sound and
+- [ ] **Mac level sliders** (Bardo design/29 section 16): in the control center the Display, Sound and
   Keyboard Brightness sliders are a 22 high well under a round white knob that holds the glyph
   (sun, speaker with waves, keys); a click on the well jumps the knob, a drag moves it, the arrows
   step a sixteenth (Shift a sixty-fourth); disabled keeps the knob, dimmed. The volume and
@@ -458,7 +458,7 @@ the real daemons or a real keyboard.
   bar. With two monitors the bar is on the monitors Mission Control is up on, each with its own Spaces.
 - [ ] **Drag a window onto a Space**: in Mission Control drag a window tile up onto a card. The card under the dragged window lights
   (accent wash, ringed card) and the window moves to that Space on release. The lit card is the one the window is over, not a
-  neighbour (the card rectangles are worked out from the bar's box and quire's card size: if they are off, FINDINGS `mc2`).
+  neighbour (the card rectangles are worked out from the bar's box and Bardo's card size: if they are off, FINDINGS `mc2`).
 - [ ] **Drag a window onto the plus**: in Mission Control drag a window tile up onto the plus at the bar's right edge. The plus lights
   (accent wash and ring) while the window is over it, and no card is lit at the same time; releasing makes a new Desktop on that
   output, moves the window to it and stays in Mission Control, where the new card appears with its picture. Moving the window off the
@@ -514,7 +514,7 @@ the real daemons or a real keyboard.
 
 - [ ] **The menu opens lit**: press ⌘K on a row with actions; the first action is lit, and Return runs it.
 - [ ] **A click stays in the menu**: click an action; it runs once and the row behind it does not run as well.
-- [ ] **Readable over the rows**: the menu can be read over the rows behind it. Known quire gap: it is see-through outside a blurred card, so look for text showing through.
+- [ ] **Readable over the rows**: the menu can be read over the rows behind it. Known Bardo gap: it is see-through outside a blurred card, so look for text showing through.
 - [ ] **Keep and Don't Keep**: on a memory row, Keep or Don't Keep removes the row at once, with no wait for the next refresh.
 
 ## A helper's model chosen from its card
@@ -537,7 +537,7 @@ the real daemons or a real keyboard.
 
 ## Terminal handover (a sill login with companiond, a coding-agent helper and at least one terminal)
 
-- [ ] **The default terminal**: with no `xdg-terminals.list`, Sign In on an app helper opens temor. Put `foot.desktop` in `~/.config/xdg-terminals.list` and press it again: foot opens instead. With `~/.config/quire-xdg-terminals.list` naming another terminal, that one wins. temor (PR #16 on) takes `-e <command>`, declares `X-TerminalArgExec=-e`, and its launch lives until that tab closes; with an older temor the close is seen at once and the work comes back immediately.
+- [ ] **The default terminal**: with no `xdg-terminals.list`, Sign In on an app helper opens temor. Put `foot.desktop` in `~/.config/xdg-terminals.list` and press it again: foot opens instead. With `~/.config/bardo-xdg-terminals.list` naming another terminal, that one wins. temor (PR #16 on) takes `-e <command>`, declares `X-TerminalArgExec=-e`, and its launch lives until that tab closes; with an older temor the close is seen at once and the work comes back immediately.
 - [ ] **Open in Terminal**: on an app helper's card whose work can move, Open in Terminal opens the terminal in the helper's folder running its session. The card now reads "In Terminal" with Bring Back. Close the window: the work comes back by itself and the card returns to Open in Terminal, with no sentence shown.
 - [ ] **Bring Back**: with the window still open, press Bring Back: the card returns to Open in Terminal. If the companion cannot, its sentence shows under the buttons.
 - [ ] **Sessions started in a terminal**: start a coding-agent session by hand in a terminal. In the assistant's panel the row "In Terminal — <app>" shows the folder under it. When it can be brought back the row offers Bring Back (Enter does it); the conversation then sits at the top of the answers. A refused bring back shows the companion's sentence in place of the folder.
@@ -594,7 +594,7 @@ the real daemons or a real keyboard.
 - [ ] **From the command line** (files 909056d): `bardo-do files open ~/Documents` shows it in the window; `bardo-do files selection` prints the selected paths; `bardo-do files trash <file>` moves it with the Undo toast; an assistant's Empty Trash only puts up the window's own question.
 - [ ] **Tabs** (files bfc7579): ⌘T opens a tab on the same folder and the tab bar appears; ⇧⌘[ and ⇧⌘] switch, each tab keeps its folder; ⌘W closes the tab and the bar goes at one. Right-click a folder, Open in New Tab, then keys still work in the new tab.
 - [ ] **Tags** (files bfc7579): right-click a file, Tags, Red: a red dot shows after its name, and `getfattr -n user.xdg.tags <file>` reads `Red`. The sidebar's Red lists it (and other red-tagged files under home). On a FAT stick it says "Tags can't be added on this disk."
-- [ ] **Icon view** (files 234a3f3, quire v0.3.39): ⌘1 shows icons, ⌘2 the list, and the toolbar switch does the same; arrows move in two directions, a click selects, Shift and ⌘ extend. Double-click or ⌘↓ opens, ⌘↑ goes to the enclosing folder (in the list too). Return renames the tile in place, and Space shows Quick Look. Quit and reopen a folder you set to icons: it is still icons.
+- [ ] **Icon view** (files 234a3f3, Bardo v0.3.39): ⌘1 shows icons, ⌘2 the list, and the toolbar switch does the same; arrows move in two directions, a click selects, Shift and ⌘ extend. Double-click or ⌘↓ opens, ⌘↑ goes to the enclosing folder (in the list too). Return renames the tile in place, and Space shows Quick Look. Quit and reopen a folder you set to icons: it is still icons.
 - [ ] **Go to Folder** (files 234a3f3): ⇧⌘G opens the sheet; type `~/Documents` and Return goes; Escape stays.
 - [ ] **Sheets take the keys** (files 234a3f3): right-click a file, Open With, Other…: arrows and Return work in the list at once, with no click first; ⌘I then Return closes Get Info.
 

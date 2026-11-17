@@ -11,7 +11,7 @@ use std::path::Path;
 use std::process::Command;
 
 /// `bardo-do` with a scratch world: only what is named here reaches the process.
-fn quire_do(dir: &Path, bus: &str, words: &[&str]) -> std::process::Output {
+fn bardo_do(dir: &Path, bus: &str, words: &[&str]) -> std::process::Output {
     Command::new(env!("CARGO_BIN_EXE_bardo-do"))
         .args(words)
         .env_clear()
@@ -45,7 +45,7 @@ fn where_intentd_is_not_the_exit_is_6_and_nothing_is_sent() {
         vec!["mail", "thread.archive", "t1"],
         vec!["undo", "--last"],
     ] {
-        let out = quire_do(dir.path(), bus.address(), &words);
+        let out = bardo_do(dir.path(), bus.address(), &words);
         assert_eq!(
             out.status.code(),
             Some(6),
@@ -61,7 +61,7 @@ fn where_intentd_is_not_the_exit_is_6_and_nothing_is_sent() {
     }
     // Last step: a bus address that is not there at all is exit 6 too.
     let nowhere = format!("unix:path={}", dir.path().join("nothing.sock").display());
-    let out = quire_do(dir.path(), &nowhere, &["apps"]);
+    let out = bardo_do(dir.path(), &nowhere, &["apps"]);
     assert_eq!(
         out.status.code(),
         Some(6),
@@ -79,7 +79,7 @@ fn where_intentd_is_not_the_exit_is_6_and_nothing_is_sent() {
 fn help_and_usage_need_no_bus_and_the_help_names_every_exit_code() {
     let dir = tempfile::tempdir().expect("scratch dir");
     let nowhere = format!("unix:path={}", dir.path().join("nothing.sock").display());
-    let help = quire_do(dir.path(), &nowhere, &["--help"]);
+    let help = bardo_do(dir.path(), &nowhere, &["--help"]);
     assert_eq!(help.status.code(), Some(0));
     let help = text(&help.stdout);
     for code in [
@@ -94,14 +94,14 @@ fn help_and_usage_need_no_bus_and_the_help_names_every_exit_code() {
         assert!(help.contains(code), "{code} in help");
     }
     assert!(help.contains("no flag that skips the question"));
-    let version = quire_do(dir.path(), &nowhere, &["--version"]);
+    let version = bardo_do(dir.path(), &nowhere, &["--version"]);
     assert_eq!(version.status.code(), Some(0));
-    let usage = quire_do(dir.path(), &nowhere, &["mail", "thread.read", "--oops"]);
+    let usage = bardo_do(dir.path(), &nowhere, &["mail", "thread.read", "--oops"]);
     assert_eq!(
         usage.status.code(),
         Some(2),
         "a command line that does not parse needs no bus"
     );
-    let none = quire_do(dir.path(), &nowhere, &[]);
+    let none = bardo_do(dir.path(), &nowhere, &[]);
     assert_eq!(none.status.code(), Some(2));
 }

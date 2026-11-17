@@ -63,7 +63,7 @@ fn entries() -> Vec<memory_eventlog::Entry> {
         Purpose::Digest,
     );
     let mut log = MemoryLog::new(&space("work"), ReplicaId([9; 16]), key.clone());
-    let rec = record(thing_body("org.quire.Mail", "7f3a"), user("org.quire.Mail"));
+    let rec = record(thing_body("org.bardo.Mail", "7f3a"), user("org.bardo.Mail"));
     log.append(NewHeader::of(&rec, NOW, &key), Some(rec.body.clone()))
         .expect("append");
     log.append(NewHeader::of(&rec, NOW, &key), None)
@@ -152,11 +152,11 @@ fn export_tar_layout_golden() {
     assert_eq!(
         names,
         [
-            "quire-memory-export-1/manifest.json",
-            "quire-memory-export-1/work/events.jsonl",
-            "quire-memory-export-1/work/facts/prefs/meetings.md",
-            "quire-memory-export-1/work/pending/01j9zk3m0q8h2v6x4c1b7n5t2a.md",
-            "quire-memory-export-1/rules.toml",
+            "bardo-memory-export-1/manifest.json",
+            "bardo-memory-export-1/work/events.jsonl",
+            "bardo-memory-export-1/work/facts/prefs/meetings.md",
+            "bardo-memory-export-1/work/pending/01j9zk3m0q8h2v6x4c1b7n5t2a.md",
+            "bardo-memory-export-1/rules.toml",
         ]
     );
     assert!(
@@ -188,7 +188,7 @@ fn config_files_round_trip() {
     };
     rules.rules = vec![
         r("r-space", RuleScope::Space(space("work"))),
-        r("r-app", RuleScope::App(app("org.quire.Mail"))),
+        r("r-app", RuleScope::App(app("org.bardo.Mail"))),
         r(
             "r-kind",
             RuleScope::Kind(KindPattern::parse("mail.*").expect("k")),
@@ -197,7 +197,7 @@ fn config_files_round_trip() {
             "r-path",
             RuleScope::Path(PathGlob::parse("/home/u/Downloads/**").expect("g")),
         ),
-        r("r-thing", RuleScope::Thing(thing("org.quire.Mail", "7f3a"))),
+        r("r-thing", RuleScope::Thing(thing("org.bardo.Mail", "7f3a"))),
         r("r-actor", RuleScope::Actor(ActorKind::Unknown)),
     ];
     let text = rules_to_toml(&rules).expect("encode");

@@ -2,7 +2,7 @@
 //!
 //! While the capture service holds a permission question and the `SheetLink` names this output,
 //! the surface maps itself (`SurfaceHandle::set_visibility`) and a `Ds { material: Sheet, extent:
-//! Viewport }` holds one quire `Alert` per question, keyed by its id: the app's icon, the
+//! Viewport }` holds one bardo `Alert` per question, keyed by its id: the app's icon, the
 //! headline, the app's name set strong with what it says, and the two buttons. The yes button
 //! comes first, so it is the default (Return); Escape answers what `escape_answer` says (the no
 //! button for a portal question, a dismissal for the compositor's). The alert answers nothing for
@@ -26,7 +26,7 @@ use super::io::use_end;
 use super::surface::PANEL_ID;
 use super::words::{app_named, escape_answer, words};
 
-/// The app icon's side in points: quire's alert draws its hero icon at 64.
+/// The app icon's side in points: Bardo's alert draws its hero icon at 64.
 const ICON_PX: u16 = 64;
 
 /// The buttons' element ids (the tests', and a person's stylesheet's, handles).

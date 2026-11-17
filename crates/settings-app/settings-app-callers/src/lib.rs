@@ -3,7 +3,7 @@
 //! A well-known name on the session bus goes to whoever asks first, so Settings never trusts one:
 //! before it reads a service, or hands it a typed secret, it asks whether the owner of the name is
 //! the program that plays the service's role in the desktop's caller table ([`RoleCheck`], the
-//! `OwnerCheck` quire's live client asks). The same peers judge who may ask the running Settings to
+//! `OwnerCheck` Bardo's live client asks). The same peers judge who may ask the running Settings to
 //! show itself (`settings-app-intents`). Everything here is peephole's: this crate names the roles and
 //! the proof each question needs, and decides nothing about a process itself.
 

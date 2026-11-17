@@ -1,5 +1,5 @@
-//! The center's own quire controls (Clear All) show quire's focus ring
-//! under the keyboard. The center runs the real `NotificationCenter`, whose root wraps quire's
+//! The center's own Bardo controls (Clear All) show Bardo's focus ring
+//! under the keyboard. The center runs the real `NotificationCenter`, whose root wraps Bardo's
 //! `Ds` under the `HostSignals` that `mount` provides; with no layer-shell-host `SurfaceHandle` (`ui_harness::Harness` has no
 //! seat) the bridge provides nothing, and the harness's own root
 //! `HostSignals` (driven by its `key`/`click`, `ui_blitz::launch`'s own mechanism) is what

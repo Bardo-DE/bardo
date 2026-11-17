@@ -1,4 +1,4 @@
-/* The gallery's own layout. Every colour, size, radius, shadow, duration and spacing is a quire
+/* The gallery's own layout. Every colour, size, radius, shadow, duration and spacing is a bardo
    token; the only raw numbers are the widths and heights that place the specimens. Linted
    with ds::lint Strict in tests/lint.rs. */
 
@@ -99,7 +99,7 @@
 .g-peeked{position:absolute;top:var(--s-10);right:var(--s-10);bottom:var(--s-10);width:45%;padding:var(--s-12);border-radius:var(--r-panel);background:var(--surface);box-shadow:var(--shadow-2)}
 /* A card holding an inline menu with its query field. */
 .g-menu-card{width:260px;padding:var(--s-6);border-radius:var(--r-panel);background:var(--surface);box-shadow:var(--shadow-2)}
-/* A consumer's own reveal on a quire button (`extra_class`): faint until its row is
+/* A consumer's own reveal on a bardo button (`extra_class`): faint until its row is
    hovered. The gallery's class, never a `ds-` one. */
 .g-reveal-row .g-reveal{opacity:.35;transition:opacity var(--t-quick) var(--e-out)}
 .g-reveal-row:hover .g-reveal{opacity:1}

@@ -25,7 +25,7 @@
 //! keypress or click already in flight (the person typing in the window under a permission
 //! question) cannot answer it. Until it arms the buttons are disabled and Return, Escape, Space
 //! and clicks do nothing, Escape included: it dismisses nothing and reports nothing. The wait is
-//! an `Arming` machine on quire's clock; it starts when the alert mounts. Unset, an alert is
+//! an `Arming` machine on Bardo's clock; it starts when the alert mounts. Unset, an alert is
 //! armed at once and nothing here is drawn or done.
 //!
 //! An alert may carry a suppression `Checkbox` under its message ("Do not show this again") and a

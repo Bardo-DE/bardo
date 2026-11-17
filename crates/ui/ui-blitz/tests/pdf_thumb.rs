@@ -96,7 +96,7 @@ fn no_pages() -> Vec<u8> {
 
 /// A fresh file under the temp directory, private to this process and `name`.
 fn file(name: &str, bytes: &[u8]) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("quire-pdf-thumb-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("bardo-pdf-thumb-{}", std::process::id()));
     std::fs::create_dir_all(&dir).expect("temp dir");
     let path = dir.join(name);
     std::fs::write(&path, bytes).expect("written");
@@ -258,7 +258,7 @@ fn what_cannot_be_drawn_fails_and_what_has_no_page_is_blank() {
     for (name, bytes, want) in cases {
         assert_eq!(&pdf_thumb_bytes(bytes.clone(), FIT), want, "{name}");
     }
-    let missing = request(std::env::temp_dir().join("quire-pdf-thumb-no-such-file.pdf"));
+    let missing = request(std::env::temp_dir().join("bardo-pdf-thumb-no-such-file.pdf"));
     assert_eq!(
         pdf_thumb_blocking(&missing),
         PdfPage::Failed(PdfTrouble::Unreadable)

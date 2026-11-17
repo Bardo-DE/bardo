@@ -206,7 +206,7 @@ red() { [ "$1" -gt 150 ] && [ "$2" -lt 110 ] && [ "$4" -gt 128 ]; }
 step_badge() {
   local log="$OUT_DIR/badge.log" x y before after start
   command -v foot >/dev/null || { expected_skip "the badge sits on the launched foot's tile; foot is not installed here"; return; }
-  # Inside the badge's right padding, clear of its digit: quire's Small `Badge` is a 14 px tall
+  # Inside the badge's right padding, clear of its digit: Bardo's Small `Badge` is a 14 px tall
   # capsule hung off the plate's top right corner (`DockTile`), its right edge 2 px right of the
   # plate's (80.5 % of a 48 px tile) and its middle 7 px below the tile's top.
   x=$(( $(first_tile_x) + 21 )); y=$(( BASELINE_Y - TILE + 7 ))
@@ -278,7 +278,7 @@ EOF
 }
 
 # Monochrome again, but `appearance.theme = "dark"`: no new raster (the dark scheme changes the
-# plate alone, through quire's own stylesheet, not a re-tinted file), so no wait, only a shot.
+# plate alone, through Bardo's own stylesheet, not a re-tinted file), so no wait, only a shot.
 style_monochrome_dark() {
   mkdir -p "$CONFIG/bardo"
   printf '[appearance]\ntheme = "dark"\n\n[icons]\nstyle = "monochrome"\nmonochrome_tint = "space"\n' \

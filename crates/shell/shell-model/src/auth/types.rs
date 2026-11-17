@@ -84,7 +84,7 @@ impl Verdict {
 pub enum AvatarSource {
     /// An image file: `AccountsService`'s `IconFile`, else `$HOME/.face`.
     File(PathBuf),
-    /// No picture: quire's `Avatar` draws the initials on the person colour.
+    /// No picture: Bardo's `Avatar` draws the initials on the person colour.
     #[default]
     Initials,
 }

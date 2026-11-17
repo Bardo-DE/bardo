@@ -19,7 +19,7 @@ Research inputs, cited by tag and section:
 
 Other docs: `20-SURFACES.md` §1.17 (Accounts), §2.1 Mail, §2.3 Files, §2.8 Notes, §2.9 Photos;
 `22-SETTINGS.md#94-live-modules-the-one-dynamic-path`; `30-CATALOGUE.md` §2 (component names);
-quire `CONVENTIONS.md` (shared rules).
+Bardo `CONVENTIONS.md` (shared rules).
 
 ## 1. Goals, non-goals, constraints
 
@@ -100,7 +100,7 @@ pub enum CapabilityKind { Identity, Mail, Calendar, Contacts, Tasks, Notes, Stor
 ```
 
 Every closed set's stable slug is its serde `snake_case` form (files, bus, consent store). porter
-does not depend on quire's `ui-core`, so these enums do not implement `Word`: the account core
+does not depend on Bardo's `ui-core`, so these enums do not implement `Word`: the account core
 builds below the design system for mailo on every platform; UI crates map slugs to labels.
 
 Every field is an enum or a newtype; no `bool` (no `bool`). Shared small enums:
@@ -308,7 +308,7 @@ AI providers:
 | `accountd` | account registry, provider registry, token broker, secrets, consent store, discovery and probes, the Settings live module | the control plane; small, must never stall | P |
 | `syncd` | the sync journal, anchors, the polling scheduler, dataset plug-ins (Photos first) | a failing backend or a long upload cannot block sign-in ([R] §3) | P |
 | `inferd` | the AI broker: routing, policy, spend, audit, wire adapters, engine supervision, GPU queue, streaming sessions | streams and big payloads; restartable alone | P |
-| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws quire's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to casement's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
+| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws Bardo's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to casement's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
 
 All are user-session services, D-Bus activated on Linux, single-instance through latchkey
 ([R] §1). syncd gets tokens and authenticated streams from accountd like any client; inferd also
@@ -394,7 +394,7 @@ proposal can reuse it ([R] §2 portals).
 | | `OpenAuthenticated(grant: s, endpoint: s) -> h` | a socket fd to a daemon-side authenticated relay. **v1 [departs §7.1/§7.2, owner 2026-10-05]**: IMAP (the relay logs in; the app sees a `* PREAUTH` greeting), SMTP (the relay does EHLO, STARTTLS and AUTH; the app sees a greeting and an EHLO reply without them), HTTP/1.1 for WebDAV, CalDAV, CardDAV and OCS (the relay adds `Authorization`, speaks TLS, reaches only the endpoint's origin and drops an app's own `Authorization`) | password protocols without releasing the password: a password never leaves accountd, to any app, sandboxed or not |
 | `.Request` (per sheet) | `Close()`; signal `Response(response: u, results: a{sv})` | 0 done, 1 cancelled, 2 other | the portal Request shape |
 | Signals on `.Manager` | `AccountAdded(o)`, `AccountRemoved(o)`, `CapabilityChanged(o)`, `NeedsReauth(o)`, `GrantChanged(s)` | sent only to holders of a relevant grant (unicast) | |
-| `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in quire's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | detent reads it; `Set` only from the `Settings` role |
+| `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in Bardo's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | detent reads it; `Set` only from the `Settings` role |
 | `.Peer` | `Verdicts(app, need, class, usage)`, `ResolveKey(grant) -> h` (the key on a sealed memfd, never a string), `ReportLocal(provider, claims, state)` | only the `PorterDaemon` role [2026-10-05] | inferd asks with the app it derived from its own connection |
 | `org.bardo.AccountsSheet1` (served by the sheet host) | `Open(handle, parent_window, view: s)`, `Update(handle, view: s)`, `Close(handle)`, signal `Input(handle, input: s)` | only accountd's connection may `Open`; only the sheet owner's `Input` counts [refines §4.6: a typed password travels inward here, nothing outward] | the add, re-auth, device-code and consent conversations [2026-10-05] |
 | `.Manager` (mailo migration) | `Adopt(legacy)` | the daemon reads an app's own legacy keyring entries itself (gated by an `[adopt]` table, `org.bardo.Mail = "mailo"`), so no credential crosses a transport | [2026-10-05] |
@@ -480,7 +480,7 @@ let token = accounts.token(&candidate, &Audience("webdav".into())).await?;  // s
 | `Found` | closed enum; the app renders every arm | P |
 | `Accounts` | `connect`, `over`, `find`, `request_grant`, `add_account`, `token`, `grants`, `revoke`, `infer`; a refusal is `ClientError::Refused(Refusal)` or `InferRefused(InferRefusal)` | P |
 | Family clients | `StorageClient`, `MailClient` (mailo), `PimClient`, `LlmClient` (talks to inferd) | P |
-| UX pieces (quire) | `AccountPicker` (a `PopUpButton` listing granted accounts + "Add Account…"), `NoAccount` (`EmptyState` with an action), `AccountBadge` (`ProviderMark` + `Label`), `LimitedNote` (`Label{Secondary}` from `Restriction`) | P |
+| UX pieces (Bardo) | `AccountPicker` (a `PopUpButton` listing granted accounts + "Add Account…"), `NoAccount` (`EmptyState` with an action), `AccountBadge` (`ProviderMark` + `Label`), `LimitedNote` (`Label{Secondary}` from `Restriction`) | P |
 
 ### 5.2 Mail (mailo)
 
@@ -646,7 +646,7 @@ those keys. v3, O.
 | Providers | Nextcloud, Microsoft (our own verified multi-tenant client), generic IMAP/SMTP + DAV; AI: Ollama, llama.cpp, the supervised `local`; Anthropic key, OpenAI key and OpenRouter once stoker's cloud backends exist. Google: **TODO** (owner, 2026-10-05) | P |
 | syncd | journal, scheduler, `Replica` for WebDAV and Graph (Google Drive with the Google TODO); the `PimMirror` dataset (§6.2); the Photos dataset built and contract-tested | P |
 | inferd | routing, local-only default, data-class floors, per-app grants, spend caps, audit, GPU queue, streaming sessions; no MCP (an edge in docket) | P |
-| UI | detent Accounts and Intelligence pages, sheets drawn by sill (quire `ui-shell::accounts` views), first-run steps | P |
+| UI | detent Accounts and Intelligence pages, sheets drawn by sill (Bardo `ui-shell::accounts` views), first-run steps | P |
 | Photos | the app is its own repo and starts after mail and calendar work end to end (owner, 2026-10-05); library on Storage, import from folders | P |
 
 Acceptance (each an automated test on private buses, scratch `XDG_*`/`HOME`, a fake Secret
@@ -759,7 +759,7 @@ stores elsewhere. Items 4-13 stand as recommended.
   `AccountCaps`, `SecretKey`, `SecretPurpose`, `Credential`), `mail-runtime/src/{oauth,signin,renewal,secrets}.rs`,
   `latchkey/src/lib.rs`.
 <!-- paths: end -->
-- Our docs: 20 §1.17, §2.1, §2.3, §2.8, §2.9; 22 §9.4; 30 §2; quire `CONVENTIONS.md`.
+- Our docs: 20 §1.17, §2.1, §2.3, §2.8, §2.9; 22 §9.4; 30 §2; Bardo `CONVENTIONS.md`.
 
 ## 10. Decision list (short, for the user)
 

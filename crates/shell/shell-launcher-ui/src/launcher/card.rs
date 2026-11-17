@@ -1,6 +1,6 @@
 //! Measuring the palette's card (the macOS polish pass: it is as tall as its content). An empty
 //! foot element follows the card in the panel's column, so its top is the card's bottom edge;
-//! the panel reads it through quire's host measurer a frame after anything that can change the
+//! the panel reads it through Bardo's host measurer a frame after anything that can change the
 //! card's height (an opening, the query, the rows, the actions menu) and publishes what the
 //! panel takes ([`PanelHit`]) on the shared link, where the panel's own input region and the
 //! catcher's follow it.

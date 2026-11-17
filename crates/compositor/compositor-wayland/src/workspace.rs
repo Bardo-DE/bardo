@@ -4,7 +4,7 @@
 //! Its requests become `Event::Workspace`.
 //!
 //! smithay has no module for it, so this one carries its own `GlobalDispatch2` and `Dispatch2`
-//! impls (as `quire_window` does). A client's requests wait until its `commit` and then go to
+//! impls (as `bardo_window` does). A client's requests wait until its `commit` and then go to
 //! the model together; the model's answer is published by `apply_spaces`, which brings every
 //! bound manager from what it was told to the [`Layout`] of the Spaces now (a pure value, so
 //! what is published is tested without a wire).

@@ -20,7 +20,7 @@ pub const DEFAULT_INDEX_URL: &str = "https://github.com/PoHsuanLai/desktop-relea
 /// What opens the Software Update page.
 pub const DEFAULT_SETTINGS_COMMAND: &str = "bardo-settings --page software-update";
 /// The name shown for the software.
-pub const DEFAULT_NAME: &str = "Quire";
+pub const DEFAULT_NAME: &str = "Bardo";
 /// Where the privileged helper lives (the polkit action names this path).
 pub const DEFAULT_APPLY_PATH: &str = "/usr/libexec/bardo/bardo-updater-apply";
 /// Where the program that goes back to the previous release lives (it has its own polkit action).

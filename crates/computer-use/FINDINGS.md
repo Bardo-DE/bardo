@@ -1,7 +1,7 @@
 # Findings
 
 Open items and standing facts. An entry names the condition that closes it. `cua-bus`,
-`cua-dbus` has no `todo!()`: its behaviour is serde and tables. `quire-agent-protocol` is gone
+`cua-dbus` has no `todo!()`: its behaviour is serde and tables. `bardo-agent-protocol` is gone
 (S0-CU2): cua-desktop and maskcap name `casement-protocols` directly.
 
 ## Stubs behind frozen interfaces
@@ -14,7 +14,7 @@ files (`a11y-tree` fixtures and golden renders).
 | Where | Count | Closes when |
 | --- | --- | --- |
 
-Per crate: none; total 0. `maskcap_wayland::QuireMaskedCapture::open` is built over a lease (`create_lease`, `get_capture_source`, `create_session`, `set_mask_hints` before each frame) and tested against a fake `quire_agent_manager_v1`; casement master does not serve that global yet, so against it `open` answers `BackendUnavailable`. cua-desktop has none: the stock half is built, and the casement half (`Backend::Casement`, `quire_agent_v1` leases, suspend, resume and glow in the compositor, the agent workspace) is P4-Z-cua. There is no `BackendKind` for it yet, so no arm could hold a `todo!()` that is reachable; KWin (`KwinStock`) refuses every lease with `ModeUnsupported` until Spike B. (`EiSeat`, `FakeEis::serve` and `ScriptedModel::from_cassette` are built: see "The f4-cua-seat fill".)
+Per crate: none; total 0. `maskcap_wayland::BardoMaskedCapture::open` is built over a lease (`create_lease`, `get_capture_source`, `create_session`, `set_mask_hints` before each frame) and tested against a fake `bardo_agent_manager_v1`; casement master does not serve that global yet, so against it `open` answers `BackendUnavailable`. cua-desktop has none: the stock half is built, and the casement half (`Backend::Casement`, `bardo_agent_v1` leases, suspend, resume and glow in the compositor, the agent workspace) is P4-Z-cua. There is no `BackendKind` for it yet, so no arm could hold a `todo!()` that is reachable; KWin (`KwinStock`) refuses every lease with `ModeUnsupported` until Spike B. (`EiSeat`, `FakeEis::serve` and `ScriptedModel::from_cassette` are built: see "The f4-cua-seat fill".)
 
 What is built, not stubbed (all behind the frozen signatures): `BackendCaps::of`, `LeaseRequest::check`,
 glow, revoke, suspend and mode wire codes (pinned against the generated protocol enums under the
@@ -65,7 +65,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
   has no row (the router's breaker counts).
 - **`Cua1.Run.Finished` argument** is named `end` (body `RunEnd`), not `result`.
 - **`Cua1.Run.Id`** (read-only `s`, the `RunId` slug such as `r-3`) lets a client name a run without
-  parsing its path: the path maps `-` and `.` to `_` (`r-3` is `/org/quire/Cua1/run/r_3`), which
+  parsing its path: the path maps `-` and `.` to `_` (`r-3` is `/org/bardo/Cua1/run/r_3`), which
   cannot be reversed. `RunAdded` and `RunRemoved` keep their single path argument (frozen); a
   client reads `Id` after `RunAdded`, and keeps its path-to-id map for `RunRemoved` (the object is
   gone by then).
@@ -82,7 +82,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
   `cedar-policy` either: docket-client's `InProcess` is behind its `in_process` feature, which
   only cuad's tests turn on, through the dev-dependency on intentd.
 
-## Dependencies added to this workspace (not in quire's pinned block)
+## Dependencies added to this workspace (not in Bardo's pinned block)
 
 - `wayland-scanner 0.31`, `wayland-backend 0.3` and `wayland-server 0.31` (dev-dependency: the fake compositors); see the f4-cua-capture fill.
 - `atspi` is pinned with `default-features = false, features = ["connection", "proxies", "tokio"]`
@@ -145,7 +145,7 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
 - **almanac `Memory1`:** `HandedBack.user_events` needs a read of the person's events between two
   instants for the cua caller; `Caller::Cuad` records `Area(Cua)` only. Ask: a bounded `Recent`
   for `Caller::Cuad`, limited to events of the window's app after a given `Seq`.
-- **casement:** serve `quire_agent_manager_v1` from `~/casement-protocols/protocols/quire-agent-v1.xml` (the XML left cua at S0-CU2); the
+- **casement:** serve `bardo_agent_manager_v1` from `~/casement-protocols/protocols/bardo-agent-v1.xml` (the XML left cua at S0-CU2); the
   `mask_reason`, `glow_state`, `suspend_reason`, `revoke_reason`, `lease_mode` values are pinned by
   tests here.
 
@@ -249,7 +249,7 @@ the machine under it. What was decided:
   `start` refuses with `NotPermitted`, `Disabled`, `ModeUnsupported`, `WindowUnknown` and `LeaseHeld`
   before any id is used.
 - **`serve`.** The Manager and a Run per live run are served with the signatures of the skeletons
-  (a unit test holds their introspection to `dbus/org.quire.Cua1.xml`); bodies are JSON in the
+  (a unit test holds their introspection to `dbus/org.bardo.Cua1.xml`); bodies are JSON in the
   `CuaEnvelope`; the caller's role is the well-known names its connection owns; `Answer` takes the
   person's own words as plain text and labels them trusted. A run's `Finished` carries the `RunEnd`,
   sent once the report is out. `serve_on(connection, supervisor)` serves on any connection (the
@@ -311,14 +311,14 @@ the machine under it. What was decided:
   confirmation up. `cua.run.start` still answers the run's id (the planner's handle on it, and what
   `Cua1` calls name); the session is `Supervisor::view(run).task.session`. The asking session stays in
   `CuaTask.conversation` (and `RunStarted`); every record names it as a `Subject` thing
-  (`org.quire.Companion` / `companion.session`, as docket's log does) and the app as a `Source` thing
+  (`org.bardo.Companion` / `companion.session`, as docket's log does) and the app as a `Source` thing
   (`<app>` / `desktop.app`; almanac's `ThingRole` has only `Subject` and `Source`).
 - **Ask 114**: `Cargo.lock` is refreshed (adds `tokio`, `futures-util`, `rustix`, `cua-parse` edges) and
   `--locked` passes against porter, docket, stoker and almanac master.
 
 ## The f4-cua-capture fill (2026-10-06): the stock wayland backends and the daemon's seams
 
-- **S0 done.** `crates/quire-agent-protocol` is deleted and
+- **S0 done.** `crates/bardo-agent-protocol` is deleted and
   cua-desktop and maskcap-wayland depend on `casement-protocols` (client) by sibling
   path; the glow, revoke, suspend, mode and mask-reason tables are pinned against its generated
   enums. check-boundary rows follow.
@@ -330,9 +330,9 @@ the machine under it. What was decided:
   cua-system opens one connection (`WaylandPair`) for capture.
 - **Facts the protocols do not give.** `ToplevelInfo.pid` is `Pid(0)` ("unknown"); `app` is the
   app id, folded into `app.<id>` when it is not reverse-DNS; `trust` is from the app id alone
-  (`org.quire.Shell*`, `Sill*`, `Desktop*` are `Shell`, other `org.quire.*` `Quire`, the rest
+  (`org.bardo.Shell*`, `Sill*`, `Desktop*` are `Shell`, other `org.bardo.*` `Bardo`, the rest
   `Native`; Flatpak cannot be told). Ask: a pid and a sandbox id on the toplevel (casement's
-  `quire_desktop_v1` can carry them).
+  `bardo_desktop_v1` can carry them).
 - **maskcap stock capture.** `StockToplevelCapture::open` finds the toplevel by identifier,
   `create_source`, `create_session`, waits for the constraints and picks `ABGR8888`, `XBGR8888`,
   `ARGB8888`, `XRGB8888` in that order (`Format` if only the 10-bit ones are offered). The buffer
@@ -347,11 +347,11 @@ the machine under it. What was decided:
   `SystemA11y` (`Unavailable` by default: `computer-use.toml` `a11y = "off"`; `"atspi"` selects
   `AtspiSource`, whose `snapshot` is still `todo!()`, so nothing turns it on). The binary reads
   `--config`/`$CUAD_CONFIG` (missing file: defaults, `cua.enabled` off; malformed: exit 2),
-  tries the compositor (none is not fatal), serves `org.quire.Cua1` and `org.quire.Cua`, and
+  tries the compositor (none is not fatal), serves `org.bardo.Cua1` and `org.bardo.Cua`, and
   stops with 0 on SIGTERM or when the bus closes.
 - **Tests, all over an in-process wayland-server on socketpairs or a private bus.**
   `maskcap/tests/it/wayland.rs` (8), `cuad/tests/it/binary.rs` (4: env cleared, no compositor).
-- **Dependencies added** (not in quire's block): `wayland-scanner`, `wayland-backend` for
+- **Dependencies added** (not in Bardo's block): `wayland-scanner`, `wayland-backend` for
   cua-desktop (generation) and `wayland-server` as a dev-dependency of maskcap
   (the fake compositor; MIT, already in the lock through casement-protocols); `tokio` and
   `rustix` become optional deps under the `wayland` features; `tokio`'s `signal` feature in cuad.
@@ -534,21 +534,21 @@ a real desktop. The model-time figures are wall time on a shared machine and are
 ## CUA-06: who is calling is a process, not a name (2026-10-16)
 
 - **Finding.** cuad classified a caller by the well-known name its connection owned
-  (`CallerNames`: `org.quire.Intents1`, `org.quire.Companion1`, `org.quire.Shell`). Any local
-  program can own a name, so one that took `org.quire.Shell` while the shell restarted was the
+  (`CallerNames`: `org.bardo.Intents1`, `org.bardo.Companion1`, `org.bardo.Shell`). Any local
+  program can own a name, so one that took `org.bardo.Shell` while the shell restarted was the
   shell: it could answer confirmations, stop runs, and (through `emit_to_shell`) read a run's
   thoughts, proposed actions and questions.
 - **Change.** The caller is the process behind the message's sender, as docket does since
   `187751f`: `docket_dbus::callers::Identity` (porter's `ProcCallers`) names the unit or app scope
   from `/proc/<pid>/cgroup` and the systemd manager's main pid, and `cuad-callers.toml`
   (`dist/cuad-callers.toml`, laid over by the person's file; only the system's can give a fixed
-  role) gives the role. The router is docket's `INTENTD` (`org.quire.Intents`, `agent`), the planner
-  is `org.quire.Companion1` (`agent`), the shell is docket's `SHELL` (`org.quire.Shell`,
+  role) gives the role. The router is docket's `INTENTD` (`org.bardo.Intents`, `agent`), the planner
+  is `org.bardo.Companion1` (`agent`), the shell is docket's `SHELL` (`org.bardo.Shell`,
   `sheet_host`); everything else, an app scope called like any of them included, is `Other`.
   `CallerNames` and `CuadConfig::callers` are gone (an old `callers` key in `computer-use.toml` is ignored).
 - **Shell-only signals** (`ThoughtDelta`, `ActionProposed`, `ActionDone`, `AskUser`) go to the owner
-  of `org.quire.Shell` only if that owner's process holds `SHELL`; otherwise nothing is emitted.
-- **Provider.** `org.quire.Cua` still answers intentd's unit alone (`docket_client::serve_on`).
+  of `org.bardo.Shell` only if that owner's process holds `SHELL`; otherwise nothing is emitted.
+- **Provider.** `org.bardo.Cua` still answers intentd's unit alone (`docket_client::serve_on`).
   `serve_on_with` is the test seam: one `Identity` for the objects and the provider.
 - **API.** `serve_on(connection, supervisor, table)` takes the callers table (`read_callers`);
   `serve_on_with(connection, supervisor, identity)` is the seam. No environment variable or feature
@@ -559,7 +559,7 @@ a real desktop. The model-time figures are wall time on a shared machine and are
 - **Tests.** The classify table, the shipped file's three rows, a squatter of the shell's name (not
   the shell: its Start and Answer are refused and it hears no shell-only signal); the links and serve
   tests introduce their callers.
-- **Open.** An installed cuad needs `/etc/quire/cuad-callers.toml`; without it nobody is identified
+- **Open.** An installed cuad needs `/etc/bardo/cuad-callers.toml`; without it nobody is identified
   and every caller is `Other` (fail closed). The install step is the packager's.
 
 ## The screen injection check (2026-10-17)
@@ -648,8 +648,8 @@ changes (a page title) is a new window to the check.
 ### Wiring the reader (not done)
 
 docket's quarantined reader (`docket-reader`: `reader_request`, `read`, `TransportReader`) is not
-in cua's lock at docket `e1e5802`, and `org.quire.Reader1.Extract` is served to intentd alone
-(`dist/readerd-callers.toml`: one row, `org.quire.Intents`, `intentd.service`, role `agent`), and it
+in cua's lock at docket `e1e5802`, and `org.bardo.Reader1.Extract` is served to intentd alone
+(`dist/readerd-callers.toml`: one row, `org.bardo.Intents`, `intentd.service`, role `agent`), and it
 reads handles of a session, not text sent by a caller. The two clean ways are: (a) bump docket past
 the commit that has `docket-reader` and have `InferdCuaModel` implement `classify_screen` with a
 `TransportReader` over the inferd transport cuad already holds (a closed `ReaderTask::Classify`
@@ -670,7 +670,7 @@ needs: docket pin bump, `docket-reader` in `[workspace.dependencies]`, and cuad'
   `SharedSeat`; so `in_place` is `hands_off` and the agent workspace is
   `unsupported:hidden_capture_withheld`.
 - Not built, and still casement P4: the agent seat of its own (own cursor and focus, so
-  `AgentSeat` and `Full` in place), masking in the compositor (`QuireMasked`), the agent Space,
+  `AgentSeat` and `Full` in place), masking in the compositor (`BardoMasked`), the agent Space,
   suspend, resume and glow in the compositor. The pid of a window is unknown (`Pid(0)`): no
   protocol read here says which process owns it.
 - casement's lease socket offers the desktop's whole extent as its absolute region (the same
@@ -698,7 +698,7 @@ the word through serde); the yes/no enums of the run machine, the host's drive l
 gate are `bool`/`Option`; `GlowDraw`, `KeyWorld` (chordkit's `Platform` is used instead),
 `ProcedureUse`, `ControlRefusal::error_name`, `ModeChoice`, the `ScreenCheck` trait and the two
 `Stalls` twins are deleted; the phrase, window-class, commit-word and sensitive-title tables are
-`dist/screen-rules.toml` (built into cuad, replaced whole by `/etc/quire/screen-rules.toml`),
+`dist/screen-rules.toml` (built into cuad, replaced whole by `/etc/bardo/screen-rules.toml`),
 handed to `cua-run` as `Rules` through `Parts`. Left as they were, each with its reason: the
 `A11yChoice` of `computer-use.toml` (stored words `off`/`atspi`), `ConsentGuard` (read by the
 authorise step), `Verb` (serialised in the run track: F18),

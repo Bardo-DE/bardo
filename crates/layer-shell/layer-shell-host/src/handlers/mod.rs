@@ -6,6 +6,7 @@
 pub(crate) mod activation;
 pub(crate) mod background_effect;
 pub(crate) mod band;
+pub(crate) mod bardo_window;
 pub(crate) mod compositor;
 pub(crate) mod data_device;
 pub(crate) mod devices;
@@ -16,7 +17,6 @@ pub(crate) mod layer;
 pub(crate) mod output;
 pub(crate) mod pipe_writes;
 pub(crate) mod pointer;
-pub(crate) mod quire_window;
 pub(crate) mod render_device;
 pub(crate) mod seat;
 pub(crate) mod session_lock;
@@ -77,7 +77,7 @@ pub(crate) fn close_surface_and_popups(state: &mut HostState, id: SurfaceId, rea
     // focus end with the surface.
     state.withdraw_pointer(id);
     state.withdraw_keyboard(id);
-    state.forget_quire_window(id);
+    state.forget_bardo_window(id);
     if let Some(mut surface) = state.remove_surface(id) {
         state.release_textures(&mut surface);
         state

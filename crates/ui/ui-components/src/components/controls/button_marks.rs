@@ -17,12 +17,12 @@ pub(crate) fn spoken_label(label: &TextLine) -> Option<String> {
 }
 
 /// A mark before the label, the counterpart of a button's trailing glyph: a glyph, or an element
-/// the caller draws with quire's own components.
+/// the caller draws with Bardo's own components.
 ///
 /// The From dropdown shows the chosen account's provider as `Leading::Mark(rsx! { ProviderMark {
 /// size: ControlSize::Small, .. } })` inside its value. The slot takes an `Element` rather than a
-/// `Provider` so any quire mark (an avatar, a person colour's dot) fits without a variant per kind;
-/// what goes in it is the caller's to keep to quire components, as for any children.
+/// `Provider` so any Bardo mark (an avatar, a person colour's dot) fits without a variant per kind;
+/// what goes in it is the caller's to keep to Bardo components, as for any children.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Leading {
     /// A glyph at the button's icon size, in the label's colour.

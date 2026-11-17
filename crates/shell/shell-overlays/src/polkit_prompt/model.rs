@@ -1,4 +1,4 @@
-//! What the polkit prompt hands quire's `PolkitPrompt`: pure.
+//! What the polkit prompt hands Bardo's `PolkitPrompt`: pure.
 
 use shell_kit::lock::vocab::{LockUser, PromptState};
 use shell_model::polkit_agent::{Cookie, LastTry, Polkit, PromptPhase, PromptView};
@@ -7,7 +7,7 @@ use ui_components::components::content::avatar::{
     AvatarFace, AvatarShape, AvatarSize, AvatarTone, person_hue,
 };
 
-/// quire's `PolkitPrompt` props that follow the request (the rest are the surface's handlers).
+/// Bardo's `PolkitPrompt` props that follow the request (the rest are the surface's handlers).
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct PolkitPromptView {
     /// A new cookie remounts the prompt (its entrance plays again).
@@ -69,7 +69,7 @@ fn state_of(phase: &PromptPhase, last: LastTry) -> PromptState {
     }
 }
 
-/// The identity asked for: the login name and an initials face (quire draws it at 48).
+/// The identity asked for: the login name and an initials face (Bardo draws it at 48).
 fn user_of(name: &str) -> LockUser {
     let initial = name
         .chars()

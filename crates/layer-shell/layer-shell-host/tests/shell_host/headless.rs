@@ -1,5 +1,5 @@
 //! Pixel probes for `layer_shell_host::headless::render_png`: the CI gate every future surface
-//! (terminal, video, PDF viewer, quire component) will eventually get one of.
+//! (terminal, video, PDF viewer, Bardo component) will eventually get one of.
 //!
 //! Why `@keyframes` and not a `transition`: `render_png` builds the document once, then calls
 //! `BaseDocument::resolve(t)` once per requested timestamp with no DOM mutation in between (see
@@ -101,7 +101,7 @@ fn raised_tiles() -> Element {
     }
 }
 
-/// quire's `.ds-widget-body` shape: a `position: relative; z-index` box inside each tile.
+/// Bardo's `.ds-widget-body` shape: a `position: relative; z-index` box inside each tile.
 const RAISED_STYLES: &str = "
 #col { display: flex; flex-direction: column; }
 .tile { height: 60px; background: rgb(0, 0, 255); }

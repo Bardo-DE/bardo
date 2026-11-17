@@ -1,7 +1,7 @@
 //! What every surface's document is rooted in: the seat's signals bridge and [`SurfaceRoot`].
 //!
-//! Every root gets quire's document host through `ui_host_hooks::provide_host()` and the keymap through
-//! [`provide_keymap`], called at the top of the root component, and quire's `HostSignals` through
+//! Every root gets Bardo's document host through `ui_host_hooks::provide_host()` and the keymap through
+//! [`provide_keymap`], called at the top of the root component, and Bardo's `HostSignals` through
 //! [`use_host_signals`], called by `mount`, `mount_lock` and `PopupFrame`.
 
 mod click_away;

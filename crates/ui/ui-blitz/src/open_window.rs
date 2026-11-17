@@ -4,7 +4,7 @@
 //! The new document gets exactly what `launch` gives the first one: the same `Host` around the
 //! root (input modality, focus seams, caret, click focus, the edit surface's IME, the window
 //! frame's `WindowHost`, the scale, file drops), the app's `AppConfig` setup (its root contexts,
-//! net policy, frame links, focus fallback), the quire faces, and dioxus-native's own window
+//! net policy, frame links, focus fallback), Bardo faces, and dioxus-native's own window
 //! contexts (the document, `use_window`, `use_window_event`). Its root renders its own `Ds`, as
 //! the first window's does, with the appearance it reads from the shared contexts.
 //!

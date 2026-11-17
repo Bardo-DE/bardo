@@ -1,4 +1,4 @@
-//! Where an app's exported menu is served: quire's `AppMenuAddress`, the one derivation, as the
+//! Where an app's exported menu is served: Bardo's `AppMenuAddress`, the one derivation, as the
 //! function the menu service and the agent's actions are given (a services crate links no
 //! design system).
 
@@ -20,7 +20,7 @@ mod tests {
     use super::menu_name_of;
 
     #[test]
-    fn a_name_is_what_quire_derives_from_the_app_id() {
+    fn a_name_is_what_bardo_derives_from_the_app_id() {
         const CASES: &[(&str, Option<&str>)] = &[
             ("dev.mailo.Mailo", Some("org.bardo.AppMenu.dev.mailo.Mailo")),
             ("test.app", Some("org.bardo.AppMenu.test.app")),

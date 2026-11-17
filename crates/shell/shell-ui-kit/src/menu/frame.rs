@@ -1,7 +1,7 @@
 //! The frame every popup document draws its `Ds` root in: an absolutely placed box at the
 //! surface's origin whose padding is the popup's transparent room, so `PopupSize::FitContent`
 //! measures the menu plus its drop shadow's room and nothing else (`style.css`). The root inside
-//! passes `RootExtent::Popup`, so quire lays its card in flow.
+//! passes `RootExtent::Popup`, so Bardo lays its card in flow.
 
 use dioxus::prelude::*;
 use ui_components::prelude::AppStyle;
@@ -17,7 +17,7 @@ pub(crate) const POPUP_SUBMENU_CSS: &str = include_str!("submenu.css");
 
 /// `children` (a `Ds` root) in the popup frame, `room` around the card and at most `widest`
 /// wide in all (none: no cap). `submenu_room` is the transparent width, in px, left of the card
-/// for the submenus a menu of the root opens beside it: quire places a submenu right of its parent
+/// for the submenus a menu of the root opens beside it: Bardo places a submenu right of its parent
 /// and falls back to the left, against the box of its overlay, which `submenu.css` widens by this
 /// much on the left. The card stays at the frame's right, so a popup that hangs from its right
 /// edge (a status menu) keeps its card where it is. The frame provides the seat's `HostSignals` to the root, so

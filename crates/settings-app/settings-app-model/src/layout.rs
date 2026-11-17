@@ -96,7 +96,7 @@ pub fn blocks(page: &PageModel) -> Vec<Block> {
     drawn.into_iter().chain(sheet).collect()
 }
 
-/// The "Use my styles" switch, which the notes follow: found by its key, so the section quire
+/// The "Use my styles" switch, which the notes follow: found by its key, so the section Bardo
 /// puts it in can be renamed.
 const STYLES_KEY: &str = "appearance.custom_styles";
 
@@ -177,7 +177,7 @@ mod tests {
         }
     }
 
-    /// The "Use my styles" switch, which quire files under "Style" (the notes find it by its key,
+    /// The "Use my styles" switch, which Bardo files under "Style" (the notes find it by its key,
     /// not by that title).
     fn styles_switch() -> KeyEntry {
         let spec = KeySpec {

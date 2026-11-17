@@ -1,8 +1,8 @@
-//! Missing helpers, and the safe file reader and writer every quire crate shares.
+//! Missing helpers, and the safe file reader and writer every Bardo crate shares.
 //!
 //! The file half ([`read_capped`], [`write_atomic`], [`update_atomic`], [`move_aside`]) is UI-free:
 //! it needs only `std`, so a core crate with no window,
-//! bus or runtime can read and write a person's files with the same guarantees as quire's
+//! bus or runtime can read and write a person's files with the same guarantees as Bardo's
 //! settings code. [`DesktopFile`] is the matching reader for the text of a freedesktop `.desktop`
 //! file (pure: the text comes in, capped, from [`read_text_capped`] or anywhere else).
 //!
@@ -13,7 +13,7 @@
 //! The file-type layer is the [`mime`] module: a file's type from its name, the apps that open it
 //! and its icon name, per shared-mime-info, `mimeapps.list` and `mimeinfo.cache`.
 //!
-//! Missing helpers (design/27 permission-prompt rules; `quire/CONSUMING.md`, "Missing helpers").
+//! Missing helpers (design/27 permission-prompt rules; `bardo/CONSUMING.md`, "Missing helpers").
 //!
 //! An app runs distro tools (mpv, ffmpeg, heif-dec) that may not be installed. This crate lets
 //! it say so declaratively, notice at the moment of use, and have the system install the tool,

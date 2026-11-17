@@ -1,6 +1,6 @@
 [package]
 name = "ui-blitz"
-description = "Blitz glue for quire: launch, fonts, headless snapshots, PDF output and printing, test harness."
+description = "Blitz glue for bardo: launch, fonts, headless snapshots, PDF output and printing, test harness."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -74,7 +74,7 @@ spellbook = { workspace = true, optional = true }
 dirs = { workspace = true, optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-# The print portal (the `print` feature): zbus with quire's async-io default (no executor is
+# The print portal (the `print` feature): zbus with Bardo's async-io default (no executor is
 # forced on the app), and a sealed memfd for the PDF's file descriptor.
 zbus = {workspace = true, features = ["default"], optional = true}
 memfd = { workspace = true, optional = true }
@@ -83,7 +83,7 @@ memfd = { workspace = true, optional = true }
 wayland-client = { workspace = true, optional = true }
 wayland-backend = { workspace = true, features = ["client_system"], optional = true }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"], optional = true }
-# `quire_window`: the client bindings of our own bardo_window_v1, generated from `protocols/` by macro.
+# `bardo_window`: the client bindings of our own bardo_window_v1, generated from `protocols/` by macro.
 wayland-scanner = { workspace = true, optional = true }
 # `menus::ShellOnly` (the `peephole` feature): which program is calling, by its pidfd and the unit
 # manager's facts. Its own repo, taken by tag; Linux only, because it reads `/proc` and the system
@@ -96,18 +96,18 @@ wayland-server = { workspace = true }
 wayland-protocols = { workspace = true, features = ["client", "server", "staging", "unstable"] }
 
 [features]
-default = ["quire-desktop"]
+default = ["desktop"]
 # Our desktop's integration on Linux (design/36 section 1): xdg-activation on the app's own Wayland
 # connection (`WindowHandle::focus_with_token`). Without it a token is ignored and the window is
 # raised through winit, the same call with the same result type. `print` and `menus` need it too.
-quire-desktop = ["dep:wayland-client", "dep:wayland-backend", "dep:wayland-protocols", "dep:wayland-scanner"]
+desktop = ["dep:wayland-client", "dep:wayland-backend", "dep:wayland-protocols", "dep:wayland-scanner"]
 # `print_dialog`: the system print dialog (the desktop portal on Linux), else the viewer.
 # Off by default, so an app that never prints builds no D-Bus client for it.
-print = ["quire-desktop", "dep:zbus", "dep:memfd", "dep:base-time"]
+print = ["desktop", "dep:zbus", "dep:memfd", "dep:base-time"]
 # `ds_blitz::menus`: the app's menu bar served as `com.canonical.dbusmenu` on its own bus
 # connection, so the shell's bar shows the focused app's menus (design/27 section 5.2). Off by
 # default, so an app that exports no menu builds no D-Bus client for it.
-menus = ["quire-desktop", "dep:zbus", "dep:serde", "dep:dbus-kit"]
+menus = ["desktop", "dep:zbus", "dep:serde", "dep:dbus-kit"]
 # `menus::ShellOnly`: the menu permit for our desktop, which lets only the shell press an item
 # (peephole's `shell` role at the full proof). Linux only. Off by default; without it an app passes
 # its own `MenuPermit` to `MenuExport::start`, because there is no default permit.

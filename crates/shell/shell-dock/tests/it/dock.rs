@@ -64,14 +64,14 @@ fn pinned_then_running_then_trash_with_dots_and_a_badge() {
         ("four tiles", "class=\"ds-dock-tile\"", 4),
         ("terminal and firefox run", "data-running=\"active\"", 2),
         (
-            "each with quire's running dot",
+            "each with bardo's running dot",
             "class=\"ds-running-dot\"",
             2,
         ),
         ("every icon as it is, on no plate", "class=\"ds-plate\"", 0),
         ("no bare art", "class=\"shell-dock-art\"", 0),
         ("the terminal draws its own icon", "icons/foot.svg", 1),
-        ("quire's floor in the pill", "class=\"ds-dock-floor\"", 1),
+        ("bardo's floor in the pill", "class=\"ds-dock-floor\"", 1),
         ("a squircle pill", "data-corner=\"squircle\"", 1),
         (
             "the tile's size and the floor",
@@ -173,7 +173,7 @@ fn a_mapped_app_draws_its_own_icon_on_no_plate() {
 }
 
 /// The popup frame's stylesheet (the dock's context menu, the bar's menus, the tray's): clean
-/// under Strict with no exception, since quire's `RootExtent::Popup` lays the overlay in flow.
+/// under Strict with no exception, since Bardo's `RootExtent::Popup` lays the overlay in flow.
 #[test]
 fn the_popup_frame_stylesheet_is_clean_under_strict() {
     let strict = LintConfig {

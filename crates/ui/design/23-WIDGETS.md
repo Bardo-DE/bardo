@@ -125,7 +125,7 @@ with confidence (H high, M medium, L low):
 | F5 | Whether the number counts through every integer or rolls its digits once | not seen for this widget; F2 suggests a digit roll | L |
 | F6 | The charging bolt's arrival relative to the sweep | not seen | L |
 
-**What quire does** (section 4.1): the arc sweeps from twelve over `--t-fill` (800 ms, at the slow end of F4's
+**What Bardo does** (section 4.1): the arc sweeps from twelve over `--t-fill` (800 ms, at the slow end of F4's
 default spring and well under F1's 1.8 s sample; a guess, not a measurement) at `--e-out`
 (deceleration without overshoot: principle 2 of design/05 keeps springs for contact, and a ring
 past its level would claim charge the battery has not got). The figure counts through the whole
@@ -149,7 +149,7 @@ desktop screenshots with the desktop in front (Aqua library, `14-Sonoma-Desktop-
 show the cards opaque; the translucent look is the desktop's background mode and its widget
 editing mode.
 
-**What quire paints (the conflict, resolved 2026-09-26, "relax the contrast then").** The
+**What Bardo paints (the conflict, resolved 2026-09-26, "relax the contrast then").** The
 legibility gate (`material-legible-over-black-and-white`, `ds/tests/it/legibility.rs`) needs the
 card's `--ink` at 4.5:1 over a black and a white backdrop, and the Space-tinted card
 (`CardTint::Space`) shares the tint's alpha; the lowest light alpha that passes both at 4.5:1 is
@@ -209,7 +209,7 @@ The widget style's name is **Flat, bright, measured** (proposed 2026-09-26, the 
 Sizes (`02-TYPE.md`): `--fs-dial` 9 and `--fs-dial-large` 18 (the numerals, M18, M19),
 `--fs-widget-figure` 20 (a battery's percentage in a row, M15), `--fs-widget-hero` 47 (a small
 battery's percentage, M13), each set so the display face's cap (.66 em) matches the measured cap.
-These are the prototype's (Editorial) sizes; for Inter Display (cap .7275 em) quire's sheet uses
+These are the prototype's (Editorial) sizes; for Inter Display (cap .7275 em) Bardo's sheet uses
 8, 16.5, 18 and 42.5, the same caps (`02-TYPE.md` section 4.1).
 The third pass's `--soft-*` tokens are removed.
 
@@ -258,7 +258,7 @@ low tone follows `BatteryState::is_low`; the arc follows its level with the prog
 | Device | the caller's glyph centred at .47 of the ring, `--ink` | M12 |
 | Bolt | while charging: a bolt .16 of the ring tall and .10 wide, `--ink`, centred on the stroke at twelve; the track and the arc leave a 29 degree gap between their ends' centres (17 between the caps) and the arc fills the rest | M11 |
 
-**Composition** (quire composes it since the widget interface, `BatteryWidget`, section 9.6;
+**Composition** (Bardo composes it since the widget interface, `BatteryWidget`, section 9.6;
 the shell passes the batteries):
 - **Small, one device**: the ring at the top left; the percentage at the bottom left in the
   display face 500 at `--fs-widget-hero`, its baseline about 15 above the card's bottom.
@@ -437,7 +437,7 @@ only), and a search found no capture to measure, so the row rule is from use of 
 from pixels. The fixed-six-rows alternative was rejected: it is the "third left empty" the user
 reported, for every five-week month.
 
-**What quire draws** (design/04-COMPONENTS.md section 39, the compact table): the header 14 and
+**What Bardo draws** (design/04-COMPONENTS.md section 39, the compact table): the header 14 and
 the heads 12 keep their heights; the weeks share the rest evenly (19.67 for six weeks, 23.6 for
 five); seven 20 columns across the 140; the number centred in its row with the 20 disc; the
 weeks run 4 past the content box so the ink's insets come out even (top 15.2, left 16.5, right
@@ -504,7 +504,7 @@ draws it.
 5. **Filled device glyphs**: a new filled set, abstract and on the Lucide grid, not copies of the
    reference's symbols (section 4.4, `DeviceGlyph`).
 6. **Every widget card is tinted by the Space** (history: retired 2026-10-02, 1.0; neutral plates now): `CardTint::Space` is the
-   default, laid by quire's card and never by a widget; a notification-center tile lays no
+   default, laid by Bardo's card and never by a widget; a notification-center tile lays no
    second gradient on the center's already tinted popover. The widget's own accent text takes a
    title colour chosen for the see-through card (section 4.3, sill Q412: two options rendered,
    the user picks). `CardTint::Material` stays for a comparison page.
@@ -516,7 +516,7 @@ draws it.
    tint stay queued for the Calendar app.
 
 And the card became an interface (section 9): every widget, ours and other apps', plugs in
-through one trait and is drawn only on quire's card; the person chooses which widgets go where
+through one trait and is drawn only on Bardo's card; the person chooses which widgets go where
 through a gallery, and the choice is data.
 
 ## 7. Sources
@@ -652,7 +652,7 @@ today; they are small, and a second surface lifts them into `catalog` when it ar
 pub trait Widget: Clone + PartialEq + Default + 'static {
     type Entry: Clone + PartialEq + Serialize + DeserializeOwned + 'static;
     type Intent: Clone + PartialEq + Serialize + DeserializeOwned + 'static; // NoIntent if none
-    fn kind() -> WidgetKind;                  // "quire.battery": reverse-DNS, unique
+    fn kind() -> WidgetKind;                  // "bardo.battery": reverse-DNS, unique
     fn name() -> Text;                        // "Batteries"
     fn description() -> Text;                 // one line in the gallery
     fn sizes() -> &'static [WidgetSize];      // the first is the size it is added at
@@ -687,7 +687,7 @@ pub struct WidgetContext<I> { pub size: WidgetSize, pub host: WidgetHost, pub wa
 - **A size a widget does not draw** is never asked of it: `fit::<W>(size)` holds it to the first
   of `W::sizes()`.
 
-### 9.3 The card is quire's (`WidgetCard`)
+### 9.3 The card is Bardo's (`WidgetCard`)
 
 `WidgetCard { widget, timeline, size, host, wake, id, onrefresh, onintent, lift }` is the only
 way a widget is drawn. It owns the `WidgetFrame`: the footprint on the grid unit, the corner
@@ -695,13 +695,13 @@ way a widget is drawn. It owns the `WidgetFrame`: the footprint on the grid unit
 center), the Space's tint (section 6 item 6), the title row (`W::title`), `data-widget` (the
 kind), and the lift (9.8). A widget draws only its content inside the body; it writes no CSS
 for the card and cannot reach it. The compositions the shell used to lay out (the batteries'
-solo, grid and row; the clocks' row with its notes) are quire's views now (`widget/views.css`).
+solo, grid and row; the clocks' row with its notes) are Bardo's views now (`widget/views.css`).
 
 ### 9.4 The registry (`WidgetRegistry`)
 
-`WidgetRegistry::quire()` holds quire's three; a host adds its own and the apps' with
+`WidgetRegistry::bardo()` holds Bardo's three; a host adds its own and the apps' with
 `.with::<W>()` (a kind registered twice is `TakenKind`) and provides it with
-`provide_widget_registry`; `use_widget_registry` reads it (quire's own when none is provided).
+`provide_widget_registry`; `use_widget_registry` reads it (Bardo's own when none is provided).
 Each `WidgetInfo` carries the kind, name, description and sizes, and draws the widget's card
 with its preview entry at any size, lifted or not, without its type: what the gallery shows.
 Each also carries **one size per host** (`WidgetInfo::size_in(host)`, from `Widget::size_in`;
@@ -719,8 +719,8 @@ An app that is not linked into the shell provides a widget the same way, across 
    (`("org.example.weather.today", "Weather", "…", ["small", "medium"])`), and emits
    `KindsChanged`. The shell adds each to its registry as a remote kind.
 2. **Views.** A remote kind's `view` cannot be Rust in the shell, so a remote kind is drawn by a
-   **view template** it names from a closed set quire provides (a number with a label, a list of
-   rows, a gauge, a grid of rings: each a quire `Widget` whose `Entry` is the template's data).
+   **view template** it names from a closed set Bardo provides (a number with a label, a list of
+   rows, a gauge, a grid of rings: each a Bardo `Widget` whose `Entry` is the template's data).
    The app's entries are those templates' entries. Arbitrary markup never crosses the bus.
 3. **Timelines.** The app emits `TimelineChanged(kind, json)`, the JSON a `WireTimeline<E>`:
    `{"entries":[{"after_ms":0,"entry":{…}}],"refresh":"never"|"at_end"|{"after_ms":n}}`. Dates are
@@ -736,13 +736,13 @@ An app that is not linked into the shell provides a widget the same way, across 
 `ds::widget::wire` is the format, with a round-trip test; the bus, the templates and the
 remote-kind registry are the pass that builds out-of-process widgets.
 
-### 9.6 quire's own widgets on the contract
+### 9.6 Bardo's own widgets on the contract
 
 | Widget | Kind | Sizes | Entry | Intent |
 | --- | --- | --- | --- | --- |
-| `BatteryWidget` "Batteries" | `quire.battery` | Small, Medium | `BatteryEntry::{Waiting, Devices(Vec<BatteryCell { name, device, level, mark }>), Absent(words)}` | none |
-| `WorldClockWidget` "World Clock" | `quire.world-clock` | Medium, Small | `ClockEntry::{Waiting, Cities(Vec<ClockCity { name, time, phase, notes }>), Absent(words)}` | none |
-| `MonthWidget` "Calendar" | `quire.month` | Small, Medium, Large | `MonthEntry::{Waiting, Month(Box<MonthFace { grid, weeks, today, events, no_events }>)}` | `MonthIntent::Step(Step)` |
+| `BatteryWidget` "Batteries" | `bardo.battery` | Small, Medium | `BatteryEntry::{Waiting, Devices(Vec<BatteryCell { name, device, level, mark }>), Absent(words)}` | none |
+| `WorldClockWidget` "World Clock" | `bardo.world-clock` | Medium, Small | `ClockEntry::{Waiting, Cities(Vec<ClockCity { name, time, phase, notes }>), Absent(words)}` | none |
+| `MonthWidget` "Calendar" | `bardo.month` | Small, Medium, Large | `MonthEntry::{Waiting, Month(Box<MonthFace { grid, weeks, today, events, no_events }>)}` | `MonthIntent::Step(Step)` |
 
 Batteries: Small with one battery the ring and the hero figure; Small with several the 2 x 2 grid,
 empty places bare tracks; Medium the row of four fixed places with the figure under each, empty places bare tracks (Q522); `Waiting` is four bare
@@ -800,7 +800,7 @@ passes the new layout back. Words are the host's (`GalleryWords`, English by def
 `WidgetLayout` is `Placements<WidgetKind, WidgetSize, WidgetAt>`, `WidgetAt::{Desktop(GridCell
 { column, row }), Center(Order)}`: a desktop widget always has a cell and a center widget an
 order, never the other. It serialises as
-`{"items":[{"id":1,"kind":"quire.battery","size":"small","at":{"desktop":{"column":3,"row":0}}}],"next":2}`.
+`{"items":[{"id":1,"kind":"bardo.battery","size":"small","at":{"desktop":{"column":3,"row":0}}}],"next":2}`.
 `apply` adds a desktop widget at the first free cell scanning the columns from the right, each
 from the top (the widgets gather at the top right, as sill places them); refuses a move onto
 another widget or off the grid (`LayoutError::Taken`), a desktop with no room (`Full`), and an
@@ -824,7 +824,7 @@ use, no frame-accurate recording found).
   thrown). At rest nothing runs. The gallery lifts the size picked with the same `Lift`.
 - **`WidgetSlotGuide { size, host }`**: the footprint of a `size` widget, a quiet plate
   (`--line` fill and hairline) in the card's corner, faded in (`a-fade`) as the drag reaches the
-  cell, `aria-hidden`. The host places it at the snap cell; quire draws it.
+  cell, `aria-hidden`. The host places it at the snap cell; Bardo draws it.
 
 Both settle to zero frames (sill's ui-conformance/tests/widget_edit.rs, on the virtual clock).
 

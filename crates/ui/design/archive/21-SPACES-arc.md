@@ -78,8 +78,8 @@ Frame tokens that are not in palette.rs (settled in S:1188-1193; `FrameVars` add
 | `--f-solid` | `stops[0]` | `stops[0]` |
 | grain opacity | `grain/100 x .10` | `grain/100 x .08` |
 
-Port notes (settled finding, fix in quire): palette.rs:177 hard-codes the card surface as
-`#F8F9F6` / `#1D211B`; in quire it reads the `surface` token from the token table.
+Port notes (settled finding, fix in Bardo): palette.rs:177 hard-codes the card surface as
+`#F8F9F6` / `#1D211B`; in Bardo it reads the `surface` token from the token table.
 
 ## 3. Where the tokens apply
 
@@ -135,7 +135,7 @@ The 8 presets (settled, S; Appendix A3):
 The names are mailo's (`space/presets.rs::PRESET_NAMES`, settled with the mailo gaps 2 wave);
 the editor's preset buttons are named by them. Work and Home are the Spaces S made from the
 first two, not the presets' names. mailo's six further presets (the retired accent hues:
-Postmark, Graphite, Pine, Indigo, Oxblood, Vermilion) are not in quire's eight.
+Postmark, Graphite, Pine, Indigo, Oxblood, Vermilion) are not in Bardo's eight.
 
 Default `SpaceLook` for a workspace with no stored look (proposed):
 - `dots = PRESETS[index % 8]`, index = the workspace's 0-based position on its output.
@@ -169,7 +169,7 @@ Trigger: the toplevel client `WorkspaceState` activation events on the `toplevel
 
 ## 6. Editor (settled placement, pieces from 04)
 
-Lives in two places, one component (`SpaceEditor`, proposed name, in quire):
+Lives in two places, one component (`SpaceEditor`, proposed name, in Bardo):
 - Settings → Spaces page: one row per workspace, full editor.
 - Bar workspace menu: right-click (or the menu button) on a workspace dot → "Edit Space…"
   opens the editor in a `Popover` (proposed: the compact layout without provider marks).
@@ -194,7 +194,7 @@ Every edit writes immediately (no Save button, proposed) and the tint updates li
 
 ## 7. Contrast guarantees (settled floors; tests)
 
-| Pair | Floor | Test (quire `space/palette` tests, proposed names) |
+| Pair | Floor | Test (Bardo `space/palette` tests, proposed names) |
 | --- | --- | --- |
 | sidebar/chrome text `--f-ink` on every stop | ≥ 4.5 | `ink_on_every_stop` |
 | faint `--f-ink-faint` on every stop | ≥ 3.0 | `faint_on_every_stop` |

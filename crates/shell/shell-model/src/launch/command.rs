@@ -90,7 +90,7 @@ pub enum LaunchCommand {
     ForceQuit(AppId),
     /// Open a file, reveal it, or open an address with the default handler (the launcher's rows).
     Open(OpenRequest),
-    /// Open the quire Settings app at a place, by bus activation of `org.bardo.Settings`.
+    /// Open Bardo Settings app at a place, by bus activation of `org.bardo.Settings`.
     OpenSettings(SettingsOpen),
 }
 

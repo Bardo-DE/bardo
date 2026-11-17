@@ -1,5 +1,5 @@
 //! The banner column's keymap: the keys a card takes once the column holds the keyboard, beyond
-//! the ones quire's card takes itself (Enter and Space press the card or the button that has the
+//! the ones Bardo's card takes itself (Enter and Space press the card or the button that has the
 //! focus; Tab moves between the card's close button, its buttons and the next card by the
 //! document's own order). Up and Down move along the stack as it is drawn, newest on top;
 //! Escape, Delete and Backspace dismiss.
@@ -35,7 +35,7 @@ mod tests {
             ("Escape", Key::Escape, Some(Dismissed)),
             ("Delete", Key::Delete, Some(Dismissed)),
             ("Backspace", Key::Backspace, Some(Dismissed)),
-            ("Enter is quire's", Key::Enter, None),
+            ("Enter is bardo's", Key::Enter, None),
             ("Tab is the document's", Key::Tab, None),
             ("a letter", Key::Character("x".into()), None),
         ];

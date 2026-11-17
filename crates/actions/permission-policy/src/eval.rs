@@ -102,9 +102,9 @@ fn entities(
 ) -> Result<(EntityUid, EntityUid, Entities), FaultCause> {
     let facts = &request.resource;
     let named = || FaultCause::Name;
-    let caller = uid("Quire::Caller", request.principal.caller.as_str()).ok_or_else(named)?;
-    let app = uid("Quire::App", facts.app.as_str()).ok_or_else(named)?;
-    let act = uid("Quire::Act", facts.action.as_str()).ok_or_else(named)?;
+    let caller = uid("Bardo::Caller", request.principal.caller.as_str()).ok_or_else(named)?;
+    let app = uid("Bardo::App", facts.app.as_str()).ok_or_else(named)?;
+    let act = uid("Bardo::Act", facts.action.as_str()).ok_or_else(named)?;
     let classes = facts
         .classes
         .iter()
@@ -160,7 +160,7 @@ fn query(
         cause,
     };
     let (caller, act, entities) = entities(request, schema).map_err(fault)?;
-    let action_uid = uid("Quire::Action", action).ok_or_else(|| fault(FaultCause::Action))?;
+    let action_uid = uid("Bardo::Action", action).ok_or_else(|| fault(FaultCause::Action))?;
     let context =
         Context::from_json_value(context_json(&request.context), Some((schema, &action_uid)))
             .map_err(|error| fault(FaultCause::Context(Arc::new(error))))?;

@@ -1,17 +1,18 @@
 //! The frozen aggregate of every protocol's sub-state, and the global filter (I7).
 
+#[cfg(feature = "shell-protocols")]
+use crate::bardo;
 use crate::client::{ClientMint, ClientState};
-#[cfg(feature = "quire")]
-use crate::quire;
 use crate::{
-    alpha_modifier, background_effect, capture_source, color_management, commit_timing, compositor,
-    content_type, cursor_shape, data_device, dmabuf, ext_data_control, fifo, foreign_toplevel_list,
-    fractional_scale, gamma, idle_inhibit, idle_notify, image_capture, input_method, layer_shell,
-    output, output_management, output_power, pointer_constraints, pointer_gestures, presentation,
-    primary_selection, quire_window, relative_pointer, seat, security_context, session_lock, shm,
-    shortcuts_inhibit, single_pixel, subcompositor, system_bell, tablet, text_input, viewporter,
-    virtual_keyboard, wlr_data_control, wlr_toplevel, workspace, xdg_activation, xdg_decoration,
-    xdg_dialog, xdg_foreign, xdg_shell, xdg_toplevel_icon, xdg_toplevel_tag,
+    alpha_modifier, background_effect, bardo_window, capture_source, color_management,
+    commit_timing, compositor, content_type, cursor_shape, data_device, dmabuf, ext_data_control,
+    fifo, foreign_toplevel_list, fractional_scale, gamma, idle_inhibit, idle_notify, image_capture,
+    input_method, layer_shell, output, output_management, output_power, pointer_constraints,
+    pointer_gestures, presentation, primary_selection, relative_pointer, seat, security_context,
+    session_lock, shm, shortcuts_inhibit, single_pixel, subcompositor, system_bell, tablet,
+    text_input, viewporter, virtual_keyboard, wlr_data_control, wlr_toplevel, workspace,
+    xdg_activation, xdg_decoration, xdg_dialog, xdg_foreign, xdg_shell, xdg_toplevel_icon,
+    xdg_toplevel_tag,
 };
 use compositor_core::WindowId;
 use compositor_core::policy::{ConnectionRole, GlobalKind, PowerSet, advertised_to};
@@ -70,7 +71,7 @@ pub struct WaylandStates<D: SeatHandler + 'static> {
     /// `xdg_system_bell_v1`.
     pub system_bell: system_bell::SystemBellPart,
     /// `bardo_window_manager_v1` (C50).
-    pub quire_window: quire_window::QuireWindowPart,
+    pub bardo_window: bardo_window::BardoWindowPart,
     /// `zwlr_layer_shell_v1`.
     pub layer_shell: layer_shell::LayerShellPart,
     /// `ext_session_lock_manager_v1`.
@@ -135,11 +136,11 @@ pub struct WaylandStates<D: SeatHandler + 'static> {
     pub screencopy: crate::screencopy::ScreencopyPart,
     /// `bardo_desktop_manager_v1` (declared at P2-Z, advertised by P2-Q1; shell and agent
     /// connections only).
-    #[cfg(feature = "quire")]
-    pub quire_desktop: quire::desktop::QuireDesktopPart,
+    #[cfg(feature = "shell-protocols")]
+    pub bardo_desktop: bardo::desktop::BardoDesktopPart,
     /// `bardo_shell_v1` (declared at P2-Z, advertised by P2-Q2; shell connections only).
-    #[cfg(feature = "quire")]
-    pub quire_shell: quire::shell::QuireShellPart,
+    #[cfg(feature = "shell-protocols")]
+    pub bardo_shell: bardo::shell::BardoShellPart,
 }
 
 /// Which globals a connection sees: the decision function takes the global, the connection's role

@@ -15,10 +15,10 @@ use tokio::sync::mpsc::UnboundedReceiver;
 use wayland_client::Connection;
 use wayland_client::backend::WaylandError;
 
+use super::bardo::bardo_view;
 use super::command::{Refusal, desktop_of, wire_of};
 use super::commands::{forward_commands, park_commands};
 use super::publish::Publish;
-use super::quire::quire_view;
 use super::{subjects, toplevels, workspaces};
 
 /// The thread's body: follow the compositor until every `Control` is dropped or the connection
@@ -106,12 +106,12 @@ impl Wlr {
     }
 }
 
-/// The desktop's view of `state`: the Quire state projected when the compositor is the
+/// The desktop's view of `state`: Bardo state projected when the compositor is the
 /// desktop's own, so the view and the windows come from one `DesktopState` and cannot disagree
 /// on which window is active; empty on any other compositor.
 fn desktop_of_state(state: &DesktopState) -> DesktopView {
     match state.backend() {
-        Some(Offered::Quire) => quire_view(state),
+        Some(Offered::Bardo) => bardo_view(state),
         Some(_) | None => DesktopView::default(),
     }
 }

@@ -1,6 +1,6 @@
 //! The one module allowed `unsafe`: a window's Wayland connection and `wl_surface`, borrowed from
 //! raw-window-handle so a protocol request can name the surface of a window that already exists.
-//! winit owns both and offers neither as a Rust object; `adopt` is the whole of what quire takes.
+//! winit owns both and offers neither as a Rust object; `adopt` is the whole of what Bardo takes.
 #![allow(
     unsafe_code,
     reason = "raw libwayland pointers handed to winit; each unsafe block carries its SAFETY comment"

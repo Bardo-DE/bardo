@@ -1,4 +1,4 @@
-//! What a document is given beyond quire's own contexts, shared by the window (`AppConfig`)
+//! What a document is given beyond Bardo's own contexts, shared by the window (`AppConfig`)
 //! and the headless document (`HarnessConfig`), so a window, a test and a snapshot of the same
 //! app see the same providers.
 

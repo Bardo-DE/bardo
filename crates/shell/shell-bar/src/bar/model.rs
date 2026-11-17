@@ -74,7 +74,7 @@ pub(crate) struct SessionDeps {
 }
 
 /// The last status item's slot, vertically centred in the bar, at its right end: the control
-/// center's title rect when it opens with no pointer event behind it. The slot is quire's
+/// center's title rect when it opens with no pointer event behind it. The slot is Bardo's
 /// (design/29): `max(--bar-status-w, box)` wide by the box tall.
 #[expect(
     clippy::cast_precision_loss,

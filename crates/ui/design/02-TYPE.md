@@ -17,7 +17,7 @@ person writes in a serif. There is one voice: Inter, with Inter Display for disp
 second typeface ("Editorial": Bricolage Grotesque, Karla, Space Mono) is no longer a setting or a
 `data-typeface` value (30 section 3.4). It is the look Extension `org.bardo.look.Editorial`
 (`extensions/org.bardo.look.Editorial/`), which a person picks under Settings > Look and which
-layers its own stacks, tracking and sizes after quire's sheet. The Editorial values in the tables
+layers its own stacks, tracking and sizes after Bardo's sheet. The Editorial values in the tables
 below are the prototype's record (marked "history"). Bricolage Grotesque and Karla still ship in
 `ui-style` so the look can name them.
 
@@ -43,7 +43,7 @@ aligned logs).
 --font-code:"Space Mono","Inter",ui-monospace,"SFMono-Regular",Menlo,monospace;
 ```
 
-History: the Editorial faces (Bricolage Grotesque, Karla) are not part of quire's own design; the Editorial look Extension names them, and each of its stacks names "Inter" right after its own face too.
+History: the Editorial faces (Bricolage Grotesque, Karla) are not part of Bardo's own design; the Editorial look Extension names them, and each of its stacks names "Inter" right after its own face too.
 
 **Key-cap glyphs.** Google's latin range carries none of `⌃ ⌥ ⇧ ⌘ ⌫ ↩ ↵ ⇥ ⌦ ⇞ ⇟` (and Space Mono's
 lacks `← →`), so a `KeyEquivalent` fell to whatever face the system offered and U+2303 drew as a
@@ -210,9 +210,9 @@ height matches the reference widget's measured cap (`23-WIDGETS.md` section 1.1;
 face's cap height is .66 em): `--fs-dial` 9 (a world clock row's dial numerals), `--fs-dial-large`
 18 (a small clock's dial numerals), `--fs-widget-figure` 20 (a battery's percentage under its
 ring) and `--fs-widget-hero` 47 (a small battery's percentage). These are the prototype's (Editorial's); the
-values quire ships are in section 4.1.
+values Bardo ships are in section 4.1.
 
-Above them sits `--fs-lock-clock` 140 (127 in quire's sheet), the lock screen's time in the display face at 700
+Above them sits `--fs-lock-clock` 140 (127 in Bardo's sheet), the lock screen's time in the display face at 700
 (design/04 section 42; proposed, M11 2026-09-26: the user asked for a very large, heavy clock).
 
 ## 5. Tracking
@@ -347,7 +347,7 @@ The Mac's smallest text is 10 pt (design/27-HIG-PARITY.md section 3.16), so unde
 text is smaller than 10 px (`FontSize::MIN_PX`, the `--fs-min` of design/27). The token table
 holds it: `--fs-nano`, `--fs-micro` and `--fs-dial` are 10 under System (`FontSize::FLOORED`),
 `--fs-help` is 11.5. One step stays under it: `--fs-pico` 7.5, the letter of an in-row provider
-mark, which is a drawing in an 11 px mark, not text (a reviewed exception in quire's own lint).
+mark, which is a drawing in an 11 px mark, not text (a reviewed exception in Bardo's own lint).
 
 The lint `MinFontSize` (a warning under Strict until sill and mailo are swept, design/27 section
 7) flags a `font-size` or `font` literal under 10 px (`pt` counted as 4/3 px) and a

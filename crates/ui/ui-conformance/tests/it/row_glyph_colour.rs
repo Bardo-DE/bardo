@@ -2,7 +2,7 @@
 //! paints with `currentColor` repaints in the colour it now has when only the row's `color`
 //! changes (a selection), so it stays legible on the ground it now sits on: dark on the plain
 //! row, light on the accent. Blitz used to keep the colour the glyph was built with (blitz-gaps,
-//! "A colour-only restyle"), which quire hid by remounting the leading span on every selection
+//! "A colour-only restyle"), which Bardo hid by remounting the leading span on every selection
 //! change.
 
 use crate::support::probe::pixel;

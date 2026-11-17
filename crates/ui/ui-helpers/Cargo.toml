@@ -30,11 +30,11 @@ zbus = {workspace = true, features = ["default", "tokio"]}
 dbus-kit = { path = "../../bus/dbus-kit" }
 
 [features]
-default = ["quire-desktop"]
+default = ["desktop"]
 # The PackageKit backend (`installer/packagekit.rs`), over the system bus. Without it
 # `PackageKit::system()` still exists and every install is `Outcome::Unsupported`
 # (design/36 section 2); `PackageKit::on` is absent, since it takes a zbus connection.
-quire-desktop = ["dep:zbus"]
+desktop = ["dep:zbus"]
 
 [lints]
 workspace = true

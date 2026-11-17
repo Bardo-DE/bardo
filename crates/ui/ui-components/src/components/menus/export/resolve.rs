@@ -8,7 +8,7 @@ use ui_core::standard_action::StandardAction;
 impl BarCommand {
     /// The stable id of a standard bar item (`standard.undo`, `bar.about`, `bar.help_search`):
     /// an app whose command type wraps [`BarCommand`] answers
-    /// [`AppCommand::id`] with it, so every quire app names its standard items alike.
+    /// [`AppCommand::id`] with it, so every Bardo app names its standard items alike.
     #[must_use]
     pub fn id(&self) -> CommandId {
         CommandId(match self {

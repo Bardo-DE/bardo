@@ -28,7 +28,7 @@ const LAYOUT_ATTEMPTS: usize = 40;
 /// its document held (it spawns, it does not focus).
 ///
 /// Public so an app focuses its own element (mailo's `.app` shell after a panel closes) with the
-/// same wait for a busy document quire's fields use.
+/// same wait for a busy document Bardo's fields use.
 pub fn focus_soon(element: Rc<MountedData>) {
     focus_soon_selecting(element, Select::None);
 }

@@ -1,6 +1,6 @@
 //! A window's accessibility root, checked (PORTAL-15).
 //!
-//! `quire_window.set_a11y_root(bus_name, object_path)` names an object any program on the bus
+//! `bardo_window.set_a11y_root(bus_name, object_path)` names an object any program on the bus
 //! could own, and the assistant tier reads the object it names. So a root a client sets is not
 //! adopted as it comes: the window keeps an unknown root, the claim is queued with the pid
 //! casement holds the client by, and the bus is asked which process owns the name

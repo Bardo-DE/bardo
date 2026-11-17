@@ -306,7 +306,7 @@ fn the_i7_table() {
         GlobalKind::Compositor,
         GlobalKind::Shm,
         GlobalKind::XdgShell,
-        GlobalKind::QuireWindow,
+        GlobalKind::BardoWindow,
         GlobalKind::Seat,
         GlobalKind::Dmabuf,
         GlobalKind::ExtDataControl,

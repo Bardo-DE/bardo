@@ -1,6 +1,6 @@
 //! Asking before Bluetooth goes off: the user cut off their Bluetooth keyboard twice with one
 //! press. A press that would power the adapter
-//! off, on the Bluetooth tile or the pane's switch, only raises the question; quire's `Alert`
+//! off, on the Bluetooth tile or the pane's switch, only raises the question; Bardo's `Alert`
 //! (`Flow::Inline`, over the panel) asks "Turn Bluetooth off?", and only its "Turn Off" sends
 //! `BluetoothCommand::Power(Off)`. Cancel, Escape or a press on the scrim leaves it on. Turning
 //! it on asks nothing.

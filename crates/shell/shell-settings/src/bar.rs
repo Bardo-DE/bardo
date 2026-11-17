@@ -40,7 +40,7 @@ pub struct BarSettings {
         note = "In full screen the bar returns when the pointer rests at the top."
     )]
     pub autohide: MenuBarHiding,
-    /// `bar.battery_low_percent` (quire design/26 G10): at or under this charge, on
+    /// `bar.battery_low_percent` (Bardo design/26 G10): at or under this charge, on
     /// battery, the bar's battery fill turns `--battery-low`.
     #[settings(
         label = "Low battery",

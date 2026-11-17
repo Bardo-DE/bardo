@@ -8,7 +8,7 @@ use ui_components::prelude::*;
 /// What the scrim draws: its opacity and whether it is dimming.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct DimScene {
-    /// The scrim's opacity at rest while dimmed, quire's `IdleDim.level`.
+    /// The scrim's opacity at rest while dimmed, Bardo's `IdleDim.level`.
     pub level: Percent,
     pub phase: IdleDimPhase,
 }
@@ -20,7 +20,7 @@ pub fn scrim_of(kept: DimLevel) -> Percent {
     Percent(100 - kept.clamp(10, 90))
 }
 
-/// The scene for `dim`. Clear keeps the last level, so waking only moves the phase and quire
+/// The scene for `dim`. Clear keeps the last level, so waking only moves the phase and Bardo
 /// snaps the scrim out instead of reading a level edit.
 pub fn scene_of(dim: DimShown, last: Percent) -> DimScene {
     match dim {

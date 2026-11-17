@@ -8,7 +8,7 @@ use std::path::Path;
 use ui_core::base64;
 use ui_core::error::DsError;
 
-/// Where an external icon's pixels come from: a `data:` or `file:` URL, the two schemes a quire
+/// Where an external icon's pixels come from: a `data:` or `file:` URL, the two schemes a Bardo
 /// document's net provider answers.
 ///
 /// Parsed once, so what reaches the stylesheet can always sit inside a quoted CSS `url("…")`.

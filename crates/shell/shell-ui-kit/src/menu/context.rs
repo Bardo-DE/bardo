@@ -2,7 +2,7 @@
 //! the owner's [`MenuModel`], reporting a pick, a dismissal and its own drop back to the owner
 //! over a channel, and closing itself once the menu has closed. The opener hands it a
 //! [`ContextMenuLink`] as a root context and [`PopupRoom::CONTEXT`] is its room. A popup is a
-//! `VirtualDom` of its own, so it provides quire's document host itself.
+//! `VirtualDom` of its own, so it provides Bardo's document host itself.
 
 use dioxus::prelude::*;
 use layer_shell_hooks::use_surface;

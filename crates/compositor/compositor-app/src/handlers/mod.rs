@@ -4,6 +4,9 @@
 
 mod alpha_modifier;
 mod background_effect;
+mod bardo_desktop;
+pub(crate) mod bardo_shell;
+mod bardo_window;
 pub(crate) mod capture_source;
 mod color_management;
 mod commit_timing;
@@ -30,9 +33,6 @@ mod pointer_constraints;
 mod pointer_gestures;
 mod presentation;
 mod primary_selection;
-mod quire_desktop;
-pub(crate) mod quire_shell;
-mod quire_window;
 mod relative_pointer;
 mod screencopy;
 mod seat;
@@ -61,6 +61,6 @@ pub(crate) use xdg_shell::popups::{
 };
 mod xdg_toplevel_icon;
 mod xdg_toplevel_tag;
+pub(crate) use bardo_window::replay_early;
 pub(crate) use output_management::sync_outputs;
-pub(crate) use quire_window::replay_early;
 pub(crate) use screencopy::serve_captures;

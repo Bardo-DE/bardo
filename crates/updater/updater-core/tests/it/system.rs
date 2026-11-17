@@ -82,7 +82,7 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/etc/xdg/bardo/evil.sh", false),
         // Not a listed folder.
         ("/etc/passwd", false),
-        ("/etc/sudoers.d/quire", false),
+        ("/etc/sudoers.d/bardo", false),
         ("/etc/systemd/system/bardo-key-remap.service", false),
         ("/etc/systemd/system/bardo-input-broker.socket", false),
         ("/usr/lib/udev/rules.d/70-bardo-key-remap.rules", false),

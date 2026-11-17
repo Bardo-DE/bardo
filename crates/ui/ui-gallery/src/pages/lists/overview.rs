@@ -47,7 +47,7 @@ const THREADS: [ThreadSample; 8] = [
     ),
     (
         "GitHub",
-        "[quire] Wave 2 merged",
+        "[bardo] Wave 2 merged",
         "Seven branches, forty-one files changed.",
         "Sun",
     ),

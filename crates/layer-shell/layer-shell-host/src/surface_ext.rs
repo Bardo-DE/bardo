@@ -32,7 +32,7 @@ impl SurfaceScroll for SurfaceHandle {
 
 /// The Wayland object behind a surface.
 pub trait SurfaceWayland {
-    /// This surface's `wl_surface`, for a protocol the host does not wrap (a `quire_*` object
+    /// This surface's `wl_surface`, for a protocol the host does not wrap (a `bardo_*` object
     /// the app's own code creates on the shell's connection). It is replaced when the surface
     /// is hidden and shown again, so read it again after `HostEvent::SurfaceMapped`. `None` for
     /// a handle that has no surface behind it (one built without a connection).

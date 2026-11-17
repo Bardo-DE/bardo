@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The portable core builds without the desktop (quire design/36 section 4): exactly the crates
+# The portable core builds without the desktop (Bardo design/36 section 4): exactly the crates
 # below, with no default features, must `cargo check`, and nothing in their trees may be a
 # Linux-only or desktop-bus crate. Needs no network (cargo reads the lockfile and the cache).
 #

@@ -1,5 +1,5 @@
 //! The effects end of one corner: feed the pointer's enter and leave to the trigger machine
-//! (`ui_behaviour::hot_corner::Corner`, run by quire's `use_machine`: its dwell and re-arm are its
+//! (`ui_behaviour::hot_corner::Corner`, run by Bardo's `use_machine`: its dwell and re-arm are its
 //! own deadlines), and write a firing
 //! to the [`CornerLink`].
 
@@ -9,14 +9,14 @@ use shell_ui_kit::links::{Corner as WhichCorner, CornerLink};
 use ui_behaviour::hot_corner::{Corner, CornerIn, CornerOut, CornerParams};
 use ui_components::machine::{MachineRef, use_machine};
 
-/// One corner's machine. Cheap to clone: a ref to quire's machine hook.
+/// One corner's machine. Cheap to clone: a ref to Bardo's machine hook.
 #[derive(Clone, Copy)]
 pub(super) struct Pointer {
     machine: MachineRef<Corner>,
 }
 
-/// Run `corner` of `output`: the machine on quire's fixed corner timing. Its dwell and re-arm are the machine's own deadlines, run by
-/// quire's one timer; a firing goes to the link.
+/// Run `corner` of `output`: the machine on Bardo's fixed corner timing. Its dwell and re-arm are the machine's own deadlines, run by
+/// Bardo's one timer; a firing goes to the link.
 pub(super) fn use_hot_corner(output: OutputId, corner: WhichCorner) -> Pointer {
     let link = use_context::<CornerLink>();
     let machine = use_machine(

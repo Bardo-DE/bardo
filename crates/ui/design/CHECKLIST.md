@@ -44,7 +44,7 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
 
 ## 3. Colour
 
-- [ ] No hex, rgb, hsl, named colour or `color-mix` outside quire (`lint` `HexColour`,
+- [ ] No hex, rgb, hsl, named colour or `color-mix` outside Bardo (`lint` `HexColour`,
       `ColourFunction`, `NamedColour`). Cite `03-COLOR.md`.
 - [ ] Each element uses the token the usage map assigns it. Cite `03-COLOR.md`.
 - [ ] "Colour is a claim": chrome is greyscale; every hue states a fact. Cite
@@ -60,7 +60,7 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
 
 - [ ] Only `ds-` classes; no consumer rule styles `.ds-*` or `[data-theme|accent|motion|
       material]` (`lint` `DsInternals`). Cite `04-COMPONENTS.md`.
-- [ ] No raw `button`, `input` or menu markup; every control is a quire component
+- [ ] No raw `button`, `input` or menu markup; every control is a Bardo component
       (`lint::markup`). Cite `04-COMPONENTS.md`.
 - [ ] Every state (hover, active, focus-visible, selected, disabled) matches 04. Cite
       `04-COMPONENTS.md`.
@@ -76,9 +76,9 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
 
 - [ ] Durations and easings are tokens only (`lint` `RawDuration`, `RawEasing`). Cite
       `05-MOTION.md`.
-- [ ] Keyframes come from quire's `motion.css` only (`lint` `Keyframes`,
+- [ ] Keyframes come from Bardo's `motion.css` only (`lint` `Keyframes`,
       `UnknownAnimation`), and only live ones. Cite `30-CATALOGUE.md` section 1.3.
-- [ ] State after an animation is driven by quire timers (`settle`, `use_motion_timer`,
+- [ ] State after an animation is driven by Bardo timers (`settle`, `use_motion_timer`,
       `use_pulse`), never ad-hoc sleeps. Cite `05-MOTION.md`.
 - [ ] No stagger, no first-show sweep, no overshoot, no hover lift or press squish. Cite
       `30-CATALOGUE.md` R2.
@@ -159,7 +159,7 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
 ## 10. Lint
 
 - [ ] `ds::lint::assert_clean(css, Strict)` passes for every stylesheet the wave touched.
-- [ ] `ds::lint::markup` passes on every SSR render (every class is one quire exports).
+- [ ] `ds::lint::markup` passes on every SSR render (every class is one Bardo exports).
 - [ ] The warnings (`ds::lint::warnings`, `ds::lint::markup_warnings` under Strict: the HIG
       guardrails, printed by `assert_clean`) are read, and each is fixed or listed for the
       consumer before the rule turns Strict (`27-HIG-PARITY.md` section 7).

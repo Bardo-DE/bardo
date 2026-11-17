@@ -358,7 +358,7 @@ fn trace_attribute_names_are_unique_and_namespaced() {
     let mut seen = std::collections::BTreeSet::new();
     for key in attr::ALL {
         assert!(seen.insert(*key), "{key} is listed twice");
-        assert!(key.starts_with("quire."), "{key}");
+        assert!(key.starts_with("bardo."), "{key}");
     }
 }
 

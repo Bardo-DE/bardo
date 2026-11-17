@@ -5,7 +5,7 @@
 //! responder, the Pages and `TextEdit` format bars) acts on a press and leaves the keyboard, the
 //! caret and the selection in the text view. A browser button takes the keyboard; Blitz clears it
 //! on any click nothing took. [`FocusOnPressScope`] puts `refuses: true` around a bar,
-//! and each quire control inside (`Button`, `IconButton`, `SegmentedControl`) then prevents its
+//! and each Bardo control inside (`Button`, `IconButton`, `SegmentedControl`) then prevents its
 //! click's default, so Blitz leaves the focus where it was, and hands the click to no host: the
 //! text body keeps the keyboard, and a later command-I still reaches it. The scope is a context,
 //! not a prop on each control, so one wrapper covers every control in the bar.

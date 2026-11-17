@@ -1,6 +1,6 @@
 //! The desktop-wide Spaces an app's own Space can link to (`org.bardo.Spaces1` on accountd).
 //!
-//! An app keeps its own Spaces (quire's Spaces kit) and stores, per Space, an optional link: the
+//! An app keeps its own Spaces (Bardo's Spaces kit) and stores, per Space, an optional link: the
 //! id of a desktop-wide Space from this list. It makes the `SpaceId` it hands memory and consent
 //! with `account_core::SpaceId::for_app`. When a desktop-wide Space is removed, the watch says so
 //! and the app falls back to its own Space; that is the app's choice.

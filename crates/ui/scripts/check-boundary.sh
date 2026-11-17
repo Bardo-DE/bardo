@@ -18,7 +18,7 @@ cd "$(dirname "$0")/.."
 # compositor runs too, so like ui-core it reaches no Dioxus and no renderer. ds is renderer-free
 # and effect-free; ui-settings does I/O but never renders, and takes a Spawner instead of naming a
 # runtime. ui-helpers (missing helpers: probe PATH, ask PackageKit) is I/O too: zbus only, no
-# renderer, no runtime, and no quire crate but base-time (the deadline on each call to a peer).
+# renderer, no runtime, and no Bardo crate but base-time (the deadline on each call to a peer).
 # chordkit (the keymap core) is pure and ui-core and ds take it; its I/O sources (keymap-kde, keymap-gnome
 # read a settings file) are named by ui-blitz alone, which injects them as the launch's default KeySource.
 # ui-desktop (the capability probe) names zbus only through its opt-in `dbus` feature and dioxus
@@ -220,7 +220,7 @@ for root in "ui-components:$ROOT_ALLOWED_DS" "ui-shell:$ROOT_ALLOWED_DS_SHELL"; 
   fi
 done
 
-# The fork [patch] block consumers copy (docs/fork-patches.toml) is quire's own, and the checker
+# The fork [patch] block consumers copy (docs/fork-patches.toml) is Bardo's own, and the checker
 # still tells a differing copy from a matching one.
 if ./scripts/fork-patches.sh selftest >/dev/null; then
   echo "fork patches: docs/fork-patches.toml matches the root manifest"

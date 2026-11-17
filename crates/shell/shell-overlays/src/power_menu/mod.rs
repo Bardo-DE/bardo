@@ -1,6 +1,6 @@
 //! The power menu (design/20 §1.8).
 //!
-//! One Overlay surface per output, kept warm and hidden like the launcher, that shows quire's
+//! One Overlay surface per output, kept warm and hidden like the launcher, that shows Bardo's
 //! `Alert` centred on its `Sheet` (it dims nothing): the question for the opening's action, then
 //! Log Out, Restart, Shut Down and Suspend as its buttons (the opening's first and the default, the
 //! ones logind does not offer left out) and Cancel. Keyboard `Exclusive`: Return presses the

@@ -1,4 +1,4 @@
-//! Holding Down through several PDFs with the preview pane shown rasterises few of them: quire's
+//! Holding Down through several PDFs with the preview pane shown rasterises few of them: Bardo's
 //! `PdfFileThumb` runs one worker with a latest-wins queue (m9-parts), and the pane hands it
 //! only the selected row's path. Its own test binary: `ui_blitz::pdf_thumb_rasters` counts for
 //! the whole process.

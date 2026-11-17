@@ -1,4 +1,4 @@
-//! The drive behind the fake Graph: items in a tree (a root, the `Apps/Quire` folder that is the
+//! The drive behind the fake Graph: items in a tree (a root, the `Apps/Bardo` folder that is the
 //! app folder, whatever the app made below it and whatever else the drive holds), a change
 //! counter that delta queries read, and the upload sessions in flight. Pure state; `routes` is
 //! the HTTP over it.
@@ -138,7 +138,7 @@ impl Default for Drive {
             },
         );
         let apps = drive.folder(ROOT, "Apps");
-        drive.approot = drive.folder(&apps, "Quire");
+        drive.approot = drive.folder(&apps, "Bardo");
         drive.seq = 0;
         for node in drive.nodes.values_mut() {
             node.changed = 0;

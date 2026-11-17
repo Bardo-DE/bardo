@@ -1,5 +1,5 @@
 //! Cloud drives in the folder pane: the small badge after a row's name, the state of a drive that
-//! cannot show its files, and the status line under a drive's folder. Motion is quire's: the pie
+//! cannot show its files, and the status line under a drive's folder. Motion is Bardo's: the pie
 //! follows its share over the move token, and the badge fades out (`Fade`) when the item no longer
 //! needs one.
 
@@ -21,7 +21,7 @@ use crate::words::{SIGN_IN_BUTTON, status_words, trouble_title};
 /// showed; a row that never had one draws nothing.
 #[component]
 pub(super) fn CloudBadge(badge: Badge) -> Element {
-    // The last badge drawn: what fades out when the row needs none. Not reactive, like quire's own
+    // The last badge drawn: what fades out when the row needs none. Not reactive, like Bardo's own
     // `ds-busy-seen` flag, so keeping it never schedules another render.
     let mut last = use_hook(|| CopyValue::new(Badge::Clear));
     if badge != Badge::Clear && *last.peek() != badge {

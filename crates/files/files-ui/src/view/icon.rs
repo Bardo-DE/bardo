@@ -1,4 +1,4 @@
-//! An app's icon file as quire draws it: an image as it is, with no plate under it.
+//! An app's icon file as Bardo draws it: an image as it is, with no plate under it.
 
 use std::path::Path;
 

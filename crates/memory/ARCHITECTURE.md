@@ -40,7 +40,7 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 
 ## 1a. Portable core and desktop extras
 
-Quire's rule (design/36-PORTABLE-CORE.md): everything except the desktop itself is
+Bardo's rule (design/36-PORTABLE-CORE.md): everything except the desktop itself is
 cross-platform, and the desktop's features are additive. For almanac:
 
 | Portable core (builds with `--no-default-features`) | Desktop extra |
@@ -58,9 +58,9 @@ Feature layout. Two kinds of feature, as design/36 names them. A **platform feat
 the OS provides and keeps its name: `memory-watch` `linux` (default; `InotifyWatch`, the `notify`
 dependency), `memory-client` `dbus` (the D-Bus transport), `memory-seal` `oo7` (Secret Service
 keys), plus `in_process` (hosting the service in the app; off by default, though the service links no SQLCipher
-or OpenSSL: the app's `Backend` does). An **app-level desktop switch** says "this app is on the Quire desktop" and is
-`quire-desktop`; it is declared only by a crate that holds a D-Bus client, by implication, never as a
-rename: `memory-client` `quire-desktop = ["dbus"]`, default on. No other almanac crate needs the
+or OpenSSL: the app's `Backend` does). An **app-level desktop switch** says "this app is on Bardo desktop" and is
+`desktop`; it is declared only by a crate that holds a D-Bus client, by implication, never as a
+rename: `memory-client` `desktop = ["dbus"]`, default on. No other almanac crate needs the
 alias: `memory-dbus`, `memory-dbus`, `memoryd` are the desktop itself, `memory-watch` and `memory-seal` hold no
 D-Bus client (their platform features are what a non-Linux OS lacks). An app on macOS or Windows
 depends on `memory-client` with `default-features = false, features = ["in_process"]`. Default
@@ -275,17 +275,17 @@ Digest), body json)`. The header holds no thing id and no text. Golden:
 `crates/eventlog/tests/golden/header_v1.{hex,link}`.
 
 **Sealed file**: `"QMEM" 0x01 ‖ nonce [24] ‖ XChaCha20-Poly1305`, associated data
-`lp(space) ‖ lp(vault path)`; key `derive(key, Files)`; subkey contexts `"quire-memory 1
+`lp(space) ‖ lp(vault path)`; key `derive(key, Files)`; subkey contexts `"bardo-memory 1
 <eventlog|index|files|digest>"`. Golden: `crates/almanac-seal/tests/golden/derive.txt`.
 
-**Topic file**: front matter (`format: quire-memory 1`, `topic`, `title`), dated headings derived
+**Topic file**: front matter (`format: bardo-memory 1`, `topic`, `title`), dated headings derived
 from each fact's `at` in the injected time zone, one `- text` bullet per fact followed by its
 trailer `  <!-- fact: <id>; at: <utc>; by: <json>; label: <json>[; from: <json>][; supersedes:
 <json>] -->`. A bullet with no trailer is the person's edit (`Unstamped`); other lines are
 `Verbatim`; `valid` and `origin` are reserved. `render(parse(s)) == s` for any `s` that render
 produced. Golden: `crates/memfiles-format/tests/golden/people-sam-lee.md`.
 
-**Export**: a tar stream under `quire-memory-export-1/`: `manifest.json`, `<space>/events.jsonl`
+**Export**: a tar stream under `bardo-memory-export-1/`: `manifest.json`, `<space>/events.jsonl`
 (one `EventLine` per entry: header fields, link, body or `"erased"`), `<space>/facts|procedures|
 pending/**.md` plain, `rules.toml`. Never the index, never the keys. Golden:
 `crates/almanac-service/tests/golden/events.jsonl` and the layout test.
@@ -400,7 +400,7 @@ the fakes.
 
 - **No `unsafe`** anywhere (`unsafe_code = "deny"`). That is why vectors are exact scan and not
   `sqlite-vec` (QUESTIONS P5).
-- **Dependencies** come from quire's pinned block (`docs/workspace-deps.toml` there), copied
+- **Dependencies** come from Bardo's pinned block (`docs/workspace-deps.toml` there), copied
   verbatim, only the lines almanac names; a new one joins that file first. porter's crates are
   git dependencies at a pinned rev, so a plain clone builds with no sibling checkout.
 - **The wire is serde.** Every stored or wire type has a round-trip test; enums with data are

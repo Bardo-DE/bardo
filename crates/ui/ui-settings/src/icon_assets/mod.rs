@@ -1,7 +1,7 @@
-//! Where quire's app-icon files are, and which file draws an app at a size and a style
+//! Where Bardo's app-icon files are, and which file draws an app at a size and a style
 //! (design/08-ICONS.md 2.11).
 //!
-//! quire ships `assets/icons/apps/<app>/[muted|monochrome/]<px>.png`; every consumer used to
+//! Bardo ships `assets/icons/apps/<app>/[muted|monochrome/]<px>.png`; every consumer used to
 //! guess where that directory lands (bardo-shell searched its own variable, then the data dirs, then a
 //! sibling checkout). The order is settled here, once, and documented in CONSUMING.md:
 //!
@@ -11,7 +11,7 @@
 //! 3. each `$XDG_DATA_DIRS` entry's `bardo/icons/apps` (`/usr/local/share:/usr/share` when
 //!    unset), for a system package;
 //! 4. the repository's own `assets/icons/apps`, resolved from this crate's `CARGO_MANIFEST_DIR`
-//!    at compile time: development only, for a consumer that takes quire as a path dependency.
+//!    at compile time: development only, for a consumer that takes Bardo as a path dependency.
 //!
 //! The first directory that exists wins, whole: a set is installed together, so a file missing
 //! from it is not looked for further down. This lives in `ui-settings`, not `ds`, because it

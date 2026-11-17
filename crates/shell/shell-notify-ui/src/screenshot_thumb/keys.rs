@@ -1,5 +1,5 @@
 //! The thumbnail's keymap: the keys the card takes once it holds the keyboard, beyond the ones
-//! quire's picture takes itself (Enter and Space open it; Tab moves between the picture and the
+//! Bardo's picture takes itself (Enter and Space open it; Tab moves between the picture and the
 //! card's action buttons by the document's own order).
 
 use dioxus::prelude::Key;
@@ -28,7 +28,7 @@ mod tests {
             ("Delete", Key::Delete, Some(ThumbIn::TrashPressed)),
             ("Backspace", Key::Backspace, Some(ThumbIn::TrashPressed)),
             ("Escape", Key::Escape, Some(ThumbIn::Dismissed)),
-            ("Enter is quire's", Key::Enter, None),
+            ("Enter is bardo's", Key::Enter, None),
             ("Tab is the document's", Key::Tab, None),
             ("a letter", Key::Character("x".into()), None),
         ];

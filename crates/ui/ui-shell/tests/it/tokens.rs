@@ -330,7 +330,7 @@ fn every_var_the_stylesheet_reads_is_declared() {
 }
 
 /// The spacing scale is design/01-LAYOUT.md section 2's common steps, verbatim, plus the three
-/// values 04-COMPONENTS quotes for a quire component (1.5, 13, 15), each emitted on `.ds` as
+/// values 04-COMPONENTS quotes for a Bardo component (1.5, 13, 15), each emitted on `.ds` as
 /// its own pixel value and nowhere else (it follows neither scheme nor motion).
 #[test]
 fn the_spacing_scale_is_the_layout_docs() {

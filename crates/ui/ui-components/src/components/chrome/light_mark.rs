@@ -50,7 +50,7 @@ pub(crate) fn LightMark(mark: Mark) -> Element {
     rsx! {
         svg {
             class: "ds-light-mark",
-            // `data-ds-svg` tells the markup lint this vector is quire's own, not raw SVG.
+            // `data-ds-svg` tells the markup lint this vector is Bardo's own, not raw SVG.
             "data-ds-svg": "light",
             width: "12",
             height: "12",

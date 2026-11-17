@@ -5,7 +5,7 @@
 //   all permitted                   -> Ruling::AllowFinal
 // Every context value is a slug (the serde form of the Rust type) or a count: Cedar has no
 // enums, and the policies read the same words the wire does.
-namespace Quire {
+namespace Bardo {
   entity Caller { kind: String };
   entity App;
   entity Space;

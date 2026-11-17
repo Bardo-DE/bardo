@@ -1,4 +1,4 @@
-//! Every tip quire draws is `Name  ⌘K` (owner decision 2026-10-09, design/30 section 2.5): a
+//! Every tip Bardo draws is `Name  ⌘K` (owner decision 2026-10-09, design/30 section 2.5): a
 //! short noun phrase in title case, two spaces, then the key in Kbd glyphs. No parentheses, no
 //! sentence, no full stop. Each tip-bearing control in the catalogue is hovered, its tip read
 //! off the page and held to the style; the accessible names keep their full wording.

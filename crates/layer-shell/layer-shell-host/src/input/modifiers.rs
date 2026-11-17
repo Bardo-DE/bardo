@@ -4,7 +4,7 @@ use keyboard_types::Modifiers;
 use smithay_client_toolkit::seat::keyboard::Modifiers as SctkModifiers;
 
 /// The keyboard-types set for sctk's modifier state. The logo key is `SUPER`: on our
-/// desktop it is Command, and Blitz's text actions and quire's normaliser read Command as
+/// desktop it is Command, and Blitz's text actions and Bardo's normaliser read Command as
 /// `SUPER`. Matches `keysym::named_key`'s `Key::Super`.
 pub(crate) fn modifiers_from(state: SctkModifiers) -> Modifiers {
     [

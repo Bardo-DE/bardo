@@ -48,7 +48,7 @@ pub(crate) fn travel_of(cause: &Cause, level: MotionLevel) -> Travel {
 }
 
 /// The touch a released swipe is. `Contact::pressed` is the one public way to a contact without
-/// Dioxus; a swipe release is the compositor's own proof of the person's hand (A23: if quire
+/// Dioxus; a swipe release is the compositor's own proof of the person's hand (A23: if Bardo
 /// closes that constructor, this is the one line that changes).
 fn thrown_by(velocity: ui_motion::velocity::Velocity) -> Touch {
     Touch::Contact(Contact::pressed(&Press::primary()).with_velocity(velocity))

@@ -2,7 +2,7 @@
 //!
 //! The HTML is the peek's (raw HTML of the source already shown as text, local images as their alt
 //! text, only web, mail and relative links kept). It sits in an `<iframe srcdoc>` whose network
-//! is sealed to `data:` and whose links never navigate (quire FINDINGS "Frames and links"), on a
+//! is sealed to `data:` and whose links never navigate (Bardo FINDINGS "Frames and links"), on a
 //! paper sheet like a mail's original message: the frame is its own document, so it takes no
 //! design tokens and is written in the one scheme every foreign page is shown in.
 

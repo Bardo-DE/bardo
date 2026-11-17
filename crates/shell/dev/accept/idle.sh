@@ -78,7 +78,7 @@ mkdir -p "$CONFIG/bardo/shell"
 LOGIND=
 TIMES="6,0"
 DAEMON_LOG="$OUT_DIR/daemon.log"
-# The daemon resolves a bardo-shell session (Host::SillSession) and owns idle only as the bardo-shell session's desktop (quire, as bardo-session sets it).
+# The daemon resolves a bardo-shell session (Host::SillSession) and owns idle only as the bardo-shell session's desktop (Bardo, as bardo-session sets it).
 SESSION_ENV=(XDG_CURRENT_DESKTOP=bardo)
 # The session bus: casement's (set by start_compositor), so the daemon reaches org.bardo.Compositor1.
 session_bus() { echo "${BARDO_COMPOSITOR_BUS:-$BUS}"; }

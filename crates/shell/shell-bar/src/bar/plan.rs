@@ -22,7 +22,7 @@ pub(crate) enum BarEffect {
     Run(BarPick),
 }
 
-/// An enabled item of the open menu: its place among the menu's choices (quire's numbering:
+/// An enabled item of the open menu: its place among the menu's choices (Bardo's numbering:
 /// items and submenu parents, not headers, status lines or rules) and what it picks.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Choice {
@@ -60,7 +60,7 @@ pub(crate) enum PopupReport {
 
 /// The machine input for `report`, and the pick it carries.
 ///
-/// A release over an item reaches the machine before the ds `Menu`'s own pick (quire calls
+/// A release over an item reaches the machine before the ds `Menu`'s own pick (Bardo calls
 /// `on_release` first), so the machine decides press-drag-release and click mode alike and the
 /// `Picked` that follows finds the session closed. `Picked` remains for the keyboard's Enter.
 /// Hover moves carry no point and every row is a leaf to the machine: the popup is another
@@ -94,7 +94,7 @@ fn item(index: usize) -> Target {
     }
 }
 
-/// What a release over choice `index` of `entries` lands on, numbered as quire's `Menu` numbers
+/// What a release over choice `index` of `entries` lands on, numbered as Bardo's `Menu` numbers
 /// `on_hover`: items and submenu parents count, headers, status lines and rules do not.
 pub(crate) fn landing(entries: &[MenuItem<BarPick>], index: usize) -> Landing {
     let entry = entries
@@ -285,7 +285,7 @@ mod tests {
                         index: 0,
                         pick: settings.clone(),
                     }))),
-                    // quire's own pick follows the release, and finds the session closed.
+                    // Bardo's own pick follows the release, and finds the session closed.
                     Input::Popup(PopupReport::Picked(settings.clone())),
                 ],
                 vec![

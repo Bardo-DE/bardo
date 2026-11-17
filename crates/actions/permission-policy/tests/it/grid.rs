@@ -187,7 +187,7 @@ fn a_rule_with_a_why_asks_with_its_own_sentence_and_one_without_is_named() {
     use permission_policy::{Layer, PolicySource, SCHEMA};
     let rule = |id: &str, why: &str| {
         format!(
-            r#"{why} @id("{id}") forbid (principal, action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"], resource) when {{ resource.effect == "read" }};"#
+            r#"{why} @id("{id}") forbid (principal, action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"], resource) when {{ resource.effect == "read" }};"#
         )
     };
     let set = |text: String| {
@@ -399,7 +399,7 @@ fn a_rule_of_the_person_may_name_the_mode() {
     use permission_policy::{Layer, PolicySource, SCHEMA};
     let only_manual = r#"
         @id("manual-reads-ask")
-        forbid (principal, action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"], resource)
+        forbid (principal, action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"], resource)
         when { context.mode == "manual" && resource.effect == "read" };
     "#;
     let sources = [

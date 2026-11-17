@@ -1,5 +1,5 @@
 //! The notification center's list motion (design/26 5.4, design/20 1.6), on the
-//! virtual clock with a pinned appearance: the center's rows are one quire `List`. They
+//! virtual clock with a pinned appearance: the center's rows are one Bardo `List`. They
 //! are there as the center opens; the cards an opened group adds enter; "Show less", Clear and
 //! Clear All fade the rows the model dropped and the rows below close the gap; an arrival
 //! while the center is open enters. Every one of them ends at rest, asking for no frame.

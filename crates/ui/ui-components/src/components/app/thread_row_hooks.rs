@@ -2,7 +2,7 @@
 //!
 //! The sender's name and the time each open a hover card of their own (design/06-INTERACTIONS.md
 //! section 3: `sender` and `time` targets inside a `thread` row), and the row itself starts a drag
-//! on a press and opens the thread card on entry. quire draws the parts, so it attaches the
+//! on a press and opens the thread card on entry. Bardo draws the parts, so it attaches the
 //! caller's handlers to them.
 
 use crate::components::lists::row::row::relay;

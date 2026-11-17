@@ -1,6 +1,6 @@
 //! What an icon slot shows.
 //!
-//! A quire glyph, an icon quire does not draw (a status item's pixmap, an icon theme's file, a third
+//! A Bardo glyph, an icon Bardo does not draw (a status item's pixmap, an icon theme's file, a third
 //! party's symbolic SVG, design/08-ICONS.md section 1.5), drawn recoloured to the text colour
 //! (symbolic) or as it is (an image), or a status glyph.
 
@@ -18,10 +18,10 @@ pub struct ExternalIcon {
     pub size: IconSize,
 }
 
-/// What an icon slot shows: one of quire's glyphs, or an external icon.
+/// What an icon slot shows: one of Bardo's glyphs, or an external icon.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum IconSource {
-    /// A quire glyph, stroked in the text colour.
+    /// A Bardo glyph, stroked in the text colour.
     Glyph(Icon),
     /// An external icon used as a mask: only its alpha counts, painted in the text colour, so
     /// it follows `--ink`, hover and `--f-ink*` exactly as a glyph does (a freedesktop

@@ -22,7 +22,7 @@ calloop-wayland-source = { workspace = true }
 raw-window-handle = { workspace = true }
 keyboard-types = {workspace = true}
 cursor-icon = { workspace = true }
-# `bardo_window_v1`'s client bindings and the wire vocab (`handlers::quire_window`).
+# `bardo_window_v1`'s client bindings and the wire vocab (`handlers::bardo_window`).
 desktop-protocols = {features = ["client"], path = "../../wayland/desktop-protocols"}
 # Documents and rendering
 blitz-embed = {features = ["adapter", "settings"], path = "../../blitz-embed/blitz-embed"}
@@ -55,7 +55,7 @@ mouse-gestures-proto = {path = "../../input/mouse-gestures-proto"}
 # The overlay scroll thumb's shapes and colour (scroll::paint).
 peniko = { workspace = true }
 # SOCK_SEQPACKET for the palmrest socket (std has no seqpacket, and unsafe is not allowed
-# here); in the pinned block since quire b45282a.
+# here); in the pinned block since Bardo b45282a.
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 # `SO_PEERPIDFD` for the palmrest socket's peer (rustix has no safe wrapper for it).
 nix = { workspace = true, features = ["socket"] }

@@ -45,7 +45,7 @@ pub fn card_region() -> RegionSpec {
 }
 
 /// The panel's blur region: the card, and the actions menu too while it is open (it hangs below the
-/// card, so without this quire paints its see-through tint over unblurred rows).
+/// card, so without this Bardo paints its see-through tint over unblurred rows).
 ///
 /// The host skips an element that is not in the document, so the menu's frame before it mounts
 /// blurs only the card.

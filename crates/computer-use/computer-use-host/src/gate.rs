@@ -238,7 +238,7 @@ mod tests {
             run: RunId::parse("r-1").unwrap(),
             step: 1,
             app: account_core::AppName::parse("org.bardo.Mail").unwrap(),
-            trust: WindowTrust::Quire,
+            trust: WindowTrust::Bardo,
             mode: RunMode::InPlace,
             space: SpaceId::parse("work").unwrap(),
             action: CuaAction::<WindowSpace>::Observe,

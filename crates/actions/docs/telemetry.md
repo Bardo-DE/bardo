@@ -47,7 +47,7 @@ OTLP/HTTP on 4318), then add a drop-in for the daemon:
 # ~/.config/systemd/user/bardo-actiond.service.d/telemetry.conf
 [Service]
 Environment=OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
-Environment=OTEL_SERVICE_NAME=quire-intentd
+Environment=OTEL_SERVICE_NAME=bardo-intentd
 ```
 
 then `systemctl --user daemon-reload && systemctl --user restart bardo-actiond`.

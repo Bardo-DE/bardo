@@ -25,7 +25,7 @@ pub enum MaskReason {
 }
 
 impl MaskReason {
-    /// The `mask_reason` value of `quire-agent-v1`.
+    /// The `mask_reason` value of `bardo-agent-v1`.
     #[must_use]
     pub fn code(self) -> u32 {
         match self {

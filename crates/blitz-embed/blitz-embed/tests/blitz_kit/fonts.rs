@@ -2,9 +2,9 @@
 //! back to fontconfig's faces): the family is reported, and a document naming that family in
 //! `font-family` measures differently from one naming only `system-ui`.
 //!
-//! Uses a real font's bytes rather than a synthetic one: Inter, read from quire's bundled
-//! assets if quire is checked out next to this repo, skipped (with a message, not a failure)
-//! otherwise. The kit must not depend on quire, so this is a file read, never a dependency.
+//! Uses a real font's bytes rather than a synthetic one: Inter, read from Bardo's bundled
+//! assets if Bardo is checked out next to this repo, skipped (with a message, not a failure)
+//! otherwise. The kit must not depend on Bardo, so this is a file read, never a dependency.
 
 use crate::support;
 
@@ -16,10 +16,10 @@ use blitz_embed::fonts::{FontFaces, SharedFonts};
 const INTER: &str = "inter-normal-400-700-latin.ttf";
 
 /// Inter's bytes, leaked to `'static` (`FontFaces`' bound: a real shell's are `include_bytes!`
-/// in its design-system crate), or `None` if quire is not checked out beside this repo.
+/// in its design-system crate), or `None` if Bardo is not checked out beside this repo.
 fn inter_bytes() -> Option<&'static [u8]> {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../../quire/crates/ds/assets/fonts")
+        .join("../../../bardo/crates/ds/assets/fonts")
         .join(INTER);
     let bytes = std::fs::read(path).ok()?;
     Some(Box::leak(bytes.into_boxed_slice()))
@@ -40,7 +40,7 @@ fn width(fonts: FontContext, stack: &str, text: &str) -> f64 {
 #[test]
 fn a_registered_face_is_a_family() {
     let Some(bytes) = inter_bytes() else {
-        eprintln!("skipped: quire is not checked out beside this repo");
+        eprintln!("skipped: bardo is not checked out beside this repo");
         return;
     };
     let families = SharedFonts::system().register(bytes);
@@ -53,7 +53,7 @@ fn a_registered_face_is_a_family() {
 #[test]
 fn a_registered_faces_stack_measures_differently_from_system_ui() {
     let Some(bytes) = inter_bytes() else {
-        eprintln!("skipped: quire is not checked out beside this repo");
+        eprintln!("skipped: bardo is not checked out beside this repo");
         return;
     };
     // The bug this pins: with only `SharedFonts::system()`, a font-family naming a bundled face

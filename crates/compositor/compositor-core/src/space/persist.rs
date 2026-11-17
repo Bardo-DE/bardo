@@ -178,12 +178,12 @@ impl SpaceFile {
         Ok(toml::to_string(&sorted)?)
     }
 
-    /// The Spaces sill's interim minter wrote to `quire/spaces.json`, read once (C16): its
+    /// The Spaces sill's interim minter wrote to `bardo/spaces.json`, read once (C16): its
     /// `by_id` keys become Space ids, with the `output` and `index` a record carries when it
     /// has them. A record without an output is kept without a home and adopted by the first
     /// output plugged.
     ///
-    /// sill writes no such file yet (its `look.rs` says quire has no store), so the shape is
+    /// sill writes no such file yet (its `look.rs` says Bardo has no store), so the shape is
     /// the minimal one the codec pins: `{"by_id": {"<space id>": {"output": "<output key>",
     /// "index": 0}}}`, both record fields optional, unknown keys ignored.
     ///

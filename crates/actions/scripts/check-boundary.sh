@@ -108,7 +108,7 @@ FAIL_ON_LONG=no
 LONG_LINES=500
 
 # External crates a P-tier crate may not depend on (regex on the dependency name).
-P_BANNED_DEPS='^(tokio|zbus|rustix|nix|hyper|reqwest|quire(-.*)?|ds-.*|.*-dbus)$'
+P_BANNED_DEPS='^(tokio|zbus|rustix|nix|hyper|reqwest|bardo(-.*)?|ds-.*|.*-dbus)$'
 # Source patterns banned in P-tier src/: "key|regex".
 P_BANNED_SRC=(
   'std::fs|\bstd::fs\b|\bstd::\{[^}]*\bfs\b'

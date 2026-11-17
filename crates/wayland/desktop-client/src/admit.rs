@@ -24,7 +24,7 @@ use crate::supports::{missing, requires_on};
 ///     CommandError, DesktopCommand, DesktopConfig, Protocol, ProtocolSet, admit,
 /// };
 ///
-/// let offered = ProtocolSet::empty().with(Protocol::QuireShell);
+/// let offered = ProtocolSet::empty().with(Protocol::BardoShell);
 /// let cancel = DesktopCommand::CancelSwitcher;
 /// assert!(matches!(
 ///     admit(&offered, &DesktopConfig::default(), &cancel),
@@ -43,11 +43,11 @@ pub fn admit(
             needs,
         });
     }
-    let needs_shell = requires_on(backend_for(offered), command).contains(&Protocol::QuireShell);
+    let needs_shell = requires_on(backend_for(offered), command).contains(&Protocol::BardoShell);
     if needs_shell && config.shell == ShellBinding::Skip {
         return Err(CommandError::NotBound {
             route: command.route(),
-            needs: Protocol::QuireShell,
+            needs: Protocol::BardoShell,
         });
     }
     Ok(())

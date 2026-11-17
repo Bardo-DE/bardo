@@ -1,5 +1,5 @@
 //! The real `ControlCenter` in a `ui_harness::Harness` (a Blitz document, no window), inside a
-//! quire `Popover` as the bar's popup draws it, on the fake services: for the tests that click
+//! Bardo `Popover` as the bar's popup draws it, on the fake services: for the tests that click
 //! and press keys.
 
 use std::cell::RefCell;

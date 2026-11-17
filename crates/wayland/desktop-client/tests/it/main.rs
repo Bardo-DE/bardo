@@ -7,6 +7,7 @@
 
 mod active_link;
 mod backend;
+mod bardo;
 mod capture;
 #[cfg(feature = "fake")]
 mod fake;
@@ -14,7 +15,6 @@ mod frame;
 mod output;
 mod pairing;
 mod protocol;
-mod quire;
 mod support;
 mod toplevel;
 mod workspace;

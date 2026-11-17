@@ -1,5 +1,5 @@
 //! What the renderer needs to draw a frame, resolved: colours, marks and shadow as plain data.
-//! `compositor-layout` makes it from quire's tokens; `compositor-render` draws it. Nothing here
+//! `compositor-layout` makes it from Bardo's tokens; `compositor-render` draws it. Nothing here
 //! knows a token or a renderer.
 
 use super::frame::{FrameGeometry, FrameMetrics, Light};

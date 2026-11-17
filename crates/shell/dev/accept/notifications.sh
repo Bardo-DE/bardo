@@ -70,7 +70,7 @@
 #      Delete clears the group: kept falls by two.
 #  9b. A real click on Clear All (found in a capture of the center): kept falls to 0 and the
 #      center then rests, 0 frames over 3 s.
-#  9c. Clear and Clear All play their exit (quire's LeavingList): Chat (two) and
+#  9c. Clear and Clear All play their exit (Bardo's LeavingList): Chat (two) and
 #      CI (one) posted with `bardo-shell debug notify`, the center opened by a real click on the clock;
 #      a real click on Chat's Clear (found in a capture): kept falls by two, the list settles
 #      Chat's head and card after their fold (the daemon logs each settled row), the center
@@ -78,7 +78,7 @@
 #      over 3 s; the same for a real click on Clear All.
 #  10. Overflowed with 15 cards, a real wheel over the column (fake-input's `axis`) scrolls it: the
 #      whole column moves, title included. Rubber-band at the top is not exercised: wheel scrolling
-#      never stretches (quire's design/11 §11.3.7's last row and its own "no stretch at an edge"
+#      never stretches (Bardo's design/11 §11.3.7's last row and its own "no stretch at an edge"
 #      test); only a finger gesture does, and fake-input has no finger source — recorded, not
 #      proven.
 #  11. 5 s idle: 0 frames on the banners and the center.
@@ -597,7 +597,7 @@ EOF
 }
 
 # Whether the top card shows its close button (it is hovered): "yes" or "no", from a capture
-# named $1. quire's 18 px button stands 6 px out past the plate's top-left corner, so its middle
+# named $1. Bardo's 18 px button stands 6 px out past the plate's top-left corner, so its middle
 # is 3 px inside the corner (layer::ROOM + 3): opaque when shown, the corner's round is not.
 close_shown() {
   sleep 0.4
@@ -748,7 +748,7 @@ step_real_spring_back() {
   drag $(( CARD_X - 60 )) "$CARD_Y" 50 10 60 300 || return 1
   sleep 1
   mapped "$BANNERS" || { echo "the card left after a 50 px drag" >&2; return 1; }
-  # Off the card first: hovered, quire's close button stands 6 px out past its corner.
+  # Off the card first: hovered, Bardo's close button stands 6 px out past its corner.
   rest || return 1
   sleep 0.4
   card_box >>"$OUT_DIR/cards.log" || return 1
@@ -835,7 +835,7 @@ step_real_center_scroll() {
   mapped "$CENTER" "$OUT_DIR/scroll-after.png" || { echo "no capture after scrolling" >&2; return 1; }
   after=$(column_signature "$OUT_DIR/scroll-after.png")
   echo "5 real wheel detents over the column: top band ${before:0:12} -> ${after:0:12}" >&2
-  echo "rubber-band at the top not exercised: wheel never stretches (quire's design/11 §11.3.7's last row" \
+  echo "rubber-band at the top not exercised: wheel never stretches (bardo's design/11 §11.3.7's last row" \
     "and its own 'no stretch at an edge' test); only a finger gesture does, and fake-input has" \
     "no finger source" >&2
   key Escape
@@ -896,11 +896,11 @@ repro_hover_after_unmap() {
   [ "$hovered" = yes ]
 }
 
-# The resting pointer (quire; Blitz's `refresh_hover`): a card that slides in under a resting
+# The resting pointer (Bardo; Blitz's `refresh_hover`): a card that slides in under a resting
 # pointer is not hovered when the pointer then moves on it. Fails: after each layout Blitz
 # re-resolves the hovered node against the last pointer position without dispatching pointerenter
 # (its own TODO), so the card's node is already the hovered one when the motion comes and no enter
-# ever reaches quire's `NotificationCard`: no pause, no close button until the pointer leaves the
+# ever reaches Bardo's `NotificationCard`: no pause, no close button until the pointer leaves the
 # card and comes back.
 repro_card_under_resting_pointer() {
   local moved back

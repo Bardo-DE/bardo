@@ -8,7 +8,7 @@ use ui_components::prelude::*;
 use super::menus::BarMenu;
 use super::status_item::StatusIcon;
 
-/// The system menu's glyph. quire has no mark of the desktop's own yet; ⌘ stands in for it.
+/// The system menu's glyph. Bardo has no mark of the desktop's own yet; ⌘ stands in for it.
 const GLYPH: Icon = Icon::Command;
 
 /// The system menu's title on `output`.

@@ -18,9 +18,9 @@ pub enum Rule {
     RawDuration,
     /// A raw `cubic-bezier()` or keyword easing: easings are `--e-*`.
     RawEasing,
-    /// A `@keyframes` block: keyframes live in quire.
+    /// A `@keyframes` block: keyframes live in bardo.
     Keyframes,
-    /// An `animation-name` quire does not export.
+    /// An `animation-name` Bardo does not export.
     UnknownAnimation,
     /// A `font-family`: faces are `--font-*`.
     FontFamily,
@@ -39,7 +39,7 @@ pub enum Rule {
     RawHairline,
     /// A `:root` selector.
     RootSelector,
-    /// A selector that styles quire's own `.ds-*` classes or `[data-theme|accent|motion|material]`.
+    /// A selector that styles Bardo's own `.ds-*` classes or `[data-theme|accent|motion|material]`.
     DsInternals,
     /// A `var(--x)` that nothing declares.
     UndeclaredVar,
@@ -61,8 +61,8 @@ pub enum Rule {
     SvgPaintInCss,
     /// Markup: a class on a rendered element that no rule in scope styles (coherence rule 2).
     UnstyledClass,
-    /// Markup: an element quire draws for you, written by hand: an `<svg>` that is not a
-    /// `Glyph` (`.ds-ic`), a `<button>`, `<input>`, `<select>` or `<textarea>` outside a quire
+    /// Markup: an element Bardo draws for you, written by hand: an `<svg>` that is not a
+    /// `Glyph` (`.ds-ic`), a `<button>`, `<input>`, `<select>` or `<textarea>` outside a Bardo
     /// component (coherence rule 2).
     RawMarkup,
     /// `animation-iteration-count: infinite`, or `infinite` in the `animation` shorthand: a loop
@@ -176,7 +176,7 @@ impl Exception {
 pub struct LintConfig {
     /// How strict.
     pub profile: Profile,
-    /// Custom properties the consumer declares itself, beyond quire's own.
+    /// Custom properties the consumer declares itself, beyond Bardo's own.
     pub own_vars: Vec<String>,
     /// Offences to suppress, each with its reason.
     pub exceptions: &'static [Exception],

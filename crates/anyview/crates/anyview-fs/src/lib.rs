@@ -94,7 +94,7 @@ pub const WHOLE_FILE_CAP: ByteLen = ByteLen(1536 * 1024 * 1024);
 /// A missing file is `ErrorKind::NotFound`, anything that is not a regular file (a folder, a FIFO,
 /// a device) `ErrorKind::InvalidInput`, and a file over `cap`, or one that grows past it while it
 /// is read, `ErrorKind::FileTooLarge`: never a hang, and never more than `cap` bytes in memory. The
-/// read is quire's `base_fs::read_capped`, the one the desktop's apps share.
+/// read is Bardo's `base_fs::read_capped`, the one the desktop's apps share.
 ///
 /// # Errors
 ///

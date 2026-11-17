@@ -24,7 +24,7 @@
 //! 1. **Your changes** ([`YourChanges`](crate::YourChanges)): the pictures the person set for
 //!    single types.
 //! 2. **The chosen pack** (`appearance.file_icons`).
-//! 3. **The standard set**: the kind and extension label quire draws
+//! 3. **The standard set**: the kind and extension label Bardo draws
 //!    (`ui_style::icon::mime::kind_for_mime`).
 //!
 //! Inside a layer, a file's names are tried in this order: the type's own icon name, its generic

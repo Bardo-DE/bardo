@@ -14,7 +14,7 @@ use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::prelude::*;
 use ui_lint::user_stylesheet_with;
 
-/// The notes quire's lint has on every style file `read` found, in plain words, a class an
+/// The notes Bardo's lint has on every style file `read` found, in plain words, a class an
 /// installed app publishes not counting as an internal one.
 fn read_notes(read: StyleInputs) -> StyleNotes {
     let StyleInputs { sheets, apps } = read;

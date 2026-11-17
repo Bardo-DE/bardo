@@ -1,7 +1,7 @@
 //! The trial sheet's root.
 //!
 //! While the link holds a trial and the sheets' output is this one, the surface maps itself
-//! (`use_sheet_stage`) and a `Ds { material: Sheet, extent: Viewport }` holds one quire `Alert`,
+//! (`use_sheet_stage`) and a `Ds { material: Sheet, extent: Viewport }` holds one Bardo `Alert`,
 //! keyed by the send of the trial so a restart starts the sheet over: the headline "Keep these
 //! display settings?", the line "Reverting in N seconds" counting down, and two buttons. Revert
 //! comes first, so it is the default (Return) and the button Escape presses; Keep Changes

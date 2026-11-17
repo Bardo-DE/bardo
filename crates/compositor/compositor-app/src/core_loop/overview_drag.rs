@@ -42,7 +42,7 @@ pub(super) fn moved(state: &mut State, at: LogicalPoint) -> bool {
     let started = !drag.is_dragging();
     let (drag, step) = {
         let model = &state.core.model;
-        drag.moved(at, &state.wl.quire_shell.space_targets, |output| {
+        drag.moved(at, &state.wl.bardo_shell.space_targets, |output| {
             model.outputs().0.contains_key(output)
         })
     };

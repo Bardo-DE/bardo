@@ -159,7 +159,7 @@ async fn every_way_a_run_ends_has_its_code() {
     println!("row                                            exit  word");
     for row in rows {
         let desk = Desk::answering(row.answers);
-        let report = desk.quire(row.words).await;
+        let report = desk.bardo(row.words).await;
         println!(
             "{:<46} {:>4}  {}",
             row.what,
@@ -182,7 +182,7 @@ async fn every_way_a_run_ends_has_its_code() {
 async fn a_halted_desktop_is_exit_7_and_so_is_a_paused_session() {
     let desk = Desk::new();
     desk.halt().await;
-    let report = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let report = desk.bardo(&["mail", "thread.read", "t2"]).await;
     println!(
         "{:<46} {:>4}  {}",
         "everything halted",
@@ -207,7 +207,7 @@ async fn a_halted_desktop_is_exit_7_and_so_is_a_paused_session() {
     }
     let mut last = Exit::Done;
     for key in ["t1", "t2", "t3", "t4"] {
-        last = desk.quire(&["mail", "thread.archive", key]).await.exit;
+        last = desk.bardo(&["mail", "thread.archive", key]).await.exit;
     }
     println!(
         "{:<46} {:>4}  {}",
@@ -223,7 +223,7 @@ async fn an_app_that_does_not_answer_is_the_app_failing_the_call() {
     let desk = Desk::new();
     let mail = AppName::parse("org.bardo.Mail").expect("app");
     desk.router.seams.link.answer_from(&mail, Answering::Silent);
-    let report = desk.quire(&["mail", "thread.read", "t2"]).await;
+    let report = desk.bardo(&["mail", "thread.read", "t2"]).await;
     println!(
         "{:<46} {:>4}  {}",
         "an app that times out",
@@ -240,7 +240,7 @@ async fn an_app_that_is_not_installed_is_exit_6_not_5() {
         &AppName::parse("org.bardo.Mail").expect("app"),
         action_fake::Answering::Absent,
     );
-    let report = desk.quire(&["mail", "thread.archive", "t1"]).await;
+    let report = desk.bardo(&["mail", "thread.archive", "t1"]).await;
     assert_eq!(report.exit, Exit::Unavailable, "{report:?}");
 }
 

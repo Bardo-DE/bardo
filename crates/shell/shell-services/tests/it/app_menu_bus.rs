@@ -1,5 +1,5 @@
 //! The app-menu service and the agent's two menu actions against `shell-testkit`'s fake app on a
-//! private bus, never the real session bus. The fake app exports a menu bar as quire apps do
+//! private bus, never the real session bus. The fake app exports a menu bar as Bardo apps do
 //! (`org.bardo.AppMenu.<app_id>`, `com.canonical.dbusmenu`) and logs every call it receives.
 //! The service follows the app's menu, a click reaches the app as `Event "clicked"`, a menu
 //! changed under it is followed, and an app with no owner has no entry. The agent lists the menu
@@ -49,7 +49,7 @@ fn app_menu_app() -> PathBuf {
     )
 }
 
-/// The bus name of `app`'s menu: these ids are already legal bus-name elements, so quire's
+/// The bus name of `app`'s menu: these ids are already legal bus-name elements, so Bardo's
 /// derivation (`shell_ui_kit::app_menu::menu_name_of`, held to it by its own test) is the prefix and
 /// the id.
 #[expect(
@@ -838,7 +838,7 @@ fn reporting(app: &str, subject: &str) -> Subjects {
     Subjects::collect([(app.to_owned(), Some(subject.to_owned()))])
 }
 
-/// QUIRE-12: with a subject the compositor established, the program that owns the name is
+/// BARDO-12: with a subject the compositor established, the program that owns the name is
 /// compared with it, not with the scope name its launcher claimed.
 #[tokio::test(flavor = "multi_thread")]
 async fn the_bar_shows_the_menu_of_the_program_the_compositor_reports_whatever_its_scope_says() {
@@ -861,7 +861,7 @@ async fn the_bar_shows_the_menu_of_the_program_the_compositor_reports_whatever_i
     .await;
 }
 
-/// QUIRE-12: a program that launched under the app's own scope name is still not shown when the
+/// BARDO-12: a program that launched under the app's own scope name is still not shown when the
 /// compositor says the window belongs to another program.
 #[tokio::test(flavor = "multi_thread")]
 async fn the_bar_shows_no_menu_for_a_program_other_than_the_one_the_compositor_reports() {

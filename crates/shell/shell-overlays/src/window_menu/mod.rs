@@ -2,7 +2,7 @@
 //!
 //! One transparent Overlay surface per output that takes no input of its own, and, when the
 //! compositor asks for a menu on its output ([`shell_ui_kit::links::WindowMenuLink`]), a context
-//! menu popup of quire's `Menu` opened at the point it names. Enter or Exit Full Screen come first,
+//! menu popup of Bardo's `Menu` opened at the point it names. Enter or Exit Full Screen come first,
 //! then the Move & Resize and Full Screen Tile submenus, then Fill and Center; the entries the
 //! window's state does not offer are dimmed. A pick is written back to the link and the daemon
 //! carries it out; a dismissal writes nothing.

@@ -25,7 +25,7 @@ fn the_two_named_hard_rules_are_present_by_id() {
 fn a_policy_naming_an_attribute_the_schema_lacks_does_not_load() {
     let bad = r#"
         @id("bad")
-        forbid (principal, action == Quire::Action::"perform", resource)
+        forbid (principal, action == Bardo::Action::"perform", resource)
         when { context.no_such_attribute == "x" };
     "#;
     assert!(matches!(
@@ -72,9 +72,9 @@ fn a_policy_that_errors_asks_with_the_failure_and_never_permits() {
     // `count + max` overflows for any count above zero: Cedar skips the policy and reports it.
     let erroring = r#"
         @id("attempt")
-        permit (principal, action == Quire::Action::"perform", resource);
+        permit (principal, action == Bardo::Action::"perform", resource);
         @id("overflow")
-        permit (principal, action == Quire::Action::"perform_unasked", resource)
+        permit (principal, action == Bardo::Action::"perform_unasked", resource)
         when { context.count + 9223372036854775807 > 0 };
     "#;
     let pdp = Pdp::load(SCHEMA, erroring).expect("validates");

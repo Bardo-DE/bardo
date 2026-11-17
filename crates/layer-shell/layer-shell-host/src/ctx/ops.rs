@@ -209,7 +209,7 @@ fn unmap<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId) {
     // Before the rebuild, while the old wl_surface is still this id's.
     ctx.state.withdraw_pointer(id);
     ctx.state.withdraw_keyboard(id);
-    ctx.state.forget_quire_window(id);
+    ctx.state.forget_bardo_window(id);
     super::timer::cancel_watchdog(ctx, id);
     let state = &mut ctx.state;
     let Some(mut surface) = state.remove_surface(id) else {
@@ -247,7 +247,7 @@ pub(super) fn close<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId, reason: Clo
     // As for an unmap: the compositor's leave will name a destroyed wl_surface.
     ctx.state.withdraw_pointer(id);
     ctx.state.withdraw_keyboard(id);
-    ctx.state.forget_quire_window(id);
+    ctx.state.forget_bardo_window(id);
     super::timer::cancel_watchdog(ctx, id);
     let state = &mut ctx.state;
     let Some(mut surface) = state.remove_surface(id) else {

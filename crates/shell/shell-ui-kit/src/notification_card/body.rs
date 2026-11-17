@@ -1,15 +1,15 @@
-//! The body as quire draws it: the service's parsed markup (`shell_model::notifications::Body`,
-//! `<b>`, `<i>`, `<u>`, `<a href>`) as quire's [`Rich`] runs.
+//! The body as Bardo draws it: the service's parsed markup (`shell_model::notifications::Body`,
+//! `<b>`, `<i>`, `<u>`, `<a href>`) as Bardo's [`Rich`] runs.
 //!
-//! A run has one tone in quire, so a run that is several at once takes the strongest: a link, then
-//! bold, then italic, then underline. The line clamp and its fade are quire's (`NotificationCard`),
+//! A run has one tone in Bardo, so a run that is several at once takes the strongest: a link, then
+//! bold, then italic, then underline. The line clamp and its fade are Bardo's (`NotificationCard`),
 //! so nothing is clipped here.
 
 use shell_model::notifications::{Body, BodyRun, RunLink, RunStyle, Slant, Underline, Weight};
 use ui_components::components::content::rich_text::{Rich, RichRun};
 use ui_components::prelude::*;
 
-/// `body` as quire's runs; `None` for an empty body (the card then draws no body line).
+/// `body` as Bardo's runs; `None` for an empty body (the card then draws no body line).
 pub fn rich_body(body: &Body) -> Option<Rich> {
     let runs: Vec<RichRun> = body
         .runs
@@ -49,7 +49,7 @@ mod tests {
     }
 
     #[test]
-    fn the_services_markup_becomes_quires_runs() {
+    fn the_services_markup_becomes_bardo_runs() {
         let cases: Vec<(&str, Option<Rich>)> = vec![
             ("", None),
             ("plain", Some(Rich(vec![run("plain", RunTone::Plain)]))),

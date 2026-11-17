@@ -1,5 +1,5 @@
 //! What the notification center's widgets draw, each in a `ui_harness::Harness` on the fake
-//! services: the card (quire's `WidgetCard`, a tile at Medium, `data-widget` its kind) and Up
+//! services: the card (Bardo's `WidgetCard`, a tile at Medium, `data-widget` its kind) and Up
 //! Next's rows, never one past the tile's body.
 
 use shell_ui_kit::harness::fake;
@@ -72,7 +72,7 @@ fn start(kind: CenterWidget, file: ShellFile) -> Running {
 }
 
 #[test]
-fn in_the_center_the_frame_is_quires_tile_with_no_header_row() {
+fn in_the_center_the_frame_is_bardo_tile_with_no_header_row() {
     let running = start(CenterWidget::Calendar, ShellFile::default());
     let h = &running.harness;
     assert_eq!(h.count(".ds-widget#widget-calendar"), 1);
@@ -100,7 +100,7 @@ fn in_the_center_the_frame_is_quires_tile_with_no_header_row() {
 #[test]
 fn the_card_names_its_kind() {
     let cases = [
-        (CenterWidget::Calendar, "quire.month"),
+        (CenterWidget::Calendar, "bardo.month"),
         (CenterWidget::UpNext, "sill.up-next"),
     ];
     for (kind, name) in cases {

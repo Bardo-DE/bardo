@@ -5,7 +5,7 @@
 //! requests become `Event::WlrToplevel`.
 //!
 //! smithay has no module for it, so this one carries its own `GlobalDispatch2` and `Dispatch2`
-//! impls (as `quire_window` does); `delegate_dispatch2!` in the composition root routes to
+//! impls (as `bardo_window` does); `delegate_dispatch2!` in the composition root routes to
 //! them and they reach the root through [`WlrToplevelHandler`].
 //!
 //! The part keeps the facts last published for each window, and for each handle what that

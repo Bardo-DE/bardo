@@ -1,5 +1,5 @@
 //! What the polkit prompt draws and sends: nothing while the agent has no request or the
-//! banners are elsewhere; with one, quire's `PolkitPrompt` on a narrow centred sheet over the
+//! banners are elsewhere; with one, Bardo's `PolkitPrompt` on a narrow centred sheet over the
 //! full-output modal scrim (the action's sentence, the identity asked for, the details); Enter
 //! sends the typed text as the answer and Escape a dismissal; a wrong try shakes; a request
 //! that goes plays the sheet out and draws nothing once it has settled.
@@ -113,7 +113,7 @@ fn a_request_for_another_output_draws_nothing_here() {
 }
 
 #[test]
-fn a_request_draws_quires_prompt_on_a_narrow_sheet() {
+fn a_request_draws_bardo_prompt_on_a_narrow_sheet() {
     let running = shown(request("c1", asking(), LastTry::None));
     let h = &running.harness;
     assert_eq!(h.count(".ds-sheet"), 1);

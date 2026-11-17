@@ -1,5 +1,5 @@
 //! The dock's hover label, as design/10 §10.3.4 draws it: the name stands 7 px above the plate,
-//! centred on the tile (quire's own card lay in the pill-sized root's coordinates and landed the
+//! centred on the tile (Bardo's own card lay in the pill-sized root's coordinates and landed the
 //! pill's origin away from its tile, then overlapped the tile). The magnified geometry, the plate
 //! widening and the baseline, is `dock::frame`'s tests (a harness has no layer surface to drive
 //! the frames that grow a tile).

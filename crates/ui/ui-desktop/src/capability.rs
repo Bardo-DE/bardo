@@ -28,7 +28,7 @@ const fn session(name: &'static str) -> Service {
 /// One extra the desktop adds to an app's portable core.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Capability {
-    /// intentd: the registry of what apps can do (`quire do`, the companion's actions).
+    /// intentd: the registry of what apps can do (`bardo do`, the companion's actions).
     Intents,
     /// accountd: the session's one account store and consent sheet.
     Accounts,

@@ -1,4 +1,4 @@
-//! Reduce transparency (quire's `appearance.transparency`): the frame's blurs drawn as their
+//! Reduce transparency (Bardo's `appearance.transparency`): the frame's blurs drawn as their
 //! solid stand-ins.
 
 use super::{CasementElement, Rgba8};

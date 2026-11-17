@@ -3,12 +3,12 @@
 //! §10.3.12). The surface is transparent everywhere but the pill and the tiles. The pill is the
 //! `Ds` root itself: a `Material::Dock` root in a box at the pill's rectangle, which draws the
 //! Space gradient at the Dock's tint alpha with the material stack's hairline, highlight and
-//! shadows (quire's tinted frame), its corner a squircle of `--shell-dock-pill-radius` (the macOS
-//! polish pass). The box around the root carries quire's dock metrics
-//! (`DockMetrics`: the tile's size and the floor), and the root's first child is quire's
+//! shadows (Bardo's tinted frame), its corner a squircle of `--shell-dock-pill-radius` (the macOS
+//! polish pass). The box around the root carries Bardo's dock metrics
+//! (`DockMetrics`: the tile's size and the floor), and the root's first child is Bardo's
 //! `DockFloor` (off unless `dock.floor` is on). Everything else hangs from the root in a layer
 //! moved back to the surface's origin, so tiles, dots and the hit elements keep surface
-//! coordinates. The root's content is on paper (`Ground::Paper`): the tiles are quire plates,
+//! coordinates. The root's content is on paper (`Ground::Paper`): the tiles are Bardo plates,
 //! neutral paper for third-party icons (design/08 §4.1), and the separator names the frame ink
 //! itself.
 

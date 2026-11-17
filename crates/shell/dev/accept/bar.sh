@@ -860,13 +860,13 @@ step_center_keys() {
   down=$(diff_box nc-0 nc-down)
   echo "notification center opened by a real click on the clock ($CLOCK_AT): real Down" \
     "changed [$down]" >&2
-  # Tab (unhandled by the center's own key map) reaches Clear All, a quire `Button`;
+  # Tab (unhandled by the center's own key map) reaches Clear All, a Bardo `Button`;
   # the signals bridge (`sill_ui_kit::root::HostSignalsBridge`) provides
   # `ds::HostSignals` there too, so the ring should draw.
   press_keys Tab || return 1
   settled "$CENTER" nc-tab || return 1
   tab=$(diff_box nc-down nc-tab)
-  echo "real Tab (after Down) reaches a quire control (Clear All): changed [$tab]" >&2
+  echo "real Tab (after Down) reaches a bardo control (Clear All): changed [$tab]" >&2
   press_keys Escape || return 1
   esc=down
   wait_surface "$CENTER" 20 down || esc=up

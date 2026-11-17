@@ -54,10 +54,10 @@ use crate::frame::{FrameInput, TimerCmd};
 use crate::gpu::context::GpuContext;
 use crate::handlers::activation::ActivationRequest;
 use crate::handlers::background_effect::BackgroundEffect;
+use crate::handlers::bardo_window::BardoWindows;
 use crate::handlers::drag_source::Dragging;
 use crate::handlers::fractional::Fractional;
 use crate::handlers::pipe_writes::PipeWrites;
-use crate::handlers::quire_window::QuireWindows;
 use crate::handlers::render_device::RenderDevice;
 use crate::handlers::seat::SeatInput;
 use crate::handlers::text_input::TextInputManager;
@@ -103,7 +103,7 @@ pub(crate) struct HostState {
     pub(crate) fractional: Option<Fractional>,
     pub(crate) background_effect: Option<BackgroundEffect>,
     /// `bardo_window_manager_v1`, only where the compositor advertises it (casement).
-    pub(crate) quire_window: Option<QuireWindows>,
+    pub(crate) bardo_window: Option<BardoWindows>,
     /// The compositor's main render device, for the adapter that follows it.
     pub(crate) render_device: Option<RenderDevice>,
     /// This compositor gets a parent layer's keyboard lifted for a grabbing popup (not `KWin` or
@@ -207,7 +207,7 @@ impl HostState {
             activation: ActivationState::bind(globals, &qh).ok(),
             fractional: Fractional::bind(globals, &qh).ok(),
             background_effect: BackgroundEffect::bind(globals, &qh).ok(),
-            quire_window: QuireWindows::bind(globals, &qh).ok(),
+            bardo_window: BardoWindows::bind(globals, &qh).ok(),
             render_device: RenderDevice::bind(globals, &qh).ok(),
             lifts_parent_keyboard: globals.contents().with_list(|list| {
                 lifts_parent_keyboard(list.iter().map(|global| global.interface.as_str()))
@@ -367,8 +367,8 @@ delegate_dispatch!(HostState: [WpViewporter: ()] => Fractional);
 delegate_dispatch!(HostState: [WpViewport: ()] => Fractional);
 delegate_dispatch!(HostState: [ExtBackgroundEffectManagerV1: ()] => BackgroundEffect);
 delegate_dispatch!(HostState: [ExtBackgroundEffectSurfaceV1: ()] => BackgroundEffect);
-delegate_dispatch!(HostState: [BardoWindowManagerV1: ()] => QuireWindows);
-delegate_dispatch!(HostState: [BardoWindowV1: ()] => QuireWindows);
+delegate_dispatch!(HostState: [BardoWindowManagerV1: ()] => BardoWindows);
+delegate_dispatch!(HostState: [BardoWindowV1: ()] => BardoWindows);
 delegate_dispatch!(HostState: [ZwpLinuxDmabufV1: ()] => RenderDevice);
 delegate_dispatch!(HostState: [ZwpLinuxDmabufFeedbackV1: ()] => RenderDevice);
 // zwp_text_input_v3 is dispatched by `handlers::text_input` directly on `HostState`: sctk has no

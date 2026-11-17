@@ -21,7 +21,7 @@ pub enum HostEvent<M> {
     },
     /// The surface's first frame is on screen (also after a hidden surface is shown again, with
     /// a new `wl_surface`). From here `SurfaceHandle::wl_surface` and `HostCtx::wl_surface`
-    /// name the object the compositor shows, for a `quire_*` object the shell creates on it.
+    /// name the object the compositor shows, for a `bardo_*` object the shell creates on it.
     SurfaceMapped {
         id: SurfaceId,
     },

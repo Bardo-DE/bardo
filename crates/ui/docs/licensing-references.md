@@ -63,7 +63,7 @@ each crate's declared licence (`ds` stays MIT OR Apache-2.0 for its code), so it
 nor needs an allow entry for the sheets, as it does not for the OFL fonts in
 `crates/ds-style/assets/fonts`. The obligation CC BY places on us, attribution with a link to the
 licence and a note that the files were changed, is met by `ATTRIBUTION.txt` beside the files and
-by the credit line in design/25; a distributor of a quire binary must carry that line in its
+by the credit line in design/25; a distributor of a Bardo binary must carry that line in its
 credits (CONSUMING, "Animated emoji"). The still `512.png` files `tools/emoji` reads to find each
 loop's rest pose stay in its cache and are not shipped.
 

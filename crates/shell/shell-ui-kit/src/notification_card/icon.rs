@@ -26,7 +26,7 @@ pub fn entry_for<'a>(app: &AppRef, index: &'a AppIndex) -> Option<&'a App> {
 }
 
 /// The icon file `app`'s card draws, `entry` being its desktop entry and `lookup` the icon theme;
-/// `None` draws quire's bell.
+/// `None` draws Bardo's bell.
 pub fn card_art(
     app: &AppRef,
     entry: Option<&App>,

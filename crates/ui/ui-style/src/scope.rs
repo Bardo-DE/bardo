@@ -23,7 +23,7 @@ pub struct Scope {
     pub activity: bool,
 }
 
-/// The enclosing scope. Panics outside a `Ds`: every quire component is drawn inside one.
+/// The enclosing scope. Panics outside a `Ds`: every Bardo component is drawn inside one.
 #[must_use]
 pub fn use_scope() -> Scope {
     use_scope_signal()()

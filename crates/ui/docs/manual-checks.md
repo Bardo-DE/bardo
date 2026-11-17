@@ -6,7 +6,7 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
 
 ## Keys as actions (queued 2026-10-10)
 
-- [ ] **Clipboard and Space chords per session**: in a quire app's edit surface and secure field,
+- [ ] **Clipboard and Space chords per session**: in a Bardo app's edit surface and secure field,
   copy, cut and paste with the platform's own chord (Ctrl on KDE and GNOME, Command arriving as
   Super on our desktop) and confirm Ctrl+C does nothing on our desktop; on KDE change Copy in
   System Settings (kdeglobals `[Shortcuts]` `Copy=`) and confirm a restart picks it up. The
@@ -41,7 +41,7 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
 - [ ] **Real-mouse and real-keyboard re-runs**: every live-input result before layer-shell-host F47
   used injected input; sill's queue lists them.
 
-## quire
+## Bardo
 
 - [ ] **EditSurface IME in a real window** (v0.1.7, FINDINGS "Edit surface"): with fcitx5 on
   McBopomofo, run `cargo run -p ui-blitz --example edit`, click into the surface, type ㄋㄧˇㄏㄠˇ

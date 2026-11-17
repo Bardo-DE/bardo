@@ -9,7 +9,7 @@ use account_match::Need;
 pub enum Found {
     /// One granted account fits: use it.
     One(Candidate),
-    /// Several granted accounts fit: let the user pick (quire's `AccountPicker`).
+    /// Several granted accounts fit: let the user pick (Bardo's `AccountPicker`).
     Several(Vec<Candidate>),
     /// Accounts fit but the app holds no grant: ask (`Accounts::request_grant`).
     NeedsConsent(ConsentOffer),

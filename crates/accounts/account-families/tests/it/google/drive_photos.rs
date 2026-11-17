@@ -196,7 +196,7 @@ async fn the_scopes_asked_cover_the_photos_upload_and_the_picker_and_each_alone_
             Method::POST,
             "/v1/albums",
             &upload,
-            r#"{"album":{"title":"Quire"}}"#,
+            r#"{"album":{"title":"Bardo"}}"#,
             &json
         )
         .await,

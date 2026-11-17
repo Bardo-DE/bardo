@@ -1,4 +1,4 @@
-//! The palette's card is as tall as its content (quire's macOS polish pass), and the panel
+//! The palette's card is as tall as its content (Bardo's macOS polish pass), and the panel
 //! publishes it as the part of the panel that takes presses, which the catcher leaves out: the
 //! card's measured bottom edge, in a `ui_harness::Harness`, through the harness's own measurer.
 

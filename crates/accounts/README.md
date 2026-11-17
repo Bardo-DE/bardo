@@ -39,7 +39,7 @@ shipped one is put beside it as `callers.toml.dist`). It never writes into a hom
 the rest.
 
 Building needs access to the private repositories that porter's dependencies come from (stoker
-and quire, as git dependencies); there is no public mirror yet.
+and Bardo, as git dependencies); there is no public mirror yet.
 
 ## Where files go
 

@@ -1,10 +1,10 @@
-//! quire's own generated stylesheet, linted under the strictest profile (the coherence rules,
+//! Bardo's own generated stylesheet, linted under the strictest profile (the coherence rules,
 //! ARCHITECTURE.md "Repo rules": every downstream crate runs this same check on its own CSS, and
-//! quire's own output has to pass it too).
+//! Bardo's own output has to pass it too).
 //!
 //! The details grammar's two rules are judged per sheet in `details_lint.rs`, which names the
-//! sheets allowed to loop. Two rules exist only for consumers and are set aside whole: [`Rule::DsInternals`] (quire is
-//! the one crate that styles `.ds-*` and `.ds[data-*]`) and [`Rule::Keyframes`] (quire is where
+//! sheets allowed to loop. Two rules exist only for consumers and are set aside whole: [`Rule::DsInternals`] (Bardo is
+//! the one crate that styles `.ds-*` and `.ds[data-*]`) and [`Rule::Keyframes`] (Bardo is where
 //! keyframes live). Every other rule must be clean, [`Rule::RawSpacing`] included (the sheets
 //! read `--s-*` since the polish pass), or name its exact selector and reason below.
 
@@ -101,9 +101,9 @@ fn config() -> LintConfig {
     }
 }
 
-/// Whether `offence` is one of the two consumer-only rules on quire's own ground (the reset's
+/// Whether `offence` is one of the two consumer-only rules on Bardo's own ground (the reset's
 /// element rules scope through `:where(.ds)`).
-fn quires_own(offence: &Offence) -> bool {
+fn bardo_own(offence: &Offence) -> bool {
     match offence.rule {
         Rule::DsInternals => {
             offence.selector.starts_with(".ds") || offence.selector.starts_with(":where(.ds)")
@@ -121,7 +121,7 @@ fn quires_own(offence: &Offence) -> bool {
 fn self_lint() {
     let rest: Vec<String> = stylesheet(ui_shell::stylesheet(), &config())
         .into_iter()
-        .filter(|offence| !quires_own(offence))
+        .filter(|offence| !bardo_own(offence))
         .map(|offence| {
             format!(
                 "{:?} {}:{}: {}",

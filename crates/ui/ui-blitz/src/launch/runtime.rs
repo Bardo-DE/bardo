@@ -1,4 +1,4 @@
-//! The Tokio runtime a host enters, so `tokio::spawn` works for what a quire app runs.
+//! The Tokio runtime a host enters, so `tokio::spawn` works for what a Bardo app runs.
 //!
 //! `ui_settings::use_environment` calls `tokio::spawn` directly in two places that are not
 //! optional for a Blitz consumer: the desktop-portal watch (`ui-settings/src/portal.rs`, over

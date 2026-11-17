@@ -33,6 +33,9 @@ mod watch_mark;
 pub mod alpha_modifier;
 pub mod appmenu;
 pub mod background_effect;
+#[cfg(feature = "shell-protocols")]
+pub mod bardo;
+pub mod bardo_window;
 pub mod capture_source;
 pub mod color_management;
 pub mod commit_timing;
@@ -60,9 +63,6 @@ pub mod pointer_constraints;
 pub mod pointer_gestures;
 pub mod presentation;
 pub mod primary_selection;
-#[cfg(feature = "quire")]
-pub mod quire;
-pub mod quire_window;
 pub mod relative_pointer;
 pub mod screencopy;
 pub mod seat;

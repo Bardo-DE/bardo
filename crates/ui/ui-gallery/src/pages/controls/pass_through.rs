@@ -45,7 +45,7 @@ fn folder(path: &str) -> Vec<DataAttr> {
 pub fn PassThrough() -> Element {
     let reveal = ExtraClass::parse("g-reveal").ok();
     rsx! {
-        Section { title: "Button: the consumer's data and class", note: "data: vec![DataAttr::new(DataName::parse(\"folder\")?, path)] writes data-folder on the button itself, and extra_class: ExtraClass::parse(\"g-reveal\")? appends the consumer's class after quire's (here the gallery's own reveal: faint until the row is hovered). A ds- class or name, or data-variant, is refused when it is built.",
+        Section { title: "Button: the consumer's data and class", note: "data: vec![DataAttr::new(DataName::parse(\"folder\")?, path)] writes data-folder on the button itself, and extra_class: ExtraClass::parse(\"g-reveal\")? appends the consumer's class after bardo's (here the gallery's own reveal: faint until the row is hovered). A ds- class or name, or data-variant, is refused when it is built.",
             div { class: "g-row g-row-top",
                 Specimen { name: "data-folder", code: "data-folder=\"INBOX/Receipts\"",
                     div { class: "g-row",

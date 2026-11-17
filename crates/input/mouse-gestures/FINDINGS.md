@@ -1,7 +1,7 @@
 FINDINGS
 ========
 
-Open items and standing facts. Design references are to quire's `design/NN` documents.
+Open items and standing facts. Design references are to Bardo's `design/NN` documents.
 
 ## Open items
 
@@ -133,7 +133,7 @@ geometry (4000 x 2800 units at 40/mm). 22-SETTINGS §4.3 sketches a flat
 catalogue; palmrest follows the catalogue and §4.3 wants correcting.
 
 **`rustix` is outside the pinned block.** It (poll, eventfd, `SOCK_SEQPACKET`,
-`CLOCK_MONOTONIC`, the hidraw ioctl) is not in quire's `docs/workspace-deps.toml`; it should be
+`CLOCK_MONOTONIC`, the hidraw ioctl) is not in Bardo's `docs/workspace-deps.toml`; it should be
 added there. `toml`, `serde_json` and `notify` use the pinned versions.
 
 **Every `TODO(untested)` left.** `sensor/evdev/mod.rs` (the whole sensor: fuzz, no contact

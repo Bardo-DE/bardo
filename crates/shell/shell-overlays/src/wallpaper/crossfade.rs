@@ -1,5 +1,5 @@
 //! Which of the wallpaper's own two image layers is in front: the same A/B swap `Ds` uses for
-//! its frame gradient (quire `root/ds.rs`'s `FrameLayers`), reimplemented here rather than
+//! its frame gradient (Bardo `root/ds.rs`'s `FrameLayers`), reimplemented here rather than
 //! shared because the wallpaper is not a `Material::Window` frame (design/21 §8: it does not
 //! tint, and is independent of the Space) — it cross-fades a `background-image` URL, not a
 //! gradient. Pure: [`Layers::show`] decides which DOM node gets the new image and which one

@@ -265,7 +265,7 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 
-    /// A near-black logo in Muted and Monochrome: kept dark in the light, lifted into quire's
+    /// A near-black logo in Muted and Monochrome: kept dark in the light, lifted into Bardo's
     /// tone band in the dark (design/29 F3), so it reads on the dark plate.
     #[test]
     fn in_the_dark_a_retinted_raster_is_lifted() {

@@ -1,7 +1,7 @@
 //! A `style` attribute's declarations, checked one by one: a literal colour or duration is an
-//! offence, except inside a custom property a quire component writes on its own element.
+//! offence, except inside a custom property a Bardo component writes on its own element.
 //!
-//! Some values quire can only compute per instance and must write inline: the Space's `--f-*`
+//! Some values Bardo can only compute per instance and must write inline: the Space's `--f-*`
 //! frame variables and the layer gradient `--f-grad` (design/03-COLOR.md section 4), an
 //! avatar's `--av-bg`, a provider mark's `--pc`. They are custom properties on an element that
 //! carries `ds` or a `ds-*` class, and the component's stylesheet reads them through `var()`. The same
@@ -17,8 +17,8 @@ use super::tokenize::{self, Located};
 /// Who drew the element whose `style` this is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Owner {
-    /// It carries the root's `ds` class or a `ds-*` one: a quire component wrote it.
-    Quire,
+    /// It carries the root's `ds` class or a `ds-*` one: a Bardo component wrote it.
+    Bardo,
     /// Anything else.
     Consumer,
 }
@@ -37,7 +37,7 @@ pub(super) fn offences(
         .collect();
     tokens
         .split(|token| token.text == ";")
-        .filter(|declaration| !(owner == Owner::Quire && is_custom_property(declaration)))
+        .filter(|declaration| !(owner == Owner::Bardo && is_custom_property(declaration)))
         .flat_map(|declaration| declaration.iter().filter_map(offence))
         .map(|(rule, token)| {
             let (line, column) = if token.line == 1 {

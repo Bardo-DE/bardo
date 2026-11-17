@@ -28,7 +28,7 @@ pub struct AppName {
 impl AppName {
     /// The desktop-wide settings (`appearance.toml`, `style.css`, `extensions.toml`), which sit
     /// directly in the `bardo` level.
-    pub const QUIRE: AppName = AppName {
+    pub const BARDO: AppName = AppName {
         name: "bardo",
         owner: Owner::DesktopWide,
     };
@@ -115,7 +115,7 @@ mod tests {
     #[test]
     fn a_folder_named_at_run_time_is_where_the_typed_name_puts_it() {
         let base = Path::new("/xdg");
-        assert_eq!(app_folder(base, "bardo"), AppName::QUIRE.under(base));
+        assert_eq!(app_folder(base, "bardo"), AppName::BARDO.under(base));
         assert_eq!(
             app_folder(base, "shell"),
             AppName::desktop("shell").under(base)

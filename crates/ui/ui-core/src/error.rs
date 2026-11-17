@@ -1,11 +1,11 @@
-//! The one error quire's design system returns: input it was handed that it cannot draw.
+//! The one error Bardo's design system returns: input it was handed that it cannot draw.
 
 use std::path::PathBuf;
 
 /// Why the design system refused a value at its boundary.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum DsError {
-    /// An external icon's URL is neither `data:` nor `file:`: the only schemes a quire
+    /// An external icon's URL is neither `data:` nor `file:`: the only schemes a Bardo
     /// document's net provider answers (ui-blitz's `LocalNet`), so anything else would draw
     /// nothing, silently.
     #[error("an icon URL must be data: or file:, not {url:?}")]

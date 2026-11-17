@@ -1,6 +1,6 @@
 //! What the voice consent sheet draws and sends, on the harness over the fake voice service:
 //! nothing until the service asks, or while the sheets are on another output; with the question,
-//! quire's `Sheet` with the one sentence of what listening means and two buttons; Allow, Not Now
+//! Bardo's `Sheet` with the one sentence of what listening means and two buttons; Allow, Not Now
 //! and Escape each sending their answer once; nothing after the service stops asking. All on the
 //! harness's virtual clock; nothing here reaches a bus.
 

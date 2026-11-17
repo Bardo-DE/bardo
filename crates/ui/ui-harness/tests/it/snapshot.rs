@@ -118,7 +118,7 @@ fn the_spinner_turns() {
     assert!(first != later, "the spinner did not turn between two steps");
 }
 
-/// A green square as an SVG, the shape quire's icon masks and grain arrive in.
+/// A green square as an SVG, the shape Bardo's icon masks and grain arrive in.
 const GREEN_SVG: &str = "<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='rgb(0,160,0)'/></svg>";
 
 /// Where the `file:` copy of [`GREEN_SVG`] lives.

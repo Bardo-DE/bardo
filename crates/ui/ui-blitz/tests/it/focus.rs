@@ -132,7 +132,7 @@ mod keep {
 }
 
 mod kept_click {
-    //! A click a quire control keeps to itself still moves the keyboard (mailo, against v0.1.10).
+    //! A click a Bardo control keeps to itself still moves the keyboard (mailo, against v0.1.10).
     //!
     //! A strip button, a row's disclosure triangle and anything in its trailing slot stop their
     //! click, so it never reached `Ds`'s click-focus fallback; Blitz then cleared the focus (or,
@@ -201,7 +201,7 @@ mod kept_click {
                                     onclick: move |_: Press| note("more"),
                                 }
                             }),
-                            Row { title: "Quire", outline: Outline::Leaf }
+                            Row { title: "Bardo", outline: Outline::Leaf }
                         }
                     }
                     div { class: "blank", style: "height:20px" }
@@ -365,7 +365,7 @@ mod kept_click {
 
 mod removed {
     //! The keyboard after the element that had it leaves the document. Blitz
-    //! resets the focus to nowhere when the focused node is removed, so after a quire Menu closed on
+    //! resets the focus to nowhere when the focused node is removed, so after a Bardo Menu closed on
     //! Escape (its panel had the keyboard) or a field removed itself on Enter, keys reached nothing
     //! and mailo's `.app[tabindex]` stopped hearing them. Under `FocusFallback::Ancestor` the host
     //! now focuses the removed element's nearest focusable ancestor, or (for a floating menu's

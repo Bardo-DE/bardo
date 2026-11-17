@@ -1,5 +1,5 @@
 //! The AT-SPI backend: the session's accessibility bus through the `atspi` crate. Chromium needs
-//! `--force-renderer-accessibility`; quire apps expose their tree through `accesskit_unix`.
+//! `--force-renderer-accessibility`; Bardo apps expose their tree through `accesskit_unix`.
 //!
 //! The walk ([`read_window`]) is written against [`AtspiTree`], so it runs over any source of
 //! objects; [`AtspiSource`] is that walk over the bus.

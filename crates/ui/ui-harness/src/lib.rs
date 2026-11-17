@@ -1,4 +1,4 @@
-//! The test driver for quire documents on Blitz: a headless document a test builds, sends
+//! The test driver for Bardo documents on Blitz: a headless document a test builds, sends
 //! pointer, key and wheel input to, advances in time, reads and paints, and the one-shot
 //! `snapshot` PNGs. Dev-only: nothing that ships an app depends on it.
 //!

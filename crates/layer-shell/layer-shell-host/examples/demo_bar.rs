@@ -21,7 +21,7 @@ use layer_shell_types::{
     Margin, OutputTarget, RegionSpec,
 };
 
-/// The margin and padding reset quire's `css/reset.css` would bring.
+/// The margin and padding reset Bardo's `css/reset.css` would bring.
 const RESET_CSS: &str = "html,body{margin:0;padding:0}";
 
 /// A magenta tint (item a probes it at (10, 10)) and a 2-logical-px checkerboard at x 200..280,

@@ -4,7 +4,7 @@
 
 use super::brief::{BriefFlag, BriefSpan};
 
-/// How many lines the field shows before its text scrolls (quire's `FieldRows::Ten`).
+/// How many lines the field shows before its text scrolls (Bardo's `FieldRows::Ten`).
 const FIELD_LINES: usize = 10;
 
 /// The fewest characters per line the field is assumed to hold; counting low means a text counts

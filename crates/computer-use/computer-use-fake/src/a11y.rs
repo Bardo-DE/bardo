@@ -6,7 +6,7 @@ const GTK4_DIALOG: &str =
     include_str!("../../computer-use-a11y-tree/fixtures/a11y/gtk4_dialog.json");
 const FIREFOX_FORM: &str =
     include_str!("../../computer-use-a11y-tree/fixtures/a11y/firefox_form.json");
-const QUIRE_MAIL: &str = include_str!("../../computer-use-a11y-tree/fixtures/a11y/quire_mail.json");
+const BARDO_MAIL: &str = include_str!("../../computer-use-a11y-tree/fixtures/a11y/bardo_mail.json");
 
 /// Which fixture.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -15,8 +15,8 @@ pub enum Fixture {
     Gtk4Dialog,
     /// A Firefox sign-in form with a password field.
     FirefoxForm,
-    /// A quire mail window with typed hints.
-    QuireMail,
+    /// A Bardo mail window with typed hints.
+    BardoMail,
 }
 
 /// An [`A11ySource`] that answers with one snapshot, or one error.
@@ -36,7 +36,7 @@ impl FakeA11y {
         let text = match which {
             Fixture::Gtk4Dialog => GTK4_DIALOG,
             Fixture::FirefoxForm => FIREFOX_FORM,
-            Fixture::QuireMail => QUIRE_MAIL,
+            Fixture::BardoMail => BARDO_MAIL,
         };
         let snapshot =
             serde_json::from_str(text).expect("the fixtures are checked by a11y-tree's tests");

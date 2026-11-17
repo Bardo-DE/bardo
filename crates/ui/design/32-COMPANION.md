@@ -1,7 +1,7 @@
 # 32 The companion
 
 Status: **proposed**, except the items marked "settled", which the user decided on 2026-10-01 and
-2026-10-02. The types and placeholder components named here are frozen in quire
+2026-10-02. The types and placeholder components named here are frozen in Bardo
 (`30-CATALOGUE.md` section 2.13); every look is a placeholder for the user's design review. The
 machinery behind the companion (models, actions, memory, computer use, the daemons) is
 `33-AGENT.md`, which summarises the locked implementation spec in `agent/SPEC.md`.
@@ -36,7 +36,7 @@ how the agent works inside.
 5. **Coupling:** the launcher and apps couple fully: the launcher runs app actions headless, shows
    app previews, expands into compact forms, promotes into the app window.
 6. **Context** comes through the same app interface (here, the selection as typed things, what is
-   visible, the editable text target), mostly reported by quire components automatically.
+   visible, the editable text target), mostly reported by Bardo components automatically.
 7. **The key is a double tap of Command.** It works inside text fields and collides with nothing.
    In a field, that field becomes the prompt, keeping query, results and selection. Elsewhere, the
    launcher opens in companion mode with the focused window's context. Holding is voice (later).
@@ -87,12 +87,12 @@ Working, Listening, Idle. An app derives its in-field presence from its own prom
 - **The period tokens** `OrbListen`, `OrbWork` and `OrbAct` are duration tokens
   (`30-CATALOGUE.md` section 1.2): 12, 8 and 5 seconds, proposed. They are `Hold` tokens, since
   Reduced motion stills the orb instead of speeding it.
-- **The glow.** The compositor draws the glow around the window the companion acts in; quire
+- **The glow.** The compositor draws the glow around the window the companion acts in; Bardo
   owns its values. `GlowLook` (None, Working, Acting with an optional spot, Waiting) goes through
   `glow_spec(look, scheme)` to a `GlowSpec`: three colours, a width, a blur, a period and a
   strength. None and Waiting have no period, so they cost no frames. Until the compositor draws it,
   the shell draws a phase A overlay around the window; the glow pulse while Working or Acting is
-  allowed only while a run is live, never in Idle or Waiting (it is the one loop outside quire).
+  allowed only while a run is live, never in Idle or Waiting (it is the one loop outside Bardo).
 - **An unseen outcome.** A run that finished while the person was away leaves a still dot on the
   orb's corner and on its run row: the `ok` tone for `Outcome::Done`, the `danger` tone for
   `Outcome::Failed`. It does not move, so it costs no frames in any presence. Whether there is an
@@ -176,7 +176,7 @@ and the consolidation switches are `memory.*` settings (`22-SETTINGS.md` section
 | `Page::Intelligence` | `ui-settings::schema::key` |
 
 `ui-intents` names no agent type. The adapter that converts the agent's wire to these marks
-(`action-ui-adapter`) lives in the docket repo, so quire never links an agent crate.
+(`action-ui-adapter`) lives in the docket repo, so Bardo never links an agent crate.
 
 ## 8. Confirmation
 

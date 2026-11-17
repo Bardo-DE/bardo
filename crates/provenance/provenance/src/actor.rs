@@ -46,7 +46,7 @@ pub enum Actor {
         /// The app.
         app: AppName,
     },
-    /// A non-quire app, observed with consent.
+    /// A non-bardo app, observed with consent.
     ThirdParty {
         /// The app.
         app: AppName,

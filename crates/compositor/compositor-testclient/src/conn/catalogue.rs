@@ -38,7 +38,7 @@ macro_rules! roots_of {
 }
 
 fn roots() -> Vec<&'static Interface> {
-    use desktop_protocols::client as quire;
+    use desktop_protocols::client as bardo;
     use wayland_client::protocol as core;
     use wayland_protocols::{ext, wp, xdg};
     use wayland_protocols_misc as misc;
@@ -101,10 +101,10 @@ fn roots() -> Vec<&'static Interface> {
         wlr::screencopy::v1::client::zwlr_screencopy_manager_v1::ZwlrScreencopyManagerV1,
         misc::zwp_input_method_v2::client::zwp_input_method_manager_v2::ZwpInputMethodManagerV2,
         misc::zwp_virtual_keyboard_v1::client::zwp_virtual_keyboard_manager_v1::ZwpVirtualKeyboardManagerV1,
-        quire::bardo_window_v1::bardo_window_v1::BardoWindowV1,
-        quire::bardo_shell_v1::bardo_shell_v1::BardoShellV1,
-        quire::bardo_window_v1::bardo_window_manager_v1::BardoWindowManagerV1,
-        quire::bardo_desktop_v1::bardo_desktop_manager_v1::BardoDesktopManagerV1,
+        bardo::bardo_window_v1::bardo_window_v1::BardoWindowV1,
+        bardo::bardo_shell_v1::bardo_shell_v1::BardoShellV1,
+        bardo::bardo_window_v1::bardo_window_manager_v1::BardoWindowManagerV1,
+        bardo::bardo_desktop_v1::bardo_desktop_manager_v1::BardoDesktopManagerV1,
     ]
 }
 

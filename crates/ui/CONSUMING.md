@@ -1,6 +1,6 @@
-# Consuming quire
+# Consuming Bardo
 
-This is the guide for a program that draws with quire instead of hand-rolling its own CSS and
+This is the guide for a program that draws with Bardo instead of hand-rolling its own CSS and
 markup: `examples/consumer` (a minimal, fully worked example — read its `Cargo.toml`,
 `src/lib.rs` and `tests/it/coherence.rs` alongside this doc), sill and mailo. It assumes you have read
 `design/README.md`'s reading order at least through `04-COMPONENTS.md`; this doc does not repeat
@@ -15,10 +15,10 @@ A fragment that needs an app around it (`YourApp`, `YourPage`, a handler you own
 `rust,ignore` and has its compiled twin in `examples/consumer/tests/it/guide.rs`, under a doc
 comment naming the section. Change a snippet and its twin together.
 
-## 1. Adding quire
+## 1. Adding Bardo
 
-**Rust version.** quire's minimum is `rust-version = "1.92"`: pdfrum's crates (PDF output,
-`ui-blitz`) declare 1.92, above the 1.91 blitz needs at the pinned rev. The toolchain quire
+**Rust version.** Bardo's minimum is `rust-version = "1.92"`: pdfrum's crates (PDF output,
+`ui-blitz`) declare 1.92, above the 1.91 blitz needs at the pinned rev. The toolchain Bardo
 builds and tests on stays pinned at 1.98.1 (`rust-toolchain.toml`); a consumer on an older
 compiler than 1.92 cannot build `ui-blitz`.
 
@@ -40,7 +40,7 @@ the same four in `ds_shell`) and the three facades. Every other name is reached 
 re-exported as modules. `#[derive(Word)]` and `#[derive(Token)]` find the crate they name through
 your manifest, so a crate that depends on `ds` alone derives them (`::ds::base`, `::ds::style`).
 
-**A path dependency.** quire has no published version, so every consumer depends on it by
+**A path dependency.** Bardo has no published version, so every consumer depends on it by
 path, the way `examples/consumer/Cargo.toml` does:
 
 ```toml
@@ -61,17 +61,17 @@ The crates and what each holds: `ds` (the components, the `Ds` root, the host se
 portal, `use_environment`), `ui-blitz` (the Blitz host: `launch`, windows, PDF, print, spell),
 `ui-lint` (the linter), `ui-harness` (the test driver). `ui-core`, `ui-style` and `ui-motion` sit
 under `ds` and are reached as `ds::base`, `ds::style` and `ds::motion`. `ui-conformance` and
-`ds-gallery` are quire's own tests and contact sheet (section 9), not for consumers.
+`ds-gallery` are Bardo's own tests and contact sheet (section 9), not for consumers.
 
 The linter is its own crate, `ui-lint` (coherence rules 1 and 2, section 5 below), so a consumer
 that never lints does not pull in `cssparser`. The app-facing parts are `ui-shell`, which an app
 depends on next to `ds` and draws with `Ds { sheet: Some(ds_shell::stylesheet()) }`; it lints
 against `ds_shell::kits()` where an app that takes `ds` alone lints against `ds::kits()`. The
 surfaces only our desktop shell draws (bar, dock, control center, lock, switcher, OSD,
-notifications, widgets, emoji, month grid, date picker) are not quire's: they are sill's
+notifications, widgets, emoji, month grid, date picker) are not Bardo's: they are sill's
 `shell-kit`, which adds its own kit and `stylesheet()` over these.
 
-**A git dependency** is how a program outside this checkout takes quire, pinned at a full revision,
+**A git dependency** is how a program outside this checkout takes Bardo, pinned at a full revision,
 with the release it is in a trailing comment:
 
 ```toml
@@ -82,18 +82,18 @@ ui-blitz = { git = "https://github.com/Bardo-DE/quire.git", rev = "<full sha>" }
 The spelling is the same in every repo: the URL ends in `.git`, the revision is the full 40-character
 sha (never a tag, never a branch), and a trailing `# vX.Y.Z` names the release it is. Cargo finds each
 crate by name in the one repository, so the crates of a revision share it.
-Nothing else is needed for quire's own dependencies: `blitz-embed` (its own public repo,
-github.com/Bardo-DE/blitz-kit) comes transitively at the rev quire's `Cargo.toml` pins, and so
+Nothing else is needed for Bardo's own dependencies: `blitz-embed` (its own public repo,
+github.com/Bardo-DE/blitz-kit) comes transitively at the rev Bardo's `Cargo.toml` pins, and so
 does the rest of the pinned block. Do not add a `[patch]` for it unless you develop `blitz-embed`
-alongside: quire's own `[patch]` table (its local `blitz-embed` checkout, the vello and anyrender
-forks) applies only when quire is the workspace root, never to a consumer, so a consumer that
+alongside: Bardo's own `[patch]` table (its local `blitz-embed` checkout, the vello and anyrender
+forks) applies only when Bardo is the workspace root, never to a consumer, so a consumer that
 needs the forks' behaviour (the CSS `filter` functions) copies the `[patch.crates-io]` block
-from quire's root `Cargo.toml` into its own workspace root. The same block carries the
+from Bardo's root `Cargo.toml` into its own workspace root. The same block carries the
 `dioxus-core` fork patch (`dioxus-core`, `dioxus-core-types`, `generational-box`, `subsecond`,
 `subsecond-types`, all at one rev of github.com/Bardo-DE/dioxus): dioxus-core 0.7.10 can spin forever
 in `wait_for_work` when a task is cancelled before it is polled (a `use_resource` restart), fixed
 upstream only in 0.8 (DioxusLabs/dioxus#5554). Every consumer that runs a `VirtualDom` copies those
-five lines too, and drops them when quire moves to dioxus 0.8. layer-shell-host and sill add, for their
+five lines too, and drops them when Bardo moves to dioxus 0.8. layer-shell-host and sill add, for their
 local checkouts, `[patch."https://github.com/Bardo-DE/blitz-kit"]` pointing at a sibling
 `blitz-embed` so every path-linked repo builds one copy.
 
@@ -102,7 +102,7 @@ runs `app` until its window closes and returns `Result<(), LaunchError>` (no run
 `.with_least(width, height)`, the least a person may resize it to: give the least your layout's
 panes fit in, so no pane is squeezed past its own least (`WindowSpec::new` takes the same value
 for a later window). It enters the process-wide Tokio runtime that `ui_host_hooks::TokioSpawner`
-hands `use_environment`, registers quire's faces, provides the document host (`provide_host`,
+hands `use_environment`, registers Bardo's faces, provides the document host (`provide_host`,
 section 6, "For a bar"), and tracks the input modality. `AppConfig` also takes
 `with_app_id`, `with_decorations(Decorations::Client)` for an app whose root draws
 `WindowFrame::Titlebar`, `with_context(value)` (read with `use_context` anywhere in the app),
@@ -256,25 +256,25 @@ The request is queued and the event loop answers it, like `focus`; `WindowHandle
 shadow and clip its corners, at the radius its own edge is drawn with (`--r-window`), as soon as
 it exists; there is nothing to call. The ask goes out on the app's own connection and only to a
 compositor that offers it, so on GNOME, KDE and X11 a window looks as it did. It is part of the
-`quire-desktop` feature, which is on by default.
+`desktop` feature, which is on by default.
 
 **The pinned dependency block.** `ds`'s own manifest resolves its dependencies (`dioxus`,
-and for `ui-blitz`, the whole blitz/anyrender/wgpu stack) against *quire's own* workspace —
+and for `ui-blitz`, the whole blitz/anyrender/wgpu stack) against *Bardo's own* workspace —
 a path dependency does not inherit your workspace's `[workspace.dependencies]`, because
 `crates/ds/Cargo.toml` has no `[workspace]` of its own and so joins whichever ancestor manifest
-does (quire's root, not yours). You only need to pin the lines **you** name directly: at minimum
+does (Bardo's root, not yours). You only need to pin the lines **you** name directly: at minimum
 `dioxus` (to write `rsx!`), plus `dioxus-ssr` as a dev-dependency if you lint an SSR render
-(section 5). Copy those lines **verbatim** from `docs/workspace-deps.toml` in quire
+(section 5). Copy those lines **verbatim** from `docs/workspace-deps.toml` in Bardo
 (the pinned block is copied verbatim into
-every workspace; `docs/workspace-deps.toml` is quire's own copy of the source of truth, not
+every workspace; `docs/workspace-deps.toml` is Bardo's own copy of the source of truth, not
 owned by this doc). If you also run on Blitz (`ui-blitz`), your own crate that calls
 `dioxus_native::*` directly (rare — most consumers only call `ds_blitz::launch`) needs the
 `dioxus-native`/`blitz-*` lines too, exactly as pinned, never a different revision.
 
 **If your own crate sits inside a Cargo workspace tree it does not own** (as `examples/consumer`
-does, under quire's own directory), give it an empty `[workspace]` table so Cargo does not treat
+does, under Bardo's own directory), give it an empty `[workspace]` table so Cargo does not treat
 it as an orphaned member of the workspace above it. A workspace root is also the only place
-`[patch.crates-io]` applies, so a consumer that builds a renderer copies quire's root patch block
+`[patch.crates-io]` applies, so a consumer that builds a renderer copies Bardo's root patch block
 (the vello and anyrender forks) verbatim into its own root manifest, as `examples/consumer/Cargo.toml`
 does; `scripts/check-consumer.sh` builds, lints and tests that example in the gate.
 
@@ -287,7 +287,7 @@ paints nothing on it (sill's hot corners). layer-shell-host injects `body { marg
 into every document it hosts; a bare document elsewhere (`ds_blitz::launch`,
 a test) must cancel the margin itself or draw inside a `Ds`.
 
-Every quire component must be drawn inside one `Ds` (design/03-COLOR.md
+Every Bardo component must be drawn inside one `Ds` (design/03-COLOR.md
 section 17.1; `crates/ds/src/assembly/ds.rs`). It resolves your appearance to a scheme, an accent
 and a motion level; stamps `data-theme`, `data-accent`, `data-motion`,
 `data-material`, `data-blur`, `data-modality` and `data-hover` on its own `div.ds`; injects the stylesheet
@@ -529,14 +529,14 @@ fn our_css_is_clean() {
 ```
 
 `Rule::LayerDs`: a stylesheet that opens `@layer ds` (a block, an order statement or a sub-layer)
-is an offence: that layer is quire's, and `AppStyle` puts yours in `app`.
+is an offence: that layer is Bardo's, and `AppStyle` puts yours in `app`.
 
 Every exception needs a `reason`, and `assert_clean` panics listing which exceptions suppressed
 zero offences, so a stale one cannot hide silently. A `LintConfig` is made from the kits it lints
 against (`LintConfig::new(&ds::kits())`), which give it the variables, keyframes and timing tokens
 it accepts; name only the fields you change and end with `..LintConfig::new(&ds::kits())`
 (`own_vars` lists the custom properties your own sheet declares). `Profile::Strict` is the
-default and runs every rule but `OffGrammarTiming`; quire's own `self_lint` tests run it, and a
+default and runs every rule but `OffGrammarTiming`; Bardo's own `self_lint` tests run it, and a
 raw `border-radius`/`font-size`/`z-index` your CSS writes is exactly the kind of drift the token
 table exists to prevent.
 
@@ -545,7 +545,7 @@ logical forms included) or `gap`/`row-gap`/`column-gap` is an offence; `0`, `aut
 percentage, an `em` and `var()` pass. The steps are `ds::style::tokens::spacing::SpacingToken`, emitted on `.ds` as
 `--s-1`, `--s-1-5`, `--s-2` … `--s-12`, `--s-13`, `--s-14`, `--s-15`, `--s-16`, `--s-18`,
 `--s-22`, `--s-26`, `--s-36`, each named by its pixel value (design/01-LAYOUT.md §2). A length
-between steps takes the nearest one, as quire's own sheets and the gallery's do. `examples/consumer/src/style.css` is Strict-clean.
+between steps takes the nearest one, as Bardo's own sheets and the gallery's do. `examples/consumer/src/style.css` is Strict-clean.
 
 `Rule::UnknownAnimation` reads the `animation` shorthand as well as `animation-name`: in each comma-separated animation the name is the first identifier that is not a keyword
 (an easing, `infinite`, a direction, a fill mode, a play state, a CSS-wide keyword), with times,
@@ -558,7 +558,7 @@ names the token (`border: 1px (use var(--hair))`, `.5px` points at `var(--hairli
 border and a `border-radius: 1px` pass: stylo already floors a border width to whole device
 pixels, and only a line of one pixel or less goes blurry.
 
-### Rule 2 — no raw markup, only quire components
+### Rule 2 — no raw markup, only Bardo components
 
 Two tests, both against an SSR render of a real page (never a hand-built HTML string — the
 markup lint runs on what your app *actually renders*, not on what you believe it renders):
@@ -595,30 +595,30 @@ separately because they read differently in a failing CI log: `Rule::UnstyledCla
 nothing in scope styles — usually a typo or a stylesheet you forgot to concatenate),
 `Rule::RawMarkup` (a hand-written `<button>`/`<input>`/`<select>`/`<textarea>` with no `ds-`
 class, or an `<svg>` that is neither `Glyph`'s `.ds-ic` nor marked `data-ds-svg`, the attribute
-a quire component that draws its own vector writes, as the SendPill's ring does), and the
+a Bardo component that draws its own vector writes, as the SendPill's ring does), and the
 inline-style rules below.
 
 Every `style` attribute is checked declaration by declaration (`ds_lint`'s `inline_style`): a
 literal colour (`Rule::HexColour`, `Rule::ColourFunction`, `Rule::NamedColour`) or a raw
 duration (`Rule::RawDuration`) is an offence. The one allowance is a custom property (`--*`) on
-an element carrying `ds` or a `ds-*` class: that is quire handing a value it computes per
+an element carrying `ds` or a `ds-*` class: that is Bardo handing a value it computes per
 instance to its own stylesheet (the Space's `--f-*` frame and `--f-grad`, an avatar's `--av-bg`,
-a provider mark's `--pc`), so quire's own markup lints clean with no exception. The same
+a provider mark's `--pc`), so Bardo's own markup lints clean with no exception. The same
 literal in a non-custom property (`background:#fff`) is an offence on any element, and a custom
 property on your own element is one too: put your values in your stylesheet as tokens.
 `examples/consumer/tests/it/coherence.rs::no_raw_form_control_or_svg_is_rendered` filters to
 `Rule::RawMarkup` alone, so its name says exactly what regressing it means: someone wrote a bare
-`button`/`input`/`svg` where a quire component belongs. Filtering the same call two different
+`button`/`input`/`svg` where a Bardo component belongs. Filtering the same call two different
 ways, rather than one `offences.is_empty()` assertion, is what keeps a future failure legible —
 "unstyled classes" and "raw markup" are different mistakes with different fixes.
 
 ### Rule 3 — nothing missing is patched locally
 
-Not a runtime test: if a page needs a component, token or motion value quire does not have, stop
-and add it to quire first (or ask quire's maintainers to), never draw it by hand in your own
+Not a runtime test: if a page needs a component, token or motion value Bardo does not have, stop
+and add it to Bardo first (or ask Bardo's maintainers to), never draw it by hand in your own
 crate. `examples/consumer` never needed this escape hatch; note in your own report if you do.
 
-### Rule 4 — motion only through quire's own timers
+### Rule 4 — motion only through Bardo's own timers
 
 Never `std::thread::sleep`, `tokio::time::sleep` or a hand-rolled `setTimeout`-equivalent to
 drive a class toggle. Use `ds::prelude::use_motion_timer` (`MotionTimer::start(on_settled)`, which runs for exactly
@@ -652,7 +652,7 @@ this a real test of rule 4: a `Duration::from_millis(1200)` literal would still 
 Fade`'s token were retuned tomorrow, which is exactly the drift `ds::motion` is supposed to make
 impossible.
 
-**Exact timing: the virtual clock.** `Clock::Wall` (the default) runs quire's timers on the wall
+**Exact timing: the virtual clock.** `Clock::Wall` (the default) runs Bardo's timers on the wall
 clock, so `advance(hold - 10ms)` can overshoot the boundary on a loaded machine. `Clock::Virtual`
 (`HarnessConfig::with_clock`, as above) makes `advance` move one clock that drives both the CSS
 animations and every ds timer (motion timers, presence and roster rests, hover intent, toast
@@ -716,8 +716,8 @@ use ds::prelude::Px;
 #[test]
 fn every_surface_keeps_content_off_the_box_edges() {
     let view = Viewport { width: 900, height: 700, scale_percent: 100 };
-    // quire's policy is the 8 px default plus quire's own allowances; add yours with a reason.
-    let policy = Policy::quire().allowing(&[Allow {
+    // Bardo's policy is the 8 px default plus Bardo's own allowances; add yours with a reason.
+    let policy = Policy::Bardo().allowing(&[Allow {
         class: "unread-count",
         min: Px(4.0),
         reason: "a count badge: design/04 section 12, 4 px either side",
@@ -1019,7 +1019,7 @@ A few props worth knowing about before you read the signatures:
 - A settings enum key's menu is built by the caller from `KeySpec::grouped_choices()`: a
   `MenuItem::Header(group)` over each group's items, an unavailable choice as `MenuItem::new(..)
   .with_availability(Availability::Disabled)` with `MenuItem::Info { title: reason, detail: None }` right
-  under it (detent's `menu_items` is the worked example). ds does not depend on ui-settings, so quire
+  under it (detent's `menu_items` is the worked example). ds does not depend on ui-settings, so Bardo
   has no converter. `KeySpec::place_of(word)` says where a choice's model runs (`ChoicePlace`: this
   computer, your computer, cloud, assistant) for the mark beside it, and `KeySpec::note` is the short
   line to show under the key (`help` stays behind the info button).
@@ -1038,7 +1038,7 @@ A few props worth knowing about before you read the signatures:
   button (the host words each `Choice { slug, label }`) and holds the chosen slug as
   `FieldText::Plain(slug)`; a pick reaches `on_input` as `(role, FieldText::Plain(slug))`, exactly the
   slug, like any edit, so the host maps it (porter's `FieldKind::choices()` slugs) and refits the
-  field list; quire reshapes nothing. A port is a plain entry, empty meaning the usual port, with
+  field list; Bardo reshapes nothing. A port is a plain entry, empty meaning the usual port, with
   the host's number as `hint`. When any field has choices or a `part`, the form is a `Form` of
   titled `FormSection`s (neighbouring fields of one `FormPart`: Incoming, Outgoing, SignIn), one
   `FieldRow` each; otherwise it is the plain stack of entries as before. `.advanced()` puts a field
@@ -1150,7 +1150,7 @@ External icons and a caller-driven tooltip (FINDINGS "Pointer events"):
 - **External icons.** An icon slot takes `ds::prelude::IconSource`: `Glyph(Icon)`, `Symbolic(ExternalIcon)`
   or `Image(ExternalIcon)`. `ExternalIcon { url: IconUrl, size: IconSize }` is a `data:` or
   `file:` URL and the square size it is drawn at. Build the URL with `IconUrl::png(&bytes)` (a
-  tray pixmap you have PNG-encoded; quire does the base64), `IconUrl::svg(&document)`,
+  tray pixmap you have PNG-encoded; Bardo does the base64), `IconUrl::svg(&document)`,
   `IconUrl::file(&absolute_path)` (an icon theme lookup), or `IconUrl::parse(url)`, which refuses
   any other scheme (`DsError::IconScheme`). `Symbolic` paints the icon's alpha in the text colour
   (`mask-image` over `currentColor`), so it follows `--ink`, hover, pressed and `--f-ink*` exactly
@@ -1202,7 +1202,7 @@ External icons and a caller-driven tooltip (FINDINGS "Pointer events"):
 For a bar (FINDINGS "Bar gaps"):
 
 - **A Blitz host that is not `ds_blitz::launch`** (layer-shell-host's surfaces, a popup's document)
-  calls `ui_host_hooks::provide_host()` (a library takes `ui-host-hooks`, never `ui-blitz`) at the top of its root component, before any quire
+  calls `ui_host_hooks::provide_host()` (a library takes `ui-host-hooks`, never `ui-blitz`) at the top of its root component, before any Bardo
   component reads the document. It installs every part of `ds::prelude::DocumentHost` at once (rects,
   focus, caret, scroll, edit, drop), so a root can never hold a subset; a root under a window's
   or the harness's host keeps that one. The program that hosts such roots registers the renderer's
@@ -1301,7 +1301,7 @@ For a bar (FINDINGS "Bar gaps"):
 
 For a launcher and a dock (FINDINGS "Launcher gaps"):
 
-- **Unmounting early is safe.** Every task quire spawns (a motion timer's settle, a roster's
+- **Unmounting early is safe.** Every task Bardo spawns (a motion timer's settle, a roster's
   exit and rest, the hover hub's and the toast hub's timers, a focus retry) is a task of the
   scope that owns it and is dropped with that scope, and writes only through fallible handles.
   A palette, menu or popover may be unmounted at any moment, mid entrance included: drop any
@@ -1379,7 +1379,7 @@ For a launcher and a dock (FINDINGS "Launcher gaps"):
 Palette behaviour:
 
 - **The selected row's rect waits for layout.** A palette mounted on a surface that has not been
-  laid out yet (a launcher surface mapped again) reads its selected row as 0 x 0; quire now
+  laid out yet (a launcher surface mapped again) reads its selected row as 0 x 0; Bardo now
   reads it again every frame for about half a second, then every 100 ms for three seconds more,
   and reports it only once it has an area. It measures again when the selection, the row
   element or the results (groups, tokens) change, and drops a read still waiting when a newer
@@ -1456,14 +1456,14 @@ Palette behaviour:
 
 ### PDF and printing
 
-A quire document as a vector PDF, without a webview: Blitz lays it out, quire paginates it, and
+A Bardo document as a vector PDF, without a webview: Blitz lays it out, Bardo paginates it, and
 the `pdfrum-anyrender` painter writes it through pdfrum (text stays text in embedded, subsetted
 faces at the layout's variable instance; a JPEG or an opaque PNG is embedded as it arrived). FINDINGS.md "PDF output" has the reasons, the limits and the
 measured numbers.
 
 | Need | API | Notes |
 | --- | --- | --- |
-| An HTML document as a PDF | feature `pdf`: `ds_blitz::pdf(&html, PageSpec::default()) -> Result<Vec<u8>, PdfError>` | A whole document (`<!DOCTYPE html>...`). quire's faces are registered; the network is sealed: only `data:` URLs load (no `file:`, no fetch). `@media print` applies. Laid out once at the page's content width, at scale 1. |
+| An HTML document as a PDF | feature `pdf`: `ds_blitz::pdf(&html, PageSpec::default()) -> Result<Vec<u8>, PdfError>` | A whole document (`<!DOCTYPE html>...`). Bardo's faces are registered; the network is sealed: only `data:` URLs load (no `file:`, no fetch). `@media print` applies. Laid out once at the page's content width, at scale 1. |
 | A Dioxus tree as a PDF | `ds_harness::pdf_app(app, HarnessConfig::new(viewport), spec)`, ui-harness feature `pdf` | Built as `config` says (its contexts and `NetPolicy`; the viewport is replaced by the page's content box), rendered until its mount-time work and images have landed (as `snapshot`), then printed. |
 | In a test | `Harness::pdf(spec) -> Result<Vec<u8>, PdfError>` | Prints the harness's document as it is now, at the page width with `@media print`; the harness's own viewport and media come back afterwards. Read the PDF back with `pdfrum` (dev-dependency) to assert on text. |
 | The sheet | `PageSpec { size, margins }`; `PageSize::{A4, Letter, Custom { width: Pt, height: Pt }}`; `Margins { top, right, bottom, left }`, `Margins::uniform(Pt)`, `Margins::symmetric(vertical, horizontal)`; `Pt::from_mm`, `Pt::from_inches` | `PageSpec::default()` is A4 with 18 mm above and below, 16 mm at the sides. `@page` is not read: the spec's margins are the only ones. `PdfError::NoContentArea` when the margins meet. |
@@ -1523,7 +1523,7 @@ through PackageKit (the first that exists in the repositories wins), installs it
 and announces the change to subscribers. It never runs a package manager or sudo. A Flatpak
 sandbox cannot reach the system PackageKit: the app gets `Unsupported`.
 
-**Availability is announced on `refresh` and `provide` only.** quire does not watch `PATH`. An
+**Availability is announced on `refresh` and `provide` only.** Bardo does not watch `PATH`. An
 app that wants live updates (a tool installed in a terminal while the app runs) watches `PATH`
 itself and calls `refresh` when it changes. `provide` also announces: the window that asked sees
 both its `Outcome` and an `Availability` on its feed, so handle the two as one event, not two.
@@ -1605,7 +1605,7 @@ rsx! {
 
 ### Exporting the menu bar
 
-A quire app's `MenuBarModel` can be served over the session bus as `com.canonical.dbusmenu`, so the
+A Bardo app's `MenuBarModel` can be served over the session bus as `com.canonical.dbusmenu`, so the
 shell's bar shows the focused app's App, File, Edit, View, Window and Help menus and an agent can
 list and run them (design/27 section 5.2 rule a). Off by default: feature `menus` of `ui-blitz`.
 
@@ -1686,7 +1686,7 @@ copy. FINDINGS.md "Texture layer" has the reasons and limits.
 
 ### The window, custom surfaces and their tests
 
-What a quire app can do about its own window and its own text regions, and how to test it. Each
+What a Bardo app can do about its own window and its own text regions, and how to test it. Each
 row replaces something apps used to work around.
 
 | Need | API | Notes |
@@ -1704,7 +1704,7 @@ row replaces something apps used to work around.
 
 ## 7. Settings schema: `#[derive(SettingsSchema)]`
 
-If your app has its own settings struct (not `AppearanceSettings`/`IconsSettings`, which quire
+If your app has its own settings struct (not `AppearanceSettings`/`IconsSettings`, which Bardo
 already derives), give it a schema the same way so the Settings app can render it
 (design/22-SETTINGS.md section 9):
 
@@ -1713,7 +1713,7 @@ its fields holds derives `ds::prelude::Word` with `#[word(case = snake)]`, whose
 the variant words to pick a widget by arity (`ds_settings::schema::kind_from_variants`, section
 9.1). The trait `.schema()` calls through is
 `ds_settings::schema::SettingsSchema` — a different item from the `SettingsSchema` the derive
-macro re-exports at the crate root (`crates/ds-settings/tests/it/schema.rs` is quire's own worked
+macro re-exports at the crate root (`crates/ds-settings/tests/it/schema.rs` is Bardo's own worked
 example of both imports together):
 
 ```rust,ignore
@@ -1765,7 +1765,7 @@ next to your `.desktop` file. `KeyKind` picks the widget for you — a two-varia
 `Toggle` when its words are an on/off pair and two segments otherwise, three to five a
 `SegmentedControl`, more a `Menu`, a `#[settings(range = "..")]` newtype a `Slider` — see
 `ds_settings::schema::KeyKind::widget` (design/22-SETTINGS.md section 9.1) for the full table; you
-never choose a widget yourself. quire's own schema is written the same way by the `ui-settings`
+never choose a widget yourself. Bardo's own schema is written the same way by the `ui-settings`
 example: `cargo run -p ui-settings --example write_schema -- --write-schema target/schema`.
 
 ### Extensions: finding, choosing and reading them
@@ -1802,7 +1802,7 @@ so the two agree. `ExtensionsFile` is `bardo/extensions.toml`; its schema is
 An app that shows files asks one resolver which icon a file gets, and draws the answer with
 `ds::FileIcon`. The icon is the person's own change if they set one for the type (Your changes),
 else the pack they chose in Settings (`appearance.file_icons`, "File icons"), else the standard set
-quire draws.
+Bardo draws.
 
 ```rust,ignore
 use std::sync::Arc;
@@ -1871,7 +1871,7 @@ authority; this table is a pointer. `ds_lint::Rule::BlitzUnsupported`
 | CSS `stroke`/`fill` reaching `<svg>` children | S6 | `ds::style::icon::render::Glyph` (renders `.ds-ic` with `stroke="currentColor"` as an attribute, not a rule); `Rule::SvgPaintInCss` |
 | `:focus-visible` / `:focus-within` (hard-coded `false`) | S12 | `.ds[*|data-modality=keyboard] :focus` — `Ds`/`ds_blitz::launch` track modality for you; `Rule::FocusPseudoClass` |
 | `onmounted` + `get_client_rect()` inside the handler itself (returns 0×0) | S9 | `ds::host::measure::use_rect()` — measures one frame later, never inside the handler; to anchor an overlay, `Anchor::Mounted` does this for you |
-| a click on a `Button` whose parent holds only inline content (the button alone, or beside text) | blitz-dom hit test | put the button in a flex row (every quire container is one) or a block; the parent of an atomic inline is hit instead (`crates/ds-conformance/tests/it/button_click.rs`, FINDINGS "Polish pass") |
+| a click on a `Button` whose parent holds only inline content (the button alone, or beside text) | blitz-dom hit test | put the button in a flex row (every Bardo container is one) or a block; the parent of an atomic inline is hit instead (`crates/ds-conformance/tests/it/button_click.rs`, FINDINGS "Polish pass") |
 | `mask-image:url(data:...)` / `background-image:url(data:...)` without a `data:` `NetProvider` | S7, S8 | `ds_blitz::launch`/`Harness` already install one; nothing to do if you use them |
 | `mix-blend-mode`, `position: sticky`, `line-clamp`, `text-shadow` | risk table | avoid outright; `ds::base::text::clip::clip_chars` covers the line-clamp case |
 | `line-clamp` for a multi-line clamp that opens on hover | notification parts | a `max-height` in whole `em` lines with a transition, and a fade decided by measuring (`NotificationCard`'s body); the hidden lines are still hit-tested, so give them `pointer-events:none` |
@@ -1880,18 +1880,18 @@ authority; this table is a pointer. `ds_lint::Rule::BlitzUnsupported`
 | `break-before`, `break-inside`, `page-break-*`, `@page` (printing) | FINDINGS "PDF output" | `data-break-before="page"`, `data-break-inside="avoid"`, and `PageSpec` margins, read by `ds_blitz::pdf` (section 6, "PDF and printing") |
 
 What *does* work and needs no fallback: a `<style>` in the body (S1), the `.ds[data-*]` custom
-property cascade with plain `[data-x=v]` attribute selectors (S2, fixed in the Blitz fork at `1b23fbd9`; quire's own sheet still writes `[*|data-x=v]`, which matches too), `@keyframes` including `var()` inside them (S3),
+property cascade with plain `[data-x=v]` attribute selectors (S2, fixed in the Blitz fork at `1b23fbd9`; Bardo's own sheet still writes `[*|data-x=v]`, which matches too), `@keyframes` including `var()` inside them (S3),
 `transition` on a `var()`-driven value (S4), restarting an animation by swapping its name (S5,
 what a keyframe pulse does), `futures-timer` sleeps from render or a handler (S10, what `ds::base::time::clock::sleep`
-and every quire timer uses), registering a bundled font through a shared `FontContext` (S11), and
-`color-mix()` (S14, though quire precomputes washes instead, for determinism).
+and every Bardo timer uses), registering a bundled font through a shared `FontContext` (S11), and
+`color-mix()` (S14, though Bardo precomputes washes instead, for determinism).
 
 ## 9. Comparing your surface against the reference
 
-`ds-gallery` (`crates/ds-gallery`) is quire's own contact sheet: every component across its
+`ds-gallery` (`crates/ds-gallery`) is Bardo's own contact sheet: every component across its
 pages (tokens, type, controls, lists, overlays, materials, motion, space, gaps, matrix,
 motion-lab), with a toolbar for theme, accent, motion, material, blur and Space preset. Its
-"Gaps" page lists what quire does not draw yet, each with the FINDINGS section that owns it.
+"Gaps" page lists what Bardo does not draw yet, each with the FINDINGS section that owns it.
 
 ```bash
 cargo run -p ui-gallery                              # opens the gallery interactively
@@ -2001,7 +2001,7 @@ windows, `ds_blitz::launch`) both run. It does not let Blitz's default scroll ac
 a line), it writes raw offsets itself every frame, and a wheel detent is 60 px eased over at most
 200 ms, detents accumulating; a touchpad flick glides and may stretch past an edge where a
 container opts in; arrows scroll 40 px, Page Up/Down and Space a page (`max(0.8 v, v - 40)`),
-Home/End jump to an edge. Everything below is quire's side of that split (design/11 section 11.7).
+Home/End jump to an edge. Everything below is Bardo's side of that split (design/11 section 11.7).
 
 **Native overflow needs nothing from you.** A container with `overflow: auto` or `scroll` scrolls
 by all of the above in a `ds_blitz` window the moment it has content to scroll, under the wheel,
@@ -2055,7 +2055,7 @@ hands it the raw `BlitzWheelEvent` through `handle_ui_event` instead of scrollin
 contains it, and the engine does nothing for that wheel; the component's own handler must call
 `prevent_default`, or Blitz's own scroll (20 px a line, in one jump) still acts (design/11
 section 11.3.1 item 2). An element with a plain `onwheel` and no marker never hears the wheel in a
-`ds_blitz` window: the engine takes it first, so mark it, or listen with `use_gestures`. It is a marker only: quire does not itself drive a wheel-triggered value
+`ds_blitz` window: the engine takes it first, so mark it, or listen with `use_gestures`. It is a marker only: Bardo does not itself drive a wheel-triggered value
 change on `Slider` yet, so add the same attribute to your own wheel-consuming controls even before
 you wire up the handler, and remove it from a component that turns out not to need it — an
 un-marked wheel-consumer silently gets scrolled instead of heard.
@@ -2068,7 +2068,7 @@ containers — a list's row scroller, a reader pane — should carry it too, unl
 the excluded kinds; an un-marked container the host finds just clamps at its edge, which is the
 safer failure than defaulting to elastic.
 
-**`scroll-behavior: smooth` is banned**, in your own CSS as much as quire's:
+**`scroll-behavior: smooth` is banned**, in your own CSS as much as Bardo's:
 `ds_lint::Rule::BlitzUnsupported` flags it (`crates/ds-lint/src/blitz.rs`) because Blitz's own
 300 ms `ScrollTo` would fight the host's engine. Drive a programmatic scroll through the host's
 `ScrollCmd` instead (design/11 sections 11.3.1 and 11.3.11); `scroll-behavior: auto` (the
@@ -2078,7 +2078,7 @@ default) lints clean.
 (design/11 section 11.3.12) — `--ink` at .5 alpha over the layer's own .8 opacity (effective .4)
 in light, `--paper`'s equivalent (white at the same effective alpha) in dark. It is a token like
 any other (`ds::style::tokens::colour::ColourToken::ScrollThumb`, registered in the lint's known-variable table the same
-way every other colour is); quire's stylesheet declares it, the host reads it, and no component
+way every other colour is); Bardo's stylesheet declares it, the host reads it, and no component
 CSS references it directly, since no ds component paints the thumb itself.
 
 ## 12. User styles
@@ -2087,17 +2087,17 @@ A person restyles your app with CSS, and the change shows as they save it (ARCHI
 section 10). Three sheets sit above your own in the cascade, lowest first: the **look** the person
 chose (`@layer look`, found by the look Extension machinery, not by `Ds`), the person's
 **desktop-wide** style, `~/.config/bardo/style.css`, and their style **for your app**,
-`~/.config/<app>/style.css`. The last two are unlayered, desktop-wide first. quire owns the
+`~/.config/<app>/style.css`. The last two are unlayered, desktop-wide first. Bardo owns the
 mechanism; you wire two things.
 
 **Load and watch them into `Ds`.** `ds_settings::UserStyle` is a `SettingsDoc` for `style.css`: a
 missing file is an empty style and no text is refused at load. The desktop-wide file is the same
-document under `AppName::QUIRE`, so you load and `Store::watch` two stores. `Ds` takes the three
+document under `AppName::BARDO`, so you load and `Store::watch` two stores. `Ds` takes the three
 sheets as one value, `styles: ReadSignal<Styles>` (`ds::style::kit::Styles { look, desktop, app,
 homes }`, empty by default), and renders each non-blank one in its own `<style data-ds-style>`
 after the design system's own sheet. The design system is `@layer ds`, your sheets `@layer app`,
 the look `@layer look`, and the person's text is unlayered, so a person's rule wins by the cascade
-whatever its specificity (`.ds-button { ... }` beats quire's `.ds-button[data-variant=push]`) and
+whatever its specificity (`.ds-button { ... }` beats Bardo's `.ds-button[data-variant=push]`) and
 never needs `!important`. `homes` names the folder each sheet may read files from (the look
 Extension's folder, the config folders); a sheet with no home may name `data:` and nothing else.
 `custom_styles: bool` is `appearance.custom_styles` ("Use my styles"): `false` draws none of
@@ -2107,7 +2107,7 @@ the three.
 use ds::style::kit::{Styles, UserStyle};
 use ds_settings::{AppName, ConfigRoot, Store};
 
-let desktop = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
+let desktop = Store::new(ConfigRoot::Xdg, AppName::BARDO);
 let own = Store::new(ConfigRoot::Xdg, AppName("your-app-id"));
 let mut styles = use_signal({
     let (desktop, own) = (desktop.clone(), own.clone());
@@ -2154,7 +2154,7 @@ which files the document may read at all (`FileRoots`): name the folders of the 
 
 **Do not let a bad style lock the person out.** Before the first window loads styles, call
 `ds_blitz::StylesGuard::begin(&state_dir, "your-app", &styles)` (`state_dir` is
-`ConfigRoot::state_dir(AppName::QUIRE)`). If your last two starts with the same sheets never
+`ConfigRoot::state_dir(AppName::BARDO)`). If your last two starts with the same sheets never
 reached a first frame plus five seconds alive, `guard.load()` is `false`: draw with
 `custom_styles: false`, show `StylesOffNotice { program: "your-app", onturnon }`, and in
 `onturnon` call `guard.turn_on_again(&styles)`. Call `ds_blitz::use_styles_guard(guard)` once in the
@@ -2174,9 +2174,9 @@ both recipes).
 
 **Put your own sheets in the `app` layer.** Your own stylesheets are unlayered unless you say
 otherwise, and an unlayered rule beats every `@layer ds` rule, so a `.card { ... }` of yours would
-beat quire's more specific rule where before it lost. Draw each one with `ds::prelude::AppStyle {
+beat Bardo's more specific rule where before it lost. Draw each one with `ds::prelude::AppStyle {
 css: MY_CSS }` instead of `style { {MY_CSS} }`: it wraps the text in `@layer app`, after `ds` and
-before the look and the person's unlayered rules, so your rules and quire's keep the order and
+before the look and the person's unlayered rules, so your rules and Bardo's keep the order and
 specificity they always had, and the look and the person's still beat both (`ds_style::css::layers` holds the names). Never write
 `@layer ds` in a sheet of your own (`Rule::LayerDs`).
 
@@ -2192,11 +2192,11 @@ them; loading never waits on them. User CSS is exempt from the design-system lin
 Your app is complete without our desktop; on it, the app does more (design/36-PORTABLE-CORE.md
 is the rule and the table of who is what). Three things follow for a consumer.
 
-- **Feature.** Put desktop integration in a `desktop/` module behind a `quire-desktop` feature,
+- **Feature.** Put desktop integration in a `desktop/` module behind a `desktop` feature,
   default on for Linux (`[target.'cfg(target_os = "linux")'.dependencies]` or a `default`
   entry your packaging sets). Core modules never import `crate::desktop` or zbus, and
   `cargo check --workspace --no-default-features` must pass. Run
-  `quire/scripts/check-portable.sh <your-workspace-dir>` from your lane gate to check both.
+  `bardo/scripts/check-portable.sh <your-workspace-dir>` from your lane gate to check both.
 - **Probe.** `ui-desktop` (features `dbus`, `dioxus`) answers `Capability::{Intents, Accounts,
   Memory, Companion, Appearance, Materials, Peek, Share, Helpers}` as `Presence::{Here,
   Absent}`. `Desktop::probe().await` once, `Desktop::watch()` to follow services starting and
@@ -2276,19 +2276,19 @@ SpacesBar { label, spaces, shown, on_pick, on_add,
 SpaceTile::new(key, name).backdrop(ImageSource::file(&wallpaper)?).thumbnail(picture)
 ```
 
-The backdrop is the desktop's own picture (the output's wallpaper), drawn under the thumbnail's picture, cover-fit and clipped to the card; a thumbnail with transparent areas shows it through, and without a thumbnail it is all the card shows. `on_layout` delivers real rectangles (window coordinates, logical pixels): `layout.spaces[i].tile` is the Space's button, `.card` its thumbnail card (`None` while the bar is collapsed), `layout.add` the plus. Do not compute them from quire's padding numbers.
+The backdrop is the desktop's own picture (the output's wallpaper), drawn under the thumbnail's picture, cover-fit and clipped to the card; a thumbnail with transparent areas shows it through, and without a thumbnail it is all the card shows. `on_layout` delivers real rectangles (window coordinates, logical pixels): `layout.spaces[i].tile` is the Space's button, `.card` its thumbnail card (`None` while the bar is collapsed), `layout.add` the plus. Do not compute them from Bardo's padding numbers.
 
 ## 15. Keyboard: actions, not modifiers
 
-An app never reads which modifier is held and never decides Command versus Ctrl. quire is the one
+An app never reads which modifier is held and never decides Command versus Ctrl. Bardo is the one
 toolkit integration of chordkit (github.com/Bardo-DE/chordkit, the keymap core): a key event
 becomes a chordkit key press in one place (`ds_core::command::key_input`), resolves to an `Action`
 in the right `Context`, and every shortcut is drawn through chordkit's display. On each OS the
 keymap follows that OS's own shortcut settings when it has any (kdeglobals on KDE, a dconf dump on
 GNOME, our desktop's keycap), and its conventions otherwise (Command on a Mac and our desktop, Ctrl
 on Windows and other Linux). The nouns (`StandardAction`, `AppAction`, `DefaultChord`, `Primary`,
-`Keymap`, `Context`, `Platform`) are chordkit's; quire keeps no copy. Add chordkit to your
-workspace by the same git rev as quire's (`docs/workspace-deps.toml`).
+`Keymap`, `Context`, `Platform`) are chordkit's; Bardo keeps no copy. Add chordkit to your
+workspace by the same git rev as Bardo's (`docs/workspace-deps.toml`).
 
 ```text
 use chordkit::{Action, AppAction, AppId, Context, DefaultChord, StandardAction};
@@ -2355,10 +2355,10 @@ fn Editor() -> Element {
   shortcut that is a standard action's shows the chord the keymap really binds it to (Windows Redo is
   Ctrl+Y). `Shortcut::standard(action)` is the action's chord on our desktop; `Shortcut::custom(keys)`
   is refused with chordkit's `Conflict` when a standard action has the chord or the desktop keeps it.
-- **What quire resolves itself.** Clipboard chords on `EditSurface` and the secure field, the
+- **What Bardo resolves itself.** Clipboard chords on `EditSurface` and the secure field, the
   desktop's Space switch (`space_switch::space_pressed(&keymap, ..)` reads the platform's
   Switch-to-Space action), an app's own Spaces (`SwitchChord::Primary`), the pane stack's back chord
-  (the action `quire.pane-back`, Primary+`[`, registered by `PaneStack`), raw-key typed text, a
+  (the action `bardo.pane-back`, Primary+`[`, registered by `PaneStack`), raw-key typed text, a
   list's, menu's and pop-up's type-ahead, and the window's wheel zoom (Primary+wheel). None reads a
   modifier.
 - **Where the keymap comes from.** `Ds` loads it from the `KeySource` in the root context. A launch
@@ -2372,7 +2372,7 @@ fn Editor() -> Element {
   settings reloads the keymap. An app that builds a keymap of its own on the system's, outside any
   window, takes `ds_blitz::system_key_source(platform, lookup)` (the config directory read through
   its lookup) and loads and watches the `KeySource` it returns (`source()`, `watch`).
-  quire does not depend on keycap: our desktop's launcher plugs its source in,
+  Bardo does not depend on keycap: our desktop's launcher plugs its source in,
 
   ```text
   let config = AppConfig::new("Mail", size).with_keymap_source(Box::new(keycap_client::Source::connect()));
@@ -2391,7 +2391,7 @@ fn Editor() -> Element {
   (`Primary+Shift+1`) needs the base key from the physical `RawKey::code`; letters and digits are
   fine. `Shortcut` text for a menu shows the shortcut as declared unless it is a standard
   action's, whose live chord is drawn. The Blitz fork's text-editing hook (word moves, line deletes,
-  `blitz-dom` `ACTION_MODS`) still accepts Ctrl and Super itself; quire will feed it the keymap's
+  `blitz-dom` `ACTION_MODS`) still accepts Ctrl and Super itself; Bardo will feed it the keymap's
   text actions in the fork lane.
 
 ### Migrating a consumer

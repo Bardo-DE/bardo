@@ -253,7 +253,7 @@ fn the_shape_check_is_short_on_topic_plain_and_free_of_developer_words() {
 }
 
 fn planner_said(calls: &[&str]) -> ModelExchange {
-    let mut e = exchange(&["quire_answer"], "text", "the person asked");
+    let mut e = exchange(&["bardo_answer"], "text", "the person asked");
     e.answer = ExchangeAnswer::Replied {
         text: String::new(),
         calls: calls

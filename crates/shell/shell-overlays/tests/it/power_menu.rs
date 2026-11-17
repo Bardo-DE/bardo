@@ -1,7 +1,7 @@
 //! The power menu on the harness, following a `PowerMenuLink` the test writes as the daemon does,
 //! over the fake session service: the offers it publishes are the ones the buttons show, and the
 //! `SessionCommand::Run` it is sent is the choice made, so nothing here can reach logind.
-//! Hidden it draws nothing; open, quire's Alert on a Sheet centred full-output (it dims nothing),
+//! Hidden it draws nothing; open, Bardo's Alert on a Sheet centred full-output (it dims nothing),
 //! the question for the opening's action, its buttons (that action first and the default, then the
 //! other offered ones, then Cancel) and the blur element covering exactly the sheet; then the
 //! keyboard and pointer (Return presses the default, Tab moves, Space presses, Escape cancels, a
@@ -76,7 +76,7 @@ fn primary(harness: &Harness) -> Option<String> {
     harness.text_of(".ds-button[*|data-answers=return]")
 }
 
-/// Whether the keyboard focus is on the default button (quire's focus ring is there).
+/// Whether the keyboard focus is on the default button (Bardo's focus ring is there).
 fn ring_on_primary(harness: &Harness) -> bool {
     harness.focus_of(".ds-button[*|data-answers=return]")
 }

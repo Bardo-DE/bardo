@@ -1,6 +1,6 @@
 //! `appearance.toml` as a settings document.
 
-use super::{AppearanceFile, quire_schema};
+use super::{AppearanceFile, bardo_schema};
 use settings_store::{FileName, Format, Limits, SettingsDoc};
 
 impl SettingsDoc for AppearanceFile {
@@ -8,6 +8,6 @@ impl SettingsDoc for AppearanceFile {
     const FORMAT: Format = Format::Toml;
 
     fn limits() -> Limits {
-        Limits::of_schema(&quire_schema())
+        Limits::of_schema(&bardo_schema())
     }
 }

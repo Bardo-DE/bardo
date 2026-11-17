@@ -16,7 +16,7 @@ use shell_ui_kit::links::{Corner, CornerLink};
 use ui_behaviour::hot_corner::CornerParams;
 use ui_harness::{Harness, Input, Viewport};
 
-/// quire's fixed corner timing.
+/// Bardo's fixed corner timing.
 fn dwell() -> Duration {
     CornerParams::default().dwell
 }

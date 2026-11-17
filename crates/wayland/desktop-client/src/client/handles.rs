@@ -26,11 +26,11 @@ use desktop_protocols::client::bardo_desktop_v1::{
 use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::BardoShellV1;
 
 use super::capture::Live;
+use crate::bardo::WindowObject;
 use crate::keys::{
     AppKey, CaptureId, GroupKey, HeadKey, ModeKey, SpaceKey, SurfaceKey, ToplevelKey, WorkspaceKey,
 };
 use crate::names::OutputName;
-use crate::quire::WindowObject;
 
 /// The bound globals (each present only when offered) and the objects they created.
 #[derive(Debug, Default)]
@@ -41,9 +41,9 @@ pub(super) struct Handles {
     pub(super) output_manager: Option<ZwlrOutputManagerV1>,
     pub(super) copy_capture: Option<ExtImageCopyCaptureManagerV1>,
     pub(super) output_source: Option<ExtOutputImageCaptureSourceManagerV1>,
-    pub(super) quire_manager: Option<BardoDesktopManagerV1>,
+    pub(super) bardo_manager: Option<BardoDesktopManagerV1>,
     /// Bound only when the caller holds the shell role.
-    pub(super) quire_shell: Option<BardoShellV1>,
+    pub(super) bardo_shell: Option<BardoShellV1>,
     pub(super) shm: Option<WlShm>,
     /// The seat activation acts on: the first one announced.
     pub(super) seat: Option<WlSeat>,

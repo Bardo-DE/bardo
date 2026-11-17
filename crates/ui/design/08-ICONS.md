@@ -96,7 +96,7 @@ either style, with no stroke. Only permissively licensed sources ship.
 
 | Icon | Source | Licence | State |
 | --- | --- | --- | --- |
-| `Download` | quire's own drawing (2026-10-20, owner's pick of a reference style): an arrow with an open chevron head over a baseline, the solid glyph's silhouette | ours | shipped |
+| `Download` | Bardo's own drawing (2026-10-20, owner's pick of a reference style): an arrow with an open chevron head over a baseline, the solid glyph's silhouette | ours | shipped |
 | `Upload` | Bootstrap Icons 1.13.2 `cloud-upload`, scaled by 22/16 from its 16 grid and moved 1 unit so the 1 px padding holds; its `evenodd` is dropped, each path being one simple contour | MIT, `LICENSE-bootstrap.txt` | shipped |
 | `Sparkles` | Remix Icon 4.6.0 `sparkling-line`, verbatim (the Apache-2.0 release; later releases carry a restrictive licence, so the version is pinned) | Apache-2.0, `LICENSE-remixicon.txt` | shipped |
 | `LogOut` | SVG Repo download `logout-svgrepo-com.svg`, SVG Repo Mixer Tools, no author or licence in the file; its page could not be reached | unconfirmed | not shipped: the Lucide outline stays |
@@ -138,7 +138,7 @@ no solid glyph carries a stroke attribute.
 | `Mail` | Tabler filled `mail` |
 | `MailOpen` | Tabler filled `mail-opened` |
 | `Tag` | Tabler filled `tag` |
-| `Refresh` | quire's own sync drawing (2026-10-20): two clockwise arcs, solid heads |
+| `Refresh` | Bardo's own sync drawing (2026-10-20): two clockwise arcs, solid heads |
 | `Send` | Tabler filled `send` |
 | `Command` | Phosphor Fill `command` |
 | `Columns` | Tabler filled `columns-3` |
@@ -206,7 +206,7 @@ no solid glyph carries a stroke attribute.
 | `Terminal` | Phosphor Fill `terminal-window` |
 | `StickyNote` | Phosphor Fill `note` |
 | `Camera` | Tabler filled `camera` |
-| `Download` | quire's own drawing (2026-10-20): arrow, open chevron head, baseline |
+| `Download` | Bardo's own drawing (2026-10-20): arrow, open chevron head, baseline |
 | `Upload` | Phosphor Fill `upload-simple` |
 | `Copy` | Tabler filled `copy` |
 | `Link` | Tabler filled `link` |
@@ -264,9 +264,9 @@ Glyphs are data, not markup strings. Source:
 - `geometry.rs`: one `const NAME: &[Shape]` per glyph, transcribed exactly from Lucide
   (for example `STAR`, geometry.rs:13-15).
 
-Changes for quire (settled in PLAN "Design: `<ds>`"):
+Changes for Bardo (settled in PLAN "Design: `<ds>`"):
 
-| mailo today | quire |
+| mailo today | Bardo |
 | --- | --- |
 | `pub(super)` | `pub` |
 | stroke from CSS `.ic` (mod.rs:186) | stroke as SVG attributes, colour `currentColor`, because usvg in Blitz may not resolve CSS on SVG (spike S6) |
@@ -338,7 +338,7 @@ rim and highlight are `--hair`.
   3. `NeedsAttention` status uses `--warn` for the recoloured mask (proposed).
 - Blitz: the recoloured tray icon is a `mask-image` data URI with `background:
   currentColor`, the same path as the S6 fallback.
-- Settled mechanics (tray gaps, quire Q6): `ds::prelude::IconSource::{Glyph(Icon), Symbolic(ExternalIcon),
+- Settled mechanics (tray gaps, Bardo Q6): `ds::prelude::IconSource::{Glyph(Icon), Symbolic(ExternalIcon),
   Image(ExternalIcon)}`, `ExternalIcon { url: IconUrl, size: IconSize }`. `IconUrl` is a `data:`
   or `file:` URL only (`png`, `svg`, `file`, `parse` constructors). `Symbolic` renders
   `span.ds-ext-icon[data-kind=symbolic]` with an inline `mask-image:url(...)` over
@@ -440,7 +440,7 @@ by code (settled, PLAN "Icons" item 1).
   Sample 1024 points (256 per quadrant) evenly in `t`, then fit cubic Béziers
   (4 segments per quadrant, max error 0.25 px at 1024) for the SVG form. The raster mask
   is computed analytically per pixel with 4x4 supersampling for anti-aliasing.
-- One function owns the shape: `quire::icon::plate::path(size) -> Path` and
+- One function owns the shape: `bardo::icon::plate::path(size) -> Path` and
   `mask(size) -> AlphaImage` (proposed names). Nothing else draws a plate.
 
 ### 2.2 Canvas and plate grid (proposed)
@@ -540,7 +540,7 @@ For the bar, tray and any place that shows the app in one colour:
   `square-terminal`, Notes → `sticky-note`, Photos → `image`, Settings → `settings`), drawn
   by 1.2 rules, exported as a freedesktop `-symbolic.svg` with fill/stroke `#bebebe` (the
   freedesktop symbolic convention, so GTK/Qt recolour it too).
-- Inside quire it is never loaded from disk: the shell uses the `Icon` variant directly.
+- Inside Bardo it is never loaded from disk: the shell uses the `Icon` variant directly.
 
 ### 2.8 The language: abstract, paper and ink (proposed, round two, 2026-09-24)
 
@@ -840,7 +840,7 @@ new subject. Same model as the hero; no mixing models inside one set.
 
 ### 3.7 Post-processing in Rust (settled steps, proposed tool name)
 
-A quire tool (proposed: `cargo run -p quire-icons -- build <app-id>`):
+A Bardo tool (proposed: `cargo run -p bardo-icons -- build <app-id>`):
 
 1. Background removal: the flat grey background is keyed out to alpha (the brief asks for a
    plain background so this is a colour-distance key, not a segmentation model; proposed
@@ -946,12 +946,12 @@ Recorded in `docs/licensing-references.md` (settled location, PLAN "Icons"):
 | ComfyUI | GPL-3.0 | tool only, never shipped or linked |
 | vtracer | MIT | tool only |
 | Hosted services (only if 3.10 happens) | provider terms | output ownership clause, date read |
-| App icons (outputs) | our own licence | "generated with <model>, post-processed by quire-icons"; recipes committed |
+| App icons (outputs) | our own licence | "generated with <model>, post-processed by bardo-icons"; recipes committed |
 | Third-party app icons | their own | never redistributed; rendered from the user's installed theme at runtime |
 
 ## 6. Acceptance
 
-An app icon passes when all of these hold (checked by `quire-icons check`, proposed):
+An app icon passes when all of these hold (checked by `bardo-icons check`, proposed):
 
 1. Silhouette: at every export size, the icon's alpha mask differs from `plate::mask(size)`
    by at most 1 px along any edge normal (compare the 0.5 alpha contour).

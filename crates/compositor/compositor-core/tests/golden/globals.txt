@@ -25,7 +25,7 @@ XdgToplevelIcon - yes yes yes
 XdgToplevelTag - yes yes yes
 XdgForeign - yes yes yes
 SystemBell - yes yes yes
-QuireWindow - yes yes yes
+BardoWindow - yes yes yes
 LayerShell - yes yes no
 SessionLock Lock yes yes no
 Seat - yes yes yes
@@ -55,5 +55,5 @@ WlrToplevel Windows yes yes no
 Workspace Windows yes yes no
 ImageCapture Screen yes yes no
 ToplevelCapture Screen yes yes no
-QuireDesktop - no yes no
-QuireShell - no no no
+BardoDesktop - no yes no
+BardoShell - no no no

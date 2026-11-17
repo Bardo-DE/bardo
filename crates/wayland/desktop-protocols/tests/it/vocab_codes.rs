@@ -46,7 +46,7 @@ macro_rules! check_side {
         use $side::bardo_trusted_surface_v1::{
             bardo_trusted_manager_v1 as trusted, bardo_trusted_surface_v1 as trusted_surface,
         };
-        use $side::bardo_window_v1::bardo_window_v1 as quire_window;
+        use $side::bardo_window_v1::bardo_window_v1 as bardo_window;
         use $wayland::protocol::wl_output;
 
         same_codes::<vocab::ActorKind, desktop::ActorKind>();
@@ -81,13 +81,13 @@ macro_rules! check_side {
         same_codes::<vocab::TrialAnswer, shell::TrialAnswer>();
         same_codes::<vocab::FullScreenBar, shell::FullScreenBar>();
         same_codes::<vocab::Motion, shell::Motion>();
-        same_codes::<vocab::WindowRole, quire_window::WindowRole>();
-        same_codes::<vocab::TileZone, quire_window::TileZone>();
-        same_codes::<vocab::PlaceTarget, quire_window::PlaceTarget>();
-        same_codes::<vocab::PlacementMark, quire_window::PlacementMark>();
-        same_codes::<vocab::Emphasis, quire_window::Emphasis>();
-        same_codes::<vocab::FrameMode, quire_window::FrameMode>();
-        same_codes::<vocab::Edited, quire_window::Edited>();
+        same_codes::<vocab::WindowRole, bardo_window::WindowRole>();
+        same_codes::<vocab::TileZone, bardo_window::TileZone>();
+        same_codes::<vocab::PlaceTarget, bardo_window::PlaceTarget>();
+        same_codes::<vocab::PlacementMark, bardo_window::PlacementMark>();
+        same_codes::<vocab::Emphasis, bardo_window::Emphasis>();
+        same_codes::<vocab::FrameMode, bardo_window::FrameMode>();
+        same_codes::<vocab::Edited, bardo_window::Edited>();
         same_codes::<vocab::SensitivityLevel, sensitive::SensitivityLevel>();
         same_codes::<vocab::RunMode, agent::LeaseMode>();
         same_codes::<vocab::RevokeReason, lease::RevokeReason>();

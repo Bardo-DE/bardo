@@ -1,5 +1,5 @@
 //! The shell's own sheets, linted as a consumer's CSS under the strictest profile (the coherence
-//! rules, quire's ARCHITECTURE.md "Repo rules"): quire's sheets are quire's to lint
+//! rules, Bardo's ARCHITECTURE.md "Repo rules"): Bardo's sheets are Bardo's to lint
 //! (`ui-shell/tests/self_lint.rs`); these are the ones that moved here, so every rule a consumer
 //! obeys holds for them, one sheet at a time. One rule is set aside whole: [`Rule::DsInternals`],
 //! because these sheets style the `ds-*` classes of the components this crate draws (the markup
@@ -15,16 +15,16 @@ use ui_lint::{LintConfig, Offence, Profile, Rule, stylesheet};
 /// (`AnimatedEmoji { disc }`).
 const INLINE_VARS: &[&str] = &["--layers", "--i", "--swipe-dx", "--em-disc"];
 
-/// The sheets this crate owns: every component sheet of the shell's stylesheet that quire's
+/// The sheets this crate owns: every component sheet of the shell's stylesheet that Bardo's
 /// (`ds` and `ui-shell`) do not list.
 fn own_sheets() -> Vec<(&'static str, &'static str)> {
-    let quires: HashSet<&str> = ui_shell::component_sheets()
+    let bardo: HashSet<&str> = ui_shell::component_sheets()
         .iter()
         .map(|(name, _)| *name)
         .collect();
     shell_kit::component_sheets()
         .into_iter()
-        .filter(|(name, _)| !quires.contains(name))
+        .filter(|(name, _)| !bardo.contains(name))
         .collect()
 }
 

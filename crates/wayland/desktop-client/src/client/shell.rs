@@ -7,11 +7,11 @@ use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::{self, BardoShell
 use desktop_protocols::vocab::{AskId, HeldMods, TrialId, WindowEntries};
 
 use super::wire::{Wire, raw, vocab};
+use crate::bardo::{DisplayTrial, PermissionAsk, RevealOutput, ShellEvent};
 use crate::event::DesktopEvent;
 use crate::geometry::{Point, Rect};
 use crate::keys::SurfaceKey;
 use crate::names::{AppId, SpaceId, ToplevelIdentifier};
-use crate::quire::{DisplayTrial, PermissionAsk, RevealOutput, ShellEvent};
 
 /// The key the caller registered `surface` under, if it did.
 fn key_of(wire: &Wire, surface: &WlSurface) -> Option<SurfaceKey> {

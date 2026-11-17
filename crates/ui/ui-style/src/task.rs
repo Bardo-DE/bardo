@@ -1,6 +1,6 @@
 //! Tasks the design system spawns, and how they end.
 //!
-//! Every task quire spawns is owned by a scope, and dioxus drops it when that scope drops. A
+//! Every task Bardo spawns is owned by a scope, and dioxus drops it when that scope drops. A
 //! task spawned for a hook's owner rather than for the component whose handler started it
 //! ([`spawn_in`]) is registered with the owner the same way, through the owner's own `spawn`:
 //! `Runtime::spawn(scope, …)` alone runs the task *for* the scope without registering it, so it

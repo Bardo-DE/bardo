@@ -45,7 +45,7 @@
 #   PREFIX/share/bardo/updater/release.pub                   the trust anchor (only with --pubkey)
 #
 # A reinstall over the old layout removes the old names (slipway-apply, slipway-rollback, slipway-health in
-# PREFIX/libexec, slipway.service, org.quire.slipway.policy, org.quire.Updates1.service); the old
+# PREFIX/libexec, slipway.service, org.bardo.slipway.policy, org.bardo.Updates1.service); the old
 # system settings and key (SYSCONFDIR/slipway, PREFIX/share/slipway) are moved to the new places once.
 #
 # The system settings file is the one place the install root and the key path are written down: the
@@ -312,15 +312,15 @@ drop "$prefix/libexec/slipway-apply"
 drop "$prefix/libexec/slipway-rollback"
 drop "$prefix/libexec/slipway-health"
 drop "$prefix/lib/systemd/user/slipway.service"
-drop "$prefix/share/polkit-1/actions/org.quire.slipway.policy"
-drop "$prefix/share/dbus-1/services/org.quire.Updates1.service"
+drop "$prefix/share/polkit-1/actions/org.bardo.slipway.policy"
+drop "$prefix/share/dbus-1/services/org.bardo.Updates1.service"
 
 # The old system settings and key move to the new places, once (an existing new file wins).
 old_settings=$destdir$sysconfdir/slipway/config.toml
 if [ ! -e "$destdir$sysconfdir/bardo/updater.toml" ] && [ -f "$old_settings" ]; then
     make_dir "$destdir$sysconfdir/bardo"
     mv "$old_settings" "$destdir$sysconfdir/bardo/updater.toml"
-    sed -i 's#/share/slipway/release.pub#/share/bardo/updater/release.pub#; s#"/opt/quire#"/opt/bardo#' "$destdir$sysconfdir/bardo/updater.toml"
+    sed -i 's#/share/slipway/release.pub#/share/bardo/updater/release.pub#; s#"/opt/bardo#"/opt/bardo#' "$destdir$sysconfdir/bardo/updater.toml"
     rmdir "$destdir$sysconfdir/slipway" 2>/dev/null || true
     changed=$((changed + 1))
     echo "moved $sysconfdir/slipway/config.toml to $sysconfdir/bardo/updater.toml"

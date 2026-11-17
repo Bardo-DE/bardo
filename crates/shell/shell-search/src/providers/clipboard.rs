@@ -1,4 +1,4 @@
-//! The clipboard history as launcher rows (quire design/09 H4: what you copied is one keystroke
+//! The clipboard history as launcher rows (Bardo design/09 H4: what you copied is one keystroke
 //! away). The history is the clipboard service's; this provider only reads it.
 //!
 //! `query` answers with [`clip_items`]: typed text matches entries' text (images match "image" and

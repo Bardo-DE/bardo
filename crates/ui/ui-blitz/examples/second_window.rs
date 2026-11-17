@@ -33,8 +33,8 @@ struct Opens(Arc<AtomicUsize>);
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(
         App,
-        AppConfig::new("quire: first window", WindowSize::new(480, 320))
-            .with_app_id(AppId("dev.quire.SecondWindow".to_owned()))
+        AppConfig::new("bardo: first window", WindowSize::new(480, 320))
+            .with_app_id(AppId("dev.bardo.SecondWindow".to_owned()))
             .with_context(Opens::default()),
     )?;
     println!("autopilot: launch returned");

@@ -1,4 +1,4 @@
-//! The frame documents inside a quire document, found by walking its `iframe` elements (and
+//! The frame documents inside a Bardo document, found by walking its `iframe` elements (and
 //! theirs): where ui-blitz reads each frame's `data-frame-tag`, and finds a frame's document
 //! again by its id to read a clicked link's text.
 

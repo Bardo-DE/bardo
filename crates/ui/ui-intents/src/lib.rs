@@ -1,9 +1,9 @@
-//! What a quire app tells the companion about itself, as presentational data: the thing a row
+//! What a Bardo app tells the companion about itself, as presentational data: the thing a row
 //! stands for, the chips a prompt carries, and the summon seam's plain values (design/32
 //! section 5) and the voice marks (voice.md section 3.6). No agent type is named here: `action-ui-adapter`, in the docket repo, converts between
-//! these marks and the agent's wire, so quire never links an agent crate.
+//! these marks and the agent's wire, so Bardo never links an agent crate.
 //!
-//! `ds` re-exports everything in this crate from `ui_components::companion`, so an app that draws quire
+//! `ds` re-exports everything in this crate from `ui_components::companion`, so an app that draws Bardo
 //! components takes these names from there.
 
 pub mod chip;

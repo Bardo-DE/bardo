@@ -1,4 +1,4 @@
-//! The service values as quire's status glyph states (design/26 section 5.1), pure: which Wi-Fi,
+//! The service values as Bardo's status glyph states (design/26 section 5.1), pure: which Wi-Fi,
 //! battery, Bluetooth and volume state each item hands its glyph.
 //!
 //! The glyph decides the moment from its own table; these only say what is true.

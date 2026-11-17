@@ -317,7 +317,7 @@ fn ask_is_a_command_with_its_words_joined_and_nothing_else_is_taken() {
 }
 
 #[tokio::test]
-async fn the_conversation_an_ask_started_is_listed_loaded_and_forked_by_quire_do_sessions() {
+async fn the_conversation_an_ask_started_is_listed_loaded_and_forked_by_bardo_do_sessions() {
     let run = ask(
         vec![view(AnswerPhase::Done, text(&["Nothing today."]))],
         false,
@@ -326,7 +326,7 @@ async fn the_conversation_an_ask_started_is_listed_loaded_and_forked_by_quire_do
     )
     .await;
     let session = run.seen.lock().expect("lock").asked[0].session.clone();
-    let listed = run.desk.quire(&["sessions"]).await;
+    let listed = run.desk.bardo(&["sessions"]).await;
     let doc: serde_json::Value = serde_json::from_str(&listed.stdout).expect("json");
     assert_eq!(doc["sessions"][0]["session"], session.as_str(), "{doc}");
     let loaded = run.desk.tty(&["sessions", "load", session.as_str()]).await;
@@ -337,7 +337,7 @@ async fn the_conversation_an_ask_started_is_listed_loaded_and_forked_by_quire_do
     );
     let forked = run
         .desk
-        .quire(&["sessions", "fork", session.as_str()])
+        .bardo(&["sessions", "fork", session.as_str()])
         .await;
     assert_eq!(forked.exit, Exit::Done, "{forked:?}");
 }

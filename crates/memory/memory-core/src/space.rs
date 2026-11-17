@@ -50,7 +50,7 @@ pub struct SpaceMeta {
     pub replica: ReplicaId,
     /// How its files are held.
     pub vault: VaultKind,
-    /// The on-disk format number (`format: quire-memory N`).
+    /// The on-disk format number (`format: bardo-memory N`).
     pub format: u32,
 }
 

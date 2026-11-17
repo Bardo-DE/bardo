@@ -1,18 +1,18 @@
 /* The launcher (design/13 §13.3.9, design/20 §1.3). The panel's body is the 680 x 460 surface
-   (its size is written inline from the layer's constants): quire's palette, embedded, lays its
+   (its size is written inline from the layer's constants): bardo's palette, embedded, lays its
    card out at the top of it, as tall as its content (the macOS polish pass), so nothing is
    drawn around or under the card. The panel's box carries the shell type scale's inputs. The
    foot is an empty element after the card whose top is the card's bottom edge (launcher/card.rs
    measures it). The catcher is an empty, transparent layer that only takes presses, sized by
    the viewport (an absolutely placed box with `inset:0` and no content got no hit area on
-   Blitz). Everything drawn is quire's. */
+   Blitz). Everything drawn is bardo's. */
 .shell-launcher{ position:absolute; inset:0; }
 .shell-launcher-catcher{ width:100vw; height:100vh; }
 .shell-launcher-body{ display:flex; flex-direction:column; position:relative; }
 /* The permissions mode sits at the field's trailing edge, over the card's top row. */
 .shell-launcher-mode{ position:absolute; top:var(--s-16); right:var(--s-16); display:flex; align-items:center; gap:var(--s-8); }
 .shell-launcher-foot{ flex:none; height:0; }
-/* The preview pane is quire's, set in the palette's aside; its
+/* The preview pane is bardo's, set in the palette's aside; its
    wrapper only fills the aside's width. The body widens to the card's and the pane's room while
    the pane is there (written inline from the layer's constants). */
 .shell-launcher-preview{ display:flex; flex-direction:column; flex:1; min-width:0; }
@@ -25,9 +25,9 @@
    the activity indicator under them. */
 .shell-answer-progress{ margin:var(--s-8) 0 0; }
 .shell-answer-progress-line{ margin:0 0 var(--s-4); font-size:var(--fs-caption); color:var(--ink-soft); }
-/* Result rows: quire's palette lays its rows out at `--row-settings-h` (48), a form row's. A
+/* Result rows: bardo's palette lays its rows out at `--row-settings-h` (48), a form row's. A
    command row is a Spotlight row, 38 pt, so the panel sets that one token for its subtree (the
-   preview pane's rows are the only others in it). To be replaced by a palette row token in quire. */
+   preview pane's rows are the only others in it). To be replaced by a palette row token in bardo. */
 .shell-launcher-body{ --row-settings-h:38px; }
 /* A helper's card in the pane: a quiet column that scrolls when the form is taller than the pane. */
 .shell-helper-card{ display:flex; flex-direction:column; gap:var(--s-8); width:100%; height:100%; padding:var(--s-8); overflow-y:auto; }

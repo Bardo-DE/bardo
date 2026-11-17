@@ -68,7 +68,7 @@ pub enum Input {
     FileDrag(FileDragInput),
     /// The input method.
     Ime(ImeInput),
-    /// One key event exactly as given: a physical code the quire keys cannot name (punctuation,
+    /// One key event exactly as given: a physical code Bardo keys cannot name (punctuation,
     /// F-keys), a release alone, a repeat, a side of the keyboard, the text it types.
     RawKey(RawKeyInput),
     /// `html` and its plain `text` put on the clipboard as a browser's copy would, then the

@@ -1,8 +1,8 @@
-//! One notification drawn as quire's `NotificationCard` (design/13 §13.3.6 "Banner", "Content"),
+//! One notification drawn as Bardo's `NotificationCard` (design/13 §13.3.6 "Banner", "Content"),
 //! shared by the banners and the notification center so both read alike.
 //!
 //! bardo-shell supplies the words (the app's icon and name, the age, the body's runs, the actions)
-//! and hears the presses; quire draws the plate, the two-to-six-line body, the actions and the
+//! and hears the presses; Bardo draws the plate, the two-to-six-line body, the actions and the
 //! close button on hover, the group's count and layers, and the swipe.
 
 pub mod actions;
@@ -50,7 +50,7 @@ pub enum CardPress {
 }
 
 /// `note` as a card; `count` notifications stand behind it (1: no chip, no layers). `id` names
-/// quire's plate for a region (a banner's `toast-<id>`); `swipe` lets a drag dismiss it;
+/// Bardo's plate for a region (a banner's `toast-<id>`); `swipe` lets a drag dismiss it;
 /// `on_hover` hears the pointer come and go; `common` puts the caller's own data on the card's
 /// root (a list's keyboard ring).
 #[component]

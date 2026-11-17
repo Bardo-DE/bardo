@@ -121,7 +121,7 @@ fn checking_asks_the_service_shows_a_spinner_and_then_what_it_found() {
     service.becomes(offered(UpdatePhase::Available));
     showing(&mut harness, "the offer", UPDATE_NOW);
     let row = row_text(&harness);
-    assert!(row.contains("Quire 0.4.0"), "{row}");
+    assert!(row.contains("Bardo 0.4.0"), "{row}");
     assert!(row.contains("45.6 MB"), "{row}");
     assert_eq!(
         harness.count(CHECK),
@@ -173,7 +173,7 @@ fn update_now_downloads_with_a_bar_installs_without_one_and_ends_with_log_out() 
     });
     showing(&mut harness, "Log Out", LOG_OUT);
     let row = row_text(&harness);
-    assert!(row.contains("Quire 0.4.0"), "{row}");
+    assert!(row.contains("Bardo 0.4.0"), "{row}");
     assert!(row.contains("Log out to finish the update"), "{row}");
     assert_eq!(sandbox.leaves().started(), 0, "nothing logs out by itself");
 

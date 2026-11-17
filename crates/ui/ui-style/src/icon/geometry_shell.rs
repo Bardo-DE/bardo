@@ -470,7 +470,7 @@ const CAMERA: &[Shape] = &[
     },
 ];
 
-/// quire's own drawing: a straight arrow with an open chevron head, over a separate baseline.
+/// Bardo's own drawing: a straight arrow with an open chevron head, over a separate baseline.
 const DOWNLOAD: &[Shape] = &[
     Shape::Path("M12 3v12"),
     Shape::Path("m6 10 6 6 6-6"),

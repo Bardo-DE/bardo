@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The portable core (quire design/36 section 1, rule 3 and section 4): everything except the
+# The portable core (Bardo design/36 section 1, rule 3 and section 4): everything except the
 # desktop itself builds without the desktop. Each core below must `cargo check` with the
 # features named, and its normal dependency tree must reach no D-Bus (zbus, zvariant). The
 # account-client build an accounts-only consumer uses (no features) must also reach no inference:

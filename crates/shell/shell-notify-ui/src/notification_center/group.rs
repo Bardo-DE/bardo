@@ -1,8 +1,8 @@
-//! One row of the center's list, as quire's `List` takes it: a group's
-//! header (quire's `GroupHeader`: the app's icon and name, the count, "N more" or "Show less",
-//! Clear) keyed by its `AppKey`, or a card (quire's `NotificationCard` through [`NoteCard`], the
+//! One row of the center's list, as Bardo's `List` takes it: a group's
+//! header (Bardo's `GroupHeader`: the app's icon and name, the count, "N more" or "Show less",
+//! Clear) keyed by its `AppKey`, or a card (Bardo's `NotificationCard` through [`NoteCard`], the
 //! newest stacked over the rest while folded) keyed by its `NotificationId`. The keyboard's
-//! ring is quire's: the header or card it is on carries `data-focus=ring`. The gap between rows
+//! ring is Bardo's: the header or card it is on carries `data-focus=ring`. The gap between rows
 //! is the row's own padding (`.shell-nc-item`), never the list's.
 
 use dioxus::prelude::*;

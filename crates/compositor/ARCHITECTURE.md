@@ -22,7 +22,7 @@ the binaries and the test kit (P0-Z2). casement-intents joins at P4-Z, composito
 | `compositor-layout` | the `SceneLayout` seam: `SceneSpec`, `Arrangement`, `RustScene`, `spec_of(&Model)`; taffy only in `crates/casement-layout/src/taffy_bridge/` | none |
 | `compositor-motion` | `MotionBook` of ui-motion spring legs, `retarget`, `sample` into an `Eq` `FrameScene` in 1/120 px | none |
 | `compositor-render` | the `Compositor` renderer trait, `CasementElement`, `output_elements` (FrameScene to elements), `render_output` (damage-tracked), blur v0, the lock cover, output read-back (`pass::capture_output`, P1-Z), `golden` (feature `testing`); the workspace's one unsafe module `src/gl_raw.rs` (A17) | the GPU through smithay |
-| `compositor-wayland` | one module per protocol: a `<Protocol>Part` (smithay's state plus our BTreeMap tables), `Part::new` behind the I7 filter, `on_*` (request to `Event`s), `apply_*` (effect to wire); `WaylandStates`, `GlobalFilter`, `ClientState`, `convert`; from P2-Z `capture_source` (window capture) and, behind the feature `quire` (default on, A8), `quire::{desktop, shell}` (the private `bardo_desktop_manager_v1` and `bardo_shell_v1` servers) | the wire |
+| `compositor-wayland` | one module per protocol: a `<Protocol>Part` (smithay's state plus our BTreeMap tables), `Part::new` behind the I7 filter, `on_*` (request to `Event`s), `apply_*` (effect to wire); `WaylandStates`, `GlobalFilter`, `ClientState`, `convert`; from P2-Z `capture_source` (window capture) and, behind the feature `bardo` (default on, A8), `bardo::{desktop, shell}` (the private `bardo_desktop_manager_v1` and `bardo_shell_v1` servers) | the wire |
 | `compositor-backend` | the headless backend (virtual outputs, vblank source, render-cost model, `VirtualInput: InputBackend`), winit (a window is one output at its own size and scale, drawn flipped, and one seat whose keyboard and pointer go through the generic input conversion; no touch), the session seam, the soft-GPU pieces (`SoftPixman`, `FixedUdmabuf`, A4); from P1-Z the tty seams (`tty::{Kms, KmsOpener, ScanoutSurface, TtySession, DeviceSource}`, `input::InputFeed`, `gpu::{RenderNodes, FormatSource}`), `TtyBackend` over them, and their thin real adapters (`*_real.rs`) compiled only under the features `tty` and `libinput` (off by default; A2) | devices under the features, none headless |
 | `compositor-agent` | the privileged-connection hand-out (`connection_role`, `hand_out`: the role check on what the bus thread proved, and the socket pair; P2-Z types, P2-Q2 bodies), agent seat, EIS, masked capture, trusted surface, kill (P4); from P2-T3 `eis` (the remote EIS server for the RemoteDesktop portal: `open`, `RemoteEisSource`, `RemoteInput`, `portal_may_connect`, by the role the caller proved; every event tagged `Origin::Remote`) | sockets |
 | `compositor-ipc` | the inject and wait grammars (its `compositor-backend` dependency is optional, on with `debug-inject`; `serve_debug_at(address)` takes the bus address, the library reads no environment); `org.bardo.Compositor.Debug1` (feature `debug-inject`), `org.bardo.Compositor1` (P2-Z: `Connect(role) -> (h)`, `serve_compositor_at(address, CallerSetup)`; every caller is rate counted and proven through the caller-identity library on the bus thread before a bounded queue of `CONNECT_QUEUE` into the loop: `CallerCheck`, `Intake`, `Proven`); `privacy::{PrivacyLink, PrivacyBoard, PrivacyModule}`, the Privacy list for Settings as a live settings module (`org.bardo.SettingsModule1` at `/org/bardo/Compositor1/privacy`); `a11y::{A11yWorker, verify}`, the accessibility-root owner check (PORTAL-15); `shell_calls::{ShellCalls, ZbusShellCalls}`, the one place a binding's D-Bus call is made (A4); `space_registry::{SpaceRegistry, ZbusSpaceRegistry, NoSpaceRegistry, Pace}`, `Spaces1.Register` through `porter_dbus::SpacesProxy` on a background thread (csvc; fake `FakeSpaceRegistry`); `IpcHandles` | D-Bus |
@@ -78,7 +78,7 @@ A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Tim
 | key bindings and their resolution | `compositor-core::input::{Bindings, resolve}`; the shell's own chords come from the desktop keymap, `casement::keymap` (chordkit layers through key-remap-client's `KeycapSource`), behind casement's `[bindings]` entries; a row that asks the shell holds a `shell_verbs::ShellVerb` (desktop-protocols' `shell-verbs`, the type sill's command line parses back), spelled as `sill <verb.argv()>` only where the binding is built |
 | first-sight scale, mode choice, output placement | `compositor-core::output` |
 | the ramp an output is driven with by night light, and which outputs it leaves alone (`night_light.skip_outputs`: a connector name or an output key) | `compositor-core::settings::NightLightSettings::{warming_of, ramp_for}` (pure); driven by `Model` (`model/night_light.rs`) from `Event::NightLightTick(MinuteOfDay)` as `Effect::SetGamma`; a gamma-control client that holds an output with a table of its own wins until it lets go |
-| how strongly the blur behind a layer surface frosts (its shell role picks `BlurStrength`, a surface with none is `Regular`), and Reduce transparency (quire's `appearance.transparency` from `appearance.toml`, live: every blur becomes the scheme's paper at 0.96) | `compositor-core::layer::BlurStrength::of` (pure); `compositor-layout::reduced_stand_in`; `casement::appearance::{stored_in, blur_finish}`; `compositor-render` `BlurLook::of`, `BlurFinish`, `BlurV0Element::with_finish`, `under_finish`; the frame carries both in `LayerDraw::{blur_strengths, finish}` |
+| how strongly the blur behind a layer surface frosts (its shell role picks `BlurStrength`, a surface with none is `Regular`), and Reduce transparency (Bardo's `appearance.transparency` from `appearance.toml`, live: every blur becomes the scheme's paper at 0.96) | `compositor-core::layer::BlurStrength::of` (pure); `compositor-layout::reduced_stand_in`; `casement::appearance::{stored_in, blur_finish}`; `compositor-render` `BlurLook::of`, `BlurFinish`, `BlurV0Element::with_finish`, `under_finish`; the frame carries both in `LayerDraw::{blur_strengths, finish}` |
 | which connection sees which global (I7) | `compositor-core::policy::{advertised, advertised_to}`; a public client is not shown the globals of a power it was refused at connect time (`advertised_to` with `Privilege::hidden_for`) |
 | which global needs the person's consent (the seven `Power`s of the shell protocol's vocabulary), and which desktop service roles are trusted without asking | `compositor-core::policy::{power_of, trusted_powers}`; `power_of` reads the `GLOBALS` table, one row per `GlobalKind` (checked at compile time) |
 | whether a program may use a power: the administrator's floor and the person's book, first match wins (floor refusal, book refusal, floor pre-approval, book allow, the floor's default, a question) | `compositor-core::privilege::{decide, decide_trusted}` over `Floor` and `Book` (pure; the text codecs `Book::{from_toml, to_toml}` and `Floor::from_toml` cap rows, bytes and strings; the files themselves are the composition root's seam) |
@@ -254,7 +254,7 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   `closed`). A selection the client already set stays until another client replaces it, and its sources are not ended. The next use asks
   again. Tests: `a_manager_the_person_switches_off_is_finished` (ext and wlr), `an_input_method_the_person_switches_off_is_unavailable`,
   `a_list_the_person_switches_off_is_finished`.
-- **The program behind an app (`bardo_desktop_app_v1.subject`, version 2; QUIRE-12).** The desktop manager is served at version 2 (the app
+- **The program behind an app (`bardo_desktop_app_v1.subject`, version 2; BARDO-12).** The desktop manager is served at version 2 (the app
   objects take the manager's version; windows and Spaces stay at 1). In an app's burst, right after `identity`, the manager sends
   `subject` to a client that bound it at 2: the text `ClientStanding::subject_text` gives for the first window of the app whose client
   has one (`Privilege::subject_of(window.client)`). `Program` is its image path, `Sandboxed` the sandbox's app id, `Service` its
@@ -265,14 +265,14 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   `hidden: PowerSet` decided at accept (`ClientState::with_standing_under(&Privilege, standing)`), so a power refused before
   the client connected is not advertised to it, and a refusal that comes later changes no registry.
 - **The shell's side.** `bardo_shell_v1` is version 6 (5 carries the question, 6 the display trial below): `permission_ask`/`permission_withdraw` go to every bound object of
-  version 5 or later (`quire/shell_permission.rs`), the part remembers the questions it sent so an object that binds later is
+  version 5 or later (`bardo/shell_permission.rs`), the part remembers the questions it sent so an object that binds later is
   shown them, `permission_answer` becomes `Event::PermissionAnswered` (an answer for a question not sent is ignored),
   `Event::ShellReady` follows the bind of a version 5 object and `Event::ShellGone` the unbind of the last one. The date an
-  answer is stamped with comes from `QuireShellHandler::quire_shell_wall` (the root's `WallClock`), passed to `on_answer`.
+  answer is stamped with comes from `BardoShellHandler::bardo_shell_wall` (the root's `WallClock`), passed to `on_answer`.
   An answer that arrives less than `ANSWER_NOT_BEFORE` (500 ms) after its question was first sent is a protocol error for that
   shell connection only (`bardo_shell_v1::Error::AnsweredTooSoon`): sill's sheet is disarmed for 600 ms, so a faster
   answer did not come from a person looking at it. The part stamps each `SentAsk` with the loop's clock
-  (`QuireShellHandler::quire_shell_now`, the root's `ClockSource`, so a test with the virtual clock decides the edge); a question
+  (`BardoShellHandler::bardo_shell_now`, the root's `ClockSource`, so a test with the virtual clock decides the edge); a question
   shown again to a shell that binds later keeps its first stamp, and an answer that is too soon settles nothing: the question
   stays open. The same rule, with the trial's first-sent stamp, applies to `displays_trial_answer`.
 - **The composition root's half (`pa2-croot`).**
@@ -280,8 +280,8 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   - *The files.* `seams.privacy: Box<dyn PrivacyStore>` (real: `FilePrivacyStore` over `$XDG_STATE_HOME/casement/privacy.toml`, from `StartConfig::state_home`; none for an ephemeral run) is read once before the first client (`privacy::start`: `Event::FloorLoaded`, `Event::BookLoaded`), written by `Effect::SaveBook` (`privacy::keep`), and the floor read again on `SIGHUP` (`privacy::reload_floor`). The floor is `/etc/bardo/privacy.toml` and `privacy.d/*.toml`, or `--system-dir` (`StartConfig::system_dir`, `RunConfig::with_system_dir`; in a build with `testing` or `debug-inject` the files of an injected folder belong to the running user, anywhere else to the administrator). Never an environment variable. The same two builds have a second exception beside the owner: `privacy::writable_image` (`privacy/injected.rs`, called from `clients::Judge::arrival`) takes a program whose image the person can write as a `Program` when the floor was read from an injected folder (`SystemDir::At`) and a row of it names that image, so a scenario's floor can pre-approve what it runs from `build/`; the book never names one, a floor in `/etc/bardo` never does, and a release build has the no-op body (the module is compiled out), so such a program stays `Unverified` and is asked every time.
   - *Test caller rows (cas13).* The third test-only exception, same two features: `clients/dev_callers.rs` reads `desktop-callers.toml` from the injected folder (`SystemDir::At`) through peephole's `TableFiles::load_dev` (a plain file, not a link, owned by the person or root, not group- or world-writable, within the table size cap; anything else adds no row and logs one line, a missing file nothing) and merges it after the system table (`Table::merge`; the system table wins where both name a program). Its rows are `Proof::Dev`, the lowest proof. Two places accept exactly that proof and only in these builds: `dbus::require` (the roles of Compositor1 and the Privacy list: `Proof::Full`, or `Proof::Dev` of the role asked) and `clients::client_standing`/`peer_of` (a Dev service is a `ClientStanding::Service`/`Proven` app). The feature chain is `casement/testing` and `casement/debug-inject` -> `compositor-ipc/dev-rows` -> `caller-identity-dbus/dev-rows`; nothing else enables it and a release build has no `Proof::Dev` at all. Row format: `[[peer]]` with `app`, `role`, `exe = ["/abs/path"]` (no `unit`).
   - *Settings.* `run.rs` creates `PrivacyLink::new()`, gives the bus thread `CallerSetup::desktop(table).with_privacy(link)` (`.with_test_units(...)` under `debug-inject`), reads the edit channel (`privacy::edited`: `edit.into_event(wall.now())`) and publishes `model.privilege().rows()` to the board at start, after every `SaveBook` and every edit.
-  - *The date.* `seams.wall: time::WallClock` (`System` in a real run, `Fixed` in a test; the seam default is the epoch) stamps answers; `QuireShellPart::wall` is a copy of it.
-  - *The accessibility root.* `quire_window.set_a11y_root` reaches the model as no root (`None`); the claim is queued on `seams.a11y` (`A11yChecks`, real: `casement_ipc::a11y::A11yWorker`, fake: `FakeA11y`) with the client's pid from `Processes`, and the verdict becomes `WindowHintChange::A11y` (`a11y::adopt`). A client casement keeps no process for (the hand-outs, a sandbox) never verifies.
+  - *The date.* `seams.wall: time::WallClock` (`System` in a real run, `Fixed` in a test; the seam default is the epoch) stamps answers; `BardoShellPart::wall` is a copy of it.
+  - *The accessibility root.* `bardo_window.set_a11y_root` reaches the model as no root (`None`); the claim is queued on `seams.a11y` (`A11yChecks`, real: `casement_ipc::a11y::A11yWorker`, fake: `FakeA11y`) with the client's pid from `Processes`, and the verdict becomes `WindowHintChange::A11y` (`a11y::adopt`). A client casement keeps no process for (the hand-outs, a sandbox) never verifies.
 
 - **Displays a program changed (CASW-10; the display trial).** A change to the displays made by a client other than the shell (mode,
   scale, position, on or off, through `zwlr_output_manager` `apply` or `zwlr_output_power`) is applied and then kept only if the
@@ -290,7 +290,7 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   `model/display_trial.rs`: the output's previous configuration is stored (the first one per output in the trial), `TimerKey::DisplayTrial`
   is armed for `output::DISPLAY_CONFIRM_WITHIN` (15 s: a bad mode can blank the screen, and someone staring at a black screen is back in
   a quarter of a minute) and `Effect::AskKeepDisplays { trial, within }` goes to the shell as `displays_trial(trial, seconds)`
-  (`quire/shell_trial.rs`, `bardo_shell_v1` version 6). `Event::DisplaysAnswered { trial, answer }` (`displays_trial_answer`) settles it: Keep
+  (`bardo/shell_trial.rs`, `bardo_shell_v1` version 6). `Event::DisplaysAnswered { trial, answer }` (`displays_trial_answer`) settles it: Keep
   keeps, Revert puts the stored configurations back at once (`Effect::ApplyOutput` per output still plugged); the timer firing is a
   Revert. Every end sends `Effect::EndDisplaysTrial` (`displays_trial_end`): answered, timed out, replaced, or the shell changed the
   displays itself (`Requester::Shell` applies and settles a trial in flight as kept; it is never asked). A further `Program` change while
@@ -300,7 +300,7 @@ How the protocol layer carries the contract above (wave 2: `pa2-cwl`).
   The part remembers the one open trial, so a shell that binds (version 6) while it is open is sent `displays_trial` at once with the
   seconds left; a shell older than 6 is never asked and the change is reverted when the time runs out, which is also the fail-safe when
   the shell goes away mid-trial. An answer for a trial that is not open is ignored; one less than `ANSWER_NOT_BEFORE` after the first
-  send is the protocol error `answered_too_soon`. Tests: core `tests/it/display_trial.rs`; wire `protocol/quire_shell_trial.rs`
+  send is the protocol error `answered_too_soon`. Tests: core `tests/it/display_trial.rs`; wire `protocol/bardo_shell_trial.rs`
   (virtual clock, scripted shell).
 
 ## 3. Canonical traits
@@ -333,10 +333,10 @@ impl smithay::backend::input::InputBackend for VirtualInput { /* one event type 
 
 // compositor-wayland (smithay has no module for our protocols): the composition root's side of
 // bardo_window_v1, reached through our own GlobalDispatch2/Dispatch2 impls.
-pub trait QuireWindowHandler: 'static {
-    fn quire_window_part(&mut self) -> &mut QuireWindowPart;
+pub trait BardoWindowHandler: 'static {
+    fn bardo_window_part(&mut self) -> &mut BardoWindowPart;
     fn window_of_toplevel(&self, toplevel: &XdgToplevel) -> Option<WindowId>;
-    fn quire_window_events(&mut self, events: Vec<Event>);
+    fn bardo_window_events(&mut self, events: Vec<Event>);
 }
 ```
 
@@ -345,12 +345,12 @@ wire glue written in the protocol's module (`Part::new`, `bind`, the dispatch of
 the refusal of management on an agent connection) and its `on_*` and `apply_note` bodies frozen:
 
 ```rust
-// compositor-wayland::quire::desktop (feature `quire`): the root provides the part and what it reads, split
+// compositor-wayland::Bardo::desktop (feature `bardo`): the root provides the part and what it reads, split
 // into disjoint borrows. `Part::new::<D>` creates the global.
-pub trait QuireDesktopHandler: EventSink + 'static {  // EventSink::feed(Vec<Event>) is compositor-wayland::handler's, shared by every handler trait
-    fn quire_desktop_parts(&mut self) -> DesktopParts<'_>;          // { part, view: DesktopView { model, outputs } }
+pub trait BardoDesktopHandler: EventSink + 'static {  // EventSink::feed(Vec<Event>) is compositor-wayland::handler's, shared by every handler trait
+    fn bardo_desktop_parts(&mut self) -> DesktopParts<'_>;          // { part, view: DesktopView { model, outputs } }
 }
-pub fn on_bind(part: &mut QuireDesktopPart, view: &DesktopView<'_>, manager: BardoDesktopManagerV1, standing: Standing)
+pub fn on_bind(part: &mut BardoDesktopPart, view: &DesktopView<'_>, manager: BardoDesktopManagerV1, standing: Standing)
     -> Result<(), WaylandFault>;
 pub fn on_get_window_for(part, view, manager: &BardoDesktopManagerV1, window: WindowId, object: BardoDesktopWindowV1)
     -> Result<(), WaylandFault>;
@@ -360,15 +360,15 @@ pub fn on_space(part, space: &SpaceId, ask: SpaceAsk) -> Vec<Event>;
 pub fn apply_note(part, view: &DesktopView<'_>, note: &DesktopNote) -> Result<(), WaylandFault>;
 pub enum Standing { Manager, ReadOnly }                           // Shell manages, Agent reads; ReadOnly is refused with not_permitted
 
-// compositor-wayland::quire::shell
-pub trait QuireShellHandler: EventSink + OutputLookup + 'static {
-    fn quire_shell_part(&mut self) -> &mut QuireShellPart;
+// compositor-wayland::Bardo::shell
+pub trait BardoShellHandler: EventSink + OutputLookup + 'static {
+    fn bardo_shell_part(&mut self) -> &mut BardoShellPart;
     fn layer_of_surface(&self, client: &Client, surface: &WlSurface) -> Option<LayerKey>;
 }
 pub fn on_set_role(part, layer: Option<LayerKey>, surface: &WlSurface, role: ShellRole) -> Result<Vec<Event>, RoleRefusal>;
 pub fn on_set_minimise_target(part, dock: Option<LayerKey>, toplevel: &str, local: LogicalRect) -> Result<Vec<Event>, TargetRefusal>;
 pub fn on_clear_minimise_target(part, toplevel: &str) -> Result<Vec<Event>, TargetRefusal>;
-pub fn apply_note(part: &mut QuireShellPart, note: &ShellNote) -> Result<(), WaylandFault>;
+pub fn apply_note(part: &mut BardoShellPart, note: &ShellNote) -> Result<(), WaylandFault>;
 
 // compositor-wayland::capture_source (window capture; the global is declared, not created)
 pub fn on_toplevel_source(book, window: WindowId) -> ToplevelSourceId;   pub fn on_source_destroyed(book, source);
@@ -548,7 +548,7 @@ ones, which is how the test kit's `Fixture` gets its fakes.
 
 **Declare a protocol before its lane fills it (a delta freeze).** Everything in "Add a protocol",
 except that `Part::new::<D>(display, role_filter)` creates no global and returns the empty part,
-so no client sees the protocol and `globals.txt` stays as it is. (The `quire` parts now create their
+so no client sees the protocol and `globals.txt` stays as it is. (The `bardo` parts now create their
 globals in `Part::new`; `ToplevelCapturePart` cannot hold smithay's state without creating the global, so its lane adds the
 field and the call together.) The `GlobalKind` variant (and its
 I7 row), the `WaylandStates` field, the `Part::new` call in `State::new`, the handler file, the
@@ -637,16 +637,16 @@ nodes (`--fabricate-gpus N`: `/sys/dev/char/226:(128+n)`, A3) for the multi-GPU 
   compositor-app` (everything) and `cargo build -p compositor-testkit` (headless only). Building the
   whole workspace at once unifies `casement`'s default features into the test kit; build the test
   kit's tests with `-p compositor-testkit` for the jail.
-- Features (A8): `compositor-wayland` has `quire`, on by default: the private `quire_*` servers
-  (`quire::desktop`, `quire::shell`) and their fields in `WaylandStates`. `casement` turns it on
+- Features (A8): `compositor-wayland` has `bardo`, on by default: the private `bardo_*` servers
+  (`bardo::desktop`, `bardo::shell`) and their fields in `WaylandStates`. `casement` turns it on
   explicitly; a consumer that wants the standard protocol set alone takes the crate with
-  `default-features = false`. `quire_window` stays outside the feature for now (FINDINGS, p2-z).
+  `default-features = false`. `bardo_window` stays outside the feature for now (FINDINGS, p2-z).
 - `unsafe_code = "deny"` at the workspace. The one unsafe module is
   `crates/casement-render/src/gl_raw.rs`: exactly `EGLDisplay::new` and `GlesRenderer::new`
   (A17). Another `unsafe` block there needs a reviewed interface ask showing a GL pass smithay's
   safe API cannot express.
 - `missing_docs` warns at the workspace, so every public item says what it means.
-- Sibling repos are path dependencies (`../quire`, `../porter`, `../wayland/desktop-protocols`); a lane
+- Sibling repos are path dependencies (`../bardo`, `../porter`, `../wayland/desktop-protocols`); a lane
   worktree links them beside itself.
 - smithay is pinned by rev to our fork `Bardo-DE/smithay` branch `casement` (upstream
   `118e34ff` plus the patches FINDINGS lists, A14) with no default features; each crate names the

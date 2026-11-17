@@ -17,7 +17,7 @@ pub struct ShownRows {
 }
 
 /// One section as shown: its heading, its lines' titles (a clipboard row's is `<clipboard>`;
-/// the "Show More"/"Show Less" stand-in is a line until quire's header action), and how
+/// the "Show More"/"Show Less" stand-in is a line until Bardo's header action), and how
 /// many rows it hides.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct ShownRowsSection {

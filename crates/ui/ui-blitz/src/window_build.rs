@@ -1,7 +1,7 @@
 //! One window's document, built the way dioxus-native's `launch_cfg_with_props` builds it (with
-//! quire's features: no `net`, no hot reload), so the first window and every window
+//! Bardo's features: no `net`, no hot reload), so the first window and every window
 //! `open_window` adds get the same document: `Host` around the root, the app's root contexts,
-//! the net, HTML-parser and navigation providers dioxus-native would give it, and the quire faces.
+//! the net, HTML-parser and navigation providers dioxus-native would give it, and Bardo faces.
 //! dioxus-native adds its window contexts (the document, the window, `use_window_event`'s
 //! registry, the shell, history, the renderer) when its application creates the window.
 

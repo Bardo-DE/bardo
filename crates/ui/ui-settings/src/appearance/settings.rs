@@ -53,7 +53,7 @@ pub struct AppearanceSettings {
     )]
     pub transparency: Transparency,
     /// `appearance.look`: `standard`, or the id of an installed look Extension (a stylesheet
-    /// that restyles every quire surface). A stored id that is not installed, or is turned off,
+    /// that restyles every Bardo surface). A stored id that is not installed, or is turned off,
     /// reads as `standard` where the installed Extensions are known and is reported once.
     #[settings(
         label = "Look",

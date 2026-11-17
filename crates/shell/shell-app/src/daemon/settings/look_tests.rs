@@ -16,7 +16,7 @@ use crate::daemon::settings::store::desktop_store;
 const PAPER: &str = "org.example.Paper";
 const SHEET: &str = ".shell-bar { background: ivory; }\n";
 
-/// A scratch directory with a `config` (the quire folder) and a `data` root.
+/// A scratch directory with a `config` (Bardo folder) and a `data` root.
 pub struct Scratch(PathBuf);
 
 impl Scratch {
@@ -55,7 +55,7 @@ impl Scratch {
         folder
     }
 
-    /// `appearance.look = choice` in the scratch quire folder.
+    /// `appearance.look = choice` in the scratch Bardo folder.
     pub fn choose(&self, choice: &str) {
         let mut file = AppearanceFile::default();
         file.appearance.look = Provided::new(choice);

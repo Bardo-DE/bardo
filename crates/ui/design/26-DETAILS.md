@@ -2,14 +2,14 @@
 
 > **Current direction (2026-10-02).** The grammar (moments, `Cue`, `Touch`, the `Detailed` trait and its tests) stands. The flourishes the catalogue below names (seal pop, bump, gulp, spark, count-up, sweeps, nudges, springs on non-contact) are deleted by `30-CATALOGUE.md` section 1.3 (Emphasis, Number change, Progress sweep); a moment whose primitive is gone is `Rest`. One quiet Mac Look; where 30 and this file disagree, 30 wins.
 
-Status: D0 built, 2026-09-27, branch `details-d0b` (quire): `ds::detail` holds the grammar as
+Status: D0 built, 2026-09-27, branch `details-d0b` (Bardo): `ds::detail` holds the grammar as
 types and the primitives (section 4.1 is now the sketch they grew from; the shipped API is in
 CONSUMING.md "Details"), the tokens of 3.4, `Spinner` on `use_pending`, the harness's
 `assert_settles_to_zero_frames`, the lint rules `InfiniteLoop` and `OffGrammarTiming`, and the
-gallery's Details page. D1's quire lane is built, 2026-09-27, branch `details-d1`: the layered
+gallery's Details page. D1's Bardo lane is built, 2026-09-27, branch `details-d1`: the layered
 status glyphs (`WifiGlyph`, `BatteryGlyph`, `BluetoothGlyph`, `VolumeGlyph`, `StatusGlyph`;
 design/04 section 51, CONSUMING.md "Status glyphs"); sill's bar wiring (D1's sill lane) is
-not started. D2's quire lane is built, 2026-09-27, branch `details-d2`: the control center
+not started. D2's Bardo lane is built, 2026-09-27, branch `details-d2`: the control center
 modules' details (the tile disc's fill and morph, `SettingsRow` phases, `PlayPauseButton`,
 `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`; design/04
 section 52, CONSUMING.md "Control center details"); D2's sill lane and D3-D7 are not started. The catalogue (section 5) still describes the
@@ -29,7 +29,7 @@ the same answer the reference itself gives: its small details are not hand-made 
 are a small fixed vocabulary of symbol and content effects (section 2) that every system element
 draws from. This file is that vocabulary for us, fitted to our rules (design/00 §3-4, design/05
 §2): a grammar of *moments* every stateful element passes through (section 3), seven primitives
-quire implements once (section 4), and a catalogue that assigns a detail to every moment of every
+Bardo implements once (section 4), and a catalogue that assigns a detail to every moment of every
 stateful element of the shell and its parts (section 5), with the gap against what is built today.
 
 ## 1. What this governs
@@ -37,10 +37,10 @@ stateful element of the shell and its parts (section 5), with the gap against wh
 - The **moments** a stateful element can be in and what each one means (3.1).
 - The **motion family** each moment plays, with its tokens (3.2, 3.4), and the **rules** that
   bound it (3.3).
-- The **primitives** in quire that play them (section 4) and how a component **declares** its
+- The **primitives** in Bardo that play them (section 4) and how a component **declares** its
   moments so every component uses the same machinery (4.2).
 - The **catalogue**: every stateful element, its states, its moment-to-detail table, what the
-  reference does, what quire and sill do today, and the gap (section 5).
+  reference does, what Bardo and sill do today, and the gap (section 5).
 - The **order** in which the gaps close (section 7).
 
 It does not change a keyframe, token or recipe in `05-MOTION.md`; it cites them. New tokens it
@@ -205,7 +205,7 @@ operation timeouts are the services' (sill), not motion tokens.
 
 ## 4. The primitives
 
-### 4.1 API sketch (quire, `ds::detail`; built in D0 with the changes CONSUMING.md "Details" lists)
+### 4.1 API sketch (Bardo, `ds::detail`; built in D0 with the changes CONSUMING.md "Details" lists)
 
 Typed, no `bool`, small structs, every effect started from a handler or an
 effect hook, never from render (design/05 §7.1). Each primitive is a hook returning what the
@@ -497,13 +497,13 @@ and every component with a `Detailed` state ships one harness test per moment th
 
 How to read an entry: **States** are the element's own enum. The table gives, per moment, **our
 detail** (primitive and tokens), **the reference** (with confidence and source key), **today**
-(quire `crates/ds`, sill sill's `crates/sill-bar`, `crates/sill-dock` and `crates/sill-overlays` at `ee9dd76`), and the **gap** (numbered `G#`,
+(Bardo `crates/ds`, sill sill's `crates/sill-bar`, `crates/sill-dock` and `crates/sill-overlays` at `ee9dd76`), and the **gap** (numbered `G#`,
 section 6 counts them). A moment the element does not have is omitted. "none" under Today means
 the state is shown with no motion (a snap).
 
 ### 5.1 Bar status items
 
-The quire side of this section is built (wave D1, `details-d1`): each item below has its glyph
+Bardo side of this section is built (wave D1, `details-d1`): each item below has its glyph
 and `Detailed` state in `ds::components::status`; the Today column still describes sill's bar,
 which moves onto them in D1's sill lane (CONSUMING.md "Status glyphs" lists what it passes).
 
@@ -547,7 +547,7 @@ Critical (≤ 10 %), Absent.
 
 #### 5.1.4 Volume item
 States: Muted, Level(0-3 waves), NoDevice. `LevelGlyph::Volume(Muting)` already cross-fades its
-waves by thirds and draws a slash (quire `ds/components/content/level_glyph/glyph.rs`); the bar uses static `Volume*` icons.
+waves by thirds and draws a slash (Bardo `ds/components/content/level_glyph/glyph.rs`); the bar uses static `Volume*` icons.
 
 | Moment | Our detail | Reference | Today | Gap |
 | --- | --- | --- | --- | --- |
@@ -695,7 +695,7 @@ States: Hidden, Shown(level, glyph), Muted.
 | Element / moment | Our detail | Reference | Today | Gap |
 | --- | --- | --- | --- | --- |
 | Open / close | `peek-in` / `fade` (built) | appears quickly (L) | built | none |
-| Results (Appear) | `Reveal` on the first result set after the panel opens; later result sets replace in place with **no** stagger (R1, R12: typing is frequent) | results update in place as you type (L) | quire side built (`CommandPalette { reveal: RevealCue }`, sill Q372); sill passes its cue | **G41** (sill adoption) |
+| Results (Appear) | `Reveal` on the first result set after the panel opens; later result sets replace in place with **no** stagger (R1, R12: typing is frequent) | results update in place as you type (L) | Bardo side built (`CommandPalette { reveal: RevealCue }`, sill Q372); sill passes its cue | **G41** (sill adoption) |
 | Calculator result | the result row's value `RollDigits` as the expression grows; an invalid expression shows no row (no error motion) | inline answer as you type (L) | a calculator provider exists? (sill M9 providers) | **G42** |
 | No results | a still "No results" line (`fade` `--t-quick`); no shake (typing is not a failure) | a "no results" state (L) | none | **G43** (words and fade) |
 | Selection (Select) | moves instantly (13.3.9, settled) | instant (L) | built | none |
@@ -724,7 +724,7 @@ States: Hidden, Shown(level, glyph), Muted.
 | --- | --- | --- | --- | --- |
 | Appear | after the show delay (13.3.5), `fade` `--t-quick`, no pop (built) | appears after a short hold (M, 13.2 R6) | built | none |
 | Select | the selection square slides `--t-quick --e-spring` (built) | the highlight moves (L) | built | none |
-| Quit (Q) | the tile `fold`s, the row heals (built in quire; `Anim::Fold`) | the icon leaves the switcher (M, [CMDTAB]) | built | none |
+| Quit (Q) | the tile `fold`s, the row heals (built in Bardo; `Anim::Fold`) | the icon leaves the switcher (M, [CMDTAB]) | built | none |
 | Hide (H) | the tile dims to .5 once (`--t-quick`) and stays: hidden is a state | hidden apps stay listed (L) | none | **G47** (small) |
 
 ### 5.9 Widgets
@@ -824,8 +824,8 @@ session ends: the button's label is replaced by `Pending{Spin}` after `PendingGr
 
 ## 7. Waves
 
-Lanes are agent-sized (one branch, one gate, about a day of agent work). **Q** = quire only;
-**Q+S** = a quire lane and a sill lane after it (the sill lane wires services' states and stamps
+Lanes are agent-sized (one branch, one gate, about a day of agent work). **Q** = Bardo only;
+**Q+S** = a Bardo lane and a sill lane after it (the sill lane wires services' states and stamps
 into the new component states). The two lanes in flight (battery-fill, animated-emoji) should
 land on the primitives rather than beside them: battery-fill is the first consumer of `Sweep` and
 `CountUp`.
@@ -833,18 +833,18 @@ land on the primitives rather than beside them: battery-fill is the first consum
 | Wave | Lane | Scope | Where | Closes |
 | --- | --- | --- | --- | --- |
 | D0 | D0a primitives: time | `Moment`, `Touch`, `FirstShow`, `EventStamp`, `Operation`, `Detailed`, `use_detail`, `moment_table`; `Tween` on `CubicBezier::at` and a frame clock that stops at rest; `Sweep`, `CountUp`, `Reveal`; tokens `--t-sweep`, `--t-count-step`, `SettleHold` into design/05 and the token table; gallery page "Details" with a replay button per primitive; harness tests (idle after settle, Reduced jumps, retarget mid-flight) | Q | foundation. **Built 2026-09-27** (`details-d0b`) |
-| D0 | D0b primitives: state | `Pending` (+ `--t-pending-step`, `PendingGrace`, `PendingCap`), `Settle`, `Shake`, `MorphGlyph`, `RollDigits`, `Nudge`; `Spinner` rebuilt on `Pending` (its two infinite loops gone; `ModuleState::Busy` and `PromptState::Checking` inherit the bound; `SyncHalo`'s idle breathe, mailo's, goes as design/05 §12 item 4 proposes, so tell the mailo session before it lands) | Q | G15, G45 (quire side). **Built 2026-09-27** (`details-d0b`), with one change: `SyncHalo` keeps its loops (it is mail's; mailo decides, design/05 §12 item 4), listed in `ui-shell/tests/it/details_lint.rs` with the three other mail loops |
-| D1 | status glyphs | a layered `StatusGlyph` family: Wi-Fi (dot + 3 arcs, the "!" badge), battery (outline, fill layer, bolt, plug), Bluetooth (base, slash, connected dots), volume (on `LevelGlyph`), each with its `Detailed` state and moment table | Q | G1-G4, G8-G10, G12 (quire side), and the glyph side of G5-G7 (the failed-join shake, the Bluetooth glyph and its bounded breath). **Built 2026-09-27** (`details-d1`) |
+| D0 | D0b primitives: state | `Pending` (+ `--t-pending-step`, `PendingGrace`, `PendingCap`), `Settle`, `Shake`, `MorphGlyph`, `RollDigits`, `Nudge`; `Spinner` rebuilt on `Pending` (its two infinite loops gone; `ModuleState::Busy` and `PromptState::Checking` inherit the bound; `SyncHalo`'s idle breathe, mailo's, goes as design/05 §12 item 4 proposes, so tell the mailo session before it lands) | Q | G15, G45 (Bardo side). **Built 2026-09-27** (`details-d0b`), with one change: `SyncHalo` keeps its loops (it is mail's; mailo decides, design/05 §12 item 4), listed in `ui-shell/tests/it/details_lint.rs` with the three other mail loops |
+| D1 | status glyphs | a layered `StatusGlyph` family: Wi-Fi (dot + 3 arcs, the "!" badge), battery (outline, fill layer, bolt, plug), Bluetooth (base, slash, connected dots), volume (on `LevelGlyph`), each with its `Detailed` state and moment table | Q | G1-G4, G8-G10, G12 (Bardo side), and the glyph side of G5-G7 (the failed-join shake, the Bluetooth glyph and its bounded breath). **Built 2026-09-27** (`details-d1`) |
 | D1 | bar wiring | sill's bar items on `StatusGlyph`: `Link::Connecting` → Joining with an op stamp from the network service, no-internet from connectivity, battery thresholds (`bar.battery_low_percent`), the Bluetooth bar item | S | G1-G12 |
-| D2 | control center modules | `ModuleTile` disc glyph on `MorphGlyph`/`Settle`; `SettingsRow` trailing `Pending`/`Settle{Check}`/`Shake`; Now Playing play/pause `MorphGlyph{OffUp}`, position bar, track cross-fade; Battery module rings on `Sweep`/`CountUp`; a keyboard-brightness module on `LevelControl` | Q+S | G14, G16-G18, G20, G21, G23, G25-G30. **Quire lane built 2026-09-27** (`details-d2`): `ModuleTile { disc: DiscMotion }`, `SettingsRow { phase: RowPhase, work: RowWork, disc: RowDisc }` and `RowTrailing::Battery`, `PlayPauseButton`, `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`, `Icon::MoonFilled`, `Anim::MorphInSpring`; the sill lane is CONSUMING.md "Control center details" |
+| D2 | control center modules | `ModuleTile` disc glyph on `MorphGlyph`/`Settle`; `SettingsRow` trailing `Pending`/`Settle{Check}`/`Shake`; Now Playing play/pause `MorphGlyph{OffUp}`, position bar, track cross-fade; Battery module rings on `Sweep`/`CountUp`; a keyboard-brightness module on `LevelControl` | Q+S | G14, G16-G18, G20, G21, G23, G25-G30. **Bardo lane built 2026-09-27** (`details-d2`): `ModuleTile { disc: DiscMotion }`, `SettingsRow { phase: RowPhase, work: RowWork, disc: RowDisc }` and `RowTrailing::Battery`, `PlayPauseButton`, `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`, `Icon::MoonFilled`, `Anim::MorphInSpring`; the sill lane is CONSUMING.md "Control center details" |
 | D3 | OSD | default `LevelLook::Segments` for the OSD (user confirms), nothing else | Q+S (a settings default) | G31 |
-| D4 | dock | badge appear and clear, running dot out, progress ring on `Sweep` + `Settle`, remove poof, Downloads stack tile's one bounce | S (quire only if `ProgressRing` from D6 is not in yet) | G36-G40 |
+| D4 | dock | badge appear and clear, running dot out, progress ring on `Sweep` + `Settle`, remove poof, Downloads stack tile's one bounce | S (Bardo only if `ProgressRing` from D6 is not in yet) | G36-G40 |
 | D5 | notifications | group content cross-fade and chip bump, center group expand (`Reveal`) and collapse (`heal`), the X → Clear morph, action `Settle`/`Shake` | Q+S | G32-G35 |
 | D6 | progress and forms | `ProgressRing`/`ProgressBar` on `Sweep` (Pending → Progress), `TextInput` `Invalid` state, sliding selection indicator for `SegmentedControl`/`WorkspacePills`/`Tabs`, `Toggle { touch }` | Q | G13, G51, G53, G55 |
 | D7 | small ones | launcher Reveal and no-results, lock dots and caps mark, switcher hide, widgets (day rollover, day/night cross-fade, bolt gap), screenshot check, power-menu pending, menu pick blink (after the 13.9 decision) | Q+S | G19, G24, G41-G44, G46-G50, G52, G54, G56, G22 (details only; the modules are their own milestone) |
 
 Order by visibility after D0: D1 (the bar is always on screen), D2, D3, D4, D5, then D6 and D7.
-D0a and D0b can run in parallel; D1's quire lane needs both.
+D0a and D0b can run in parallel; D1's Bardo lane needs both.
 
 ## 8. Open decisions
 
@@ -897,7 +897,7 @@ D0a and D0b can run in parallel; D1's quire lane needs both.
 - [CLOCK] MacRumors Forums, "Interesting Clock icon behavior" (the second hand moves smoothly). L.
 - Our docs: design/00 §3-4, design/05 (§2, §3, §7, §9, §10, §12), design/10 §10.3.2 and §10.3.5,
   design/13 §13.2-13.3, design/20 §1, design/22 §3.2, design/23 §1.1.
-- Code read: quire `crates/ds/src/motion/*`, `components/{battery_level,battery_ring,count,bump_on,
+- Code read: Bardo `crates/ds/src/motion/*`, `components/{battery_level,battery_ring,count,bump_on,
   spinner,sync_halo,module_tile*,level/*,osd*,lock_*,app_switcher,shot_thumbnail,toggle,segmented,
   traffic_lights,notification_card,banner_stack,menu}*`; sill `crates/sill-surfaces/src/surfaces/
   {bar/status.rs, control_center/**, dock/**}` at `ee9dd76`.

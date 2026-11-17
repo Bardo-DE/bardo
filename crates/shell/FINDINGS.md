@@ -1,8 +1,8 @@
 # Findings
 
 Reference, not history: the facts sill's code rests on (what the compositors, the system services and the
-libraries were found to do), the decisions that depart from quire's design docs and why, and the
-items still open. "Q" marks something wanted from quire, "G" from shell-host or from sill itself.
+libraries were found to do), the decisions that depart from Bardo's design docs and why, and the
+items still open. "Q" marks something wanted from Bardo, "G" from shell-host or from sill itself.
 A settled item is deleted, not marked closed.
 
 ## Standing facts: compositors
@@ -21,7 +21,7 @@ A settled item is deleted, not marked closed.
   values, not a closed channel.
 - **One binary, the arm from the globals.** The thread lists the registry and
   `sill_services::desktop_wl::backend_of` picks, by asking `desktop_client::backend_for` of the
-  offered globals: Quire (`quire_desktop_manager_v1` and the ext list) or Wlr (the wlr manager,
+  offered globals: Bardo (`bardo_desktop_manager_v1` and the ext list) or Wlr (the wlr manager,
   or the ext list alone), both over `desktop-client`. Never a compositor's name or
   the environment. The displays use the native output management.
 - **The standard protocols do not say which workspace a window is on, or which window was last
@@ -89,11 +89,11 @@ A settled item is deleted, not marked closed.
   by `menus.submenu_*`; the bar's machine sees every row as a leaf. A submenu needs room beside its
   parent in the popup's document, so `PopupFrame { submenu_room }` pads the card's left by a column
   per level of nesting (the status popups hang from their right edge, so the card does not move) and
-  `menu/submenu.css` lays quire's later overlays over the first, the box a submenu is placed against
-  (it names quire's `.ds-overlay`, which Strict forbids: the lint test excuses those two selectors).
+  `menu/submenu.css` lays Bardo's later overlays over the first, the box a submenu is placed against
+  (it names Bardo's `.ds-overlay`, which Strict forbids: the lint test excuses those two selectors).
   `AboutToShow` is sent for the root only: a lazily filled submenu is not asked first.
 - **The focused app's menus are bar menus** (`sill_services::AppMenuService`, state `AppMenus`).
-  A quire app serves `com.canonical.dbusmenu` at `org.quire.AppMenu.<app_id>` (name from quire's
+  A Bardo app serves `com.canonical.dbusmenu` at `org.bardo.AppMenu.<app_id>` (name from Bardo's
   `AppMenuAddress::for_app_id`, which `sill_ui_kit::app_menu::menu_name_of` hands the services; the
   services crate links no design system). Each bar tells the service its focused toplevel's `app_id`
   (`AppMenuCommand::Follow`, one follower per output); the service follows the union of those apps
@@ -106,10 +106,10 @@ A settled item is deleted, not marked closed.
   "clicked"`, an open is `AboutToShow` for that menu's id. `bar/dbusmenu.rs` is the one rows-to-entries
   conversion for the tray and for apps (it also draws the row's `shortcut`). One menu per app, not per
   window (the Mac's model).
-- **`shell.menu.list` and `shell.menu.activate`** (`dist/intents/org.quire.Shell.toml`, served by
+- **`shell.menu.list` and `shell.menu.activate`** (`dist/intents/org.bardo.Shell.toml`, served by
   `sill_services::app_menu::MenuAgent`) read the menu fresh from the focused (or named) window's app.
   The listing is one line per row, its id first, labelled `Untrusted(App(<app>))`. Everything an app
-  sends (labels, titles, `x-quire-command-id`) is a claim, so the effect table is
+  sends (labels, titles, `x-bardo-command-id`) is a claim, so the effect table is
   `sill_model::app_menu::{route_of, effect_of}`: the shell's own rows (raise or minimise a window, Hide,
   Hide Others, Show All) are `Read`; Quit is `Destructive`; a command id counts only when the app is
   `Identity::Verified` (porter's caller identity of the name's owner, from its cgroup scope through
@@ -176,7 +176,7 @@ A settled item is deleted, not marked closed.
   `FileManager1.ShowItems` when the name is owned or activatable. URIs are percent-encoded as
   GLib writes them. Unit names escape as `systemd-escape` does (a literal `-` included).
   `Terminal=true` runs `$TERMINAL`, else ghostty, wezterm, foot, wrapped `-e`.
-- **Desktop entries**: `OnlyShowIn`/`NotShowIn` are matched against `quire`, not the live
+- **Desktop entries**: `OnlyShowIn`/`NotShowIn` are matched against `bardo`, not the live
   `XDG_CURRENT_DESKTOP`. `TryExec` that resolves nowhere drops the entry. Flatpak's export
   directories are added even when `XDG_DATA_DIRS` lacks them. An absolute `Icon=` is kept
   only as an image file of a sane size inside the icon folders or an app store's (`IconRoots`). The SVG-over-largest-PNG preference is a heuristic over `freedesktop_icons`' first
@@ -203,14 +203,14 @@ A settled item is deleted, not marked closed.
   failures in 30 s) is `Failed`. keycap's notices carry no action, so they point at `bardo-shell keycap retry` and
   `bardo-shell keycap resume`.
   `keyboard.overrides` (design/22 §3.25) is a list of `{ app, profile }` tables, which needs
-  quire's `ds-settings` list-of-tables keys (`SettingsRow`, quire PR #2): sill builds against
-  quire's `claude/settings-rows` branch until that PR merges. A row whose `profile` is not a
+  Bardo's `ds-settings` list-of-tables keys (`SettingsRow`, Bardo PR #2): sill builds against
+  Bardo's `claude/settings-rows` branch until that PR merges. A row whose `profile` is not a
   profile name or whose `app` is empty is dropped, a row that is not a table of two texts is
   dropped on load, each costs only itself and is logged as `sill: settings.toml: ...`, and when
   two rows name one app the last wins. The settings `Policy` sends `KeycapCommand::Overrides`
   and the service re-chooses the focused window's profile.
 
-- **accounts**: `sill_services::accounts` follows accountd (`org.quire.Accounts1`, session bus) through
+- **accounts**: `sill_services::accounts` follows accountd (`org.bardo.Accounts1`, session bus) through
   `NameOwnerChanged`. On meeting it, it calls the shell's `Manager.NeedingReauth` (the accounts that need
   signing in again, with labels; the call also puts sill on accountd's roster, which is what receives
   unicast signals), then hears `NeedsReauth` and watches each such account's `State` until it is not
@@ -231,15 +231,15 @@ A settled item is deleted, not marked closed.
   device's sign-in). A notice already held (banner or history) is replaced, not doubled. An accountd with
   no `NeedingReauth` lists nothing and is followed by its signal alone. Test: `accounts_bus.rs`.
 
-- **accounts sheet**: `sill_services::accounts::sheet` serves `org.quire.AccountsSheet1` (`/org/quire/AccountsSheet1`) on the
+- **accounts sheet**: `sill_services::accounts::sheet` serves `org.bardo.AccountsSheet1` (`/org/bardo/AccountsSheet1`) on the
   session bus once the daemon says to serve (passive before, like intents); `Open(handle, parent_window, view)`,
   `Update(handle, view)` and `Close(handle)` take a `SheetView` as JSON (at most 64 KiB; a handle is 1-64 of
-  `[A-Za-z0-9_.-]`; at most 8 sheets, one per handle). Only the owner of `org.quire.Accounts1` may call them, and `Update` and
+  `[A-Za-z0-9_.-]`; at most 8 sheets, one per handle). Only the owner of `org.bardo.Accounts1` may call them, and `Update` and
   `Close` only from the connection that opened the handle; any other caller gets `AccessDenied` and nothing is
   drawn. `Input(handle, input)` is emitted to the opener's unique name, never broadcast, because it may carry a typed
   password; the service never logs an input. accountd leaving the bus takes every sheet down. The sheet is a
   `sill-overlays` surface (`accounts-sheet`, the banners' output, Overlay, keyboard exclusive, no blur): a centred
-  window of its own (the window gradient, `--r-window`, `--shadow-window`) with quire's `WindowTitlebar` carrying the step's
+  window of its own (the window gradient, `--r-window`, `--shadow-window`) with Bardo's `WindowTitlebar` carrying the step's
   title, never an attached or dropping sheet. The typed values are the shell's (`sill_model::accounts::sheet::Draft`);
   a secret is emptied from the draft by the same step that sends it, and a form that comes back refused keeps the address and
   asks for the password again. "Other..." on the provider list picks the first `ProviderRow` whose `kind` is `Generic`;
@@ -299,11 +299,11 @@ A settled item is deleted, not marked closed.
   with `inset:0` gets no hit area; size it by the viewport.
 - **A popup is `PopupSize::FitContent`, measured through its frame.** shell-host measures the
   first content child of `#main` and the far edges of every absolutely positioned box beneath
-  it (shell-host F38). quire lays a floating card absolutely in `.ds-overlay`, which fills the
+  it (shell-host F38). Bardo lays a floating card absolutely in `.ds-overlay`, which fills the
   root: measured as it is, the popup would be the whole surface, and shrunk to nothing every
   press misses (Blitz hit-tests an overlay by its own box, so the overlay must cover the card).
   `menu/style.css` therefore puts one absolutely placed frame at the surface's origin, padded by
-  the popup's shadow room, and quire's `RootExtent::Popup` lays the overlay, its outside catcher
+  the popup's shadow room, and Bardo's `RootExtent::Popup` lays the overlay, its outside catcher
   and the card (not a submenu) in flow inside it: the root is the card's size, the popup is the
   card plus its room, and a press reaches it. A press in the transparent room no longer closes the
   menu (the catcher is 0 px tall); one outside the popup is the compositor's grab.
@@ -316,7 +316,7 @@ A settled item is deleted, not marked closed.
   transforms; one `RegionSpec::Element` keeps its last rect once its element is gone.
 - **Tokio**: services spawn on the `Handle` they are given, never with a bare `tokio::spawn`;
   the settings watch runs on a `ds_blitz::TokioSpawner` over the daemon's runtime.
-- **Every Harness test runs on `Clock::Virtual`** and pins `PinnedAppearance`: quire's live
+- **Every Harness test runs on `Clock::Virtual`** and pins `PinnedAppearance`: Bardo's live
   `use_environment` reads the settings portal and `appearance.toml` off-thread on wall time and
   wakes a settled document with no change (Q455). The bar clock is a `watch` fed by
   sill-services' ticker, not a ds timer, and must stay one (a re-armed `ds::sleep` would chase
@@ -330,7 +330,7 @@ A settled item is deleted, not marked closed.
   mid-animation, the cancelling restyle cascades the value at that moment and nothing restyles
   the node again (stylo sets `ElementAnimationSet::dirty`, Blitz never reads it). The stale
   transform is painted and hit-tested; `get_client_bounding_rect` reads the resting box.
-  `crates/sill-ui-kit/tests/it/cancelled_animation.rs` is ignored until quire's Blitz pin restyles dirty sets before
+  `crates/sill-ui-kit/tests/it/cancelled_animation.rs` is ignored until Bardo's Blitz pin restyles dirty sets before
   dropping them.
 
 ## Standing facts: tests never touch the real system
@@ -353,19 +353,19 @@ A settled item is deleted, not marked closed.
 ## Standing facts: the seat at intentd
 
 - **One connection owns three roles.** intentd names a caller's role from the well-known names its
-  connection owns (`dist/intentd.toml`: `org.quire.Shell` is `launcher`, `confirm` and `control`;
+  connection owns (`dist/intentd.toml`: `org.bardo.Shell` is `launcher`, `confirm` and `control`;
   `Confirm1`'s owner is trusted only while it also owns that name). So `sill_services::intents`
-  claims `org.quire.Shell` first (the provider, `docket_client::serve_on`), then
-  `org.quire.Confirm1`, and makes its `Control` calls from the same connection. It is passive until
+  claims `org.bardo.Shell` first (the provider, `docket_client::serve_on`), then
+  `org.bardo.Confirm1`, and makes its `Control` calls from the same connection. It is passive until
   the daemon's `IntentsCommand::Serve`, like the polkit agent.
 - **Phase A, not unforgeable.** The sheet is a layer surface on a stock compositor; its receipt says
   `InputProof::SheetFallback`, never `HardwareSeat`. Anything that can type into the session
   (uinput, an injected key) can answer it. Phase B is the same surface on the compositor's
   trusted surface ("What casement still has to provide" below).
-- **The answer is a signal to the asker alone.** `Confirm` returns `/org/quire/Confirm1/request/<n>`
-  and the person's answer goes back as `org.quire.Intents1.Request.Response(0, <ConfirmAnswer
+- **The answer is a signal to the asker alone.** `Confirm` returns `/org/bardo/Confirm1/request/<n>`
+  and the person's answer goes back as `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer
   JSON>)` to the caller's unique name (a withdrawn question: code 1). Only the owner of
-  `org.quire.Intents1` may call `Confirm`, `Cancel` or the provider, and only a question's own
+  `org.bardo.Intents1` may call `Confirm`, `Cancel` or the provider, and only a question's own
   asker may close its request object. A question expires on its own clock (`expires`), is
   dropped when intentd leaves the bus, and is never an allow.
 - **The sheet arms for 500 ms and a destructive action is a 1 s hold**, both constants in
@@ -388,11 +388,11 @@ A settled item is deleted, not marked closed.
 - **Everything said to intentd and the companion goes out on the shell's own connection.** intentd
   names a caller's role from the names its connection owns, so a turn (`Session.Turn`), a search,
   an undo or a journal read from any other connection would not be the launcher's. The intents
-  service claims `org.quire.Shell`, then publishes that connection on `sill_services::seat`; the
+  service claims `org.bardo.Shell`, then publishes that connection on `sill_services::seat`; the
   companion service follows it (and every follower it starts goes when the seat is given up).
   Without the seat the machines still run (a summon opens the launcher) and a lookup answers
   `Failed`.
-- **The two machines run inside the companion service**, on quire's `Machine` (`Tap`, `Summon` in
+- **The two machines run inside the companion service**, on Bardo's `Machine` (`Tap`, `Summon` in
   `sill_model::companion`), stamped in milliseconds from the service's start and woken by one timer
   for the earlier of their deadlines; at rest there is none. A tap or a summon first finds out
   whether the focused app owns its bus name, in order, so two quick taps stay two taps. The
@@ -449,7 +449,7 @@ A settled item is deleted, not marked closed.
   `spaces.lookup_order`, `notifications.banner_entry_direction` and, with step 4a.8, `bar.title_hit_height_px` (a
   bar item's hit box is the item's own), `dock.progress_style`,
   `dock.badge_size_px`, `dock.badge_radius_px`, `dock.progress_ring_diameter_px` and
-  `dock.progress_ring_stroke_px` had no reader (quire's `DockTile` draws its own `Badge` and progress
+  `dock.progress_ring_stroke_px` had no reader (Bardo's `DockTile` draws its own `Badge` and progress
   bar), so the fields are gone and design/22's rows say `RETIRING`; a file that still sets one is
   told the key is unknown. The 2026-10-27 prune turned the numbers, hold times and looks into
   constants (Settings shows only what an OS offers); a file that still sets one is told the key is
@@ -467,7 +467,7 @@ A settled item is deleted, not marked closed.
   line on the daemon's stderr (`sill: settings.toml: unknown key ...`), on every read, and the next
   save drops it. A value that does not parse costs only its own key; a file that is not TOML at
   all keeps the last good file in the watch and is reported invalid.
-- **Places are state, not settings**: dock pins (`[[dock]]` rows of `$XDG_CONFIG_HOME/bardo/shell/layout.toml`, version = 1, kind `quire.dock.app` + `app`; an old `dock.json` is read once into it and left in place) and, per
+- **Places are state, not settings**: dock pins (`[[dock]]` rows of `$XDG_CONFIG_HOME/bardo/shell/layout.toml`, version = 1, kind `bardo.dock.app` + `app`; an old `dock.json` is read once into it and left in place) and, per
   output connector, the desktop's widget list and cells (`$XDG_STATE_HOME/bardo/shell/desktop-widgets.json`:
   `{"outputs":[{"output":"DP-1","widgets":[...],"places":[...]}]}`). `widgets.desktop_widgets` is
   the default list: an output has a `widgets` list of its own once Edit Widgets has edited it
@@ -491,7 +491,7 @@ A settled item is deleted, not marked closed.
   and `CloseNotification` are dismissals. A click with no `default` action dismisses. A
   notification never wakes sleeping displays (and there is no key for it).
 - **The launcher's session rows**: Lock and Suspend run at once; Log Out, Restart and Shut Down
-  open the power menu on that button, which is the confirmation: quire's `Alert` about that action, that button first and the default (Return), the other actions logind offers after it, then Cancel; an action logind refuses is left out, not drawn disabled, and there are no arrow keys (Tab and Shift+Tab move, Space presses, Escape cancels).
+  open the power menu on that button, which is the confirmation: Bardo's `Alert` about that action, that button first and the default (Return), the other actions logind offers after it, then Cancel; an action logind refuses is left out, not drawn disabled, and there are no arrow keys (Tab and Shift+Tab move, Space presses, Escape cancels).
 - **The calendar is a widget** (the clock opens the notification center, not a date popup).
 - **Widgets have one size per host**: Medium for every kind in the center; on the desktop the
   month and the batteries Small, the rest Medium. A drop lands in the cell nearest where it is
@@ -528,16 +528,16 @@ A settled item is deleted, not marked closed.
 - **The screenshot thumbnail takes the keyboard only when asked** (`bardo-shell focus-latest`, an `Act`
   verb answered on `BannerLink`'s key channel). The layer is `KeyboardMode::None`; on the ask it
   becomes `Exclusive` (an `OnDemand` layer is focused only by a click, so it cannot be asked
-  for), the seat modality is set to `Keyboard` so quire's ring shows before any key arrives, and
+  for), the seat modality is set to `Keyboard` so Bardo's ring shows before any key arrives, and
   the picture is focused by selector. Every way out of the shown state, and the compositor taking
   the keyboard away, sets `None` again, and the hold is paused while the card holds it.
   Escape dismisses like the hold running out (the file is kept); Delete and Backspace are the
-  Delete button; Enter and Space are quire's picture.
+  Delete button; Enter and Space are Bardo's picture.
 - **The banners take the keyboard the same way**, one card at a time. The transients tell
   `BannerLink` when a card appears and when none is up; `bardo-shell focus-latest` asks it, and it names
   the one that appeared last (`KeyWhat::Asked(Transient)`), so only that surface answers (the
   compositor's focus loss names its surface the same way). The keyboard goes to the newest
-  listed card's plate (quire's `NotificationCard` plate is a focusable button: Enter and Space
+  listed card's plate (Bardo's `NotificationCard` plate is a focusable button: Enter and Space
   press it, Tab walks its action buttons, which activate on Enter) and pauses that card's hold
   only (`Entry::keys`, folded with the pointer so the hold resumes when neither is on it). Up and
   Down follow the stack as drawn (newest at the top, the banner position being fixed), the ends
@@ -565,12 +565,12 @@ a source; `assumed` means not yet checked.
 | Toplevel urgency | A window asking for attention cannot bounce its dock tile; `LauncherEntry` `urgent` is the workaround | verified: protocol read |
 | Stable workspace ids (`ext-workspace` `id`) | Spaces keep their identity across restarts | verified: stock compositors send none |
 | Modifier state for an unfocused layer surface | Hot corners that need a held key, as macOS offers; asking for keyboard focus would steal it from the window | KWin sends it; others assumed not to |
-| A confirmation only the person can answer: hardware input only, nothing drawn over it, no synthetic or agent input | The sheet is a layer surface any injected input can answer (`SheetFallback`); the design is `quire_trusted_surface_v1` (spec 4.2) | assumed absent elsewhere |
+| A confirmation only the person can answer: hardware input only, nothing drawn over it, no synthetic or agent input | The sheet is a layer surface any injected input can answer (`SheetFallback`); the design is `bardo_trusted_surface_v1` (spec 4.2) | assumed absent elsewhere |
 | A layer surface under a still pointer gets `enter` | Hover state is wrong until the pointer moves | verified on a stock compositor |
 | A press on a layer surface while a popup of that layer holds the grab ends the grab (`popup_done`) and is delivered | A second popup opened with the grab still up is a protocol error (`not_the_topmost_popup`) that ends sill's connection (G368) | assumed for a real press |
 | A lone modifier tap as a shortcut | Double-tap Cmd summons the companion; today a unique chord (`Ctrl+Alt+Shift+Super F19`) is sent by the keyboard remapper, and the `Tap` machine in the companion service decides which tap is the second | assumed: the remap's effect on Cmd-click and Cmd-drag is the open spike (docs/manual-checks.md "The companion") |
 | Timely frame callbacks for fullscreen layer surfaces | Delayed callbacks stall the lock screen; shell-host has a watchdog | upstream reports on stock compositors |
-| Background blur that also boosts saturation (about x1.8) with a tunable sigma (22 logical px for widget cards) | macOS vibrancy behind widgets and panels (quire design/23) | blur only elsewhere |
+| Background blur that also boosts saturation (about x1.8) with a tunable sigma (22 logical px for widget cards) | macOS vibrancy behind widgets and panels (Bardo design/23) | blur only elsewhere |
 | A locker that dies while locked: policy | A compositor that keeps the lock until another client locks and unlocks is secure but strands the person; sill relocks from its crash marker | design choice for casement |
 | An Inhibit portal | Flatpak apps' "keep the screen on" | casement's portal at P2 |
 | Synthetic input that counts as idle activity | So an idle test can wake the seat (`bardo-shell debug idle-wake` stands in) | test harness only |
@@ -581,15 +581,15 @@ a source; `assumed` means not yet checked.
   feed run on casement unchanged; `desktop_wl::desktop_view` builds the frozen `DesktopView` from
   the same state and nothing reads it yet. Ends when the surfaces take `DesktopView` and
   `DesktopCommand`.
-- **The Quire arm.** `backend_for` returns `Quire` when `quire_desktop_manager_v1` is offered and
+- **Bardo arm.** `backend_for` returns `Bardo` when `bardo_desktop_manager_v1` is offered and
   the thread declines it (the windows and workspaces stay empty). Ends when the arm over ext and
-  `quire_desktop_v1` exists.
+  `bardo_desktop_v1` exists.
 - **The dock's minimise target on Wlr.** `DesktopCommand::SetMinimiseTarget` carries no surface and
   the wlr request needs the dock's own `wl_surface` on shell-host's connection, so minimise
   animates to the compositor's default place. Ends when shell-host exports the surface to a client
   that can register it with `DesktopClient::register_surface`.
 
-- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ds_shell::ProviderEntry` has no face (`gap(quire)` at `mark_of`); quire v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.quire.Settings` (`ActivateAction("open-account", [account path])` at `/org/quire/Settings`), so it runs as `org.quire.Settings.service`; detent must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: quire has no help line under a field for porter's full sentence.
+- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ds_shell::ProviderEntry` has no face (`gap(bardo)` at `mark_of`); Bardo v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.bardo.Settings` (`ActivateAction("open-account", [account path])` at `/org/bardo/Settings`), so it runs as `org.bardo.Settings.service`; detent must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: Bardo has no help line under a field for porter's full sentence.
 
 ### sill
 
@@ -602,11 +602,11 @@ a source; `assumed` means not yet checked.
   docket's variant is merged.
 - **anyview is taken by path.** The root `Cargo.toml` names `anyview-core`, `anyview-image`, `anyview-peek`,
   `anyview-platform` and `anyview-store` at `../anyview/crates/...`, a sibling checkout. Ends when
-  anyview's integration branch is merged: the five become the git revision pinned in quire's
+  anyview's integration branch is merged: the five become the git revision pinned in Bardo's
   `docs/workspace-deps.toml` (as pdfrum is), copied into the pinned block here.
 - **The pane's peek budget is a constant.** `preview::load::PANE_BUDGET` (64 MiB read, one megapixel
   of picture, 500 ms) stands in for settings keys; anyview's `PeekBudget::time` is not enforced. Ends
-  when quire's `22-SETTINGS` has `viewer.peek.*` rows and `launcher.preview_*` reads them.
+  when Bardo's `22-SETTINGS` has `viewer.peek.*` rows and `launcher.preview_*` reads them.
 - **A row offers only the shared file actions the launcher carries out.** Open (⌘O, and Enter), Reveal
   (⌘R), Copy Path (⌥⌘C) and Play are carried; Open With, Copy File (⌘C), Share, Rename, Duplicate, Move to
   Trash, Convert To and Play in Mini Window are in `anyview_core::actions_for` and not on the row, each
@@ -617,18 +617,18 @@ a source; `assumed` means not yet checked.
   wire has the place for a pane that keeps one. Ends when the pane scrolls or plays.
 - **The pane does not grow into the viewer's window.** The handoff opens the viewer's window beside the
   closing launcher with no shared-element animation. Ends when a window can start from a rectangle
-  (the launcher passes the pane's) and quire has the motion for it.
+  (the launcher passes the pane's) and Bardo has the motion for it.
 - **The viewer is called without an activation token.** `Handoff` and `Play` take none, so the viewer's window
   depends on the compositor to raise it. Ends with anyview's matching item.
 - **An audio file shows facts, not its cover or length, and the play control is an action.** The pane has
   no audio peek until anyview-media lands; "Play" in the actions sends `Play` over D-Bus and the viewer
   opens the file until its background session exists. Ends with anyview-media.
 - **A PDF's first page is the one picture that is not a texture.** It comes through `PdfPage::Ready`'s
-  PNG `data:` URL (quire's FINDINGS), so it is encoded and decoded once per page. Ends with quire's
+  PNG `data:` URL (Bardo's FINDINGS), so it is encoded and decoded once per page. Ends with Bardo's
   `pdf_thumb_pixels`.
 - **The pane's picture is a `TextureLayer`, unseen on a real surface.** The harness's CPU painter draws
   none (a picture's pane is blank there), and no one has looked at it on a shell-host surface, whose
-  renderer must hand its device to quire's `Gpu` for the texture to draw. Ends when
+  renderer must hand its device to Bardo's `Gpu` for the texture to draw. Ends when
   `docs/manual-checks.md` "A file from the launcher in the viewer" is ticked on casement; if the picture is
   blank there, the pane needs the PNG fallback its FINDINGS names.
 - **Each file peek writes the pane's stylesheet.** `anyview_peek::Card` draws its own `AppStyle`, one
@@ -640,11 +640,11 @@ a source; `assumed` means not yet checked.
 - **G361** One widget of a kind per surface: the drag, regions and state file are keyed by kind.
 - **G364** World Clock builds its entry from the clock at each minute tick; it does not send
   dated timeline entries, so a city's date flips on the first tick after its midnight.
-- **G365** A submenu in a `FitContent` popup opens below its parent, not beside it: quire draws a
+- **G365** A submenu in a `FitContent` popup opens below its parent, not beside it: Bardo draws a
   submenu in an overlay of its own, which a popup root lays in flow as an empty strip under the card,
   and places the submenu against that strip. The bar's popup is fixed (`PopupFrame { submenu_room }`
   and `menu/submenu.css`, see the tray fact); the dock's `Options` and the desktop menu's Show View
-  Options still open below. Ends when their popups pass a room, or when quire places a popup's
+  Options still open below. Ends when their popups pass a room, or when Bardo places a popup's
   submenu against the card's overlay.
 - **G366** Change Wallpaper... opens Settings (its Wallpaper page when the machine has
   that desktop entry): sill has no wallpaper picker of its own, and the choice of app is not a
@@ -665,7 +665,7 @@ a source; `assumed` means not yet checked.
   appmenu protocol (`org_kde_kwin_appmenu`) to hand a toplevel's address over; casement P3-MN
   (`menu_source`) adds the server side, then sill reads the address it gives per toplevel instead of
   deriving it from the `app_id`, which also makes the menu per window. Until then only apps that serve
-  `org.quire.AppMenu.<app_id>` (quire apps) have menus in the bar.
+  `org.bardo.AppMenu.<app_id>` (Bardo apps) have menus in the bar.
 - **G371** App menus: `shell.menu.activate`'s Zoom and full-screen items are not provided: the shell
   has no `WlCommand` for maximise or fullscreen, so the Read set is Minimise, Hide, Hide Others, Show
   All and raising a window. Ends when the windows model gains those commands (then two `OwnItem`s).
@@ -725,10 +725,10 @@ a source; `assumed` means not yet checked.
   summon) and `companion.notify` (a notification when a task needs the person) are in the domain
   and the schema; nothing reads them. (`companion.confirm_arm_ms` is a constant now.) Ends when the tap machine, the notifications service and the confirmation
   sheet each take theirs. `agent.undo.keep_h` is docket's file, not sill's.
-- **quire's companion components are placeholders.** `AnswerCard`, `ContextChips`, `RunRow`,
+- **Bardo's companion components are placeholders.** `AnswerCard`, `ContextChips`, `RunRow`,
   `ActivityStrip`, `MemoryTimeline` draw an empty root, and `CommandPalette` has no `mode` or
   `chips` prop, so the prompt keeps the search text as state (`Session::kept`) and shows no chip.
-  Ends with quire's W1 to W3 fills; then the pane's slot draws the real card and the chip shows.
+  Ends with Bardo's W1 to W3 fills; then the pane's slot draws the real card and the chip shows.
 - **A thing whose app declares no `<kind>.open` has no Enter action and no dimmed look.** A launcher
   `Item` has no way to say "not openable", so the row is shown as any other and Enter does nothing
   (mailo declares `mail.thread.open` only once it adds it, docket FINDINGS f4-docket-3 section 2).
@@ -748,7 +748,7 @@ a source; `assumed` means not yet checked.
 - **Nothing in the launcher says something to a subagent.** `CompanionCommand::Tell` (open a session,
   record the person's turn, `Message.Send` as a request, `Companion1.Told`, close) is done and
   tested; no surface issues it, because the launcher has no roster of subagents to pick one from.
-  A plan card has no Stop or Undo All button: the plan's own step machine is quire's (`plan_step`,
+  A plan card has no Stop or Undo All button: the plan's own step machine is Bardo's (`plan_step`,
   unfilled).
 - **The summon's origin is always the double tap**; a voice summon waits for voice.
 - **No Toshy snippet ships for route B.** The session's shortcuts bind `Ctrl+Alt+Shift+Super F19` to `bardo-shell companion tap`
@@ -766,12 +766,12 @@ a source; `assumed` means not yet checked.
   service's local `ManagerSignIn` proxy is replaced by `porter_dbus::ManagerProxy::needing_reauth`.
 
 - **The accounts sheet's props live in `sill-overlays`, not `sill-model`.** PLAN §2.4 and the lane brief put the
-  `SheetView` to props table in `sill-model`; the props are quire's (`ds-shell::accounts::model` names `MarkProvider`
+  `SheetView` to props table in `sill-model`; the props are Bardo's (`ds-shell::accounts::model` names `MarkProvider`
   and its own `Word` enums), and `sill-model` may reach no design system (`scripts/check-boundary.sh`). The pure half
   (what is open, what is typed, what is sent back) is `sill_model::accounts::sheet`; the table is
   `sill_overlays::accounts_sheet::props` (with `words.rs`, `events.rs`). `sill-model` takes `porter-core` for it.
 
-### quire
+### Bardo
 
 - **Q3** No per-workspace look store; `use_space_look` computes the preset for the position.
 - **Q62** Ctrl+K while the launcher's actions menu is open does not close it.
@@ -800,7 +800,7 @@ a source; `assumed` means not yet checked.
 - design/22 still shows rows for the keys the 2026-10-27 prune made constants or stylesheet
   tokens (the list is `RETIRED` in `crates/sill-settings/tests/it/keys.rs`: the pixel keys of
   `bar`, `dock`, `launcher`, `scrollbar`, `notifications` and `control_center`, now tokens such
-  as `--cc-gap`/`--cc-pad` or constants beside their readers); the rows are quire's to remove.
+  as `--cc-gap`/`--cc-pad` or constants beside their readers); the rows are Bardo's to remove.
 - The Harness's `count` misses `[aria-selected="true"] .ds-chord` (an attribute selector with a
   descendant).
 
@@ -886,7 +886,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 
 - **design/22 has no `voice` section.** `voice.hold_to_talk` ships and `voice.consent` is state
   (`#[settings(skip)]`); `crates/sill-settings/tests/it/keys.rs` lists `voice.hold_to_talk` as
-  `UNCATALOGUED`. Ends when quire's design/22 gains the rows and `SECTIONS` names them.
+  `UNCATALOGUED`. Ends when Bardo's design/22 gains the rows and `SECTIONS` names them.
 - **The hold's edges come from a source that detects the hold itself** (`bardo-shell voice
   hold-start|hold-end|hold-cancel`). The raw-edge machine (`HoldKey`: command down, up, other key,
   pointer) is not built; it ends when keycap or the compositor sends raw edges.
@@ -917,7 +917,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 
 - **Now.** The service reads `Answer.Routing` (JSON `Vec<RouteNote>`) when an answer's object appears and on every
   `PropertiesChanged`, as `CompanionEvent::Routing`, kept in `AnswerFacts.routing`. The launcher's answer card shows
-  `companion_wire::footer_line` of it as one caption line (`.sill-route-line`, quire tokens only); no notes, no line.
+  `companion_wire::footer_line` of it as one caption line (`.sill-route-line`, Bardo tokens only); no notes, no line.
 - **Older companiond.** An object without the property keeps `[]`: no footer, nothing logged.
 - **Declined.** A named model that cannot serve arrives as `RefusalWire::Failed(reason)`; the card shows that reason.
 - Test: `companion_routing_bus.rs`, `launcher_companion.rs`.
@@ -925,37 +925,37 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 ## Space removal: not a shell path
 
 - sill has no Space-removal path. Settings (detent) owns the removal sheet and calls
-  `org.quire.Memory1 Control.RemoveSpace` before `Spaces1.Remove`. The shell neither removes Spaces nor shows the sheet.
+  `org.bardo.Memory1 Control.RemoveSpace` before `Spaces1.Remove`. The shell neither removes Spaces nor shows the sheet.
 
-## p2-sq: the Quire arm
+## p2-sq: Bardo arm
 
 - **Wired.** `desktop_wl::backend_of` (replaces `sill_model::desktop::backend_for`; `GlobalOffer::names`).
-  The model grew the commands the Quire arm carries (`AssignSpaces`, `ClearMinimiseTarget`, the app
+  The model grew the commands Bardo arm carries (`AssignSpaces`, `ClearMinimiseTarget`, the app
   verbs, Space create/remove/move, `Overview`, `ShowDesktop`, `PickSwitcher`, `CancelSwitcher`),
   `ShellNote` (the shell protocol in the shell's words) and the fields `AppView::visibility` and
   `WindowView::{role, modality, geometry, responsiveness, lease, sensitivity}` (the wlr arm fills defaults).
-  `desktop_wl::quire` holds the pure mappings (`quire_view`, `quire_wire_of`, `note_of`), the handout seam
-  (`ZbusHandout` calls `org.quire.Compositor1.Connect("shell")`), `QuireArm` over any
+  `desktop_wl::bardo` holds the pure mappings (`bardo_view`, `bardo_wire_of`, `note_of`), the handout seam
+  (`ZbusHandout` calls `org.bardo.Compositor1.Connect("shell")`), `BardoArm` over any
   `Desktop`, and the thread that runs it on the host's connection. The daemon asks the compositor for the
   shell connection before `Host::connect`, gives it to the host as `WaylandRoute::Handed`, and starts the
   arm at the first mapped surface that has a role. Notes: hot corner -> the corner link (first output, the
   protocol names none), summon gesture -> the companion's tap, kill chord -> the companion's stop-all.
-  Tests: `tests/it/desktop_quire.rs` (fake desktop with `holding_shell`, scripted `QuireEvent`s, a stand-in
+  Tests: `tests/it/desktop_bardo.rs` (fake desktop with `holding_shell`, scripted `BardoEvent`s, a stand-in
   `Compositor1` on a private bus).
 - **Waits for P3-SILL.** No-ops with a doc naming the lane, in `compositor.rs`: modifiers over shell
   surfaces (Option variants), the switcher panel and `PickSwitcher`/`CancelSwitcher` answers, Mission
   Control chrome, edge reveals, menu flash, bell, reopen and the hold overlay. Nothing in the UI reads
   the arm's `DesktopView` or sends it commands yet (`ShellSeat` has no `command` method until a surface
   needs one); the toplevels and workspaces the dock and switcher draw still come from the windows thread's
-  environment connection (which on a Quire offer is the standard arm over the projected flags).
+  environment connection (which on a Bardo offer is the standard arm over the projected flags).
 - **Waits for casement's server lanes.** The whole path is unrun against a compositor: the handed
-  connection, `quire_shell_v1` on it, `SetShellRole`, the notes. Activation sends serial 0 (desktop-client's
+  connection, `bardo_shell_v1` on it, `SetShellRole`, the notes. Activation sends serial 0 (desktop-client's
   decision). A window with no ext handle is invisible.
 - **Deviations to confirm.** (1) `supports(Wlr, SetMinimiseTarget)` stays `No`: the Wlr arm runs on its
-  own connection, which holds no dock surface; on the Quire arm the command names the dock's registered
+  own connection, which holds no dock surface; on Bardo arm the command names the dock's registered
   surface for the window's output. (2) The ext list alone is the Wlr arm. (3) A second queue on the host's connection gets no wake-up
   when the host's thread reads the socket first. Settled (cp1): the arm leaves a waker in its queue
-  (`DesktopClient::poll_dispatch_pending`, `quire/queue_wake.rs`) and the loop sleeps until the socket or
+  (`DesktopClient::poll_dispatch_pending`, `bardo/queue_wake.rs`) and the loop sleeps until the socket or
   the waker's ping has something; the 20 ms tick (about 50 wake-ups a second while idle) is gone. (4) The arm's
   connection comes from `wl_surface.backend()` of the first mapped surface; shell-host exposes no
   `Connection` accessor.
@@ -988,7 +988,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 - **What changed.** The dock publishes, per output, the resting rectangle of each app's icon
   (`rest_rects::app_rects`, from the frame at no magnification, whole logical px in the dock
   surface's coordinates; the Trash has none) into `Services::dock_rects` (`DockRects`, a watch, written
-  only on change). The daemon's `ShellSeat` (Quire arm only) reads it with the arm's `DesktopView`
+  only on change). The daemon's `ShellSeat` (Bardo arm only) reads it with the arm's `DesktopView`
   and sends `SetMinimiseTarget` for each window whose app has an icon on the window's output,
   `ClearMinimiseTarget` for each that had one and has none (`MinimiseTargets::of` / `since`, pure,
   table-tested in `sill-model`). `ShellSeat::command` is the smallest command method. Every shell
@@ -997,10 +997,10 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 - **Matching is by app name.** The dock groups windows from the environment connection
   (the windows model's keys), the arm names them by identifier, and the two key spaces do not meet.
   A window therefore takes the rectangle of the icon filed under its `WindowView::app`: the icon's
-  desktop-entry id and the raw app id of each of the icon's windows. If Quire's app key differs
+  desktop-entry id and the raw app id of each of the icon's windows. If Bardo's app key differs
   from both (a proven name unlike the entry id), that app's windows get no target.
 - **Only a live casement run proves.** That the rectangle is in the coordinates
-  `quire_shell_v1.set_minimise_target` expects (surface-local logical px, top-left origin) and
+  `bardo_shell_v1.set_minimise_target` expects (surface-local logical px, top-left origin) and
   that the genie lands on the icon rather than offset by the pill's gutter or the autohide slide
   (the rectangle ignores the slide); that a target sent before the dock's `SetShellRole` is
   refused and the resend after registration fixes it; that a dock restarted or an output hot-plugged
@@ -1011,26 +1011,26 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 
 ## p2-ch: the screen-sharing picker
 
-- **Served.** `org.quire.Shell1.PickCaptureSource(app_label, kinds, multiple, cursor_modes) ->
-  (sources, cursor)` at `/org/quire/Shell1`, frozen by transom's `chooser.rs`. Pure logic in
+- **Served.** `org.bardo.Shell1.PickCaptureSource(app_label, kinds, multiple, cursor_modes) ->
+  (sources, cursor)` at `/org/bardo/Shell1`, frozen by transom's `chooser.rs`. Pure logic in
   `sill_model::capture_pick` (parse the call, `plan` the tabs and rows, `toggle` the picks, `reply`
   the answer, `step` one request at a time, `windows_of` the desktop's view); the service in
   `sill_services::capture_pick`; the sheet in `sill_overlays::capture_sheet`; tables in
   `sill-model` (`capture_pick/tests`), a private-bus test in
   `sill-services/tests/it/capture_pick_bus.rs` and a lint case in `sill/tests/it/lint.rs`.
 - **Name ownership.** The object is exported on the connection the intents service already holds as
-  `org.quire.Shell` (the `seat`), so the interface is served from the name transom's proxy
+  `org.bardo.Shell` (the `seat`), so the interface is served from the name transom's proxy
   already calls and no second name is claimed. Without a seat nothing is served and transom's call
   fails with an unknown-name error ("no picker"). Only the owner of
-  `org.freedesktop.impl.portal.desktop.quire` may call (a forged caller is `AccessDenied`).
+  `org.freedesktop.impl.portal.desktop.bardo` may call (a forged caller is `AccessDenied`).
 - **Candidates.** Screens: the displays service's outputs, quoted by connector name (`DP-1`).
-  Windows: the Quire arm's `DesktopView` pushed by the daemon on every `ShellMsg::Desktop`
+  Windows: Bardo arm's `DesktopView` pushed by the daemon on every `ShellMsg::Desktop`
   (documents that are not minimised and not `CaptureHidden`), quoted by the identifier casement
   publishes. **No fallback on the other arms**: the wlr toplevels carry no ext
   identifier (`desktop_wl::identifier` would make one up, `toplevel-N`, which casement would not
   know), so the Windows tab is empty there rather than wrong. Reading the ext identifier on
   the windows thread would fix it.
-- **UI.** A centred quire `Sheet` over an Overlay layer (keyboard exclusive) on the banners'
+- **UI.** A centred Bardo `Sheet` over an Overlay layer (keyboard exclusive) on the banners'
   output, like the confirmation sheet. Screens/Windows `SegmentedControl` only when both kinds
   are accepted; a `List` of `Row`s (monitor/window glyph, title, detail, check); a pointer
   `SegmentedControl` only when more than one mode is offered; Cancel and Share. Keys: arrows move
@@ -1045,17 +1045,17 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 
 ## winwire: a window's menu (the green light)
 
-- **The route.** casement sends `quire_shell_v1.window_menu(toplevel, x, y, enabled)` when the pointer rests on a
+- **The route.** casement sends `bardo_shell_v1.window_menu(toplevel, x, y, enabled)` when the pointer rests on a
   window's green light; `desktop-client` folds it into `ShellEvent::WindowMenu`; `sill-services` `note_of` makes
   `ShellNote::WindowMenu { window, at, enabled }`; `daemon::compositor::apply` opens it on
   `Links::window_menu` (`WindowMenuLink`); each output's `sill_overlays::WindowMenu` surface (Overlay, whole
-  output, empty input region, draws nothing) opens quire's `Menu` as a context popup (`context_menu_popup`,
+  output, empty input region, draws nothing) opens Bardo's `Menu` as a context popup (`context_menu_popup`,
   `PopupConfig` of the desktop menu) when the point is on its output. A pick is written back to the link,
-  `window_menu::spawn_picks` sends `DesktopCommand::PickWindowMenu(window, entry)` to the arm, and the Quire arm sends
+  `window_menu::spawn_picks` sends `DesktopCommand::PickWindowMenu(window, entry)` to the arm, and Bardo arm sends
   `window_menu_pick`. A dismissal sends nothing.
-- **Dimmed, not hidden.** quire's context menu leaves unavailable entries out unless asked; `MenuModel::unavailable()`
+- **Dimmed, not hidden.** Bardo's context menu leaves unavailable entries out unless asked; `MenuModel::unavailable()`
   (default `Hide`) lets this menu ask for `Dim`, so the menu is always the same set of entries.
-- **Submenus are quire's own** ("Move & Resize", "Full Screen Tile"); no section headers were needed.
+- **Submenus are Bardo's own** ("Move & Resize", "Full Screen Tile"); no section headers were needed.
 - **Open, only a real run proves:** the popup is opened by a hover, not by a press on the shell's own surface, so it
   has no input serial. If casement refuses or immediately dismisses the grab, give the popup `PopupGrab::Ungrabbed`
   and close it on the next pointer press outside (the compositor knows the press; add a `window_menu_close` event).
@@ -1063,7 +1063,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 
 ## splitwire: the Split View picker and divider
 
-- **The route.** casement offers the other half of a Split View with `quire_shell_v1.split_choose(first, side)` and one
+- **The route.** casement offers the other half of a Split View with `bardo_shell_v1.split_choose(first, side)` and one
   `split_candidate(toplevel)` per candidate, and ends it with `split_choice_end(first)`; `desktop-client` folds them
   into `Shell::split_choice` and `ShellEvent::{SplitChoose, SplitCandidate, SplitChoiceEnd}`; `sill-services` `note_of`
   makes `ShellNote::{SplitChoose, SplitCandidate, SplitChoiceEnd}` (one note per event: the wire has no "list complete"
@@ -1072,9 +1072,9 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
   each candidate's title from the latest `DesktopView`. Each output's `sill_overlays::SplitPicker` (Overlay, whole output,
   keyboard Exclusive, input everywhere, no blur) maps while an offer shows on it. A tile or Return writes
   `SplitAnswer::Picked`, Escape or a press on the backdrop `Cancelled`; `split_picker::spawn_answers` sends
-  `DesktopCommand::PickSplit` / `CancelSplit`, and the Quire arm sends `split_pick` / `split_cancel`.
+  `DesktopCommand::PickSplit` / `CancelSplit`, and Bardo arm sends `split_pick` / `split_cancel`.
 - **No window previews.** sill has no window previews (Mission Control and the switcher are the compositor's or app
-  tiles), so each card is the window's app icon with its title under the selected tile: quire's `AppSwitcher` with the
+  tiles), so each card is the window's app icon with its title under the selected tile: Bardo's `AppSwitcher` with the
   window identifier as the tile key. A thumbnail needs a per-window capture (casement has `ext-image-copy-capture`
   for toplevels); when the shell asks for those, the tile's `IconSource` is where the picture goes.
 - **Shared with the switcher.** The icon source (`TileIcons`) and the tile sizes (`icon_side`, `metrics_of`) moved
@@ -1104,7 +1104,7 @@ Mission Control's Spaces bar (lane `spacesbar`, written without a build: nothing
   App Expose and Show Desktop, which have no bar) on `SpacesBarLink`. `daemon/events.rs` writes each `DesktopView` to the same
   link. Each output's `sill_overlays::SpacesBar` (Top, anchored top/left/right, 112 px high = `STRIP_PX`, reserves nothing, no keyboard,
   input everywhere, spawned before the menu bar so the bar draws over its top) maps while the bar is up and unmaps when the leave
-  has settled. It draws quire's `WorkspacePills` (a pill per Space of the output, the one on show `Selected`) centred, and a
+  has settled. It draws Bardo's `WorkspacePills` (a pill per Space of the output, the one on show `Selected`) centred, and a
   toolbar `Button` with the plus glyph at the right edge; the strip is padded by `--shell-bar-h` so the pills sit under the menu bar.
 - **Names.** `bar_spaces`: desktops are "Desktop N" counted per output in order (as the Mac counts them, full-screen Spaces do
   not take a number); full-screen, Split View and agent Spaces are named by the apps with a window on them (app index name, else
@@ -1116,7 +1116,7 @@ Mission Control's Spaces bar (lane `spacesbar`, written without a build: nothing
 - **Departures.**
   1. *Names only, no thumbnails.* Sonoma expands the collapsed bar to Space thumbnails when the pointer reaches the top. The wire has
      no Space thumbnail and sill has no capture of a Space, so the bar stays at the collapsed state.
-  2. *Motion is 120 ms, not about 350 ms.* quire has no top-edge slide and its sheet pair is the nearest known animation: `sheet-in`
+  2. *Motion is 120 ms, not about 350 ms.* Bardo has no top-edge slide and its sheet pair is the nearest known animation: `sheet-in`
      / `sheet-out` (`--t-quick`, `--e-out` / `--e-exit`) with `--sheet-dy` set to a lift of `--s-48` off the top (sill may not define
      keyframes: the lint rejects unknown animation names). The windows settle in about 350 ms, so the bar finishes first.
   3. *Every output.* The overview note names no output, so the bar shows on all outputs; the Spaces on each are its own.
@@ -1125,9 +1125,9 @@ Mission Control's Spaces bar (lane `spacesbar`, written without a build: nothing
   5. *Space reorder, remove and the Space menu are not done* (`MoveSpace`, `RemoveSpace` exist as commands; nothing in the bar sends them).
   6. *`Tracking` shows the bar at once,* at full strength, not scaled by `progress`; the progress field is ignored.
 - **Interface asks.**
-  - quire: `Anim::DropIn` / `Exit::LiftOut` (a top-edge slide-down and lift, with the overview's duration token, about 350 ms) for
+  - Bardo: `Anim::DropIn` / `Exit::LiftOut` (a top-edge slide-down and lift, with the overview's duration token, about 350 ms) for
     `use_presence`; today the bar borrows the sheet pair.
-  - quire: a `SpacesBar` component (pills with a thumbnail slot that expands on hover, the Space add plus, drop target highlight)
+  - Bardo: a `SpacesBar` component (pills with a thumbnail slot that expands on hover, the Space add plus, drop target highlight)
     once the wire has thumbnails; `WorkspacePills` is the menu bar's segmented group, near enough for a collapsed bar.
   - casement: say which output Mission Control is open on (a per-output `overview_state`), report a Space thumbnail, and report a
     window dropped on the strip.
@@ -1138,22 +1138,22 @@ Mission Control's Spaces bar (lane `spacesbar`, written without a build: nothing
 
 ## mc2
 
-Lane `mc2`, written without a build: nothing here has been compiled or run, so the gate decides. Adopts quire's `SpacesBar`
-and casement's `quire_shell_v1` version 2 (casement-protocols `ea171a1`).
+Lane `mc2`, written without a build: nothing here has been compiled or run, so the gate decides. Adopts Bardo's `SpacesBar`
+and casement's `bardo_shell_v1` version 2 (casement-protocols `ea171a1`).
 
 - **What landed.**
-  1. *quire's bar.* `sill-overlays/src/spaces_bar/` now hangs `SpacesBar { label, spaces, shown, on_pick, on_add, on_hidden,
+  1. *Bardo's bar.* `sill-overlays/src/spaces_bar/` now hangs `SpacesBar { label, spaces, shown, on_pick, on_add, on_hidden,
      expansion, common }` under the menu bar's padding. WorkspacePills, the own Add Button, `style.css`, `SPACES_BAR_CSS` and the
      `sheet-in`/`sheet-out` presence are gone (the lint case takes `css: ""`). A Space id is the `BarSpaceKey` string
      (`SpaceId::as_str`) and parsed back on a press (`SpaceId::parse`; an unparsable key sends nothing).
-  2. *Wire.* The arm's client already binds `quire_shell_v1` at `1..=2` and every `wl_output` (desktop-client `bind_all`,
+  2. *Wire.* The arm's client already binds `bardo_shell_v1` at `1..=2` and every `wl_output` (desktop-client `bind_all`,
      `bind_outputs`); sill changed nothing there. New notes `ShellNote::{OverviewOutput, DropTarget, SpacePicture}`, new commands
      `DesktopCommand::{CaptureSpace, SetSpaceTargets}`. sill matches `ShellEvent`/`DesktopCommand` exhaustively nowhere else than
-     `quire_wire_of` (arms added) and `desktop_wl::wire_of` (wlr refuses both); `note_of` has a catch-all.
+     `bardo_wire_of` (arms added) and `desktop_wl::wire_of` (wlr refuses both); `note_of` has a catch-all.
   3. *Per output.* `BarOutputs::bar_on(overall, output)` (sill-model `bar_outputs.rs`): up only when the overview as a whole is
      Mission Control and the output is reported `Shown`; with no report at all every output follows the whole (desktop-client's
      `Overview::shown_on` rule, kept in the model because sill carries notes, not the client's state).
-  4. *Pictures.* `QuireArm::execute` keeps the capture ticket of a `CaptureSpace`; `QuireArm::pictures(take)` (called by the
+  4. *Pictures.* `BardoArm::execute` keeps the capture ticket of a `CaptureSpace`; `BardoArm::pictures(take)` (called by the
      shell thread after each sync with `DesktopClient::take_capture`, which the `Desktop` trait does not have) turns a finished
      frame into PNG bytes (`pictures.rs`, `Frame::to_rgba8`, `image`) and a `ShellNote::SpacePicture`, or `Failed`. The note
      reaches `SpacesBarLink::set_picture`; the tile gets `SpaceTile::thumbnail(ImageSource::png(..))`.
@@ -1169,7 +1169,7 @@ and casement's `quire_shell_v1` version 2 (casement-protocols `ea171a1`).
 - **Surface height and input (record asked for).** The layer surface is `--shell-bar-h` plus `BAR_EXPANDED_PX` (150) tall
   (`layer::surface_px`), more than the compositor's 112 px reserve (`STRIP_PX`, kept: casement still keeps 112 free for the collapsed
   bar). The expanded bar therefore lies over the top (about 62 px with a 24 px menu bar) of the windows' layout, as the Mac's does.
-  Input is `RegionSpec::Element { id: "spaces-bar" }`, the quire bar's own element (its `Common::id`), so the transparent rest of
+  Input is `RegionSpec::Element { id: "spaces-bar" }`, Bardo bar's own element (its `Common::id`), so the transparent rest of
   the surface passes the pointer to the compositor's window tiles; the menu-bar padding above the bar is not input either (the menu
   bar's own surface covers it). Ask for casement: reserve at least the bar's real height if the windows should not be overlapped.
 - **Departures.**
@@ -1177,15 +1177,15 @@ and casement's `quire_shell_v1` version 2 (casement-protocols `ea171a1`).
      bar gets no pointer events, so a hover-driven expansion could never happen during the one gesture the targets exist for; and
      the targets are the cards, which exist only expanded. The collapsed row of names is not reachable.
   2. *Card rectangles are arithmetic.* `SpacesBar` reports no per-tile rectangle or mounted handle, so `tiles_of` centres a row of
-     168 x ... cards in the bar's box using quire's `spaces_bar.css` numbers (160 x 100 card, `--s-4` tile padding, `--s-16` gap,
+     168 x ... cards in the bar's box using Bardo's `spaces_bar.css` numbers (160 x 100 card, `--s-4` tile padding, `--s-16` gap,
      `--s-8` top padding). A harness test compares the first card with the drawn `.ds-spaces-bar-thumb`, which catches drift when
-     quire changes. Interface ask to quire: `SpaceTile::common` (or `on_layout(Vec<(BarSpaceKey, Rect)>)`) so the host measures the
+     Bardo changes. Interface ask to Bardo: `SpaceTile::common` (or `on_layout(Vec<(BarSpaceKey, Rect)>)`) so the host measures the
      cards.
   3. *Only the Space on show is pictured* (casement: "first version: only the Space the output shows now"). A tile keeps the last
      picture it got in the session (the feed holds them per output and Space; they go stale), else the quiet blank card.
-  4. *No wallpaper under the picture.* The picture has none (windows over transparency) and the card is quire's blank colour. The
-     wallpaper images exist (`WallpaperService`) but drawing one under quire's `<img>` needs a layer in quire's card or compositing
-     in the daemon; not done. Ask to quire: a `SpaceTile` backdrop, or draw the card's background from an `ImageSource`.
+  4. *No wallpaper under the picture.* The picture has none (windows over transparency) and the card is Bardo's blank colour. The
+     wallpaper images exist (`WallpaperService`) but drawing one under Bardo's `<img>` needs a layer in Bardo's card or compositing
+     in the daemon; not done. Ask to Bardo: a `SpaceTile` backdrop, or draw the card's background from an `ImageSource`.
   5. *Scale from the output.* The picture is asked at the output's scale (`OutputInfo::scale`), not the surface's own
      `preferred_scale`; they are equal unless fractional scale differs per surface.
   6. *Base64 per recompute.* `ImageSource::png` re-encodes each picture when the tile list is recomputed (a memo over the feed and
@@ -1194,8 +1194,8 @@ and casement's `quire_shell_v1` version 2 (casement-protocols `ea171a1`).
      compositor to say a drag has begun.
 - **Tests.** sill-model `bar_tests.rs` (per-output show, card layout and scale, target commands, ask/refresh decisions, a bar that
   goes, a failed answer, drop highlight, the outbox, space ids); sill-ui-kit link tests (the new parts, repeats wake no one);
-  sill-services `desktop_quire.rs` (the two notes, `SetSpaceTargets`, a picture asked for and returned as a PNG note);
-  sill-overlays `spaces_bar.rs` (the existing five moved to quire's selectors, plus per-output, picture and drop highlight, the
+  sill-services `desktop_bardo.rs` (the two notes, `SetSpaceTargets`, a picture asked for and returned as a PNG note);
+  sill-overlays `spaces_bar.rs` (the existing five moved to Bardo's selectors, plus per-output, picture and drop highlight, the
   published cards against the drawn thumbnail); layer tests (height, input element); `bardo-shell` `spaces_bar.rs` (the notes reach the link).
 - **Check at the gate.** Everything compiles for the first time: the `ds::prelude` names (`BarSpaceKey`, `ImageSource`, `Rect`, `Common`,
   `BarExpansion`), `Memo<BarShow>` in `use_map_when_up`/`use_publish_layout`, the `fn(&mut SpacesBarFeed) -> &mut T` closures in
@@ -1210,24 +1210,24 @@ and casement's `quire_shell_v1` version 2 (casement-protocols `ea171a1`).
 
 ## mc4
 
-Lane `mc4`, written without a build: nothing here has been compiled or run, so the gate decides. Adopts casement's `quire_shell_v1`
+Lane `mc4`, written without a build: nothing here has been compiled or run, so the gate decides. Adopts casement's `bardo_shell_v1`
 version 3 (casement-protocols `0f7afcb`, casement `3eaf1f7`) and completes the Spaces bar of `mc2`.
 
 - **What landed.**
-  1. *Version 3.* sill pins no version: desktop-client's `bind_all` binds `quire_shell_v1` at `1..=3` already, so nothing changed
+  1. *Version 3.* sill pins no version: desktop-client's `bind_all` binds `bardo_shell_v1` at `1..=3` already, so nothing changed
      there. New note `ShellNote::DropTargetNew { output, over }`, new command `DesktopCommand::SetNewSpaceTarget { output, rect:
-     Option<Rect> }` (`None` removes). Matched in `quire_wire_of`, `desktop_wl::command` (wlr refuses), `note_of`, `compositor::apply`.
+     Option<Rect> }` (`None` removes). Matched in `bardo_wire_of`, `desktop_wl::command` (wlr refuses), `note_of`, `compositor::apply`.
   2. *A picture of every Space.* `thumbs_wanted` keeps one ask per output and Space (`ThumbAsks` keyed by both) and asks for every
      Space `bar_space_ids` lists on a laid-out output, shown or not. The refresh rule is the mc2 one per Space: again only after the
      last answer arrived and that Space's windows (identifier, state, geometry) changed. Switching Space changes no window, so the
      compositor's kept sessions are not asked again. A Space that leaves an output forgets its ask. The arm already tracked captures by
-     id (`QuireArm::pending`), so several in flight needed nothing there. The mc2 departure "only the shown Space" is gone, and so is
+     id (`BardoArm::pending`), so several in flight needed nothing there. The mc2 departure "only the shown Space" is gone, and so is
      its test (replaced by the every-Space ask test).
-  3. *Wallpaper under each picture.* quire's `SpaceTile` has no backdrop slot, so sill composes it with no quire change: the bar's
+  3. *Wallpaper under each picture.* Bardo's `SpaceTile` has no backdrop slot, so sill composes it with no Bardo change: the bar's
      wrapper div carries `--sill-bar-wallpaper: url("file://...")` (the same prepared image the wallpaper surface shows, light or dark
      as `resolve` says, through `wallpaper::url_for`, now shared by the wallpaper view and the bar) and `data-backdrop=wallpaper`;
-     the spaces bar's stylesheet (an `AppStyle`) paints it as the background of quire's `.ds-spaces-bar-thumb`, under the
-     transparent picture. The lint case takes the sheet again. Interface ask to quire (cleaner): `SpaceTile::backdrop(ImageSource)`.
+     the spaces bar's stylesheet (an `AppStyle`) paints it as the background of Bardo's `.ds-spaces-bar-thumb`, under the
+     transparent picture. The lint case takes the sheet again. Interface ask to Bardo (cleaner): `SpaceTile::backdrop(ImageSource)`.
   4. *The plus.* `add_of` gives its rectangle from the bar's box, as `tiles_of` gives the cards: at the right edge, `--s-20` in,
      `--s-8` down, a square of `--ctl-h-m` (28 px). `BarLayout::add` carries it; `target_commands` sends `SetSpaceTargets` then
      `SetNewSpaceTarget` per output, each only when it changed, and `SetNewSpaceTarget { rect: None }` once the bar goes. The
@@ -1235,11 +1235,11 @@ version 3 (casement-protocols `0f7afcb`, casement `3eaf1f7`) and completes the S
   5. *The plus lit.* `BarDrops` now holds the Space tile and the plus per output (`with_new`, `new_state_of`); a Space under the window
      puts the plus out. `ShellNote::DropTargetNew` -> `SpacesBarLink::set_drop_new`.
 - **Departures.**
-  1. *The plus is lit by sill's sheet, not quire's drop state.* quire's `SpacesBar` has no drop state for its plus (the `Button` is
+  1. *The plus is lit by sill's sheet, not Bardo's drop state.* Bardo's `SpacesBar` has no drop state for its plus (the `Button` is
      built inside it), so the wrapper says `data-add-drop=target` and `style.css` gives the button the wash and ring a lit Space gets
-     (`--accent-soft`, `--accent`). Interface ask to quire: `SpacesBar::add_drop: DropState` (and `SpaceTile::backdrop`, and a
+     (`--accent-soft`, `--accent`). Interface ask to Bardo: `SpacesBar::add_drop: DropState` (and `SpaceTile::backdrop`, and a
      measured rectangle for the plus, as for the cards).
-  2. *The plus rectangle is arithmetic*, like the cards (FINDINGS `mc2` departure 2): a change to quire's bar padding or the medium
+  2. *The plus rectangle is arithmetic*, like the cards (FINDINGS `mc2` departure 2): a change to Bardo's bar padding or the medium
      control height needs `BAR_SIDE`, `ADD_PX` in `bar_layout.rs` changed with it. It is the button itself, 28 px: small to hit.
   3. *`Accepts` is still never set.* The protocol gives no event when a drag begins: `drop_target` and `drop_target_new` fire only on
      entering or leaving a rectangle (and at the end), so the shell cannot know a drag is in progress before the pointer reaches a
@@ -1251,12 +1251,12 @@ version 3 (casement-protocols `0f7afcb`, casement `3eaf1f7`) and completes the S
      name, nothing more.
 - **Tests.** sill-model `bar_tests.rs` (the plus's place, targets then the plus's target sent, moved alone, cleared with the bar; an ask
   per Space, kept across a switch, forgotten when the Space leaves; the plus lit and put out by a tile; the outbox); `tests.rs` (the
-  new command is Quire-only); sill-services `desktop_quire.rs` (`SetNewSpaceTarget` set and removed, `DropTargetNew` note); sill-ui-kit
+  new command is Bardo-only); sill-services `desktop_bardo.rs` (`SetNewSpaceTarget` set and removed, `DropTargetNew` note); sill-ui-kit
   link test; `bardo-shell` `spaces_bar.rs` (the note reaches the link); sill-overlays `spaces_bar.rs` (the plus where it is drawn, a picture
   on every tile, the plus lit, the wallpaper backdrop for the right output only) and `io.rs` (`css_url`).
 - **Check at the gate.** First compile: `ds::prelude::{DropState, Scheme, SpaceLook, resolve}` in `io.rs`; `Memo<Option<String>>` read
   as `(bar.wallpaper)()`; `"data-backdrop": Option<&str>` and `"data-add-drop": Option<&'static str>` attributes in `rsx!`;
-  `AppStyle` inside `SpacesStrip`; the lint of `style.css` under `Profile::Strict` (selectors that name quire's classes,
+  `AppStyle` inside `SpacesStrip`; the lint of `style.css` under `Profile::Strict` (selectors that name Bardo's classes,
   `var(--sill-bar-wallpaper)` as a `background-image`). The overlay harness cases: whether `html()` shows the inline custom property
   and `data-add-drop`; the plus-rectangle equality test (`.ds-spaces-bar-add .ds-button`) is the one most likely to need the
   constants changed.
@@ -1264,43 +1264,43 @@ version 3 (casement-protocols `0f7afcb`, casement `3eaf1f7`) and completes the S
   shows under the pictures; that a drop on the plus makes a Desktop and the new card appears with its picture; that dragging between
   outputs lights the right bar; that the plus lights and puts its light out.
 
-### mc4, part 2: quire's `SpacesBar` API (lane `sill-mc4`, written without a build)
+### mc4, part 2: Bardo's `SpacesBar` API (lane `sill-mc4`, written without a build)
 
-Switches the Spaces bar onto quire `c22bbd9e` (`add_drop`, `on_layout`, `SpaceTile::backdrop`; quire FINDINGS `q-barasks`) and deletes
+Switches the Spaces bar onto Bardo `c22bbd9e` (`add_drop`, `on_layout`, `SpaceTile::backdrop`; Bardo FINDINGS `q-barasks`) and deletes
 the workarounds above.
 
 - **Resolved.** Departures 1 and 2 and the wallpaper's custom property: the spaces bar's stylesheet, the wrapper's
   `data-add-drop` / `data-backdrop` / `--sill-bar-wallpaper`, `css_url`, and the arithmetic (`tiles_of`, `add_of`, `BAR_SIDE`, `ADD_PX`,
   the tile padding and gap) are gone. The plus is lit by `SpacesBar::add_drop` (`BarDrops::new_state_of`); each tile takes
   `.backdrop(ImageSource(file URL))`, the URL `wallpaper::url_for` gives (the string the wallpaper surface's `img` already loads);
-  `io.rs` keeps the last `ds::prelude::BarLayout` quire reported (imported as `DrawnBar`, because `sill_model::desktop::BarLayout` is the
+  `io.rs` keeps the last `ds::prelude::BarLayout` Bardo reported (imported as `DrawnBar`, because `sill_model::desktop::BarLayout` is the
   published shape and keeps its name), and an effect publishes it as the link's `BarLayout` while the bar is up: the cards (`card`, so a
   collapsed bar publishes none), the plus, each moved by the surface's origin on the output, `thumb` still from `thumb_size`. The
   published shape, `target_commands` and the daemon are unchanged. The lint case is `css: ""` again.
 - **Still open.** Departure 3 (`Accepts` is never set: no drag-start event from the compositor). Departure 4 (the wallpaper and the
   windows agree only on a 16:10 output) stands; the backdrop is now an `img` with `object-fit: cover`, so the file URL needs no
-  background-image proof. The plus rectangle is quire's `span.ds-spaces-bar-add` (the button's box), not a smaller button.
+  background-image proof. The plus rectangle is Bardo's `span.ds-spaces-bar-add` (the button's box), not a smaller button.
 - **Tests.** sill-model: the `tiles_of` / `add_of` tests are deleted (target commands, asks, drops kept). `io.rs`: the origin shift and
   the collapsed card. sill-overlays: published rects equal the drawn `.ds-spaces-bar-thumb` and `.ds-spaces-bar-add`; the lit plus is
   `.ds-spaces-bar-add[data-drop=target]`; `img.ds-spaces-bar-backdrop` appears on both tiles for the right output only.
 - **Check at the gate.** `use_signal` / `use_hook` in `use_publish_layout`; `DrawnBar: PartialEq` (it is); `rect` equality to the whole
-  pixel between quire's phase-published rects and the harness's `rect` (rounding may need a one-pixel tolerance); the lit-tile test
+  pixel between Bardo's phase-published rects and the harness's `rect` (rounding may need a one-pixel tolerance); the lit-tile test
   assumes `data-drop` is only on the plus then; whether the surface's `logical` origin type is `i32`.
 
 ## wave-2026-10-15/dragstart
 
 The Spaces bar shows its accepting state during a Mission Control window drag. `ShellNote::WindowDragBegin` / `WindowDragEnd`
-(from `ShellEvent::WindowDragBegin` / `WindowDragEnd`, quire_shell_v1 version 4) go through `spaces_bar::apply_note` to
+(from `ShellEvent::WindowDragBegin` / `WindowDragEnd`, bardo_shell_v1 version 4) go through `spaces_bar::apply_note` to
 `SpacesBarLink::set_dragging`; `BarDrops` keeps the outputs with a drag under way and answers `DropState::Accepts` for every
-Space tile and the plus there, `DropState::Target` still wins for the tile under the window. No quire change: `SpacesBar`
+Space tile and the plus there, `DropState::Target` still wins for the tile under the window. No Bardo change: `SpacesBar`
 already draws `DropState::Accepts` through `SpaceTile::in_drag` and `add_drop`. Needs casement-protocols `08bcc62`; against a
 compositor older than version 4 nothing is sent and the bar behaves as before.
 
 ## wave-6/colour-picker: `PickColor` and the eyedropper
 
-- **Served.** `org.quire.Shell1.PickColor(app_label: s) -> (color: a(ddd))` on the same object as
+- **Served.** `org.bardo.Shell1.PickColor(app_label: s) -> (color: a(ddd))` on the same object as
   `PickCaptureSource` (`sill_services::capture_pick`), with the same caller check (only the owner of
-  `org.freedesktop.impl.portal.desktop.quire`; anyone else is `AccessDenied`). The array is empty on
+  `org.freedesktop.impl.portal.desktop.bardo`; anyone else is `AccessDenied`). The array is empty on
   cancel, else one `(red, green, blue)` in 0..1 sRGB (`sill_model::capture_pick::color_wire`,
   an 8-bit pixel over 255). One question at a time of either kind: a second call while a colour or a
   sources question is open is `LimitsExceeded`; the caller leaving the bus clears it
@@ -1320,8 +1320,8 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
   array to the app, never a wait.
 - **Departures from the Mac.** The picture is frozen: the Mac samples the live screen, so a video
   playing under the loupe keeps playing there and here it stands still (the answer is always the
-  pixel the person saw). The loupe's size is a sill constant (`SIDE`, `CELL`), not a quire token:
-  quire has no loupe. The pointer cursor is hidden with `cursor: none`; if shell-host does not map
+  pixel the person saw). The loupe's size is a sill constant (`SIDE`, `CELL`), not a Bardo token:
+  Bardo has no loupe. The pointer cursor is hidden with `cursor: none`; if shell-host does not map
   that to a hidden cursor the arrow is drawn over the middle cell.
 - **Pixel under the pointer.** `pixel_under` scales each axis by (picture size / surface size), so a
   fractional scale and the rounding of the logical size are exact; it floors. The picture is read
@@ -1377,12 +1377,12 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
 ## wave-6/force-quit: Force Quit Applications
 
 - **The panel.** `bardo-shell force-quit {open,close,toggle}` opens a centred `Sheet` on the output of the
-  active window: the apps the compositor lists (`quire_desktop_app_v1`, in `DesktopView`; those
+  active window: the apps the compositor lists (`bardo_desktop_app_v1`, in `DesktopView`; those
   with windows, most recently used first), each with its icon, "(not responding)" after the name
   of one whose life is `not_responding` or any of whose windows does not answer pings, a hung app
   preselected, and a Force Quit button that asks first ("Do you want to force quit "App"? You
   will lose any unsaved changes.", Cancel the default, Force Quit destructive). Confirming sends
-  `DesktopCommand::ForceQuitApp` (`quire_desktop_app_v1.force_quit`). The panel stays open for the
+  `DesktopCommand::ForceQuitApp` (`bardo_desktop_app_v1.force_quit`). The panel stays open for the
   next app, as on the Mac.
 - **Departures from macOS.** The shell is not listed, so there is no Relaunch (the Mac lists
   Finder with it). There is no Apple menu in the bar (its power items are the power menu), so the
@@ -1405,8 +1405,8 @@ Fixed by reading, not built: the gate run is the first compile. Where the fix li
 ARCHITECTURE.md's one-home table (deadlines, supervision, durable writes, quit while locked, release
 confirmation).
 
-- **Durable writer.** `sill_services::durable` is a local copy of what quire's pa-qfiles lane is
-  adding as a public writer. Switch to quire's when it lands and delete this file. Open until then.
+- **Durable writer.** `sill_services::durable` is a local copy of what Bardo's pa-qfiles lane is
+  adding as a public writer. Switch to Bardo's when it lands and delete this file. Open until then.
 - **Dry-run power menu backend (SILLM-17, deferred).** `PowerMenuBackend::dry_run` and
   `DryRunSession` are still `pub`: `power_menu::io` falls back to them when a surface is mounted
   with neither the live service nor a provided backend, which is non-test code. Closing it needs
@@ -1431,7 +1431,7 @@ confirmation).
   is resized; sources are decoded within 32768 px a side and 1 GiB; outputs above 100 Mpx are refused.
 - **Night Shift (SILLS-16).** `settings.toml` is edited with `toml_edit`: comments, layout, mode and
   links are kept, and nothing is written when the text is unchanged. `toml_edit` 0.25 is a new
-  workspace dependency (already in the lockfile through `toml`); it needs adding to quire's
+  workspace dependency (already in the lockfile through `toml`); it needs adding to Bardo's
   `docs/workspace-deps.toml` if that file pins it.
 - **Launcher close (SILLM-01).** A close request is held back for 1 s after a pick starts, never
   longer; `opened` clears it. The unhandled half, a refused `ask()` publishing an event so the UI
@@ -1451,7 +1451,7 @@ Fixed by reading, not built: the gate run is the first compile.
   - *Cover art a player names by a local file* (`mpris:artUrl` as `file:`) is copied into the
     now-playing art cache and drawn from the copy (a root already). A root would have been the
     wrong tool: the file is anywhere (often a temporary folder), and a player that rewrites one
-    file for each track would be drawn stale. The copy goes through quire's `read_capped` (a
+    file for each track would be drawn stale. The copy goes through Bardo's `read_capped` (a
     regular file of at most 5 MiB; a device, a socket, a folder or a pipe is refused and a pipe is
     never waited on) and `write_atomic` (own temporary name, synced, renamed, owner-only). Its name
     is a hash of the path, the time and the size (`local_art_cache_name`), so a rewritten file is a
@@ -1510,9 +1510,9 @@ Fixed by reading, not built: the gate run is the first compile.
   reads the path as written; a link inside an allowed folder that leaves it is refused by the host.
   A history file saved before this change may hold a path outside the folders; it is not
   re-checked on load, and the host refuses to read it.
-- **`AskPermission` (served).** `org.quire.Shell1.AskPermission` is served by the capture service on
+- **`AskPermission` (served).** `org.bardo.Shell1.AskPermission` is served by the capture service on
   the seat's connection, for the portal backend only (`sill_services::callers`, pa2-sill below),
-  in one line with the compositor's questions. The sheet is quire's `Alert`; a portal question
+  in one line with the compositor's questions. The sheet is Bardo's `Alert`; a portal question
   keeps Escape as the no button and answers 1 (`escape_answer`), while the contract's 2 (closed
   without answering) is what the compositor's question is told on Escape. The portal reads 1 and
   2 the same (both are "cancelled by the user"); `Alert`'s `on_dismiss` is what tells them apart,
@@ -1525,9 +1525,9 @@ Fixed by reading, not built: the gate run is the first compile.
   code: `take_door` prints the library's own words for any error other than `AlreadyRunning`, and the
   command line prints `ClientError::Agent` as it is. `is_running` is not called by sill. An empty
   connection (what a knock is) reaches `serve_one_with`, fails to read a request and writes an
-  error line to a socket that is already closed; nothing is dispatched or logged. quire's
+  error line to a socket that is already closed; nothing is dispatched or logged. Bardo's
   `docs/workspace-deps.toml` still pins latchkey at 335d7a7, so the pinned block in this
-  `Cargo.toml` no longer matches it; quire's file takes the new revision when this lands.
+  `Cargo.toml` no longer matches it; Bardo's file takes the new revision when this lands.
 - **The daemon polls `Listening::standing()`.** `sill::door_guard` asks every
   `STANDING_EVERY` (60 s, latchkey's "once a minute is plenty") on the daemon's runtime; a lock file
   that is gone or replaced (a cache cleaner ran; the fallback under `$HOME/.cache` is the case that
@@ -1558,12 +1558,12 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   that fails is `AccessDenied` with fixed words and one line on stderr naming the roles asked.
   The services' units must unset the loader variables (the table says so for `Full`); one that does
   not is refused until it does.
-- **The table is read once, at start** (`DesktopCallers::from_system`, `/etc/quire/desktop-callers.toml`
+- **The table is read once, at start** (`DesktopCallers::from_system`, `/etc/bardo/desktop-callers.toml`
   and `.d/`). A table that cannot be read (missing, or writable by someone other than root) is an
   empty one: the shell then refuses every call to these objects and shows no app menu, and says so
   once on stderr. A table installed after the shell started is read at the next start.
 - **Stand-in services in the dev scripts are let in by `--dev-callers` (closed 2026-10-17).** The
-  shell reads the desktop's table once (`/etc/quire/desktop-callers.toml`; a jail has none, so it is
+  shell reads the desktop's table once (`/etc/bardo/desktop-callers.toml`; a jail has none, so it is
   empty), and peephole judges an image the person can write `Unverified` before it looks at any row,
   so a stand-in built in a checkout is never a service: `dev/accept/accounts.sh` (the
   `accountd_standin` example) and `dev/accept/confirm.sh` (docket's `accept-intentd`) were refused on
@@ -1601,7 +1601,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   (it changes which arm the scripts exercise), so a power the daemon takes over a public
   connection is asked until they do. Clipboard, input-method and the toplevel list are not gated by
   casement yet, so today only the screen and the keys can ask.
-- **`org.quire.Shell` is asked for without queueing, and the shell exits when it is taken
+- **`org.bardo.Shell` is asked for without queueing, and the shell exits when it is taken
   (PORTAL-10, sill's half).** The name was already asked for with `DoNotQueue` (docket's
   `serve_on_with`); a taken name was only the seat's `NameTaken` trouble and the shell went on
   without a seat. `sill::name_guard` now ends the host and the daemon exits with a failure and
@@ -1609,12 +1609,12 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   repeats once a second while a program holds the name, which is the loud outcome asked for and the
   one that gets the session its shell back as soon as the name is free. A restart policy that
   waits longer is the unit's, not this change's.
-- **App menus (QUIRE-12, sill's half).** The bar reads, shows and an agent clicks a menu only when
-  the owner of `org.quire.AppMenu.<id>` is the program of the focused window
-  (`sill_model::app_menu::menu_trust`). Since `quire_desktop_app_v1` version 2 the compositor
+- **App menus (BARDO-12, sill's half).** The bar reads, shows and an agent clicks a menu only when
+  the owner of `org.bardo.AppMenu.<id>` is the program of the focused window
+  (`sill_model::app_menu::menu_trust`). Since `bardo_desktop_app_v1` version 2 the compositor
   reports each app's `subject` (the image path or the sandboxed app's id it established; absent for a
   program it cannot name), and the comparison uses it when there is one: `desktop-client` reads it
-  into `QuireApp::subject`, the windows service projects it per app id into `WindowModel::subjects`
+  into `BardoApp::subject`, the windows service projects it per app id into `WindowModel::subjects`
   (`sill_model::windows::Subjects::collect`: an app id whose windows disagree, or only some of them
   report one, has none, because two programs declaring one id cannot vouch for it), and the app-menu
   service and the agent build `MenuClient::new(app, subjects.of(app_id))` before asking `menu_trust`.
@@ -1630,7 +1630,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   menu from the verified owner's unique name, but a click is still addressed to the well-known name,
   so a name taken over in the instant between the check and the click is clicked until the owner
   change is seen.
-- **The compositor's permission question.** `quire_shell_v1` version 5 arrives as
+- **The compositor's permission question.** `bardo_shell_v1` version 5 arrives as
   `ShellNote::PermissionAsk` and `PermissionWithdraw` (the client crate binds up to 5 already) and
   is answered with `DesktopCommand::AnswerPermission` (allow, deny, dismissed). It shares one line
   with `AskPermission`: one sheet on screen, others waiting in the order they came, at most
@@ -1650,7 +1650,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   could otherwise write an entry that calls their own program "Firefox". The sheet's icon is found by
   that name in the app index, as for the portal's.
 - **The permission sheet arms after a delay.** Both kinds of question (the portal's
-  `AskPermission` and the compositor's `permission_ask`) are one component, quire's `Alert` with
+  `AskPermission` and the compositor's `permission_ask`) are one component, Bardo's `Alert` with
   `arm_after: Some(PERMISSION_ARM_AFTER)` (600 ms, `sill_overlays::permission_sheet`): the buttons
   are disabled and Return, Escape and clicks do nothing until it has been up that long, and each
   question in the line starts its own wait when drawn. casement may refuse an answer sooner than
@@ -1673,7 +1673,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   `Some(..)`; that the sheet's HTML carries the typographic apostrophes unescaped (a test asserts
   `can\u{2019}t` and `Don\u{2019}t Allow` in it).
 
-## pa3-sill/display-trial: the display trial (`quire_shell_v1` version 6, 2026-10-17)
+## pa3-sill/display-trial: the display trial (`bardo_shell_v1` version 6, 2026-10-17)
 
 - **What it is.** When a program other than the shell changes the displays, casement applies the
   change, sends `displays_trial(trial, seconds)` and reverts by itself when the time runs out;
@@ -1701,7 +1701,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   person should be given the moment to read it). A `displays_trial_end` for the open trial takes
   the sheet down unanswered; an end for another number changes nothing. A person's answer takes the
   question off the link at once; the compositor's end that follows finds nothing open.
-- **Countdown.** Counted from when the card mounts on quire's clock (`ds::base::time::clock::sleep`
+- **Countdown.** Counted from when the card mounts on Bardo's clock (`ds::base::time::clock::sleep`
   to each whole second, `seconds_left` / `until_next_second` in `sill-model`). It is a display of the
   time given, not the compositor's clock: the card mounts a frame after the event, so it can lag the
   compositor's own deadline by a frame or two. It decides nothing: the compositor reverts.
@@ -1717,7 +1717,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   countdown line is changed by the time the harness has advanced a whole second, and that the card
   mounts less than a second after `begin`); that `use_future` accepts an `async move` block over a
   `Signal` written with `set`; that the lint's `display_trial` row passes `Profile::Strict` with
-  `css: ""` as the permission sheet's does; that `desktop_client::quire::DisplayTrial::new` is public
+  `css: ""` as the permission sheet's does; that `desktop_client::bardo::DisplayTrial::new` is public
   and `FakeDesktop::script` takes the two new `ShellEvent` variants (read from casement-protocols
   8cebc9b, not compiled).
 
@@ -1756,7 +1756,7 @@ Nothing runs while the lock screen is up (`shell_lock.id`), and the words are wi
 ## helpers: the Helpers filter and a helper's card (2026-10-17)
 
 The companion's state holds the helpers (`Companion::helpers`, `sill_model::companion::HelpersModel`).
-The companion service reads `org.quire.Companion1.Helpers` when the shell is seated and at each
+The companion service reads `org.bardo.Companion1.Helpers` when the shell is seated and at each
 `Changed`, and the panel's companion mode has a Helpers stop in its Tab ring (Assistant, Helpers, Runs,
 Memory): a "New Helper…" row and one row per helper, a "Waiting for you" badge on the right of a helper that
 needs the person, and the helper's card in the preview pane. Not run on a session: the model, the provider,
@@ -1806,7 +1806,7 @@ The line is built by the pure `sill_model::launch::launch_line`.
 
 - **design/22 has no `bar.autohide` row.** The key ships (Appearance page, Basic, the Mac's "Automatically
   hide and show the menu bar"); `crates/sill-settings/tests/it/keys.rs` lists it as `UNCATALOGUED`. Ends
-  when quire's design/22 gains the row.
+  when Bardo's design/22 gains the row.
 - **The reveal note names no output.** `reveal(edge, shown)` is applied to the focused window's output
   (`sill::edge_reveal`), a hide to every output; ends when the note carries the output.
 - **Full screen with `desktop_only` or `never`.** The bar should stay in full screen there; sill has no

@@ -1,5 +1,5 @@
 //! A service's attempts at one operation (a Wi-Fi join, a Bluetooth connect) and the stamp it mints
-//! for each (quire design/26 R4, R6).
+//! for each (Bardo design/26 R4, R6).
 //!
 //! The stamp stays the same for as long as one attempt runs, so the bar's pending loop keeps its
 //! grace and cap, and every failure gets a new one, so each failure shakes once and a repeated

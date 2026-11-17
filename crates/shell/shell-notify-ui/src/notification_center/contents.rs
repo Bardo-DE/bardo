@@ -1,10 +1,10 @@
 //! Inside the column: the title with Clear All (`Button{Quiet}`), the history grouped by app
-//! (`group_views`) as one quire `List` of headers and cards (each drawn by `group.rs`),
+//! (`group_views`) as one Bardo `List` of headers and cards (each drawn by `group.rs`),
 //! or the empty state; the footer when bardo-shell is not the one receiving notifications; and the
 //! widgets slot at the bottom. The column holds the keyboard: every key goes through
 //! [`step_keys`] over the drawn rows.
 //!
-//! The list's motion is quire's: the rows are simply there as the center opens, a row that
+//! The list's motion is Bardo's: the rows are simply there as the center opens, a row that
 //! arrives while it is open enters with `row-in`, and every row the model drops in one update (a
 //! Clear, Clear All, a dismissal, "Show less") fades and slides up, then the rows below close the
 //! gap.
@@ -63,7 +63,7 @@ pub(super) fn Contents(output: OutputId) -> Element {
             class: "shell-nc-column",
             // The column holds the keyboard and shows it on the rows (their ring), not on itself.
             "data-focus": "highlight",
-            // macOS's Notification Center rubber-bands (quire design/11 §11.3.7); the launcher's
+            // macOS's Notification Center rubber-bands (Bardo design/11 §11.3.7); the launcher's
             // result list and every menu are excluded by that table and carry nothing here.
             "data-overscroll": "band",
             tabindex: "-1",

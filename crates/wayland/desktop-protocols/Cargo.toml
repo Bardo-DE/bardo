@@ -1,6 +1,6 @@
 [package]
 name = "desktop-protocols"
-description = "The desktop's private Wayland protocols (quire_*_v1): the XML, the pure wire vocabulary, and wayland-scanner bindings behind the `client` and `server` features."
+description = "The desktop's private Wayland protocols (bardo_*_v1): the XML, the pure wire vocabulary, and wayland-scanner bindings behind the `client` and `server` features."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -24,7 +24,7 @@ quick-xml = { workspace = true }
 
 [features]
 default = []
-# The clients' side: sill, layer-shell-host, cua, transom, quire's ui-blitz.
+# The clients' side: sill, layer-shell-host, cua, transom, Bardo's ui-blitz.
 client = [
   "dep:wayland-client",
   "dep:wayland-backend",

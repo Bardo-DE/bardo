@@ -7,7 +7,7 @@
 #   export SHERPA_ONNX_LIB_DIR=$(dev/build-sherpa.sh | tail -n1 | sed 's/^export SHERPA_ONNX_LIB_DIR=//')
 #   cargo build --release --manifest-path crates/speech-host-sherpa/Cargo.toml
 #
-# The `sherpa-onnx` line joins quire's `docs/workspace-deps.toml` with the beta pin (ask in FINDINGS).
+# The `sherpa-onnx` line joins Bardo's `docs/workspace-deps.toml` with the beta pin (ask in FINDINGS).
 [package]
 name = "speech-host-sherpa"
 description = "The bardo-speech-host engine: a Recognizer over sherpa-onnx's streaming recognizer, and the bardo-speech-host binary."

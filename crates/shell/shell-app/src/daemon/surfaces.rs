@@ -155,7 +155,7 @@ pub(crate) fn spawn_hidden(
 
 /// `root` with the contexts every surface the daemon spawns is given: the services, the launcher's
 /// providers and the
-/// settings feed. The links come with each surface (`Surface::link`, `Surface::needs`). quire's
+/// settings feed. The links come with each surface (`Surface::link`, `Surface::needs`). Bardo's
 /// document host is not one of them: the root component installs it (`mount`, `mount_lock`),
 /// the same call a popup's root makes. Every spawn goes through here, so a new surface cannot
 /// forget the rest.

@@ -80,7 +80,7 @@ pub const READER_STEP_APP: &str = "org.bardo.Companion";
 const READER_STEP: &str = "companion.read";
 
 impl StepLine {
-    /// The task of the reader, when this step is the reader's answer (`quire_read`): the history
+    /// The task of the reader, when this step is the reader's answer (`bardo_read`): the history
     /// names such a step `companion.read.<word>`.
     #[must_use]
     pub fn reader_task(&self) -> Option<ReaderTask> {

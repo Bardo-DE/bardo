@@ -1,4 +1,4 @@
-bardo-do: drive any quire app from a command line.
+bardo-do: drive any Bardo app from a command line.
 
 Usage:
   bardo-do apps                                  installed apps with manifests

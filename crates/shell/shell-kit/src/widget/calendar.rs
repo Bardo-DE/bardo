@@ -98,7 +98,7 @@ impl Widget for MonthWidget {
     type Intent = MonthIntent;
 
     fn kind() -> WidgetKind {
-        WidgetKind::fixed("quire.month")
+        WidgetKind::fixed("bardo.month")
     }
 
     fn sizes() -> &'static [WidgetSize] {

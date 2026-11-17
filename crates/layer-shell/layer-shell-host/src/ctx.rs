@@ -204,7 +204,7 @@ impl<M: 'static> HostCtx<M> {
         }
     }
 
-    /// Surface `id`'s `wl_surface` (F34): the object a shell creates a `quire_*` extension on.
+    /// Surface `id`'s `wl_surface` (F34): the object a shell creates a `bardo_*` extension on.
     /// It changes when a hidden surface is shown again; read it after `HostEvent::SurfaceMapped`.
     pub fn wl_surface(&self, id: SurfaceId) -> Option<WlSurface> {
         self.state

@@ -1,4 +1,4 @@
-//! The portal's stand-in where there is no portal client (not Linux, or no `quire-desktop`): the
+//! The portal's stand-in where there is no portal client (not Linux, or no `desktop`): the
 //! same two entry points as `portal/bus.rs`, answering the defaults and never changing.
 
 use super::SystemPrefs;

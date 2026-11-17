@@ -3,7 +3,7 @@
 use settings_types::schema::{Control, KeyKind, KeyPath, Provided};
 use ui_extensions::look::stylesheet_for;
 use ui_extensions::{Capability, ExtensionId, Search, choices_for, chosen};
-use ui_settings::quire_schema;
+use ui_settings::bardo_schema;
 
 use crate::support::{ICONS, Scratch, install_entries, install_look, write};
 
@@ -45,7 +45,7 @@ fn the_filled_key_is_a_menu_of_those_words() {
     let scratch = Scratch::new();
     let looks = found_in(&scratch).resolve(Capability::Look);
     let choices = choices_for(Capability::Look, looks.registry.installed());
-    let key = quire_schema()
+    let key = bardo_schema()
         .key
         .into_iter()
         .find(|key| key.path.0 == "appearance.look")
@@ -138,7 +138,7 @@ fn the_chosen_looks_stylesheet_is_read_with_its_folder() {
     );
 }
 
-/// The looks quire ships, as their folders sit in the repo (`extensions/<id>/`).
+/// The looks Bardo ships, as their folders sit in the repo (`extensions/<id>/`).
 const SHIPPED: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../extensions");
 
 #[test]

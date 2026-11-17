@@ -1,6 +1,6 @@
 [package]
 name = "ui-intents"
-description = "The companion's presentational context: the marks a quire app reports (a thing, a chip, a summon) and nothing of the agent's wire."
+description = "The companion's presentational context: the marks a bardo app reports (a thing, a chip, a summon) and nothing of the agent's wire."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -7,7 +7,7 @@ the citation convention of `README.md#3-citation-convention`.
 ## 1. What this governs
 
 Every runtime-tunable number and closed-set choice for the desktop shell: the design-system
-appearance (`quire`), the shell (`bardo-shell`, its bar/dock/launcher/menus/notifications/spaces), and
+appearance (`bardo`), the shell (`bardo-shell`, its bar/dock/launcher/menus/notifications/spaces), and
 the gesture daemon (`palmrest`). The rule, per the user's decision of 2026-09-24 recorded in
 `README.md#4-canonical-source`: **no value any design doc marks "proposed" is hard-coded**; it
 ships as the default *and* is read from a settings key listed in section 3. A **settled** value
@@ -160,7 +160,7 @@ level itself is user-tunable, and it is `appearance.motion_level` (3.1).
 ### 3.3 `icons` (bardo/appearance.toml)
 
 The app-icon *generation* pipeline (`08-ICONS.md#3-generation-pipeline`) is a build-time tool
-(`quire-icons`), not a runtime setting, and is out of scope. These are the runtime,
+(`bardo-icons`), not a runtime setting, and is out of scope. These are the runtime,
 per-third-party-icon rendering values `bardo-shell`'s dock/launcher apply live (`08-ICONS.md#4-third-party-app-icons`).
 
 <!-- keys:begin icons -->
@@ -181,7 +181,7 @@ per-third-party-icon rendering values `bardo-shell`'s dock/launcher apply live (
 `--plate-glyph`), `icons.symbolic_chroma_max` (`ChromaLimit::PROPOSED`, 0.04),
 `icons.squircle_detect_iou` (0.90), `icons.plate_glyph_colour_policy` (Auto: white ink where it
 reads at 3:1 on the fill, the hue's deep ink otherwise) and `icons.dark_mode_variant` (the same
-icon in both schemes) are no longer settings. The three constants with no reader in quire
+icon in both schemes) are no longer settings. The three constants with no reader in Bardo
 (0.90, Auto, same-as-light) belong to the program that plates third-party icons (sill).
 
 ### 3.4 `bar` (shell/settings.toml)
@@ -207,10 +207,10 @@ Pinned items live in `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (des
 | `dock.position` | `DockPosition::{Bottom,Left,Right}` | `Bottom` | Left/Right deferred | `10-BEHAVIOUR-dock.md#10-6-configuration` | RETIRING: no reader; the dock is always at the bottom until Left and Right are built |
 | `dock.indicators` | `Indicators::{On,Off}` | `On` | | `10-BEHAVIOUR-dock.md#10-6-configuration` | proposed |
 | `dock.trash` | `TrashTile::{On,Off}` | `On` | | `10-BEHAVIOUR-dock.md#10-6-configuration` | proposed |
-| `dock.badge_size_px` | `Px` | `18` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; quire's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
-| `dock.badge_radius_px` | `Px` | `9` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; quire's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
-| `dock.progress_ring_diameter_px` | `Px` | `20` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; quire's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
-| `dock.progress_ring_stroke_px` | `Px` | `3` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; quire's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.badge_size_px` | `Px` | `18` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.badge_radius_px` | `Px` | `9` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.progress_ring_diameter_px` | `Px` | `20` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.progress_ring_stroke_px` | `Px` | `3` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
 | `dock.floor` | `DockFloor::{Off,On}` | `Off` |  | `FINDINGS.md` "macOS polish"; `04-COMPONENTS.md` | proposed (polish pass, 2026-09-25) |
 
 ### 3.6 `launcher` (shell/settings.toml)
@@ -335,7 +335,7 @@ The parts a sill session borrows until M11 draws its own (design/20 §1.9 lock s
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `session.user_picture` | `PictureChoice::{Auto,Letter,Emoji(name),Photo}` written as a string | `auto` | `auto`, `letter`, `photo` or `emoji:<name>` (a stable name from quire's 42, design/25). Auto: the photo if `~/.face` (or AccountsService's icon) exists, else the letter; Photo with no file falls back to the letter | design/25 (user picture), quire `PictureChoice::resolve` | RETIRING: no reader; the picture is wired to `resolve_picture` first |
+| `session.user_picture` | `PictureChoice::{Auto,Letter,Emoji(name),Photo}` written as a string | `auto` | `auto`, `letter`, `photo` or `emoji:<name>` (a stable name from Bardo's 42, design/25). Auto: the photo if `~/.face` (or AccountsService's icon) exists, else the letter; Photo with no file falls back to the letter | design/25 (user picture), Bardo `PictureChoice::resolve` | RETIRING: no reader; the picture is wired to `resolve_picture` first |
 | `session.lock_grace_s` | `Secs` | `5` | `0..=60`; 0 always asks; only after sill's own idle screen-off lock (cause `IdleScreenOff`), never after a manual lock, the lid, suspend or resume | sill F863, F908 | proposed (Q441, 2026-09-27) |
 
 ### 3.20 `widgets` (retired)
@@ -865,7 +865,7 @@ only in v1, no widget; a later wave may promote one if the user asks.
 | **Keyboard / Shortcuts** | proposed by `28-CUSTOMIZATION.md#411-keyboard-shortcuts`: `shortcuts.bindings` (the system list, toggle and chord per action) and `shortcuts.app_shortcuts`, rows added here after sill registers them (28 §6.0); sill writes them into the compositor's `system_actions` and `custom` shortcut files, and the chord the desktop already holds wins a clash, shown on the row (28 §7 decision 10) |
 | **Notifications** | `notifications.dnd`, `notifications.banner_style` (per app) |
 | **Spotlight** (sill M9, Q303) | `launcher.clipboard_history` (a privacy choice people should find), `launcher.web_search`, `launcher.emoji_skin_tone`; the rest of `launcher.*` stays Advanced |
-| **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows casement publishes through its settings module (one per app and permission); no keys of quire's own | 
+| **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows casement publishes through its settings module (one per app and permission); no keys of Bardo's own | 
 | **Power** (added Q445; sill's own idle service, section 3.24) | `idle.screen_off_ac_min`, `idle.screen_off_battery_min`, `idle.suspend_ac_min`, `idle.suspend_battery_min`, `idle.lock`, `session.lock_grace_s` (`Sill` under `idle.times` is what makes the `idle.screen_off_*`/`idle.suspend_*` sliders apply; under `Desktop` they still render, disabled, so the row explains itself) |
 | **Intelligence** (the companion, design/32; sill's `companion` domain and the daemons' schemas) | Companion: `companion.summon`, `companion.in_field`, `companion.notify`; Models: `ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>` (the live picker, section 9.4); Memory: `memory.files.at_rest`, `memory.consolidation.when`, `memory.consolidation.apply`, and the memory view (a live module); Computer use: `cua.enabled`, `cua.apps`, `cua.default_mode`, `cua.autopause`; Privacy: `agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h` |
 | **Viewer** (anyview, section 3.31) | Window: `viewer.chrome.hide_after`, `viewer.warm_for`; Viewing: `viewer.zoom.step`, `viewer.media.seek_step`; History: `viewer.history.cap`, `viewer.versions.keep`; Export: `viewer.export.jpeg_quality`, `viewer.export.avif_quality`, `viewer.export.paper`, `viewer.export.orientation`; `viewer.peek.*` and `viewer.image.*` are Advanced |
@@ -1042,7 +1042,7 @@ The derive's build step writes `target/.../<app-id>.settings.toml` and the packa
 to `$XDG_DATA_DIRS/bardo/settings/<app-id>.settings.toml`, next to the `.desktop` file, the way
 GSettings ships schemas. The file is TOML, one `[[key]]` table per `KeySpec`, plus `app`,
 `file` and `version`. Developers run `cargo run -p <app> -- --write-schema <dir>` for a local
-install. quire's own schema (`bardo.settings.toml`: the `appearance` and `icons` domains of
+install. Bardo's own schema (`bardo.settings.toml`: the `appearance` and `icons` domains of
 `bardo/appearance.toml`) has no app binary, so it is written by the `ui-settings` example
 `write_schema` (`cargo run -p ui-settings --example write_schema -- --write-schema <dir>`). A schema without a program (a stale file) is skipped with a warning.
 
@@ -1122,7 +1122,7 @@ The Settings app renders these modules in the same pages, with the same widgets;
 difference is that `Set` calls the service instead of writing a file. mailo, calendar and
 contacts register their account pages this way (`20-SURFACES.md`).
 
-The interface is frozen (quire `ui-settings`, feature `live`, 2026-10-06): `Describe() -> s`
+The interface is frozen (Bardo `ui-settings`, feature `live`, 2026-10-06): `Describe() -> s`
 (JSON `{version, key: [KeySpec]}`), `Get(s) -> v`, `Set(s, v)`, signal `Changed(s, v)`; values
 are `b`, `x`, `s` or `as` only. Value keys of a live module use the ordinary kinds; only action
 rows use `kind = Live{action}` (a label plus weight `plain` or `destructive`), are run by
@@ -1134,7 +1134,7 @@ rows use `kind = Live{action}` (a label plus weight `plain` or `destructive`), a
 schema that marks an `AGENT_NEVER_SETTABLE` key agent-settable, the same check
 `Schema::from_toml` and the derive use.
 
-Who hears `Changed` (2026-10-16, production audit QUIRE-04; the signature is not touched): the signal is
+Who hears `Changed` (2026-10-16, production audit BARDO-04; the signature is not touched): the signal is
 never a broadcast, because a signal with no destination goes to every peer that adds a match rule and
 `permit` cannot refuse a match rule. The skeleton remembers the peers `permit` let read (a call to
 `Describe`, `Get` or `Snapshot`; `LiveClient::changes` makes one) and sends `Changed` to each of
@@ -1244,15 +1244,15 @@ mark is written; a person never edits it, and a settings file cannot carry it.
 The list below is a **proposal for the user to accept or trim**, not a grant. It is conservative on
 purpose: each key is cosmetic or a convenience that one click undoes, and none touches data,
 accounts, spend or a lock. `ds_settings::schema::AGENT_SETTABLE_PROPOSED` holds the same list so
-quire's, sill's and detent's tests check their schemas against one source.
+Bardo's, sill's and detent's tests check their schemas against one source.
 
 | Key | Owner | Why an agent may set it | Status |
 | --- | --- | --- | --- |
-| `appearance.theme` | quire (`AppearanceSettings`) | "make it dark": a visible, instantly reversible preference | proposed (2026-10-03) |
-| `appearance.accent` | quire (`AppearanceSettings`) | the same, one of eight colours | proposed (2026-10-03) |
-| `appearance.look` | quire (`AppearanceSettings`) | "use the Paper look": the choice is among looks the person installed, and Standard undoes it in one click | proposed (2026-10-23) |
-| `appearance.file_icons` | quire (`AppearanceSettings`) | "use the paper icons": the choice is among sets the person installed, and Standard undoes it in one click | proposed (2026-10-24) |
-| `appearance.custom_styles` | quire (`AppearanceSettings`) | "turn my styles off": the way back from a style that broke a surface, one switch, undone in one click | proposed (2026-10-23) |
+| `appearance.theme` | Bardo (`AppearanceSettings`) | "make it dark": a visible, instantly reversible preference | proposed (2026-10-03) |
+| `appearance.accent` | Bardo (`AppearanceSettings`) | the same, one of eight colours | proposed (2026-10-03) |
+| `appearance.look` | Bardo (`AppearanceSettings`) | "use the Paper look": the choice is among looks the person installed, and Standard undoes it in one click | proposed (2026-10-23) |
+| `appearance.file_icons` | Bardo (`AppearanceSettings`) | "use the paper icons": the choice is among sets the person installed, and Standard undoes it in one click | proposed (2026-10-24) |
+| `appearance.custom_styles` | Bardo (`AppearanceSettings`) | "turn my styles off": the way back from a style that broke a surface, one switch, undone in one click | proposed (2026-10-23) |
 | `dock.magnification` | sill (`DockSettings`) | on/off, cosmetic | proposed (2026-10-03) |
 | `dock.tile_size_px` | sill (`DockSettings`) | bounded slider, cosmetic | proposed (2026-10-03) |
 | `dock.magnified_size_px` | sill (`DockSettings`) | bounded slider, cosmetic | proposed (2026-10-03) |
@@ -1268,7 +1268,7 @@ a program's own schema still decides which other keys it marks settable.
 `AGENT_NEVER_SETTABLE` lists those prefixes and a test keeps the proposal clear of them. An
 agent that could raise its own budget or switch computer use on would be its own gatekeeper.
 
-The marks of sill's and detent's own keys live in their schemas; quire marks only what
+The marks of sill's and detent's own keys live in their schemas; Bardo marks only what
 `bardo/appearance.toml` owns (`appearance.theme`, `appearance.accent`, `appearance.look`,
 `appearance.file_icons`, `appearance.custom_styles`).
 

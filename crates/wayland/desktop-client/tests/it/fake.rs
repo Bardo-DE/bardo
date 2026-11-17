@@ -110,19 +110,19 @@ fn configurations_get_their_own_tickets() {
     assert!(matches!(ticket, Ticket::Config(_)));
 }
 
-// The Quire arm.
+// Bardo arm.
 
-fn quire_fake() -> FakeDesktop {
+fn bardo_fake() -> FakeDesktop {
     offering(&[
         Protocol::ExtForeignToplevelList,
-        Protocol::QuireDesktop,
-        Protocol::QuireShell,
+        Protocol::BardoDesktop,
+        Protocol::BardoShell,
     ])
 }
 
-/// Scripts a toplevel with an identifier, its Quire window, an app and a Space.
+/// Scripts a toplevel with an identifier, its Bardo window, an app and a Space.
 fn populate(desktop: &mut FakeDesktop) {
-    use desktop_client::quire::{SpaceEvent, WindowEvent};
+    use desktop_client::bardo::{SpaceEvent, WindowEvent};
     use desktop_client::{AppKey, SpaceKey, ToplevelIdentifier};
     for event in [
         top(ToplevelEvent::Opened(tk(1))),
@@ -132,7 +132,7 @@ fn populate(desktop: &mut FakeDesktop) {
         ),
         top(ToplevelEvent::Done(tk(1))),
         DesktopEvent::Window(WindowEvent::Opened(tk(1))),
-        DesktopEvent::App(desktop_client::quire::AppEvent::Opened(AppKey::new(1))),
+        DesktopEvent::App(desktop_client::bardo::AppEvent::Opened(AppKey::new(1))),
         DesktopEvent::Space(SpaceEvent::Opened(SpaceKey::new(1))),
     ] {
         desktop.script(event);
@@ -141,10 +141,10 @@ fn populate(desktop: &mut FakeDesktop) {
 }
 
 #[test]
-fn the_quire_commands_are_recorded_when_their_targets_exist() {
+fn the_bardo_commands_are_recorded_when_their_targets_exist() {
     use desktop_client::{AppKey, SpaceKey};
     use desktop_protocols::vocab::{Assign, PlaceTarget};
-    let mut desktop = quire_fake();
+    let mut desktop = bardo_fake();
     populate(&mut desktop);
     let commands = [
         DesktopCommand::Place {
@@ -173,10 +173,10 @@ fn the_quire_commands_are_recorded_when_their_targets_exist() {
 }
 
 #[test]
-fn a_quire_command_naming_nothing_is_refused_and_not_recorded() {
+fn a_bardo_command_naming_nothing_is_refused_and_not_recorded() {
     use desktop_client::{AppKey, SpaceKey};
     use desktop_protocols::vocab::PlaceTarget;
-    let mut desktop = quire_fake();
+    let mut desktop = bardo_fake();
     populate(&mut desktop);
     assert_eq!(
         desktop.send(DesktopCommand::Place {
@@ -197,13 +197,13 @@ fn a_quire_command_naming_nothing_is_refused_and_not_recorded() {
 }
 
 #[test]
-fn a_quire_command_on_a_wlr_only_compositor_is_unsupported() {
+fn a_bardo_command_on_a_wlr_only_compositor_is_unsupported() {
     let mut desktop = offering(&[Protocol::WlrForeignToplevelManagement]);
     let refused = desktop.send(DesktopCommand::QuitApp(desktop_client::AppKey::new(1)));
     assert!(matches!(
         refused,
         Err(CommandError::Unsupported {
-            needs: Protocol::QuireDesktop,
+            needs: Protocol::BardoDesktop,
             ..
         })
     ));
@@ -213,16 +213,16 @@ fn a_quire_command_on_a_wlr_only_compositor_is_unsupported() {
 fn shell_commands_need_the_shell_role() {
     use desktop_protocols::vocab::Toggle;
     let command = DesktopCommand::ShowDesktop(Toggle::On);
-    let mut skipped = quire_fake();
+    let mut skipped = bardo_fake();
     assert!(matches!(
         skipped.send(command.clone()),
         Err(CommandError::NotBound {
-            needs: Protocol::QuireShell,
+            needs: Protocol::BardoShell,
             ..
         })
     ));
     let mut shell = FakeDesktop::with_config(
-        ProtocolSet::empty().with(Protocol::QuireShell),
+        ProtocolSet::empty().with(Protocol::BardoShell),
         desktop_client::DesktopConfig::holding_shell(),
     );
     assert_eq!(shell.send(command.clone()), Ok(Ticket::Sent));
@@ -230,7 +230,7 @@ fn shell_commands_need_the_shell_role() {
 }
 
 #[test]
-fn the_minimise_target_needs_the_window_identifier_on_the_quire_arm() {
+fn the_minimise_target_needs_the_window_identifier_on_the_bardo_arm() {
     use desktop_client::{Rect, SurfaceKey};
     let target = |toplevel| DesktopCommand::SetMinimiseTarget {
         toplevel,
@@ -240,8 +240,8 @@ fn the_minimise_target_needs_the_window_identifier_on_the_quire_arm() {
     let mut desktop = FakeDesktop::with_config(
         ProtocolSet::empty()
             .with(Protocol::ExtForeignToplevelList)
-            .with(Protocol::QuireDesktop)
-            .with(Protocol::QuireShell),
+            .with(Protocol::BardoDesktop)
+            .with(Protocol::BardoShell),
         desktop_client::DesktopConfig::holding_shell(),
     );
     desktop.script(top(ToplevelEvent::Opened(tk(1))));
@@ -264,13 +264,13 @@ fn the_minimise_target_needs_the_window_identifier_on_the_quire_arm() {
 }
 
 #[test]
-fn quire_events_reduce_through_the_fake_like_any_other() {
-    use desktop_client::quire::ShellEvent;
-    let mut desktop = quire_fake();
+fn bardo_events_reduce_through_the_fake_like_any_other() {
+    use desktop_client::bardo::ShellEvent;
+    let mut desktop = bardo_fake();
     desktop.script(DesktopEvent::Shell(ShellEvent::SwitcherShown {
         selected: 3,
     }));
     desktop.advance_all();
-    assert_eq!(desktop.state().quire.shell().switcher.selected(), Some(3));
+    assert_eq!(desktop.state().bardo.shell().switcher.selected(), Some(3));
     assert_eq!(desktop.drain_events().len(), 1);
 }

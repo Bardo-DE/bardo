@@ -1,4 +1,4 @@
-//! The words on a card: the app's name, how long ago it arrived, and the group's count (quire
+//! The words on a card: the app's name, how long ago it arrived, and the group's count (Bardo
 //! draws the chip from two and the layers behind the card).
 
 use shell_kit::notifications::parts::{GroupCount, StackLayers};

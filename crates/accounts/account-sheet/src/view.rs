@@ -1,4 +1,4 @@
-//! What the sheet host draws. One value per sheet state; the host maps it to quire's
+//! What the sheet host draws. One value per sheet state; the host maps it to Bardo's
 //! `ui-shell::accounts` props in one small table-tested file.
 
 use super::fields::{FieldKind, FieldSpec};

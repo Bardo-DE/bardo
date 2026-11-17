@@ -1,5 +1,5 @@
 //! The questions the window asks before it goes on: a taken name, and erasing for good. Each is
-//! quire's `Alert`, with Finder's words.
+//! Bardo's `Alert`, with Finder's words.
 
 use dioxus::prelude::*;
 use files_core::{Answer, Conflict, Resolution};

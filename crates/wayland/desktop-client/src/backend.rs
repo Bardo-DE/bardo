@@ -7,7 +7,7 @@ use crate::protocol::{Protocol, ProtocolSet};
 pub enum DesktopBackend {
     /// `ext-foreign-toplevel-list` for identity plus `bardo_desktop_v1` for state, places,
     /// apps and Spaces.
-    Quire,
+    Bardo,
     /// `zwlr-foreign-toplevel-management` (paired with the ext list when that is offered).
     Wlr,
     /// The ext list alone: identity, title and app id, no state and no actions.
@@ -16,7 +16,7 @@ pub enum DesktopBackend {
 
 /// The arm for `offered`, from the globals alone.
 ///
-/// Never from a compositor's name or the environment: Quire when `bardo_desktop_v1` and the ext list are offered, else wlr when its
+/// Never from a compositor's name or the environment: Bardo when `bardo_desktop_v1` and the ext list are offered, else wlr when its
 /// manager is, else the ext list alone; `None` when no toplevel protocol is offered.
 ///
 /// ```
@@ -24,17 +24,17 @@ pub enum DesktopBackend {
 ///
 /// let wlr = ProtocolSet::empty().with(Protocol::WlrForeignToplevelManagement);
 /// assert_eq!(backend_for(&wlr), Some(DesktopBackend::Wlr));
-/// let quire = wlr
+/// let Bardo = wlr
 ///     .with(Protocol::ExtForeignToplevelList)
-///     .with(Protocol::QuireDesktop);
-/// assert_eq!(backend_for(&quire), Some(DesktopBackend::Quire));
+///     .with(Protocol::BardoDesktop);
+/// assert_eq!(backend_for(&Bardo), Some(DesktopBackend::Bardo));
 /// assert_eq!(backend_for(&ProtocolSet::empty()), None);
 /// ```
 #[must_use]
 pub fn backend_for(offered: &ProtocolSet) -> Option<DesktopBackend> {
     let has = |p| offered.contains(p);
-    if has(Protocol::QuireDesktop) && has(Protocol::ExtForeignToplevelList) {
-        Some(DesktopBackend::Quire)
+    if has(Protocol::BardoDesktop) && has(Protocol::ExtForeignToplevelList) {
+        Some(DesktopBackend::Bardo)
     } else if has(Protocol::WlrForeignToplevelManagement) {
         Some(DesktopBackend::Wlr)
     } else if has(Protocol::ExtForeignToplevelList) {

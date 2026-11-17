@@ -24,7 +24,7 @@ fn main() -> ExitCode {
         eprintln!("compositor-shell-exec: {why}");
         return ExitCode::from(2);
     }
-    let socket = match compositor_testclient::quire::handout::shell() {
+    let socket = match compositor_testclient::bardo::handout::shell() {
         Ok(socket) => socket,
         Err(why) => {
             eprintln!("compositor-shell-exec: no shell connection: {why}");

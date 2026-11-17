@@ -25,7 +25,7 @@ pub mod trash;
 
 pub use entries::menu_entries;
 
-/// One row of a menu, before it becomes quire `MenuEntry`s.
+/// One row of a menu, before it becomes Bardo `MenuEntry`s.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DockMenuRow {
     Header(String),

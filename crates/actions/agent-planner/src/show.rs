@@ -1,4 +1,4 @@
-//! `quire_finish`'s `show`: the text handles the person is shown in the answer. The planner names
+//! `bardo_finish`'s `show`: the text handles the person is shown in the answer. The planner names
 //! them and never reads them; the host puts them in the answer as handles, which the screen
 //! resolves as quoted content (`Session.Display`), so what a handle holds is never taken for the
 //! planner's words or for an instruction.
@@ -14,7 +14,7 @@ use serde_json::Value as Json;
 /// The most handles one finish may show.
 pub(crate) const MOST_SHOWN: usize = 8;
 
-/// The name of the list in `quire_finish`'s arguments.
+/// The name of the list in `bardo_finish`'s arguments.
 const SHOW: &str = "show";
 
 fn wrong(why: Why) -> ReplyFault {
@@ -52,7 +52,7 @@ fn shown(args: &Json, view: &PlannerView) -> Result<Vec<Handle>, ReplyFault> {
     Ok(out)
 }
 
-/// A `quire_finish` as the end of the task and the handles to show; a `show` that names anything
+/// A `bardo_finish` as the end of the task and the handles to show; a `show` that names anything
 /// but text handles of the view is told to the model, and the task does not end.
 pub(crate) fn finish_output(
     call: &ToolCall,

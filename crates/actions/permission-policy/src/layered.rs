@@ -125,7 +125,7 @@ impl Pdp {
     /// preset stands, unreported.
     ///
     /// A source that is refused is handled by its layer: person and assistant sources are left
-    /// out and listed in `skipped` (the limit rules Quire generated in them are kept one by one); any bad preset source drops the whole preset for the built-in
+    /// out and listed in `skipped` (the limit rules Bardo generated in them are kept one by one); any bad preset source drops the whole preset for the built-in
     /// one (listed too); a bad core, built-in or administrator source is an error.
     ///
     /// # Errors

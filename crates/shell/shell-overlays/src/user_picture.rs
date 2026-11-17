@@ -1,4 +1,4 @@
-//! The person's picture as quire's `LockUser` carries it (`UserPicture`): helpers
+//! The person's picture as Bardo's `LockUser` carries it (`UserPicture`): helpers
 //! shared by the lock screen and the polkit prompt.
 
 use shell_kit::lock::vocab::LockUser;

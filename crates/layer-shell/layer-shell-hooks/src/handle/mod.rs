@@ -125,7 +125,7 @@ impl SurfaceHandle {
     }
 
     /// This surface's platform object as a `T`, for a protocol the host does not wrap (the Wayland
-    /// host's is a `wl_surface`, for a `quire_*` object the app's own code creates on the shell's
+    /// host's is a `wl_surface`, for a `bardo_*` object the app's own code creates on the shell's
     /// connection). It is replaced when the surface is hidden and shown again, so read it again
     /// after `HostEvent::SurfaceMapped`. `None` for a handle that has no surface behind it (one
     /// built without a connection), or when the object is not a `T`.

@@ -4,7 +4,7 @@
 //! It exists for pixel snapping. Blitz lays out in logical pixels and rounds every box to whole
 //! *logical* pixels at the end of each `resolve`; at 1.25, 1.5 or 1.75 that is not the device
 //! grid, so a 1 px line paints as one full row and one half row. A design system that knows the
-//! device grid (quire's `ds_native::snap_to_device`) redoes the rounding on it, and it has to run
+//! device grid (Bardo's `ds_native::snap_to_device`) redoes the rounding on it, and it has to run
 //! after *every* resolve, because every resolve re-runs Blitz's rounding. layer-shell-host cannot call
 //! it itself (it stays free of any design-system dependency), so it takes the pass as a hook.
 //!

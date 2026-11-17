@@ -10,7 +10,7 @@ use ui_blitz::{PageSpec, pdf, print_dialog};
 fn main() {
     let html = print_fixture::html(&print_fixture::jpeg(), &print_fixture::png());
     let bytes = pdf(&html, PageSpec::default()).expect("the fixture prints");
-    match print_dialog(&bytes, "quire print fixture") {
+    match print_dialog(&bytes, "bardo print fixture") {
         Ok(outcome) => println!("{outcome:?}"),
         Err(error) => eprintln!("{error}"),
     }

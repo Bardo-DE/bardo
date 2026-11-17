@@ -49,7 +49,7 @@ fn offence_text(offences: &[Offence]) -> String {
     for offence in offences {
         by_rule.entry(offence.rule).or_default().push(offence);
     }
-    let mut message = format!("quire lint found {} offence(s):\n", offences.len());
+    let mut message = format!("bardo lint found {} offence(s):\n", offences.len());
     for (rule, group) in &by_rule {
         for offence in group {
             writeln!(
@@ -78,7 +78,7 @@ fn warning_text(warnings: &[Offence]) -> String {
         .expect("writing to a String cannot fail");
     }
     format!(
-        "quire lint warns {} time(s) (not yet failing; design/27 section 7):\n{lines}",
+        "bardo lint warns {} time(s) (not yet failing; design/27 section 7):\n{lines}",
         warnings.len()
     )
 }
@@ -89,7 +89,7 @@ fn stale_text(stale: &[&Exception]) -> String {
         return String::new();
     }
     let mut text = format!(
-        "quire lint found {} stale exception(s), which suppressed nothing:\n",
+        "bardo lint found {} stale exception(s), which suppressed nothing:\n",
         stale.len()
     );
     for exception in stale {

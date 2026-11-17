@@ -5,7 +5,7 @@
 //! gives 0 where the target is unsigned), which is what an `as` cast does; naming it keeps the
 //! lint's reasons in one place.
 
-/// A length or position from the host's `f64` to the `f32` every quire rect is held in.
+/// A length or position from the host's `f64` to the `f32` every Bardo rect is held in.
 #[expect(
     clippy::cast_possible_truncation,
     reason = "pixel lengths and unit fractions are far inside f32's exact range"

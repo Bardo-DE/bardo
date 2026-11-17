@@ -180,7 +180,7 @@ pub enum KeyKind {
     /// ([`KeySpec::offering`]), as a menu. Written `kind = "provided"` with `v.capability`. A
     /// reader that predates the kind refuses the schema file it is in, as it does for any kind it
     /// does not know (the file is skipped with a warning); that is why a build that reads a newer
-    /// quire schema must be rebuilt with it.
+    /// Bardo schema must be rebuilt with it.
     Provided { capability: String },
     /// An action of a live module (section 9.4): a button, not a value. Setting the key runs the
     /// action in the service. Only a live module's schema carries it; a settings file has no such

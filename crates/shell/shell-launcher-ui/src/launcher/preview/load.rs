@@ -36,7 +36,7 @@ use super::frames::ThumbnailFrames;
 /// What a peek of a file may spend: it reads a PDF whole, and a picture is fitted to a pane's worth
 /// of pixels (`PANE` is 328 by 220 px, drawn at up to twice that).
 ///
-/// Constants until quire's settings have `viewer.peek.*` keys (the viewer's FINDINGS).
+/// Constants until Bardo's settings have `viewer.peek.*` keys (the viewer's FINDINGS).
 pub const PANE_BUDGET: PeekBudget = PeekBudget::DEFAULT;
 
 /// Why a file could not be previewed. A code with no cause on purpose: it carries no path or
@@ -196,7 +196,7 @@ pub fn use_clip_png(key: Option<ClipKey>) -> Option<Vec<u8>> {
     let history = use_service::<ClipboardService>();
     let key = key?;
     let image = clip_image(&history.read(), key)?;
-    // quire takes a picture as PNG bytes; the service keeps PNG when it is offered.
+    // Bardo takes a picture as PNG bytes; the service keeps PNG when it is offered.
     (image.mime.0 == "image/png").then(|| image.bytes.to_vec())
 }
 

@@ -150,10 +150,10 @@ impl Dirs {
         self.state.join("bardo").join("shell")
     }
 
-    /// The desktop's shared folder under the state directory (`quire`): where quire keeps records
+    /// The desktop's shared folder under the state directory (`bardo`): where Bardo keeps records
     /// every app shares, such as the styles guard's.
     #[must_use]
-    pub fn quire_state(&self) -> PathBuf {
+    pub fn bardo_state(&self) -> PathBuf {
         self.state.join("bardo")
     }
 

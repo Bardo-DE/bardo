@@ -4,7 +4,7 @@
 //! - [`SystemSeams`] is the bundle of seams `computer_use_run` runs against. [`SystemSeams::parts`] builds
 //!   it over the [`Links`] to the daemons (the router's gate, memoryd, inferd) and what was
 //!   [`Reached`] of a compositor.
-//! - The seat is `EiSeat`. Capture is a [`CaptureBackend`] (`StockToplevel`, `QuireMasked`), the
+//! - The seat is `EiSeat`. Capture is a [`CaptureBackend`] (`StockToplevel`, `BardoMasked`), the
 //!   desktop a [`CasementDesktop`] and the tree a [`LoggedAtspi`] (AT-SPI), each inside an `Option`.
 //!   With no compositor the `None` cases answer, and the bus says `Backend = none`.
 //! - [`CasementDesktop`] is the desktop of casement: windows from the agent connection and a lease

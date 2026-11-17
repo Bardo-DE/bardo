@@ -3,7 +3,7 @@
 //! A press that
 //! travels [`DRAG_THRESHOLD`] becomes a drag, told to the caller once, and the click that ends
 //! it does not open the picture; one that stays under the threshold opens on its click. The
-//! host does the drag itself (a data source and a drag icon are the compositor's), so quire's
+//! host does the drag itself (a data source and a drag icon are the compositor's), so Bardo's
 //! part ends at saying when it began and where. On a card that swipes away to the right
 //! ([`DragLane::NotRight`]), a press that crosses the threshold heading mostly right is the
 //! swipe's, not a drag: it starts none and does not open either.

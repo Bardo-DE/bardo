@@ -3,7 +3,7 @@
 //! session bus, router or desktop is involved: a provider answers only intentd's main process, and
 //! a fixture `/proc` says the test's process is it.
 
-#![cfg(feature = "quire-desktop")]
+#![cfg(feature = "desktop")]
 
 use crate::support;
 

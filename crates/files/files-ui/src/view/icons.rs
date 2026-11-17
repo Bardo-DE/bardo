@@ -1,4 +1,4 @@
-//! The icon view: quire's `CollectionView` over the browser's rows, a grid of tiles.
+//! The icon view: Bardo's `CollectionView` over the browser's rows, a grid of tiles.
 
 use dioxus::prelude::*;
 use files_core::{Entry, FileName, ItemRef};

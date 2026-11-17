@@ -3,7 +3,7 @@
 //! A
 //! widget is data in, content out: it names its kind and the sizes it draws, gives a placeholder
 //! entry for a size, and draws an entry at a size. It never draws its card: the corner, the
-//! inset and the title row are quire's ([`crate::widget::card::WidgetCard`]),
+//! inset and the title row are Bardo's ([`crate::widget::card::WidgetCard`]),
 //! so every widget, ours and other apps', sits on the same card.
 
 use crate::widget::kind::{WidgetSize, WidgetTitle};
@@ -14,7 +14,7 @@ use std::borrow::Cow;
 use ui_components::motion::epoch::Epoch;
 
 /// A widget's kind: a reverse-DNS name, unique across every app that provides widgets
-/// (`quire.month`). What a card's markup names the widget by.
+/// (`bardo.month`). What a card's markup names the widget by.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct WidgetKind(Cow<'static, str>);

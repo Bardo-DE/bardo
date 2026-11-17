@@ -1,5 +1,5 @@
 //! One widget of any kind: the [`WidgetProvider`] every kind implements, the [`Card`] that puts a
-//! provider's feed on quire's card, and the one match on the kind ([`with_provider`]).
+//! provider's feed on Bardo's card, and the one match on the kind ([`with_provider`]).
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
@@ -33,7 +33,7 @@ pub trait WidgetProvider: Clone + PartialEq + Default + 'static {
     fn use_feed() -> Feed<Self::W>;
 }
 
-/// `provider`'s widget on quire's card in the notification center, its element id
+/// `provider`'s widget on Bardo's card in the notification center, its element id
 /// `widget-<kind>`; the provider value only names the type.
 #[component]
 pub fn Card<P: WidgetProvider>(provider: P) -> Element {
@@ -63,7 +63,7 @@ pub fn card(kind: CenterWidget) -> Element {
     }
 }
 
-/// One widget of `kind` on quire's card in the notification center: the kind's provider feeds
+/// One widget of `kind` on Bardo's card in the notification center: the kind's provider feeds
 /// the card.
 #[component]
 pub fn Widget(kind: CenterWidget) -> Element {

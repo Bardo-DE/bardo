@@ -6,7 +6,7 @@
 //! `scripts/gen-emoji-keywords.sh`).
 //!
 //! The data model says nothing about painting: a row carries the emoji as text and the system's
-//! colour font draws it (Noto Color Emoji, `COLRv1`, here). quire's `AnimatedEmoji` catalogue is
+//! colour font draws it (Noto Color Emoji, `COLRv1`, here). Bardo's `AnimatedEmoji` catalogue is
 //! a separate, animated subset for the user's picture and is not used here.
 
 use std::collections::HashMap;

@@ -95,7 +95,7 @@ impl Desk {
     }
 
     /// Runs one command line with standard output a pipe: JSON.
-    pub async fn quire(&self, words: &[&str]) -> Report {
+    pub async fn bardo(&self, words: &[&str]) -> Report {
         self.invoke(words, Stdin::Closed, Stdout::Pipe).await
     }
 

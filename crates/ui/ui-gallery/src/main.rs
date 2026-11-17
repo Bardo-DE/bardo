@@ -1,4 +1,4 @@
-//! The quire gallery: every component across theme, accent, motion, material, blur and Space
+//! Bardo gallery: every component across theme, accent, motion, material, blur and Space
 //! preset; a matrix page; a motion lab; and `--snapshot DIR` for a contact sheet.
 
 mod accent_sheet;
@@ -67,7 +67,7 @@ fn main() {
         });
         if let Err(error) = launch(
             app::App,
-            AppConfig::new("quire gallery", WindowSize::new(1280, 900)).with_file_roots(
+            AppConfig::new("bardo gallery", WindowSize::new(1280, 900)).with_file_roots(
                 FileRoots::new([Path::new(env!("CARGO_MANIFEST_DIR")).join("assets")]),
             ),
         ) {

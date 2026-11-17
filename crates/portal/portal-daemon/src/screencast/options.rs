@@ -17,7 +17,7 @@ use super::Dict;
 use super::session::Selection;
 
 /// The vendor name in the `restore_data` this portal writes.
-pub const VENDOR: &str = "quire";
+pub const VENDOR: &str = "bardo";
 
 /// The version of the private data in `restore_data`: the token as a string.
 pub const DATA_VERSION: u32 = 1;
@@ -81,7 +81,7 @@ pub fn restore_token(options: &Dict) -> Option<RestoreToken> {
     RestoreToken::parse(data.downcast_ref::<&str>().ok()?)
 }
 
-/// The `restore_data` to hand back for a token: `("quire", 1, <token>)`.
+/// The `restore_data` to hand back for a token: `("bardo", 1, <token>)`.
 ///
 /// # Errors
 ///

@@ -3,7 +3,7 @@
 //! Everything an app sends over dbusmenu is a claim. A command id counts only when the app is
 //! proven to be the app whose manifest names it (`Identity::Verified`, which the service grants
 //! only when porter's caller identity of the name's owner is that app and its menu name is the
-//! one quire derives from the app). Then the item is that action, run through intentd so the
+//! one Bardo derives from the app). Then the item is that action, run through intentd so the
 //! gate, the confirmation, the undo journal and the audit apply as for a typed call. Every other
 //! item of an app is a click the shell cannot weigh, so it is `Destructive` and always asks; the
 //! app's own titles ("View", "Window") buy nothing. Only the shell's own rows ([`OwnItem`]) are

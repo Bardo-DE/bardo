@@ -18,7 +18,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-/// The row's height mailo reports; the test's own style, not a quire value.
+/// The row's height mailo reports; the test's own style, not a Bardo value.
 const ROW: &str = ".ds-row{height:74px;box-sizing:border-box}";
 
 /// How wide the row is.

@@ -1,4 +1,4 @@
-//! A Bluetooth device's filled glyph (quire's `DeviceGlyph`): the control center's Battery
+//! A Bluetooth device's filled glyph (Bardo's `DeviceGlyph`): the control center's Battery
 //! module draws it beside each device's level.
 
 use shell_kit::battery::device_glyph::Device;

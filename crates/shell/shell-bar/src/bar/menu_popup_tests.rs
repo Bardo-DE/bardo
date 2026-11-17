@@ -175,7 +175,7 @@ fn a_tray_submenu_opens_beside_its_row_after_the_rest_delay_inside_the_popup() {
         "inside the popup's frame, which is what the surface is fitted to: {sub:?} in {frame:?}"
     );
     let row = harness.rect(PARENT).expect("the Devices row"); // test-only
-    // The submenu is as tall as three of the card's rows, so quire's 8 px margin lifts it a little
+    // The submenu is as tall as three of the card's rows, so Bardo's 8 px margin lifts it a little
     // above its row; it still stands against the row, inside the card's height.
     let (top, bottom) = (sub.origin.y.0, sub.origin.y.0 + sub.size.height.0);
     assert!(

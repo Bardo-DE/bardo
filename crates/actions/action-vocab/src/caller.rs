@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 pub enum CallerRole {
     /// sill's launcher: acts as the person.
     Launcher,
-    /// A quire app recording a turn from its own prompt field.
+    /// A Bardo app recording a turn from its own prompt field.
     Field,
     /// A code editor driving the companion over ACP (`bardo-agent-acp`): opens sessions, records its
     /// person's turns and cancels. It answers no `Confirm1` sheet and halts nothing.

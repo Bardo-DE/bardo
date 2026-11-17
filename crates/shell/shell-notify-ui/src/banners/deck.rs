@@ -1,7 +1,7 @@
 //! The column's cards over time, pure: which cards the stack lists (the [`stack`](super::stack)'s)
-//! and which are still drawn while quire's `BannerStack` plays them out, one banner
+//! and which are still drawn while Bardo's `BannerStack` plays them out, one banner
 //! [`step`](super::step) per card, and what the column must do next (start a hold, tell the
-//! service). The view (`io.rs`) owns the timers; the motion is quire's. Everything it decides
+//! service). The view (`io.rs`) owns the timers; the motion is Bardo's. Everything it decides
 //! with is here, tested by table (`deck_tests.rs`).
 //!
 //! A card keeps its entry while its app's banners keep coming: a newer notification replaces
@@ -19,7 +19,7 @@ use super::deck_keys::{KeysIn, keys, release_leavers};
 use super::stack::Card;
 use super::step::{Banner, BannerIn, BannerOut, BannerParams, Deadline, step};
 
-/// One drawn card's identity for its life on screen (a new one per arrival): quire's
+/// One drawn card's identity for its life on screen (a new one per arrival): Bardo's
 /// `BannerKey`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct EntryKey(pub u32);

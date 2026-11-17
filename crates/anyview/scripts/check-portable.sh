@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# The portable build (quire's check-portable.sh convention, design/36 section 4, in this repo's terms):
-#   (a) the whole workspace compiles with every default feature off, so without `quire-desktop`, the
-#       Linux desktop's services; anyview-platform's own tree has no zbus. quire still brings zbus
+# The portable build (Bardo's check-portable.sh convention, design/36 section 4, in this repo's terms):
+#   (a) the whole workspace compiles with every default feature off, so without `desktop`, the
+#       Linux desktop's services; anyview-platform's own tree has no zbus. Bardo still brings zbus
 #       (ui-settings, ui-helpers) and wayland-client (ui-blitz) into the dependency graph until its
 #       own portable lane lands; this checks anyview's code, not the final graph.
 #   (b) no module outside a `desktop/` directory or a file named `desktop.rs` names `crate::desktop`
 #       or zbus: the core never reaches the desktop modules or a D-Bus crate. Tests and the platform crate's `testing` support are exempt.
-#       ui-desktop is not a leak: it is quire's probe, and without its `dbus` feature it has no bus.
+#       ui-desktop is not a leak: it is Bardo's probe, and without its `dbus` feature it has no bus.
 #   (c) anyview-peek compiles on its own, headless and with `media` (see below).
 #   (d) anyview-pane, the viewer as a pane another app hosts, compiles on its own and reaches no bus
 #       and no docket or porter: it asks the OS for nothing (abilities arrive as `PlatformAbilities`).
@@ -39,7 +39,7 @@ for dep in zbus ashpd action-provider action-core account-core; do
   fi
 done
 if cargo tree -p anyview-platform --no-default-features -e normal,build -i zbus 2>/dev/null | grep -q .; then
-  echo "check-portable: anyview-platform reaches zbus without quire-desktop" >&2
+  echo "check-portable: anyview-platform reaches zbus without desktop" >&2
   exit 1
 fi
 leaks=$(find . -path ./target -prune -o -name '*.rs' -print \
@@ -51,4 +51,4 @@ if [ -n "$leaks" ]; then
   echo "$leaks" | head -50 >&2
   exit 1
 fi
-echo "check-portable: the workspace builds without quire-desktop, anyview-peek builds alone (headless and with media), anyview-pane builds alone and reaches no bus, anyview-platform has no zbus and no core module names crate::desktop or zbus"
+echo "check-portable: the workspace builds without desktop, anyview-peek builds alone (headless and with media), anyview-pane builds alone and reaches no bus, anyview-platform has no zbus and no core module names crate::desktop or zbus"

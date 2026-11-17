@@ -8,7 +8,7 @@
 //! same colours.
 //!
 //! The most events asked for is a ceiling, not a promise. The card's body is a fixed number of pixels
-//! (`--widget-cell`, `--widget-gap`; quire's card), so asking for more rows than it holds would
+//! (`--widget-cell`, `--widget-gap`; Bardo's card), so asking for more rows than it holds would
 //! draw the last one half off the bottom, clipped by the card's `overflow:hidden`. The view draws
 //! at most [`EVENT_ROWS`], measured once against a real render (`ui_harness::Harness`) rather
 //! than guessed.

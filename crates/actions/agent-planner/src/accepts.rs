@@ -37,7 +37,7 @@ fn takes_kind(schema: &Json, kind: &str) -> bool {
 }
 
 fn places(card: &ActionCard, kind: &EntityKind) -> Vec<Place> {
-    // A related action is reached through `quire_related`, and said by `related_of`.
+    // A related action is reached through `bardo_related`, and said by `related_of`.
     if !card.related.is_empty() {
         return Vec::new();
     }
@@ -255,7 +255,7 @@ mod tests {
         assert_eq!(
             used_as(&kind("mail.thread"), &cards).as_deref(),
             Some("as target in mail.thread.read, mail.message.forward"),
-            "it is reached through quire_related, so it is not named as a tool"
+            "it is reached through bardo_related, so it is not named as a tool"
         );
     }
 

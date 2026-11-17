@@ -1,4 +1,4 @@
-//! Open With, Other: a quire `Sheet` listing every installed app. Choosing one opens the
+//! Open With, Other: a Bardo `Sheet` listing every installed app. Choosing one opens the
 //! selection with it.
 
 use dioxus::prelude::*;
@@ -30,7 +30,7 @@ pub(super) fn AppChooser(browse: Browse) -> Element {
 #[component]
 fn AppRow(line: AppLine, selection: bool, onpick: EventHandler<AppPick>) -> Element {
     let pick = line.pick.clone();
-    // An app with no picture shows quire's plain app glyph, so the names stay in one column.
+    // An app with no picture shows Bardo's plain app glyph, so the names stay in one column.
     let leading = line
         .icon
         .as_deref()

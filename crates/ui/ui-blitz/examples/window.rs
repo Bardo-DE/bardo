@@ -1,4 +1,4 @@
-//! A quire window on the portable Blitz shell: a `Ds` root with a Button that opens a Menu and
+//! A Bardo window on the portable Blitz shell: a `Ds` root with a Button that opens a Menu and
 //! raises the undo Toast. It closes itself after three seconds, or on Escape.
 //!
 //! `cargo run -p ui-blitz --example window`
@@ -21,8 +21,8 @@ const LIFETIME: Duration = Duration::from_secs(3);
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(
         App,
-        AppConfig::new("quire: ds-blitz window", WindowSize::new(480, 320))
-            .with_app_id(AppId("dev.quire.Window".to_owned())),
+        AppConfig::new("bardo: ds-blitz window", WindowSize::new(480, 320))
+            .with_app_id(AppId("dev.bardo.Window".to_owned())),
     )
 }
 

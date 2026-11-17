@@ -88,7 +88,7 @@ impl CollectionSize {
         Px(aspect.height(self.thumb()).0 + CAPTION_BAND.0)
     }
 
-    /// How many characters of a caption fit on its line. Blitz has no `text-overflow` and quire
+    /// How many characters of a caption fit on its line. Blitz has no `text-overflow` and Bardo
     /// has no text measure for a caption it has not laid out, so this is a budget of the small
     /// type's average advance (about 6.5 px) over the tile's width, not a measurement: a caption
     /// of narrow letters is cut a little early, one of wide letters a little late.

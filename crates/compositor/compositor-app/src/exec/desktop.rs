@@ -3,7 +3,7 @@
 use super::log;
 use crate::state::State;
 use compositor_core::desktop::DesktopNote;
-use compositor_wayland::quire::desktop::{self, DesktopView};
+use compositor_wayland::bardo::desktop::{self, DesktopView};
 
 /// Sends every bound desktop manager the object `note` names as it now is.
 pub(super) fn publish(state: &mut State, note: &DesktopNote) {
@@ -19,7 +19,7 @@ pub(super) fn publish(state: &mut State, note: &DesktopNote) {
             .collect(),
     };
     log(desktop::apply_note(
-        &mut state.wl.quire_desktop,
+        &mut state.wl.bardo_desktop,
         &view,
         note,
     ));

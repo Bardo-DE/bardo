@@ -1,5 +1,5 @@
 //! The portal client: the half of `portal.rs` that reaches `zbus`. Built only on Linux with feature
-//! `quire-desktop`; `portal/absent.rs` answers the same two entry points elsewhere.
+//! `desktop`; `portal/absent.rs` answers the same two entry points elsewhere.
 
 use super::{SystemPrefs, contrast_from_portal, reduced_motion_from_portal, scheme_from_portal};
 use base_spawn::Spawner;

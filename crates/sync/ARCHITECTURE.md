@@ -4,7 +4,7 @@ ferry is the desktop's sync service: it keeps copies of calendars, contacts, tas
 photos in step with the services an account reaches, and shows an account's whole drive as a folder
 (Files on demand). It was cut from porter 223c7251bff4; porter is accounts only. ferry depends on
 porter by git rev, as mailo and steward do, and porter never on ferry (porter's check-boundary
-fails if it does). The design is quire's `design/31-ACCOUNTS.md` and its sync chapters; this file
+fails if it does). The design is Bardo's `design/31-ACCOUNTS.md` and its sync chapters; this file
 is the map of the code. `CONVENTIONS.md` holds the rules.
 
 Reading order: section 1 (find the crate), section 2 (find the module).

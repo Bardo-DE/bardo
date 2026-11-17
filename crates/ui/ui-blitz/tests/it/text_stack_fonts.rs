@@ -1,10 +1,10 @@
 //! Why bardo-shell drew digits and spaces from Noto Color Emoji (FINDINGS "Colour emoji"):
 //! the stack `"Inter","Noto Color Emoji",system-ui,sans-serif` is laid out here through the font
 //! context layer-shell-host builds for every surface (`layer_shell_host::dom::fonts::SharedFonts::system`:
-//! `FontContext::new()` and Blitz's bullet face, nothing else) and through quire's own
+//! `FontContext::new()` and Blitz's bullet face, nothing else) and through Bardo's own
 //! (`ui_blitz::font_context`, which registers `ui_components::style::fonts::FACES`).
 //!
-//! Under quire's context Inter is a family, maps every character of ordinary text, and the stack
+//! Under Bardo's context Inter is a family, maps every character of ordinary text, and the stack
 //! lays out exactly as `"Inter"` alone. Under layer-shell-host's there is no family called Inter (it is
 //! not installed on the system and `SharedFonts::register` has no caller), so the stack's first
 //! family that exists is Noto Color Emoji, which maps U+0020 and 0-9 (the keycap sequences' bases):
@@ -130,26 +130,26 @@ fn inter_is_not_a_family_in_shell_hosts_font_context() {
         shell.collection.family_by_name("Inter").is_none(),
         "shell-host's context has no Inter"
     );
-    let mut quire = ui_blitz::font_context();
+    let mut bardo = ui_blitz::font_context();
     assert!(
-        quire.collection.family_by_name("Inter").is_some(),
-        "quire's context has Inter"
+        bardo.collection.family_by_name("Inter").is_some(),
+        "bardo's context has Inter"
     );
 }
 
-/// Under quire's context the stack is Inter's to the pixel; under layer-shell-host's it is wider than
+/// Under Bardo's context the stack is Inter's to the pixel; under layer-shell-host's it is wider than
 /// system-ui alone by the emoji face's advances, which is bardo-shell's "m 9 -extra- 1 .pdf".
 #[test]
-fn the_stack_is_inter_under_quire_and_takes_the_emoji_faces_digits_under_shell_host() {
+fn the_stack_is_inter_under_bardo_and_takes_the_emoji_faces_digits_under_shell_host() {
     if !applies() {
         return;
     }
     for text in TEXTS {
-        let quire_stack = width(ui_blitz::font_context(), STACK, text);
-        let quire_inter = width(ui_blitz::font_context(), "\"Inter\"", text);
+        let bardo_stack = width(ui_blitz::font_context(), STACK, text);
+        let bardo_inter = width(ui_blitz::font_context(), "\"Inter\"", text);
         assert!(
-            (quire_stack - quire_inter).abs() < 0.01,
-            "{text}: quire lays the stack out as Inter ({quire_stack} vs {quire_inter})"
+            (bardo_stack - bardo_inter).abs() < 0.01,
+            "{text}: bardo lays the stack out as Inter ({bardo_stack} vs {bardo_inter})"
         );
         let shell_stack = width(shell_host_fonts(), STACK, text);
         let shell_system = width(shell_host_fonts(), "system-ui,sans-serif", text);
@@ -187,12 +187,12 @@ fn an_emoji_face_after_system_ui_is_never_reached_under_shell_host() {
     );
 }
 
-/// Under quire's context the colour face sits ahead of the monochrome one in `system-ui` and
+/// Under Bardo's context the colour face sits ahead of the monochrome one in `system-ui` and
 /// `sans-serif` (`ui_blitz::EmojiChoice`), so emoji in a stack that names no emoji family lay
 /// out as the colour face's (a ZWJ family and a flag shape to single glyphs) and ordinary text
 /// is still Inter's.
 #[test]
-fn quire_s_context_reaches_the_colour_face_through_system_ui() {
+fn bardo_s_context_reaches_the_colour_face_through_system_ui() {
     if !applies() {
         return;
     }

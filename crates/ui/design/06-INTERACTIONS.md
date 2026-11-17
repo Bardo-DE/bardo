@@ -10,7 +10,7 @@ Durations named here (HoverOpen, ToastHold, `settle()`, …) are defined in `05-
 
 ## 1. What this governs
 
-Every behaviour a quire surface performs in response to input: the keyboard maps, the
+Every behaviour a Bardo surface performs in response to input: the keyboard maps, the
 hover-card intent machine, where menus and floating surfaces are placed and how they are
 dismissed, drag and drop, the sidebar and its edge peek, Space switching, the undo toast and its
 pull tab, undo send, the command menu's search and ranking, the selection bubble, the link pill,
@@ -600,7 +600,7 @@ One Escape dismisses exactly one layer: the innermost. The table is the port's r
 | 8 | C: an open view menu | close it | C:2260 |
 | 9 | a hover card | not specified (proposed: close without warm) | |
 | 10 | desktop launcher | close | plan sill |
-| 11 | an alert (`Alert`) | Cancel (as a press on its scrim) | quire, sill Q490 |
+| 11 | an alert (`Alert`) | Cancel (as a press on its scrim) | Bardo, sill Q490 |
 
 ## 19. Other list behaviours
 

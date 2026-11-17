@@ -1,6 +1,6 @@
 //! The two providers dioxus-native gives a window's document and keeps private, rebuilt here
 //! because ui-blitz now builds the document itself (`crate::window_build`) so a running app can
-//! open a second window. With dioxus-native's features as quire sets them (no `net`, no
+//! open a second window. With dioxus-native's features as Bardo sets them (no `net`, no
 //! `data-uri`), its net provider serves the `dioxus:` asset scheme and nothing else, and its
 //! navigation provider hands a clicked `http:`, `https:` or `mailto:` link to the desktop's
 //! browser. These do the same.

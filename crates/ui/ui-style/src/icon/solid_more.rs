@@ -208,7 +208,7 @@ const ELLIPSIS_VERTICAL: &[Shape] = &[
     ),
 ];
 
-/// quire's filled grip: six dots of radius 1.5 on `GRIP`'s centres, two columns of three.
+/// Bardo's filled grip: six dots of radius 1.5 on `GRIP`'s centres, two columns of three.
 const GRIP: &[Shape] = &[
     Shape::Solid("M10.5 5a1.5 1.5 0 1 1 -3 0a1.5 1.5 0 0 1 3 0"),
     Shape::Solid("M16.5 5a1.5 1.5 0 1 1 -3 0a1.5 1.5 0 0 1 3 0"),

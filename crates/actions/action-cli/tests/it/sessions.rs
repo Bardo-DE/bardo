@@ -76,7 +76,7 @@ async fn nothing_to_list_is_said_plainly() {
     let tty = desk.tty(&["sessions"]).await;
     assert_eq!(tty.exit, Exit::Done);
     assert_eq!(tty.stdout, "no sessions\n");
-    assert_eq!(ids(&desk.quire(&["sessions"]).await), Vec::<String>::new());
+    assert_eq!(ids(&desk.bardo(&["sessions"]).await), Vec::<String>::new());
 }
 
 #[tokio::test]
@@ -91,7 +91,7 @@ async fn the_list_holds_the_terminals_own_sessions_and_not_another_apps() {
         tty.stdout,
         format!("{mine}  work  assistant  1 turn  open\n")
     );
-    let listed = ids(&desk.quire(&["sessions"]).await);
+    let listed = ids(&desk.bardo(&["sessions"]).await);
     assert_eq!(listed, [mine.to_string()]);
 
     // The other app's session is answered as one the log does not hold.
@@ -114,7 +114,7 @@ async fn load_prints_the_turns_and_json_is_the_export() {
     assert_eq!(tty.exit, Exit::Done, "{tty:?}");
     assert_eq!(tty.stdout, "opened in work\nyou: tidy the downloads\n");
 
-    let doc = json(&desk.quire(&["sessions", "load", mine.as_str()]).await);
+    let doc = json(&desk.bardo(&["sessions", "load", mine.as_str()]).await);
     assert_eq!(doc["session"], mine.as_str());
     assert!(doc["entries"].as_array().is_some_and(|e| e.len() >= 2));
 }
@@ -124,14 +124,14 @@ async fn a_fork_keeps_the_log_up_to_a_row_and_is_the_terminals_too() {
     let desk = Desk::new();
     let mine = session_of(&desk, "org.bardo.Do", "tidy the downloads").await;
 
-    let forked = desk.quire(&["sessions", "fork", mine.as_str()]).await;
+    let forked = desk.bardo(&["sessions", "fork", mine.as_str()]).await;
     assert_eq!(forked.exit, Exit::Done, "{forked:?}");
     let child = json(&forked)["session"].as_str().expect("child").to_owned();
     assert_eq!(child, format!("{mine}-f1"));
 
     // The child is listed and loads with the parent's words.
     assert_eq!(
-        ids(&desk.quire(&["sessions"]).await),
+        ids(&desk.bardo(&["sessions"]).await),
         [mine.to_string(), child.clone()]
     );
     let tty = desk.tty(&["sessions", "load", &child]).await;

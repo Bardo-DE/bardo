@@ -1,6 +1,6 @@
 //! `cargo run -p ui-settings --example doc_tables -- [--check] [--schema <file>]... <doc.md>`:
 //! rewrites the key tables of design/22-SETTINGS.md (the ones between `keys:begin <domain>` and
-//! `keys:end <domain>` comment lines) from quire's own schema and any `<app>.settings.toml` named
+//! `keys:end <domain>` comment lines) from Bardo's own schema and any `<app>.settings.toml` named
 //! with `--schema`. With `--check` it writes nothing and fails when the doc is out of date.
 //! `scripts/check-doc-keys.sh` runs it that way.
 
@@ -8,7 +8,7 @@ use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
 use settings_types::schema::{Schema, regenerate};
-use ui_settings::quire_schema;
+use ui_settings::bardo_schema;
 
 /// What the command line asked for.
 struct Request {
@@ -42,7 +42,7 @@ fn load(path: &Path) -> Result<Schema, String> {
 }
 
 fn run(request: &Request) -> Result<(), String> {
-    let mut schemas = vec![quire_schema()];
+    let mut schemas = vec![bardo_schema()];
     for path in &request.schemas {
         schemas.push(load(path)?);
     }

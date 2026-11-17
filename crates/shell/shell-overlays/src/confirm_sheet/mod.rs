@@ -4,8 +4,8 @@
 //! One Overlay per output, kept warm and hidden like the polkit prompt, shown on the sheets' output
 //! (the focused window's, latched while a question is up) while the intents service's queue holds a
 //! question. It draws the question the router formatted (`shell_model::intents::sheet::SheetView`:
-//! the action's own label, who asks, the arguments, the reasons) on quire's `Sheet`, centred, with
-//! quire's `FactList` and `Button`s, and answers through `IntentsCommand::Answer`.
+//! the action's own label, who asks, the arguments, the reasons) on Bardo's `Sheet`, centred, with
+//! Bardo's `FactList` and `Button`s, and answers through `IntentsCommand::Answer`.
 //!
 //! Arming: the buttons are drawn disabled until the sheet has been on screen for [`gate::ARM_MS`]
 //! with no key pressed and the pointer still, and Return is ignored meanwhile, so a key typed for

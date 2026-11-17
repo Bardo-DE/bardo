@@ -5,7 +5,7 @@
 #   - a crate names only workspace crates of its own layer or below, and files-core names none;
 #   - the pure crates (files-core, files-model) name no I/O crate;
 #   - only files-desktop names zbus, docket, porter (and its `prov`), ferry or peephole;
-#   - only files-ui and the binary name dioxus or quire's
+#   - only files-ui and the binary name dioxus or Bardo's
 #     UI crates (ds, ui-blitz, ui-settings, ...); ui-helpers is UI-free and allowed lower.
 # Prints each violation as `crate -> dep (rule)` and exits 1 when there is any.
 set -euo pipefail
@@ -37,7 +37,7 @@ for line in sys.stdin.read().split("\n"):
 
 PURE = {"files-core", "files-model"}
 # ui-helpers is allowed in the pure crates for its `mime` module (names and types as data); the rest of
-# the quire crates are I/O or UI.
+# Bardo crates are I/O or UI.
 io = re.compile(r"^(tokio.*|async-.*|futures.*|notify.*|trash|rustix|nix|libc|xattr|zbus.*|action-.*|agent-.*|companion-.*|permission-.*|dioxus.*|ui-(?!helpers$).*)$")
 bus = re.compile(r"^(zbus.*|action-.*|agent-.*|companion-.*|permission-.*|account-.*|inference-.*|sync-.*|drive-.*|replica-.*|caller-identity-.*|provenance)$")
 ui = re.compile(r"^(dioxus.*|blitz.*|ui-(?!helpers$|peer$).*)$")

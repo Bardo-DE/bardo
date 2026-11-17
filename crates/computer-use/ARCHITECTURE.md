@@ -34,7 +34,7 @@ picture), section 6 (copy the recipe).
 | `computer-use-eval` | the computer-use model eval (section 8): fake `surface`s drawn as pixels, a `Stage` shared by an `EvalSeat`, an `EvalCapture` and an `EvalDesktop`, a reference gate, `ScriptModel` (lines of moves) and `ProviderModel` (a model on a local engine, over stoker's `CuaSession`), `Corpus` (`eval/surfaces`, `eval/tasks`), verdicts, rates with Wilson bounds, the markdown report, and the `computer-use-eval` binary | the binary: files; `live`: loopback HTTP to an engine the caller started |
 | `computer-use-eval-cloud` | the eval against a hosted model (section 8): `InferdProvider` (a stoker `Provider` whose turns are inferd chat turns, `Need::Llm` with images on class `screen`), `request` (a stoker turn as an inferd `ChatRequest`), `Watch` (turns, tokens, the charges the provider reported, a spend refusal), `isolation` (what this process can reach), and the `computer-use-eval-cloud` binary | the bus to inferd (the key stays in accountd) |
 | `computer-use-host` | the run executor as a library: `Supervisor` (a task per run), `SupervisorEvent`, `IntentsGate`, `DaemonLinks`, `record_of`, `guard`, `CuadConfig`, `SystemClock`, and the settings read from text: `read`, `Locator` (over the caller's `ReadText`; `bardo-computer-use` supplies the disk reader), `ReadFailure`, `SCHEMA`, `Supervisor::{settings, apps, apply_settings, adopt}`. No backend, bus or file watch | action-client and memory-client without `dbus` |
-| `computer-use-capture-wayland` | the capture backend of `maskcap`: `StockToplevelCapture`, `QuireMaskedCapture`, `WaylandSession`, `StampClock`, and the `Pump` that drives one wayland connection from async code (with `ObjectKey`, `Rounds`, `SyncTag`) | wayland-client, tokio, rustix |
+| `computer-use-capture-wayland` | the capture backend of `maskcap`: `StockToplevelCapture`, `BardoMaskedCapture`, `WaylandSession`, `StampClock`, and the `Pump` that drives one wayland connection from async code (with `ObjectKey`, `Rounds`, `SyncTag`) | wayland-client, tokio, rustix |
 | `computer-use-seat-ei` | the EI client of the agent's seat: `EiSeat`, an `AgentSeat` over reis (the connection lives on a thread of its own) | reis, tokio |
 | `computer-use-a11y-atspi` | the AT-SPI backend of `computer-use-a11y-tree`: `AtspiSource`, `AtspiTree`, `read_window` (the walk, over any `AtspiTree`) | zbus, atspi, tokio |
 | `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CasementDesktop` (casement's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdCuaModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
@@ -153,7 +153,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | Trait | Home | Implemented by |
 | --- | --- | --- |
 | `Desktop`, `LeaseControl` | `computer-use-desktop` | `CasementDesktop`, `FakeDesktop`; `Option<D>` (no desktop) |
-| `WindowCapture`, `CaptureSession` | `maskcap` | `StockToplevelCapture`, `QuireMaskedCapture` (through `CaptureBackend`; `Option<C>` is the absent one), `FakeCapture` |
+| `WindowCapture`, `CaptureSession` | `maskcap` | `StockToplevelCapture`, `BardoMaskedCapture` (through `CaptureBackend`; `Option<C>` is the absent one), `FakeCapture` |
 | `AgentSeat` | `computer-use-seat-input` | `seat_ei::EiSeat`, `FakeSeat` |
 | `A11ySource` | `computer-use-a11y-tree` | `LoggedAtspi` (over `AtspiSource`), `FakeA11y`; `Option<S>` (no tree) |
 | `CuaModel`, `StepSink` | `computer-use-run` | `InferdCuaModel`, `ScriptedModel` |
@@ -275,7 +275,7 @@ action it leads to is gated like any other.
   1.98.1 and `deny.toml` is the licence gate.
 - Cross-repo dependencies are git dependencies at pinned revs (stoker, porter, almanac, docket,
   desktop-protocols), so a plain clone builds with no sibling checkout; the URLs and revs match the
-  other repos' pins of the same crates, or cargo links two copies. External versions are copied from quire's `docs/workspace-deps.toml`, never chosen here;
+  other repos' pins of the same crates, or cargo links two copies. External versions are copied from Bardo's `docs/workspace-deps.toml`, never chosen here;
   FINDINGS lists the ones added to this workspace.
 - Behaviour is `todo!()` behind frozen signatures, each listed in `FINDINGS.md`; shape tests
   (round trips, pinned JSON, introspection, tables) pass.

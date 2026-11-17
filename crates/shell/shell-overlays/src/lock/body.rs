@@ -1,4 +1,4 @@
-//! The lock surface's content inside its `Ds` root: quire's stage, the clock, the prompt on the
+//! The lock surface's content inside its `Ds` root: Bardo's stage, the clock, the prompt on the
 //! prompt's output, and the unlock fade (the module doc of `screen.rs` has the rules).
 
 use base_secret::SecretText;
@@ -120,7 +120,7 @@ pub(super) fn LockBody(
     }
 }
 
-/// On `Accepted` while the host holds the lock, asks layer-shell-host to unlock at once (quire's
+/// On `Accepted` while the host holds the lock, asks layer-shell-host to unlock at once (Bardo's
 /// picture accept beat is gone); the others do nothing.
 fn use_unlock_fade(
     auth: ReadSignal<Auth>,

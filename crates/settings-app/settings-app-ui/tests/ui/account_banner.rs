@@ -150,7 +150,7 @@ fn the_banners_button_starts_the_sign_in_in_accountd_for_either_banner() {
 }
 
 #[test]
-fn the_banner_is_only_quire_components_and_layout_only_css() {
+fn the_banner_is_only_bardo_components_and_layout_only_css() {
     let rows = vec![google(
         "work.example",
         "Work mail",

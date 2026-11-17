@@ -167,7 +167,7 @@ stoker.
 | how to ask for a typed output and repair it | `model-extract` (inferd runs it) |
 | retry classes and backoff | `model-provider::retry` (inferd runs it) |
 | the order a conversation must be in | `model-provider::sequence` |
-| OpenTelemetry GenAI names | `model-genai-names` (our own `quire.*` names are porter's `prov::trace`) |
+| OpenTelemetry GenAI names | `model-genai-names` (our own `bardo.*` names are porter's `prov::trace`) |
 | wire cassettes (HTTP exchanges at the `Transport`) | `model-replay::wire` |
 | default sampling of a model | `model-catalog::SamplingDefaults` |
 | audio formats, positions and durations; the bytes of PCM | `speech-provider::audio` (`AudioFormat`, `SampleIndex`, `AudioMs`, `PcmBytes`) |
@@ -448,7 +448,7 @@ run by hand against the user's own engine.
   `cargo build --manifest-path crates/<name>/Cargo.toml`; their `Cargo.lock` and `target/` stay
   untracked. They join the workspace if the runtime joins the pinned block and the gate can
   build it.
-- **Dependencies** come from quire's pinned block (`docs/workspace-deps.toml` there) and the
+- **Dependencies** come from Bardo's pinned block (`docs/workspace-deps.toml` there) and the
   adopted lines of the spec (SPEC.md 1.4), copied verbatim, only the lines stoker names; a new
   one joins that file first. No `reqwest` (it cannot reach a Unix socket), no `async-openai`,
   `genai` or `rig`.

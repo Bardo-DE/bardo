@@ -21,11 +21,11 @@ fn said(out: &std::process::Output) -> String {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn quire_do_ask_prints_the_companions_answer() {
+async fn bardo_do_ask_prints_the_companions_answer() {
     let world = World::start(&binaries(), Consent::Standing, TERMINAL_ASK).await;
     let out = world
-        .quire_do(
-            &binaries().quire_do,
+        .bardo_do(
+            &binaries().bardo_do,
             &[
                 "ask", "--space", "work", "find", "the", "Lisbon", "receipts",
             ],
@@ -47,11 +47,11 @@ async fn quire_do_ask_prints_the_companions_answer() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn quire_do_ask_leaves_a_confirmation_to_the_shell() {
+async fn bardo_do_ask_leaves_a_confirmation_to_the_shell() {
     let mut world = World::start(&binaries(), Consent::Standing, FLOW_A).await;
     let out = world
-        .quire_do(
-            &binaries().quire_do,
+        .bardo_do(
+            &binaries().bardo_do,
             &[
                 "ask",
                 "--space",

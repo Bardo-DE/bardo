@@ -167,7 +167,7 @@ for feature in $family_features; do
     echo "boundary holds: account-families[$feature] reaches none of ${forbidden[*]}"
   fi
   found=$(cargo tree -p account-families --no-default-features --features "$feature" --depth 1 -e normal,build --prefix none 2>/dev/null \
-    | grep -E '\((/|https://github.com/Bardo-DE/(stoker|quire))' | awk '{print $1}' | grep -vx account-families | sort -u | tr '\n' ' ')
+    | grep -E '\((/|https://github.com/Bardo-DE/(stoker|bardo))' | awk '{print $1}' | grep -vx account-families | sort -u | tr '\n' ' ')
   want=$(printf '%s\n' ${FAMILY_EDGES[$feature]} | sort -u | tr '\n' ' ')
   if [ "$found" != "$want" ]; then
     echo "EDGE: account-families[$feature] depends on [${found% }], the table allows [${want% }]"
@@ -331,7 +331,7 @@ for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
   read -r -a allowed <<<"${edge#*:}"
   found=$(cargo tree -p "$crate" --depth 1 -e normal,build --prefix none --all-features 2>/dev/null \
-    | grep -E '\((/|https://github.com/Bardo-DE/(stoker|quire))' | awk '{print $1}' | grep -vx "$crate" | sort -u | tr '\n' ' ')
+    | grep -E '\((/|https://github.com/Bardo-DE/(stoker|bardo))' | awk '{print $1}' | grep -vx "$crate" | sort -u | tr '\n' ' ')
   want=$(printf '%s\n' "${allowed[@]}" | grep . | sort -u | tr '\n' ' ')
   if [ "$found" != "$want" ]; then
     echo "EDGE: $crate depends on [${found% }], the table allows [${want% }]"
@@ -544,7 +544,7 @@ else
 fi
 
 # The portable cores build without the desktop and reach no D-Bus; the accounts-only client
-# reaches no inference either (quire design/36).
+# reaches no inference either (Bardo design/36).
 ./scripts/check-portable.sh || fail=1
 
 exit "$fail"

@@ -261,7 +261,7 @@ fn a_page_is_found_by_the_start_of_its_name_or_of_a_word_of_it() {
 fn a_provided_key_draws_a_menu_of_what_is_installed_and_only_on_the_pages_that_have_one() {
     let catalogue = real("a_provided_key_draws_a_menu_of_what_is_installed");
     let look = KeyPath("appearance.look".to_owned());
-    let bare = catalogue.entry(&look).expect("quire's look key");
+    let bare = catalogue.entry(&look).expect("bardo's look key");
     assert_eq!(
         bare.control,
         Control::Provided(vec!["standard".to_owned()]),

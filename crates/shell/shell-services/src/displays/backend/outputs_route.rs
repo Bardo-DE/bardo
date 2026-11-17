@@ -41,11 +41,11 @@ impl OutputsRoute {
             .and_then(|connection| DesktopClient::new(&connection).ok())
             .filter(|client| {
                 // The standard arm or the desktop's own: both list the wlr toplevel manager or the
-                // Quire manager; the ext list alone is not enough.
+                // Bardo manager; the ext list alone is not enough.
                 matches!(
                     desktop_client::backend_for(&client.state().protocols),
                     Some(
-                        desktop_client::DesktopBackend::Wlr | desktop_client::DesktopBackend::Quire
+                        desktop_client::DesktopBackend::Wlr | desktop_client::DesktopBackend::Bardo
                     )
                 )
             });

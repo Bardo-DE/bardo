@@ -77,7 +77,7 @@ fn commands(running: &mut Running) -> Vec<ShotCommand> {
     std::iter::from_fn(|| running.feeds.shot_commands.try_recv().ok()).collect()
 }
 
-/// How many cards quire's stack draws (shown or playing out).
+/// How many cards Bardo's stack draws (shown or playing out).
 fn cards(running: &Running) -> usize {
     running.harness.count(".ds-shot")
 }
@@ -165,7 +165,7 @@ fn a_shot_slides_in_holds_and_is_kept() {
     assert_eq!(cards(&running), 0, "a pending preview is waited for");
     ready(&mut running, 1);
     running.harness.advance(Duration::from_millis(20));
-    assert_eq!(cards(&running), 1, "quire's stack slides it in");
+    assert_eq!(cards(&running), 1, "bardo's stack slides it in");
     let src = running.harness.attr(".ds-shot-image", "src");
     assert!(
         src.as_deref()

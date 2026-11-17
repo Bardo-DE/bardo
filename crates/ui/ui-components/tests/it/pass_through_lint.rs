@@ -1,7 +1,7 @@
-//! A consumer's own class on a quire button: the markup lint takes it when the
+//! A consumer's own class on a Bardo button: the markup lint takes it when the
 //! consumer's sheet styles it, the stylesheet lint takes the consumer's rule for it, and a `ds-`
 //! class never gets that far, since `ExtraClass` refuses it when it is built. The same for a
-//! `data-*` name: `DataName` refuses `ds-…` and the names quire writes itself.
+//! `data-*` name: `DataName` refuses `ds-…` and the names Bardo writes itself.
 
 use dioxus::prelude::*;
 use ui_components::prelude::*;
@@ -30,7 +30,7 @@ fn render() -> String {
 }
 
 #[test]
-fn a_consumer_class_on_a_quire_button_lints_clean() {
+fn a_consumer_class_on_a_bardo_button_lints_clean() {
     let html = render();
     assert!(
         html.contains(r#"class="ds-button row-reveal""#) && html.contains(r#"data-folder="INBOX""#),
@@ -45,7 +45,7 @@ fn a_consumer_class_on_a_quire_button_lints_clean() {
 
 #[test]
 fn the_class_is_unstyled_without_the_consumers_rule() {
-    // The check above is not vacuous: the same markup against quire's sheet alone names the
+    // The check above is not vacuous: the same markup against Bardo's sheet alone names the
     // consumer's class as unstyled.
     let offences = markup(
         &render(),
@@ -83,7 +83,7 @@ fn a_ds_class_or_name_is_refused_before_it_reaches_a_button() {
             "{name}"
         );
     }
-    // And a consumer rule that did reach for quire's class is the stylesheet lint's to catch.
+    // And a consumer rule that did reach for Bardo's class is the stylesheet lint's to catch.
     let reaching = stylesheet(
         ".ds-button.row-reveal { opacity: 0; }",
         &LintConfig::new(&ui_components::kits()),

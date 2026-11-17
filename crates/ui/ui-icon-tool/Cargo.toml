@@ -21,9 +21,9 @@ ui-style = {path = "../ui-style", default-features = false}
 ui-settings = { path = "../ui-settings", default-features = false }
 
 [features]
-default = ["quire-desktop"]
-# Desktop integration of the quire crates this one uses (design/36 section 1).
-quire-desktop = ["ui-settings/quire-desktop"]
+default = ["desktop"]
+# Desktop integration of Bardo crates this one uses (design/36 section 1).
+desktop = ["ui-settings/desktop"]
 
 [lints]
 workspace = true

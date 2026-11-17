@@ -26,7 +26,7 @@ fn lines(path: &PathBuf) -> Vec<AuditEntry> {
 #[test]
 fn entries_append_one_per_line_and_the_directory_is_made() {
     let scratch = Scratch::new("audit");
-    let path = scratch.join("quire").join("accountd").join("audit.jsonl");
+    let path = scratch.join("bardo").join("accountd").join("audit.jsonl");
     let sink = FileAudit::new(path.clone());
     sink.record(entry(AuditEvent::SignedIn));
     // A second sink on the same file appends; nothing is truncated.

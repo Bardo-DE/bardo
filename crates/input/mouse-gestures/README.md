@@ -2,7 +2,7 @@
 
 The Magic Mouse 2 gesture daemon of the desktop shell program. It reads the mouse's touch
 reports from hidraw, turns them into scroll and gesture streams, and delivers them over a socket to layer-shell-host surfaces and, through
-virtual input devices, to every other client. Specified in quire's
+virtual input devices, to every other client. Specified in Bardo's
 `design/12-BEHAVIOUR-gestures.md` (and `design/11-BEHAVIOUR-scroll.md` for how the host uses
 the stream; `design/22-SETTINGS.md` §3.9-3.10 for the settings). Portable to any Linux; no
 shell dependency. Pointer motion and physical clicks stay in the kernel driver.

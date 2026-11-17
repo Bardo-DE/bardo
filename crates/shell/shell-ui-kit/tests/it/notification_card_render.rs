@@ -1,6 +1,6 @@
 //! `NoteCard` on its own, as a banner and as a notification center row, SSR-rendered inside a
-//! `Ds`: it is quire's `NotificationCard` with bardo-shell's words: the app's name, the age, the
-//! summary, the body as quire's runs, every action but `default` as a button, a group's count
+//! `Ds`: it is Bardo's `NotificationCard` with bardo-shell's words: the app's name, the age, the
+//! summary, the body as Bardo's runs, every action but `default` as a button, a group's count
 //! and layers, the plate's id; a center row paints the Popover material, and an inverse banner
 //! the other scheme.
 
@@ -84,7 +84,7 @@ fn render(shown: Shown) -> String {
 }
 
 #[test]
-fn a_banner_is_quires_card_with_sills_words() {
+fn a_banner_is_bardo_card_with_sills_words() {
     let html = render(Shown {
         note: note(&["default", "reply"]),
         count: 1,

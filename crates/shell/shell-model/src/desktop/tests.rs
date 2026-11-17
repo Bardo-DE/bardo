@@ -41,7 +41,7 @@ fn each_backend_carries_what_its_protocols_can() {
     // Rows: activate, close, minimise, unminimise, place, to space, switch space, target.
     let table: &[(DesktopBackend, [bool; 8])] = &[
         (
-            DesktopBackend::Quire,
+            DesktopBackend::Bardo,
             [YES, YES, YES, YES, YES, YES, YES, YES],
         ),
         (DesktopBackend::Wlr, [YES, YES, YES, YES, NO, NO, YES, NO]),
@@ -55,7 +55,7 @@ fn each_backend_carries_what_its_protocols_can() {
 }
 
 #[test]
-fn what_only_the_desktops_own_compositor_can_do_is_quire_only() {
+fn what_only_the_desktops_own_compositor_can_do_is_bardo_only() {
     let window = || "w1".to_owned();
     let app = || "org.example.app".to_owned();
     let space = || SpaceId::parse("ws-1").unwrap_or_else(|e| panic!("{e}"));
@@ -108,7 +108,7 @@ fn what_only_the_desktops_own_compositor_can_do_is_quire_only() {
         },
     ];
     for command in &commands {
-        assert!(supports(DesktopBackend::Quire, command));
+        assert!(supports(DesktopBackend::Bardo, command));
         assert!(!supports(DesktopBackend::Wlr, command));
         assert!(!supports(DesktopBackend::Bare, command));
     }

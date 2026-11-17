@@ -1,6 +1,6 @@
 //! The colours of the compositor's own scenes (Mission Control, the Split View backdrop), read
-//! from quire's tokens so they follow the desktop's look. Pure; the loop turns them into the
-//! renderer's colours. Nothing here is a copy of a number quire owns.
+//! from Bardo's tokens so they follow the desktop's look. Pure; the loop turns them into the
+//! renderer's colours. Nothing here is a copy of a number Bardo owns.
 
 use crate::frame::colour;
 use compositor_core::window::FrameColour;
@@ -20,7 +20,7 @@ pub fn overview_ring(scheme: Scheme) -> FrameColour {
     colour(ColourToken::Accent.value(scheme))
 }
 
-/// The dimming over the picture in Mission Control: quire's scrim (black at about a fifth, the
+/// The dimming over the picture in Mission Control: Bardo's scrim (black at about a fifth, the
 /// same in both schemes).
 ///
 /// ```
@@ -35,7 +35,7 @@ pub fn overview_dim(scheme: Scheme) -> FrameColour {
     colour(ColourToken::Scrim.value(scheme))
 }
 
-/// The plate drawn for an app that has no icon, in Mission Control: quire's raised ground, so it
+/// The plate drawn for an app that has no icon, in Mission Control: Bardo's raised ground, so it
 /// reads over the dimmed picture in either scheme.
 ///
 /// ```
@@ -81,7 +81,7 @@ pub fn split_backdrop() -> FrameColour {
     colour(ColourToken::Paper.value(Scheme::Dark))
 }
 
-/// How much of the ground a blur's stand-in keeps under Reduce transparency, out of 255: quire's
+/// How much of the ground a blur's stand-in keeps under Reduce transparency, out of 255: Bardo's
 /// solid fallback floor, "alpha at least .94" (design/03 section 17.1), at 0.96.
 const REDUCED_ALPHA: u8 = 245;
 
@@ -110,7 +110,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn the_colours_are_quires_tokens() {
+    fn the_colours_are_bardo_tokens() {
         let paper = split_backdrop();
         assert_eq!((paper.r, paper.g, paper.b), (0x1E, 0x1E, 0x1E));
         // The scrim is .22 over nothing: 220 thousandths of 255.

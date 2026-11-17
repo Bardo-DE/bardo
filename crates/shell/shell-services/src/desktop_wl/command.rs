@@ -76,7 +76,7 @@ pub fn wire_of(command: &DesktopCommand, state: &DesktopState) -> Result<Vec<Wir
         DesktopCommand::Minimise(id) => Ok(vec![Wire::Minimise(find_window(state, id)?)]),
         DesktopCommand::Unminimise(id) => Ok(vec![Wire::Unminimise(find_window(state, id)?)]),
         DesktopCommand::SwitchSpace(space) => switch(state, space),
-        // The Quire arm carries these: `quire::quire_wire_of`.
+        // Bardo arm carries these: `bardo::bardo_wire_of`.
         DesktopCommand::Place(..)
         | DesktopCommand::ToSpace(..)
         | DesktopCommand::SetMinimiseTarget { .. }

@@ -1,6 +1,6 @@
 //! The control center's render: the page state ([`super::step_page`]), the modules in
-//! `control_center.modules` order on quire's `ModuleGrid` (each from
-//! `crate::control_center::modules`), the detail panes behind quire's `PaneSwitcher`,
+//! `control_center.modules` order on Bardo's `ModuleGrid` (each from
+//! `crate::control_center::modules`), the detail panes behind Bardo's `PaneSwitcher`,
 //! and Escape.
 
 use std::rc::Rc;
@@ -42,7 +42,7 @@ pub(crate) fn control_center(
     use_context_provider(|| ClosePanel(Callback::new(move |()| on_close.call(()))));
     provide_power_ask();
     let go = use_callback(move |input: PageInput| {
-        // The slide is quire's `PaneSwitcher`'s, played on `shown`.
+        // The slide is Bardo's `PaneSwitcher`'s, played on `shown`.
         let (next, _slide, out) = step_page(*page.peek(), input);
         match out {
             PageOut::Close => on_close.call(()),
@@ -97,14 +97,14 @@ pub(crate) fn control_center(
                 }
             },
             PaneSwitcher { shown: pane_of(current), root, detail }
-            // The alert slot: last in the positioned body, which it covers (quire's `Alert`,
+            // The alert slot: last in the positioned body, which it covers (Bardo's `Alert`,
             // `Flow::Inline`).
             TurnOffAlert { on_answered: move |()| home.take() }
         }
     }
 }
 
-/// quire's pane for a page.
+/// Bardo's pane for a page.
 pub(crate) fn pane_of(page: CcPage) -> Pane {
     match page {
         CcPage::Modules => Pane::Root,
@@ -146,7 +146,7 @@ pub(crate) fn panel_style(cap: Option<PanelCap>) -> String {
     })
 }
 
-/// The modules on quire's grid (two columns, and the `--cc-gap` between them), in order: a
+/// The modules on Bardo's grid (two columns, and the `--cc-gap` between them), in order: a
 /// tile takes a column, a full-width module the row (as [`super::place`] lays them out). The
 /// panel pads the grid and the detail panes alike with `--cc-pad`,
 /// so the grid pads nothing of its own.
@@ -183,7 +183,7 @@ mod tests {
     }
 
     #[test]
-    fn a_detail_page_is_quires_detail_pane() {
+    fn a_detail_page_is_bardo_detail_pane() {
         assert_eq!(pane_of(CcPage::Modules), Pane::Root);
         assert_eq!(pane_of(CcPage::Detail(Detail::Bluetooth)), Pane::Detail);
     }

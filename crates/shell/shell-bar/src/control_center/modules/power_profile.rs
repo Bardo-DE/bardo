@@ -1,6 +1,6 @@
 //! The power profile.
 //!
-//! A quire `SegmentedControl<Profile>` over `PowerProfiles::offered` (labels from
+//! A Bardo `SegmentedControl<Profile>` over `PowerProfiles::offered` (labels from
 //! [`crate::control_center::profile_label`]), set with `ProfileCommand::Set`;
 //! `ProfileDegraded::Because` shown as a `SectionHeader` value. Absent when power-profiles-daemon
 //! is. Reads `use_service::<PowerProfileService>`.

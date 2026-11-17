@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/cua.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area: cua — the computer-use runtime and its desktop plumbing
 
-Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, quire design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), quire CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
+Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, Bardo design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
 
 I also checked the installed binaries on this machine (Fedora 44: the compositor, kwin 6.7.5) and the the nested compositor globals the harness recorded (`~/shell-host/scripts/dev/out/globals.txt`):
 
@@ -51,14 +51,14 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 
 ### New repo `~/cua` (working name; Q3), MIT OR Apache-2.0, porter-style
 
-Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, quire's `deny.toml` verbatim, `CONVENTIONS.md` pointing at quire's with the porter additions (closed sets are enums with serde slugs and no `Word`; async seams are `-> impl Future + Send`; closed sets of implementations are enums, not `dyn`; `todo!()` only behind a frozen interface and listed in FINDINGS; nothing ambient below the daemon). It also gets `ARCHITECTURE.md`, `FINDINGS.md`, `dbus/`, `protocols/` and `scripts/`.
+Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, Bardo's `deny.toml` verbatim, `CONVENTIONS.md` pointing at Bardo's with the porter additions (closed sets are enums with serde slugs and no `Word`; async seams are `-> impl Future + Send`; closed sets of implementations are enums, not `dyn`; `todo!()` only behind a frozen interface and listed in FINDINGS; nothing ambient below the daemon). It also gets `ARCHITECTURE.md`, `FINDINGS.md`, `dbus/`, `protocols/` and `scripts/`.
 
 | Crate | Purpose | I/O | Portable |
 |---|---|---|---|
 | `computer-use-a11y-tree` | snapshot model (`A11ySnapshot`, `A11yNode`, `Role`), prune, render to model text, diff, `NodeSelector`; trait `A11ySource`; feature `atspi` = AT-SPI backend | none by default; zbus behind `atspi` | core yes |
 | `computer-use-seat-input` | `InputOp`, `plan(action) -> Vec<InputOp>`, chord/keymap mapping, `InputReceipt`; trait `AgentSeat`; feature `ei` = reis client backend | none by default; reis behind `ei` | core yes |
-| `maskcap` | `Frame`, `PixelBuf`, `MaskRegion`, `MaskReport`, `apply_masks`, `FrameDigest`, settle logic; traits `WindowCapture` and `CaptureSession`; feature `wayland` = ext-image-copy-capture plus the quire masked source | none by default | core yes |
-| `computer-use-desktop` | `ToplevelInfo`, `LeaseRequest`/`LeaseGrant`, `BackendCaps`, `GlowState`, `DesktopEvent`; traits `Desktop` and `LeaseControl`; feature `wayland` = the Wayland client toolkit, ext-workspace and the quire-agent protocol | none by default | core yes |
+| `maskcap` | `Frame`, `PixelBuf`, `MaskRegion`, `MaskReport`, `apply_masks`, `FrameDigest`, settle logic; traits `WindowCapture` and `CaptureSession`; feature `wayland` = ext-image-copy-capture plus Bardo masked source | none by default | core yes |
+| `computer-use-desktop` | `ToplevelInfo`, `LeaseRequest`/`LeaseGrant`, `BackendCaps`, `GlowState`, `DesktopEvent`; traits `Desktop` and `LeaseControl`; feature `wayland` = the Wayland client toolkit, ext-workspace and the bardo-agent protocol | none by default | core yes |
 | `bardo-agent-protocol` | `protocols/bardo-agent-v1.xml` plus wayland-scanner bindings; features `client` and `server` (the fork uses `server`) | none | yes |
 | `computer-use-run` | pure core: ids, `CuaTask`, `CuaResult`, `RunMode`, `Budget`, `Observation`, `ActionOutcome`, `classify_effect`, `LeaseBook`, the run machine (`Run::step`), stall detection, `CuaRecord` (event-log payloads), `Procedure` types, the `Cua1` wire bodies, `mode_support` | none | yes |
 | `computer-use-dbus` | `org.bardo.ComputerUse1` zbus proxies and skeletons, `dbus/org.bardo.ComputerUse1.xml`, codec, introspection test | zbus | Linux |
@@ -73,23 +73,23 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, q
 | `computer-use-seat-input` | `computer-use-action` |
 | `maskcap` | `computer-use-action` |
 | `computer-use-desktop` | `computer-use-action`; `bardo-agent-protocol` (feature `wayland`) |
-| `computer-use-run` | `computer-use-action`, `computer-use-a11y-tree`, `computer-use-seat-input`, `maskcap`, `computer-use-desktop` (all default features), `prov`, `quire-intents` (types), `account-core` (`DataClass`, `AppId`, `Locality`) |
+| `computer-use-run` | `computer-use-action`, `computer-use-a11y-tree`, `computer-use-seat-input`, `maskcap`, `computer-use-desktop` (all default features), `prov`, `bardo-intents` (types), `account-core` (`DataClass`, `AppId`, `Locality`) |
 | `computer-use-dbus` | `computer-use-run` |
 | `computer-use-fake` | everything above with default features, plus `reis` (for `FakeEis`), plus models' `model-provider` (replay) |
 | `cuad` | all of the above with their I/O features, plus `model-provider` (models), `permission-policy` (actions), `eventlog` (memory), `account-client` (`DbusTransport`) |
 
 **External boundary.** Every crate except `computer-use-dbus`, `cuad` and the backend features never reaches `zbus`, `zvariant`, `tokio`, `wayland-client`, `wayland-backend`, `reis`, `atspi`, `reqwest` or `hyper` (default features). `computer-use-run` additionally never reaches `cedar-policy` or `rusqlite`: verdicts and records cross as data.
 
-### Fork repo `~/casement` (GPL-3.0-only, branch `quire`, rebased on upstream release tags)
+### Fork repo `~/casement` (GPL-3.0-only, branch `bardo`, rebased on upstream release tags)
 
-All quire code goes in `src/quire/` (agent seat, masked source, lease and glow globals, input-origin gate, kill chord), with small hook calls into upstream files. The fork depends on `bardo-agent-protocol` (feature `server`) by git rev. The double-tap ⌘ detection (COMPANION item 7) also lands here later; whoever owns it shares the branch. Ownership: Q11.
+All Bardo code goes in `src/bardo/` (agent seat, masked source, lease and glow globals, input-origin gate, kill chord), with small hook calls into upstream files. The fork depends on `bardo-agent-protocol` (feature `server`) by git rev. The double-tap ⌘ detection (COMPANION item 7) also lands here later; whoever owns it shares the branch. Ownership: Q11.
 
-### Adopted crates (from quire's pinned block unless marked "joins the block")
+### Adopted crates (from Bardo's pinned block unless marked "joins the block")
 
 - **Already pinned:** `wayland-client 0.31`, `wayland-backend 0.3`, `wayland-protocols 0.32.13` (staging), `the Wayland client toolkit` (pinned rev), `xkbcommon 0.8` (text → keysym → keycode on the EIS keymap), `zbus 5.19` (tokio), `tokio 1`, `serde`/`serde_json`, `thiserror 2`, `image 0.25.6` (PNG for thumbnails only), `memfd 0.6` (shm buffers for capture), `rustix 1.1`.
 - **Joins the block:** `reis 0.7` (MIT; pin the minor that the fork's the compositor `Cargo.lock` resolves; the README says its API may change) and `atspi 0.30` (Apache-2.0 OR MIT).
 - **Later, joins the block:** `ashpd 0.13` (RemoteDesktop/ScreenCast portal fallback if `GetSenderSocket` is owner-restricted) and `pipewire` (KWin window capture; [unverified] version and licence).
-- **From other areas:** `computer-use-action`, `model-provider` (models); `prov`, `permission-policy`, `quire-intents` (actions); `eventlog`, `memfiles` (memory); `account-core` (`DataClass::Screen`, `AppId`, `Locality`).
+- **From other areas:** `computer-use-action`, `model-provider` (models); `prov`, `permission-policy`, `bardo-intents` (actions); `eventlog`, `memfiles` (memory); `account-core` (`DataClass::Screen`, `AppId`, `Locality`).
 
 Image resize and encoding are models' `model-vision-prep`. cua hands over raw masked pixels.
 
@@ -160,7 +160,7 @@ pub struct A11ySnapshot {
     pub nodes: Vec<A11yNode>,              // arena; index 0 = window root
     pub truncated: Truncation,
 }
-pub enum TreeSource { Atspi, QuireApp }    // QuireApp = accesskit_unix from a Blitz app (still AT-SPI on the wire)
+pub enum TreeSource { Atspi, BardoApp }    // BardoApp = accesskit_unix from a Blitz app (still AT-SPI on the wire)
 pub enum Truncation { Complete, Pruned { dropped: u32 } }
 pub struct A11yNode {
     pub id: NodeId, pub parent: Parent, pub role: Role,
@@ -168,7 +168,7 @@ pub struct A11yNode {
     pub value: NodeValue, pub states: BTreeSet<NodeState>,
     pub bounds: WinRect,                   // window-local logical px
     pub actions: Vec<NodeAction>,          // AT-SPI action names, parsed
-    pub typed: TypedHint,                  // quire widgets: the typed action this control maps to
+    pub typed: TypedHint,                  // Bardo widgets: the typed action this control maps to
     pub sensitivity: Sensitivity,
 }
 pub enum Parent { Root, Node(NodeId) }
@@ -179,8 +179,8 @@ pub enum Role { Window, Dialog, Button, ToggleButton, CheckBox, RadioButton, Com
 pub enum NodeValue { None, Text(Labelled<String>), Range { now: i64, min: i64, max: i64 } }
 pub enum NodeState { Enabled, Focusable, Focused, Selected, Checked, Expanded, Editable, Visible, Showing }
 pub enum NodeAction { Click, Press, Activate, Toggle, Expand, Other(String) }
-pub enum TypedHint { None, Action(ActionName) }     // ActionName from quire-intents
-pub enum Sensitivity { Normal, Secret }             // PasswordText role or a quire Sensitivity flag
+pub enum TypedHint { None, Action(ActionName) }     // ActionName from bardo-intents
+pub enum Sensitivity { Normal, Secret }             // PasswordText role or a Bardo Sensitivity flag
 pub struct NodeBudget(pub u32);                     // setting cua.tree.max_nodes (proposed 400)
 
 pub fn prune(s: &A11ySnapshot, budget: NodeBudget) -> A11ySnapshot;          // visible+actionable first
@@ -280,7 +280,7 @@ pub enum FrameWant { Now, AfterDamage }
 pub enum CaptureError { SourceGone, Refused, Withheld /* hidden window not rendered */, Format, Protocol(String) }
 ```
 
-Backends: `CaptureBackend { StockToplevel(..), QuireMasked(..) }`. On stock, `hints` (from `computer-use-a11y-tree::secret_rects`, sensitive-window rules and the text-input heuristic) are applied by `apply_masks` in `cuad` (`applied_by = Cuad`). On the fork, hints are sent to the compositor and the buffer arrives masked (`applied_by = Compositor`).
+Backends: `CaptureBackend { StockToplevel(..), BardoMasked(..) }`. On stock, `hints` (from `computer-use-a11y-tree::secret_rects`, sensitive-window rules and the text-input heuristic) are applied by `apply_masks` in `cuad` (`applied_by = Cuad`). On the fork, hints are sent to the compositor and the buffer arrives masked (`applied_by = Compositor`).
 
 ### 3.4 `computer-use-desktop` — freeze now
 
@@ -288,7 +288,7 @@ Backends: `CaptureBackend { StockToplevel(..), QuireMasked(..) }`. On stock, `hi
 pub struct ToplevelIdent(pub String);    // ext_foreign_toplevel_handle_v1.identifier
 pub struct ToplevelInfo { pub ident: ToplevelIdent, pub app: AppName, pub title: String, pub pid: Pid,
     pub geometry: GlobalRect, pub workspace: WorkspaceRef, pub state: BTreeSet<ToplevelState>, pub trust: WindowTrust }
-pub enum WindowTrust { Quire, Flatpak, Native, Shell /* never leasable */ }
+pub enum WindowTrust { Bardo, Flatpak, Native, Shell /* never leasable */ }
 pub enum RunMode { InPlace, AgentWorkspace, NestedSession }
 pub struct LeaseId(pub u64);
 pub struct LeaseRequest { pub window: ToplevelIdent, pub mode: RunMode, pub space: SpaceId, pub placement: ReleasePlacement }
@@ -338,7 +338,7 @@ pub struct Stamp(pub u64);                           // ms from cuad's clock ori
 pub struct CuaTask {
     pub goal: Labelled<String>,                      // Trusted(User) when typed by the user
     pub target: TaskTarget, pub mode: RunMode, pub space: SpaceId,
-    pub budget: Budget, pub data_in: Vec<Labelled<Value>>, // quire-intents Value
+    pub budget: Budget, pub data_in: Vec<Labelled<Value>>, // bardo-intents Value
     pub success: SuccessCheck, pub plan_step: PlanStepRef, pub origin: RunOrigin,
     pub procedure: ProcedureUse,                     // later; frozen variant None
 }
@@ -359,7 +359,7 @@ pub enum Focus { Focused, Unfocused }
 pub enum Visibility { Shown, Occluded, HiddenWorkspace, Minimized }
 pub enum TreeObs { Absent(TreeAbsence), Present(A11ySnapshot) }
 pub enum TreeAbsence { NotExposed, NoMatch, Timeout, Off }
-pub enum ContextObs { Absent, Present(Labelled<quire_intents::Context>) }
+pub enum ContextObs { Absent, Present(Labelled<bardo_intents::Context>) }
 pub enum CursorObs { Unknown, At(WinPoint) }
 pub struct ActionOutcome { pub action: TargetedAction, pub result: ActionResult }
 pub enum ActionResult { Done, NotExecuted, Refused(DenyReason), UserDeclined, Failed(String),
@@ -533,14 +533,14 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
 
 CUA consent and effect confirmations never come through `Answer`. They are drawn by the compositor (fork) or accounts-ui (stock), and their answer arrives as `RunInput::ConsentAnswered` from cuad's own prompter seam.
 
-### 3.9 Private Wayland protocol `quire-agent-v1` (`bardo-agent-protocol`) — freeze the XML in the freeze wave; the server side is fork fill
+### 3.9 Private Wayland protocol `bardo-agent-v1` (`bardo-agent-protocol`) — freeze the XML in the freeze wave; the server side is fork fill
 
 - **`bardo_agent_manager_v1`** (global; offered only to clients cuad's systemd unit runs under, through the security-context and an app-id allow-list in the fork).
   - `create_lease(id: new_id bardo_agent_lease_v1, toplevel: object ext_foreign_toplevel_handle_v1, mode: uint)`.
 - **`bardo_agent_lease_v1`**
   - Events: `granted`, `revoked(reason: uint)`, `ei_socket(fd)` (an EIS sender context bound to this lease's agent seat; absolute region = window geometry, window-local), `physical_input`, `geometry(w, h, scale120)`.
   - Requests: `get_capture_source(new_id ext_image_capture_source_v1)` (window content with compositor masks; used with stock `ext_image_copy_capture_manager_v1`), `set_mask_hints(array of rects+reason)`, `set_glow(state: uint, x, y, w, h)`, `suspend(why: uint)`, `resume`, `destroy`.
-- **`bardo_sensitive_v1`**: for clients (quire apps through layer-shell-host/blitz) to declare sensitive surface regions or a whole surface. Later.
+- **`bardo_sensitive_v1`**: for clients (Bardo apps through layer-shell-host/blitz) to declare sensitive surface regions or a whole surface. Later.
 
 ---
 
@@ -626,7 +626,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 
 **`computer-use-a11y-tree`**
 - `prune_keeps_actionable_visible_first_within_budget`
-- `render_is_stable_golden` (fixtures `fixtures/a11y/{gtk4_dialog,firefox_form,quire_mail}.json`)
+- `render_is_stable_golden` (fixtures `fixtures/a11y/{gtk4_dialog,firefox_form,bardo_mail}.json`)
 - `secret_rects_cover_password_text`
 - `diff_reports_added_removed_changed`
 - `selector_resolution_table` (later)
@@ -711,7 +711,7 @@ Also check whether accesskit can carry `TypedHint` (a custom property or `author
 
 ### Freeze wave (one agent per repo)
 
-Prerequisite: models' `computer-use-action`, actions' `prov` and `quire-intents` types, and memory's `eventlog` record seam are frozen first, or in the same wave with this spec's §3.0 as the contract. Spikes A, B and E run in parallel; they need no types.
+Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents` types, and memory's `eventlog` record seam are frozen first, or in the same wave with this spec's §3.0 as the contract. Spikes A, B and E run in parallel; they need no types.
 
 - **Agent `cua-freeze`** owns all of `~/cua`:
   - the workspace, CONVENTIONS, ARCHITECTURE (crate map, one-home table, traits, recipes), FINDINGS (every `todo!()`);
@@ -719,8 +719,8 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `quire-intents`
   - every crate's types and traits, with `todo!()` bodies for behaviour;
   - all shape tests in §5 that need no behaviour: wire round-trips, slugs, introspection, fixtures load;
   - `scripts/check-boundary.sh`;
-  - joining reis and atspi into quire's `docs/workspace-deps.toml` first (a quire edit, coordinated).
-- **Agent `fork-setup`** owns `~/casement`: fork at the upstream 1.8 tag, branch `quire`, an empty `src/quire/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
+  - joining reis and atspi into Bardo's `docs/workspace-deps.toml` first (a Bardo edit, coordinated).
+- **Agent `fork-setup`** owns `~/casement`: fork at the upstream 1.8 tag, branch `bardo`, an empty `src/bardo/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
 
 ### Fill waves (disjoint file ownership)
 
@@ -735,7 +735,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `quire-intents`
   3. `crates/a11y-tree/src/atspi/**`
   4. `crates/cua-desktop/src/wayland/**`
 - **Fill 3 (1 agent):** `crates/cuad/**`, `crates/cua-dbus/src/codec.rs`, `crates/cua-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
-- **Fill 4 (1 agent, `~/casement` `src/quire/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/casement/target/release/the compositor`).
+- **Fill 4 (1 agent, `~/casement` `src/bardo/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/casement/target/release/the compositor`).
 - **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `bardo_sensitive_v1` client in layer-shell-host.
 
 ### Fork changes (the compositor) against stock
@@ -781,7 +781,7 @@ Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` ac
 - `prov`: `Labelled<T>`, `Label`, `Source::Screen{app, window}`, join.
 - `permission-policy`: `decide(AuthAsk-shaped request) -> Allow | Ask(ConfirmText) | Deny`, with Cedar context fields `effect`, `taint`, `window_trust`, `app_id`, `mode`, `space`, `data_class = screen`.
 - The CUA grant store keyed by `(AppName, SpaceId)` with Once/Always, denial wins, and a "sensitive classes never Always" list.
-- `quire-intents` `Context`, `Value`, `ActionName`, `Effect` (with a `From` mapping to `EffectClass`).
+- `bardo-intents` `Context`, `Value`, `ActionName`, `Effect` (with a `From` mapping to `EffectClass`).
 - The router's tier decision that calls `Start`.
 
 **memory**
@@ -837,7 +837,7 @@ Fork: `cargo build --release && cargo test` in `~/casement`, then the `~/cua` ac
 ### Critical files for implementation
 - /home/pohsuanlai/rs-wt/companion/cua-integration.md
 - /home/pohsuanlai/porter/ARCHITECTURE.md (the repo shape, boundary script and frozen-trait conventions to copy)
-- /home/pohsuanlai/quire/design/31-ACCOUNTS.md (§4.4 Inference1, §4.5 consent, §5.5 data-class floors)
+- /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.4 Inference1, §4.5 consent, §5.5 data-class floors)
 - /home/pohsuanlai/shell-host/scripts/dev/README.md (the the nested compositor and headless KWin harness the spikes reuse)
 - /home/pohsuanlai/sill/crates/sill-launcher/src/activation.rs and provider.rs (where the run strip plugs in)
 

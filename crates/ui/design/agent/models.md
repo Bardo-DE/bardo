@@ -7,7 +7,7 @@ research-cua-models.md; research-ecosystem-agents.md and -infra.md; intents-rese
 design/31-ACCOUNTS.md (including §11, the frozen interfaces); the porter repo (account-core
 `capability/ai.rs`, `need/`, `ai_props.rs`, `wire/frame.rs`, all of inference-core, account-dbus
 `inference.rs` + `dbus/org.bardo.Inference1.xml`, inferd, account-fake `FakeModel`,
-ARCHITECTURE.md, CONVENTIONS.md, FINDINGS.md, `scripts/check-boundary.sh`); quire CONVENTIONS.md
+ARCHITECTURE.md, CONVENTIONS.md, FINDINGS.md, `scripts/check-boundary.sh`); Bardo CONVENTIONS.md
 and `docs/workspace-deps.toml`; design/22 §9.4; design/30 §3.4 and VoiceOrb; shell-launcher
 `Provider`. I also read the H Company local-inference page (2026-10-02). It serves Holo with
 `vllm serve ... --enable-auto-tool-choice --tool-call-parser qwen3_coder --reasoning-parser qwen3
@@ -110,7 +110,7 @@ Boundary script (stoker `scripts/check-boundary.sh`, porter's form):
 
 Allowed new edges: `inference-core -> computer-use-action`; `inferd -> computer-use-action, model-vision-prep, model-provider, computer-use-session, model-catalog, engine-supervisor, model-http, model-openai-compat`.
 
-### 2.4 Dependencies: what joins quire's pinned block first 
+### 2.4 Dependencies: what joins Bardo's pinned block first 
 
 | Dep | Version | For | Note |
 |---|---|---|---|
@@ -118,7 +118,7 @@ Allowed new edges: `inference-core -> computer-use-action`; `inferd -> computer-
 | hyper-util | 0.1.21 (research-infra, 2026-09-24) | model-http | client legacy pool, tokio rt |
 | http-body-util | 0.1 [unverified] | model-http | streaming bodies |
 | hyper-rustls + rustls | 0.27 / 0.23 [unverified] | model-http (cloud, later) | no OpenSSL |
-| base64 | 0.22 [unverified] | inference-core inline images, backends | quire ui-core has a codec, but porter and stoker may not depend on ui-core |
+| base64 | 0.22 [unverified] | inference-core inline images, backends | Bardo ui-core has a codec, but porter and stoker may not depend on ui-core |
 | fast_image_resize | 6.1.0 (2026-07-21) | model-vision-prep `pixels` | SIMD resize |
 | blake3 | 1 [unverified] | model-replay image digests (31 §5.3 Photos already plans BLAKE3) | |
 | proptest | 1 [unverified], dev only | computer-use-parse, model-vision-prep properties | cargo-fuzz targets live in a non-workspace `fuzz/` crate on nightly (dev script, Q9) |
@@ -744,12 +744,12 @@ Fakes and fixtures:
 
 ## 6. Work breakdown
 
-**Wave 0: deps (one agent, shared with the other areas).** Edit `~/quire/docs/workspace-deps.toml`:
+**Wave 0: deps (one agent, shared with the other areas).** Edit `~/bardo/docs/workspace-deps.toml`:
 - add the crates in §2.4 and the keyboard-types `serde` and tokio `net, io-util, process` features;
 - add `stoker` crates as git deps pinned by rev, the way latchkey is;
 - add design/22 rows for every `ai.*` key named here.
 
-Verify with quire's gate.
+Verify with Bardo's gate.
 
 **Freeze wave (parallel; one agent per repo):**
 
@@ -759,11 +759,11 @@ Verify with quire's gate.
 - Then every crate's types and traits per §3, bodies as `todo!()`, the shape tests of §5, and `catalog/holo-3.1-4b.toml`.
 - Commit computer-use-action first, so that F2 can path-patch it.
 
-**F2 porter** (owns porter files and **design/31-ACCOUNTS.md** in quire, edited in step).
+**F2 porter** (owns porter files and **design/31-ACCOUNTS.md** in Bardo, edited in step).
 - §2.3 and §3.8 changes; the vocabulary bump; `providers/local.toml`; regenerated `dbus/org.bardo.Inference1.xml`.
 - ARCHITECTURE edges and `check-boundary.sh` rows (inference-core→computer-use-action; inferd→stoker crates); FINDINGS stubs (`Broker::infer` streaming, session server, Prepare).
 - inferd modules as skeletons.
-- Before computer-use-action lands in the pinned block, porter depends on it through a `[patch]` path to `../stoker` (quire CONSUMING.md §1 pattern).
+- Before computer-use-action lands in the pinned block, porter depends on it through a `[patch]` path to `../stoker` (Bardo CONSUMING.md §1 pattern).
 - design/31 edits: §2.3 (ComputerUse row), §3.3 (Readiness, Supervised), §4.4 (Inference1 members), §5.5 (streaming, tools, CUA steps, picker TierMap), §11 table.
 
 Verify each repo with:
@@ -776,7 +776,7 @@ cargo test --workspace --all-features
 cargo deny check licenses
 ```
 
-In quire, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not a gate).
+In Bardo, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not a gate).
 
 **Fill wave W1 (pure; stoker agents own one crate each, plus one porter agent):**
 - W1a model-vision-prep plus `dev/smart-resize-vectors.py` (run in the `~/vllm` uv environment).
@@ -837,6 +837,6 @@ In quire, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not 
 - /home/pohsuanlai/porter/crates/porter-infer/src/model.rs
 - /home/pohsuanlai/porter/crates/porter-dbus/src/inference.rs (with /home/pohsuanlai/porter/dbus/org.bardo.Inference1.xml)
 - /home/pohsuanlai/porter/crates/porter-core/src/capability/ai.rs (with need/ai.rs, matching.rs)
-- /home/pohsuanlai/quire/design/31-ACCOUNTS.md and /home/pohsuanlai/quire/docs/workspace-deps.toml
+- /home/pohsuanlai/bardo/design/31-ACCOUNTS.md and /home/pohsuanlai/bardo/docs/workspace-deps.toml
 
 <!-- paths: end -->

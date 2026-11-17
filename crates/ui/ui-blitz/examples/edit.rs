@@ -19,8 +19,8 @@ use ui_components::prelude::*;
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(
         App,
-        AppConfig::new("quire: edit surface", WindowSize::new(520, 300))
-            .with_app_id(AppId("dev.quire.Edit".to_owned())),
+        AppConfig::new("bardo: edit surface", WindowSize::new(520, 300))
+            .with_app_id(AppId("dev.bardo.Edit".to_owned())),
     )
 }
 

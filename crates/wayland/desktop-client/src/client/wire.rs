@@ -5,11 +5,11 @@ use wayland_client::{Proxy, QueueHandle, WEnum};
 
 use super::handles::Handles;
 use super::pairing::Book;
+use crate::bardo::Linker;
 use crate::config::DesktopConfig;
 use crate::event::DesktopEvent;
 use crate::keys::Mint;
 use crate::names::OutputName;
-use crate::quire::Linker;
 use crate::state::DesktopState;
 use desktop_protocols::vocab::WireCode;
 
@@ -21,7 +21,7 @@ pub(super) struct Wire {
     pub(super) events: Vec<DesktopEvent>,
     pub(super) handles: Handles,
     pub(super) book: Book,
-    /// Quire window objects and the ext handles they belong to.
+    /// Bardo window objects and the ext handles they belong to.
     pub(super) linker: Linker,
     pub(super) config: DesktopConfig,
     pub(super) qh: QueueHandle<Wire>,

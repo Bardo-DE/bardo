@@ -2,7 +2,7 @@
 //! earns a note, never a refusal.
 
 /// The largest blur radius, in CSS pixels, that `backdrop-filter` or `filter: blur()` may name
-/// without a note. quire's own materials stay under it.
+/// without a note. Bardo's own materials stay under it.
 pub const MAX_BLUR_RADIUS_PX: f32 = 24.0;
 
 /// The most blur, in CSS pixels, that one `box-shadow` may add up to over all its stacked layers

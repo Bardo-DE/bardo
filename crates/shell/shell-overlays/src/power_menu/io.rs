@@ -1,6 +1,6 @@
 //! The effects end of the menu: follow the [`PowerMenuLink`] onto the surface's visibility and
 //! an opening's [`MenuSession`], feed [`advance`] the alert's answers and dismissals, and hand a
-//! chosen action to the session service once quire's `Sheet` has played its exit (its
+//! chosen action to the session service once Bardo's `Sheet` has played its exit (its
 //! `on_hidden`). Once hidden, nothing runs and nothing asks for a frame. A daemon whose session
 //! actions are a dry run (`bardo-shell run --session-dry-run`) says so in the `power_menu.backend=` line,
 //! which the acceptance script proves before it presses Enter.

@@ -1,4 +1,4 @@
-//! Get Info: a quire `Sheet` of a `Form`, the item's icon and name over its facts as `FactList`s.
+//! Get Info: a Bardo `Sheet` of a `Form`, the item's icon and name over its facts as `FactList`s.
 //! Name and extension are read-only for now.
 
 use dioxus::prelude::*;

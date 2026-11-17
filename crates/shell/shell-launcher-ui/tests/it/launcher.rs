@@ -1,6 +1,6 @@
 //! The panel's picture of fake results, in a `ui_harness::Harness`: groups in order under their
 //! headings, the top hit first, the empty query's Actions and Recent, the empty state, and the
-//! row chord (Spotlight's hint: only the selected row shows it, quire's `RowChord`).
+//! row chord (Spotlight's hint: only the selected row shows it, Bardo's `RowChord`).
 
 use crate::launcher_harness;
 

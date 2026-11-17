@@ -36,15 +36,15 @@ ui-components = {path = "../ui-components"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [features]
-default = ["quire-desktop"]
+default = ["desktop"]
 # Our desktop's integration: the settings portal client (`portal/bus.rs`). Without it
 # `SystemPrefsSource::Portal` answers the defaults and the appearance file, its watch and
 # `use_environment` work as ever; no D-Bus client is built (design/36 section 1).
-quire-desktop = ["dep:zbus"]
+desktop = ["dep:zbus"]
 # `use_environment`, the signal a surface resolves its look from.
 dioxus = ["dep:dioxus", "ui-style/dioxus"]
 # Drive zbus on the tokio runtime the shell already runs (see the workspace zbus note).
-tokio = ["quire-desktop", "zbus/tokio"]
+tokio = ["desktop", "zbus/tokio"]
 
 [lints]
 workspace = true

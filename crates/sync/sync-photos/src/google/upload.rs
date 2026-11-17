@@ -33,7 +33,7 @@ use tokio::sync::Mutex;
 pub const SLUG: &str = "google_photos_upload";
 
 /// The album the uploads go into, by title.
-pub const ALBUM_TITLE: &str = "Quire";
+pub const ALBUM_TITLE: &str = "Bardo";
 
 /// The anchor of a feed that never has anything.
 const NOTHING: &str = "upload-only";

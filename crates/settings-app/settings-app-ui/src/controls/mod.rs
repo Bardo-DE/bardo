@@ -1,5 +1,5 @@
 //! The control each key kind gets (design/22 section 9.1's fixed table): one component per
-//! [`settings_app_model::Control`], all of them quire's.
+//! [`settings_app_model::Control`], all of them Bardo's.
 
 mod file_only;
 mod menu;

@@ -139,13 +139,13 @@ changes the home) and the provider file (`data/porter/providers/openrouter.toml`
 # 1. a test build of accountd (feature test-keys), from porter
 (cd ~/porter && cargo build -p account-daemon --features test-keys)
 # 2. once, in your own terminal: typed at accountd's own prompt with echo off, on a private bus
-dev/live/cloud-key.sh ~/.local/share/quire-test/keys <accountd>
+dev/live/cloud-key.sh ~/.local/share/bardo-test/keys <accountd>
 #    or from a 0600 key file outside every repository (piped to accountd's stdin, never in argv):
-dev/live/cloud-key.sh ~/.local/share/quire-test/keys <accountd> \
-  --key-file ~/.local/share/quire-test/openrouter.key
+dev/live/cloud-key.sh ~/.local/share/bardo-test/keys <accountd> \
+  --key-file ~/.local/share/bardo-test/openrouter.key
 # 3. any number of runs, no prompt
 scripts/eval-release.sh --engine cloud --inferd-config dev/live/inferd.cloud.toml \
-  --keys-home ~/.local/share/quire-test/keys
+  --keys-home ~/.local/share/bardo-test/keys
 ```
 
 With an empty home the run stops with the command of step 2 instead of waiting. `--accountd` and
@@ -269,7 +269,7 @@ Four small flows (`live::everyday`) cover what a person asks all day: `fact` ("W
 ends Done, no app call but memory reads, one short reply of at most 240 characters that says "Taipei" and none of
 memory, tool, history, recall, "I can answer", no sheet), `remember` (a memory write is proposed and the sheet
 allowed), `what-remember` (a memory read, then an answer, no sheet) and `mail-find` (a thread search, no send;
-showing the found thread with `quire_finish {show}` is an answer without words).
+showing the found thread with `bardo_finish {show}` is an answer without words).
 The answer checks are one reusable `Shape` (`live::shape`: length, words it must and must not hold, and never an
 identifier such as an action id or a tool name), so any flow can ask for them. Each flow has a cassette, so the
 gate plays them; a live run is judged on the same expectations. Each trace now holds `answer chars:` and `answer:`.
@@ -277,7 +277,7 @@ gate plays them; a live run is judged on the same expectations. Each trace now h
 `dev/live/model-compare.sh` picks the planner model by measurement:
 
 ```sh
-dev/live/model-compare.sh --keys-home ~/.local/share/quire-test/keys \
+dev/live/model-compare.sh --keys-home ~/.local/share/bardo-test/keys \
   --models "cloud/claude-haiku-4.5 cloud/gemini-3.8-flash" --repeat 3
 ```
 

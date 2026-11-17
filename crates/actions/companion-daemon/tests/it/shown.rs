@@ -89,9 +89,9 @@ async fn a_finish_shows_a_handle_as_content_in_its_own_session_only() {
 }
 
 /// Words said beside a call are progress, kept apart on the wire; the body holds the reply, and
-/// `quire_answer` is the reply, word for word, ending the turn done.
+/// `bardo_answer` is the reply, word for word, ending the turn done.
 #[tokio::test]
-async fn progress_words_are_not_the_body_and_quire_answer_is_exactly_the_reply() {
+async fn progress_words_are_not_the_body_and_bardo_answer_is_exactly_the_reply() {
     let aside = Say::Reply(
         "I'll read it.".into(),
         vec![(

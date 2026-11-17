@@ -723,7 +723,7 @@ const MARKUP_CASES: &[MarkupCase] = &[
         expect: false,
     },
     MarkupCase {
-        name: "raw markup: a ds class alone does not make an svg quire's",
+        name: "raw markup: a ds class alone does not make an svg bardo's",
         html: "<svg class=\"ds-send-ring\" viewBox=\"0 0 24 24\"></svg>",
         css: ".ds-send-ring{}",
         rule: Rule::RawMarkup,
@@ -765,7 +765,7 @@ const MARKUP_CASES: &[MarkupCase] = &[
         expect: true,
     },
     MarkupCase {
-        name: "raw markup: a quire button passes",
+        name: "raw markup: a bardo button passes",
         html: "<button type=\"button\" class=\"ds-button\" data-variant=\"primary\">Send</button>",
         css: ".ds-button{}",
         rule: Rule::RawMarkup,

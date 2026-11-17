@@ -319,7 +319,7 @@ async fn a_message_across_spaces_carries_its_labels_shows_presence_only_and_gran
             "org_bardo_Mail-mail_thread_read",
             json!({ "target": { "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" } }),
         ),
-        call("quire_ask", json!({ "text": "which one?" })),
+        call("bardo_ask", json!({ "text": "which one?" })),
         // work: reads the message and answers.
         words("Noted."),
     ]);

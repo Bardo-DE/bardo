@@ -2,7 +2,7 @@
 //!
 //! The DEFLATE body (RFC 1951) is either stored blocks, for noise that would not compress, or
 //! one fixed-Huffman block (section 3.2.6) from a greedy matcher that only tries "one pixel
-//! back" and "one scanline back": the images quire draws are small and regular, so that is
+//! back" and "one scanline back": the images Bardo draws are small and regular, so that is
 //! enough, and needs no dependency.
 
 /// An image's size and pixels, rows top to bottom, `channels` bytes per pixel.

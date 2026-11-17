@@ -1,4 +1,4 @@
-//! The `look` capability: a stylesheet that restyles every quire surface (design: Extensions,
+//! The `look` capability: a stylesheet that restyles every Bardo surface (design: Extensions,
 //! section 7.7).
 //!
 //! ```toml

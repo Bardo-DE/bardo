@@ -1,0 +1,279 @@
+//! Bardo arm running on the shell host's connection: a thread that binds the desktop
+//! client (with the shell role) beside the host on the same socket, follows the compositor,
+//! publishes the shell protocol's notes, and carries out commands and surface registrations sent
+//! to it. The desktop's view is not published here: the windows service projects it from its own
+//! state, and every reader holds that one channel.
+//!
+//! The host reads the socket on its own thread. Both threads read through the connection's
+//! cooperative read guards, so whichever reads first dispatches into both queues; events the
+//! host's read leaves in this queue wake this thread through the waker the client leaves in the
+//! queue (`queue_wake`), so the loop sleeps until the socket or the waker has something.
+
+use std::io;
+use std::task::{Context, Waker};
+
+use desktop_client::DesktopConfig;
+use desktop_client::client::DesktopClient;
+use desktop_protocols::vocab::ShellRole;
+use shell_model::desktop::{DesktopCommand, ShellNote};
+use smithay_client_toolkit::reexports::calloop::generic::Generic;
+use smithay_client_toolkit::reexports::calloop::ping::PingSource;
+use smithay_client_toolkit::reexports::calloop::{
+    self, EventLoop, Interest, Mode, PostAction, channel,
+};
+use tokio::sync::mpsc;
+use wayland_client::backend::WaylandError;
+use wayland_client::protocol::wl_surface::WlSurface;
+use wayland_client::{Connection, Proxy};
+
+use super::arm::{BardoArm, NoteSink};
+use super::queue_wake::waker_and_source;
+
+/// One thing sent to the arm's thread.
+#[derive(Debug)]
+pub enum ShellCall {
+    /// Carry out a command.
+    Command(DesktopCommand),
+    /// `surface` is the shell's `role` on `output`: register it with the client and tell the
+    /// compositor. Sent again after a hidden surface is shown (it has a new `wl_surface`).
+    Register {
+        /// What the surface is.
+        role: ShellRole,
+        /// The output it is on.
+        output: String,
+        /// The host's `wl_surface`.
+        surface: WlSurface,
+    },
+}
+
+/// The arm's thread has ended (the compositor went away or the client could not bind).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[error("the desktop arm is not running")]
+pub struct ShellGone;
+
+/// Why the thread did not start.
+#[derive(Debug, thiserror::Error)]
+pub enum SpawnError {
+    /// The surface's connection is already closed.
+    #[error("the surface's connection is gone")]
+    Connection,
+    /// The thread could not be made.
+    #[error("starting the thread: {0}")]
+    Thread(#[from] io::Error),
+}
+
+/// The handle to a running arm.
+#[derive(Debug)]
+pub struct ShellArm {
+    notes: Option<mpsc::UnboundedReceiver<ShellNote>>,
+    calls: channel::Sender<ShellCall>,
+}
+
+impl ShellArm {
+    /// The receiver of the shell protocol's notes; once.
+    pub fn take_notes(&mut self) -> Option<mpsc::UnboundedReceiver<ShellNote>> {
+        self.notes.take()
+    }
+
+    /// Carry out `command` on the arm's thread.
+    ///
+    /// # Errors
+    /// [`ShellGone`] when the arm's thread has stopped.
+    pub fn command(&self, command: DesktopCommand) -> Result<(), ShellGone> {
+        self.call(ShellCall::Command(command))
+    }
+
+    /// Register a surface of the host with the arm.
+    ///
+    /// # Errors
+    /// [`ShellGone`] when the arm's thread has stopped.
+    pub fn register(
+        &self,
+        role: ShellRole,
+        output: impl Into<String>,
+        surface: WlSurface,
+    ) -> Result<(), ShellGone> {
+        self.call(ShellCall::Register {
+            role,
+            output: output.into(),
+            surface,
+        })
+    }
+
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "the send error only hands the call back; `ShellGone` says the thread has stopped"
+    )]
+    fn call(&self, call: ShellCall) -> Result<(), ShellGone> {
+        self.calls.send(call).map_err(|_| ShellGone)
+    }
+}
+
+/// Start the arm on the connection `surface` lives on: the shell host's, which the surface
+/// came from.
+///
+/// # Errors
+/// [`SpawnError::Connection`] when the surface's connection is gone, [`SpawnError::Thread`] when
+/// the thread cannot be made.
+pub fn spawn_shell_arm(surface: &WlSurface) -> Result<ShellArm, SpawnError> {
+    let connection = surface
+        .backend()
+        .upgrade()
+        .map(Connection::from_backend)
+        .ok_or(SpawnError::Connection)?;
+    let (notes_tx, notes) = mpsc::unbounded_channel();
+    let (calls, from_callers) = channel::channel();
+    std::thread::Builder::new()
+        .name("desktop_bardo".to_owned())
+        .spawn(move || run(&connection, notes_tx, from_callers))?;
+    Ok(ShellArm {
+        notes: Some(notes),
+        calls,
+    })
+}
+
+/// Notes into a channel.
+struct ChannelSink(mpsc::UnboundedSender<ShellNote>);
+
+impl NoteSink for ChannelSink {
+    fn note(&mut self, note: ShellNote) {
+        // A dropped receiver means nobody follows the notes any more.
+        let _nobody_follows = self.0.send(note);
+    }
+}
+
+/// What the loop dispatches into.
+struct Following {
+    arm: BardoArm<DesktopClient, ChannelSink>,
+    /// Woken when another thread's read queues an event for the client.
+    waker: Waker,
+}
+
+impl Following {
+    /// Hand out the notes, with the pictures of Spaces that finished.
+    fn hand_out(&mut self) {
+        self.arm.drain_notes();
+        self.arm
+            .pictures(desktop_client::client::DesktopClient::take_capture);
+    }
+
+    /// Dispatch what this queue holds and leave the waker in it; hand out when something arrived.
+    fn pump(&mut self) -> io::Result<()> {
+        let mut cx = Context::from_waker(&self.waker);
+        let arrived = self
+            .arm
+            .desktop_mut()
+            .poll_dispatch_pending(&mut cx)
+            .map_err(io::Error::other)?;
+        if arrived > 0 {
+            self.hand_out();
+        }
+        Ok(())
+    }
+
+    /// Read what the compositor sent, dispatch it and hand it out.
+    fn read(&mut self) -> io::Result<()> {
+        if let Some(guard) = self.arm.desktop_mut().connection().prepare_read() {
+            match guard.read() {
+                Ok(_) => {}
+                Err(WaylandError::Io(error)) if error.kind() == io::ErrorKind::WouldBlock => {}
+                Err(error) => return Err(io::Error::other(error)),
+            }
+        }
+        self.pump()
+    }
+
+    fn call(&mut self, call: ShellCall) {
+        match call {
+            ShellCall::Command(command) => {
+                if let Err(error) = self.arm.execute(&command) {
+                    eprintln!("bardo-shell: desktop_bardo: {error}");
+                }
+            }
+            ShellCall::Register {
+                role,
+                output,
+                surface,
+            } => {
+                let key = self.arm.desktop_mut().register_surface(&surface);
+                if let Err(error) = self.arm.assign(role, output, key) {
+                    eprintln!("bardo-shell: desktop_bardo: {error}");
+                }
+            }
+        }
+        self.hand_out();
+    }
+}
+
+fn run(
+    connection: &Connection,
+    notes: mpsc::UnboundedSender<ShellNote>,
+    calls: channel::Channel<ShellCall>,
+) {
+    let client = match DesktopClient::with_config(connection, DesktopConfig::holding_shell()) {
+        Ok(client) => client,
+        Err(error) => {
+            eprintln!("bardo-shell: desktop_bardo: {error}; the shell protocol is not followed");
+            return;
+        }
+    };
+    let (waker, wake) = match waker_and_source() {
+        Ok(pair) => pair,
+        Err(error) => {
+            eprintln!("bardo-shell: desktop_bardo: {error}; the shell protocol is not followed");
+            return;
+        }
+    };
+    let mut following = Following {
+        arm: BardoArm::new(client, ChannelSink(notes)),
+        waker,
+    };
+    following.hand_out();
+    if let Err(error) = drive(&mut following, wake, calls) {
+        eprintln!("bardo-shell: desktop_bardo: {error}; the shell protocol stops here");
+    }
+}
+
+/// Dispatch the socket, the waker's ping and the calls into `following` until every handle is
+/// dropped or the connection fails.
+fn drive(
+    following: &mut Following,
+    wake: PingSource,
+    calls: channel::Channel<ShellCall>,
+) -> Result<(), calloop::Error> {
+    let mut event_loop = EventLoop::<Following>::try_new()?;
+    let signal = event_loop.get_signal();
+    let handle = event_loop.handle();
+    let fd = following
+        .arm
+        .desktop_mut()
+        .connection()
+        .backend()
+        .poll_fd()
+        .try_clone_to_owned()?;
+    handle
+        .insert_source(
+            Generic::new(fd, Interest::READ, Mode::Level),
+            |_, _, following: &mut Following| following.read().map(|()| PostAction::Continue),
+        )
+        .map_err(|error| error.error)?;
+    handle
+        .insert_source(wake, |(), (), following: &mut Following| {
+            if let Err(error) = following.pump() {
+                eprintln!("bardo-shell: desktop_bardo: {error}");
+            }
+        })
+        .map_err(|error| error.error)?;
+    handle
+        .insert_source(
+            calls,
+            move |event, (), following: &mut Following| match event {
+                channel::Event::Msg(call) => following.call(call),
+                channel::Event::Closed => signal.stop(),
+            },
+        )
+        .map_err(|error| error.error)?;
+    // Events already queued (and the first waker left in the queue) before the loop sleeps.
+    following.pump()?;
+    event_loop.run(None, following, |_| {})
+}

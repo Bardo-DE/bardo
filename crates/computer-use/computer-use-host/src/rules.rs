@@ -9,7 +9,7 @@ use computer_use_run::Rules;
 /// The rules the program ships.
 pub const SHIPPED_RULES: &str = include_str!("../../dist/screen-rules.toml");
 
-/// The file name of an administrator's replacement, under the machine's `quire` directory.
+/// The file name of an administrator's replacement, under the machine's `bardo` directory.
 pub const RULES_FILE: &str = "screen-rules.toml";
 
 /// The text of a rules file did not read.

@@ -325,7 +325,7 @@ fn a_limit_is_a_rule_in_a_file_that_is_added_replaced_and_removed_by_id() {
         said: None,
     }
     .limit(at(6));
-    assert!(rule_text(&never).contains("action == Quire::Action::\"perform\""));
+    assert!(rule_text(&never).contains("action == Bardo::Action::\"perform\""));
     // Added twice is one rule; a hand-written rule beside it stays; removal is by id.
     let by_hand = "forbid (principal, action, resource) when { false };";
     let file = with_rule(&with_rule(by_hand, &made), &made);

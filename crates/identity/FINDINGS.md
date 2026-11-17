@@ -40,7 +40,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     field are `cfg`-gated, so a build without the feature has the same API as 0.1.3: `Proof` is
     already `#[non_exhaustive]`, and the new variant sits first so the derived order puts it below
     `Cgroup`. A developer row may name an app or role a shipped row names (a stand-in for the
-    accounts service is `org.quire.Accounts` in both); what it never does is replace a shipped row,
+    accounts service is `org.bardo.Accounts` in both); what it never does is replace a shipped row,
     hold a shipped unit, or give a proof above `Dev`. `Requirement::dev` accepts every proof, so a
     consumer's debug build lets in the real service too; "only Dev or Full" is not expressible
     without a new `Requirement` field. `TableFiles::load_dev` takes the person's uid as an argument

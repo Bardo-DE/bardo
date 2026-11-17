@@ -1,5 +1,5 @@
 //! The clock status item. A click toggles the notification center on this output, as the clock
-//! opens Notification Center on macOS 11 on; it no longer opens a date menu. Its pill is quire's
+//! opens Notification Center on macOS 11 on; it no longer opens a date menu. Its pill is Bardo's
 //! `MenuBarItem`, on while the center is open here.
 
 use dioxus::prelude::*;

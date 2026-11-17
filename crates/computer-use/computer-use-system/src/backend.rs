@@ -3,7 +3,7 @@
 
 use computer_use_capture::{CaptureError, WindowCapture};
 use computer_use_capture_wayland::{
-    QuireMaskedCapture, StampClock, StockToplevelCapture, WaylandSession,
+    BardoMaskedCapture, StampClock, StockToplevelCapture, WaylandSession,
 };
 use computer_use_desktop::{BackendCaps, BackendKind, LeaseGrant, MaskWhere};
 use std::sync::Arc;
@@ -26,7 +26,7 @@ pub enum CaptureBackend {
     /// `computer_use_capture::apply_masks`.
     StockToplevel(StockToplevelCapture),
     /// The lease's `get_capture_source`, masked by the compositor.
-    QuireMasked(QuireMaskedCapture),
+    BardoMasked(BardoMaskedCapture),
 }
 
 impl CaptureBackend {
@@ -34,7 +34,7 @@ impl CaptureBackend {
     #[must_use]
     pub fn over(kind: BackendKind, connection: Connection) -> Self {
         if compositor_masks(kind) {
-            CaptureBackend::QuireMasked(QuireMaskedCapture::over(connection))
+            CaptureBackend::BardoMasked(BardoMaskedCapture::over(connection))
         } else {
             CaptureBackend::StockToplevel(StockToplevelCapture::over(connection))
         }
@@ -48,7 +48,7 @@ impl CaptureBackend {
             CaptureBackend::StockToplevel(capture) => {
                 CaptureBackend::StockToplevel(capture.with_clock(clock))
             }
-            CaptureBackend::QuireMasked(capture) => CaptureBackend::QuireMasked(capture),
+            CaptureBackend::BardoMasked(capture) => CaptureBackend::BardoMasked(capture),
         }
     }
 }
@@ -59,7 +59,7 @@ impl WindowCapture for CaptureBackend {
     async fn open(&self, lease: &LeaseGrant) -> Result<WaylandSession, CaptureError> {
         match self {
             CaptureBackend::StockToplevel(capture) => capture.open(lease).await,
-            CaptureBackend::QuireMasked(capture) => capture.open(lease).await,
+            CaptureBackend::BardoMasked(capture) => capture.open(lease).await,
         }
     }
 }

@@ -1,6 +1,6 @@
 # detent
 
-The desktop's Settings app (`org.bardo.Settings`): one window on Blitz, drawn with quire's
+The desktop's Settings app (`org.bardo.Settings`): one window on Blitz, drawn with Bardo's
 components. Its rows come from each app's settings schema, and its Accounts and Intelligence
 pages talk to the account service and the inference service.
 

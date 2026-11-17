@@ -40,7 +40,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 x11rb = { workspace = true, features = ["res"] }
 # The probe's `shell-connect` and compositor-shell-exec ask org.bardo.Compositor1 for the shell
-# connection (quire/handout.rs).
+# connection (bardo/handout.rs).
 zbus = {workspace = true, features = ["tokio"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
 
@@ -51,7 +51,7 @@ workspace = true
 # Modules that hold only a note on why a protocol needs no handler of its own.
 ignored-paths = [
     "src/misc/syncobj.rs",
-    "src/quire/agent.rs",
-    "src/quire/sensitive.rs",
-    "src/quire/trusted.rs",
+    "src/bardo/agent.rs",
+    "src/bardo/sensitive.rs",
+    "src/bardo/trusted.rs",
 ]

@@ -10,7 +10,7 @@
 /// `blitz_embed::units::Scale120(u32)` that layer-shell-host and the kit's pixel snap share: a host
 /// passes its value through unchanged, and every scale a compositor can announce is exact here.
 /// It is a second type on purpose: this crate is the pure base and must not depend on Blitz, and
-/// the kit sits below quire, so neither can name the other's.
+/// the kit sits below Bardo, so neither can name the other's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Scale(pub u32);
 

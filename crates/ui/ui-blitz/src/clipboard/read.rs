@@ -54,7 +54,7 @@ impl Reader {
         let claim = Arc::clone(&self.running);
         let (send, receive) = mpsc::sync_channel(1);
         thread::Builder::new()
-            .name("quire-clipboard-read".to_owned())
+            .name("bardo-clipboard-read".to_owned())
             .spawn(move || {
                 let text = read();
                 // Released before the answer is sent, so the next paste never finds it busy.

@@ -48,7 +48,7 @@ fn task_handles(seen: &Seen<'_>) -> Vec<String> {
 pub(crate) fn busy_hint(step: &StepLine, seen: &Seen<'_>) -> String {
     let tasks = task_handles(seen);
     let own = match (holders(step, seen), tasks.as_slice()) {
-        (0, _) => return "another run is already in progress, so this one cannot start; wait for it to finish, or ask the person with quire_ask".to_owned(),
+        (0, _) => return "another run is already in progress, so this one cannot start; wait for it to finish, or ask the person with bardo_ask".to_owned(),
         (1, [one]) => format!("your background task {one}"),
         (_, []) => "one of your background tasks".to_owned(),
         (_, many) => format!("one of your background tasks ({})", many.join(", ")),

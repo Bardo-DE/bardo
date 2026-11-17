@@ -32,7 +32,7 @@ use super::resolve::{RESOLVE_EVERY_S, resolve};
 use super::screensaver::{Call, Served};
 use super::wl::{Epoch, Heard, Order, Tell, Wire, WlEvent};
 use super::{logind as idle_logind, screensaver, wl};
-use crate::desktop_wl::quire::shell_connection;
+use crate::desktop_wl::bardo::shell_connection;
 use crate::env::{HandedSocket, WaylandRoute};
 use crate::stream::next_opt;
 

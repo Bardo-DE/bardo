@@ -1,6 +1,6 @@
 //! Proving who owns a menu's bus name. Owning `org.bardo.AppMenu.<id>` proves nothing: any
 //! process may claim it. The system's account of the owner (peephole's standing for the unique
-//! name) names its app, and the name counts only when it is the menu name quire derives for that
+//! name) names its app, and the name counts only when it is the menu name Bardo derives for that
 //! app.
 
 use action_client::Transport;

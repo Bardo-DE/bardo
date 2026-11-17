@@ -1,8 +1,8 @@
 //! The banner column in a Blitz harness, on the virtual clock and the fake services, drawn by
-//! quire's `BannerStack` and `NotificationCard`: a banner slides in and holds for
+//! Bardo's `BannerStack` and `NotificationCard`: a banner slides in and holds for
 //! its hold, then says it timed out and plays out; hovering it pauses the
 //! hold; a press on the card invokes `default`; the close button dismisses it; a drag past
-//! quire's threshold swipes it away (`SwipeAway`), a short one springs back; a link in the body
+//! Bardo's threshold swipes it away (`SwipeAway`), a short one springs back; a link in the body
 //! keeps its press; one app's banners group into one card with a count and two layers; a card
 //! the service dropped leaves silently; another output's column draws nothing; and the keyboard
 //! ([`keys`]) is asked for and never taken.
@@ -51,7 +51,7 @@ fn commands(running: &mut Running) -> Vec<NotificationsCommand> {
     std::iter::from_fn(|| running.feeds.notification_commands.try_recv().ok()).collect()
 }
 
-/// How many cards quire's stack draws (listed or playing out).
+/// How many cards Bardo's stack draws (listed or playing out).
 fn cards(running: &Running) -> usize {
     running.harness.count(".ds-banner")
 }
@@ -179,7 +179,7 @@ fn a_banner_slides_in_holds_and_times_out() {
     );
     let shown = running.harness.now();
     running.harness.advance(Duration::from_millis(20));
-    assert_eq!(cards(&running), 1, "quire's stack slides it in");
+    assert_eq!(cards(&running), 1, "bardo's stack slides it in");
     let h = &running.harness;
     assert_eq!(
         h.text_of(".ds-notification-summary").as_deref(),
@@ -417,7 +417,7 @@ fn the_stylesheet_names_no_motion_of_its_own() {
     for motion in ["@keyframes", "transition", "animation"] {
         assert!(
             !shell_notify_ui::banners::BANNERS_CSS.contains(motion),
-            "{motion}: the stack's motion is quire's"
+            "{motion}: the stack's motion is bardo's"
         );
     }
 }

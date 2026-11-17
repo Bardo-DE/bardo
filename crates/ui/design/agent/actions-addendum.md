@@ -207,7 +207,7 @@ pub enum Saw { Seen, NotSeen }
 
 ```cedar
 @id("rule-of-two")
-forbid (principal, action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"], resource)
+forbid (principal, action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"], resource)
 when { resource.effect == "outbound" && context.saw_private == "seen" && context.saw_untrusted == "seen" };
 ```
 
@@ -242,7 +242,7 @@ pub struct ArgLabels { pub per_arg: BTreeMap<ParamName, Label>, pub planner: Int
 
 ```cedar
 @id("untrusted-sink")
-forbid (principal, action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"], resource)
+forbid (principal, action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"], resource)
 when { (resource.effect == "outbound" || resource.effect == "destructive") &&
        (context.sinks.recipient == "untrusted" || context.sinks.destination == "untrusted" ||
         context.sinks.path == "untrusted" || context.sinks.body == "untrusted") };

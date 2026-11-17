@@ -64,7 +64,7 @@ pub fn lock_screen(screen: Screen) -> Element {
         };
         spawn(async move {
             // `set_focus` borrows the document when it is called; while the renderer holds
-            // it, the call panics, so try again a moment later (quire's `guarded_call`).
+            // it, the call panics, so try again a moment later (Bardo's `guarded_call`).
             for _ in 0..20 {
                 let call = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                     element.set_focus(true)

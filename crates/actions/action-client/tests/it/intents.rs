@@ -60,7 +60,7 @@ fn ask_for_run() -> CuaAsk {
         run: provenance::RunId::parse("r-1").expect("run"),
         step: 1,
         app: AppName::parse("org.bardo.Mail").expect("app"),
-        trust: WindowTrust::Quire,
+        trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: provenance::SpaceId::parse("work").expect("space"),
         action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,

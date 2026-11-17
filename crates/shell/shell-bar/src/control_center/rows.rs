@@ -1,4 +1,4 @@
-//! A detail pane's list (networks, devices) as a quire `List` of settings-height `Row`s: each row's value, glyph,
+//! A detail pane's list (networks, devices) as a Bardo `List` of settings-height `Row`s: each row's value, glyph,
 //! words, trailing mark, operation phase and disc as data, so the pages build them purely and
 //! test them. Rows are keyed by their item (an SSID, an address), so a row's detail state stays
 //! with its item when the list reorders.
@@ -68,7 +68,7 @@ pub(crate) fn RowList<T: Clone + PartialEq + 'static>(
     }
 }
 
-/// quire's leading element for a row's glyph and disc.
+/// Bardo's leading element for a row's glyph and disc.
 fn leading(glyph: Icon, disc: RowDisc) -> RowLeading {
     match disc {
         RowDisc::None => RowLeading::Icon(glyph),
@@ -85,7 +85,7 @@ fn availability(own: Availability, phase: ItemPhase) -> Availability {
     }
 }
 
-/// quire's accessory for `mark`.
+/// Bardo's accessory for `mark`.
 fn accessory(mark: RowMark) -> Accessory {
     match mark {
         RowMark::Nothing => Accessory::None,

@@ -20,7 +20,7 @@
 #                                         # a release build from github.com/ggml-org/llama.cpp and
 #                                         # set its llama-server path here.
 # speech_host = "/usr/libexec/bardo/bardo-speech-host"
-# speech_host_libs = "/usr/lib/quire/sherpa"  # the directory of libsherpa-onnx-c-api.so and
+# speech_host_libs = "/usr/lib/bardo/sherpa"  # the directory of libsherpa-onnx-c-api.so and
 #                                             # libonnxruntime.so: the speech host's LD_LIBRARY_PATH,
 #                                             # and readable in its sandbox
 # kokoro_python = "/home/you/kokoro/.venv/bin/python"

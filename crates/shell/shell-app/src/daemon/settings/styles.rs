@@ -1,4 +1,4 @@
-//! The person's styles: `~/.config/bardo/style.css` (every quire app) and bardo-shell's own
+//! The person's styles: `~/.config/bardo/style.css` (every Bardo app) and bardo-shell's own
 //! `~/.config/bardo/shell/style.css`, read at start, watched, and published to the feeds every surface
 //! root draws them from (ARCHITECTURE.md section 8). The [`StyleKeeper`] holds both files' stores
 //! and the two feeds: the sheets, and the crash guard of this start's sheets

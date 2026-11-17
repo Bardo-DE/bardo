@@ -2,10 +2,10 @@
 //! launcher card.
 //!
 //! What it shows is `shell_launcher::preview_for(row)`; its keys are [`keys::step_preview`]; its
-//! moments go through quire's `ui_components::motion::detail` in [`moment::use_pane_detail`].
+//! moments go through Bardo's `ui_components::motion::detail` in [`moment::use_pane_detail`].
 //!
-//! It is quire's `PreviewPane`, set beside the results as the palette's
-//! `aside`: bardo-shell maps a [`Preview`] to quire's `PaneContent` (`content.rs`) and a row's actions
+//! It is Bardo's `PreviewPane`, set beside the results as the palette's
+//! `aside`: bardo-shell maps a [`Preview`] to Bardo's `PaneContent` (`content.rs`) and a row's actions
 //! to `PaneAction`s with their chords. A file's content is the viewer's own pane
 //! (`anyview_peek::Card`) in `PaneContent::Slot`: the viewer's parts sniff and peek at it off the
 //! UI thread (`load.rs`), so a file looks the same here as in the viewer's window, and bardo-shell
@@ -33,12 +33,12 @@ use crate::launcher::preview::moment::{PaneState, use_pane_detail};
 /// The pane's element id (for the blur region, if the card's does not cover it).
 pub const PREVIEW_ID: &str = "launcher-preview";
 
-/// The pane's width beside the 680 px card (quire's `ASIDE_WIDTH`; Spotlight's is about 45 % of
+/// The pane's width beside the 680 px card (Bardo's `ASIDE_WIDTH`; Spotlight's is about 45 % of
 /// its window). The panel widens to fit it while the pane is shown (`layer::PANEL_ROOM_WIDTH`).
 pub const PREVIEW_WIDTH_PX: u32 = 360;
 
 /// The pane for `preview`, with the selected row's `actions` as its controls (their chords
-/// shown, quire design/09 H5), `focused` the control with the keyboard (Tab order). The
+/// shown, Bardo design/09 H5), `focused` the control with the keyboard (Tab order). The
 /// launcher's panel draws [`LauncherPane`], which also takes the row's icon, the pane's showing
 /// and what a click on a control does.
 #[component]
@@ -49,7 +49,7 @@ pub fn PreviewPane(preview: Preview, actions: Vec<Action>, focused: Option<usize
 }
 
 /// [`PreviewPane`] as the panel draws it: `icon` is the row's (an app's), `shown` plays the
-/// pane in and out (quire calls `on_hidden` when it has left), `onaction` hears a click on a
+/// pane in and out (Bardo calls `on_hidden` when it has left), `onaction` hears a click on a
 /// control, `touch` is who caused this render's change (design/26 R5).
 #[component]
 pub fn LauncherPane(
@@ -63,7 +63,7 @@ pub fn LauncherPane(
     #[props(default)] touch: Touch,
 ) -> Element {
     let (content, load) = content::use_content(&preview, icon);
-    // quire plays what the cue names: the entrance springs only on contact, another
+    // Bardo plays what the cue names: the entrance springs only on contact, another
     // kind or a load landing cross-fades the media, a slow load shows its pending look. One
     // `ui_components::prelude::PreviewPane` stays mounted whatever it shows, so a kind change is never an entrance.
     let pane = use_pane_detail(pane_state(shown, preview.kind(), load), touch);

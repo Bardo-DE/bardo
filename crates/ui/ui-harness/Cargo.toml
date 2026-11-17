@@ -1,6 +1,6 @@
 [package]
 name = "ui-harness"
-description = "Test driver for quire documents on Blitz: Harness, Clock::Virtual, snapshots, painters. Dev-only."
+description = "Test driver for bardo documents on Blitz: Harness, Clock::Virtual, snapshots, painters. Dev-only."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -48,9 +48,9 @@ zbus = {workspace = true, features = ["default"]}
 serde = { workspace = true, features = ["derive"] }
 
 [features]
-default = ["quire-desktop"]
-# Desktop integration of the quire crates this one uses (design/36 section 1).
-quire-desktop = ["ui-blitz/quire-desktop"]
+default = ["desktop"]
+# Desktop integration of Bardo crates this one uses (design/36 section 1).
+desktop = ["ui-blitz/desktop"]
 # `pdf_app` and `Harness::pdf`: a harness's document printed as it is now.
 pdf = ["ui-blitz/pdf"]
 # `menu_export`: the exported menu bar, driven over a private bus.

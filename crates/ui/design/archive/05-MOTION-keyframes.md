@@ -367,7 +367,7 @@ Source C:1066-1068. `Anim::CmdkIn`. C-only. Live: C command menu (C:1064). S use
 ```
 
 
-### 4.5 Added by quire (mailo gaps 3)
+### 4.5 Added by Bardo (mailo gaps 3)
 
 Settled for the port; the catalogue above is unchanged except where named.
 
@@ -376,7 +376,7 @@ Settled for the port; the catalogue above is unchanged except where named.
   S's `fade` still serves the scrim that rests at 1.
 - `pill-up`: `from{ transform:translate(-50%,160%) } to{ transform:translate(-50%,0) }` at
   `--t-big --e-spring`, the entrance of a pill centred by `translateX(-50%)` (mailo's toast and
-  send pill). quire's `SendPill` and `Toast` keep their `data-shown` transition, which also
+  send pill). Bardo's `SendPill` and `Toast` keep their `data-shown` transition, which also
   carries them down.
 - `ring-drain`: `stroke-dashoffset` 0 to 57 at `--t-send-ring` linear, forwards, where CSS reaches
   the ring (the webview; on Blitz the SendPill writes the offset as an attribute, spike S6).
@@ -387,7 +387,7 @@ Settled for the port; the catalogue above is unchanged except where named.
   `min(1, (--overshoot - 1) x 25)`: 1 at Standard and Extra, 0 at Calm and Reduced. Calm (3.2:
   "no overshoot") now flattens them as it flattens `pop-in`; Standard is the text above.
 
-### 4.6 Added by quire (control center parts, 2026-09-25)
+### 4.6 Added by Bardo (control center parts, 2026-09-25)
 
 - `slide-r` and `slide-l` are also played at `--t-move --e-spring` (`Anim::PaneInR`,
   `Anim::PaneInL`): a control-center detail pane arriving and the root pane coming back
@@ -398,7 +398,7 @@ Settled for the port; the catalogue above is unchanged except where named.
   push and one timer settles both (`PaneSwitcher`, sill Q80). An exit, so it does not spring
   (principle 2).
 
-### 4.7 Added by quire (OSD parts, 2026-09-25)
+### 4.7 Added by Bardo (OSD parts, 2026-09-25)
 
 - `osd-in`: `from{ opacity:0; transform:translateY(var(--osd-dy)) scale(.96) } to{ opacity:1;
   transform:none }` at `--t-quick --e-out` (design/20 §1.7's "in"), `Anim::OsdIn`: `pop-in`'s
@@ -410,14 +410,14 @@ Settled for the port; the catalogue above is unchanged except where named.
   `-8px` at the top right (drops in from above, lifts back out), `8px` at the bottom centre
   (rises in, drops away). Played outside the card, the fallback is the top right's.
 
-### 4.8 Added by quire (sheet and modal parts, 2026-09-25)
+### 4.8 Added by Bardo (sheet and modal parts, 2026-09-25)
 
 - `sheet-out`: `from{ opacity:1; transform:none } to{ opacity:0; transform:scale(.98)
   translateY(8px) }` at `--t-move --e-exit`, forwards (section 10's exit rule), `Anim::SheetOut`:
   `peek-in` reversed and quieter. A sheet its host hides plays it and reports `on_hidden` at
   `settle(SheetOut)`; its scrim plays `menu-out` at `--t-quick` meanwhile.
 
-### 4.9 Added by quire (notification parts, 2026-09-25)
+### 4.9 Added by Bardo (notification parts, 2026-09-25)
 
 - `banner-in`: `from{ transform:translate(var(--banner-dx,calc(100% + var(--s-16))),
   var(--banner-dy,0px)) } to{ transform:none }` at `--t-move --e-spring`, `Anim::BannerIn`: a
@@ -443,7 +443,7 @@ Settled for the port; the catalogue above is unchanged except where named.
   (`Anim::PeekFullIn`'s recipe), and every hide or show after it is the sheet's spring on
   `--present-p` (opacity, 12 px down, 95 %; Reduced: opacity only). No new keyframe.
 
-### 4.10 Added by quire (screenshot thumbnail, 2026-09-26)
+### 4.10 Added by Bardo (screenshot thumbnail, 2026-09-26)
 
 - `rise` at `--t-big --e-spring` (`Anim::ShotIn`): the screenshot thumbnail's entrance
   (design/20 section 1.13). The catalogue's `rise` row plays at `--t-move --e-out` for rows; the
@@ -454,7 +454,7 @@ Settled for the port; the catalogue above is unchanged except where named.
   until the host unmaps it at `settle(ShotOut)`. `slide-r` is an entrance (from 26 px right to
   rest); this is its exit, carried off the edge the card sits at.
 
-### 4.11 Added by quire (the user's picture, 2026-09-26)
+### 4.11 Added by Bardo (the user's picture, 2026-09-26)
 
 The persona's five keyframes (`persona-blink`, `-breathe`, `-wince`, `-hop`, `-drift`) and its
 `--t-drift` token were removed with the persona. What remains:
@@ -474,7 +474,7 @@ change asking for it. Allowed because it is bounded: whole loops only, only for 
 tested in sill's ui-conformance/tests/emoji_animation.rs with `Harness::is_animating`). Under Reduced only still
 frames are shown.
 
-### 4.12 Added by quire (battery fill, 2026-09-26)
+### 4.12 Added by Bardo (battery fill, 2026-09-26)
 
 No keyframe: a battery ring's arc is an SVG path, which Blitz's stylesheet cannot animate, so
 the fill is driven from Rust (`ds::use_level_run`, as the animated emoji drives its frames). On mount and on
@@ -488,7 +488,7 @@ sweep at all (not a 60 ms one): the first frame is the final state. This replace
 `bump` on a new percentage (section 5 row 18 still applies to a figure a host wraps in
 `Bumped`).
 
-### 4.13 Added by quire (small-state details, 2026-09-26)
+### 4.13 Added by Bardo (small-state details, 2026-09-26)
 
 The primitives of design/26-DETAILS.md section 4. Six keyframes and nine `Anim` rows, each
 played once on an HTML wrapper (Blitz's stylesheet cannot reach inside an SVG) and taken off at
@@ -521,7 +521,7 @@ transitions (`--t-pending-step`), not a keyframe.
   arrives plays `Anim::RowIn` (`row-in`, `--t-big --e-spring`) for the press, `Anim::Rise`
   otherwise, taken off at its `settle`.
 
-### 4.14 Added by quire (a widget card's exit, 2026-09-28)
+### 4.14 Added by Bardo (a widget card's exit, 2026-09-28)
 
 - `widget-out`: `from{ opacity:1; transform:none } to{ opacity:0; transform:scale(.85) }` at
   `--t-move --e-exit`, forwards (`Anim::WidgetOut`, sill G423): a desktop widget the person

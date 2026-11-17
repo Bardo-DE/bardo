@@ -73,7 +73,7 @@ pub enum GlobalKind {
     /// `xdg_system_bell_v1`.
     SystemBell,
     /// `bardo_window_manager_v1` (C50).
-    QuireWindow,
+    BardoWindow,
     /// `zwlr_layer_shell_v1`.
     LayerShell,
     /// `ext_session_lock_manager_v1`.
@@ -136,9 +136,9 @@ pub enum GlobalKind {
     ToplevelCapture,
     /// `bardo_desktop_manager_v1`: the desktop model of apps, windows and Spaces (P2-Z; the
     /// shell manages through it, an agent reads it).
-    QuireDesktop,
+    BardoDesktop,
     /// `bardo_shell_v1`: the shell's surface roles and system events (P2-Z; the shell only).
-    QuireShell,
+    BardoShell,
 }
 
 impl GlobalKind {
@@ -188,7 +188,7 @@ const fn row(kind: GlobalKind, tier: Tier, sandboxed: bool, power: Option<Power>
 }
 
 /// The globals table, one row per [`GlobalKind`] in declaration order (checked at compile time
-/// below, so a row cannot drift from the enum). Everything is `Everyone` but the two `quire`
+/// below, so a row cannot drift from the enum). Everything is `Everyone` but the two `bardo`
 /// management protocols. Whoever adds a global adds its row and decides on purpose whether a
 /// sandbox sees it, who else may, and which power gates it (I7).
 const GLOBALS: &[Global] = &[
@@ -213,7 +213,7 @@ const GLOBALS: &[Global] = &[
     row(GlobalKind::XdgToplevelTag, Tier::Everyone, true, None),
     row(GlobalKind::XdgForeign, Tier::Everyone, true, None),
     row(GlobalKind::SystemBell, Tier::Everyone, true, None),
-    row(GlobalKind::QuireWindow, Tier::Everyone, true, None),
+    row(GlobalKind::BardoWindow, Tier::Everyone, true, None),
     row(GlobalKind::LayerShell, Tier::Everyone, false, None),
     row(
         GlobalKind::SessionLock,
@@ -308,8 +308,8 @@ const GLOBALS: &[Global] = &[
         false,
         Some(Power::Screen),
     ),
-    row(GlobalKind::QuireDesktop, Tier::ShellAndAgent, false, None),
-    row(GlobalKind::QuireShell, Tier::ShellOnly, false, None),
+    row(GlobalKind::BardoDesktop, Tier::ShellAndAgent, false, None),
+    row(GlobalKind::BardoShell, Tier::ShellOnly, false, None),
 ];
 
 const _: () = {
@@ -318,7 +318,7 @@ const _: () = {
         assert!(GLOBALS[at].kind as usize == at);
         at += 1;
     }
-    assert!(GLOBALS.len() == GlobalKind::QuireShell as usize + 1);
+    assert!(GLOBALS.len() == GlobalKind::BardoShell as usize + 1);
 };
 
 /// Whether a connection of `role` sees `global` when nothing is hidden from it by consent.

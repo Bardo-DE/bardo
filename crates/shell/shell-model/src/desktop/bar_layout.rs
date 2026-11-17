@@ -2,7 +2,7 @@
 //! the compositor's drop targets equal to them. Pure; the bar's surface measures itself and
 //! publishes a [`BarLayout`], the daemon sends [`target_commands`].
 //!
-//! Where the cards and the plus lie is not computed here: quire's `SpacesBar` reports its drawn
+//! Where the cards and the plus lie is not computed here: Bardo's `SpacesBar` reports its drawn
 //! rectangles (`on_layout`) and the surface moves them onto the desktop.
 
 use std::collections::BTreeMap;
@@ -12,7 +12,7 @@ use account_core::SpaceId;
 use super::DesktopCommand;
 use super::target::Rect;
 
-/// The thumbnail card's width in logical pixels (quire's `.ds-spaces-bar-thumb`; it sizes the
+/// The thumbnail card's width in logical pixels (Bardo's `.ds-spaces-bar-thumb`; it sizes the
 /// picture asked for, not where the card lies).
 pub const THUMB_W: u32 = 160;
 /// The thumbnail card's height in logical pixels.

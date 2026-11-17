@@ -1,4 +1,4 @@
-//! One quire document with no window: the pieces `Harness` and `snapshot` share. It gets the
+//! One Bardo document with no window: the pieces `Harness` and `snapshot` share. It gets the
 //! shared font context, the app's net policy, the HTML parser (so an `<iframe srcdoc>` is a
 //! real sub-document, as in the window), a shell whose clipboard is in memory, sequential styling (deterministic, and
 //! no rayon pool per test), the host's input modality, device scale, rect read and focus write as
@@ -182,7 +182,7 @@ impl Headless {
         };
         let listeners = EditListeners::default();
         let mut vdom = VirtualDom::new(app);
-        // The app's own first, so a quire context of the same type (none today) would win.
+        // The app's own first, so a Bardo context of the same type (none today) would win.
         setup.install(&mut vdom);
         let signals = vdom.in_runtime(|| HostSignals {
             modality: Signal::new_in_scope(false, ScopeId::ROOT),

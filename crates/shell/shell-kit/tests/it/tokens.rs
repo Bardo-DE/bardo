@@ -226,7 +226,7 @@ fn every_table_name_is_declared_on_the_root() {
 /// tinted plate's per-scheme stops and ink (`IconView { plate_tint }`), and a collection's
 /// thumbnail size and pitch (`CollectionView`).
 const PER_ELEMENT: &[&str] = &[
-    // A chip's leading colour dot (quire `Chip { dot }`).
+    // A chip's leading colour dot (Bardo `Chip { dot }`).
     "--chip-dot",
     "--a",
     "--dy",

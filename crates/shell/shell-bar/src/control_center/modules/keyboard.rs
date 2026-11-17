@@ -1,6 +1,6 @@
 //! The Keyboard Brightness module (design/26 5.2.7 G25).
 //!
-//! A [`crate::control_center::LevelModule`] with the `Keyboard` glyph and quire's
+//! A [`crate::control_center::LevelModule`] with the `Keyboard` glyph and Bardo's
 //! `LevelGlyph::KeyboardBrightness` (a keyboard under a rising sun whose rays follow the level), on
 //! `UPower`'s keyboard backlight. Absent on a machine without one. A drag sends `KbdCommand::Set`;
 //! the service sets the nearest step and the level follows its report, the laptop's own brightness

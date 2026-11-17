@@ -1,6 +1,6 @@
 [package]
 name = "files-ui"
-description = "The window of files: a Finder-like folder view drawn only with quire's components."
+description = "The window of files: a Finder-like folder view drawn only with bardo's components."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

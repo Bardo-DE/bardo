@@ -29,9 +29,9 @@ fn the_fixture_parses_and_one_name_may_play_several_roles() {
             CallerRole::Control
         ]
     );
-    let quire_do = AppName::parse("org.bardo.Do").expect("app");
+    let bardo_do = AppName::parse("org.bardo.Do").expect("app");
     assert_eq!(
-        config.roles_of(&quire_do).into_iter().collect::<Vec<_>>(),
+        config.roles_of(&bardo_do).into_iter().collect::<Vec<_>>(),
         [CallerRole::Cli],
         "any process running bardo-do plays the cli role"
     );

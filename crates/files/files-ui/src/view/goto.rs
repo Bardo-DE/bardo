@@ -1,4 +1,4 @@
-//! Go to Folder: a quire `Sheet` with a `TextField` holding the path. Return goes, Escape or
+//! Go to Folder: a Bardo `Sheet` with a `TextField` holding the path. Return goes, Escape or
 //! Cancel puts it away; a folder that is not there is said under the field and the sheet stays.
 
 use dioxus::prelude::*;

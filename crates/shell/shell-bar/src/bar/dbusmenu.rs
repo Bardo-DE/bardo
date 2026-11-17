@@ -86,7 +86,7 @@ fn entry(pick: RowPick, row: &TrayMenuEntry, icon: RowIcon) -> Option<MenuItem<B
     })
 }
 
-/// The key equivalent the app's row names, when quire reads its key names.
+/// The key equivalent the app's row names, when Bardo reads its key names.
 fn key_of(chord: &Chord) -> Option<Shortcut> {
     ExportChord(chord.0.clone()).shortcut().ok()
 }

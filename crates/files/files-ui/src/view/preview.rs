@@ -1,4 +1,4 @@
-//! The preview pane (Finder's Show Preview): quire's `PreviewPane` beside the folder, holding
+//! The preview pane (Finder's Show Preview): Bardo's `PreviewPane` beside the folder, holding
 //! the card anyview draws for Quick Look over the selected item's facts. Several items are a
 //! count and their total size; none is "No Selection".
 

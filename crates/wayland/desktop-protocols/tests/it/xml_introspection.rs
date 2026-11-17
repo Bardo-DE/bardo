@@ -200,7 +200,7 @@ fn every_protocol_is_named_after_its_file() {
 }
 
 #[test]
-fn every_interface_is_a_quire_v1_interface_at_its_version() {
+fn every_interface_is_a_bardo_v1_interface_at_its_version() {
     let protocols = protocols();
     let names: Vec<&str> = all_interfaces(&protocols)
         .iter()

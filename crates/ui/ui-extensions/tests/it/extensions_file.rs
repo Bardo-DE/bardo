@@ -55,7 +55,7 @@ fn the_file_round_trips_and_names_the_ids_a_scan_takes() {
     let scratch = Scratch::new();
     let store = Store::new(
         ConfigRoot::Scratch(scratch.path().to_path_buf()),
-        AppName::QUIRE,
+        AppName::BARDO,
     );
     assert!(ExtensionsFile::default().off_ids().is_empty());
 

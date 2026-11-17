@@ -1,5 +1,5 @@
-//! A minimal page proving quire's coherence rules from outside the quire workspace
-//! (`../../CONSUMING.md` "The consumer example"): one `Ds` root, a page built only from quire
+//! A minimal page proving Bardo's coherence rules from outside Bardo workspace
+//! (`../../CONSUMING.md` "The consumer example"): one `Ds` root, a page built only from Bardo
 //! components (`Button`, `TextField`, `Menu`, `Toast`), a stylesheet of its own, and motion
 //! driven only by `ui_components::motion` timers, never an ad-hoc sleep.
 //!
@@ -19,10 +19,10 @@ use ui_components::root::common::Common;
 use ui_host_hooks::TokioSpawner;
 use ui_settings::{SystemPrefsSource, use_environment};
 
-/// This example's own stylesheet, quire tokens only (`tests/coherence.rs::our_stylesheet_lints_clean`).
+/// This example's own stylesheet, Bardo tokens only (`tests/coherence.rs::our_stylesheet_lints_clean`).
 pub const STYLE: &str = include_str!("style.css");
 
-/// The example's one page, wrapped in the root every quire surface draws inside.
+/// The example's one page, wrapped in the root every Bardo surface draws inside.
 ///
 /// Reads its settings through `ui_settings::use_environment` (`../../CONSUMING.md` "Reading
 /// appearance"), live file and portal watches included. Its watches run on the Tokio runtime
@@ -62,7 +62,7 @@ fn items() -> Vec<MenuItem<Action>> {
 }
 
 /// A subject field, a `Send` button whose "Sent" confirmation is timed by
-/// `ui_components::prelude::use_motion_timer` rather than a sleep, and a "More" button that opens a quire `Menu`
+/// `ui_components::prelude::use_motion_timer` rather than a sleep, and a "More" button that opens a Bardo `Menu`
 /// anchored to the button itself: `Button`'s `common.mounted` hands over its element and the menu
 /// takes it as `Anchor::Mounted`, measured when placing (`CONSUMING.md` §4, "Overlays"). No
 /// wrapper element is measured in its place. The subject field has the keyboard as the page

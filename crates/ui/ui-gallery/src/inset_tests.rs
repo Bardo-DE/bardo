@@ -20,10 +20,10 @@ const WIDTH: u32 = 1280;
 /// How long a page runs before it is read: past every entrance and every placement.
 const SETTLE: Duration = Duration::from_secs(10);
 
-/// The policy of the gallery: quire's, for the components; the gallery's own `g-*` chrome is
+/// The policy of the gallery: Bardo's, for the components; the gallery's own `g-*` chrome is
 /// the gallery's layout and holds the same default.
 fn policy() -> Policy {
-    Policy::quire()
+    Policy::bardo()
 }
 
 fn findings_of(page: Page, theme: Theme) -> Findings {

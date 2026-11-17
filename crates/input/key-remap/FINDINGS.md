@@ -26,7 +26,7 @@ enums that existed only because `bool` was banned are gone.
 
 ## Keymap-aware apps
 
-An app that resolves Cmd itself through chordkit (temor, any quire app) must receive Super, not
+An app that resolves Cmd itself through chordkit (temor, any Bardo app) must receive Super, not
 the `terminal` profile's Ctrl+Shift+letter: Cmd+D and Cmd+Shift+D collapse to one chord there.
 Foreign terminals (foot, kitty, ...) keep the rewrite.
 
@@ -44,13 +44,13 @@ Control+A/E) as themselves, because a rule cannot be deleted down an `inherits` 
 desktop's own chords (Cmd+Tab, Cmd+Space, Cmd+`, Cmd+Q) stay rewritten. A unit test fails if a
 new `default` rule is neither a desktop chord nor restated.
 
-Wiring: temor's app id is `org.quire.Temor` (its desktop entry, `StartupWMClass`). Plasma:
+Wiring: temor's app id is `org.bardo.Temor` (its desktop entry, `StartupWMClass`). Plasma:
 `OWN_PROFILES` in `dist/plasma/keycap-focus` maps it to `terminal`, not `keymap-aware` (changed
 2026-10-14): KWin binds Super+T, Super+W, Super+D and Super+V globally, so Command as Super never
 reached temor there, and chordkit's KDE keymap expects the Ctrl+Shift+letter forms `terminal`
 writes. The cost on Plasma is that Cmd+D and Cmd+Shift+D arrive as one chord. sill: temor lists `TerminalEmulator`, so
 sill's category table would give it `terminal`; sill's `DeclaredProfile` (`X-Keycap-Profile`) or
-`OwnProfiles` must name `keymap-aware` for it (both rank above the category table). Quire apps
+`OwnProfiles` must name `keymap-aware` for it (both rank above the category table). Bardo apps
 are not `TerminalEmulator`, so they never get the terminal rewrite; they get `default` (Cmd as
 Ctrl) unless they too declare `keymap-aware`. A desktop-wide rule set in `[profile.default]` is
 inherited, but one the desktop restates for a chord (sill's Cmd+H to Ctrl+H) must be restated in
@@ -232,7 +232,7 @@ read leniently by the client: a bad line is skipped and reported, and an unusabl
 empty with one problem (no last-good copy is kept for it). Problems from both files are returned
 by `load_reporting`, each labelled "System keymap:" or "Your keymap:".
 
-**How apps get it.** Through quire, which takes a `chordkit::KeymapSource`: it passes
+**How apps get it.** Through Bardo, which takes a `chordkit::KeymapSource`: it passes
 `KeycapSource::standard()`, whose `load(platform)` is chordkit's conventions for our desktop, the
 desktop's own bindings (`keycap_client::system_bindings`, only what chordkit's conventions leave to
 the source), the machine's overrides (asked of the daemon with `KeymapCall::Watch`, or, when no daemon

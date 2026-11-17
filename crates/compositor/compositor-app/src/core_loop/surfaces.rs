@@ -54,7 +54,7 @@ pub(super) fn sync(state: &mut State, events: &[Event]) {
                 // person's answer is what decides whether an agent's held input goes on.
                 tracing::info!(?layer, "layer unmapped");
                 // Whatever shell role the surface held is free again.
-                compositor_wayland::quire::shell::on_layer_gone(&mut state.wl.quire_shell, *layer);
+                compositor_wayland::bardo::shell::on_layer_gone(&mut state.wl.bardo_shell, *layer);
                 let book = std::mem::take(&mut state.render.textures);
                 state.render.textures = book.without_layer(layer);
             }

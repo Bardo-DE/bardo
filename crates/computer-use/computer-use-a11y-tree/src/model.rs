@@ -14,8 +14,8 @@ use std::collections::BTreeSet;
 pub enum TreeSource {
     /// AT-SPI.
     Atspi,
-    /// A quire (Blitz) app: `accesskit_unix`, still AT-SPI on the wire, plus typed hints.
-    QuireApp,
+    /// A Bardo (Blitz) app: `accesskit_unix`, still AT-SPI on the wire, plus typed hints.
+    BardoApp,
 }
 
 /// Whether pruning dropped nodes.
@@ -115,7 +115,7 @@ pub enum NodeAction {
     Other(String),
 }
 
-/// The typed action a quire widget maps to.
+/// The typed action a Bardo widget maps to.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum TypedHint {
@@ -149,9 +149,9 @@ pub struct A11yNode {
     pub bounds: Rect<WindowSpace>,
     /// What it offers.
     pub actions: Vec<NodeAction>,
-    /// The typed action a quire widget maps it to.
+    /// The typed action a Bardo widget maps it to.
     pub typed: TypedHint,
-    /// Whether its content must never reach a model: a password entry or a quire-declared
+    /// Whether its content must never reach a model: a password entry or a bardo-declared
     /// sensitive control.
     pub secret: bool,
 }

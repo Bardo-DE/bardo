@@ -1,6 +1,6 @@
 //! The answer-carrying form of the stage: one sheet that is up or on its way out with an answer
 //! (a [`ExitIn::Leave`] carries what happens next), handed to the caller once the exit has
-//! settled. Pure; quire's `Sheet` plays the exit, and the caller feeds its `on_hidden` back as
+//! settled. Pure; Bardo's `Sheet` plays the exit, and the caller feeds its `on_hidden` back as
 //! [`ExitIn::Settled`].
 
 use crate::surface::Pointer;
@@ -17,7 +17,7 @@ pub enum SheetExit<A> {
 pub enum ExitIn<A> {
     /// The sheet is dismissed or answered; `A` happens once it has left.
     Leave(A),
-    /// The sheet's exit settled (quire's `on_hidden`).
+    /// The sheet's exit settled (Bardo's `on_hidden`).
     Settled,
     /// Shown again while leaving: it is up again and the answer is dropped.
     Reshown,
@@ -34,7 +34,7 @@ pub enum ExitOut<A> {
 }
 
 impl<A: Clone> SheetExit<A> {
-    /// quire's `Sheet { shown }` for this phase.
+    /// Bardo's `Sheet { shown }` for this phase.
     pub fn shown(&self) -> bool {
         match self {
             SheetExit::Open => true,

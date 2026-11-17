@@ -1,6 +1,6 @@
 # 25 Emoji
 
-Status: built 2026-09-26 on branch `animated-emoji` (quire), for review. The decision (user,
+Status: built 2026-09-26 on branch `animated-emoji` (Bardo), for review. The decision (user,
 2026-09-26): the persona is not better than plain emoji, so the user's picture becomes an emoji
 the user picks, and it should move, as the reference desktop's animated emoji do. Those are
 proprietary; we use Google's open **Noto Animated Emoji** instead. Code, classes and assets say
@@ -72,7 +72,7 @@ set was checked against the site's `data/api.json`.
 
 Blitz cannot play Lottie, and it decodes one frame of a GIF or WebP (verified: `blitz-dom`'s
 `ImageHandler::parse` calls `image::ImageReader::decode`, which returns the first frame; the
-`image` crate's `gif` and `webp` features are on, but no frame sequence is kept). So quire plays
+`image` crate's `gif` and `webp` features are on, but no frame sequence is kept). So Bardo plays
 pre-rendered frames itself.
 
 `tools/emoji` (Python through uv, `pillow` only; never run by cargo):
@@ -145,7 +145,7 @@ would have played, then the pick's.
   3.8 s between loops; as a `UserPortrait`, each mood shows its emoji and is at rest with no
   frame asked for 21 s after the last wake. `emoji/tests.rs` checks every script of every emoji
   in every mood ends on frame 0 within the window.
-- Loops are quire's one bounded exception to "nothing loops" (design/05 section 2): finite
+- Loops are Bardo's one bounded exception to "nothing loops" (design/05 section 2): finite
   plays inside the awake window, never `infinite`.
 
 ## 7. The emoji as the user's picture (2026-09-26)
@@ -204,7 +204,7 @@ picker. It is not an `EmojiGrid`: that grid draws text glyphs in the colour font
 value per glyph, and holds a separate selection cursor; the picker draws pictures and is a radio
 group. It reuses the grid's step rule and column style.
 
-## 8. Built (quire)
+## 8. Built (Bardo)
 
 - `crates/sill-shell-kit/src/emoji/`: `id.rs` (`EmojiId`), `sheet.rs` (sheets, manifest, the
   frame position), `script.rs` (the wake script), `emoji/play.rs` (playing it), `disc.rs`

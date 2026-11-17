@@ -5,13 +5,13 @@
 //! (`menu`).
 //!
 //! No `Material::Window`: design/20 §1.4 gives the wallpaper no material at all ("opaque
-//! image"), and quire's eight materials (`ui_components::prelude::Material`) have no such variant. `Window` is the
+//! image"), and Bardo's eight materials (`ui_components::prelude::Material`) have no such variant. `Window` is the
 //! one wrong choice regardless — its own frame paints the Space's gradient
 //! (`--m-tint-solid:var(--f-grad)`, `materials_css.rs`), which is exactly the per-workspace tint
 //! design/21 §8 says the wallpaper must not have. `Material::Widget` is used instead (closest
 //! in kind: a background-level surface, not a bar/menu/sheet one) with `false`
 //! (design's "blur none"): its own paper tint never shows, since the two image layers (or, with
-//! no source, `.shell-wallpaper`'s own `--paper`) cover the root completely. A quire gap: no
+//! no source, `.shell-wallpaper`'s own `--paper`) cover the root completely. A Bardo gap: no
 //! material variant paints nothing at all.
 
 mod crossfade;

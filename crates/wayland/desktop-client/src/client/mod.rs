@@ -8,6 +8,8 @@
 //! Protocol events become [`DesktopEvent`]s, are reduced into the state and are kept for
 //! [`Desktop::drain_events`]. Commands are checked with `supports` first and then sent.
 
+mod bardo;
+mod bardo_commands;
 mod bind;
 mod capture;
 mod commands;
@@ -16,8 +18,6 @@ mod handles;
 mod output;
 mod pairing;
 mod passive;
-mod quire;
-mod quire_commands;
 mod route;
 mod shell;
 mod shm;
@@ -82,7 +82,7 @@ impl DesktopClient {
     /// Like [`DesktopClient::new`], for a caller that says more about itself: with
     /// `DesktopConfig::holding_shell()` it also binds `bardo_shell_v1` when that is offered.
     ///
-    /// On the Quire arm (`bardo_desktop_v1` and the ext list offered) the toplevels come from
+    /// On Bardo arm (`bardo_desktop_v1` and the ext list offered) the toplevels come from
     /// those and the wlr manager is left unbound.
     ///
     /// # Errors

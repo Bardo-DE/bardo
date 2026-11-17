@@ -37,7 +37,7 @@ base-ids = { path = "../../base/base-ids" }
 base-secret = { path = "../../base/base-secret" }
 base-time = { path = "../../base/base-time" }
 anyview-core = {path = "../../anyview/crates/anyview-core"}
-anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["quire-desktop"]}
+anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["desktop"]}
 shell-model = {path = "../shell-model"}
 shell-desktop-fs = {path = "../shell-desktop-fs"}
 shell-launcher = {path = "../shell-launcher"}

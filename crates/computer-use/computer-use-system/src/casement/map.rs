@@ -6,8 +6,8 @@ use computer_use_desktop::{
     DesktopError, DesktopEvent, GlobalCoord, GlobalRect, Pid, ToplevelIdent, ToplevelInfo,
     ToplevelState, WindowTitle, WindowTrust, WorkspaceRef,
 };
+use desktop_client::bardo::{BardoWindow, SpacePlace, WindowChange, WindowEvent};
 use desktop_client::geometry::Rect;
-use desktop_client::quire::{QuireWindow, SpacePlace, WindowChange, WindowEvent};
 use desktop_client::toplevel::{Toplevel, ToplevelEvent, ToplevelFlag};
 use desktop_client::{DesktopEvent as Raised, DesktopState, Protocol, ToplevelKey};
 use std::collections::BTreeMap;
@@ -45,7 +45,7 @@ fn ident_of(top: &Toplevel) -> Option<ToplevelIdent> {
 }
 
 fn info_of(state: &DesktopState, top: &Toplevel) -> Option<ToplevelInfo> {
-    let window = state.quire.window(top.key);
+    let window = state.bardo.window(top.key);
     Some(ToplevelInfo {
         ident: ident_of(top)?,
         app: app_name(&top.app_id),
@@ -85,10 +85,10 @@ fn state_of(flag: ToplevelFlag) -> Option<ToplevelState> {
 
 /// The Space a window is on, and whether that Space is on screen. A window on every Space, or
 /// one the compositor has not placed, is shown; a window on a Space with no workspace is not.
-fn workspace_of(state: &DesktopState, window: Option<&QuireWindow>) -> WorkspaceRef {
+fn workspace_of(state: &DesktopState, window: Option<&BardoWindow>) -> WorkspaceRef {
     let id = match window.map(|w| w.place) {
         Some(SpacePlace::On(space)) => state
-            .quire
+            .bardo
             .space(space)
             .and_then(|s| s.id.as_ref())
             .map(|id| id.as_str().to_owned())
@@ -141,14 +141,14 @@ pub(super) fn app_name(app_id: &str) -> AppName {
 }
 
 /// How far cua may trust a window, from its app id alone (no sandbox information is read
-/// here): the shell's own windows are never leasable, other quire apps are ours, everything
+/// here): the shell's own windows are never leasable, other Bardo apps are ours, everything
 /// else is native.
 pub(super) fn trust_of(app_id: &str) -> WindowTrust {
     const SHELL: [&str; 3] = ["org.bardo.Shell", "org.bardo.Shell", "org.bardo.Desktop"];
     if SHELL.iter().any(|shell| app_id.starts_with(shell)) {
         WindowTrust::Shell
     } else if app_id.starts_with("org.bardo.") {
-        WindowTrust::Quire
+        WindowTrust::Bardo
     } else {
         WindowTrust::Native
     }
@@ -177,7 +177,7 @@ pub(super) fn events(raised: &[Raised], before: &Idents, now: &Idents) -> Vec<De
 #[cfg(test)]
 mod tests {
     use super::*;
-    use desktop_client::quire::{SpaceChange, SpaceEvent, WindowGeometry};
+    use desktop_client::bardo::{SpaceChange, SpaceEvent, WindowGeometry};
     use desktop_client::toplevel::{ToplevelChange, ToplevelFlags};
     use desktop_client::workspace::{WorkspaceChange, WorkspaceEvent, WorkspaceFlag};
     use desktop_client::{
@@ -212,22 +212,22 @@ mod tests {
         ]
     }
 
-    fn quire(event: WindowEvent) -> Raised {
+    fn bardo(event: WindowEvent) -> Raised {
         Raised::Window(event)
     }
 
     fn placed(n: u64, place: SpacePlace, rect: Rect) -> Vec<Raised> {
         vec![
-            quire(WindowEvent::Opened(tk(n))),
-            quire(WindowEvent::Changed {
+            bardo(WindowEvent::Opened(tk(n))),
+            bardo(WindowEvent::Changed {
                 key: tk(n),
                 change: WindowChange::Place(place),
             }),
-            quire(WindowEvent::Changed {
+            bardo(WindowEvent::Changed {
                 key: tk(n),
                 change: WindowChange::Geometry(WindowGeometry::new(rect, 120)),
             }),
-            quire(WindowEvent::Done(tk(n))),
+            bardo(WindowEvent::Done(tk(n))),
         ]
     }
 
@@ -251,7 +251,7 @@ mod tests {
         let table = [
             ("org.bardo.Shell", WindowTrust::Shell),
             ("org.bardo.Shell.Bar", WindowTrust::Shell),
-            ("org.bardo.Photos", WindowTrust::Quire),
+            ("org.bardo.Photos", WindowTrust::Bardo),
             ("org.gnome.Calculator", WindowTrust::Native),
             ("", WindowTrust::Native),
         ];
@@ -267,7 +267,7 @@ mod tests {
     }
 
     #[test]
-    fn a_toplevel_becomes_its_info_with_the_quire_geometry_and_flags() {
+    fn a_toplevel_becomes_its_info_with_the_bardo_geometry_and_flags() {
         let mut script = window(1, "w1", "org.gnome.Calculator", "Calculator");
         script.extend(placed(
             1,
@@ -361,7 +361,7 @@ mod tests {
         let before = idents(&run(script));
         let moved = WindowGeometry::new(Rect::new(5, 6, 7, 8), 120);
         let raised = vec![
-            quire(WindowEvent::Changed {
+            bardo(WindowEvent::Changed {
                 key: tk(1),
                 change: WindowChange::Geometry(moved),
             }),

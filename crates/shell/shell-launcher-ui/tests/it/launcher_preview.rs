@@ -87,7 +87,7 @@ fn space_while_browsing_shows_the_pdf_and_then_the_image() {
     );
     // The page rasters off the harness's thread; the pending look holds the pane until it lands.
     let landed = await_off_thread(&mut open.harness, |h| h.count(".ds-pdf-thumb") == 1);
-    assert_eq!(landed, Seen::Once, "quire's PDF thumbnail");
+    assert_eq!(landed, Seen::Once, "bardo's PDF thumbnail");
     press(&mut open, Press::Down);
     assert_eq!(
         rows(&open).preview,
@@ -103,7 +103,7 @@ fn space_while_browsing_shows_the_pdf_and_then_the_image() {
 }
 
 #[test]
-fn a_file_is_drawn_by_the_viewers_pane_in_quires_slot_whatever_it_is() {
+fn a_file_is_drawn_by_the_viewers_pane_in_bardo_slot_whatever_it_is() {
     let mut open = open("m9");
     open.harness
         .send(Input::chord(&[ShortcutKey::Super], ShortcutKey::Char('y')));
@@ -120,12 +120,12 @@ fn a_file_is_drawn_by_the_viewers_pane_in_quires_slot_whatever_it_is() {
         assert_eq!(
             open.harness.attr(".ds-preview", "data-content").as_deref(),
             Some("slot"),
-            "{kind}: one quire pane, with the viewer's in its media area"
+            "{kind}: one bardo pane, with the viewer's in its media area"
         );
         assert_eq!(
             open.harness.count(".ds-preview > .ds-preview-caption"),
             0,
-            "{kind}: the viewer's pane draws its own name and facts, quire adds none"
+            "{kind}: the viewer's pane draws its own name and facts, bardo adds none"
         );
         assert!(
             open.harness
@@ -188,7 +188,7 @@ fn command_y_while_typing_then_right_enter_the_pane_and_escape_steps_out() {
         "⌘Y while typing"
     );
     let html = open.harness.html();
-    assert!(html.contains("ds-preview"), "quire's pane");
+    assert!(html.contains("ds-preview"), "bardo's pane");
     assert!(html.contains("ds-palette-aside"), "as the palette's aside");
     assert!(
         !html.contains("data-focused=\"true\""),
@@ -337,7 +337,7 @@ fn shift_tab_with_nothing_typed_reaches_emoji_alone() {
     assert_eq!(
         open.harness.count(".ds-emoji-cell"),
         3,
-        "quire's emoji grid"
+        "bardo's emoji grid"
     );
 }
 

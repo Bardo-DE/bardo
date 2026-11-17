@@ -167,7 +167,7 @@ const OVERLAY_EXCEPTIONS: &[Exception] = &[
     Exception {
         rule: Rule::DsInternals,
         selector: ".shell-popup-frame .ds-overlay",
-        reason: "quire's overlay is the box a submenu is placed against; the room is its padding",
+        reason: "bardo's overlay is the box a submenu is placed against; the room is its padding",
     },
     Exception {
         rule: Rule::DsInternals,
@@ -177,7 +177,7 @@ const OVERLAY_EXCEPTIONS: &[Exception] = &[
 ];
 
 #[test]
-fn the_submenu_sheet_names_quires_overlay_and_nothing_else_strict_forbids() {
+fn the_submenu_sheet_names_bardo_overlay_and_nothing_else_strict_forbids() {
     let config = LintConfig {
         profile: Profile::Strict,
         own_vars: vec!["--popup-submenu-room".to_owned()],

@@ -1,4 +1,4 @@
-//! The net provider every quire document gets, one per kind of document: the app's own and its
+//! The net provider every Bardo document gets, one per kind of document: the app's own and its
 //! frames' (`crate::frames` gives each frame document the frame one as it is parsed). Where a
 //! request goes is `crate::route`'s table; this file only carries it out. `data:` and `file:`
 //! are answered on the calling thread; a `file:` is read only from inside the `FileRoots` the app

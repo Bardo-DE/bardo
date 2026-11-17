@@ -5,5 +5,5 @@ mod file;
 mod schema;
 mod settings;
 
-pub use schema::quire_schema;
+pub use schema::bardo_schema;
 pub use settings::{AppearanceFile, AppearanceSettings, IconStyle, IconsSettings};

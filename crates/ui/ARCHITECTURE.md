@@ -1,12 +1,12 @@
 # Architecture
 
-quire is the design system of the desktop shell program: tokens, palette, icons, components,
+Bardo is the design system of the desktop shell program: tokens, palette, icons, components,
 motion, the Blitz glue that draws them, and the tools that test them. `design/` says what
 everything looks like, `DESIGN.md` maps each design section to its module, `CONSUMING.md` is the
 guide for a downstream crate, `CONVENTIONS.md` holds the rules every repo shares. This file is the
 map: which crate owns what, what may depend on what, where each concept lives, the exact shape of
 each trait, and how to add each kind of thing. Where it and `CONVENTIONS.md` disagree, this file
-wins for quire.
+wins for bardo.
 
 Reading order for a contributor: section 1 (find the crate), section 4 (find the home), section 5
 (find the trait), section 7 (copy the recipe).
@@ -27,7 +27,7 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 | `ds` | generic components (among them `CommandLine`, a copyable command; the host writes the clipboard), the `DocumentHost` seam and its hooks, overlay stack, root, `Ds`, stylesheet assembly, `ds::prelude` |
 | `ui-shell` | app-facing parts above `ds`, cross-platform: the account sheets and consent alert, the missing-helper sheet (its `Unsupported` phase shows the install command for the person's distro as a selectable line with a Copy button), the confirm card, with their sheets and `KIT`. The surfaces only our desktop shell draws live in sill's `shell-kit` (see "Moved to sill" in section 3) |
 | `ui-settings` | the look's settings I/O over `crates/settings` (`settings-types`, `settings-store`, `settings-store-fs`, `settings-dbus`, which services use without the toolkit): the appearance file, the settings portal, the icon-theme lookup, the Spaces and style files |
-| `ui-helpers` | the safe file reader and writer every quire crate shares (`files`: `read_capped`, `read_text_capped`, `write_atomic`, `update_atomic` (read, edit and write back under an in-process lock and a sidecar `flock`), `move_aside`; std plus `rustix` for the lock on Unix, no UI), and missing helpers: the helpers file (capability, probe, per-distro package alternatives), the PATH probe, the distro family and its install command, `OsRelease` (the `ID`, `ID_LIKE` and `VERSION_ID` of an os-release text, which `Family::detect` is built on), `DesktopFile` (a `.desktop` file's text as groups and keys: localized keys by `EntryLocale`, the value escapes, `;` lists, booleans, capped by `DESKTOP_ENTRY_CAP`; pure, the text comes from the caller; `Exec` field codes stay the caller's), the PackageKit installer (and a fake), the availability feed, and for a request nothing can install (no PackageKit, as on a stock Arch) the `Missing::install_lines` to copy |
+| `ui-helpers` | the safe file reader and writer every Bardo crate shares (`files`: `read_capped`, `read_text_capped`, `write_atomic`, `update_atomic` (read, edit and write back under an in-process lock and a sidecar `flock`), `move_aside`; std plus `rustix` for the lock on Unix, no UI), and missing helpers: the helpers file (capability, probe, per-distro package alternatives), the PATH probe, the distro family and its install command, `OsRelease` (the `ID`, `ID_LIKE` and `VERSION_ID` of an os-release text, which `Family::detect` is built on), `DesktopFile` (a `.desktop` file's text as groups and keys: localized keys by `EntryLocale`, the value escapes, `;` lists, booleans, capped by `DESKTOP_ENTRY_CAP`; pure, the text comes from the caller; `Exec` field codes stay the caller's), the PackageKit installer (and a fake), the availability feed, and for a request nothing can install (no PackageKit, as on a stock Arch) the `Missing::install_lines` to copy |
 | `ui-extensions` | Extensions, as a library with no UI, runtime or bus: `Search` (explicit roots, or `from_env`) scans `<data>/bardo/extensions/<id>/extension.toml` through bayonet's folder layout and returns every copy of every id unranked with the turned-off ones apart and named (`Found`, `Off`); `Found::resolve` checks and ranks the entries of this crate's words (`Capability`: `file_icons`, `look`; `Provision` is the bayonet `Provides` type and claims only those words, so another owner reparses the raw candidates itself); the checks (paths inside the folder, a stylesheet under `STYLESHEET_CAP_BYTES`) and the plain-words `Problem`; `Choices`/`choices_for`/`chosen` for a `Provided` settings key; `look::stylesheet_for`; the file-icon resolver `FileIcons` (`build` from a scan and the stored `appearance.file_icons`, then `of(&FileFacts)` answers `IconPick`: Your changes, then the chosen pack, then the standard set from `ui-style`'s `kind_for_mime`) and `YourChanges` (the person Extension `user.YourChanges` and its atomic writes); `ExtensionsFile` (`bardo/extensions.toml`, `extensions.off`) |
 | `ui-desktop` | which extras of our desktop are here: `Capability` with its D-Bus name, `Desktop::probe` and `watch` over name ownership (feature `dbus`), `Outputs` (the shell's per-output work area and scale from `org.bardo.Outputs1`, empty without it; `Outputs::read`/`watch` need `dbus`), `use_desktop` (feature `dioxus`); everything `Absent` without `dbus` |
 | `ui-host-hooks` | what a component calls on the document that hosts it, with no Blitz, GPU or windowing type: `provide_host` (+ `set_standalone_host`, the seam `ui-blitz` fills), `StylesGuard`, `use_resolved` / `use_tokens` (+ the `TokenSource` seam), `clipboard` (`Clipboard`, `write_text`, ...), `TokioSpawner`, `use_app_control`, `use_window_control`, `FocusFallback`. A UI library takes this instead of `ui-blitz` |
@@ -106,7 +106,7 @@ declarations and re-exports. Directories group a concept; role files are named f
 | `ds` | `host` (the seam traits: `DocumentHost`, `FocusHost`, `CaretHost`, `GeometryHost`, `ClickFocusHost`, `EditHost`, `ImeHost`, `FileDropHost`, `NoHost`, `HostSignals`) < `focus`, `edit`, `file_drop`, `keys` (the window's chordkit keymap), `machine` (re-exports `ds_motion::machine`), `spell`, `window` (hooks and pure logic over the seams) < `stack` (overlay stack, hover hub, toast hub, menu tracker, pull tab) < `root` (`Surface`, chrome, extent) < components `content` < `controls` < `overlays` < `forms` < `lists` < `fields` < `menus` < `editor` < `chrome` < `companion` < `app` (mail-only, named by nothing but `assembly`) < `assembly` (`Ds`, stylesheet, sheet registration) < `prelude`, `testing` |
 | `ui-shell` | `confirm`, `accounts` (`adapter` is the one file that reaches the components R2 makes controlled), `helpers` < `sheets` < `kit` < `prelude` |
 | `ui-settings` | `error` < `root` (`ConfigRoot`, `AppName`) < `lenient` < `damaged` (`DamagedFile`, `Saved`: a file that is there and unusable is kept) < `doc` (`SettingsDoc`, `Format`, `FileName`) < `preserve` (a TOML save merged into the parsed file) < `store` < `writer` (`SettingsWriter`: one key patched in place) < `spaces_storage` < `watch` < `schema` (keys, pages, controls, the doc tables) < `target` (`SettingsTarget`) < `region` (`HourCycle`) < `appearance` (file, settings structs) < `portal` < `live` (feature `live`: `org.bardo.SettingsModule1`) < `environment` (feature `dioxus`) < `icon_assets` < `units` |
-| `ui-blitz` | `error`, `contexts`, `setup`, `document` (node ref, origin, wake) < `focus`, `measure`, `resolved` (`Resolved::length` and `number`: a token's value from a node's computed style, after the cascade; `BlitzTokens`, the `TokenSource` `use_tokens` and `use_resolved` read through), `reveal`, `phase` (the frame phase: `Phase`, its book of watches and queued writes, the reads), `edit` (+ ime, tree, geometry), `file_drop`, `clipboard` (+ `read`: reads on a worker, with a wait and a size cap), `frames` < `host` (`BlitzHost`, `use_standalone_host`) < `window` (build, place, platform, requests, hover, drop, shell), `window_scroll` (`WindowScroll`: winit's wheel and keys as `blitz_kit::scroll` inputs and as gestures, the fingers' glide for eased listeners, `ScrollHandle`), `window_fit` (the cap), `size_ledger`, `sized_window` < `window_sizer`, `screen_area` < `window_screen`, `startup_token`, `window_activate` (raising a window, with or without a token), `link_open` (a clicked link opened on a worker, failures reported, `mailto` without `attach`) < `xdg_activation` and `quire_window` (the window's shadow and corner clip, asked of the compositor; `window_frame` holds it per window) over `wayland_surface` (Linux; the one `unsafe`) < `app_life` (`LastWindowClosed`, the pure `Lifecycle`), `app_handle` (`AppHandle`, `AppHold`) < `launch`, `open_window` < `texture_layer` (model, fit, convert, gpu, widget, view) < features `pdf`, `print`, `spell`, `menus` (`service` over `wire`, over the pure `ds::menus::export`) |
+| `ui-blitz` | `error`, `contexts`, `setup`, `document` (node ref, origin, wake) < `focus`, `measure`, `resolved` (`Resolved::length` and `number`: a token's value from a node's computed style, after the cascade; `BlitzTokens`, the `TokenSource` `use_tokens` and `use_resolved` read through), `reveal`, `phase` (the frame phase: `Phase`, its book of watches and queued writes, the reads), `edit` (+ ime, tree, geometry), `file_drop`, `clipboard` (+ `read`: reads on a worker, with a wait and a size cap), `frames` < `host` (`BlitzHost`, `use_standalone_host`) < `window` (build, place, platform, requests, hover, drop, shell), `window_scroll` (`WindowScroll`: winit's wheel and keys as `blitz_kit::scroll` inputs and as gestures, the fingers' glide for eased listeners, `ScrollHandle`), `window_fit` (the cap), `size_ledger`, `sized_window` < `window_sizer`, `screen_area` < `window_screen`, `startup_token`, `window_activate` (raising a window, with or without a token), `link_open` (a clicked link opened on a worker, failures reported, `mailto` without `attach`) < `xdg_activation` and `bardo_window` (the window's shadow and corner clip, asked of the compositor; `window_frame` holds it per window) over `wayland_surface` (Linux; the one `unsafe`) < `app_life` (`LastWindowClosed`, the pure `Lifecycle`), `app_handle` (`AppHandle`, `AppHold`) < `launch`, `open_window` < `texture_layer` (model, fit, convert, gpu, widget, view) < features `pdf`, `print`, `spell`, `menus` (`service` over `wire`, over the pure `ds::menus::export`) |
 | `ui-harness` | `input` (`Input` and its parts) < `query` (the `Harness` read methods) < `headless` (document, painter, backend, gpu paint, clock, settle) < `harness` (`Harness`) < `snapshot`; `inset` (the content inset check: `scene` < `read`, `measure`, `policy`, `offence`) |
 | `ui-conformance` | `tests/<component>.rs`, `tests/support/` |
 | `ds-gallery` | `axes`, `args`, `page`, `registry`, `pages/<group>/<component>.rs`, `sheet`, `snapshot`, `app` |
@@ -193,7 +193,7 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 
 ### Moved to sill (2026-10-07: `ui-shell` -> sill's `shell-kit`)
 
-Quire's `ui-shell` kept what an app on any platform takes: `accounts`, `helpers`, `confirm`. The
+Bardo's `ui-shell` kept what an app on any platform takes: `accounts`, `helpers`, `confirm`. The
 surfaces only our desktop shell draws moved, with their tokens, sheets, goldens, behaviour tests
 and emoji assets, to `crates/sill-shell-kit` in the sill workspace under the same module names:
 `bar`, `battery`, `catalog`, `clock`, `control_center`, `date_picker`, `dock`, `emoji`,
@@ -262,9 +262,9 @@ The single place a concept lives. Extend it; never write a second one.
 | A floating pill of controls, and its media slots (progress bar, level) | `ds::components::chrome::capsule` (`Capsule`, `CapsuleSlot::{Item, Readout, Divider, Scrub, Level}`, `ScrubEvent`, `SlotPriority`, `RankedSlot`, `fit`) |
 | Scope-owned tasks, spawning | `ui-style::task` (`spawn_in`); the `Spawner` trait in `base-spawn` |
 | Base vocabulary (`Availability`, `Switch`, `Check`) | `ui-core::vocab`; `Fraction` in `base-ids` |
-| Standard actions, app actions, chords, `Primary`, the keymap and its sources, shortcut display | chordkit (own repo); quire keeps none of it. `ui-core::standard_action` re-exports `StandardAction`, `SpaceNumber` and `Conflict`; a `Shortcut` is the design vocabulary over a chordkit `DefaultChord` (`ui-core::command::shortcut_chord`, `shortcut_text`) |
+| Standard actions, app actions, chords, `Primary`, the keymap and its sources, shortcut display | chordkit (own repo); Bardo keeps none of it. `ui-core::standard_action` re-exports `StandardAction`, `SpaceNumber` and `Conflict`; a `Shortcut` is the design vocabulary over a chordkit `DefaultChord` (`ui-core::command::shortcut_chord`, `shortcut_text`) |
 | A key event becoming a chordkit key press, resolving to an action, and the type-ahead and wheel-zoom tests | `ui-core::command` (`key_input`, `resolve`, `types_text`, `holds_primary`); the one place a toolkit modifier is read |
-| The window's keymap: loading from the injected source, reload, registering apps' actions, `on_action`, drawing a shortcut for the platform | `ds::keys` (`Keys`, `KeySource`, `use_keys`, `on_action`); quire's own actions are in `keys::quire_actions`; the launch's source and the detected default are `ui-blitz` (`AppConfig::with_keymap_source`, `keymap_detect`) |
+| The window's keymap: loading from the injected source, reload, registering apps' actions, `on_action`, drawing a shortcut for the platform | `ds::keys` (`Keys`, `KeySource`, `use_keys`, `on_action`); Bardo's own actions are in `keys::bardo_actions`; the launch's source and the detected default are `ui-blitz` (`AppConfig::with_keymap_source`, `keymap_detect`) |
 | PNG, base64 | `ui-core::codec` |
 | The crate error | `ui-core::error::DsError`; settings: `ui-settings::error::SettingsError` |
 | Design tokens (colour, duration, easing, spacing, shape, type, layer) | `ui-style::tokens` (one file per family, `impl Token`) |
@@ -777,7 +777,7 @@ are reached as `ds::components::app::X`, not through the prelude.
    `LintConfig`, never from a hand list.
 3. Tests: `ui-lint/tests/<name>.rs` with a failing and a passing fixture; then
    `ds`, `ui-shell` and `examples/consumer` must still pass their own lint tests.
-4. Message the sill session before it lands: sill reads quire by path, so a new failing
+4. Message the sill session before it lands: sill reads Bardo by path, so a new failing
    rule breaks sill master at once.
 
 ### Add a closed vocabulary (a `Word` enum)
@@ -844,7 +844,7 @@ Add a variant to `ds_extensions::Capability` (its word is the manifest's capabil
 | Host behaviour (frames, clipboard, edit, drop, spell, PDF) | `Harness` on the real `BlitzHost` | `ui-blitz/tests/<topic>.rs` |
 | Settings | `Store` on `ConfigRoot::Scratch`, `SystemPrefsSource::Fixed` | `ui-settings/tests` |
 | Pixels | `Harness::render`, golden in `tests/snapshots/`, re-blessed only with a reason in the commit message | the owning crate |
-| Content inset (text, glyphs, images 8 px off a painted box edge) | `ds_harness::inset::assert_insets(&harness, &Policy::quire())` | `ds-gallery/src/inset_tests.rs` (every page, light and dark); `ui-harness/tests/it/inset.rs` (the detector) |
+| Content inset (text, glyphs, images 8 px off a painted box edge) | `ds_harness::inset::assert_insets(&harness, &Policy::bardo())` | `ds-gallery/src/inset_tests.rs` (every page, light and dark); `ui-harness/tests/it/inset.rs` (the detector) |
 | A consumer | `examples/consumer/tests/it/coherence.rs` | `examples/consumer` |
 
 The one harness is `ui-harness`: `Harness` implements `Driver` and `DocQuery` over one headless
@@ -863,7 +863,7 @@ The content inset check lives in `ui-harness`, not `ui-lint` or `ui-conformance`
 *laid-out* geometry (the glyph runs and border boxes of a Blitz document), which `ui-lint` (strings
 only, no Blitz) cannot, and `ui-conformance` is test-only (a consumer cannot depend on its
 tests), while `ui-harness` is the dev-dependency every consumer already has and the one crate whose
-`DocQuery` reads any rendered document, quire's or an app's. Its `Policy::quire()` allow table names
+`DocQuery` reads any rendered document, Bardo's or an app's. Its `Policy::bardo()` allow table names
 the components the design holds under `--s-8`, each with its reason; an app adds its own.
 
 ## 9. Repo rules
@@ -889,7 +889,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
   `check-portable.sh .` builds `cargo check --workspace --no-default-features` and fails when a
   file outside `.portable-allow` names zbus: ui-settings, ui-helpers and ui-blitz keep their
   desktop integration (portal, live modules, PackageKit, xdg-activation, print portal, menus)
-  behind `quire-desktop` (default on), and each workspace member forwards it.
+  behind `desktop` (default on), and each workspace member forwards it.
 
   `check-consumer.sh` builds, clippies (`-D warnings`) and tests `examples/consumer`, its own
   cargo workspace that `--workspace` does not reach, so `CONSUMING.md`'s snippets and coherence
@@ -915,14 +915,14 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 - **Design-system rules:** every class is prefixed `ds-`; variants go in `data-variant` and
   `data-size`, state in `aria-*`; every colour, duration, easing, keyframe and font comes from
   the token table. A missing component or token is added here, never patched in a consumer.
-- **Coherence rules for every consumer:** no stylesheet outside quire contains a hex/rgb/hsl
+- **Coherence rules for every consumer:** no stylesheet outside Bardo contains a hex/rgb/hsl
   colour, a raw `ms`/`s` duration, a raw `cubic-bezier`, a `@keyframes`, a `font-family` or a
   `:root` selector, and none styles `.ds-*` or `[data-theme|accent|motion|material]`
   (`ds_lint::stylesheet`, which every downstream crate runs in its own tests); no surface or app
   writes raw `button`/`input`/menu markup (`ds_lint::markup` over an SSR render).
   `CONSUMING.md` section 5 has the tests.
 - **Lint profile:** `Profile::Strict` is the default and runs every rule but `OffGrammarTiming`
-  (HIG guardrails report as warnings); `Profile::Details` adds the details grammar's timing. Consumers read quire by path, so
+  (HIG guardrails report as warnings); `Profile::Details` adds the details grammar's timing. Consumers read Bardo by path, so
   a new failing rule breaks every consumer's tests at once: tell their owners before it lands.
 - **Time in `ds*`** is read only through `ds_core::time::{now, since, sleep}`, never
   `Instant::now()` or `futures_timer` directly (`ds/tests/it/clock_rule.rs`), so the virtual
@@ -953,9 +953,9 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 - **The pinned dependency block's source of truth is `docs/workspace-deps.toml`**; the root
   `Cargo.toml` and every consumer copy it verbatim. `blitz-embed` copies it too. The block holds the
   `blitz-embed` line, a git dependency at a pinned rev (public repo). Each workspace root that
-  builds it from a sibling checkout (quire, layer-shell-host, sill) adds
+  builds it from a sibling checkout (Bardo, layer-shell-host, sill) adds
   `[patch."https://github.com/Bardo-DE/blitz-kit"] blitz-embed = { path = "../blitz-embed/blitz-embed" }`,
-  so local builds use one checkout while a git consumer of quire, whose `[patch]` is ignored,
+  so local builds use one checkout while a git consumer of Bardo, whose `[patch]` is ignored,
   gets the pinned rev. A blitz-embed bump is a rev change in the block, in all three repos.
 - **`docs/licensing-references.md`** is the verified licence table the borrowing rules cite.
 - **Docs:** `DESIGN.md` names each module as `crate::module` and moves with every crate move.
@@ -963,14 +963,14 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 ## 10. User styles
 
 A person tunes their desktop in real time by editing CSS files, and can change the whole look
-with one (customization design section 7). quire owns the mechanism so every consumer (sill,
-mailo, any app on quire) gets it the same way.
+with one (customization design section 7). Bardo owns the mechanism so every consumer (sill,
+mailo, any app on Bardo) gets it the same way.
 
 The cascade, lowest to highest:
 
 | # | Sheet | From | Rank |
 |---|---|---|---|
-| 1 | the design system | quire | `@layer ds` |
+| 1 | the design system | Bardo | `@layer ds` |
 | 2 | the app's own sheet | the app (`AppStyle`) | `@layer app` |
 | 3 | the chosen look | the app fills `Styles::look` (finding look Extensions is not `Ds`'s job) | `@layer look` |
 | 4 | the person's desktop-wide style | `~/.config/bardo/style.css` | unlayered |
@@ -978,14 +978,14 @@ The cascade, lowest to highest:
 
 | Piece | Home | What it is |
 |---|---|---|
-| The files | `ui-style::kit::UserStyle`, `ui-settings::user_style` | `UserStyle(String)` (a value in `ui-style`, so `ds` can take it as a prop; re-exported by `ui-settings`), a `SettingsDoc` with `FILE = "style.css"`, `Format::Css` (raw text, never parsed at load). The same document type is the app's file (`AppName("<app>")`) and the desktop-wide one (`AppName::QUIRE`). A missing file is an empty style. |
+| The files | `ui-style::kit::UserStyle`, `ui-settings::user_style` | `UserStyle(String)` (a value in `ui-style`, so `ds` can take it as a prop; re-exported by `ui-settings`), a `SettingsDoc` with `FILE = "style.css"`, `Format::Css` (raw text, never parsed at load). The same document type is the app's file (`AppName("<app>")`) and the desktop-wide one (`AppName::BARDO`). A missing file is an empty style. |
 | The three sheets | `ui-style::kit::Styles { look: LookStyle, desktop: UserStyle, app: UserStyle, homes: StyleHomes }` | one value for sheets 3-5, empty by default; `Styles::drawn(bool)` is what `Ds` draws, `Styles::dropped()` what the reach rule cut, `Styles::fingerprint()` the hash the crash guard keeps |
-| Live reload | `ui-settings::Store::watch::<UserStyle>()` | the same watch every settings file uses (rename-safe, debounced); a program watches both its own file and `AppName::QUIRE`'s; each change publishes the whole text |
+| Live reload | `ui-settings::Store::watch::<UserStyle>()` | the same watch every settings file uses (rename-safe, debounced); a program watches both its own file and `AppName::BARDO`'s; each change publishes the whole text |
 | Cascade layers | `ui-style::css::layers` (`DS`, `APP`, `LOOK`, `ORDER`, `app()`, `look()`), `ds::prelude::AppStyle` | the whole design-system stylesheet (every kit) is `@layer ds { ... }`, opened by the statement `@layer ds, app, look;`; a consumer's own sheets are `@layer app` (`AppStyle { css }` writes the same statement, so the order holds whichever sheet parses first); the look is `@layer look` (`layers::look`); the person's two sheets are unlayered. An unlayered rule beats every layered rule and a later layer beats an earlier one, whatever the specificity, so the order of who wins is the person's app sheet, their desktop-wide sheet, the look, app, then ds. A look beats the app on purpose: it restyles every app the same way. Inside `ds` the kits keep the order and specificity they always had (the marker order below); there are no per-kit sub-layers, because a sub-layer would let a Shell rule beat a Components rule by rank alone. |
 | Cascade slot | `ui-style::kit::KitRank::User` | always after every kit: a user kit's sections are written after `@layer ds { }`, unlayered. A user rule wins over the design system by the cascade layer, never by `!important` or specificity |
 | Rendering | `ds::prelude::Ds { styles: ReadSignal<Styles>, custom_styles: bool }` | the root renders each non-blank sheet in its own `<style data-ds-style=look \| desktop \| app>` after the design-system stylesheet, in cascade order (no element for a blank sheet); every surface root re-renders when it changes. `custom_styles` is `appearance.custom_styles` ("Use my styles", a `bool` switch, agent-settable): `false` draws none of the three |
 | What a sheet may fetch | `ui-style::kit::reach::within` | `url()`, `@import` and `@font-face` in sheets 3-5 may name `data:` or a file inside the sheet's own folder (`StyleHomes`); the rest is rewritten away before the text goes into `<style>` (a `url()` becomes an empty `data:` URL, an `@import` is removed) and recorded as `Dropped`. Blitz's net provider cannot tell which sheet asked, so the rule is a rewrite, not a provider check; an app's `FileRoots` still decide which files the document may read at all |
-| Crash guard | `ui-blitz::styles_guard::StylesGuard`, `use_styles_guard`, `ds::prelude::StylesOffNotice` | before the first window loads the sheets, `begin` writes `<state>/bardo/styles-guard/<program>` (the fingerprint of the three sheets and `good = false`); `use_styles_guard` marks it `good` after the first frame plus five seconds alive; the last two starts with the same sheets never `good` turn the styles off (the pure `decide`, `false`), and the app draws with `custom_styles: false` and shows `StylesOffNotice` ("Turn On Again" calls `turn_on_again`); a change to any sheet clears it (`changed`). The state directory is a parameter (`ConfigRoot::state_dir(AppName::QUIRE)`; a test passes a scratch one) |
+| Crash guard | `ui-blitz::styles_guard::StylesGuard`, `use_styles_guard`, `ds::prelude::StylesOffNotice` | before the first window loads the sheets, `begin` writes `<state>/bardo/styles-guard/<program>` (the fingerprint of the three sheets and `good = false`); `use_styles_guard` marks it `good` after the first frame plus five seconds alive; the last two starts with the same sheets never `good` turn the styles off (the pure `decide`, `false`), and the app draws with `custom_styles: false` and shows `StylesOffNotice` ("Turn On Again" calls `turn_on_again`); a change to any sheet clears it (`changed`). The state directory is a parameter (`ConfigRoot::state_dir(AppName::BARDO)`; a test passes a scratch one) |
 | Public selector surface | `ds::selectors` (a table, and its doc page) | what a user stylesheet may rely on: `[data-surface=<name>]` on every surface root; `.ds-<component>` on every component root; the parts each component lists as public (`.ds-<component>-<part>`); `data-variant`, `data-size`, `data-state`, `aria-*`; every token variable (`--<prefix><slug>`). Anything else is internal and may change without notice. |
 | Report | `ui-lint::user_stylesheet(css, &Kits) -> Vec<UserStyleNote>` | report-only, never blocks loading: unknown variables, selectors outside the public surface, `url()` that is not a local `file:`/`data:` URL, parse errors with line numbers, and cost notes (heavy blur, large shadows, an endless animation, `transition: all`, a property with no effect here; limits in `ds_lint::limits`). `user_stylesheet_with` also takes the parts apps publish (`ds::selectors::AppSelectors`) |
 
@@ -1021,4 +1021,4 @@ Rules:
   (section above), so the rest of the sheet still applies; the cuts are listed for the notes.
 - **Selector spelling**: an unprefixed attribute selector (`[data-surface=bar]`) matches on
   Blitz since the fork's `1b23fbd9` (dioxus-native-dom writes attributes with no namespace, as
-  the DOM does); the `*|` form still matches, and quire's own generated sheet keeps writing it.
+  the DOM does); the `*|` form still matches, and Bardo's own generated sheet keeps writing it.

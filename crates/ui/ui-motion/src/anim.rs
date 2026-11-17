@@ -3,10 +3,10 @@
 //! 92 variants: the canonical keyframe set minus `part`, plus the three heavy exits an unread row plays 15 % slower
 //! (principle 6): `FoldHeavy`, `CrumpleHeavy` and `CurlHeavy`, each its base keyframes at a
 //! heavy duration (so `settle()` never drops a node before its
-//! CSS ends), plus `ChipFlash`, quire's own keyframe for the person chip's 1200 ms ring, plus four
+//! CSS ends), plus `ChipFlash`, Bardo's own keyframe for the person chip's 1200 ms ring, plus four
 //! assignment rows that play a catalogue keyframe at another
 //! recipe (section 5 rows 7, 26, 37 and 64): `PaletteFade`,
-//! `PeekFullIn`, plus `MenuOut`, quire's own fade for a menu
+//! `PeekFullIn`, plus `MenuOut`, Bardo's own fade for a menu
 //! closed by Escape or an outside click (bar gaps), plus `CmdkRise`, `cmdk-in` without its fade,
 //! for a command panel that must be opaque on its first frame, plus four for
 //! states the catalogue has no motion for: `FadeIn` (C's veil, to `--veil`, where S's `fade`

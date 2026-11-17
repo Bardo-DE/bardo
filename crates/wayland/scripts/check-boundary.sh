@@ -66,7 +66,7 @@ else
   echo "boundary holds: no unsafe in src/"
 fi
 
-# 5. Clean room: every interface is ours (quire_*).
+# 5. Clean room: every interface is ours (bardo_*).
 if grep -nE '<interface name="' protocols/*.xml | grep -vE 'name="bardo_[a-z0-9_]+_v1"'; then
   echo "LEAK: an interface outside bardo_*_v1"
   fail=1

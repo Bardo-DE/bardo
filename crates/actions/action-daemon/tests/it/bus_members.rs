@@ -70,7 +70,7 @@ fn cua_ask() -> CuaAsk {
         run: provenance::RunId::parse("r-1").expect("run"),
         step: 1,
         app: mail(),
-        trust: WindowTrust::Quire,
+        trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space("work"),
         action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,

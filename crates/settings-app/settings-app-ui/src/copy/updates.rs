@@ -15,12 +15,12 @@ const TWO_DAYS: i64 = 2 * DAY;
 
 /// What the daily check is, as the page tells it.
 pub(crate) fn automatic() -> &'static str {
-    "Quire checks once a day and asks before it installs anything."
+    "Bardo checks once a day and asks before it installs anything."
 }
 
-/// The version the row is about: "Quire 0.3.1", or "Quire" when none is known.
+/// The version the row is about: "Bardo 0.3.1", or "Bardo" when none is known.
 pub(crate) fn title(version: Option<&str>) -> String {
-    version.map_or_else(|| "Quire".to_owned(), |version| format!("Quire {version}"))
+    version.map_or_else(|| "Bardo".to_owned(), |version| format!("Bardo {version}"))
 }
 
 /// What is true of the version, under the title.

@@ -1,4 +1,4 @@
-//! The planner's `quire_read` call, read part by part so a model that gets one part wrong is told
+//! The planner's `bardo_read` call, read part by part so a model that gets one part wrong is told
 //! which one and what it looks like, instead of the turn failing on an unreadable reply.
 
 use crate::planner::log_unreadable;
@@ -69,11 +69,11 @@ pub(crate) fn read_fault_text(fault: &ReadFault) -> String {
 fn not_text(handle: Handle, shape: &HandleShape) -> String {
     match shape {
         HandleShape::Entity(kind) => format!(
-            "#{n} is a {kind}, not text: read it first with the action that reads a {kind} (such as {kind}.read) and give quire_read the handle that call returns",
+            "#{n} is a {kind}, not text: read it first with the action that reads a {kind} (such as {kind}.read) and give bardo_read the handle that call returns",
             n = handle.0
         ),
         HandleShape::File => format!(
-            "#{} is a file, not text; quire_read takes only text handles",
+            "#{} is a file, not text; bardo_read takes only text handles",
             handle.0
         ),
         HandleShape::Text => format!("#{} is text; name it as an input again", handle.0),

@@ -1,4 +1,4 @@
-//! The numbers the machine runs on: constants, `dock.*` settings plus quire's motion tokens
+//! The numbers the machine runs on: constants, `dock.*` settings plus Bardo's motion tokens
 //! (no easing follows the motion level). Built once per settings change, never hard-coded.
 
 use crate::dock::tokens::DockTokens;
@@ -8,7 +8,7 @@ use ui_components::base::time::stamp::Ms;
 use ui_components::motion::hover_intent::HoverProfile;
 use ui_components::style::tokens::delay::TipDelay;
 use ui_components::style::tokens::easing::{CubicBezier, EasingToken};
-// `eased` is quire's one curve evaluator, which the dock's magnification shares with the reveal.
+// `eased` is Bardo's one curve evaluator, which the dock's magnification shares with the reveal.
 pub(super) use shell_ui_kit::autohide::eased;
 use shell_ui_kit::autohide::{self, Timing};
 
@@ -27,7 +27,7 @@ pub(crate) const REMOVE_THRESHOLD_PX: i32 = 64;
 /// How long a dragged file waits on an app before it opens.
 const SPRING_LOAD: Ms = Ms(500);
 
-/// The label's first delay: quire's `HoverProfile::Label` (100 ms; design/30 section 1.2), where
+/// The label's first delay: Bardo's `HoverProfile::Label` (100 ms; design/30 section 1.2), where
 /// it was 350 ms (`--d-fly`) before the dock followed `DockLabel`.
 fn fly_delay_ms() -> Ms {
     Ms(u64::try_from(HoverProfile::Label.open(TipDelay::default()).as_millis()).unwrap_or(100))

@@ -70,7 +70,7 @@ pub const SURFACE_ATTRIBUTE: &str = "data-surface";
 
 /// A public part that was renamed.
 ///
-/// For one quire release the part carries both names: the old class stays on the element and in
+/// For one Bardo release the part carries both names: the old class stays on the element and in
 /// this table, so a person's stylesheet keeps working, and the release notes list it under
 /// "Styles". The release after it deletes the row.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

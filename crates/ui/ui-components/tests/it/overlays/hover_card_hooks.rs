@@ -75,7 +75,7 @@ fn name_rect() -> Rect {
 }
 
 /// A sender card opened from the caller's own hook (here, as the page mounts), with no
-/// target element of quire's anywhere.
+/// target element of Bardo's anywhere.
 #[component]
 fn HookKeyed(anchor: HoverAnchor, flow: Flow) -> Element {
     let driver = use_hover_intent();

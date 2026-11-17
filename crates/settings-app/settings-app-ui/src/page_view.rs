@@ -1,5 +1,5 @@
 //! One page: its blocks, or, when a drill-in row of its advanced keys was pressed, that section's
-//! page under quire's page header with its back button.
+//! page under Bardo's page header with its back button.
 
 use crate::advanced_view::{AdvancedPage, Level, level_title};
 use crate::env::Env;

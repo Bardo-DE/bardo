@@ -1,5 +1,5 @@
 //! The bar's titles made from an app's menus: the first menu is the app's own (About, Settings,
-//! Quit, titled with its name in quire's order) and goes into the bold app-name menu; the others
+//! Quit, titled with its name in Bardo's order) and goes into the bold app-name menu; the others
 //! are titles of their own after it.
 
 use crate::tray::{TrayMenuEntry, TrayMenuKind};

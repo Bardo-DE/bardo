@@ -1,6 +1,6 @@
 //! The Appearance module.
 //!
-//! The theme as a quire `SegmentedControl`, its value from `use_appearance`, a change written by
+//! The theme as a Bardo `SegmentedControl`, its value from `use_appearance`, a change written by
 //! `write_appearance` (the file the daemon's appearance watch then publishes to every surface). The
 //! accent is not here: it lives in Settings (cleanup DECISIONS: the control center keeps the dark-
 //! mode switch only).

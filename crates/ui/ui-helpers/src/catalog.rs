@@ -94,7 +94,7 @@ struct RawEntry {
     packages: RawPackages,
 }
 
-/// Unknown family keys are ignored, so a newer file still loads on an older quire.
+/// Unknown family keys are ignored, so a newer file still loads on an older bardo.
 #[derive(Deserialize, Default)]
 struct RawPackages {
     #[serde(default)]

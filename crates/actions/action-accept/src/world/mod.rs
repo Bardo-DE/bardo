@@ -77,7 +77,7 @@ pub struct Binaries {
     /// porter's packaged `inferd`.
     pub inferd: PathBuf,
     /// `accept-bardo-do`.
-    pub quire_do: PathBuf,
+    pub bardo_do: PathBuf,
     /// `accept-actions-mcp`: the bridge an external agent starts.
     pub action_mcp: PathBuf,
     /// `accept-bus-relay`: a bus connection that is a process of its own ([`World::connect_as`]).
@@ -104,7 +104,7 @@ impl Binaries {
             memoryd: PathBuf::from(env!("BARDO_ACCEPT_MEMORYD")),
             accountd: PathBuf::from(env!("BARDO_ACCEPT_ACCOUNTD")),
             inferd: PathBuf::from(env!("BARDO_ACCEPT_INFERD")),
-            quire_do: beside("accept-bardo-do"),
+            bardo_do: beside("accept-bardo-do"),
             action_mcp: beside("accept-actions-mcp"),
             relay: beside("accept-bus-relay"),
             engine_cache: env(ENGINE_CACHE_VAR)

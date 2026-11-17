@@ -10,7 +10,7 @@ use std::path::Path;
 
 const NO_READS: &str = r#"
     @id("no-reads")
-    forbid (principal, action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"], resource)
+    forbid (principal, action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"], resource)
     when { resource.effect == "read" };
 "#;
 
@@ -201,11 +201,11 @@ fn an_edited_auto_or_manual_folder_is_not_read_and_is_named_as_unused() {
 }
 
 #[test]
-fn a_rules_file_with_a_bad_hand_edit_is_named_and_keeps_the_nevers_quire_wrote() {
+fn a_rules_file_with_a_bad_hand_edit_is_named_and_keeps_the_nevers_bardo_wrote() {
     let scratch = Scratch::new();
     let dirs = scratch.dirs();
     let never = "@id(\"sg-0123456789abcdef\")\n@why(\"You said never.\")\n\
-        forbid (principal, action == Quire::Action::\"perform\", resource)\n\
+        forbid (principal, action == Bardo::Action::\"perform\", resource)\n\
         when { principal.kind != \"user\" };";
     put(&dirs.person, "never.cedar", &format!("{never}\n\nforbid ("));
     let loaded = load_policies(&dirs).expect("loads");

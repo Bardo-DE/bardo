@@ -17,7 +17,7 @@ pub fn binaries() -> Binaries {
         memoryd: env!("BARDO_ACCEPT_MEMORYD").into(),
         accountd: env!("BARDO_ACCEPT_ACCOUNTD").into(),
         inferd: env!("BARDO_ACCEPT_INFERD").into(),
-        quire_do: env!("CARGO_BIN_EXE_accept-bardo-do").into(),
+        bardo_do: env!("CARGO_BIN_EXE_accept-bardo-do").into(),
         action_mcp: env!("CARGO_BIN_EXE_accept-actions-mcp").into(),
         relay: env!("CARGO_BIN_EXE_accept-bus-relay").into(),
         engine_cache: None,
@@ -54,7 +54,7 @@ pub const FIRST_USE: Cassette = Cassette(include_str!(
 pub const FLOW_C: Cassette = Cassette(include_str!("../../../dev/accept/cassettes/flow-c.jsonl"));
 
 /// Flow (c) where the planner replies to the thread's sender: it asks for the sender with
-/// `quire_related` (the sender is the relation `from` of the thread), and sends to that handle.
+/// `bardo_related` (the sender is the relation `from` of the thread), and sends to that handle.
 pub const FLOW_C_RELATED: Cassette = Cassette(include_str!(
     "../../../dev/accept/cassettes/flow-c-related.jsonl"
 ));

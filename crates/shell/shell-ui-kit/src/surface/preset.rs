@@ -19,7 +19,7 @@ pub struct PanelBlur {
 }
 
 impl PanelBlur {
-    /// A sheet's panel: rounded as quire's `.ds-sheet` (`--r-panel`).
+    /// A sheet's panel: rounded as Bardo's `.ds-sheet` (`--r-panel`).
     #[must_use]
     pub const fn sheet(id: &'static str) -> PanelBlur {
         PanelBlur {

@@ -1,4 +1,4 @@
-//! The owner check quire's live client asks, answered from the desktop's caller table.
+//! The owner check Bardo's live client asks, answered from the desktop's caller table.
 
 use crate::allow::allowing;
 use crate::services::{SERVICE_PROOF, required_role};

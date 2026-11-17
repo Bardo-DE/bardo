@@ -45,13 +45,13 @@
 permit (
   principal,
   action in [
-    Quire::Action::"perform",
-    Quire::Action::"search",
-    Quire::Action::"preview",
-    Quire::Action::"suggest",
-    Quire::Action::"read_context",
-    Quire::Action::"undo",
-    Quire::Action::"index_push"
+    Bardo::Action::"perform",
+    Bardo::Action::"search",
+    Bardo::Action::"preview",
+    Bardo::Action::"suggest",
+    Bardo::Action::"read_context",
+    Bardo::Action::"undo",
+    Bardo::Action::"index_push"
   ],
   resource
 );
@@ -61,8 +61,8 @@ permit (
 permit (
   principal,
   action in [
-    Quire::Action::"perform_unasked",
-    Quire::Action::"perform_unjudged"
+    Bardo::Action::"perform_unasked",
+    Bardo::Action::"perform_unjudged"
   ],
   resource
 )
@@ -73,8 +73,8 @@ when { resource.effect == "read" };
 permit (
   principal,
   action in [
-    Quire::Action::"perform_unasked",
-    Quire::Action::"perform_unjudged"
+    Bardo::Action::"perform_unasked",
+    Bardo::Action::"perform_unjudged"
   ],
   resource
 )
@@ -85,8 +85,8 @@ when { principal.kind == "user" && context.origin == "launcher" };
 permit (
   principal,
   action in [
-    Quire::Action::"perform_unasked",
-    Quire::Action::"perform_unjudged"
+    Bardo::Action::"perform_unasked",
+    Bardo::Action::"perform_unjudged"
   ],
   resource
 )
@@ -106,7 +106,7 @@ when {
 @id("undoable-judged")
 permit (
   principal,
-  action == Quire::Action::"perform_unasked",
+  action == Bardo::Action::"perform_unasked",
   resource
 )
 when {
@@ -129,8 +129,8 @@ unless {
 permit (
   principal,
   action in [
-    Quire::Action::"perform_unasked",
-    Quire::Action::"perform_unjudged"
+    Bardo::Action::"perform_unasked",
+    Bardo::Action::"perform_unjudged"
   ],
   resource
 )
@@ -146,8 +146,8 @@ when {
 permit (
   principal,
   action in [
-    Quire::Action::"perform_unasked",
-    Quire::Action::"perform_unjudged"
+    Bardo::Action::"perform_unasked",
+    Bardo::Action::"perform_unjudged"
   ],
   resource
 )
@@ -165,8 +165,8 @@ when {
 permit (
   principal,
   action in [
-    Quire::Action::"perform_unasked",
-    Quire::Action::"perform_unjudged"
+    Bardo::Action::"perform_unasked",
+    Bardo::Action::"perform_unjudged"
   ],
   resource
 )
@@ -183,8 +183,8 @@ when {
 permit (
   principal,
   action in [
-    Quire::Action::"perform_unasked",
-    Quire::Action::"perform_unjudged"
+    Bardo::Action::"perform_unasked",
+    Bardo::Action::"perform_unjudged"
   ],
   resource
 )
@@ -201,7 +201,7 @@ when {
 @why("This reaches into a different Space than the one you are working in.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when { context.target_space == "other" && principal.kind != "user" };
@@ -211,7 +211,7 @@ when { context.target_space == "other" && principal.kind != "user" };
 @why("This changes a lot of things at once.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {
@@ -225,7 +225,7 @@ when {
 @why("This app asks every time before it does this.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when { resource.reach == "ask_always" && principal.kind != "user" };
@@ -236,7 +236,7 @@ when { resource.reach == "ask_always" && principal.kind != "user" };
 @why("A terminal cannot tell you from a program typing in it, so it asks.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {
@@ -250,7 +250,7 @@ when {
 @why("Deleting from a terminal always asks.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when { principal.kind == "cli" && resource.effect == "destructive" };
@@ -261,7 +261,7 @@ when { principal.kind == "cli" && resource.effect == "destructive" };
 @why("You chose to be asked at each change in another app's window.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {
@@ -280,7 +280,7 @@ when {
 @why("This is the first time it has been allowed to do this here.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when {
@@ -291,8 +291,8 @@ when {
 }
 unless {
   (context.run == "allowed" && context.rows.screen == "once") ||
-  ((resource in Quire::App::"org.bardo.Companion" ||
-    resource in Quire::App::"org.bardo.Memory") &&
+  ((resource in Bardo::App::"org.bardo.Companion" ||
+    resource in Bardo::App::"org.bardo.Memory") &&
    (resource.effect == "undoable_write"))
 };
 
@@ -304,8 +304,8 @@ unless {
 @why("Another app asked for this, so it checks with you before changing anything.")
 forbid (
   principal,
-  action in [Quire::Action::"perform_unasked", Quire::Action::"perform_unjudged"],
+  action in [Bardo::Action::"perform_unasked", Bardo::Action::"perform_unjudged"],
   resource
 )
 when { principal.kind == "mcp" && resource.effect != "read" }
-unless { resource in Quire::App::"org.bardo.AcpAgent" };
+unless { resource in Bardo::App::"org.bardo.AcpAgent" };

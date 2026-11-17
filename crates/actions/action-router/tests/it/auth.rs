@@ -199,7 +199,7 @@ fn a_caller_acts_in_the_first_of_its_roles_that_may_make_the_call() {
 }
 
 #[test]
-fn a_terminal_gets_exactly_the_members_quire_do_uses() {
+fn a_terminal_gets_exactly_the_members_bardo_do_uses() {
     let cli: Vec<Member> = Member::ALL
         .into_iter()
         .filter(|m| permits(CallerRole::Cli, *m))

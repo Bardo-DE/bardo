@@ -1,6 +1,6 @@
-//! `SheetView` to quire's `ui-shell::accounts` props: the one place porter's sheet values become
+//! `SheetView` to Bardo's `ui-shell::accounts` props: the one place porter's sheet values become
 //! what the drawn parts take (PLAN §2.4, design/31 §5.1). It stands in `shell-overlays`, not
-//! `shell-model`: the props are quire's (they name `MarkProvider` and the `Word` enums of
+//! `shell-model`: the props are Bardo's (they name `MarkProvider` and the `Word` enums of
 //! `ui-shell`), and `shell-model` may reach no design system (`scripts/check-boundary.sh`).
 //! Plain values in, plain values out; the draft supplies what the person has typed.
 //!
@@ -414,7 +414,7 @@ pub(super) fn role_of(kind: FieldKind) -> FieldRole {
         FieldKind::OutgoingSecurity => FieldRole::OutgoingSecurity,
         FieldKind::SessionUrl => FieldRole::SessionUrl,
         FieldKind::ServerUrl => FieldRole::ServerUrl,
-        // A name has no role of its own in quire's form yet, so it is the plain server field.
+        // A name has no role of its own in Bardo's form yet, so it is the plain server field.
         FieldKind::Server | FieldKind::Name => FieldRole::Server,
     }
 }

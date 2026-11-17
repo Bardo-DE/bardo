@@ -19,7 +19,7 @@
 //! ) -> Result<Option<Candidate>, GrantsError> {
 //!     Ok(match grants.find(need, DataClass::Photos, Usage::Interactive).await? {
 //!         Found::One(candidate) => Some(candidate),
-//!         Found::Several(list) => list.into_iter().next(), // quire's AccountPicker lets the person pick
+//!         Found::Several(list) => list.into_iter().next(), // Bardo's AccountPicker lets the person pick
 //!         Found::NeedsConsent(offer) => Some(grants.request_grant(&offer, window).await?),
 //!         Found::None(_why) => None, // EmptyState + "Add Account…"
 //!     })

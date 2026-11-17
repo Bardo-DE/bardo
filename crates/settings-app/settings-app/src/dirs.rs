@@ -99,7 +99,7 @@ pub fn intent_dirs() -> Vec<PathBuf> {
 fn intent_dirs_beside(schemas: &[PathBuf]) -> Vec<PathBuf> {
     schemas
         .iter()
-        .filter_map(|settings| settings.parent().map(|quire| quire.join("intents")))
+        .filter_map(|settings| settings.parent().map(|bardo| bardo.join("intents")))
         .collect()
 }
 

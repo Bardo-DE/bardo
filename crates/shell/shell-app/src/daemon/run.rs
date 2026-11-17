@@ -77,7 +77,7 @@ pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
         store.clone(),
         appearance_store.clone(),
         settings::LookSearch::of(&env.dirs),
-        &env.dirs.quire_state(),
+        &env.dirs.bardo_state(),
     );
     let (styles_rx, guard_rx) = styles.feeds();
     let first_appearance = settings::load_appearance(&appearance_store);
@@ -95,7 +95,7 @@ pub fn run(args: &crate::run_args::RunArgs) -> ExitCode {
 
     // The desktop's own compositor hands the shell a connection; any other session is reached
     // through the environment.
-    let handed = runtime.block_on(shell_services::desktop_wl::quire::shell_connection(
+    let handed = runtime.block_on(shell_services::desktop_wl::bardo::shell_connection(
         &env.buses.session,
     ));
     let handed_by_compositor = handed.is_some();

@@ -1,13 +1,13 @@
 //! The menus of the apps the bar follows, read from each app's own name.
 //!
 //! The menus of the apps the bar follows. An app that serves `com.canonical.dbusmenu` at
-//! `org.bardo.AppMenu.<app_id>` (quire design/27 §5.2 rule a) has its menu read, followed
+//! `org.bardo.AppMenu.<app_id>` (Bardo design/27 §5.2 rule a) has its menu read, followed
 //! (`LayoutUpdated`, `ItemsPropertiesUpdated`) and published; a click, and `AboutToShow` when a
 //! menu opens, go back to the app. An app with no owner for its name has no entry, so the bar
 //! keeps its own App menu alone (rule c).
 //!
 //! The service follows an app only while some bar names it ([`AppMenuCommand::Follow`]). The bus
-//! name is made by `AppMenuDeps::name_of`, which the daemon fills with quire's `AppMenuAddress`
+//! name is made by `AppMenuDeps::name_of`, which the daemon fills with Bardo's `AppMenuAddress`
 //! (a services crate links no design system). Owning the name proves nothing, so a menu is read
 //! only when its owner is the program of the app the bar follows
 //! (`shell_model::app_menu::menu_trust`, [`crate::callers`]), compared with the program the

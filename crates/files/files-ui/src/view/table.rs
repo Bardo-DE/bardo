@@ -1,4 +1,4 @@
-//! The list view: quire's `VirtualTable` over the browser's rows.
+//! The list view: Bardo's `VirtualTable` over the browser's rows.
 
 use dioxus::prelude::*;
 use files_core::{Entry, Location, Sort, SortKey};

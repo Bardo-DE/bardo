@@ -1,4 +1,4 @@
-//! The card's numbers in quire's words: the notification tokens the layer maths and the icon's
+//! The card's numbers in Bardo's words: the notification tokens the layer maths and the icon's
 //! raster read ([`NotificationTokens`]), the swipe thresholds as a `SwipeMetrics`, and the icon's
 //! side.
 //!
@@ -83,7 +83,7 @@ const SWIPE_DISMISS_VELOCITY_PX_S: f32 = 600.0;
 /// How far a leftward drag moves the card, in thousandths (250 is 0.25).
 const SWIPE_DAMPING: Fraction = Fraction(250);
 
-/// quire's swipe thresholds for a card.
+/// Bardo's swipe thresholds for a card.
 #[must_use]
 pub fn swipe_metrics() -> SwipeMetrics {
     SwipeMetrics {

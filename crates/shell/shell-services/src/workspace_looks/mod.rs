@@ -7,7 +7,7 @@
 //! - **Interface `org.bardo.Workspaces1`** at `/org/bardo/Workspaces1`.
 //!   - Property `Workspaces`, type `a(ssssb)`: per workspace its id (the compositor's stable id,
 //!     else the shell's key for the session), name, output (the connector name of its group's first
-//!     output, empty when none), look (a `SpaceLook` as quire's compact JSON, at most 1024 bytes)
+//!     output, empty when none), look (a `SpaceLook` as Bardo's compact JSON, at most 1024 bytes)
 //!     and whether it is the active workspace of its group.
 //!   - Change signal: the standard `PropertiesChanged` for `Workspaces`, sent whenever a
 //!     workspace, a name, a look or the active one changes.

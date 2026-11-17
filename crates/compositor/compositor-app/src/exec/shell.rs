@@ -4,7 +4,7 @@ use super::log;
 use crate::state::State;
 use compositor_core::overview::Overview;
 use compositor_core::shell::ShellNote;
-use compositor_wayland::quire::{shell, shell_screen, shell_space};
+use compositor_wayland::bardo::{shell, shell_screen, shell_space};
 use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1::Shown;
 
 /// Carries out one note for the shell. Also the way the edge reports the real modifier keys
@@ -19,14 +19,14 @@ pub(super) fn note(state: &mut State, note: &ShellNote) {
                 _ => Shown::Shown,
             };
             shell_space::send_overview_outputs(
-                &state.wl.quire_shell,
+                &state.wl.bardo_shell,
                 &state.wl.output.outputs,
                 shown,
             );
         }
         ShellNote::DropTarget { output, space } => {
             shell_space::send_drop_target(
-                &state.wl.quire_shell,
+                &state.wl.bardo_shell,
                 &state.wl.output.outputs,
                 output,
                 space.as_ref(),
@@ -39,7 +39,7 @@ pub(super) fn note(state: &mut State, note: &ShellNote) {
                 desktop_protocols::vocab::Shown::Hidden => Shown::Hidden,
             };
             shell_space::send_drop_target_new(
-                &state.wl.quire_shell,
+                &state.wl.bardo_shell,
                 &state.wl.output.outputs,
                 output,
                 over,
@@ -48,7 +48,7 @@ pub(super) fn note(state: &mut State, note: &ShellNote) {
         }
         ShellNote::WindowDragBegin { output, window } => {
             shell_space::send_window_drag_begin(
-                &state.wl.quire_shell,
+                &state.wl.bardo_shell,
                 &state.wl.output.outputs,
                 output,
                 *window,
@@ -61,7 +61,7 @@ pub(super) fn note(state: &mut State, note: &ShellNote) {
             outcome,
         } => {
             shell_space::send_window_drag_end(
-                &state.wl.quire_shell,
+                &state.wl.bardo_shell,
                 &state.wl.output.outputs,
                 output,
                 *window,
@@ -71,7 +71,7 @@ pub(super) fn note(state: &mut State, note: &ShellNote) {
         }
         ShellNote::Reveal(output, edge, shown) => {
             shell_screen::send_reveal(
-                &state.wl.quire_shell,
+                &state.wl.bardo_shell,
                 &state.wl.output.outputs,
                 output,
                 *edge,
@@ -81,5 +81,5 @@ pub(super) fn note(state: &mut State, note: &ShellNote) {
         }
         _ => {}
     }
-    log(shell::apply_note(&mut state.wl.quire_shell, note));
+    log(shell::apply_note(&mut state.wl.bardo_shell, note));
 }

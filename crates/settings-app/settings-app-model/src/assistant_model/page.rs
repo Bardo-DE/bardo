@@ -1,4 +1,4 @@
-//! The page's place among the pages, and the slug of its first-run step. Quire's fixed page list
+//! The page's place among the pages, and the slug of its first-run step. Bardo's fixed page list
 //! has no Assistant Model, so the catalogue holds it as the page of a program of that name, as it
 //! does Software Update. The first-run step is the same page drawn as a short dialogue; it is
 //! reached by its slug and never listed.

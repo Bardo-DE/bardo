@@ -26,7 +26,7 @@ def cached(cache: Path, codepoint: str, kind: str) -> Path:
     path = cache / codepoint / FILES[kind]
     if not path.exists():
         path.parent.mkdir(parents=True, exist_ok=True)
-        request = urllib.request.Request(url(codepoint, kind), headers={"User-Agent": "quire-emojitool"})
+        request = urllib.request.Request(url(codepoint, kind), headers={"User-Agent": "bardo-emojitool"})
         with urllib.request.urlopen(request, timeout=60) as response:
             data = response.read()
         path.write_bytes(data)

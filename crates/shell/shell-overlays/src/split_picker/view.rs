@@ -1,7 +1,7 @@
 //! The picker's render: one transparent viewport root holding, while an offer shows on this
 //! output, a key target (focused per offer, so Escape and the arrows reach it), the dimmed
 //! backdrop that turns the choice down when pressed, and, in the half the first window left
-//! free, quire's `AppSwitcher` with one tile per window on offer. The tile's key is the window's
+//! free, Bardo's `AppSwitcher` with one tile per window on offer. The tile's key is the window's
 //! identifier, its name the window's title, its icon the app's.
 //!
 //! [`super::io`] follows the link and writes the answer; this file only draws.

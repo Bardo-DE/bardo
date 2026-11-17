@@ -1,5 +1,5 @@
 //! The settings provider against a fixture schema directory: two files
-//! (`tests/fixtures/settings/{quire,bardo-shell}.settings.toml`) standing in for an installed quire
+//! (`tests/fixtures/settings/{bardo,bardo-shell}.settings.toml`) standing in for an installed Bardo
 //! schema and an installed bardo-shell schema, discovered and indexed together — design/22-SETTINGS.md
 //! §9.3's "the launcher's Settings provider reads the same schemas... no hand-kept table".
 //!

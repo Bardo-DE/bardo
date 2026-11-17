@@ -1,4 +1,4 @@
-//! `use_surface_tokens`: a surface's geometry tokens as the cascade resolves them, over quire's
+//! `use_surface_tokens`: a surface's geometry tokens as the cascade resolves them, over Bardo's
 //! `ui_host_hooks::use_resolved`, which reads them again after every resolved frame (so after the
 //! person's styles or the look change) and re-renders only when they differ. Until the first frame
 //! after the element mounts the value is the reader's with nothing resolved, the shipped one.

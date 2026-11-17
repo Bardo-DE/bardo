@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/actions.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "actions": the typed action layer and its safety core
 
-Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, quire design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, quire CONVENTIONS.md, porter (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, quire `ds` host seams and `toast_hub::UndoToken`.
+Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, Bardo design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, Bardo CONVENTIONS.md, porter (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, Bardo `ds` host seams and `toast_hub::UndoToken`.
 
 This version includes the coordinator's scope addition, the **auto-mode action reviewer** (§3.9, §4.4, §5.6).
 
@@ -13,7 +13,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 **In scope**
 - The vocabulary: Entity, Action, Param, Value, Effect, Preview, Context, Invocation, Outcome, Refusal. Also the app manifest file and its validation.
 - The router `org.bardo.Intents1` (daemon `intentd`) and the per-app `org.bardo.IntentProvider1`. This covers D-Bus activation, the pushed entity index and the caller identity the transport derives.
-- The Context call. It reports where the user is, the selection as typed things, what is visible, and the editable text target. The quire layer answers it on the app's behalf.
+- The Context call. It reports where the user is, the selection as typed things, what is visible, and the editable text target. Bardo layer answers it on the app's behalf.
 - The shared undo history, labelled by actor: app stacks plus the router's journal.
 - `prov`: the provenance and taint label lattice (FIDES-style integrity × confidentiality).
 - `permission-policy`: a Cedar wrapper. It holds the entity schema, the request shape and a decision of Deny, Allow, Review or Ask.
@@ -78,7 +78,7 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 
 **Sibling path dependencies:** `account-core` and `inference-core` (`../porter/crates/...`).
 
-**Third-party, joining quire's `docs/workspace-deps.toml` first**:
+**Third-party, joining Bardo's `docs/workspace-deps.toml` first**:
 - `cedar-policy = "4.13"` (4.13.0, 2026-09-15, Apache-2.0)
 - `rmcp = { version = "3.5", default-features = false, features = ["server", "transport-io"] }` (3.5.0, 2026-09-28). Pin the minor; 3.x churns.
 - Already in the pinned block: `serde`, `serde_json`, `thiserror 2`, `toml 1`, `zbus 5.19` (tokio), `tokio 1`.
@@ -89,8 +89,8 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 | Repo | Change | Wave |
 |---|---|---|
 | porter | `account-core`: new `space.rs` (`SpaceId`, `SpaceScope`); `GrantKey.space: SpaceScope`; consent generic over its key (`Grant<K = GrantKey>`, `decide<K: Eq>`). A design/31 §4.5 edit in step. | freeze |
-| quire | Add `cedar-policy` and `rmcp` to `docs/workspace-deps.toml`. Write `design/33-ACTIONS.md` from this file. Edit 31 §4.5 (Space in the key) and §5.5 (inferd is no longer the MCP host, see C4). | freeze |
-| quire | New crate `ui-intents`: the `ContextModel` gathered from components (`thing` prop on `Row`/`List`, edit surfaces as text targets), answered through `docker-client`. Blocked on question U6 (30 §3.4 defers companion work). | fill 2 |
+| Bardo | Add `cedar-policy` and `rmcp` to `docs/workspace-deps.toml`. Write `design/33-ACTIONS.md` from this file. Edit 31 §4.5 (Space in the key) and §5.5 (inferd is no longer the MCP host, see C4). | freeze |
+| Bardo | New crate `ui-intents`: the `ContextModel` gathered from components (`thing` prop on `Row`/`List`, edit surfaces as text targets), answered through `docker-client`. Blocked on question U6 (30 §3.4 defers companion work). | fill 2 |
 | sill | `shell-launcher` gains `ProviderKind::Things`, `Subject::Entity`, `Activation::Intent`, `Preview::Intent`. `shell-search`/`shell-services` gain a `ThingsProvider` over the router. sill serves `IntentProvider1` as `org.bardo.Shell` (launch, focus window, open file) by reusing its `Activation` executor. | fill 2 |
 | mailo | First real provider (archive, move, label, draft, send). `UndoStack` entries gain `actor: Actor`. | fill 2 (mailo session) |
 
@@ -161,7 +161,7 @@ pub fn declassify<T>(v: Labelled<T>, to: Confidentiality, w: &Witness) -> Labell
 ### 3.2 `account-core` additions (freeze now; a porter change)
 
 ```rust
-/// A Space's stable id, minted by quire when the Space is made (not the workspace id,
+/// A Space's stable id, minted by Bardo when the Space is made (not the workspace id,
 /// which may not survive a session: 21-SPACES §11.3).
 pub struct SpaceId(String);                      // id grammar like AccountId; Hash, Ord
 pub enum SpaceScope { Any, Only(SpaceId) }
@@ -306,7 +306,7 @@ pub struct EntityRef { pub id: EntityId, pub title: Labelled<String>, pub subtit
 pub enum WindowPrivacy { Normal, Private }
 pub enum ContextScope { ActiveWindow }                 // later: Window(ForeignHandle)
 
-/// Closed vocabulary the host draws with quire components; apps send data only.
+/// Closed vocabulary the host draws with Bardo components; apps send data only.
 pub enum Preview {
     None,
     Text { heading: Labelled<String>, body: Labelled<Markdownish> },
@@ -613,7 +613,7 @@ How `decide` maps the three queries:
 The Cedar API used is `Authorizer::is_authorized` with `Response::diagnostics().reason()` [unverified against the 4.13 docs; check in the freeze].
 
 Files:
-- `crates/policy-point/schema/bardo.cedarschema`. Namespace `Quire`. Entities: `Caller { kind: String }`, `App`, `Space`, `Act in [App] { effect, classes: Set<String>, reach, lasting }`. Actions: `perform`, `perform_unasked`, `perform_reviewed`, `search`, `preview`, `suggest`, `read_context`, `undo`, `index_push`. Context is the record above, using slugs.
+- `crates/policy-point/schema/bardo.cedarschema`. Namespace `Bardo`. Entities: `Caller { kind: String }`, `App`, `Space`, `Act in [App] { effect, classes: Set<String>, reach, lasting }`. Actions: `perform`, `perform_unasked`, `perform_reviewed`, `search`, `preview`, `suggest`, `read_context`, `undo`, `index_push`. Context is the record above, using slugs.
 - `crates/policy-point/policies/default.cedar`. Each policy carries `@id`. Its content is the table in §4.4.
 - A user override directory `$XDG_CONFIG_HOME/bardo/policy/*.cedar` comes later and is forbid-only (it may only tighten).
 
@@ -909,7 +909,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### Freeze wave (parallel, one agent per repo)
 
-1. **quire agent.**
+1. **Bardo agent.**
    - Owns `docs/workspace-deps.toml`. It adds `cedar-policy`, `rmcp` and their licences, and lands this commit first.
    - Writes `design/33-ACTIONS.md` (this spec, settled parts marked).
    - Edits 31 §4.5 (`space` in `GrantKey`, generic grants) and §5.5 (MCP hosting moves to bardo-actions-mcp, C4).
@@ -944,7 +944,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - **docket F2a**: `intentd` serves the bus over the private bus, with seams wired: `AppLink` over zbus, `GrantStore` file, `EventSink` to the memory area's `eventlog` (or a JSONL stub until it exists).
 - **docket F2b**: `bardo-actions-mcp` over rmcp.
 - **sill agent**: the `shell-launcher` variants, following the warn-before-lint-rules practice. Pinned wire tests for the new `Activation::Intent`/`Subject::Entity`/`Preview::Intent`. `ThingsProvider` in `shell-search` over `action-client`. `org.bardo.Shell` provider in `shell-services`. Verify with sill's gate.
-- **quire agent**: `ui-intents` (`ContextModel`, a `thing` prop on `Row`/`List`, edit-surface text targets, a default `ContextSource`). Only after the user answers U6.
+- **Bardo agent**: `ui-intents` (`ContextModel`, a `thing` prop on `Row`/`List`, edit-surface text targets, a default `ContextSource`). Only after the user answers U6.
 - **mailo session**: the manifest, `IntentProvider`, and `actor` on `UndoStack`.
 
 ### Fill wave 3 (other areas join)
@@ -981,7 +981,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - **C4. MCP.** 31 §5.5 makes inferd the MCP host. The build map makes `bardo-actions-mcp` edge-only. Resolution: MCP in both directions lives in `bardo-actions-mcp`. Imported tools become router actions of a pseudo-app `mcp.<server>`, default `Outbound`, each in bubblewrap. inferd drops the role (an edit to 31).
 - **C5. Provider kinds.** models.md has `ProviderKind::App(AppName)`, which breaks sill's `Copy` + `ALL` Tab order. Resolution: one `ProviderKind::Things`, with per-kind scoping later (`Scope::Kind`).
 - **C6. Companion work is deferred.** 30 §3.4 says "Deferred, map only: one-input/companion/AI work". Resolution: freeze types only; `ds` is untouched until U6.
-- **C7. Space identity.** 21-SPACES §11.3 says workspace ids may be unstable, yet Spaces are hard walls with their own key. Resolution: a quire-minted `SpaceId`, mapped to workspaces by `SpaceStore`.
+- **C7. Space identity.** 21-SPACES §11.3 says workspace ids may be unstable, yet Spaces are hard walls with their own key. Resolution: a bardo-minted `SpaceId`, mapped to workspaces by `SpaceStore`.
 - **C8. P1 inline replace.** agent-ux P1 ("nothing applies without the Apply keypress") differs from item 9 (`text.replace` is an UndoableWrite and runs). This is a UX call (U8).
 
 ### 7.3 Questions only the user can answer
@@ -991,7 +991,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - **U3.** May the reviewer ever allow `Destructive` (proposed: only under `TrustMore` with an Authorization and untainted args), and may it ever allow tainted `Outbound` (proposed: only `TrustMore` with an Authorization)?
 - **U4.** Authorizations: is the reviewer's check of your own words enough, or should each one also get a one-time compositor confirm ("Let it archive newsletters in Work for an hour?")? Default length is 1 h, this session only.
 - **U5.** The shadow index stores third-party titles (mail subjects) outside the app. Allow it, per app opt-out, and encrypted at rest when?
-- **U6.** May quire's `ds` gain context reporting (`thing` props, text targets) now, despite 30 §3.4's deferral?
+- **U6.** May Bardo's `ds` gain context reporting (`thing` props, text targets) now, despite 30 §3.4's deferral?
 - **U7.** Expose actions to external MCP clients in v1 (off by default), or not at all?
 - **U8.** Companion text replace into your field: run at once (item 9), or show a TextChange preview and wait for Apply (agent-ux P1)?
 - **U9.** Budget defaults (§3.7) and the reviewer timeout of 2 s. Is any of them yours to set rather than a setting?
@@ -1016,7 +1016,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - /home/pohsuanlai/porter/crates/porter-core/src/consent/grant.rs and /home/pohsuanlai/porter/crates/porter-core/src/consent/decide.rs (the `GrantKey` Space dimension and generic `Grant<K>`)
 - /home/pohsuanlai/porter/ARCHITECTURE.md and /home/pohsuanlai/porter/scripts/check-boundary.sh (the template for docket's layout, gate and boundaries)
 - /home/pohsuanlai/sill/crates/sill-launcher/src/activation.rs, /home/pohsuanlai/sill/crates/sill-launcher/src/ids.rs and /home/pohsuanlai/sill/crates/sill-launcher/src/subject.rs (the sill variants)
-- /home/pohsuanlai/quire/docs/workspace-deps.toml (cedar-policy and rmcp must join first)
-- /home/pohsuanlai/quire/design/31-ACCOUNTS.md (§4.5 and §5.5 edits), /home/pohsuanlai/rs-wt/companion/COMPANION.md and /home/pohsuanlai/rs-wt/intents-research/models.md (the sources this spec resolves)
+- /home/pohsuanlai/bardo/docs/workspace-deps.toml (cedar-policy and rmcp must join first)
+- /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.5 and §5.5 edits), /home/pohsuanlai/rs-wt/companion/COMPANION.md and /home/pohsuanlai/rs-wt/intents-research/models.md (the sources this spec resolves)
 - /home/pohsuanlai/mailo/crates/mail-app/src/undo.rs (the first app-side undo stack to gain `actor`)
 <!-- paths: end -->

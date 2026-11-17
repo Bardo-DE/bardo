@@ -1,7 +1,7 @@
-//! `mouse-gestures.settings.toml`: the schema of `gestures.toml` for the Settings app (quire
+//! `mouse-gestures.settings.toml`: the schema of `gestures.toml` for the Settings app (Bardo
 //! design/22 section 9).
 //!
-//! palmrest is a standalone daemon and takes no quire crate, so it cannot use quire's
+//! palmrest is a standalone daemon and takes no Bardo crate, so it cannot use Bardo's
 //! `SettingsSchema` derive (and its own settings come from `settings_struct!`, which has no
 //! serde derive to hang one on). This module writes the same file format from a table
 //! (`keys.rs`) whose defaults are read from [`Config::default`], and the tests pin every row to
@@ -18,10 +18,10 @@ use std::collections::BTreeMap;
 
 /// The file this schema describes, under `$XDG_CONFIG_HOME`.
 const FILE: &str = "mouse-gestures/gestures.toml";
-/// The schema file format's version (quire design/22 section 9.2).
+/// The schema file format's version (Bardo design/22 section 9.2).
 const VERSION: u16 = 1;
 
-/// A key's shape: what values it holds. Serialises as quire's `KeyKind`.
+/// A key's shape: what values it holds. Serialises as Bardo's `KeyKind`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub(super) enum Kind {
@@ -40,7 +40,7 @@ pub(super) enum Kind {
 }
 
 impl Kind {
-    /// The kind of a closed set of `words`: quire's rule by count (two a toggle, three to five
+    /// The kind of a closed set of `words`: Bardo's rule by count (two a toggle, three to five
     /// segments, more a menu).
     pub(super) fn choice(words: &[&str]) -> Kind {
         let owned: Vec<String> = words.iter().map(|word| (*word).to_owned()).collect();
@@ -56,7 +56,7 @@ impl Kind {
 /// palmrest key is on the page.
 const EXPOSURE: &str = "basic";
 
-/// The page every palmrest key is on, as quire's `Page` writes it.
+/// The page every palmrest key is on, as Bardo's `Page` writes it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 struct Page {
     kind: &'static str,
@@ -66,7 +66,7 @@ const PAGE: Page = Page {
     kind: "mouse_and_gestures",
 };
 
-/// One key, as quire's `KeySpec` writes it.
+/// One key, as Bardo's `KeySpec` writes it.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub(super) struct KeySpec {
     pub path: String,

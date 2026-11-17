@@ -6,7 +6,7 @@
 //! item reports `Connecting` is the one. A pane remembers the last item it saw connecting
 //! ([`aim_after`]), so the failure that follows (its item back to idle) and the success (its
 //! item in use) land on that row. A row that never saw its `Pending` (the pane opened after the
-//! join) rests: quire plays a plain Change for a Succeeded nobody watched start, and no Change
+//! join) rests: Bardo plays a plain Change for a Succeeded nobody watched start, and no Change
 //! reads the same.
 
 use shell_model::attempt::{Attempt, Attempts, OpStamp};
@@ -80,7 +80,7 @@ pub(crate) fn item_phase(attempts: Attempts, item: Item, aim: Aim) -> ItemPhase 
     }
 }
 
-/// A service stamp as quire's.
+/// A service stamp as Bardo's.
 fn event(stamp: OpStamp) -> EventStamp {
     EventStamp(stamp.0)
 }

@@ -9,11 +9,11 @@
 //!   ([`output`]);
 //! - output capture: `ext-image-copy-capture-v1` over `ext-output-image-capture-source-v1`,
 //!   one frame of an output into shared memory ([`capture`]);
-//! - the Quire arm: apps, windows (role, place, geometry, emphasis, placement), Spaces and the
+//! - Bardo arm: apps, windows (role, place, geometry, emphasis, placement), Spaces and the
 //!   shell's notes (modifiers, switcher, overview, hot corners, reveals) from
-//!   `bardo_desktop_v1` and `bardo_shell_v1` ([`quire`]). [`backend_for`] picks it from the
+//!   `bardo_desktop_v1` and `bardo_shell_v1` ([`bardo`]). [`backend_for`] picks it from the
 //!   offered globals when `bardo_desktop_v1` and the ext list are both there; otherwise the
-//!   wlr arm serves the toplevels, and the Quire commands are refused by [`supports`].
+//!   wlr arm serves the toplevels, and Bardo commands are refused by [`supports`].
 //!
 //! # Layers
 //!
@@ -47,6 +47,7 @@
 //! assert!(!supports(&ProtocolSet::empty(), &close));
 //! ```
 
+pub mod bardo;
 pub mod capture;
 pub mod command;
 pub mod desktop;
@@ -56,7 +57,6 @@ pub mod keys;
 pub mod names;
 pub mod output;
 pub mod protocol;
-pub mod quire;
 pub mod toplevel;
 pub mod workspace;
 

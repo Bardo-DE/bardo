@@ -2,7 +2,7 @@
 //!
 //! It draws `Ds { material: Window, extent: Viewport }` holding `shell_kit::prelude::LockScreen { wallpaper, clock,
 //! prompt }`: the wallpaper is [`super::backdrop::backdrop_for`] over `use_service::<WallpaperService>()` in
-//! the scheme `use_appearance()` resolves (`ImageSource::file`; `None` lets quire paint its veil
+//! the scheme `use_appearance()` resolves (`ImageSource::file`; `None` lets Bardo paint its veil
 //! alone); the clock is `shell_kit::prelude::LockClock` from [`super::model::clock_lines`] over the minute
 //! (`use_service::<ClockService>()` wakes it) and `use_hours()`; the prompt, only on the
 //! output the [`shell_ui_kit::links::LockLink`] names, is `shell_kit::prelude::LockPrompt` with [`super::model::lock_user`] over
@@ -63,7 +63,7 @@ fn HostedStage(output: OutputInfo) -> Element {
     }
 }
 
-/// The `Ds` root; everything that needs quire's environment is [`LockBody`].
+/// The `Ds` root; everything that needs Bardo's environment is [`LockBody`].
 #[component]
 fn Stage(
     output: OutputInfo,

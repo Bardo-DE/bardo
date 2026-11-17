@@ -1,8 +1,8 @@
 //! Which keys are proposed as agent-settable (design/22-SETTINGS.md section 9.7).
 //!
 //! The mark itself lives in each program's own schema (`#[settings(agent_settable)]`, written as
-//! `agent = "settable"`); this file is the one reviewed list of what quire proposes the programs
-//! mark, so quire's, bardo-shell's and bardo-settings's tests can check their schemas against the same words.
+//! `agent = "settable"`); this file is the one reviewed list of what Bardo proposes the programs
+//! mark, so Bardo's, bardo-shell's and bardo-settings's tests can check their schemas against the same words.
 //! The list is a proposal for the person to accept or trim, not a grant.
 
 use super::key::{AgentSetting, KeySpec};

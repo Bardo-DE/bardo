@@ -165,7 +165,7 @@ async fn an_edit_of_layout_toml_reaches_the_dock() {
     loop {
         std::fs::write(
             &file,
-            "version = 1\n[[dock]]\nkind = \"quire.dock.app\"\napp = \"btop\"\n",
+            "version = 1\n[[dock]]\nkind = \"bardo.dock.app\"\napp = \"btop\"\n",
         )
         .unwrap_or_else(|e| panic!("{e}"));
         if pinned_within(&mut pins, SETTLE / 4, |p| ids(p) == ["btop"]).await {
@@ -180,7 +180,7 @@ async fn a_pin_under_an_old_id_is_the_renamed_app_and_the_file_follows_the_next_
     let scratch = TempDir::new("pins-renamed");
     let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
-    let row = |app: &str| format!("[[dock]]\nkind = \"quire.dock.app\"\napp = \"{app}\"\n");
+    let row = |app: &str| format!("[[dock]]\nkind = \"bardo.dock.app\"\napp = \"{app}\"\n");
     let stored = format!(
         "version = 1\n{}{}{}",
         row("mailo"),

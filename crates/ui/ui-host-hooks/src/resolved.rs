@@ -1,5 +1,5 @@
 //! A token's resolved value for Rust geometry: a custom property as an element's computed style
-//! holds it after the cascade (the quire sheet, the look, the person's own sheet), with every
+//! holds it after the cascade (Bardo sheet, the look, the person's own sheet), with every
 //! `var()` substituted. Tokens are declared on `.ds` and inherit, so any element inside a
 //! surface sees them with their overrides; a dock's gap or a menu's row height that a look may
 //! move is read here, not from a settings key.

@@ -204,7 +204,7 @@ fn FolderTree() -> Element {
     // Posed with Archive under the pointer, as a drag over it would leave it.
     let mut over = use_signal(|| Some("Archive"));
     let mut said = use_signal(|| "nothing yet".to_string());
-    let mut current = use_signal(|| "INBOX/Projects/Quire");
+    let mut current = use_signal(|| "INBOX/Projects/Bardo");
     let mut projects = use_signal(|| true);
     let mut archive = use_signal(|| false);
     let more = move |path: &'static str| {
@@ -273,7 +273,7 @@ fn FolderTree() -> Element {
                             "INBOX/Projects", "Projects", Icon::Folder, projects(),
                             EventHandler::new(move |to| projects.set(to)), 4,
                             rsx! {
-                                {leaf("INBOX/Projects/Quire", "Quire")}
+                                {leaf("INBOX/Projects/Bardo", "Bardo")}
                                 {leaf("INBOX/Projects/Sill", "Sill")}
                             },
                         )),

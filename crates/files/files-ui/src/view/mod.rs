@@ -1,4 +1,4 @@
-//! The window: `Ds` over a `SplitView` of the sidebar and the folder, drawn only with quire's
+//! The window: `Ds` over a `SplitView` of the sidebar and the folder, drawn only with Bardo's
 //! components. The views read the browser and map it; nothing here decides anything.
 
 mod busy;
@@ -36,11 +36,11 @@ use crate::launch::Launch;
 use self::file_icons::use_file_icons;
 use self::window::Window;
 
-/// files' own CSS: layout only, quire's tokens only.
+/// files' own CSS: layout only, Bardo's tokens only.
 pub const STYLE: &str = include_str!("style.css");
 
 /// The window's root component: the look from the person's settings and the desktop, then the
-/// window itself under quire's `Ds`.
+/// window itself under Bardo's `Ds`.
 #[component]
 pub fn App() -> Element {
     let launch = use_hook(consume_context::<Launch>);

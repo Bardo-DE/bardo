@@ -190,7 +190,7 @@ fn the_shell_and_the_agent_tier_are_trusted_and_a_sandbox_is_not() {
     }
 }
 
-/// What the desktop protocol tells the shell about the program behind a window (QUIRE-12): the
+/// What the desktop protocol tells the shell about the program behind a window (BARDO-12): the
 /// image of a program, the app of a sandbox, the image of a service when it is known, and
 /// nothing for anything that cannot be named or has no program of its own.
 #[test]

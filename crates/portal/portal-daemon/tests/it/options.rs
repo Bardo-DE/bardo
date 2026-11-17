@@ -97,12 +97,12 @@ fn restore_data_round_trips_and_foreign_data_is_ignored() {
     let good = RestoreToken::mint([1; 16]);
     let text = good.expose();
     assert_eq!(
-        restore_token(&foreign("quire", 1, text)),
+        restore_token(&foreign("bardo", 1, text)),
         Some(good.clone())
     );
     assert_eq!(restore_token(&foreign("GNOME", 1, text)), None);
-    assert_eq!(restore_token(&foreign("quire", 2, text)), None);
-    assert_eq!(restore_token(&foreign("quire", 1, "not a token")), None);
+    assert_eq!(restore_token(&foreign("bardo", 2, text)), None);
+    assert_eq!(restore_token(&foreign("bardo", 1, "not a token")), None);
     let short = OwnedValue::try_from(Structure::from((1_u32, 2_u32))).expect("owned");
     assert_eq!(restore_token(&dict(vec![("restore_data", short)])), None);
 }

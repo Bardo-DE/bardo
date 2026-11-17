@@ -35,8 +35,8 @@ const SECRET_PAIRS: &[(&str, &str)] = &[
     (".local", "state/bardo/accounts"),
     (".local", "state/bardo/inference"),
     (".local", "state/porter"),
-    (".local", "state/quire/accountd"),
-    (".local", "state/quire/inferd"),
+    (".local", "state/bardo/accountd"),
+    (".local", "state/bardo/inferd"),
 ];
 /// File names that are credentials.
 const SECRET_FILES: &[&str] = &[
@@ -213,10 +213,10 @@ mod tests {
             "/home/u/proj/.netrc",
             "/home/u/proj/.config/accountd/keys",
             "/home/u/proj/.local/share/keyrings/login.keyring",
-            "/home/u/proj/.local/state/quire/inferd/keys/registry.json",
-            "/home/u/proj/.local/state/quire/inferd",
+            "/home/u/proj/.local/state/bardo/inferd/keys/registry.json",
+            "/home/u/proj/.local/state/bardo/inferd",
             "/home/u/proj/.local/state/porter/registry.json",
-            "/home/u/proj/.local/state/quire/accountd/audit.jsonl",
+            "/home/u/proj/.local/state/bardo/accountd/audit.jsonl",
             "/home/u/proj/.local/state/bardo/inference/keys/registry.json",
             "/home/u/proj/.local/state/bardo/accounts/audit.jsonl",
             "/home/u/proj/.config/bardo/accounts/clients.toml",

@@ -1,5 +1,5 @@
 //! One indicator's show and hold (design/20 §1.7): a change
-//! shows it and restarts the hold; when the hold ends it is hidden. Quire's `Osd` card owns
+//! shows it and restarts the hold; when the hold ends it is hidden. Bardo's `Osd` card owns
 //! its own entrance and exit fade from that `shown` and calls `on_hidden` once the exit has
 //! settled, so the surface unmaps then, not when this machine's hold ends. Pure: time is a
 //! [`Stamp`] argument, and the surface wakes the machine at [`OsdHold::wake`].
@@ -16,7 +16,7 @@ pub struct OsdTimes {
 /// Where one indicator is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum OsdHold {
-    /// `shown` is hidden: quire's card is fading out, or already gone.
+    /// `shown` is hidden: Bardo's card is fading out, or already gone.
     #[default]
     Hidden,
     /// `shown` is visible, until `until`.

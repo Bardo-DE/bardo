@@ -181,7 +181,7 @@ fn is_read(call: &str) -> bool {
 }
 
 fn is_meta(call: &str) -> bool {
-    call.starts_with("quire_")
+    call.starts_with("bardo_")
 }
 
 /// The names of every call the planner made, in order.

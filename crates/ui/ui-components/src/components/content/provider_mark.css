@@ -29,7 +29,7 @@
 .ds-provider[*|data-kind=local] .ds-ic{ display:block; }
 .ds-provider[*|data-kind=image]{ padding:var(--s-1-5); }
 .ds-provider[*|data-kind=image] img{ width:100%; height:100%; display:block; object-fit:contain; }
-/* A face supplied as data: the colour is the ground and the letter takes `--pi`, the ink quire
+/* A face supplied as data: the colour is the ground and the letter takes `--pi`, the ink bardo
    chose for it (white or dark, whichever contrasts more). Two letters are set smaller to fit. */
 .ds-provider[*|data-kind=face]{ background:var(--pc); color:var(--pi); letter-spacing:-0.02em; }
 .ds-provider[*|data-kind=face][*|data-letters="2"]{ font-size:var(--fs-pico); }

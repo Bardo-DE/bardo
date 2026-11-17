@@ -171,7 +171,7 @@ mod tests {
     fn lease_request_refuses_shell_trust_and_wrong_windows() {
         let cases: Vec<(&str, &str, WindowTrust, Result<(), DesktopError>)> = vec![
             ("native window", "w1", WindowTrust::Native, Ok(())),
-            ("quire window", "w1", WindowTrust::Quire, Ok(())),
+            ("bardo window", "w1", WindowTrust::Bardo, Ok(())),
             ("flatpak window", "w1", WindowTrust::Flatpak, Ok(())),
             (
                 "the shell's own window",

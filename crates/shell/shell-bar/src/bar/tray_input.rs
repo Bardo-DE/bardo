@@ -37,7 +37,7 @@ pub(crate) enum TrayAction {
     OpenMenu,
 }
 
-/// The art `art` as quire draws it: a PNG by the chroma test (`ui_components::style::icon::classify::classify_with` at
+/// The art `art` as Bardo draws it: a PNG by the chroma test (`ui_components::style::icon::classify::classify_with` at
 /// `limit`), a theme file by its name, and the window glyph when there is none or its URL is
 /// refused. A PNG the test cannot decode is shown as it is.
 pub(crate) fn icon_source(art: Option<IconArt>, limit: ChromaLimit) -> IconSource {
@@ -202,7 +202,7 @@ mod tests {
                 "{name}"
             );
         }
-        // A faintly tinted grey (OKLCH chroma about .03) is symbolic at quire's .04 and an image
+        // A faintly tinted grey (OKLCH chroma about .03) is symbolic at Bardo's .04 and an image
         // once the key is lowered to .01.
         let tinted = || Some(IconArt::Png(png([120, 110, 100, 255])));
         assert_eq!(kind(&icon_source(tinted(), ChromaLimit(40))), "symbolic");

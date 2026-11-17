@@ -85,20 +85,20 @@ fn a_learned_word_is_written_to_the_users_dictionary_and_kept() {
     let dir = spell_dict::dictionary("learn");
     let spell = checker(&dir);
     assert_eq!(
-        block(spell.check(vec![en()], words(&["quire"]))),
-        words(&["quire"])
+        block(spell.check(vec![en()], words(&["bardo"]))),
+        words(&["bardo"])
     );
-    assert_eq!(block(spell.learn(en(), "quire".to_owned())), Learned::Saved);
+    assert_eq!(block(spell.learn(en(), "bardo".to_owned())), Learned::Saved);
     assert_eq!(
-        block(spell.check(vec![en()], words(&["quire"]))),
+        block(spell.check(vec![en()], words(&["bardo"]))),
         Vec::<String>::new()
     );
     let file =
         std::fs::read_to_string(dir.join("user").join("en_US.dic")).expect("the user's file");
-    assert_eq!(file, "quire\n");
+    assert_eq!(file, "bardo\n");
     let next = checker(&dir);
     assert_eq!(
-        block(next.check(vec![en()], words(&["quire"]))),
+        block(next.check(vec![en()], words(&["bardo"]))),
         Vec::<String>::new(),
         "a new session reads it back"
     );

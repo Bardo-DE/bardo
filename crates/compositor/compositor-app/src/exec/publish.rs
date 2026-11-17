@@ -7,7 +7,7 @@ use crate::state::State;
 use compositor_core::window::{SpacePlace, Window};
 use compositor_core::{Model, OutputKey, WindowId};
 use compositor_wayland::foreign_toplevel_list::disclosed;
-use compositor_wayland::{capture_source, quire_window, wlr_toplevel, workspace};
+use compositor_wayland::{bardo_window, capture_source, wlr_toplevel, workspace};
 use smithay::output::Output;
 
 /// Writes the Spaces file through `state.seams.space_store` (`Model::space_file`). A failure is
@@ -48,8 +48,8 @@ pub(super) fn publish_toplevel(state: &mut State, window: WindowId) {
     ));
     // The same trigger tells an extended window where it now sits (a no-op when the mark did
     // not change).
-    log(quire_window::apply_placement(
-        &mut state.wl.quire_window,
+    log(bardo_window::apply_placement(
+        &mut state.wl.bardo_window,
         window,
         held.state.mark(),
     ));

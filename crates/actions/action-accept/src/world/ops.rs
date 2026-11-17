@@ -81,7 +81,7 @@ impl World {
     /// # Panics
     ///
     /// Panics when `bardo-do` cannot be started or its pipes are missing.
-    pub async fn quire_do(&self, binary: &Path, words: &[&str]) -> std::process::Output {
+    pub async fn bardo_do(&self, binary: &Path, words: &[&str]) -> std::process::Output {
         use std::io::{Read, Write};
         let mut process = Reaped::spawn(
             Command::new("sh")

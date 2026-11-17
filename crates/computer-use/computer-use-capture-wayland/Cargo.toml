@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-capture-wayland"
-description = "The capture backend of maskcap over a wayland connection: ext-image-copy-capture (the stock toplevel source and the quire masked source over an agent lease), and the pump that drives a connection from async code."
+description = "The capture backend of maskcap over a wayland connection: ext-image-copy-capture (the stock toplevel source and the bardo masked source over an agent lease), and the pump that drives a connection from async code."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -23,7 +23,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 base-ids = { path = "../../base/base-ids" }
 account-core = {path = "../../accounts/account-core"}
 wayland-server = { workspace = true }
-# The compositor side of quire-agent-v1, for the fake compositor in the tests.
+# The compositor side of bardo-agent-v1, for the fake compositor in the tests.
 desktop-protocols = {features = ["server"], path = "../../wayland/desktop-protocols"}
 wayland-protocols = { workspace = true, features = ["client", "server", "staging", "unstable"] }
 rustix = {workspace = true, features = ["event", "fs", "std"]}

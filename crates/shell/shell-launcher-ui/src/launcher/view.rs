@@ -3,7 +3,7 @@
 //! The runner's sections (`Results::sections`, placed by `shell_launcher::place`) capped by
 //! [`shown`] unless expanded, or, under a Tab filter, that provider's rows alone under its own
 //! heading. The palette's cursor stops on each row (each emoji cell) and then on the section
-//! header's "Show More" or "Show Less" (quire's `PaletteGroup` action), so a line here is a row or
+//! header's "Show More" or "Show Less" (Bardo's `PaletteGroup` action), so a line here is a row or
 //! that action, numbered as the palette's `selected` counts them. Pure.
 
 use shell_launcher::{

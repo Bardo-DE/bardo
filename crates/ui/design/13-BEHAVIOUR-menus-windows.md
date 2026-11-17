@@ -145,7 +145,7 @@ is an Overlay layer with `KeyboardMode::Exclusive`, kept warm (plan launcher pat
 | Do Not Disturb | no banners and no sounds except urgency Critical; everything still enters the history | proposed |
 | Sound | the `sound-name` or `sound-file` hint, else `message-new-instant`; `suppress-sound` honoured | proposed |
 
-Built from these quire parts (CONSUMING.md "Notification parts"): the banner is `NotificationCard`
+Built from these Bardo parts (CONSUMING.md "Notification parts"): the banner is `NotificationCard`
 (the hover row as written: body two lines to six over `--t-move --e-out`, actions and the 18 px
 top-left close button on hover, `on_hover` for the caller's timer), the stack `BannerStack` (enter
 and exit as the two rows above; the banners below close the gap by `Roster`), swipe to dismiss
@@ -222,7 +222,7 @@ Played from the freedesktop sound theme (`sound.theme`, default `freedesktop`) b
 
 ### 13.3.11 Window frame (our client-decorated windows; settled 2026-09-25)
 
-The frame quire draws for a window that asks for no server decorations
+The frame Bardo draws for a window that asks for no server decorations
 (`Ds { window: WindowFrame::Titlebar }`, design/04 "Window frame"). It acts through the host seam
 `ds::prelude::HostWindow`: ui-blitz over winit, sill over layer-shell-host's `SurfaceHandle`.
 
@@ -290,12 +290,12 @@ compositor-gaps list (send modifier state to the surface under the pointer).
 
 Pure; `now` is an argument; effects are returned.
 
-Menu tracking: **settled** (implemented in quire `crates/ds/src/stack/menu_track/machine.rs`,
+Menu tracking: **settled** (implemented in Bardo `crates/ds/src/stack/menu_track/machine.rs`,
 2026-09-24, sill gap Q1; the table below is its test list). The shipped shape differs from the
 first sketch in names only: generic over the caller's menu key, timings carried in the machine.
 
 ```rust
-// quire: crates/ds/src/overlay/menu_track.rs  (drives bar menus and every ds Menu)
+// Bardo: crates/ds/src/overlay/menu_track.rs  (drives bar menus and every ds Menu)
 pub enum Held { Held, Released }
 pub enum Entered { Entered, NotYet }
 pub struct MenuTrack<K> { pub timing: MenuTiming, pub phase: MenuPhase<K> } // timing from menus.*
@@ -393,7 +393,7 @@ Banner duration is not a setting (R8: not user-changeable since Big Sur).
 
 | Concern | Owner |
 | --- | --- |
-| Menu tracking machine, safe triangle, `Menu` component | quire `ds/stack/menu_track/machine.rs` (settled, shipped), `ds/components/menus/menu/menu.rs` |
+| Menu tracking machine, safe triangle, `Menu` component | Bardo `ds/stack/menu_track/machine.rs` (settled, shipped), `ds/components/menus/menu/menu.rs` |
 | Popup surfaces, reposition, grabs | layer-shell-host `popup` (`PopupConfig`, `xdg_positioner`, `xdg_popup.reposition`) |
 | Bar, switcher, notifications, control center, launcher surfaces | sill `surfaces/{bar,switcher,notifications,control_center,launcher}` |
 | Notification server | shell-services (pattern: the desktop notification daemon subscriptions/notifications.rs) |

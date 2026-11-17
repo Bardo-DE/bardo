@@ -53,7 +53,7 @@ impl IntentdConfig {
         Ok(config)
     }
 
-    /// The configuration the package ships (`dist/actiond.toml`): the role names of the quire
+    /// The configuration the package ships (`dist/actiond.toml`): the role names of Bardo
     /// desktop, no reviewer set, the proposed values. What a machine with no file of its own
     /// runs with.
     ///

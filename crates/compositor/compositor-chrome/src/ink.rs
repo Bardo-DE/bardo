@@ -1,4 +1,4 @@
-//! The title's ink: quire's primary ink for the key window, its secondary ink for the others,
+//! The title's ink: Bardo's primary ink for the key window, its secondary ink for the others,
 //! in the scheme the frame is drawn in.
 
 use ui_style::appearance::theme::Scheme;

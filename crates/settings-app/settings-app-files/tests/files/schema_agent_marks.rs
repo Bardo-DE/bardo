@@ -208,10 +208,10 @@ fn a_folder_is_system_only_when_root_owns_it_and_every_folder_above_it() {
 }
 
 #[test]
-fn quires_schema_marks_theme_accent_look_file_icons_and_use_my_styles_and_use_my_styles_is_two_segments()
+fn bardo_schema_marks_theme_accent_look_file_icons_and_use_my_styles_and_use_my_styles_is_two_segments()
  {
     use settings_app_model::{Control, PageSlug};
-    let scratch = Scratch::under(TMP, "marks-quire-appearance");
+    let scratch = Scratch::under(TMP, "marks-bardo-appearance");
     let dir = scratch.join("d");
     std::fs::create_dir_all(&dir).expect("dir");
     std::fs::copy(

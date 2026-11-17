@@ -23,7 +23,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | gating research | `agent/research-action-gating.md` | the research behind the policy grid and the breaker |
 | memory | `agent/memory.md` | event log, memory files, recall, sealing, the memory daemon |
 | computer use | `agent/cua.md` | accessibility tree, agent seat, masked capture, leases, the run machine |
-| ux | `agent/ux.md` | quire components, sill surfaces, the summon and double-tap machines |
+| ux | `agent/ux.md` | Bardo components, sill surfaces, the summon and double-tap machines |
 | consolidation | `agent/SPEC.md` | names, one home per type, frozen interfaces, flows, the freeze plan |
 
 ## 3. Repos
@@ -33,28 +33,28 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | stoker (new) | the model layer: provider trait, backends, computer-use action and parse, vision prep, catalogue, engine supervisor | yes |
 | porter | the account and capability layer, plus `prov` (labels and the shared who and what vocabulary), `SpaceId`, streaming inference, inferd | yes |
 | almanac (new) | memory: event log, memory files, recall, the memory daemon | yes (daemon Linux) |
-| docket (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter quire apps use | core yes; daemons Linux |
+| docket (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter Bardo apps use | core yes; daemons Linux |
 | cua (new) | computer use: accessibility tree, agent seat, masked capture, leases, run machine, the daemon, the compositor protocol | core yes; daemon Linux |
 | casement (new, GPL) | the compositor's agent seat, masked source, trusted surface, glow, kill chord | no |
-| quire | `ui-intents`, the companion components and vocabulary, design docs | yes |
+| Bardo | `ui-intents`, the companion components and vocabulary, design docs | yes |
 | sill | launcher companion mode, the companion service, providers, overlays, settings domain | no |
 | detent | the Intelligence page row and icon | no |
 
 Direction, acyclic and enforced per repo by each `check-boundary.sh`: stoker, then porter, then
-almanac, then docket, then cua, then sill. quire depends on none of them; docket's adapter depends
-on quire's `ui-intents`.
+almanac, then docket, then cua, then sill. Bardo depends on none of them; docket's adapter depends
+on Bardo's `ui-intents`.
 
 ## 4. Where the shared types live
 
-The spec's section 2 holds the whole table; the ones quire's part touches:
+The spec's section 2 holds the whole table; the ones Bardo's part touches:
 
 - `Effect`, `Actor`, labels (`Integrity`, `Confidentiality`, `Label`), ids and receipts: porter's
-  `prov`. quire's `EffectMark` and `ActorMark` are views of them, converted in sill.
+  `prov`. Bardo's `EffectMark` and `ActorMark` are views of them, converted in sill.
 - Presence: `ui-core::vocab::CompanionPresence`, derived only by sill's `presence_of`.
 - Memory verb: `ui-core::vocab::MemoryVerb`, used by sill's launcher too.
-- Confirmation: the wire request is docket's; quire's `ConfirmView`, `ConfirmChoice` (was
+- Confirmation: the wire request is docket's; Bardo's `ConfirmView`, `ConfirmChoice` (was
   `ConfirmAnswer`), `TaintLine` (was `TaintNote`) and `GestureMark` are the card's own view.
-- Glow: the protocol values are the compositor's; quire's `GlowLook` (was `GlowState`) feeds
+- Glow: the protocol values are the compositor's; Bardo's `GlowLook` (was `GlowState`) feeds
   `glow_spec`.
 - Settings: `agent.undo.keep_h`, `cua.autopause` and `cua.default_mode` replace the three
   duplicate `companion.*` keys (`22-SETTINGS.md` sections 3.26 to 3.30).
@@ -98,18 +98,18 @@ Caller identity is always derived from the connection, never sent. Every interfa
 
 `agent/SPEC.md` section 5 gives the owner of every step.
 
-## 8. What quire owns in the freeze
+## 8. What Bardo owns in the freeze
 
 `ui-core::vocab` (the companion vocabulary), `ui-intents`, `ds::components::companion`, the
 `ui-shell` confirmation card and glow values, the orb duration tokens, `Page::Intelligence`, the
 `22-SETTINGS.md` rows for every `ai`, `agent`, `memory`, `cua` and `companion` key, and this
 documentation. Every behaviour behind a frozen signature is `todo!()`, listed in `FINDINGS.md`.
-quire does not own `31-ACCOUNTS.md` (porter's agent edits it), the `TextField` and `CommandPalette`
-prompt props (the quire fill), or anything in the other repos.
+Bardo does not own `31-ACCOUNTS.md` (porter's agent edits it), the `TextField` and `CommandPalette`
+prompt props (Bardo fill), or anything in the other repos.
 
 ## 9. The freeze plan
 
-The spec's section 6 orders the agents (dependency list, stoker, quire, porter, almanac and docket,
+The spec's section 6 orders the agents (dependency list, stoker, Bardo, porter, almanac and docket,
 cua and the compositor fork, sill and detent), the spikes that block fills, and the fill waves.
 Every repo's gate is format, clippy with warnings denied, tests, the boundary script and the
-licence check, and quire's adds the consumer check; each exit code is checked and nothing is piped.
+licence check, and Bardo's adds the consumer check; each exit code is checked and nothing is piped.

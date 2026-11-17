@@ -27,7 +27,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-/// The root every quire surface draws inside.
+/// The root every Bardo surface draws inside.
 #[component]
 fn Root(children: Element) -> Element {
     rsx! {

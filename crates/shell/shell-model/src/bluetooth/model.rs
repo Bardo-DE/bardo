@@ -15,7 +15,7 @@ pub struct Bluetooth {
     /// Every device `BlueZ` knows under the adapter, in the order `BlueZ` reported them.
     pub devices: Vec<BtDevice>,
     /// The connect attempts: one stamp per device entering `Connecting`, a new one per connect
-    /// that falls back to `Disconnected` (the bar's Bluetooth glyph, quire design/26 R4, R6).
+    /// that falls back to `Disconnected` (the bar's Bluetooth glyph, Bardo design/26 R4, R6).
     #[serde(default)]
     pub connect: Attempts,
 }

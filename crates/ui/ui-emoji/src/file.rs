@@ -17,7 +17,7 @@ use std::path::{Path, PathBuf};
 const COLRV1_FILE: &str = "Noto-COLRv1.ttf";
 
 /// The directory under a data dir's `fonts` that the desktop installer fills.
-const QUIRE_DIR: &str = "bardo";
+const BARDO_DIR: &str = "bardo";
 
 /// Where Fedora's `google-noto-color-emoji-fonts` puts it.
 const FEDORA_PATH: &str = "/usr/share/fonts/google-noto-color-emoji-fonts/Noto-COLRv1.ttf";
@@ -85,7 +85,7 @@ impl EmojiDirs {
     /// The files that are named for the `COLRv1` build, best first: our install dir under each data
     /// dir, the user's, then the distro packages' places.
     pub(crate) fn candidates(&self) -> Vec<PathBuf> {
-        let ours = |base: &PathBuf| base.join("fonts").join(QUIRE_DIR).join(COLRV1_FILE);
+        let ours = |base: &PathBuf| base.join("fonts").join(BARDO_DIR).join(COLRV1_FILE);
         let packaged = std::iter::once(FEDORA_PATH)
             .chain(AUR_PATHS)
             .map(PathBuf::from);

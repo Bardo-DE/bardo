@@ -3,7 +3,7 @@
 //! blocks the window's input until it closes (macOS Sonoma/Sequoia).
 //!
 //! A window is a sheet when it is modal for its parent (`xdg_dialog_v1.set_modal` on a
-//! toplevel with a parent of the same app, or a `quire_window` hint that says the same): the
+//! toplevel with a parent of the same app, or a `bardo_window` hint that says the same): the
 //! model has made that `Modality::WindowModal` and a parent window. What is here is the
 //! geometry; layout puts the sheet where [`attach_rect`] says each time it arranges, so the
 //! sheet follows its window with no bookkeeping, and the focus machine's sheet hook (A39)

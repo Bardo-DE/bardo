@@ -18,7 +18,7 @@ mod companion_mode_bus;
 mod companion_routing_bus;
 mod companion_session_bus;
 mod companion_support;
-mod desktop_quire;
+mod desktop_bardo;
 mod desktop_wl;
 mod dev_callers;
 mod displays_bus;

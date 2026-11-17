@@ -16,7 +16,7 @@
 //! dock's icons are neither black nor lost on their plates. [`retint_in`] takes the scheme;
 //! [`retint`] is the light scheme's rule.
 //!
-//! The quire app icons ship a neutral grey Monochrome set for exactly this call; a third-party
+//! Bardo app icons ship a neutral grey Monochrome set for exactly this call; a third-party
 //! icon is re-coloured the same way, so a Monochrome dock is one hue.
 
 use super::tone_band::Tone;

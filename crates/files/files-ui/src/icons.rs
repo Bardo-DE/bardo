@@ -1,4 +1,4 @@
-//! Which icon an item gets: quire's resolver (the person's own change, the chosen pack, the
+//! Which icon an item gets: Bardo's resolver (the person's own change, the chosen pack, the
 //! standard set) asked for an entry, and its answer mapped to the choice `ui_components::FileIcon` draws.
 //!
 //! Pure: the resolver was built by the edge (`edge::IconSources`) and no file is read here.
@@ -102,7 +102,7 @@ impl Icons {
         match self.standard.of(facts) {
             IconPick::Standard { kind, label } => FileIconChoice::Standard { kind, label },
             IconPick::Folder(kind) => FileIconChoice::Folder(kind),
-            // The standard set draws no artwork; a pick quire adds later is the plain page.
+            // The standard set draws no artwork; a pick Bardo adds later is the plain page.
             IconPick::Artwork(_) => other(),
         }
     }

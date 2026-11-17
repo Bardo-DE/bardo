@@ -1,7 +1,7 @@
 //! The question's root.
 //!
 //! While the link holds an opening on this output the surface maps itself (`use_sheet_stage`) and
-//! a `Ds { material: Sheet, extent: Viewport }` holds one quire `Alert`, keyed by the opening's
+//! a `Ds { material: Sheet, extent: Viewport }` holds one Bardo `Alert`, keyed by the opening's
 //! serial. Cancel is the Cancel button, so it is the default (Return) and what Escape presses;
 //! Empty Trash is destructive. Nothing is styled under `.ds-alert*`, `.ds-sheet*` or `.ds-button*`.
 

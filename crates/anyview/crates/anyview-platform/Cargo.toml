@@ -12,16 +12,16 @@ publish.workspace = true
 # The Linux desktop's services: D-Bus single instance with bus activation and the agent intents. Opt in:
 # the default build is the traits, the portable implementations and the `testing` fakes, with no zbus.
 # The code behind the feature is also gated on `target_os = "linux"`, so a build for another platform
-# ignores it (quire design/36).
+# ignores it (Bardo design/36).
 default = []
-quire-desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:base-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus"]
+desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:base-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus"]
 # The fakes (`anyview_platform::testing`), for the tests of the crates that consume the traits.
 testing = ["dep:tempfile"]
 
 [dependencies]
 base-words = { path = "../../../base/base-words" }
 base-fs = { path = "../../../base/base-fs" }
-# Capped reads and atomic writes of the thumbnail and cover caches: quire's, shared by the desktop's apps.
+# Capped reads and atomic writes of the thumbnail and cover caches: Bardo's, shared by the desktop's apps.
 anyview-core = {path = "../anyview-core"}
 dirs = { workspace = true }
 service-locator = {path = "../../../platform/service-locator"}
@@ -34,7 +34,7 @@ tempfile = { workspace = true, optional = true }
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
-# Only a Linux build has a session bus and the freedesktop entries; `quire-desktop` names them.
+# Only a Linux build has a session bus and the freedesktop entries; `desktop` names them.
 [target.'cfg(target_os = "linux")'.dependencies]
 zbus = {workspace = true, features = ["tokio"], optional = true}
 action-provider = {features = ["dbus"], optional = true, path = "../../../actions/action-provider"}
@@ -49,7 +49,7 @@ base-ids = { path = "../../../base/base-ids", optional = true }
 toml = { workspace = true, optional = true }
 
 [dev-dependencies]
-# The integration tests use the fakes and, with `quire-desktop`, the private bus behind `testing`.
+# The integration tests use the fakes and, with `desktop`, the private bus behind `testing`.
 anyview-platform = { path = ".", default-features = false, features = ["testing"] }
 tempfile = { workspace = true }
 

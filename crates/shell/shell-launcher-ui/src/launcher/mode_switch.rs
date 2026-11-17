@@ -1,5 +1,5 @@
 //! The permissions mode in the assistant's input box: Auto or Manual for the conversation being
-//! typed into, quire's `SegmentedControl` at the field's trailing edge. It shows the mode at all
+//! typed into, Bardo's `SegmentedControl` at the field's trailing edge. It shows the mode at all
 //! times; a switch made while a step runs says "From the next step" beside it, and when an
 //! administrator holds every conversation in Manual the control is shown but unavailable and the
 //! same place says why. The key is `sill.switch-mode` (⇧⌘M), run by the panel's key claim.

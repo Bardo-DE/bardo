@@ -269,7 +269,7 @@ const CAMERA: &[Shape] = &[Shape::Solid(
     "M15 3a2 2 0 0 1 1.995 1.85l.005 .15a1 1 0 0 0 .883 .993l.117 .007h1a3 3 0 0 1 2.995 2.824l.005 .176v9a3 3 0 0 1 -2.824 2.995l-.176 .005h-14a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-9a3 3 0 0 1 2.824 -2.995l.176 -.005h1a1 1 0 0 0 1 -1a2 2 0 0 1 1.85 -1.995l.15 -.005h6zm-3 7a3 3 0 0 0 -2.985 2.698l-.011 .152l-.004 .15l.004 .15a3 3 0 1 0 2.996 -3.15z",
 )];
 
-/// quire's own drawing, the outline's silhouette at a 2.5 wide stroke: shaft, chevron, baseline.
+/// Bardo's own drawing, the outline's silhouette at a 2.5 wide stroke: shaft, chevron, baseline.
 pub(super) const DOWNLOAD: &[Shape] = &[
     Shape::Solid("M10.75 4.25A1.25 1.25 0 0 1 13.25 4.25V15H10.75Z"),
     Shape::Solid(

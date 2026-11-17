@@ -66,10 +66,10 @@ fn open(endpoint: &WaylandRoute) -> Result<Connection, Refusal> {
     let (globals, _queue) = registry_queue_init::<Probe>(&connection)?;
     match backend_of(&offer_of_registry(&globals)) {
         // The desktop's own compositor serves the toplevels and workspaces on this connection
-        // as the standard arm reads them (the client projects the Quire window state onto the
+        // as the standard arm reads them (the client projects Bardo window state onto the
         // toplevels' flags); its shell role lives on the shell host's connection
-        // (`desktop_wl::quire`).
-        DesktopBackend::Quire | DesktopBackend::Wlr => Ok(connection),
+        // (`desktop_wl::bardo`).
+        DesktopBackend::Bardo | DesktopBackend::Wlr => Ok(connection),
         DesktopBackend::Bare => Err(Refusal::NoWindowProtocol),
     }
 }

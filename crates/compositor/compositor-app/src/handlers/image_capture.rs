@@ -24,9 +24,9 @@ pub(super) use gate::resolved;
 use super::{capture_source, space_shot};
 use crate::state::State;
 use compositor_core::OutputKey;
+use compositor_wayland::bardo::space_shot::{SpaceSessionId, SpaceSourceId};
 use compositor_wayland::capture_source::{ToplevelSessionId, ToplevelSourceId};
 use compositor_wayland::image_capture::{self, CaptureSessionId, CaptureSourceId};
-use compositor_wayland::quire::space_shot::{SpaceSessionId, SpaceSourceId};
 use smithay::output::Output;
 use smithay::reexports::wayland_server::protocol::wl_pointer::WlPointer;
 use smithay::reexports::wayland_server::protocol::wl_shm::Format;
@@ -46,7 +46,7 @@ impl ImageCaptureSourceHandler for State {
             image_capture::on_source_destroyed(&mut self.wl.image_capture.book, *id);
         }
         if let Some(id) = source.user_data().get::<SpaceSourceId>() {
-            self.wl.quire_shell.shots.book.on_source_destroyed(*id);
+            self.wl.bardo_shell.shots.book.on_source_destroyed(*id);
         }
         // A window source (P2-Q3) leaves the window book with it, not when its window closes.
         if let Some(id) = source

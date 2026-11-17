@@ -1,6 +1,6 @@
 //! What the person's own styles have to say: the notes under "Use my styles" on the Appearance
 //! page, and the sheet that lists them (customization design section 7.5). The lint that finds
-//! them is quire's; this is only how they are counted and placed for the window.
+//! them is Bardo's; this is only how they are counted and placed for the window.
 
 /// Whose style file this is.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -27,7 +27,7 @@ impl StyleOwner {
 pub struct StyleNote {
     /// The 1-based line.
     pub line: u32,
-    /// What it says, in the plain words quire's lint gives it.
+    /// What it says, in the plain words Bardo's lint gives it.
     pub words: String,
 }
 

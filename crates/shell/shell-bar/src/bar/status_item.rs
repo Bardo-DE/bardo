@@ -1,4 +1,4 @@
-//! One icon status item: a quire `MenuBarItem`, expanded while its menu is
+//! One icon status item: a Bardo `MenuBarItem`, expanded while its menu is
 //! open (design/20 §1.1), sized by the stylesheet's `--bar-status-box` and `--bar-status-glyph`.
 
 use dioxus::prelude::*;

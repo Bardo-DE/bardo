@@ -80,8 +80,8 @@ pub fn sk(n: u64) -> desktop_client::SpaceKey {
 
 pub fn window_change(
     key: ToplevelKey,
-    change: desktop_client::quire::WindowChange,
+    change: desktop_client::bardo::WindowChange,
 ) -> DesktopEvent {
-    use desktop_client::quire::WindowEvent;
+    use desktop_client::bardo::WindowEvent;
     DesktopEvent::Window(WindowEvent::Changed { key, change })
 }

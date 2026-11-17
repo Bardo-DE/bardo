@@ -2,8 +2,8 @@
 //! out, and the `bardo_shell_v1` requests made on it (roles and minimise targets). The grammar
 //! is in `command.rs`; every verb answers one JSON note.
 
-use compositor_testclient::quire::handout;
-use compositor_testclient::quire::shell::{ShellHandle, ShellRole};
+use compositor_testclient::bardo::handout;
+use compositor_testclient::bardo::shell::{ShellHandle, ShellRole};
 use compositor_testclient::{ClientError, TestClient};
 use serde_json::{Value, json};
 use std::os::fd::OwnedFd;

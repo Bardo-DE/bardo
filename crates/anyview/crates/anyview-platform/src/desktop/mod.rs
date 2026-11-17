@@ -1,5 +1,5 @@
 //! The Linux desktop's own services: the D-Bus single instance and the agent intents. Built with
-//! the `quire-desktop` feature on Linux. A new platform adds a sibling module with the same shapes
+//! the `desktop` feature on Linux. A new platform adds a sibling module with the same shapes
 //! and selects it in `lib.rs`.
 
 mod env;

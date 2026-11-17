@@ -72,7 +72,7 @@ fn Page() -> Element {
                     accessory: more("projects"),
                     common: place("projects"),
                     onclick: move |_| note("select:projects".to_string()),
-                    Row { title: "Quire", outline: Outline::Leaf, common: place("quire") }
+                    Row { title: "Bardo", outline: Outline::Leaf, common: place("bardo") }
                 }
                 Row {
                     state: RowState { drop: DropState::Target, ..RowState::default() },
@@ -288,7 +288,7 @@ fn Rename(start: Start) -> Element {
                     accessory: Accessory::Badge(3),
                     common: place("projects"),
                     onclick: move |_| note("select".to_string()),
-                    Row { title: "Quire", outline: Outline::Leaf, common: place("quire") }
+                    Row { title: "Bardo", outline: Outline::Leaf, common: place("bardo") }
                 }
             }
             p { class: "log", {log().join(",")} }
@@ -341,9 +341,9 @@ fn the_field_takes_the_titles_place_and_moves_nothing() {
         "the count stays put"
     );
     assert_eq!(
-        edit.rect(".ds-row[*|data-place=quire]")
+        edit.rect(".ds-row[*|data-place=bardo]")
             .map(|next| next.origin.y),
-        read.rect(".ds-row[*|data-place=quire]")
+        read.rect(".ds-row[*|data-place=bardo]")
             .map(|next| next.origin.y),
         "the next row stays put"
     );

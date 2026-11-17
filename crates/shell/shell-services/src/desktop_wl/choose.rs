@@ -12,7 +12,7 @@ use shell_model::desktop::{DesktopBackend, GlobalOffer};
 pub fn backend_of(offer: &GlobalOffer) -> DesktopBackend {
     let protocols = ProtocolSet::from_interfaces(offer.names());
     match desktop_client::backend_for(&protocols) {
-        Some(Offered::Quire) => DesktopBackend::Quire,
+        Some(Offered::Bardo) => DesktopBackend::Bardo,
         Some(Offered::Wlr | Offered::Ext) => DesktopBackend::Wlr,
         None => DesktopBackend::Bare,
     }

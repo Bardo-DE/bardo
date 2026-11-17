@@ -1,4 +1,4 @@
-//! Which tag each live frame document carries, per quire document. A frame's document is parsed,
+//! Which tag each live frame document carries, per Bardo document. A frame's document is parsed,
 //! and asks for its first images, before Blitz attaches it to its `iframe`, so nothing can read
 //! the element's `data-frame-tag` while those first requests are made. The book holds a frame's
 //! requests for the app until the document it came from is found under its `iframe` (the next
@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 /// A frame's request for the app, run with the frame's tag once it is known.
 pub(crate) type Held = Box<dyn FnOnce(Option<FrameTag>) + Send>;
 
-/// One quire document's frames.
+/// One Bardo document's frames.
 #[derive(Default)]
 struct Book {
     /// Every frame found under an `iframe`, and its tag if the element has one.
@@ -22,7 +22,7 @@ struct Book {
     held: HashMap<FrameId, Vec<Held>>,
 }
 
-/// One quire document's frames, shared by its frame net provider and its walk.
+/// One Bardo document's frames, shared by its frame net provider and its walk.
 #[derive(Clone)]
 pub struct FrameBook(Arc<Mutex<Book>>);
 

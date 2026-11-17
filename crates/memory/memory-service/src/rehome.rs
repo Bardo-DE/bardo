@@ -12,7 +12,7 @@ use memory_core::{
 use memory_store::{Entry, VaultPath};
 use std::collections::BTreeMap;
 
-/// An app's first Space: where its memories land (quire's Spaces kit numbers from 0).
+/// An app's first Space: where its memories land (Bardo's Spaces kit numbers from 0).
 pub(crate) const FIRST_SPACE: LocalSpace = LocalSpace(0);
 
 /// What a Space held that is worth moving.

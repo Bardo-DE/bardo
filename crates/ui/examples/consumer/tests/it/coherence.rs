@@ -1,4 +1,4 @@
-//! The four coherence rules (`CONSUMING.md` section 5), proven from outside the quire workspace
+//! The four coherence rules (`CONSUMING.md` section 5), proven from outside Bardo workspace
 //! the way a real consumer's own test suite would: this crate depends on `ds`, `ui-settings` and
 //! `ui-blitz` by path, and `ui-lint` and `ui-harness` as dev-dependencies, exactly as
 //! `CONSUMING.md` tells a consumer to.
@@ -7,7 +7,7 @@
 //! 1. [`our_stylesheet_lints_clean`]: no literal design value in `consumer`'s own CSS.
 //! 2. [`rendered_markup_uses_only_styled_classes`] and
 //!    [`no_raw_form_control_or_svg_is_rendered`]: no raw markup, no class nothing styles.
-//! 3. Rule 3 (a missing component is added to quire first) is a review discipline, not a check.
+//! 3. Rule 3 (a missing component is added to Bardo first) is a review discipline, not a check.
 //! 4. [`the_sent_badge_times_out_on_ds_motions_own_clock`]: motion is timed by `ds`'s timers.
 
 use consumer::{App, STYLE};
@@ -28,7 +28,7 @@ fn render() -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// What `markup` needs to know is styled: quire's own stylesheet, plus ours.
+/// What `markup` needs to know is styled: Bardo's own stylesheet, plus ours.
 fn consumer_css() -> String {
     format!("{}\n{STYLE}", ui_components::stylesheet())
 }
@@ -50,11 +50,15 @@ fn our_stylesheet_lints_clean() {
     );
 }
 
-/// Rule 2: every class the first frame carries is one quire's stylesheet or `STYLE` styles.
+/// Rule 2: every class the first frame carries is one Bardo's stylesheet or `STYLE` styles.
 #[test]
 fn rendered_markup_uses_only_styled_classes() {
     let html = render();
-    let offences = markup(&html, &consumer_css(), &LintConfig::new(&ui_components::kits()));
+    let offences = markup(
+        &html,
+        &consumer_css(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     let unstyled: Vec<_> = offences
         .iter()
         .filter(|offence| offence.rule == Rule::UnstyledClass)
@@ -66,7 +70,11 @@ fn rendered_markup_uses_only_styled_classes() {
 #[test]
 fn no_raw_form_control_or_svg_is_rendered() {
     let html = render();
-    let offences = markup(&html, &consumer_css(), &LintConfig::new(&ui_components::kits()));
+    let offences = markup(
+        &html,
+        &consumer_css(),
+        &LintConfig::new(&ui_components::kits()),
+    );
     let raw: Vec<_> = offences
         .iter()
         .filter(|offence| offence.rule == Rule::RawMarkup)

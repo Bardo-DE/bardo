@@ -42,7 +42,7 @@ fn render(auth: Auth, prompt: PromptOutput, wallpapers: Wallpapers) -> String {
     markup_only(&run.harness.html())
 }
 
-/// The markup without its `<style>` blocks (quire's stylesheet names every class).
+/// The markup without its `<style>` blocks (Bardo's stylesheet names every class).
 fn markup_only(html: &str) -> String {
     let mut rest = html;
     let mut kept = String::new();

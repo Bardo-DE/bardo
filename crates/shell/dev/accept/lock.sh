@@ -290,7 +290,7 @@ step_idle() {
   start=$(now_ms)
   bardo-shell lock >"$log" 2>&1
   [ "$(until_phase "$start" "locked" 2000)" -ge 0 ] || { echo "not locked" | tee -a "$log" >&2; return 1; }
-  # The password field's caret blinks for its first ten idle seconds (quire f3bcb531, as the Mac's
+  # The password field's caret blinks for its first ten idle seconds (Bardo f3bcb531, as the Mac's
   # does), so the count starts after them. Keep the window inside one minute: the clock redraws
   # once a minute.
   while [ "$(date +%S | sed 's/^0//')" -ge 40 ]; do sleep 1; done

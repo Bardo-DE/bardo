@@ -1,6 +1,6 @@
 # Consuming chordkit
 
-Two roles use chordkit: a **toolkit** (quire) that turns key events into actions, and an **app**
+Two roles use chordkit: a **toolkit** (Bardo) that turns key events into actions, and an **app**
 that declares and handles actions. Neither reads modifiers or decides Command versus Ctrl.
 
 ## The toolkit

@@ -117,7 +117,7 @@ impl WlrLayerShellHandler for State {
 
     fn layer_destroyed(&mut self, surface: LayerSurface) {
         if let Some(key) = self.wl.layer_shell.key_of(surface.wl_surface()) {
-            compositor_wayland::quire::shell::on_layer_gone(&mut self.wl.quire_shell, key);
+            compositor_wayland::bardo::shell::on_layer_gone(&mut self.wl.bardo_shell, key);
         }
         let events = layer_shell::on_layer_destroyed(&mut self.wl.layer_shell, &surface);
         core_loop::feed(self, events);

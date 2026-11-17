@@ -7,6 +7,9 @@
 fn main() -> Result<(), ui_blitz::LaunchError> {
     ui_blitz::launch(
         consumer::App,
-        ui_blitz::AppConfig::new("quire consumer example", ui_blitz::WindowSize::new(480, 360)),
+        ui_blitz::AppConfig::new(
+            "bardo consumer example",
+            ui_blitz::WindowSize::new(480, 360),
+        ),
     )
 }

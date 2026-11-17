@@ -1,4 +1,4 @@
-//! How the person may answer, pure and on quire's clock: the arming delay, Escape, and the hold a
+//! How the person may answer, pure and on Bardo's clock: the arming delay, Escape, and the hold a
 //! destructive action asks for. `ui_components::machine::use_machine` runs it; the surface feeds it the
 //! buttons' presses and carries out its one output.
 //!

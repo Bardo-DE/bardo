@@ -1,5 +1,5 @@
 //! The effects end of the center: follow the [`CenterLink`] through [`step_phase`] onto the
-//! surface's visibility (quire's `Panel` plays the exit and says when it has settled), and carry
+//! surface's visibility (Bardo's `Panel` plays the exit and says when it has settled), and carry
 //! a row's [`RowAct`] to the notifications service. Once hidden nothing runs and nothing asks
 //! for a frame.
 
@@ -67,7 +67,7 @@ fn drive(mut phase: Signal<Phase>, surface: Option<&SurfaceHandle>, input: Phase
     let visibility = match out {
         Some(PhaseOut::Map) => Visibility::Shown,
         Some(PhaseOut::Unmap) => Visibility::Hidden,
-        // quire's `Panel` plays its exit on `shown: Hidden` and reports at its settle.
+        // Bardo's `Panel` plays its exit on `shown: Hidden` and reports at its settle.
         Some(PhaseOut::PlayExit) | None => return,
     };
     eprintln!(

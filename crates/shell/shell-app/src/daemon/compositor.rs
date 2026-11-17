@@ -21,7 +21,7 @@ use shell_model::desktop::{
     Corner as ProtocolCorner, DesktopCommand, DesktopView, KeyGesture, ScreenEdge, ShellNote,
     ShellRole, Shown,
 };
-use shell_services::desktop_wl::quire::{ShellArm, WlSurface, spawn_shell_arm};
+use shell_services::desktop_wl::bardo::{ShellArm, WlSurface, spawn_shell_arm};
 use shell_ui_kit::links::Corner;
 use shell_ui_kit::surface::OutputPolicy;
 use tokio::runtime::Handle;

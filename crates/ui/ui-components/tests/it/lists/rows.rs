@@ -303,7 +303,7 @@ pub const ROW_CASES: &[Case] = &[
     Case {
         component: "row",
         state: "leading-text",
-        make: || rsx! { Row { title: "Quire", leading: RowLeading::Text("Q".to_string()), size: RowSize::Settings } },
+        make: || rsx! { Row { title: "Bardo", leading: RowLeading::Text("Q".to_string()), size: RowSize::Settings } },
     },
     Case {
         component: "row",

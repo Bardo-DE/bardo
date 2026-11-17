@@ -11,7 +11,7 @@
 //! The icons are data and not markup strings, so nothing here needs a raw HTML sink.
 //! The mailo set's geometry is in `geometry`, transcribed from the design's `ICON` table; the
 //! shell set's is in `geometry_shell` (design/08-ICONS.md section 1.6), the control center's in
-//! `geometry_control`, quire's own marks on Lucide's grid in `geometry_own`
+//! `geometry_control`, Bardo's own marks on Lucide's grid in `geometry_own`
 //!; the named sets are in `sets`.
 //!
 //! No serde: an icon is never stored, and a derive would make it a persisted schema.
@@ -86,7 +86,7 @@ pub enum Icon {
     MailOpen,
     /// The mailo `Tag` glyph.
     Tag,
-    /// The sync glyph, quire's own drawing: two clockwise arcs, each ending in an arrowhead.
+    /// The sync glyph, Bardo's own drawing: two clockwise arcs, each ending in an arrowhead.
     Refresh,
     /// The mailo `Send` glyph.
     Send,
@@ -222,7 +222,7 @@ pub enum Icon {
     StickyNote,
     /// Lucide `camera`.
     Camera,
-    /// quire's own drawing: an arrow with an open chevron head over a baseline.
+    /// Bardo's own drawing: an arrow with an open chevron head over a baseline.
     Download,
     /// Lucide `upload`.
     Upload,
@@ -278,7 +278,7 @@ pub enum Icon {
     /// Lucide `grip-vertical`: six dots, two across and three down; a row's handle where a list
     /// can be reordered by dragging it.
     Grip,
-    // Control center parts 2: quire's own glyphs on Lucide's grid.
+    // Control center parts 2: Bardo's own glyphs on Lucide's grid.
     /// Two toggles with their knobs at opposite ends: the control center's bar item
     /// (`geometry_own`, which documents the geometry).
     Switches,
@@ -294,7 +294,7 @@ pub enum Icon {
     Smile,
     /// Lucide `globe`: the web.
     Globe,
-    // design/26: quire's own glyph on Lucide's grid.
+    // design/26: Bardo's own glyph on Lucide's grid.
     /// Lucide `moon`'s outline, filled: the Focus module when it is on (`geometry_own`).
     MoonFilled,
     // Text formatting (a format bar) and severity (a banner, a label).
@@ -349,7 +349,7 @@ pub enum Icon {
     Eject,
     /// Lucide `hard-drive`: a drive inside the machine.
     DriveInternal,
-    /// quire's own drawing: a flat drive with a connector plug on it (`geometry_files`).
+    /// Bardo's own drawing: a flat drive with a connector plug on it (`geometry_files`).
     DriveExternal,
     /// Lucide `disc`: an optical disc.
     Disc,
@@ -365,13 +365,13 @@ pub enum Icon {
     FileArchive,
     /// Lucide `file-code`: source code.
     FileCode,
-    /// quire's own drawing: a file with a letter P (`geometry_files`).
+    /// Bardo's own drawing: a file with a letter P (`geometry_files`).
     FilePdf,
     /// Lucide `file-cog`: a program.
     FileApp,
     /// Lucide `align-left`: three lines of text, the mark of a document (`geometry_files`).
     Lines,
-    /// quire's own drawing: the letter P, the mark of a PDF (`geometry_files`).
+    /// Bardo's own drawing: the letter P, the mark of a PDF (`geometry_files`).
     Pdf,
     /// Lucide `puzzle`: a puzzle piece, the Extensions page (`geometry_files`).
     Puzzle,

@@ -163,10 +163,10 @@ Linear alternative: O = 1000 -> 50 px. Snap-back from 100 px, `v0 = 0`: `|s| < 1
 Impact at 2000 px/s: peak 18.3 px at 80 ms, below 1 px at ~451 ms.
 
 **`data-overscroll="band"`, by container.** "Applies to" above is the rule; this is the rule
-applied to every scroll container quire or a consumer draws, so the host can read one attribute
+applied to every scroll container Bardo or a consumer draws, so the host can read one attribute
 rather than re-derive "is this a menu" from a class name. A container the host finds without the
 attribute clamps (no rubber band) rather than defaulting to elastic — the safer failure, since an
-un-marked scroller is more likely a mistake than a menu quire forgot to exclude.
+un-marked scroller is more likely a mistake than a menu Bardo forgot to exclude.
 
 | Container | `data-overscroll` | Why |
 | --- | --- | --- |
@@ -467,7 +467,7 @@ fade 240 ms, double-scroll grace 150 ms.
 | palmrest client | `layer-shell-host/src/input/palmrest.rs`: connects to the palmrest socket if present, sends `PointerOver`, feeds Gesture inputs; absent daemon = no-op |
 | Units to px, axis lock, gains | palmrest `feel` module (12 §12.3.8) |
 | Scroll notification hook | layer-shell-host's `use_scroll` (beside `use_surface`: the host owns the engine, so the hook lives on its side, not `ui-blitz`'s) |
-| `scrollbar-width: none`, `scroll-behavior` ban, `--scroll-thumb` token, `data-wheel="capture"`, `data-overscroll="band"` | quire (component CSS, `lint::Rule::BlitzUnsupported`, tokens, component markup — §11.3.7's table, §11.3.1 item 2) |
+| `scrollbar-width: none`, `scroll-behavior` ban, `--scroll-thumb` token, `data-wheel="capture"`, `data-overscroll="band"` | Bardo (component CSS, `lint::Rule::BlitzUnsupported`, tokens, component markup — §11.3.7's table, §11.3.1 item 2) |
 | Settings UI | Settings app; writes both our keys and the compositor's natural-scroll keys |
 
 Platform limits:

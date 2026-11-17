@@ -1,7 +1,7 @@
-//! The person's light or dark scheme and their Reduce transparency choice, read from quire's
+//! The person's light or dark scheme and their Reduce transparency choice, read from Bardo's
 //! `appearance.toml` through ui-settings and followed while casement runs.
 //!
-//! The transparency is quire's `appearance.transparency` (`system` or `reduced`; a file without it
+//! The transparency is Bardo's `appearance.transparency` (`system` or `reduced`; a file without it
 //! is `system`), the one desktop-wide setting the shell reads too: `reduced` draws every blur as
 //! its mostly opaque stand-in in the scheme's paper ([`blur_finish`]), at the next frame. The
 //! server-side window frame is drawn in it (`core_loop::frames::styles` reads `state.render.scheme`
@@ -37,7 +37,7 @@ fn store_for(home: Option<&Path>) -> Store {
     let root = home.map_or(ConfigRoot::Xdg, |dir| {
         ConfigRoot::Scratch(dir.to_path_buf())
     });
-    Store::new(root, AppName::QUIRE)
+    Store::new(root, AppName::BARDO)
 }
 
 /// The scheme `home`'s appearance file paints now (the light scheme when there is no file, and

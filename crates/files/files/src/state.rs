@@ -1,5 +1,5 @@
 //! Where the program keeps what changes as it is used and is not a choice: how each folder is
-//! shown. The environment is read once, here, by quire's settings root.
+//! shown. The environment is read once, here, by Bardo's settings root.
 
 use std::path::PathBuf;
 use std::sync::Arc;

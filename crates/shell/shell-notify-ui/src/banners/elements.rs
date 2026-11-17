@@ -1,5 +1,5 @@
 //! The column's input and blur regions as element regions (layer-shell-host's `RegionSpec::Elements`,
-//! resolved after every layout): each drawn card's quire plate by its id (`toast-<id>`,
+//! resolved after every layout): each drawn card's Bardo plate by its id (`toast-<id>`,
 //! design/20 §1.6), and for a group the whole card, whose layers reach below the plate, so a
 //! press in the gap between cards passes through to the window below and nothing but the cards
 //! is blurred. A card sliding out is still drawn, so it keeps its regions until the stack says
@@ -11,7 +11,7 @@ use shell_model::notifications::NotificationId;
 use super::layer::CARD_RADIUS;
 use shell_ui_kit::notification_card::{CardPart, part_id};
 
-/// How far quire's close button stands out past the plate's top left corner (`--s-6`): the
+/// How far Bardo's close button stands out past the plate's top left corner (`--s-6`): the
 /// input region reaches that far round the plate so the whole button takes a press.
 const CLOSE_OVERHANG: i32 = 6;
 

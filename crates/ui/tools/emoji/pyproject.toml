@@ -1,7 +1,7 @@
 [project]
 name = "emojitool"
 version = "0.1.0"
-description = "Fetch Noto Animated Emoji and pack each into a sprite sheet for quire (design/25-EMOJI.md)."
+description = "Fetch Noto Animated Emoji and pack each into a sprite sheet for bardo (design/25-EMOJI.md)."
 requires-python = ">=3.12"
 dependencies = ["pillow>=11"]
 

@@ -1,7 +1,7 @@
 //! The wire of `org.bardo.Companion1`: what an app or the launcher asks, the answer object
 //! they watch (`AnswerWire`: a phase, a body, a footer), the cards, plans and forms inside it,
 //! the records companiond stores about its sessions, and the front pointer (the task the
-//! launcher returns to). Pure and serde-only; sill and the ds adapter read it, and quire
+//! launcher returns to). Pure and serde-only; sill and the ds adapter read it, and Bardo
 //! never names it (each pair of wire and view types has a `*_total` conversion test in sill).
 //!
 //! Session records are stored as `EventBody::Area { area: Companion }` in this serde form.

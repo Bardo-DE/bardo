@@ -1,4 +1,4 @@
-//! The `PackageKit` backend's stand-in for a build without `quire-desktop`: no D-Bus client, so
+//! The `PackageKit` backend's stand-in for a build without `desktop`: no D-Bus client, so
 //! every install is [`Outcome::Unsupported`], the answer the app already handles.
 
 use super::{BoxFuture, Install, Request, Timeouts};
@@ -9,7 +9,7 @@ use crate::outcome::Outcome;
 pub struct PackageKit;
 
 impl PackageKit {
-    /// The system's `PackageKit`; without `quire-desktop` there is none to reach.
+    /// The system's `PackageKit`; without `desktop` there is none to reach.
     #[must_use]
     pub fn system() -> PackageKit {
         PackageKit

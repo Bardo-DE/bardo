@@ -3,7 +3,7 @@
 //! The
 //! shell computes the month; these mirror its grid field for field, with the civil dates as its
 //! calendar library gives them (`i16` year, `i8` month and day), so its mapping is a plain
-//! `From` and quire needs no calendar of its own.
+//! `From` and Bardo needs no calendar of its own.
 
 use serde::{Deserialize, Serialize};
 use ui_components::components::content::text_runs::TextLine;

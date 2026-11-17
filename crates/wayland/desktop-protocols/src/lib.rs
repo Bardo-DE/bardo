@@ -1,4 +1,4 @@
-//! The desktop's private Wayland protocols, `quire_*_v1`.
+//! The desktop's private Wayland protocols, `bardo_*_v1`.
 //!
 //! The six XML files in `protocols/` are the interface. This crate carries them in three
 //! layers:

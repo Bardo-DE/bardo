@@ -18,7 +18,7 @@ use wgpu_context::DeviceHandle;
 /// and never dropped because tearing one down while another test creates its own deadlocks the
 /// NVIDIA driver: `vkDestroyDevice` and EGL `destroy_context` on one thread against
 /// `vkEnumerateDeviceExtensionProperties` and `create_pipeline_layout` on others hung a test
-/// binary for hours (quire ui-blitz and anyview, 2026-10-15). A wgpu device is safe to use from
+/// binary for hours (Bardo ui-blitz and anyview, 2026-10-15). A wgpu device is safe to use from
 /// many threads, and each harness still owns its renderer, target and resources.
 static OPENED: Mutex<Vec<Opened>> = Mutex::new(Vec::new());
 

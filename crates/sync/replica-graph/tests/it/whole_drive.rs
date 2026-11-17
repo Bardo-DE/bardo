@@ -85,8 +85,8 @@ async fn the_whole_drive_is_listed_in_pages_with_its_folders_as_items() {
         items(&changes),
         [
             ("Apps".to_owned(), true),
-            ("Apps/Quire".to_owned(), true),
-            ("Apps/Quire/app.bin".to_owned(), false),
+            ("Apps/Bardo".to_owned(), true),
+            ("Apps/Bardo/app.bin".to_owned(), false),
             ("Docs".to_owned(), true),
             ("Docs/Sub".to_owned(), true),
             ("Docs/Sub/b.txt".to_owned(), false),

@@ -1,5 +1,5 @@
-//! The widget contract as markup (design/23-WIDGETS.md section 9): quire's own widgets drawn
-//! only through `WidgetCard`, each size and state they take, with the card quire owns around
+//! The widget contract as markup (design/23-WIDGETS.md section 9): Bardo's own widgets drawn
+//! only through `WidgetCard`, each size and state they take, with the card Bardo owns around
 //! them. Each specimen lints clean and every `ds-` class in it is styled by the stylesheet. The
 //! timeline's clock behaviour is proven on the virtual clock in
 //! `ui-conformance/tests/widget_timeline.rs`.
@@ -192,18 +192,18 @@ pub(crate) fn specimens() -> Vec<Specimen> {
         .collect()
 }
 
-/// The card is quire's: it says the widget's kind, and the widget draws only its content
+/// The card is Bardo's: it says the widget's kind, and the widget draws only its content
 /// inside.
 #[test]
-fn the_card_is_quires_and_names_its_widget() {
+fn the_card_is_bardo_and_names_its_widget() {
     let small = html("month-small");
-    assert!(small.contains("data-widget=\"quire.month\""), "{small}");
+    assert!(small.contains("data-widget=\"bardo.month\""), "{small}");
     assert!(
         !small.contains("ds-widget-title"),
         "no header row (M25): {small}"
     );
     let tile = html("month-large-tile");
-    assert!(tile.contains("data-widget=\"quire.month\""), "{tile}");
+    assert!(tile.contains("data-widget=\"bardo.month\""), "{tile}");
 }
 
 /// The month follows the reference's layouts (design/23 section 5.2): Small the compact month

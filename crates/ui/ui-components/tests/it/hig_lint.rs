@@ -1,6 +1,6 @@
 //! The HIG guardrails (design/27-HIG-PARITY.md section 7, H0): one passing and one failing case
 //! per warning rule, that they stay warnings (never in `stylesheet` or `markup`, never failing
-//! `assert_clean`), that Standard does not run them, and quire's own stylesheet under them.
+//! `assert_clean`), that Standard does not run them, and Bardo's own stylesheet under them.
 
 use ui_lint::{
     Exception, LintConfig, Offence, Profile, Rule, Severity, WARNINGS, assert_clean, markup,
@@ -280,10 +280,10 @@ fn an_exception_covers_a_warning() {
     assert_clean(".row { cursor: pointer; }", &config);
 }
 
-/// quire's own stylesheet under the guardrails: every warning left is named here with its
-/// reason, so a new one fails this test (quire is held to them now; consumers are warned).
+/// Bardo's own stylesheet under the guardrails: every warning left is named here with its
+/// reason, so a new one fails this test (Bardo is held to them now; consumers are warned).
 #[test]
-fn quires_own_sheet_warns_only_where_reviewed() {
+fn bardo_own_sheet_warns_only_where_reviewed() {
     const REVIEWED: &[(Rule, &str, &str)] = &[
         (
             Rule::MinFontSize,
@@ -334,7 +334,7 @@ use crate::support::golden;
 /// Every rendered golden under the markup guardrails: the only hit is a case that renders an
 /// `EditSurface` without its optional `label` (making it required is H2's, design/27 section 7).
 #[test]
-fn quires_goldens_warn_only_where_reviewed() {
+fn bardo_goldens_warn_only_where_reviewed() {
     const REVIEWED: &[(&str, Rule)] = &[("controls/edit_surface/empty.html", Rule::UnnamedControl)];
     let left: Vec<String> = golden::all_in("")
         .into_iter()

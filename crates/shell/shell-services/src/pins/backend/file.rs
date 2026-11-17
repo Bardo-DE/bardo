@@ -22,7 +22,7 @@ pub(crate) const FILE_NAME: &str = "layout.toml";
 const VERSION: i64 = 1;
 
 /// The kind of a row that places an app in the dock.
-const APP_KIND: &str = "quire.dock.app";
+const APP_KIND: &str = "bardo.dock.app";
 
 /// The pins in `dir`: those of `layout.toml`, else those of an old `dock.json` (written to
 /// `layout.toml` at once, with a line on stderr), else none (the dock still shows running apps).
@@ -187,7 +187,7 @@ mod tests {
         write(
             &dir,
             FILE_NAME,
-            "[[center_widgets]]\nkind = \"quire.battery\"\n",
+            "[[center_widgets]]\nkind = \"bardo.battery\"\n",
         );
         save(dir.path(), &pins(&["foot"])).unwrap_or_else(|e| panic!("{e}"));
         let text = read(&dir, FILE_NAME);
@@ -260,17 +260,17 @@ mod tests {
         write(
             &dir,
             FILE_NAME,
-            "version = 1\n[[dock]]\nkind = \"quire.dock.app\"\napp = \"a\"\n\
-             [[dock]]\nkind = \"quire.dock.stack\"\npath = \"/x\"\n\
-             [[dock]]\nkind = \"quire.dock.app\"\n\
-             [[dock]]\nkind = \"quire.dock.app\"\napp = \"b\"\n",
+            "version = 1\n[[dock]]\nkind = \"bardo.dock.app\"\napp = \"a\"\n\
+             [[dock]]\nkind = \"bardo.dock.stack\"\npath = \"/x\"\n\
+             [[dock]]\nkind = \"bardo.dock.app\"\n\
+             [[dock]]\nkind = \"bardo.dock.app\"\napp = \"b\"\n",
         );
         assert_eq!(load(dir.path()), pins(&["a", "b"]));
         // A save rewrites the apps and keeps the rows that are not ours, in their order.
         save(dir.path(), &pins(&["b"])).unwrap_or_else(|e| panic!("{e}"));
         let text = read(&dir, FILE_NAME);
         assert_eq!(load(dir.path()), pins(&["b"]));
-        assert!(text.contains("quire.dock.stack"), "{text}");
+        assert!(text.contains("bardo.dock.stack"), "{text}");
         assert!(text.contains("path = \"/x\""), "{text}");
     }
 }

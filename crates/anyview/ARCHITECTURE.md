@@ -26,7 +26,7 @@ Layers go lowest first. A crate names only crates in a lower layer, and
 | L2 | `anyview-platform` | the edge the desktop uses: the single-instance `Request` hand-off (D-Bus or a per-user socket) and the shared thumbnail cache, with fakes |
 | L3 | `anyview-peek` | the light tier: the registry that maps every kind to its `Peek`, the folder, video and audio (pure-Rust header parsers) and facts-only peeks, the type-erased `AnyPeeked`, `look` (its one front door: probe a file and peek at it as `Peeking` says), and the pane view (what the launcher links) |
 
-### Allowed edges (workspace crates and quire; everything else is forbidden)
+### Allowed edges (workspace crates and Bardo; everything else is forbidden)
 
 | Crate | May depend on |
 | --- | --- |
@@ -38,8 +38,8 @@ Layers go lowest first. A crate names only crates in a lower layer, and
 | `anyview-archive` | `anyview-core`, `ui-core` (`Word` for entry kinds) |
 | `anyview-book` | `anyview-archive`, `anyview-core` (its `data:` URLs through `image_data_url`) |
 | `anyview-font` | `anyview-core` |
-| `anyview-platform` | `anyview-core`, `ui-core` (`Word` for `ThumbSize`), `base-fs` (the thumbnail cache's capped reads and atomic writes), `service-locator` (the single-instance socket); with `quire-desktop`, `zbus` and the action crates for the bus name and agent intents |
-| `anyview-peek` | `anyview-archive`, `anyview-book`, `anyview-core`, `anyview-font`, `anyview-fs`, `anyview-image`, `anyview-text`, `ui-core`, and with `pane` the quire view crates |
+| `anyview-platform` | `anyview-core`, `ui-core` (`Word` for `ThumbSize`), `base-fs` (the thumbnail cache's capped reads and atomic writes), `service-locator` (the single-instance socket); with `desktop`, `zbus` and the action crates for the bus name and agent intents |
+| `anyview-peek` | `anyview-archive`, `anyview-book`, `anyview-core`, `anyview-font`, `anyview-fs`, `anyview-image`, `anyview-text`, `ui-core`, and with `pane` Bardo view crates |
 
 ### Features
 
@@ -47,7 +47,7 @@ No crate turns a heavy dependency on by default: a default build of a library is
 
 | crate | feature | what it adds |
 |---|---|---|
-| `anyview-platform` | `quire-desktop` | D-Bus single instance with bus activation and the agent intents (Linux) |
+| `anyview-platform` | `desktop` | D-Bus single instance with bus activation and the agent intents (Linux) |
 | `anyview-platform` | `testing` | the fakes and the private bus |
 | `anyview-peek` | `pane` | the pane view the launcher and the file manager link |
 | `anyview-peek` | `media` | recordings' facts and an audio cover |
@@ -77,7 +77,7 @@ oniguruma), `pulldown-cmark`, `csv`, `serde_json`, `serde`, `encoding_rs`, `unic
 
 `anyview-peek` depends on the five crates below it, `anyview-fs`, `ui-core` and `thiserror`; its `pane` feature adds `ds`,
 `ui-blitz` (feature `pdf`) and `dioxus`. Outside `card/` (and the PDF raster that feeds it) no module names a type of
-`ds` or dioxus: the PDF page is the peek's own `PageLook` and `PageTrouble`, and the card converts them to quire's
+`ds` or dioxus: the PDF page is the peek's own `PageLook` and `PageTrouble`, and the card converts them to Bardo's
 `PdfPage` at its boundary (`card/page.rs`). The headless tree has no dioxus, `ui-motion` or `ui-style`, and
 `scripts/check-boundary.sh` fails if one returns. `wgpu` is not an exception to its rule so much as a fact of `ui-blitz`: `TextureLayer` and the PDF
 thumbnail cache both live there, the launcher is a Blitz window and already links the renderer, and the
@@ -192,7 +192,7 @@ one file.
 Token classes are words (`keyword`, `string`, `comment`, …), never colours: the stylesheet maps each
 `tok-<class>` to a design-system colour token. Markdown never passes raw HTML through (it is shown
 as text), keeps only web, mail and relative link targets, and writes local images as `data:` URLs
-read through `LocalFiles`, because quire's sealed frames load nothing else.
+read through `LocalFiles`, because Bardo's sealed frames load nothing else.
 
 ## 2e. Modules inside `anyview-platform`
 
@@ -201,10 +201,10 @@ implementations are reached through `portable`, `linux` and `testing`.
 
 **Two halves, one feature.** `portable` is built everywhere and calls no desktop service; `desktop`
 (public path `anyview_platform::linux`) is the Linux desktop's D-Bus single instance and agent intents,
-built only with the opt-in feature `quire-desktop` on Linux (the code is also gated on
+built only with the opt-in feature `desktop` on Linux (the code is also gated on
 `target_os = "linux"`; `zbus` is an optional dependency of that feature).
 
-| Ability | With `quire-desktop` (Linux) | Without it |
+| Ability | With `desktop` (Linux) | Without it |
 | --- | --- | --- |
 | Single instance | `DbusInstance`: the name `org.bardo.Anyview1`, with bus activation | `LatchkeyInstance`: the first launch listens on `$XDG_RUNTIME_DIR/anyview/agent.sock`, a later one forwards one line of JSON and leaves |
 | Thumbnails | `FreedesktopThumbnails`, re-exported from `linux` | the same, from `portable` |
@@ -221,8 +221,8 @@ Nothing reads `std::env`, `dirs` or a bus address outside `env`: a program build
 | `handoff` (private) | a `Handoff` as the fields both wires carry, encoded and parsed once, for the bus and the socket |
 | `thumbnail` | `ThumbnailCache`, `ThumbSize`, `ThumbPixels` |
 | `portable` | `LatchkeyInstance` (the `frame` module is its line of JSON), `FreedesktopThumbnails` |
-| `desktop` (feature `quire-desktop`), public as `linux` | `DbusInstance` (and `forward_over`, `BUS_NAME`), the agent intents (`AGENT_BUS_NAME`, `OPEN_FILES`) |
-| `testing` (feature `testing`) | `FakeInstance`, `FakeThumbnails`, and `PrivateBus` (a private `dbus-daemon` with `quire-desktop`) |
+| `desktop` (feature `desktop`), public as `linux` | `DbusInstance` (and `forward_over`, `BUS_NAME`), the agent intents (`AGENT_BUS_NAME`, `OPEN_FILES`) |
+| `testing` (feature `testing`) | `FakeInstance`, `FakeThumbnails`, and `PrivateBus` (a private `dbus-daemon` with `desktop`) |
 
 On the bus: `org.bardo.Anyview1` at `/org/bardo/Anyview1` has `Open(as)`, `Peek(s)`, `Play(s)` and
 `Handoff(s file, s resume, t results, as entries)` over absolute paths (a relative one is an
@@ -272,7 +272,7 @@ peeks on another).
 | `pdf` | `PdfPeek`, `PdfPeeked`, `PageLook`, `PageTrouble` (a page drawn, blank or failed, in no component's types): the first page, through `ui-blitz`'s thumbnail cache for a file and `pdf_thumb_bytes` for bytes handed in; facts only without the `pane` feature |
 | `worker` | `PeekWorker` (`spawn`, or `looking` for `look` itself), `WorkerConfig` (with `with_*` builders): the one thread that looks at the latest file asked for (`ask(input, reply)`), a thread per peek with an 8 MiB stack, the 4 s overrun and the cap on abandoned peeks; it takes no async runtime |
 | `when` | `modified_text`: a modification time as the Info panel words it, in the person's zone |
-| `card` | `Card`, `Part`, `Parts` (which of the media, the name and the facts it draws; all by default), `STYLE`; `page` (a `PageLook` to and from quire's `PdfPage`, the only place the two meet), `picture` (a `TextureLayer`), `lines` (plain and highlighted), `grid` (a table, a tree's top level and an archive's first entries, all as quire's `Table`), `specimen` (a font's sample lines, each an inline SVG of the face's outlines) and `frame` (Markdown in a sealed frame) are private, and `card.css` is its stylesheet |
+| `card` | `Card`, `Part`, `Parts` (which of the media, the name and the facts it draws; all by default), `STYLE`; `page` (a `PageLook` to and from Bardo's `PdfPage`, the only place the two meet), `picture` (a `TextureLayer`), `lines` (plain and highlighted), `grid` (a table, a tree's top level and an archive's first entries, all as Bardo's `Table`), `specimen` (a font's sample lines, each an inline SVG of the face's outlines) and `frame` (Markdown in a sealed frame) are private, and `card.css` is its stylesheet |
 
 `peek(src, sniffed, budget)` never fails: a peek that cannot be made returns a `Body::Unavailable` with the
 reason and the facts the file can still give. The pane draws a `Body` over the file's name and a `FactList`

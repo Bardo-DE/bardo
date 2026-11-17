@@ -28,7 +28,7 @@ fn a_real_looking_version_and_short_notes_pass_unchanged() {
 #[test]
 fn a_version_that_is_long_or_not_a_version_is_a_service_that_makes_no_sense() {
     for odd in [
-        "Quire 0.3.1",
+        "Bardo 0.3.1",
         "0.4.0\nEnter your password to continue",
         &"9".repeat(65),
         "<b>0.4</b>",

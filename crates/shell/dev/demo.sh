@@ -131,19 +131,19 @@ EOF
 version = 1
 
 [[dock]]
-kind = "quire.dock.app"
+kind = "bardo.dock.app"
 app = "foot"
 
 [[dock]]
-kind = "quire.dock.app"
+kind = "bardo.dock.app"
 app = "org.gnome.Nautilus"
 
 [[dock]]
-kind = "quire.dock.app"
+kind = "bardo.dock.app"
 app = "google-chrome"
 
 [[dock]]
-kind = "quire.dock.app"
+kind = "bardo.dock.app"
 app = "btop"
 EOF
   backdrop_seed "$CONFIG"

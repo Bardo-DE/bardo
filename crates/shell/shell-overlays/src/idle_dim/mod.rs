@@ -1,5 +1,5 @@
 //! The idle dim: before the displays go off for idleness, every output gets a black scrim at `100 -
-//! the dim level` percent, quire's `IdleDim`.
+//! the dim level` percent, bardo's `IdleDim`.
 //!
 //! It is an overlay, never a brightness change, so a crash while dimmed leaves nothing dark.
 //!

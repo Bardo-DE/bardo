@@ -3,7 +3,7 @@
 //! `ui_components::prelude::PdfThumb` draws a page it is handed and never reads a file: ds stays renderer-free and
 //! effect-free (`scripts/check-boundary.sh` forbids it pdfrum and every renderer). Reading the
 //! file and rasterising its first page are effects, and pdfrum's CPU rasteriser (`vello_cpu`) is a
-//! renderer, so both live here, in quire's one host crate, behind a feature so an app that shows
+//! renderer, so both live here, in Bardo's one host crate, behind a feature so an app that shows
 //! no PDF builds no PDF reader. [`PdfFileThumb`] is what a consumer places: a path and a size in,
 //! the raster done on one long-lived worker thread fed by a latest-wins queue (`worker`), the result cached by path, modification time, device
 //! size and scale ([`ThumbKey`]), and `ui_components::prelude::PdfThumb` fed each state.

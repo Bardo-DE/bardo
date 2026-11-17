@@ -103,7 +103,7 @@ pub struct Timing {
     pub ease_exit: CubicBezier,
 }
 
-/// `curve` at time `t` (thousandths, at most all): quire's one evaluator, [`CubicBezier::at`].
+/// `curve` at time `t` (thousandths, at most all): Bardo's one evaluator, [`CubicBezier::at`].
 #[must_use]
 pub fn eased(curve: CubicBezier, t: Permille) -> Permille {
     let at = Fraction(u16::try_from(t.0.min(1000)).unwrap_or(1000));

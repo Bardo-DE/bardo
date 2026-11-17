@@ -1,6 +1,6 @@
-//! What the notification center draws: nothing while closed; open, quire's `Panel`
+//! What the notification center draws: nothing while closed; open, Bardo's `Panel`
 //! `--notifications-center-width` wide at the right edge and the height of the surface, the
-//! title and Clear All, the history grouped by app (quire's `GroupHeader` over the newest card,
+//! title and Clear All, the history grouped by app (Bardo's `GroupHeader` over the newest card,
 //! stacked over the rest), the footer when another daemon holds the name, the widgets slot
 //! last; and what its presses send.
 
@@ -32,7 +32,7 @@ fn closed_it_draws_nothing() {
 }
 
 #[test]
-fn open_it_is_quires_full_height_panel_at_the_right_edge() {
+fn open_it_is_bardo_full_height_panel_at_the_right_edge() {
     let running = opened(two_apps());
     let h = &running.harness;
     let panel = h.rect(".ds-side-panel").expect("the panel is laid out");
@@ -55,7 +55,7 @@ fn open_it_is_quires_full_height_panel_at_the_right_edge() {
     assert_eq!(
         h.attr(".ds-side-panel", "data-presence").as_deref(),
         Some("present"),
-        "quire's entrance has played"
+        "bardo's entrance has played"
     );
     assert_eq!(h.count("[*|data-layer=click-away]"), 1);
     let column = h.rect(&format!("#{PANEL_ID}")).expect("the column");
@@ -287,7 +287,7 @@ fn the_footer_names_the_daemon_holding_the_name() {
 }
 
 #[test]
-fn a_press_outside_the_panel_closes_it_after_quires_exit() {
+fn a_press_outside_the_panel_closes_it_after_bardo_exit() {
     let mut running = opened(two_apps());
     running.harness.send(Input::click(Point {
         x: Px(100.0),
@@ -303,7 +303,7 @@ fn a_press_outside_the_panel_closes_it_after_quires_exit() {
             .attr(".ds-side-panel", "data-presence")
             .as_deref(),
         Some("leaving"),
-        "still drawn while quire's exit plays"
+        "still drawn while bardo's exit plays"
     );
     let exit = settle_time(Anim::PanelOut, MotionLevel::Standard);
     settle(&mut running.harness, |h| h.count(".ds-side-panel") == 0);

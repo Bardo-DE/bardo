@@ -56,7 +56,7 @@ async fn a_call_written_as_words_is_a_fault_in_every_template() {
 }
 
 #[tokio::test]
-async fn quire_answer_is_the_reply_and_a_bad_one_is_a_fault_never_a_call() {
+async fn bardo_answer_is_the_reply_and_a_bad_one_is_a_fault_never_a_call() {
     let reply = |text: &str| json!({ "text": text });
     assert_eq!(
         plan(call(TOOL_ANSWER, reply("  Taipei.  "))).await,

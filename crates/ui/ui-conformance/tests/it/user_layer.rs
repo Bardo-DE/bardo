@@ -1,6 +1,6 @@
 //! The cascade layers (ARCHITECTURE.md section 10): the design system is `@layer ds`, a consumer's
 //! `AppStyle` sheet is `@layer app`, the chosen look is `@layer look`, and the person's own styles
-//! are unlayered. A one-class user rule beats quire's own attribute-qualified rule, and a
+//! are unlayered. A one-class user rule beats Bardo's own attribute-qualified rule, and a
 //! one-class app rule beats it too, a look beats a more specific app rule, and a user rule beats
 //! a look or an app rule that is more specific: specificity only ever sorts rules inside one
 //! layer.
@@ -71,18 +71,18 @@ const GREEN: [u8; 4] = [0, 255, 0, 255];
 const BLUE: [u8; 4] = [0, 0, 255, 255];
 
 #[test]
-fn quires_own_rule_is_more_specific_than_the_probe_rules() {
+fn bardo_own_rule_is_more_specific_than_the_probe_rules() {
     assert_ne!(fill("", ""), GREEN);
     assert_ne!(fill("", ""), BLUE);
 }
 
 #[test]
-fn a_low_specificity_user_rule_beats_quires_higher_specificity_rule() {
+fn a_low_specificity_user_rule_beats_bardo_higher_specificity_rule() {
     assert_eq!(fill("", ".ds-button { background: rgb(0,255,0) }"), GREEN);
 }
 
 #[test]
-fn a_low_specificity_app_rule_beats_quires_higher_specificity_rule() {
+fn a_low_specificity_app_rule_beats_bardo_higher_specificity_rule() {
     assert_eq!(fill(".ds-button { background: rgb(0,0,255) }", ""), BLUE);
 }
 

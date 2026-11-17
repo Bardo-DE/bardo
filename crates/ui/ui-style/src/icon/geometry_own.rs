@@ -1,4 +1,4 @@
-//! quire's own glyphs: composed on Lucide's grid (24, a 2 px round stroke, no fills) where Lucide
+//! Bardo's own glyphs: composed on Lucide's grid (24, a 2 px round stroke, no fills) where Lucide
 //! has no mark for the thing, so they sit in a row of Lucide glyphs without standing out.
 //!
 //! `Switches`, the control center's: two toggle tracks with their knobs at

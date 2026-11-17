@@ -1,5 +1,5 @@
-# The D-Bus clients of quire (see scripts/check-portable.sh). Each file below reaches zbus by design
-# and is compiled only under its crate's `quire-desktop` feature (or, for ds-desktop, `dbus`); the
+# The D-Bus clients of bardo (see scripts/check-portable.sh). Each file below reaches zbus by design
+# and is compiled only under its crate's `desktop` feature (or, for ds-desktop, `dbus`); the
 # rest of every crate, and every other crate, names no zbus and builds with --no-default-features.
 ^\./crates/ds-settings/src/portal/bus\.rs$
 ^\./crates/ds-settings/src/live/(client|error|link|module|readers|skeleton|value)\.rs$

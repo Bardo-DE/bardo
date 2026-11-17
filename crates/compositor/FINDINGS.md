@@ -40,7 +40,7 @@ P3-CSS, three in `src/` and its ignored parity test, never built at P0-Z2).
 | `crates/casement-wayland/src/subcompositor.rs` | on_new_subsurface (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/subcompositor.rs` |
 | `crates/casement/src/handlers/compositor.rs` | CompositorHandler::commit (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/compositor.rs` |
 | `crates/casement/src/handlers/shm.rs` | BufferHandler::buffer_destroyed (1) | P0-H1 | `crates/casement-testkit/tests/it/protocol/shm.rs` |
-| `crates/casement-wayland/src/quire_window.rs` | Dispatch2::request, Dispatch2::destroyed, on_get_window, on_set_first_mouse, on_set_frame, on_set_role, on_set_a11y_root, on_set_edited, on_request_placement, apply_emphasis, apply_placement (12) | P0-H2 | `crates/casement-testkit/tests/it/protocol/quire_window.rs` |
+| `crates/casement-wayland/src/bardo_window.rs` | Dispatch2::request, Dispatch2::destroyed, on_get_window, on_set_first_mouse, on_set_frame, on_set_role, on_set_a11y_root, on_set_edited, on_request_placement, apply_emphasis, apply_placement (12) | P0-H2 | `crates/casement-testkit/tests/it/protocol/bardo_window.rs` |
 | `crates/casement-wayland/src/system_bell.rs` | on_bell (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/system_bell.rs` |
 | `crates/casement-wayland/src/xdg_activation.rs` | on_token_request, on_activate (2) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_activation.rs` |
 | `crates/casement-wayland/src/xdg_decoration.rs` | on_decoration_mode, apply_mode (2) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_decoration.rs` |
@@ -48,7 +48,7 @@ P3-CSS, three in `src/` and its ignored parity test, never built at P0-Z2).
 | `crates/casement-wayland/src/xdg_shell.rs` | on_new_toplevel, on_toplevel_commit, on_move, on_resize, on_maximise, on_minimise, on_full_screen, on_window_menu, on_title, on_app_id, on_parent, on_limits, on_toplevel_destroyed, on_new_popup, on_popup_grab, on_reposition, on_pong, apply_configure, apply_close, apply_ping, apply_popup_done (21) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_shell.rs` |
 | `crates/casement-wayland/src/xdg_toplevel_icon.rs` | on_icon (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_toplevel_icon.rs` |
 | `crates/casement-wayland/src/xdg_toplevel_tag.rs` | on_tag (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_toplevel_tag.rs` |
-| `crates/casement/src/handlers/quire_window.rs` | QuireWindowHandler::window_of_toplevel (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/quire_window.rs` |
+| `crates/casement/src/handlers/bardo_window.rs` | BardoWindowHandler::window_of_toplevel (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/bardo_window.rs` |
 | `crates/casement/src/handlers/system_bell.rs` | XdgSystemBellHandler::ring (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/system_bell.rs` |
 | `crates/casement/src/handlers/xdg_activation.rs` | XdgActivationHandler::request_activation (1) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_activation.rs` |
 | `crates/casement/src/handlers/xdg_decoration.rs` | XdgDecorationHandler::new_decoration, XdgDecorationHandler::request_mode, XdgDecorationHandler::unset_mode (3) | P0-H2 | `crates/casement-testkit/tests/it/protocol/xdg_decoration.rs` |
@@ -127,13 +127,13 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 
 | Item | Closes when |
 | --- | --- |
-| `taffy` (git rev `4863877b`, A14/A24) is declared here outside the block copied from quire's `docs/workspace-deps.toml` | quire's pinned block carries the line and this workspace copies it verbatim |
-| ds-core's `Scale` has no serde, so stored types write it through `geometry::scale_serde` | ds-core derives `Serialize, Deserialize` (transparent) on `Scale` (interface ask to quire); the helper module is deleted |
-| ds-style without dioxus still pulls `image` (png, jpeg, moxcms) into casement-core's graph (A22, SP8) | quire makes `image` an optional ds-style feature |
+| `taffy` (git rev `4863877b`, A14/A24) is declared here outside the block copied from Bardo's `docs/workspace-deps.toml` | Bardo's pinned block carries the line and this workspace copies it verbatim |
+| ds-core's `Scale` has no serde, so stored types write it through `geometry::scale_serde` | ds-core derives `Serialize, Deserialize` (transparent) on `Scale` (interface ask to Bardo); the helper module is deleted |
+| ds-style without dioxus still pulls `image` (png, jpeg, moxcms) into casement-core's graph (A22, SP8) | Bardo makes `image` an optional ds-style feature |
 | ds-behaviour: the switcher and hot-corner machines have no caller yet (the Space-swipe machine runs since lane cas21-gesture, `model/swipe.rs`, fed through `Mono::stamp`) | the switcher and hot-corner machines run in casement (C41, P3-Z), with their `*Params` in `CasementSettings` |
 | `CasementSettings::defaults` carries no bindings (C30 says the settings document holds the defaults) | the shell's chords are not defaults of the settings document: c17 reads them from the desktop keymap (`casement::keymap`, see the c17 rows below); `settings/bindings.rs` stays empty and a `[bindings]` entry is only an addition or a win over the keymap for one chord |
 | The smithay fork `Bardo-DE/smithay` (branch `casement`, C2) exists (P0-fork) and the pin names its commit; it carries two patches, listed below | a further patch is one more commit on the fork and a new rev in the root Cargo.toml and `wlcs-casement/Cargo.toml` |
-| Workspace pins outside quire's pinned block: smithay, wayland-protocols-wlr, wayland-protocols-misc, xkbcommon 0.9 (quire's block says 0.8 through sctk 0.20, A14), libseat, tracing, tracing-subscriber | quire's `docs/workspace-deps.toml` carries them (with the xkbcommon note) and this workspace copies the block verbatim |
+| Workspace pins outside Bardo's pinned block: smithay, wayland-protocols-wlr, wayland-protocols-misc, xkbcommon 0.9 (Bardo's block says 0.8 through sctk 0.20, A14), libseat, tracing, tracing-subscriber | Bardo's `docs/workspace-deps.toml` carries them (with the xkbcommon note) and this workspace copies the block verbatim |
 | `reis` and `pipewire` are pinned (A14) and named by no crate | P2-Z (capture source) and P4-Z (EIS) name them |
 | wlcs attaches buffers before acking the first configure; smithay refuses (about 260 failures, A6) | the orchestrator decides: a wlcs-only relaxation under a debug feature, or a newer wlcs pin |
 | smithay's `IdleNotifierState` arms calloop timers on the wall clock, which the virtual clock cannot stop | P0-H8 times idleness with the model's `TimerKey::IdleNotify` and drives smithay's notifier objects only (test `idle_is_notified_at_virtual_time`) |
@@ -150,7 +150,7 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 | A minimised window travels to the bottom centre of its output (`Cause::Minimise` needs a target and the model does not know the dock) | the dock's tile arrives as an event or a layer fact (P3-Z) |
 | `focus::step` on `SheetClosed` keys the parent even when the parent is in the dock or on a Space nobody sees (found by the T0 proptest); `Model::step` skips the feed for a parent it cannot see | the focus machine checks `is_visible` in `sheet_closed`; the model's guard goes |
 | A window moved by a grab has no event to report its place, so a placed window stays `WindowState::New` until a placement request moves it | P0-H2's grabs report geometry (an `Event`) or P3-Z's `Drag` cause does |
-| ds-motion's `Contact::pressed` is public without dioxus although its doc says crate-private (A23) | decided in quire (S0-QM1 follow-up): intended for compositor swipe releases, or closed |
+| ds-motion's `Contact::pressed` is public without dioxus although its doc says crate-private (A23) | decided in Bardo (S0-QM1 follow-up): intended for compositor swipe releases, or closed |
 
 ## Departures from 20-FREEZE-PLAN §4.2
 
@@ -199,11 +199,11 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 
 - **Dispatch at smithay 118e34ff.** The per-protocol `delegate_*!` macros are gone: every
   global's and object's user data implements `GlobalDispatch2`/`Dispatch2`, and
-  `delegates.rs` is the one line `delegate_dispatch2!(State)`. `quire_window` carries its own
-  `GlobalDispatch2`/`Dispatch2` impls and reaches `State` through `QuireWindowHandler`.
+  `delegates.rs` is the one line `delegate_dispatch2!(State)`. `bardo_window` carries its own
+  `GlobalDispatch2`/`Dispatch2` impls and reaches `State` through `BardoWindowHandler`.
 - **casement-wayland.** `Part::new` is generic (`new::<D>`) with smithay's constructor bounds;
   filtered globals (decoration, layer shell, session lock, primary selection, data control,
-  input method, virtual keyboard, foreign toplevel list, security context, quire_window) pass
+  input method, virtual keyboard, foreign toplevel list, security context, bardo_window) pass
   `GlobalFilter::for_global`, the rest ignore the filter (I7 shows them to everyone).
   `WaylandStates<D>` is generic because smithay's seat and idle notifier are, and gains
   `clients: ClientMint`. New modules: `client.rs` (`ClientState`: key, role, peer, smithay's
@@ -481,7 +481,7 @@ until P1-C1 asks Debug1 (`Shot`) for the PNG of the last presented frame. Found 
 an interactive resize changed the frame but never configured the client (floating layout asks
 nothing when the rect is its own size): `core_loop::configure_size`, test
 `a_resize_configures_the_client_to_the_dragged_size`; `debug wait settled` did not step the stepped
-clock. Open: `scale-crisp` uses casement's own test client, not a quire or shell-host window (those
+clock. Open: `scale-crisp` uses casement's own test client, not a Bardo or shell-host window (those
 are the consumer scripts'); after a drop casement sent `wl_data_device.leave` at once (fixed by
 P0-dead-focus); pointer motion while a dead locker's cover stands did not move the
 cursor (not asserted).
@@ -801,7 +801,7 @@ the `--xwayland` flags, `VendorFact::from_pci_vendor`, `GammaTable::new`, `Outpu
 - **Cargo.lock needs regenerating** (nothing here could): `casement-core` gains `serde_json` and `toml` as normal
   dependencies (the Space file codec; they were dev-dependencies), `casement-backend` gains `serde` (KMS fixtures are
   serde values), `casement-testkit` gains `casement-ipc`. `casement-testclient` gains only a bin target.
-- **`SpaceFile`'s sill import** reads `by_id` keys of the interim `quire/spaces.json`, because sill has no concrete writer yet
+- **`SpaceFile`'s sill import** reads `by_id` keys of the interim `bardo/spaces.json`, because sill has no concrete writer yet
   (`sill-ui-kit/src/look.rs` says so); the shape is a guess P1-M2 pins against whatever sill wrote by then.
 - **Settings.** `PointerSettings` (mouse and touchpad profiles) exists in core and is not yet a field of
   `CasementSettings` nor a section of the document: P1-I1 adds both with the "Add a settings key" recipe.
@@ -884,7 +884,7 @@ Nothing here compiled (no builds this lane). Both globals are advertised: `zwlr_
   book and a small record per window per step. Closing is `UnlistWindow`, whose exec arm now also calls
   `wlr_toplevel::apply_closed`. Core tests that assert an exact effect list on a step that changes a window's key flag
   (`model_lock.rs` 218-242 if a key window exists there) would see a `PublishToplevel` too.
-- **`import_sill_json`: sill writes no spaces file.** `sill-ui-kit/src/look.rs` still says quire has no `spaces.json`
+- **`import_sill_json`: sill writes no spaces file.** `sill-ui-kit/src/look.rs` still says Bardo has no `spaces.json`
   store, and `sill-model` only reads the protocol's `id` as `stable_id`. The shape imported is the minimal one the codec
   pins: `{"by_id": {"<space id>": {"output": "<output key>", "index": 0}}}`, both record fields optional, unknown keys
   ignored. A record without an output is `StoredSpace::homeless` (so `StoredSpace::output` is now `Option<OutputKey>`;
@@ -977,7 +977,7 @@ Nothing here compiled (no builds this lane).
 - **ZbusShellCalls.** One thread with a current-thread tokio runtime, the session bus connected on the first call, one task per
   call, failures returned by `failures()` and logged by `exec::call`. A call carries at most four string arguments
   (`ShellCallError::TooManyArgs`); names are validated before anything is queued. Real check: the default launcher binding
-  reaches sill once sill exports `org.quire.Sill1` (the fake accepts anything).
+  reaches sill once sill exports `org.bardo.Sill1` (the fake accepts anything).
 - **ProcessSpawner.** `Command` with null stdin, its own process group, `spec.env` added, the `pass` descriptors' close-on-exec
   cleared with rustix, a thread reaping the child.
 - **Bindings.** `carry_out` sends `Effect::CallBinding` and `Effect::Spawn` through `exec::exec`; the stale "not reached"
@@ -1046,7 +1046,7 @@ Nothing here compiled (no builds this lane). `todo!()` left: 0. Shared files tou
   the release (`InhibitReleased`). Every mode counts as held; `wait_released` is how a test sees the sleep may go on.
 - **`PauseDevice` and `ResumeDevice` are signals** in real logind (the brief calls them recorders): the fake sends them
   (`pause_device`, `resume_device`) and records the session's answer, `PauseDeviceComplete`.
-- **Control interface** `org.quire.Casement.FakeLogind1` at `/org/quire/Casement/FakeLogind1` (Lock, Unlock,
+- **Control interface** `org.bardo.Casement.FakeLogind1` at `/org/bardo/Casement/FakeLogind1` (Lock, Unlock,
   PrepareForSleep(b), Calls, HeldInhibitors) lets a jailed scenario drive the `fake-logind` binary with `busctl`; the binary
   takes the address from argv[1] or `DBUS_SYSTEM_BUS_ADDRESS` and refuses to start without one.
 - **`PrivateBus`** (testkit, `fakes::PrivateBus`) is the casement-ipc test helper made public: dbus-daemon on
@@ -1424,7 +1424,7 @@ Surprise: `cargo fmt -p` needs the sibling checkouts, absent in this worktree, s
 Nothing here compiled or run (the lane does not build).
 
 - **Verbs** (`casement-probe session`, one `probe: {json}` note each; a failure is `{"error": "..."}`):
-  `shell-connect` calls `org.quire.Compositor1.Connect("shell")` on `$DBUS_SESSION_BUS_ADDRESS`, runs the first roundtrip on the
+  `shell-connect` calls `org.bardo.Compositor1.Connect("shell")` on `$DBUS_SESSION_BUS_ADDRESS`, runs the first roundtrip on the
   returned fd and makes it the session's client (surfaces made earlier go with the old connection; the session rebinds
   its seat, wm_base and clipboard on the new one); `shell-role ROLE LAYER` (bar, dock, launcher, switcher, overview,
   notifications, osd, control-centre, wallpaper, widget) calls `set_role` on a layer surface made after `shell-connect`;
@@ -1447,19 +1447,19 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
 
 - **Built (implemented).** `casement-core`: `desktop` (`DesktopRequest`, `AppAsk`, `WindowAsk`, `SpaceAsk`,
   `DesktopNote`, `DesktopRef`) and `shell` (`ShellRequest`, `ShellNote`); `Event::{Desktop, Shell}`, `Effect::{Desktop,
-  Shell}`, `CoreNote::Deferred(Deferred)`; `GlobalKind::{ToplevelCapture, QuireDesktop, QuireShell}` with their I7 rows
+  Shell}`, `CoreNote::Deferred(Deferred)`; `GlobalKind::{ToplevelCapture, BardoDesktop, BardoShell}` with their I7 rows
   (a `Tier` beside the sandbox table); `LayerBook::role_holder`; the model's routing of both new events
   (`model/desktop_requests.rs`, `model/shell_requests.rs`: roles, dock-local minimise targets, and every desktop ask that
   an existing machine already carries, reached through `wlr_request`, `place`, `workspace_request`, `activation`,
-  `hide_app`, `hide_others`, `close_all_of`). `casement-wayland`: feature `quire` (A8), `quire::{desktop, shell}`
+  `hide_app`, `hide_others`, `close_all_of`). `casement-wayland`: feature `bardo` (A8), `bardo::{desktop, shell}`
   with the part, handler trait, global and object dispatch, the refusal of management on an agent connection
   (`Standing`), the object makers, and `capture_source` (types, the book, `capture_size`, the part);
   `window_of_identifier`. `casement-agent`: `Handed`, `RefuseWhy::NoSocket`. `casement-ipc`: `Compositor1` (object, types,
   `parse_connect_role`, `ConnectRefusal::to_error`), `serve_compositor_at`, the `PeerCgroups` seam, `IpcHandles::compositor`.
   `casement`: `connect::attach`, `CompositorBus`, `RunConfig::with_compositor_bus`, the handler files, the exec arms,
   `AgentState::handed`, the state fields and constructor calls. The test kit: `FakeCgroups`.
-- **Departure: the two `quire` globals and the window-capture global are declared, not created.** The task wanted the
-  globals behind the filter. `quire::{desktop, shell}::GLOBAL` is a constant (`Advertised::Not`) in front of the
+- **Departure: the two `bardo` globals and the window-capture global are declared, not created.** The task wanted the
+  globals behind the filter. `bardo::{desktop, shell}::GLOBAL` is a constant (`Advertised::Not`) in front of the
   `create_global` call, which is written and type-checked; the lane flips it. Why: the typed fuzz box connects `Shell`
   and `Agent` roles in a tenth of its clients and `bind_all` binds every advertised global, then sends requests to
   live objects by creation order, so an advertised protocol whose requests reach a `todo!()` would panic the fuzz gate.
@@ -1467,9 +1467,9 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
   the creation, and the public socket sees it (like output capture), so P2-Q3 adds the state field and the call
   together. The I7 rows are in force already (`the_p2_globals_are_seen_by_the_right_connections`); `globals.txt` is
   unchanged (the public view), and the fuzz oracle maps the three interface names to their kinds.
-- **Departure: `quire_desktop_manager_v1` is seen by `Shell` and `Agent`, not by `Shell` only.** The task brief said shell
+- **Departure: `bardo_desktop_manager_v1` is seen by `Shell` and `Agent`, not by `Shell` only.** The task brief said shell
   only for both; 20 §4.2 (`advertised on Shell and Agent connections only`), 03 and the XML (`not_permitted` on an agent
-  connection) say the agent tier reads the desktop. `quire_shell_v1` is `Shell` only. The agent's management requests are
+  connection) say the agent tier reads the desktop. `bardo_shell_v1` is `Shell` only. The agent's management requests are
   refused in the dispatch (`Standing::ReadOnly`), before any event is made.
 - **Departure: `hand_out` no longer takes a `DisplayHandle`.** `casement-agent` cannot build a client's data (its key and
   its gone queue live in `casement-wayland`'s `ClientState`), so it makes the decision and the socket pair
@@ -1484,18 +1484,18 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
 - **Departure: the Compositor1 method signature has no `#[zbus(header)]` yet.** The wire signature is the plan's (`s` in,
   `h` out); the lane adds the header argument to read the sender and asks the bus for its process id.
 - **Plan facts P1 changed.** `Model::place` already carries every `PlaceTarget` (halves, quarters, centre, fill,
-  restore), so "full `quire_window` placement" is flipping `PLACEMENT_POLICY` to `Act`, sending the mark when a window's state
+  restore), so "full `bardo_window` placement" is flipping `PLACEMENT_POLICY` to `Act`, sending the mark when a window's state
   changes (`apply_placement` is written and called by nobody) and replacing `request_placement_is_stored`. The minimise table
   (`minimise_rects`) exists. `Model::activate_app`, `hide_app`, `unhide_app`, `hide_others` and `close_all_of` exist, so only
   `ToSpace`, `Assign` and Space `MoveTo` are stubs in the model; `ForceQuit` and `Reopen` answer `CoreNote::Deferred` (P3 and P4).
-  `Model::step` had to grow two arms; 04's wording ("`quire_toplevel`, `quire_space`") is superseded by `quire_desktop_v1` (C6).
-- **A8 is partial.** The `quire` feature gates the two new servers and their `WaylandStates` fields. `quire_window` stays
+  `Model::step` had to grow two arms; 04's wording ("`bardo_toplevel`, `bardo_space`") is superseded by `bardo_desktop_v1` (C6).
+- **A8 is partial.** The `bardo` feature gates the two new servers and their `WaylandStates` fields. `bardo_window` stays
   outside it: every app and shell-host's identity probe use it, and moving it needs a conditional field in the P0 aggregate for
   no consumer yet. `casement` names the feature explicitly; the workspace dependency keeps the default.
 - **Open items this freeze adds.** (1) A dock's `set_minimise_target` and a window-list client's `set_rectangle` write one
   table; the shell's target should win while a dock is bound (decide in P2-Q2). (2) `ContentStamp` needs a commit counter
   per window surface tree: P2-Q3 counts commits in `handlers/compositor.rs` (every commit, subsurfaces included, enters
-  `CompositorHandler::commit` there) and calls `apply_content`. (3) The testclient helpers (`quire/desktop.rs`, `quire/shell.rs`, `capture/toplevel_source.rs`)
+  `CompositorHandler::commit` there) and calls `apply_content`. (3) The testclient helpers (`bardo/desktop.rs`, `bardo/shell.rs`, `capture/toplevel_source.rs`)
   are still one-line stubs: each lane writes its own, on `desktop_client`'s reducers where it can (as `capture/` does).
   (4) `Compositor1` is served on the session bus whenever `$DBUS_SESSION_BUS_ADDRESS` is set, so a casement started before
   P2-Q2 owns the name and `Connect` never answers; harmless (nothing calls it), and a name clash only logs.
@@ -1504,10 +1504,10 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
   `casement-wayland` `Cargo.toml`, `lib.rs`, `states.rs`, `foreign_toplevel_list.rs`; `casement` `Cargo.toml`, `lib.rs`,
   `main.rs`, `run.rs`, `state.rs`, `exec.rs`, `handlers/mod.rs`, `handlers/image_capture.rs` (four early returns for window
   sources), `casement-ipc` `error.rs`, `handles.rs`, `dbus/mod.rs`; the test kit's `fakes/mod.rs`, `fuzz/oracles.rs`,
-  `tests/it/globals.rs`, `tests/it/protocol/mod.rs`, `tests/it/protocol/quire_window.rs`; `ARCHITECTURE.md`.
-- **Spots most likely not to compile.** `casement-wayland/src/quire/desktop.rs` (`Makers`' non-capturing closures coerced to
+  `tests/it/globals.rs`, `tests/it/protocol/mod.rs`, `tests/it/protocol/bardo_window.rs`; `ARCHITECTURE.md`.
+- **Spots most likely not to compile.** `casement-wayland/src/bardo/desktop.rs` (`Makers`' non-capturing closures coerced to
   `fn` pointers over a generic `D`; `Output::from_resource`; `ForeignToplevelHandle::from_resource`; the borrows of
-  `DesktopParts` in the dispatch arms), `quire/shell.rs` (`post_error` on `QuireShellV1`; the `Request::SetRole` field
+  `DesktopParts` in the dispatch arms), `bardo/shell.rs` (`post_error` on `BardoShellV1`; the `Request::SetRole` field
   types `WEnum<ShellRole>`), `casement-ipc/src/dbus/compositor1.rs` (`#[zbus::interface]` with a `todo!()` body and the
   `zbus::zvariant::OwnedFd` return), `casement-core/src/model/shell_requests.rs` (`Arranged::place`, the partial moves
   out of `self`), `casement/src/handlers/image_capture.rs` (`return capture_source::new_session(self, session, window)` moves
@@ -1520,24 +1520,24 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
 Nothing here compiled or run (the lane does not build). Plan: 23 §1. The eleven `todo!()` of the lane and the nine
 ignored tests are gone; their rows left the P2-Z table.
 
-- **Built.** `casement-wayland::quire::desktop`: `on_bind`, `on_get_window_for`, `on_create_space`, `on_stop`, `on_app`,
+- **Built.** `casement-wayland::bardo::desktop`: `on_bind`, `on_get_window_for`, `on_create_space`, `on_stop`, `on_app`,
   `on_window`, `on_space`, `apply_note`, and two child files (`desktop/facts.rs`, `desktop/bound.rs`). An object's
   state is a value (`AppFacts`, `WindowFacts`, `SpaceFacts`, `ActiveFacts`); each bound manager keeps what each of its
   objects was last told (`Told`) and sends only the events whose value differs, so the same note twice sends nothing
   the second time and a new object gets every event. `casement-core`: `WindowAsk::ToSpace`, `WindowAsk::Assign`,
   `SpaceAsk::MoveTo` (`model/desktop_places.rs`) and the emission of `Effect::Desktop` (`model/desktop_notes.rs`, a
   snapshot before and after each step beside `Published`), in the order Spaces, apps, windows, active, then what went.
-  The test client: `quire::desktop::DesktopWatch` (a side queue, like `WorkspaceWatch`; it also binds the window list so
-  `get_window_for` can name a window). `GLOBAL` is `Advertised::Yes`; the catalogue has `quire_desktop_manager_v1`.
+  The test client: `bardo::desktop::DesktopWatch` (a side queue, like `WorkspaceWatch`; it also binds the window list so
+  `get_window_for` can name a window). `GLOBAL` is `Advertised::Yes`; the catalogue has `bardo_desktop_manager_v1`.
 - **Decision (orchestrator, from p2-z-dc): an activation with serial 0 is accepted from the Shell role only.**
-  `desktop-client` sends serial 0 on `quire_desktop_app_v1.activate` and `quire_desktop_window_v1.activate` because its
+  `desktop-client` sends serial 0 on `bardo_desktop_app_v1.activate` and `bardo_desktop_window_v1.activate` because its
   `DesktopCommand::Activate` has none. The dispatch never read the serial, and refuses every management request on a
   `ReadOnly` (Agent) connection before an event is made, so the rule is: the shell's activation is the person's hand (a
   dock or switcher click, as P1-M2 departure 5 did for wlr activate); an agent's stays refused. Both `activate` arms say
   so in a comment, and the tests send serial 0 from a shell and from an agent.
 - **Departure: `DesktopView` owns `rects`.** The geometry of a window is the arrangement's rectangle, which the model
   does not hold (it lives in `State`). `DesktopView` gained `rects: BTreeMap<WindowId, LogicalRect>`, built in both places
-  that make a view (`handlers/quire_desktop.rs`, `exec/desktop.rs`) from `state.core.arrangement`; it lost `Copy`.
+  that make a view (`handlers/bardo_desktop.rs`, `exec/desktop.rs`) from `state.core.arrangement`; it lost `Copy`.
 - **Departure: `exec()` runs `Effect::Desktop` after the batch's relayout** (`exec.rs`, a shared file, one hunk): the
   notes carry the rectangles the relayout just made. A window whose rectangle changes with no change in its model state
   (a tiled window when a layer's exclusive zone moves) is not re-sent; a `geometry` event for it waits for the next note
@@ -1548,7 +1548,7 @@ ignored tests are gone; their rows left the P2-Z table.
   actor is the provenance lane's.
 - **Departure: bind order.** Spaces, apps, then a `window` event for every window, then each window's burst, `active`,
   `done`. The XML says "an app, window and space event for each"; a window's burst names its app, Space and parent, so
-  those objects exist first. The golden `quire_desktop-bind.txt` was written by hand from the code and may need one
+  those objects exist first. The golden `bardo_desktop-bind.txt` was written by hand from the code and may need one
   `CASEMENT_BLESS=1` run; check the diff by eye (the masked events are the ones that depend on the run).
 - **Departure: the refusal is raised on the object the request was made on** (the frozen glue's `refused`), with the
   manager's `not_permitted` code (0). The XML says the manager's; a client reads an error code in the object's own
@@ -1560,12 +1560,12 @@ ignored tests are gone; their rows left the P2-Z table.
 - **Fuzz seeds.** The catalogue line shifts the typed fuzz box's object ids (as P1-C1's globals did), and the fuzz box now
   binds the desktop manager on `Shell` and `Agent` connections and sends it requests: re-run every seed that failed
   before, and the role fuzz (`PrivilegedOffered`, `GlobalNotForRole`).
-- **Spots most likely not to compile.** `quire/desktop/facts.rs` (`wire::<W: TryFrom<u32>>` over the generated enums; the
-  cross-protocol enum paths `quire_window_v1::quire_window_v1::{Emphasis, PlacementMark, WindowRole}`,
-  `quire_sensitive_v1::quire_sensitive_surface_v1::SensitivityLevel`, `quire_agent_v1::quire_agent_lease_v1::GlowState`;
-  `Output::client_outputs(..).next()`), `quire/desktop/bound.rs` (the field-by-field borrows in `window()`; `Told` and
+- **Spots most likely not to compile.** `bardo/desktop/facts.rs` (`wire::<W: TryFrom<u32>>` over the generated enums; the
+  cross-protocol enum paths `bardo_window_v1::bardo_window_v1::{Emphasis, PlacementMark, WindowRole}`,
+  `bardo_sensitive_v1::bardo_sensitive_surface_v1::SensitivityLevel`, `bardo_agent_v1::bardo_agent_lease_v1::GlowState`;
+  `Output::client_outputs(..).next()`), `bardo/desktop/bound.rs` (the field-by-field borrows in `window()`; `Told` and
   `Asked` public in a private module), `casement-core/src/model/desktop_places.rs` (`window_to_space`'s borrows),
-  `casement-testclient/src/quire/desktop/roster.rs` (client event field names and `event_created_child!`), and the
+  `casement-testclient/src/bardo/desktop/roster.rs` (client event field names and `event_created_child!`), and the
   `[(&str, fn); 19]` table in the agent test.
 
 ## p2-q3: window capture and full placement (2026-10-11)
@@ -1573,7 +1573,7 @@ ignored tests are gone; their rows left the P2-Z table.
 Nothing here compiled or run (the lane does not build). `ext_foreign_toplevel_image_capture_source_manager_v1`
 is advertised at version 1 to every non-sandboxed connection (`globals.txt` row, the sandbox `HIDDEN` table, the
 I7 table in casement-core's `input.rs`, the globals test's `KINDS`, the test client's catalogue line).
-`quire_window`'s `PLACEMENT_POLICY` is `Act`. Re-run the fuzz seeds that failed before: the catalogue line adds an
+`bardo_window`'s `PLACEMENT_POLICY` is `Act`. Re-run the fuzz seeds that failed before: the catalogue line adds an
 interface, which shifts the typed fuzz box's object ids (as P1-C1's globals did).
 
 ### The decision: an offscreen pass, not a crop of the output's last frame
@@ -1639,10 +1639,10 @@ ignored tests of this lane; two tests were rewritten (below).
 - **Units are fixed, not configuration.** The plan names them (`sill.service` the shell, `cuad.service` the agent tier),
   so `role_for` is a `match`. Moving them to a typed list is a one-function change if porter's unit check wants it.
 - **Departure: `on_set_minimise_target` takes the window, not the identifier string.** The dispatch turns the identifier
-  into a `WindowId` and keeps it only when `QuireShellHandler::window_known` says the model has it; the part gets
+  into a `WindowId` and keeps it only when `BardoShellHandler::window_known` says the model has it; the part gets
   `Option<WindowId>` (`None` is `unknown_toplevel`). `on_clear_minimise_target` still takes the string and refuses one that
-  is no identifier. `window_known` is new on the handler trait, implemented in `handlers/quire_shell.rs`.
-- **Departure: `QuireShellPart` gained `asked` and `mods`.** `ShellNote::Role` carries the layer, not the surface, so
+  is no identifier. `window_known` is new on the handler trait, implemented in `handlers/bardo_shell.rs`.
+- **Departure: `BardoShellPart` gained `asked` and `mods`.** `ShellNote::Role` carries the layer, not the surface, so
   `on_set_role` remembers the surface each layer asked from and `apply_note` moves it into `roles` when the model confirms.
   `mods` is the last set sent; `apply_note` sends `modifiers` only when it changed, so the edge may report after every key.
 - **Modifiers are reported after every delivered key** (`core_loop/deliver.rs::tell_shell_modifiers`), including a key a
@@ -1666,14 +1666,14 @@ ignored tests of this lane; two tests were rewritten (below).
   casement-ipc). It needs `dbus-daemon` on PATH and `GetConnectionUnixProcessID` allowed by `dev/private-bus.conf`.
 - **Not proven by a test:** that a minimised window travels to the dock's rectangle (the model test for the stored target
   and `space_persist.rs` for the genie target together cover it); the `hot_corner` and `reveal` emitters are P3's.
-- **Fuzz:** `quire_shell_v1` is advertised and its interface is in the test client catalogue, so the typed fuzz box's
+- **Fuzz:** `bardo_shell_v1` is advertised and its interface is in the test client catalogue, so the typed fuzz box's
   object ids shifted: re-run every seed that failed before the P2-Q2 merge, and the role fuzz (`PrivilegedOffered`,
   `GlobalNotForRole`) for all four roles.
-- **Spots most likely not to compile.** `casement-wayland/src/quire/shell.rs` (`quire_shell_v1::MacMods::from_bits_truncate`,
+- **Spots most likely not to compile.** `casement-wayland/src/bardo/shell.rs` (`bardo_shell_v1::MacMods::from_bits_truncate`,
   `Corner`/`ScreenEdge`/`Shown` `TryFrom<u32>` from the scanner's enums, `shell.client() == holder.surface.client()`),
   `casement-ipc/src/dbus/compositor1.rs` (`#[zbus(header)]` and `#[zbus(connection)]` together, `BusName::from(sender.clone())`,
   `DBusProxy::get_connection_unix_process_id`, `OwnedFd::from`), `compositor_serve/tests.rs`,
-  `casement/src/connect.rs` (partial moves out of `handed`), `casement-testkit/tests/it/protocol/quire_shell.rs`
+  `casement/src/connect.rs` (partial moves out of `handed`), `casement-testkit/tests/it/protocol/bardo_shell.rs`
   (the key code 125 reaching `logo` -> Command; `Anchor::Bottom` dock placement; `fixture.client(id).create_surface()`).
 
 
@@ -1706,7 +1706,7 @@ casement as a systemd service, and its Spaces registered with accountd. Nothing 
   `with_notify`, so the test kit's `Seams::new` call compiles unchanged. `run` installs the real ones: the registry only
   when `RunConfig::compositor_bus` is `At(address)` (the session bus), so a run without a bus registers nothing.
   A jail run with `DBUS_SESSION_BUS_ADDRESS` set to its private bus registers there and logs a "later" at debug.
-- **Tests.** Private-bus: `casement-ipc/src/space_registry/tests.rs` (stand-in `org.quire.Accounts1` serving
+- **Tests.** Private-bus: `casement-ipc/src/space_registry/tests.rs` (stand-in `org.bardo.Accounts1` serving
   `Spaces1.Register`: arrival with the default look, refusal once and then silence, no service -> `Later`; needs
   `dbus-daemon`). Pure: `Pace`, the datagram text, a real datagram socket in a tempdir (path and abstract), `Watchdog`,
   `Space::plain_name`, `FakeNotify`; `casement-testkit/tests/it/space_sync.rs` over `FakeSpaceRegistry`.
@@ -1775,7 +1775,7 @@ Lane P2-T3, casement half (not compiled; the orchestrator gates). No `todo!()` w
   bits allow it and the app binds it; absolute ones have one region at (0, 0) of the desktop's size at connect time, mapped
   back onto the desktop (the extent is not updated if outputs change during a session). An app that asks to receive input gets
   no devices. Keys and buttons still held when the app goes are released before `Ended`.
-- **Hand-out.** `org.quire.Compositor1.ConnectEis(session: t, devices: u) -> (h)`. `ConnectAsk` gained `remote:
+- **Hand-out.** `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> (h)`. `ConnectAsk` gained `remote:
   Option<RemoteAsk>` (and `ConnectAsk::remote_eis`); `casement::connect::answer` branches to `answer_remote`, which checks
   `portal_may_connect` (`transom.service`; `role_for` is unchanged, the portal has no Wayland role: sill gets
   `RoleNotAllowed`, an unknown unit `UnknownUnit`) and inserts the source into `state.event_loop`. `State` is not edited.
@@ -2001,8 +2001,8 @@ without a compiler (wave rule); the orchestrator builds.
   release is swallowed (`seat.taken`), the model routes it as a titlebar or edge press (activate, raise), then the part acts:
   close = `Effect::SendClose`, minimise and zoom = `ToplevelRequest`, drag = `ToplevelRequest::Move` (the existing grab),
   edge = `Resize`, double click = `windows.double_click_title`. Lights act on release inside, as on the Mac (chrome2).
-- **Unreachable from quire's pure crates, so written here (asks below):** the window radius 10 (`--r-window` is a CSS string,
-  and still 26 until quire's batch), `--shadow-window` (CSS string, hand-copied as two `ShadowLayer`s), the three light hues
+- **Unreachable from Bardo's pure crates, so written here (asks below):** the window radius 10 (`--r-window` is a CSS string,
+  and still 26 until Bardo's batch), `--shadow-window` (CSS string, hand-copied as two `ShadowLayer`s), the three light hues
   and their mark inks (stylesheet candy colours), and (until chrome2) the colour scheme.
 - **Not done.** (1) Title text: casement had no
   text stack (`casement-chrome`, B15), so the titlebar title was empty. (Done by chrome3: `casement-chrome` draws it.) (2) The green light has no Move and Resize menu, and
@@ -2015,7 +2015,7 @@ without a compiler (wave rule); the orchestrator builds.
   pixel, scaled up; cost on a window being resized is a new raster per frame (cache limit 64 entries). (Done by
   chrome2: layout reserves the titlebar, lights act on release, Option-click zoom, the colour scheme from settings; done by
   clip: the rounded bottom corners.)
-- **Interface asks for quire** (exact):
+- **Interface asks for Bardo** (exact):
   1. `ds-style/src/tokens/shape.rs`: `impl Radius { pub fn px(self) -> u16 }` returning the number `value()` writes (Window
      10 in the next batch), so casement stops hard-coding `WINDOW_RADIUS`.
   2. `ds-style/src/tokens/elevation.rs`: numeric `Shadow::layers(self, scheme: Scheme) -> &'static [ShadowLayer { dx, dy, blur,
@@ -2054,11 +2054,11 @@ orchestrator builds.
   None }` (it exists). Option held at release is zoom (`Maximise`), today's behaviour. `chrome_action` takes the `MacMods`.
   Double click on the title still follows `windows.double_click_title`. The hover menu of the Mac's green light (Move and Resize,
   tile) is not built. A full-screen window draws no frame, so leaving full screen is by the app, its key or the shell.
-- **The colour scheme.** `casement::appearance` reads quire's `appearance.toml` (`AppName::QUIRE`, the file ds-settings owns)
+- **The colour scheme.** `casement::appearance` reads Bardo's `appearance.toml` (`AppName::BARDO`, the file ds-settings owns)
   through a `Store`, puts `casement_layout::scheme_of(appearance.theme)` in `RenderState::scheme`, and follows the file with
   `Store::watch` (ds-settings' task runs on a small thread-per-task `Spawner`, `block_on` by parking; casement runs no async
   runtime). The watch forwards the scheme over a calloop channel; the next vblank draws the frame in it (`styles` reads it each
-  frame). `theme = "system"` paints Light: following the desktop needs the settings portal, which is ds-settings' `quire-desktop`
+  frame). `theme = "system"` paints Light: following the desktop needs the settings portal, which is ds-settings' `desktop`
   feature and is off in the workspace's `ds-settings` dependency. Ask for the orchestrator: if `system` should follow the
   desktop, enable that feature (a Cargo edit) and read `SystemPrefsSource::Portal` once at startup and on its watch.
   Only the frame follows the scheme; the cursor and everything else casement draws is scheme-free.
@@ -2074,7 +2074,7 @@ orchestrator builds.
   `==`/`step`), `casement_layout::Theme` re-export. Real run: press a light and drag off it (it un-darkens), back on (darkens),
   release off it (nothing happens), release on it (acts); green click goes full screen, Option-click zooms and a second one
   restores; a window opened at the top of the screen has its bar under the menu bar's exclusive zone, not beneath it; fill
-  leaves the bar visible; set `appearance.theme = "dark"` in `~/.config/quire/appearance.toml` and the frames turn dark
+  leaves the bar visible; set `appearance.theme = "dark"` in `~/.config/bardo/appearance.toml` and the frames turn dark
   without a restart; windows with client-side frames are unchanged.
 ## wave-2026-10-15/clip
 
@@ -2116,7 +2116,7 @@ the orchestrator builds.
   in `RoundedClipElement::new`, `Compositor::draw_rounded_clip`'s default (`clip.surface().draw` needs `RenderElement` in scope),
   `egl_context().user_data().insert_if_missing` (a non-threadsafe entry, as the blur's cache), `Uniform::new` with tuple values,
   `OpaqueRegions` collected from `Vec`s in `opaque_regions`. Real run on foot: the bottom corners are round in light and dark
-  (set `appearance.theme` in `~/.config/quire/appearance.toml`); a full-screen window has square corners; a zoomed one keeps
+  (set `appearance.theme` in `~/.config/bardo/appearance.toml`); a full-screen window has square corners; a zoomed one keeps
   them; there is no seam or light line between the titlebar and the content at the sides (both use the same rounded edges of
   `window_content`); a window moved or resized across a fractional scale keeps a one-pixel anti-aliased edge; a Qt app that
   insists on client-side decoration is unchanged.
@@ -2147,10 +2147,10 @@ without a compiler (wave rule); the orchestrator builds.
   `request(FullScreen)`, and only when the entry is enabled for the window's state now (a stale pick changes nothing). Tests:
   `tests/it/model_window_menu.rs`.
 - **Departure: the wire step is not built.** The XML has no event for "show the window menu" or request for a pick, and
-  `casement-protocols` is not this lane's. `casement_wayland::quire::shell::apply_note` has an explicit empty arm for
+  `casement-protocols` is not this lane's. `casement_wayland::bardo::shell::apply_note` has an explicit empty arm for
   `ShellNote::WindowMenu` naming this section; until the protocol lands the menu is asked for and nothing shows. No new
   interface, so nothing was added to the test client catalogue (the ask below adds the event and the request; the catalogue's
-  `quire_shell_v1` root already binds the object).
+  `bardo_shell_v1` root already binds the object).
 - **Departure: Full Screen Tile is dimmed.** "Left of Screen" and "Right of Screen" put two windows in a Split View; the model
   has the Space kind (`SpaceContent::SplitView`) but no command that makes one. `window_menu.rs` passes
   `SplitSupport::Unavailable`, so both entries are sent dimmed and a pick of one does nothing. Flip the const when a command exists.
@@ -2173,7 +2173,7 @@ without a compiler (wave rule); the orchestrator builds.
   frame vanished the instant a window was minimised instead of flying with its content (`frames::drawn` adds the dock state for
   drawing only; hit, reserve and clip rules use `framed` as before). A window that closes still loses its frame at once (no
   model entry to style it).
-- **Interface asks.** In the lane report: the `quire_shell_v1` XML (event `window_menu`, request `window_menu_pick`, enum
+- **Interface asks.** In the lane report: the `bardo_shell_v1` XML (event `window_menu`, request `window_menu_pick`, enum
   `window_entry`) and sill's side.
 - **Gate and real run.** Likeliest compile faults: `window/menu.rs` (`Toggle`/`PlaceTarget`/`TileZone` imports and the match on
   `entry.action()` in `zone`), `menu_dwell.rs` or-pattern with bindings in `over`, `model/window_menu.rs` calling `self.request`
@@ -2228,7 +2228,7 @@ To check in a real run: wlcs counts (expect 8 more passes, 9 listed); the caseme
 
 The window menu's wire, end to end (casement-protocols `lane/winwire`, casement, sill). Written without a compiler.
 
-- **Protocol.** `quire_shell_v1` (version 1, changed in place as the draft allows; no pinned bytes touched): enum
+- **Protocol.** `bardo_shell_v1` (version 1, changed in place as the draft allows; no pinned bytes touched): enum
   `window_entry` (15, codes = `MenuEntry::code`), event `window_menu(toplevel, x, y, enabled)`, request
   `window_menu_pick(toplevel, entry)`. casement-protocols also has vocab `WindowEntry` and the desktop-client
   `ShellEvent::WindowMenu` / `DesktopCommand::PickWindowMenu`. Land casement-protocols first.
@@ -2237,7 +2237,7 @@ The window menu's wire, end to end (casement-protocols `lane/winwire`, casement,
   window) and `MenuEntry::from_code`; `on_window_menu_pick` feeds `ShellRequest::WindowMenuPick`. An unknown window or
   entry is ignored, no protocol error (the menu may be on screen while the window goes away).
 - **Test client.** `ShellHandle::window_menu_pick`, `ShellHandle::window_menus()` (`WindowMenuSeen`).
-- **Tests.** `protocol/quire_shell.rs`: `resting_on_the_green_light_shows_the_menu_and_a_pick_tiles_the_window`,
+- **Tests.** `protocol/bardo_shell.rs`: `resting_on_the_green_light_shows_the_menu_and_a_pick_tiles_the_window`,
   `a_pick_for_nothing_is_ignored`; a doc test on `on_window_menu_pick`. No golden or `globals.txt` changed (no version bump).
 - **Check at the gate.** The light test computes the zoom light from `rect_of(window).origin` as the content origin and
   `frame_style(..).around(content)`; if the layout rectangle includes the titlebar, the expected point is off by the bar
@@ -2247,9 +2247,9 @@ The window menu's wire, end to end (casement-protocols `lane/winwire`, casement,
   clicking away sends nothing.
 ## wave-2026-10-15/chrome3
 
-Title text, quire's numbers, `theme = "system"`. Written without a compiler (wave rule); the orchestrator builds.
+Title text, Bardo's numbers, `theme = "system"`. Written without a compiler (wave rule); the orchestrator builds.
 
-- **casement-chrome (new crate, a workspace member).** `TitleRaster::system(Margins)` reads quire's `title_font(Typeface::System)`
+- **casement-chrome (new crate, a workspace member).** `TitleRaster::system(Margins)` reads Bardo's `title_font(Typeface::System)`
   (Inter 13 px, weight 600), shapes with parley (`FontContext` made once, kept; fontique scans the system fonts on the first
   title, never per frame), rasterises with vello_cpu to premultiplied RGBA8 as big as the titlebar at the output's native scale
   (`device`: half-up, the rounding of `buffer_size`). The family is `Inter, system-ui, sans-serif`, so a missing Inter falls to any
@@ -2270,13 +2270,13 @@ Title text, quire's numbers, `theme = "system"`. Written without a compiler (wav
 - **Departures.** (1) `check-boundary.sh` B15 exempted nothing, yet `casement` must depend on the crate: the graph rule now skips
   `casement-chrome`, `casement` (the consumer) and `casement-testkit` (reaches it through `casement`), and a new source rule
   says only `crates/casement-chrome/` names `parley::`, `fontique::` or `vello_cpu::`. B11 is unchanged (its pattern is `vello`,
-  not `vello_cpu`). (2) `ShadowLayer` (casement-core) gained `dx` because quire's layers have one; the shadow raster honours it.
+  not `vello_cpu`). (2) `ShadowLayer` (casement-core) gained `dx` because Bardo's layers have one; the shadow raster honours it.
   (3) `casement_layout::pressed` takes the scheme (the pressed hue is `light_hue`'s for it).
-- **quire's numbers.** `WINDOW_RADIUS`, the two hand-written `ShadowLayer`s and `HUES` are deleted; `frame_style` reads
+- **Bardo's numbers.** `WINDOW_RADIUS`, the two hand-written `ShadowLayer`s and `HUES` are deleted; `frame_style` reads
   `Radius::Window.px()`, `Shadow::Window.layers(scheme)` and `light_hue(light, scheme)`. Tests in `casement-layout/src/frame.rs`
   pin the agreement for both schemes (radius, every shadow field and colour, every disc and mark ink, pressed). The light hues
-  change from the macOS candy values casement copied (`#FF5F57`...) to quire's (`#e8483c`...; dark `#ff6b60`...): that is
-  quire's token, the point of the lane. FrameLook holds two shadow layers; a test pins quire's count at two.
+  change from the macOS candy values casement copied (`#FF5F57`...) to Bardo's (`#e8483c`...; dark `#ff6b60`...): that is
+  Bardo's token, the point of the lane. FrameLook holds two shadow layers; a test pins Bardo's count at two.
 - **theme = system.** `casement_ipc::system_scheme::SchemeWatch` is the follower: a thread with a current-thread tokio runtime
   (the pattern of `sleep` and `signals`; the portal's zbus needs a runtime and casement has none), `SystemPrefsWatch::start` on
   it, the first answer and each change passed to a callback. `casement::appearance` starts it the first time the stored theme is
@@ -2288,7 +2288,7 @@ Title text, quire's numbers, `theme = "system"`. Written without a compiler (wav
   manifest, `DesktopScheme` can become `Scheme`. A custom `--config-home` therefore does not follow the desktop (a jail).
 - **Tests.** Table: `place` (device rounding, room, left edge, longest fit, margins), `key` (tidy, device size, key fields),
   `ink` (token to ink, per scheme and activity), `cache` (LRU, bound), `TitleDraw::argb`, `appearance::{resolve, Heard,
-  system_source}`, `titles::margins`, `DesktopScheme::of_portal`, the quire agreement tests. Needing fonts, but asserting only
+  system_source}`, `titles::margins`, `DesktopScheme::of_portal`, the bardo agreement tests. Needing fonts, but asserting only
   invariants: `raster.rs` (size per scale, premultiplied, errors, kept raster is the same, bounded, ink stays between the margins).
   Doc tests: `ink`, `TitleKey::new`, `tidy`, `Margins::in_device`, `device`, `room`, `left_edge`, `longest_fit`,
   `TitleRaster::system`, `TitleDraw::argb`, `pressed`, `appearance::{system_source, resolve}`, `SchemeWatch`, `DesktopScheme`.
@@ -2300,7 +2300,7 @@ Title text, quire's numbers, `theme = "system"`. Written without a compiler (wav
   seven wide, `prefs.scheme = ...` assignment on a `non_exhaustive` struct in casement-ipc's test, `Light::ALL.map`. Real run on
   foot: the title sits centred in the bar in Inter 13/600 (or the system sans), dim on a window that is not key, ellipsis on
   a narrow window with the start of the title left of the right margin and clear of the lights; sharp at 1x, 1.5x and 2x; changes
-  with the window's title with no flash; with `theme = "system"` in `~/.config/quire/appearance.toml`, the frame follows the
+  with the window's title with no flash; with `theme = "system"` in `~/.config/bardo/appearance.toml`, the frame follows the
   desktop's light/dark toggle without a restart (KDE/GNOME portal; check `busctl --user` shows no second connection per frame);
   with `theme = "dark"` it does not. Open: right-to-left titles (parley shapes them; the margins are not mirrored), and
   the title is not in a window capture of a window without its frame (as the frame is not).
@@ -2405,7 +2405,7 @@ compiler (wave rule); the orchestrator builds.
   above the top layers (`full_screen_windows`), so a halves-in-usable-area layout would leave the bar's strip uncovered. Layout
   uses `OutputSpec::full`. Changing it is one line (`let area = output.full;` in `rust_scene/split.rs`).
 - **Departure: the picker has no wire.** The XML has no event or request for it and `casement-protocols` is not this lane's.
-  `casement_wayland::quire::shell::apply_note` has an explicit empty arm for `SplitChoose` and `SplitChoiceEnd` naming this
+  `casement_wayland::bardo::shell::apply_note` has an explicit empty arm for `SplitChoose` and `SplitChoiceEnd` naming this
   section. Until the protocol lands the menu entry makes the window full screen and the model waits for a pick that cannot
   come (it ends when the window leaves full screen or closes). No test client catalogue entry (no new interface).
 - **Departures.** A window's maximum size is not honoured by a half (it is as wide as the half, like a full-screen window);
@@ -2414,7 +2414,7 @@ compiler (wave rule); the orchestrator builds.
 - **Tests.** `casement-core/tests/it/model_split.rs` (enter, candidates, pick both sides, cancel, stale picks, first leaving,
   exit from either window, close either window, divider clamp); `casement-layout/tests/it/split.rs` (widths table, unmet
   minimums, the output's place, a missing window); in-file test of `taffy_bridge/split.rs`. Changed: `model_window_menu.rs`
-  ("a Full Screen Tile entry ..." now ends full screen), `casement-testkit/tests/it/protocol/quire_shell.rs`
+  ("a Full Screen Tile entry ..." now ends full screen), `casement-testkit/tests/it/protocol/bardo_shell.rs`
   (`resting_on_the_green_light...` expects both Full Screen Tile entries enabled).
 - **Gate.** Likeliest compile faults: `model/split.rs` (the `restore.filter(..)` let-else in `split_pick`, `Moved::then(Model::choice_over)`,
   `with_all(Option<Effect>)`), `invariants.rs` (the tuple match), `requests.rs` `leave_full_screen` closures, `desktop.rs`
@@ -2426,16 +2426,16 @@ compiler (wave rule); the orchestrator builds.
 
 The Split View picker and divider on the wire (casement-protocols `lane/splitwire`, casement, sill). Written without a compiler.
 
-- **Protocol.** `quire_shell_v1` (still version 1): enum `split_side`, events `split_choose(first, side)` +
+- **Protocol.** `bardo_shell_v1` (still version 1): enum `split_side`, events `split_choose(first, side)` +
   one `split_candidate(toplevel)` per candidate + `split_choice_end(first)`, requests `split_pick`, `split_cancel`,
   `split_divide(toplevel, share)`. Land casement-protocols first. This closes the "picker has no wire" departure of
   `## wave-2026-10-15/split`.
-- **Dispatch.** `casement_wayland::quire::shell_split` (new file; `shell.rs` was at 400 lines): `send_choose`,
+- **Dispatch.** `casement_wayland::bardo::shell_split` (new file; `shell.rs` was at 400 lines): `send_choose`,
   `send_choice_end`, `on_split_pick`, `on_split_cancel`, `on_split_divide`. A pick/divide naming an unknown window is
   ignored, no protocol error. `share` above 1000 is cut to 1000; the model clamps to 200..800.
 - **Test client.** `ShellHandle::{split_pick, split_cancel, split_divide, split_choices, split_ends}`
   (`SplitChoiceSeen`). No new interface, so no catalogue change.
-- **Tests.** `protocol/quire_shell.rs`: `left_of_screen_offers_the_other_window_and_a_pick_makes_both_halves`,
+- **Tests.** `protocol/bardo_shell.rs`: `left_of_screen_offers_the_other_window_and_a_pick_makes_both_halves`,
   `a_cancelled_choice_leaves_the_first_window_alone`; doc tests on the three `on_split_*`. No golden or `globals.txt` changed.
 - **Check at the gate.** The tests assume both toplevels (no app id) are candidates of each other and that
   `windows()` is in id order; the second window must not be hidden or in the dock.
@@ -2484,7 +2484,7 @@ key command. Written without a compiler (wave rule); the orchestrator builds.
 - **Tests.** Layout table tests: `tests/it/divider.rs` (strip hit, share from pointer x with limits and minimums),
   `tests/it/split.rs` (divider strip per share, centred maximum widths and the backdrop). Model (`model_split.rs`): the key
   command, candidates from one desktop, cancel on a Space switch. `round_trip.rs` pins the serde form; `config.rs` round trips
-  the new words; `model_props.rs` and `model_input.rs` include `SplitTile`. Testkit: `protocol/quire_shell_divider.rs` drives a
+  the new words; `model_props.rs` and `model_input.rs` include `SplitTile`. Testkit: `protocol/bardo_shell_divider.rs` drives a
   real pointer through the fixture (press on the strip, drag, release, a press beside the strip). No golden changed.
 - **Gate.** Likeliest compile faults: `core_loop/divider.rs` (borrow of `state.render.divider` before `feed(state, ..)` in
   `moved`; `bool::then` returning a clone), `deliver.rs` (`press_on_divider`, the early return in `motion`), `model/split.rs`
@@ -2568,8 +2568,8 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   motion flies them back. A locked session ignores every way in. Not done: a Space switch, a lock or a new window does not close
   the overview (a new window gets a slot at once); the model does not close it when its last window goes.
 - **The ways in.** `DesktopCommand::MissionControl` (a toggle; the config word `mission_control`; the chordkit standard action
-  `MissionControl` is bound to it: Ctrl+Up on our desktop) and the shell's own `quire_shell_v1.overview(mode, toggle)` request
-  (`ShellRequest::Overview`, `quire/shell_overview.rs`): Mission Control on or off, the other modes change nothing. The wire
+  `MissionControl` is bound to it: Ctrl+Up on our desktop) and the shell's own `bardo_shell_v1.overview(mode, toggle)` request
+  (`ShellRequest::Overview`, `bardo/shell_overview.rs`): Mission Control on or off, the other modes change nothing. The wire
   event `overview_state(mode, state, progress)` is sent (progress 0 entering and closed, 1000 open and leaving). The wire
   already had all of this; no protocol change. sill's `mission_control_chrome()` is still an empty function.
 - **Input (`core_loop/overview.rs`, `deliver.rs`).** While the overview is not closed, the windows take no input: motion goes to
@@ -2595,7 +2595,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   of 500 specs), none of which this lane's code touches.
 - **Tests.** casement-core `model_overview.rs` (state walks for the command and the shell request, relayout and timer effects, no
   output, a pick raises and keys, a leave without a pick, picks while closed or leaving); `model_props.rs` gets the command in its
-  generator. casement-testkit `protocol/quire_shell_overview.rs` (shell opens it and hears Entering then Open with progress, a
+  generator. casement-testkit `protocol/bardo_shell_overview.rs` (shell opens it and hears Entering then Open with progress, a
   click on a slot picks, a click on the picture leaves with nothing picked, Escape leaves, the shell closes it and App Expose is
   ignored). `casement/src/core_loop/overview.rs` (the reach of a slot with its frame), `keymap/shell.rs` (Ctrl+Up),
   `tests/it/config.rs` (the word round-trips), `element/overview.rs` (physical rectangles at 1x and 2x).
@@ -2767,7 +2767,7 @@ Rounded corners and shadows right everywhere (wave 5). Written without a compile
   to zero from 1 px in). The corner squares inside the curve now show shadow where the window is not (outside the curve) and
   none where it is. A window drawn at opacity below 1 (fade) has no shadow beneath its body either, as the Mac.
 - **Small windows.** A window with one side under twice the corner reach (`inner_reach`, about 120 to 150 logical px for
-  quire's shadow) and neither side over 240 gets one raster of its own size plus the margin, the true separable Gaussian blur of
+  Bardo's shadow) and neither side over 240 gets one raster of its own size plus the margin, the true separable Gaussian blur of
   its rounded shape (`shadow/whole.rs`, sharing `blurred` with the corner tiles), cut out under the window. It is cached by
   (scale, radius, layers, width, height) in `DrawCache::wholes` (16 sizes), and uploaded once per window and size
   (`whole_sets`). A window past the limit on a side (a long thin one) keeps the tile pieces and their cropped, slightly strong
@@ -2794,7 +2794,7 @@ Rounded corners and shadows right everywhere (wave 5). Written without a compile
 
 Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted, not changed" of `session`.
 
-- **Live apply.** casement watched no `settings.toml` before (only quire's `appearance.toml`). New
+- **Live apply.** casement watched no `settings.toml` before (only Bardo's `appearance.toml`). New
   `casement::settings_live` watches the document through ds-settings (the appearance watch's thread
   spawner, now `pub(crate)`), and `settings_live::apply` tells the model `followed(current, doc)`:
   the file's pointer and touchpad profiles and the key repeat; everything else (bindings from the
@@ -2836,7 +2836,7 @@ Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted
 
 ## wave-2026-10-15/ovpolish
 
-Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours to quire tokens"). Written without a compiler
+Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours to Bardo tokens"). Written without a compiler
 (wave rule); the orchestrator builds.
 
 - **The frame shrinks with the window.** The chosen way is "draw the frame at full size into the scaled rectangle", not a scaled
@@ -2869,10 +2869,10 @@ Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours
 - **Themed colours.** Boundary: `scripts/check-boundary.sh` has no row against `ds-style` in `casement-layout` (B1 limits only
   `casement-core`'s own dependencies; B13 limits only ds-settings), and `frame.rs` already reads ColourToken there. So the values
   are read in a new `casement-layout/src/look.rs` and reach the renderer through the loop: `overview_ring(scheme)` is
-  `ColourToken::Accent` (quire's accent fill, Blue until the person's accent is carried to casement; casement has no accent setting
+  `ColourToken::Accent` (Bardo's accent fill, Blue until the person's accent is carried to casement; casement has no accent setting
   today), `overview_dim(scheme)` is `ColourToken::Scrim` (black at .22: alpha 56 where 64 was written), `split_backdrop()` is
   `ColourToken::Paper` in its Dark value (#1E1E1E) in both schemes (was 28/28/30), because the Mac's backdrop stays dark on a
-  light desktop and quire has no separate backdrop token. `OverviewDraw::On` carries an `OverviewLook { dim, ring }` (premultiplied
+  light desktop and Bardo has no separate backdrop token. `OverviewDraw::On` carries an `OverviewLook { dim, ring }` (premultiplied
   `Rgba8`, made by `From<FrameColour>`). The ring is the light scheme's accent fill rather than the dark #0A84FF
   that was written: the colour changes slightly in light. No golden pinned any of these.
 - **App icon in the hover label: not done (departure).** casement can resolve an app's icon only when the client sets
@@ -2881,7 +2881,7 @@ Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours
   buffer nearest 16 px x scale from `icon_of`, read it with the capture's `ArgbImage::from_shm`, and lay it left of the title in
   `label_element` (the label's raster has no left margin to make room: widen `LABEL_MIN`).
 - **Tests.** Layout: `spread.rs` (`the_frame_reserve_shrinks_with_the_window` table at four scales, `a_shrunk_window_keeps_only_its_scaled_frame_above_the_slot`);
-  `look.rs` (the three colours are quire's tokens). Render: `frame/shrink.rs` tables (lengths, no-shrink cases, touching parts,
+  `look.rs` (the three colours are Bardo's tokens). Render: `frame/shrink.rs` tables (lengths, no-shrink cases, touching parts,
   placement about a corner, the titlebar keeps a pixel), `frame.rs` (the shrunk bar and outline land on whole pixels at 1x and 2x:
   (100,186,400x14) and (100,186,400x314) at 1x, doubled at 2x; a frame at its own size is where it was; the shrunk shadow margin),
   doc tests for `shown_outline`, `shown_length`, `OverviewLook::new`, `Rgba8::from(FrameColour)`. Model (`model_overview.rs`): a Space
@@ -3045,7 +3045,7 @@ Lane `kbdlive` (not compiled; the orchestrator gates). Closes input2's departure
 
 ## wave-2026-10-15/mcwire
 
-The three asks of sill's Spaces bar (`## spacesbar`), as `quire_shell_v1` **version 2** (casement-protocols `lane/cas9-mcwire`,
+The three asks of sill's Spaces bar (`## spacesbar`), as `bardo_shell_v1` **version 2** (casement-protocols `lane/cas9-mcwire`,
 FINDINGS `## wave-2026-10-15/mcwire` there). Written without a compiler (the lane rules); the gate is the first build. Land
 casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not merged here; the files both touch are
 `core_loop/overview.rs` (the `press`, `hover` and `leave` bodies; `window_at`, `draw` and the colours are ovpolish's) and
@@ -3059,7 +3059,7 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
   Control is open is not told until the next state change; a shell that binds while it is open hears nothing until then.
 - **2. Space pictures (`get_space_capture_source(source, output, space_id, width, height)`).** Reuses ext-image-copy-capture: the
   request makes an `ImageCaptureSource` (smithay's custom-source path) whose user data is a `SpaceSourceId`
-  (`casement_wayland::quire::space_shot`, a pure book like the toplevel one); `handlers/image_capture.rs` hands such sessions to
+  (`casement_wayland::bardo::space_shot`, a pure book like the toplevel one); `handlers/image_capture.rs` hands such sessions to
   `handlers/space_shot.rs`. The constraints are exactly the size asked for (each side clamped to 1..=1024), shm and the usual
   dma-buf offer. A picture is the windows of the Space the output shows, each drawn alone with `capture_source::window_rgba`
   (no frame, no popups), shrunk to where `arrangement.windows` puts it on the output and composed back to front by
@@ -3086,7 +3086,7 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
   and Mission Control stays open; a release elsewhere calls `relayout(Overview)`, which puts the slot back and the window flies
   home on the `Move` spring. A press on the picture still leaves at once. `leave()` resets the drag. Requests: `space_target_clear
   (output)` and `space_target(output, space_id, x, y, w, h)` (global logical pixels; an empty rectangle is `bad_target`; an unknown
-  output or Space id is kept out silently); the table lives on `QuireShellPart::space_targets` and is cleared when the last shell
+  output or Space id is kept out silently); the table lives on `BardoShellPart::space_targets` and is cleared when the last shell
   object goes. **Departures:** (1) the dragged window is drawn in the usual window stacking, so it can pass under another window's
   slot (the slot list is reordered for hits, the scene is not); raising it in the model would change focus order. (2) The drag
   starts only from entering or open, as a pick did. (3) The target highlight is the shell's: casement draws nothing for it.
@@ -3095,20 +3095,20 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
 - **Not asked, not done.** Dragging a window between outputs in Mission Control; dropping on a "new desktop" tile (the Mac adds a
   Space); dropping a window onto an app; a per-output overview (the event shape allows it).
 - **Test client.** `ShellHandle::{bind_outputs, space_target_clear, space_target, overview_outputs, drop_targets}`, `BoundOutput`
-  (a bound `wl_output` with its connector name), `OutputCapture::open_space`. No catalogue change: `QuireShellV1` is a root and
+  (a bound `wl_output` with its connector name), `OutputCapture::open_space`. No catalogue change: `BardoShellV1` is a root and
   its new messages' interfaces (`ext_image_capture_source_v1`, `wl_output`) are reached from it. No `globals.txt` change (the
   private globals are not listed), no golden changed, `expected-failures.txt` untouched.
 - **Tests.** casement-core `overview_drag.rs` (hit order and live outputs, clear, threshold table, the window keeps its place, target
   changes reported, release picks/drops/flies back, doc tests); casement-render `pass/thumb.rs` (placement table, box average,
-  over blending, clipping, half off the picture, doc tests); casement-wayland `quire/space_shot.rs` (size clamp, damage gate,
+  over blending, clipping, half off the picture, doc tests); casement-wayland `bardo/space_shot.rs` (size clamp, damage gate,
   forget, destroyed source, fingerprint) and doc tests on `target_rect`, `clamp_side`, `look_of`; casement-testkit
-  `protocol/quire_shell_spaces.rs` (two outputs hear `overview_output` and a version 1 shell does not; a press that hardly moves
+  `protocol/bardo_shell_spaces.rs` (two outputs hear `overview_output` and a version 1 shell does not; a press that hardly moves
   picks; drag, hover event, drop and stays open; release elsewhere flies back; an empty target is a protocol error and a cleared
   one is not hit; a picture on first request, held, sent on commit, background transparent; a picture of a Space not shown stops).
-  Existing: `quire_shell_overview.rs`'s click tests now go through press-then-release and still pick.
-- **Gate.** Likeliest compile faults: `shell_space::on_request` (the generic `D: QuireShellHandler` also needs
+  Existing: `bardo_shell_overview.rs`'s click tests now go through press-then-release and still pick.
+- **Gate.** Likeliest compile faults: `shell_space::on_request` (the generic `D: BardoShellHandler` also needs
   `Dispatch<ExtImageCaptureSourceV1, ImageCaptureSourceData>`, supplied by the new supertrait `ImageCaptureSourceHandler`; a
-  `GlobalDispatch2/Dispatch2` impl that names `D: QuireShellHandler` only may need the supertrait spelled out), `exec/shell.rs`
+  `GlobalDispatch2/Dispatch2` impl that names `D: BardoShellHandler` only may need the supertrait spelled out), `exec/shell.rs`
   (`Shown` is the generated server enum, `Overview` is non-exhaustive), `core_loop/overview_drag.rs` (`Moved` and `Released` are
   non-exhaustive: the `let ... else` and the `_ =>` arm), `handlers/space_shot.rs` (`frame.fail`, `frame.has_failed`,
   `Frame` is consumed by `answer`), the testclient (`Dispatch<WlOutput, Shared<Option<String>>> for Host`;
@@ -3124,7 +3124,7 @@ casement-protocols first. Built on casement 79456e1: `ovpolish` (6cb6035) is not
 
 ## wave-2026-10-15/mc3
 
-The four "Not done" items of `mcwire` and the dragged window's stacking, as `quire_shell_v1` **version 3** (casement-protocols
+The four "Not done" items of `mcwire` and the dragged window's stacking, as `bardo_shell_v1` **version 3** (casement-protocols
 `lane/cas10-mc3`, FINDINGS `## wave-2026-10-15/mc3` there; land it first). Written without a compiler (wave rule); the gate is the
 first build. Built on casement 78b3152.
 
@@ -3156,7 +3156,7 @@ first build. Built on casement 78b3152.
   output** than the window's own drops it on the Space that output shows (`Released::FlyBack` now carries `at`); (c) after every
   drop the loop lays out again (`relayout(Overview)`), so a drop the model refuses (the Space the window is already on, a
   full-screen Space) flies back instead of leaving the slot where it was dropped (mcwire departure 4 and 5). Tests:
-  `model_drop.rs`, `desktop_places.rs` (`shifted`), `quire_shell_drop.rs` (two outputs: drop on a tile, drop on the bare output,
+  `model_drop.rs`, `desktop_places.rs` (`shifted`), `bardo_shell_drop.rs` (two outputs: drop on a tile, drop on the bare output,
   release on the own output).
 - **4. "New desktop" tile.** Wire: `space_target_new(output, x, y, w, h)` and `drop_target_new(output, over: shown)` (version 3).
   Core: `SpaceTargets::set_new_space`, `Landing { Space, NewSpace }` in `Over`, `ShellNote::DropTargetNew`,
@@ -3170,12 +3170,12 @@ first build. Built on casement 78b3152.
   drawn above every other slot and its frame, ring and label go with it. It stays below layers that are above windows.
 - **Tests added.** casement-core: `overview_drag.rs` (tile priority, per-output tiles, clear/clear_all, release remembers the
   pointer), `model_drop.rs` (pictured, new Space, gone output, cross-output shift), `desktop_places.rs::shifted`. casement-layout:
-  `hidden_space.rs`. casement-render: `lift_last`. casement-testkit: `quire_shell_drop.rs` (hidden picture follows its own
+  `hidden_space.rs`. casement-render: `lift_last`. casement-testkit: `bardo_shell_drop.rs` (hidden picture follows its own
   windows only, tile lights/unlights/creates, tile beats a Space target, empty rectangle removes and clear keeps it, version 2
-  shell hears nothing, three cross-output drags); `quire_shell_spaces.rs` (the "not shown stops" test became "empty Space picture
+  shell hears nothing, three cross-output drags); `bardo_shell_spaces.rs` (the "not shown stops" test became "empty Space picture
   is transparent" and "a Space not on the output stops"; the desk now binds version 3). casement-testclient: `space_target_new`,
   `drop_targets_new`. No golden and no `expected-failures.txt` changed; no `globals.txt` change (private global).
-- **What sill must do.** Bind `quire_shell_v1` at 3 (`desktop-client` binds `1..=3`). Ask for a picture of each Space tile on
+- **What sill must do.** Bind `bardo_shell_v1` at 3 (`desktop-client` binds `1..=3`). Ask for a picture of each Space tile on
   each output (`CaptureRequest::of_space`), not only the shown one, and keep the sessions across Space switches (they now live
   until the Space is removed); draw the wallpaper under the pictures; send `SetNewSpaceTarget` for the "+" tile after
   `SetSpaceTargets`; light the tile on `ShellEvent::DropTargetNew` (`Overview::over_new_space`).
@@ -3185,7 +3185,7 @@ first build. Built on casement 78b3152.
   (`others` is now `mut`; `lift_last` over `Vec<&PlacedWindow>`), `exec/shell.rs` (the `Shown` mapping), `desktop_places.rs`
   (`carried_between` is called before `self` moves). Tests likeliest to need a tweak: `model_drop.rs`
   (`a_picture_leaves_out_the_dock...` assumes `WindowAsk::Minimise` puts window 3 in the dock at once;
-  the cross-output test assumes the second output is to the right and the centred window floats), `quire_shell_drop.rs` (the
+  the cross-output test assumes the second output is to the right and the centred window floats), `bardo_shell_drop.rs` (the
   hidden-picture test assumes `desk.tops[i]` is `desk.windows[i]`, and that two outputs at 0,0 and 640,0 map both windows to the
   first; the `s-nowhere` Space source stops its sessions as mcwire's text says).
 - **Real run.** Ctrl+Up with two Spaces: the second tile shows its windows (not blank) and updates when one of its apps redraws
@@ -3325,14 +3325,14 @@ Lane cas12-winit: the winit backend usable for hands-on testing in a host deskto
   desktop size to its slot (`icon_place`), so it grows and fades in with the slot and leaves with it. On the way out the
   layout has no slots, so `IconBook::remembered` keeps the last ones.
 - **The theme** follows the desktop (cas14-mcfit): `gtk-icon-theme-name` in `gtk-3.0/settings.ini` under
-  `$XDG_CONFIG_HOME` (else `$HOME/.config`), the file sill reads too (quire has no icon-theme setting of its own;
-  `ds-settings::icon_assets` is quire's own app-icon set). `IconBook` reads it again each time Mission Control opens
+  `$XDG_CONFIG_HOME` (else `$HOME/.config`), the file sill reads too (Bardo has no icon-theme setting of its own;
+  `ds-settings::icon_assets` is Bardo's own app-icon set). `IconBook` reads it again each time Mission Control opens
   (a change while it is open shows at the next opening; no watcher), `hicolor` when the file names none.
   `freedesktop-icons` reads the process's own folders (`$XDG_DATA_DIRS`) and cannot be pointed elsewhere, so
   `ThemeLookup` is the seam the tests fake.
 - **No icons without a person.** `IconSearch::Off` (the default, and the headless backend in `main`) looks for and draws
   nothing, so no golden and no jail run changes. The test kit passes `Off`.
-- **The plate.** An app with no icon gets a plain rounded plate in quire's raised ground (`overview_plate`), drawn by
+- **The plate.** An app with no icon gets a plain rounded plate in Bardo's raised ground (`overview_plate`), drawn by
   `casement_icons::plate`; no letter or glyph.
 - **Not looked at.** An `Icon=` with an extension-less absolute path, `.xpm` icons and animated icons are skipped
   (the next place in the order is tried). `Icon=` keys with a locale are ignored.
@@ -3347,12 +3347,12 @@ parley or fontique into the graph).
 
 ## wave-2026-10-15/dragstart
 
-`quire_shell_v1` is served at **version 4** (lane `cas17-dragstart`, written without a compiler; needs casement-protocols
+`bardo_shell_v1` is served at **version 4** (lane `cas17-dragstart`, written without a compiler; needs casement-protocols
 `08bcc62`). `window_drag_begin(output, toplevel)` goes out once per output when a press on a Mission Control slot passes the
 drag threshold (`Drag` goes from `Pressed` to `Dragging`), before any `drop_target`. `window_drag_end(output, toplevel,
 outcome)` goes out once per output after the highlight is cleared: `dropped_on_space` (a target, or the Space the other
 output shows), `dropped_on_new` (the new-desktop tile), `cancelled` (flew back, or Mission Control left mid-drag). Only
-objects bound at version 4 or later hear them. Tests: `quire_shell_drop.rs`
+objects bound at version 4 or later hear them. Tests: `bardo_shell_drop.rs`
 `the_shell_hears_a_window_drag_begin_and_end_with_its_outcome`.
 ## wave-2026-10-15/closegpu
 
@@ -3498,8 +3498,8 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
 
 - **Global menus: the transport is blocked on a dependency.** The recorded address, the model and the shell path are done and tested:
   `MenuSource` (`core/app/menu.rs`) on `WindowHints.menu`, `WindowHintChange::Menu`, `Model::app_menu` (the key window's address, else the
-  app's first window that declared one), and the existing `quire_desktop_app_v1.menu_source` and `quire_desktop_window_v1.menu_path`
-  events now carry it (no new `quire_shell` event, no change to casement-protocols). `casement-wayland/src/{appmenu,gtk_shell}.rs` are
+  app's first window that declared one), and the existing `bardo_desktop_app_v1.menu_source` and `bardo_desktop_window_v1.menu_path`
+  events now carry it (no new `bardo_shell` event, no change to casement-protocols). `casement-wayland/src/{appmenu,gtk_shell}.rs` are
   the meaning of the requests as pure functions (validation of bus names and object paths, staging until the window maps). What is
   missing is the generated server code, which needs a dependency edit (a Cargo.toml change is outside a lane): for
   `org_kde_kwin_appmenu` the crate `wayland-protocols-plasma` 0.3.12 (already in Cargo.lock, client only) with feature `server`, whose
@@ -3518,7 +3518,7 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   moves with the window. A sheet whose window has no target in the same arrangement (tiled, in the dock) is placed as a new window.
   Departure: the open and close slide ([`window::slide_start`], [`window::slide_clip`]) is geometry only; the motion and render sides are
   the animation lane's and the renderer's (see the report's interface asks). A sheet is not draggable.
-- **Picture in picture.** Role `pip` (set through `quire_window_v1`) moves the window to every Space of its output, floats it above the
+- **Picture in picture.** Role `pip` (set through `bardo_window_v1`) moves the window to every Space of its output, floats it above the
   stack (layout sorts by `(floats above, rank)`), holds the aspect ratio of its current rectangle during a drag, and snaps it to the nearest
   corner of the usable area, 16 px in, when the person lets go (new `Event::WindowDragEnded`, fed from the seat grab's end). Heuristic
   (only when the client declared nothing): role `document` with title `Picture-in-Picture` or `Picture in picture` and an app id starting
@@ -3571,29 +3571,29 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
 ## wave-2026-10-15/cas31-blurmat (blur strength per surface; Reduce transparency)
 
 - **Which material.** ext-background-effect carries no parameters and no protocol was added. A layer surface's strength comes from
-  the shell role sill already gave it through `quire_shell_v1` (`LayerSpec::role`): `BlurStrength::of(ShellRoleTag)` in
+  the shell role sill already gave it through `bardo_shell_v1` (`LayerSpec::role`): `BlurStrength::of(ShellRoleTag)` in
   `casement-core::layer` (pure, table-tested over every `ShellRole`). Osd is `Light` (`BlurLook::LIGHT`, sigma 12, saturation 1.6),
   Launcher and ControlCentre are `Strong` (sigma 32, saturation 1.8), everything else, and any layer with no role, is `Regular`, which is
   `BlurLook::MATERIAL`, today's look. UNMEASURED: design/23 fixes only the widget's look (sigma 22, saturation 1.8, the Regular one); Light
   and Strong are a judgement, one table row each, to be tuned by eye. A window's blur (xdg toplevel) is always `Regular`: casement
   knows a window's app, not its material. If the shell later wants a per-region material, the protocol is an addition to
-  `quire_shell_v1` (a `set_blur_strength` on a shell surface), not a change to ext-background-effect.
+  `bardo_shell_v1` (a `set_blur_strength` on a shell surface), not a change to ext-background-effect.
 - **Plumbing.** `LayerDraw::blur_strengths` (per layer, filled by `layers_on` from the model) reaches `layer_elements` as an argument;
   `behind`/`behind_scaled` take the `BlurLook`.
-- **Reduce transparency.** One desktop-wide setting, quire's `appearance.transparency` (`system` or `reduced`; a file without the key
-  is `system`), read from quire's `appearance.toml` the way `theme` is: `appearance::stored_in` at start, an `Input::Transparency` from
+- **Reduce transparency.** One desktop-wide setting, Bardo's `appearance.transparency` (`system` or `reduced`; a file without the key
+  is `system`), read from Bardo's `appearance.toml` the way `theme` is: `appearance::stored_in` at start, an `Input::Transparency` from
   the file watch (live), `state.render.transparency` beside `state.render.scheme`. casement has no key of its own (an earlier cut of
   this lane added `accessibility.reduce_transparency`; it is gone). `appearance::blur_finish(transparency, scheme)` makes the typed
   `BlurFinish { Frosted, Solid(Rgba8) }`; `LayerDraw::finish` carries it and `under_finish` (applied to the frame's elements at the
   end of `output_elements`) makes every `BlurV0Element` solid. A solid blur is not a framebuffer effect (no capture, no passes), and on
   GLES its draw is `draw_stand_in` (the path `EffectSupport::Plain` takes on pixman). The colour is per scheme:
-  `casement_layout::reduced_stand_in(scheme)`, quire's `Paper` token (the Window material has no tint; its solid fallback is the page,
-  `#ECECEC` light, `#1E1E1E` dark) at alpha 245/255 (0.96, above quire's .94 floor, design/03 17.1). The element's commit includes the
-  colour, so a scheme change repaints. DEPENDS ON QUIRE: `ds_style::appearance::transparency::Transparency` (re-exported by
-  `casement-layout`) and `Appearance::transparency` do not exist until the quire lane lands, so casement-layout and casement do not
-  compile before then (the path follows `appearance::theme::Theme`; adjust the one `pub use` in `casement-layout/src/lib.rs` if quire
+  `casement_layout::reduced_stand_in(scheme)`, Bardo's `Paper` token (the Window material has no tint; its solid fallback is the page,
+  `#ECECEC` light, `#1E1E1E` dark) at alpha 245/255 (0.96, above Bardo's .94 floor, design/03 17.1). The element's commit includes the
+  colour, so a scheme change repaints. DEPENDS ON BARDO: `ds_style::appearance::transparency::Transparency` (re-exported by
+  `casement-layout`) and `Appearance::transparency` do not exist until Bardo lane lands, so casement-layout and casement do not
+  compile before then (the path follows `appearance::theme::Theme`; adjust the one `pub use` in `casement-layout/src/lib.rs` if Bardo
   re-exports it elsewhere).
-- **Not done here.** The shell reads the same quire key itself for its own tints (`--m-tint-solid`); nothing for it lives in casement.
+- **Not done here.** The shell reads the same Bardo key itself for its own tints (`--m-tint-solid`); nothing for it lives in casement.
 - **Goldens.** None changes: `Regular` is the old look and `Frosted` the old behaviour; no scene sets a role or the finish. Nothing
   compiled or run in this lane (no builds allowed): the tests added are `a_strength_picks_its_look_and_a_stronger_one_blurs_wider` and
   `a_solid_blur_is_its_colour_and_a_new_commit` (`casement-render/tests/it/blur.rs`),
@@ -3612,14 +3612,14 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   `TimerKey::PingGap`) in its own book so the next input can see them.
 - The busy cursor over a not-responding app's windows is NOT drawn: casement does not draw
   cursors per surface yet. The state is in the model (`AppLife::NotResponding`) and published to
-  `quire_desktop_v1` (app life and window responsiveness).
+  `bardo_desktop_v1` (app life and window responsiveness).
 - Quit (Cmd+Q, `desktop_app.quit`): asks every window to close, shows the app as quitting for
   3 s, then as running again if it is still here (a "Save changes?" sheet). Since cas35 a client
-  that bound `quire_window_manager_v1` at version 2 is sent `quit` instead, so an app with no
+  that bound `bardo_window_manager_v1` at version 2 is sent `quit` instead, so an app with no
   window can be asked to quit too (see cas35-quitevent).
 - Force Quit panel (Option-Command-Escape): `ShellNote::ForceQuitPanel(rows)` goes to the shell
   edge, which has no event to carry it yet (see the interface ask in the lane report); the shell
-  can already draw the list from `quire_desktop_v1` and call `desktop_app.force_quit`.
+  can already draw the list from `bardo_desktop_v1` and call `desktop_app.force_quit`.
 - Force quit (`desktop_app.force_quit`): SIGTERM now, SIGKILL 3 s later if the app is still here.
   macOS kills at once; the TERM first is the plan's. Processes are those of the connections that
   serve the app and no other app, from the socket credentials (`Client::get_credentials`), only
@@ -3724,14 +3724,14 @@ the pinned sources, none was built. Look here first when it fails to compile.
   `TimerKey::PingGap`) in its own book so the next input can see them.
 - The busy cursor over a not-responding app's windows is NOT drawn: casement does not draw
   cursors per surface yet. The state is in the model (`AppLife::NotResponding`) and published to
-  `quire_desktop_v1` (app life and window responsiveness).
+  `bardo_desktop_v1` (app life and window responsiveness).
 - Quit (Cmd+Q, `desktop_app.quit`): asks every window to close, shows the app as quitting for
   3 s, then as running again if it is still here (a "Save changes?" sheet). Since cas35 a client
-  that bound `quire_window_manager_v1` at version 2 is sent `quit` instead, so an app with no
+  that bound `bardo_window_manager_v1` at version 2 is sent `quit` instead, so an app with no
   window can be asked to quit too (see cas35-quitevent).
 - Force Quit panel (Option-Command-Escape): `ShellNote::ForceQuitPanel(rows)` goes to the shell
   edge, which has no event to carry it yet (see the interface ask in the lane report); the shell
-  can already draw the list from `quire_desktop_v1` and call `desktop_app.force_quit`.
+  can already draw the list from `bardo_desktop_v1` and call `desktop_app.force_quit`.
 - Force quit (`desktop_app.force_quit`): SIGTERM now, SIGKILL 3 s later if the app is still here.
   macOS kills at once; the TERM first is the plan's. Processes are those of the connections that
   serve the app and no other app, from the socket credentials (`Client::get_credentials`), only
@@ -3946,10 +3946,10 @@ Written without a build or a run (rule of the lane); the orchestrator's run sett
 ## cas35-quitevent: `quit` for apps that listen, the macOS applicationShouldTerminate path (2026-10-16)
 
 Written without a build or a run (rule of the lane); the orchestrator's gate settles it. Needs casement-protocols
-`quire_window_manager_v1` version 2 (branch `lane/cas35-quitevent`, land it first).
+`bardo_window_manager_v1` version 2 (branch `lane/cas35-quitevent`, land it first).
 
-- **Wire.** `quire_window_manager_v1` is version 2 and gains the event `quit()`. It sits on the manager (the object an app
-  binds once and may keep for its whole life), not on `quire_window_v1`, because a quit is about the app and an app with no
+- **Wire.** `bardo_window_manager_v1` is version 2 and gains the event `quit()`. It sits on the manager (the object an app
+  binds once and may keep for its whole life), not on `bardo_window_v1`, because a quit is about the app and an app with no
   window still has the manager. A client bound at version 1 never gets it. Destroying the manager ends the listening.
 - **Model.** New `Event::QuitListener { client, toggle }` (fed by the wire when a client's first version-2 manager appears and
   when its last goes), `Model::quit_listeners` (forgotten at disconnect, and a client that is not connected is not
@@ -3959,16 +3959,16 @@ Written without a build or a run (rule of the lane); the orchestrator's gate set
   asked to quit when a client of it listens (the client stays tied to its app after its last window unmaps).
 - **Unchanged.** The app shows as `Quitting(Asked)`, `QuitGrace` is armed for 3 s, and an app still here after it is `Running`
   again. The app answers by acting (exit, or a sheet and stay); there is no reply request.
-- **Edge.** `casement-wayland` `quire_window`: `VERSION` 2, `QUIT_VERSION`, `QuireWindowPart::quit_managers`,
+- **Edge.** `casement-wayland` `bardo_window`: `VERSION` 2, `QUIT_VERSION`, `BardoWindowPart::quit_managers`,
   `on_quit_manager_bound` / `on_quit_manager_gone` (feed the event), `apply_quit` (the effect; an error if none is alive);
   `exec.rs` maps `Effect::SendQuit`. `golden/globals.txt` row is version 2.
 - **Tests.** `model_input.rs`: listening app gets `SendQuit` and no `SendClose` (and the grace still returns it to running);
   a client that does not listen, a mixed app and a listener that let go keep the close; a windowless app with a listener is
-  asked; a listener that is not connected is ignored. `quire_desktop.rs` (testkit): a version 2 manager receives `quit` and no
+  asked; a listener that is not connected is ignored. `bardo_desktop.rs` (testkit): a version 2 manager receives `quit` and no
   window closes, a version 1 manager has both windows closed. The test client's `WindowManager` counts `quit` events.
 - **Departure removed.** The "an app with no window cannot be asked to quit" note of cas23 no longer holds for listening apps;
   an app that never binds version 2 still cannot be asked (nothing to close), and only shows as quitting for the grace.
-- **What the app side needs.** quire / shell-host client hosts bind `quire_window_manager_v1` at `1..=2` (today at 1), keep the
+- **What the app side needs.** Bardo / shell-host client hosts bind `bardo_window_manager_v1` at `1..=2` (today at 1), keep the
   manager for the life of the connection, handle `Event::Quit` as "run the app's should-terminate path": save or ask, then
   exit, or stay (and then do nothing more). An app that does nothing is closed window by window only if it binds version 1;
   one bound at version 2 that ignores `quit` just returns to running after 3 s, so a host that binds 2 must act on it.
@@ -4011,7 +4011,7 @@ cancels on hardware; honour cursor-hidden in output captures") described the cod
 
 ## cas36-castframe: the screencast "EPIPE after the first frame" is not casement (2026-10-16)
 
-Read from `evidence/` (casement, transom and scenario logs of the `portal-quire` screencast chain) and the code; nothing was
+Read from `evidence/` (casement, transom and scenario logs of the `portal-bardo` screencast chain) and the code; nothing was
 built or run. Report: casement does not close the client, panic, or hang. No casement source changed; two regression tests and a
 test-client helper pin the wire behaviour transom relies on.
 
@@ -4099,7 +4099,7 @@ Deferred:
   unit would fail to start. Needs a system-level grant (a drop-in installed as root); not added.
 - CASB-12, the `unwrap`s in smithay's libseat session: fixed in the fork (`lane/libseat-errors` 30e544aa, which casement pins). A failed
   dispatch pauses the session and removes the source, a refused disable is logged, and the fd and token paths return errors.
-- CASB-13, CASB-14: quire's ds-settings (bounded reader, hardened writer): interface ask, not this repo.
+- CASB-13, CASB-14: Bardo's ds-settings (bounded reader, hardened writer): interface ask, not this repo.
 - CASB-20, CASB-21, CASB-28: left, as decided.
 ## pa-cassec: production-audit fixes in casement-core, casement-layout, casement-wayland and casement-ipc (2026-10-16)
 
@@ -4188,7 +4188,7 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   and came out `Proven(Flatpak)` for any app id (a forged label for the Dock, `AppKey` and the PiP guess; powers stayed closed,
   the clients are `ConnectionRole::Sandboxed` whoever made the context). Now `clients::maker_of` reads the creator's judged
   standing: it is `Maker::SandboxLauncher` only as the table's `sandbox_launcher` row (`dist/desktop-callers.toml`:
-  `org.quire.Flatpak`, `/usr/bin/flatpak`, no unit) at `Proof::Exe` or a test caller row's `Proof::Dev`. `Judge::arrival` carries it
+  `org.bardo.Flatpak`, `/usr/bin/flatpak`, no unit) at `Proof::Exe` or a test caller row's `Proof::Dev`. `Judge::arrival` carries it
   in `Standing::Judged { maker }`, `ClientState::maker` keeps it, and `identity_for_clients(creator, maker, facts)` lets the
   context's facts count only for a launcher whose own peer is `Proven` (`peer_of` gives a launcher row's app at `Exe`); every other
   creator, however well proven, and an unproven one, leaves the clients with no app, an unknown one. The creator's cap is
@@ -4239,7 +4239,7 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   (640 000 logical px squared, about 1140 x 560), and, for the title-and-app-id guess, `AppKey::Proven`. `pip_joined` puts a
   window on every Space only when its app has none there already. **Consequence:** every connection is `Unproven` today, so
   browsers' picture-in-picture windows (guessed) float above nothing until a peer can be proven; a declared role (the
-  `quire_window` protocol) still works. The shell's way to take a window off every Space is the existing Assign ask. Test:
+  `bardo_window` protocol) still works. The shell's way to take a window off every Space is the existing Assign ask. Test:
   `only_a_small_believed_window_floats_above_and_one_per_app_joins_every_space`.
 - **CASW-13 (partly done): each virtual keyboard has its own device id and a bounded pressed set.** Ids count up from
   `VIRTUAL_KEYBOARD_DEVICE` (`VirtualKeyboardPart::next_device`), so two clients' held keys no longer collide and one's
@@ -4347,7 +4347,7 @@ dropped, never waited for.
   (`RemoteSessions::mint`, 28 bits, refused when spent); `remote_device_id(slot, class)` replaces the id squeezed from the portal
   session id, so two sessions never share a device. The held-key sets are shared with the connection's `RemoteHandle`, capped at
   `MAX_HELD` (256) keys and buttons. Tests: `two_connections_never_share_a_device_id`, `a_full_held_set_drops_new_presses_and_releases_empty_it`.
-- **PORTAL-05: `org.quire.Compositor1.EndEis(session: t)`.** Next to `ConnectEis`, callable only by `transom.service` (the same
+- **PORTAL-05: `org.bardo.Compositor1.EndEis(session: t)`.** Next to `ConnectEis`, callable only by `transom.service` (the same
   `portal_only` check). It takes every socket opened for `session` out of the event loop (the compositor's end closes, so the app is
   disconnected), then feeds the releases of every key and button the app still held. An unknown or already ended session is not an
   error. Tests: `end_eis_reaches_the_loop_only_from_the_portals_unit` (private bus),
@@ -4442,9 +4442,9 @@ first. The contract it implements is ARCHITECTURE.md "Consent at the wire". The 
   - `GlobalFilter` takes `advertised_to` (the decision with the powers refused at accept) and `ClientState` carries the
     `hidden: PowerSet`; the design's "GlobalFilter consults the client's Standing and the book" would need the model inside
     `can_view`, which runs without the state.
-  - `quire_shell_v1` sends one question at a time and re-sends the open ones to a shell that binds late from the part's own list;
+  - `bardo_shell_v1` sends one question at a time and re-sends the open ones to a shell that binds late from the part's own list;
     the design's "sends every open ask again" is what core's `pump` does one by one after `ShellReady`.
-  - The date stamped on an answer comes from `QuireShellHandler::quire_shell_wall` (the root's `WallClock`) and is passed to
+  - The date stamped on an answer comes from `BardoShellHandler::bardo_shell_wall` (the root's `WallClock`) and is passed to
     `on_answer`.
   - (Superseded by pa3-cas NEW-CAS-4: cursor sessions are gated by the Screen power now.) `ext_image_copy_capture` cursor sessions (`cursor_frame`) were not gated: they carry the cursor image and position over the
     capture source, not the screen's contents. The shell's own Space pictures are gated like any frame; the shell is trusted, so the
@@ -4456,7 +4456,7 @@ first. The contract it implements is ARCHITECTURE.md "Consent at the wire". The 
   methods (rev `005eebf1`) do now.
 - **Deferred / for other lanes.**
   - The composition root fills `ClientState` (`with_standing_under`, `with_image_watch` with the pinned peer's image check),
-    `QuireShellPart::wall`, and the privacy store behind `Effect::SaveBook` (`exec.rs` logs it) (croot).
+    `BardoShellPart::wall`, and the privacy store behind `Effect::SaveBook` (`exec.rs` logs it) (croot).
   - The testkit's `connect` takes a public client as a trusted service and has its own insertion helper
     (`fixture/standing.rs`) that mirrors `insert_client` with a standing; once `insert_client` takes a standing, the helper
     should call it (croot).
@@ -4481,7 +4481,7 @@ Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rul
   role, the portal's two calls, the one refusal sentence, the rate limit (4 then `LimitsExceeded`), nine calls into a stalled loop
   (8 wait, 1 dropped)); `dbus/intake.rs` (100k calls from 100k names: the queue holds 8, the counts stop at 1024); `casement-agent`
   socket and eis tables. The three old cgroup-based serve tests are replaced by these.
-- **Settings > Privacy (served).** `casement_ipc::privacy`: `org.quire.SettingsModule1` at `/org/quire/Compositor1/privacy` on
+- **Settings > Privacy (served).** `casement_ipc::privacy`: `org.bardo.SettingsModule1` at `/org/bardo/Compositor1/privacy` on
   Compositor1's own connection (`CallerSetup::with_privacy(PrivacyLink)`). Read by `settings` and `shell`, written by `settings`
   only, each `Proof::Full`; `permit` refuses everyone else, who then also hear no `Changed`. A section per power
   (`Power::title()`, help `Power::blurb()`), `privacy.<power>.<n>` a two-word switch (`on`/`off`, labelled Allowed/Not allowed) and
@@ -4500,7 +4500,7 @@ Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rul
   casement holds the client by its pidfd, so the pid cannot be reused while the client is held: the pid compare is equivalent.
   Test: `a11y.rs` on a private bus.
 - **Debug units (`debug-inject`).** `DebugPeerUnits` is now a `CallerCheck`: a peer the test table matches stands as the role of
-  `sill.service` (shell), `cuad.service` (agent_tier) or `transom.service` (portal), `Proof::Full`, app `org.quire.TestOnly`, and
+  `sill.service` (shell), `cuad.service` (agent_tier) or `transom.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
   every other peer goes to the real check. `CallerSetup::with_test_units(table)`; it logs nothing itself (the root's one "TEST ONLY"
   warning stays).
 - **Deviations from the design text.**
@@ -4522,11 +4522,11 @@ Crates `casement-ipc` and `casement-agent`. Written without a compiler (lane rul
     `AgentState::handed` becomes `BTreeMap<ClientKey, AppKey>` (`casement_agent::AppKey`) from `ask.caller.app`.
   - The loop reads `edits: Channel<PrivacyEdit>` and feeds `edit.into_event(UnixSeconds(now))`; after every step that can change the
     book or floor it calls `link.board().publish(model.privilege().rows())` (a no-op when equal) and once at start.
-  - The test kit (`FakeCgroups`, `fixture/handout.rs`, `tests/it/remote_eis.rs`, `quire_shell.rs`) builds `Proven` instead of cgroup
+  - The test kit (`FakeCgroups`, `fixture/handout.rs`, `tests/it/remote_eis.rs`, `bardo_shell.rs`) builds `Proven` instead of cgroup
     text; `ConnectRefusal::UnknownUnit`/`RoleNotAllowed` are unchanged in name.
   - `set_a11y_root`: the handler leaves `A11yRoot::Unknown` and the root queues `A11yWorker::check(A11yAsk { window, client_pid, .. })`
     (the client's pinned pid), feeding the `Channel<A11yVerdict>` back as `WindowHintChange::A11y(verdict.root)`.
-- **Interface asks.** quire `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
+- **Interface asks.** Bardo `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
   `PRIVACY_PAGE` in `casement-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
   the rows `shell` (sill.service), `agent_tier` (cuad.service), `portal` (transom.service), `settings` (detent) and `manager`
   (systemd, `Exe`) with `exe` lists.
@@ -4541,7 +4541,7 @@ Crates `casement`, `casement-testkit`, `casementctl`, a new `casement-privacy`, 
 Written without a compiler (lane rules); the gate run is the first build of this branch, which merges the consent gates (`pa2-cwl`)
 and the caller identity (`pa2-cipc`). The contract is ARCHITECTURE.md "Consent for the privileged globals" ("The composition
 root's half"). Owner decisions carried out: per-app consent; the book is `$XDG_STATE_HOME/casement/privacy.toml`, written only by
-casement; the administrator's floor is `/etc/quire/privacy.toml` and `privacy.d/*.toml`, believed only when root-owned and not
+casement; the administrator's floor is `/etc/bardo/privacy.toml` and `privacy.d/*.toml`, believed only when root-owned and not
 group/world writable; a user-writable program or an interpreter gets Allow Once and is never written to the book.
 
 - **What was done.**
@@ -4556,7 +4556,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
   - `casementctl privacy list | reload`; `casement` hears `SIGHUP` (`hangup.rs`).
   - Tests: `casement-privacy` (floor trust table, drop-ins, link refused, folder 0700, file 0600, damaged/oversized/non-text book set
     aside whole, the load policy), `clients` (standing conversion table, scope name, a real probe of the test process, the image
-    watch), `consent_store.rs` end to end over real files in a scratch folder, `quire_window.rs` (the accessibility claim), `casementctl`
+    watch), `consent_store.rs` end to end over real files in a scratch folder, `bardo_window.rs` (the accessibility claim), `casementctl`
     (the subcommand table), `wall.rs`.
 - **Decided here (not in the design).**
   - *A new crate, `casement-privacy`.* `casementctl privacy list` has to read the two files the way casement does, and a dependency
@@ -4570,14 +4570,14 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     lost until the file is fixed and `casementctl privacy reload` is run. Flip `asking_about_everything` to `Fallback::Deny` if the owner
     prefers failing closed.
   - *Ownership is checked on the open descriptor, plus the folder.* The file is judged by `fstat` of what is then read (no second open),
-    and so is its folder (`/etc/quire`, `privacy.d`). The whole path to `/` is not walked (a scratch folder under `/tmp` could never pass);
+    and so is its folder (`/etc/bardo`, `privacy.d`). The whole path to `/` is not walked (a scratch folder under `/tmp` could never pass);
     `/etc` itself is root's. The expected owner is an argument (`Owner::Root` in a real run; `Owner::User(uid)` only for `--system-dir`
     in a build with `testing` or `debug-inject`), so the tests make a floor they own and also try a wrong owner.
   - *`--system-dir DIR`* (`StartConfig::system_dir`, `RunConfig::with_system_dir`) is the injected place for a jail's floor, never an
     environment variable. A build without `testing`/`debug-inject` still wants the administrator to own the files there.
   - *`casementctl privacy list` reads the files; `reload` sends `SIGHUP`.* The list is the book and floor as stored (the book is
     rewritten after every change, so it is current), computed with the same `Privilege::rows()` the Settings page shows; it never sets
-    a damaged book aside and says in a sentence what it could not read. `reload` asks the bus who holds `org.quire.Compositor1`, checks
+    a damaged book aside and says in a sentence what it could not read. `reload` asks the bus who holds `org.bardo.Compositor1`, checks
     `/proc/<pid>/comm` is `casement`, and sends `SIGHUP`. No new `Compositor1` method and no role for casementctl was needed. `SIGHUP` is
     not heard in the vkms test mode (`--drm-node`), where it already means "read one frame back".
   - *Pruning:* a book that is full (512 rows) forgets answers about programs no longer on disk when it is read (`Book::retained`); a
@@ -4598,8 +4598,8 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
   reason `LoadError`/`TableFiles` are re-exported there; no other file. Workspace `Cargo.toml`: members and `ds-helpers`,
   `casement-privacy`. Nothing in casement-core, casement-wayland or casement-agent.
 - **Deleted/replaced tests.** `FakeCgroups` and its unit test; the cases "a process nobody knows" in `remote_eis.rs` and
-  `quire_shell.rs` (the bus thread refuses it before the loop hears of it; `casement-ipc` tests that); the unit-name wording of the
-  hand-out tests. `quire_window::hints_apply_on_commit_and_are_forgotten_on_destroy` now expects an unverified root and then drives the
+  `bardo_shell.rs` (the bus thread refuses it before the loop hears of it; `casement-ipc` tests that); the unit-name wording of the
+  hand-out tests. `bardo_window::hints_apply_on_commit_and_are_forgotten_on_destroy` now expects an unverified root and then drives the
   verdict.
 - **Not verified by reading (the gate run looks here).**
   - Cargo: the hand-edited `Cargo.lock` (new package `casement-privacy`; `casementctl` gains `casement-privacy` and `rustix`);
@@ -4613,7 +4613,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     applying the mode to every folder it makes.
   - `run.rs`: the `Channel<PrivacyEdit>` and `Channel<A11yVerdict>` made in casement-ipc inserted with smithay's calloop re-export
     (the same assumption `connect::attach` already makes); `RunConfig::with_system_dir`'s struct update after a partial move.
-  - `state.rs`: `wl.quire_shell.wall = Box::new(seams.wall)` before the model is built.
+  - `state.rs`: `wl.bardo_shell.wall = Box::new(seams.wall)` before the model is built.
   - `casementctl`: `zbus::Connection::session()` with the workspace's feature set; `DBusProxy::get_connection_unix_process_id`.
   - Tests that read real files assume a non-root user (they own their scratch folders); the `Judge` and `PinnedImage` tests read
     `/proc/self` (a sandbox that hides it makes the second one fail: `moved()` needs a successful probe).
@@ -4621,15 +4621,15 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     it would then be set aside at the next start. Core's lenient reader and its cap are ccore's; noted, not changed.
 - **Interface asks.**
   - release lane: `desktop-callers.toml` rows (`shell`, `agent_tier`, `portal`, `settings`, `manager`) as pa2-cipc listed; no
-    `/etc/quire/privacy.toml` is shipped. The release notes and the user docs get the sentence from the design: "Programs that watch
+    `/etc/bardo/privacy.toml` is shipped. The release notes and the user docs get the sentence from the design: "Programs that watch
     the screen, type for you or read the clipboard now ask the first time; a program that exits before you answer (wtype) works the next
     time you run it" (casement has no README to carry it).
   - the desktop harness: scenarios that run `grim`/`wl-copy` start casement with `--system-dir` and a floor of `allow` rows
     (design 3.8); the flag exists, the scenarios are theirs.
-  - sill: nothing new (the question is `quire_shell_v1` version 5, as cwl built it).
+  - sill: nothing new (the question is `bardo_shell_v1` version 5, as cwl built it).
   - closed by pa2-cgate: the four globals smithay serves whole (clipboard, input method, `ext_foreign_toplevel_list`) are gated.
 
-## pa2-cgate: the smithay-served globals gated, and the subject of an app (CASW-01, CASC-01, PORTAL-02, QUIRE-12; 2026-10-17)
+## pa2-cgate: the smithay-served globals gated, and the subject of an app (CASW-01, CASC-01, PORTAL-02, BARDO-12; 2026-10-17)
 
 - Closed: the clipboard managers, the input method and `ext_foreign_toplevel_list` ask `consent::gate` (see ARCHITECTURE.md "Consent at
   the wire"). smithay is pinned at the fork's `6d813694` (branch `lane/consent-gates`). `InputMethodManagerState::new` now needs
@@ -4643,7 +4643,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
 - Not done: a power taken back (`Revoked`) does not end a device, an input method or a list that smithay already registered; the next
   use asks again and objects made after the revocation are refused. Closing it needs a smithay hook to end registered objects
   (pa2-cwl2 below has the exact fork change and three ignored tests).
-- QUIRE-12: `quire_desktop_app_v1.subject` (see casement-protocols FINDINGS). The subject is read when an app is published, from the
+- BARDO-12: `bardo_desktop_app_v1.subject` (see casement-protocols FINDINGS). The subject is read when an app is published, from the
   standing the model holds for the client of the app's first nameable window; a security-context sandbox connection has no standing in the
   model, so its apps get no subject yet.
 
@@ -4652,7 +4652,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
 Written without a compile (lane rules); the gate run is the first. Branch `cas10` from `origin/master` 8f0a962, one commit per item.
 
 - **CASW-10 (decided: a display change by anyone but the shell is kept only if the person confirms): built in cas11 (this was the
-  state at pa2-cwl2: NOT built, waiting for the shell protocol).** The question needs "Keep these display settings?" with Keep and Revert, and `quire_shell_v1` (version 5) has no event or
+  state at pa2-cwl2: NOT built, waiting for the shell protocol).** The question needs "Keep these display settings?" with Keep and Revert, and `bardo_shell_v1` (version 5) has no event or
   request that fits: `permission_ask` is about a program and a power with Allow and Don't Allow, remembered per program, not a trial of
   a setup with a countdown. A new event and request are an interface ask on `casement-protocols` (a read-only sibling here), below. Nothing was
   written against a protocol that does not exist. What exists today and stays: the refusals in `resolve_change`/`keeps_one_lit` (at least one
@@ -4673,11 +4673,11 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
     a revert lights the display again). The shell going away mid-trial reverts at the timer, which is the fail-safe. Tests (core, table +
     timer): a timed-out trial reverts; Keep keeps; a shell's own change is not asked; a second change keeps the first `before`; the testkit
     does the same through `zwlr_output_manager` with the virtual clock.
-  - *Interface ask 1 (casement-protocols, `protocols/quire-shell-v1.xml`, version 5 to 6, plus the vocab and `desktop-client`):*
+  - *Interface ask 1 (casement-protocols, `protocols/bardo-shell-v1.xml`, version 5 to 6, plus the vocab and `desktop-client`):*
 
     ```diff
-    -  <interface name="quire_shell_v1" version="5">
-    +  <interface name="quire_shell_v1" version="6">
+    -  <interface name="bardo_shell_v1" version="5">
+    +  <interface name="bardo_shell_v1" version="6">
     @@ enum name="error"
          <entry name="bad_target" value="3" since="2" summary="a Space target rectangle has no size"/>
     +    <entry name="answered_too_soon" value="4" since="5" summary="an answer came before the question could have been read"/>
@@ -4728,9 +4728,9 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
     Version 6 also carries the `answered_too_soon` entry that item 2 below uses (the error entry may ship alone as version 5 `since="5"` if
     version 6 is not wanted yet).
 
-- **Answers that come too fast (WAVE2-DESIGN 3.4).** `quire/shell_permission.rs`: `ANSWER_NOT_BEFORE = 500 ms` (sill's sheet is disarmed for
+- **Answers that come too fast (WAVE2-DESIGN 3.4).** `bardo/shell_permission.rs`: `ANSWER_NOT_BEFORE = 500 ms` (sill's sheet is disarmed for
   `PERMISSION_ARM_AFTER` = 600 ms; the margin is for scheduling and the wire). `SentAsk` carries `sent_at: Mono` from the loop's clock
-  (`QuireShellHandler::quire_shell_now`, implemented by `State` with `clock.now()`; `apply_ask` takes `now`). `on_answer` returns
+  (`BardoShellHandler::bardo_shell_now`, implemented by `State` with `clock.now()`; `apply_ask` takes `now`). `on_answer` returns
   `Err(AnsweredTooSoon)` for a known question answered sooner; the dispatch posts a protocol error on that shell object only
   (`ANSWERED_TOO_SOON = 4`). The question stays open (the next shell is shown it). A shell that binds later and is shown a question again keeps the
   question's first stamp (the delay protects a sheet that was on screen; a replay is the lenient direction). The testkit's
@@ -4739,8 +4739,8 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
   - *Deviation:* the XML's `error` enum has no entry for it yet (FINDINGS in casement-protocols already named `answered_too_soon` as the
     later addition), so the code is a named constant, `4`, the next free value, and `Connection::error_is_documented` would say `false` for it
     until interface ask 1 lands (the fuzz oracle "a documented protocol error or nothing" would flag a fuzzed fast answer: the fuzzer does
-    not answer questions, but watch it at the gate). When the entry lands, replace the constant with `quire_shell_v1::Error::AnsweredTooSoon`.
-- **The Privacy page.** `casement-ipc/src/privacy/keys.rs`: `PRIVACY_PAGE` is `Page::Privacy` (quire v0.3.30). Test: `every_key_is_on_the_privacy_page`.
+    not answer questions, but watch it at the gate). When the entry lands, replace the constant with `bardo_shell_v1::Error::AnsweredTooSoon`.
+- **The Privacy page.** `casement-ipc/src/privacy/keys.rs`: `PRIVACY_PAGE` is `Page::Privacy` (Bardo v0.3.30). Test: `every_key_is_on_the_privacy_page`.
   The note in pa2-cipc ("interim `Page::Apps`") is closed.
 - **Rows for programs nobody has answered.** `keys::listed` adds, for each program in the rows (the person's first, then the administrator's, at
   most `MAX_GRANTS` = 512 programs) and each power it has no row for, a `Toggle` switch whose value is the word `ask` (`keys::ASK`), at the same
@@ -4924,9 +4924,9 @@ Written without a compile (lane rules); the gate run is the first. Branch `cas10
 Written without a compile (lane rules); the gate run is the first. Branch `cas11` from `origin/master` 5cbb0da, one commit per item. Pins:
 smithay moves to the fork's `005eebf1` (branch `lane/revoke`: `revoke` on both data-control states, the input method handle and the
 foreign toplevel list state); `casement-protocols` is a path dependency (no rev to move) and its sibling stands at `8cebc9b`
-(`quire_shell_v1` version 6). casement serves `quire_shell_v1` at version 6. The lock files are the orchestrator's.
+(`bardo_shell_v1` version 6). casement serves `bardo_shell_v1` at version 6. The lock files are the orchestrator's.
 
-- **`answered_too_soon` is the generated `quire_shell_v1::Error::AnsweredTooSoon`;** the hand-written `ANSWERED_TOO_SOON = 4` is gone (the
+- **`answered_too_soon` is the generated `bardo_shell_v1::Error::AnsweredTooSoon`;** the hand-written `ANSWERED_TOO_SOON = 4` is gone (the
   deviation recorded at pa2-cwl2 is closed). `displays_trial_answer` follows the same 500 ms rule (`ANSWER_NOT_BEFORE`), measured from the
   trial's first send: a further change restarts the time and sends the question again but keeps the stamp, so a person who pressed a key
   on a sheet that was already up just before it restarted is not cut.
@@ -4934,7 +4934,7 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
   - `output::Requester` has a third variant, `Restore`. `zwlr_output_power`'s `on_released` (a control goes, the output it darkened is lit
     again) used to be an ordinary request; as `Shell` it would have settled a program's open trial as kept, as `Program` it would have
     started a trial for lighting a display. `Restore` is applied, never asked, and leaves a trial alone.
-  - The late-binding replay is the wire part's (`QuireShellPart::trial`, `quire/shell_trial.rs`), not the model's `ShellReady`: only the new
+  - The late-binding replay is the wire part's (`BardoShellPart::trial`, `bardo/shell_trial.rs`), not the model's `ShellReady`: only the new
     object is told, with `ends - now` rounded up to whole seconds, and not at all when none is left.
   - A trial is opened per `OutputRequested` event, so an `apply` of a configuration that changes two heads sends the shell `displays_trial`
     twice with the same id (the second restarts the time); the shell treats an id it shows as the same question.
@@ -4956,7 +4956,7 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
 - **Not verified by reading (the gate run looks here).**
   - Found at the gate: `ClientData::initialized` is never called, because casement's wayland-backend has `server_system` (the C
     libwayland server), which calls only `disconnected`. The connection is recorded by `clients::insert_client` instead.
-  - `quire_shell_v1::Request::DisplaysTrialAnswer { trial: u32, answer: WEnum<TrialAnswer> }` and `QuireShellV1::displays_trial(u32, u32)` /
+  - `bardo_shell_v1::Request::DisplaysTrialAnswer { trial: u32, answer: WEnum<TrialAnswer> }` and `BardoShellV1::displays_trial(u32, u32)` /
     `displays_trial_end(u32)` are named as wayland-scanner names them from the XML at `8cebc9b`; the client side takes the enum itself
     (`displays_trial_answer(trial, wire::TrialAnswer)`), like `permission_answer`.
   - In the tests, `fixture.advance(d)` fires a timer due exactly at `d` or earlier (the revert tests step past it by a second to stay
@@ -4976,7 +4976,7 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
   the image. The model then gives it the floor's verdict like any `Program`. `clients::Judge` takes the `SystemDir` at `new` and the floor at
   `arrival`; `run.rs` passes `state.core.model.privilege().floor()`.
 - **What stays.** The owner rule for real builds: a release build compiles `injected.rs` out and `writable_image` returns its argument, so a
-  user-writable image is asked every time and no record names it. In a test build a floor in `/etc/quire` (`SystemDir::Etc`), a book row, or
+  user-writable image is asked every time and no record names it. In a test build a floor in `/etc/bardo` (`SystemDir::Etc`), a book row, or
   a row about another program names nothing. Tests: `privacy/injected.rs` (a row decides; the three non-cases), `privacy/mod.rs` (the build
   shape: the result is `Program` iff `cfg!(any(testing, debug-inject))`), `clients/judge.rs` (this test binary, a real writable image, is
   named by an injected floor and by none other).
@@ -4992,7 +4992,7 @@ foreign toplevel list state); `casement-protocols` is a path dependency (no rev 
 
 ## cas13: test caller rows in the injected folder, test builds only (2026-10-17)
 
-- **What.** The desktop harness runs casement in a jail with no `/etc/quire/desktop-callers.toml`, so `clients::desktop_table` was an empty
+- **What.** The desktop harness runs casement in a jail with no `/etc/bardo/desktop-callers.toml`, so `clients::desktop_table` was an empty
   table, nobody was a desktop service, and the shell (sill), Settings (detent) and the portal (transom) could not connect. Now, in a build
   with `testing` or `debug-inject` and a run with `SystemDir::At(dir)`, casement also reads `dir/desktop-callers.toml` (`clients/dev_callers.rs`)
   as developer rows of peephole v0.1.4 (`TableFiles::load_dev`, `Table::from_toml_dev`; `Proof::Dev`, `RowOrigin::Dev`) and merges them after
@@ -5050,13 +5050,13 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **NEW-FA-2 (fixed: a portal connection handed out over the bus).** transom captured on the public socket, where a peer is shown at
   most as `Proof::Exe` (`Judge::arrival` probes without the unit manager), so after NEW-PI-3 it was a `Program` and its first
   screenshot or share raised casement's own Screen sheet over the portal's chooser. The fix does not need a `Full` proof on the
-  public socket: `org.quire.Compositor1.Connect("portal")` hands the caller proven `Full` as the `portal` role (peephole-bus and the
+  public socket: `org.bardo.Compositor1.Connect("portal")` hands the caller proven `Full` as the `portal` role (peephole-bus and the
   unit manager, the same proof as the shell's and the agent tier's) a connection of its own, `ConnectionRole::Portal`
   (`casement-agent::connection_role`, `casement-ipc::parse_connect_role`). Its model class is the standing a `Full` portal has on the
   public socket (`ClientStanding::portal()`): trusted for the screen and the windows and nothing else (`trusted_powers`), asked about
   the rest. It is shown the globals every client is shown and not the shell's or the agent tier's (`globals.rs`). A portal role at
   `Exe` or less is refused on the bus thread like any other role. Tests: `socket.rs` (role table), `compositor_serve/tests.rs`
-  (Full is granted, Exe refused), `globals.rs` and `privilege_step.rs` (core), `quire_shell.rs` (hand-out, globals) and
+  (Full is granted, Exe refused), `globals.rs` and `privilege_step.rs` (core), `bardo_shell.rs` (hand-out, globals) and
   `image_capture.rs` (a frame with no sheet). transom asks for this connection first and falls back to the public socket when there
   is no casement to ask. `desktop/harness/lib/casement-floor.sh` `floor_powers` can drop its allow row for transom once both land.
 - **NEW-CASB-7 (closed, 2026-10-17).** `Processes::handle_of` takes the kernel's own pidfd of the connector
@@ -5098,7 +5098,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **CASC-11, NEW-CAS-5, NEW-CAS-4, NEW-CAS-7, NEW-CAS-6, CASC-12, CASC-19 (profile).** As the commit messages say. CASC-19 lints
   (`unwrap_used`, `indexing_slicing`) are not added: tests use `expect` throughout and the lane cannot run clippy.
 - **NEW-CAS-3, NEW-CASB-2, 4, 5, CASB-13, 14, NEW-CASB-3, CASW-17.** The privacy book and the Spaces file are written by `LatestWriter`
-  (quire's atomic writer); the Spaces file and `settings.toml` are read through quire's capped reader; the version stamp is written with quire's
+  (Bardo's atomic writer); the Spaces file and `settings.toml` are read through Bardo's capped reader; the version stamp is written with Bardo's
   writer; the GTK settings file is read with the icon crate's non-blocking capped reader; the X11 socket probe never blocks; the accept-time
   look runs on a thread with a 2 s deadline; the dma-buf size is asked only of a dma-buf or memory file.
 - **CASB-20, CASB-21.** Force quit signals through a pidfd opened at accept; the cursor pool is read from a copy.
@@ -5291,7 +5291,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
 
 ### Version 7 (wh-fsbar, 2026-10-22; built, uncompiled)
 
-`quire_shell_v1` is served at version 7: `set_full_screen_bar`, `set_motion`, `reveal_on_output`, and one bar and dock per output.
+`bardo_shell_v1` is served at version 7: `set_full_screen_bar`, `set_motion`, `reveal_on_output`, and one bar and dock per output.
 
 - **State.** `Model::full_screen_bar` (`FullScreenBar::Reveal` default, `Keep`) and `Model::motion` (`Reduced`, default `No`) are
   set by `ShellRequest::FullScreenBar` / `ShellRequest::Motion`; the last request wins and both are global. A mode change asks for
@@ -5308,15 +5308,15 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   the output's bar as a permanently raised surface (at its rest rectangle, opacity 1000) while the output shows a full-screen Space,
   so the one place the renderer and the hit test both read (`LayerDraw::raised`, `scene::stack`) draws and hits it above the window.
 - **`reveal_on_output`.** `ShellNote::Reveal(OutputKey, ScreenEdge, Shown)`; `exec/shell.rs` hands it to
-  `quire::shell_screen::send_reveal`, which sends `reveal_on_output` (the client's own `wl_output` of that output, as
+  `bardo::shell_screen::send_reveal`, which sends `reveal_on_output` (the client's own `wl_output` of that output, as
   `overview_output` does) to objects of version 7 or later and plain `reveal` to older ones.
 - **One holder per role per output, for `bar` and `dock`.** `LayerBook::role_taken(role, layer, output)` (model) and
-  `RoleHolder { role, output }` (wire, `QuireShellPart::roles` is now keyed by layer) raise `role_taken` only for a second live bar or
+  `RoleHolder { role, output }` (wire, `BardoShellPart::roles` is now keyed by layer) raise `role_taken` only for a second live bar or
   dock on the same output (the layer's `LayerRecord::output`); other roles stay global. `LayerBook::role_holder_on(role, output)` is
   the holder the reveal uses; the minimise target of a window uses the dock of the window's home output, falling back to any dock
   (`role_holder_near`). `role_holder(role)` remains for "any holder".
 - **Hot corners.** Nothing armed `TimerKey::HotCorner` and nothing sent `ShellNote::HotCorner`, so both are gone, with the
-  `hot_corner` send in `quire/shell.rs`. The XML event `hot_corner` stays in the protocol; casement just never sends it.
+  `hot_corner` send in `bardo/shell.rs`. The XML event `hot_corner` stays in the protocol; casement just never sends it.
 
 ## Settings schema and launch tokens (wh-csset, 2026-10-23)
 
@@ -5325,7 +5325,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   window only asks for attention, A7); an app activated from the switcher, dock or launcher becomes active where the person is.
   `spaces.per_display` and `spaces.auto_rearrange` are `#[settings(skip)]`: nothing reads them yet (D4), so the Settings app
   draws no row that changes nothing; the document still holds them (`NOT_DRAWN` in the schema test).
-- **Installer.** `scripts/install.sh` step 4/5 writes `casement --write-schema` into `P/share/quire/settings`, where detent
+- **Installer.** `scripts/install.sh` step 4/5 writes `casement --write-schema` into `P/share/bardo/settings`, where detent
   scans; the schema existed but no installer put it there, so the row never showed.
 - **Launch tokens.** A token asked for naming an `app_id` (a launcher's) is good for `LAUNCH_LIFETIME` (60 s, = `TOKEN_MEMORY`)
   instead of `TOKEN_LIFETIME` (5 s): a slow app's first window (a cold browser, Blender) mapped with a stale token, so it
@@ -5335,7 +5335,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
 
 ## Corners and shadow for windows that draw their own frame (wh-ccorner, 2026-10-24)
 
-- **The bug.** Only a window casement frames (`LayerDraw::frames`) was clipped and shadowed, so every quire app, GTK headerbar
+- **The bug.** Only a window casement frames (`LayerDraw::frames`) was clipped and shadowed, so every Bardo app, GTK headerbar
   window and Electron window had square corners and no shadow. `FrameHint.corner_radius` was stored and sampled
   (`PlacedWindow::corner`) but nothing in the scene read it.
 - **`LayerDraw::rounds`.** `core_loop/frames.rs::rounds` lists the windows that are not server-side framed, not full screen
@@ -5347,7 +5347,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
   `FrameSaid` records whether the call came; `WindowHintChange::FrameForgotten` (the object's destroy) puts it back to
   `Silent`. `WindowHints::frame_choice()` reads both as `FrameChoice::{Silent, Own, Shadowed}`.
 - **The rule, `window::round_of(choice, margin, desktop)`.** `Shadowed { r }`: corners of `r` and casement's shadow. `Own`:
-  nothing. `Silent`: the desktop's window radius (`frame_style(..).look.radius`, quire's `Radius::Window`), and the shadow by
+  nothing. `Silent`: the desktop's window radius (`frame_style(..).look.radius`, Bardo's `Radius::Window`), and the shadow by
   `Margin`: a buffer larger than the xdg window geometry (`margin_of`) means the toolkit has drawn its shadow in the margin (GTK),
   and a second one on top of it would look heavy, so casement casts none; a geometry equal to the buffer (Electron, most
   frameless windows) has no shadow of its own, so casement casts one. The shadow uses the framed window's look for the same
@@ -5434,7 +5434,7 @@ pointer resting at the top edge brings the surface with the role `bar` over the 
 
 - casement-core's `geometry::Transform` is gone: `casement_protocols::vocab::Transform` (same variants, same snake_case
   JSON) is the one `wl_output.transform` type for the model, the backend and the testclient.
-- `MacMods` is `HeldMods`; the compositor's fn `mac_mods` is `held_mods`. The generated `quire_shell_v1::MacMods` keeps the
+- `MacMods` is `HeldMods`; the compositor's fn `mac_mods` is `held_mods`. The generated `bardo_shell_v1::MacMods` keeps the
   XML name.
 - The vocab-to-generated ladders (`wire_emphasis`, `wire_mark`, `wire_outcome`, facts' `wire()`) are `WireCode::to_wire`;
   the TileZone/PlaceTarget/PlacementMark ladders (`tile_zone`, `entry_zone`'s arms, `TileTarget::place`, `zone_mark`) are

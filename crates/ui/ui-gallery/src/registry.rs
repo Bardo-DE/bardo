@@ -140,7 +140,7 @@ pub fn entry(page: Page) -> Entry {
         Page::BlitzLimits => Entry {
             page: Page::BlitzLimits,
             title: "Blitz limits",
-            lede: "What Blitz cannot do and what quire draws instead (spike S1-S16), and what the design names that quire does not draw yet.",
+            lede: "What Blitz cannot do and what bardo draws instead (spike S1-S16), and what the design names that bardo does not draw yet.",
             height: 2250,
             body: crate::pages::foundations::blitz_limits::BlitzLimitsPage,
         },
@@ -189,7 +189,7 @@ pub fn entry(page: Page) -> Entry {
         Page::FileIcons => Entry {
             page: Page::FileIcons,
             title: "File icons",
-            lede: "The standard file-icon set, drawn by quire with no image files: a page with a folded corner for each kind (document, PDF, spreadsheet, presentation, image, audio, video, archive, code, font, disk image, program, other) with the kind's mark and the extension label, the Mac folder with the special folders' glyphs embossed, a file's own picture, and the monochrome style, at 16, 32, 64 and 128 px in light and dark.",
+            lede: "The standard file-icon set, drawn by bardo with no image files: a page with a folded corner for each kind (document, PDF, spreadsheet, presentation, image, audio, video, archive, code, font, disk image, program, other) with the kind's mark and the extension label, the Mac folder with the special folders' glyphs embossed, a file's own picture, and the monochrome style, at 16, 32, 64 and 128 px in light and dark.",
             height: 9000,
             body: crate::pages::content::file_icons::FileIconsPage,
         },

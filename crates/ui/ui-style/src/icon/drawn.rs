@@ -4,7 +4,7 @@
 
 use super::shape::Shape;
 
-/// quire's own download drawing (an arrow over a baseline), the same silhouette as the solid
+/// Bardo's own download drawing (an arrow over a baseline), the same silhouette as the solid
 /// glyph: the native pick keeps Download a replacement, now drawn by us.
 pub(super) const DOWNLOAD: &[Shape] = super::solid_shell::DOWNLOAD;
 

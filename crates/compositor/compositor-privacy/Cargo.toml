@@ -12,7 +12,7 @@ publish.workspace = true
 base-fs = { path = "../../base/base-fs" }
 compositor-core = {path = "../compositor-core"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
-# The safe file reader and writer every quire crate shares (`read_capped`, `write_atomic`,
+# The safe file reader and writer every Bardo crate shares (`read_capped`, `write_atomic`,
 # `move_aside`); no bus, no UI.
 thiserror = { workspace = true }
 tracing = { workspace = true }

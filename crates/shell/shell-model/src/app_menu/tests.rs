@@ -31,7 +31,7 @@ fn with(mut node: Node, edit: impl FnOnce(&mut NodeProps)) -> Node {
     node
 }
 
-/// A quire-shaped bar: the app's own menu, Edit with Undo, a hidden menu, and View.
+/// A bardo-shaped bar: the app's own menu, Edit with Undo, a hidden menu, and View.
 fn served() -> ServedMenu {
     let undo = with(node(21, "Undo", Vec::new()), |p| {
         p.shortcut = Some(Chord(vec!["Super".to_owned(), "Z".to_owned()]));

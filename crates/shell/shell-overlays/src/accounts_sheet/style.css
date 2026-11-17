@@ -1,5 +1,5 @@
 /* The accounts sheet (design/31 section 4.5 and 5.6): a window of its own, centred on the output.
-   Its titlebar is quire's `WindowTitlebar`, its steps are `ds-shell::accounts` parts; this only
+   Its titlebar is bardo's `WindowTitlebar`, its steps are `ds-shell::accounts` parts; this only
    stands the window in the middle and gives it the window's look from the tokens: the window
    gradient, `--r-window`, `--shadow-window`. */
 
@@ -10,7 +10,7 @@
 
 /* The provider list can be longer than the window: the step's column shrinks to the window and its
    first part (the search and the rows) scrolls, while the last (the Cancel button) stays where it
-   is. The step is quire's, so it is reached by position from the body that is ours. */
+   is. The step is bardo's, so it is reached by position from the body that is ours. */
 .shell-accounts-window[data-step=providers] .shell-accounts-body{ overflow:hidden; }
 .shell-accounts-window[data-step=providers] .shell-accounts-body > *{ min-height:0; }
 .shell-accounts-window[data-step=providers] .shell-accounts-body > * > :first-child{ flex:1 1 auto; min-height:0; overflow-y:auto; scrollbar-width:none; }

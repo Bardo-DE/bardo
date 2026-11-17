@@ -1,11 +1,11 @@
-//! design/26's lint on quire's own sheets, one sheet at a time: no stylesheet loops
+//! design/26's lint on Bardo's own sheets, one sheet at a time: no stylesheet loops
 //! (`Rule::InfiniteLoop`) and every component times its motion with the grammar's tokens
 //! (`Rule::OffGrammarTiming`, `Profile::Details`), except the sheets listed here, each with its
 //! reason. A sheet on the list that no longer offends is a failure too, so the list only shrinks.
 
 use ui_lint::{LintConfig, Profile, Rule, stylesheet};
 
-/// Sheets allowed to break the details rules, and why. Each is mail's (mailo pins quire by tag,
+/// Sheets allowed to break the details rules, and why. Each is mail's (mailo pins Bardo by tag,
 /// so these change when mailo decides, design/05 section 12 item 4), or the keyframe table
 /// itself (`a-turn` and the symbol effects' loops).
 const ALLOWED: &[(&str, Rule, &str)] = &[

@@ -1,5 +1,5 @@
 //! The reader's answer as the planner reads it. The reader's step is the companion's own
-//! (`companion.read.<task>`); in the history it reads as the planner's `quire_read`, and what it
+//! (`companion.read.<task>`); in the history it reads as the planner's `bardo_read`, and what it
 //! returned is named for what it is: the reader's answer, never content. The view also says which
 //! of those answers have not yet been shown to the person, so the planner can see that the task
 //! can end by showing one.
@@ -9,18 +9,18 @@ use crate::step_text::{returned, with_text};
 use action_core::{HandleCard, HandleShape, PlannerView, StepEnd, StepLine};
 use action_vocab::Handle;
 
-/// The head of a history line for the reader's step: `quire_read summarise #10`. None for any
+/// The head of a history line for the reader's step: `bardo_read summarise #10`. None for any
 /// other step.
 pub(crate) fn reader_head(step: &StepLine) -> Option<String> {
     let task = step.reader_task()?;
     Some(format!(
-        "quire_read {}{}",
+        "bardo_read {}{}",
         task.word(),
         with_text(&step.with)
     ))
 }
 
-/// The line of a reader step that returned one handle: `quire_read summarise #10 → #11 (the
+/// The line of a reader step that returned one handle: `bardo_read summarise #10 → #11 (the
 /// reader's answer, text)`. None for any other step, or one that returned something else.
 pub(crate) fn reader_answer(head: &str, step: &StepLine, handles: &[HandleCard]) -> Option<String> {
     step.reader_task()?;
@@ -88,7 +88,7 @@ fn put_to_use(handle: Handle, history: &[StepLine]) -> bool {
 }
 
 /// The reader's text answers the person has not been shown and no done step has used, oldest
-/// first, at most [`MOST_SHOWN`] of the newest: what `quire_finish` can show to answer them.
+/// first, at most [`MOST_SHOWN`] of the newest: what `bardo_finish` can show to answer them.
 pub(crate) fn ready_to_show(view: &PlannerView) -> Vec<Handle> {
     let mut ready: Vec<Handle> = view
         .history
@@ -109,7 +109,7 @@ pub(crate) fn ready_to_show(view: &PlannerView) -> Vec<Handle> {
     ready
 }
 
-/// The line that offers the finish: `Ready to show: #11 (quire_finish {"show":[11]})`. None when
+/// The line that offers the finish: `Ready to show: #11 (bardo_finish {"show":[11]})`. None when
 /// no reader answer waits to be shown.
 pub(crate) fn ready_line(view: &PlannerView) -> Option<String> {
     let ready = ready_to_show(view);
@@ -119,7 +119,7 @@ pub(crate) fn ready_line(view: &PlannerView) -> Option<String> {
     let names: Vec<String> = ready.iter().map(|h| format!("#{}", h.0)).collect();
     let numbers: Vec<String> = ready.iter().map(|h| h.0.to_string()).collect();
     Some(format!(
-        "Ready to show: {} (quire_finish {{\"show\":[{}]}})",
+        "Ready to show: {} (bardo_finish {{\"show\":[{}]}})",
         names.join(", "),
         numbers.join(",")
     ))
@@ -231,7 +231,7 @@ mod tests {
     fn the_readers_step_reads_as_the_reader_and_its_answer_says_what_it_is() {
         let text = viewed(summarised(), vec![]);
         assert!(
-            text.contains("- quire_read summarise #10 → #11 (the reader's answer, text)"),
+            text.contains("- bardo_read summarise #10 → #11 (the reader's answer, text)"),
             "{text}"
         );
         assert!(
@@ -247,7 +247,7 @@ mod tests {
 
     #[test]
     fn a_reader_text_answer_not_yet_shown_is_offered_and_not_after() {
-        let ready = "Ready to show: #11 (quire_finish {\"show\":[11]})";
+        let ready = "Ready to show: #11 (bardo_finish {\"show\":[11]})";
         assert!(viewed(summarised(), vec![]).contains(ready));
         assert!(!viewed(summarised(), vec![Handle(11)]).contains("Ready to show"));
         let only_read = summarised().into_iter().take(1).collect();
@@ -277,7 +277,7 @@ mod tests {
         };
         let line = step_line_of(&reader("classify", &[10], choice));
         assert!(
-            line.starts_with("quire_read classify #10 done value "),
+            line.starts_with("bardo_read classify #10 done value "),
             "{line}"
         );
         assert_eq!(
@@ -323,7 +323,7 @@ mod tests {
         };
         assert_eq!(
             crate::step_text::step_line_in(&again, &seen),
-            "quire_read summarise #10 not run: you already hold its answer #11; repeating it again asks the person"
+            "bardo_read summarise #10 not run: you already hold its answer #11; repeating it again asks the person"
         );
     }
 }

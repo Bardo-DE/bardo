@@ -13,7 +13,7 @@ design except where a row says **proposed**. `S` = `~/mailo-design/mailo-spaces.
 
 ## 1. What this governs
 
-Every moving thing in every surface that renders through quire: the timing tokens (durations,
+Every moving thing in every surface that renders through Bardo: the timing tokens (durations,
 easings, scalars) per look and per motion level, the complete set of keyframes with their exact
 text, which element plays which keyframe with which token, every CSS transition, every timer the
 prototypes ran in JavaScript (restated as Rust-owned timers, because Blitz fires no
@@ -53,7 +53,7 @@ Quoted from the prototypes. Each one is a rule the port is reviewed against.
    Known exceptions in the prototypes, all listed so the port can decide each one: the
    destination preview `dest` (`infinite alternate`, S:447), the sync halo `breathe` and `spin`
    (C:288, C:291), and the Pip mascot (excluded, section 11). An animated emoji's loops
-   (section 4.11, design/25-EMOJI.md sections 5 and 6) are quire's one idle exception: finite
+   (section 4.11, design/25-EMOJI.md sections 5 and 6) are Bardo's one idle exception: finite
    plays, only for 20 s after a wake or a mood change, then 0 frames. Errors shake once and hold still:
    "A looping error animation is something you learn to ignore inside a day" (C:2326). A loop
    while an operation runs is bounded by design/26-DETAILS.md §3.3 R4 (`PendingGrace`,
@@ -63,7 +63,7 @@ Quoted from the prototypes. Each one is a rule the port is reviewed against.
 9. **The body is opaque.** The message body is animated as one block; staggering lives in the
    chrome around it (C:1352-1358, `.frame` C:472).
 10. **Don't drop the row until its exit ends.** "don't drop the row from the signal until the exit
-    animation ends, or the node vanishes mid-flight" (C:1402-1404). In quire this is the
+    animation ends, or the node vanishes mid-flight" (C:1402-1404). In Bardo this is the
     `Roster` `Leaving` state plus a `settle()` timer (section 7), not `onanimationend`.
 11. **Never celebrate a retraction.** Unstar plays the same pop with no sparks (C:2288; S:1526
     fires sparks only when `t.starred` becomes true).
@@ -119,7 +119,7 @@ six tokens change; every other token keeps the look's value.
 | `--tilt` | 0deg | = look | 5deg | 0deg (neutral) |
 | `--stagger` | 0ms | = look | 34ms | 0ms (neutral) |
 
-Reduced is new in quire (plan, "Token model": "durations per MotionLevel{Calm,Standard,Extra,
+Reduced is new in Bardo (plan, "Token model": "durations per MotionLevel{Calm,Standard,Extra,
 Reduced} … Reduced = 60 ms everywhere"). It replaces the prototypes' two mechanisms:
 
 - the media rule `@media (prefers-reduced-motion: reduce){ *, *::before, *::after{
@@ -176,15 +176,15 @@ The prototypes write these as literal milliseconds, so they do not change with l
 | `--t-scene` | 380ms | CSS | Space layer cross-fade | S:86 |
 | `--t-shake` | 420ms | CSS | `shake-x` (S). C's `shake` is 560ms (C:546) | S:590 |
 | `--d-fly` | 350ms | CSS delay | strip preview label | S:445 |
-| `--t-overview` | 350ms (Reduced: `--t-quick`) | CSS | `drop-in` / `lift-out`: Mission Control's Spaces bar, at the pace the overview's windows fly (the system's value is not published, design/13 R7) | quire |
+| `--t-overview` | 350ms (Reduced: `--t-quick`) | CSS | `drop-in` / `lift-out`: Mission Control's Spaces bar, at the pace the overview's windows fly (the system's value is not published, design/13 R7) | Bardo |
 | (park) | 420ms | CSS | `park` | S:570 |
 | (nudge) | 520ms | CSS, C only | outbox retry | C:545 |
 | (C shake) | 560ms | CSS, C only | outbox needs-sign-in | C:546 |
 | (sail) | 1150ms | CSS, C only, orphaned | boat | C:535 |
 | (boat-return) | 900ms | CSS, C only, orphaned | boat | C:536 |
 | (spin) | 1.1s linear | CSS, C only | busy halo | C:291 |
-| (send ring) | 5s linear | JS-set transition; quire's `--t-send-ring`, a hold (Reduced keeps 5 s: it is the undo window, not motion; mailo gaps 3) | undo-send countdown ring | S:2339 |
-| `--t-flash` | 1200ms linear | CSS (quire's `chip-flash` keyframe, wave 1 amendment, proposed) | mentioned person chip's ring (04-COMPONENTS §10) | S:2119 |
+| (send ring) | 5s linear | JS-set transition; Bardo's `--t-send-ring`, a hold (Reduced keeps 5 s: it is the undo window, not motion; mailo gaps 3) | undo-send countdown ring | S:2339 |
+| `--t-flash` | 1200ms linear | CSS (Bardo's `chip-flash` keyframe, wave 1 amendment, proposed) | mentioned person chip's ring (04-COMPONENTS §10) | S:2119 |
 | `--e-shake` | `cubic-bezier(.36,.07,.19,.97)` | easing | `shake-x`, C `shake` | S:590, C:546 |
 | `--e-linear` | `linear` | easing | spin, send ring | C:291, S:2339 |
 | HoverOpen | 450ms | Rust-only | hover intent | S:1704 |
@@ -378,10 +378,10 @@ Extra: 594 ms. Reduced: every `settle` = 60 + 34 = 94 ms (stagger 0).
 
 ### 7.2 Timer table
 
-"Prototype" is what the script did; "quire timer" is what replaces it. Names in *italics* are
+"Prototype" is what the script did; "Bardo timer" is what replaces it. Names in *italics* are
 proposed here; the rest are the plan's.
 
-| What | Prototype | quire timer | Source |
+| What | Prototype | Bardo timer | Source |
 | --- | --- | --- | --- |
 | Hover card opens after rest | `setTimeout(show, 450)`; 0 when warm | HoverOpen 450 ms (0 when warm) | S:1704, S:1795 |
 | Hover card closes after absence | `setTimeout(closeCard, 150)` | HoverClose 150 ms | S:1783, S:1802 |
@@ -391,7 +391,7 @@ proposed here; the rest are the plan's.
 | Undo toast hides | `setTimeout(hide, 5200)`, reset on every new undo | ToastHold 5200 ms | S:1552, C:1920 |
 | Row exit completes | `animationend` or fallback `setTimeout(finish, 900)` | `settle()` of Fold, FoldHeavy, Curl or Crumple | S:1545, C:1892-1893 |
 | Heal ripple class removed | `setTimeout(…, 600)` (S), 700 (C, and C has no heal CSS) | `settle(Heal, k)` per row | S:1544, C:1859 |
-| A batch of rows leaves (a Clear in the notification center) | none (S and C remove one row at a time) | the batch's longest `settle(exit, i)`, `i` its place in the batch capped at 12; then the rows drop together and the rows below heal by the dropped rows' summed measured heights (design/04 section 54, sill Q510) | quire |
+| A batch of rows leaves (a Clear in the notification center) | none (S and C remove one row at a time) | the batch's longest `settle(exit, i)`, `i` its place in the batch capped at 12; then the rows drop together and the rows below heal by the dropped rows' summed measured heights (design/04 section 54, sill Q510) | Bardo |
 | Gulp class removed | `setTimeout(…, 460)` | `settle(Gulp)` = 454 ms | S:1520, C:1851 |
 | Today entry removed after close | `animationend` or `setTimeout(done, 400)` | `settle(TabOut)` = 284 ms | S:1485 |
 | List re-render after read toggle | `setTimeout(renderList, 260)` | *ReadReflow* 260 ms (the dot's transition is 170 ms) | S:1533 |
@@ -551,7 +551,7 @@ Moved to `archive/05-MOTION-keyframes.md` (history).
    banners sit top-right. **Decided (2026-09-26):** banners enter from the right edge
    (translateX) by default, with the same spring and hold 5200 ms (the hold is the caller's);
    `notifications.banner_entry_direction` (`BannerEntry::{FromRight, FromBelow}`, design/22)
-   selects rising from below instead, and the banner leaves back the way it came. quire's `BannerStack { entry }` writes `data-entry`, which
+   selects rising from below instead, and the banner leaves back the way it came. Bardo's `BannerStack { entry }` writes `data-entry`, which
    sets the `--banner-dx`/`--banner-dy` that the one `banner-in`/`banner-out` pair reads (4.9).
    Swipe right dismisses, and a swiped banner leaves to the right whatever the entry edge.
 8. **Hover-card spring.** `hc-in` springs 450 ms after rest, which is not "the 200 ms after you

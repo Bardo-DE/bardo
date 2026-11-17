@@ -34,7 +34,7 @@ tools = true
 # which outranks your user, project and local settings). No file is written and the agent cannot change them.
 #   - your claude.ai account's connectors (cloud services), skills and plugins are turned off, which would
 #     otherwise reach tools and hooks that never pass docket's router;
-#   - Claude Code may call the desktop's own tool server (`quire`) without its own permission prompt, so the
+#   - Claude Code may call the desktop's own tool server (`bardo`) without its own permission prompt, so the
 #     desktop's sheet is the only one you see; no other server is pre-allowed.
 # The variables of Claude Code's isolated mode are set too (no account connectors, no CLAUDE.md files, no
 # update check). If `state` is your real ~/.claude, your own user-level MCP servers and hooks still load, and
@@ -58,7 +58,7 @@ state = ["/home/u/.gemini"]
 home = "/home/u"
 label = "Antigravity"
 sign_in = "oauth-personal"
-# agy asks before every tool of its own, the desktop's tool server (`quire`) included. The desktop answers
+# agy asks before every tool of its own, the desktop's tool server (`bardo`) included. The desktop answers
 # that request itself for a call to its own server (the call is ruled when it arrives), so no `profile` is needed;
 # agy's command, file and subagent tools keep asking, through the desktop.
 

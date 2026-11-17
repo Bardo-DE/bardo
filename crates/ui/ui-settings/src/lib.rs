@@ -15,7 +15,7 @@ mod portal;
 pub mod published_parts;
 mod spaces_storage;
 
-pub use appearance::{AppearanceFile, AppearanceSettings, IconStyle, IconsSettings, quire_schema};
+pub use appearance::{AppearanceFile, AppearanceSettings, IconStyle, IconsSettings, bardo_schema};
 #[cfg(feature = "dioxus")]
 pub use environment::{Environment, use_environment};
 pub use icon_assets::{app_icon_path, apps_dir};

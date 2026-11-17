@@ -5,7 +5,7 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Host {
     /// bardo-shell's own session (`dist/shell-session`, or the desktop's own: `XDG_CURRENT_DESKTOP`
-    /// names quire).
+    /// names Bardo).
     SillSession,
     /// Another desktop's session, e.g. bardo-shell on a nested compositor during development:
     /// logind's signals belong to that desktop.

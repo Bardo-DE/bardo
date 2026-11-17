@@ -2,10 +2,10 @@
 //! any.
 //!
 //! Spaces are per app, but linkable (owner decision 2026-10-09). Each app keeps its own list of
-//! Spaces (quire's Spaces kit numbers them, `ui_style::space::list::SpaceId(u64)`), and any of
+//! Spaces (Bardo's Spaces kit numbers them, `ui_style::space::list::SpaceId(u64)`), and any of
 //! them may be linked to a desktop-wide Space, whose registry accountd keeps
 //! (`org.bardo.Spaces1`). Only linked Spaces share agent memory and consent across apps; an
-//! unlinked Space is its app's alone. porter owns the ids; quire's kit stores only an opaque
+//! unlinked Space is its app's alone. porter owns the ids; Bardo's kit stores only an opaque
 //! link per Space, which is a desktop-wide Space's id.
 //!
 //! One [`SpaceId`] names any of the three kinds ([`SpaceKind`]), as text:
@@ -51,7 +51,7 @@ pub enum SpaceKind {
     },
 }
 
-/// An app's own number for one of its Spaces (quire's kit `SpaceId(u64)`).
+/// An app's own number for one of its Spaces (Bardo's kit `SpaceId(u64)`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct LocalSpace(pub u64);

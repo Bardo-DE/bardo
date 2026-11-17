@@ -20,7 +20,7 @@ use layer_shell_types::{
     PopupPlacement, PopupSize, Rect, RegionSpec, Size,
 };
 
-/// The margin and padding reset quire's `css/reset.css` would bring.
+/// The margin and padding reset Bardo's `css/reset.css` would bring.
 const RESET_CSS: &str = "html,body{margin:0;padding:0}";
 
 const BAR_CSS: &str = ".bar{height:32px;box-sizing:border-box;display:flex;align-items:center;\

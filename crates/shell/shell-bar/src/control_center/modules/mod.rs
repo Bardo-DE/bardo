@@ -1,6 +1,6 @@
 //! One file per control center module (design/13 §13.3.7's list).
 //!
-//! Each is a component over its hook, drawn only with quire components (`Toggle`, `Slider`, `SegmentedControl`,
+//! Each is a component over its hook, drawn only with Bardo components (`Toggle`, `Slider`, `SegmentedControl`,
 //! `SegmentedControl`, `RadioGroup`, `SectionHeader`, `Button{Mini}`, `Button`, `Glyph`, `IconView`), and
 //! [`Module`], which picks one by `control_center.modules`' word.
 

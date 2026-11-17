@@ -183,7 +183,7 @@ Also not yet present, and not `todo!()`:
 - `command` rows for `SpeechHost` (`paths.speech_host`, `--socket`, `--model-dir`) and
   `KokoroFastApi` (`paths.kokoro_python`, uvicorn's `--uds`) join the `command_is_pure` table
   with `command`'s fill; zero-vram entries get `GpuAccess::Absent`.
-- The settings `ai.engine.speech_host.path` and `ai.engine.kokoro.python` (the quire agent owns the
+- The settings `ai.engine.speech_host.path` and `ai.engine.kokoro.python` (Bardo agent owns the
   design/22 rows).
 
 - The io feature flags of `engine-supervisor` (`systemd`, `process`, `nvidia`) and the
@@ -427,7 +427,7 @@ drops the socket. Timeouts are the endpoint's (`WaitMs(0)` is a literal zero: th
 its settings); the request is the endpoint's base plus the path (or the path alone for
 `RouteRoot::Server`), `Accept` by framing, the auth header and the extra headers marked sensitive.
 The `hyper` feature is off by default so the codecs reach no HTTP stack; the workspace carries
-`tokio`, `hyper`, `hyper-util` and `http-body-util` from quire's pinned block. TLS is the `tls`
+`tokio`, `hyper`, `hyper-util` and `http-body-util` from Bardo's pinned block. TLS is the `tls`
 feature (F4 stoker-tls): `tokio-rustls` on the `ring` provider, SNI from the host, ALPN `http/1.1`,
 the platform's roots through `rustls-native-certs` (never `webpki-roots`, MPL), chain, dates and name
 always checked; `HttpClient::with_roots(endpoint, TlsRoots::Only(certs))` is the test seam. Without
@@ -766,13 +766,13 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
   SPEC.md edit.
 - `Length::new`/`Point::new`/`Size::new` are the only constructors; the `PhantomData` field is
   private, so a space cannot be forged by a struct literal outside `cua-action`.
-- Proposed settings without design/22 rows (the quire agent owns the rows): `ai.engine.*` (six
+- Proposed settings without design/22 rows (Bardo agent owns the rows): `ai.engine.*` (six
   keys, see `SupervisorConfig::default`), `ai.cua.history_frames` (3), `ai.cua.repair_attempts`
   (1), `ai.engine.vllm.python`, `ai.engine.llama_server.path`.
 - The pinned block now carries `hyper`, `hyper-util`, `http-body-util`, `tokio` and `blake3`;
   the workspace names the first four (verbatim) for `model-http`'s `hyper` feature. It also
   carries `hyper-rustls` and `rustls`, which stay unnamed until the first cloud backend needs TLS.
-- `deny.toml` is quire's verbatim (the unused MPL allowance warns) plus the `[graph] exclude` of
+- `deny.toml` is Bardo's verbatim (the unused MPL allowance warns) plus the `[graph] exclude` of
   the two excluded speech crates.
 - **The excluded crates' `Cargo.lock` and `target/` are untracked** (`.gitignore`), and their
   third-party dependencies (`ort`, `sherpa-onnx`) are commented in their manifests until the
@@ -875,7 +875,7 @@ Lane `v-host`. Closes the two `speech-host` stubs (7 to 5 `todo!()` in the repo;
 
 | Item | Closes when |
 | --- | --- |
-| `sherpa-onnx` 1.13.x (`shared`) is not yet in quire's `docs/workspace-deps.toml`; the excluded crate pins `=1.13.8` | the beta pin lands with the speech-host-client release |
+| `sherpa-onnx` 1.13.x (`shared`) is not yet in Bardo's `docs/workspace-deps.toml`; the excluded crate pins `=1.13.8` | the beta pin lands with the speech-host-client release |
 | `webpki-roots` and `ureq` arrive as build-dependencies of `sherpa-onnx-sys`, never linked | the crate joins deny's graph (add a deny line or switch the sys crate to `SHERPA_ONNX_LIB_DIR`-only upstream) |
 | `--chunk-ms` does not select a model export (the catalog entry is the 560 ms one) | a second Nemotron entry (80 to 1120 ms) picks the export directory from the flag |
 | `serve(&HostArgs)` is engine-less by design; the catalog's `speech_host` engine kind needs the binary from `speech-host-sherpa` (path `target/release/speech-host`) | the engine unit's command points at that binary and `LD_LIBRARY_PATH` or an rpath names the sherpa libs |

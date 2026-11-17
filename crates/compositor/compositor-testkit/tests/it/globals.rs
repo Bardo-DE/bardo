@@ -59,7 +59,7 @@ fn module_of(kind: GlobalKind) -> &'static str {
         GlobalKind::XdgToplevelTag => "xdg_toplevel_tag",
         GlobalKind::XdgForeign => "xdg_foreign",
         GlobalKind::SystemBell => "system_bell",
-        GlobalKind::QuireWindow => "quire_window",
+        GlobalKind::BardoWindow => "bardo_window",
         GlobalKind::LayerShell => "layer_shell",
         GlobalKind::SessionLock => "session_lock",
         GlobalKind::Seat => "seat",
@@ -90,10 +90,10 @@ fn module_of(kind: GlobalKind) -> &'static str {
         GlobalKind::Workspace => "workspace",
         GlobalKind::ImageCapture => "image_capture",
         // P2-Q3: the toplevel capture source is advertised to the public socket (golden row);
-        // the two quire protocols never are, so the public golden has no row for them.
+        // the two Bardo protocols never are, so the public golden has no row for them.
         GlobalKind::ToplevelCapture => "capture_source",
-        GlobalKind::QuireDesktop => "quire_desktop",
-        GlobalKind::QuireShell => "quire_shell",
+        GlobalKind::BardoDesktop => "bardo_desktop",
+        GlobalKind::BardoShell => "bardo_shell",
     }
 }
 
@@ -120,7 +120,7 @@ const KINDS: [GlobalKind; 51] = [
     GlobalKind::XdgToplevelTag,
     GlobalKind::XdgForeign,
     GlobalKind::SystemBell,
-    GlobalKind::QuireWindow,
+    GlobalKind::BardoWindow,
     GlobalKind::LayerShell,
     GlobalKind::SessionLock,
     GlobalKind::Seat,

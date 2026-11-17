@@ -68,11 +68,11 @@ pub fn check_grant_file_contract<S: GrantStore>(
     open: impl Fn(&Path) -> S,
     standing_file: &str,
 ) {
-    restart_and_replace(&dir.join("restart/quire/grants.json"), &open);
+    restart_and_replace(&dir.join("restart/bardo/grants.json"), &open);
     two_stores_one_file(&dir.join("two/grants.json"), &open);
     damaged_grants_are_never_written_over(&dir.join("damaged/grants.json"), &open);
     standing_survives_and_revokes(
-        &dir.join("standing/quire/grants.json"),
+        &dir.join("standing/bardo/grants.json"),
         standing_file,
         &open,
     );

@@ -12,7 +12,7 @@ const FALLBACK: &str = "hicolor";
 /// on a scaled screen.
 const SIZE: u16 = 32;
 
-/// The image kinds quire's external icons draw.
+/// The image kinds Bardo's external icons draw.
 const DRAWN: [&str; 2] = ["png", "svg"];
 
 /// Finds icons in the person's theme, then in hicolor and the pixmaps folders.
@@ -57,7 +57,7 @@ impl IconLookup for ThemeIcons {
     }
 }
 
-/// Whether quire can draw the file: a PNG or an SVG.
+/// Whether Bardo can draw the file: a PNG or an SVG.
 fn drawn(file: &Path) -> bool {
     file.extension()
         .and_then(|extension| extension.to_str())

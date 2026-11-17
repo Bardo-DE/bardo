@@ -77,7 +77,7 @@ pub struct LayerDraw {
     pub titles: BTreeMap<WindowId, RasterImage>,
     /// How a window in a minimise flight is drawn (`windows.minimise_effect`).
     pub minimise_effect: MinimiseEffect,
-    /// Whether blurs are drawn or replaced by a solid colour (quire's
+    /// Whether blurs are drawn or replaced by a solid colour (Bardo's
     /// `appearance.transparency`, in the scheme in force).
     pub finish: BlurFinish,
     /// How strongly the blur behind each layer surface frosts; a layer not in it is

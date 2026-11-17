@@ -1,6 +1,6 @@
 //! Whether a window's accessibility root belongs to the window's own program (PORTAL-15).
 //!
-//! `quire_window.set_a11y_root(bus_name, object_path)` names an object any program on the bus
+//! `bardo_window.set_a11y_root(bus_name, object_path)` names an object any program on the bus
 //! could own. The assistant tier reads that object to see the window, so a client must not be
 //! able to point it at someone else's. [`verify`] asks the bus which process owns the name and
 //! accepts the root only when that process is the client's own: the pid casement holds the client

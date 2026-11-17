@@ -1,6 +1,6 @@
 //! The glow the compositor draws around the window the companion acts in (design/32 section 3).
 //!
-//! quire owns the values and the compositor links this crate to read them, so the glow it draws
+//! Bardo owns the values and the compositor links this crate to read them, so the glow it draws
 //! is the one the design system describes; this module is plain data and names no renderer.
 
 use ui_core::geometry::units::Px;

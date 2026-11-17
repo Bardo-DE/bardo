@@ -1,6 +1,6 @@
 [package]
 name = "ui-conformance"
-description = "Behaviour tests for every quire component, driven through ui-harness on a real Blitz document. Test-only."
+description = "Behaviour tests for every bardo component, driven through ui-harness on a real Blitz document. Test-only."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -19,9 +19,9 @@ dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 image = { workspace = true, features = ["png", "jpeg"] }
 
 [features]
-default = ["quire-desktop"]
-# Desktop integration of the quire crates this one uses (design/36 section 1).
-quire-desktop = ["ui-blitz/quire-desktop"]
+default = ["desktop"]
+# Desktop integration of Bardo crates this one uses (design/36 section 1).
+desktop = ["ui-blitz/desktop"]
 
 [lints]
 workspace = true

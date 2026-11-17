@@ -37,7 +37,7 @@ fn the_bar_shows_what_the_services_hold() {
         ("the network item", "aria-label=\"Network\"", 1),
         ("the battery item", "aria-label=\"Battery\"", 1),
         ("in one segmented group", "class=\"ds-ws-pills\"", 1),
-        ("each a quire pill", "class=\"ds-ws-pill\"", 3),
+        ("each a bardo pill", "class=\"ds-ws-pill\"", 3),
         ("one current pill", "aria-current=\"true\"", 1),
         (
             "the app name and the clock as menu-bar title items",

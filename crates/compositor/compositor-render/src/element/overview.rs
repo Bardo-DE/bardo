@@ -15,7 +15,7 @@ use smithay::backend::renderer::utils::CommitCounter;
 /// The colours Mission Control draws with, premultiplied: the dimming over the picture and the
 /// hovered window's ring.
 ///
-/// The composition root makes them from quire's tokens (the scrim and the accent, in the person's
+/// The composition root makes them from Bardo's tokens (the scrim and the accent, in the person's
 /// scheme); this crate holds no colour of its own for them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct OverviewLook {

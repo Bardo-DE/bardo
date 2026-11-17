@@ -211,7 +211,7 @@ pub fn firefox_form() -> A11ySnapshot {
     )
 }
 
-pub fn quire_mail() -> A11ySnapshot {
+pub fn bardo_mail() -> A11ySnapshot {
     let mut archive = Spec::new(2, under(1), Role::Button, "Archive", (12, 8, 80, 32));
     archive.states = FOCUSABLE;
     archive.actions = vec![NodeAction::Press];
@@ -239,7 +239,7 @@ pub fn quire_mail() -> A11ySnapshot {
     ];
     snapshot(
         "org.bardo.Mail",
-        TreeSource::QuireApp,
+        TreeSource::BardoApp,
         vec![
             Spec::new(0, ROOT, Role::Window, "Inbox", (0, 0, 900, 600)),
             Spec::new(1, under(0), Role::ToolBar, "Toolbar", (0, 0, 900, 48)),

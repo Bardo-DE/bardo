@@ -1,4 +1,4 @@
-//! One dock tile: quire's `DockTile` at the tile's magnified size, in the slot the frame gives
+//! One dock tile: Bardo's `DockTile` at the tile's magnified size, in the slot the frame gives
 //! it. `DockTile` draws the app's icon as it is, on no plate (under Muted or
 //! Monochrome the icon cache re-colours its raster), its `Badge` (a count, `999+` past 999), the `ProgressIndicator`
 //! bar while the app works, the running dot that says the app is open and the hover label
@@ -87,7 +87,7 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
                 running,
                 side: side_px,
                 label: name.clone(),
-                // Never quire's own: its card is placed in the pill-sized root's coordinates and
+                // Never Bardo's own: its card is placed in the pill-sized root's coordinates and
                 // lands the pill's origin away from its tile. The label is drawn below, in the
                 // tile's own box, so it follows the tile every frame.
                 label_shown: Some(false),
@@ -109,12 +109,12 @@ pub(super) fn px(v: Cpx) -> f64 {
     f64::from(v.0) / 100.0
 }
 
-/// A count as quire's `Badge` takes it (it says `999+` past 999 itself).
+/// A count as Bardo's `Badge` takes it (it says `999+` past 999 itself).
 fn count(count: u64) -> BadgeContent {
     BadgeContent::Number(u32::try_from(count).unwrap_or(u32::MAX))
 }
 
-/// A progress as quire's `ProgressIndicator` takes it: a share in thousandths, at most all.
+/// A progress as Bardo's `ProgressIndicator` takes it: a share in thousandths, at most all.
 fn fraction(progress: Permille) -> Fraction {
     Fraction(u16::try_from(progress.0.min(1000)).unwrap_or(1000))
 }

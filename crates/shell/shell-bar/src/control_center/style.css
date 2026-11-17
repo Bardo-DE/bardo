@@ -1,18 +1,18 @@
 /* The control center (design/20 §1.5, design/13 §13.3.7) and the module dropdowns, inside the
-   bar popup's quire Popover card. The grid, the tiles, the list rows and the pane slide are
-   quire's (ModuleGrid, ModuleTile, ModulePanel, List, Row, PaneSwitcher); this sheet lays out what sill
+   bar popup's bardo Popover card. The grid, the tiles, the list rows and the pane slide are
+   bardo's (ModuleGrid, ModuleTile, ModulePanel, List, Row, PaneSwitcher); this sheet lays out what sill
    puts around and inside them. Its width and padding are `--cc-width` and `--cc-pad`, its cap is
    written inline; everything here is layout and tokens. Attribute selectors carry `*|`. */
 
-/* The panel holds the keyboard (Escape), with no ring of its own. It is positioned: quire's
+/* The panel holds the keyboard (Escape), with no ring of its own. It is positioned: bardo's
    inline `Alert` ("Turn Bluetooth off?", its last child) covers it. */
 .shell-cc{ display:block; position:relative; width:var(--cc-width); padding:var(--cc-pad); box-sizing:border-box; color:var(--ink);
   outline:none; }
 
-/* The full-width modules (Sound, Display, Now Playing, Appearance, Battery) are quire's
+/* The full-width modules (Sound, Display, Now Playing, Appearance, Battery) are bardo's
    ModulePanel, `Bare` in a module's own dropdown. */
 
-/* Now Playing: quire's track (art and two lines) beside the transport, the position under
+/* Now Playing: bardo's track (art and two lines) beside the transport, the position under
    them. */
 .shell-cc-media{ display:flex; flex-direction:column; gap:var(--s-6); min-width:0; }
 .shell-cc-media-row{ display:flex; align-items:center; gap:var(--s-12); min-width:0; }
@@ -34,7 +34,7 @@
 .shell-cc-batteries{ display:flex; flex-wrap:wrap; gap:var(--s-12); }
 .shell-cc-profile{ display:flex; flex-direction:column; margin-top:var(--s-4); }
 
-/* A detail pane (Wi-Fi's networks, Bluetooth's devices): quire's PaneHeader, its list or empty
+/* A detail pane (Wi-Fi's networks, Bluetooth's devices): bardo's PaneHeader, its list or empty
    state, its PaneFooter. */
 .shell-cc-detail{ display:flex; flex-direction:column; gap:var(--s-6); }
 

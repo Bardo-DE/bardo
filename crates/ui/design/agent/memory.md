@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/memory.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area: memory — implementation spec (plan for the freeze)
 
-Status: PROPOSAL to lock. Sources: COMPANION.md item 11, Security items 1, 2 and 6, Deferred; research-agent-memory.md §7; research-os-memory.md §8 P1–P10; research-ecosystem-infra.md §2 and §7 (crates 2–4); cua-integration.md §6; intents-research/models.md; design/31 and porter (the code shape is copied from porter); design/21-SPACES; quire CONVENTIONS.md and docs/workspace-deps.toml.
+Status: PROPOSAL to lock. Sources: COMPANION.md item 11, Security items 1, 2 and 6, Deferred; research-agent-memory.md §7; research-os-memory.md §8 P1–P10; research-ecosystem-infra.md §2 and §7 (crates 2–4); cua-integration.md §6; intents-research/models.md; design/31 and porter (the code shape is copied from porter); design/21-SPACES; Bardo CONVENTIONS.md and docs/workspace-deps.toml.
 Marks: **[freeze now]** means the type, signature or format is fixed in the freeze wave, with `todo!()` bodies where the behaviour is not built yet. **[later]** means the place is named now and the shape is decided when the work happens. **[Q]** means only the user can answer.
 
 ---
@@ -73,8 +73,8 @@ Why a separate repo: memory is not accounts. The three owned crates (`eventlog`,
 
 ### 2.3 Adopted externals (versions as surveyed 2026-10-02; re-check at freeze)
 
-- **From quire's pinned block:** serde 1, serde_json 1, thiserror 2, zbus 5.19 (tokio), tokio 1, jiff 0.2, **notify 8.2**. The ecosystem survey named notify 9.0.0-rc.5; use the pinned 8.2. A bump is a toolchain-wave decision.
-- **New lines for `quire/docs/workspace-deps.toml` (wave 0):**
+- **From Bardo's pinned block:** serde 1, serde_json 1, thiserror 2, zbus 5.19 (tokio), tokio 1, jiff 0.2, **notify 8.2**. The ecosystem survey named notify 9.0.0-rc.5; use the pinned 8.2. A bump is a toolchain-wave decision.
+- **New lines for `bardo/docs/workspace-deps.toml` (wave 0):**
   - `rusqlite = { version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"] }`. mailo is on 0.40 `bundled`, in a separate tree, so there is no conflict. Spike S2 verifies that FTS5 is compiled in.
   - `blake3 = "1"`, `chacha20poly1305 = "0.10"` (XChaCha20-Poly1305), `zeroize = "1"`, `getrandom = "0.3"`, `tar = "0.4"`, `tempfile = "3"` (dev only).
   - `oo7 = "0.6"`. porter is also waiting for this line.
@@ -100,7 +100,7 @@ pub enum Actor {
     User { via: AppName },                          // reported by the app the user acted in
     Companion { session: SessionId, tier: AgentTier },
     App { app: AppName },                           // an app acting on its own (sync, rules)
-    ThirdParty { app: AppName, channel: Channel },  // non-quire app, observed with consent
+    ThirdParty { app: AppName, channel: Channel },  // non-bardo app, observed with consent
     System { part: SystemPart },                    // memoryd itself, the router, the watcher
     Unknown,                                        // a file change nobody explained
 }
@@ -246,13 +246,13 @@ $XDG_DATA_HOME/bardo/memory/
   <space>/consolidation/<run>.toml    # the diff of one run + pre-images for revert (kept until next run)
 $XDG_CACHE_HOME/bardo/memory/<space>/index.db   # recall index, SQLCipher; deletable, rebuilt
 $XDG_CONFIG_HOME/bardo/memory.toml               # RuleSet + defaults (written only by memoryd)
-$XDG_RUNTIME_DIR/quire/memory/edit/<space>/...   # decrypted edit copies (tmpfs), Q1
+$XDG_RUNTIME_DIR/bardo/memory/edit/<space>/...   # decrypted edit copies (tmpfs), Q1
 ```
 
 **Topic file** (the canonical plain form; sealed vaults store exactly these bytes, sealed):
 ```markdown
 ---
-format: quire-memory 1
+format: bardo-memory 1
 topic: people/sam-lee
 title: Sam Lee
 ---
@@ -273,7 +273,7 @@ Format rules:
 
 Contract: `render_topic(&parse_topic(s)?) == s` for any `s` that `render_topic` produced. Parsing is strict on the comment grammar and lenient everywhere else.
 
-**Sealed file:** `b"QMEM\x01"` ‖ 24-byte nonce ‖ XChaCha20-Poly1305(ciphertext). The associated data is `space ‖ vault-relative path`, so a sealed file moved to another path or another Space fails to open. The key is `derive(space_key, "quire-memory 1 files")`.
+**Sealed file:** `b"QMEM\x01"` ‖ 24-byte nonce ‖ XChaCha20-Poly1305(ciphertext). The associated data is `space ‖ vault-relative path`, so a sealed file moved to another path or another Space fails to open. The key is `derive(space_key, "bardo-memory 1 files")`.
 
 **Event header canonical bytes (v1)**, the input to the chain:
 ```
@@ -293,7 +293,7 @@ The header holds no thing ids or text. Subjects and sources are in the body and 
 
 **Export** (the fd receives a tar stream) [freeze now]:
 ```
-quire-memory-export-1/manifest.json   # ExportManifest: format, spaces, counts, created, chain heads
+bardo-memory-export-1/manifest.json   # ExportManifest: format, spaces, counts, created, chain heads
 <space>/events.jsonl                   # one line per entry: header fields + link + body-or-"erased"
 <space>/facts/**.md  <space>/procedures/**.md  <space>/pending/**.md   (plain, never sealed)
 rules.toml
@@ -318,7 +318,7 @@ pub trait KeyStore: Send + Sync {
 }
 pub enum KeyError { Locked, Missing, Store(String) }
 // Impls: MemoryKeys (testing), Oo7Keys (stub until oo7 is pinned; Secret Service item
-// attributes { "xdg:schema": "org.quire.Memory.SpaceKey", "space": <id> }).
+// attributes { "xdg:schema": "org.bardo.Memory.SpaceKey", "space": <id> }).
 ```
 
 ### 3.6 eventlog [freeze now]
@@ -709,7 +709,7 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 ## 6. Work breakdown
 
 **Wave 0 (prerequisites, sequential, user/toolchain owner)**
-1. Add the dependency lines of §2.3 to `quire/docs/workspace-deps.toml`, including the rusqlite sqlcipher line.
+1. Add the dependency lines of §2.3 to `bardo/docs/workspace-deps.toml`, including the rusqlite sqlcipher line.
 2. The actions area freezes `prov` (Label, Integrity, Confirmation, and SpaceId and Actor if they agree, §7).
 3. Create the empty repo `~/almanac`, copying porter's `rust-toolchain.toml` (1.98.1), `.cargo/config.toml`, `deny.toml`, `rustfmt.toml` and `CONVENTIONS.md` pointer.
 
@@ -771,7 +771,7 @@ cargo deny check licenses
   - inferd owns the GPU queue, so the default embedder is `InferdEmbedder`. `FastembedEmbedder` exists for standalone or portable use.
 - **cua:** `cua.*` payloads (opaque `CuaStep` re-declared), procedures written through memfiles with the same metadata trailer, and the run-link purge on forget.
 - **ux:** draws the timeline, "what it knows", forget preview, pending, the consolidation diff, rules and pause. Uses §3.11 only. Pause appears in the presence glow.
-- **quire Spaces/settings:** the stable `SpaceId` per workspace (design/21 §11.3) and the design/22 rows for `memory.retention.*`, `memory.pending_ttl_days`, `memory.join_window_ms`, `memory.consolidation.*`.
+- **Bardo Spaces/settings:** the stable `SpaceId` per workspace (design/21 §11.3) and the design/22 rows for `memory.retention.*`, `memory.pending_ttl_days`, `memory.join_window_ms`, `memory.consolidation.*`.
 - **agent-loop:** reads `Primer` at session start and `Search` as needed. The handover working memory is its own.
 
 **Conflicts found, with the proposed resolution**
@@ -784,7 +784,7 @@ cargo deny check licenses
 
 **Questions only the user can answer**
 1. **Q1, files at rest:** sealed per file by default with "open in editor" through tmpfs, or plain files with only disk encryption, or a per-Space choice?
-2. **Q2, Space identity:** where is the stable `SpaceId` minted (quire `SpaceStore` beside `SpaceLook`?), and is there a `desktop` scope for memory outside any Space (for example personal preferences)?
+2. **Q2, Space identity:** where is the stable `SpaceId` minted (Bardo `SpaceStore` beside `SpaceLook`?), and is there a `desktop` scope for memory outside any Space (for example personal preferences)?
 3. **Q3, strict cascade:** when a fact has two sources and one is deleted, is the fact deleted (proposed: yes, strict) or kept on the remaining source?
 4. **Q4, forget and audit:** may audit headers (kind, actor, time) outlive a forget? If not, forget must cut the chain with a redaction checkpoint, which weakens tamper evidence.
 5. **Q5, file capture:** fanotify filesystem marks need CAP_SYS_ADMIN. Allow a tiny privileged helper, or use inotify on Space roots only for v1?
@@ -799,7 +799,7 @@ cargo deny check licenses
 - /home/pohsuanlai/rs-wt/companion/COMPANION.md (item 11, Security 1/2/6, Deferred)
 - /home/pohsuanlai/porter/ARCHITECTURE.md and /home/pohsuanlai/porter/scripts/check-boundary.sh (the repo shape to copy)
 - /home/pohsuanlai/porter/crates/porter-core/src/{id.rs,app_id.rs,units.rs,data_class.rs} and /home/pohsuanlai/porter/crates/porter-infer/src/{request.rs,reply.rs} (reused types; Embed path)
-- /home/pohsuanlai/quire/docs/workspace-deps.toml (wave-0 dependency additions)
-- /home/pohsuanlai/quire/CONVENTIONS.md and /home/pohsuanlai/quire/design/21-SPACES.md (rules; Space identity question)
+- /home/pohsuanlai/bardo/docs/workspace-deps.toml (wave-0 dependency additions)
+- /home/pohsuanlai/bardo/CONVENTIONS.md and /home/pohsuanlai/bardo/design/21-SPACES.md (rules; Space identity question)
 
 <!-- paths: end -->

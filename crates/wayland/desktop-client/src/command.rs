@@ -14,7 +14,7 @@ use desktop_protocols::vocab::{
 
 /// A request to the compositor. Targets are keys from [`crate::DesktopState`].
 ///
-/// The commands from `Place` on are the Quire arm's: wlr cannot place a window, move it to a
+/// The commands from `Place` on are Bardo arm's: wlr cannot place a window, move it to a
 /// Space or tell an app to hide (FINDINGS). Which protocol carries each command is
 /// [`crate::requires_on`]'s table; [`crate::supports`] answers it for an offer.
 #[derive(Debug, Clone, PartialEq)]
@@ -78,61 +78,61 @@ pub enum DesktopCommand {
     TestOutputs(OutputConfig),
     /// Capture one frame of an output.
     CaptureOutput(CaptureRequest),
-    /// Place a window: a tile zone, fill, centre or restore. Quire arm.
+    /// Place a window: a tile zone, fill, centre or restore. Bardo arm.
     Place {
         /// The toplevel.
         toplevel: ToplevelKey,
         /// Where.
         target: PlaceTarget,
     },
-    /// Move a window to a Space. Quire arm.
+    /// Move a window to a Space. Bardo arm.
     MoveToSpace {
         /// The toplevel.
         toplevel: ToplevelKey,
         /// The Space.
         space: SpaceKey,
     },
-    /// Assign a window to every Space, the one it is on, or none. Quire arm.
+    /// Assign a window to every Space, the one it is on, or none. Bardo arm.
     AssignSpaces {
         /// The toplevel.
         toplevel: ToplevelKey,
         /// Which Spaces.
         assign: Assign,
     },
-    /// Forget a window's minimise target (`bardo_shell_v1`). Quire arm, shell role.
+    /// Forget a window's minimise target (`bardo_shell_v1`). Bardo arm, shell role.
     ClearMinimiseTarget(ToplevelKey),
-    /// Switch to a Space. Quire arm.
+    /// Switch to a Space. Bardo arm.
     ActivateSpace(SpaceKey),
-    /// Remove a Space; its windows move to the neighbouring desktop Space. Quire arm.
+    /// Remove a Space; its windows move to the neighbouring desktop Space. Bardo arm.
     RemoveSpace(SpaceKey),
-    /// Move a Space to a position on its output (0 is leftmost). Quire arm.
+    /// Move a Space to a position on its output (0 is leftmost). Bardo arm.
     MoveSpace {
         /// The Space.
         space: SpaceKey,
         /// The new position.
         position: u32,
     },
-    /// Add a Space on an output; it arrives as a `DesktopEvent::Space`. Quire arm.
+    /// Add a Space on an output; it arrives as a `DesktopEvent::Space`. Bardo arm.
     CreateSpace {
         /// The output.
         output: OutputName,
     },
-    /// Bring an app forward and raise its windows. Quire arm.
+    /// Bring an app forward and raise its windows. Bardo arm.
     ActivateApp(AppKey),
-    /// Hide an app. Quire arm.
+    /// Hide an app. Bardo arm.
     HideApp(AppKey),
-    /// Show a hidden app. Quire arm.
+    /// Show a hidden app. Bardo arm.
     UnhideApp(AppKey),
-    /// Hide every app but this one. Quire arm.
+    /// Hide every app but this one. Bardo arm.
     HideOtherApps(AppKey),
-    /// Ask an app to quit; it may refuse or ask the person first. Quire arm.
+    /// Ask an app to quit; it may refuse or ask the person first. Bardo arm.
     QuitApp(AppKey),
-    /// End an app's processes. Quire arm.
+    /// End an app's processes. Bardo arm.
     ForceQuitApp(AppKey),
     /// Activate an app that has no windows; the compositor answers the shell with
-    /// `ShellEvent::Reopen`. Quire arm.
+    /// `ShellEvent::Reopen`. Bardo arm.
     ReopenApp(AppKey),
-    /// Tell the compositor what a registered layer surface is (bar, dock, ...). Quire arm,
+    /// Tell the compositor what a registered layer surface is (bar, dock, ...). Bardo arm,
     /// shell role.
     SetShellRole {
         /// The caller's surface.
@@ -140,22 +140,22 @@ pub enum DesktopCommand {
         /// Its role.
         role: ShellRole,
     },
-    /// The person picked an app in the switcher, by the index the compositor gave. Quire arm,
+    /// The person picked an app in the switcher, by the index the compositor gave. Bardo arm,
     /// shell role.
     PickSwitcher(u32),
-    /// The person dismissed the switcher. Quire arm, shell role.
+    /// The person dismissed the switcher. Bardo arm, shell role.
     CancelSwitcher,
-    /// Open or close an overview. Quire arm, shell role.
+    /// Open or close an overview. Bardo arm, shell role.
     Overview {
         /// Which overview.
         mode: OverviewMode,
         /// Open (`On`) or close (`Off`).
         toggle: Toggle,
     },
-    /// Move every window aside, or back. Quire arm, shell role.
+    /// Move every window aside, or back. Bardo arm, shell role.
     ShowDesktop(Toggle),
     /// The person picked an entry of a window's menu (`ShellEvent::WindowMenu`). A dismissal
-    /// sends nothing. Quire arm, shell role.
+    /// sends nothing. Bardo arm, shell role.
     PickWindowMenu {
         /// The window, by the identifier the menu event carried.
         window: ToplevelIdentifier,
@@ -163,12 +163,12 @@ pub enum DesktopCommand {
         entry: WindowEntry,
     },
     /// The person picked a window for the other half of the Split View being chosen
-    /// (`ShellEvent::SplitChoose`). Quire arm, shell role.
+    /// (`ShellEvent::SplitChoose`). Bardo arm, shell role.
     PickSplit(ToplevelIdentifier),
     /// The person turned the choice down (Escape, or a click elsewhere): the first window stays
-    /// alone, full screen. Quire arm, shell role.
+    /// alone, full screen. Bardo arm, shell role.
     CancelSplit,
-    /// The person moved the divider of a Split View. Quire arm, shell role.
+    /// The person moved the divider of a Split View. Bardo arm, shell role.
     DivideSplit {
         /// Either window of the pair.
         window: ToplevelIdentifier,
@@ -176,7 +176,7 @@ pub enum DesktopCommand {
         share: u32,
     },
     /// Replaces the rectangles of `output` a window dragged in Mission Control can be dropped on
-    /// to move it to a Space (version 2). Quire arm, shell role.
+    /// to move it to a Space (version 2). Bardo arm, shell role.
     SetSpaceTargets {
         /// The output.
         output: OutputName,
@@ -185,7 +185,7 @@ pub enum DesktopCommand {
     },
     /// Sets, or with `None` removes, the rectangle of `output` a window dragged in Mission Control
     /// can be dropped on to make a new Space with it (version 3). It stays when
-    /// [`SetSpaceTargets`](Self::SetSpaceTargets) replaces the Space targets. Quire arm, shell
+    /// [`SetSpaceTargets`](Self::SetSpaceTargets) replaces the Space targets. Bardo arm, shell
     /// role.
     SetNewSpaceTarget {
         /// The output.
@@ -194,8 +194,8 @@ pub enum DesktopCommand {
         rect: Option<Rect>,
     },
     /// The person answered a question the compositor asked
-    /// ([`ShellEvent::PermissionAsk`](crate::quire::ShellEvent::PermissionAsk)); send
-    /// [`Answer::Dismissed`] when the sheet goes away without an answer (version 5). Quire arm,
+    /// ([`ShellEvent::PermissionAsk`](crate::Bardo::ShellEvent::PermissionAsk)); send
+    /// [`Answer::Dismissed`] when the sheet goes away without an answer (version 5). Bardo arm,
     /// shell role.
     AnswerPermission {
         /// The question, by the id the ask carried.
@@ -204,10 +204,10 @@ pub enum DesktopCommand {
         answer: Answer,
     },
     /// The person answered a question about a changed display setup
-    /// ([`ShellEvent::DisplaysTrial`](crate::quire::ShellEvent::DisplaysTrial)); send
+    /// ([`ShellEvent::DisplaysTrial`](crate::Bardo::ShellEvent::DisplaysTrial)); send
     /// [`TrialAnswer::Revert`] when the sheet goes away without an answer (version 6). Answering
     /// faster than the person could have read the question is a protocol error for the shell's
-    /// connection. Quire arm, shell role.
+    /// connection. Bardo arm, shell role.
     AnswerTrial {
         /// The trial, by the id the event carried.
         trial: TrialId,
@@ -216,10 +216,10 @@ pub enum DesktopCommand {
     },
     /// What the bar does in full screen: slides in at the top edge, or stays up with full-screen
     /// windows sized below it (version 7). Send it after binding and whenever the setting
-    /// changes. Quire arm, shell role.
+    /// changes. Bardo arm, shell role.
     SetFullScreenBar(FullScreenBar),
     /// How much motion the person allows; reduced makes the full-screen bar and dock cross-fade
-    /// (version 7). Send it after binding and whenever the setting changes. Quire arm, shell
+    /// (version 7). Send it after binding and whenever the setting changes. Bardo arm, shell
     /// role.
     SetMotion(Motion),
 }
@@ -247,10 +247,10 @@ impl SpaceTarget {
 /// crate::CommandError) names it instead of the command.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CommandRoute {
-    /// The plain window commands: `zwlr-foreign-toplevel-management` or, on the Quire arm,
+    /// The plain window commands: `zwlr-foreign-toplevel-management` or, on Bardo arm,
     /// `bardo_desktop_window_v1`.
     Toplevel,
-    /// The minimise target: the toplevel handle, or on the Quire arm `bardo_shell_v1`.
+    /// The minimise target: the toplevel handle, or on Bardo arm `bardo_shell_v1`.
     MinimiseTarget,
     /// `ext-workspace-v1`.
     Workspace,
@@ -258,12 +258,12 @@ pub enum CommandRoute {
     Output,
     /// `ext-image-copy-capture`.
     Capture,
-    /// A window command only the Quire arm has.
-    QuireWindow,
+    /// A window command only Bardo arm has.
+    BardoWindow,
     /// An app or Space command, on `bardo_desktop_manager_v1`.
-    QuireDesktop,
+    BardoDesktop,
     /// A shell command, on `bardo_shell_v1`.
-    QuireShell,
+    BardoShell,
 }
 
 impl DesktopCommand {
@@ -290,7 +290,7 @@ impl DesktopCommand {
             Self::ApplyOutputs(_) | Self::TestOutputs(_) => CommandRoute::Output,
             Self::CaptureOutput(_) => CommandRoute::Capture,
             Self::Place { .. } | Self::MoveToSpace { .. } | Self::AssignSpaces { .. } => {
-                CommandRoute::QuireWindow
+                CommandRoute::BardoWindow
             }
             Self::ActivateSpace(_)
             | Self::RemoveSpace(_)
@@ -302,7 +302,7 @@ impl DesktopCommand {
             | Self::HideOtherApps(_)
             | Self::QuitApp(_)
             | Self::ForceQuitApp(_)
-            | Self::ReopenApp(_) => CommandRoute::QuireDesktop,
+            | Self::ReopenApp(_) => CommandRoute::BardoDesktop,
             Self::ClearMinimiseTarget(_)
             | Self::SetShellRole { .. }
             | Self::PickSwitcher(_)
@@ -318,7 +318,7 @@ impl DesktopCommand {
             | Self::AnswerPermission { .. }
             | Self::AnswerTrial { .. }
             | Self::SetFullScreenBar(_)
-            | Self::SetMotion(_) => CommandRoute::QuireShell,
+            | Self::SetMotion(_) => CommandRoute::BardoShell,
         }
     }
 }

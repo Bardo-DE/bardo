@@ -23,7 +23,7 @@ account-dbus = {path = "../../accounts/account-dbus"}
 # `live`: `org.bardo.SettingsModule1`, the way Settings reads and changes the Privacy list.
 settings-dbus = { path = "../../settings/settings-dbus" }
 settings-types = { path = "../../settings/settings-types" }
-ui-settings = { path = "../../ui/ui-settings", default-features = false, features = ["quire-desktop"] }
+ui-settings = { path = "../../ui/ui-settings", default-features = false, features = ["desktop"] }
 ui-style = {path = "../../ui/ui-style", default-features = false}
 calloop = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}

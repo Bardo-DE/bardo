@@ -3,11 +3,11 @@
 This file holds two kinds of entry about the renderer stack (Blitz, stylo, taffy, parley, vello,
 dioxus-native, winit) and the design system built on it: **open items**, things still
 unresolved, and **standing facts**, things true at the current pin that code and tests rely on,
-with the workaround quire uses. It is a reference, not a log: how each fact was found, and what
+with the workaround Bardo uses. It is a reference, not a log: how each fact was found, and what
 changed when, lives in git history. Code cites sections by name (FINDINGS "Edit surface"), so a
 renamed heading needs its citations updated.
 
-The pinned Blitz is the fork rev `bf588142` (github.com/Bardo-DE/blitz, branch `quire-pin`):
+The pinned Blitz is the fork rev `bf588142` (github.com/Bardo-DE/blitz, branch `bardo-pin`):
 upstream `e99fbdbd` plus one patch that restyles an element whose animation was cancelled
 mid-way. "At the pinned rev" below means that rev, with dioxus 0.7.x, stylo 0.21, taffy at
 blitz's lock, parley 0.11, anyrender_vello_cpu 0.17 / vello_cpu 0.1, anyrender_vello_hybrid 0.10 /
@@ -16,13 +16,13 @@ that rev.
 
 ## Open items
 
-- **Agent-settable is a deny-list, not an allow-list (QUIRE-13).** Owner decision 2026-10-16:
+- **Agent-settable is a deny-list, not an allow-list (BARDO-13).** Owner decision 2026-10-16:
   `AGENT_NEVER_SETTABLE` now also lists `privacy.`, `network.` and `security.`, and no allow-list
   is enforced at read time (a program's own schema still decides which other keys it marks
   settable; `AGENT_SETTABLE_PROPOSED` stays a proposal that tests check). A consumer whose schema
   marks a key under one of the three new prefixes agent-settable now fails to compile (derive) or
   to load (`Schema::from_toml`, `LiveSchema::check`); sill and detent must be told before they re-pin.
-- **Menu export and owner check: what is not covered (QUIRE-03, QUIRE-12, DETENT-05; production audit
+- **Menu export and owner check: what is not covered (BARDO-03, BARDO-12, DETENT-05; production audit
   wave 2, 2026-10-16).** `MenuExport::start` takes a required `MenuPermit` and `LiveClient::new` a required
   `OwnerCheck`; both policies belong to the consumer (the desktop's are peephole roles: `ShellOnly`
   for menus, detent's `BusPeers` check for the live modules). Deferred or decided here:
@@ -30,34 +30,34 @@ that rev.
   gated: the layout is what the window already shows, and the shell's bar reads it; (2) a single
   `Event` is gated but not paced (the permit is what bounds it; only `EventGroup` has the 8-a-second
   limit the audit asked for); (3) the focused-app check (the menu's owner is the focused window's
-  app, QUIRE-12 sill side) is sill's; (4) a second copy of an app no longer queues for the menu name
+  app, BARDO-12 sill side) is sill's; (4) a second copy of an app no longer queues for the menu name
   and shows no menu in the bar: its `start` fails with `NameTaken` and the app decides (run without a
   menu, or exit); (5) `LiveClient` caps `Describe`/`Snapshot`/`Get`/`Changed` replies
   (`ds_settings::live::limits`), but detent's own `Holds`/`NeedsConfirmation` parsing (Sync1) is
   detent's to cap; (6) the first check after a name changes hands costs one `GetNameOwner` on every
   call (the owner is looked up each time so a name that moved is never trusted for one call), and a
   refused owner is asked again on every call, not cached; (7) `ShellOnly` has no test of its own in
-  quire (peephole's `fake` seam would need a second feature); its logic is one `require` call. The
+  Bardo (peephole's `fake` seam would need a second feature); its logic is one `require` call. The
   values of the caps (64, 8, 1024 and the rest) are ours; the owner has not confirmed them.
-- **Watched directory deleted and recreated (QUIRE-18).** `Watch` starts its watcher before the
+- **Watched directory deleted and recreated (BARDO-18).** `Watch` starts its watcher before the
   first read and re-reads on every event, but the inotify watch dies with a deleted directory
   while `state()` stays `Live`. The portal and output watches still end silently on a bus error
   (bus lane). Ends when `Watch` re-arms on a vanished directory and reports `Blind`.
-- **The password in a field is copied into the DOM value (QUIRE-22).** `Hidden` now wipes its
+- **The password in a field is copied into the DOM value (BARDO-22).** `Hidden` now wipes its
   own memory on drop, but `ds-shell`'s `Entry` hands the secret to `TextField` as a `String`
   prop. Ends when the secure field holds a wiping secret type instead of a `String`.
-- **The print fallback's PDF is not deleted when the viewer exits (QUIRE-11).** It is written
-  0600 in `$XDG_RUNTIME_DIR/quire-print` (else the temp directory), and the next print sweeps
+- **The print fallback's PDF is not deleted when the viewer exits (BARDO-11).** It is written
+  0600 in `$XDG_RUNTIME_DIR/bardo-print` (else the temp directory), and the next print sweeps
   files older than a day; `xdg-open` returns before the viewer has read it, so no earlier
   delete is safe.
-- **Sibling `[patch]` for blitz-kit still in the root `Cargo.toml` (QUIRE-24).** The repo rules want
+- **Sibling `[patch]` for blitz-kit still in the root `Cargo.toml` (BARDO-24).** The repo rules want
   it in the work dir above the siblings; moving it needs a `.cargo/config.toml` outside this repo
   and a `Cargo.lock` refresh against the pinned git rev.
 - **`WindowSizer::request_size` on Wayland (fixed on `lane/wayland-resize`, live check not run).**
   winit's `request_surface_size` returns `Some(size)` when the platform applied the size at once,
   and then emits no `SurfaceResized`; winit-wayland always returns `Some` (`window/state.rs`) and
   sends `SurfaceResized` only for a compositor `configure` or a scale change, so a client-initiated
-  resize left Blitz's viewport and renderer, quire's `framed.refresh()`/`resized.bump()` and the
+  resize left Blitz's viewport and renderer, Bardo's `framed.refresh()`/`resized.bump()` and the
   `SizeLedger` unaware (the box kept its size, the request read `Expired`). `WinitSized` and
   `WinitWindow::tile` now pass `Some(size)` to `Requests::applied`, which queues
   `Request::Resized` and wakes the loop; `Windows::serve` hands the window a synthetic
@@ -122,7 +122,7 @@ Upstream (pinned around; re-check at every toolchain bump):
   Unprefixed attribute selectors never match (S2), and a `details { open }` written by dioxus
   never opens ("Selectors and cascade"). Fixed in our fork at `1b23fbd9` (branch
   `g296-unprefixed-attr`, G296): attributes are written with no namespace, so the plain selector
-  matches and `[*|…]` still does. Not offered upstream (PRs on hold). quire's own sheet keeps `[*|…]`.
+  matches and `[*|…]` still does. Not offered upstream (PRs on hold). Bardo's own sheet keeps `[*|…]`.
 - **`get_client_rect` borrows the document mutably** when a shared borrow would do, which is why
   rect reads can collide with the renderer ("Bar gaps"). Upstream report material.
 - **Hit test in an inline formatting context** returns the parent, not an atomic inline
@@ -134,10 +134,10 @@ Upstream (pinned around; re-check at every toolchain bump):
   was not audited box by box for the trap.
   `blitz_orders_auto_positioned_boxes_among_siblings_only` flips when Blitz is fixed.
 - **Programmatic focus dispatches no focus or blur event** (dioxus-native-dom's `set_focus`
-  says "TODO: queue focus events"). quire tells the newly focused field itself; the element that
+  says "TODO: queue focus events"). Bardo tells the newly focused field itself; the element that
   *loses* the caret to a host focus write still hears no `blur` on Blitz.
 - **blitz-shell panics on a session with no clipboard** (it unwraps `arboard::Clipboard::new()`).
-  quire's own calls catch it; a field's own Ctrl+C in such a session still panics.
+  Bardo's own calls catch it; a field's own Ctrl+C in such a session still panics.
 - **anyrender's `draw_glyphs` carries no text.** PDF output walks the parley layouts to recover
   each glyph's text ("PDF output"); the clean fix is a text-and-clusters argument upstream.
 - **vello_hybrid's glyph atlas cache is off** (`atlas_cache_enabled: false`, never turned on by
@@ -146,17 +146,17 @@ Upstream (pinned around; re-check at every toolchain bump):
 - **CJK line breaking**: parley at this rev prints `ICU4X data error: No segmentation model for
   complex script` and wraps CJK without dictionary word boundaries.
 - **Closing a second window's vello_hybrid renderer crashes the first window on NVIDIA/Wayland**
-  (`vkAcquireNextImageKHR` through a null function pointer). quire keeps closed renderers alive
+  (`vkAcquireNextImageKHR` through a null function pointer). Bardo keeps closed renderers alive
   and reuses them. Not reported upstream; other drivers untested.
 - **Blitz reads `Instant` itself** for the double-click interval and the scrollbar fade, in
   `pub(crate)` fields, so the virtual clock cannot reach them ("Timing tests").
 - **Blitz's text editor ignores most of the input's style** (family, weight, letter-spacing,
   text-align). Bare fields draw their value in the default face; masked fields draw their own
   caret to compensate ("Text, fonts and editing").
-- **Taking `display: none` away does not restart a CSS animation** in Stylo; quire relies on
+- **Taking `display: none` away does not restart a CSS animation** in Stylo; Bardo relies on
   the `X--b` alias swap wherever a restart is needed.
 
-Not built, or limited, in quire:
+Not built, or limited, in Bardo:
 
 - **Other Blitz hosts get less than `launch` and the harness.** shell-host and sill call
   `ds_blitz::provide_host()`, which installs every part of the document host, but do not
@@ -166,19 +166,19 @@ Not built, or limited, in quire:
   replay; they must call
   `ds_blitz::snap_to_device` after each resolve themselves. Each needs a ds-blitz entry point
   the host calls.
-- **shell-host does not register quire's faces.** `SharedFonts::system()` never calls
+- **shell-host does not register Bardo's faces.** `SharedFonts::system()` never calls
   `SharedFonts::register`, and Inter is not installed system-wide, so sill draws system-ui
   wherever it asks for Inter, Inter Display, Bricolage, Karla, Space Mono or Noto Serif (its
-  headless `Fonts::Bundled` registers only the first `.ttf` in quire's font folder). The fix is
+  headless `Fonts::Bundled` registers only the first `.ttf` in Bardo's font folder). The fix is
   shell-host's: register `ds::style::fonts::FACES` (`ds_blitz::register_fonts`). Until then, never put the
   emoji face in a stack that carries ordinary text ("Colour emoji").
 - **`ds_blitz::launch` is not pixel-snapped and gets no hover replay**: blitz-shell resolves and
   paints in one redraw with no hook between.
 - **No tooltips for `title=` on the launch path.** Blitz draws none. Closing it means a host
-  overlay that shows a quire `Tooltip` for a hovered element's `title`; meanwhile
+  overlay that shows a Bardo `Tooltip` for a hovered element's `title`; meanwhile
   `Button { title }` and `HoverTarget` cover the places that matter.
 - **Scrollbars on the launch path.** blitz-paint's `scrollbars` feature is off in the pinned
-  block and quire's scroll containers set `scrollbar-width: none`; whether a window should draw
+  block and Bardo's scroll containers set `scrollbar-width: none`; whether a window should draw
   a thumb (with `--scroll-thumb`) is a design decision not taken.
 - **`Slider` carries `data-wheel="capture"` but has no `onwheel` handler**, and whether a host
   reads `data-wheel`/`data-overscroll` correctly is shell-host's test to write.
@@ -281,7 +281,7 @@ Not built, or limited, in quire:
 - **The overlay bounds are the `.ds` box**, which is as tall as its content, so a menu under a
   button in a content-high root flips and clamps to the top. `RootExtent::Viewport` addresses
   roots that should fill the viewport; unsure whether anything else is still affected.
-- **The gallery's own wallpaper, stage and grid layout** have no quire token or component (unsure
+- **The gallery's own wallpaper, stage and grid layout** have no Bardo token or component (unsure
   whether this still matters).
 - **`ds-behaviour` keeps no `ds-motion` dependency (recommended to stay that way).** The Space
   swipe's finish is an ease-out-cubic sampled by the caller from `Swipe::Finishing`, and its
@@ -331,7 +331,7 @@ Open items:
   tokens), and the size ladder 14/16/20/40/192 are the freeze's proposals. a proposed value would be a settings key; none is added because the user's design review comes
   first. Ends when the user sets the values or asks for keys.
 - **`TextField` and `CommandPalette` are untouched.** `prompt_host` and `FieldMode` are frozen; the
-  props pass-through is the quire fill.
+  props pass-through is Bardo fill.
 - **The gallery has no companion pages and `ds::prelude` no companion names** until the fill.
 - **The gate was run with the GPU busy:** `vello_hybrid`, `css_filter` and `texture_layer` tests
   were skipped.
@@ -367,7 +367,7 @@ anyrender_vello_hybrid) as a `DioxusDocument` driven with `resolve(t)`, `poll` a
   `qual_name(name, None)`, in the HTML namespace, and Stylo's `attr_matches` compares
   namespaces, so `[data-theme=dark]`, `[aria-selected=true]` and `[data-variant=…]` never match
   an attribute dioxus sets (fixed at fork rev `1b23fbd9`, G296: the plain form now matches).
-  `[*|data-theme=dark]` (valid CSS that browsers also match) and classes do. Every attribute selector in quire's CSS is written with `*|`, and the lint flags
+  `[*|data-theme=dark]` (valid CSS that browsers also match) and classes do. Every attribute selector in Bardo's CSS is written with `*|`, and the lint flags
   an unprefixed one under the Blitz profile. This is the most far-reaching finding.
 - **S3.** Keyframes with literal values, `var()` colours, `var()` distances and a `var()`
   duration all interpolate (a 1 s, 300 px linear move is at x = 90 at 0.3 s). motion.css and
@@ -414,7 +414,7 @@ anyrender_vello_hybrid) as a `DioxusDocument` driven with `resolve(t)`, `poll` a
   `data-blur=on` with `--m-tint` or `data-blur=off` with `--m-tint-solid`.
 - **S16.** Stock anyrender_vello_cpu 0.17 drops every filter when `multithreading` is on (the
   pinned feature), and stock anyrender_vello_hybrid 0.10 applies `blur()` and `drop-shadow()` only
-  and one filter node at most. Quire builds against forks of vello and anyrender that paint every
+  and one filter node at most. Bardo builds against forks of vello and anyrender that paint every
   `filter` function and filter list on both (see "CSS `filter`"); `filter` is no longer linted.
   The vibrancy saturation boost stays precomputed into the tint colours.
 - **Offscreen GPU rendering works**: `wgpu_context::BufferRenderer`, `vello_hybrid::Renderer::
@@ -434,7 +434,7 @@ adapter opens).
 | lists: `brightness() invert()`, `brightness() blur()`, `blur() contrast()` | paints, first function first | paints, first function first |
 
 - **How.** Stock anyrender and vello cannot do this, so the workspace patches them
-  (`[patch.crates-io]` in the root `Cargo.toml`) with the `quire-filters` branches of our forks,
+  (`[patch.crates-io]` in the root `Cargo.toml`) with the `bardo-filters` branches of our forks,
   github.com/Bardo-DE/vello and github.com/Bardo-DE/anyrender, and enables anyrender_vello_cpu's `filters` feature
   in the pinned block. vello: a colour matrix filter (`vello_common`, the CPU pass in `vello_cpu`,
   a `PASS_COLOR_MATRIX` in `vello_hybrid`'s `filter.wesl` with the GPU filter struct grown from 48
@@ -483,36 +483,36 @@ adapter opens).
   (`Availability::Disabled` writes `disabled="true"` beside `aria-disabled`).
 - **`data-*` names are case-sensitive on Blitz** (HTML folds them to lowercase), so
   `DataName::parse` takes lowercase letters, digits and `-` only, and refuses `ds-` names and the
-  names quire writes or reads (`variant`, `size`, `theme`, `accent`, `motion`, `material`,
+  names Bardo writes or reads (`variant`, `size`, `theme`, `accent`, `motion`, `material`,
   `slot`). dioxus names attributes by `&'static str`, so each distinct runtime `data-*` name is
   interned once (a leaked string per name for the program's life); a spread goes after the named
   attributes.
 - **`:where` works.** The reset is written `:where(.ds) button, :where(.ds) input, …`
   (specificity 0,0,1), so a component rule of one class outranks it. Written `.ds button`
   (0,1,1), the reset takes a lone class's `color` and `font` on every `button` and `input`.
-  `self_lint` counts `:where(.ds)` as quire's own ground.
-- **Blitz's user-agent sheet** gives `button { justify-content: center }` (quire's items set
-  `flex-start`) and gives an unsized `input` the 300 x 150 replaced-element default (quire sizes
+  `self_lint` counts `:where(.ds)` as Bardo's own ground.
+- **Blitz's user-agent sheet** gives `button { justify-content: center }` (Bardo's items set
+  `flex-start`) and gives an unsized `input` the 300 x 150 replaced-element default (Bardo sizes
   every input).
 - **Cascade order matters at equal specificity**: components come after motion, so a component
   rule's `animation` outranks a pulse class unless it excludes it
   (`.ds-chip[*|data-variant=person]:not(.a-chip-flash)`); `button.css` comes after
   `pin_tile.css`, so the add tile's rule names both classes; the shared drop rules
   (the shared drop rules) sort last because they tie with the items' hover and current rules.
-- **`DsInternals`** forbids a consumer selector on quire's classes or root attributes
+- **`DsInternals`** forbids a consumer selector on Bardo's classes or root attributes
   (`data-theme`, `data-hover`, `data-extent`, …); `data-slot` is a consumer seam
-  (`CONSUMER_SEAMS` in `ds-lint/selector.rs`). A type selector on a quire element trips the
+  (`CONSUMER_SEAMS` in `ds-lint/selector.rs`). A type selector on a Bardo element trips the
   consumer-only exemption, which keys on a selector starting `.ds`, so a `div`/`li` hover target
   carries `data-as`.
-- **A custom property on a `ds-*` element is how quire hands its sheet a per-instance colour**
+- **A custom property on a `ds-*` element is how Bardo hands its sheet a per-instance colour**
   (`--dot-c1..3`, `--plate-*-l/-d`, `--av-bg`, `--f-*`, `--ic-size`): the markup lint allows
-  custom properties inline on quire's elements and flags a literal colour in any other property
-  on any element. An `<svg>` is quire's when it is `.ds-ic` or carries `data-ds-svg`.
+  custom properties inline on Bardo's elements and flags a literal colour in any other property
+  on any element. An `<svg>` is Bardo's when it is `.ds-ic` or carries `data-ds-svg`.
 - **`scroll-behavior: smooth` is in `Rule::BlitzUnsupported`'s table** (as `position: sticky`
   is); `scroll-behavior: auto` lints clean.
 - **`Rule::UnknownAnimation` parses the `animation` shorthand**: each animation's name is its
   first identifier that is not a shorthand keyword; a name behind `var()` or in a string is not
-  judged. A consumer sheet that defines `@keyframes` under one of quire's names shadows quire's.
+  judged. A consumer sheet that defines `@keyframes` under one of Bardo's names shadows Bardo's.
 - **Other lint rules**: `Rule::RawHairline` (Strict) flags a literal `1px`/`.5px` border or
   outline width and a box whose whole width or height is `1px`, naming the pixel token;
   `Rule::RawSpacing` (Strict) flags a literal `px` in margin, padding and gaps (`0`, `auto`, `%`,
@@ -540,14 +540,14 @@ adapter opens).
 - **Glyph strokes at a fractional scale** are an even number of device pixels (`icon/stroke.rs`,
   design/08 section 1.4.1): a 16 px glyph's stroke is 2 device pixels at 1.25, 1.5 and 1.75.
 - **Lucide transcriptions** come from lucide-static 1.47.0 (ISC). A `<line>` is written as the
-  equivalent path. `Icon::Switches` and `Icon::MoonFilled` are quire's own compositions from
+  equivalent path. `Icon::Switches` and `Icon::MoonFilled` are Bardo's own compositions from
   Lucide parts (`icon/geometry_own.rs` explains each number); a filled glyph is
   `Shape::Solid(d)`, which fills and still strokes, so its silhouette equals the outline glyph's.
   At 16 px a ring knob would touch its track, so a knob is a stroked point, as Lucide draws dots.
 - **App icons.** The shipped set is in design/08 section 2.11 (`assets/icons/apps/`): thirteen
   sizes, three styles (Colour, Muted, Monochrome). Monochrome ships neutral and is tinted at run
   time by `ds::style::icon::retint::retint`, so one set serves every Space. The lookup
-  (`ds_settings::app_icon_path`) tries `$QUIRE_ICON_ASSETS` (the apps directory itself),
+  (`ds_settings::app_icon_path`) tries `$BARDO_ICON_ASSETS` (the apps directory itself),
   `$XDG_DATA_HOME/bardo/icons/apps`, each `$XDG_DATA_DIRS/bardo/icons/apps`, then the
   repository's `assets/icons/apps` in development; the first existing directory wins whole; the
   exact size, else the nearest larger, else the largest smaller. It lives in `ds-settings`
@@ -669,14 +669,14 @@ own caret and selection. The route needs no Blitz fork.
   clear the focus, so the surface prevents both defaults, focuses itself through `FocusHost::focus`, and
   treats the write's success as its focus-in (a host write dispatches no `focus` event). It keeps
   its own click count. `EditHandle::focus()`/`blur()` run the same focus-in/focus-out as a press.
-- **Pointer capture** is quire's: a press registers the surface's sink (`EditHost::capture`), and
+- **Pointer capture** is Bardo's: a press registers the surface's sink (`EditHost::capture`), and
   until the primary release every move and the release go to it wherever the pointer is. The
   window's hook hears winit's pointer events before the document (logical = physical / scale
   factor); while captured the surface ignores its own `pointermove`/`pointerup`.
 - **Clipboard HTML.** `ShellProvider` has text only; the window reads `text/html` through arboard
   directly (`ds_blitz::clipboard::read_html()`). On Wayland arboard goes through XWayland, as
-  blitz-shell's text clipboard does: quire does not use `wayland-data-control` (decided 2026-10-16,
-  production audit QUIRE-08; the workspace `arboard` asks for no features). The blitz fork's own
+  blitz-shell's text clipboard does: Bardo does not use `wayland-data-control` (decided 2026-10-16,
+  production audit BARDO-08; the workspace `arboard` asks for no features). The blitz fork's own
   workspace still enables the feature for blitz-shell's arboard, so the lock keeps `wl-clipboard-rs`
   until the fork drops it (an ask to the blitz fork, see "Clipboard" below).
 - **Stacking with an app's layers follows CSS 2.1 Appendix E** here: a positioned (z-index auto)
@@ -710,10 +710,10 @@ own caret and selection. The route needs no Blitz fork.
   `provide_host()` (shell surfaces) has the same part, with no keeper. Blitz counts `tabindex="-1"`
   as not focusable (`flush_is_focussable`: `index >= 0`), so a panel that is the keyboard's home
   must carry `tabindex="0"` to be the ancestor a press on empty space lands on; a browser would
-  take `-1` too, and quire does not yet (departure from the browser, kept to leave menus' and
+  take `-1` too, and Bardo does not yet (departure from the browser, kept to leave menus' and
   radios' roving `-1` items out of the click chain).
 - **The kept-click rule.** dioxus 0.7 has no capture phase and Blitz dispatches bottom-up only
-  (blitz-dom's events/driver.rs), so a control that stops a click keeps it from the root. Every quire click
+  (blitz-dom's events/driver.rs), so a control that stops a click keeps it from the root. Every Bardo click
   handler that stops a click or prevents its default calls `focus::click::kept_click` last: with
   the default left to run it goes through `ClickFocusHost`; with the default prevented,
   `ClickFocusHost::press` gives the nearest focusable element from the pressed one up the keyboard at
@@ -917,20 +917,20 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
 - dioxus-native's `clipboard` feature is on (blitz-shell over arboard 3.6), so Ctrl+C/X/V work in
   every field of a `launch` window. The app's calls answer `NoHost` outside a ds-blitz document,
   or `Unavailable`. The harness keeps an in-memory clipboard with an HTML slot.
-- **No data-control (2026-10-16, QUIRE-08).** quire reads and writes the clipboard as a client with
+- **No data-control (2026-10-16, BARDO-08).** Bardo reads and writes the clipboard as a client with
   a window, never through `zwlr`/`ext` data-control, which would let a background client read it:
-  so casement need not offer that protocol to every app for quire apps to paste. The cost is that
+  so casement need not offer that protocol to every app for Bardo apps to paste. The cost is that
   arboard reaches the Wayland selection through XWayland. The workspace `arboard` has no features;
   blitz-shell's arboard (in the blitz fork's workspace, `features = ["wayland-data-control"]`)
   still turns it on in the build, so **ask to the blitz fork:** drop `wayland-data-control` from
   `arboard` in the fork's root `Cargo.toml` (the fork commit 15ead74d added it), after which the
-  lock loses `wl-clipboard-rs`. Until then the build contains the backend but quire's own reads do
+  lock loses `wl-clipboard-rs`. Until then the build contains the backend but Bardo's own reads do
   not depend on it.
 - **The primary selection** is `ClipboardTarget::Primary` on `ds_blitz::clipboard::{read_from, write_to}` (a terminal's OSC 52 `p`).
   Linux reaches it through arboard's `LinuxClipboardKind::Primary` (`clipboard/primary.rs`), so on Wayland it goes through
   XWayland like the regular clipboard and is not shared with native Wayland clients; other platforms read nothing and refuse a
   write, never falling back to the regular clipboard. The harness keeps it in memory (`Harness::primary_text`).
-- **Reads are bounded (QUIRE-08).** `ds_blitz::clipboard` reads on a worker thread (`clipboard/read.rs`):
+- **Reads are bounded (BARDO-08).** `ds_blitz::clipboard` reads on a worker thread (`clipboard/read.rs`):
   the UI waits at most 500 ms, takes at most 16 MiB, and starts no second read while one is stuck.
   An owner that is slow, silent or huge reads as an empty clipboard. Still open: the `EditHost::paste`
   seam is synchronous, so a paste still holds the UI for up to those 500 ms, and blitz-shell's own
@@ -960,7 +960,7 @@ on a machine other builds were also using, so about +-10 ms).
   Vulkan loader and its drivers load once), and the first `request_adapter` on all backends is
   60 to 68 ms against 13 ms on Vulkan alone: the renderer's `WGPUContext` passes `display: None`,
   so the GL backend can never produce an adapter on Linux (`WGPU_BACKEND=gl` panics with no
-  adapter) and its probe is the whole difference. quire cannot narrow the backends: the renderer
+  adapter) and its probe is the whole difference. Bardo cannot narrow the backends: the renderer
   reads them from `WGPU_BACKEND` only, and `std::env::set_var` is unsafe and forbidden.
 - Tried and dropped, no gain beyond noise (+-10 ms): a thread that loads the system fonts while
   the main thread builds the document; a thread that creates a `wgpu::Instance` and an adapter at
@@ -1023,7 +1023,7 @@ on a machine other builds were also using, so about +-10 ms).
   others are sorted by `node_to_paint_order`, positioned above in-flow and floated, tree order
   within a level, **per parent**: a static box sorts below its positioned siblings, so an
   `absolute` card with no z-index inside a static wrapper after `relative` rows goes under the
-  rows (a browser puts it on top). quire's floating surfaces render in the overlay host with a
+  rows (a browser puts it on top). Bardo's floating surfaces render in the overlay host with a
   z-index, so they are hoisted and safe.
 - **Hoisted boxes' hit offsets trail a layout change by one resolve** (`flush_styles_to_layout`
   runs before `resolve_layout`). The overlay host covers the root, so its offsets never move.
@@ -1046,7 +1046,7 @@ on a machine other builds were also using, so about +-10 ms).
 - A Button is `inline-flex`, an atomic inline. When its parent holds only inline content (the
   Button alone, beside a placeholder, or beside inline text) the parent is an inline formatting
   context, and blitz-dom's `Node::hit` returns the parent, so the click goes to the parent. A
-  block sibling or a flex parent gives the Button its own box. Every quire container is a flex
+  block sibling or a flex parent gives the Button its own box. Every Bardo container is a flex
   row; a consumer puts a lone button in one. `crates/ds-conformance/tests/it/button_click.rs` pins both working
   shapes and keeps the failing one ignored.
 
@@ -1289,7 +1289,7 @@ names only anyrender, peniko, pdfrum and skrifa (no Blitz, no parley).
   print in a process (font context and system scan), 5.8-6.9 ms after; rasterised at 96 dpi
   against the headless snapshot, mean channel difference 0.52/255 and 0.13 % of pixels off by
   more than 64 (anti-aliasing only; the layout is identical).
-- **Limits**: pagination is quire's heuristic (backgrounds and borders split at a cut; a line or
+- **Limits**: pagination is Bardo's heuristic (backgrounds and borders split at a cut; a line or
   image taller than a page is cut; table headers do not repeat; floats and absolute boxes are
   not kept; orphans and widows fixed at 2; no `break-after`; no running headers, footers or page
   numbers). Font fallback is fontique's (the fixture's Karla heading got its CJK from
@@ -1314,7 +1314,7 @@ What Blitz at the pinned rev paints (48 px, headless):
 | no emoji family named, before `ds_blitz::EmojiChoice` | monochrome from Symbola, with tofu for modifiers and flags | |
 | Noto Emoji (monochrome), named | monochrome outlines | |
 
-- **COLRv1 needs no change in quire**: glifo interprets the paint graphs (layers, gradients,
+- **COLRv1 needs no change in Bardo**: glifo interprets the paint graphs (layers, gradients,
   clips) on either backend. `ds-blitz/tests/it/colour_emoji.rs` keeps it as a regression test (skipped where
   the font is not installed).
 - **Bitmap colour emoji draw since vello fork 5379e4a8.** glifo decodes `sbix` and `CBDT` glyphs
@@ -1331,7 +1331,7 @@ What Blitz at the pinned rev paints (48 px, headless):
   (which maps emoji itself, from Symbola). With the emoji face first, "Ab 2#" drew "Ab" and
   nothing for "2#". `--font-emoji` (`"Inter","Noto Color Emoji",system-ui,sans-serif`) and
   `.ds-emoji-text` are for emoji content only (the emoji grid, the preview glyph); the text
-  stacks name no emoji face while shell-host lacks quire's faces (Open items).
+  stacks name no emoji face while shell-host lacks Bardo's faces (Open items).
   `ds-blitz/tests/it/text_stack_fonts.rs` lays the stack out under both font contexts: under shell-host's,
   "00:22" is 84 px against 45 for Inter and 41 for system-ui.
 - **Unnamed-stack emoji (anyview report, 2026-10-14).** A ZWJ family drew as four monochrome
@@ -1340,11 +1340,11 @@ What Blitz at the pinned rev paints (48 px, headless):
   `big_colr`) and the named-family rows above prove it. Parley (shape/mod.rs, `select_font`)
   asks the element's stack, then the `emoji` generic, and `system-ui`/`sans-serif` expand to the
   whole fontconfig match list (`fc-match -s`), which reaches Symbola before the `emoji` generic
-  is consulted. Fix: `ds_blitz::font_context` (`quire-emoji`, `face.rs`; shared with temor's terminal) detects the first COLR family of
+  is consulted. Fix: `ds_blitz::font_context` (`bardo-emoji`, `face.rs`; shared with temor's terminal) detects the first COLR family of
   the `emoji` generic, else the COLRv1 file, else the first `sbix` or `CBDT` family, and inserts it into each generic list
   just before the first family mapping U+1F600, so text fonts earlier in the list keep digits and
-  spaces. `QUIRE_EMOJI_FAMILY=<name>` (`EmojiChoice::Named`) overrides the detection. Not
-  covered: contexts not built by quire (shell-host's `SharedFonts::system`) still need the
+  spaces. `BARDO_EMOJI_FAMILY=<name>` (`EmojiChoice::Named`) overrides the detection. Not
+  covered: contexts not built by Bardo (shell-host's `SharedFonts::system`) still need the
   emoji face named, or the same call; the fix would belong in `blitz_kit::fonts::SharedFonts`.
 
 - **For an emoji grid**: COLRv1 by name for the whole set; AnimatedEmoji's still first frames
@@ -1376,7 +1376,7 @@ runs whole either way), and parley's cluster flags do not expose the dictionary'
   offscreen `Rgba8Unorm` texture on one wgpu device held for the harness's life, and reads it
   back, so pixel assertions work on both backends (under 1 % of pixels differ by more than 24
   levels from vello_cpu, all anti-aliased edges). The adapter is chosen as shell-host chooses it
-  (`AdapterPref`, `WGPU_ADAPTER_NAME`, reimplemented because quire cannot depend on shell-host);
+  (`AdapterPref`, `WGPU_ADAPTER_NAME`, reimplemented because Bardo cannot depend on shell-host);
   with none, `try_new` returns `HarnessError::Renderer`. `paint_timed()` waits for the GPU
   before stopping the clock; `PaintTime::scene` is the CPU scene build. On vello_cpu the harness
   builds a renderer per picture, which its numbers include.
@@ -1522,7 +1522,7 @@ the decisions and what was verified:
   it keeps the target's mode, writes through a symlink, and queues writers of one path in a
   process behind a lock. Caps: settings 1 MiB and 4 000 keys, Spaces and Today 16 MiB, a schema
   file 256 KiB. `spaces.json` and `today.json` are created 0600.
-- **A TOML settings save merges into the file** (QUIRE-10, QUIRE-02; owner decision 2026-10-16,
+- **A TOML settings save merges into the file** (BARDO-10, BARDO-02; owner decision 2026-10-16,
   preserve). `Store::save` runs under `ds_helpers::update_atomic`: it takes the in-process path
   lock and an `flock` on the sidecar `.<name>.lock` (0600, left in place, waited for at most five
   seconds), reads the file through the capped reader, and publishes through the same writer as
@@ -1535,7 +1535,7 @@ the decisions and what was verified:
   covered: JSON and CSS stores (they write the type's own keys only), and a damaged file's move
   aside, which runs after the lock is released (a second writer could in theory move the same
   file first; the damaged file is kept either way).
-- **Schema discovery trusts only what its location says** (QUIRE-13). A `<app>.settings.toml`
+- **Schema discovery trusts only what its location says** (BARDO-13). A `<app>.settings.toml`
   must declare that `app` and a `file` inside `<app>/`; the first schema found for an app wins and
   `data_dirs()` lists the system directories before `$XDG_DATA_HOME`, so a user-dir schema can add
   a program but not replace an installed one. The `agent = "settable"` mark is read only from the
@@ -1657,7 +1657,7 @@ the decisions and what was verified:
   has no user any more and can go with the token pass. (5) `ProviderMark` is on the `ControlSize`
   ladder (Mini 11, Small 13, Regular 14, Large as Regular). (6) `RichText` and `TextRuns` draw
   inline runs with no element of their own, so they take no `Common`. (7) `LinkPill` takes
-  `href` and `oncopy` (quire has no clipboard write on the `DocumentHost`); "Copied" shows for the
+  `href` and `oncopy` (Bardo has no clipboard write on the `DocumentHost`); "Copied" shows for the
   toast hold, not until the pointer leaves, since the pill shrinks out from under it.
   (8) `space_pressed` reads Ctrl+1..9; the Space colour cross-fade over `--t-big` is the frame's,
   already built. (9) `Anim::{MenuPop, BubblePop, PillUp, RingDrain, LinkPillIn}` and their keyframes
@@ -1766,7 +1766,7 @@ Open:
   the only place a dioxus key and its modifiers become a chordkit `KeyInput` (Ctrl, Alt, Shift, Super
   and Meta are kept apart; chordkit's normaliser folds Meta into Super on every platform; lock and
   AltGraph flags are not chord modifiers). `Keys::action_of` / `Keys::resolve` read the active keymap,
-  `Context` decides what a text field or a terminal keeps. Nothing else in quire reads
+  `Context` decides what a text field or a terminal keeps. Nothing else in Bardo reads
   `Modifiers::CONTROL`, `SUPER` or `META` to decide a chord.
 - Standing: on our desktop (and macOS) Command arrives as Super and Ctrl+V is not a paste;
   on KDE, GNOME, Windows and other Linux Ctrl+V is. A document under no `KeySource` takes our
@@ -1784,7 +1784,7 @@ Open:
   drawn from the live keymap, so a remapped Copy shows its new chord.
 - Standing: `SwitchChord` is `Primary` or `Unbound`; the `Control` variant is gone because Ctrl+1..9 is the
   desktop's Space switch on our desktop (chordkit reserves it).
-- Standing: `PaneStack` registers `quire.pane-back` (Primary+`[`) on first render; an app that already
+- Standing: `PaneStack` registers `bardo.pane-back` (Primary+`[`) on first render; an app that already
   holds that chord leaves the pane stack's Command+`[` unbound (the conflict is in `Keys::problems`),
   while Escape and Alt+Left still go back.
 - Open: a chord that holds Shift with a symbol key reaches the resolver as the shifted symbol
@@ -1798,7 +1798,7 @@ Open:
   (which `Keys` may do during a render) only parses. A failed `dconf` keeps the last dump; the dump
   saved at `$XDG_CONFIG_HOME/chordkit/dconf-dump` is read only when there is no `dconf` program, and
   that file is not watched. The `dconf` call is injected, so tests never read the real database.
-  Moved from temor's own keymap source, which now takes quire's.
+  Moved from temor's own keymap source, which now takes Bardo's.
 - Open: `Keys` reloads inside `Ds`'s render (the watch callback sets a flag and schedules the render),
   and registering writes a signal during a render. Neither has been run; check for a dioxus
   "write during render" warning with a live source.
@@ -1936,7 +1936,7 @@ Tests (`crates/ds-conformance/tests/it/search_summon_prefilled.rs`, Ctrl+K summo
 
 Expectation on Blitz 6069a906 alone, without fix B: the prefilled and replaced cases fail with "nvoicei" (editor built with text, caret at 0; `set_text` keeps the old index), when the field is focused before its first layout. `prefilled_selector_all*` fails with "nvoicei" when the selection was not made. Cases where focus lands after layout already pass (the `Place` path already places the caret).
 - Blitz fix (ca79f436, caret to text end when the editor is built or its text replaced): closes `prefilled_*` (None/Own) and `replaced_*`. Does not make Select::All select "i" if the selection is dropped.
-- Fix B (quire): `focus_selecting`'s `Leave` arm now owes the caret at End like `Place`; a Busy `caret_owed` read counts as owed; the owed caret waits up to 40 frames for the layout (was 8). Closes `prefilled_selector_none*` and `prefilled_selector_all*` on old Blitz; cannot close `replaced_*` (text replaced after focus; only the Blitz fix). `prefilled_own_focus*` goes through `focus_placing` (Place arm) and was already covered by the old owed check, so it is the control.
+- Fix B (Bardo): `focus_selecting`'s `Leave` arm now owes the caret at End like `Place`; a Busy `caret_owed` read counts as owed; the owed caret waits up to 40 frames for the layout (was 8). Closes `prefilled_selector_none*` and `prefilled_selector_all*` on old Blitz; cannot close `replaced_*` (text replaced after focus; only the Blitz fix). `prefilled_own_focus*` goes through `focus_placing` (Place arm) and was already covered by the old owed check, so it is the control.
 
 ### q22 results (run at merge, 2026-10-11)
 
@@ -1950,7 +1950,7 @@ second line (a focus that lands before layout owes the caret).
 
 ## chrome numbers for casement (2026-10-15)
 
-casement draws window chrome itself and reaches quire only through the pure crates, so the numbers
+casement draws window chrome itself and reaches Bardo only through the pure crates, so the numbers
 the chrome stylesheet writes are now public as numbers, each from the table the CSS is written from:
 
 - `Radius::px() -> u16` (`--r-window` is 10). `Radius::value()` now returns a `String` formatted
@@ -1960,7 +1960,7 @@ the chrome stylesheet writes are now public as numbers, each from the table the 
   `.12` or `.66` and write them back); `rgba()` rounds to bytes for a renderer. The CSS for those two
   is written from the layers. The other eleven shadows read `var(--hair)`, `--hairline` or
   `--f-pill`, so they stay CSS-only and `layers` returns an empty slice for them.
-- `chrome::light_hue(Light, Scheme) -> (Hex, Hex)`: disc and mark ink. quire already had the colours:
+- `chrome::light_hue(Light, Scheme) -> (Hex, Hex)`: disc and mark ink. Bardo already had the colours:
   `window_frame.css` paints the disc `--c-red|amber|green` and the mark `-deep` (light) or `-soft`
   (dark), from `label_hue.rs`. `light_hue` names that choice; a test checks the CSS reads the same
   tokens.
@@ -2010,7 +2010,7 @@ Lane `q-spacesbar`, written without a build: nothing here has been compiled or r
   its own `use_presence` with `DropIn` / `LiftOut`, so a host gets `on_hidden` at `settle(LiftOut)` and draws nothing
   once hidden. The drag highlight reuses `DropState` (`Target` lit, `Accepts` outlined, `Source` dimmed).
 - **Departures.**
-  1. WorkspacePills lives in sill's `sill-shell-kit`, not in quire, so `SpacesBar` draws its own Space buttons (the
+  1. WorkspacePills lives in sill's `sill-shell-kit`, not in Bardo, so `SpacesBar` draws its own Space buttons (the
      same look: the frame's `--f-pill` with `--shadow-current` for the current one) instead of reusing it.
   2. Hover is `onpointerenter` / `onpointerleave` on the bar with no intent delay; Sonoma expands as the pointer
      reaches the top edge, which only the host's layer-surface input region can decide.
@@ -2042,7 +2042,7 @@ Lane `q-barasks`, written without a build: nothing here has been compiled or run
 - **Why an `img` for the backdrop.** The thumbnail picture is already an `img` with `object-fit: cover` clipped by the card's `overflow:hidden`
   and radius, which Blitz draws (and an `img` takes `file:` and `data:` through the net provider). A CSS `background-image` through a custom
   property is what sill called unproven; S8 (above) proves only `data:` backgrounds with a `data:` NetProvider.
-- **Why `on_layout` and not per-tile hooks.** Every quire component that exposes geometry does it with `use_rect` (the host's frame phase) and a
+- **Why `on_layout` and not per-tile hooks.** Every Bardo component that exposes geometry does it with `use_rect` (the host's frame phase) and a
   callback or anchor (palette `on_rect`, menus' `Anchor::Mounted`), not ids for the caller to measure. One event with all rects lets the host
   send one update per change. Each part (`Tile`, `Card`, `Plus`) owns a probe and publishes into a book the bar shares by context; a `Reporter`
   child reads the book in the bar's order and calls `on_layout` when the layout differs; nothing is reported until a part is laid out. The card
@@ -2145,11 +2145,11 @@ apps (first detent's Settings, "install llama.cpp" with a copyable command) reus
   peer, work)` and the typed `NotAnswering` ("The package manager is not answering"). Used by ds-helpers (PackageKit), ds-settings (the
   live client, the portal read), ds-desktop (probe, `Outputs`) and ds-blitz (print portal). The values are the audit's (10 s reads,
   30 s actions); the owner has not confirmed them. A new peer call takes one of the four, never a bare `Duration`.
-- **PackageKit (QUIRE-05, 06).** The match rule names PackageKit's unique name (from the `CreateTransaction` reply) and `apply` checks the
+- **PackageKit (BARDO-05, 06).** The match rule names PackageKit's unique name (from the `CreateTransaction` reply) and `apply` checks the
   sender again; a `NameOwnerChanged` watch ends the wait if PackageKit disconnects; a quiet transaction is cancelled. `Resolve` ignores any
   id whose name is not the one asked for. Not answering is `Outcome::Failed("The package manager is not answering")`, **not a new variant**:
   `Outcome` is matched exhaustively by anyview, so a `NotAnswering` variant waits for a wave that updates it.
-- **`Changed` (QUIRE-04): unicast, not key-only.** The signature stays `(s, v)` (design/22 section 9.4, frozen) and accountd's
+- **`Changed` (BARDO-04): unicast, not key-only.** The signature stays `(s, v)` (design/22 section 9.4, frozen) and accountd's
   `Served::changed(key, value)` keeps working: the skeleton sends the signal by unique name to the peers `permit(Read)` let read (a
   `Describe`, `Get` or `Snapshot`; `LiveClient::changes` makes one), never as a broadcast. `permit` is not asked again at emission, so a
   peer whose role is withdrawn mid-session keeps hearing until it leaves. On a session bus that allows eavesdropping (the stock
@@ -2158,12 +2158,12 @@ apps (first detent's Settings, "install llama.cpp" with a copyable command) reus
 - **Clients take signals from the owner only.** zbus's proxy signal streams filter on the destination's current unique name, so
   `LiveClient::changes`, the portal's `SettingChanged` and the print portal's `Response` are sender-checked; PackageKit used a raw match
   rule and now checks by hand.
-- **`use_environment` (QUIRE-07).** The file is published and watched first; `SystemPrefsWatch::start` subscribes to `SettingChanged`
+- **`use_environment` (BARDO-07).** The file is published and watched first; `SystemPrefsWatch::start` subscribes to `SettingChanged`
   before it reads, on one connection, and a portal that does not answer within `START` is the defaults. `start` still awaits its first
   read (casement and anyview call it), so only `use_environment` stopped waiting.
-- **Not done.** (QUIRE-03 and QUIRE-12's library side landed in wave 2: see Open items.) QUIRE-25's owner check (is the holder
-  of `org.quire.Outputs1` sill?) belongs with sill; quire now drops rows with no size or no scale and caps the list at 16. The dbusmenu
-  `RequestName` in `ds-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (QUIRE-21) is still
+- **Not done.** (BARDO-03 and BARDO-12's library side landed in wave 2: see Open items.) BARDO-25's owner check (is the holder
+  of `org.bardo.Outputs1` sill?) belongs with sill; Bardo now drops rows with no size or no scale and caps the list at 16. The dbusmenu
+  `RequestName` in `ds-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (BARDO-21) is still
   unbounded. detent's half of DETENT-07 (feeding `Failed` on `LiveError::Timeout`, awaiting `invoke` off the effect loop) and the same
   convention in porter-dbus are theirs.
 
@@ -2185,7 +2185,7 @@ apps (first detent's Settings, "install llama.cpp" with a copyable command) reus
   entry on a repeated group or a localized key with no default), and the same locale rule in every app. What it costs: sill reads
   more accessors than `DesktopFile` has (`only_show_in`, `not_show_in`, `flatpak`, `startup_wm_class`, `dbus_activatable`, `Iter`'s
   directory walk and app ids), which stay with the caller as plain `string`/`list`/`is_true` reads. Whether to move is the owner's call;
-  the reader is additive and nothing in quire uses it yet.
+  the reader is additive and nothing in Bardo uses it yet.
 
 ## Type rules (2026-10-28)
 

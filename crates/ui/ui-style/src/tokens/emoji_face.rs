@@ -8,9 +8,9 @@
 //! and `*` (the bases of keycap sequences) to empty glyphs, so with the emoji face first "2#"
 //! drew nothing (measured; ui-blitz/tests/colour_emoji.rs in ui-blitz keeps the text pixel-equal to
 //! Inter's). Every emoji Inter lacks, which is all the pictographs, flags, skin tones and ZWJ
-//! sequences, falls through to the colour face. Consumers may not write a `font-family` themselves (the lint), so quire carries
+//! sequences, falls through to the colour face. Consumers may not write a `font-family` themselves (the lint), so Bardo carries
 //! the stack, and `.ds-emoji-text` applies it. Kept apart from [`super::Family`], whose members are
-//! the faces quire ships; this one is the system's.
+//! the faces Bardo ships; this one is the system's.
 
 use super::name::VarName;
 use super::token::Token;

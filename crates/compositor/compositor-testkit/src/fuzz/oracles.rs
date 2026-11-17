@@ -145,7 +145,7 @@ fn kind_of(interface: &str) -> Option<GlobalKind> {
         "xdg_toplevel_tag_manager_v1" => GlobalKind::XdgToplevelTag,
         "zxdg_exporter_v2" | "zxdg_importer_v2" => GlobalKind::XdgForeign,
         "xdg_system_bell_v1" => GlobalKind::SystemBell,
-        "bardo_window_manager_v1" => GlobalKind::QuireWindow,
+        "bardo_window_manager_v1" => GlobalKind::BardoWindow,
         "zwlr_layer_shell_v1" => GlobalKind::LayerShell,
         "ext_session_lock_manager_v1" => GlobalKind::SessionLock,
         "wl_seat" => GlobalKind::Seat,
@@ -179,8 +179,8 @@ fn kind_of(interface: &str) -> Option<GlobalKind> {
         | "zwlr_screencopy_manager_v1" => GlobalKind::ImageCapture,
         // P2-Z: the desktop and shell protocols (the shell and agent connections only) and
         // the toplevel capture source (declared; P2-Q3 advertises it).
-        "bardo_desktop_manager_v1" => GlobalKind::QuireDesktop,
-        "bardo_shell_v1" => GlobalKind::QuireShell,
+        "bardo_desktop_manager_v1" => GlobalKind::BardoDesktop,
+        "bardo_shell_v1" => GlobalKind::BardoShell,
         "ext_foreign_toplevel_image_capture_source_manager_v1" => GlobalKind::ToplevelCapture,
         _ => return None,
     })

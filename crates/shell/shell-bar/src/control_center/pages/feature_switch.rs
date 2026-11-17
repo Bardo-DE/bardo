@@ -1,5 +1,5 @@
 //! What a detail pane's header holds besides the title: the feature's switch, and the back
-//! button's handler as quire's `PaneHeader` takes it.
+//! button's handler as Bardo's `PaneHeader` takes it.
 
 use dioxus::prelude::*;
 use ui_components::base::press::Press;

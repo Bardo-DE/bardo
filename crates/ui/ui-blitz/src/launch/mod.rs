@@ -1,11 +1,11 @@
-//! Running a quire app on Blitz.
+//! Running a Bardo app on Blitz.
 //!
 //! The document, the font registration, the input modality (`ui_components::prelude::HostSignals`),
 //! a `data:` net provider for mask and background images (spike S7/S8), and a redraw when a timer
 //! or an image lands.
 //!
 //! The window is blitz's portable `dioxus-native` shell (winit), so an app runs the same on any
-//! OS; `crate::host` wraps the app to supply what quire needs on top of it. ui-blitz runs the
+//! OS; `crate::host` wraps the app to supply what Bardo needs on top of it. ui-blitz runs the
 //! event loop itself (`crate::window_shell`), one dioxus-native application per window, so the
 //! app can open more windows (`crate::open_window`).
 
@@ -48,7 +48,7 @@ pub struct AppConfig {
     /// The first window: its title and size, and the application id and decorations every
     /// later window falls back to.
     first: WindowSpec,
-    /// What the document is given beyond quire's own contexts.
+    /// What the document is given beyond Bardo's own contexts.
     setup: Setup,
     /// What the app does when its last window closes.
     last_window: LastWindowClosed,

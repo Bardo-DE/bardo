@@ -32,9 +32,9 @@ both schemes and at every motion level. The lint's Strict profile has `Rule::Raw
 literal `px` in `margin`, `padding` (and their sides and logical forms) or a `gap` is an
 offence in consumer CSS. The odd values stay with their one component each.
 
-**Settled (Polish pass, 2026-09-24).** quire's own component sheets read the tokens, and
+**Settled (Polish pass, 2026-09-24).** Bardo's own component sheets read the tokens, and
 `Rule::RawSpacing` runs on them. Three steps were added because 04-COMPONENTS quotes them
-exactly for a quire component: `--s-1-5` (1.5, the chip and the image provider mark), `--s-13`
+exactly for a Bardo component: `--s-1-5` (1.5, the chip and the image provider mark), `--s-13`
 (13, the hover card's `12px 13px`) and `--s-15` (15, the toast's `5px 5px 5px 15px`).
 
 Measures: reading and writing text is capped at `66ch` (`S:462`, `S:608`, `S:728`); focus-mode
@@ -82,7 +82,7 @@ The old frame model (coloured frame, 8 px inset card, `.layer` A/B, `.grain` lay
 | Sidebar hidden | columns `0 minmax(0,1fr)`; the edge peek (below) brings it back |
 | Shadow | the window shadow only (30 section 3.2); none on the content |
 
-Status: **target (clean-up phase)** for the quire code: `.ds-frame`, the `.ds-layer` pair and the 8 px
+Status: **target (clean-up phase)** for Bardo code: `.ds-frame`, the `.ds-layer` pair and the 8 px
 card inset still exist and go.
 
 ## 4. The sidebar

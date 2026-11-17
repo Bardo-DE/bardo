@@ -1,7 +1,7 @@
 {
  "source": "Noto Animated Emoji, https://googlefonts.github.io/noto-emoji-animation/",
  "licence": "CC-BY-4.0",
- "attribution": "Animated emoji from Noto Animated Emoji by Google, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Resampled, cropped to frames and packed into sprite sheets by quire's tools/emoji.",
+ "attribution": "Animated emoji from Noto Animated Emoji by Google, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). Resampled, cropped to frames and packed into sprite sheets by bardo's tools/emoji.",
  "step_ms": 80,
  "colours": 256,
  "sizes": [

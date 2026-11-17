@@ -1,12 +1,12 @@
-//! A launcher row's parts as quire's palette and menus take them (design/13 §13.3.9: a 34 px tile,
+//! A launcher row's parts as Bardo's palette and menus take them (design/13 §13.3.9: a 34 px tile,
 //! the title, the subtitle as its detail, a trailing hint).
 //!
 //! Each row carries its chord ([`row_chord`]: its first action's, `⌘K` for actions without one,
-//! else `↵`) as quire's `RowChord::on_selected`, so only the selected row shows it and quire moves
+//! else `↵`) as Bardo's `RowChord::on_selected`, so only the selected row shows it and Bardo moves
 //! it with the selection, as Spotlight's hint does; a row in a mixed section trails its kind. Pure.
 //!
 //! A row's tile is the icon file the app index resolved (`IconRef::File`) drawn at 48 px, as a
-//! `Symbolic` for a freedesktop `*-symbolic` file and an `Image` otherwise; else the quire glyph
+//! `Symbolic` for a freedesktop `*-symbolic` file and an `Image` otherwise; else Bardo glyph
 //! its `IconRef::Glyph` names; else its provider's glyph.
 
 use std::path::Path;
@@ -63,7 +63,7 @@ pub fn action_entries(actions: &[Action]) -> Vec<MenuItem<ActionId>> {
         .collect()
 }
 
-/// A row's chord, shown by quire only while the row is the selection (Spotlight's hint): its
+/// A row's chord, shown by Bardo only while the row is the selection (Spotlight's hint): its
 /// first action's chord, `⌘K` (the shared show-actions key) when it has actions but none has a
 /// chord, else `↵` (Enter runs it).
 pub(crate) fn row_chord(item: &Item) -> RowChord {
@@ -147,7 +147,7 @@ fn file_icon(path: &Path) -> Option<IconSource> {
     })
 }
 
-/// The row's glyph: the quire icon it names, else its provider's.
+/// The row's glyph: Bardo icon it names, else its provider's.
 #[must_use]
 pub fn glyph(item: &Item) -> Icon {
     match &item.icon {
@@ -156,8 +156,8 @@ pub fn glyph(item: &Item) -> Icon {
     }
 }
 
-/// The quire icon whose kebab-case name is `name` (`power`, `wifi-low`), as `IconRef::Glyph`
-/// carries it. quire has no name lookup, so the variant's own name is kebab-cased.
+/// Bardo icon whose kebab-case name is `name` (`power`, `wifi-low`), as `IconRef::Glyph`
+/// carries it. Bardo has no name lookup, so the variant's own name is kebab-cased.
 #[must_use]
 pub fn named(name: &str) -> Option<Icon> {
     Icon::ALL
@@ -207,7 +207,7 @@ mod tests {
         }
     }
 
-    /// Every row carries its chord for quire to show on the selected row only (the first
+    /// Every row carries its chord for Bardo to show on the selected row only (the first
     /// action's, `⌘K` for actions without one, `↵` for none); the trail keeps only data, a kind
     /// in a mixed section.
     #[test]
@@ -253,7 +253,7 @@ mod tests {
     }
 
     #[test]
-    fn glyph_names_are_quires_in_kebab_case() {
+    fn glyph_names_are_bardo_in_kebab_case() {
         assert_eq!(kebab("WifiLow"), "wifi-low");
         assert_eq!(kebab("Volume2"), "volume-2");
         assert_eq!(named("power"), Some(Icon::Power));

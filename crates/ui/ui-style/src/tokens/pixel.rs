@@ -3,7 +3,7 @@
 //!
 //! A `1px` line at scale 1.5 is 1.5 device pixels, which paints as one full row and one half
 //! row; at 1.25 and 1.75 it is worse. Every hairline, 1 px border, separator and focus ring in
-//! quire reads one of these instead, and the root writes each one's value for its scale
+//! Bardo reads one of these instead, and the root writes each one's value for its scale
 //! (`Ds { scale }`), so the line is exactly one (or a whole number of) device pixels.
 //!
 //! Each is a tuned token: `.ds` declares `--hair:var(--scale-hair,1px)` and the root writes

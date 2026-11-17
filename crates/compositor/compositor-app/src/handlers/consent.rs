@@ -12,9 +12,9 @@ use crate::core_loop;
 use crate::state::State;
 use compositor_core::privilege::{AskSubject, PowerOutcome};
 use compositor_core::{ClientKey, Event};
+use compositor_wayland::bardo::shell_permission;
 use compositor_wayland::consent::{ConsentHandler, Ledger, release_gate};
 use compositor_wayland::handler::EventSink;
-use compositor_wayland::quire::shell_permission;
 use compositor_wayland::{gamma, output_management, output_power, virtual_keyboard};
 use compositor_wayland::{wlr_toplevel, workspace};
 use desktop_protocols::vocab::{AskId, Memory, Power};
@@ -128,10 +128,10 @@ pub(crate) fn ask(
     memory: Memory,
 ) {
     let now = state.clock.now();
-    shell_permission::apply_ask(&mut state.wl.quire_shell, ask, power, subject, memory, now);
+    shell_permission::apply_ask(&mut state.wl.bardo_shell, ask, power, subject, memory, now);
 }
 
 /// `Effect::WithdrawAsk`: the question is taken back from the shell.
 pub(crate) fn withdraw(state: &mut State, ask: AskId) {
-    shell_permission::apply_withdraw(&mut state.wl.quire_shell, ask);
+    shell_permission::apply_withdraw(&mut state.wl.bardo_shell, ask);
 }

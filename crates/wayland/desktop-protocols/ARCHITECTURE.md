@@ -1,10 +1,10 @@
 # Architecture
 
-desktop-protocols holds the desktop's private Wayland protocols, `quire_*_v1`: the XML, the pure
+desktop-protocols holds the desktop's private Wayland protocols, `bardo_*_v1`: the XML, the pure
 wire vocabulary every tier shares, and the wayland-scanner bindings for clients and the
 compositor. It is a leaf: it depends on nothing of ours, so the compositor (casement), the shell
 (sill, layer-shell-host), the agent tier (cua, docket, porter's `prov`), the portal (transom) and
-quire's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
+Bardo's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items.
 
 ## 1. The crate and its layers
@@ -123,7 +123,7 @@ reads the same as the protocol.
 3. The server (casement) and every client are updated in the same change (see section 7).
 
 **Add a protocol.**
-1. `protocols/quire-<name>-v1.xml` with the copyright block every file carries.
+1. `protocols/bardo-<name>-v1.xml` with the copyright block every file carries.
 2. A `client_protocol!` line in `src/client.rs` and a `server_protocol!` line in
    `src/server.rs`, listing the protocols whose interfaces it names.
 3. The file in `tests/it/support/mod.rs` `FILES`; its interfaces and errors in
@@ -133,7 +133,7 @@ reads the same as the protocol.
 
 | File | Proves |
 | --- | --- |
-| `tests/it/xml_introspection.rs` | every file parses and is named after itself; every file has a row in section 2 that says `casement` or `not served yet`, and its XML says `Not served yet:` exactly when the row does; every interface is `quire_*_v1` at version 1 (the shell's global at 5 and the window manager at 2, their newer messages last and saying `since=`); every request and event with its arguments, in opcode order, as frozen; error enums; codes dense from 0 (bitfields: single bits); every vocab enum has its XML enum's names and codes and every XML enum has a vocab type; cross-references resolve; the licence notice; `bardo-agent-v1.xml`'s pinned bytes; with both features, the generated interfaces' names, versions and messages |
+| `tests/it/xml_introspection.rs` | every file parses and is named after itself; every file has a row in section 2 that says `casement` or `not served yet`, and its XML says `Not served yet:` exactly when the row does; every interface is `bardo_*_v1` at version 1 (the shell's global at 5 and the window manager at 2, their newer messages last and saying `since=`); every request and event with its arguments, in opcode order, as frozen; error enums; codes dense from 0 (bitfields: single bits); every vocab enum has its XML enum's names and codes and every XML enum has a vocab type; cross-references resolve; the licence notice; `bardo-agent-v1.xml`'s pinned bytes; with both features, the generated interfaces' names, versions and messages |
 | `tests/it/vocab_codes.rs` | (features `client,server`) every vocab enum accepts exactly the codes the generated enum accepts, with the same variant names, on both sides; `HeldMods` bits and `Transform` against `wl_output` |
 | `tests/it/round_trip.rs` | every vocab value round-trips through serde and its code; pinned JSON for stored forms |
 
@@ -175,7 +175,7 @@ holds the frozen interface as tables (every message with its arguments, every er
 
 The workspace has three members: `desktop-protocols` (the repo root), `desktop-client` and `shell-verbs` (section 9). The
 second is the one typed Wayland desktop client (amendment A3 of the P1 library plan): the
-standard wlroots-style protocols plus the Quire arm (`bardo_desktop_v1`, `bardo_shell_v1`,
+standard wlroots-style protocols plus Bardo arm (`bardo_desktop_v1`, `bardo_shell_v1`,
 filled at P2-Z-dc). It is a separate package so a consumer that wants only toplevels and
 outputs on a stock compositor does not take the private bindings: its core takes
 `desktop-protocols` with default features (the pure vocab, serde and thiserror only), and its
@@ -184,7 +184,7 @@ outputs on a stock compositor does not take the private bindings: its core takes
 | Layer | Path | Built | Depends on |
 | --- | --- | --- | --- |
 | core | `desktop-client/src/` (all but `client/`, `fake/`) | always | thiserror, desktop-protocols (vocab only) |
-| wire | `desktop-client/src/client/` | feature `client` | wayland-client, wayland-protocols (ext), wayland-protocols-wlr, rustix (memfd, no mmap), desktop-protocols `client` (the `quire_*` bindings) |
+| wire | `desktop-client/src/client/` | feature `client` | wayland-client, wayland-protocols (ext), wayland-protocols-wlr, rustix (memfd, no mmap), desktop-protocols `client` (the `bardo_*` bindings) |
 | fake | `desktop-client/src/fake/` | feature `fake` | nothing beyond the core |
 
 Core, one concept per file:
@@ -200,16 +200,16 @@ Core, one concept per file:
 | Commands, tickets, errors | `command.rs`, `error.rs` |
 | The one transition `reduce(DesktopState, DesktopEvent)` | `state.rs`, `event.rs`, `reduce.rs` |
 | The seam consumers code against | `desktop.rs` (`trait Desktop`; `DesktopClient` and `FakeDesktop` implement it) |
-| The Quire arm: apps, windows, Spaces, the shell's notes, the window-to-handle `Linker`, the projection onto toplevel flags | `quire/` (`app.rs`, `window.rs`, `space.rs`, `shell.rs`, `link.rs`, `project.rs`, `targets.rs`, `reduce.rs`, `set.rs`) |
+| Bardo arm: apps, windows, Spaces, the shell's notes, the window-to-handle `Linker`, the projection onto toplevel flags | `bardo/` (`app.rs`, `window.rs`, `space.rs`, `shell.rs`, `link.rs`, `project.rs`, `targets.rs`, `reduce.rs`, `set.rs`) |
 
 **Choosing the arm.** `backend_for(&ProtocolSet)` reads the offered globals only (never a
-name or the environment): Quire when `bardo_desktop_manager_v1` and the ext list are both
-offered, else wlr, else the ext list alone. On the Quire arm the plain window commands
+name or the environment): Bardo when `bardo_desktop_manager_v1` and the ext list are both
+offered, else wlr, else the ext list alone. On Bardo arm the plain window commands
 (`Activate`, `Close`, `Minimise`, ...) go to `bardo_desktop_window_v1`, the wlr manager is not
-bound, and a window is the ext handle (title, app id, identifier) plus the Quire window
+bound, and a window is the ext handle (title, app id, identifier) plus Bardo window
 (everything else) under one `ToplevelKey`: `Linker` matches the manager's window object to the
 ext handle by identifier, whichever arrives first, and resends the manager's `active` once its
-key window links, so a window that is focused before its handle arrives still becomes key. The reducer projects the Quire state onto
+key window links, so a window that is focused before its handle arrives still becomes key. The reducer projects Bardo state onto
 `Toplevel.flags` (filled is maximised, the key window is activated), `parent` and `outputs`, so
 a consumer that reads only toplevels is unchanged. `bardo_shell_v1` is bound only when the
 caller says it holds the shell role (`DesktopConfig::holding_shell()`); `admit` returns
@@ -217,12 +217,12 @@ caller says it holds the shell role (`DesktopConfig::holding_shell()`); `admit` 
 the environment or handed over (`client::WaylandRoute::{Environment, Handed(OwnedFd)}`, the
 shape of layer-shell-host's own `WaylandRoute`).
 
-**Recipe: a new Quire command.** Add the variant and its `CommandRoute` (`DesktopCommand::route` in
+**Recipe: a new Bardo command.** Add the variant and its `CommandRoute` (`DesktopCommand::route` in
 `command.rs`, which `requires_on` and `carries` read), its target check in
-`quire::check_targets`, its request in `client/quire_commands.rs` (`send`), then a row in
-`tests/it/protocol.rs` `quire_only` and a fake test. **A new Quire event:** the variant in the
-object's `…Change`/`…Event`, its row in `quire/<object>.rs` `apply`, the dispatch in
-`client/quire.rs` (or `client/shell.rs`), and a table row in `tests/it/quire.rs`.
+`bardo::check_targets`, its request in `client/bardo_commands.rs` (`send`), then a row in
+`tests/it/protocol.rs` `bardo_only` and a fake test. **A new Bardo event:** the variant in the
+object's `…Change`/`…Event`, its row in `bardo/<object>.rs` `apply`, the dispatch in
+`client/bardo.rs` (or `client/shell.rs`), and a table row in `tests/it/bardo.rs`.
 
 Rules: the core names no `wayland_*` crate and does no I/O; the wire layer reads the
 environment only for `WaylandRoute::Environment`, which the caller picks (otherwise the caller

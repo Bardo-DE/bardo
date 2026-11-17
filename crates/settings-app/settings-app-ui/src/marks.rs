@@ -1,5 +1,5 @@
 //! The marks of the providers Settings shows: each shipped provider file names a mark and may give
-//! it a face (a letter on a colour). Quire draws the face first, then the named mark, then the
+//! it a face (a letter on a colour). Bardo draws the face first, then the named mark, then the
 //! neutral `@`.
 
 use settings_app_client::shipped_marks;
@@ -11,7 +11,7 @@ use ui_components::components::content::provider_mark::MarkProvider;
 /// What a provider's mark is drawn from.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MarkSource {
-    /// The named mark; the neutral one for a provider quire has no name for.
+    /// The named mark; the neutral one for a provider Bardo has no name for.
     pub provider: MarkProvider,
     /// The letter and colour the provider's file gives, if it does.
     pub face: Option<MarkFace>,

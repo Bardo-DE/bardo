@@ -1,5 +1,5 @@
 //! The motion the compositor is told about (`bardo_shell_v1.set_motion`): the person's
-//! `appearance.motion_level`, reduced also when the desktop asks for reduced motion, as quire's
+//! `appearance.motion_level`, reduced also when the desktop asks for reduced motion, as Bardo's
 //! own resolve reads it.
 
 use shell_model::desktop::Motion as ShellMotion;

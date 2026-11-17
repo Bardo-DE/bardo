@@ -23,7 +23,7 @@ pub(super) fn offered(globals: &GlobalList) -> ProtocolSet {
 }
 
 /// Binds each offered protocol at the version this crate implements (`bardo_desktop_v1` only on
-/// the Quire arm, `bardo_shell_v1` only when the caller holds the shell role), and the first seat, the
+/// Bardo arm, `bardo_shell_v1` only when the caller holds the shell role), and the first seat, the
 /// shm and every `wl_output` (at version 4 for `name`).
 ///
 /// An output below version 4 is refused with [`WireError::OutputTooOld`]: without the name a
@@ -40,19 +40,19 @@ pub(super) fn bind_all(
     if offered.contains(Protocol::ExtForeignToplevelList) {
         wire.handles.toplevel_list = Some(globals.bind(qh, 1..=1, ())?);
     }
-    // On the Quire arm the toplevels come from the ext list and `bardo_desktop_v1`; the wlr
+    // On Bardo arm the toplevels come from the ext list and `bardo_desktop_v1`; the wlr
     // manager is left unbound so one window is not reported twice.
     let backend = backend_for(&offered);
     if offered.contains(Protocol::WlrForeignToplevelManagement)
-        && backend != Some(DesktopBackend::Quire)
+        && backend != Some(DesktopBackend::Bardo)
     {
         wire.handles.toplevel_manager = Some(globals.bind(qh, 1..=3, ())?);
     }
-    if backend == Some(DesktopBackend::Quire) {
-        wire.handles.quire_manager = Some(globals.bind(qh, 1..=2, ())?);
+    if backend == Some(DesktopBackend::Bardo) {
+        wire.handles.bardo_manager = Some(globals.bind(qh, 1..=2, ())?);
     }
-    if offered.contains(Protocol::QuireShell) && wire.config.shell == ShellBinding::Bind {
-        wire.handles.quire_shell = Some(globals.bind(qh, 1..=7, ())?);
+    if offered.contains(Protocol::BardoShell) && wire.config.shell == ShellBinding::Bind {
+        wire.handles.bardo_shell = Some(globals.bind(qh, 1..=7, ())?);
     }
     if offered.contains(Protocol::ExtWorkspace) {
         wire.handles.workspace_manager = Some(globals.bind(qh, 1..=1, ())?);

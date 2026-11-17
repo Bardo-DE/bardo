@@ -35,7 +35,7 @@ impl AppearanceSource {
     #[must_use]
     pub fn desktop() -> AppearanceSource {
         AppearanceSource {
-            store: Store::new(ConfigRoot::Xdg, AppName::QUIRE),
+            store: Store::new(ConfigRoot::Xdg, AppName::BARDO),
             system: SystemPrefsSource::Portal,
         }
     }
@@ -44,7 +44,7 @@ impl AppearanceSource {
     #[must_use]
     pub fn scratch(config_dir: PathBuf, system: SystemPrefs) -> AppearanceSource {
         AppearanceSource {
-            store: Store::new(ConfigRoot::Scratch(config_dir), AppName::QUIRE),
+            store: Store::new(ConfigRoot::Scratch(config_dir), AppName::BARDO),
             system: SystemPrefsSource::Fixed(system),
         }
     }

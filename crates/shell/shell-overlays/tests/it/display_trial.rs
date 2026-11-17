@@ -1,6 +1,6 @@
 //! What the display trial draws and sends, on the harness over a `DisplayTrialLink` the test
 //! writes as the daemon does: nothing until the compositor opens a trial, or while the sheets are
-//! on another output; then quire's `Alert` "Keep these display settings?" with a line that counts
+//! on another output; then Bardo's `Alert` "Keep these display settings?" with a line that counts
 //! the seconds down and two buttons, Revert (the default, and Escape) and Keep Changes, each
 //! writing its answer to the link once; a restart of the trial starts the count over; the
 //! compositor's end of the trial takes the sheet down; and nothing answers before the arming

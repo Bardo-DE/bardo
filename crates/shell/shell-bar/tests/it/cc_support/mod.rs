@@ -1,5 +1,5 @@
 //! The control center rendered to HTML on the fake services, for its render and lint tests:
-//! the real `ControlCenter` in a quire `Ds` root, as the bar's popup draws it.
+//! the real `ControlCenter` in a Bardo `Ds` root, as the bar's popup draws it.
 
 pub mod details;
 pub use shell_ui_kit::harness::fake;

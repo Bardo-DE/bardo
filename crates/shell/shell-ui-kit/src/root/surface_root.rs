@@ -1,4 +1,4 @@
-//! The root every layer surface's document starts with: quire's `Ds` given the desktop's
+//! The root every layer surface's document starts with: Bardo's `Ds` given the desktop's
 //! appearance and the look of the active workspace on the surface's output; the material's tint
 //! and stack are stylesheet tokens. The device scale and the seat's input modality reach it
 //! as `HostSignals` (`mount`). A surface supplies only what is its own: its material, its chrome

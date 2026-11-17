@@ -459,7 +459,7 @@ fn UserStyled() -> Element {
     use settings_types::AppName;
     use ui_components::style::kit::{Styles, UserStyle};
 
-    let desktop = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
+    let desktop = Store::new(ConfigRoot::Xdg, AppName::BARDO);
     let own = Store::new(ConfigRoot::Xdg, AppName::foreign("your-app-id"));
     let mut styles = use_signal({
         let (desktop, own) = (desktop.clone(), own.clone());

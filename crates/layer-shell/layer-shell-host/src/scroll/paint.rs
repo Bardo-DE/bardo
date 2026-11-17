@@ -14,7 +14,7 @@ const THUMB_ALPHA: f32 = 0.4;
 /// The track shown while hovered.
 const TRACK_ALPHA: f32 = 0.08;
 
-/// The thumb and track colours for `scheme`: black on light, white on dark. (quire's
+/// The thumb and track colours for `scheme`: black on light, white on dark. (Bardo's
 /// `--scroll-thumb` token is not read: the host cannot see the design system's tokens.)
 fn ink(scheme: ColorScheme) -> [f32; 3] {
     match scheme {

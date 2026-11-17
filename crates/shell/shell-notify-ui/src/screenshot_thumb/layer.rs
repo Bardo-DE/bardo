@@ -15,14 +15,14 @@ pub const THUMB_ID: &str = "thumb";
 /// The card's corner (the Toast material's, as a banner's: 16).
 pub const THUMB_RADIUS: i32 = 16;
 
-/// The card's width in logical px, quire's `ShotThumbnail` default. design/20 names none;
+/// The card's width in logical px, Bardo's `ShotThumbnail` default. design/20 names none;
 /// macOS's is about a sixth of a 1440 px screen.
 pub const THUMB_WIDTH: u32 = 240;
 
-/// quire's mat round the picture.
+/// Bardo's mat round the picture.
 const THUMB_MAT: u32 = 4;
 
-/// The card at its tallest: a 16:10 picture box inside the mat (quire holds the box between 2:1
+/// The card at its tallest: a 16:10 picture box inside the mat (Bardo holds the box between 2:1
 /// and 16:10, so no picture makes it taller).
 pub const THUMB_HEIGHT: u32 = (THUMB_WIDTH - 2 * THUMB_MAT) * 10 / 16 + 2 * THUMB_MAT;
 

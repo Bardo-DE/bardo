@@ -118,7 +118,7 @@ fn a_space_picture_needs_the_copy_manager_and_the_shell_not_the_output_source() 
     let command = DesktopCommand::CaptureOutput(request);
     assert_eq!(
         requires(&command),
-        &[Protocol::ExtImageCopyCapture, Protocol::QuireShell]
+        &[Protocol::ExtImageCopyCapture, Protocol::BardoShell]
     );
 }
 
@@ -142,18 +142,18 @@ fn offering(protocols: &[Protocol]) -> ProtocolSet {
         .fold(ProtocolSet::empty(), |set, p| set.with(*p))
 }
 
-/// The commands only the Quire arm carries, each with the protocols it needs.
+/// The commands only Bardo arm carries, each with the protocols it needs.
 #[expect(
     clippy::too_many_lines,
-    reason = "a table with one row per Quire-only command"
+    reason = "a table with one row per Bardo-only command"
 )]
-fn quire_only() -> Vec<(DesktopCommand, Vec<Protocol>)> {
+fn bardo_only() -> Vec<(DesktopCommand, Vec<Protocol>)> {
     let t = ToplevelKey::new(1);
     let s = SpaceKey::new(1);
     let a = AppKey::new(1);
-    let window = vec![Protocol::QuireDesktop, Protocol::ExtForeignToplevelList];
-    let desktop = vec![Protocol::QuireDesktop];
-    let shell = vec![Protocol::QuireShell];
+    let window = vec![Protocol::BardoDesktop, Protocol::ExtForeignToplevelList];
+    let desktop = vec![Protocol::BardoDesktop];
+    let shell = vec![Protocol::BardoShell];
     vec![
         (
             DesktopCommand::Place {
@@ -270,8 +270,8 @@ fn quire_only() -> Vec<(DesktopCommand, Vec<Protocol>)> {
 }
 
 #[test]
-fn quire_commands_need_exactly_their_quire_protocols() {
-    for (command, needs) in quire_only() {
+fn bardo_commands_need_exactly_their_bardo_protocols() {
+    for (command, needs) in bardo_only() {
         assert_eq!(requires(&command), needs.as_slice(), "{command:?}");
         let offered = needs
             .iter()
@@ -290,30 +290,30 @@ fn quire_commands_need_exactly_their_quire_protocols() {
 }
 
 #[test]
-fn wlr_alone_cannot_do_what_only_quire_can() {
+fn wlr_alone_cannot_do_what_only_bardo_can() {
     let wlr = offering(&[
         Protocol::WlrForeignToplevelManagement,
         Protocol::ExtForeignToplevelList,
     ]);
-    for (command, _) in quire_only() {
+    for (command, _) in bardo_only() {
         assert!(!supports(&wlr, &command), "{command:?}");
     }
 }
 
 #[test]
-fn on_the_quire_arm_the_window_commands_go_to_quire_not_wlr() {
-    let quire = offering(&[Protocol::QuireDesktop, Protocol::ExtForeignToplevelList]);
-    let wlr_too = quire.clone().with(Protocol::WlrForeignToplevelManagement);
+fn on_the_bardo_arm_the_window_commands_go_to_bardo_not_wlr() {
+    let bardo = offering(&[Protocol::BardoDesktop, Protocol::ExtForeignToplevelList]);
+    let wlr_too = bardo.clone().with(Protocol::WlrForeignToplevelManagement);
     for command in toplevel_commands() {
         if command.route() == CommandRoute::MinimiseTarget {
             // The minimise target is the shell's: bardo_shell_v1.
-            assert_eq!(missing(&quire, &command), Some(Protocol::QuireShell));
+            assert_eq!(missing(&bardo, &command), Some(Protocol::BardoShell));
             assert!(supports(
-                &quire.clone().with(Protocol::QuireShell),
+                &bardo.clone().with(Protocol::BardoShell),
                 &command
             ));
         } else {
-            assert!(supports(&quire, &command), "{command:?}");
+            assert!(supports(&bardo, &command), "{command:?}");
             assert!(supports(&wlr_too, &command), "{command:?}");
         }
         assert_eq!(
@@ -325,18 +325,18 @@ fn on_the_quire_arm_the_window_commands_go_to_quire_not_wlr() {
 }
 
 #[test]
-fn quire_without_the_ext_list_falls_back_to_wlr_for_the_window_commands() {
+fn bardo_without_the_ext_list_falls_back_to_wlr_for_the_window_commands() {
     let offered = offering(&[
-        Protocol::QuireDesktop,
+        Protocol::BardoDesktop,
         Protocol::WlrForeignToplevelManagement,
     ]);
     assert!(supports(
         &offered,
         &DesktopCommand::Close(ToplevelKey::new(1))
     ));
-    let only_quire = offering(&[Protocol::QuireDesktop]);
+    let only_bardo = offering(&[Protocol::BardoDesktop]);
     assert_eq!(
-        missing(&only_quire, &DesktopCommand::Close(ToplevelKey::new(1))),
+        missing(&only_bardo, &DesktopCommand::Close(ToplevelKey::new(1))),
         Some(Protocol::WlrForeignToplevelManagement)
     );
 }
@@ -350,7 +350,7 @@ fn every_command_is_listed_once_and_needs_something() {
     commands.push(DesktopCommand::CaptureOutput(CaptureRequest::new(
         OutputName::new("x"),
     )));
-    commands.extend(quire_only().into_iter().map(|(c, _)| c));
+    commands.extend(bardo_only().into_iter().map(|(c, _)| c));
     let mut kinds = Vec::new();
     for command in &commands {
         assert!(!requires(command).is_empty(), "{command:?}");

@@ -1,6 +1,6 @@
-/* Editorial: mail's voice for every quire surface (design/02-TYPE.md section 2). Bricolage
+/* Editorial: mail's voice for every bardo surface (design/02-TYPE.md section 2). Bricolage
    Grotesque for headings and big numbers, Karla for text and controls, Space Mono for machine
-   facts; the faces ship inside quire (ds-style fonts), so the stacks name them by family.
+   facts; the faces ship inside bardo (ds-style fonts), so the stacks name them by family.
    Every stack names Inter next, so a glyph a face lacks (the key caps) comes from Inter.
    The tracking, weight and sizes below are the values these faces want for the same roles. */
 .ds {

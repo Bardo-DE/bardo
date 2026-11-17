@@ -31,7 +31,7 @@ fn account_of(id: &str) -> AccountTarget {
     })
 }
 
-/// The page `text` names, through quire's page table (an id, an alias, the old `app:` form): the
+/// The page `text` names, through Bardo's page table (an id, an alias, the old `app:` form): the
 /// catalogue's page that the table declares under that id, else the hidden first-run step (which
 /// the table resolves but the sidebar does not list), else the accounts step (which only bardo-settings
 /// declares), else a page only the catalogue knows by that slug.

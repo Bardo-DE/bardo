@@ -1,4 +1,4 @@
-"""emojitool build: fetch the curated set and write the sheets and manifest quire ships.
+"""emojitool build: fetch the curated set and write the sheets and manifest bardo ships.
 
     cd tools/emoji && uv run emojitool build --out ../../ui-shell/assets/emoji
 """
@@ -59,7 +59,7 @@ def cmd_build(args: argparse.Namespace) -> None:
         "licence": "CC-BY-4.0",
         "attribution": "Animated emoji from Noto Animated Emoji by Google, CC BY 4.0 "
                        "(https://creativecommons.org/licenses/by/4.0/). Resampled, cropped to "
-                       "frames and packed into sprite sheets by quire's tools/emoji.",
+                       "frames and packed into sprite sheets by bardo's tools/emoji.",
         "step_ms": args.step,
         "colours": args.colours,
         "sizes": args.sizes,

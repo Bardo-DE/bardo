@@ -1,5 +1,5 @@
-//! Reading a reply's words and its meta calls (`quire_answer`, `quire_ask`, `quire_read`,
-//! `quire_finish`, `quire_related`) into the loop's output, and the limits on what a model's
+//! Reading a reply's words and its meta calls (`bardo_answer`, `bardo_ask`, `bardo_read`,
+//! `bardo_finish`, `bardo_related`) into the loop's output, and the limits on what a model's
 //! words may carry.
 
 use crate::plain::without_ids;
@@ -78,7 +78,7 @@ pub(crate) fn is_meta(name: &str) -> bool {
     )
 }
 
-/// The words of a `quire_answer`: plain, not empty, and not a call written as words. A reply
+/// The words of a `bardo_answer`: plain, not empty, and not a call written as words. A reply
 /// that is none of these is unreadable, like a question that is none of them.
 pub(crate) fn answer_text(call: &ToolCall) -> Result<String, PlanFault> {
     let args: Json = serde_json::from_str(call.input.as_str()).map_err(|error| {
@@ -134,7 +134,7 @@ fn missing(name: &str) -> ModelOutput {
     }
 }
 
-/// A `quire_related` as the call of the related action of the thing's kind: the same call the
+/// A `bardo_related` as the call of the related action of the thing's kind: the same call the
 /// router gates and records as any other read, so a planner gets a related thing no other way
 /// than through the gate. The thing is a handle the view shows or a thing named as `target`
 /// names it (`{"app", "kind", "key"}`, as the context shows the thing the person has open), and
@@ -223,7 +223,7 @@ fn question(args: &Json) -> Result<ModelOutput, PlanFault> {
     Ok(ModelOutput::Ask { text, choices })
 }
 
-/// The thing a `quire_related` is about and its kind: a handle the view holds a thing for, or a
+/// The thing a `bardo_related` is about and its kind: a handle the view holds a thing for, or a
 /// thing named in full.
 fn related_subject(of: &Json, view: &PlannerView) -> Option<(TargetValue, EntityKind)> {
     let object = of.as_object()?;

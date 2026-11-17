@@ -8,6 +8,7 @@
 //! give none), apps, Spaces and the commands' mapping. The thread starts in `thread`, which
 //! picks the arm from the compositor's globals ([`backend_of`]).
 
+pub mod bardo;
 mod choose;
 mod command;
 mod commands;
@@ -15,7 +16,6 @@ mod ids;
 mod offer;
 mod outputs;
 mod publish;
-pub mod quire;
 mod run;
 mod service;
 mod subjects;

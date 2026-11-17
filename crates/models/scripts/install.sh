@@ -51,8 +51,8 @@ install_rest() {
   if [ "$MODE" = system ]; then
     put 644 "$ROOT/dist/org.bardo.engines.policy" "$PREFIX/share/polkit-1/actions/org.bardo.engines.policy" policy
     # Earlier installs left actions under the old names; they name programs that are gone.
-    drop "$PREFIX/share/polkit-1/actions/org.quire.engines.policy"
-    drop "$PREFIX/share/polkit-1/actions/org.quire.porter.engines.policy"
+    drop "$PREFIX/share/polkit-1/actions/org.bardo.engines.policy"
+    drop "$PREFIX/share/polkit-1/actions/org.bardo.porter.engines.policy"
   fi
 }
 

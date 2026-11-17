@@ -22,11 +22,11 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 
 [features]
-# The private `quire_*` servers (`bardo_desktop_manager_v1`, `bardo_shell_v1`; A8): a consumer that
+# The private `bardo_*` servers (`bardo_desktop_manager_v1`, `bardo_shell_v1`; A8): a consumer that
 # wants the standard protocol set alone takes the crate with `default-features = false`. The
 # composition root needs them.
-default = ["quire"]
-quire = []
+default = ["shell-protocols"]
+shell-protocols = []
 
 [lints]
 workspace = true

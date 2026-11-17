@@ -64,7 +64,7 @@ pub fn install_file_icons(data_home: &Path, id: &str, name: &str, summary: &str)
     folder
 }
 
-/// Installs the person's own Extension (`user.YourChanges`) as quire writes it, holding one
+/// Installs the person's own Extension (`user.YourChanges`) as Bardo writes it, holding one
 /// picture when `holds_changes` is true, else an empty folder.
 ///
 /// # Panics

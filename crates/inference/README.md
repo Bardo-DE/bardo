@@ -43,7 +43,7 @@ is put beside it as `inferd-callers.toml.dist`). It never writes into a home fol
 installs a daemon you built yourself instead of building it, and `--help` lists the rest.
 
 Building needs access to the private repositories the dependencies come from (porter, stoker and
-quire, as git dependencies); there is no public mirror yet.
+Bardo, as git dependencies); there is no public mirror yet.
 
 ## Where files go
 

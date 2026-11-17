@@ -9,7 +9,7 @@ use compositor_app::icons::IconSearch;
 use compositor_core::OutputName;
 use compositor_core::policy::ConnectionRole;
 use compositor_testclient::Pattern;
-use compositor_testclient::quire::shell::{Motion, OverviewMode, ShellHandle, Toggle};
+use compositor_testclient::bardo::shell::{Motion, OverviewMode, ShellHandle, Toggle};
 use compositor_testkit::{Fixture, FixtureSpec, FrameCount, ShotTarget};
 use std::time::Duration;
 

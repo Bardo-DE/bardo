@@ -83,7 +83,7 @@ mod tests {
         ("one element", "photos", false),
         ("empty element", "org..Photos", false),
         ("digit first", "org.1photos", false),
-        ("slash", "org/quire", false),
+        ("slash", "org/bardo", false),
     ];
 
     #[test]

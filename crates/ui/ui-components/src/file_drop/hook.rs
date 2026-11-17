@@ -93,7 +93,7 @@ impl FileDropHandle {
     }
 
     /// The target's `data-drop`: `target` with files over it, `accepts` while files are dragged
-    /// elsewhere in the window, nothing otherwise (the attribute a quire drop place writes).
+    /// elsewhere in the window, nothing otherwise (the attribute a Bardo drop place writes).
     #[must_use]
     pub fn drop_attr(&self) -> Option<&'static str> {
         self.place().drop_attr()

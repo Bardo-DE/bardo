@@ -12,7 +12,7 @@ const DIC: &str = "8\nthe\ncat\nsat\non\nmat\nhello\nworld\nquick\n";
 
 /// A new directory holding `en_US.aff` and `en_US.dic`, unique to `name` and this process.
 pub fn dictionary(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("quire-spell-{}-{name}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("bardo-spell-{}-{name}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).expect("a temporary directory");
     std::fs::write(dir.join("en_US.aff"), AFF).expect("the affix file");

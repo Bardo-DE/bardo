@@ -1,4 +1,4 @@
-//! The Wallpaper page: the page quire's schemas declare as `wallpaper`, and the pictures its grid
+//! The Wallpaper page: the page Bardo's schemas declare as `wallpaper`, and the pictures its grid
 //! shows. The page holds one key, `wallpaper.picture`, drawn by the picture control.
 
 use std::path::{Path, PathBuf};

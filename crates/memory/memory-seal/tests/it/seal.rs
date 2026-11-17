@@ -65,7 +65,7 @@ fn unseal_reports_each_malformation() {
         ("half a magic", b"QM".to_vec(), SealError::Truncated),
         (
             "not sealed",
-            b"---\nformat: quire-memory 1\n".to_vec(),
+            b"---\nformat: bardo-memory 1\n".to_vec(),
             SealError::BadMagic,
         ),
         ("magic only", b"QMEM".to_vec(), SealError::Truncated),
@@ -163,7 +163,7 @@ fn oo7_items_are_found_by_schema_and_space() {
     let attrs = oo7_attributes();
     assert_eq!(
         attrs[0],
-        ("xdg:schema", "org.quire.Memory.SpaceKey".to_owned())
+        ("xdg:schema", "org.bardo.Memory.SpaceKey".to_owned())
     );
     assert_eq!(attrs[1], ("space", "work".to_owned()));
 }

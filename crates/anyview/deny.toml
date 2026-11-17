@@ -65,7 +65,7 @@ ignore = [
     { id = "RUSTSEC-2026-0369", reason = "zip's extract() sets permissions through symlinks; nothing here calls extract, and calamine holds zip at 8" },
     # zbus 5's companion crates: zvariant, zvariant_derive and zbus_names are folded into zbus 6 as
     # modules, so the standalone crates are marked unmaintained. No known flaw. zbus 5 comes through
-    # quire, docket, porter, peephole and ashpd, so the move to zbus 6 is the whole desktop's, not
+    # Bardo, docket, porter, peephole and ashpd, so the move to zbus 6 is the whole desktop's, not
     # anyview's alone. Remove these when the desktop set moves to zbus 6.
     { id = "RUSTSEC-2026-0370", reason = "zvariant folded into zbus 6; no known flaw; zbus 5 comes through the desktop's own crates" },
     { id = "RUSTSEC-2026-0371", reason = "zbus_names folded into zbus 6; no known flaw; zbus 5 comes through the desktop's own crates" },
@@ -81,17 +81,17 @@ wildcards = "allow"
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-# The pinned git dependencies, all rev-pinned in Cargo.lock: quire and blitz-embed (the desktop
+# The pinned git dependencies, all rev-pinned in Cargo.lock: Bardo and blitz-embed (the desktop
 # manifest's revs), our forks, mpv-wgpu, and
 # taffy (reached through blitz).
 allow-git = [
     "https://github.com/Bardo-DE/anyrender",
     "https://github.com/Bardo-DE/blitz",
     "https://github.com/Bardo-DE/blitz-kit",
-    # The desktop's portable keymap (quire v0.3.14 resolves keys to actions with it, and anyview-core
-    # declares the viewer's own default chords): one rev, quire's. MIT OR Apache-2.0.
+    # The desktop's portable keymap (Bardo v0.3.14 resolves keys to actions with it, and anyview-core
+    # declares the viewer's own default chords): one rev, Bardo's. MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/chordkit",
-    # dioxus-core 0.7.10 with the dirty-task fix backported (quire's [patch], v0.2.15+).
+    # dioxus-core 0.7.10 with the dirty-task fix backported (Bardo's [patch], v0.2.15+).
     "https://github.com/Bardo-DE/dioxus",
     # Single instance without D-Bus (anyview-platform): MIT OR Apache-2.0, one rev in Cargo.toml.
     "https://github.com/Bardo-DE/latchkey",
@@ -101,7 +101,7 @@ allow-git = [
     "https://github.com/Bardo-DE/bayonet",
     "https://github.com/Bardo-DE/mpv-wgpu",
     "https://github.com/Bardo-DE/vello",
-    # The desktop's agent layer (anyview-platform, quire-desktop): docket at the manifest's rev, and
+    # The desktop's agent layer (anyview-platform, desktop): docket at the manifest's rev, and
     # porter, almanac and stoker at the revs docket pins, and peephole (account-dbus's caller check,
     # at the tag porter pins). All MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/docket",

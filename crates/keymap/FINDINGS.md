@@ -47,7 +47,7 @@
 - **Plain types (2026-10-28).** The type rule changed. `Platform`, `Desktop` and the
   slug strings stay as they are: cua depends on them. The nine `Ctrl+1`..`Ctrl+9` reserved rows on
   our desktop are one `CtrlDigit` rule, so the reason reads "switches to a Space" without the number.
-  `AltGr` waits for wave 2 (quire uses it).
+  `AltGr` waits for wave 2 (Bardo uses it).
 - **keyboard-types (2026-11-15).** chordkit's own `Modifier`, `Modifiers`, `NamedKey` and `AltGr` are
   gone: modifiers are keyboard-types' `Modifiers` (the OS key is `META`; its deprecated `SUPER` is
   not read), named keys are its `NamedKey`, AltGr is its `ALT_GRAPH` flag. `Key` stays as the chord's
@@ -102,7 +102,7 @@
   display order ("Meta+Ctrl+Alt+Shift") are best-effort; confirm against each desktop's shortcut
   settings page.
 - `Modifier::folded` folds Meta into Super everywhere. Toolkits disagree (Qt's Meta is the OS key;
-  GDK's Meta is usually Alt); revisit when quire's real event source is wired.
+  GDK's Meta is usually Alt); revisit when Bardo's real event source is wired.
 - The shifted-symbol folding is US-layout only.
 - Window tiling in sources: GNOME keys `maximize`, `move-to-center` (wm keybindings) and
   `toggle-tiled-left`, `toggle-tiled-right` (org/gnome/mutter/keybindings) are mapped from memory;

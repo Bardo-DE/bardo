@@ -136,7 +136,7 @@ ratchet "a hand-written MD5 (its first round constant)" '0xd76aa478' "" "md-5"
 ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? )?struct Scratch\b' "" "test_kit::Scratch"
 
 # The allowed edges to the crates of ours and of the repos we pin (this workspace, porter, stoker,
-# quire): each crate's DIRECT normal and build dependencies (all features), and nothing else. A
+# Bardo): each crate's DIRECT normal and build dependencies (all features), and nothing else. A
 # dependency not listed is a leak; so is one the crate no longer has, so the table stays exact.
 # Dev dependencies are outside it. steward depends on porter by git rev; porter never depends on
 # steward.
@@ -159,7 +159,7 @@ for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
   read -r -a allowed <<<"${edge#*:}"
   found=$(cargo tree -p "$crate" --depth 1 -e normal,build --prefix none --all-features 2>/dev/null \
-    | grep -E '\((/|https://github.com/Bardo-DE/(porter|stoker|quire))' | awk '{print $1}' | grep -vx "$crate" | sort -u | tr '\n' ' ')
+    | grep -E '\((/|https://github.com/Bardo-DE/(porter|stoker|bardo))' | awk '{print $1}' | grep -vx "$crate" | sort -u | tr '\n' ' ')
   want=$(printf '%s\n' "${allowed[@]}" | grep . | sort -u | tr '\n' ' ')
   if [ "$found" != "$want" ]; then
     echo "EDGE: $crate depends on [${found% }], the table allows [${want% }]"

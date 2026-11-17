@@ -48,10 +48,10 @@ impl Policy {
         }
     }
 
-    /// quire's own policy: the default inset, with [`QUIRE_ALLOW`].
+    /// Bardo's own policy: the default inset, with [`BARDO_ALLOW`].
     #[must_use]
-    pub fn quire() -> Self {
-        Policy::new().allowing(QUIRE_ALLOW)
+    pub fn bardo() -> Self {
+        Policy::new().allowing(BARDO_ALLOW)
     }
 
     /// This policy with `entries` allowed.
@@ -87,10 +87,10 @@ impl Default for Policy {
     }
 }
 
-/// The quire components the design holds to a smaller inset than `--s-8`, each with its reason.
+/// Bardo components the design holds to a smaller inset than `--s-8`, each with its reason.
 /// Every value is the component's own padding token plus any hairline, read from its stylesheet;
 /// a regular-size control keeps 8 or more (`--ctl-pad-m` 10, `--tf-pad` 8, `--s-8`).
-pub const QUIRE_ALLOW: &[Allow] = &[
+pub const BARDO_ALLOW: &[Allow] = &[
     Allow {
         when: &["ds-key-equivalent-key"],
         min: Px(6.0),

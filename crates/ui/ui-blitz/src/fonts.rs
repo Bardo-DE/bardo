@@ -2,7 +2,7 @@
 //! `blitz_embed::fonts::SharedFonts`.
 //!
 //! The base context (system fonts with a colour emoji face ahead of the monochrome ones (`ui_emoji`), blitz's
-//! list-bullet face and every quire face) is built once
+//! list-bullet face and every Bardo face) is built once
 //! and cloned: its collection and source cache are shared, so every window, snapshot and harness
 //! document resolves the same registered families without registering or parsing them again.
 
@@ -25,12 +25,12 @@ static BASE: LazyLock<SharedFonts> = LazyLock::new(|| {
     fonts
 });
 
-/// Every quire face's bytes.
+/// Every Bardo face's bytes.
 fn faces() -> FontFaces {
     FontFaces(FACES.iter().map(|face| face.bytes).collect())
 }
 
-/// A font context with the system fonts and every quire face registered: what `launch`, `snapshot`
+/// A font context with the system fonts and every Bardo face registered: what `launch`, `snapshot`
 /// and `Harness` hand their documents.
 ///
 /// Clones share one collection and one source cache, so the faces are registered once per process.
@@ -45,7 +45,7 @@ mod tests {
     use ui_components::prelude::*;
     use ui_components::style::tokens::type_scale::Family;
 
-    /// The Editorial look Extension's sheet: its stacks lead with faces quire ships.
+    /// The Editorial look Extension's sheet: its stacks lead with faces Bardo ships.
     const EDITORIAL: &str = include_str!("../../extensions/org.bardo.look.Editorial/look.css");
 
     /// Every family name a `font-family` stack leads with, the standard stacks' and the Editorial

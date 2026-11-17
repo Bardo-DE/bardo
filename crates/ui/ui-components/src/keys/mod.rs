@@ -6,17 +6,17 @@
 //! actions; they never read modifiers or decide Command versus Ctrl. See CONSUMING.md "Keyboard:
 //! actions, not modifiers".
 
+mod bardo_actions;
 mod handle;
 mod on_action;
 mod provider;
-mod quire_actions;
 mod source;
 mod state;
 
+pub(crate) use bardo_actions::{pane_back as pane_back_action, register_bardo_actions};
 pub use handle::Keys;
 pub use on_action::on_action;
 pub use provider::{use_keys, use_keys_provider, use_platform, use_register, use_register_actions};
-pub(crate) use quire_actions::{pane_back as pane_back_action, register_quire_actions};
 pub use source::KeySource;
 
 #[cfg(test)]

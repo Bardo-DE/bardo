@@ -1,4 +1,4 @@
-//! A bar title or status item's pointer: its quire `MenuBarItem`, a title or a status glyph, hands
+//! A bar title or status item's pointer: its Bardo `MenuBarItem`, a title or a status glyph, hands
 //! the menu session its presses, releases and pointer entries (design/13 §13.3.2: open on press,
 //! click mode on release over the title, hover switch on entry) and draws the hover and open pill
 //! itself.

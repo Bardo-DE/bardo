@@ -41,7 +41,7 @@ pub fn mcp_request(
 ) -> serde_json::Value {
     let mut call = serde_json::json!({
         "toolCallId": "tc-1", "kind": kind, "status": "pending",
-        "title": "quire_mail__mail_thread_read", "content": [], "rawInput": raw
+        "title": "bardo_mail__mail_thread_read", "content": [], "rawInput": raw
     });
     if let Some(mcp) = meta {
         call["_meta"] = serde_json::json!({"mcp": mcp, "is_mcp_tool_call": true});

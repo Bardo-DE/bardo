@@ -13,7 +13,7 @@ use crate::clouds::Web;
 /// Hands files to the launcher, each to its default app or all to the one the person picked.
 ///
 /// No activation token goes along yet: the window has no way to ask the compositor for one, so
-/// the app that opens raises itself as its own policy allows. When quire offers one, it is
+/// the app that opens raises itself as its own policy allows. When Bardo offers one, it is
 /// passed here.
 pub struct DesktopOpener {
     launcher: Arc<DesktopLauncher>,

@@ -11,7 +11,7 @@
 //! fix the style and try again.
 //!
 //! The state directory is a parameter, never read from the environment here: an app passes
-//! `ConfigRoot::state_dir(AppName::QUIRE)`, a test passes a scratch directory. Writes are atomic
+//! `ConfigRoot::state_dir(AppName::BARDO)`, a test passes a scratch directory. Writes are atomic
 //! (a temp file renamed over the record) and best effort: a state directory that cannot be
 //! written leaves the program without a guard, never without its window.
 

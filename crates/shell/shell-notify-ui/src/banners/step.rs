@@ -3,7 +3,7 @@
 //! `surfaces/notifications/banner.rs`; it sits here, beside its surface.
 //!
 //! The swipe itself (following the finger, the thresholds, springing back, flying out) is
-//! quire's `NotificationCard { swipe }`: the machine hears only that it went ([`BannerIn::Swiped`]).
+//! Bardo's `NotificationCard { swipe }`: the machine hears only that it went ([`BannerIn::Swiped`]).
 //!
 //! design/13 §13.3.6 says a 5000 ms lifetime; design/20 §1.6 (`ToastHold`) says
 //! 5200. That wins.
@@ -32,7 +32,7 @@ pub enum Leave {
     Timeout,
     /// The close button, `CloseNotification`, or a replacement.
     Dismissed,
-    /// Swiped or dragged away past quire's threshold: kept in the center or dismissed, as
+    /// Swiped or dragged away past Bardo's threshold: kept in the center or dismissed, as
     /// `notifications.swipe` says (the service's decision).
     Swiped,
     Acted,
@@ -71,7 +71,7 @@ pub enum BannerIn {
     /// The keyboard left the card. The deck folds these and the pointer into one hold or rest
     /// (`deck::feed`); the machine itself only hears hover.
     KeysOut,
-    /// quire's card was swiped away (a drag or a horizontal scroll past its threshold).
+    /// Bardo's card was swiped away (a drag or a horizontal scroll past its threshold).
     Swiped,
     /// The card was pressed (`ActionInvoked("default")`).
     Clicked,

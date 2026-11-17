@@ -1,7 +1,7 @@
 //! The manager's `active` event through the linker: a key window that links after `active`
 //! still becomes the key window.
 
-use desktop_client::quire::{Linker, WindowEvent, WindowObject};
+use desktop_client::bardo::{Linker, WindowEvent, WindowObject};
 use desktop_client::toplevel::{ToplevelChange, ToplevelEvent};
 use desktop_client::{DesktopEvent, ToplevelIdentifier};
 use desktop_protocols::vocab::ActorKind;

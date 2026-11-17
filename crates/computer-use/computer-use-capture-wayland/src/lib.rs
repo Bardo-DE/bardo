@@ -1,5 +1,5 @@
 //! ext-image-copy-capture over a wayland connection: the stock toplevel source (masking in
-//! cuad) and the quire masked source (masking in the compositor, over an agent lease).
+//! cuad) and Bardo masked source (masking in the compositor, over an agent lease).
 //!
 //! Stock frames are unmasked and not damage-gated (Spike A): `frame` applies the caller's mask
 //! hints with [`apply_masks`] and `damage` is a pixel diff between consecutive frames. Capture
@@ -44,7 +44,7 @@ pub struct StockToplevelCapture {
 /// a compositor that does not advertise `bardo_agent_manager_v1` (casement master does not yet)
 /// makes `open` answer [`CaptureError::BackendUnavailable`].
 #[derive(Debug)]
-pub struct QuireMaskedCapture {
+pub struct BardoMaskedCapture {
     pump: Arc<Pump<CapState>>,
     clock: Arc<dyn StampClock>,
 }
@@ -76,7 +76,7 @@ impl StockToplevelCapture {
     }
 }
 
-impl QuireMaskedCapture {
+impl BardoMaskedCapture {
     /// Captures over an open agent connection. Nothing is asked of the compositor until `open`.
     #[must_use]
     pub fn over(connection: Connection) -> Self {
@@ -141,7 +141,7 @@ impl WindowCapture for StockToplevelCapture {
     }
 }
 
-impl WindowCapture for QuireMaskedCapture {
+impl WindowCapture for BardoMaskedCapture {
     type Session = WaylandSession;
 
     async fn open(&self, lease: &LeaseGrant) -> Result<WaylandSession, CaptureError> {
@@ -172,7 +172,7 @@ impl WindowCapture for QuireMaskedCapture {
     }
 }
 
-impl QuireMaskedCapture {
+impl BardoMaskedCapture {
     /// The session on a granted lease. The session owns the lease from here.
     async fn start(&self, held: Key) -> Result<WaylandSession, CaptureError> {
         let key = self

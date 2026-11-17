@@ -61,7 +61,7 @@ and `04-COMPONENTS.md`) or the launch mechanics (plan, "Design: sill", Launch).
 | Pill height | `H_p` | `T + 2 pad` = 60 | derived | `DockMetrics::pill_height` |
 | Pill width | `W_0` | `n T + (n-1) g + 2 pad` (+ separator block, 10.3.9) | derived | |
 | Pill corner radius | `--m-radius` of `Material::Dock` | 22; the shell draws it as `Corner::Squircle(Px(dock.pill_radius_px))`, recommended 18 | squircle settled 2026-09-24, value proposed (L) | `03-COLOR.md` materials table (Dock radius 22) and §17.4; a squircle of 18 reaches 36 along each edge, capped at half the 60 px pill |
-| Pill material | `Material::Dock` | tint + edge + shadow tokens from `03-COLOR.md`; compositor blur behind | settled | plan "Design: quire", Material enum |
+| Pill material | `Material::Dock` | tint + edge + shadow tokens from `03-COLOR.md`; compositor blur behind | settled | plan "Design: Bardo", Material enum |
 | Pill tint with Spaces | None (superseded 2026-10-02: one Look, the Dock is the material alone and takes no Space tint, 21-SPACES §3; target (clean-up phase), the code still tints it). No cross-fade on workspace switch | settled | plan settled decisions (Spaces on the desktop) |
 | Surface height | `H_s` | 160 = `gut + pad + S + T` (room for a magnified tile and the hover label above it) | proposed | derived; transparent area outside the input region |
 | Exclusive zone | | `Reserve(gut + H_p)` = 72 when auto-hide is off; `0` when on | settled | plan: `Reserve(base+margin)`; R4 |

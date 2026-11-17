@@ -54,7 +54,7 @@ pub struct EngineConfig {
     pub vllm_python: Option<PathBuf>,
     /// The `llama-server` binary.
     pub llama_server: Option<PathBuf>,
-    /// quire's speech host.
+    /// Bardo's speech host.
     pub speech_host: Option<PathBuf>,
     /// The directory of the shared libraries the speech host loads (sherpa-onnx and onnxruntime),
     /// set as the host's `LD_LIBRARY_PATH` and bound read-only into its sandbox.

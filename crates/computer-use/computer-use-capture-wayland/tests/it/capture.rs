@@ -12,7 +12,7 @@ use computer_use_capture::{
     CaptureError, CaptureSession, DamageSource, FrameWant, MaskReason, MaskRegion, WholeMask,
     WindowCapture,
 };
-use computer_use_capture_wayland::{QuireMaskedCapture, StampClock, StockToplevelCapture};
+use computer_use_capture_wayland::{BardoMaskedCapture, StampClock, StockToplevelCapture};
 use computer_use_desktop::{
     EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Pid, SeatIsolation, Stamp,
     ToplevelIdent, ToplevelInfo, WindowTitle, WindowTrust, WorkspaceRef,
@@ -293,8 +293,8 @@ async fn two_sessions_share_one_connection() {
     assert_eq!(fb.unwrap().pixels.size, DeviceSize { w: 2, h: 2 });
 }
 
-fn masked(server: &mut FakeCompositor) -> QuireMaskedCapture {
-    QuireMaskedCapture::over(Connection::from_socket(server.client()).expect("connect"))
+fn masked(server: &mut FakeCompositor) -> BardoMaskedCapture {
+    BardoMaskedCapture::over(Connection::from_socket(server.client()).expect("connect"))
 }
 
 #[tokio::test]

@@ -1,4 +1,4 @@
-//! The page's place among the pages: quire declares it by the id `wifi`.
+//! The page's place among the pages: Bardo declares it by the id `wifi`.
 
 use settings_types::schema::Page;
 

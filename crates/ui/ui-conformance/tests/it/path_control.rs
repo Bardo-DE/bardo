@@ -31,12 +31,12 @@ fn Page() -> Element {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
             PathControl {
                 label: "Path",
-                segments: folders(&["Root", "Users", "me", "Documents", "Projects", "Quire", "Notes"]),
+                segments: folders(&["Root", "Users", "me", "Documents", "Projects", "Bardo", "Notes"]),
                 onpick: move |at: usize| said.set(format!("picked {at}")),
             }
             Toolbar::<u8> {
                 title: Some(TextLine::from("Notes")),
-                title_menu: folders(&["Quire", "Projects"]),
+                title_menu: folders(&["Bardo", "Projects"]),
                 onpick: |_| {},
             }
             p { id: "said", "{said}" }

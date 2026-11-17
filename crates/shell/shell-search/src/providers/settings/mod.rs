@@ -1,4 +1,4 @@
-//! Settings pages and keys: quire and bardo-shell's own schemas (design/22 §9.3 "deep links").
+//! Settings pages and keys: Bardo and bardo-shell's own schemas (design/22 §9.3 "deep links").
 
 pub mod index;
 pub mod schema_files;
@@ -46,7 +46,7 @@ impl Default for SettingsProvider {
 }
 
 impl SettingsProvider {
-    /// Indexes the installed quire and bardo-shell schemas: `bardo/settings` in each of `data_dirs` (the
+    /// Indexes the installed Bardo and bardo-shell schemas: `bardo/settings` in each of `data_dirs` (the
     /// system data directories) and then in `data_home`, as the environment was read once at the
     /// edge ([`shell_model::dirs::Dirs`]).
     pub fn new(data_home: &Path, data_dirs: &[PathBuf]) -> SettingsProvider {

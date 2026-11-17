@@ -1,4 +1,4 @@
-//! The root `launch` runs: the app, plus what a window host owes quire.
+//! The root `launch` runs: the app, plus what a window host owes bardo.
 //!
 //! - The input modality (spike S12): every key press (other than a lone modifier) makes it
 //!   `keyboard`, every pointer press makes it `pointer`; `Ds` reads it through `ui_components::prelude::HostSignals`
@@ -12,7 +12,7 @@
 //!   geometry and IME through its edit part (`crate::edit`).
 //! - Under `FocusFallback::Ancestor` (the default), the host's click-focus part: a click on
 //!   nothing focusable leaves the keyboard on the nearest focusable ancestor, and a click a
-//!   quire control kept to itself on the pressed control (`crate::click_focus`),
+//!   Bardo control kept to itself on the pressed control (`crate::click_focus`),
 //!   and so does the removal of the focused element (`crate::focus_keep`), looked at on every
 //!   window event before the document hears it, so a key after a menu closed reaches the app.
 //! - IME events: dioxus-native-dom drops them, but this window hook hears each winit event

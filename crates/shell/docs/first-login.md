@@ -11,12 +11,12 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    the OS (MOK, BIOS) the K5 Max must be on Cable or 2.4G, not Bluetooth.
 2. **Bring the sibling checkouts up to date.** The install builds with `--locked`, and `Cargo.lock`
    was resolved against the current master of every repo next to `~/sill`: `almanac`, `anyview`,
-   `blitz-embed`, `cua`, `docket`, `keycap`, `porter`, `quire`, `layer-shell-host`, plus `stoker` and
+   `blitz-embed`, `cua`, `docket`, `keycap`, `porter`, `bardo`, `layer-shell-host`, plus `stoker` and
    `desktop-protocols` (reached through them). `palmrest` is not needed to build. A stale one
    (`anyview` was 11 commits behind once) stops the build with a raw cargo error, so check first:
 
    ```sh
-   for r in anyview quire layer-shell-host keycap blitz-embed almanac cua docket porter stoker desktop-protocols; do
+   for r in anyview Bardo layer-shell-host keycap blitz-embed almanac cua docket porter stoker desktop-protocols; do
      git -C ~/$r pull --ff-only || echo "NOT FAST-FORWARD: $r"; done
    git -C ~/anyview pull --ff-only                          # the one that was behind
    cd ~/sill && git status --short && git log --oneline -1  # clean, master
@@ -25,8 +25,8 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 
    `dist/install.sh` runs the same `cargo metadata --locked` check as its step 2 and, when it fails,
    names the siblings that are behind and the `git -C <path> pull --ff-only` that fixes each; follow that
-   advice and run it again. Install only when `bardo-shell` and `quire` are both on a merged master (a
-   quire merge breaks sill until sill follows it).
+   advice and run it again. Install only when `bardo-shell` and `bardo` are both on a merged master (a
+   Bardo merge breaks sill until sill follows it).
 3. **Remove a stale binary that would shadow the install:** `rm -f ~/.cargo/bin/bardo-shell`.
 4. **Install sill and the session.** The login entry "sill (casement)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, detent, sill, keycap and the rest, then the session files). sill's own part, from `~/sill`:
 
@@ -158,7 +158,7 @@ Then, in this order, tick them in `docs/manual-checks.md`:
 # 14 power menu offers (N14): the menu lists Log Out, Restart, Shut Down (do not press Restart or Shut Down)
 # 15 workspaces and the mouse: sill workspace next; sill workspace prev; sill workspace overview (Mission Control opens); scroll the Magic Mouse: direction (section 1, item 8; else Settings > Mouse)
 # 16 screenshot and share: sill screenshot area; share a screen in Zen or Teams; plug a USB drive, open it in your file manager
-# 17 quire apps: open mailo and anyview: which adapter do they log, does a second window close cleanly (X5)
+# 17 Bardo apps: open mailo and anyview: which adapter do they log, does a second window close cleanly (X5)
 # 18 SELinux: sudo ausearch -m avc -ts recent | head    # expect nothing about sill, ksecretd, pam_kwallet_init
 # 19 leave it for an evening: free -h, top, journalctl -b -p warning (L16)
 ```
@@ -191,7 +191,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   Settings. Sunset to Sunrise is not offered (sill has no location). Where `display.night_warmth` is
   `hardware` the monitors are warmed over DDC/CI instead and casement's night light is kept off.
 - No colour management, no screen recording app, no printer applet, no weather.
-- Escape does not close the control centre after a pointer press on empty space (G400; waits on quire's
+- Escape does not close the control centre after a pointer press on empty space (G400; waits on Bardo's
   shell-surface click focus).
 - fcitx5 starts from XDG autostart; `GTK_IM_MODULE` and `QT_IM_MODULE` are deliberately unset.
 - More in `FINDINGS.md` ("What casement still has to provide").

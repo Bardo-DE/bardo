@@ -1,7 +1,7 @@
 //! Now Playing's face as data and its one view, shared by the control center's module and the
-//! Now Playing widget: the current track as quire's
+//! Now Playing widget: the current track as Bardo's
 //! `NowPlayingTrack` (the art from an `IconUrl::file`; a new track cross-fades), Previous,
-//! Play or Pause and Next as large toolbar `Button`s, each disabled per `Abilities`, then quire's
+//! Play or Pause and Next as large toolbar `Button`s, each disabled per `Abilities`, then Bardo's
 //! `TrackPosition` when the player reports both its position and the track's length (design/26
 //! 5.2.10, G28-G30). Nothing playing: "Not Playing" and no buttons. The view reads no hook: a
 //! press is a [`Transport`] handed to its caller, which sends it to the player.
@@ -169,7 +169,7 @@ pub fn MediaView(face: MediaFace, onpress: Option<EventHandler<Transport>>) -> E
     }
 }
 
-/// The service's playback as quire's: a stopped player offers Play, as a paused one does.
+/// The service's playback as Bardo's: a stopped player offers Play, as a paused one does.
 pub fn playback_of(playback: shell_model::now_playing::Playback) -> Playback {
     match playback {
         shell_model::now_playing::Playback::Playing => Playback::Playing,
@@ -196,7 +196,7 @@ fn duration_of(micros: Micros) -> Duration {
     Duration::from_micros(micros.0)
 }
 
-/// The service's word for "can do it" as quire's.
+/// The service's word for "can do it" as Bardo's.
 fn available(can: bool) -> Availability {
     if can {
         Availability::Enabled
@@ -205,7 +205,7 @@ fn available(can: bool) -> Availability {
     }
 }
 
-/// The track's art at 48, or none (quire draws the Now Playing glyph on its well).
+/// The track's art at 48, or none (Bardo draws the Now Playing glyph on its well).
 fn art_of(art: &Art) -> Option<IconSource> {
     match art {
         Art::File(path) => IconUrl::file(path).ok().map(|url| {

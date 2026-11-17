@@ -2,7 +2,7 @@
 //! add-account steps, drawn by bardo-shell on `org.bardo.AccountsSheet1`.
 //!
 //! A centred window of its own on the sheets' output, with a titlebar that carries the step's
-//! title, over an Overlay layer that takes the keyboard exclusively; the steps inside are quire's
+//! title, over an Overlay layer that takes the keyboard exclusively; the steps inside are Bardo's
 //! `ui-shell::accounts` parts, given the props `props.rs` makes of accountd's `SheetView`.
 //!
 //! Only accountd may open or drive it (`shell_services::accounts::sheet`); the typed values live in

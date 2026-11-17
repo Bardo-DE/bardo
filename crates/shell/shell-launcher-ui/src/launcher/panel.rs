@@ -1,8 +1,8 @@
 //! The panel's render (design/13 §13.3.9, design/20 §1.3): a `Ds` root on the active Space's
-//! look in the sheet material, holding quire's `CommandPalette` embedded in the
+//! look in the sheet material, holding Bardo's `CommandPalette` embedded in the
 //! surface (no scrim; the card is as tall as its content, its corner a squircle, and it is the
 //! blur and input region; `card.rs` measures it) over the fresh results in the runner's
-//! sections, the selected row's actions as a quire `Menu{Rich}` hung from that row
+//! sections, the selected row's actions as a Bardo `Menu{Rich}` hung from that row
 //! (⌘K), and the preview pane beside the results while it is shown. The box
 //! around the root carries the shell type scale (the 22/500 query, 14 and 12 px rows), and the
 //! root's material draws the card. A palette mounts with each opening and unmounts when
@@ -60,7 +60,7 @@ pub const LAUNCHER_CSS: &str = include_str!("style.css");
 /// Where the actions menu hangs while the palette has reported no usable rect: under the first
 /// row (its rect in the embedded palette is 6, 80.5, 668 x 38 in the card, which starts
 /// `SHADOW_SIDE` and `CARD_INSET` in; the menu hangs 6 px below).
-/// quire reads a new palette's first row before the freshly mapped surface has laid it out and
+/// Bardo reads a new palette's first row before the freshly mapped surface has laid it out and
 /// reports 0 x 0, then nothing more until the selection moves, and the selection
 /// is always the first row then.
 #[expect(
@@ -79,7 +79,7 @@ pub const FIRST_ROW_FOOT: Point = Point {
 )]
 const PREVIEW_WIDTH: Px = Px(PREVIEW_WIDTH_PX as f32);
 
-/// A reported row rect, unless it is the empty one quire reports before layout.
+/// A reported row rect, unless it is the empty one Bardo reports before layout.
 pub fn measured(rect: Rect) -> Option<Rect> {
     (rect.size.width.0 > 0.0 && rect.size.height.0 > 0.0).then_some(rect)
 }
@@ -226,7 +226,7 @@ pub(crate) struct Aside {
     touch: ui_components::motion::detail::touch::Touch,
 }
 
-/// The pane while it shows, and after it is hidden until quire has played it out
+/// The pane while it shows, and after it is hidden until Bardo has played it out
 /// (`on_hidden`), so it leaves as it came.
 fn use_aside(
     shown: Option<&Shown>,
@@ -428,7 +428,7 @@ struct Beside {
     aside: Option<Aside>,
 }
 
-/// The preview pane for `aside`: quire's, through [`LauncherPane`].
+/// The preview pane for `aside`: Bardo's, through [`LauncherPane`].
 fn pane(panel: &PanelCtx, aside: Aside) -> Element {
     let (act, gone) = (panel.clone(), panel.clone());
     rsx! {
