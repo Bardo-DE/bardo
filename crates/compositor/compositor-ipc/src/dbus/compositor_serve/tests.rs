@@ -336,13 +336,9 @@ async fn the_loop_is_told_when_the_portals_connection_leaves() {
         .expect("a unique name");
     drop(portal);
     connection.close().await.expect("the connection closes");
-    let mut gone = None;
-    for _ in 0..100 {
-        gone = served.asks().into_iter().find_map(|ask| ask.gone);
-        if gone.is_some() {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    assert_eq!(gone.map(|gone| gone.owner), Some(owner));
+    let gone = base_testkit::eventually_some("the loop was told the portal left", || {
+        served.asks().into_iter().find_map(|ask| ask.gone)
+    })
+    .await;
+    assert_eq!(gone.owner, owner);
 }

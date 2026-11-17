@@ -6,9 +6,7 @@ use key_remap_proto::{KeymapState, PROTOCOL_VERSION};
 use keymap::{Action, Context, StandardAction};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::time::{Duration, Instant};
-
-const WAIT: Duration = Duration::from_secs(5);
+use std::time::Duration;
 
 fn state(overrides: &str) -> KeymapState {
     KeymapState {
@@ -36,14 +34,6 @@ fn file_only(dir: &tempfile::TempDir, text: Option<&str>) -> KeycapSource {
         std::fs::write(&file, text).expect("write");
     }
     KeycapSource::new(dir.path().join("no-daemon.sock"), file, "")
-}
-
-fn wait_for(what: &str, ready: impl Fn() -> bool) {
-    let deadline = Instant::now() + WAIT;
-    while !ready() {
-        assert!(Instant::now() < deadline, "timed out waiting for {what}");
-        std::thread::sleep(Duration::from_millis(10));
-    }
 }
 
 #[test]
@@ -188,7 +178,9 @@ fn watch_fires_when_the_daemon_says_the_keymap_changed_and_not_for_the_first_sta
     let source = KeycapSource::new(daemon.socket.clone(), "/nonexistent/keymap", "");
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
-    wait_for("the watcher to subscribe", || daemon.watchers() == 1);
+    base_testkit::eventually_blocking("the watcher to subscribe", || daemon.watchers() == 1);
+    // Best-effort absence check: the watch thread announces nothing when it stays quiet, so a
+    // short real pause is all there is.
     std::thread::sleep(Duration::from_millis(100));
     assert_eq!(
         count.load(Ordering::SeqCst),
@@ -197,7 +189,7 @@ fn watch_fires_when_the_daemon_says_the_keymap_changed_and_not_for_the_first_sta
     );
 
     daemon.change(&state("paste = Primary+Alt+V\n"));
-    wait_for("the callback", || count.load(Ordering::SeqCst) == 1);
+    base_testkit::eventually_blocking("the callback", || count.load(Ordering::SeqCst) == 1);
 }
 
 #[test]
@@ -206,6 +198,8 @@ fn with_no_daemon_watch_fires_when_the_file_changes() {
     let source = file_only(&dir, Some("copy = Primary+Alt+C\n"));
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
+    // Best-effort absence check: the watch thread announces nothing when it stays quiet, so a
+    // short real pause is all there is.
     std::thread::sleep(Duration::from_millis(100));
     assert_eq!(count.load(Ordering::SeqCst), 0);
 
@@ -214,7 +208,7 @@ fn with_no_daemon_watch_fires_when_the_file_changes() {
         "copy = Primary+Alt+C\nredo = none\n",
     )
     .expect("write");
-    wait_for("the callback", || count.load(Ordering::SeqCst) >= 1);
+    base_testkit::eventually_blocking("the callback", || count.load(Ordering::SeqCst) >= 1);
 }
 
 #[test]
@@ -224,6 +218,8 @@ fn dropping_the_watch_ends_it() {
     let (count, callback) = counter();
     let watch = source.watch(callback).expect("watches");
     drop(watch);
+    // Best-effort absence check: the file is polled by a thread that cannot be observed ending,
+    // so both pauses outlast its poll interval (watch.rs RETRY and TICK).
     std::thread::sleep(Duration::from_millis(1200));
     std::fs::write(dir.path().join("keymap"), "redo = none\n").expect("write");
     std::thread::sleep(Duration::from_millis(1200));
@@ -241,7 +237,7 @@ fn registered_actions_are_listed_and_end_with_their_registration() {
     let kept = source
         .register(&app, &[(compose, chord)])
         .expect("registers");
-    wait_for("the registration", || {
+    base_testkit::eventually_blocking("the registration", || {
         source.registered().is_ok_and(|all| all.len() == 1)
     });
     let all = source.registered().expect("lists");
@@ -250,7 +246,7 @@ fn registered_actions_are_listed_and_end_with_their_registration() {
     assert_eq!(all[0].actions[0].chord, chord.canonical());
 
     drop(kept);
-    wait_for("the registration to end", || {
+    base_testkit::eventually_blocking("the registration to end", || {
         source.registered().is_ok_and(|all| all.is_empty())
     });
 }
@@ -302,12 +298,14 @@ fn watch_fires_when_the_persons_file_changes_with_or_without_a_daemon() {
     let source = KeycapSource::new(daemon.socket.clone(), "/nonexistent/keymap", &person);
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
-    wait_for("the watcher to subscribe", || daemon.watchers() == 1);
+    base_testkit::eventually_blocking("the watcher to subscribe", || daemon.watchers() == 1);
+    // Best-effort absence check: the watch thread announces nothing when it stays quiet, so a
+    // short real pause is all there is.
     std::thread::sleep(Duration::from_millis(100));
     assert_eq!(count.load(Ordering::SeqCst), 0);
 
     std::fs::write(&person, "copy = Primary+Alt+C\nredo = none\n").expect("write");
-    wait_for("the callback", || count.load(Ordering::SeqCst) >= 1);
+    base_testkit::eventually_blocking("the callback", || count.load(Ordering::SeqCst) >= 1);
 
     let alone = tempfile::tempdir().expect("scratch dir");
     let file = alone.path().join("person");
@@ -318,7 +316,9 @@ fn watch_fires_when_the_persons_file_changes_with_or_without_a_daemon() {
     );
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
+    // Best-effort absence check: the watch thread announces nothing when it stays quiet, so a
+    // short real pause is all there is.
     std::thread::sleep(Duration::from_millis(100));
     std::fs::write(&file, "redo = none\n").expect("write");
-    wait_for("the callback", || count.load(Ordering::SeqCst) >= 1);
+    base_testkit::eventually_blocking("the callback", || count.load(Ordering::SeqCst) >= 1);
 }

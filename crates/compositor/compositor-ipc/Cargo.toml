@@ -37,6 +37,7 @@ xkbcommon = {version = "0.9", features = ["wayland"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 # `BusPeers::introduce`, `FixtureProc`: the tests make a sender stand as a chosen caller on a
 # private bus and never read the real `/proc` for it.
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}

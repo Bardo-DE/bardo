@@ -124,13 +124,11 @@ impl Fixture {
         }
         let before = self.state.roster.len();
         begin_probe(&mut self.state, server);
-        for _ in 0..400 {
+        // The look runs on a thread and nothing announces its end: pump the loop until it joins.
+        base_testkit::eventually_blocking("the public connection was taken in", || {
             self.pump();
-            if self.state.roster.len() > before {
-                break;
-            }
-            std::thread::sleep(std::time::Duration::from_millis(5));
-        }
+            self.state.roster.len() > before
+        });
         (client, self.state.roster.len() - before)
     }
 

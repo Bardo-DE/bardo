@@ -45,10 +45,10 @@ fn a_real_satellite_that_exits_is_noticed_and_can_be_started_again() {
     // `true` stands in for a satellite that exits at once, whatever it is given.
     let mut spawner = ProcessSpawner::new(None);
     let mut state = running_with(&mut spawner, "true", dir.path());
-    let back = (0..400).any(|turn| {
-        std::thread::sleep(Duration::from_millis(10));
+    let mut turn = 0;
+    base_testkit::eventually_blocking("the exit was noticed", || {
+        turn += 1;
         state.reap(&spawner.exited(compositor_core::time::Mono(Duration::from_secs(turn))));
         matches!(state, XwaylandState::Listening(_))
     });
-    assert!(back, "the exit was never noticed");
 }

@@ -18,6 +18,7 @@ rustix = {version = "1", features = ["event", "fs", "net", "time", "process"]}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 tempfile = { workspace = true }
 
 [lints]

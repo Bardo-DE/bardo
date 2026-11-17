@@ -70,17 +70,6 @@ fn registration(id: &str, name: &str) -> SpaceRegistration {
     SpaceRegistration::new(SpaceId::parse(id).expect("an id"), name.to_owned())
 }
 
-/// Polls `ready` for up to five seconds (500 turns of 10 ms).
-fn until(mut ready: impl FnMut() -> bool) -> bool {
-    for _ in 0..500 {
-        if ready() {
-            return true;
-        }
-        std::thread::sleep(std::time::Duration::from_millis(10));
-    }
-    false
-}
-
 #[test]
 fn a_batch_reaches_the_service_with_the_default_look() {
     let bus = PrivateBus::start();
@@ -92,14 +81,14 @@ fn a_batch_reaches_the_service_with_the_default_look() {
             registration("s-2", "Desktop 2"),
         ])
         .expect("queued");
-    assert!(until(|| {
+    base_testkit::eventually_blocking("the batch reached the service", || {
         served
             .heard
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .len()
             == 2
-    }));
+    });
     let heard = served
         .heard
         .lock()
@@ -127,16 +116,18 @@ fn a_refusal_is_reported_once_and_ends_the_asking() {
         ])
         .expect("queued");
     let mut failures = Vec::new();
-    assert!(until(|| {
+    base_testkit::eventually_blocking("the refusal was reported", || {
         failures.extend(registry.failures());
         !failures.is_empty()
-    }));
+    });
     assert_eq!(failures.len(), 1);
     assert_eq!(failures[0].fault, RegisterFault::Refused);
     assert_eq!(failures[0].id.as_str(), "s-1");
     registry
         .register(vec![registration("s-3", "Desktop 3")])
         .expect("queued");
+    // Best-effort absence check: nothing is asked, so nothing can be waited on and no marker can
+    // follow; a short real pause is all there is.
     std::thread::sleep(std::time::Duration::from_millis(200));
     assert_eq!(
         served
@@ -157,9 +148,9 @@ fn no_service_on_the_bus_means_try_again_later() {
         .register(vec![registration("s-1", "Desktop 1")])
         .expect("queued");
     let mut failures = Vec::new();
-    assert!(until(|| {
+    base_testkit::eventually_blocking("the failure was reported", || {
         failures.extend(registry.failures());
         !failures.is_empty()
-    }));
+    });
     assert_eq!(failures[0].fault, RegisterFault::Later);
 }

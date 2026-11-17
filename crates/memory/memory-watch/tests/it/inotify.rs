@@ -124,18 +124,29 @@ fn inotify_watches_subdirectories_and_ignores_folders() {
     };
     watch.watch(&space).expect("watch");
     std::fs::create_dir(root.join("sub")).expect("mkdir");
-    // Give the recursive watch time to attach before writing inside.
-    std::thread::sleep(std::time::Duration::from_millis(200));
-    std::fs::write(root.join("sub/c.txt"), b"y").expect("write");
-    let seen = next_observed(&mut watch);
+    // The recursive watch attaches to the new folder on the backend's own thread and says
+    // nothing when it is done: write a new file each look until one is observed. A file written
+    // before the attach is lost, and the first observation must be a file, never the folder.
+    let mut written = 0_u32;
+    let mut seen = None;
+    base_testkit::eventually_blocking("a file in the new folder was observed", || {
+        std::fs::write(root.join(format!("sub/c{written}.txt")), b"y").expect("write");
+        written += 1;
+        seen = block_on(std::time::Duration::ZERO, watch.next()).flatten();
+        seen.is_some()
+    });
+    let seen = seen.expect("an observation");
     assert_eq!(
         seen.change,
         FileChange::Created,
         "the folder is not reported"
     );
-    assert_eq!(
-        seen.path.as_str(),
-        root.join("sub/c.txt").to_str().expect("utf8")
+    assert!(
+        seen.path
+            .as_str()
+            .starts_with(root.join("sub/c").to_str().expect("utf8")),
+        "{}",
+        seen.path.as_str()
     );
 }
 

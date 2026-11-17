@@ -148,6 +148,27 @@ mod tests {
         Mono(Duration::from_secs(secs))
     }
 
+    /// Sweeps once a simulated second, from `from`, until something has ended: nothing announces
+    /// the end of a child, the sweep is what notices it.
+    fn reaped(spawner: &mut ProcessSpawner, from: u64) -> Vec<Pid> {
+        let mut turn = from;
+        let mut ended = Vec::new();
+        base_testkit::eventually_blocking("the program was reaped", || {
+            ended = spawner.exited(at(turn));
+            turn += 1;
+            !ended.is_empty()
+        });
+        ended
+    }
+
+    /// Waits until the process has ended but not been reaped, so the next sweep must see it.
+    fn wait_until_zombie(pid: Pid) {
+        let stat = format!("/proc/{}/stat", pid.0);
+        base_testkit::eventually_blocking("the program ended", || {
+            std::fs::read_to_string(&stat).is_ok_and(|text| text.contains(") Z"))
+        });
+    }
+
     #[test]
     fn an_empty_argument_list_starts_nothing() {
         let spec = SpawnSpec::new(Argv(Vec::new()));
@@ -163,12 +184,8 @@ mod tests {
         let started = spawner
             .spawn(SpawnSpec::new(argv(&["true"])))
             .expect("started");
-        let ended = (0..400).find_map(|turn| {
-            std::thread::sleep(Duration::from_millis(10));
-            let got = spawner.exited(at(turn));
-            (!got.is_empty()).then_some(got)
-        });
-        assert_eq!(ended, Some(vec![started.pid]));
+        let ended = reaped(&mut spawner, 0);
+        assert_eq!(ended, vec![started.pid]);
         assert_eq!(spawner.exited(at(10_000)), Vec::<Pid>::new());
     }
 
@@ -184,24 +201,26 @@ mod tests {
             .and_then(rustix::process::Pid::from_raw)
             .expect("a pid");
         rustix::process::kill_process(pid, rustix::process::Signal::KILL).expect("killed");
-        let ended = (1..400).find_map(|turn| {
-            std::thread::sleep(Duration::from_millis(10));
-            let got = spawner.exited(at(turn));
-            (!got.is_empty()).then_some(got)
-        });
-        assert_eq!(ended, Some(vec![started.pid]));
+        let ended = reaped(&mut spawner, 1);
+        assert_eq!(ended, vec![started.pid]);
     }
 
     #[test]
     fn the_children_are_looked_at_at_most_every_quarter_second() {
         let mut spawner = ProcessSpawner::default();
-        spawner
-            .spawn(SpawnSpec::new(argv(&["true"])))
+        let started = spawner
+            .spawn(SpawnSpec::new(argv(&["sleep", "30"])))
             .expect("started");
         let _ = spawner.exited(at(100));
-        std::thread::sleep(Duration::from_millis(200));
+        let pid = i32::try_from(started.pid.0)
+            .ok()
+            .and_then(rustix::process::Pid::from_raw)
+            .expect("a pid");
+        rustix::process::kill_process(pid, rustix::process::Signal::KILL).expect("killed");
+        wait_until_zombie(started.pid);
         // The same second: not looked at, whatever has happened.
         assert_eq!(spawner.exited(at(100)), Vec::<Pid>::new());
+        assert_eq!(spawner.exited(at(101)), vec![started.pid]);
     }
 
     #[test]

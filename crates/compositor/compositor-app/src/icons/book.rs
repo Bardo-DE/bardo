@@ -359,14 +359,17 @@ mod tests {
         // two draws, and then the second is the icon.
         let second = draw(&mut book);
         assert!(second.id == plate_first.id || red_middle(&second));
-        // Up to ten seconds for the thread; it takes a few milliseconds.
-        let found = (0..2000)
-            .find_map(|_| {
-                let now = draw(&mut book);
-                std::thread::sleep(std::time::Duration::from_millis(5));
-                (now.id != plate_first.id).then_some(now)
-            })
-            .expect("the icon never came");
+        // The thread answers on its own; nothing announces it, so draw until the icon is in.
+        let mut found = None;
+        base_testkit::eventually_blocking("the icon came", || {
+            let now = draw(&mut book);
+            let came = now.id != plate_first.id;
+            if came {
+                found = Some(now);
+            }
+            came
+        });
+        let found = found.expect("the icon");
         assert!(red_middle(&found));
     }
 

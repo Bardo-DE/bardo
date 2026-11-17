@@ -383,19 +383,13 @@ async fn what_the_terminal_did_is_in_memory_as_audit_records() {
     let desk = Desk::start().await;
     let read = desk.quire(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&read), 0, "{}", say(&read));
-    let mut found = None;
-    for _ in 0..100 {
-        found = desk
-            .memoryd
+    let record = base_testkit::eventually_some("the call reached memoryd", || {
+        desk.memoryd
             .stored()
             .into_iter()
-            .find(|r| r.body.kind().as_str() == "docket.call");
-        if found.is_some() {
-            break;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
-    }
-    let record = found.expect("the call reached memoryd");
+            .find(|r| r.body.kind().as_str() == "docket.call")
+    })
+    .await;
     assert_eq!(record.actor, Actor::Cli);
     assert_eq!(record.effect, provenance::Effect::Read);
     assert_eq!(

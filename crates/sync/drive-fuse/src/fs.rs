@@ -990,13 +990,7 @@ mod tests {
     }
 
     async fn sent(sink: &MemorySink, n: usize) -> Vec<Took> {
-        let deadline = base_testkit::Deadline::generous();
-        while sink.took().len() < n {
-            if deadline.passed() {
-                deadline.fail(&format!("{n} changes sent"));
-            }
-            tokio::time::sleep(Duration::from_millis(5)).await;
-        }
+        base_testkit::eventually(&format!("{n} changes sent"), || sink.took().len() >= n).await;
         sink.took()
     }
 

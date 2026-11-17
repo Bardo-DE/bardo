@@ -17,6 +17,7 @@ name = "writeback-compare"
 path = "src/bin/writeback_compare.rs"
 
 [dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 base-time = { path = "../../base/base-time" }
 compositor-app = {path = "../compositor-app", default-features = false, features = ["testing"]}
 compositor-core = {path = "../compositor-core"}

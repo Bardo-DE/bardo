@@ -22,6 +22,7 @@ linux = ["dep:notify"]
 pure-hash = ["blake3/pure"]
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 tempfile = { workspace = true }
 
 [lints]
