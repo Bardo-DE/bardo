@@ -10,7 +10,6 @@ use super::super::graph::{encode, unreadable_body};
 use super::super::{Feed, FeedChange, Page, PimSource};
 use super::task::{self, Task, TaskList};
 use super::{Api, TaskCursor, id_in, list_all, read_error, segment_of};
-use sync_engine::dataset::fingerprint;
 use crate::PimKind;
 use crate::discover::{DiscoverError, Found};
 use account_client::{Grants, GrantsLink};
@@ -24,6 +23,7 @@ use sync_core::{Clock, DELETED};
 use sync_core::{
     ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, Tombstone,
 };
+use sync_engine::dataset::fingerprint;
 
 /// How many tasks a page asks for (Google's most).
 const PAGE: &str = "100";

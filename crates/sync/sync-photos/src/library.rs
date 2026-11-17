@@ -13,11 +13,11 @@
 
 use super::cas::{self, ContentId};
 use super::hlc::{DeviceId, HlcClock};
-use sync_engine::clock::Millis;
 use super::manifest::{Edit, Manifest};
 use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+use sync_engine::clock::Millis;
 
 /// Why a library call failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -291,10 +291,10 @@ fn read_all(dir: &Path) -> io::Result<Manifest> {
 
 #[cfg(test)]
 mod tests {
-    use sync_engine::clock::ManualMillis;
     use super::super::manifest::Mark;
     use super::*;
     use crate::testing::scratch;
+    use sync_engine::clock::ManualMillis;
 
     fn open(dir: &Path, device: &str, ms: u64) -> (PhotoLibrary, Arc<ManualMillis>) {
         let millis = Arc::new(ManualMillis::at(ms));

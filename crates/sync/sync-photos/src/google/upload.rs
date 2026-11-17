@@ -17,7 +17,6 @@
 
 use super::api::{AlbumId, ApiError, MediaId, PhotosApi};
 use super::ledger::{Entry, Kept, LedgerError};
-use sync_engine::dataset::fingerprint;
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use base_ids::Bytes;
 use http_core::Http;
@@ -27,6 +26,7 @@ use sync_core::{
     Anchor, BaseVersion, Blob, ByteRange, ChangePage, Cursor, More, PutItem, PutRefused, PutTarget,
     Quota, RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
+use sync_engine::dataset::fingerprint;
 use tokio::sync::Mutex;
 
 /// The dataset's name.

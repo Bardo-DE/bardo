@@ -3,9 +3,6 @@
 
 use super::tests::ics;
 use super::*;
-use sync_engine::clock::ManualClock;
-use sync_vdir::items_in;
-use sync_engine::engine::Engine;
 use crate::testing::scratch;
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use base_time::UnixSeconds;
@@ -15,6 +12,9 @@ use sync_core::{
     BaseVersion, ByteRange, ChangePage, Cursor, MemoryReplica, PutItem, PutRefused, PutTarget,
     Quota, RemoteVersion, Replica, ReplicaError,
 };
+use sync_engine::clock::ManualClock;
+use sync_engine::engine::Engine;
+use sync_vdir::items_in;
 
 /// A replica shared between engines (a restart), counting what is asked of it.
 #[derive(Debug, Clone)]

@@ -3,14 +3,14 @@
 //! run late by as long as the computer slept.
 
 use super::rig::*;
-use sync_driver::hub::{Access, DatasetName, Hub};
-use sync_driver::Driver;
-use sync_engine::scheduler::{MeteredPolicy, Network, Pausing, Settings};
 use account_callers::{Caller, CallerRole};
 use account_capability::{Delta, StorageCap};
 use account_core::{AppId, AppName, Isolation};
 use std::sync::Arc;
 use std::time::Duration;
+use sync_driver::Driver;
+use sync_driver::hub::{Access, DatasetName, Hub};
+use sync_engine::scheduler::{MeteredPolicy, Network, Pausing, Settings};
 use tokio::sync::{Notify, watch};
 
 #[tokio::test]

@@ -10,7 +10,6 @@ use super::super::graph::{name_of, unconverted, unreadable_body};
 use super::super::{Feed, FeedChange, Page, PimSource};
 use super::event::{self, Event};
 use super::{Api, SyncCursor, id_in, list_all, read_error, segment_of};
-use sync_engine::dataset::fingerprint;
 use crate::PimKind;
 use crate::discover::{DiscoverError, Found};
 use account_client::{Grants, GrantsLink};
@@ -24,6 +23,7 @@ use sync_core::{Clock, DELETED};
 use sync_core::{
     ItemKind, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter, Tombstone,
 };
+use sync_engine::dataset::fingerprint;
 
 /// How many events a page asks for.
 const PAGE: &str = "250";

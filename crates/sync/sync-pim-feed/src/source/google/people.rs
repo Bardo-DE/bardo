@@ -8,7 +8,6 @@ use super::super::graph::{encode, name_of, unreadable_body};
 use super::super::{Feed, FeedChange, Page, PimSource};
 use super::person::{self, Person};
 use super::{Api, SyncCursor, read_error};
-use sync_engine::dataset::fingerprint;
 use crate::PimKind;
 use crate::discover::{DiscoverError, Found};
 use account_client::{Grants, GrantsLink};
@@ -22,6 +21,7 @@ use sync_core::{Clock, DELETED};
 use sync_core::{
     ItemKind, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter, Tombstone,
 };
+use sync_engine::dataset::fingerprint;
 
 /// The fields asked for: what the converter carries, and the metadata that says "deleted".
 const FIELDS: &str =

@@ -8,11 +8,11 @@
 
 use super::cas::{self, ContentId};
 use super::library::{PhotoLibrary, originals_dir};
-use sync_engine::dataset::{Dataset, DatasetError, DatasetId};
 use base_ids::Bytes;
 use std::io;
 use std::path::Path;
 use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};
+use sync_engine::dataset::{Dataset, DatasetError, DatasetId};
 
 /// Every original under `dir`, with its size. Files that are not `ab/<id>` are ignored.
 pub(super) fn list(dir: &Path) -> io::Result<Vec<(ContentId, u64)>> {
@@ -165,11 +165,11 @@ fn scanned(id: &ContentId, size: u64) -> Scanned {
 #[cfg(test)]
 mod tests {
     use super::super::hlc::DeviceId;
-    use sync_engine::clock::ManualMillis;
     use super::*;
-    use sync_engine::dataset::fingerprint;
     use crate::testing::scratch;
     use std::sync::Arc;
+    use sync_engine::clock::ManualMillis;
+    use sync_engine::dataset::fingerprint;
 
     fn dataset(name: &str) -> (PhotoOriginals, PhotoLibrary, tempfile::TempDir) {
         let dir = scratch(name);

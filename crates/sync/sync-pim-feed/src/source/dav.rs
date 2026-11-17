@@ -5,10 +5,9 @@
 //! [`WebDavReplica`] over the account's relay; its upserts carry no content, so the engine fetches
 //! each item, as before.
 
+use super::{Feed, FeedChange, FeedCursor, Page, PimSource};
 use crate::PimKind;
 use crate::discover::{DiscoverError, Found, discover};
-use sync_relay::pim::{pim_http, pim_replica};
-use super::{Feed, FeedChange, FeedCursor, Page, PimSource};
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
@@ -18,6 +17,7 @@ use replica_webdav::WebDavReplica;
 use std::sync::Arc;
 use sync_core::Clock;
 use sync_core::{Anchor, ByteRange, Change, Cursor, RemoteId, Replica, ReplicaError};
+use sync_relay::pim::{pim_http, pim_replica};
 
 /// A `WebDAV` sync token or etag-walk position: the replica's own anchor text.
 #[derive(Debug, Clone, PartialEq, Eq)]

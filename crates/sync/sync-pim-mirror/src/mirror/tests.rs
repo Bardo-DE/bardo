@@ -1,11 +1,11 @@
 use super::*;
-use sync_vdir::items_in;
 use crate::testing::scratch;
 use base_time::UnixSeconds;
 use sync_core::{
     Anchor, BaseVersion, Conflict, RemoteId, RemoteSide, RemoteVersion, StoredAnchor,
     StoredConflict,
 };
+use sync_vdir::items_in;
 
 pub(super) fn ics(uid: &str, summary: &str) -> Blob {
     Blob(

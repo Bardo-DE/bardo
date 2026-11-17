@@ -20,10 +20,8 @@ mod recur;
 mod zones;
 
 use super::{Feed, FeedChange, FeedCursor, Page, PimSource};
-use sync_engine::dataset::fingerprint;
 use crate::PimKind;
 use crate::discover::{DiscoverError, Found};
-use sync_relay::pim::pim_http;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
@@ -42,6 +40,8 @@ use sync_core::{
     ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter,
     Tombstone,
 };
+use sync_engine::dataset::fingerprint;
+use sync_relay::pim::pim_http;
 
 /// How many events a delta page asks for.
 const PAGE: usize = 100;

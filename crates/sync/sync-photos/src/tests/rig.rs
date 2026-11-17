@@ -3,9 +3,6 @@
 
 use crate::testing::scratch;
 use crate::{DeviceId, PhotoLibrary, PhotoMetadata, PhotoOriginals};
-use sync_engine::clock::ManualMillis;
-use sync_engine::engine::{Engine, Report};
-use sync_journal_sqlite::Journal;
 use account_fake_servers::{DavHandle, FakeDav, Running};
 use base_time::SystemClock;
 use base_time::UnixSeconds;
@@ -18,6 +15,9 @@ use replica_webdav::WebDavReplica;
 use std::path::PathBuf;
 use std::sync::Arc;
 use sync_core::Clock;
+use sync_engine::clock::ManualMillis;
+use sync_engine::engine::{Engine, Report};
+use sync_journal_sqlite::Journal;
 use tokio::net::TcpStream;
 
 const USER: &str = "ada";

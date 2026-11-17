@@ -10,10 +10,10 @@ use super::cas;
 use super::hlc::DeviceId;
 use super::library::{PhotoLibrary, manifest_dir};
 use super::originals::blocking;
-use sync_engine::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
 use base_ids::Bytes;
 use std::io;
 use sync_core::{Blob, ConflictRule, ItemPath, LocalId, Scanned};
+use sync_engine::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
 
 fn fail(what: &str, why: impl std::fmt::Display) -> DatasetError {
     DatasetError(format!("{what}: {why}"))
@@ -131,11 +131,11 @@ impl Dataset for PhotoMetadata {
 #[cfg(test)]
 mod tests {
     use super::super::cas::ContentId;
-    use sync_engine::clock::ManualMillis;
     use super::super::manifest::{Edit, Mark};
     use super::*;
     use crate::testing::scratch;
     use std::sync::Arc;
+    use sync_engine::clock::ManualMillis;
 
     fn dataset(name: &str) -> (PhotoMetadata, PhotoLibrary, tempfile::TempDir) {
         let dir = scratch(name);

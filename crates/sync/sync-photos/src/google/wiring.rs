@@ -11,13 +11,13 @@
 //! scheme) and refuses every other, so a `baseUrl` on an unlisted host fails to dial.
 
 use super::picker::PhotosPicker;
-use sync_relay::webdav::BuildError;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
 use base_url::{Origin, WebUrl};
 use http_relay::{RelayDial, RelayHttp, RelayLimits, Routed, bare_url};
 use std::sync::Arc;
+use sync_relay::webdav::BuildError;
 
 /// What the upload API sends through.
 pub type LibraryHttp<T> = RelayHttp<RelayDial<T>>;

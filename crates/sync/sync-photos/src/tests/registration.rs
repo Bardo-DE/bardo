@@ -2,11 +2,6 @@
 
 use crate::testing::scratch;
 use crate::{DeviceId, PhotoLibrary, PhotosWiring, start};
-use sync_driver::hub::{Access, DatasetName, Hub};
-use sync_driver::removal::wipe;
-use sync_engine::clock::ManualMillis;
-use sync_engine::scheduler::{Network, Settings};
-use sync_xdg::{AccountDir, Paths};
 use account_callers::{Caller, CallerRole};
 use account_capability::{Access as Rights, Delta, HashKind, StorageCap, StorageScope};
 use account_core::{AppId, AppName, Isolation};
@@ -14,6 +9,11 @@ use base_time::UnixSeconds;
 use std::path::Path;
 use std::sync::Arc;
 use sync_core::MemoryReplica;
+use sync_driver::hub::{Access, DatasetName, Hub};
+use sync_driver::removal::wipe;
+use sync_engine::clock::ManualMillis;
+use sync_engine::scheduler::{Network, Settings};
+use sync_xdg::{AccountDir, Paths};
 
 fn replica() -> MemoryReplica {
     MemoryReplica::new(

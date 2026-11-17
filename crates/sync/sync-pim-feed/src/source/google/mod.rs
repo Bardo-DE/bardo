@@ -37,7 +37,6 @@ pub use tasks::{GoogleTasksFeed, GoogleTasksSource};
 
 use super::graph::{encode, get, unreached};
 use crate::discover::DiscoverError;
-use sync_relay::pim::pim_http;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
@@ -52,6 +51,7 @@ use sha2::{Digest, Sha256};
 use std::sync::Arc;
 use sync_core::ReplicaError;
 use sync_core::status::retry_after;
+use sync_relay::pim::pim_http;
 
 /// The pages a listing of collections is followed for before a looping server is given up on.
 const MAX_PAGES: usize = 50;

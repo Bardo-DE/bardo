@@ -2,9 +2,9 @@
 
 use super::rig::{Machine, Server};
 use crate::{ContentId, Edit, Mark, Stored};
-use sync_engine::engine::Outcome;
 use std::collections::BTreeSet;
 use std::time::Instant;
+use sync_engine::engine::Outcome;
 
 fn ids(machine: &Machine) -> BTreeSet<ContentId> {
     machine.library.held().expect("held").into_iter().collect()
