@@ -219,9 +219,10 @@ async fn a_package_manager_that_vanishes_ends_the_wait_at_once() {
     let client = bus.connect().await;
     let installer = PackageKit::on(client).with_timeouts(timeouts(Duration::from_secs(120)));
     let vanish = async {
-        while calls.installed().is_empty() {
-            tokio::time::sleep(Duration::from_millis(20)).await;
-        }
+        base_testkit::eventually("the install to be requested", || {
+            !calls.installed().is_empty()
+        })
+        .await;
         drop(daemon);
     };
     let wanted = request(&["mpv"]);

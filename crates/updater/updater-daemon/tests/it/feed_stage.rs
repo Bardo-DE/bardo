@@ -252,12 +252,7 @@ async fn checked(engine: &Arc<Engine>) -> Status {
 /// Runs `job` to its end and returns the status it left.
 async fn ran(engine: &Arc<Engine>, job: Job) -> Status {
     engine.begin(job).await.expect("the job begins");
-    for _ in 0..500 {
-        if !engine.snapshot().phase.is_busy() {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
+    base_testkit::eventually("the job to end", || !engine.snapshot().phase.is_busy()).await;
     engine.snapshot()
 }
 

@@ -31,6 +31,7 @@ tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"]
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
+base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 tempfile = { workspace = true }
 tar = {version = "0.4.46"}

@@ -20,6 +20,7 @@ zbus = {version = "5.19", optional = true}
 # `update_atomic` locks a sidecar file between programs.
 
 [dev-dependencies]
+base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
 base-time = { path = "../../base/base-time" }
 # The tests' runtime; the crate itself names none (zbus brings its own executor).
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
