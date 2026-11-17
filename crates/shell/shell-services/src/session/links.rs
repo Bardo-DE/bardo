@@ -6,7 +6,7 @@ use shell_model::notifications::NotificationsCommand;
 use shell_model::windows::{WindowModel, WlCommand};
 use tokio::sync::watch;
 
-use crate::control::Control;
+use shell_model::service::Control;
 
 /// The other services the session service uses.
 #[derive(Debug, Clone)]

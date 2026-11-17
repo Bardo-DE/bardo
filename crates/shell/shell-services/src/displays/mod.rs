@@ -24,26 +24,16 @@ pub use backend::{OutputsRoute, WlrOutputs};
 
 use std::sync::Arc;
 
-use shell_model::displays::{Displays, DisplaysCommand};
 use shell_model::volume::Volume;
 use tokio::sync::watch;
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::displays::DisplaysService;
+use shell_model::service::ServiceIo;
 
-/// The displays as a [`Service`].
-///
-/// It follows the volume service (its `Deps`) for the monitor-speaker path and talks DDC on
-/// `env`'s buses. Until the first `Policy` command it does nothing at all: no bus probe, no
-/// output query, no file.
-#[derive(Debug)]
-pub enum DisplaysService {}
-
-impl Service for DisplaysService {
-    const NAME: &'static str = "displays";
-    type State = Displays;
-    type Command = DisplaysCommand;
+impl Run for DisplaysService {
     type Deps = watch::Receiver<Volume>;
 
     fn run(

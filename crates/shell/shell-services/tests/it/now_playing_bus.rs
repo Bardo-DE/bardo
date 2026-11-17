@@ -5,8 +5,8 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
+use shell_model::now_playing::NowPlayingService;
 use shell_model::now_playing::{Media, TEXT_MAX_CHARS};
-use shell_services::NowPlayingService;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};

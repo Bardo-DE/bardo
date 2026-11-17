@@ -34,15 +34,16 @@ use zbus::zvariant::OwnedObjectPath;
 use super::probe::{self, Arrival};
 use super::{answer, cua, helpers, intents, memory, tell, terminal, terminals};
 use crate::call_error::CallError;
-use crate::companion::{CompanionLinks, CompanionService};
-use crate::control::Control;
+use crate::companion::CompanionLinks;
 use crate::deadline::{COMPANION_CALL, within};
 use crate::env::{Env, WallClock};
 use crate::launch::TerminalSearch;
 use crate::owner;
 use crate::seat::SeatView;
-use crate::service::ServiceIo;
 use crate::stream::next;
+use shell_model::companion::CompanionService;
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
 
 /// What the loop reaches outside the process: the wall clock the turns are stamped with, and
 /// where the default terminal is looked for.

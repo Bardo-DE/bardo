@@ -7,8 +7,8 @@ use shell_model::notifications::{NotesState, NotificationsCommand};
 use shell_model::windows::WindowModel;
 use tokio::sync::watch;
 
-use crate::control::Control;
 use crate::env::{Bus, BusRoute, Env, UnitWait};
+use shell_model::service::Control;
 
 /// The other services keycap reads and drives.
 #[derive(Debug, Clone)]

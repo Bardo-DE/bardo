@@ -37,7 +37,7 @@ pub struct Attempt {
 }
 
 /// `ecb-rates.xml` in bardo-shell's folder of `dirs`' cache directory.
-pub fn cache_path(dirs: &shell_services::env::Dirs) -> PathBuf {
+pub fn cache_path(dirs: &shell_model::dirs::Dirs) -> PathBuf {
     dirs.sill_cache().join("ecb-rates.xml")
 }
 

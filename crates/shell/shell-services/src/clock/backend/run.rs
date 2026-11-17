@@ -59,9 +59,9 @@ mod tests {
     use std::sync::Arc;
 
     use super::publish;
-    use crate::clock::ClockService;
     use crate::env::FixedClock;
     use crate::service::spawn;
+    use shell_model::clock::ClockService;
     use shell_model::clock::{ClockCommand, ClockMinute};
     use shell_testkit::TempDir;
 

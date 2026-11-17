@@ -15,11 +15,14 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use shell_model::companion::CompanionCommand;
+use shell_model::service::Control;
+use shell_model::service::Handle;
+use shell_model::voice::VoiceService;
 use shell_model::voice::{Voice, VoiceCommand, VoiceConsent};
+use shell_services::VoiceLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::seat::{SeatPublisher, seat};
-use shell_services::service::{Handle, spawn};
-use shell_services::{Control, VoiceLinks, VoiceService};
+use shell_services::service::spawn;
 use shell_testkit::PrivateBus;
 use speech_wire::{
     CancelCause, Envelope, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal, VoiceVocab, frame, seal,

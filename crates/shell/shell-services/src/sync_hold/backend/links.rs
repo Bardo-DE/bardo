@@ -4,8 +4,8 @@ use shell_model::launch::LaunchCommand;
 use shell_model::notifications::{NotesState, NotificationsCommand};
 use tokio::sync::watch;
 
-use crate::control::Control;
 use crate::notifications::Answers;
+use shell_model::service::Control;
 
 /// The notifications service the notices go through, and the launch service that opens Settings.
 #[derive(Debug, Clone)]

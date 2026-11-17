@@ -39,7 +39,6 @@ mod backend;
 use std::sync::Arc;
 
 use shell_model::apps::AppIndex;
-use shell_model::capture_pick::{CaptureCommand, CapturePicker};
 use shell_model::desktop::{DesktopCommand, DesktopView};
 use shell_model::displays::Displays;
 use tokio::sync::{mpsc, watch};
@@ -47,7 +46,9 @@ use tokio::sync::{mpsc, watch};
 use crate::env::Env;
 use crate::error::ServiceError;
 use crate::seat::SeatView;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::capture_pick::CaptureService;
+use shell_model::service::ServiceIo;
 
 /// What the capture-pick service reads.
 ///
@@ -68,14 +69,7 @@ pub struct CaptureLinks {
     pub answers: mpsc::UnboundedSender<DesktopCommand>,
 }
 
-/// The picker as a [`Service`].
-#[derive(Debug)]
-pub enum CaptureService {}
-
-impl Service for CaptureService {
-    const NAME: &'static str = "capture-pick";
-    type State = CapturePicker;
-    type Command = CaptureCommand;
+impl Run for CaptureService {
     type Deps = CaptureLinks;
 
     fn run(

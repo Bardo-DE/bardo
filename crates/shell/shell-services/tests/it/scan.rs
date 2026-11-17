@@ -9,8 +9,9 @@
 
 use std::path::{Path, PathBuf};
 
+use shell_desktop_fs::icons::{IconRoots, IconTheme};
 use shell_model::apps::{App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal};
-use shell_services::apps::{IconRoots, IconTheme, scan};
+use shell_services::apps::scan;
 
 fn fixture_dirs() -> Vec<PathBuf> {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/applications");

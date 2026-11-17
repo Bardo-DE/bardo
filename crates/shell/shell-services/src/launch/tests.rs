@@ -7,11 +7,12 @@ use shell_model::launch::{
     FailureCause, LaunchCommand, LaunchDone, LaunchRequest, Launches, answer_to,
 };
 
-use super::{LaunchLinks, LaunchService, monotonic_now};
-use crate::Control;
-use crate::NotificationsService;
+use super::{LaunchLinks, monotonic_now};
 use crate::notifications::Answers;
 use crate::service::spawn;
+use shell_model::launch::LaunchService;
+use shell_model::notifications::NotificationsService;
+use shell_model::service::Control;
 
 fn index_with(id: &str, exec: &str) -> AppIndex {
     let app = App {

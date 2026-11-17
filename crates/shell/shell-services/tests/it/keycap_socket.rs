@@ -20,14 +20,15 @@ use shell_model::apps::{
     App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal, step as apps_step,
 };
 use shell_model::keyboard::{ShellFocus, UserOverrides};
+use shell_model::keycap::KeycapService;
 use shell_model::keycap::{Attention, KeycapCommand, KeycapState, notice_text};
 use shell_model::notifications::{
     BannerLife, LiveBanner, NotesState, Notification, NotificationId, NotificationsCommand, UnixMs,
 };
+use shell_model::service::Control;
 use shell_model::windows::{Sizing, Toplevel, Toplevels, WindowModel};
-use shell_services::Control;
 use shell_services::env::Env;
-use shell_services::keycap::{KeycapLinks, KeycapService};
+use shell_services::keycap::KeycapLinks;
 use shell_services::service::spawn;
 use shell_testkit::TempDir;
 use tokio::sync::{mpsc, watch};
@@ -210,7 +211,7 @@ struct Rig {
 impl Rig {
     /// Where the service looks for `key-remap.toml`.
     fn config_dir(&self) -> PathBuf {
-        shell_services::env::Dirs::under(self.scratch.path()).keycap_config()
+        shell_model::dirs::Dirs::under(self.scratch.path()).keycap_config()
     }
 }
 
@@ -218,7 +219,7 @@ impl Rig {
 fn rig(config: Option<&str>) -> Rig {
     let (daemon, socket) = Daemon::start();
     let scratch = TempDir::new("keycap-scratch");
-    let config_dir = shell_services::env::Dirs::under(scratch.path()).keycap_config();
+    let config_dir = shell_model::dirs::Dirs::under(scratch.path()).keycap_config();
     if let Some(text) = config {
         std::fs::create_dir_all(&config_dir).unwrap_or_else(|e| panic!("{e}"));
         std::fs::write(config_dir.join("key-remap.toml"), text).unwrap_or_else(|e| panic!("{e}"));

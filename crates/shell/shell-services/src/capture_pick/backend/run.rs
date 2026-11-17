@@ -18,11 +18,12 @@ use zbus::fdo;
 
 use super::objects::{Call, ColorCall, PermissionCall, PickerObject, SourceCall};
 use crate::callers::CallerSource;
-use crate::capture_pick::{CaptureLinks, CaptureService};
+use crate::capture_pick::CaptureLinks;
 use crate::owner;
 use crate::seat::SeatView;
-use crate::service::ServiceIo;
 use shell_dbus::SHELL_PATH;
+use shell_model::capture_pick::CaptureService;
+use shell_model::service::ServiceIo;
 
 pub(crate) async fn run(
     links: CaptureLinks,

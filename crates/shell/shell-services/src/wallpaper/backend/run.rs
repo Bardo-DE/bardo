@@ -16,7 +16,7 @@ use super::backdrop::ensure_backdrop;
 use super::config::{config_path, resolve_source};
 use super::resize;
 use crate::debounced::{self, Debounced, EventFilter, Place};
-use crate::env::Dirs;
+use shell_model::dirs::Dirs;
 
 /// `wallpaper` in bardo-shell's folder of `dirs`' cache directory.
 pub(crate) fn cache_directory(dirs: &Dirs) -> PathBuf {
@@ -167,8 +167,8 @@ fn forget(tx: &channel::Sender<Wallpapers>, output: &OutputName) {
 #[cfg(test)]
 mod tests {
     use crate::service::spawn;
-    use crate::wallpaper::WallpaperService;
     use shell_model::ids::OutputName;
+    use shell_model::wallpaper::WallpaperService;
     use shell_model::wallpaper::{WallpaperCommand, Wallpapers};
 
     /// Starting never panics (no compositor or config directory needed to start), and a

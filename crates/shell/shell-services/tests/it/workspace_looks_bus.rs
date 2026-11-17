@@ -5,12 +5,13 @@
 use std::time::Duration;
 
 use shell_model::serve::ClaimError;
+use shell_model::service::Handle;
+use shell_model::workspace_looks::WorkspaceLooksService;
 use shell_model::workspace_looks::{
     PublishedWorkspace, WorkspaceLooks, WorkspaceLooksCommand, WorkspaceLooksLink,
 };
 use shell_services::env::{BusRoute, Buses, Env, NameClaims};
-use shell_services::service::{Handle, spawn};
-use shell_services::workspace_looks::WorkspaceLooksService;
+use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 use zbus::connection::Builder;

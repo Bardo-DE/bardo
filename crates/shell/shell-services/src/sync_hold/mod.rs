@@ -11,23 +11,15 @@
 
 mod backend;
 
-use shell_model::sync_hold::{SyncHoldCommand, SyncHoldState};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::service::ServiceIo;
+use shell_model::sync_hold::SyncHoldService;
 
 pub use backend::SyncHoldLinks;
 
-/// The held mass deletions on `env`'s session bus, told through the notifications service and
-/// opened in Settings through the launch service, both in its [`SyncHoldLinks`].
-#[derive(Debug)]
-pub enum SyncHoldService {}
-
-impl Service for SyncHoldService {
-    const NAME: &'static str = "sync_hold";
-    type State = SyncHoldState;
-    type Command = SyncHoldCommand;
+impl Run for SyncHoldService {
     type Deps = SyncHoldLinks;
 
     fn run(

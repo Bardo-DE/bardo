@@ -1,15 +1,15 @@
-//! The compositor's toplevels and workspaces as a [`Service`], on a thread of its own.
+//! The compositor's toplevels and workspaces as a service, on a thread of its own.
 
 use shell_model::desktop::DesktopView;
-use shell_model::windows::{WindowModel, WlCommand};
-
 use tokio::sync::{oneshot, watch};
 
 use super::publish::Publish;
 use super::thread;
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::service::ServiceIo;
+use shell_model::windows::WindowsService;
 
 /// What the service writes beside its own state.
 #[derive(Debug, Clone)]
@@ -20,18 +20,7 @@ pub struct WindowsLinks {
     pub desktop: watch::Sender<DesktopView>,
 }
 
-/// The compositor's toplevels and workspaces as a [`Service`].
-///
-/// It runs on a thread of its own (started by `run`) with its own Wayland connection to `env`'s
-/// compositor: the compositor's globals pick the arm that follows it, and it publishes after
-/// every dispatch.
-#[derive(Debug)]
-pub enum WindowsService {}
-
-impl Service for WindowsService {
-    const NAME: &'static str = "windows";
-    type State = WindowModel;
-    type Command = WlCommand;
+impl Run for WindowsService {
     type Deps = WindowsLinks;
 
     fn run(
@@ -67,9 +56,11 @@ mod tests {
     use shell_testkit::TempDir;
     use tokio::sync::watch;
 
-    use super::{WindowModel, WindowsLinks, WindowsService};
+    use super::WindowsLinks;
     use crate::env::Env;
-    use crate::service::{Handle, Service};
+    use crate::service::Run;
+    use shell_model::service::Handle;
+    use shell_model::windows::{WindowModel, WindowsService};
 
     /// The run is not over while the thread follows (here: waits on its commands with no
     /// compositor to reach), and is over once every control is gone.

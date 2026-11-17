@@ -16,21 +16,15 @@
 mod backend;
 
 use shell_model::displays::Displays;
-use shell_model::night_shift::{NightShift, NightShiftCommand};
 use tokio::sync::watch;
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::night_shift::NightShiftService;
+use shell_model::service::ServiceIo;
 
-/// Night Shift as a [`Service`].
-#[derive(Debug)]
-pub enum NightShiftService {}
-
-impl Service for NightShiftService {
-    const NAME: &'static str = "night-shift";
-    type State = NightShift;
-    type Command = NightShiftCommand;
+impl Run for NightShiftService {
     /// The displays, whose DDC monitors casement is told to leave alone where bardo-shell warms them.
     type Deps = watch::Receiver<Displays>;
 

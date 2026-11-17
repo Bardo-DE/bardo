@@ -10,10 +10,11 @@ use shell_model::displays::Displays;
 use shell_model::displays::NightWarmthMode;
 use shell_model::displays::ddc::{Controls, DdcDisplay, Endpoint, RgbGain};
 use shell_model::ids::{DdcId, OutputName};
+use shell_model::night_shift::NightShiftService;
 use shell_model::night_shift::{NightShift, NightShiftCommand, Schedule, Shown, shown};
+use shell_model::service::Handle;
 use shell_services::env::Env;
-use shell_services::night_shift::NightShiftService;
-use shell_services::service::{Handle, spawn};
+use shell_services::service::spawn;
 use shell_testkit::TempDir;
 use tokio::sync::watch;
 

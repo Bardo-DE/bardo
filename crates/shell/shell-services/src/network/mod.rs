@@ -3,21 +3,13 @@
 
 mod backend;
 
-use shell_model::network::{Network, NetworkCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::network::NetworkService;
+use shell_model::service::ServiceIo;
 
-/// NetworkManager's primary connection as a [`Service`]. Without NetworkManager the state
-/// stays at `Network::default()` (disconnected, connectivity unknown).
-#[derive(Debug)]
-pub enum NetworkService {}
-
-impl Service for NetworkService {
-    const NAME: &'static str = "network";
-    type State = Network;
-    type Command = NetworkCommand;
+impl Run for NetworkService {
     type Deps = ();
 
     fn run(

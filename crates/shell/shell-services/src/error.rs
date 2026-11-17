@@ -7,8 +7,8 @@ use std::path::PathBuf;
 #[derive(Debug, thiserror::Error)]
 pub enum ServiceError {
     /// The service's task has stopped; its commands go nowhere.
-    #[error("the service has stopped")]
-    Gone,
+    #[error(transparent)]
+    Gone(#[from] shell_model::service::Gone),
     /// The session bus could not be reached or refused a call.
     #[error("d-bus: {0}")]
     Bus(#[from] zbus::Error),

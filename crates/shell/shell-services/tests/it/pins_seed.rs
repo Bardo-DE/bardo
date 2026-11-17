@@ -9,10 +9,11 @@ use shell_launcher::AppId;
 use shell_model::apps::{
     App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal, step,
 };
+use shell_model::pins::PinsService;
 use shell_model::pins::{DockPins, PinAt, PinEvent};
+use shell_model::service::Handle;
 use shell_services::env::Env;
-use shell_services::pins::PinsService;
-use shell_services::service::{Handle, spawn};
+use shell_services::service::spawn;
 use shell_testkit::TempDir;
 use tokio::sync::watch;
 

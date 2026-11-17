@@ -21,7 +21,7 @@ use zbus::Connection;
 
 use super::MenuNameOf;
 use crate::callers::Peers;
-use crate::control::Control;
+use shell_model::service::Control;
 
 pub use activate::{Activated, Activation, MenuFault};
 pub use read::MenuListed;

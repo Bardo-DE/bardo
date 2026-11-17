@@ -7,8 +7,8 @@ use std::time::UNIX_EPOCH;
 
 use shell_model::screenshots::preview_name;
 
-use crate::env::Dirs;
 use crate::error::ServiceError;
+use shell_model::dirs::Dirs;
 
 /// The preview's long side in px: twice the thumbnail's width, for a 2x output.
 pub const PREVIEW_MAX: u32 = 480;

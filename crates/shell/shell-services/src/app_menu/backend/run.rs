@@ -9,11 +9,12 @@ use tokio::task::JoinHandle;
 use zbus::Connection;
 
 use super::serve;
-use crate::app_menu::{AppMenuDeps, AppMenuService, wire};
+use crate::app_menu::{AppMenuDeps, wire};
 use crate::callers::CallerSource;
 use crate::env::{Bus, ConnectError};
 use crate::machine::Published;
-use crate::service::ServiceIo;
+use shell_model::app_menu::AppMenuService;
+use shell_model::service::ServiceIo;
 
 /// How many clicks and "about to show" calls are on the way at once: each waits on an app that may
 /// be hung, so past this a call is dropped, not queued behind them.

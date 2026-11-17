@@ -20,11 +20,11 @@ use super::notice;
 use super::wire;
 use crate::env::Bus;
 use crate::error::ServiceError;
-use crate::guest_asks::GuestAsksService;
 use crate::machine::Machine;
 use crate::notices::Board;
 use crate::owner::{self, Ended};
-use crate::service::ServiceIo;
+use shell_model::guest_asks::GuestAsksService;
+use shell_model::service::ServiceIo;
 
 /// The shell's seat at inferd's guests.
 type Guests = Inference<DbusTransport>;

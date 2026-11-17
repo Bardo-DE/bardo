@@ -12,13 +12,15 @@
 
 mod backend;
 
-use crate::control::Control;
 use crate::env::Env;
 use crate::error::ServiceError;
 use crate::seat::SeatView;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
 use shell_model::companion::CompanionCommand;
-use shell_model::voice::{Voice, VoiceCommand, VoiceConsent};
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
+use shell_model::voice::VoiceConsent;
+use shell_model::voice::VoiceService;
 use tokio::sync::mpsc;
 
 /// What the service needs from the daemon: the seat to speak on, and the companion that takes
@@ -33,14 +35,7 @@ pub struct VoiceLinks {
     pub consents: mpsc::UnboundedSender<VoiceConsent>,
 }
 
-/// Hold-to-talk as a [`Service`].
-#[derive(Debug)]
-pub enum VoiceService {}
-
-impl Service for VoiceService {
-    const NAME: &'static str = "voice";
-    type State = Voice;
-    type Command = VoiceCommand;
+impl Run for VoiceService {
     type Deps = VoiceLinks;
 
     fn run(

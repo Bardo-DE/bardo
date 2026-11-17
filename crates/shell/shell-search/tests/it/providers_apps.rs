@@ -7,10 +7,11 @@
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 
+use shell_desktop_fs::icons::{IconRoots, IconTheme};
 use shell_launcher::{Cancel, Frecency, Provider, Query, VecSink};
 use shell_model::apps::{AppIndex, AppsEvent};
 use shell_search::providers::AppsProvider;
-use shell_services::apps::{IconRoots, IconTheme, scan};
+use shell_services::apps::scan;
 
 fn fixture_dirs() -> Vec<PathBuf> {
     let root =

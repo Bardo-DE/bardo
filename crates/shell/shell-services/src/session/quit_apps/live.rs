@@ -11,9 +11,9 @@ use shell_model::windows::{WindowModel, WlCommand};
 use tokio::sync::watch;
 
 use super::{AppsHost, OpenWindow};
-use crate::control::Control;
 use crate::env::{Children, ProcessGroup, Start};
 use crate::launch::{Manager, user_manager};
+use shell_model::service::Control;
 
 /// The scopes bardo-shell starts every app in.
 const APP_SCOPES: &str = "app-bardo-*.scope";

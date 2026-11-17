@@ -21,23 +21,15 @@
 
 mod backend;
 
-use shell_model::keycap::{KeycapCommand, KeycapState};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::keycap::KeycapService;
+use shell_model::service::ServiceIo;
 
 pub use backend::KeycapLinks;
 
-/// The keycap connection as a [`Service`], on `env`'s socket and system bus, reading the focused
-/// window and posting its notices through the services in its [`KeycapLinks`].
-#[derive(Debug)]
-pub enum KeycapService {}
-
-impl Service for KeycapService {
-    const NAME: &'static str = "keycap";
-    type State = KeycapState;
-    type Command = KeycapCommand;
+impl Run for KeycapService {
     type Deps = KeycapLinks;
 
     fn run(

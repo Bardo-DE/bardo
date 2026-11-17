@@ -18,8 +18,9 @@ use shell_model::screenshots::{
 use tokio::sync::{mpsc, watch};
 use tokio::task::JoinSet;
 
-use crate::env::{Children, Dirs};
+use crate::env::Children;
 use crate::machine::Machine;
+use shell_model::dirs::Dirs;
 
 /// The task's own state beside the published [`Shots`].
 struct Live {

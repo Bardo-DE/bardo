@@ -7,9 +7,9 @@ use std::time::Duration;
 use jiff::Zoned;
 use jiff::civil::Date;
 use jiff::tz::TimeZone;
+use shell_model::events::EventsService;
 use shell_model::events::{Agenda, EventSources, EventsCommand, IcsPlace, SourceStatus};
 use shell_services::env::Env;
-use shell_services::events::EventsService;
 use shell_services::service::spawn;
 use tokio::sync::watch;
 

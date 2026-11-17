@@ -18,7 +18,7 @@ use base_fs::NewFileMode;
 pub const FILE_NAME: &str = "notifications.json";
 
 /// `notifications.json` in bardo-shell's folder of `dirs`' state directory.
-pub fn path_in(dirs: &crate::env::Dirs) -> PathBuf {
+pub fn path_in(dirs: &shell_model::dirs::Dirs) -> PathBuf {
     dirs.sill_state().join(FILE_NAME)
 }
 

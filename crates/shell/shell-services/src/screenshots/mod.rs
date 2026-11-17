@@ -19,21 +19,13 @@
 
 mod backend;
 
-use shell_model::screenshots::{ShotCommand, Shots};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::screenshots::ScreenshotsService;
+use shell_model::service::ServiceIo;
 
-/// Screenshots as a [`Service`]: watching folders under `env`'s directories, its previews in their
-/// cache. Passive until `Configure`.
-#[derive(Debug)]
-pub enum ScreenshotsService {}
-
-impl Service for ScreenshotsService {
-    const NAME: &'static str = "screenshots";
-    type State = Shots;
-    type Command = ShotCommand;
+impl Run for ScreenshotsService {
     type Deps = ();
 
     fn run(

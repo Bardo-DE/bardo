@@ -5,7 +5,7 @@ use shell_model::notifications::{
     AppRef, Body, Expiry, Hints, IconRef, NotificationsCommand, Posting,
 };
 
-use crate::control::Control;
+use shell_model::service::Control;
 
 /// The desktop entry the notices carry.
 const ENTRY: &str = "shell-launch";

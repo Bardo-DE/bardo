@@ -6,13 +6,15 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use shell_model::battery::BatteryService;
 use shell_model::battery::{Battery, Charge};
+use shell_model::kbd_backlight::KbdBacklightService;
 use shell_model::kbd_backlight::{KbdBacklight, KbdCommand};
+use shell_model::power_profile::PowerProfileService;
 use shell_model::power_profile::{PowerProfiles, Profile, ProfileDegraded};
 use shell_model::units::{Percent, Presence, Seconds};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use shell_services::{BatteryService, KbdBacklightService, PowerProfileService};
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 use zbus::interface;

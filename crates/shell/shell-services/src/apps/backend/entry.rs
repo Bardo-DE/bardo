@@ -4,12 +4,10 @@ use std::borrow::Cow;
 use std::path::Path;
 
 use key_remap_proto::ProfileName;
+use shell_desktop_fs::icons::{IconRoots, IconTheme, resolve_icon};
 use shell_launcher::AppId;
 use shell_model::apps::{App, AppIcon, DbusActivation, DesktopActionEntry, Listing, Terminal};
 use ui_helpers::{ApplicationEntry, DesktopFile, DesktopGroup, DesktopId, EntryLocale};
-
-use super::icon_roots::IconRoots;
-use super::icons::{IconTheme, resolve_icon};
 
 /// The desktop names this scan targets. bardo-shell runs as the desktop's own session
 /// (`bardo`), so `OnlyShowIn`/`NotShowIn` are matched against these constants rather than the
@@ -184,10 +182,9 @@ fn actions(
 
 #[cfg(test)]
 mod tests {
-    use super::super::icon_roots::IconRoots;
-    use super::super::icons::IconTheme;
     use super::{is_application, is_listed, on_path, parse_entry};
     use key_remap_proto::ProfileName;
+    use shell_desktop_fs::icons::{IconRoots, IconTheme};
     use shell_model::apps::{App, Listing};
     use std::path::Path;
     use ui_helpers::{

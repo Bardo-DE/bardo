@@ -7,13 +7,13 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use shell_model::network::NetworkService;
 use shell_model::network::{Connectivity, Link, Network, NetworkCommand};
 use shell_model::units::{Percent, Presence};
+use shell_model::wifi::WifiService;
 use shell_model::wifi::{Association, Radio, Security, Ssid, Wifi, WifiCommand};
 use shell_services::env::{BusRoute, Buses, Env};
-use shell_services::network::NetworkService;
 use shell_services::service::spawn;
-use shell_services::wifi::WifiService;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 use zbus::interface;

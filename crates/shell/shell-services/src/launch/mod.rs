@@ -16,28 +16,19 @@ mod backend;
 mod tests;
 
 use backend::Reach;
-use shell_model::launch::{LaunchCommand, Launches};
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::launch::LaunchService;
+use shell_model::service::ServiceIo;
 
 pub use backend::{LaunchLinks, file_uri, monotonic_now, open_argv, reveal_folder};
 pub(crate) use backend::{
     Manager, TerminalCommand, TerminalSearch, open_in_terminal, user_manager,
 };
 
-/// App launching as a [`Service`]: scopes, activation tokens, opening files.
-///
-/// Its `Deps` is the app index, which resolves ids to entries, and the notifications service that
-/// tells the person an app did not open.
-#[derive(Debug)]
-pub enum LaunchService {}
-
-impl Service for LaunchService {
-    const NAME: &'static str = "launch";
-    type State = Launches;
-    type Command = LaunchCommand;
+impl Run for LaunchService {
     type Deps = LaunchLinks;
 
     fn run(

@@ -2,24 +2,13 @@
 
 mod backend;
 
-use shell_model::volume::{Volume, VolumeCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::service::ServiceIo;
+use shell_model::volume::VolumeService;
 
-/// The output volume as a [`Service`].
-///
-/// It is libpulse's standard mainloop on a thread of the blocking
-/// pool, asleep until the sound server or a command wakes it, its callbacks feeding `step`.
-/// Without a pulse server the state stays at `Volume::default()` (absent).
-#[derive(Debug)]
-pub enum VolumeService {}
-
-impl Service for VolumeService {
-    const NAME: &'static str = "volume";
-    type State = Volume;
-    type Command = VolumeCommand;
+impl Run for VolumeService {
     type Deps = ();
 
     fn run(

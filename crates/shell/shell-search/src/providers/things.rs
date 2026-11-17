@@ -19,7 +19,7 @@ use shell_launcher::{
     Subject,
 };
 use shell_model::companion::{Companion, CompanionCommand, LookupPhase, Opener};
-use shell_services::control::Control;
+use shell_model::service::Control;
 use tokio::sync::watch;
 
 use super::lookup::block_on;

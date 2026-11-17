@@ -12,21 +12,13 @@
 
 mod backend;
 
-use shell_model::clipboard::{Clipboard, ClipboardCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::clipboard::ClipboardService;
+use shell_model::service::ServiceIo;
 
-/// The clipboard history as a [`Service`], on `env`'s compositor. Passive until the daemon's
-/// first policy.
-#[derive(Debug)]
-pub enum ClipboardService {}
-
-impl Service for ClipboardService {
-    const NAME: &'static str = "clipboard";
-    type State = Clipboard;
-    type Command = ClipboardCommand;
+impl Run for ClipboardService {
     type Deps = ();
 
     fn run(

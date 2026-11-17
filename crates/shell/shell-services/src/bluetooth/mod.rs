@@ -9,21 +9,13 @@
 
 mod backend;
 
-use shell_model::bluetooth::{Bluetooth, BluetoothCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::bluetooth::BluetoothService;
+use shell_model::service::ServiceIo;
 
-/// BlueZ's adapter and devices as a [`Service`]. Without BlueZ or an adapter the state stays
-/// at `Bluetooth::default()` (absent), and the control center shows the module unavailable.
-#[derive(Debug)]
-pub enum BluetoothService {}
-
-impl Service for BluetoothService {
-    const NAME: &'static str = "bluetooth";
-    type State = Bluetooth;
-    type Command = BluetoothCommand;
+impl Run for BluetoothService {
     type Deps = ();
 
     fn run(

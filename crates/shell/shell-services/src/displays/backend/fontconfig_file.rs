@@ -66,7 +66,7 @@ pub fn plan(
 }
 
 /// `fontconfig` under `dirs`' config directory.
-pub fn dir_in(dirs: &crate::env::Dirs) -> PathBuf {
+pub fn dir_in(dirs: &shell_model::dirs::Dirs) -> PathBuf {
     dirs.config.join("fontconfig")
 }
 

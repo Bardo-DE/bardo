@@ -6,26 +6,16 @@
 mod backend;
 
 use shell_model::apps::AppIndex;
-use shell_model::pins::{DockPins, PinEvent};
+use shell_model::pins::DockPins;
 use tokio::sync::watch;
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::pins::PinsService;
+use shell_model::service::ServiceIo;
 
-/// The dock pins as a [`Service`].
-///
-/// Loaded at once, then every [`PinEvent`] sent to the control applied and the file written atomically after each; an external edit (another process, a
-/// text editor) is picked up through a 30 ms debounced directory watch and published as if it
-/// were a `Replaced` event. A fresh account's dock does not exist: once the installed apps are
-/// known the dock starts with the desktop's own (`shell_model::seed::first_dock`), once.
-#[derive(Debug)]
-pub enum PinsService {}
-
-impl Service for PinsService {
-    const NAME: &'static str = "pins";
-    type State = DockPins;
-    type Command = PinEvent;
+impl Run for PinsService {
     /// The installed apps, which a fresh account's dock starts from.
     type Deps = watch::Receiver<AppIndex>;
 

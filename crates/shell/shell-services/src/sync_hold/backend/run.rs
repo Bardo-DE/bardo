@@ -16,15 +16,15 @@ use super::links::SyncHoldLinks;
 use super::notice;
 use super::wire::{self, Heard};
 use crate::account_label::{Accountd, accountd, label_of};
-use crate::control::Control;
 use crate::env::Bus;
 use crate::error::ServiceError;
 use crate::machine::Machine;
 use crate::notices::Board;
 use crate::owner::{self, Ended};
-use crate::service::ServiceIo;
 use crate::stream::next;
-use crate::sync_hold::SyncHoldService;
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
+use shell_model::sync_hold::SyncHoldService;
 
 /// Everything the loop owns.
 struct Live {

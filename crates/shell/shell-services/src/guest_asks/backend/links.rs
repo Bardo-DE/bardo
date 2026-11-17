@@ -3,8 +3,8 @@
 use shell_model::notifications::{NotesState, NotificationsCommand};
 use tokio::sync::watch;
 
-use crate::control::Control;
 use crate::notifications::Answers;
+use shell_model::service::Control;
 
 /// The notifications service the questions go through.
 #[derive(Debug, Clone)]

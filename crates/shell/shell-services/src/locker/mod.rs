@@ -11,21 +11,13 @@
 
 mod backend;
 
-use shell_model::locker::{Lock, LockerCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::locker::LockerService;
+use shell_model::service::ServiceIo;
 
-/// bardo-shell's own lock screen as a [`Service`], logind on `env`'s system bus, the crash marker in
-/// its runtime directory. Inert until the first `Configure` or `Use`.
-#[derive(Debug)]
-pub enum LockerService {}
-
-impl Service for LockerService {
-    const NAME: &'static str = "locker";
-    type State = Lock;
-    type Command = LockerCommand;
+impl Run for LockerService {
     type Deps = ();
 
     fn run(

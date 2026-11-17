@@ -6,9 +6,9 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::time::Duration;
 
+use shell_model::bluetooth::BluetoothService;
 use shell_model::bluetooth::{Bluetooth, BtPower};
 use shell_model::units::Presence;
-use shell_services::bluetooth::BluetoothService;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
 use shell_testkit::PrivateBus;

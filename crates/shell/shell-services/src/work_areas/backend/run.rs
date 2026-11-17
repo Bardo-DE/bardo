@@ -9,9 +9,9 @@ use zbus::Connection;
 use super::object::OutputsObject;
 use crate::env::{Bus, NameClaims};
 use crate::serve;
-use crate::service::ServiceIo;
-use crate::work_areas::WorkAreaService;
 use shell_dbus::{OUTPUTS_BUS, OUTPUTS_PATH};
+use shell_model::service::ServiceIo;
+use shell_model::work_areas::WorkAreaService;
 
 pub(crate) async fn run(bus: Bus, claims: NameClaims, io: ServiceIo<WorkAreaService>) {
     let ServiceIo {

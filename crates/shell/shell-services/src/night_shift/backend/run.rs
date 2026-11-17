@@ -19,8 +19,8 @@ use tokio::sync::watch;
 use super::files::{SETTINGS, read_light, read_manual, write_light, write_manual, write_skip};
 use crate::debounced::{self, Debounced};
 use crate::env::WallClock;
-use crate::night_shift::NightShiftService;
-use crate::service::ServiceIo;
+use shell_model::night_shift::NightShiftService;
+use shell_model::service::ServiceIo;
 
 /// How often a manual turn-on's end is looked at again: the sleep is the monotonic clock's, which
 /// stops while the machine sleeps, so the wall clock is asked at least this often.

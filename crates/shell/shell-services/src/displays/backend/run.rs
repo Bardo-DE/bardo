@@ -29,7 +29,8 @@ use super::ddc::worker::DdcJob;
 use super::outputs_route::OutputsRoute;
 use super::{backlight, fontconfig_file};
 use crate::env::ddc::{DdcBus, connected};
-use crate::env::{Bus, Dirs, WaylandRoute};
+use crate::env::{Bus, WaylandRoute};
+use shell_model::dirs::Dirs;
 
 /// Where the service looks and writes.
 #[derive(Debug, Clone)]

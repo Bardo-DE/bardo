@@ -18,14 +18,16 @@ mod backend;
 
 use tokio::sync::mpsc;
 
-use shell_model::companion::{Companion, CompanionCommand, SummonOut};
+use shell_model::companion::SummonOut;
 use shell_model::launch::LaunchCommand;
 
-use crate::control::Control;
 use crate::env::Env;
 use crate::error::ServiceError;
 use crate::seat::SeatView;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::companion::CompanionService;
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
 
 /// What the service needs from the daemon: the seat to speak on, where a summon's launcher
 /// effects go, and the launch service that opens Settings' model picker.
@@ -39,14 +41,7 @@ pub struct CompanionLinks {
     pub launch: Control<LaunchCommand>,
 }
 
-/// The companion as a [`Service`].
-#[derive(Debug)]
-pub enum CompanionService {}
-
-impl Service for CompanionService {
-    const NAME: &'static str = "companion";
-    type State = Companion;
-    type Command = CompanionCommand;
+impl Run for CompanionService {
     type Deps = CompanionLinks;
 
     fn run(

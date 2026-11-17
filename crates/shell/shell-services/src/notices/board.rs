@@ -8,7 +8,7 @@ use shell_model::notifications::{
 };
 use tokio::sync::watch;
 
-use crate::control::Control;
+use shell_model::service::Control;
 
 /// The notices of one service, one per key (an account, a dataset, a computer; `()` for a service
 /// with a single notice).

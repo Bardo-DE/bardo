@@ -9,20 +9,13 @@
 
 mod backend;
 
-use shell_model::input_source::{InputCommand, InputSwitch};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::input_source::InputSourceService;
+use shell_model::service::ServiceIo;
 
-/// Next Input Source as a [`Service`]. The state is `InputSwitch::Idle` until the first switch.
-#[derive(Debug)]
-pub enum InputSourceService {}
-
-impl Service for InputSourceService {
-    const NAME: &'static str = "input_source";
-    type State = InputSwitch;
-    type Command = InputCommand;
+impl Run for InputSourceService {
     type Deps = ();
 
     fn run(

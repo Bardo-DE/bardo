@@ -13,12 +13,13 @@ use desktop_protocols::vocab::{
 };
 use shell_dbus::Shell1Proxy;
 use shell_model::apps::AppIndex;
+use shell_model::capture_pick::CaptureService;
 use shell_model::capture_pick::{
     CaptureCommand, CaptureLink, CapturePicker, Picks, Plurality, Rgb8, Source, plan, toggle,
 };
 use shell_model::desktop::{DesktopCommand, DesktopView, SpacePlaceView, WindowView};
 use shell_model::displays::Displays;
-use shell_services::capture_pick::{CaptureLinks, CaptureService};
+use shell_services::capture_pick::CaptureLinks;
 use shell_services::env::Env;
 use shell_services::seat::seat;
 use shell_services::service::spawn;
@@ -146,7 +147,7 @@ async fn transom_asks_the_person_picks_and_the_answer_comes_back() {
 pub(crate) async fn serving(
     bus: &PrivateBus,
     scratch: &TempDir,
-) -> (shell_services::service::Handle<CaptureService>, Connection) {
+) -> (shell_model::service::Handle<CaptureService>, Connection) {
     let rig = rig(bus, scratch).await;
     (rig.service, rig.transom)
 }
@@ -154,7 +155,7 @@ pub(crate) async fn serving(
 /// The service serving on a private bus: what stands in for transom, for the shell's seat, and
 /// for the compositor (the answers it hears).
 pub(crate) struct Rig {
-    pub service: shell_services::service::Handle<CaptureService>,
+    pub service: shell_model::service::Handle<CaptureService>,
     /// The portal backend: the owner of its name, introduced as the program that is.
     pub transom: Connection,
     /// What the compositor is told the person answered.
@@ -256,7 +257,7 @@ async fn a_colour_request_is_cancelled_at_once_while_nothing_draws_the_eyedroppe
 /// Tell the service a surface draws the eyedropper and wait until it has taken that in. The
 /// service reads its commands and the bus calls on two channels and takes whichever is ready, so
 /// a call made straight after the command can be handled first and cancelled at once.
-async fn draw_eyedropper(service: &mut shell_services::service::Handle<CaptureService>) {
+async fn draw_eyedropper(service: &mut shell_model::service::Handle<CaptureService>) {
     let _ = service.control.send(CaptureCommand::Eyedropper(true));
     assert!(
         wait_for(&mut service.state, |s: &CapturePicker| s.eyedropper).await,

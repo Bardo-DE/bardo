@@ -5,7 +5,7 @@
 use shell_launcher::Activation;
 use shell_model::windows::WlCommand;
 
-use shell_services::control::Control;
+use shell_model::service::Control;
 
 /// What carrying out an activation takes.
 #[derive(Debug, Clone, PartialEq, Eq)]

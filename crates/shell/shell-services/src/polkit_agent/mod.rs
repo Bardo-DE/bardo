@@ -31,25 +31,17 @@
 
 mod backend;
 
-use shell_model::polkit_agent::{Polkit, PolkitCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::polkit_agent::PolkitAgentService;
+use shell_model::service::ServiceIo;
 
 pub use backend::{
     AGENT_PATH, AUTHORITY_NAME, AUTHORITY_PATH, HelperChoice, PolkitRoute, SessionChoice,
 };
 
-/// bardo-shell's polkit agent as a [`Service`], registering where `env`'s [`PolkitRoute`] says (the
-/// daemon's: [`PolkitRoute::system`]); passive until a `Policy(Own)`.
-#[derive(Debug)]
-pub enum PolkitAgentService {}
-
-impl Service for PolkitAgentService {
-    const NAME: &'static str = "polkit_agent";
-    type State = Polkit;
-    type Command = PolkitCommand;
+impl Run for PolkitAgentService {
     type Deps = ();
 
     fn run(

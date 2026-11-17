@@ -37,25 +37,18 @@
 mod answers;
 mod backend;
 
-use shell_model::notifications::{ImageDirs, NotesState, NotificationsCommand};
+use shell_model::notifications::ImageDirs;
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::notifications::NotificationsService;
+use shell_model::service::ServiceIo;
 
 pub use answers::Answers;
 pub use backend::{BUS_NAME, OBJECT_PATH};
 
-/// The notifications server as a [`Service`]: on `env`'s session bus with its clock, the
-/// history in its state directory. Passive until the daemon's first
-/// policy (module doc).
-#[derive(Debug)]
-pub enum NotificationsService {}
-
-impl Service for NotificationsService {
-    const NAME: &'static str = "notifications";
-    type State = NotesState;
-    type Command = NotificationsCommand;
+impl Run for NotificationsService {
     type Deps = Answers;
 
     fn run(

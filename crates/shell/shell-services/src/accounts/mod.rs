@@ -18,23 +18,15 @@
 mod backend;
 pub mod sheet;
 
-use shell_model::accounts::{AccountsCommand, AccountsState};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::accounts::AccountsService;
+use shell_model::service::ServiceIo;
 
 pub use backend::AccountsLinks;
 
-/// The accounts that need signing in again, on `env`'s session bus, told through the
-/// notifications service in its [`AccountsLinks`].
-#[derive(Debug)]
-pub enum AccountsService {}
-
-impl Service for AccountsService {
-    const NAME: &'static str = "accounts";
-    type State = AccountsState;
-    type Command = AccountsCommand;
+impl Run for AccountsService {
     type Deps = AccountsLinks;
 
     fn run(

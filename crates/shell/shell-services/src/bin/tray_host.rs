@@ -13,9 +13,9 @@ use std::io::{BufRead, Write};
 use std::path::PathBuf;
 
 use shell_model::tray::TrayCommand;
+use shell_model::tray::TrayService;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use shell_services::tray::TrayService;
 
 fn say(line: &str) {
     let mut out = std::io::stdout().lock();

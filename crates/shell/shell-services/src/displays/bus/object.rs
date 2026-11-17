@@ -14,7 +14,7 @@ use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
 
 use crate::callers::{Claim, Peers, admit};
-use crate::control::Control;
+use shell_model::service::Control;
 
 /// Settings' name: only its owner, holding the `settings` role, may set a brightness.
 const SETTINGS_BUS: &str = "org.bardo.Settings";

@@ -5,8 +5,8 @@ use shell_model::battery::Battery;
 use shell_model::locker::{Lock, LockerCommand};
 use tokio::sync::watch;
 
-use crate::control::Control;
 use crate::env::{Bus, Env, WaylandRoute};
+use shell_model::service::Control;
 
 /// The other services idle reads and drives.
 #[derive(Debug, Clone)]

@@ -10,12 +10,13 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use base_secret::SecretText;
+use shell_model::auth::AuthService;
 use shell_model::auth::{
     Attempt, Attempts, Auth, AuthCommand, AuthFault, AuthPhase, FakeVerdict, Outcome, RealName,
     UserName,
 };
-use shell_services::auth::{AuthService, PamHelper, pam};
-use shell_services::control::Control;
+use shell_model::service::Control;
+use shell_services::auth::{PamHelper, pam};
 use shell_services::env::{Authenticator, Env, FakeAuthenticator, FakeRule};
 use shell_services::service::spawn;
 use tokio::sync::watch;

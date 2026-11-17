@@ -17,24 +17,17 @@
 
 mod backend;
 
-use shell_model::workspace_looks::{WorkspaceLooks, WorkspaceLooksCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::service::ServiceIo;
+use shell_model::workspace_looks::WorkspaceLooksService;
 
 /// The well-known name of the interface and its object path.
 pub const BUS_NAME: &str = "org.bardo.Workspaces1";
 pub const PATH: &str = "/org/bardo/Workspaces1";
 
-/// The workspaces and their looks as a [`Service`].
-#[derive(Debug)]
-pub enum WorkspaceLooksService {}
-
-impl Service for WorkspaceLooksService {
-    const NAME: &'static str = "workspace-looks";
-    type State = WorkspaceLooks;
-    type Command = WorkspaceLooksCommand;
+impl Run for WorkspaceLooksService {
     type Deps = ();
 
     fn run(

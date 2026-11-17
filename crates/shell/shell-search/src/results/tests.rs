@@ -15,8 +15,9 @@ use tokio::sync::watch;
 
 use super::effect::Outlets;
 use super::history::History;
-use super::{ResultsService, load_frecency, runner};
-use shell_services::control::Control;
+use super::{load_frecency, runner};
+use shell_model::results::ResultsService;
+use shell_model::service::Control;
 
 /// How long a test waits for an event before it fails. A hang guard for a broken runner, not
 /// something a passing test waits on: every wait below is for an event, never for the clock.
@@ -51,8 +52,7 @@ fn search_to(
     outlets: Outlets,
 ) -> (watch::Receiver<Results>, Control<SearchCommand>, History) {
     let history = History::default();
-    let (search, io) =
-        shell_services::service::Handle::<ResultsService>::channel(Results::default());
+    let (search, io) = shell_model::service::Handle::<ResultsService>::channel(Results::default());
     Handle::current().spawn(runner(
         providers,
         history.clone(),

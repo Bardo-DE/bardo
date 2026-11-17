@@ -1,30 +1,23 @@
-//! The one shape every service has: a published state, a command channel, the other services it
-//! reads or drives, and a task started against [`Env`]'s seams.
+//! The effectful half of a service: the other services it reads or drives, and a task started
+//! against [`Env`]'s seams.
 //!
-//! A service is a marker type implementing [`Service`]; [`spawn`] starts it and hands back its
-//! [`Handle`]. The pure half of a service is its `step` function (one per state machine, always
-//! that name, a free function beside the state it steps); `run` is the effectful half that feeds
-//! it and publishes.
+//! What a service publishes and is told, and the [`Handle`] its readers hold, are
+//! `shell_model::service` (a surface needs no effects). A service is a marker type implementing
+//! [`Run`] here; [`spawn`] starts it and hands back its handle. The pure half of a service is its
+//! `step` function (one per state machine, always that name, a free function beside the state it
+//! steps); `run` is the effectful half that feeds it and publishes.
 
-use std::fmt;
 use std::time::{Duration, Instant};
 
-use tokio::sync::{mpsc, watch};
+use shell_model::service::{Handle, Service, ServiceIo};
+use tokio::sync::watch;
 
-use crate::control::Control;
 use crate::env::Env;
 use crate::error::ServiceError;
 use crate::restart::{Ending, Next, Tries, ending_of};
 
-/// One service: what it publishes, what it can be told, what it needs from other services, and
-/// the task that does the work.
-pub trait Service: Sized + 'static {
-    /// The name its log lines carry.
-    const NAME: &'static str;
-    /// What it publishes; its default means "absent" or "nothing yet".
-    type State: Clone + Default + PartialEq + Send + Sync + 'static;
-    /// What it can be told.
-    type Command: Send + 'static;
+/// How a service is run: what it needs from other services, and the task that does the work.
+pub trait Run: Service {
     /// Other services' receivers and controls it reads or drives; `()` when none. It is cloned for
     /// each restart of the service.
     type Deps: Clone + Send + 'static;
@@ -48,60 +41,7 @@ pub trait Service: Sized + 'static {
     ) -> impl Future<Output = Result<(), ServiceError>> + Send + 'static;
 }
 
-/// The service's own halves of its channels.
-pub struct ServiceIo<S: Service> {
-    /// Where it publishes.
-    pub state: watch::Sender<S::State>,
-    /// What it is told; `None` once every [`Control`] has gone.
-    pub commands: mpsc::UnboundedReceiver<S::Command>,
-}
-
-/// A running service as its readers hold it. Cheap to clone.
-pub struct Handle<S: Service> {
-    pub state: watch::Receiver<S::State>,
-    pub control: Control<S::Command>,
-}
-
-impl<S: Service> fmt::Debug for ServiceIo<S> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("ServiceIo")
-            .field("service", &S::NAME)
-            .finish()
-    }
-}
-
-impl<S: Service> Clone for Handle<S> {
-    fn clone(&self) -> Self {
-        Handle {
-            state: self.state.clone(),
-            control: self.control.clone(),
-        }
-    }
-}
-
-impl<S: Service> fmt::Debug for Handle<S> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Handle").field("service", &S::NAME).finish()
-    }
-}
-
-impl<S: Service> Handle<S> {
-    /// A handle starting at `state`, and the service's halves of its channels: what [`spawn`]
-    /// gives a service's task, and what a test or a demo feeds and reads in its place.
-    pub fn channel(state: S::State) -> (Handle<S>, ServiceIo<S>) {
-        let (tx, rx) = watch::channel(state);
-        let (control, commands) = Control::channel();
-        (
-            Handle { state: rx, control },
-            ServiceIo {
-                state: tx,
-                commands,
-            },
-        )
-    }
-}
-
-/// How long a run is given to finish once every [`Control`] is gone and its commands have closed:
+/// How long a run is given to finish once every `Control` is gone and its commands have closed:
 /// long enough to hand a bus name back and flush a file, short enough that a run that never
 /// looks at its commands (it ends some other way) does not hold its keeper.
 const WIND_DOWN: Duration = Duration::from_secs(5);
@@ -109,15 +49,15 @@ const WIND_DOWN: Duration = Duration::from_secs(5);
 /// Start `S` on `rt` against `env`'s seams, reading or driving `deps`, and keep it running.
 ///
 /// A task that panics, returns an error, or ends cleanly after running a while, while its
-/// [`Control`]s are still held, is started again after a growing wait, up to `RESTARTS_MAX`
+/// `Control`s are still held, is started again after a growing wait, up to `RESTARTS_MAX`
 /// times in a row (`restart.rs`), and each ending is logged with the service's name. A restarted service starts from the state it last
 /// published; commands sent while it was down wait for it.
-pub fn spawn<S: Service>(rt: &tokio::runtime::Handle, env: &Env, deps: S::Deps) -> Handle<S> {
+pub fn spawn<S: Run>(rt: &tokio::runtime::Handle, env: &Env, deps: S::Deps) -> Handle<S> {
     spawn_with(rt, env, deps, Tries::default())
 }
 
 /// [`spawn`] with the given restart waits.
-pub(crate) fn spawn_with<S: Service>(
+pub(crate) fn spawn_with<S: Run>(
     rt: &tokio::runtime::Handle,
     env: &Env,
     deps: S::Deps,
@@ -132,12 +72,7 @@ pub(crate) fn spawn_with<S: Service>(
 ///
 /// `S::run` consumes the channel halves it is given, so each run gets a fresh pair and this task
 /// carries commands in and state out between that pair and `outer`.
-async fn keep_running<S: Service>(
-    env: Env,
-    deps: S::Deps,
-    mut outer: ServiceIo<S>,
-    mut tries: Tries,
-) {
+async fn keep_running<S: Run>(env: Env, deps: S::Deps, mut outer: ServiceIo<S>, mut tries: Tries) {
     loop {
         let started = Instant::now();
         let Some(ending) = run_once::<S>(&env, deps.clone(), &mut outer).await else {
@@ -158,13 +93,9 @@ async fn keep_running<S: Service>(
     }
 }
 
-/// One run of `S`, from the state `outer` holds. `None` when every [`Control`] has gone: the run
+/// One run of `S`, from the state `outer` holds. `None` when every `Control` has gone: the run
 /// is told so by closing its own commands, and is waited for.
-async fn run_once<S: Service>(
-    env: &Env,
-    deps: S::Deps,
-    outer: &mut ServiceIo<S>,
-) -> Option<Ending> {
+async fn run_once<S: Run>(env: &Env, deps: S::Deps, outer: &mut ServiceIo<S>) -> Option<Ending> {
     let (mut inner, io) = Handle::<S>::channel(outer.state.borrow().clone());
     let mut work = tokio::spawn(S::run(env, deps, io));
     loop {
@@ -220,7 +151,9 @@ mod tests {
 
     use shell_testkit::TempDir;
 
-    use super::{Handle, Service, ServiceIo, spawn_with};
+    use shell_model::service::{Handle, Service, ServiceIo};
+
+    use super::{Run, spawn_with};
     use crate::env::Env;
     use crate::error::ServiceError;
     use crate::restart::{RESTARTS_MAX, Tries};
@@ -238,6 +171,9 @@ mod tests {
         const NAME: &'static str = "flaky";
         type State = u32;
         type Command = u32;
+    }
+
+    impl Run for Flaky {
         type Deps = Arc<AtomicU32>;
 
         #[allow(
@@ -270,6 +206,9 @@ mod tests {
         const NAME: &'static str = "broken";
         type State = u32;
         type Command = u32;
+    }
+
+    impl Run for Broken {
         type Deps = Arc<AtomicU32>;
 
         #[allow(

@@ -39,6 +39,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
+shell-desktop-fs = {path = "../shell-desktop-fs"}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 computer-use-bus = {path = "../../computer-use/computer-use-bus"}
 shell-testkit = {path = "../shell-testkit"}

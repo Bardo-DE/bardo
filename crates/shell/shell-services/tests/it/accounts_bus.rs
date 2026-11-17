@@ -10,15 +10,18 @@ pub(crate) mod accounts_support;
 use std::time::Duration;
 
 use accounts_support::{ACCOUNT, FakeAccountd, Listing};
+use shell_model::accounts::AccountsService;
 use shell_model::accounts::{AccountKey, AccountsState, shown_for, sign_in_key};
+use shell_model::notifications::NotificationsService;
 use shell_model::notifications::{
     ActionKey, Activation, CloseReason, NotesState, NotificationId, NotificationsCommand,
     NotificationsPolicy, Said, ServerMode,
 };
-use shell_services::accounts::{AccountsLinks, AccountsService};
+use shell_model::service::Handle;
+use shell_services::accounts::AccountsLinks;
 use shell_services::env::{BusRoute, Buses, Env};
-use shell_services::notifications::{Answers, NotificationsService};
-use shell_services::service::{Handle, spawn};
+use shell_services::notifications::Answers;
+use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 

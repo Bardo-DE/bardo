@@ -7,21 +7,13 @@
 
 mod backend;
 
-use shell_model::power_profile::{PowerProfiles, ProfileCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::power_profile::PowerProfileService;
+use shell_model::service::ServiceIo;
 
-/// power-profiles-daemon as a [`Service`]. Without it the state stays at
-/// `PowerProfiles::default()` (absent), and the control center hides the control.
-#[derive(Debug)]
-pub enum PowerProfileService {}
-
-impl Service for PowerProfileService {
-    const NAME: &'static str = "power_profile";
-    type State = PowerProfiles;
-    type Command = ProfileCommand;
+impl Run for PowerProfileService {
     type Deps = ();
 
     fn run(

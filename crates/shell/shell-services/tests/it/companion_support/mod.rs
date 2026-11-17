@@ -21,17 +21,19 @@ use provenance::{
     TaskId, UnixSeconds,
 };
 use shell_launcher::{LauncherMode, WindowKey};
+use shell_model::companion::CompanionService;
 use shell_model::companion::{
     AskInput, Companion, CompanionCommand, CompanionParams, FocusInput, SummonOut, SummonParams,
     TapParams,
 };
 use shell_model::launch::LaunchCommand;
+use shell_model::service::Control;
+use shell_model::service::Handle;
 use shell_model::units::Ms;
-use shell_services::control::Control;
+use shell_services::CompanionLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::seat::{SeatPublisher, seat};
-use shell_services::service::{Handle, spawn};
-use shell_services::{CompanionLinks, CompanionService};
+use shell_services::service::spawn;
 use shell_testkit::PrivateBus;
 use tokio::sync::{mpsc, watch};
 use zbus::Connection;

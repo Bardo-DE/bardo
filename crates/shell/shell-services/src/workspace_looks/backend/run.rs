@@ -9,8 +9,9 @@ use zbus::Connection;
 use super::object::WorkspacesObject;
 use crate::env::{Bus, NameClaims};
 use crate::serve;
-use crate::service::ServiceIo;
-use crate::workspace_looks::{BUS_NAME, PATH, WorkspaceLooksService};
+use crate::workspace_looks::{BUS_NAME, PATH};
+use shell_model::service::ServiceIo;
+use shell_model::workspace_looks::WorkspaceLooksService;
 
 pub(crate) async fn run(bus: Bus, claims: NameClaims, io: ServiceIo<WorkspaceLooksService>) {
     let ServiceIo {

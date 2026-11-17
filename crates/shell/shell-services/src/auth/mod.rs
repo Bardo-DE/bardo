@@ -30,27 +30,16 @@ mod backend;
 use std::sync::Arc;
 
 use backend::AccountPlace;
-use shell_model::auth::{Auth, AuthCommand};
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::auth::AuthService;
+use shell_model::service::ServiceIo;
 
 pub use backend::{PamHelper, pam};
 
-/// The lock screen's password check as a [`Service`].
-///
-/// The lock screen's password check as a [`Service`], through `env`'s `Authenticator` (PAM
-/// through `bardo-shell auth-check` in the daemon, a `FakeAuthenticator` in every test), the account
-/// read from `env`'s accounts database, system bus and home. Idle until the first `Submit`: nothing is checked, and
-/// no PAM module runs, before that.
-#[derive(Debug)]
-pub enum AuthService {}
-
-impl Service for AuthService {
-    const NAME: &'static str = "auth";
-    type State = Auth;
-    type Command = AuthCommand;
+impl Run for AuthService {
     type Deps = ();
 
     fn run(

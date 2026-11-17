@@ -16,9 +16,10 @@ use zbus::Connection;
 use super::super::SessionLinks;
 use super::super::quit_apps::Scopes;
 use super::ending::{Ending, before};
-use crate::env::{ActionReach, Bus, SessionActions};
+use crate::env::{Bus, SessionActions};
 use crate::login_session::session_path;
 use crate::stream::next_opt;
+use shell_model::session::ActionReach;
 
 /// Runs until `commands` closes. Without a bus or logind, `tx` holds what `actions` offers
 /// without it (`Session::default()` for logind's own). Every action goes through `actions`

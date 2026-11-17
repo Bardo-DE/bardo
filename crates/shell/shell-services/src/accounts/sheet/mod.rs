@@ -24,13 +24,14 @@
 
 mod backend;
 
-use shell_model::accounts::sheet::{AccountsSheetCommand, AccountsSheets};
 use shell_model::launch::LaunchCommand;
 
-use crate::control::Control;
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::accounts::sheet::AccountsSheetService;
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
 
 /// What the service drives: the launch service, which opens the page a browser step shows.
 #[derive(Debug, Clone)]
@@ -39,14 +40,7 @@ pub struct AccountsSheetLinks {
     pub launch: Control<LaunchCommand>,
 }
 
-/// The accounts sheet's host side as a [`Service`].
-#[derive(Debug)]
-pub enum AccountsSheetService {}
-
-impl Service for AccountsSheetService {
-    const NAME: &'static str = "accounts-sheet";
-    type State = AccountsSheets;
-    type Command = AccountsSheetCommand;
+impl Run for AccountsSheetService {
     type Deps = AccountsSheetLinks;
 
     fn run(

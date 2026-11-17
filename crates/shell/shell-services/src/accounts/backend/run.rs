@@ -17,13 +17,13 @@ use super::links::AccountsLinks;
 use super::retry::{self, Retry, Wait};
 use super::{notice, wire};
 use crate::account_label::{Accountd, accountd, key_of, label_of};
-use crate::accounts::AccountsService;
 use crate::env::Bus;
 use crate::error::ServiceError;
 use crate::machine::Machine;
 use crate::notices::Board;
 use crate::owner::{self, Ended};
-use crate::service::ServiceIo;
+use shell_model::accounts::AccountsService;
+use shell_model::service::ServiceIo;
 
 /// Everything the loop owns.
 struct Live {

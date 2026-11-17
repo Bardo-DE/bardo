@@ -8,24 +8,13 @@
 
 mod backend;
 
-use shell_model::badges::{Badges, BadgesCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::badges::BadgesService;
+use shell_model::service::ServiceIo;
 
-/// `LauncherEntry` badges as a [`Service`].
-///
-/// `LauncherEntry` badges as a [`Service`]: follows `LauncherEntry.Update` on the session bus and
-/// senders leaving it (`NameOwnerChanged` clears their apps' badges). Without a session bus the
-/// state stays at `Badges::default()`.
-#[derive(Debug)]
-pub enum BadgesService {}
-
-impl Service for BadgesService {
-    const NAME: &'static str = "badges";
-    type State = Badges;
-    type Command = BadgesCommand;
+impl Run for BadgesService {
     type Deps = ();
 
     fn run(

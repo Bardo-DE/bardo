@@ -8,15 +8,18 @@
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use shell_model::guest_asks::GuestAsksService;
 use shell_model::guest_asks::{Computer, GuestAsksState, Verdict, choice_key, shown_for};
+use shell_model::notifications::NotificationsService;
 use shell_model::notifications::{
     Activation, NameHolder, NotesState, NotificationId, NotificationsCommand, NotificationsPolicy,
     ServerMode,
 };
+use shell_model::service::Handle;
 use shell_services::env::{BusRoute, Buses, Env};
-use shell_services::guest_asks::{GuestAsksLinks, GuestAsksService};
-use shell_services::notifications::{Answers, NotificationsService};
-use shell_services::service::{Handle, spawn};
+use shell_services::guest_asks::GuestAsksLinks;
+use shell_services::notifications::Answers;
+use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 use zbus::object_server::SignalEmitter;

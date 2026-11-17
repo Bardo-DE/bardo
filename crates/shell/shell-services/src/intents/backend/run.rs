@@ -31,9 +31,10 @@ use super::serve::{self, Seat};
 use crate::call_error::CallError;
 use crate::callers::CallerSource;
 use crate::env::{Bus, Env, NameClaims, WallClock};
-use crate::intents::{IntentsLinks, IntentsService};
+use crate::intents::IntentsLinks;
 use crate::owner;
-use crate::service::ServiceIo;
+use shell_model::intents::IntentsService;
+use shell_model::service::ServiceIo;
 
 /// How long after a "from the terminal" answer the grants are read again, so intentd has stored
 /// the grant the answer made.

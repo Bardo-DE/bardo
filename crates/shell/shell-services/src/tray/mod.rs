@@ -1,36 +1,21 @@
 //! The status tray: an SNI host with dbusmenu (system-tray 0.8.9: SNI host + dbusmenu; registers a
 //! watcher if none).
 //!
-//! [`TrayService`] and its backend do the effect (a `system_tray::client::Client` on the
-//! session bus); [`icon_art`] turns a resolved `TrayIcon` into the art the bar draws (PNG bytes
-//! or a theme file). Neither reaches `dioxus`, `ds` or `layer-shell-host`
-//! (`scripts/check-boundary.sh`): the bar reads this module only through `shell_model::tray` and
-//! [`icon_art`], via `use_service::<TrayService>`.
+//! `TrayService` (in `shell_model::tray`) and its backend do the effect (a
+//! `system_tray::client::Client` on the session bus). Neither reaches `dioxus`, `ds` or
+//! `layer-shell-host` (`scripts/check-boundary.sh`): the bar reads this module only through
+//! `shell_model::tray`, via `use_service::<TrayService>`; the art of an icon is the bar's own
+//! (`shell_bar::bar::tray_icon`).
 
 mod backend;
-mod icon;
-
-use shell_model::tray::{Tray, TrayCommand};
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::service::ServiceIo;
+use shell_model::tray::TrayService;
 
-pub use icon::{IconArt, icon_art};
-
-/// The tray host as a [`Service`].
-///
-/// It registers a `StatusNotifierWatcher` when none is on the bus
-/// (`system_tray::client::Client::new`'s own `StatusNotifierWatcher::attach_to`: it tries to own
-/// `org.kde.StatusNotifierWatcher` and quietly defers when a desktop already does). Without a
-/// session bus the state stays at `Tray::default()`.
-#[derive(Debug)]
-pub enum TrayService {}
-
-impl Service for TrayService {
-    const NAME: &'static str = "tray";
-    type State = Tray;
-    type Command = TrayCommand;
+impl Run for TrayService {
     type Deps = ();
 
     fn run(

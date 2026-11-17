@@ -35,10 +35,10 @@ account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-secret = { path = "../../base/base-secret" }
 base-time = { path = "../../base/base-time" }
-base-xdg = { path = "../../base/base-xdg" }
 anyview-core = {path = "../../anyview/crates/anyview-core"}
 anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["quire-desktop"]}
 shell-model = {path = "../shell-model"}
+shell-desktop-fs = {path = "../shell-desktop-fs"}
 shell-launcher = {path = "../shell-launcher"}
 ui-core = {path = "../../ui/ui-core"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
@@ -84,11 +84,9 @@ wayland-protocols = { workspace = true, features = ["client", "staging", "unstab
 upower_dbus = {workspace = true}
 libpulse-binding = { workspace = true }
 system-tray = { workspace = true }
-freedesktop-icons = { workspace = true }
 notify = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg", "webp"] }
 logind-zbus = { workspace = true }
-dirs = { workspace = true }
 jiff = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

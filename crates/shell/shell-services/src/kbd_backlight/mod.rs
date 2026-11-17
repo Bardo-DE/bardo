@@ -9,21 +9,13 @@
 
 mod backend;
 
-use shell_model::kbd_backlight::{KbdBacklight, KbdCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::kbd_backlight::KbdBacklightService;
+use shell_model::service::ServiceIo;
 
-/// The keyboard backlight as a [`Service`]. Without UPower or a backlight the state stays at
-/// `KbdBacklight::default()` (absent), and the control center shows no module.
-#[derive(Debug)]
-pub enum KbdBacklightService {}
-
-impl Service for KbdBacklightService {
-    const NAME: &'static str = "kbd_backlight";
-    type State = KbdBacklight;
-    type Command = KbdCommand;
+impl Run for KbdBacklightService {
     type Deps = ();
 
     fn run(

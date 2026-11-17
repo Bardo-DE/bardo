@@ -17,7 +17,7 @@ use shell_model::companion::{
     Companion, CompanionCommand, HelpersModel, LookupPhase, ProgramLabels, memory_line,
     waiting_line,
 };
-use shell_services::control::Control;
+use shell_model::service::Control;
 use tokio::sync::watch;
 use ui_core::vocab::MemoryVerb;
 

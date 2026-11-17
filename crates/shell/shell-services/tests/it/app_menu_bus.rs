@@ -20,18 +20,18 @@ use action_vocab::{ActionRef, CallClass, CallRequest, Origin, TargetValue};
 use action_wire::{IntentsReply, IntentsRequest};
 use provenance::{ActionName, AppName, Effect};
 use shell_launcher::WindowKey;
+use shell_model::app_menu::AppMenuService;
 use shell_model::app_menu::{
     AppMenuCommand, AppMenus, Follower, MenuApp, MenuName, ServedMenu, titles,
 };
 use shell_model::ids::OutputName;
+use shell_model::service::Control;
+use shell_model::service::Handle;
 use shell_model::windows::{Sizing, Subjects, Toplevel, Toplevels, WindowModel, WlCommand};
-use shell_services::app_menu::{
-    Activated, AppMenuDeps, AppMenuService, MenuAgent, MenuFault, MenuLinks,
-};
+use shell_services::app_menu::{Activated, AppMenuDeps, MenuAgent, MenuFault, MenuLinks};
 use shell_services::callers::CallerSource;
-use shell_services::control::Control;
 use shell_services::env::{BusRoute, Buses, Env};
-use shell_services::service::{Handle, spawn};
+use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 use zbus::Connection;

@@ -8,12 +8,12 @@ mod clipboard_support;
 use std::time::Duration;
 
 use shell_launcher::ClipKey;
+use shell_model::clipboard::ClipboardService;
 use shell_model::clipboard::{
     ClipContent, ClipPolicy, ClipProtocol, Clipboard, ClipboardCommand, EntryCap, HistoryMode,
     ImageCap,
 };
-use shell_services::clipboard::ClipboardService;
-use shell_services::control::Control;
+use shell_model::service::Control;
 use shell_services::env::{Env, WaylandRoute};
 use shell_services::service::spawn;
 use tokio::runtime::Runtime;

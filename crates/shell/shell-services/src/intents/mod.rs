@@ -23,12 +23,13 @@ mod backend;
 use tokio::sync::{mpsc, oneshot};
 
 use shell_model::intents::shell::{ShellAction, ShellFault};
-use shell_model::intents::{Intents, IntentsCommand};
 
 use crate::env::Env;
 use crate::error::ServiceError;
 use crate::seat::SeatPublisher;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::intents::IntentsService;
+use shell_model::service::ServiceIo;
 
 pub use backend::{ManifestFault, manifest, menus};
 
@@ -53,14 +54,7 @@ pub struct IntentsLinks {
     pub seat: SeatPublisher,
 }
 
-/// The seat as a [`Service`].
-#[derive(Debug)]
-pub enum IntentsService {}
-
-impl Service for IntentsService {
-    const NAME: &'static str = "intents";
-    type State = Intents;
-    type Command = IntentsCommand;
+impl Run for IntentsService {
     type Deps = IntentsLinks;
 
     fn run(

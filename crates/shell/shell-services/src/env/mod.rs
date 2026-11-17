@@ -8,7 +8,6 @@ mod bus_name;
 mod buses;
 mod children;
 pub mod ddc;
-mod dirs;
 mod ibus;
 mod passwd;
 mod release;
@@ -25,6 +24,7 @@ use crate::callers::{CallerSource, DesktopCallers};
 use crate::polkit_agent;
 use ddc::{DdcBus, FileBus, I2cBuses};
 use shell_model::auth::{RealName, UserName};
+use shell_model::dirs::Dirs;
 use shell_model::idle::IdleTimes;
 use shell_model::keycap::{UNIT_GRACE, UNIT_RECHECK};
 
@@ -32,12 +32,11 @@ pub use authenticator::{Authenticator, FakeAuthenticator, FakeRule};
 pub use bus_name::{NameState, name_state};
 pub use buses::{Bus, BusKind, BusRoute, Buses, ConnectError};
 pub use children::{Children, ProcessGroup, RealChildren, RecordedChildren, Start};
-pub use dirs::Dirs;
 pub use ibus::IbusRoute;
 pub use passwd::{FakePasswd, Passwd, Person, SystemPasswd, UserId};
 pub use release::{SESSION_MODE_VAR, SessionMode};
 pub use session_actions::{
-    ActionReach, DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line,
+    DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line,
 };
 pub use wall_clock::{FixedClock, SystemClock, WallClock};
 pub use wayland::{HandedSocket, WaylandRoute, WaylandUnreached};

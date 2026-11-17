@@ -4,7 +4,7 @@ use shell_model::apps::AppIndex;
 use shell_model::notifications::NotificationsCommand;
 use tokio::sync::watch;
 
-use crate::control::Control;
+use shell_model::service::Control;
 
 /// The app index that resolves ids to entries, and the notifications service a failed launch is
 /// told through.

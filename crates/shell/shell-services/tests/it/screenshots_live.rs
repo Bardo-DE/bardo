@@ -6,11 +6,12 @@
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
+use shell_model::dirs::Dirs;
+use shell_model::screenshots::ScreenshotsService;
 use shell_model::screenshots::{
     ShotCommand, ShotFolders, ShotLeave, ShotPolicy, ShotPreview, Shots, Watching,
 };
-use shell_services::env::{Dirs, Env, RecordedChildren};
-use shell_services::screenshots::ScreenshotsService;
+use shell_services::env::{Env, RecordedChildren};
 use shell_services::service::spawn;
 use tokio::sync::watch;
 

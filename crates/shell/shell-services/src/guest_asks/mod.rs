@@ -11,23 +11,15 @@
 
 mod backend;
 
-use shell_model::guest_asks::{GuestAsksCommand, GuestAsksState};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::guest_asks::GuestAsksService;
+use shell_model::service::ServiceIo;
 
 pub use backend::GuestAsksLinks;
 
-/// The questions about lending models on `env`'s session bus, told through the notifications
-/// service in its [`GuestAsksLinks`].
-#[derive(Debug)]
-pub enum GuestAsksService {}
-
-impl Service for GuestAsksService {
-    const NAME: &'static str = "guest_asks";
-    type State = GuestAsksState;
-    type Command = GuestAsksCommand;
+impl Run for GuestAsksService {
     type Deps = GuestAsksLinks;
 
     fn run(

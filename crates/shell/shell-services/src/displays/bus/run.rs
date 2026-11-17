@@ -7,13 +7,14 @@ use shell_model::displays::wire_of;
 use shell_model::serve::ServeLink;
 use zbus::Connection;
 
+use super::DisplaysBusLinks;
 use super::object::DisplaysObject;
-use super::{DisplaysBusLinks, DisplaysBusService};
 use crate::callers::CallerSource;
 use crate::env::{Bus, NameClaims};
 use crate::serve;
-use crate::service::ServiceIo;
 use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
+use shell_model::serve::DisplaysBusService;
+use shell_model::service::ServiceIo;
 
 pub(super) async fn run(
     bus: Bus,

@@ -21,9 +21,9 @@ use super::socket::{self, Link};
 use super::{config, notice, systemd};
 use crate::debounced;
 use crate::error::ServiceError;
-use crate::keycap::KeycapService;
 use crate::notices::Board;
-use crate::service::ServiceIo;
+use shell_model::keycap::KeycapService;
+use shell_model::service::ServiceIo;
 
 /// How soon the unit is read after a retry asked systemd to restart it.
 const AFTER_RETRY: Duration = Duration::from_secs(1);

@@ -133,6 +133,7 @@ mod tests {
     use crate::env::BusKind;
     use crate::error::ServiceError;
     use crate::supervise::{FIRST_WAIT, HEALTHY_FOR};
+    use shell_model::service::Gone;
 
     async fn panicked() -> Ending {
         ending_of(tokio::spawn(async { panic_now() }).await)
@@ -154,7 +155,7 @@ mod tests {
             ),
             (
                 "an error",
-                ending_of(Ok(Err(ServiceError::Gone))),
+                ending_of(Ok(Err(ServiceError::Gone(Gone)))),
                 "Failed(\"the service has stopped\")",
             ),
             (

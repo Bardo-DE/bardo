@@ -16,11 +16,13 @@ use anyview_platform::{
 };
 use shell_launcher::{Generation, OpenTarget, ViewerOpen};
 use shell_model::apps::AppIndex;
+use shell_model::launch::LaunchService;
 use shell_model::launch::{LaunchCommand, OpenRequest};
+use shell_model::notifications::NotificationsService;
+use shell_services::Answers;
 use shell_services::env::{BusRoute, Buses, Env, RecordedChildren};
-use shell_services::launch::{LaunchLinks, LaunchService};
+use shell_services::launch::LaunchLinks;
 use shell_services::service::spawn;
-use shell_services::{Answers, NotificationsService};
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 
@@ -46,7 +48,7 @@ fn launcher(
     bus: &PrivateBus,
     scratch: &TempDir,
 ) -> (
-    shell_services::Control<LaunchCommand>,
+    shell_model::service::Control<LaunchCommand>,
     Arc<RecordedChildren>,
 ) {
     let children = RecordedChildren::shared();

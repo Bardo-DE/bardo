@@ -25,11 +25,12 @@ use zbus::zvariant::OwnedObjectPath;
 
 use super::{reader, signals};
 use crate::callers::{CallerSource, Peers};
-use crate::control::Control;
 use crate::env::{Env, WallClock};
 use crate::seat::SeatView;
-use crate::service::ServiceIo;
-use crate::voice::{VoiceLinks, VoiceService};
+use crate::voice::VoiceLinks;
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
+use shell_model::voice::VoiceService;
 
 /// The error voiced answers a `Cancel` whose cause it will not take (superseded, too long, empty,
 /// bad JSON): the microphone stays open.

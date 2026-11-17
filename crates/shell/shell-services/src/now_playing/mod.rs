@@ -10,21 +10,13 @@
 
 mod backend;
 
-use shell_model::now_playing::{Media, MediaCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::now_playing::NowPlayingService;
+use shell_model::service::ServiceIo;
 
-/// Now Playing (MPRIS) as a [`Service`]. Without a session bus the state stays at
-/// `Media::default()` (no players), and the module shows nothing playing.
-#[derive(Debug)]
-pub enum NowPlayingService {}
-
-impl Service for NowPlayingService {
-    const NAME: &'static str = "now_playing";
-    type State = Media;
-    type Command = MediaCommand;
+impl Run for NowPlayingService {
     type Deps = ();
 
     fn run(

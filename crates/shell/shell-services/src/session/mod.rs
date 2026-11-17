@@ -12,27 +12,14 @@ pub use links::SessionLinks;
 
 use std::sync::Arc;
 
-use shell_model::session::{Session, SessionCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
 use quit_apps::Scopes;
+use shell_model::service::ServiceIo;
+use shell_model::session::SessionService;
 
-/// logind's power actions as a [`Service`].
-///
-/// Without logind the state stays at
-/// `Session::default()` (absent: nothing offered), and the power menu shows every button
-/// unavailable. Its `Deps` is [`SessionLinks`]: the locker, where `Run(Lock)` goes, and what Log Out,
-/// Restart and Shut Down use to quit the apps first; the actions themselves go to `env`'s
-/// session actions.
-#[derive(Debug)]
-pub enum SessionService {}
-
-impl Service for SessionService {
-    const NAME: &'static str = "session";
-    type State = Session;
-    type Command = SessionCommand;
+impl Run for SessionService {
     type Deps = SessionLinks;
 
     fn run(

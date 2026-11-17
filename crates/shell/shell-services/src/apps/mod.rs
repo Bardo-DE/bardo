@@ -7,23 +7,15 @@
 
 mod backend;
 
-use shell_model::apps::{AppIndex, AppsCommand};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::apps::AppsService;
+use shell_model::service::ServiceIo;
 
-pub use backend::{IconRoots, IconTheme, icon_theme, parse_entry, pixmap_dirs, resolve_icon, scan};
+pub use backend::{parse_entry, scan};
 
-/// The desktop entries and their icons as a [`Service`]: scanned once and published, then every
-/// applications directory watched and rescanned after half a second of quiet.
-#[derive(Debug)]
-pub enum AppsService {}
-
-impl Service for AppsService {
-    const NAME: &'static str = "apps";
-    type State = AppIndex;
-    type Command = AppsCommand;
+impl Run for AppsService {
     type Deps = ();
 
     fn run(

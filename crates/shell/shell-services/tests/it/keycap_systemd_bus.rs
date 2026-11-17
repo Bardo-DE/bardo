@@ -8,12 +8,13 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use shell_model::apps::AppIndex;
+use shell_model::keycap::KeycapService;
 use shell_model::keycap::{Attention, KeycapCommand, KeycapState, notice_text};
 use shell_model::notifications::{NotesState, NotificationsCommand};
+use shell_model::service::Control;
 use shell_model::windows::WindowModel;
-use shell_services::Control;
 use shell_services::env::{BusRoute, Buses, Env, UnitWait};
-use shell_services::keycap::{KeycapLinks, KeycapService};
+use shell_services::keycap::KeycapLinks;
 use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::{mpsc, watch};

@@ -16,23 +16,16 @@
 mod backend;
 
 use backend::Reach;
-use shell_model::idle::{Idle, IdleCommand};
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::idle::IdleService;
+use shell_model::service::ServiceIo;
 
 pub use backend::IdleLinks;
 
-/// bardo-shell's own idle as a [`Service`], on `env`'s compositor and buses, reading and driving the
-/// services in its [`IdleLinks`]. Passive until the first command.
-#[derive(Debug)]
-pub enum IdleService {}
-
-impl Service for IdleService {
-    const NAME: &'static str = "idle";
-    type State = Idle;
-    type Command = IdleCommand;
+impl Run for IdleService {
     type Deps = IdleLinks;
 
     fn run(

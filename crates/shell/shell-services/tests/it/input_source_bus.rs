@@ -6,8 +6,8 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use shell_model::input_source::InputSourceService;
 use shell_model::input_source::{InputCommand, InputRefusal, InputSwitch};
-use shell_services::InputSourceService;
 use shell_services::env::{BusRoute, Buses, Env, IbusRoute};
 use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};

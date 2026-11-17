@@ -20,13 +20,15 @@ mod agent;
 mod backend;
 mod wire;
 
-use shell_model::app_menu::{AppMenuCommand, AppMenus, MenuApp, MenuName};
+use shell_model::app_menu::{MenuApp, MenuName};
 use shell_model::windows::WindowModel;
 use tokio::sync::watch;
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::app_menu::AppMenuService;
+use shell_model::service::ServiceIo;
 
 pub use agent::{Activated, Activation, MenuAgent, MenuFault, MenuLinks, MenuListed};
 
@@ -41,14 +43,7 @@ pub struct AppMenuDeps {
     pub windows: watch::Receiver<WindowModel>,
 }
 
-/// The followed apps' menus as a [`Service`]. Without a session bus it publishes nothing.
-#[derive(Debug)]
-pub enum AppMenuService {}
-
-impl Service for AppMenuService {
-    const NAME: &'static str = "app_menu";
-    type State = AppMenus;
-    type Command = AppMenuCommand;
+impl Run for AppMenuService {
     type Deps = AppMenuDeps;
 
     fn run(

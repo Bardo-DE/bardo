@@ -13,20 +13,13 @@
 
 mod backend;
 
-use shell_model::work_areas::{WorkAreaCommand, WorkAreas};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::service::ServiceIo;
+use shell_model::work_areas::WorkAreaService;
 
-/// The work areas as a [`Service`].
-#[derive(Debug)]
-pub enum WorkAreaService {}
-
-impl Service for WorkAreaService {
-    const NAME: &'static str = "work-areas";
-    type State = WorkAreas;
-    type Command = WorkAreaCommand;
+impl Run for WorkAreaService {
     type Deps = ();
 
     fn run(

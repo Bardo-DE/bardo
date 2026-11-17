@@ -4,24 +4,15 @@ mod backend;
 
 use std::sync::Arc;
 
-use shell_model::clock::{ClockCommand, ClockMinute};
+use shell_model::clock::ClockMinute;
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::clock::ClockService;
+use shell_model::service::ServiceIo;
 
-/// The bar clock as a [`Service`].
-///
-/// The bar clock as a [`Service`]: publishes the wall clock's local time now, then at every
-/// minute boundary (the system clock reads the zone afresh, so a time-zone change shows at the
-/// next minute, or at once on `Refresh`).
-#[derive(Debug)]
-pub enum ClockService {}
-
-impl Service for ClockService {
-    const NAME: &'static str = "clock";
-    type State = ClockMinute;
-    type Command = ClockCommand;
+impl Run for ClockService {
     type Deps = ();
 
     fn initial(env: &Env, (): &()) -> ClockMinute {

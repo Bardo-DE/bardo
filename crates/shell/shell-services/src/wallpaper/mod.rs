@@ -15,21 +15,13 @@
 
 mod backend;
 
-use shell_model::wallpaper::{WallpaperCommand, Wallpapers};
-
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::service::ServiceIo;
+use shell_model::wallpaper::WallpaperService;
 
-/// The wallpapers as a [`Service`]: resized on the blocking pool, published as cached paths.
-/// The old source file is read under `env`'s config directory, the resized copies kept in its cache.
-#[derive(Debug)]
-pub enum WallpaperService {}
-
-impl Service for WallpaperService {
-    const NAME: &'static str = "wallpaper";
-    type State = Wallpapers;
-    type Command = WallpaperCommand;
+impl Run for WallpaperService {
     type Deps = ();
 
     fn run(

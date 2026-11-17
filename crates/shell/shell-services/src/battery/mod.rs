@@ -4,18 +4,11 @@ mod backend;
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
-use shell_model::battery::{Battery, BatteryCommand};
+use crate::service::Run;
+use shell_model::battery::BatteryService;
+use shell_model::service::ServiceIo;
 
-/// UPower's display device as a [`Service`]. Without UPower the state stays at
-/// `Battery::default()` (absent), and the bar hides the item.
-#[derive(Debug)]
-pub enum BatteryService {}
-
-impl Service for BatteryService {
-    const NAME: &'static str = "battery";
-    type State = Battery;
-    type Command = BatteryCommand;
+impl Run for BatteryService {
     type Deps = ();
 
     fn run(

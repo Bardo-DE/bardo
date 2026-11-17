@@ -7,16 +7,7 @@ use std::io::Write as _;
 use std::path::PathBuf;
 use std::sync::Mutex;
 
-use shell_model::session::{Session, SessionAction};
-
-/// Whether chosen actions reach logind.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum ActionReach {
-    /// logind carries them out.
-    Logind,
-    /// They are only recorded.
-    DryRun,
-}
+use shell_model::session::{ActionReach, Session, SessionAction};
 
 /// The session's actions: what is offered and where a chosen one goes.
 pub trait SessionActions: Send + Sync + fmt::Debug {
@@ -135,10 +126,8 @@ impl SessionActions for DryRunActions {
 
 #[cfg(test)]
 mod tests {
-    use super::{
-        ActionReach, DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line,
-    };
-    use shell_model::session::{Session, SessionAction};
+    use super::{DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line};
+    use shell_model::session::{ActionReach, Session, SessionAction};
     use shell_testkit::TempDir;
 
     #[test]

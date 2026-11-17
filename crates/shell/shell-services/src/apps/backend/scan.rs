@@ -2,16 +2,15 @@
 
 use std::path::PathBuf;
 
+use shell_desktop_fs::icons::{IconRoots, IconTheme};
 use shell_model::apps::App;
 use ui_helpers::{EntryLocale, load_entries};
 
 use super::entry::parse_entry;
-use super::icon_roots::IconRoots;
-use super::icons::IconTheme;
 
 /// Every desktop entry under `dirs`, in precedence order with each id once.
 ///
-/// Every entry under `dirs` (the applications folders, [`Dirs::applications`](crate::env::Dirs)),
+/// Every entry under `dirs` (the applications folders, [`Dirs::applications`](shell_model::dirs::Dirs)),
 /// in precedence order with each id once, icons resolved in `theme` (an absolute `Icon=` only
 /// inside `roots`), with the desktop's current locales. A folder that does not exist, or a
 /// `.desktop` file that cannot be read (or is over [`ui_helpers::DESKTOP_ENTRY_CAP`], or is not text), is

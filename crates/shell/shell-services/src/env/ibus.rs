@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use super::Dirs;
+use shell_model::dirs::Dirs;
 
 /// How IBus's bus is reached (it keeps its own, apart from the session bus).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]

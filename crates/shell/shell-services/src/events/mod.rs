@@ -29,23 +29,17 @@ mod backend;
 
 use std::sync::Arc;
 
-use shell_model::events::{Agenda, AutoEnv, EventsCommand};
+use shell_model::events::{Agenda, AutoEnv};
 
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::events::EventsService;
+use shell_model::service::ServiceIo;
 
 pub use backend::{IcsProvider, ProviderRead, provider_for};
 
-/// Calendar events as a [`Service`], found under `env`'s directories and dated by its clock.
-/// Until the first `Sources` the agenda holds today only, with `SourceStatus::Off`.
-#[derive(Debug)]
-pub enum EventsService {}
-
-impl Service for EventsService {
-    const NAME: &'static str = "events";
-    type State = Agenda;
-    type Command = EventsCommand;
+impl Run for EventsService {
     type Deps = ();
 
     fn initial(env: &Env, (): &()) -> Agenda {

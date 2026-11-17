@@ -19,14 +19,14 @@ mod object;
 mod run;
 
 use shell_model::displays::{Displays, DisplaysCommand};
-use shell_model::serve::ServeLink;
-use std::convert::Infallible;
 use tokio::sync::watch;
 
-use crate::control::Control;
 use crate::env::Env;
 use crate::error::ServiceError;
-use crate::service::{Service, ServiceIo};
+use crate::service::Run;
+use shell_model::serve::DisplaysBusService;
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
 
 /// What the service reads and drives: the displays it lists and the displays service it tells.
 #[derive(Debug, Clone)]
@@ -35,14 +35,7 @@ pub struct DisplaysBusLinks {
     pub control: Control<DisplaysCommand>,
 }
 
-/// The displays' bus interface as a [`Service`]; its state says whether the name is held.
-#[derive(Debug)]
-pub enum DisplaysBusService {}
-
-impl Service for DisplaysBusService {
-    const NAME: &'static str = "displays-bus";
-    type State = ServeLink;
-    type Command = Infallible;
+impl Run for DisplaysBusService {
     type Deps = DisplaysBusLinks;
 
     fn run(

@@ -29,17 +29,19 @@ use shell_launcher::Provider;
 use shell_model::apps::AppIndex;
 use shell_model::clipboard::Clipboard;
 use shell_model::companion::{Companion, CompanionCommand};
-use shell_model::results::{LauncherPolicy, Results, SearchCommand};
+use shell_model::results::LauncherPolicy;
 use shell_model::seed::Store;
 use shell_model::session::Session;
 use shell_model::windows::{WindowModel, WlCommand};
 use tokio::sync::watch;
 
-use shell_services::control::Control;
+use shell_model::results::ResultsService;
+use shell_model::service::Control;
+use shell_model::service::ServiceIo;
 use shell_services::env::Env;
 use shell_services::error::ServiceError;
 use shell_services::first_run::store_of;
-use shell_services::service::{Service, ServiceIo};
+use shell_services::service::Run;
 
 pub use frecency_file::{FILE_NAME as FRECENCY_FILE, load_frecency, save_frecency};
 
@@ -82,21 +84,7 @@ pub struct ResultsLinks {
     pub wl: Control<WlCommand>,
 }
 
-/// The launcher's search as a [`Service`].
-///
-/// Its providers queried in parallel on the blocking pool, its history loaded from bardo-shell's
-/// folder of `env`'s state directory.
-///
-/// Tracker (the files
-/// index) is reached on `env`'s session bus; the rates cache and
-/// the files provider's home are `env`'s directories.
-#[derive(Debug)]
-pub enum ResultsService {}
-
-impl Service for ResultsService {
-    const NAME: &'static str = "results";
-    type State = Results;
-    type Command = SearchCommand;
+impl Run for ResultsService {
     type Deps = Sources;
 
     fn run(

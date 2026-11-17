@@ -8,16 +8,15 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use base_secret::SecretText;
+use shell_model::polkit_agent::PolkitAgentService;
 use shell_model::polkit_agent::machine::MAX_TRIES;
 use shell_model::polkit_agent::{
     ActionId, Cookie, FAKE_SECRET, FakeRequest, HelperRoute, LastTry, Polkit, PolkitCommand,
     PromptPhase, Registration,
 };
-use shell_services::control::Control;
+use shell_model::service::Control;
 use shell_services::env::{Bus, BusRoute, Env};
-use shell_services::polkit_agent::{
-    AGENT_PATH, HelperChoice, PolkitAgentService, PolkitRoute, SessionChoice,
-};
+use shell_services::polkit_agent::{AGENT_PATH, HelperChoice, PolkitRoute, SessionChoice};
 use shell_services::service::spawn;
 use shell_testkit::PrivateBus;
 use tokio::sync::{mpsc, watch};
@@ -172,7 +171,7 @@ async fn begin(connection: Connection, agent: String, cookie: &str) -> Result<()
         })
 }
 
-fn answer(control: &shell_services::Control<PolkitCommand>, cookie: &str, text: &str) {
+fn answer(control: &shell_model::service::Control<PolkitCommand>, cookie: &str, text: &str) {
     control
         .send(PolkitCommand::Answer {
             cookie: Cookie(cookie.to_owned()),

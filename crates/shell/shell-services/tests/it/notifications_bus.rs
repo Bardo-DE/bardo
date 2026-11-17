@@ -7,13 +7,14 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
+use shell_model::notifications::NotificationsService;
 use shell_model::notifications::{
     ActionKey, Activation, ActivationToken, NameHolder, NotesState, NotificationId,
     NotificationsCommand, NotificationsPolicy, ServerMode,
 };
-use shell_services::control::Control;
+use shell_model::service::Control;
 use shell_services::env::{BusRoute, Buses, Env};
-use shell_services::notifications::{self, Answers, BUS_NAME, NotificationsService};
+use shell_services::notifications::{self, Answers, BUS_NAME};
 use shell_services::service::spawn;
 use shell_testkit::{Heard, PrivateBus, Signals, TempDir};
 use tokio::sync::watch;

@@ -9,15 +9,15 @@ use std::time::{Duration, Instant};
 
 use shell_model::auth::AuthCommand;
 use shell_model::battery::Battery;
+use shell_model::idle::IdleService;
 use shell_model::idle::{
     DimLevel, DimPlan, Idle, IdleCommand, IdleLock, IdleMode, IdlePhase, IdlePolicy, IdleSecs,
     IdleTimes, Inhibition, LockGrace, LockedScreenOff, PowerPair, Timeout,
 };
 use shell_model::locker::{Lock, LockerCommand};
-use shell_services::Control;
+use shell_model::service::Control;
 use shell_services::env::{BusRoute, Buses, Env, WaylandRoute};
 use shell_services::idle::IdleLinks;
-use shell_services::idle::IdleService;
 use shell_services::service::spawn;
 use shell_testkit::PrivateBus;
 use tokio::sync::watch;
