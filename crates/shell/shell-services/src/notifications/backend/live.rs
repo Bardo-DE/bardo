@@ -114,8 +114,12 @@ impl Core {
                 return;
             }
             NotificationsCommand::Post(posting) => {
+                let actions = posting.actions.iter().map(|a| a.key.clone()).collect();
                 let id = self.post(*posting, bus).await;
                 self.senders.record(id, None);
+                // Said here, on the stream the presses come on, so no press of `id` is heard
+                // before its poster knows the id.
+                self.answers.say(Said::Posted { id, actions });
                 return;
             }
             NotificationsCommand::Dismiss(id) => NotificationsEvent::Dismissed(id),

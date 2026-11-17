@@ -1,8 +1,8 @@
 //! Notices a service posts through the notifications service and answers when their buttons are
 //! pressed.
 //!
-//! Which notification id carries which key, so a press is answered only when the id is one
-//! bardo-shell itself posted for that key. The accounts, sync-hold and guest-asks services each
+//! Which notification id carries which key, learnt from the server's own word when it posts, so a
+//! press is answered only when the id is one bardo-shell itself posted for that key. The accounts, sync-hold and guest-asks services each
 //! keep one of these over their own key (an account, a dataset, a computer); they differ only in
 //! the words and in how an action key names its notice.
 
@@ -11,11 +11,11 @@ use std::hash::Hash;
 
 use super::{ActionKey, NotesState, NotificationId};
 
-/// The id of the notification posted for each key, kept from when it was seen in the notes until
-/// the server says it closed or the key's notice is withdrawn.
+/// The id of the notification posted for each key, kept from when the server said it posted it
+/// until the server says it closed or the key's notice is withdrawn.
 ///
-/// It outlives the notes' own copy on purpose: a pressed button leaves the notes before its
-/// `ActionInvoked` is heard.
+/// Only ids the server said for bardo-shell's own posts are kept, so an app's look-alike notice
+/// answers nothing.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Notices<K: Eq + Hash>(HashMap<K, NotificationId>);
 
@@ -26,21 +26,28 @@ impl<K: Eq + Hash> Default for Notices<K> {
 }
 
 impl<K: Eq + Hash + Clone> Notices<K> {
-    /// Remember the notification the notes hold for each of `keys`, as `shown_for` finds it; one
-    /// posted afresh replaces the id kept for its key.
-    pub fn learn<'a>(
+    /// A notification bardo-shell posted was given `id` and carries buttons with `actions`
+    /// (`Said::Posted`): it is the notice of each key `read` finds in those actions (`key_of`
+    /// names the key in what `read` returns). One posted afresh replaces the id kept for its key.
+    ///
+    /// Told by the notifications service itself, in order with the presses, so a press is never
+    /// weighed before the id it names is known; nothing here reads the notes.
+    pub fn posted<R>(
         &mut self,
-        notes: &NotesState,
-        keys: impl IntoIterator<Item = &'a K>,
-        shown_for: impl Fn(&NotesState, &K) -> Option<NotificationId>,
-    ) where
-        K: 'a,
-    {
-        for key in keys {
-            if let Some(id) = shown_for(notes, key) {
-                self.0.insert(key.clone(), id);
-            }
+        id: NotificationId,
+        actions: &[ActionKey],
+        read: impl Fn(&ActionKey) -> Option<R>,
+        key_of: impl Fn(&R) -> &K,
+    ) {
+        for found in actions.iter().filter_map(read) {
+            self.0.insert(key_of(&found).clone(), id);
         }
+    }
+
+    /// The id of the notice posted for `key`, while it stands.
+    #[must_use]
+    pub fn id_of(&self, key: &K) -> Option<NotificationId> {
+        self.0.get(key).copied()
     }
 
     /// The server closed `id`: it answers nothing from now on.
@@ -137,6 +144,21 @@ mod tests {
         notices.answers(NotificationId(id), name_of(key), |name| name)
     }
 
+    /// `Said::Posted` for `id`, with buttons named by `names`: a bare name is a press of it.
+    fn posted(notices: &mut Notices<String>, id: u32, names: &[&str]) {
+        let keys: Vec<ActionKey> = names
+            .iter()
+            .map(|name| {
+                if name.contains(':') || *name == "default" {
+                    ActionKey((*name).to_owned())
+                } else {
+                    key_of(name)
+                }
+            })
+            .collect();
+        notices.posted(NotificationId(id), &keys, name_of, |name| name);
+    }
+
     #[test]
     fn the_notice_shown_is_found_by_its_key_among_banners_and_history() {
         let (a, b) = ("a".to_owned(), "b".to_owned());
@@ -161,25 +183,15 @@ mod tests {
     #[test]
     fn a_press_answers_only_for_the_id_posted_for_that_key() {
         let (a, b) = ("a".to_owned(), "b".to_owned());
-        let mut notes = NotesState::default();
-        notes.live.banners = vec![banner(note(1, ENTRY, "a")), banner(note(2, ENTRY, "b"))];
         let mut notices = Notices::default();
-        notices.learn(&notes, [&a, &b], |notes, name: &String| {
-            shown_for(notes, name)
-        });
+        posted(&mut notices, 1, &["a"]);
+        posted(&mut notices, 2, &["b"]);
         assert_eq!(answer(&notices, 1, &key_of("a")), Some(a.clone()));
         assert_eq!(answer(&notices, 2, &key_of("b")), Some(b.clone()));
         // The right id with the wrong key, a foreign id, and a key that is not a press.
         assert_eq!(answer(&notices, 1, &key_of("b")), None);
         assert_eq!(answer(&notices, 9, &key_of("a")), None);
         assert_eq!(answer(&notices, 1, &ActionKey("default".to_owned())), None);
-
-        // A pressed button leaves the notes before its signal is heard; the id still answers.
-        notes.live.banners.clear();
-        notices.learn(&notes, [&a, &b], |notes, name: &String| {
-            shown_for(notes, name)
-        });
-        assert_eq!(answer(&notices, 1, &key_of("a")), Some(a.clone()));
         // Closed by the server: it answers nothing, and the other key's is untouched.
         notices.closed(NotificationId(1));
         assert_eq!(answer(&notices, 1, &key_of("a")), None);
@@ -190,14 +202,45 @@ mod tests {
     }
 
     #[test]
+    fn the_id_is_learned_from_the_stream() {
+        let a = "a".to_owned();
+        let mut notices = Notices::default();
+        assert_eq!(notices.id_of(&a), None);
+        // A post that carries no button of this service's teaches nothing.
+        posted(&mut notices, 3, &["default", "other:a"]);
+        assert_eq!(notices.id_of(&a), None);
+        posted(&mut notices, 4, &["default", "press:a"]);
+        assert_eq!(notices.id_of(&a), Some(NotificationId(4)));
+    }
+
+    #[test]
+    fn a_press_with_an_unknown_id_is_ignored() {
+        let mut notices = Notices::default();
+        // An app's look-alike notice carries the same key but was never said as posted by us.
+        assert_eq!(answer(&notices, 7, &key_of("a")), None);
+        posted(&mut notices, 1, &["a"]);
+        assert_eq!(answer(&notices, 7, &key_of("a")), None);
+        assert_eq!(answer(&notices, 1, &key_of("a")), Some("a".to_owned()));
+    }
+
+    #[test]
+    fn a_press_before_the_notes_show_the_notice_still_answers() {
+        // The notes are never consulted: the id was said when posted, and the press follows on
+        // the same stream, whether or not the notes ever held the notice.
+        let a = "a".to_owned();
+        let notes = NotesState::default();
+        assert_eq!(shown_for(&notes, &a), None);
+        let mut notices = Notices::default();
+        posted(&mut notices, 5, &["a"]);
+        assert_eq!(answer(&notices, 5, &key_of("a")), Some(a));
+    }
+
+    #[test]
     fn a_fresh_post_replaces_the_id_kept() {
         let a = "a".to_owned();
-        let mut notes = NotesState::default();
-        notes.live.banners = vec![banner(note(1, ENTRY, "a"))];
         let mut notices = Notices::default();
-        notices.learn(&notes, [&a], |notes, name: &String| shown_for(notes, name));
-        notes.live.banners = vec![banner(note(5, ENTRY, "a"))];
-        notices.learn(&notes, [&a], |notes, name: &String| shown_for(notes, name));
+        posted(&mut notices, 1, &["a"]);
+        posted(&mut notices, 5, &["a"]);
         assert_eq!(answer(&notices, 1, &key_of("a")), None);
         assert_eq!(answer(&notices, 5, &key_of("a")), Some(a));
     }
