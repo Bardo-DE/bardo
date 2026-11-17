@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Not Bardo
+Exec=not-bardo
+NotShowIn=bardo;

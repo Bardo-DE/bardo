@@ -1,5 +1,5 @@
 //! The apps provider's query table against the real fixture tree `tests/scan.rs` already
-//! exercises (`shell-services/tests/fixtures/applications`): name, generic name and keyword matches, a
+//! exercises (`tests/fixtures/applications`): name, generic name and keyword matches, a
 //! matching desktop action surfacing as its own row, and the visibility rules (`Hidden`,
 //! `NoDisplay`, an unresolvable `TryExec`) keeping entries out of the launcher the same way
 //! they keep them out of the dock.
@@ -14,8 +14,7 @@ use shell_search::providers::AppsProvider;
 use shell_services::apps::scan;
 
 fn fixture_dirs() -> Vec<PathBuf> {
-    let root =
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("../shell-services/tests/fixtures/applications");
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/applications");
     vec![root.join("home"), root.join("system")]
 }
 

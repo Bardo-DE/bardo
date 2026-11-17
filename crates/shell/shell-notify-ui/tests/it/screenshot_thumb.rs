@@ -21,10 +21,10 @@ mod keys;
 
 type Running = SurfaceHarness<ScreenshotThumb>;
 
-/// The services' own fixture screenshot, drawn as a ready preview.
+/// A fixture screenshot, drawn as a ready preview.
 const FIXTURE: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/../shell-services/tests/fixtures/shots/Screenshot_fixture.png"
+    "/tests/fixtures/shots/Screenshot_fixture.png"
 );
 
 /// Whether a wait ended in what it waited for.

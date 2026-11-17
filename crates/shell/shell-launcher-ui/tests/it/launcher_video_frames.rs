@@ -14,11 +14,8 @@ use shell_launcher_ui::launcher::preview::frames::ThumbnailFrames;
 use shell_launcher_ui::launcher::preview::load::{Look, ViewerLook};
 use shell_testkit::TempDir;
 
-/// A recording with no cover of its own, in anyview's fixtures.
-const CLIP: &str = concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/../../anyview/crates/anyview-peek/tests/fixtures/clip.mp4"
-);
+/// A recording with no cover of its own.
+const CLIP: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/clip.mp4");
 
 /// A scratch `XDG_CACHE_HOME` and a copy of the clip next to it.
 struct Scene {

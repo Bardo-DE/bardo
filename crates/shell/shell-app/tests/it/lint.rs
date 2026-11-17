@@ -872,7 +872,7 @@ fn screenshot_thumb_states() -> Vec<(&'static str, String)> {
     let idle = thumb.harness.html();
     let fixture = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../shell-services/tests/fixtures/shots/Screenshot_fixture.png"
+        "/tests/fixtures/shots/Screenshot_fixture.png"
     );
     thumb.feeds.shots.send_replace(Shots {
         current: Some(Shot {
