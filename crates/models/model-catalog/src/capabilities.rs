@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 
 use base_ids::Tokens;
 use model_provider::{
-    Caps, Constraint, CuaSupport, EmbedCaps, ImageCount, ImageLimits, InputKind, ModelSpace,
+    Caps, Constraint, ComputerUseSupport, EmbedCaps, ImageCount, ImageLimits, InputKind, ModelSpace,
     ResizeRule, Support, ToolSupport,
 };
 use serde::{Deserialize, Serialize};

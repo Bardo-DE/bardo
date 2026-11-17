@@ -7,7 +7,7 @@
 use base_ids::Tokens;
 use computer_use_action::{GridMax, ModelSpace};
 use model_provider::{
-    Caps, Constraint, CuaSupport, EngineExtras, ImageCount, ImageLimits, InputKind, Knob, Limits,
+    Caps, Constraint, ComputerUseSupport, EngineExtras, ImageCount, ImageLimits, InputKind, Knob, Limits,
     Message, Milli, ModelName, OutputShape, Part, Reasoning, Role, Sampling, StopReason, Support,
     ToolChoice, ToolParallelism, ToolSupport, TurnEnd, TurnRequest, TurnUsage,
 };

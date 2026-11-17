@@ -16,7 +16,7 @@ use computer_use_capture::PixelBuf;
 use computer_use_run::{FrameAttachment, StepEvent, StepSink};
 use inference_client::{Transport, TransportError};
 use inference_core::{
-    AttachIndex, ClientFrame, CuaBegin, CuaStepReply, CuaStepRequest, FrameImage, FrameLayout,
+    AttachIndex, ClientFrame, ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, FrameImage, FrameLayout,
     ImageSource, InferEvent, InferReply, InferSession, MaskedRegions, NoteFrom, OpenOptions,
     PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote, TurnUsage, WindowGeometry,
 };

@@ -13,7 +13,7 @@ use computer_use_bus::QuestionId;
 use computer_use_capture::{CaptureError, DamageAt};
 use computer_use_desktop::{DesktopError, DesktopEvent, LeaseGrant};
 use computer_use_seat_input::{InputReceipt, SeatError};
-use inference_core::{CuaStepReply, ServedBy, TurnUsage};
+use inference_core::{ComputerUseStepReply, ServedBy, TurnUsage};
 use model_provider::Money;
 use provenance::{ConfirmId, Labelled};
 use serde::{Deserialize, Serialize};

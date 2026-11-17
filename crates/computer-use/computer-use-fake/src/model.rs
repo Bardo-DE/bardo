@@ -7,7 +7,7 @@ use computer_use_run::{
     ComputerUseModel, ComputerUseModelError, FrameAttachment, ModelReach, ModelSight, StepSink,
 };
 use inference_core::{
-    CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, SafetyHint, ServedBy,
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, DropReason, DroppedAction, SafetyHint, ServedBy,
     TurnUsage,
 };
 use model_provider::{ProviderError, SafetySignal, ToolCall, TurnEvent};

@@ -20,7 +20,7 @@ use computer_use_session::{
 };
 use computer_use_vendors::StepResult;
 use inference_core::{
-    CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, NoteFrom, PrevResult,
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, DropReason, DroppedAction, NoteFrom, PrevResult,
     ServedBy, StepNote, TurnUsage,
 };
 use model_catalog::{ModelEntry, parse_entry};

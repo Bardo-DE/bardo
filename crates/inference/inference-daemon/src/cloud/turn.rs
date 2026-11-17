@@ -308,7 +308,7 @@ fn counted(report: Option<sp::UsageReport>) -> Option<TurnUsage> {
         Some(sp::UsageReport::Known(used)) => Some(used),
         Some(sp::UsageReport::Unknown { seen }) => Some(seen),
         Some(sp::UsageReport::Nothing) => None,
-        // No report at all, or one a later stoker adds: a model may have run.
+        // No report at all, or one a later model layer adds: a model may have run.
         _ => Some(sp::TurnUsage::default()),
     }
 }

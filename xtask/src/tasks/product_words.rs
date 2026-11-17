@@ -49,8 +49,9 @@ const ENGLISH_IN_SOURCE: [&str; 1] = ["detent"];
 /// Phrases that keep a retired word on purpose, because the word is part of what is already
 /// stored on a person's computer: the audit record kinds and the area name in the memory event
 /// log, the actor slug, the checkpoint refs and plan hash, the keyring service and namespace names
-/// and the key wrap of the test keys. A hit inside one of these phrases is not reported.
-const KEPT_STORED_FORMS: [&str; 24] = [
+/// the key wrap of the test keys, the memory file and export format tags, the memory key
+/// schema, and the inputs of golden tests that pin them. A hit inside one of these phrases is not reported.
+const KEPT_STORED_FORMS: [&str; 31] = [
     "\"cua\"",
     "cua\\\"",
     "cua.run.",
@@ -75,6 +76,13 @@ const KEPT_STORED_FORMS: [&str; 24] = [
     "porter/cloud/password",
     "almanac test-keys: not a secret.",
     "\"cua.*\"",
+    "quire-memory",
+    "quire-memory-export-1",
+    "quire-memory-export",
+    "org.quire.Memory.SpaceKey",
+    "org.quire.Mail",
+    "org.quire.Files",
+    "row(\"author\", \"Quire\")",
 ];
 
 /// The parts of one name: split at `_`, `-` and digits, then at camel-case humps, lower-cased.

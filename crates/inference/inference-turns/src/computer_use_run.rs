@@ -5,9 +5,9 @@
 //! The history lives in the session value the run holds, so the run is pinned to one model.
 
 use crate::bridge::Frames;
-use crate::cua_step::{self, Failed};
+use crate::computer_use_step::{self, Failed};
 use base_ids::Tokens;
-use computer_use_session::CuaSession;
+use computer_use_session::ComputerUseSession;
 use inference_core::{
     ChatSink, ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply,
     ComputerUseStepRequest, ModelError,

@@ -20,8 +20,8 @@ use computer_use_run::{ComputerUseModel, ComputerUseModelError, FrameAttachment,
 use inference_core::{
     ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TokenUsage,
 };
-use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepSink};
-use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TurnUsage};
+use computer_use_run::{ComputerUseModel, ComputerUseModelError, FrameAttachment, StepSink};
+use inference_core::{ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage};
 use keyboard_types::Key;
 use std::collections::{BTreeSet, VecDeque};
 use std::str::FromStr;

@@ -13,7 +13,7 @@ use computer_use_run::{
 use inference_core::{
     ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TokenUsage,
 };
-use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TurnUsage};
+use inference_core::{ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage};
 
 /// A model that never answers, and counts the sessions it was begun for.
 struct Mute {

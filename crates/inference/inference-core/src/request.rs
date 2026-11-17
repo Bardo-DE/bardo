@@ -3,7 +3,7 @@
 
 use crate::computer_use::{ComputerUseBegin, ComputerUseStepRequest};
 use crate::control::{ChatControl, ThoughtSeal};
-use crate::cua::{CuaBegin, CuaStepRequest};
+use crate::computer_use::{ComputerUseBegin, ComputerUseStepRequest};
 use crate::ids::{AttachIndex, Base64Bytes, SchemaText, ToolCallId, ToolName};
 use crate::speech::{SpeakRequest, TranscribeBegin};
 use account_capability::Tier;

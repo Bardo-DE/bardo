@@ -27,7 +27,7 @@ use computer_use_run::{
     ComputerUseConfig, ContextObs, CursorObs, Focus, ModelReply, Observation, Rules, Run,
     RunEffect, RunEnv, RunInput, RunPhase, TreeObs, Visibility, WindowInfo,
 };
-use inference_core::{CuaStepReply, StepIndex, TurnUsage};
+use inference_core::{ComputerUseStepReply, StepIndex, TurnUsage};
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, RunId, SessionId, Source,
     SpaceId,
@@ -247,7 +247,7 @@ pub fn finish(outcome: FinishOutcome, text: &str) -> ComputerUseAction<WindowSpa
 
 pub fn reply(actions: Vec<ComputerUseAction<WindowSpace>>) -> Box<ModelReply> {
     Box::new(ModelReply {
-        reply: CuaStepReply::new(actions).with_thought("think".to_owned()),
+        reply: ComputerUseStepReply::new(actions).with_thought("think".to_owned()),
         usage: TurnUsage {
             input: Tokens(0),
             output: Tokens(0),

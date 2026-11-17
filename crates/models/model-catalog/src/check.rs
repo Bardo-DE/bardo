@@ -3,7 +3,7 @@
 use speech_provider::SpeechDir;
 
 use base_ids::Tokens;
-use model_provider::{CuaSupport, ToolSupport};
+use model_provider::{ComputerUseSupport, ToolSupport};
 
 use crate::{
     Capabilities, CatalogError, DetailTable, EngineProfile, Locality, Modality, Serving, TextOut,
