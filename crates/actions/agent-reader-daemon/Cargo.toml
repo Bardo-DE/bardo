@@ -38,6 +38,7 @@ zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
 base-ids = { path = "../../base/base-ids" }
+base-testkit = { path = "../../base/base-testkit" }
 
 account-wire = {path = "../../accounts/account-wire"}
 account-match = {path = "../../accounts/account-match"}

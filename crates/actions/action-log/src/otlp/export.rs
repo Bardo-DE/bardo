@@ -187,22 +187,20 @@ mod tests {
         body.len() >= length
     }
 
-    /// A collector for one request: waits at most ten seconds for the connection and five for
+    /// A collector for one request: waits for the connection and at most five seconds for
     /// each read, answers 200, and returns what it was sent.
     fn collect_one(listener: &TcpListener) -> String {
         listener.set_nonblocking(true).expect("nonblocking");
-        let deadline = Instant::now() + Duration::from_secs(10);
-        let mut stream = loop {
-            match listener.accept() {
-                Ok((stream, _)) => break stream,
-                Err(why)
-                    if why.kind() == io::ErrorKind::WouldBlock && Instant::now() < deadline =>
-                {
-                    thread::sleep(Duration::from_millis(5));
-                }
-                Err(why) => panic!("the exporter never connected: {why}"),
+        let mut accepted = None;
+        base_testkit::eventually_blocking("the exporter connected", || match listener.accept() {
+            Ok((stream, _)) => {
+                accepted = Some(stream);
+                true
             }
-        };
+            Err(why) if why.kind() == io::ErrorKind::WouldBlock => false,
+            Err(why) => panic!("accepting the exporter failed: {why}"),
+        });
+        let stream = accepted.expect("the exporter connected");
         stream.set_nonblocking(false).expect("blocking");
         stream
             .set_read_timeout(Some(Duration::from_secs(5)))

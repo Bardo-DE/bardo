@@ -8,9 +8,10 @@ use crate::support::bus::PrivateBus;
 use action_core::{ReaderAsk, ReaderTask, ValueSchema};
 use action_dbus::{Details, ReaderProxy};
 use action_vocab::Handle;
+use base_testkit::GENEROUS;
+use futures_util::StreamExt;
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
-use std::time::Duration;
 use zbus::fdo::DBusProxy;
 
 /// A child that is killed when the test ends, however it ends.
@@ -44,14 +45,25 @@ async fn has_owner(connection: &zbus::Connection, name: &str) -> bool {
     dbus.name_has_owner(name).await.unwrap_or(false)
 }
 
-async fn until_served(connection: &zbus::Connection) {
-    for _ in 0..200 {
-        if has_owner(connection, "org.bardo.Reader1").await {
-            return;
+/// Waits until `name` has an owner (`owned`) or has none, on the bus's own announcement of a
+/// change: subscribed before the first look, so a change between the look and the wait is kept.
+async fn until_owner(connection: &zbus::Connection, name: &str, owned: bool) {
+    let dbus = DBusProxy::new(connection).await.expect("dbus");
+    let mut changes = dbus
+        .receive_name_owner_changed_with_args(&[(0, name)])
+        .await
+        .expect("subscribe to the owner changes");
+    tokio::time::timeout(GENEROUS, async {
+        while has_owner(connection, name).await != owned {
+            changes.next().await.expect("the bus ended the signals");
         }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    panic!("readerd never claimed org.bardo.Reader1");
+    })
+    .await
+    .unwrap_or_else(|_| panic!("{name} never had owned = {owned}"));
+}
+
+async fn until_served(connection: &zbus::Connection) {
+    until_owner(connection, "org.bardo.Reader1", true).await;
 }
 
 fn ask() -> String {
@@ -99,11 +111,5 @@ async fn the_binary_refuses_a_stranger_claims_the_name_once_and_frees_it_when_it
     // Stopping it frees the name.
     daemon.0.kill().expect("kill");
     daemon.0.wait().expect("wait");
-    for _ in 0..100 {
-        if !has_owner(&me, "org.bardo.Reader1").await {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    panic!("the name outlived the daemon");
+    until_owner(&me, "org.bardo.Reader1", false).await;
 }

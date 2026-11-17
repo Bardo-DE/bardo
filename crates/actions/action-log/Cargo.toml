@@ -22,5 +22,8 @@ url = { workspace = true, optional = true }
 # accepted. Off by default; without it the crate has no dependency beyond `tracing`.
 otlp = ["dep:serde_json", "dep:thiserror", "dep:url"]
 
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
+
 [lints]
 workspace = true
