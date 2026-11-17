@@ -7,12 +7,31 @@ use crate::support;
 
 use anyview_core::{Peek, PixelLen, PixelSize};
 use anyview_image::{Decoded, ImageError, RasterPeek, decode_bytes};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use support::{budget, bytes, fixture, sniffed};
 
-/// How long a refusal may take: it reads a header, so a second is generous even on a loaded
-/// machine, and a decode of what the header claims takes far longer than this.
+/// How much work a refusal may cost: it reads a header, so a second is generous, and a decode of
+/// what the header claims costs far more than this.
 const REFUSAL: Duration = Duration::from_secs(5);
+
+/// The CPU time this process has used. Each test runs in a process of its own, so this counts
+/// the work of one refusal (worker threads included) and not the time spent waiting for a CPU
+/// on a loaded machine.
+#[derive(Clone, Copy)]
+struct Started(Duration);
+
+impl Started {
+    fn now() -> Started {
+        let spent = rustix::time::clock_gettime(rustix::time::ClockId::ProcessCPUTime);
+        let nanos = u32::try_from(spent.tv_nsec).expect("nanoseconds fit in a u32");
+        let secs = u64::try_from(spent.tv_sec).expect("CPU time is not negative");
+        Started(Duration::new(secs, nanos))
+    }
+
+    fn elapsed(self) -> Duration {
+        Started::now().0.saturating_sub(self.0)
+    }
+}
 
 fn size(width: u32, height: u32) -> PixelSize {
     PixelSize {
@@ -41,7 +60,7 @@ fn refused<T>(got: &Result<T, ImageError>) -> bool {
     matches!(got, Err(ImageError::TooLarge { .. }))
 }
 
-fn refused_in_time(name: &str, started: Instant, got: &Result<impl std::fmt::Debug, ImageError>) {
+fn refused_in_time(name: &str, started: Started, got: &Result<impl std::fmt::Debug, ImageError>) {
     assert!(
         started.elapsed() < REFUSAL,
         "{name}: took {:?}",
@@ -73,14 +92,14 @@ fn a_header_that_claims_a_huge_canvas_is_refused_before_anything_is_decoded() {
     ];
     for (name, file) in CASES {
         let (src, sniffed) = fixture(file);
-        let started = Instant::now();
+        let started = Started::now();
         let peeked = RasterPeek::peek(&src, &sniffed, &budget(1 << 20));
         refused_in_time(name, started, &peeked);
         assert!(
             matches!(peeked, Err(ImageError::TooLarge { .. })),
             "{name}: a peek is {peeked:?}"
         );
-        let started = Instant::now();
+        let started = Started::now();
         let opened = decode_bytes(&bytes(file), &sniffed);
         refused_in_time(name, started, &opened);
         assert!(
@@ -131,7 +150,7 @@ fn thousands_of_frames_are_neither_decoded_to_be_counted_nor_kept() {
     // 3000 frames on a 512 square canvas: a megabyte each once composited, three gigabytes kept.
     let file = gif_of_tiny_frames(512, 3000);
     let sniffed = sniffed(&file, "many.gif");
-    let started = Instant::now();
+    let started = Started::now();
     let opened = decode_bytes(&file, &sniffed).unwrap();
     let Decoded::HeldStill { picture, frames } = opened else {
         panic!("three gigabytes of frames are held as a still");
@@ -143,7 +162,7 @@ fn thousands_of_frames_are_neither_decoded_to_be_counted_nor_kept() {
     let path = dir.path().join("many.gif");
     std::fs::write(&path, &file).unwrap();
     let source = support::source_of(&path, file.len());
-    let started = Instant::now();
+    let started = Started::now();
     let peeked = RasterPeek::peek(&source, &sniffed, &budget(1 << 20)).unwrap();
     assert_eq!(peeked.frames, 3000);
     assert_eq!(peeked.source_size, size(512, 512));
@@ -163,7 +182,7 @@ fn a_frame_that_breaks_the_webp_decoder_is_an_error_not_a_panic() {
 #[test]
 fn an_icon_element_that_claims_four_gigabytes_is_refused() {
     let (src, sniffed) = fixture("bomb-element.icns");
-    let started = Instant::now();
+    let started = Started::now();
     let peeked = RasterPeek::peek(&src, &sniffed, &budget(1 << 20));
     refused_in_time("a 16 byte icns", started, &peeked);
 }

@@ -37,6 +37,9 @@ thiserror = { workspace = true }
 [dev-dependencies]
 # `OnDisk`: the input of a fixture on disk (core opens no file).
 anyview-fs = {path = "../anyview-fs"}
+# The CPU time a refusal costs, so the hostile tests do not count time spent waiting on a loaded
+# machine.
+rustix = { workspace = true, features = ["time"] }
 tempfile = { workspace = true }
 
 [lints]
