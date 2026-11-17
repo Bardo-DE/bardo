@@ -81,7 +81,7 @@ udev and polkit rules, the `uinput` modules-load file, `key_remap.plasma.toml`, 
 
 Two outside parties decide what the key remap daemon trusts, and both are in the unit's reach only:
 
-- **Devices.** The desktop's `turnstile` service owns `/dev/uinput` (root only) and hands the key remap daemon finished
+- **Devices.** The desktop's `input_broker` service owns `/dev/uinput` (root only) and hands the key remap daemon finished
   devices; the unit has no `DeviceAllow=/dev/uinput`. The standalone install has no such service and gets the
   one line back as the drop-in `bardo-key-remap.service.d/10-uinput.conf` (`dist/bardo-key-remap.uinput.conf`, placed by
   `install.sh`) next to the udev rule that lets the `input` group write the node. `SupplementaryGroups=input`

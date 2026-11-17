@@ -41,7 +41,7 @@ fn log_lines_are_one_line_with_quoted_odd_values() {
     );
     assert_eq!(
         got,
-        r#"turnstile: refused pid=42 why="events for a device\nthat is not there" empty="""#
+        r#"input_broker: refused pid=42 why="events for a device\nthat is not there" empty="""#
     );
     assert!(!got.contains('\n'));
 }

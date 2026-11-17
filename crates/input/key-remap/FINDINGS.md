@@ -120,7 +120,7 @@ refusal for (d), because a defined profile is the only thing a name can select.
   the connection that owns `org.kde.KWin` now (`GetNameOwner` per call) and owns its own name with
   `DO_NOT_QUEUE`, exiting if it is taken.
 
-**Where the virtual devices come from (INPUT-02, wave 2).** With `/run/turnstile/input.sock` present, the key remap daemon
+**Where the virtual devices come from (INPUT-02, wave 2).** With `/run/input_broker/input.sock` present, the key remap daemon
 asks the root service for a `KeyRemapKeyboard` and, per combo device, a `KeyRemapPointer` (the original's name
 as the label; the service adds the suffix), and uses the handed descriptor exactly as it used its own:
 writes, `led_fd` and `leds` are unchanged. Without the socket, or if nothing answers on it, the key remap daemon opens
@@ -129,7 +129,7 @@ writes, `led_fd` and `leds` are unchanged. Without the socket, or if nothing ans
 `bardo-key-remap.service.d/10-uinput.conf` for the standalone install, with `70-key-remap.rules` as before. The desktop's
 packaging ships neither the drop-in nor the udev line. `--check-uinput` connects to the service when the socket
 is there (it creates nothing) and otherwise opens the node as before. Unverified: the service's behaviour
-against a real the key remap daemon (needs the desktop gate), and `After=turnstile.socket` ordering on a real boot.
+against a real the key remap daemon (needs the desktop gate), and `After=bardo-input-broker.socket` ordering on a real boot.
 
 **The profile mechanism cannot see inside a window.** A terminal embedded in another app (an
 editor's terminal panel) gets the window's profile, not `terminal`: the desktop knows the
@@ -343,7 +343,7 @@ chord repeats its output.
 **No `unsafe` anywhere; the workspace lint is `forbid` (2026-10-17).** The ioctls in `daemon/sys.rs` and,
 test-only, `key-remap-devtest/src/sys.rs` used to be rustix `Ioctl` blocks (including a hand-written
 `unsafe impl Ioctl` for `EVIOCGABS`). They now go through `input-linux` 0.7 (MIT, `default-features = false`,
-the same line as turnstile): `EvdevHandle` for `EVIOCGRAB`, `EVIOCGKEY`, `EVIOCGLED`, `EVIOCGBIT`, `EVIOCGPROP`,
+the same line as the input broker): `EvdevHandle` for `EVIOCGRAB`, `EVIOCGKEY`, `EVIOCGLED`, `EVIOCGBIT`, `EVIOCGPROP`,
 `EVIOCGABS` and `UInputHandle` for the `UI_SET_*BIT` calls, `UI_DEV_SETUP`, `UI_ABS_SETUP`, `UI_DEV_CREATE`,
 `UI_DEV_DESTROY`, `UI_GET_SYSNAME`. No site stays unsafe. What changed in behaviour: a raw code is now checked
 against its kind's range before the ioctl (`InvalidInput`); `UInputHandle::create` does setup, the axis setups and
@@ -358,10 +358,10 @@ that key remap daemon grabs the keyboard and remaps, and releases on exit (the g
   seat's active user (`socket/seat.rs`). With `PrivateUsers=yes` every process outside the unit's user namespace
   reads as the overflow uid, so no client would ever match the seat owner and the shell could not steer. The other
   deferred half, `ProtectProc=invisible`, stays dropped for the steering check (WAVE2-DESIGN 4.8). The unit now also
-  unsets the 22 loader variables so that turnstile can prove it `Full`. Closes if steering moves to a mechanism that
+  unsets the 22 loader variables so that input broker can prove it `Full`. Closes if steering moves to a mechanism that
   does not read uids.
 - *INPUT-02, the standalone install keeps its `input` group rule.* `install.sh` and `70-key-remap.rules` (a node open
-  to the `input` group) are for a machine with no turnstile, where the key remap daemon opens `/dev/uinput` itself. The desktop's
+  to the `input` group) are for a machine with no input broker, where the key remap daemon opens `/dev/uinput` itself. The desktop's
   packaging ships neither. Closes when no supported standalone target remains.
 - *INPUT-03, steering identity.* Owner decision: no root identity check for the key remap daemon's own socket; the bound is the
   user layer's confinement, now including Shift (NEW-PI-5).

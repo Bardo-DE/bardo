@@ -1,4 +1,4 @@
-//! The five kinds of device turnstile will make, and nothing else. Everything about a kind that is
+//! The five kinds of device the input broker will make, and nothing else. Everything about a kind that is
 //! a fact (its code, who may ask, how events reach the kernel) lives here.
 
 use crate::maker::Maker;

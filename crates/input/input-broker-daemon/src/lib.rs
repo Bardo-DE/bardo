@@ -1,4 +1,4 @@
-//! turnstile: the root service that makes the mouse gestures daemon's and the key remap daemon's virtual input devices, and no
+//! The input broker: the root service that makes the mouse gestures daemon's and the key remap daemon's virtual input devices, and no
 //! others.
 //!
 //! systemd owns the socket and starts the service on the first connection; the service exits by

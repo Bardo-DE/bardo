@@ -126,10 +126,10 @@ Departures from the plan, standing facts and open items. An entry names the cond
     (the error type that carries them cannot name another family); a refused `Rollback` or `Check` is the bus's own
     `AccessDenied`. (d) The properties are not gated.
 25. **The input service's files are allowed, and the helper tells the system (wave 2, pa2-slip).** Four exact rules
-    were added (`turnstile.socket`, `turnstile.service` under `/usr/lib/systemd/system`, `72-turnstile.rules`,
-    `turnstile.conf`); the design text says "three new rules" but lists four files, and the four files are the
-    turnstile lane's. After placing or removing system files the helper runs `daemon-reload`, the udev reload and
-    trigger for misc devices, and `enable --now turnstile.socket` (ARCHITECTURE s.4, `apply/settle.rs`). The helper is
+    were added (`bardo-input-broker.socket`, `bardo-input-broker.service` under `/usr/lib/systemd/system`, `72-input-broker.rules`,
+    `input-broker.conf`); the design text says "three new rules" but lists four files, and the four files are the
+    The input broker lane's. After placing or removing system files the helper runs `daemon-reload`, the udev reload and
+    trigger for misc devices, and `enable --now bardo-input-broker.socket` (ARCHITECTURE s.4, `apply/settle.rs`). The helper is
     installed by hand, so an existing install must re-run `scripts/install.sh` before the first release that
     places these files; an older helper refuses that release whole. Not done: disabling the socket when a release
     stops listing it (only the reload runs), and loading the `uinput` module at once (it loads at the next boot, or
@@ -147,7 +147,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     now refuses three links in that folder. The helper and the daemon share the list, so a computer needs the new helper
     (`scripts/install.sh`) before this holds there; an older helper still accepts a release that exports there.
 27. **A release-only install enables the keyboard map (NEW-ROOT-5, lane pa3-root).** `settle` enabled and started
-    `turnstile.socket` only; `bardo-key-remap.service` was placed in `/usr/lib/systemd/system` but its `[Install]` section is never
+    `bardo-input-broker.socket` only; `bardo-key-remap.service` was placed in `/usr/lib/systemd/system` but its `[Install]` section is never
     acted on, so the Mac key mapping did not run until someone enabled it (the desktop's `install/system.sh` does `enable --now
     bardo-key-remap.service`). The unit's name is the file name the exact list gives (`bardo-key-remap.service`, checked against key_remap's
     `dist/bardo-key-remap.service` and `install/system.sh`). `commands` now adds `enable --now bardo-key-remap.service` when that file is

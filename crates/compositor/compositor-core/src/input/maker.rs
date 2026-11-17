@@ -1,11 +1,11 @@
-//! Whom a virtual input device was made for, as the desktop's device service (turnstile) wrote it
+//! Whom a virtual input device was made for, as the desktop's device service (the input broker) wrote it
 //! into the device (NEW-FA-4, decided 2026-10-17).
 //!
 //! The kernel keeps a free-text `phys` on every input device (`/sys/class/input/<event>/device/phys`).
-//! Only a process that can open `/dev/uinput` can set it, and on this desktop that is turnstile
+//! Only a process that can open `/dev/uinput` can set it, and on this desktop that is the input broker
 //! alone (its udev rule makes the node root-only), which makes a device only for the services it
-//! has proven. The compositor links nothing of turnstile, so this is its own copy of turnstile's
-//! `input_broker_wire::Maker::parse`; the test below and turnstile's pin the same strings.
+//! has proven. The compositor links nothing of the input broker, so this is its own copy of the input broker's
+//! `input_broker_wire::Maker::parse`; the test below and the input broker's pin the same strings.
 
 use super::origin::{DeviceClass, Origin};
 
@@ -55,10 +55,10 @@ impl Maker {
 mod tests {
     use super::*;
 
-    /// turnstile pins these same strings (its `maker` test in input-broker-wire): change one side and
+    /// The input broker pins these same strings (its `maker` test in input-broker-wire): change one side and
     /// the other must change with it.
     #[test]
-    fn the_labels_are_the_strings_turnstile_writes() {
+    fn the_labels_are_the_strings_input_broker_writes() {
         for (text, maker) in [
             ("input-broker/pad_daemon", Maker::PadDaemon),
             ("input-broker/keymap_daemon", Maker::KeymapDaemon),

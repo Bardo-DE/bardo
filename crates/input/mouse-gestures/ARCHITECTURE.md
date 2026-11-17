@@ -119,7 +119,7 @@ out the effects it gets back.
 
 | Trait | Signature | Implementors |
 |---|---|---|
-| `Emitter` (`outputs`) | `fn pad(&mut self, f: &PadFrame) -> Result<(), OutputError>; fn key(&mut self, k: &KeyCombo) -> Result<(), OutputError>` | `daemon::uinput::UinputEmitter` (over any `turnstile_client::Session`), `RecordingEmitter` |
+| `Emitter` (`outputs`) | `fn pad(&mut self, f: &PadFrame) -> Result<(), OutputError>; fn key(&mut self, k: &KeyCombo) -> Result<(), OutputError>` | `daemon::uinput::UinputEmitter` (over any `input_broker_client::Session`), `RecordingEmitter` |
 | `Setting` (`config::lenient`) | `fn read(v: &toml::Value, key: &str, warn: &mut Vec<Warning>) -> Option<Self>` | every unit newtype and `Action` (through `settings_struct!` and `serde_settings!`) |
 
 Add an implementor of `Emitter` for a new kind of output
@@ -246,7 +246,7 @@ node for writing, or reads a real config directory or a running daemon.
 - **No `bool` in a field, parameter or key.** A key is an enum.
 - **The decoder is pinned by frozen goldens**; nothing regenerates them.
 - **Tests never create an input device:** every test writes through `RecordingEmitter` or
-  `turnstile_client::fake::FakeSource`, and no test reads a real config directory, opens the
+  `input_broker_client::fake::FakeSource`, and no test reads a real config directory, opens the
   service's socket or touches a running daemon (README, "Safety rules").
 - **Gate** (no boundary script):
 
@@ -288,7 +288,7 @@ Each step keeps master green (the gate above).
 
 ## 10. The virtual devices and the input service
 
-The mouse gestures daemon does not own `/dev/uinput`. The input service (turnstile, a separate repository and a
+The mouse gestures daemon does not own `/dev/uinput`. The input service (the input broker, a separate repository and a
 root service) does, and makes the mouse gestures daemon's three devices on request after checking who asks.
 
 | File (`daemon/uinput/`) | Holds |

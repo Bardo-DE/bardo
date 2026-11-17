@@ -1,4 +1,4 @@
-//! The real service: a `SOCK_SEQPACKET` connection to turnstile's socket.
+//! The real service: a `SOCK_SEQPACKET` connection to the input broker's socket.
 
 use crate::error::ClientError;
 use crate::link::Link;

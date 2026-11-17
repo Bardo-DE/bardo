@@ -1,4 +1,4 @@
-//! The turnstile wire: what a client may ask for, what the service answers, and the fixed list of
+//! The input broker wire: what a client may ask for, what the service answers, and the fixed list of
 //! devices it will make with the per-event ceilings on each.
 //!
 //! This crate is pure. It reads no file, clock or socket and links nothing but `thiserror`; the

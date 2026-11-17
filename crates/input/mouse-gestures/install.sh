@@ -167,13 +167,6 @@ if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT" ]]; then
   say "      \$ systemctl --user disable --now $UNIT && rm ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT"
 fi
 
-# Temporary: an install from before the rename keeps its config in /etc/mouse_gestures; carry it over once.
-# Delete in the release after everyone has installed once.
-if [[ -d /etc/mouse_gestures && ! -e /etc/bardo/mouse-gestures ]]; then
-  root_step "move /etc/mouse_gestures to /etc/bardo/mouse-gestures" \
-    sh -c 'mkdir -p /etc/bardo && mv /etc/mouse_gestures /etc/bardo/mouse-gestures'
-fi
-
 root_step "load uinput now (it loads at every start of the computer anyway)" modprobe uinput
 root_step "let the mouse's own scrolling go (bardo-mouse-gestures scrolls)" \
   sh -c 'echo 0 > /sys/module/hid_magicmouse/parameters/emulate_scroll_wheel'

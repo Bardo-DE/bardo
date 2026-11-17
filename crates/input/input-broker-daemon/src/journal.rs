@@ -1,4 +1,4 @@
-//! One line per event on standard error, which the journal collects: `turnstile: event key=value ...`.
+//! One line per event on standard error, which the journal collects: `input_broker: event key=value ...`.
 //! A value that is not a plain word is quoted. Nothing here is shown to a person.
 
 use std::fmt::Display;
@@ -11,7 +11,7 @@ pub fn kv<'a>(key: &'a str, value: &'a dyn Display) -> (&'a str, &'a dyn Display
 
 /// Builds the line.
 pub fn line(event: &str, fields: &[(&str, &dyn Display)]) -> String {
-    let mut out = format!("turnstile: {event}");
+    let mut out = format!("input_broker: {event}");
     for (key, value) in fields {
         let text = value.to_string();
         let plain = !text.is_empty()

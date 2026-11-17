@@ -23,7 +23,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    is a system service too since 2026-10-17 (owner decision) and its identity is as strong, but its
    events still pass the ceiling one by one: the ceiling bounds what a bug in its input parsing can type.
 3. **No `RuntimeDirectory=` in the service unit.** The design listed it; stopping the service would
-   delete `/run/turnstile`, and with it the socket systemd keeps for activation. The socket unit makes
+   delete `/run/input_broker`, and with it the socket systemd keeps for activation. The socket unit makes
    the folder (`DirectoryMode=0755`) and nothing else needs one.
 4. **`MaxConnections=` is not in the socket unit.** It applies to `Accept=yes` sockets only. The
    service caps its own live connections and answers the rest with `Refused(TooMany)`: 16 for strangers
@@ -92,14 +92,14 @@ Departures from the plan, standing facts and open items. An entry names the cond
 13. **Every device carries the label of the service it was made for (owner, 2026-10-17, NEW-FA-4).**
     The compositor used to guess whether input is the person's own hand from a device's bus type and
     vendor id, which wrongly caught a laptop's keyboard and kept the mouse gestures daemon's Magic Mouse clicks off
-    the lock screen and consent sheets. turnstile is the only process that can create a uinput
-    device (`dist/72-turnstile.rules`) and it already proves which service each device is for
+    the lock screen and consent sheets. The input broker is the only process that can create a uinput
+    device (`dist/72-input-broker.rules`) and it already proves which service each device is for
     (`policy.rs`), so it writes that into the device with `UI_SET_PHYS` (`input-linux`'s
-    `UInputHandle::set_phys`, before `UI_DEV_SETUP`): `turnstile/pad_daemon` for the mouse gestures daemon's three kinds,
-    `turnstile/keymap_daemon` for the key remap daemon's two. The kernel shows it in
-    `/sys/class/input/<event>/device/phys`. The format is `turnstile_wire::Maker` (format and
+    `UInputHandle::set_phys`, before `UI_DEV_SETUP`): `input_broker/pad_daemon` for the mouse gestures daemon's three kinds,
+    `input_broker/keymap_daemon` for the key remap daemon's two. The kernel shows it in
+    `/sys/class/input/<event>/device/phys`. The format is `input_broker_wire::Maker` (format and
     `parse`); every plan sets `DeviceSpec::maker` and a test pins the exact strings and the label of
-    each kind. The compositor links nothing of turnstile, so it keeps its own copy of the parser and pins the
+    each kind. The compositor links nothing of the input broker, so it keeps its own copy of the parser and pins the
     same strings in its `origin.rs` test: change a string here and change it there. The label is
     not a secret and not signed: it is trusted because only root can create the device. A device made
     some other way (a `uinput` group member on a standalone install, ydotool) has none.
@@ -120,7 +120,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 1. peephole's API was read from the sibling lane's tree at its commit `e3f8ed3`; the dependency is
    the git tag `v0.1.0` (`peephole` and `peephole-core` with feature `desktop`), commit `9cef560`,
    which was not re-read after tagging. The calls are
-   confined to `crates/turnstile/src/identity/peephole_authority.rs` and `policy.rs`:
+   confined to `crates/input_broker/src/identity/peephole_authority.rs` and `policy.rs`:
    `Pinned::of_stream`, `Prober::system`, `Prober::probe`, `Prober::fs`, `TableFiles::desktop` and
    `TableFiles::load`, `judge`, `Standing::Service`, `roles::{PAD_DAEMON, KEYMAP_DAEMON}`. The lane
    was still moving; if it changes a signature the change is in those two files. `Pinned::of_stream`
@@ -131,7 +131,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    `drivers/input/misc/uinput.c`, `uinput_abs_setup` only needs the absbit and a device not yet created).
 3. The unit's `SystemCallFilter` with the minus-list, `ReadOnlyPaths=/proc` and `CAP_SYS_PTRACE` alone
    is enough to read another user's `/proc/<pid>/exe`: start it in a Fedora, Ubuntu and Arch VM and run
-   `systemd-analyze security turnstile.service`.
+   `systemd-analyze security bardo-input-broker.service`.
 4. `rustix` 1.1: `recv` returns `(output, real_len)`; `RecvFlags::TRUNC` on `SOCK_SEQPACKET`
    reports the real length; `SO_RCVTIMEO` on an accepted socket ends `recv` with `EAGAIN`.
 5. `SO_PEERPIDFD` needs kernel 6.5 (peephole's `Pinned::of_stream`); an older kernel gets the reopened

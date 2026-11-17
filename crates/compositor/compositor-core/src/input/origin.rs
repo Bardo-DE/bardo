@@ -22,7 +22,7 @@ pub enum Origin {
     Test,
 }
 
-/// The bus type of a device made through uinput, as turnstile makes every device.
+/// The bus type of a device made through uinput, as the input broker makes every device.
 pub const BUS_VIRTUAL: u16 = 0x06;
 
 /// What a kernel input device says it is: its bus type and, for a virtual one, the label the
@@ -122,7 +122,7 @@ mod tests {
     use super::*;
 
     /// NEW-PI-4, NEW-FA-4: which kernel devices count as the person's hands. Only a virtual-bus
-    /// device is ever in doubt; there, the label turnstile wrote decides (never the vendor id).
+    /// device is ever in doubt; there, the label the input broker wrote decides (never the vendor id).
     #[test]
     fn a_virtual_device_is_the_persons_hand_only_when_made_for_key_remap() {
         const USB: Option<u16> = Some(0x03);

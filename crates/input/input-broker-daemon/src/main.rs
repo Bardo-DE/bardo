@@ -7,7 +7,7 @@ fn main() -> ExitCode {
     match input_broker_daemon::run() {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
-            eprintln!("turnstile: {e}");
+            eprintln!("input_broker: {e}");
             ExitCode::FAILURE
         }
     }

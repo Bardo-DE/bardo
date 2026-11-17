@@ -2,11 +2,11 @@
 //!
 //! The kernel keeps a free-text "physical path" (`phys`) on every input device and shows it in
 //! `/sys/class/input/<event>/device/phys`. Only a process that can open `/dev/uinput` can set it, and
-//! that is turnstile alone (its udev rule makes the node root-only), so a desktop that reads
+//! that is the input broker alone (its udev rule makes the node root-only), so a desktop that reads
 //! `input-broker/pad_daemon` there knows which proven service the device was made for. The form is
 //! `input-broker/<role>`, the role being the peephole role the service admitted the caller under.
 //!
-//! The compositor keeps its own copy of [`Maker::parse`] (it links nothing of turnstile); each repository
+//! The compositor keeps its own copy of [`Maker::parse`] (it links nothing of the input broker); each repository
 //! pins the exact strings in a test, so a change here fails both.
 
 use std::fmt;

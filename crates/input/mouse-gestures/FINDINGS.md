@@ -147,14 +147,14 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 
 **Deferred from the 2026-10-16 production audit (input).**
 - *Key synthesis access (INPUT-02): done in this repository, the rest is the desktop's.*
-  The mouse gestures daemon asks the input service (turnstile, `turnstile-client` at tag `v0.1.0`) for its
+  The mouse gestures daemon asks the input service (the input broker, `input-broker-client` at tag `v0.1.0`) for its
   touchpad and keyboard instead of opening `/dev/uinput`. `dist/70-mouse-gestures.rules` no
   longer tags the node (the hidraw line stays), `dist/bardo-mouse-gestures.service` has a root-owned
   `ExecStart` and `UnsetEnvironment=` for the library-path variables, and `install.sh` installs
   the program to `/usr/local/bin`. The service refuses a letter, digit, punctuation, Enter,
   Space, Tab, Backspace, Delete or Escape unless ctrl, alt or super is held, so the mouse gestures daemon warns
   at load time about a mapped combination like that. Still to come: the desktop installer
-  placing the service and `72-turnstile.rules` (`pa2-desk`). INPUT-19's remaining half (limit raw
+  placing the service and `72-input-broker.rules` (`pa2-desk`). INPUT-19's remaining half (limit raw
   hidraw writes to the daemon) is not done: the hidraw rule keeps `uaccess`.
 - *The direct fallback is gone (INPUT-02, 2026-10-17).* `Origin::Service` is the input service alone; with
   the service absent the mouse gestures daemon has no pad and says so. `--direct-uinput` (`Route::Node`) stays for development
@@ -164,9 +164,9 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   replaced; libinput sees the contact until the next stroke lands or lifts. Dropped frames are
   logged at the 1st, 2nd, 4th, 8th... loss. Revisit if the log ever shows any: the fix is to
   resend the pad's state, not to block.
-- *`turnstile-wire` is no longer a direct dependency.* turnstile v0.1.1's client re-exports
+- *`input-broker-wire` is no longer a direct dependency.* the input broker v0.1.1's client re-exports
   `Kind` and `Create`, which the direct path matches, and its stand-in is a dev-only feature.
-- *Rust 1.92.* `turnstile-client` declares `rust-version = "1.92"`, so the workspace's moved
+- *Rust 1.92.* `input-broker-client` declares `rust-version = "1.92"`, so the workspace's moved
   from 1.91. The pinned toolchain (1.98.1) already satisfies it.
 - *Who may talk to the mouse gestures daemon (INPUT-03, INPUT-14): done (2026-10-17).* the mouse gestures daemon is a system service
   (owner decision), so its socket is `/run/mouse_gestures/events.sock`, mode 0666, and the socket thread
@@ -264,7 +264,7 @@ whose queue is full misses that message rather than delaying the reader.
 **`unsafe` lives in `daemon/hidioc.rs` only (2026-10-17).** The evdev and uinput ioctls (`EVIOCGABS`,
 `EVIOCSCLOCKID`, `UI_SET_*BIT`, `UI_DEV_SETUP`, `UI_ABS_SETUP`, `UI_DEV_CREATE`, `UI_DEV_DESTROY`) used to be
 rustix `Ioctl` blocks in `daemon/sys.rs`; they now go through `input-linux` 0.7 (MIT, `default-features = false`,
-the same line as turnstile): `EvdevHandle::{absolute_info, set_clock_id}` and `UInputHandle::{set_evbit,
+the same line as the input broker): `EvdevHandle::{absolute_info, set_clock_id}` and `UInputHandle::{set_evbit,
 set_keybit, set_relbit, set_absbit, set_propbit, create, dev_destroy}`. One site stays unsafe: `HIDIOCSFEATURE`
 (`send_feature`, moved to `daemon/hidioc.rs`, which keeps the `SAFETY` comment and an opcode test) because no
 safe crate has the hidraw ioctls. What changed in behaviour: a raw code is checked against its kind's range
@@ -334,7 +334,7 @@ v2 evdev file rather than decoding it as hidraw.
 ## Supply chain and standalone access (2026-10-17)
 
 - *CI exists (INPUT-16).* `.github/workflows/ci.yml` runs format, clippy, tests, `cargo deny check licenses`,
-  `advisories` and `bans sources` (deny.toml allows crates.io and the one git source, turnstile), weekly as well as
+  `advisories` and `bans sources` (deny.toml allows crates.io and the one git source, the input broker), weekly as well as
   on push. Advisories read a live database, so a new one can fail an unchanged tree.
 - *The hidraw `uaccess` line stays (INPUT-19).* The Magic Mouse's raw reports are read by the mouse gestures daemon itself as the user;
   the rule grants that node and no other.

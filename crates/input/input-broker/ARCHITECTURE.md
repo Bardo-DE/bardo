@@ -4,7 +4,7 @@
 
 `/dev/uinput` lets a process create any input device. If the node is open to the logged-in user, any
 program of that user can create a keyboard and type into the focused window, into a password prompt
-or past the compositor's consent for virtual keyboards. turnstile is the only holder of the node
+or past the compositor's consent for virtual keyboards. The input broker is the only holder of the node
 (`root:root 0600`, see `dist/72-bardo-input-broker.rules`). Two programs need virtual devices, so it makes
 those and no others.
 
@@ -13,7 +13,7 @@ those and no others.
 ```
 input-broker-wire    pure          kinds, ceilings, codec, rate limiter, key table
 input-broker-client  rustix        Broker (the socket), FakeSource; the mouse gestures daemon and the key remap daemon link this
-turnstile         rustix,       Daemon, serve, Session, policy; seams: Backend, Authority,
+The input broker         rustix,       Daemon, serve, Session, policy; seams: Backend, Authority,
                   input-linux,  SeatSource, Clock
                   peephole
 ```
@@ -103,8 +103,8 @@ admitted at all: the policy asks for a group under `/system.slice`.
 | `KeyRemapPointer` | handed | the request cut to buttons, relative axes, absolute axes with sane ranges and pointer properties; never a key |
 
 Every device, whatever its kind, is made with a label naming the service it is for: `phys`
-(`UI_SET_PHYS`, set before `UI_DEV_SETUP`) is `turnstile/pad_daemon` for the mouse gestures daemon's kinds and
-`turnstile/keymap_daemon` for the key remap daemon's (`turnstile_wire::Maker`; the role is the peephole role the
+(`UI_SET_PHYS`, set before `UI_DEV_SETUP`) is `input_broker/pad_daemon` for the mouse gestures daemon's kinds and
+`input_broker/keymap_daemon` for the key remap daemon's (`input_broker_wire::Maker`; the role is the peephole role the
 policy admitted). The kernel shows it in `/sys/class/input/<event>/device/phys`. Only a process that
 can open `/dev/uinput` can set it, and that is this service alone, so the desktop's compositor
 reads it as proof of who the device was made for (FINDINGS 13). No client sends any part of it.
@@ -129,6 +129,6 @@ The mouse gestures daemon from becoming a general typist.
   the limiter, and a comparison of the key table with the mouse gestures daemon's source when it sits next to this one.
 - `input-broker-client`: a thread stands in for the service on a socket pair or a socket in a scratch
   folder: create, split events, handed descriptors, refusals, timeouts, full queue, gone peer.
-- `turnstile`: `Session` with a fake kernel (caps, flood, hostile events, failures); `serve` over a
+- `input_broker`: `Session` with a fake kernel (caps, flood, hostile events, failures); `serve` over a
   socket pair with the real client; the accept loop on a real socket (idle exit, the connection cap);
   the policy as a table; the real authority over a fixture tree standing for `/proc` and the table files; two `#[ignore]`d tests that make real devices.

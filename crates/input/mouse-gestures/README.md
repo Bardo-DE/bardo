@@ -13,7 +13,7 @@ shell dependency. Pointer motion and physical clicks stay in the kernel driver.
 node ──read──► Sensor::decode ──► stamp ──► Tracker::step ──► Vec<Out> ──► dispatch
      (bytes)   (Vec<Frame>, mm)   (time)    (pure state)              │
                                                                    ├─ Host(ToHost) ─► socket thread ─► subscribers
-                                                                   ├─ Pad / Key ─► Emitter ─► input service (turnstile)
+                                                                   ├─ Pad / Key ─► Emitter ─► input service (the input broker)
                                                                    └─ Action ─► action::plan ─► key (input service) | ToHost::Run (the shell runs it)
 the shell ── PointerOver ──► socket thread ── claim ──► Tracker::claim (silences foreign outputs)
 subscribers ── SessionLock ──► socket thread ── lock ──► Tracker::with_session_lock (no gesture keys or actions)
@@ -125,7 +125,7 @@ the shell sees it only as a `MayBegin` closed by `Ended` with no axis. Every `Ma
 The mouse gestures daemon drives the user's only pointing device, so:
 
 - **Tests never create an input device.** Every test writes through `RecordingEmitter`, or
-  through the input service's fake (`turnstile_client::fake::FakeSource`) for the code that
+  through the input service's fake (`input_broker_client::fake::FakeSource`) for the code that
   talks to the service. The real service and the real uinput node are never opened by a test.
 - **the mouse gestures daemon cannot type.** The virtual keyboard comes from the input service, which sends
   The mouse gestures daemon's key presses on only while ctrl, alt or super is held for a letter, digit,
@@ -163,7 +163,7 @@ install ran the mouse gestures daemon as a service of the person; the script say
   `input` group, which the service is in, and to no person (the raw node, and the feature report
   written to it, are not reachable from the logged-in user's programs). `mouse_gestures record` therefore
   needs root (or a person in `input`). There is no rule for `/dev/uinput`: the desktop installs the
-  input service (turnstile), which owns that node and makes the mouse gestures daemon's devices. The mouse gestures daemon on its own,
+  input service (the input broker), which owns that node and makes the mouse gestures daemon's devices. The mouse gestures daemon on its own,
   without the desktop, runs only with `--direct-uinput` and a `/dev/uinput` you have made writable
   for yourself.
 - `dist/99-bardo-mouse-gestures.conf` to `/etc/modprobe.d/`: `hid_magicmouse` keeps the pointer and clicks

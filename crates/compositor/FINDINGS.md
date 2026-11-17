@@ -5070,16 +5070,16 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **NEW-PI-4 (the compositor half), as replaced by NEW-FA-4 below.** A virtual-bus device is `Origin::Virtual` unless the device service made it
   for the key remap daemon (`Origin::of_kernel_device`). A virtual device still moves the pointer, fires bindings and drives swipes (`Origin::is_pad`),
   but trusted surfaces, the lock surface and VT switching never hear it.
-- **NEW-FA-4 (decided by the owner, 2026-10-17): a virtual device is trusted by who turnstile made it for, not by a guess.** The old rule
+- **NEW-FA-4 (decided by the owner, 2026-10-17): a virtual device is trusted by who the input broker made it for, not by a guess.** The old rule
   read the bus type and the vendor id (`0x0001`) and wrongly caught a laptop's AT keyboard (`Bus=0011 Vendor=0001`; first fixed by also
-  requiring `BUS_VIRTUAL`); the vendor is gone from the decision. turnstile is the only process that can create a uinput device
-  (`dist/72-turnstile.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `turnstile/pad_daemon` (the mouse gestures daemon)
-  or `turnstile/keymap_daemon` (the key remap daemon) into the device's `phys`. `RealInputFeed` reads `/sys/class/input/<sysname>/device/phys` next to the bus
+  requiring `BUS_VIRTUAL`); the vendor is gone from the decision. The input broker is the only process that can create a uinput device
+  (`dist/72-input-broker.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `input_broker/pad_daemon` (the mouse gestures daemon)
+  or `input_broker/keymap_daemon` (the key remap daemon) into the device's `phys`. `RealInputFeed` reads `/sys/class/input/<sysname>/device/phys` next to the bus
   type (`maker_of`; unreadable reads as unlabelled) and `Maker::parse` (`compositor-core/src/input/maker.rs`) reads it. A virtual-bus device
   labelled for the key remap daemon is `Origin::Physical` (the key remap daemon only replays the person's own keyboard and mouse); one labelled for the mouse gestures daemon, one with no label
-  (ydotool, a `uinput` group member) and one with any other label (a label that merely starts with `turnstile/`) is `Origin::Virtual`.
-  Every device off the virtual bus is physical, as before. The compositor links nothing of turnstile, so `Maker::parse` is its own copy of
-  turnstile-wire's `Maker`; `origin.rs` and `maker.rs` tests pin the same strings as turnstile's `maker` test: change one side and change both.
+  (ydotool, a `uinput` group member) and one with any other label (a label that merely starts with `input_broker/`) is `Origin::Virtual`.
+  Every device off the virtual bus is physical, as before. The compositor links nothing of the input broker, so `Maker::parse` is its own copy of
+  input-broker-wire's `Maker`; `origin.rs` and `maker.rs` tests pin the same strings as the input broker's `maker` test: change one side and change both.
   **the mouse gestures daemon stays `Virtual`** (`Maker::origin`). Read in the mouse gestures daemon (origin/master): its gesture actions press synthetic key chords
   (`action.rs:129` `key_of`, `tracker/out.rs:45`, `daemon/dispatch.rs:25`, `outputs/events.rs:81`), `Back` is Alt+Left by default, and the shell's
   `UserConfig` (`socket/client.rs:137`) can map a gesture to any chord with ctrl, alt or super, `Ctrl+Alt+F3` included (`keys.rs:125`); as a
