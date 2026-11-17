@@ -23,8 +23,10 @@ pub const SCHEMA: &str = include_str!("../../../dist/settings/computer-use.setti
 /// The file the settings live in, under the configuration directory.
 pub const SETTINGS_FILE: &str = "computer-use/settings.toml";
 
-/// Where the settings file is: `$XDG_CONFIG_HOME/bardo/computer-use/settings.toml`, then the same
-/// under each of `$XDG_CONFIG_DIRS`. Read it with
+/// Where the settings file is.
+///
+/// `$XDG_CONFIG_HOME/bardo/computer-use/settings.toml`, then the same under each of
+/// `$XDG_CONFIG_DIRS`. Read it with
 /// [`Locator::read_with`](settings_store_fs::Locator::read_with)`(reader, base, read)`.
 pub fn locator(env: &impl Fn(&str) -> Option<String>) -> settings_store_fs::Locator {
     settings_store_fs::Locator::from_env(env, SETTINGS_FILE)

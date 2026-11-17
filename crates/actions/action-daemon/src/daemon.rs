@@ -391,7 +391,7 @@ pub async fn start(
     let mut router = Router::new(seams, config.agent, loaded.presets);
     router.floor = floor;
     // The person's settings over actiond.toml's proposed values, now and whenever the file changes.
-    let mut watched = watch_settings(settings, AgentSettings::over(config.agent));
+    let mut watched = watch_settings(&settings, AgentSettings::over(config.agent));
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("intentd: settings are read once, not watched: {reason}");
     }

@@ -142,6 +142,13 @@ fn look_or_none(entry: serde_json::Value) -> Option<SpaceLook> {
         .flatten()
 }
 
+/// `spaces.json` as a settings document: `by_id` is read key by key, so a stale value costs only its own
+/// key; `by_index` is salvaged entry by entry here.
+impl settings_store::SettingsDoc for SpaceStore {
+    const FILE: settings_store::FileName = settings_store::FileName("spaces.json");
+    const FORMAT: settings_store::Format = settings_store::Format::Json;
+}
+
 #[cfg(test)]
 mod tests {
     use super::{SpaceDefaults, SpaceStore, Workspace, WorkspaceId, WorkspaceIndex};

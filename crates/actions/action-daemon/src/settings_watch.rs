@@ -11,9 +11,9 @@ use settings_store_fs::{LocatedWatch, Locator};
 
 /// Reads the file now over `base` and starts watching it. Must run inside a tokio runtime.
 #[must_use]
-pub fn watch_settings(locator: Locator, base: AgentSettings) -> LocatedWatch<AgentSettings> {
+pub fn watch_settings(locator: &Locator, base: AgentSettings) -> LocatedWatch<AgentSettings> {
     let reader = locator.clone();
-    let (watch, task) = LocatedWatch::start(&locator, move || reader.read(base, read));
+    let (watch, task) = LocatedWatch::start(locator, move || reader.read(base, read));
     if let Some(task) = task {
         tokio::spawn(task);
     }

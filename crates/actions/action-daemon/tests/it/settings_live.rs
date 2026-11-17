@@ -29,7 +29,7 @@ async fn a_change_in_the_file_applies_to_the_router_without_a_restart() {
     };
     let router = fake_router(AgentConfig::default()).expect("router");
     let mut watch = watch_settings(
-        action_settings::locator(&env),
+        &action_settings::locator(&env),
         AgentSettings::over(AgentConfig::default()),
     );
     assert_eq!(*watch.state(), WatchState::Live);

@@ -4,7 +4,7 @@
 //! The directory, not the file, is watched: editors and atomic writers replace the inode by
 //! rename, which a file watch would lose.
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::mpsc::Sender;
 
 use key_remap_proto::Warning;
@@ -21,7 +21,7 @@ use key_remap_core::ConfigLayer;
 ///
 /// Returns the `notify::Error` when `dir` cannot be watched.
 pub fn spawn(
-    dir: PathBuf,
+    dir: &Path,
     out: Sender<(ConfigLayer, Vec<Warning>)>,
 ) -> notify::Result<notify::RecommendedWatcher> {
     spawn_reading(dir, FILE_NAME, out, system)
@@ -30,7 +30,7 @@ pub fn spawn(
 /// Like `spawn` for the vendor file in `dir`, which must exist: a folder that is not there has
 /// nothing to watch and is no layer.
 pub fn spawn_vendor(
-    dir: PathBuf,
+    dir: &Path,
     out: Sender<(ConfigLayer, Vec<Warning>)>,
 ) -> notify::Result<notify::RecommendedWatcher> {
     spawn_reading(dir, FILE_NAME, out, vendor)
@@ -40,13 +40,13 @@ pub fn spawn_vendor(
 /// settled change and its result sent to `out`. The watch and its debounce are
 /// `settings-store-fs`'s.
 pub fn spawn_reading<T: Send + 'static>(
-    dir: PathBuf,
+    dir: &Path,
     name: &'static str,
     out: Sender<T>,
     read: fn(&Path) -> T,
 ) -> notify::Result<notify::RecommendedWatcher> {
-    let at = dir.clone();
-    watch_file_on_thread(&dir, name, format!("keycap-watch-{name}"), move || {
+    let at = dir.to_path_buf();
+    watch_file_on_thread(dir, name, format!("keycap-watch-{name}"), move || {
         out.send(read(&at)).is_ok()
     })
 }

@@ -192,7 +192,7 @@ async fn run(
     // A value looser than the shipped default waits for the person's confirmation, kept in our
     // own data directory (ALM-16).
     let locator = Locator::from_env(&|key| env(key)).confirming(dirs.confirmed_settings_toml());
-    let mut watched = watch_settings(locator.clone(), MemorySettings::default());
+    let mut watched = watch_settings(&locator, MemorySettings::default());
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("memoryd: settings are read once, not watched: {reason}");
     }

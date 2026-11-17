@@ -13,9 +13,7 @@ mod environment;
 pub mod icon_assets;
 mod portal;
 pub mod published_parts;
-mod spaces_file;
 mod spaces_storage;
-mod user_style;
 
 pub use appearance::{AppearanceFile, AppearanceSettings, IconStyle, IconsSettings, quire_schema};
 #[cfg(feature = "dioxus")]

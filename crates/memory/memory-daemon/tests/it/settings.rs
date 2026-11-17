@@ -51,7 +51,7 @@ async fn a_change_in_the_file_applies_to_the_service_without_a_restart() {
             ("memory.retention.search_days", "3"),
         ]))
         .unwrap();
-    let mut watch = watch_settings(locator, MemorySettings::default());
+    let mut watch = watch_settings(&locator, MemorySettings::default());
     assert_eq!(*watch.state(), WatchState::Live);
     apply(&service, &watch.current());
     assert_eq!(service.settings(), MemorySettings::default());

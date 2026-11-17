@@ -5,7 +5,7 @@
 
 use super::load::{FILE_NAME, Loaded, load};
 use settings_store_fs::watch_file_on_thread;
-use std::path::PathBuf;
+use std::path::Path;
 use std::sync::mpsc::Sender;
 
 /// Watches `dir` on a thread of its own and sends every settled reload to `out`. Returns the
@@ -13,10 +13,10 @@ use std::sync::mpsc::Sender;
 ///
 /// # Errors
 /// `notify::Error` when `dir` cannot be created or watched.
-pub fn spawn(dir: PathBuf, out: Sender<Loaded>) -> notify::Result<notify::RecommendedWatcher> {
-    std::fs::create_dir_all(&dir).map_err(notify::Error::io)?;
-    let at = dir.clone();
-    watch_file_on_thread(&dir, FILE_NAME, "palmrest-config".to_owned(), move || {
+pub fn spawn(dir: &Path, out: Sender<Loaded>) -> notify::Result<notify::RecommendedWatcher> {
+    std::fs::create_dir_all(dir).map_err(notify::Error::io)?;
+    let at = dir.to_path_buf();
+    watch_file_on_thread(dir, FILE_NAME, "palmrest-config".to_owned(), move || {
         out.send(load(Some(at.as_path()))).is_ok()
     })
 }

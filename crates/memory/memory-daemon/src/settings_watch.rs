@@ -11,7 +11,7 @@ use settings_store_fs::LocatedWatch;
 
 /// Reads the file now over `base` and starts watching it. Must run inside a tokio runtime.
 #[must_use]
-pub fn watch_settings(locator: Locator, base: MemorySettings) -> LocatedWatch<MemorySettings> {
+pub fn watch_settings(locator: &Locator, base: MemorySettings) -> LocatedWatch<MemorySettings> {
     let reader = locator.clone();
     let (watch, task) = LocatedWatch::start(locator.config(), move || reader.read(base));
     if let Some(task) = task {

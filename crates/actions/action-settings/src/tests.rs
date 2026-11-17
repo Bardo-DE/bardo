@@ -422,9 +422,9 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         "XDG_CONFIG_DIRS" => Some(etc.path().display().to_string()),
         _ => None,
     };
-    let locator = locator(&env);
-    assert_eq!(locator.watch_dir(), Some(home.path().join("bardo/actions")));
-    let value = locator.read(AgentSettings::default(), read).value;
+    let found = locator(&env);
+    assert_eq!(found.watch_dir(), Some(home.path().join("bardo/actions")));
+    let value = found.read(AgentSettings::default(), read).value;
     assert_eq!(value.agent.budget.spend, Some(micro_usd(5)));
     // The first file wins whole: the later directory's other keys are not merged in.
     assert!(!value.expose);

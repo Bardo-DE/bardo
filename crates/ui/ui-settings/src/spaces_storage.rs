@@ -230,7 +230,8 @@ fn write_json<T: Serialize + DeserializeOwned>(
         source,
     })?;
     let path = dir.join(name);
-    let body = serde_json::to_string_pretty(value)? + "\n";
+    let body =
+        serde_json::to_string_pretty(value).map_err(settings_store::EncodeError::from)? + "\n";
     let saved = keep_damaged(&path, STORAGE_CAP, |text| {
         serde_json::from_str::<T>(text)
             .map(|_| ())

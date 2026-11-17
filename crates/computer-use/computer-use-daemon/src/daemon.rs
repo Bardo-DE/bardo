@@ -139,7 +139,7 @@ pub async fn run(
         config: supervisor.settings(),
         apps: Apps::Listed(Vec::new()),
     };
-    let mut watched = watch_settings(locator(&env), base);
+    let mut watched = watch_settings(&locator(&env), base);
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("cuad: settings are read once, not watched: {reason}");
     }

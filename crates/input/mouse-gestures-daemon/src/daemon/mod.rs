@@ -38,7 +38,7 @@ pub fn run(env: &Env, origin: Origin) -> Result<(), Error> {
     }
     let (config_tx, config_rx) = mpsc::channel();
     let _watcher = match dir {
-        Some(d) => Some(config::watch::spawn(d, config_tx).map_err(Error::ConfigWatch)?),
+        Some(d) => Some(config::watch::spawn(&d, config_tx).map_err(Error::ConfigWatch)?),
         None => None,
     };
     let path = socket::default_path(&env.runtime_dir);

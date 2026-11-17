@@ -19,8 +19,8 @@ use ui_style::appearance::system::SystemPrefs;
 /// use dioxus::prelude::*;
 /// use ui_components::prelude::*; use base_spawn::Spawner;
 /// use settings_types::AppName;
-use settings_store_fs::{ConfigRoot, Store};
-use ui_settings::{SystemPrefsSource, use_environment};
+/// use settings_store_fs::{ConfigRoot, Store};
+/// use ui_settings::{SystemPrefsSource, use_environment};
 /// use std::sync::Arc;
 ///
 /// #[component]

@@ -38,7 +38,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
         config: sup.settings(),
         apps: Apps::Listed(Vec::new()),
     };
-    let mut watch = watch_settings(locator(&env), base);
+    let mut watch = watch_settings(&locator(&env), base);
     assert_eq!(*watch.state(), WatchState::Live);
     sup.apply_settings(&watch.current().value);
     assert_eq!(
@@ -98,7 +98,7 @@ async fn a_bad_value_in_the_file_leaves_the_running_value_and_is_reported() {
         config: sup.settings(),
         apps: Apps::Unrestricted,
     };
-    let mut watch = watch_settings(locator(&env), base);
+    let mut watch = watch_settings(&locator(&env), base);
     write_atomically(home.path(), "[cua.budget]\nspend_microusd = -1\n");
     let loaded = watch.changed().await.expect("the watch is live");
     sup.adopt(&loaded);
@@ -127,7 +127,7 @@ async fn a_settings_file_that_cannot_be_read_is_reported_and_the_next_directory_
         config: sup.settings(),
         apps: Apps::Unrestricted,
     };
-    let loaded = watch_settings(locator(&env), base).current();
+    let loaded = watch_settings(&locator(&env), base).current();
     assert_eq!(
         loaded.value.config.budget.spend,
         model_provider::Money::usd(rust_decimal::Decimal::new(1900, 6))
