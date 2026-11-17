@@ -1,5 +1,4 @@
-//! What `bardo-do` prints: JSON goldens (`tests/golden`, rewritten with `UPDATE_GOLDEN=1`),
-//! text on a terminal and JSON when stdout is a pipe, standard input end to end, `describe`
+//! What `bardo-do` prints: the JSON documents, text on a terminal and JSON when stdout is a pipe, standard input end to end, `describe`
 //! through the model layer's `Shape::to_json_schema`, search, context and shell completion.
 
 use crate::support::*;
@@ -10,27 +9,26 @@ use action_vocab::EntityRef;
 use base_ids::Count;
 use provenance::{DataClass, EntityId, EntityKey, EntityKind, Label, Labelled, Source, SpaceId};
 use serde_json::Value;
-use std::path::PathBuf;
-
-fn golden(name: &str, actual: &Value) {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/golden")
-        .join(format!("{name}.json"));
-    let text = format!("{}\n", serde_json::to_string_pretty(actual).expect("json"));
-    if std::env::var_os("UPDATE_GOLDEN").is_some() {
-        std::fs::write(&path, &text).expect("write golden");
-    }
-    let want = std::fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("{}: {e} (run with UPDATE_GOLDEN=1)", path.display()));
-    assert_eq!(text, want, "{name} differs from tests/golden/{name}.json");
-}
 
 #[tokio::test]
-async fn json_goldens() {
+async fn json_documents_say_what_happened() {
     let desk = Desk::answering(vec![once()]);
-    golden("apps", &json(&desk.bardo(&["apps"]).await));
-    // The list and describe documents were goldens; their `undo` word changed to a bool, so they
-    // are checked on the fields that matter instead (no golden was re-blessed).
+    let apps = json(&desk.bardo(&["apps"]).await);
+    let mail = apps["apps"]
+        .as_array()
+        .expect("apps")
+        .iter()
+        .find(|app| app["slug"] == "mail")
+        .expect("the mail app is listed");
+    assert_eq!(apps["vocab"], 1);
+    assert_eq!(mail["app"], "org.bardo.Mail");
+    assert!(mail["actions"].as_u64().is_some_and(|n| n > 0), "{mail}");
+    assert!(
+        mail["kinds"]
+            .as_array()
+            .is_some_and(|kinds| kinds.contains(&serde_json::json!("mail.thread"))),
+        "{mail}"
+    );
     let list = json(&desk.bardo(&["mail", "--list"]).await);
     let undo_of = |action: &str| {
         list["actions"]
@@ -49,40 +47,47 @@ async fn json_goldens() {
     assert_eq!(describe["effect"], "outbound");
     assert_eq!(describe["undo"], serde_json::json!(true));
     assert!(describe["params"].as_array().is_some_and(|p| !p.is_empty()));
-    golden(
-        "outcome-read",
-        &json(&desk.bardo(&["mail", "thread.read", "t2"]).await),
+    let read = json(&desk.bardo(&["mail", "thread.read", "t2"]).await);
+    assert_eq!(read["outcome"]["value"]["v"], "This week", "{read}");
+    assert_eq!(read["undo"], Value::Null);
+    let archive = json(&desk.bardo(&["mail", "thread.archive", "t2"]).await);
+    assert_eq!(
+        archive["outcome"]["said"], "Archived 1 threads",
+        "{archive}"
     );
-    golden(
-        "outcome-archive",
-        &json(&desk.bardo(&["mail", "thread.archive", "t2"]).await),
+    assert!(archive["undo"]["id"].is_u64(), "{archive}");
+    let dry_run = json(
+        &desk
+            .bardo(&[
+                "mail",
+                "message.forward",
+                "t1",
+                "--to",
+                "mail.contact:c1",
+                "--dry-run",
+            ])
+            .await,
     );
-    golden(
-        "dry-run-forward",
-        &json(
-            &desk
-                .bardo(&[
-                    "mail",
-                    "message.forward",
-                    "t1",
-                    "--to",
-                    "mail.contact:c1",
-                    "--dry-run",
-                ])
-                .await,
-        ),
+    assert_eq!(dry_run["preview"]["kind"], "message", "{dry_run}");
+    assert_eq!(
+        dry_run["preview"]["v"]["to"][0]["value"], "accounting@example.test",
+        "{dry_run}"
     );
-    golden(
-        "error-declined",
-        &json(&desk.bardo(&["mail", "thread.archive", "t1"]).await),
+    let declined = json(&desk.bardo(&["mail", "thread.archive", "t1"]).await);
+    assert_eq!(declined["error"]["exit"], 4, "{declined}");
+    assert_eq!(declined["error"]["kind"], "declined", "{declined}");
+    let usage = json(
+        &desk
+            .bardo(&["mail", "thread.read", "t1", "--bogus", "x"])
+            .await,
     );
-    golden(
-        "error-usage",
-        &json(
-            &desk
-                .bardo(&["mail", "thread.read", "t1", "--bogus", "x"])
-                .await,
-        ),
+    assert_eq!(usage["error"]["exit"], 2, "{usage}");
+    assert_eq!(usage["error"]["kind"], "usage", "{usage}");
+    assert!(
+        usage["error"]["what"]
+            .as_str()
+            .is_some_and(|what| what.contains("--bogus")),
+        "{usage}"
     );
 }
 

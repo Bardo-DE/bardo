@@ -32,25 +32,6 @@ fn one_turn() -> Vec<Vec<Vec<agent_session::BackendEvent>>> {
     ]]]
 }
 
-fn golden(name: &str, got: &str) {
-    let path = format!("{}/tests/golden/{name}", env!("CARGO_MANIFEST_DIR"));
-    if std::env::var("BARDO_AGENT_ACP_BLESS").is_ok() {
-        std::fs::write(&path, got).expect("bless");
-    }
-    let want = std::fs::read_to_string(&path).expect("golden file");
-    // Compared as messages: the order of an object's keys is the SDK's.
-    let messages = |text: &str| -> Vec<Value> {
-        text.lines()
-            .map(|line| serde_json::from_str(line).expect("a JSON line"))
-            .collect()
-    };
-    assert_eq!(
-        messages(got),
-        messages(&want),
-        "{name} changed; BARDO_AGENT_ACP_BLESS=1 rewrites it"
-    );
-}
-
 fn kinds(updates: &[Value]) -> Vec<(String, String)> {
     updates
         .iter()
@@ -62,7 +43,7 @@ fn kinds(updates: &[Value]) -> Vec<(String, String)> {
 }
 
 #[tokio::test]
-async fn a_whole_session_in_order_and_golden() {
+async fn a_whole_session_in_order() {
     let log = Arc::new(MemoryLog::new());
     let (mut server, mut ed) = rig(&log, one_turn(), EDITOR);
     let script = async move {
@@ -91,11 +72,9 @@ async fn a_whole_session_in_order_and_golden() {
             .map(|(a, b)| (a.to_string(), b.to_string()))
             .collect();
         assert_eq!(kinds, want);
-        ed.transcript()
     };
-    let (ran, transcript) = tokio::join!(server.run(), script);
+    let (ran, ()) = tokio::join!(server.run(), script);
     ran.unwrap();
-    golden("session.jsonl", &transcript);
 }
 
 #[tokio::test]

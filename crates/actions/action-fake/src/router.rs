@@ -93,7 +93,7 @@ pub fn registry() -> Result<Registry, ManifestFileError> {
 }
 
 /// Installs the fake menu app's manifest in `router` (it is not in `registry()`: the menu is only
-/// for the tests of per-call effects, and the default world's goldens do not list it).
+/// for the tests of per-call effects, and the default world's tests do not list it).
 ///
 /// # Errors
 ///
