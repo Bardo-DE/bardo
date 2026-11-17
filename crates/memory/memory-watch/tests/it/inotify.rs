@@ -136,11 +136,9 @@ fn inotify_watches_subdirectories_and_ignores_folders() {
         seen.is_some()
     });
     let seen = seen.expect("an observation");
-    assert_eq!(
-        seen.change,
-        FileChange::Created,
-        "the folder is not reported"
-    );
+    // Where the attach lands within a file's create, write and close decides which of them is
+    // the file's first event (Created, Modified or Closed); what must hold is that it is a file in
+    // the new folder, never the folder itself, which the path check pins.
     assert!(
         seen.path
             .as_str()
