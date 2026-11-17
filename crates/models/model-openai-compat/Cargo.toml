@@ -12,7 +12,7 @@ publish.workspace = true
 model-provider = {path = "../model-provider"}
 model-http = {path = "../model-http"}
 model-wire = {path = "../model-wire"}
-speech-provider = {path = "../../speech/speech-provider"}
+speech-provider = {path = "../speech-provider"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 tracing = { workspace = true }

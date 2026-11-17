@@ -62,7 +62,7 @@ model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
 model-replay = {path = "../../models/model-replay"}
 model-wire = {path = "../../models/model-wire"}
-speech-provider = {path = "../../speech/speech-provider"}
+speech-provider = {path = "../../models/speech-provider"}
 speech-host-client = {path = "../../speech/speech-host-client"}
 clap = {workspace = true, features = ["default", "derive"]}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
@@ -100,7 +100,7 @@ account-fake-servers = {path = "../../accounts/account-fake-servers"}
 # The scratch directory, the test catalog entries and the models they make.
 inference-router = {path = "../inference-router", features = ["testing"]}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 
 [lints]
 workspace = true

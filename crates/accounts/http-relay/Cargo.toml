@@ -9,11 +9,11 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-core = {path = "../../accounts/account-core"}
-account-wire = {path = "../../accounts/account-wire"}
+account-core = {path = "../account-core"}
+account-wire = {path = "../account-wire"}
 base-url = { path = "../../base/base-url" }
-http-core = {path = "../http-core"}
-account-client = {path = "../../accounts/account-client"}
+http-core = {path = "../../network/http-core"}
+account-client = {path = "../account-client"}
 hyper = { workspace = true, features = ["client", "http1"] }
 hyper-util = { workspace = true, features = ["tokio"] }
 http-body-util = { workspace = true }

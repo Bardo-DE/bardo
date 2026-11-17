@@ -24,7 +24,7 @@ serde_json = { workspace = true }
 base-testkit = {path = "../../base/base-testkit"}
 sync-fake-graph = {path = "../sync-fake-graph"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
-http-relay = {path = "../../network/http-relay"}
+http-relay = {path = "../../accounts/http-relay"}
 sync-core = {path = "../sync-core", features = ["testing"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

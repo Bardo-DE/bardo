@@ -23,7 +23,7 @@ name = "compositor-shell-exec"
 path = "src/bin/shell_exec.rs"
 
 [dependencies]
-compositor-dbus = { path = "../../compositor/compositor-dbus" }
+compositor-dbus = { path = "../compositor-dbus" }
 base-xdg = { path = "../../base/base-xdg" }
 compositor-core = {path = "../compositor-core"}
 desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["client"]}

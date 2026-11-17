@@ -14,9 +14,9 @@ account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-computer-use-action = {path = "../../computer-use/computer-use-action"}
-computer-use-parse = {path = "../../computer-use/computer-use-parse"}
-computer-use-session = {path = "../../computer-use/computer-use-session"}
+computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-parse = {path = "../../models/computer-use-parse"}
+computer-use-session = {path = "../../models/computer-use-session"}
 model-vision-prep = {path = "../../models/model-vision-prep"}
 model-provider = {path = "../../models/model-provider"}
 model-catalog = {path = "../../models/model-catalog"}

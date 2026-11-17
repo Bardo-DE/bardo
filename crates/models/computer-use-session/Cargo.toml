@@ -10,19 +10,19 @@ publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../computer-use-action"}
-model-vision-prep = {path = "../../models/model-vision-prep"}
-model-provider = {path = "../../models/model-provider"}
+model-vision-prep = {path = "../model-vision-prep"}
+model-provider = {path = "../model-provider"}
 computer-use-parse = {path = "../computer-use-parse"}
 computer-use-vendors = {path = "../computer-use-vendors"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-model-provider = {path = "../../models/model-provider", features = ["testing"]}
-model-http = {path = "../../models/model-http"}
-model-wire = {path = "../../models/model-wire"}
-model-replay = {path = "../../models/model-replay"}
-model-openai-compat = {path = "../../models/model-openai-compat"}
+model-provider = {path = "../model-provider", features = ["testing"]}
+model-http = {path = "../model-http"}
+model-wire = {path = "../model-wire"}
+model-replay = {path = "../model-replay"}
+model-openai-compat = {path = "../model-openai-compat"}
 base64 = { workspace = true }
 proptest = { workspace = true }
 

@@ -26,7 +26,7 @@ provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
 
 [dev-dependencies]
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 action-fake = {path = "../action-fake"}
 account-core = {path = "../../accounts/account-core"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}

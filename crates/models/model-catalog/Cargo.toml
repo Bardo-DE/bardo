@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 model-provider = {path = "../model-provider"}
-speech-provider = {path = "../../speech/speech-provider"}
+speech-provider = {path = "../speech-provider"}
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 thiserror = { workspace = true }

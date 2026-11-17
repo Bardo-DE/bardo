@@ -18,7 +18,7 @@ model-http = { path = "../model-http" }
 model-openai-compat = { path = "../model-openai-compat" }
 model-provider = { path = "../model-provider" }
 model-wire = { path = "../model-wire" }
-speech-provider = { path = "../../speech/speech-provider" }
+speech-provider = { path = "../speech-provider" }
 speech-host-client = { path = "../../speech/speech-host-client" }
 
 [workspace]

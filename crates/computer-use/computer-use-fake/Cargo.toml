@@ -13,7 +13,7 @@ action-gate-wire = {path = "../../actions/action-gate-wire"}
 action-wire = {path = "../../actions/action-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-computer-use-action = {path = "../computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 computer-use-capture = {path = "../computer-use-capture"}
 computer-use-seat-input = {path = "../computer-use-seat-input"}
@@ -26,7 +26,7 @@ account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 model-replay = {path = "../../models/model-replay"}
 model-provider = {path = "../../models/model-provider"}
-computer-use-parse = {path = "../computer-use-parse"}
+computer-use-parse = {path = "../../models/computer-use-parse"}
 reis = { workspace = true }
 rustix = {workspace = true, features = ["std", "fs"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}

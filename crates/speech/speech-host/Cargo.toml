@@ -13,7 +13,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-speech-provider = {path = "../speech-provider"}
+speech-provider = {path = "../../models/speech-provider"}
 model-provider = {path = "../../models/model-provider"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }

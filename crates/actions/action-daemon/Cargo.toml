@@ -86,7 +86,7 @@ agent-reader-daemon = {path = "../agent-reader-daemon"}
 proptest = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
 action-provider = {path = "../action-provider", features = ["dbus"]}
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 serde_json = { workspace = true }
 tempfile = { workspace = true }
 toml = { workspace = true }

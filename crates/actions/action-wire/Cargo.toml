@@ -23,7 +23,7 @@ serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 serde_json = { workspace = true }
 
 [lints]

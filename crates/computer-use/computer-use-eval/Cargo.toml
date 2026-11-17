@@ -19,7 +19,7 @@ action-wire = {path = "../../actions/action-wire"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-computer-use-action = {path = "../computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 computer-use-desktop = {path = "../computer-use-desktop"}
 keymap = {path = "../../keymap/keymap"}
 computer-use-capture = {path = "../computer-use-capture"}
@@ -32,9 +32,9 @@ action-core = {path = "../../actions/action-core"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
-computer-use-session = {path = "../computer-use-session"}
-computer-use-vendors = {path = "../computer-use-vendors"}
-computer-use-parse = {path = "../computer-use-parse"}
+computer-use-session = {path = "../../models/computer-use-session"}
+computer-use-vendors = {path = "../../models/computer-use-vendors"}
+computer-use-parse = {path = "../../models/computer-use-parse"}
 model-catalog = {path = "../../models/model-catalog"}
 model-http = {path = "../../models/model-http"}
 model-http-reqwest = {path = "../../models/model-http-reqwest"}

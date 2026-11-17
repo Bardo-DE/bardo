@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 computer-use-action = {path = "../computer-use-action"}
-model-provider = {path = "../../models/model-provider"}
+model-provider = {path = "../model-provider"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 keyboard-types = {workspace = true, features = ["serde"]}

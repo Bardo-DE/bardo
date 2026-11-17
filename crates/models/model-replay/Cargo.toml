@@ -12,7 +12,7 @@ publish.workspace = true
 http-core = {path = "../../network/http-core"}
 model-http = {path = "../model-http"}
 model-provider = {path = "../model-provider"}
-speech-provider = {path = "../../speech/speech-provider"}
+speech-provider = {path = "../speech-provider"}
 model-vision-prep = {path = "../model-vision-prep"}
 blake3 = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

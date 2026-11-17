@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 action-core = {path = "../action-core"}
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}

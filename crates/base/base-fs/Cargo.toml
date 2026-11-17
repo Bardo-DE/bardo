@@ -24,7 +24,7 @@ rustix = {workspace = true, features = ["std", "fs"]}
 book = ["dep:serde", "dep:serde_json", "dep:tokio"]
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../base-testkit"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]

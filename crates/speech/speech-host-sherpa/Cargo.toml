@@ -24,7 +24,7 @@ path = "src/main.rs"
 
 [dependencies]
 speech-host = { path = "../speech-host" }
-speech-provider = { path = "../speech-provider" }
+speech-provider = { path = "../../models/speech-provider" }
 model-provider = { path = "../../models/model-provider" }
 sherpa-onnx = { version = "=1.13.8", default-features = false, features = ["shared"] }
 

@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../computer-use-action"}
 model-genai-names = {path = "../model-genai-names"}
 model-http = {path = "../model-http"}
 model-vision-prep = {path = "../model-vision-prep"}

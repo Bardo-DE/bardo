@@ -21,7 +21,7 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-secret = { path = "../../base/base-secret" }
 inference-core = {path = "../inference-core"}
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 # Which program an engine kind runs (`Engine`), and the folder a person pointed at (Strata).
 engine-spec = {path = "../../engines/engine-spec"}
 engine-probe = {path = "../../engines/engine-probe"}
@@ -31,7 +31,7 @@ model-catalog = {path = "../../models/model-catalog"}
 model-http = {path = "../../models/model-http"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
 model-provider = {path = "../../models/model-provider"}
-speech-provider = {path = "../../speech/speech-provider"}
+speech-provider = {path = "../../models/speech-provider"}
 model-vision-prep = {path = "../../models/model-vision-prep"}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 serde = { workspace = true, features = ["derive"] }

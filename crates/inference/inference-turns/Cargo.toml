@@ -17,9 +17,9 @@ base-time = { path = "../../base/base-time" }
 inference-core = {path = "../inference-core"}
 inference-bridge = {path = "../inference-bridge"}
 inference-router = {path = "../inference-router"}
-computer-use-action = {path = "../../computer-use/computer-use-action"}
-computer-use-session = {path = "../../computer-use/computer-use-session"}
-computer-use-vendors = {path = "../../computer-use/computer-use-vendors"}
+computer-use-action = {path = "../../models/computer-use-action"}
+computer-use-session = {path = "../../models/computer-use-session"}
+computer-use-vendors = {path = "../../models/computer-use-vendors"}
 engine-supervisor = {path = "../../engines/engine-supervisor"}
 model-extract = {path = "../../models/model-extract"}
 # The HTTP client to a local engine (`hyper`); a plain Unix socket or loopback, so no `tls`.

@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
-computer-use-action = {path = "../computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 serde = { workspace = true, features = ["derive"] }

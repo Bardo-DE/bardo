@@ -36,7 +36,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 
 [dev-dependencies]
 inference-core = {path = "../../inference/inference-core"}
-computer-use-action = {path = "../computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 computer-use-fake = {path = "../computer-use-fake"}
 
 [lints]

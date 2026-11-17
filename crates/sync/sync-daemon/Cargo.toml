@@ -38,7 +38,7 @@ base-url = { path = "../../base/base-url" }
 base-fs = {path = "../../base/base-fs"}
 account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
 http-core = {path = "../../network/http-core"}
-http-relay = {path = "../../network/http-relay"}
+http-relay = {path = "../../accounts/http-relay"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
 settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}

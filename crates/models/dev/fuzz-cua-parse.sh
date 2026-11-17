@@ -6,7 +6,7 @@
 #   dev/fuzz-cua-parse.sh                 # every target, 60 s each
 #   dev/fuzz-cua-parse.sh parse_text 600  # one target, 600 s
 set -euo pipefail
-cd "$(dirname "$0")/../../computer-use/computer-use-parse"
+cd "$(dirname "$0")/../computer-use-parse"
 export RUSTUP_TOOLCHAIN=nightly
 seconds="${2:-60}"
 targets=(parse_text parse_tool_calls read_calls)

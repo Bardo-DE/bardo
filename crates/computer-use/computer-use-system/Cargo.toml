@@ -35,7 +35,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
-computer-use-action = {path = "../computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 
 [lints]
 workspace = true

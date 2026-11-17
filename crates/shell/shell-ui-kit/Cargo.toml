@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 base-words = { path = "../../base/base-words" }
 base-fs = { path = "../../base/base-fs" }
-computer-use-action = {path = "../../computer-use/computer-use-action"}
+computer-use-action = {path = "../../models/computer-use-action"}
 permission-core = {path = "../../actions/permission-core"}
 action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
