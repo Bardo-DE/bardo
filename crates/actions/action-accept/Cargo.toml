@@ -56,7 +56,6 @@ base-ids = { path = "../../base/base-ids" }
 action-mcp = {path = "../action-mcp"}
 companion-wire = {path = "../companion-wire"}
 companion-daemon = {path = "../companion-daemon"}
-agent-acp-server = {path = "../agent-acp-server"}
 agent-acp-bin = {path = "../agent-acp-bin", features = ["testing"]}
 action-cli = {path = "../action-cli"}
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
@@ -69,7 +68,6 @@ action-vocab = {path = "../action-vocab"}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers", "inferd"]}
 action-log = {path = "../action-log"}
 action-trace = {path = "../action-trace"}
-action-router = {path = "../action-router"}
 agent-session = {path = "../agent-session"}
 action-testbus = {path = "../action-testbus"}
 fnv = { workspace = true }
@@ -92,3 +90,7 @@ dbus-kit = { path = "../../bus/dbus-kit" }
 
 [lints]
 workspace = true
+
+[package.metadata.cargo-shear]
+# The `action` binary above is built from action-cli's own sources.
+ignored-paths = ["../action-cli/src/*.rs"]

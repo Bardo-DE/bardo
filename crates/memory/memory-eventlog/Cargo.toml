@@ -12,11 +12,9 @@ publish.workspace = true
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal"}
 memory-store = {path = "../memory-store"}
-blake3 = { workspace = true }
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-thiserror = { workspace = true }
 
 [dev-dependencies]
 const-hex = { workspace = true }

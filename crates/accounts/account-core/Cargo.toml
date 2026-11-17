@@ -19,9 +19,6 @@ caller-identity-core = {default-features = false, path = "../../identity/caller-
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-secrecy = { workspace = true, features = ["serde"] }
-subtle = { workspace = true }
-zeroize = { workspace = true }
 
 [dev-dependencies]
 account-match = {path = "../account-match"}

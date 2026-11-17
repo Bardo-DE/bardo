@@ -28,13 +28,9 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 iso_currency = { workspace = true, features = ["with-serde"] }
-base-testkit = {path = "../../base/base-testkit"}
 # Its own fakes, for tests/it.
 inference-core = { path = ".", features = ["testing"] }
-# `llm_account` for the fake model test (tests/it/fake_model.rs).
-account-fake = {path = "../../accounts/account-fake"}
 proptest = { workspace = true }
-tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]
 # `testing`: `FakeModel` and `FakeInferSession`, for the tests of code built on the broker.

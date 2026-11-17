@@ -46,7 +46,6 @@ shell-kit = {path = "../shell-kit"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 layer-shell-types = {path = "../../layer-shell/layer-shell-types"}
 layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
-ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [dev-dependencies]
 serde_json = { workspace = true }

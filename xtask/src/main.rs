@@ -17,11 +17,12 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps and renderer-edges, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges and shear, then fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
   check test-modules            every tests/it file is a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
   check renderer-edges          only the renderer crates and the programs depend on the renderer
+  check shear                   no crate declares a dependency it does not use (needs cargo-shear)
   check legacy [<repo>]         run the old per-repo check-*.sh scripts unchanged
   install [<part>...]           build and install the desktop (every part, or just these)
   install --build [<part>...]   build as you, install nothing
@@ -79,7 +80,7 @@ fn run() -> Result<bool> {
         "check" => {
             let which = parser
                 .value()
-                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges or legacy")?
+                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, shear or legacy")?
                 .string()?;
             match which.as_str() {
                 "deny" => {
@@ -97,6 +98,10 @@ fn run() -> Result<bool> {
                 "renderer-edges" => {
                     reject_extra(&mut parser)?;
                     tasks::renderer_edges::run()
+                }
+                "shear" => {
+                    reject_extra(&mut parser)?;
+                    tasks::shear::run()
                 }
                 "legacy" => {
                     let mut only = None;

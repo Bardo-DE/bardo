@@ -15,7 +15,6 @@ serde_json = { workspace = true }
 [dev-dependencies]
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 model-vision-prep = {path = "../model-vision-prep"}
-proptest = { workspace = true }
 
 [lints]
 workspace = true

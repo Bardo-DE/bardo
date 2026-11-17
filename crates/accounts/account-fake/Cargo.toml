@@ -13,9 +13,7 @@ account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
 account-wire = {path = "../account-wire"}
-base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-base-url = { path = "../../base/base-url" }
 account-provider = {path = "../account-provider"}
 account-secrets = {path = "../account-secrets", features = ["testing"]}
 account-service = {path = "../account-service"}
@@ -27,6 +25,8 @@ base-testkit = {path = "../../base/base-testkit"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "test-util"]}
 account-match = {path = "../account-match"}
 serde_json = { workspace = true }
+base-ids = { path = "../../base/base-ids" }
+base-url = { path = "../../base/base-url" }
 
 [lints]
 workspace = true

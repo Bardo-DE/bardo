@@ -31,7 +31,6 @@ objc2-core-foundation = { workspace = true, features = ["std", "CFBase", "CFStri
 [dev-dependencies]
 base-words = { path = "../../base/base-words" }
 settings-dbus = { path = "../../settings/settings-dbus" }
-tempfile.workspace = true
 ui-components = {path = "../ui-components"}
 # The tests' runtime and the `Spawner` they hand the watches; the crate itself names no runtime.
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}

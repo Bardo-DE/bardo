@@ -18,7 +18,6 @@ serde = { workspace = true, features = ["derive"] }
 
 [dev-dependencies]
 account-capability = {path = "../../accounts/account-capability"}
-serde_json = { workspace = true }
 
 [lints]
 workspace = true

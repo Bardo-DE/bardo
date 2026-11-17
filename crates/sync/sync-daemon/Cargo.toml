@@ -27,8 +27,6 @@ account-client-dbus = {path = "../../accounts/account-client-dbus"}
 # What syncd serves: the callers it judges and the bus objects (`Call`, `Details`, `BusTarget`).
 account-callers = {features = ["file"], path = "../../accounts/account-callers"}
 account-dbus = {path = "../../accounts/account-dbus"}
-# Only `xdg`: the directories a daemon keeps its files under.
-account-daemon-support = {path = "../../accounts/account-daemon-support"}
 # The vocabulary: needs, grants, ids, the parent window.
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}

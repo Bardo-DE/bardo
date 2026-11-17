@@ -27,7 +27,6 @@ provenance = {path = "../../provenance/provenance"}
 [dev-dependencies]
 account-capability = {path = "../../accounts/account-capability"}
 account-match = {path = "../../accounts/account-match"}
-account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 companion-model = {path = "../companion-model"}
 agent-session = {path = "../agent-session", features = ["testing"]}

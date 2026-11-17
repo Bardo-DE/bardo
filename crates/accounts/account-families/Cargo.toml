@@ -16,7 +16,6 @@ account-family-oauth = {path = "../account-family-oauth", optional = true}
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
-base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 account-provider = {path = "../account-provider"}
@@ -41,10 +40,9 @@ account-match = {path = "../account-match"}
 account-discover = {path = "../account-discover"}
 account-oauth = {path = "../account-oauth", features = ["io"]}
 account-proxy = {path = "../account-proxy", features = ["tls"]}
-account-dav-proto = {path = "../account-dav-proto"}
-serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 base64 = { workspace = true }
+base-ids = { path = "../../base/base-ids" }
 
 [features]
 # `set`: which provider files a daemon serves and the family of each (`set::load_specs`,

@@ -18,7 +18,6 @@ inference-core = {path = "../inference-core"}
 inference-bridge = {path = "../inference-bridge"}
 inference-router = {path = "../inference-router"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
-computer-use-parse = {path = "../../computer-use/computer-use-parse"}
 computer-use-session = {path = "../../computer-use/computer-use-session"}
 computer-use-vendors = {path = "../../computer-use/computer-use-vendors"}
 engine-supervisor = {path = "../../engines/engine-supervisor"}

@@ -17,7 +17,6 @@ account-capability = {path = "../../accounts/account-capability"}
 account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-base-url = { path = "../../base/base-url" }
 inference-core = {path = "../inference-core"}
 account-callers = {optional = true, path = "../../accounts/account-callers"}
 account-dbus = {optional = true, path = "../../accounts/account-dbus"}

@@ -11,7 +11,6 @@ publish.workspace = true
 [dependencies]
 ui-host-hooks = {path = "../ui-host-hooks"}
 blitz-embed-types = {path = "../../blitz-embed/blitz-embed-types"}
-base-words = { path = "../../base/base-words" }
 base-fs = { path = "../../base/base-fs" }
 base-xdg = { path = "../../base/base-xdg" }
 ui-components = {path = "../ui-components"}
@@ -72,9 +71,6 @@ skrifa = { workspace = true, optional = true }
 # Spellchecking (the `spell` feature): the checker, and XDG data for the user dictionary.
 spellbook = { workspace = true, optional = true }
 dirs = { workspace = true, optional = true }
-# The user's learned words and a thumbnail's PDF are read through the capped reader
-# (`ds_helpers::read_text_capped`, `read_capped`).
-ui-helpers = {path = "../ui-helpers", default-features = false, optional = true}
 
 [target.'cfg(target_os = "linux")'.dependencies]
 # The print portal (the `print` feature): zbus with quire's async-io default (no executor is
@@ -122,11 +118,11 @@ desktop-outputs = ["ui-desktop/dbus"]
 # PDF output (`pdf`, `PageSpec`) and `PdfFileThumb`: a PDF's first page rasterised off the UI
 # thread and cached, drawn by `ds::PdfThumb`. Off by default, so an app that writes and shows no
 # PDF builds no PDF writer or reader.
-pdf = ["dep:pdfrum-anyrender", "dep:pdfrum", "dep:ui-helpers", "dep:skrifa"]
+pdf = ["dep:pdfrum-anyrender", "dep:pdfrum", "dep:skrifa"]
 # `ds_blitz::spell`: an `EditSurface`'s spellchecker (`ds::HostSpell`), system Hunspell
 # dictionaries checked on one worker thread. Off by default, so an app that never checks
 # spelling builds no checker.
-spell = ["dep:spellbook", "dep:dirs", "dep:ui-helpers"]
+spell = ["dep:spellbook", "dep:dirs"]
 
 # `BARDO_DEBUG_PROBE=<dir>`: each window writes its controls, by role and name, with their boxes,
 # to a file there after every frame (`crate::probe`), so a scenario presses a control by name.

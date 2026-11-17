@@ -19,7 +19,6 @@ base-path = { path = "../../base/base-path" }
 const-hex = { workspace = true }
 action-core = {path = "../action-core"}
 action-vocab = {path = "../action-vocab"}
-account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 sha2 = { workspace = true }
 thiserror = { workspace = true }

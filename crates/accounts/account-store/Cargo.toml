@@ -12,8 +12,6 @@ publish.workspace = true
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 base-fs = {path = "../../base/base-fs"}
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

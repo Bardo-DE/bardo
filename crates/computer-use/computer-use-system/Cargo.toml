@@ -17,7 +17,6 @@ computer-use-desktop = {path = "../computer-use-desktop"}
 desktop-client = {features = ["client"], path = "../../wayland/desktop-client"}
 computer-use-capture = {path = "../computer-use-capture"}
 computer-use-capture-wayland = {path = "../computer-use-capture-wayland"}
-computer-use-seat-input = {path = "../computer-use-seat-input"}
 computer-use-seat-ei = {path = "../computer-use-seat-ei"}
 computer-use-a11y-tree = {path = "../computer-use-a11y-tree"}
 computer-use-a11y-atspi = {path = "../computer-use-a11y-atspi"}

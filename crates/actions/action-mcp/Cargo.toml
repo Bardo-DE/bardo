@@ -19,7 +19,6 @@ path = "src/main.rs"
 [dependencies]
 dbus-kit = { path = "../../bus/dbus-kit" }
 action-tools = {path = "../action-tools"}
-action-core = {path = "../action-core"}
 action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
 action-dbus = {path = "../action-dbus"}
 action-manifest = {path = "../action-manifest"}
@@ -48,6 +47,7 @@ action-router = {path = "../action-router"}
 rmcp = { workspace = true, features = ["client", "server", "transport-io"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 action-wire = {path = "../action-wire"}
+action-core = {path = "../action-core"}
 
 [lints]
 workspace = true

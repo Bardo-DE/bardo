@@ -16,7 +16,6 @@ http-core = {path = "../../network/http-core"}
 base64 = { workspace = true }
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 
 [lints]

@@ -18,7 +18,6 @@ base-time = { path = "../../base/base-time" }
 zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-thiserror = { workspace = true }
 # The caller's runtime (`accounts::pending`); zbus already runs on tokio here.
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

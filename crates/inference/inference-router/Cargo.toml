@@ -15,7 +15,6 @@ testing = []
 
 [dependencies]
 account-core = {path = "../../accounts/account-core"}
-inference-tailnet = {path = "../inference-tailnet"}
 account-tailscale = {path = "../../accounts/account-tailscale"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}

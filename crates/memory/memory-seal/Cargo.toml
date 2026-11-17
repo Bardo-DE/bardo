@@ -21,7 +21,6 @@ oo7 = { workspace = true, optional = true }
 [dev-dependencies]
 memory-seal = { path = ".", features = ["testing", "oo7"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
-tempfile = { workspace = true }
 
 [features]
 # `MemoryKeys`, for tests and memory-fake.

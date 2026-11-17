@@ -19,7 +19,6 @@ sync-core = {path = "../sync-core"}
 tracing = { workspace = true }
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
 base64 = { workspace = true }
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
 http-relay = {path = "../../network/http-relay"}

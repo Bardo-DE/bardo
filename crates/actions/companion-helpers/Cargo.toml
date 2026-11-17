@@ -24,7 +24,6 @@ agent-planner = {path = "../agent-planner"}
 action-store = {path = "../action-store"}
 companion-tasks = {path = "../companion-tasks"}
 futures-util = { workspace = true, features = ["std"] }
-account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
 tracing = { workspace = true }
@@ -48,6 +47,7 @@ inference-core = {path = "../../inference/inference-core"}
 serde_json = { workspace = true }
 tempfile = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+account-core = {path = "../../accounts/account-core"}
 
 [lints]
 workspace = true

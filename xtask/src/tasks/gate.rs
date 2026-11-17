@@ -21,6 +21,9 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
     if !super::renderer_edges::run()? {
         return Ok(finish("gate", false));
     }
+    if !super::shear::run()? {
+        return Ok(finish("gate", false));
+    }
     let ws = Workspace::load()?;
     let scope = if all {
         Scope::All

@@ -23,8 +23,6 @@ serde_json = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
-account-wire = {path = "../../accounts/account-wire"}
-action-fake = {path = "../action-fake"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 # The scripted model transport of companiond's tests is included by path (one file, not a copy).
 inference-client = {path = "../../inference/inference-client"}

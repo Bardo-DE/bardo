@@ -13,14 +13,12 @@ publish.workspace = true
 testing = ["zbus/p2p"]
 
 [dependencies]
-compositor-dbus = { path = "../../compositor/compositor-dbus" }
 shell-dbus = { path = "../../shell/shell-dbus" }
 portal-dbus = { path = "../../portal/portal-dbus" }
 memory-dbus = { path = "../../memory/memory-dbus" }
 updater-dbus = { path = "../../updater/updater-dbus" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
-account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-wire = {path = "../../accounts/account-wire"}
 bluez-proxy = {default-features = false, features = ["tokio"], path = "../../network/bluez-proxy"}

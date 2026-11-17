@@ -15,7 +15,6 @@ shell-model = {path = "../shell-model"}
 provenance = {path = "../../provenance/provenance"}
 clap = {workspace = true, features = ["default", "derive"]}
 ui-lint = {path = "../../ui/ui-lint"}
-ui-blitz = {path = "../../ui/ui-blitz"}
 ui-components = {path = "../../ui/ui-components"}
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
@@ -29,7 +28,6 @@ layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 shell-ipc = {path = "../shell-ipc", features = ["cli"]}
 shell-launcher = {path = "../shell-launcher"}
-shell-search = {path = "../shell-search"}
 shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
@@ -52,7 +50,6 @@ shell-host-config = {path = "../shell-host-config"}
 base-testkit = {path = "../../base/base-testkit"}
 # `start_paused` for the lock-file watch's tests (src/door_guard.rs).
 tokio = {workspace = true, features = ["test-util"]}
-tempfile.workspace = true
 serde_json = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 speech-wire = {path = "../../speech/speech-wire"}

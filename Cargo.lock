@@ -100,7 +100,6 @@ name = "account-capability"
 version = "0.1.0"
 dependencies = [
  "base-ids",
- "base-url",
  "serde",
  "serde_json",
 ]
@@ -164,7 +163,6 @@ dependencies = [
  "account-sheet",
  "account-wire",
  "base-time",
- "base-url",
  "http-core",
  "http-reqwest",
  "tokio",
@@ -182,12 +180,9 @@ dependencies = [
  "base-url",
  "caller-identity-core",
  "http-core",
- "secrecy",
  "serde",
  "serde_json",
- "subtle",
  "thiserror 2.0.21",
- "zeroize",
 ]
 
 [[package]]
@@ -225,7 +220,6 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
- "base-url",
  "base-xdg",
  "clap",
  "dbus-kit",
@@ -236,7 +230,6 @@ dependencies = [
  "serde_json",
  "settings-dbus",
  "settings-types",
- "sha2 0.10.9",
  "thiserror 2.0.21",
  "tokio",
  "toml",
@@ -270,7 +263,6 @@ dependencies = [
  "proptest",
  "serde",
  "serde_json",
- "thiserror 2.0.21",
  "tokio",
  "zbus",
 ]
@@ -358,7 +350,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-dav-proto",
  "account-discover",
  "account-fake",
  "account-fake-servers",
@@ -384,7 +375,6 @@ dependencies = [
  "base64 0.22.1",
  "http-core",
  "http-reqwest",
- "serde",
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
@@ -413,7 +403,6 @@ dependencies = [
  "account-core",
  "account-provider",
  "account-sheet",
- "base-testkit",
  "base64 0.22.1",
  "http-core",
  "tokio",
@@ -502,7 +491,6 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "base-ids",
- "base-url",
  "serde",
 ]
 
@@ -610,7 +598,6 @@ dependencies = [
  "base-fs",
  "base-testkit",
  "base-time",
- "base-url",
  "clap",
  "futures-util",
  "rustix 1.1.6",
@@ -692,7 +679,6 @@ dependencies = [
  "base-url",
  "serde",
  "serde_json",
- "thiserror 2.0.21",
  "tracing",
 ]
 
@@ -755,7 +741,6 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-provider",
- "account-service-core",
  "account-sheet",
  "account-wire",
  "base-testkit",
@@ -788,8 +773,6 @@ dependencies = [
  "account-fake",
  "base-fs",
  "base-testkit",
- "serde",
- "serde_json",
  "thiserror 2.0.21",
  "tokio",
 ]
@@ -839,13 +822,11 @@ dependencies = [
  "action-manifest",
  "action-mcp",
  "action-provider",
- "action-router",
  "action-testbus",
  "action-trace",
  "action-vocab",
  "action-wire",
  "agent-acp-bin",
- "agent-acp-server",
  "agent-reader-daemon",
  "agent-session",
  "base-ids",
@@ -872,7 +853,6 @@ dependencies = [
 name = "action-checkpoint"
 version = "0.1.0"
 dependencies = [
- "account-core",
  "action-core",
  "action-vocab",
  "base-ids",
@@ -888,7 +868,6 @@ dependencies = [
 name = "action-checkpoint-git"
 version = "0.1.0"
 dependencies = [
- "account-core",
  "action-checkpoint",
  "action-core",
  "base-ids",
@@ -1128,7 +1107,6 @@ dependencies = [
  "action-eval-core",
  "action-fake",
  "action-manifest",
- "action-review",
  "action-router",
  "action-vocab",
  "action-wire",
@@ -1407,7 +1385,6 @@ dependencies = [
  "provenance",
  "serde",
  "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -1456,7 +1433,6 @@ dependencies = [
  "action-store",
  "action-vocab",
  "agent-registry",
- "base-xdg",
  "model-provider",
  "permission-core",
  "rust_decimal",
@@ -1861,7 +1837,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
- "account-wire",
  "action-core",
  "action-fake",
  "action-review",
@@ -1886,7 +1861,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
- "account-wire",
  "action-client",
  "action-core",
  "action-fake",
@@ -1946,9 +1920,7 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
- "account-wire",
  "action-core",
- "action-fake",
  "action-vocab",
  "agent-models",
  "base-ids",
@@ -1969,7 +1941,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-match",
- "account-wire",
  "action-client",
  "action-context",
  "action-core",
@@ -1987,8 +1958,6 @@ dependencies = [
  "futures-util",
  "inference-client",
  "inference-core",
- "permission-core",
- "proptest",
  "provenance",
  "serde_json",
  "tempfile",
@@ -2023,7 +1992,6 @@ dependencies = [
  "base-ids",
  "companion-model",
  "companion-wire",
- "memory-core",
  "model-provider",
  "permission-core",
  "proptest",
@@ -2918,7 +2886,6 @@ name = "base-path"
 version = "0.1.0"
 dependencies = [
  "serde",
- "serde_json",
  "thiserror 2.0.21",
 ]
 
@@ -4363,7 +4330,6 @@ dependencies = [
  "base-xdg",
  "compositor-core",
  "compositor-dbus",
- "compositor-testkit",
  "desktop-client",
  "desktop-protocols",
  "rustix 1.1.6",
@@ -4542,7 +4508,6 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
- "base-xdg",
  "computer-use-action",
  "computer-use-bus",
  "computer-use-capture",
@@ -4584,7 +4549,6 @@ version = "0.1.0"
 dependencies = [
  "computer-use-bus",
  "provenance",
- "thiserror 2.0.21",
  "zbus",
 ]
 
@@ -4709,10 +4673,8 @@ dependencies = [
  "action-wire",
  "base-ids",
  "base-time",
- "computer-use-a11y-tree",
  "computer-use-action",
  "computer-use-bus",
- "computer-use-capture",
  "computer-use-desktop",
  "computer-use-fake",
  "computer-use-run",
@@ -4782,7 +4744,6 @@ dependencies = [
 name = "computer-use-seat-ei"
 version = "0.1.0"
 dependencies = [
- "account-core",
  "base-ids",
  "computer-use-action",
  "computer-use-desktop",
@@ -4797,7 +4758,6 @@ dependencies = [
 name = "computer-use-seat-input"
 version = "0.1.0"
 dependencies = [
- "account-core",
  "base-ids",
  "computer-use-action",
  "computer-use-desktop",
@@ -4847,7 +4807,6 @@ dependencies = [
  "computer-use-host",
  "computer-use-run",
  "computer-use-seat-ei",
- "computer-use-seat-input",
  "desktop-client",
  "inference-client",
  "inference-core",
@@ -4864,7 +4823,6 @@ dependencies = [
 name = "computer-use-types"
 version = "0.1.0"
 dependencies = [
- "account-core",
  "base-ids",
  "computer-use-desktop",
  "serde",
@@ -6071,7 +6029,6 @@ version = "0.1.0"
 dependencies = [
  "engine-spec",
  "model-catalog",
- "serde_json",
  "sha2 0.10.9",
 ]
 
@@ -6096,7 +6053,6 @@ version = "0.1.0"
 dependencies = [
  "model-catalog",
  "serde",
- "serde_json",
  "thiserror 2.0.21",
 ]
 
@@ -6477,7 +6433,6 @@ dependencies = [
  "anyview-peek",
  "anyview-platform",
  "base-testkit",
- "base-words",
  "chrono",
  "dioxus",
  "files-core",
@@ -7753,7 +7708,6 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
- "base-url",
  "base-xdg",
  "computer-use-action",
  "dbus-kit",
@@ -7776,10 +7730,8 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-fake",
  "account-match",
  "base-ids",
- "base-testkit",
  "base-time",
  "base64 0.22.1",
  "computer-use-action",
@@ -7795,7 +7747,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
- "tokio",
 ]
 
 [[package]]
@@ -7807,7 +7758,6 @@ dependencies = [
  "account-client",
  "account-client-dbus",
  "account-core",
- "account-daemon-support",
  "account-dbus",
  "account-fake",
  "account-fake-servers",
@@ -7826,9 +7776,6 @@ dependencies = [
  "chrono",
  "clap",
  "computer-use-action",
- "computer-use-parse",
- "computer-use-session",
- "computer-use-vendors",
  "dbus-kit",
  "engine-manifest",
  "engine-probe",
@@ -7839,7 +7786,6 @@ dependencies = [
  "hex",
  "http-core",
  "http-reqwest",
- "inference-bridge",
  "inference-client",
  "inference-core",
  "inference-dbus",
@@ -7849,13 +7795,11 @@ dependencies = [
  "inference-turns",
  "iso_currency",
  "model-catalog",
- "model-extract",
  "model-http",
  "model-http-reqwest",
  "model-openai-compat",
  "model-provider",
  "model-replay",
- "model-vision-prep",
  "model-wire",
  "rust_decimal",
  "rustix 1.1.6",
@@ -7884,7 +7828,6 @@ dependencies = [
  "account-match",
  "account-wire",
  "base-ids",
- "base-testkit",
  "dbus-kit",
  "serde",
  "serde_json",
@@ -7939,7 +7882,6 @@ dependencies = [
  "engine-spec",
  "engine-supervisor",
  "inference-core",
- "inference-tailnet",
  "model-catalog",
  "model-http",
  "model-openai-compat",
@@ -7983,7 +7925,6 @@ dependencies = [
  "base-testkit",
  "base-time",
  "computer-use-action",
- "computer-use-parse",
  "computer-use-session",
  "computer-use-vendors",
  "engine-supervisor",
@@ -8923,7 +8864,6 @@ dependencies = [
  "tokio",
  "vello_common 0.1.0",
  "vello_hybrid",
- "wayland-backend",
  "wayland-client",
  "wayland-protocols",
  "wgpu",
@@ -9494,7 +9434,6 @@ dependencies = [
  "provenance",
  "serde",
  "serde_json",
- "thiserror 2.0.21",
  "ulid",
 ]
 
@@ -9504,7 +9443,6 @@ version = "0.1.0"
 dependencies = [
  "account-callers",
  "account-capability",
- "account-client",
  "account-client-dbus",
  "account-core",
  "account-dbus",
@@ -9531,7 +9469,6 @@ dependencies = [
  "memory-host",
  "memory-infer",
  "memory-keyfile",
- "memory-local",
  "memory-recall",
  "memory-seal",
  "memory-service",
@@ -9567,7 +9504,6 @@ dependencies = [
 name = "memory-eventlog"
 version = "0.1.0"
 dependencies = [
- "blake3",
  "const-hex",
  "memory-core",
  "memory-eventlog",
@@ -9577,7 +9513,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -9723,7 +9658,6 @@ dependencies = [
  "memory-core",
  "memory-seal",
  "oo7",
- "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "zeroize",
@@ -9907,9 +9841,7 @@ dependencies = [
 name = "model-catalog"
 version = "0.1.0"
 dependencies = [
- "computer-use-action",
  "model-provider",
- "model-vision-prep",
  "serde",
  "serde_json",
  "speech-provider",
@@ -9924,7 +9856,6 @@ dependencies = [
  "computer-use-action",
  "model-provider",
  "model-vision-prep",
- "proptest",
  "serde_json",
 ]
 
@@ -9959,7 +9890,6 @@ dependencies = [
  "rustls-pki-types",
  "tokio",
  "tokio-rustls",
- "tracing",
 ]
 
 [[package]]
@@ -10039,7 +9969,6 @@ dependencies = [
  "http-core",
  "model-http",
  "model-provider",
- "serde_json",
  "thiserror 2.0.21",
 ]
 
@@ -12333,7 +12262,6 @@ dependencies = [
  "account-dav-proto",
  "account-fake-servers",
  "base-ids",
- "base-testkit",
  "base-time",
  "base-url",
  "base64 0.22.1",
@@ -13000,7 +12928,6 @@ dependencies = [
  "settings-app-testkit",
  "settings-app-ui",
  "settings-store-fs",
- "tempfile",
  "tokio",
  "toml",
  "ui-blitz",
@@ -13155,7 +13082,6 @@ dependencies = [
  "account-client-dbus",
  "account-core",
  "account-dbus",
- "account-tailscale",
  "account-wire",
  "anyview-core",
  "anyview-fs",
@@ -13164,7 +13090,6 @@ dependencies = [
  "base-time",
  "base-xdg",
  "bluez-proxy",
- "compositor-dbus",
  "dbus-kit",
  "desktop-client",
  "desktop-protocols",
@@ -13306,7 +13231,6 @@ dependencies = [
 name = "settings-types-macros"
 version = "0.1.0"
 dependencies = [
- "base-words",
  "proc-macro2",
  "quote",
  "syn 2.0.119",
@@ -13410,18 +13334,15 @@ dependencies = [
  "shell-model",
  "shell-notify-ui",
  "shell-overlays",
- "shell-search",
  "shell-services",
  "shell-settings",
  "shell-testkit",
  "shell-ui-kit",
  "shell-verbs",
  "speech-wire",
- "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "ui-blitz",
  "ui-components",
  "ui-extensions",
  "ui-harness",
@@ -13486,7 +13407,6 @@ dependencies = [
  "tokio",
  "ui-components",
  "ui-harness",
- "ui-host-hooks",
  "ui-lint",
  "ui-settings",
 ]
@@ -13521,14 +13441,12 @@ dependencies = [
 name = "shell-kit"
 version = "0.1.0"
 dependencies = [
- "base-words",
  "dioxus",
  "dioxus-ssr",
  "image",
  "serde",
  "serde_json",
  "shell-testkit",
- "thiserror 2.0.21",
  "ui-blitz",
  "ui-components",
  "ui-core",
@@ -13598,7 +13516,6 @@ dependencies = [
  "ui-blitz",
  "ui-components",
  "ui-harness",
- "ui-host-hooks",
  "ui-lint",
 ]
 
@@ -13690,7 +13607,6 @@ dependencies = [
  "ui-behaviour",
  "ui-components",
  "ui-harness",
- "ui-host-hooks",
  "ui-settings",
  "ui-shell",
 ]
@@ -13849,11 +13765,9 @@ dependencies = [
 name = "shell-testkit"
 version = "0.1.0"
 dependencies = [
- "account-core",
  "account-dbus",
  "rustix 1.1.6",
  "serde",
- "serde_json",
  "shell-launcher",
  "shell-model",
  "shell-search",
@@ -14242,7 +14156,6 @@ dependencies = [
  "model-provider",
  "proptest",
  "serde",
- "serde_json",
  "speech-provider",
  "tokio",
 ]
@@ -14256,7 +14169,6 @@ dependencies = [
  "action-wire",
  "inference-core",
  "serde",
- "serde_json",
  "speech-provider",
  "speech-wire",
 ]
@@ -14290,7 +14202,6 @@ version = "0.1.0"
 dependencies = [
  "proptest",
  "serde",
- "serde_json",
  "speech-provider",
  "thiserror 2.0.21",
 ]
@@ -14872,7 +14783,6 @@ dependencies = [
  "account-client-dbus",
  "account-client-inproc",
  "account-core",
- "account-daemon-support",
  "account-dav-proto",
  "account-dbus",
  "account-fake",
@@ -14933,7 +14843,6 @@ dependencies = [
  "account-fake",
  "account-fake-servers",
  "account-provider",
- "base-testkit",
  "base-url",
  "base64 0.22.1",
  "quickxorhash",
@@ -14966,7 +14875,6 @@ dependencies = [
  "base-fs",
  "base-testkit",
  "base-time",
- "base-url",
  "clap",
  "rustix 1.1.6",
  "serde",
@@ -15631,7 +15539,6 @@ dependencies = [
  "arboard",
  "base-fs",
  "base-testkit",
- "base-words",
  "base-xdg",
  "blitz-dom",
  "blitz-embed",
@@ -15668,7 +15575,6 @@ dependencies = [
  "ui-desktop",
  "ui-emoji",
  "ui-harness",
- "ui-helpers",
  "ui-host-hooks",
  "ui-peer",
  "wayland-backend",
@@ -15772,7 +15678,6 @@ dependencies = [
 name = "ui-gallery"
 version = "0.1.0"
 dependencies = [
- "base-words",
  "dioxus",
  "dioxus-ssr",
  "image",
@@ -15918,7 +15823,6 @@ dependencies = [
  "settings-store",
  "settings-store-fs",
  "settings-types",
- "tempfile",
  "tokio",
  "toml",
  "ui-components",

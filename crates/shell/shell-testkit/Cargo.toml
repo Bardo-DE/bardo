@@ -15,7 +15,6 @@ zbus = {workspace = true, features = ["tokio"]}
 # The stand-ins in `examples/` speak bardo-shell's own protocols and reuse its types. Only examples
 # name these: the library reaches no bardo-shell crate (scripts/check-boundary.sh).
 [dev-dependencies]
-account-core = {path = "../../accounts/account-core"}
 account-dbus = {path = "../../accounts/account-dbus"}
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
@@ -25,7 +24,6 @@ wayland-client = { workspace = true }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
 
 # Stand-ins the tests and dev scripts start as child processes, each under its own bus name or
 # socket; none touches the person's session.

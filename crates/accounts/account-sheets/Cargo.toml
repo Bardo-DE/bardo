@@ -17,7 +17,6 @@ account-wire = {path = "../account-wire"}
 account-callers = {path = "../account-callers"}
 account-dbus = {path = "../account-dbus"}
 account-provider = {path = "../account-provider"}
-account-service-core = {path = "../account-service-core"}
 serde_json = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {workspace = true, features = ["tokio"]}

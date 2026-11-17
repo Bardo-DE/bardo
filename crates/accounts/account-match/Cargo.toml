@@ -11,7 +11,6 @@ publish.workspace = true
 [dependencies]
 account-capability = {path = "../account-capability"}
 base-ids = { path = "../../base/base-ids" }
-base-url = { path = "../../base/base-url" }
 serde = { workspace = true, features = ["derive"] }
 
 [dev-dependencies]

@@ -38,7 +38,6 @@ sync-daemon = {path = "../sync-daemon", features = ["testing"]}
 account-callers = {features = ["test-proc-root"], path = "../../accounts/account-callers"}
 account-core = {path = "../../accounts/account-core"}
 base-time = { path = "../../base/base-time" }
-base-url = { path = "../../base/base-url" }
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 

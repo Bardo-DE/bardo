@@ -31,7 +31,6 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 agent-session = {path = ".", features = ["testing"]}
-memory-core = {path = "../../memory/memory-core"}
 proptest = { workspace = true }
 
 [lints]

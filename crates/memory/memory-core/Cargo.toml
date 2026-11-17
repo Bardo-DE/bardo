@@ -16,7 +16,6 @@ account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-thiserror = { workspace = true }
 ulid = { workspace = true }
 
 [lints]

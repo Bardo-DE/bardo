@@ -25,7 +25,6 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-account-wire = {path = "../../accounts/account-wire"}
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 action-fake = {path = "../action-fake"}

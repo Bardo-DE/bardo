@@ -27,8 +27,6 @@ account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 account-wire = {path = "../account-wire"}
 base-fs = { path = "../../base/base-fs" }
-base-time = { path = "../../base/base-time" }
-base-url = { path = "../../base/base-url" }
 account-client = {path = "../account-client"}
 account-client-dbus = {path = "../account-client-dbus"}
 account-callers = {path = "../account-callers", features = ["test-proc-root"]}
@@ -50,6 +48,7 @@ account-service = {path = "../account-service"}
 account-service-core = {path = "../account-service-core"}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+base-time = { path = "../../base/base-time" }
 
 [lints]
 workspace = true

@@ -25,7 +25,6 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 account-capability = {path = "../../accounts/account-capability"}
-base-testkit = {path = "../../base/base-testkit"}
 
 [lints]
 workspace = true

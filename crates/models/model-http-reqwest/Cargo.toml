@@ -12,7 +12,6 @@ publish.workspace = true
 http-core = { path = "../../network/http-core" }
 http-reqwest = { path = "../../network/http-reqwest" }
 model-http = { path = "../model-http" }
-tracing = { workspace = true }
 
 [dev-dependencies]
 base-secret = { path = "../../base/base-secret" }

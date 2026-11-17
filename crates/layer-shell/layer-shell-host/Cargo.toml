@@ -16,8 +16,6 @@ base-xdg = { path = "../../base/base-xdg" }
 # Wayland
 smithay-client-toolkit = { workspace = true, features = ["calloop", "xkbcommon"] }
 wayland-client = { workspace = true }
-# Named for its `client_system` feature: `Connection::backend().display_ptr()` (gpu::raw_handle).
-wayland-backend = { workspace = true, features = ["client_system"] }
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"] }
 calloop = { workspace = true }
 calloop-wayland-source = { workspace = true }

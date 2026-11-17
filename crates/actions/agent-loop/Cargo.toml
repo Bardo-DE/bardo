@@ -16,7 +16,6 @@ permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 companion-wire = {path = "../companion-wire"}
 provenance = {path = "../../provenance/provenance"}
-account-core = {path = "../../accounts/account-core"}
 memory-core = {path = "../../memory/memory-core"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -24,6 +23,7 @@ serde_json = { workspace = true }
 [dev-dependencies]
 action-manifest = {path = "../action-manifest"}
 proptest = { workspace = true }
+account-core = {path = "../../accounts/account-core"}
 
 [lints]
 workspace = true

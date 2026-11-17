@@ -35,3 +35,7 @@ rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "pr
 
 [lints]
 workspace = true
+
+[package.metadata.cargo-shear]
+# A Rust file the highlighter tests read as text.
+ignored-paths = ["tests/fixtures/*.rs"]

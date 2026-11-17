@@ -22,7 +22,6 @@ tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "r
 
 [dev-dependencies]
 proptest = { workspace = true }
-serde_json = { workspace = true }
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 speech-provider = {path = "../speech-provider", features = ["testing"]}
 

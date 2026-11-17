@@ -43,3 +43,7 @@ server = [
 
 [lints]
 workspace = true
+
+[package.metadata.cargo-shear]
+# The code wayland-scanner generates names these; nothing written by hand does.
+ignored = ["bitflags", "wayland-backend"]

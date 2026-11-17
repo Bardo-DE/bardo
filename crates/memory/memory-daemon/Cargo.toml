@@ -30,7 +30,6 @@ memory-eventlog = {path = "../memory-eventlog"}
 memory-store = {path = "../memory-store"}
 memory-files = {path = "../memory-files"}
 memory-recall = {path = "../memory-recall"}
-memory-local = {path = "../memory-local"}
 memory-host = {path = "../memory-host"}
 memory-service = {path = "../memory-service"}
 memory-infer = {path = "../memory-infer"}
@@ -42,7 +41,6 @@ memory-watch = {path = "../memory-watch"}
 memory-dbus = {path = "../memory-dbus"}
 account-core = {path = "../../accounts/account-core"}
 account-callers = {features = ["file"], path = "../../accounts/account-callers"}
-account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
 clap = {workspace = true, features = ["default", "derive"]}

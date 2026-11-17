@@ -44,10 +44,14 @@ x11rb = { workspace = true, features = ["res"] }
 zbus = {workspace = true, features = ["tokio"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process", "signal"]}
 
-[dev-dependencies]
-# The infrastructure tests run against the real compositor (a dev-dependency cycle cargo
-# allows; B9 reads normal edges only).
-compositor-testkit = {path = "../compositor-testkit"}
-
 [lints]
 workspace = true
+
+[package.metadata.cargo-shear]
+# Modules that hold only a note on why a protocol needs no handler of its own.
+ignored-paths = [
+    "src/misc/syncobj.rs",
+    "src/quire/agent.rs",
+    "src/quire/sensitive.rs",
+    "src/quire/trusted.rs",
+]

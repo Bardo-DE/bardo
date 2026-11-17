@@ -5,6 +5,7 @@ pub mod gate;
 pub mod install;
 pub mod legacy;
 pub mod renderer_edges;
+pub mod shear;
 pub mod test_modules;
 pub mod workspace_deps;
 

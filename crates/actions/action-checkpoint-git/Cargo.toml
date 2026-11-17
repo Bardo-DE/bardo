@@ -15,7 +15,6 @@ base-path = { path = "../../base/base-path" }
 action-checkpoint = {path = "../action-checkpoint"}
 action-core = {path = "../action-core"}
 percent-encoding = { workspace = true }
-account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}

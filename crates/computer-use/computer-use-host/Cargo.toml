@@ -17,9 +17,7 @@ permission-core = {path = "../../actions/permission-core"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-computer-use-a11y-tree = {path = "../computer-use-a11y-tree"}
 computer-use-desktop = {path = "../computer-use-desktop"}
-computer-use-capture = {path = "../computer-use-capture"}
 computer-use-bus = {path = "../computer-use-bus"}
 computer-use-run = {path = "../computer-use-run"}
 action-core = {path = "../../actions/action-core"}

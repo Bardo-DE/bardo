@@ -17,8 +17,6 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true }
-computer-use-action = {path = "../../computer-use/computer-use-action"}
-model-vision-prep = {path = "../model-vision-prep"}
 
 [lints]
 workspace = true

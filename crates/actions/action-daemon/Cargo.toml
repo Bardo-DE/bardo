@@ -25,7 +25,6 @@ base-path = { path = "../../base/base-path" }
 companion-model = {path = "../companion-model"}
 action-checkpoint-git = {path = "../action-checkpoint-git"}
 permission-core = {path = "../permission-core"}
-account-dbus = {path = "../../accounts/account-dbus"}
 account-callers = {path = "../../accounts/account-callers"}
 action-core = {path = "../action-core"}
 action-wire = {path = "../action-wire"}
@@ -92,6 +91,7 @@ serde_json = { workspace = true }
 tempfile = { workspace = true }
 toml = { workspace = true }
 action-gate-wire = {path = "../action-gate-wire"}
+account-dbus = {path = "../../accounts/account-dbus"}
 
 [features]
 # Span export over OTLP (action-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.

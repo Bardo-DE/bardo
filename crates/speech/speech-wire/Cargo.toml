@@ -11,7 +11,6 @@ publish.workspace = true
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
 speech-vad = {path = "../speech-vad"}
-base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 action-wire = {path = "../../actions/action-wire"}
 action-vocab = {path = "../../actions/action-vocab"}
@@ -23,6 +22,7 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
+base-ids = { path = "../../base/base-ids" }
 
 [lints]
 workspace = true

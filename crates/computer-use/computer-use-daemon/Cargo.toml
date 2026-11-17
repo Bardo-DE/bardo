@@ -29,12 +29,10 @@ fixture-callers = ["action-dbus/fixture-callers"]
 [dependencies]
 shell-dbus = { path = "../../shell/shell-dbus" }
 dbus-kit = { path = "../../bus/dbus-kit" }
-base-xdg = { path = "../../base/base-xdg" }
 action-wire = {path = "../../actions/action-wire"}
 action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
 base-ids = { path = "../../base/base-ids" }
-base-time = { path = "../../base/base-time" }
 computer-use-desktop = {path = "../computer-use-desktop"}
 computer-use-system = {path = "../computer-use-system"}
 computer-use-bus = {path = "../computer-use-bus"}
@@ -45,7 +43,6 @@ computer-use-host = {path = "../computer-use-host"}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 computer-use-dbus = {path = "../computer-use-dbus"}
 action-core = {path = "../../actions/action-core"}
-action-client = {default-features = false, features = ["dbus"], path = "../../actions/action-client"}
 action-provider = {features = ["dbus"], path = "../../actions/action-provider"}
 action-dbus = {path = "../../actions/action-dbus"}
 provenance = {path = "../../provenance/provenance"}
@@ -83,6 +80,8 @@ action-router = {path = "../../actions/action-router"}
 memory-fake = {path = "../../memory/memory-fake"}
 memory-service = {path = "../../memory/memory-service"}
 memory-client = {default-features = false, features = ["dbus", "in_process"], path = "../../memory/memory-client"}
+action-client = {default-features = false, features = ["dbus"], path = "../../actions/action-client"}
+base-time = { path = "../../base/base-time" }
 
 [lints]
 workspace = true

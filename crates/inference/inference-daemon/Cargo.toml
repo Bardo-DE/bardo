@@ -25,9 +25,7 @@ account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-daemon-support = {path = "../../accounts/account-daemon-support"}
 base-fs = {path = "../../base/base-fs"}
-computer-use-action = {path = "../../computer-use/computer-use-action"}
 account-callers = {path = "../../accounts/account-callers"}
 account-dbus = {path = "../../accounts/account-dbus"}
 # The AI keys are accountd's: inferd asks it through account-client (`broker`).
@@ -48,7 +46,6 @@ inference-router = {path = "../inference-router"}
 # Running turns: a local model's chat, embedding and computer-use turns, the structured-reply
 # check, the audit trail and the stages of a pipeline.
 inference-turns = {path = "../inference-turns"}
-inference-bridge = {path = "../inference-bridge"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
 settings-types = { path = "../../settings/settings-types" }
 model-provider = {path = "../../models/model-provider"}
@@ -63,11 +60,6 @@ engine-supervisor = {path = "../../engines/engine-supervisor"}
 model-http = {path = "../../models/model-http"}
 model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
-model-vision-prep = {features = ["pixels"], path = "../../models/model-vision-prep"}
-computer-use-parse = {path = "../../computer-use/computer-use-parse"}
-computer-use-session = {path = "../../computer-use/computer-use-session"}
-computer-use-vendors = {path = "../../computer-use/computer-use-vendors"}
-model-extract = {path = "../../models/model-extract"}
 model-replay = {path = "../../models/model-replay"}
 model-wire = {path = "../../models/model-wire"}
 speech-provider = {path = "../../speech/speech-provider"}
@@ -108,6 +100,7 @@ account-fake-servers = {path = "../../accounts/account-fake-servers"}
 # The scratch directory, the test catalog entries and the models they make.
 inference-router = {path = "../inference-router", features = ["testing"]}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "test-util", "time"]}
+computer-use-action = {path = "../../computer-use/computer-use-action"}
 
 [lints]
 workspace = true
