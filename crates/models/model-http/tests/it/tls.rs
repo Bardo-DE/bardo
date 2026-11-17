@@ -81,8 +81,9 @@ async fn serve(leaf: Option<(CertificateDer<'static>, KeyPair)>, steps: Vec<Step
     tokio::spawn(async move {
         let (tcp, _) = listener.accept().await.unwrap();
         let Some((cert, key)) = leaf else {
-            tokio::time::sleep(Duration::from_secs(30)).await;
-            drop(tcp);
+            // Holds the connection open and says nothing until the test ends.
+            let _held = tcp;
+            std::future::pending::<()>().await;
             return;
         };
         let key = PrivateKeyDer::from(PrivatePkcs8KeyDer::from(key.serialize_der()));

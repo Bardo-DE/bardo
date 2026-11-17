@@ -28,6 +28,7 @@ rustls = { workspace = true, features = ["ring", "std", "tls12"], optional = tru
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"], optional = true}
 
 [dev-dependencies]
+base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
 rcgen = { workspace = true, features = ["ring", "pem"] }
 tokio-rustls = { workspace = true, features = ["ring", "logging", "tls12"] }
 rustls-pki-types = { workspace = true }

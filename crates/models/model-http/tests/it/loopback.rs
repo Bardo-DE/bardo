@@ -513,13 +513,10 @@ async fn a_sink_that_stops_closes_the_connection() {
         "an early stop is not a failure"
     );
     assert_eq!(seen.chunks.len(), 2, "nothing is read after the stop");
-    for _ in 0..200 {
-        if server.peer_closed.load(Ordering::SeqCst) {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
-    panic!("the server never saw the connection close");
+    base_testkit::eventually("the server to see the connection close", || {
+        server.peer_closed.load(Ordering::SeqCst)
+    })
+    .await;
 }
 
 #[tokio::test(flavor = "current_thread")]
@@ -532,13 +529,10 @@ async fn dropping_the_future_closes_the_connection() {
     // to be long enough for a loaded machine to read a first chunk (100 ms was not, under the gate).
     let _ = tokio::time::timeout(Duration::from_secs(1), client.exchange(&ex, &mut seen)).await;
     assert!(!seen.chunks.is_empty(), "some of the stream was read first");
-    for _ in 0..200 {
-        if server.peer_closed.load(Ordering::SeqCst) {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
-    panic!("the server never saw the connection close");
+    base_testkit::eventually("the server to see the connection close", || {
+        server.peer_closed.load(Ordering::SeqCst)
+    })
+    .await;
 }
 
 #[tokio::test(flavor = "current_thread")]
