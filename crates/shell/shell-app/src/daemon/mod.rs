@@ -9,8 +9,8 @@
 mod compositor;
 mod events;
 mod hardening;
+mod mouse_gestures;
 pub mod msg;
-mod palmrest;
 mod run;
 pub(crate) mod services;
 pub(crate) mod settings;

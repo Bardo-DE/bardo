@@ -3,7 +3,7 @@
 //!
 //! | Kind | Role in the table | Proof | User | Control group |
 //! |---|---|---|---|---|
-//! | palmrest's | `pad_daemon` | `Full` | not the seat's active user (it is a dynamic user) | exactly `/system.slice/bardo-mouse-gestures.service` |
+//! | the mouse gestures daemon's | `pad_daemon` | `Full` | not the seat's active user (it is a dynamic user) | exactly `/system.slice/bardo-mouse-gestures.service` |
 //! | the key remap daemon's | `keymap_daemon` | `Full` | not the seat's active user (it is a dynamic user) | exactly `/system.slice/bardo-key-remap.service` |
 //!
 //! Both are system services, so the control group is one only the system manager can fill; both are
@@ -19,7 +19,7 @@ use caller_identity_core::Proof;
 use caller_identity_core::roles::{KEYMAP_DAEMON, PAD_DAEMON};
 use input_broker_wire::{Kind, Maker};
 
-/// palmrest's control group, which only a system service can have.
+/// The mouse gestures daemon's control group, which only a system service can have.
 pub const PAD_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
 /// The key remap daemon's control group, which only a system service can have.
 pub const KEYMAP_CGROUP: &str = "/system.slice/bardo-key-remap.service";

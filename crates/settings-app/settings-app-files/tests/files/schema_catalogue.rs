@@ -77,8 +77,8 @@ fn a_page_lists_its_basic_sections_and_one_advanced_group_after_them() {
 }
 
 #[test]
-fn mouse_and_gestures_holds_palmrests_and_sills_keys_with_the_advanced_ones_apart() {
-    let catalogue = real("mouse_and_gestures_holds_palmrests_and_sills_keys");
+fn mouse_and_gestures_holds_mouse_gestures_and_sills_keys_with_the_advanced_ones_apart() {
+    let catalogue = real("mouse_and_gestures_holds_mouse_gestures_and_sills_keys");
     let page = catalogue
         .page(&slug("mouse_and_gestures"))
         .expect("the page");
@@ -95,7 +95,7 @@ fn mouse_and_gestures_holds_palmrests_and_sills_keys_with_the_advanced_ones_apar
     );
     assert!(
         basic.contains(&"scroll.natural"),
-        "bardo-shell's key sits beside palmrest's"
+        "bardo-shell's key sits beside mouse_gestures's"
     );
     assert!(!basic.contains(&"scroll.momentum"), "{basic:?}");
     let advanced: Vec<&str> = page

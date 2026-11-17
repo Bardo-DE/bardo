@@ -1,7 +1,7 @@
 //! The allow-list: for each kind, the device the service makes and the ceiling every event of a
 //! proxied device passes.
 //!
-//! Palmrest's three kinds are proxied event by event; the key remap daemon's two are made to a fixed shape and
+//! The mouse gestures daemon's three kinds are proxied event by event; the key remap daemon's two are made to a fixed shape and
 //! handed over, because a uinput descriptor cannot be made write-only (the holder can destroy the
 //! device and set it up again with any capabilities), so for those the caller's identity is the
 //! gate and the ceiling only shapes the device the service itself makes.
@@ -45,7 +45,7 @@ pub enum BadCaps {
     /// A keyboard with no keys.
     #[error("the key list is empty")]
     NoKeys,
-    /// A key that palmrest's keyboard may not have.
+    /// A key that mouse gestures daemon's keyboard may not have.
     #[error("key {0} is not one the keyboard may have")]
     UnknownKey(u16),
     /// A pointer with nothing a pointer can do after the cut.

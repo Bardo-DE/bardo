@@ -25,7 +25,7 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
 - [x] **Widget picks** (settled 2026-09-27: battery percent 500, track = plate darkened, one red; World Clock follows the scheme; filled device glyphs; cards tinted by the Space [superseded 2026-10-02: neutral plates, no Space tint, design/23 §1.0]; the widget card becomes an interface) (progress page "Widgets matched to the reference"): percent weight, ring
   track, low-battery colour, dark World Clock card, filled device glyphs, Space tint default.
 - [x] **Level-control look** (settled 2026-09-27: Capsule) (progress page, OSD): Capsule (recommended) / CapsuleKnob / Segments.
-- [ ] **palmrest live steps**: section below.
+- [ ] **the mouse gestures daemon live steps**: section below.
 - [x] **Spotlight settings** (settled 2026-09-27: clipboard history on, web search on, default skin tone) (launcher v2, design/22 §5 Spotlight page, all proposed): clipboard
   history on (memory only, never password-manager copies) or off; web search as the last result
   on or off (engine DuckDuckGo by default); the default emoji skin tone.
@@ -84,15 +84,15 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
 
 Kept by the mailo session in its own repo.
 
-## palmrest (Magic Mouse daemon, M8; repo ~/palmrest, FINDINGS F1–F21)
+## the mouse gestures daemon (Magic Mouse daemon, M8; repo ~/mouse_gestures, FINDINGS F1–F21)
 
 Nothing here has run on the real mouse yet; every fixture is synthesised. The Python
 `magic-mouse-kde.service` stays in charge until you switch.
 
-1. **Record real sessions** (safe, read-only): `cd ~/palmrest && cargo run --release -- record /tmp/mm.bin`, then scroll slow, fast, repeated flicks, diagonal and change finger count for about 20 s, Ctrl+C. Five such files replace the synthesised parity fixtures (F9) and verify the +y sign, the rear band side and the ~90 Hz report rate.
-2. **Switch services when ready**: `~/palmrest/install.sh` disables the Python service, enables palmrest with your current feel (`SCROLL_SPEED=32`, `SCROLL_ACCEL_MAX=1`, F6) and rolls back if palmrest does not stay up. Under KDE it sets `foreign_output = "wheel"` so scroll direction does not flip (F7).
+1. **Record real sessions** (safe, read-only): `cd ~/mouse_gestures && cargo run --release -- record /tmp/mm.bin`, then scroll slow, fast, repeated flicks, diagonal and change finger count for about 20 s, Ctrl+C. Five such files replace the synthesised parity fixtures (F9) and verify the +y sign, the rear band side and the ~90 Hz report rate.
+2. **Switch services when ready**: `~/mouse_gestures/install.sh` disables the Python service, enables the mouse gestures daemon with your current feel (`SCROLL_SPEED=32`, `SCROLL_ACCEL_MAX=1`, F6) and rolls back if the mouse gestures daemon does not stay up. Under KDE it sets `foreign_output = "wheel"` so scroll direction does not flip (F7).
 3. **Live acceptance** after switching: design/12 §12.8 items 8 (libinput sees finger scroll with an axis stop, no motion, no taps), 9 (calibrate the virtual touchpad's mm/px; at 0.25 it re-lands every ~120 px, F8), 10 (suppression over shell surfaces), 11 (latency on the device), 12 (timestamp calibration).
-4. **After the sensor change (palmrest 7abdae3, F25–F29)**: use the Magic Mouse on the new build for a minute (scroll, swipe, double-tap); it should feel exactly as before, since thresholds are now in mm but convert back to the same values. Optional: `[device] source = "evdev"` in gestures.toml and compare (README "Manual checks"). Other mice and the Magic Mouse 1/USB-C are marked `TODO(untested)`; no check needed.
+4. **After the sensor change (the mouse gestures daemon 7abdae3, F25–F29)**: use the Magic Mouse on the new build for a minute (scroll, swipe, double-tap); it should feel exactly as before, since thresholds are now in mm but convert back to the same values. Optional: `[device] source = "evdev"` in gestures.toml and compare (README "Manual checks"). Other mice and the Magic Mouse 1/USB-C are marked `TODO(untested)`; no check needed.
 
 ## focus_with_token on a real Wayland compositor (queued 2026-10-03)
 

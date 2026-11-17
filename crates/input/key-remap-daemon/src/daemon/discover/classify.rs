@@ -7,8 +7,8 @@ use crate::daemon::events::{ABS_MT_POSITION_X, ABS_X, EV_ABS, EV_KEY, EV_REL, RE
 use crate::daemon::{pointer, uinput};
 use std::path::{Path, PathBuf};
 
-/// Name prefix of palmrest's virtual devices, which key remap daemon must never grab.
-const PALMREST_PREFIX: &str = "mouse-gestures";
+/// Name prefix of the mouse gestures daemon's virtual devices, which key remap daemon must never grab.
+const MOUSE_GESTURES_PREFIX: &str = "mouse-gestures";
 
 /// Who a node says it is.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -44,12 +44,12 @@ pub(crate) enum Eligibility {
 }
 
 /// Whether the node is one of the virtual devices that must never be grabbed: the key remap daemon's own
-/// keyboard and pointer twins (grabbing them would feed our output back in) and palmrest's.
-fn is_ours_or_palmrests(id: &Identity) -> bool {
+/// keyboard and pointer twins (grabbing them would feed our output back in) and the mouse gestures daemon's.
+fn is_ours_or_mouse_gestures(id: &Identity) -> bool {
     id.name == uinput::NAME
         || id.name.ends_with(pointer::NAME_SUFFIX)
         || (id.vendor, id.product) == (uinput::VENDOR, uinput::PRODUCT)
-        || id.name.starts_with(PALMREST_PREFIX)
+        || id.name.starts_with(MOUSE_GESTURES_PREFIX)
 }
 
 /// Whether the key mask has every letter and the space bar: what separates a keyboard from a
@@ -74,7 +74,7 @@ fn has_pointer_axes(caps: &Caps) -> bool {
 /// The rule, on capabilities, identity, whether the node is virtual and the allowance. A virtual device is never
 /// grabbed, whoever made it, unless `allow` names it exactly: two remappers grabbing each
 /// other's output is a feedback loop. A named allowance excludes every other device too.
-/// The key remap daemon's own device and palmrest's stay excluded even
+/// The key remap daemon's own device and the mouse gestures daemon's stay excluded even
 /// when named.
 pub(crate) fn classify(
     caps: &Caps,
@@ -85,7 +85,8 @@ pub(crate) fn classify(
     let keyboard = caps.ev.has(u32::from(EV_KEY)) && has_typing_keys(caps);
     let pointer = has_pointer_axes(caps);
     let refused_virtual = virtual_node && !allow.admits(&id.name);
-    let excluded = refused_virtual || allow.names_another(&id.name) || is_ours_or_palmrests(id);
+    let excluded =
+        refused_virtual || allow.names_another(&id.name) || is_ours_or_mouse_gestures(id);
     match (excluded, keyboard, pointer) {
         (true, _, _) | (false, false, _) => Eligibility::NotKeyboard,
         (false, true, false) => Eligibility::Keyboard,

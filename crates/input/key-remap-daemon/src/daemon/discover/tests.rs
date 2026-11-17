@@ -216,7 +216,7 @@ fn classify_table() {
             Eligibility::NotKeyboard,
         ),
         (
-            "palmrest's virtual keys",
+            "mouse_gestures's virtual keys",
             caps(&ev_kb, &typing_keys(), &[]),
             identity("mouse-gestures keys", 0x0001, 0x0003),
             HARDWARE,

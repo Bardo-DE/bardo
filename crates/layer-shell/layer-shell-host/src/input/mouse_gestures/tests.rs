@@ -1,4 +1,4 @@
-//! The palmrest client against a fake daemon: a listening socket at a scratch path.
+//! The mouse gestures daemon client against a fake daemon: a listening socket at a scratch path.
 
 use super::*;
 use crate::scratch::Dir;
@@ -31,19 +31,19 @@ fn received(fd: &OwnedFd) -> String {
 #[test]
 fn no_daemon_is_a_no_op() {
     let dir = Dir::new();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     assert!(client.retry_due());
     assert!(client.connect().is_none());
     assert!(!client.retry_due(), "no retry storm");
     client.pointer_over(true);
     assert!(client.retry_due(), "an enter tries again");
-    assert!(Palmrest::at(None).connect().is_none());
+    assert!(MouseGestures::at(None).connect().is_none());
 }
 
 #[test]
 fn a_fake_daemon_hears_pointer_over_and_its_events_are_read() {
     let (dir, listener) = daemon();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     client.pointer_over(true);
     let reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
@@ -96,7 +96,7 @@ fn a_fake_daemon_hears_pointer_over_and_its_events_are_read() {
 #[test]
 fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
     let (dir, listener) = daemon();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     client.session_lock(true);
     let _reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
@@ -134,7 +134,7 @@ fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
 #[test]
 fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
     let dir = Dir::new();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     client.session_lock(true);
     assert!(client.connect().is_none(), "no daemon yet");
     assert!(!client.retry_due());
@@ -175,7 +175,7 @@ fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
 #[test]
 fn a_lock_while_the_daemon_is_away_makes_an_attempt_due_and_an_unlock_does_not() {
     let dir = Dir::new();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     assert!(client.connect().is_none());
     assert!(!client.retry_due());
     client.session_lock(true);
@@ -193,14 +193,14 @@ fn a_lock_while_the_daemon_is_away_makes_an_attempt_due_and_an_unlock_does_not()
 #[test]
 fn a_daemon_that_went_away_is_looked_for_again_and_never_without_a_path() {
     let (dir, listener) = daemon();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     let _reader = client.connect().expect("connects");
     let _peer = accept(&listener).expect("accept");
     client.disconnected();
     assert_eq!(client.retry_in(), Some(Duration::from_millis(250)));
     client.retry_now();
     assert!(client.retry_due());
-    assert_eq!(Palmrest::at(None).retry_in(), None);
+    assert_eq!(MouseGestures::at(None).retry_in(), None);
 }
 
 #[test]
@@ -218,7 +218,7 @@ fn only_locked_reports_lock_the_session() {
 #[test]
 fn a_flood_is_read_a_bounded_batch_at_a_time() {
     let (dir, listener) = daemon();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     let reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
     let touches = r#"{"kind":"touches","v":{"active":true}}"#;
@@ -237,7 +237,7 @@ fn a_flood_is_read_a_bounded_batch_at_a_time() {
 fn only_the_unit_of_the_daemon_may_be_the_daemon() {
     let cases: &[(&str, &str, bool)] = &[
         (
-            "palmrest's unit",
+            "mouse_gestures's unit",
             "0::/system.slice/bardo-mouse-gestures.service\n",
             true,
         ),
@@ -272,7 +272,7 @@ fn only_the_unit_of_the_daemon_may_be_the_daemon() {
 fn a_process_that_is_not_in_the_unit_is_refused_by_the_real_check() {
     // The daemon of this test is a thread of the test process, in no system unit.
     let (dir, listener) = daemon();
-    let mut client = Palmrest::at(Some(dir.path().join("events.sock")));
+    let mut client = MouseGestures::at(Some(dir.path().join("events.sock")));
     assert!(client.connect().is_none(), "refused");
     let _ = listener;
 }
@@ -281,7 +281,7 @@ fn a_process_that_is_not_in_the_unit_is_refused_by_the_real_check() {
 fn the_persons_settings_are_told_on_connect_and_again_when_the_file_changes() {
     let (dir, listener) = daemon();
     let file = dir.path().join("gestures.toml");
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), Some(file.clone()));
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), Some(file.clone()));
     assert!(client.watches_settings());
     std::fs::write(&file, "[scroll]\nspeed = 30\n").expect("write");
     let _reader = client.connect().expect("connects");
@@ -321,7 +321,7 @@ fn the_persons_settings_are_told_on_connect_and_again_when_the_file_changes() {
 #[test]
 fn a_hello_of_another_version_stops_the_read() {
     let (dir, listener) = daemon();
-    let mut client = Palmrest::trusting(dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     let reader = client.connect().expect("connects");
     let peer = accept(&listener).expect("accept");
     let hello = r#"{"kind":"hello","v":{"version":2,"device":{"name":"m","path":"p","vendor":0,"product":0}}}"#;

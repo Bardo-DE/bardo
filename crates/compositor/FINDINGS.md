@@ -105,7 +105,7 @@ P3-CSS, three in `src/` and its ignored parity test, never built at P0-Z2).
 | `crates/compositor-ipc/src/wait.rs` | parse_wait (1) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
 | `crates/bardo-compositorctl/src/command.rs` | parse, run (2) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
 | `crates/compositor-testkit/src/fixture.rs` | Fixture::session (1) | P1-D1 | P1-Z's session suite |
-| `crates/compositor-testkit/src/fixture.rs` | Fixture::palmrest (1) | P3-Z | P3-Z's palmrest tests |
+| `crates/compositor-testkit/src/fixture.rs` | Fixture::mouse_gestures (1) | P3-Z | P3-Z's the mouse gestures daemon tests |
 
 Ignored tests by lane (P0-Z2): P0-H1 17, P0-H2 16, P0-H3 7, P0-H4 10, P0-H5 7, P0-H6 3,
 P0-H7 5, P0-H8 7, P0-B-headless 7, P0-B-loop 4, P0-R-scene 2, P0-T-client 5, P0-T-dev 6,
@@ -3430,7 +3430,7 @@ Built, uncompiled (wave 6 lanes do not build): `input/gesture_route.rs` (finger-
 | Finish timer | The finish reuses `TimerKey::SpaceFinish(output)` (its doc: a Space change animation finishes), which nothing armed before. |
 | Client delivery | The model steps an input event before the loop delivers it; `Model::swipe_owner()` right after says whether the desktop took that swipe step. It holds for one input event per `feed` (what every caller does). A taken swipe is not delivered to clients (`core_loop/deliver.rs`); other finger counts still are. |
 | Origins | Physical, test and trusted-feed swipes count; virtual, agent and remote ones never do (I2: system gestures are physical only). |
-| Not done | palmrest's Magic Mouse part (`Fixture::palmrest`); a horizontal swipe while Mission Control is up (the Mac switches Spaces there); the 2-finger Magic Mouse source. |
+| Not done | the mouse gestures daemon's Magic Mouse part (`Fixture::mouse_gestures`); a horizontal swipe while Mission Control is up (the Mac switches Spaces there); the 2-finger Magic Mouse source. |
 ## cas33-strip: finger-tracked Spaces and Mission Control (2026-10-16)
 
 Built, uncompiled (the lane does not build). Closes the cas21 rows "Space strip drawing" and "Mission Control progress", and
@@ -5073,20 +5073,20 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **NEW-FA-4 (decided by the owner, 2026-10-17): a virtual device is trusted by who turnstile made it for, not by a guess.** The old rule
   read the bus type and the vendor id (`0x0001`) and wrongly caught a laptop's AT keyboard (`Bus=0011 Vendor=0001`; first fixed by also
   requiring `BUS_VIRTUAL`); the vendor is gone from the decision. turnstile is the only process that can create a uinput device
-  (`dist/72-turnstile.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `turnstile/pad_daemon` (palmrest)
+  (`dist/72-turnstile.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `turnstile/pad_daemon` (the mouse gestures daemon)
   or `turnstile/keymap_daemon` (the key remap daemon) into the device's `phys`. `RealInputFeed` reads `/sys/class/input/<sysname>/device/phys` next to the bus
   type (`maker_of`; unreadable reads as unlabelled) and `Maker::parse` (`compositor-core/src/input/maker.rs`) reads it. A virtual-bus device
-  labelled for the key remap daemon is `Origin::Physical` (the key remap daemon only replays the person's own keyboard and mouse); one labelled for palmrest, one with no label
+  labelled for the key remap daemon is `Origin::Physical` (the key remap daemon only replays the person's own keyboard and mouse); one labelled for the mouse gestures daemon, one with no label
   (ydotool, a `uinput` group member) and one with any other label (a label that merely starts with `turnstile/`) is `Origin::Virtual`.
   Every device off the virtual bus is physical, as before. The compositor links nothing of turnstile, so `Maker::parse` is its own copy of
   turnstile-wire's `Maker`; `origin.rs` and `maker.rs` tests pin the same strings as turnstile's `maker` test: change one side and change both.
-  **palmrest stays `Virtual`** (`Maker::origin`). Read in palmrest (origin/master): its gesture actions press synthetic key chords
+  **the mouse gestures daemon stays `Virtual`** (`Maker::origin`). Read in the mouse gestures daemon (origin/master): its gesture actions press synthetic key chords
   (`action.rs:129` `key_of`, `tracker/out.rs:45`, `daemon/dispatch.rs:25`, `outputs/events.rs:81`), `Back` is Alt+Left by default, and the shell's
   `UserConfig` (`socket/client.rs:137`) can map a gesture to any chord with ctrl, alt or super, `Ctrl+Alt+F3` included (`keys.rs:125`); as a
   physical keyboard that would switch the VT and answer a consent sheet. Its pad is two-contact scroll strokes at the pad's centre, never a click or a
   single-contact move (`outputs/pad.rs:1-8`). The consequence the audit feared (NEW-FA-4: a Magic Mouse user cannot click a consent sheet or the lock) does
-  not arise from this: palmrest only reads the mouse and never grabs it (`daemon/evdev.rs:11,140`), so the mouse's own clicks and motion come from its
-  kernel device, a non-virtual one, and are physical. Closes if palmrest stops pressing key chords, or the owner decides they are the person's hand:
+  not arise from this: the mouse gestures daemon only reads the mouse and never grabs it (`daemon/evdev.rs:11,140`), so the mouse's own clicks and motion come from its
+  kernel device, a non-virtual one, and are physical. Closes if the mouse gestures daemon stops pressing key chords, or the owner decides they are the person's hand:
   then `Maker::PadDaemon` maps to `Origin::Physical` in `Maker::origin` and its test row flips.
 - **NEW-PI-8 (the compositor half).** `ConnectEis` records the asking bus connection's unique name; `portal_watch.rs` listens for the bus's
   `NameOwnerChanged` and asks the loop (`ConnectAsk::owner_gone`) to close every socket that connection asked for. Transom half: seed

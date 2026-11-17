@@ -95,7 +95,7 @@ impl Devices {
                 false
             }
             Effect::Log(line) => {
-                eprintln!("palmrest: {line}");
+                eprintln!("mouse_gestures: {line}");
                 false
             }
             Effect::Lost => true,

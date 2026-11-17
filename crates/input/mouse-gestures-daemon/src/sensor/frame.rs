@@ -5,7 +5,7 @@ use crate::time::Mono;
 use crate::touch::{TouchId, TouchState};
 use serde::{Deserialize, Serialize};
 
-/// The physical buttons held in a frame. palmrest never makes clicks (the kernel does); it only
+/// The physical buttons held in a frame. The mouse gestures daemon never makes clicks (the kernel does); it only
 /// keeps clicks from being read as taps or scrolls (P4).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Buttons(pub u8);

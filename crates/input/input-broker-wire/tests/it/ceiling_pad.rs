@@ -1,4 +1,4 @@
-//! palmrest's touchpad and wheel: what palmrest really writes passes unchanged, and nothing else does.
+//! The mouse gestures daemon's touchpad and wheel: what the mouse gestures daemon really writes passes unchanged, and nothing else does.
 
 use crate::{abs, key, rel, sync};
 use input_broker_wire::codes::*;
@@ -17,9 +17,9 @@ fn pass_all(f: &mut Filter, events: &[Event]) {
     assert_eq!(out.pass, events);
 }
 
-/// The sequences palmrest's `PadEncoder` writes for a two finger land, a move and a lift.
+/// The sequences the mouse gestures daemon's `PadEncoder` writes for a two finger land, a move and a lift.
 #[test]
-fn what_palmrest_writes_for_a_two_finger_gesture_passes_unchanged() {
+fn what_mouse_gestures_writes_for_a_two_finger_gesture_passes_unchanged() {
     let mut f = filter(&Create::touchpad());
     pass_all(
         &mut f,
@@ -151,7 +151,7 @@ fn a_click_needs_a_finger_down_and_ends_when_it_lifts() {
 }
 
 #[test]
-fn the_touchpad_capabilities_are_exactly_palmrests() {
+fn the_touchpad_capabilities_are_exactly_mouse_gestures() {
     let spec = plan(&Create::touchpad()).expect("plans").spec;
     assert_eq!(spec.name, "mouse-gestures touchpad");
     assert_eq!((spec.vendor, spec.product), (0x0001, 0x0002));

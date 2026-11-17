@@ -14,10 +14,10 @@ use std::sync::Arc;
 pub(crate) const USER: Uid = Uid::new(1000);
 /// The key remap daemon's dynamic user.
 pub(crate) const KEY_REMAP_UID: Uid = Uid::new(61_234);
-/// palmrest's dynamic user.
-pub(crate) const PALMREST_UID: Uid = Uid::new(61_235);
-/// palmrest's control group: a system service's.
-pub(crate) const PALMREST_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
+/// The mouse gestures daemon's dynamic user.
+pub(crate) const MOUSE_GESTURES_UID: Uid = Uid::new(61_235);
+/// The mouse gestures daemon's control group: a system service's.
+pub(crate) const MOUSE_GESTURES_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
 
 pub(crate) fn listed(role: &str, proof: Proof, uid: Uid, cgroup: &str) -> Caller {
     let role = RoleName::new(role).expect("a valid role name");
@@ -30,9 +30,14 @@ pub(crate) fn listed(role: &str, proof: Proof, uid: Uid, cgroup: &str) -> Caller
     }
 }
 
-/// The genuine palmrest.
-pub(crate) fn palmrest() -> Caller {
-    listed("pad_daemon", Proof::Full, PALMREST_UID, PALMREST_CGROUP)
+/// The genuine mouse_gestures.
+pub(crate) fn mouse_gestures() -> Caller {
+    listed(
+        "pad_daemon",
+        Proof::Full,
+        MOUSE_GESTURES_UID,
+        MOUSE_GESTURES_CGROUP,
+    )
 }
 
 /// The genuine key_remap.

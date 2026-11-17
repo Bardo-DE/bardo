@@ -1,4 +1,4 @@
-//! `MagicMouseHid`: the mouse's hidraw reports, decoded by palmrest itself (12.3.1).
+//! `MagicMouseHid`: the mouse's hidraw reports, decoded by the mouse gestures daemon itself (12.3.1).
 //!
 //! `decode` turns bytes into `Report`s in the mouse's own units (and `encode` runs it in
 //! reverse for fixtures); this sensor lifts each report into a millimetre `Frame` at the

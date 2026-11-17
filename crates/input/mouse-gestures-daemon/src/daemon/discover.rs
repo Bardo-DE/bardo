@@ -154,7 +154,7 @@ mod tests {
 
     #[test]
     fn find_reads_a_sysfs_tree() {
-        let root = std::env::temp_dir().join(format!("palmrest-sys-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("mouse-gestures-sys-{}", std::process::id()));
         for (n, id) in [
             ("hidraw0", "0003:00000DB0:00000076"),
             ("hidraw3", "0005:0000004C:00000269"),

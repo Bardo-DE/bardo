@@ -1,4 +1,4 @@
-//! The seam palmrest and the key remap daemon code against.
+//! The seam the mouse gestures daemon and the key remap daemon code against.
 
 use crate::error::ClientError;
 use input_broker_wire::{Create, DeviceId, Event, Reason};

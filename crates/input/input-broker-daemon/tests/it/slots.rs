@@ -1,4 +1,4 @@
-use crate::support::{KEY_REMAP_UID, PALMREST_UID, USER, key_remap, palmrest};
+use crate::support::{KEY_REMAP_UID, MOUSE_GESTURES_UID, USER, key_remap, mouse_gestures};
 use caller_identity_core::Uid;
 use input_broker_daemon::identity::{ActiveUid, Caller};
 use input_broker_daemon::slots::{Bucket, NoSlot, Slots};
@@ -15,14 +15,18 @@ fn stranger(uid: Uid) -> Caller {
     Caller {
         uid,
         credential: None,
-        ..palmrest()
+        ..mouse_gestures()
     }
 }
 
 #[test]
 fn a_caller_that_passes_the_policy_has_a_reserve_and_anyone_else_a_user_pool() {
     let table: &[(&str, Caller, Bucket)] = &[
-        ("palmrest", palmrest(), Bucket::Reserved(Maker::PadDaemon)),
+        (
+            "mouse_gestures",
+            mouse_gestures(),
+            Bucket::Reserved(Maker::PadDaemon),
+        ),
         (
             "key_remap",
             key_remap(),
@@ -39,18 +43,18 @@ fn a_caller_that_passes_the_policy_has_a_reserve_and_anyone_else_a_user_pool() {
             Bucket::Stranger(Uid::new(2000)),
         ),
         (
-            "palmrest's user is not a free pass",
+            "mouse_gestures's user is not a free pass",
             Caller {
                 credential: None,
-                ..palmrest()
+                ..mouse_gestures()
             },
-            Bucket::Stranger(PALMREST_UID),
+            Bucket::Stranger(MOUSE_GESTURES_UID),
         ),
         (
-            "palmrest running as the person at the seat",
+            "mouse_gestures running as the person at the seat",
             Caller {
                 uid: USER,
-                ..palmrest()
+                ..mouse_gestures()
             },
             Bucket::Stranger(USER),
         ),

@@ -167,11 +167,11 @@ if [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT" ]]; then
   say "      \$ systemctl --user disable --now $UNIT && rm ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$UNIT"
 fi
 
-# Temporary: an install from before the rename keeps its config in /etc/palmrest; carry it over once.
+# Temporary: an install from before the rename keeps its config in /etc/mouse_gestures; carry it over once.
 # Delete in the release after everyone has installed once.
-if [[ -d /etc/palmrest && ! -e /etc/bardo/mouse-gestures ]]; then
-  root_step "move /etc/palmrest to /etc/bardo/mouse-gestures" \
-    sh -c 'mkdir -p /etc/bardo && mv /etc/palmrest /etc/bardo/mouse-gestures'
+if [[ -d /etc/mouse_gestures && ! -e /etc/bardo/mouse-gestures ]]; then
+  root_step "move /etc/mouse_gestures to /etc/bardo/mouse-gestures" \
+    sh -c 'mkdir -p /etc/bardo && mv /etc/mouse_gestures /etc/bardo/mouse-gestures'
 fi
 
 root_step "load uinput now (it loads at every start of the computer anyway)" modprobe uinput

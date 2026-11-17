@@ -34,11 +34,11 @@ pub struct Filtered {
 /// The ceiling and the little state it tracks (fingers down, keys down).
 #[derive(Debug)]
 pub enum Filter {
-    /// palmrest's touchpad.
+    /// The mouse gestures daemon's touchpad.
     Touchpad(TouchpadState),
-    /// palmrest's wheel.
+    /// The mouse gestures daemon's wheel.
     Wheel,
-    /// palmrest's keyboard.
+    /// The mouse gestures daemon's keyboard.
     Keys(KeysState),
 }
 

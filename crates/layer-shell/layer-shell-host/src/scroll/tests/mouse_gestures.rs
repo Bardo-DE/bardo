@@ -1,8 +1,8 @@
-//! design/11 §11.8 item 13, double scroll, with a fake palmrest daemon: the daemon's stream
+//! design/11 §11.8 item 13, double scroll, with a fake the mouse gestures daemon daemon: the daemon's stream
 //! over a real `SOCK_SEQPACKET` socket, read and routed as the host does
-//! (`input::palmrest::{read_all, route}`), plus the same stroke arriving again as compositor
+//! (`input::mouse_gestures::{read_all, route}`), plus the same stroke arriving again as compositor
 //! touchpad frames, filtered by the suppression window. The offsets must equal the
-//! palmrest-only run within 1 px; without the window they would not.
+//! mouse-gestures-only run within 1 px; without the window they would not.
 
 use std::os::fd::OwnedFd;
 use std::task::Context;
@@ -16,8 +16,8 @@ use rustix::net::{
 
 use crate::dom::document::SurfaceDocument;
 use crate::dom::tests::env::test_env;
-use crate::input::palmrest::route::route;
-use crate::input::palmrest::{Palmrest, read_all};
+use crate::input::mouse_gestures::route::route;
+use crate::input::mouse_gestures::{MouseGestures, read_all};
 use crate::input::pointer::PointerPos;
 use crate::scratch::Dir;
 use crate::scroll::source::{AxisFrame, AxisSource, AxisValue};
@@ -50,7 +50,7 @@ fn document() -> SurfaceDocument {
     doc
 }
 
-/// A fake palmrest: a listening socket in a private temp directory.
+/// A fake the mouse gestures daemon: a listening socket in a private temp directory.
 struct Daemon {
     dir: Dir,
     listener: OwnedFd,
@@ -85,10 +85,10 @@ fn scroll_msg(phase: Phase, dy: f32, t: Duration) -> ToHost {
     }
 }
 
-/// Which extra input a run gets besides palmrest's stream.
+/// Which extra input a run gets besides the mouse gestures daemon's stream.
 #[derive(Clone, Copy, PartialEq)]
 enum Echo {
-    /// palmrest only.
+    /// The mouse gestures daemon only.
     None,
     /// The same stroke through the compositor, filtered by the window.
     Suppressed,
@@ -123,7 +123,7 @@ impl Host {
             }
             if let Some(event) = routed.scroll {
                 self.scroll
-                    .palmrest(&mut self.doc.base_mut(), event, AT, self.now);
+                    .mouse_gestures(&mut self.doc.base_mut(), event, AT, self.now);
             }
         }
         let Some((px, stop)) = echo else {
@@ -172,7 +172,7 @@ impl Host {
 /// then the lift; the page's offset after every frame until it settles.
 fn run(echo: Echo) -> Vec<f64> {
     let daemon = Daemon::start();
-    let mut client = Palmrest::trusting(daemon.dir.path().join("events.sock"), None);
+    let mut client = MouseGestures::trusting(daemon.dir.path().join("events.sock"), None);
     let reader = client.connect().expect("the fake daemon is there");
     let peer = accept(&daemon.listener).expect("accept");
     let mut doc = document();

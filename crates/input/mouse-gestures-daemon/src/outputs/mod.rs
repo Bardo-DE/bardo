@@ -18,7 +18,7 @@ pub enum OutputError {
     Unavailable(String),
     #[error("writing to the virtual device failed: {0}")]
     Write(#[from] std::io::Error),
-    /// The input service closed the connection, turned palmrest away or stopped answering. The
+    /// The input service closed the connection, turned the mouse gestures daemon away or stopped answering. The
     /// text says why, in plain words. Too many in a row end the virtual devices.
     #[error("{0}")]
     Cut(String),

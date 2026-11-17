@@ -16,8 +16,8 @@
 //!    machine says so (`wl_surface.frame()`, then present, then clear the redraw flag).
 //! 4. **Arm timers.** The watchdog, key-repeat and scroll-thumb changes the handlers and phase
 //!    3 asked for, the loop sources for pipes another client asked us to fill or that carry the
-//!    selection it offers (`ctx::pipe`, `ctx::paste`), and the palmrest socket's source when a
-//!    connection attempt is due (`ctx::palmrest`).
+//!    selection it offers (`ctx::pipe`, `ctx::paste`), and the mouse gestures daemon socket's source when a
+//!    connection attempt is due (`ctx::mouse_gestures`).
 //! 5. **Flush the connection**, and stop on a protocol error, or on the failure an earlier phase
 //!    found and could not return (`HostCtx::failed`).
 
@@ -103,7 +103,7 @@ impl<M: 'static> Flush for HostCtx<M> {
         super::timer::arm_requested(self);
         super::pipe::register_writes(self);
         super::paste::register_read(self);
-        super::palmrest::connect_if_due(self);
+        super::mouse_gestures::connect_if_due(self);
     }
 
     fn flush_connection(&mut self) -> Result<()> {

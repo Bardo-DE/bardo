@@ -2,8 +2,10 @@
 
 use layer_shell_types::{KeyboardFocus, LockId, LockState, OutputId, OutputInfo, SurfaceId};
 
-/// What palmrest asks of the shell, and its workspace steps.
-pub use mouse_gestures_proto::{HostAction as PalmrestAction, Workspace as PalmrestWorkspace};
+/// What the mouse gestures daemon asks of the shell, and its workspace steps.
+pub use mouse_gestures_proto::{
+    HostAction as MouseGesturesAction, Workspace as MouseGesturesWorkspace,
+};
 
 /// An event delivered to the closure given to `Host::run`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -44,11 +46,11 @@ pub enum HostEvent<M> {
     /// compositor that offers it (the compositor, from `bardo_window_manager_v1` version 2); elsewhere
     /// the windows are closed one by one and `SurfaceClosed` is all the app sees.
     QuitAsked,
-    /// palmrest asks for an action that needs the person's session, and the host carries none of it
+    /// The mouse gestures daemon asks for an action that needs the person's session, and the host carries none of it
     /// out: the shell does, as it does its own commands (the workspace steps, a line of its own
     /// command language, a program of the person's). The daemon is a system service with no session
-    /// of its own. The words are within [`PalmrestAction::fits`]'s bounds.
-    Palmrest(PalmrestAction),
+    /// of its own. The words are within [`MouseGesturesAction::fits`]'s bounds.
+    MouseGestures(MouseGesturesAction),
     /// A message sent through a `HostHandle`.
     App(M),
 }
@@ -88,7 +90,7 @@ pub(crate) fn widen<M>(event: ShellEvent) -> HostEvent<M> {
         HostEvent::KeyboardFocus { id, focus } => HostEvent::KeyboardFocus { id, focus },
         HostEvent::Lock { id, state } => HostEvent::Lock { id, state },
         HostEvent::QuitAsked => HostEvent::QuitAsked,
-        HostEvent::Palmrest(ask) => HostEvent::Palmrest(ask),
+        HostEvent::MouseGestures(ask) => HostEvent::MouseGestures(ask),
         HostEvent::App(never) => match never {},
     }
 }
@@ -103,8 +105,12 @@ mod tests {
             (HostEvent::Started, HostEvent::Started),
             (HostEvent::QuitAsked, HostEvent::QuitAsked),
             (
-                HostEvent::Palmrest(PalmrestAction::Workspace(PalmrestWorkspace::Next)),
-                HostEvent::Palmrest(PalmrestAction::Workspace(PalmrestWorkspace::Next)),
+                HostEvent::MouseGestures(MouseGesturesAction::Workspace(
+                    MouseGesturesWorkspace::Next,
+                )),
+                HostEvent::MouseGestures(MouseGesturesAction::Workspace(
+                    MouseGesturesWorkspace::Next,
+                )),
             ),
             (
                 HostEvent::OutputRemoved(OutputId(3)),

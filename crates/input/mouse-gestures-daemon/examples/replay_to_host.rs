@@ -2,7 +2,7 @@
 //! the `ToHost` JSON lines a subscriber receives, one packet per line.
 //!
 //! This is the stream the compositor subscribes to (it is written to
-//! `compositor-testkit/fixtures/palmrest/*.jsonl` per fixture). With no arguments every Magic
+//! `compositor-testkit/fixtures/mouse_gestures/*.jsonl` per fixture). With no arguments every Magic
 //! Mouse fixture in `tests/fixtures` is replayed in name order, each introduced by a `# name`
 //! line on stderr so stdout stays pure JSON lines. `--held` replays as if a host held the
 //! pointer, which is when taps are sent.
@@ -59,7 +59,7 @@ fn split_args(args: Vec<String>) -> (bool, Vec<PathBuf>) {
     (held, files)
 }
 
-/// Every `.bin` fixture of palmrest's tests, in name order.
+/// Every `.bin` fixture of the mouse gestures daemon's tests, in name order.
 fn default_fixtures() -> Result<Vec<PathBuf>, String> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let entries = std::fs::read_dir(&dir).map_err(|e| format!("{}: {e}", dir.display()))?;

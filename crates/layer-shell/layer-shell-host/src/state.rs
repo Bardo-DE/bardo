@@ -64,7 +64,7 @@ use crate::handlers::text_input::TextInputManager;
 use crate::ime::{Ime, PendingIme, SentSurrounding};
 use crate::input::focus::PointerFocus;
 use crate::input::key::key_event;
-use crate::input::palmrest::Palmrest;
+use crate::input::mouse_gestures::MouseGestures;
 use crate::input::pointer::PointerPos;
 use crate::lock::active::{ActiveLock, LockIds};
 use crate::popup_keyboard::lifts_parent_keyboard;
@@ -148,12 +148,12 @@ pub(crate) struct HostState {
     pub(crate) timers: Vec<TimerRequest>,
     /// The scroll configuration and physics every surface uses (`HostCtx::set_scroll_config`).
     pub(crate) scroll: Tuning,
-    /// The double-scroll window palmrest's fingers open (design/11 §11.3.14).
+    /// The double-scroll window the mouse gestures daemon's fingers open (design/11 §11.3.14).
     pub(crate) suppress: Suppress,
     /// The evdev code of a scroll key the engine took, so its repeats and release are too.
     pub(crate) scroll_key: Option<u32>,
-    /// The palmrest socket, when the daemon runs.
-    pub(crate) palmrest: Palmrest,
+    /// The mouse gestures daemon socket, when the daemon runs.
+    pub(crate) mouse_gestures: MouseGestures,
     pub(crate) qh: QueueHandle<HostState>,
     pub(crate) conn: Connection,
 }
@@ -247,7 +247,7 @@ impl HostState {
             scroll: Tuning::default(),
             suppress: Suppress::default(),
             scroll_key: None,
-            palmrest: Palmrest::system(),
+            mouse_gestures: MouseGestures::system(),
             qh,
             conn,
         })

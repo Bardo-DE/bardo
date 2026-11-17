@@ -17,7 +17,7 @@ pub const PREFIX: &str = "input-broker/";
 /// The proven service a device was made for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Maker {
-    /// palmrest, the Magic Mouse gesture daemon: peephole role `pad_daemon`.
+    /// The mouse gestures daemon, the Magic Mouse gesture daemon: peephole role `pad_daemon`.
     PadDaemon,
     /// The key remap daemon, the Mac keyboard mapping daemon: peephole role `keymap_daemon`.
     KeymapDaemon,

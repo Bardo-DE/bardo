@@ -188,7 +188,7 @@ Props added in the launcher gaps (FINDINGS "Launcher gaps"): `FieldFocus::Contro
 | `ds-gallery` | the plan's gallery (axes, `pages/<group>/<component>.rs`, `--snapshot`) |
 
 The shell-only settings of 22-SETTINGS (§3.4-3.14, `ShellFile`, `GesturesFile`, `Settings`,
-`SettingsWatch`, `apply`) belong to sill and palmrest, not to this workspace.
+`SettingsWatch`, `apply`) belong to sill and the mouse gestures daemon, not to this workspace.
 
 ## `ds`: the widget interface and placements
 

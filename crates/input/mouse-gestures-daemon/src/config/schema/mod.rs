@@ -1,7 +1,7 @@
 //! `mouse-gestures.settings.toml`: the schema of `gestures.toml` for the Settings app (Bardo
 //! design/22 section 9).
 //!
-//! palmrest is a standalone daemon and takes no Bardo crate, so it cannot use Bardo's
+//! The mouse gestures daemon is a standalone daemon and takes no Bardo crate, so it cannot use Bardo's
 //! `SettingsSchema` derive (and its own settings come from `settings_struct!`, which has no
 //! serde derive to hang one on). This module writes the same file format from a table
 //! (`keys.rs`) whose defaults are read from [`Config::default`], and the tests pin every row to
@@ -53,10 +53,10 @@ impl Kind {
 }
 
 /// Whether the Settings app draws a key on its page or under its "Advanced" disclosure; every
-/// palmrest key is on the page.
+/// The mouse gestures daemon key is on the page.
 const EXPOSURE: &str = "basic";
 
-/// The page every palmrest key is on, as Bardo's `Page` writes it.
+/// The page every mouse gestures daemon key is on, as Bardo's `Page` writes it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 struct Page {
     kind: &'static str,
@@ -95,12 +95,12 @@ pub struct Schema {
 pub const FILE_NAME: &str = "mouse-gestures.settings.toml";
 
 impl Schema {
-    /// palmrest's schema: one key per setting of [`Config`].
+    /// The mouse gestures daemon's schema: one key per setting of [`Config`].
     ///
     /// # Panics
     /// never: every field of `Config` is a plain value or table.
     #[must_use]
-    pub fn palmrest() -> Schema {
+    pub fn mouse_gestures() -> Schema {
         let defaults = toml::Value::try_from(Config::default())
             .expect("every field of Config is a plain value or table");
         Schema {

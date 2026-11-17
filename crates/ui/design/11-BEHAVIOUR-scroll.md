@@ -72,7 +72,7 @@ All sources become one of three engine inputs: **Gesture** (phased pixel deltas)
 
 | Source | Arrives as | Engine input | Momentum | Rubber band | Status |
 | --- | --- | --- | --- | --- | --- |
-| Magic Mouse on our surface | `palmrest` socket `Scroll{phase, dx_px, dy_px, t}` (12 §12.3.10), already axis-locked and accelerated | Gesture | yes (host) | yes | settled (plan B) |
+| Magic Mouse on our surface | `mouse_gestures` socket `Scroll{phase, dx_px, dy_px, t}` (12 §12.3.10), already axis-locked and accelerated | Gesture | yes (host) | yes | settled (plan B) |
 | Touchpad / virtual touchpad on our surface | `wl_pointer` axis, `axis_source finger`, continuous px, `axis_stop` | Gesture: first axis event = Began, `axis_stop` on both axes = Ended | yes (host) | yes | settled (plan B) |
 | Continuous non-finger (trackpoint) | axis, source `continuous` | Gesture, no momentum | no | no | proposed |
 | Wheel mouse | axis, source `wheel`, `axis_value120` | Step, 120 = 1 detent = 60 px | no | no | proposed |
@@ -81,7 +81,7 @@ All sources become one of three engine inputs: **Gesture** (phased pixel deltas)
 | Programmatic | `ScrollCmd::{To, By, IntoView}` | Step (smooth) or immediate | no | no | proposed |
 
 Compositor-delivered axis values already carry the compositor's natural-scrolling choice
-(`wl_pointer.axis_relative_direction`); the host uses them as delivered. `palmrest` events are
+(`wl_pointer.axis_relative_direction`); the host uses them as delivered. `mouse_gestures` events are
 in **finger direction**; the host applies `scroll.natural` to them (§11.3.13).
 
 ### 11.3.3 Latching (target chosen at gesture start)
@@ -106,11 +106,11 @@ Engine phases mirror R1 (H):
 
 | Phase | Gesture source | Engine |
 | --- | --- | --- |
-| MayBegin | palmrest: fingers down before the axis lock | stops running momentum and rebound instantly (touch-to-stop) |
-| Began | palmrest: axis locked (first delta dropped, see 12); touchpad: first axis event | latch |
+| MayBegin | the mouse gestures daemon: fingers down before the axis lock | stops running momentum and rebound instantly (touch-to-stop) |
+| Began | the mouse gestures daemon: axis locked (first delta dropped, see 12); touchpad: first axis event | latch |
 | Changed | every non-zero delta | tracking, 1:1 |
-| Ended | palmrest: all fingers lifted or contact set changed; touchpad: `axis_stop` | momentum or rebound |
-| Cancelled | palmrest: physical click or palm (12) | rebound only, velocity 0 |
+| Ended | the mouse gestures daemon: all fingers lifted or contact set changed; touchpad: `axis_stop` | momentum or rebound |
+| Cancelled | the mouse gestures daemon: physical click or palm (12) | rebound only, velocity 0 |
 | MomentumBegan / Changed / Ended | engine-generated | notifications only |
 
 ### 11.3.5 Tracking
@@ -185,7 +185,7 @@ scrollbar (that is banned everywhere a ds container scrolls).
 
 ### 11.3.8 Scroll acceleration (device units to px)
 
-For the Magic Mouse the conversion is computed once, in `palmrest` (12 §12.3.8), so that our
+For the Magic Mouse the conversion is computed once, in `mouse_gestures` (12 §12.3.8), so that our
 surfaces and foreign clients get the same distance for the same stroke. It keeps the Python
 daemon's feel as the starting point (settled):
 
@@ -204,8 +204,8 @@ daemon's feel as the starting point (settled):
 
 | Source | Rule | Status |
 | --- | --- | --- |
-| Magic Mouse | the Python lock, executed in palmrest: accumulate centroid deltas; lock X when `|x| >= 40` and `|x| >= 1.5 |y|`, Y symmetrically; the accumulated pre-lock motion is **dropped** (no jump); unlock when a non-zero delta arrives `>= 0.25 s` after the previous motion; two fingers locking X become Blocked (they belong to the workspace swipe); all in raw units | settled (Python `SCROLL_LOCK_THRESHOLD 40`, `SCROLL_LOCK_RATIO 1.5`, `SCROLL_LOCK_TIMEOUT 0.25`) |
-| Unlock in phase terms | palmrest emits Ended (no momentum: the finger was idle >= 0.25 s so `v0 = 0` by the held-still rule), then MayBegin, then Began at the re-lock; the host re-latches | proposed |
+| Magic Mouse | the Python lock, executed in the mouse gestures daemon: accumulate centroid deltas; lock X when `|x| >= 40` and `|x| >= 1.5 |y|`, Y symmetrically; the accumulated pre-lock motion is **dropped** (no jump); unlock when a non-zero delta arrives `>= 0.25 s` after the previous motion; two fingers locking X become Blocked (they belong to the workspace swipe); all in raw units | settled (Python `SCROLL_LOCK_THRESHOLD 40`, `SCROLL_LOCK_RATIO 1.5`, `SCROLL_LOCK_TIMEOUT 0.25`) |
+| Unlock in phase terms | the mouse gestures daemon emits Ended (no momentum: the finger was idle >= 0.25 s so `v0 = 0` by the held-still rule), then MayBegin, then Began at the re-lock; the host re-latches | proposed |
 | Touchpad on our surface | accumulate until `max(|dx|,|dy|) >= 10 px`, lock the larger axis (ratio 1) for the gesture and its momentum; no free diagonal scrolling | proposed (R17 H, R11 ratio 1 and 10 px) |
 | Wheel | per event: vertical unless the event is horizontal or Shift is held | proposed |
 
@@ -276,25 +276,25 @@ latched node's rect and scroll metrics.
 ### 11.3.13 Natural scrolling
 
 Default **ON** (R16 H). One Settings value `scroll.natural`; the Settings app writes it to our
-config (applied by the host to palmrest events) and to the compositor's per-device settings for
-mice and touchpads including the palmrest virtual touchpad (the desktop `the desktop settings`
+config (applied by the host to the mouse gestures daemon events) and to the compositor's per-device settings for
+mice and touchpads including the mouse gestures daemon virtual touchpad (the desktop `the desktop settings`
 input config; KWin `kcminputrc`), so our surfaces and foreign clients agree. Status: settled
 default, mechanism proposed.
 
 ### 11.3.14 Double-scroll suppression
 
-The same finger stroke can reach one of our surfaces twice: directly from palmrest, and through
-the compositor from the palmrest virtual touchpad (or from the kernel wheel emulation if it is
+The same finger stroke can reach one of our surfaces twice: directly from the mouse gestures daemon, and through
+the compositor from the mouse gestures daemon virtual touchpad (or from the kernel wheel emulation if it is
 ever re-enabled). Wayland does not identify the device, so (settled rule, plan B, extended):
 
-1. **Primary**: each host tells palmrest when the pointer is over one of its surfaces
+1. **Primary**: each host tells the mouse gestures daemon when the pointer is over one of its surfaces
    (`PointerOver{ours}` on `wl_pointer.enter`/`leave`, 12 §12.3.10); while any subscriber
-   claims the pointer, palmrest sends nothing to the virtual touchpad or wheel device.
+   claims the pointer, the mouse gestures daemon sends nothing to the virtual touchpad or wheel device.
 2. **Safety net**: the host drops `wl_pointer` axis events of source `finger` **and** `wheel`
-   on its surfaces while palmrest reports fingers down, or momentum/rebound driven by palmrest
-   is running, or for a 150 ms grace after the last palmrest Ended (or until an `axis_stop`
+   on its surfaces while the mouse gestures daemon reports fingers down, or momentum/rebound driven by the mouse gestures daemon
+   is running, or for a 150 ms grace after the last the mouse gestures daemon Ended (or until an `axis_stop`
    arrives, whichever is first). A real wheel mouse used during that window is ignored.
-3. Never set `emulate_scroll_wheel=0` without palmrest (or the Python daemon) running: it
+3. Never set `emulate_scroll_wheel=0` without the mouse gestures daemon (or the Python daemon) running: it
    disables Magic Mouse scrolling everywhere (plan B).
 
 ### 11.3.15 Frames and notifications
@@ -397,7 +397,7 @@ if t_end - t_last > 50 ms: v0 = 0
 v0 = clamp(v0 (+ v_boost), -12000, 12000)
 ```
 
-Timestamps: palmrest device time when calibrated (12 §12.3.1), else arrival `CLOCK_MONOTONIC`.
+Timestamps: the mouse gestures daemon device time when calibrated (12 §12.3.1), else arrival `CLOCK_MONOTONIC`.
 
 ### 11.5.3 Rubber band
 
@@ -419,7 +419,7 @@ held:    v(t) = min(t / 0.2, 1) * 25 * step   px/s ;   x(t) = x0 + integral
 spring:  x'' = -175 (x - target) - 20 x'      (m = 1); zeta = 20 / (2 sqrt 175) = 0.756, overshoot ~2.6 %
 ```
 
-### 11.5.5 Magic Mouse units to px (computed in palmrest)
+### 11.5.5 Magic Mouse units to px (computed in the mouse gestures daemon)
 
 ```
 px = raw * (detent_px / ((64 - speed) * 7)) * g_repeat * g_velocity
@@ -441,7 +441,7 @@ opacity(t) = 1 for t < 0.5 s after the last change; 1 - (t - 0.5)/0.24 until 0
 ## 11.6 Configuration
 
 Settings app keys (host config `~/.config/bardo/scroll.json`, read by every layer-shell-host
-process; palmrest keys in 12 §12.6):
+process; the mouse gestures daemon keys in 12 §12.6):
 
 | Key | Type | Default | Range | Status |
 | --- | --- | --- | --- | --- |
@@ -452,7 +452,7 @@ process; palmrest keys in 12 §12.6):
 | `scroll.wheel_detent_px` | px | 60 | 20..200 | proposed |
 | `scroll.wheel_accel_max` | factor | 5 | 1..8 (1 is off) | proposed |
 | `scroll.fling_accel_max` | factor | 2 | 1..4 (1 is off) | proposed |
-| `scroll.speed` (palmrest) | int | 22 | 0..63 | settled (Python) |
+| `scroll.speed` (the mouse gestures daemon) | int | 22 | 0..63 | settled (Python) |
 
 Gallery-only: `a` 30, `b` 0.7, stop 1 px/s, start 100 px/s, cap 12 000 px/s, velocity window
 80 ms, held-still 50 ms, `c` 0.55, snap-back 12.5/s and 0.31, thumb 12/16/8/18, hide 500 ms,
@@ -464,8 +464,8 @@ fade 240 ms, double-scroll grace 150 ms.
 | --- | --- |
 | Engine, latching, rubber band, keyboard, the document side | `blitz-embed/src/scroll/{engine,latch,rubber,keys,doc,driver}` (pure except `doc` and `driver`) |
 | Thumb painting, frame requests, device input | `layer-shell-host/src/scroll/{indicator,paint}` + layer-shell-host's input/scroll.rs (axis -> engine), layer-shell-host's handlers (source, `axis_stop`, `axis_relative_direction`); `ui-blitz/src/window_scroll` (winit's `MouseWheel` and keys -> engine, the window's frame requests, the gestures `use_gestures` hears; a `ui-blitz` window paints no thumb, FINDINGS "Scrolling") |
-| palmrest client | `layer-shell-host/src/input/palmrest.rs`: connects to the palmrest socket if present, sends `PointerOver`, feeds Gesture inputs; absent daemon = no-op |
-| Units to px, axis lock, gains | palmrest `feel` module (12 §12.3.8) |
+| The mouse gestures daemon client | `layer-shell-host/src/input/mouse_gestures.rs`: connects to the mouse gestures daemon socket if present, sends `PointerOver`, feeds Gesture inputs; absent daemon = no-op |
+| Units to px, axis lock, gains | the mouse gestures daemon `feel` module (12 §12.3.8) |
 | Scroll notification hook | layer-shell-host's `use_scroll` (beside `use_surface`: the host owns the engine, so the hook lives on its side, not `ui-blitz`'s) |
 | `scrollbar-width: none`, `scroll-behavior` ban, `--scroll-thumb` token, `data-wheel="capture"`, `data-overscroll="band"` | Bardo (component CSS, `lint::Rule::BlitzUnsupported`, tokens, component markup — §11.3.7's table, §11.3.1 item 2) |
 | Settings UI | Settings app; writes both our keys and the compositor's natural-scroll keys |
@@ -481,7 +481,7 @@ Platform limits:
 - Foreign clients (GTK, Qt, Chromium, Firefox) do their own kinetic scrolling from the virtual
   touchpad's finger source + `axis_stop` (GTK needs `gdk_scroll_event_is_stop`); their curves
   differ from ours (R8, R9). Accepted.
-- Magic Mouse on stock libinput has no `axis_stop` (R20); this is why palmrest exists.
+- Magic Mouse on stock libinput has no `axis_stop` (R20); this is why the mouse gestures daemon exists.
 - KWin and the compositor both deliver `axis_source` and `axis_stop` (wl_pointer v5+); the
   suppression rule depends on it.
 
@@ -517,13 +517,13 @@ use `debug-inject` + FrameStats in the nested compositor.
     Keys in a text input do not scroll.
 12. **Wheel**: one detent: +60 px in 60 ms +- 1 frame; five detents within 50 ms: target +300,
     reached <= 250 ms after the first; no stretch at an edge.
-13. **Double scroll**: palmrest stream plus the same stroke through the virtual touchpad over
-    one of our surfaces: offsets equal the palmrest-only run within 1 px.
+13. **Double scroll**: the mouse gestures daemon stream plus the same stroke through the virtual touchpad over
+    one of our surfaces: offsets equal the mouse-gestures-only run within 1 px.
 14. **Idle**: 5 s after the last settle: 0 frames, 0 commits.
-15. **Natural**: with `Natural`, a finger moving toward the user (palmrest +y) decreases the
+15. **Natural**: with `Natural`, a finger moving toward the user (the mouse gestures daemon +y) decreases the
     vertical offset (content follows the finger); `Traditional` inverts; compositor-delivered
     touchpad events are not inverted twice.
-16. **Python parity** (with 12 §12.8): a recorded hidraw capture replayed through palmrest's
+16. **Python parity** (with 12 §12.8): a recorded hidraw capture replayed through the mouse gestures daemon's
     `feel` and through the Python `ScrollAxisLock`: cumulative px / (60/120) equals the Python
     cumulative v120 within 1 v120 unit on every report.
 

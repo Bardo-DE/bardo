@@ -29,7 +29,7 @@ pub(crate) const PROBE_PERMIT: &str = "BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE";
 /// The name the virtual keyboard registers under; discovery never grabs a device with it.
 pub(crate) const NAME: &str = "key-remap keyboard";
 /// Vendor id of the virtual keyboard: "KC" in ASCII. Not a registered USB vendor; it only has
-/// to differ from palmrest's 0x0001 and from every keyboard the key remap daemon would grab.
+/// to differ from the mouse gestures daemon's 0x0001 and from every keyboard the key remap daemon would grab.
 pub(crate) const VENDOR: u16 = 0x4b43;
 /// Product id of the virtual keyboard.
 pub(crate) const PRODUCT: u16 = 0x0001;
@@ -348,11 +348,11 @@ mod tests {
     }
 
     #[test]
-    fn identity_is_ours_and_not_palmrests() {
+    fn identity_is_ours_and_not_mouse_gestures() {
         let s = setup();
         assert_eq!(&s.name[..NAME.len()], NAME.as_bytes());
         assert!(s.name[NAME.len()..].iter().all(|&b| b == 0));
-        assert_ne!(s.id.vendor, 0x0001, "palmrest's vendor");
+        assert_ne!(s.id.vendor, 0x0001, "mouse_gestures's vendor");
     }
 
     #[test]

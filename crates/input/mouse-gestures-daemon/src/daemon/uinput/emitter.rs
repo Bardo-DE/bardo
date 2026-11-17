@@ -1,4 +1,4 @@
-//! The real emitter: palmrest's virtual touchpad and keyboard, through a `Session`.
+//! The real emitter: the mouse gestures daemon's virtual touchpad and keyboard, through a `Session`.
 //!
 //! A pad frame is one call to `Session::send`, so one batch. What goes wrong is told to the
 //! owner of the emitter (`Devices`) through `OutputError`, which decides when to rebuild and
@@ -67,7 +67,7 @@ impl<S: Session> UinputEmitter<S> {
                 // fill it.
                 if self.lost.is_power_of_two() {
                     eprintln!(
-                        "palmrest: the input service is behind; frames lost so far: {}",
+                        "mouse_gestures: the input service is behind; frames lost so far: {}",
                         self.lost
                     );
                 }
@@ -111,14 +111,14 @@ fn make<S: Session>(session: &mut S, request: &Create) -> Result<DeviceId, Outpu
         Ok(Made::Proxied(id)) => Ok(id),
         Err(ClientError::Io(io)) => Err(OutputError::Unavailable(format!("{UNREACHABLE}: {io}"))),
         Ok(Made::Handed { .. }) => Err(OutputError::Cut(
-            "the input service sent a device palmrest did not ask for".to_owned(),
+            "the input service sent a device mouse_gestures did not ask for".to_owned(),
         )),
         Err(e) => Err(explain(session, e)),
     }
 }
 
-/// What a failed request means for palmrest, in words a person can read in the log. A service
-/// that turned palmrest away says why; that reason is asked for here, while the session that
+/// What a failed request means for the mouse gestures daemon, in words a person can read in the log. A service
+/// that turned the mouse gestures daemon away says why; that reason is asked for here, while the session that
 /// heard it is still at hand.
 fn explain<S: Session>(session: &mut S, e: ClientError) -> OutputError {
     match e {
@@ -143,5 +143,5 @@ fn turned_away(reason: Reason) -> String {
         Reason::Unavailable => "the system would not make the device",
         Reason::Unknown => "it gave no reason",
     };
-    format!("the input service turned palmrest away: {why}")
+    format!("the input service turned mouse_gestures away: {why}")
 }

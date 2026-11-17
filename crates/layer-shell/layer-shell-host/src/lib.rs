@@ -83,7 +83,7 @@ pub use blitz_traits::shell::ColorScheme;
 pub use config::{Backend, HostConfig, Ms, registered_families};
 pub use ctx::HostCtx;
 pub use error::{HostError, Recovery, Result};
-pub use event::{CloseReason, HostEvent, PalmrestAction, PalmrestWorkspace};
+pub use event::{CloseReason, HostEvent, MouseGesturesAction, MouseGesturesWorkspace};
 pub use host::Host;
 pub use host_handle::HostHandle;
 pub use prepaint::{Prepaint, PrepaintFn};

@@ -4,7 +4,7 @@
 //! assembles its own `State`, and nothing here sleeps: time moves only when a test advances it.
 //!
 //! Also here: the mintable test origins ([`TestOrigin`]), the fakes (session, udev, logind,
-//! palmrest), the soft GPU topology (A3, A4), the golden environment ([`Env`]) and the typed
+//! The mouse gestures daemon), the soft GPU topology (A3, A4), the golden environment ([`Env`]) and the typed
 //! fuzz ops.
 
 mod env;

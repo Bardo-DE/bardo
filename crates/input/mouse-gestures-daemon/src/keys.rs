@@ -85,7 +85,7 @@ impl Key {
 
     /// Whether the key is sent only together with ctrl, alt or super: a letter, digit,
     /// punctuation, Enter, Space, Tab, Backspace, Delete or Escape. The input service refuses
-    /// them on their own so that palmrest cannot type text. Navigation, function keys, Insert,
+    /// them on their own so that mouse gestures daemon cannot type text. Navigation, function keys, Insert,
     /// Back and Forward go out freely. The service keeps the same table.
     #[must_use]
     pub fn needs_a_shortcut_modifier(self) -> bool {

@@ -346,7 +346,7 @@ fn item_11_page_down_over_the_page_scrolls_it() {
     clippy::float_cmp,
     reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
 )]
-fn item_15_natural_palmrest_content_follows_the_finger() {
+fn item_15_natural_mouse_gestures_content_follows_the_finger() {
     for (natural, want_down) in [
         (crate::NaturalScroll::Natural, false),
         (crate::NaturalScroll::Traditional, true),
@@ -360,7 +360,7 @@ fn item_15_natural_palmrest_content_follows_the_finger() {
             let mut base = bench.doc.base_mut();
             bench
                 .scroll
-                .palmrest(&mut base, event, OVER_PAGE, bench.now);
+                .mouse_gestures(&mut base, event, OVER_PAGE, bench.now);
         };
         feed(&mut bench, PalmScroll::MayBegin);
         feed(

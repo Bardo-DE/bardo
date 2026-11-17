@@ -1,5 +1,5 @@
 //! Host-side scroll physics for every Blitz document (design/11-BEHAVIOUR-scroll): the host
-//! owns scrolling. Wheel, touchpad, palmrest and keyboard input reach this engine instead of
+//! owns scrolling. Wheel, touchpad, the mouse gestures daemon and keyboard input reach this engine instead of
 //! Blitz's default scroll action; the engine writes raw offsets each frame and paints its own
 //! overlay thumb.
 //!

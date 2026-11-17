@@ -1,9 +1,9 @@
-//! The keys palmrest's keyboard may register: the name table of palmrest's `keys.rs` plus its four
+//! The keys the mouse gestures daemon's keyboard may register: the name table of the mouse gestures daemon's `keys.rs` plus its four
 //! left-hand modifiers, with how each may be pressed.
 //!
-//! A test in this crate fails when palmrest's table has a code this one lacks.
+//! A test in this crate fails when the mouse gestures daemon's table has a code this one lacks.
 
-/// How a key may be pressed on palmrest's keyboard.
+/// How a key may be pressed on the mouse gestures daemon's keyboard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum KeyClass {
     /// Control, shift, alt or super: always allowed, and control, alt or super make a chord.
@@ -18,7 +18,7 @@ pub enum KeyClass {
 /// One key of the table.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct KeyEntry {
-    /// The name palmrest's settings use.
+    /// The name the mouse gestures daemon's settings use.
     pub name: &'static str,
     /// The evdev code.
     pub code: u16,
@@ -34,7 +34,7 @@ const M: KeyClass = KeyClass::Modifier;
 const C: KeyClass = KeyClass::Chorded;
 const F: KeyClass = KeyClass::Free;
 
-/// Every key palmrest's keyboard may register.
+/// Every key the mouse gestures daemon's keyboard may register.
 #[rustfmt::skip]
 pub const KEY_TABLE: &[KeyEntry] = &[
     key("ctrl", 29, M), key("shift", 42, M), key("alt", 56, M), key("super", 125, M),

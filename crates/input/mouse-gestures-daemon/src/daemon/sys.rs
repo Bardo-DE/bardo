@@ -1,7 +1,7 @@
 //! The evdev and uinput ioctls, through `input-linux`'s safe handles.
 //!
 //! No `unsafe` lives here: the crate owns the opcodes and the argument layouts, so this module
-//! only turns palmrest's plain values (raw `u16` codes) into its typed ones. A handle borrows
+//! only turns the mouse gestures daemon's plain values (raw `u16` codes) into its typed ones. A handle borrows
 //! the descriptor for one call; the caller keeps ownership, and closing it still destroys a
 //! device. The one hidraw ioctl no safe crate has is in `hidioc`.
 
@@ -33,7 +33,7 @@ fn out_of_range<E>(_: E) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidInput, "code out of range")
 }
 
-/// An evdev axis palmrest reads the geometry of.
+/// An evdev axis the mouse gestures daemon reads the geometry of.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MtAxis {
     Slot,

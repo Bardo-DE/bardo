@@ -1,7 +1,7 @@
 //! The input seam: a `Sensor` turns a device's reads into `Frame`s in millimetres.
 //!
-//! `Sensor` is a closed enum of the two kinds palmrest decodes: `MagicMouseHid` (the mouse's
-//! hidraw reports, decoded by palmrest itself; the one the daemon was written for) and `EvdevMultitouch` (the `ABS_MT_*` slots a
+//! `Sensor` is a closed enum of the two kinds the mouse gestures daemon decodes: `MagicMouseHid` (the mouse's
+//! hidraw reports, decoded by the mouse gestures daemon itself; the one the daemon was written for) and `EvdevMultitouch` (the `ABS_MT_*` slots a
 //! kernel multitouch driver exposes on an evdev node; untested on anything but the Magic Mouse).
 //!
 //! Everything downstream of a `Frame` is device-generic: the tracker projects each frame onto
@@ -32,7 +32,7 @@ pub enum SensorError {
     Evdev(#[from] EvdevError),
 }
 
-/// A touch-sensing pointing device, as the core sees it: one of the two kinds palmrest decodes.
+/// A touch-sensing pointing device, as the core sees it: one of the two kinds the mouse gestures daemon decodes.
 ///
 /// `decode` takes `&mut self` and may return any number of frames, because the two sources
 /// cut their streams differently: one hidraw read is one or two whole reports (an 0xF7 double),

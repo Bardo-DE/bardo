@@ -1,4 +1,4 @@
-//! palmrest's wheel: four relative axes and nothing else.
+//! The mouse gestures daemon's wheel: four relative axes and nothing else.
 
 use super::filter::{Denial, Filter};
 use super::{Plan, Route};

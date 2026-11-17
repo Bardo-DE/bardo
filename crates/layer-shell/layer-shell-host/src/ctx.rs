@@ -5,9 +5,9 @@ mod drag;
 mod drag_icon;
 pub(crate) mod flush;
 mod lock;
+mod mouse_gestures;
 mod ops;
 mod paint;
-mod palmrest;
 mod paste;
 mod pipe;
 mod rescale;
@@ -53,11 +53,11 @@ pub struct HostCtx<M> {
     /// Pending scroll-thumb wakes by surface (`TimerRequest::ScrollWake`).
     pub(crate) scroll_wakes: BTreeMap<SurfaceId, RegistrationToken>,
     pub(crate) repeat: Option<RegistrationToken>,
-    /// The timer that makes the next attempt to reach palmrest due (`ctx::palmrest`).
-    pub(crate) palmrest_retry: Option<RegistrationToken>,
-    /// The timer that looks at the person's gesture settings file and tells palmrest when it
-    /// changed (`ctx::palmrest`); armed once, at the first connection.
-    pub(crate) palmrest_settings: Option<RegistrationToken>,
+    /// The timer that makes the next attempt to reach the mouse gestures daemon due (`ctx::mouse_gestures`).
+    pub(crate) mouse_gestures_retry: Option<RegistrationToken>,
+    /// The timer that looks at the person's gesture settings file and tells the mouse gestures daemon when it
+    /// changed (`ctx::mouse_gestures`); armed once, at the first connection.
+    pub(crate) mouse_gestures_settings: Option<RegistrationToken>,
     /// The selection read in flight (`ctx::paste`), if any.
     pub(crate) reading: Option<paste::Reading>,
     /// `Break` once `Host::run` should return after this iteration.

@@ -1,4 +1,4 @@
-//! Opening the sensor: the Magic Mouse's hidraw node, or its evdev node when palmrest cannot
+//! Opening the sensor: the Magic Mouse's hidraw node, or its evdev node when the mouse gestures daemon cannot
 //! decode the mouse's report; the sensor that decodes it, and what the socket announces about it.
 
 use super::discover::{self, SYS_HIDRAW};
@@ -19,7 +19,7 @@ pub const EVDEV_READ_EVENTS: usize = 64;
 pub enum Purpose {
     /// The daemon: hidraw read-write, so multitouch can be enabled.
     Run,
-    /// `palmrest record`: read-only, nothing is sent to the mouse.
+    /// `mouse_gestures record`: read-only, nothing is sent to the mouse.
     Record,
 }
 
@@ -42,11 +42,11 @@ impl Opened {
 }
 
 /// Finds and opens the mouse: its hidraw node, or its evdev node through the kernel's multitouch
-/// driver when palmrest does not decode its report. The error is the line to log.
+/// driver when the mouse gestures daemon does not decode its report. The error is the line to log.
 pub fn open(purpose: Purpose) -> Result<Opened, Error> {
     match open_hidraw(purpose) {
         Err(undecodable @ Error::UndecodableReport { .. }) => {
-            eprintln!("palmrest: {undecodable}; reading it through evdev instead");
+            eprintln!("mouse_gestures: {undecodable}; reading it through evdev instead");
             open_evdev()
         }
         other => other,
@@ -64,7 +64,7 @@ fn open_hidraw(purpose: Purpose) -> Result<Opened, Error> {
     }
     if !d.verified {
         eprintln!(
-            "palmrest: {:?} ({:04x}:{:04x}) has never been run with palmrest",
+            "mouse_gestures: {:?} ({:04x}:{:04x}) has never been run with mouse_gestures",
             d.model, d.vendor, d.product
         );
     }
@@ -76,11 +76,11 @@ fn open_hidraw(purpose: Purpose) -> Result<Opened, Error> {
     match (purpose, writable) {
         (Purpose::Run, true) => {
             if let Err(e) = hidraw::enable_multitouch(&fd) {
-                eprintln!("palmrest: enabling multitouch failed: {e}");
+                eprintln!("mouse_gestures: enabling multitouch failed: {e}");
             }
         }
         (Purpose::Run, false) => eprintln!(
-            "palmrest: {} is read-only; multitouch left as the kernel set it",
+            "mouse_gestures: {} is read-only; multitouch left as the kernel set it",
             found.info.path
         ),
         (Purpose::Record, _) => {}
@@ -100,7 +100,7 @@ fn open_evdev() -> Result<Opened, Error> {
         source,
     })?;
     eprintln!(
-        "palmrest: reading {} through evdev (untested beyond the Magic Mouse)",
+        "mouse_gestures: reading {} through evdev (untested beyond the Magic Mouse)",
         info.path
     );
     Ok(Opened {

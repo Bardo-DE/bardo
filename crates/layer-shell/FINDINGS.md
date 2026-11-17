@@ -684,7 +684,7 @@ layer); whether it follows the pointer on a real session is a manual check. Not 
 
 ### F63. The scroll engine: shell-host owns every scroll of a Blitz document
 
-design/11 §11.3.1. Wheel, touchpad, trackpoint, palmrest and keyboard input never reach Blitz's
+design/11 §11.3.1. Wheel, touchpad, trackpoint, the mouse gestures daemon and keyboard input never reach Blitz's
 default scroll action; `scroll/` runs the §11.4 machine, writes raw offsets each frame, and the
 host paints its own overlay thumb. `HostCtx::set_scroll_config` (not in `HostConfig`, which is
 `Eq` while the physics keys are `f32`), `use_scroll(ElementId)`, `SurfaceHandle::scroll(
@@ -734,26 +734,26 @@ setting).
 - The thumb's colour follows the document's colour scheme (F81); Bardo's `--scroll-thumb` is not readable
   from the host.
 - The viewport is rigid: `html`/`body` cannot carry `data-overscroll="band"` from Dioxus.
-- Not proven live: touchpad, keyboard, palmrest, hover expansion, the thumb on screen.
+- Not proven live: touchpad, keyboard, the mouse gestures daemon, hover expansion, the thumb on screen.
 - The one-finger page swipe (design/12 §12.3.6) and `Tap{One}` have no consumer; a new
   `HostEvent` for them is an API change to agree with sill.
 
-### F64. The palmrest client and the double-scroll window
+### F64. The mouse gestures daemon client and the double-scroll window
 
-The host connects to `/run/palmrest/events.sock` (a constant: palmrest is a system service since
+The host connects to `/run/mouse_gestures/events.sock` (a constant: the mouse gestures daemon is a system service since
 2026-10-17, so `XDG_RUNTIME_DIR` plays no part) when it exists (non-blocking `SOCK_SEQPACKET` through
 `rustix`), at start, on the next pointer enter while unconnected, when the session locks while
-unconnected, and on a timer after a miss (NEW-QDH-2, below). Wire form is palmrest's, taken from its
-`palmrest-protocol` crate by path: one JSON message per packet, at most 64 KiB, `PROTOCOL_VERSION` 3,
+unconnected, and on a timer after a miss (NEW-QDH-2, below). Wire form is the mouse gestures daemon's, taken from its
+`mouse-gestures-protocol` crate by path: one JSON message per packet, at most 64 KiB, `PROTOCOL_VERSION` 3,
 enums adjacently tagged, `snake_case`. A `Hello` with another version disconnects until the next enter;
 a packet over the bound is skipped. `PointerOver{Ours|NotOurs}` is sent on changes and after each
 connect.
 
 **The daemon is trusted by its control group.** The daemon is a dynamic user, so neither the person's
-uid nor root says anything. `peer_trust` (`input/palmrest.rs`) holds the listener by the kernel's own
+uid nor root says anything. `peer_trust` (`input/mouse_gestures.rs`) holds the listener by the kernel's own
 pidfd of the peer, made when it connected (`SO_PEERPIDFD`, Linux 6.5, through the `nix` crate: rustix has no safe wrapper), reads
 `/proc/<pid>/cgroup` only after holding it, and trusts the peer only if the line
-`0::/system.slice/palmrest.service` is there and the pidfd still polls not-readable afterwards (the
+`0::/system.slice/bardo-mouse-gestures.service` is there and the pidfd still polls not-readable afterwards (the
 process still runs). Only the system manager can put a process in that group. A peer that has exited
 (`ESRCH`) is refused; a kernel without the option (any other error) falls back to a pidfd opened by the
 `SO_PEERCRED` pid and kept only if the credentials read again are the same. The fallback leaves one
@@ -761,43 +761,43 @@ gap, a pid recycled between connect and the open; the primary path has none (clo
 audit item "reopened pin": the owner allowed `nix` for it the same day). This is the proof route of
 peephole's `Pinned::of_stream` and the compositor's `handle_of` (shell-host has no peephole dependency, so the
 same steps are done here), without the caller table: the group is the only judgement. A fake daemon in a test is
-believed only through `Palmrest::trusting`, which exists in test builds.
+believed only through `MouseGestures::trusting`, which exists in test builds.
 
 **The person's gesture settings.** The daemon cannot read a home folder, so after `PointerOver` on every
-connect the host sends `UserConfig{toml}`: the text of `$XDG_CONFIG_HOME/palmrest/gestures.toml` (else
-`~/.config/palmrest/gestures.toml`), at most 24 KiB, read without blocking from a regular file; empty
+connect the host sends `UserConfig{toml}`: the text of `$XDG_CONFIG_HOME/mouse_gestures/gestures.toml` (else
+`~/.config/mouse_gestures/gestures.toml`), at most 24 KiB, read without blocking from a regular file; empty
 when there is no file or it is unusable, which takes the person's layer away at the daemon. The host
-watches no files, so while the daemon is connected a timer (`ctx::palmrest::watch_settings`, armed once)
+watches no files, so while the daemon is connected a timer (`ctx::mouse_gestures::watch_settings`, armed once)
 looks at the file's size and modification time every two seconds and sends the text again when either
 moved.
 
 **Actions for the session.** `ToHost::Run{action}` arrives on the shell's own connection only (the daemon
-sends it to nobody else) and becomes `HostEvent::Palmrest(PalmrestAction)` for the embedder, which
+sends it to nobody else) and becomes `HostEvent::MouseGestures(MouseGesturesAction)` for the embedder, which
 carries it out as it carries out its own commands. An action over the protocol's bounds is dropped here
 too. The host runs nothing.
 
 **INPUT-09.** `SessionLock{Locked|Unlocked}` is sent the same way: on changes only, and again right
-after `PointerOver` on every connect, so a daemon that restarts mid-lock hears it. Palmrest stops
+after `PointerOver` on every connect, so a daemon that restarts mid-lock hears it. The mouse gestures daemon stops
 gesture keys and desktop actions while any connection says `Locked`. The only source is the lock
 machine's `Report` (`ctx::lock::perform`), which every `locked`, `finished` and unlock reaches:
-`Locked` maps to `Locked`, `Unlocked` and `Finished` to `Unlocked` (`input::palmrest::lock_for`).
+`Locked` maps to `Locked`, `Unlocked` and `Finished` to `Unlocked` (`input::mouse_gestures::lock_for`).
 `SessionLock` is the first message on every connect, ahead of `PointerOver`.
 
-**NEW-QDH-2.** A palmrest that restarts or starts late is found again without a pointer enter:
+**NEW-QDH-2.** A mouse gestures daemon that restarts or starts late is found again without a pointer enter:
 a miss (no socket, an untrusted peer, a daemon that went away or spoke another protocol) arms a
-calloop timer (`ctx/palmrest.rs`) whose wait doubles from 250 ms (`input/palmrest/backoff.rs`) to
+calloop timer (`ctx/mouse_gestures.rs`) whose wait doubles from 250 ms (`input/mouse_gestures/backoff.rs`) to
 2 s while the session is locked and 30 s otherwise, and a lock while unconnected makes an attempt
 due at once; the miss count restarts when the daemon speaks. While locked the pointer stays inside
-the lock surface, so no enter would ever have come. **With no host connection palmrest does not
+the lock surface, so no enter would ever have come. **With no host connection the mouse gestures daemon does not
 fail safe:** it counts the session locked only while some connection says `Locked`
-(`palmrest/src/daemon/socket.rs::aggregate_lock`), so a daemon that no host reached runs gesture
+(`mouse_gestures/src/daemon/socket.rs::aggregate_lock`), so a daemon that no host reached runs gesture
 actions on a locked screen. The host shortens the gap to at most 2 s; closing it needs the daemon
-to treat "no host connected" as locked for desktop actions (an ask for palmrest, in the lane report).
-When the host stops while locked its socket closes, and palmrest then counts the session as
+to treat "no host connected" as locked for desktop actions (an ask for the mouse gestures daemon, in the lane report).
+When the host stops while locked its socket closes, and the mouse gestures daemon then counts the session as
 unlocked until the restarted host locks again (F65).
 
 The window (§11.3.14 rule 2): a compositor axis frame whose source is `finger`, `wheel` or
-absent is dropped while palmrest reports fingers down, while a glide palmrest started runs, or
+absent is dropped while the mouse gestures daemon reports fingers down, while a glide the mouse gestures daemon started runs, or
 for `scroll.double_scroll_grace_ms` (150) after the fingers lift, unless an `axis_stop` comes
 first. Not proven: a real compositor's echo timing, `Tap`/`Swipe` (no consumer).
 
@@ -816,7 +816,7 @@ output never flashes the compositor's colour.
 - Lock surfaces are made at the request, not at `locked` ("clients should immediately create lock
   surfaces for all outputs"); some compositors send `locked` without waiting for them. A lock
   surface is never committed before its configure, never hidden, carries no popup.
-- Palmrest hears every lock state change (F64, INPUT-09), so gesture actions stop while locked.
+- The mouse gestures daemon hears every lock state change (F64, INPUT-09), so gesture actions stop while locked.
 - `Unlocking` is published to every lock document a flush before `unlock_and_destroy`, so an exit
   animation plays first and calls `unlock()` at its end.
 - Which lock surface has the keyboard is compositor policy. Blitz's `autofocus` is a feature the
@@ -853,7 +853,7 @@ never allowed to wedge the single event-loop thread:
 | Key repeat rate | 1000 per second | `handlers/keyboard/decide` |
 | Pipes open for other clients to read | 6 for the selection and 2 for a drag, each 10 s | `drag::pipe::{MAX_SELECTION_WRITES, MAX_DRAG_WRITES, WRITE_DEADLINE}` |
 | A selection read | 1 MiB, 200 ms, one at a time | `paste` |
-| Palmrest datagrams per read | 256; the daemon must be this user or root | `input/palmrest` |
+| The mouse gestures daemon datagrams per read | 256; the daemon must be this user or root | `input/mouse_gestures` |
 | Local files a document reads | roots, regular files, 32 MiB | F21 |
 | Uploaded images | emptied past 1024 | `gpu/image_cache` |
 | Widget textures | a dropped widget's is forgotten before the next paint; a closed surface's all at once | `gpu/context_proxy` (`forget_dropped`, `forget_document`) |
@@ -1045,10 +1045,10 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   not send stale surrounding text, and a dropped `done` would lose a commit. Condition to close:
   the Blitz rev with these commits is pinned (blitz-kit and shell-host re-locked), and an input
   method (fcitx5) is tried with a deletion in a real field.
-- **HOST-15.** `palmrest-protocol` is a path dependency (`../input/mouse-gestures-proto`)
+- **HOST-15.** `mouse-gestures-protocol` is a path dependency (`../input/mouse-gestures-proto`)
   and the blitz-kit `[patch]` is a path, so a clone of this repo alone cannot build. Pinning
-  palmrest by git rev like `desktop-protocols` would make sill (which takes shell-host by path)
-  fetch palmrest from the network unless sill adds the same `[patch]`. Condition to close: the
+  The mouse gestures daemon by git rev like `desktop-protocols` would make sill (which takes shell-host by path)
+  fetch the mouse gestures daemon from the network unless sill adds the same `[patch]`. Condition to close: the
   installer/CI lane decides the dev overlay for all consumers at once.
 - **A failing lock surface is not an event.** It is in the log only (F65). A `HostEvent` variant
   would break sill's exhaustive matches, so it waits for a sill change made with it.

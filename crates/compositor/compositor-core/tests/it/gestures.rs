@@ -395,21 +395,21 @@ fn the_row_follows_the_unaccelerated_movement() {
     assert_eq!(strip.position, PageMilli(600), "240 px of 400, not 360");
 }
 
-/// NEW-PI-4, NEW-FA-4: palmrest's pad (made for the pad daemon) is not the person's hand (a consent
+/// NEW-PI-4, NEW-FA-4: the mouse gestures daemon's pad (made for the pad daemon) is not the person's hand (a consent
 /// sheet never hears it), but its swipes still move the Spaces; a device that is no pad does not
 /// take a swipe.
 #[test]
-fn a_swipe_from_palmrests_pad_drives_the_spaces_and_one_from_a_virtual_keyboard_does_not() {
-    let palmrest = Origin::of_kernel_device(
+fn a_swipe_from_mouse_gestures_pad_drives_the_spaces_and_one_from_a_virtual_keyboard_does_not() {
+    let mouse_gestures = Origin::of_kernel_device(
         DeviceClass::Touchpad,
         KernelIds {
             bus: Some(BUS_VIRTUAL),
             maker: Some(Maker::PadDaemon),
         },
     );
-    assert!(!palmrest.is_physical());
+    assert!(!mouse_gestures.is_physical());
     for (origin, drives) in [
-        (palmrest, true),
+        (mouse_gestures, true),
         (Origin::Virtual(DeviceClass::Keyboard), false),
     ] {
         let model = three_spaces(GestureSettings::defaults());

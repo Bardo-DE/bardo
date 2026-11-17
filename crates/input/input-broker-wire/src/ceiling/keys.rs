@@ -1,6 +1,6 @@
-//! palmrest's keyboard: only keys of the name table, never auto-repeat, and no typing. A letter,
+//! The mouse gestures daemon's keyboard: only keys of the name table, never auto-repeat, and no typing. A letter,
 //! digit, Enter, Space, Backspace, Delete or Escape goes down only while control, alt or super is
-//! held, so a compromised palmrest can press shortcuts but not write text. That is a large step
+//! held, so a compromised the mouse gestures daemon can press shortcuts but not write text. That is a large step
 //! down from arbitrary typing, not a proof of safety (`Ctrl+M` is Enter in a terminal): the gate
 //! is the caller's identity.
 

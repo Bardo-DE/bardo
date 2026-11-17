@@ -8,7 +8,7 @@ use common::{doc, keys_in_section};
 use shell_settings::schemas;
 
 /// The sections that are bardo-shell's, each with the heading that ends it. §3.9 `gestures` and §3.10
-/// `palm_rejection` are palmrest's file, not this one.
+/// `palm_rejection` are the mouse gestures daemon's file, not this one.
 const SECTIONS: &[(&str, &str)] = &[
     ("### 3.4 `bar`", "### 3.5 `dock`"),
     ("### 3.5 `dock`", "### 3.6 `launcher`"),

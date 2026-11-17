@@ -21,7 +21,7 @@ fn write_to(dir: &Path) -> std::io::Result<std::path::PathBuf> {
     let target = dir.join(SCHEMA_FILE_NAME);
     base_fs::write_atomic(
         &target,
-        Schema::palmrest().to_toml().as_bytes(),
+        Schema::mouse_gestures().to_toml().as_bytes(),
         NewFileMode::Umask,
     )
     .map_err(|error| error.source)?;
@@ -34,7 +34,8 @@ mod tests {
 
     #[test]
     fn the_schema_lands_in_a_directory_it_creates() {
-        let dir = std::env::temp_dir().join(format!("palmrest-schema-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("mouse-gestures-schema-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let target = write_to(&dir.join("nested")).unwrap();
         let text = std::fs::read_to_string(&target).unwrap();

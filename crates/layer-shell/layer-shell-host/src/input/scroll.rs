@@ -1,4 +1,4 @@
-//! Scroll input on the host's terms: `wl_pointer` axis frames, scroll keys, palmrest's events
+//! Scroll input on the host's terms: `wl_pointer` axis frames, scroll keys, the mouse gestures daemon's events
 //! and programmatic scrolls, routed to the right surface's engine (`scroll::surface`), with the
 //! double-scroll rule and the `data-wheel="capture"` exception applied first (design/11
 //! §11.3.1, §11.3.14). Every path ends by invalidating the surface when an offset moved or an
@@ -14,7 +14,7 @@ use wayland_client::protocol::wl_pointer;
 
 use crate::event::HostEvent;
 use crate::input::focus::PointerFocus;
-use crate::input::palmrest::route::{Route, route};
+use crate::input::mouse_gestures::route::{Route, route};
 use crate::input::pointer::{self, PointerPos};
 use crate::scroll::source::AxisSource;
 use crate::scroll::suppress::Suppress;
@@ -48,8 +48,8 @@ impl HostState {
         }
     }
 
-    /// Whether any palmrest-driven animation still runs (the double-scroll rule).
-    fn palmrest_driven(&self) -> bool {
+    /// Whether any mouse-gestures-driven animation still runs (the double-scroll rule).
+    fn mouse_gestures_driven(&self) -> bool {
         self.surfaces.values().any(|s| s.scroll.driven())
     }
 
@@ -68,9 +68,9 @@ impl HostState {
             AxisSource::Continuous | AxisSource::WheelTilt => false,
         };
         let grace = self.scroll.settings().double_scroll_grace_ms.duration();
-        let delivered = self
-            .suppress
-            .delivers(suppressible, self.palmrest_driven(), grace, now);
+        let delivered =
+            self.suppress
+                .delivers(suppressible, self.mouse_gestures_driven(), grace, now);
         if frame.horizontal.stop || frame.vertical.stop {
             self.suppress = self.suppress.axis_stop();
         }
@@ -202,12 +202,12 @@ impl HostState {
         }
     }
 
-    /// One message from palmrest (design/12 §12.3.11, `input::palmrest::route`).
-    pub(crate) fn palmrest_message(&mut self, message: ToHost) {
+    /// One message from the mouse gestures daemon (design/12 §12.3.11, `input::mouse_gestures::route`).
+    pub(crate) fn mouse_gestures_message(&mut self, message: ToHost) {
         if let ToHost::Run { action } = message {
             // The shell carries it out; an action over the bounds is not one the daemon sends.
             if action.fits() {
-                self.events.push_back(HostEvent::Palmrest(action));
+                self.events.push_back(HostEvent::MouseGestures(action));
             }
             return;
         }
@@ -221,7 +221,7 @@ impl HostState {
         }
     }
 
-    /// Feed a palmrest scroll event to the surface under the pointer, if it is ours.
+    /// Feed a mouse gestures daemon scroll event to the surface under the pointer, if it is ours.
     fn palm_scroll(&mut self, event: PalmScroll, now: Elapsed) {
         let PointerFocus::On(entered) = self.input.pointer_focus else {
             return;
@@ -233,7 +233,7 @@ impl HostState {
         };
         let moved = {
             let mut doc = surface.document.base_mut();
-            surface.scroll.palmrest(&mut doc, event, pos, now)
+            surface.scroll.mouse_gestures(&mut doc, event, pos, now)
         };
         self.after_scroll(id, moved, now);
     }

@@ -49,7 +49,7 @@ EDGES=(
   "key-remap-proto: serde serde_json thiserror"
   # bardo-key-remap also links peephole (who the socket's peer is) and input-broker-client (the root service
   # that makes its virtual devices), both by tag; neither brings a bus or an async runtime. latchkey
-  # (feature guard) holds the socket guard bardo-key-remap shares with palmrest.
+  # (feature guard) holds the socket guard bardo-key-remap shares with mouse_gestures.
   "key-remap-daemon: keymap key-remap-client key-remap-core key-remap-proto key-remap-evdev service-locator notify caller-identity-linux caller-identity-core rustix thiserror input-broker-client"
   # key-remap-evdev: the evdev and uinput ioctls and the node drain that bardo-key-remap and key-remap-devtest
   # share; the safe input-linux handles and rustix reads, nothing of bardo-key-remap's own.

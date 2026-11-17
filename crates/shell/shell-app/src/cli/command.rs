@@ -90,7 +90,7 @@ pub enum Command {
         #[arg(value_parser = word::<SwitcherRequest>())]
         action: SwitcherRequest,
     },
-    /// Step the workspace (palmrest's swipes run these).
+    /// Step the workspace (the mouse gestures daemon's swipes run these).
     Workspace {
         /// `prev` and `next` go to the workspace before or after the active one; `overview` shows
         /// every window and workspace at once (Mission Control; fails on a session that is not

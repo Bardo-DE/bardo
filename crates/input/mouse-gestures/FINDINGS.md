@@ -5,7 +5,7 @@ Open items and standing facts. Design references are to Bardo's `design/NN` docu
 
 ## Open items
 
-**Type rules changed (2026-10-28).** The type rules now follow plain Rust first: `bool` is fine in private code, newtypes only hold a rule, one fact has one type, two-way outcomes are `Option`/`Result`. Two-arm enums and mirror enums in palmrest were folded into `bool`, `Option` and their owner types.
+**Type rules changed (2026-10-28).** The type rules now follow plain Rust first: `bool` is fine in private code, newtypes only hold a rule, one fact has one type, two-way outcomes are `Option`/`Result`. Two-arm enums and mirror enums in the mouse gestures daemon were folded into `bool`, `Option` and their owner types.
 
 **Palm rejection P1 and P3 calibrated on the device (2026-09-30).** The guessed defaults
 (light below size 8, palm at major 64 or more) rejected every touch on the first real install,
@@ -15,7 +15,7 @@ them apart; motion does (P2 and the axis lock). Now light is size 0 to 1 (lift-o
 and a palm is major 240 or more. `tests/recorded_calibration.rs` replays the two recordings
 (`recorded_scroll`, `recorded_rest`): rejection keeps the scrolling and a resting hand leaks
 next to nothing. Rejection is always on; its numbers are constants in `gestures/`. The Python
-daemon had no rejection, only the axis lock. Recalibrate from new `palmrest record` sessions on another device.
+daemon had no rejection, only the axis lock. Recalibrate from new `mouse_gestures record` sessions on another device.
 
 **Manual acceptance, waiting for the user and the device.** Items 1-7 of 12.8 pass as tests
 (`tests/decode.rs`, `reference_cases.rs`, `gestures_replay.rs`), with the
@@ -35,12 +35,12 @@ P1 and P3 are calibrated, below).
 **The shipped scroll speed is 22.** `scroll.speed = 22`, as 12.6 documents it and as the Python
 daemon ran on the development machine (its built-in `SCROLL_SPEED` 22), so switching daemons
 keeps the base ratio. The 32 in `/sys/module/hid_magicmouse/parameters/scroll_speed` is the
-kernel's own wheel emulation, off while palmrest scrolls. Settled 2026-09-30. The Python
+kernel's own wheel emulation, off while the mouse gestures daemon scrolls. Settled 2026-09-30. The Python
 daemon's repeat gain (2.3) and the classic velocity gain were retired with the `Classic` curve
 (2026-10-27); one acceleration curve (`feel/curve.rs`) replaced them.
 
 **The foreign outputs.** Foreign clients are scrolled through a new
-device, "palmrest touchpad"; a desktop may have no saved natural-scrolling setting for it, so the
+device, "the mouse gestures daemon touchpad"; a desktop may have no saved natural-scrolling setting for it, so the
 direction may need setting once in the system settings. libinput owns the scroll feel (its
 scaling, acceleration and momentum): the pad's fingers move as far as the real ones, times the
 `scroll.speed` multiplier (`feel/pad.rs`, 1.0 at the default speed). Items below are the device
@@ -54,7 +54,7 @@ stroke is the recogniser's `SpaceSwipe` (`gestures/stroke`), and while both two-
 `[gestures.gesture_action_map]` are the workspace defaults (`workspace_next`, `workspace_prev`) the
 pad session puts four contacts 12 mm apart on the virtual touchpad that follow the fingers 1:1 in
 x; the compositor's four-finger touchpad swipe moves the Spaces live and commits or returns on the lift.
-palmrest decides nothing about the Space. Any other mapping keeps a one-shot action fired on
+The mouse gestures daemon decides nothing about the Space. Any other mapping keeps a one-shot action fired on
 7.7 mm of travel with a 500 ms cooldown. The scroll pad lands two contacts 20 mm apart on the side
 opposite the motion and moves 1:1, so a 45 mm stroke is one stroke (it re-lands only when truly out
 of room); the old 0.25 mm/px, 120 px re-landing and centre landing are gone. `ToHost::Swipe` is no
@@ -112,14 +112,14 @@ Spaces swipe, so those were one-finger strokes, and a quick one-finger flick is 
 - DWT: libinput's disable-while-typing is on for the virtual pad, which may swallow a scroll or a
   swipe right after typing. compositor-side; recorded for the shell brief.
 - `ToHost::Swipe` is no longer sent and the shell ignores it: delete the variant (and `Topic::Swipe`)
-  from `palmrest-protocol` in lockstep with shell-host.
+  from `mouse-gestures-protocol` in lockstep with shell-host.
 - The shell stream's px is `raw / rate * detent / hi-res` per sample (`feel/shell.rs`); the old
   carried remainder is gone, because at a constant rate it cancelled and when the gain changed it
   only added sub-pixel wobble.
 
 **Settings that are constants (2026-10-27).** Only `scroll.speed` and the six
 `gestures.gesture_action_map.*` rows are settings; macOS offers a scrolling speed and a choice of
-what gestures do, and nothing else of palmrest's numbers is a choice a person makes. The
+what gestures do, and nothing else of the mouse gestures daemon's numbers is a choice a person makes. The
 numbers design/22 §3.9/§3.10 once listed as keys are constants beside the code that uses them:
 the axis lock (`gestures/stroke/rule.rs`: 1538 / 571 um thresholds, ratio 1.5, 250 ms timeout for a scroll; a swipe's lock does not time out),
 the shell's 60 px detent (`feel/shell.rs`), the acceleration curve (`feel/curve.rs`: `v0` 1500, `s` 3000, `p` 1.6, `g_max` 6.0),
@@ -130,7 +130,7 @@ written with the removed keys still loads: an unknown key is ignored. Also hard-
 timestamp calibration constants (10 s fit window, 60 s refit, 1 ms residual) and the pad
 geometry (4000 x 2800 units at 40/mm). 22-SETTINGS §4.3 sketches a flat
 `GesturesSettings { scroll_speed, .. }`, which disagrees with its own §3.9/§3.10 dotted
-catalogue; palmrest follows the catalogue and §4.3 wants correcting.
+catalogue; the mouse gestures daemon follows the catalogue and §4.3 wants correcting.
 
 **`rustix` is outside the pinned block.** It (poll, eventfd, `SOCK_SEQPACKET`,
 `CLOCK_MONOTONIC`, the hidraw ioctl) is not in Bardo's `docs/workspace-deps.toml`; it should be
@@ -147,17 +147,17 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 
 **Deferred from the 2026-10-16 production audit (input).**
 - *Key synthesis access (INPUT-02): done in this repository, the rest is the desktop's.*
-  palmrest asks the input service (turnstile, `turnstile-client` at tag `v0.1.0`) for its
-  touchpad and keyboard instead of opening `/dev/uinput`. `dist/70-palmrest.rules` no
-  longer tags the node (the hidraw line stays), `dist/palmrest.service` has a root-owned
+  The mouse gestures daemon asks the input service (turnstile, `turnstile-client` at tag `v0.1.0`) for its
+  touchpad and keyboard instead of opening `/dev/uinput`. `dist/70-mouse-gestures.rules` no
+  longer tags the node (the hidraw line stays), `dist/bardo-mouse-gestures.service` has a root-owned
   `ExecStart` and `UnsetEnvironment=` for the library-path variables, and `install.sh` installs
   the program to `/usr/local/bin`. The service refuses a letter, digit, punctuation, Enter,
-  Space, Tab, Backspace, Delete or Escape unless ctrl, alt or super is held, so palmrest warns
+  Space, Tab, Backspace, Delete or Escape unless ctrl, alt or super is held, so the mouse gestures daemon warns
   at load time about a mapped combination like that. Still to come: the desktop installer
   placing the service and `72-turnstile.rules` (`pa2-desk`). INPUT-19's remaining half (limit raw
   hidraw writes to the daemon) is not done: the hidraw rule keeps `uaccess`.
 - *The direct fallback is gone (INPUT-02, 2026-10-17).* `Origin::Service` is the input service alone; with
-  the service absent palmrest has no pad and says so. `--direct-uinput` (`Route::Node`) stays for development
+  the service absent the mouse gestures daemon has no pad and says so. `--direct-uinput` (`Route::Node`) stays for development
   on a machine whose node is open to the developer.
 - *A lost pad frame can leave a contact down.* When the service's queue is full the frame is
   dropped and counted (the next frame replaces a move), but a dropped `Land` or `Lift` is not
@@ -168,21 +168,21 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   `Kind` and `Create`, which the direct path matches, and its stand-in is a dev-only feature.
 - *Rust 1.92.* `turnstile-client` declares `rust-version = "1.92"`, so the workspace's moved
   from 1.91. The pinned toolchain (1.98.1) already satisfies it.
-- *Who may talk to palmrest (INPUT-03, INPUT-14): done (2026-10-17).* palmrest is a system service
-  (owner decision), so its socket is `/run/palmrest/events.sock`, mode 0666, and the socket thread
+- *Who may talk to the mouse gestures daemon (INPUT-03, INPUT-14): done (2026-10-17).* the mouse gestures daemon is a system service
+  (owner decision), so its socket is `/run/mouse_gestures/events.sock`, mode 0666, and the socket thread
   serves only the person at the seat and believes only the shell (peephole, as the key remap daemon's `Steering`)
   about the pointer and an unlocked session. The hidraw rule gives the node to the `input` group and
   no person (INPUT-19's second half: the raw node and its feature reports are no longer reachable
   from the logged-in user's programs).
-- *Shell side of the lock (INPUT-09).* palmrest drops gesture keys and actions while a
+- *Shell side of the lock (INPUT-09).* the mouse gestures daemon drops gesture keys and actions while a
   subscriber says the session is locked (`SessionLock`). Nothing sends it yet: shell-host must
   send `ToDaemon::SessionLock` when the lock service reports Locked or Unlocked (interface ask in
   the lane report). Neither the compositor nor sill publishes a lock state a daemon outside the session
   can read, and logind's `LockedHint` is not set by sill's locker.
 - *Settings and actions after the move to a system service (2026-10-17): done.* The service
-  (a dynamic user with `ProtectHome=yes`) reads `/etc/palmrest/gestures.toml`; the person's
-  `~/.config/palmrest/gestures.toml` reaches it as `ToDaemon::UserConfig`, sent by the shell
-  (shell-host's palmrest client reads the file, at most 24 KiB, after connecting and whenever it
+  (a dynamic user with `ProtectHome=yes`) reads `/etc/mouse_gestures/gestures.toml`; the person's
+  `~/.config/mouse_gestures/gestures.toml` reaches it as `ToDaemon::UserConfig`, sent by the shell
+  (shell-host's the mouse gestures daemon client reads the file, at most 24 KiB, after connecting and whenever it
   changes; it polls the file's modification time every two seconds, since shell-host watches no
   files). The daemon believes it from the shell's connection only, merges it key by key over the
   machine's file (`config::layer`), drops what a person may not set (a program or
@@ -195,17 +195,17 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   child of the shell). With no shell connected the action is dropped and logged. Key actions still go
   through the input service. The protocol is version 2 (`Run`, `UserConfig`, 64 KiB packets).
 - *Fail safe without a shell (NEW-QDH-2, 2026-10-17).* The session counts as locked unless a subscriber has said
-  Unlocked and none says Locked (`aggregate_lock`): with no subscriber connected (a shell restart, or palmrest
+  Unlocked and none says Locked (`aggregate_lock`): with no subscriber connected (a shell restart, or the mouse gestures daemon
   restarting during a lock), or only silent ones, gesture keys and desktop actions are dropped, while pointer
   movement, scrolling and the stream to subscribers go on. The daemon's tracker and the socket start Locked.
   shell-host sends `SessionLock` first on every connect, so an unlocked desktop opens at once. Cost: a few
-  hundred milliseconds of no gesture actions after palmrest starts, until the shell has connected.
+  hundred milliseconds of no gesture actions after the mouse gestures daemon starts, until the shell has connected.
 - *Shared bounded reader (INPUT-12).* `config/load.rs` has its own bounded regular-file read;
   the one shared reader belongs in chordkit and moves there when it exists.
 
 ## Standing facts
 
-**The settings file.** `$XDG_CONFIG_HOME/palmrest/gestures.toml` (22-SETTINGS §2). Two tables:
+**The settings file.** `$XDG_CONFIG_HOME/mouse_gestures/gestures.toml` (22-SETTINGS §2). Two tables:
 `[scroll]` (`speed`) and `[gestures.gesture_action_map]`. Unknown keys are ignored, so a file
 from before the pruning loads and its removed keys do nothing. Enums are snake_case.
 
@@ -272,7 +272,7 @@ before the ioctl (`InvalidInput`); `UInputHandle::create` does setup, the axis s
 the axes are passed at creation, not as the bits are set, and on `EINVAL` from `UI_DEV_SETUP` (a kernel before
 4.5) it falls back to the legacy `uinput_user_dev` write. The crate brings `nix` 0.29 beside the `nix` that
 `notify` uses. The opcode and struct-size tests for the removed calls are gone; the manual check is that
-palmrest scrolls and swipes, and both it and the device it made go away on exit. Licences pass `cargo deny`.
+The mouse gestures daemon scrolls and swipes, and both it and the device it made go away on exit. Licences pass `cargo deny`.
 
 **Discovery matches fields, not substrings.** `HID_ID` is parsed as bus:vendor:product and
 looked up in `sensor::magic_mouse::KNOWN`: Bluetooth Magic Mouse 2 (`0005:004c:0269`,
@@ -281,7 +281,7 @@ the listed id, not read from a device) and the Magic Mouse 1 (`0005:05ac:030d`),
 The Magic Mouse 1 is refused on hidraw: it sends report
 0x29 (different header, 6-byte touches), which `decode` does not read.
 
-**0xF7 doubles.** palmrest checks the report id and decodes both halves of a Bluetooth double.
+**0xF7 doubles.** the mouse gestures daemon checks the report id and decodes both halves of a Bluetooth double.
 The reference sessions contain none.
 
 **Latency, replay only.** 10 000 synthesised reads (`daemon/latency/tests.rs`, release build): read
@@ -290,7 +290,7 @@ Debug build: p95 5.3 us / 5.9 us. The budget is 2 ms p95; the live figure adds t
 hand-off, the send, and the kernel.
 
 **The acceleration curve.** The one curve (the `Classic` pair of velocity and repeat gains was
-deleted 2026-10-27, with `feel.curve` and `palmrest replay --curve`). The shape is ours, fitted
+deleted 2026-10-27, with `feel.curve` and `mouse_gestures replay --curve`). The shape is ours, fitted
 to the published *description* of the reference desktop's scroll acceleration (slow scrolling is
 pixel-precise, faster motion gains progressively, the gain saturates), not to its driver's
 table, which was neither read nor copied. One function of the sample's finger speed `v` (grid
@@ -309,7 +309,7 @@ Constants: `v0 = 1500` (~21 mm/s along y), `s = 3000`, `p = 1.6`, `g_max = 6.0` 
 **No synthesized momentum, no wheel output (2026-10-27; history).** Foreign clients get the virtual
 touchpad only: at a locked stroke's Ended the pad lifts and the app runs its own kinetic scroll.
 The opt-in `foreign_momentum = "ours"` glide (design/11 §11.5.1 drag; `feel/momentum.rs` and
-`tracker/coast.rs` no longer exist), the `"palmrest wheel"` device (`foreign_output = "wheel"`) and the
+`tracker/coast.rs` no longer exist), the `"mouse_gestures wheel"` device (`foreign_output = "wheel"`) and the
 `foreign_output = "off"` choice were deleted with their keys: none is a choice a person makes.
 
 **The `Sensor` enum and the evdev sensor.** `fn surface(&self) -> Surface` (extent in mm,
@@ -318,14 +318,14 @@ resolution per axis) and
 `Vec` because an evdev read is a run of events whose frames end at `SYN_REPORT` and can span
 reads. `EvdevMultitouch` implements protocol B (`ABS_MT_SLOT`, `TRACKING_ID`,
 `POSITION_X/Y`, `BTN_LEFT/RIGHT`, `REL_X/Y`), stamps each frame with its `SYN_REPORT` time (the
-fd is switched to `CLOCK_MONOTONIC` with `EVIOCSCLOCKID`, which affects only palmrest's open
+fd is switched to `CLOCK_MONOTONIC` with `EVIOCSCLOCKID`, which affects only the mouse gestures daemon's open
 file), drops events after `SYN_DROPPED` until the next report and then treats every slot as
 lifted, and refuses a node with no position resolution. `daemon/evdev.rs` can pick a node that is a mouse
 (`REL_X/Y`) with MT slots and is not a touchpad (`ID_INPUT_TOUCHPAD`, or `BTN_TOOL_FINGER`),
 and open it `O_RDONLY` without grabbing, but the daemon no longer calls it (`device.source`
 left the settings, 2026-10-27; the daemon reads the hidraw node). `tests/evdev_parity.rs` replays every fixture through
 both sensors: identical outputs except `palm_during_scroll` (evdev has no major axis, so no
-P3). One read-only `palmrest record` of the real node returned the expected geometry and 16
+P3). One read-only `mouse_gestures record` of the real node returned the expected geometry and 16
 slots; it has not tracked a real finger, and no other mouse has run it. Recordings: v1
 (`PALMREC\x01`, hidraw) is what hidraw records write and every fixture is; v2 (`PALMREC\x02`)
 adds a JSON header naming the source and, for evdev, the geometry. `recording::parse` refuses a
@@ -336,5 +336,5 @@ v2 evdev file rather than decoding it as hidraw.
 - *CI exists (INPUT-16).* `.github/workflows/ci.yml` runs format, clippy, tests, `cargo deny check licenses`,
   `advisories` and `bans sources` (deny.toml allows crates.io and the one git source, turnstile), weekly as well as
   on push. Advisories read a live database, so a new one can fail an unchanged tree.
-- *The hidraw `uaccess` line stays (INPUT-19).* The Magic Mouse's raw reports are read by palmrest itself as the user;
+- *The hidraw `uaccess` line stays (INPUT-19).* The Magic Mouse's raw reports are read by the mouse gestures daemon itself as the user;
   the rule grants that node and no other.

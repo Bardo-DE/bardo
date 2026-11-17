@@ -1,7 +1,7 @@
 //! Release velocity (design/11 §11.3.5, §11.5.2): the least-squares slope of the cumulative
 //! offset over the samples of the last 80 ms before the fingers lift.
 //!
-//! Sample times are on the source's own timeline ([`SampleTime`]): palmrest's `t_ns`, or the
+//! Sample times are on the source's own timeline ([`SampleTime`]): the mouse gestures daemon's `t_ns`, or the
 //! host's arrival time for compositor axis events. Only differences are ever taken, so the two
 //! never need to agree with each other or with the host clock.
 

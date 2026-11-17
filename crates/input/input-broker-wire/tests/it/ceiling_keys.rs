@@ -1,4 +1,4 @@
-//! palmrest's keyboard: shortcuts yes, typing no.
+//! The mouse gestures daemon's keyboard: shortcuts yes, typing no.
 
 use crate::{key, sync};
 use input_broker_wire::codes::*;
@@ -24,7 +24,7 @@ fn verdict(f: &mut Filter, event: Event) -> Result<(), Denial> {
 }
 
 #[test]
-fn what_palmrest_writes_for_alt_left_passes() {
+fn what_mouse_gestures_writes_for_alt_left_passes() {
     let mut f = filter(&[KEY_LEFTALT, LEFT]);
     let out = f.apply(&[
         key(KEY_LEFTALT, 1),

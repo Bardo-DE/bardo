@@ -1,4 +1,4 @@
-# 12 BEHAVIOUR: Magic Mouse gestures (`palmrest`)
+# 12 BEHAVIOUR: Magic Mouse gestures (`mouse_gestures`)
 
 Status legend: **settled** = decided with the user (plan, 2026-09-23); **proposed** = chosen
 here, tune on the device or in the gallery, the user may override. Confidence of the basis:
@@ -10,7 +10,7 @@ this machine today; "kernel" = `drivers/hid/hid-magicmouse.c` (master).
 
 ## 12.1 What this governs
 
-`palmrest`, the Rust Magic Mouse 2 daemon that replaces the Python daemon at M8 (settled): the
+`mouse_gestures`, the Rust Magic Mouse 2 daemon that replaces the Python daemon at M8 (settled): the
 hidraw report decoder, per-touch tracking, palm and rest rejection, the gesture set and its
 detection thresholds, the configurable gesture-to-action table, the live-tracking model for
 later, the outputs (a socket for our surfaces, a virtual touchpad and a virtual keyboard for
@@ -68,7 +68,7 @@ unverified, B).
 | Touch y | signed 12-bit `(t2 << 4 | t1 >> 4)` sign-extended, then negated (kernel form) | H |
 | Other fields | major `t3`, minor `t4`, size `t5 & 0x3f`, id 0..15, orientation `(t6 >> 2) - 32`, state nibble `t7 >> 4` | H |
 | Canonical frame | `+x` = rightwards across the mouse, `+y` = toward the user, both in raw units; a fixture test pins the sign against a recorded stroke | proposed |
-| Python difference | the Python daemon reads x and y as **unsigned** 12-bit and fixes wraps with `wrap_delta` (modulo 4096), and does not negate y. Deltas are identical after sign handling; palmrest uses the kernel form and needs no wrap fix | H (both sources) |
+| Python difference | the Python daemon reads x and y as **unsigned** 12-bit and fixes wraps with `wrap_delta` (modulo 4096), and does not negate y. Deltas are identical after sign handling; the mouse gestures daemon uses the kernel form and needs no wrap fix | H (both sources) |
 
 Timestamp calibration (proposed): for the first 10 s after connect, fit `mono_ns = k * ticks +
 c` by least squares over (arrival time, unwrapped device ticks); if the residual p95 < 1 ms,
@@ -110,7 +110,7 @@ from the contact set for its whole lifetime.
 | Rule | Specification | Status |
 | --- | --- | --- |
 | P1 Light touch | size < 8: may continue a gesture it is already part of, never starts one or counts toward a new contact set | proposed (floor from R17 H) |
-| P2 Resting grip | a contact that lands in the side bands (`x < -900` or `x > 1060`) or the rear band (rear 15 % of the y span, sign pinned by fixture) and moves < 30 units in its first 150 ms is Resting | proposed (L, tune with `palmrest record`) |
+| P2 Resting grip | a contact that lands in the side bands (`x < -900` or `x > 1060`) or the rear band (rear 15 % of the y span, sign pinned by fixture) and moves < 30 units in its first 150 ms is Resting | proposed (L, tune with `mouse_gestures record`) |
 | P3 Large contact | `major >= 64` raw is Palm | proposed (L, units unverified) |
 | P4 Click in progress | while a physical button bit is set and for 200 ms after release: no gesture starts, taps are void, the running scroll gesture is Cancelled at press | proposed (R7 H: clicks are not taps) |
 | P5 Mouse moving | while mouse motion exceeds 200 counts/s over the last 100 ms, the axis-lock threshold doubles (40 -> 80) | proposed (L) |
@@ -129,11 +129,11 @@ All distances are raw units in the canonical frame (x ~26 u/mm, y ~70.6 u/mm, R1
 | G5 Two-finger horizontal swipe | 2 contacts; centroid travel from landing; if `|y| > 150 && |y| > |x|`: re-anchor (reset both); when `|x| >= 200`: fire once in the direction the fingers moved, re-anchor, suppress if `< 0.5 s` since the last fire | Workspace: fingers right -> previous (left) workspace, fingers left -> next | settled (Python `SWIPE_THRESHOLD 200`, `SWIPE_VERTICAL_MAX 150`, `SWIPE_COOLDOWN 0.5`; direction "desktop follows the fingers") |
 | G6 Two-finger double-tap | two taps, each: exactly 2 contacts at peak, all contacts down <= 200 ms, each contact moves < 40 units, no click bit; the second tap lands <= 350 ms after the first lifts, centroid within 300 units of the first; fires at the second tap's lift | Workspace overview | settled mapping, thresholds proposed |
 | G7 One-finger double-tap | same timing with exactly 1 contact | Smart zoom where supported | settled mapping, thresholds proposed |
-| G8 Secondary click | kernel: a click with a touch in the right zone (`x > 350`) is BTN_RIGHT | right click | settled (R1; kernel-owned, palmrest does nothing) |
+| G8 Secondary click | kernel: a click with a touch in the right zone (`x > 350`) is BTN_RIGHT | right click | settled (R1; kernel-owned, the mouse gestures daemon does nothing) |
 | G9 Middle zone | kernel with `emulate_3button=1` (this machine): middle zone may give BTN_MIDDLE | middle click | kept as configured (L); macOS has none |
 
 G4 vs scrolling: G4 is evaluated at lift and never suppresses the horizontal scroll that G1
-already emitted during the stroke. On our surfaces the host decides instead (12.3.6); palmrest
+already emitted during the stroke. On our surfaces the host decides instead (12.3.6); the mouse gestures daemon
 does not emit G4 keys while a host claims the pointer.
 
 G5 on a long drag keeps firing every 200 units after the 0.5 s cooldown (Python test "long
@@ -172,7 +172,7 @@ the 40-unit lock. Status: proposed (R5 H, R8 H).
 | Commit | at lift: if `|p| >= 0.5`: commit unless `v * sign(p) <= -1.5 pages/s` (reverse flick); if `|p| < 0.5`: commit iff `v * sign(p) >= 1.5 pages/s` | proposed (R10/R11: libadwaita 0.6 px/ms over 400 px = 1.5 pages/s) |
 | Finish duration | `clamp(|p_target - p| / max(|v|, 2 pages/s) * 3, 100 ms, 400 ms)`, ease-out-cubic | proposed (R10: base 0.002/ms = 2 pages/s) |
 | One page per gesture | yes (live mode never fires twice per contact) | proposed (R8) |
-| Output on the compositor | no client protocol for a live workspace offset (ext-workspace has none; "no live workspace tracking yet"); route: synthetic 4-contact horizontal swipe on the palmrest virtual touchpad so the compositor runs its own live gesture | proposed (L: compositor finger count to verify) |
+| Output on the compositor | no client protocol for a live workspace offset (ext-workspace has none; "no live workspace tracking yet"); route: synthetic 4-contact horizontal swipe on the mouse gestures daemon virtual touchpad so the compositor runs its own live gesture | proposed (L: compositor finger count to verify) |
 | Default today | Trigger mode (G5), live mode behind `workspace_swipe = Live` | settled ("trigger now, live tracking later") |
 
 ### 12.3.8 Units to px (the `feel` module)
@@ -194,14 +194,14 @@ in the Wheel output (12.3.9); the socket carries f32 px.
 | Output | For | Specification | Status |
 | --- | --- | --- | --- |
 | O1 Socket | our Blitz surfaces (every layer-shell-host process) | `$XDG_RUNTIME_DIR/bardo/mouse-gestures/events.sock`, `SOCK_SEQPACKET`, mode 0600, many subscribers; messages 12.3.10 | settled (plan B), protocol proposed |
-| O2 Virtual touchpad | every other client, via the compositor and libinput | uinput device "palmrest touchpad", `BUS_VIRTUAL`, vendor 0x0001 product 0x0002; `INPUT_PROP_POINTER`; `EV_KEY` BTN_LEFT (never pressed), BTN_TOUCH, BTN_TOOL_FINGER / DOUBLETAP / TRIPLETAP / QUADTAP; `EV_ABS` ABS_X/Y, ABS_MT_SLOT 0..4, ABS_MT_TRACKING_ID, ABS_MT_POSITION_X 0..4000 and Y 0..2800 with resolution 40 units/mm (100 x 70 mm) | settled (plan B), fields proposed |
+| O2 Virtual touchpad | every other client, via the compositor and libinput | uinput device "the mouse gestures daemon touchpad", `BUS_VIRTUAL`, vendor 0x0001 product 0x0002; `INPUT_PROP_POINTER`; `EV_KEY` BTN_LEFT (never pressed), BTN_TOUCH, BTN_TOOL_FINGER / DOUBLETAP / TRIPLETAP / QUADTAP; `EV_ABS` ABS_X/Y, ABS_MT_SLOT 0..4, ABS_MT_TRACKING_ID, ABS_MT_POSITION_X 0..4000 and Y 0..2800 with resolution 40 units/mm (100 x 70 mm) | settled (plan B), fields proposed |
 | O2 contact rules | never exactly one contact (a 1-finger touchpad contact would move the pointer); scroll = 2 contacts 20 mm apart moved by the identical delta (no pinch); contacts land at Began (never at MayBegin) and lift at Ended/Cancelled; if the stroke lasted < 200 ms or moved < 2 mm, the lift is delayed to 200 ms after landing (defeats libinput tap-to-click, tap timeout 180 ms); live swipe = 4 contacts | proposed (M: libinput behaviour) |
 | O2 scale | virtual mm per px chosen so that a libinput 2-finger scroll in GTK4 moves the same px as the O1 path for the same stroke; start value 0.25 mm/px, calibrated by acceptance test 9 | proposed (L) |
 | O2 direction | finger direction (a touchpad reports where the fingers go); the compositor's natural-scroll setting for this device applies (11 §11.3.13) | proposed |
-| O3 Virtual keyboard | Keys actions | uinput "palmrest keys", only the keys used by the action table | proposed |
+| O3 Virtual keyboard | Keys actions | uinput "the mouse gestures daemon keys", only the keys used by the action table | proposed |
 | O4 Wheel (fallback) | foreign clients when `foreign_output = Wheel` | exactly the Python device: name "Magic Mouse Scroll", `BUS_VIRTUAL`, vendor 0x0001 product 0x0001 (identity saved in Plasma `kcminputrc` with NaturalScroll=true), REL_WHEEL/HWHEEL + HI_RES, v120 quantisation with remainders | settled (Python) |
 | Suppression | while any subscriber claims the pointer (`PointerOver{Ours}`), O2 and O4 emit nothing and G4 emits no keys | proposed (11 §11.3.14) |
-| Kernel param | `emulate_scroll_wheel=0` stays (settled); palmrest refuses to start its outputs only if it cannot read hidraw, and logs loudly; it never changes module parameters | settled |
+| Kernel param | `emulate_scroll_wheel=0` stays (settled); the mouse gestures daemon refuses to start its outputs only if it cannot read hidraw, and logs loudly; it never changes module parameters | settled |
 
 ### 12.3.10 Socket protocol (O1)
 
@@ -223,7 +223,7 @@ socket write <= 2 ms p95.
 
 ### 12.3.11 Interaction with 11-BEHAVIOUR-scroll (exact)
 
-| palmrest | layer-shell-host engine (11) |
+| The mouse gestures daemon | layer-shell-host engine (11) |
 | --- | --- |
 | `Touches{Down}` / MayBegin | stop momentum and rebound (touch to stop); start the double-scroll drop window |
 | `Scroll{Began}` | latch (11 §11.3.3) on `axis`; or swipe decision (12.3.6) |
@@ -234,20 +234,20 @@ socket write <= 2 ms p95.
 | `Tap{One}` | `SmartZoom` event to the focused ds root when the pointer is over our surface |
 | `Swipe{fingers: 2}` | ignored by hosts in Trigger mode (the daemon fires the action) |
 
-Momentum and rubber band are never computed in palmrest. Foreign clients get momentum from
+Momentum and rubber band are never computed in mouse_gestures. Foreign clients get momentum from
 their toolkit via O2's `axis_stop`.
 
 ### 12.3.12 Daemon architecture
 
 | Part | Specification |
 | --- | --- |
-| Repo / crate | `magic-gestures` repo (plan repo map, M8), binary `palmrest`; no shell dependency; `unsafe_code = "deny"` except the ioctl module |
+| Repo / crate | `magic-gestures` repo (plan repo map, M8), binary `mouse_gestures`; no shell dependency; `unsafe_code = "deny"` except the ioctl module |
 | Threads | one reader thread: `poll` on the hidraw fd, `read(64)`, decode, `Tracker::step`, outputs; one socket thread (accept, fan-out); no async runtime |
 | Pure core | `decode`, `Tracker::step(tracker, report, now) -> (Tracker, Vec<Out>)`, `feel`, `gestures`, `action_for` |
 | Device discovery | scan `/sys/class/hidraw/*/device/uevent` for vendor 004C product 0269 (Python `find_hidraw_device`); reconnect backoff 1 s x2 up to 30 s; 10 consecutive read errors = disconnect (Python) |
 | Service | `bardo-mouse-gestures.service` (systemd user, `graphical-session.target`, `Restart=on-failure`); installing it disables the Python service; uinput ACL wait loop as Python `wait_for_scroll_output` (1 s x2 up to 5 s) |
-| Tools | `palmrest record FILE` (raw reports + monotonic times), `palmrest replay FILE` (drives the pure core; used by tests and tuning), `palmrest --check-uinput` |
-| Config | `~/.config/palmrest/config.toml`, watched (debounce 30 ms); the Python env vars (`SCROLL_SPEED`, `SCROLL_LOCK_*`, `SCROLL_VELOCITY_GAIN_MAX`, `SCROLL_ACCEL_MAX`, `SWIPE_*`) still override for parity runs |
+| Tools | `mouse_gestures record FILE` (raw reports + monotonic times), `mouse_gestures replay FILE` (drives the pure core; used by tests and tuning), `mouse_gestures --check-uinput` |
+| Config | `~/.config/mouse_gestures/config.toml`, watched (debounce 30 ms); the Python env vars (`SCROLL_SPEED`, `SCROLL_LOCK_*`, `SCROLL_VELOCITY_GAIN_MAX`, `SCROLL_ACCEL_MAX`, `SWIPE_*`) still override for parity runs |
 
 ## 12.4 State machine
 
@@ -308,7 +308,7 @@ virtual pad mm   = px * 0.25 (calibrated)
 
 ## 12.6 Configuration
 
-`~/.config/palmrest/config.toml`, edited by the Settings app ("Mouse & Gestures" page).
+`~/.config/mouse_gestures/config.toml`, edited by the Settings app ("Mouse & Gestures" page).
 
 | Key | Default | Range | Status |
 | --- | --- | --- | --- |
@@ -354,10 +354,10 @@ pub enum Action {
 
 | Concern | Owner |
 | --- | --- |
-| Decoder, tracker, feel, gestures, outputs, service | `magic-gestures` repo, `palmrest` binary |
-| Host client, double-scroll rule, swipe decision on our surfaces | `layer-shell-host/src/input/palmrest.rs` + `scroll/**` (11) |
+| Decoder, tracker, feel, gestures, outputs, service | `magic-gestures` repo, `mouse_gestures` binary |
+| Host client, double-scroll rule, swipe decision on our surfaces | `layer-shell-host/src/input/mouse_gestures.rs` + `scroll/**` (11) |
 | Workspace / overview actions on the compositor | `shell-ipc` gains `Workspace{Prev, Next, Overview}` (proposed addition); `shell-services` `toplevel_wl` performs them |
-| Settings page | Settings app, writes `config.toml` and the compositor's natural-scroll value for "palmrest touchpad" |
+| Settings page | Settings app, writes `config.toml` and the compositor's natural-scroll value for "the mouse gestures daemon touchpad" |
 
 Platform limits:
 
@@ -378,14 +378,14 @@ Platform limits:
    report, a 0xF7 double, lengths 13, 15 and 29 (rejected with `DecodeError::Length`): exact field values; x/y agree with
    the kernel form and, after wrap handling, with the Python parser's deltas.
 2. **Python parity (scroll)**: replay 5 recorded sessions (slow, fast, repeated flicks,
-   diagonal, finger-count changes) through palmrest `feel` with `rejection = Off` and through
+   diagonal, finger-count changes) through the mouse gestures daemon `feel` with `rejection = Off` and through
    the Python `ScrollAxisLock`: identical lock decisions per report; cumulative v120 on O4
    identical; cumulative px on O1 = v120 x 0.5 within 1 v120 unit.
 3. **Python tests ported**: every case in `test_kde_gestures.py` (one finger vertical only,
    horizontal only, two fingers never horizontal, swipe right -> desktop left, long drag
    switches again after cooldown, vertical drag no switch, one finger never switches, two
    fingers scroll vertically, three fingers nothing, finger count change no jump, steps finer
-   than a tenth the Settings app) passes against palmrest.
+   than a tenth the Settings app) passes against mouse_gestures.
 4. **Swipe trigger**: synthetic 2-finger stroke of 200 units in 0.3 s: exactly one
    WorkspacePrev/Next; 199 units: none; 160 units vertical before 160 horizontal: none (re-
    anchored) then a further 200 horizontal fires once; 600 units in 0.4 s: one fire (cooldown).
@@ -415,7 +415,7 @@ Platform limits:
    alternative `Native`: send only the horizontal 2-finger scroll on O2 and let browsers do
    their own overscroll navigation (no double effect in horizontally scrollable views).
 3. Treat nibble 1-2 (in range) as contact (Python parity) or only 3-4 (kernel "down").
-4. Rejection zones and the palm size are guesses; tune with `palmrest record`.
+4. Rejection zones and the palm size are guesses; tune with `mouse_gestures record`.
 5. The kernel `u/mm` constants make X 2.7x coarser than Y per mm; the Python thresholds are in
    raw units, so horizontal locks need ~2.7x more finger travel. Keep (feel) or normalise to mm.
 6. `emulate_3button=1` gives a middle click that macOS does not have; keep or set 0.
@@ -424,7 +424,7 @@ Platform limits:
 
 - Plan Appendix B (kernel parameters, report format, libinput, existing Linux projects,
   ownership decision) and Appendix C-C (all R rows); plan settled decisions (gestures,
-  palmrest replaces the Python daemon at M8).
+  The mouse gestures daemon replaces the Python daemon at M8).
 - Python daemon v0.3.0-kde and its tests `test_kde_gestures.py`; `/etc/modprobe.d/
   99-magic-mouse-kde.conf`; `/etc/udev/rules.d/70-magic-mouse-kde.rules`.
 - Linux `drivers/hid/hid-magicmouse.c`; Apple Support 102482 (Magic Mouse gestures); Apple

@@ -12,7 +12,7 @@ pub enum Origin {
     Physical(DeviceClass),
     /// A user-writable virtual device (uinput, `virtual_keyboard`): never physical (I8).
     Virtual(DeviceClass),
-    /// A trusted feed (palmrest's stream): scroll and system gestures only.
+    /// A trusted feed (the mouse gestures daemon's stream): scroll and system gestures only.
     Feed,
     /// The agent seat of this lease.
     Agent(LeaseId),
@@ -57,7 +57,7 @@ impl Origin {
     }
 
     /// Whether this origin is a touchpad that moves the pointer and swipes spaces: the person's
-    /// own pad, or palmrest's (whose swipes arrive as pad gestures, not as a feed).
+    /// own pad, or the mouse gestures daemon's (whose swipes arrive as pad gestures, not as a feed).
     #[must_use]
     pub fn is_pad(&self) -> bool {
         matches!(
@@ -157,15 +157,15 @@ mod tests {
                 ids(VIRTUAL, "input-broker/keymap_daemon\n"),
                 true,
             ),
-            // palmrest turns gestures into synthetic key chords (see `Maker::origin`).
+            // The mouse gestures daemon turns gestures into synthetic key chords (see `Maker::origin`).
             (
-                "palmrest's touchpad",
+                "mouse_gestures's touchpad",
                 DeviceClass::Touchpad,
                 ids(VIRTUAL, "input-broker/pad_daemon"),
                 false,
             ),
             (
-                "palmrest's keys",
+                "mouse_gestures's keys",
                 DeviceClass::Keyboard,
                 ids(VIRTUAL, "input-broker/pad_daemon"),
                 false,
@@ -213,14 +213,14 @@ mod tests {
         }
     }
 
-    /// palmrest's pad is virtual but still a pad: its swipes drive the Spaces.
+    /// The mouse gestures daemon's pad is virtual but still a pad: its swipes drive the Spaces.
     #[test]
-    fn palmrests_pad_still_drives_swipes() {
-        let palmrest = KernelIds {
+    fn mouse_gestures_pad_still_drives_swipes() {
+        let mouse_gestures = KernelIds {
             bus: Some(BUS_VIRTUAL),
             maker: Some(Maker::PadDaemon),
         };
-        assert!(Origin::of_kernel_device(DeviceClass::Touchpad, palmrest).is_pad());
-        assert!(!Origin::of_kernel_device(DeviceClass::Pointer, palmrest).is_pad());
+        assert!(Origin::of_kernel_device(DeviceClass::Touchpad, mouse_gestures).is_pad());
+        assert!(!Origin::of_kernel_device(DeviceClass::Pointer, mouse_gestures).is_pad());
     }
 }

@@ -16,7 +16,10 @@ use std::sync::mpsc::Sender;
 pub fn spawn(dir: &Path, out: Sender<Loaded>) -> notify::Result<notify::RecommendedWatcher> {
     std::fs::create_dir_all(dir).map_err(notify::Error::io)?;
     let at = dir.to_path_buf();
-    watch_file_on_thread(dir, FILE_NAME, "palmrest-config".to_owned(), move || {
-        out.send(load(Some(at.as_path()))).is_ok()
-    })
+    watch_file_on_thread(
+        dir,
+        FILE_NAME,
+        "mouse-gestures-config".to_owned(),
+        move || out.send(load(Some(at.as_path()))).is_ok(),
+    )
 }

@@ -1,12 +1,12 @@
-//! The key table is a copy of palmrest's `keys.rs::NAMES` plus four modifiers. When palmrest's source
-//! sits next to this repository (the lane worktree), a code palmrest has and this table lacks fails
+//! The key table is a copy of the mouse gestures daemon's `keys.rs::NAMES` plus four modifiers. When the mouse gestures daemon's source
+//! sits next to this repository (the lane worktree), a code the mouse gestures daemon has and this table lacks fails
 //! here; without it (CI of this repository alone) the comparison is skipped and says so.
 
 use input_broker_wire::keytable::{KEY_TABLE, class_of};
 use std::path::PathBuf;
 
 /// Every `("name", code)` pair between `pub const NAMES` and the closing `];`.
-fn palmrest_names(source: &str) -> Vec<(String, u16)> {
+fn mouse_gestures_names(source: &str) -> Vec<(String, u16)> {
     let body = source
         .split("pub const NAMES")
         .nth(1)
@@ -37,17 +37,17 @@ fn the_table_has_no_duplicate_names_or_codes() {
 }
 
 #[test]
-fn every_key_palmrest_can_name_is_in_the_table() {
+fn every_key_mouse_gestures_can_name_is_in_the_table() {
     let path =
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../mouse-gestures-daemon/src/keys.rs");
     let Ok(source) = std::fs::read_to_string(&path) else {
         eprintln!("skipped: {} is not there", path.display());
         return;
     };
-    let names = palmrest_names(&source);
+    let names = mouse_gestures_names(&source);
     assert!(
         names.len() > 50,
-        "parsed only {} names from palmrest",
+        "parsed only {} names from mouse_gestures",
         names.len()
     );
     for (name, code) in names {
@@ -55,7 +55,7 @@ fn every_key_palmrest_can_name_is_in_the_table() {
         assert_eq!(
             ours.map(|e| e.name),
             Some(name.as_str()),
-            "palmrest's {name} ({code})"
+            "mouse_gestures's {name} ({code})"
         );
         assert!(class_of(code).is_some());
     }

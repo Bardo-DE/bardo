@@ -5,7 +5,7 @@
 use std::cell::RefCell;
 use std::time::Instant;
 
-use layer_shell_host::{CloseReason, HostCtx, HostEvent, PalmrestAction};
+use layer_shell_host::{CloseReason, HostCtx, HostEvent, MouseGesturesAction};
 use layer_shell_types::{KeyboardFocus, LayerOp, SurfaceId};
 use settings_store_fs::Store;
 use shell_bar::Bar;
@@ -25,8 +25,8 @@ use shell_ui_kit::surface::{OutputPolicy, Surface};
 use tokio::sync::watch;
 use ui_settings::Environment;
 
+use super::mouse_gestures::{self, Plan};
 use super::msg::ShellMsg;
-use super::palmrest::{self, Plan};
 use super::settings;
 use super::surfaces::{self, Spawn};
 use crate::edge_reveal::FullScreenPrefs;
@@ -109,7 +109,7 @@ pub fn handle(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, event: HostEvent<S
         HostEvent::App(ShellMsg::Ipc { request, reply }) => {
             let _ = reply.send(answer(shell, ctx, request));
         }
-        HostEvent::Palmrest(ask) => palmrest_ask(shell, ctx, &ask),
+        HostEvent::MouseGestures(ask) => mouse_gestures_ask(shell, ctx, &ask),
         HostEvent::App(ShellMsg::Lock(wish)) => apply_lock(shell, ctx, wish),
         HostEvent::App(ShellMsg::Sheets) => {
             let latch = std::mem::take(&mut shell.sheet_latch);
@@ -142,21 +142,21 @@ pub fn handle(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, event: HostEvent<S
     }
 }
 
-/// A gesture's action that needs the session, asked by palmrest (a system service): carried out as
-/// the person's own command would be. None while the lock screen is up (palmrest drops them then
+/// A gesture's action that needs the session, asked by the mouse gestures daemon (a system service): carried out as
+/// the person's own command would be. None while the lock screen is up (the mouse gestures daemon drops them then
 /// too).
-fn palmrest_ask(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, ask: &PalmrestAction) {
+fn mouse_gestures_ask(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, ask: &MouseGesturesAction) {
     if shell.lock.id.is_some() {
         return;
     }
-    match palmrest::plan(ask) {
+    match mouse_gestures::plan(ask) {
         Plan::Request(request) => {
             if let Response::Failed(failure) = answer(shell, ctx, request) {
-                eprintln!("bardo-shell: palmrest: {}", failure.message);
+                eprintln!("bardo-shell: mouse_gestures: {}", failure.message);
             }
         }
-        Plan::Program { program, args } => palmrest::run(&program, &args),
-        Plan::Refused(why) => eprintln!("bardo-shell: palmrest: {ask:?}: {why}"),
+        Plan::Program { program, args } => mouse_gestures::run(&program, &args),
+        Plan::Refused(why) => eprintln!("bardo-shell: mouse_gestures: {ask:?}: {why}"),
     }
 }
 
@@ -383,8 +383,8 @@ fn on_event(ctx: &mut HostCtx<ShellMsg>, outputs: &mut Outputs, event: HostEvent
         HostEvent::SurfaceMapped { .. } => {}
         // The shell is not an app the person quits: it stays up, and logging out stops its unit.
         HostEvent::QuitAsked => {}
-        // Answered by `handle`, which carries it out (`palmrest_ask`).
-        HostEvent::Palmrest(_) => {}
+        // Answered by `handle`, which carries it out (`mouse_gestures_ask`).
+        HostEvent::MouseGestures(_) => {}
         HostEvent::App(ShellMsg::Settings(file)) => {
             resize_bars(ctx, outputs, &file);
             ctx.set_scroll_config(crate::scroll::config(&file));

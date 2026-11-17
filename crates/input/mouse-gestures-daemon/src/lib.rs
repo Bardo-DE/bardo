@@ -1,4 +1,4 @@
-//! palmrest: the Magic Mouse gesture daemon (12-BEHAVIOUR-gestures).
+//! The mouse gestures daemon: the Magic Mouse gesture daemon (12-BEHAVIOUR-gestures).
 //!
 //! The pure core (`sensor`, `touch`, `stamp`, `feel`, `gestures`, `tracker`, `action`,
 //! `config`, `outputs`) takes bytes and instants and returns values; `recording` and `replay`

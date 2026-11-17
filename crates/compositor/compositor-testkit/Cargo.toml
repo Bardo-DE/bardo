@@ -1,6 +1,6 @@
 [package]
 name = "compositor-testkit"
-description = "The compositor's one test harness: Fixture over the real State on the headless backend, test origins, fakes (session, udev, logind, palmrest), the soft GPU topology, golden helpers and typed fuzz ops; the fake-logind binary."
+description = "The compositor's one test harness: Fixture over the real State on the headless backend, test origins, fakes (session, udev, logind, the mouse gestures daemon), the soft GPU topology, golden helpers and typed fuzz ops; the fake-logind binary."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

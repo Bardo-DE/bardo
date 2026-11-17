@@ -1,4 +1,4 @@
-//! What palmrest needs to know about an evdev node, read once when it is opened.
+//! What the mouse gestures daemon needs to know about an evdev node, read once when it is opened.
 
 use super::EvdevError;
 use crate::sensor::surface::{Extent, Surface};

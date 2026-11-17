@@ -38,7 +38,7 @@ pub fn parse_table(root: &toml::Table) -> (Config, Vec<Warning>) {
     (config, warn)
 }
 
-/// The defaults as TOML, for `palmrest --print-config` and the install script.
+/// The defaults as TOML, for `mouse_gestures --print-config` and the install script.
 #[must_use]
 pub fn to_toml(c: &Config) -> String {
     toml::to_string(c).unwrap_or_default() // every field is a plain value or table; cannot fail

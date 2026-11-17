@@ -1,4 +1,4 @@
-//! What each of palmrest's two virtual devices is: its identity and its capabilities.
+//! What each of the mouse gestures daemon's two virtual devices is: its identity and its capabilities.
 //!
 //! The input service builds the same two from constants of its own, so a change here is a
 //! change there. Only the direct path (`direct.rs`) uses the capabilities; the service path
@@ -94,7 +94,7 @@ pub(super) fn touchpad_caps() -> Caps {
     }
 }
 
-/// The identity and capabilities `request` asks for; none for a device that is not palmrest's.
+/// The identity and capabilities `request` asks for; none for a device that is not the mouse gestures daemon's.
 pub(super) fn wanted(request: &Create) -> Option<(Identity, Caps)> {
     match request {
         Create::Touchpad => Some((TOUCHPAD, touchpad_caps())),
@@ -121,7 +121,7 @@ mod tests {
     }
 
     #[test]
-    fn only_palmrests_own_devices_are_wanted() {
+    fn only_mouse_gestures_own_devices_are_wanted() {
         let keys = wanted(&Create::keys(vec![56, 105])).map(|(id, caps)| (id.name, caps.keys));
         assert_eq!(keys, Some(("mouse-gestures keys", vec![56, 105])));
         assert_eq!(
@@ -130,7 +130,7 @@ mod tests {
         );
         assert!(
             wanted(&Create::wheel()).is_none(),
-            "palmrest has no wheel device"
+            "mouse_gestures has no wheel device"
         );
         assert!(
             wanted(&Create::keyboard()).is_none(),

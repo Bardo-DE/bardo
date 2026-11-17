@@ -46,7 +46,11 @@ fn every_setting_has_one_row_and_every_row_a_setting() {
     let defaults = toml::Value::try_from(crate::config::Config::default()).unwrap();
     let mut want = BTreeSet::new();
     leaves("", &defaults, &mut want);
-    let paths: Vec<String> = Schema::palmrest().key.into_iter().map(|k| k.path).collect();
+    let paths: Vec<String> = Schema::mouse_gestures()
+        .key
+        .into_iter()
+        .map(|k| k.path)
+        .collect();
     let got: BTreeSet<String> = paths.iter().cloned().collect();
     assert_eq!(got.len(), paths.len(), "a path has two rows");
     assert_eq!(got, want);
@@ -54,7 +58,7 @@ fn every_setting_has_one_row_and_every_row_a_setting() {
 
 #[test]
 fn every_default_is_inside_its_own_kind() {
-    for key in Schema::palmrest().key {
+    for key in Schema::mouse_gestures().key {
         let ok = match (&key.kind, &key.default) {
             (Kind::Bounded { min, max, .. }, toml::Value::Integer(n)) => (min..=max).contains(&n),
             (Kind::Toggle { variants }, toml::Value::String(word)) => variants.contains(word),
@@ -73,7 +77,7 @@ fn every_default_is_inside_its_own_kind() {
 
 #[test]
 fn the_reader_accepts_every_bound_and_every_word() {
-    for key in Schema::palmrest().key {
+    for key in Schema::mouse_gestures().key {
         let values: Vec<toml::Value> = match &key.kind {
             Kind::Bounded { min, max, .. } => vec![(*min).into(), (*max).into()],
             Kind::Toggle { variants } => variants.iter().map(|w| w.as_str().into()).collect(),
@@ -96,7 +100,7 @@ fn the_reader_accepts_every_bound_and_every_word() {
 fn a_bound_just_outside_the_scroll_speed_is_refused() {
     // The schema's bounds are the reader's range exactly.
     let path = "scroll.speed";
-    let key = Schema::palmrest()
+    let key = Schema::mouse_gestures()
         .key
         .into_iter()
         .find(|k| k.path == path)
@@ -122,7 +126,7 @@ fn the_kind_follows_the_count_of_words() {
 
 #[test]
 fn the_file_is_toml_with_one_key_table_per_row() {
-    let schema = Schema::palmrest();
+    let schema = Schema::mouse_gestures();
     let text = schema.to_toml();
     let table: toml::Table = text.parse().unwrap();
     assert_eq!(table["app"].as_str(), Some("mouse-gestures"));
@@ -138,7 +142,7 @@ fn the_file_is_toml_with_one_key_table_per_row() {
 
 #[test]
 fn every_key_is_labelled_and_explained_and_every_choice_word_has_a_human_label() {
-    for key in Schema::palmrest().key {
+    for key in Schema::mouse_gestures().key {
         assert!(
             !key.label.is_empty() && !key.section.is_empty(),
             "{}",

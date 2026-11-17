@@ -7,7 +7,7 @@ relies on, and `CONVENTIONS.md` names the style guides every repo follows. This 
 each thing lives, what may depend on what, and how to add the next thing.
 
 layer-shell-host stands below Bardo and sill and is portable to any Wayland compositor with
-layer-shell: no compositor-specific crate, no D-Bus, no PulseAudio, no design-system crate, no palmrest
+layer-shell: no compositor-specific crate, no D-Bus, no PulseAudio, no design-system crate, no mouse gestures daemon
 daemon.
 
 ## 1. Crate map
@@ -18,7 +18,7 @@ daemon.
 | `layer-shell-hooks` | this workspace (`crates/layer-shell/layer-shell-hooks`) | what a component calls: `SurfaceHandle`, `use_surface` and the other hooks, `HostRoot`, and the cells, queue and feeds the host publishes into; dioxus and tokio's `sync` only, no blitz, wgpu or wayland |
 | `layer-shell-host` | this workspace (`crates/layer-shell/layer-shell-host`) | the host: Wayland plumbing, surfaces, frame loop, input, scroll, lock; it drains the hooks' request queue and fills their cells |
 | `blitz-embed` | sibling repo `blitz-embed` | portable Blitz repairs and helpers, no Wayland, no Dioxus, no design system (section 4) |
-| `mouse-gestures-proto` | sibling repo `palmrest` (`crates/palmrest-protocol`) | the palmrest socket's messages, `ToHost` / `ToDaemon`, `PROTOCOL_VERSION` |
+| `mouse-gestures-proto` | sibling repo `mouse_gestures` (`crates/mouse-gestures-protocol`) | the mouse gestures daemon socket's messages, `ToHost` / `ToDaemon`, `PROTOCOL_VERSION` |
 
 Allowed edges (everything else is forbidden):
 
@@ -37,7 +37,7 @@ and the programs) that names `layer-shell-host`, `ui-blitz`, `blitz-dom`, `blitz
 `[dependencies]` or `[dev-dependencies]` respectively.
 
 Forbidden for `layer-shell-host`: `zbus`,
-`libpulse-binding`, every Bardo crate, sill, and the `palmrest` daemon crate.
+`libpulse-binding`, every Bardo crate, sill, and the `mouse_gestures` daemon crate.
 `scripts/check-boundary.sh` checks this list, and that Blitz's own scrollbars stay off (the host
 paints the thumb). `blitz-embed` forbids `smithay-client-toolkit`, `wayland-*`, `dioxus*`, every
 Bardo crate and sill; its own repo carries the same script. Sibling repos are path
@@ -55,7 +55,7 @@ dependencies, as sill's are on layer-shell-host.
 | `ElementId` (`region.rs`) | `blitz-embed::element_id` |
 | `dom/fonts.rs` (`SharedFonts`) | `blitz-embed::fonts` |
 | `gpu/adapter.rs` (`DeviceKind`, `GpuBackend`, `AdapterFacts`, `rank`, `validate`) | `blitz-embed::adapter` |
-| `input/palmrest/wire.rs` | `mouse-gestures-proto` (re-declaration deleted; layer-shell-host imports the crate) |
+| `input/mouse_gestures/wire.rs` | `mouse-gestures-proto` (re-declaration deleted; layer-shell-host imports the crate) |
 | the `Prepaint` hook's snapping helpers (in consumers today) | `blitz-embed::snap`; the `Prepaint` type stays here |
 
 ## 2. Modules and layers
@@ -77,11 +77,11 @@ a higher one. When something needs a higher layer, move the shared piece down or
 |---|---|---|
 | L0 vocabulary | `id`, `geometry`, `scale`, `output`, `error`, `modifiers`, `config`, `blur`, `event`, `msg`, `stats` | pure data |
 | L1 role configs | `layer`, `toplevel`, `popup`, `region`, `placement`, `csd`, `drag/{spec,offer,serial,pipe,outcome}`, `prepaint`, `lock/{config,machine,retry}` | pure: configs, wire mappings, geometry |
-| L2 machines and physics | `frame`, `resolve`, `grab`, `popup_keyboard`, `timers`, `clock`, `tick` (pacing), `modality`, `paste`, `input/{pointer,keysym,keycode,modifiers,capability,focus}`, `input/palmrest/route`, `scroll/{config,indicator,source,suppress,wheel}` | pure, table-tested |
+| L2 machines and physics | `frame`, `resolve`, `grab`, `popup_keyboard`, `timers`, `clock`, `tick` (pacing), `modality`, `paste`, `input/{pointer,keysym,keycode,modifiers,capability,focus}`, `input/mouse_gestures/route`, `scroll/{config,indicator,source,suppress,wheel}` | pure, table-tested |
 | L3 shared cells and handles | `live`, `wake`, `handle`, `host_handle`, `bridge`, `root`, `lock/handle`, `scroll/{watch,wheel_feed}` | values shared with documents; no Wayland |
 | L4 documents | `dom/{document,head,shell_provider,stacking,scheme,scroll,ime_focus}`, `headless` | Blitz, through `blitz-embed` |
 | L5 GPU | `gpu/{context,context_proxy,presenter,swapchain,shm,render,probe,deadline,image_cache,rebuild,raw_handle}` | effects |
-| L6 Wayland effects | `state`, `surface`, `role`, `handlers/*` (`pipe_writes`, `surface_objects`, `text_input`, `surrounding` among them), `clipboard`, `cursor`, `ime` (`ime/surrounding`: what to send about the text around the caret), `input/{key,scroll,palmrest}` (socket), `scroll/{surface,paint,tuning}`, `lock/active` | effects |
+| L6 Wayland effects | `state`, `surface`, `role`, `handlers/*` (`pipe_writes`, `surface_objects`, `text_input`, `surrounding` among them), `clipboard`, `cursor`, `ime` (`ime/surrounding`: what to send about the text around the caret), `input/{key,scroll,mouse_gestures}` (socket), `scroll/{surface,paint,tuning}`, `lock/active` | effects |
 | L7 orchestration | `ctx/*`, `host`, `inject` | effects; the loop and the flush |
 
 Fixed role files inside a concept directory (these): `decide.rs` (the
@@ -206,12 +206,12 @@ neither side names the other's types. Tests for each module live in the kit agai
 | Key event assembly, key repeat | `input/key`, `handlers/keyboard` |
 | Seat capability decision | `input/capability` |
 | Input modality (keyboard vs pointer) | `modality` |
-| Palmrest socket client (pointer, session lock, the person's gesture settings, the daemon's proof) | `input/palmrest` (socket, `peer_trust`: the peer held by `SO_PEERPIDFD` through `nix`, its cgroup read from `/proc`), `input/palmrest/user_config` (the settings file), `input/palmrest/route` (meaning); the lock is told from `ctx/lock`; the settings look is `ctx/palmrest` |
-| What palmrest asks of the session (`ToHost::Run`) | `HostEvent::Palmrest(PalmrestAction)`, from `input/scroll::palmrest_message`; the embedder carries it out |
-| Palmrest messages | `mouse-gestures-proto` |
+| The mouse gestures daemon socket client (pointer, session lock, the person's gesture settings, the daemon's proof) | `input/mouse_gestures` (socket, `peer_trust`: the peer held by `SO_PEERPIDFD` through `nix`, its cgroup read from `/proc`), `input/mouse_gestures/user_config` (the settings file), `input/mouse_gestures/route` (meaning); the lock is told from `ctx/lock`; the settings look is `ctx/mouse_gestures` |
+| What the mouse gestures daemon asks of the session (`ToHost::Run`) | `HostEvent::MouseGestures(MouseGesturesAction)`, from `input/scroll::mouse_gestures_message`; the embedder carries it out |
+| The mouse gestures daemon messages | `mouse-gestures-proto` |
 | Scroll physics, latching, document side, driver | `blitz_kit::scroll` (shared with `ui-blitz`) |
 | Scroll settings (engine part) | `blitz_kit::scroll::config::ScrollSettings`; `scroll/config` holds `ScrollConfig` (it and the thumb's settings) |
-| Scroll thumb, palmrest and Wayland axis input, double-scroll rule | `scroll/{indicator,source,suppress,paint}`, `scroll/surface` (the surface's driver, thumb and palmrest tracker) |
+| Scroll thumb, the mouse gestures daemon and Wayland axis input, double-scroll rule | `scroll/{indicator,source,suppress,paint}`, `scroll/surface` (the surface's driver, thumb and the mouse gestures daemon tracker) |
 | What a component hears of a wheel or touchpad (source, phase, distance) | `scroll/wheel` (the meaning), `scroll/wheel_feed` (the queue), `use_wheel` |
 | Scroll view of Blitz (scroller chain, raw offsets) | `dom/scroll` |
 | Hover repair, net provider, fonts, adapter ranking, transform-aware hit and rect, pixel snap | `blitz-embed` |
@@ -365,7 +365,7 @@ the compositor for the acceptance scripts. Handlers become table-testable by str
 | Rendering | `headless` feature (`render_png` through vello_cpu) and the golden PNGs in `tests/snapshots/` |
 | Blitz repairs | in `blitz-embed`, against a `BaseDocument` |
 | Synthetic input on a live host | `HostCtx::inject` on the headless KWin through the demos and `accept-*.sh` |
-| Palmrest messages | `mouse-gestures-proto` round-trip tests; `input/palmrest/route` table tests; `input/palmrest` fake-daemon tests (pointer and session lock sent on change and on connect) |
+| The mouse gestures daemon messages | `mouse-gestures-proto` round-trip tests; `input/mouse_gestures/route` table tests; `input/mouse_gestures` fake-daemon tests (pointer and session lock sent on change and on connect) |
 
 Integration tests in `tests/` use only the public root, `headless` and `inject`; a test that
 needs an internal module is a unit test beside that module. The one harness is the headless
@@ -390,7 +390,7 @@ session. Goldens change only with a reason in the commit message.
   stays a `bool`; an enum is for a public `f(true, false)` argument, a realistic third state, or
   the bus (`Modifier::of`, `LockKey::of`, `Elastic`).
 - **`Serialize, Deserialize` only where the type is data all the way down** (FINDINGS F11);
-  the palmrest wire types are `mouse-gestures-proto`'s and are not re-declared.
+  The mouse gestures daemon wire types are `mouse-gestures-proto`'s and are not re-declared.
 - **Compositor behaviour is cited with a trace.** Before branching on protocol text, use what
   the protocol already said: an event, a global's presence, an error code.
 - **Nothing reads the environment except `Host::connect`** (through `HostConfig` and the
@@ -417,8 +417,8 @@ step as an API they use.
 2. layer-shell-host depends on `blitz-embed` (done); delete `dom/hover_sync.rs`, `dom/net.rs`, `dom/fonts.rs`,
    `dom/painted.rs`, the ranking half of `gpu/adapter.rs`; `tests/hover_sync.rs` and
    `tests/host_fonts.rs` move to the kit.
-3. `mouse-gestures-proto` exists (palmrest step 1) (done); layer-shell-host depends on it and deletes
-   `input/palmrest/wire.rs`; `tests/scroll_palmrest.rs` reads the crate's fixtures. Update
+3. `mouse-gestures-proto` exists (the mouse gestures daemon step 1) (done); layer-shell-host depends on it and deletes
+   `input/mouse_gestures/wire.rs`; `tests/scroll_mouse_gestures.rs` reads the crate's fixtures. Update
    `check-boundary.sh`.
 4. Bools to enums (done): `Modifier::of`, `LockKey::of`, `pick`, `elastic`, `requested`,
    `set_ime_enabled`.

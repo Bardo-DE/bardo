@@ -42,7 +42,7 @@ impl Reader {
         loop {
             self = self.housekeeping();
             match source::open(Purpose::Run) {
-                Err(e) => eprintln!("palmrest: {e}"),
+                Err(e) => eprintln!("mouse_gestures: {e}"),
                 Ok(opened) => {
                     backoff = Backoff::DEVICE;
                     self = self.session(&opened);
@@ -50,14 +50,14 @@ impl Reader {
             }
             let (delay, next) = backoff.step();
             backoff = next;
-            eprintln!("palmrest: retrying in {}s", delay.as_secs());
+            eprintln!("mouse_gestures: retrying in {}s", delay.as_secs());
             std::thread::sleep(delay);
         }
     }
 
     fn session(mut self, opened: &Opened) -> Self {
         let info = opened.info.clone();
-        eprintln!("palmrest: connected: {} ({})", info.name, info.path);
+        eprintln!("mouse_gestures: connected: {} ({})", info.name, info.path);
         self.socket.send(ToSocket::Device(info));
         let mut sensor = opened.source.sensor();
         self.tracker = self.tracker.with_surface(sensor.surface());
@@ -86,19 +86,19 @@ impl Reader {
                     );
                     clock = c;
                     if let Some(e) = step.error {
-                        eprintln!("palmrest: dropped a read: {e}");
+                        eprintln!("mouse_gestures: dropped a read: {e}");
                     }
                     self = Self { tracker: t, ..self }.emit(step.outs);
                 }
                 Ok(None) => self = self.with_tracker(|t| t.tick(hidraw::now())),
                 Err(e) => {
                     errors += 1;
-                    eprintln!("palmrest: read failed ({errors}): {e}");
+                    eprintln!("mouse_gestures: read failed ({errors}): {e}");
                     std::thread::sleep(IDLE_POLL);
                 }
             }
         }
-        eprintln!("palmrest: device disconnected");
+        eprintln!("mouse_gestures: device disconnected");
         let s = self.with_tracker(|t| t.disconnect(hidraw::now()));
         s.socket.send(ToSocket::Gone);
         s
@@ -111,7 +111,7 @@ impl Reader {
             loaded
                 .warnings
                 .iter()
-                .for_each(|w| eprintln!("palmrest: config: {w}"));
+                .for_each(|w| eprintln!("mouse_gestures: config: {w}"));
             self.system = loaded.text;
             self = self.with_layers(now);
         }
@@ -133,7 +133,7 @@ impl Reader {
     fn with_layers(mut self, now: Mono) -> Self {
         let (config, warnings) = config::layered(&self.system, self.user.as_deref());
         for w in &warnings {
-            eprintln!("palmrest: config: {w}");
+            eprintln!("mouse_gestures: config: {w}");
         }
         self.devices = self.devices.reconfigure(&config, now);
         self.tracker = self.tracker.with_config(config);

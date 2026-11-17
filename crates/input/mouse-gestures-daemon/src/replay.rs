@@ -1,4 +1,4 @@
-//! `palmrest replay`: a recording through the pure core, exactly as the reader thread drives it.
+//! `mouse_gestures replay`: a recording through the pure core, exactly as the reader thread drives it.
 //!
 //! The acceptance tests run through here, so what they check is the daemon's own path from
 //! bytes to outputs, not a test-only shortcut.

@@ -1,4 +1,4 @@
-//! `palmrest --check-uinput`: can this machine make palmrest's virtual devices?
+//! `mouse_gestures --check-uinput`: can this machine make the mouse gestures daemon's virtual devices?
 
 use super::emitter::UinputEmitter;
 use crate::outputs::OutputError;

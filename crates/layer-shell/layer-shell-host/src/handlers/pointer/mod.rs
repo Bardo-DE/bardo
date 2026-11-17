@@ -55,7 +55,7 @@ impl PointerHandler for HostState {
                     self.pointer_off(id);
                     self.invalidate(id);
                     if self.input.pointer_focus == PointerFocus::Nowhere {
-                        self.palmrest.pointer_over(false);
+                        self.mouse_gestures.pointer_over(false);
                     }
                 }
                 PointerEventKind::Motion { .. } => {
@@ -114,7 +114,7 @@ impl HostState {
         // force `Cursor::set` past its no-op-when-unchanged check.
         self.cursor.current = None;
         self.show_cursor(pointer, id);
-        self.palmrest.pointer_over(true);
+        self.mouse_gestures.pointer_over(true);
     }
 
     /// Press: the grab record, the first-mouse filter, then the resize band or the document.

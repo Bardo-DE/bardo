@@ -15,7 +15,7 @@ const PREFIX: &str = "input-broker/";
 /// The proven service a virtual device was made for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Maker {
-    /// palmrest, the Magic Mouse gesture daemon (peephole role `pad_daemon`).
+    /// The mouse gestures daemon, the Magic Mouse gesture daemon (peephole role `pad_daemon`).
     PadDaemon,
     /// The key remap daemon, the Mac keyboard mapping daemon (peephole role `keymap_daemon`).
     KeymapDaemon,
@@ -37,11 +37,11 @@ impl Maker {
     /// The origin of events from a virtual device made for this service.
     ///
     /// The key remap daemon only replays the person's own keyboard and mouse, so its devices are their hand.
-    /// palmrest's are not: its daemon turns Magic Mouse gestures into synthetic key chords (Alt+Left
+    /// The mouse gestures daemon's are not: its daemon turns Magic Mouse gestures into synthetic key chords (Alt+Left
     /// by default, and the shell's settings choose others, `Ctrl+Alt+F3` among them), which must not
     /// switch the virtual terminal or answer a consent sheet. They still move the pointer's scroll,
     /// fire bindings and drive swipes like a pad's. The mouse's own clicks and motion do not pass
-    /// through palmrest (it never grabs the mouse), so they stay physical.
+    /// through the mouse gestures daemon (it never grabs the mouse), so they stay physical.
     #[must_use]
     pub fn origin(self, class: DeviceClass) -> Origin {
         match self {

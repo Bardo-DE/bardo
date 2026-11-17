@@ -12,7 +12,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 2. **Bring the sibling checkouts up to date.** The install builds with `--locked`, and `Cargo.lock`
    was resolved against the current master of every repo next to `~/sill`: `almanac`, `anyview`,
    `blitz-embed`, `cua`, `docket`, `key_remap`, `porter`, `bardo`, `layer-shell-host`, plus `stoker` and
-   `desktop-protocols` (reached through them). `palmrest` is not needed to build. A stale one
+   `desktop-protocols` (reached through them). `mouse_gestures` is not needed to build. A stale one
    (`anyview` was 11 commits behind once) stops the build with a raw cargo error, so check first:
 
    ```sh
@@ -185,7 +185,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   `bardo-shell force-quit toggle` from a terminal to see the panel.
 - No sink list in the control centre (G352): switch audio in Settings > Sound or `wpctl set-default <id>`.
 - Mouse settings are the compositor's (`~/.config/compositor/settings.toml`, section 1, item 8), or per device in
-  Settings > Mouse (the "palmrest" devices).
+  Settings > Mouse (the "the mouse gestures daemon" devices).
 - Night Shift: the control centre's Display module switches the compositor's software night light on until
   tomorrow and sets its warmth; the schedule (times, "always") is the compositor's `[night_light]`, set in
   Settings. Sunset to Sunrise is not offered (sill has no location). Where `display.night_warmth` is
@@ -223,7 +223,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 ```sh
 journalctl -b --no-pager | grep -iE 'sill|the compositor|bardo-session' | tail -100   # the session script, compositor, shell
 journalctl --user -b -u bardo-compositor.service -u bardo-session.target -u xdg-desktop-portal
-journalctl --user -b -u palmrest -u 'app-org.fcitx.Fcitx5@autostart'
+journalctl --user -b -u the mouse gestures daemon -u 'app-org.fcitx.Fcitx5@autostart'
 journalctl -b -u the key remap daemon                                              # system unit
 cat "$XDG_RUNTIME_DIR"/bardo-session/guard.log                     # the crash-loop guard's decisions
 ```

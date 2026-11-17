@@ -1,7 +1,7 @@
-//! palmrest's virtual touchpad and keyboard: the devices every client but layer-shell-host sees.
+//! The mouse gestures daemon's virtual touchpad and keyboard: the devices every client but layer-shell-host sees.
 //!
 //! They are made by the input service (turnstile), which closes the uinput node to everyone
-//! else and checks every event palmrest sends; `route` picks the service or, for development,
+//! else and checks every event the mouse gestures daemon sends; `route` picks the service or, for development,
 //! the node itself (`direct`). The emitter is one piece of code over either, through
 //! `input_broker_client::Session`.
 

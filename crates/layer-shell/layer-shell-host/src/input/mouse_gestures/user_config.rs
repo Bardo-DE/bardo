@@ -1,4 +1,4 @@
-//! The person's gesture settings, `~/.config/bardo/mouse-gestures/gestures.toml`. palmrest is a system service
+//! The person's gesture settings, `~/.config/bardo/mouse-gestures/gestures.toml`. The mouse gestures daemon is a system service
 //! and cannot read a home folder, so the host reads the file and sends its text (`UserConfig`)
 //! after connecting and when the file changes. The host watches no files, so a change is found by
 //! looking at the file's size and modification time every [`LOOK_EVERY`].

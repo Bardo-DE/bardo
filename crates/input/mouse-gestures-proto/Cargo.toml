@@ -1,7 +1,7 @@
 [package]
 publish.workspace = true
 name = "mouse-gestures-proto"
-description = "The socket contract between palmrest and its hosts: messages, their vocabulary, and the packet codec"
+description = "The socket contract between the mouse gestures daemon and its hosts: messages, their vocabulary, and the packet codec"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

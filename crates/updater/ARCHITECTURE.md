@@ -117,8 +117,8 @@ rule, a login service, the keyboard daemon's unit). The bundle carries them unde
 path>`, `release.toml` lists each destination in `[[system]]`, and `SyncSystem` copies the verified file
 from the new release's tree (atomic rename, the listed mode). The destination must be a path `ALLOWED_SYSTEM_FILES` names:
 a folder and either one exact name or any plain name with a given ending. Today that is `/etc/pam.d/bardo-shell`,
-`/etc/udev/rules.d/{60-sill-ddc,70-key-remap,70-palmrest}.rules`, `/etc/modules-load.d/{sill-ddc,key_remap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/key_remap` is the administrator's and is not on the list),
-`/etc/modprobe.d/99-bardo-mouse-gestures.conf`, `/usr/lib/systemd/system/{key_remap,turnstile,palmrest}.service`,
+`/etc/udev/rules.d/{60-sill-ddc,70-key-remap,70-mouse-gestures}.rules`, `/etc/modules-load.d/{sill-ddc,key_remap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/key_remap` is the administrator's and is not on the list),
+`/etc/modprobe.d/99-bardo-mouse-gestures.conf`, `/usr/lib/systemd/system/{key_remap,turnstile,mouse_gestures}.service`,
 `/usr/lib/systemd/system/bardo-input-broker.socket`, `/etc/udev/rules.d/72-bardo-input-broker.rules`,
 `/etc/modules-load.d/turnstile.conf`, `/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules`, `/etc/porter/{callers,inferd-callers}.toml`,
 `/etc/bardo/*-callers.toml`, `/etc/xdg/bardo/*.toml`, `/usr/lib/systemd/user/*.service` (the desktop's user units, which must be plain root-owned files: a link into the release reads as writable to the unit manager's judge) and `/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf`; anything else makes the whole release refused. A path is a link (an export) or a file (a system file), never both. A link into the install root found where a release places a file is what an earlier release's export left, and is replaced by the file (the link itself, never what it points at); a link anywhere else is the person's, and is a conflict. The helper is
@@ -143,7 +143,7 @@ effect, with programs found at fixed paths (never `PATH`). `commands` decides fr
 --reload-rules` and `udevadm trigger --subsystem-match=misc`; the file `bardo-input-broker.socket` being *placed* (not removed)
 also gets `systemctl enable --now bardo-input-broker.socket`, after the reload, and `bardo-key-remap.service` being *placed* gets `systemctl enable
 --now bardo-key-remap.service` after that (the keyboard map asks the input service for its devices; `install/system.sh` of the desktop
-enables it too, so both routes end alike), then `bardo-mouse-gestures.service` being *placed* gets `systemctl enable --now bardo-mouse-gestures.service` (the touchpad daemon, same reason; `install/system.sh palmrest` enables it too). A missing program is skipped and a failing one
+enables it too, so both routes end alike), then `bardo-mouse-gestures.service` being *placed* gets `systemctl enable --now bardo-mouse-gestures.service` (the touchpad daemon, same reason; `install/system.sh mouse_gestures` enables it too). A missing program is skipped and a failing one
 is a warning in the report, as with the security labels: the files are in place either way. It is a second method on
 the `Relabel` seam (`settle`, a no-op by default), implemented by `Selinux` (the real helper's choice, which runs both with its one runner), so tests that use `NoRelabel`
 or a fake runner never run a real program.

@@ -203,7 +203,7 @@ screen.
 - [ ] **Secrets**: `secret-tool search xdg:schema org.freedesktop.Secret.Generic` finds the
   Secret Service without a wallet prompt; Chrome and Electron apps stay signed in.
 - [ ] **Workspace gestures**: with two workspaces, `bardo-shell workspace next` and `prev` move between
-  them; at the ends nothing happens; the Magic Mouse two-finger swipes do the same (palmrest).
+  them; at the ends nothing happens; the Magic Mouse two-finger swipes do the same (the mouse gestures daemon).
   `bardo-shell workspace overview` opens Mission Control, and so does a hot corner set to Workspaces.
 - [ ] **Hot corner, keyed binding**: give the top left corner two bindings, none held (Mission Control) and Option held (Lock Screen). Rest the pointer there: Mission Control opens. Leave, hold Option, rest in the corner: the screen locks (not Mission Control).
 - [ ] **Hot corner, only a keyed binding**: set the bottom right corner to one binding that needs Command held. A plain rest there does nothing; hold Command and rest: it fires. Hold Command and Shift: nothing (the keys must match exactly).

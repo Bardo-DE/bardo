@@ -1,13 +1,13 @@
-//! What palmrest asks of the session. palmrest is a system service with no session of its own, so
+//! What the mouse gestures daemon asks of the session. The mouse gestures daemon is a system service with no session of its own, so
 //! a gesture whose action needs one (the workspace steps, a line of the shell's own commands, a
-//! program of the person's) arrives here as `HostEvent::Palmrest` and the shell carries it out as
+//! program of the person's) arrives here as `HostEvent::MouseGestures` and the shell carries it out as
 //! the person: the workspace steps and shell lines are requests, answered as `bardo-shell workspace next`
 //! and the like are, and a program is started as a child of the shell. The decision is pure
 //! ([`plan`]); only [`run`] has an effect.
 
 use std::process::Stdio;
 
-use layer_shell_host::{PalmrestAction, PalmrestWorkspace};
+use layer_shell_host::{MouseGesturesAction, MouseGesturesWorkspace};
 use shell_ipc::request::Request;
 
 use crate::cli::request_of_words;
@@ -19,18 +19,24 @@ pub enum Plan {
     Request(Request),
     /// A program of the person's, started without a shell.
     Program { program: String, args: Vec<String> },
-    /// Not something the shell does for palmrest.
+    /// Not something the shell does for mouse_gestures.
     Refused(&'static str),
 }
 
 /// What `ask` comes to.
-pub fn plan(ask: &PalmrestAction) -> Plan {
+pub fn plan(ask: &MouseGesturesAction) -> Plan {
     match ask {
-        PalmrestAction::Workspace(PalmrestWorkspace::Prev) => line(&["workspace", "prev"]),
-        PalmrestAction::Workspace(PalmrestWorkspace::Next) => line(&["workspace", "next"]),
-        PalmrestAction::Workspace(PalmrestWorkspace::Overview) => line(&["workspace", "overview"]),
-        PalmrestAction::Shell { words } => line(words),
-        PalmrestAction::Command { argv } => match argv.split_first() {
+        MouseGesturesAction::Workspace(MouseGesturesWorkspace::Prev) => {
+            line(&["workspace", "prev"])
+        }
+        MouseGesturesAction::Workspace(MouseGesturesWorkspace::Next) => {
+            line(&["workspace", "next"])
+        }
+        MouseGesturesAction::Workspace(MouseGesturesWorkspace::Overview) => {
+            line(&["workspace", "overview"])
+        }
+        MouseGesturesAction::Shell { words } => line(words),
+        MouseGesturesAction::Command { argv } => match argv.split_first() {
             Some((program, args)) => Plan::Program {
                 program: program.clone(),
                 args: args.to_vec(),
@@ -60,15 +66,15 @@ pub fn run(program: &str, args: &[String]) {
     {
         Ok(mut child) => {
             let reaped = std::thread::Builder::new()
-                .name("shell-palmrest-reaper".to_owned())
+                .name("shell-mouse-gestures-reaper".to_owned())
                 .spawn(move || {
                     let _ = child.wait();
                 });
             if let Err(error) = reaped {
-                eprintln!("bardo-shell: palmrest: could not wait for {program}: {error}");
+                eprintln!("bardo-shell: mouse_gestures: could not wait for {program}: {error}");
             }
         }
-        Err(error) => eprintln!("bardo-shell: palmrest: running {program}: {error}"),
+        Err(error) => eprintln!("bardo-shell: mouse_gestures: running {program}: {error}"),
     }
 }
 
@@ -88,29 +94,29 @@ mod tests {
         let cases = [
             (
                 "previous workspace",
-                PalmrestAction::Workspace(PalmrestWorkspace::Prev),
+                MouseGesturesAction::Workspace(MouseGesturesWorkspace::Prev),
                 step(ActionId::PreviousSpace),
             ),
             (
                 "next workspace",
-                PalmrestAction::Workspace(PalmrestWorkspace::Next),
+                MouseGesturesAction::Workspace(MouseGesturesWorkspace::Next),
                 step(ActionId::NextSpace),
             ),
             (
                 "the overview",
-                PalmrestAction::Workspace(PalmrestWorkspace::Overview),
+                MouseGesturesAction::Workspace(MouseGesturesWorkspace::Overview),
                 step(ActionId::MissionControl),
             ),
             (
                 "a line of the shell's commands",
-                PalmrestAction::Shell {
+                MouseGesturesAction::Shell {
                     words: words("workspace next"),
                 },
                 step(ActionId::NextSpace),
             ),
             (
                 "a program",
-                PalmrestAction::Command {
+                MouseGesturesAction::Command {
                     argv: words("notify-send hi"),
                 },
                 Plan::Program {
@@ -129,29 +135,29 @@ mod tests {
         let cases = [
             (
                 "stopping the shell",
-                PalmrestAction::Shell {
+                MouseGesturesAction::Shell {
                     words: words("quit"),
                 },
             ),
             (
                 "not a command",
-                PalmrestAction::Shell {
+                MouseGesturesAction::Shell {
                     words: words("no such verb"),
                 },
             ),
             (
                 "the shell's own start",
-                PalmrestAction::Shell {
+                MouseGesturesAction::Shell {
                     words: words("run"),
                 },
             ),
             (
                 "a help request",
-                PalmrestAction::Shell {
+                MouseGesturesAction::Shell {
                     words: words("--help"),
                 },
             ),
-            ("no program", PalmrestAction::Command { argv: vec![] }),
+            ("no program", MouseGesturesAction::Command { argv: vec![] }),
         ];
         for (name, ask) in cases {
             assert!(

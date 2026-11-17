@@ -1,6 +1,6 @@
 //! Double-scroll suppression, the safety net (design/11 §11.3.14 rule 2, 12 §12.3.11): the
-//! same stroke can reach our surface from palmrest directly and again through the compositor
-//! from palmrest's virtual touchpad. While palmrest has fingers down, while a glide or rebound
+//! same stroke can reach our surface from the mouse gestures daemon directly and again through the compositor
+//! from the mouse gestures daemon's virtual touchpad. While the mouse gestures daemon has fingers down, while a glide or rebound
 //! it drove is running, and for a grace period after its last Ended (or until an `axis_stop`),
 //! compositor axis events of source finger and wheel are dropped. Pure.
 
@@ -11,15 +11,15 @@ use blitz_embed::scroll::time::Elapsed;
 /// The suppression window.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub(crate) struct Suppress {
-    /// Whether palmrest's fingers are down, once it has said.
+    /// Whether the mouse gestures daemon's fingers are down, once it has said.
     fingers_down: Option<bool>,
-    /// When palmrest's fingers last lifted (its Ended, or `Touches{Up}`); `None` once an
+    /// When the mouse gestures daemon's fingers last lifted (its Ended, or `Touches{Up}`); `None` once an
     /// `axis_stop` closed the grace.
     lifted: Option<Elapsed>,
 }
 
 impl Suppress {
-    /// palmrest reported its fingers `down` or up at `now` (`Touches`, or a scroll phase:
+    /// The mouse gestures daemon reported its fingers `down` or up at `now` (`Touches`, or a scroll phase:
     /// `MayBegin` / Began / Changed are down, Ended / Cancelled are up).
     pub(crate) fn fingers(down: bool, now: Elapsed) -> Suppress {
         Suppress {
@@ -37,8 +37,8 @@ impl Suppress {
     }
 
     /// Whether a compositor axis event at `now` is delivered. `suppressible`: its source is
-    /// `finger` or `wheel`, what palmrest's outputs arrive as (anything else, continuous or
-    /// wheel tilt, is always delivered). `driven`: a palmrest-driven animation is running.
+    /// `finger` or `wheel`, what the mouse gestures daemon's outputs arrive as (anything else, continuous or
+    /// wheel tilt, is always delivered). `driven`: a mouse-gestures-driven animation is running.
     pub(crate) fn delivers(
         &self,
         suppressible: bool,

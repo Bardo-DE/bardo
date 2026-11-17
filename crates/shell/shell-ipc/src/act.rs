@@ -67,7 +67,7 @@ pub enum SwitcherRequest {
     Commit,
 }
 
-/// The words of `bardo-shell workspace ...`: palmrest's swipes run `prev` and `next`.
+/// The words of `bardo-shell workspace ...`: the mouse gestures daemon's swipes run `prev` and `next`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
 #[serde(rename_all = "snake_case")]
 pub enum WorkspaceRequest {

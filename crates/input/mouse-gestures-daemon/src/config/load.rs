@@ -136,7 +136,7 @@ mod tests {
 
     #[test]
     fn a_pipe_or_a_huge_file_is_the_defaults_with_a_warning() {
-        let dir = std::env::temp_dir().join(format!("palmrest-load-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("mouse-gestures-load-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let file = dir.join(FILE_NAME);
         rustix::fs::mknodat(

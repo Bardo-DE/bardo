@@ -9,7 +9,7 @@ turnstile closes the node to everyone but itself and makes devices for two known
 
 | Program | Devices | How |
 |---|---|---|
-| palmrest (Magic Mouse gestures) | a touchpad, a scroll wheel, a keyboard for shortcut combinations | proxied: palmrest sends events, turnstile checks each one against a ceiling and writes it |
+| The mouse gestures daemon (Magic Mouse gestures) | a touchpad, a scroll wheel, a keyboard for shortcut combinations | proxied: the mouse gestures daemon sends events, turnstile checks each one against a ceiling and writes it |
 | The key remap daemon (Mac keyboard mapping) | a full keyboard with its lights, the pointer half of a combo device | handed: turnstile makes the device and passes the key remap daemon its file descriptor |
 
 Who is calling is decided by the kernel (the process behind the socket, held by a pidfd) and a
@@ -21,7 +21,7 @@ not by anything the caller says. A kind of device is only made for the program i
 | Crate | What |
 |---|---|
 | `input-broker-wire` | Pure. The datagrams, their codec, the fixed list of device kinds and the per-event ceilings. |
-| `input-broker-client` | What palmrest and the key remap daemon link. Sync and small: connect, ask for a device, send events, get a descriptor. A `DeviceSource` trait with the real service and, under feature `fake`, a stand-in. Re-exports the wire types callers name. |
+| `input-broker-client` | What the mouse gestures daemon and the key remap daemon link. Sync and small: connect, ask for a device, send events, get a descriptor. A `DeviceSource` trait with the real service and, under feature `fake`, a stand-in. Re-exports the wire types callers name. |
 | `turnstile` | The root service: socket activation, caller identity, the device life cycle, exit after 60 s idle. |
 
 ```rust

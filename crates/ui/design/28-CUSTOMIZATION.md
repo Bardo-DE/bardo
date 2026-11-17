@@ -528,7 +528,7 @@ per gesture.
 **Today.** `gestures.gesture_action_map: Map<Gesture, Action>` in `mouse-gestures/gestures.toml`
 (22 §3.9; 12 §12.6).
 
-**Mapping.** Owner: palmrest (the map), sill (the action registry, 4.9). The map's values become
+**Mapping.** Owner: the mouse gestures daemon (the map), sill (the action registry, 4.9). The map's values become
 `ShellAction` ids; no other change. Picker: the Mouse & Gestures page's remap table (exists in
 22 §5).
 
@@ -697,7 +697,7 @@ placement list per Focus). Recorded, not specified: it needs Focus modes first.
 
 ### 5.2 `KindId`, `Shape`, `Placement`, `Layout`, `Cell` (data; crate `ui-settings`, no UI)
 
-Non-UI crates (shell-launcher, shell-services, palmrest) need these, so they live beside the
+Non-UI crates (shell-launcher, shell-services, the mouse gestures daemon) need these, so they live beside the
 settings loader and schema in `ui-settings` (decision 6, settled A). `AppId` moves there too
 (from `sill_launcher::ids`), so layouts, `notifications.apps` and the launcher share one type.
 
@@ -911,7 +911,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 | sill `pins::model::{DockPins, PinEvent, PinAt}` and `pins::run` | `Layout` plus the dock's own events; `pins::run` is the model for rule 5.2.4's writer task | sill, over the shared data |
 | sill `ControlCenterModule`, `MENU_BAR_ORDER`, `in_menu_bar` | `ModuleInfo` in a registry; presence from the `menu_bar_*` keys, bar order from `layout.bar_items` | sill, contract in Bardo |
 | sill `ProviderKind` closed enum and its `ALL` order | built-in `KindId`s; order from `layout.launcher_categories` (Web pinned last) | shell-launcher |
-| sill `CornerAction` closed enum; palmrest `Action` | `ShellAction` ids in one action registry | sill (palmrest reads ids) |
+| sill `CornerAction` closed enum; the mouse gestures daemon `Action` | `ShellAction` ids in one action registry | sill (the mouse gestures daemon reads ids) |
 | `ui-settings` `KeyKind::List` ("a rows editor") | its widget is `OrderedChecklist`; `KeyKind::Record` (P5) makes `List(Record)` a table editor | ui-settings + Settings app |
 | `SettingsRow`, `ds::motion::roster`, `DragGhost`, `DropPlace`, `ds::detail::use_tween` | reused unchanged by the pickers and the reorder machine | Bardo |
 | the appearance picker, `UserPicture` picker | stay single-value pickers (one choice, no placement) | unchanged |
@@ -922,7 +922,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 
 sill's shell-settings/tests/keys.rs checks design/22 against sill's registered `KeySpec`s in
 both directions over §3.4-3.8 and §3.11 through `## 4. Rust shape` (that is, §3.4-3.23 less
-palmrest's §3.9-3.10), reading Bardo's doc by path from sill's own checkout. A row with no spec,
+The mouse gestures daemon's §3.9-3.10), reading Bardo's doc by path from sill's own checkout. A row with no spec,
 or a spec with no row, fails sill master at once, so a key is added, changed or retired in one change to both repos: the `KeySpec` and
 the design/22 row land together.
 
@@ -963,7 +963,7 @@ Shell; each a Bardo lane plus a sill lane where named.
    `Vec<struct>` key and the Settings app draws it as a table editor; today `List` holds only
    scalar kinds); sill adds `notifications.apps` and `notifications.previews`,
    the `notifying-apps.json` state file written by the notifications task, and the Settings page.
-7. **P6 Actions** (sill, palmrest): the `ShellAction` registry; hot corners, gestures and the
+7. **P6 Actions** (sill, the mouse gestures daemon): the `ShellAction` registry; hot corners, gestures and the
    system shortcuts list read ids; `shortcuts.bindings` written to the compositor's `custom` and
    `system_actions` with the compositor winning a clash (4.11); design/22 §5's Keyboard / Shortcuts line
    now points here.
@@ -1013,7 +1013,7 @@ compositor fork reports held modifiers (4.9).
    Sonoma/Sequoia; (B) free reorder and resize of tiles (the post-2025 editable Control Center).
    **Recommend A** (target era; B is Liquid Glass era).
 6. **Where the data types live.** (A) `ui-settings` (non-UI, already owns persistence and the
-   schema; shell-launcher and palmrest can depend on it); (B) a new small crate `ds-place`;
+   schema; shell-launcher and the mouse gestures daemon can depend on it); (B) a new small crate `ds-place`;
    (C) `ds` (pulls dioxus into non-UI crates). **Recommend A**; split to B only if `ui-settings`
    grows past its purpose.
 7. **Third-party launcher providers in v1.** Consume KRunner D-Bus runners and GNOME search

@@ -4,13 +4,23 @@ use input_broker_wire::{Delivery, Kind, Maker};
 fn every_kind_round_trips_its_code_and_has_one_maker_and_delivery() {
     const WANT: &[(Kind, u8, Maker, Delivery)] = &[
         (
-            Kind::PalmrestTouchpad,
+            Kind::MouseGesturesTouchpad,
             1,
             Maker::PadDaemon,
             Delivery::Proxied,
         ),
-        (Kind::PalmrestWheel, 2, Maker::PadDaemon, Delivery::Proxied),
-        (Kind::PalmrestKeys, 3, Maker::PadDaemon, Delivery::Proxied),
+        (
+            Kind::MouseGesturesWheel,
+            2,
+            Maker::PadDaemon,
+            Delivery::Proxied,
+        ),
+        (
+            Kind::MouseGesturesKeys,
+            3,
+            Maker::PadDaemon,
+            Delivery::Proxied,
+        ),
         (
             Kind::KeyRemapKeyboard,
             16,

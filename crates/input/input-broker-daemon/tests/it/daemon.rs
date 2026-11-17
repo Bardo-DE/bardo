@@ -1,6 +1,6 @@
 //! The accept loop on a real socket in a scratch folder.
 
-use crate::support::{USER, listed, palmrest};
+use crate::support::{USER, listed, mouse_gestures};
 use base_time::SystemMonotonic;
 use caller_identity_core::Uid;
 use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Reason, Session};
@@ -111,7 +111,7 @@ impl<A: Authority> Authority for InOrder<A> {
 
 /// Runs a daemon on a fresh socket; the receiver says when `run` returned.
 fn start(idle_ms: u64) -> (tempfile::TempDir, Broker, mpsc::Receiver<()>, FakeBackend) {
-    start_with(idle_ms, FixedAuthority::naming(palmrest()))
+    start_with(idle_ms, FixedAuthority::naming(mouse_gestures()))
 }
 
 /// Names the next peers in the order they are accepted, then `rest` for every one after. The peer
@@ -250,12 +250,12 @@ fn a_connection_keeps_it_alive_and_its_end_lets_it_go() {
 
 /// NEW-PI-6: one user's idle connections fill that user's slots and nothing else's.
 #[test]
-fn a_flood_from_one_user_is_refused_after_its_own_slots_and_palmrest_still_gets_in() {
+fn a_flood_from_one_user_is_refused_after_its_own_slots_and_mouse_gestures_still_gets_in() {
     let script: VecDeque<Caller> = (0..=MAX_CONNECTIONS_PER_USER)
         .map(|_| stranger(Uid::new(2000)))
         .chain([stranger(Uid::new(2001))])
         .collect();
-    let authority = Scripted::new(script, palmrest());
+    let authority = Scripted::new(script, mouse_gestures());
     let (_dir, broker, _finished, _kernel) = start_with(60_000, authority);
     let held: Vec<_> = (0..MAX_CONNECTIONS_PER_USER)
         .map(|_| broker.open().expect("connects"))
@@ -280,13 +280,13 @@ fn a_flood_from_one_user_is_refused_after_its_own_slots_and_palmrest_still_gets_
         !matches!(err, ClientError::Refused(Reason::TooMany)),
         "{err:?}"
     );
-    // And palmrest, proven, has its own reserve.
+    // And the mouse gestures daemon, proven, has its own reserve.
     let mut pad = broker.open().expect("connects");
     assert!(matches!(pad.create(&Create::wheel()), Ok(Made::Proxied(_))));
     drop(held);
 }
 
-/// NEW-PI-6: palmrest's reserve is its own and has a cap too.
+/// NEW-PI-6: the mouse gestures daemon's reserve is its own and has a cap too.
 #[test]
 fn proven_clients_have_their_own_cap() {
     let (_dir, broker, _finished, _kernel) = start(60_000);
@@ -321,26 +321,29 @@ fn promptly<T: Send + 'static>(work: impl FnOnce() -> T + Send + 'static) -> T {
 
 /// NEW-FA-3: a peer whose identification never returns holds its own thread and nobody else's.
 #[test]
-fn a_stuck_identification_does_not_delay_palmrest() {
+fn a_stuck_identification_does_not_delay_mouse_gestures() {
     let script = VecDeque::from([stranger(Uid::new(3000))]);
-    let (authority, release) = Scripted::new(script, palmrest()).hanging(Uid::new(3000));
+    let (authority, release) = Scripted::new(script, mouse_gestures()).hanging(Uid::new(3000));
     let (_dir, broker, _finished, _kernel) = start_capped(60_000, authority, Caps::default());
     let _stuck = broker.open().expect("connects");
     let served = promptly(move || {
         let mut pad = broker.open().expect("connects");
         matches!(pad.create(&Create::wheel()), Ok(Made::Proxied(_)))
     });
-    assert!(served, "palmrest waited behind a stuck identification");
+    assert!(
+        served,
+        "mouse_gestures waited behind a stuck identification"
+    );
     drop(release);
 }
 
 /// NEW-FA-3: one user's stuck identifications use up that user's share and no one else's.
 #[test]
-fn a_user_over_its_pending_share_is_closed_at_once_and_palmrest_still_gets_in() {
+fn a_user_over_its_pending_share_is_closed_at_once_and_mouse_gestures_still_gets_in() {
     let script: VecDeque<Caller> = (0..=MAX_PENDING_PER_USER)
         .map(|_| stranger(Uid::new(3000)))
         .collect();
-    let (authority, release) = Scripted::new(script, palmrest()).hanging(Uid::new(3000));
+    let (authority, release) = Scripted::new(script, mouse_gestures()).hanging(Uid::new(3000));
     let (_dir, broker, _finished, _kernel) = start_capped(60_000, authority, Caps::default());
     let _stuck: Vec<_> = (0..MAX_PENDING_PER_USER)
         .map(|_| broker.open().expect("connects"))

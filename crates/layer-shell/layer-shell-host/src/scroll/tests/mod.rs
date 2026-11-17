@@ -1,4 +1,4 @@
 //! The scroll engine and its document seams, against real Blitz documents built from components.
 
 mod dom;
-mod palmrest;
+mod mouse_gestures;

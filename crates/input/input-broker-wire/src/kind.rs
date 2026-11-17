@@ -35,12 +35,12 @@ impl Delivery {
 /// A kind of device the service will make.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Kind {
-    /// palmrest's virtual touchpad.
-    PalmrestTouchpad,
-    /// palmrest's virtual scroll wheel.
-    PalmrestWheel,
-    /// palmrest's virtual keyboard, for gesture key combinations only.
-    PalmrestKeys,
+    /// The mouse gestures daemon's virtual touchpad.
+    MouseGesturesTouchpad,
+    /// The mouse gestures daemon's virtual scroll wheel.
+    MouseGesturesWheel,
+    /// The mouse gestures daemon's virtual keyboard, for gesture key combinations only.
+    MouseGesturesKeys,
     /// The key remap daemon's virtual keyboard.
     KeyRemapKeyboard,
     /// The key remap daemon's virtual pointer, the pointer half of a combo device.
@@ -50,9 +50,9 @@ pub enum Kind {
 impl Kind {
     /// Every kind.
     pub const ALL: [Kind; 5] = [
-        Kind::PalmrestTouchpad,
-        Kind::PalmrestWheel,
-        Kind::PalmrestKeys,
+        Kind::MouseGesturesTouchpad,
+        Kind::MouseGesturesWheel,
+        Kind::MouseGesturesKeys,
         Kind::KeyRemapKeyboard,
         Kind::KeyRemapPointer,
     ];
@@ -61,9 +61,9 @@ impl Kind {
     #[must_use]
     pub const fn code(self) -> u8 {
         match self {
-            Self::PalmrestTouchpad => 1,
-            Self::PalmrestWheel => 2,
-            Self::PalmrestKeys => 3,
+            Self::MouseGesturesTouchpad => 1,
+            Self::MouseGesturesWheel => 2,
+            Self::MouseGesturesKeys => 3,
             Self::KeyRemapKeyboard => 16,
             Self::KeyRemapPointer => 17,
         }
@@ -79,7 +79,9 @@ impl Kind {
     #[must_use]
     pub const fn delivery(self) -> Delivery {
         match self {
-            Self::PalmrestTouchpad | Self::PalmrestWheel | Self::PalmrestKeys => Delivery::Proxied,
+            Self::MouseGesturesTouchpad | Self::MouseGesturesWheel | Self::MouseGesturesKeys => {
+                Delivery::Proxied
+            }
             Self::KeyRemapKeyboard | Self::KeyRemapPointer => Delivery::Handed,
         }
     }
@@ -88,7 +90,9 @@ impl Kind {
     #[must_use]
     pub const fn maker(self) -> Maker {
         match self {
-            Self::PalmrestTouchpad | Self::PalmrestWheel | Self::PalmrestKeys => Maker::PadDaemon,
+            Self::MouseGesturesTouchpad | Self::MouseGesturesWheel | Self::MouseGesturesKeys => {
+                Maker::PadDaemon
+            }
             Self::KeyRemapKeyboard | Self::KeyRemapPointer => Maker::KeymapDaemon,
         }
     }
@@ -97,9 +101,9 @@ impl Kind {
     #[must_use]
     pub const fn name(self) -> &'static str {
         match self {
-            Self::PalmrestTouchpad => "mouse-gestures-touchpad",
-            Self::PalmrestWheel => "mouse-gestures-wheel",
-            Self::PalmrestKeys => "mouse-gestures-keys",
+            Self::MouseGesturesTouchpad => "mouse-gestures-touchpad",
+            Self::MouseGesturesWheel => "mouse-gestures-wheel",
+            Self::MouseGesturesKeys => "mouse-gestures-keys",
             Self::KeyRemapKeyboard => "key-remap-keyboard",
             Self::KeyRemapPointer => "key-remap-pointer",
         }

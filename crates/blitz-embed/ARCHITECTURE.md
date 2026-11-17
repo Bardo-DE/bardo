@@ -19,7 +19,7 @@ and the `adapter` feature (`units` and `element_id` are the sibling crate `blitz
 `default-features = false, features = ["adapter"]` for the ranking and `adapter::opening` with only
 std, `wgpu` and `serde`.
 `scripts/check-boundary.sh` forbids every `ds*`, `dioxus*`, `wayland*` and `smithay*`
-crate, Bardo, sill, layer-shell-host and palmrest. Consumers depend on it by path.
+crate, Bardo, sill, layer-shell-host and mouse_gestures. Consumers depend on it by path.
 
 | Module | Holds |
 |---|---|

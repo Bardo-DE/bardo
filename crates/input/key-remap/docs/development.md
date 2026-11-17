@@ -137,7 +137,7 @@ The key remap daemon grabs the user's only keyboard, so:
   device with that name eligible like a hardware keyboard, for tests whose keyboard is itself a
   uinput device. Only root, or the unit's `Environment=`, can set it; it admits
   exactly one named device and makes it the only device grabbed (no hardware keyboard is touched),
-  and the key remap daemon's own keyboard and palmrest's stay excluded even when named. Leave it unset on a
+  and the key remap daemon's own keyboard and the mouse gestures daemon's stay excluded even when named. Leave it unset on a
   real machine.
 - **No `record` command.** A tool that writes every keystroke to a file is a keylogger. Test
   scripts are synthesised by hand; `key_remap replay FILE` feeds one through the core.

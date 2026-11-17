@@ -2,7 +2,7 @@
 //!
 //! What stands in for the session, udev, logind, KMS, scanout, libinput's configuration, the Spaces
 //! file, sill's D-Bus methods, the service manager's notifications, the account service's Spaces,
-//! the process table, the callers of the bus, the accessibility-root checker and palmrest inside
+//! the process table, the callers of the bus, the accessibility-root checker and the mouse gestures daemon inside
 //! the jail.
 
 mod a11y;
@@ -13,8 +13,8 @@ mod input_feed;
 pub mod kms;
 mod lock_marker;
 pub mod logind;
+mod mouse_gestures;
 mod notify;
-mod palmrest;
 mod scanout;
 mod session;
 mod shell_calls;
@@ -36,8 +36,8 @@ pub use lock_marker::MemoryLockMarker;
 pub use logind::{
     FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, PrivateBus, SleepPhase,
 };
+pub use mouse_gestures::FakeMouseGestures;
 pub use notify::FakeNotify;
-pub use palmrest::FakePalmrest;
 pub use scanout::{FakeScanout, GlassHandle, Pacing};
 pub use session::{FakeSession, SessionFixture, SharedSession};
 pub use shell_calls::FakeShellCalls;

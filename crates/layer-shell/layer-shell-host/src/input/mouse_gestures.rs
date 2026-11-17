@@ -1,4 +1,4 @@
-//! The palmrest client (design/12 §12.3.10-11, design/11 §11.7): connects to
+//! The mouse gestures daemon client (design/12 §12.3.10-11, design/11 §11.7): connects to
 //! `/run/bardo/mouse-gestures/events.sock` (`SOCK_SEQPACKET`) when the daemon runs, tells it when the pointer
 //! is over one of our surfaces (`PointerOver`), whether the session is locked (`SessionLock`) and
 //! what the person's gesture settings say (`UserConfig`, `user_config`), and reads its scroll,
@@ -8,7 +8,7 @@
 //! growing wait (`backoff`) and at the next pointer enter.
 //!
 //! The socket I/O is here; registering the reading side with the event loop is the context's
-//! (`ctx::palmrest`), since the loop belongs to `HostCtx`.
+//! (`ctx::mouse_gestures`), since the loop belongs to `HostCtx`.
 //!
 //! See FINDINGS F64.
 
@@ -45,8 +45,8 @@ const MAX_DATAGRAMS_PER_READ: usize = 256;
 /// the person's runtime folder.
 pub(crate) const SOCKET: &str = "/run/bardo/mouse-gestures/events.sock";
 
-/// The control group of palmrest's unit: only the system manager can put a process there, so a
-/// process in it is palmrest, whoever it runs as. Any other process at the socket's path would be
+/// The control group of the mouse gestures daemon's unit: only the system manager can put a process there, so a
+/// process in it is the mouse gestures daemon, whoever it runs as. Any other process at the socket's path would be
 /// feeding scroll and touch input, and asking the shell to run programs.
 const DAEMON_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
 
@@ -77,9 +77,9 @@ enum Link {
     Up(OwnedFd),
 }
 
-/// The host's connection to palmrest.
+/// The host's connection to mouse_gestures.
 #[derive(Debug)]
-pub(crate) struct Palmrest {
+pub(crate) struct MouseGestures {
     path: Option<PathBuf>,
     /// How a peer is judged: [`peer_trust`] (the control group) in production; a test's daemon is
     /// a thread of the test, in no unit.
@@ -90,14 +90,14 @@ pub(crate) struct Palmrest {
     link: Link,
     /// Where the pointer is, sent on every change and again after each connect.
     over: bool,
-    /// Whether the session is locked, sent on every change and again after each connect: palmrest
+    /// Whether the session is locked, sent on every change and again after each connect: the mouse gestures daemon
     /// stops gesture actions while any connection says locked.
     lock: bool,
     /// The attempts in a row that found no usable daemon; the next wait grows with it.
     misses: Misses,
 }
 
-/// Whether palmrest is told the session is locked for the host's lock report: only `Locked`
+/// Whether the mouse gestures daemon is told the session is locked for the host's lock report: only `Locked`
 /// locks. `Unlocked`, and `Finished` (the compositor ended the lock), leave it unlocked.
 pub(crate) fn lock_for(state: HostLock) -> bool {
     matches!(state, HostLock::Locked)
@@ -110,20 +110,20 @@ struct Settings {
     told: Option<user_config::Stamp>,
 }
 
-impl Palmrest {
+impl MouseGestures {
     /// The client for the daemon's socket and the person's settings file; unconnected, first
     /// attempt due.
-    pub(crate) fn system() -> Palmrest {
+    pub(crate) fn system() -> MouseGestures {
         let settings = user_config::path(&Xdg::process()).map(|path| Settings { path, told: None });
-        Palmrest {
+        MouseGestures {
             settings,
-            ..Palmrest::at(Some(PathBuf::from(SOCKET)))
+            ..MouseGestures::at(Some(PathBuf::from(SOCKET)))
         }
     }
 
     /// The client for the socket at `path` (`None`: never connects); sends no settings.
-    pub(crate) fn at(path: Option<PathBuf>) -> Palmrest {
-        Palmrest {
+    pub(crate) fn at(path: Option<PathBuf>) -> MouseGestures {
+        MouseGestures {
             path,
             peer: peer_trust,
             settings: None,
@@ -137,16 +137,16 @@ impl Palmrest {
     /// A client for tests: believes whatever listens at `path`, which is a thread of the test
     /// and in no unit; reads the person's settings from `settings` when given.
     #[cfg(test)]
-    pub(crate) fn trusting(path: PathBuf, settings: Option<PathBuf>) -> Palmrest {
-        Palmrest {
+    pub(crate) fn trusting(path: PathBuf, settings: Option<PathBuf>) -> MouseGestures {
+        MouseGestures {
             peer: |_| true,
             settings: settings.map(|path| Settings { path, told: None }),
-            ..Palmrest::at(Some(path))
+            ..MouseGestures::at(Some(path))
         }
     }
 
     /// Whether a connection attempt is due: at start, after a pointer enter while down, when the
-    /// session locks while down, and when the wait of [`Palmrest::retry_in`] has run out.
+    /// session locks while down, and when the wait of [`MouseGestures::retry_in`] has run out.
     pub(crate) fn retry_due(&self) -> bool {
         matches!(self.link, Link::Down { retry_due: true })
     }
@@ -160,7 +160,7 @@ impl Palmrest {
     }
 
     /// How long to wait before the next attempt, after one that found no daemon (or after the
-    /// daemon went away): the host makes the attempt due then with [`Palmrest::retry_now`], so a
+    /// daemon went away): the host makes the attempt due then with [`MouseGestures::retry_now`], so a
     /// daemon that starts or restarts is found without a pointer enter. `None` when there is no
     /// socket path to look at, or the daemon is connected.
     pub(crate) fn retry_in(&self) -> Option<Duration> {
@@ -170,7 +170,7 @@ impl Palmrest {
         }
     }
 
-    /// The wait of [`Palmrest::retry_in`] ran out: an attempt is due, if still unconnected.
+    /// The wait of [`MouseGestures::retry_in`] ran out: an attempt is due, if still unconnected.
     pub(crate) fn retry_now(&mut self) {
         self.set_retry(true);
     }
@@ -184,7 +184,7 @@ impl Palmrest {
     /// Connect if the socket exists: returns the descriptor the event loop reads from. Sends
     /// the session's `SessionLock` first and then the pointer's current `PointerOver` at once, so
     /// the daemon stops gesture actions before anything else it hears. `None` (and no attempt
-    /// before [`Palmrest::retry_in`] has passed, or the next pointer enter) when there is no
+    /// before [`MouseGestures::retry_in`] has passed, or the next pointer enter) when there is no
     /// usable daemon.
     pub(crate) fn connect(&mut self) -> Option<OwnedFd> {
         self.set_retry(false);
@@ -203,7 +203,7 @@ impl Palmrest {
         let fd = open(path).ok()?;
         if !self.judge(&fd) {
             eprintln!(
-                "shell-host: the palmrest socket is not served by palmrest's unit; ignoring it"
+                "shell-host: the mouse_gestures socket is not served by mouse_gestures's unit; ignoring it"
             );
             return None;
         }
@@ -219,7 +219,7 @@ impl Palmrest {
         (self.peer)(fd)
     }
 
-    /// Whether a place for the person's settings is known, so that [`Palmrest::settings_changed`]
+    /// Whether a place for the person's settings is known, so that [`MouseGestures::settings_changed`]
     /// is worth asking every [`user_config::LOOK_EVERY`].
     pub(crate) fn watches_settings(&self) -> bool {
         self.settings.is_some()
@@ -256,7 +256,7 @@ impl Palmrest {
     }
 
     /// The daemon went away (the read side saw the end, or it spoke another protocol): a miss,
-    /// and the next attempt waits for [`Palmrest::retry_in`].
+    /// and the next attempt waits for [`MouseGestures::retry_in`].
     pub(crate) fn disconnected(&mut self) {
         self.link = Link::Down { retry_due: false };
         self.misses = self.misses.more();
@@ -316,7 +316,7 @@ impl Palmrest {
     }
 }
 
-/// Whether the process that listens on `fd` is palmrest's unit. The process is held by a pidfd,
+/// Whether the process that listens on `fd` is the mouse gestures daemon's unit. The process is held by a pidfd,
 /// its control group is read from `/proc`, and it must still be running afterwards, so the pid
 /// cannot have been another process's when the group was read. Fails closed: anything that cannot
 /// be read is refused.

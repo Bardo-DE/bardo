@@ -1,6 +1,6 @@
 //! Palm rejection calibrated on the development machine's Magic Mouse 2 (Bluetooth), 2026-09-30.
 //!
-//! Two sessions recorded with `palmrest record`: `recorded_scroll` (ordinary one-finger
+//! Two sessions recorded with `mouse_gestures record`: `recorded_scroll` (ordinary one-finger
 //! scrolling, slow and fast, both axes) and `recorded_rest` (holding, moving, clicking and
 //! resting the hand on the mouse; the first second is the end of a scroll). The default
 //! rejection must keep the scrolling and drop the resting: on this device fingers measure 120 to

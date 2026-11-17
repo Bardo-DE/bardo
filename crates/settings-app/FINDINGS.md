@@ -91,15 +91,15 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
   `FieldGroup` has no footer slot.
 - A "Choose Model..." button beside a declined model is not drawn: the picker is on the same page.
 
-## palmrest's schema
+## the mouse gestures daemon's schema
 
-palmrest writes `palmrest.settings.toml` (`palmrest --write-schema <dir>`), one row for every key
-of `gestures.toml`, so a save from the Settings app drops nothing palmrest reads. Two things to know:
+The mouse gestures daemon writes `mouse_gestures.settings.toml` (`mouse_gestures --write-schema <dir>`), one row for every key
+of `gestures.toml`, so a save from the Settings app drops nothing the mouse gestures daemon reads. Two things to know:
 
-- The keys are palmrest's own, not design/22 section 3.9's names: lengths are micrometres
+- The keys are the mouse gestures daemon's own, not design/22 section 3.9's names: lengths are micrometres
   (`scroll.lock_threshold_x_um`), ellipses are x/y pairs, there is no `swipe.workspace_mode`, and
   the taps are six advanced sliders, not one "double-tap sensitivity" control. Mouse & Gestures
-  shows what palmrest reads: palm rejection, scrolling in other apps and the six gesture actions
+  shows what the mouse gestures daemon reads: palm rejection, scrolling in other apps and the six gesture actions
   are Basic; the rest is under Advanced.
 - A gesture's action is a `Menu` of the words that need no value (`back`, `forward`,
   `workspace_prev`, ...). An action with a value (`{ kind = "keys", v = "alt+left" }`, a command, a

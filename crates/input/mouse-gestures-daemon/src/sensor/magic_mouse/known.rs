@@ -1,4 +1,4 @@
-//! The mice palmrest knows by id, and how far each is verified.
+//! The mice the mouse gestures daemon knows by id, and how far each is verified.
 //!
 //! `HID_ID` is parsed as `bus:vendor:product` and compared field by field; a substring search
 //! for "004c" and "0269" would also match a device whose name or
@@ -47,7 +47,7 @@ pub struct KnownDevice {
     pub vendor: u32,
     pub product: u32,
     pub model: Model,
-    /// Whether palmrest has ever run against this device.
+    /// Whether the mouse gestures daemon has ever run against this device.
     pub verified: bool,
 }
 
@@ -56,7 +56,7 @@ pub const BT_VENDOR: u32 = 0x004c;
 /// Apple's USB vendor id (also what the Magic Mouse 1 reports over Bluetooth).
 pub const USB_VENDOR: u32 = 0x05ac;
 
-/// Every id palmrest matches, in the order discovery prefers them.
+/// Every id the mouse gestures daemon matches, in the order discovery prefers them.
 pub const KNOWN: &[KnownDevice] = &[
     KnownDevice {
         bus: Bus::Bluetooth,

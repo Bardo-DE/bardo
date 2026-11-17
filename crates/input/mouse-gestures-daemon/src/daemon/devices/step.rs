@@ -22,7 +22,7 @@ pub(super) fn step(life: Life, event: Event) -> (Life, Vec<Effect>) {
     }
 }
 
-/// A write failed: the devices are dropped, and rebuilt unless the service has cut palmrest off
+/// A write failed: the devices are dropped, and rebuilt unless the service has cut the mouse gestures daemon off
 /// too often.
 fn lose(cuts: u8, why: &Why) -> (Life, Vec<Effect>) {
     let cuts = why.tally(cuts);
@@ -53,7 +53,7 @@ fn begin_wait(cuts: u8, now: Mono) -> (Life, Vec<Effect>) {
     (life, once(said).chain(rest).collect())
 }
 
-/// A rebuild failed: wait and try again, unless the service has cut palmrest off too often.
+/// A rebuild failed: wait and try again, unless the service has cut the mouse gestures daemon off too often.
 fn fail_build(why: &Why, at: Mono, backoff: Backoff, cuts: u8) -> (Life, Vec<Effect>) {
     let cuts = why.tally(cuts);
     if spent(cuts) {
@@ -82,7 +82,7 @@ fn restart(now: Mono) -> (Life, Vec<Effect>) {
 fn give_up(why: &Why) -> Effect {
     Effect::Log(format!(
         "virtual input stopped: {}. It starts again after a change of settings or a restart of \
-         palmrest.",
+         mouse_gestures.",
         why.text()
     ))
 }

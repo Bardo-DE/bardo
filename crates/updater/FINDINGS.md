@@ -155,10 +155,10 @@ Departures from the plan, standing facts and open items. An entry names the cond
     placed only when it changed, and a restart would drop key state mid-typing); it picks the new program up at the next start of
     the computer or of the service. Test: `what_the_system_is_told_follows_the_paths_that_changed` (placed, removed, both).
     The helper is installed by hand, so a computer needs the new helper (`scripts/install.sh`) before this holds there.
-28. **A release-only install enables the touchpad daemon (N-2, lane fa7).** `palmrest.service` is a system service placed
+28. **A release-only install enables the touchpad daemon (N-2, lane fa7).** `bardo-mouse-gestures.service` is a system service placed
     by the release (`[Install] WantedBy=multi-user.target`), but `settle` started only the socket and the keyboard map, so
-    Magic Mouse gestures did not run on a release-only install although `install/system.sh palmrest` enables it. `commands`
-    now adds `enable --now palmrest.service` when that file is *placed*, after the keyboard map's, through the same
+    Magic Mouse gestures did not run on a release-only install although `install/system.sh mouse_gestures` enables it. `commands`
+    now adds `enable --now bardo-mouse-gestures.service` when that file is *placed*, after the keyboard map's, through the same
     `run_first` path: a missing `systemctl` is skipped and a failing one is one warning, the files stay in place. Not done:
     a running daemon is not restarted when a release replaces its program, as for the keyboard map. Test:
     `what_the_system_is_told_follows_the_paths_that_changed` (placed, removed, all three). The helper is installed by hand,
@@ -389,7 +389,7 @@ the `--config` flag on the pinned 1.98.1; and the toolchain-install branch of th
 ## System units and plain files (2026-10-17)
 
 `ALLOWED_SYSTEM_FILES` grew to 21 rules, in the order the desktop's `release/system-files.list` has them (after
-`/etc/modprobe.d/99-palmrest.conf`): `/usr/lib/systemd/system/palmrest.service` (the touchpad daemon became a
+`/etc/modprobe.d/99-mouse-gestures.conf`): `/usr/lib/systemd/system/bardo-mouse-gestures.service` (the touchpad daemon became a
 system service, as the key remap daemon is), `/usr/lib/systemd/user/*.service` and
 `/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf`. The last two exist because a unit that has to
 prove its standing to its callers cannot be an export link: the unit manager's judge looks at the fragment with

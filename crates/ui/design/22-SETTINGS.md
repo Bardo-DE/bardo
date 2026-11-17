@@ -8,7 +8,7 @@ the citation convention of `README.md#3-citation-convention`.
 
 Every runtime-tunable number and closed-set choice for the desktop shell: the design-system
 appearance (`bardo`), the shell (`bardo-shell`, its bar/dock/launcher/menus/notifications/spaces), and
-the gesture daemon (`palmrest`). The rule, per the user's decision of 2026-09-24 recorded in
+the gesture daemon (`mouse_gestures`). The rule, per the user's decision of 2026-09-24 recorded in
 `README.md#4-canonical-source`: **no value any design doc marks "proposed" is hard-coded**; it
 ships as the default *and* is read from a settings key listed in section 3. A **settled** value
 becomes a key only where a doc treats it as a user-facing preference — natural scrolling,
@@ -42,7 +42,7 @@ preferences:
 
 One TOML file per owning program, replacing the plan's `appearance.json` (PLAN "Design:
 `<ds>`") and the docs' scattered `~/.config/bardo/scroll.json` / `~/.config/bardo/shell/settings.json`
-/ `~/.config/palmrest/config.toml` mentions (`11-BEHAVIOUR-scroll.md#11-6-configuration`,
+/ `~/.config/mouse_gestures/config.toml` mentions (`11-BEHAVIOUR-scroll.md#11-6-configuration`,
 `10-BEHAVIOUR-dock.md#10-6-configuration`, `12-BEHAVIOUR-gestures.md#12-6-configuration`): this
 doc is the authority on where each key actually lives, and supersedes those inline paths.
 
@@ -52,7 +52,7 @@ doc is the authority on where each key actually lives, and supersedes those inli
 | `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
 | `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (almanac), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is porter's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
-| `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` | `palmrest` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
+| `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` | `mouse_gestures` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
 
 Rules, all three files:
 
@@ -225,7 +225,7 @@ Pinned items live in `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (des
 ### 3.7 `scroll` (shell/settings.toml)
 
 `scroll.speed`, `scroll.lock_*` and the gain constants are **not** duplicated here: they are
-palmrest's `feel` module; `scroll.speed` lives under `gestures` (3.9) in `mouse-gestures/gestures.toml`, which
+The mouse gestures daemon's `feel` module; `scroll.speed` lives under `gestures` (3.9) in `mouse-gestures/gestures.toml`, which
 `layer-shell-host` reads read-only (`11-BEHAVIOUR-scroll.md#11-7-integration`).
 
 | Key | Type | Default | Range / Alt | Source | Status |
@@ -242,11 +242,11 @@ palmrest's `feel` module; `scroll.speed` lives under `gestures` (3.9) in `mouse-
 
 ### 3.9 `gestures` (mouse-gestures/gestures.toml)
 
-Retired 2026-10-27 except two rows: palmrest has only `scroll.speed` and the
+Retired 2026-10-27 except two rows: the mouse gestures daemon has only `scroll.speed` and the
 `gestures.gesture_action_map` rows (one per gesture). The other keys of
 `12-BEHAVIOUR-gestures.md#12-6-configuration` (the scroll lock and gains, `swipe.*`, `tap.*`,
 `foreign_output`, the G4 and live-workspace numbers, `contact_nibble_policy`) are constants in
-palmrest; a file that still has them loads, the keys are ignored.
+The mouse gestures daemon; a file that still has them loads, the keys are ignored.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -255,8 +255,8 @@ palmrest; a file that still has them loads, the keys are ignored.
 
 ### 3.10 `palm_rejection` (retired)
 
-Retired 2026-10-27: palmrest keeps only `scroll.speed` and the `gestures.gesture_action_map`
-rows (3.9), so `rejection` and every `palm_rejection.*` key are constants in palmrest; a file
+Retired 2026-10-27: the mouse gestures daemon keeps only `scroll.speed` and the `gestures.gesture_action_map`
+rows (3.9), so `rejection` and every `palm_rejection.*` key are constants in the mouse gestures daemon; a file
 that still has them loads, the keys are ignored. The section number stays so later links hold.
 
 ### 3.11 `menus` (retired)
@@ -573,7 +573,7 @@ shows a grid of pictures with "Add Picture...".
 
 Adds to `crates/ds-settings` (appearance/icons/motion) and a new `shell-settings` module
 (bar/dock/launcher/scroll/scrollbar/menus/notifications/control_center/spaces); `gestures`/
-`palm_rejection` live in `palmrest`'s own crate but follow the identical shape so the three
+`palm_rejection` live in `mouse_gestures`'s own crate but follow the identical shape so the three
 loaders share one macro/derive story.
 
 Shared newtypes (beyond the four the catalogue names, added because every unit and identifier gets a newtype):
@@ -782,7 +782,7 @@ impl Default for ScrollSettings {
 ### 4.3 The rest, by name
 
 `AppearanceSettings` (theme, accent, motion_level, transparency, look, file_icons, custom_styles; the `material_*` keys are gone, section 3.1),
-`IconsSettings`, `BarSettings`, `LauncherSettings`, `GesturesSettings` (palmrest crate:
+`IconsSettings`, `BarSettings`, `LauncherSettings`, `GesturesSettings` (the mouse gestures daemon crate:
 `scroll_speed`/`lock_*`/`swipe_*`/`tap_*`/`foreign_output`/`g4_*`/`live_workspace_*`/
 `gesture_action_map`), `PalmRejectionSettings`, `MenusSettings` (carries `switcher_*` as the nested
 struct the switcher's timing and cells are constants, not settings (2026-10-27: `SwitcherParams::default()`, show delay 150 ms; cell 80, icon 64, gap 8, overflow minimum icon 48, design/13 section 13.3.5)), `NotificationsSettings`,
@@ -826,7 +826,7 @@ pub struct GesturesFile {            // mouse-gestures/gestures.toml
     pub palm_rejection: PalmRejectionSettings,
 }
 
-/// Composes all three files; `ui-settings`, `shell-settings` and `palmrest` each own one
+/// Composes all three files; `ui-settings`, `shell-settings` and `mouse_gestures` each own one
 /// field's I/O, but a surface that needs more than one file's values (the dock reading
 /// `spaces` for tint, `bardo-shell` reading `appearance.banner_material`) takes `&Settings`.
 pub struct Settings {
@@ -1316,11 +1316,11 @@ program's own sections move onto the same markers when its schema is passed with
 
 ## 7. Open decisions
 
-1. **Whether palmrest and sill share one file.** This doc keeps them separate
-   (`mouse-gestures/gestures.toml` vs `shell/settings.toml`) because `palmrest` is a separate daemon
+1. **Whether the mouse gestures daemon and sill share one file.** This doc keeps them separate
+   (`mouse-gestures/gestures.toml` vs `shell/settings.toml`) because `mouse_gestures` is a separate daemon
    that must start and apply its own config before `bardo-shell` or any compositor exists
    (`12-BEHAVIOUR-gestures.md#12-3-12-daemon-architecture`), and because `12.6`'s own doc text
-   already assumes a `palmrest/config.toml`. A merged file would need `palmrest` to depend on
+   already assumes a `mouse_gestures/config.toml`. A merged file would need `mouse_gestures` to depend on
    `bardo-shell`'s schema or vice versa, which sill's crate boundaries (its ARCHITECTURE.md, "Crates":
    `shell-launcher`/`shell-ipc` must not reach several crates) argue against generalizing.
    Kept separate; revisit only if the two are shown to drift out of sync in practice.

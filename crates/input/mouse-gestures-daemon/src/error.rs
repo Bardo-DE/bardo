@@ -1,4 +1,4 @@
-//! Why a palmrest command stopped: each variant's text is the line the command prints.
+//! Why a mouse gestures daemon command stopped: each variant's text is the line the command prints.
 
 use crate::outputs::OutputError;
 use crate::recording::RecordingError;
@@ -20,7 +20,7 @@ pub enum Error {
     #[error("no multitouch mouse evdev node found")]
     NoEvdevNode,
     /// The mouse sends a report the hidraw decoder does not read.
-    #[error("{path} is a {model:?}, whose report 0x29 palmrest does not decode")]
+    #[error("{path} is a {model:?}, whose report 0x29 mouse_gestures does not decode")]
     UndecodableReport { path: String, model: Model },
     /// The hidraw node could not be opened.
     #[error("cannot read {}: {source}; no gestures until it can be read", node.display())]

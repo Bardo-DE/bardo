@@ -20,7 +20,7 @@ use crate::spec::{AbsAxis, DeviceSpec};
 pub const POINTER_SUFFIX: &str = "(key-remap pointer)";
 /// The keyboard's name; the key remap daemon never grabs a device with it.
 pub const KEYBOARD_NAME: &str = "key-remap keyboard";
-/// "KC" in ASCII: not a registered vendor, only different from palmrest's and every real keyboard's.
+/// "KC" in ASCII: not a registered vendor, only different from the mouse gestures daemon's and every real keyboard's.
 const VENDOR: u16 = 0x4b43;
 /// The highest property bit a pointer may have (`INPUT_PROP_POINTING_STICK`).
 const PROP_MAX: u16 = 5;

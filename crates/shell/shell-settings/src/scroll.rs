@@ -2,7 +2,7 @@
 //!
 //! The physics run in layer-shell-host with constants (`shell_app::scroll`). Natural scrolling is
 //! on the Mouse & Gestures page; the rest are Advanced (§5). `scroll.speed`, `scroll.lock_*` and
-//! the gains are palmrest's (`mouse-gestures/gestures.toml`, §3.9), not here.
+//! the gains are the mouse gestures daemon's (`mouse-gestures/gestures.toml`, §3.9), not here.
 
 use base_words::Word;
 use serde::{Deserialize, Serialize};

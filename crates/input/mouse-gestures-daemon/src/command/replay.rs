@@ -1,4 +1,4 @@
-//! `palmrest replay FILE`: a recording through the core, printed as outputs or latency.
+//! `mouse_gestures replay FILE`: a recording through the core, printed as outputs or latency.
 
 use super::ReplayReport;
 use crate::config::{self, Config};

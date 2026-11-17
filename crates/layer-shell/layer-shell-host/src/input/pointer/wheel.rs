@@ -1,5 +1,5 @@
 //! A wheel with `value120` (or legacy `discrete`) steps is `Lines`; a continuous source
-//! (touchpad, the palmrest virtual touchpad) is `Pixels`. Wayland's axis sign is the inverse of
+//! (touchpad, the mouse gestures daemon virtual touchpad) is `Pixels`. Wayland's axis sign is the inverse of
 //! the DOM's, so both are negated.
 
 use blitz_traits::events::{

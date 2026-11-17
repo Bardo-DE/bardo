@@ -5,10 +5,10 @@
 //! itself in a control group of that name. What it buys is that no ordinary program of theirs can
 //! say the session is unlocked.
 //!
-//! palmrest is a dynamic user without privileges, so it cannot read another user's image path;
+//! The mouse gestures daemon is a dynamic user without privileges, so it cannot read another user's image path;
 //! the unit name in the control group is all there is to go on, and the process is held by its
 //! pidfd so the name cannot belong to a process that has since been replaced. The check itself is
-//! `service_locator::guard`; this file is palmrest's table and its choice of who is believed.
+//! `service_locator::guard`; this file is the mouse gestures daemon's table and its choice of who is believed.
 
 use caller_identity_core::Table;
 use caller_identity_core::roles::SHELL;
@@ -62,7 +62,9 @@ impl Steering {
 /// believed, which is the safe way to fail.
 fn shell_check() -> ShellCheck {
     let table = Table::from_toml(SHELL_TABLE).unwrap_or_else(|e| {
-        eprintln!("palmrest: nobody is believed about the lock: the shell table is unusable: {e}");
+        eprintln!(
+            "mouse_gestures: nobody is believed about the lock: the shell table is unusable: {e}"
+        );
         Table::empty()
     });
     ShellCheck::system(table, vec![SHELL])

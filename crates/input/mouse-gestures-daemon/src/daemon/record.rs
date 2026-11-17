@@ -1,4 +1,4 @@
-//! `palmrest record FILE`: raw reads of the Magic Mouse with their arrival times, for replay
+//! `mouse_gestures record FILE`: raw reads of the Magic Mouse with their arrival times, for replay
 //! and tuning.
 //!
 //! Opens the node read-only: it only listens, exactly as the kernel and any other reader do,
@@ -46,7 +46,7 @@ pub fn record(out: &Path, limits: Limits) -> Result<usize, Error> {
     })?;
     file.write_all(&header(&opened.source))?;
     eprintln!(
-        "palmrest: recording {} ({}) to {}",
+        "mouse_gestures: recording {} ({}) to {}",
         info.name,
         info.path,
         out.display()
@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn a_new_recording_is_private_whatever_the_umask() {
-        let dir = std::env::temp_dir().join(format!("palmrest-rec-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("mouse-gestures-rec-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
         let path = dir.join("trace.bin");
         drop(create_private(&path).unwrap());

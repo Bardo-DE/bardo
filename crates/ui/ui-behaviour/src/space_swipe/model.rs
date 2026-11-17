@@ -68,7 +68,7 @@ impl Default for Swipe {
 }
 
 /// The device a swipe comes from, which sets the distance of one page: 1000 raw x units on the
-/// Magic Mouse (palmrest's units), 400 px of libinput swipe delta on a touchpad.
+/// Magic Mouse (the mouse gestures daemon's units), 400 px of libinput swipe delta on a touchpad.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SwipeSource {
     /// Two fingers locked horizontal on a Magic Mouse; one page is 1000 raw units.

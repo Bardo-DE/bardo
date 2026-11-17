@@ -32,11 +32,11 @@ pub struct PointerCaps {
 /// together cannot be built.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Create {
-    /// palmrest's touchpad.
+    /// The mouse gestures daemon's touchpad.
     Touchpad,
-    /// palmrest's wheel.
+    /// The mouse gestures daemon's wheel.
     Wheel,
-    /// palmrest's keyboard with these key codes.
+    /// The mouse gestures daemon's keyboard with these key codes.
     Keys(Vec<u16>),
     /// The key remap daemon's keyboard.
     Keyboard,
@@ -45,19 +45,19 @@ pub enum Create {
 }
 
 impl Create {
-    /// palmrest's touchpad.
+    /// The mouse gestures daemon's touchpad.
     #[must_use]
     pub const fn touchpad() -> Self {
         Self::Touchpad
     }
 
-    /// palmrest's wheel.
+    /// The mouse gestures daemon's wheel.
     #[must_use]
     pub const fn wheel() -> Self {
         Self::Wheel
     }
 
-    /// palmrest's keyboard with the keys `codes`.
+    /// The mouse gestures daemon's keyboard with the keys `codes`.
     #[must_use]
     pub fn keys(codes: Vec<u16>) -> Self {
         Self::Keys(codes)
@@ -79,9 +79,9 @@ impl Create {
     #[must_use]
     pub const fn kind(&self) -> Kind {
         match self {
-            Self::Touchpad => Kind::PalmrestTouchpad,
-            Self::Wheel => Kind::PalmrestWheel,
-            Self::Keys(_) => Kind::PalmrestKeys,
+            Self::Touchpad => Kind::MouseGesturesTouchpad,
+            Self::Wheel => Kind::MouseGesturesWheel,
+            Self::Keys(_) => Kind::MouseGesturesKeys,
             Self::Keyboard => Kind::KeyRemapKeyboard,
             Self::Pointer(_) => Kind::KeyRemapPointer,
         }

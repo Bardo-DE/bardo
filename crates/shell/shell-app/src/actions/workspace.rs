@@ -1,4 +1,4 @@
-//! The Space actions (`bardo-shell workspace prev|next|overview`, palmrest's swipes).
+//! The Space actions (`bardo-shell workspace prev|next|overview`, the mouse gestures daemon's swipes).
 //!
 //! A step activates the neighbour of the active workspace through the compositor service; at either
 //! end nothing happens. The overview opens Mission Control on the desktop's own compositor, and is

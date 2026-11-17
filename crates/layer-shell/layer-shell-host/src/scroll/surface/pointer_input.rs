@@ -1,5 +1,5 @@
 //! Pointer-driven scrolling: a `wl_pointer` axis frame (wheel detents, a touchpad's phased pan)
-//! and palmrest's gestures, latched from the scrollers under the pointer.
+//! and the mouse gestures daemon's gestures, latched from the scrollers under the pointer.
 
 use blitz_dom::BaseDocument;
 
@@ -33,8 +33,8 @@ impl SurfaceScroll {
         self.applied(&moves, now)
     }
 
-    /// A palmrest scroll event while the pointer is at `pos` on this surface.
-    pub(crate) fn palmrest(
+    /// A mouse gestures daemon scroll event while the pointer is at `pos` on this surface.
+    pub(crate) fn mouse_gestures(
         &mut self,
         doc: &mut BaseDocument,
         event: PalmScroll,
@@ -43,7 +43,7 @@ impl SurfaceScroll {
     ) -> Moved {
         let tuning = self.tuning;
         let env = tuning.at(now);
-        self.driven_by_palmrest = true;
+        self.driven_by_mouse_gestures = true;
         match event {
             PalmScroll::MayBegin => {
                 self.palm = PalmGesture::Idle;

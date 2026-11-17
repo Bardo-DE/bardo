@@ -1,4 +1,4 @@
-//! palmrest's touchpad: exactly the capabilities of its `touchpad_caps`, with the fixed ranges.
+//! The mouse gestures daemon's touchpad: exactly the capabilities of its `touchpad_caps`, with the fixed ranges.
 
 use super::filter::{Denial, Filter};
 use super::{Plan, Route};
@@ -11,13 +11,13 @@ use crate::event::Event;
 use crate::maker::Maker;
 use crate::spec::{AbsAxis, DeviceSpec};
 
-/// Horizontal extent in device units (palmrest's `PAD_X_MAX`).
+/// Horizontal extent in device units (the mouse gestures daemon's `PAD_X_MAX`).
 pub(super) const X_MAX: i32 = 4000;
-/// Vertical extent in device units (palmrest's `PAD_Y_MAX`).
+/// Vertical extent in device units (the mouse gestures daemon's `PAD_Y_MAX`).
 pub(super) const Y_MAX: i32 = 2800;
-/// Units per millimetre (palmrest's `UNITS_PER_MM`).
+/// Units per millimetre (the mouse gestures daemon's `UNITS_PER_MM`).
 const UNITS_PER_MM: i32 = 40;
-/// Contact slots (palmrest's `PAD_SLOTS`).
+/// Contact slots (the mouse gestures daemon's `PAD_SLOTS`).
 pub(super) const SLOTS: usize = 5;
 
 /// The highest slot number, as the kernel's signed axis maximum.
@@ -27,7 +27,7 @@ pub(super) const SLOTS: usize = 5;
     reason = "SLOTS is 5, far inside i32"
 )]
 const LAST_SLOT: i32 = SLOTS as i32 - 1;
-/// The largest tracking id palmrest registers.
+/// The largest tracking id the mouse gestures daemon registers.
 const TRACKING_MAX: i32 = 0xffff;
 
 /// The buttons and tools the touchpad has.

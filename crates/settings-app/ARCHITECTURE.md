@@ -25,7 +25,7 @@ style guides every repo follows; this file is the Settings app's map and rules, 
 | The compositor (the compositor; no build dependency) | The Privacy & Security page reads and writes the module the compositor serves as `org.bardo.SettingsModule1` at `/org/bardo/Compositor1/privacy` on `org.bardo.Compositor1`: `privacy.<power>.<id>` (a person's answer: an `on`/`off` switch, with `.forget` beside it, the action that asks again; a power nobody has answered for a program in the book: the same switch at `ask`, with no action, whose first change is the person's first answer), a read-out for an administrator's answer (`KeyKind::Fixed`, noted "Set by your administrator") and `privacy.<power>.none` for a power nobody asked in. A `Set` becomes a `PrivacyEdit` the compositor turns into its event. Settings reads as role `settings`; the owner of the name must hold `compositor` |
 | desktop-protocols (`../wayland/desktop-protocols`, path dep) | `desktop-client` with its `client` feature (`DesktopClient`, the output heads and modes, `OutputConfig`, `ApplyOutputs`, `OutputEvent::ConfigResolved`), taken by `settings-app-system`'s `displays/` only. A change from this window is a program's change to the compositor, which applies it at once and has the shell ask "Keep these display settings?" |
 | sill (the shell) | The Displays page reads and sets each display's brightness on `org.bardo.Displays1` at `/org/bardo/Displays1` (session bus, owner must hold role `shell`): `Brightness() -> a(su)`, `SetBrightness(s, u)`, signal `Changed(a(su))`. No build dependency; `settings-app-system`'s `displays/brightness.rs` is the caller |
-| sill's schema, palmrest | nothing at build time. Their `--write-schema` output is the test fixture (`scripts/gen-fixtures.sh`); so is Bardo's own schema, from `ui-settings`' `write_schema` example |
+| sill's schema, the mouse gestures daemon | nothing at build time. Their `--write-schema` output is the test fixture (`scripts/gen-fixtures.sh`); so is Bardo's own schema, from `ui-settings`' `write_schema` example |
 
 ## 1. Crate map and layers
 
@@ -180,7 +180,7 @@ a `params` list even when empty), add its arm in `settings-app-intents/src/ask.r
 ## 4. Tests
 
 - `settings-app-model`, `settings-app-files`: table tests and integration tests over `fixtures/schemas`, real
-  schemas from `bardo-shell --write-schema`, `palmrest --write-schema` and Bardo's `write_schema` example.
+  schemas from `bardo-shell --write-schema`, `mouse_gestures --write-schema` and Bardo's `write_schema` example.
   Regenerate with `scripts/gen-fixtures.sh`.
 - `settings-app-ui/tests/ui/support`: `Sandbox` seeds the fixtures into a scratch `$XDG_DATA_HOME`, points
   the app at a scratch `$XDG_CONFIG_HOME`, fixes the desktop preferences, and builds a

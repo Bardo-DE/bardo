@@ -1,4 +1,4 @@
-//! How long the host waits before it looks for the palmrest daemon again after it was not there.
+//! How long the host waits before it looks for the mouse gestures daemon daemon again after it was not there.
 //!
 //! A missing daemon is looked for on a timer, not only when the pointer enters one of our
 //! surfaces: while the session is locked the pointer stays inside the lock surface, and a daemon
@@ -15,7 +15,7 @@ const FIRST: Duration = Duration::from_millis(250);
 /// The longest wait while the session is locked.
 const LONGEST_LOCKED: Duration = Duration::from_secs(2);
 
-/// The longest wait while it is not: a host without palmrest wakes once in this long.
+/// The longest wait while it is not: a host without the mouse gestures daemon wakes once in this long.
 const LONGEST_UNLOCKED: Duration = Duration::from_secs(30);
 
 /// The most doublings counted: past this the longest wait has been reached anyway.

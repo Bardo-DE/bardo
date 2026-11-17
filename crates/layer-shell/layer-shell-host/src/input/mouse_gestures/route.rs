@@ -1,4 +1,4 @@
-//! What each palmrest message means for the host (design/12 §12.3.11): the fingers' state for
+//! What each mouse gestures daemon message means for the host (design/12 §12.3.11): the fingers' state for
 //! the double-scroll window, and the scroll event for the engine. Pure.
 
 use std::time::Duration;

@@ -1,4 +1,4 @@
-//! Finding and opening a multitouch mouse's evdev node: what the daemon reads when palmrest does
+//! Finding and opening a multitouch mouse's evdev node: what the daemon reads when the mouse gestures daemon does
 //! not decode the mouse's hidraw report.
 //!
 // TODO(untested): run only against the Magic Mouse's node. The capability test below is what
@@ -70,7 +70,7 @@ pub struct Caps {
     pub udev: String,
 }
 
-/// Whether palmrest may read a node, on capabilities alone: a multitouch mouse that is not a
+/// Whether the mouse gestures daemon may read a node, on capabilities alone: a multitouch mouse that is not a
 /// touchpad (those are left to libinput).
 pub fn is_multitouch_mouse(c: &Caps) -> bool {
     let touchpad =
@@ -215,7 +215,8 @@ mod tests {
 
     #[test]
     fn find_reads_a_sysfs_tree() {
-        let root = std::env::temp_dir().join(format!("palmrest-input-{}", std::process::id()));
+        let root =
+            std::env::temp_dir().join(format!("mouse-gestures-input-{}", std::process::id()));
         let (sys, udev) = (root.join("sys"), root.join("udev"));
         let node = |n: &str, dev: &str, abs: &str, rel: &str, key: &str| {
             let d = sys.join(n);

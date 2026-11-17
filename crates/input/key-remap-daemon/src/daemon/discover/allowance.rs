@@ -155,7 +155,7 @@ mod tests {
                 Eligibility::NotKeyboard,
             ),
             (
-                "palmrest's devices stay excluded even when named",
+                "mouse_gestures's devices stay excluded even when named",
                 identity("mouse-gestures keys", 0x0001, 0x0003),
                 VIRTUAL,
                 VirtualAllowance::Named("mouse-gestures keys".to_owned()),

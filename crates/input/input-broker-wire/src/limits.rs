@@ -11,9 +11,9 @@ pub const MAX_EVENTS_PER_DATAGRAM: usize = 64;
 /// Feedback events in one datagram: a keyboard has three lights.
 pub const MAX_FEEDBACK_EVENTS: usize = 8;
 
-/// Key codes palmrest's keyboard may ask for: its gesture table has a few dozen at most.
+/// Key codes the mouse gestures daemon's keyboard may ask for: its gesture table has a few dozen at most.
 pub const MAX_KEY_CODES: usize = 64;
-/// Keys held at once on palmrest's keyboard: a combination is three or four.
+/// Keys held at once on the mouse gestures daemon's keyboard: a combination is three or four.
 pub const MAX_KEYS_DOWN: usize = 8;
 /// Buttons on a pointer: the mouse block of `linux/input-event-codes.h` is 16 wide.
 pub const MAX_POINTER_BUTTONS: usize = 16;
@@ -33,13 +33,13 @@ pub const MAX_DEVICES_PER_CONNECTION: usize = 4;
 pub const MAX_CREATES_PER_CONNECTION: u8 = 64;
 /// Handed devices one connection may ask for: the service cannot see them close, so it counts them.
 pub const MAX_HANDED_PER_CONNECTION: u8 = 16;
-/// Connections at once from callers that are not palmrest or the key remap daemon: the units run one palmrest and
+/// Connections at once from callers that are not the mouse gestures daemon or the key remap daemon: the units run one the mouse gestures daemon and
 /// one the key remap daemon, so nothing else has a use for more.
 pub const MAX_CONNECTIONS: usize = 16;
-/// Connections at once from one user that is not shown to be palmrest or the key remap daemon: one local account
+/// Connections at once from one user that is not shown to be the mouse gestures daemon or the key remap daemon: one local account
 /// cannot take the slots of the others.
 pub const MAX_CONNECTIONS_PER_USER: usize = 4;
-/// Connections reserved for each of palmrest and the key remap daemon once they are proven: a client reconnects
+/// Connections reserved for each of the mouse gestures daemon and the key remap daemon once they are proven: a client reconnects
 /// after a cut and may briefly hold the old and the new, so more than one; outside every other cap.
 pub const MAX_RESERVED_PER_CLIENT: usize = 4;
 
@@ -74,7 +74,7 @@ pub const FLOOD_GAP_MS: u64 = 1_000;
 /// hostile peer sends them all.
 pub const MAX_DENIED_EVENTS: u32 = 256;
 
-/// A new connection of a proven palmrest or the key remap daemon that has made no device in this long is closed.
+/// A new connection of a proven the mouse gestures daemon or the key remap daemon that has made no device in this long is closed.
 pub const HANDSHAKE_TIMEOUT_MS: u64 = 1_000;
 /// Any other connection that has made no device in this long is closed: it has no business waiting.
 pub const STRANGER_HANDSHAKE_TIMEOUT_MS: u64 = 200;

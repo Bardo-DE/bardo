@@ -7,7 +7,7 @@
 //!
 //! A user over [`Caps::per_user`], or all users over [`Caps::total`], is closed at once. Identified
 //! callers are still counted into [`crate::slots`] afterwards (NEW-PI-6), so strangers cannot use
-//! the reserve of palmrest and key_remap. What a stuck identification costs is bounded: its user's
+//! the reserve of the mouse gestures daemon and key_remap. What a stuck identification costs is bounded: its user's
 //! share of these caps, and nothing of the accept loop. The caps are sized so the threads they
 //! allow plus the slots' fit the unit's `TasksMax=` (checked at compile time in the limits).
 

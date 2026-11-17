@@ -25,7 +25,7 @@ impl Shape {
 /// reloaded answers within a few seconds, and one that does not is not coming back.
 const RECONNECT_TRIES: u8 = 3;
 
-/// Whether `cuts`, the times the service cut palmrest off since a frame last went through, are
+/// Whether `cuts`, the times the service cut the mouse gestures daemon off since a frame last went through, are
 /// too many. The first cut is the loss itself; each rebuild that fails or is cut again is
 /// another.
 pub(super) fn spent(cuts: u8) -> bool {
@@ -49,7 +49,7 @@ pub(super) enum Life {
         backoff: Backoff,
         cuts: u8,
     },
-    /// The service kept cutting palmrest off: frames are dropped until the shape changes.
+    /// The service kept cutting the mouse gestures daemon off: frames are dropped until the shape changes.
     Dead,
 }
 
@@ -65,7 +65,7 @@ impl Life {
 }
 
 /// Why a write or a build failed, as far as the lifecycle cares: whether the service cut
-/// palmrest off, and the words for the log.
+/// The mouse gestures daemon off, and the words for the log.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum Why {
     Cut(String),

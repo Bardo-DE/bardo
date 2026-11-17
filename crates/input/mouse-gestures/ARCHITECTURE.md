@@ -1,28 +1,28 @@
 # Architecture
 
-palmrest is the Magic Mouse 2 gesture daemon: it reads touch reports, turns them into scroll and
+The mouse gestures daemon is the Magic Mouse 2 gesture daemon: it reads touch reports, turns them into scroll and
 gesture streams, and delivers them over a socket to layer-shell-host surfaces and, through virtual
 input devices, to every other client. `README.md` has the data flow, the socket protocol and
 the safety rules; Bardo's `design/12-BEHAVIOUR-gestures.md` is the specification;
 `CONVENTIONS.md` points to the published Rust guides and gives three design directions (push IO to
 the edges, let types carry the facts, judgement over rules); `FINDINGS.md` holds the open items and
 standing facts. This file is the map: where each thing lives, what may depend on what, and how to add
-the next thing. palmrest depends on no shell crate and runs on any Linux.
+the next thing. The mouse gestures daemon depends on no shell crate and runs on any Linux.
 
 ## 1. Crate map
 
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
-| `mouse-gestures-proto` | `crates/palmrest-protocol` | the socket contract with layer-shell-host: `ToHost`, `ToDaemon`, their field types, `PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
-| `palmrest` | `crates/palmrest` | the pure core, the tools that replay recordings, and the daemon; library plus the `palmrest` binary | `mouse-gestures-proto`, `serde`, `serde_json`, `thiserror`, `toml`, `notify`, `rustix`, `input-broker-client` (git, tag `v0.1.1`; the daemon layer only; its `fake` feature only as a dev dependency), `peephole`, `caller-identity-core` (git, tag `v0.1.4`; the socket's shell check only; `peephole`'s `fake` feature only as a dev dependency) |
+| `mouse-gestures-proto` | `crates/mouse-gestures-protocol` | the socket contract with layer-shell-host: `ToHost`, `ToDaemon`, their field types, `PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
+| `mouse_gestures` | `crates/mouse_gestures` | the pure core, the tools that replay recordings, and the daemon; library plus the `mouse_gestures` binary | `mouse-gestures-proto`, `serde`, `serde_json`, `thiserror`, `toml`, `notify`, `rustix`, `input-broker-client` (git, tag `v0.1.1`; the daemon layer only; its `fake` feature only as a dev dependency), `peephole`, `caller-identity-core` (git, tag `v0.1.4`; the socket's shell check only; `peephole`'s `fake` feature only as a dev dependency) |
 
-Edges: `palmrest` -> `mouse-gestures-proto` only. `mouse-gestures-proto` depends on no other workspace
+Edges: `mouse_gestures` -> `mouse-gestures-proto` only. `mouse-gestures-proto` depends on no other workspace
 crate, and has no `toml`, `notify` or `rustix`, so layer-shell-host takes it without pulling the
-daemon. layer-shell-host imports `mouse-gestures-proto` as a path dependency; nothing else of palmrest
+daemon. layer-shell-host imports `mouse-gestures-proto` as a path dependency; nothing else of the mouse gestures daemon
 leaves the repo. There is no boundary script; `cargo tree -p mouse-gestures-proto` showing only
 serde, serde_json and thiserror is the check, run in review.
 
-The library surface of `palmrest` is the pure core plus the recording tools (section 2). The
+The library surface of `mouse_gestures` is the pure core plus the recording tools (section 2). The
 daemon, `sys` and the CLI verbs are `pub(crate)`; the one public entry to them is
 `command::run`.
 
@@ -30,17 +30,17 @@ daemon, `sys` and the CLI verbs are `pub(crate)`; the one public entry to them i
 
 | From | To |
 |---|---|
-| `crates/palmrest/src/protocol.rs` | `crates/palmrest-protocol/src/lib.rs` split into `message.rs` (`ToHost`, `ToDaemon`, `Filter`, `Topic`, `DeviceInfo`), `vocab.rs` (`GestureId`, `Phase`, `Axis`, `TapKind`, `ActiveTouch`, `Over`), `wire.rs` (`encode`, `decode`, `Compat`, `compat`, constants), `tests.rs` |
-| `crates/palmrest/src/lib.rs` re-export `pub use protocol::{ToDaemon, ToHost}` | deleted; callers import `palmrest_protocol` |
+| `crates/mouse_gestures/src/protocol.rs` | `crates/mouse-gestures-protocol/src/lib.rs` split into `message.rs` (`ToHost`, `ToDaemon`, `Filter`, `Topic`, `DeviceInfo`), `vocab.rs` (`GestureId`, `Phase`, `Axis`, `TapKind`, `ActiveTouch`, `Over`), `wire.rs` (`encode`, `decode`, `Compat`, `compat`, constants), `tests.rs` |
+| `crates/mouse_gestures/src/lib.rs` re-export `pub use protocol::{ToDaemon, ToHost}` | deleted; callers import `mouse_gestures_protocol` |
 | `outputs/uinput.rs` | `daemon/uinput/` (`caps`, `direct`, `emitter`, `route`, `probe`) |
 | `sys.rs` | `daemon/sys.rs` (safe evdev and uinput ioctls) and `daemon/hidioc.rs` (the one `unsafe` module: `HIDIOCSFEATURE`) |
-| `main.rs` verbs (`record_cmd`, `replay_cmd`, `check_uinput`, usage, arguments) | `command/{mod.rs (Command, parse, run), record.rs, replay.rs, probe.rs}`; `main.rs` is `fn main() -> ExitCode { palmrest::command::run(std::env::args()) }` |
+| `main.rs` verbs (`record_cmd`, `replay_cmd`, `check_uinput`, usage, arguments) | `command/{mod.rs (Command, parse, run), record.rs, replay.rs, probe.rs}`; `main.rs` is `fn main() -> ExitCode { mouse_gestures::command::run(std::env::args()) }` |
 | `gestures/live.rs`, the seven `gestures.live_workspace_*` keys | deleted (section 8) |
 | `tests/socket.rs`, `tests/latency.rs` | unit tests beside `daemon/socket.rs` and `daemon/latency.rs` |
 
 ## 2. Modules and layers
 
-`crates/palmrest/src`. A module imports from its own layer or a lower one only.
+`crates/mouse_gestures/src`. A module imports from its own layer or a lower one only.
 
 | Layer | Modules | Nature | Visibility |
 |---|---|---|---|
@@ -54,7 +54,7 @@ daemon, `sys` and the CLI verbs are `pub(crate)`; the one public entry to them i
 | L7 effects | `daemon` (`reader`, `socket`, `discover`, `hidraw`, `evdev`, `devices`, `dispatch`, `record`, `latency`, `source`, `uinput`, `sys`, `hidioc`) | threads, sockets, nodes, clocks, uinput, ioctls | `pub(crate)` |
 | L8 entry | `command` | argument parsing, one `run(args)`; reads `std::env` once into `daemon::Env` | `pub` (one fn) |
 
-`recording` and `replay` stay public because the acceptance suite and the `palmrest replay`
+`recording` and `replay` stay public because the acceptance suite and the `mouse_gestures replay`
 verb are the same harness: a recording file in, the core's outputs out, no clock and no device.
 `daemon` is where every thread, socket, device node and clock lives; the core never reaches
 into it.
@@ -96,7 +96,7 @@ out the effects it gets back.
 | Every other tuning number | a named constant beside the code that uses it |
 | Lenient per-key reading | `config::lenient` |
 | Config file location, reload | `config::{load, watch}` |
-| The schema of the config for the Settings app (`palmrest --write-schema`) | `config::schema` (table in `keys.rs`), `command::schema` |
+| The schema of the config for the Settings app (`mouse_gestures --write-schema`) | `config::schema` (table in `keys.rs`), `command::schema` |
 | Virtual device write seam | `outputs::Emitter` |
 | Touchpad frame model, evdev event encoding | `outputs::{pad, events}` |
 | Recording file format | `recording` |
@@ -104,10 +104,10 @@ out the effects it gets back.
 | Threads, sockets, discovery, backoff, nodes | `daemon` |
 | Subscribers of the socket: ids, admission, caps, the joint claim and lock, what the reader is told and when | `daemon::socket::{model, step}` (the pure `Subscribers::step`; `admit`, `packet`, `deliver`, `publish`, `aggregate` hold its parts), `limits` (the caps and budgets) |
 | The socket thread: polling, reading, the peer facts (uid, vouch, seat file), carrying out effects | `daemon::socket::{io, conn}` |
-| Who has the seat, and what a connection is to the daemon (shell, other program, stranger) | `daemon::socket::seat` (`peer_of`), `daemon::socket::shell` (`Steering`, palmrest's shell table); the shell check, the seat file and the accept failures are `latchkey::guard`, shared with the key remap daemon |
-| Actions that need the person's session (asked of the shell, never run here) | `action::plan` (the tracker's `Out::Deferred(Action)` becomes an `Option<HostAction>`), `palmrest_protocol::HostAction`, `ToHost::Run` |
+| Who has the seat, and what a connection is to the daemon (shell, other program, stranger) | `daemon::socket::seat` (`peer_of`), `daemon::socket::shell` (`Steering`, the mouse gestures daemon's shell table); the shell check, the seat file and the accept failures are `latchkey::guard`, shared with the key remap daemon |
+| Actions that need the person's session (asked of the shell, never run here) | `action::plan` (the tracker's `Out::Deferred(Action)` becomes an `Option<HostAction>`), `mouse_gestures_protocol::HostAction`, `ToHost::Run` |
 | The person's settings laid over the machine's | `config::layer`, `ToDaemon::UserConfig` |
-| What the shell says about the lock screen | `palmrest_protocol::ToDaemon::SessionLock`, `Tracker::with_session_lock` |
+| What the shell says about the lock screen | `mouse_gestures_protocol::ToDaemon::SessionLock`, `Tracker::with_session_lock` |
 | The virtual devices: what each is, asking the input service for them, the direct fallback | `daemon::uinput::{caps, emitter, direct, route}` |
 | When to rebuild the devices after a cut, and when to give up | `daemon::devices::{model, step}` (the pure lifecycle); `devices::io` holds the emitter and the factory |
 | evdev and uinput ioctls | `daemon::sys` (through `input-linux`, no `unsafe`) |
@@ -148,7 +148,7 @@ environment (`daemon::Env`); it is a plain struct until a fake exists.
    bump `PROTOCOL_VERSION`, update the round-trip test and layer-shell-host in the same change).
 6. Tests: a table test of the recogniser beside it; a scenario in `tests/support/scenarios.rs`
    (a synthesised stroke), its fixture written by `BARDO_MOUSE_GESTURES_REGEN_FIXTURES=1 cargo test --test
-   fixtures_current`, and a replay assertion in `tests/palmrest/gestures_replay.rs`; the same recording
+   fixtures_current`, and a replay assertion in `tests/mouse_gestures/gestures_replay.rs`; the same recording
    replayed through `EvdevMultitouch` in `tests/evdev_parity.rs`.
 
 ### Add a sensor
@@ -160,7 +160,7 @@ environment (`daemon::Env`); it is a plain struct until a fake exists.
 3. `daemon/source.rs`: a `RecordedSource` variant and its arm in `Opened::read_len`;
    `daemon/<family>.rs` for opening and identifying the node (node facts parsed, never
    searched); `recording.rs`: its arm in `RecordedSource::sensor` and `header` so recordings replay.
-4. Tests: decode tables from bytes captured with `palmrest record`; a parity test in
+4. Tests: decode tables from bytes captured with `mouse_gestures record`; a parity test in
    `tests/` replaying an existing fixture re-expressed through the new sensor to the same
    outputs.
 
@@ -188,7 +188,7 @@ behaviour choice; a tuning number is a named constant beside the code that uses 
    `Default`, and its `section(...)` call).
 3. Read it where it is used, from the `Config` value the caller holds (`tracker`, `gestures`,
    `feel`), never from a global.
-4. `palmrest --print-config` prints it automatically; `README.md` "Configuration" names it.
+4. `mouse_gestures --print-config` prints it automatically; `README.md` "Configuration" names it.
 5. `config/schema/keys.rs`: one row (label, help, section, its range or words). The default
    comes from `Config::default()`; a test fails until every key has a row, and reads each row's
    bounds and words back through the lenient reader.
@@ -200,8 +200,8 @@ A key that is removed needs nothing in the reader: an unknown key in a stored fi
 
 ### The schema and Bardo
 
-`palmrest --write-schema DIR` writes `palmrest.settings.toml`, the file Bardo's Settings app
-reads (Bardo `design/22-SETTINGS.md` section 9). palmrest takes no Bardo crate, so it does not use
+`mouse_gestures --write-schema DIR` writes `mouse_gestures.settings.toml`, the file Bardo's Settings app
+reads (Bardo `design/22-SETTINGS.md` section 9). The mouse gestures daemon takes no Bardo crate, so it does not use
 Bardo's `SettingsSchema` derive: `config::schema` writes the same format from a table, with the
 tests above as the guard that it cannot drift from `Config`.
 
@@ -212,7 +212,7 @@ tests above as the guard that it cannot drift from `Config`.
 | Codecs, feel, gestures, config, protocol | table tests beside the code |
 | Whole-core behaviour | replay: a recording through `replay::replay` with `RecordingEmitter`, asserting `Out`s and `Emitted`; strokes and fixtures from `tests/support` |
 | Another sensor | the same recording re-expressed as evdev events, replayed to identical outputs (`tests/evdev_parity.rs`) |
-| Decoder | goldens in `tests/fixtures/reference/`, frozen; the reference gesture cases in `tests/palmrest/reference_cases.rs` |
+| Decoder | goldens in `tests/fixtures/reference/`, frozen; the reference gesture cases in `tests/mouse_gestures/reference_cases.rs` |
 | Socket | decisions as pure `Subscribers::step` tests over events (`daemon/socket/tests/{step, packet, aggregate}.rs`); a private socket in a temp dir for the wiring (`tests/{wiring, passes}.rs`) |
 | Latency | ignored release test beside `daemon/latency.rs` |
 
@@ -221,7 +221,7 @@ node for writing, or reads a real config directory or a running daemon.
 
 ## 7. Repo rules
 
-- **palmrest is a system service** (a dynamic user, `dist/bardo-mouse-gestures.service`; owner decision 2026-10-17, as
+- **the mouse gestures daemon is a system service** (a dynamic user, `dist/bardo-mouse-gestures.service`; owner decision 2026-10-17, as
   The key remap daemon): its socket is `/run/bardo/mouse-gestures/events.sock`, mode 0666, and `daemon::socket` serves only the person
   at the seat. A connection is a `Peer`: the `Shell` (the process in `bardo-shell.service` under that person's own
   manager, held by pidfd and judged by peephole), another program of the person (`Plain`: subscribes, may
@@ -259,7 +259,7 @@ node for writing, or reads a real config directory or a running daemon.
 
 ## 8. The live Spaces swipe
 
-palmrest does not model the swipe's progress, overshoot or commit: the compositor does, on any
+The mouse gestures daemon does not model the swipe's progress, overshoot or commit: the compositor does, on any
 touchpad. A two-finger sideways stroke (the recogniser's `SpaceSwipe`) lands four contacts on the
 virtual touchpad that follow the fingers' x 1:1 and lift the moment the fingers do (no minimum
 time down: libinput only taps with up to three fingers); the compositor decides to commit or return on
@@ -277,7 +277,7 @@ variant stays in the protocol until layer-shell-host drops it in lockstep.
 Each step keeps master green (the gate above).
 
 1. (done) `mouse-gestures-proto` crate: create it, move `protocol.rs` into it (split as in section 1), add
-   it to the workspace, switch `palmrest` to import it, delete the re-export in `lib.rs`. The
+   it to the workspace, switch `mouse_gestures` to import it, delete the re-export in `lib.rs`. The
    layer-shell-host session then deletes its copy.
 2. (done) Delete `gestures/live.rs`, the seven `live_workspace_*` keys, their `README` and default
    config text.
@@ -288,20 +288,20 @@ Each step keeps master green (the gate above).
 
 ## 10. The virtual devices and the input service
 
-palmrest does not own `/dev/uinput`. The input service (turnstile, a separate repository and a
-root service) does, and makes palmrest's three devices on request after checking who asks.
+The mouse gestures daemon does not own `/dev/uinput`. The input service (turnstile, a separate repository and a
+root service) does, and makes the mouse gestures daemon's three devices on request after checking who asks.
 
 | File (`daemon/uinput/`) | Holds |
 |---|---|
 | `emitter.rs` | `UinputEmitter<S: Session>`: asks for the touchpad, and for the keyboard only when a gesture presses keys (`Create::keys` with the deduplicated codes of `KeyCombo::codes()`). One `Session::send` per pad frame. Counts `Sent::Dropped` frames and goes on. Turns every `ClientError` into an `OutputError` in plain words, asking the session for the service's reason first |
 | `route.rs` | `LiveSource`: a `DeviceSource` over the service or the direct node (`Origin`; the session is a boxed `Session`) |
-| `direct.rs` | `DirectSource`/`DirectSession`: the same `Session` over palmrest's own uinput node (`--direct-uinput`) |
+| `direct.rs` | `DirectSource`/`DirectSession`: the same `Session` over the mouse gestures daemon's own uinput node (`--direct-uinput`) |
 | `caps.rs` | each device's identity and capabilities (used by `direct.rs`) |
 | `probe.rs` | `--check-uinput`: open a session and make a touchpad |
 
 Who rebuilds, and when to stop, is `daemon/devices/step.rs` and nothing else (`model.rs` holds the states, events and effects, `io.rs` the emitter and the factory that carry them out). A write that fails is returned once as an error: that error is the news that the devices were lost, and `dispatch` hands it to the reader. `OutputError` says what
 happened: `Unavailable` (the service is not there yet; retried without limit), `Write` (the
-device failed; rebuilt) and `Cut` (the service closed the connection, refused palmrest or timed
+device failed; rebuilt) and `Cut` (the service closed the connection, refused the mouse gestures daemon or timed
 out; counted). After a cut the devices are rebuilt with the 1 s, 2 s, 4 s, 5 s backoff, three
 times; a fourth cut in a row, with no frame going through between, ends the virtual devices with
 one line in the log that carries the service's reason. A change of settings that changes what the

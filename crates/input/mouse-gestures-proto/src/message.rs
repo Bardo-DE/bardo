@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::vocab::{Axis, GestureId, HostAction, Phase, TapKind};
 
-/// The mouse palmrest is reading.
+/// The mouse the mouse gestures daemon is reading.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DeviceInfo {
     pub name: String,
@@ -43,7 +43,7 @@ impl Filter {
     }
 }
 
-/// palmrest to a host.
+/// The mouse gestures daemon to a host.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ToHost {
@@ -94,7 +94,7 @@ impl ToHost {
     }
 }
 
-/// A host to palmrest.
+/// A host to mouse_gestures.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ToDaemon {

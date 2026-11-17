@@ -50,14 +50,14 @@ vello_common = { workspace = true }
 serde_json = { workspace = true }
 # The pulse test waits for a timer by a blocking dispatch with the one generous limit.
 base-testkit = { path = "../../base/base-testkit" }
-# The palmrest socket's messages (`input::palmrest`).
+# The mouse gestures daemon socket's messages (`input::mouse_gestures`).
 mouse-gestures-proto = {path = "../../input/mouse-gestures-proto"}
 # The overlay scroll thumb's shapes and colour (scroll::paint).
 peniko = { workspace = true }
-# SOCK_SEQPACKET for the palmrest socket (std has no seqpacket, and unsafe is not allowed
+# SOCK_SEQPACKET for the mouse gestures daemon socket (std has no seqpacket, and unsafe is not allowed
 # here); in the pinned block since Bardo b45282a.
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
-# `SO_PEERPIDFD` for the palmrest socket's peer (rustix has no safe wrapper for it).
+# `SO_PEERPIDFD` for the mouse gestures daemon socket's peer (rustix has no safe wrapper for it).
 nix = { workspace = true, features = ["socket"] }
 
 [features]

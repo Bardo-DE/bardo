@@ -1,4 +1,4 @@
-# palmrest
+# The mouse gestures daemon
 
 The Magic Mouse 2 gesture daemon of the desktop shell program. It reads the mouse's touch
 reports from hidraw, turns them into scroll and gesture streams, and delivers them over a socket to layer-shell-host surfaces and, through
@@ -22,14 +22,14 @@ the shell ── UserConfig (the person's file) ──┴► config::layered ─
 ```
 
 The `Sensor` seam mirrors `Emitter` on the output side: `MagicMouseHid` (the hidraw node,
-decoded by palmrest) or `EvdevMultitouch` (a mouse's evdev node through its kernel multitouch
+decoded by the mouse gestures daemon) or `EvdevMultitouch` (a mouse's evdev node through its kernel multitouch
 driver, replayed from recordings) turns reads into millimetre `Frame`s, and everything after it
 is device-generic (see [Sensors](#sensors)).
 
 Two threads and no async runtime: the **reader** (poll on the sensor's fd, read, decode, step,
 emit, and every housekeeping step between reads) and the **socket** thread (accept, fan-out,
 `PointerOver` and `SessionLock` aggregation), woken by an eventfd so the reader never waits on a
-subscriber. palmrest is a system service (a dynamic user, as the key remap daemon is), so the socket is open
+subscriber. The mouse gestures daemon is a system service (a dynamic user, as the key remap daemon is), so the socket is open
 to every local account and the socket thread decides whom to serve: only the person at the seat
 (logind's `seat0` state file, read when someone connects and once a second), and of their programs
 only the shell (the process in `bardo-shell.service` under that person's own manager, held by its pidfd,
@@ -59,7 +59,7 @@ sensor's millimetres feel the same per millimetre.
 | `mouse-gestures-proto` (crate) | the socket messages and their codec (12.3.10) |
 | `config` | `gestures.toml`, lenient per key, the watch |
 | `outputs` | the `Emitter` seam, `RecordingEmitter`, the virtual touchpad session (`pad`: scroll pair and four-finger Spaces swipe, and the policy of what may be down), evdev event encoding |
-| `recording`, `replay` | the `palmrest record` file (v1 hidraw, v2 any sensor) and the replay used by every acceptance test |
+| `recording`, `replay` | the `mouse_gestures record` file (v1 hidraw, v2 any sensor) and the replay used by every acceptance test |
 | `daemon` | threads, socket, discovery and backoff, the sensor node (hidraw), devices, record, latency, the virtual-device emitter over the input service (and the direct fallback), `sys`: the evdev and uinput ioctls through `input-linux`'s safe handles, and `hidioc`: the one hidraw ioctl, the only module allowed `unsafe` |
 
 ## Sensors
@@ -67,7 +67,7 @@ sensor's millimetres feel the same per millimetre.
 The daemon reads the Magic Mouse's hidraw node: `MagicMouseHid`. The node is found by `HID_ID`
 in a list of known mice: the Bluetooth Magic Mouse 2 (`004c:0269`) is the one verified. Listed
 but **untested**: the Magic Mouse 2 on its cable (`05ac:0269`), the USB-C model (`0323`, id not
-read from a device), and the Magic Mouse 1 (`05ac:030d`), whose report 0x29 palmrest does not
+read from a device), and the Magic Mouse 1 (`05ac:030d`), whose report 0x29 the mouse gestures daemon does not
 decode; the daemon refuses it.
 
 `EvdevMultitouch` reads a mouse's `/dev/input/eventN` with multitouch slots, as the kernel's
@@ -122,24 +122,24 @@ the shell sees it only as a `MayBegin` closed by `Ended` with no axis. Every `Ma
 
 ## Safety rules
 
-palmrest drives the user's only pointing device, so:
+The mouse gestures daemon drives the user's only pointing device, so:
 
 - **Tests never create an input device.** Every test writes through `RecordingEmitter`, or
   through the input service's fake (`turnstile_client::fake::FakeSource`) for the code that
   talks to the service. The real service and the real uinput node are never opened by a test.
-- **palmrest cannot type.** The virtual keyboard comes from the input service, which sends
-  palmrest's key presses on only while ctrl, alt or super is held for a letter, digit,
+- **the mouse gestures daemon cannot type.** The virtual keyboard comes from the input service, which sends
+  The mouse gestures daemon's key presses on only while ctrl, alt or super is held for a letter, digit,
   punctuation, Enter, Space, Tab, Backspace, Delete or Escape. A gesture mapped to such a key
   on its own (`enter`, `shift+t`) is warned about in the log when the settings are read and does
   nothing. Navigation and function keys go out as they are.
-- `palmrest --check-uinput` asks the service for a touchpad and lets it go (it opens a session
+- `mouse_gestures --check-uinput` asks the service for a touchpad and lets it go (it opens a session
   and makes a device; nothing else). `--direct-uinput` makes the devices without the service,
   for development on a machine that has none.
-- `palmrest record` opens the hidraw node read-only and stops after 20 s without a touch.
+- `mouse_gestures record` opens the hidraw node read-only and stops after 20 s without a touch.
 - The daemon never changes kernel module parameters, udev rules or `/etc/modprobe.d`; only
   `install.sh` does, as root, and says each step first (`--dry-run` prints them all). With
-  `emulate_scroll_wheel=0` the mouse scrolls only while palmrest runs.
-- palmrest is a dynamic user with no capabilities, no network, a read-only file system and no
+  `emulate_scroll_wheel=0` the mouse scrolls only while the mouse gestures daemon runs.
+- The mouse gestures daemon is a dynamic user with no capabilities, no network, a read-only file system and no
   access to `/dev/uinput`; the mouse's node comes through the `input` group.
 
 ## Install
@@ -148,28 +148,28 @@ palmrest drives the user's only pointing device, so:
 ./install.sh
 ```
 
-palmrest is a system service, like key_remap. `install.sh` builds a release binary and installs, through
+The mouse gestures daemon is a system service, like key_remap. `install.sh` builds a release binary and installs, through
 `sudo`, `doas` or `pkexec` (whichever is found; `$SUDO` overrides; with none it prints the commands
 for you to run as root): the program in `/usr/local/bin` (a root-owned file: the input service
-serves only a palmrest that only root can change), `dist/bardo-mouse-gestures.service` in `/etc/systemd/system`,
+serves only a mouse gestures daemon that only root can change), `dist/bardo-mouse-gestures.service` in `/etc/systemd/system`,
 and the three system files below; then it enables and starts the service. The unit runs as a
 dynamic user, passes no library-path variables (`UnsetEnvironment=`), and reads its settings from
 `/etc/bardo/mouse-gestures/gestures.toml`. `--prefix P` installs a packaged layout under P (the unit in
 `P/lib/systemd/system`, the system files in `P/lib/udev/rules.d`, `P/lib/modprobe.d` and
 `P/lib/modules-load.d`) and `--destdir D` stages it under D without root or systemd. An earlier
-install ran palmrest as a service of the person; the script says how to remove that one.
+install ran the mouse gestures daemon as a service of the person; the script says how to remove that one.
 
 - `dist/70-bardo-mouse-gestures.rules` to `/etc/udev/rules.d/`: the Magic Mouse 2's hidraw node belongs to the
   `input` group, which the service is in, and to no person (the raw node, and the feature report
-  written to it, are not reachable from the logged-in user's programs). `palmrest record` therefore
+  written to it, are not reachable from the logged-in user's programs). `mouse_gestures record` therefore
   needs root (or a person in `input`). There is no rule for `/dev/uinput`: the desktop installs the
-  input service (turnstile), which owns that node and makes palmrest's devices. palmrest on its own,
+  input service (turnstile), which owns that node and makes the mouse gestures daemon's devices. The mouse gestures daemon on its own,
   without the desktop, runs only with `--direct-uinput` and a `/dev/uinput` you have made writable
   for yourself.
 - `dist/99-bardo-mouse-gestures.conf` to `/etc/modprobe.d/`: `hid_magicmouse` keeps the pointer and clicks
   (`emulate_3button=1`) and stops its own wheel emulation (`emulate_scroll_wheel=0`), because
-  palmrest scrolls.
-- `dist/bardo-mouse-gestures-modules.conf` to `/etc/modules-load.d/palmrest.conf`: loads `uinput` at boot, so
+  The mouse gestures daemon scrolls.
+- `dist/bardo-mouse-gestures-modules.conf` to `/etc/modules-load.d/mouse-gestures.conf`: loads `uinput` at boot, so
   `/dev/uinput` exists on Ubuntu and Arch too (the input service ships the same line).
 
 ## Retiring the Python daemon
@@ -184,7 +184,7 @@ sudo install -Dm644 dist/99-bardo-mouse-gestures.conf /etc/modprobe.d/99-bardo-m
 echo 0 | sudo tee /sys/module/hid_magicmouse/parameters/emulate_scroll_wheel
 sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=hidraw --subsystem-match=misc
-./install.sh                                    # builds, installs and starts palmrest
+./install.sh                                    # builds, installs and starts the mouse gestures daemon
 ```
 
 The `rm` repeats what `uninstall.sh` does, in case it was already removed. Then
@@ -197,8 +197,8 @@ The `rm` repeats what `uninstall.sh` does, in case it was already removed. Then
 chooses is a setting: `scroll.speed` and the six `gestures.gesture_action_map.*` rows (what
 each gesture does). Every other number (the axis lock, the acceleration curve, palm rejection,
 swipe and tap thresholds, the virtual touchpad) is a constant next to the code that uses it.
-`palmrest --print-config` prints the settings with their defaults, and
-`palmrest --write-schema DIR` writes `palmrest.settings.toml`, the schema the Settings app reads.
+`mouse_gestures --print-config` prints the settings with their defaults, and
+`mouse_gestures --write-schema DIR` writes `mouse_gestures.settings.toml`, the schema the Settings app reads.
 A bad value costs only its own key (logged, default used); an unknown key is ignored, so a file
 written when more keys existed still loads. A change is re-read 30 ms after the last write and
 applied at the reader's next wake (at most 100 ms later).
@@ -206,11 +206,11 @@ applied at the reader's next wake (at most 100 ms later).
 ## Tools
 
 ```bash
-palmrest record FILE [SECONDS]              # raw reads of the Magic Mouse + monotonic times
-palmrest replay FILE                        # the outputs a recording produces, one JSON line each
-palmrest replay FILE --latency              # decode-to-bytes latency percentiles
-palmrest --check-uinput                     # can palmrest get its virtual devices?
-palmrest --direct-uinput                    # run the daemon without the input service (development)
+The mouse gestures daemon record FILE [SECONDS]              # raw reads of the Magic Mouse + monotonic times
+The mouse gestures daemon replay FILE                        # the outputs a recording produces, one JSON line each
+The mouse gestures daemon replay FILE --latency              # decode-to-bytes latency percentiles
+The mouse gestures daemon --check-uinput                     # can the mouse gestures daemon get its virtual devices?
+The mouse gestures daemon --direct-uinput                    # run the daemon without the input service (development)
 ```
 
 ## Manual checks
@@ -218,7 +218,7 @@ palmrest --direct-uinput                    # run the daemon without the input s
 Waiting for the user and the device (FINDINGS has the core's list: items 8, 9, 10 live,
 11 live, 12).
 
-- **Acceleration:** record real sessions (`palmrest record`) and scroll with the curve; tune the
+- **Acceleration:** record real sessions (`mouse_gestures record`) and scroll with the curve; tune the
   constants in `feel/curve.rs` if slow scrolling is not precise or a flick runs away (the shell's
   feel only; apps scroll by libinput's).
 - **Suppression:** hovering a layer-shell-host surface stops the touchpad's scroll.
@@ -228,7 +228,7 @@ Waiting for the user and the device (FINDINGS has the core's list: items 8, 9, 1
 `cargo test` runs the unit tables and the acceptance tests of 12.8 items 1-7 (and the replay
 half of 10), and `tests/evdev_parity.rs` (every fixture re-expressed as evdev events replays
 to the same outputs through `EvdevMultitouch`), against the fixtures in
-`crates/palmrest/tests/fixtures/`, which are synthesised from the documented report format by
+`crates/mouse_gestures/tests/fixtures/`, which are synthesised from the documented report format by
 `tests/support/scenarios.rs` and must match it byte for byte
 (`BARDO_MOUSE_GESTURES_REGEN_FIXTURES=1 cargo test --test fixtures_current` rewrites them).
 

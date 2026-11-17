@@ -1,4 +1,4 @@
-//! The `palmrest` command line: the daemon and its record / replay / probe verbs. `run` is the
+//! The `mouse_gestures` command line: the daemon and its record / replay / probe verbs. `run` is the
 //! one way in, and the only place that reads the process environment.
 
 mod probe;
@@ -35,7 +35,7 @@ const USAGE: &str = "usage:
 /// A recording stops after this long when no length is given.
 const DEFAULT_RECORD: Duration = Duration::from_secs(600);
 
-/// What `palmrest replay` prints.
+/// What `mouse_gestures replay` prints.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum ReplayReport {
     /// Every output, one per line.
@@ -137,7 +137,7 @@ pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
     match result {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
-            eprintln!("palmrest: {e}");
+            eprintln!("mouse_gestures: {e}");
             ExitCode::FAILURE
         }
     }

@@ -3,7 +3,7 @@
 //! At boot the input service can arrive after the user session starts. The reader keeps running
 //! meanwhile, so the socket stream to our own surfaces never waits on the virtual devices.
 //!
-//! When the service cuts palmrest off (closes the connection, refuses it, stops answering), the
+//! When the service cuts the mouse gestures daemon off (closes the connection, refuses it, stops answering), the
 //! devices are rebuilt after a pause, a few times; a service that keeps cutting us off ends the
 //! virtual devices until the settings change, and the log says why.
 //!

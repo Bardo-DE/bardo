@@ -1,7 +1,7 @@
 //! The whole connection, over a socket pair, with the real client on one end and the fake kernel
 //! and a fixed authority on the other.
 
-use crate::support::{USER, context, key_remap, palmrest};
+use crate::support::{USER, context, key_remap, mouse_gestures};
 use input_broker_client::{
     ClientError, Connection, Create, DeviceId, Event, Made, Reason, Sent, Session,
 };
@@ -46,8 +46,8 @@ fn wheel() -> Vec<Event> {
 }
 
 #[test]
-fn palmrest_gets_a_proxied_wheel_and_loses_it_when_it_hangs_up() {
-    let (ctx, kernel) = context(palmrest());
+fn mouse_gestures_gets_a_proxied_wheel_and_loses_it_when_it_hangs_up() {
+    let (ctx, kernel) = context(mouse_gestures());
     let (mut client, thread) = connect(&ctx);
     let Made::Proxied(id) = client.create(&Create::wheel()).expect("created") else {
         panic!("a wheel is proxied");
@@ -91,7 +91,7 @@ fn key_remap_gets_its_keyboard_as_a_descriptor_that_outlives_the_connection() {
 
 #[test]
 fn a_caller_asking_for_another_programs_device_is_refused_and_cut() {
-    let (ctx, kernel) = context(palmrest());
+    let (ctx, kernel) = context(mouse_gestures());
     let (mut client, thread) = connect(&ctx);
     let err = client.create(&Create::keyboard()).expect_err("refused");
     assert!(
@@ -103,10 +103,10 @@ fn a_caller_asking_for_another_programs_device_is_refused_and_cut() {
 }
 
 #[test]
-fn a_palmrest_running_as_the_person_at_the_seat_is_refused() {
+fn a_mouse_gestures_running_as_the_person_at_the_seat_is_refused() {
     let (ctx, _) = context(Caller {
         uid: USER,
-        ..palmrest()
+        ..mouse_gestures()
     });
     let (mut client, thread) = connect(&ctx);
     let err = client.create(&Create::wheel()).expect_err("refused");
@@ -180,7 +180,7 @@ fn next_reply(peer: &rustix::fd::OwnedFd) -> Reply {
 
 #[test]
 fn garbage_and_overlong_datagrams_end_the_connection_with_unknown() {
-    let (ctx, _) = context(palmrest());
+    let (ctx, _) = context(mouse_gestures());
     for datagram in [vec![0xff; 5], vec![1, 77], vec![0u8; MAX_DATAGRAM + 1]] {
         let (peer, thread) = raw(&ctx);
         send(&peer, &datagram, SendFlags::NOSIGNAL).expect("send");
@@ -196,7 +196,7 @@ fn garbage_and_overlong_datagrams_end_the_connection_with_unknown() {
 
 #[test]
 fn a_connection_that_asks_for_nothing_is_closed_after_the_handshake_timeout() {
-    let (ctx, _) = context(palmrest());
+    let (ctx, _) = context(mouse_gestures());
     let (peer, thread) = raw(&ctx);
     let started = Instant::now();
     assert_eq!(next_reply(&peer), Reply::Refused(Reason::Unknown));
@@ -210,7 +210,7 @@ fn a_connection_that_asks_for_nothing_is_closed_after_the_handshake_timeout() {
 
 #[test]
 fn a_connection_with_a_device_may_stay_silent() {
-    let (ctx, _) = context(palmrest());
+    let (ctx, _) = context(mouse_gestures());
     let (mut client, thread) = connect(&ctx);
     client.create(&Create::wheel()).unwrap();
     // A best-effort absence check: the handshake timeout is the daemon's own socket timer, so

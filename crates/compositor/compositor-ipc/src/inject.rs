@@ -65,7 +65,7 @@ pub enum InjectLine {
 }
 
 /// The origins an injected line may carry (Agent input enters only through a lease's EIS
-/// socket; Feed only through palmrest's socket).
+/// socket; Feed only through the mouse gestures daemon's socket).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum InjectOrigin {
     /// As if from a kernel device.

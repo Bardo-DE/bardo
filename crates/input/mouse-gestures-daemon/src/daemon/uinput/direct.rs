@@ -1,4 +1,4 @@
-//! The devices made by palmrest itself, through the uinput node. This is the way for a machine
+//! The devices made by the mouse gestures daemon itself, through the uinput node. This is the way for a machine
 //! that has no input service and for development (`--direct-uinput`); a desktop install closes
 //! the node to everyone but the service, and this path then fails at once.
 //!

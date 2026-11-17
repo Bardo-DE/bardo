@@ -1,15 +1,16 @@
 use crate::support::{
-    KEY_REMAP_UID, PALMREST_CGROUP, PALMREST_UID, USER, key_remap, listed, palmrest,
+    KEY_REMAP_UID, MOUSE_GESTURES_CGROUP, MOUSE_GESTURES_UID, USER, key_remap, listed,
+    mouse_gestures,
 };
 use caller_identity_core::{Proof, Uid};
 use input_broker_daemon::identity::{ActiveUid, Caller};
 use input_broker_daemon::policy::{Refusal, authorise};
 use input_broker_wire::Kind;
 
-const PALMREST_KINDS: [Kind; 3] = [
-    Kind::PalmrestTouchpad,
-    Kind::PalmrestWheel,
-    Kind::PalmrestKeys,
+const MOUSE_GESTURES_KINDS: [Kind; 3] = [
+    Kind::MouseGesturesTouchpad,
+    Kind::MouseGesturesWheel,
+    Kind::MouseGesturesKeys,
 ];
 const KEY_REMAP_KINDS: [Kind; 2] = [Kind::KeyRemapKeyboard, Kind::KeyRemapPointer];
 
@@ -19,9 +20,9 @@ fn seat(uid: Option<Uid>) -> ActiveUid {
 
 #[test]
 fn the_genuine_programs_get_their_own_devices_and_only_those() {
-    for kind in PALMREST_KINDS {
+    for kind in MOUSE_GESTURES_KINDS {
         assert_eq!(
-            authorise(kind, &palmrest(), seat(Some(USER))),
+            authorise(kind, &mouse_gestures(), seat(Some(USER))),
             Ok(()),
             "{kind:?}"
         );
@@ -37,8 +38,8 @@ fn the_genuine_programs_get_their_own_devices_and_only_those() {
             "{kind:?}"
         );
         assert!(
-            authorise(kind, &palmrest(), seat(Some(USER))).is_err(),
-            "palmrest asking for {kind:?}"
+            authorise(kind, &mouse_gestures(), seat(Some(USER))).is_err(),
+            "mouse_gestures asking for {kind:?}"
         );
     }
 }
@@ -50,7 +51,7 @@ fn both_are_served_before_anyone_logs_in() {
         Ok(())
     );
     assert_eq!(
-        authorise(Kind::PalmrestWheel, &palmrest(), seat(None)),
+        authorise(Kind::MouseGesturesWheel, &mouse_gestures(), seat(None)),
         Ok(())
     );
 }
@@ -58,42 +59,47 @@ fn both_are_served_before_anyone_logs_in() {
 #[test]
 fn refusals_table() {
     use Refusal::*;
-    let user_palmrest =
+    let user_mouse_gestures =
         "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
     let user_key_remap =
         "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
     let table: Vec<(&str, Kind, Caller, ActiveUid, Refusal)> = vec![
         (
             "not in the table",
-            Kind::PalmrestWheel,
+            Kind::MouseGesturesWheel,
             Caller {
                 credential: None,
-                ..palmrest()
+                ..mouse_gestures()
             },
             seat(Some(USER)),
             Unlisted,
         ),
         (
             "another role: the shell",
-            Kind::PalmrestWheel,
-            listed("shell", Proof::Full, PALMREST_UID, PALMREST_CGROUP),
+            Kind::MouseGesturesWheel,
+            listed(
+                "shell",
+                Proof::Full,
+                MOUSE_GESTURES_UID,
+                MOUSE_GESTURES_CGROUP,
+            ),
             seat(Some(USER)),
             WrongRole {
                 have: "shell".to_owned(),
             },
         ),
         (
-            "palmrest asks for key_remap's keyboard",
+            "mouse_gestures asks for key_remap's keyboard",
             Kind::KeyRemapKeyboard,
-            palmrest(),
+            mouse_gestures(),
             seat(Some(USER)),
             WrongRole {
                 have: "pad_daemon".to_owned(),
             },
         ),
         (
-            "key_remap asks for palmrest's keys",
-            Kind::PalmrestKeys,
+            "key_remap asks for mouse_gestures's keys",
+            Kind::MouseGesturesKeys,
             key_remap(),
             seat(Some(USER)),
             WrongRole {
@@ -101,9 +107,14 @@ fn refusals_table() {
             },
         ),
         (
-            "palmrest proven by its control group only",
-            Kind::PalmrestTouchpad,
-            listed("pad_daemon", Proof::Cgroup, PALMREST_UID, PALMREST_CGROUP),
+            "mouse_gestures proven by its control group only",
+            Kind::MouseGesturesTouchpad,
+            listed(
+                "pad_daemon",
+                Proof::Cgroup,
+                MOUSE_GESTURES_UID,
+                MOUSE_GESTURES_CGROUP,
+            ),
             seat(Some(USER)),
             TooWeak,
         ),
@@ -120,38 +131,43 @@ fn refusals_table() {
             TooWeak,
         ),
         (
-            "palmrest running as the logged in user",
-            Kind::PalmrestWheel,
-            listed("pad_daemon", Proof::Full, USER, PALMREST_CGROUP),
+            "mouse_gestures running as the logged in user",
+            Kind::MouseGesturesWheel,
+            listed("pad_daemon", Proof::Full, USER, MOUSE_GESTURES_CGROUP),
             seat(Some(USER)),
             WrongUser,
         ),
         (
-            "palmrest as a user unit of the person",
-            Kind::PalmrestWheel,
-            listed("pad_daemon", Proof::Full, PALMREST_UID, user_palmrest),
+            "mouse_gestures as a user unit of the person",
+            Kind::MouseGesturesWheel,
+            listed(
+                "pad_daemon",
+                Proof::Full,
+                MOUSE_GESTURES_UID,
+                user_mouse_gestures,
+            ),
             seat(Some(USER)),
             WrongPlace,
         ),
         (
-            "palmrest in a lookalike system unit",
-            Kind::PalmrestWheel,
+            "mouse_gestures in a lookalike system unit",
+            Kind::MouseGesturesWheel,
             listed(
                 "pad_daemon",
                 Proof::Full,
-                PALMREST_UID,
+                MOUSE_GESTURES_UID,
                 "/system.slice/bardo-mouse-gestures.service/x",
             ),
             seat(Some(USER)),
             WrongPlace,
         ),
         (
-            "palmrest in key_remap's unit",
-            Kind::PalmrestWheel,
+            "mouse_gestures in key_remap's unit",
+            Kind::MouseGesturesWheel,
             listed(
                 "pad_daemon",
                 Proof::Full,
-                PALMREST_UID,
+                MOUSE_GESTURES_UID,
                 "/system.slice/bardo-key-remap.service",
             ),
             seat(Some(USER)),
@@ -212,18 +228,23 @@ fn only_a_proven_unit_gets_devices_whatever_the_place_is() {
         ("its unit", Proof::Full, Ok(())),
     ];
     for (name, proof, want) in table {
-        let pad = listed("pad_daemon", *proof, PALMREST_UID, PALMREST_CGROUP);
+        let pad = listed(
+            "pad_daemon",
+            *proof,
+            MOUSE_GESTURES_UID,
+            MOUSE_GESTURES_CGROUP,
+        );
         let key = listed(
             "keymap_daemon",
             *proof,
             KEY_REMAP_UID,
             "/system.slice/bardo-key-remap.service",
         );
-        for kind in PALMREST_KINDS {
+        for kind in MOUSE_GESTURES_KINDS {
             assert_eq!(
                 authorise(kind, &pad, seat(Some(USER))),
                 *want,
-                "palmrest, {name}, {kind:?}"
+                "mouse_gestures, {name}, {kind:?}"
             );
         }
         for kind in KEY_REMAP_KINDS {

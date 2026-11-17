@@ -1,10 +1,10 @@
-//! The `palmrest record` file: raw reads with their monotonic arrival times.
+//! The `mouse_gestures record` file: raw reads with their monotonic arrival times.
 //!
 //! Raw bytes, not decoded frames, so a recording also exercises the sensor's decoder and
 //! survives a decoder change. Two versions:
 //!
 //! - **v1**, `PALMREC\x01`: Magic Mouse hidraw reads. Every recording made before sensors
-//!   existed, every fixture, and still what `palmrest record` writes for hidraw.
+//!   existed, every fixture, and still what `mouse_gestures record` writes for hidraw.
 //! - **v2**, `PALMREC\x02`: a `u16 LE` length and that many bytes of JSON naming the source
 //!   (`RecordedSource`: which sensor, and for evdev the node's geometry, which the bytes alone
 //!   do not carry), then the same records.
@@ -57,7 +57,7 @@ pub struct Recording {
 /// A recording that cannot be read.
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
 pub enum RecordingError {
-    #[error("not a palmrest recording (bad magic)")]
+    #[error("not a mouse_gestures recording (bad magic)")]
     Magic,
     #[error("recording truncated at byte {0}")]
     Truncated(usize),
@@ -74,7 +74,7 @@ pub fn to_bytes(records: &[Record]) -> Vec<u8> {
     out
 }
 
-/// The bytes a recording starts with: v1 for hidraw (readable by every palmrest), v2 else.
+/// The bytes a recording starts with: v1 for hidraw (readable by every mouse gestures daemon), v2 else.
 #[must_use]
 pub fn header(source: &RecordedSource) -> Vec<u8> {
     match source {

@@ -87,7 +87,7 @@
   cannot stop `open`), regular files only (links are followed, then the target is checked), 4 MiB at most
   (`SETTINGS_FILE_LIMIT`), UTF-8 only. A refusal is a `ReadError`, which a source turns into
   `SourceError::Read`; the caller skips the source and logs it. A missing file is not an error (nothing
-  was changed). Open: the key remap daemon (`key-remap-client/src/fallback.rs`, `key_remap/src/keymap/file.rs`) and palmrest
+  was changed). Open: the key remap daemon (`key-remap-client/src/fallback.rs`, `key_remap/src/keymap/file.rs`) and the mouse gestures daemon
   (`config/load.rs`) still open their own files; they take `chordkit-file` in their own repos (pin
   `chordkit-file` by git rev, as the key remap daemon pins `chordkit`).
 - Change notification: the trait is a callback; no source here implements a file watcher (that would

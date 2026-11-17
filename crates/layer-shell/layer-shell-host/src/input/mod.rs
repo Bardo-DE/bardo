@@ -7,6 +7,6 @@ pub(crate) mod key;
 pub(crate) mod keycode;
 pub(crate) mod keysym;
 pub(crate) mod modifiers;
-pub(crate) mod palmrest;
+pub(crate) mod mouse_gestures;
 pub(crate) mod pointer;
 pub(crate) mod scroll;

@@ -1,5 +1,5 @@
 //! One surface's scrolling: the engine's driver (`blitz_embed::scroll::driver`), the thumb and the
-//! palmrest tracker, applied to the surface's Blitz document. The host calls these from its
+//! The mouse gestures daemon tracker, applied to the surface's Blitz document. The host calls these from its
 //! input handlers and its render; everything they decide is the pure modules'.
 
 mod key_input;
@@ -18,7 +18,7 @@ use blitz_embed::scroll::time::Elapsed;
 use blitz_embed::scroll::velocity::SampleTime;
 use layer_shell_hooks::ScrollBoard;
 
-/// A palmrest gesture whose axis is known but whose direction is not yet (palmrest drops the
+/// A mouse gestures daemon gesture whose axis is known but whose direction is not yet (the mouse gestures daemon drops the
 /// first delta at Began, design/12 §12.3.5).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum PalmGesture {
@@ -27,14 +27,14 @@ enum PalmGesture {
     Latched,
 }
 
-/// A palmrest scroll event, already on the host's terms.
+/// A mouse gestures daemon scroll event, already on the host's terms.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub(crate) enum PalmScroll {
     MayBegin,
     Began {
         axis: ScrollAxis,
     },
-    /// Finger-direction px on each axis at `at` (palmrest's `t_ns`).
+    /// Finger-direction px on each axis at `at` (the mouse gestures daemon's `t_ns`).
     Changed {
         dx: f64,
         dy: f64,
@@ -52,8 +52,8 @@ pub(crate) struct SurfaceScroll {
     scroll: ScrollDriver,
     indicator: Indicator,
     palm: PalmGesture,
-    /// palmrest started what the engine is doing, for the double-scroll rule.
-    driven_by_palmrest: bool,
+    /// The mouse gestures daemon started what the engine is doing, for the double-scroll rule.
+    driven_by_mouse_gestures: bool,
     board: ScrollBoard,
     tuning: Tuning,
 }
@@ -65,7 +65,7 @@ impl SurfaceScroll {
             scroll: ScrollDriver::default(),
             indicator: Indicator::default(),
             palm: PalmGesture::Idle,
-            driven_by_palmrest: false,
+            driven_by_mouse_gestures: false,
             board,
             tuning,
         }
@@ -101,7 +101,7 @@ impl SurfaceScroll {
             self.indicator = self.indicator.changed(*latch, now);
         }
         if moves.claim() == Claim::Took {
-            self.driven_by_palmrest = false;
+            self.driven_by_mouse_gestures = false;
         }
         moves.moved()
     }
@@ -140,9 +140,9 @@ impl SurfaceScroll {
             .wake(env.scrollbar, env.kit.settings.scrollbars, env.now)
     }
 
-    /// Whether palmrest drove what the engine is doing now (for the double-scroll rule).
+    /// Whether the mouse gestures daemon drove what the engine is doing now (for the double-scroll rule).
     pub(crate) fn driven(&self) -> bool {
         let busy = !matches!(self.scroll.engine(), Engine::Idle);
-        self.driven_by_palmrest && busy
+        self.driven_by_mouse_gestures && busy
     }
 }

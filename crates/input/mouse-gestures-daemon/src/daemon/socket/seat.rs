@@ -1,4 +1,4 @@
-//! Who has the seat, and what that makes a connection. palmrest is a system service, so any local
+//! Who has the seat, and what that makes a connection. The mouse gestures daemon is a system service, so any local
 //! account can reach its socket; only the person at the seat is served, and only their shell is
 //! believed about the lock screen and the pointer. The decisions are pure; the seat file is
 //! `service_locator::guard::SeatFile`.

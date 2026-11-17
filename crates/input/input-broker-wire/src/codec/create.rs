@@ -14,9 +14,9 @@ pub(super) fn read(r: &mut Reader<'_>) -> Result<Create, WireError> {
     let code = r.u8()?;
     let kind = Kind::from_code(code).ok_or(WireError::Kind(code))?;
     let create = match kind {
-        Kind::PalmrestTouchpad => Create::Touchpad,
-        Kind::PalmrestWheel => Create::Wheel,
-        Kind::PalmrestKeys => {
+        Kind::MouseGesturesTouchpad => Create::Touchpad,
+        Kind::MouseGesturesWheel => Create::Wheel,
+        Kind::MouseGesturesKeys => {
             Create::Keys(r.counted("the key list", MAX_KEY_CODES, Reader::u16)?)
         }
         Kind::KeyRemapKeyboard => Create::Keyboard,

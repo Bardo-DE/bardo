@@ -1,4 +1,4 @@
-//! The socket protocol between palmrest and layer-shell-host (12.3.10, O1).
+//! The socket protocol between the mouse gestures daemon and layer-shell-host (12.3.10, O1).
 //!
 //! `/run/bardo/mouse-gestures/events.sock`, `SOCK_SEQPACKET`: one JSON message per packet, so
 //! there is no framing to get wrong and a reader never sees half a message. The first packet
@@ -6,7 +6,7 @@
 //! else; an incompatible change bumps `PROTOCOL_VERSION`.
 //!
 //! Scroll deltas are `f32` px in **finger direction** with every gain applied; the host applies
-//! natural scrolling (11.3.13). These are the only floats in palmrest's public types, because
+//! natural scrolling (11.3.13). These are the only floats in the mouse gestures daemon's public types, because
 //! a sub-pixel delta is the whole point of the stream.
 
 mod message;

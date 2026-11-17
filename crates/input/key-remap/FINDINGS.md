@@ -312,7 +312,7 @@ through key_remap. A keyboard that registers there on purpose (a remote-desktop 
 keyboard to be remapped) is not remapped. Bluetooth keyboards register under `uhid` and are not
 affected. The CI keyboard is a uinput device, so the device tests start the daemon with
 `KEY_REMAP_GRAB_VIRTUAL=<its exact name>`; the allowance is exact-match, one device, and never covers
-The key remap daemon's own keyboard or palmrest's. Only root or the unit's environment can set it.
+The key remap daemon's own keyboard or the mouse gestures daemon's. Only root or the unit's environment can set it.
 
 **A grab that succeeds is checked again.** A key that went down between the gate's check and
 the grab reached the desktop but its release would not, so the key remap daemon re-reads `EVIOCGKEY` after
@@ -337,7 +337,7 @@ The key remap daemon and the grab gate waits for all keys to be up before grabbi
 releases; the compositor generates repeat from the held virtual key, so a repeating mapped
 chord repeats its output.
 
-**`rustix` is outside the pinned block**, as in palmrest: poll, eventfd, `SOCK_SEQPACKET`,
+**`rustix` is outside the pinned block**, as in the mouse gestures daemon: poll, eventfd, `SOCK_SEQPACKET`,
 `CLOCK_MONOTONIC` and file opens without libc's unsafe surface.
 
 **No `unsafe` anywhere; the workspace lint is `forbid` (2026-10-17).** The ioctls in `daemon/sys.rs` and,

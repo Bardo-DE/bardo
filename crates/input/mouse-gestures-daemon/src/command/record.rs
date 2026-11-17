@@ -1,4 +1,4 @@
-//! `palmrest record FILE [SECONDS]`.
+//! `mouse_gestures record FILE [SECONDS]`.
 
 use crate::daemon::record::{self, Limits};
 use crate::error::Error;
@@ -12,6 +12,6 @@ const IDLE: Duration = Duration::from_secs(20);
 pub(super) fn record(file: &Path, total: Duration) -> Result<(), Error> {
     let limits = Limits { idle: IDLE, total };
     let n = record::record(file, limits)?;
-    eprintln!("palmrest: recorded {n} reads");
+    eprintln!("mouse_gestures: recorded {n} reads");
     Ok(())
 }

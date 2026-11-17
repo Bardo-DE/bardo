@@ -21,7 +21,7 @@ pub const SETTINGS: RoleName = RoleName::from_static("settings");
 pub const UPDATER: RoleName = RoleName::from_static("updater");
 /// The `slipway` command line: a program, not a service.
 pub const UPDATER_CLI: RoleName = RoleName::from_static("updater_cli");
-/// The touchpad daemon (`palmrest`).
+/// The touchpad daemon (`mouse_gestures`).
 pub const PAD_DAEMON: RoleName = RoleName::from_static("pad_daemon");
 /// The keymap daemon (`bardo-key-remap`).
 pub const KEYMAP_DAEMON: RoleName = RoleName::from_static("keymap_daemon");

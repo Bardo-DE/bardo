@@ -4,8 +4,8 @@ Departures from the plan, standing facts and open items. An entry names the cond
 
 ## Decisions and departures
 
-1. **The service keeps `CAP_SYS_PTRACE` (owner, 2026-10-16).** Reading `/proc/<pid>/exe` of palmrest,
-   which runs as another user (a dynamic user, since palmrest became a system service), needs it. Without
+1. **The service keeps `CAP_SYS_PTRACE` (owner, 2026-10-16).** Reading `/proc/<pid>/exe` of the mouse gestures daemon,
+   which runs as another user (a dynamic user, since the mouse gestures daemon became a system service), needs it. Without
    it only the control group is available; both groups are system ones now, so the image check is
    defence in depth.
    Mitigations are in the unit: no `ptrace`, `process_vm_*` or `pidfd_getfd` system call, a
@@ -19,7 +19,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 2. **the key remap daemon's identity is the strong one, the keyboard is handed over, the pad is proxied (owner,
    2026-10-16).** A uinput descriptor cannot be made write-only (the holder can destroy the device and
    set it up again with any capabilities), so a handed descriptor is only as safe as its holder.
-   The key remap daemon is a system service with a control group a user cannot enter, so it gets the fd. palmrest
+   The key remap daemon is a system service with a control group a user cannot enter, so it gets the fd. The mouse gestures daemon
    is a system service too since 2026-10-17 (owner decision) and its identity is as strong, but its
    events still pass the ceiling one by one: the ceiling bounds what a bug in its input parsing can type.
 3. **No `RuntimeDirectory=` in the service unit.** The design listed it; stopping the service would
@@ -27,7 +27,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    the folder (`DirectoryMode=0755`) and nothing else needs one.
 4. **`MaxConnections=` is not in the socket unit.** It applies to `Accept=yes` sockets only. The
    service caps its own live connections and answers the rest with `Refused(TooMany)`: 16 for strangers
-   in all and 4 per user, plus a reserve of 4 for each of palmrest and the key remap daemon (NEW-PI-6, `slots.rs`).
+   in all and 4 per user, plus a reserve of 4 for each of the mouse gestures daemon and the key remap daemon (NEW-PI-6, `slots.rs`).
 5. **`LimitNOFILE=128`, not 64.** Twenty-four connections (16 strangers, 8 reserved) plus up to four proxied devices on each is 120
    descriptors in the worst case (strangers make none, so the real bound is far lower); 64 would make the cap unreachable.
 6. **`Feedback` is on the wire but the service sends none.** No proxied kind has an output
@@ -44,25 +44,25 @@ Departures from the plan, standing facts and open items. An entry names the cond
    `(key_remap pointer)`, which key remap daemon never grabs. Because the descriptor is handed over, the ceiling
    shapes the device the service makes and is not a boundary on what the holder can then do
    (decision 2). Closes if the key remap daemon stops cloning axis ranges.
-8. **Palmrest's keyboard classes are stricter than the design's list.** Besides letters, digits, Enter,
+8. **The mouse gestures daemon's keyboard classes are stricter than the design's list.** Besides letters, digits, Enter,
    Space, Backspace, Delete and Escape, Tab and the punctuation keys also need a control, alt or super
-   held. Navigation, function keys, Insert, Back and Forward are free. palmrest's real combinations
+   held. Navigation, function keys, Insert, Back and Forward are free. The mouse gestures daemon's real combinations
    (alt+left, alt+right, super+pageup, ctrl+shift+t, f5) all pass.
 9. **A position outside the touchpad's range is clamped, not refused.** The kernel does not clamp
-   uinput positions; palmrest's spread of up to five contacts could exceed the range by a few units at
+   uinput positions; the mouse gestures daemon's spread of up to five contacts could exceed the range by a few units at
    an edge, and dropping half a frame is worse than moving a coordinate to the edge. A slot or a
    tracking id outside its range is refused.
 10. **`fake` code is behind the `fake` feature.** The daemon's fake kernel and identity (since
     v0.1.0) and the client's `fake` (since v0.1.1) are compiled only with `fake`, so a shipped build
-    cannot hold a stand-in for the service. palmrest and the key remap daemon name the feature on their
+    cannot hold a stand-in for the service. The mouse gestures daemon and the key remap daemon name the feature on their
     dev-dependency, so their tests always have it; this repo's gate runs `--all-features`, and a plain
     `cargo test` skips the client's `fake` tests.
 
-11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** palmrest and the key remap daemon are admitted at peephole's
+11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** the mouse gestures daemon and the key remap daemon are admitted at peephole's
     `Full` only. With no manager to ask, `identity/unit_files` supplies the unit's facts from the unit
     files and the process (ARCHITECTURE "Who may have what"). `MainPID` is taken as the caller's own pid.
-    That was a residual for palmrest while it was a user unit (a same-user process could fill the
-    group); palmrest is a system unit since 2026-10-17 (`/system.slice/palmrest.service`, as the key remap daemon), so
+    That was a residual for the mouse gestures daemon while it was a user unit (a same-user process could fill the
+    group); the mouse gestures daemon is a system unit since 2026-10-17 (`/system.slice/bardo-mouse-gestures.service`, as the key remap daemon), so
     it is closed: the group is the system manager's alone.
     A symlink as the unit's fragment reads as writable (a link's mode is 0777), so it is refused; our
     units are plain files.
@@ -70,7 +70,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 12. **Identification runs on the connection's thread, with a pending cap (NEW-FA-3, 2026-10-17).**
     Naming a peer reads its `/proc` entries and stats its image, and a program running from a file
     system it controls (FUSE) can make that wait for ever; on the single accept thread that stalled
-    every later accept, palmrest's and the key remap daemon's included. Now the accept loop reads only the peer's
+    every later accept, the mouse gestures daemon's and the key remap daemon's included. Now the accept loop reads only the peer's
     user from `SO_PEERCRED` (no `/proc`), takes a ticket from `pending.rs` (2 per user, 6 in all,
     `MAX_PENDING_PER_USER`, `MAX_PENDING_IDENTIFICATIONS`) and spawns the connection thread, which
     identifies and then takes its slot (`admit.rs`), so NEW-PI-6 holds as before: strangers are
@@ -83,19 +83,19 @@ Departures from the plan, standing facts and open items. An entry names the cond
     128 still holds, since strangers make no devices (16 + 8 x 5 + 24 + a few = about 90; the
     figure of 120 in decision 5 counted devices for strangers too).
     Residual: stuck identifications are never reclaimed, so accounts that each run a hanging program
-    can use up their 2 each; with 3 such accounts the 6 are gone and no new connection (palmrest's
+    can use up their 2 each; with 3 such accounts the 6 are gone and no new connection (the mouse gestures daemon's
     included) is served until those peers exit. A hung peer also keeps the service from exiting idle.
     That takes several local accounts, not one. Closes if the pending room is split so that a user
-    already proven as palmrest or the key remap daemon has its own (needs the policy's uid, a config the service
+    already proven as the mouse gestures daemon or the key remap daemon has its own (needs the policy's uid, a config the service
     does not have).
 
 13. **Every device carries the label of the service it was made for (owner, 2026-10-17, NEW-FA-4).**
     The compositor used to guess whether input is the person's own hand from a device's bus type and
-    vendor id, which wrongly caught a laptop's keyboard and kept palmrest's Magic Mouse clicks off
+    vendor id, which wrongly caught a laptop's keyboard and kept the mouse gestures daemon's Magic Mouse clicks off
     the lock screen and consent sheets. turnstile is the only process that can create a uinput
     device (`dist/72-turnstile.rules`) and it already proves which service each device is for
     (`policy.rs`), so it writes that into the device with `UI_SET_PHYS` (`input-linux`'s
-    `UInputHandle::set_phys`, before `UI_DEV_SETUP`): `turnstile/pad_daemon` for palmrest's three kinds,
+    `UInputHandle::set_phys`, before `UI_DEV_SETUP`): `turnstile/pad_daemon` for the mouse gestures daemon's three kinds,
     `turnstile/keymap_daemon` for the key remap daemon's two. The kernel shows it in
     `/sys/class/input/<event>/device/phys`. The format is `turnstile_wire::Maker` (format and
     `parse`); every plan sets `DeviceSpec::maker` and a test pins the exact strings and the label of
@@ -108,7 +108,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     `Result<Event, Denial>`, `Handled` a `Result` over `Outgoing`/`Refused`, `Idling` a `bool`,
     `Phase` a `bool` method, `Flood` an `Option`, and `Credential` is a struct held as an `Option`.
     No behaviour, wire or table change. The Proxied-or-Handed mirrors (`Route`, `Made`) wait for
-    palmrest's wave.
+    The mouse gestures daemon's wave.
 
 ## Unverified (nothing here was compiled or run; the gate checks each)
 
@@ -159,4 +159,4 @@ Departures from the plan, standing facts and open items. An entry names the cond
 
 - The units, rule and modules file are placed by the desktop installer (`pa2-desk`); this repository
   only ships them in `dist/`.
-- palmrest and the key remap daemon switch over (`pa2-palm`, `pa2-key`); their briefs are in the lane report.
+- The mouse gestures daemon and the key remap daemon switch over (`pa2-palm`, `pa2-key`); their briefs are in the lane report.

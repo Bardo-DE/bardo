@@ -13,7 +13,7 @@ use std::time::Duration;
 #[test]
 fn hello_fanout_filters_and_claims() {
     use std::os::unix::fs::PermissionsExt;
-    let dir = std::env::temp_dir().join(format!("palmrest-sock-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("mouse-gestures-sock-{}", std::process::id()));
     let path = dir.join("events.sock");
     let listener = bind(&path).unwrap();
     assert_eq!(

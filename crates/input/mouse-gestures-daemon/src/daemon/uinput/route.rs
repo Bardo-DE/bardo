@@ -1,4 +1,4 @@
-//! Where the virtual devices come from: the input service, or palmrest's own uinput node.
+//! Where the virtual devices come from: the input service, or the mouse gestures daemon's own uinput node.
 //!
 //! `LiveSource` is itself a `DeviceSource`, so the emitter above it never knows which one it got.
 //!

@@ -18,7 +18,7 @@ use crate::ctx::spawn::{Initial, insert, new_wl_surface};
 use crate::error::HostError;
 use crate::event::HostEvent;
 use crate::handlers::output::output_info;
-use crate::input::palmrest::lock_for;
+use crate::input::mouse_gestures::lock_for;
 use crate::lock::active::ActiveLock;
 use crate::lock::machine::{self, LockAction, LockInput};
 use crate::lock::retry::{Failures, Retry, retry};
@@ -152,8 +152,8 @@ fn perform<M: 'static>(ctx: &mut HostCtx<M>, action: LockAction) {
         LockAction::Report(state) => {
             let id = active.id;
             // The one place the lock's state changes (the handlers' `locked`/`finished` and an
-            // unlock all arrive here), so palmrest hears every change once, in order.
-            ctx.state.palmrest.session_lock(lock_for(state));
+            // unlock all arrive here), so the mouse gestures daemon hears every change once, in order.
+            ctx.state.mouse_gestures.session_lock(lock_for(state));
             ctx.state.events.push_back(HostEvent::Lock { id, state });
         }
     }

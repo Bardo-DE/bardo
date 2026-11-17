@@ -32,9 +32,9 @@ pub fn run(env: &Env, origin: Origin) -> Result<(), Error> {
     loaded
         .warnings
         .iter()
-        .for_each(|w| eprintln!("palmrest: config: {w}"));
+        .for_each(|w| eprintln!("mouse_gestures: config: {w}"));
     if let Some(src) = &loaded.source {
-        eprintln!("palmrest: config from {}", src.display());
+        eprintln!("mouse_gestures: config from {}", src.display());
     }
     let (config_tx, config_rx) = mpsc::channel();
     let _watcher = match dir {
@@ -49,7 +49,7 @@ pub fn run(env: &Env, origin: Origin) -> Result<(), Error> {
     let (notes_tx, notes_rx) = mpsc::channel();
     let socket = socket::spawn(listener, notes_tx, env.seat_file.clone(), env.steering)
         .map_err(Error::SocketThread)?;
-    eprintln!("palmrest: listening on {}", path.display());
+    eprintln!("mouse_gestures: listening on {}", path.display());
     let route = LiveSource(origin);
     let factory: Factory = Box::new(move |combos| {
         Ok(Box::new(UinputEmitter::create(&route, combos)?) as Box<dyn Emitter>)

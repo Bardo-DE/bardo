@@ -43,7 +43,7 @@ fn wheel(v: i32) -> Event {
 const T0: Millis = Millis(0);
 
 #[test]
-fn a_palmrest_device_is_made_fed_and_destroyed_with_the_connection() {
+fn a_mouse_gestures_device_is_made_fed_and_destroyed_with_the_connection() {
     let backend = FakeBackend::new();
     let admission = all();
     let mut s = Session::new(&backend, &admission);
@@ -135,7 +135,7 @@ fn a_pointer_is_cut_to_the_ceiling_before_the_kernel_hears_of_it() {
 #[test]
 fn a_kind_the_caller_may_not_have_is_refused_and_nothing_is_made() {
     let backend = FakeBackend::new();
-    let admission = AllowKinds(vec![Kind::PalmrestWheel]);
+    let admission = AllowKinds(vec![Kind::MouseGesturesWheel]);
     let mut s = Session::new(&backend, &admission);
     let handled = s.handle(T0, Request::Create(Create::keyboard()));
     let Err(Refused { reason, note }) = handled else {

@@ -1,5 +1,5 @@
 //! The origins a test may mint (C19): the mintable subset of `compositor_core::input::Origin`.
-//! Agent input enters only through a lease's EIS socket (P4); a feed only through palmrest's
+//! Agent input enters only through a lease's EIS socket (P4); a feed only through the mouse gestures daemon's
 //! socket (P3).
 
 use compositor_core::input::{DeviceClass, Origin, PortalSessionId};

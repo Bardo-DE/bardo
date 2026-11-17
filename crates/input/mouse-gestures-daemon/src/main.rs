@@ -1,4 +1,4 @@
-//! The `palmrest` command: the daemon, and its record / replay / probe tools.
+//! The `mouse_gestures` command: the daemon, and its record / replay / probe tools.
 
 use std::process::ExitCode;
 

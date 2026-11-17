@@ -63,7 +63,7 @@ fn a_custom_gesture_action_is_read_only_and_survives_a_save() {
     assert!(row.contains("Edit in file"), "{row}");
     assert_eq!(harness.count(".key-file-only"), 1, "only the custom action");
 
-    // Scroll speed is palmrest's own key: a press on its slider writes into the same file.
+    // Scroll speed is the mouse gestures daemon's own key: a press on its slider writes into the same file.
     click(&mut harness, ".ds-slider[*|aria-label=\"Scroll speed\"]");
     let after = sandbox
         .read("mouse-gestures/gestures.toml")

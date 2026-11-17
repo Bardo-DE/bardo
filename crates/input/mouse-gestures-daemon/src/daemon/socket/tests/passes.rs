@@ -25,7 +25,8 @@ struct Stepped {
 impl Stepped {
     /// A server where this test's user has the seat.
     fn new(name: &str) -> Self {
-        let dir = std::env::temp_dir().join(format!("palmrest-{name}-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("mouse-gestures-{name}-{}", std::process::id()));
         let listener = bind(&dir.join("events.sock")).unwrap();
         let wake = Arc::new(eventfd(0, EventfdFlags::CLOEXEC | EventfdFlags::NONBLOCK).unwrap());
         let (tx, rx) = mpsc::sync_channel(QUEUE_MAX);

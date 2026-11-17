@@ -3,7 +3,7 @@
 //! has the pointer, foreign outputs are silent), and their `SessionLock` reports into whether
 //! the session is locked (a locked session runs no gesture action).
 //!
-//! palmrest is a system service, so the socket is open to every local account and the server
+//! The mouse gestures daemon is a system service, so the socket is open to every local account and the server
 //! decides whom to serve: only the person at the seat (`seat`), and of their programs only the
 //! shell (`shell`) is believed about the pointer and an unlocked session.
 //!
@@ -97,7 +97,7 @@ pub fn default_path(runtime_dir: &Path) -> PathBuf {
 
 /// Binds the listening socket, a stale socket file replaced. Mode 0666: every local account may
 /// connect, and the server serves only the person at the seat (the seat and shell checks, not the
-/// file mode, decide whom palmrest believes). The directory is the unit's `RuntimeDirectory=`
+/// file mode, decide whom the mouse gestures daemon believes). The directory is the unit's `RuntimeDirectory=`
 /// (0755); made here only when it is missing, as in a development run.
 pub fn bind(path: &Path) -> std::io::Result<OwnedFd> {
     if let Some(dir) = path.parent() {
@@ -139,7 +139,7 @@ pub fn spawn(
         steering.vouch(),
     );
     std::thread::Builder::new()
-        .name("palmrest-socket".to_owned())
+        .name("mouse-gestures-socket".to_owned())
         .spawn(move || {
             if server.run() == Exit::PollFailed {
                 std::process::exit(SOCKET_LOST_STATUS);
