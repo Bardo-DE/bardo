@@ -17,7 +17,7 @@
 # person's, not writable by group or others. Only a bardo-portal built with `--features debug`
 # (`cargo build -p portal-daemon --features debug`) reads it; a release build has no such variable and
 # refuses the frontend. BARDO_PORTAL_BIN must point at the debug-feature build when this is set.
-transom_tool() {
+portal_tool() {
   local name=$1
   case "$name" in
     bardo-portal)
@@ -40,7 +40,7 @@ transom_tool() {
   esac
 }
 
-transom_state_dir() {
+portal_state_dir() {
   echo "${BARDO_PORTAL_STATE:?chain.sh: BARDO_PORTAL_STATE is not set}"
 }
 
@@ -65,11 +65,11 @@ start_chain() {
   mkdir -p "$state/portals" "$XDG_CONFIG_HOME/xdg-desktop-portal"
 
   local pw wp tr ps xdp
-  pw=$(transom_tool pipewire) || return 3
-  wp=$(transom_tool wireplumber) || return 3
-  tr=$(transom_tool bardo-portal) || return 3
-  ps=$(transom_tool xdg-permission-store) || return 3
-  xdp=$(transom_tool xdg-desktop-portal) || return 3
+  pw=$(portal_tool pipewire) || return 3
+  wp=$(portal_tool wireplumber) || return 3
+  tr=$(portal_tool bardo-portal) || return 3
+  ps=$(portal_tool xdg-permission-store) || return 3
+  xdp=$(portal_tool xdg-desktop-portal) || return 3
 
   if [ -n "$envfile" ]; then
     # The env file holds plain assignments (the bus address, the compositor's display); `set -a`
@@ -80,7 +80,7 @@ start_chain() {
     set +a
   else
     private_bus_start || return 1
-    echo "TRANSOM_BUS_PID=$PRIVATE_BUS_PID" >> "$state/env"
+    echo "PORTAL_BUS_PID=$PRIVATE_BUS_PID" >> "$state/env"
   fi
 
   cp "$root/dist/bardo.portal" "$state/portals/bardo.portal"
@@ -130,10 +130,10 @@ start_chain() {
 # stop_chain: stop what start_chain started, each by the pid in the env file, the bus last.
 stop_chain() {
   local state envfile var pid
-  state=$(transom_state_dir) || return 0
+  state=$(portal_state_dir) || return 0
   envfile=$state/env
   [ -f "$envfile" ] || return 0
-  for var in BARDO_PORTAL_PORTAL_PID BARDO_PORTAL_PERMISSION_STORE_PID BARDO_PORTAL_PID BARDO_PORTAL_WIREPLUMBER_PID BARDO_PORTAL_PIPEWIRE_PID TRANSOM_BUS_PID; do
+  for var in BARDO_PORTAL_PORTAL_PID BARDO_PORTAL_PERMISSION_STORE_PID BARDO_PORTAL_PID BARDO_PORTAL_WIREPLUMBER_PID BARDO_PORTAL_PIPEWIRE_PID PORTAL_BUS_PID; do
     pid=$(sed -n "s/^$var=//p" "$envfile" | tail -n 1)
     if [ -n "$pid" ]; then kill "$pid" 2>/dev/null || true; fi
   done

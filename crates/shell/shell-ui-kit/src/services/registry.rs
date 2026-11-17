@@ -70,7 +70,7 @@ services! {
         /// Each display's brightness for Settings (`org.bardo.Displays1`); passive until the daemon
         /// says to serve.
         displays_bus: DisplaysBusService;
-        /// The screen-sharing picker transom asks (`org.bardo.Shell1.PickCaptureSource`); served on
+        /// The screen-sharing picker the portal asks (`org.bardo.Shell1.PickCaptureSource`); served on
         /// the connection `intents` holds, passive until the daemon says to serve.
         capture: CaptureService;
         battery: BatteryService => crate::harness::fake::battery();

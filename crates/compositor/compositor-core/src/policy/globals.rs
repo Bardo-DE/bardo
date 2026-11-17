@@ -15,7 +15,7 @@ pub enum ConnectionRole {
     Shell,
     /// A connection handed to the agent tier (cuad).
     Agent,
-    /// A connection handed to the desktop portal (transom) for its screenshots and recordings:
+    /// A connection handed to the desktop portal (the portal) for its screenshots and recordings:
     /// it sees what the public socket sees and is trusted for the screen and the windows
     /// (`trusted_powers`), nothing more.
     Portal,

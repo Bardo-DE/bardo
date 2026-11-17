@@ -2,7 +2,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 use portal_core::{Appearance, Contrast, Scheme};
 use portal_daemon::settings::{
-    AppearanceError, AppearanceSource, DesktopAppearance, PortalError, SettingsService,
+    AppearanceError, AppearanceSource, DesktopAppearance, SettingsError, SettingsService,
     parse_appearance, read_namespaces, read_setting,
 };
 
@@ -83,7 +83,7 @@ fn an_unknown_setting_is_not_found() {
     let a = dark_green();
     for (ns, key) in [("org.example", "x"), ("org.freedesktop.appearance", "nope")] {
         assert!(
-            matches!(read_setting(&a, ns, key), Err(PortalError::NotFound(_))),
+            matches!(read_setting(&a, ns, key), Err(SettingsError::NotFound(_))),
             "{ns} {key}"
         );
     }

@@ -1012,15 +1012,15 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
 ## p2-ch: the screen-sharing picker
 
 - **Served.** `org.bardo.Shell1.PickCaptureSource(app_label, kinds, multiple, cursor_modes) ->
-  (sources, cursor)` at `/org/bardo/Shell1`, frozen by transom's `chooser.rs`. Pure logic in
+  (sources, cursor)` at `/org/bardo/Shell1`, frozen by portal's `chooser.rs`. Pure logic in
   `sill_model::capture_pick` (parse the call, `plan` the tabs and rows, `toggle` the picks, `reply`
   the answer, `step` one request at a time, `windows_of` the desktop's view); the service in
   `sill_services::capture_pick`; the sheet in `sill_overlays::capture_sheet`; tables in
   `sill-model` (`capture_pick/tests`), a private-bus test in
   `sill-services/tests/it/capture_pick_bus.rs` and a lint case in `sill/tests/it/lint.rs`.
 - **Name ownership.** The object is exported on the connection the intents service already holds as
-  `org.bardo.Shell` (the `seat`), so the interface is served from the name transom's proxy
-  already calls and no second name is claimed. Without a seat nothing is served and transom's call
+  `org.bardo.Shell` (the `seat`), so the interface is served from the name the portal's proxy
+  already calls and no second name is claimed. Without a seat nothing is served and the portal's call
   fails with an unknown-name error ("no picker"). Only the owner of
   `org.freedesktop.impl.portal.desktop.bardo` may call (a forged caller is `AccessDenied`).
 - **Candidates.** Screens: the displays service's outputs, quoted by connector name (`DP-1`).
@@ -1519,7 +1519,7 @@ Fixed by reading, not built: the gate run is the first compile.
   so a portal question could answer 2 on Escape too if that is wanted.
 - **The sheet finds the app's icon by name.** The portal knows an app only by the name it shows, so
   `permission_sheet` looks the name up in the app index (case-insensitive) and falls back to the
-  Window glyph. Two installed apps with one name get the first by id. An id from transom in the
+  Window glyph. Two installed apps with one name get the first by id. An id from the portal in the
   call would make this exact.
 - **latchkey at 99cc9de.** The pin moved from ef0117a. `Error::Unsafe` and `Error::WrongOwner` need no
   code: `take_door` prints the library's own words for any error other than `AlreadyRunning`, and the

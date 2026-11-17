@@ -55,7 +55,7 @@ scripts/check-boundary.sh
 `Pump` (`screencast/stream.rs`) is the loop body between a `CaptureSource` and a `FrameSink`, and
 is implemented and tested against the fakes. A turn waits at most `QUIET_TURN` for a frame and reports
 `Quiet` if the picture did not change; the sink, not the pump, keeps the newest picture and sends it
-again at the stream's negotiated pace (`transom_core::decide`), so a still screen still gives a stream.
+again at the stream's negotiated pace (`portal_core::decide`), so a still screen still gives a stream.
 
 ## 4. Flow of a screen share
 
@@ -207,7 +207,7 @@ Some apps never ask to be remembered (RustDesk 1.5.0 sends no `persist_mode`), a
 an app that asks, so a token cannot carry them. The person says it instead: `Allow(app_id: s, screens: s, input: u)`
 on `org.bardo.Portal1`, Settings only, proved `Full`. `screens` is `none`, `every` or `output:<name>` (that display, else
 the first one there is: nothing names this machine's hardware); `input` is the portal's device bit set. The grant
-(`transom_core::StandingGrant`) lives in the same book and file as the tokens (file version 3; version 2 still reads),
+(`portal_core::StandingGrant`) lives in the same book and file as the tokens (file version 3; version 2 still reads),
 keyed by the app's proven id, and it does not run out. `Start` consults it when there is no token or the token does not
 stand: `Shared::restored` for the screen, `restored_kinds` for input (an ask for more kinds than were allowed is asked).
 It is listed by `ListGrants` as "until taken back" and `Revoke` removes it with the rest. An unproven app is never let in

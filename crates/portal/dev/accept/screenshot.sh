@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Acceptance script 'screenshot': a Screenshot portal call through xdg-desktop-portal returns the address of a PNG of the output.
 # Needs BARDO_PORTAL_COMPOSITOR_ENV: the env file of a headless compositor session; its output is named
-# in TRANSOM_OUTPUT_NAME. Needs BARDO_PORTAL_BIN.
+# in PORTAL_OUTPUT_NAME. Needs BARDO_PORTAL_BIN.
 # Prints PASS or FAIL per step. Calls require_jail first. Owner: P2-T1.
 #   exit 0 all steps passed, 1 a step failed, 2 not runnable (outside the jail), 3 a tool is missing.
 set -euo pipefail

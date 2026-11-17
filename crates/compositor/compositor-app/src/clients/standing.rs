@@ -279,7 +279,7 @@ mod tests {
     /// with is `trusted_powers`' to say (the screen and the windows, nothing more).
     #[test]
     fn the_portal_is_trusted_only_when_proven_full_and_otherwise_asked_like_a_program() {
-        let transom = exe("/usr/libexec/bardo/bardo-portal");
+        let portal_exe = exe("/usr/libexec/bardo/bardo-portal");
         let path = ProgramPath::parse("/usr/libexec/bardo/bardo-portal").expect("a path");
         let portal = ServiceRole::parse("portal").expect("a role");
         let cases = [
@@ -306,7 +306,7 @@ mod tests {
         ];
         for (case, proof, want) in cases {
             assert_eq!(
-                client_standing(&service("portal", proof), &transom),
+                client_standing(&service("portal", proof), &portal_exe),
                 want,
                 "{case}"
             );

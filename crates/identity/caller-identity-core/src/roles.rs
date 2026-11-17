@@ -7,7 +7,7 @@ use crate::ids::RoleName;
 
 /// The shell (`sill`): draws the desktop and asks the person on behalf of other programs.
 pub const SHELL: RoleName = RoleName::from_static("shell");
-/// The desktop's portal backend (`transom`): asks the shell, is handed an input socket, captures the screen.
+/// The desktop's portal backend (`portal`): asks the shell, is handed an input socket, captures the screen.
 pub const PORTAL: RoleName = RoleName::from_static("portal");
 /// The portal frontend (`xdg-desktop-portal`): the only caller of the portal backend.
 pub const PORTAL_FRONTEND: RoleName = RoleName::from_static("portal_frontend");

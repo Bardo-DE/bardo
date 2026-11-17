@@ -13,7 +13,7 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
 1. **The shell side of the chooser.** `org.bardo.Shell1.PickCaptureSource` is the client in `chooser.rs` (the
    `Shell1` proxy): `(app_label: s, kinds: u, multiple: u, cursor_modes: au) -> (sources: a(ss), cursor: u)` on name
    `org.bardo.Shell`, path `/org/bardo/Shell1`. sill serves it since its p2-ch lane (checked against sill's source on
-   2026-10-15, see "transom-shot" below). Closed on this side; the jailed chain's fake shell still stands in for sill.
+   2026-10-15, see "portal-shot" below). Closed on this side; the jailed chain's fake shell still stands in for sill.
 2. **Settings source.** `DesktopAppearance` reads `bardo/appearance.toml` with a small parser of its
    own (`settings::parse_appearance`: `theme` and `accent` in `[appearance]`; no contrast key exists
    in the document yet). Bardo's `ds-settings` (v0.3.16) was not added: it pulls `ds-core`, `ds-style`
@@ -21,7 +21,7 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
    eight accent colours are the macOS system values written into `settings.rs`; check them against
    Bardo's token table. Changes are found by looking at the file every 2 seconds.
 3. **Restore data shape.** Checked against the installed interface XML (version 6): `restore_data`
-   is `(suv)`. transom writes `("bardo", 1, <token as a string variant>)`; `RestoreToken` is the token.
+   is `(suv)`. The portal writes `("bardo", 1, <token as a string variant>)`; `RestoreToken` is the token.
    Closed.
 4. **`UseIn=bardo`** in `dist/bardo.portal` matches `XDG_CURRENT_DESKTOP`; the session must set
    it to `bardo`.
@@ -32,7 +32,7 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
    `interactive`, `target` and `permission_store_checked` are read-only hints and are ignored.
    `dist/` matches the installed `portals.conf(5)` and portal-file format. Still to re-read: ScreenCast
    and RemoteDesktop (P2-T2, P2-T3).
-7. **Screenshot outputs.** Closed 2026-10-15 (transom-shot, below): `screenshot::LiveLayout` asks the compositor for
+7. **Screenshot outputs.** Closed 2026-10-15 (portal-shot, below): `screenshot::LiveLayout` asks the compositor for
    the outputs at each screenshot. The Inhibit effect talks to the login manager on the system bus
    (`LogindInhibitor`); the compositor's idle-inhibit is not used. `PickColor` is now asked of the shell (below).
 
@@ -61,7 +61,7 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
 ## Standing facts
 
 - The screen-cast session `step` function is total: every (state, input) pair that matters has
-  a row in `crates/transom-core/tests/it/screencast.rs`; anything else leaves the session as it is.
+  a row in `crates/portal-core/tests/it/screencast.rs`; anything else leaves the session as it is.
 - A restore token resolves all or nothing, and only for the app it was given to.
 - No accent chosen is published as an out-of-range colour, as the specification says.
 
@@ -73,7 +73,7 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
   `close`) so tests run without a bus. Seams: `Asker` (the one `Parts.access`; the question is `remote_control_question`) and `EisHandout` (`CompositorEis`,
   `FakeEis`); `Parts` gained `eis` (built inside `Parts::real`, whose signature is unchanged).
 - **EIS only.** `ConnectToEIS` asks `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> h` (the compositor; only
-  `transom.service` may call it). The `Notify*` methods are accepted and dropped (debug log): there is no second way in.
+  `bardo-portal.service` may call it). The `Notify*` methods are accepted and dropped (debug log): there is no second way in.
   Checked against the installed `org.freedesktop.impl.portal.RemoteDesktop.xml`: all signatures match the skeleton; `ConnectToEIS`
   now returns `fdo::Result<h>` so a refusal is an error and not a panic.
 - **Session object.** The frontend closes a session through `org.freedesktop.impl.portal.Session.Close` at the session handle; a
@@ -89,24 +89,24 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
 - **Open: request objects.** `Start` waits for the person; the frontend cancels it with `Request.Close` on `handle`, which no
   interface here serves yet (same for ScreenCast and Screenshot).
 - **Open: acceptance.** `dev/accept/remote-desktop.sh` is still a skeleton: it needs a stub `org.bardo.Shell1` on the private
-  bus (for consent), the unit-check override in the compositor's debug peer table (so the jailed transom reads as
-  `transom.service`), and a client that receives a file descriptor over D-Bus and speaks EIS. None exists in the jail.
+  bus (for consent), the unit-check override in the compositor's debug peer table (so the jailed the portal reads as
+  `bardo-portal.service`), and a client that receives a file descriptor over D-Bus and speaks EIS. None exists in the jail.
 - **Spots most likely not to compile.** `OwnedValue::downcast_ref::<u32>()` on `&OwnedValue`; `#[zbus(object_server)]` as a
   parameter next to `ObjectPath` arguments; `server.at(session_handle, object)` and `server.remove::<SessionObject, _>(&str)`;
   the `From<zbus::zvariant::OwnedFd> for std::os::fd::OwnedFd` conversion; `name.as_str()` on the `MethodError` name;
   `OwnedValue::try_from(Value::from(u32))`.
 
-## Install (desktop-transom lane, 2026-10-15)
+## Install (desktop-portal lane, 2026-10-15)
 
 - `scripts/install.sh` added (binary, unit, D-Bus file, portal file; prefix and destdir aware, no home writes).
-  The desktop installs transom through it and ships its own `bardo-portals.conf` (same choices as `dist/`).
+  The desktop installs the portal through it and ships its own `bardo-portals.conf` (same choices as `dist/`).
 - **Asks before the desktop can drop xdg-desktop-portal-wlr in earnest.** (a) Screenshot is answered as failed
   while `main.rs` passes an empty `FixedLayout` (open item 7): it needs an `OutputLayout` from the capture
   side. (b) ScreenCast Start needs `org.bardo.Shell1.PickCaptureSource` served by sill (open item 1);
   without it a browser's share dialog never gets a source. (c) `PickColor` is cancelled until the shell offers
   a picker.
 
-## transom-shot: screenshot layout, shell asks (2026-10-15)
+## portal-shot: screenshot layout, shell asks (2026-10-15)
 
 Not compiled; the orchestrator gates.
 
@@ -114,9 +114,9 @@ Not compiled; the orchestrator gates.
   code passed `$WAYLAND_DISPLAY` as the display name, but a name is an absolute socket path (empty = the session's own),
   so even with a layout every capture would have failed with "a display name must be a socket path". Each screenshot
   connects afresh (`capture::output_facts`), binds every `wl_output` (v1 to v4), reads name, geometry (logical x, y and
-  transform), current mode and scale, and hands them to `transom_core::arrange`. Nothing is cached, so outputs that come
+  transform), current mode and scale, and hands them to `portal_core::arrange`. Nothing is cached, so outputs that come
   and go, move or change scale are current at the next screenshot.
-- **Arrangement (`transom-core/src/layout.rs`).** Logical size = current mode (swapped for the odd transform values)
+- **Arrangement (`portal-core/src/layout.rs`).** Logical size = current mode (swapped for the odd transform values)
   over the integer scale, rounded to nearest. The picture is laid out at the finest scale among the outputs: each output
   covers its logical rectangle times that scale, a coarser one is enlarged (nearest pixel) to fit, so screens of mixed
   sharpness share one picture without losing detail. An output with no mode, and a mirror (same place and size as an
@@ -127,7 +127,7 @@ Not compiled; the orchestrator gates.
   feature `unstable`, which is a manifest edit this lane may not make. With `wl_output` alone the compositor's fractional scale
   arrives as its ceiling (1.5 as 2), so such an output's logical size is under-estimated, the picture is a little small
   and the gap between neighbours is not exact. All-1x and all-2x layouts, and mixes of them, are exact. Ask for the
-  orchestrator: enable `wayland-protocols` `unstable` for transom, then bind `zxdg_output_manager_v1` in
+  orchestrator: enable `wayland-protocols` `unstable` for the portal, then bind `zxdg_output_manager_v1` in
   `capture/wl/outputs.rs` and prefer its logical position and size (and use `wp_fractional_scale` or the ratio of mode
   to logical size for the scale).
 - **ScreenCast without a shell.** When the shell is not on the bus, or is on it but has not exported
@@ -137,12 +137,12 @@ Not compiled; the orchestrator gates.
 - **PickColor.** The Screenshot interface calls `org.bardo.Shell1.PickColor` (the `Shell1` proxy); the portal result is
   `color: (ddd)`. No shell, or a cancel, is response 1; a malformed answer is response 2.
 - **Acceptance scripts (not run).** `dev/accept/screenshot.sh` needs no shell (Screenshot never asks one) and needs no
-  change: it joins the compositor session, so transom's session display is the compositor's; with scale 1 or 2 the
-  expected `TRANSOM_OUTPUT_SIZE` is the output's mode size, which is what the picture now has. `dev/accept/
+  change: it joins the compositor session, so the portal's session display is the compositor's; with scale 1 or 2 the
+  expected `PORTAL_OUTPUT_SIZE` is the output's mode size, which is what the picture now has. `dev/accept/
   screencast-output.sh` starts its own fake shell (`start_fake_shell`), as do `chooser.sh` and `screencast-window.sh`; its
   step 1 of `chooser.sh` (no shell) still passes with response 1. `dev/lib/portal_client.py`'s fake shell now also serves
   `PickColor` (a fixed colour, a cancel for `none`); no script exercises it yet.
-- **Environment.** transom reads the display the way Wayland clients do (`WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`), so the
+- **Environment.** the portal reads the display the way Wayland clients do (`WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`), so the
   D-Bus-activated process needs both: the session must run `dbus-update-activation-environment --systemd
   WAYLAND_DISPLAY XDG_RUNTIME_DIR` (or the unit must import them). The screencast path had the same need already.
 
@@ -150,8 +150,8 @@ Not compiled; the orchestrator gates.
 
 1. **`org.bardo.Shell1.PickCaptureSource` is already served** by sill (`sill_services::capture_pick`, exported on the
    seat connection that owns `org.bardo.Shell`); its signature, caller check and `("output", name)` / `("window", id)`
-   sources match transom's client. Nothing to change. Two notes: (a) until the seat exists the object is absent and
-   transom now treats that as "nobody to ask" and cancels; (b) the call has no timeout on either side, it waits on the
+   sources match the portal's client. Nothing to change. Two notes: (a) until the seat exists the object is absent and
+   The portal now treats that as "nobody to ask" and cancels; (b) the call has no timeout on either side, it waits on the
    person.
 2. **`org.bardo.Shell1.PickColor` is not served and is not anywhere in sill.** The shell must serve, on the same object
    (`/org/bardo/Shell1`, interface `org.bardo.Shell1`, name `org.bardo.Shell`):
@@ -165,15 +165,15 @@ Not compiled; the orchestrator gates.
      portal call fails.
    - Behaviour: show an on-screen eyedropper over the live screen (magnifier loupe, click to pick, Escape to cancel, as
      macOS Digital Color Meter / the system colour well's eyedropper). Block until the person picks or cancels; no timeout
-     (transom waits). One question at a time: a second call while one is open gets `org.freedesktop.DBus.Error.
+     (the portal waits). One question at a time: a second call while one is open gets `org.freedesktop.DBus.Error.
      LimitsExceeded`. The caller leaving the bus takes the eyedropper down.
    - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.bardo` may call
      (`AccessDenied` otherwise).
-   - Until sill serves it, transom answers every `PickColor` as cancelled when the object is absent
+   - Until sill serves it, the portal answers every `PickColor` as cancelled when the object is absent
      (`UnknownObject`/`UnknownMethod`), so no app breaks.
 3. **Remote control consent (from p2-t3): closed 2026-10-16.** It goes through `AskPermission` (item 4); no
    `AskRemoteControl` is asked of the shell.
-4. **Yes-or-no question (transom-access).** The Access portal needs the person to answer through the shell. The shell
+4. **Yes-or-no question (portal-access).** The Access portal needs the person to answer through the shell. The shell
    must serve, on the same object (`/org/bardo/Shell1`, interface `org.bardo.Shell1`, name `org.bardo.Shell`):
 
    ```
@@ -189,7 +189,7 @@ Not compiled; the orchestrator gates.
    - `answer`: 0 when the person pressed `grant_label`, 1 when they pressed `deny_label`, 2 when they dismissed the
      sheet (Escape, or it was replaced) without answering. Anything else is a bad answer and the portal call fails.
    - Caller check, as for `PickCaptureSource`: only the owner of `org.freedesktop.impl.portal.desktop.bardo`.
-   - Until sill serves it (it does not at sill 3fecef0), transom answers every question as denied (response 1) when
+   - Until sill serves it (it does not at sill 3fecef0), the portal answers every question as denied (response 1) when
      the object is absent, so a screenshot is refused rather than taken unasked. Three things now ask it: the Access
      portal, an `interactive` or unvouched Screenshot (PORTAL-06) and remote control (PORTAL-04). Until sill serves
      it, remote control and those screenshots do not work; fail closed.
@@ -197,16 +197,16 @@ Not compiled; the orchestrator gates.
    - The desktop's own `bardo-portals.conf` (desktop/session) must also route
      `org.freedesktop.impl.portal.Access=bardo`.
 
-## transom-repush: a still screen still gives a stream (2026-10-16)
+## portal-repush: a still screen still gives a stream (2026-10-16)
 
 Written without a build or a run: nothing here has been compiled or tried in the jail. Source of the symptoms:
 `screencast-output.sh` steps 3, 4 and 5 against the compositor's headless output; the compositor lane's analysis
 (cas36) showed the compositor is correct (a still output has no damage, so the second capture is parked).
 
-**A. Frames from a still source (fixed in transom).**
-- `transom_core::pacing` decides: `Negotiated::repeat_gap_ns` (the stream's frame gap, within 1/60 s and 1 s; an
+**A. Frames from a still source (fixed in the portal).**
+- `portal_core::pacing` decides: `Negotiated::repeat_gap_ns` (the stream's frame gap, within 1/60 s and 1 s; an
   open rate fills at 5 a second or its ceiling if slower) and `decide(Held, gap) -> Step`. A picture that has not gone
-  out is sent at once; a sent one is sent again only after a full gap. Table tests: `transom-core/tests/it/pacing.rs`.
+  out is sent at once; a sent one is sent again only after a full gap. Table tests: `portal-core/tests/it/pacing.rs`.
 - `screencast/pipewire.rs`: the sink now keeps the newest picture (`Slot`) instead of taking it out on the first
   buffer. `fill_next_buffer` runs `decide` on every process cycle with the gap read from the negotiated format. The
   first frame, pushed before any reader exists, is no longer lost: a reader that links late gets it on its first free
@@ -221,7 +221,7 @@ Written without a build or a run: nothing here has been compiled or tried in the
 
 **B. "target not found" (consumer `pipewiresrc path=<node>`): cause not established.**
 - Read, not run: the id returned is `pw_stream_get_node_id`, set in libpipewire's `proxy_bound_props` just before the
-  stream goes Paused, which is when transom reads it; so it is the node's global id. The consumer's `path=` becomes
+  stream goes Paused, which is when the portal reads it; so it is the node's global id. The consumer's `path=` becomes
   `node.target=<id>` (PipeWire 1.6 `pw_stream_connect`), which WirePlumber 0.5 (`find-defined-target.lua`) looks up as
   `node.id` among its session items; `target-object=` is looked up as `object.serial`. So a node id as `path` is
   correct, and the id in the Start response stays the node id as the portal spec says. The "target not found" text
@@ -229,7 +229,7 @@ Written without a build or a run: nothing here has been compiled or tried in the
   item for `Video/*` nodes (`node/create-item.lua`) once its ports are known.
 - So either WirePlumber never made an item for the node (ports not announced, or not running with these scripts in the
   jail) or the item failed `canLink`. Neither can be told from the evidence: no pipewire or wireplumber log was kept.
-  Not changed in transom: the properties differ from the other portals' (they set only `media.class` and connect with
+  Not changed in the portal: the properties differ from the other portals' (they set only `media.class` and connect with
   driver and allocate-buffers flags) but none of that is read by the linking scripts.
 - To settle it: `dev/lib/chain.sh` now starts WirePlumber with `s-linking` and `s-node` at info level, and
   `dev/lib/cast_check.sh::explain_node` (called by `screencast-output.sh` step 3 on failure) prints the node as the
@@ -239,12 +239,12 @@ Written without a build or a run: nothing here has been compiled or tried in the
 **Steps 4 and 5 are not caused by 3.** The portal frontend's app-facing API carries the token as `restore_token`
 (`s`), in `SelectSources` options and in the `Start` results; `restore_data` `(suv)` exists only on the backend
 interface (see the installed `org.freedesktop.portal.ScreenCast.xml`). `portal_client.py cast` sent and read
-`restore_data`, so it could never see a token and never offered one back. Fixed in the client; transom's backend
+`restore_data`, so it could never see a token and never offered one back. Fixed in the client; the portal's backend
 side (`restore_data` and `persist_mode` in its Start results) was already right.
 
-## Production audit, area PORTAL (2026-10-16, lane pa-transom)
+## Production audit, area PORTAL (2026-10-16, lane pa-portal)
 
-Written without a build or a run: nothing here has been compiled. Fixed in transom: PORTAL-01, 04, 05, 06, 07, 08, 09,
+Written without a build or a run: nothing here has been compiled. Fixed in the portal: PORTAL-01, 04, 05, 06, 07, 08, 09,
 11, 12 (caps), 13 (memfd, node name), 16, 17, 18, 19, 20, 21. Fixed in latchkey: PORTAL-22 to 26.
 
 **Decisions recorded**
@@ -284,8 +284,8 @@ Written without a build or a run: nothing here has been compiled. Fixed in trans
 - **PORTAL-21, `ProtectSystem=strict`.** Not added: a user unit gets a mount namespace only where unprivileged user
   namespaces are allowed, and Ubuntu 24.04 restricts them (owner decision 2026-10-16: no AppArmor allowance there).
   Closes when that changes. `NoNewPrivileges`, `RestrictAddressFamilies=AF_UNIX`, `RestrictSUIDSGID`,
-  `LockPersonality` and `SystemCallArchitectures` are in `dist/transom.service`. The compositor still trusts the unit name
-  `transom.service`, which a user can override with a drop-in.
+  `LockPersonality` and `SystemCallArchitectures` are in `dist/bardo-portal.service`. The compositor still trusts the unit name
+  `bardo-portal.service`, which a user can override with a drop-in.
 - **Request objects.** `Request.Close` is still not served for Start, so a cancelled Start leaves the sheet up
   (PORTAL-04's extra).
 - **The jailed chain's fake shell** (`dev/`) does not apply the shell's owner check; the private-bus test
@@ -297,11 +297,11 @@ Written without a build or a run: nothing here has been compiled. Fixed in trans
 **Interface asks**
 
 - The compositor: `org.bardo.Compositor1.EndEis(session: t)`: end every socket handed out for `session` (stop its input and
-  close the compositor's end), callable only by `transom.service` like `ConnectEis`. Until it exists a close logs a
+  close the compositor's end), callable only by `bardo-portal.service` like `ConnectEis`. Until it exists a close logs a
   warning and the app keeps the socket it was given (PORTAL-05's other half).
 - sill: serve `org.bardo.Shell1.AskPermission` (item 4 above); remote control and interactive screenshots need it.
 
-## Production audit wave 2, area PORTAL (2026-10-16, lane pa2-transom)
+## Production audit wave 2, area PORTAL (2026-10-16, lane pa2-portal)
 
 Written without a build or a run: nothing here has been compiled or tested; the tests are written and unrun.
 Fixed: PORTAL-03 and PORTAL-10, with `peephole-bus` (tag v0.1.0) as the one way of telling callers apart. See
@@ -312,7 +312,7 @@ ARCHITECTURE section 3b-2.
 - **Frontend only, proved `Full` (PORTAL-03).** Every portal method refuses a caller that does not hold role
   `portal_frontend` at `Full`, including the `Notify*` methods (accepted and dropped, still guarded) and Settings.
   The frontend's unit therefore has to be provable by the desktop's table (not ours), and
-  `dist/transom.service` unsets the loader variables so transom's own `portal` standing can reach `Full` for the
+  `dist/bardo-portal.service` unsets the loader variables so the portal's own `portal` standing can reach `Full` for the
   The compositor and sill checks.
 - **Opener only (PORTAL-03).** The frontend is one peer for every app, so the "creator" check separates a second
   frontend-role peer from the first and stops a session being driven by anything but its opener; it is not a
@@ -347,11 +347,11 @@ ARCHITECTURE section 3b-2.
 
 The jail has no root-owned table and no unit manager, so every call from `xdg-desktop-portal` was refused as an
 unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_toml_dev`, `TableFiles::load_dev`,
-`Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`); transom takes them the way sill does.
+`Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`); the portal takes them the way sill does.
 
-- **Feature `debug`** on the transom crate turns on `peephole-bus/dev-rows` and nothing else. It is off by default and
+- **Feature `debug`** on the portal crate turns on `peephole-bus/dev-rows` and nothing else. It is off by default and
   in every shipped build (the desktop gate greps for `dev-rows`).
-- **`TRANSOM_DEV_CALLERS=FILE`**, read in `main.rs` only in that build. `dev_rows::with_dev_rows` loads the person's
+- **`PORTAL_DEV_CALLERS=FILE`**, read in `main.rs` only in that build. `dev_rows::with_dev_rows` loads the person's
   own file and merges it after the shipped table. A file that cannot be taken (a link, writable by others, not a table,
   a row without `exe`, missing) stops the start with the reason, not a portal that quietly refuses its stand-ins.
 - **Accepted proof.** `peers::need` lists `Requirement::dev(role)` beside `Proof::Full` for the portal frontend and the
@@ -361,8 +361,8 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   `[[peer]]` with `app = "org.freedesktop.portal.Desktop"`, `role = "portal_frontend"`, `exe = ["/usr/libexec/xdg-desktop-portal"]`,
   and one with `app = "org.bardo.Shell"`, `role = "shell"`, `exe = [<the stand-in shell's image>]`. A shipped row that
   claims the same image wins over a developer row.
-- **Dev scripts.** `dev/lib/chain.sh` passes `TRANSOM_DEV_CALLERS` to transom; no dev script builds transom (they take
-  `TRANSOM_BIN`), so the caller builds it with `--features debug` (documented at the top of `chain.sh`).
+- **Dev scripts.** `dev/lib/chain.sh` passes `PORTAL_DEV_CALLERS` to the portal; no dev script builds the portal (they take
+  `PORTAL_BIN`), so the caller builds it with `--features debug` (documented at the top of `chain.sh`).
 - **Not verified here (no compile, no run):** the new tests, the build with and without the feature, and the
   `Cargo.lock` move from peephole v0.1.1 to v0.1.4. The workspace `rustix` gains the `process` feature (the person's user
   id), which adds no crate.
@@ -384,17 +384,17 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   `org.freedesktop.impl.portal.desktop.bardo`, path `/org/freedesktop/portal/desktop`. Settings must run as
   `org.bardo.Settings.service` from a root-owned unit with the loader variables unset, or it is proved below `Full`
   and refused. Closes when the Settings app has the row.
-- **PORTAL-02 rest / NEW-PI-3, transom half.** Nothing in transom trusts a desktop service below `Full`: the frontend,
+- **PORTAL-02 rest / NEW-PI-3, the portal half.** Nothing in the portal trusts a desktop service below `Full`: the frontend,
   the shell and Settings are all asked for at `Full` (`peers::need`). The one `Proof::Exe` left is the unit manager's
   own identity (`ManagerCheck::Verified`, role `manager`), which is a program row with no unit and so cannot be proved
   higher; its answers decide whether others reach `Full`, nothing more.
-- **NEW-PI-8: a restart strands handed-out sockets (transom half).** Session numbers now count up from the clock in
+- **NEW-PI-8: a restart strands handed-out sockets (the portal half).** Session numbers now count up from the clock in
   nanoseconds (`Book::starting_after`), so a number is never reused by a later run, and at start `serve_on` calls
   `RemoteDesktopService::forget_previous_run`, which asks the compositor to drop every socket handed to this portal
   before: `org.bardo.Compositor1.EndAllEis()`, tolerated when the method or the compositor is absent. The compositor's
   half (the method, or ending a portal's sockets itself when the portal leaves the bus) is the compositor's; until it lands
   an app of the earlier run keeps its input. Closes when the compositor has it.
-- **NEW-FA-2: the portal's own capture connection (transom half).** A capture on the session's display (an empty
+- **NEW-FA-2: the portal's own capture connection (the portal half).** A capture on the session's display (an empty
   `DisplayName`) first asks `org.bardo.Compositor1.Connect("portal")` over the session bus (`capture::CompositorLine`, through the
   connection that owns the portal's name, the way `ConnectEis` is asked, within `LINE_DEADLINE`) and speaks Wayland on the
   descriptor it gets back (`DisplayName::route` gives `Route::Handed`). The compositor trusts that connection for the screen and the
@@ -402,7 +402,7 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   or it times out (another compositor, an older the compositor), the capture connects the way any Wayland client does (`Route::Env`)
   and the log says so once. A display named by a socket path is used as given and the compositor is not asked. A call over
   The compositor's rate (four a second) is asked once more after a pause. Closes when the compositor has `Connect("portal")`
-  (the compositor `fb1-portal-connect`); `desktop/harness/lib/compositor-floor.sh` `floor_powers` can then drop its allow row for transom.
+  (the compositor `fb1-portal-connect`); `desktop/harness/lib/compositor-floor.sh` `floor_powers` can then drop its allow row for portal.
 - **NEW-FA-2 follow-up: one handed connection per capture job.** The first cut asked for a connection at every step: a
   screenshot asked once for the sources, once for the outputs and once per output captured, a share once per stream. The compositor
   limits each bus caller to four `Connect` calls in a one-second window (`CALLS_PER_WINDOW`), so a screenshot of three or more
@@ -421,11 +421,11 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
 ## Standing grants (RustDesk asked for the screen every time)
 
 - **Cause.** RustDesk 1.5.0 reads and sends `restore_token` but never `persist_mode`, so the frontend issues it no token, and
-  transom's book stayed empty for it. Checked from the strings of `librustdesk.so`; the live "asked every time" log line is
+  The portal's book stayed empty for it. Checked from the strings of `librustdesk.so`; the live "asked every time" log line is
   still to be read on the real login (run with `RUST_LOG=info`, connect from RustDesk, look for it).
 - **Fix.** The person lets an app in for good, in Settings: `org.bardo.Portal1.Allow(app_id, screens, input)`, see
-  ARCHITECTURE "Letting an app in for good". Transom side done, with tests: core book and rules
-  (`transom-core/tests/it/restore.rs`), the file (`restore_file.rs`), the bus method and its guard (`grants.rs`), and the
+  ARCHITECTURE "Letting an app in for good". The portal side done, with tests: core book and rules
+  (`portal-core/tests/it/restore.rs`), the file (`restore_file.rs`), the bus method and its guard (`grants.rs`), and the
   no-ask path for input (`remote_desktop.rs`). The screen path in `Shared::restored` shares the lookup but has no
   stand-alone test: it needs a live `capture::Job`; the real run covers it (dev/accept).
 - **Asks of other repos.** the Settings app (Privacy page): a row per remembered app with "Let <name> share this screen without

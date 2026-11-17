@@ -21,4 +21,4 @@ require_jail
 # shellcheck source=dev/lib/chain.sh
 source "$root/dev/lib/chain.sh"
 start_chain "$@"
-echo "$(transom_state_dir)/env"
+echo "$(portal_state_dir)/env"

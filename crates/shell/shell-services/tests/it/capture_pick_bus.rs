@@ -1,4 +1,4 @@
-//! The screen-sharing picker's host side on a private bus: a stand-in transom (the owner of the
+//! The screen-sharing picker's host side on a private bus: a stand-in the portal (the owner of the
 //! portal backend's name) calls `PickCaptureSource` on the connection the seat holds; the shell's
 //! own part is stepped through `Answer`. Only the portal backend may ask (who counts as it is
 //! `callers_bus.rs`'s), and a second call while one is open is refused. `PickColor` is the same:
@@ -83,7 +83,7 @@ fn desktop_with_notes() -> DesktopView {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn transom_asks_the_person_picks_and_the_answer_comes_back() {
+async fn portal_asks_the_person_picks_and_the_answer_comes_back() {
     let Some(bus) = PrivateBus::start() else {
         eprintln!("skipped: no dbus-daemon");
         return;
@@ -91,7 +91,7 @@ async fn transom_asks_the_person_picks_and_the_answer_comes_back() {
     let scratch = TempDir::new("capture-pick-bus");
     let Rig {
         mut service,
-        transom,
+        portal,
         desktop,
         ..
     } = rig(&bus, &scratch).await;
@@ -104,7 +104,7 @@ async fn transom_asks_the_person_picks_and_the_answer_comes_back() {
         "the desktop's window was not offered"
     );
 
-    let proxy = Shell1Proxy::new(&transom)
+    let proxy = Shell1Proxy::new(&portal)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let first = {
@@ -143,21 +143,21 @@ async fn transom_asks_the_person_picks_and_the_answer_comes_back() {
     assert_eq!(answer, (vec![("window".to_owned(), "w-1".to_owned())], 1));
 }
 
-/// The service serving on a private bus, with a stand-in transom connected.
+/// The service serving on a private bus, with a stand-in the portal connected.
 pub(crate) async fn serving(
     bus: &PrivateBus,
     scratch: &TempDir,
 ) -> (shell_model::service::Handle<CaptureService>, Connection) {
     let rig = rig(bus, scratch).await;
-    (rig.service, rig.transom)
+    (rig.service, rig.portal)
 }
 
-/// The service serving on a private bus: what stands in for transom, for the shell's seat, and
+/// The service serving on a private bus: what stands in for the portal, for the shell's seat, and
 /// for the compositor (the answers it hears).
 pub(crate) struct Rig {
     pub service: shell_model::service::Handle<CaptureService>,
     /// The portal backend: the owner of its name, introduced as the program that is.
-    pub transom: Connection,
+    pub portal: Connection,
     /// What the compositor is told the person answered.
     pub answers: tokio::sync::mpsc::UnboundedReceiver<DesktopCommand>,
     /// Who the stand-ins are, to the shell.
@@ -177,8 +177,8 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
         callers: std::sync::Arc::<Introduced>::clone(&callers),
         ..Env::isolated(scratch.path())
     };
-    let transom = connect(bus, Some(portal_dbus::BUS_NAME)).await;
-    callers.make(&transom, who);
+    let portal = connect(bus, Some(portal_dbus::BUS_NAME)).await;
+    callers.make(&portal, who);
     let shell = connect(bus, Some("org.bardo.Shell")).await;
     // The shell's connection already serves objects when the picker exports its own; without
     // this, a look sent before zbus's object server runs is dropped unanswered (see dbus-kit's ready).
@@ -211,7 +211,7 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
     // look for it by introspection (each look answered at once now), up to the generous deadline.
     let deadline = base_testkit::Deadline::generous();
     loop {
-        let introspect = zbus::fdo::IntrospectableProxy::builder(&transom)
+        let introspect = zbus::fdo::IntrospectableProxy::builder(&portal)
             .destination("org.bardo.Shell")
             .and_then(|builder| builder.path("/org/bardo/Shell1"))
             .unwrap_or_else(|e| panic!("{e}"))
@@ -228,7 +228,7 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
     }
     Rig {
         service,
-        transom,
+        portal,
         answers,
         callers,
         desktop,
@@ -242,8 +242,8 @@ async fn a_colour_request_is_cancelled_at_once_while_nothing_draws_the_eyedroppe
         return;
     };
     let scratch = TempDir::new("capture-pick-colour-absent");
-    let (service, transom) = serving(&bus, &scratch).await;
-    let proxy = Shell1Proxy::new(&transom)
+    let (service, portal) = serving(&bus, &scratch).await;
+    let proxy = Shell1Proxy::new(&portal)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let answer = proxy
@@ -272,9 +272,9 @@ async fn a_colour_is_asked_one_at_a_time_and_the_click_comes_back_as_floats() {
         return;
     };
     let scratch = TempDir::new("capture-pick-colour");
-    let (mut service, transom) = serving(&bus, &scratch).await;
+    let (mut service, portal) = serving(&bus, &scratch).await;
     draw_eyedropper(&mut service).await;
-    let proxy = Shell1Proxy::new(&transom)
+    let proxy = Shell1Proxy::new(&portal)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let first = {
@@ -324,7 +324,7 @@ async fn a_colour_request_from_anyone_but_the_portal_backend_is_refused() {
         return;
     };
     let scratch = TempDir::new("capture-pick-colour-forged");
-    let (mut service, _transom) = serving(&bus, &scratch).await;
+    let (mut service, _portal) = serving(&bus, &scratch).await;
     draw_eyedropper(&mut service).await;
     let forger = connect(&bus, None).await;
     let proxy = Shell1Proxy::new(&forger)

@@ -147,13 +147,13 @@ impl FileStore {
 }
 
 /// The first line of the file; a different one is a file this version did not write.
-const HEADER: &str = "transom-restore 3";
+const HEADER: &str = "portal-restore 3";
 
 /// The header of the version before the standing grants; its lines read the same.
-const PREVIOUS_HEADER: &str = "transom-restore 2";
+const PREVIOUS_HEADER: &str = "portal-restore 2";
 
 /// The first line of the oldest version, which kept no mode and no date.
-const OLDER_HEADER: &str = "transom-restore 1";
+const OLDER_HEADER: &str = "portal-restore 1";
 
 /// One grant per line: the token, the app, the persist mode (1 or 2), when it was given (seconds
 /// since the epoch), then each source as `kind:name`, tab separated. A grant of remote control has

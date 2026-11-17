@@ -14,7 +14,7 @@ need_compositor() {
 
 # start_fake_shell ANSWER...: own org.bardo.Shell in the background; sets SHELL_PID and SHELL_LOG.
 start_fake_shell() {
-  SHELL_LOG=$(transom_state_dir)/fake-shell.log
+  SHELL_LOG=$(portal_state_dir)/fake-shell.log
   : > "$SHELL_LOG"
   python3 "$root/dev/lib/portal_client.py" fake-shell "$SHELL_LOG" "$@" &
   SHELL_PID=$!
@@ -30,7 +30,7 @@ start_fake_shell() {
 # run_cast TYPES PERSIST [TOKEN]: run a cast in the background; sets CAST_PID and CAST_OUT (the
 # one result line lands in the file). The cast holds its session open on a fifo until stop_cast.
 run_cast() {
-  local dir; dir=$(transom_state_dir)
+  local dir; dir=$(portal_state_dir)
   CAST_OUT=$dir/cast-$RANDOM.out
   CAST_IN=$dir/cast-$RANDOM.in
   mkfifo "$CAST_IN"
@@ -114,10 +114,10 @@ print(f"node {node}: class={p.get('media.class')} name={p.get('node.name')} "
 if len(sys.argv) > 2:
     print(p.get("object.serial", ""), file=open(sys.argv[2], "w"))
 PY
-  serial=$(transom_state_dir)/node-serial
+  serial=$(portal_state_dir)/node-serial
   python3 -I -c "$code" "$node" "$serial" <<<"$dump" || true
   serial=$(cat "$serial" 2>/dev/null || true)
-  log=$(transom_state_dir)/wireplumber.log
+  log=$(portal_state_dir)/wireplumber.log
   if [ -f "$log" ]; then
     echo "wireplumber, lines naming node $node:"
     grep -E "[^0-9]$node[^0-9]" "$log" | tail -n 10 | sed 's/^/  /' || true

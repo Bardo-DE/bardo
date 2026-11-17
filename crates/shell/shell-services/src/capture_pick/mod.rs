@@ -1,14 +1,14 @@
 //! bardo-shell serves the screen-sharing picker.
 //!
-//! bardo-shell serves the screen-sharing picker: `org.bardo.Shell1.PickCaptureSource`, which transom (the
+//! bardo-shell serves the screen-sharing picker: `org.bardo.Shell1.PickCaptureSource`, which portal (the
 //! portal backend) calls with what an app asked to share and which returns what the person picked;
 //! and the questions beside it (`PickColor`, `AskPermission`).
 //!
 //! - **The name.** The object is exported on the connection the intents service already holds as
 //!   `org.bardo.Shell` (the seat); this service claims no name of its own. Without the seat the
-//!   interface is not served and transom's call fails with an unknown-name error, which it takes
+//!   interface is not served and the portal's call fails with an unknown-name error, which it takes
 //!   as "nobody to ask".
-//! - **Only transom.** A call is let in only from the program the table of the desktop's own
+//! - **Only portal.** A call is let in only from the program the table of the desktop's own
 //!   programs names as the portal backend, which owns the portal backend's name
 //!   ([`crate::callers`]); any other caller is refused and draws nothing.
 //! - **One at a time.** A sharing or colour call while a sheet is open gets a plain error at
@@ -22,7 +22,7 @@
 //!   person cancelled. The daemon sends [`CaptureCommand::Eyedropper`] while an eyedropper
 //!   surface exists (`shell_overlays::eyedropper`); without one it is answered with an empty array
 //!   at once.
-//! - **Permission.** `AskPermission` is the portal's yes-or-no question about an app (transom asks
+//! - **Permission.** `AskPermission` is the portal's yes-or-no question about an app (the portal asks
 //!   it before remote control and before a screenshot the person did not start): the texts are
 //!   cleaned and cut (`PermissionAsk::from_wire`), checked like the others, and answered with 0
 //!   (the yes button), 1 (the no button) or 2 (the sheet went away unanswered). Its sheet is

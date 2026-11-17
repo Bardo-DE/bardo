@@ -1,4 +1,4 @@
-//! The permission question's host side on a private bus: a stand-in transom (the owner of the
+//! The permission question's host side on a private bus: a stand-in the portal (the owner of the
 //! portal backend's name) calls `AskPermission` on the connection the seat holds and gets each
 //! answer the shell steps through `PermissionAnswer`: 0 for the yes button, 1 for the no button,
 //! 2 for a closed sheet. The app's words reach the sheet cleaned. One sheet at a time: a second
@@ -15,7 +15,7 @@ use crate::capture_pick_bus::{rig, serving, wait_for};
 use shell_dbus::Shell1Proxy;
 
 #[tokio::test(flavor = "multi_thread")]
-async fn transom_asks_and_each_button_comes_back_as_its_number() {
+async fn portal_asks_and_each_button_comes_back_as_its_number() {
     const CASES: &[(PermissionOutcome, u32)] = &[
         (PermissionOutcome::Grant, 0),
         (PermissionOutcome::Deny, 1),
@@ -26,8 +26,8 @@ async fn transom_asks_and_each_button_comes_back_as_its_number() {
         return;
     };
     let scratch = TempDir::new("capture-pick-permission");
-    let (mut service, transom) = serving(&bus, &scratch).await;
-    let proxy = Shell1Proxy::new(&transom)
+    let (mut service, portal) = serving(&bus, &scratch).await;
+    let proxy = Shell1Proxy::new(&portal)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     for &(outcome, want) in CASES {
@@ -106,7 +106,7 @@ async fn the_portals_question_and_the_compositors_wait_in_one_line_one_sheet_at_
     };
     let scratch = TempDir::new("capture-pick-consent-line");
     let mut rig = rig(&bus, &scratch).await;
-    let proxy = Shell1Proxy::new(&rig.transom)
+    let proxy = Shell1Proxy::new(&rig.portal)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
 
@@ -212,7 +212,7 @@ async fn a_withdrawn_question_comes_down_unanswered_and_a_dismissal_is_told_as_o
         "a withdrawn question is not answered"
     );
 
-    // A question whose sheet went away is told as a dismissal, which the compositor never keeps.
+    // A question whose sheet went away is told as a dismissal, which compositor never keeps.
     let _ = rig.service.control.send(CaptureCommand::Consent(grim()));
     assert!(
         wait_for(&mut rig.service.state, |s: &CapturePicker| s

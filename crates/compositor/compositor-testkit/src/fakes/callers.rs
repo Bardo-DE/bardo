@@ -47,7 +47,7 @@ pub fn agent_tier() -> Proven {
     )
 }
 
-/// The portal backend (transom).
+/// The portal backend (the portal).
 ///
 /// # Panics
 ///

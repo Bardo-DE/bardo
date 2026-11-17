@@ -1,4 +1,4 @@
-//! The loop: passive until `Serve`, then the calls from transom and the person's answers, each a
+//! The loop: passive until `Serve`, then the calls from the portal and the person's answers, each a
 //! [`CaptureEvent`] fed to the pure step; what the step asks (a reply) is carried out here.
 
 use std::collections::HashMap;

@@ -1,6 +1,6 @@
 //! The screen-sharing picker: what an app may see, asked of the person the way macOS asks it.
 //!
-//! transom (the portal backend) calls `org.bardo.Shell1.PickCaptureSource`
+//! The portal (the portal backend) calls `org.bardo.Shell1.PickCaptureSource`
 //! (`shell_services::capture_pick`); this sheet lists the screens and windows the app may take,
 //! centred on the sheets' output over an Overlay layer that takes the keyboard, and answers
 //! through `CaptureCommand::Answer`.

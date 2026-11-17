@@ -110,7 +110,7 @@ fn the_proven_role_decides_which_connection_a_program_is_handed() {
     assert!(sees(&mut fixture, shell, INTERFACE), "the shell");
     let portal = fixture
         .connect_through_handout(&callers::portal(), ConnectionRole::Portal)
-        .expect("transom gets the portal connection");
+        .expect("portal gets the portal connection");
     assert!(!sees(&mut fixture, agent, INTERFACE), "the agent tier");
     assert!(!sees(&mut fixture, portal, INTERFACE), "the portal");
     assert!(

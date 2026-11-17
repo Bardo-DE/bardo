@@ -64,7 +64,7 @@ fn the_file_is_private_to_its_owner() {
     assert_eq!(mode & 0o777, 0o600);
 }
 
-const HEADER: &str = "transom-restore 3";
+const HEADER: &str = "portal-restore 3";
 
 #[test]
 fn a_file_this_version_did_not_write_is_set_aside_and_reported_damaged() {
@@ -73,7 +73,7 @@ fn a_file_this_version_did_not_write_is_set_aside_and_reported_damaged() {
     for text in [
         String::new(),
         "something else\n".to_owned(),
-        "transom-restore 4\n".to_owned(),
+        "portal-restore 4\n".to_owned(),
     ] {
         std::fs::write(&path, &text).expect("write");
         let store = FileStore::new(path.clone());
@@ -124,7 +124,7 @@ fn a_file_from_the_version_before_is_dropped_without_fuss() {
     let token = RestoreToken::mint([4; 16]);
     std::fs::write(
         &path,
-        format!("transom-restore 1\n{}\tapp\toutput:DP-1\n", token.expose()),
+        format!("portal-restore 1\n{}\tapp\toutput:DP-1\n", token.expose()),
     )
     .expect("write");
     let store = FileStore::new(path.clone());
@@ -167,7 +167,7 @@ fn what_the_person_let_apps_do_survives_a_save_and_a_load_and_an_older_file_stil
 
     // The file of the version before reads the same, so nothing is dropped on upgrade.
     let text = std::fs::read_to_string(store.path()).expect("text");
-    let older = text.replacen("transom-restore 3", "transom-restore 2", 1);
+    let older = text.replacen("portal-restore 3", "portal-restore 2", 1);
     std::fs::write(store.path(), older).expect("write");
     assert_eq!(store.load().expect("load"), book);
 }

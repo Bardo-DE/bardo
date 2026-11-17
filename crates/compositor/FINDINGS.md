@@ -1777,14 +1777,14 @@ Lane P2-T3, the compositor half (not compiled; the orchestrator gates). No `todo
   no devices. Keys and buttons still held when the app goes are released before `Ended`.
 - **Hand-out.** `org.bardo.Compositor1.ConnectEis(session: t, devices: u) -> (h)`. `ConnectAsk` gained `remote:
   Option<RemoteAsk>` (and `ConnectAsk::remote_eis`); `compositor::connect::answer` branches to `answer_remote`, which checks
-  `portal_may_connect` (`transom.service`; `role_for` is unchanged, the portal has no Wayland role: sill gets
+  `portal_may_connect` (`bardo-portal.service`; `role_for` is unchanged, the portal has no Wayland role: sill gets
   `RoleNotAllowed`, an unknown unit `UnknownUnit`) and inserts the source into `state.event_loop`. `State` is not edited.
 - **Visibility changes.** `core_loop::tty` is `pub(crate)` and `desktop_extent` is `pub(crate)` (the extent for absolute devices).
 - **Tests.** Pure: the translation functions, the device bits, the origin tag, release on end, `open` in `eis.rs`. Private
   bus: `connect_eis_reaches_the_loop_as_a_remote_ask_with_the_callers_unit`. Fixture: `tests/it/remote_eis.rs` (the unit check
   through `Fixture::connect_remote_eis`; remote keys of a bound chord fire nothing, through `Fixture::deliver_remote`).
-  Not tested: a real EIS client talking to the source (no crate outside `compositor-agent` may name `reis`, B14); the transom
-  acceptance script remote-desktop.sh (in the transom repo, dev/accept) does that against a real compositor.
+  Not tested: a real EIS client talking to the source (no crate outside `compositor-agent` may name `reis`, B14); the portal
+  acceptance script remote-desktop.sh (in the portal repo, dev/accept) does that against a real compositor.
 - **Spots most likely not to compile.** `eis.rs`: `inner.process_events(...)` closure types against reis' `EisRequestSource`,
   `smithay::reexports::calloop::Result`, `caps.into_iter().collect()` into `BitFlags`, the `before_done_cb` closure typed as
   `for<'a> FnOnce(&'a Device)`, `eis::handshake::ContextType` comparison, the `KeyState`/`ButtonState` paths and a
@@ -4011,9 +4011,9 @@ cancels on hardware; honour cursor-hidden in output captures") described the cod
 
 ## cas36-castframe: the screencast "EPIPE after the first frame" is not the compositor (2026-10-16)
 
-Read from `evidence/` (the compositor, transom and scenario logs of the `portal-bardo` screencast chain) and the code; nothing was
+Read from `evidence/` (the compositor, the portal and scenario logs of the `portal-bardo` screencast chain) and the code; nothing was
 built or run. Report: the compositor does not close the client, panic, or hang. No compositor source changed; two regression tests and a
-test-client helper pin the wire behaviour transom relies on.
+test-client helper pin the wire behaviour the portal relies on.
 
 - **What the compositor does.** The first `capture()` of a session is answered from the last presented frame (whole damage, `ready`;
   about 85 ms in the debug build, the CPU conversion of an 8 MB frame in `CapturedFrame::from_rgba`). The next `capture()` finds
@@ -4023,38 +4023,38 @@ test-client helper pin the wire behaviour transom relies on.
   there is no later request to log. A headless output with no moving pointer and no client damage never presents damage, so the
   parked frame stays parked. Nothing in the compositor posts a protocol error or kills a client for this path: `grep` for
   `kill_client`/`post_error` in `compositor-wayland/src/image_capture*` and `handlers/image_capture*` finds none; smithay's only
-  error there is `DuplicateFrame` (a `create_frame` while the previous frame is not destroyed), which transom's order
+  error there is `DuplicateFrame` (a `create_frame` while the previous frame is not destroyed), which portal's order
   (`frame.destroy()` before `create_frame`) never triggers, and which would show as `wl_display.error` in `WAYLAND_DEBUG`.
-- **Where the EPIPE comes from.** transom's `Share::drop` (screencast/run.rs in the transom repo) calls
+- **Where the EPIPE comes from.** the portal's `Share::drop` (screencast/run.rs in the portal repo) calls
   `Canceller::cancel` (`capture/mod.rs`), which does `shutdown(Both)` on a duplicate of its own Wayland socket to unblock
   `Copier::frame`, then the next write on that connection fails with "Io error: Broken pipe". The timestamps prove it: in
-  `transom-wldebug.log` the second `capture()` is at 1422158.8 ms and the next line, `session.destroy()` from `Copier::drop`, at
+  `portal-wldebug.log` the second `capture()` is at 1422158.8 ms and the next line, `session.destroy()` from `Copier::drop`, at
   1442123.6 ms, 19.96 s later. A connection the compositor had closed would have ended the pump thread (and dropped the
-  `Copier`) at once. The 20 s is `timeout 20` in `frames_of` in the transom repo's dev/lib/cast_check.sh plus `stop_cast`, after which the next cast
+  `Copier`) at once. The 20 s is `timeout 20` in `frames_of` in the portal repo's dev/lib/cast_check.sh plus `stop_cast`, after which the next cast
   starts (the "later connection", 61 ms after the drop). That second connection's `capture()` is followed by the same
   `Share::drop` 48 ms later (end of the script, `down.sh`), before the compositor's 85 ms answer could come: its log stops at
   `capture()` for that reason, not because the compositor hung. `compositor-wldebug.log` shows the compositor accepting the connection and
   serving globals throughout, so the main thread was never blocked.
-- **The real failures, both on transom's side (not edited).** (1) `FAIL 3`: `pipewiresrc path=<node>` says "target not found",
+- **The real failures, both on the portal's side (not edited).** (1) `FAIL 3`: `pipewiresrc path=<node>` says "target not found",
   so no consumer ever links to the node `Start` returned (`screencast/pipewire.rs` reads `stream.node_id()` at the first
   Paused/Streaming state and the node is `Video/Source`, "not linked to anything"); check that the id is one `pipewiresrc`
   accepts as `path` in this PipeWire (object.serial or node.name rather than the node id) and that the jail's session manager
-  sees the node. (2) Even with that fixed the acceptance script wants 5 buffers from a still output, and transom produces at
+  sees the node. (2) Even with that fixed the acceptance script wants 5 buffers from a still output, and the portal produces at
   most one: `Copier::frame` blocks forever on a still source (its own doc: "a static picture yields none") and
   `fill_next_buffer` writes only when a consumer buffer is free, so the first frame, pushed before any consumer exists, is
-  dropped. The fix is in transom: let `Copier::frame` wait with a timeout (poll the connection fd for the frame interval; on
+  dropped. The fix is in the portal: let `Copier::frame` wait with a timeout (poll the connection fd for the frame interval; on
   timeout return the last frame again, or have `Pump` re-push the cached last frame at `max_framerate`), and keep the last frame
   in the sink so a consumer that links late gets a buffer.
 - **A minor thing seen, not changed.** A frame parked in `waiting` whose client destroyed it stays there until the session's next
   request replaces it or damage arrives; `release_waiting` then serves the dead frame once, which records `delivered` and so
   swallows that damage for the session's next frame. Implementing `ImageCopyCaptureHandler::frame_aborted` to drop the parked
-  frame would close it; transom destroys a frame only after its outcome, so it does not hit this.
+  frame would close it; the portal destroys a frame only after its outcome, so it does not hit this.
 - **Tests added** (`crates/compositor-testkit/tests/it/protocol/image_capture.rs`): `a_session_serves_frame_after_frame_into_one_buffer`
   (a whole first frame, then three frames each into the same buffer after a pointer move, the session and connection alive, the last
   equal to the scanout) and `a_waiting_frame_does_not_hold_up_a_second_session` (a parked frame on one session; a second session
   opened meanwhile gets a whole first frame; both are answered when the pointer moves; closing the first leaves the second
   working). The test client gained `BufferAsk::Reuse` (`compositor-testclient/src/capture/copy_session.rs`): the buffer of the
-  last request attached to the next frame, as transom does. **Unsure it compiles or passes** (written without a build): the
+  last request attached to the next frame, as the portal does. **Unsure it compiles or passes** (written without a build): the
   `Kept` refactor of `OutputCapture::request`, and the two tests' pump sequencing.
 
 ## Production audit, lane pa-casrob (CASB, CASC-08)
@@ -4256,13 +4256,13 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   next visible, or refused. Video players ask on their own, so the owner picks. The change belongs in
   `model/requests.rs::enter_full_screen`.
 - **CASW-19 (done in pa-caslim; was deferred):** `compositor-agent/src/eis.rs::device_id` masks the portal session id to 28 bits; two sessions that differ only
-  above bit 28 would share a device. Session ids come only from transom (a counter), so it needs over 268 million sessions. The
+  above bit 28 would share a device. Session ids come only from the portal (a counter), so it needs over 268 million sessions. The
   fix is a per-session device counter minted where the remote link is opened (`compositor/src/connect.rs`), outside the four
   crates this lane was given.
 
 ## pa-caslim: production-audit limits and the decisions taken for the lane (2026-10-16)
 
-Rows for CASC-03/04/05/07/08/16/18, CASW-06/07/08/09/10/13/15/16/17/19/20 and the transom ask PORTAL-05 (audit files in
+Rows for CASC-03/04/05/07/08/16/18, CASW-06/07/08/09/10/13/15/16/17/19/20 and the portal ask PORTAL-05 (audit files in
 `~/rs-wt/prod-audit-de/`). Written without a build: the gate run is the first compile. Every cap is a named constant with its
 reason beside it; a peer that goes past one is cut with `wl_display.no_memory` (`compositor-wayland::limits`), refused, or
 dropped, never waited for.
@@ -4347,7 +4347,7 @@ dropped, never waited for.
   (`RemoteSessions::mint`, 28 bits, refused when spent); `remote_device_id(slot, class)` replaces the id squeezed from the portal
   session id, so two sessions never share a device. The held-key sets are shared with the connection's `RemoteHandle`, capped at
   `MAX_HELD` (256) keys and buttons. Tests: `two_connections_never_share_a_device_id`, `a_full_held_set_drops_new_presses_and_releases_empty_it`.
-- **PORTAL-05: `org.bardo.Compositor1.EndEis(session: t)`.** Next to `ConnectEis`, callable only by `transom.service` (the same
+- **PORTAL-05: `org.bardo.Compositor1.EndEis(session: t)`.** Next to `ConnectEis`, callable only by `bardo-portal.service` (the same
   `portal_only` check). It takes every socket opened for `session` out of the event loop (the compositor's end closes, so the app is
   disconnected), then feeds the releases of every key and button the app still held. An unknown or already ended session is not an
   error. Tests: `end_eis_reaches_the_loop_only_from_the_portals_unit` (private bus),
@@ -4500,7 +4500,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
   The compositor holds the client by its pidfd, so the pid cannot be reused while the client is held: the pid compare is equivalent.
   Test: `a11y.rs` on a private bus.
 - **Debug units (`debug-inject`).** `DebugPeerUnits` is now a `CallerCheck`: a peer the test table matches stands as the role of
-  `sill.service` (shell), `cuad.service` (agent_tier) or `transom.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
+  `sill.service` (shell), `cuad.service` (agent_tier) or `bardo-portal.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
   every other peer goes to the real check. `CallerSetup::with_test_units(table)`; it logs nothing itself (the root's one "TEST ONLY"
   warning stays).
 - **Deviations from the design text.**
@@ -4528,7 +4528,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
     (the client's pinned pid), feeding the `Channel<A11yVerdict>` back as `WindowHintChange::A11y(verdict.root)`.
 - **Interface asks.** Bardo `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
   `PRIVACY_PAGE` in `compositor-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
-  the rows `shell` (sill.service), `agent_tier` (cuad.service), `portal` (transom.service), `settings` (the Settings app) and `manager`
+  the rows `shell` (sill.service), `agent_tier` (cuad.service), `portal` (bardo-portal.service), `settings` (the Settings app) and `manager`
   (systemd, `Exe`) with `exe` lists.
 - **Not verified by reading (the gate run looks here).** That `BusPeers::who`'s future is `Send` (the boxed `WhoFuture` and zbus
   interface methods need it); that `Arc::new(BusPeers)` coerces at the closure return in `CallerSetup::with`; `tokio::spawn` of
@@ -4969,7 +4969,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
 ## cas12: a floor row may name a program run from a build folder, in test builds only (2026-10-17)
 
 - **What.** The desktop harness starts the compositor with `--system-dir` and a floor of `allow` rows, but the programs it runs from `build/`
-  (transom's screenshot and screencast, `compositor-probe workspaces`, shell-host's `demo_lock`) are judged `Unverified` (`ImageWritable`) and
+  (the portal's screenshot and screencast, `compositor-probe workspaces`, shell-host's `demo_lock`) are judged `Unverified` (`ImageWritable`) and
   are asked every time, so those steps waited on a question. Now, under `cfg(any(feature = "testing", feature = "debug-inject"))` only,
   `privacy::writable_image` (`privacy/injected.rs`, next to `injected_owner`, the floor's other test-only exception) turns that judgement
   into `ClientStanding::Program { exe }` when the run's `SystemDir` is `At(..)` and a row of the model's floor (read from that folder) names
@@ -4993,7 +4993,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
 ## cas13: test caller rows in the injected folder, test builds only (2026-10-17)
 
 - **What.** The desktop harness runs the compositor in a jail with no `/etc/bardo/desktop-callers.toml`, so `clients::desktop_table` was an empty
-  table, nobody was a desktop service, and the shell (sill), Settings (the Settings app) and the portal (transom) could not connect. Now, in a build
+  table, nobody was a desktop service, and the shell (sill), Settings (the Settings app) and the portal (the portal) could not connect. Now, in a build
   with `testing` or `debug-inject` and a run with `SystemDir::At(dir)`, the compositor also reads `dir/desktop-callers.toml` (`clients/dev_callers.rs`)
   as developer rows of peephole v0.1.4 (`TableFiles::load_dev`, `Table::from_toml_dev`; `Proof::Dev`, `RowOrigin::Dev`) and merges them after
   the system table (the system table still wins where both name a program: the library judges an image a shipped row claims by shipped rows
@@ -5016,7 +5016,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
   `cfg!(any(testing, debug-inject))`), `dbus/callers.rs` (Full admitted, Exe/Cgroup refused, Dev admitted only for its own role, and only with
   `dev-rows`).
 - **Harness lane.** Write `desktop-callers.toml` next to `privacy.toml` in the folder passed as `--system-dir`, mode 0600, one `[[peer]]` per
-  stand-in with `exe` the `readlink -f` path of its build-folder image (sill: `shell`; the Settings app: `settings`; transom: `portal`; cuad:
+  stand-in with `exe` the `readlink -f` path of its build-folder image (sill: `shell`; the Settings app: `settings`; the portal: `portal`; cuad:
   `agent_tier`). `desktop/gate/check-no-fake.sh` must still see no `dev-rows` in a shipped build.
 - **Known limit, test builds only.** A developer row makes any program the person can write a service of its role at `Proof::Dev`, and
   `client_standing` then gives it the role's powers; that is the point of the file and why a release build compiles it out.
@@ -5047,7 +5047,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **NEW-PI-3.** On the public socket only `Proof::Full` makes a desktop service. A service at `Proof::Exe` is an ordinary program known by its
   image, asked per app; the shell and the agent tier use the handed-out connection. `Judge` probes without the unit manager, so on the public
   socket `Full` is not reachable today; that is the point (no cgroup-and-image-only trust). Table test per proof level in `standing.rs`.
-- **NEW-FA-2 (fixed: a portal connection handed out over the bus).** transom captured on the public socket, where a peer is shown at
+- **NEW-FA-2 (fixed: a portal connection handed out over the bus).** the portal captured on the public socket, where a peer is shown at
   most as `Proof::Exe` (`Judge::arrival` probes without the unit manager), so after NEW-PI-3 it was a `Program` and its first
   screenshot or share raised the compositor's own Screen sheet over the portal's chooser. The fix does not need a `Full` proof on the
   public socket: `org.bardo.Compositor1.Connect("portal")` hands the caller proven `Full` as the `portal` role (peephole-bus and the
@@ -5057,8 +5057,8 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   the rest. It is shown the globals every client is shown and not the shell's or the agent tier's (`globals.rs`). A portal role at
   `Exe` or less is refused on the bus thread like any other role. Tests: `socket.rs` (role table), `compositor_serve/tests.rs`
   (Full is granted, Exe refused), `globals.rs` and `privilege_step.rs` (core), `bardo_shell.rs` (hand-out, globals) and
-  `image_capture.rs` (a frame with no sheet). transom asks for this connection first and falls back to the public socket when there
-  is no compositor to ask. `desktop/harness/lib/compositor-floor.sh` `floor_powers` can drop its allow row for transom once both land.
+  `image_capture.rs` (a frame with no sheet). The portal asks for this connection first and falls back to the public socket when there
+  is no compositor to ask. `desktop/harness/lib/compositor-floor.sh` `floor_powers` can drop its allow row for the portal once both land.
 - **NEW-CASB-7 (closed, 2026-10-17).** `Processes::handle_of` takes the kernel's own pidfd of the connector
   (`SO_PEERPIDFD`, Linux 6.5) through nix, which the owner allowed (rustix 1.1 has no safe wrapper and every
   crate forbids `unsafe`): force quit signals the very process that connected, never one that took its pid. A
@@ -5089,7 +5089,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   kernel device, a non-virtual one, and are physical. Closes if the mouse gestures daemon stops pressing key chords, or the owner decides they are the person's hand:
   then `Maker::PadDaemon` maps to `Origin::Physical` in `Maker::origin` and its test row flips.
 - **NEW-PI-8 (the compositor half).** `ConnectEis` records the asking bus connection's unique name; `portal_watch.rs` listens for the bus's
-  `NameOwnerChanged` and asks the loop (`ConnectAsk::owner_gone`) to close every socket that connection asked for. Transom half: seed
+  `NameOwnerChanged` and asks the loop (`ConnectAsk::owner_gone`) to close every socket that connection asked for. The portal half: seed
   session numbers from the clock so a restarted portal does not reuse ids (not the compositor's).
 - **CASC-03 (rest).** `MAX_WINDOWS` 4096 bounds the per-step walk; key-repeat, idle and IME timers and the night-light tick skip the two
   snapshots. A real delta publish (no clone per window per step) is not done: it needs dirty tracking in every transition.

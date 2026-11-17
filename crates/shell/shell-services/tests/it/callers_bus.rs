@@ -113,7 +113,7 @@ async fn only_the_portal_backend_that_owns_its_name_asks_the_picker() {
         let scratch = TempDir::new("callers-picker");
         let rig = rig_as(&bus, &scratch, owner).await;
         let calling = match caller {
-            Caller::Owner => rig.transom.clone(),
+            Caller::Owner => rig.portal.clone(),
             Caller::Another(who) => {
                 let other = connect_picker_bus(&bus, None).await;
                 rig.callers.make(&other, who);
@@ -175,7 +175,7 @@ async fn a_stand_in_named_in_the_persons_rows_is_let_in_only_as_its_own_role() {
         };
         let scratch = TempDir::new("callers-dev-rows");
         let rig = rig_as(&bus, &scratch, owner).await;
-        let proxy = Shell1Proxy::new(&rig.transom)
+        let proxy = Shell1Proxy::new(&rig.portal)
             .await
             .unwrap_or_else(|e| panic!("{e}"));
         let colour = proxy.pick_color("Screenshot").await;

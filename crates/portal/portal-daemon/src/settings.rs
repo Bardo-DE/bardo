@@ -16,7 +16,7 @@ use portal_core::{
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, StructureBuilder, Value};
 
-use crate::TransomError;
+use crate::PortalError;
 use crate::peers::RoleGuard;
 use portal_dbus::PORTAL_PATH;
 
@@ -152,7 +152,7 @@ pub type Namespaces = HashMap<String, HashMap<String, OwnedValue>>;
 /// What the portal answers with when a read fails.
 #[derive(Debug, zbus::DBusError)]
 #[zbus(prefix = "org.freedesktop.portal.Error")]
-pub enum PortalError {
+pub enum SettingsError {
     /// The bus itself failed.
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -165,8 +165,8 @@ pub enum PortalError {
 }
 
 /// The reply for a caller the guard refused.
-fn refused(error: &zbus::fdo::Error) -> PortalError {
-    PortalError::NotAllowed(error.to_string())
+fn refused(error: &zbus::fdo::Error) -> SettingsError {
+    SettingsError::NotAllowed(error.to_string())
 }
 
 /// A setting as the bus carries it: `U32` is `u`, `Rgb` is `(ddd)`.
@@ -191,17 +191,17 @@ fn owned(value: SettingValue) -> Option<OwnedValue> {
 ///
 /// # Errors
 ///
-/// Returns [`PortalError::NotFound`] when the namespace and key name no setting, and
-/// [`PortalError::Failed`] when the value has no wire form.
+/// Returns [`SettingsError::NotFound`] when the namespace and key name no setting, and
+/// [`SettingsError::Failed`] when the value has no wire form.
 pub fn read_setting(
     appearance: &Appearance,
     namespace: &str,
     key: &str,
-) -> Result<OwnedValue, PortalError> {
+) -> Result<OwnedValue, SettingsError> {
     let value = portal_core::read(appearance, namespace, key).map_err(|e| match e {
-        SettingsRefusal::NotFound => PortalError::NotFound(format!("{namespace} {key}")),
+        SettingsRefusal::NotFound => SettingsError::NotFound(format!("{namespace} {key}")),
     })?;
-    owned(value).ok_or_else(|| PortalError::Failed("the value has no wire form".into()))
+    owned(value).ok_or_else(|| SettingsError::Failed("the value has no wire form".into()))
 }
 
 /// Every setting the namespace patterns select, grouped by namespace.
@@ -325,15 +325,15 @@ pub fn spawn_watch(connection: zbus::Connection) {
 // property-change methods, which the crate's `missing_docs` would flag on a public impl.
 mod interface {
     use super::{
-        Duration, Namespaces, OwnedValue, PORTAL_PATH, PortalError, SettingsService, SignalEmitter,
-        TransomError, read_namespaces, read_setting, refused, wire_value,
+        Duration, Namespaces, OwnedValue, PORTAL_PATH, PortalError, SettingsError, SettingsService,
+        SignalEmitter, read_namespaces, read_setting, refused, wire_value,
     };
 
     /// The watcher loop behind [`spawn_watch`].
     pub(super) async fn watch(
         connection: zbus::Connection,
         every: Duration,
-    ) -> Result<(), TransomError> {
+    ) -> Result<(), PortalError> {
         let iface = connection
             .object_server()
             .interface::<_, SettingsService>(PORTAL_PATH)
@@ -369,7 +369,7 @@ mod interface {
             &self,
             namespaces: Vec<String>,
             #[zbus(header)] header: zbus::message::Header<'_>,
-        ) -> Result<Namespaces, PortalError> {
+        ) -> Result<Namespaces, SettingsError> {
             self.guard
                 .admit(&header)
                 .await
@@ -377,7 +377,7 @@ mod interface {
             let appearance = self
                 .snapshot()
                 .await
-                .map_err(|e| PortalError::Failed(e.to_string()))?;
+                .map_err(|e| SettingsError::Failed(e.to_string()))?;
             Ok(read_namespaces(&appearance, &namespaces))
         }
 
@@ -387,7 +387,7 @@ mod interface {
             namespace: &str,
             key: &str,
             #[zbus(header)] header: zbus::message::Header<'_>,
-        ) -> Result<OwnedValue, PortalError> {
+        ) -> Result<OwnedValue, SettingsError> {
             self.guard
                 .admit(&header)
                 .await
@@ -395,7 +395,7 @@ mod interface {
             let appearance = self
                 .snapshot()
                 .await
-                .map_err(|e| PortalError::Failed(e.to_string()))?;
+                .map_err(|e| SettingsError::Failed(e.to_string()))?;
             read_setting(&appearance, namespace, key)
         }
 

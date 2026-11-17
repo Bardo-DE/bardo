@@ -46,7 +46,7 @@ use std::pin::Pin;
 
 use portal_dbus::{BUS_NAME, PORTAL_PATH};
 
-pub use error::TransomError;
+pub use error::PortalError;
 
 /// A boxed future, the shape the seams return so they stay object-safe.
 pub type BoxFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
@@ -161,10 +161,10 @@ impl Parts {
 ///
 /// # Errors
 ///
-/// Returns a [`TransomError`] when the session bus cannot be reached or the portal cannot be put on
+/// Returns a [`PortalError`] when the session bus cannot be reached or the portal cannot be put on
 /// it.
 /// The returned connection keeps the service alive; drop it to stop.
-pub async fn serve(parts: Parts) -> Result<zbus::Connection, TransomError> {
+pub async fn serve(parts: Parts) -> Result<zbus::Connection, PortalError> {
     serve_on(zbus::connection::Builder::session()?, parts).await
 }
 
@@ -174,12 +174,12 @@ pub async fn serve(parts: Parts) -> Result<zbus::Connection, TransomError> {
 ///
 /// # Errors
 ///
-/// Returns a [`TransomError`] when the bus cannot be reached or the portal cannot be put on it.
+/// Returns a [`PortalError`] when the bus cannot be reached or the portal cannot be put on it.
 /// the name claimed, so no call can arrive before the seams know which connection to ask from.
 pub async fn serve_on(
     builder: zbus::connection::Builder<'_>,
     parts: Parts,
-) -> Result<zbus::Connection, TransomError> {
+) -> Result<zbus::Connection, PortalError> {
     let Parts {
         chooser,
         restore,

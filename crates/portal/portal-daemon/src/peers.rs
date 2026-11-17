@@ -26,7 +26,7 @@ use zbus::message::Header;
 use zbus::names::BusName;
 use zbus::{Connection, fdo};
 
-use crate::TransomError;
+use crate::PortalError;
 use crate::inhibit::InhibitService;
 use crate::link::BusLink;
 use crate::remote_desktop::RemoteDesktopService;
@@ -303,8 +303,8 @@ pub fn departed(name: &str, old_owner: Option<&str>, new_owner: Option<&str>) ->
 ///
 /// # Errors
 ///
-/// Returns a [`TransomError`] when the bus cannot be asked to report changes of name ownership.
-pub async fn spawn_watch(connection: &Connection) -> Result<(), TransomError> {
+/// Returns a [`PortalError`] when the bus cannot be asked to report changes of name ownership.
+pub async fn spawn_watch(connection: &Connection) -> Result<(), PortalError> {
     let dbus = fdo::DBusProxy::new(connection).await?;
     let changes = dbus.receive_name_owner_changed().await?;
     let connection = connection.clone();

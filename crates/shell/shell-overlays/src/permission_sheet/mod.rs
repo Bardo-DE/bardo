@@ -1,6 +1,6 @@
 //! The permission sheet.
 //!
-//! A yes-or-no question about an app, asked of the person the way macOS asks it. transom (the
+//! A yes-or-no question about an app, asked of the person the way macOS asks it. The portal (the
 //! portal backend) calls `org.bardo.Shell1.AskPermission` (`shell_services::capture_pick`) before
 //! it lets an app control the desktop or take a screenshot the person did not start; this sheet is
 //! Bardo's `Alert` centred on the sheets' output over an Overlay layer that takes the keyboard. It
