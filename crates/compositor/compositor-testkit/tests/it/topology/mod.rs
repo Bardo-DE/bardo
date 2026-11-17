@@ -154,10 +154,10 @@ fn import_routes_follow_the_plan() {
 /// its format (A5); returns B's and A's counters after one commit.
 fn display_on_a_client_from_b(
     cross: CrossSupport,
-) -> (
+) -> Option<(
     compositor_backend::gpu::CopyCounters,
     compositor_backend::gpu::CopyCounters,
-) {
+)> {
     let topology = pair(cross);
     let (_dir, mut nodes) = tree(&topology);
     let stack = GpuStack::start(&mut nodes, &GpuChoice::Auto).expect("a stack");
@@ -185,8 +185,8 @@ fn display_on_a_client_from_b(
     let a = stack.plan.render;
 
     let (w, h) = SIZE;
-    let client = TestBuffer::new(w, h, Some(drm_node(b))).expect("the client buffer");
-    let mut out = TestBuffer::new(w, h, Some(drm_node(a))).expect("the output buffer");
+    let client = TestBuffer::new_or_skip(w, h, Some(drm_node(b)))?;
+    let mut out = TestBuffer::new_or_skip(w, h, Some(drm_node(a)))?;
     assert_eq!(
         client.dmabuf.node().map(|node| node.dev_id()),
         Some(rustix::fs::makedev(b.major, b.minor)),
@@ -216,12 +216,14 @@ fn display_on_a_client_from_b(
             .map(|device| device.counters().snapshot())
             .expect("the device is enumerated")
     };
-    (counters_of(&mut gpu, 1), counters_of(&mut gpu, 0))
+    Some((counters_of(&mut gpu, 1), counters_of(&mut gpu, 0)))
 }
 
 #[test]
 fn display_on_a_client_buffers_from_b_take_the_dma_shadow_copy() {
-    let (b, a) = display_on_a_client_from_b(CrossSupport::Direct);
+    let Some((b, a)) = display_on_a_client_from_b(CrossSupport::Direct) else {
+        return;
+    };
     assert_eq!(b.bind_dmabuf, 1, "B rendered the shadow buffer once");
     assert_eq!(b.copy_texture, 0, "no CPU copy");
     assert_eq!(a.import_memory, 0, "no CPU copy");
@@ -230,7 +232,9 @@ fn display_on_a_client_buffers_from_b_take_the_dma_shadow_copy() {
 
 #[test]
 fn display_on_a_client_buffers_from_b_take_the_cpu_copy_when_a_cannot_import() {
-    let (b, a) = display_on_a_client_from_b(CrossSupport::CopyOnly);
+    let Some((b, a)) = display_on_a_client_from_b(CrossSupport::CopyOnly) else {
+        return;
+    };
     assert_eq!(b.copy_texture, 1, "B's texture was read back once");
     assert_eq!(a.import_memory, 1, "A uploaded it once");
     assert_eq!(b.bind_dmabuf, 0, "no shadow buffer");
@@ -242,7 +246,9 @@ fn a_shm_client_renders_exactly_beside_a_foreign_gpu() {
     let mut gpu =
         GpuManager::new(SoftGraphicsApi::new(pair(CrossSupport::Direct))).expect("manager");
     let a = drm_node(DrmNodeId::new(226, 128));
-    let mut out = TestBuffer::new(w, h, Some(a)).expect("the output buffer");
+    let Some(mut out) = TestBuffer::new_or_skip(w, h, Some(a)) else {
+        return;
+    };
     let mut renderer = gpu.renderer(&a, &a, Fourcc::Argb8888).expect("a renderer");
     let bytes = TestBuffer::shm_bytes(w, h, 5);
     let texture = renderer
@@ -261,8 +267,12 @@ fn unplugging_a_gpu_falls_back_to_shm() {
         drm_node(DrmNodeId::new(226, 128)),
         drm_node(DrmNodeId::new(226, 129)),
     );
-    let client = TestBuffer::new(w, h, Some(b)).expect("the client buffer");
-    let mut out = TestBuffer::new(w, h, Some(a)).expect("the output buffer");
+    let (Some(client), Some(mut out)) = (
+        TestBuffer::new_or_skip(w, h, Some(b)),
+        TestBuffer::new_or_skip(w, h, Some(a)),
+    ) else {
+        return;
+    };
     client.fill(1).expect("fill");
     let mut gpu = GpuManager::new(SoftGraphicsApi::new(topology)).expect("manager");
     {

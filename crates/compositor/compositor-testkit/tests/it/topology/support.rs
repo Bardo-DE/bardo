@@ -49,6 +49,24 @@ impl TestBuffer {
         })
     }
 
+    /// [`TestBuffer::new`], or `None` after printing a skip note when this host has no usable
+    /// `/dev/udmabuf` (missing, or opening it is denied). Any other failure panics.
+    pub fn new_or_skip(w: u32, h: u32, node: Option<DrmNode>) -> Option<TestBuffer> {
+        match TestBuffer::new(w, h, node) {
+            Ok(buffer) => Some(buffer),
+            Err(error)
+                if matches!(
+                    error.kind(),
+                    std::io::ErrorKind::NotFound | std::io::ErrorKind::PermissionDenied
+                ) =>
+            {
+                eprintln!("skipped: no /dev/udmabuf here");
+                None
+            }
+            Err(error) => panic!("a test buffer: {error}"),
+        }
+    }
+
     /// Writes the pattern of `frame`.
     pub fn fill(&self, frame: u32) -> std::io::Result<()> {
         let mut row = vec![0u8; self.stride as usize];
