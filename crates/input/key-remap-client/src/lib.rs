@@ -1,4 +1,4 @@
-//! A program's end of key_remap.
+//! A program's end of the key remap daemon.
 //!
 //! - [`Connection`]: the socket, one message per packet, `Hello` checked.
 //! - [`KeyRemapSource`]: this desktop's `keymap::KeymapSource`. It lays the chord keymap's conventions

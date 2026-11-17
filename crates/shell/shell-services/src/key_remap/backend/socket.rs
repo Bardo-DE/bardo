@@ -143,7 +143,7 @@ fn note_unreached(path: &Path, error: &io::Error) {
         error.kind(),
         io::ErrorKind::NotFound | io::ErrorKind::ConnectionRefused
     ) {
-        eprintln!("bardo-shell: key_remap: {}: {error}", path.display());
+        eprintln!("bardo-shell: key-remap: {}: {error}", path.display());
     }
 }
 
@@ -290,13 +290,13 @@ fn read_packet(fd: &OwnedFd, buffer: &mut [u8]) -> Packet {
     match recv(fd.as_fd(), &mut *buffer, RecvFlags::TRUNC) {
         Ok((0, _)) => Packet::Closed,
         Ok((len, full)) if full > len => {
-            eprintln!("bardo-shell: key_remap: a packet of {full} bytes is over the limit");
+            eprintln!("bardo-shell: key-remap: a packet of {full} bytes is over the limit");
             Packet::Skipped
         }
         Ok((len, _)) => match decode::<ToClient>(&buffer[..len]) {
             Ok(message) => Packet::Message(message),
             Err(error) => {
-                eprintln!("bardo-shell: key_remap: a packet that is not a message: {error}");
+                eprintln!("bardo-shell: key-remap: a packet that is not a message: {error}");
                 Packet::Skipped
             }
         },
@@ -316,7 +316,7 @@ fn handle(
 ) -> Turn {
     if let Compat::Incompatible { version } = compat(&message) {
         eprintln!(
-            "bardo-shell: key_remap: the daemon speaks protocol {version}, this bardo-shell {}; it is left alone",
+            "bardo-shell: key-remap: the daemon speaks protocol {version}, this bardo-shell {}; it is left alone",
             key_remap_proto::PROTOCOL_VERSION
         );
         return Turn::Lost;
@@ -336,7 +336,7 @@ fn handle(
         ToClient::ConfigWarnings(warnings) => {
             for warning in warnings {
                 eprintln!(
-                    "bardo-shell: key_remap: key-remap.toml {}: {}",
+                    "bardo-shell: key-remap: key-remap.toml {}: {}",
                     warning.key, warning.problem
                 );
             }

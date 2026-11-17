@@ -17,7 +17,7 @@
 //! `Overrides` (the person's `keyboard.overrides`) replaces the service's own and re-chooses the
 //! focused window's profile, sending `Focus` when it changed.
 //!
-//! The notices carry no action, so recovery is `bardo-shell key_remap retry` and `bardo-shell key_remap resume`.
+//! The notices carry no action, so recovery is `bardo-shell key-remap retry` and `bardo-shell key-remap resume`.
 
 mod backend;
 

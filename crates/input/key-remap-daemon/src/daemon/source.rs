@@ -82,7 +82,9 @@ fn ask(
     match handed(source, request) {
         Ok(fd) => Ok(fd),
         Err(ClientError::Absent) => {
-            eprintln!("key_remap: the device service is not running; opening the device directly");
+            eprintln!(
+                "bardo-key-remap: the device service is not running; opening the device directly"
+            );
             direct()
         }
         Err(e) => Err(OutputError::Unavailable(e.to_string())),

@@ -46,7 +46,7 @@ pub fn record(out: &Path, limits: Limits) -> Result<usize, Error> {
     })?;
     file.write_all(&header(&opened.source))?;
     eprintln!(
-        "mouse_gestures: recording {} ({}) to {}",
+        "bardo-mouse-gestures: recording {} ({}) to {}",
         info.name,
         info.path,
         out.display()

@@ -15,7 +15,10 @@ impl<E: Emitter> Reader<E> {
     pub(super) fn arm_caps(&mut self, id: DeviceId) {
         match self.nodes.leds_lit(id) {
             Ok(lit) => self.caps_grabbed(lit.lamp(Led::Caps)),
-            Err(e) => eprintln!("key_remap: reading the LEDs of device {} failed: {e}", id.0),
+            Err(e) => eprintln!(
+                "bardo-key-remap: reading the LEDs of device {} failed: {e}",
+                id.0
+            ),
         }
     }
 
@@ -38,7 +41,7 @@ impl<E: Emitter> Reader<E> {
     pub(super) fn write_caps_tap(&mut self, tap: &[OutEvent]) {
         if !tap.is_empty() {
             eprintln!(
-                "key_remap: turned Caps Lock off: the desktop had it on, nothing typed through \
+                "bardo-key-remap: turned Caps Lock off: the desktop had it on, nothing typed through \
                  key_remap asked for it, and the Caps Lock key is remapped so pressing it cannot \
                  (Shift+Caps Lock sets it on purpose)"
             );

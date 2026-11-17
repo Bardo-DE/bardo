@@ -15,7 +15,7 @@ pub fn dispatch(outs: Vec<Out>, socket: &SocketHandle, emitter: &mut dyn Emitter
         |failed, result| match result {
             Ok(()) => failed,
             Err(e) => {
-                eprintln!("mouse_gestures: output failed: {e}");
+                eprintln!("bardo-mouse-gestures: output failed: {e}");
                 true
             }
         },

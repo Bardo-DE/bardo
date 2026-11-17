@@ -61,7 +61,7 @@ fn eligibility(node: &Node, allow: &VirtualAllowance) -> Eligibility {
         path: PathBuf::from("/dev/input/event0"),
     };
     // Bluetooth HID devices register under `devices/virtual/misc/uhid`, which is not
-    // `devices/virtual/input`, so they are hardware to key_remap.
+    // `devices/virtual/input`, so they are hardware to the key remap daemon.
     classify(&caps, &id, false, allow)
 }
 

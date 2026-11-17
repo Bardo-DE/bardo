@@ -16,7 +16,7 @@ impl<E: Emitter> Reader<E> {
         for id in change.given {
             if let Err(e) = self.twins.retire(id) {
                 eprintln!(
-                    "key_remap: releasing the pointer of device {} failed: {e}",
+                    "bardo-key-remap: releasing the pointer of device {} failed: {e}",
                     id.0
                 );
             }
@@ -37,7 +37,10 @@ impl<E: Emitter> Reader<E> {
             return;
         }
         if let Err(e) = self.nodes.write(id, &events) {
-            eprintln!("key_remap: setting LEDs on device {} failed: {e}", id.0);
+            eprintln!(
+                "bardo-key-remap: setting LEDs on device {} failed: {e}",
+                id.0
+            );
         }
     }
 
@@ -52,7 +55,7 @@ impl<E: Emitter> Reader<E> {
             Ok(_) => return,
             Err(e) => {
                 eprintln!(
-                    "key_remap: reading the pointer of device {} failed: {e}",
+                    "bardo-key-remap: reading the pointer of device {} failed: {e}",
                     id.0
                 );
                 return;
@@ -60,10 +63,10 @@ impl<E: Emitter> Reader<E> {
         };
         match self.emitter.twin(&caps) {
             Ok(twin) => {
-                eprintln!("key_remap: created \"{}\"", caps.name);
+                eprintln!("bardo-key-remap: created \"{}\"", caps.name);
                 self.twins.insert(id, twin);
             }
-            Err(e) => eprintln!("key_remap: cannot create \"{}\": {e}", caps.name),
+            Err(e) => eprintln!("bardo-key-remap: cannot create \"{}\": {e}", caps.name),
         }
     }
 }

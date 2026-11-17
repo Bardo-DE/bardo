@@ -18,7 +18,10 @@ use key_remap_proto::Warning;
 
 /// One config problem as a log line.
 pub(super) fn log_warning(warning: &Warning) {
-    eprintln!("key_remap: config: {}: {}", warning.key, warning.problem);
+    eprintln!(
+        "bardo-key-remap: config: {}: {}",
+        warning.key, warning.problem
+    );
 }
 
 impl<E: Emitter> Reader<E> {
@@ -39,7 +42,9 @@ impl<E: Emitter> Reader<E> {
                 self.looking = std::mem::take(&mut self.looking).appeared(path);
             }
             Message::Hotplug(Hotplug::Rescan) => {
-                eprintln!("key_remap: device events were missed; looking at every keyboard again");
+                eprintln!(
+                    "bardo-key-remap: device events were missed; looking at every keyboard again"
+                );
                 self.looking = Lookout::everything();
             }
             Message::Hotplug(Hotplug::Gone(path)) => {
@@ -202,7 +207,7 @@ impl<E: Emitter> Reader<E> {
     fn release_twins(&mut self) {
         for (id, e) in self.twins.release_all() {
             eprintln!(
-                "key_remap: releasing the pointer of device {} failed: {e}",
+                "bardo-key-remap: releasing the pointer of device {} failed: {e}",
                 id.0
             );
         }
@@ -216,7 +221,7 @@ impl<E: Emitter> Reader<E> {
         match self.emitter.write(events) {
             Ok(()) => false,
             Err(e) => {
-                eprintln!("key_remap: writing to the virtual keyboard failed: {e}");
+                eprintln!("bardo-key-remap: writing to the virtual keyboard failed: {e}");
                 self.recreate_output();
                 true
             }
@@ -228,10 +233,10 @@ impl<E: Emitter> Reader<E> {
     /// would leave the machine without keys.
     fn recreate_output(&mut self) {
         match self.emitter.recreate() {
-            Ok(()) => eprintln!("key_remap: recreated the virtual keyboard"),
+            Ok(()) => eprintln!("bardo-key-remap: recreated the virtual keyboard"),
             Err(e) => {
                 eprintln!(
-                    "key_remap: cannot recreate the virtual keyboard: {e}; releasing the keyboards"
+                    "bardo-key-remap: cannot recreate the virtual keyboard: {e}; releasing the keyboards"
                 );
                 self.release_grabs();
             }
@@ -250,7 +255,7 @@ impl<E: Emitter> Reader<E> {
         self.write(&events);
         if let Err(e) = self.twins.release(id) {
             eprintln!(
-                "key_remap: releasing the pointer of device {} failed: {e}",
+                "bardo-key-remap: releasing the pointer of device {} failed: {e}",
                 id.0
             );
         }
@@ -268,7 +273,10 @@ impl<E: Emitter> Reader<E> {
         }
         for id in self.devices.grabbed() {
             if let Err(e) = self.nodes.write(id, &events) {
-                eprintln!("key_remap: setting LEDs on device {} failed: {e}", id.0);
+                eprintln!(
+                    "bardo-key-remap: setting LEDs on device {} failed: {e}",
+                    id.0
+                );
             }
         }
     }

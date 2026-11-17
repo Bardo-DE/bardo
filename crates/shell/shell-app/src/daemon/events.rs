@@ -152,11 +152,11 @@ fn mouse_gestures_ask(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, ask: &Mous
     match mouse_gestures::plan(ask) {
         Plan::Request(request) => {
             if let Response::Failed(failure) = answer(shell, ctx, request) {
-                eprintln!("bardo-shell: mouse_gestures: {}", failure.message);
+                eprintln!("bardo-shell: mouse-gestures: {}", failure.message);
             }
         }
         Plan::Program { program, args } => mouse_gestures::run(&program, &args),
-        Plan::Refused(why) => eprintln!("bardo-shell: mouse_gestures: {ask:?}: {why}"),
+        Plan::Refused(why) => eprintln!("bardo-shell: mouse-gestures: {ask:?}: {why}"),
     }
 }
 

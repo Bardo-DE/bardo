@@ -134,7 +134,7 @@ impl Server {
             let ready = match self.wait() {
                 Ok(ready) => ready,
                 Err(e) => {
-                    eprintln!("key_remap: socket poll failed: {e}");
+                    eprintln!("bardo-key-remap: socket poll failed: {e}");
                     return;
                 }
             };
@@ -207,7 +207,9 @@ impl Server {
                     AcceptFailure::NothingPending => return,
                     AcceptFailure::Retry => {}
                     AcceptFailure::Pause => {
-                        eprintln!("key_remap: accept failed: {e}; not accepting for a moment");
+                        eprintln!(
+                            "bardo-key-remap: accept failed: {e}; not accepting for a moment"
+                        );
                         self.intake = Intake::paused_at(clock::now());
                         return;
                     }
@@ -258,7 +260,7 @@ impl Server {
         let (complaints, voice) = std::mem::take(&mut self.complaints).note(uid, clock::now());
         self.complaints = complaints;
         if voice == Voice::Speak {
-            eprintln!("key_remap: client uid {uid}: {what}");
+            eprintln!("bardo-key-remap: client uid {uid}: {what}");
         }
     }
 
@@ -279,7 +281,7 @@ impl Server {
                 Ok(ToSocket::Keymap(reading)) => {
                     if let Some(replies) = self.shelf.read(reading) {
                         self.shelf.state().problems.iter().for_each(|p| {
-                            eprintln!("key_remap: keymap: line {}: {}", p.line, p.what)
+                            eprintln!("bardo-key-remap: keymap: line {}: {}", p.line, p.what);
                         });
                         self.deliver(replies);
                     }

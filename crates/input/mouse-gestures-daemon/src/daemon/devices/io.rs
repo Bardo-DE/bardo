@@ -95,7 +95,7 @@ impl Devices {
                 false
             }
             Effect::Log(line) => {
-                eprintln!("mouse_gestures: {line}");
+                eprintln!("bardo-mouse-gestures: {line}");
                 false
             }
             Effect::Lost => true,

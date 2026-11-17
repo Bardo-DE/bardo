@@ -77,7 +77,7 @@ enum Link {
     Up(OwnedFd),
 }
 
-/// The host's connection to mouse_gestures.
+/// The host's connection to the mouse gestures daemon.
 #[derive(Debug)]
 pub(crate) struct MouseGestures {
     path: Option<PathBuf>,

@@ -67,7 +67,7 @@ impl<S: Session> UinputEmitter<S> {
                 // fill it.
                 if self.lost.is_power_of_two() {
                     eprintln!(
-                        "mouse_gestures: the input service is behind; frames lost so far: {}",
+                        "bardo-mouse-gestures: the input service is behind; frames lost so far: {}",
                         self.lost
                     );
                 }

@@ -2,7 +2,7 @@
 
 use super::bitset::bitset;
 
-/// What a modifier key means on the keyboard that sent it, independent of its key_remap.
+/// What a modifier key means on the keyboard that sent it, independent of any remap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Role {
     /// The key beside the space bar.

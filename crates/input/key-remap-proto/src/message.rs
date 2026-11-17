@@ -5,19 +5,20 @@ use serde::{Deserialize, Serialize};
 use crate::keymap::{KeymapState, Registration};
 use crate::vocab::{ProfileName, Status, Warning};
 
-/// A desktop to the key remap daemon: a request to steer it or a call on the keymap. Only the seat owner's
-/// steering is honoured; the keymap calls are open to every client, because they only read or
-/// inform.
+/// A desktop to the key remap daemon: a request to steer it or a call on the keymap.
+///
+/// Only the seat owner's steering is honoured; the keymap calls are open to every client, because
+/// they only read or inform.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ToDaemon {
-    /// A request that changes key_remap.
+    /// A request that changes the key remap daemon.
     Steer(Steer),
     /// A call on the person's keymap.
     Keymap(KeymapCall),
 }
 
-/// What the seat owner's shell asks of key_remap.
+/// What the seat owner's shell asks of the key remap daemon.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Steer {

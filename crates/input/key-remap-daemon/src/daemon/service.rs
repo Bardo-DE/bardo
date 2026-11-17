@@ -24,7 +24,10 @@ pub(crate) fn run(env: &Env) -> Result<(), String> {
     let notifier =
         Notifier::new(env.notify_socket.as_deref()).map_err(|e| format!("notify socket: {e}"))?;
     let source = Source::detect(&env.device_service);
-    eprintln!("key_remap: virtual devices from {}", source.describe());
+    eprintln!(
+        "bardo-key-remap: virtual devices from {}",
+        source.describe()
+    );
     let emitter = create_output(&source)?;
     let (inbox, mailbox) = mailbox().map_err(|e| format!("inbox: {e}"))?;
     let path = socket_path(&env.runtime_dir);
@@ -34,7 +37,7 @@ pub(crate) fn run(env: &Env) -> Result<(), String> {
     keymap::settle(&KeymapState::default(), first_keymap.clone())
         .problems
         .iter()
-        .for_each(|p| eprintln!("key_remap: keymap: line {}: {}", p.line, p.what));
+        .for_each(|p| eprintln!("bardo-key-remap: keymap: line {}: {}", p.line, p.what));
     let socket = socket::spawn(
         listener,
         inbox.clone(),
@@ -44,7 +47,7 @@ pub(crate) fn run(env: &Env) -> Result<(), String> {
         first_keymap,
     )
     .map_err(|e| format!("socket thread: {e}"))?;
-    eprintln!("key_remap: listening on {}", path.display());
+    eprintln!("bardo-key-remap: listening on {}", path.display());
     let _devices = watch_devices(&env.dev_input, &inbox)?;
     let (layers, _config) = load_config(env, &inbox);
     let _keymap = watch_keymap(&env.config_dir, &socket);
@@ -100,7 +103,7 @@ fn create_output(source: &Source) -> Result<Device, String> {
                     ));
                 }
                 Patience::TryAgainAfter(delay) => {
-                    eprintln!("key_remap: {e}; retrying in {}ms", delay.as_millis());
+                    eprintln!("bardo-key-remap: {e}; retrying in {}ms", delay.as_millis());
                     std::thread::sleep(delay);
                     waited += delay;
                 }
@@ -134,7 +137,7 @@ fn watch_keymap(dir: &Path, socket: &SocketHandle) -> Option<notify::Recommended
             keymap::spawn(dir, tx)
                 .map_err(|e| format!("not watching the keymap in {}: {e}", dir.display()))
         });
-    watcher.map_err(|e| eprintln!("key_remap: {e}")).ok()
+    watcher.map_err(|e| eprintln!("bardo-key-remap: {e}")).ok()
 }
 
 /// How a config file is watched: the function that starts the watch and the message its
@@ -160,7 +163,7 @@ fn watch_layer(
                 .map(|()| watcher)
                 .map_err(|e| format!("config thread: {e}"))
         });
-    watcher.map_err(|e| eprintln!("key_remap: {e}")).ok()
+    watcher.map_err(|e| eprintln!("bardo-key-remap: {e}")).ok()
 }
 
 /// The built-in, vendor and system layers, and the watches that re-read the vendor and system
@@ -172,7 +175,7 @@ fn load_config(env: &Env, inbox: &Inbox) -> (Layers, Vec<notify::RecommendedWatc
     vendor_warnings
         .iter()
         .chain(&warnings)
-        .for_each(|w| eprintln!("key_remap: config: {}: {}", w.key, w.problem));
+        .for_each(|w| eprintln!("bardo-key-remap: config: {}: {}", w.key, w.problem));
     let layers = Layers::builtin_only()
         .with_vendor(vendor_layer)
         .with_system(layer);

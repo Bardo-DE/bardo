@@ -12,6 +12,6 @@ const IDLE: Duration = Duration::from_secs(20);
 pub(super) fn record(file: &Path, total: Duration) -> Result<(), Error> {
     let limits = Limits { idle: IDLE, total };
     let n = record::record(file, limits)?;
-    eprintln!("mouse_gestures: recorded {n} reads");
+    eprintln!("bardo-mouse-gestures: recorded {n} reads");
     Ok(())
 }

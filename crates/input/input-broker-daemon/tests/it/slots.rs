@@ -23,12 +23,12 @@ fn stranger(uid: Uid) -> Caller {
 fn a_caller_that_passes_the_policy_has_a_reserve_and_anyone_else_a_user_pool() {
     let table: &[(&str, Caller, Bucket)] = &[
         (
-            "mouse_gestures",
+            "the mouse gestures daemon",
             mouse_gestures(),
             Bucket::Reserved(Maker::PadDaemon),
         ),
         (
-            "key_remap",
+            "the key remap daemon",
             key_remap(),
             Bucket::Reserved(Maker::KeymapDaemon),
         ),

@@ -62,7 +62,7 @@ pub(crate) fn vouch(seat_user: bool) -> Box<dyn Vouch> {
 /// nobody steering, which is the safe way to fail.
 fn steering_check() -> ShellCheck {
     let table = Table::from_toml(STEERING_TABLE).unwrap_or_else(|e| {
-        eprintln!("key_remap: nobody may steer: the steering table is unusable: {e}");
+        eprintln!("bardo-key-remap: nobody may steer: the steering table is unusable: {e}");
         Table::empty()
     });
     ShellCheck::system(table, vec![SHELL, FOCUS_FEED])

@@ -65,7 +65,7 @@ fn each_attention_has_its_words() {
             "failed",
             Attention::Failed,
             "Command-key layout stopped",
-            "Keys work as on a standard keyboard. Run `bardo-shell key_remap retry` to try again.",
+            "Keys work as on a standard keyboard. Run `bardo-shell key-remap retry` to try again.",
         ),
         (
             "conflict",
@@ -77,7 +77,7 @@ fn each_attention_has_its_words() {
             "paused",
             Attention::Paused,
             "Command-key layout paused",
-            "Keys work as on a standard keyboard. Run `bardo-shell key_remap resume` to turn it back on.",
+            "Keys work as on a standard keyboard. Run `bardo-shell key-remap resume` to turn it back on.",
         ),
     ];
     for (case, attention, summary, body) in cases {

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::keyboard::{ShellFocus, UserOverrides};
 
-/// What a person can ask of the key remap daemon from outside the daemon (`bardo-shell key_remap retry` and `resume`):
+/// What a person can ask of the key remap daemon from outside the daemon (`bardo-shell key-remap retry` and `resume`):
 /// the part of [`KeyRemapCommand`] that crosses the IPC wire.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

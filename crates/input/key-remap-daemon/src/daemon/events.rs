@@ -59,7 +59,7 @@ impl InputEvent {
     }
 }
 
-/// What a device event means to key_remap.
+/// What a device event means to the key remap daemon.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Decoded {
     /// A keyboard key transition.

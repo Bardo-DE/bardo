@@ -88,14 +88,14 @@ pub(super) fn replay_file(file: &Path, config: Option<&Path>) -> Result<Vec<Stri
                 std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
             let (layer, warnings) = parse_user(&toml);
             for w in &warnings {
-                eprintln!("key_remap: config: {}: {}", w.key, w.problem);
+                eprintln!("bardo-key-remap: config: {}: {}", w.key, w.problem);
             }
             Layers::builtin_only().with_user(layer)
         }
     };
     let (profiles, warnings) = layers.resolve();
     for w in &warnings {
-        eprintln!("key_remap: config: {}: {}", w.key, w.problem);
+        eprintln!("bardo-key-remap: config: {}: {}", w.key, w.problem);
     }
     Ok(run(steps, &profiles))
 }
@@ -160,7 +160,7 @@ mod tests {
     /// The race at a restart: the lamp read Off at the grab, then the desktop set the new
     /// virtual keyboard's Caps Lock LED.
     const RACE: &str = "\
-# key_remap just grabbed the keyboard; its lamp read off
+# the key remap daemon just grabbed the keyboard; its lamp read off
 0 led caps on
 10 press 1 apple leftshift
 20 press 1 apple a

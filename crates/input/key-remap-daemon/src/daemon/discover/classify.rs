@@ -21,7 +21,7 @@ pub(crate) struct Identity {
 
 /// Whether a node is a uinput device, read off its resolved (symlink-free) sysfs path: it sits
 /// under `devices/virtual/input`, where uinput devices register. Another program writes such a
-/// device, so grabbing it would feed that program's output back through key_remap.
+/// device, so grabbing it would feed that program's output back through the key remap daemon.
 pub(crate) fn is_virtual(resolved: &Path) -> bool {
     let parts: Vec<_> = resolved.components().collect();
     let virtual_input = ["devices", "virtual", "input"];

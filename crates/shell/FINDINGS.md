@@ -200,8 +200,8 @@ A settled item is deleted, not marked closed.
   socket has been down 3 s, then every 5 s: `GetUnit` answers `NoSuchUnit` for an installed unit
   that is not loaded (stopped and collected), which reads as `NotInstalled`, and that is as
   silent as `Unknown`. A stopped unit is silent on purpose; only a unit that gave up (five
-  failures in 30 s) is `Failed`. The key remap daemon's notices carry no action, so they point at `bardo-shell key_remap retry` and
-  `bardo-shell key_remap resume`.
+  failures in 30 s) is `Failed`. The key remap daemon's notices carry no action, so they point at `bardo-shell key-remap retry` and
+  `bardo-shell key-remap resume`.
   `keyboard.overrides` (design/22 §3.25) is a list of `{ app, profile }` tables, which needs
   The UI kit's `ds-settings` list-of-tables keys (`SettingsRow`, Bardo PR #2): sill builds against
   The UI kit's `claude/settings-rows` branch until that PR merges. A row whose `profile` is not a

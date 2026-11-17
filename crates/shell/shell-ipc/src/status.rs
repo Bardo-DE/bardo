@@ -1,5 +1,5 @@
 //! What a client reads: the notifications server, the lock, the polkit agent, the clipboard
-//! history, idle and key_remap.
+//! history, idle and the key remap daemon.
 //!
 //! Each answer is the `shell-model` state, serialised; the two that hold more than a client should
 //! see (a clipboard entry's text, a polkit prompt's cookie) are reduced to counts and names here.

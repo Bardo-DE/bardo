@@ -46,7 +46,7 @@ impl Opened {
 pub fn open(purpose: Purpose) -> Result<Opened, Error> {
     match open_hidraw(purpose) {
         Err(undecodable @ Error::UndecodableReport { .. }) => {
-            eprintln!("mouse_gestures: {undecodable}; reading it through evdev instead");
+            eprintln!("bardo-mouse-gestures: {undecodable}; reading it through evdev instead");
             open_evdev()
         }
         other => other,
@@ -64,7 +64,7 @@ fn open_hidraw(purpose: Purpose) -> Result<Opened, Error> {
     }
     if !d.verified {
         eprintln!(
-            "mouse_gestures: {:?} ({:04x}:{:04x}) has never been run with mouse_gestures",
+            "bardo-mouse-gestures: {:?} ({:04x}:{:04x}) has never been run with bardo-mouse-gestures",
             d.model, d.vendor, d.product
         );
     }
@@ -76,11 +76,11 @@ fn open_hidraw(purpose: Purpose) -> Result<Opened, Error> {
     match (purpose, writable) {
         (Purpose::Run, true) => {
             if let Err(e) = hidraw::enable_multitouch(&fd) {
-                eprintln!("mouse_gestures: enabling multitouch failed: {e}");
+                eprintln!("bardo-mouse-gestures: enabling multitouch failed: {e}");
             }
         }
         (Purpose::Run, false) => eprintln!(
-            "mouse_gestures: {} is read-only; multitouch left as the kernel set it",
+            "bardo-mouse-gestures: {} is read-only; multitouch left as the kernel set it",
             found.info.path
         ),
         (Purpose::Record, _) => {}
@@ -100,7 +100,7 @@ fn open_evdev() -> Result<Opened, Error> {
         source,
     })?;
     eprintln!(
-        "mouse_gestures: reading {} through evdev (untested beyond the Magic Mouse)",
+        "bardo-mouse-gestures: reading {} through evdev (untested beyond the Magic Mouse)",
         info.path
     );
     Ok(Opened {

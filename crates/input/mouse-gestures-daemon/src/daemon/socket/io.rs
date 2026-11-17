@@ -92,7 +92,7 @@ impl Server {
         let ready = match self.wait() {
             Ok(r) => r,
             Err(e) => {
-                eprintln!("mouse_gestures: socket poll failed: {e}");
+                eprintln!("bardo-mouse-gestures: socket poll failed: {e}");
                 return Some(Exit::PollFailed);
             }
         };
@@ -270,7 +270,7 @@ impl Server {
                 let _ = self.notes.send(note);
             }
             SocketEffect::PauseAccept { until } => self.paused_until = Some(until),
-            SocketEffect::Log(line) => eprintln!("mouse_gestures: {line}"),
+            SocketEffect::Log(line) => eprintln!("bardo-mouse-gestures: {line}"),
         }
     }
 

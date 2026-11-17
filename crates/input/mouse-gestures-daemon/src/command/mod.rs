@@ -137,7 +137,7 @@ pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
     match result {
         Ok(()) => ExitCode::SUCCESS,
         Err(e) => {
-            eprintln!("mouse_gestures: {e}");
+            eprintln!("bardo-mouse-gestures: {e}");
             ExitCode::FAILURE
         }
     }

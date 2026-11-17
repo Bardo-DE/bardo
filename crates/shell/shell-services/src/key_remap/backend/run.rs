@@ -37,7 +37,7 @@ struct Live {
     tx: watch::Sender<KeyRemapState>,
     windows: watch::Receiver<WindowModel>,
     apps: watch::Receiver<AppIndex>,
-    /// The one notice about key_remap.
+    /// The one notice about the key remap daemon.
     board: Board<()>,
     state: KeyRemapState,
     /// What the notification now says.
@@ -70,7 +70,7 @@ pub(crate) async fn run(
     let (told, mut events) = unbounded_channel();
     let link = socket::start(socket, told.clone())?;
     let mut touch = config::watch(&reach.config_dir)
-        .map_err(|error| eprintln!("bardo-shell: key_remap: watching key-remap.toml: {error}"))
+        .map_err(|error| eprintln!("bardo-shell: key-remap: watching key-remap.toml: {error}"))
         .ok();
     let (mut windows, mut apps) = (links.windows.clone(), links.apps.clone());
     let mut live = Live {
@@ -146,12 +146,12 @@ impl Live {
     /// Ask systemd to reset and restart the unit, and read it again soon after.
     fn retry(&mut self) {
         let Some(bus) = self.reach.system.clone() else {
-            eprintln!("bardo-shell: key_remap: there is no system bus to ask systemd on");
+            eprintln!("bardo-shell: key-remap: there is no system bus to ask systemd on");
             return;
         };
         self.rt.spawn(async move {
             if let Err(error) = systemd::restart(&bus).await {
-                eprintln!("bardo-shell: key_remap: restarting bardo-key-remap.service: {error}");
+                eprintln!("bardo-shell: key-remap: restarting bardo-key-remap.service: {error}");
             }
         });
         self.check_at = Some(Instant::now() + AFTER_RETRY);
@@ -179,7 +179,7 @@ impl Live {
         let text = config::read(&self.reach.config_dir).unwrap_or_default();
         match user_config(text) {
             Some(message) => self.link.send(message),
-            None => eprintln!("bardo-shell: key_remap: key-remap.toml is too large to send"),
+            None => eprintln!("bardo-shell: key-remap: key-remap.toml is too large to send"),
         }
     }
 

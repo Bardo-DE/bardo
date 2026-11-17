@@ -30,7 +30,7 @@ pub(crate) fn listed(role: &str, proof: Proof, uid: Uid, cgroup: &str) -> Caller
     }
 }
 
-/// The genuine mouse_gestures.
+/// The genuine the mouse gestures daemon.
 pub(crate) fn mouse_gestures() -> Caller {
     listed(
         "pad_daemon",
@@ -40,7 +40,7 @@ pub(crate) fn mouse_gestures() -> Caller {
     )
 }
 
-/// The genuine key_remap.
+/// The genuine the key remap daemon.
 pub(crate) fn key_remap() -> Caller {
     listed(
         "keymap_daemon",

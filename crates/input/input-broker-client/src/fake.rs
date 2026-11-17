@@ -1,5 +1,7 @@
-//! A stand-in for the service, for the tests of the mouse gestures daemon, the key remap daemon and this crate: no socket, no
-//! daemon, no device. It records what a caller asked for and answers as it is told to.
+//! A stand-in for the service, for the tests of the mouse gestures daemon, the key remap daemon and
+//! this crate: no socket, no daemon, no device.
+//!
+//! It records what a caller asked for and answers as it is told to.
 
 use crate::error::ClientError;
 use crate::session::{DeviceSource, Made, Sent, Session};

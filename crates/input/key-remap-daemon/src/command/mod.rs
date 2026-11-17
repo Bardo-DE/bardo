@@ -93,7 +93,7 @@ pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
         Some(command) => match execute(command, &env) {
             Ok(()) => ExitCode::SUCCESS,
             Err(e) => {
-                eprintln!("key_remap: {e}");
+                eprintln!("bardo-key-remap: {e}");
                 ExitCode::FAILURE
             }
         },
@@ -139,14 +139,14 @@ fn check_devices(env: &Env) -> Result<(), String> {
                 .map(drop)
                 .map_err(|e| e.to_string())
                 .and_then(|()| {
-                    print_out("key_remap: the device service answers; devices can be made\n")
+                    print_out("bardo-key-remap: the device service answers; devices can be made\n")
                 })
         }
         _ => uinput::probe(env.probe, Path::new(UINPUT))
             .map_err(|e| e.to_string())
             .and_then(|()| {
                 print_out(&format!(
-                    "key_remap: {UINPUT} can be opened; this user can create devices\n"
+                    "bardo-key-remap: {UINPUT} can be opened; this user can create devices\n"
                 ))
             }),
     }

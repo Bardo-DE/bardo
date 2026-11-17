@@ -43,7 +43,7 @@ pub(super) fn render(status: &Status, caps: impl Fn(&Keyboard) -> Option<bool>) 
     } else {
         "running"
     };
-    let mut lines = vec![format!("key_remap: {mode}")];
+    let mut lines = vec![format!("bardo-key-remap: {mode}")];
     if status.keyboards.is_empty() {
         lines.push("  no keyboards".to_owned());
     }
@@ -121,7 +121,7 @@ mod tests {
                     paused: false,
                     keyboards: vec![],
                 },
-                "key_remap: running\n  no keyboards",
+                "bardo-key-remap: running\n  no keyboards",
             ),
             (
                 "grabbed",
@@ -129,7 +129,7 @@ mod tests {
                     paused: false,
                     keyboards: vec![keyboard("K5", Grab::Active)],
                 },
-                "key_remap: running\n  K5 (/dev/input/event16, 3434:0a53): grabbed, remapping",
+                "bardo-key-remap: running\n  K5 (/dev/input/event16, 3434:0a53): grabbed, remapping",
             ),
             (
                 "conflict",
@@ -137,7 +137,7 @@ mod tests {
                     paused: false,
                     keyboards: vec![keyboard("K5", Grab::Conflict)],
                 },
-                "key_remap: running\n  K5 (/dev/input/event16, 3434:0a53): held by another remapper (Toshy, keyd, ...)",
+                "bardo-key-remap: running\n  K5 (/dev/input/event16, 3434:0a53): held by another remapper (Toshy, keyd, ...)",
             ),
         ];
         for (name, status, want) in cases {

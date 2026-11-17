@@ -11,7 +11,7 @@ pub fn kv<'a>(key: &'a str, value: &'a dyn Display) -> (&'a str, &'a dyn Display
 
 /// Builds the line.
 pub fn line(event: &str, fields: &[(&str, &dyn Display)]) -> String {
-    let mut out = format!("input_broker: {event}");
+    let mut out = format!("bardo-input-broker: {event}");
     for (key, value) in fields {
         let text = value.to_string();
         let plain = !text.is_empty()

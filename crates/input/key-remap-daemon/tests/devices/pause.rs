@@ -30,7 +30,7 @@ fn the_escape_chord_gives_the_keyboard_back_and_resume_takes_it_again() {
     );
     ok(r.out.expect_silence(QUIET), "output after the releases");
 
-    // Paused: Command+C goes nowhere through key_remap.
+    // Paused: Command+C goes nowhere through the key remap daemon.
     ok(r.fake.chord(&["leftmeta", "c"]), "typing Command+C");
     ok(r.out.expect_silence(QUIET), "output while paused");
 

@@ -16,7 +16,7 @@ pub(crate) fn read(dir: &Path) -> Option<String> {
         Ok(text) => Some(text),
         Err(error) if error.kind() == ErrorKind::NotFound => None,
         Err(error) => {
-            eprintln!("bardo-shell: key_remap: {}: {error}", path.display());
+            eprintln!("bardo-shell: key-remap: {}: {error}", path.display());
             None
         }
     }

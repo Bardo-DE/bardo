@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 /// Where the connection to the key remap daemon stands.
 ///
 /// Failure and absence are states, not a silent default: a machine without the key remap daemon is
-/// `NotInstalled`, one not yet heard from is `Unknown`. Crosses the wire as `bardo-shell key_remap
+/// `NotInstalled`, one not yet heard from is `Unknown`. Crosses the wire as `bardo-shell key-remap
 /// status`.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
@@ -24,7 +24,7 @@ pub enum KeyRemapState {
     NotInstalled,
 }
 
-/// What the person should be told about key_remap. Everything else, including a restart that
+/// What the person should be told about the key remap daemon. Everything else, including a restart that
 /// recovers, is silent.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Attention {

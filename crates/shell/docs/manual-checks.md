@@ -289,7 +289,7 @@ root for the unit. Install the key remap daemon first (`install.sh` in the key r
 folder and polkit rule `dist/bardo-key-remap.polkit.rules`), run sill's `dist/install.sh` (it copies the
 sill layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-remap.toml` when missing), then log in to a sill session.
 
-- [ ] `bardo-shell key_remap status` says `connected` with your keyboard listed and `grab` `active`.
+- [ ] `bardo-shell key-remap status` says `connected` with your keyboard listed and `grab` `active`.
 - [ ] Cmd+Space opens the launcher and again closes it (Super+Space, not Alt+Space), and Cmd+Shift+4 starts
   `bardo-shell screenshot area`.
 - [ ] Focus a terminal (foot, Alacritty): Cmd+C copies in it, and Ctrl+C still
@@ -304,20 +304,20 @@ sill layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-rem
 - [ ] Edit `~/.config/bardo/key-remap/key-remap.toml` (a rule on a key you can tell): the change applies
   within a second, no restart.
 - [ ] `sudo pkill -KILL key_remap` once: keys keep working, **no notification** appears (systemd
-  brings it back in 200 ms; `bardo-shell key_remap status` is `connected` again).
+  brings it back in 200 ms; `bardo-shell key-remap status` is `connected` again).
 - [ ] Make it give up: run `for i in 1 2 3 4 5 6; do sudo pkill -KILL key_remap; sleep 0.4; done`.
   After about 3 s a "Command-key layout stopped" notification appears, the keys work as on a
-  standard keyboard, and `bardo-shell key_remap status` says `failed`. `bardo-shell key_remap retry` (no password
+  standard keyboard, and `bardo-shell key-remap status` says `failed`. `bardo-shell key-remap retry` (no password
   asked) brings it back: the notification goes and the layout works again.
 - [ ] `sudo systemctl stop key_remap`: nothing is posted (stopped on purpose); `sudo systemctl start
   The key remap daemon` and the layout is back.
-- [ ] `sudo systemctl mask --now key_remap`: nothing is posted and `bardo-shell key_remap status` says `not_installed`
+- [ ] `sudo systemctl mask --now key_remap`: nothing is posted and `bardo-shell key-remap status` says `not_installed`
   or `unknown`; `sudo systemctl unmask key_remap && sudo systemctl start key_remap` restores it.
 - [ ] Start another remapper that grabs the same keyboard (`keyd`, or `kmonad`): an "Another keyboard
   program is running" notification names the keyboard; stopping the other program clears it
   within about 30 s, and the key remap daemon grabs the keyboard.
 - [ ] Press both Shifts and Esc: a "Command-key layout paused" notification appears and the
-  keys work as on a standard keyboard. `bardo-shell key_remap resume` brings the layout back and the
+  keys work as on a standard keyboard. `bardo-shell key-remap resume` brings the layout back and the
   notification goes.
 - [ ] Log out and in again: the login screen already has the layout, and after login the terminal
   and the browser behave as in the second item.

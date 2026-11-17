@@ -43,9 +43,10 @@ pub struct Layer {
     pub origin: Origin,
 }
 
-/// The keymap of our desktop: the chord keymap's conventions for it, the desktop's own bindings
-/// ([`crate::system_bindings`]), the machine's keymap and the person's own keymap laid over
-/// them, the person's last.
+/// The keymap of our desktop.
+///
+/// The chord keymap's conventions for it, the desktop's own bindings ([`crate::system_bindings`]),
+/// the machine's keymap and the person's own keymap laid over them, the person's last.
 #[derive(Debug, Clone)]
 pub struct KeyRemapSource {
     socket: PathBuf,

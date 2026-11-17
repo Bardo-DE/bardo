@@ -52,7 +52,7 @@ pub enum Request {
     /// banner, whichever appeared last (`bardo-shell focus-latest`; bound in the compositor's shortcuts
     /// like the launcher's). Nothing happens when none is showing.
     FocusLatest,
-    /// Restart the key remap daemon, or end its pause (`bardo-shell key_remap retry|resume`).
+    /// Restart the key remap daemon, or end its pause (`bardo-shell key-remap retry|resume`).
     KeyRemap(KeyRemapAsk),
     /// Withdraw a standing terminal grant, or let a paused terminal go on (`bardo-shell intents
     /// revoke|resume`).

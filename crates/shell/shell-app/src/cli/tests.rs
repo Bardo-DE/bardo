@@ -154,13 +154,13 @@ fn every_command_line_sends_its_request() {
         ),
         (&["polkit", "status"], status(StatusRequest::Polkit)),
         (&["idle", "status"], status(StatusRequest::Idle)),
-        (&["key_remap", "status"], status(StatusRequest::KeyRemap)),
+        (&["key-remap", "status"], status(StatusRequest::KeyRemap)),
         (
-            &["key_remap", "retry"],
+            &["key-remap", "retry"],
             Some(Request::KeyRemap(KeyRemapAsk::Retry)),
         ),
         (
-            &["key_remap", "resume"],
+            &["key-remap", "resume"],
             Some(Request::KeyRemap(KeyRemapAsk::Resume)),
         ),
         (&["intents", "status"], status(StatusRequest::Intents)),

@@ -601,7 +601,7 @@ impl Fixture {
 }
 
 /// The entropy Space ids are minted from: fixed, so two runs mint the same ids.
-const FIXTURE_ENTROPY: [u8; 16] = *b"compositor-fixture";
+const FIXTURE_ENTROPY: [u8; 16] = *b"bardo-fixture-id";
 
 /// A settings directory that does not exist (the document is missing: the defaults).
 fn scratch_config_home() -> PathBuf {

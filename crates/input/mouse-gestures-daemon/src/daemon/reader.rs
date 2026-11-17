@@ -42,7 +42,7 @@ impl Reader {
         loop {
             self = self.housekeeping();
             match source::open(Purpose::Run) {
-                Err(e) => eprintln!("mouse_gestures: {e}"),
+                Err(e) => eprintln!("bardo-mouse-gestures: {e}"),
                 Ok(opened) => {
                     backoff = Backoff::DEVICE;
                     self = self.session(&opened);
@@ -50,14 +50,17 @@ impl Reader {
             }
             let (delay, next) = backoff.step();
             backoff = next;
-            eprintln!("mouse_gestures: retrying in {}s", delay.as_secs());
+            eprintln!("bardo-mouse-gestures: retrying in {}s", delay.as_secs());
             std::thread::sleep(delay);
         }
     }
 
     fn session(mut self, opened: &Opened) -> Self {
         let info = opened.info.clone();
-        eprintln!("mouse_gestures: connected: {} ({})", info.name, info.path);
+        eprintln!(
+            "bardo-mouse-gestures: connected: {} ({})",
+            info.name, info.path
+        );
         self.socket.send(ToSocket::Device(info));
         let mut sensor = opened.source.sensor();
         self.tracker = self.tracker.with_surface(sensor.surface());
@@ -86,19 +89,19 @@ impl Reader {
                     );
                     clock = c;
                     if let Some(e) = step.error {
-                        eprintln!("mouse_gestures: dropped a read: {e}");
+                        eprintln!("bardo-mouse-gestures: dropped a read: {e}");
                     }
                     self = Self { tracker: t, ..self }.emit(step.outs);
                 }
                 Ok(None) => self = self.with_tracker(|t| t.tick(hidraw::now())),
                 Err(e) => {
                     errors += 1;
-                    eprintln!("mouse_gestures: read failed ({errors}): {e}");
+                    eprintln!("bardo-mouse-gestures: read failed ({errors}): {e}");
                     std::thread::sleep(IDLE_POLL);
                 }
             }
         }
-        eprintln!("mouse_gestures: device disconnected");
+        eprintln!("bardo-mouse-gestures: device disconnected");
         let s = self.with_tracker(|t| t.disconnect(hidraw::now()));
         s.socket.send(ToSocket::Gone);
         s
@@ -111,7 +114,7 @@ impl Reader {
             loaded
                 .warnings
                 .iter()
-                .for_each(|w| eprintln!("mouse_gestures: config: {w}"));
+                .for_each(|w| eprintln!("bardo-mouse-gestures: config: {w}"));
             self.system = loaded.text;
             self = self.with_layers(now);
         }
@@ -133,7 +136,7 @@ impl Reader {
     fn with_layers(mut self, now: Mono) -> Self {
         let (config, warnings) = config::layered(&self.system, self.user.as_deref());
         for w in &warnings {
-            eprintln!("mouse_gestures: config: {w}");
+            eprintln!("bardo-mouse-gestures: config: {w}");
         }
         self.devices = self.devices.reconfigure(&config, now);
         self.tracker = self.tracker.with_config(config);

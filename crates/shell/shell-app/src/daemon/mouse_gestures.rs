@@ -19,7 +19,7 @@ pub enum Plan {
     Request(Request),
     /// A program of the person's, started without a shell.
     Program { program: String, args: Vec<String> },
-    /// Not something the shell does for mouse_gestures.
+    /// Not something the shell does for the mouse gestures daemon.
     Refused(&'static str),
 }
 
@@ -71,10 +71,10 @@ pub fn run(program: &str, args: &[String]) {
                     let _ = child.wait();
                 });
             if let Err(error) = reaped {
-                eprintln!("bardo-shell: mouse_gestures: could not wait for {program}: {error}");
+                eprintln!("bardo-shell: mouse-gestures: could not wait for {program}: {error}");
             }
         }
-        Err(error) => eprintln!("bardo-shell: mouse_gestures: running {program}: {error}"),
+        Err(error) => eprintln!("bardo-shell: mouse-gestures: running {program}: {error}"),
     }
 }
 

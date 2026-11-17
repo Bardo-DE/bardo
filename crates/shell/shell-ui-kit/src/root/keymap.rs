@@ -6,7 +6,7 @@ use keymap::{Desktop, Platform};
 use ui_components::keys::KeySource;
 
 /// What every shell document loads its keymap from: the conventions of our desktop, the
-/// desktop's own bindings and the machine's and the person's keymap files, kept live by key_remap.
+/// desktop's own bindings and the machine's and the person's keymap files, kept live by the key remap daemon.
 #[must_use]
 pub fn desktop_keys() -> KeySource {
     KeySource::new(

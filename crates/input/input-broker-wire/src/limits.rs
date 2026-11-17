@@ -33,14 +33,19 @@ pub const MAX_DEVICES_PER_CONNECTION: usize = 4;
 pub const MAX_CREATES_PER_CONNECTION: u8 = 64;
 /// Handed devices one connection may ask for: the service cannot see them close, so it counts them.
 pub const MAX_HANDED_PER_CONNECTION: u8 = 16;
-/// Connections at once from callers that are not the mouse gestures daemon or the key remap daemon: the units run one the mouse gestures daemon and
-/// one the key remap daemon, so nothing else has a use for more.
+/// Connections at once from callers that are not the mouse gestures daemon or the key remap daemon:
+///
+/// the units run one the mouse gestures daemon and one the key remap daemon, so nothing else has a
+/// use for more.
 pub const MAX_CONNECTIONS: usize = 16;
 /// Connections at once from one user that is not shown to be the mouse gestures daemon or the key remap daemon: one local account
 /// cannot take the slots of the others.
 pub const MAX_CONNECTIONS_PER_USER: usize = 4;
-/// Connections reserved for each of the mouse gestures daemon and the key remap daemon once they are proven: a client reconnects
-/// after a cut and may briefly hold the old and the new, so more than one; outside every other cap.
+/// Connections reserved for each of the mouse gestures daemon and the key remap daemon once they
+/// are proven:
+///
+/// a client reconnects after a cut and may briefly hold the old and the new, so more than one;
+/// outside every other cap.
 pub const MAX_RESERVED_PER_CLIENT: usize = 4;
 
 /// Connections being identified at once from one user (NEW-FA-3).

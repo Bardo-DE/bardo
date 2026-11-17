@@ -94,7 +94,7 @@ impl ToHost {
     }
 }
 
-/// A host to mouse_gestures.
+/// A host to the mouse gestures daemon.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ToDaemon {

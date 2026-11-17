@@ -63,7 +63,7 @@ impl Steering {
 fn shell_check() -> ShellCheck {
     let table = Table::from_toml(SHELL_TABLE).unwrap_or_else(|e| {
         eprintln!(
-            "mouse_gestures: nobody is believed about the lock: the shell table is unusable: {e}"
+            "bardo-mouse-gestures: nobody is believed about the lock: the shell table is unusable: {e}"
         );
         Table::empty()
     });
