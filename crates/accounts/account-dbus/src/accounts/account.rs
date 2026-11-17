@@ -2,7 +2,7 @@
 //! with a grant for it.
 
 use crate::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 use zbus::zvariant::OwnedObjectPath;
 
 /// The interface, written once. `#[bus_interface]` makes [`AccountProxy`] for its callers from this

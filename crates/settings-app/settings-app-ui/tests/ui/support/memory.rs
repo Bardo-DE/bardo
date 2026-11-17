@@ -140,7 +140,7 @@ pub async fn serve(bus: &PrivateBus, file: PathBuf, confinement: &'static str) -
         )
         .await
         .expect("memory served");
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the object server answers");
     connection

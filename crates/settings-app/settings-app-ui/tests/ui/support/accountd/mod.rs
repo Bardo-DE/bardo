@@ -247,7 +247,7 @@ impl Accountd {
         let served = serve(&connection, self.module.path(), self.clone())
             .await
             .expect("serves");
-        zbus_ready::serving(&connection)
+        dbus_kit::ready::serving(&connection)
             .await
             .expect("the object server answers");
         connection

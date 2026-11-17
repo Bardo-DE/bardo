@@ -25,9 +25,6 @@ pub use check::RoleCheck;
 #[cfg(feature = "dev-callers")]
 pub use dev::{DevRowsFault, load_dev_rows, use_dev_rows};
 pub use peers::desktop_peers;
-pub use services::{
-    ACCOUNTS_BUS, COMPOSITOR_BUS, DISPLAYS_BUS, INFERENCE_BUS, MEMORY_BUS, PORTAL_BUS,
-    SERVICE_PROOF, SYNC_BUS, UPDATES_BUS, required_role,
-};
+pub use services::{SERVICE_PROOF, required_role};
 #[cfg(feature = "testing")]
 pub use testing::{introduce_service, private_peers};

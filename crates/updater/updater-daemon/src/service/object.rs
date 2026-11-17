@@ -9,11 +9,6 @@ use std::sync::Arc;
 use zbus::message::Header;
 use zbus::{fdo, interface};
 
-/// The well-known name the daemon owns.
-pub const BUS_NAME: &str = "org.bardo.Updates1";
-/// The object's path.
-pub const PATH: &str = "/org/bardo/Updates1";
-
 /// The exported object; every property reads the engine's current status.
 #[derive(Debug)]
 pub struct Updates {

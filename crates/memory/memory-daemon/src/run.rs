@@ -13,7 +13,7 @@ use account_callers::{
 };
 use account_client_dbus::Bus;
 use memory_core::{Dirs, RuleSet};
-use memory_dbus_serve::serve_on;
+use memory_dbus::serve_on;
 use memory_host::{Locator, read_config};
 use memory_infer::{InferdConsolidator, InferdEmbedder};
 use memory_service::{ConfigError, MemoryService, rules_from_toml, spaces_from_toml};

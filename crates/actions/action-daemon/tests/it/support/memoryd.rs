@@ -12,7 +12,7 @@
 use base_ids::Count;
 use memory_core::{EventBody, EventRef, MemoryReply, MemoryRequest, Record, ReplicaId, Seq};
 use memory_dbus::{Call, MemoryError, decode_request, encode_reply};
-use memory_dbus_serve::{Serve, serve_on};
+use memory_dbus::{Serve, serve_on};
 use provenance::{Integrity, Label};
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};

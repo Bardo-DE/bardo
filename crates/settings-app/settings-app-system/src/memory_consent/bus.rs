@@ -1,12 +1,13 @@
 //! The calls about looser settings and the confinement line. None starts the memory service: with it not running
 //! nothing waits on anyone, and opening Settings must not start it.
 
-use super::proxy::{MEMORY_NAME, control};
+use super::proxy::control;
 use super::{MemoryFailure, MemoryLink};
 use crate::bus::{BusSource, Pinned, pinned};
 use crate::deadline::{Deadline, answered, peer};
 use account_dbus::{BusFailure, classify};
 use memory_core::WaitingSetting;
+use memory_dbus::MEMORY_BUS;
 use settings_app_model::{Confinement, SettingPair, Trouble, Work};
 
 /// The bus name memory answers a refusal with when the caller may not do this.
@@ -34,7 +35,7 @@ fn failure_of(error: &zbus::Error) -> MemoryFailure {
 /// memory: a program that took the name is treated as memory not running, and is asked and told
 /// nothing. The calls go to that owner.
 async fn running(bus: &BusSource) -> Result<Pinned, MemoryFailure> {
-    pinned(bus, MEMORY_NAME)
+    pinned(bus, MEMORY_BUS)
         .await
         // The absence says only that memory is not there; `pinned` has logged why.
         .map_err(|_absence| MemoryFailure::Absent)

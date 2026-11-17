@@ -35,7 +35,7 @@ toml = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }
 action-log = {path = "../../actions/action-log"}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [features]
 default = ["pipewire"]

@@ -1,32 +1,8 @@
-//! The caller's side of `org.bardo.Memory1.Control`, the members Settings uses.
+//! The caller's side of `org.bardo.Memory1.Control`, the members Settings uses: memory-dbus's
+//! proxy, built for the owner that was confirmed to be the memory service.
 
 use crate::bus::Pinned;
-use std::collections::HashMap;
-
-/// The memory service's name on the bus.
-pub const MEMORY_NAME: &str = "org.bardo.Memory1";
-
-/// The controls memory offers the person (`org.bardo.Memory1.Control`).
-#[zbus::proxy(
-    interface = "org.bardo.Memory1.Control",
-    default_service = "org.bardo.Memory1",
-    default_path = "/org/bardo/Memory1"
-)]
-pub trait MemoryControl {
-    /// Settles a removed Space's memories and history; `removal` is JSON, the reply says what moved.
-    fn remove_space(&self, space: &str, removal: &str) -> zbus::Result<String>;
-
-    /// The person agreed to these looser settings (key to value). Only Settings may say so.
-    fn confirm_settings(&self, values: HashMap<String, String>) -> zbus::Result<()>;
-
-    /// The looser settings in the file that are not confirmed: key, value waiting, shipped value.
-    fn pending_settings(&self) -> zbus::Result<Vec<(String, String, String)>>;
-
-    /// Whether memory keeps itself to its own folders: `confined`, `partial`, `not-available` or
-    /// (in a test build only) `off`. It does not change while memory runs.
-    #[zbus(property)]
-    fn confinement(&self) -> zbus::Result<String>;
-}
+use memory_dbus::ControlProxy;
 
 /// The controls of the memory service whose owner was confirmed: calls go to that owner by its
 /// unique name.
@@ -34,18 +10,9 @@ pub trait MemoryControl {
 /// # Errors
 ///
 /// The `zbus::Error` when the proxy cannot be built for that owner.
-pub async fn control(memory: &Pinned) -> zbus::Result<MemoryControlProxy<'_>> {
-    MemoryControlProxy::builder(&memory.connection)
+pub async fn control(memory: &Pinned) -> zbus::Result<ControlProxy<'_>> {
+    ControlProxy::builder(&memory.connection)
         .destination(memory.destination())?
         .build()
         .await
-}
-
-#[cfg(test)]
-mod tests {
-    /// The name these calls go to is the one the owner check knows the role of.
-    #[test]
-    fn the_service_name_is_the_one_the_owner_check_knows() {
-        assert_eq!(super::MEMORY_NAME, settings_app_callers::MEMORY_BUS);
-    }
 }

@@ -1,7 +1,7 @@
 //! `org.bardo.Sync1` at `/org/bardo/Sync1`: syncd's datasets and their state.
 
 use account_dbus::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 
 /// The interface, written once. `#[bus_interface]` makes [`SyncProxy`] for its callers from this
 /// trait, [`SyncServer`] for the daemon to implement and [`SyncServed`] to register.

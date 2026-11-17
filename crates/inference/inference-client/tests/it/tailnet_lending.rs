@@ -485,7 +485,7 @@ mod session_bus {
             )
             .await
             .expect("manager");
-        zbus_ready::serving(&systemd)
+        dbus_kit::ready::serving(&systemd)
             .await
             .expect("the object server answers");
         systemd

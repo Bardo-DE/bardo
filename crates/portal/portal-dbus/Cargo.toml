@@ -1,0 +1,15 @@
+[package]
+name = "portal-dbus"
+description = "The screen-sharing portal's D-Bus name, object path and the one proxy of org.bardo.Portal1, the members only Settings may call."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+zbus = { workspace = true, features = ["tokio"] }
+
+[lints]
+workspace = true

@@ -38,7 +38,6 @@ memory-tidy = {path = "../memory-tidy"}
 memory-settings = {path = "../memory-settings"}
 memory-watch = {path = "../memory-watch"}
 memory-dbus = {path = "../memory-dbus"}
-memory-dbus-serve = {path = "../memory-dbus-serve"}
 account-core = {path = "../../accounts/account-core"}
 account-callers = {features = ["file"], path = "../../accounts/account-callers"}
 account-daemon-support = {path = "../../accounts/account-daemon-support"}
@@ -71,7 +70,7 @@ memory-seal = {path = "../memory-seal", features = ["oo7", "testing"]}
 memory-recall = {path = "../memory-recall", features = ["testing"]}
 tar = {workspace = true, features = ["default"]}
 tempfile = { workspace = true }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [lints]
 workspace = true

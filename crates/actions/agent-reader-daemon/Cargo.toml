@@ -34,7 +34,7 @@ zbus = {workspace = true, features = ["tokio"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 tracing = { workspace = true }
 action-log = {path = "../action-log"}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-ids = { path = "../../base/base-ids" }

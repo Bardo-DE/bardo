@@ -33,7 +33,7 @@ mod start;
 mod watch;
 
 pub use callers::{
-    FILE as CALLERS_FILE, SHELL_BUS, classify, identity as caller_identity, read as read_callers,
+    FILE as CALLERS_FILE, classify, identity as caller_identity, read as read_callers,
     shipped as shipped_callers,
 };
 pub use computer_use_host::{

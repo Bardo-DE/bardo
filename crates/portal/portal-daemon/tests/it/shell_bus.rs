@@ -11,11 +11,13 @@ use portal_core::{
     CastSource, ChoiceRequest, CursorMode, Keep, Multiple, Offer, PersistMode, SourceKinds,
 };
 use portal_daemon::access::{Answer, Asker, Question, ShellAsker};
-use portal_daemon::chooser::{Chooser, Shell1Proxy, ShellChooser};
+use portal_daemon::chooser::{Chooser, ShellChooser};
 use portal_daemon::screencast::restore::FileStore;
 use portal_daemon::screenshot::{ColorPicker, ShellColorPicker};
 use portal_daemon::settings::DesktopAppearance;
-use portal_daemon::{BUS_NAME, Parts, serve_on};
+use portal_daemon::{Parts, serve_on};
+use portal_dbus::BUS_NAME;
+use shell_dbus::Shell1Proxy;
 use zbus::message::Header;
 use zbus::names::BusName;
 use zbus::{Connection, fdo};

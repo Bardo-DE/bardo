@@ -67,7 +67,7 @@ provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 action-fake = {path = "../action-fake"}

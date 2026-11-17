@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 compositor-core = {path = "../compositor-core"}
+compositor-dbus = {path = "../compositor-dbus"}
 # Only `VirtualOutputSpec` for the Debug1 object: a release build links neither the backend nor
 # smithay.
 compositor-backend = {path = "../compositor-backend", optional = true}
@@ -34,7 +35,7 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 tracing = { workspace = true }
 # Keysym names in the inject grammar (`key Return down`).
 xkbcommon = {workspace = true, features = ["wayland"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}

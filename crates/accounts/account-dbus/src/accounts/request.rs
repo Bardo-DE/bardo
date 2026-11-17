@@ -2,7 +2,7 @@
 //! carries 0 (done), 1 (cancelled) or 2 (other), and the results by name.
 
 use crate::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 
 /// The interface, written once. `#[bus_interface]` makes [`RequestProxy`] for its callers from this
 /// trait, [`RequestServer`] for the daemon to implement and [`RequestServed`] to register.

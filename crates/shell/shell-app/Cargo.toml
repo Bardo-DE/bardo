@@ -49,7 +49,7 @@ tempfile.workspace = true
 serde_json = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 speech-wire = {path = "../../speech/speech-wire"}
-zbus-ready = {path = "../../zbus-ready"}
+dbus-kit = { path = "../../bus/dbus-kit" }
 ui-harness = {path = "../../ui/ui-harness"}
 shell-testkit = {path = "../shell-testkit"}
 # `tests/lint.rs` mounts every surface on the harness and lints its markup and stylesheet.

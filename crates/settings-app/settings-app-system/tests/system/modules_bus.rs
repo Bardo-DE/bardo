@@ -135,7 +135,7 @@ async fn a_module_on_the_bus_is_opened_and_its_changes_are_heard() {
     serve(&connection, PATH, Words::holding("first", Verdict::Allow))
         .await
         .expect("serves");
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the object server answers");
     connection.request_name(NAME).await.expect("name");
@@ -172,7 +172,7 @@ async fn a_module_that_refuses_the_settings_app_is_gone_as_not_permitted() {
     serve(&connection, PATH, Words::holding("first", Verdict::Refuse))
         .await
         .expect("serves");
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the object server answers");
     connection.request_name(NAME).await.expect("name");

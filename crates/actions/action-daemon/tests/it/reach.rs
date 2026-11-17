@@ -76,7 +76,7 @@ fn menu(router: &Router<FakeSeams>) -> Vec<String> {
 async fn provider(bus: &PrivateBus, reach: &ReachServer) -> BusConnection {
     let connection = bus.connect().await;
     reach.serve(&connection).await.expect("served");
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the object server answers");
     connection.request_name(MAIL).await.expect("mail's name");

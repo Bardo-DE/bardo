@@ -12,7 +12,7 @@ publish.workspace = true
 caller-identity-linux = {path = "../caller-identity-linux"}
 caller-identity-core = {path = "../caller-identity-core"}
 zbus = {workspace = true}
-futures-timer = { workspace = true }
+dbus-kit = {path = "../../bus/dbus-kit", default-features = false}
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt"], optional = true}
 
@@ -20,8 +20,8 @@ tokio = {workspace = true, features = ["rt"], optional = true}
 # zbus runs on its own executor by default. A tokio program turns `default-features` off and
 # `tokio` on: zbus then runs on that runtime and `Offload::Tokio` becomes available.
 default = ["async-io"]
-async-io = ["zbus/async-io"]
-tokio = ["dep:tokio", "zbus/tokio"]
+async-io = ["zbus/async-io", "dbus-kit/async-io"]
+tokio = ["dep:tokio", "zbus/tokio", "dbus-kit/tokio"]
 # Test seams (`BusPeers::introduce`); a shipped binary never enables it.
 fake = ["caller-identity-linux/fake"]
 # Forwarded to caller-identity-core (`roles`).
@@ -32,7 +32,7 @@ dev-rows = ["caller-identity-linux/dev-rows"]
 [dev-dependencies]
 caller-identity-linux = {path = "../caller-identity-linux", features = ["fake"]}
 tempfile = { workspace = true }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = {path = "../../bus/dbus-kit", features = ["tokio"]}
 
 # One integration binary that needs the `fake` seams (an introduced standing, a fixture tree).
 [[test]]

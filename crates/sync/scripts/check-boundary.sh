@@ -130,7 +130,7 @@ EDGES=(
   "drive-core: account-capability account-ids base-fs sync-core quickxorhash"
   "drive-fuse: drive-core drive-mount-daemon"
   "drive-mount-daemon:"
-  "sync-bus: account-dbus account-dbus-macros account-ids"
+  "sync-bus: account-dbus dbus-kit account-ids"
   "sync-fake-graph: account-core account-fake account-fake-servers account-ids account-provider quickxorhash"
   "sync-rig: sync-bus sync-fake-graph account-dbus account-fake-servers account-rig"
   "sync-fakes: sync-bus account-dbus"

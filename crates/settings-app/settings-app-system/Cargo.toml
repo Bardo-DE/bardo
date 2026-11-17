@@ -13,6 +13,11 @@ publish.workspace = true
 testing = ["zbus/p2p"]
 
 [dependencies]
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
+shell-dbus = { path = "../../shell/shell-dbus" }
+portal-dbus = { path = "../../portal/portal-dbus" }
+memory-dbus = { path = "../../memory/memory-dbus" }
+updater-dbus = { path = "../../updater/updater-dbus" }
 base-time = { path = "../../base/base-time" }
 account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
@@ -50,7 +55,7 @@ thiserror = { workspace = true }
 tokio = {workspace = true, features = ["macros", "net", "rt-multi-thread", "sync", "time"]}
 toml = { workspace = true }
 zbus = {workspace = true, features = ["default", "tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 # The integration tests use the fakes, which the library has behind `testing`.

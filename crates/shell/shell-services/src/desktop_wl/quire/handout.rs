@@ -8,6 +8,8 @@
 
 use std::os::fd::OwnedFd;
 
+use compositor_dbus::Compositor1Proxy;
+
 use crate::env::{Bus, ConnectError};
 
 /// The role name on the bus for the desktop shell's connection.
@@ -28,17 +30,6 @@ pub enum HandoutError {
 pub trait Handout {
     /// A new connected socket for the shell's role: `bardo_shell_v1` and the shell role.
     fn connect(&self) -> impl Future<Output = Result<OwnedFd, HandoutError>>;
-}
-
-/// `org.bardo.Compositor1`, which casement serves on the session bus.
-#[zbus::proxy(
-    interface = "org.bardo.Compositor1",
-    default_service = "org.bardo.Compositor1",
-    default_path = "/org/bardo/Compositor1"
-)]
-trait Compositor1 {
-    /// A connected Wayland socket for `role` (`"shell"` or `"agent"`).
-    fn connect(&self, role: &str) -> zbus::Result<zbus::zvariant::OwnedFd>;
 }
 
 /// The compositor, asked over a bus connection.

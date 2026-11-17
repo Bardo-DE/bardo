@@ -1,7 +1,7 @@
 //! The one bus connection that owns the portal's name.
 //!
 //! Every question this portal asks (the picker, a yes-or-no sheet, the colour picker, the input
-//! socket) must come from the connection that owns [`crate::BUS_NAME`]: the shell answers only
+//! socket) must come from the connection that owns [`portal_dbus::BUS_NAME`]: the shell answers only
 //! the owner of that name, and a second connection has a different unique name, so the shell would
 //! see a stranger. [`BusLink`] is the handle the asking seams share. It is empty until [`crate::serve`]
 //! has built the connection, then holds it for the life of the process. The same handle carries

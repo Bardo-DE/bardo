@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 account-dbus = {path = "../../accounts/account-dbus"}
-account-dbus-macros = {path = "../../accounts/account-dbus-macros"}
+dbus-kit = { path = "../../bus/dbus-kit" }
 base-ids = { path = "../../base/base-ids" }
 serde = { workspace = true, features = ["derive"] }
 zbus = {workspace = true, features = ["tokio"]}

@@ -13,8 +13,8 @@ mod local_engines;
 mod names;
 mod running;
 
-use account_dbus::Document;
-use account_dbus::Unserved;
+use dbus_kit::Document;
+use dbus_kit::Unserved;
 
 pub use agents::{
     AGENT_ERROR_PREFIX, AgentsProxy, AgentsServed, AgentsServer, EndpointArg, MODELS_ANY,

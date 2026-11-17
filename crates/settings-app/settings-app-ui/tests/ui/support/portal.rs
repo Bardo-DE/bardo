@@ -111,7 +111,7 @@ pub async fn serve_unnamed(bus: &PrivateBus, apps: &[Remembered]) -> Fake {
         )
         .await
         .expect("portal served");
-    zbus_ready::serving(&fake.connection)
+    dbus_kit::ready::serving(&fake.connection)
         .await
         .expect("the object server answers");
     fake

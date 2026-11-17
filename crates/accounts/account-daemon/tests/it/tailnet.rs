@@ -153,7 +153,7 @@ impl World {
             .at(account_wire::names::SHEET_PATH, host)
             .await
             .expect("host object");
-        zbus_ready::serving(&host_connection)
+        dbus_kit::ready::serving(&host_connection)
             .await
             .expect("the host takes calls");
         host_connection

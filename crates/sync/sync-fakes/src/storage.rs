@@ -9,7 +9,8 @@
 //! The files on disk are ordinary files with a line of text: nothing here is downloaded from
 //! anywhere, only the states are. Test tooling, never installed.
 
-use account_dbus::{Call, Details};
+use account_dbus::Details;
+use dbus_kit::Call;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -1208,7 +1209,7 @@ pub async fn serve(connection: &Connection, name: &str, storage: FakeStorage) ->
         .object_server()
         .at(STORAGE_PATH, StorageServed(storage.clone()))
         .await?;
-    zbus_ready::serving(connection).await?;
+    dbus_kit::ready::serving(connection).await?;
     connection.request_name(name.to_owned()).await?;
     let emitter = SignalEmitter::new(connection, STORAGE_PATH)?.into_owned();
     tokio::spawn(async move {

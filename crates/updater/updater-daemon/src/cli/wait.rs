@@ -1,7 +1,7 @@
 //! Waiting for the daemon to finish what it was asked to do.
 
-use super::client::UpdatesClientProxy;
 use std::time::{Duration, Instant};
+use updater_dbus::UpdatesProxy;
 
 const POLL: Duration = Duration::from_millis(250);
 
@@ -26,7 +26,7 @@ impl Until {
 /// Polls `State` until `until` is reached, calling `note` when the state changes. `None` when
 /// `limit` passes first.
 pub async fn wait(
-    proxy: &UpdatesClientProxy<'_>,
+    proxy: &UpdatesProxy<'_>,
     until: Until,
     limit: Duration,
     mut note: impl FnMut(&str),

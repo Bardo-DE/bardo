@@ -135,7 +135,7 @@ async fn snapshot_over_the_bus_equals_describe_and_get() {
     serve(&daemon, PATH, Accounts::new(None))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -161,7 +161,7 @@ async fn a_vanished_key_is_absent_from_the_bus_snapshot_too() {
         gone: CLIENT,
     };
     serve(&daemon, PATH, module).await.expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -181,7 +181,7 @@ async fn a_refused_reader_gets_not_permitted() {
     serve(&daemon, PATH, Closed(Accounts::new(None)))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -203,7 +203,7 @@ async fn a_module_without_snapshot_is_read_by_the_client() {
         .at(PATH, Legacy(Accounts::new(None)))
         .await
         .expect("exports");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");

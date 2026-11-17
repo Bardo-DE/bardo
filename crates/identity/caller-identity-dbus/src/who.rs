@@ -1,17 +1,18 @@
 //! Who is the sender of a bus message: the pinned process behind its connection, its unit as the
 //! manager states it, and the judgement against the table.
 
+use crate::BUS_TIMEOUT;
 use crate::attest::Attest;
 use crate::error::{WhoError, access_denied};
 use crate::manager::{ManagerLink, SYSTEMD, UnitSource};
 use crate::offload::Offload;
-use crate::timeout::{TimedOut, bounded};
 use caller_identity_core::procinfo::parse_security_label;
 use caller_identity_core::{
     Facts, Pid, Proof, Refused, Requirement, SandboxFacts, Standing, Table, Uid, UnitFacts,
     UnitName, WhyNot, judge,
 };
 use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
+use dbus_kit::timeout::{TimedOut, within};
 use std::os::fd::AsFd;
 use std::sync::Arc;
 use zbus::Connection;
@@ -214,7 +215,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         if !self.manager_is_real().await {
             return None;
         }
-        bounded(self.units.unit(&unit)).await.ok()?.ok()
+        within(BUS_TIMEOUT, self.units.unit(&unit)).await.ok()?.ok()
     }
 
     async fn manager_is_real(&self) -> bool {
@@ -249,9 +250,9 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         let bus = DBusProxy::new(&self.connection)
             .await
             .map_err(WhoError::Bus)?;
-        let owner = bounded(bus.get_name_owner(name))
+        let owner = within(BUS_TIMEOUT, bus.get_name_owner(name))
             .await
-            .map_err(|TimedOut| WhoError::Timeout)?
+            .map_err(|TimedOut { .. }| WhoError::Timeout)?
             .map_err(bus_error)?;
         Ok(owner.as_str().to_owned())
     }
@@ -283,9 +284,9 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         bus: &DBusProxy<'_>,
         name: &BusName<'_>,
     ) -> Result<ConnectionCredentials, WhoError> {
-        bounded(bus.get_connection_credentials(name.clone()))
+        within(BUS_TIMEOUT, bus.get_connection_credentials(name.clone()))
             .await
-            .map_err(|TimedOut| WhoError::Timeout)?
+            .map_err(|TimedOut { .. }| WhoError::Timeout)?
             .map_err(bus_error)
     }
 

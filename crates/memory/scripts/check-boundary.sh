@@ -39,7 +39,6 @@ LAYERS=(
   "memory-watch: C"
   "memory-infer: C"
   "memory-dbus: C"
-  "memory-dbus-serve: C"
   "memory-client: C"
   "memory-fake: C"
   "memory-local: C"
@@ -108,7 +107,6 @@ RULES=(
   # keyring, no embedding runtime and no storage, so an app other than memoryd can use them.
   "memory-infer: zbus zvariant reqwest hyper oo7 ort fastembed $STORAGE notify"
   "memory-dbus: reqwest hyper oo7 ort fastembed rusqlite notify"
-  "memory-dbus-serve: reqwest hyper oo7 ort fastembed rusqlite notify"
   "memory-client: $EFFECTS rusqlite openssl-sys notify"
   "memory-fake: $EFFECTS notify"
   "memory-local: $EFFECTS notify"

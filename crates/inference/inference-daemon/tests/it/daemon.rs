@@ -5,7 +5,7 @@
 
 use crate::hosting::bus::{self, PrivateBus};
 
-use account_dbus::BusTarget;
+use dbus_kit::connect::BusTarget;
 use inference_daemon::config::{Dirs, ProgramSearch};
 use inference_daemon::{Config, Daemon};
 use inference_dbus::inference::INFERENCE_BUS;

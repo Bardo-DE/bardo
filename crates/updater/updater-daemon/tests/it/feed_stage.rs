@@ -17,9 +17,10 @@ use updater_daemon::fetch::{
 use updater_daemon::problem::Problem;
 use updater_daemon::report::Report;
 use updater_daemon::service::{
-    BUS_NAME, Context, Engine, Gate, Job, PATH, Phase, Status, Updates, Wanted, peers_on,
+    Context, Engine, Gate, Job, Phase, Status, Updates, Wanted, peers_on,
 };
 use updater_daemon::state::StateStore;
+use updater_dbus::{BUS_NAME, PATH};
 use updater_root::apply::Staged;
 
 /// Serves bytes from memory and remembers what was asked.
@@ -464,10 +465,12 @@ fn the_kind_of_a_failure_is_on_the_bus_and_clears_with_the_next_attempt() {
             .at(PATH, Updates::new(Arc::clone(&engine), gate))
             .await
             .expect("serve");
-        zbus_ready::serving(&server)
+        dbus_kit::ready::serving(&server)
             .await
             .expect("the object server answers");
-        server.request_name(BUS_NAME).await.expect("the name");
+        dbus_kit::name::claim(&server, BUS_NAME)
+            .await
+            .expect("the name");
         engine.connect(server.clone());
 
         assert_eq!(

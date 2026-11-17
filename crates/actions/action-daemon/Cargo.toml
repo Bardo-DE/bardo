@@ -65,7 +65,7 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
@@ -82,7 +82,6 @@ action-fake = {path = "../action-fake"}
 inference-core = {features = ["testing"], path = "../../inference/inference-core"}
 account-wire = {path = "../../accounts/account-wire"}
 memory-dbus = {path = "../../memory/memory-dbus"}
-memory-dbus-serve = {path = "../../memory/memory-dbus-serve"}
 agent-reader-daemon = {path = "../agent-reader-daemon"}
 proptest = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}

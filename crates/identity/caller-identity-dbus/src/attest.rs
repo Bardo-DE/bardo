@@ -7,10 +7,11 @@
 //! proof asks the system manager, which only root can be: process 1 owns `org.freedesktop.systemd1`
 //! on the system bus, and its `user@<uid>.service` has the user manager as its main process.
 
+use crate::BUS_TIMEOUT;
 use crate::error::UnitError;
 use crate::manager::{SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH};
-use crate::timeout::{TimedOut, bounded};
 use caller_identity_core::{Pid, Uid};
+use dbus_kit::timeout::{TimedOut, within};
 use std::sync::Mutex;
 use zbus::Connection;
 use zbus::fdo::{DBusProxy, PropertiesProxy};
@@ -36,9 +37,9 @@ impl SystemManager {
         if let Some(connection) = held {
             return Ok(connection);
         }
-        let connection = bounded(Connection::system())
+        let connection = within(BUS_TIMEOUT, Connection::system())
             .await
-            .map_err(|TimedOut| UnitError::Timeout)?
+            .map_err(|TimedOut { .. }| UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         *self
             .connection
@@ -59,14 +60,17 @@ impl SystemManager {
         let connection = self.connection().await?;
         let bus = DBusProxy::new(&connection).await.map_err(UnitError::Bus)?;
         let name = BusName::try_from(SYSTEMD).map_err(|e| UnitError::Bus(e.into()))?;
-        let owner = bounded(bus.get_name_owner(name))
+        let owner = within(BUS_TIMEOUT, bus.get_name_owner(name))
             .await
-            .map_err(|TimedOut| UnitError::Timeout)?
+            .map_err(|TimedOut { .. }| UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))?;
-        let owner_pid = bounded(bus.get_connection_unix_process_id(owner.clone().into()))
-            .await
-            .map_err(|TimedOut| UnitError::Timeout)?
-            .map_err(|e| UnitError::Bus(e.into()))?;
+        let owner_pid = within(
+            BUS_TIMEOUT,
+            bus.get_connection_unix_process_id(owner.clone().into()),
+        )
+        .await
+        .map_err(|TimedOut { .. }| UnitError::Timeout)?
+        .map_err(|e| UnitError::Bus(e.into()))?;
         if owner_pid != 1 {
             return Err(UnitError::Malformed(
                 "the system bus's unit manager is not process 1",
@@ -83,9 +87,9 @@ impl SystemManager {
             "GetUnit",
             &args,
         );
-        let path: OwnedObjectPath = bounded(call)
+        let path: OwnedObjectPath = within(BUS_TIMEOUT, call)
             .await
-            .map_err(|TimedOut| UnitError::Timeout)?
+            .map_err(|TimedOut { .. }| UnitError::Timeout)?
             .map_err(UnitError::from_get_unit)?
             .body()
             .deserialize()
@@ -118,9 +122,9 @@ async fn property(
 ) -> Result<Value<'static>, UnitError> {
     let interface =
         InterfaceName::from_static_str(interface).map_err(|e| UnitError::Bus(e.into()))?;
-    let value = bounded(properties.get(interface, name))
+    let value = within(BUS_TIMEOUT, properties.get(interface, name))
         .await
-        .map_err(|TimedOut| UnitError::Timeout)?
+        .map_err(|TimedOut { .. }| UnitError::Timeout)?
         .map_err(|e| UnitError::Bus(e.into()))?;
     Ok(Value::from(value))
 }
@@ -146,7 +150,7 @@ impl Attest {
     pub(crate) async fn user_manager(&self, uid: Uid) -> Option<Pid> {
         match self {
             Attest::System(system) => {
-                let answer = bounded(system.user_manager(uid))
+                let answer = within(BUS_TIMEOUT, system.user_manager(uid))
                     .await
                     .ok()
                     .and_then(Result::ok);

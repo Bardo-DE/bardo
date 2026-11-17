@@ -1,0 +1,38 @@
+[package]
+name = "dbus-kit"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+description = "What every D-Bus service and client of the desktop shares: connecting to a bus, taking a name without queueing, waiting until the object server listens, a bound on one call, and the call and introspection types the interface macro uses."
+
+[dependencies]
+dbus-kit-macros = { path = "../dbus-kit-macros" }
+zbus = { workspace = true }
+tokio = { workspace = true, features = ["time", "macros"], optional = true }
+thiserror = { workspace = true }
+# A wall-clock delay on its own timer thread, so a bound works under any executor (zbus's own,
+# tokio, a test's block_on).
+futures-timer = { workspace = true }
+
+[features]
+# zbus runs on tokio, as every daemon of the desktop does. A program on zbus's own executor turns
+# `default-features` off and `async-io` on (`ready` needs tokio's clock and is not there then).
+default = ["tokio"]
+tokio = ["dep:tokio", "zbus/tokio"]
+async-io = ["zbus/async-io"]
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "process", "io-util", "test-util"] }
+tempfile.workspace = true
+
+[lints]
+workspace = true
+
+# Against a private bus, with tokio's clock.
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+required-features = ["tokio"]

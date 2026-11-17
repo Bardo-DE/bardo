@@ -3,13 +3,12 @@
 
 use std::sync::Arc;
 
+use account_dbus::accounts::AccountsSheetServer;
 use account_sheet::SheetView;
+use dbus_kit::Call as BusCall;
 use shell_model::accounts::sheet::SheetHandle;
 use tokio::sync::{mpsc::UnboundedSender, oneshot};
 use zbus::fdo;
-use zbus::interface;
-use zbus::message::Header;
-use zbus::object_server::SignalEmitter;
 
 use super::callers::{Caller, from_service};
 use crate::callers::Peers;
@@ -82,14 +81,15 @@ async fn asked(
     received?
 }
 
-#[interface(name = "org.bardo.AccountsSheet1")]
-impl SheetObject {
+impl AccountsSheetServer for SheetObject {
+    type Error = fdo::Error;
+
     async fn open(
         &self,
+        BusCall { header, .. }: BusCall<'_>,
         handle: String,
         parent_window: String,
         view: String,
-        #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<()> {
         // The sheet is the shell's own window: a parent window handle names nothing it needs.
         let _ = parent_window;
@@ -106,9 +106,9 @@ impl SheetObject {
 
     async fn update(
         &self,
+        BusCall { header, .. }: BusCall<'_>,
         handle: String,
         view: String,
-        #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<()> {
         let from = from_service(&self.peers, &header).await?;
         let (handle, view) = (handle_of(&handle)?, view_of(&view)?);
@@ -121,7 +121,7 @@ impl SheetObject {
         .await
     }
 
-    async fn close(&self, handle: String, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
+    async fn close(&self, BusCall { header, .. }: BusCall<'_>, handle: String) -> fdo::Result<()> {
         let from = from_service(&self.peers, &header).await?;
         let handle = handle_of(&handle)?;
         asked(&self.calls, |answer| Call::Close {
@@ -131,8 +131,4 @@ impl SheetObject {
         })
         .await
     }
-
-    /// What the person did; sent to accountd alone (the loop emits it with a destination).
-    #[zbus(signal)]
-    async fn input(emitter: &SignalEmitter<'_>, handle: &str, input: &str) -> zbus::Result<()>;
 }

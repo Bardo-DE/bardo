@@ -3,7 +3,7 @@
 //! signals carry).
 
 use memory_core::SpaceId;
-use memory_dbus_serve::Signal;
+use memory_dbus::Signal;
 use memory_tidy::Change;
 
 /// How the bus is told of a [`Change`].

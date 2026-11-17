@@ -9,7 +9,7 @@
 //! bus name and object.
 
 use account_dbus::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 
 /// A route (`(sssas)`): its kind (`account` or `model`), its id (an account id, or a catalogue
 /// model id), which model ids it serves (`listed` or `any`) and, for `listed`, the ids.

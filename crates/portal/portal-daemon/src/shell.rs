@@ -1,7 +1,7 @@
 //! Asking the shell, and only the shell.
 //!
 //! The picker, the yes-or-no sheet and the colour picker are surfaces of the desktop shell, which
-//! answers on the well-known name [`SHELL_NAME`]. A name can be taken by any program while the shell
+//! answers on the well-known name [`SHELL_BUS`]. A name can be taken by any program while the shell
 //! restarts, so each question is put in four steps and nothing is remembered between questions:
 //!
 //! 1. Subscribe to changes of the name's owner.
@@ -14,12 +14,10 @@
 use caller_identity_dbus::OwnerWatch;
 use caller_identity_dbus::caller_identity_core::roles;
 
-use crate::chooser::{Shell1Proxy, ShellError, call_failed, nobody_answers};
+use crate::chooser::{ShellError, call_failed, nobody_answers};
 use crate::link::BusLink;
 use crate::peers::need;
-
-/// The well-known name the shell answers on.
-pub const SHELL_NAME: &str = "org.bardo.Shell";
+use shell_dbus::{SHELL_BUS, Shell1Proxy};
 
 /// The shell, confirmed for one question: a client addressed to its unique name, and the watch
 /// that fires when the name changes hands.
@@ -27,12 +25,12 @@ pub const SHELL_NAME: &str = "org.bardo.Shell";
 pub(crate) struct Door {
     /// The shell's interface, on the confirmed owner.
     pub shell: Shell1Proxy<'static>,
-    /// Fires when the owner of [`SHELL_NAME`] changes.
+    /// Fires when the owner of [`SHELL_BUS`] changes.
     pub watch: OwnerWatch,
 }
 
 impl Door {
-    /// Confirm who owns [`SHELL_NAME`] now. A name nobody owns, an owner that is not the shell and
+    /// Confirm who owns [`SHELL_BUS`] now. A name nobody owns, an owner that is not the shell and
     /// a bus that does not answer are all [`ShellError::NotTheShell`].
     pub async fn open(link: &BusLink) -> Result<Self, ShellError> {
         let connection = link.connection()?;
@@ -40,12 +38,12 @@ impl Door {
             tracing::warn!("the shell cannot be confirmed before callers can be told apart");
             return Err(ShellError::NotTheShell);
         };
-        let watch = peers.watch_owner(SHELL_NAME).await.map_err(|error| {
+        let watch = peers.watch_owner(SHELL_BUS).await.map_err(|error| {
             tracing::warn!(%error, "the shell's name could not be watched, so it is not asked");
             ShellError::NotTheShell
         })?;
         let owner = peers
-            .owner_of(SHELL_NAME, &need(roles::SHELL))
+            .owner_of(SHELL_BUS, &need(roles::SHELL))
             .await
             .map_err(|refused| {
                 tracing::warn!(%refused, "the shell could not be confirmed, so it is not asked");

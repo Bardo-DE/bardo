@@ -129,7 +129,7 @@ EDGES=(
   "inference-router: computer-use-action engine-probe engine-spec engine-supervisor model-catalog model-http model-openai-compat model-provider account-capability account-core account-ids inference-core account-match inference-tailnet account-tailscale speech-provider model-vision-prep"
   "inference-tailnet: base-fs account-ids account-tailscale"
   "inference-turns: computer-use-action computer-use-parse computer-use-session computer-use-vendors engine-supervisor model-extract model-http model-openai-compat model-provider inference-bridge account-capability account-core account-ids inference-core account-match inference-router model-vision-prep"
-  "inference-dbus: account-core account-dbus account-dbus-macros account-ids account-match account-wire"
+  "inference-dbus: account-core account-dbus dbus-kit account-ids account-match account-wire"
   "inference-rig: inference-client account-capability account-core account-ids inference-core account-match account-rig"
 )
 for edge in "${EDGES[@]}"; do

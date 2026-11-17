@@ -268,7 +268,7 @@ pub async fn serve(connection: &Connection, behaviour: Behaviour) -> Calls {
         .at("/org/freedesktop/PackageKit", root)
         .await
         .expect("root served");
-    zbus_ready::serving(connection)
+    dbus_kit::ready::serving(connection)
         .await
         .expect("the object server answers");
     connection.request_name(NAME).await.expect("name claimed");

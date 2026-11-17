@@ -16,12 +16,13 @@ use tokio::sync::{mpsc, oneshot, watch};
 use zbus::Connection;
 use zbus::fdo;
 
-use super::objects::{Call, ColorCall, PATH, PORTAL_BUS, PermissionCall, PickerObject, SourceCall};
+use super::objects::{Call, ColorCall, PermissionCall, PickerObject, SourceCall};
 use crate::callers::CallerSource;
 use crate::capture_pick::{CaptureLinks, CaptureService};
 use crate::owner;
 use crate::seat::SeatView;
 use crate::service::ServiceIo;
+use shell_dbus::SHELL_PATH;
 
 pub(crate) async fn run(
     links: CaptureLinks,
@@ -274,10 +275,10 @@ impl Live {
         tokio::spawn(async move {
             let exported = connection
                 .object_server()
-                .at(PATH, PickerObject { calls, peers })
+                .at(SHELL_PATH, PickerObject { calls, peers })
                 .await;
             if let Err(error) = exported {
-                eprintln!("bardo-shell: capture picker: serving {PATH} failed: {error}");
+                eprintln!("bardo-shell: capture picker: serving {SHELL_PATH} failed: {error}");
                 return;
             }
             watch_caller(connection, left).await;
@@ -352,7 +353,7 @@ impl Live {
 async fn watch_caller(connection: Connection, left: mpsc::UnboundedSender<()>) {
     owner::while_owned(
         &connection,
-        PORTAL_BUS,
+        portal_dbus::BUS_NAME,
         || left.closed(),
         || {
             // A closed receiver ends the next task's wait, so a lost send is no loss.

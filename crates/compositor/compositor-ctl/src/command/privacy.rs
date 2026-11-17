@@ -13,8 +13,6 @@ use std::path::PathBuf;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
-/// The well-known name casement holds on the session bus.
-const COMPOSITOR: &str = "org.bardo.Compositor1";
 /// What a compositor process calls itself (`/proc/<pid>/comm`): the program name `bardo-compositor`
 /// cut to the kernel's 15 bytes.
 const COMM: &str = "bardo-composito";
@@ -147,7 +145,7 @@ async fn compositor_pid() -> Result<i32, String> {
     let bus = DBusProxy::new(&connection)
         .await
         .map_err(|error| unreachable(&error))?;
-    let name = BusName::try_from(COMPOSITOR).map_err(|error| unreachable(&error))?;
+    let name = BusName::try_from(compositor_dbus::BUS_NAME).map_err(|error| unreachable(&error))?;
     let pid = bus
         .get_connection_unix_process_id(name)
         .await

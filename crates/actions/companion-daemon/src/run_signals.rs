@@ -18,9 +18,6 @@ use zbus::message::Type;
 use zbus::names::BusName;
 use zbus::{MatchRule, MessageStream};
 
-/// The run daemon's bus name.
-const CUA_BUS: &str = "org.bardo.ComputerUse1";
-
 fn rule() -> Option<MatchRule<'static>> {
     Some(
         MatchRule::builder()
@@ -45,7 +42,7 @@ pub(crate) async fn watch<P, I, K>(
     let (Some(rule), Ok(dbus), Ok(name)) = (
         rule(),
         DBusProxy::new(&connection).await,
-        BusName::try_from(CUA_BUS),
+        BusName::try_from(computer_use_dbus::CUA_BUS),
     ) else {
         return;
     };

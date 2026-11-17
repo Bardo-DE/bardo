@@ -6,7 +6,6 @@ use std::fmt::Display;
 
 use shell_model::serve::{ClaimError, ServeLink};
 use zbus::Connection;
-use zbus::fdo::{RequestNameFlags, RequestNameReply};
 
 use crate::env::{Bus, ConnectError};
 
@@ -29,7 +28,9 @@ pub(crate) async fn claim(
 ) -> Result<Connection, ClaimError> {
     let connection = bus.try_connect().await?;
     objects(&connection).await?;
-    zbus_ready::serving(&connection).await.map_err(refused)?;
+    dbus_kit::ready::serving(&connection)
+        .await
+        .map_err(refused)?;
     take_name(&connection, name).await?;
     Ok(connection)
 }
@@ -45,16 +46,12 @@ pub(crate) fn held(claimed: Result<Connection, ClaimError>) -> (ServeLink, Optio
 
 /// Ask for `name` on `connection` without queueing.
 pub(crate) async fn take_name(connection: &Connection, name: &str) -> Result<(), ClaimError> {
-    match connection
-        .request_name_with_flags(name, RequestNameFlags::DoNotQueue.into())
+    dbus_kit::name::claim(connection, name)
         .await
-    {
-        Ok(RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner) => Ok(()),
-        Ok(RequestNameReply::InQueue | RequestNameReply::Exists) | Err(zbus::Error::NameTaken) => {
-            Err(ClaimError::NameTaken(format!("{name} is taken")))
-        }
-        Err(error) => Err(refused(error)),
-    }
+        .map_err(|error| match error {
+            dbus_kit::name::ClaimError::Taken(_) => ClaimError::NameTaken(error.to_string()),
+            dbus_kit::name::ClaimError::Bus { .. } => refused(error),
+        })
 }
 
 /// The bus refusing something other than the name, with its words.

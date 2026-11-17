@@ -9,13 +9,14 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+shell-dbus = { path = "../../shell/shell-dbus" }
 ui-peer = {path = "../ui-peer"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 zbus = {workspace = true, features = ["default"], optional = true}
 
 [dev-dependencies]
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [features]
 # `Desktop::probe` and `Desktop::watch` over the session bus (and the system bus for PackageKit).

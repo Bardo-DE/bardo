@@ -263,7 +263,7 @@ pub async fn serve(connection: &Connection, devices: &[Device]) -> Shared {
         .at(ROOT, zbus::fdo::ObjectManager)
         .await
         .unwrap();
-    zbus_ready::serving(connection)
+    dbus_kit::ready::serving(connection)
         .await
         .expect("the object server answers");
     connection

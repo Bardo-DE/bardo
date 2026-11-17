@@ -29,8 +29,8 @@ mod sheet_backend;
 mod spaces;
 mod tailnet;
 
-use crate::Document;
-use crate::Unserved;
+use dbus_kit::Document;
+use dbus_kit::Unserved;
 
 pub use account::{AccountProxy, AccountServed, AccountServer};
 pub use broker::{

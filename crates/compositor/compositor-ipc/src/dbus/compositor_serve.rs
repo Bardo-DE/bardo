@@ -4,7 +4,7 @@
 //! The same shape as `serve_debug_at`.
 
 use super::callers::{CallerCheck, DesktopCallers};
-use super::compositor1::{BUS_NAME, Compositor1, OBJECT_PATH};
+use super::compositor1::Compositor1;
 use super::connect_ask::ConnectCall;
 use super::intake::{CONNECT_QUEUE, Intake, RATE_WINDOW};
 use super::portal_watch::{self, PortalWatch};
@@ -13,10 +13,10 @@ use crate::privacy::{PrivacyLink, serve_privacy};
 use caller_identity_dbus::caller_identity_core::{Proof, Requirement, Table, roles};
 use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
 use calloop::channel::{Channel, SyncSender, sync_channel};
+use compositor_dbus::{BUS_NAME, OBJECT_PATH};
 use std::sync::{Arc, mpsc};
 use std::time::Duration;
 use zbus::Connection;
-use zbus::fdo::RequestNameFlags;
 
 /// Makes the caller check once the bus connection exists.
 type BuildCheck = Box<dyn FnOnce(&Connection) -> Arc<dyn CallerCheck> + Send>;
@@ -199,10 +199,8 @@ async fn connect(
     if let Some(link) = privacy {
         serve_privacy(&connection, for_privacy, link).await?;
     }
-    zbus_ready::serving(&connection).await?;
-    connection
-        .request_name_with_flags(BUS_NAME, RequestNameFlags::DoNotQueue.into())
-        .await?;
+    dbus_kit::ready::serving(&connection).await?;
+    dbus_kit::name::claim(&connection, BUS_NAME).await?;
     Ok(connection)
 }
 

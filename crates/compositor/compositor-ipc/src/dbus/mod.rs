@@ -14,10 +14,7 @@ pub use caller_identity_dbus::caller_identity_core::Table as CallerTable;
 pub use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFiles};
 pub use callers::{CallerCheck, DesktopCallers, WhoFuture, require, role_for_connection};
 pub use compositor_serve::{CallerSetup, serve_compositor_at};
-pub use compositor1::{
-    BUS_NAME as COMPOSITOR_BUS_NAME, Compositor1, OBJECT_PATH as COMPOSITOR_OBJECT_PATH,
-    parse_connect_role,
-};
+pub use compositor1::{Compositor1, parse_connect_role};
 pub use connect_ask::{
     ConnectAsk, ConnectCall, ConnectRefusal, ConnectReply, EndAsk, EndLeaseAsk, FocusLeaseAsk,
     GoneAsk, LeaseAsk, NOT_THE_CALLER, Proven, RemoteAsk,

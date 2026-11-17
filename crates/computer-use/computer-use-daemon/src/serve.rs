@@ -20,7 +20,6 @@ use futures_util::StreamExt;
 use provenance::{Label, Labelled};
 use std::sync::Arc;
 use tokio::task::JoinHandle;
-use zbus::fdo;
 
 /// Why the daemon stopped.
 #[derive(Debug, thiserror::Error)]
@@ -195,16 +194,9 @@ async fn serve_as<S: Seams>(
                 .map_err(bus)?;
         }
     }
-    let taken = connection
-        .request_name_with_flags(CUA_BUS, fdo::RequestNameFlags::DoNotQueue.into())
+    dbus_kit::name::claim(connection, CUA_BUS)
         .await
         .map_err(bus)?;
-    match taken {
-        fdo::RequestNameReply::PrimaryOwner | fdo::RequestNameReply::AlreadyOwner => {}
-        fdo::RequestNameReply::InQueue | fdo::RequestNameReply::Exists => {
-            return Err(ServeError::Bus(format!("{CUA_BUS} is taken")));
-        }
-    }
     Ok(Serving {
         tasks: vec![
             tokio::spawn(relay(

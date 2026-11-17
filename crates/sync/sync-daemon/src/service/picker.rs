@@ -23,9 +23,9 @@ use crate::paths::AccountDir;
 use account_callers::Callers;
 use account_client::GrantsLink;
 #[cfg(feature = "photos-picker")]
-use account_dbus::Call;
-#[cfg(feature = "photos-picker")]
 use account_wire::Refusal;
+#[cfg(feature = "photos-picker")]
+use dbus_kit::Call;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 #[cfg(feature = "photos-picker")]
