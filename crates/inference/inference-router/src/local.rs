@@ -11,12 +11,13 @@
 //! cache is `Downloadable`, and there is no downloader yet), and the engine programs come from
 //! configuration, never from the environment.
 
-use crate::attached::{Attached, AttachedEntry, AttachedError, Target};
+use crate::attached::{Attached, AttachedEntry, AttachedError, KeyFile, KeyFileProblem, Target};
 use crate::catalog::claims_of;
 use account_capability::ModelId;
 use account_capability::{Billing, Locality};
 use account_capability::{Capability, Offer};
 use account_core::AccountId;
+use base_secret::SecretText;
 use engine_spec::{ENGINES, EnginePaths, ProgramPath, engine};
 use engine_supervisor::{EngineSpec, EnvPair, SocketPath, UnitSpec, command};
 use inference_core::{ModelCard, ModelRef};
@@ -247,14 +248,20 @@ pub fn loopback_endpoint(port: Port, base: &str, timeouts: Timeouts) -> HttpEndp
 
 impl LocalModel {
     /// Where this model's engine is reached, under the path `base`: the target the person
-    /// attached (with its token read now, or none when the key file is refused, so the engine
-    /// answers 401), the loopback port of a runtime they run, or the engine's own socket.
+    /// attached (with its token read now by `read_key`, or none when the key file is refused, so
+    /// the engine answers 401), the loopback port of a runtime they run, or the engine's own
+    /// socket. Reading the file is the caller's (`inference_fs::read_key`).
     #[must_use]
-    pub fn endpoint(&self, base: &str, timeouts: Timeouts) -> HttpEndpoint {
+    pub fn endpoint(
+        &self,
+        base: &str,
+        timeouts: Timeouts,
+        read_key: impl FnOnce(&KeyFile) -> Result<SecretText, KeyFileProblem>,
+    ) -> HttpEndpoint {
         if let Some(target) = &self.attached {
             return target
-                .endpoint(base, timeouts)
-                .unwrap_or_else(|_| target.unsigned(base, timeouts));
+                .endpoint(base, timeouts, read_key)
+                .unwrap_or_else(|_refused| target.unsigned(base, timeouts));
         }
         match self.loopback {
             Some(port) => loopback_endpoint(port, base, timeouts),

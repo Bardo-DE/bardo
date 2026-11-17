@@ -151,7 +151,7 @@ EDGES=(
   "inference-fs: base-secret inference-bridge inference-router model-catalog"
   "inference-settings: account-capability account-core base-ids base-time inference-core inference-router model-extract model-provider"
   "inference-agent-proto: account-capability account-core base-ids inference-core"
-  "inference-turns: inference-settings computer-use-action computer-use-parse computer-use-session computer-use-vendors engine-supervisor model-extract model-http model-openai-compat model-provider inference-bridge account-capability account-core account-ids inference-core account-match inference-router model-vision-prep"
+  "inference-turns: inference-fs inference-settings computer-use-action computer-use-parse computer-use-session computer-use-vendors engine-supervisor model-extract model-http model-openai-compat model-provider inference-bridge account-capability account-core account-ids inference-core account-match inference-router model-vision-prep"
   "inference-dbus: account-core account-dbus dbus-kit account-ids account-match account-wire"
   "inference-rig: inference-client account-capability account-core account-ids inference-core account-match account-rig"
 )

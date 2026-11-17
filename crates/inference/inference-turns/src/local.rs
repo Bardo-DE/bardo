@@ -75,7 +75,7 @@ impl EngineUse for () {
 fn client(model: &LocalModel) -> HttpClient {
     // An engine the person attached: its token is read now (so a rotated one is the one sent). A
     // key file that is refused sends no token at all: the engine answers 401.
-    model_http_reqwest::client(model.endpoint("/v1", TIMEOUTS))
+    model_http_reqwest::client(model.endpoint("/v1", TIMEOUTS, inference_fs::read_key))
 }
 
 /// The provider of a chat engine on this computer, retried as the daemon retries; none for a model

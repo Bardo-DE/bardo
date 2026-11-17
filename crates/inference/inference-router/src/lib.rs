@@ -1,11 +1,12 @@
 //! Who answers an inference session, and what this computer can run: the part of inferd that an
-//! app or another daemon can use without inferd. No bus, no runtime, no process: every function is
-//! pure over the lists it is given, or reads a file when it says so.
+//! app or another daemon can use without inferd. No bus, no runtime, no process, no file: every
+//! function is pure over the lists it is given. What comes from files (the catalogue directories,
+//! a key file, a stale engine socket) is read by `inference-fs` and passed in.
 //!
 //! The pieces, from the bottom:
 //!
-//! - [`catalog`]: stoker's model catalogue (`ModelEntry` files) read from the directories it is
-//!   given, and the capabilities each entry claims ([`catalog::claims_of`]).
+//! - [`catalog`]: stoker's model catalogue (`ModelEntry` text parsed, [`catalog::parse_entry_text`])
+//!   and the capabilities each entry claims ([`catalog::claims_of`]).
 //! - [`local`]: [`local::LocalModel`], one per catalogue entry a configured engine can serve, with
 //!   its card (what routing sees), the supervisor's spec (how to start its engine) and the socket
 //!   it listens on; [`local::EngineConfig`] is where the engine programs and the weights are
