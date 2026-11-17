@@ -2,8 +2,9 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 
+use base_ids::Tokens;
 use model_provider::{
-    CallIndex, Charges, ModelName, ProviderError, StopReason, Tokens, TurnEnd, TurnEvent, TurnUsage,
+    CallIndex, Charges, ModelName, ProviderError, StopReason, TurnEnd, TurnEvent, TurnUsage,
 };
 use model_wire::{ChatDecoder, CodecError};
 use serde_json::Value;

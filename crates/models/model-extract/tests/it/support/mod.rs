@@ -4,11 +4,12 @@
     reason = "each test file that includes this module uses a subset of the builders"
 )]
 
+use base_ids::Tokens;
 use computer_use_action::{GridMax, ModelSpace};
 use model_provider::{
     Caps, Constraint, CuaSupport, EngineExtras, ImageCount, ImageLimits, InputKind, Knob, Limits,
     Message, Milli, ModelName, OutputShape, Part, Reasoning, Role, Sampling, StopReason, Support,
-    Tokens, ToolChoice, ToolParallelism, ToolSupport, TurnEnd, TurnRequest, TurnUsage,
+    ToolChoice, ToolParallelism, ToolSupport, TurnEnd, TurnRequest, TurnUsage,
 };
 use model_vision_prep::{PatchFactor, PixelCount, ResizeRule};
 

@@ -5,9 +5,10 @@
     reason = "a shared test helper: each test binary uses only part of it"
 )]
 
+use base_ids::Tokens;
 use model_provider::{
     EngineExtras, ImageInput, Knob, Limits, Message, Milli, ModelName, OutputShape, Part,
-    Reasoning, Role, Sampling, SchemaText, Tokens, ToolCall, ToolCallId, ToolChoice, ToolName,
+    Reasoning, Role, Sampling, SchemaText, ToolCall, ToolCallId, ToolChoice, ToolName,
     ToolParallelism, ToolResult, ToolSpec, ToolStatus, TurnRequest,
 };
 use serde_json::{Value, json};

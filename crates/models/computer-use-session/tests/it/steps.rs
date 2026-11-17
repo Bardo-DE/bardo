@@ -171,13 +171,13 @@ fn the_request_carries_the_settings_the_daemon_gave() {
     );
     let mut settings = TurnSettings::default();
     settings.sampling.temperature = Milli(600);
-    settings.sampling.top_k = Knob::Set(model_provider::Count(20));
-    settings.limits.max_output = model_provider::Tokens(4096);
+    settings.sampling.top_k = Knob::Set(base_ids::Count(20));
+    settings.limits.max_output = base_ids::Tokens(4096);
     let request = s
         .with_settings(settings)
         .request(&obs(0), &map(grid()), frame("f"));
     assert_eq!(request.sampling.temperature, Milli(600));
-    assert_eq!(request.limits.max_output, model_provider::Tokens(4096));
+    assert_eq!(request.limits.max_output, base_ids::Tokens(4096));
 }
 
 #[test]

@@ -2,7 +2,8 @@
 
 use speech_provider::SpeechDir;
 
-use model_provider::{CuaSupport, Tokens, ToolSupport};
+use base_ids::Tokens;
+use model_provider::{CuaSupport, ToolSupport};
 
 use crate::{
     Capabilities, CatalogError, DetailTable, EngineProfile, Locality, Modality, Serving, TextOut,

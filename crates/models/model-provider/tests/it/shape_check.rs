@@ -1,8 +1,9 @@
 //! `Shape::check`.
 
+use base_ids::Count;
 use model_provider::{
-    CharCount, ChoiceText, Count, Field, FieldName, JsonText, Shape, ShapeFault, ShapeKind,
-    Variant, VariantName,
+    CharCount, ChoiceText, Field, FieldName, JsonText, Shape, ShapeFault, ShapeKind, Variant,
+    VariantName,
 };
 
 fn name(text: &str) -> FieldName {

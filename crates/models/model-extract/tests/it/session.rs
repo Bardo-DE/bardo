@@ -2,12 +2,13 @@
 
 use crate::support;
 
+use base_ids::Count;
 use model_extract::{
     ExtractFailure, ExtractMode, ExtractSession, Extracted, FINAL_RESULT_TOOL, RepairBudget,
     RepairsLeft,
 };
 use model_provider::{
-    CharCount, ChoiceText, Count, Extract, Field, FieldName, JsonText, OutputShape, Part, Role,
+    CharCount, ChoiceText, Extract, Field, FieldName, JsonText, OutputShape, Part, Role,
     SchemaDialect, Shape, ShapeFault, StopReason, ToolCall, ToolCallId, ToolChoice, ToolName,
     ToolSpec, check_sequence,
 };

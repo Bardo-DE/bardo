@@ -3,9 +3,9 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    Charges, ModelName, ProviderDetail, RetrySeconds, ServerStatus, Tokens, TurnEnd, TurnRequest,
-    TurnSink,
+    Charges, ModelName, ProviderDetail, RetrySeconds, ServerStatus, TurnEnd, TurnRequest, TurnSink,
 };
+use base_ids::Tokens;
 
 /// One endpoint: a running engine or a cloud account.
 ///

@@ -87,8 +87,8 @@ fn end(stop: StopReason, output: u32) -> TurnEnd {
     TurnEnd {
         stop,
         usage: TurnUsage {
-            input: model_provider::Tokens(10),
-            output: model_provider::Tokens(output),
+            input: base_ids::Tokens(10),
+            output: base_ids::Tokens(output),
             ..TurnUsage::default()
         },
         served: ModelName("tiny-chat".into()),

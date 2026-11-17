@@ -62,7 +62,7 @@ pub fn remote_target(model: &RemoteModel) -> Target {
     Target {
         name: sp::ModelName(model.reach.model.0.clone()),
         sampling: DefaultSampling::Provider,
-        max_output: sp::Tokens(limit),
+        max_output: base_ids::Tokens(limit),
         flavor: Some(flavor_of(&model.reach.provider)),
         json: model
             .entry
@@ -326,8 +326,8 @@ mod tests {
     fn an_attempt_is_counted_from_how_the_provider_says_it_ended() {
         let charge = sp::Money::usd(Decimal::new(95, 5));
         let used = sp::TurnUsage {
-            input: sp::Tokens(10),
-            output: sp::Tokens(5),
+            input: base_ids::Tokens(10),
+            output: base_ids::Tokens(5),
             charge: Some(charge),
             ..sp::TurnUsage::default()
         };
@@ -336,7 +336,7 @@ mod tests {
         assert_eq!(known.charge, Some(charge));
         assert_eq!(counted(Some(sp::UsageReport::Nothing)), None);
         let seen = sp::TurnUsage {
-            input: sp::Tokens(3),
+            input: base_ids::Tokens(3),
             ..sp::TurnUsage::default()
         };
         let cut = counted(Some(sp::UsageReport::Unknown { seen })).expect("counted");

@@ -246,7 +246,7 @@ impl<U: EngineUse> LocalTurns<U> {
         model: &LocalModel,
         request: &inference_core::CuaStepRequest,
         frames: &Frames,
-        ceiling: sp::Tokens,
+        ceiling: base_ids::Tokens,
     ) -> InferReply {
         let run = self
             .run

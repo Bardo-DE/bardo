@@ -4,9 +4,10 @@ use serde::{Deserialize, Serialize};
 use std::ops::ControlFlow;
 
 use crate::{
-    CallIndex, FirstTokenLogprobs, ImageCount, ModelName, Money, ThoughtSeal, Tokens, ToolCall,
-    ToolCallId, ToolName,
+    CallIndex, FirstTokenLogprobs, ImageCount, ModelName, Money, ThoughtSeal, ToolCall, ToolCallId,
+    ToolName,
 };
+use base_ids::Tokens;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]

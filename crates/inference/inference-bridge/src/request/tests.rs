@@ -7,7 +7,7 @@ fn target(sampling: DefaultSampling) -> Target {
     Target {
         name: sp::ModelName("llama3.2:3b".into()),
         sampling,
-        max_output: sp::Tokens(512),
+        max_output: base_ids::Tokens(512),
         flavor: Some(Flavor::LlamaServer),
         json: JsonReply::Schema,
     }
@@ -35,7 +35,7 @@ fn a_target_names_the_model_the_limit_and_the_dialect_extras() {
     )
     .expect("turn");
     assert_eq!(turn.model, sp::ModelName("llama3.2:3b".into()));
-    assert_eq!(turn.limits.max_output, sp::Tokens(512));
+    assert_eq!(turn.limits.max_output, base_ids::Tokens(512));
     assert_eq!(turn.sampling, PROVIDER_DEFAULT);
     assert_eq!(
         turn.engine,
@@ -65,7 +65,7 @@ fn a_choice_that_asks_for_scores_asks_the_engine_for_its_first_tokens_and_nothin
     assert_eq!(
         ask(choice(), on),
         sp::ChoiceScores::FirstToken {
-            top_k: sp::Count(20)
+            top_k: base_ids::Count(20)
         }
     );
     assert_eq!(ask(choice(), pi::Knob::Off), sp::ChoiceScores::Off);

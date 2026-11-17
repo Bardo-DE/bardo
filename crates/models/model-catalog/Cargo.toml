@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-ids = {path = "../../base/base-ids"}
 model-provider = {path = "../model-provider"}
 speech-provider = {path = "../speech-provider"}
 serde = { workspace = true, features = ["derive"] }

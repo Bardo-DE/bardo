@@ -12,11 +12,12 @@ use std::ops::ControlFlow;
 
 use std::sync::Mutex;
 
+use base_ids::Tokens;
 use computer_use_action::{CuaAction, CuaDialect, ModelSpace, TextDialect, ToolDialect};
 use computer_use_session::{CuaSession, StepOutcome, TranscriptSink};
 use model_http::{BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport};
 use model_openai_compat::{Flavor, OpenAiCodec};
-use model_provider::{ModelName, Provider, ProviderError, Seed, Tokens};
+use model_provider::{ModelName, Provider, ProviderError, Seed};
 use model_replay::{
     BuildLabel, ByteStep, CassetteHeader, CassetteVersion, ChunkPlan, ContextStamp, EngineLabel,
     EngineStamp, RecordedAt, RecordingTransport, ReplayMode, ReplayTransport, SinkError,

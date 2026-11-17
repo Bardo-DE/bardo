@@ -32,7 +32,7 @@ pub struct LocalTurn<'a, U> {
     pub frames: &'a Frames,
     /// The most a reply may write, whatever the request asks (the model's most, the person's
     /// length and the window the engine runs with: `LocalModel::reply_ceiling`).
-    pub ceiling: sp::Tokens,
+    pub ceiling: base_ids::Tokens,
 }
 
 impl<U: EngineUse> LocalTurn<'_, U> {

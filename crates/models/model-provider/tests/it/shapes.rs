@@ -1,4 +1,5 @@
-use model_provider::{ImageBytes, JsonText, ProviderError, RetrySeconds, Tokens, ToolName};
+use base_ids::Tokens;
+use model_provider::{ImageBytes, JsonText, ProviderError, RetrySeconds, ToolName};
 
 #[test]
 fn image_bytes_serialise_as_base64_and_debug_hides_them() {

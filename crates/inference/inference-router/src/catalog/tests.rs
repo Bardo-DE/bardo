@@ -1,6 +1,6 @@
 use super::*;
-use base_ids::{Dims, Tokens};
 use crate::testkit::entries;
+use base_ids::{Dims, Tokens};
 
 #[test]
 fn an_embedding_entry_makes_a_claim_from_its_embed_table() {

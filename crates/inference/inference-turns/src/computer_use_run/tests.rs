@@ -118,7 +118,7 @@ impl Rig {
                 provider,
                 frames: &frames,
                 request: &request,
-                ceiling: model_provider::Tokens(u32::MAX),
+                ceiling: base_ids::Tokens(u32::MAX),
             },
             sink,
         )
@@ -255,7 +255,7 @@ async fn a_model_with_no_computer_use_dialect_cannot_run_a_step() {
                 provider: &provider,
                 frames: &frames,
                 request: &request,
-                ceiling: model_provider::Tokens(u32::MAX),
+                ceiling: base_ids::Tokens(u32::MAX),
             },
             &mut Events::default(),
         )

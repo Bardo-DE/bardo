@@ -34,7 +34,8 @@ use serde_json::{Map, Value};
 mod tagged;
 use tagged::tagged;
 
-use crate::{CharCount, ChoiceText, Count, Field, FieldName, IdentError, SchemaText, Shape};
+use crate::{CharCount, ChoiceText, Field, FieldName, IdentError, SchemaText, Shape};
+use base_ids::Count;
 
 /// What a schema may leave open, and how deep it may nest. Settings the daemon reads: no default
 /// lives here.

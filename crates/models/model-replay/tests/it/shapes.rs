@@ -1,6 +1,7 @@
+use base_ids::Tokens;
 use model_provider::{
     EngineExtras, ImageDetail, Knob, Limits, Milli, ModelName, OutputShape, ProviderError,
-    Reasoning, Role, Sampling, StopReason, Tokens, ToolChoice, ToolParallelism, TurnEnd, TurnEvent,
+    Reasoning, Role, Sampling, StopReason, ToolChoice, ToolParallelism, TurnEnd, TurnEvent,
     TurnUsage,
 };
 use model_replay::{
@@ -127,7 +128,8 @@ fn bad_files_name_the_line() {
 
 mod speech {
     use super::stamp;
-    use model_provider::{ModelName, ProviderError, Tokens};
+    use base_ids::Tokens;
+    use model_provider::{ModelName, ProviderError};
     use model_replay::{
         AudioDigest, AudioPrint, ByteCount, CassetteError, CassetteHeader, CassetteVersion,
         ContextStamp, RecordedAt, SpeechCassette, SpeechInteraction, SttPrint, TextDigest,

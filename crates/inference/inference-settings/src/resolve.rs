@@ -15,11 +15,11 @@ use crate::{
 use account_capability::Tier;
 use account_core::DataClass;
 use base_ids::Permille;
+use base_ids::Tokens;
 use inference_core::{
     AutoRow, ClassFloor, Floor, ModelRef, Policy, PoolRow, Slot, TierMap, TierRow,
 };
 use inference_router::local::Lengths;
-use model_provider::Tokens;
 
 /// The settings in force, and the paths of the rows whose values were refused.
 #[derive(Debug, Clone, PartialEq, Eq)]

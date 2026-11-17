@@ -1,8 +1,9 @@
 //! The types the rig amendment added to the frozen interface: round trips, pinned JSON and the
 //! tables that are pure data.
 
+use base_ids::Dims;
 use model_provider::{
-    Dims, EmbedEnd, EmbedRole, EmbedTurn, EmbedVector, FieldName, Knob, ModelName, ProviderError,
+    EmbedEnd, EmbedRole, EmbedTurn, EmbedVector, FieldName, Knob, ModelName, ProviderError,
     ServerStatus, StopReason, TurnUsage, VariantName,
 };
 

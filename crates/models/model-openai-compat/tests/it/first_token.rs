@@ -1,9 +1,10 @@
 //! First-token log-probabilities: the request fields and the decoder's record, over frames written
 //! by hand in the shape vLLM and llama-server send (`choices[0].logprobs.content[].top_logprobs`).
 
+use base_ids::Count;
 use model_openai_compat::{Flavor, StreamDecoder, encode_request};
 use model_provider::{
-    ChoiceScores, Count, FirstTokenLogprobs, Logprob, ModelName, OutputShape, TokenLogprob,
+    ChoiceScores, FirstTokenLogprobs, Logprob, ModelName, OutputShape, TokenLogprob,
 };
 use model_wire::ChatDecoder;
 use serde_json::{Value, json};

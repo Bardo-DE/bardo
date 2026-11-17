@@ -3,11 +3,12 @@
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
+use base_ids::Tokens;
 use model_http::{
     BodyKind, BodySink, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb, WaitSeconds,
 };
-use model_provider::{ModelName, Tokens};
+use model_provider::ModelName;
 use model_replay::{
     BuildLabel, ByteStep, CassetteHeader, CassetteVersion, ChunkPlan, ContextStamp, EngineLabel,
     EngineStamp, HeadPrint, InteractionId, RecordedAt, RecordingTransport, ReplayMode,

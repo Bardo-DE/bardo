@@ -4,7 +4,8 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{Count, Knob, Milli, OpaqueText, Seconds, Seed, SignatureText, SlotId, Tokens};
+use crate::{Knob, Milli, OpaqueText, Seconds, Seed, SignatureText, SlotId};
+use base_ids::{Count, Tokens};
 
 /// How a model samples its next token. Defaults per model come from the catalog entry
 /// (`SamplingDefaults`); a request carries the values to use.

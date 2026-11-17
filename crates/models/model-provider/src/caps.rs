@@ -6,7 +6,8 @@ use computer_use_action::{ActionProfile, CuaDialect, ModelSpace};
 use model_vision_prep::ResizeRule;
 use serde::{Deserialize, Serialize};
 
-use crate::{ImageCount, Tokens};
+use crate::ImageCount;
+use base_ids::Tokens;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Caps {

@@ -8,8 +8,9 @@
 //! settings file does (design/22 section 2), it falls back to the row's default, for that field
 //! only, and is named in [`Resolved::rejected`] so the daemon can log it once.
 
+use base_ids::Count;
 use model_extract::RepairBudget;
-use model_provider::{CharCount, Count, SchemaLimits};
+use model_provider::{CharCount, SchemaLimits};
 use serde::{Deserialize, Serialize};
 use std::ops::RangeInclusive;
 

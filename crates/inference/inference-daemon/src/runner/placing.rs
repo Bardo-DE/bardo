@@ -154,7 +154,7 @@ impl Job {
 
     /// The most a reply of `model` may write now: what the model supports and the person's
     /// length allow, bounded by the window its engine was started with.
-    pub(super) fn ceiling(&self, model: &LocalModel) -> model_provider::Tokens {
+    pub(super) fn ceiling(&self, model: &LocalModel) -> base_ids::Tokens {
         model.reply_ceiling(
             self.engines.lengths(),
             self.engines.window_of(&model.spec.id),

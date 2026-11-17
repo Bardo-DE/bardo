@@ -1,5 +1,6 @@
 //! `ScriptedModel::from_cassette`: recorded turns replay as window-space replies.
 
+use base_ids::Tokens;
 use computer_use_action::{
     Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size,
 };
@@ -8,8 +9,8 @@ use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, Step
 use inference_core::{DropReason, SafetyHint, StepIndex};
 use model_provider::{
     ChoiceScores, EngineExtras, JsonText, Knob, Limits, Message, Milli, ModelName, OutputShape,
-    Part, ProviderError, Reasoning, Role, SafetySignal, Sampling, StopReason, Tokens, ToolCall,
-    ToolCallId, ToolChoice, ToolName, ToolParallelism, TurnEnd, TurnEvent, TurnRequest, TurnUsage,
+    Part, ProviderError, Reasoning, Role, SafetySignal, Sampling, StopReason, ToolCall, ToolCallId,
+    ToolChoice, ToolName, ToolParallelism, TurnEnd, TurnEvent, TurnRequest, TurnUsage,
 };
 use model_replay::{
     BuildLabel, Cassette, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp,

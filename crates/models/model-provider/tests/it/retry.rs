@@ -5,10 +5,11 @@ use std::pin::pin;
 use std::sync::Mutex;
 use std::task::{Context, Poll, Waker};
 
+use base_ids::Tokens;
 use model_provider::{
     Attempt, ModelInfo, ModelName, Permille, Provider, ProviderDetail, ProviderError, RetryClass,
     RetryPolicy, RetrySeconds, Retrying, Script, ScriptedProvider, ServerStatus, Sleeper,
-    StopReason, Tokens, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage, WaitMs, next_wait,
+    StopReason, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage, WaitMs, next_wait,
 };
 use proptest::prelude::*;
 

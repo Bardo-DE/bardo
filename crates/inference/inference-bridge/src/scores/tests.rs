@@ -20,7 +20,7 @@ fn only_a_choice_of_two_or_more_with_the_knob_set_asks_the_engine() {
     assert_eq!(
         choice_scores(&control(on), &two),
         sp::ChoiceScores::FirstToken {
-            top_k: sp::Count(5)
+            top_k: base_ids::Count(5)
         }
     );
     assert_eq!(
@@ -48,13 +48,13 @@ fn the_number_of_candidates_asked_for_is_held_to_what_the_engines_take() {
     assert_eq!(
         ask(0),
         sp::ChoiceScores::FirstToken {
-            top_k: sp::Count(1)
+            top_k: base_ids::Count(1)
         }
     );
     assert_eq!(
         ask(500),
         sp::ChoiceScores::FirstToken {
-            top_k: sp::Count(20)
+            top_k: base_ids::Count(20)
         }
     );
 }

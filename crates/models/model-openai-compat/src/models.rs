@@ -1,7 +1,8 @@
 //! `describe`: which request lists the models, and how its body reads.
 
+use base_ids::Tokens;
 use model_http::{Exchange, Framing, RouteRoot, UrlPath, Verb};
-use model_provider::{ModelInfo, ModelName, Tokens};
+use model_provider::{ModelInfo, ModelName};
 use model_wire::CodecError;
 use serde_json::Value;
 

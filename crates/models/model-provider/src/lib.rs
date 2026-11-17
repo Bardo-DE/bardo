@@ -71,6 +71,6 @@ pub use shape::{
     sanitize_schema,
 };
 pub use units::{
-    Attempt, BatchMax, CallIndex, CharCount, Count, Dims, ImageCount, Knob, Milli, Permille,
-    RepairBudget, RetrySeconds, Seconds, Seed, ServerStatus, SlotId, Tokens, WaitMs,
+    Attempt, BatchMax, CallIndex, CharCount, ImageCount, Knob, Milli, Permille, RepairBudget,
+    RetrySeconds, Seconds, Seed, ServerStatus, SlotId, WaitMs,
 };

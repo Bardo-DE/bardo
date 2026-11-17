@@ -1,6 +1,7 @@
 //! One model's entry.
 
-use model_provider::{Reasoning, Sampling, Tokens};
+use base_ids::Tokens;
+use model_provider::{Reasoning, Sampling};
 use serde::{Deserialize, Serialize};
 
 use crate::{Capabilities, EngineProfile, Serving};

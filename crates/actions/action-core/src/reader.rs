@@ -230,7 +230,7 @@ impl ValueSchema {
     /// Returns [`SchemaFault::NotRepresentable`] when a record field has a name that cannot be a
     /// field name, and any fault of a nested schema.
     pub fn shape(&self) -> Result<Shape, SchemaFault> {
-        let count = |n: usize| model_provider::Count(u32::try_from(n).unwrap_or(u32::MAX));
+        let count = |n: usize| base_ids::Count(u32::try_from(n).unwrap_or(u32::MAX));
         match self {
             ValueSchema::Choice(ids) => Ok(Shape::Choice(
                 ids.iter()

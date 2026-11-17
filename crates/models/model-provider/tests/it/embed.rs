@@ -1,7 +1,8 @@
 //! Batch planning and reply checks for embeddings.
 
+use base_ids::{Count, Dims};
 use model_provider::{
-    BatchMax, Count, Dims, EmbedEnd, EmbedFault, EmbedVector, ModelName, TurnUsage, plan_batches,
+    BatchMax, EmbedEnd, EmbedFault, EmbedVector, ModelName, TurnUsage, plan_batches,
 };
 use proptest::prelude::*;
 

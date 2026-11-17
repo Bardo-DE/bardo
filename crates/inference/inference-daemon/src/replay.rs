@@ -25,12 +25,12 @@ pub mod record;
 pub mod render;
 pub mod replayer;
 
+use base_ids::Tokens;
 use engine_supervisor::{EngineId, SupervisorConfig};
 use host::{ReplayHost, Replaying};
 use inference_router::local::LocalModel;
 use inference_router::local::NamedEngine;
 use model_catalog::MiB;
-use model_provider::Tokens;
 use replayer::Replayer;
 use std::collections::BTreeMap;
 use std::path::Path;

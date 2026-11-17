@@ -9,6 +9,7 @@ use account_capability::ModelId;
 use account_capability::{Billing, Locality};
 use account_capability::{Capability, Offer};
 use account_core::AccountId;
+use base_ids::Tokens;
 use engine_spec::{EnginePaths, ProgramPath};
 use engine_supervisor::{EngineId, EngineSpec, SocketPath, command};
 use inference_core::ModelCard;
@@ -16,7 +17,7 @@ use inference_router::catalog::parse_entry_text;
 use inference_router::local::LocalModel;
 use model_catalog::EngineKind;
 use model_openai_compat::Flavor;
-use model_provider::{ModelName, Tokens};
+use model_provider::ModelName;
 use std::path::{Path, PathBuf};
 
 const SAMPLING: &str = r#"sampling = { reasoning_on = { temperature = 600, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_off = { temperature = 0, top_p = { kind = "off" }, top_k = { kind = "off" }, min_p = { kind = "off" }, repeat_penalty = { kind = "off" }, seed = { kind = "off" } }, reasoning_default = "off" }"#;

@@ -4,7 +4,8 @@ use std::collections::VecDeque;
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
-use model_provider::{ModelName, ProviderError, Support, Tokens};
+use base_ids::Tokens;
+use model_provider::{ModelName, ProviderError, Support};
 use model_replay::{
     AudioPrint, BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel,
     EngineStamp, RecordedAt, RecordingSpeech, ReplayMode, SinkError, SpeechCassette,

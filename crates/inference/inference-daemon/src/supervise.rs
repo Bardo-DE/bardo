@@ -265,7 +265,7 @@ impl Supervised {
     /// The window the engine was last started with, when it is one whose window is chosen at
     /// start.
     #[must_use]
-    pub fn window_of(&self, id: &EngineId) -> Option<model_provider::Tokens> {
+    pub fn window_of(&self, id: &EngineId) -> Option<base_ids::Tokens> {
         self.sizing.window_of(id)
     }
 

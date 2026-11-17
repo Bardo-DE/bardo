@@ -10,7 +10,8 @@ use core::ops::Range;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{BatchMax, Count, Dims, Knob, ModelName, ProviderError, Tokens, TurnUsage};
+use crate::{BatchMax, Knob, ModelName, ProviderError, TurnUsage};
+use base_ids::{Count, Dims, Tokens};
 
 /// What a text is for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

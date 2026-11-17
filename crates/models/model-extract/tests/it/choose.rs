@@ -2,9 +2,10 @@
 
 use crate::support;
 
+use base_ids::Count;
 use model_extract::{ExtractMode, FINAL_RESULT_TOOL, ToolsPresent, choose};
 use model_provider::{
-    CharCount, ChoiceText, Constraint, Count, Field, FieldName, OutputShape, SchemaDialect, Shape,
+    CharCount, ChoiceText, Constraint, Field, FieldName, OutputShape, SchemaDialect, Shape,
     ShapeWithTools, ToolName, ToolSupport,
 };
 use support::caps;

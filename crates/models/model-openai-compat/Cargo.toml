@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-ids = {path = "../../base/base-ids"}
 model-provider = {path = "../model-provider"}
 model-http = {path = "../model-http"}
 model-wire = {path = "../model-wire"}

@@ -8,9 +8,10 @@ use model_vision_prep::MediaType;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::{
-    ChoiceScores, EngineExtras, JsonText, ModelName, Sampling, SchemaText, ThoughtSeal, Tokens,
-    ToolCallId, ToolName, ToolParallelism, WaitMs,
+    ChoiceScores, EngineExtras, JsonText, ModelName, Sampling, SchemaText, ThoughtSeal, ToolCallId,
+    ToolName, ToolParallelism, WaitMs,
 };
+use base_ids::Tokens;
 use computer_use_action::WireDialect;
 
 /// One request to one concrete model: sampling, native tools, prepared images.

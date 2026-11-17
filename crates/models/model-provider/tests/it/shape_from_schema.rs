@@ -1,8 +1,9 @@
 //! `Shape::from_json_schema`: the subset it reads, the typed refusal of the rest, and the round
 //! trip with `Shape::to_json_schema`.
 
+use base_ids::Count;
 use model_provider::{
-    CharCount, ChoiceText, Count, Field, FieldName, JsonText, Refused, SchemaDialect, SchemaLimits,
+    CharCount, ChoiceText, Field, FieldName, JsonText, Refused, SchemaDialect, SchemaLimits,
     SchemaRefusal, SchemaText, Shape, Variant, VariantName,
 };
 use proptest::prelude::*;

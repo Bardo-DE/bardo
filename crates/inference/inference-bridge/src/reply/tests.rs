@@ -24,9 +24,9 @@ fn end(stop: sp::StopReason) -> sp::TurnEnd {
     sp::TurnEnd {
         stop,
         usage: sp::TurnUsage {
-            input: sp::Tokens(10),
-            output: sp::Tokens(4),
-            cached: sp::Tokens(3),
+            input: base_ids::Tokens(10),
+            output: base_ids::Tokens(4),
+            cached: base_ids::Tokens(3),
             images: sp::ImageCount(1),
             charge: Some(sp::Money::usd(Decimal::new(95, 5))),
         },
@@ -131,7 +131,7 @@ fn every_provider_error_is_a_model_error_the_app_can_act_on() {
         ),
         (
             P::ContextOverflow {
-                limit: sp::Tokens(10),
+                limit: base_ids::Tokens(10),
             },
             M::ContextOverflow,
         ),

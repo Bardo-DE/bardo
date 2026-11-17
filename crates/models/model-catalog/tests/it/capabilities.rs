@@ -2,11 +2,11 @@
 
 use crate::support;
 
+use base_ids::Tokens;
 use model_catalog::{
     CatalogError, CatalogId, DetailTable, EngineKind, MiB, Modalities, Modality, VramEstimate,
     merge_catalogs, parse_entry,
 };
-use model_provider::Tokens;
 use support::*;
 
 #[test]
@@ -307,7 +307,7 @@ fn modalities_are_a_set_of_slugs() {
 
 #[test]
 fn the_models_own_limits_are_optional_and_checked_against_what_the_line_serves() {
-    use model_catalog::Tokens;
+    use base_ids::Tokens;
     // The served window is 8192 and the served reply 1024 (`text_out`).
     let limits = |extra: &str| {
         let text =

@@ -9,10 +9,10 @@
 //! `ai.length.conversation` is read the next time an engine starts.
 
 use super::Programs;
+use base_ids::Tokens;
 use engine_supervisor::{EngineId, UnitSpec, Window};
 use inference_router::local::{EngineConfig, Lengths, LocalModel};
 use model_catalog::MiB;
-use model_provider::Tokens;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 

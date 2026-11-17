@@ -8,9 +8,9 @@
 //! memory, and when, is the engine starter's (inferd's `supervise`).
 
 use super::{EngineConfig, LocalModel, host_env};
+use base_ids::Tokens;
 use engine_supervisor::{UnitSpec, Window, command_with_window};
 use model_catalog::{ContextArg, EngineArg, MiB, TextOut, VramEstimate};
-use model_provider::Tokens;
 
 /// A window is chosen in whole blocks of this many tokens, so a figure is the same size the
 /// catalogue writes.

@@ -98,7 +98,7 @@ impl LocalEngines {
 }
 
 fn place_of(origin: Origin) -> EnginePlace {
-    match place {
+    match origin {
         Origin::Package => EnginePlace::Package,
         Origin::System => EnginePlace::System,
         Origin::Person => EnginePlace::Person,

@@ -13,6 +13,7 @@ model-provider = {path = "../model-provider"}
 serde_json = { workspace = true }
 
 [dev-dependencies]
+base-ids = {path = "../../base/base-ids"}
 computer-use-action = {path = "../computer-use-action"}
 model-vision-prep = {path = "../model-vision-prep"}
 

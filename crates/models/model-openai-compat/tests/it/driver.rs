@@ -11,12 +11,12 @@ use std::ops::ControlFlow;
 
 use std::sync::Mutex;
 
+use base_ids::{Dims, Tokens};
 use model_http::{BodyKind, HttpStatus, ResponseHead};
 use model_openai_compat::{Flavor, OpenAiCodec};
 use model_provider::{
-    CallIndex, Dims, EmbedRole, EmbedTurn, Embedder, JsonText, Knob, ModelName, Provider,
-    ProviderError, StopReason, Tokens, ToolCall, ToolCallId, ToolName, TurnEnd, TurnEvent,
-    TurnSink, TurnUsage,
+    CallIndex, EmbedRole, EmbedTurn, Embedder, JsonText, Knob, ModelName, Provider, ProviderError,
+    StopReason, ToolCall, ToolCallId, ToolName, TurnEnd, TurnEvent, TurnSink, TurnUsage,
 };
 use model_replay::{
     ByteStep, ChunkPlan, HeadPrint, RecordingTransport, ReplayMode, ReplayTransport, WireBody,

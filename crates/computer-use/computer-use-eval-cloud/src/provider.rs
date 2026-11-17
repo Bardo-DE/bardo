@@ -84,7 +84,7 @@ fn model_fault(error: ModelError) -> ProviderError {
         ),
         ModelError::NotReady => ProviderError::NotReady,
         ModelError::ContextOverflow => ProviderError::ContextOverflow {
-            limit: sp::Tokens(0),
+            limit: base_ids::Tokens(0),
         },
         other => ProviderError::Unreadable(other.to_string()),
     }

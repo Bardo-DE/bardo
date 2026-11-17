@@ -1,8 +1,9 @@
 //! `describe`, `parse_models`, `encode_embed` and `decode_embed`.
 
+use base_ids::{Dims, Tokens};
 use model_http::{Framing, RouteRoot, Verb};
 use model_openai_compat::{CodecError, Flavor, OpenAiCodec};
-use model_provider::{Dims, EmbedRole, EmbedTurn, EmbedVector, Knob, ModelInfo, ModelName, Tokens};
+use model_provider::{EmbedRole, EmbedTurn, EmbedVector, Knob, ModelInfo, ModelName};
 use model_wire::{ChatCodec, EmbedCodec};
 use serde_json::{Value, json};
 

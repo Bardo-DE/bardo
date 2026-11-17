@@ -5,11 +5,12 @@ use std::fmt::Write as _;
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
+use base_ids::Tokens;
 use model_http::{
     BodyKind, BodySink, EventName, Exchange, Framing, HttpError, HttpStatus, JsonBody,
     ResponseHead, RouteRoot, Transport, UrlPath, Verb,
 };
-use model_provider::{ModelName, Tokens};
+use model_provider::ModelName;
 use model_replay::{
     BuildLabel, CassetteHeader, CassetteVersion, ContextStamp, EngineLabel, EngineStamp,
     RecordedAt, RecordingTransport, SinkError, WireBody, WireCassette, WireEnd, WireExchange,

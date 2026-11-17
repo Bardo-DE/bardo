@@ -6,10 +6,11 @@ use crate::support;
 use std::fmt::Write as _;
 use std::ops::ControlFlow;
 
+use base_ids::{Dims, Tokens};
 use model_http::{BodyKind, Framing, HttpError, HttpStatus};
 use model_provider::{
-    Dims, Embedder, Knob, ModelInfo, ModelName, Provider, ProviderError, RetrySeconds, StopReason,
-    Tokens, TurnEnd, TurnEvent, TurnUsage,
+    Embedder, Knob, ModelInfo, ModelName, Provider, ProviderError, RetrySeconds, StopReason,
+    TurnEnd, TurnEvent, TurnUsage,
 };
 use model_wire::Driver;
 use support::*;

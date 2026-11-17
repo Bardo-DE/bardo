@@ -150,7 +150,7 @@ pub struct Target {
     /// Where a sampling the request leaves open comes from.
     pub sampling: DefaultSampling,
     /// The reply limit a request leaves open.
-    pub max_output: sp::Tokens,
+    pub max_output: base_ids::Tokens,
     /// The engine's flavor, when it has one.
     pub flavor: Option<Flavor>,
     /// How the model takes a reply of a JSON shape (from its entry's output constraints).

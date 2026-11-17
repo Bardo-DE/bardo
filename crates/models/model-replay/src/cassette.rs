@@ -1,7 +1,8 @@
 //! The cassette file: JSON Lines, `<name>.cassette.jsonl`, a header line then one line per
 //! interaction.
 
-use model_provider::{ModelName, ProviderError, Tokens, TurnEnd, TurnEvent};
+use base_ids::Tokens;
+use model_provider::{ModelName, ProviderError, TurnEnd, TurnEvent};
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use speech_provider::SpeechCaps;

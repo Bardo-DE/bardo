@@ -3,10 +3,11 @@
 use std::ops::ControlFlow;
 use std::sync::Mutex;
 
+use base_ids::Tokens;
 use model_provider::{
     CallIndex, EngineExtras, ImageBytes, ImageDetail, ImageInput, JsonText, Knob, Limits, Message,
     Milli, ModelName, OutputShape, Part, Provider, ProviderError, Reasoning, Role, Sampling,
-    Script, ScriptedProvider, StopReason, Tokens, ToolCall, ToolCallId, ToolChoice, ToolName,
+    Script, ScriptedProvider, StopReason, ToolCall, ToolCallId, ToolChoice, ToolName,
     ToolParallelism, ToolResult, ToolStatus, TurnEnd, TurnEvent, TurnRequest, TurnSink, TurnUsage,
 };
 use model_replay::{

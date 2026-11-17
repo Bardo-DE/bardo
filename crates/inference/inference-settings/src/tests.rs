@@ -571,7 +571,7 @@ fn length(text: &str) -> inference_router::local::Lengths {
 
 #[test]
 fn the_length_rows_are_automatic_unless_the_person_sets_a_number() {
-    use model_provider::Tokens as Count;
+    use base_ids::Tokens as Count;
     let automatic = inference_router::local::Lengths::default();
     assert_eq!(length(""), automatic);
     assert_eq!(

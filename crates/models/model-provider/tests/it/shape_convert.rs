@@ -2,9 +2,10 @@
 
 use crate::support;
 
+use base_ids::Count;
 use model_provider::{
-    CharCount, ChoiceText, Count, Field, FieldName, SchemaDialect, SchemaText, Shape, ShapeFault,
-    Variant, VariantName, sanitize_schema,
+    CharCount, ChoiceText, Field, FieldName, SchemaDialect, SchemaText, Shape, ShapeFault, Variant,
+    VariantName, sanitize_schema,
 };
 use proptest::prelude::*;
 use support::Grammar;

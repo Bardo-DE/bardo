@@ -45,7 +45,7 @@ pub fn choice_scores(control: &pi::ChatControl, shape: &sp::OutputShape) -> sp::
     match (control.scores, shape) {
         (pi::Knob::Set(options), sp::OutputShape::Choice(choices)) if choices.len() >= 2 => {
             sp::ChoiceScores::FirstToken {
-                top_k: sp::Count(options.top_k.0.clamp(1, MOST)),
+                top_k: base_ids::Count(options.top_k.0.clamp(1, MOST)),
             }
         }
         _ => sp::ChoiceScores::Off,

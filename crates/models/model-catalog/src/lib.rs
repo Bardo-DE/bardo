@@ -38,7 +38,6 @@ pub use entry::{
 };
 pub use file::EntryFile;
 pub use modality::{Modalities, Modality};
-pub use model_provider::Tokens;
 pub use parse::{CatalogError, merge_catalogs, parse_entry};
 pub use reach::reachable;
 pub use slot::{Signature, Slot, fits, slot_members};

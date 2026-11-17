@@ -258,7 +258,7 @@ fn replayed_text_model(scratch: &Scratch) -> (Turns, Listed) {
     let local = model(
         "scripted",
         &cassette,
-        model_provider::Tokens(4096),
+        base_ids::Tokens(4096),
         scratch.path(),
     )
     .expect("model");

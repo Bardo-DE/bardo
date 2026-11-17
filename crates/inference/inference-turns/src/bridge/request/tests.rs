@@ -81,7 +81,7 @@ fn reasoning_picks_the_catalog_sampling_set_and_an_explicit_sampling_wins() {
         sp::Sampling {
             temperature: sp::Milli(300),
             top_p: sp::Knob::Set(sp::Milli(900)),
-            top_k: sp::Knob::Set(sp::Count(40)),
+            top_k: sp::Knob::Set(base_ids::Count(40)),
             min_p: sp::Knob::Off,
             repeat_penalty: sp::Knob::Off,
             seed: sp::Knob::Set(sp::Seed(7)),
@@ -90,7 +90,7 @@ fn reasoning_picks_the_catalog_sampling_set_and_an_explicit_sampling_wins() {
     assert_eq!(
         turn.limits,
         sp::Limits {
-            max_output: sp::Tokens(1),
+            max_output: base_ids::Tokens(1),
             stop: vec!["END".into()],
             deadline: None,
         }
@@ -331,7 +331,11 @@ fn embedding_texts_carry_the_prefix_of_their_role_and_are_cut_into_batches() {
             .iter()
             .all(|t| t.role == sp::EmbedRole::Document && t.model.0 == "tiny-embed")
     );
-    assert!(turns.iter().all(|t| t.dims == sp::Knob::Set(sp::Dims(4))));
+    assert!(
+        turns
+            .iter()
+            .all(|t| t.dims == sp::Knob::Set(base_ids::Dims(4)))
+    );
 
     let query =
         embed_turns(&model, &embed(&["q"], pi::EmbedRole::Query, DimsNeed::Any)).expect("turns");

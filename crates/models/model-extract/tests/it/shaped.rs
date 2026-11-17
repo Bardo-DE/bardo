@@ -3,14 +3,14 @@
 
 use crate::support;
 
+use base_ids::Count;
 use model_extract::{
     ExtractMode, ExtractSession, Extracted, FINAL_RESULT_TOOL, RepairBudget, ShapedSession,
     ToolsPresent, choose,
 };
 use model_provider::{
-    CharCount, Constraint, Count, Extract, JsonText, OutputShape, Refused, SchemaLimits,
-    SchemaText, Shape, ShapeFault, ShapeWithTools, StopReason, ToolCall, ToolCallId, ToolName,
-    ToolSupport,
+    CharCount, Constraint, Extract, JsonText, OutputShape, Refused, SchemaLimits, SchemaText,
+    Shape, ShapeFault, ShapeWithTools, StopReason, ToolCall, ToolCallId, ToolName, ToolSupport,
 };
 use support::{base, caps, end};
 

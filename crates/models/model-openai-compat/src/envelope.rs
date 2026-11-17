@@ -1,6 +1,7 @@
 //! The error envelope a server writes, in a 200 stream or as an error body.
 
-use model_provider::{ProviderError, RetrySeconds, ServerStatus, Tokens};
+use base_ids::Tokens;
+use model_provider::{ProviderError, RetrySeconds, ServerStatus};
 use serde_json::Value;
 
 /// The error in `value` (`{"error": {...}}` or `{"error": "text"}`), mapped to what a caller

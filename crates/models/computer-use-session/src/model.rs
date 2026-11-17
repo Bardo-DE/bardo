@@ -1,11 +1,12 @@
 //! The state and the values that go in and out of a session (data only).
 
+use base_ids::Tokens;
 use computer_use_action::{ActionProfile, CuaAction, CuaDialect, ModelSpace, Point, WindowSpace};
 use computer_use_parse::{Dropped, ParseError};
 use computer_use_vendors::StepResult;
 use model_provider::{
     EngineExtras, ImageCount, ImageLimits, Knob, Limits, Milli, Reasoning, SafetySignal, Sampling,
-    Tokens, ToolCall, ToolParallelism, TurnEnd, TurnRequest,
+    ToolCall, ToolParallelism, TurnEnd, TurnRequest,
 };
 use model_vision_prep::{Encoding, ResizeRule};
 use serde::{Deserialize, Serialize};

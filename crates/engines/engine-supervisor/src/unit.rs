@@ -2,10 +2,9 @@
 
 use std::path::PathBuf;
 
+use base_ids::Tokens;
 use engine_spec::{EnginePaths, Launch, ProgramPath, engine, repo_dir, snapshot_dir};
-use model_catalog::{
-    ContextArg, EngineArg, EngineKind, EngineProfile, GpuNeed, MiB, ModelEntry, Tokens,
-};
+use model_catalog::{ContextArg, EngineArg, EngineKind, EngineProfile, GpuNeed, MiB, ModelEntry};
 use serde::{Deserialize, Serialize};
 
 /// The Unix socket an engine listens on, `$XDG_RUNTIME_DIR/bardo/inference/<engine>.sock`.

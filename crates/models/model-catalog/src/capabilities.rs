@@ -3,9 +3,10 @@
 
 use std::collections::BTreeSet;
 
+use base_ids::Tokens;
 use model_provider::{
     Caps, Constraint, CuaSupport, EmbedCaps, ImageCount, ImageLimits, InputKind, ModelSpace,
-    ResizeRule, Support, Tokens, ToolSupport,
+    ResizeRule, Support, ToolSupport,
 };
 use serde::{Deserialize, Serialize};
 use speech_provider::SpeechCaps;

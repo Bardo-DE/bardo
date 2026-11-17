@@ -1,9 +1,10 @@
 //! Joins a codec to a transport.
 
+use base_ids::{Count, Dims};
 use model_http::Transport;
 use model_provider::{
-    Charges, Count, Dims, EmbedEnd, EmbedFault, EmbedTurn, Embedder, Knob, ModelInfo, Provider,
-    ProviderError, TurnEnd, TurnRequest, TurnSink, TurnUsage,
+    Charges, EmbedEnd, EmbedFault, EmbedTurn, Embedder, Knob, ModelInfo, Provider, ProviderError,
+    TurnEnd, TurnRequest, TurnSink, TurnUsage,
 };
 
 use crate::collect::Collect;

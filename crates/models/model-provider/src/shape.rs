@@ -18,7 +18,8 @@ pub use schema::sanitize_schema;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{CharCount, Count, JsonText, SchemaText};
+use crate::{CharCount, JsonText, SchemaText};
+use base_ids::Count;
 
 macro_rules! ident {
     ($(#[$doc:meta])* $name:ident) => {

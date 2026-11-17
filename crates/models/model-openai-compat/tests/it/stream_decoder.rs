@@ -1,10 +1,11 @@
 //! The stream decoder: tool-call assembly (rig's §3.3), the quirk cases (§3.2) and the streaming
 //! conformance list (§3.7), over frames written by hand.
 
+use base_ids::Tokens;
 use model_openai_compat::{CodecError, Flavor, StreamDecoder};
 use model_provider::{
-    CallIndex, JsonText, ModelName, ProviderError, StopReason, Tokens, ToolCall, ToolCallId,
-    ToolName, TurnEnd, TurnEvent, TurnUsage,
+    CallIndex, JsonText, ModelName, ProviderError, StopReason, ToolCall, ToolCallId, ToolName,
+    TurnEnd, TurnEvent, TurnUsage,
 };
 use model_wire::ChatDecoder;
 use proptest::prelude::*;

@@ -7,7 +7,8 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::{Count, Permille};
+use crate::Permille;
+use base_ids::Count;
 
 /// Whether a turn asks the engine for the log-probabilities of its first answer token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]

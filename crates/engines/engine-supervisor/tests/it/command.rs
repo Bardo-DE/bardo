@@ -2,13 +2,14 @@
 
 use std::path::PathBuf;
 
+use base_ids::Tokens;
 use engine_spec::{EnginePaths, ProgramPath};
 use engine_supervisor::{
     EnvPair, GpuAccess, MissingProgram, Network, Sandbox, SocketPath, UnitSpec, Window,
 };
 use model_catalog::{
-    ContextArg, EngineArg, EngineKind, EngineProfile, FileName, MiB, ModelEntry, Tokens,
-    WeightFiles, parse_entry,
+    ContextArg, EngineArg, EngineKind, EngineProfile, FileName, MiB, ModelEntry, WeightFiles,
+    parse_entry,
 };
 
 const HOLO: &str = include_str!("../../../../models/catalog/holo-3.1-4b.toml");

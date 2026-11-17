@@ -160,7 +160,7 @@ mod tests {
             choice_scores: sp::ChoiceScores::Off,
             output,
             limits: sp::Limits {
-                max_output: sp::Tokens(512),
+                max_output: base_ids::Tokens(512),
                 stop: vec![],
                 deadline: None,
             },
@@ -194,7 +194,10 @@ mod tests {
             })
         ));
         assert!(matches!(request.control.sampling, pi::Knob::Set(_)));
-        assert_eq!(request.control.max_output, pi::Knob::Set(sp::Tokens(512)));
+        assert_eq!(
+            request.control.max_output,
+            pi::Knob::Set(base_ids::Tokens(512))
+        );
     }
 
     #[test]
