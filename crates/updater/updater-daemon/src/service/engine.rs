@@ -2,7 +2,8 @@
 
 use super::context::Context;
 use super::notify::{self, Posted};
-use super::object::{PATH, Updates};
+use super::object::Updates;
+use updater_dbus::PATH;
 use super::status::{Phase, Status};
 use super::wanted::Wanted;
 use crate::clock::now;

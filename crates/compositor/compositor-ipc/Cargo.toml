@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 compositor-core = {path = "../compositor-core"}
+compositor-dbus = {path = "../compositor-dbus"}
 # Only `VirtualOutputSpec` for the Debug1 object: a release build links neither the backend nor
 # smithay.
 compositor-backend = {path = "../compositor-backend", optional = true}

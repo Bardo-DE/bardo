@@ -1,6 +1,6 @@
 //! The signals of `org.bardo.Memory1.Control` and how they are emitted.
 
-use memory_dbus::{CONTROL_INTERFACE, MEMORY_PATH};
+use crate::{CONTROL_INTERFACE, MEMORY_PATH};
 use zbus::Connection;
 
 /// The signals of `org.bardo.Memory1.Control`.

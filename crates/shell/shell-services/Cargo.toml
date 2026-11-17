@@ -17,6 +17,9 @@ publish.workspace = true
 dev-callers = ["caller-identity-dbus/dev-rows", "action-dbus/fixture-callers"]
 
 [dependencies]
+portal-dbus = { path = "../../portal/portal-dbus" }
+shell-dbus = { path = "../../shell/shell-dbus" }
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
 base-fs = { path = "../../base/base-fs" }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-wire = {path = "../../actions/action-wire"}

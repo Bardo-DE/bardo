@@ -30,7 +30,8 @@ use crate::inhibit::InhibitService;
 use crate::link::BusLink;
 use crate::remote_desktop::RemoteDesktopService;
 use crate::screencast::ScreenCastService;
-use crate::{PORTAL_PATH, TransomError};
+use crate::TransomError;
+use portal_dbus::PORTAL_PATH;
 
 /// How callers on the bus are told apart: their process, held by a pidfd, judged against the
 /// caller table. The probe runs on tokio's blocking pool.

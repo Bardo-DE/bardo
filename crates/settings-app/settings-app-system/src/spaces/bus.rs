@@ -8,7 +8,8 @@ use crate::memory_consent::control;
 use account_core::DesktopSpace;
 use account_dbus::{BusFailure, classify};
 use memory_core::Removal;
-use settings_app_callers::{ACCOUNTS_BUS, MEMORY_BUS};
+use account_wire::names::ACCOUNTS_BUS;
+use memory_dbus::MEMORY_BUS;
 use settings_app_model::{Absence, SpaceKey, SpaceRow, Work, needs_memory};
 use ui_peer::within;
 

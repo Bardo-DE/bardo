@@ -4,7 +4,8 @@
 //! The same shape as `serve_debug_at`.
 
 use super::callers::{CallerCheck, DesktopCallers};
-use super::compositor1::{BUS_NAME, Compositor1, OBJECT_PATH};
+use super::compositor1::Compositor1;
+use compositor_dbus::{BUS_NAME, OBJECT_PATH};
 use super::connect_ask::ConnectCall;
 use super::intake::{CONNECT_QUEUE, Intake, RATE_WINDOW};
 use super::portal_watch::{self, PortalWatch};

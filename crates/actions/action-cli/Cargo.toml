@@ -49,7 +49,6 @@ action-provider = {path = "../action-provider", features = ["dbus"]}
 action-fake = {path = "../action-fake"}
 action-router = {path = "../action-router"}
 memory-dbus = {path = "../../memory/memory-dbus"}
-memory-dbus-serve = {path = "../../memory/memory-dbus-serve"}
 futures-util = { workspace = true, features = ["std"] }
 memory-core = {path = "../../memory/memory-core"}
 account-core = {path = "../../accounts/account-core"}

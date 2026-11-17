@@ -54,57 +54,6 @@ pub trait Chooser: Send + Sync + std::fmt::Debug {
     ) -> BoxFuture<'a, Result<Option<Choice>, ShellError>>;
 }
 
-/// The shell's side of the handshake, as the client sees it.
-///
-/// `PickCaptureSource(app_label: s, kinds: u, multiple: u, cursor_modes: au, remembered: u) ->
-/// (sources: a(ss), cursor: u)`. `kinds` is the portal's bit set (1 display, 2 window); `multiple`
-/// is 0 for one source and 1 for several; `remembered` is how long a yes is kept, the portal's
-/// persist mode (0 asked every time, 1 until the app quits, 2 until taken back in Settings), so
-/// the picker can say so; each source is `("output", name)` or `("window", identifier)`; an
-/// empty list means the person cancelled. The shell lists what exists, so the call carries no
-/// candidates.
-///
-/// `PickColor(app_label: s) -> (color: a(ddd))` serves the Screenshot portal's colour picker.
-///
-/// `AskPermission(app_label: s, title: s, subtitle: s, body: s, grant_label: s, deny_label: s)
-/// -> (answer: u)` serves the Access portal's yes-or-no question: the shell shows a sheet with
-/// the app's icon and name, the three texts, and two buttons labelled as given (the grant button
-/// is the default). `answer` is 0 when the person pressed the grant button, 1 when they pressed
-/// the deny button, 2 when they closed the sheet (Escape, or the sheet was replaced) without
-/// answering. Only the portal backend's name may ask.
-#[zbus::proxy(
-    interface = "org.bardo.Shell1",
-    default_service = "org.bardo.Shell",
-    default_path = "/org/bardo/Shell1",
-    gen_blocking = false
-)]
-pub trait Shell1 {
-    /// Show the picker and wait for the answer.
-    fn pick_capture_source(
-        &self,
-        app_label: &str,
-        kinds: u32,
-        multiple: u32,
-        cursor_modes: Vec<u32>,
-        remembered: u32,
-    ) -> zbus::Result<(Vec<(String, String)>, u32)>;
-
-    /// Show the colour picker and wait for the answer: no tuple is a cancel, one tuple is the
-    /// picked colour as red, green and blue, each 0 to 1.
-    fn pick_color(&self, app_label: &str) -> zbus::Result<Vec<(f64, f64, f64)>>;
-
-    /// Show a yes-or-no sheet and wait for the answer: 0 granted, 1 denied, 2 dismissed.
-    fn ask_permission(
-        &self,
-        app_label: &str,
-        title: &str,
-        subtitle: &str,
-        body: &str,
-        grant_label: &str,
-        deny_label: &str,
-    ) -> zbus::Result<u32>;
-}
-
 /// The real chooser: the desktop shell's picker over the session bus, asked from the connection
 /// that owns the portal's name (the shell answers no other).
 #[derive(Debug)]

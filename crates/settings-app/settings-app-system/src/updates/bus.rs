@@ -11,15 +11,14 @@ use base_time::{Clock, SystemClock};
 use settings_app_model::{Absence, UnixSeconds, UpdateStatus, UpdateVersion, Work};
 use std::collections::HashMap;
 use ui_peer::{NotAnswering, within};
+use updater_dbus::{
+    BUS_NAME, ERROR_NOT_A_VERSION, ERROR_REFUSED, ERROR_VERSION_CHANGED, INTERFACE, PATH,
+    UpdatesProxy,
+};
 use zbus::fdo::{DBusProxy, PropertiesProxy};
 use zbus::names::InterfaceName;
 use zbus::proxy::CacheProperties;
 use zbus::zvariant::OwnedValue;
-
-/// The name the service owns, and its object.
-const BUS_NAME: &str = "org.bardo.Updates1";
-const PATH: &str = "/org/bardo/Updates1";
-const INTERFACE: &str = "org.bardo.Updates1";
 
 /// The error names the service answers a refusal with; each one's message is the plain sentence.
 /// The first is the general failure (`Check`, and `Rollback`'s checks); the others are
@@ -27,31 +26,12 @@ const INTERFACE: &str = "org.bardo.Updates1";
 /// as work in progress.
 const SENTENCE_ERRORS: [&str; 3] = [
     "org.freedesktop.DBus.Error.Failed",
-    "org.bardo.Updates1.Error.NotAVersion",
-    "org.bardo.Updates1.Error.Refused",
+    ERROR_NOT_A_VERSION,
+    ERROR_REFUSED,
 ];
-
-/// The error name of `Install(version)` when what the service offers is not the version named,
-/// or it offers nothing.
-const VERSION_CHANGED: &str = "org.bardo.Updates1.Error.VersionChanged";
 
 /// What the person reads when a request failed and the service gave no sentence.
 const COULD_NOT: &str = "The request could not be made. Try again in a moment.";
-
-/// The service's side as this window calls it. The properties are read together, through
-/// `GetAll` (`wire.rs`), so the proxy has only the requests.
-#[zbus::proxy(
-    interface = "org.bardo.Updates1",
-    default_service = "org.bardo.Updates1",
-    default_path = "/org/bardo/Updates1"
-)]
-trait Updates {
-    /// Looks for a newer version; returns at once.
-    fn check(&self) -> zbus::Result<()>;
-    /// Installs the newer version, which is `version`: the one the person was shown (the
-    /// service's `Available`). Returns at once.
-    fn install(&self, version: &str) -> zbus::Result<()>;
-}
 
 /// The one request the page makes of the service.
 #[derive(Debug, Clone)]
@@ -87,7 +67,7 @@ fn sentence_of(error: &zbus::Error) -> String {
 /// sentence for the person.
 fn refusal_of(error: &zbus::Error) -> InstallRefusal {
     match error {
-        zbus::Error::MethodError(name, _, _) if name.as_str() == VERSION_CHANGED => {
+        zbus::Error::MethodError(name, _, _) if name.as_str() == ERROR_VERSION_CHANGED => {
             InstallRefusal::VersionChanged
         }
         _ => InstallRefusal::Told(sentence_of(error)),
@@ -218,14 +198,5 @@ impl UpdatesLink for OnBus {
 
     fn now(&self) -> UnixSeconds {
         SystemClock.now()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    /// The name this page calls is the one the owner check knows the role of.
-    #[test]
-    fn the_service_name_is_the_one_the_owner_check_knows() {
-        assert_eq!(super::BUS_NAME, settings_app_callers::UPDATES_BUS);
     }
 }

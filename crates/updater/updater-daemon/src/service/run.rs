@@ -4,7 +4,8 @@ use super::context::Context;
 use super::engine::{Engine, Job};
 use super::gate::{Gate, peers_on};
 use super::notify::{self, RESTORED_TEXT};
-use super::object::{BUS_NAME, PATH, Updates};
+use super::object::Updates;
+use updater_dbus::{BUS_NAME, PATH};
 use crate::clock::now;
 use crate::health::{Health, on_start};
 use std::sync::Arc;
@@ -47,7 +48,7 @@ pub async fn run(ctx: Context) -> Result<(), RunError> {
         .at(PATH, Updates::new(Arc::clone(&engine), gate))
         .await?;
     dbus_kit::ready::serving(&connection).await?;
-    connection.request_name(BUS_NAME).await?;
+    dbus_kit::name::claim(&connection, BUS_NAME).await?;
     engine.connect(connection.clone());
     if health == Health::Restored
         && let Err(e) = notify::post(&connection, &engine.posted(), RESTORED_TEXT).await

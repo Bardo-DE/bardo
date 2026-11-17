@@ -1,12 +1,10 @@
 //! The connection `org.bardo.Compositor1.Connect("shell")` hands out, asked of casement on the
 //! session bus. The probe's `shell-connect` and `compositor-shell-exec` both take theirs here.
 
+use compositor_dbus::Compositor1Proxy;
 use std::os::fd::OwnedFd;
 use std::time::Duration;
 
-const BUS_NAME: &str = "org.bardo.Compositor1";
-const OBJECT_PATH: &str = "/org/bardo/Compositor1";
-const INTERFACE: &str = "org.bardo.Compositor1";
 /// How long the bus call may take.
 const CALL_PATIENCE: Duration = Duration::from_secs(10);
 
@@ -26,9 +24,8 @@ pub fn shell() -> Result<OwnedFd, String> {
         let bus = zbus::connection::Builder::address(address.as_str())?
             .build()
             .await?;
-        let proxy = zbus::Proxy::new(&bus, BUS_NAME, OBJECT_PATH, INTERFACE).await?;
-        let fd: zbus::zvariant::OwnedFd = proxy.call("Connect", &("shell",)).await?;
-        Ok::<OwnedFd, zbus::Error>(fd.into())
+        let proxy = Compositor1Proxy::new(&bus).await?;
+        Ok::<OwnedFd, zbus::Error>(proxy.connect("shell").await?.into())
     };
     // The timeout's timer is made inside the runtime: tokio's timers need its context.
     runtime

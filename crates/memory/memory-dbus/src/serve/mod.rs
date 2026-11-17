@@ -15,7 +15,7 @@ pub use recall::RecallObject;
 pub use record::RecordObject;
 pub use signal::{Signal, emit, emit_to};
 
-use memory_dbus::{Call, CallArg, Iface, MEMORY_BUS, MEMORY_PATH, MemoryError};
+use crate::{Call, CallArg, Iface, MEMORY_BUS, MEMORY_PATH, MemoryError};
 use std::os::fd::OwnedFd;
 use std::sync::Arc;
 use zbus::Connection;

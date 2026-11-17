@@ -4,40 +4,11 @@ use super::wait::{Until, wait};
 use super::{Command, Exit};
 use crate::config::Config;
 use std::time::Duration;
+use updater_dbus::UpdatesProxy;
 use zbus::proxy::CacheProperties;
 
 const CHECK_LIMIT: Duration = Duration::from_secs(300);
 const WORK_LIMIT: Duration = Duration::from_hours(2);
-
-/// The daemon's object, as a caller sees it.
-#[zbus::proxy(
-    interface = "org.bardo.Updates1",
-    default_service = "org.bardo.Updates1",
-    default_path = "/org/bardo/Updates1"
-)]
-pub trait UpdatesClient {
-    /// Look for a newer version.
-    fn check(&self) -> zbus::Result<()>;
-    /// Install the newer version, which must be `version`, the one the person was shown.
-    fn install(&self, version: &str) -> zbus::Result<()>;
-    /// Go back to the previous version.
-    fn rollback(&self) -> zbus::Result<()>;
-    /// Where the flow is.
-    #[zbus(property)]
-    fn state(&self) -> zbus::Result<String>;
-    /// The installed version.
-    #[zbus(property)]
-    fn current(&self) -> zbus::Result<String>;
-    /// The version on offer.
-    #[zbus(property)]
-    fn available(&self) -> zbus::Result<String>;
-    /// What went wrong.
-    #[zbus(property)]
-    fn problem(&self) -> zbus::Result<String>;
-    /// When the last check finished.
-    #[zbus(property)]
-    fn last_checked(&self) -> zbus::Result<i64>;
-}
 
 /// What a command answers: the exit code and the one line to print (standard output for `Done` and
 /// `NothingToDo`, standard error otherwise).
@@ -85,9 +56,9 @@ fn from_error(error: &zbus::Error) -> Reply {
     }
 }
 
-async fn proxy() -> zbus::Result<UpdatesClientProxy<'static>> {
+async fn proxy() -> zbus::Result<UpdatesProxy<'static>> {
     let connection = zbus::Connection::session().await?;
-    UpdatesClientProxy::builder(&connection)
+    UpdatesProxy::builder(&connection)
         .cache_properties(CacheProperties::No)
         .build()
         .await
@@ -110,7 +81,7 @@ pub async fn dispatch(command: Command, config: &Config) -> Reply {
     result.unwrap_or_else(|e| from_error(&e))
 }
 
-async fn problem_reply(proxy: &UpdatesClientProxy<'_>) -> zbus::Result<Reply> {
+async fn problem_reply(proxy: &UpdatesProxy<'_>) -> zbus::Result<Reply> {
     let problem = proxy.problem().await?;
     Ok(Reply::failed(if problem.is_empty() {
         "The update could not be completed.".to_owned()
@@ -120,7 +91,7 @@ async fn problem_reply(proxy: &UpdatesClientProxy<'_>) -> zbus::Result<Reply> {
 }
 
 async fn describe_available(
-    proxy: &UpdatesClientProxy<'_>,
+    proxy: &UpdatesProxy<'_>,
     config: &Config,
 ) -> zbus::Result<Reply> {
     let available = proxy.available().await?;
@@ -131,7 +102,7 @@ async fn describe_available(
     }))
 }
 
-async fn check(proxy: &UpdatesClientProxy<'_>, config: &Config) -> zbus::Result<Reply> {
+async fn check(proxy: &UpdatesProxy<'_>, config: &Config) -> zbus::Result<Reply> {
     proxy.check().await?;
     match wait(proxy, Until::CheckDone, CHECK_LIMIT, |_| {}).await? {
         Some(state) if state == "failed" => problem_reply(proxy).await,
@@ -140,7 +111,7 @@ async fn check(proxy: &UpdatesClientProxy<'_>, config: &Config) -> zbus::Result<
     }
 }
 
-async fn status(proxy: &UpdatesClientProxy<'_>, config: &Config) -> zbus::Result<Reply> {
+async fn status(proxy: &UpdatesProxy<'_>, config: &Config) -> zbus::Result<Reply> {
     let current = proxy.current().await?;
     let installed = if current.is_empty() {
         format!("{} is not installed from an update.", config.name)
@@ -162,7 +133,7 @@ enum OnOffer {
 }
 
 /// The version on offer, after a check when none is known yet.
-async fn on_offer(proxy: &UpdatesClientProxy<'_>) -> zbus::Result<OnOffer> {
+async fn on_offer(proxy: &UpdatesProxy<'_>) -> zbus::Result<OnOffer> {
     let known = proxy.available().await?;
     if !known.is_empty() {
         return Ok(OnOffer::Version(known));
@@ -183,7 +154,7 @@ async fn on_offer(proxy: &UpdatesClientProxy<'_>) -> zbus::Result<OnOffer> {
     }
 }
 
-async fn install(proxy: &UpdatesClientProxy<'_>, config: &Config) -> zbus::Result<Reply> {
+async fn install(proxy: &UpdatesProxy<'_>, config: &Config) -> zbus::Result<Reply> {
     let version = match on_offer(proxy).await? {
         OnOffer::Version(version) => version,
         OnOffer::Answer(reply) => return Ok(reply),
@@ -211,7 +182,7 @@ async fn install(proxy: &UpdatesClientProxy<'_>, config: &Config) -> zbus::Resul
     }
 }
 
-async fn rollback(proxy: &UpdatesClientProxy<'_>) -> zbus::Result<Reply> {
+async fn rollback(proxy: &UpdatesProxy<'_>) -> zbus::Result<Reply> {
     proxy.rollback().await?;
     match wait(proxy, Until::WorkDone, WORK_LIMIT, |_| {}).await? {
         Some(state) if state == "installed" => Ok(Reply::done(

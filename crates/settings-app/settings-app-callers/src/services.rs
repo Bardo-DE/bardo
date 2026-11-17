@@ -1,29 +1,13 @@
 //! The eight services Settings talks to, and the role the owner of each one's bus name must hold.
 
+use account_wire::names::{ACCOUNTS_BUS, INFERENCE_BUS};
 use caller_identity_dbus::caller_identity_core::{Proof, RoleName, roles};
-
-/// accountd: the accounts and their live settings module.
-pub const ACCOUNTS_BUS: &str = "org.bardo.Accounts1";
-/// syncd: the datasets and the deletions it holds for the person's word.
-pub const SYNC_BUS: &str = "org.bardo.Sync1";
-/// inferd: the model picker, the person's computers, the month's spend of AI accounts.
-pub const INFERENCE_BUS: &str = "org.bardo.Inference1";
-/// slipway: the software-update service.
-pub const UPDATES_BUS: &str = "org.bardo.Updates1";
-/// memoryd: the controls Settings reaches.
-pub const MEMORY_BUS: &str = "org.bardo.Memory1";
-/// The compositor: the Privacy list of which program may use which power, served as a live
-/// settings module.
-pub const COMPOSITOR_BUS: &str = "org.bardo.Compositor1";
-/// The screen-sharing portal (transom).
-///
-/// It holds the apps it lets share the screen without asking again, and the call that takes one
-/// back. The name is the portal backend's own; the interface Settings calls on it is
-/// `org.bardo.Portal1`.
-pub const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.bardo";
-
-/// The shell (bardo-shell): each display's brightness, which Settings lists and sets.
-pub const DISPLAYS_BUS: &str = "org.bardo.Displays1";
+use compositor_dbus::BUS_NAME as COMPOSITOR_BUS;
+use memory_dbus::MEMORY_BUS;
+use portal_dbus::BUS_NAME as PORTAL_BUS;
+use shell_dbus::DISPLAYS_BUS;
+use sync_bus::SYNC_BUS;
+use updater_dbus::BUS_NAME as UPDATES_BUS;
 
 /// The proof a service's owner must show.
 ///

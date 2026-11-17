@@ -1,7 +1,7 @@
 //! The `org.bardo.Memory1.Record` object over a [`Serve`] handler.
 
 use super::{Serve, first, forward, none, text, two};
-use memory_dbus::{Iface, MemoryError};
+use crate::{Iface, MemoryError};
 use std::sync::Arc;
 use zbus::message::Header;
 

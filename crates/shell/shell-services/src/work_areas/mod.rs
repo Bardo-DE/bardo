@@ -21,8 +21,6 @@ use crate::service::{Service, ServiceIo};
 
 /// The well-known name of the interface and its object path (quire's `ui-desktop` names the
 /// same one for its `Outputs` capability).
-pub const BUS_NAME: &str = "org.bardo.Outputs1";
-pub const PATH: &str = "/org/bardo/Outputs1";
 
 /// The work areas as a [`Service`].
 #[derive(Debug)]

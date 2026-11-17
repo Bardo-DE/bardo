@@ -17,7 +17,8 @@ use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, StructureBuilder, Value};
 
 use crate::peers::RoleGuard;
-use crate::{PORTAL_PATH, TransomError};
+use crate::TransomError;
+use portal_dbus::PORTAL_PATH;
 
 /// The largest appearance document that is read. The real one is a few hundred bytes.
 const MAX_DOCUMENT: ReadCap = ReadCap::kib(64);

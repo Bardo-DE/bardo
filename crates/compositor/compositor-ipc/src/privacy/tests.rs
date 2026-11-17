@@ -4,11 +4,11 @@
 //! the channel the test reads. No test reads the real `/proc` for a caller.
 
 use super::{PRIVACY_PATH, PrivacyLink};
-use crate::dbus::COMPOSITOR_BUS_NAME;
 use crate::test_served::{Served, WHOLE_TEST, outcome, service};
 use caller_identity_dbus::caller_identity_core::Proof;
 use caller_identity_dbus::caller_identity_linux::fake::introduced_program;
 use calloop::channel::Channel;
+use compositor_dbus::BUS_NAME as COMPOSITOR_BUS_NAME;
 use compositor_core::policy::Power;
 use compositor_core::privilege::{Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict};
 use ui_settings::live::LiveSchema;

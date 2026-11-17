@@ -17,6 +17,7 @@ name = "bardo-companiond"
 path = "src/main.rs"
 
 [dependencies]
+computer-use-dbus = { path = "../../computer-use/computer-use-dbus" }
 companion-core = {path = "../companion-core"}
 companion-model = {path = "../companion-model"}
 companion-wire = {path = "../companion-wire"}

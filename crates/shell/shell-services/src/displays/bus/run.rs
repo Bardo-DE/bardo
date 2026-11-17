@@ -8,7 +8,8 @@ use shell_model::serve::ServeLink;
 use zbus::Connection;
 
 use super::object::DisplaysObject;
-use super::{BUS, DisplaysBusLinks, DisplaysBusService, PATH};
+use super::{DisplaysBusLinks, DisplaysBusService};
+use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
 use crate::callers::CallerSource;
 use crate::env::{Bus, NameClaims};
 use crate::serve;
@@ -33,7 +34,7 @@ pub(super) async fn run(
     let object_displays = displays.clone();
     let claimed = match claims {
         NameClaims::Claim => {
-            serve::claim(&bus, BUS, async move |connection| {
+            serve::claim(&bus, DISPLAYS_BUS, async move |connection| {
                 let object = DisplaysObject {
                     displays: object_displays,
                     control,
@@ -41,7 +42,7 @@ pub(super) async fn run(
                 };
                 connection
                     .object_server()
-                    .at(PATH, object)
+                    .at(DISPLAYS_PATH, object)
                     .await
                     .map(|_| ())
                     .map_err(serve::refused)
@@ -84,7 +85,7 @@ async fn announce(connection: &Connection, levels: &[(String, u32)]) {
     let sent = connection
         .emit_signal(
             None::<&str>,
-            PATH,
+            DISPLAYS_PATH,
             "org.bardo.Displays1",
             "Changed",
             &(levels,),

@@ -14,12 +14,6 @@ use zbus::message::Header;
 
 use crate::callers::{Claim, Peers, admit};
 
-/// The portal backend's name: transom owns it, and only its owner, holding the portal role, may
-/// ask the person.
-pub(super) const PORTAL_BUS: &str = "org.freedesktop.impl.portal.desktop.bardo";
-/// Where the object is exported.
-pub(super) const PATH: &str = "/org/bardo/Shell1";
-
 /// The longest app label taken, in characters.
 const MAX_LABEL: usize = 128;
 /// The most cursor modes taken.
@@ -74,7 +68,7 @@ impl PickerObject {
     /// names as `portal`, which owns the portal backend's name.
     async fn admit_transom(&self, header: &Header<'_>) -> fdo::Result<()> {
         let claims = [Claim {
-            name: PORTAL_BUS,
+            name: portal_dbus::BUS_NAME,
             role: roles::PORTAL,
             tag: (),
         }];

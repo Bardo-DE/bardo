@@ -22,6 +22,9 @@ path = "src/main.rs"
 debug = ["caller-identity-dbus/dev-rows"]
 
 [dependencies]
+shell-dbus = { path = "../../shell/shell-dbus" }
+portal-dbus = { path = "../../portal/portal-dbus" }
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
 dbus-kit = { path = "../../bus/dbus-kit" }
 base-fs = { path = "../../base/base-fs" }
 base-time = { path = "../../base/base-time" }

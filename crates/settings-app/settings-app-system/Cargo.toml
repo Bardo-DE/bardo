@@ -13,6 +13,11 @@ publish.workspace = true
 testing = ["zbus/p2p"]
 
 [dependencies]
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
+shell-dbus = { path = "../../shell/shell-dbus" }
+portal-dbus = { path = "../../portal/portal-dbus" }
+memory-dbus = { path = "../../memory/memory-dbus" }
+updater-dbus = { path = "../../updater/updater-dbus" }
 base-time = { path = "../../base/base-time" }
 account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}

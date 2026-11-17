@@ -6,14 +6,13 @@ use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
 use crate::support::drive::{let_threads_run, settle_on_threads};
 use account_wire::names::{ACCOUNTS_BUS, INFERENCE_BUS};
+use memory_dbus::MEMORY_BUS;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use sync_bus::SYNC_BUS;
 use ui_harness::Harness;
 
-/// A daemon no page reads: starting it would be a start for a page nobody opened.
-const MEMORY_BUS: &str = "org.bardo.Memory1";
-
+/// MEMORY_BUS is a daemon no page reads here: starting it would be a start for a page nobody opened.
 const ALL: [&str; 4] = [ACCOUNTS_BUS, INFERENCE_BUS, SYNC_BUS, MEMORY_BUS];
 
 fn page(slug: &str) -> Opening {

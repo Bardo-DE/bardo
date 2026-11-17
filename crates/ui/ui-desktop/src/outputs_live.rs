@@ -5,19 +5,9 @@ use crate::probe::bus::answered;
 use std::future::poll_fn;
 use std::pin::Pin;
 use zbus::export::futures_core::Stream;
+use shell_dbus::Outputs1Proxy;
+use zbus::Connection;
 use zbus::proxy::PropertyStream;
-use zbus::{Connection, proxy};
-
-#[proxy(
-    interface = "org.bardo.Outputs1",
-    default_service = "org.bardo.Outputs1",
-    default_path = "/org/bardo/Outputs1",
-    gen_blocking = false
-)]
-trait Outputs1 {
-    #[zbus(property)]
-    fn work_areas(&self) -> zbus::Result<Vec<Wire>>;
-}
 
 impl Outputs {
     /// The shell's outputs over the session bus; empty when no bus or no shell answers.

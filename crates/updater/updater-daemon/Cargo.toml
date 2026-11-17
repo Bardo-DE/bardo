@@ -13,6 +13,7 @@ name = "bardo-updater"
 path = "src/main.rs"
 
 [dependencies]
+updater-dbus = { path = "../../updater/updater-dbus" }
 base-fs = { path = "../../base/base-fs" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }

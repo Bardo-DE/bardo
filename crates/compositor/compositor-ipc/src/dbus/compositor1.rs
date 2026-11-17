@@ -53,12 +53,6 @@ use std::sync::Arc;
 use zbus::fdo;
 use zbus::message::Header;
 
-/// The object's path.
-pub const OBJECT_PATH: &str = "/org/bardo/Compositor1";
-
-/// The well-known name casement owns on the session bus.
-pub const BUS_NAME: &str = "org.bardo.Compositor1";
-
 /// The object: the door into the event loop, where every call is carried out, and the check
 /// that says who a caller is.
 #[derive(Debug)]

@@ -13,21 +13,10 @@ use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 use zbus::connection::Builder;
 use zbus::export::futures_core::Stream;
-use zbus::{Connection, proxy};
+use shell_dbus::Outputs1Proxy;
+use zbus::Connection;
 
 const SETTLE: Duration = Duration::from_secs(5);
-
-type Wire = (u32, String, (i32, i32, u32, u32), (i32, i32, u32, u32), u32);
-
-#[proxy(
-    interface = "org.bardo.Outputs1",
-    default_service = "org.bardo.Outputs1",
-    default_path = "/org/bardo/Outputs1"
-)]
-trait Outputs {
-    #[zbus(property)]
-    fn work_areas(&self) -> zbus::Result<Vec<Wire>>;
-}
 
 async fn wait_for<T>(receiver: &mut watch::Receiver<T>, want: impl Fn(&T) -> bool) -> bool {
     tokio::time::timeout(SETTLE, receiver.wait_for(|value| want(value)))
@@ -93,7 +82,7 @@ async fn the_property_answers_and_a_change_is_announced() {
     );
 
     let connection = client(&bus).await;
-    let proxy = OutputsProxy::new(&connection)
+    let proxy = Outputs1Proxy::new(&connection)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let first = proxy.work_areas().await.unwrap_or_else(|e| panic!("{e}"));

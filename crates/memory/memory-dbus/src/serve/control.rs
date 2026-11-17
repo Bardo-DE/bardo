@@ -3,7 +3,7 @@
 
 use super::{Serve, first, forward, none, text};
 use memory_core::WaitingSetting;
-use memory_dbus::{CallArg, Iface, MemoryError};
+use crate::{CallArg, Iface, MemoryError};
 use std::collections::HashMap;
 use std::os::fd::OwnedFd;
 use std::sync::Arc;

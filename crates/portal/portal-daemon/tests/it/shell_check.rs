@@ -9,7 +9,7 @@ use std::time::Duration;
 use caller_identity_dbus::caller_identity_linux::fake::introduced_program;
 use portal_daemon::access::{Answer, Asker, Question, ShellAsker, response_of};
 use portal_daemon::chooser::ShellError;
-use portal_daemon::shell::SHELL_NAME;
+use shell_dbus::SHELL_BUS;
 use zbus::Connection;
 use zbus::zvariant::OwnedValue;
 
@@ -55,7 +55,7 @@ async fn stand_in(portal: &Portal, answers: Answers) -> (Connection, Arc<AtomicU
     let connection = portal
         .bus
         .builder()
-        .name(SHELL_NAME)
+        .name(SHELL_BUS)
         .and_then(|b| {
             b.serve_at(
                 "/org/bardo/Shell1",
@@ -120,7 +120,7 @@ async fn only_the_shell_is_asked_and_a_squatter_is_not() {
         "a squatter hears nothing"
     );
     squatter
-        .release_name(SHELL_NAME)
+        .release_name(SHELL_BUS)
         .await
         .expect("the squatter leaves");
 
@@ -132,7 +132,7 @@ async fn only_the_shell_is_asked_and_a_squatter_is_not() {
         Answer::Granted
     );
     shell
-        .release_name(SHELL_NAME)
+        .release_name(SHELL_BUS)
         .await
         .expect("the shell leaves");
     let (squatter, asked_again) = stand_in(&portal, Answers::Yes).await;
@@ -169,7 +169,7 @@ async fn a_question_ends_as_a_no_when_the_shell_changes_while_it_is_open() {
     })
     .await;
     shell
-        .release_name(SHELL_NAME)
+        .release_name(SHELL_BUS)
         .await
         .expect("the shell lets go of its name");
 

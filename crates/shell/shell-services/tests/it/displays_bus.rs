@@ -15,7 +15,8 @@ use shell_model::ids::{DdcId, OutputName};
 use shell_model::serve::ServeLink;
 use shell_model::units::Percent;
 use shell_services::control::Control;
-use shell_services::displays::bus::{BUS, DisplaysBusLinks, DisplaysBusService, PATH};
+use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
+use shell_services::displays::bus::{DisplaysBusLinks, DisplaysBusService};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::{Handle, spawn};
 use shell_testkit::{PrivateBus, TempDir};
@@ -121,7 +122,7 @@ async fn settings_of(bus: &PrivateBus, shell: &Shell) -> Connection {
 
 async fn levels(connection: &Connection) -> Vec<(String, u32)> {
     connection
-        .call_method(Some(BUS), PATH, Some(INTERFACE), "Brightness", &())
+        .call_method(Some(DISPLAYS_BUS), DISPLAYS_PATH, Some(INTERFACE), "Brightness", &())
         .await
         .unwrap_or_else(|e| panic!("{e}"))
         .body()
@@ -132,8 +133,8 @@ async fn levels(connection: &Connection) -> Vec<(String, u32)> {
 async fn set(connection: &Connection, output: &str, percent: u32) -> zbus::Result<()> {
     connection
         .call_method(
-            Some(BUS),
-            PATH,
+            Some(DISPLAYS_BUS),
+            DISPLAYS_PATH,
             Some(INTERFACE),
             "SetBrightness",
             &(output, percent),

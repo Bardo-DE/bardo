@@ -1,0 +1,15 @@
+[package]
+name = "shell-dbus"
+description = "The desktop shell's D-Bus names and the proxies of its interfaces: org.bardo.Shell1 (the portal's questions), org.bardo.Displays1 (brightness) and org.bardo.Outputs1 (work areas)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+zbus = { workspace = true, features = ["tokio"] }
+
+[lints]
+workspace = true

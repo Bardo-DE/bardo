@@ -6,24 +6,11 @@
 use crate::bus::{BusSource, because, connect, pinned, said, watch_on};
 use crate::deadline::{Deadline, answered, peer};
 use crate::ticks::Ticks;
-use settings_app_callers::DISPLAYS_BUS;
+use shell_dbus::{DISPLAYS_BUS, Displays1Proxy};
 use settings_app_model::{Absence, Brightness, BrightnessList, OutputId};
 use zbus::Message;
 
 const COULD_NOT_SET: &str = "The brightness can\u{2019}t be changed right now.";
-
-/// The shell's brightness list (`org.bardo.Displays1`).
-#[zbus::proxy(
-    interface = "org.bardo.Displays1",
-    default_path = "/org/bardo/Displays1"
-)]
-trait Displays1 {
-    /// Each display whose brightness can be read: its connector and its percentage.
-    fn brightness(&self) -> zbus::Result<Vec<(String, u32)>>;
-
-    /// Sets one display's brightness; only Settings may.
-    fn set_brightness(&self, output: &str, percent: u32) -> zbus::Result<()>;
-}
 
 /// The displays that have a brightness now.
 pub async fn read(bus: &BusSource) -> Result<BrightnessList, Absence> {

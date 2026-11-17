@@ -8,7 +8,7 @@ use crate::support::bus::PrivateBus;
 use crate::support::connect;
 use memory_core::Refusal;
 use memory_dbus::{Call, MemoryError, encode_request, invoke};
-use memory_dbus_serve::{Serve, introspection, serve_on};
+use memory_dbus::{Serve, introspection, serve_on};
 use std::collections::BTreeSet;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex};

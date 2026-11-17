@@ -20,9 +20,6 @@ use zbus::Connection;
 
 pub use error::StorageError;
 
-/// The service's name on the bus: syncd's.
-pub const SERVICE: &str = "org.bardo.Sync1";
-
 /// The cloud service over a connection.
 #[derive(Clone)]
 pub struct Storage {
@@ -50,7 +47,7 @@ impl Storage {
     ///
     /// `StorageError` when the proxy cannot be built on `connection`.
     pub async fn connect(connection: &Connection) -> Result<Storage, StorageError> {
-        Storage::connect_to(connection, SERVICE).await
+        Storage::connect_to(connection, sync_bus::SYNC_BUS).await
     }
 
     /// The service under another bus name (a stand-in on a private bus).

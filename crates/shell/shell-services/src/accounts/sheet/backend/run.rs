@@ -19,6 +19,7 @@ use zbus::fdo;
 
 use super::callers::{Caller, Host};
 use super::objects::{Call, SheetObject};
+use account_dbus::accounts::AccountsSheetServed;
 use crate::accounts::sheet::{AccountsSheetLinks, AccountsSheetService};
 use crate::callers::CallerSource;
 use crate::control::Control;
@@ -51,7 +52,7 @@ pub(crate) async fn run(
                 };
                 connection
                     .object_server()
-                    .at(SHEET_PATH, sheet)
+                    .at(SHEET_PATH, AccountsSheetServed(sheet))
                     .await
                     .map(|_| ())
                     .map_err(serve::refused)

@@ -16,7 +16,7 @@ use memory_core::{
     DesktopSpace, Dirs, MemoryReply, MemoryRequest, PlanToken, Refusal, Removal, SpaceId, SpaceKind,
 };
 use memory_dbus::{Call, MemoryError, decode_request, encode_reply};
-use memory_dbus_serve::{Serve, Signal, emit_to};
+use memory_dbus::{Serve, Signal, emit_to};
 use memory_service::Caller;
 use memory_service::{
     Backend, MemoryService, ServiceEvent, SpacesFile, allowed, locked_status, rules_to_toml,

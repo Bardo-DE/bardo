@@ -27,6 +27,7 @@ keycap = ["dep:key-remap-client"]
 fixture-callers = ["action-dbus/fixture-callers"]
 
 [dependencies]
+shell-dbus = { path = "../../shell/shell-dbus" }
 dbus-kit = { path = "../../bus/dbus-kit" }
 base-xdg = { path = "../../base/base-xdg" }
 action-wire = {path = "../../actions/action-wire"}

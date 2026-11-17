@@ -39,7 +39,7 @@ const MAX_ROWS: usize = 16;
 
 /// The wire row, `(us(iiuu)(iiuu)u)`.
 #[cfg(any(feature = "dbus", test))]
-pub(crate) type Wire = (u32, String, (i32, i32, u32, u32), (i32, i32, u32, u32), u32);
+pub(crate) type Wire = shell_dbus::WorkAreaWire;
 
 #[cfg(any(feature = "dbus", test))]
 fn rect((x, y, width, height): (i32, i32, u32, u32)) -> OutputRect {
