@@ -860,7 +860,7 @@ daemon. No `todo!()` was left behind (none in syncd before or after).
 - `dist/syncd.service` (AF_UNIX only; writes only the journals and mirrors) and
   `dist/dbus/org.bardo.Sync1.service`. check-boundary: the syncd row gains `account-core`, plus the
   `test-proc-root` leak check. `/etc/accounts/callers.toml` needs a `[[caller]]` row for
-  `syncd.service` with role `account_daemon` (packaging; not a file of this lane).
+  `syncd.service` with role `account_daemon_support` (packaging; not a file of this lane).
 - account-sync gained `journal` and `journal_reconcile` (no new dependency; not consumer-used).
 
 ### Interface asks from W6a
@@ -2386,8 +2386,8 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 **Which gate, and why it is the strictest.** All six copies (accountd, syncd, inferd here; the actions service intentd and companiond; the memory service memoryd) gate on the same thing: a compile-time `cfg!(feature = "test-proc-root")` of the daemon's own crate. No copy checks the path, and no copy honours the variable in a test binary that was built without the feature. The library cannot see the daemon's features, so the daemon passes `ProcGate::Honour` or `ProcGate::Ignore` from its own `cfg!`, as a `const`. Three behaviours any copy has are kept: an empty value is no value; a gated-out build reads the system's `/proc` (never the variable's path); and the gated-out build says so on standard error where it said so before (`notice` gives the line; accountd and syncd stay silent as before). No path check was added, since none of the copies had one. One difference: the lookup returns `OsString`, so a non-UTF-8 value is now honoured in a test build (before, accountd, syncd and inferd read `env::var(..).ok()`, which dropped it).
 
 **Moved, with the old paths kept for a batch.**
-- inferd: `peers::{ProcGate, ProcRoot}` is `pub use account_daemon::{ProcGate, ProcRoot}`. Gone: `ProcGate::BUILT` (now `peers::PROC_GATE`), `ProcRoot::select(gate, Option<&str>)` (now `choose`), `ProcRoot::notice()` (now `notice("inferd", PROC_ROOT_VAR)`, the same words). `ProcRoot` is `#[non_exhaustive]`, so a match outside the crate needs `fixture()` or a wildcard.
-- accountd, syncd: `paths::proc_root(Build, Option<String>)`, `Build` and `BUILD` stay (syncd's `rescan` still takes `Build`); `proc_root` now calls `account_daemon::ProcRoot`. New `paths::PROC_GATE`. `Config::from_env` calls `ProcRoot::choose(PROC_GATE, PROC_ROOT_VAR, |name| std::env::var_os(name)).into_fixture()`.
+- inferd: `peers::{ProcGate, ProcRoot}` is `pub use account_daemon_support::{ProcGate, ProcRoot}`. Gone: `ProcGate::BUILT` (now `peers::PROC_GATE`), `ProcRoot::select(gate, Option<&str>)` (now `choose`), `ProcRoot::notice()` (now `notice("inferd", PROC_ROOT_VAR)`, the same words). `ProcRoot` is `#[non_exhaustive]`, so a match outside the crate needs `fixture()` or a wildcard.
+- accountd, syncd: `paths::proc_root(Build, Option<String>)`, `Build` and `BUILD` stay (syncd's `rescan` still takes `Build`); `proc_root` now calls `account_daemon_support::ProcRoot`. New `paths::PROC_GATE`. `Config::from_env` calls `ProcRoot::choose(PROC_GATE, PROC_ROOT_VAR, |name| std::env::var_os(name)).into_fixture()`.
 - Tests: the three tables of the same rows (accountd and syncd `only_a_test_build_honours_the_proc_root_variable`, inferd's rows in `peers/tests.rs`) are one table in `account-daemon-support` (`proc_root.rs`), plus the notice words. inferd keeps a one-line check that `PROC_GATE` follows the feature. The acceptance tests (`binary.rs`, `tests/it/proc_root.rs`, `dist.rs`) are untouched.
 
 **Switch-over for the other repos** (each bumps its accounts service `rev` to a commit with `account-daemon-support`, adds `account-daemon-support = { git = ".../accounts", rev = ".." }` to the root `[workspace.dependencies]` and `account-daemon-support = { workspace = true }` to the crate; `notify` stays in the root only if something else names it, `thiserror` is no longer needed by the file if that was its only use). The two pure files below are then deleted. No edits were made in those repos.
@@ -2396,20 +2396,20 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 
 - The actions service `crates/intentd/src/lib.rs:60`
   - before: `pub use procroot::{PROC_ROOT_VAR, ProcRoot, TestProcRoot, proc_root_choice};` (and `mod procroot;`)
-  - after: `pub use account_daemon::{ProcGate, ProcRoot};` and, in `daemon.rs`, `pub const PROC_ROOT_VAR: &str = "INTENTD_PROC_ROOT";` and `pub const PROC_GATE: ProcGate = if cfg!(feature = "test-proc-root") { ProcGate::Honour } else { ProcGate::Ignore };`
+  - after: `pub use account_daemon_support::{ProcGate, ProcRoot};` and, in `daemon.rs`, `pub const PROC_ROOT_VAR: &str = "INTENTD_PROC_ROOT";` and `pub const PROC_GATE: ProcGate = if cfg!(feature = "test-proc-root") { ProcGate::Honour } else { ProcGate::Ignore };`
 - The actions service `crates/intentd/src/daemon.rs:14`
   - before: `use crate::procroot::{PROC_ROOT_VAR, ProcRoot, TestProcRoot, proc_root_choice};`
-  - after: `use account_daemon::{ProcGate, ProcRoot};`
+  - after: `use account_daemon_support::{ProcGate, ProcRoot};`
 - The actions service `crates/intentd/src/daemon.rs:130-133`
   - before: `let proc_root = proc_root_choice(env(PROC_ROOT_VAR).as_deref(), TestProcRoot::THIS_BUILD);` then `if let Some(line) = proc_root.said() { eprintln!("intentd: {line}"); }`
   - after: `let proc_root = ProcRoot::choose(PROC_GATE, PROC_ROOT_VAR, |name| env(name).map(OsString::from));` then `if let Some(line) = proc_root.notice("intentd", PROC_ROOT_VAR) { eprintln!("{line}"); }` (`env` returns `Option<String>` there, so the lookup converts; `OsString` is already imported in that file). The words of the two lines change (`intentd: INTENTD_PROC_ROOT=/x ignored: not a test-proc-root build`, `intentd: test proc root /x: callers are read from it, not /proc`); a test or doc that quotes the old `TEST BUILD: reading callers ...` or `... ignoring it and reading /proc` line must be changed.
   - where `proc_root` is used as a path: `proc_root.path()` returned a `PathBuf`; it returns `&Path` now, so `.path().to_path_buf()` where an owned path is needed.
 - The memory service `crates/memoryd/src/lib.rs:36`
   - before: `pub use procroot::{PROC_ROOT_VAR, ProcRoot, TestProcRoot, proc_root_choice};` (and `mod procroot;`)
-  - after: `pub use account_daemon::{ProcGate, ProcRoot};` and in `run.rs`: `pub const PROC_ROOT_VAR: &str = "MEMORYD_PROC_ROOT";` and the same `PROC_GATE` const.
+  - after: `pub use account_daemon_support::{ProcGate, ProcRoot};` and in `run.rs`: `pub const PROC_ROOT_VAR: &str = "MEMORYD_PROC_ROOT";` and the same `PROC_GATE` const.
 - The memory service `crates/memoryd/src/run.rs:8-10`
   - before: `PROC_ROOT_VAR, ProcPeers, ProcRoot, ...TestProcRoot, ... proc_root_choice` in the `use memoryd::{..}` list
-  - after: drop `TestProcRoot` and `proc_root_choice`; add `use account_daemon::ProcRoot;` (`PROC_ROOT_VAR` and `PROC_GATE` from the crate).
+  - after: drop `TestProcRoot` and `proc_root_choice`; add `use account_daemon_support::ProcRoot;` (`PROC_ROOT_VAR` and `PROC_GATE` from the crate).
 - The memory service `crates/memoryd/src/run.rs:188-191`
   - before: `let proc_root = proc_root_choice(env(PROC_ROOT_VAR).as_deref(), TestProcRoot::THIS_BUILD);` then `if let Some(line) = proc_root.said() { eprintln!("memoryd: {line}"); }`
   - after: `let proc_root = ProcRoot::choose(PROC_GATE, PROC_ROOT_VAR, |name| env(name).map(OsString::from));` then `if let Some(line) = proc_root.notice("memoryd", PROC_ROOT_VAR) { eprintln!("{line}"); }`
@@ -2428,12 +2428,12 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
   - after: `pub use speaker::{Call, PROC_GATE, PROC_ROOT_VAR, Speaker, permits};`
 - The actions service `crates/companiond/src/serve.rs:362`
   - before: `let proc_root = speaker::proc_root_from(std::env::var(speaker::PROC_ROOT_VAR).ok().as_deref());`
-  - after: `let choice = account_daemon::ProcRoot::choose(speaker::PROC_GATE, speaker::PROC_ROOT_VAR, |name| std::env::var_os(name));` then `if let Some(line) = choice.notice("companiond", speaker::PROC_ROOT_VAR) { eprintln!("{line}"); }` then `let proc_root = choice.path().to_path_buf();`. companiond's `PathBuf` field and `serve_on_rooted` do not change. companiond's `from_env`-style rule (if it has one) applies to this line: it is the one environment read.
+  - after: `let choice = account_daemon_support::ProcRoot::choose(speaker::PROC_GATE, speaker::PROC_ROOT_VAR, |name| std::env::var_os(name));` then `if let Some(line) = choice.notice("companiond", speaker::PROC_ROOT_VAR) { eprintln!("{line}"); }` then `let proc_root = choice.path().to_path_buf();`. companiond's `PathBuf` field and `serve_on_rooted` do not change. companiond's `from_env`-style rule (if it has one) applies to this line: it is the one environment read.
 
 *Settings-file watch.* In each of `crates/intentd/src/settings_watch.rs`, `crates/memoryd/src/settings_watch.rs` and `crates/computer_use_daemon/src/watch.rs` the pieces that stay are `DEBOUNCE`, `WatchState`, `SettingsWatch`, `settle`, `apply` and `apply_next`. What goes: `touches`, `start_watcher`, the private error enum (`WatchError` in memoryd, `StartError` in the computer-use daemon; intentd has `String`), and the `notify` imports.
 - the `use` line (intentd 8, memoryd 7, the computer-use daemon 7)
   - before: `use notify::{RecommendedWatcher, RecursiveMode, Watcher};` and `use std::ffi::OsStr;`
-  - after: `use account_daemon::Watch;` (the computer-use daemon also drops `use std::path::PathBuf;`)
+  - after: `use account_daemon_support::Watch;` (the computer-use daemon also drops `use std::path::PathBuf;`)
 - the field
   - before: `_watcher: Option<RecommendedWatcher>,`
   - after: `_watcher: Option<Watch>,`

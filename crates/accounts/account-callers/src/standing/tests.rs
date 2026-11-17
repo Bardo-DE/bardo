@@ -78,11 +78,7 @@ fn a_fixed_role_service_proved_by_its_unit_keeps_its_role() {
 fn a_fixed_role_service_with_only_its_program_or_its_cgroup_is_a_plain_app() {
     for proof in [Proof::Exe, Proof::Cgroup] {
         assert_eq!(
-            shown(&service(
-                "org.bardo.Inference",
-                "account_daemon",
-                proof
-            )),
+            shown(&service("org.bardo.Inference", "account_daemon", proof)),
             want(
                 "org.bardo.Inference",
                 Isolation::Unsandboxed,

@@ -443,10 +443,10 @@ mod tests {
 
     #[test]
     fn no_label_or_help_a_person_reads_uses_a_developer_word() {
-        const JARGON: [&str; 25] = [
+        const JARGON: [&str; 24] = [
             "acp", "mcp", "oauth", "pkce", "imap", "smtp", "pop", "jmap", "dav", "caldav",
-            "carddav", "api", "cli", "token", "endpoint", "relay", "scope", "accountd",
-            "syncd", "inferd", "socket", "localapi", "daemon", "node",
+            "carddav", "api", "cli", "token", "endpoint", "relay", "scope", "accountd", "syncd",
+            "inferd", "socket", "localapi", "daemon", "node",
         ];
         let mut registry = registry();
         // Tailscale, signed out (it offers "Sign in") and working, with ids of their own.

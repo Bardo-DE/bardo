@@ -93,8 +93,10 @@ impl Default for HarnessSeams {
 }
 
 /// The administrator's files the daemon reads: which callers get a fixed role, the floor and the
-/// policy folder. Where they are is an input of [`Setup::from_env`], so a test names its own and
-/// never reads this computer's `/etc/bardo`.
+/// policy folder.
+///
+/// Where they are is an input of [`Setup::from_env`], so a test names its own and never reads
+/// this computer's `/etc/bardo`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SystemFiles {
     /// `actiond-callers.toml`: the system's table, which alone can give a fixed role.

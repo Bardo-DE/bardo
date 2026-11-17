@@ -99,9 +99,10 @@ pub fn read_table_at_in(
     load_callers(system, &user_dir(domain, env).join(file))
 }
 
-/// The system's callers file a test build reads in place of the one under [`SYSTEM_DIR`]: the
-/// file the variable `var` names, when the daemon's own build `honour`s it (its `test-system-callers`
-/// feature), so that no test reads this computer's `/etc/bardo`.
+/// The system's callers file a test build reads in place of the one under [`SYSTEM_DIR`].
+///
+/// It is the file the variable `var` names, when the daemon's own build `honour`s it (its
+/// `test-system-callers` feature), so that no test reads this computer's `/etc/bardo`.
 ///
 /// A shipped build ignores the variable. Either way, a variable that is set is said once on
 /// standard error, prefixed by `daemon`, so a person who set it by mistake is told it did nothing.

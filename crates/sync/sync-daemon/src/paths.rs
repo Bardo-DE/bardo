@@ -23,8 +23,10 @@ pub const BUILD: Build = if cfg!(feature = "test-proc-root") {
 /// release build ignores the variable.
 pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");
 
-/// Whether this binary honours `BARDO_ACCOUNTD_SYSTEM_CALLERS`: only with the `test-system-callers` feature (which
-/// `test-proc-root` implies), so a test never reads this computer's `/etc/bardo`. A release build ignores the variable.
+/// Whether this binary honours `BARDO_ACCOUNTD_SYSTEM_CALLERS`.
+///
+/// Only with the `test-system-callers` feature (which `test-proc-root` implies), so a test never
+/// reads this computer's `/etc/bardo`. A release build ignores the variable.
 pub const HONOURS_SYSTEM_CALLERS: bool = cfg!(feature = "test-system-callers");
 
 /// How often the supervisors read grants again.

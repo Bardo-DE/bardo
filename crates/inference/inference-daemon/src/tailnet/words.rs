@@ -79,8 +79,8 @@ mod tests {
 
     /// Words a person reads never include a program name or a term of the network's plumbing.
     const JARGON: [&str; 15] = [
-        "inferd", "accountd", "socket", "port ", "node", "tailnet", "address",
-        "localapi", "daemon", "whois", "http", "tcp", "listener", "tagged", "api",
+        "inferd", "accountd", "socket", "port ", "node", "tailnet", "address", "localapi",
+        "daemon", "whois", "http", "tcp", "listener", "tagged", "api",
     ];
 
     fn plain(text: &str) {
