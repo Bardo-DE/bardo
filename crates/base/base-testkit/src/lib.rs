@@ -4,7 +4,11 @@
 //! (providers, accounts, sheets, the service) are in `account-fake`.
 
 mod deadline;
+mod eventually;
 mod scratch;
 
 pub use deadline::{Deadline, GENEROUS};
+pub use eventually::eventually_blocking;
+#[cfg(feature = "tokio")]
+pub use eventually::{eventually, eventually_some};
 pub use scratch::Scratch;
