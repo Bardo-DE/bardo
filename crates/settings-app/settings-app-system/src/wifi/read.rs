@@ -3,6 +3,7 @@
 //! mid-list costs one failed read.
 
 use crate::bus::{is_running, system_connection};
+use base_time::deadline::within;
 use networkmanager_proxy::{
     AccessPointProxy, ConnectionSettingsProxy, DeviceProxy, NetworkManagerProxy, SERVICE,
     SettingsProxy, WirelessDeviceProxy,
@@ -13,7 +14,6 @@ use settings_app_model::{
     Absence, AccessPoint, NetworkLink, SignalStrength, Ssid, WifiRadio, WifiStatus, WifiWire,
     wifi_link_of, wifi_security_of,
 };
-use base_time::deadline::within;
 use zbus::Connection;
 use zbus::zvariant::OwnedObjectPath;
 

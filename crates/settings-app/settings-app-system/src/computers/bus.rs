@@ -3,6 +3,7 @@
 
 use crate::bus::{Pinned, ToAbsence, absence_of, because, inferd, inferd_owners, read_once};
 use account_dbus::BusStream;
+use base_time::deadline::within;
 use inference_client::{
     ClientError, ComputerReach, ComputerReason, DbusTransport, Inference, NewComputer,
     NewComputerModel, TransportError,
@@ -18,7 +19,6 @@ use settings_app_model::{
     Work, picker_row_is_choice, server_models,
 };
 use std::path::Path;
-use base_time::deadline::within;
 
 /// Why a call was refused, as the pane knows it.
 fn reason_of(error: &ClientError) -> ComputersReason {

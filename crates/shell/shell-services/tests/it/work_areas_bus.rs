@@ -4,7 +4,7 @@
 
 use std::time::Duration;
 
-use shell_dbus::Outputs1Proxy;
+use outputs_dbus::Outputs1Proxy;
 use shell_model::serve::ClaimError;
 use shell_model::service::Handle;
 use shell_model::work_areas::WorkAreaService;

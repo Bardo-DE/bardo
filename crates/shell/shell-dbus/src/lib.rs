@@ -1,8 +1,8 @@
 //! The shell's place on the session bus.
 //!
 //! The shell serves these interfaces behind caller checks (`shell-services`), so the objects are
-//! written by hand there. Its callers hold one proxy of each: the portal asks `Shell1`, Settings
-//! reads and sets `Displays1`, and apps read `Outputs1`.
+//! written by hand there. Its callers hold one proxy of each: the portal asks `Shell1`, and Settings
+//! reads and sets `Displays1`. The work areas (`Outputs1`) are `outputs-dbus`'s, which apps read.
 
 /// The well-known name the shell answers the portal's questions on, and the name whose owner a
 /// caller must prove is the shell.
@@ -16,16 +16,6 @@ pub const DISPLAYS_BUS: &str = "org.bardo.Displays1";
 
 /// Where `org.bardo.Displays1` is exported.
 pub const DISPLAYS_PATH: &str = "/org/bardo/Displays1";
-
-/// The well-known name `org.bardo.Outputs1` is served under.
-pub const OUTPUTS_BUS: &str = "org.bardo.Outputs1";
-
-/// Where `org.bardo.Outputs1` is exported.
-pub const OUTPUTS_PATH: &str = "/org/bardo/Outputs1";
-
-/// One output of `Outputs1.WorkAreas`, `(us(iiuu)(iiuu)u)`: id, name, frame, work area (each x, y,
-/// width, height) and the scale in 120ths.
-pub type WorkAreaWire = (u32, String, (i32, i32, u32, u32), (i32, i32, u32, u32), u32);
 
 /// The shell's pickers and sheets (`org.bardo.Shell1`), asked by the portal backend alone: the
 /// shell answers no other name. The shell's answers are what the person decided.
@@ -74,17 +64,4 @@ pub trait Displays1 {
 
     /// Sets one display's brightness (0 to 100); only Settings may.
     fn set_brightness(&self, output: &str, percent: u32) -> zbus::Result<()>;
-}
-
-/// The shell's work areas (`org.bardo.Outputs1`), for an app that sizes and places a window.
-#[zbus::proxy(
-    interface = "org.bardo.Outputs1",
-    default_service = "org.bardo.Outputs1",
-    default_path = "/org/bardo/Outputs1",
-    gen_blocking = false
-)]
-pub trait Outputs1 {
-    /// Each output's frame, work area and scale.
-    #[zbus(property)]
-    fn work_areas(&self) -> zbus::Result<Vec<WorkAreaWire>>;
 }

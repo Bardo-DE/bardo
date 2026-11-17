@@ -3,6 +3,7 @@
 
 use crate::bus::{ToAbsence, because, inferd, inferd_owners, said};
 use crate::computers::relay;
+use base_time::deadline::within;
 use inference_client::TransportError;
 use inference_dbus::inference::{InferenceProxy, RunState, RunningModel};
 use settings_app_link::Ticks;
@@ -10,7 +11,6 @@ use settings_app_link::bus::BusSource;
 use settings_app_link::running::RunningLink;
 use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, ModelRun, RunAction, RunStanding, Work};
-use base_time::deadline::within;
 
 /// What the person reads when a model could not be started or stopped and the assistant gave no
 /// sentence.

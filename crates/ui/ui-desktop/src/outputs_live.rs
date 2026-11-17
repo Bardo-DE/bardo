@@ -2,7 +2,7 @@
 
 use crate::outputs::{Outputs, Wire};
 use crate::probe::bus::answered;
-use shell_dbus::Outputs1Proxy;
+use outputs_dbus::Outputs1Proxy;
 use std::future::poll_fn;
 use std::pin::Pin;
 use zbus::Connection;

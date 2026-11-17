@@ -2,10 +2,10 @@
 //! daemon.
 
 use crate::bus::{because, read_once};
+use base_time::deadline::within;
 use settings_app_link::bus::{BusSource, Daemon};
 use settings_app_link::{Deadline, peer};
 use settings_app_model::{Absence, AccountsPane, ModuleId, Sources, accounts_row_is_valued};
-use base_time::deadline::within;
 
 /// The accounts the modules list now, read once. A module that is not there leaves its part out;
 /// the answer is an absence only when none is there.

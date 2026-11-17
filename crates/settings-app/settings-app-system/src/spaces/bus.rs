@@ -6,13 +6,13 @@ use crate::memory_consent::control;
 use account_core::DesktopSpace;
 use account_dbus::{BusFailure, classify};
 use account_wire::names::ACCOUNTS_BUS;
+use base_time::deadline::within;
 use memory_core::Removal;
 use memory_dbus::MEMORY_BUS;
 use settings_app_link::bus::BusSource;
 use settings_app_link::spaces::SpacesLink;
 use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, SpaceKey, SpaceRow, Work, needs_memory};
-use base_time::deadline::within;
 
 /// What the person reads when a delete choice cannot be carried out because memory is not running.
 const MEMORY_NOT_RUNNING: &str = "Memory isn\u{2019}t running right now, so this Space can\u{2019}t be deleted. Try again in a moment.";

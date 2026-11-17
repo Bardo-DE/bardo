@@ -9,13 +9,13 @@
 //! filters on it), so another process cannot answer for the dialog.
 
 use super::{PrintError, PrintOutcome};
+use base_time::deadline::{Deadline, NotAnswering, within};
 use std::collections::HashMap;
 use std::future::poll_fn;
 use std::io::{Seek, SeekFrom, Write};
 use std::os::fd::OwnedFd;
 use std::pin::Pin;
 use std::task::Poll;
-use base_time::deadline::{Deadline, NotAnswering, within};
 use zbus::export::futures_core::Stream;
 use zbus::proxy::{OwnerChangedStream, SignalStream};
 use zbus::zvariant::{Fd, OwnedValue, Value};

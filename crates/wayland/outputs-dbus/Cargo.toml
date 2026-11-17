@@ -1,0 +1,15 @@
+[package]
+name = "outputs-dbus"
+description = "The shell's work areas on the session bus: the names of org.bardo.Outputs1, the wire row of one output and the proxy an app reads them through."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+zbus = { workspace = true, features = ["tokio"] }
+
+[lints]
+workspace = true

@@ -30,9 +30,9 @@ impl Desktop {
 pub(crate) mod bus {
     use crate::Desktop;
     use crate::capability::{Bus, Capability};
+    use base_time::deadline::{Deadline, within};
     use std::collections::HashSet;
     use std::future::Future;
-    use base_time::deadline::{Deadline, within};
     use zbus::Connection;
     use zbus::fdo::DBusProxy;
 

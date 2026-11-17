@@ -3,9 +3,9 @@
 
 use super::{SystemPrefs, contrast_from_portal, reduced_motion_from_portal, scheme_from_portal};
 use base_spawn::Spawner;
+use base_time::deadline::{Deadline, within};
 use settings_store::latest::{self, Receiver, Sender};
 use std::collections::HashMap;
-use base_time::deadline::{Deadline, within};
 use zbus::export::ordered_stream::OrderedStreamExt;
 use zbus::proxy;
 use zbus::zvariant::OwnedValue;

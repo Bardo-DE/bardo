@@ -52,6 +52,7 @@ mod snapshot;
 mod timeouts;
 pub mod value;
 
+pub use base_time::deadline::Deadline;
 pub use client::{Change, Changes, LiveClient, SettingsModule1Proxy};
 pub use error::LiveError;
 pub use module::{Access, Caller, LiveModule, SenderName, Verdict};
@@ -62,7 +63,6 @@ pub use schema::{LiveSchema, LiveSchemaError};
 pub use skeleton::{Served, serve};
 pub use snapshot::Snapshot;
 pub use timeouts::Timeouts;
-pub use base_time::deadline::Deadline;
 
 /// The D-Bus interface name.
 pub const INTERFACE: &str = "org.bardo.SettingsModule1";

@@ -7,10 +7,10 @@
 //! `Package` or a `Finished`. A `PackageKit` that vanishes mid-transaction ends the wait at once,
 //! and one that goes quiet is asked to cancel.
 
+use base_time::deadline::{Deadline, NotAnswering, within};
 use std::future::poll_fn;
 use std::pin::Pin;
 use std::task::Poll;
-use base_time::deadline::{Deadline, NotAnswering, within};
 use zbus::export::futures_core::Stream;
 use zbus::message::Type;
 use zbus::names::UniqueName;

@@ -5,6 +5,7 @@ use super::join::{join, join_hidden, sign_in};
 use super::known::forget;
 use super::read::{read, wifi_device, wireless_at};
 use crate::bus::{every, said, system_connection, watch_service};
+use base_time::deadline::within;
 use networkmanager_proxy::{NetworkManagerProxy, SERVICE};
 use settings_app_link::Ticks;
 use settings_app_link::bus::BusSource;
@@ -14,7 +15,6 @@ use settings_app_model::{
     Absence, HiddenNetwork, JoinFailure, Passphrase, Ssid, WifiLogin, WifiRadio, WifiStatus, Work,
 };
 use std::collections::HashMap;
-use base_time::deadline::within;
 
 const NOT_AVAILABLE: &str = "Wi-Fi isn\u{2019}t available right now. Try again in a moment.";
 const COULD_NOT_SWITCH: &str = "Wi-Fi couldn\u{2019}t be switched. Try again in a moment.";

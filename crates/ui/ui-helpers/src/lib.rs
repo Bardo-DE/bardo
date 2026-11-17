@@ -85,6 +85,7 @@ mod outcome;
 mod probe;
 mod watch;
 
+pub use base_time::deadline::Deadline;
 pub use capability::{CapabilityName, Executable, NameError, PackageName};
 pub use catalog::{Catalog, CatalogError, Entry};
 pub use desktop_entries::{
@@ -101,5 +102,4 @@ pub use installer::{BoxFuture, FakeInstaller, Install, PackageKit, Request, Stan
 pub use os_release::OsRelease;
 pub use outcome::{Missing, Outcome};
 pub use probe::Environment;
-pub use base_time::deadline::Deadline;
 pub use watch::{Availability, Subscription};

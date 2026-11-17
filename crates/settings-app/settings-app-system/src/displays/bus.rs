@@ -8,6 +8,7 @@
 use super::brightness;
 use super::map::{mode_of, monitors_of, transform_of};
 use crate::bus::{because, said};
+use base_time::deadline::within;
 use desktop_client::client::{DesktopClient, WaylandRoute};
 use desktop_client::output::{
     ConfigOutcome, HeadChangeRequest, HeadConfig, HeadSettings, ModeChoice, OutputConfig,
@@ -24,7 +25,6 @@ use settings_app_model::{
     Absence, Brightness, BrightnessList, DisplayChange, DisplayEdit, DisplayMode, DisplaysStatus,
     OutputId, Work, mode_at,
 };
-use base_time::deadline::within;
 
 const CANNOT: &str = "Displays can\u{2019}t be changed right now.";
 

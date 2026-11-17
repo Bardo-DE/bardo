@@ -2,12 +2,12 @@
 
 use super::io::{connect, owner_changes};
 use super::system::system_connection;
+use base_time::deadline::within;
 use settings_app_link::bus::{BusSource, Daemon};
 use settings_app_link::{Deadline, peer};
 use settings_app_link::{Ticker, Ticks};
 use settings_app_model::Absence;
 use std::pin::Pin;
-use base_time::deadline::within;
 use zbus::export::futures_core::Stream;
 use zbus::fdo::DBusProxy;
 use zbus::message::Type as MessageType;

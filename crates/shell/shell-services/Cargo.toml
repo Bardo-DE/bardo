@@ -19,6 +19,7 @@ dev-callers = ["caller-identity-dbus/dev-rows", "action-dbus/fixture-callers"]
 [dependencies]
 portal-dbus = { path = "../../portal/portal-dbus" }
 shell-dbus = { path = "../shell-dbus" }
+outputs-dbus = { path = "../../wayland/outputs-dbus" }
 compositor-dbus = { path = "../../compositor/compositor-dbus" }
 base-words = { path = "../../base/base-words" }
 base-fs = { path = "../../base/base-fs" }

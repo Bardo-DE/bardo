@@ -60,6 +60,7 @@ members = [
     "crates/compositor/compositor-ctl",
     "crates/wayland/desktop-protocols",
     "crates/wayland/desktop-client",
+    "crates/wayland/outputs-dbus",
     "crates/wayland/shell-verbs",
     "crates/keymap/keymap",
     "crates/keymap/keymap-gnome",

@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-shell-dbus = { path = "../../shell/shell-dbus" }
+outputs-dbus = { path = "../../wayland/outputs-dbus" }
 base-time = { path = "../../base/base-time" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 zbus = {workspace = true, features = ["default"], optional = true}

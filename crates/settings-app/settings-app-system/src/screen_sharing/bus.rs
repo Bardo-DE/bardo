@@ -4,12 +4,12 @@
 
 use super::proxy::portal;
 use crate::bus::{ToAbsence, because, pinned, pinned_starting, said};
+use base_time::deadline::within;
 use portal_dbus::BUS_NAME;
 use settings_app_link::bus::BusSource;
 use settings_app_link::screen_sharing::ScreenSharingLink;
 use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, ProgramSubject, ScreenGrant, Work, screen_grants_of};
-use base_time::deadline::within;
 
 /// The screens an allowed app may share: every one.
 const ALLOWED_SCREENS: &str = "every";

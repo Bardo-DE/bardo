@@ -3,10 +3,10 @@
 
 use super::read::{find_device, managed};
 use crate::bus::said;
+use base_time::deadline::within;
 use bluez_proxy::{Adapter1Proxy, Device1Proxy};
 use settings_app_link::{Deadline, peer};
 use settings_app_model::BtAddress;
-use base_time::deadline::within;
 use zbus::Connection;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 

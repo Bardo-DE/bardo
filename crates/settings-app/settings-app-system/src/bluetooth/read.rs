@@ -2,13 +2,13 @@
 //! properties, so a read is one moment.
 
 use crate::bus::is_running;
+use base_time::deadline::within;
 use bluez_proxy::{Objects, SERVICE};
 use settings_app_link::{Deadline, peer};
 use settings_app_model::{
     Absence, BtAddress, BtDeviceWire, BtLink, BtStatus, bt_device_of, is_under_adapter,
 };
 use std::collections::HashMap;
-use base_time::deadline::within;
 use zbus::Connection;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue};
