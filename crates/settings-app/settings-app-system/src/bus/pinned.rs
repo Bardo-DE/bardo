@@ -3,10 +3,10 @@
 
 use super::activate::start_one;
 use super::io::{because, confirmed, connect};
-use super::source::BusSource;
 use account_client::Porter;
 use account_client_dbus::Bus;
 use inference_client::DbusTransport;
+use settings_app_link::bus::BusSource;
 use settings_app_model::Absence;
 use settings_dbus::SenderName;
 use zbus::Connection;

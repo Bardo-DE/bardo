@@ -1,14 +1,12 @@
 //! Talking to a daemon's settings module: connect, find the daemon, read its rows, follow it.
 
-use super::daemon::Daemon;
-use super::source::BusSource;
-use super::vouch::Vouch;
-use crate::deadline::{Deadline, peer};
 use account_client::{LinkError, SpacesError};
 use account_dbus::{BusFailure, classify};
 use dbus_kit::connect::BusTarget;
 use inference_client::{ClientError, TransportError};
 use settings_app_callers::{RoleCheck, desktop_peers};
+use settings_app_link::bus::{BusSource, Daemon, Vouch, failed, live_absence};
+use settings_app_link::{Deadline, peer};
 use settings_app_model::Absence;
 use settings_dbus::{Changes, LiveClient, LiveError, OwnerCheck, SenderName, Verdict};
 use settings_types::schema::KeyPath;
@@ -16,12 +14,6 @@ use ui_peer::within;
 use zbus::Connection;
 use zbus::fdo::{DBusProxy, NameOwnerChangedStream};
 use zbus::names::BusName;
-
-/// A failure the person sees only as "failed": its cause goes to the log.
-fn failed(why: impl std::fmt::Display) -> Absence {
-    eprintln!("bardo-settings: a settings service failed: {why}");
-    Absence::Failed
-}
 
 /// A failure the pane shows as `absence`: the cause goes to the log, so a stuck pane can be
 /// traced to the bus error behind it.
@@ -57,11 +49,7 @@ pub fn absence_of<E: ToAbsence>(error: E) -> Absence {
 
 impl ToAbsence for LiveError {
     fn absence(&self) -> Absence {
-        match self {
-            LiveError::NotPermitted(_) => Absence::NotPermitted,
-            LiveError::NotTheService(_) => Absence::Unavailable,
-            other => failed(other),
-        }
+        live_absence(self)
     }
 }
 
@@ -110,22 +98,6 @@ impl ToAbsence for SpacesError {
             SpacesError::Link(link) => link.absence(),
             SpacesError::TooMany => Absence::Failed,
         }
-    }
-}
-
-/// What a live module's refusal says, in the module's own words and without the name of the
-/// error: that name is for a program, and a toast or a pane shows what the person reads.
-#[must_use]
-pub fn plain(error: &LiveError) -> String {
-    match error {
-        LiveError::NotPermitted(words)
-        | LiveError::UnknownKey(words)
-        | LiveError::BadValue(words)
-        | LiveError::Unavailable(words)
-        | LiveError::Failed(words)
-        | LiveError::NotTheService(words)
-        | LiveError::Timeout(words) => words.clone(),
-        LiveError::ZBus(_) => "The service did not answer as expected.".to_owned(),
     }
 }
 

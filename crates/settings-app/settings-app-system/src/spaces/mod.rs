@@ -10,16 +10,3 @@ mod fake;
 pub use bus::OnBus;
 #[cfg(feature = "testing")]
 pub use fake::FakeSpaces;
-
-use memory_core::Removal;
-use settings_app_model::{Absence, SpaceKey, SpaceRow, Work};
-use std::fmt::Debug;
-
-/// What the Spaces page asks of the services.
-pub trait SpacesLink: Debug + Send + Sync {
-    /// The desktop-wide Spaces, in the order they were made.
-    fn list(&self) -> Work<'_, Result<Vec<SpaceRow>, Absence>>;
-    /// Removes `space` after telling memory what becomes of what it holds; the words that say why
-    /// not.
-    fn remove(&self, space: SpaceKey, removal: Removal) -> Work<'_, Result<(), String>>;
-}

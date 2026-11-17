@@ -2,10 +2,10 @@
 //! switch and devices the way BlueZ would, counts the sessions looking for devices, and lets a test
 //! make a device ask something.
 
-use super::{BluetoothLink, BtSession, PairingReply, PairingRequest};
 use crate::fake_kit::Kit;
 use crate::lock::locked;
-use crate::ticks::Ticks;
+use settings_app_link::Ticks;
+use settings_app_link::bluetooth::{BluetoothLink, BtSession, PairingReply, PairingRequest};
 use settings_app_model::{
     Absence, BtAddress, BtLink, BtStatus, PairingAnswer, PairingQuestion, Work,
 };

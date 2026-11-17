@@ -10,15 +10,3 @@ mod fake;
 pub use bus::{OnBus, restart};
 #[cfg(feature = "testing")]
 pub use fake::FakeEngines;
-
-use settings_app_model::{LlamaCpp, Restarted, Work};
-use std::fmt::Debug;
-
-/// What the engines note asks of the assistant.
-pub trait EnginesLink: Debug + Send + Sync {
-    /// Where llama.cpp stands in the engines the assistant lists now; unknown when the assistant
-    /// is not running, not answering, or not allowing Settings to ask.
-    fn look(&self) -> Work<'_, LlamaCpp>;
-    /// Restarts the assistant in the person's own session, and answers when it is up again.
-    fn restart(&self) -> Work<'_, Restarted>;
-}

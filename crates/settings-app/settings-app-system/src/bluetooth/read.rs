@@ -2,8 +2,8 @@
 //! properties, so a read is one moment.
 
 use crate::bus::is_running;
-use crate::deadline::{Deadline, peer};
 use bluez_proxy::{Objects, SERVICE};
+use settings_app_link::{Deadline, peer};
 use settings_app_model::{
     Absence, BtAddress, BtDeviceWire, BtLink, BtStatus, bt_device_of, is_under_adapter,
 };

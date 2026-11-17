@@ -1,8 +1,8 @@
 //! The update service and the log-out from memory: nothing here reaches a bus, the clock or a
 //! process.
 
-use super::{Departure, InstallRefusal, UpdateTicks, UpdatesLink};
 use crate::fake_kit::Kit;
+use settings_app_link::updates::{Departure, InstallRefusal, UpdateTicks, UpdatesLink};
 use settings_app_model::{Absence, UnixSeconds, UpdatePhase, UpdateStatus, UpdateVersion, Work};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};

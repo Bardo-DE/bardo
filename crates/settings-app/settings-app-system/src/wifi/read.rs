@@ -2,12 +2,13 @@
 //! networks with a kept password. Every read runs under one deadline, so a service that hangs
 //! mid-list costs one failed read.
 
-use crate::bus::{BusSource, is_running, system_connection};
-use crate::deadline::{Deadline, peer};
+use crate::bus::{is_running, system_connection};
 use networkmanager_proxy::{
     AccessPointProxy, ConnectionSettingsProxy, DeviceProxy, NetworkManagerProxy, SERVICE,
     SettingsProxy, WirelessDeviceProxy,
 };
+use settings_app_link::bus::BusSource;
+use settings_app_link::{Deadline, peer};
 use settings_app_model::{
     Absence, AccessPoint, NetworkLink, SignalStrength, Ssid, WifiRadio, WifiStatus, WifiWire,
     wifi_link_of, wifi_security_of,

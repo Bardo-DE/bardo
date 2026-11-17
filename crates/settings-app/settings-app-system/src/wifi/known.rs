@@ -1,9 +1,10 @@
 //! The networks this computer keeps a password for: removing them.
 
 use super::read::saved;
-use crate::bus::{BusSource, said, system_connection};
-use crate::deadline::{Deadline, peer};
+use crate::bus::{said, system_connection};
 use networkmanager_proxy::ConnectionSettingsProxy;
+use settings_app_link::bus::BusSource;
+use settings_app_link::{Deadline, peer};
 use settings_app_model::Ssid;
 use ui_peer::within;
 use zbus::Connection;

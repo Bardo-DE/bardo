@@ -1,6 +1,6 @@
 //! A person from memory.
 
-use super::PersonLink;
+use settings_app_link::person::PersonLink;
 use settings_app_model::{Person, Work};
 
 /// A person that answers with what it was given.

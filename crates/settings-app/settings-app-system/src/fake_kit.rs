@@ -2,7 +2,7 @@
 //! order, the words a refusal is made of, and the ticks that tell the ones that follow it.
 
 use crate::lock::locked;
-use crate::ticks::{Ticker, Ticks};
+use settings_app_link::{Ticker, Ticks};
 use settings_app_model::Absence;
 use std::sync::{Arc, Mutex};
 

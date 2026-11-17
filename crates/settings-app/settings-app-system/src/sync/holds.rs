@@ -1,9 +1,10 @@
 //! The sync service's held deletions: told as they start and end, asked for when a hold is
 //! confirmed, never starting the service.
 
-use crate::bus::{BusSource, Daemon, Pinned, connect, next_owner, owner_changes, pinned};
-use crate::deadline::{Deadline, answered, peer};
+use crate::bus::{Pinned, connect, next_owner, owner_changes, pinned};
 use account_dbus::BusError;
+use settings_app_link::bus::{BusSource, Daemon};
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{DatasetName, HoldCounts, HoldInput, SyncNowEnd};
 use std::collections::HashMap;
 use sync_bus::SyncProxy;

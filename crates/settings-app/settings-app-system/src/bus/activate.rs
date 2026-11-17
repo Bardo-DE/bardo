@@ -1,9 +1,8 @@
 //! Starting the daemons a page reads, once, when the page is shown.
 
-use super::daemon::Daemon;
 use super::io::connect;
-use super::source::BusSource;
-use crate::deadline::{Deadline, answered, peer};
+use settings_app_link::bus::{BusSource, Daemon};
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::ModuleId;
 use zbus::Connection;
 use zbus::fdo::DBusProxy;

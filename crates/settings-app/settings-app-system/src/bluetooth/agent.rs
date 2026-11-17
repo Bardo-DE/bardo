@@ -1,8 +1,8 @@
 //! The agent this window serves to BlueZ while the page is open: when a device pairs, BlueZ asks
 //! the agent of the program that started the pairing, and the agent asks the person.
 
-use super::{PairingReply, PairingRequest};
 use bluez_proxy::{AgentError, Device1Proxy};
+use settings_app_link::bluetooth::{PairingReply, PairingRequest};
 use settings_app_model::{BtAddress, PairingAnswer, PairingAsk, PairingCode, PairingQuestion};
 use tokio::sync::mpsc;
 use zbus::Connection;

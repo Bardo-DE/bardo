@@ -3,9 +3,10 @@
 //! shell's role before it is read or told anything (`live::pinned`), and a call goes to the owner
 //! that was confirmed. Nothing is started: a shell that is not there has no sliders.
 
-use crate::bus::{BusSource, because, connect, pinned, said, watch_on};
-use crate::deadline::{Deadline, answered, peer};
-use crate::ticks::Ticks;
+use crate::bus::{because, connect, pinned, said, watch_on};
+use settings_app_link::Ticks;
+use settings_app_link::bus::BusSource;
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, Brightness, BrightnessList, OutputId};
 use shell_dbus::{DISPLAYS_BUS, Displays1Proxy};
 use zbus::Message;

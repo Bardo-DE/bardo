@@ -1,0 +1,30 @@
+[package]
+name = "settings-app-link"
+description = "What the Settings app asks of the computer: one Link trait per service, the deadlines and the ticks every call shares. No service is reached here."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-tailscale = {path = "../../accounts/account-tailscale"}
+account-wire = {path = "../../accounts/account-wire"}
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
+inference-dbus = {path = "../../inference/inference-dbus"}
+memory-core = {path = "../../memory/memory-core"}
+settings-app-model = {path = "../settings-app-model"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
+sync-bus = {path = "../../sync/sync-bus"}
+tokio = {workspace = true, features = ["rt", "sync"]}
+toml = { workspace = true }
+ui-peer = {path = "../../ui/ui-peer"}
+
+[dev-dependencies]
+settings-app-callers = {path = "../settings-app-callers"}
+tokio = {workspace = true, features = ["macros", "rt", "sync", "time"]}
+
+[lints]
+workspace = true

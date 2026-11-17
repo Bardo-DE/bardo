@@ -1,9 +1,10 @@
 //! The desktop's file chooser portal on the bus: one request, answered by a signal that is
 //! listened for before the question is asked.
 
-use super::{Asked, Want};
-use crate::bus::{BusSource, connect};
-use settings_app_model::path_of_file_uri;
+use crate::bus::connect;
+use settings_app_link::bus::BusSource;
+use settings_app_link::chooser::{Asked, PortalLink, Want};
+use settings_app_model::{Work, path_of_file_uri};
 use std::collections::HashMap;
 use zbus::export::futures_core::Stream;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
@@ -35,42 +36,46 @@ impl OnPortal {
     }
 }
 
-impl Want {
-    /// Names the request, so its answer can be listened for before it is asked.
-    fn token(self) -> &'static str {
-        match self {
-            Want::Folder => "detent_engine_folder",
-            Want::File => "detent_corner_file",
-            Want::Picture => "detent_wallpaper_picture",
-        }
+impl PortalLink for OnPortal {
+    fn ask(&self, want: Want) -> Work<'_, Asked> {
+        Box::pin(OnPortal::ask(self, want))
     }
+}
 
-    /// What the chooser's window is called.
-    fn title(self) -> &'static str {
-        match self {
-            Want::Folder => "Choose a Folder",
-            Want::File => "Choose a File",
-            Want::Picture => "Add Picture",
-        }
+/// Names the request, so its answer can be listened for before it is asked.
+fn token(want: Want) -> &'static str {
+    match want {
+        Want::Folder => "detent_engine_folder",
+        Want::File => "detent_corner_file",
+        Want::Picture => "detent_wallpaper_picture",
     }
+}
 
-    /// The chooser's options for it.
-    fn options(self) -> HashMap<&'static str, Value<'static>> {
-        let mut options = HashMap::from([("handle_token", Value::from(self.token()))]);
-        match self {
-            Want::Folder => {
-                options.insert("directory", Value::from(true));
-            }
-            Want::File => {}
-            Want::Picture => {
-                // Without the filter, every file is offered and a refused one is a silent no-op.
-                let (filters, current) = picture_filters();
-                options.insert("filters", filters);
-                options.insert("current_filter", current);
-            }
-        }
-        options
+/// What the chooser's window is called.
+fn title(want: Want) -> &'static str {
+    match want {
+        Want::Folder => "Choose a Folder",
+        Want::File => "Choose a File",
+        Want::Picture => "Add Picture",
     }
+}
+
+/// The chooser's options for it.
+fn options(want: Want) -> HashMap<&'static str, Value<'static>> {
+    let mut options = HashMap::from([("handle_token", Value::from(token(want)))]);
+    match want {
+        Want::Folder => {
+            options.insert("directory", Value::from(true));
+        }
+        Want::File => {}
+        Want::Picture => {
+            // Without the filter, every file is offered and a refused one is a silent no-op.
+            let (filters, current) = picture_filters();
+            options.insert("filters", filters);
+            options.insert("current_filter", current);
+        }
+    }
+    options
 }
 
 /// The portal's `filters` (`a(sa(us))`: one "Pictures" filter of MIME types) and the same filter
@@ -100,7 +105,7 @@ async fn ask_through(bus: &BusSource, want: Want) -> Option<Asked> {
     let request = zbus::Proxy::new(
         &connection,
         PORTAL,
-        format!("{PORTAL_PATH}/request/{sender}/{}", want.token()),
+        format!("{PORTAL_PATH}/request/{sender}/{}", token(want)),
         REQUEST,
     )
     .await
@@ -110,7 +115,7 @@ async fn ask_through(bus: &BusSource, want: Want) -> Option<Asked> {
         .await
         .ok()?;
     let _handle: OwnedObjectPath = chooser
-        .call("OpenFile", &("", want.title(), want.options()))
+        .call("OpenFile", &("", title(want), options(want)))
         .await
         .ok()?;
     let answer = std::future::poll_fn(|cx| std::pin::Pin::new(&mut answers).poll_next(cx)).await?;

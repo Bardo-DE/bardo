@@ -1,8 +1,8 @@
 //! The account service from memory: the accounts they list, and how each add sheet ends.
 
-use super::AccountsLink;
 use crate::fake_kit::Kit;
 use crate::lock::locked;
+use settings_app_link::accounts::AccountsLink;
 use settings_app_model::{Absence, AccountsPane, AddEnd, Work};
 use std::sync::{Arc, Mutex};
 

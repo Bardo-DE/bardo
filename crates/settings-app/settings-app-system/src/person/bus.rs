@@ -1,9 +1,10 @@
 //! The person from AccountsService (`org.freedesktop.Accounts`) on the system bus, which a page
 //! only looks at; when it is not there, the passwd file and `~/.face`.
 
-use super::PersonLink;
-use crate::bus::{BusSource, system_connection};
-use crate::deadline::{Deadline, peer};
+use crate::bus::system_connection;
+use settings_app_link::bus::BusSource;
+use settings_app_link::person::PersonLink;
+use settings_app_link::{Deadline, peer};
 use settings_app_model::{Person, Work, passwd_name};
 use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};

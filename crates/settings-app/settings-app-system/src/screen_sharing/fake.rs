@@ -1,9 +1,9 @@
 //! The screen-sharing portal from memory: the apps it lets share, and what was taken back.
 
-use super::ScreenSharingLink;
 use crate::fake_kit::Kit;
 use crate::lock::locked;
 use crate::updates::NOW;
+use settings_app_link::screen_sharing::ScreenSharingLink;
 use settings_app_model::{Absence, ProgramSubject, ScreenGrant, ShareLength, Work};
 use std::sync::{Arc, Mutex};
 

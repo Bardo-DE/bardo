@@ -85,6 +85,7 @@ members = [
     "crates/settings-app/settings-app-client",
     "crates/settings-app/settings-app-files",
     "crates/settings-app/settings-app-intents",
+    "crates/settings-app/settings-app-link",
     "crates/settings-app/settings-app-model",
     "crates/settings-app/settings-app-system",
     "crates/settings-app/settings-app-testkit",

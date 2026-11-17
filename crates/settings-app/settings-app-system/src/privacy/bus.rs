@@ -1,8 +1,8 @@
 //! The compositor's Privacy module on the bus, as the Privacy page's link.
 
-use super::PrivacyLink;
 use super::set::{forget, set};
-use crate::modules::Module;
+use settings_app_link::modules::Module;
+use settings_app_link::privacy::PrivacyLink;
 use settings_app_model::Work;
 use settings_types::schema::KeyPath;
 

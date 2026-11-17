@@ -10,22 +10,3 @@ mod fake;
 pub use bus::OnAccounts;
 #[cfg(feature = "testing")]
 pub use fake::FakePerson;
-
-use settings_app_model::{Person, Work};
-use std::fmt::Debug;
-
-/// What the sidebar's card asks.
-pub trait PersonLink: Debug + Send + Sync {
-    /// Who is using this computer, or none when nothing says (the card is then left out).
-    fn who(&self) -> Work<'_, Option<Person>>;
-}
-
-/// Nobody is known: no card.
-#[derive(Debug, Clone, Copy)]
-pub struct NoPerson;
-
-impl PersonLink for NoPerson {
-    fn who(&self) -> Work<'_, Option<Person>> {
-        Box::pin(std::future::ready(None))
-    }
-}

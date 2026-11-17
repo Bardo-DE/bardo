@@ -1,9 +1,10 @@
 //! A tick each time a system service changes hands or says anything: the page reads it again.
 
-use super::source::BusSource;
+use super::io::{connect, owner_changes};
 use super::system::system_connection;
-use crate::deadline::{Deadline, peer};
-use crate::ticks::{Ticker, Ticks};
+use settings_app_link::bus::{BusSource, Daemon};
+use settings_app_link::{Deadline, peer};
+use settings_app_link::{Ticker, Ticks};
 use settings_app_model::Absence;
 use std::pin::Pin;
 use ui_peer::within;
@@ -91,6 +92,20 @@ pub async fn watch_on(
     Ok(ticks
         .with_relay(tokio::spawn(relay(owners, ticker.clone())))
         .with_relay(tokio::spawn(relay_matching(signals, matters, ticker))))
+}
+
+/// The ticks for inferd's name changing hands, subscribed before anyone reads, so no change falls
+/// between the reading and the listening. The relay ends with the ticks.
+///
+/// # Errors
+///
+/// `Absence::NoBus` when there is no bus to look on, `Absence::Failed` when the bus cannot be
+/// reached or does not take the subscription in time.
+pub async fn inferd_owners(bus: &BusSource) -> Result<Ticks, Absence> {
+    let connection = connect(bus).await?;
+    let owners = owner_changes(&connection, &Daemon::inferd()).await?;
+    let (ticker, ticks) = Ticks::channel();
+    Ok(ticks.with_relay(tokio::spawn(relay(owners, ticker))))
 }
 
 /// The next item of one `Unpin` stream; `None` once it has ended.

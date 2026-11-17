@@ -1,12 +1,14 @@
 //! The two calls about the engines. Looking never starts the assistant: with it not running there
 //! is nothing to say, and opening Settings must not start it. Restarting is the person's word.
 
-use super::EnginesLink;
-use crate::bus::{BusSource, connect, inferd};
-use crate::deadline::{Deadline, answered, peer};
+use crate::bus::{connect, inferd, inferd_owners};
 use inference_client::{INFERD_UNIT, SessionUnits, UnitManager};
 use inference_dbus::inference::EngineState;
-use settings_app_model::{ListedEngine, LlamaCpp, Program, Restarted, Work, llama_cpp_of};
+use settings_app_link::Ticks;
+use settings_app_link::bus::BusSource;
+use settings_app_link::engines::EnginesLink;
+use settings_app_link::{Deadline, answered, peer};
+use settings_app_model::{Absence, ListedEngine, LlamaCpp, Program, Restarted, Work, llama_cpp_of};
 
 /// Where llama.cpp stands in the engines the assistant lists now. The assistant not running, not
 /// answering, or not allowing Settings to ask leaves it unknown.
@@ -63,5 +65,9 @@ impl EnginesLink for OnBus {
 
     fn restart(&self) -> Work<'_, Restarted> {
         Box::pin(restart(&self.0))
+    }
+
+    fn owner_changes(&self) -> Work<'_, Result<Ticks, Absence>> {
+        Box::pin(inferd_owners(&self.0))
     }
 }

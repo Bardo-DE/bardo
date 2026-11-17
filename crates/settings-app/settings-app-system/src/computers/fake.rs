@@ -1,10 +1,10 @@
 //! The computers over inferd from memory: the lists, the candidates, and each change asked.
 
-use super::{Change, ChangeFailure, ComputersLink};
 use crate::fake_kit::Kit;
 use crate::lock::locked;
-use crate::ticks::Ticks;
 use inference_tailnet::ComputerCandidate;
+use settings_app_link::Ticks;
+use settings_app_link::computers::{Change, ChangeFailure, ComputersLink};
 use settings_app_model::{Absence, ComputersFound, ComputersReason, ServerModel, Work};
 use std::sync::{Arc, Mutex};
 
@@ -86,5 +86,9 @@ impl ComputersLink for FakeComputers {
 
     fn changes(&self) -> Work<'_, Result<Ticks, Absence>> {
         Box::pin(std::future::ready(Ok(self.kit.listen())))
+    }
+
+    fn owner_changes(&self) -> Work<'_, Result<Ticks, Absence>> {
+        Box::pin(std::future::ready(Err(Absence::NoBus)))
     }
 }

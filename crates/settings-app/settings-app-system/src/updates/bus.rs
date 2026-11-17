@@ -2,12 +2,13 @@
 //! started: opening Settings must not wake a service the person's session did not start.
 
 use super::wire::wire_of;
-use super::{InstallRefusal, UpdateTicks, UpdatesLink};
-use crate::bus::{BusSource, Pinned, ToAbsence, absence_of, because, connect, pinned, relay};
-use crate::deadline::{Deadline, peer};
-use crate::ticks::Ticks;
+use crate::bus::{Pinned, ToAbsence, absence_of, because, connect, pinned, relay};
 use account_dbus::{BusFailure, classify};
 use base_time::{Clock, SystemClock};
+use settings_app_link::Ticks;
+use settings_app_link::bus::BusSource;
+use settings_app_link::updates::{InstallRefusal, UpdateTicks, UpdatesLink};
+use settings_app_link::{Deadline, peer};
 use settings_app_model::{Absence, UnixSeconds, UpdateStatus, UpdateVersion, Work};
 use std::collections::HashMap;
 use ui_peer::{NotAnswering, within};

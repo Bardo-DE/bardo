@@ -2,8 +2,8 @@
 //! chooser that answers what it is told and writes down every time it was asked. Never a real
 //! folder, never the real chooser.
 
-use super::CornerDesk;
 use crate::lock::locked;
+use settings_app_link::hot_corners::CornerDesk;
 use settings_app_model::{HotActionChoice, HotOpenKind, Work, actions_of_all};
 use std::sync::{Arc, Mutex};
 

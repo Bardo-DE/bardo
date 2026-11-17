@@ -4,9 +4,9 @@
 //! that vouches for the desktop's own daemons has nothing to add.
 
 use super::io::because;
-use super::source::BusSource;
-use crate::deadline::{Deadline, peer};
 use dbus_kit::connect::BusTarget;
+use settings_app_link::bus::BusSource;
+use settings_app_link::{Deadline, peer};
 use settings_app_model::Absence;
 use ui_peer::within;
 use zbus::Connection;

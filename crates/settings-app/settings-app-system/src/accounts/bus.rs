@@ -1,9 +1,9 @@
 //! The account service on the bus, as the Accounts pane's link.
 
-use super::AccountsLink;
 use super::add::add_account;
 use super::read::read_accounts;
-use crate::bus::BusSource;
+use settings_app_link::accounts::AccountsLink;
+use settings_app_link::bus::BusSource;
 use settings_app_model::{Absence, AccountsPane, AddEnd, Work};
 
 /// The services on the bus they are built over.

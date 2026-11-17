@@ -1,11 +1,10 @@
 //! The real link: the module is looked for on the bus, followed by its name's owner and by the
 //! `Changed` signals it sends to this peer.
 
-use super::{Followed, Module, ModulesLink};
-use crate::bus::{
-    BusSource, Daemon, attach_listening, connect, next_change, next_owner, owner_changes,
-};
-use settings_app_model::Work;
+use crate::bus::{attach_listening, connect, next_change, next_owner, owner_changes, start};
+use settings_app_link::bus::{BusSource, Daemon};
+use settings_app_link::modules::{Followed, Module, ModulesLink};
+use settings_app_model::{ModuleId, Work};
 use settings_dbus::Changes;
 use settings_types::schema::KeyKind;
 use std::sync::Arc;
@@ -24,6 +23,10 @@ impl ModulesLink for OnBus {
         told: UnboundedSender<Followed>,
     ) -> Work<'a, ()> {
         Box::pin(follow(&self.0, daemon, valued, told))
+    }
+
+    fn start<'a>(&'a self, modules: &'a [ModuleId]) -> Work<'a, ()> {
+        Box::pin(start(&self.0, modules))
     }
 }
 
