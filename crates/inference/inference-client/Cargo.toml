@@ -32,7 +32,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 zbus = {version = "5.19", default-features = false, features = ["tokio"], optional = true}
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 # The scripted inference session the session tests play (`porter_infer::testing`).

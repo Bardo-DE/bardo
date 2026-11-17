@@ -29,6 +29,7 @@ tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros",
 url = { workspace = true }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 rcgen = { workspace = true, features = ["ring", "pem"] }
 rustls-pki-types = { workspace = true }
 tempfile = { workspace = true }

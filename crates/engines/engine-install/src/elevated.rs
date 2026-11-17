@@ -202,13 +202,7 @@ mod tests {
                 .await
             })
         };
-        tokio::time::timeout(Duration::from_secs(10), async {
-            while meter.done() == 0 {
-                tokio::time::sleep(Duration::from_millis(10)).await;
-            }
-        })
-        .await
-        .expect("the helper reports its progress within 10 s");
+        base_testkit::eventually("the helper reports its progress", || meter.done() != 0).await;
         cancel.cancel();
         assert_eq!(job.await.expect("joined"), Err(Failure::Cancelled));
     }

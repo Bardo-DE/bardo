@@ -78,16 +78,10 @@ pub async fn until<S: computer_use_run::Seams>(
     run: &RunId,
     wanted: impl Fn(&computer_use_run::RunPhase) -> bool,
 ) {
-    for _ in 0..2000 {
-        if let Some(view) = supervisor.view(run)
-            && wanted(&view.phase)
-        {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(5)).await;
-    }
-    panic!(
-        "the run never reached the phase: {:?}",
-        supervisor.view(run)
-    );
+    base_testkit::eventually("the run reaches the phase", || {
+        supervisor
+            .view(run)
+            .is_some_and(|view| wanted(&view.phase))
+    })
+    .await;
 }

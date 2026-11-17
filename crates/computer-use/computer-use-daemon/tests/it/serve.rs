@@ -266,16 +266,11 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
         ]
     );
     // And the run is no longer listed once it is over.
-    let mut listed = manager_p.runs().await.unwrap();
-    for _ in 0..50 {
-        if listed.is_empty() {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-        listed = manager_p.runs().await.unwrap();
-    }
-    assert!(listed.is_empty());
-    assert!(fx.supervisor.runs().is_empty());
+    base_testkit::eventually("the run is no longer listed", || {
+        fx.supervisor.runs().is_empty()
+    })
+    .await;
+    assert!(manager_p.runs().await.unwrap().is_empty());
 }
 
 #[tokio::test]

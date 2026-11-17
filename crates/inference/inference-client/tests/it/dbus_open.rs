@@ -298,7 +298,10 @@ async fn an_attachment_count_that_is_not_what_the_frame_names_is_refused_unwritt
     // Nothing was written, so the session still works.
     session.send(ClientFrame::Cancel).await.expect("send");
     session.send(ClientFrame::Cancel).await.expect("send");
-    tokio::time::sleep(Duration::from_millis(50)).await;
+    base_testkit::eventually("the server has read both frames", || {
+        rig.seen.lock().expect("lock").frames.len() >= 2
+    })
+    .await;
     assert_eq!(
         rig.seen.lock().expect("lock").frames,
         vec![ClientFrame::Cancel, ClientFrame::Cancel]

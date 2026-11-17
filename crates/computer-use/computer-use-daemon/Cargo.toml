@@ -58,6 +58,7 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 futures-util = { workspace = true, features = ["std"] }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 action-gate-wire = {path = "../../actions/action-gate-wire"}
 permission-core = {path = "../../actions/permission-core"}
 account-capability = {path = "../../accounts/account-capability"}

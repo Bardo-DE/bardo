@@ -7,7 +7,6 @@ use model_catalog::EngineKind;
 use model_http::TlsRoots;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use std::time::Duration;
 
 fn held(_: &Path) -> bool {
     true
@@ -42,14 +41,10 @@ fn installs(
 }
 
 async fn until(installs: &EngineInstalls, done: impl Fn(&Standing) -> bool) -> Standing {
-    for _ in 0..1000 {
-        let now = installs.standing(EngineKind::LlamaServer);
-        if done(&now) {
-            return now;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
-    panic!("the install did not end");
+    base_testkit::eventually_some("the install ends", || {
+        Some(installs.standing(EngineKind::LlamaServer)).filter(|now| done(now))
+    })
+    .await
 }
 
 #[tokio::test]
