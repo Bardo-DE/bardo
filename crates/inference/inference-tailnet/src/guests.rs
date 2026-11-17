@@ -258,6 +258,11 @@ impl Guests {
     }
 
     #[cfg(not(feature = "persist"))]
+    #[expect(
+        clippy::unused_self,
+        clippy::unnecessary_wraps,
+        reason = "the same shape as the saving build's, which keeps the file and may fail"
+    )]
     fn save(&self, _file: &File) -> Result<(), GuestError> {
         Ok(())
     }
