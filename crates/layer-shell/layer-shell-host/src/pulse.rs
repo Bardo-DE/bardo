@@ -61,12 +61,14 @@ mod tests {
         let mut event_loop = EventLoop::<()>::try_new().expect("a loop");
         let pulse = start(&event_loop.handle(), Duration::from_millis(1)).expect("a pulse");
         assert_eq!(pulse.beats(), 0, "nothing beats before the loop turns");
-        // The interval is lifted to the shortest, so wait past it.
-        std::thread::sleep(SHORTEST_BEAT + Duration::from_millis(20));
+        // The interval is lifted to the shortest: the dispatch waits for the timer to come due.
         event_loop
-            .dispatch(Some(Duration::ZERO), &mut ())
+            .dispatch(Some(base_testkit::GENEROUS), &mut ())
             .expect("a dispatch");
         assert_eq!(pulse.beats(), 1, "one dispatch, one beat");
+        // Real time must pass with the loop not dispatching, for several beats to fall due; the
+        // timer reads the real clock, and a sleep never ends early, so a slow machine only makes
+        // the dispatch later still.
         std::thread::sleep(SHORTEST_BEAT * 3);
         assert_eq!(
             pulse.beats(),

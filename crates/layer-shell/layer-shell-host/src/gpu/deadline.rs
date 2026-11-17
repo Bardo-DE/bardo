@@ -48,15 +48,14 @@ mod tests {
 
     #[test]
     fn work_that_hangs_is_given_up_on_at_the_deadline() {
-        let started = std::time::Instant::now();
-        let finished = run_within(Duration::from_millis(50), || {
-            thread::sleep(Duration::from_millis(600));
+        // The hung work waits for the test to let it go: it is still running when the deadline
+        // gives up on it, which is what is under test.
+        let (release, hung) = std::sync::mpsc::channel::<()>();
+        let finished = run_within(Duration::from_millis(50), move || {
+            let _ = hung.recv();
         });
         assert_eq!(finished, Finished::TimedOut);
-        assert!(
-            started.elapsed() < Duration::from_millis(500),
-            "the caller did not wait for the work"
-        );
+        drop(release);
     }
 
     #[test]

@@ -48,6 +48,8 @@ rustc-hash = { workspace = true }
 vello_common = { workspace = true }
 # The debug-inject JSON stats lines.
 serde_json = { workspace = true }
+# The pulse test waits for a timer by a blocking dispatch with the one generous limit.
+base-testkit = { path = "../../base/base-testkit" }
 # The palmrest socket's messages (`input::palmrest`).
 mouse-gestures-proto = {path = "../../input/mouse-gestures-proto"}
 # The overlay scroll thumb's shapes and colour (scroll::paint).
@@ -117,6 +119,8 @@ name = "demo_swipe"
 [dev-dependencies]
 # The drag outcome's wire form in tests, and demo_drag's JSON lines.
 serde_json = { workspace = true }
+# The pulse test waits for a timer by a blocking dispatch with the one generous limit.
+base-testkit = { path = "../../base/base-testkit" }
 
 [lints]
 workspace = true
