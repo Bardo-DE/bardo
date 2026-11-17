@@ -11,9 +11,9 @@ slug_enum!(
     /// Which area owns a payload.
     AreaTag {
         /// The actions service: policy decisions, consent, calls, undo, breaker (`AuditRecord`).
-        Actions => "docket",
+        Actions => "actions",
         /// Computer use: run steps (`ComputerUseRecord`).
-        ComputerUse => "cua",
+        ComputerUse => "computer_use",
         /// The companion's session records (`SessionRecord`).
         Companion => "companion",
         /// The person's helpers: the board's jobs and the helpers' posts (`swarm.md`).
@@ -26,7 +26,7 @@ slug_enum!(
 pub struct AreaPayload {
     /// The owner.
     pub area: AreaTag,
-    /// The event's kind tag (`policy.ruled`, `cua.step`): the owner's choice, whole.
+    /// The event's kind tag (`policy.ruled`, `computer_use.step`): the owner's choice, whole.
     pub kind: KindTag,
     /// The owner's serde form, stored and returned unchanged.
     pub json: JsonText,

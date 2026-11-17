@@ -196,7 +196,7 @@ pub(crate) async fn relay<S: Seams>(
             }
             Err(broadcast::error::RecvError::Lagged(missed)) => {
                 eprintln!(
-                    "computer_use_daemon: the bus relay missed {missed} events; reconciling the run objects"
+                    "bardo-computer-use: the bus relay missed {missed} events; reconciling the run objects"
                 );
                 for event in reconcile(&exported, &supervisor.runs()) {
                     note_exported(&mut exported, &event);

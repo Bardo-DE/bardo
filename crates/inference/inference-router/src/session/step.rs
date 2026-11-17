@@ -486,6 +486,10 @@ struct Ended {
     queued: Option<InferRequest>,
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one match over what a turn in flight can be told; splitting it would scatter the phase table"
+)]
 fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<SessionOut>) {
     let Phase::InTurn {
         served,

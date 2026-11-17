@@ -9,7 +9,7 @@ const SEGMENT: &AsciiSet = &NON_ALPHANUMERIC.remove(b'_').remove(b'-');
 
 /// Where points live in a repository: outside `refs/heads` and `refs/tags`, so no branch or tag
 /// listing shows them and a clone does not fetch them.
-const FAMILY: &str = "refs/docket/checkpoints";
+const FAMILY: &str = "refs/bardo/checkpoints";
 
 /// The session as one ref segment: letters, digits, `_` and `-` as they are, every other byte as
 /// `%` and two hex digits, so no session id can make a ref name git refuses or one that collides
@@ -26,7 +26,7 @@ pub(crate) fn segment(session: &SessionId) -> String {
         .collect()
 }
 
-/// The ref of point `id` of `session`: `refs/docket/checkpoints/<session>/<n>`.
+/// The ref of point `id` of `session`: `refs/bardo/checkpoints/<session>/<n>`.
 #[must_use]
 pub fn ref_name(session: &SessionId, id: CheckpointId) -> String {
     format!("{FAMILY}/{}/{}", segment(session), id.0)

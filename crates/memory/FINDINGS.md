@@ -576,7 +576,7 @@ reads them.
    debounce, the whole file read again, `MemoryService::apply_settings`). Every request builds its `Cx` from the
    settings in force, so a change applies to the next request:
    - retention: `RuleSet::with_retention(&RetentionDays)` lays the person's days over the rules' defaults
-     (`search.*`; `session.*` and `cua.*`; `policy.*`, `consent.*` and `memory.*`) **for the request only**:
+     (`search.*`; `session.*` and `computer_use.*`; `policy.*`, `consent.*` and `memory.*`) **for the request only**:
      `service.rules()`, which memoryd writes to `memory.toml`, is still what `SetRule` made it, so the settings
      never become sticky in `memory.toml`. Unexplained file changes (7 days), audit bodies (90) and audit headers
      (365) are the constants `UNEXPLAINED_FILE_DAYS`, `AUDIT_BODY_DAYS` and `HEADER_DAYS`. The `companion.*`, `thing.*` and

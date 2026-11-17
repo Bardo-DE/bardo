@@ -102,7 +102,7 @@ pub struct Tried {
 
 impl Tried {
     /// `action` and how it ended. `unchanged` is whether the window looked the same after it (a
-    /// stored step's comes from the `cua.step.seen` that follows it).
+    /// stored step's comes from the `computer_use.step.seen` that follows it).
     #[must_use]
     pub fn of(
         action: &ComputerUseAction<WindowSpace>,

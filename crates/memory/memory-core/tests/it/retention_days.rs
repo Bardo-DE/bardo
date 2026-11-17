@@ -21,7 +21,7 @@ fn each_class_changes_its_own_patterns_and_nothing_else() {
     for (pattern, want) in [
         ("search.*", keep(1)),
         ("session.*", keep(3)),
-        ("cua.*", keep(3)),
+        ("computer_use.*", keep(3)),
         ("policy.*", keep(90)),
         ("consent.*", keep(90)),
         ("memory.*", keep(90)),

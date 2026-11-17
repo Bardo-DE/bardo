@@ -51,9 +51,9 @@ async fn contract<F: Fixture>(fixture: F) {
         .expect("replace");
     assert_eq!(store.get(&cloud).await, Ok(password("hunter3")));
 
-    // The attributes {service: "porter", account, purpose}.
+    // The attributes {service: "bardo", account, purpose}.
     if let Some(filed) = fixture.filed("cloud", r#"{"kind":"password"}"#).await {
-        assert!(filed, "filed under porter/cloud/password");
+        assert!(filed, "filed under bardo/cloud/password");
     }
 
     // put_if_absent files a missing key once and never replaces what is there.
@@ -211,7 +211,7 @@ mod file_store {
                     .expect("items")
                     .iter()
                     .any(|item| {
-                        item["service"] == "porter"
+                        item["service"] == "bardo"
                             && item["account"] == account
                             && item["purpose"] == purpose
                     }),
@@ -245,7 +245,7 @@ impl Fixture for Mock {
     async fn filed(&self, account: &str, purpose: &str) -> Option<bool> {
         let entry = self
             .mock
-            .build("porter", &format!("{account}:{purpose}"), None)
+            .build("bardo", &format!("{account}:{purpose}"), None)
             .expect("entry");
         Some(entry.get_password().is_ok())
     }
@@ -298,7 +298,7 @@ async fn namespaces_keep_their_items_apart() {
         .expect("entry")
         .get_password()
     };
-    entry("porter").unwrap();
+    entry("bardo").unwrap();
     entry("mailo/work").unwrap();
     mailo.delete_account(&filed.account).await.expect("wipe");
     assert_eq!(mailo.get(&filed).await, Err(SecretsError::Missing));
@@ -359,7 +359,7 @@ mod oo7_file {
         async fn filed(&self, account: &str, purpose: &str) -> Option<bool> {
             let look = oo7::Keyring::File(Arc::clone(&self.shared));
             let wanted = [
-                ("service", "porter"),
+                ("service", "bardo"),
                 ("account", account),
                 ("purpose", purpose),
             ];
@@ -421,7 +421,7 @@ async fn a_large_secret_is_filed_in_numbered_parts_and_leaves_none_behind() {
     store.put(&big, &large).await.expect("put");
     let part = |n: u8| {
         let name = format!("big:{{\"kind\":\"api_key\"}}#{n}");
-        mock.build("porter", &name, None)
+        mock.build("bardo", &name, None)
             .expect("entry")
             .get_password()
     };
@@ -432,20 +432,20 @@ async fn a_large_secret_is_filed_in_numbered_parts_and_leaves_none_behind() {
 }
 
 /// Entries as account-secrets' own chunking wrote them before account-keyring-chunked: a head
-/// `porter-parts:<count>` and the parts `#1`, `#2`, ... They still read, and deleting the key
+/// `bardo-parts:<count>` and the parts `#1`, `#2`, ... They still read, and deleting the key
 /// removes every one.
 #[tokio::test]
 async fn a_credential_filed_in_parts_before_keyring_chunked_still_reads() {
     let mock: Arc<keyring_core::CredentialStore> = keyring_core::mock::Store::new().expect("mock");
     let name = r#"old:{"kind":"password"}"#;
     let filed = [
-        (name.to_owned(), "porter-parts:3"),
+        (name.to_owned(), "bardo-parts:3"),
         (format!("{name}#1"), r#"{"kind":"passwo"#),
         (format!("{name}#2"), r#"rd","v":"correct horse "#),
         (format!("{name}#3"), r#"battery staple"}"#),
     ];
     for (user, value) in &filed {
-        mock.build("porter", user, None)
+        mock.build("bardo", user, None)
             .expect("entry")
             .set_password(value)
             .expect("planted");
@@ -465,7 +465,7 @@ async fn a_credential_filed_in_parts_before_keyring_chunked_still_reads() {
         .await
         .expect("delete");
     for (user, _) in &filed {
-        let entry = mock.build("porter", user, None).expect("entry");
+        let entry = mock.build("bardo", user, None).expect("entry");
         assert!(
             entry
                 .get_password()

@@ -2,7 +2,7 @@
 //!
 //! ```markdown
 //! ---
-//! format: quire-memory 1
+//! format: bardo-memory 1
 //! topic: people/sam-lee
 //! title: Sam Lee
 //! ---
@@ -25,7 +25,7 @@ use memory_core::{Fact, FactText, TopicPath};
 use std::fmt::Write as _;
 
 /// What the first front matter line must say.
-pub const FORMAT_LINE: &str = "quire-memory 1";
+pub const FORMAT_LINE: &str = "bardo-memory 1";
 
 /// One block of a topic file.
 // A stamped fact is the large case and the common one; boxing it would complicate every match.

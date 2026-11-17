@@ -28,7 +28,7 @@ pub(crate) fn table() -> Vec<RuleKey<ComputerUseSettings>> {
         ),
         toggle("computer_use.autopause", |s, v| s.config.autopause = v),
         toggle("computer_use.accessibility", |s, v| {
-            s.config.accessibility = v
+            s.config.accessibility = v;
         }),
         number(
             "computer_use.budget.spend_microusd",

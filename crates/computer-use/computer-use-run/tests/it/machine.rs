@@ -1,4 +1,4 @@
-//! The run machine's transitions, as the phase table of computer_use.md section 4 (changed for the
+//! The run machine's transitions, as the phase table of `computer_use.md` section 4 (changed for the
 //! router's gate) states them.
 
 use crate::support::rules;

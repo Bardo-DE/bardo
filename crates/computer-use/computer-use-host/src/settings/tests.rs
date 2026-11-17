@@ -357,7 +357,7 @@ fn unknown_keys_are_reported_and_the_retired_screens_keys_are_among_them() {
     );
     assert_eq!(
         loaded.lines("computer_use_daemon"),
-        ["computer_use_daemon: settings: computer_use.screens.keep: no such key, ignored"]
+        ["bardo-computer-use: settings: computer_use.screens.keep: no such key, ignored"]
     );
 }
 

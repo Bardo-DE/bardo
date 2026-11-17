@@ -3,7 +3,7 @@
 # bus). It is found, and started, by D-Bus activation (dbus/org.bardo.Accounts1.service) the first
 # time an app asks which identities there are. Sync's sign-ins are syncd's.
 #
-# accountd talks to the session bus, the Secret Service on it (items under `porter.accountd`),
+# accountd talks to the session bus, the Secret Service on it (items under `bardo.accountd`),
 # the sheet host (the shell) on it, and the network (provider sign-in and revocation, and the check of
 # a new AI key). It reads /proc to know who is calling, so the unit must not hide other processes'
 # cgroups (no ProtectProc, no PrivatePID).

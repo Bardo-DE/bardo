@@ -115,7 +115,7 @@ impl Reached {
                     Ok(reached) => Ok(reached),
                     Err(error) => {
                         eprintln!(
-                            "computer_use_daemon: compositor is running but not usable ({error})"
+                            "bardo-computer-use: compositor is running but not usable ({error})"
                         );
                         Ok(Self::environment())
                     }

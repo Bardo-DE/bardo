@@ -105,9 +105,9 @@ fn every_record_has_a_header_kind_in_the_dotted_grammar() {
         trip: BreakerTrip::Probing,
     };
     let cases = [
-        (halt, "docket.halt"),
-        (confirm, "docket.confirm"),
-        (breaker, "docket.breaker"),
+        (halt, "actions.halt"),
+        (confirm, "actions.confirm"),
+        (breaker, "actions.breaker"),
     ];
     for (record, want) in cases {
         assert_eq!(

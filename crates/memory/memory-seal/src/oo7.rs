@@ -10,7 +10,7 @@ use memory_core::SpaceId;
 use oo7::{Item, Keyring};
 
 /// The item schema of a Space key.
-pub const SCHEMA: &str = "org.quire.Memory.SpaceKey";
+pub const SCHEMA: &str = "org.bardo.Memory.SpaceKey";
 
 /// The Secret Service store: connects to the session's keyring on each call.
 #[derive(Debug, Default)]

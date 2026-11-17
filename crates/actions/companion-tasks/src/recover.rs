@@ -26,12 +26,12 @@ const EPISODE_KIND: &str = "companion.episode";
 /// them as `Area { ComputerUse }` payloads in `computer-use-bus`'s `ComputerUseRecord` form; the actions service names no computer-use type and
 /// reads only the words below.
 const RUN_KINDS: [&str; 6] = [
-    "cua.run.started",
-    "cua.asked",
-    "cua.confirmed",
-    "cua.taken_over",
-    "cua.handed_back",
-    "cua.run.finished",
+    "computer_use.run.started",
+    "computer_use.asked",
+    "computer_use.confirmed",
+    "computer_use.taken_over",
+    "computer_use.handed_back",
+    "computer_use.run.finished",
 ];
 /// The most events one restart reads.
 const RESTART_LIMIT: u32 = 5000;
@@ -198,10 +198,12 @@ fn what_of(entry: &RecentEntry) -> Result<Option<ReplayWhat>, ReplayFault> {
 /// Where a run stands after one of its records, from the record's kind and body.
 fn run_state(kind: &str, record: &serde_json::Value) -> Option<RosterState> {
     Some(match kind {
-        "cua.run.started" | "cua.confirmed" | "cua.handed_back" => RosterState::Working,
-        "cua.asked" => RosterState::NeedsYou,
-        "cua.taken_over" => RosterState::Paused,
-        "cua.run.finished" => match record["v"]["outcome"]["kind"].as_str()? {
+        "computer_use.run.started" | "computer_use.confirmed" | "computer_use.handed_back" => {
+            RosterState::Working
+        }
+        "computer_use.asked" => RosterState::NeedsYou,
+        "computer_use.taken_over" => RosterState::Paused,
+        "computer_use.run.finished" => match record["v"]["outcome"]["kind"].as_str()? {
             "done" => RosterState::Done,
             "cancelled" => RosterState::Cancelled,
             "failed" | "blocked" | "budget_out" => RosterState::Failed,
@@ -211,7 +213,7 @@ fn run_state(kind: &str, record: &serde_json::Value) -> Option<RosterState> {
     })
 }
 
-/// A record of a computer-use run as the rebuild's `Run` event. Only `cua.run.started` names the
+/// A record of a computer-use run as the rebuild's `Run` event. Only `computer_use.run.started` names the
 /// Space, so the Space of each run seen so far is kept in `spaces` (oldest record first); a run
 /// whose start is older than the window has no Space and says nothing.
 fn run_of(
@@ -235,7 +237,7 @@ fn run_of(
         .as_str()
         .and_then(|r| RunId::parse(r).ok())
         .ok_or(ReplayFault::Malformed)?;
-    if kind == "cua.run.started" {
+    if kind == "computer_use.run.started" {
         let space = record["v"]["space"]
             .as_str()
             .and_then(|s| SpaceId::parse(s).ok())

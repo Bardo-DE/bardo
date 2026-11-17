@@ -70,8 +70,10 @@ fn icon_arg(icon: &AppIcon) -> String {
     }
 }
 
-/// `app-bardo-<id>-<nonce>.scope`, the scope a launch runs in: the accounts service's [`ScopeName`] writes it, so
-/// what the accounts service reads back to learn which app a process is (`identity_of`) is the same name.
+/// `app-bardo-<id>-<nonce>.scope`, the scope a launch runs in.
+///
+/// The accounts service's [`ScopeName`] writes it, so what the accounts service reads back to learn
+/// which app a process is (`identity_of`) is the same name.
 ///
 /// The id is escaped as a unit name component (`systemd-escape`); an empty id has no scope.
 ///

@@ -4,7 +4,7 @@
 //! One JSON file holds every credential as plain text, so it protects nothing but the file's
 //! mode: it is created `0600` and refused, on open and on every later use, when any group or
 //! other bit is set. Items are addressed as the keyring backends address them (`service` the
-//! store's namespace, `porter` unless the host names another; the account; the purpose in its
+//! store's namespace, `bardo` unless the host names another; the account; the purpose in its
 //! serde form). Every use takes an advisory lock on a
 //! sibling `<file>.lock`, reads the file and, for a change, writes it through `account_core`'s
 //! atomic writer (a staging file, synced, renamed over the file), so a crash leaves the old file

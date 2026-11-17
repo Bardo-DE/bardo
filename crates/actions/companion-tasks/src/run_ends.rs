@@ -6,8 +6,10 @@ use action_core::EndWhy;
 use provenance::{AgentRef, MessageId};
 use std::collections::BTreeMap;
 
-/// The report a `ComputerUse1.Run.Finished` signal names and why the run ended, when the signal says both
-/// in its enumerated fields (`{"body": {"outcome": .., "report": {"kind": "sent", "v": {"message": ..}}}}`).
+/// The report a `ComputerUse1.Run.Finished` signal names and why the run ended.
+///
+/// Only when the signal says both in its enumerated fields
+/// (`{"body": {"outcome": .., "report": {"kind": "sent", "v": {"message": ..}}}}`).
 #[must_use]
 pub fn report_end(signal: &str) -> Option<(MessageId, EndWhy)> {
     let body: serde_json::Value = serde_json::from_str(signal).ok()?;

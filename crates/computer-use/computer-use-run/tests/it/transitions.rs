@@ -145,7 +145,7 @@ fn the_lease_row_starts_the_first_look_and_the_capture_comes_last() {
     d.feed(RunInput::Leased(grant(STOCK)));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(1)));
     assert_eq!(d.run.lease, Some(LeaseId(1)));
-    assert_eq!(kinds(&d.effects), ["cua.run.started"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.run.started"]);
     assert!(d.has(|e| matches!(e, RunEffect::Glow(GlowState::Working))));
     assert!(d.has(|e| matches!(e, RunEffect::FetchContext)));
     assert!(d.has(|e| matches!(e, RunEffect::Snapshot(_))));
@@ -373,7 +373,7 @@ fn a_verdict_to_run_injects_and_the_input_settles_before_the_next_look() {
         d.phase(),
         RunPhase::Settling(StepIndex(1), Settle::Waiting { .. })
     ));
-    assert_eq!(kinds(&d.effects), ["cua.step"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.step"]);
     assert!(d.has(|e| matches!(e, RunEffect::WatchSettle { .. })));
     assert!(d.has(|e| matches!(e, RunEffect::Emit(ComputerUseSignal::ActionDone(..)))));
     assert!(
@@ -587,7 +587,7 @@ fn finish_done_on_the_models_word_ends_the_run_and_reports_done_with_the_values(
     let (status, text) = report_of(&d.effects).expect("a report");
     assert_eq!(status, ReportStatus::Done);
     assert_eq!(text, ["Downloaded it.", "invoice_no: 2291"]);
-    assert_eq!(kinds(&d.effects), ["cua.run.finished"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.run.finished"]);
     let order: Vec<&str> = d
         .effects
         .iter()
@@ -680,7 +680,7 @@ fn a_question_waits_for_the_person_and_the_answer_goes_back_as_the_outcome() {
         provenance::Integrity::Untrusted
     );
     assert_eq!(body.choices.len(), 2);
-    assert_eq!(kinds(&d.effects), ["cua.asked"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.asked"]);
     assert!(d.has(|e| matches!(e, RunEffect::Glow(GlowState::WaitingForYou))));
     assert_eq!(report_of(&d.effects).unwrap().0, ReportStatus::Progress);
 
@@ -694,7 +694,7 @@ fn a_question_waits_for_the_person_and_the_answer_goes_back_as_the_outcome() {
         Labelled::new("Work".into(), user_goal().label),
     ));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
-    assert_eq!(kinds(&d.effects), ["cua.step"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.step"]);
     assert!(
         matches!(&*d.run.track.outcomes, [ActionOutcome { result: ActionResult::Answered(a), .. }] if a.value == "Work"),
         "the rest of the batch is dropped, the answer is the outcome"
@@ -812,7 +812,7 @@ fn a_refusal_marks_the_rest_not_executed_and_tells_the_model() {
         DenyCode::NeedsUser,
     ))));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
-    assert_eq!(kinds(&d.effects), ["cua.step"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.step"]);
     d.feed(RunInput::Observed(Box::new(observation(2, tree(vec![])))));
     let prev: Vec<ActionResult> = d
         .run
@@ -886,7 +886,7 @@ fn a_confirmation_that_is_granted_runs_the_action_and_resumes_input_on_stock() {
         resume.unwrap() < inject.unwrap(),
         "input flows before the click is made"
     );
-    assert_eq!(kinds(&d.effects), ["cua.confirmed"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.confirmed"]);
     assert_eq!(d.run.track.authorised, computer_use_bus::AuthorisedBy::User);
     d.feed(RunInput::Injected(receipt(50)));
     let step = d.effects.iter().find_map(|e| match e {
@@ -943,7 +943,7 @@ fn input_that_cannot_be_delivered_looks_again_unless_the_window_is_gone() {
     d.feed(RunInput::Verdict(GateAnswer::Run));
     d.feed(RunInput::InjectFailed(SeatError::Refused));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
-    assert_eq!(kinds(&d.effects), ["cua.step"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.step"]);
     let mut gone = authorising();
     gone.feed(RunInput::Verdict(GateAnswer::Run));
     gone.feed(RunInput::InjectFailed(SeatError::TargetGone));
@@ -959,7 +959,7 @@ fn a_window_that_moved_under_the_aim_is_not_injected_into_and_the_run_looks_agai
     d.feed(RunInput::Verdict(GateAnswer::Run));
     d.feed(RunInput::StateMoved(computer_use_run::Moved::Focus));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
-    assert_eq!(kinds(&d.effects), ["cua.step"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.step"]);
 }
 
 #[test]

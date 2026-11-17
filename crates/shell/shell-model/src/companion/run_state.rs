@@ -48,9 +48,11 @@ impl RunState {
     }
 }
 
-/// The state a run is in, from the computer-use daemon's phase and, for a finished run, how it ended. A finished
-/// run whose outcome has not arrived yet reads `Stopped`: it is over, and nothing says it
-/// succeeded.
+/// The state a run is in, from the computer-use daemon's phase and, for a finished run, how it
+/// ended.
+///
+/// A finished run whose outcome has not arrived yet reads `Stopped`: it is over, and nothing says
+/// it succeeded.
 #[must_use]
 pub fn run_state_of(slug: RunStateSlug, outcome: Option<ComputerUseOutcome>) -> RunState {
     match slug {

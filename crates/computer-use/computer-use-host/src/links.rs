@@ -92,8 +92,10 @@ fn things_of(ctx: &RecordContext) -> Result<Vec<(ThingView, ThingRole)>, RecordE
     ])
 }
 
-/// The memory service event for `record`: an `EventBody::Area` of area `ComputerUse` whose JSON is the record's
-/// serde form and whose kind tag is its slug, by the actor `Companion { session, role: ComputerUse }`.
+/// The memory service event for `record`.
+///
+/// An `EventBody::Area` of area `ComputerUse` whose JSON is the record's serde form and whose kind
+/// tag is its slug, by the actor `Companion { session, role: ComputerUse }`.
 ///
 /// Pure. A step's effect is the record's own; every other record is a `Read`.
 ///
@@ -292,7 +294,7 @@ mod tests {
             panic!("not an area body")
         };
         assert_eq!(payload.area, AreaTag::ComputerUse);
-        assert_eq!(payload.kind.as_str(), "cua.run.finished");
+        assert_eq!(payload.kind.as_str(), "computer_use.run.finished");
         assert_eq!(
             payload.json.as_str(),
             serde_json::to_string(&record).unwrap()

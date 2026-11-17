@@ -8,8 +8,8 @@ use keyring_core::{CredentialStore, Entry, mock};
 use std::collections::HashMap;
 use std::sync::Arc;
 
-const SERVICE: &str = "porter";
-const MARK: &str = "porter-parts:";
+const SERVICE: &str = "bardo";
+const MARK: &str = "bardo-parts:";
 /// Room for the head's marker and count, and small enough that a test value needs parts.
 const SIXTEEN: Limit = Limit::Utf16Units(16);
 
@@ -183,10 +183,10 @@ fn a_missing_part_or_a_damaged_head_is_an_error_and_not_a_shorter_value() {
     );
 
     for head in [
-        "porter-parts:",
-        "porter-parts:1",
-        "porter-parts:65",
-        "porter-parts:-2",
+        "bardo-parts:",
+        "bardo-parts:1",
+        "bardo-parts:65",
+        "bardo-parts:-2",
     ] {
         let mock = self::mock();
         let store = chunked(&mock, SIXTEEN);
@@ -248,7 +248,7 @@ fn a_write_that_fails_part_way_leaves_the_old_value_or_nothing_but_never_a_mix()
 /// What account-secrets' own `chunks.rs` wrote before this crate, at a limit of 16 units: the
 /// format must read unchanged, and writing the same value must give the same entries.
 const ACCOUNT_WROTE: &[(&str, &str)] = &[
-    ("acct:oauth", "porter-parts:4"),
+    ("acct:oauth", "bardo-parts:4"),
     ("acct:oauth#1", "{\"refresh\":\"1//0"),
     ("acct:oauth#2", "gYw-déjà-vu-😀-t"),
     ("acct:oauth#3", "oken\",\"expires\":"),
@@ -301,14 +301,10 @@ fn a_value_that_begins_with_the_marker_is_kept_in_parts_and_reads_back() {
     let mock = mock();
     for limit in [Limit::None, SIXTEEN] {
         let k = entry(&chunked(&mock, limit), "k");
-        k.set_password("porter-parts:7").expect("set");
-        assert_eq!(
-            k.get_password().expect("get"),
-            "porter-parts:7",
-            "{limit:?}"
-        );
-        assert_eq!(raw(&mock, "k").as_deref(), Some("porter-parts:2"));
-        assert_eq!(raw(&mock, "k#1").as_deref(), Some("porter-parts:7"));
+        k.set_password("bardo-parts:7").expect("set");
+        assert_eq!(k.get_password().expect("get"), "bardo-parts:7", "{limit:?}");
+        assert_eq!(raw(&mock, "k").as_deref(), Some("bardo-parts:2"));
+        assert_eq!(raw(&mock, "k#1").as_deref(), Some("bardo-parts:7"));
     }
 }
 

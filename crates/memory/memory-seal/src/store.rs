@@ -27,7 +27,7 @@ pub enum KeyError {
 ///
 /// Implementations: `ProvidedKeys` (the app's own master key; portable), `MemoryKeys` (feature `testing`), `Oo7Keys`
 /// (feature `oo7`; Secret Service items with attributes `xdg:schema` =
-/// `org.quire.Memory.SpaceKey` and `space` = the id).
+/// `org.bardo.Memory.SpaceKey` and `space` = the id).
 pub trait KeyStore: Send + Sync {
     /// The Space's key.
     fn get(&self, space: &SpaceId) -> impl Future<Output = Result<SpaceKey, KeyError>> + Send;

@@ -304,7 +304,7 @@ fn an_asked_record_holds_the_persons_words_and_the_target_agent() {
     assert!(
         json.contains("skip the newsletter folder")
             && json.contains(r#""via":"spoken""#)
-            && json.contains(r#""kind":"cua""#),
+            && json.contains(r#""kind":"computer_use""#),
         "{json}"
     );
     let _ = Count(0);

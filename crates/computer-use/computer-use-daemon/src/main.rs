@@ -14,7 +14,7 @@ async fn main() -> ExitCode {
     match computer_use_daemon::run(&args, |key| std::env::var(key).ok()).await {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
-            eprintln!("computer_use_daemon: {error}");
+            eprintln!("bardo-computer-use: {error}");
             ExitCode::from(2)
         }
     }

@@ -156,12 +156,12 @@ fn taking_over_stops_the_input_and_handing_back_tells_the_model_the_person_acted
     assert_eq!(n, StepIndex(1));
     assert!(d.has(|e| matches!(e, RunEffect::SuspendLease(_, Suspend::TakeOver))));
     assert!(d.has(|e| matches!(e, RunEffect::Glow(GlowState::Off))));
-    assert_eq!(kinds(&d.effects), ["cua.taken_over"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.taken_over"]);
     d.feed(RunInput::UserTakeOver);
     assert!(d.effects.is_empty());
     d.feed(RunInput::UserHandBack);
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
-    assert_eq!(kinds(&d.effects), ["cua.handed_back"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.handed_back"]);
     assert!(
         d.has(|e| matches!(e, RunEffect::FetchContext)),
         "a fresh look at what they did"
@@ -261,7 +261,7 @@ fn inferd_saying_who_answers_is_recorded_once() {
         locality: account_capability::Locality::OnDevice,
     };
     d.feed(RunInput::Routed(served.clone()));
-    assert_eq!(kinds(&d.effects), ["cua.run.routed"]);
+    assert_eq!(kinds(&d.effects), ["computer_use.run.routed"]);
     assert_eq!(d.run.served, Some(served));
     assert!(matches!(d.phase(), RunPhase::Thinking(_)));
 }

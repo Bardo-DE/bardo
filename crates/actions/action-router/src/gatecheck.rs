@@ -411,8 +411,8 @@ impl<S: Seams> Router<S> {
                 op: Op::Perform,
                 resource: ActionFacts {
                     app: ask.app.clone(),
-                    action: ActionName::parse("cua.step")
-                        .expect("`cua.step` is a valid action name"),
+                    action: ActionName::parse("computer_use.step")
+                        .expect("`computer_use.step` is a valid action name"),
                     effect: ask.effect,
                     classes: BTreeSet::new(),
                     reach: AgentReach::Offered,

@@ -311,7 +311,7 @@ impl<S: Seams> Supervisor<S> {
         }
         if let TaskTarget::Window(ident) = &task.target {
             let known = self.shared.desktop.windows().await.map_err(|e| {
-                eprintln!("computer_use_daemon: the desktop's windows could not be listed: {e}");
+                eprintln!("bardo-computer-use: the desktop's windows could not be listed: {e}");
                 ControlRefusal::WindowUnknown
             })?;
             let window = known
@@ -338,7 +338,7 @@ impl<S: Seams> Supervisor<S> {
             let id = mint_run_id(state.next + 1);
             if let TaskTarget::Window(ident) = &task.target {
                 state.leases = state.leases.claim(ident, &id).map_err(|held| {
-                    eprintln!("computer_use_daemon: a window was asked for twice: {held}");
+                    eprintln!("bardo-computer-use: a window was asked for twice: {held}");
                     ControlRefusal::LeaseHeld
                 })?;
             }
@@ -400,7 +400,7 @@ impl<S: Seams> Supervisor<S> {
         let state = self.shared.state();
         let live = state.live.get(run).ok_or(ControlRefusal::WrongState)?;
         live.control.send(input).map_err(|e| {
-            eprintln!("computer_use_daemon: a run takes no more control: {e}");
+            eprintln!("bardo-computer-use: a run takes no more control: {e}");
             ControlRefusal::WrongState
         })
     }

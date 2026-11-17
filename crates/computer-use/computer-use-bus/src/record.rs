@@ -1,6 +1,6 @@
 //! What a run writes to the event log. The computer-use daemon stores each record as a memory service
 //! `EventBody::Area { area: ComputerUse }` whose `json` is the serde form below and whose kind tag is
-//! the variant's slug (`cua.run.started`, ...). The actor is
+//! the variant's slug (`computer_use.run.started`, ...). The actor is
 //! `Actor::Companion { session, role: ComputerUse { run } }` ([`computer_use_actor`]).
 //!
 //! No pixels and no thought text are stored: a thought becomes a digest, a frame a digest and a
@@ -76,7 +76,7 @@ pub enum ConfirmBy {
 #[serde(tag = "kind", content = "v")]
 pub enum ComputerUseRecord {
     /// The run began.
-    #[serde(rename = "cua.run.started")]
+    #[serde(rename = "computer_use.run.started")]
     RunStarted {
         /// The run.
         run: RunId,
@@ -98,7 +98,7 @@ pub enum ComputerUseRecord {
         budget: RunBudget,
     },
     /// inferd said which account and model answers.
-    #[serde(rename = "cua.run.routed")]
+    #[serde(rename = "computer_use.run.routed")]
     Routed {
         /// The run.
         run: RunId,
@@ -106,7 +106,7 @@ pub enum ComputerUseRecord {
         served_by: ServedBy,
     },
     /// One action, decided and done.
-    #[serde(rename = "cua.step")]
+    #[serde(rename = "computer_use.step")]
     Step {
         /// The run.
         run: RunId,
@@ -130,10 +130,10 @@ pub enum ComputerUseRecord {
         /// What was injected, if anything.
         input: Option<InputReceipt>,
     },
-    /// The look after a step's input: whether the window changed. It follows the `cua.step`
+    /// The look after a step's input: whether the window changed. It follows the `computer_use.step`
     /// records of the actions it judges, and is written only when an input ran and there was a
     /// look before it.
-    #[serde(rename = "cua.step.seen")]
+    #[serde(rename = "computer_use.step.seen")]
     Seen {
         /// The run.
         run: RunId,
@@ -144,7 +144,7 @@ pub enum ComputerUseRecord {
         unchanged: bool,
     },
     /// The model asked the person something.
-    #[serde(rename = "cua.asked")]
+    #[serde(rename = "computer_use.asked")]
     Asked {
         /// The run.
         run: RunId,
@@ -156,7 +156,7 @@ pub enum ComputerUseRecord {
         question: Labelled<String>,
     },
     /// A confirmation was answered yes.
-    #[serde(rename = "cua.confirmed")]
+    #[serde(rename = "computer_use.confirmed")]
     Confirmed {
         /// The run.
         run: RunId,
@@ -166,7 +166,7 @@ pub enum ComputerUseRecord {
         by: ConfirmBy,
     },
     /// The person took over the window.
-    #[serde(rename = "cua.taken_over")]
+    #[serde(rename = "computer_use.taken_over")]
     TakenOver {
         /// The run.
         run: RunId,
@@ -174,7 +174,7 @@ pub enum ComputerUseRecord {
         n: StepIndex,
     },
     /// The person handed the window back.
-    #[serde(rename = "cua.handed_back")]
+    #[serde(rename = "computer_use.handed_back")]
     HandedBack {
         /// The run.
         run: RunId,
@@ -185,7 +185,7 @@ pub enum ComputerUseRecord {
         user_events: Vec<EventRef>,
     },
     /// The run ended.
-    #[serde(rename = "cua.run.finished")]
+    #[serde(rename = "computer_use.run.finished")]
     Finished {
         /// The run.
         run: RunId,
@@ -199,7 +199,7 @@ pub enum ComputerUseRecord {
         report: Option<MessageId>,
     },
     /// A procedure was learned (a later wave).
-    #[serde(rename = "cua.procedure.learned")]
+    #[serde(rename = "computer_use.procedure.learned")]
     ProcedureLearned {
         /// The procedure.
         procedure: String,
@@ -207,9 +207,9 @@ pub enum ComputerUseRecord {
         from: RunId,
     },
     /// The screen check found something before the model was shown the screen. Only the kinds
-    /// are kept, never the text. A yes from the person follows as `cua.confirmed`; a no ends the
+    /// are kept, never the text. A yes from the person follows as `computer_use.confirmed`; a no ends the
     /// run as `Blocked(ScreenSuspicious(..))`.
-    #[serde(rename = "cua.screen.suspicious")]
+    #[serde(rename = "computer_use.screen.suspicious")]
     ScreenSuspicious {
         /// The run.
         run: RunId,

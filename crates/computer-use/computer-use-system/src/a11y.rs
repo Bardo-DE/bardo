@@ -20,11 +20,11 @@ impl A11ySource for LoggedAtspi {
         let ms = started.elapsed().as_millis();
         match &snapshot {
             Ok(tree) => eprintln!(
-                "computer_use_daemon: accessibility tree: {} nodes in {ms} ms",
+                "bardo-computer-use: accessibility tree: {} nodes in {ms} ms",
                 tree.nodes.len()
             ),
             Err(error) => {
-                eprintln!("computer_use_daemon: no accessibility tree after {ms} ms: {error:?}")
+                eprintln!("bardo-computer-use: no accessibility tree after {ms} ms: {error:?}");
             }
         }
         snapshot

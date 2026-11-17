@@ -82,7 +82,7 @@ pub enum ModelRole {
     /// The policy writer.
     PolicyWriter,
     /// The computer-use model.
-    #[serde(rename = "cua")]
+    #[serde(rename = "computer_use")]
     ComputerUse,
     /// Nightly memory consolidation.
     Consolidator,

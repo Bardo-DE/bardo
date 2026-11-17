@@ -9,7 +9,7 @@
 //!
 //! [`ChunkedStore`] wraps any other store. A value over its [`Limit`] is cut into parts, each in
 //! an entry of its own named `<user>#1`, `<user>#2` and so on, and the entry `<user>` holds only
-//! a head: the store's marker followed by how many parts there are, as in `porter-parts:3`. A
+//! a head: the store's marker followed by how many parts there are, as in `bardo-parts:3`. A
 //! value that fits is stored whole in `<user>`, exactly as the wrapped store would have stored
 //! it, so a store with no limit (the Keychain, the Secret Service) holds what it always held.
 //!

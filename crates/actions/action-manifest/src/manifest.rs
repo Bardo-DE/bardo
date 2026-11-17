@@ -223,7 +223,7 @@ pub enum Filled {
     PersonWords,
     /// The app's own records in memory about the conversation the call works for: a JSON array of
     /// their bodies, oldest first, labelled with the join of the records' labels. `kinds` is the
-    /// kind pattern the app's records have (`cua.*`).
+    /// kind pattern the app's records have (`computer_use.*`).
     OwnHistory {
         /// Which of the app's record kinds are its history.
         kinds: String,

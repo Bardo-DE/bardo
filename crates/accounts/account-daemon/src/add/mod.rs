@@ -324,7 +324,7 @@ pub async fn add_account(
         paths, keys, bus, ..
     } = config;
     let namespace = Namespace::parse(crate::daemon::NAMESPACE)
-        .unwrap_or_else(|_| unreachable!("porter.accountd is a well-formed namespace"));
+        .unwrap_or_else(|_| unreachable!("bardo.accountd is a well-formed namespace"));
     let chosen = Chosen::open(keys, namespace, "accountd").map_err(StartError::from)?;
     eprintln!("{}", chosen.said);
     let args = AddArgs::parse(provider, allow, classes)?;

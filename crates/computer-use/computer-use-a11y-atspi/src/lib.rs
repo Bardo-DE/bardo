@@ -55,7 +55,7 @@ impl AtspiSource {
             .get_or_try_init(|| async {
                 let bus = ::atspi::AccessibilityConnection::new().await.map_err(|e| {
                     eprintln!(
-                        "computer_use_daemon: the accessibility bus could not be reached: {e}"
+                        "bardo-computer-use: the accessibility bus could not be reached: {e}"
                     );
                     A11yError::NoBus
                 })?;

@@ -5,7 +5,7 @@
 //! builds and runs the daemon, all in the library (`account_daemon::daemon`): it resolves its paths,
 //! loads the caller tables, the provider files and the registry (refusing to start over a
 //! registry it cannot read), builds the service over its seams (the Secret Service through oo7 in
-//! the `porter.accountd` namespace, or in a `test-keys` build the key file `BARDO_ACCOUNTD_KEYS` names,
+//! the `bardo.accountd` namespace, or in a `test-keys` build the key file `BARDO_ACCOUNTD_KEYS` names,
 //! the sheet host over `org.bardo.AccountsSheet1`, the families, the file store and audit) and
 //! serves `org.bardo.Accounts1`. `accountd add` adds an AI key from a terminal.
 

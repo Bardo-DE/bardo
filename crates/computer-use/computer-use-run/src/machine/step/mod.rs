@@ -173,7 +173,7 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::InjectFailed(error) => inject_failed(run, fx, error),
         RunInput::StateMoved(_) => state_moved(run, fx),
         RunInput::RecordFailed => {
-            finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Log))
+            finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Log));
         }
         RunInput::Damage(damage) => damaged(run, fx, at, damage),
         RunInput::Checked(result) => checked(run, fx, result),

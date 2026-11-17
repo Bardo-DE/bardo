@@ -166,7 +166,7 @@ pub fn computer_use_run_step() -> Option<Record> {
         mail_label(),
         area(
             AreaTag::ComputerUse,
-            "cua.step",
+            "computer_use.step",
             r#"{"step":1,"action":"observe"}"#,
         )?,
         Cause::None,

@@ -417,12 +417,12 @@ async fn a_companion_starts_a_task_and_the_task_is_audited_into_memory() {
         .expect("inbox");
     assert_eq!(inbox.len(), 1, "the goal reached the worker as a request");
 
-    let started = desk.records("docket.task_started").await;
+    let started = desk.records("actions.task_started").await;
     assert_eq!(started.len(), 1, "the new task is in the log");
     let messages = desk.records("companion.message").await;
     assert_eq!(messages.len(), 1, "and so is the request it was given");
     assert!(
-        !desk.records("docket.call").await.is_empty(),
+        !desk.records("actions.call").await.is_empty(),
         "the call that started it too"
     );
 }

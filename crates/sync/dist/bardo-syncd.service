@@ -4,7 +4,7 @@
 #
 # syncd signs in for itself ("Continue as": the person picks one of the accounts accountd lists)
 # and keeps its own tokens: its registry under $XDG_STATE_HOME/bardo/sync and its secrets in the
-# keyring under the namespace porter.syncd. It talks to the servers itself, so it may use the
+# keyring under the namespace bardo.syncd. It talks to the servers itself, so it may use the
 # network, and the sign-in's loopback listener needs the inet families. It reads /proc to know who
 # is calling, so the unit must not hide other processes' cgroups (no ProtectProc, no PrivatePID).
 [Unit]

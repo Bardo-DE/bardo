@@ -92,7 +92,7 @@ fn actors_round_trip_and_pin_their_json() {
     };
     assert_eq!(
         round_trip(&computer_use),
-        r#"{"kind":"companion","v":{"session":"s-1","role":{"kind":"cua","v":{"run":"r-7"}}}}"#
+        r#"{"kind":"companion","v":{"session":"s-1","role":{"kind":"computer_use","v":{"run":"r-7"}}}}"#
     );
     assert_eq!(round_trip(&Actor::Unknown), r#"{"kind":"unknown"}"#);
     assert_eq!(round_trip(&Actor::Cli), r#"{"kind":"cli"}"#);
@@ -158,7 +158,7 @@ fn execute_ranks_at_least_as_high_as_outbound_and_destructive() {
 fn records_written_before_execute_and_acp_still_read() {
     const OLD_ACP: &str = r#"{"kind":"mcp","v":{"client":"acp:claude-code"}}"#;
     const OLD_KINDS: &str =
-        r#"["user","companion","cua","mcp","cli","app","third_party","system","unknown"]"#;
+        r#"["user","companion","computer_use","mcp","cli","app","third_party","system","unknown"]"#;
 
     const EFFECTS: &str = r#"["read","undoable_write","outbound","destructive"]"#;
     let effects: Vec<Effect> = serde_json::from_str(EFFECTS).expect("old effects read");

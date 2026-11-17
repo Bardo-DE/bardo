@@ -7,13 +7,13 @@
 //! author): the store opened once and kept, and the entry-per-credential layout.
 //!
 //! A value too long for one entry of the Windows credential manager is cut into parts by the
-//! account-keyring-chunked crate, whose heads begin `porter-parts:`.
+//! account-keyring-chunked crate, whose heads begin `bardo-parts:`.
 //!
 //! Blocking keyring calls run on a dedicated thread and resolve a oneshot, because this crate
 //! may not reach a runtime and a blocking call on an async executor once panicked mailo.
 //!
 //! Each credential is one entry `{account}:{purpose}` under the service of its namespace
-//! (`porter` unless the host names another), where the purpose is its serde form, as in
+//! (`bardo` unless the host names another), where the purpose is its serde form, as in
 //! [`attributes`]. keyring-core stores cannot be searched the
 //! same way on every platform, so each account also has an index entry `{account}:index` that
 //! lists its purposes, and removing an account reads it.
@@ -41,7 +41,7 @@ const LIMIT: Limit = Limit::None;
 
 /// What the head entry of a value in parts holds before the count. Stored values are JSON,
 /// which begins with `{` or `"`, so none is mistaken for a head.
-const MARK: &str = "porter-parts:";
+const MARK: &str = "bardo-parts:";
 
 /// `store`, cutting values over `limit` into parts.
 fn chunked(store: Arc<CredentialStore>, limit: Limit) -> ChunkedStore {

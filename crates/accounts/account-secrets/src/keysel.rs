@@ -218,7 +218,7 @@ mod tests {
     use super::*;
 
     fn namespace() -> Namespace {
-        Namespace::parse("porter.test").expect("a namespace")
+        Namespace::parse("bardo.test").expect("a namespace")
     }
 
     #[test]

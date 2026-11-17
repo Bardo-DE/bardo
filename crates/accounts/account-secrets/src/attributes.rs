@@ -4,7 +4,7 @@ use crate::namespace::Namespace;
 use account_core::SecretKey;
 
 /// The `service` attribute of every item the accounts service's own daemons file: [`Namespace::ACCOUNTS`].
-pub const SERVICE: &str = "porter";
+pub const SERVICE: &str = "bardo";
 
 /// The attributes of one item, in the order the store is searched by.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -64,7 +64,7 @@ mod tests {
                     got.account.as_str(),
                     got.purpose.as_str()
                 ),
-                ("porter", "cloud", want)
+                ("bardo", "cloud", want)
             );
             let named = attributes_in(&mailo, &key);
             assert_eq!(

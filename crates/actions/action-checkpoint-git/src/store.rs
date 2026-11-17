@@ -18,7 +18,7 @@ const CHUNK: usize = 200;
 
 /// The name and address every point is committed under.
 const NAME: &str = "Actions";
-const MAIL: &str = "docket@localhost";
+const MAIL: &str = "actions@localhost";
 
 fn authorship(at: i64) -> Vec<(String, String)> {
     // `@` marks raw seconds: without it git reads a small number as some other date form.
@@ -127,7 +127,7 @@ impl CheckpointStore for GitStore {
         self.ok(&root, &["add", "-A", "--", "."], &env).await?;
         let tree = object_id(&self.ok(&root, &["write-tree"], &env).await?)
             .map_err(|error| failed("write-tree printed no tree id", &error))?;
-        let message = format!("docket restore point {} of {}", id.0, session.as_str());
+        let message = format!("actions restore point {} of {}", id.0, session.as_str());
         let args = vec![
             "commit-tree".to_owned(),
             tree.clone(),

@@ -1,9 +1,9 @@
 //! The keyring namespace: the `service` attribute every item is filed under (and the keyring-core
 //! service), chosen by the host, so two programs on one keyring never read each other's items.
 //!
-//! Every constructor that takes no namespace files under `porter` ([`Namespace::ACCOUNTS`]). That
+//! Every constructor that takes no namespace files under `bardo` ([`Namespace::ACCOUNTS`]). That
 //! namespace is kept for apps that migrate their old items out of it; new code names its own.
-//! The accounts service's daemons each name theirs (`porter.accountd`, `porter.syncd`), and a
+//! The accounts service's daemons each name theirs (`bardo.accountd`, `bardo.syncd`), and a
 //! host that keeps its own credentials names its own, such as mailo's `mailo/<profile>`
 //! (`mailo/default`, `mailo/3fa9c01b`). Any one line of text is a valid name.
 
@@ -26,11 +26,11 @@ pub enum NamespaceError {
 pub struct Namespace(Cow<'static, str>);
 
 impl Namespace {
-    /// `porter`: what every store uses unless its host names another, and `Namespace::default()`.
+    /// `bardo`: what every store uses unless its host names another, and `Namespace::default()`.
     /// Kept for apps that migrate their old items out of it; new code names its own namespace.
-    pub const ACCOUNTS: Self = Self(Cow::Borrowed("porter"));
+    pub const ACCOUNTS: Self = Self(Cow::Borrowed("bardo"));
 
-    /// The namespace `text` names (`mailo/work`, `porter.accountd`).
+    /// The namespace `text` names (`mailo/work`, `bardo.accountd`).
     ///
     /// # Errors
     ///
@@ -70,11 +70,11 @@ mod tests {
     #[test]
     fn a_namespace_is_one_line_of_text() {
         let cases = [
-            ("porter", Ok("porter")),
+            ("bardo", Ok("bardo")),
             ("mailo/work", Ok("mailo/work")),
             ("mailo/default", Ok("mailo/default")),
             ("mailo/3fa9c01b", Ok("mailo/3fa9c01b")),
-            ("porter.accountd", Ok("porter.accountd")),
+            ("bardo.accountd", Ok("bardo.accountd")),
             ("", Err(NamespaceError::Empty)),
             ("two\nlines", Err(NamespaceError::Control)),
         ];

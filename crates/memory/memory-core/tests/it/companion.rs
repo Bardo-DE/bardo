@@ -423,7 +423,7 @@ fn session_kinds_are_not_for_recall_and_everything_else_is() {
         "companion.sessions",
         "thing.archived",
         "policy.ruled",
-        "cua.step",
+        "computer_use.step",
     ] {
         assert_eq!(
             Recallable::of_kind(&kind(other)),

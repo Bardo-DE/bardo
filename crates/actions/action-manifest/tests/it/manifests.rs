@@ -180,7 +180,7 @@ fn validate_rejects_one_row_per_rule() {
         ),
         (
             "ok: an optional parameter filled from the app's history",
-            filled(ParamNeed::Optional, history("cua.*")),
+            filled(ParamNeed::Optional, history("computer_use.*")),
             None,
         ),
         (

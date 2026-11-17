@@ -67,11 +67,11 @@ fn on_stock_input_stops_before_the_prompt_shows_and_starts_after_the_answer() {
     assert_eq!(
         kinds,
         [
-            "cua.run.started",
-            "cua.confirmed",
-            "cua.step",
-            "cua.step.seen",
-            "cua.run.finished"
+            "computer_use.run.started",
+            "computer_use.confirmed",
+            "computer_use.step",
+            "computer_use.step.seen",
+            "computer_use.run.finished"
         ]
     );
 }
@@ -358,10 +358,10 @@ fn a_screen_that_talks_to_the_assistant_stops_the_run_when_the_person_says_no() 
     assert_eq!(
         kinds,
         [
-            "cua.run.started",
-            "cua.screen.suspicious",
-            "cua.asked",
-            "cua.run.finished"
+            "computer_use.run.started",
+            "computer_use.screen.suspicious",
+            "computer_use.asked",
+            "computer_use.run.finished"
         ]
     );
 }
@@ -391,14 +391,14 @@ fn a_yes_goes_on_and_the_same_screen_is_recorded_but_not_asked_again() {
     assert_eq!(
         kinds,
         [
-            "cua.run.started",
-            "cua.screen.suspicious",
-            "cua.asked",
-            "cua.confirmed",
-            "cua.step",
-            "cua.step.seen",
-            "cua.screen.suspicious",
-            "cua.run.finished"
+            "computer_use.run.started",
+            "computer_use.screen.suspicious",
+            "computer_use.asked",
+            "computer_use.confirmed",
+            "computer_use.step",
+            "computer_use.step.seen",
+            "computer_use.screen.suspicious",
+            "computer_use.run.finished"
         ]
     );
 }

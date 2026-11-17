@@ -46,7 +46,7 @@ pub const PROC_ROOT_VAR: &str = "BARDO_ACCOUNTD_PROC_ROOT";
 pub const KEYS_VAR: &str = "BARDO_ACCOUNTD_KEYS";
 
 /// accountd's keyring namespace: the `service` its items are filed under.
-pub const NAMESPACE: &str = "porter.accountd";
+pub const NAMESPACE: &str = "bardo.accountd";
 
 /// accountd's [`Namespace`].
 fn namespace() -> Namespace {

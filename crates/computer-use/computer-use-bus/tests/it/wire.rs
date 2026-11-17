@@ -93,7 +93,7 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                 backend: BackendKind::KwinStock,
                 budget: RunBudget::PROPOSED,
             },
-            "cua.run.started",
+            "computer_use.run.started",
         ),
         (
             ComputerUseRecord::Routed {
@@ -104,7 +104,7 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                     locality: Locality::OnDevice,
                 },
             },
-            "cua.run.routed",
+            "computer_use.run.routed",
         ),
         (
             ComputerUseRecord::Step {
@@ -128,7 +128,7 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                     at: Stamp(9000),
                 }),
             },
-            "cua.step",
+            "computer_use.step",
         ),
         (
             ComputerUseRecord::Asked {
@@ -137,7 +137,7 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                 question_id: QuestionId(2),
                 question: screen("Which account?"),
             },
-            "cua.asked",
+            "computer_use.asked",
         ),
         (
             ComputerUseRecord::Confirmed {
@@ -145,14 +145,14 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                 n: step,
                 by: ConfirmBy::ShellPrompt,
             },
-            "cua.confirmed",
+            "computer_use.confirmed",
         ),
         (
             ComputerUseRecord::TakenOver {
                 run: run(),
                 n: step,
             },
-            "cua.taken_over",
+            "computer_use.taken_over",
         ),
         (
             ComputerUseRecord::HandedBack {
@@ -160,7 +160,7 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                 n: step,
                 user_events: vec![],
             },
-            "cua.handed_back",
+            "computer_use.handed_back",
         ),
         (
             ComputerUseRecord::Finished {
@@ -170,14 +170,14 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                 charges: ChargeTotal::default(),
                 report: Some(MessageId::parse("m-88").unwrap()),
             },
-            "cua.run.finished",
+            "computer_use.run.finished",
         ),
         (
             ComputerUseRecord::ProcedureLearned {
                 procedure: "org.mozilla.firefox/download-invoice".into(),
                 from: run(),
             },
-            "cua.procedure.learned",
+            "computer_use.procedure.learned",
         ),
         (
             ComputerUseRecord::ScreenSuspicious {
@@ -186,7 +186,7 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                 kinds: vec![ScreenKind::Instruction, ScreenKind::HiddenCharacters],
                 asked: true,
             },
-            "cua.screen.suspicious",
+            "computer_use.screen.suspicious",
         ),
         (
             ComputerUseRecord::Seen {
@@ -194,7 +194,7 @@ fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
                 n: step,
                 unchanged: true,
             },
-            "cua.step.seen",
+            "computer_use.step.seen",
         ),
     ]
 }
@@ -217,7 +217,7 @@ fn a_screen_record_keeps_kinds_and_never_text() {
     let (record, _) = every_record().remove(9);
     assert_eq!(
         serde_json::to_string(&record).unwrap(),
-        r#"{"kind":"cua.screen.suspicious","v":{"run":"r-17","n":3,"kinds":["instruction","hidden_characters"],"asked":true}}"#
+        r#"{"kind":"computer_use.screen.suspicious","v":{"run":"r-17","n":3,"kinds":["instruction","hidden_characters"],"asked":true}}"#
     );
 }
 
@@ -226,7 +226,7 @@ fn a_finished_record_pins_its_json() {
     let (record, _) = every_record().remove(7);
     assert_eq!(
         serde_json::to_string(&record).unwrap(),
-        r#"{"kind":"cua.run.finished","v":{"run":"r-17","outcome":{"kind":"done"},"steps":9,"charges":{"reported":{"amount":"0","currency":"USD"},"unpriced":0},"report":"m-88"}}"#
+        r#"{"kind":"computer_use.run.finished","v":{"run":"r-17","outcome":{"kind":"done"},"steps":9,"charges":{"reported":{"amount":"0","currency":"USD"},"unpriced":0},"report":"m-88"}}"#
     );
 }
 

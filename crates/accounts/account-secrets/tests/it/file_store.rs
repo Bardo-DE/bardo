@@ -238,7 +238,7 @@ async fn namespaces_share_a_file_without_reading_each_other() {
         .iter()
         .map(|item| item["service"].as_str().expect("service").to_owned())
         .collect();
-    assert_eq!(services, ["porter", "mailo/work"]);
+    assert_eq!(services, ["bardo", "mailo/work"]);
     mailo
         .delete_account(&key("cloud").account)
         .await
@@ -260,7 +260,7 @@ async fn the_file_names_each_item_by_the_keyring_attributes_and_debug_hides_valu
     let document: serde_json::Value = serde_json::from_str(&text).expect("json");
     assert_eq!(document["version"], 1);
     let item = &document["items"][0];
-    assert_eq!(item["service"], "porter");
+    assert_eq!(item["service"], "bardo");
     assert_eq!(item["account"], "cloud");
     assert_eq!(item["purpose"], r#"{"kind":"api_key"}"#);
     assert!(!format!("{store:?}").contains("sk-TOPSECRET"));

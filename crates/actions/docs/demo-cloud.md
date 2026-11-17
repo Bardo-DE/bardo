@@ -41,7 +41,7 @@ systemctl --user restart accountd inferd   # they read /etc/bardo/accountd-calle
 ## 3. Add the key
 
 You need an OpenRouter API key (openrouter.ai, Keys). accountd keeps AI keys: it files the key in
-the Secret Service (KWallet, under `porter.accountd`) and checks it with one call to OpenRouter. Each `--allow`
+the Secret Service (KWallet, under `bardo.accountd`) and checks it with one call to OpenRouter. Each `--allow`
 is a permit: the app named may use your AI keys. Typing the command is your consent. accountd reads its
 accounts only when it starts, so it must be stopped while you add a key (the command refuses to run beside a
 running accountd).
@@ -127,4 +127,4 @@ systemctl --user daemon-reload
 
 `--uninstall` keeps `~/.config/inferd/inferd.toml` because you edited it (delete it by hand), and does not touch your
 key: remove the AI account in Settings later (accountd's list under `~/.local/state/accounts`, and the
-`porter.accountd` entry in KWallet), or delete the OpenRouter key at openrouter.ai.
+`bardo.accountd` entry in KWallet), or delete the OpenRouter key at openrouter.ai.

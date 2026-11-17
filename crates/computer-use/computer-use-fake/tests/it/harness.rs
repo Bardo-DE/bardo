@@ -252,7 +252,7 @@ fn on_an_unfocused_window(
         .events
         .records()
         .into_iter()
-        .filter(|r| r.kind() == "cua.step")
+        .filter(|r| r.kind() == "computer_use.step")
         .map(|r| format!("{r:?}"))
         .collect();
     (performed, steps, world.desktop.calls())

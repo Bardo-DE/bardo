@@ -80,7 +80,7 @@ pub fn thing_body(app_name: &str, key: &str) -> EventBody {
 pub fn area_body(area: AreaTag) -> EventBody {
     EventBody::Area(AreaPayload {
         area,
-        kind: KindTag::parse("cua.step").expect("kind"),
+        kind: KindTag::parse("computer_use.step").expect("kind"),
         json: JsonText::parse("{}").expect("json"),
         things: vec![],
     })

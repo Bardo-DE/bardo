@@ -54,7 +54,7 @@ label = "Earlier attempts"
 ty = { kind = "text", v = { max = 100000, multiline = true } }
 need = { kind = "optional" }
 sink = "inert"
-filled = { kind = "own_history", v = { kinds = "cua.*" } }
+filled = { kind = "own_history", v = { kinds = "computer_use.*" } }
 "#;
 
 /// The app: it keeps the arguments of every call it is given.
@@ -249,8 +249,8 @@ async fn the_persons_words_are_the_conversations_newest_turn_even_from_a_run() {
 
 #[tokio::test]
 async fn the_apps_history_is_read_about_the_conversation_and_stays_untrusted() {
-    let first = entry("cua.step", 1, screen(), Some(r#"{"n":1}"#), None);
-    let second = entry("cua.step", 2, screen(), Some(r#"{"n":2}"#), None);
+    let first = entry("computer_use.step", 1, screen(), Some(r#"{"n":1}"#), None);
+    let second = entry("computer_use.step", 2, screen(), Some(r#"{"n":2}"#), None);
     let (router, watcher) = world(vec![page(vec![first, second])]);
     let (front, run) = conversation_and_run(&router).await;
     perform_in(&router, &run, look(vec![]))
@@ -265,7 +265,7 @@ async fn the_apps_history_is_read_about_the_conversation_and_stays_untrusted() {
     assert_eq!(
         *query,
         EntriesQuery {
-            kinds: vec![KindPattern::parse("cua.*").expect("pattern")],
+            kinds: vec![KindPattern::parse("computer_use.*").expect("pattern")],
             about: session_thing(&front),
             after: None,
             limit: Count(200),

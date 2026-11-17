@@ -156,7 +156,7 @@ impl Outlet for Channel {
     }
 
     fn note(&mut self, note: computer_use_run::StepNote) {
-        eprintln!("computer_use_daemon: {note}");
+        eprintln!("bardo-computer-use: {note}");
     }
 }
 

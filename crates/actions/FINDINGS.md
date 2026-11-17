@@ -295,8 +295,8 @@ Built in the w4-actions fill (each with tests on a private bus, a scripted infer
 5. **A missing app is `AppFault::Unavailable`** (ask 105): `call_step` turns it into `CallRefusal::AppUnavailable`, and
    `bardo-do` exits 6 (the end-to-end test installs the Files manifest and runs no Files app). **`serve(router, config)`**
    takes the configuration (ask 106).
-6. **A computer-use run is rebuilt on restart** (ask 63): `companiond::recover` reads `cua.run.started`, `cua.asked`,
-   `cua.confirmed`, `cua.taken_over`, `cua.handed_back` and `cua.run.finished` as `ReplayWhat::Run`, by the words of
+6. **A computer-use run is rebuilt on restart** (ask 63): `companiond::recover` reads `computer_use.run.started`, `computer_use.asked`,
+   `computer_use.confirmed`, `computer_use.taken_over`, `computer_use.handed_back` and `computer_use.run.finished` as `ReplayWhat::Run`, by the words of
    `computer-use-bus`'s `ComputerUseRecord` (the actions service names no computer-use type); a run whose start is older than the window says nothing.
 7. **`tool_schema` routes its text, integer and choice leaves through the model layer's `Shape`** (ask 43); the snapshot is
    unchanged. Entities, handles, dates and the rest stay hand-written: `Shape` has no entity-or-handle form, and a date
@@ -504,7 +504,7 @@ Interface asks left after the w5 fill, as the f4-actions fill leaves them (the f
 - The accounts service: the two effect classes (item 4 of the w5 fill).
 - Bardo: `mcp.enabled` (item 3 of the w5 fill): until the settings row exists the edge reads its own
   `actions-mcp.toml`.
-- The computer-use daemon: use `gate_check_watched`, open its run's session, and have `cua.run.start` answer the session it opened.
+- The computer-use daemon: use `gate_check_watched`, open its run's session, and have `computer_use.run.start` answer the session it opened.
 - The memory service: let `Caller::Router` ask `MemoryRequest::Spaces` (see the f4-actions fill, item 5).
 - A recent entry whose label is untrusted comes without a body (a message carrying what a worker read, a narrated episode):
   a restart falls back to the trusted skeleton events; nothing more can be rebuilt from them.
@@ -642,8 +642,8 @@ marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), an
    hand-written `serde_json` (ask 14): their records are not `ValueSchema`s.
 3. **computer use `computer-use-bus`** exists: `companiond::recover` reads a run's records from `Recent` as
    `ReplayWhat::Run` by the words of `ComputerUseRecord`'s serde form and names no computer-use type; the strings
-   it reads (`cua.run.started`, `cua.asked`, `cua.confirmed`, `cua.taken_over`, `cua.handed_back`,
-   `cua.run.finished`, and the `run`, `space` and `outcome.kind` fields) are pinned by a test.
+   it reads (`computer_use.run.started`, `computer_use.asked`, `computer_use.confirmed`, `computer_use.taken_over`, `computer_use.handed_back`,
+   `computer_use.run.finished`, and the `run`, `space` and `outcome.kind` fields) are pinned by a test.
 4. voice.md section 3.4 (the accounts service's speech items) is all present in `inference-core`
    (`TranscribeBegin`, `SpeakRequest`, `AudioFrame`, `HeardDelta`, `ClientFrame::{Audio,
    EndOfAudio}`, `Readiness`): nothing is asked of accounts for voice.

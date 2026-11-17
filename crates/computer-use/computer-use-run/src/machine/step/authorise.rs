@@ -150,7 +150,7 @@ pub(super) fn conclude(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
             );
         }
         (FinishOutcome::Done, SuccessCheck::ModelSays) => {
-            finish(run, fx, ComputerUseOutcome::Done, &said)
+            finish(run, fx, ComputerUseOutcome::Done, &said);
         }
         (FinishOutcome::Done, SuccessCheck::TreeHas(selector) | SuccessCheck::Both(selector)) => {
             enter(run, fx, RunPhase::Verifying(n));

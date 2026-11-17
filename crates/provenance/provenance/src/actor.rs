@@ -71,7 +71,7 @@ pub enum AgentRole {
     /// The quarantined reader: sees untrusted content, acts on nothing.
     Reader,
     /// A computer-use run.
-    #[serde(rename = "cua")]
+    #[serde(rename = "computer_use")]
     ComputerUse {
         /// The run.
         run: RunId,
@@ -135,7 +135,7 @@ slug_enum! {
         /// [`Actor::Companion`] as planner, reader, worker or helper.
         Companion = "companion",
         /// [`Actor::Companion`] as a computer-use run.
-        ComputerUse = "cua",
+        ComputerUse = "computer_use",
         /// [`Actor::Mcp`].
         Mcp = "mcp",
         /// [`Actor::Acp`].

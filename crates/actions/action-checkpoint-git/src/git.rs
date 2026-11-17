@@ -46,7 +46,7 @@ const HARDENING: [(&str, &str); 5] = [
 /// Restore points of a folder that is in a git repository, kept in a repository of the actions service's own.
 ///
 /// Every point is a commit with no parent, made from a private index (a file under `index_dir`,
-/// one set per session), kept under `refs/docket/checkpoints/<session>/<n>` in `shadow.git`
+/// one set per session), kept under `refs/bardo/checkpoints/<session>/<n>` in `shadow.git`
 /// under `index_dir`. The folder's own `.git` is never read by git: its config, hooks and
 /// attributes belong to whoever can write the folder. The person's own index, HEAD, branches and
 /// stash are never named; only `apply` writes files of the folder.

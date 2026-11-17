@@ -46,45 +46,6 @@ const WORDS: [&str; 22] = [
 /// They are not checked inside `.rs` files (a name or a `Cargo.toml` line is still checked).
 const ENGLISH_IN_SOURCE: [&str; 1] = ["detent"];
 
-/// Phrases that keep a retired word on purpose, because the word is part of what is already
-/// stored on a person's computer: the audit record kinds and the area name in the memory event
-/// log, the actor slug, the checkpoint refs and plan hash, the keyring service and namespace names
-/// the key wrap of the test keys, the memory file and export format tags, the memory key
-/// schema, and the inputs of golden tests that pin them. A hit inside one of these phrases is not reported.
-const KEPT_STORED_FORMS: [&str; 31] = [
-    "\"cua\"",
-    "cua\\\"",
-    "cua.run.",
-    "cua.step",
-    "cua.asked",
-    "cua.confirmed",
-    "cua.taken_over",
-    "cua.handed_back",
-    "cua.procedure.",
-    "cua.screen.",
-    "cua.*",
-    "\"docket\"",
-    "\"docket.",
-    "refs/docket",
-    "docket@localhost",
-    "docket restore point",
-    "docket-restore-plan-v1",
-    "\"porter\"",
-    "`porter`",
-    "porter-parts:",
-    "porter.",
-    "porter/cloud/password",
-    "almanac test-keys: not a secret.",
-    "\"cua.*\"",
-    "quire-memory",
-    "quire-memory-export-1",
-    "quire-memory-export",
-    "org.quire.Memory.SpaceKey",
-    "org.quire.Mail",
-    "org.quire.Files",
-    "row(\"author\", \"Quire\")",
-];
-
 /// The parts of one name: split at `_`, `-` and digits, then at camel-case humps, lower-cased.
 fn parts(name: &str) -> Vec<String> {
     let mut out = Vec::new();
@@ -149,7 +110,7 @@ fn names(text: &str) -> Vec<Range<usize>> {
 }
 
 /// The retired words in `text`, each with the name it was found in. `in_source` also lets the
-/// words that are English pass and keeps the phrases that name stored forms.
+/// words that are English pass.
 fn hits(text: &str, in_source: bool) -> Vec<(String, &'static str)> {
     let mut found = Vec::new();
     for range in names(text) {
@@ -161,21 +122,10 @@ fn hits(text: &str, in_source: bool) -> Vec<(String, &'static str)> {
             if in_source && ENGLISH_IN_SOURCE.contains(word) {
                 continue;
             }
-            if in_source && kept_by_phrase(text, &range) {
-                continue;
-            }
             found.push((name.to_owned(), *word));
         }
     }
     found
-}
-
-/// Whether the name at `range` lies inside one of the phrases that keep a stored form.
-fn kept_by_phrase(text: &str, range: &Range<usize>) -> bool {
-    KEPT_STORED_FORMS.iter().any(|phrase| {
-        text.match_indices(phrase)
-            .any(|(at, _)| at <= range.start && range.end <= at + phrase.len())
-    })
 }
 
 /// Whether the `Cargo.toml` line `line`, under table `table`, is one the check reads: a
@@ -270,17 +220,6 @@ mod tests {
             .is_empty()
         );
         assert!(words("TransportError and ExportError", true).is_empty());
-    }
-
-    #[test]
-    fn a_kept_stored_form_is_not_a_hit() {
-        assert!(words("kind(\"cua.run.started\")", true).is_empty());
-        assert!(words("const REF: &str = \"refs/docket/checkpoints\";", true).is_empty());
-        assert!(words("Namespace::parse(\"porter.accountd\")", true).is_empty());
-        assert_eq!(
-            words("let docket = 1; // docket.call", true),
-            ["docket", "docket"]
-        );
     }
 
     #[test]

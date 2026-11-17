@@ -1,5 +1,5 @@
 ---
-format: quire-memory 1
+format: bardo-memory 1
 topic: people/sam-lee
 title: Sam Lee
 ---

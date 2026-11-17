@@ -212,8 +212,10 @@ async fn serve_as<S: Seams>(
     })
 }
 
-/// Serves the computer-use daemon on the session bus until the bus goes away, naming callers by `table` (the
-/// caller reads `computer-use-callers.toml`, with [`crate::read_callers`], from its own environment).
+/// Serves the computer-use daemon on the session bus until the bus goes away.
+///
+/// Callers are named by `table` (the caller reads `computer-use-callers.toml`, with
+/// [`crate::read_callers`], from its own environment).
 ///
 /// # Errors
 ///

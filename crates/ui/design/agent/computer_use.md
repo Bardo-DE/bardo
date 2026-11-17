@@ -440,7 +440,7 @@ pub enum ComputerUseSignal { StateChanged(RunStateSlug), StepStarted(StepIndex),
 
 ### 3.6 Event-log records (payloads; storage is **memory**'s `eventlog`) — freeze now
 
-Actor is `Actor::Companion(ComputerUseRun(RunId))`. The kind slug is the serde tag (`cua.run.started`, …). No pixels and no thought text are stored. A thought becomes a digest; a frame becomes a digest and a size.
+Actor is `Actor::Companion(ComputerUseRun(RunId))`. The kind slug is the serde tag (`computer_use.run.started`, …). No pixels and no thought text are stored. A thought becomes a digest; a frame becomes a digest and a size.
 
 ```rust
 pub enum ComputerUseRecord {
@@ -470,7 +470,7 @@ The file is `procedures/<app-id>/<slug>.md` in the Space's memory folder (memory
 procedure = "org.mozilla.firefox/download-invoice"
 app = "org.mozilla.firefox"
 created = "2026-10-02T10:00:00Z"
-from_runs = ["ev:…"]                 # EventIds of cua.run.started
+from_runs = ["ev:…"]                 # EventIds of computer_use.run.started
 params = [{ slot = "month", ty = "text" }]     # slots, never stored values
 effects = ["undoable_write"]
 replay = "ask_each"                  # ask_each | pinned (user only)
@@ -609,7 +609,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 
 **`computer-use-run`**
 - `wire_bodies_round_trip`: every `ComputerUse1` body and every `ComputerUseRecord` variant survives serde, with `kind`/`v` tags and the vocab envelope.
-- `record_kind_slugs_are_stable`: a table of variant → `cua.run.started` and the rest.
+- `record_kind_slugs_are_stable`: a table of variant → `computer_use.run.started` and the rest.
 - `run_transitions_table`: one row per §4 line; asserts the next phase and the exact effects list.
 - `finished_ignores_every_input`.
 - `pause_drops_queue_and_resumes_with_fresh_observation`: the queue length goes from k to 0, and Resume emits Capture.

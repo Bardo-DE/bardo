@@ -124,14 +124,14 @@ The actions service `InProcess` feature ask (it is behind `in_process`), and the
 - ~~**the actions router / spec:** no one can open the session a run's steps are ruled in. `Gate.Check`
   finds the session whose actor is `Companion { role: ComputerUse { run } }` and answers `Halted(Any)`
   without it; `Session.Open` is for the launcher, field and companion roles (not computer use), and the run
-  id is minted by the computer-use daemon after `cua.run.start`. The computer-use daemon's tests open the session as the companion does,
+  id is minted by the computer-use daemon after `computer_use.run.start`. The computer-use daemon's tests open the session as the companion does,
   after the id is known, and the first `Gate.Check` of a real run races that. Ask: let the computer-use role
   open the session of its own run (`Session.Open { agent: ComputerUse { run } }`, only for a run it started),
-  or have `cua.run.start`'s perform open it and return both. `ComputerUseTask.session`, `Message.Send` and
+  or have `computer_use.run.start`'s perform open it and return both. `ComputerUseTask.session`, `Message.Send` and
   every record carry that session, so the same answer fixes the sender of the reports (today a
   report sent in the planner's session would go out as the planner). ~~ Closed: the computer-use role opens its run's session (the actions service ask 124) and the computer-use daemon does it before the first check (ask 149).
 - **The actions service `Run.Perform` / Intents1 XML:** `inv.actor` carries the planner's session, which
-  `cua.run.start` uses as the task's session until the ask above is settled (ask 62: any copy of
+  `computer_use.run.start` uses as the task's session until the ask above is settled (ask 62: any copy of
   the XML gains `session` on `Run.Perform` and `app` on `Context.Current`).
 - **The accounts service `inference-core` / the computer-use daemon `Seams`:** a run holds a model session (`ComputerUseBegin` once, then
   steps), but `Seams` has one `Model`. The supervisor therefore lets a run hold the model for as
@@ -154,7 +154,7 @@ The actions service `InProcess` feature ask (it is behind `in_process`), and the
 - `computer-use-desktop` as the base crate; `Digest32` for `FrameDigest` and `ThoughtDigest`; `Ms`, `Stamp`
   (the computer-use daemon clock, never wall time).
 - The run reports `Progress` only while it waits for the person (a question, a pause).
-- `cua.run.start` returns the run id once the run has begun (`latency = long`: it waits for the
+- `computer_use.run.start` returns the run id once the run has begun (`latency = long`: it waits for the
   consent and the lease); its report arrives as a message. Its manifest is `reach = hidden` while
   `computer_use.enabled = off` and `offered` once on (`manifest_for`).
 - `ComputerUse1` caller classes `Router`, `Companion`, `Shell`, `Other`, derived from the process behind the
@@ -308,7 +308,7 @@ the machine under it. What was decided:
   planner's in `ComputerUseTask.session` (so records, `Message.Send` and the report go out as the run). A router
   that will not open it makes the start `NotPermitted` and the lease claim is released. `FakePdp` opens
   `s-1` (or `opening(session)`), records `opened()` and `closes()`, and `Verdict::AskAndHang` leaves a
-  confirmation up. `cua.run.start` still answers the run's id (the planner's handle on it, and what
+  confirmation up. `computer_use.run.start` still answers the run's id (the planner's handle on it, and what
   `ComputerUse1` calls name); the session is `Supervisor::view(run).task.session`. The asking session stays in
   `ComputerUseTask.conversation` (and `RunStarted`); every record names it as a `Subject` thing
   (`org.bardo.Companion` / `companion.session`, as the actions service's log does) and the app as a `Source` thing
@@ -589,7 +589,7 @@ what the model is about to be shown, each turn, before the model is called.
     `Observation::withheld` (never serialised) for the check alone: an instruction or hidden
     characters in one is still found, reported as that reason plus `Reason::Unseen` (event-log
     kind `unseen_text`, which is never alone). Below the bottom edge and unknown bounds stay.
-- **What a finding does.** The run records `cua.screen.suspicious` (kinds only, never the text) and
+- **What a finding does.** The run records `computer_use.screen.suspicious` (kinds only, never the text) and
   pauses with the question "The screen shows text that looks like instructions for the assistant.
   Continue?" (or "...text with characters hidden in it. Continue?" when hidden characters are all
   there is), plus one line for hidden or unseen text and one short quoted excerpt, labelled as
@@ -682,7 +682,7 @@ needs: the actions pin bump, `agent-reader` in `[workspace.dependencies]`, and t
 - A stored step does not keep whether the screen changed (the record's `effect` is the action's
   class, not a look), so an earlier attempt shows "no visible change" only for a step the run
   refused for lack of progress. The run's own stall report knows more (`RunTrack.tried` has the
-  look after each action). Closing the gap means a field on `cua.step`.
+  look after each action). Closing the gap means a field on `computer_use.step`.
 - The digest reads whatever the router hands over (the newest 200 records of the conversation); a
   conversation with more runs than that loses its oldest attempts first.
 

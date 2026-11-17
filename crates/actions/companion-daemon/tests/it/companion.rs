@@ -142,7 +142,7 @@ async fn restart_rebuilds_the_front_and_the_roster_from_recent_with_bodies() {
     let source = Scripted::new(Ok(vec![
         // Newest first, as `Recent` answers; a kind the rebuild does not read is skipped, and so
         // is an event whose body is gone.
-        entry(3, "docket.call", 3, Some("{}".into())),
+        entry(3, "actions.call", 3, Some("{}".into())),
         entry(2, "companion.session.closed", 2, None),
         entry(1, "companion.session.opened", 1, Some(opened(&task))),
     ]));
@@ -166,12 +166,12 @@ async fn restart_rebuilds_the_front_and_the_roster_from_recent_with_bodies() {
             "companion.session.*",
             "companion.message",
             "companion.episode",
-            "cua.run.started",
-            "cua.asked",
-            "cua.confirmed",
-            "cua.taken_over",
-            "cua.handed_back",
-            "cua.run.finished",
+            "computer_use.run.started",
+            "computer_use.asked",
+            "computer_use.confirmed",
+            "computer_use.taken_over",
+            "computer_use.handed_back",
+            "computer_use.run.finished",
         ]
     );
 }
@@ -210,16 +210,19 @@ fn run_record(kind: &str, v: &serde_json::Value) -> String {
 #[test]
 fn a_computer_use_run_is_rebuilt_from_its_area_records() {
     let started = run_record(
-        "cua.run.started",
+        "computer_use.run.started",
         &serde_json::json!({ "run": "r-3", "session": "s-2", "space": "work", "app": "org.example.Browser" }),
     );
-    let asked = run_record("cua.asked", &serde_json::json!({ "run": "r-3", "n": 4 }));
+    let asked = run_record(
+        "computer_use.asked",
+        &serde_json::json!({ "run": "r-3", "n": 4 }),
+    );
     let rows = |last: &str, body: String| {
         vec![
             entry(4, last, 40, Some(body)),
-            entry(3, "cua.asked", 30, Some(asked.clone())),
-            entry(2, "cua.step", 20, Some("{}".into())),
-            entry(1, "cua.run.started", 10, Some(started.clone())),
+            entry(3, "computer_use.asked", 30, Some(asked.clone())),
+            entry(2, "computer_use.step", 20, Some("{}".into())),
+            entry(1, "computer_use.run.started", 10, Some(started.clone())),
         ]
     };
     let state_after = |last: &str, body: String| {
@@ -234,52 +237,52 @@ fn a_computer_use_run_is_rebuilt_from_its_area_records() {
     };
     let finished = |outcome: serde_json::Value| {
         run_record(
-            "cua.run.finished",
+            "computer_use.run.finished",
             &serde_json::json!({ "run": "r-3", "outcome": outcome }),
         )
     };
     let rows_expected: [(&str, String, RosterState); 7] = [
         (
-            "cua.confirmed",
+            "computer_use.confirmed",
             run_record(
-                "cua.confirmed",
+                "computer_use.confirmed",
                 &serde_json::json!({ "run": "r-3", "n": 5 }),
             ),
             RosterState::Working,
         ),
         (
-            "cua.taken_over",
+            "computer_use.taken_over",
             run_record(
-                "cua.taken_over",
+                "computer_use.taken_over",
                 &serde_json::json!({ "run": "r-3", "n": 5 }),
             ),
             RosterState::Paused,
         ),
         (
-            "cua.handed_back",
+            "computer_use.handed_back",
             run_record(
-                "cua.handed_back",
+                "computer_use.handed_back",
                 &serde_json::json!({ "run": "r-3", "n": 6 }),
             ),
             RosterState::Working,
         ),
         (
-            "cua.run.finished",
+            "computer_use.run.finished",
             finished(serde_json::json!({ "kind": "done" })),
             RosterState::Done,
         ),
         (
-            "cua.run.finished",
+            "computer_use.run.finished",
             finished(serde_json::json!({ "kind": "failed", "v": "no_progress" })),
             RosterState::Failed,
         ),
         (
-            "cua.run.finished",
+            "computer_use.run.finished",
             finished(serde_json::json!({ "kind": "budget_out", "v": "steps" })),
             RosterState::Failed,
         ),
         (
-            "cua.run.finished",
+            "computer_use.run.finished",
             finished(serde_json::json!({ "kind": "cancelled", "v": "user" })),
             RosterState::Cancelled,
         ),
@@ -288,7 +291,7 @@ fn a_computer_use_run_is_rebuilt_from_its_area_records() {
         assert_eq!(state_after(kind, body.clone()), want, "{kind} {body}");
     }
     // With nothing after the question, the run is waiting for the person.
-    let only_asked = replay_of(&rows("cua.asked", asked.clone())).expect("events");
+    let only_asked = replay_of(&rows("computer_use.asked", asked.clone())).expect("events");
     assert_eq!(recover_events(&only_asked), RosterState::NeedsYou);
 }
 
@@ -305,15 +308,15 @@ fn recover_events(events: &[agent_loop::ReplayEvent]) -> RosterState {
 #[test]
 fn a_run_whose_start_is_older_than_the_window_says_nothing_and_a_broken_record_is_a_fault() {
     let finished = run_record(
-        "cua.run.finished",
+        "computer_use.run.finished",
         &serde_json::json!({ "run": "r-9", "outcome": { "kind": "done" } }),
     );
     assert_eq!(
-        replay_of(&[entry(1, "cua.run.finished", 5, Some(finished))]).expect("events"),
+        replay_of(&[entry(1, "computer_use.run.finished", 5, Some(finished))]).expect("events"),
         vec![]
     );
-    for body in ["{\"nope\":1}", "{\"kind\":\"cua.asked\",\"v\":{}}"] {
-        let bad = vec![entry(1, "cua.asked", 1, Some(body.into()))];
+    for body in ["{\"nope\":1}", "{\"kind\":\"computer_use.asked\",\"v\":{}}"] {
+        let bad = vec![entry(1, "computer_use.asked", 1, Some(body.into()))];
         assert_eq!(replay_of(&bad), Err(ReplayFault::Malformed), "{body}");
     }
 }

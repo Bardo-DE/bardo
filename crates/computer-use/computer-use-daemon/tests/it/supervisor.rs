@@ -79,12 +79,12 @@ async fn end_to_end_scripted_run_done() {
     assert_eq!(
         kinds,
         [
-            "cua.run.started",
-            "cua.asked",
-            "cua.confirmed",
-            "cua.step",
-            "cua.step.seen",
-            "cua.run.finished"
+            "computer_use.run.started",
+            "computer_use.asked",
+            "computer_use.confirmed",
+            "computer_use.step",
+            "computer_use.step.seen",
+            "computer_use.run.finished"
         ]
     );
     let performed = sup
@@ -338,8 +338,14 @@ async fn pause_resume_take_over_and_hand_back_move_a_run_through_its_phases() {
         .iter()
         .map(computer_use_bus::ComputerUseRecord::kind)
         .collect();
-    assert!(kinds.contains(&"cua.taken_over".to_owned()), "{kinds:?}");
-    assert!(kinds.contains(&"cua.handed_back".to_owned()), "{kinds:?}");
+    assert!(
+        kinds.contains(&"computer_use.taken_over".to_owned()),
+        "{kinds:?}"
+    );
+    assert!(
+        kinds.contains(&"computer_use.handed_back".to_owned()),
+        "{kinds:?}"
+    );
 }
 
 #[tokio::test(start_paused = true)]

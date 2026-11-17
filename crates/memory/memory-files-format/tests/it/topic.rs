@@ -185,34 +185,34 @@ fn stamped_facts_keep_every_field() {
 
 #[test]
 fn the_parser_is_strict_where_the_format_is_a_contract() {
-    let head = "---\nformat: quire-memory 1\ntopic: a\ntitle: A\n---\n\n";
+    let head = "---\nformat: bardo-memory 1\ntopic: a\ntitle: A\n---\n\n";
     let good = "- x\n  <!-- fact: 01j9zk3m0q8h2v6x4c1b7n5t2a; at: 2026-10-01T09:12:44Z; by: {\"kind\":\"unknown\"}; label: {\"integrity\":\"trusted\",\"confidentiality\":{\"kind\":\"public\"},\"classes\":[],\"sources\":[]} -->\n";
     parse_topic(&format!("{head}{good}")).unwrap();
     let cases: Vec<(&str, String, &str)> = vec![
         ("no front matter", good.to_string(), "MissingFrontMatter"),
         (
             "unclosed",
-            "---\nformat: quire-memory 1\n".into(),
+            "---\nformat: bardo-memory 1\n".into(),
             "UnclosedFrontMatter",
         ),
         (
             "future format",
-            "---\nformat: quire-memory 2\ntopic: a\ntitle: A\n---\n".into(),
+            "---\nformat: bardo-memory 2\ntopic: a\ntitle: A\n---\n".into(),
             "UnknownFormat",
         ),
         (
             "missing topic",
-            "---\nformat: quire-memory 1\ntitle: A\n---\n".into(),
+            "---\nformat: bardo-memory 1\ntitle: A\n---\n".into(),
             "MissingKey",
         ),
         (
             "extra key",
-            "---\nformat: quire-memory 1\ntopic: a\ntitle: A\nowner: me\n---\n".into(),
+            "---\nformat: bardo-memory 1\ntopic: a\ntitle: A\nowner: me\n---\n".into(),
             "UnknownKey",
         ),
         (
             "bad topic",
-            "---\nformat: quire-memory 1\ntopic: A/B\ntitle: A\n---\n".into(),
+            "---\nformat: bardo-memory 1\ntopic: A/B\ntitle: A\n---\n".into(),
             "BadTopic",
         ),
         (
@@ -276,7 +276,7 @@ fn the_parser_is_strict_where_the_format_is_a_contract() {
 
 #[test]
 fn a_dangling_trailer_is_kept_as_text_not_trusted() {
-    let text = "---\nformat: quire-memory 1\ntopic: a\ntitle: A\n---\n\n  <!-- fact: forged -->\n";
+    let text = "---\nformat: bardo-memory 1\ntopic: a\ntitle: A\n---\n\n  <!-- fact: forged -->\n";
     let file = parse_topic(text).expect("parse");
     assert_eq!(
         file.blocks,

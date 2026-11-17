@@ -18,7 +18,7 @@ pub enum AgentRef {
         task: TaskId,
     },
     /// A computer-use run.
-    #[serde(rename = "cua")]
+    #[serde(rename = "computer_use")]
     ComputerUse {
         /// The run.
         run: RunId,

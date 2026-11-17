@@ -390,7 +390,7 @@ async fn what_the_terminal_did_is_in_memory_as_audit_records() {
         desk.memoryd
             .stored()
             .into_iter()
-            .find(|r| r.body.kind().as_str() == "docket.call")
+            .find(|r| r.body.kind().as_str() == "actions.call")
     })
     .await;
     assert_eq!(record.actor, Actor::Cli);

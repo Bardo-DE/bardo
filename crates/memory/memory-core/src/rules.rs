@@ -117,7 +117,7 @@ pub const FALLBACK_DAYS: DayCount = DayCount(30);
 pub struct RetentionDays {
     /// Searches and selections (`search.*`): 30.
     pub search: DayCount,
-    /// Session and computer-use records (`session.*`, `cua.*`): 30.
+    /// Session and computer-use records (`session.*`, `computer_use.*`): 30.
     pub session: DayCount,
 }
 
@@ -138,7 +138,7 @@ impl RuleSet {
     pub fn with_retention(mut self, days: &RetentionDays) -> RuleSet {
         let classes = [
             (&["search.*"][..], days.search),
-            (&["session.*", "cua.*"][..], days.session),
+            (&["session.*", "computer_use.*"][..], days.session),
             (&["policy.*", "consent.*", "memory.*"][..], AUDIT_BODY_DAYS),
         ];
         for (patterns, keep) in classes {
@@ -175,7 +175,7 @@ impl RuleSet {
                 while_source("file.*"),
                 days("session.*", 30),
                 days("companion.*", 30),
-                days("cua.*", 30),
+                days("computer_use.*", 30),
                 days("policy.*", 90),
                 days("consent.*", 90),
                 days("memory.*", 90),

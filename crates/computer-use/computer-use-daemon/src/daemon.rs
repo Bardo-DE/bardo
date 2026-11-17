@@ -124,7 +124,7 @@ pub async fn run(
     let platform = keymap::detect(keymap::HostOs::compiled(), env);
     let (keymap, problems) = crate::desktop_keymap(platform, env);
     for problem in problems {
-        eprintln!("computer_use_daemon: {problem}");
+        eprintln!("bardo-computer-use: {problem}");
     }
     let hints: Vec<String> = computer_use_run::shortcut_hint(&keymap)
         .into_iter()
@@ -133,7 +133,7 @@ pub async fn run(
         .await
         .map_err(|e| Fatal::Bus(e.to_string()))?;
     let reached = Reached::find(&config, &connection).await?;
-    eprintln!("computer_use_daemon: {}", reached.describe());
+    eprintln!("bardo-computer-use: {}", reached.describe());
     let links = Links::over(&connection, config.tier);
     let parts = SystemSeams::parts(&config, links, reached, SystemClock::start(), rules);
     let supervisor = Arc::new(Supervisor::with_hints(parts, config, hints));
@@ -145,7 +145,7 @@ pub async fn run(
     };
     let mut watched = watch_settings(&locator(&env), base);
     if let WatchState::Blind { reason } = watched.state() {
-        eprintln!("computer_use_daemon: settings are read once, not watched: {reason}");
+        eprintln!("bardo-computer-use: settings are read once, not watched: {reason}");
     }
     supervisor.adopt(&watched.current());
     let following = Arc::clone(&supervisor);
