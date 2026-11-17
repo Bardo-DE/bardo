@@ -1,6 +1,6 @@
 [package]
 name = "input-broker-daemon"
-description = "the input broker: the root service that makes the mouse gestures daemon's and the key remap daemon's virtual input devices, and no others"
+description = "The input broker: the root service that makes the mouse gestures daemon's and the key remap daemon's virtual input devices, and no others"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

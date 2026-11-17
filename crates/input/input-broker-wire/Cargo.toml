@@ -1,6 +1,6 @@
 [package]
 name = "input-broker-wire"
-description = "the input broker: the messages between the input-device service and its clients, and the fixed list of devices it will make"
+description = "The input broker: the messages between the input-device service and its clients, and the fixed list of devices it will make"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

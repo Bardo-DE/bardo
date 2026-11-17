@@ -1,7 +1,7 @@
 [package]
 publish.workspace = true
 name = "key-remap-core"
-description = "the key remap daemon's pure remap core: key vocabulary, layout tables, profiles, the layered config over strings, and Remapper::step. No device, socket, clock or file I/O, so a compositor can link it"
+description = "The key remap daemon's pure remap core: key vocabulary, layout tables, profiles, the layered config over strings, and Remapper::step. No device, socket, clock or file I/O, so a compositor can link it"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
