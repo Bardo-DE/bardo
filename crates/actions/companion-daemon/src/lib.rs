@@ -39,7 +39,7 @@ pub use agent_planner::{
 };
 pub use apps_link::AppsLink;
 pub use bell::Bell;
-pub use callers::{FILE as CALLERS_FILE, shipped as shipped_callers};
+pub use callers::{FILE as CALLERS_FILE, SYSTEM_CALLERS_VAR, shipped as shipped_callers};
 pub use companion_tasks::{
     Begun, Change, RecentSource, ReplayFault, RouterLog, RouterRecent, ServeFault, TaskRuntime,
     completion_effects, events_of, rebuild_from, recent_events, recover, replay_of, restart_query,

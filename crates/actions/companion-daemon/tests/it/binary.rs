@@ -32,6 +32,12 @@ fn companiond(dir: &Path, bus: &str) -> Daemon {
             .env("HOME", &home)
             .env("XDG_CONFIG_HOME", dir.join("config"))
             .env("XDG_CONFIG_DIRS", dir.join("none"))
+            // Never this computer's `/etc/bardo`: a system table in the scratch directory (absent,
+            // so empty: nobody has a fixed role).
+            .env(
+                companion_daemon::SYSTEM_CALLERS_VAR,
+                dir.join("system-callers.toml"),
+            )
             .env("DBUS_SESSION_BUS_ADDRESS", bus)
             .stdin(Stdio::null())
             .spawn()

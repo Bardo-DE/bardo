@@ -165,6 +165,10 @@ fn the_binary_with_no_bus_to_serve_on_says_so_and_exits_one() {
         .env("HOME", dir.path())
         .env("XDG_DATA_HOME", dir.path())
         .env("XDG_CONFIG_HOME", dir.path())
+        .env(
+            action_daemon::callers::SYSTEM_CALLERS_VAR,
+            crate::support::system::scratch(dir.path()).callers,
+        )
         .env("DBUS_SESSION_BUS_ADDRESS", nowhere)
         .output()
         .expect("runs");

@@ -115,7 +115,13 @@ impl Desk {
             "XDG_CONFIG_HOME" => Some(dir.path().join("config").display().to_string()),
             _ => None,
         };
-        let mut setup = Setup::from_env(&env).expect("the shipped configuration and the manifests");
+        // The administrator's files are the scratch directory's own, never this computer's
+        // `/etc/bardo`.
+        let system = action_daemon::SystemFiles::in_dir(&dir.path().join("system"));
+        std::fs::create_dir_all(dir.path().join("system")).expect("system dir");
+        std::fs::write(&system.callers, action_daemon::callers::SHIPPED).expect("system callers");
+        let mut setup =
+            Setup::from_env(&system, &env).expect("the shipped configuration and the manifests");
         setup.audit_every = std::time::Duration::from_millis(100);
         setup.signals.every = std::time::Duration::from_millis(30);
         setup.proc_root = ProcRoot::Honoured(dir.path().join("proc"));

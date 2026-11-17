@@ -81,7 +81,8 @@ fn the_environment_says_where_everything_is() {
         _ => None,
     };
     // No file of its own: the shipped configuration.
-    let setup = Setup::from_env(&env).expect("setup");
+    let setup =
+        Setup::from_env(&crate::support::system::scratch(home.path()), &env).expect("setup");
     assert_eq!(
         setup.config,
         action_daemon::IntentdConfig::shipped().expect("shipped")
@@ -98,7 +99,7 @@ fn the_environment_says_where_everything_is() {
         shipped.replace("org.bardo.Do", "org.bardo.Mine"),
     )
     .expect("write");
-    let own = Setup::from_env(&env).expect("setup");
+    let own = Setup::from_env(&crate::support::system::scratch(home.path()), &env).expect("setup");
     assert!(
         own.config
             .roles
@@ -108,7 +109,7 @@ fn the_environment_says_where_everything_is() {
     );
     // A file that is not a configuration stops the daemon: it is not guessed at.
     std::fs::write(folder.join("actiond.toml"), "roles = 3").expect("write");
-    Setup::from_env(&env).unwrap_err();
+    Setup::from_env(&crate::support::system::scratch(home.path()), &env).unwrap_err();
 }
 
 #[test]

@@ -18,7 +18,8 @@
 
 use crate::BusConnection;
 pub use account_callers::{
-    Caller, CallerFileError, CallerTable, Callers, ProcCallers, load_callers, table_from_toml,
+    Caller, CallerFileError, CallerTable, Callers, Override, ProcCallers, load_callers,
+    table_from_toml,
 };
 use base_xdg::Xdg;
 use caller_role_types::CallerRole;
@@ -96,6 +97,42 @@ pub fn read_table_at_in(
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<CallerTable, CallerFileError> {
     load_callers(system, &user_dir(domain, env).join(file))
+}
+
+/// The system's callers file a test build reads in place of the one under [`SYSTEM_DIR`]: the
+/// file the variable `var` names, when the daemon's own build `honour`s it (its `test-system-callers`
+/// feature), so that no test reads this computer's `/etc/bardo`.
+///
+/// A shipped build ignores the variable. Either way, a variable that is set is said once on
+/// standard error, prefixed by `daemon`, so a person who set it by mistake is told it did nothing.
+/// An empty value is the same as no value. The library reads no environment variable itself: `env`
+/// is how the daemon reads its own.
+pub fn system_override(
+    honour: bool,
+    daemon: &str,
+    var: &str,
+    env: &impl Fn(&str) -> Option<String>,
+) -> Option<PathBuf> {
+    let value = env(var)
+        .filter(|value| !value.is_empty())
+        .map(PathBuf::from);
+    match Override::choose(honour, value) {
+        Override::Unset => None,
+        Override::Honoured(file) => {
+            eprintln!(
+                "{daemon}: test system callers {}: read in place of {SYSTEM_DIR}",
+                file.display()
+            );
+            Some(file)
+        }
+        Override::Ignored(file) => {
+            eprintln!(
+                "{daemon}: {var}={} ignored: not a test build",
+                file.display()
+            );
+            None
+        }
+    }
 }
 
 /// What a method asks of its caller: the app its row names and the role the system's table gives

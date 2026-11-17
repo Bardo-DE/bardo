@@ -44,7 +44,7 @@ use companion_memory_core::QueuedSink;
 use permission_core::Floor;
 use provenance::SpaceId;
 use settings_store_fs::{Locator, WatchState};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -58,10 +58,12 @@ const PRUNE_EVERY: Duration = Duration::from_hours(24);
 const SPACES_RETRY: Duration = Duration::from_secs(10);
 
 /// What only the acceptance harness's mains choose: where callers' cgroups are read from and
-/// whether the inferd watch writes to a file.
+/// whether the inferd watch writes to a file, and which administrator's files are read.
 ///
-/// The shipped `main` passes the default (the system's `/proc`, no watch) and no environment
-/// variable can change either.
+/// The shipped `main` passes the default (the system's `/proc`, no watch, the files under
+/// `/etc/bardo`) and no environment variable can change any of them; a build with the
+/// `test-system-callers` feature reads another callers table when `BARDO_ACTIOND_SYSTEM_CALLERS`
+/// names one.
 #[derive(Debug, Clone)]
 pub struct HarnessSeams {
     /// Where callers' cgroups are read.
@@ -86,6 +88,42 @@ impl Default for HarnessSeams {
             trace: InferWatch::off(),
             floor: None,
             admin_permissions: None,
+        }
+    }
+}
+
+/// The administrator's files the daemon reads: which callers get a fixed role, the floor and the
+/// policy folder. Where they are is an input of [`Setup::from_env`], so a test names its own and
+/// never reads this computer's `/etc/bardo`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SystemFiles {
+    /// `actiond-callers.toml`: the system's table, which alone can give a fixed role.
+    pub callers: PathBuf,
+    /// The floor file; none when it is missing.
+    pub floor: PathBuf,
+    /// The folder of the administrator's policy files.
+    pub permissions: PathBuf,
+}
+
+impl SystemFiles {
+    /// The files of an installed system, under `/etc/bardo`.
+    #[must_use]
+    pub fn installed() -> Self {
+        Self {
+            callers: Path::new(action_dbus::callers::SYSTEM_DIR).join(callers::FILE),
+            floor: PathBuf::from(FLOOR_FILE),
+            permissions: PathBuf::from(ADMIN_DIR),
+        }
+    }
+
+    /// The files as an installed system names them, but under `dir`: a scratch directory is its
+    /// own system.
+    #[must_use]
+    pub fn in_dir(dir: &Path) -> Self {
+        Self {
+            callers: dir.join(callers::FILE),
+            floor: dir.join("actions-floor.toml"),
+            permissions: dir.join("permissions"),
         }
     }
 }
@@ -158,7 +196,7 @@ pub struct Setup {
     pub settings: Locator,
     /// What is kept of the exchanges with inferd (off, unless the harness's main passed a watch).
     pub trace: InferWatch,
-    /// The administrator's floor: none unless the file exists (`run_with` reads it).
+    /// The administrator's floor: none unless the file exists.
     pub floor: Floor,
     /// Where the policy files are read from, and watched.
     pub permissions: PolicyDirs,
@@ -182,13 +220,17 @@ fn state(why: PathError) -> DaemonFault {
 
 impl Setup {
     /// Reads the configuration (the first `bardo/actions/actiond.toml` of the configuration
-    /// directories, else the shipped one) and the manifests of the data directories.
+    /// directories, else the shipped one), the manifests of the data directories and the
+    /// administrator's files `system` names.
     ///
     /// # Errors
     ///
-    /// Returns a [`DaemonFault`] when a directory is not absolute, the configuration or the callers
-    /// file cannot be used, or the policy set does not load.
-    pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Result<Self, DaemonFault> {
+    /// Returns a [`DaemonFault`] when a directory is not absolute, the configuration, the callers
+    /// file or the floor cannot be used, or the policy set does not load.
+    pub fn from_env(
+        system: &SystemFiles,
+        env: &impl Fn(&str) -> Option<String>,
+    ) -> Result<Self, DaemonFault> {
         let xdg = Xdg::new(env);
         let config_home = xdg.config_home().map_err(state)?;
         let found = std::iter::once(config_home.clone())
@@ -200,7 +242,9 @@ impl Setup {
             None => IntentdConfig::shipped(),
         }
         .map_err(DaemonFault::Config)?;
-        let callers = callers::read(env).map_err(|e| DaemonFault::Callers(e.to_string()))?;
+        let callers = callers::read_at(&system.callers, env)
+            .map_err(|e| DaemonFault::Callers(e.to_string()))?;
+        let floor = read_floor(&system.floor).map_err(|e| DaemonFault::Floor(e.to_string()))?;
         let data = data_dirs(env).map_err(state)?;
         let permissions = PolicyDirs {
             data_home: data[0].clone(),
@@ -209,7 +253,7 @@ impl Setup {
                 .join("bardo")
                 .join("actions")
                 .join("permissions"),
-            admin: PathBuf::from(ADMIN_DIR),
+            admin: system.permissions.clone(),
         };
         let grants = intents_dir(&data[0]).join("grants.json");
         Ok(Self {
@@ -227,7 +271,7 @@ impl Setup {
             proc_root: ProcRoot::Unset,
             settings: action_settings_fs::locator(env),
             trace: InferWatch::off(),
-            floor: Floor::none(),
+            floor,
             permissions,
         })
     }
@@ -576,7 +620,11 @@ fn placed_by<S: Seams>(router: &Router<S>, record: &AuditRecord) -> Option<Space
 /// Returns a [`DaemonFault`] when setup fails (configuration, callers, floor or policies) or the
 /// bus fails while serving.
 pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonFault> {
-    run_with(HarnessSeams::default(), env).await
+    let seams = HarnessSeams {
+        system_callers: callers::system_override(env),
+        ..HarnessSeams::default()
+    };
+    run_with(seams, env).await
 }
 
 /// [`run`] with the seams the acceptance harness's mains choose.
@@ -589,18 +637,15 @@ pub async fn run_with(
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<(), DaemonFault> {
-    let mut setup = Setup::from_env(env)?;
+    let installed = SystemFiles::installed();
+    let files = SystemFiles {
+        callers: seams.system_callers.unwrap_or(installed.callers),
+        floor: seams.floor.unwrap_or(installed.floor),
+        permissions: seams.admin_permissions.unwrap_or(installed.permissions),
+    };
+    let mut setup = Setup::from_env(&files, env)?;
     setup.proc_root = seams.proc_root;
     setup.trace = seams.trace;
-    let floor = seams.floor.unwrap_or_else(|| PathBuf::from(FLOOR_FILE));
-    setup.floor = read_floor(&floor).map_err(|e| DaemonFault::Floor(e.to_string()))?;
-    setup.permissions.admin = seams
-        .admin_permissions
-        .unwrap_or_else(|| PathBuf::from(ADMIN_DIR));
-    if let Some(system) = &seams.system_callers {
-        setup.callers =
-            callers::read_at(system, env).map_err(|e| DaemonFault::Callers(e.to_string()))?;
-    }
     let session = dbus_kit::connect::session_from_env(env)
         .await
         .map_err(|e| DaemonFault::Serve(ServeFault::Bus(e.to_string())))?;

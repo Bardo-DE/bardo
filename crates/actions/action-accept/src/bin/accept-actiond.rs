@@ -24,8 +24,11 @@ fn main() -> ExitCode {
             action_accept::seams::INTENTD_SYSTEM_CALLERS_VAR,
         ),
         trace: action_accept::seams::trace(&env),
-        floor: None,
-        admin_permissions: None,
+        floor: action_accept::seams::system_callers(&env, action_accept::seams::INTENTD_FLOOR_VAR),
+        admin_permissions: action_accept::seams::system_callers(
+            &env,
+            action_accept::seams::INTENTD_PERMISSIONS_VAR,
+        ),
     };
     match runtime.block_on(action_daemon::run_with(seams, &env)) {
         Ok(()) => ExitCode::SUCCESS,

@@ -23,6 +23,12 @@ pub const COMPANIOND_PROC_ROOT_VAR: &str = "BARDO_COMPANIOND_PROC_ROOT";
 /// harness is its own system, and a fixed role (the shell's) comes from no file of the person's.
 pub const INTENTD_SYSTEM_CALLERS_VAR: &str = "BARDO_ACTIOND_SYSTEM_CALLERS";
 
+/// The variable that names the administrator's floor file intentd reads (`actions-floor.toml`).
+pub const INTENTD_FLOOR_VAR: &str = "BARDO_ACTIOND_FLOOR";
+
+/// The variable that names the administrator's policy folder intentd reads.
+pub const INTENTD_PERMISSIONS_VAR: &str = "BARDO_ACTIOND_ADMIN_PERMISSIONS";
+
 /// The variable that names the system's callers file companiond reads.
 pub const COMPANIOND_SYSTEM_CALLERS_VAR: &str = "BARDO_COMPANIOND_SYSTEM_CALLERS";
 
@@ -68,7 +74,7 @@ pub fn proc_root(env: &impl Fn(&str) -> Option<String>, name: &str) -> ProcRoot 
     })
 }
 
-/// The file named by the variable `name`, if the world set one: a system callers file.
+/// The file named by the variable `name`, if the world set one: a system file (a callers table, the floor).
 pub fn system_callers(env: &impl Fn(&str) -> Option<String>, name: &str) -> Option<PathBuf> {
     set(env, name).map(PathBuf::from)
 }

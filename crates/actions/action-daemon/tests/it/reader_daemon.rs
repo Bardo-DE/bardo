@@ -92,7 +92,8 @@ impl Desk {
             }
             _ => None,
         };
-        let mut setup = Setup::from_env(&env).expect("setup");
+        let mut setup =
+            Setup::from_env(&crate::support::system::scratch(dir.path()), &env).expect("setup");
         let _ = FileGrants::at(setup.grants.clone());
         setup.config = config();
         let daemon_connection = bus.connect().await;

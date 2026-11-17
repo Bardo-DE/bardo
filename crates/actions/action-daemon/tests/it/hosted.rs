@@ -94,7 +94,8 @@ impl Desk {
             }
             _ => None,
         };
-        let mut setup = Setup::from_env(&env).expect("setup");
+        let mut setup =
+            Setup::from_env(&crate::support::system::scratch(dir.path()), &env).expect("setup");
         // The person has let the companion use both built-ins, always.
         let grants = FileGrants::at(setup.grants.clone());
         for (n, owner) in ["org.bardo.Memory", "org.bardo.Companion"]

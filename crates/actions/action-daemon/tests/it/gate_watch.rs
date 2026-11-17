@@ -84,7 +84,8 @@ impl Desk {
             }
             _ => None,
         };
-        let mut setup = Setup::from_env(&env).expect("setup");
+        let mut setup =
+            Setup::from_env(&crate::support::system::scratch(dir.path()), &env).expect("setup");
         let config = IntentdConfig {
             roles: BTreeMap::from([
                 (CallerRole::ComputerUse, vec![app(COMPUTER_USE_DAEMON)]),

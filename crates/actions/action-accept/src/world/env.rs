@@ -107,6 +107,19 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
         "bardo-actiond" => vec![
             (crate::seams::INTENTD_PROC_ROOT_VAR, proc_root),
             (crate::seams::INTENTD_SYSTEM_CALLERS_VAR, system("actiond")),
+            // No floor and no administrator's policies: the harness's own system has none, and
+            // this computer's `/etc/bardo` is never read.
+            (
+                crate::seams::INTENTD_FLOOR_VAR,
+                dir.join("system")
+                    .join("actions-floor.toml")
+                    .display()
+                    .to_string(),
+            ),
+            (
+                crate::seams::INTENTD_PERMISSIONS_VAR,
+                dir.join("system").join("permissions").display().to_string(),
+            ),
         ],
         "bardo-companiond" => vec![
             (crate::seams::COMPANIOND_PROC_ROOT_VAR, proc_root),

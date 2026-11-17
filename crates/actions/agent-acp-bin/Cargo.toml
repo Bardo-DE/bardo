@@ -72,10 +72,15 @@ zbus = {workspace = true, features = ["tokio"]}
 dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
+agent-acp-bin = {path = ".", features = ["test-system-callers"]}
 action-fake = {path = "../action-fake"}
 tempfile = { workspace = true }
 
 [features]
+# TEST ONLY, off by default and never in dist: `BARDO_AGENT_ACP_SYSTEM_CALLERS=<file>` makes the program read that file as the
+# system's callers table, so no test reads this computer's `/etc/bardo`. Without this feature the variable is ignored (with a
+# line on standard error). The crate's own tests turn it on (the dev-dependency on itself).
+test-system-callers = []
 # What the acceptance harness needs to host an agent in its own process (`harness`). Only dev-dependencies
 # and the harness crates turn it on; no packaged binary does.
 testing = []

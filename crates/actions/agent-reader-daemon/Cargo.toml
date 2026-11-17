@@ -35,6 +35,7 @@ action-log = {path = "../action-log"}
 dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
+agent-reader-daemon = {path = ".", features = ["test-system-callers"]}
 base-ids = { path = "../../base/base-ids" }
 base-testkit = { path = "../../base/base-testkit" }
 account-match = {path = "../../accounts/account-match"}
@@ -49,6 +50,12 @@ action-context = {path = "../action-context"}
 action-router = {path = "../action-router"}
 action-wire = {path = "../action-wire"}
 account-core = {path = "../../accounts/account-core"}
+
+[features]
+# TEST ONLY, off by default and never in dist: `BARDO_READERD_SYSTEM_CALLERS=<file>` makes the program read that file as the
+# system's callers table, so no test reads this computer's `/etc/bardo`. Without this feature the variable is ignored (with a
+# line on standard error). The crate's own tests turn it on (the dev-dependency on itself).
+test-system-callers = []
 
 [lints]
 workspace = true

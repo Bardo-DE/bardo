@@ -147,7 +147,8 @@ impl Desk {
             }
             _ => None,
         };
-        let mut setup = Setup::from_env(&env).expect("setup");
+        let mut setup =
+            Setup::from_env(&crate::support::system::scratch(dir.path()), &env).expect("setup");
         // Nothing of the real system's callers file: this test calls no one's methods.
         setup.callers = action_dbus::callers::CallerTable::default();
         prefill(&setup.grants);
