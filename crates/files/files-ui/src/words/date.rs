@@ -6,6 +6,7 @@ use jiff::Zoned;
 ///
 /// quire has no date formatter yet (the relative "Today, 14:03" Finder shows is its to add), so
 /// the column writes the full date.
+#[must_use]
 pub fn date_words(at: &Zoned) -> String {
     at.strftime("%Y-%m-%d %H:%M").to_string()
 }

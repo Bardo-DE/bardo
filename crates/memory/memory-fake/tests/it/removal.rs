@@ -29,7 +29,11 @@ fn home_of(name: &str) -> SpaceId {
 }
 
 fn store(service: &Service, space: &SpaceId) -> Store<SharedVault> {
-    Store::new(service.backend().vault_of(space), space.clone(), Offset::UTC)
+    Store::new(
+        service.backend().vault_of(space),
+        space.clone(),
+        Offset::UTC,
+    )
 }
 
 fn fact(n: u8, by: Actor, label: Label) -> Fact {
