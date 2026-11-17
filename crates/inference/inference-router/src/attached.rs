@@ -30,7 +30,7 @@ pub mod model;
 pub mod not_ready;
 pub mod target;
 
-pub use config::{Attached, AttachedEntry, AttachedError, Place, Reach};
+pub use config::{Attached, AttachedEntry, AttachedError, Reach, Site};
 pub use key::{KeyFile, KeyFileProblem};
 pub use model::{engine_id, local_model};
 pub use not_ready::NotReady;

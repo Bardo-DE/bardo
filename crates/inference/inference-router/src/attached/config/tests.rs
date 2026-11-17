@@ -102,7 +102,7 @@ fn an_entry_names_one_target_and_where_the_data_goes() {
             "socket = \"/run/user/1000/lab.sock\"\nwhere = \"my-network\"",
             Ok((
                 Reach::Socket("/run/user/1000/lab.sock".into()),
-                Place::MyNetwork,
+                Site::MyNetwork,
             )),
         ),
         (
@@ -112,7 +112,7 @@ fn an_entry_names_one_target_and_where_the_data_goes() {
                     host: Ipv4Addr::LOCALHOST,
                     port: Port(8000),
                 },
-                Place::ThisDevice,
+                Site::ThisDevice,
             )),
         ),
         (

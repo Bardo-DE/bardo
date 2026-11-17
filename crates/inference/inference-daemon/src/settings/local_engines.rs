@@ -6,7 +6,7 @@
 use super::missing::{engine_name, serves, state};
 use crate::installed::{Installed, Standing};
 use crate::supervise::Programs;
-use engine_probe::Place;
+use engine_probe::Origin;
 use engine_spec::{ENGINES, engine};
 use inference_core::Slot;
 use inference_dbus::inference::{EnginePlace, EngineState, LocalEngine};
@@ -84,12 +84,12 @@ impl LocalEngines {
             Standing::Ready(found) => {
                 row.state = EngineState::Found(found.program);
                 row.version = found.version;
-                row.place = Some(place_of(found.place));
+                row.place = Some(place_of(found.origin));
             }
             Standing::Changed(found) => {
                 row.state = EngineState::Changed(found.program);
                 row.version = found.version;
-                row.place = Some(place_of(found.place));
+                row.place = Some(place_of(found.origin));
             }
             Standing::NotInstalled => {}
         }
@@ -97,12 +97,12 @@ impl LocalEngines {
     }
 }
 
-fn place_of(place: Place) -> EnginePlace {
+fn place_of(origin: Origin) -> EnginePlace {
     match place {
-        Place::Package => EnginePlace::Package,
-        Place::System => EnginePlace::System,
-        Place::Person => EnginePlace::Person,
-        Place::Pointed => EnginePlace::Pointed,
+        Origin::Package => EnginePlace::Package,
+        Origin::System => EnginePlace::System,
+        Origin::Person => EnginePlace::Person,
+        Origin::Pointed => EnginePlace::Pointed,
     }
 }
 

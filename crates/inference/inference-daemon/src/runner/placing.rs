@@ -4,9 +4,10 @@
 //! the person's own request that lost its engine before it had said anything.
 
 use super::{Job, Seating};
+use crate::admit::Standing;
 use crate::admit::{Priority, Seats};
 use crate::failure::{EngineView, Retry, Spoke, Tried, explain, log_line, retry};
-use crate::seats::{Pass, Standing, seats_in};
+use crate::seats::{Pass, seats_in};
 use engine_spec::engine;
 use engine_supervisor::EngineId;
 use inference_core::{

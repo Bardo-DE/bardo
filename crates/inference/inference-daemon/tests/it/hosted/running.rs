@@ -5,7 +5,7 @@ use super::*;
 use crate::hosting::bus::within;
 use account_capability::ModelId;
 use account_dbus::Details;
-use inference_daemon::{Attached, Place, Reach};
+use inference_daemon::{Attached, Reach, Site};
 use inference_dbus::inference::{
     InferenceProxy, RunState, RunningModel, RunningRowError, running_from_dbus,
 };
@@ -133,7 +133,7 @@ async fn a_model_inferd_does_not_run_is_refused_in_plain_words() {
             id: ModelId::parse(entries::ATTACHED).expect("id"),
             reach: Reach::Socket(scratch.join("lab.sock")),
             key_file: None,
-            place: Place::ThisDevice,
+            place: Site::ThisDevice,
             computer: None,
         }],
         ..Plan::default()

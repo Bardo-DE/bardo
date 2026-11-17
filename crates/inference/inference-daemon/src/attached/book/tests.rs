@@ -4,13 +4,13 @@ use crate::lab::Lab;
 use account_capability::ModelId;
 use account_fake_servers::net::Bind;
 use base_testkit::Scratch;
-use inference_router::attached::config::{Attached, Place, Reach};
+use inference_router::attached::config::{Attached, Reach, Site};
 use inference_router::attached::local_model;
 use inference_router::catalog::parse_entry_text;
 use inference_router::startup::Level;
 use std::sync::Mutex;
 
-fn model_on(reach: Reach, place: Place, scratch: &Scratch) -> LocalModel {
+fn model_on(reach: Reach, place: Site, scratch: &Scratch) -> LocalModel {
     let attached = Attached {
         id: ModelId::parse(entries::ATTACHED).expect("id"),
         reach,
@@ -41,7 +41,7 @@ async fn an_engine_not_yet_looked_at_is_unavailable_and_a_look_makes_it_ready() 
         None,
     )
     .await;
-    let model = model_on(Reach::Socket(lab.socket()), Place::MyNetwork, &scratch);
+    let model = model_on(Reach::Socket(lab.socket()), Site::MyNetwork, &scratch);
     let which = model.model_ref();
     let book = AttachedBook::new(vec![model]);
     assert_eq!(book.state(&which), None);
@@ -60,7 +60,7 @@ async fn nothing_looks_between_two_opens_and_each_open_looks_once_per_engine() {
             host: std::net::Ipv4Addr::LOCALHOST,
             port: model_http::Port(lab.port()),
         },
-        Place::ThisDevice,
+        Site::ThisDevice,
         &scratch,
     );
     let book = AttachedBook::new(vec![model]);
@@ -83,7 +83,7 @@ async fn an_engine_that_goes_away_and_comes_back_is_re_probed_on_the_next_look()
     )
     .await;
     let path = lab.socket();
-    let model = model_on(Reach::Socket(path.clone()), Place::MyNetwork, &scratch);
+    let model = model_on(Reach::Socket(path.clone()), Site::MyNetwork, &scratch);
     let which = model.model_ref();
     let (log, lines) = logged();
     let book = AttachedBook::new(vec![model]).logging_to(log);

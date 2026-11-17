@@ -7,7 +7,7 @@
 //!
 //! The lock is held for a few map operations and never across an await.
 
-use crate::admit::{Admission, Lane, Place, Priority, Promoted, Seats, Ticket};
+use crate::admit::{Admission, Lane, Priority, Promoted, Seats, Standing, Ticket};
 use base_ids::Count;
 use engine_spec::engine;
 use engine_supervisor::EngineId;
@@ -16,27 +16,6 @@ use model_catalog::{EngineArg, EngineKind};
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use tokio::sync::watch;
-
-/// Where a request stands, as the request sees it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Standing {
-    /// It has a seat.
-    Seated,
-    /// It waits; `ahead` requests are served first.
-    Waiting {
-        /// How many are ahead.
-        ahead: Count,
-    },
-}
-
-impl From<Place> for Standing {
-    fn from(place: Place) -> Self {
-        match place {
-            Place::Seated => Standing::Seated,
-            Place::Waiting { ahead } => Standing::Waiting { ahead },
-        }
-    }
-}
 
 /// How many requests the engine launched with `args` takes at once.
 ///
@@ -152,7 +131,7 @@ impl Gate {
         if let Some(placed) = placed {
             inner.renumber(placed.lane);
         }
-        let standing = placed.map_or(Standing::Seated, |placed| Standing::from(placed.place));
+        let standing = placed.map_or(Standing::Seated, |placed| placed.standing);
         let (tell, listen) = watch::channel(standing);
         if let Some(placed) = placed {
             inner.tell.insert(placed.ticket, tell);

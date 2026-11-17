@@ -24,7 +24,7 @@ use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
     MessagePart, ModelRef, Role as ChatRole,
 };
-use inference_daemon::{Attached, KeyFileProblem, NotReady, Place, Reach};
+use inference_daemon::{Attached, KeyFileProblem, NotReady, Reach, Site};
 use inference_router::seams::EngineHost;
 use inference_router::startup::Cause;
 use inference_settings::Settings;
@@ -143,7 +143,7 @@ fn signal(pid: u32, signal: Signal) {
     kill_process(pid, signal).expect("signal a process this test started");
 }
 
-fn attach(reach: Reach, place: Place, key_file: Option<PathBuf>) -> Attached {
+fn attach(reach: Reach, place: Site, key_file: Option<PathBuf>) -> Attached {
     Attached {
         id: ModelId::parse(entries::ATTACHED).expect("id"),
         reach,
@@ -153,7 +153,7 @@ fn attach(reach: Reach, place: Place, key_file: Option<PathBuf>) -> Attached {
     }
 }
 
-fn on_socket(dir: &Dir, place: Place, key_file: Option<PathBuf>) -> Attached {
+fn on_socket(dir: &Dir, place: Site, key_file: Option<PathBuf>) -> Attached {
     attach(Reach::Socket(dir.socket()), place, key_file)
 }
 
@@ -250,7 +250,7 @@ fn lines(world: &World) -> String {
 async fn a_chat_streams_over_the_socket_and_nothing_is_started() {
     let dir = Dir::new();
     let lab = dir.lab(None).await;
-    let world = world(vec![on_socket(&dir, Place::ThisDevice, None)]).await;
+    let world = world(vec![on_socket(&dir, Site::ThisDevice, None)]).await;
 
     // Mail data, floor "this computer": a `this-device` engine takes it.
     let events = turn(
@@ -299,7 +299,7 @@ async fn a_chat_streams_over_a_loopback_port_too() {
         host: std::net::Ipv4Addr::LOCALHOST,
         port: model_http::Port(lab.port()),
     };
-    let world = world(vec![attach(reach, Place::ThisDevice, None)]).await;
+    let world = world(vec![attach(reach, Site::ThisDevice, None)]).await;
     let events = turn(&world, DataClass::Mail, "hello over loopback").await;
     assert_eq!(said(&events), "The lab says hello.");
     assert_eq!(lab.chats().len(), 1);
@@ -308,7 +308,7 @@ async fn a_chat_streams_over_a_loopback_port_too() {
 #[tokio::test(flavor = "multi_thread")]
 async fn each_way_an_engine_cannot_answer_is_a_typed_cause_and_the_session_is_unavailable() {
     let dir = Dir::new();
-    let world = world(vec![on_socket(&dir, Place::MyNetwork, None)]).await;
+    let world = world(vec![on_socket(&dir, Site::MyNetwork, None)]).await;
 
     // The tunnel is down: nothing is at the path.
     assert_eq!(
@@ -354,7 +354,7 @@ async fn the_bearer_is_sent_from_the_key_file_and_without_it_the_engine_says_401
     let lab = dir.lab(Some(KEY)).await;
 
     // No key file: Unauthorized, and the session is unavailable.
-    let without = world(vec![on_socket(&dir, Place::ThisDevice, None)]).await;
+    let without = world(vec![on_socket(&dir, Site::ThisDevice, None)]).await;
     assert_eq!(
         cause_of(&without).await,
         Cause::Attached(NotReady::Unauthorized { status: 401 })
@@ -367,7 +367,7 @@ async fn the_bearer_is_sent_from_the_key_file_and_without_it_the_engine_says_401
 
     // The key file, mode 0600: the probe and the chat both carry it.
     let key_file = dir.key_file(&format!("{KEY}\n"), 0o600);
-    let with = world(vec![on_socket(&dir, Place::ThisDevice, Some(key_file))]).await;
+    let with = world(vec![on_socket(&dir, Site::ThisDevice, Some(key_file))]).await;
     let events = turn(&with, DataClass::Mail, "hi").await;
     assert_eq!(said(&events), "The lab says hello.");
     let sent: Vec<_> = lab
@@ -396,7 +396,7 @@ async fn a_key_file_others_can_read_is_refused_and_no_request_carries_the_token(
     let dir = Dir::new();
     let lab = dir.lab(Some(KEY)).await;
     let key_file = dir.key_file(&format!("{KEY}\n"), 0o644);
-    let world = world(vec![on_socket(&dir, Place::ThisDevice, Some(key_file))]).await;
+    let world = world(vec![on_socket(&dir, Site::ThisDevice, Some(key_file))]).await;
     assert_eq!(
         cause_of(&world).await,
         Cause::Attached(NotReady::KeyFile(KeyFileProblem::NotPrivate {
@@ -422,7 +422,7 @@ async fn a_key_file_others_can_read_is_refused_and_no_request_carries_the_token(
 async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_the_setting_allows() {
     let dir = Dir::new();
     let lab = dir.lab(None).await;
-    let world = world(vec![on_socket(&dir, Place::MyNetwork, None)]).await;
+    let world = world(vec![on_socket(&dir, Site::MyNetwork, None)]).await;
 
     // The default setting: Mail may go to this computer only, and the lab is another machine.
     let before = turn(&world, DataClass::Mail, "private").await;
@@ -484,7 +484,7 @@ async fn an_eviction_pass_leaves_the_attached_engines_process_alive_and_still_re
             ("big-a.toml", big("big-a")),
             ("big-b.toml", big("big-b")),
         ],
-        attached: vec![on_socket(&dir, Place::MyNetwork, None)],
+        attached: vec![on_socket(&dir, Site::MyNetwork, None)],
         ..Plan::default()
     })
     .await;
@@ -642,7 +642,7 @@ async fn sigterm_to_the_real_inferd_leaves_the_attached_engines_process_alive() 
     let target = inference_daemon::Target {
         reach: Reach::Socket(dir.socket()),
         key: None,
-        place: Place::MyNetwork,
+        place: Site::MyNetwork,
         computer: None,
     };
     assert_eq!(

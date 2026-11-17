@@ -1,6 +1,6 @@
 //! Where an attached engine is and how a request to it is signed: the endpoint of one connect.
 
-use super::config::{Attached, Place, Reach};
+use super::config::{Attached, Reach, Site};
 use super::key::{KeyFile, KeyFileProblem};
 use base_secret::SecretText;
 use inference_core::ComputerName;
@@ -15,7 +15,7 @@ pub struct Target {
     /// Its bearer token's file, when it wants one.
     pub key: Option<KeyFile>,
     /// Where the data goes.
-    pub place: Place,
+    pub place: Site,
     /// The machine it runs on, when the entry names one.
     pub computer: Option<ComputerName>,
 }

@@ -58,7 +58,7 @@ mod watch;
 
 pub use agent::Agents;
 pub use attached::{
-    AddedFile, Attached, AttachedBook, Computers, KeyFileProblem, NotReady, Place, Reach, Target,
+    AddedFile, Attached, AttachedBook, Computers, KeyFileProblem, NotReady, Reach, Site, Target,
     models as attached_models, probe as probe_attached,
 };
 pub use broker::{AccountList, AccountdBroker, follow as follow_accounts};

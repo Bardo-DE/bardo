@@ -16,7 +16,7 @@ use hosting::lab::Lab;
 use hosting::rig::{Hosted, Plan, Trust, World};
 use inference_client::{ClientError, TransportError};
 use inference_core::{ComputerName, PlaceKind, PlaceRow, PlaceState, Takes};
-use inference_daemon::{Attached, Place, Reach};
+use inference_daemon::{Attached, Reach, Site};
 
 fn app(name: &str) -> AppId {
     AppId {
@@ -41,7 +41,7 @@ async fn world(lab_dir: &str, role: CallerRole, who: &str) -> (World, Lab) {
             id: ModelId::parse(entries::ATTACHED).expect("id"),
             reach: Reach::Socket(lab.socket()),
             key_file: None,
-            place: Place::MyNetwork,
+            place: Site::MyNetwork,
             computer: Some(ComputerName::parse("lab").expect("name")),
         }],
         role,
@@ -312,7 +312,7 @@ mod routing {
                 id: ModelId::parse(entries::ATTACHED).expect("id"),
                 reach: Reach::Socket(lab.socket()),
                 key_file: None,
-                place: Place::MyNetwork,
+                place: Site::MyNetwork,
                 computer: Some(ComputerName::parse("lab").expect("name")),
             }],
             policy: Policy {

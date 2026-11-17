@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 
 /// Where a found program came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Place {
+pub enum Origin {
     /// A distro package, at a fixed system path.
     Package,
     /// An install of ours for everyone.
@@ -27,7 +27,7 @@ pub struct Found {
     /// Which engine.
     pub engine: EngineKind,
     /// Where it came from.
-    pub place: Place,
+    pub origin: Origin,
     /// Its program.
     pub program: PathBuf,
     /// Its release, when the install says it.
@@ -97,7 +97,7 @@ impl Finder {
             .find(|path| is_program(path) && (self.held)(path))
             .map(|path| Found {
                 engine,
-                place: Place::Package,
+                origin: Origin::Package,
                 program: path.clone(),
                 version: None,
             })
@@ -126,9 +126,9 @@ impl Finder {
             };
             trusted.then_some(Found {
                 engine,
-                place: match scope {
-                    Scope::AllUsers => Place::System,
-                    Scope::JustMe => Place::Person,
+                origin: match scope {
+                    Scope::AllUsers => Origin::System,
+                    Scope::JustMe => Origin::Person,
                 },
                 program,
                 version: Some(record.version),
@@ -155,7 +155,7 @@ pub fn pointed(engine: EngineKind, folder: &Path) -> Option<Found> {
     let ready = folder.join(layout.marker).is_file() && is_program(&program);
     ready.then(|| Found {
         engine,
-        place: Place::Pointed,
+        origin: Origin::Pointed,
         program,
         version: std::fs::read(folder.join(layout.build_record))
             .ok()
@@ -217,12 +217,12 @@ mod tests {
         install(&roots, Scope::AllUsers, ".b1-cpu.partial");
         let found = finder(&roots).find(EngineKind::LlamaServer).expect("found");
         assert_eq!(
-            (found.place, found.version.as_deref()),
-            (Place::Person, Some("b1"))
+            (found.origin, found.version.as_deref()),
+            (Origin::Person, Some("b1"))
         );
         install(&roots, Scope::AllUsers, "b1-cpu");
         let found = finder(&roots).find(EngineKind::LlamaServer).expect("found");
-        assert_eq!(found.place, Place::System);
+        assert_eq!(found.origin, Origin::System);
         assert_eq!(
             found.program,
             roots
@@ -263,9 +263,12 @@ mod tests {
                 .find(EngineKind::LlamaServer)
         };
         let gone = dir.path().join("gone");
-        assert_eq!(at(vec![gone.clone()]).map(|f| f.place), Some(Place::Person));
+        assert_eq!(
+            at(vec![gone.clone()]).map(|f| f.origin),
+            Some(Origin::Person)
+        );
         let found = at(vec![gone, packaged.clone()]).expect("found");
-        assert_eq!((found.place, found.program), (Place::Package, packaged));
+        assert_eq!((found.origin, found.program), (Origin::Package, packaged));
     }
 
     #[test]
@@ -284,8 +287,8 @@ mod tests {
         .expect("build");
         let found = pointed(EngineKind::Strata, dir.path()).expect("found");
         assert_eq!(
-            (found.place, found.version.as_deref()),
-            (Place::Pointed, Some("0.1.42"))
+            (found.origin, found.version.as_deref()),
+            (Origin::Pointed, Some("0.1.42"))
         );
     }
 }

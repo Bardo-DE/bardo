@@ -57,7 +57,7 @@ fn studio(key: Option<&str>) -> NewComputer {
 fn by_hand(computer: Option<&str>) -> Attached {
     AttachedEntry {
         socket: Some("/run/user/1000/lab.sock".into()),
-        place: Some(Place::MyNetwork),
+        place: Some(Site::MyNetwork),
         computer: computer.map(str::to_owned),
         ..AttachedEntry::default()
     }
@@ -84,7 +84,7 @@ fn a_computer_is_added_to_the_file_the_keys_and_the_book_and_reads_back_as_the_s
         target.computer.as_ref().map(ComputerName::as_str),
         Some("studio-pc")
     );
-    assert_eq!(target.place, Place::MyNetwork);
+    assert_eq!(target.place, Site::MyNetwork);
     assert_eq!(
         rig.book
             .label_of(&ComputerName::parse("studio-pc").expect("name")),
@@ -494,7 +494,7 @@ fn a_computer_on_the_network_is_kept_by_its_node_with_no_address_and_no_key() {
             }
         );
         assert!(target.is_relayed());
-        assert_eq!(target.place, Place::MyNetwork);
+        assert_eq!(target.place, Site::MyNetwork);
         assert_eq!(
             found.card.locality,
             account_capability::Locality::LocalNetwork

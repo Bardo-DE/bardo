@@ -59,7 +59,7 @@ fn an_address_is_a_place_and_a_way_to_reach_it() {
         ),
     ];
     for (url, tls, (host, port, base, link)) in cases {
-        let place = Place::of(&endpoint(url, tls)).expect(url);
+        let place = Address::of(&endpoint(url, tls)).expect(url);
         assert_eq!(
             (
                 place.door().host.as_str(),
@@ -72,7 +72,7 @@ fn an_address_is_a_place_and_a_way_to_reach_it() {
         );
     }
     assert_eq!(
-        Place::of(&endpoint("imaps://mail.example.test", Tls::Implicit)),
+        Address::of(&endpoint("imaps://mail.example.test", Tls::Implicit)),
         None
     );
 }
@@ -81,7 +81,7 @@ fn an_address_is_a_place_and_a_way_to_reach_it() {
 fn a_key_is_a_bearer_over_tls_or_this_computer_and_an_empty_key_is_none() {
     let key = |text: &str| SecretText::new(text);
     let auth = |url: &str, tls, key: &SecretText| {
-        Place::of(&endpoint(url, tls))
+        Address::of(&endpoint(url, tls))
             .expect(url)
             .endpoint(key, LIST_WAIT)
             .auth

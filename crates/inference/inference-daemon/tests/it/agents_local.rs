@@ -228,7 +228,7 @@ async fn a_reply_of_only_reasoning_is_an_error_with_a_status_in_both_shapes() {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_setting() {
     use hosting::lab::Lab;
-    use inference_daemon::{Attached, Place, Reach};
+    use inference_daemon::{Attached, Reach, Site};
     let dir = base_testkit::Scratch::new("ag");
     let lab = Lab::start_in(dir, "lab", &[entries::SERVED], None).await;
     lab.say(&["from the lab"]);
@@ -238,7 +238,7 @@ async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_sett
             id: account_capability::ModelId::parse(entries::ATTACHED).expect("id"),
             reach: Reach::Socket(lab.socket()),
             key_file: None,
-            place: Place::MyNetwork,
+            place: Site::MyNetwork,
             computer: None,
         }],
         role: CallerRole::AgentLauncher,

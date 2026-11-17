@@ -1,12 +1,12 @@
 use super::*;
-use crate::attached::config::{Place, Reach};
+use crate::attached::config::{Reach, Site};
 use crate::catalog::parse_entry_text;
 use crate::testkit::entries;
 use account_capability::Locality;
 use account_capability::ModelId;
 use base_testkit::Scratch;
 
-fn attached(id: &str, place: Place) -> Attached {
+fn attached(id: &str, place: Site) -> Attached {
     Attached {
         id: ModelId::parse(id).expect("id"),
         reach: Reach::Socket("/run/user/1000/lab.sock".into()),
@@ -37,7 +37,7 @@ fn an_attached_model_is_the_catalogues_entry_with_the_place_the_person_said() {
         )
         .expect("model")
     };
-    let (here, there) = (make(Place::ThisDevice), make(Place::MyNetwork));
+    let (here, there) = (make(Site::ThisDevice), make(Site::MyNetwork));
     assert_eq!(here.card.locality, Locality::OnDevice);
     assert_eq!(there.card.locality, Locality::LocalNetwork);
     for model in [&here, &there] {
@@ -63,7 +63,7 @@ fn an_entry_inferd_launches_or_an_id_the_catalogue_lacks_is_a_typed_error() {
     let scratch = Scratch::new("am");
     let one = |id: &str| {
         local_model(
-            &attached(id, Place::ThisDevice),
+            &attached(id, Site::ThisDevice),
             &catalogue(),
             scratch.path(),
         )
@@ -82,8 +82,8 @@ fn an_entry_inferd_launches_or_an_id_the_catalogue_lacks_is_a_typed_error() {
     );
     let all = crate::attached::models(
         &[
-            attached(entries::ATTACHED, Place::ThisDevice),
-            attached("tiny-embed", Place::ThisDevice),
+            attached(entries::ATTACHED, Site::ThisDevice),
+            attached("tiny-embed", Site::ThisDevice),
         ],
         &catalogue(),
         scratch.path(),

@@ -2,7 +2,7 @@ use super::*;
 use crate::lab::Lab;
 use account_fake_servers::net::Bind;
 use base_testkit::Scratch;
-use inference_router::attached::config::{Place, Reach};
+use inference_router::attached::config::{Reach, Site};
 use inference_router::attached::key::{KeyFile, KeyFileProblem};
 use model_http::Port;
 use std::os::unix::fs::PermissionsExt;
@@ -15,7 +15,7 @@ fn socket_target(path: PathBuf, key: Option<KeyFile>) -> Target {
     Target {
         reach: Reach::Socket(path),
         key,
-        place: Place::MyNetwork,
+        place: Site::MyNetwork,
         computer: None,
     }
 }
@@ -27,7 +27,7 @@ fn port_target(port: u16, key: Option<KeyFile>) -> Target {
             port: Port(port),
         },
         key,
-        place: Place::ThisDevice,
+        place: Site::ThisDevice,
         computer: None,
     }
 }

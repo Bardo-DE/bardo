@@ -9,8 +9,8 @@ fn one_lane(seats: u32) -> Admission {
     admission
 }
 
-fn waiting(ahead: u32) -> Place {
-    Place::Waiting {
+fn waiting(ahead: u32) -> Standing {
+    Standing::Waiting {
         ahead: Count(ahead),
     }
 }
@@ -19,10 +19,10 @@ fn waiting(ahead: u32) -> Place {
 fn a_lone_person_session_never_waits() {
     let mut admission = one_lane(1);
     let first = admission.arrive(&[A], Priority::Person).expect("lane");
-    assert_eq!(first.place, Place::Seated);
+    assert_eq!(first.standing, Standing::Seated);
     admission.leave(first.ticket);
     let second = admission.arrive(&[A], Priority::Person).expect("lane");
-    assert_eq!(second.place, Place::Seated);
+    assert_eq!(second.standing, Standing::Seated);
 }
 
 #[test]
@@ -31,10 +31,10 @@ fn the_person_goes_ahead_of_every_helper_and_helpers_keep_their_order() {
     let busy = admission.arrive(&[A], Priority::Helper).expect("lane");
     let first = admission.arrive(&[A], Priority::Helper).expect("lane");
     let second = admission.arrive(&[A], Priority::Helper).expect("lane");
-    assert_eq!((first.place, second.place), (waiting(0), waiting(1)));
+    assert_eq!((first.standing, second.standing), (waiting(0), waiting(1)));
     // The person arrives last and stands first.
     let person = admission.arrive(&[A], Priority::Person).expect("lane");
-    assert_eq!(person.place, waiting(0));
+    assert_eq!(person.standing, waiting(0));
     assert_eq!(admission.ahead(first.ticket), Some(Count(1)));
     assert_eq!(admission.ahead(second.ticket), Some(Count(2)));
     // The order the seat is handed on: person, then the helpers as they asked.
@@ -56,21 +56,21 @@ fn a_person_waits_behind_persons_only() {
     admission.arrive(&[A], Priority::Helper).expect("lane");
     let first = admission.arrive(&[A], Priority::Person).expect("lane");
     let second = admission.arrive(&[A], Priority::Person).expect("lane");
-    assert_eq!((first.place, second.place), (waiting(0), waiting(1)));
+    assert_eq!((first.standing, second.standing), (waiting(0), waiting(1)));
 }
 
 #[test]
 fn seats_are_as_many_as_the_engine_takes() {
     let mut admission = one_lane(2);
-    let places: Vec<Place> = (0..3)
+    let places: Vec<Standing> = (0..3)
         .map(|_| {
             admission
                 .arrive(&[A], Priority::Helper)
                 .expect("lane")
-                .place
+                .standing
         })
         .collect();
-    assert_eq!(places, [Place::Seated, Place::Seated, waiting(0)]);
+    assert_eq!(places, [Standing::Seated, Standing::Seated, waiting(0)]);
     // An engine whose seats are unknown has one.
     assert_eq!(Seats::of(0), Seats::of(1));
     // More seats seat what waits.
@@ -86,8 +86,8 @@ fn two_instances_spread_requests_then_the_shortest_queue_wins() {
     let first = admission.arrive(&lanes, Priority::Helper).expect("lane");
     let second = admission.arrive(&lanes, Priority::Helper).expect("lane");
     assert_eq!(
-        (first.lane, second.lane, second.place),
-        (A, B, Place::Seated)
+        (first.lane, second.lane, second.standing),
+        (A, B, Standing::Seated)
     );
     // Both full: the queues grow evenly, the lower lane first on a tie.
     let third = admission.arrive(&lanes, Priority::Helper).expect("lane");
@@ -97,7 +97,7 @@ fn two_instances_spread_requests_then_the_shortest_queue_wins() {
     admission.leave(second.ticket);
     admission.leave(fourth.ticket);
     let fifth = admission.arrive(&lanes, Priority::Helper).expect("lane");
-    assert_eq!((fifth.lane, fifth.place), (B, Place::Seated));
+    assert_eq!((fifth.lane, fifth.standing), (B, Standing::Seated));
 }
 
 #[test]
@@ -113,7 +113,7 @@ fn a_person_picks_the_lane_where_fewer_persons_wait() {
     admission.arrive(&[A], Priority::Helper).expect("lane");
     admission.arrive(&[A], Priority::Helper).expect("lane");
     let person = admission.arrive(&lanes, Priority::Person).expect("lane");
-    assert_eq!((person.lane, person.place), (A, waiting(0)));
+    assert_eq!((person.lane, person.standing), (A, waiting(0)));
 }
 
 #[test]
@@ -157,7 +157,7 @@ fn a_lost_lane_hands_back_what_it_held_and_the_waiting_move_on() {
     let moved = admission
         .rehome(waits.ticket, Priority::Helper, &[B])
         .expect("lane");
-    assert_eq!((moved.lane, moved.place), (B, Place::Seated));
+    assert_eq!((moved.lane, moved.standing), (B, Standing::Seated));
     // Nothing is left of the lane.
     assert_eq!(admission.arrive(&[A], Priority::Person), None);
 }

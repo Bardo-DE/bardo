@@ -2,7 +2,7 @@ use crate::host::FileHost;
 use crate::support::{fetcher, fixture, roots, row};
 use engine_install::{CancelToken, InstallError, Installer, Meter};
 use engine_manifest::{Failure, Manifest};
-use engine_probe::{Finder, Place, Record, Scope, Verdict, Verifier, seal_of};
+use engine_probe::{Finder, Origin, Record, Scope, Verdict, Verifier, seal_of};
 use model_catalog::EngineKind;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
@@ -48,8 +48,8 @@ async fn an_archive_installs_into_the_persons_directory_and_is_found_and_verifie
         .find(EngineKind::LlamaServer)
         .expect("found");
     assert_eq!(
-        (found.place, found.program.clone()),
-        (Place::Person, program.clone())
+        (found.origin, found.program.clone()),
+        (Origin::Person, program.clone())
     );
     let verifier = Verifier::new(roots, manifest);
     assert_eq!(verifier.check(&program), Verdict::Verified);

@@ -7,7 +7,7 @@
 //! turn goes, instead of the fixed table of [`Doors`](super::wire::Doors).
 //!
 //! * [`OwnServer`] is what the accounts give (the account, its name, where it is);
-//! * [`Place`] is where and how: the address's host, port and base path, and whether the
+//! * [`Address`] is where and how: the address's host, port and base path, and whether the
 //!   connection is TLS, plain on this computer, or plain elsewhere (a computer of the person's
 //!   own on their tailnet, which stoker sends no key to);
 //! * [`OwnBook`] keeps what each server listed, in memory, as hosted models with no limit known:
@@ -74,12 +74,12 @@ pub enum Link {
 
 /// Where a server is and how it is reached.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Place {
+pub struct Address {
     door: Door,
     link: Link,
 }
 
-impl Place {
+impl Address {
     /// A provider at a fixed `door`, over TLS.
     #[must_use]
     pub fn tls(door: Door) -> Self {
@@ -156,7 +156,7 @@ pub struct OwnServer {
     /// What the person calls it.
     pub label: String,
     /// Where it is.
-    pub place: Place,
+    pub place: Address,
 }
 
 impl OwnServer {
@@ -169,7 +169,7 @@ impl OwnServer {
         Some(Self {
             account,
             label,
-            place: Place::of(endpoint)?,
+            place: Address::of(endpoint)?,
         })
     }
 }
@@ -241,7 +241,7 @@ enum Outcome {
 
 #[derive(Debug, Clone)]
 struct Listing {
-    place: Place,
+    place: Address,
     outcome: Outcome,
     at: UnixSeconds,
 }
@@ -260,7 +260,7 @@ impl OwnBook {
 
     /// Where the server of `account` is.
     #[must_use]
-    pub fn place_of(&self, account: &AccountId) -> Option<Place> {
+    pub fn place_of(&self, account: &AccountId) -> Option<Address> {
         self.read()
             .get(account)
             .map(|listing| listing.place.clone())
@@ -427,7 +427,7 @@ pub fn names_in(body: &[u8]) -> Option<Vec<String>> {
 
 /// Asks the server at `place` for its models with `key` (`GET <base>/models`); none when it does
 /// not answer a readable list. The key goes to this server only, in the one request.
-pub async fn list(place: &Place, key: &SecretText, roots: &TlsRoots) -> Option<Vec<String>> {
+pub async fn list(place: &Address, key: &SecretText, roots: &TlsRoots) -> Option<Vec<String>> {
     let exchange = Exchange {
         verb: Verb::Get,
         root: RouteRoot::Base,

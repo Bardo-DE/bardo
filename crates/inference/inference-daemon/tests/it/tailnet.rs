@@ -17,7 +17,7 @@ use hosting::entries;
 use hosting::lab::Lab;
 use hosting::rig::{Hosted, Plan, Trust, World};
 use hosting::tailnet::{Addresses, TailnetPlan, addresses, free_port, network};
-use inference_daemon::{Attached, Place, Reach};
+use inference_daemon::{Attached, Reach, Site};
 use inference_dbus::inference::GUEST_KEY_STATE;
 use inference_dbus::inference::InferenceProxy;
 use std::net::{IpAddr, SocketAddr};
@@ -79,7 +79,7 @@ async fn pair(name: &str, serving: bool) -> Pair {
             id: ModelId::parse(entries::ATTACHED).expect("id"),
             reach: Reach::Socket(lab.socket()),
             key_file: None,
-            place: Place::ThisDevice,
+            place: Site::ThisDevice,
             computer: None,
         }],
         policy: policy(),

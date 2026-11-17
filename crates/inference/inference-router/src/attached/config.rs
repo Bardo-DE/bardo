@@ -18,7 +18,7 @@ use std::path::{Path, PathBuf};
 /// Where an attached engine's data goes: written for every entry, with no default.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub enum Place {
+pub enum Site {
     /// The engine runs on this computer (a server of the person's own, a container).
     ThisDevice,
     /// The engine runs on another machine of the person's, reached through a tunnel: the data
@@ -26,13 +26,13 @@ pub enum Place {
     MyNetwork,
 }
 
-impl Place {
+impl Site {
     /// Where routing counts the engine to be.
     #[must_use]
     pub fn locality(self) -> Locality {
         match self {
-            Place::ThisDevice => Locality::OnDevice,
-            Place::MyNetwork => Locality::LocalNetwork,
+            Site::ThisDevice => Locality::OnDevice,
+            Site::MyNetwork => Locality::LocalNetwork,
         }
     }
 }
@@ -53,7 +53,7 @@ pub struct AttachedEntry {
     pub key_file: Option<PathBuf>,
     /// Where the data goes.
     #[serde(default, rename = "where", skip_serializing_if = "Option::is_none")]
-    pub place: Option<Place>,
+    pub place: Option<Site>,
     /// The name of the machine the engine runs on, so that several engines on one machine are one
     /// place (`computer:<name>`). Optional; an engine on another machine of yours that names none
     /// belongs to the computer called `other-computer` ([`ComputerName::other`]).
@@ -104,7 +104,7 @@ pub struct Attached {
     /// Where its bearer token is, when it wants one.
     pub key_file: Option<PathBuf>,
     /// Where the data goes.
-    pub place: Place,
+    pub place: Site,
     /// The machine it runs on, when the entry names one.
     pub computer: Option<ComputerName>,
 }

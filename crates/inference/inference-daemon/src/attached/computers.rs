@@ -27,7 +27,7 @@ use account_tailscale::NodeId;
 use base_fs::atomic::AtomicWrite;
 use inference_core::{ComputerName, PlaceId};
 use inference_router::attached::{
-    Attached, AttachedEntry, AttachedError, Place, Reach, local_model,
+    Attached, AttachedEntry, AttachedError, Reach, Site, local_model,
 };
 use inference_router::startup::SUN_PATH;
 use serde::{Deserialize, Serialize};
@@ -69,7 +69,7 @@ impl AddedModel {
             socket: self.socket.clone(),
             url: self.port.map(|port| format!("http://127.0.0.1:{port}")),
             key_file: self.key_file.clone(),
-            place: Some(Place::MyNetwork),
+            place: Some(Site::MyNetwork),
             computer: Some(computer.to_owned()),
         }
     }
@@ -225,7 +225,7 @@ fn tailnet_engines(
                 socket: socket.clone(),
             },
             key_file: None,
-            place: Place::MyNetwork,
+            place: Site::MyNetwork,
             computer: Some(name.clone()),
         })
         .collect())
@@ -237,7 +237,7 @@ fn tailnet_engines(
 pub fn hand_written(engines: &[Attached]) -> BTreeSet<ComputerName> {
     engines
         .iter()
-        .filter(|engine| engine.place == Place::MyNetwork)
+        .filter(|engine| engine.place == Site::MyNetwork)
         .map(|engine| engine.computer.clone().unwrap_or_else(ComputerName::other))
         .collect()
 }
@@ -818,7 +818,7 @@ impl Computers {
                     socket: socket.clone(),
                 },
                 key_file: None,
-                place: Place::MyNetwork,
+                place: Site::MyNetwork,
                 computer: Some(name.clone()),
             };
             let local = local_model(&attached, self.book.catalogue(), self.book.sockets())

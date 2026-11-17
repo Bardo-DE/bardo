@@ -1,7 +1,7 @@
 //! The attached tables as `inferd.toml` holds them: the file's reading and the typed error it
 //! refuses with. The tables' own checks are `inference_router::attached::config`'s tests.
 
-use super::{AttachedError, Place};
+use super::{AttachedError, Site};
 use crate::config::{ConfigError, InferdConfig};
 use std::path::Path;
 
@@ -31,7 +31,7 @@ where = "this-device"
     let attached = config.engines.attached().expect("checked");
     let ids: Vec<&str> = attached.iter().map(|one| one.id.as_str()).collect();
     assert_eq!(ids, ["qwen3-32b", "small-local"]);
-    assert_eq!(attached[0].place, Place::MyNetwork);
+    assert_eq!(attached[0].place, Site::MyNetwork);
     assert_eq!(
         attached[0].key_file.as_deref(),
         Some(Path::new("/home/me/.config/lab/vllm.key"))

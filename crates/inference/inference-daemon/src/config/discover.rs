@@ -7,7 +7,7 @@
 //! checked here.
 
 use account_callers::root_held;
-use engine_probe::{Finder, Place, Roots};
+use engine_probe::{Finder, Origin, Roots};
 use engine_spec::engine;
 use model_catalog::EngineKind;
 use std::os::unix::fs::PermissionsExt;
@@ -78,9 +78,9 @@ impl ProgramSearch {
     pub fn vllm_python(&self, explicit: Option<&Path>) -> Option<PathBuf> {
         explicit.map(Path::to_path_buf).or_else(|| {
             let found = self.found(EngineKind::Vllm)?;
-            match found.place {
-                Place::Package => interpreter_of(&found.program, self.held),
-                Place::System | Place::Person | Place::Pointed => Some(found.program),
+            match found.origin {
+                Origin::Package => interpreter_of(&found.program, self.held),
+                Origin::System | Origin::Person | Origin::Pointed => Some(found.program),
             }
         })
     }

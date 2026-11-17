@@ -41,7 +41,7 @@ use model_http::{
 };
 use model_http::{UrlPath, WaitMs};
 use models::{RemoteModel, remote_entries, remote_models};
-use own::{OwnBook, OwnServer, Place};
+use own::{Address, OwnBook, OwnServer};
 use std::sync::Arc;
 use transport::ShapedTransport;
 use wire::{BodyShape, Doors};
@@ -236,9 +236,9 @@ impl Cloud {
 
     /// Where `provider` is: the fixed table's address, else the address of the server of the
     /// person's own that is the account of that name.
-    fn place_of(&self, provider: &ProviderId) -> Option<Place> {
+    fn place_of(&self, provider: &ProviderId) -> Option<Address> {
         match self.0.doors.of(provider) {
-            Some(door) => Some(Place::tls(door.clone())),
+            Some(door) => Some(Address::tls(door.clone())),
             None => self.0.own.place_of(&AccountId::parse(&provider.0).ok()?),
         }
     }

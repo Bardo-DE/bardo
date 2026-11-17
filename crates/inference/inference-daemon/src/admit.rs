@@ -56,9 +56,9 @@ impl Seats {
     }
 }
 
-/// Where a request stands.
+/// Where a request stands, as the request sees it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Place {
+pub enum Standing {
     /// It has a seat and may go to the engine.
     Seated,
     /// It waits; `ahead` requests are served before it.
@@ -76,7 +76,7 @@ pub struct Placed {
     /// The lane it is in.
     pub lane: Lane,
     /// Its seat or its place in the queue.
-    pub place: Place,
+    pub standing: Standing,
 }
 
 /// A waiting request that got a seat.
@@ -269,19 +269,19 @@ impl Admission {
     fn place(&mut self, ticket: Ticket, lanes: &[Lane], priority: Priority) -> Option<Placed> {
         let lane = self.choose(lanes, priority)?;
         let state = self.lanes.get_mut(&lane)?;
-        let place = if state.free() {
+        let standing = if state.free() {
             state.seated.insert(ticket);
-            Place::Seated
+            Standing::Seated
         } else {
             let ahead = count_of(state.ahead_of(priority));
             state.waiting.insert((priority, ticket));
-            Place::Waiting { ahead }
+            Standing::Waiting { ahead }
         };
         self.at.insert(ticket, (lane, priority));
         Some(Placed {
             ticket,
             lane,
-            place,
+            standing,
         })
     }
 
