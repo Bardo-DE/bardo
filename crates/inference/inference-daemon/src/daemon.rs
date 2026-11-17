@@ -477,7 +477,7 @@ impl Daemon {
         for path in &structured.rejected {
             eprintln!("inferd: {path}: out of range; using its default");
         }
-        let settings = resolve(&config);
+        let settings = inference_settings::resolve(&config.ai);
         for path in &settings.rejected {
             eprintln!("inferd: {path}: not accepted; using its default");
         }

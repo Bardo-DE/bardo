@@ -167,7 +167,7 @@ fn a_monthly_cap_stays_stopped_to_the_end_of_the_month_and_a_missing_file_is_jus
             account: ScopeLimits::default(),
             app: ScopeLimits {
                 daily: None,
-                monthly: crate::settings::cents_to_limit(10),
+                monthly: cents_to_limit(10),
             },
         },
         ..SpendLine::default()
