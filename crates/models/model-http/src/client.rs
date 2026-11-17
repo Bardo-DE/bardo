@@ -111,7 +111,9 @@ pub enum TlsRoots {
     Only(Vec<DerCertificate>),
 }
 
-/// One endpoint's HTTP client; it is a [`crate::Transport`]. It writes the request and reads the
+/// One endpoint's HTTP client; it is a [`crate::Transport`].
+///
+/// It writes the request and reads the
 /// response head and body; the connection is the [`HttpStream`] it was given (`http-reqwest`'s,
 /// built by `model-http-reqwest`, or a fake).
 #[derive(Debug, Clone)]

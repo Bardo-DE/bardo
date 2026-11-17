@@ -47,18 +47,19 @@ pub struct Waits {
     pub total: Option<Duration>,
 }
 
-/// Sends one request and pushes the response to a [`BodySink`]. Redirects are not followed, so a
-/// caller reads `Location` from the head and asks again. The same errors as [`Http`](crate::Http):
+/// Sends one request and pushes the response to a [`BodySink`].
+///
+/// Redirects are not followed, so a caller reads `Location` from the head and asks again. The same errors as [`Http`](crate::Http):
 /// a wait that ran out is [`HttpError::TimedOut`].
 pub trait HttpStream: Send + Sync {
     /// Sends `request` and gives the response to `sink`; the status when the body ended or the
     /// sink stopped it.
-    fn stream(
-        &self,
+    fn stream<'a>(
+        &'a self,
         request: Request<Vec<u8>>,
         waits: Waits,
-        sink: &mut dyn BodySink,
-    ) -> impl Future<Output = Result<StatusCode, HttpError>> + Send;
+        sink: &'a mut dyn BodySink,
+    ) -> impl Future<Output = Result<StatusCode, HttpError>> + Send + 'a;
 }
 
 type Poured<'a> = Pin<Box<dyn Future<Output = Result<StatusCode, HttpError>> + Send + 'a>>;
@@ -102,12 +103,12 @@ impl std::fmt::Debug for SharedStream {
 }
 
 impl HttpStream for SharedStream {
-    fn stream(
-        &self,
+    fn stream<'a>(
+        &'a self,
         request: Request<Vec<u8>>,
         waits: Waits,
-        sink: &mut dyn BodySink,
-    ) -> impl Future<Output = Result<StatusCode, HttpError>> + Send {
+        sink: &'a mut dyn BodySink,
+    ) -> impl Future<Output = Result<StatusCode, HttpError>> + Send + 'a {
         self.0.stream_boxed(request, waits, sink)
     }
 }

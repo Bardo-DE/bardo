@@ -1,4 +1,6 @@
-//! [`BlockingHttp`]: the same client for a caller with no async runtime. A response's body is
+//! [`BlockingHttp`]: the same client for a caller with no async runtime.
+//!
+//! A response's body is
 //! read as [`std::io::Read`], so a download is copied to a file as it arrives. Run it off any
 //! async runtime (it blocks the thread it is called on).
 
@@ -56,7 +58,9 @@ impl BlockingHttp {
         let client = Client::builder()
             .https_only(true)
             .connect_timeout(patience.connect)
-            .read_timeout(patience.read)
+            // The blocking client's timeout bounds each read and write, not the whole exchange:
+            // a long download that keeps arriving is never cut off.
+            .timeout(patience.read)
             .user_agent(user_agent)
             .build()
             .map_err(HttpError::malformed)?;

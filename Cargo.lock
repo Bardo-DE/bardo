@@ -153,8 +153,6 @@ dependencies = [
  "account-fake-servers",
  "account-families",
  "account-family-generic",
- "account-http",
- "account-http-reqwest",
  "account-match",
  "account-provider",
  "account-proxy",
@@ -167,6 +165,8 @@ dependencies = [
  "account-wire",
  "base-time",
  "base-url",
+ "http-core",
+ "http-reqwest",
  "tokio",
 ]
 
@@ -181,6 +181,7 @@ dependencies = [
  "base-time",
  "base-url",
  "caller-identity-core",
+ "http-core",
  "secrecy",
  "serde",
  "serde_json",
@@ -204,8 +205,6 @@ dependencies = [
  "account-fake-servers",
  "account-families",
  "account-family-oauth",
- "account-http",
- "account-http-reqwest",
  "account-identities",
  "account-match",
  "account-oauth",
@@ -229,6 +228,8 @@ dependencies = [
  "base-url",
  "base-xdg",
  "clap",
+ "http-core",
+ "http-reqwest",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -293,10 +294,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-http",
  "account-provider",
  "base-url",
  "hickory-resolver",
+ "http-core",
  "roxmltree 0.21.1",
  "serde",
  "serde_json",
@@ -378,8 +379,6 @@ dependencies = [
  "account-family-kit",
  "account-family-nextcloud",
  "account-family-oauth",
- "account-http",
- "account-http-reqwest",
  "account-match",
  "account-oauth",
  "account-provider",
@@ -396,6 +395,8 @@ dependencies = [
  "base-time",
  "base-url",
  "base64 0.22.1",
+ "http-core",
+ "http-reqwest",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -411,10 +412,10 @@ dependencies = [
  "account-discover",
  "account-family-kit",
  "account-generic-proto",
- "account-http",
  "account-provider",
  "account-proxy",
  "account-sheet",
+ "http-core",
  "tokio",
 ]
 
@@ -423,11 +424,11 @@ name = "account-family-kit"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-http",
  "account-provider",
  "account-sheet",
  "base-testkit",
  "base64 0.22.1",
+ "http-core",
  "tokio",
 ]
 
@@ -439,10 +440,10 @@ dependencies = [
  "account-core",
  "account-dav-proto",
  "account-family-kit",
- "account-http",
  "account-nextcloud-proto",
  "account-provider",
  "account-sheet",
+ "http-core",
 ]
 
 [[package]]
@@ -452,8 +453,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-family-kit",
- "account-http",
- "account-http-reqwest",
  "account-oauth",
  "account-oauth-probe-proto",
  "account-provider",
@@ -462,6 +461,8 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-url",
+ "http-core",
+ "http-reqwest",
  "serde",
  "serde_json",
  "tokio",
@@ -480,46 +481,6 @@ dependencies = [
  "base-url",
  "http",
  "thiserror 2.0.21",
-]
-
-[[package]]
-name = "account-http"
-version = "0.1.0"
-dependencies = [
- "account-core",
- "base-time",
- "base-url",
- "http",
- "httpdate",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "account-http-relay"
-version = "0.1.0"
-dependencies = [
- "account-client",
- "account-core",
- "account-http",
- "account-wire",
- "base-url",
- "http-body-util",
- "hyper",
- "hyper-util",
- "tokio",
-]
-
-[[package]]
-name = "account-http-reqwest"
-version = "0.1.0"
-dependencies = [
- "account-core",
- "account-fake-servers",
- "account-http",
- "base-url",
- "reqwest",
- "rustls",
- "tokio",
 ]
 
 [[package]]
@@ -577,12 +538,12 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "account-fake-servers",
- "account-http",
  "account-provider",
  "base-testkit",
  "base-time",
  "base64 0.22.1",
  "form_urlencoded",
+ "http-core",
  "httparse",
  "serde",
  "serde_json",
@@ -1830,8 +1791,11 @@ version = "0.1.0"
 dependencies = [
  "action-store",
  "agent-registry",
+ "base-url",
  "clap",
  "flate2",
+ "http-core",
+ "http-reqwest",
  "serde",
  "serde_json",
  "tar",
@@ -4614,6 +4578,7 @@ dependencies = [
  "keymap",
  "model-catalog",
  "model-http",
+ "model-http-reqwest",
  "model-openai-compat",
  "model-provider",
  "model-vision-prep",
@@ -4949,39 +4914,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "cookie"
-version = "0.18.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a373e3602691c3cdea496d2f0ee5935151e6168fe87739483c463db1b2f2f87"
-dependencies = [
- "percent-encoding",
- "time",
- "version_check",
-]
-
-[[package]]
 name = "cookie-factory"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9885fa71e26b8ab7855e2ec7cae6e9b380edff76cd052e07c683a0319d51b3a2"
-
-[[package]]
-name = "cookie_store"
-version = "0.22.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "15b2c103cf610ec6cae3da84a766285b42fd16aad564758459e6ecf128c75206"
-dependencies = [
- "cookie",
- "document-features",
- "idna",
- "indexmap 2.14.2",
- "log",
- "serde",
- "serde_derive",
- "serde_json",
- "time",
- "url",
-]
 
 [[package]]
 name = "core-foundation"
@@ -6041,6 +5977,7 @@ dependencies = [
  "flate2",
  "model-catalog",
  "model-http",
+ "model-http-reqwest",
  "rcgen",
  "rustix 1.1.6",
  "rustls-pki-types",
@@ -7277,6 +7214,45 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-core"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "base-url",
+ "http",
+ "httpdate",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "http-relay"
+version = "0.1.0"
+dependencies = [
+ "account-client",
+ "account-core",
+ "account-wire",
+ "base-url",
+ "http-body-util",
+ "http-core",
+ "hyper",
+ "hyper-util",
+ "tokio",
+]
+
+[[package]]
+name = "http-reqwest"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-fake-servers",
+ "base-url",
+ "http-core",
+ "reqwest",
+ "rustls",
+ "tokio",
+]
+
+[[package]]
 name = "httparse"
 version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7755,8 +7731,6 @@ dependencies = [
  "account-dbus",
  "account-fake",
  "account-fake-servers",
- "account-http",
- "account-http-reqwest",
  "account-match",
  "account-provider",
  "account-secrets",
@@ -7782,6 +7756,8 @@ dependencies = [
  "futures-util",
  "getrandom 0.4.3",
  "hex",
+ "http-core",
+ "http-reqwest",
  "inference-bridge",
  "inference-client",
  "inference-core",
@@ -7794,6 +7770,7 @@ dependencies = [
  "model-catalog",
  "model-extract",
  "model-http",
+ "model-http-reqwest",
  "model-openai-compat",
  "model-provider",
  "model-replay",
@@ -7839,10 +7816,10 @@ name = "inference-probe"
 version = "0.1.0"
 dependencies = [
  "account-capability",
- "account-http",
  "account-provider",
  "base-ids",
  "base-url",
+ "http-core",
  "serde_json",
  "tokio",
 ]
@@ -7934,6 +7911,7 @@ dependencies = [
  "inference-router",
  "model-extract",
  "model-http",
+ "model-http-reqwest",
  "model-openai-compat",
  "model-provider",
  "model-vision-prep",
@@ -9864,15 +9842,26 @@ name = "model-http"
 version = "0.1.0"
 dependencies = [
  "base-secret",
- "base-testkit",
+ "http-core",
  "proptest",
- "rcgen",
- "reqwest",
- "rustls",
- "rustls-pki-types",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+ "tracing",
+]
+
+[[package]]
+name = "model-http-reqwest"
+version = "0.1.0"
+dependencies = [
+ "base-secret",
+ "base-testkit",
+ "http-core",
+ "http-reqwest",
+ "model-http",
+ "proptest",
+ "rcgen",
+ "rustls-pki-types",
  "tokio",
  "tokio-rustls",
  "tracing",
@@ -9886,6 +9875,7 @@ dependencies = [
  "base64 0.22.1",
  "log",
  "model-http",
+ "model-http-reqwest",
  "model-provider",
  "model-replay",
  "model-wire",
@@ -9922,6 +9912,7 @@ name = "model-replay"
 version = "0.1.0"
 dependencies = [
  "blake3",
+ "http-core",
  "model-http",
  "model-provider",
  "model-vision-prep",
@@ -9950,6 +9941,7 @@ dependencies = [
 name = "model-wire"
 version = "0.1.0"
 dependencies = [
+ "http-core",
  "model-http",
  "model-provider",
  "serde_json",
@@ -12193,12 +12185,12 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-fake-servers",
- "account-http",
- "account-http-relay",
  "base-ids",
  "base-testkit",
  "base-time",
  "base-url",
+ "http-core",
+ "http-relay",
  "serde",
  "serde_json",
  "sync-core",
@@ -12211,14 +12203,14 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-fake-servers",
- "account-http",
- "account-http-relay",
  "base-ids",
  "base-testkit",
  "base-time",
  "base-url",
  "base64 0.22.1",
  "hex",
+ "http-core",
+ "http-relay",
  "serde",
  "serde_json",
  "sync-core",
@@ -12233,13 +12225,13 @@ dependencies = [
  "account-capability",
  "account-dav-proto",
  "account-fake-servers",
- "account-http",
- "account-http-relay",
  "base-ids",
  "base-testkit",
  "base-time",
  "base-url",
  "base64 0.22.1",
+ "http-core",
+ "http-relay",
  "roxmltree 0.21.1",
  "sync-core",
  "tokio",
@@ -12254,7 +12246,9 @@ checksum = "16a1cfa75cc186dd73d5818e510e042e40927bccc9c236b061cea97e1eb08029"
 dependencies = [
  "base64 0.23.1",
  "bytes",
+ "futures-channel",
  "futures-core",
+ "futures-util",
  "http",
  "http-body",
  "http-body-util",
@@ -13454,6 +13448,7 @@ dependencies = [
  "computer-use-bus",
  "emojis",
  "fend-core",
+ "http-reqwest",
  "jiff",
  "memory-core",
  "mime_guess",
@@ -13516,6 +13511,8 @@ dependencies = [
  "desktop-protocols",
  "dirs 6.0.0",
  "freedesktop-icons",
+ "http-core",
+ "http-reqwest",
  "image",
  "inference-client",
  "inference-core",
@@ -14575,11 +14572,11 @@ name = "sync-core"
 version = "0.1.0"
 dependencies = [
  "account-capability",
- "account-http",
  "base-ids",
  "base-testkit",
  "base-time",
  "base-url",
+ "http-core",
  "serde",
  "serde_json",
  "sync-core",
@@ -14602,9 +14599,6 @@ dependencies = [
  "account-dbus",
  "account-fake",
  "account-fake-servers",
- "account-http",
- "account-http-relay",
- "account-http-reqwest",
  "account-match",
  "account-provider",
  "account-secrets",
@@ -14624,6 +14618,9 @@ dependencies = [
  "drive-core",
  "drive-fuse",
  "hex",
+ "http-core",
+ "http-relay",
+ "http-reqwest",
  "mime_guess",
  "nanohtml2text",
  "replica-gdrive",
@@ -15831,8 +15828,11 @@ dependencies = [
  "base-fs",
  "base-testkit",
  "base-time",
+ "base-url",
  "base-xdg",
  "caller-identity-dbus",
+ "http-core",
+ "http-reqwest",
  "semver",
  "serde",
  "tar",
@@ -15844,7 +15844,6 @@ dependencies = [
  "tracing-subscriber",
  "updater-core",
  "updater-root",
- "ureq",
  "zbus",
  "zbus-ready",
  "zstd",
@@ -15873,37 +15872,6 @@ dependencies = [
  "serde",
  "serde_repr",
  "zbus",
-]
-
-[[package]]
-name = "ureq"
-version = "3.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ac5cecf619ca81f66a96482db09687c9f7465af65f4300a8c30cca05bd5a59d"
-dependencies = [
- "base64 0.23.1",
- "cookie_store",
- "log",
- "percent-encoding",
- "rustls",
- "rustls-pki-types",
- "serde",
- "serde_json",
- "ureq-proto",
- "utf8-zero",
- "webpki-roots",
-]
-
-[[package]]
-name = "ureq-proto"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "622dce33c252115466d83f63e9744a18f12b4406aae51a01c15ad8fcf1185eb3"
-dependencies = [
- "base64 0.23.1",
- "http",
- "httparse",
- "log",
 ]
 
 [[package]]
@@ -15952,12 +15920,6 @@ dependencies = [
  "unicode-vo",
  "xmlwriter",
 ]
-
-[[package]]
-name = "utf8-zero"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8c0a043c9540bae7c578c88f91dda8bd82e59ae27c21baca69c8b191aaf5a6e"
 
 [[package]]
 name = "utf8_iter"

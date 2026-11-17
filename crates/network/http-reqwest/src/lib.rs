@@ -67,8 +67,9 @@ pub struct Options {
     pub plain_http_anywhere: bool,
 }
 
-/// reqwest behind the [`Http`](http_core::Http) and [`HttpStream`](http_core::HttpStream)
-/// seams: connection reuse, a timeout, a cap on the response size, and TLS through rustls with
+/// reqwest behind the [`Http`](http_core::Http) and [`HttpStream`](http_core::HttpStream) seams.
+///
+/// It gives connection reuse, a timeout, a cap on the response size, and TLS through rustls with
 /// the system's trust roots.
 #[derive(Debug, Clone)]
 pub struct ReqwestHttp {
