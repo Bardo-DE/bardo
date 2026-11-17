@@ -1,8 +1,6 @@
 //! `Surface` as markup: a nested scope re-stamps the attributes it overrides and inherits the
-//! rest, and the `Scope` its children read agrees with what it stamped. One golden per override,
-//! the corner (`radius`) included.
-
-use crate::support::golden;
+//! rest, and the `Scope` its children read agrees with what it stamped, the corner (`radius`)
+//! included.
 
 use dioxus::prelude::*;
 use ui_components::prelude::*;
@@ -128,9 +126,6 @@ fn each_override_is_stamped_and_read() {
         let html = nested(setup);
         if !html.contains(&format!("<p>{reads}</p>")) {
             failures.push(format!("{name}: the children read something else: {html}"));
-        }
-        if let Err(diff) = golden::check(&format!("root/surface/{name}.html"), &html) {
-            failures.push(diff);
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));

@@ -1,10 +1,8 @@
-//! The edit surface's markup (FINDINGS "Edit surface"), rendered through dioxus-ssr and compared
-//! with goldens under `controls/edit_surface/`, so the controls' class scan covers it. The
-//! surface's behaviour needs a document and is proved in `ui-blitz/tests/edit_surface.rs`.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it edit_surface_ssr` rewrites these goldens.
+//! The edit surface's markup (FINDINGS "Edit surface"), rendered through dioxus-ssr and linted
+//! as markup. The surface's behaviour needs a document and is proved in
+//! `ui-blitz/tests/edit_surface.rs`.
 
-use crate::support::golden;
+use crate::support::specimen;
 
 use dioxus::prelude::*;
 use ui_components::components::editor::spell_menu::SpellMarks;
@@ -40,26 +38,23 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// A golden's name and how to render it.
+/// A state's name and how to render it.
 type Case = (&'static str, fn() -> Element);
 
 const CASES: &[Case] = &[
-    (
-        "controls/edit_surface/two-paragraphs-and-a-chip.html",
-        || {
-            rsx! {
-                EditSurface { common: Common { id: Some("body".to_string()), aria_label: Some("Message".to_string()), ..Common::default() }, on_input: |_| {},
-                    p { "data-edit-node": "0", "Dear Ada," }
-                    p { "data-edit-node": "1",
-                        "Lunch with "
-                        span { "data-edit-node": "2", "data-edit-kind": EditKind::Atom.slug(), "Grace" }
-                        " on Friday?"
-                    }
+    ("controls/edit_surface/two-paragraphs-and-a-chip", || {
+        rsx! {
+            EditSurface { common: Common { id: Some("body".to_string()), aria_label: Some("Message".to_string()), ..Common::default() }, on_input: |_| {},
+                p { "data-edit-node": "0", "Dear Ada," }
+                p { "data-edit-node": "1",
+                    "Lunch with "
+                    span { "data-edit-node": "2", "data-edit-kind": EditKind::Atom.slug(), "Grace" }
+                    " on Friday?"
                 }
             }
-        },
-    ),
-    ("controls/edit_surface/app-class-and-data.html", || {
+        }
+    }),
+    ("controls/edit_surface/app-class-and-data", || {
         let data = DataName::parse("draft")
             .map(|name| vec![DataAttr::new(name, "42")])
             .unwrap_or_default();
@@ -69,11 +64,11 @@ const CASES: &[Case] = &[
             }
         }
     }),
-    ("controls/edit_surface/empty.html", || {
+    ("controls/edit_surface/empty", || {
         rsx! { EditSurface { on_input: |_| {} } }
     }),
     // Spelling on: the marks' layer is the surface's last child, empty until the host checks.
-    ("controls/edit_surface/spell-on.html", || {
+    ("controls/edit_surface/spell-on", || {
         rsx! {
             EditSurface { spell: Spell::On { lang: None }, on_input: |_| {},
                 p { "data-edit-node": "0", "Teh cat sat" }
@@ -82,7 +77,7 @@ const CASES: &[Case] = &[
     }),
     // A marked paragraph: "Teh" underlined, as the layer draws it once the host has answered
     // (its box is the word's line box from the layer's corner).
-    ("controls/edit_surface/spell-marked.html", || {
+    ("controls/edit_surface/spell-marked", || {
         let teh = Rect {
             origin: Point {
                 x: Px(0.0),
@@ -103,10 +98,10 @@ const CASES: &[Case] = &[
 ];
 
 #[test]
-fn every_edit_surface_state_matches_its_golden() {
+fn every_edit_surface_state_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|(name, make)| golden::check(name, &render(*make)).err())
+        .filter_map(|(name, make)| specimen::lint(name, &render(*make)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

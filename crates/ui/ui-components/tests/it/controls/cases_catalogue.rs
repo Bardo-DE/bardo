@@ -1,6 +1,6 @@
 //! The catalogue's controls and fields in every state they can express (design/30 section 2), as
-//! data: the table the golden test walks beside `cases.rs`. One `Case` is one component in one
-//! state; its golden is `tests/snapshots/controls/<component>/<state>.html`.
+//! data: the table the render test walks beside `cases.rs`. One `Case` is one component in one
+//! state.
 
 use super::cases::Case;
 use dioxus::prelude::*;

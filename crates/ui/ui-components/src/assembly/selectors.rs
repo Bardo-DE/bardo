@@ -7,8 +7,8 @@
 //! (`.ds-<component>-<part>`), the attribute axes below, and every token variable
 //! (`--<prefix><slug>`, from `Kits::vocabulary`). Anything else is internal and may change
 //! without notice; a rename of anything listed here is a breaking change for the person's file,
-//! so it updates this table and `docs/selectors.md` (a test keeps the page equal to
-//! [`markdown`]).
+//! so it updates this table and `docs/selectors.md` (a test checks the page lists every name
+//! in the table).
 //!
 //! The table is versioned: [`SURFACE`] is bumped when a listed name is renamed or removed. A
 //! renamed part keeps its old name for one release ([`RENAMES`]); an app lists its own parts in
@@ -17,8 +17,6 @@
 //! A component's public parts are added here in the change that gives it the part
 //! (a gallery example that restyles it and a `lint::user_stylesheet` case that accepts it come
 //! with the row).
-
-use std::fmt::Write as _;
 
 /// The version of the public styling surface this table describes.
 ///
@@ -412,62 +410,4 @@ pub fn attributes() -> Vec<String> {
     std::iter::once(SURFACE_ATTRIBUTE.to_string())
         .chain(AXES.iter().map(|axis| axis.attribute.to_string()))
         .collect()
-}
-
-/// The page `docs/selectors.md` holds: the table, as markdown.
-#[must_use]
-pub fn markdown() -> String {
-    let mut page = String::from(
-        "# Public selectors\n\n\
-         What a user stylesheet (`~/.config/<app>/style.css`) may rely on. Anything not listed\n\
-         here is internal and may change without notice; renaming anything listed here is a\n\
-         breaking change for the person's file.\n\n\
-         Prefer token overrides (`.ds { --accent: ...; --t-quick: 120ms }`) to selectors: they\n\
-         re-theme every surface consistently, and every token variable\n\
-         (`--<prefix><slug>`) is public.\n\n",
-    );
-    let _ = write!(
-        page,
-        "The surface is version {SURFACE}: it is bumped when a listed name is renamed or removed.\n\n"
-    );
-    let _ = write!(
-        page,
-        "## Surfaces\n\n`[{SURFACE_ATTRIBUTE}=<name>]` is on every surface root.\n\n"
-    );
-    page.push_str("## Components\n\n| Component | Root | Parts |\n| --- | --- | --- |\n");
-    for component in COMPONENTS {
-        let parts = component.part_selectors();
-        let parts = if parts.is_empty() {
-            "none yet".to_string()
-        } else {
-            parts
-                .iter()
-                .map(|part| format!("`{part}`"))
-                .collect::<Vec<_>>()
-                .join(", ")
-        };
-        let _ = writeln!(
-            page,
-            "| {} | `{}` | {parts} |",
-            component.component,
-            component.root_selector()
-        );
-    }
-    let renames: Vec<&PartRename> = RENAMES.iter().collect();
-    if !renames.is_empty() {
-        page.push_str("\n## Renamed this release\n\n| Old | New |\n| --- | --- |\n");
-        for rename in renames {
-            let _ = writeln!(
-                page,
-                "| `.{}` | `.{}` |",
-                rename.old_class(),
-                rename.new_class()
-            );
-        }
-    }
-    page.push_str("\n## Attributes\n\n| Attribute | Meaning |\n| --- | --- |\n");
-    for axis in AXES {
-        let _ = writeln!(page, "| `{}` | {} |", axis.attribute, axis.meaning);
-    }
-    page
 }

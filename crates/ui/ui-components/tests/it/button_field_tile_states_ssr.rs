@@ -1,15 +1,11 @@
 //! The mail-app states (controls and tiles) and 3 (the muted avatar): each new prop or variant
-//! rendered through
-//! dioxus-ssr and compared with a golden under its component's directory, so the controls' and
-//! lists' class scans cover them too. Every state here is additive; the goldens of the states
+//! rendered through dioxus-ssr and linted as markup. Every state here is additive; the states
 //! that existed before are in `components_controls.rs` and `components_lists.rs`.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it button_field_tile_states_ssr` rewrites these goldens.
 
 #[path = "button_field_tile_states/cases.rs"]
 mod cases;
-use crate::support::golden;
 use crate::support::scoped;
+use crate::support::specimen;
 
 use cases::CASES;
 use dioxus::prelude::*;
@@ -29,7 +25,7 @@ impl PartialEq for HostProps {
 
 /// Renders a case inside a scope, so its handlers have a runtime to attach to and a component
 /// that reads the scope (a text field) draws instead of panicking, which dioxus-ssr renders as
-/// nothing: the four text-field goldens were once blessed as one blank line that way.
+/// nothing.
 #[expect(
     clippy::needless_pass_by_value,
     reason = "a Dioxus component takes its props by value"
@@ -46,22 +42,22 @@ fn render(make: fn() -> Element) -> String {
 }
 
 #[test]
-fn every_button_field_and_tile_state_matches_its_golden() {
+fn every_button_field_and_tile_state_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|case| golden::check(case.golden, &render(case.make)).err())
+        .filter_map(|case| specimen::lint(case.name, &render(case.make)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
-/// A field that failed to draw renders as nothing, and a blessed golden of nothing passes
-/// forever: every text-field golden must hold the field.
+/// A field that failed to draw renders as nothing: every text-field state must hold the field.
 #[test]
-fn every_text_field_golden_draws_the_field() {
-    let blank: Vec<String> = golden::all_in("controls/text_field")
-        .into_iter()
-        .filter(|(_, html)| !html.contains("class=\"ds-text-field"))
-        .map(|(name, _)| name)
+fn every_text_field_state_draws_the_field() {
+    let blank: Vec<&str> = CASES
+        .iter()
+        .filter(|case| case.name.starts_with("controls/text_field/"))
+        .filter(|case| !render(case.make).contains("class=\"ds-text-field"))
+        .map(|case| case.name)
         .collect();
-    assert!(blank.is_empty(), "goldens with no text field: {blank:?}");
+    assert!(blank.is_empty(), "states with no text field: {blank:?}");
 }

@@ -1,6 +1,6 @@
 //! The mail app's Space editor rows: the name field, the Motion row and the readout per scheme
 //! (both for a System Space, one for a Dark one), an unnamed Space's placeholder, and the Motion
-//! row alone. Each is a golden under `space_editor`.
+//! row alone. Each is a named state under `space_editor`.
 
 use dioxus::prelude::*;
 use ui_components::components::app::space_editor::DotIndex;
@@ -33,27 +33,27 @@ fn editor_rows(theme: Theme) -> Element {
     }
 }
 
-/// One state and the golden it must match (relative to `tests/snapshots`).
+/// One state and its name.
 pub struct Case {
-    pub golden: &'static str,
+    pub name: &'static str,
     pub make: fn() -> Element,
 }
 
 pub const CASES: &[Case] = &[
     Case {
-        golden: "space_editor/rows-system.html",
+        name: "space_editor/rows-system",
         make: || editor_rows(Theme::System),
     },
     Case {
-        golden: "space_editor/rows-dark.html",
+        name: "space_editor/rows-dark",
         make: || editor_rows(Theme::Dark),
     },
     Case {
-        golden: "space_editor/rename-unnamed.html",
+        name: "space_editor/rename-unnamed",
         make: || rsx! { SpaceEditor { look: look(2, Theme::Light), scheme: Scheme::Light, active_dot: DotIndex(0), onchange: |_| {}, on_rename: EventHandler::new(|_: String| {}) } },
     },
     Case {
-        golden: "space_editor/motion-row.html",
+        name: "space_editor/motion-row",
         make: || {
             rsx! {
                 SpaceEditor {

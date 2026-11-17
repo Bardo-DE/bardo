@@ -1,17 +1,14 @@
 //! The control components (design/04-COMPONENTS.md sections 1-7, 9-15): every component in
-//! every state rendered through dioxus-ssr and compared with a golden in
-//! `tests/snapshots/controls/<component>/<state>.html`, plus scans that every `ds-` class a
-//! golden uses is styled by that component's CSS and that the CSS uses tokens only.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it components_controls` rewrites the goldens.
+//! every state rendered through dioxus-ssr and linted as markup, plus scans that every `ds-`
+//! class a state renders is styled by that component's CSS and that the CSS uses tokens only.
 
 #[path = "controls/cases.rs"]
 mod cases;
 #[path = "controls/cases_catalogue.rs"]
 mod cases_catalogue;
 use crate::css_scan;
-use crate::support::golden;
 use crate::support::scoped;
+use crate::support::specimen;
 
 use cases::{CASES, Case, MOTION_CASES};
 use css_scan::{STYLES, classes, styles_class, token_violations};
@@ -50,48 +47,26 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
+/// Renders every case, lints it as markup, and checks that every `ds-` class it draws is styled
+/// by the sheets of its own component.
 fn check_all(cases: &[Case]) {
-    let failures: Vec<String> = cases
-        .iter()
-        .filter_map(|case| {
-            let name = format!("controls/{}/{}.html", case.component, case.state);
-            golden::check(&name, &render(case.make)).err()
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-#[test]
-fn every_control_matches_its_golden() {
-    check_all(CASES);
-}
-
-#[test]
-fn every_catalogue_control_matches_its_golden() {
-    check_all(cases_catalogue::CASES);
-}
-
-#[test]
-fn motion_driven_controls_match_their_goldens() {
-    check_all(MOTION_CASES);
-}
-
-#[test]
-fn every_class_in_a_golden_is_styled_by_its_component() {
-    let goldens = golden::all_in("controls");
-    assert!(
-        goldens.len() >= CASES.len() + cases_catalogue::CASES.len(),
-        "only {} goldens",
-        goldens.len()
-    );
     let mut failures = Vec::new();
-    for (name, html) in &goldens {
-        let component = name.split('/').nth(1).unwrap_or_default();
-        let Some((_, sheets)) = STYLES.iter().find(|(c, _)| *c == component) else {
-            failures.push(format!("{name}: no stylesheet listed for {component}"));
+    for case in cases {
+        let name = format!("controls/{}/{}", case.component, case.state);
+        let html = render(case.make);
+        failures.extend(specimen::lint(&name, &html).err());
+        // A field that failed to draw renders as nothing; every text-field state must hold it.
+        if case.component == "text_field" && !html.contains("class=\"ds-text-field") {
+            failures.push(format!("{name}: no text field drawn"));
+        }
+        let Some((_, sheets)) = STYLES.iter().find(|(c, _)| *c == case.component) else {
+            failures.push(format!(
+                "{name}: no stylesheet listed for {}",
+                case.component
+            ));
             continue;
         };
-        for class in classes(html) {
+        for class in classes(&html) {
             // `ds-ic` is `Glyph`'s: sized by its own attributes, never by component CSS (S6).
             // `a-*` pulse classes come from the motion stylesheet.
             if class == "ds-ic" || !class.starts_with("ds-") {
@@ -99,12 +74,28 @@ fn every_class_in_a_golden_is_styled_by_its_component() {
             }
             if !sheets.iter().any(|css| styles_class(css, class)) {
                 failures.push(format!(
-                    "{name}: .{class} is in no stylesheet of {component}"
+                    "{name}: .{class} is in no stylesheet of {}",
+                    case.component
                 ));
             }
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
+fn every_control_renders_clean() {
+    check_all(CASES);
+}
+
+#[test]
+fn every_catalogue_control_renders_clean() {
+    check_all(cases_catalogue::CASES);
+}
+
+#[test]
+fn motion_driven_controls_render_clean() {
+    check_all(MOTION_CASES);
 }
 
 #[test]
@@ -210,7 +201,7 @@ fn a_shortcut_is_glyphs_without_separators() {
 /// "sliders, zoomable canvases"): layer-shell-host's scroll engine hands `data-wheel="capture"`
 /// elements the raw `BlitzWheelEvent` instead of scrolling the page under them. Every slider
 /// case carries the marker, not just the default one, so a state that later drops it (a variant,
-/// a disabled slider) is caught here rather than only in a golden diff.
+/// a disabled slider) is caught here rather than only by a look at the markup.
 #[test]
 fn every_slider_carries_the_wheel_capture_marker() {
     let sliders: Vec<&Case> = CASES

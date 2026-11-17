@@ -2,7 +2,7 @@
 //! in the pose and at the place the caller gives.
 //!
 //! `Scrubber` holds the pointer and feeds this; a host that owns the pose itself (the gallery, a
-//! golden) draws it directly.
+//! test) draws it directly.
 //!
 //! Markup: `div.ds-scrubber[role=slider][data-state][data-size][data-availability]`, the played
 //! share as `--f` and the tooltip's place as `--tip`; parts `track` (holding `buffered`, one per

@@ -47,7 +47,7 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// Lint offences and unstyled classes of every specimen, swept by `golden_hygiene`.
+/// Lint offences and unstyled classes of every specimen, swept by `specimen_hygiene`.
 pub(crate) fn hygiene_failures() -> Vec<String> {
     let sheet = ui_components::stylesheet();
     let config = LintConfig::new(&ui_components::kits());

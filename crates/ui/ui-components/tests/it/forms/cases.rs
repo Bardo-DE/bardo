@@ -1,5 +1,4 @@
-//! Form, `FormSection`, `IconTile` and `PaneStack` in every state, as data: the table the golden test walks.
-//! Goldens live in `tests/snapshots/forms/<component>/<state>.html`.
+//! Form, `FormSection`, `IconTile` and `PaneStack` in every state, as data: the table the render test walks.
 
 use super::scoped::Scoped;
 use dioxus::prelude::*;

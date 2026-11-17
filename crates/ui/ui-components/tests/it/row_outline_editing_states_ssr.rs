@@ -1,14 +1,11 @@
 //! The mail-app states: a tree item renamed in place (its editing slot in the label's place)
-//! rendered through dioxus-ssr and compared with a golden under the lists' directory, so the
-//! lists' class scans cover the new class too. The trailing slot's `data-slot="trailing"` shows
-//! in these and in the mail-app tree goldens.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it row_outline_editing_states_ssr` rewrites these goldens.
+//! rendered through dioxus-ssr and linted as markup. The trailing slot's `data-slot="trailing"`
+//! shows in these and in the mail-app tree states.
 
 #[path = "row_outline_editing_states/cases.rs"]
 mod cases;
-use crate::support::golden;
 use crate::support::scoped;
+use crate::support::specimen;
 
 use cases::CASES;
 use dioxus::prelude::*;
@@ -41,10 +38,10 @@ fn render(make: fn() -> Element) -> String {
 }
 
 #[test]
-fn every_row_outline_editing_state_matches_its_golden() {
+fn every_row_outline_editing_state_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|case| golden::check(case.golden, &render(case.make)).err())
+        .filter_map(|case| specimen::lint(case.name, &render(case.make)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

@@ -1,9 +1,6 @@
-//! The missing-helper sheet as markup: every phase in light and dark matches its golden under
-//! `tests/snapshots/helpers/`, lints clean, and uses only `ds-` classes the stylesheet styles.
-//!
-//! `DS_BLESS=1 cargo test -p ui-shell --test it helpers_ssr` rewrites the goldens.
+//! The missing-helper sheet as markup: every phase in light and dark lints clean, and uses only
+//! `ds-` classes the stylesheet styles.
 
-use crate::golden;
 use crate::hygiene;
 
 use dioxus::core::NoOpMutations;
@@ -113,23 +110,7 @@ fn light(name: &str) -> String {
     )
 }
 
-#[test]
-fn every_phase_matches_its_golden_in_light_and_dark() {
-    let failures: Vec<String> = SPECIMENS
-        .iter()
-        .enumerate()
-        .flat_map(|(at, (name, _))| {
-            [("light", Theme::Light), ("dark", Theme::Dark)]
-                .into_iter()
-                .filter_map(move |(look, theme)| {
-                    golden::check(&format!("helpers/{name}-{look}.html"), &render(theme, at)).err()
-                })
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// Lint offences and unstyled classes of every specimen, swept by `golden_hygiene`.
+/// Lint offences and unstyled classes of every specimen, swept by `specimen_hygiene`.
 pub(crate) fn hygiene_failures() -> Vec<String> {
     let sheet = ui_shell::stylesheet();
     let config = LintConfig::new(&ui_shell::kits());

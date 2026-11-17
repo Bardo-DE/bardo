@@ -1,12 +1,9 @@
 //! The window frame as markup (FINDINGS "Window frame"): a `Ds` root with
 //! `window: WindowFrame::Titlebar` and the lights shown, with them hidden, and in a maximized
 //! window (a host that reports `maximized: true`: the green light restores, the edges are gone),
-//! each through dioxus-ssr against a golden under `controls/window_frame/`, so the control goldens'
-//! markup lint covers them. A root with no frame is every other root golden, unchanged.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it window_frame_ssr` rewrites these goldens.
+//! each through dioxus-ssr and linted as markup.
 
-use crate::support::golden;
+use crate::support::specimen;
 
 use dioxus::prelude::*;
 use std::rc::Rc;
@@ -50,13 +47,13 @@ fn window(lights: bool) -> Element {
     }
 }
 
-/// A golden's name and how to render it.
+/// A state's name and how to render it.
 type Case = (&'static str, fn() -> Element);
 
 const CASES: &[Case] = &[
-    ("controls/window_frame/lights.html", || window(true)),
-    ("controls/window_frame/no-lights.html", || window(false)),
-    ("controls/window_frame/maximized.html", || {
+    ("controls/window_frame/lights", || window(true)),
+    ("controls/window_frame/no-lights", || window(false)),
+    ("controls/window_frame/maximized", || {
         use_window_host_provider(|| Rc::new(Still(true)));
         window(true)
     }),
@@ -89,10 +86,10 @@ fn render(make: fn() -> Element) -> String {
 }
 
 #[test]
-fn every_frame_state_matches_its_golden() {
+fn every_frame_state_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|(name, make)| golden::check(name, &render(*make)).err())
+        .filter_map(|(name, make)| specimen::lint(name, &render(*make)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

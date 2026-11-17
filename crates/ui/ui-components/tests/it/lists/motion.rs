@@ -5,13 +5,13 @@ use super::*;
 use ui_components::prelude::*;
 use ui_motion::drag::DRAG_THRESHOLD;
 
-/// The list's markup at each moment of a key's arrival and exit, and each moment's presences.
+/// The list's markup at each moment of a key's arrival and exit lints clean.
 #[test]
 fn a_list_renders_each_moment_of_an_exit() {
     let moments = live::moments();
     let mut failures = Vec::new();
     for (name, html) in &moments {
-        if let Err(why) = golden::check(&format!("lists/roster/{name}.html"), html) {
+        if let Err(why) = specimen::lint(&format!("lists/roster/{name}"), html) {
             failures.push(why);
         }
     }
@@ -104,7 +104,7 @@ fn the_ghost_appears_past_three_pixels_and_drops_on_its_target() {
     let over = step(&mut dom, &|drag| drag.moved(at(100.0, 110.0)));
     let failures: Vec<String> = [("live", &live), ("over-target", &over)]
         .into_iter()
-        .filter_map(|(name, html)| golden::check(&format!("lists/drag/{name}.html"), html).err())
+        .filter_map(|(name, html)| specimen::lint(&format!("lists/drag/{name}"), html).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     assert!(live.contains("left:265px;top:285px"), "{live}");

@@ -1,6 +1,5 @@
-//! The structure components in every state they can express, as data: the table the golden test
-//! walks. One `Case` is one component in one state; its golden is
-//! `tests/snapshots/structure/<component>/<state>.html`.
+//! The structure components in every state they can express, as data: the table the render test
+//! walks. One `Case` is one component in one state.
 
 use dioxus::prelude::*;
 use ui_components::components::chrome::capsule::model::{CapsuleSlot, LevelSlot, ScrubSlot};

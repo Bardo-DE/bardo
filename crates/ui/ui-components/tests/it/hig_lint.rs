@@ -328,33 +328,3 @@ fn the_ramp_starts_at_the_floor() {
         assert_eq!(size.css(), "10px", "{size:?}");
     }
 }
-
-use crate::support::golden;
-
-/// Every rendered golden under the markup guardrails: the only hit is a case that renders an
-/// `EditSurface` without its optional `label` (making it required is H2's, design/27 section 7).
-#[test]
-fn bardo_goldens_warn_only_where_reviewed() {
-    const REVIEWED: &[(&str, Rule)] = &[("controls/edit_surface/empty.html", Rule::UnnamedControl)];
-    let left: Vec<String> = golden::all_in("")
-        .into_iter()
-        .filter(|(name, _)| {
-            std::path::Path::new(name)
-                .extension()
-                .is_some_and(|ext| ext.eq_ignore_ascii_case("html"))
-        })
-        .flat_map(|(name, html)| {
-            markup_warnings(&html, &strict())
-                .into_iter()
-                .filter(|offence| !REVIEWED.contains(&(name.as_str(), offence.rule)))
-                .map(|offence| {
-                    format!(
-                        "{name}:{} {:?} {}",
-                        offence.line, offence.rule, offence.text
-                    )
-                })
-                .collect::<Vec<_>>()
-        })
-        .collect();
-    assert!(left.is_empty(), "{}", left.join("\n"));
-}

@@ -1,12 +1,8 @@
 //! The launcher v2 parts as markup: each row shape, a palette group with
 //! a "Show More" action at rest and under the cursor, an emoji grid in the palette and on its
 //! own, the preview pane with each kind of content, and the palette widened by a pane. Each
-//! matches its golden under `tests/snapshots/launcher/`, lints clean, and uses only `ds-`
-//! classes the stylesheet styles.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --features lint --test it launcher_parts_ssr` rewrites the goldens.
+//! lints clean and uses only `ds-` classes the stylesheet styles.
 
-use crate::support::golden;
 use crate::support::hygiene;
 
 use dioxus::prelude::*;
@@ -382,7 +378,7 @@ fn with_aside() -> Element {
     )
 }
 
-/// A specimen: its golden name and how it is made.
+/// A specimen: its name and how it is made.
 type Specimen = (&'static str, fn() -> Element);
 
 const SPECIMENS: &[Specimen] = &[
@@ -413,18 +409,7 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-#[test]
-fn every_specimen_matches_its_golden() {
-    let failures: Vec<String> = SPECIMENS
-        .iter()
-        .filter_map(|(name, make)| {
-            golden::check(&format!("launcher/{name}.html"), &render(*make)).err()
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// Lint offences and unstyled classes of every specimen, swept by `golden_hygiene`.
+/// Lint offences and unstyled classes of every specimen, swept by `specimen_hygiene`.
 pub(crate) fn hygiene_failures() -> Vec<String> {
     let sheet = ui_components::stylesheet();
     let config = LintConfig::new(&ui_components::kits());

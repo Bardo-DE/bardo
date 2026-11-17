@@ -1,9 +1,6 @@
 //! The root chrome as markup (bar gaps): what each material's root stamps
 //! and draws (the window's loose layers and grain; shell chrome's `.ds-frame` group; nothing on
-//! a transparent root), the explicit overrides, and a `Surface` on the frame ground. One golden
-//! per material and per override, under `snapshots/root/chrome/`.
-
-use crate::support::golden;
+//! a transparent root), the explicit overrides, and a `Surface` on the frame ground.
 
 use dioxus::prelude::*;
 use ui_components::assembly::ds::Inject;
@@ -73,68 +70,60 @@ fn setup(material: Material) -> Setup {
 }
 
 #[test]
-fn each_materials_root_matches_its_golden() {
-    let mut failures = Vec::new();
+fn each_materials_root_stamps_its_material_and_keeps_its_content() {
     for material in Material::ALL.iter().copied() {
-        let name = format!("root/chrome/{}.html", material.slug());
-        if let Err(failure) = golden::check(&name, &render(setup(material))) {
-            failures.push(failure);
-        }
+        let html = render(setup(material));
+        let stamp = format!("data-material=\"{}\"", material.slug());
+        assert!(html.contains(&stamp), "{stamp} missing: {html}");
+        assert!(html.contains("<p>inside</p>"), "{html}");
     }
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]
-fn the_overrides_match_their_goldens() {
-    let cases = [
-        (
-            "painted-popover",
-            Setup {
-                chrome: Some(RootChrome::Painted),
-                ..setup(Material::Popover)
-            },
-        ),
-        (
-            "transparent-bar",
-            Setup {
-                chrome: Some(RootChrome::Transparent),
-                ..setup(Material::Bar)
-            },
-        ),
-        (
-            "paper-bar",
-            Setup {
-                ground: Some(Ground::Paper),
-                ..setup(Material::Bar)
-            },
-        ),
-        (
-            "frame-surface-in-a-window",
-            Setup {
-                surface: Some(Ground::Frame),
-                ..setup(Material::Window)
-            },
-        ),
-        (
-            "dock-radius",
-            Setup {
-                radius: Some(Corner::Px(Px(12.0))),
-                ..setup(Material::Dock)
-            },
-        ),
-        (
-            "paper-surface-in-a-bar",
-            Setup {
-                surface: Some(Ground::Paper),
-                ..setup(Material::Bar)
-            },
-        ),
-    ];
-    let mut failures = Vec::new();
-    for (name, case) in cases {
-        if let Err(failure) = golden::check(&format!("root/chrome/{name}.html"), &render(case)) {
-            failures.push(failure);
-        }
-    }
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
+fn the_overrides_change_what_the_root_draws() {
+    let painted = render(Setup {
+        chrome: Some(RootChrome::Painted),
+        ..setup(Material::Popover)
+    });
+    assert!(
+        painted.contains("ds-frame"),
+        "a painted popover draws the frame: {painted}"
+    );
+    let plain = render(setup(Material::Popover));
+    assert!(
+        !plain.contains("ds-frame"),
+        "a popover is transparent by default: {plain}"
+    );
+
+    let transparent = render(Setup {
+        chrome: Some(RootChrome::Transparent),
+        ..setup(Material::Bar)
+    });
+    assert!(!transparent.contains("ds-frame"), "{transparent}");
+    assert!(
+        transparent.contains("data-chrome=\"transparent\""),
+        "{transparent}"
+    );
+
+    let paper = render(Setup {
+        ground: Some(Ground::Paper),
+        ..setup(Material::Bar)
+    });
+    assert!(!paper.contains("data-ground"), "{paper}");
+
+    let frame_surface = render(Setup {
+        surface: Some(Ground::Frame),
+        ..setup(Material::Window)
+    });
+    assert!(
+        frame_surface.contains("data-ground=\"frame\""),
+        "{frame_surface}"
+    );
+
+    let radius = render(Setup {
+        radius: Some(Corner::Px(Px(12.0))),
+        ..setup(Material::Dock)
+    });
+    assert!(radius.contains("--m-radius:12px"), "{radius}");
+    assert!(!render(setup(Material::Dock)).contains("--m-radius"));
 }

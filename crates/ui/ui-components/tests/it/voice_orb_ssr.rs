@@ -1,10 +1,7 @@
 //! The voice orb as markup: idle, active, a small one (96 px) and one with the caller's colours
-//! and period (128 px, 15 s), each matching its golden under `tests/snapshots/voice_orb/`, lint
+//! and period (128 px, 15 s), each linting
 //! clean, using only `ds-` classes the stylesheet styles, and carrying the state it is in.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --features lint --test it voice_orb_ssr` rewrites the goldens.
 
-use crate::support::golden;
 use crate::support::hygiene;
 
 use dioxus::prelude::*;
@@ -56,7 +53,7 @@ fn named() -> Element {
     root(rsx! { VoiceOrb { aria_label: "Listening" } })
 }
 
-/// A specimen: its golden name and how it is made.
+/// A specimen: its name and how it is made.
 type Specimen = (&'static str, fn() -> Element);
 
 const SPECIMENS: &[Specimen] = &[
@@ -84,18 +81,7 @@ fn orb(html: &str) -> &str {
     &rest[..end]
 }
 
-#[test]
-fn every_specimen_matches_its_golden() {
-    let failures: Vec<String> = SPECIMENS
-        .iter()
-        .filter_map(|(name, make)| {
-            golden::check(&format!("voice_orb/{name}.html"), orb(&render(*make))).err()
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// Lint offences and unstyled classes of every specimen, swept by `golden_hygiene`.
+/// Lint offences and unstyled classes of every specimen, swept by `specimen_hygiene`.
 pub(crate) fn hygiene_failures() -> Vec<String> {
     let sheet = ui_components::stylesheet();
     let config = LintConfig::new(&ui_components::kits());

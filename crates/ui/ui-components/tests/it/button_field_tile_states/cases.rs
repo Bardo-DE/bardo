@@ -1,4 +1,4 @@
-//! The mail-app states, as data: the golden each renders to and how to make it.
+//! The mail-app states, as data: the name each renders under and how to make it.
 
 use dioxus::prelude::*;
 use ui_components::components::app::pin_tile::{PinFace, PinTile};
@@ -48,70 +48,70 @@ fn poh() -> PinFace {
     }
 }
 
-/// One state and the golden it must match (relative to `tests/snapshots`).
+/// One state and its name.
 pub struct Case {
-    pub golden: &'static str,
+    pub name: &'static str,
     pub make: fn() -> Element,
 }
 
 pub const CASES: &[Case] = &[
     // Button: a hint, a name for assistive technology, and the open state of what it opens.
     Case {
-        golden: "controls/button/mini-titled-open.html",
+        name: "controls/button/mini-titled-open",
         make: || rsx! { Button { common: Common { aria_label: Some("Add account".to_string()), ..Common::default() }, size: ControlSize::Mini, label: "+", title: "Add Account", shown: true, onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/quiet-closed.html",
+        name: "controls/button/quiet-closed",
         make: || rsx! { Button { bezel: Bezel::Inline, label: "More", shown: false, onclick: |_| {} } },
     },
     // TextField: a secure field, empty (the placeholder) and filled (the dots).
     Case {
-        golden: "controls/text_field/password-empty.html",
+        name: "controls/text_field/password-empty",
         make: || rsx! { TextField { kind: FieldKind::Secure, label: "Password", value: "", placeholder: "App password", oninput: |_| {} } },
     },
     Case {
-        golden: "controls/text_field/password-filled.html",
+        name: "controls/text_field/password-filled",
         make: || rsx! { TextField { kind: FieldKind::Secure, label: "Password", value: "hunter2", oninput: |_| {} } },
     },
     // PinTile: the favicon mark, and the Add account tile, with and without a hint.
     Case {
-        golden: "lists/pin_tile/one-image-mark.html",
+        name: "lists/pin_tile/one-image-mark",
         make: || rsx! { PinTile { face: poh(), selection: true, unread: 2, mark: MarkStyle::Image(ImageSource("data:image/png;base64,iVBORw0KGgo=".to_string())), onclick: |_| {} } },
     },
     Case {
-        golden: "lists/pin_tile/add.html",
+        name: "lists/pin_tile/add",
         make: || rsx! { PinTile { face: PinFace::Add { label: "Add account".to_string(), hint: Some("Add Account".to_string()) }, onclick: |_| {} } },
     },
     Case {
-        golden: "lists/pin_tile/add-named.html",
+        name: "lists/pin_tile/add-named",
         make: || rsx! { PinTile { face: PinFace::Add { label: "Add an account to Work".to_string(), hint: None }, onclick: |_| {} } },
     },
     // SendPill: Cancel for a held send, and a fatal refusal on two lines.
     Case {
-        golden: "overlays/send_pill/cancel.html",
+        name: "overlays/send_pill/cancel",
         make: || rsx! { SendPill { text: "Scheduled for 9:00", progress: Fraction(0), operation: Operation::Running(PendingToken::start()), action: PillAction::Cancel, onundo: |()| {} } },
     },
     Case {
-        golden: "overlays/send_pill/fatal-refused.html",
+        name: "overlays/send_pill/fatal-refused",
         make: || rsx! { SendPill { text: "Not sent", progress: Fraction(700), operation: Operation::Running(PendingToken::start()), mood: SendMood::Fatal, refusal: "No recipients", onundo: |()| {} } },
     },
     // Row: a scheduled Today row with its time and cancel.
     Case {
-        golden: "lists/row/today-scheduled.html",
+        name: "lists/row/today-scheduled",
         make: scheduled,
     },
     // Avatar: an account's colour muted (chroma .55, hue and lightness kept),
     // and a person's; a muted ink avatar is greyscale already and keeps its colours.
     Case {
-        golden: "controls/avatar/account-28-muted.html",
+        name: "controls/avatar/account-28-muted",
         make: || rsx! { Avatar { initial: 'P', size: AvatarSize::Size28, tone: AvatarTone::Account(VIOLET), muting: true } },
     },
     Case {
-        golden: "controls/avatar/person-18-muted.html",
+        name: "controls/avatar/person-18-muted",
         make: || rsx! { Avatar { initial: 'D', size: AvatarSize::Size18, tone: AvatarTone::Person(PersonHue(212)), muting: true } },
     },
     Case {
-        golden: "controls/avatar/ink-28-muted.html",
+        name: "controls/avatar/ink-28-muted",
         make: || rsx! { Avatar { initial: 'A', size: AvatarSize::Size28, tone: AvatarTone::Ink, muting: true } },
     },
 ];

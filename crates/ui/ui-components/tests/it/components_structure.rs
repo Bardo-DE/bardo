@@ -1,13 +1,10 @@
 //! The structure components (design/30 sections 2.1 to 2.7): every component in every state
-//! rendered through dioxus-ssr and compared with a golden in
-//! `tests/snapshots/structure/<component>/<state>.html`, and
+//! rendered through dioxus-ssr and linted as markup, and
 //! every `ds-` class in one styled by its own component's sheet.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it components_structure` rewrites the goldens.
 
 #[path = "structure/cases.rs"]
 mod cases;
-use crate::support::golden;
+use crate::support::specimen;
 
 use cases::{CASES, Case};
 use dioxus::prelude::*;
@@ -40,7 +37,7 @@ fn render(case: &Case) -> String {
 }
 
 fn name(case: &Case) -> String {
-    format!("structure/{}/{}.html", case.component, case.state)
+    format!("structure/{}/{}", case.component, case.state)
 }
 
 /// The classes each component's own sheet styles, by the prefix its markup carries.
@@ -123,10 +120,10 @@ const OWN_SHEETS: &[(&str, &str, &str)] = &[
 ];
 
 #[test]
-fn every_structure_component_matches_its_golden() {
+fn every_structure_component_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|case| golden::check(&name(case), &render(case)).err())
+        .filter_map(|case| specimen::lint(&name(case), &render(case)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

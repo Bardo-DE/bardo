@@ -1,4 +1,4 @@
-//! The mail-app states, as data: the golden each renders to and how to make it.
+//! The mail-app states, as data: the name each renders under and how to make it.
 
 use super::scoped::Scoped;
 use dioxus::prelude::*;
@@ -6,9 +6,9 @@ use ui_components::components::controls::button_model::{Bezel, ImagePosition};
 use ui_components::components::lists::row::row::Outline;
 use ui_components::prelude::*;
 
-/// One state and its golden.
+/// One state and its name.
 pub struct Case {
-    pub golden: &'static str,
+    pub name: &'static str,
     pub make: fn() -> Element,
 }
 
@@ -28,7 +28,7 @@ fn more(name: &str) -> Element {
 
 pub const CASES: &[Case] = &[
     Case {
-        golden: "lists/row/outline-editing-branch.html",
+        name: "lists/row/outline-editing-branch",
         make: || {
             rsx! {
                 Scoped { Row {
@@ -44,7 +44,7 @@ pub const CASES: &[Case] = &[
         },
     },
     Case {
-        golden: "lists/row/edit-slot.html",
+        name: "lists/row/edit-slot",
         make: || {
             rsx! {
                 Scoped { Row { title: "Receipts", detail: "12 messages", edit: rename("Receipts"), leading: RowLeading::Icon(Icon::Folder), onclick: |_| {}, accessory: Accessory::Slot(more("Receipts")) } }
@@ -52,7 +52,7 @@ pub const CASES: &[Case] = &[
         },
     },
     Case {
-        golden: "lists/row/outline-editing-leaf.html",
+        name: "lists/row/outline-editing-leaf",
         make: || {
             rsx! {
                 Scoped { Row { title: "Receipts", content: rename("Receipts"), leading: RowLeading::Icon(Icon::Folder), outline: Outline::Leaf } }

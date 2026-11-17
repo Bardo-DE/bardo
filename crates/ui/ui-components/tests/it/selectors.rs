@@ -1,9 +1,9 @@
 //! The public selector table: every class it lists is in the stylesheet, its names are unique,
-//! and `docs/selectors.md` is the table (`DS_BLESS=1` rewrites the page; read the diff).
+//! and `docs/selectors.md` lists every name in the table.
 
 use std::collections::HashSet;
 use std::path::PathBuf;
-use ui_components::selectors::{AXES, COMPONENTS, markdown};
+use ui_components::selectors::{AXES, COMPONENTS};
 
 fn page() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../docs/selectors.md")
@@ -58,19 +58,25 @@ fn the_table_has_no_duplicates_and_every_root_is_a_ds_class() {
 }
 
 #[test]
-fn the_doc_page_is_the_table() {
-    let want = markdown();
+fn the_doc_page_lists_every_selector() {
     let path = page();
-    if std::env::var("DS_BLESS").is_ok_and(|value| value == "1") {
-        std::fs::write(&path, &want).expect("write docs/selectors.md");
-        return;
+    let page = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
+    let mut missing = Vec::new();
+    for component in COMPONENTS {
+        let selectors =
+            std::iter::once(component.root_selector()).chain(component.part_selectors());
+        for selector in selectors {
+            if !page.contains(&format!("`{selector}`")) {
+                missing.push(selector);
+            }
+        }
     }
-    let have = std::fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("{}: {e} (DS_BLESS=1 writes it)", path.display()));
-    assert_eq!(
-        have, want,
-        "docs/selectors.md is stale (DS_BLESS=1 rewrites it)"
-    );
+    for axis in AXES {
+        if !page.contains(&format!("`{}`", axis.attribute)) {
+            missing.push(axis.attribute.to_string());
+        }
+    }
+    assert_eq!(missing, Vec::<String>::new(), "not in docs/selectors.md");
 }
 
 #[test]

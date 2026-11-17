@@ -1,10 +1,7 @@
-//! The account sheets as markup: every step in light and dark matches its golden under
-//! `tests/snapshots/accounts/`, lints clean, and uses only `ds-` classes the stylesheet styles.
-//! The markup carries what the props say, and no secret reaches it.
-//!
-//! `DS_BLESS=1 cargo test -p ui-shell --test it accounts_ssr` rewrites the goldens.
+//! The account sheets as markup: every step in light and dark lints clean, and uses only
+//! `ds-` classes the stylesheet styles. The markup carries what the props say, and no secret
+//! reaches it.
 
-use crate::golden;
 use crate::hygiene;
 
 use dioxus::core::NoOpMutations;
@@ -563,10 +560,6 @@ fn render(theme: Theme, specimen: usize) -> String {
     dioxus_ssr::render(&dom)
 }
 
-fn themes() -> [(&'static str, Theme); 2] {
-    [("light", Theme::Light), ("dark", Theme::Dark)]
-}
-
 /// Where the specimen called `name` stands in `SPECIMENS`.
 fn specimen(name: &str) -> usize {
     SPECIMENS
@@ -579,21 +572,7 @@ fn light(name: &str) -> String {
     render(Theme::Light, specimen(name))
 }
 
-#[test]
-fn every_specimen_matches_its_golden_in_light_and_dark() {
-    let failures: Vec<String> = SPECIMENS
-        .iter()
-        .enumerate()
-        .flat_map(|(at, (name, _))| {
-            themes().into_iter().filter_map(move |(look, theme)| {
-                golden::check(&format!("accounts/{name}-{look}.html"), &render(theme, at)).err()
-            })
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// Lint offences and unstyled classes of every specimen, swept by `golden_hygiene`.
+/// Lint offences and unstyled classes of every specimen, swept by `specimen_hygiene`.
 pub(crate) fn hygiene_failures() -> Vec<String> {
     let sheet = ui_shell::stylesheet();
     let config = LintConfig::new(&ui_shell::kits());

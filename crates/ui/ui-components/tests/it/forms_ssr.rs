@@ -1,14 +1,11 @@
-//! Form, `FormSection`, `IconTile` and `PaneStack` in every state rendered through dioxus-ssr and compared with
-//! a golden in `tests/snapshots/forms/<component>/<state>.html`; every class in a golden is
-//! styled by the components' sheets. `golden_lints` lints every golden as markup.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it forms_ssr` rewrites the goldens.
+//! Form, `FormSection`, `IconTile` and `PaneStack` in every state rendered through dioxus-ssr and
+//! linted as markup; every class they draw is styled by the components' sheets.
 
 #[path = "forms/cases.rs"]
 mod cases;
 use crate::css_scan;
-use crate::support::golden;
 use crate::support::scoped;
+use crate::support::specimen;
 
 use cases::{CASES, Case};
 use css_scan::{classes, styles_class};
@@ -41,11 +38,11 @@ fn render(case: &Case) -> String {
     dioxus_ssr::render(&dom)
 }
 
-fn golden_name(case: &Case) -> String {
-    format!("forms/{}/{}.html", case.component, case.state)
+fn case_name(case: &Case) -> String {
+    format!("forms/{}/{}", case.component, case.state)
 }
 
-/// The sheets of the forms components and of what a golden draws inside them.
+/// The sheets of the forms components and of what a state draws inside them.
 const SHEETS: &[&str] = &[
     "form",
     "form_section",
@@ -65,16 +62,16 @@ fn sheet(name: &str) -> &'static str {
 }
 
 #[test]
-fn every_forms_state_matches_its_golden() {
+fn every_forms_state_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|case| golden::check(&golden_name(case), &render(case)).err())
+        .filter_map(|case| specimen::lint(&case_name(case), &render(case)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]
-fn every_class_in_a_forms_golden_is_styled() {
+fn every_class_in_a_forms_state_is_styled() {
     let mut failures = Vec::new();
     for case in CASES {
         let html = render(case);
@@ -85,7 +82,7 @@ fn every_class_in_a_forms_golden_is_styled() {
             if class.starts_with("ds-") && !styled {
                 failures.push(format!(
                     "{}: .{class} is styled by no sheet",
-                    golden_name(case)
+                    case_name(case)
                 ));
             }
         }

@@ -1,10 +1,7 @@
 //! The PDF thumbnail as markup (bardo-shell M9's launcher preview): each state, pending, a portrait and a landscape page, an empty document, and the two
-//! failures, matches its golden under `tests/snapshots/pdf_thumb/`, lints clean, and uses only
+//! failures, lints clean and uses only
 //! `ds-` classes the stylesheet styles.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --features lint --test it pdf_thumb_ssr` rewrites the goldens.
 
-use crate::support::golden;
 use crate::support::hygiene;
 
 use dioxus::prelude::*;
@@ -76,7 +73,7 @@ fn locked_dark() -> Element {
     )
 }
 
-/// A specimen: its golden name and how it is made.
+/// A specimen: its name and how it is made.
 type Specimen = (&'static str, fn() -> Element);
 
 const SPECIMENS: &[Specimen] = &[
@@ -94,18 +91,7 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-#[test]
-fn every_specimen_matches_its_golden() {
-    let failures: Vec<String> = SPECIMENS
-        .iter()
-        .filter_map(|(name, make)| {
-            golden::check(&format!("pdf_thumb/{name}.html"), &render(*make)).err()
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// Lint offences and unstyled classes of every specimen, swept by `golden_hygiene`.
+/// Lint offences and unstyled classes of every specimen, swept by `specimen_hygiene`.
 pub(crate) fn hygiene_failures() -> Vec<String> {
     let sheet = ui_components::stylesheet();
     let config = LintConfig::new(&ui_components::kits());

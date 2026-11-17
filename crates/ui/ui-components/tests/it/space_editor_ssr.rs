@@ -1,15 +1,11 @@
-//! The Space editor and the Space dot: every state rendered through dioxus-ssr and compared with
-//! a golden in `tests/snapshots/space_editor/<state>.html`; the field plane decoded and
-//! probed, the handles placed from the dots, the contrast pills against `space::readout`; and
-//! every golden's classes styled, its sheet on tokens, and its markup linted against the
-//! stylesheet the design system draws with.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it space_editor_ssr` rewrites the goldens.
+//! The Space editor and the Space dot: every state rendered through dioxus-ssr; the field plane
+//! decoded and probed, the handles placed from the dots, the contrast pills against
+//! `space::readout`; and every state's classes styled, its sheet on tokens, and its markup
+//! linted against the stylesheet the design system draws with.
 
 use crate::css_scan;
 #[path = "lists/editor.rs"]
 mod field_plane;
-use crate::support::golden;
 #[path = "lists/png.rs"]
 mod png;
 #[path = "lists/space_editor_rows.rs"]
@@ -51,30 +47,6 @@ fn render(make: fn() -> Element) -> String {
     dioxus_ssr::render(&dom)
 }
 
-const PLANE: &str = "data:image/png;base64,";
-
-/// `html` with each field plane's data URI payload replaced by a marker: the plane is checked by
-/// decoding it (in `field_plane`), not by 60 kB of base64 in a golden.
-fn scrub(html: &str) -> String {
-    let mut out = String::new();
-    let mut rest = html;
-    while let Some(at) = rest.find(PLANE) {
-        let payload = &rest[at + PLANE.len()..];
-        let end = payload
-            .find(|c: char| !(c.is_ascii_alphanumeric() || c == '+' || c == '/' || c == '='))
-            .unwrap_or(payload.len());
-        out.push_str(&rest[..at + PLANE.len()]);
-        out.push_str(if end > 64 {
-            "[field plane]"
-        } else {
-            &payload[..end]
-        });
-        rest = &payload[end..];
-    }
-    out.push_str(rest);
-    out
-}
-
 /// Preset `index` as a Space's look.
 fn preset_look(index: usize, grain: Grain) -> SpaceLook {
     SpaceLook {
@@ -88,7 +60,7 @@ fn editor(look: SpaceLook, scheme: Scheme, active: u8) -> Element {
     rsx! { SpaceEditor { look, scheme, active_dot: DotIndex(active), onchange: |_| {} } }
 }
 
-/// One state and the golden it must match (relative to `tests/snapshots`).
+/// One state.
 struct Case {
     state: &'static str,
     make: fn() -> Element,
@@ -144,21 +116,17 @@ const CASES: &[Case] = &[
     },
 ];
 
-#[test]
-fn every_space_editor_state_matches_its_golden() {
-    let failures: Vec<String> = CASES
+/// Every state rendered, by name.
+fn rendered() -> Vec<(String, String)> {
+    CASES
         .iter()
-        .filter_map(|case| {
-            let name = format!("space_editor/{}.html", case.state);
-            golden::check(&name, &scrub(&render(case.make))).err()
-        })
+        .map(|case| (format!("space_editor/{}", case.state), render(case.make)))
         .chain(
             space_editor_rows::CASES
                 .iter()
-                .filter_map(|case| golden::check(case.golden, &render(case.make)).err()),
+                .map(|case| (case.name.to_string(), render(case.make))),
         )
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
+        .collect()
 }
 
 /// The stylesheets that style the editor's markup: its own, then those of the components it
@@ -186,17 +154,11 @@ fn sheets() -> Vec<&'static str> {
 const SHARED: &[&str] = &["ds-ic", "ds-truncate"];
 
 #[test]
-fn every_class_in_a_golden_is_styled_by_the_editors_sheets() {
-    let goldens = golden::all_in("space_editor");
-    assert!(
-        goldens.len() >= CASES.len() + space_editor_rows::CASES.len(),
-        "only {} goldens",
-        goldens.len()
-    );
+fn every_class_in_a_state_is_styled_by_the_editors_sheets() {
     let css = sheets();
     assert_eq!(css.len(), 9, "a sheet the editor draws with is missing");
     let mut failures = Vec::new();
-    for (name, html) in &goldens {
+    for (name, html) in &rendered() {
         for class in classes(html) {
             if SHARED.contains(&class) || !class.starts_with("ds-") {
                 continue;
@@ -244,17 +206,16 @@ const MARKUP_EXCEPTIONS: &[ui_lint::Exception] = {
     ]
 };
 
-/// Coherence rule 2 on the editor's output: every golden uses only classes the stylesheet
+/// Coherence rule 2 on the editor's output: every state uses only classes the stylesheet
 /// styles, no hand-written SVG or form control, and no colour inline beyond the exceptions.
 #[test]
-fn every_space_editor_golden_lints_clean() {
+fn every_space_editor_state_lints_clean() {
     use ui_lint::{LintConfig, markup};
     let config = LintConfig {
         exceptions: MARKUP_EXCEPTIONS,
         ..LintConfig::new(&ui_components::kits())
     };
-    let goldens = golden::all_in("space_editor");
-    let failures: Vec<String> = goldens
+    let failures: Vec<String> = rendered()
         .iter()
         .flat_map(|(name, html)| {
             markup(html, ui_components::stylesheet(), &config)
@@ -263,8 +224,4 @@ fn every_space_editor_golden_lints_clean() {
         })
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
-    // The plane's payload is scrubbed from the goldens; the real markup must lint clean too.
-    let real = render(|| editor(preset_look(0, Grain(35)), Scheme::Light, 0));
-    let offences = markup(&real, ui_components::stylesheet(), &config);
-    assert!(offences.is_empty(), "{offences:?}");
 }

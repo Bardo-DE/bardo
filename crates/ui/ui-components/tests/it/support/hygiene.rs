@@ -1,5 +1,5 @@
 //! What every rendered specimen must be, shared by the suites that keep specimens and swept by
-//! each crate's `golden_hygiene`: its markup lints clean against the stylesheet, and every `ds-`
+//! `specimen_hygiene`: its markup lints clean against the stylesheet, and every `ds-`
 //! class in it is one the stylesheet styles.
 
 use ui_lint::{LintConfig, markup};

@@ -1,4 +1,4 @@
-//! The mail-app states, as data: the golden each renders to and how to make it.
+//! The mail-app states, as data: the name each renders under and how to make it.
 
 use super::scoped::Scoped;
 use dioxus::prelude::*;
@@ -9,9 +9,9 @@ use ui_components::root::pass_through::{DataAttr, DataName, ExtraClass};
 use ui_core::vocab::RowState;
 use ui_style::tokens::control_size::ControlSize;
 
-/// One state and its golden.
+/// One state and its name.
 pub struct Case {
-    pub golden: &'static str,
+    pub name: &'static str,
     pub make: fn() -> Element,
 }
 
@@ -60,51 +60,51 @@ fn projects(open: bool, drop: DropState) -> Element {
 
 pub const CASES: &[Case] = &[
     Case {
-        golden: "controls/button/data-attr.html",
+        name: "controls/button/data-attr",
         make: || rsx! { Button { common: Common { data: folder("INBOX/Receipts"), ..Common::default() }, bezel: Bezel::Toolbar, label: "Receipts", onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/extra-class.html",
+        name: "controls/button/extra-class",
         make: || rsx! { Button { common: Common { extra_class: class("row-reveal  quiet-until-hover"), ..Common::default() }, size: ControlSize::Mini, label: "Reply", onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/data-attr-extra-class.html",
+        name: "controls/button/data-attr-extra-class",
         make: || rsx! { Button { common: Common { data: folder("INBOX/Receipts"), extra_class: class("fold-more"), ..Common::default() }, bezel: Bezel::Toolbar, image: ImagePosition::Only, icon: Icon::Ellipsis, label: "Actions for Receipts", stop_propagation: true, onclick: |_| {} } },
     },
     Case {
-        golden: "lists/row/outline-open-idle.html",
+        name: "lists/row/outline-open-idle",
         make: || projects(true, DropState::Idle),
     },
     Case {
-        golden: "lists/row/outline-open-accepts.html",
+        name: "lists/row/outline-open-accepts",
         make: || projects(true, DropState::Accepts),
     },
     Case {
-        golden: "lists/row/outline-open-target.html",
+        name: "lists/row/outline-open-target",
         make: || projects(true, DropState::Target),
     },
     Case {
-        golden: "lists/row/outline-open-source.html",
+        name: "lists/row/outline-open-source",
         make: || projects(true, DropState::Source),
     },
     Case {
-        golden: "lists/row/outline-closed-idle.html",
+        name: "lists/row/outline-closed-idle",
         make: || projects(false, DropState::Idle),
     },
     Case {
-        golden: "lists/row/outline-closed-accepts.html",
+        name: "lists/row/outline-closed-accepts",
         make: || projects(false, DropState::Accepts),
     },
     Case {
-        golden: "lists/row/outline-closed-target.html",
+        name: "lists/row/outline-closed-target",
         make: || projects(false, DropState::Target),
     },
     Case {
-        golden: "lists/row/outline-closed-source.html",
+        name: "lists/row/outline-closed-source",
         make: || projects(false, DropState::Source),
     },
     Case {
-        golden: "lists/row/outline-leaf-current.html",
+        name: "lists/row/outline-leaf-current",
         make: || rsx! { Row { state: RowState { selection: true, ..RowState::default() }, title: "Receipts", outline: Outline::Leaf, accessory: Accessory::Slot(more("Receipts")) } },
     },
 ];

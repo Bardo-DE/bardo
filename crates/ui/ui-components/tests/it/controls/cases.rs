@@ -1,4 +1,4 @@
-//! Every control in every state, as data: the table the golden test walks.
+//! Every control in every state, as data: the table the render test walks.
 
 use dioxus::prelude::*;
 use ui_components::components::content::avatar::{
@@ -30,7 +30,7 @@ fn symbolic() -> IconSource {
     })
 }
 
-/// A PNG pixmap, 22 px (its bytes stand in: the golden is the markup, not the picture).
+/// A PNG pixmap, 22 px (its bytes stand in: the test lints the markup, not the picture).
 fn image() -> IconSource {
     IconSource::Image(ExternalIcon {
         url: IconUrl::png(b"\x89PNG"),

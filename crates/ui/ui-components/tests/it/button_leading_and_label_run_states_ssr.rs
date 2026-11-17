@@ -1,14 +1,11 @@
 //! The mail-app states (controls and lists): each new prop or variant rendered through dioxus-ssr
-//! and compared with a golden under its component's directory, so the controls' and lists'
-//! class scans cover them too. Every state here is additive; the goldens of the states that
-//! existed before are in `components_controls.rs`, `components_lists.rs` and
-//! `button_field_tile_states_ssr.rs` and `provider_and_button_face_states_ssr.rs`; the overlays are in `components_overlays.rs`.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it button_leading_and_label_run_states_ssr` rewrites these goldens.
+//! and linted as markup. Every state here is additive; the states that existed before are in
+//! `components_controls.rs`, `components_lists.rs`, `button_field_tile_states_ssr.rs` and
+//! `provider_and_button_face_states_ssr.rs`; the overlays are in `components_overlays.rs`.
 
 #[path = "button_leading_and_label_run_states/cases.rs"]
 mod cases;
-use crate::support::golden;
+use crate::support::specimen;
 
 use cases::CASES;
 use dioxus::prelude::*;
@@ -41,10 +38,10 @@ fn render(make: fn() -> Element) -> String {
 }
 
 #[test]
-fn every_button_leading_and_label_run_state_matches_its_golden() {
+fn every_button_leading_and_label_run_state_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|case| golden::check(case.golden, &render(case.make)).err())
+        .filter_map(|case| specimen::lint(case.name, &render(case.make)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

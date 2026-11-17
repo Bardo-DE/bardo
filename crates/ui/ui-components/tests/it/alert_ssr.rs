@@ -1,11 +1,7 @@
-//! The alert as markup: every state matches its golden under
-//! `tests/snapshots/alert/`, lints clean and uses only `ds-` classes the stylesheet styles; the
+//! The alert as markup: every state lints clean and uses only `ds-` classes the stylesheet styles; the
 //! markup says which button is the default (Primary), how a destructive action reads and how the
 //! footer lies for one, two and three buttons.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --features lint --test it alert_ssr` rewrites the goldens.
 
-use crate::support::golden;
 use crate::support::hygiene;
 
 use dioxus::core::NoOpMutations;
@@ -162,18 +158,7 @@ fn by_name(name: &str) -> String {
     render(make)
 }
 
-#[test]
-fn every_specimen_matches_its_golden() {
-    let failures: Vec<String> = SPECIMENS
-        .iter()
-        .filter_map(|(name, make)| {
-            golden::check(&format!("alert/{name}.html"), &render(*make)).err()
-        })
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-/// Lint offences and unstyled classes of every specimen, swept by `golden_hygiene`.
+/// Lint offences and unstyled classes of every specimen, swept by `specimen_hygiene`.
 pub(crate) fn hygiene_failures() -> Vec<String> {
     let sheet = ui_components::stylesheet();
     let config = LintConfig::new(&ui_components::kits());

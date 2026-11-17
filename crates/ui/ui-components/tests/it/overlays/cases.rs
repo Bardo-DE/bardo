@@ -1,4 +1,4 @@
-//! Every overlay component in every state, as data: the table the golden test walks. Each case
+//! Every overlay component in every state, as data: the table the render test walks. Each case
 //! renders inside a `Ds`, so floating surfaces arrive through its overlay host; `wait` lets the
 //! case's timers run first (a hover card's 450 ms intent, an entrance settling).
 
@@ -520,8 +520,8 @@ pub const CASES: &[Case] = &[
         make: || rsx! { SenderCard { kind: HoverKind::Side } },
         wait: INTENT,
     },
-    // HoverCard parts: each block alone, and the sender card composed from parts (its golden
-    // equals `sender-open`, the same card written by hand).
+    // HoverCard parts: each block alone, and the sender card composed from parts (it renders
+    // the same markup as `sender-open`, the same card written by hand).
     Case {
         component: "hover_card",
         state: "part-title",

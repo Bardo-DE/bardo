@@ -1,5 +1,5 @@
-//! Every list, sidebar and Space-frame component in every state, as data: the table the golden
-//! test walks. Goldens live in `tests/snapshots/lists/<component>/<state>.html`.
+//! Every list, sidebar and Space-frame component in every state, as data: the table the render
+//! test walks.
 
 use super::rows::strip_actions;
 use dioxus::prelude::*;

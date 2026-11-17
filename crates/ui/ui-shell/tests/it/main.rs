@@ -4,12 +4,10 @@
 mod accounts_ssr;
 mod confirm_ssr;
 mod details_lint;
-#[path = "../../../ui-components/tests/it/support/golden.rs"]
-mod golden;
-mod golden_hygiene;
 mod helpers_ssr;
 #[path = "../../../ui-components/tests/it/support/hygiene.rs"]
 mod hygiene;
 mod self_lint;
+mod specimen_hygiene;
 mod stylesheet;
 mod tokens;

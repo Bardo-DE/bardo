@@ -1,4 +1,4 @@
-//! The mail-app states, as data: the golden each renders to and how to make it.
+//! The mail-app states, as data: the name each renders under and how to make it.
 
 use dioxus::prelude::*;
 use ui_components::components::app::pin_tile::{PinFace, PinTile};
@@ -22,63 +22,63 @@ fn local() -> PinFace {
     }
 }
 
-/// One state and its golden.
+/// One state and its name.
 pub struct Case {
-    pub golden: &'static str,
+    pub name: &'static str,
     pub make: fn() -> Element,
 }
 
 pub const CASES: &[Case] = &[
     Case {
-        golden: "lists/pin_tile/one-local.html",
+        name: "lists/pin_tile/one-local",
         make: || rsx! { PinTile { face: local(), selection: true, unread: 2, onclick: |_| {} } },
     },
     Case {
-        golden: "lists/provider_mark/local-row.html",
+        name: "lists/provider_mark/local-row",
         make: || rsx! { ProviderMark { provider: MarkProvider::Local, size: ControlSize::Mini, style: MarkStyle::Letter } },
     },
     Case {
-        golden: "lists/provider_mark/local-image-ignored.html",
+        name: "lists/provider_mark/local-image-ignored",
         make: || rsx! { ProviderMark { provider: MarkProvider::Local, size: ControlSize::Small, style: MarkStyle::Image(ImageSource("data:image/png;base64,iVBORw0KGgo=".to_string())) } },
     },
     Case {
-        golden: "lists/provider_mark/face-one-letter.html",
+        name: "lists/provider_mark/face-one-letter",
         make: || rsx! { ProviderMark { provider: MarkProvider::Imap, size: ControlSize::Regular, face: Some(MarkFace::new("A", "#D97757")) } },
     },
     Case {
-        golden: "lists/provider_mark/face-two-letters-mini.html",
+        name: "lists/provider_mark/face-two-letters-mini",
         make: || rsx! { ProviderMark { provider: MarkProvider::Imap, size: ControlSize::Mini, face: Some(MarkFace::new("OR", "#6467F2")) } },
     },
     Case {
-        golden: "lists/provider_mark/face-dark-ink.html",
+        name: "lists/provider_mark/face-dark-ink",
         make: || rsx! { ProviderMark { provider: MarkProvider::Imap, size: ControlSize::Small, face: Some(MarkFace::new("Cx", "#FFE066")) } },
     },
     Case {
-        golden: "lists/provider_mark/face-bad-colour-neutral.html",
+        name: "lists/provider_mark/face-bad-colour-neutral",
         make: || rsx! { ProviderMark { provider: MarkProvider::Google, size: ControlSize::Small, face: Some(MarkFace::new("Zz", "teal")) } },
     },
     Case {
-        golden: "controls/button/frame.html",
+        name: "controls/button/frame",
         make: || rsx! { Button { bezel: Bezel::Toolbar, label: "Settings", icon: Some(Icon::Settings), onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/frame-pressed.html",
+        name: "controls/button/frame-pressed",
         make: || rsx! { Button { bezel: Bezel::Toolbar, label: "Today", value: Some(Check::On), onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/quiet-caret.html",
+        name: "controls/button/quiet-caret",
         make: || rsx! { Button { bezel: Bezel::Inline, label: "poh@acme.example", trailing: Icon::ChevronDown, shown: false, onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/mini-trailing-glyph.html",
+        name: "controls/button/mini-trailing-glyph",
         make: || rsx! { Button { size: ControlSize::Mini, label: "Open", trailing: Icon::Link, onclick: |_| {} } },
     },
     Case {
-        golden: "controls/text_field/secret-value-unwritten.html",
+        name: "controls/text_field/secret-value-unwritten",
         make: || rsx! { TextField { kind: FieldKind::Secure, label: "App password", value: "hunter2", placeholder: "App password", oninput: |_| {} } },
     },
     Case {
-        golden: "controls/text_field/bare.html",
+        name: "controls/text_field/bare",
         make: || rsx! { TextField { bezeled: false, label: "Name", value: "Work", placeholder: "Name this Space", oninput: |_| {} } },
     },
 ];

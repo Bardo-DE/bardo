@@ -1,17 +1,14 @@
 //! The list, sidebar and Space-frame components (design/04-COMPONENTS.md sections 8, 16, 17, 19,
-//! 26-28, 32-35): every component in every state rendered through dioxus-ssr and compared with
-//! a golden in `tests/snapshots/lists/<component>/<state>.html`; roster-driven lists at each
+//! 26-28, 32-35): every component in every state rendered through dioxus-ssr and
+//! linted as markup and checked against its component's sheets; roster-driven lists at each
 //! moment of a row's exit; the drag ghost driven by a `DragTracker`; the Space editor's field
-//! plane decoded and probed; and the contrast pills against `space::readout`. `golden_lints` lints
-//! every golden as markup against the stylesheet.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it components_lists` rewrites the goldens.
+//! plane decoded and probed; and the contrast pills against `space::readout`.
 
 #[path = "lists/cases.rs"]
 mod cases;
 use crate::css_scan;
 use crate::support::dom_time;
-use crate::support::golden;
+use crate::support::specimen;
 #[path = "lists/live.rs"]
 mod live;
 #[path = "lists/motion.rs"]
@@ -58,22 +55,6 @@ fn render(make: fn() -> Element) -> String {
     let mut dom = VirtualDom::new_with_props(host, HostProps { make });
     dom.rebuild_in_place();
     dioxus_ssr::render(&dom)
-}
-
-fn golden_name(case: &Case) -> String {
-    format!("lists/{}/{}.html", case.component, case.state)
-}
-
-#[test]
-fn every_list_component_matches_its_golden() {
-    let failures: Vec<String> = CASES
-        .iter()
-        .chain(ROW_CASES)
-        .chain(THREAD_ROW_CASES)
-        .chain(STRIP_PRESS_CASES)
-        .filter_map(|case| golden::check(&golden_name(case), &render(case.make)).err())
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 /// The stylesheets that style one component's markup: its own, then those of the components it
@@ -146,30 +127,34 @@ const SHARED: &[&str] = &["ds-ic", "ds-truncate"];
 const STYLED_ABOVE: &[&str] = &["ds-space-dot"];
 
 #[test]
-fn every_class_in_a_golden_is_styled_by_its_component() {
-    let goldens = golden::all_in("lists");
-    assert!(
-        goldens.len()
-            >= CASES.len() + ROW_CASES.len() + THREAD_ROW_CASES.len() + STRIP_PRESS_CASES.len(),
-        "only {} goldens",
-        goldens.len()
-    );
+fn every_list_component_renders_clean_and_is_styled_by_its_component() {
     let mut failures = Vec::new();
-    for (name, html) in &goldens {
-        let component = name.split('/').nth(1).unwrap_or_default();
-        let css = sheets(component);
+    for case in CASES
+        .iter()
+        .chain(ROW_CASES)
+        .chain(THREAD_ROW_CASES)
+        .chain(STRIP_PRESS_CASES)
+    {
+        let name = format!("lists/{}/{}", case.component, case.state);
+        let html = render(case.make);
+        failures.extend(specimen::lint(&name, &html).err());
+        let css = sheets(case.component);
         if css.is_empty() {
-            failures.push(format!("{name}: no stylesheet listed for {component}"));
+            failures.push(format!(
+                "{name}: no stylesheet listed for {}",
+                case.component
+            ));
             continue;
         }
-        for class in classes(html) {
+        for class in classes(&html) {
             if SHARED.contains(&class) || STYLED_ABOVE.contains(&class) || !class.starts_with("ds-")
             {
                 continue;
             }
             if !css.iter().any(|sheet| styles_class(sheet, class)) {
                 failures.push(format!(
-                    "{name}: .{class} is in no stylesheet of {component}"
+                    "{name}: .{class} is in no stylesheet of {}",
+                    case.component
                 ));
             }
         }

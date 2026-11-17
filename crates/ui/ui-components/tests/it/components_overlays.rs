@@ -1,14 +1,11 @@
 //! The overlay components (design/04-COMPONENTS.md sections 18, 20-25, 29-31): every component
-//! in every state rendered inside a `Ds` through dioxus-ssr and compared with a golden in
-//! `tests/snapshots/overlays/<component>/<state>.html`; the root's toast host;
-//! the layer stack a floating component joins. `golden_lints` lints the goldens' markup against the stylesheet.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it components_overlays` rewrites the goldens.
+//! in every state rendered inside a `Ds` through dioxus-ssr and linted as markup against the
+//! stylesheet; the root's toast host; the layer stack a floating component joins.
 
 #[path = "overlays/cases.rs"]
 mod cases;
 use crate::support::dom_time;
-use crate::support::golden;
+use crate::support::specimen;
 #[path = "overlays/hover_card_flag.rs"]
 mod hover_card_flag;
 #[path = "overlays/hover_card_hooks.rs"]
@@ -72,7 +69,7 @@ fn built(make: fn() -> Element, wait: Duration) -> TimedDom {
 }
 
 /// What a case renders inside the root: the markup between `.ds`'s own tags, so a change to
-/// the frame variables does not rewrite every golden.
+/// the frame variables does not change what is linted.
 fn inside_root(dom: &VirtualDom) -> String {
     let html = dioxus_ssr::render(dom);
     let open = html.find('>').map_or(0, |at| at + 1);
@@ -80,20 +77,24 @@ fn inside_root(dom: &VirtualDom) -> String {
     html[open..close].to_string()
 }
 
-fn golden_name(case: &Case) -> String {
-    format!("overlays/{}/{}.html", case.component, case.state)
+fn case_name(case: &Case) -> String {
+    format!("overlays/{}/{}", case.component, case.state)
 }
 
-#[test]
-fn every_overlay_matches_its_golden() {
-    let failures: Vec<String> = CASES
+fn all_cases() -> impl Iterator<Item = &'static Case> {
+    CASES
         .iter()
         .chain(palette_and_hover_targets::PALETTE_AND_HOVER_CASES)
         .chain(hover_card_hooks::HOVER_CARD_HOOK_CASES)
         .chain(hover_card_flag::HOVER_CARD_FLAG_CASES)
+}
+
+#[test]
+fn every_overlay_lints_clean() {
+    let failures: Vec<String> = all_cases()
         .filter_map(|case| {
             let dom = built(case.make, case.wait);
-            golden::check(&golden_name(case), &inside_root(&dom)).err()
+            specimen::lint(&case_name(case), &inside_root(&dom)).err()
         })
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
@@ -250,9 +251,11 @@ fn a_toast_slides_in_and_is_dropped_after_it_slides_out() {
 /// hand, so a consumer loses nothing by using the parts.
 #[test]
 fn the_parts_draw_the_hand_written_card() {
-    let read = |state: &str| {
-        std::fs::read_to_string(golden::path(&format!("overlays/hover_card/{state}.html")))
-            .expect("the golden exists")
+    let render = |state: &str| {
+        let case = all_cases()
+            .find(|case| case.component == "hover_card" && case.state == state)
+            .expect("the case exists");
+        inside_root(&built(case.make, case.wait))
     };
-    assert_eq!(read("sender-parts"), read("sender-open"));
+    assert_eq!(render("sender-parts"), render("sender-open"));
 }

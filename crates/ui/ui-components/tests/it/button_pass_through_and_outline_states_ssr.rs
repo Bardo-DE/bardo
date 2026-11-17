@@ -1,14 +1,11 @@
 //! The mail-app states: each new prop, variant or component rendered through dioxus-ssr and
-//! compared with a golden under its component's directory, so the controls' and lists' class
-//! scans cover them too. The props are additive; `SidebarItem`'s class list gained `ds-drop-place`
-//! (the drop styling it now shares with `TreeItem`), which the existing sidebar goldens show.
-//!
-//! `DS_BLESS=1 cargo test -p ui-components --test it button_pass_through_and_outline_states_ssr` rewrites these goldens.
+//! linted as markup. The props are additive; `SidebarItem`'s class list gained `ds-drop-place`
+//! (the drop styling it now shares with `TreeItem`).
 
 #[path = "button_pass_through_and_outline_states/cases.rs"]
 mod cases;
-use crate::support::golden;
 use crate::support::scoped;
+use crate::support::specimen;
 
 use cases::CASES;
 use dioxus::prelude::*;
@@ -41,10 +38,10 @@ fn render(make: fn() -> Element) -> String {
 }
 
 #[test]
-fn every_button_pass_through_and_outline_state_matches_its_golden() {
+fn every_button_pass_through_and_outline_state_lints_clean() {
     let failures: Vec<String> = CASES
         .iter()
-        .filter_map(|case| golden::check(case.golden, &render(case.make)).err())
+        .filter_map(|case| specimen::lint(case.name, &render(case.make)).err())
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

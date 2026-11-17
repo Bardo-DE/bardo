@@ -1,4 +1,4 @@
-//! The mail-app states, as data: the golden each renders to and how to make it.
+//! The mail-app states, as data: the name each renders under and how to make it.
 
 use dioxus::prelude::*;
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
@@ -9,9 +9,9 @@ use ui_components::root::pass_through::{DataAttr, DataName};
 use ui_core::vocab::RowState;
 use ui_style::tokens::control_size::ControlSize;
 
-/// One state and its golden.
+/// One state and its name.
 pub struct Case {
-    pub golden: &'static str,
+    pub name: &'static str,
     pub make: fn() -> Element,
 }
 
@@ -47,23 +47,23 @@ fn google() -> Leading {
 
 pub const CASES: &[Case] = &[
     Case {
-        golden: "controls/button/leading-mark.html",
+        name: "controls/button/leading-mark",
         make: || rsx! { Button { bezel: Bezel::Inline, label: "poh@acme.example", leading: google(), trailing: Icon::ChevronDown, shown: false, onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/leading-glyph.html",
+        name: "controls/button/leading-glyph",
         make: || rsx! { Button { size: ControlSize::Mini, label: "Pinned", leading: Leading::Glyph(Icon::Pin), onclick: |_| {} } },
     },
     Case {
-        golden: "lists/row/place-drop-accepts.html",
+        name: "lists/row/place-drop-accepts",
         make: || archive(DropState::Accepts),
     },
     Case {
-        golden: "controls/button/label-runs.html",
+        name: "controls/button/label-runs",
         make: || rsx! { Button { bezel: Bezel::Inline, label: quoted_head(), onclick: |_| {} } },
     },
     Case {
-        golden: "controls/button/label-runs-named.html",
+        name: "controls/button/label-runs-named",
         make: || rsx! { Button { common: Common { aria_label: Some("Show the quoted message".to_string()), ..Common::default() }, bezel: Bezel::Inline, label: quoted_head(), onclick: |_| {} } },
     },
 ];
