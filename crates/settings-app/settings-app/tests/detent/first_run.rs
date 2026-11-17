@@ -3,14 +3,10 @@
 
 use settings_app_files::{FirstRunMark, StateHome};
 use settings_app_testkit::Scratch;
-use std::process::{Command, Stdio};
-use std::time::{Duration, Instant};
+use std::process::{Child, Command, Stdio};
 
 const BIN: &str = env!("CARGO_BIN_EXE_bardo-settings");
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
-
-/// How long a run that should exit at once is given.
-const PATIENCE: Duration = Duration::from_secs(20);
 
 fn run(scratch: &Scratch) -> std::process::ExitStatus {
     // Nothing of the real session reaches the process: no display, no bus, scratch directories.
@@ -26,19 +22,24 @@ fn run(scratch: &Scratch) -> std::process::ExitStatus {
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .spawn()
+        .map(Started)
         .expect("bardo-settings starts");
-    let started = Instant::now();
-    loop {
-        if let Some(status) = child.try_wait().expect("wait") {
-            return status;
-        }
-        if started.elapsed() > PATIENCE {
-            // Killed by its PID, the one this test started.
-            child.kill().expect("kill");
-            child.wait().expect("reap");
-            panic!("--first-run did not exit at once");
-        }
-        std::thread::sleep(Duration::from_millis(50));
+    let mut status = None;
+    base_testkit::eventually_blocking("--first-run to exit at once", || {
+        status = child.0.try_wait().expect("wait");
+        status.is_some()
+    });
+    status.expect("the process exited")
+}
+
+/// The process this test started, killed by its PID (and reaped) when the test is done with it,
+/// so a hang that fails the test leaves nothing behind.
+struct Started(Child);
+
+impl Drop for Started {
+    fn drop(&mut self) {
+        let _ = self.0.kill();
+        let _ = self.0.wait();
     }
 }
 
