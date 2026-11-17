@@ -24,7 +24,7 @@ anyview-core = {path = "../../anyview/crates/anyview-core"}
 anyview-fs = {path = "../../anyview/crates/anyview-fs"}
 anyview-image = {path = "../../anyview/crates/anyview-image"}
 anyview-peek = {path = "../../anyview/crates/anyview-peek", default-features = false, features = ["pane"]}
-anyview-platform = {path = "../../anyview/crates/anyview-platform", features = ["quire-desktop"]}
+anyview-platform = {path = "../../anyview/crates/anyview-platform"}
 keymap = {path = "../../keymap/keymap"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 dirs = { workspace = true }

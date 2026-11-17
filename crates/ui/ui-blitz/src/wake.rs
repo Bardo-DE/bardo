@@ -4,6 +4,7 @@
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Condvar, Mutex, PoisonError};
 use std::task::Wake;
+#[cfg(any(test, feature = "testing"))]
 use std::time::Duration;
 
 /// Counts wake-ups and lets one thread wait for the next.

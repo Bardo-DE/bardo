@@ -28,6 +28,7 @@ impl Offload {
         not(feature = "tokio"),
         expect(
             clippy::unused_async,
+            clippy::unused_async_trait_impl,
             reason = "only the tokio variant awaits; callers await the same signature in every build"
         )
     )]

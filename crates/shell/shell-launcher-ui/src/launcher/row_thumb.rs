@@ -15,7 +15,7 @@ use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 use anyview_core::{ByteLen, FilePath, FileStamp, ModTime};
-use anyview_platform::linux::FreedesktopThumbnails;
+use anyview_platform::portable::FreedesktopThumbnails;
 use anyview_platform::{Env, ThumbSize, ThumbnailCache, file_uri};
 use dioxus::prelude::*;
 use md5::{Digest, Md5};
@@ -137,7 +137,7 @@ mod tests {
     use std::time::{Duration, SystemTime};
 
     use anyview_core::{FilePath, PixelLen, PixelSize};
-    use anyview_platform::linux::FreedesktopThumbnails;
+    use anyview_platform::portable::FreedesktopThumbnails;
     use anyview_platform::{Env, ThumbPixels, ThumbSize, ThumbnailCache};
     use shell_model::dirs::Dirs;
     use shell_testkit::TempDir;

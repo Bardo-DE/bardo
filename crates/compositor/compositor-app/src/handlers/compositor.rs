@@ -131,7 +131,10 @@ impl State {
                         // Only the testing build extends the events (A37 below).
                         #[cfg_attr(
                             not(feature = "testing"),
-                            expect(unused_mut, reason = "only the testing build extends the events")
+                            expect(
+                                unused_mut,
+                                reason = "only the testing build extends the events"
+                            )
                         )]
                         let mut events =
                             xdg_shell::on_toplevel_commit(&mut self.wl.xdg_shell, surface, state);

@@ -13,7 +13,7 @@ use std::path::Path;
 use anyview_core::Input;
 use anyview_image::Rgba8;
 use anyview_peek::StillSource;
-use anyview_platform::linux::FreedesktopThumbnails;
+use anyview_platform::portable::FreedesktopThumbnails;
 use anyview_platform::{Env, ThumbSize, ThumbnailCache};
 
 /// The sizes tried, the larger first: the pane shows it at up to twice its own size.
