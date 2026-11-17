@@ -59,6 +59,9 @@ pub struct Env {
     pub clock: Arc<dyn WallClock>,
     /// The sound server the volume service connects to.
     pub sound: SoundRoute,
+    /// The kernel's `/sys/class` tree the displays service reads connectors and backlights
+    /// from: `/sys/class`, or a folder with nothing in it in a test.
+    pub sys_class: PathBuf,
     /// The DDC/CI buses external monitors answer on.
     pub ddc: Arc<dyn DdcBus>,
     /// Where idle's screen-off and suspend times come from.
@@ -158,6 +161,7 @@ impl Env {
             ibus: IbusRoute::from_process(),
             clock: Arc::new(SystemClock),
             sound: SoundRoute::Server,
+            sys_class: PathBuf::from("/sys/class"),
             ddc: Arc::new(I2cBuses::default()),
             idle_times: IdleTimesSource::Settings,
             session_actions: Arc::new(LogindActions),
@@ -183,7 +187,7 @@ impl Env {
     /// every directory inside `scratch`, the system clock (read only), DDC monitors from a file
     /// that is not there (none), no polkit helper, session actions that are only recorded, and a
     /// password check that refuses everything, a made-up person for the account, no processes
-    /// running, no child started (each is recorded), no key remap daemon socket, no sound server, no bus name claimed and callers judged against an empty table (every call to a
+    /// running, no child started (each is recorded), no key remap daemon socket, no sound server, no `/sys/class` content, no bus name claimed and callers judged against an empty table (every call to a
     /// shell object is refused until a test says who its stand-ins are). For tests that start
     /// services and must never reach the person's session or files. `scratch` must exist: the
     /// wallpaper service watches the nearest existing folder above the wallpaper's source file.
@@ -197,6 +201,7 @@ impl Env {
             ibus: IbusRoute::Absent,
             clock: Arc::new(SystemClock),
             sound: SoundRoute::Absent,
+            sys_class: scratch.join("no-sys-class"),
             ddc: Arc::new(FileBus::new(scratch.join("no-ddc-monitors.json"))),
             idle_times: IdleTimesSource::Settings,
             polkit: polkit_agent::PolkitRoute {

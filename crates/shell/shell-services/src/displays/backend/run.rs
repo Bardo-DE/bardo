@@ -3,7 +3,7 @@
 //! blocking pool; everything else here is quick.
 
 use std::collections::BTreeSet;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, mpsc as std_mpsc};
 use std::time::Duration;
 
@@ -50,11 +50,18 @@ pub struct Paths {
 }
 
 impl Paths {
-    /// The kernel's usual places, the files in `dirs`, logind on `system`, DDC on `ddc`.
-    pub fn of(system: Bus, dirs: &Dirs, ddc: Arc<dyn DdcBus>, wayland: WaylandRoute) -> Self {
+    /// The connectors and backlights under `sys_class` (the kernel's `/sys/class`), the files in
+    /// `dirs`, logind on `system`, DDC on `ddc`.
+    pub fn of(
+        system: Bus,
+        dirs: &Dirs,
+        sys_class: &Path,
+        ddc: Arc<dyn DdcBus>,
+        wayland: WaylandRoute,
+    ) -> Self {
         Paths {
-            drm: PathBuf::from("/sys/class/drm"),
-            backlight: PathBuf::from("/sys/class/backlight"),
+            drm: sys_class.join("drm"),
+            backlight: sys_class.join("backlight"),
             fontconfig: Some(fontconfig_file::dir_in(dirs)),
             ddc,
             system,

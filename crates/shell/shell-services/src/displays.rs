@@ -45,6 +45,7 @@ impl Run for DisplaysService {
         let paths = backend::Paths::of(
             env.buses.system.clone(),
             &env.dirs,
+            &env.sys_class,
             Arc::clone(&env.ddc),
             env.wayland.clone(),
         );
