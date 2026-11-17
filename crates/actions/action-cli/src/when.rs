@@ -8,7 +8,7 @@ use action_vocab::{CivilDate, Decimal, Scale, Seconds};
 use provenance::UnixSeconds;
 
 /// Why a word is not the value wanted.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum WhenFault {
     /// Not RFC 3339.
     #[error(

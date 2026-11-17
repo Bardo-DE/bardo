@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-chrono = { workspace = true, features = ["alloc"] }
+jiff = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 # `within`'s bound: a wall-clock delay on its own timer thread, so it works under any executor.

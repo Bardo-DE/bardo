@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-chrono = { workspace = true, features = ["std"] }
+jiff = { workspace = true }
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 serde = { workspace = true, features = ["derive"] }
