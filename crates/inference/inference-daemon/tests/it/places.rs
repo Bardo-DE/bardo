@@ -14,8 +14,8 @@ use hosting::lab::Lab;
 use hosting::rig::{Hosted, Plan, Trust, World};
 use inference_client::{ClientError, TransportError};
 use inference_core::{ComputerName, PlaceKind, PlaceRow, PlaceState, Takes};
-use inference_daemon::attached::{Attached, Place, Reach};
-use inference_daemon::peers::{Caller, Role};
+use inference_daemon::{Attached, Place, Reach};
+use inference_daemon::{Caller, Role};
 
 fn app(name: &str) -> AppId {
     AppId {
@@ -347,7 +347,7 @@ mod routing {
         ] {
             world.peers.introduce(
                 &me,
-                inference_daemon::peers::Caller {
+                inference_daemon::Caller {
                     app: app(name),
                     role,
                 },
@@ -392,7 +392,7 @@ mod routing {
         // A placer is let through.
         world.peers.introduce(
             &me,
-            inference_daemon::peers::Caller {
+            inference_daemon::Caller {
                 app: app(COMPANION),
                 role: Role::Placer,
             },

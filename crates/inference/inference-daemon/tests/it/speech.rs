@@ -24,8 +24,8 @@ use inference_core::{
     ModelLabel, ModelRef, OpenOptions, Readiness, RequestShape, Role, StageRole, TierMap,
     TranscribeBegin, TranscribeMode,
 };
-use inference_daemon::runner::{Pin, Pinned, Turns};
-use inference_daemon::speech::Ears;
+use inference_daemon::Ears;
+use inference_daemon::{Pin, Pinned, Turns};
 use inference_router::pipeline::plan;
 use inference_turns::pipeline::{PipelineInput, VecAudio, run_pipeline};
 use std::collections::BTreeSet;

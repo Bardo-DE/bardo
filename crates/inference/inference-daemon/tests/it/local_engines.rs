@@ -9,14 +9,14 @@ use base_time::UnixSeconds;
 use engine_manifest::{Arch, Artifact, Backend, Delivery, Manifest, Row};
 use engine_probe::{Record, Roots, Scope, seal_of};
 use inference_core::{Policy, TierMap};
-use inference_daemon::config::{Dirs, InferdConfig, ProgramSearch};
-use inference_daemon::engines::Engines;
-use inference_daemon::installed::Installed;
-use inference_daemon::peers::{Caller, Role, TablePeers};
-use inference_daemon::service::{Inference, serve_on};
-use inference_daemon::settings::LocalEngines;
-use inference_daemon::settings::{ConfigFile, Reload};
-use inference_daemon::supervise::Supervised;
+use inference_daemon::Engines;
+use inference_daemon::Installed;
+use inference_daemon::LocalEngines;
+use inference_daemon::Supervised;
+use inference_daemon::{Caller, Role, TablePeers};
+use inference_daemon::{ConfigFile, Reload};
+use inference_daemon::{Dirs, InferdConfig, ProgramSearch};
+use inference_daemon::{Inference, serve_on};
 use inference_dbus::inference::{
     EnginePlace, EngineState, InferenceProxy, LocalEngine, local_engine_from_dbus,
 };

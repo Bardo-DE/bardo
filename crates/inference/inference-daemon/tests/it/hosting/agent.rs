@@ -9,7 +9,7 @@ use super::rig::{AgentsPlan, Hosted, Plan, Trust, World};
 use account_core::{AppId, AppName, Isolation};
 use account_dbus::Details;
 use inference_core::{Period, Policy, SpendScope};
-use inference_daemon::peers::Role;
+use inference_daemon::Role;
 use inference_dbus::inference::{AgentsProxy, EndpointArg};
 use serde_json::{Value, json};
 use std::fmt::Write as _;

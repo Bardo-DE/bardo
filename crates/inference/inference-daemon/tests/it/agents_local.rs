@@ -9,7 +9,7 @@ use hosting::engine::Chat;
 use hosting::entries;
 use hosting::rig::{AgentsPlan, Plan, World};
 use inference_core::Policy;
-use inference_daemon::peers::Role;
+use inference_daemon::Role;
 use serde_json::json;
 
 // ---- a model on this computer --------------------------------------------------------------
@@ -228,7 +228,7 @@ async fn a_reply_of_only_reasoning_is_an_error_with_a_status_in_both_shapes() {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_setting() {
     use hosting::lab::Lab;
-    use inference_daemon::attached::{Attached, Place, Reach};
+    use inference_daemon::{Attached, Place, Reach};
     let dir = base_testkit::Scratch::new("ag");
     let lab = Lab::start_in(dir, "lab", &[entries::SERVED], None).await;
     lab.say(&["from the lab"]);

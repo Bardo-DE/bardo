@@ -13,7 +13,7 @@
 #![recursion_limit = "256"]
 
 use clap::Parser;
-use inference_daemon::shutdown::Signals;
+use inference_daemon::Signals;
 use inference_daemon::{Config, Daemon};
 use std::path::PathBuf;
 use std::process::ExitCode;

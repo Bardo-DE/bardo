@@ -5,7 +5,7 @@ use super::*;
 use crate::hosting::bus::within;
 use account_capability::ModelId;
 use account_dbus::Details;
-use inference_daemon::attached::{Attached, Place, Reach};
+use inference_daemon::{Attached, Place, Reach};
 use inference_dbus::inference::{
     InferenceProxy, RunState, RunningModel, RunningRowError, running_from_dbus,
 };

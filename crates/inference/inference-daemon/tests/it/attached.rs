@@ -24,7 +24,7 @@ use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
     MessagePart, ModelRef, Role as ChatRole,
 };
-use inference_daemon::attached::{Attached, KeyFileProblem, NotReady, Place, Reach};
+use inference_daemon::{Attached, KeyFileProblem, NotReady, Place, Reach};
 use inference_router::seams::EngineHost;
 use inference_router::startup::Cause;
 use inference_settings::Settings;
@@ -639,14 +639,14 @@ async fn sigterm_to_the_real_inferd_leaves_the_attached_engines_process_alive() 
         "inferd's shutdown did not reach the engine it never started"
     );
     // And it still answers: nothing closed its socket.
-    let target = inference_daemon::attached::Target {
+    let target = inference_daemon::Target {
         reach: Reach::Socket(dir.socket()),
         key: None,
         place: Place::MyNetwork,
         computer: None,
     };
     assert_eq!(
-        inference_daemon::attached::probe(&target, entries::SERVED).await,
+        inference_daemon::probe_attached(&target, entries::SERVED).await,
         Ok(())
     );
 }

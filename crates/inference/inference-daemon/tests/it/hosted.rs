@@ -20,7 +20,7 @@ use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, EmbedRequest, EmbedRole, InferEvent, InferReply,
     InferRequest, MessagePart, Readiness, ReplyShape, Role as ChatRole, StopReason,
 };
-use inference_daemon::peers::Role;
+use inference_daemon::Role;
 use serde_json::Value;
 
 fn llm() -> Need {

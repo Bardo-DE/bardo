@@ -6,8 +6,8 @@
 use crate::hosting::bus::{self, PrivateBus};
 
 use dbus_kit::connect::BusTarget;
-use inference_daemon::config::{Dirs, ProgramSearch};
 use inference_daemon::{Config, Daemon};
+use inference_daemon::{Dirs, ProgramSearch};
 use inference_dbus::inference::INFERENCE_BUS;
 use std::path::Path;
 use std::time::Duration;

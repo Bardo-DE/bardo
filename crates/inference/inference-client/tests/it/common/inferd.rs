@@ -183,7 +183,7 @@ impl FakeInferd {
                         runner: served.runner,
                         audit: super::served::Unaudited,
                     };
-                    inference_daemon::serve::serve_session(stream, spec, &seams).await;
+                    inference_daemon::serve_session(stream, spec, &seams).await;
                 });
             }
             behaviour => {

@@ -16,19 +16,19 @@ use engine_supervisor::{
 };
 use inference_client::{DbusTransport, Inference as InferenceClient};
 use inference_core::{ModelCard, Policy, Slot, TierMap};
-use inference_daemon::attached::{Attached, AttachedBook};
-use inference_daemon::cloud::Cloud;
-use inference_daemon::cloud::wire::{Door, Doors};
-use inference_daemon::engines::Engines;
-use inference_daemon::hosts::{HealthProbe, ProcessHost};
-use inference_daemon::peers::{Caller, Role, TablePeers};
-use inference_daemon::probe::ProbeConfig;
-use inference_daemon::replay::Replays;
-use inference_daemon::report::{NoReports, Reports};
-use inference_daemon::service::{Inference, serve_on};
-use inference_daemon::supervise::{Ports, Supervised};
-use inference_daemon::tailnet::{BusMachines, Parts, Tailnet};
-use inference_daemon::watch::{Probing, Watch};
+use inference_daemon::Cloud;
+use inference_daemon::Engines;
+use inference_daemon::ProbeConfig;
+use inference_daemon::Replays;
+use inference_daemon::{Attached, AttachedBook};
+use inference_daemon::{BusMachines, Parts, Tailnet};
+use inference_daemon::{Caller, Role, TablePeers};
+use inference_daemon::{Door, Doors};
+use inference_daemon::{HealthProbe, ProcessHost};
+use inference_daemon::{Inference, serve_on};
+use inference_daemon::{NoReports, Reports};
+use inference_daemon::{Ports, Supervised};
+use inference_daemon::{Probing, Watch};
 use inference_fs::read_catalog;
 use inference_router::catalog::CatalogDirs;
 use inference_router::local::NamedEngine;
@@ -382,7 +382,7 @@ impl World {
         let replays = Replays::read(&named, &sockets);
         models.extend(replays.models.iter().cloned());
         let attached =
-            inference_daemon::attached::models(&plan.attached, &catalog.entries, &sockets)
+            inference_daemon::attached_models(&plan.attached, &catalog.entries, &sockets)
                 .expect("the attached engines name catalog entries");
         models.retain(|model| {
             attached
@@ -475,8 +475,7 @@ impl World {
         // here and attached (each catalogue model as `local/<model>`, so a computer added later
         // is in it too), the remote ones, each catalogue model hosted by whichever account
         // reaches it (`cloud/<model>`), and what the plan adds.
-        let cloud =
-            account_core::AccountId::parse(inference_daemon::engines::CLOUD_ACCOUNT).expect("id");
+        let cloud = account_core::AccountId::parse(inference_daemon::CLOUD_ACCOUNT).expect("id");
         let local = account_core::AccountId::parse("local").expect("id");
         let pool: Vec<inference_core::ModelRef> = models
             .iter()
@@ -528,11 +527,11 @@ impl World {
         });
         // The computers Settings adds live in the world's own state directory.
         let state = scratch.join("state");
-        let computers = inference_daemon::attached::Computers::new(
+        let computers = inference_daemon::Computers::new(
             state.join("computers.toml"),
             state.join("computer-keys"),
             served.attached().clone(),
-            inference_daemon::attached::AddedFile::default(),
+            inference_daemon::AddedFile::default(),
             &plan.attached,
         );
         let bus = PrivateBus::start();
@@ -606,7 +605,7 @@ impl World {
             inference = inference.probing(probing.clone());
         }
         if plan.agents.is_some() {
-            inference = inference.agents(inference_daemon::agent::Agents::new(
+            inference = inference.agents(inference_daemon::Agents::new(
                 served.clone(),
                 Arc::new(audit.clone()),
                 Arc::new(FixedClock(UnixSeconds(1_700_000_000))),
@@ -647,7 +646,7 @@ impl World {
                             limits: inference_tailnet::Limits::default(),
                             first_pause: std::time::Duration::from_millis(50),
                             longest_pause: std::time::Duration::from_millis(200),
-                            words: inference_daemon::tailnet::words::refusal,
+                            words: inference_daemon::tailnet_refusal,
                         },
                         timing: inference_tailnet::Timing {
                             backstop: std::time::Duration::from_millis(300),

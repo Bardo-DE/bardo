@@ -4,7 +4,7 @@
 use crate::serve::{chat, mail};
 use crate::support::*;
 use inference_core::{InferEvent, InferReply, InferRequest, ModelError};
-use inference_daemon::serve::{guarded, serve_session};
+use inference_daemon::{guarded, serve_session};
 use inference_router::seams::{Seams, TurnStep};
 use std::os::fd::OwnedFd;
 use std::os::unix::net::UnixStream as StdStream;

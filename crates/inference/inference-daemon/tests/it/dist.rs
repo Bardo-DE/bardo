@@ -1,8 +1,8 @@
 //! The files under `dist/` agree with the code: the activation file and the unit name the bus name
 //! the daemon claims, and the sample configuration reads.
 
-use inference_daemon::config::InferdConfig;
-use inference_daemon::peers::CallerTable;
+use inference_daemon::CallerTable;
+use inference_daemon::InferdConfig;
 use inference_settings::{self as settings, CLASSES};
 use settings_types::schema::{ForeignTables, KeyKind, KeySpec, Schema};
 use std::path::PathBuf;
@@ -68,7 +68,7 @@ fn the_shipped_table_names_settings_by_its_unit() {
 /// runs (by unit, as placers), gives the shell its scope, and leaves the other apps plain.
 #[test]
 fn the_shipped_table_names_the_placers_and_the_shell_by_unit() {
-    use inference_daemon::peers::Role;
+    use inference_daemon::Role;
     let callers = shipped_callers();
     let role = |unit: &str| {
         callers
@@ -184,7 +184,7 @@ fn the_tailnet_drop_in_opens_the_networks_own_addresses_and_nothing_else() {
 fn the_shipped_table_names_the_callers_the_design_calls_for() {
     let callers = shipped_callers();
     let cua = callers.resolve("bardo-computer-use.service").expect("cuad");
-    assert_eq!(cua.role, inference_daemon::peers::Role::Cua);
+    assert_eq!(cua.role, inference_daemon::Role::Cua);
     for exe in [
         "bardo-memoryd",
         "bardo-actiond",
@@ -198,9 +198,9 @@ fn the_shipped_table_names_the_callers_the_design_calls_for() {
         // The three that docket's places reach through are placers: they open as an app does.
         let want = match exe {
             "bardo-companiond" | "bardo-readerd" | "bardo-actiond" => {
-                inference_daemon::peers::Role::Placer
+                inference_daemon::Role::Placer
             }
-            _ => inference_daemon::peers::Role::App,
+            _ => inference_daemon::Role::App,
         };
         assert_eq!(caller.role, want, "{exe}");
     }
@@ -225,7 +225,7 @@ fn the_agent_launcher_is_listed_by_the_machine_that_runs_it_never_by_default() {
         .expect("the documented line");
     let mine = CallerTable::from_toml_text(&documented).expect("the documented line reads");
     let launcher = mine.resolve("bardo-agent-acp.service").expect("the unit");
-    assert_eq!(launcher.role, inference_daemon::peers::Role::AgentLauncher);
+    assert_eq!(launcher.role, inference_daemon::Role::AgentLauncher);
 }
 
 /// Who is calling is the system's table's to say: the sample configuration names no caller.

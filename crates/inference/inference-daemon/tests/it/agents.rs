@@ -13,7 +13,7 @@ use hosting::agent::*;
 use hosting::engine::Chat;
 use hosting::rig::{AgentsPlan, World};
 use inference_core::{ChargeTotal, Period, SpendScope};
-use inference_daemon::peers::{Caller, Role};
+use inference_daemon::{Caller, Role};
 use inference_dbus::inference::AgentsProxy;
 use model_provider::Money;
 use rust_decimal::Decimal;

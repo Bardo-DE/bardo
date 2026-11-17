@@ -18,7 +18,7 @@ use inference_core::{
     InferRefusal, InferReply, InferRequest, MessagePart, ModelError, Role, StopReason, TokenUsage,
     ToolParallelism, TranscribeBegin, TranscribeMode, TranscribeReply,
 };
-use inference_daemon::serve::serve_session;
+use inference_daemon::serve_session;
 use inference_router::carried::Carried;
 use inference_router::seams::{Seams, TurnStep};
 use inference_router::session::SessionSpec;

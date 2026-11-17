@@ -27,7 +27,7 @@ use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
     MessagePart, Policy, Role as ChatRole,
 };
-use inference_daemon::probe::ProbeConfig;
+use inference_daemon::ProbeConfig;
 use inference_dbus::inference::InferenceProxy;
 
 const MAIL: &str = "org.bardo.Mail";

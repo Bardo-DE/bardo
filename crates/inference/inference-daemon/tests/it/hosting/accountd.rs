@@ -13,11 +13,11 @@ use account_core::{
     AccountState, AppId, DataClass, EndpointUrl, Family, LoginName, SecretText, ServiceEndpoint,
     Tls,
 };
-use inference_daemon::cloud::accountd::{AccountVerdict, Accountd, AccountdFault, Boxed};
-use inference_daemon::cloud::own::{OWN_PROVIDER, OwnServer};
-use inference_daemon::probe::Runtime;
-use inference_daemon::probed::Standing as Probed;
-use inference_daemon::report::{ReportFault, Reports};
+use inference_daemon::Runtime;
+use inference_daemon::Standing as Probed;
+use inference_daemon::{AccountVerdict, Accountd, AccountdFault, Boxed};
+use inference_daemon::{OWN_PROVIDER, OwnServer};
+use inference_daemon::{ReportFault, Reports};
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
 

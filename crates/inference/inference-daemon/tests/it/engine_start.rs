@@ -224,7 +224,7 @@ async fn prepare(world: &World) -> String {
         .expect("prepare")
 }
 
-fn the_failure(world: &World) -> inference_daemon::supervise::Failure {
+fn the_failure(world: &World) -> inference_daemon::EngineFailure {
     world
         .supervised
         .snapshot()

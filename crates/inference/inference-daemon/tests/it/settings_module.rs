@@ -14,11 +14,11 @@ use base_time::FixedClock;
 use base_time::UnixSeconds;
 use hosting::bus::{PrivateBus, within};
 use inference_core::{Pick, Policy, Slot, TierMap};
-use inference_daemon::engines::Engines;
-use inference_daemon::peers::{Caller, Role, TablePeers};
-use inference_daemon::service::{Inference, serve_with_settings};
-use inference_daemon::settings::{ConfigFile, InferdSettings, Reload};
-use inference_daemon::supervise::Supervised;
+use inference_daemon::Engines;
+use inference_daemon::Supervised;
+use inference_daemon::{Caller, Role, TablePeers};
+use inference_daemon::{ConfigFile, InferdSettings, Reload};
+use inference_daemon::{Inference, serve_with_settings};
 use inference_dbus::inference::InferenceProxy;
 use inference_dbus::inference::{INFERENCE_BUS, INFERENCE_PATH, INFERENCE_SETTINGS_PATH};
 use inference_turns::audit::Memory;
@@ -345,8 +345,8 @@ async fn a_model_of_a_probed_runtime_is_listed_under_this_computer_and_stays_lis
     use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
     use account_capability::{Claim, Offer, Provenance, Subject};
     use base_ids::Tokens;
-    use inference_daemon::probe::{Found, Probed, Runtime};
-    use inference_daemon::probed::Standing;
+    use inference_daemon::Standing;
+    use inference_daemon::{Found, Probed, Runtime};
     let id = ModelId::parse("llama3.2-3b").expect("id");
     let found = Found {
         runtime: Runtime::Ollama,
