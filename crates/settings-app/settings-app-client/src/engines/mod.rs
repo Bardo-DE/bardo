@@ -9,15 +9,13 @@ pub use programs::EnginePrograms;
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::engines::EnginesLink;
 use settings_app_model::{EnginesEffect, EnginesInput, EnginesState, LlamaCpp, engines_step};
-use settings_app_system::bus::{BusSource, Daemon, connect, next_owner, owner_changes};
-use settings_app_system::engines::EnginesLink;
 use std::sync::Arc;
 
 /// The note's handle: cheap to clone, one live value behind it.
 #[derive(Debug, Clone)]
 pub struct Engines {
-    bus: BusSource,
     link: Arc<dyn EnginesLink>,
     live: Live<EnginesState>,
 }
@@ -25,9 +23,8 @@ pub struct Engines {
 pane!(Engines, EnginesState, follow);
 
 impl Engines {
-    pub(crate) fn over(bus: BusSource, link: Arc<dyn EnginesLink>) -> Engines {
+    pub(crate) fn over(link: Arc<dyn EnginesLink>) -> Engines {
         Engines {
-            bus,
             link,
             live: Live::default(),
         }
@@ -41,17 +38,14 @@ impl Engines {
 
     /// Looks when the pane appears and again each time the assistant's name changes hands.
     async fn follow(&self) {
-        let Ok(connection) = connect(&self.bus).await else {
-            return self.dispatch(EnginesInput::Listed(LlamaCpp::Unknown)).await;
-        };
         // Subscribed before the first look, so a change in between is not lost.
-        let Ok(mut owners) = owner_changes(&connection, &Daemon::inferd()).await else {
-            return;
+        let Ok(mut owners) = self.link.owner_changes().await else {
+            return self.dispatch(EnginesInput::Listed(LlamaCpp::Unknown)).await;
         };
         loop {
             let found = self.link.look().await;
             self.dispatch(EnginesInput::Listed(found)).await;
-            if next_owner(&mut owners).await.is_none() {
+            if owners.recv().await.is_none() {
                 return;
             }
         }

@@ -9,10 +9,9 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-base-xdg = { path = "../../base/base-xdg" }
 settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
-settings-app-system = {path = "../settings-app-system"}
+settings-app-link = {path = "../settings-app-link"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
 settings-types = { path = "../../settings/settings-types" }
 inference-core = {path = "../../inference/inference-core"}

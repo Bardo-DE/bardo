@@ -3,8 +3,8 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::spaces::SpacesLink;
 use settings_app_model::{SpacesEffect, SpacesInput, SpacesState, spaces_step};
-use settings_app_system::spaces::SpacesLink;
 use std::sync::Arc;
 
 /// The Spaces' handle: cheap to clone, one live value behind it.

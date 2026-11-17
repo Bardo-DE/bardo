@@ -7,12 +7,14 @@ mod service;
 
 use clap::Parser;
 use cli::Run;
-use settings_app_client::{BusSource, ClientBuilder, ClientHomes};
+use settings_app_client::{ClientBuilder, ClientHomes};
 use settings_app_files::{FirstRunMark, KeymapFiles, find_agents_program};
 use settings_app_intents::{
     ServeFault, SettingsProvider, hand_over_session, search_entries, serve_session,
 };
+use settings_app_link::bus::BusSource;
 use settings_app_model::{Catalogue, PageKind, PageSlug, discover, inbox};
+use settings_app_system::services;
 use settings_app_ui::{App, Env, FirstRunApp, Homes, Opening};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -90,15 +92,19 @@ fn environment(opening: Opening) -> Result<Env, ExitCode> {
         return Err(ExitCode::FAILURE);
     };
     let path = std::env::var("PATH").unwrap_or_default();
+    let real = services::over(
+        &BusSource::Session,
+        &data_home,
+        &cache_home,
+        dirs::intent_dirs(),
+    );
     let client = ClientBuilder::over(
-        BusSource::Session,
+        real,
         ClientHomes {
             config: config_home.clone(),
             data: data_home.clone(),
-            cache: cache_home,
         },
     )
-    .with_intent_dirs(dirs::intent_dirs())
     .with_programs_path(path.clone())
     .with_agents_program(find_agents_program(
         std::env::current_exe().ok().as_deref(),

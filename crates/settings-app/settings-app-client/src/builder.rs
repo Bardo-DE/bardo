@@ -1,107 +1,96 @@
-//! Building a [`Client`]: over the real services of the person's session, with any of them
-//! replaced by what a test hands in.
+//! Building a [`Client`]: over the services it is handed (the real ones of the person's session
+//! from `settings-app-system`, or what a test hands in), with any of them replaced.
 
 use crate::client::Client;
 use crate::picker::{AgentSearch, ReasonFeed};
-use base_xdg::Xdg;
-use settings_app_files::{CacheHome, ConfigHome, DataHome, PictureDirs};
-use settings_app_system::accounts::{AccountsLink, OnBus as AccountsOnBus};
-use settings_app_system::bluetooth::{BluetoothLink, OnBluetooth};
-use settings_app_system::bus::BusSource;
-use settings_app_system::chooser::OnPortal;
-use settings_app_system::computers::{ComputersLink, OnBus as ComputersOnBus};
-use settings_app_system::displays::{DisplaysLink, OnCompositor};
-use settings_app_system::engine_install::{Desk, OnEngines};
-use settings_app_system::engines::{EnginesLink, OnBus as EnginesOnBus};
-use settings_app_system::hot_corners::{CornerDesk, OnCorners};
-use settings_app_system::lending::Lender;
-use settings_app_system::memory_consent::{MemoryLink, OnBus as MemoryOnBus};
-use settings_app_system::modules::{ModulesLink, OnBus as ModulesOnBus};
-use settings_app_system::person::{NoPerson, OnAccounts, PersonLink};
-use settings_app_system::picker::{OnClient as PickerOnClient, PickerLink};
-use settings_app_system::privacy::{OnClient as PrivacyOnClient, PrivacyLink};
-use settings_app_system::running::{OnBus as RunningOnBus, RunningLink};
-use settings_app_system::screen_sharing::{OnBus as ScreenSharingOnBus, ScreenSharingLink};
-use settings_app_system::spaces::{OnBus as SpacesOnBus, SpacesLink};
-use settings_app_system::sync::{OnBus as SyncOnBus, SyncLink};
-use settings_app_system::updates::{Departure, OnBus, PowerMenu, UpdatesLink};
-use settings_app_system::wallpaper::{OnDisk, Pictures, Thumbnails};
-use settings_app_system::wifi::{OnWifi, WifiLink};
-use std::path::{Path, PathBuf};
+use settings_app_files::{ConfigHome, DataHome};
+use settings_app_link::accounts::AccountsLink;
+use settings_app_link::bluetooth::BluetoothLink;
+use settings_app_link::computers::ComputersLink;
+use settings_app_link::displays::DisplaysLink;
+use settings_app_link::engine_install::Desk;
+use settings_app_link::engines::EnginesLink;
+use settings_app_link::hot_corners::CornerDesk;
+use settings_app_link::lending::Lender;
+use settings_app_link::memory_consent::MemoryLink;
+use settings_app_link::modules::ModulesLink;
+use settings_app_link::person::PersonLink;
+use settings_app_link::picker::PickerLink;
+use settings_app_link::privacy::PrivacyLink;
+use settings_app_link::running::RunningLink;
+use settings_app_link::screen_sharing::ScreenSharingLink;
+use settings_app_link::services::Services;
+use settings_app_link::spaces::SpacesLink;
+use settings_app_link::sync::SyncLink;
+use settings_app_link::updates::{Departure, UpdatesLink};
+use settings_app_link::wallpaper::Pictures;
+use settings_app_link::wifi::WifiLink;
+use std::path::PathBuf;
 use std::sync::Arc;
 
-/// The person's own folders the client reads and writes: settings, data and cache (or scratch
-/// folders standing in for them).
+/// The person's own folders the client reads: settings and data (or scratch folders standing in
+/// for them).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ClientHomes {
     /// Where the settings files are.
     pub config: ConfigHome,
     /// Where docket's agents and the added pictures are.
     pub data: DataHome,
-    /// Where the Wallpaper page's small pictures are kept.
-    pub cache: CacheHome,
 }
 
-/// Where the person's name and picture come from when the services are looked for on `bus`: on
-/// the person's own session, the system's accounts, else the passwd file and the home folder. On
-/// no bus, or a test's private one, nobody is known, so nothing of this computer's own reaches a
-/// window that was told to look somewhere else.
-fn person_on(bus: &BusSource) -> Arc<dyn PersonLink> {
-    match bus {
-        BusSource::Session => Arc::new(OnAccounts::new(
-            bus.clone(),
-            PathBuf::from("/etc/passwd"),
-            Xdg::process()
-                .home()
-                .map(Path::to_path_buf)
-                .unwrap_or_default(),
-        )),
-        BusSource::Absent | BusSource::Address(..) => Arc::new(NoPerson),
-    }
-}
-
-/// A client being built: every service is the person's own until a setter says otherwise.
+/// A client being built: every service is the one it was handed until a setter says otherwise.
 #[derive(Debug, Clone)]
 pub struct ClientBuilder(Client);
 
 impl ClientBuilder {
-    /// A client over the real services, looked for on `bus`, with its files under `homes`.
+    /// A client over `services`, with its files under `homes`.
     #[must_use]
-    pub fn over(bus: BusSource, homes: ClientHomes) -> ClientBuilder {
-        let ClientHomes {
-            config,
-            data,
-            cache,
-        } = homes;
-        let chooser = Arc::new(OnPortal(bus.clone()));
-        let desk = Arc::new(OnEngines::new(bus.clone(), Arc::clone(&chooser), &data.0));
-        let pictures = Arc::new(OnDisk::new(
-            Arc::clone(&chooser),
-            PictureDirs::standard(&data),
-            Thumbnails::under(&cache),
-        ));
-        let corners = Arc::new(OnCorners::new(Arc::clone(&chooser), Vec::new()));
-        let person = person_on(&bus);
+    pub fn over(services: Services, homes: ClientHomes) -> ClientBuilder {
+        let ClientHomes { config, data } = homes;
+        let Services {
+            chooser,
+            modules,
+            accounts,
+            sync,
+            picker,
+            privacy,
+            screen_sharing,
+            spaces,
+            memory,
+            running,
+            computers,
+            engines,
+            lender,
+            updates,
+            log_out,
+            wifi,
+            bluetooth,
+            displays,
+            desk,
+            pictures,
+            person,
+            corners,
+        } = services;
         ClientBuilder(Client {
             chooser,
-            modules: Arc::new(ModulesOnBus(bus.clone())),
-            accounts: Arc::new(AccountsOnBus(bus.clone())),
-            sync: Arc::new(SyncOnBus(bus.clone())),
-            picker: Arc::new(PickerOnClient),
-            privacy: Arc::new(PrivacyOnClient),
-            screen_sharing: Arc::new(ScreenSharingOnBus(bus.clone())),
-            spaces: Arc::new(SpacesOnBus(bus.clone())),
-            memory: Arc::new(MemoryOnBus(bus.clone())),
-            running: Arc::new(RunningOnBus(bus.clone())),
-            computers: Arc::new(ComputersOnBus(bus.clone())),
-            engines: Arc::new(EnginesOnBus(bus.clone())),
+            modules,
+            accounts,
+            sync,
+            picker,
+            privacy,
+            screen_sharing,
+            spaces,
+            memory,
+            running,
+            computers,
+            engines,
             reasons: ReasonFeed::default(),
-            lender: Lender::from_env(),
-            updates: Arc::new(OnBus(bus.clone())),
-            log_out: Arc::new(PowerMenu),
-            wifi: Arc::new(OnWifi(bus.clone())),
-            bluetooth: Arc::new(OnBluetooth::new(bus.clone())),
-            displays: Arc::new(OnCompositor(bus.clone())),
+            lender,
+            updates,
+            log_out,
+            wifi,
+            bluetooth,
+            displays,
             desk,
             pictures,
             person,
@@ -112,7 +101,6 @@ impl ClientBuilder {
                 programs_path: String::new(),
             },
             agents_program: None,
-            bus,
         })
     }
 
@@ -202,13 +190,6 @@ impl ClientBuilder {
     #[must_use]
     pub fn with_person(self, person: Arc<dyn PersonLink>) -> ClientBuilder {
         ClientBuilder(Client { person, ..self.0 })
-    }
-
-    /// Listing the apps' actions from the manifests in `intent_dirs`, in the order of trust.
-    #[must_use]
-    pub fn with_intent_dirs(self, intent_dirs: Vec<PathBuf>) -> ClientBuilder {
-        let corners = Arc::new(OnCorners::new(Arc::clone(&self.0.chooser), intent_dirs));
-        ClientBuilder(Client { corners, ..self.0 })
     }
 
     /// With the Hot Corners sheet working through `corners`.

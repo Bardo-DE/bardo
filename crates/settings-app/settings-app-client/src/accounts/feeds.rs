@@ -3,8 +3,8 @@
 //! up. Reading again goes one read at a time: the latest ask wins.
 
 use crate::follow::Slot;
+use settings_app_link::modules::{Module, reread};
 use settings_app_model::{Absence, Described, ModuleId, Reads, accounts_row_is_valued};
-use settings_app_system::modules::{Module, reread};
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 

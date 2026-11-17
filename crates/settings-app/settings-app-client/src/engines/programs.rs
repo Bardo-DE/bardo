@@ -5,12 +5,12 @@
 use crate::follow::{Followed, Slot, follow_with};
 use crate::live::Live;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::bus::Daemon;
+use settings_app_link::modules::ModulesLink;
+use settings_app_link::picker::PickerLink;
 use settings_app_model::{
     ProgramsEffect, ProgramsInput, ProgramsPane, program_rows, programs_step,
 };
-use settings_app_system::bus::Daemon;
-use settings_app_system::modules::ModulesLink;
-use settings_app_system::picker::PickerLink;
 use settings_types::schema::KeyKind;
 use std::sync::Arc;
 

@@ -4,10 +4,10 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::screen_sharing::ScreenSharingLink;
 use settings_app_model::{
     ScreenSharingEffect, ScreenSharingInput, ScreenSharingState, screen_sharing_step,
 };
-use settings_app_system::screen_sharing::ScreenSharingLink;
 use std::sync::Arc;
 
 /// The pane's handle: cheap to clone, one live value behind it.

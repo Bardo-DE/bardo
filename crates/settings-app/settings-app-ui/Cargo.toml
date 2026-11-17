@@ -31,6 +31,7 @@ account-capability = {path = "../../accounts/account-capability"}
 # the test kit, and quire's harness. The tests that stand a service that is no live module up on a
 # private bus (the portal, running models, the engines, computers, memory, the sync service, and
 # the owner checks) need the commented ones below.
+settings-app-link = {path = "../settings-app-link"}
 settings-app-system = {path = "../settings-app-system", features = ["testing"]}
 settings-app-testkit = {path = "../settings-app-testkit"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["testing"] }

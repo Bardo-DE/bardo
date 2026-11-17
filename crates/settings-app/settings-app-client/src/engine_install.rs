@@ -4,10 +4,10 @@
 
 use crate::live::Live;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::engine_install::Desk;
 use settings_app_model::{
     EngineOfferEffect, EngineOfferInput, EngineOfferState, EngineStanding, engine_offer_step,
 };
-use settings_app_system::engine_install::Desk;
 use std::sync::Arc;
 use std::time::Duration;
 

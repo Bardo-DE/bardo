@@ -4,8 +4,8 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::updates::{Departure, InstallRefusal, UpdatesLink};
 use settings_app_model::{UnixSeconds, UpdatesEffect, UpdatesInput, UpdatesState, updates_step};
-use settings_app_system::updates::{Departure, InstallRefusal, UpdatesLink};
 use std::sync::Arc;
 
 /// The Software Update pane's handle: cheap to clone, one live value behind it.

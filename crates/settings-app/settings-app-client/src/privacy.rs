@@ -5,10 +5,10 @@ use crate::follow::{Followed, Slot, follow_with};
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::bus::Daemon;
+use settings_app_link::modules::{ModulesLink, reread};
+use settings_app_link::privacy::PrivacyLink;
 use settings_app_model::{PrivacyEffect, PrivacyInput, PrivacyState, privacy_step};
-use settings_app_system::bus::Daemon;
-use settings_app_system::modules::{ModulesLink, reread};
-use settings_app_system::privacy::PrivacyLink;
 use settings_types::schema::KeyKind;
 use std::sync::Arc;
 

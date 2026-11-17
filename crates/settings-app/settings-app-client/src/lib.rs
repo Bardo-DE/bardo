@@ -1,5 +1,5 @@
 //! The one door the Settings window uses to reach the computer. A [`Client`] holds every service
-//! (the links of `settings-app-system`) and the bus they are looked for on; the window asks it for a
+//! (the links of `settings-app-link`) and the bus they are looked for on; the window asks it for a
 //! pane and gets a live value to draw and the commands to give it. Every follow loop, deadline and
 //! error mapping lives here, so a view holds none: it reads a [`Live`] state, draws it, and sends
 //! the pane an input.
@@ -75,13 +75,12 @@ pub use whoami::Whoami;
 pub use wifi::Wifi;
 
 // The services the tests and the binary hand to a builder, and the types their signatures name.
-pub use settings_app_system::bluetooth::{BluetoothLink, BtSession, PairingReply, PairingRequest};
-pub use settings_app_system::bus::{BusSource, Vouch};
-pub use settings_app_system::displays::DisplaysLink;
-pub use settings_app_system::engine_install::{Desk, Quiet};
-pub use settings_app_system::hot_corners::{CornerDesk, NoCorners};
-pub use settings_app_system::lending::Lender;
-pub use settings_app_system::person::{NoPerson, PersonLink};
-pub use settings_app_system::updates::{Departure, InstallRefusal, UpdateTicks, UpdatesLink};
-pub use settings_app_system::wallpaper::{NoPictures, Pictures, ThumbFault, Thumbnails};
-pub use settings_app_system::wifi::WifiLink;
+pub use settings_app_link::bluetooth::{BluetoothLink, BtSession, PairingReply, PairingRequest};
+pub use settings_app_link::displays::DisplaysLink;
+pub use settings_app_link::engine_install::{Desk, Quiet};
+pub use settings_app_link::hot_corners::{CornerDesk, NoCorners};
+pub use settings_app_link::lending::Lender;
+pub use settings_app_link::person::{NoPerson, PersonLink};
+pub use settings_app_link::updates::{Departure, InstallRefusal, UpdateTicks, UpdatesLink};
+pub use settings_app_link::wallpaper::{NoPictures, Pictures};
+pub use settings_app_link::wifi::WifiLink;

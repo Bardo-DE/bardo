@@ -21,8 +21,9 @@ RULES=(
   "settings-app-files: $PURE"
   "settings-app-callers: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-model settings-app-files settings-app-intents settings-app-ui bardo-settings"
   "settings-app-testkit: $PURE zbus ui-settings settings-app-model settings-app-files settings-app-ui bardo-settings"
+  "settings-app-link: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-system settings-app-client settings-app-ui settings-app-intents bardo-settings"
   "settings-app-system: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-client settings-app-ui settings-app-intents bardo-settings"
-  "settings-app-client: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui settings-app-intents bardo-settings"
+  "settings-app-client: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-system settings-app-ui settings-app-intents bardo-settings"
   "settings-app-ui: bardo-settings settings-app-intents"
   "settings-app-intents: dioxus dioxus-core blitz-dom ds ui-blitz ui-harness ui-lint settings-app-ui bardo-settings"
 )
@@ -56,7 +57,7 @@ done
 # refuses a use of the files, the services, porter, almanac, docket or the bus in a view
 # (ARCHITECTURE.md "The fence"). The EDGES row below is the exact list of what it may name.
 DIRECT=(
-  "settings-app-ui: settings-app-files settings-app-system sync-bus account-client account-core account-dbus inference-core account-provider memory-core action-core action-settings action-dbus action-provider agent-install agent-registry account-ids account-capability account-match account-wire account-sheet inference-tailnet account-tailscale action-vocab action-manifest action-wire action-gate-wire permission-core companion-model zbus"
+  "settings-app-ui: settings-app-files settings-app-link settings-app-system sync-bus account-client account-core account-dbus inference-core account-provider memory-core action-core action-settings action-dbus action-provider agent-install agent-registry account-ids account-capability account-match account-wire account-sheet inference-tailnet account-tailscale action-vocab action-manifest action-wire action-gate-wire permission-core companion-model zbus"
 )
 for rule in "${DIRECT[@]}"; do
   crate="${rule%%:*}"
@@ -84,11 +85,12 @@ EDGES=(
   "settings-app-callers: ui-settings"
   "settings-app-model: memory-core action-core action-manifest action-settings action-vocab ui-helpers ui-settings account-capability account-core account-ids inference-core account-sheet inference-tailnet account-tailscale"
   "settings-app-files: agent-registry settings-app-model agent-install action-settings ui-extensions ui-helpers ui-settings"
-  "settings-app-client: settings-app-files settings-app-model settings-app-system ui-settings inference-core account-provider"
+  "settings-app-link: settings-app-model account-tailscale account-wire compositor-dbus inference-dbus memory-core settings-dbus settings-types sync-bus ui-peer"
+  "settings-app-client: settings-app-files settings-app-link settings-app-model ui-settings inference-core account-provider"
   "settings-app-intents: settings-app-callers settings-app-client settings-app-files settings-app-model action-core action-dbus action-manifest action-provider action-vocab action-wire ui-peer ui-settings account-core account-ids prov"
-  "settings-app-system: memory-core anyview-core anyview-fs anyview-image anyview-platform desktop-protocols desktop-client settings-app-callers settings-app-files settings-app-model ui-peer ui-settings engine-install engine-manifest engine-probe engine-spec inference-client model-catalog account-callers account-client account-client-dbus account-core account-dbus inference-tailnet account-tailscale account-wire inference-dbus sync-bus"
+  "settings-app-system: settings-app-link memory-core anyview-core anyview-fs anyview-image anyview-platform desktop-protocols desktop-client settings-app-callers settings-app-files settings-app-model ui-peer ui-settings engine-install engine-manifest engine-probe engine-spec inference-client model-catalog account-callers account-client account-client-dbus account-core account-dbus inference-tailnet account-tailscale account-wire inference-dbus sync-bus"
   "settings-app-ui: settings-app-client settings-app-model ds ui-blitz ui-helpers ui-lint ui-settings"
-  "bardo-settings: settings-app-callers settings-app-client settings-app-files settings-app-intents settings-app-model settings-app-ui ui-blitz ui-settings"
+  "bardo-settings: settings-app-callers settings-app-client settings-app-files settings-app-intents settings-app-link settings-app-model settings-app-system settings-app-ui ui-blitz ui-settings"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"

@@ -10,8 +10,8 @@ mod rows;
 use super::bus::PrivateBus;
 use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH, INFERENCE_BUS};
 use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
+use settings_app_link::bus::Daemon;
 use settings_app_model::ModuleId;
-use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
 use settings_types::schema::{

@@ -4,11 +4,11 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::displays::DisplaysLink;
 use settings_app_model::{
     Brightness, BrightnessList, DisplaysEffect, DisplaysInput, DisplaysState, OutputId,
     displays_step,
 };
-use settings_app_system::displays::DisplaysLink;
 use std::sync::Arc;
 
 /// The Displays pane's handle: cheap to clone, one live value behind it.

@@ -4,16 +4,14 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::sync::SyncLink;
 use settings_app_model::{DatasetName, HoldEffect, HoldInput, Holds, SyncBook, hold_step};
-use settings_app_system::bus::BusSource;
-use settings_app_system::sync::{SyncLink, follow_holds};
 use std::sync::{Arc, Mutex, PoisonError};
 use tokio::sync::mpsc::unbounded_channel;
 
 /// The held deletions' handle: cheap to clone, one live value behind it.
 #[derive(Debug, Clone)]
 pub struct HeldDeletions {
-    bus: BusSource,
     sync: Arc<dyn SyncLink>,
     live: Live<Holds>,
 }
@@ -21,9 +19,8 @@ pub struct HeldDeletions {
 pane!(HeldDeletions, Holds, follow);
 
 impl HeldDeletions {
-    pub(crate) fn over(bus: BusSource, sync: Arc<dyn SyncLink>) -> HeldDeletions {
+    pub(crate) fn over(sync: Arc<dyn SyncLink>) -> HeldDeletions {
         HeldDeletions {
-            bus,
             sync,
             live: Live::default(),
         }
@@ -38,9 +35,7 @@ impl HeldDeletions {
     /// Takes each hold the service starts or ends, until the bus goes away.
     async fn follow(&self) {
         let (told, mut heard) = unbounded_channel();
-        let following = follow_holds(&self.bus, move |input| {
-            let _gone = told.send(input);
-        });
+        let following = self.sync.follow_holds(told);
         let handling = async {
             while let Some(input) = heard.recv().await {
                 self.dispatch(input).await;
