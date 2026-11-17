@@ -170,7 +170,7 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   from 1.91. The pinned toolchain (1.98.1) already satisfies it.
 - *Who may talk to the mouse gestures daemon (INPUT-03, INPUT-14): done (2026-10-17).* The mouse gestures daemon is a system service
   (owner decision), so its socket is `/run/bardo/mouse-gestures/events.sock`, mode 0666, and the socket thread
-  serves only the person at the seat and believes only the shell (peephole, as the key remap daemon's `Steering`)
+  serves only the person at the seat and believes only the shell (the caller-identity library, as the key remap daemon's `Steering`)
   about the pointer and an unlocked session. The hidraw rule gives the node to the `input` group and
   no person (INPUT-19's second half: the raw node and its feature reports are no longer reachable
   from the logged-in user's programs).

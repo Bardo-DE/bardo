@@ -1,7 +1,7 @@
 //! [`ProcCallers`]: the callers of a bus connection, by the process behind each sender.
 
 use super::standing::caller_of;
-use super::translate::{manager_need, peephole_table};
+use super::translate::{caller_identity_table, manager_need};
 use super::{Caller, CallerTable, Callers};
 use caller_identity_core::Standing;
 use caller_identity_dbus::{BusPeers, ManagerCheck};
@@ -9,7 +9,7 @@ use zbus::Connection as BusConnection;
 
 /// Callers by process.
 ///
-/// Peephole holds the process behind a sender (a pidfd), reads what `/proc` and the systemd manager
+/// The caller-identity library holds the process behind a sender (a pidfd), reads what `/proc` and the systemd manager
 /// say of it, and judges it against the table's service rows; the table then names the role. The
 /// table is porter's own (`callers.toml`), translated once when this is built (see `translate`).
 #[derive(Debug)]
@@ -30,7 +30,7 @@ pub(super) enum Peers {
 }
 
 impl Peers {
-    /// Boxed, so a daemon future that awaits a caller does not carry peephole's whole lookup.
+    /// Boxed, so a daemon future that awaits a caller does not carry the caller-identity library's whole lookup.
     fn who<'a>(
         &'a self,
         sender: &'a str,
@@ -49,7 +49,7 @@ impl ProcCallers {
     /// its own process is the system's `systemd`.
     #[must_use]
     pub fn new(connection: BusConnection, table: CallerTable) -> Self {
-        let rows = peephole_table(&table);
+        let rows = caller_identity_table(&table);
         let peers = BusPeers::new(connection, rows, ManagerCheck::Verified(manager_need()));
         Self {
             table,

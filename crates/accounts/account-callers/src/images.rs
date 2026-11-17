@@ -1,5 +1,5 @@
 //! Where the desktop installs its programs, for the rows of a caller table that name a unit and
-//! no program. The patterns are peephole's `exe` patterns: absolute, at most one `*` in a segment.
+//! no program. The patterns are the caller-identity library's `exe` patterns: absolute, at most one `*` in a segment.
 
 /// The kind of place a program of the desktop is installed in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

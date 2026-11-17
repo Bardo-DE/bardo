@@ -10,12 +10,12 @@ cd "$(dirname "$0")/.."
 
 # What each crate reaches through ANY path (transitive, every feature turned on).
 #   caller-identity-core: pure. No bus, no system-call layer, no async runtime, no executor.
-#   peephole:      sync I/O. No bus, no async runtime, no executor.
+#   The caller-identity library:      sync I/O. No bus, no async runtime, no executor.
 #   caller-identity-dbus:  the adapter. May reach all of those, but never an HTTP client or a TLS stack.
 EFFECTS="zbus zvariant rustix nix libc tokio async-io futures-timer"
 RULES=(
   "caller-identity-core: $EFFECTS"
-  "peephole: zbus zvariant tokio async-io futures-timer"
+  "caller_identity: zbus zvariant tokio async-io futures-timer"
   "caller-identity-dbus: reqwest hyper ureq rustls openssl openssl-sys"
 )
 fail=0

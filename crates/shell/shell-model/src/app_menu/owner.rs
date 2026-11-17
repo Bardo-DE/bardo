@@ -1,6 +1,6 @@
 //! Whose menu the bar shows: the owner of `org.bardo.AppMenu.<id>` must be the program the
 //! focused window belongs to (BARDO-12). Any process may claim the name, so the name proves
-//! nothing; the system's account of the owner (peephole's standing: an image the system owns, a
+//! nothing; the system's account of the owner (the caller-identity library's standing: an image the system owns, a
 //! sandbox it attests, a desktop service) is compared with the window's client.
 //!
 //! Pure. `shell-services::callers` turns a standing into a [`MenuOwner`]; the services ask

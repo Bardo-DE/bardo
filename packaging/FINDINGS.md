@@ -428,7 +428,7 @@ check first is listed under "Not verified" at the end of this section.
 
 ## pa2-desk: the table of the desktop's programs, the input service, the keyboard map (lane pa2-desk, 2026-10-17)
 
-What changed: `dist/desktop-callers.toml` (peephole's table, one row per role, `settings` twice, four paths per program), placed by
+What changed: `dist/desktop-callers.toml` (the caller-identity library's table, one row per role, `settings` twice, four paths per program), placed by
 `install.sh` first (`install/system.sh callers`) and by every release (`system/etc/bardo/desktop-callers.toml`); the input service
 (`input_broker`: program, `/usr/local/bin/input_broker` export, socket, service, `72-input-broker.rules`, `input-broker.conf`) in the release and in
 `install.sh`; the key remap daemon installed by `install/system.sh key_remap`, not by the key remap daemon's installer; `release/system-files.list` takes the updater's four input broker
@@ -436,17 +436,17 @@ rules (it equals the updater origin/master, 17 rules, `check-system-list.sh` say
 
 - **The socket lets any local program connect, on purpose.** `bardo-input-broker.socket` is `SocketMode=0666`, `DirectoryMode=0755`
   (`/run/bardo/input-broker/input.sock`); the input broker's own header says who may have a device is "decided by the identity of the caller, never by this
-  mode" (peephole over the pidfd and this table: `pad_daemon` for the mouse gestures daemon, `keymap_daemon` for the key remap daemon, at `Exe`). So the key remap daemon's service (a
+  mode" (the caller-identity library over the pidfd and this table: `pad_daemon` for the mouse gestures daemon, `keymap_daemon` for the key remap daemon, at `Exe`). So the key remap daemon's service (a
   `DynamicUser`) and the mouse gestures daemon (the person's user service) both connect, and nothing in the desktop changes the mode. The unit comments, the input broker's
   README and the wave-2 design (4.1) agree; the daemon was not run.
-- **`settings` has two rows.** The first keeps peephole's (unit `org.bardo.Settings.service`, for processes that unit starts); the second has no
+- **`settings` has two rows.** The first keeps the caller-identity library's (unit `org.bardo.Settings.service`, for processes that unit starts); the second has no
   unit (`app = "org.bardo.Settings"`, the `detent` images), because Settings is also started by a launcher outside any unit and the updater asks for it at
   `Exe` (the updater FINDINGS 24, its ask to this lane). Four roles are known by image alone: `settings` (second row), `updater_cli`,
-  `sandbox_launcher`, `manager`. `check-callers-table.sh` allows no other row without a unit (the brief said "settings only"; peephole's own
+  `sandbox_launcher`, `manager`. `check-callers-table.sh` allows no other row without a unit (the brief said "settings only"; the caller-identity library's own
   table and the updater need the other three).
 - **Each program is listed in four places**, not three: `/opt/bardo/releases/*/...` (what `/proc/<pid>/exe` shows), `/opt/bardo/current/...`
-  (what the release's units say in `ExecStart`, and peephole matches `ExecStart` against these patterns for `Full`), `/usr/local/...` (a build from
-  source with the default prefix; the daemons in `libexec` also get `/usr/local/libexec/...`, which peephole's sample lacks) and `/usr/...`.
+  (what the release's units say in `ExecStart`, and the caller-identity library matches `ExecStart` against these patterns for `Full`), `/usr/local/...` (a build from
+  source with the default prefix; the daemons in `libexec` also get `/usr/local/libexec/...`, which the caller-identity library's sample lacks) and `/usr/...`.
   `check-callers-table.sh` compares each unit's `ExecStart` in the checkouts with its row (13 of 15 units found; the updater's and
   xdg-desktop-portal's are not in a sibling).
 - **The key remap daemon is no longer installed by the key remap daemon's installer.** Its `install.sh` always places `dist/key_remap.uinput.conf` (`DeviceAllow=/dev/uinput`
@@ -485,14 +485,14 @@ syntax check, and `gate/installer-check.sh`, `release/*.sh` and `install/system.
 
 | # | Fact | How to check |
 |---|---|---|
-| 1 | `Table::from_toml` accepts `dist/desktop-callers.toml` (the repo's checks re-implement the reader's rules in Python from peephole's docs; peephole was not compiled) | `cargo test` in peephole with `include_str!` of this file, or `TableFiles::load` on an installed copy |
+| 1 | `Table::from_toml` accepts `dist/desktop-callers.toml` (the repo's checks re-implement the reader's rules in Python from the caller-identity library's docs; the caller-identity library was not compiled) | `cargo test` in the caller-identity library with `include_str!` of this file, or `TableFiles::load` on an installed copy |
 | 2 | `/usr/libexec/xdg-desktop-portal` (Ubuntu, Fedora) and `/usr/lib/xdg-desktop-portal` (Arch) are the frontend's paths; `bardo-updater.service` and `xdg-desktop-portal.service` ExecStart are not compared (not in a checkout) | `dpkg -L`, `rpm -ql`, `pacman -Ql` per distribution |
 | 3 | `gate/installer-check.sh` passes with the new order (callers first, the input broker before the key remap daemon, the key remap daemon's own installer never run) | run it |
 | 4 | `release/build.sh --only input_broker,key_remap,mouse_gestures,session` stages the four input broker files, the table and no key remap daemon device rule; `retarget` accepts the mouse gestures daemon's `/usr/local/bin/mouse_gestures` | a local build (`release/README.md`, "Local trial") |
 | 5 | `bardo-input-broker.service`, `bardo-input-broker.socket` and `bardo-key-remap.service` as the checkouts ship them pass `systemd-analyze verify` here (Fedora 44; the only complaint is that `/usr/local/bin/input_broker` does not exist yet); the rendered `ExecStart` differs only when the prefix is not `/usr/local`; not tried on Ubuntu or Arch | `systemd-analyze verify` there |
 | 6 | `modprobe uinput` and the `uinput` module exist on all three; `udevadm trigger --subsystem-match=misc` re-applies `72-input-broker.rules` to a node that is already there | the three distributions |
 | 7 | `/etc/bardo/key-remap` ownership when `ConfigurationDirectory=key_remap` meets `DynamicUser=yes` (the key remap daemon's own open item) and whether the daemon reads a root-owned `key-remap.toml` there | a start of the real service |
-| 8 | The table check is not in CI: the pack job has no peephole checkout (peephole is not in `manifest.toml`); `--self` runs it where a peephole checkout is beside this repo | add peephole to the manifest or fetch its tag in the job |
+| 8 | The table check is not in CI: the pack job has no caller-identity checkout (the caller-identity library is not in `manifest.toml`); `--self` runs it where a caller-identity checkout is beside this repo | add the caller-identity library to the manifest or fetch its tag in the job |
 | 9 | `check-no-uinput-access.sh` reads rule text; a rule that reaches the node without naming `uinput` is not seen | `udevadm test /sys/devices/virtual/misc/uinput` per distribution, `getfacl /dev/uinput` |
 
 ## dharn: the compositor asks per app, and the harness answers (lane dharn, 2026-10-17)
@@ -516,7 +516,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   person, so it is "unverified" and asked every time, whatever the floor says; and without `/etc/bardo/desktop-callers.toml` (the jail has none) sill,
   The Settings app and the portal are nobody and the shell cannot connect. The compositor 679e93d (cas12) lets a debug-inject build's `--system-dir` floor name such a
   program by its `readlink -f` path; the cas13 lane makes the same build read `DIR/desktop-callers.toml` (owned by the person, not group or world
-  writable, not a link) as test caller rows in peephole's format (`app`, `role`, `exe`, no `unit`). `floor_make NAME [TOOL...]` now writes both files,
+  writable, not a link) as test caller rows in the caller-identity library's format (`app`, `role`, `exe`, no `unit`). `floor_make NAME [TOOL...]` now writes both files,
   mode 600, from one list of TOOLs: `floor_powers` (the powers a row allows), `floor_role` (the role in the caller list: sill and the shell-host demos that
   map the shell's surfaces `shell`, the Settings app `settings`, the portal `portal`; the caller list keeps `dist/desktop-callers.toml`'s app ids) and `floor_image`
   (where the harness built it: `build/tools/bin`, `build/portal-target`, `build/sill-target`, `build/detent-target`, `build/shell-host-target/debug/examples`,
@@ -586,13 +586,13 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   (`unset_session_args`). The reader is sill: it must skip `updater confirm` when the variable is `safe` (interface ask to the sill lane, below in the report: sill's `release.rs`).
   Until sill lands that, nothing changes for the person. Test: `scenarios/session-crash-guard.sh` (the fake compositor logs the variable: three `normal`, then `safe`; the sill
   stand-in sees `normal`). The non-nested `set-environment` call is not covered by a test (the scenario runs without a user manager).
-- **NEW-PI-1: every trusted unit throws away the loader variables, and the portal frontend gets a drop-in.** peephole proves `Full` only when a unit's `UnsetEnvironment=`
-  holds all 22 names of `LOADER_VARIABLES` (peephole-core `facts.rs`), and the compositor and the portal require `Full`; the distro's `xdg-desktop-portal.service` has none, so
+- **NEW-PI-1: every trusted unit throws away the loader variables, and the portal frontend gets a drop-in.** the caller-identity library proves `Full` only when a unit's `UnsetEnvironment=`
+  holds all 22 names of `LOADER_VARIABLES` (caller-identity-core `facts.rs`), and the compositor and the portal require `Full`; the distro's `xdg-desktop-portal.service` has none, so
   on a real install the frontend would be refused for every call. `session/xdg-desktop-portal.service.d/10-bardo.conf` (generated from the constant, not typed) is
   placed by `install/install.sh` at `<sysconfdir>/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf` (root-held, `/etc/systemd/user`) and by every release at
   `lib/systemd/user/...`, which the packer exports as a link under `/usr/lib/systemd/user`: a folder the updater already allows, so no change to its list (a link there is
-  judged by peephole like any fragment; the manager reports a drop-in path the same way). `release/stage-owners.list` names it for the `small` job. The source of truth is
-  peephole's constant: `gate/check-loader-unset.sh` reads it from `peephole-core/src/facts.rs` and checks the drop-in and every `unit =` row of
+  judged by the caller-identity library like any fragment; the manager reports a drop-in path the same way). `release/stage-owners.list` names it for the `small` job. The source of truth is
+  The caller-identity library's constant: `gate/check-loader-unset.sh` reads it from `caller-identity-core/src/facts.rs` and checks the drop-in and every `unit =` row of
   `dist/desktop-callers.toml` (plus `bardo-input-broker.service`) whose file is in a sibling checkout; `gate/installer-check.sh` runs it on the staged drop-in and on generated
   trees (3d); `gate/desktop-gate.sh --self` runs it. Units that live in other repositories and still lack the full line are on `gate/loader-unset-pending.txt`
   (a debt list: accountd.service in porter, bardo-key-remap.service in the key remap daemon, org.bardo.Settings.service in the Settings app, bardo-input-broker.service in the input broker, which has 3 of 22);
@@ -637,7 +637,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   The updater's `ALLOWED_SYSTEM_FILES` carries them in the same order, and a release that holds such a file cannot be installed by a helper
   that lacks them. The updater's branch pr1 (1c9273a) has them in that order (`release/check-system-list.sh --updater` reports the 21 rules equal), and its helper replaces a link into the install root where a file is placed (never writing through it) and refuses a release that both links and places a path; the pin and the helper on every computer move with it. Until the pinned the updater is that one, do not cut a release from this tree.
 - **Units named by a caller row are plain files in a release.** A staged `lib/systemd/user/X.service` is exported as a link under
-  `/usr/lib/systemd/user`; the unit manager's judge (`peephole-bus` `fragment`, `trust_of_path` over `symlink_metadata`) reads a link
+  `/usr/lib/systemd/user`; the unit manager's judge (`caller-identity-dbus` `fragment`, `trust_of_path` over `symlink_metadata`) reads a link
   (mode 0777) as `Writable`, so the unit never proves `Full` (the unverified note of NEW-PI-1 is now settled the other way for a link:
   it reads writable). `release/build.sh` `plain_units` stages every unit that a `unit =` row of `dist/desktop-callers.toml` names
   (sill, the compositor, the portal, Settings, accountd, syncd, inferd, memoryd, intentd, companiond, cuad) as a system file at

@@ -13,7 +13,7 @@ fn row(app: &str, unit: Option<&str>, role: CallerRole, exe: &[&str]) -> CallerR
 }
 
 fn table_of(rows: Vec<CallerRow>) -> Table {
-    peephole_table(&CallerTable { callers: rows })
+    caller_identity_table(&CallerTable { callers: rows })
 }
 
 fn unit(name: &str) -> caller_identity_core::UnitName {
@@ -66,7 +66,7 @@ fn a_rows_own_programs_replace_the_convention() {
 }
 
 #[test]
-fn a_row_peephole_could_not_judge_is_left_out_and_the_others_stand() {
+fn a_row_caller_identity_could_not_judge_is_left_out_and_the_others_stand() {
     let table = table_of(vec![
         // An app by name: no unit.
         row("org.bardo.Settings", None, CallerRole::Settings, &[]),
@@ -77,7 +77,7 @@ fn a_row_peephole_could_not_judge_is_left_out_and_the_others_stand() {
             CallerRole::Terminal,
             &[],
         ),
-        // A program path peephole refuses (two stars in a segment).
+        // A program path the caller-identity library refuses (two stars in a segment).
         row(
             "org.bardo.Bad",
             Some("bad.service"),

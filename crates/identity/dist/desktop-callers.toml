@@ -1,7 +1,7 @@
 # The desktop's own processes: which program is which, and the role it plays.
 #
 # One shipped table, root-owned: /etc/bardo/desktop-callers.toml, with additions for an
-# administrator or a developer in /etc/bardo/desktop-callers.d/*.toml. peephole reads no user
+# administrator or a developer in /etc/bardo/desktop-callers.d/*.toml. The caller-identity library reads no user
 # file: nothing a person's file says makes a process more trusted. A file that is not owned by
 # root alone is refused, and so is any file whose directory is writable by someone else.
 #

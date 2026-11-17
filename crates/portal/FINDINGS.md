@@ -304,7 +304,7 @@ Written without a build or a run: nothing here has been compiled. Fixed in the p
 ## Production audit wave 2, area PORTAL (2026-10-16, lane pa2-portal)
 
 Written without a build or a run: nothing here has been compiled or tested; the tests are written and unrun.
-Fixed: PORTAL-03 and PORTAL-10, with `peephole-bus` (tag v0.1.0) as the one way of telling callers apart. See
+Fixed: PORTAL-03 and PORTAL-10, with `caller-identity-dbus` (tag v0.1.0) as the one way of telling callers apart. See
 ARCHITECTURE section 3b-2.
 
 **Decisions recorded**
@@ -339,17 +339,17 @@ ARCHITECTURE section 3b-2.
 
 **Asks**
 
-- peephole: none. The desktop table must name `portal_frontend` (unit `xdg-desktop-portal.service`) and `shell`
+- The caller-identity library: none. The desktop table must name `portal_frontend` (unit `xdg-desktop-portal.service`) and `shell`
   (`sill.service`); the sample table does.
 - sill: serve `org.bardo.Shell` with `DoNotQueue` (above).
 
 ## The jailed chain is let in (lane devc, 2026-10-17)
 
 The jail has no root-owned table and no unit manager, so every call from `xdg-desktop-portal` was refused as an
-unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_toml_dev`, `TableFiles::load_dev`,
+unknown caller. The caller-identity library v0.1.4 adds developer rows (`dev-rows`: `Table::from_toml_dev`, `TableFiles::load_dev`,
 `Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`); the portal takes them the way sill does.
 
-- **Feature `debug`** on the portal crate turns on `peephole-bus/dev-rows` and nothing else. It is off by default and
+- **Feature `debug`** on the portal crate turns on `caller-identity-dbus/dev-rows` and nothing else. It is off by default and
   in every shipped build (the desktop gate greps for `dev-rows`).
 - **`PORTAL_DEV_CALLERS=FILE`**, read in `main.rs` only in that build. `dev_rows::with_dev_rows` loads the person's
   own file and merges it after the shipped table. A file that cannot be taken (a link, writable by others, not a table,
@@ -364,12 +364,12 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
 - **Dev scripts.** `dev/lib/chain.sh` passes `PORTAL_DEV_CALLERS` to the portal; no dev script builds the portal (they take
   `PORTAL_BIN`), so the caller builds it with `--features debug` (documented at the top of `chain.sh`).
 - **Not verified here (no compile, no run):** the new tests, the build with and without the feature, and the
-  `Cargo.lock` move from peephole v0.1.1 to v0.1.4. The workspace `rustix` gains the `process` feature (the person's user
+  `Cargo.lock` move from the caller-identity library v0.1.1 to v0.1.4. The workspace `rustix` gains the `process` feature (the person's user
   id), which adds no crate.
 
 ## Production audit, wave 3 (2026-10-17)
 
-- **NEW-PI-2: remembering needs a proven app.** See ARCHITECTURE 4d. Residuals: (a) the sandbox proof is peephole's
+- **NEW-PI-2: remembering needs a proven app.** See ARCHITECTURE 4d. Residuals: (a) the sandbox proof is the caller-identity library's
   metadata-plus-scope check, which a same-user process could imitate with a private mount namespace and a scope of its
   own making; the owner's ruling lets scope claims stand only where the person answers, so this is the weakest part,
   and a stronger proof needs the frontend to say how it learned the id (an ask for xdg-desktop-portal, not ours).

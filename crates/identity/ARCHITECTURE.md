@@ -1,6 +1,6 @@
 # Architecture
 
-peephole answers one question for a Linux desktop service: which program is on the other end of
+The caller-identity library answers one question for a Linux desktop service: which program is on the other end of
 this connection? It holds the caller by a pidfd, reads what `/proc` says of it afterwards, asks the
 systemd manager about its unit when the table names one, and judges the result against a
 root-owned table of the desktop's own programs. Consumers (a compositor, a portal backend, an
@@ -11,10 +11,10 @@ updater, a root input service) then say which roles a method accepts.
 | Crate | Layer | Contents | Depends on |
 | --- | --- | --- | --- |
 | `caller-identity-core` | pure | ids, `Table` (TOML codec), `Facts`, `Standing`, `judge`, `Requirement`, `Refused`, the text parsers of `procinfo`, the `roles` constants (feature `desktop`) | serde, toml, thiserror |
-| `peephole` | sync I/O | `Pinned` (pidfd), `ProcFs` (`RealProc`; the fixture tree under `fake`), `Prober`, the ownership walk, `TableFiles` (the loader), `fake` | caller-identity-core, rustix, nix (`SO_PEERPIDFD` only), thiserror |
-| `caller-identity-dbus` | async adapter | `BusPeers`: credentials, the manager's unit facts (`UnitSource`, `ManagerLink`), `require`, `owner_of`, `watch_owner`, `Offload` | peephole, caller-identity-core, zbus 5, futures-timer, thiserror |
+| `caller_identity` | sync I/O | `Pinned` (pidfd), `ProcFs` (`RealProc`; the fixture tree under `fake`), `Prober`, the ownership walk, `TableFiles` (the loader), `fake` | caller-identity-core, rustix, nix (`SO_PEERPIDFD` only), thiserror |
+| `caller-identity-dbus` | async adapter | `BusPeers`: credentials, the manager's unit facts (`UnitSource`, `ManagerLink`), `require`, `owner_of`, `watch_owner`, `Offload` | the caller-identity library, caller-identity-core, zbus 5, futures-timer, thiserror |
 
-`caller-identity-core` reaches no bus, system-call layer, runtime or executor; `peephole` reaches no bus or
+`caller-identity-core` reaches no bus, system-call layer, runtime or executor; `caller_identity` reaches no bus or
 executor (`scripts/check-boundary.sh`). Every crate sets `unsafe_code = "forbid"`: the pidfd comes
 from rustix.
 
@@ -22,7 +22,7 @@ from rustix.
 
 ```
 caller-identity-core/src/{lib, ids, cgroup, procinfo, facts, standing, requirement, table, judge, error, roles}.rs
-peephole/src/{lib, pin, unix, procfs, probe, walk, tablefile, error, fixture, fake}.rs
+caller_identity/src/{lib, pin, unix, procfs, probe, walk, tablefile, error, fixture, fake}.rs
 caller-identity-dbus/src/{lib, who, owner, manager, offload, timeout, error}.rs
 dist/desktop-callers.toml   scripts/check-boundary.sh   deny.toml   .github/workflows/ci.yml
 ```
@@ -87,14 +87,14 @@ path belongs to another mount namespace, so it is not read: its exe is `Hidden`.
 row for a unit wins, so a later file adds programs and cannot take over a unit. A file is refused
 whole unless the file and every directory above it are root-only. The format is refused whole for:
 an unknown key, a row without `exe`, a relative or `..` path, `**` or two `*` in a segment, a
-malformed id, two rows for one unit, more than 256 rows or 256 KiB. **peephole reads no user file** (the opt-in `dev-rows` feature, section 8, is the one exception).
+malformed id, two rows for one unit, more than 256 rows or 256 KiB. **the caller-identity library reads no user file** (the opt-in `dev-rows` feature, section 8, is the one exception).
 
 ## 5. API shape
 
 - `caller-identity-core`: `Pid`, `Uid`, `UnitName`, `AppKey`, `RoleName`, `ExePath`, `ExePattern`,
   `CgroupPath`, `Facts`, `Table`, `Row`, `Standing`, `Proof`, `Requirement`, `Refused`,
   `judge(&Facts, &Table) -> Standing`, `Standing::holds(&[Requirement])`.
-- `peephole`: `Pinned::{of_stream, from_pid, from_pid_with_uid, from_fd, alive, pidfd}`,
+- `caller_identity`: `Pinned::{of_stream, from_pid, from_pid_with_uid, from_fd, alive, pidfd}`,
   `Prober::{probe, stand, stand_stream}`, `ProcFs`, `RealProc`, `TableFiles`.
 - `caller-identity-dbus`: `BusPeers::{who, require, require_or_deny, owner_of, watch_owner}`,
   `ManagerCheck`, `UnitSource`, `ManagerLink`, `Offload` (an enum: `Inline`, `Tokio`), `access_denied`,
@@ -128,7 +128,7 @@ library function reads no environment and no fixed path.
 
 A checkout-built stand-in has a user-writable image and no real unit, so it is `Unverified` by rule 3
 and tops out below `Full`. The desktop's developer and acceptance scripts need a seam, and it must
-not exist in a shipped build. Feature `dev-rows` (`caller-identity-core`, forwarded by `peephole` and
+not exist in a shipped build. Feature `dev-rows` (`caller-identity-core`, forwarded by `caller_identity` and
 `caller-identity-dbus`; off by default; the desktop gate greps `cargo tree -e features` for it) adds:
 
 | Piece | Where | What |
@@ -139,7 +139,7 @@ not exist in a shipped build. Feature `dev-rows` (`caller-identity-core`, forwar
 | `Proof::Dev` | `caller-identity-core` | lowest proof, below `Cgroup` |
 | `Requirement::dev(role)` | `caller-identity-core` | what a consumer lists in its debug builds to accept `Dev` |
 | `judge` rule 2b | `caller-identity-core` | a native process whose image matches a developer row (and whose cgroup leaf is the row's unit, when it has one), and that no shipped row claims by image, is that service at `Dev`; before rule 3 |
-| `TableFiles::load_dev(fs, path, person)`, `NodeInfo`, `NodeKind`, `ProcFs::info_of`, `LoadError::{NotAFile, NotTheirs}` | `peephole` | a plain file (no link), owned by `person` or root, not group- or world-writable, within `TABLE_FILE_CAP` |
+| `TableFiles::load_dev(fs, path, person)`, `NodeInfo`, `NodeKind`, `ProcFs::info_of`, `LoadError::{NotAFile, NotTheirs}` | `caller_identity` | a plain file (no link), owned by `person` or root, not group- or world-writable, within `TABLE_FILE_CAP` |
 
 Rules that keep the seam from widening: only shipped rows are consulted for `Cgroup`, `Exe` and
 `Full` (a developer row never names a unit or a program for those); a sandboxed process never

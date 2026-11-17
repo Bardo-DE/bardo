@@ -160,7 +160,7 @@ floor_make() {
 }
 
 # floor_sill_callers: bardo-shell (a `debug` build) takes the floor's desktop-callers.toml as the person's own rows
-# (`bardo-shell run --dev-callers FILE`, peephole's Proof::Dev), so the services and the portal it checks by role are known.
+# (`bardo-shell run --dev-callers FILE`, the caller-identity library's Proof::Dev), so the services and the portal it checks by role are known.
 # Call it after sourcing bardo-shell's dev/lib (which clears DEV_CALLERS_FLAGS) and before launch_daemon. bardo-settings (feature
 # dev-callers) takes the same file as `bardo-settings --dev-callers FILE` and bardo-portal (feature debug) as BARDO_PORTAL_DEV_CALLERS.
 floor_sill_callers() {

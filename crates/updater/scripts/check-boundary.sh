@@ -21,7 +21,7 @@ bad=$(reaches updater-core normal 'ureq|zbus|tokio|tar|zstd|rustls')
 
 # Excluded from the privileged programs: the user-level program, the network client and TLS, the bus,
 # the async runtime and its building blocks, logging, and the caller-identity library.
-excluded='bardo-updater|peephole[a-z0-9_-]*|ureq[a-z0-9_-]*|rustls[a-z0-9_-]*|webpki[a-z0-9_-]*|native-tls|openssl[a-z0-9_-]*|ring'
+excluded='bardo-updater|caller_identity[a-z0-9_-]*|ureq[a-z0-9_-]*|rustls[a-z0-9_-]*|webpki[a-z0-9_-]*|native-tls|openssl[a-z0-9_-]*|ring'
 excluded="$excluded|hyper[a-z0-9_-]*|h2|http|reqwest|zbus[a-z0-9_-]*|zvariant[a-z0-9_-]*|dbus[a-z0-9_-]*"
 excluded="$excluded|tokio[a-z0-9_-]*|mio|async-[a-z0-9_-]*|futures[a-z0-9_-]*|smol|tracing[a-z0-9_-]*"
 bad=$(reaches updater-root normal,build "$excluded")

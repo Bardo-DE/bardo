@@ -1624,7 +1624,7 @@ list and run them (design/27 section 5.2 rule a). Off by default: feature `menus
    ```
 
    `permit` is a `MenuPermit` and has no default. Our desktop's is `ShellOnly::new(peers)` (feature
-   `peephole`, Linux): only the shell may press an item, as peephole's caller table judges it; build
+   `caller_identity`, Linux): only the shell may press an item, as the caller-identity library's caller table judges it; build
    the `BusPeers` once for the process. Another desktop passes its own permit. Reading the menu stays
    open to everyone.
 

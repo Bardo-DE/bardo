@@ -5,7 +5,7 @@
 #   desktop-gate.sh --merge
 #   desktop-gate.sh --phase P<n>
 #
-# --self    the jail's selftest (inside, 2 fabricated GPUs), its negative check (outside), install.sh against stub installers (gate/installer-check.sh), release/selftest.sh (a SKIP, exit 2, when minisign is missing), the distro helpers (gate/distro-check.sh), the three input and caller checks (gate/check-callers-table.sh: every role of peephole's list has a row in dist/desktop-callers.toml; gate/check-no-fake.sh; gate/check-no-uinput-access.sh; gate/check-loader-unset.sh: every trusted unit throws away peephole's loader variables) with their own test on generated trees, and every scenario in the jail (an unlisted SKIP fails). The table check reads peephole's list from the peephole crate of this tree.
+# --self    the jail's selftest (inside, 2 fabricated GPUs), its negative check (outside), install.sh against stub installers (gate/installer-check.sh), release/selftest.sh (a SKIP, exit 2, when minisign is missing), the distro helpers (gate/distro-check.sh), the three input and caller checks (gate/check-callers-table.sh: every role of the caller-identity library's list has a row in dist/desktop-callers.toml; gate/check-no-fake.sh; gate/check-no-uinput-access.sh; gate/check-loader-unset.sh: every trusted unit throws away the caller-identity library's loader variables) with their own test on generated trees, and every scenario in the jail (an unlisted SKIP fails). The table check reads the caller-identity library's list from the caller-identity crate of this tree.
 # --merge   --self, plus the whole tree through ~/rs-wt/gate-lane-jailed.sh (it hands the bardo tree to its own gate), and the
 #           check that no trace of the removed compositor stack is left in the tree.
 # --phase   --merge, and additionally an entry of expected-skips.toml whose `closes` is P<n> or
@@ -154,7 +154,7 @@ step "legacy-free check (generated trees)" "$HERE/legacy-free-selftest.sh" || tr
 step "distro helpers (family, package table, check mode)" "$HERE/distro-check.sh" || true
 step "input and caller checks (generated trees)" "$HERE/input-checks-selftest.sh" || true
 step "the table of the desktop's own programs: every role has a row" "$HERE/check-callers-table.sh" || true
-step "every trusted unit and the portal frontend's drop-in unset all loader variables (peephole's list)" "$HERE/check-loader-unset.sh" || true
+step "every trusted unit and the portal frontend's drop-in unset all loader variables (the caller-identity library's list)" "$HERE/check-loader-unset.sh" || true
 step "no stand-in (fake feature) in what is built or shipped" "$HERE/check-no-fake.sh" || true
 step "nothing shipped opens /dev/uinput to the person or a group" "$HERE/check-no-uinput-access.sh" || true
 step "expected-skips resolve" skip_entries_resolve || true

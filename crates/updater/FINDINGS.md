@@ -109,18 +109,18 @@ Departures from the plan, standing facts and open items. An entry names the cond
     and (since the version argument, ROOT-04) to the exact version the caller names, so a release that arrived after
     the person was shown another is never installed unseen (ARCHITECTURE s.6). The CLI `updater rollback` from a
     terminal is refused by the gate; the way back there is `pkexec /usr/libexec/bardo-updater-rollback`.
-24. **Callers are identified by peephole, not by the name of their cgroup (ROOT-04 daemon side, wave 2).**
+24. **Callers are identified by the caller-identity library, not by the name of their cgroup (ROOT-04 daemon side, wave 2).**
     `service/caller.rs` and the `callers` setting (a list of unit and app names; the settings file may still carry the
-    key, it is ignored) are gone; `service/gate.rs` asks peephole which program is calling and checks roles from the
+    key, it is ignored) are gone; `service/gate.rs` asks the caller-identity library which program is calling and checks roles from the
     desktop's table: `Install` for `shell` (at `Full`, the unit manager confirms its unit), `settings` and
     `updater_cli` (the `updater` program; both at `Exe`, because Settings is also started by a launcher and the program
     from a terminal, neither of which has a unit to prove); `Rollback` for `shell` and `settings`; `Check` for any
-    caller peephole can identify at all (an unreadable or vanished sender is refused; an unverified one is not, since
+    caller the caller-identity library can identify at all (an unreadable or vanished sender is refused; an unverified one is not, since
     `Check` only looks). Replaced by the table: `DEFAULT_CALLERS`, `Config::callers`, `leaf_of`, `is_allowed`.
     Consequences: (a) the table `/etc/bardo/desktop-callers.toml` must be installed or every `Install` and `Rollback`
     is refused, with a line in the service's log; the desktop's installer places it (lane pa2-desk), and until then
     the old open `Install` is closed on a machine without it. (b) `Settings` started by a launcher is `Program`, not
-    `settings`, unless the table also has a row for it without a unit (interface ask to peephole's
+    `settings`, unless the table also has a row for it without a unit (interface ask to the caller-identity library's
     `dist/desktop-callers.toml`: a second `settings` row, `app = "org.bardo.Settings"`, no `unit`, the `detent` images).
     (c) A refused `Install` is `org.bardo.Updates1.Error.AccessDenied`, in the family of the other `Install` errors
     (the error type that carries them cannot name another family); a refused `Rollback` or `Check` is the bus's own
@@ -341,9 +341,9 @@ Deferred or to check:
 Written without a compiler (only `cargo fmt -p`). Done: ROOT-04 daemon side (decision 24), the allow-list rules and the
 helper's reload step (decision 25). Look first at:
 
-- `Cargo.lock`: `peephole-bus` (git tag `v0.1.0`; features `tokio`, `desktop`; `fake` in dev) is a new direct dependency of
-  `updater`, with `peephole`, `peephole-core` and a second `toml` major (1.x) behind it. `deny.toml` has no `[sources]`
-  table, so a git source is only a warning; add `allow-git` for the peephole repository if the gate treats it as an error.
+- `Cargo.lock`: `caller-identity-dbus` (git tag `v0.1.0`; features `tokio`, `desktop`; `fake` in dev) is a new direct dependency of
+  `updater`, with `caller_identity`, `caller-identity-core` and a second `toml` major (1.x) behind it. `deny.toml` has no `[sources]`
+  table, so a git source is only a warning; add `allow-git` for the caller-identity library repository if the gate treats it as an error.
 - `service/run.rs`: the object is now served on a connection built without a name, then the name is requested
   (`Connection::object_server().at(..)`, `Connection::request_name(..)`), because the identification needs the connection.
 - `service/gate.rs`: `BusPeers::new(..).with_offload(Tokio)` is the type `BusPeers<RealProc, Tokio>` (default third
@@ -351,9 +351,9 @@ helper's reload step (decision 25). Look first at:
   await.
 - `service/refusal.rs`: the derive names the new variant `org.bardo.Updates1.Error.AccessDenied`.
 - `updater-root/src/apply/settle.rs`: the program lists are fixed paths; `Fake` in `system_applied.rs` answers by exact path.
-- Tests `caller_gate.rs` need `dbus-daemon` on `PATH` (as peephole's own tests do) and the `fake` feature of
-  `peephole-bus` (dev-dependency); they start a private bus and never touch the session bus. `Settings` is introduced at
-  `Exe` and the shell at `Full` there; the real judgement of a process is peephole's own tests.
+- Tests `caller_gate.rs` need `dbus-daemon` on `PATH` (as the caller-identity library's own tests do) and the `fake` feature of
+  `caller-identity-dbus` (dev-dependency); they start a private bus and never touch the session bus. `Settings` is introduced at
+  `Exe` and the shell at `Full` there; the real judgement of a process is the caller-identity library's own tests.
 - Not covered by a test: the real table loader in `bootstrap.rs`, and the helper running the real `systemctl` and `udevadm`.
 - Interface ask to the desktop (pa2-desk): the installer places `/etc/bardo/desktop-callers.toml` (the existing
   `/etc/bardo/*-callers.toml` rule already covers that name), with the `settings` row without a unit described in decision 24.
@@ -369,7 +369,7 @@ umask 077 and 022). Closes the desktop lane's asks 1 to 4 (audit ROOT-17):
   Open, and not worth a crate yet: all three programs link the same code, so the rollback program also links the
   unpack path it never runs.
 - **`scripts/check-boundary.sh`** now checks the root tree with normal and build dependencies and a longer exclusion
-  list (the user-level program, `peephole*`, network client and TLS, bus, async runtime and its parts, `tracing*`), and
+  list (the user-level program, `caller_identity*`, network client and TLS, bus, async runtime and its parts, `tracing*`), and
   pins the direct dependencies of `updater-root` to `updater-core`, `thiserror`, `semver`, `toml`, `rustix`, `tar`,
   `zstd`. Adding a direct dependency to the privileged programs is now a change to this script, on purpose.
 - **`scripts/install.sh`** builds from `/` with `--manifest-path`, the pinned toolchain through `RUSTUP_TOOLCHAIN` and
@@ -378,7 +378,7 @@ umask 077 and 022). Closes the desktop lane's asks 1 to 4 (audit ROOT-17):
   and when the person cannot write where the files go it says so and prints the `sudo` line. Folders and files were
   already made with `install -d -m755` and `install -m MODE`; a trial under umask 077 gave 755 and 644 everywhere.
 - **CI and `deny.toml`:** `advisories` was already there and ignores nothing. Added `[bans]` and `[sources]` (crates.io and
-  the peephole repository only, as in the sibling repositories) and a `cargo deny check bans sources` step.
+  the caller-identity library repository only, as in the sibling repositories) and a `cargo deny check bans sources` step.
 
 Not verified by reading alone: that `cargo tree -e normal,build --depth 1 --prefix none` prints the crate itself as the
 first line and each direct dependency once (the script drops line 1 and sorts uniquely); that no crate in the root tree

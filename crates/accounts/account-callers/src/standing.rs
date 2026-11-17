@@ -1,4 +1,4 @@
-//! A peephole [`Standing`] as a porter [`Caller`]: which app it is, how that was established, and
+//! A caller-identity library [`Standing`] as a porter [`Caller`]: which app it is, how that was established, and
 //! which role the proof reaches. Pure: the table and the standing in, the caller out.
 
 use super::translate::role_of_name;
@@ -12,7 +12,7 @@ use caller_identity_core::{AppKey, Engine, Proof, Standing};
 /// - A service a table row matched is the row's app, `Unsandboxed`.
 /// - A program in an app scope of a launcher is the scope's app, `Unsandboxed`: the name is a
 ///   claim, so consent here is advisory, as it always was for a native app. So is one whose image
-///   the person can write (a build of their own, `~/.local/bin`): peephole keeps its scope's claim
+///   the person can write (a build of their own, `~/.local/bin`): the caller-identity library keeps its scope's claim
 ///   for exactly that case (WAVE2 §2.8).
 /// - Every other program and every other `Unverified` process shows nothing.
 pub(super) fn identity_of(standing: &Standing) -> PeerIdentity {

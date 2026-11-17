@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Every unit of a trusted service, and the drop-in for the portal frontend's own unit, throws away all the loader variables.
-# peephole proves a service at `Full` only when its unit's `UnsetEnvironment=` holds every name of LOADER_VARIABLES (caller-identity-core
+# The caller-identity library proves a service at `Full` only when its unit's `UnsetEnvironment=` holds every name of LOADER_VARIABLES (caller-identity-core
 # src/facts.rs), and bardo-compositor and the portal backend (bardo-portal) require `Full` for the services they trust: a unit that lacks one
-# name is refused at run time, so the screen cannot be shared, the shell is not trusted. The list is peephole's constant, read from
+# name is refused at run time, so the screen cannot be shared, the shell is not trusted. The list is the caller-identity library's constant, read from
 # its source here; nothing in this repository copies it by hand except the drop-in, which this check compares.
 #
-#   gate/check-loader-unset.sh [--peephole DIR] [--crates DIR] [--table FILE] [--pending FILE] [--dropin FILE]...
+#   gate/check-loader-unset.sh [--caller-identity DIR] [--crates DIR] [--table FILE] [--pending FILE] [--dropin FILE]...
 #
-#   --peephole DIR   the caller-identity folder, holding caller-identity-core (default: $BARDO_CALLER_IDENTITY_DIR, then crates/identity of this tree). None: exit 2
+#   --caller-identity DIR   the caller-identity folder, holding caller-identity-core (default: $BARDO_CALLER_IDENTITY_DIR, then crates/identity of this tree). None: exit 2
 #   --crates DIR   the component domain folders (crates/<domain> of this tree), where the unit files are looked for under <domain>/dist, <domain>/dbus and one folder
 #                    deeper (<domain>/<group>/dist) (default: crates/ of this tree). A unit whose file is not found is noted and skipped
 #   --table FILE     the table of the desktop's programs (default dist/desktop-callers.toml): its `unit` rows are the units checked,
@@ -18,16 +18,16 @@
 #   --dropin FILE    another drop-in to check (e.g. the one an installer staged); session/xdg-desktop-portal.service.d/10-bardo.conf
 #                    is always checked
 # `UnsetEnvironment=` lines add up; an empty assignment resets the list (systemd.exec(5)); an entry NAME=value does not count.
-# Exit: 0 clean, 1 a fault (each printed), 2 usage or no peephole.
+# Exit: 0 clean, 1 a fault (each printed), 2 usage or no caller-identity library.
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 usage() { sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
-table="$ROOT/dist/desktop-callers.toml" peephole="" crates_dir="$(dirname "$ROOT")/crates" pending="$HERE/loader-unset-pending.txt"
+table="$ROOT/dist/desktop-callers.toml" caller_identity="" crates_dir="$(dirname "$ROOT")/crates" pending="$HERE/loader-unset-pending.txt"
 dropins=("$ROOT/session/xdg-desktop-portal.service.d/10-bardo.conf")
 while [ $# -gt 0 ]; do
   case "$1" in
-    --peephole) peephole=${2:?}; shift ;;
+    --caller-identity) caller_identity=${2:?}; shift ;;
     --crates) crates_dir=${2:?}; shift ;;
     --table) table=${2:?}; shift ;;
     --pending) pending=${2:?}; shift ;;
@@ -38,16 +38,16 @@ while [ $# -gt 0 ]; do
   shift
 done
 command -v python3 >/dev/null || { echo "check-loader-unset: python3 is not installed" >&2; exit 2; }
-if [ -z "$peephole" ]; then
+if [ -z "$caller_identity" ]; then
   for d in "${BARDO_CALLER_IDENTITY_DIR:-}" "$ROOT/../crates/identity"; do
-    if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/facts.rs" ]; then peephole=$d; break; fi
+    if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/facts.rs" ]; then caller_identity=$d; break; fi
   done
 fi
-if [ -z "$peephole" ] || [ ! -f "$peephole/caller-identity-core/src/facts.rs" ]; then
-  echo "check-loader-unset: no peephole crate (caller-identity-core/src/facts.rs): give --peephole DIR or set BARDO_CALLER_IDENTITY_DIR" >&2
+if [ -z "$caller_identity" ] || [ ! -f "$caller_identity/caller-identity-core/src/facts.rs" ]; then
+  echo "check-loader-unset: no caller-identity crate (caller-identity-core/src/facts.rs): give --caller-identity DIR or set BARDO_CALLER_IDENTITY_DIR" >&2
   exit 2
 fi
-exec python3 -I - "$peephole/caller-identity-core/src/facts.rs" "$table" "$crates_dir" "$pending" "${dropins[@]}" <<'PY'
+exec python3 -I - "$caller_identity/caller-identity-core/src/facts.rs" "$table" "$crates_dir" "$pending" "${dropins[@]}" <<'PY'
 import os
 import re
 import sys

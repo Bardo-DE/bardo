@@ -15,7 +15,7 @@ input-broker-wire    pure          kinds, ceilings, codec, rate limiter, key tab
 input-broker-client  rustix        Broker (the socket), FakeSource; the mouse gestures daemon and the key remap daemon link this
 The input broker         rustix,       Daemon, serve, Session, policy; seams: Backend, Authority,
                   input-linux,  SeatSource, Clock
-                  peephole
+                  caller_identity
 ```
 
 `scripts/check-boundary.sh` keeps the graph honest: the wire links no socket, device or identity
@@ -72,7 +72,7 @@ socket unit (systemd) --accept--> Daemon --thread--> admit(conn)
 | The mouse gestures daemon touchpad, wheel, keys | `pad_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/bardo-mouse-gestures.service` |
 | The key remap daemon keyboard, pointer | `keymap_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/bardo-key-remap.service` |
 
-A caller is admitted only at peephole's `Full` proof (NEW-PI-4); the control group, or the group and
+A caller is admitted only at the caller-identity library's `Full` proof (NEW-PI-4); the control group, or the group and
 the image, are refused and logged (`unproven` with the reason, then `refused ... its unit was not
 checked`). The service has no unit manager to ask (it would be a socket the user controls, and it
 links no bus), so `identity/unit_files` builds the unit's facts from what a root service can read
@@ -104,7 +104,7 @@ admitted at all: the policy asks for a group under `/system.slice`.
 
 Every device, whatever its kind, is made with a label naming the service it is for: `phys`
 (`UI_SET_PHYS`, set before `UI_DEV_SETUP`) is `input_broker/pad_daemon` for the mouse gestures daemon's kinds and
-`input_broker/keymap_daemon` for the key remap daemon's (`input_broker_wire::Maker`; the role is the peephole role the
+`input_broker/keymap_daemon` for the key remap daemon's (`input_broker_wire::Maker`; the role is the caller-identity role the
 policy admitted). The kernel shows it in `/sys/class/input/<event>/device/phys`. Only a process that
 can open `/dev/uinput` can set it, and that is this service alone, so the desktop's compositor
 reads it as proof of who the device was made for (FINDINGS 13). No client sends any part of it.

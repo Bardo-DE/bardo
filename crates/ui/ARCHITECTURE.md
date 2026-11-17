@@ -348,7 +348,7 @@ The single place a concept lives. Extend it; never write a second one.
 | PDF output, printing | `ui-blitz::{pdf, print}` |
 | An app's menu bar as data for other processes: the tree, its `com.canonical.dbusmenu` layout and properties, an event mapped back to a `CommandId`, the revision book, the bus address derived from the `app_id` | `ds::components::menus::export` (`MenuTree`, `dbusmenu`, `MenuState`, `AppMenuAddress`); pure, no zbus |
 | Serving that menu on the session bus (`com.canonical.dbusmenu`) | `ui-blitz::menus::MenuExport` (feature `menus`) |
-| Who may press an exported menu's items: the policy, its required argument, the shell-only implementation, the per-sender pace | `ui-blitz::menus` (`MenuPermit`, `Caller`, `Verdict`; `ShellOnly` behind feature `peephole`, Linux only; `AllowAnyCaller` behind `testing`; `pace` limits `EventGroup`) |
+| Who may press an exported menu's items: the policy, its required argument, the shell-only implementation, the per-sender pace | `ui-blitz::menus` (`MenuPermit`, `Caller`, `Verdict`; `ShellOnly` behind feature `caller_identity`, Linux only; `AllowAnyCaller` behind `testing`; `pace` limits `EventGroup`) |
 | Whether the owner of a live module's bus name is the program the module belongs to, and what a module's replies may carry | `ui-settings::live` (`OwnerCheck`, a required argument of `LiveClient::new`, supplied by the consumer; `limits`; `AnyOwner` behind `testing`) |
 | The companion's presence (idle, listening, working, acting, waiting) | `ui-core::vocab::CompanionPresence`; derived only by sill's `presence_of` |
 | What an app tells the companion (a thing, a chip, a summon, a field's mode) | `ui-intents`; re-exported once from `ds::components::companion` |

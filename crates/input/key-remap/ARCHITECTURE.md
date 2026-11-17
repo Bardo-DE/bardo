@@ -13,7 +13,7 @@ how to add the next thing. The key remap daemon depends on no desktop crate and 
 | `key-remap-proto` | `crates/key-remap-protocol` | the socket contract: `ToDaemon` (`Steer` or `KeymapCall`), `ToClient`, `Status`, `ProfileName`, `KeymapState`, `Registration`, `PROTOCOL_VERSION`, `MIN_PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
 | `key-remap-client` | `crates/key-remap-client` | a program's end of the socket (`Connection`) and `KeyRemapSource`, this desktop's `keymap::KeymapSource`: the chord keymap's conventions for our desktop, `system_bindings`, the machine's keymap from the daemon or its file, then the person's own file; `register` | `key-remap-proto`, `keymap`, `rustix` (std has no `SOCK_SEQPACKET`) |
 | `key-remap-evdev` | `crates/key-remap-sys` | tier C (IO, no key remap daemon concepts): the evdev and uinput ioctls through `input-linux`'s safe `EvdevHandle` and `UInputHandle` (`EVIOCGRAB`, `EVIOCGKEY`, `EVIOCGLED`, `EVIOCGBIT`, `EVIOCGPROP`, `EVIOCGABS`, uinput incl. `UI_ABS_SETUP`; raw codes in, typed handles inside, `io::Error` out) and `drain`, reading a nonblocking event node until it would block; shared by the daemon and `key-remap-devtest`, so neither keeps a copy | `input-linux`, `rustix`, `thiserror` |
-| `key_remap` | `crates/key_remap` | the pure core and the daemon; library plus the `key_remap` binary | `key-remap-core`, `key-remap-proto`, `key-remap-client`, `key-remap-evdev`, `keymap`, `serde`, `serde_json`, `thiserror`, `notify`, `rustix`, `peephole`, `caller-identity-core` (who is on the socket), `input-broker-client` (the root device service's client, which re-exports the wire types the key remap daemon names); the three are git deps by tag, `peephole` and `input-broker-client` with their `fake` features only as dev dependencies |
+| `key_remap` | `crates/key_remap` | the pure core and the daemon; library plus the `key_remap` binary | `key-remap-core`, `key-remap-proto`, `key-remap-client`, `key-remap-evdev`, `keymap`, `serde`, `serde_json`, `thiserror`, `notify`, `rustix`, `caller_identity`, `caller-identity-core` (who is on the socket), `input-broker-client` (the root device service's client, which re-exports the wire types the key remap daemon names); the three are git deps by tag, `caller_identity` and `input-broker-client` with their `fake` features only as dev dependencies |
 | `key-remap-devtest` | `crates/key-remap-devtest` | test-only (`publish = false`): fake keyboards on `/dev/uinput`, the daemon as a child process, the output device reader, a socket client | `key-remap-proto`, `key-remap-client` (its `Heard`), `key-remap-evdev`, `rustix` |
 
 Edges: `key_remap` -> `key-remap-proto` and `key-remap-client` (the `status` verb's socket client), and `key-remap-client` -> `key-remap-proto` and `keymap`, never `key_remap`; `key_remap` also takes `keymap` for the keymap file's judgement. The key remap daemon defines no action, chord or keymap type: those are the chord keymap's. And `key_remap` dev-depends on `key-remap-devtest`, which
@@ -89,11 +89,11 @@ Two outside parties decide what the key remap daemon trusts, and both are in the
   ignored where that unit does not exist.
 - **Steering.** The socket is 0666, so a connection is told apart three ways: `Steering` (the shell: the kernel
   puts its process in `bardo-shell.service` or `bardo-key-remap-focus.service` under `user@<active uid>.service`, held by pidfd
-  and still alive; judged by peephole at `Proof::Cgroup` or better, any pin), `Plain` (any other process of
+  and still alive; judged by the caller-identity library at `Proof::Cgroup` or better, any pin), `Plain` (any other process of
   the active uid: it hears status, watches the keymap and registers actions and may `Resume`; any other request ends its
   connection) and `Observer` (another user). Only `Steering` is obeyed for `Focus` and `UserConfig`.
   `ProtectProc=default` (with `ProcSubset=pid`) lets the key remap daemon read `/proc/<pid>/cgroup` of the shell's process;
-  it still cannot read another user's image or sandbox metadata, and peephole reads a refused `<pid>/root`
+  it still cannot read another user's image or sandbox metadata, and the caller-identity library reads a refused `<pid>/root`
   as "no sandbox".
   This is a speed bump: a program of the same user can put itself in a control group of that name. What it
   gets is bounded by what the user layer may say, which is the part that holds: `ConfigLayer::confined`
@@ -185,7 +185,7 @@ that stay enums:** `RemapInput`, `RemapOut`, `RuleAction`, `Edge`, `Layout`, `To
 | Whole-core behaviour | scripts of `RemapInput`s through `Remapper::step`, asserting `RemapOut`s, in `tests/` |
 | Stuck keys | a property test: every emitted press has exactly one release |
 | Socket | a private socket in a temp dir and a fake seat file, in `daemon/socket/tests.rs` (the harness treats every program of the seat's user as the shell, or none of them); the keymap's serving in the pure `shelf` tests plus the same file |
-| Who is the shell | `service_locator::guard::ShellCheck` over the key remap daemon's table in `daemon/socket/shell.rs`, tested on peephole's fixture `/proc` (a held process that is only a claim), as a table of control groups and images |
+| Who is the shell | `service_locator::guard::ShellCheck` over the key remap daemon's table in `daemon/socket/shell.rs`, tested on the caller-identity library's fixture `/proc` (a held process that is only a claim), as a table of control groups and images |
 | Devices from the service | `daemon/source.rs`: `input-broker-client`'s `FakeSource` (handed descriptor, `recreate`, twin, refusal, absent) |
 | The user layer's limits | `key-remap-core` `config/tests/confine.rs`, `Layers::offered` in `daemon/settings.rs`, and the reader's `UserConfig` handling |
 | `KeyRemapSource` | `key-remap-client`'s own tests against a fake daemon on a private socket (`testing.rs`): with the daemon, with an old one, with the file only, with nothing; watch; register; and `crates/key_remap/tests/devices/keymap.rs` against the real binary |
@@ -293,7 +293,7 @@ per profile, per modmap field and per trigger, except that the user layer is cut
 the built-in mapping and under `/etc/bardo/key-remap/key-remap.toml`, which stays the administrator's (systemd's `/usr/lib` and
 `/etc` split). The vendor file has the machine file's trust, so it may hold a rule on a key pressed alone (the
 desktop's Caps Lock rule), and its `[user_layer] sequences` counts when the machine file sets none. Both are
-trusted, so both are read by one function, `config::trusted::read_layer`, and only when root-only: `peephole`'s
+trusted, so both are read by one function, `config::trusted::read_layer`, and only when root-only: `caller_identity`'s
 check, the file and every folder above it root's and not writable by group or others, and a link never passes.
 The file is also read through a 64 KiB cap. A file that fails is no layer and one plain-words warning in the log
 (`installed defaults: ...` or `machine settings: ...`); a missing file or folder is no layer and no warning.

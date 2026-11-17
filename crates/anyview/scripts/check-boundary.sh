@@ -221,11 +221,11 @@ DIRECT=(
 # The UI kit's ui-helpers (capped reads and atomic writes, for anyview-fs, -store and -platform) adds
 # ui-helpers and base-time everywhere, and to the headless peek toml with serde_spanned and toml_writer
 # too (its catalog is TOML): the headless budget rose by five, the others by one or two.
-# porter 063e9db's account-dbus checks callers through peephole (peephole, -core and -bus) instead of
+# porter 063e9db's account-dbus checks callers through the caller-identity library (the caller-identity library, -core and -bus) instead of
 # account-daemon-support, and reaches the viewer through action-dbus: two more than before account-daemon-support left.
 # The unused freedesktop-desktop-entry left anyview-platform, and with it gettext-rs and gettext-sys
 # (C, LGPL) and five others the viewer reached: 695.
-# peephole v0.1.6 reads a socket peer's pidfd through nix (the owner's choice where rustix has no safe
+# The caller-identity library v0.1.6 reads a socket peer's pidfd through nix (the owner's choice where rustix has no safe
 # wrapper), which brings nix and memoffset, and docket's helpers reach inference-core through action-dbus: 698.
 # key-remap-client 52c66c7 reads the shared key file through keymap-fs (the chord keymap's own file reader, MIT OR
 # Apache-2.0, its dependencies already in every tree): one more in each windowed tree: the peek 579, the viewer
@@ -251,7 +251,7 @@ DIRECT=(
 # notify-types, inotify and inotify-sys, all already in every Bardo app that hosts the pane: eight
 # more in each: the media host 620 and the pane with its player 621.
 # zip 9 (RUSTSEC-2026-0429) sets file times through nix on macOS and the BSDs (MIT, already in the
-# viewer's tree through peephole): one more in the pane alone: 593. In the headless peek it is two, nix
+# viewer's tree through the caller-identity library): one more in the pane alone: 593. In the headless peek it is two, nix
 # and getrandom 0.4 (zip's own, MIT OR Apache-2.0): 202. calamine 0.38 (beside zip 9, as the workbook
 # reader shares its archive) reads its sheets through quick-xml 0.42 (MIT), a second quick-xml beside
 # the one the tree already has: one more in the peek and the viewer: 581 and 721.

@@ -1,7 +1,7 @@
 //! A person's own rows (feature `dev-callers`, which only the `bardo-settings` binary's feature of the same
 //! name turns on): the stand-ins a checkout builds, named in a file the person owns, are let in as the
 //! services they stand for, at `Proof::Dev`, below every real proof. A release build has none of this:
-//! the feature, the option and peephole's `dev-rows` are all absent.
+//! the feature, the option and the caller-identity library's `dev-rows` are all absent.
 
 use caller_identity_dbus::caller_identity_core::{Table, Uid};
 use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFiles};
@@ -24,7 +24,7 @@ pub enum DevRowsFault {
 }
 
 /// The rows in `path`: a plain file of this user's (or root's) that group and others cannot write,
-/// within peephole's size cap, every row a developer row. Anything else is an error.
+/// within the caller-identity library's size cap, every row a developer row. Anything else is an error.
 pub fn load_dev_rows(path: &Path) -> Result<Table, LoadError> {
     let person = Uid::new(rustix::process::getuid().as_raw());
     TableFiles::load_dev(&RealProc::system(), path, person)

@@ -33,7 +33,7 @@ subscriber. The mouse gestures daemon is a system service (a dynamic user, as th
 to every local account and the socket thread decides whom to serve: only the person at the seat
 (logind's `seat0` state file, read when someone connects and once a second), and of their programs
 only the shell (the process in `bardo-shell.service` under that person's own manager, held by its pidfd,
-judged by peephole) is believed about the pointer and an unlocked session; any other program of
+judged by the caller-identity library) is believed about the pointer and an unlocked session; any other program of
 theirs may subscribe and may say the session is locked. A user switch closes the old user's
 connections. At most 8 subscribers are served; each pass reads at most 16 packets from one, and a
 subscriber is known by an id, never by its place in the list. If the socket thread cannot poll,

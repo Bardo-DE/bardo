@@ -10,7 +10,7 @@
 //! - `daemon`: the daemon as one call, [`Config`] (typed; [`Config::from_env`] is the one place the
 //!   environment is read), [`Daemon::build`] and [`Daemon::run`]. The binary only parses its
 //!   arguments and calls these.
-// peephole's caller types (account-dbus ProcCallers) take the daemon's futures past the default
+// The caller-identity library's caller types (account-dbus ProcCallers) take the daemon's futures past the default
 // depth of 128.
 #![recursion_limit = "256"]
 pub mod daemon;

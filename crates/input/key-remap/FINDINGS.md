@@ -78,7 +78,7 @@ none). A missing folder is not watched, so a vendor file installed while the dae
 Tests: `config/tests.rs` (`trusted_files`), `daemon/settings.rs` (order, bare key, `sequences`).
 
 *Decided (owner, 2026-10-17): the machine file is checked too.* Both files are read by one reader,
-`config/trusted.rs`, through peephole's own check (`dirs_trust` + `weaker` over `RealProc`): the file and every
+`config/trusted.rs`, through the caller-identity library's own check (`dirs_trust` + `weaker` over `RealProc`): the file and every
 folder above it root's, not group/other-writable, and a link never passes. Otherwise the file is no layer and one
 warning in plain words ("installed defaults: not used, because someone other than an administrator could change this
 file or a folder it is in"; the machine file's says "machine settings: ..."). A missing file or folder is no layer and
@@ -96,7 +96,7 @@ no warning. Both files are capped at 64 KiB (`LAYER_FILE_CAP`). Consequences:
 **Who steers (INPUT-03, INPUT-14, wave 2).** The owner decided the key remap daemon gets a light identity check and a reduced
 user layer, and no root identity service and no new capability. The shell is the one connection obeyed for
 `Focus` and `UserConfig`: its process sits in `sill.service` (or, for the Plasma feed,
-`key-remap-focus.service`) under `user@<active uid>.service`, held by pidfd (`Proof::Cgroup`; peephole's socket
+`key-remap-focus.service`) under `user@<active uid>.service`, held by pidfd (`Proof::Cgroup`; the caller-identity library's socket
 pin is `Reopened`, and any pin is accepted). Every other process of the active uid is `Plain`: it hears status,
 watches the keymap, registers actions and may `Resume`; any other request drops its connection. This is a speed bump,
 not a boundary: a same-user program can move itself into a control group of that name. The boundary is the
@@ -113,7 +113,7 @@ refusal for (d), because a defined profile is the only thing a name can select.
 - *The user layer is cut when it arrives.* Changing `[user_layer]` in the machine file later does not re-cut a
   layer already in force; the shell sends its file again on change or restart.
 - *Probing needs `ProtectProc=default`.* A process without privileges cannot read another user's
-  `/proc/<pid>/root` (peephole reads it for sandbox metadata) or image path. peephole v0.1.3 reads a
+  `/proc/<pid>/root` (the caller-identity library reads it for sandbox metadata) or image path. The caller-identity library v0.1.3 reads a
   refused `<pid>/root/.flatpak-info` as "no sandbox", as it reads a refused `exe` as hidden, so the probe
   reaches the control group; the key remap daemon's own `Procs` wrapper for this is gone.
 - *INPUT-14.* The Plasma `key-remap-focus` helper (Python under Gio, not JavaScript) answers `Focus` only to

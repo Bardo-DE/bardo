@@ -1,6 +1,6 @@
-//! porter's caller table as peephole's [`Table`], and the names between the two.
+//! porter's caller table as the caller-identity library's [`Table`], and the names between the two.
 //!
-//! peephole knows a service by unit and program; porter's rows say app, unit and role. The
+//! The caller-identity library knows a service by unit and program; porter's rows say app, unit and role. The
 //! smallest sound translation, and the only one made:
 //!
 //! - a row with a `unit` and at least one program ([`CallerRow::images`]) becomes a `[[peer]]` row
@@ -35,13 +35,13 @@ pub(super) fn manager_need() -> Requirement {
     Requirement::new(RoleName::from_static(MANAGER_ROLE), Proof::Exe)
 }
 
-/// The role `role` as peephole spells it.
+/// The role `role` as the caller-identity library spells it.
 pub(super) fn role_name(role: CallerRole) -> Option<RoleName> {
     let value = serde_json::to_value(role).ok()?;
     RoleName::new(value.as_str()?).ok()
 }
 
-/// The role a peephole role name stands for; `None` for a name no porter role has.
+/// The role a caller-identity role name stands for; `None` for a name no porter role has.
 pub(super) fn role_of_name(name: &RoleName) -> Option<CallerRole> {
     serde_json::from_value(serde_json::Value::String(name.as_str().to_owned())).ok()
 }
@@ -51,7 +51,7 @@ fn quoted(text: &str) -> String {
     serde_json::to_string(text).unwrap_or_default()
 }
 
-/// The `[[peer]]` text of `row`, or `None` when it is not a service peephole can judge.
+/// The `[[peer]]` text of `row`, or `None` when it is not a service the caller-identity library can judge.
 fn peer_text(row: &CallerRow) -> Option<String> {
     let unit = row.unit.as_deref()?;
     let images = row.images();
@@ -69,7 +69,7 @@ fn peer_text(row: &CallerRow) -> Option<String> {
     ))
 }
 
-/// One row as a table; a row peephole refuses (a program path it does not take) is left out with
+/// One row as a table; a row the caller-identity library refuses (a program path it does not take) is left out with
 /// one line on stderr, as [`CallerTable::layered`] does for a user row, and the rest stand.
 fn one_row(row: &CallerRow) -> Option<Table> {
     let text = peer_text(row)?;
@@ -85,8 +85,8 @@ fn one_row(row: &CallerRow) -> Option<Table> {
     }
 }
 
-/// `table` as the table peephole judges against, with the unit manager's row.
-pub(super) fn peephole_table(table: &CallerTable) -> Table {
+/// `table` as the table the caller-identity library judges against, with the unit manager's row.
+pub(super) fn caller_identity_table(table: &CallerTable) -> Table {
     let manager = Table::from_toml(MANAGER_ROW).unwrap_or_default();
     table
         .callers

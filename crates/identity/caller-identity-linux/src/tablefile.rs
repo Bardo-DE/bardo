@@ -1,4 +1,4 @@
-//! Loading the caller table from the root-owned files that ship it. peephole reads no user file:
+//! Loading the caller table from the root-owned files that ship it. The caller-identity library reads no user file:
 //! nothing a person's file says makes a process more trusted.
 
 use crate::error::LoadError;

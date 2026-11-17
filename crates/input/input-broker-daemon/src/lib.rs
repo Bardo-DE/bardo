@@ -34,7 +34,7 @@ use backend::real::UinputBackend;
 use base_time::SystemMonotonic;
 use clock::Uptime;
 use daemon::{Daemon, DaemonError, Settings};
-use identity::peephole_authority::PeepholeAuthority;
+use identity::caller_identity_authority::CallerIdentityAuthority;
 use identity::seat::SeatFile;
 use serve::Context;
 
@@ -58,7 +58,7 @@ pub fn run() -> Result<(), RunError> {
     let listener = activation::listener()?;
     let context = Context {
         backend: UinputBackend::default(),
-        authority: PeepholeAuthority::system(),
+        authority: CallerIdentityAuthority::system(),
         seat: SeatFile::system(),
         clock: Uptime::new(SystemMonotonic),
     };

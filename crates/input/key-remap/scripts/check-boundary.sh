@@ -47,7 +47,7 @@ done
 EDGES=(
   "key-remap-core: key-remap-proto thiserror toml"
   "key-remap-proto: serde serde_json thiserror"
-  # bardo-key-remap also links peephole (who the socket's peer is) and input-broker-client (the root service
+  # bardo-key-remap also links the caller-identity library (who the socket's peer is) and input-broker-client (the root service
   # that makes its virtual devices), both by tag; neither brings a bus or an async runtime. The service locator
   # (feature guard) holds the socket guard bardo-key-remap shares with the mouse gestures daemon.
   "key-remap-daemon: keymap key-remap-client key-remap-core key-remap-proto key-remap-evdev service-locator notify caller-identity-linux caller-identity-core rustix thiserror input-broker-client"

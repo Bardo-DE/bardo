@@ -24,7 +24,7 @@ that rev.
   to load (`Schema::from_toml`, `LiveSchema::check`); sill and the Settings app must be told before they re-pin.
 - **Menu export and owner check: what is not covered (BARDO-03, BARDO-12, SETTINGS-05; production audit
   wave 2, 2026-10-16).** `MenuExport::start` takes a required `MenuPermit` and `LiveClient::new` a required
-  `OwnerCheck`; both policies belong to the consumer (the desktop's are peephole roles: `ShellOnly`
+  `OwnerCheck`; both policies belong to the consumer (the desktop's are the caller-identity roles: `ShellOnly`
   for menus, the Settings app's `BusPeers` check for the live modules). Deferred or decided here:
   (1) reads of the menu (`GetLayout`, `GetGroupProperties`, `GetProperty`, `AboutToShow`) are not
   gated: the layout is what the window already shows, and the shell's bar reads it; (2) a single
@@ -37,7 +37,7 @@ that rev.
   The Settings app's to cap; (6) the first check after a name changes hands costs one `GetNameOwner` on every
   call (the owner is looked up each time so a name that moved is never trusted for one call), and a
   refused owner is asked again on every call, not cached; (7) `ShellOnly` has no test of its own in
-  Bardo (peephole's `fake` seam would need a second feature); its logic is one `require` call. The
+  Bardo (the caller-identity library's `fake` seam would need a second feature); its logic is one `require` call. The
   values of the caps (64, 8, 1024 and the rest) are ours; the owner has not confirmed them.
 - **Watched directory deleted and recreated (BARDO-18).** `Watch` starts its watcher before the
   first read and re-reads on every event, but the inotify watch dies with a deleted directory

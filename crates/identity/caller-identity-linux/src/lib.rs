@@ -1,4 +1,4 @@
-//! Which program is calling: the I/O half of peephole.
+//! Which program is calling: the I/O half of the caller-identity library.
 //!
 //! [`Pinned`] holds a process by pidfd; [`Prober`] reads what `/proc` says of it through a
 //! [`ProcFs`] (the real one, or a fixture tree under feature `fake`) and [`caller_identity_core::judge`] decides.

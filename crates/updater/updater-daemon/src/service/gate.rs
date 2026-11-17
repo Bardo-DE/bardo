@@ -1,6 +1,6 @@
 //! Who may ask the update service for what, by the program that is calling.
 //!
-//! The bus names the caller's process; peephole holds it by the descriptor the bus daemon gave, reads
+//! The bus names the caller's process; the caller-identity library holds it by the descriptor the bus daemon gave, reads
 //! what the system says of it and judges it against the desktop's own table of programs (a root-owned
 //! file). A method then names the roles it answers:
 //!

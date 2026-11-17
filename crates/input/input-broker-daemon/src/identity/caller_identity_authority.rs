@@ -1,7 +1,7 @@
-//! The real authority: `peephole` pins the process behind the socket, probes its facts and judges
+//! The real authority: `caller_identity` pins the process behind the socket, probes its facts and judges
 //! them against the table.
 //!
-//! This is the one file that knows `peephole`'s types; everything else sees a [`Caller`].
+//! This is the one file that knows `caller_identity`'s types; everything else sees a [`Caller`].
 //!
 //! The service holds `CAP_SYS_PTRACE` so that the probe can read `/proc/<pid>/exe` and `status` of
 //! another user's process. It never asks a unit manager (that would mean connecting to a socket the
@@ -17,12 +17,12 @@ use std::os::fd::OwnedFd;
 
 /// Judges callers against the table on disk, through a view of `/proc` and the file system.
 #[derive(Debug)]
-pub struct PeepholeAuthority<P = RealProc> {
+pub struct CallerIdentityAuthority<P = RealProc> {
     prober: Prober<P>,
     files: TableFiles,
 }
 
-impl PeepholeAuthority<RealProc> {
+impl CallerIdentityAuthority<RealProc> {
     /// The authority of this machine: the real `/proc` and the shipped table.
     #[must_use]
     pub fn system() -> Self {
@@ -30,7 +30,7 @@ impl PeepholeAuthority<RealProc> {
     }
 }
 
-impl<P: ProcFs> PeepholeAuthority<P> {
+impl<P: ProcFs> CallerIdentityAuthority<P> {
     /// An authority reading through `prober`, with the table in `files`; the table is read through
     /// the same view, so a test's fixture tree stands for both.
     pub fn new(prober: Prober<P>, files: TableFiles) -> Self {
@@ -38,7 +38,7 @@ impl<P: ProcFs> PeepholeAuthority<P> {
     }
 }
 
-impl<P: ProcFs + 'static> Authority for PeepholeAuthority<P> {
+impl<P: ProcFs + 'static> Authority for CallerIdentityAuthority<P> {
     fn identify(&self, conn: &OwnedFd) -> Result<Caller, IdentifyError> {
         let pinned = Pinned::of_stream(conn).map_err(IdentifyError::Pin)?;
         let facts = self
@@ -65,7 +65,7 @@ impl<P: ProcFs + 'static> Authority for PeepholeAuthority<P> {
     }
 }
 
-impl<P: ProcFs> PeepholeAuthority<P> {
+impl<P: ProcFs> CallerIdentityAuthority<P> {
     /// Judges `facts`; a listed service whose image checked out is judged again with the facts of
     /// its unit, which is the only way to `Proof::Full`. When the unit cannot be shown the first
     /// judgement stands (the policy refuses it) and the reason goes to the journal.

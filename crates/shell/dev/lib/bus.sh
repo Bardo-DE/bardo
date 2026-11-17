@@ -87,7 +87,7 @@ require_fake_ddc() {
 # Names a stand-in a script built in this checkout as the desktop's service APP in the role ROLE
 # (accounts, router, ...), for the daemon under test only: the row goes into $SCRATCH/dev-callers.toml
 # (mode 600, never anywhere else) and DEV_CALLERS_FLAGS becomes `--dev-callers FILE`, the `bardo-shell run`
-# option of a debug build that reads that file as the person's own rows (peephole's developer rows,
+# option of a debug build that reads that file as the person's own rows (the caller-identity library's developer rows,
 # `Proof::Dev`, below every real proof). The release table is never read or written. Needs
 # scratch_new first. $1 APP, $2 ROLE, $3 the stand-in's image (resolved: /proc names the real path).
 DEV_CALLERS_FLAGS=()

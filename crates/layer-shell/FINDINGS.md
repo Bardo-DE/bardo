@@ -759,7 +759,7 @@ process still runs). Only the system manager can put a process in that group. A 
 `SO_PEERCRED` pid and kept only if the credentials read again are the same. The fallback leaves one
 gap, a pid recycled between connect and the open; the primary path has none (closed 2026-10-17, final
 audit item "reopened pin": the owner allowed `nix` for it the same day). This is the proof route of
-peephole's `Pinned::of_stream` and the compositor's `handle_of` (shell-host has no peephole dependency, so the
+The caller-identity library's `Pinned::of_stream` and the compositor's `handle_of` (shell-host has no caller-identity dependency, so the
 same steps are done here), without the caller table: the group is the only judgement. A fake daemon in a test is
 believed only through `MouseGestures::trusting`, which exists in test builds.
 

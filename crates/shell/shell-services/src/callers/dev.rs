@@ -1,7 +1,7 @@
 //! A person's own rows (feature `dev-callers`, which only the bardo-shell binary's `debug` feature turns
 //! on): the stand-ins a checkout builds, named in a file the person owns, are let in as the
 //! services they stand for, at `Proof::Dev`, below every real proof. A release build has none of
-//! this: the feature, the flag and peephole's `dev-rows` are all absent.
+//! this: the feature, the flag and the caller-identity library's `dev-rows` are all absent.
 
 use std::path::Path;
 

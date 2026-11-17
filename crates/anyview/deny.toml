@@ -65,7 +65,7 @@ ignore = [
     { id = "RUSTSEC-2026-0369", reason = "zip's extract() sets permissions through symlinks; nothing here calls extract, and calamine holds zip at 8" },
     # zbus 5's companion crates: zvariant, zvariant_derive and zbus_names are folded into zbus 6 as
     # modules, so the standalone crates are marked unmaintained. No known flaw. zbus 5 comes through
-    # Bardo, docket, porter, peephole and ashpd, so the move to zbus 6 is the whole desktop's, not
+    # Bardo, docket, porter, the caller-identity library and ashpd, so the move to zbus 6 is the whole desktop's, not
     # anyview's alone. Remove these when the desktop set moves to zbus 6.
     { id = "RUSTSEC-2026-0370", reason = "zvariant folded into zbus 6; no known flaw; zbus 5 comes through the desktop's own crates" },
     { id = "RUSTSEC-2026-0371", reason = "zbus_names folded into zbus 6; no known flaw; zbus 5 comes through the desktop's own crates" },
@@ -102,7 +102,7 @@ allow-git = [
     "https://github.com/Bardo-DE/mpv-wgpu",
     "https://github.com/Bardo-DE/vello",
     # The desktop's agent layer (anyview-platform, desktop): docket at the manifest's rev, and
-    # porter, almanac and stoker at the revs docket pins, and peephole (account-dbus's caller check,
+    # porter, almanac and stoker at the revs docket pins, and the caller-identity library (account-dbus's caller check,
     # at the tag porter pins). All MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/docket",
     "https://github.com/Bardo-DE/porter",

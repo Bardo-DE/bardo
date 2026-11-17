@@ -331,7 +331,7 @@ step_boot() {
   build || return 1
   monitor_start
   stamp compositor_up
-  # bardo-shell takes the floor's caller rows as the person's own (peephole's Proof::Dev) and, with them, the assistant's router.
+  # bardo-shell takes the floor's caller rows as the person's own (the caller-identity library's Proof::Dev) and, with them, the assistant's router.
   { cat "$FLOOR_DIR/desktop-callers.toml"
     printf '\n[[peer]]\napp = "org.bardo.Intents"\nrole = "router"\nexe = ["%s"]\n' "$(readlink -f "$DK/accept-actiond")"
   } >"$RUN/dev-callers.toml"

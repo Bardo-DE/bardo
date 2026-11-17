@@ -77,7 +77,7 @@ allow-git = [
     "https://github.com/Bardo-DE/mpv-wgpu",
     "https://github.com/Bardo-DE/vello",
     # The desktop's agent layer (anyview-platform, desktop): docket at the manifest's rev, and
-    # porter, almanac and stoker at the revs docket pins, and peephole (account-dbus's caller check,
+    # porter, almanac and stoker at the revs docket pins, and the caller-identity library (account-dbus's caller check,
     # at the tag porter pins). All MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/docket",
     "https://github.com/Bardo-DE/porter",

@@ -1,7 +1,7 @@
-//! A person's own rows (feature `debug`, which turns on peephole's `dev-rows`): the stand-ins a
+//! A person's own rows (feature `debug`, which turns on the caller-identity library's `dev-rows`): the stand-ins a
 //! checkout builds (a fake portal frontend, a fake shell), named in a file the person owns, are let
 //! in as the programs they stand for, at `Proof::Dev`, below every real proof. A release build has
-//! none of this: the feature, the environment variable and peephole's `dev-rows` are all absent.
+//! none of this: the feature, the environment variable and the caller-identity library's `dev-rows` are all absent.
 
 use std::path::Path;
 

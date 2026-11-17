@@ -85,7 +85,7 @@ wayland-backend = { workspace = true, features = ["client_system"], optional = t
 wayland-protocols = { workspace = true, features = ["client", "staging", "unstable"], optional = true }
 # `bardo_window`: the client bindings of our own bardo_window_v1, generated from `protocols/` by macro.
 wayland-scanner = { workspace = true, optional = true }
-# `menus::ShellOnly` (the `peephole` feature): which program is calling, by its pidfd and the unit
+# `menus::ShellOnly` (the `caller_identity` feature): which program is calling, by its pidfd and the unit
 # manager's facts. Its own repo, taken by tag; Linux only, because it reads `/proc` and the system
 # manager's bus. `desktop` adds the desktop's role names.
 caller-identity-dbus = {features = ["desktop"], optional = true, path = "../../identity/caller-identity-dbus"}
@@ -109,9 +109,9 @@ print = ["desktop", "dep:zbus", "dep:memfd", "dep:base-time"]
 # default, so an app that exports no menu builds no D-Bus client for it.
 menus = ["desktop", "dep:zbus", "dep:serde", "dep:dbus-kit"]
 # `menus::ShellOnly`: the menu permit for our desktop, which lets only the shell press an item
-# (peephole's `shell` role at the full proof). Linux only. Off by default; without it an app passes
+# (the caller-identity library's `shell` role at the full proof). Linux only. Off by default; without it an app passes
 # its own `MenuPermit` to `MenuExport::start`, because there is no default permit.
-peephole = ["menus", "dep:caller-identity-dbus"]
+caller_identity = ["menus", "dep:caller-identity-dbus"]
 # `AppHandle::follow_desktop_outputs`: the shell's work area and scale from `org.bardo.Outputs1`
 # (ui-desktop's `Outputs`), fed to `AppHandle::screen_area`. Off by default, so an app that never asks
 # builds no D-Bus client for it.

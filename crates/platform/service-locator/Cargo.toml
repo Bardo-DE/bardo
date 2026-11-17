@@ -24,7 +24,7 @@ interprocess.workspace = true
 [target.'cfg(unix)'.dependencies]
 rustix = {workspace = true, features = ["std", "fs", "net", "process"]}
 # Only for the `guard` feature: the caller check (who is on the other end of a socket) is
-# peephole's, by git tag like every consumer of it.
+# The caller-identity library's, by git tag like every consumer of it.
 caller-identity-linux = {optional = true, path = "../../identity/caller-identity-linux"}
 caller-identity-core = {optional = true, path = "../../identity/caller-identity-core"}
 

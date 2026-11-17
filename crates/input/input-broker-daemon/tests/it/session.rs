@@ -283,7 +283,7 @@ fn devices_of_one_connection_are_independent() {
 }
 
 /// NEW-FA-4: the kernel is told, for every kind, the service the device is made for; the label's
-/// role is the peephole role the policy admitted the caller under.
+/// role is the caller-identity role the policy admitted the caller under.
 #[test]
 fn every_device_kind_is_made_with_the_label_of_the_caller_it_is_for() {
     let pointer = PointerCaps {

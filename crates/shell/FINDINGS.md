@@ -845,7 +845,7 @@ a source; `assumed` means not yet checked.
   is a plain theme name, the theme lookup is a few `stat`s, and the file is one capped read of a
   regular file (NEW-SILL-1). Resolving icons on a worker with a cache by name is open.
 - **The voice role is sill's own word** (`"voice"` in `voice/backend/signals.rs`) until
-  peephole names it (`roles::VOICE`) and its table has a row for voiced; until then the signals
+  The caller-identity names it (`roles::VOICE`) and its table has a row for voiced; until then the signals
   and the ask are refused (voiced is a skeleton and not installed).
 - **Badges for ids that match no installed app** are still tracked, up to `BADGE_APPS_MAX`
   (NEW-SILL-4); ignoring them needs the app index in the service's `Deps`.
@@ -1547,7 +1547,7 @@ Fixed by reading, not built: the gate run is the first compile.
 
 Fixed by reading, not built: the gate run is the first compile. Where each piece lives is in
 ARCHITECTURE.md's one-home table (the callers module, the compositor's permission question, the
-shell's names). New dependency: `peephole-bus` (git tag v0.1.2, features `tokio` and `desktop`; `fake`
+shell's names). New dependency: `caller-identity-dbus` (git tag v0.1.2, features `tokio` and `desktop`; `fake`
 only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's to refresh.
 
 - **Callers (SILLS-07).** The three copies of "the sender is the owner of a name" are one module,
@@ -1564,18 +1564,18 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   once on stderr. A table installed after the shell started is read at the next start.
 - **Stand-in services in the dev scripts are let in by `--dev-callers` (closed 2026-10-17).** The
   shell reads the desktop's table once (`/etc/bardo/desktop-callers.toml`; a jail has none, so it is
-  empty), and peephole judges an image the person can write `Unverified` before it looks at any row,
+  empty), and the caller-identity library judges an image the person can write `Unverified` before it looks at any row,
   so a stand-in built in a checkout is never a service: `dev/accept/accounts.sh` (the
   `accountd_standin` example) and `dev/accept/confirm.sh` (docket's `accept-intentd`) were refused on
-  every call. peephole v0.1.4 added the seam (feature `dev-rows`: `Table::from_toml_dev`,
+  every call. The caller-identity library v0.1.4 added the seam (feature `dev-rows`: `Table::from_toml_dev`,
   `TableFiles::load_dev`, `RowOrigin::Dev`, `Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`).
   sill's side: `bardo-shell run --dev-callers FILE` exists only in a build with the sill crate's `debug`
   feature, which alone turns on `sill-services/dev-callers`, which alone turns on
-  `peephole-bus/dev-rows`; none is a default feature or a dependency of a shipped build, so a release
+  `caller-identity-dbus/dev-rows`; none is a default feature or a dependency of a shipped build, so a release
   build has neither the flag nor the feature (the desktop gate greps for `dev-rows`; a table test
   in `run_args.rs` shows the release-shaped parser refuses the flag). The file is read through
   `DesktopCallers::with_dev_rows`: a plain file (a link is refused) of this user or root that group
-  and others cannot write, within peephole's size cap; anything else adds nothing and says so on
+  and others cannot write, within the caller-identity library's size cap; anything else adds nothing and says so on
   stderr (`tests/it/dev_callers.rs`). Its rows are added after the desktop's table, never over a unit
   it names. `callers::claim` asks for the role at `Proof::Full` as before and, in a `dev-callers`
   build, also at `Proof::Dev` (`Requirement::dev`); that also lets in the real service at any
@@ -1586,7 +1586,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   scratch tree, resolves the image path because `/proc` names the real one) and `launch_daemon`
   passes `--dev-callers`. `dev/demo.sh` still runs with the table empty: a `mailo` built in a
   checkout is `Unverified`, so its menu is not in the bar. Not verified here (no compile, no run):
-  the two scripts end to end, and the `Cargo.lock` move from peephole v0.1.2 to v0.1.4.
+  the two scripts end to end, and the `Cargo.lock` move from the caller-identity library v0.1.2 to v0.1.4.
 - **Dev sessions start the compositor with a floor.** The compositor asks before a program captures the screen,
   reads the clipboard, types and so on. `dev/lib/compositor.sh`'s `start_compositor` writes a floor
   (`compositor-floor/privacy.toml` in the script's output folder, mode 600 in a 700 folder) with an
@@ -1626,7 +1626,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   update. Consequences, all stated: a program whose image the
   person can write (a `cargo build` under the home folder) is `Unverified`, so its menu is not
   shown; a desktop service's standing carries no image, so it is known by its app key even once a
-  subject is reported (peephole could return the image on `Standing::Service`); the bar reads the
+  subject is reported (the caller-identity library could return the image on `Standing::Service`); the bar reads the
   menu from the verified owner's unique name, but a click is still addressed to the well-known name,
   so a name taken over in the instant between the check and the click is clicked until the owner
   change is seen.
@@ -1665,10 +1665,10 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   input, 200 ms before the early inputs end, and the late click comes `PERMISSION_ARM_AFTER` later), that a click on
   a disabled `AlertButton` still finds the button laid out (`centre`), and that `ShortcutKey::Enter` is
   what the alert hears as Return.
-- **Could not be checked by reading.** `peephole-bus` 0.1.2's `BusPeers::new`, `with_offload(Tokio)`,
+- **Could not be checked by reading.** `caller-identity-dbus` 0.1.2's `BusPeers::new`, `with_offload(Tokio)`,
   `who`, `require`, `owner_of` and `introduce` against the sources of that tag (read, not compiled);
   that `Standing::Sandboxed { app, .. }` and `Standing::Program { exe, scope_app }` can be built from
-  outside peephole in the tests (they are non-exhaustive enums, not non-exhaustive variants);
+  outside the caller-identity library in the tests (they are non-exhaustive enums, not non-exhaustive variants);
   that `Alert`'s `on_dismiss` is passed as `Some(EventHandler)` the way `message` is passed as
   `Some(..)`; that the sheet's HTML carries the typographic apostrophes unescaped (a test asserts
   `can\u{2019}t` and `Don\u{2019}t Allow` in it).

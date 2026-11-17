@@ -1,8 +1,8 @@
-# peephole
+# The caller-identity library
 
 Which program is calling: pinned process identity for Linux desktop services (pidfd, systemd unit, sandbox), judged against a root-owned table.
 
-A service that does something only the desktop's own programs may ask for (take a screenshot, create an input device, install an update) needs to know who is on the other end of its socket or its bus message. A process id is not an answer: it can be reused, and the name of the cgroup a process sits in can be set by the process itself. peephole holds the caller by a pidfd, reads what `/proc` says of it afterwards, optionally asks the systemd manager about its unit, and judges the result against one table that says which program is the shell, the portal, the updater and so on.
+A service that does something only the desktop's own programs may ask for (take a screenshot, create an input device, install an update) needs to know who is on the other end of its socket or its bus message. A process id is not an answer: it can be reused, and the name of the cgroup a process sits in can be set by the process itself. The caller-identity library holds the caller by a pidfd, reads what `/proc` says of it afterwards, optionally asks the systemd manager about its unit, and judges the result against one table that says which program is the shell, the portal, the updater and so on.
 
 Licensed under either of MIT or Apache-2.0, at your option.
 
@@ -11,14 +11,14 @@ Licensed under either of MIT or Apache-2.0, at your option.
 | Crate | Layer | Contents |
 |---|---|---|
 | `caller-identity-core` | pure, no I/O | ids, the caller table (TOML), the facts read about a process, `judge`, `Requirement`, `Standing` |
-| `peephole` | sync I/O | `Pinned` (pidfd), `Prober` over a `ProcFs` (real `/proc`, or a fixture tree under feature `fake`), the ownership walk, the table loader |
+| `caller_identity` | sync I/O | `Pinned` (pidfd), `Prober` over a `ProcFs` (real `/proc`, or a fixture tree under feature `fake`), the ownership walk, the table loader |
 | `caller-identity-dbus` | async adapter | `BusPeers` over zbus: the sender's process, the unit manager's facts, `require`, `owner_of`, `watch_owner` |
 
 ```rust
 // In a bus method: who may call this?
 let need = [Requirement::new(roles::SHELL, Proof::Full)];
 let caller = peers.require(header.sender().map(|s| s.as_str()), &need).await
-    .map_err(peephole_bus::access_denied)?;
+    .map_err(caller_identity_dbus::access_denied)?;
 ```
 
 ## What a proof is
@@ -44,13 +44,13 @@ Other limits, stated rather than hidden:
 
 ## The table
 
-`dist/desktop-callers.toml` is a sample of the format and of this desktop's own table. A row has `app`, `exe` (a non-empty list of absolute patterns; one `*` per segment, never `**`), `role`, and optionally `unit` and `name`. A row with a `unit` is a service; a row without is a program matched by its image alone, whose ceiling is `Exe`. The loader refuses a file that is not owned by root alone, or whose directory anyone else can write. peephole reads no user file: nothing a person's file says makes a process more trusted. (The one exception is the opt-in `dev-rows` feature below, whose rows reach `Proof::Dev` and no higher.)
+`dist/desktop-callers.toml` is a sample of the format and of this desktop's own table. A row has `app`, `exe` (a non-empty list of absolute patterns; one `*` per segment, never `**`), `role`, and optionally `unit` and `name`. A row with a `unit` is a service; a row without is a program matched by its image alone, whose ceiling is `Exe`. The loader refuses a file that is not owned by root alone, or whose directory anyone else can write. The caller-identity library reads no user file: nothing a person's file says makes a process more trusted. (The one exception is the opt-in `dev-rows` feature below, whose rows reach `Proof::Dev` and no higher.)
 
 ## Developer rows
 
 Scripts that run a checkout-built stand-in (an accounts stand-in, a router stand-in, an app built in the working tree) cannot be a service in the table: the image is one the person can write and there is no real unit, so `judge` calls it `Unverified` before it looks at any row. Every privileged call to it from such a script is refused. Feature `dev-rows` gives those scripts a seam that cannot exist in a shipped build.
 
-**The risk, plainly: rows read from a file a person owns let that person's programs take a service's role. No shipped program may turn `dev-rows` on.** It is off by default in `caller-identity-core`, `peephole` and `caller-identity-dbus` (each forwards it to the one below), and the desktop's gate greps `cargo tree -e features` for it in every release shape, as it does for `fake`.
+**The risk, plainly: rows read from a file a person owns let that person's programs take a service's role. No shipped program may turn `dev-rows` on.** It is off by default in `caller-identity-core`, `caller_identity` and `caller-identity-dbus` (each forwards it to the one below), and the desktop's gate greps `cargo tree -e features` for it in every release shape, as it does for `fake`.
 
 With the feature:
 
@@ -69,7 +69,7 @@ Without the feature nothing changes: `Proof` has `Cgroup`, `Exe` and `Full` only
 
 | Feature | Crate | What it does | Shipped? |
 |---|---|---|---|
-| `fake` | `peephole`, `caller-identity-dbus` | `Pinned::introduced`, the fixture tree, `BusPeers::introduce` | never |
+| `fake` | `caller_identity`, `caller-identity-dbus` | `Pinned::introduced`, the fixture tree, `BusPeers::introduce` | never |
 | `desktop` | `caller-identity-core` | the `roles` module of this desktop's own roles | by the desktop |
 | `dev-rows` | all three | developer rows, `Proof::Dev`, `TableFiles::load_dev` (see Developer rows) | never |
 | `tokio` | `caller-identity-dbus` | `Offload::Tokio` and zbus on tokio | optional |

@@ -58,7 +58,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     dev-dependency, so their tests always have it; this repo's gate runs `--all-features`, and a plain
     `cargo test` skips the client's `fake` tests.
 
-11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** The mouse gestures daemon and the key remap daemon are admitted at peephole's
+11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** The mouse gestures daemon and the key remap daemon are admitted at the caller-identity library's
     `Full` only. With no manager to ask, `identity/unit_files` supplies the unit's facts from the unit
     files and the process (ARCHITECTURE "Who may have what"). `MainPID` is taken as the caller's own pid.
     That was a residual for the mouse gestures daemon while it was a user unit (a same-user process could fill the
@@ -112,19 +112,19 @@ Departures from the plan, standing facts and open items. An entry names the cond
 
 ## Unverified (nothing here was compiled or run; the gate checks each)
 
-0. NEW-PI-4: `peephole` is now tag `v0.1.4` (Cargo.lock to be refreshed). The calls added are `UnitFacts`
-   (all fields public, no `non_exhaustive`), `Loader::from_unset`, `LOADER_VARIABLES`, `peephole::{dirs_trust,
+0. NEW-PI-4: `caller_identity` is now tag `v0.1.4` (Cargo.lock to be refreshed). The calls added are `UnitFacts`
+   (all fields public, no `non_exhaustive`), `Loader::from_unset`, `LOADER_VARIABLES`, `caller_identity::{dirs_trust,
    weaker}` and `ProcFs::{read_file_capped, list_dir, trust_of}`; read from the sibling checkout at 5a2e742. That
    a fixture `FixtureProc::file` overwrites an existing node (tests rely on it).
 
-1. peephole's API was read from the sibling lane's tree at its commit `e3f8ed3`; the dependency is
-   the git tag `v0.1.0` (`peephole` and `peephole-core` with feature `desktop`), commit `9cef560`,
+1. The caller-identity library's API was read from the sibling lane's tree at its commit `e3f8ed3`; the dependency is
+   the git tag `v0.1.0` (`caller_identity` and `caller-identity-core` with feature `desktop`), commit `9cef560`,
    which was not re-read after tagging. The calls are
-   confined to `crates/input_broker/src/identity/peephole_authority.rs` and `policy.rs`:
+   confined to `crates/input_broker/src/identity/caller_identity_authority.rs` and `policy.rs`:
    `Pinned::of_stream`, `Prober::system`, `Prober::probe`, `Prober::fs`, `TableFiles::desktop` and
    `TableFiles::load`, `judge`, `Standing::Service`, `roles::{PAD_DAEMON, KEYMAP_DAEMON}`. The lane
    was still moving; if it changes a signature the change is in those two files. `Pinned::of_stream`
-   gives `Pin::AtConnect` from peephole 0.1.5 (`SO_PEERPIDFD` through nix) and `Pin::Reopened` on a
+   gives `Pin::AtConnect` from the caller-identity library 0.1.5 (`SO_PEERPIDFD` through nix) and `Pin::Reopened` on a
    kernel before 6.5; this service accepts either: it asks for `Proof::Exe`, not for a firm pin.
 2. `input-linux` 0.7.1's `UInputHandle::create` calls `UI_DEV_SETUP`, then `UI_ABS_SETUP` for each axis,
    then `UI_DEV_CREATE`; that the kernel accepts the axes after `UI_DEV_SETUP` (it does in
@@ -134,7 +134,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    `systemd-analyze security bardo-input-broker.service`.
 4. `rustix` 1.1: `recv` returns `(output, real_len)`; `RecvFlags::TRUNC` on `SOCK_SEQPACKET`
    reports the real length; `SO_RCVTIMEO` on an accepted socket ends `recv` with `EAGAIN`.
-5. `SO_PEERPIDFD` needs kernel 6.5 (peephole's `Pinned::of_stream`); an older kernel gets the reopened
+5. `SO_PEERPIDFD` needs kernel 6.5 (the caller-identity library's `Pinned::of_stream`); an older kernel gets the reopened
    pin. `getsockopt` is in `@system-service`, so the unit's `SystemCallFilter` lets it through (read,
    not run under the unit).
 6. SELinux on Fedora lets an unconfined service domain open `/dev/uinput` and `/proc/<pid>/exe` of a
@@ -149,7 +149,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 
 ## Deferred
 
-- **Requiring `Pin::AtConnect`.** Since peephole 0.1.6 (`SO_PEERPIDFD` through nix, owner allowed nix
+- **Requiring `Pin::AtConnect`.** Since the caller-identity library 0.1.6 (`SO_PEERPIDFD` through nix, owner allowed nix
   2026-10-17) a socket peer is pinned at connect on every supported distro's kernel (6.5+), so the
   recycled-pid window is closed there. The service still accepts the reopened pin a kernel before 6.5
   gives (it judges a `Standing` at `Proof::Exe`, not a pin level); refusing it is a one-line

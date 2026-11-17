@@ -2,7 +2,7 @@
 //! them, for a service that has no manager to ask.
 //!
 //! A root service cannot ask a user's manager (that is a socket the user controls) and links no
-//! bus, so `peephole`'s `Full` proof cannot come from a manager call here. It comes from what a
+//! bus, so `caller_identity`'s `Full` proof cannot come from a manager call here. It comes from what a
 //! root service can read with the one capability it keeps:
 //!
 //! - the unit's fragment is a file in a root-owned unit folder, with every drop-in root-owned, and

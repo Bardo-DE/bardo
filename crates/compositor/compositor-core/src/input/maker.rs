@@ -15,9 +15,9 @@ const PREFIX: &str = "input-broker/";
 /// The proven service a virtual device was made for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Maker {
-    /// The mouse gestures daemon, the Magic Mouse gesture daemon (peephole role `pad_daemon`).
+    /// The mouse gestures daemon, the Magic Mouse gesture daemon (the caller-identity role `pad_daemon`).
     PadDaemon,
-    /// The key remap daemon, the Mac keyboard mapping daemon (peephole role `keymap_daemon`).
+    /// The key remap daemon, the Mac keyboard mapping daemon (the caller-identity role `keymap_daemon`).
     KeymapDaemon,
 }
 

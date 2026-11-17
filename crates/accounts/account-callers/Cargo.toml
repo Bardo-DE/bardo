@@ -1,6 +1,6 @@
 [package]
 name = "account-callers"
-description = "Who is calling a daemon: a bus connection's sender to an app and a role (peephole's judgement of the process, then the caller table), the table read from its files, and which /proc and which system tables a daemon reads them from."
+description = "Who is calling a daemon: a bus connection's sender to an app and a role (the caller-identity library's judgement of the process, then the caller table), the table read from its files, and which /proc and which system tables a daemon reads them from."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -26,7 +26,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 # The caller table read from `callers.toml` files (`load_callers`): accountd's and syncd's.
 file = ["dep:toml"]
 # TEST ONLY, never default and never in dist: `ProcCallers::with_proc_root` and `caller_of_pid` read a
-# directory tree standing for /proc (peephole's `fake` seams: a process that is only a claim). A daemon
+# directory tree standing for /proc (the caller-identity library's `fake` seams: a process that is only a claim). A daemon
 # turns it on through its own `test-proc-root` feature; check-boundary.sh checks that no default build
 # has it.
 test-proc-root = ["caller-identity-linux/fake"]

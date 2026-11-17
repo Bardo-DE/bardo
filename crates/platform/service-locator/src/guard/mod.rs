@@ -4,7 +4,7 @@
 //! Policy-free mechanics: the table of callers, the caps and the messages stay with the daemon that
 //! serves the socket.
 //!
-//! Unix only, behind the `guard` feature, because the caller check is peephole's.
+//! Unix only, behind the `guard` feature, because the caller check is the caller-identity library's.
 
 mod accept;
 mod seat;

@@ -108,7 +108,7 @@ fn a_refusal_is_a_cut_that_says_why_in_plain_words() {
         };
         assert!(message.contains(words), "{reason:?}: {message}");
         let shown = message.to_lowercase();
-        for developer_word in ["uinput", "socket", "peephole", "ceiling"] {
+        for developer_word in ["uinput", "socket", "caller_identity", "ceiling"] {
             assert!(!shown.contains(developer_word), "{message}");
         }
     }

@@ -51,7 +51,7 @@ caller-identity-dbus = {default-features = false, features = ["desktop", "fake",
 testing = []
 # org.bardo.Compositor.Debug1 on the private bus (B10): never in a release build.
 debug-inject = ["dep:compositor-backend", "compositor-backend/debug-inject"]
-# Developer rows (peephole's `dev-rows`): a program named in a file the person owns is a desktop
+# Developer rows (the caller-identity library's `dev-rows`): a program named in a file the person owns is a desktop
 # service at `Proof::Dev`, and `dbus::require` lets exactly that proof in. Only the compositor's
 # `testing` and `debug-inject` turn it on; a shipped build never has it (the desktop gate greps
 # `cargo tree -e features` for `dev-rows`).

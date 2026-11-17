@@ -3,10 +3,10 @@
 # is complete and well formed. It is read by the update service, the portal backend and the input service, and each
 # refuses every caller when a row it needs is missing, so a hole here is a desktop that cannot update or share a screen.
 #
-#   gate/check-callers-table.sh [--table FILE] [--peephole DIR] [--crates DIR]
+#   gate/check-callers-table.sh [--table FILE] [--caller-identity DIR] [--crates DIR]
 #
 #   --table FILE     the table (default dist/desktop-callers.toml of this repo)
-#   --peephole DIR   the caller-identity folder: its caller-identity-core/src/roles.rs lists the roles (default: $BARDO_CALLER_IDENTITY_DIR, then
+#   --caller-identity DIR   the caller-identity folder: its caller-identity-core/src/roles.rs lists the roles (default: $BARDO_CALLER_IDENTITY_DIR, then
 #                    crates/identity of this tree). Without one the check cannot say which roles are missing: exit 2
 #   --crates DIR   the component domain folders (crates/<domain> of this tree), to compare each unit's ExecStart program with the row's `exe` list
 #                    (default: crates/ of this tree; a unit whose file is not found there is noted and skipped)
@@ -14,7 +14,7 @@
 # Checks: the file parses; every key is one the reader knows; every row has an app, a role and a non-empty list of
 # `exe` paths, each absolute, without `..`, without `**` and with at most one `*` per path segment; no unit twice;
 # no row without a unit except for the roles that are programs (settings, updater_cli, sandbox_launcher, manager), and
-# `settings` has one (the update service asks for it at the image level); every role of peephole's list has a row
+# `settings` has one (the update service asks for it at the image level); every role of the caller-identity library's list has a row
 # and every row is one of those roles; and each unit's ExecStart program, where its file is in a checkout, matches
 # one of its row's paths.
 # Exit: 0 clean, 1 something is wrong (each problem printed), 2 usage or nothing to compare the roles with.
@@ -22,11 +22,11 @@ set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 usage() { sed -n '2,/^set -uo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
-table="$ROOT/dist/desktop-callers.toml" peephole="" crates_dir="$(dirname "$ROOT")/crates"
+table="$ROOT/dist/desktop-callers.toml" caller_identity="" crates_dir="$(dirname "$ROOT")/crates"
 while [ $# -gt 0 ]; do
   case "$1" in
     --table) table=${2:?}; shift ;;
-    --peephole) peephole=${2:?}; shift ;;
+    --caller-identity) caller_identity=${2:?}; shift ;;
     --crates) crates_dir=${2:?}; shift ;;
     -h|--help) usage; exit 0 ;;
     *) usage >&2; exit 2 ;;
@@ -35,16 +35,16 @@ while [ $# -gt 0 ]; do
 done
 command -v python3 >/dev/null || { echo "check-callers-table: python3 is not installed" >&2; exit 2; }
 [ -f "$table" ] || { echo "check-callers-table: no table at $table" >&2; exit 2; }
-if [ -z "$peephole" ]; then
+if [ -z "$caller_identity" ]; then
   for d in "${BARDO_CALLER_IDENTITY_DIR:-}" "$ROOT/../crates/identity"; do
-    if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/roles.rs" ]; then peephole=$d; break; fi
+    if [ -n "$d" ] && [ -f "$d/caller-identity-core/src/roles.rs" ]; then caller_identity=$d; break; fi
   done
 fi
-if [ -z "$peephole" ] || [ ! -f "$peephole/caller-identity-core/src/roles.rs" ]; then
-  echo "check-callers-table: no peephole crate (caller-identity-core/src/roles.rs): give --peephole DIR or set BARDO_CALLER_IDENTITY_DIR" >&2
+if [ -z "$caller_identity" ] || [ ! -f "$caller_identity/caller-identity-core/src/roles.rs" ]; then
+  echo "check-callers-table: no caller-identity crate (caller-identity-core/src/roles.rs): give --caller-identity DIR or set BARDO_CALLER_IDENTITY_DIR" >&2
   exit 2
 fi
-exec python3 -I - "$table" "$peephole/caller-identity-core/src/roles.rs" "$crates_dir" <<'PY'
+exec python3 -I - "$table" "$caller_identity/caller-identity-core/src/roles.rs" "$crates_dir" <<'PY'
 import fnmatch
 import os
 import re
@@ -129,7 +129,7 @@ for i, row in enumerate(rows, 1):
     role = row.get("role")
     unit = row.get("unit")
     if role not in roles:
-        bad(f"{who}: {role!r} is not a role of peephole's list")
+        bad(f"{who}: {role!r} is not a role of the caller-identity library's list")
     if unit is None:
         if role not in UNITLESS:
             bad(f"{who}: no unit, and {role!r} is a service (only {sorted(UNITLESS)} are known by their image alone)")

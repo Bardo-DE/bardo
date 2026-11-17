@@ -1,6 +1,6 @@
 //! The roles a caller can have: the one vocabulary of the desktop's daemons.
 //!
-//! A daemon learns who is calling from the caller table (`account-callers`, over peephole's
+//! A daemon learns who is calling from the caller table (`account-callers`, over the caller-identity library's
 //! judgement of the process) and answers with a [`CallerRole`]. What each role may ask a daemon for
 //! is that daemon's own matter: each keeps its permission predicates over these roles instead of
 //! mapping them into an enum of its own.

@@ -20,10 +20,10 @@
 # "Mail" under an identity, not "org.bardo.Mail"); an app without one is named by its desktop
 # entry (`<app id>.desktop`, its `Name=`), else by its id.
 # A row with a unit that gives a fixed role is honoured only while the systemd manager vouches for
-# the unit (peephole's `Full` proof): the process is the unit's main process, the unit comes from
+# the unit (the caller-identity library's `Full` proof): the process is the unit's main process, the unit comes from
 # files root owns (its fragment and every drop-in, in directories only root can write), it is not
 # transient, it starts one of the row's programs, and it unsets the loader variables
-# (`UnsetEnvironment=` of the 22 names of peephole's LOADER_VARIABLES, as the inference service's dist/bardo-inferd.service
+# (`UnsetEnvironment=` of the 22 names of the caller-identity library's LOADER_VARIABLES, as the inference service's dist/bardo-inferd.service
 # does). Otherwise the caller is a plain app. A row names its programs with
 # `exe = ["/usr/bin/bardo-shell", ...]` (absolute paths, one `*` allowed per segment); a row for a daemon
 # unit (`bardo-inferd.service`) that names none runs `libexec/bardo/<name>` under /usr, /usr/local or

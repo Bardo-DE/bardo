@@ -4,7 +4,7 @@
 //! `/sys/class/input/<event>/device/phys`. Only a process that can open `/dev/uinput` can set it, and
 //! that is the input broker alone (its udev rule makes the node root-only), so a desktop that reads
 //! `input-broker/pad_daemon` there knows which proven service the device was made for. The form is
-//! `input-broker/<role>`, the role being the peephole role the service admitted the caller under.
+//! `input-broker/<role>`, the role being the caller-identity role the service admitted the caller under.
 //!
 //! The compositor keeps its own copy of [`Maker::parse`] (it links nothing of the input broker); each repository
 //! pins the exact strings in a test, so a change here fails both.
@@ -17,14 +17,14 @@ pub const PREFIX: &str = "input-broker/";
 /// The proven service a device was made for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Maker {
-    /// The mouse gestures daemon, the Magic Mouse gesture daemon: peephole role `pad_daemon`.
+    /// The mouse gestures daemon, the Magic Mouse gesture daemon: the caller-identity role `pad_daemon`.
     PadDaemon,
-    /// The key remap daemon, the Mac keyboard mapping daemon: peephole role `keymap_daemon`.
+    /// The key remap daemon, the Mac keyboard mapping daemon: the caller-identity role `keymap_daemon`.
     KeymapDaemon,
 }
 
 impl Maker {
-    /// The peephole role name.
+    /// The caller-identity role name.
     #[must_use]
     pub const fn role(self) -> &'static str {
         match self {

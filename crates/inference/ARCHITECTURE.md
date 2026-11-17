@@ -143,12 +143,12 @@ annotated sample configuration). One `Open` is:
 3. **Away.** The first event is `Waiting(readiness)` when the engine is not ready, then `Routed`,
    then the turn's events and one `Finished` per request, exactly as `session::step` decides.
 
-## 4. Caller identity (peephole)
+## 4. Caller identity (the caller-identity library)
 
-`account-callers::ProcCallers` identifies a bus sender with [peephole](https://github.com/Bardo-DE/peephole)
+`account-callers::ProcCallers` identifies a bus sender with [the caller-identity library](https://github.com/Bardo-DE/peephole)
 (`BusPeers`, by git tag, never by path): the sender's process is held by pidfd, `/proc` and the user
 manager state what it is, and `judge` returns a `Standing`. `standing.rs` turns the standing into a
-`Caller`; `translate.rs` turns porter's table into peephole's.
+`Caller`; `translate.rs` turns porter's table into the caller-identity library's.
 
 - Fixed roles (`CallerRole::is_fixed`) need `Proof::Unit` or `Proof::Full` (main process of a unit from
   root-owned fragment and drop-ins, not transient, starting a program of the row, loader variables unset;
@@ -167,7 +167,7 @@ manager state what it is, and `judge` returns a `Standing`. `standing.rs` turns 
   manager's answers are believed only while its owner holds it. A user row can name `exe` but only gets
   a non-fixed role, and only if the program is root-owned.
 - Tests: the daemons' `test-proc-root` features turn on account-callers' `test-proc-root`, which turns on
-  peephole's `fake` and adds `ProcCallers::with_proc_root` and `caller_of_pid` over a directory tree
+  The caller-identity library's `fake` and adds `ProcCallers::with_proc_root` and `caller_of_pid` over a directory tree
   (`fixture.rs`). Never in a default build; check-boundary.sh checks it.
 
 ## 5. Installing engines

@@ -2,7 +2,7 @@
 //!
 //! The session bus lets any program send `Event` to `com.canonical.dbusmenu`, and an event runs the
 //! app's command. Before one does, the export asks a [`MenuPermit`] about the sender. The
-//! desktop's answer is `ShellOnly` (feature `peephole`): only the shell, proved
+//! desktop's answer is `ShellOnly` (feature `caller_identity`): only the shell, proved
 //! by its image and unit, may press an item. There is no default: `MenuExport::start` takes the
 //! permit as an argument, so an app cannot export a menu anyone may press by leaving it out.
 

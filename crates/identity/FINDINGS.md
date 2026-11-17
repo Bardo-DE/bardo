@@ -13,7 +13,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    `PeerGone`; any other error (a kernel before 6.5 says `ENOPROTOOPT`) falls back to the reopened pin.
    This closes the compositor's NEW-CASB-7 once the compositor holds its Wayland clients through `of_stream`;
    `Pinned::pidfd` (0.1.6) lends the held descriptor so the compositor signals the same process it judged.
-2. **No `From<Refused> for fdo::Error`.** Both types are foreign to `peephole-bus` (orphan rule).
+2. **No `From<Refused> for fdo::Error`.** Both types are foreign to `caller-identity-dbus` (orphan rule).
    `access_denied(Refused) -> fdo::Error` and `BusPeers::require_or_deny` do the same job.
 3. **`watch_owner` is `async` and returns a `Result`.** Subscribing is a bus call. The watch yields
    `Option<()>` per change; the consumer re-runs `owner_of`.
@@ -28,7 +28,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 5. **`ExecStart` is matched against the row's patterns, not equal to the image** (ARCHITECTURE 3).
 6. **`FixtureProc` is behind `fake`.** The plan listed it as public; as a test helper it follows the
    convention "test helpers are not API".
-7. **`peephole::peephole_core` and `peephole_bus::peephole` are crate re-exports,** not glob re-exports.
+7. **`caller_identity::caller_identity_core` and `caller_identity_dbus::caller_identity` are crate re-exports,** not glob re-exports.
 8. **Roles added to the plan's list:** `updater` (bardo-updater.service), `memory` (memoryd.service) and
    `manager` (the systemd image). The plan's SETTINGS-05 row names `updater` and `memory`.
 9. **`Cgroup` proof is reachable only with a hidden image.** A readable but user-writable image is

@@ -14,7 +14,7 @@ the next thing. The mouse gestures daemon depends on no shell crate and runs on 
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
 | `mouse-gestures-proto` | `crates/mouse-gestures-protocol` | the socket contract with layer-shell-host: `ToHost`, `ToDaemon`, their field types, `PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
-| `mouse_gestures` | `crates/mouse_gestures` | the pure core, the tools that replay recordings, and the daemon; library plus the `mouse_gestures` binary | `mouse-gestures-proto`, `serde`, `serde_json`, `thiserror`, `toml`, `notify`, `rustix`, `input-broker-client` (git, tag `v0.1.1`; the daemon layer only; its `fake` feature only as a dev dependency), `peephole`, `caller-identity-core` (git, tag `v0.1.4`; the socket's shell check only; `peephole`'s `fake` feature only as a dev dependency) |
+| `mouse_gestures` | `crates/mouse_gestures` | the pure core, the tools that replay recordings, and the daemon; library plus the `mouse_gestures` binary | `mouse-gestures-proto`, `serde`, `serde_json`, `thiserror`, `toml`, `notify`, `rustix`, `input-broker-client` (git, tag `v0.1.1`; the daemon layer only; its `fake` feature only as a dev dependency), `caller_identity`, `caller-identity-core` (git, tag `v0.1.4`; the socket's shell check only; `caller_identity`'s `fake` feature only as a dev dependency) |
 
 Edges: `mouse_gestures` -> `mouse-gestures-proto` only. `mouse-gestures-proto` depends on no other workspace
 crate, and has no `toml`, `notify` or `rustix`, so layer-shell-host takes it without pulling the
@@ -224,7 +224,7 @@ node for writing, or reads a real config directory or a running daemon.
 - **The mouse gestures daemon is a system service** (a dynamic user, `dist/bardo-mouse-gestures.service`; owner decision 2026-10-17, as
   The key remap daemon): its socket is `/run/bardo/mouse-gestures/events.sock`, mode 0666, and `daemon::socket` serves only the person
   at the seat. A connection is a `Peer`: the `Shell` (the process in `bardo-shell.service` under that person's own
-  manager, held by pidfd and judged by peephole), another program of the person (`Plain`: subscribes, may
+  manager, held by pidfd and judged by the caller-identity library), another program of the person (`Plain`: subscribes, may
   say `Locked`, never `Unlocked`, and its `PointerOver` is ignored) or a stranger (closed at once). The
   session counts as unlocked only while the shell says so; a user switch closes the old user's
   connections. Its settings are `/etc/bardo/mouse-gestures/gestures.toml`; nothing in the daemon reads a home folder.

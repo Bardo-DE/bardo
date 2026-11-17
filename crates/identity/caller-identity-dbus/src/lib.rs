@@ -1,4 +1,4 @@
-//! Which program is calling, over a bus: the adapter half of peephole.
+//! Which program is calling, over a bus: the adapter half of the caller-identity library.
 //!
 //! [`BusPeers`] turns a message's sender into a [`caller_identity_linux::Standing`]: it asks the bus for the
 //! sender's process (the bus daemon's pidfd when it offers one), holds it, reads `/proc`

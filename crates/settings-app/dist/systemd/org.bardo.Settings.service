@@ -12,5 +12,5 @@ Type=dbus
 BusName=org.bardo.Settings
 ExecStart=/usr/bin/bardo-settings --service
 # Settings holds the Settings role in full proof only when the unit clears every loader variable
-# (the list is peephole-core's LOADER_VARIABLES), so no environment can load code into it.
+# (the list is caller-identity-core's LOADER_VARIABLES), so no environment can load code into it.
 UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE

@@ -45,7 +45,7 @@ pub struct DebugSeams {
     /// What the dry run offers: every action, or logind's answers (read only).
     #[arg(long, value_enum, default_value_t = DryRunOffersArg::Everything, requires = "session_dry_run")]
     pub session_dry_run_offers: DryRunOffersArg,
-    /// Callers named in this file (the person's own, mode 600 or 644; peephole's `[[peer]]` rows)
+    /// Callers named in this file (the person's own, mode 600 or 644; the caller-identity library's `[[peer]]` rows)
     /// are let in as the services they stand for, at a standing below every real proof: a stand-in
     /// built in a checkout (`accountd_standin`, docket's `accept-actiond`) is the accounts service
     /// or the router for this daemon only. The desktop's table is read as usual and wins.

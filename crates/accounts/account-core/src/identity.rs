@@ -66,7 +66,7 @@ const FLATPAK_ENGINE: &str = "org.flatpak";
 ///
 /// A sandbox's metadata wins: Flatpak's (by its file or its security context) proves a `Flatpak` id
 /// when the process also sits in the scope Flatpak makes for a run of that app (`app-
-/// flatpak-<id>-<n>.scope`, as peephole's `judge` asks), so a security context a native process
+/// flatpak-<id>-<n>.scope`, as caller_identity's `judge` asks), so a security context a native process
 /// opened cannot name a Flatpak app by itself. Another engine proves nothing, since `Isolation` has
 /// no variant for it. A native process is proven `Unsandboxed` by a launcher's scope whose name is
 /// reverse-DNS; anything else, `app-firefox-3.scope` included, is unproven (C39).

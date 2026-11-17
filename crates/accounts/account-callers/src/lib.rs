@@ -1,6 +1,6 @@
 //! Who is calling: a bus connection's unique name to a [`Caller`] (an app and a role), for the
 //! daemons (porter PLAN §2.1). The process behind the connection is held and judged by
-//! [peephole](https://github.com/Bardo-DE/peephole) (`BusPeers`): the bus names the process (a
+//! [the caller-identity library](https://github.com/Bardo-DE/peephole) (`BusPeers`): the bus names the process (a
 //! pidfd), `/proc/<pid>` and the systemd manager state what it is, and the judgement is one of
 //! four standings, which [`ProcCallers`] turns into a [`Caller`]:
 //!
@@ -10,7 +10,7 @@
 //! - a native app that a launcher started in `app-<id>-<n>.scope`, from a root-owned program, is
 //!   `Proven(Unsandboxed)` (advisory: any process of the person's may start such a scope);
 //! - a service the table names by unit and program is that row's app and role, as far as the
-//!   proof reaches: a fixed role ([`CallerRole::is_fixed`]) needs peephole's `Unit` or `Full`
+//!   proof reaches: a fixed role ([`CallerRole::is_fixed`]) needs the caller-identity library's `Unit` or `Full`
 //!   proof (the unit manager says the process is the unit's main process, from a fragment and
 //!   drop-ins root owns, not transient, starting the row's program, which is root-only all the
 //!   way up); with less, the caller is a plain app;
@@ -64,7 +64,7 @@
 //!
 //! What this cannot prove: every process of the person's runs as the same user. A same-user
 //! process that edits the person's own systemd configuration or environment and waits for the
-//! next start of a trusted service rides on that service's role (peephole's README states the
+//! next start of a trusted service rides on that service's role (the caller-identity library's README states the
 //! same residual); the shipped units sit in the system's folders so that `Full` fails for a unit
 //! kept in a home directory. A scope row never carries a fixed role: a scope has no main process,
 //! so the unit manager can only vouch for its program (`Exe`).
@@ -129,7 +129,7 @@ pub struct CallerRow {
     pub unit: Option<String>,
     /// Its role.
     pub role: CallerRole,
-    /// The programs the unit runs (absolute paths, one `*` allowed in a segment: peephole's
+    /// The programs the unit runs (absolute paths, one `*` allowed in a segment: the caller-identity library's
     /// patterns). A fixed role needs the unit manager to say the unit starts one of them, so the
     /// system's table writes them for the units that are not installed as a daemon. Without any,
     /// see [`CallerRow::images`].

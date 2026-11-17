@@ -13,7 +13,7 @@ option.
 
 ## Debug builds
 
-`cargo build -p portal-daemon --features debug` adds one thing: `BARDO_PORTAL_DEV_CALLERS=FILE`, a rows file of your own (peephole's
+`cargo build -p portal-daemon --features debug` adds one thing: `BARDO_PORTAL_DEV_CALLERS=FILE`, a rows file of your own (the caller-identity library's
 `[[peer]]` rows, a plain file that group and others cannot write) that names the stand-ins for the portal frontend and
 the shell, for a jail or a checkout that has no `/etc/bardo/desktop-callers.toml`. Each row has `app`, `role`
 (`portal_frontend` or `shell`) and `exe`. A release build has neither the feature nor the variable. See

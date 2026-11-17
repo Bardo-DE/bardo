@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 /// Lets the shell press items and no one else: the caller must stand as the `shell` role of the
 /// desktop's caller table at the full proof (its image is root-owned and its unit is the real
-/// one), as peephole judges it. Any caller peephole cannot identify is refused.
+/// one), as the caller-identity library judges it. Any caller the caller-identity library cannot identify is refused.
 ///
 /// The `BusPeers` is the consumer's own, built once for the process on a connection to the same
 /// bus (not the menu's own, which does not exist before the export starts).

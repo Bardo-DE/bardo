@@ -14,7 +14,7 @@
 //! folder, no drop-ins, not transient, starting that image, clearing the loader variables.
 
 use super::standing::caller_of;
-use super::translate::peephole_table;
+use super::translate::caller_identity_table;
 use super::{Caller, CallerTable, ProcCallers};
 use caller_identity_core::{
     CgroupPath, DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Pin, Transient, Uid, UnitFacts,
@@ -167,7 +167,7 @@ impl ProcCallers {
         let units = DirUnits::new(proc_root, fs.clone());
         let peers: BusPeers<DirProc, DirUnits> = BusPeers::with_proc(
             connection,
-            peephole_table(&table),
+            caller_identity_table(&table),
             ManagerCheck::Unchecked,
             fs,
         )
@@ -185,6 +185,6 @@ impl ProcCallers {
         let who = Pinned::introduced(Pid::new(pid)?, Uid::new(1000), Pin::AtConnect);
         let mut facts = Prober::new(fs).probe(&who, None).ok()?;
         facts.unit = facts.cgroup.unit_leaf().and_then(|unit| units.facts(&unit));
-        caller_of(&judge(&facts, &peephole_table(table)), table)
+        caller_of(&judge(&facts, &caller_identity_table(table)), table)
     }
 }

@@ -1,4 +1,4 @@
-//! `ProcCallers` over fixture `/proc` trees (peephole's judgement of a process, then the table's
+//! `ProcCallers` over fixture `/proc` trees (the caller-identity library's judgement of a process, then the table's
 //! roles) and a private bus where an unidentified sender is refused. Nothing reads the real
 //! `/proc` or `/etc`: the roots and the table paths are the test's own. Needs feature
 //! `test-proc-root` (main.rs declares this module only then).
@@ -300,7 +300,7 @@ fn a_process_nothing_names_is_nobody() {
 }
 
 /// A `root` closed to the reader (another user's process, or ptrace-gated under Landlock) is no
-/// sandbox metadata, as peephole 0.1.3 reads it, not a failed probe: the cgroup and the image
+/// sandbox metadata, as the caller-identity library 0.1.3 reads it, not a failed probe: the cgroup and the image
 /// decide. A Flatpak scope then disagrees with "native" and is nobody; a service is its unit's
 /// main process; an app scope is the app it names, as a claim.
 #[test]

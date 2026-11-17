@@ -7,7 +7,7 @@
 //! same user that says the same word, and it would stream the screen with no sheet. So a restore
 //! token is honoured, and a new one issued, only for an app that is shown to be what its id says:
 //!
-//! - a sandboxed app (its sandbox's metadata agrees with its control group, which `peephole`
+//! - a sandboxed app (its sandbox's metadata agrees with its control group, which `caller_identity`
 //!   checks), whose sandbox names the id; or
 //! - a host app whose image is root-owned and is the program the id's desktop entry, written by
 //!   root, says to run.

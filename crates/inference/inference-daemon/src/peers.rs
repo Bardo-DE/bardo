@@ -245,7 +245,7 @@ impl CallerTable {
                 name: None,
             })
         });
-        // Settings by its unit, whose main process alone has the role (peephole's `Unit` or `Full` proof):
+        // Settings by its unit, whose main process alone has the role (the caller-identity library's `Unit` or `Full` proof):
         // before the apps, so an app entry cannot claim the unit.
         let settings = self
             .settings

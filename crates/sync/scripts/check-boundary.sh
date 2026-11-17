@@ -200,10 +200,10 @@ if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | 
 else
   echo "test-only: syncd's default build does not include test-proc-root"
 fi
-# account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
+# account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on the caller-identity library's
 # `fake`) are never in syncd's normal dependency tree.
 if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|caller-identity-linux) ' | grep -Eq 'test-proc-root|fake'; then
-  echo "LEAK: syncd's default build enables account-callers test-proc-root or peephole fake"
+  echo "LEAK: syncd's default build enables account-callers test-proc-root or the caller-identity fake"
   fail=1
 else
   echo "test-only: syncd's default build has no caller fixtures"

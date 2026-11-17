@@ -41,7 +41,7 @@ stub files/dist/install.sh files
 stub input/mouse-gestures/install.sh mouse-gestures
 # The two units the session installer puts in /etc/systemd/user, as the compositor and shell checkouts ship them.
 mkdir -p "$sib/crates/compositor/dist" "$sib/crates/shell/dist"
-# the stub units carry the loader line the real ones do (peephole's list), so the loader step below checks them as it would a release
+# the stub units carry the loader line the real ones do (the caller-identity library's list), so the loader step below checks them as it would a release
 unset_line='UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE'
 printf '[Service]\nExecStart=/usr/bin/bardo-compositor $BARDO_COMPOSITOR_SESSION_ARGS\n%s\n' "$unset_line" >"$sib/crates/compositor/dist/bardo-compositor.service"
 printf '[Service]\nExecStart=/usr/bin/bardo-shell run\n%s\n' "$unset_line" >"$sib/crates/shell/dist/bardo-shell.service"
@@ -163,7 +163,7 @@ grep -q "^compositor/scripts/install.sh --prefix /opt/d --locked --no-build --de
 [ -x "$dest/opt/d/bin/bardo-session" ] || fail "bardo-session was not staged under the prefix"
 [ -f "$dest/etc/systemd/user/bardo-session.target" ] || fail "the user target was not staged"
 # The portal frontend's own unit gets a root-held drop-in that unsets the loader variables (NEW-PI-1): staged next to the units, the
-# same bytes as the repo's, and complete against peephole's list (the check skips, exit 2, when no peephole checkout is beside this one)
+# same bytes as the repo's, and complete against the caller-identity library's list (the check skips, exit 2, when no caller-identity checkout is beside this one)
 dropin="$dest/etc/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf"
 [ -f "$dropin" ] || fail "the portal frontend's drop-in was not staged"
 cmp -s "$HERE/../session/xdg-desktop-portal.service.d/10-bardo.conf" "$dropin" || fail "the staged portal drop-in is not the repo's"
@@ -303,7 +303,7 @@ printf '[Service]\nUnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH\nUnsetEnvironment
 printf '[Service]\nUnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH\n' >"$lt/sibs/y/dist/b.service"
 printf '[Service]\nUnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH GTK_PATH\n' >"$lt/dropin.conf"
 : >"$lt/pending.txt"
-loader() { "$HERE/check-loader-unset.sh" --peephole "$lt/identity" --crates "$lt/sibs" --table "$lt/table.toml" --pending "$lt/pending.txt" "$@" >"$lt/out.log" 2>&1; }
+loader() { "$HERE/check-loader-unset.sh" --caller-identity "$lt/identity" --crates "$lt/sibs" --table "$lt/table.toml" --pending "$lt/pending.txt" "$@" >"$lt/out.log" 2>&1; }
 loader && fail "a unit that lacks GTK_PATH passed the loader check: $(cat "$lt/out.log")"
 grep -q 'b.service .*does not unset: GTK_PATH' "$lt/out.log" || fail "the loader check does not name the unit and the variable: $(cat "$lt/out.log")"
 printf 'b.service y\n' >"$lt/pending.txt"

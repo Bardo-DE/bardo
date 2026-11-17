@@ -1,5 +1,5 @@
 //! The crate's integration tests: one executable, one module per topic.
-// The PIM supervisor's future nests the whole account service's generics; peephole's caller
+// The PIM supervisor's future nests the whole account service's generics; the caller-identity library's caller
 // types (account-dbus ProcCallers) take its layout past the default depth of 128.
 #![recursion_limit = "256"]
 

@@ -22,7 +22,7 @@ world() {
   printf '#!/usr/bin/env bash\ncargo_in "$d" input_broker -p input-broker-daemon\nput_system 644 "$t/dist/72-bardo-input-broker.rules" /etc/udev/rules.d/72-bardo-input-broker.rules\nput_system 644 "$t/dist/bardo-input-broker.service" /usr/lib/systemd/system/bardo-input-broker.service\nput_system 644 "$k/dist/bardo-key-remap.service" /usr/lib/systemd/system/bardo-key-remap.service\n' >"$d/release/build.sh"
   printf '#!/usr/bin/env bash\n' >"$d/install.sh"
   printf '#!/usr/bin/env bash\necho "644 $x/dist/72-bardo-input-broker.rules /etc/udev/rules.d/72-bardo-input-broker.rules"\n' >"$d/install/system.sh"
-  # peephole's role list, copied from the real one when it is in this tree, else the eighteen written out
+  # The caller-identity library's role list, copied from the real one when it is in this tree, else the eighteen written out
   if [ -f "$REAL/../crates/identity/caller-identity-core/src/roles.rs" ]; then cp "$REAL/../crates/identity/caller-identity-core/src/roles.rs" "$s/identity/caller-identity-core/src/"
   else
     {
@@ -35,7 +35,7 @@ world() {
   printf 'KERNEL=="uinput", SUBSYSTEM=="misc", MODE="0600", GROUP="root", TAG-="uaccess", OPTIONS+="static_node=uinput"\n' >"$s/input/input-broker/dist/72-bardo-input-broker.rules"
   printf '[Service]\nExecStart=/usr/local/bin/bardo-input-broker\nDeviceAllow=/dev/uinput rw\n' >"$s/input/input-broker/dist/bardo-input-broker.service"
   printf '[Service]\nExecStart=/usr/local/bin/bardo-key-remap\nDeviceAllow=char-input rw\n' >"$s/input/key-remap/dist/bardo-key-remap.service"
-  printf '[package]\nname = "x"\n[features]\nfake = []\ndefault = []\n[dev-dependencies]\npeephole = { version = "1", features = ["fake"] }\n' >"$s/input/input-broker-daemon/Cargo.toml"
+  printf '[package]\nname = "x"\n[features]\nfake = []\ndefault = []\n[dev-dependencies]\ncaller_identity = { version = "1", features = ["fake"] }\n' >"$s/input/input-broker-daemon/Cargo.toml"
   git -C "$tmp/w/bardo" init -q 2>/dev/null
 }
 callers() { "$tmp/w/bardo/packaging/gate/check-callers-table.sh" "$@" >"$tmp/out" 2>&1; }
@@ -82,7 +82,7 @@ bad 1 callers; says "ExecStart /srv/somewhere/sill"
 world; printf '[Service]\nExecStart=/usr/bin/bardo-shell run\n' >"$tmp/w/bardo/crates/shell/dist/bardo-shell.service"
 ok callers; says "2 unit(s) compared"
 world; rm -rf "$tmp/w/bardo/crates/identity"
-bad 2 callers --peephole "$tmp/w/none"; says "no peephole crate"
+bad 2 callers --caller-identity "$tmp/w/none"; says "no caller-identity crate"
 
 # --- no stand-in
 world
@@ -99,17 +99,17 @@ world; printf '[features]\nfake = []\ndefault = ["extra"]\nextra = ["dep/fake"]\
 bad 1 nofake; says "default features"
 world; printf '[features]\nfake = []\ndefault = ["fake"]\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
 bad 1 nofake; says "default features"
-world; printf '[dependencies]\npeephole = { version = "1", features = ["fake"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
-bad 1 nofake; says "peephole turns"
-world; printf '[workspace.dependencies]\npeephole = { version = "1", features = ["fake"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
+world; printf '[dependencies]\ncaller_identity = { version = "1", features = ["fake"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
+bad 1 nofake; says "caller_identity turns"
+world; printf '[workspace.dependencies]\ncaller_identity = { version = "1", features = ["fake"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
 bad 1 nofake; says "workspace.dependencies"
-world; printf '[features]\nfake = []\n[dev-dependencies]\npeephole = { version = "1", features = ["fake"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
+world; printf '[features]\nfake = []\n[dev-dependencies]\ncaller_identity = { version = "1", features = ["fake"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
 ok nofake
-world; printf '[dependencies]\npeephole = { version = "1", features = ["dev-rows"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
-bad 1 nofake; says "peephole turns"
-world; printf 'cargo_in "$d" x --features peephole/dev-rows\n' >>"$tmp/w/bardo/packaging/release/build.sh"
+world; printf '[dependencies]\ncaller_identity = { version = "1", features = ["dev-rows"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
+bad 1 nofake; says "caller_identity turns"
+world; printf 'cargo_in "$d" x --features caller_identity/dev-rows\n' >>"$tmp/w/bardo/packaging/release/build.sh"
 bad 1 nofake
-world; printf '[features]\n[dev-dependencies]\npeephole = { version = "1", features = ["dev-rows"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
+world; printf '[features]\n[dev-dependencies]\ncaller_identity = { version = "1", features = ["dev-rows"] }\n' >"$tmp/w/bardo/crates/input/input-broker-daemon/Cargo.toml"
 ok nofake
 
 # --- nothing opens /dev/uinput

@@ -54,7 +54,7 @@ cargo as root: the build is a step of its own, as the person (`--build-only`), a
 `rust-toolchain.toml`, so it links with the computer's own linker and never needs clang or mold. If the person
 cannot write where the files go, the script says so and prints the `sudo` line. `.github/workflows/ci.yml` runs
 format, clippy, the boundary check, the tests and `cargo deny check licenses`, `advisories`, `bans` and `sources`
-(the `deny` job also weekly); `deny.toml` ignores no advisory and allows crates.io plus the peephole repository.
+(the `deny` job also weekly); `deny.toml` ignores no advisory and allows crates.io plus the caller-identity library repository.
 
 ## 3. The release format (frozen with the CI lane)
 
@@ -229,8 +229,8 @@ slug of the failure, for programs only and never shown: `no-key`, `key-unreadabl
 `install-not-from-here`, `rollback-not-from-here`, `caller-unknown`, `other`; "" when there is no problem; it changes
 with `Problem`, set and cleared together; `Problem::kind` in `problem.rs`; a program that finds a slug it does not
 know treats it as a plain failure).
-Methods: `Check()`, `Install(version: s)`, `Rollback()`. Who is calling is decided by peephole (`service/gate.rs`):
-the bus names the caller's process, peephole holds it by the descriptor the bus daemon gave, reads its image and its
+Methods: `Check()`, `Install(version: s)`, `Rollback()`. Who is calling is decided by the caller-identity library (`service/gate.rs`):
+the bus names the caller's process, the caller-identity library holds it by the descriptor the bus daemon gave, reads its image and its
 unit and judges it against the desktop's own table (`/etc/bardo/desktop-callers.toml`, root-owned; loaded once at
 start by `bootstrap.rs`, an empty table when it is missing or not trustworthy, which refuses every `Install` and
 `Rollback`). `Install` is answered for the roles `shell` (proved up to the unit manager), `settings` and

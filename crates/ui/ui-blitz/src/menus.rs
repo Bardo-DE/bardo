@@ -12,7 +12,7 @@
 //!
 //! Who may press an item is the app's [`MenuPermit`], a required argument of [`MenuExport::start`]:
 //! there is no default, so a menu anyone on the bus may press cannot be exported by leaving it out.
-//! Our desktop's is `ShellOnly` (feature `peephole`, Linux): only the shell. A press from a
+//! Our desktop's is `ShellOnly` (feature `caller_identity`, Linux): only the shell. A press from a
 //! message that names no sender, or from a caller the permit refuses, fails with `AccessDenied`;
 //! reading the menu stays open, because it is what the window already shows. An `EventGroup`
 //! carries at most 64 events, and one sender may make at most 8 such calls a second.
@@ -25,14 +25,14 @@
 mod pace;
 mod permit;
 mod service;
-#[cfg(feature = "peephole")]
+#[cfg(feature = "caller_identity")]
 mod shell_only;
 mod wire;
 
 #[cfg(feature = "testing")]
 pub use permit::AllowAnyCaller;
 pub use permit::{Caller, MenuPermit, SenderName, Verdict};
-#[cfg(feature = "peephole")]
+#[cfg(feature = "caller_identity")]
 pub use shell_only::ShellOnly;
 
 use crate::app_id::AppId;

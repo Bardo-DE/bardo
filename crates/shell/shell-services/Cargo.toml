@@ -10,7 +10,7 @@ publish.workspace = true
 
 [features]
 # `bardo-shell run --dev-callers FILE`: callers named in a person's own rows file are let in at
-# `Proof::Dev` (peephole's `dev-rows`). Off by default; only the bardo-shell binary's `debug` feature turns
+# `Proof::Dev` (the caller-identity library's `dev-rows`). Off by default; only the bardo-shell binary's `debug` feature turns
 # it on, so no shipped build has it (the desktop gate refuses `dev-rows` in any release shape).
 # It also lets `bardo-shell run --proc-root DIR` name callers by a stand-in `/proc` (docket's
 # `fixture-callers`), as a jail with no systemd must.

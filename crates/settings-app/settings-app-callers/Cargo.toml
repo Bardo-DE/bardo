@@ -1,6 +1,6 @@
 [package]
 name = "settings-app-callers"
-description = "Which program is on the other end of a bus name: the desktop's caller table over peephole, as the owner check the live client asks and the peers the activation object judges its callers with."
+description = "Which program is on the other end of a bus name: the desktop's caller table over the caller-identity library, as the owner check the live client asks and the peers the activation object judges its callers with."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -31,7 +31,7 @@ settings-app-testkit = {path = "../settings-app-testkit"}
 # binary never enables it; a dev-dependency does.
 testing = ["caller-identity-dbus/fake"]
 # `bardo-settings --dev-callers FILE`: callers named in a person's own rows file are let in at `Proof::Dev`
-# (peephole's `dev-rows`). Off by default; only the `bardo-settings` binary's feature of the same name turns it
+# (the caller-identity library's `dev-rows`). Off by default; only the `bardo-settings` binary's feature of the same name turns it
 # on, so no shipped build has it.
 dev-callers = ["caller-identity-dbus/dev-rows", "dep:rustix", "dep:thiserror"]
 

@@ -1,8 +1,8 @@
-//! Which program is calling: the pure half of peephole.
+//! Which program is calling: the pure half of the caller-identity library.
 //!
 //! This crate holds the vocabulary (ids, the facts read about a process, the caller table) and
 //! the judgement over them. It does no I/O and reads no clock, environment or fixed path: the
-//! `peephole` crate reads `/proc` through a pidfd and fills in [`Facts`]; [`judge`] turns facts
+//! `caller_identity` crate reads `/proc` through a pidfd and fills in [`Facts`]; [`judge`] turns facts
 //! and a [`Table`] into a [`Standing`]; a method says what it accepts with [`Requirement`]s and
 //! [`Standing::holds`].
 

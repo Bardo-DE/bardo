@@ -4,8 +4,8 @@
 use crate::support::{MOUSE_GESTURES_UID, USER};
 use caller_identity_core::{FileTrust, LOADER_VARIABLES, Pid, Proof, RoleName, Uid, Writer};
 use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Prober, TableFiles};
+use input_broker_daemon::identity::caller_identity_authority::CallerIdentityAuthority;
 use input_broker_daemon::identity::fake::FixedAuthority;
-use input_broker_daemon::identity::peephole_authority::PeepholeAuthority;
 use input_broker_daemon::identity::{ActiveUid, Authority, Credential, IdentifyError};
 use input_broker_daemon::policy::{Refusal, authorise};
 use input_broker_wire::Kind;
@@ -91,14 +91,14 @@ fn authority(
     tree: FixtureProc,
     cgroup: &str,
     image: FixtureImage<'_>,
-) -> PeepholeAuthority<FixtureProc> {
+) -> CallerIdentityAuthority<FixtureProc> {
     let tree = tree.process(&FixtureProcess {
         pid: me(),
         cgroup,
         image,
         flatpak_info: None,
     });
-    PeepholeAuthority::new(
+    CallerIdentityAuthority::new(
         Prober::new(tree),
         TableFiles::new(PathBuf::from(MAIN), PathBuf::from(DIR)),
     )
@@ -360,7 +360,7 @@ fn a_table_a_user_can_write_is_not_believed() {
 #[test]
 fn a_peer_the_probe_cannot_find_is_a_failure_not_a_guess() {
     // The fixture has no process for this test's pid.
-    let authority = PeepholeAuthority::new(
+    let authority = CallerIdentityAuthority::new(
         Prober::new(tree()),
         TableFiles::new(PathBuf::from(MAIN), PathBuf::from(DIR)),
     );

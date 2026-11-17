@@ -4470,7 +4470,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
   `compositor_agent::{CallerUnit, role_for, PORTAL_UNIT}` are deleted. On the bus thread, before anything reaches the loop, a call is
   (1) counted against its caller (`RateLimit`: 4 calls per fixed 1 s window per unique bus name, at most `TRACKED_CALLERS` (1024)
   names at once, the table cleared by a timer task so no clock is read; `LimitsExceeded` beyond), (2) proven through
-  `peephole-bus` (`CallerCheck::who`, `Proof::Full` and either pin, because a socket pin is `Reopened` today): `Connect("shell")` needs role
+  `caller-identity-dbus` (`CallerCheck::who`, `Proof::Full` and either pin, because a socket pin is `Reopened` today): `Connect("shell")` needs role
   `shell`, `Connect("agent")` `agent_tier`, `ConnectEis` and `EndEis` `portal`; a refusal is `AccessDenied("not the caller this
   method answers")` and one `tracing::warn` with the roles asked and the standing found, (3) put in a `sync_channel` of
   `CONNECT_QUEUE` (8): a full queue drops the call (`LimitsExceeded`), a loop that does not answer in `ANSWER_WAIT` (10 s) is
@@ -4496,7 +4496,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
 - **PORTAL-15 (verification worker written, not wired).** `compositor_ipc::a11y::{A11yWorker, A11yAsk, A11yVerdict, verify}`:
   `GetConnectionUnixProcessID(bus_name)` (unique or well-known, 2 s bound) must equal the client's pid, else the root stays
   `A11yRoot::Unknown`; a sandboxed client's connection is its proxy's, a different process, so it never verifies. Queue and answers
-  are bounded (`A11Y_QUEUE` 32). The design says `Pinned::same_process` (pid and start time); peephole v0.1.1 has no such method, and
+  are bounded (`A11Y_QUEUE` 32). The design says `Pinned::same_process` (pid and start time); the caller-identity library v0.1.1 has no such method, and
   The compositor holds the client by its pidfd, so the pid cannot be reused while the client is held: the pid compare is equivalent.
   Test: `a11y.rs` on a private bus.
 - **Debug units (`debug-inject`).** `DebugPeerUnits` is now a `CallerCheck`: a peer the test table matches stands as the role of
@@ -4604,8 +4604,8 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
 - **Not verified by reading (the gate run looks here).**
   - Cargo: the hand-edited `Cargo.lock` (new package `compositor-privacy`; `bardo-compositorctl` gains `compositor-privacy` and `rustix`);
     `ds-helpers` with `default-features = false` resolving beside ds-settings' default one.
-  - `compositor-ipc::dbus::peer` names: `Alive`, `PinError`, `Pinned`, `ProbeError`, `Prober` (peephole) and `AppKey`, `Engine`, `Exe`,
-    `ExePath`, `Facts`, `FileTrust`, `Pin`, `Proof`, `RoleName`, `Standing`, `Table`, `WhyNot`, `judge`, `roles` (peephole-core v0.1.1,
+  - `compositor-ipc::dbus::peer` names: `Alive`, `PinError`, `Pinned`, `ProbeError`, `Prober` (the caller-identity library) and `AppKey`, `Engine`, `Exe`,
+    `ExePath`, `Facts`, `FileTrust`, `Pin`, `Proof`, `RoleName`, `Standing`, `Table`, `WhyNot`, `judge`, `roles` (caller-identity-core v0.1.1,
     read from the checkout, not compiled). Tests build `Standing::Service/Program/Sandboxed/Unverified` and `Exe::Read` from outside
     the defining crate (non-exhaustive enums; the variants are plain).
   - `clients/standing.rs`: the match on a `#[non_exhaustive]` `Standing` with a guard (`*proof >= Proof::Exe`) falling through to `_`.
@@ -4987,7 +4987,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
   `readlink -f` path of the image, as for installed tools); the header comment saying a floor cannot name them is out of date once this lands
   and the harness pins a compositor with it.
 - **Not verified by reading (the gate run looks here).** That `peer::WhyNot::ImageWritable` and `Standing::Unverified { why, .. }` match
-  as written in `injected.rs` (non-exhaustive peephole v0.1.1 types); that `Exe::Read` path from `/proc/<pid>/exe` is the same text a
+  as written in `injected.rs` (non-exhaustive the caller-identity library v0.1.1 types); that `Exe::Read` path from `/proc/<pid>/exe` is the same text a
   `readlink -f` floor row has; the `judge.rs` test's use of `std::env::current_exe` as the connecting image.
 
 ## cas13: test caller rows in the injected folder, test builds only (2026-10-17)
@@ -4995,7 +4995,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
 - **What.** The desktop harness runs the compositor in a jail with no `/etc/bardo/desktop-callers.toml`, so `clients::desktop_table` was an empty
   table, nobody was a desktop service, and the shell (sill), Settings (the Settings app) and the portal (the portal) could not connect. Now, in a build
   with `testing` or `debug-inject` and a run with `SystemDir::At(dir)`, the compositor also reads `dir/desktop-callers.toml` (`clients/dev_callers.rs`)
-  as developer rows of peephole v0.1.4 (`TableFiles::load_dev`, `Table::from_toml_dev`; `Proof::Dev`, `RowOrigin::Dev`) and merges them after
+  as developer rows of the caller-identity library v0.1.4 (`TableFiles::load_dev`, `Table::from_toml_dev`; `Proof::Dev`, `RowOrigin::Dev`) and merges them after
   the system table (the system table still wins where both name a program: the library judges an image a shipped row claims by shipped rows
   alone). `desktop_table` takes the `SystemDir` and is the one place the table is made; `Judge::desktop` and `run.rs` pass it.
 - **The proof.** `Proof::Dev` sorts below `Cgroup`, so no real requirement is met by it. `dbus::require` (Compositor1 and the Privacy list)
@@ -5003,10 +5003,10 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
   `Requirement::dev(role)`: that one means "this role at any proof", which would also admit a service known by its image or control group
   alone in a test build, and the existing refusal tests (`Proof::Exe`, `Proof::Cgroup` are denied) run with `--all-features`. The Wayland side
   (`clients::client_standing`, `peer_of`) takes `Proof::Dev` as shown, in `testing`/`debug-inject` builds only.
-- **Feature chain.** `compositor/testing` and `compositor/debug-inject` -> `compositor-ipc/dev-rows` -> `peephole-bus/dev-rows` (-> `peephole`,
-  `peephole-core`). Off by default; no other feature turns it on. Pins of `peephole-bus` and `peephole-core` moved to tag v0.1.4 (needed for
+- **Feature chain.** `compositor/testing` and `compositor/debug-inject` -> `compositor-ipc/dev-rows` -> `caller-identity-dbus/dev-rows` (-> `caller_identity`,
+  `caller-identity-core`). Off by default; no other feature turns it on. Pins of `caller-identity-dbus` and `caller-identity-core` moved to tag v0.1.4 (needed for
   `dev-rows`); this brought `Standing::Unverified { scope_app }` (v0.1.2), so the test constructions of it say `scope_app: None`.
-- **The file.** `desktop-callers.toml` in the folder given to `--system-dir`; peephole's row format: `[[peer]]` with `app`, `role` (`shell`,
+- **The file.** `desktop-callers.toml` in the folder given to `--system-dir`; the caller-identity library's row format: `[[peer]]` with `app`, `role` (`shell`,
   `settings`, `portal`, `agent_tier`, ...) and `exe = ["/abs/path"]` (one `*` per segment at most; no `unit`: a build-folder program has no
   real unit). A plain file (a link is refused) owned by the person or root and not writable by group or others; a missing file adds nothing and
   says nothing; any other fault adds nothing and logs one `TEST ONLY` warning line. The unit manager is not a developer row: the
@@ -5050,7 +5050,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **NEW-FA-2 (fixed: a portal connection handed out over the bus).** The portal captured on the public socket, where a peer is shown at
   most as `Proof::Exe` (`Judge::arrival` probes without the unit manager), so after NEW-PI-3 it was a `Program` and its first
   screenshot or share raised the compositor's own Screen sheet over the portal's chooser. The fix does not need a `Full` proof on the
-  public socket: `org.bardo.Compositor1.Connect("portal")` hands the caller proven `Full` as the `portal` role (peephole-bus and the
+  public socket: `org.bardo.Compositor1.Connect("portal")` hands the caller proven `Full` as the `portal` role (caller-identity-dbus and the
   unit manager, the same proof as the shell's and the agent tier's) a connection of its own, `ConnectionRole::Portal`
   (`compositor-agent::connection_role`, `compositor-ipc::parse_connect_role`). Its model class is the standing a `Full` portal has on the
   public socket (`ClientStanding::portal()`): trusted for the screen and the windows and nothing else (`trusted_powers`), asked about
@@ -5064,9 +5064,9 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   crate forbids `unsafe`): force quit signals the very process that connected, never one that took its pid. A
   connector that has exited (`ESRCH`) gets no handle; a kernel before 6.5 gets the old reopen-and-recheck.
   The same handle now guards the security-context client's cgroup read (`handlers/security_context.rs`
-  `peer_of`): the cgroup counts only if the held process still runs after it is read. peephole 0.1.6 has the
-  same pin (`Pinned::of_stream`, `Pinned::pidfd`); the compositor moves to it with porter's next peephole bump
-  (porter-dbus pins 0.1.4, and one lock carries one peephole).
+  `peer_of`): the cgroup counts only if the held process still runs after it is read. The caller-identity library 0.1.6 has the
+  same pin (`Pinned::of_stream`, `Pinned::pidfd`); the compositor moves to it with porter's next the caller-identity library bump
+  (porter-dbus pins 0.1.4, and one lock carries one the caller-identity library).
 - **NEW-PI-4 (the compositor half), as replaced by NEW-FA-4 below.** A virtual-bus device is `Origin::Virtual` unless the device service made it
   for the key remap daemon (`Origin::of_kernel_device`). A virtual device still moves the pointer, fires bindings and drives swipes (`Origin::is_pad`),
   but trusted surfaces, the lock surface and VT switching never hear it.
@@ -5109,7 +5109,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   runs on the loop when Mission Control opens, and `IconBook::theme()` and its test read the result synchronously. Moving it to the worker
   means an answer type for the theme and a rewrite of that test.
 - **NEW-CAS-3, `moved()` at first use.** `PinnedImage::moved` repeats the probe (a stat of `/proc/<pid>/exe`'s target) on the loop. An ask to
-  peephole: `Prober::image_path(&Pinned) -> Result<Exe, ProbeError>` that reads only the `/proc/<pid>/exe` link (no stat of the target) for
+  The caller-identity library: `Prober::image_path(&Pinned) -> Result<Exe, ProbeError>` that reads only the `/proc/<pid>/exe` link (no stat of the target) for
   the comparison.
 - **CASB-07 (software renderer for `--safe`).** Built: see "fc1-safe-scanout" below.
 - **CASB-25** (`keymap::live::load_bindings` is synchronous, bounded by key-remap-client's 2 s), **CASB-26** (`test_mode` is compiled in: gating

@@ -1,13 +1,13 @@
 //! Who is calling.
 //!
 //! The kernel names the process behind the socket (a pidfd, so a recycled process id cannot pass
-//! for another program); `peephole` judges it against the root-owned table of desktop programs;
+//! for another program); `caller_identity` judges it against the root-owned table of desktop programs;
 //! [`crate::policy`] decides what that program may have.
 
 // Test seams: never in a shipped build.
+pub mod caller_identity_authority;
 #[cfg(any(test, feature = "fake"))]
 pub mod fake;
-pub mod peephole_authority;
 pub mod seat;
 pub mod unit_files;
 

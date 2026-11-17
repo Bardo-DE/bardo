@@ -425,11 +425,11 @@ for crate in account-daemon account-secrets; do
   fi
 done
 
-# account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
+# account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on the caller-identity library's
 # `fake`) are never in a daemon's normal dependency tree.
 for crate in account-daemon; do
   if cargo tree -p "$crate" -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|caller-identity-linux) ' | grep -Eq 'test-proc-root|fake'; then
-    echo "LEAK: $crate's default build enables account-callers test-proc-root or peephole fake"
+    echo "LEAK: $crate's default build enables account-callers test-proc-root or the caller-identity fake"
     fail=1
   else
     echo "test-only: $crate's default build has no caller fixtures"

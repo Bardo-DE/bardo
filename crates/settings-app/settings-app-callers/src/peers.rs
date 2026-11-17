@@ -5,7 +5,7 @@ use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
 use caller_identity_dbus::{BusPeers, ManagerCheck};
 use zbus::Connection;
 
-/// Peers on `connection`, judging against the desktop's caller table (the root-owned files peephole
+/// Peers on `connection`, judging against the desktop's caller table (the root-owned files the caller-identity library
 /// loads) and believing the unit manager only when its own owner is the system's.
 ///
 /// A table that cannot be read leaves an empty one, so no program is a service and every question
