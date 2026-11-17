@@ -11,7 +11,6 @@ use action_core::AuditRecord;
 use companion_model::helper::*;
 use inference_core::{Asker, OpenOptions};
 use memory_core::MemoryReply;
-use std::time::Duration;
 
 #[tokio::test]
 async fn the_board_is_written_through_the_router_and_comes_back_after_a_restart() {
@@ -268,7 +267,10 @@ async fn a_helper_with_no_model_waits_to_be_given_one_and_nothing_stands_in() {
         .await,
     );
     let job = posted(&hub.apply(person_job(&research, "compare the offers")).await);
-    tokio::time::sleep(Duration::from_millis(50)).await;
+    until("the job is blocked on a model", || {
+        status_of(&hub, job) == JobStatus::Blocked(Need::ChooseModel)
+    })
+    .await;
     assert_eq!(
         state_of(&hub, &research),
         HelperState::Waiting(Need::ChooseModel)

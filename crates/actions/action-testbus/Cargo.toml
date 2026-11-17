@@ -13,6 +13,7 @@ action-dbus = {path = "../action-dbus"}
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 tempfile = { workspace = true }
 
 [lints]

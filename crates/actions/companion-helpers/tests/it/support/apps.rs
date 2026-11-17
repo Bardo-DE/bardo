@@ -12,17 +12,8 @@ use permission_core::{ActionMatch, ProgramName, TaskPolicy, TaskPolicyState};
 use provenance::{AgentProgram, Effect, EntityKind, HelperId, SessionId, UnixSeconds};
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
 
-pub async fn until(what: &str, mut ready: impl FnMut() -> bool) {
-    for _ in 0..500 {
-        if ready() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
-    panic!("never happened: {what}");
-}
+pub use base_testkit::eventually as until;
 
 /// What a scripted host of agent apps was asked, and what it answers, by helper name.
 #[derive(Default)]

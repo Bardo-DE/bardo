@@ -130,29 +130,26 @@ mod tests {
             pidfile.display()
         );
         let guard = Reaped::spawn(Command::new("/bin/sh").args(["-c", &script])).expect("spawn");
-        let started = (0..200).find_map(|_| {
-            std::thread::sleep(std::time::Duration::from_millis(10));
-            std::fs::read_to_string(&pidfile)
+        let mut started = None;
+        base_testkit::eventually_blocking("the grandchild started", || {
+            started = std::fs::read_to_string(&pidfile)
                 .ok()
-                .and_then(|t| t.trim().parse::<u32>().ok())
+                .and_then(|t| t.trim().parse::<u32>().ok());
+            started.is_some()
         });
         let grandchild = started.expect("the grandchild started");
         // The pid is written before `setsid` has run: dropping now races the move into a group of
         // its own, and a group read before it and signalled after it misses the sleeper.
-        let own_group = (0..200).any(|_| {
-            std::thread::sleep(std::time::Duration::from_millis(10));
+        base_testkit::eventually_blocking("the grandchild led a group of its own", || {
             group_of(grandchild) == Some(grandchild)
         });
-        assert!(own_group, "the grandchild never led a group of its own");
         drop(guard);
-        let gone = (0..200).any(|_| {
-            std::thread::sleep(std::time::Duration::from_millis(10));
+        base_testkit::eventually_blocking("the grandchild ended with the guard", || {
             !std::path::Path::new(&format!("/proc/{grandchild}")).exists()
                 || std::fs::read_to_string(format!("/proc/{grandchild}/stat"))
                     .unwrap_or_default()
                     .contains(") Z ")
         });
-        assert!(gone, "grandchild {grandchild} outlived the guard");
     }
 
     #[test]
@@ -161,14 +158,14 @@ mod tests {
         let pidfile = dir.path().join("grandchild");
         let script = format!("sleep 300 & echo $! > {}; wait", pidfile.display());
         let guard = Reaped::spawn(Command::new("/bin/sh").args(["-c", &script])).expect("spawn");
-        let grandchild = (0..200)
-            .find_map(|_| {
-                std::thread::sleep(std::time::Duration::from_millis(10));
-                std::fs::read_to_string(&pidfile)
-                    .ok()
-                    .and_then(|t| t.trim().parse::<u32>().ok())
-            })
-            .expect("the grandchild started");
+        let mut started = None;
+        base_testkit::eventually_blocking("the grandchild started", || {
+            started = std::fs::read_to_string(&pidfile)
+                .ok()
+                .and_then(|t| t.trim().parse::<u32>().ok());
+            started.is_some()
+        });
+        let grandchild = started.expect("the grandchild started");
         drop(guard);
         let alive = |pid: u32| {
             std::path::Path::new(&format!("/proc/{pid}")).exists()
@@ -176,10 +173,8 @@ mod tests {
                     .unwrap_or_default()
                     .contains(") Z ")
         };
-        let gone = (0..200).any(|_| {
-            std::thread::sleep(std::time::Duration::from_millis(10));
+        base_testkit::eventually_blocking("the grandchild ended with the child", || {
             !alive(grandchild)
         });
-        assert!(gone, "grandchild {grandchild} outlived the guard");
     }
 }

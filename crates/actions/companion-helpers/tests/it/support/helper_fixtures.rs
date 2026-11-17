@@ -17,18 +17,9 @@ use permission_core::{ActionMatch, TaskPolicy, TaskPolicyState};
 use provenance::{Actor, Effect, EntityKind, HelperId, UnixSeconds};
 use serde_json::json;
 use std::collections::BTreeSet;
-use std::time::Duration;
 
 /// Waits (the jobs run on tasks of their own) until `ready` holds.
-pub async fn until(what: &str, mut ready: impl FnMut() -> bool) {
-    for _ in 0..500 {
-        if ready() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
-    panic!("never happened: {what}");
-}
+pub use base_testkit::eventually as until;
 
 pub fn state_of(hub: &TestHub, helper: &HelperId) -> HelperState {
     hub.board().card(helper).expect("card").state.clone()

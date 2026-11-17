@@ -9,8 +9,6 @@ use std::process::{Command, Stdio};
 
 /// Set in the doomed process's environment; its presence makes `doomed_process` do the work.
 const DOOMED: &str = "BARDO_ACTIONS_TESTBUS_DOOMED";
-/// How many 10 ms polls a process gets to disappear. A counted bound, not a timing assertion.
-const POLLS: usize = 1000;
 
 /// The doomed process: a private bus and a service, announced on stdout, held until killed.
 /// Does nothing in a normal run.
@@ -73,15 +71,21 @@ fn a_killed_test_group_leaves_no_bus_and_no_service() {
         .expect("kill runs");
     assert!(status.success());
     let _ = child.wait();
-    let gone = (0..POLLS).any(|_| {
-        std::thread::sleep(std::time::Duration::from_millis(10));
-        pids.iter().all(|p| !alive(*p))
-    });
+    // Another process's state: nothing announces it, so poll with the testkit's deadline.
+    let waited = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        base_testkit::eventually_blocking("the killed group's processes ended", || {
+            pids.iter().all(|p| !alive(*p))
+        });
+    }));
     let left: Vec<u32> = pids.iter().copied().filter(|p| alive(*p)).collect();
     for pid in &left {
         let _ = Command::new("/bin/kill")
             .args(["-KILL", &pid.to_string()])
             .status();
     }
-    assert!(gone, "outlived a killed test group: {left:?}");
+    // The strays are ended above; a wait that ran out then fails the test with what it named.
+    if let Err(failure) = waited {
+        eprintln!("outlived a killed test group: {left:?}");
+        std::panic::resume_unwind(failure);
+    }
 }

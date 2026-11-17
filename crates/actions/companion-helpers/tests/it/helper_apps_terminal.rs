@@ -76,6 +76,8 @@ async fn a_conversation_opens_in_the_terminal_pauses_its_helper_and_comes_back()
 
     // A job given meanwhile waits: no job reaches the app while the person works in it.
     let second = give(&hub, &coder, "and the best one?").await;
+    // Best-effort absence check: nothing announces a job that is NOT taken, so a short pause
+    // gives a wrongly started job the chance to show; the Bring Back below proves the order.
     tokio::time::sleep(Duration::from_millis(100)).await;
     assert_eq!(status_of(&hub, second), JobStatus::Open);
     let again = hub.open_in_terminal(coder.clone()).await;
