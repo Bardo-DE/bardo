@@ -4,7 +4,7 @@ use crate::support;
 
 use blitz_dom::{LocalName, Namespace, QualName};
 use blitz_embed::hit::{element_at, element_of, is_content_element};
-use blitz_embed::units::PagePoint;
+use blitz_embed_types::units::PagePoint;
 
 fn point(x: f64, y: f64) -> PagePoint {
     PagePoint { x, y }

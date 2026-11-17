@@ -1,5 +1,5 @@
 //! Portable Blitz repairs and helpers: no Wayland, no Dioxus, no design system. Everything takes
-//! and returns CSS px `f64` in Blitz's own units ([`units`]); a consumer converts at its own
+//! and returns CSS px `f64` in Blitz's own units (`blitz_embed_types::units`); a consumer converts at its own
 //! boundary.
 //!
 //! # Modules
@@ -11,11 +11,11 @@
 //! - [`snap`]: pixel snapping at fractional scales.
 //! - [`fonts`]: one shared font context for every document.
 //! - [`net`] and [`data_url`]: a local-only network provider and `data:` URL decoding.
-//! - [`element_id`] and [`units`]: the small typed vocabulary the rest shares.
+//! - `blitz_embed_types`: the small typed vocabulary the rest shares (`units`, `element_id`).
 //! - `adapter` (feature `adapter`): ranking GPU adapters, and the one lock every wgpu opener in a
 //!   process holds.
 //!
-//! Every module but `data_url`, `element_id`, `units` and `adapter` needs the default feature
+//! Every module but `data_url` and `adapter` needs the default feature
 //! `blitz`.
 //!
 //! ```
@@ -30,7 +30,6 @@ pub mod adapter;
 #[cfg(feature = "blitz")]
 pub mod after_resolve;
 pub mod data_url;
-pub mod element_id;
 #[cfg(feature = "blitz")]
 pub mod fonts;
 #[cfg(feature = "blitz")]
@@ -45,4 +44,3 @@ pub mod paint_rect;
 pub mod scroll;
 #[cfg(feature = "blitz")]
 pub mod snap;
-pub mod units;

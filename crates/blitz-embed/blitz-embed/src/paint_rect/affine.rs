@@ -1,6 +1,6 @@
 //! A 2-D affine map in CSS px.
 
-use crate::units::PagePoint;
+use blitz_embed_types::units::PagePoint;
 
 /// A 2-D affine map in CSS px, in kurbo's coefficient order: `(x, y)` goes to
 /// `(a x + c y + e, b x + d y + f)`.

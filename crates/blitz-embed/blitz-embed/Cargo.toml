@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+blitz-embed-types = {path = "../blitz-embed-types"}
 # Feature `blitz` (default): the modules that work on a Blitz document.
 blitz-dom = {workspace = true, features = ["svg", "system-fonts", "custom-widget", "accessibility"], optional = true}
 blitz-traits = {workspace = true, optional = true}

@@ -3,7 +3,7 @@
 use blitz_dom::{BaseDocument, NodeId};
 
 use super::{Affine2, Placed, painted_bounds};
-use crate::units::{Bounds, PagePoint};
+use blitz_embed_types::units::{Bounds, PagePoint};
 
 /// Where the element `id` paints, in surface-local logical px.
 ///

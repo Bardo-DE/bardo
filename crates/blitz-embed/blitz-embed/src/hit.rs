@@ -6,7 +6,7 @@
 
 use blitz_dom::{BaseDocument, ElementData, NodeId};
 
-use crate::units::PagePoint;
+use blitz_embed_types::units::PagePoint;
 
 /// `id` if it is an element, else its nearest element ancestor: the node whose listeners a
 /// hover change reaches.

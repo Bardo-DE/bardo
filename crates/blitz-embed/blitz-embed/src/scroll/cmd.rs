@@ -4,9 +4,9 @@
 //! with the smooth rule (or at once), never through Blitz's own `scroll_to` (whose 300 ms
 //! animation would fight the engine).
 
-use crate::element_id::ElementId;
 use crate::scroll::engine::ScrollAnimate;
 use crate::scroll::geom::ScrollAxis;
+use blitz_embed_types::element_id::ElementId;
 
 /// The margin `IntoView` keeps between the element and the scroller's edge, px.
 pub const INTO_VIEW_MARGIN: f64 = 8.0;

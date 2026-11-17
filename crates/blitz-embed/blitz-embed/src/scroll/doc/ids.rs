@@ -3,8 +3,8 @@
 use blitz_dom::{BaseDocument, NodeId};
 
 use super::element::{ancestors, is_root, scrolls};
-use crate::element_id::ElementId;
 use crate::scroll::geom::{Area, ScrollAxis, Scroller};
+use blitz_embed_types::element_id::ElementId;
 
 /// The scroller the element with `id` names, if it exists.
 pub fn scroller_by_id(doc: &BaseDocument, id: &ElementId) -> Option<Scroller> {

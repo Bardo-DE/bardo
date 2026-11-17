@@ -14,8 +14,8 @@ One crate, `blitz-embed` (`crates/blitz-kit`). Allowed dependencies, behind the 
 `parley`, `keyboard-types` (`scroll::keys` names the keys a scroll answers to), `tokio` (`net` reads
 files on the caller's blocking pool), and, behind feature `adapter`, `wgpu` and `serde`
 (`AdapterPref` is a shell's serialized setting), behind feature `settings`, `serde` (the scroll
-settings read as a settings file's `[scroll]` table). Without `blitz` the crate is `data_url`,
-`element_id`, `units` and the `adapter` feature: a layer below Blitz (a media host) takes
+settings read as a settings file's `[scroll]` table). Without `blitz` the crate is `data_url`
+and the `adapter` feature (`units` and `element_id` are the sibling crate `blitz-embed-types`, plain data a layer with no renderer takes): a layer below Blitz (a media host) takes
 `default-features = false, features = ["adapter"]` for the ranking and `adapter::opening` with only
 std, `wgpu` and `serde`.
 `scripts/check-boundary.sh` forbids every `ds*`, `dioxus*`, `wayland*` and `smithay*`
@@ -23,7 +23,7 @@ crate, quire, sill, layer-shell-host and palmrest. Consumers depend on it by pat
 
 | Module | Holds |
 |---|---|
-| `units` | `Bounds`, `PagePoint` (CSS px `f64`), `Scale120` (integer 120ths) |
+| `blitz_embed_types::units` | `Bounds`, `PagePoint` (CSS px `f64`), `Scale120` (integer 120ths) |
 | `hover` | the repair for hover changes a resolve makes on its own |
 | `after_resolve` | `AfterResolve`: the readings a host takes from its document after every resolve, for components that cannot read it while they render (a token's resolved value) |
 | `net` | `LocalNet`, a `NetProvider` for `data:` and absolute `file:` only, files only inside the `FileRoots` the consumer passes, regular files only, at most `MAX_RESOURCE_BYTES`; `LocalSource::{read, read_within}`, the same reads on the calling thread |
@@ -33,14 +33,14 @@ crate, quire, sill, layer-shell-host and palmrest. Consumers depend on it by pat
 | `hit` | the element Blitz would hit at a point, lifted to its element |
 | `paint_rect` | where a laid-out box paints, through its own and its ancestors' transforms |
 | `snap` | `snap_layout`: whole device pixels for every box after a resolve |
-| `element_id` | `ElementId`: an element's `id` attribute, as a typed name |
+| `blitz_embed_types::element_id` | `ElementId`: an element's `id` attribute, as a typed name |
 | `scroll` | the scroll engine (design/11), shared by every host: its physics, the document side, and a driver joining them (below) |
 
 ## 2. Public API
 
 | Module | Names |
 |---|---|
-| `units` | `Bounds`, `PagePoint`, `Scale120::{factor, is_whole}` |
+| `blitz_embed_types::units` | `Bounds`, `PagePoint`, `Scale120::{factor, is_whole}` |
 | `hover` | `LastMove::{Unknown, At}`, `remember`, `Shift<N>`, `HoverSync::{Unchanged, Restore, Clear}`, `decide`, `probe_points`, `repair(&mut dyn Document, &LastMove, Shift<NodeId>) -> Repaired::{Yes, No}` |
 | `after_resolve` | `AfterResolve::{watch, read, is_empty}`, `Registration`, `Read`, `Publish`, `publish` |
 | `net` | `LocalNet::new(FileRoots)`, `FileRoots::new`, `MAX_RESOURCE_BYTES`, `LocalSource::{Data, File, Unservable}`, `LocalSource::{of, read, read_within}` |
@@ -51,7 +51,7 @@ crate, quire, sill, layer-shell-host and palmrest. Consumers depend on it by pat
 | `paint_rect` | `Affine2`, `Placed`, `painted_bounds`, `painted_rect` |
 | `snap` | `snap_layout(&mut BaseDocument, Scale120)` |
 
-`units::Scale120::from_factor` turns a viewport's `f64` scale into 120ths.
+`blitz_embed_types::units::Scale120::from_factor` turns a viewport's `f64` scale into 120ths.
 
 ### `scroll`
 

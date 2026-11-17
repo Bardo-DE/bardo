@@ -2,7 +2,7 @@
 //! through them.
 
 use super::Affine2;
-use crate::units::{Bounds, PagePoint};
+use blitz_embed_types::units::{Bounds, PagePoint};
 
 /// One transformed box on the way from an element up to the root: its untransformed border-box
 /// origin, in the coordinates of the rectangle being carried, and its transform about it.

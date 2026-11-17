@@ -8,7 +8,7 @@ use keyboard_types::Modifiers;
 use std::sync::Arc;
 
 use super::*;
-use crate::units::{Bounds, PagePoint};
+use blitz_embed_types::units::{Bounds, PagePoint};
 
 const AT: PagePoint = PagePoint { x: 50.0, y: 20.0 };
 

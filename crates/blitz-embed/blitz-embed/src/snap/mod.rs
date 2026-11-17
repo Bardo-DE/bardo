@@ -29,7 +29,7 @@ mod tests;
 
 use blitz_dom::BaseDocument;
 
-use crate::units::Scale120;
+use blitz_embed_types::units::Scale120;
 use grid::DeviceGrid;
 
 /// Snap every box of `doc` to the device pixel grid at `scale`; nothing at a whole scale.

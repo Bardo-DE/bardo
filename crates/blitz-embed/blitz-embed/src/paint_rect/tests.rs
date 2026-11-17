@@ -1,7 +1,7 @@
 use std::f64::consts::FRAC_PI_2;
 
 use super::*;
-use crate::units::{Bounds, PagePoint};
+use blitz_embed_types::units::{Bounds, PagePoint};
 
 const fn bounds(x: f64, y: f64, width: f64, height: f64) -> Bounds {
     Bounds {

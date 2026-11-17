@@ -4,7 +4,7 @@ use blitz_dom::{BaseDocument, Node, NodeId};
 
 use crate::hit::element_at;
 use crate::scroll::geom::ScrollAxis;
-use crate::units::PagePoint;
+use blitz_embed_types::units::PagePoint;
 
 /// The value of attribute `name` on `node`, if it is an element carrying it.
 pub(super) fn attr<'a>(node: &'a Node, name: &str) -> Option<&'a str> {

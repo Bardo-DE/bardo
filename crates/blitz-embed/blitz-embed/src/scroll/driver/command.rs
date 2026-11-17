@@ -3,12 +3,12 @@
 use blitz_dom::BaseDocument;
 
 use super::{Moves, ScrollDriver};
-use crate::element_id::ElementId;
 use crate::scroll::cmd::{self, ScrollCmd};
 use crate::scroll::doc;
 use crate::scroll::engine::{ScrollAnimate, ScrollIn};
 use crate::scroll::geom::{Latch, Px, ScrollAxis};
 use crate::scroll::tuning::Env;
+use blitz_embed_types::element_id::ElementId;
 
 impl ScrollDriver {
     /// Run a programmatic scroll. A command is always the engine's own, even when its element

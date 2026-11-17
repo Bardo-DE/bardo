@@ -4,7 +4,7 @@
 use crate::support;
 
 use blitz_embed::paint_rect::painted_rect;
-use blitz_embed::units::Bounds;
+use blitz_embed_types::units::Bounds;
 
 /// A 100 x 40 card inside a 200 x 100 wrapper, the wrapper's `transform` set to `wrapper`.
 fn card_under(wrapper: &str, scale: f32) -> Option<Bounds> {

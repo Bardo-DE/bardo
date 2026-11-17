@@ -4,7 +4,7 @@
 use crate::support;
 
 use blitz_embed::snap::snap_layout;
-use blitz_embed::units::Scale120;
+use blitz_embed_types::units::Scale120;
 
 const BOX: &str = "position:absolute;left:11px;top:11px;width:10px;height:10px;\
 border:1px solid black";

@@ -3,7 +3,7 @@
 use blitz_dom::NodeId;
 
 use super::LastMove;
-use crate::units::{Bounds, PagePoint};
+use blitz_embed_types::units::{Bounds, PagePoint};
 
 /// The hovered element before and after one resolve (an element: a hovered text node counts
 /// as its element, which is what carries the listeners).

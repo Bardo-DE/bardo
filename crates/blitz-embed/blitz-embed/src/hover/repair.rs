@@ -5,7 +5,7 @@ use blitz_traits::events::{BlitzPointerEvent, UiEvent};
 
 use super::{HoverSync, LastMove, Shift, decide};
 use crate::hit::element_at;
-use crate::units::Bounds;
+use blitz_embed_types::units::Bounds;
 
 /// Whether [`repair`] changed anything.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -1,0 +1,12 @@
+[package]
+name = "blitz-embed-types"
+description = "Plain data shared below the Blitz repairs: the fractional scale, page-space boxes and points, and the element id."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
