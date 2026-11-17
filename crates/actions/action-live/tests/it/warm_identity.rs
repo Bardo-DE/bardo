@@ -39,7 +39,7 @@ async fn after_the_warm_up_the_real_intentd_is_still_the_intentd_unit() {
         history.last().map(|v| v.phase.clone()),
         Some(AnswerPhase::Done)
     );
-    let seen = recorded(&world, &["actions.call"]).await;
+    let seen = recorded(&world, &["docket.call"]).await;
     assert!(!seen.is_empty(), "memoryd took intentd's audit records");
     assert!(
         !world.logs().contains("refused the audit records"),

@@ -11,7 +11,7 @@ slug_enum!(
     /// Which area owns a payload.
     AreaTag {
         /// The actions service: policy decisions, consent, calls, undo, breaker (`AuditRecord`).
-        Actions => "actions",
+        Actions => "docket",
         /// cua: run steps (`CuaRecord`).
         Cua => "cua",
         /// The companion's session records (`SessionRecord`).

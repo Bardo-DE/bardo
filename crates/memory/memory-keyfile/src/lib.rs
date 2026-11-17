@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
 /// The constant the file is wrapped with (see the module note: this is not secrecy).
-const WRAP: [u8; 32] = *b"memory test-keys: not a secret.";
+const WRAP: [u8; 32] = *b"almanac test-keys: not a secret.";
 
 /// Keys in a sealed file at one path, read and rewritten on every call, so two runs over the same
 /// path share keys as successive runs share the Secret Service.

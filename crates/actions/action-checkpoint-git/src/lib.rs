@@ -2,7 +2,7 @@
 //!
 //! A restore point is a hidden commit of the workspace with no parent, made from a private index
 //! (a file the actions service owns, never the person's index) and kept under
-//! `refs/actions/checkpoints/<session>/<n>`, a ref family no branch or tag listing shows. Taking a
+//! `refs/docket/checkpoints/<session>/<n>`, a ref family no branch or tag listing shows. Taking a
 //! point writes only objects, that private index and the new ref. Applying one is the only thing
 //! that writes the workspace's files, after re-deriving the plan and checking its digest.
 //!

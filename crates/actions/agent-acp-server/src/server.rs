@@ -224,7 +224,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             .session_capabilities(SessionCapabilities::new().list(SessionListCapabilities::new()));
         InitializeResponse::new(ProtocolVersion::V1)
             .agent_capabilities(capabilities)
-            .agent_info(Implementation::new("actions", env!("CARGO_PKG_VERSION")))
+            .agent_info(Implementation::new("docket", env!("CARGO_PKG_VERSION")))
     }
 
     fn set_mode(&mut self, asked: &SetSessionModeRequest) -> Result<SetSessionModeResponse, Error> {
