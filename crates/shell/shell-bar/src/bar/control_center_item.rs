@@ -4,7 +4,7 @@
 //! rather than from the item.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use ui_components::prelude::*;
 
 use super::menus::BarMenu;

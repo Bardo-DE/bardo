@@ -7,7 +7,7 @@
 //! (`on_hidden`), where the menu closes and a chosen action runs.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::session::Session;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
 use ui_components::prelude::*;

@@ -11,7 +11,7 @@ use std::time::Duration;
 use ui_components::base::time::FRAME_SLACK;
 use ui_harness::Input;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::notifications::{
     Action, ActionKey, Activation, AppRef, BannerLife, Body, Expiry, Hints, IconRef, LiveBanner,
     Notification, NotificationId, Notifications, NotificationsCommand, UnixMs, parse_body,

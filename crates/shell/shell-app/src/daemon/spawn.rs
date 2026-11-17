@@ -2,7 +2,9 @@
 //! new output's or slot's surface is spawned (hidden or shown, as `Surface::start` says), one
 //! whose slot the settings dropped is closed, and one whose layer size changed is resized.
 
-use layer_shell_host::{HostCtx, HostRoot, LayerConfig, LayerOp, OutputInfo};
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::HostCtx;
+use layer_shell_types::{LayerConfig, LayerOp, OutputInfo};
 use shell_ui_kit::surface::{MountProps, OutputPolicy, OutputRank, Place, Start, Surface, mount};
 
 use crate::daemon::msg::ShellMsg;
@@ -123,7 +125,7 @@ fn spawn_layer(
     root: HostRoot,
     info: &OutputInfo,
     start: Start,
-) -> Option<layer_shell_host::SurfaceId> {
+) -> Option<layer_shell_types::SurfaceId> {
     match start {
         Start::Hidden => spawn_hidden(ctx, config, root, info),
         Start::Shown => {

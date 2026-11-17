@@ -2,7 +2,7 @@
 //! (the output the action came from, else [`Outputs::open_on`](crate::outputs::Outputs::open_on)'s
 //! rule for the panel's surface) and says so when no output has the surface.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_bar::Bar;
 use shell_ipc::response::Response;
 use shell_ipc::show::Reveal;

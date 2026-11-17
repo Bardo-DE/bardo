@@ -14,7 +14,7 @@
 //! output), less those with no brightness to show.
 
 use crate::outputs::Outputs;
-use layer_shell_host::{OutputId, OutputInfo};
+use layer_shell_types::{OutputId, OutputInfo};
 use shell_ipc::act::DisplayRequest;
 use shell_ipc::response::Response;
 use shell_model::displays::brightness::targets;

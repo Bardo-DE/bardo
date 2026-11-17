@@ -1,6 +1,6 @@
 //! Where a surface is being placed: the output, its rank among the outputs, and the settings.
 
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_settings::ShellFile;
 
 /// How an output ranks among the daemon's outputs.

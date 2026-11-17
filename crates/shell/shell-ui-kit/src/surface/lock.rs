@@ -1,7 +1,8 @@
 //! The session lock's surface: one document per output, made by layer-shell-host's session lock.
 
 use dioxus::prelude::{Element, use_context_provider};
-use layer_shell_host::{HostRoot, LockConfig, OutputInfo};
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::{LockConfig, OutputInfo};
 use shell_settings::ShellFile;
 
 use crate::links::Links;
@@ -44,7 +45,7 @@ impl MountLockProps {
 )]
 pub fn mount_lock(props: MountLockProps) -> Element {
     // Both provide into the component's context; the handles they return are not needed here.
-    let _ = ui_blitz::provide_host();
+    let _ = ui_host_hooks::provide_host();
     let _ = crate::root::provide_keymap();
     let name = props.surface.name;
     use_context_provider(|| SurfaceName(name));

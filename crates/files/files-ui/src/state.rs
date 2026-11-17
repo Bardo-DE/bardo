@@ -7,9 +7,9 @@ use std::time::Instant;
 use dioxus::prelude::*;
 use files_model::{Browser, Input, Rename, TabId, Tabs};
 use tokio::sync::mpsc::UnboundedReceiver;
-use ui_blitz::{WindowHandle, use_window_handle};
 use ui_components::prelude::use_toasts;
 use ui_components::stack::toast_hub::UndoToken;
+use ui_host_hooks::{WindowControl, use_window_control};
 
 use crate::edge::{self, AppChoiceView, Edge, Heard};
 use crate::icons::Icons;
@@ -31,7 +31,7 @@ pub(crate) struct Browse {
     pub(crate) tabs: Signal<Tabs>,
     /// The browser in front.
     pub(crate) state: Front,
-    window: CopyValue<Option<WindowHandle>>,
+    window: CopyValue<Option<WindowControl>>,
     edge: CopyValue<Rc<Edge>>,
     start: Instant,
     /// The previews the peek worker has made, for Quick Look and the preview pane.
@@ -147,7 +147,7 @@ pub(crate) fn use_browse(launch: &Launch) -> Browse {
     let looked = use_signal(Looks::default);
     let thumbs = use_signal(Thumbs::default);
     let preferences = use_signal(|| launch.preferences.borrow().clone());
-    let window = use_window_handle();
+    let window = use_window_control();
     let browse = Browse {
         tabs,
         state: tabs.map(Tabs::front as fn(&Tabs) -> &Browser),

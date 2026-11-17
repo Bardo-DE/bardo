@@ -2,7 +2,8 @@
 //! `HostCtx::take_stats` (it needs neither the `debug` feature nor layer-shell-host's `debug-inject`;
 //! draining, so each report covers only the time since the previous one).
 
-use layer_shell_host::{HostCtx, SurfaceId};
+use layer_shell_host::HostCtx;
+use layer_shell_types::SurfaceId;
 use shell_ipc::debug::{Micros, SurfaceName, SurfaceStats};
 use shell_overlays::LOCK;
 use shell_settings::ShellFile;
@@ -35,7 +36,7 @@ fn lock_surfaces(ctx: &mut HostCtx<ShellMsg>, outputs: &Outputs) -> Vec<(String,
         .filter_map(|name| {
             let namespace = (LOCK.config)(&ShellFile::default()).namespace;
             let label = format!("{namespace}/{name}");
-            let id = ctx.surface_named(&layer_shell_host::SurfaceName(label.clone()))?;
+            let id = ctx.surface_named(&layer_shell_types::SurfaceName(label.clone()))?;
             Some((label, id))
         })
         .collect()

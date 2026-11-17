@@ -9,7 +9,7 @@
 //! `PRESETS[index % 8]`, the preset's own grain (35 and 55 for presets 1 and 2) or
 //! no grain. The card always wears the appearance accent.
 
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::ids::{OutputName, WorkspaceKey};
 use shell_model::windows::{WorkspaceGroup, Workspaces};
 use shell_services::WindowsService;

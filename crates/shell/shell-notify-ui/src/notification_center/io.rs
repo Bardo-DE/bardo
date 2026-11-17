@@ -7,7 +7,8 @@ use std::rc::Rc;
 use ui_components::focus::soon::focus_soon;
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputId, SurfaceHandle, Visibility, use_watch};
+use layer_shell_hooks::{SurfaceHandle, use_watch};
+use layer_shell_types::{OutputId, Visibility};
 use shell_model::notifications::{
     Activation, ActivationToken, Clear, NotificationId, NotificationsCommand,
 };

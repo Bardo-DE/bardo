@@ -6,7 +6,7 @@
 
 use std::time::Duration;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::voice::{ConsentAnswer, Voice, VoiceCommand};
 use shell_overlays::VoiceConsentSheet;
 use shell_ui_kit::harness::{SurfaceHarness, fake};

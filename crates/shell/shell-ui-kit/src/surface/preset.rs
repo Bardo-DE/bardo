@@ -2,7 +2,7 @@
 //! the preset fills in the ten fields of a `LayerConfig`, so a sheet is three lines and the
 //! blur radius is one number ([`PANEL_RADIUS`]), not a copy per surface.
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
     LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };

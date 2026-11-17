@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 use ui_harness::Input;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::screenshots::{Shot, ShotCommand, ShotId, ShotLeave, ShotPreview, Shots};
 use shell_notify_ui::ScreenshotThumb;
 use shell_settings::{ScreenshotSettings, ShellFile};
@@ -44,7 +44,7 @@ fn start(file: ShellFile) -> Running {
         .to_path_buf();
     SurfaceHarness::<ScreenshotThumb>::setup(link, ())
         .settings(file)
-        .file_roots(layer_shell_host::FileRoots::new([shots]))
+        .file_roots(ui_harness::FileRoots::new([shots]))
         .start()
 }
 

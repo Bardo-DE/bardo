@@ -13,7 +13,7 @@
 //! itself.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::prelude::*;
 use shell_model::desktop::Shown;
 use shell_model::ids::OutputName;

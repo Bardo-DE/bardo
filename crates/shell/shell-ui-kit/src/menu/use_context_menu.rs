@@ -3,7 +3,8 @@
 //! to the owner. The owner supplies the menu, where it goes and what a pick does.
 
 use dioxus::prelude::*;
-use layer_shell_host::{HostRoot, Rect, SurfaceHandle};
+use layer_shell_hooks::{HostRoot, SurfaceHandle};
+use layer_shell_types::Rect;
 use tokio::sync::mpsc;
 
 use super::{ContextMenuLink, MenuModel, MenuReport, PopupGeom, PopupLook, context_menu_popup};

@@ -11,8 +11,8 @@
 //! (published on keyboard focus, so a Caps Lock toggled before the lock shows from the first frame;
 //! [`super::model::caps_of`]), and `onsubmit` sending `AuthCommand::Submit(Secret::new(text))` on
 //! the auth service's control (the text is moved into the `Secret` there, never stored or logged).
-//! On `Accepted` it fades and, on the prompt's output, calls `layer_shell_host::use_lock().unlock()` when
-//! the fade settles; `layer_shell_host::use_lock_phase()` saying `Unlocking` first (the daemon's
+//! On `Accepted` it fades and, on the prompt's output, calls `layer_shell_hooks::use_lock().unlock()` when
+//! the fade settles; `layer_shell_hooks::use_lock_phase()` saying `Unlocking` first (the daemon's
 //! backstop) skips the fade. A click on a lock surface moves the prompt there (macOS: the prompt
 //! follows the display you click), as the keyboard's focus does (the daemon). Style nothing under
 //! `.ds-lock*`: the fade is bardo-shell's own wrapper's.
@@ -21,9 +21,8 @@
 //! the same and the unlock is the daemon's backstop alone.
 
 use dioxus::prelude::*;
-use layer_shell_host::{
-    LockHandle, LockPhase, OutputInfo, use_lock, use_lock_phase, use_modifiers,
-};
+use layer_shell_hooks::{LockHandle, use_lock, use_lock_phase, use_modifiers};
+use layer_shell_types::{LockPhase, OutputInfo};
 use shell_kit::lock::vocab::CapsLock;
 use ui_components::prelude::*;
 

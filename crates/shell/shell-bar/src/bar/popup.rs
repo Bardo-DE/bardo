@@ -2,7 +2,7 @@
 //! Seat)`; design/13 §13.3.2 position: `x = title.left - 8`, `y = title.bottom + 6`, status
 //! menus right-aligned to `item.right + 8`, one reusable popup repositioned on hover switch).
 
-use layer_shell_host::{
+use layer_shell_types::{
     ElementId, PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset,
     PopupPlacement, PopupSize, Rect, Size,
 };
@@ -155,7 +155,7 @@ pub fn adjust(side: MenuSide) -> PopupAdjust {
 #[cfg(test)]
 mod tests {
     use super::{MAX_PX, MenuSide, SIDE, TOP, anchor_rect, menu_offset, menu_popup};
-    use layer_shell_host::{
+    use layer_shell_types::{
         ElementId, PopupAnchor, PopupEdge, PopupGrab, PopupOffset, PopupSize, Rect, offset_rect,
     };
     use ui_components::prelude::Rect as DsRect;
@@ -236,7 +236,10 @@ mod tests {
             (PopupEdge::BottomRight, PopupEdge::BottomLeft)
         );
         assert_eq!(edge.offset, PopupOffset { dx: 20, dy: 6 });
-        assert_eq!(edge.adjust, layer_shell_host::PopupAdjust::NONE);
-        assert_eq!(status.adjust, layer_shell_host::PopupAdjust::SLIDE_AND_FLIP);
+        assert_eq!(edge.adjust, layer_shell_types::PopupAdjust::NONE);
+        assert_eq!(
+            status.adjust,
+            layer_shell_types::PopupAdjust::SLIDE_AND_FLIP
+        );
     }
 }

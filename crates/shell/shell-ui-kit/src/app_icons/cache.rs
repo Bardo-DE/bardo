@@ -19,7 +19,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{LazyLock, Mutex, MutexGuard};
 
 use dioxus::prelude::*;
-use layer_shell_host::use_watch;
+use layer_shell_hooks::use_watch;
 use tokio::sync::watch;
 
 use crate::app_icons::key::IconKey;

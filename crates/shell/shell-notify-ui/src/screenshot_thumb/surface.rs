@@ -2,7 +2,7 @@
 //! output the banners' link names.
 
 use dioxus::prelude::Element;
-use layer_shell_host::{KeyboardFocus, LayerConfig, OutputId, OutputInfo};
+use layer_shell_types::{KeyboardFocus, LayerConfig, OutputId, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::layer::layer;

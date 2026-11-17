@@ -1,4 +1,4 @@
-use layer_shell_host::{OutputId, OutputInfo, Rect, Scale120};
+use layer_shell_types::{OutputId, OutputInfo, Rect, Scale120};
 use shell_ipc::act::{DisplayRequest, LevelRequest, VolumeRequest};
 use shell_model::displays::ddc::Endpoint;
 use shell_model::displays::{Controls, DdcDisplay, Displays, KeysTarget, Level as DdcLevel};

@@ -37,7 +37,7 @@ pub fn follow(opening: Option<&PowerMenuOpening>, menu: Option<MenuSession>) -> 
 mod tests {
     use super::{Follow, follow};
     use crate::power_menu::sheet::{MenuSession, Then};
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
     use shell_model::session::SessionAction;
     use shell_ui_kit::links::{OpenSerial, PanelFocus};
     use shell_ui_kit::links::{PowerMenuOpening, PowerMenuPayload, Preselect, Showing};

@@ -11,7 +11,7 @@
 //! release).
 
 use dioxus::prelude::*;
-use layer_shell_host::use_modifiers;
+use layer_shell_hooks::use_modifiers;
 
 use super::hold::chord_of;
 use super::io::SwitcherCtx;

@@ -6,7 +6,7 @@
 
 use std::time::Duration;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::auth::UserName;
 use shell_model::polkit_agent::{
     ActionId, Cookie, Echo, LastTry, Polkit, PolkitCommand, PromptPhase, PromptView, Registration,

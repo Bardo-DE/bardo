@@ -1,7 +1,8 @@
 //! The bar's menu session as data: what its popup shows, what it is fed, what it needs from the
 //! bar each render, and the notification-center handoff it waits on.
 
-use layer_shell_host::{OutputId, PopupPlacement, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::{OutputId, PopupPlacement};
 use shell_model::ids::OutputName;
 use shell_ui_kit::links::FocusLink;
 use shell_ui_kit::settings::SettingsFeed;

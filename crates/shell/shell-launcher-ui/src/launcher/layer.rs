@@ -1,7 +1,7 @@
 //! The launcher's two layer surfaces and the panel's vertical position (design/13 §13.5:
 //! `top = max(bar_h + 24, round(0.4 H - 230))`, the gap and the bias are `LauncherTokens`).
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
     Margin, OutputInfo, OutputTarget, Rect,
 };
@@ -110,7 +110,7 @@ pub fn panel_rect(output: &OutputInfo, tokens: &LauncherTokens) -> Rect {
 mod tests {
     use super::{layer, panel_top};
     use crate::launcher::tokens::LauncherTokens;
-    use layer_shell_host::{Anchor, BlurSpec, KeyboardMode, LayerExtent, LayerLevel, RegionSpec};
+    use layer_shell_types::{Anchor, BlurSpec, KeyboardMode, LayerExtent, LayerLevel, RegionSpec};
     use shell_ui_kit::harness::fake::output_named as output;
 
     #[test]

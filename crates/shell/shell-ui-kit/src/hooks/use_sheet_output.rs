@@ -2,7 +2,7 @@
 //! `crate::links::SheetLink`.
 
 use dioxus::prelude::{ReadSignal, try_consume_context, use_hook};
-use layer_shell_host::use_watch;
+use layer_shell_hooks::use_watch;
 
 use super::use_link::tell_if_missing;
 use crate::links::{SheetLink, SheetOutput};

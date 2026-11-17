@@ -14,7 +14,9 @@ use std::collections::HashSet;
 use std::fmt::Debug;
 use std::time::Instant;
 
-use layer_shell_host::{Host, HostCtx, HostEvent, HostRoot, OutputId, OutputInfo};
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostCtx, HostEvent};
+use layer_shell_types::{OutputId, OutputInfo};
 use shell_bar::Bar;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::CenterLink;
@@ -56,7 +58,7 @@ fn run() -> Result<(), String> {
     media.send_replace(fake::media());
     let settings = SettingsFeed::fixed(ShellFile::default());
     let clock = FrameClock::new(Instant::now());
-    let host = Host::<()>::connect(shell_ui_kit::root::host_config(
+    let host = Host::<()>::connect(shell_host_config::host_config(
         &shell_services::env::Dirs::from_process(),
     ))
     .map_err(|e| e.to_string())?;

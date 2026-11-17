@@ -7,7 +7,7 @@
 //! [`super::io`] follows the link and writes the answer; this file only draws.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::prelude::*;
 use shell_kit::switcher::app_switcher::AppKey;
 use shell_kit::switcher::app_switcher::SwitcherApp as Tile;

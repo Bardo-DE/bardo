@@ -11,7 +11,7 @@ mod opening;
 mod panel_hit;
 mod panel_place;
 
-use layer_shell_host::{KeyboardFocus, OutputId};
+use layer_shell_types::{KeyboardFocus, OutputId};
 use shell_launcher::{LauncherMode, Scope};
 use tokio::sync::watch;
 
@@ -164,7 +164,7 @@ impl LauncherLink {
 mod tests {
     use super::{ask, switched};
     use crate::links::{LauncherLink, LauncherOpening, Reveal};
-    use layer_shell_host::{KeyboardFocus, OutputId};
+    use layer_shell_types::{KeyboardFocus, OutputId};
     use shell_launcher::LauncherMode;
 
     const ONE: OutputId = OutputId(1);

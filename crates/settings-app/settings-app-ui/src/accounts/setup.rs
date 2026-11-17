@@ -14,7 +14,6 @@ use dioxus::prelude::*;
 use settings_app_model::{
     SetupAction, SetupAvailability, SignedIn, accounts_setup_offer, signed_in,
 };
-use ui_blitz::{AppHandle, use_app_handle};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::lists::list::model::ListStyle;
@@ -22,6 +21,7 @@ use ui_components::prelude::*;
 use ui_components::root::pass_through::ExtraClass;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::ControlSize;
+use ui_host_hooks::{AppControl, use_app_control};
 
 /// The line under an account that needs a new sign-in.
 fn standing_line(row: &SignedIn) -> String {
@@ -73,7 +73,7 @@ fn rows_of(rows: &[SignedIn], marks: &ProviderMarks) -> Vec<ListItem<String>> {
 pub(crate) fn AccountsSetup() -> Element {
     let env = use_context::<Env>();
     let toasts = use_toasts();
-    let app = use_app_handle();
+    let app = use_app_control();
     let listed = use_listed();
     let adding = use_signal(|| false);
     let rows = match listed() {
@@ -159,7 +159,7 @@ fn availability_of(availability: SetupAvailability) -> Availability {
 
 /// Closes the window. `app` is the running app, absent in the harness, where there is no window
 /// to close.
-fn leave(app: Option<&AppHandle>) {
+fn leave(app: Option<&AppControl>) {
     if let Some(app) = app {
         // The loop having ended already is the same as the window being closed.
         let _ended = app.quit();

@@ -11,16 +11,17 @@ publish.workspace = true
 [dependencies]
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
-ui-blitz = {path = "../../ui/ui-blitz"}
 shell-kit = {path = "../shell-kit"}
 image = { workspace = true, features = ["png", "jpeg", "webp"] }
-layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
+layer-shell-types = {path = "../../layer-shell/layer-shell-types"}
+layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
+ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [dev-dependencies]
 shell-testkit = {path = "../shell-testkit"}
@@ -31,6 +32,7 @@ dioxus-ssr = { workspace = true }
 ui-lint = {path = "../../ui/ui-lint"}
 layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["debug-inject"]}
 jiff = { workspace = true }
+shell-host-config = {path = "../shell-host-config"}
 
 [[example]]
 name = "bar_demo"

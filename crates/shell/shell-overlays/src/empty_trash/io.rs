@@ -2,7 +2,8 @@
 //! mapping), and write the person's answer to it.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputInfo;
 use shell_ui_kit::links::{EmptyTrashLink, EmptyTrashOpening};
 use shell_ui_kit::sheet_stage::{SheetStage, use_sheet_stage};
 

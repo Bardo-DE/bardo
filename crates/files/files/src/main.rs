@@ -15,6 +15,7 @@ mod launcher;
 mod opener;
 mod places;
 mod port;
+mod run;
 mod session;
 mod state;
 mod thumbnails;
@@ -122,7 +123,7 @@ fn main() -> ExitCode {
         Some(home) => launch.with_home(home),
         None => launch,
     };
-    match files_ui::run(launch) {
+    match run::run(launch) {
         Ok(()) => ExitCode::SUCCESS,
         Err(err) => {
             eprintln!("bardo-files: {err}");

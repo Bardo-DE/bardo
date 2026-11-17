@@ -7,7 +7,7 @@ use files_trash::{THIRTY_DAYS, Trash, sweep};
 use settings_store_fs::{ConfigRoot, WatchState};
 use tokio::runtime::Handle;
 use tokio::sync::watch;
-use ui_blitz::TokioSpawner;
+use ui_host_hooks::TokioSpawner;
 
 use super::{FilesDoc, store};
 use crate::preferences::Preferences;

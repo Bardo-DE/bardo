@@ -6,7 +6,7 @@
 //! osd`, which fakes a change without touching a real level. Each change carries one more
 //! serial than the last, so a surface restarts its hold even when the same key is pressed again.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 pub use shell_model::osd::OsdKind;
 use shell_model::units::Percent;
 use shell_model::volume::Mute;
@@ -106,7 +106,7 @@ impl OsdLink {
 mod tests {
     use super::next;
     use crate::links::{ChangeSerial, OsdKind, OsdLink};
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     const ONE: OutputId = OutputId(1);
     const TWO: OutputId = OutputId(2);

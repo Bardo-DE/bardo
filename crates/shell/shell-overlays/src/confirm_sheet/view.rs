@@ -10,7 +10,7 @@
 //! ([`super::gate`]). Nothing is styled under `.ds-sheet*` or `.ds-button*`.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::intents::sheet::{SheetChoice, SheetFact, SheetView, sheet_view};
 use shell_model::intents::{ConfirmOffer, Gesture, NeverOffer};
 use shell_services::IntentsService;

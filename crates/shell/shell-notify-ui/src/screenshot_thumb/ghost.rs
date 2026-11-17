@@ -3,7 +3,8 @@
 //! contexts, so the appearance it is drawn in travels as its props ([`GhostLook`]).
 
 use dioxus::prelude::*;
-use layer_shell_host::{DragIcon, HostRoot, Size};
+use layer_shell_hooks::{DragIcon, HostRoot};
+use layer_shell_types::Size;
 use shell_kit::prelude::*;
 use ui_components::components::content::image_source::ImageSize;
 use ui_components::prelude::*;
@@ -74,7 +75,7 @@ pub fn ghost_icon(picture: &ThumbPicture, look: GhostLook) -> DragIcon {
 /// The icon document: a transparent Toast root holding the ghost.
 fn ghost_root(ghost: Ghost) -> Element {
     // Called for the document host it provides to this component, not for the handle.
-    let _ = ui_blitz::provide_host();
+    let _ = ui_host_hooks::provide_host();
     let look = ghost.look;
     rsx! {
         Ds {

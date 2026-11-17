@@ -15,7 +15,8 @@ mod keys;
 use std::path::Path;
 use std::process::Stdio;
 
-use layer_shell_host::{HostHandle, OutputId};
+use layer_shell_host::HostHandle;
+use layer_shell_types::OutputId;
 use shell_launcher::activation::Activation;
 use shell_model::actions::Ask;
 use shell_model::companion::CompanionCommand;

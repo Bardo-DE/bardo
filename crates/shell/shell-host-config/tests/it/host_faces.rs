@@ -8,7 +8,7 @@ use shell_services::env::Dirs;
 
 #[test]
 fn the_host_config_registers_quires_faces() {
-    let families = registered_families(&shell_ui_kit::root::host_config(&Dirs::under(Path::new(
+    let families = registered_families(&shell_host_config::host_config(&Dirs::under(Path::new(
         "/scratch",
     ))));
     for family in ["Inter", "Inter Display", "Space Mono"] {

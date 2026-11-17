@@ -3,7 +3,7 @@
 //! picked.
 
 use dioxus::prelude::*;
-use layer_shell_host::SurfaceHandle;
+use layer_shell_hooks::SurfaceHandle;
 use shell_launcher::actions::ActionId;
 use shell_launcher::settings_target::page;
 use shell_model::actions::Subject;

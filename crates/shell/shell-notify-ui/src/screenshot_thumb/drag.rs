@@ -6,7 +6,8 @@
 //! dismisses the card, a move counts the file as the target's, a cancel or a refusal leaves the
 //! card and resumes the hold.
 
-use layer_shell_host::{DragAction, DragActions, DragOutcome, DragPayload, DragSpec};
+use layer_shell_hooks::DragSpec;
+use layer_shell_types::{DragAction, DragActions, DragOutcome, DragPayload};
 use ui_components::prelude::*;
 
 use super::ghost::{GhostLook, ghost_icon};
@@ -42,7 +43,7 @@ pub fn file_drag(picture: &ThumbPicture, look: GhostLook) -> Option<DragSpec> {
 mod tests {
     use std::path::PathBuf;
 
-    use layer_shell_host::{DragAction, DragActions, DragOutcome, DragPayload, DragRefused};
+    use layer_shell_types::{DragAction, DragActions, DragOutcome, DragPayload, DragRefused};
     use ui_components::components::content::image_source::ImageSize;
     use ui_components::prelude::*;
 

@@ -2,7 +2,8 @@
 //! says where it asked from, and the daemon's interpreter (`shell_app::actions`) carries it out. The
 //! surface never picks an output, fetches a token or decides to ask first: the daemon does, once.
 
-use layer_shell_host::{OutputId, SurfaceHandle, SurfaceId};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::{OutputId, SurfaceId};
 use shell_launcher::actions::ActionId;
 use shell_model::actions::{Ask, Subject};
 use tokio::sync::watch;

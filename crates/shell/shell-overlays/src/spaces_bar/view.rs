@@ -5,7 +5,7 @@
 //! lie; this file only draws.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_services::AppsService;
 use ui_components::prelude::*;
 

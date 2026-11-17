@@ -3,7 +3,7 @@
 //! asks, and kept so that a second Tab arriving before the surface has read the first is still
 //! a second step. Every output's switcher surface follows it and acts on asks for its own output.
 
-use layer_shell_host::{KeyboardFocus, OutputId};
+use layer_shell_types::{KeyboardFocus, OutputId};
 use shell_launcher::AppId;
 use tokio::sync::watch;
 use ui_behaviour::Dir;
@@ -148,7 +148,7 @@ impl SwitcherLink {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::{KeyboardFocus, OutputId};
+    use layer_shell_types::{KeyboardFocus, OutputId};
 
     use crate::links::{AskSerial, Dir, SwitcherAsk, SwitcherLink};
 

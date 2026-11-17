@@ -7,7 +7,8 @@
 //! bar renders nothing. A `Redraw` stamps the time the next render draws the slide at.
 
 use dioxus::prelude::*;
-use layer_shell_host::{FrameDrive, OutputId, SurfaceHandle};
+use layer_shell_hooks::{FrameDrive, SurfaceHandle};
+use layer_shell_types::OutputId;
 use shell_model::desktop::Shown;
 use shell_settings::MenuBarHiding;
 use shell_ui_kit::autohide::{Phase, Timing};

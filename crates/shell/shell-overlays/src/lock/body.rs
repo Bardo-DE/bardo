@@ -3,7 +3,7 @@
 
 use base_secret::SecretText;
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
 use shell_model::auth::{Auth, AuthCommand, AuthFault, AuthPhase, PamNote};
@@ -70,7 +70,7 @@ pub(super) fn LockBody(
     // The bar clock's text changes each minute: reading it re-renders the lock clock with it.
     let _minute = use_service::<ClockService>()();
     let link = use_context::<LockLink>();
-    let prompt_at = layer_shell_host::use_watch(link.subscribe())();
+    let prompt_at = layer_shell_hooks::use_watch(link.subscribe())();
     // Whether the prompt is on this surface's output.
     let here = matches!(prompt_at, PromptOutput::On(id) if id == output.id);
     use_unlock_fade(auth_signal, host, here, on_unlock);

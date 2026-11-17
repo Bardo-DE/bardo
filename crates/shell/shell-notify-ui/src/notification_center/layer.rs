@@ -12,7 +12,7 @@
 //! pointer serial, which a grabbing popup needs (the control center's problem); and a popup
 //! would join the bar's hover switch, which Notification Center does not.
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
     LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
@@ -60,7 +60,7 @@ mod tests {
     use super::{layer, panel_region};
     use shell_settings::ShellFile;
 
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, RegionSpec,
     };
     use shell_ui_kit::harness::fake::output_named as output;

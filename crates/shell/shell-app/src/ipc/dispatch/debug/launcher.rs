@@ -58,7 +58,7 @@ mod tests {
     fn a_closed_launcher_answers_nothing_and_an_open_one_its_rows() {
         let link = LauncherLink::new();
         assert!(matches!(rows(&link), Response::Failed(_)));
-        link.open(layer_shell_host::OutputId(1), "m9".to_owned());
+        link.open(layer_shell_types::OutputId(1), "m9".to_owned());
         link.show_rows(Some(ShownRows {
             query: "m9".to_owned(),
             sections: vec![ShownRowsSection {

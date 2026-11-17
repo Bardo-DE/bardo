@@ -3,7 +3,8 @@
 //! once, with the settings of that moment).
 
 use dioxus::prelude::*;
-use layer_shell_host::{LayerConfig, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::LayerConfig;
 
 /// Re-apply `config` on this surface whenever it differs from the last one applied.
 pub fn use_follow_layer(config: LayerConfig) {

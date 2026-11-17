@@ -4,7 +4,7 @@
 //! under `.ds-sheet*` or `.ds-button*`.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::voice::{ConsentAnswer, VoiceCommand};
 use shell_services::VoiceService;
 use ui_components::components::controls::button_model::Answers;

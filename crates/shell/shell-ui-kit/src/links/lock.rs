@@ -2,7 +2,7 @@
 //! the main display, the banners' output; then whichever lock surface gains keyboard focus) and
 //! every lock surface follows.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use tokio::sync::watch;
 
 use super::Shared;
@@ -45,7 +45,7 @@ impl LockLink {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     use crate::links::{LockLink, PromptOutput};
 

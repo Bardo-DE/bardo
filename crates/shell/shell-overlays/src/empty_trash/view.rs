@@ -6,7 +6,7 @@
 //! Empty Trash is destructive. Nothing is styled under `.ds-alert*`, `.ds-sheet*` or `.ds-button*`.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_settings::confirm_arm;
 use shell_ui_kit::links::{EmptyTrashLink, EmptyTrashOpening};
 use shell_ui_kit::root::SurfaceRoot;

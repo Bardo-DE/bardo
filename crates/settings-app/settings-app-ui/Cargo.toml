@@ -16,15 +16,17 @@ settings-app-client = {path = "../settings-app-client"}
 settings-app-model = {path = "../settings-app-model"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
-ui-blitz = {path = "../../ui/ui-blitz"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 ui-lint = {path = "../../ui/ui-lint"}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
+ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [dev-dependencies]
+# The runtime the coherence test enters (`ui_blitz::enter_runtime`).
+ui-blitz = {path = "../../ui/ui-blitz"}
 memory-dbus = { path = "../../memory/memory-dbus" }
 account-capability = {path = "../../accounts/account-capability"}
 # Fixtures: the in-memory links (the daemons' live settings modules among them: `FakeModules`) and

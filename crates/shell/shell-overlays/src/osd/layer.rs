@@ -9,7 +9,7 @@
 //! Osd material's ambient shadow, so its margin is the gap less that room (negative when the
 //! gap is smaller: the transparent room may overlap the reserve).
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
     LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
@@ -77,7 +77,7 @@ pub fn layer(output: &OutputInfo, tokens: OsdTokens) -> LayerConfig {
 mod tests {
     use super::{CARD_HEIGHT, CARD_WIDTH, ROOM, anchor, layer, margin};
     use crate::osd::tokens::OsdTokens;
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, Margin, RegionSpec,
     };
     use shell_ui_kit::harness::fake::output_named as output;

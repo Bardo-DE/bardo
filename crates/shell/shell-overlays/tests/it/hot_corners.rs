@@ -6,7 +6,7 @@
 use std::time::Duration;
 use ui_components::prelude::*;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_overlays::HotCorners;
 use shell_settings::{
     CornerAction, CornerBinding, CornerBindings, CornerDo, CornerKeys, HotCornerSettings, ShellFile,

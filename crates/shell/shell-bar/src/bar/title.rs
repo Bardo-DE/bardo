@@ -5,7 +5,7 @@
 
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use layer_shell_host::Point;
+use layer_shell_types::Point;
 use shell_kit::bar::pointer::BarPointer;
 use ui_components::host::measure::RectProbe;
 

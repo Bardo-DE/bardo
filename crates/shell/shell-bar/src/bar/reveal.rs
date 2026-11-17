@@ -11,7 +11,7 @@
 //! `DesktopOnly` rests fixed on an output showing a full-screen Space ([`mode_on`]).
 
 use super::tokens::BarTokens;
-use layer_shell_host::{BlurSpec, ElementId, RegionSpec};
+use layer_shell_types::{BlurSpec, ElementId, RegionSpec};
 use shell_model::desktop::Shown;
 use shell_model::units::Cpx;
 use shell_settings::MenuBarHiding;

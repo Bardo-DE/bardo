@@ -4,7 +4,7 @@
 //! hold machine (`step.rs`) only decides when the card is shown.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, Visibility};
+use layer_shell_types::{OutputInfo, Visibility};
 use shell_kit::osd::OsdPosition;
 use shell_kit::prelude::*;
 use shell_model::ids::OutputName;

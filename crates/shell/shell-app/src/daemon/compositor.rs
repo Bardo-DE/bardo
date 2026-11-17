@@ -12,7 +12,8 @@
 
 use std::os::fd::OwnedFd;
 
-use layer_shell_host::{HostCtx, HostEvent, HostHandle, SurfaceId, WaylandRoute};
+use layer_shell_host::{HostCtx, HostEvent, HostHandle, WaylandRoute};
+use layer_shell_types::SurfaceId;
 use shell_model::capture_pick::CaptureCommand;
 use shell_model::companion::CompanionCommand;
 use shell_model::desktop::target::{MinimiseTargets, OutputRects};

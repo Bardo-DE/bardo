@@ -2,7 +2,7 @@
 //! pixels turned into the layer's (the layer covers its output). The popup's own geometry is
 //! [`shell_ui_kit::menu::PopupGeom`].
 
-use layer_shell_host::Rect;
+use layer_shell_types::Rect;
 
 /// `at`, in the desktop's logical pixels, in the layer of the output whose rectangle is
 /// `output`; `None` when the point is on another output.
@@ -14,7 +14,7 @@ pub(super) fn local_point(at: (i32, i32), output: Rect) -> Option<(i32, i32)> {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::Rect;
+    use layer_shell_types::Rect;
 
     use super::local_point;
 

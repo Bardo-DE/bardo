@@ -1,7 +1,8 @@
 //! `apply` and `on_host_event` against a fake host: nothing here locks a session.
 
-use layer_shell_host::{
-    HostEvent, KeyboardFocus, LockId, LockState, OutputId, OutputInfo, Rect, Scale120, SurfaceId,
+use layer_shell_host::HostEvent;
+use layer_shell_types::{
+    KeyboardFocus, LockId, LockState, OutputId, OutputInfo, Rect, Scale120, SurfaceId,
 };
 use shell_ui_kit::links::{LockLink, PromptOutput};
 
@@ -61,7 +62,7 @@ fn outputs() -> Outputs {
 
 fn never_built() -> LockFactory {
     LockFactory {
-        config: layer_shell_host::LockConfig::default(),
+        config: layer_shell_types::LockConfig::default(),
         build: Box::new(|_| panic!("the fake host builds no surface")),
     }
 }

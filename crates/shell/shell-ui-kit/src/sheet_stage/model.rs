@@ -1,6 +1,6 @@
 //! The stage's state types.
 
-use layer_shell_host::Visibility;
+use layer_shell_types::Visibility;
 
 use crate::surface::Pointer;
 

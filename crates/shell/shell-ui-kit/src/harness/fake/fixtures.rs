@@ -1,7 +1,7 @@
 //! The fixed values the fake services start at, and the outputs and workspaces the surfaces are
 //! drawn on.
 
-use layer_shell_host::{OutputId, OutputInfo, Rect, Scale120};
+use layer_shell_types::{OutputId, OutputInfo, Rect, Scale120};
 use shell_launcher::WindowKey;
 use shell_model::battery::{Battery, Charge};
 use shell_model::bluetooth::{

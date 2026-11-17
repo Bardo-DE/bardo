@@ -5,7 +5,7 @@ use layer_shell_host::HostHandle;
 use settings_store_fs::{Store, WatchState};
 use shell_settings::ShellFile;
 use tokio::runtime::Runtime;
-use ui_blitz::TokioSpawner;
+use ui_host_hooks::TokioSpawner;
 
 use super::store::report_shell;
 use crate::daemon::msg::ShellMsg;

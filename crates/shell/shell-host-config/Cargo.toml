@@ -1,0 +1,21 @@
+[package]
+name = "shell-host-config"
+description = "What a bardo-shell process hands layer-shell-host: quire's faces, the pre-paint pass and the folders pictures may be read from."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
+ui-blitz = {path = "../../ui/ui-blitz"}
+ui-components = {path = "../../ui/ui-components"}
+shell-services = {path = "../shell-services"}
+
+[dev-dependencies]
+shell-testkit = {path = "../shell-testkit"}
+
+[lints]
+workspace = true

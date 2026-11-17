@@ -2,7 +2,8 @@
 //! and list the apps of the desktop's view.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputInfo;
 use shell_model::desktop::{ForceQuitRow, force_quit_rows};
 use shell_ui_kit::links::{ForceQuitLink, ForceQuitOpening};
 use shell_ui_kit::sheet_stage::{SheetStage, use_sheet_stage};

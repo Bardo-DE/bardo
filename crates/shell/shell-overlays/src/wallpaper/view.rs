@@ -2,7 +2,7 @@
 //! menu at a press of the secondary button.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::ids::OutputName;
 use ui_components::prelude::*;
 

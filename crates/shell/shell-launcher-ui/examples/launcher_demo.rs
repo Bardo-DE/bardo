@@ -20,9 +20,9 @@ mod launcher_support;
 use std::fmt::Debug;
 use std::io::BufRead;
 
-use layer_shell_host::{
-    Host, HostCtx, HostEvent, HostRoot, LayerConfig, OutputId, OutputInfo, SurfaceId, Visibility,
-};
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostCtx, HostEvent};
+use layer_shell_types::{LayerConfig, OutputId, OutputInfo, SurfaceId, Visibility};
 use shell_launcher_ui::{Launcher, LauncherCatcher};
 use shell_settings::ShellFile;
 use shell_ui_kit::links::LauncherLink;
@@ -63,7 +63,7 @@ fn run() -> Result<(), String> {
         providers: launcher_support::providers(),
         panels: Vec::new(),
     };
-    let host = Host::<DemoMsg>::connect(shell_ui_kit::root::host_config(
+    let host = Host::<DemoMsg>::connect(shell_host_config::host_config(
         &shell_services::env::Dirs::from_process(),
     ))
     .map_err(|e| e.to_string())?;

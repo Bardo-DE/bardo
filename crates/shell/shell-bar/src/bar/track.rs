@@ -43,7 +43,7 @@ pub fn timing() -> MenuTiming {
     clippy::cast_precision_loss,
     reason = "a pixel position, far below 2^24, exact in f32"
 )]
-pub fn point(at: layer_shell_host::Point) -> Point {
+pub fn point(at: layer_shell_types::Point) -> Point {
     Point {
         x: Px(at.x as f32),
         y: Px(at.y as f32),

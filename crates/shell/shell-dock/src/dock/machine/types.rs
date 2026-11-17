@@ -1,6 +1,6 @@
 //! The dock machine's vocabulary: its whole state, its events and its effects.
 
-use layer_shell_host::{BlurSpec, ExclusiveZone, RegionSpec};
+use layer_shell_types::{BlurSpec, ExclusiveZone, RegionSpec};
 use shell_model::desktop::Shown;
 use shell_model::units::Cpx;
 use ui_components::base::time::stamp::Stamp;

@@ -11,7 +11,7 @@
 //! [`host::LockFactory`] of `Lock` surfaces; `HostEvent::Lock(Locked)` becomes
 //! `LockerCommand::Shell(Locked)` ([`on_host_event`]). A right password makes the auth service
 //! `Accepted`: every lock surface plays its fade, and the prompt's surface calls
-//! `layer_shell_host::use_lock().unlock()` when its fade settles (layer-shell-host sends `unlock_and_destroy`
+//! `layer_shell_hooks::use_lock().unlock()` when its fade settles (layer-shell-host sends `unlock_and_destroy`
 //! at the next flush). The wish turns `Released` at the same moment; the follower sends it only
 //! after [`UNLOCK_BACKSTOP_MS`] and only if the lock is still held, so [`apply`]'s
 //! `unlock_session` is a backstop for a surface that never finished its fade (its output gone).
@@ -27,7 +27,8 @@ pub mod host;
 
 use std::time::Duration;
 
-use layer_shell_host::{HostEvent, HostHandle, KeyboardFocus, LockId, LockState, SurfaceId};
+use layer_shell_host::{HostEvent, HostHandle};
+use layer_shell_types::{KeyboardFocus, LockId, LockState, SurfaceId};
 use shell_model::auth::{Auth, AuthCommand, AuthPhase};
 use shell_model::locker::{Lock, LockPhase, LockerCommand, ShellLockEvent};
 use shell_ui_kit::links::{LockLink, PromptOutput};

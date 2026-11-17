@@ -11,7 +11,7 @@
 //! keyboard focus lands 50 to 90 ms after the chord on the nested compositor, inside the
 //! 150 ms delay; a focus later than the delay would read a held chord as a tap.)
 
-use layer_shell_host::{Modifier, Modifiers};
+use layer_shell_types::{Modifier, Modifiers};
 
 use super::keys::Chord;
 use ui_behaviour::Dir;
@@ -69,7 +69,7 @@ pub fn chord_input(state: Phase, hold: Option<Chord>, dir: Dir) -> SwIn {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::{Modifier, Modifiers};
+    use layer_shell_types::{Modifier, Modifiers};
     use ui_components::base::time::stamp::Stamp;
 
     use super::{Hold, Watch, chord_input, chord_of, tick_input};

@@ -5,7 +5,7 @@ use super::{
     BarReveal, RevealEffect, RevealEvent, mode_on, rest_phase, shown_blur, shown_input, step,
     strip_input, timing,
 };
-use layer_shell_host::BlurSpec;
+use layer_shell_types::BlurSpec;
 use shell_model::desktop::Shown;
 use shell_settings::MenuBarHiding;
 use shell_ui_kit::autohide::{Hold, Phase};

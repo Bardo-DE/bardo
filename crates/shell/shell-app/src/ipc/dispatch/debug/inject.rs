@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use layer_shell_host::HostCtx;
 #[cfg(feature = "debug")]
-use layer_shell_host::SurfaceId;
+use layer_shell_types::SurfaceId;
 use shell_ipc::debug::{KeyAction, KeySpec, Point, PointerButton, SurfaceName};
 use shell_ipc::response::{FailureKind, Response};
 
@@ -32,7 +32,7 @@ pub fn inject(
     surface: &SurfaceName,
     injection: Injection,
 ) -> Response {
-    let Some(id) = ctx.surface_named(&layer_shell_host::SurfaceName(surface.0.clone())) else {
+    let Some(id) = ctx.surface_named(&layer_shell_types::SurfaceName(surface.0.clone())) else {
         return failed(
             FailureKind::UnknownSurface,
             format!("no surface {:?}", surface.0),
@@ -72,7 +72,7 @@ fn apply(ctx: &mut HostCtx<ShellMsg>, id: SurfaceId, injection: Injection) -> Re
 /// the boundary.
 #[cfg(feature = "debug")]
 fn to_host(injection: Injection) -> Result<layer_shell_host::inject::Inject, String> {
-    let point = |at: Point| layer_shell_host::Point { x: at.x, y: at.y };
+    let point = |at: Point| layer_shell_types::Point { x: at.x, y: at.y };
     Ok(match injection {
         Injection::Key(spec, action) => return host_key(&spec, action),
         Injection::Pointer(at) => layer_shell_host::inject::Inject::Pointer { at: point(at) },
@@ -105,7 +105,7 @@ fn host_button(button: PointerButton) -> layer_shell_host::inject::PointerButton
 #[cfg(not(feature = "debug"))]
 fn apply(
     _ctx: &mut HostCtx<ShellMsg>,
-    _id: layer_shell_host::SurfaceId,
+    _id: layer_shell_types::SurfaceId,
     injection: Injection,
 ) -> Response {
     // Naming the injection keeps every variant's payload read in this build too.
@@ -130,7 +130,7 @@ mod tests {
     #[test]
     fn a_click_press_or_release_maps_onto_shell_hosts_injection_with_its_button() {
         let at = Point { x: 1200, y: 16 };
-        let host_at = layer_shell_host::Point { x: 1200, y: 16 };
+        let host_at = layer_shell_types::Point { x: 1200, y: 16 };
         let buttons = [
             (
                 PointerButton::Primary,

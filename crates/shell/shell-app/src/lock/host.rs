@@ -3,7 +3,7 @@
 //! `HostCtx::lock_session(LockConfig, factory) -> Result<LockId, LockError::{Unsupported,
 //! InProgress}>`, `unlock_session(LockId)`, `lock_surfaces(LockId)`, and `HostEvent::Lock { id,
 //! state: Locked | Unlocked | Finished }`. Lock surfaces are made on request, one per output (and
-//! for outputs added while locked); a lock document reads `layer_shell_host::use_lock()` (whose
+//! for outputs added while locked); a lock document reads `layer_shell_hooks::use_lock()` (whose
 //! `unlock()` sends `unlock_and_destroy` at the next flush) and `use_lock_phase()`. A compositor
 //! without `ext-session-lock-v1` answers `Unsupported`.
 //!
@@ -12,9 +12,10 @@
 
 use std::fmt;
 
-use layer_shell_host::{
-    HostCtx, HostEvent, HostRoot, LockConfig, LockError, LockId, LockState, OutputId, OutputInfo,
-    SurfaceId,
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{HostCtx, HostEvent};
+use layer_shell_types::{
+    LockConfig, LockError, LockId, LockState, OutputId, OutputInfo, SurfaceId,
 };
 
 use crate::daemon::msg::ShellMsg;
@@ -94,7 +95,8 @@ pub fn lock_event(event: &HostEvent<ShellMsg>) -> Option<(LockId, LockState)> {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::{HostEvent, LockError, LockId, LockState, OutputId};
+    use layer_shell_host::HostEvent;
+    use layer_shell_types::{LockError, LockId, LockState, OutputId};
 
     use super::{LockRefusal, lock_event, refusal_of};
     use crate::daemon::msg::ShellMsg;

@@ -8,7 +8,7 @@
 
 use std::time::Duration;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::desktop::{DisplayTrial, TrialAnswer, TrialId};
 use shell_overlays::DisplayTrialSheet;
 use shell_overlays::arming::QUESTION_ARM_AFTER;

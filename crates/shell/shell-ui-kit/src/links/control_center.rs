@@ -6,7 +6,7 @@
 //! An xdg popup's grab wants the serial of a recent input event, and an IPC request has none;
 //! the compositor may refuse the grab (the popup then shows ungrabbed or not at all).
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use tokio::sync::watch;
 
 use super::Shared;
@@ -54,7 +54,7 @@ impl ControlCenterLink {
 #[cfg(test)]
 mod tests {
     use crate::links::{ControlCenterAsk, ControlCenterLink};
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     #[test]
     fn every_toggle_is_a_new_ask_for_its_output() {

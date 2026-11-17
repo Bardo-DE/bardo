@@ -18,7 +18,7 @@ pub fn desktop_keys() -> KeySource {
 }
 
 /// Provide [`desktop_keys`] to the `Ds` below, called at the top of every root component beside
-/// `ui_blitz::provide_host()`.
+/// `ui_host_hooks::provide_host()`.
 ///
 /// A document that already has a source (the harness, with its fixed platform) keeps it, so a test
 /// reads no real system.

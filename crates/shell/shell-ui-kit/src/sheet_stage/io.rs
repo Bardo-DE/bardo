@@ -3,7 +3,8 @@
 //! the preset's input while a value is up, nothing from the moment its exit starts.
 
 use dioxus::prelude::*;
-use layer_shell_host::{RegionSpec, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::RegionSpec;
 
 use super::model::{SheetStage, StageIn};
 use super::step::advance;

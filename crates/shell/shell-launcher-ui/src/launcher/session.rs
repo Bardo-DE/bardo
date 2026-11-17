@@ -75,7 +75,7 @@ impl Session {
 mod tests {
     use super::Session;
     use crate::launcher::keys::{Filter, LauncherState};
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
     use shell_launcher::{Generation, LauncherMode, ProviderKind, Scope};
     use shell_ui_kit::links::{LauncherAsk, LauncherOpening, OpenSerial, PanelFocus};
     use std::time::Instant;

@@ -2,7 +2,7 @@
 //! tile, placement Top, gap 8), in the dock surface's logical pixels. The popup's geometry is
 //! [`PopupGeom::OverTile`]; this is the tile it hangs over.
 
-use layer_shell_host::Rect;
+use layer_shell_types::Rect;
 use shell_model::units::Cpx;
 
 use crate::dock::frame::Area;

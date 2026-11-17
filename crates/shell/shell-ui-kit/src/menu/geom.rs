@@ -3,7 +3,7 @@
 //! popup's document, so only the anchor and the way the popup hangs off it differ: at a pointer
 //! or over a tile. The widest the popup grows is one number here, not one per surface.
 
-use layer_shell_host::{
+use layer_shell_types::{
     PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupPlacement,
     PopupSize, Rect, Size,
 };
@@ -90,7 +90,7 @@ impl PopupGeom {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::offset_rect;
+    use layer_shell_types::offset_rect;
 
     use super::{CONTEXT_MENU_WIDTH, PopupGeom, PopupRoom, Rect, point_anchor};
 

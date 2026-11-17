@@ -7,7 +7,8 @@ use ui_components::base::time::clock::sleep;
 use ui_components::prelude::*;
 
 use dioxus::prelude::*;
-use layer_shell_host::{HostRoot, OutputId, OutputInfo, PopupAnchor, PopupConfig, SurfaceHandle};
+use layer_shell_hooks::{HostRoot, SurfaceHandle};
+use layer_shell_types::{OutputId, OutputInfo, PopupAnchor, PopupConfig};
 use shell_model::ids::OutputName;
 use shell_ui_kit::links::FocusLink;
 use shell_ui_kit::settings::SettingsFeed;

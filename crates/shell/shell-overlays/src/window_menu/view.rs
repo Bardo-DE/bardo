@@ -2,7 +2,7 @@
 //! the popup [`super::io::use_window_menu`] opens.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use ui_components::prelude::*;
 
 use super::io::use_window_menu;

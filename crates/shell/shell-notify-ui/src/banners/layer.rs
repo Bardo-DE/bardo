@@ -3,14 +3,14 @@
 //! of the bar's reserve above and the dock's below, as the OSD), no keyboard until `bardo-shell focus-latest` asks (the surface then sets `Exclusive`, `io.rs`).
 //!
 //! Input and blur start empty: the surface sets both to its cards' element regions
-//! (`elements.rs`, through `layer_shell_host::use_surface`) as they enter and leave, so the
+//! (`elements.rs`, through `layer_shell_hooks::use_surface`) as they enter and leave, so the
 //! transparent rest of the column never takes a click or blurs what is under it (design/20:
 //! "per toast `Element("toast-<id>")`; input same", which a single `RegionSpec::Element` cannot
 //! say for several cards).
 //!
 //! Spawned before the OSD, so on the same Overlay layer the OSD draws over a banner.
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
     Margin, OutputInfo, OutputTarget, RegionSpec,
 };
@@ -65,7 +65,7 @@ pub fn layer(output: &OutputInfo, tokens: &NotificationTokens) -> LayerConfig {
 #[cfg(test)]
 mod tests {
     use super::{ROOM, layer};
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, Margin, RegionSpec,
     };
     use shell_ui_kit::harness::fake::output_named as output;

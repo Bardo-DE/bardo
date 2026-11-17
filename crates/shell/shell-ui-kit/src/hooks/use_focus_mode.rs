@@ -2,7 +2,7 @@
 //! `crate::links::FocusLink`).
 
 use dioxus::prelude::{ReadSignal, use_context};
-use layer_shell_host::use_watch;
+use layer_shell_hooks::use_watch;
 
 use crate::links::FocusLink;
 

@@ -1,7 +1,7 @@
 //! The wallpaper's layer surface: Background, every edge, ignoring exclusive zones, no keyboard,
 //! input over the whole output (a press of the secondary button opens the desktop's menu).
 
-use layer_shell_host::{LayerConfig, LayerLevel, OutputInfo};
+use layer_shell_types::{LayerConfig, LayerLevel, OutputInfo};
 
 use shell_ui_kit::surface::{LayerPreset, Pointer};
 
@@ -22,7 +22,7 @@ pub fn layer(output: &OutputInfo) -> LayerConfig {
 #[cfg(test)]
 mod tests {
     use super::layer;
-    use layer_shell_host::{Anchor, BlurSpec, ExclusiveZone, LayerLevel, RegionSpec};
+    use layer_shell_types::{Anchor, BlurSpec, ExclusiveZone, LayerLevel, RegionSpec};
     use shell_ui_kit::harness::fake::output_named as output;
 
     #[test]

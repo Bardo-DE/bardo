@@ -8,7 +8,7 @@
 
 use std::time::Duration;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::intents::sheet::{Pending, Serial, SheetChoice, Sheets};
 use shell_model::intents::{ConfirmId, Intents, IntentsCommand, IntentsLink};
 use shell_overlays::ConfirmSheet;

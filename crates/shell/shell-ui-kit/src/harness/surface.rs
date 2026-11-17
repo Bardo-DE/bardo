@@ -8,12 +8,12 @@ use std::rc::Rc;
 
 use crate::settings::SettingsFeed;
 use dioxus::prelude::*;
-use layer_shell_host::{LayerExtent, OutputInfo};
+use layer_shell_types::{LayerExtent, OutputInfo};
 use shell_settings::ShellFile;
 use tokio::sync::watch;
-use ui_blitz::{FocusFallback, StylesGuard};
 use ui_components::style::kit::{Styles, UserStyle};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
+use ui_host_hooks::{FocusFallback, StylesGuard};
 use ui_settings::Environment;
 
 use super::fake;
@@ -87,7 +87,7 @@ pub struct SurfaceSetup<S: Surface> {
     styles: Styles,
     guard: Option<StylesGuard>,
     focus: FocusFallback,
-    file_roots: layer_shell_host::FileRoots,
+    file_roots: ui_harness::FileRoots,
 }
 
 impl<S: Surface> fmt::Debug for SurfaceSetup<S> {
@@ -125,7 +125,7 @@ impl<S: Surface> SurfaceHarness<S> {
             styles: Styles::default(),
             guard: None,
             focus: FocusFallback::default(),
-            file_roots: layer_shell_host::FileRoots::default(),
+            file_roots: ui_harness::FileRoots::default(),
         }
     }
 }
@@ -208,7 +208,7 @@ impl<S: Surface> SurfaceSetup<S> {
     /// The folders the surface may read `file:` pictures from (none by default, as a surface with
     /// no roots reads none); a test that draws a fixture names the fixture's folder.
     #[must_use]
-    pub fn file_roots(mut self, roots: layer_shell_host::FileRoots) -> Self {
+    pub fn file_roots(mut self, roots: ui_harness::FileRoots) -> Self {
         self.file_roots = roots;
         self
     }

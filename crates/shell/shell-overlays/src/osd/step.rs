@@ -4,7 +4,7 @@
 //! settled, so the surface unmaps then, not when this machine's hold ends. Pure: time is a
 //! [`Stamp`] argument, and the surface wakes the machine at [`OsdHold::wake`].
 
-use layer_shell_host::Visibility;
+use layer_shell_types::Visibility;
 use ui_components::base::time::stamp::{Ms, Stamp};
 
 /// How long the indicator holds after the last change, in milliseconds (`io::HOLD`).
@@ -65,7 +65,7 @@ pub fn step(phase: OsdHold, input: OsdInput, times: OsdTimes) -> OsdHold {
 #[cfg(test)]
 mod tests {
     use super::{OsdHold, OsdInput, OsdTimes, step};
-    use layer_shell_host::Visibility;
+    use layer_shell_types::Visibility;
     use ui_components::base::time::stamp::{Ms, Stamp};
 
     const TIMES: OsdTimes = OsdTimes { hold_ms: Ms(1500) };

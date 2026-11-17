@@ -1,7 +1,7 @@
 //! The dim's render: quire's `IdleDim` alone in a transparent viewport root.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::idle_dim::IdleDim;
 use ui_components::prelude::*;
 

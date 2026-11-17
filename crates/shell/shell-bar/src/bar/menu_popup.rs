@@ -10,7 +10,8 @@
 //! (a tray item's dbusmenu has them) are the `Menu`'s own, timed by `menus.submenu_*`.
 
 use dioxus::prelude::*;
-use layer_shell_host::{PopupPlacement, use_surface, use_watch};
+use layer_shell_hooks::{use_surface, use_watch};
+use layer_shell_types::PopupPlacement;
 use shell_model::ids::OutputName;
 use shell_settings::ControlCenterModule;
 use tokio::sync::{mpsc, watch};
@@ -65,7 +66,7 @@ const GAP: Px = Px(7.0);
 #[component]
 pub(crate) fn BarPopup() -> Element {
     // Providing the host and the key source is the point; the handles are read through context.
-    let _ = ui_blitz::provide_host();
+    let _ = ui_host_hooks::provide_host();
     let _ = shell_ui_kit::root::provide_keymap();
     let link = use_context::<PopupLink>();
     let surface = use_surface();

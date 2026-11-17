@@ -12,7 +12,7 @@
 //! sends.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_launcher::AppId;
 use shell_model::desktop::{ForceQuitRow, Standing};
 use shell_ui_kit::app_icons::{LogicalPx, TileIcons, use_tile_icons};

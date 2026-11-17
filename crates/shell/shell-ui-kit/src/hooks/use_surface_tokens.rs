@@ -1,11 +1,11 @@
 //! `use_surface_tokens`: a surface's geometry tokens as the cascade resolves them, over quire's
-//! `ui_blitz::use_resolved`, which reads them again after every resolved frame (so after the
+//! `ui_host_hooks::use_resolved`, which reads them again after every resolved frame (so after the
 //! person's styles or the look change) and re-renders only when they differ. Until the first frame
 //! after the element mounts the value is the reader's with nothing resolved, the shipped one.
 
 use dioxus::prelude::*;
-use ui_blitz::{Lookup, ResolvedTokens, use_resolved};
 use ui_components::prelude::Px;
+use ui_host_hooks::{Lookup, ResolvedTokens, use_resolved};
 
 /// A surface's tokens built from the resolved length of each custom property they name.
 pub trait ReadTokens: Copy + PartialEq + 'static {

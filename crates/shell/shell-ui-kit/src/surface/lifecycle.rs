@@ -1,7 +1,7 @@
 //! What a surface declares about its life, beside where it lives ([`super::OutputPolicy`]): how
 //! it is mapped, and what losing the keyboard does to it.
 
-use layer_shell_host::{KeyboardFocus, OutputId};
+use layer_shell_types::{KeyboardFocus, OutputId};
 
 use crate::links::{CenterLink, LauncherLink, PowerMenuLink, SplitPickerLink, SwitcherLink};
 

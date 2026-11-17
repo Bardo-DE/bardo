@@ -26,7 +26,6 @@ keymap = {path = "../../keymap/keymap"}
 chrono = { workspace = true, features = ["std", "clock"] }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
-ui-blitz = {path = "../../ui/ui-blitz"}
 ui-extensions = {path = "../../ui/ui-extensions"}
 ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
 settings-store = { path = "../../settings/settings-store" }
@@ -41,6 +40,7 @@ files-trash = {path = "../files-trash"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
+ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [dev-dependencies]
 files-ui = { path = ".", features = ["testing"] }

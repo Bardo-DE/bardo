@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
-use layer_shell_host::{SurfaceHandle, Visibility};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::Visibility;
 
 /// The surface's mapping following `visibility` (read inside an effect, so the signals it reads
 /// drive it): mapped while it says `Shown`, unmapped while it says `Hidden`.

@@ -7,7 +7,7 @@
 //! live in `shell-overlays`, `shell-notify-ui`, `shell-dock`, `shell-launcher-ui` and `shell-bar`.
 //!
 //! Surfaces read shared state only through [`hooks`], which read `crate::services::Services` and
-//! `settings::SettingsFeed` from the root context with `layer_shell_host::use_watch`. Nothing
+//! `settings::SettingsFeed` from the root context with `layer_shell_hooks::use_watch`. Nothing
 //! here passes a Dioxus signal through `Root::context` (a review rule), styles a
 //! `.ds-*` class, or writes raw `button`/`input`/menu markup (coherence rules 1-2).
 

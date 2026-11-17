@@ -9,7 +9,7 @@
 //! only that surface answers. The compositor's focus loss on a surface comes back the same way,
 //! naming the surface.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use tokio::sync::watch;
 
 use super::Shared;
@@ -138,7 +138,7 @@ impl BannerLink {
 #[cfg(test)]
 mod tests {
     use crate::links::{BannerLink, BannerOutput, KeyWhat, Transient};
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     #[test]
     fn one_output_shows_and_a_repeat_is_not_news() {

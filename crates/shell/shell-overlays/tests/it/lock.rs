@@ -5,7 +5,7 @@
 
 use std::time::Duration;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::auth::{Account, Auth, AuthPhase, RealName, UserName};
 use shell_model::ids::OutputName;
 use shell_model::wallpaper::{WallpaperImage, Wallpapers};

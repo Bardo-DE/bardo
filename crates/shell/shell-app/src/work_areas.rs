@@ -4,7 +4,7 @@
 //! surfaces are spawned with, so the numbers cannot drift from what the compositor reserves), and
 //! published to the work-areas service for `org.bardo.Outputs1`.
 
-use layer_shell_host::{Anchor, ExclusiveZone, LayerConfig, OutputInfo, Rect as HostRect};
+use layer_shell_types::{Anchor, ExclusiveZone, LayerConfig, OutputInfo, Rect as HostRect};
 use shell_bar::Bar;
 use shell_dock::Dock;
 use shell_model::work_areas::{Edge, Rect, WorkArea, WorkAreaCommand, Zone, work_area};
@@ -91,9 +91,9 @@ pub fn publish(services: &Services, outputs: &Outputs, settings: &ShellFile) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use layer_shell_host::{BlurSpec, RegionSpec};
-    use layer_shell_host::{
-        KeyboardMode, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget,
+    use layer_shell_types::{
+        BlurSpec, KeyboardMode, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget,
+        RegionSpec,
     };
 
     fn config(anchor: Anchor, exclusive: ExclusiveZone) -> LayerConfig {

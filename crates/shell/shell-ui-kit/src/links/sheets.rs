@@ -8,7 +8,7 @@
 //! focus, and the question must stay where it was put. Between bursts of questions the link
 //! names no output. The latch that decides it is `shell_app::sheet_latch`.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use tokio::sync::watch;
 
 use super::Shared;
@@ -64,7 +64,7 @@ impl SheetLink {
 #[cfg(test)]
 mod tests {
     use crate::links::{SheetLink, SheetOutput};
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     #[test]
     fn one_output_shows_and_a_repeat_is_not_news() {

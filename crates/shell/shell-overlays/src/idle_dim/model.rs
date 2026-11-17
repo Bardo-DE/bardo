@@ -1,6 +1,6 @@
 //! What the scrim draws for a published dim, and whether the daemon maps the surface.
 
-use layer_shell_host::Visibility;
+use layer_shell_types::Visibility;
 use shell_kit::idle_dim::IdleDimPhase;
 use shell_model::idle::{DimLevel, DimShown};
 use ui_components::prelude::*;
@@ -46,7 +46,7 @@ pub fn visibility_of(dim: DimShown) -> Visibility {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::Visibility;
+    use layer_shell_types::Visibility;
     use shell_kit::idle_dim::IdleDimPhase;
     use shell_model::idle::{DimLevel, DimShown};
     use ui_components::prelude::*;

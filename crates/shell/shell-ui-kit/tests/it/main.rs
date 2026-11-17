@@ -3,7 +3,6 @@
 
 mod calendar_render;
 mod cancelled_animation;
-mod host_faces;
 mod notification_card_render;
 mod widgets_render;
 

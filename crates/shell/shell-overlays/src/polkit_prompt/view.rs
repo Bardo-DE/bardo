@@ -12,7 +12,7 @@
 
 use base_secret::SecretText;
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
 use shell_model::polkit_agent::{Cookie, PolkitCommand};

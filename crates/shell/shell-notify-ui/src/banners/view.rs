@@ -9,7 +9,8 @@
 //! [`BannerLink`]: shell_ui_kit::links::BannerLink
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, SurfaceHandle, Visibility, use_watch};
+use layer_shell_hooks::{SurfaceHandle, use_watch};
+use layer_shell_types::{OutputInfo, Visibility};
 use shell_kit::notifications::banner_stack::BannerKey;
 use shell_kit::notifications::parts::Hover;
 use shell_kit::notifications::swipe::NotificationSwipe;
@@ -58,7 +59,7 @@ pub(super) fn banners(output: &OutputInfo) -> Element {
 
 /// The cards, inside the root.
 #[component]
-fn ColumnView(output: layer_shell_host::OutputId) -> Element {
+fn ColumnView(output: layer_shell_types::OutputId) -> Element {
     let control = use_control::<NotificationsService>();
     let link = use_context::<BannerLink>();
     let (resolved, tokens) = use_notification_tokens();
@@ -159,7 +160,7 @@ fn use_follow_stack(
     column: &Column,
     live: ReadSignal<Notifications>,
     shows: ReadSignal<shell_ui_kit::links::BannerOutput>,
-    output: layer_shell_host::OutputId,
+    output: layer_shell_types::OutputId,
     max: usize,
 ) {
     let column = *column;

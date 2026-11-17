@@ -11,14 +11,15 @@ publish.workspace = true
 [dependencies]
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
-ui-blitz = {path = "../../ui/ui-blitz"}
 ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 shell-kit = {path = "../shell-kit"}
-layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 shell-model = {path = "../shell-model"}
 shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
+layer-shell-types = {path = "../../layer-shell/layer-shell-types"}
+layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
+ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [dev-dependencies]
 shell-testkit = {path = "../shell-testkit"}

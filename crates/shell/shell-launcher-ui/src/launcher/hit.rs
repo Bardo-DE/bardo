@@ -5,7 +5,7 @@
 //! catcher's input leaves out only what the panel takes, so a press under a short card closes
 //! the launcher like any other outside press.
 
-use layer_shell_host::{ElementId, ElementRegion, Rect, RegionSpec, RoundedRect};
+use layer_shell_types::{ElementId, ElementRegion, Rect, RegionSpec, RoundedRect};
 
 use crate::launcher::layer::{
     CARD_BLUR_RADIUS, CARD_ID, MENU_BLUR_RADIUS, MENU_ID, PANEL_HEIGHT, PANEL_ROOM_WIDTH,
@@ -94,7 +94,7 @@ pub enum ActionsShown {
 #[cfg(test)]
 mod tests {
     use super::{ActionsShown, blur_region, card_region, hit_for, panel_input};
-    use layer_shell_host::{ElementId, Rect, RegionSpec};
+    use layer_shell_types::{ElementId, Rect, RegionSpec};
     use shell_ui_kit::links::PanelHit;
 
     #[test]

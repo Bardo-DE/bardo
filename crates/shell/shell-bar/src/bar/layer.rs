@@ -4,7 +4,7 @@
 //! nothing reserved, no blur, and only the thin strip at the top edge takes the pointer
 //! (`reveal.rs` moves it from there).
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
     Margin, OutputInfo, OutputTarget, RegionSpec,
 };
@@ -50,7 +50,7 @@ pub(super) fn layer(output: &OutputInfo, mode: MenuBarHiding, tokens: BarTokens)
 mod tests {
     use super::layer;
     use crate::bar::tokens::BarTokens;
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, OutputId,
         OutputTarget, RegionSpec,
     };

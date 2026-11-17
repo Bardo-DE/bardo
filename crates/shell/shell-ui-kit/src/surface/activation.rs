@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use tokio::sync::oneshot;
 
-use layer_shell_host::SurfaceHandle;
+use layer_shell_hooks::SurfaceHandle;
 use shell_launcher::{AppId, DesktopAction, SettingsTarget};
 use shell_model::launch::{LaunchCommand, LaunchRequest, SETTINGS_BUS_NAME, SettingsOpen};
 use shell_services::ServiceError;

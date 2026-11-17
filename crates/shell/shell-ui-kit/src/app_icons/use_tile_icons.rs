@@ -2,7 +2,7 @@
 //! read against the active Space's look, the output's scale, the re-tint cache and the
 //! installed apps.
 
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_services::AppsService;
 use ui_components::prelude::*;
 

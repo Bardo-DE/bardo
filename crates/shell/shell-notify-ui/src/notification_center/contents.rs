@@ -13,7 +13,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use ui_components::components::controls::button_model::Bezel;
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::notifications::{History, UnixMs};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::prelude::*;

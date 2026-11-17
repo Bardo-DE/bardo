@@ -2,7 +2,7 @@
 //! `~/.config/bardo/shell/style.css`, read at start, watched, and published to the feeds every surface
 //! root draws them from (ARCHITECTURE.md section 8). The [`StyleKeeper`] holds both files' stores
 //! and the two feeds: the sheets, and the crash guard of this start's sheets
-//! (`ui_blitz::StylesGuard`), which turns the person's styles off when the last two starts with
+//! (`ui_host_hooks::StylesGuard`), which turns the person's styles off when the last two starts with
 //! the same sheets never got a frame up and five seconds alive. Nothing is automatic: a start the
 //! guard turned them off for says so on the bar, and its Turn On Again button asks for
 //! [`StyleKeeper::turn_on_again`].
@@ -28,8 +28,8 @@ use shell_ui_kit::links::Outbox;
 use shell_ui_kit::settings::TurnOnStyles;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
-use ui_blitz::{StylesGuard, TokioSpawner};
 use ui_components::style::kit::{StyleHomes, Styles, UserStyle};
+use ui_host_hooks::{StylesGuard, TokioSpawner};
 use ui_settings::AppearanceFile;
 
 use super::look::{ChosenLook, LookSearch, chosen_look, spawn_look_watch};

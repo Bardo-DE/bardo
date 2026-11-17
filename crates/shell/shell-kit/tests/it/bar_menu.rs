@@ -335,7 +335,8 @@ fn a_press_reports_where_it_happened() {
 fn MeasuredRoot() -> Element {
     // What a layer-shell-host surface's root does, where `ui_blitz::launch` did not provide it.
     // Called for its side effect (installing the host context); the handle itself is not needed.
-    let _ = ui_blitz::provide_host();
+    ui_blitz::use_standalone_host();
+    let _ = ui_host_hooks::provide_host();
     let probe = use_rect();
     let width = probe.rect().map_or(0.0, |rect| rect.size.width.0);
     rsx! {
@@ -348,7 +349,7 @@ fn MeasuredRoot() -> Element {
     }
 }
 
-/// `ui_blitz::provide_host()` gives a root the Blitz rect read `use_rect` goes through.
+/// `ui_host_hooks::provide_host()` gives a root the Blitz rect read `use_rect` goes through.
 #[test]
 fn the_exported_measurer_reads_a_rect() {
     let mut harness = Harness::new(

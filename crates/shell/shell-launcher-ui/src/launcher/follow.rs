@@ -3,7 +3,8 @@
 //! v1"), and neither needs the other's id.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputId, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputId;
 
 use shell_ui_kit::hooks::use_follow_visibility as follow_visibility;
 use shell_ui_kit::links::{LauncherLink, LauncherOpening, Reveal};

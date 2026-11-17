@@ -1,7 +1,8 @@
 //! The wallpaper as a [`Surface`]: one per output, shown at once.
 
 use dioxus::prelude::Element;
-use layer_shell_host::{HostRoot, LayerConfig, OutputInfo};
+use layer_shell_hooks::HostRoot;
+use layer_shell_types::{LayerConfig, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 

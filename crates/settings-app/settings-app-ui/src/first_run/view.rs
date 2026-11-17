@@ -12,7 +12,6 @@ use settings_app_model::{
 use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
 use std::sync::Arc;
-use ui_blitz::{AppHandle, TokioSpawner, use_app_handle};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
@@ -21,6 +20,7 @@ use ui_components::root::pass_through::ExtraClass;
 use ui_components::stack::toast_hub::ToastHub;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::ControlSize;
+use ui_host_hooks::{AppControl, TokioSpawner, use_app_control};
 use ui_settings::use_environment;
 
 fn send(state: &mut Signal<FirstRun>, input: FirstRunInput) -> Vec<FirstRunEffect> {
@@ -60,7 +60,7 @@ pub fn FirstRunApp() -> Element {
 fn FirstRunWindow() -> Element {
     let env = use_context::<Env>();
     let toasts = use_toasts();
-    let app = use_app_handle();
+    let app = use_app_control();
     let mut state = use_signal(FirstRun::default);
     let Picker { state: picker, ask } = use_picker();
     use_future({
@@ -96,7 +96,7 @@ fn FirstRunWindow() -> Element {
 
 /// What the window does for an effect that is not a write. `app` is the running app, absent in
 /// the harness, where there is no window to close.
-fn react(effect: FirstRunEffect, toasts: ToastHub, app: Option<&AppHandle>) {
+fn react(effect: FirstRunEffect, toasts: ToastHub, app: Option<&AppControl>) {
     match effect {
         FirstRunEffect::Tell(text) => toasts.push(text, None),
         FirstRunEffect::Close => {

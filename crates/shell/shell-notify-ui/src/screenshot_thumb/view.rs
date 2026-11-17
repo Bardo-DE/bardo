@@ -6,7 +6,8 @@
 //! `BannerLink` through [`super::follow`] and [`super::step::step`].
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputId, OutputInfo, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::{OutputId, OutputInfo};
 use shell_kit::notifications::banner_stack::{Banner, BannerKey, BannerPosition};
 use shell_kit::prelude::*;
 use shell_model::screenshots::ShotId;

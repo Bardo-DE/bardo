@@ -1,7 +1,7 @@
 //! The OSD as a [`Surface`]: one per output, spawned hidden and mapped by its own machine.
 
 use dioxus::prelude::Element;
-use layer_shell_host::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerConfig, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 

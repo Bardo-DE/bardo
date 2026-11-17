@@ -12,7 +12,8 @@ use ui_components::base::time::clock::sleep;
 
 use dioxus::core::{Runtime, Task, current_scope_id};
 use dioxus::prelude::*;
-use layer_shell_host::{KeyboardMode, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::KeyboardMode;
 use shell_kit::notifications::parts::Hover;
 use shell_model::notifications::{
     ActionKey, Activation, ActivationToken, LiveBanner, Notification, NotificationId,

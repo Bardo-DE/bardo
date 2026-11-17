@@ -11,7 +11,7 @@
 //! screens come and go; what the person has picked is a `Picks`, changed only by `toggle`.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::capture_pick::{
     Asking, Picks, Plurality, Pointer, Source, Tab, can_allow, plan, toggle,
 };

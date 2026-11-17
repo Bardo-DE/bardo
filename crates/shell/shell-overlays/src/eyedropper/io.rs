@@ -4,7 +4,8 @@
 //! answer hides the surface at once; the daemon's end of the question arrives after.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, Visibility, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::{OutputInfo, Visibility};
 use shell_model::capture_pick::{AskId, CaptureCommand, Rgb8};
 use shell_model::desktop::OutputShot;
 use shell_services::Control;

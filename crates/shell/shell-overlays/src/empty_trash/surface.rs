@@ -2,7 +2,7 @@
 //! an opening on its output.
 
 use dioxus::prelude::Element;
-use layer_shell_host::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerConfig, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::view::empty_trash;

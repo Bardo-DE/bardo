@@ -6,7 +6,7 @@
 
 use std::collections::BTreeSet;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::desktop::Shown;
 use tokio::sync::watch;
 
@@ -143,7 +143,7 @@ mod tests {
     use std::collections::BTreeSet;
 
     use super::{EdgeLink, FullScreens, RevealEdge};
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
     use shell_model::desktop::Shown;
 
     #[test]

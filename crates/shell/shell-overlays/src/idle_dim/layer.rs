@@ -4,7 +4,7 @@
 //! idle tracking sees the input as it would without the scrim. The session-lock surfaces are
 //! above every layer surface, so a lock taken while dimmed covers it.
 
-use layer_shell_host::{LayerConfig, LayerLevel, OutputInfo};
+use layer_shell_types::{LayerConfig, LayerLevel, OutputInfo};
 
 use shell_ui_kit::surface::{LayerPreset, Pointer};
 
@@ -19,7 +19,7 @@ pub fn layer(output: &OutputInfo) -> LayerConfig {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, OutputTarget,
         RegionSpec,
     };

@@ -7,7 +7,8 @@
 //! so an idle dock renders nothing. A `Redraw` stamps the time the next render draws at.
 
 use dioxus::prelude::*;
-use layer_shell_host::{FrameDrive, Rect, SurfaceHandle};
+use layer_shell_hooks::{FrameDrive, SurfaceHandle};
+use layer_shell_types::Rect;
 use shell_model::badges::Badges;
 use shell_ui_kit::services::Services;
 use ui_components::base::time::clock::sleep;

@@ -5,7 +5,7 @@
 //! and its extent.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use ui_components::prelude::*;
 
 use crate::hooks::use_appearance;

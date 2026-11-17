@@ -6,7 +6,8 @@
 //! which the acceptance script proves before it presses Enter.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputId, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputId;
 use shell_model::session::{Session, SessionAction, SessionCommand};
 use shell_services::Control;
 use shell_services::env::ActionReach;

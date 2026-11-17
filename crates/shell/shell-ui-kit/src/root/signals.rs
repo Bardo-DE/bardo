@@ -16,7 +16,8 @@
 //! the hooks run in the same order on every render.
 
 use dioxus::prelude::*;
-use layer_shell_host::{InputModality as SeatModality, Scale120, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::{InputModality as SeatModality, Scale120};
 use ui_components::prelude::*;
 
 /// layer-shell-host's raw modality, as quire's own: whether the person last used the keyboard.
@@ -27,15 +28,15 @@ fn to_ds(modality: SeatModality) -> bool {
 /// Provides `HostSignals` to this component and everything under it.
 ///
 /// The signals are `ui_components::prelude::HostSignals`, kept live from layer-shell-host's
-/// per-seat [`layer_shell_host::use_input_modality`] and the surface's
-/// [`layer_shell_host::use_surface_scale`]. Nothing is provided on a component with no
+/// per-seat [`layer_shell_hooks::use_input_modality`] and the surface's
+/// [`layer_shell_hooks::use_surface_scale`]. Nothing is provided on a component with no
 /// `SurfaceHandle`.
 pub fn use_host_signals() {
     let hosted = use_hook(try_consume_context::<SurfaceHandle>);
     if hosted.is_some() {
         use_republished(
-            layer_shell_host::use_input_modality(),
-            layer_shell_host::use_surface_scale(),
+            layer_shell_hooks::use_input_modality(),
+            layer_shell_hooks::use_surface_scale(),
         );
     }
 }

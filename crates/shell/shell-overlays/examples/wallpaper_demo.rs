@@ -12,8 +12,9 @@ use shell_ui_kit::harness::fake;
 
 use std::collections::HashSet;
 
-use layer_shell_host::{Host, HostCtx, HostEvent, HostRoot, OutputId, OutputInfo};
-use layer_shell_host::{Size, buffer_size};
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostCtx, HostEvent};
+use layer_shell_types::{OutputId, OutputInfo, Size, buffer_size};
 use shell_model::ids::OutputName;
 use shell_model::wallpaper::WallpaperCommand;
 use shell_overlays::Wallpaper;
@@ -49,7 +50,7 @@ fn run() -> Result<(), String> {
     services.wallpaper.state = wallpaper.state;
     services.wallpaper.control = wallpaper.control;
 
-    let host = Host::<()>::connect(shell_ui_kit::root::host_config(
+    let host = Host::<()>::connect(shell_host_config::host_config(
         &shell_services::env::Dirs::from_process(),
     ))
     .map_err(|e| e.to_string())?;

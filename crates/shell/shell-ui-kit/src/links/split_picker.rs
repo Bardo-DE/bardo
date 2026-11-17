@@ -4,7 +4,7 @@
 //! the daemon carries it out. The compositor ends an offer by itself (a pick, a cancel, the
 //! first window leaving full screen), and the daemon closes it on the link then.
 
-use layer_shell_host::KeyboardFocus;
+use layer_shell_types::KeyboardFocus;
 use shell_model::desktop::{SplitCard, SplitSide};
 use tokio::sync::watch;
 
@@ -162,7 +162,7 @@ impl SplitPickerLink {
 #[cfg(test)]
 mod tests {
     use super::{OfferSerial, SplitAnswer, SplitPickerLink};
-    use layer_shell_host::KeyboardFocus;
+    use layer_shell_types::KeyboardFocus;
     use shell_model::desktop::{SplitCard, SplitSide};
 
     fn card(window: &str) -> SplitCard {

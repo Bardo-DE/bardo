@@ -2,9 +2,9 @@
 //! through `spawn_surface` in their drawing order ([`spawn_missing`]). The wallpaper's `Prepare`
 //! for the wallpaper service lives here.
 
-use layer_shell_host::SurfaceId;
-use layer_shell_host::{HostCtx, HostRoot, OutputInfo};
-use layer_shell_host::{Size as BufferSize, buffer_size};
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::HostCtx;
+use layer_shell_types::{OutputInfo, Size as BufferSize, SurfaceId, buffer_size};
 use shell_bar::Bar;
 use shell_dock::Dock;
 use shell_launcher_ui::{Launcher, LauncherCatcher};
@@ -133,14 +133,14 @@ fn prepare_wallpapers(outputs: &Outputs, services: &Services) {
 /// Spawn a layer surface and hide it before its first paint.
 pub(crate) fn spawn_hidden(
     ctx: &mut HostCtx<ShellMsg>,
-    config: layer_shell_host::LayerConfig,
+    config: layer_shell_types::LayerConfig,
     root: HostRoot,
     info: &OutputInfo,
 ) -> Option<SurfaceId> {
     let namespace = config.namespace.clone();
     match ctx.spawn_layer(config, root) {
         Ok(id) => {
-            ctx.set_visibility(id, layer_shell_host::Visibility::Hidden);
+            ctx.set_visibility(id, layer_shell_types::Visibility::Hidden);
             Some(id)
         }
         Err(error) => {

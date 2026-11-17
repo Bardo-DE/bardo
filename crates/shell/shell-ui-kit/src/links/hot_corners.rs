@@ -1,7 +1,7 @@
 //! Firings, from every corner surface to the daemon: one shared watch of the latest hit, each
 //! hit numbered so two firings of one corner are two changes.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 pub use shell_model::hot_corners::Corner;
 use tokio::sync::watch;
 
@@ -56,7 +56,7 @@ impl CornerLink {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     use crate::links::{Corner, CornerHit, CornerLink};
 

@@ -12,7 +12,9 @@ use std::fmt::Debug;
 use std::io::BufRead;
 use std::time::Instant;
 
-use layer_shell_host::{Host, HostCtx, HostEvent, HostRoot, OutputId, OutputInfo};
+use layer_shell_hooks::HostRoot;
+use layer_shell_host::{Host, HostCtx, HostEvent};
+use layer_shell_types::{OutputId, OutputInfo};
 use shell_dock::Dock;
 use shell_settings::ShellFile;
 use shell_ui_kit::harness::fake;
@@ -45,7 +47,7 @@ fn run() -> Result<(), String> {
     let windows = feeds.windows;
     let settings = SettingsFeed::fixed(ShellFile::default());
     let clock = FrameClock::new(Instant::now());
-    let host = Host::<DemoMsg>::connect(shell_ui_kit::root::host_config(
+    let host = Host::<DemoMsg>::connect(shell_host_config::host_config(
         &shell_services::env::Dirs::from_process(),
     ))
     .map_err(|e| e.to_string())?;

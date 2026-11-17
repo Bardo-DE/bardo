@@ -3,7 +3,7 @@
 //! keyboard, input and blur the thumbnail's own card (`Element("thumb")`), with room around
 //! the card for the Toast material's shadow and the swipe's travel.
 
-use layer_shell_host::{Anchor, ExclusiveZone, LayerConfig, OutputInfo};
+use layer_shell_types::{Anchor, ExclusiveZone, LayerConfig, OutputInfo};
 
 use shell_settings::ShellFile;
 
@@ -53,7 +53,7 @@ mod tests {
     use shell_settings::ShellFile;
 
     use super::{ROOM, THUMB_CARD, THUMB_WIDTH, layer};
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
     };
     use shell_ui_kit::harness::fake::output_named as output;

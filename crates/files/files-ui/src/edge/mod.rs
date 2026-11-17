@@ -51,8 +51,8 @@ use files_fs::WatchHandle;
 use files_model::{Effect, Input, Now, OpenTarget, TabId, Tabbed};
 use files_ops::{Job, Worker};
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};
-use ui_blitz::clipboard;
 use ui_components::base::time::clock;
+use ui_host_hooks::clipboard;
 
 pub use apps::{AppChoiceView, Apps, NoApps};
 #[cfg(feature = "testing")]

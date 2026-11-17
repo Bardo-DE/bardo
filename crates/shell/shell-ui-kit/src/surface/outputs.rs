@@ -1,6 +1,6 @@
 //! Which outputs a surface lives on, and which one its panel opens on.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 
 /// A surface's rule for outputs, declared once as [`super::Surface::OUTPUTS`].
 ///
@@ -31,7 +31,7 @@ impl OutputPolicy {
 #[cfg(test)]
 mod tests {
     use super::OutputPolicy;
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     #[test]
     fn only_a_main_surface_leaves_the_other_outputs_alone() {

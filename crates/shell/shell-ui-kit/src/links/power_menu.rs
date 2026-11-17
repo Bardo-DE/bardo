@@ -2,7 +2,7 @@
 //! the bar and the launcher (the launcher's pattern: one `watch` channel holding a `Reveal`, pure
 //! transitions, each surface mirroring it onto its own visibility).
 
-use layer_shell_host::{KeyboardFocus, OutputId};
+use layer_shell_types::{KeyboardFocus, OutputId};
 use shell_model::session::SessionAction;
 use tokio::sync::watch;
 
@@ -145,7 +145,7 @@ mod tests {
     use super::{leaving, open, toggle};
     use crate::links::{OpenSerial, PanelFocus, Reveal};
     use crate::links::{PowerMenuLink, PowerMenuOpening, Preselect, Showing};
-    use layer_shell_host::{OutputId, Visibility};
+    use layer_shell_types::{OutputId, Visibility};
     use shell_model::session::SessionAction;
 
     const ONE: OutputId = OutputId(1);

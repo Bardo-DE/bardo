@@ -2,7 +2,7 @@
 //! `Ignore` (at the true corner of the output, over the bar's and the dock's reserve), no
 //! keyboard, no blur, input the whole square.
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
     Margin, OutputInfo, OutputTarget, RegionSpec,
 };
@@ -42,7 +42,7 @@ pub fn layer(output: &OutputInfo, corner: Corner) -> LayerConfig {
 #[cfg(test)]
 mod tests {
     use super::layer;
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, RegionSpec,
     };
     use shell_ui_kit::harness::fake::output_named as output;

@@ -1,10 +1,10 @@
 //! `use_styles`: the styles every `Ds` root draws, live, and whether the person's are drawn.
 
 use dioxus::prelude::{ReadSignal, try_consume_context, use_hook};
-use layer_shell_host::use_watch;
+use layer_shell_hooks::use_watch;
 use tokio::sync::watch;
-use ui_blitz::StylesGuard;
 use ui_components::style::kit::Styles;
+use ui_host_hooks::StylesGuard;
 
 use crate::hooks::use_appearance;
 use crate::settings::SettingsFeed;

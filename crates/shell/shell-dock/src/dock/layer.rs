@@ -7,7 +7,7 @@
 //! need a width that follows magnification every frame; a full-width transparent surface with
 //! an element input region does not.
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
     Margin, OutputInfo, OutputTarget,
 };
@@ -66,7 +66,7 @@ pub fn layer(output: &OutputInfo, settings: &ShellFile, tokens: DockTokens) -> L
 mod tests {
     use super::layer;
     use crate::dock::tokens::DockTokens;
-    use layer_shell_host::{
+    use layer_shell_types::{
         Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
     };
     use shell_settings::{DockSettings, ShellFile};

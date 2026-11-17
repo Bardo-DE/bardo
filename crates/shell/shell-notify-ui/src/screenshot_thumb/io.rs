@@ -12,7 +12,8 @@ use ui_components::base::time::clock::sleep;
 
 use dioxus::core::{Runtime, Task, current_scope_id};
 use dioxus::prelude::*;
-use layer_shell_host::{KeyboardMode, SurfaceHandle, Visibility};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::{KeyboardMode, Visibility};
 use shell_model::screenshots::{ShotCommand, ShotId};
 use shell_services::Control;
 use ui_components::focus::select::Select;

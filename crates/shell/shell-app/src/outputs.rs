@@ -3,7 +3,7 @@
 
 use std::sync::Arc;
 
-use layer_shell_host::{KeyboardFocus, LayerSize, OutputId, OutputInfo, SurfaceId};
+use layer_shell_types::{KeyboardFocus, LayerSize, OutputId, OutputInfo, SurfaceId};
 use shell_model::desktop::ShellRole;
 use shell_model::ids::OutputName;
 use shell_ui_kit::services::Services;
@@ -224,7 +224,7 @@ pub fn reconcile(current: &Outputs, now: &[OutputInfo]) -> Vec<OutputAction> {
 #[cfg(test)]
 mod tests {
     use super::{FocusRoute, OutputSurfaces, Outputs, Spawned, reconcile};
-    use layer_shell_host::{
+    use layer_shell_types::{
         LayerExtent, LayerSize, OutputId, OutputInfo, Rect, Scale120, SurfaceId,
     };
     use shell_model::ids::OutputName;

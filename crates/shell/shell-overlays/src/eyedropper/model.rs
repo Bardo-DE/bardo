@@ -1,7 +1,7 @@
 //! What the eyedropper decides, pure: which picture this output's surface draws, how big the
 //! surface is, and the style text that places the magnifier.
 
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::capture_pick::{AskId, CELL, Loupe, SIDE};
 use shell_model::desktop::OutputShot;
 use shell_ui_kit::links::EyedropFeed;

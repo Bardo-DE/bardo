@@ -6,7 +6,7 @@
 //! surface.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use ui_components::prelude::*;
 
 use super::contents::Contents;

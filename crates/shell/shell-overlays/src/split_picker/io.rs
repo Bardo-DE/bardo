@@ -4,7 +4,8 @@
 //! (which the daemon puts on the link) arrives after.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, Visibility, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::{OutputInfo, Visibility};
 use shell_ui_kit::hooks::use_follow_visibility as follow_visibility;
 use shell_ui_kit::links::{OfferSerial, SplitAnswer, SplitOffer, SplitPickerLink};
 

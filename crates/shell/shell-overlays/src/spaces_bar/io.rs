@@ -4,7 +4,8 @@
 
 use account_core::SpaceId;
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, Visibility, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::{OutputInfo, Visibility};
 use shell_model::apps::AppIndex;
 use shell_model::desktop::target::Rect as WholeRect;
 use shell_model::desktop::{

@@ -1,7 +1,7 @@
 //! The catcher's layer surface: Overlay over the whole output, no keyboard, no blur, input
 //! everywhere the panel does not take it.
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
     Margin, OutputInfo, OutputTarget, Rect, RegionSpec, RoundedRect,
 };
@@ -90,7 +90,7 @@ mod tests {
     use super::{input, layer};
     use crate::launcher::layer::panel_rect;
     use crate::launcher::tokens::LauncherTokens;
-    use layer_shell_host::{Anchor, BlurSpec, KeyboardMode, Rect, RegionSpec};
+    use layer_shell_types::{Anchor, BlurSpec, KeyboardMode, Rect, RegionSpec};
     use shell_ui_kit::harness::fake::output_named as output;
     use shell_ui_kit::links::PanelHit;
 

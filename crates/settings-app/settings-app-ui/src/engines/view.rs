@@ -77,7 +77,7 @@ pub(crate) fn LocalEnginesNote() -> Element {
                         text,
                         copy: copy(),
                         on_copy: move |text: String| {
-                            let _ = ui_blitz::clipboard::write_text(&text);
+                            let _ = ui_host_hooks::clipboard::write_text(&text);
                             copy.set(true);
                         },
                     }

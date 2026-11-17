@@ -5,7 +5,7 @@
 //! menu has none of these titles (design/27 §5.2 rule c).
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::prelude::*;
 use shell_model::ids::OutputName;
 use shell_services::{AppMenuService, AppsService, WindowsService};

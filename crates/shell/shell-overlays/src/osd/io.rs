@@ -9,7 +9,8 @@ use ui_components::base::time::clock::sleep;
 
 use dioxus::core::Task;
 use dioxus::prelude::*;
-use layer_shell_host::{OutputId, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputId;
 
 use super::step::{OsdHold, OsdInput, OsdTimes, step};
 use shell_ui_kit::hooks::{use_map_when_shown, use_unmap_on_hidden};

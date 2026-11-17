@@ -3,7 +3,7 @@
 //! is to be drawn and hit-testable (`Shown`) or put back (`Hidden`).
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::desktop::Shown;
 
 use crate::links::{EdgeLink, RevealEdge};

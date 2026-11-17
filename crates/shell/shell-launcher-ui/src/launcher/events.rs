@@ -4,7 +4,8 @@
 //! line opens its section) and a dismissal. The other keys (the preview pane's, row chords) are `pane_keys.rs`.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputId, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::OutputId;
 use shell_launcher::{Choice, CompanionAct, ItemKey, LauncherMode};
 use shell_model::results::{Results, SearchCommand};
 use shell_ui_kit::services::Services;

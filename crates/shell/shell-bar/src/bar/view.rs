@@ -4,7 +4,7 @@
 //! the person's styles were turned off (`StylesNotice`): it is the one surface every session has.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use ui_components::prelude::*;
 
 use super::app_name::AppName;

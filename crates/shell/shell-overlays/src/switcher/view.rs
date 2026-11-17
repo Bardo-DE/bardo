@@ -10,7 +10,8 @@
 //! `onhover` / `onactivate` as `Hover` / `Click`. Style nothing under `.ds-switcher*`.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::OutputInfo;
 use shell_kit::prelude::*;
 use shell_kit::switcher::app_switcher::AppKey;
 use shell_kit::switcher::app_switcher::SwitcherApp as Tile;

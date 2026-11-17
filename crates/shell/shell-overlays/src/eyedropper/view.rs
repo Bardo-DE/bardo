@@ -9,7 +9,7 @@
 
 use dioxus::html::input_data::MouseButton;
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::capture_pick::{AskId, Rgb8, loupe_at, pick_at};
 use shell_model::desktop::OutputShot;
 use shell_ui_kit::links::EyedropperLink;

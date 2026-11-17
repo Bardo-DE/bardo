@@ -1,7 +1,7 @@
 //! The layer configuration of the thirteen full-output sheets, from their presets: one table in
 //! place of a test per surface.
 
-use layer_shell_host::{
+use layer_shell_types::{
     Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
     RegionSpec,
 };

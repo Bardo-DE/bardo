@@ -5,7 +5,8 @@
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputInfo;
 use shell_model::desktop::{TrialAnswer, TrialId, seconds_left, until_next_second};
 use shell_ui_kit::links::{DisplayTrialLink, TrialRun};
 use shell_ui_kit::sheet_stage::{SheetStage, use_sheet_stage};

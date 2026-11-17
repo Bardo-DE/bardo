@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use layer_shell_host::{InputModality as SeatModality, Scale120};
+use layer_shell_types::{InputModality as SeatModality, Scale120};
 use ui_components::prelude::*;
 use ui_components::style::tokens::pixel::PixelToken;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};

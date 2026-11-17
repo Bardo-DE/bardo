@@ -128,7 +128,7 @@ fn a_faked_change_shows_its_own_level_and_another_outputs_does_not_show() {
     let mut running = start(file());
     running
         .link
-        .show(OsdKind::Volume, vec![layer_shell_host::OutputId(99)], None);
+        .show(OsdKind::Volume, vec![layer_shell_types::OutputId(99)], None);
     running.harness.advance(Duration::from_millis(60));
     assert_eq!(
         look(&running.harness).as_deref(),

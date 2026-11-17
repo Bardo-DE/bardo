@@ -2,7 +2,7 @@
 //! Empty Trash row asks for the action); every output's surface follows it; the surface that
 //! shows it writes the person's yes, and the daemon empties the Trash.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use tokio::sync::watch;
 
 use super::{Opening, Outbox, PanelLink, Reveal, Sent};
@@ -78,7 +78,7 @@ impl EmptyTrashLink {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     use super::EmptyTrashLink;
     use crate::links::OpenSerial;

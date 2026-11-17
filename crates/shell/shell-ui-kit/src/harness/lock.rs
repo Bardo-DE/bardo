@@ -7,7 +7,7 @@ use std::rc::Rc;
 
 use crate::settings::SettingsFeed;
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_settings::ShellFile;
 use tokio::sync::watch;
 use ui_components::style::kit::Styles;

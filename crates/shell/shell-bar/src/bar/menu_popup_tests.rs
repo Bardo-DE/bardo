@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::time::Duration;
 
 use dioxus::prelude::*;
-use layer_shell_host::{PopupPlacement, Rect as HostRect, Size as HostSize};
+use layer_shell_types::{PopupPlacement, Rect as HostRect, Size as HostSize};
 use shell_model::tray::{Check, TrayItemId, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
 use shell_model::units::Visibility;
 use shell_ui_kit::menu::PopupLook;

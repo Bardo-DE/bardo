@@ -7,7 +7,7 @@
 
 use std::time::Duration;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::apps::AppIndex;
 use shell_model::capture_pick::{
     AskId, AskedBy, CaptureCommand, CapturePicker, PermissionAsk, PermissionAsking,

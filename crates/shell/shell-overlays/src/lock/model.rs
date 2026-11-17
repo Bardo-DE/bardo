@@ -12,10 +12,10 @@ use ui_components::prelude::*;
 
 /// Caps Lock from layer-shell-host's live modifiers (`use_modifiers()`, published on keyboard focus
 /// and on every change, so it is known before the first key).
-pub fn caps_of(key: layer_shell_host::LockKey) -> CapsLock {
+pub fn caps_of(key: layer_shell_types::LockKey) -> CapsLock {
     match key {
-        layer_shell_host::LockKey::Locked => CapsLock::On,
-        layer_shell_host::LockKey::Unlocked => CapsLock::Off,
+        layer_shell_types::LockKey::Locked => CapsLock::On,
+        layer_shell_types::LockKey::Unlocked => CapsLock::Off,
     }
 }
 
@@ -111,8 +111,8 @@ mod tests {
 
     #[test]
     fn caps_lock_from_the_hosts_modifiers() {
-        assert_eq!(caps_of(layer_shell_host::LockKey::Locked), CapsLock::On);
-        assert_eq!(caps_of(layer_shell_host::LockKey::Unlocked), CapsLock::Off);
+        assert_eq!(caps_of(layer_shell_types::LockKey::Locked), CapsLock::On);
+        assert_eq!(caps_of(layer_shell_types::LockKey::Unlocked), CapsLock::Off);
     }
 
     #[test]

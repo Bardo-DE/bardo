@@ -1,6 +1,6 @@
 //! Auto-hide (design/10 §10.3.11, §10.4 "Reveal", §10.5.5). `Fixed` is auto-hide off.
 
-use layer_shell_host::{BlurSpec, ElementId, ExclusiveZone, RegionSpec};
+use layer_shell_types::{BlurSpec, ElementId, ExclusiveZone, RegionSpec};
 use shell_model::units::Cpx;
 use shell_ui_kit::autohide::{self, Change, Hold, Input, advance};
 use ui_components::base::time::stamp::Stamp;

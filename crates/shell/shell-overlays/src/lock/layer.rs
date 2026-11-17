@@ -1,7 +1,7 @@
 //! How layer-shell-host sets the lock surfaces up: their name prefix, `shell-lock`, so each is
 //! `shell-lock/<output>` (what `bardo-shell debug capture` and `debug stats` address).
 
-use layer_shell_host::LockConfig;
+use layer_shell_types::LockConfig;
 use shell_settings::ShellFile;
 
 /// The lock surfaces' configuration; nothing in the settings changes it yet.

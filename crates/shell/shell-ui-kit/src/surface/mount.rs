@@ -4,7 +4,7 @@ use std::fmt;
 use std::marker::PhantomData;
 
 use dioxus::prelude::{Element, use_context_provider};
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 
 use super::Surface;
 use crate::root::{SurfaceName, use_host_signals};
@@ -53,7 +53,7 @@ impl<S: Surface> fmt::Debug for MountProps<S> {
 )]
 pub fn mount<S: Surface>(props: MountProps<S>) -> Element {
     // Both provide into the component's context; the handles they return are not needed here.
-    let _ = ui_blitz::provide_host();
+    let _ = ui_host_hooks::provide_host();
     let _ = crate::root::provide_keymap();
     use_context_provider(|| SurfaceName(S::NAME));
     use_host_signals();

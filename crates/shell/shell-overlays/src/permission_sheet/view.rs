@@ -10,7 +10,7 @@
 //! `.ds-alert*`, `.ds-sheet*` or `.ds-button*`.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_launcher::AppId;
 use shell_model::capture_pick::{PermissionAsking, PermissionOutcome};
 use shell_services::capture_pick::CaptureService;

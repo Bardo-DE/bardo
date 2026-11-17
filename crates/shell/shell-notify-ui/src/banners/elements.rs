@@ -5,7 +5,7 @@
 //! is blurred. A card sliding out is still drawn, so it keeps its regions until the stack says
 //! it has gone.
 
-use layer_shell_host::{BlurSpec, ElementId, ElementRegion, RegionSpec};
+use layer_shell_types::{BlurSpec, ElementId, ElementRegion, RegionSpec};
 use shell_model::notifications::NotificationId;
 
 use super::layer::CARD_RADIUS;
@@ -79,7 +79,7 @@ fn region(note: NotificationId, part: CardPart, radius: i32, inflate: i32) -> El
 #[cfg(test)]
 mod tests {
     use super::{CardShape, Regions, element_regions};
-    use layer_shell_host::{BlurSpec, ElementId, ElementRegion, RegionSpec};
+    use layer_shell_types::{BlurSpec, ElementId, ElementRegion, RegionSpec};
     use shell_model::notifications::NotificationId;
 
     fn el(id: &str, radius: i32, inflate: i32) -> ElementRegion {

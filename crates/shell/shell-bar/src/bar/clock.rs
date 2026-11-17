@@ -3,7 +3,8 @@
 //! `MenuBarItem`, on while the center is open here.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputInfo;
 use shell_kit::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::root::pass_through::ExtraClass;

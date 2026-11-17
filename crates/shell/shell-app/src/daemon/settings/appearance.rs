@@ -8,7 +8,7 @@ use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
-use ui_blitz::TokioSpawner;
+use ui_host_hooks::TokioSpawner;
 use ui_settings::{AppearanceFile, Environment, SystemPrefsSource, SystemPrefsWatch};
 
 use super::store::report;

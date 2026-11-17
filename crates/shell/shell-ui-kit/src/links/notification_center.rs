@@ -3,7 +3,7 @@
 //! every output's center surface onto its own visibility, the way the power menu shares
 //! `PowerMenuLink`. The center carries nothing of its own, so it is a bare [`PanelLink`].
 
-use layer_shell_host::{KeyboardFocus, OutputId};
+use layer_shell_types::{KeyboardFocus, OutputId};
 use tokio::sync::watch;
 
 use super::{Opening, PanelLink, Reveal};
@@ -60,7 +60,7 @@ impl CenterLink {
 #[cfg(test)]
 mod tests {
     use crate::links::CenterLink;
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     const ONE: OutputId = OutputId(1);
     const TWO: OutputId = OutputId(2);

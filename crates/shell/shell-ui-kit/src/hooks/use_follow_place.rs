@@ -4,7 +4,8 @@
 //! them reset with the rest of its configuration, as `use_follow_layer` does.
 
 use dioxus::prelude::*;
-use layer_shell_host::{LayerSize, Margin, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::{LayerSize, Margin};
 
 /// Re-apply `size` and `margin` on this surface whenever they differ from the last ones applied.
 pub fn use_follow_place(size: LayerSize, margin: Margin) {

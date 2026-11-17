@@ -9,7 +9,7 @@
 //! under `.ds-alert*`, `.ds-sheet*` or `.ds-button*`.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_model::desktop::{KEEP_LABEL, REVERT_LABEL, TRIAL_TITLE, TrialAnswer, countdown_line};
 use shell_settings::confirm_arm;
 use shell_ui_kit::links::TrialRun;

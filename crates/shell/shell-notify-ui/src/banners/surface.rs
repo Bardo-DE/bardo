@@ -1,7 +1,7 @@
 //! The banner column as a [`Surface`]: one per output, spawned hidden, mapped while a card is up.
 
 use dioxus::prelude::Element;
-use layer_shell_host::{KeyboardFocus, LayerConfig, OutputId, OutputInfo};
+use layer_shell_types::{KeyboardFocus, LayerConfig, OutputId, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 

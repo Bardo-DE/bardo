@@ -6,8 +6,8 @@
 
 use shell_settings::ShellFile;
 use tokio::sync::watch;
-use ui_blitz::StylesGuard;
 use ui_components::style::kit::Styles;
+use ui_host_hooks::StylesGuard;
 use ui_settings::Environment;
 
 use crate::links::Outbox;

@@ -36,7 +36,7 @@ mod settings_publish_tests {
     use layer_shell_host::HostEvent;
     use shell_settings::ShellFile;
     use tokio::sync::watch;
-    use ui_blitz::TokioSpawner;
+    use ui_host_hooks::TokioSpawner;
 
     use super::publish_watched;
     use crate::daemon::msg::ShellMsg;

@@ -6,7 +6,8 @@
 //! whichever surface is on top and a press under a short card closes the launcher.
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputInfo;
 use ui_components::prelude::AppStyle;
 
 use super::layer::input;

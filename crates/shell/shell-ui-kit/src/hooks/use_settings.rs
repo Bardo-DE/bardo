@@ -1,7 +1,7 @@
 //! `use_settings` and `use_section`: `shell/settings.toml`, live.
 
 use dioxus::prelude::{ReadSignal, ReadableExt, use_context, use_memo};
-use layer_shell_host::use_watch;
+use layer_shell_hooks::use_watch;
 use shell_settings::ShellFile;
 
 use crate::settings::SettingsFeed;

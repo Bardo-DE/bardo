@@ -17,7 +17,7 @@
 //! `#[component]` prop at all: `TrayButton` reads it itself instead of receiving it).
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::bar::pointer::BarPointer;
 use shell_kit::prelude::*;
 use shell_model::tray::{TrayCommand, TrayIcon, TrayItem, TrayStatus};

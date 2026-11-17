@@ -15,8 +15,8 @@
 //! - [`words`] are the pure functions that say sizes, kinds and dates the way a person reads them.
 //! - [`places`], [`rows`] and [`menu`] are the pure mappings from the model to what quire draws:
 //!   the sidebar's sections, the table's selection and sort, the context menu's commands.
-//! - [`run`] opens the window; its `view` is `Ds`, `SplitView`, `Sidebar`, `Toolbar` and
-//!   `VirtualTable`, and nothing is drawn by hand.
+//! - [`App`] is the window's root; its `view` is `Ds`, `SplitView`, `Sidebar`, `Toolbar` and
+//!   `VirtualTable`, and nothing is drawn by hand. The `files` program opens the window with it.
 //!
 //! ```
 //! use files_ui::words::size_words;
@@ -37,7 +37,6 @@ pub mod places;
 mod preferences;
 mod requests;
 pub mod rows;
-mod run;
 pub mod settings;
 mod state;
 pub mod thumbs;
@@ -55,5 +54,4 @@ pub use launch::{AppearanceSource, Launch};
 pub use places::{Heading, PlaceKey, PlaceKind, Places, Sidebar};
 pub use preferences::Preferences;
 pub use requests::{Answer, Query, Reading, Request, RequestSender, Requests, channel};
-pub use run::{APP_ID, run};
 pub use view::{App, STYLE};

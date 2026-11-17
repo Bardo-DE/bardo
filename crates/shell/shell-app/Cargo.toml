@@ -43,6 +43,10 @@ rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "pr
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
+layer-shell-types = {path = "../../layer-shell/layer-shell-types"}
+layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
+ui-host-hooks = {path = "../../ui/ui-host-hooks"}
+shell-host-config = {path = "../shell-host-config"}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}

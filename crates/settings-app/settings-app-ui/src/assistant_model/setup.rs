@@ -7,19 +7,19 @@ use crate::env::Env;
 use crate::picker::{Picker, use_picker};
 use dioxus::prelude::*;
 use settings_app_model::{Clearing, PageKind, SetupAction, SetupAvailability, setup_availability};
-use ui_blitz::{AppHandle, use_app_handle};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::prelude::*;
 use ui_components::root::pass_through::ExtraClass;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::ControlSize;
+use ui_host_hooks::{AppControl, use_app_control};
 
 /// The step, under the frame: the picker's row and the two buttons.
 #[component]
 pub(crate) fn AssistantSetup() -> Element {
     let env = use_context::<Env>();
-    let app = use_app_handle();
+    let app = use_app_control();
     let Picker { state, ask } = use_picker();
     use_future({
         let client = env.client.clone();
@@ -79,7 +79,7 @@ fn availability_of(availability: SetupAvailability) -> Availability {
 
 /// Closes the window. `app` is the running app, absent in the harness, where there is no window
 /// to close.
-fn leave(app: Option<&AppHandle>) {
+fn leave(app: Option<&AppControl>) {
     if let Some(app) = app {
         // The loop having ended already is the same as the window being closed.
         let _ended = app.quit();

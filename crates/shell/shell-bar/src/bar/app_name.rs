@@ -1,7 +1,7 @@
 //! The frontmost app's name, the first bar title (ui 13/700): its menu lists the app's windows and Quit.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::prelude::*;
 use shell_model::ids::OutputName;
 use ui_components::host::measure::use_rect;

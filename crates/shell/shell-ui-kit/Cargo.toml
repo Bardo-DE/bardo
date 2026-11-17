@@ -23,11 +23,9 @@ ui-behaviour = {path = "../../ui/ui-behaviour"}
 keymap = {path = "../../keymap/keymap"}
 key-remap-client = {path = "../../input/key-remap-client"}
 shell-kit = {path = "../shell-kit"}
-ui-blitz = {path = "../../ui/ui-blitz"}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
-layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 # The test driver, for the `harness` feature.
 ui-harness = {path = "../../ui/ui-harness", optional = true}
 shell-search = {path = "../shell-search"}
@@ -54,6 +52,9 @@ thiserror = { workspace = true }
 # file is JSON.
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+layer-shell-types = {path = "../../layer-shell/layer-shell-types"}
+layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
+ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [features]
 # Fake services and the values they start at, for tests and demos (`harness`).

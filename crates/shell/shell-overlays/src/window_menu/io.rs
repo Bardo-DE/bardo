@@ -4,7 +4,8 @@
 //! [`shell_ui_kit::menu::use_context_menu`].
 
 use dioxus::prelude::*;
-use layer_shell_host::{OutputInfo, use_watch};
+use layer_shell_hooks::use_watch;
+use layer_shell_types::OutputInfo;
 use shell_model::desktop::WindowEntry;
 use shell_ui_kit::links::{MenuSerial, WindowMenuLink};
 use shell_ui_kit::menu::{PopupGeom, PopupLook, point_anchor, use_context_menu};

@@ -4,7 +4,7 @@
 //! to the [`CornerLink`].
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_ui_kit::links::{Corner as WhichCorner, CornerLink};
 use ui_behaviour::hot_corner::{Corner, CornerIn, CornerOut, CornerParams};
 use ui_components::machine::{MachineRef, use_machine};

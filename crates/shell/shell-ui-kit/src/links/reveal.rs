@@ -5,7 +5,7 @@
 
 use std::ops::Deref;
 
-use layer_shell_host::{KeyboardFocus, OutputId, Visibility};
+use layer_shell_types::{KeyboardFocus, OutputId, Visibility};
 
 use super::Shared;
 
@@ -230,7 +230,7 @@ impl<P: Clone + PartialEq> PanelLink<P> {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::{KeyboardFocus, OutputId, Visibility};
+    use layer_shell_types::{KeyboardFocus, OutputId, Visibility};
 
     use super::{OpenSerial, Opening, PanelFocus, Reveal};
 

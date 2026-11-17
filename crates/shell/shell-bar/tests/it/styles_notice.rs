@@ -8,9 +8,9 @@ use shell_bar::Bar;
 use shell_testkit::TempDir;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::ControlCenterLink;
-use ui_blitz::StylesGuard;
 use ui_components::style::kit::{Styles, UserStyle};
 use ui_harness::Input;
+use ui_host_hooks::StylesGuard;
 
 const CSS: &str = ".ds { --accent: red }";
 const SENTENCE: &str = "Your styles were turned off because bardo-shell could not start with them.";

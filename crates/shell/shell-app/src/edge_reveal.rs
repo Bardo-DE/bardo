@@ -11,7 +11,7 @@
 
 use std::collections::BTreeSet;
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::desktop::{
     DesktopCommand, DesktopView, FullScreenBar, Motion as WireMotion, ScreenEdge, Shown, SpaceKind,
 };
@@ -112,7 +112,7 @@ impl FullScreenPrefs {
 mod tests {
     use super::{FullScreenPrefs, Landing, apply, full_screens, landing};
     use account_core::SpaceId;
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
     use shell_model::desktop::{
         DesktopCommand, DesktopView, FullScreenBar, Motion as WireMotion, ScreenEdge, Shown,
         SpaceKind, SpaceView,

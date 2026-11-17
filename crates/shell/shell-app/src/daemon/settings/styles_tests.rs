@@ -8,9 +8,8 @@ use std::time::Duration;
 
 use layer_shell_host::HostEvent;
 use settings_store_fs::Store;
-use ui_blitz::StylesGuard;
-use ui_blitz::TokioSpawner;
 use ui_components::style::kit::{Styles, UserStyle};
+use ui_host_hooks::{StylesGuard, TokioSpawner};
 use ui_settings::AppearanceFile;
 
 use super::StyleKeeper;

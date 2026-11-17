@@ -11,7 +11,7 @@
 //! key), Tab, Shift+Tab and ⌘K from its `onkey` (after).
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_launcher::{ActionId, ClipKey, Item, LauncherMode, Preview, Section, preview_for};
 use shell_search::preview::clip_image;
 use ui_components::components::menus::palette::palette_claim::FieldKey;

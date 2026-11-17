@@ -5,9 +5,8 @@
 use std::cell::RefCell;
 use std::time::Instant;
 
-use layer_shell_host::{
-    CloseReason, HostCtx, HostEvent, KeyboardFocus, LayerOp, PalmrestAction, SurfaceId,
-};
+use layer_shell_host::{CloseReason, HostCtx, HostEvent, PalmrestAction};
+use layer_shell_types::{KeyboardFocus, LayerOp, SurfaceId};
 use settings_store_fs::Store;
 use shell_bar::Bar;
 use shell_ipc::request::Request;

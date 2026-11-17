@@ -8,7 +8,8 @@
 use std::rc::Rc;
 
 use dioxus::prelude::*;
-use layer_shell_host::{BlurSpec, RegionSpec, SurfaceHandle, use_watch};
+use layer_shell_hooks::{SurfaceHandle, use_watch};
+use layer_shell_types::{BlurSpec, RegionSpec};
 use ui_components::base::time::FRAME_SLACK;
 use ui_components::base::time::clock::sleep;
 use ui_components::prelude::*;

@@ -2,7 +2,7 @@
 
 use super::layer::config;
 use super::view::lock;
-use layer_shell_host::HostRoot;
+use layer_shell_hooks::HostRoot;
 use shell_ui_kit::links::Links;
 use shell_ui_kit::surface::LockSurface;
 

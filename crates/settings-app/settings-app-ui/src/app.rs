@@ -12,8 +12,8 @@ use settings_app_model::{Arrival, Notice, PageKind, arrival, assistant_model_pag
 use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
 use std::sync::Arc;
-use ui_blitz::{TokioSpawner, use_window_handle};
 use ui_components::prelude::*;
+use ui_host_hooks::{TokioSpawner, use_window_control};
 use ui_settings::use_environment;
 
 /// The Settings app. Reads its [`Env`] from the context the launcher provides.
@@ -27,7 +27,7 @@ pub fn App() -> Element {
     let query = use_signal(|| opening.query.clone());
     let link = AccountLink::provide(page, query);
     let extension_link = ExtensionLink::provide(page, query);
-    let handle = use_window_handle();
+    let handle = use_window_control();
     let files = use_signal({
         let env = env.clone();
         move || load_all(&env)

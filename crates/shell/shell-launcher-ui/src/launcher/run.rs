@@ -3,7 +3,8 @@
 //! so the app can take focus (the same two steps as the daemon's `shell_app::launch`, which a
 //! surface cannot reach). The insertion into the field is the panel's own (`events.rs`).
 
-use layer_shell_host::{OutputId, SurfaceHandle};
+use layer_shell_hooks::SurfaceHandle;
+use layer_shell_types::OutputId;
 use shell_model::clipboard::ClipboardCommand;
 use shell_model::companion::CompanionCommand;
 use shell_model::launch::{LaunchCommand, OpenRequest};

@@ -3,7 +3,7 @@
 //! from which the panel lists the apps; every output's panel surface follows both. The surface
 //! that shows the panel writes the app the person confirmed, and the daemon carries it out.
 
-use layer_shell_host::OutputId;
+use layer_shell_types::OutputId;
 use shell_model::desktop::DesktopView;
 use tokio::sync::watch;
 
@@ -113,7 +113,7 @@ impl ForceQuitLink {
 
 #[cfg(test)]
 mod tests {
-    use layer_shell_host::OutputId;
+    use layer_shell_types::OutputId;
 
     use super::{ForceQuitLink, ForceQuitShown};
     use crate::links::{OpenSerial, Reveal};

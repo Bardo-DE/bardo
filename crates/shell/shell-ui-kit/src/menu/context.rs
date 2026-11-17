@@ -5,7 +5,7 @@
 //! `VirtualDom` of its own, so it provides quire's document host itself.
 
 use dioxus::prelude::*;
-use layer_shell_host::use_surface;
+use layer_shell_hooks::use_surface;
 use tokio::sync::mpsc;
 
 use super::{MenuModel, MenuPopup, PopupLook, PopupRoom};
@@ -38,7 +38,7 @@ pub struct ContextMenuLink<Model: MenuModel> {
 )]
 pub fn context_menu_popup<Model: MenuModel>() -> Element {
     // Both provide into the component's context; the handles they return are not needed here.
-    let _ = ui_blitz::provide_host();
+    let _ = ui_host_hooks::provide_host();
     let _ = crate::root::provide_keymap();
     let link = use_context::<ContextMenuLink<Model>>();
     let surface = use_surface();

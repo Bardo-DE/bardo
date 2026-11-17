@@ -6,7 +6,7 @@
 //! `BarPointer` hears. Right-click Edit Space waits for the Space editor popup.
 
 use dioxus::prelude::*;
-use layer_shell_host::OutputInfo;
+use layer_shell_types::OutputInfo;
 use shell_kit::bar::pointer::BarPointer;
 use shell_kit::prelude::*;
 use shell_model::ids::OutputName;

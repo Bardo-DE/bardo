@@ -245,7 +245,7 @@ fn host_config(dirs: &Dirs, route: layer_shell_host::WaylandRoute) -> HostConfig
     HostConfig {
         first_mouse_window_ms: layer_shell_host::Ms(FIRST_MOUSE_WINDOW_MS),
         route,
-        ..shell_ui_kit::root::host_config(dirs)
+        ..shell_host_config::host_config(dirs)
     }
 }
 
