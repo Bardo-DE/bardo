@@ -110,24 +110,18 @@ impl Fixture {
         self.commands.flush().unwrap_or_else(|e| panic!("{e}"));
     }
 
-    /// The item's log once it has `line`, within [`WAIT`].
+    /// The item's log once it has `line`.
     fn logged(&self, line: &str) -> Vec<String> {
-        let end = Instant::now() + WAIT;
-        loop {
-            let lines: Vec<String> = std::fs::read_to_string(&self.log)
+        let mut lines: Vec<String> = Vec::new();
+        base_testkit::eventually_blocking(&format!("the item logged {line:?}"), || {
+            lines = std::fs::read_to_string(&self.log)
                 .unwrap_or_default()
                 .lines()
                 .map(str::to_owned)
                 .collect();
-            if lines.iter().any(|l| l == line) {
-                return lines;
-            }
-            assert!(
-                Instant::now() < end,
-                "the item never logged {line:?}: {lines:?}"
-            );
-            std::thread::sleep(Duration::from_millis(50));
-        }
+            lines.iter().any(|l| l == line)
+        });
+        lines
     }
 }
 

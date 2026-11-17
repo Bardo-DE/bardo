@@ -5,7 +5,7 @@
 //! `Env::keycap_unit_wait`. The tests need a `dbus-daemon` and skip, saying so, without one.
 
 use std::sync::{Arc, Mutex};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use shell_model::apps::AppIndex;
 use shell_model::keycap::{Attention, KeycapCommand, KeycapState, notice_text};
@@ -20,6 +20,8 @@ use tokio::sync::{mpsc, watch};
 use zbus::interface;
 use zbus::zvariant::OwnedObjectPath;
 
+/// How long a thing that must not happen is given to happen: a best-effort absence check, as
+/// nothing announces a call or a notice that never comes.
 const SHORT: Duration = Duration::from_millis(400);
 const LONG: Duration = Duration::from_secs(5);
 
@@ -287,7 +289,6 @@ async fn retry_resets_the_failure_then_restarts_the_unit() {
     rig.control
         .send(KeycapCommand::Retry)
         .unwrap_or_else(|e| panic!("{e}"));
-    let give_up = Instant::now() + LONG;
     let writes = || {
         lock(&shared)
             .calls
@@ -296,10 +297,7 @@ async fn retry_resets_the_failure_then_restarts_the_unit() {
             .cloned()
             .collect::<Vec<_>>()
     };
-    while writes().len() < 2 {
-        assert!(Instant::now() < give_up, "heard only {:?}", writes());
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually("the unit was reset and restarted", || writes().len() >= 2).await;
     assert_eq!(
         writes(),
         [

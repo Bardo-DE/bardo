@@ -38,6 +38,12 @@ impl<C> Control<C> {
     pub fn send(&self, command: C) -> Result<(), ServiceError> {
         self.tx.send(command).map_err(|_| ServiceError::Gone)
     }
+
+    /// Resolves once the service's receiver has been dropped: the service has stopped.
+    #[cfg(test)]
+    pub(crate) async fn closed(&self) {
+        self.tx.closed().await;
+    }
 }
 
 #[cfg(test)]

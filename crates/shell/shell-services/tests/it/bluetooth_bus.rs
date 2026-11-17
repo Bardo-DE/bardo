@@ -90,6 +90,8 @@ fn bluez_starting_late_dying_and_returning_is_followed() {
         // bardo-shell first: no org.bluez yet.
         let service = spawn::<BluetoothService>(&tokio::runtime::Handle::current(), &env, ());
         let mut rx = service.state;
+        // Best-effort absence check: the service says nothing when it finds no BlueZ, so it is
+        // given a moment to have said something wrong.
         tokio::time::sleep(Duration::from_millis(500)).await;
         assert_eq!(rx.borrow().presence, Presence::Absent);
 

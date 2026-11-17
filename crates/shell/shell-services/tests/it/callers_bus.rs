@@ -272,6 +272,8 @@ async fn only_an_account_service_that_owns_its_own_name_drives_the_accounts_shee
                 assert!(opened.is_ok(), "{name}: {opened:?}");
             }
             Refused => {
+                // Best-effort absence check: the refused caller's name holder may be nobody the
+                // test can send a legitimate marker through, so a draw is given QUIET to show.
                 tokio::time::sleep(QUIET).await;
                 assert!(
                     shell.sheet.state.borrow().open.is_empty(),
@@ -342,6 +344,7 @@ async fn only_intentd_that_owns_its_name_asks_the_confirmation_sheet() {
             Refused => {
                 let withdrawn = proxy.cancel("c-1").await;
                 assert_eq!(verdict(&withdrawn), Refused, "{name}: cancel");
+                // Best-effort absence check, as above.
                 tokio::time::sleep(QUIET).await;
                 assert!(
                     desk.seat.state.borrow().sheets.queue.is_empty(),

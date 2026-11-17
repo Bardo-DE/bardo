@@ -73,6 +73,7 @@ async fn a_renamed_screenshot_is_current_with_a_preview_and_a_part_file_is_not()
     assert!(watching.is_some(), "the folder is watched");
 
     std::fs::copy(FIXTURE, dir.join("Screenshot_a.png.part")).expect("copied"); // test-only
+    // Best-effort absence check: a file that is ignored announces nothing.
     tokio::time::sleep(Duration::from_millis(300)).await;
     assert_eq!(rx.borrow().current, None, "a .part file is nothing");
 
@@ -123,10 +124,7 @@ async fn opening_and_trashing_a_shot_are_recorded_never_run() {
     control
         .send(ShotCommand::Leave(id, ShotLeave::Opened))
         .expect("sent"); // test-only
-    let end = Instant::now() + Duration::from_secs(2);
-    while children.started().is_empty() && Instant::now() < end {
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually("the opener was recorded", || !children.started().is_empty()).await;
     let argv: Vec<_> = children.started().into_iter().map(|s| s.argv).collect();
     assert_eq!(
         argv,

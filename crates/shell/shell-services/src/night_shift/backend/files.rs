@@ -531,8 +531,15 @@ mod tests {
         let dir = TempDir::new("night-shift-same");
         write_light(dir.path(), &warm()).unwrap_or_else(|e| panic!("{e}"));
         let path = dir.path().join(SETTINGS);
+        // Dated long ago: a second write would show as a newer time at any clock resolution.
+        let long_ago =
+            std::time::SystemTime::UNIX_EPOCH + std::time::Duration::from_secs(1_000_000);
+        std::fs::File::options()
+            .write(true)
+            .open(&path)
+            .and_then(|file| file.set_modified(long_ago))
+            .unwrap_or_else(|e| panic!("{e}"));
         let first = std::fs::metadata(&path).and_then(|m| m.modified());
-        std::thread::sleep(std::time::Duration::from_millis(20));
         write_light(dir.path(), &warm()).unwrap_or_else(|e| panic!("{e}"));
         let second = std::fs::metadata(&path).and_then(|m| m.modified());
         assert_eq!(first.ok(), second.ok(), "casement's watch is not woken");

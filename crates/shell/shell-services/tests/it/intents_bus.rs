@@ -16,6 +16,7 @@ use action_core::{
 use action_dbus::{CONFIRM_BUS, ConfirmProxy, INTENTS_BUS};
 use action_vocab::{ActionRef, LabelText, Seconds};
 use base_ids::Count;
+use base_testkit::eventually;
 use permission_core::{AskReason, LimitLevel, LimitNote, StandingGrantId};
 use provenance::{ActionName, Actor, AppName, Effect, InputProof, SpaceId};
 use shell_launcher::WindowKey;
@@ -285,15 +286,6 @@ impl Desk {
     }
 }
 
-/// Poll `ok` until it holds, for at most [`WAIT`].
-async fn eventually(what: &str, ok: impl Fn() -> bool) {
-    let start = std::time::Instant::now();
-    while !ok() {
-        assert!(start.elapsed() < WAIT, "timed out waiting for {what}");
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-}
-
 fn answer_of(body: &str) -> ConfirmAnswer {
     serde_json::from_str(body).unwrap_or_else(|e| panic!("{body}: {e}"))
 }
@@ -321,6 +313,8 @@ async fn a_seat_in_a_passive_environment_owns_no_name() {
         NameClaims::Passive,
     )
     .await;
+    // Best-effort absence check: a name never claimed announces nothing, so the seat is given a
+    // moment to have claimed one.
     tokio::time::sleep(Duration::from_millis(300)).await;
     let dbus = fdo::DBusProxy::new(&desk.intentd)
         .await
@@ -947,7 +941,8 @@ async fn a_screenshot_answers_with_the_path_the_watch_saw() {
             .recv()
             .await
             .unwrap_or_else(|| panic!("a call"));
-        // The tool ran; the folder watch then sees the file.
+        // The tool ran; the folder watch then sees the file. The pause stands in for the watch's
+        // own delay, which the screenshot wait in the code under test has to bear.
         let _ = call.reply.send(Ok(()));
         tokio::time::sleep(Duration::from_millis(100)).await;
         shots_tx.send_modify(|s| {

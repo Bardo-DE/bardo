@@ -177,14 +177,8 @@ async fn notice_shown(shell: &mut Shell) -> NotificationId {
     shown_for(&shell.notes.state.borrow(), &dataset()).unwrap_or_else(|| panic!("it left"))
 }
 
-async fn until(what: &str, mut done: impl FnMut() -> bool) {
-    let waited = tokio::time::timeout(SETTLE, async {
-        while !done() {
-            tokio::time::sleep(Duration::from_millis(20)).await;
-        }
-    })
-    .await;
-    assert!(waited.is_ok(), "{what}");
+async fn until(what: &str, done: impl FnMut() -> bool) {
+    base_testkit::eventually(what, done).await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -223,8 +217,8 @@ async fn a_hold_is_told_opens_settings_at_the_account_and_is_withdrawn_when_it_e
         .await
     );
 
-    // A person is slower than the service's reading of the notes.
-    tokio::time::sleep(Duration::from_millis(150)).await;
+    // The service reads the notes' current notice before it weighs a press, so the press needs
+    // no head start over it.
     let _ = shell
         .notes
         .control

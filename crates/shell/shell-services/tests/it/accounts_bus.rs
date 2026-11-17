@@ -23,7 +23,9 @@ use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::watch;
 
 const SETTLE: Duration = Duration::from_secs(5);
-/// How long a thing that must not happen is given to happen.
+/// How long a thing that must not happen is given to happen. A best-effort absence check: nothing
+/// announces that the service has weighed and refused a press, so the tests wait this long and
+/// look; a slow machine can only make them pass wrongly, never fail.
 const QUIET: Duration = Duration::from_millis(600);
 
 async fn wait_for<T>(receiver: &mut watch::Receiver<T>, want: impl Fn(&T) -> bool) -> bool {
@@ -109,10 +111,9 @@ async fn needing(shell: &mut Shell, count: usize) -> bool {
     .await
 }
 
-/// The person presses the notice's button. A person is slower than the service's reading of the
-/// notes (it keeps the id when it first sees the notice), so the press waits a beat.
+/// The person presses the notice's button. The service reads the notes' current notice before it
+/// weighs a press, so the press needs no head start over it.
 async fn press(shell: &Shell, id: NotificationId) {
-    tokio::time::sleep(Duration::from_millis(150)).await;
     let _ = shell
         .notes
         .control
@@ -124,13 +125,11 @@ async fn press(shell: &Shell, id: NotificationId) {
 }
 
 async fn until_reauthenticated(accountd: &FakeAccountd, times: usize) -> bool {
-    tokio::time::timeout(SETTLE, async {
-        while accountd.reauthentications() < times {
-            tokio::time::sleep(Duration::from_millis(20)).await;
-        }
+    base_testkit::eventually("accountd was asked to sign in again", || {
+        accountd.reauthentications() >= times
     })
-    .await
-    .is_ok()
+    .await;
+    true
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -226,6 +225,8 @@ async fn a_refusal_past_the_backoff_waits_for_the_name_to_change() {
     // Five refusals outlast the four waits: only a new owner of the name starts it over.
     let first = FakeAccountd::start(&bus, "ok", Listing::Refusing(5, vec![])).await;
     let mut shell = shell(&bus).await;
+    // Best-effort absence check: nothing announces that the service has given up, so it is given
+    // longer than the four waits it tries again after.
     tokio::time::sleep(Duration::from_secs(3)).await;
     assert!(!shell.accounts.state.borrow().present);
     drop(first);

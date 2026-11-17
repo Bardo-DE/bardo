@@ -186,20 +186,11 @@ async fn where_sill_warms_monitors_casement_is_told_to_leave_them_alone_and_warm
         monitor(5, "DP-1"),
         monitor(6, "HDMI-A-1"),
     ]));
-    let both = tokio::time::timeout(SETTLE, async {
-        loop {
-            let listed = skip_in(&settings);
-            if listed.len() == 2 {
-                break listed;
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
+    let both = base_testkit::eventually_some("both monitors listed in the settings", || {
+        Some(skip_in(&settings)).filter(|listed| listed.len() == 2)
     })
     .await;
-    assert_eq!(
-        both.ok(),
-        Some(vec!["DP-1".to_owned(), "HDMI-A-1".to_owned()])
-    );
+    assert_eq!(both, vec!["DP-1".to_owned(), "HDMI-A-1".to_owned()]);
 
     let _ = service
         .control

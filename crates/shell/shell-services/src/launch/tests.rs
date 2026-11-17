@@ -149,10 +149,10 @@ async fn opening_with_no_session_records_the_opener_and_starts_nothing() {
             .unwrap_or_else(|e| panic!("{e}"));
     }
 
-    let end = tokio::time::Instant::now() + Duration::from_secs(5);
-    while children.started().len() < targets.len() && tokio::time::Instant::now() < end {
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
+    base_testkit::eventually("every target is handed to an opener", || {
+        children.started().len() >= targets.len()
+    })
+    .await;
     let started = children.started();
     let opened: Vec<Vec<OsString>> = started.iter().map(|s| s.argv.clone()).collect();
     let want = [

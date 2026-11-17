@@ -32,7 +32,8 @@ use zbus::export::futures_core::Stream;
 use crate::callers_support::{Introduced, Role, Who};
 
 const SETTLE: Duration = Duration::from_secs(5);
-/// How long a thing that must not happen is given to happen.
+/// How long the claim of a name the environment must not take is given to show. A best-effort
+/// absence check: a claim never made announces nothing.
 const QUIET: Duration = Duration::from_millis(500);
 
 async fn wait_for<T>(receiver: &mut watch::Receiver<T>, want: impl Fn(&T) -> bool) -> bool {
@@ -302,9 +303,18 @@ async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
     serving(&mut shell).await;
     let mut inputs = inputs_of(&accountd).await;
     let sheet = host(&accountd).await;
-    let opened = |shell: &mut Shell| {
-        std::iter::from_fn(|| shell.launched.try_recv().ok()).collect::<Vec<_>>()
-    };
+    // The next `count` launches the shell asks for, waited for.
+    async fn opened(shell: &mut Shell, count: usize) -> Vec<LaunchCommand> {
+        let mut got = Vec::new();
+        while got.len() < count {
+            let next = tokio::time::timeout(base_testkit::GENEROUS, shell.launched.recv())
+                .await
+                .expect("the shell asked to open the page")
+                .expect("the launch channel stayed open");
+            got.push(next);
+        }
+        got
+    }
     let page = || {
         LaunchCommand::Open(shell_model::launch::OpenRequest {
             target: shell_launcher::OpenTarget::Url("https://accounts.example.org/auth".to_owned()),
@@ -320,9 +330,8 @@ async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
             == 1)
         .await
     );
-    tokio::time::sleep(QUIET).await;
     assert_eq!(
-        opened(&mut shell),
+        opened(&mut shell, 1).await,
         vec![page()],
         "the first open is the shell's"
     );
@@ -336,9 +345,8 @@ async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
         .update("accountd-0", BROWSER)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    tokio::time::sleep(QUIET).await;
     assert_eq!(
-        opened(&mut shell),
+        opened(&mut shell, 1).await,
         vec![page()],
         "the repeat opens it again"
     );
@@ -373,13 +381,10 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
         other => panic!("{what}: {other:?}"),
     };
     refused(sheet_as_forger.open("evil", "", &providers()).await, "Open");
-    tokio::time::sleep(QUIET).await;
-    assert!(
-        shell.sheet.state.borrow().open.is_empty(),
-        "a forged Open drew"
-    );
 
-    // accountd's own sheet: the forger can neither change nor take it down.
+    // accountd's own sheet: the forger can neither change nor take it down. The forged Open was
+    // answered before this one is sent, so a draw it caused would be in the state by the time
+    // this sheet shows: waiting for exactly one open sheet rules it out.
     let sheet = host(&accountd).await;
     sheet
         .open("accountd-0", "", &providers())
@@ -388,7 +393,8 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
     assert!(
         wait_for(&mut shell.sheet.state, |s: &AccountsSheets| s.open.len()
             == 1)
-        .await
+        .await,
+        "a forged Open drew"
     );
     refused(
         sheet_as_forger.update("accountd-0", &form()).await,

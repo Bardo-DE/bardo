@@ -415,6 +415,7 @@ async fn an_end_signal_from_a_program_that_is_not_voiced_ends_nothing() {
     desk.voiced_becomes(voice_support::VoicedIs::OnlyOwnsTheName);
     desk.end_signal(1, &UtteranceEnd::Cancelled(CancelCause::Shell))
         .await;
+    // Best-effort absence check: a signal that is ignored announces nothing.
     tokio::time::sleep(std::time::Duration::from_millis(500)).await;
     assert!(
         matches!(desk.voice.state.borrow().phase, Phase::Live(_)),

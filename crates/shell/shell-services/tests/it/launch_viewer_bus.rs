@@ -64,12 +64,12 @@ fn launcher(
     (control, children)
 }
 
-/// The command lines `children` was asked to start, once there is one (or `WAIT` has gone).
+/// The command lines `children` was asked to start, once there is one.
 async fn started_within(children: &RecordedChildren) -> Vec<Vec<OsString>> {
-    let end = tokio::time::Instant::now() + WAIT;
-    while children.started().is_empty() && tokio::time::Instant::now() < end {
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually("the launcher started a command", || {
+        !children.started().is_empty()
+    })
+    .await;
     children.started().into_iter().map(|s| s.argv).collect()
 }
 

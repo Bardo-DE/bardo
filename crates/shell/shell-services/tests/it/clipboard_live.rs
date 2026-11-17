@@ -90,6 +90,8 @@ fn without_a_compositor_history_is_on_but_not_connected() {
     wait(&rt, &mut history, "history on", |h| {
         h.status.mode == HistoryMode::Memory
     });
+    // Best-effort absence check: the service says nothing when no compositor answers, so it is
+    // given a moment to have connected.
     std::thread::sleep(Duration::from_millis(300));
     let shown = history.borrow().clone();
     assert_eq!(shown.status.protocol, ClipProtocol::NotConnected);
@@ -119,6 +121,7 @@ fn the_history_follows_the_nested_clipboard() {
 
     // A password manager's copy is never kept.
     let mut secret = secret_source(&socket);
+    // Best-effort absence check: a copy that is skipped announces nothing.
     std::thread::sleep(Duration::from_millis(500));
     assert_eq!(
         history.borrow().entries.len(),
@@ -130,12 +133,11 @@ fn the_history_follows_the_nested_clipboard() {
     control
         .send(ClipboardCommand::Offer(key))
         .expect("the service listens");
-    let pasted = (0..50).find_map(|_| {
-        std::thread::sleep(Duration::from_millis(100));
-        (paste_text(&socket) == MADE_UP.as_bytes()).then_some(())
+    base_testkit::eventually_blocking("wl-paste read the offered entry", || {
+        paste_text(&socket) == MADE_UP.as_bytes()
     });
-    assert!(pasted.is_some(), "wl-paste did not read the offered entry");
     let _ = secret.wait();
+    // Best-effort absence check: a duplicate that is not made announces nothing.
     std::thread::sleep(Duration::from_millis(300));
     let shown = history.borrow().clone();
     assert_eq!(shown.entries.len(), 1, "offering back does not duplicate");

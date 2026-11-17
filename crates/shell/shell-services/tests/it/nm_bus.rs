@@ -284,13 +284,10 @@ async fn until<T>(rx: &mut watch::Receiver<T>, what: &str, ok: impl FnMut(&T) ->
 }
 
 async fn calls_include(shared: &Shared, wanted: &str) {
-    for _ in 0..100 {
-        if lock(shared).calls.iter().any(|c| c == wanted) {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    panic!("never heard {wanted}: {:?}", lock(shared).calls);
+    base_testkit::eventually(&format!("the stand-in heard {wanted}"), || {
+        lock(shared).calls.iter().any(|c| c == wanted)
+    })
+    .await;
 }
 
 #[test]
@@ -355,13 +352,10 @@ fn wifi_reads_the_device_and_carries_out_commands() {
         send(WifiCommand::Disconnect);
         calls_include(&shared, "Disconnect").await;
         send(WifiCommand::Radio(Radio::Off));
-        for _ in 0..100 {
-            if !lock(&shared).wireless_enabled {
-                return;
-            }
-            tokio::time::sleep(Duration::from_millis(50)).await;
-        }
-        panic!("WirelessEnabled was never set to false");
+        base_testkit::eventually("WirelessEnabled was set to false", || {
+            !lock(&shared).wireless_enabled
+        })
+        .await;
     });
 }
 
@@ -376,7 +370,8 @@ fn wifi_follows_networkmanager_that_starts_after_the_shell() {
         let env = env_for(&bus, &scratch);
         let handle = spawn::<WifiService>(&tokio::runtime::Handle::current(), &env, ());
         let mut rx = handle.state;
-        // No NetworkManager yet: the service waits instead of ending.
+        // No NetworkManager yet: the service waits instead of ending. Best-effort absence check:
+        // nothing announces a device that is not there, so the service is given a moment.
         tokio::time::sleep(Duration::from_millis(500)).await;
         assert_eq!(rx.borrow().device, Presence::Absent);
 

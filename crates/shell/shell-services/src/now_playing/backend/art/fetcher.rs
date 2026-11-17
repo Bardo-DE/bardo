@@ -175,12 +175,13 @@ mod tests {
     /// A job that counts its runs and leaves the cover where it was asked to.
     async fn make(runs: &AtomicUsize, at: &Path) -> bool {
         runs.fetch_add(1, Ordering::SeqCst);
-        // Long enough for the other job to be waiting for its turn.
+        // The paused clock moves on only when both jobs are idle: the other job is waiting for
+        // its turn by then.
         tokio::time::sleep(std::time::Duration::from_millis(50)).await;
         std::fs::write(at, b"cover").is_ok()
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn two_jobs_for_one_cover_fetch_it_once() {
         let dir = TempDir::new("art-once");
         let (turns, slots) = (Turns::default(), Semaphore::new(2));
@@ -193,7 +194,7 @@ mod tests {
         assert_eq!(runs.load(Ordering::SeqCst), 1, "one fetch for one cover");
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn jobs_for_different_covers_each_run() {
         let dir = TempDir::new("art-each");
         let (turns, slots) = (Turns::default(), Semaphore::new(2));

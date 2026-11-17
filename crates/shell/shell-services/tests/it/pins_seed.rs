@@ -159,14 +159,19 @@ async fn an_edit_of_layout_toml_reaches_the_dock() {
     let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     let (mut pins, _apps, file) = start(&scratch);
-    // Let the first read and the watch settle before the edit.
-    tokio::time::sleep(SETTLE / 4).await;
-    std::fs::write(
-        &file,
-        "version = 1\n[[dock]]\nkind = \"quire.dock.app\"\napp = \"btop\"\n",
-    )
-    .unwrap_or_else(|e| panic!("{e}"));
-    assert!(pinned_within(&mut pins, SETTLE, |p| ids(p) == ["btop"]).await);
+    // Nothing announces that the watch is on: the edit is made again until the dock shows it.
+    let deadline = base_testkit::Deadline::generous();
+    loop {
+        std::fs::write(
+            &file,
+            "version = 1\n[[dock]]\nkind = \"quire.dock.app\"\napp = \"btop\"\n",
+        )
+        .unwrap_or_else(|e| panic!("{e}"));
+        if pinned_within(&mut pins, SETTLE / 4, |p| ids(p) == ["btop"]).await {
+            break;
+        }
+        assert!(!deadline.passed(), "the edit never reached the dock");
+    }
 }
 
 #[tokio::test(flavor = "multi_thread")]

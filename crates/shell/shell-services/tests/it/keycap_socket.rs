@@ -32,6 +32,8 @@ use shell_services::service::spawn;
 use shell_testkit::TempDir;
 use tokio::sync::{mpsc, watch};
 
+/// How long a thing that must not happen is given to happen: a best-effort absence check, as
+/// nothing announces a notice or a state change that never comes.
 const SHORT: Duration = Duration::from_millis(300);
 const LONG: Duration = Duration::from_secs(5);
 

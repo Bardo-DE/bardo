@@ -122,20 +122,13 @@ impl FakeApp {
             .collect()
     }
 
-    /// The log once it has `line`, within [`WAIT`].
+    /// The log once it has `line`.
     async fn logged(&self, line: &str) -> Vec<String> {
-        let end = Instant::now() + WAIT;
-        loop {
+        base_testkit::eventually_some(&format!("the app logged {line:?}"), || {
             let lines = self.lines();
-            if lines.iter().any(|l| l == line) {
-                return lines;
-            }
-            assert!(
-                Instant::now() < end,
-                "the app never logged {line:?}: {lines:?}"
-            );
-            tokio::time::sleep(Duration::from_millis(50)).await;
-        }
+            lines.iter().any(|l| l == line).then_some(lines)
+        })
+        .await
     }
 }
 
@@ -300,6 +293,8 @@ async fn an_app_with_no_owner_has_no_menu_until_one_appears_and_none_after_it_le
     let late = MenuApp("test.app".to_owned());
 
     follow(&handle, Some("test.app"));
+    // Best-effort absence check: the service says nothing when it finds no menu, so it is given
+    // time to have shown a wrong one.
     tokio::time::sleep(Duration::from_millis(800)).await;
     assert_eq!(
         *handle.state.borrow(),
@@ -828,6 +823,8 @@ async fn a_menu_served_by_another_program_than_the_apps_is_neither_listed_nor_cl
     );
     let clicked = agent.menu.activate(None, "21", None).await;
     assert!(matches!(clicked, Err(MenuFault::NoMenu)), "{clicked:?}");
+    // Best-effort absence check: the squatter is another process, and a click it never gets
+    // leaves nothing to wait for.
     tokio::time::sleep(Duration::from_millis(300)).await;
     assert!(
         !squatter.lines().iter().any(|l| l.starts_with("Event ")),
@@ -880,6 +877,8 @@ async fn the_bar_shows_no_menu_for_a_program_other_than_the_one_the_compositor_r
     });
     let handle = service_seeing(&bus, scratch.path(), &callers, receiver);
     follow(&handle, Some("test.app"));
+    // Best-effort absence check: the service says nothing when it finds no menu, so it is given
+    // time to have shown a wrong one.
     tokio::time::sleep(Duration::from_millis(800)).await;
     assert_eq!(
         *handle.state.borrow(),

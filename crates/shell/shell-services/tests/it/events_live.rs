@@ -112,7 +112,8 @@ fn a_file_and_a_collection_are_read_and_an_edit_is_read_again_within_a_second() 
             }
         );
 
-        // Let the watch settle before the edit, then time the edit alone.
+        // Let the watch settle before the edit, then time the edit alone. Nothing announces that
+        // the file watch is on, and the test times the first edit, so this is a fixed head start.
         tokio::time::sleep(Duration::from_millis(200)).await;
         let edited = std::time::Instant::now();
         save(&file, &calendar("a", "Lunch with Mei", day));

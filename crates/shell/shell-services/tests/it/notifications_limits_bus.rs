@@ -248,6 +248,8 @@ fn a_sender_that_floods_is_refused_and_its_banners_are_capped() {
         );
         // Callers are counted by process, so a second connection from this test is the same
         // caller (another process passing is `senders.rs`' unit tests): its allowance comes back.
+        // The allowance refills by the service's own clock, which a test cannot move: this waits
+        // the refill out in real time.
         let refill = u64::try_from(SENDER_REFILL_MS).unwrap_or(0);
         tokio::time::sleep(std::time::Duration::from_millis(refill * 2)).await;
         let later = connect(&bus).await;

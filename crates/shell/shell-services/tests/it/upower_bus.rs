@@ -188,6 +188,8 @@ fn the_three_follow_a_upower_that_starts_late_and_leaves() {
         let (mut battery_rx, mut profiles_rx, mut kbd_rx) =
             (battery.state, profiles.state, kbd.state);
         // Nothing is on the bus yet: the services wait instead of ending.
+        // Best-effort absence check: a UPower that is not there announces nothing, so the
+        // services are given a moment to have said something wrong.
         tokio::time::sleep(Duration::from_millis(300)).await;
         assert_eq!(battery_rx.borrow().presence, Presence::Absent);
 
@@ -217,12 +219,10 @@ fn the_three_follow_a_upower_that_starts_late_and_leaves() {
 
         // A command reaches the daemon.
         let _ = kbd.control.send(KbdCommand::Set(Percent(100)));
-        for _ in 0..100 {
-            if lock(&shared).kbd_steps == [3] {
-                break;
-            }
-            tokio::time::sleep(Duration::from_millis(50)).await;
-        }
+        base_testkit::eventually("the daemon was asked for the step", || {
+            lock(&shared).kbd_steps == [3]
+        })
+        .await;
         assert_eq!(lock(&shared).kbd_steps, [3]);
 
         // UPower leaves: all three go back to absent.

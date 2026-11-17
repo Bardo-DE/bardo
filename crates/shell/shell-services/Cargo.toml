@@ -92,6 +92,7 @@ percent-encoding = { workspace = true }
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 account-capability = {path = "../../accounts/account-capability"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
 # A caller that is only a claim (`BusPeers::introduce`): the tests name who their stand-ins are.
@@ -104,6 +105,8 @@ action-fake = {path = "../../actions/action-fake"}
 action-checkpoint = {path = "../../actions/action-checkpoint"}
 permission-policy = {path = "../../actions/permission-policy"}
 tracing = { workspace = true }
+# `start_paused` and `advance` for the tests of timers.
+tokio = {version = "1", features = ["test-util"]}
 
 [lints]
 workspace = true

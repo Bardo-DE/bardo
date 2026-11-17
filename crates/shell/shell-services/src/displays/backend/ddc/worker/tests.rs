@@ -1,5 +1,4 @@
 use std::sync::mpsc;
-use std::time::Duration;
 
 use shell_model::displays::ddc::debounce::Write;
 use shell_model::displays::ddc::{Endpoint, Feature, Level};
@@ -100,25 +99,25 @@ fn a_burst_of_writes_reaches_the_bus_once_with_the_latest_value() {
             .unwrap_or_else(|e| panic!("{e}"));
     }
     // The cache follows at once, before any write.
-    std::thread::sleep(Duration::from_millis(30));
-    let cached = displays
-        .borrow()
-        .first()
-        .and_then(|d| d.controls.brightness);
-    assert_eq!(
-        cached,
-        Some(Level {
-            value: 25,
-            max: 100
-        })
-    );
-    assert_eq!(
-        fake.writes(),
-        vec![],
-        "nothing written inside the quiet spell"
-    );
+    let cached = || {
+        displays
+            .borrow()
+            .first()
+            .and_then(|d| d.controls.brightness)
+    };
+    base_testkit::eventually_blocking("the cache shows the latest value", || {
+        cached()
+            == Some(Level {
+                value: 25,
+                max: 100,
+            })
+    });
 
-    std::thread::sleep(Duration::from_millis(400));
+    // Once the quiet spell is over the bus has had one write, the latest value: the earlier
+    // three of the burst never reached it.
+    base_testkit::eventually_blocking("the debounced write reaches the bus", || {
+        !fake.writes().is_empty()
+    });
     assert_eq!(fake.writes(), vec![(DdcId(5), Feature::Brightness, 25)]);
 
     // A write to a feature the display does not have changes no cache and fails quietly.
@@ -166,14 +165,15 @@ fn a_reread_follows_the_monitor_but_never_undoes_a_waiting_write() {
     // The monitor's own buttons: 49 -> 70; a re-read shows it.
     set_on_the_monitor(70);
     send(DdcJob::Reread(Feature::Brightness));
-    std::thread::sleep(Duration::from_millis(50));
-    assert_eq!(shown(&displays), Some(70));
+    base_testkit::eventually_blocking("the re-read shows the monitor's value", || {
+        shown(&displays) == Some(70)
+    });
     // bardo-shell's write of 30 waits for its debounce; a re-read meanwhile keeps 30 on show.
     send(brightness(30));
     send(DdcJob::Reread(Feature::Brightness));
-    std::thread::sleep(Duration::from_millis(20));
-    assert_eq!(shown(&displays), Some(30));
+    // The worker has served every job once it is joined: the re-read had its say by then.
     drop(jobs);
     thread.join().unwrap_or_else(|_| panic!("worker panicked"));
+    assert_eq!(shown(&displays), Some(30));
     assert_eq!(fake.writes(), vec![(DdcId(5), Feature::Brightness, 30)]);
 }

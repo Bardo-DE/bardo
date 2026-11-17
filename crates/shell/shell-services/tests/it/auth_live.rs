@@ -99,6 +99,8 @@ async fn busy_while_checking_then_right_then_reset() {
     send(&control, AuthCommand::Submit(SecretText::new("nope")));
     send(&control, AuthCommand::Submit(SecretText::new("nope again")));
     until(&mut auth, "wrong", |a| a.phase == AuthPhase::Wrong).await;
+    // Best-effort absence check: a second check, had it started, would end one fake delay (300 ms)
+    // after the first; nothing announces a submit that was turned away.
     tokio::time::sleep(Duration::from_millis(400)).await;
     assert_eq!(
         auth.borrow().failures,
@@ -113,6 +115,8 @@ async fn busy_while_checking_then_right_then_reset() {
     send(&control, AuthCommand::Submit(SecretText::new("stale")));
     until(&mut auth, "checking", |a| a.phase == AuthPhase::Checking).await;
     send(&control, AuthCommand::Reset);
+    // Best-effort absence check: the dropped verdict would land when the 300 ms fake check ends;
+    // nothing announces a verdict that is thrown away.
     tokio::time::sleep(Duration::from_millis(500)).await;
     assert_eq!(auth.borrow().phase, AuthPhase::Idle);
     assert_eq!(auth.borrow().failures, Attempts(0));

@@ -50,6 +50,29 @@ async fn owner(connection: &zbus::Connection) -> Option<String> {
     dbus.get_name_owner(name).await.ok().map(|o| o.to_string())
 }
 
+/// Waits until nobody owns the service's name.
+async fn released(connection: &zbus::Connection) {
+    use zbus::export::futures_core::Stream;
+    let dbus = zbus::fdo::DBusProxy::new(connection)
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
+    // Listen before looking, so a release in between is not missed.
+    let mut changes = dbus
+        .receive_name_owner_changed_with_args(&[(0, BUS_NAME)])
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
+    let gone = async {
+        while owner(connection).await.is_some() {
+            std::future::poll_fn(|cx| std::pin::Pin::new(&mut changes).poll_next(cx))
+                .await
+                .expect("the bus stayed up");
+        }
+    };
+    tokio::time::timeout(base_testkit::GENEROUS, gone)
+        .await
+        .expect("the name was given back");
+}
+
 /// The service on `bus`, its history kept under `scratch`; nothing else reached.
 fn start(
     runtime: &tokio::runtime::Runtime,
@@ -110,6 +133,8 @@ fn a_passive_service_never_asks_for_the_name_but_reports_its_holder() {
     assert!(seen, "{:?}", notes.borrow().live.server);
     let _ = control.send(NotificationsCommand::Policy(NotificationsPolicy::default()));
     runtime.block_on(async {
+        // Best-effort absence check: a name never asked for announces nothing, so the service
+        // is given a moment to have asked.
         tokio::time::sleep(Duration::from_millis(500)).await;
         assert_eq!(
             owner(&connect(&bus).await).await,
@@ -336,12 +361,7 @@ fn the_history_survives_a_restart() {
     // The first service gives the name back once its control is gone.
     runtime.block_on(async {
         let connection = connect(&bus).await;
-        for _ in 0..30 {
-            if owner(&connection).await.is_none() {
-                break;
-            }
-            tokio::time::sleep(Duration::from_millis(100)).await;
-        }
+        released(&connection).await;
         assert_eq!(owner(&connection).await, None, "released on exit");
     });
     let (mut notes, _control) = owning(&runtime, &bus, &scratch);

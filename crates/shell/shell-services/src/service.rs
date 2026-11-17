@@ -226,6 +226,8 @@ mod tests {
     use crate::restart::{RESTARTS_MAX, Tries};
 
     const WAIT: Duration = Duration::from_secs(20);
+    /// Longer than the wind-down and any restart wait, on the paused clock.
+    const WIND_DOWN_AND_MORE: Duration = Duration::from_secs(600);
 
     /// Panics on its first run. Every later run publishes its own number, then answers a command
     /// `n` by publishing `100 + n`.
@@ -314,7 +316,7 @@ mod tests {
         state_is(&mut handle, 105).await;
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn a_service_that_always_panics_is_given_up_on_after_the_limit() {
         let scratch = TempDir::new("service-giveup");
         let env = Env::isolated(scratch.path());
@@ -326,12 +328,9 @@ mod tests {
             quick(),
         );
         let limit = RESTARTS_MAX + 1;
-        let given_up = async {
-            while handle.control.send(0).is_ok() {
-                tokio::time::sleep(Duration::from_millis(10)).await;
-            }
-        };
-        tokio::time::timeout(WAIT, given_up).await.unwrap();
+        tokio::time::timeout(WAIT, handle.control.closed())
+            .await
+            .expect("the service was given up on");
         assert_eq!(
             runs.load(Ordering::SeqCst),
             limit,
@@ -339,7 +338,7 @@ mod tests {
         );
     }
 
-    #[tokio::test]
+    #[tokio::test(start_paused = true)]
     async fn dropping_every_control_ends_the_run_that_was_going() {
         let scratch = TempDir::new("service-close");
         let env = Env::isolated(scratch.path());
@@ -354,7 +353,8 @@ mod tests {
         drop(handle);
         // The run publishes 2, sees its commands close and returns; nothing starts it again.
         let _ = tokio::time::timeout(WAIT, state.wait_for(|state| *state == 2)).await;
-        tokio::time::sleep(Duration::from_millis(100)).await;
+        // The paused clock passes every restart wait there could be; nothing started again.
+        tokio::time::advance(WIND_DOWN_AND_MORE).await;
         assert_eq!(runs.load(Ordering::SeqCst), 2);
     }
 }

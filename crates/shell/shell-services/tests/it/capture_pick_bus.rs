@@ -230,8 +230,25 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
             == CaptureLink::Serving)
         .await
     );
-    // The object is exported a moment after the link says serving.
-    tokio::time::sleep(Duration::from_millis(300)).await;
+    // The object is exported a moment after the link says serving, and nothing announces it:
+    // look for it by introspection, up to the generous deadline.
+    let deadline = base_testkit::Deadline::generous();
+    loop {
+        let introspect = zbus::fdo::IntrospectableProxy::builder(&transom)
+            .destination("org.bardo.Shell")
+            .and_then(|builder| builder.path("/org/bardo/Shell1"))
+            .unwrap_or_else(|e| panic!("{e}"))
+            .build()
+            .await
+            .unwrap_or_else(|e| panic!("{e}"))
+            .introspect()
+            .await;
+        if introspect.is_ok_and(|xml| xml.contains("org.bardo.Shell1")) {
+            break;
+        }
+        assert!(!deadline.passed(), "the picker object was never exported");
+        tokio::time::sleep(Duration::from_millis(10)).await;
+    }
     Rig {
         service,
         transom,

@@ -17,10 +17,11 @@
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::PathBuf;
+use std::pin::Pin;
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
 
 use serde::Serialize;
+use zbus::export::futures_core::Stream;
 use zbus::fdo::DBusProxy;
 use zbus::interface;
 use zbus::object_server::SignalEmitter;
@@ -58,11 +59,16 @@ async fn main() {
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let watcher = zbus::names::BusName::try_from(WATCHER).unwrap_or_else(|e| panic!("{e}"));
-    for _ in 0..200 {
-        if bus.name_has_owner(watcher.clone()).await.unwrap_or(false) {
+    // Listen before looking, so an owner that appears in between is not missed.
+    let mut owners = bus
+        .receive_name_owner_changed_with_args(&[(0, WATCHER)])
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
+    while !bus.name_has_owner(watcher.clone()).await.unwrap_or(false) {
+        let heard = std::future::poll_fn(|cx| Pin::new(&mut owners).poll_next(cx)).await;
+        if heard.is_none() {
             break;
         }
-        tokio::time::sleep(Duration::from_millis(100)).await;
     }
     connection
         .call_method(

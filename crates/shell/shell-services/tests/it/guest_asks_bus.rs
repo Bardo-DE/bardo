@@ -254,8 +254,8 @@ async fn notice_gone(shell: &mut Shell, why: &str) {
 }
 
 async fn press(shell: &Shell, id: NotificationId, verdict: Verdict) {
-    // A person is slower than the service's reading of the notes.
-    tokio::time::sleep(Duration::from_millis(150)).await;
+    // The service reads the notes' current notice before it weighs a press, so the press needs
+    // no head start over it.
     let _ = shell
         .notes
         .control
@@ -266,14 +266,8 @@ async fn press(shell: &Shell, id: NotificationId, verdict: Verdict) {
         });
 }
 
-async fn until(what: &str, mut done: impl FnMut() -> bool) {
-    let waited = tokio::time::timeout(SETTLE, async {
-        while !done() {
-            tokio::time::sleep(Duration::from_millis(20)).await;
-        }
-    })
-    .await;
-    assert!(waited.is_ok(), "{what}");
+async fn until(what: &str, done: impl FnMut() -> bool) {
+    base_testkit::eventually(what, done).await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
