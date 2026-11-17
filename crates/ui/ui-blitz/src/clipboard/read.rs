@@ -74,7 +74,6 @@ impl Reader {
 mod tests {
     use super::Reader;
     use std::sync::mpsc;
-    use std::thread;
     use std::time::Duration;
 
     #[test]
@@ -93,13 +92,10 @@ mod tests {
         );
         drop(release);
         let mut served = None;
-        for _ in 0..200 {
+        base_testkit::eventually_blocking("the stuck read let go", || {
             served = reader.text(|| Some("third".to_owned()));
-            if served.is_some() {
-                break;
-            }
-            thread::sleep(Duration::from_millis(10));
-        }
+            served.is_some()
+        });
         assert_eq!(served.as_deref(), Some("third"));
     }
 
@@ -119,13 +115,10 @@ mod tests {
         assert_eq!(reader.text(|| panic!("an owner that cannot be read")), None);
         // The panicking thread releases its claim as it unwinds, a moment after the answer.
         let mut served = None;
-        for _ in 0..200 {
+        base_testkit::eventually_blocking("the panicked read let go", || {
             served = reader.text(|| Some("ok".to_owned()));
-            if served.is_some() {
-                break;
-            }
-            thread::sleep(Duration::from_millis(10));
-        }
+            served.is_some()
+        });
         assert_eq!(served.as_deref(), Some("ok"));
     }
 }

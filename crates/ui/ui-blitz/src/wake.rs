@@ -81,12 +81,11 @@ mod tests {
         let seen = wakeup.generation();
         let waker = Waker::from(Arc::clone(&wakeup));
         let started = Instant::now();
-        let thread = std::thread::spawn(move || {
-            std::thread::sleep(Duration::from_millis(20));
-            waker.wake();
-        });
-        wakeup.wait_past(seen, Duration::from_secs(5));
-        assert!(started.elapsed() < Duration::from_secs(2));
+        // The wake may land before the wait starts or while it waits: the wait is on the
+        // generation, so either way it ends at the wake, long before its limit.
+        let thread = std::thread::spawn(move || waker.wake());
+        wakeup.wait_past(seen, base_testkit::GENEROUS);
+        assert!(started.elapsed() < base_testkit::GENEROUS);
         assert_eq!(wakeup.generation(), seen + 1);
         thread.join().expect("the waking thread ends cleanly");
     }

@@ -124,6 +124,9 @@ fn a_panel_present_before_its_slide_has_played_still_comes_to_rest() {
         HarnessConfig::new(PANEL_VIEW).with_clock(Clock::Wall),
     );
     assert_eq!(presence(&h).as_deref(), Some("entering"));
+    // Real time must pass for the wall-clock timer to come due while the frame clock stands
+    // still: that is the case under test, and no event announces a timer on the wall clock. A
+    // sleep never ends early, so a slow machine only makes the timer later still.
     std::thread::sleep(standard(Anim::PanelIn) + ms(50));
     h.advance(ms(1));
     assert_eq!(

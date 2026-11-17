@@ -3,19 +3,12 @@
 //! The virtual clock's `advance` takes no wall time, so a state that a worker thread ends (the
 //! spell checker's reply, a PDF raster) cannot be waited out in virtual time: `settle_until`
 //! would spend its whole bound before the thread ran. These helpers wait on the event instead,
-//! giving the thread real time between looks, and bound the wait with a hang guard that no
-//! passing run comes near.
+//! giving the thread real time between looks, and bound the wait with the one generous deadline
+//! that no passing run comes near.
 #![allow(dead_code, reason = "each includer uses its own part of this module")]
 
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use ui_harness::Harness;
-
-/// How long a test waits on a worker before it calls the worker hung. A passing run returns the
-/// moment the worker has answered and never waits on this.
-pub const HANG_GUARD: Duration = Duration::from_secs(60);
-
-/// The real time between looks at a worker's progress.
-const LOOK: Duration = Duration::from_millis(1);
 
 /// The virtual time `settle_on_worker` lets pass per look, for timers the app runs meanwhile.
 const STEP: Duration = Duration::from_millis(10);
@@ -40,14 +33,11 @@ pub fn give_worker_time(harness: &mut Harness, grace: Duration) {
 }
 
 fn wait(harness: &mut Harness, step: Duration, done: impl Fn(&Harness) -> bool) {
-    let began = Instant::now();
-    while !done(harness) {
-        assert!(
-            began.elapsed() < HANG_GUARD,
-            "the worker never answered:\n{}",
-            harness.html()
-        );
+    base_testkit::eventually_blocking("the worker answered", || {
+        if done(harness) {
+            return true;
+        }
         harness.advance(step);
-        std::thread::sleep(LOOK);
-    }
+        false
+    });
 }

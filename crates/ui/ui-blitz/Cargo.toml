@@ -144,6 +144,8 @@ pdfrum-edit = { workspace = true, features = ["variable-fonts"] }
 pdfrum-common = { workspace = true }
 # Glyph ids from the cmap, for the colour-emoji and font-stack tests.
 skrifa = { workspace = true }
+# The one deadline wait, for the tests that wait on a thread or a process.
+base-testkit = { path = "../../base/base-testkit" }
 
 [[example]]
 name = "window"
