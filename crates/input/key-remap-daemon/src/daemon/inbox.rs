@@ -177,14 +177,11 @@ mod tests {
         })
         .unwrap();
         tx.send((ConfigLayer::default(), Vec::new())).unwrap();
-        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(2);
-        let got = loop {
-            let got = mailbox.drain();
-            if !got.is_empty() || std::time::Instant::now() > deadline {
-                break got;
-            }
-            std::thread::sleep(std::time::Duration::from_millis(5));
-        };
+        let mut got = Vec::new();
+        base_testkit::eventually_blocking("the forwarded message", || {
+            got = mailbox.drain();
+            !got.is_empty()
+        });
         assert_eq!(got, [Message::System(ConfigLayer::default(), Vec::new())]);
     }
 }

@@ -24,6 +24,7 @@ caller-identity-core = {features = ["desktop"], path = "../../identity/caller-id
 input-broker-client = {path = "../input-broker-client"}
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 input-broker-client = {features = ["fake"], path = "../input-broker-client"}
 key-remap-devtest = { path = "../key-remap-devtest" }
 # A held process that is only a claim, for tests of who the socket's peer is; never in a shipped build.

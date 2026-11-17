@@ -6,16 +6,10 @@ use key_remap_client::{KeycapSource, Origin};
 use keymap::{AppAction, AppId, ChangeCallback, DefaultChord, KeymapSource};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::time::{Duration, Instant};
-
-const WITHIN: Duration = Duration::from_secs(10);
+use std::time::Duration;
 
 fn wait_for(what: &str, ready: impl Fn() -> bool) {
-    let deadline = Instant::now() + WITHIN;
-    while !ready() {
-        assert!(Instant::now() < deadline, "timed out waiting for {what}");
-        std::thread::sleep(Duration::from_millis(20));
-    }
+    base_testkit::eventually_blocking(what, ready);
 }
 
 fn counter() -> (Arc<AtomicUsize>, ChangeCallback) {
@@ -45,6 +39,8 @@ fn the_keymap_file_is_served_watched_and_a_bad_edit_keeps_the_last_good_copy() {
 
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
+    // Nothing tells this test that the watcher's connection is subscribed in the daemon, so it
+    // gives it a moment before the edit it expects to hear about (a best-effort pause).
     std::thread::sleep(Duration::from_millis(500));
     std::fs::write(&file, "paste = Primary+Alt+V\n").expect("write");
     wait_for("the change", || count.load(Ordering::SeqCst) >= 1);

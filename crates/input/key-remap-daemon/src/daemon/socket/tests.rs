@@ -2,7 +2,7 @@
 //! tests is a process of this test binary: the shell when the harness is told to treat every
 //! program of the seat's user as one, an ordinary program when the steering table is empty.
 
-use super::client::{WAIT, connect, recv, send};
+use super::client::{connect, recv, send};
 use super::*;
 use crate::daemon::inbox::{Mailbox, Message, Request, mailbox};
 use caller_identity_core::Table;
@@ -16,7 +16,6 @@ use key_remap_proto::{
 use rustix::net::SendFlags;
 use service_locator::guard::{ShellCheck, Vouch};
 use std::path::{Path, PathBuf};
-use std::time::{Duration, Instant};
 
 fn own_uid() -> u32 {
     rustix::process::getuid().as_raw()
@@ -101,15 +100,14 @@ impl Harness {
 
     /// Everything the reader would be woken for, waiting for `n` messages.
     fn requests(&self, n: usize) -> Vec<Request> {
-        let deadline = Instant::now() + WAIT;
         let mut got = Vec::new();
-        while got.len() < n && Instant::now() < deadline {
+        base_testkit::eventually_blocking("the reader's messages", || {
             got.extend(self.mailbox.drain().into_iter().map(|m| match m {
                 Message::Request(r) => r,
                 other => panic!("unexpected {other:?}"),
             }));
-            std::thread::sleep(Duration::from_millis(5));
-        }
+            got.len() >= n
+        });
         got
     }
 
@@ -304,7 +302,16 @@ fn a_program_that_is_not_the_shell_may_watch_and_register_but_never_steers_or_co
     let another = connect(&h.socket);
     assert_eq!(recv(&another), Some(hello(running())));
     drop(another);
-    std::thread::sleep(Duration::from_millis(400));
+    // A marker behind their going: a program that is not the shell asks to steer and is closed,
+    // which the daemon only does once it has dealt with what came before.
+    let marker = connect(&h.socket);
+    assert_eq!(recv(&marker), Some(hello(running())));
+    send(&marker, &focus("terminal"));
+    assert_eq!(
+        recv(&marker),
+        None,
+        "a program that is not the shell never steers"
+    );
     assert!(
         h.nothing_queued(),
         "its coming and going never resets the reader"
@@ -354,20 +361,9 @@ fn a_client_beyond_the_per_user_cap_is_closed_at_once_and_the_others_are_served(
     drop(admitted);
     drop(refused);
     // Their places are free again once the daemon has seen them go: a new client is let in.
-    let deadline = Instant::now() + WAIT;
-    let welcomed = loop {
-        let c = connect(&h.socket);
-        if let Some(ToClient::Hello { .. }) = recv(&c) {
-            break true;
-        }
-        if Instant::now() > deadline {
-            break false;
-        }
-        std::thread::sleep(Duration::from_millis(20));
-    };
-    assert!(
-        welcomed,
-        "the cap is on live clients, not on connections ever made"
+    base_testkit::eventually_blocking(
+        "the cap to be on live clients, not on connections ever made",
+        || matches!(recv(&connect(&h.socket)), Some(ToClient::Hello { .. })),
     );
 }
 
@@ -592,17 +588,15 @@ fn registrations_are_listed_to_everyone_and_end_with_their_connection() {
 
     send(&app, &ToDaemon::Keymap(KeymapCall::Register(mail())));
     // The registration and the list travel on different connections, so ask until it shows.
-    let deadline = Instant::now() + WAIT;
-    while registered(&settings).is_empty() && Instant::now() < deadline {
-        std::thread::sleep(Duration::from_millis(10));
-    }
+    base_testkit::eventually_blocking("the registration to be listed", || {
+        !registered(&settings).is_empty()
+    });
     assert_eq!(registered(&settings), [mail()]);
 
     drop(app);
-    let deadline = Instant::now() + WAIT;
-    while !registered(&settings).is_empty() && Instant::now() < deadline {
-        std::thread::sleep(Duration::from_millis(10));
-    }
+    base_testkit::eventually_blocking("the registration to end with its connection", || {
+        registered(&settings).is_empty()
+    });
     assert_eq!(registered(&settings), []);
     assert!(h.nothing_queued(), "registering reached the reader");
 }
@@ -621,7 +615,15 @@ fn a_keymap_watcher_coming_and_going_never_resets_the_reader() {
     assert_eq!(recv(&registrar), Some(hello(running())));
     send(&registrar, &ToDaemon::Keymap(KeymapCall::Register(mail())));
     drop(registrar);
-    std::thread::sleep(Duration::from_millis(400));
+    // A marker behind their going: the owner's own request is queued after anything the watchers
+    // and the registrar leaving would have queued, so once it is read nothing else came before.
+    let owner = connect(&h.socket);
+    assert_eq!(recv(&owner), Some(hello(running())));
+    send(&owner, &focus("terminal"));
+    assert_eq!(
+        h.requests(1),
+        [Request::Focus(ProfileName::parse("terminal").unwrap())]
+    );
     assert!(h.nothing_queued(), "no focus reset, no cleared user config");
 }
 
