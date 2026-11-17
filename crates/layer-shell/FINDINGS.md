@@ -129,7 +129,7 @@ content under it hit-tests (`tests/pointer.rs`). Margin and padding are left to 
 ### F62. Blitz's default `body { margin: 8px }` is reset by the host
 
 Blitz's user-agent sheet (`blitz_dom::DEFAULT_CSS`) has the browser's `body { margin: 8px }`. A
-document without Bardo's reset laid out from (8, 8), so an `inset:0` box never reached the
+document without the UI kit's reset laid out from (8, 8), so an `inset:0` box never reached the
 surface's corner. Every document the host builds (`SurfaceDocument::build`,
 `headless::render_png`) gets `BODY_RESET` (`body{margin:0}`) as a second user-agent sheet through
 `BaseDocument::add_user_agent_stylesheet`; `DocumentConfig::ua_stylesheets` would *replace*
@@ -142,7 +142,7 @@ Every `VirtualDom` renders into `<main id="main">`, which has `height:auto` and 
 of its own. A `height:100%` root under it is 0 px tall, and an absolute or fixed `inset:0` box
 (placed against `#main`) spans the width but is 0 px tall. A bare document that must cover its
 surface sizes its box in viewport units (`width:100vw; height:100vh`), which lands exactly on
-the surface; Bardo's `RootExtent::Viewport` does that for `Ds` roots. The host does not size
+the surface; the UI kit's `RootExtent::Viewport` does that for `Ds` roots. The host does not size
 `#main`: a percentage height on a content root would then resolve against the surface and change
 content layouts and `PopupSize::FitContent`'s measurement. A lock document paints its whole
 surface with `html { background }` for the same reason (F65).
@@ -153,7 +153,7 @@ surface with `html { background }` for the same reason (F65).
 `wp_fractional_scale_v1.preferred_scale`, else `preferred_buffer_scale` / the output's integer
 scale. A surface starts at `Scale120::ONE`, a popup at its parent's. `HostConfig::prepaint`
 (`Prepaint::Hook`) is per host, not per document, so a popup opened from a component gets it
-too; sill passes Bardo's device-pixel snapping.
+too; sill passes the UI kit's device-pixel snapping.
 
 - **One resolve per frame.** Blitz's `resolve_layout` runs `taffy::round_layout` on every resolve,
   so a snap after one resolve is undone by the next. `SurfaceDocument::resolve` is the frame's
@@ -193,8 +193,8 @@ and the headless `render_frame`). It reads `data-theme` on the outermost `.ds`, 
 viewport's colour scheme at it, and on a change turns incremental layout off, so every resolve
 rebuilds every box; it stays off while a transition runs (a box built mid-transition bakes that
 frame's colour) and the first frame after the last transition turns it back on. It is the rule of
-Bardo's `ds_blitz::scheme::follow_root`, written against `blitz-dom` because the host may not
-depend on a Bardo crate. A document with no `.ds` keeps the scheme the host gave it
+The UI kit's `ds_blitz::scheme::follow_root`, written against `blitz-dom` because the host may not
+depend on a UI kit crate. A document with no `.ds` keeps the scheme the host gave it
 (`HostCtx::set_color_scheme`); the scroll thumb's ink and a resize's new viewport read the
 document's scheme, so they follow the root too. `dom/tests/scheme_follow.rs` reads the painted
 pixels across a live switch with the same nodes. Upstream fix: mark colour-dependent boxes damaged
@@ -501,7 +501,7 @@ xdg-shell's `tiled_*` states are compositor-to-client only. Some compositors hav
 placement capability. KWin 6.7.5 offers `xdg_toplevel_tag_manager_v1` (a name for window rules, no placement) and
 `org_kde_plasma_surface.set_position` (absolute, KDE-only, not in the pinned block); quick tile
 is D-Bus/scripting only. The host implements maximize (the menu's Fill) and nothing for
-Left/Right/Centre; Bardo's menu hides them until a compositor offers a request.
+Left/Right/Centre; the UI kit's menu hides them until a compositor offers a request.
 Since p2-z-sh the host sends `bardo_window_v1.request_placement` where that global is advertised
 (the compositor).
 
@@ -596,7 +596,7 @@ default; the real state lands in the same event-loop pass, before the first fram
 current_input_modality()`: one `Live<InputModality>` in `SeatInput`, cloned into every handle,
 so all surfaces agree and a new one starts from the current value. `modality::after` (pure): a
 key press that is not a lone modifier makes it `Keyboard`, a pointer button press `Pointer`;
-releases, repeats, scrolls and motion change nothing (Bardo's reference host and browsers'
+releases, repeats, scrolls and motion change nothing (the UI kit's reference host and browsers'
 `:focus-visible` switch on a press only; with motion a brushed mouse would hide the ring
 mid-Tab-walk). The host never depends on Bardo; a shell bridges it into `ds::HostModality` in
 its root (README, "Consuming: input modality").
@@ -644,14 +644,14 @@ expression). Two deliberate changes from winit and blitz-shell: the Super keys' 
 
 `input::modifiers::modifiers_from` maps the logo key to `Modifiers::SUPER` and `keysym::named_key`
 maps `Super_L`/`Super_R` to `Key::Super` (they were `META` and `Key::Meta`), because Blitz's text
-actions and Bardo's key normaliser both read Command as SUPER. `Modifiers::META` is still
+actions and the UI kit's key normaliser both read Command as SUPER. `Modifiers::META` is still
 accepted when an injected key's flags become the seat's `logo` (`with_dom`), and `Key::Meta`
 (an actual Meta keysym) still holds `META`. shell-host does not depend on Bardo, so it does not
 fill the Blitz text-action resolver (`blitz_dom::DocumentConfig::text_action_resolver`): Blitz's
 default resolver, unchanged from before, treats SUPER (and META) as Command and CONTROL as
 Command off macOS. The embedder that links Bardo (sill) builds the `TextActionResolver` from
-Bardo's key resolution (ds-blitz) and passes it in the `DocumentConfig` it hands the host, so a
-chord Bardo does not map to a text action (Ctrl+C on our desktop) is not a copy.
+The UI kit's key resolution (ds-blitz) and passes it in the `DocumentConfig` it hands the host, so a
+chord the UI kit does not map to a text action (Ctrl+C on our desktop) is not a copy.
 
 ## Drag source
 
@@ -731,7 +731,7 @@ setting).
   `max / (track - thumb)` px per thumb px, clamped, never stretched, design/11 §11.3.12).
   `scrollbars = Always` still shows one thumb at a time, and the vertical track never stops short
   for a horizontal one (`scrollbar.other_axis_offset_px` is parsed and read by nothing).
-- The thumb's colour follows the document's colour scheme (F81); Bardo's `--scroll-thumb` is not readable
+- The thumb's colour follows the document's colour scheme (F81); the UI kit's `--scroll-thumb` is not readable
   from the host.
 - The viewport is rigid: `html`/`body` cannot carry `data-overscroll="band"` from Dioxus.
 - Not proven live: touchpad, keyboard, the mouse gestures daemon, hover expansion, the thumb on screen.
@@ -926,7 +926,7 @@ prints window geometry through a KWin script.
 
 ### F82. The compositor is a second acceptance compositor
 
-`COMPOSITOR=compositor scripts/dev/accept-<name>.sh` runs the real-input scripts on the compositor
+`COMPOSITOR=bardo scripts/dev/accept-<name>.sh` runs the real-input scripts on the compositor
 (`bardo-compositor --backend headless`, started by the compositor's `dev/up.sh`) inside `~/desktop/harness/jail.sh`
 instead of on a headless KWin; `scripts/dev/lib/compositor.sh` is the one place that knows the
 difference (the script re-executes itself in the jail after its cargo builds, `comp_start`,
@@ -999,7 +999,7 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   bardo-pinned block). Its `rust-version` is 1.92 against this workspace's 1.91.
 - **F50.** Closed on a compositor that advertises `bardo_window_manager_v1` (the compositor), as far as
   the host goes: the request exists and is sent. It stays open on KWin (nothing to
-  send), where `placement_support()` is `Absent` and Bardo's menu keeps hiding Left, Right and
+  send), where `placement_support()` is `Absent` and the UI kit's menu keeps hiding Left, Right and
   Centre. Whether the compositor acts on the request is its own lane (H lanes).
 - **Not run.** Written without a build; the orchestrator's gate is the first compile.
 

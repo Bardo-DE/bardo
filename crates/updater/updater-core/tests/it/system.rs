@@ -87,7 +87,7 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/etc/systemd/system/bardo-input-broker.socket", false),
         ("/usr/lib/udev/rules.d/70-bardo-key-remap.rules", false),
         ("/usr/bin/bardo-key-remap", false),
-        // The administrator's the key remap daemon folder is never placed into; only the vendor folder is.
+        // The administrator's key remap daemon folder is never placed into; only the vendor folder is.
         ("/etc/bardo/key-remap/key-remap.toml", false),
         ("/usr/lib/bardo/key-remap/other.toml", false),
         // Security profiles are never placed by an update (owner, 2026-10-16).

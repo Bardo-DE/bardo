@@ -24,7 +24,7 @@
 # started from a `target/*/bardo-shell run` is waited for (up to 10 minutes), so two shells never share
 # the nested output's screenshots.
 #
-# The panel, the group headers and the cards are Bardo's (`Panel`, `GroupHeader`,
+# The panel, the group headers and the cards are the UI kit's (`Panel`, `GroupHeader`,
 # `NotificationCard`); a group's "N more" and Clear are found in its header's ink.
 #
 # Usage: dev/accept/notification-center.sh

@@ -1,6 +1,6 @@
 //! The Viewer page: anyview's `viewer.*` keys, drawn when anyview's schema is installed.
 //!
-//! anyview does not write its schema yet (its FINDINGS wait for Bardo's `viewer.*` rows), so
+//! anyview does not write its schema yet (its FINDINGS wait for the UI kit's `viewer.*` rows), so
 //! the test installs a scratch schema of the keys its FINDINGS name, on `Page::Viewer`.
 
 use crate::support::Sandbox;

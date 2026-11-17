@@ -28,7 +28,7 @@ fn render() -> String {
     dioxus_ssr::render(&dom)
 }
 
-/// What `markup` needs to know is styled: Bardo's own stylesheet, plus ours.
+/// What `markup` needs to know is styled: the UI kit's own stylesheet, plus ours.
 fn consumer_css() -> String {
     format!("{}\n{STYLE}", ui_components::stylesheet())
 }
@@ -50,7 +50,7 @@ fn our_stylesheet_lints_clean() {
     );
 }
 
-/// Rule 2: every class the first frame carries is one Bardo's stylesheet or `STYLE` styles.
+/// Rule 2: every class the first frame carries is one the UI kit's stylesheet or `STYLE` styles.
 #[test]
 fn rendered_markup_uses_only_styled_classes() {
     let html = render();

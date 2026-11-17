@@ -8,7 +8,7 @@ use ui_components::prelude::{FieldFocus, TextField, TextLine, Validity};
 
 use crate::state::Browse;
 
-/// Bardo's text field in the name cell, in its plain bezel so the name is edited where it reads.
+/// The UI kit's text field in the name cell, in its plain bezel so the name is edited where it reads.
 /// Return commits, Escape puts the name back, and leaving the field commits. A name the model
 /// refuses stays here with its reason under it.
 #[component]

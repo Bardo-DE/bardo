@@ -10,7 +10,7 @@
 #           check that no trace of the removed compositor stack is left in the tree.
 # --phase   --merge, and additionally an entry of expected-skips.toml whose `closes` is P<n> or
 #           earlier must be gone: the list is empty at that phase's exit; and bardo-shell's own acceptance
-#           suite on bardo-compositor (crates/shell/dev/accept.sh --compositor the compositor, its skips
+#           suite on bardo-compositor (crates/shell/dev/accept.sh --compositor bardo, its skips
 #           listed in shell-accept-skips.txt). The scenarios launcher-p95-on-compositor and
 #           bardo-settings-on-compositor-at-1.5 are the phase's other checks and run with every scenario.
 #
@@ -100,7 +100,7 @@ sill_accept() {
   local -a failed=() skipped=()
   rm -rf "$work"; mkdir -p "$work"; log="$work/accept.log"
   export CARGO_TARGET_DIR="$work/target" BARDO_COMPOSITOR_TARGET="$work/compositor-target" BARDO_COMPOSITOR_TOOLS="$work/compositor-tools"
-  "$shell_dir/dev/accept.sh" --compositor bardo-compositor --build --out "$work/run" >"$log" 2>&1 || rc=$?
+  "$shell_dir/dev/accept.sh" --compositor bardo --build --out "$work/run" >"$log" 2>&1 || rc=$?
   cat "$log"
   [ "$rc" != 3 ] && [ "$rc" != 4 ] || { echo "  bardo-shell acceptance could not run (exit $rc)"; return "$rc"; }
   mapfile -t failed < <(sed -n 's/^FAIL \([a-z0-9-]*\) .*/\1/p' "$log")
@@ -108,7 +108,7 @@ sill_accept() {
     echo "  RETRY ${failed[*]} (failed under the parallel run; one at a time now)"
     rc=0
     for name in "${failed[@]}"; do
-      "$shell_dir/dev/accept.sh" --compositor bardo-compositor --jobs 1 --out "$work/retry-$name" "$name" >"$work/retry-$name.log" 2>&1
+      "$shell_dir/dev/accept.sh" --compositor bardo --jobs 1 --out "$work/retry-$name" "$name" >"$work/retry-$name.log" 2>&1
       case $? in
         0) echo "  retry PASS $name" ;;
         2) echo "  retry SKIP $name"; sed -n 's/^SKIP \([a-z0-9-]*\) .*/\1/p' "$work/retry-$name.log" >>"$work/retry-skips" ;;
@@ -171,7 +171,7 @@ if [ "$tier" != self ]; then
   step "lane gate of the whole tree" lane_gate || true
   # Whatever failed before, this check still runs: a phase gate names every failure.
   if [ "$tier" = phase ]; then
-    step "bardo-shell acceptance on bardo-compositor (dev/accept.sh --compositor compositor)" sill_accept || true
+    step "bardo-shell acceptance on bardo-compositor (dev/accept.sh --compositor bardo)" sill_accept || true
   fi
 fi
 

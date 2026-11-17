@@ -1,5 +1,5 @@
 //! The shell's own sheets, linted as a consumer's CSS under the strictest profile (the coherence
-//! rules, Bardo's ARCHITECTURE.md "Repo rules"): Bardo's sheets are Bardo's to lint
+//! rules, the UI kit's ARCHITECTURE.md "Repo rules"): the UI kit's sheets are the UI kit's to lint
 //! (`ui-shell/tests/self_lint.rs`); these are the ones that moved here, so every rule a consumer
 //! obeys holds for them, one sheet at a time. One rule is set aside whole: [`Rule::DsInternals`],
 //! because these sheets style the `ds-*` classes of the components this crate draws (the markup

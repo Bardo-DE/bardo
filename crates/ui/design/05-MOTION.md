@@ -53,7 +53,7 @@ Quoted from the prototypes. Each one is a rule the port is reviewed against.
    Known exceptions in the prototypes, all listed so the port can decide each one: the
    destination preview `dest` (`infinite alternate`, S:447), the sync halo `breathe` and `spin`
    (C:288, C:291), and the Pip mascot (excluded, section 11). An animated emoji's loops
-   (section 4.11, design/25-EMOJI.md sections 5 and 6) are Bardo's one idle exception: finite
+   (section 4.11, design/25-EMOJI.md sections 5 and 6) are the UI kit's one idle exception: finite
    plays, only for 20 s after a wake or a mood change, then 0 frames. Errors shake once and hold still:
    "A looping error animation is something you learn to ignore inside a day" (C:2326). A loop
    while an operation runs is bounded by design/26-DETAILS.md §3.3 R4 (`PendingGrace`,
@@ -99,7 +99,7 @@ Where the scalars are read: `--overshoot` inside `pop-in`, `row-in`, `compose-ri
 ### 3.2 Motion levels (C:172-176)
 
 Levels are one attribute that rescales the whole system: "The setting rescales the one system
-rather than switching animations off one by one" (mailo mailo's tokens.css, same values as C). Only
+rather than switching animations off one by one" (mailo's tokens.css, same values as C). Only
 six tokens change; every other token keeps the look's value.
 
 | Token | Calm | Standard | Extra | Reduced (new, plan) |
@@ -183,8 +183,8 @@ The prototypes write these as literal milliseconds, so they do not change with l
 | (sail) | 1150ms | CSS, C only, orphaned | boat | C:535 |
 | (boat-return) | 900ms | CSS, C only, orphaned | boat | C:536 |
 | (spin) | 1.1s linear | CSS, C only | busy halo | C:291 |
-| (send ring) | 5s linear | JS-set transition; Bardo's `--t-send-ring`, a hold (Reduced keeps 5 s: it is the undo window, not motion; mailo gaps 3) | undo-send countdown ring | S:2339 |
-| `--t-flash` | 1200ms linear | CSS (Bardo's `chip-flash` keyframe, wave 1 amendment, proposed) | mentioned person chip's ring (04-COMPONENTS §10) | S:2119 |
+| (send ring) | 5s linear | JS-set transition; the UI kit's `--t-send-ring`, a hold (Reduced keeps 5 s: it is the undo window, not motion; mailo gaps 3) | undo-send countdown ring | S:2339 |
+| `--t-flash` | 1200ms linear | CSS (the UI kit's `chip-flash` keyframe, wave 1 amendment, proposed) | mentioned person chip's ring (04-COMPONENTS §10) | S:2119 |
 | `--e-shake` | `cubic-bezier(.36,.07,.19,.97)` | easing | `shake-x`, C `shake` | S:590, C:546 |
 | `--e-linear` | `linear` | easing | spin, send ring | C:291, S:2339 |
 | HoverOpen | 450ms | Rust-only | hover intent | S:1704 |
@@ -551,7 +551,7 @@ Moved to `archive/05-MOTION-keyframes.md` (history).
    banners sit top-right. **Decided (2026-09-26):** banners enter from the right edge
    (translateX) by default, with the same spring and hold 5200 ms (the hold is the caller's);
    `notifications.banner_entry_direction` (`BannerEntry::{FromRight, FromBelow}`, design/22)
-   selects rising from below instead, and the banner leaves back the way it came. Bardo's `BannerStack { entry }` writes `data-entry`, which
+   selects rising from below instead, and the banner leaves back the way it came. The UI kit's `BannerStack { entry }` writes `data-entry`, which
    sets the `--banner-dx`/`--banner-dy` that the one `banner-in`/`banner-out` pair reads (4.9).
    Swipe right dismisses, and a swiped banner leaves to the right whatever the entry edge.
 8. **Hover-card spring.** `hc-in` springs 450 ms after rest, which is not "the 200 ms after you

@@ -464,7 +464,7 @@ fn after_a_pop_up_choice_by_keys_tab_and_typing_go_to_the_next_field() {
 }
 
 /// A layer-shell-host document has no focus keeper (`ui_host_hooks::provide_host` wires none): on
-/// `BlitzDefault` Bardo's pop-up gives the keyboard back to its button itself, so Tab and typing
+/// `BlitzDefault` the UI kit's pop-up gives the keyboard back to its button itself, so Tab and typing
 /// reach the next field.
 #[test]
 fn after_a_pop_up_choice_by_keys_on_the_hosts_wiring_tab_and_typing_go_to_the_next_field() {

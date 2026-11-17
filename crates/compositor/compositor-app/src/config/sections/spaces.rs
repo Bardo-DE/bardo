@@ -11,7 +11,7 @@ use settings_types::schema::Page;
 #[settings(file = "compositor/settings.toml", domain = "spaces", page = Page::Spaces)]
 pub struct SpacesSection {
     /// `spaces.per_display`. Held but not yet a behaviour (every display has its own Spaces), so
-    /// the Settings app draws no row for it.
+    /// The Settings app draws no row for it.
     #[settings(skip)]
     pub per_display: bool,
     /// `spaces.auto_rearrange`. Held but not yet a behaviour (open D4), so the Settings app draws

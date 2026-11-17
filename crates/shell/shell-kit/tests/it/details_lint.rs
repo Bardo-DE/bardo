@@ -1,4 +1,4 @@
-//! design/26's lint on Bardo's own sheets, one sheet at a time: no stylesheet loops
+//! design/26's lint on the UI kit's own sheets, one sheet at a time: no stylesheet loops
 //! (`Rule::InfiniteLoop`) and every component times its motion with the grammar's tokens
 //! (`Rule::OffGrammarTiming`, `Profile::Details`), except the sheets listed here, each with its
 //! reason. A sheet on the list that no longer offends is a failure too, so the list only shrinks.

@@ -2,7 +2,7 @@
 //!
 //! Shape after smithay's `wlcs_anvil` example (MIT, Copyright (c) 2017 Victor Berger and
 //! Victoria Brekenfeld; THIRD-PARTY.md): the ABI glue in `ffi`, a channel from wlcs' thread to
-//! the compositor's, and a seam that turns each wlcs call into a compositor call. Nothing here is
+//! The compositor's, and a seam that turns each wlcs call into a compositor call. Nothing here is
 //! linked into the compositor; wlcs (GPL-3.0) loads this cdylib in its own test process.
 //!
 //! The compositor behind the seam is the compositor itself: [`host::Host`] runs the test kit's

@@ -1,6 +1,6 @@
 [package]
 name = "compositor-app"
-description = "The compositor, the desktop's Wayland compositor: the composition root (State, the smithay delegates, the protocol handlers, exec, the clock, the settings document) and the binary."
+description = "The desktop's Wayland compositor: the composition root (State, the smithay delegates, the protocol handlers, exec, the clock, the settings document) and the binary."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

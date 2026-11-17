@@ -22,7 +22,7 @@ pub struct PowerMenuPayload {
 /// the sheet: its entrance plays, focus starts over).
 pub type PowerMenuOpening = Opening<PowerMenuPayload>;
 
-/// Whether an opening's sheet is up or on its way out (Bardo's `Sheet` plays the exit; the
+/// Whether an opening's sheet is up or on its way out (the UI kit's `Sheet` plays the exit; the
 /// menu is hidden only once it has settled).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Showing {

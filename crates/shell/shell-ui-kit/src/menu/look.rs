@@ -22,7 +22,7 @@ pub struct PopupRoom {
     pub bottom: i32,
 }
 
-/// A Context menu's width: Bardo's `menu.css` fixes Slim and Context at 220.
+/// A Context menu's width: the UI kit's `menu.css` fixes Slim and Context at 220.
 pub const CONTEXT_MENU_WIDTH: i32 = 220;
 
 impl PopupRoom {

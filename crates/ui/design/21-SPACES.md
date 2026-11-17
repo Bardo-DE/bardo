@@ -223,7 +223,7 @@ directory) and over `R`, the place the app was left at in a Space.
   never reads inside. A file with no `link`, or one that is not a non-empty string, reads as
   unlinked; an unlinked Space writes no key. `SpaceLook::to_json` and `SpaceLook::from_json`
   turn a look into compact JSON of at most 1024 bytes and back, for a registry that keeps one
-  look per desktop Space (the registry is the app's; Bardo does not depend on it).
+  look per desktop Space (the registry is the app's; the UI kit does not depend on it).
 
 ### 13.2 Switching (`ds::components::app::spaces::use_spaces`)
 
@@ -231,7 +231,7 @@ The hook owns the list as a signal and calls the app's `keep` when a change is f
 pick, a closed part). `handle.look()` goes to the root's `Ds { look }`, whose frame cross-fades
 over `--t-big` (380 ms) as for a workspace switch. `here` says where the app is, `arrived` receives
 the restored place and the slide direction. A switch is refused while a part of a Space's menu is
-open. The chord is the app's: `SwitchChord::Command` (⌘1-9, the default, Bardo's primary modifier)
+open. The chord is the app's: `SwitchChord::Command` (⌘1-9, the default, the UI kit's primary modifier)
 or `Control`.
 
 ### 13.3 Sidebar head and foot

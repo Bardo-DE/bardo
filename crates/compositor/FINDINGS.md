@@ -105,7 +105,7 @@ P3-CSS, three in `src/` and its ignored parity test, never built at P0-Z2).
 | `crates/compositor-ipc/src/wait.rs` | parse_wait (1) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
 | `crates/bardo-compositorctl/src/command.rs` | parse, run (2) | P0-T-dev | `crates/compositor-ipc/src/inject.rs`, `wait.rs` tests; `crates/bardo-compositorctl/src/command.rs` test; `dev/accept.sh --jobs 8` |
 | `crates/compositor-testkit/src/fixture.rs` | Fixture::session (1) | P1-D1 | P1-Z's session suite |
-| `crates/compositor-testkit/src/fixture.rs` | Fixture::mouse_gestures (1) | P3-Z | P3-Z's the mouse gestures daemon tests |
+| `crates/compositor-testkit/src/fixture.rs` | Fixture::mouse_gestures (1) | P3-Z | P3-Z's mouse gestures daemon tests |
 
 Ignored tests by lane (P0-Z2): P0-H1 17, P0-H2 16, P0-H3 7, P0-H4 10, P0-H5 7, P0-H6 3,
 P0-H7 5, P0-H8 7, P0-B-headless 7, P0-B-loop 4, P0-R-scene 2, P0-T-client 5, P0-T-dev 6,
@@ -633,7 +633,7 @@ W13 8 to 0.
   while a grab holds the pointer; the release gives the pointer back (after the release is delivered).
   The shim also lets a dropped window glide to rest (1 s at each release): the compositor springs a dragged
   window after the pointer by design.
-- **W13.** the compositor was right (a null buffer returns the toplevel to its initial state, xdg-shell's
+- **W13.** The compositor was right (a null buffer returns the toplevel to its initial state, xdg-shell's
   "Unmapping"; the lenient policy already maps a buffer without an ack). The test
   (`tests/relax.rs`) passes without a compositor change. A toplevel that maps again keeps its id and is a
   fresh window (`WindowState::New`) where the compositor puts it; wlcs takes it to be where it was. The shim
@@ -1330,7 +1330,7 @@ Nothing here compiled or run (no builds, no vkms). User-run only (C3).
   `COMPOSITOR_BLESS=1` run of the scene test (the lane could not render). Until it is blessed the scene test fails with
   "differs (golden missing)"; bless, review the image, commit. The scene assumes output spec
   `HEADLESS-1:1024x768@60000:120:0,0` (120 = 1x) and the pointer at the middle.
-- **Departure: the script cannot run end to end today.** the compositor has no way to run the tty backend on one named
+- **Departure: the script cannot run end to end today.** The compositor has no way to run the tty backend on one named
   node: the real seams use libseat and `GpuChoice::Auto`, which would take the person's real VT and GPU. So the script
   needs four hooks on the compositor, listed in its header ("the compositor contract") and probed with `bardo-compositor --help`
   (exit 4 when missing): `--drm-node PATH` (direct fd on that node, checks driver `vkms`), `--kms-report FILE` (JSON
@@ -1873,7 +1873,7 @@ lenient toplevel now carries its final state, so a wlcs test that counts configu
 Nothing here compiled or ran (the lane does not build). Real session finding: `grim` failed with "failed to copy
 output".
 
-- **Cause 1: no `zwlr_screencopy_manager_v1`.** the compositor served only ext-image-copy-capture. Added
+- **Cause 1: no `zwlr_screencopy_manager_v1`.** The compositor served only ext-image-copy-capture. Added
   `compositor_wayland::screencopy` (version 3; smithay has no plumbing for it, so the wire is ours on
   `wayland-protocols-wlr`'s server side, through smithay's re-export): `capture_output`, `capture_output_region`,
   `copy`, `copy_with_damage`, shm `argb8888` (and `xrgb8888` from version 3, with `buffer_done`). The frame is the one
@@ -2794,7 +2794,7 @@ Rounded corners and shadows right everywhere (wave 5). Written without a compile
 
 Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted, not changed" of `session`.
 
-- **Live apply.** the compositor watched no `settings.toml` before (only Bardo's `appearance.toml`). New
+- **Live apply.** The compositor watched no `settings.toml` before (only Bardo's `appearance.toml`). New
   `compositor::settings_live` watches the document through ds-settings (the appearance watch's thread
   spawner, now `pub(crate)`), and `settings_live::apply` tells the model `followed(current, doc)`:
   the file's pointer and touchpad profiles and the key repeat; everything else (bindings from the
@@ -2875,7 +2875,7 @@ Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours
   light desktop and Bardo has no separate backdrop token. `OverviewDraw::On` carries an `OverviewLook { dim, ring }` (premultiplied
   `Rgba8`, made by `From<FrameColour>`). The ring is the light scheme's accent fill rather than the dark #0A84FF
   that was written: the colour changes slightly in light. No golden pinned any of these.
-- **App icon in the hover label: not done (departure).** the compositor can resolve an app's icon only when the client sets
+- **App icon in the hover label: not done (departure).** The compositor can resolve an app's icon only when the client sets
   `xdg_toplevel_icon` (`compositor_wayland::xdg_toplevel_icon::icon_of(root)` returns the shm buffers or a theme name, nothing reads it
   yet); the usual source (`.desktop` -> icon theme lookup) needs an icon loader, which this lane does not add. To finish: pick the
   buffer nearest 16 px x scale from `icon_of`, read it with the capture's `ArgbImage::from_shm`, and lay it left of the title in
@@ -3051,7 +3051,7 @@ desktop-protocols first. Built on the compositor 79456e1: `ovpolish` (6cb6035) i
 `core_loop/overview.rs` (the `press`, `hover` and `leave` bodies; `window_at`, `draw` and the colours are ovpolish's) and
 `model/overview.rs` (untouched here).
 
-- **1. Which output (`overview_output`).** the compositor's overview is global (one `Overview` in the model, every output flies its
+- **1. Which output (`overview_output`).** The compositor's overview is global (one `Overview` in the model, every output flies its
   windows), and that is the Mac's behaviour with separate Spaces: Mission Control opens on every display at once. So the event is
   sent for every output, `shown` while the overview is not closed and `hidden` when it is, just before each `overview_state`
   (`exec/shell.rs`, `shell_space::send_overview_outputs`, only to objects bound at version 2 or later, through
@@ -3226,7 +3226,7 @@ by the GPU with no CPU read-back, for an output, a window and `zwlr_screencopy` 
 - **Departure: cursor sessions stay a read-back.** The cursor image is a client surface (or a theme image) of at most a few tens of
   pixels, already on the CPU after `ArgbImage::drawn`; `deliver` uploads it. A client's dma-buf cursor is still read back through the
   renderer (`read_dmabuf`).
-- **Departure: no multi-GPU renderer.** the compositor has none for captures (`RenderPlan` routes outputs, the lender is the first device's
+- **Departure: no multi-GPU renderer.** The compositor has none for captures (`RenderPlan` routes outputs, the lender is the first device's
   renderer). `placement(main device, drawing device)` is `Foreign` when both numbers are known and differ, and a foreign buffer is
   `ReadBack` (uploaded by the lender or the shadow, as in `capgpu`). The drawing device is `RealKms::node` (the render node of the open
   device, `DrmNode::from_file` then `node_with_type(Render)`); the fakes and headless report none, so `Local`.
@@ -3701,7 +3701,7 @@ the pinned sources, none was built. Look here first when it fails to compile.
   pointer's output. (7) Esc during the drag does not cancel (no keyboard route into the grab yet); Option pressed or released with
   the pointer still does not re-evaluate until the next motion. (8) `rust_scene/fill.rs` was not made: Fill is `filled_target`
   already, and the plan's file would only repeat it.
-- **Keys (D12) are an interface ask, not built.** the chord keymap 55a62b2 has no `StandardAction` for tiling (no left/right/top/bottom/
+- **Keys (D12) are an interface ask, not built.** The chord keymap 55a62b2 has no `StandardAction` for tiling (no left/right/top/bottom/
   quarters/fill/centre/return), so the compositor's `keymap/shell.rs` has no row to bind: the keymap module holds action names only.
   Ask to the chord keymap (and the key remap daemon for the layers): add `TileLeft`, `TileRight`, `TileTop`, `TileBottom`, `TileTopLeft`,
   `TileTopRight`, `TileBottomLeft`, `TileBottomRight`, `TileFill`, `TileCentre`, `TileReturn` with the Sequoia chords (Globe/Fn+Ctrl
@@ -4025,7 +4025,7 @@ test-client helper pin the wire behaviour the portal relies on.
   `kill_client`/`post_error` in `compositor-wayland/src/image_capture*` and `handlers/image_capture*` finds none; smithay's only
   error there is `DuplicateFrame` (a `create_frame` while the previous frame is not destroyed), which portal's order
   (`frame.destroy()` before `create_frame`) never triggers, and which would show as `wl_display.error` in `WAYLAND_DEBUG`.
-- **Where the EPIPE comes from.** the portal's `Share::drop` (screencast/run.rs in the portal repo) calls
+- **Where the EPIPE comes from.** The portal's `Share::drop` (screencast/run.rs in the portal repo) calls
   `Canceller::cancel` (`capture/mod.rs`), which does `shutdown(Both)` on a duplicate of its own Wayland socket to unblock
   `Copier::frame`, then the next write on that connection fails with "Io error: Broken pipe". The timestamps prove it: in
   `portal-wldebug.log` the second `capture()` is at 1422158.8 ms and the next line, `session.destroy()` from `Copier::drop`, at
@@ -5047,7 +5047,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **NEW-PI-3.** On the public socket only `Proof::Full` makes a desktop service. A service at `Proof::Exe` is an ordinary program known by its
   image, asked per app; the shell and the agent tier use the handed-out connection. `Judge` probes without the unit manager, so on the public
   socket `Full` is not reachable today; that is the point (no cgroup-and-image-only trust). Table test per proof level in `standing.rs`.
-- **NEW-FA-2 (fixed: a portal connection handed out over the bus).** the portal captured on the public socket, where a peer is shown at
+- **NEW-FA-2 (fixed: a portal connection handed out over the bus).** The portal captured on the public socket, where a peer is shown at
   most as `Proof::Exe` (`Judge::arrival` probes without the unit manager), so after NEW-PI-3 it was a `Program` and its first
   screenshot or share raised the compositor's own Screen sheet over the portal's chooser. The fix does not need a `Full` proof on the
   public socket: `org.bardo.Compositor1.Connect("portal")` hands the caller proven `Full` as the `portal` role (peephole-bus and the
@@ -5118,7 +5118,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **CASC-15.** `Origin::Test` is used by tests in five crates and a doctest; gating it needs a `testing` feature on compositor-core enabled by each.
 - **CASC-17.** The model does not know the pointer's output.
 - **CASW-04 (2): closed in the compositor, see "CASW-04 (3)" below.** The residual that stays is the launcher's own, named there.
-- **NEW-QDH-4 (checked, nothing to cap in the compositor).** the compositor never writes selection or drag data itself, so there is no write slot
+- **NEW-QDH-4 (checked, nothing to cap in the compositor).** The compositor never writes selection or drag data itself, so there is no write slot
   for a client's unread pipes to hold. `SelectionHandler for State` (`crates/compositor/src/handlers/data_device.rs`) implements only
   `new_selection`; `send_selection`, the one hook that hands the compositor a client's fd to write into, is left at smithay's default, which
   drops the fd. It is reached only for a compositor-owned selection (fork `wayland/selection/offer.rs:185-186`), and the compositor sets none:

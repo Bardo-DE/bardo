@@ -7,9 +7,9 @@ so terminals get terminal-safe shortcuts. It works on any Linux with systemd.
 
 ## Before you start
 
-- **Don't change your apps' own shortcuts.** the key remap daemon translates Mac shortcuts into the Linux ones
+- **Don't change your apps' own shortcuts.** The key remap daemon translates Mac shortcuts into the Linux ones
   your apps already have. Rebinding them in the apps as well will break the mapping.
-- **Know the emergency chord.** the key remap daemon takes over your keyboards. If keys misbehave, hold both
+- **Know the emergency chord.** The key remap daemon takes over your keyboards. If keys misbehave, hold both
   Shift keys and press Esc to get them back.
 - **Run one remapper at a time.** Stop keyd, Toshy or similar before switching to key_remap.
 - **On Plasma, install the focus feed** (`--plasma-focus`). Without it the key remap daemon can't tell when a
@@ -109,7 +109,7 @@ A bad value is logged and ignored; the rest of the file still applies. See
 [docs/personal-config.md](docs/personal-config.md) for common settings: telling the key remap daemon a
 keyboard's layout, Caps Lock as the input-method switch, and terminal rules.
 
-**Keyboard layout.** the key remap daemon treats Apple keyboards as Apple and everything else as PC. Keyboards
+**Keyboard layout.** The key remap daemon treats Apple keyboards as Apple and everything else as PC. Keyboards
 with a Mac/Windows switch look the same to the computer in both positions, so declare them in
 your config with a `[[device]]` entry.
 

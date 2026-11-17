@@ -228,7 +228,7 @@ step_item_click() {
   # A screenshot taken before the compositor shows the popup has no card in it (gap = the whole
   # width): take it again, up to four times.
   for _ in 1 2 3 4; do
-    [ "$COMPOSITOR" != compositor ] || break # no output screenshot there yet (below)
+    [ "$COMPOSITOR" != bardo ] || break # no output screenshot there yet (below)
     shot "$SHOTS/control-center-compositor.png" >>"$log" 2>&1 \
       || echo "screenshot failed" >&2
     gap=$(card_right_gap "$SHOTS/control-center-compositor.png")
@@ -238,7 +238,7 @@ step_item_click() {
   # shellcheck disable=SC2086
   click_bar $CC_ITEM
   wait_surface "$POPUP" 20 down || { echo "a second click left it open" | tee -a "$log" >&2; return 1; }
-  if [ "$COMPOSITOR" = compositor ]; then
+  if [ "$COMPOSITOR" = bardo ]; then
     echo "item click: popup ${width} wide (want $PANEL_POPUP_MIN to $PANEL_POPUP_MAX); a second click closed it" | tee -a "$log" >&2
     panel_width_ok "$width" || return 1
     expected_skip "the card's distance from the output's right edge is read off an output screenshot (bardo-compositorctl shot, P1-C1)"

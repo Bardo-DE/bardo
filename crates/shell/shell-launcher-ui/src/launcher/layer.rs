@@ -52,7 +52,7 @@ pub fn panel_top(output_height: i32, tokens: &LauncherTokens) -> i32 {
 /// The palette card's element id: the panel's blur and input region.
 pub const CARD_ID: &str = "launcher-card";
 
-/// The card's corner: a squircle of Bardo's panel radius (`--r-panel`, 14; the macOS polish
+/// The card's corner: a squircle of the UI kit's panel radius (`--r-panel`, 14; the macOS polish
 /// pass), handed to the palette as `CommandPalette { corner }`.
 pub const CARD_RADIUS: f32 = 14.0;
 
@@ -60,11 +60,11 @@ pub const CARD_RADIUS: f32 = 14.0;
 /// (`Corner::Squircle(14).css()`, 12.38 px), in whole pixels.
 pub const CARD_BLUR_RADIUS: i32 = 12;
 
-/// The actions menu's element id: set on Bardo's menu through `Common`, so the panel's blur
+/// The actions menu's element id: set on the UI kit's menu through `Common`, so the panel's blur
 /// can cover the menu while it hangs below the card.
 pub const MENU_ID: &str = "launcher-actions-menu";
 
-/// The blur region's corner under the menu: Bardo's menu radius (`--r-menu`, 14) as the circle
+/// The blur region's corner under the menu: the UI kit's menu radius (`--r-menu`, 14) as the circle
 /// its squircle's shadows follow, in whole pixels (as [`CARD_BLUR_RADIUS`]).
 pub const MENU_BLUR_RADIUS: i32 = 12;
 

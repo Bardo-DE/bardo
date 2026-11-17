@@ -63,7 +63,7 @@ impl Session {
         self.apps.get(index).map(|app| &app.app)
     }
 
-    /// Whether `app`'s tile is listed: `false` while it folds (Bardo's `AppSwitcher` keeps a tile
+    /// Whether `app`'s tile is listed: `false` while it folds (the UI kit's `AppSwitcher` keeps a tile
     /// it is no longer given until its exit has settled).
     pub fn shown(&self, app: &AppId) -> bool {
         !self.leaving.contains(app)

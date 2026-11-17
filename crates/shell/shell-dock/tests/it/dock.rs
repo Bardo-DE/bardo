@@ -173,7 +173,7 @@ fn a_mapped_app_draws_its_own_icon_on_no_plate() {
 }
 
 /// The popup frame's stylesheet (the dock's context menu, the bar's menus, the tray's): clean
-/// under Strict with no exception, since Bardo's `RootExtent::Popup` lays the overlay in flow.
+/// under Strict with no exception, since the UI kit's `RootExtent::Popup` lays the overlay in flow.
 #[test]
 fn the_popup_frame_stylesheet_is_clean_under_strict() {
     let strict = LintConfig {

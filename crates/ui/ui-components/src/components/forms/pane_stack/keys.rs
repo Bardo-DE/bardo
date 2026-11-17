@@ -6,7 +6,7 @@ use keymap::{Action, Context, Keymap};
 use ui_core::command::resolve;
 
 /// Whether `key` with `modifiers` asks to go back under `keymap`: Escape, Alt+Left, and the
-/// chord Bardo's `bardo.pane-back` action holds (Command and `[` by default).
+/// chord the UI kit's `bardo.pane-back` action holds (Command and `[` by default).
 pub(crate) fn goes_back(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> bool {
     match key {
         Key::Escape => modifiers.is_empty(),

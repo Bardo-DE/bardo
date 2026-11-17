@@ -1,8 +1,8 @@
 //! The banner column in a Blitz harness, on the virtual clock and the fake services, drawn by
-//! Bardo's `BannerStack` and `NotificationCard`: a banner slides in and holds for
+//! The UI kit's `BannerStack` and `NotificationCard`: a banner slides in and holds for
 //! its hold, then says it timed out and plays out; hovering it pauses the
 //! hold; a press on the card invokes `default`; the close button dismisses it; a drag past
-//! Bardo's threshold swipes it away (`SwipeAway`), a short one springs back; a link in the body
+//! The UI kit's threshold swipes it away (`SwipeAway`), a short one springs back; a link in the body
 //! keeps its press; one app's banners group into one card with a count and two layers; a card
 //! the service dropped leaves silently; another output's column draws nothing; and the keyboard
 //! ([`keys`]) is asked for and never taken.
@@ -51,7 +51,7 @@ fn commands(running: &mut Running) -> Vec<NotificationsCommand> {
     std::iter::from_fn(|| running.feeds.notification_commands.try_recv().ok()).collect()
 }
 
-/// How many cards Bardo's stack draws (listed or playing out).
+/// How many cards the UI kit's stack draws (listed or playing out).
 fn cards(running: &Running) -> usize {
     running.harness.count(".ds-banner")
 }

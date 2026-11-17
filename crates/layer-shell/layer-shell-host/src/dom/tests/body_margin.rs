@@ -5,7 +5,7 @@
 //!
 //! The reset fixes the corner, not the height: an `inset:0` box is placed against its parent,
 //! dioxus-native-dom's `height:auto` `#main`, which an all-positioned document leaves 0 px tall
-//! (Bardo's `RootExtent::Viewport`). A box sized in viewport units covers it all.
+//! (the UI kit's `RootExtent::Viewport`). A box sized in viewport units covers it all.
 
 use std::task::Context;
 

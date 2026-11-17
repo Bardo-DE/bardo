@@ -1,6 +1,6 @@
 //! `cargo run -p ui-settings --example doc_tables -- [--check] [--schema <file>]... <doc.md>`:
 //! rewrites the key tables of design/22-SETTINGS.md (the ones between `keys:begin <domain>` and
-//! `keys:end <domain>` comment lines) from Bardo's own schema and any `<app>.settings.toml` named
+//! `keys:end <domain>` comment lines) from the UI kit's own schema and any `<app>.settings.toml` named
 //! with `--schema`. With `--check` it writes nothing and fails when the doc is out of date.
 //! `scripts/check-doc-keys.sh` runs it that way.
 

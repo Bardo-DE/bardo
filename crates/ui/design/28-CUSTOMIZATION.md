@@ -155,7 +155,7 @@ Desktop, In Stage Manager), Widget style (Automatic, Monochrome, Full-color), Us
 - Drag, always on: sill's sill-widgets-ui/src/desktop/drag.rs `Hold::{Idle, Pressed, Live}`; only Manhattan travel
   past `window.move_threshold_px` (4) makes a press `Live`, so a click still reaches a widget's
   control (F883, F887); `arrange.rs` `snap` and `make_room` push covered widgets to their nearest
-  free spot and back (F884); the motion is Bardo's `use_tween` in `placed.rs` (F885).
+  free spot and back (F884); the motion is the UI kit's `use_tween` in `placed.rs` (F885).
 - Scalars: `widgets.desktop` (the layer on or off), `widgets.desktop_cell_px`,
   `widgets.desktop_gap_px`, `widgets.world_clocks` (the zones, `;`-separated, read by
   sill's `shell-ui-kit/src/widgets/world_clock`).
@@ -234,7 +234,7 @@ switch the user settled (22 §3.6): `launcher.web_search` (On/Off), `launcher.cl
 named this surface.
 
 **Mapping.** Owner: sill (`shell-launcher` keeps the trait; the registry of providers is sill's,
-non-UI); Bardo owns the `OrderedChecklist` picker and the `KindId` type. Trait change:
+non-UI); the UI kit owns the `OrderedChecklist` picker and the `KindId` type. Trait change:
 `fn kind(&self) -> ProviderKind` becomes `fn info(&self) -> ProviderInfo { id: KindId, name,
 icon, section: SectionTitle, default_shown: Shown }`, so a provider from another process
 (section 5.7) is a row like ours; `ProviderKind` stays as the ids of the built-in nine
@@ -547,7 +547,7 @@ standard shortcuts, custom ones only for frequent commands.
 **Today.** Global keys belong to the compositor. sill ships and writes the compositor's shortcut files,
 `the shortcut file` and `.../system_actions` (under `dist/compositor`;
 sill FINDINGS: the launcher, screenshots, the switcher, brightness and lock are bound there).
-Bardo has `StandardAction` and `Shortcut::custom` refusing reserved chords (27 §6.2, H0).
+The UI kit has `StandardAction` and `Shortcut::custom` refusing reserved chords (27 §6.2, H0).
 
 **Mapping.** Owner: sill (system shortcuts are `ShellAction` bindings, written to the compositor's two
 files), Bardo (`MenuModel` commands for App Shortcuts, `KeyKind::Shortcut` capture field). The
@@ -555,7 +555,7 @@ registry is the action registry of 4.9 plus every app's `MenuModel` commands. Pi
 Settings app's Keyboard Shortcuts page, a `SettingsRow` list per group with a toggle and a
 capture field; App Shortcuts as a `List` of `{app, menu_path, chord}` rows.
 
-**Who wins a conflict (proposed, open decision 10).** the compositor's files are the live truth for
+**Who wins a conflict (proposed, open decision 10).** The compositor's files are the live truth for
 global keys, and the person or the desktop settings app may edit them behind sill's back. So: **the chord
 the desktop holds wins**. sill writes a binding only to a chord the desktop does not already hold for
 another action; when `shortcuts.bindings` asks for a chord the desktop holds (a clash), sill leaves
@@ -907,7 +907,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 | `ds::components::widget_kind::WidgetSize`; sill `widgets::size_of(kind, host)` | `Shape`; `KindInfo::size_in(host)` | `ui-settings`; `ds::place` |
 | sill `desktop_widgets::saved::{SavedEntry, OutputKey}` | `Cell { instance, output: Option<OutputName>, column, row }` (`OutputKey::Any` is `None`) | `ui-settings`; sill keeps the file and `with_output` |
 | sill `desktop_widgets::placement::{GridSlot, clamp, nearest_free}` | stay sill's (the desktop grid is sill's); `clamp` keeps rule 5.2.6 | sill |
-| sill sill's sill-widgets-ui/src/desktop/drag.rs (`Hold::{Idle,Pressed,Live}`, threshold, grab offset) with `arrange.rs` (`snap`, `make_room`), and sill `dock/machine/press.rs` (press, threshold, drag reorder, drag-out) | `ds::motion::reorder`: one press-travel-lift-drop machine and the make-room rule for a grid and for a row, used by the desktop, the dock, the bar's Command-drag, toolbars and checklists | Bardo |
+| sill's sill-widgets-ui/src/desktop/drag.rs (`Hold::{Idle,Pressed,Live}`, threshold, grab offset) with `arrange.rs` (`snap`, `make_room`), and sill `dock/machine/press.rs` (press, threshold, drag reorder, drag-out) | `ds::motion::reorder`: one press-travel-lift-drop machine and the make-room rule for a grid and for a row, used by the desktop, the dock, the bar's Command-drag, toolbars and checklists | Bardo |
 | sill `pins::model::{DockPins, PinEvent, PinAt}` and `pins::run` | `Layout` plus the dock's own events; `pins::run` is the model for rule 5.2.4's writer task | sill, over the shared data |
 | sill `ControlCenterModule`, `MENU_BAR_ORDER`, `in_menu_bar` | `ModuleInfo` in a registry; presence from the `menu_bar_*` keys, bar order from `layout.bar_items` | sill, contract in Bardo |
 | sill `ProviderKind` closed enum and its `ALL` order | built-in `KindId`s; order from `layout.launcher_categories` (Web pinned last) | shell-launcher |
@@ -922,7 +922,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 
 sill's shell-settings/tests/keys.rs checks design/22 against sill's registered `KeySpec`s in
 both directions over §3.4-3.8 and §3.11 through `## 4. Rust shape` (that is, §3.4-3.23 less
-The mouse gestures daemon's §3.9-3.10), reading Bardo's doc by path from sill's own checkout. A row with no spec,
+The mouse gestures daemon's §3.9-3.10), reading the UI kit's doc by path from sill's own checkout. A row with no spec,
 or a spec with no row, fails sill master at once, so a key is added, changed or retired in one change to both repos: the `KeySpec` and
 the design/22 row land together.
 
@@ -958,7 +958,7 @@ Shell; each a Bardo lane plus a sill lane where named.
    the person's hands), `InMenuBar::WhenActive`, the new `control_center.menu_bar_focus` key;
    the tray service reads the SNI `Id` property (`TrayItem.sni_id`), and `layout.bar_items` /
    `layout.bar_hidden` are keyed by it; Command-drag in the bar on `ds::motion::reorder`.
-6. **P5 Notifications per app** (Bardo + sill): Bardo adds a record kind to ui-settings'
+6. **P5 Notifications per app** (Bardo + sill): the UI kit adds a record kind to ui-settings'
    `KeyKind` (`Record { fields: Vec<FieldSpec> }`, so `List(Box<Record>)` describes a
    `Vec<struct>` key and the Settings app draws it as a table editor; today `List` holds only
    scalar kinds); sill adds `notifications.apps` and `notifications.previews`,

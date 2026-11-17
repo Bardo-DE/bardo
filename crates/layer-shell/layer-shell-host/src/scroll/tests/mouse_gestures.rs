@@ -1,4 +1,4 @@
-//! design/11 §11.8 item 13, double scroll, with a fake the mouse gestures daemon daemon: the daemon's stream
+//! design/11 §11.8 item 13, double scroll, with a fake mouse gestures daemon: the daemon's stream
 //! over a real `SOCK_SEQPACKET` socket, read and routed as the host does
 //! (`input::mouse_gestures::{read_all, route}`), plus the same stroke arriving again as compositor
 //! touchpad frames, filtered by the suppression window. The offsets must equal the
@@ -50,7 +50,7 @@ fn document() -> SurfaceDocument {
     doc
 }
 
-/// A fake the mouse gestures daemon: a listening socket in a private temp directory.
+/// A fake mouse gestures daemon: a listening socket in a private temp directory.
 struct Daemon {
     dir: Dir,
     listener: OwnedFd,
@@ -109,7 +109,7 @@ struct Host {
 
 impl Host {
     /// The daemon sends `message` (if any), the host reads and routes everything waiting, then
-    /// the compositor's copy of the stroke (`echo`: finger px and stop) arrives, if any.
+    /// The compositor's copy of the stroke (`echo`: finger px and stop) arrives, if any.
     fn step(&mut self, message: Option<ToHost>, echo: Option<(f64, bool)>) {
         if let Some(message) = message {
             let bytes = mouse_gestures_proto::encode(&message);

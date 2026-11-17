@@ -1,4 +1,4 @@
-//! design/22-SETTINGS.md's key tables for Bardo's own domains are generated from the schema
+//! design/22-SETTINGS.md's key tables for the UI kit's own domains are generated from the schema
 //! (`scripts/gen-doc-keys.sh`), so a default, a range or a page cannot drift from the code.
 //! Reads a file outside the crate, so it is an integration test: `cargo test` runs it from the
 //! crate root.

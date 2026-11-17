@@ -35,7 +35,7 @@ touches a device, so a script replays to exactly the outputs the live daemon pro
 | `backoff` | the pure reconnect backoff |
 | `key-remap-proto` (crate) | the socket messages and their codec |
 | `keymap` | the person's keymap file (`keymap`, the chord keymap's overrides line format): read, judged against the last good copy, watched |
-| `key-remap-client` (crate) | a program's end of the socket, and `KeyRemapSource`, this desktop's the chord keymap keymap source |
+| `key-remap-client` (crate) | a program's end of the socket, and `KeyRemapSource`, this desktop's chord keymap source |
 | `daemon` | threads, socket, discovery, the uinput keyboard, sd_notify, sd_notify; the ioctls are `key-remap-evdev`, through `input-linux`'s safe handles (the workspace forbids `unsafe`) |
 
 ## The socket protocol

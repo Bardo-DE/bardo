@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # The acceptance runner: every dev/accept/NAME.sh on a compositor, one verdict per script.
 #
-#   dev/accept.sh [--compositor the compositor|kwin] [--jobs N] [--build] [--out DIR]
+#   dev/accept.sh [--compositor bardo|kwin] [--jobs N] [--build] [--out DIR]
 #                 [--timeout SECONDS] [NAME...]
 #
 # NAME is a script's name (`bar`, `bar.sh` or its path); with none, every dev/accept/*.sh.
 #
-#   --compositor the compositor   each script runs in its OWN jail (packaging/harness/jail.sh) on a headless
+#   --compositor bardo   each script runs in its OWN jail (packaging/harness/jail.sh) on a headless
 #                           The compositor that the script starts itself (dev/lib/compositor.sh's
 #                           start_compositor, through the compositor's dev/up.sh): N jails at a
 #                           time (--jobs, default 4), each with its own scratch dir OUT/NAME/ for its
@@ -49,7 +49,7 @@ while [ $# -gt 0 ]; do
     *) names+=("$1"); shift ;;
   esac
 done
-case "$compositor" in ""|compositor|kwin) ;; *) echo "accept.sh: --compositor is compositor or kwin" >&2; exit 64 ;; esac
+case "$compositor" in ""|bardo|kwin) ;; *) echo "accept.sh: --compositor is bardo or kwin" >&2; exit 64 ;; esac
 case "$parallel" in ''|*[!0-9]*|0) echo "accept.sh: --jobs wants a positive number" >&2; exit 64 ;; esac
 
 # The scripts to run, as names.
@@ -62,7 +62,7 @@ else
   done
 fi
 [ "$parallel" -le ${#names[@]} ] || parallel=${#names[@]}
-if [ "$compositor" != compositor ] && [ "$parallel" -gt 1 ]; then
+if [ "$compositor" != bardo ] && [ "$parallel" -gt 1 ]; then
   echo "accept.sh: scripts on ${compositor:-their own compositors} share one compositor: running them one at a time"
   parallel=1
 fi
@@ -94,10 +94,10 @@ prebuild() {
   } >"$out/build.log" 2>&1 || { echo "accept.sh: the build failed (see $out/build.log)" >&2; return 1; }
 }
 if [ "$build" = yes ]; then
-  [ "$compositor" = compositor ] || echo "accept.sh: --build prepares the jailed (compositor) run; building anyway"
+  [ "$compositor" = bardo ] || echo "accept.sh: --build prepares the jailed (compositor) run; building anyway"
   prebuild || exit 3
 fi
-if [ "$compositor" = compositor ]; then
+if [ "$compositor" = bardo ]; then
   for tool in bardo-compositor bardo-compositorctl compositor-probe fake-logind; do
     [ -x "$BARDO_COMPOSITOR_TOOLS/bin/$tool" ] || { echo "accept.sh: $BARDO_COMPOSITOR_TOOLS/bin/$tool is missing: run dev/accept.sh --build (outside the jail)" >&2; exit 3; }
   done
@@ -107,7 +107,7 @@ if [ "$compositor" = compositor ]; then
   jail="${BARDO_SHELL_JAIL:-$BARDO_SHELL_TREE/packaging/harness/jail.sh}"
   [ -x "$jail" ] || { echo "accept.sh: the jail script $jail is missing" >&2; exit 3; }
   jail_env=(
-    --env BARDO_SHELL_COMPOSITOR=bardo-compositor --env BARDO_SHELL_PREBUILT=1 --env "BARDO_SHELL_PROFILE=$BARDO_SHELL_PROFILE"
+    --env BARDO_SHELL_COMPOSITOR=bardo --env BARDO_SHELL_PREBUILT=1 --env "BARDO_SHELL_PROFILE=$BARDO_SHELL_PROFILE"
     --env "CARGO_TARGET_DIR=$BARDO_SHELL_TARGET" --env "BARDO_ACTIONS_TARGET=$BARDO_ACTIONS_TARGET"
     --env "BARDO_SHELL_PROBE=$BARDO_SHELL_TARGET/release/examples/probe_toplevel" --env "BARDO_COMPOSITOR_REPO=$BARDO_COMPOSITOR_REPO" --env "BARDO_COMPOSITOR_TOOLS=$BARDO_COMPOSITOR_TOOLS"
   )
@@ -120,7 +120,7 @@ fi
 run_one() {
   local name=$1 start end rc
   start=$(date +%s)
-  if [ "$compositor" = compositor ]; then
+  if [ "$compositor" = bardo ]; then
     timeout --kill-after=10 "$bound" "$jail" --scratch "$out/$name" "${jail_env[@]}" -- \
       "$root/dev/accept/$name.sh" >"$out/$name.log" 2>&1 </dev/null
   else

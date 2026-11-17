@@ -205,7 +205,7 @@ fn available(can: bool) -> Availability {
     }
 }
 
-/// The track's art at 48, or none (Bardo draws the Now Playing glyph on its well).
+/// The track's art at 48, or none (the UI kit draws the Now Playing glyph on its well).
 fn art_of(art: &Art) -> Option<IconSource> {
     match art {
         Art::File(path) => IconUrl::file(path).ok().map(|url| {

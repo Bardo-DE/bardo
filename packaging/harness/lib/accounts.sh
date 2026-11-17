@@ -35,7 +35,7 @@ acc_need() {
 # acc_env: the variables every accounts scenario sets before sourcing bardo-shell's lib (BARDO_COMPOSITOR_REPO and BARDO_COMPOSITOR_DIR
 # become the stand-in checkout floor_shim makes).
 acc_env() {
-  export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+  export BARDO_SHELL_COMPOSITOR=bardo BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
   export CARGO_TARGET_DIR="$SCEN_BUILD/shell-probe-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
   # The rig's programs take no power; bardo-compositorctl's `shot` (acc_shot) takes the screen and the window list, so those are the
   # floor's only rows and nothing waits on a question (an unanswered ask stops the capture after ~29 s, and its dialog

@@ -1,8 +1,8 @@
 //! A tile's icon, as the switcher and the Split View picker pick one (design/08 §4).
 //!
 //! The entry's own icon file in the icon style (re-tinted under Muted and Monochrome), a
-//! `*-symbolic` file in the text colour, and Bardo's `Window` glyph for an app with no icon (or no
-//! entry). Every entry takes this one path. Bardo's `AppSwitcher` stretches a file to the cell's
+//! `*-symbolic` file in the text colour, and the UI kit's `Window` glyph for an app with no icon (or no
+//! entry). Every entry takes this one path. The UI kit's `AppSwitcher` stretches a file to the cell's
 //! icon square, so it is loaded at the drawn icon side times the scale.
 
 use std::path::Path;

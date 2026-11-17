@@ -77,7 +77,7 @@ fn commands(running: &mut Running) -> Vec<ShotCommand> {
     std::iter::from_fn(|| running.feeds.shot_commands.try_recv().ok()).collect()
 }
 
-/// How many cards Bardo's stack draws (shown or playing out).
+/// How many cards the UI kit's stack draws (shown or playing out).
 fn cards(running: &Running) -> usize {
     running.harness.count(".ds-shot")
 }

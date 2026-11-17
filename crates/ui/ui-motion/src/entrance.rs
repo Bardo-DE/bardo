@@ -1,6 +1,6 @@
 //! An entrance played once as a surface mounts: `Entering` until the animation settles, then `Present` (design/05-MOTION.md section 7, timers instead of `animationend`).
 //!
-//! Every floating surface Bardo draws enters this way, and a consumer's own surface (a control-
+//! Every floating surface the UI kit draws enters this way, and a consumer's own surface (a control-
 //! center pane, a card of its own) can too without restating the timer.
 
 use crate::anim::Anim;

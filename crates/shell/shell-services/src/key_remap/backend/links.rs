@@ -37,7 +37,7 @@ pub(crate) struct Reach {
 }
 
 impl Reach {
-    /// `env`'s the key remap daemon socket, system bus and config directory.
+    /// `env`'s key remap daemon socket, system bus and config directory.
     pub(crate) fn of(env: &Env) -> Reach {
         let system = match env.buses.system.route() {
             BusRoute::Absent => None,

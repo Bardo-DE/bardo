@@ -4,7 +4,7 @@
 //! A file row is the file's icon (or a thumbnail), its name, its folder as `~/…` and when it
 //! was modified; a clipboard row an excerpt (or an image's thumbnail) with its age; an emoji a
 //! cell of the grid ([`super::emoji_grid::EmojiGrid`]); the web fallback a plain row with the
-//! engine's host. Bardo draws each: `sections_view::palette_groups` hands these
+//! engine's host. The UI kit draws each: `sections_view::palette_groups` hands these
 //! words to `RowShape::File` and `RowShape::Clip`, and the emoji to the palette's grid.
 
 use jiff::Timestamp;

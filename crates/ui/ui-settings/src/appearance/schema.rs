@@ -1,4 +1,4 @@
-//! The schema of `bardo/appearance.toml`, as Bardo ships it (design/22-SETTINGS.md section 9.2).
+//! The schema of `bardo/appearance.toml`, as the UI kit ships it (design/22-SETTINGS.md section 9.2).
 
 use super::settings::{AppearanceSettings, IconsSettings};
 use settings_types::RegionSettings;
@@ -7,7 +7,7 @@ use settings_types::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSch
 /// `bardo.settings.toml`: the keys of `appearance.toml`, the `appearance`, `icons` and `region`
 /// domains in one schema.
 ///
-/// Bardo has no program of its own, so `examples/write_schema.rs` writes it (`cargo run -p
+/// The UI kit has no program of its own, so `examples/write_schema.rs` writes it (`cargo run -p
 /// ui-settings --example write_schema -- --write-schema <dir>`).
 #[must_use]
 pub fn bardo_schema() -> Schema {

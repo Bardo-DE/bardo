@@ -1,4 +1,4 @@
-//! A kind Bardo has no component for: its value, read-only, and where to change it.
+//! A kind the UI kit has no component for: its value, read-only, and where to change it.
 
 use dioxus::prelude::*;
 #[cfg_attr(

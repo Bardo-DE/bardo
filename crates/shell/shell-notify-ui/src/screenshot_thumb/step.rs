@@ -1,5 +1,5 @@
 //! The thumbnail's machine: pure, table-tested; the surface feeds it the service's current shot,
-//! the pointer, the gestures, the drag's outcome and Bardo's timers, and carries out what it
+//! the pointer, the gestures, the drag's outcome and the UI kit's timers, and carries out what it
 //! returns.
 //!
 //! - A new current shot shows (`Show`) and starts the hold (`StartHold` with a fresh token); a
@@ -13,7 +13,7 @@
 //!   `ExitSettled` hides (`Hide`, the surface unmaps).
 //! - The keyboard is never taken on appear. The shared ask (`FocusAsked`, from `bardo-shell focus-latest`)
 //!   gives the card the keyboard (`TakeKeyboard`) and pauses the hold like the pointer does; the
-//!   keys then act as the card's buttons do (Enter and Space open it in Bardo's card; Delete and
+//!   keys then act as the card's buttons do (Enter and Space open it in the UI kit's card; Delete and
 //!   Backspace are `TrashPressed`; Escape is `Dismissed`: the hold's own leave, the file kept). Every
 //!   way out of `Shown` while the keyboard is held gives it back (`ReleaseKeyboard`), and the
 //!   compositor taking it away (`FocusLost`) gives the hold `rest_ms` again.
@@ -40,9 +40,9 @@ pub enum Pointer {
 /// Which motion carries a leaving card out.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ThumbExit {
-    /// The card's own exit (Bardo's `ShotOut`), its row still listed.
+    /// The card's own exit (the UI kit's `ShotOut`), its row still listed.
     Card,
-    /// A swipe: the row is unlisted and Bardo's stack flies it out along the swipe.
+    /// A swipe: the row is unlisted and the UI kit's stack flies it out along the swipe.
     Row,
 }
 
@@ -110,9 +110,9 @@ pub enum ThumbIn {
     PointerEnter,
     PointerLeave,
     Click,
-    /// A swipe right past Bardo's threshold.
+    /// A swipe right past the UI kit's threshold.
     SwipedAway,
-    /// A press on the card crossed Bardo's drag threshold: shot `id` is being carried out.
+    /// A press on the card crossed the UI kit's drag threshold: shot `id` is being carried out.
     DragStarted(ShotId),
     /// The drag of shot `id` ended.
     DragEnded(ShotId, DragEnd),
@@ -133,7 +133,7 @@ pub enum ThumbIn {
 pub enum ThumbOut {
     /// Map the surface and play the entrance for `id`.
     Show(ShotId),
-    /// Sleep this long with Bardo's timer, then feed `HoldElapsed(token)`.
+    /// Sleep this long with the UI kit's timer, then feed `HoldElapsed(token)`.
     StartHold(HoldToken, u32),
     /// Tell the service (`ShotCommand::Leave`) and play the exit.
     Leave(ShotId, ShotLeave),

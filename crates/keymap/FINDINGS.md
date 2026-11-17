@@ -48,7 +48,7 @@
   slug strings stay as they are: cua depends on them. The nine `Ctrl+1`..`Ctrl+9` reserved rows on
   our desktop are one `CtrlDigit` rule, so the reason reads "switches to a Space" without the number.
   `AltGr` waits for wave 2 (Bardo uses it).
-- **keyboard-types (2026-11-15).** the chord keymap's own `Modifier`, `Modifiers`, `NamedKey` and `AltGr` are
+- **keyboard-types (2026-11-15).** The chord keymap's own `Modifier`, `Modifiers`, `NamedKey` and `AltGr` are
   gone: modifiers are keyboard-types' `Modifiers` (the OS key is `META`; its deprecated `SUPER` is
   not read), named keys are its `NamedKey`, AltGr is its `ALT_GRAPH` flag. `Key` stays as the chord's
   `Copy` form (one character or a named key); a tapped modifier is that modifier's named key, and

@@ -1,6 +1,6 @@
 //! The rows the center draws, in order, and what a press, Return or Delete on one asks for, pure.
 //!
-//! Each group is its header (Bardo's `GroupHeader`: the app, the count, "N more" or "Show less",
+//! Each group is its header (the UI kit's `GroupHeader`: the app, the count, "N more" or "Show less",
 //! Clear) and then its cards: a collapsed group of several is its newest card stacked over the rest
 //! (macOS: a press on the stack opens it, its close clears the group).
 

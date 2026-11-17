@@ -497,7 +497,7 @@ and every component with a `Detailed` state ships one harness test per moment th
 
 How to read an entry: **States** are the element's own enum. The table gives, per moment, **our
 detail** (primitive and tokens), **the reference** (with confidence and source key), **today**
-(Bardo `crates/ds`, sill sill's `crates/sill-bar`, `crates/sill-dock` and `crates/sill-overlays` at `ee9dd76`), and the **gap** (numbered `G#`,
+(Bardo `crates/ds`, sill's `crates/sill-bar`, `crates/sill-dock` and `crates/sill-overlays` at `ee9dd76`), and the **gap** (numbered `G#`,
 section 6 counts them). A moment the element does not have is omitted. "none" under Today means
 the state is shown with no motion (a snap).
 
@@ -824,7 +824,7 @@ session ends: the button's label is replaced by `Pending{Spin}` after `PendingGr
 
 ## 7. Waves
 
-Lanes are agent-sized (one branch, one gate, about a day of agent work). **Q** = Bardo only;
+Lanes are agent-sized (one branch, one gate, about a day of agent work). **Q** = the UI kit only;
 **Q+S** = a Bardo lane and a sill lane after it (the sill lane wires services' states and stamps
 into the new component states). The two lanes in flight (battery-fill, animated-emoji) should
 land on the primitives rather than beside them: battery-fill is the first consumer of `Sweep` and
@@ -838,7 +838,7 @@ land on the primitives rather than beside them: battery-fill is the first consum
 | D1 | bar wiring | sill's bar items on `StatusGlyph`: `Link::Connecting` → Joining with an op stamp from the network service, no-internet from connectivity, battery thresholds (`bar.battery_low_percent`), the Bluetooth bar item | S | G1-G12 |
 | D2 | control center modules | `ModuleTile` disc glyph on `MorphGlyph`/`Settle`; `SettingsRow` trailing `Pending`/`Settle{Check}`/`Shake`; Now Playing play/pause `MorphGlyph{OffUp}`, position bar, track cross-fade; Battery module rings on `Sweep`/`CountUp`; a keyboard-brightness module on `LevelControl` | Q+S | G14, G16-G18, G20, G21, G23, G25-G30. **Bardo lane built 2026-09-27** (`details-d2`): `ModuleTile { disc: DiscMotion }`, `SettingsRow { phase: RowPhase, work: RowWork, disc: RowDisc }` and `RowTrailing::Battery`, `PlayPauseButton`, `NowPlayingTrack`, `TrackPosition`, `DeviceBattery`, `LevelGlyph::KeyboardBrightness`, `Icon::MoonFilled`, `Anim::MorphInSpring`; the sill lane is CONSUMING.md "Control center details" |
 | D3 | OSD | default `LevelLook::Segments` for the OSD (user confirms), nothing else | Q+S (a settings default) | G31 |
-| D4 | dock | badge appear and clear, running dot out, progress ring on `Sweep` + `Settle`, remove poof, Downloads stack tile's one bounce | S (Bardo only if `ProgressRing` from D6 is not in yet) | G36-G40 |
+| D4 | dock | badge appear and clear, running dot out, progress ring on `Sweep` + `Settle`, remove poof, Downloads stack tile's one bounce | S (the UI kit only if `ProgressRing` from D6 is not in yet) | G36-G40 |
 | D5 | notifications | group content cross-fade and chip bump, center group expand (`Reveal`) and collapse (`heal`), the X → Clear morph, action `Settle`/`Shake` | Q+S | G32-G35 |
 | D6 | progress and forms | `ProgressRing`/`ProgressBar` on `Sweep` (Pending → Progress), `TextInput` `Invalid` state, sliding selection indicator for `SegmentedControl`/`WorkspacePills`/`Tabs`, `Toggle { touch }` | Q | G13, G51, G53, G55 |
 | D7 | small ones | launcher Reveal and no-results, lock dots and caps mark, switcher hide, widgets (day rollover, day/night cross-fade, bolt gap), screenshot check, power-menu pending, menu pick blink (after the 13.9 decision) | Q+S | G19, G24, G41-G44, G46-G50, G52, G54, G56, G22 (details only; the modules are their own milestone) |

@@ -1,6 +1,6 @@
 //! The cascade layers (ARCHITECTURE.md section 10): the design system is `@layer ds`, a consumer's
 //! `AppStyle` sheet is `@layer app`, the chosen look is `@layer look`, and the person's own styles
-//! are unlayered. A one-class user rule beats Bardo's own attribute-qualified rule, and a
+//! are unlayered. A one-class user rule beats the UI kit's own attribute-qualified rule, and a
 //! one-class app rule beats it too, a look beats a more specific app rule, and a user rule beats
 //! a look or an app rule that is more specific: specificity only ever sorts rules inside one
 //! layer.

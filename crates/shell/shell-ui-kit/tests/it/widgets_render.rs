@@ -1,5 +1,5 @@
 //! What the notification center's widgets draw, each in a `ui_harness::Harness` on the fake
-//! services: the card (Bardo's `WidgetCard`, a tile at Medium, `data-widget` its kind) and Up
+//! services: the card (the UI kit's `WidgetCard`, a tile at Medium, `data-widget` its kind) and Up
 //! Next's rows, never one past the tile's body.
 
 use shell_ui_kit::harness::fake;

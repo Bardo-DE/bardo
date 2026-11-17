@@ -8,7 +8,7 @@ use files_model::{AppPick, Browser, Input};
 use crate::edge::AppChoiceView;
 use crate::words;
 
-/// Bardo's availability for a yes/no.
+/// The UI kit's availability for a yes/no.
 #[must_use]
 pub fn enabled(can: bool) -> ui_components::prelude::Availability {
     if can {

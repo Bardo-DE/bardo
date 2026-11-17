@@ -175,7 +175,7 @@ pub use screen_sharing::{
     screen_sharing_step,
 };
 pub use search::{Found, Hit, Rank, Search, search};
-/// Whether an agent may set a key: Bardo's own type, carried by each `KeySpec`.
+/// Whether an agent may set a key: the UI kit's own type, carried by each `KeySpec`.
 pub use settings_types::schema::AgentSetting;
 pub use sharing::{
     Existing, LendFailure, SHARING_KEY, Sharing, SharingEffect, SharingInput, sharing_step,

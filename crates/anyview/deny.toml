@@ -91,7 +91,7 @@ allow-git = [
     # The desktop's portable keymap (Bardo v0.3.14 resolves keys to actions with it, and anyview-core
     # declares the viewer's own default chords): one rev, Bardo's. MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/chordkit",
-    # dioxus-core 0.7.10 with the dirty-task fix backported (Bardo's [patch], v0.2.15+).
+    # dioxus-core 0.7.10 with the dirty-task fix backported (the UI kit's [patch], v0.2.15+).
     "https://github.com/Bardo-DE/dioxus",
     # Single instance without D-Bus (anyview-platform): MIT OR Apache-2.0, one rev in Cargo.toml.
     "https://github.com/Bardo-DE/latchkey",

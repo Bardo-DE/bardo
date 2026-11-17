@@ -1,4 +1,4 @@
-//! The page's place among the pages: Bardo declares it by the id `extensions`.
+//! The page's place among the pages: the UI kit declares it by the id `extensions`.
 
 use settings_types::schema::Page;
 

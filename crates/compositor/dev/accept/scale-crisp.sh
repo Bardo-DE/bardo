@@ -8,7 +8,7 @@
 # the testkit shoots: a 400x300 gradient window, the pointer in the corner) byte for byte.
 # The client is the compositor's own test client, the artefact a jail has; Bardo and layer-shell-host demo
 # windows are the consumer scripts' (layer-shell-host's scripts/dev/accept-*.sh, run with
-# COMPOSITOR=the compositor). Exit: 0 pass, 1 fail, 2 could not run, 3 environment.
+# COMPOSITOR=bardo). Exit: 0 pass, 1 fail, 2 could not run, 3 environment.
 #
 # Owner: P0-accept (fills the P0-H1 stub).
 set -euo pipefail

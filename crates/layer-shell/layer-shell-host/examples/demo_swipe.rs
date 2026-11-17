@@ -1,7 +1,7 @@
 //! A notification banner swiped away, for `scripts/dev/accept-swipe.sh`: a 400 x 120 Overlay layer
 //! anchored top-right whose blur and input regions both follow the card `#card`
 //! (`RegionSpec::Elements`, radius 0, so each region is one `wl_region.add`). A press and drag
-//! moves the card's wrapper by `translateX(dx)` (Bardo's `--swipe-dx`); a release past 40 px starts
+//! moves the card's wrapper by `translateX(dx)` (the UI kit's `--swipe-dx`); a release past 40 px starts
 //! the card's own exit animation (`translateX(0)` to `(420px)` over 400 ms, like Bardo's
 //! `banner-out`), a release short of it puts the card back. The regions are what the acceptance
 //! reads, from the client's `WAYLAND_DEBUG` trace.

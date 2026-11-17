@@ -17,7 +17,7 @@
 #
 #   dev/bootstrap.sh [--build-only | --tools-only | --foot-only] [--release] [--fuzz] [--force]
 #
-# --build-only builds just the four the compositor binaries (what dev/accept.sh --build runs);
+# --build-only builds just the four compositor binaries (what dev/accept.sh --build runs);
 # --tools-only the rest; --foot-only just foot (no cargo, no network beyond dnf). Anything already present is kept unless --force. $BARDO_COMPOSITOR_TOOLS moves
 # the tools directory. Refuses inside the jail (exit 2). Exit 3: a host tool is missing.
 #

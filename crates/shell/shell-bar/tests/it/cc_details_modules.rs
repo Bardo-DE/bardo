@@ -127,7 +127,7 @@ fn each_devices_ring_stands_at_its_level_when_the_center_opens() {
     settle_until(harness, |h| h.count(RING) == 2);
     let this = format!("{RING}:nth-child(1) .ds-battery-figure");
     let buds = format!("{RING}:nth-child(2) .ds-battery-figure");
-    // Nothing sweeps in on first show (Bardo design/30 section 1.3): the figures are the levels.
+    // Nothing sweeps in on first show (the UI kit design/30 section 1.3): the figures are the levels.
     assert_eq!(
         (figure(harness, &this), figure(harness, &buds)),
         (Some(64), Some(80))

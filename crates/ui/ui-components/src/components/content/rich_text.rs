@@ -1,7 +1,7 @@
 //! Rich: a body of runs that may hold links (notification parts).
 //!
 //! The Notifications spec lets a body carry `<b>`, `<i>`, `<u>` and `<a href>`; the server parses
-//! that markup into runs once, and Bardo draws them: a toned run as [`Text`] draws it, a link as
+//! that markup into runs once, and the UI kit draws them: a toned run as [`Text`] draws it, a link as
 //! `a.ds-run-link`. A link keeps its press (the rule of a stopped press: propagation stopped and
 //! the default prevented), so a press on a link inside a notification opens the link and never also
 //! opens the notification, and Blitz never navigates the document itself.
@@ -23,7 +23,7 @@ pub enum RichRun {
     Link {
         /// The words drawn.
         text: String,
-        /// The target, as the markup gave it; Bardo never opens it.
+        /// The target, as the markup gave it; the UI kit never opens it.
         href: String,
     },
 }

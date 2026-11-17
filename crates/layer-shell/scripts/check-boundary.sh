@@ -11,7 +11,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 # layer-shell-host is portable to any Wayland compositor: nothing compositor-specific, D-Bus or PulseAudio. It
-# also stands below the design system and the gesture daemon: nothing of Bardo's or the mouse gestures daemon's
+# also stands below the design system and the gesture daemon: nothing of the UI kit's or the mouse gestures daemon's
 # daemon. The mouse gestures daemon socket's messages come from the `mouse-gestures-proto` crate, which is not the
 # daemon (`mouse_gestures`, forbidden below) and depends on serde and thiserror only.
 #

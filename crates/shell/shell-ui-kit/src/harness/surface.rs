@@ -197,7 +197,7 @@ impl<S: Surface> SurfaceSetup<S> {
     }
 
     /// Where the keyboard goes when the element that had it leaves the document. The harness
-    /// hands it on to an ancestor, as a window of Bardo's own does; `BlitzDefault` is what a
+    /// hands it on to an ancestor, as a window of the UI kit's own does; `BlitzDefault` is what a
     /// layer-shell-host surface has today, which wires no focus keeper.
     #[must_use]
     pub fn focus(mut self, focus: FocusFallback) -> Self {

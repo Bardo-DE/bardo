@@ -18,7 +18,7 @@
 #   5. 5 s idle after it hides: 0 frames on the OSD surface.
 #
 # Then, not one of the four: `bardo-shell debug osd volume 60 --mute muted` for a second screenshot,
-# dev/out/osd-compositor-muted.png, of Bardo's `Osd` card muted (non-fatal: it does not flip the
+# dev/out/osd-compositor-muted.png, of the UI kit's `Osd` card muted (non-fatal: it does not flip the
 # script's exit status).
 #
 # Usage: dev/accept/osd.sh

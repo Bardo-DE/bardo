@@ -10,7 +10,7 @@
 //! Inter's). Every emoji Inter lacks, which is all the pictographs, flags, skin tones and ZWJ
 //! sequences, falls through to the colour face. Consumers may not write a `font-family` themselves (the lint), so Bardo carries
 //! the stack, and `.ds-emoji-text` applies it. Kept apart from [`super::Family`], whose members are
-//! the faces Bardo ships; this one is the system's.
+//! the faces the UI kit ships; this one is the system's.
 
 use super::name::VarName;
 use super::token::Token;

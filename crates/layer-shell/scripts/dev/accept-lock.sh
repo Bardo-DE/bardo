@@ -3,9 +3,9 @@
 # does not, so there is no KWin form of this script) in a jail, driven with lib/input.sh. Never the user's
 # session: the compositor's socket lives in a private runtime directory with a marker file, demo_lock's
 # guard refuses any other socket, the jail is the second wall, and every exit path unlocks and stops
-# the compositor.
+# The compositor.
 #
-#   COMPOSITOR=the compositor scripts/dev/accept-lock.sh   (the default here)
+#   COMPOSITOR=bardo scripts/dev/accept-lock.sh   (the default here)
 #
 # There is no screenshot: bardo-compositorctl has no `shot` until P1-C1, so what a pixel check would prove (the
 # lock covers the session; the session shows again after the unlock) is read from the compositor's
@@ -23,10 +23,10 @@
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
-COMPOSITOR="${COMPOSITOR:-compositor}"
+COMPOSITOR="${COMPOSITOR:-bardo}"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"
-[ "$COMPOSITOR" = compositor ] || { echo "accept-lock.sh runs on compositor only: KWin has no ext-session-lock-v1" >&2; exit 64; }
+[ "$COMPOSITOR" = bardo ] || { echo "accept-lock.sh runs on compositor only: KWin has no ext-session-lock-v1" >&2; exit 64; }
 comp_build -p layer-shell-host --example demo_lock || exit 1
 comp_build -p layer-shell-host --features debug-inject \
   --example probe_toplevel || exit 1

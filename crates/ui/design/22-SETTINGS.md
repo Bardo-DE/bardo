@@ -207,10 +207,10 @@ Pinned items live in `[[dock]]` rows of `~/.config/bardo/shell/layout.toml` (des
 | `dock.position` | `DockPosition::{Bottom,Left,Right}` | `Bottom` | Left/Right deferred | `10-BEHAVIOUR-dock.md#10-6-configuration` | RETIRING: no reader; the dock is always at the bottom until Left and Right are built |
 | `dock.indicators` | `Indicators::{On,Off}` | `On` | | `10-BEHAVIOUR-dock.md#10-6-configuration` | proposed |
 | `dock.trash` | `TrashTile::{On,Off}` | `On` | | `10-BEHAVIOUR-dock.md#10-6-configuration` | proposed |
-| `dock.badge_size_px` | `Px` | `18` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
-| `dock.badge_radius_px` | `Px` | `9` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
-| `dock.progress_ring_diameter_px` | `Px` | `20` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
-| `dock.progress_ring_stroke_px` | `Px` | `3` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; Bardo's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.badge_size_px` | `Px` | `18` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; the UI kit's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.badge_radius_px` | `Px` | `9` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; the UI kit's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.progress_ring_diameter_px` | `Px` | `20` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; the UI kit's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
+| `dock.progress_ring_stroke_px` | `Px` | `3` | | `10-BEHAVIOUR-dock.md#10-3-2-running-indicator-badge-progress-separator` | RETIRING: no reader; the UI kit's `Badge` and `ProgressIndicator` set their own sizes (`DockTile`) |
 | `dock.floor` | `DockFloor::{Off,On}` | `Off` |  | `FINDINGS.md` "macOS polish"; `04-COMPONENTS.md` | proposed (polish pass, 2026-09-25) |
 
 ### 3.6 `launcher` (shell/settings.toml)
@@ -335,7 +335,7 @@ The parts a sill session borrows until M11 draws its own (design/20 §1.9 lock s
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `session.user_picture` | `PictureChoice::{Auto,Letter,Emoji(name),Photo}` written as a string | `auto` | `auto`, `letter`, `photo` or `emoji:<name>` (a stable name from Bardo's 42, design/25). Auto: the photo if `~/.face` (or AccountsService's icon) exists, else the letter; Photo with no file falls back to the letter | design/25 (user picture), Bardo `PictureChoice::resolve` | RETIRING: no reader; the picture is wired to `resolve_picture` first |
+| `session.user_picture` | `PictureChoice::{Auto,Letter,Emoji(name),Photo}` written as a string | `auto` | `auto`, `letter`, `photo` or `emoji:<name>` (a stable name from the UI kit's 42, design/25). Auto: the photo if `~/.face` (or AccountsService's icon) exists, else the letter; Photo with no file falls back to the letter | design/25 (user picture), Bardo `PictureChoice::resolve` | RETIRING: no reader; the picture is wired to `resolve_picture` first |
 | `session.lock_grace_s` | `Secs` | `5` | `0..=60`; 0 always asks; only after sill's own idle screen-off lock (cause `IdleScreenOff`), never after a manual lock, the lid, suspend or resume | sill F863, F908 | proposed (Q441, 2026-09-27) |
 
 ### 3.20 `widgets` (retired)
@@ -865,7 +865,7 @@ only in v1, no widget; a later wave may promote one if the user asks.
 | **Keyboard / Shortcuts** | proposed by `28-CUSTOMIZATION.md#411-keyboard-shortcuts`: `shortcuts.bindings` (the system list, toggle and chord per action) and `shortcuts.app_shortcuts`, rows added here after sill registers them (28 §6.0); sill writes them into the compositor's `system_actions` and `custom` shortcut files, and the chord the desktop already holds wins a clash, shown on the row (28 §7 decision 10) |
 | **Notifications** | `notifications.dnd`, `notifications.banner_style` (per app) |
 | **Spotlight** (sill M9, Q303) | `launcher.clipboard_history` (a privacy choice people should find), `launcher.web_search`, `launcher.emoji_skin_tone`; the rest of `launcher.*` stays Advanced |
-| **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows the compositor publishes through its settings module (one per app and permission); no keys of Bardo's own | 
+| **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows the compositor publishes through its settings module (one per app and permission); no keys of the UI kit's own | 
 | **Power** (added Q445; sill's own idle service, section 3.24) | `idle.screen_off_ac_min`, `idle.screen_off_battery_min`, `idle.suspend_ac_min`, `idle.suspend_battery_min`, `idle.lock`, `session.lock_grace_s` (`Sill` under `idle.times` is what makes the `idle.screen_off_*`/`idle.suspend_*` sliders apply; under `Desktop` they still render, disabled, so the row explains itself) |
 | **Intelligence** (the companion, design/32; sill's `companion` domain and the daemons' schemas) | Companion: `companion.summon`, `companion.in_field`, `companion.notify`; Models: `ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>` (the live picker, section 9.4); Memory: `memory.files.at_rest`, `memory.consolidation.when`, `memory.consolidation.apply`, and the memory view (a live module); Computer use: `cua.enabled`, `cua.apps`, `cua.default_mode`, `cua.autopause`; Privacy: `agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h` |
 | **Viewer** (anyview, section 3.31) | Window: `viewer.chrome.hide_after`, `viewer.warm_for`; Viewing: `viewer.zoom.step`, `viewer.media.seek_step`; History: `viewer.history.cap`, `viewer.versions.keep`; Export: `viewer.export.jpeg_quality`, `viewer.export.avif_quality`, `viewer.export.paper`, `viewer.export.orientation`; `viewer.peek.*` and `viewer.image.*` are Advanced |
@@ -1042,7 +1042,7 @@ The derive's build step writes `target/.../<app-id>.settings.toml` and the packa
 to `$XDG_DATA_DIRS/bardo/settings/<app-id>.settings.toml`, next to the `.desktop` file, the way
 GSettings ships schemas. The file is TOML, one `[[key]]` table per `KeySpec`, plus `app`,
 `file` and `version`. Developers run `cargo run -p <app> -- --write-schema <dir>` for a local
-install. Bardo's own schema (`bardo.settings.toml`: the `appearance` and `icons` domains of
+install. The UI kit's own schema (`bardo.settings.toml`: the `appearance` and `icons` domains of
 `bardo/appearance.toml`) has no app binary, so it is written by the `ui-settings` example
 `write_schema` (`cargo run -p ui-settings --example write_schema -- --write-schema <dir>`). A schema without a program (a stale file) is skipped with a warning.
 

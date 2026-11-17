@@ -7,12 +7,12 @@
 //! a consumer's own compiled stylesheet already is (mirroring how `mail-app`'s
 //! `a_class_with_no_rule_is_named` test passed its whole `STYLE` constant, tokens and
 //! components together, to `unstyled_classes`). `markup` does not add `ui_components::stylesheet()`
-//! itself, so a page that forgets to inject Bardo's sheet is caught too.
+//! itself, so a page that forgets to inject the UI kit's sheet is caught too.
 //!
-//! A class no rule styles is [`Rule::UnstyledClass`]; an element Bardo draws for you written by
+//! A class no rule styles is [`Rule::UnstyledClass`]; an element the UI kit draws for you written by
 //! hand (an `<svg>` that is neither a `Glyph` nor marked `data-ds-svg`, a form control with no
 //! `ds-` class) is [`Rule::RawMarkup`]; inline colours and durations are the stylesheet rules
-//! (`super::inline_style`), except in the custom properties a Bardo component computes and
+//! (`super::inline_style`), except in the custom properties a UI kit component computes and
 //! writes on its own element. Each offence's
 //! selector is the element as `tag.class.class`, which is what an [`super::Exception`] names.
 
@@ -24,7 +24,7 @@ use super::markup_hig;
 use super::rule::{LintConfig, Offence, Rule};
 use super::tokenize::{self, Located};
 
-/// Form controls Bardo's components render; one without a `ds-` class was written by hand.
+/// Form controls the UI kit's components render; one without a `ds-` class was written by hand.
 const CONTROLS: &[&str] = &["button", "input", "select", "textarea"];
 
 /// Every offence in `html`, given the consumer's own stylesheet, that none of
@@ -121,13 +121,13 @@ pub(super) fn element_selector(tag: &str) -> String {
         .collect()
 }
 
-/// Whether `class` is one Bardo's components write: the root's `ds` or any `ds-*`.
+/// Whether `class` is one the UI kit's components write: the root's `ds` or any `ds-*`.
 fn is_bardo_class(class: &str) -> bool {
     class == "ds" || class.starts_with("ds-")
 }
 
 /// Why `name` with `classes` is hand-written markup Bardo should have drawn, if it is. An
-/// `<svg>` is Bardo's when it is a `Glyph` (`.ds-ic`) or carries the `data-ds-svg` marker a
+/// `<svg>` is the UI kit's when it is a `Glyph` (`.ds-ic`) or carries the `data-ds-svg` marker a
 /// component that draws its own vector (the `SendPill`'s ring) writes.
 fn raw_element(name: &str, classes: &[&str], marked: bool) -> Option<&'static str> {
     if name.eq_ignore_ascii_case("svg") {

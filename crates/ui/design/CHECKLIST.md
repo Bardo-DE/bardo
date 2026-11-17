@@ -60,7 +60,7 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
 
 - [ ] Only `ds-` classes; no consumer rule styles `.ds-*` or `[data-theme|accent|motion|
       material]` (`lint` `DsInternals`). Cite `04-COMPONENTS.md`.
-- [ ] No raw `button`, `input` or menu markup; every control is a Bardo component
+- [ ] No raw `button`, `input` or menu markup; every control is a UI kit component
       (`lint::markup`). Cite `04-COMPONENTS.md`.
 - [ ] Every state (hover, active, focus-visible, selected, disabled) matches 04. Cite
       `04-COMPONENTS.md`.
@@ -76,7 +76,7 @@ anything that fails. A box that cannot be checked is a finding, not a skip.
 
 - [ ] Durations and easings are tokens only (`lint` `RawDuration`, `RawEasing`). Cite
       `05-MOTION.md`.
-- [ ] Keyframes come from Bardo's `motion.css` only (`lint` `Keyframes`,
+- [ ] Keyframes come from the UI kit's `motion.css` only (`lint` `Keyframes`,
       `UnknownAnimation`), and only live ones. Cite `30-CATALOGUE.md` section 1.3.
 - [ ] State after an animation is driven by Bardo timers (`settle`, `use_motion_timer`,
       `use_pulse`), never ad-hoc sleeps. Cite `05-MOTION.md`.

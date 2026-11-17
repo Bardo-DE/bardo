@@ -257,7 +257,7 @@ const DISC_BT: &str = ".ds-module-disc > .ds-status-glyph[*|data-kind=bluetooth]
 const BATTERY_HEAD: &str = ".ds-module-panel-glyph > .ds-status-glyph[*|data-kind=battery]";
 /// The Sound module's level (Display's is the other `.ds-slider`).
 const SOUND: &str = ".ds-slider[*|aria-label=\"Built-in Audio Analog Stereo\"]";
-/// The glyph in the knob (the `Mac` look carries it there, Bardo design/29 section 16).
+/// The glyph in the knob (the `Mac` look carries it there, the UI kit design/29 section 16).
 const LEVEL: &str = ".ds-slider[*|aria-label=\"Built-in Audio Analog Stereo\"] .ds-slider-thumb";
 
 /// The battery header's drawn fill width, 0 when there is none.
@@ -274,7 +274,7 @@ fn the_centers_battery_stands_at_its_level_when_opened() {
     let mut running = live::start(services, feeds);
     let harness = &mut running.harness;
     settle_until(harness, |h| h.count(BATTERY_HEAD) == 1);
-    // Nothing sweeps in on first show (Bardo design/30 section 1.3).
+    // Nothing sweeps in on first show (the UI kit design/30 section 1.3).
     let start = fill(harness);
     harness.advance(Duration::from_millis(200));
     assert_settles_to_zero_frames(harness);

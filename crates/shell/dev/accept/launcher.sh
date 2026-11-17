@@ -54,7 +54,7 @@
 #        `escape` hides the pane, `escape` closes the launcher. On a row with actions: an `m9`
 #        document, else, while the files provider answers nothing, the Ghostty app row.
 #     6. Documents over its cap reports `hidden > 0`; Enter on the "Show More" line reveals them.
-#     7. `tab` to Emoji with nothing typed (Shift+Tab twice: Web, then Emoji) shows Bardo's emoji
+#     7. `tab` to Emoji with nothing typed (Shift+Tab twice: Web, then Emoji) shows the UI kit's emoji
 #        grid (dev/out/launcher-v2-emoji.png).
 #     8. 5 s idle after closing: 0 frames on the launcher's surfaces.
 #     C. Home then →, End then →: the key claim reads the caret under bardo-shell.
@@ -88,7 +88,7 @@
 #
 # --real-input: layer-shell-host's scripts/dev/fake-input.sh drives the headless KWin: every key is a
 # real Wayland key event with a real serial and keyboard focus, reaching the palette's field and
-# Bardo's key claim as a person's would. `bardo-shell debug launcher-rows` and `bardo-shell debug capture` only
+# The UI kit's key claim as a person's would. `bardo-shell debug launcher-rows` and `bardo-shell debug capture` only
 # look; no key goes through `bardo-shell debug key`. The bus is KWin's private bus, given to
 # the daemon (and the stub file manager, as an argument) only, never to this shell. ONE
 # fake-input client serves the whole run. `wl-copy`/`wl-paste` get KWin's socket by absolute
@@ -111,7 +111,7 @@
 #        skipped (exit 2).
 #     Scroll. Real Down past the card's visible rows (Documents filtered, 24 rows): is the
 #        selected row scrolled into view? Real Up back to the first row. Recorded, not asserted
-#        (Bardo's open gap): OPEN while the selected row is off the card.
+#        (the UI kit's open gap): OPEN while the selected row is off the card.
 #     Caret. `bardo-shell launcher open --query m9`, then a real "x": where the caret starts. Recorded,
 #        not asserted: OPEN while the query becomes "xm9" (the caret at the start). Then real
 #        End and →: the pane shows (the claim reads the caret at the end).
@@ -1169,7 +1169,7 @@ print(*box, a.size[0]) if box else print("none")
 EOF
 }
 
-# How many pixels of a capture carry the selected row's tint (Bardo's light selection, about
+# How many pixels of a capture carry the selected row's tint (the UI kit's light selection, about
 # rgb(220, 229, 243)): a selected row on the card shows thousands.
 selection_pixels() {
   python3 - "$OUT_DIR/$1.png" <<'EOF'

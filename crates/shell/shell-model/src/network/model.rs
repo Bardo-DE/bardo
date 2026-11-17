@@ -11,7 +11,7 @@ pub struct Network {
     pub link: Link,
     pub connectivity: Connectivity,
     /// The join attempts: one stamp per entry into `Connecting`, a new one per failed
-    /// activation (the bar's Wi-Fi glyph, Bardo design/26 R4 and R6).
+    /// activation (the bar's Wi-Fi glyph, the UI kit design/26 R4 and R6).
     #[serde(default)]
     pub join: Attempts,
 }

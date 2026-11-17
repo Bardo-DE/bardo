@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The own polkit agent's acceptance, on a private headless compositor: the compositor under
-# dev/accept.sh --compositor the compositor, else KWin (layer-shell-host scripts/dev/kwin-virtual.sh), started and stopped by the script.
+# dev/accept.sh --compositor bardo, else KWin (layer-shell-host scripts/dev/kwin-virtual.sh), started and stopped by the script.
 #
 # Nothing here reaches polkitd, the system bus, PAM or a real password. Every bus is KWin's
 # private one (start_compositor refuses to go on if it would be the real one): the daemon's session and

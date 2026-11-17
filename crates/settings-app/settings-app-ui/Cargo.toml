@@ -1,6 +1,6 @@
 [package]
 name = "settings-app-ui"
-description = "The Settings window: sidebar, pages and controls, drawn only with bardo's components."
+description = "The Settings window: sidebar, pages and controls, drawn only with the UI kit's components."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -30,7 +30,7 @@ ui-blitz = {path = "../../ui/ui-blitz"}
 memory-dbus = { path = "../../memory/memory-dbus" }
 account-capability = {path = "../../accounts/account-capability"}
 # Fixtures: the in-memory links (the daemons' live settings modules among them: `FakeModules`) and
-# the test kit, and Bardo's harness. The tests that stand a service that is no live module up on a
+# the test kit, and the UI kit's harness. The tests that stand a service that is no live module up on a
 # private bus (the portal, running models, the engines, computers, memory, the sync service, and
 # the owner checks) need the commented ones below.
 settings-app-link = {path = "../settings-app-link"}

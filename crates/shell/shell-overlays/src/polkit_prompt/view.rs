@@ -8,7 +8,7 @@
 //! at once and is never kept in a signal), `oncancel` sending `PolkitCommand::Dismiss(cookie)`;
 //! when the request goes away `shown` turns `false` and the surface unmaps at `on_hidden`
 //! (`shell_ui_kit::sheet_stage`). Nothing is styled under `.ds-polkit*`; the only markup of bardo-shell's own is the
-//! wrapper that hears the keys' modifiers, since Bardo's sheet floats in the root's overlay host.
+//! wrapper that hears the keys' modifiers, since the UI kit's sheet floats in the root's overlay host.
 
 use base_secret::SecretText;
 use dioxus::prelude::*;
@@ -55,7 +55,7 @@ fn caps_of(modifiers: Modifiers) -> CapsLock {
     }
 }
 
-/// Bardo's prompt for `view`.
+/// The UI kit's prompt for `view`.
 fn prompt(
     view: PolkitPromptView,
     shown: bool,

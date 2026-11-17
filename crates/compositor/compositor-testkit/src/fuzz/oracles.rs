@@ -1,6 +1,6 @@
 //! The five oracles of 11 section 3.5, checked after every op:
 //!
-//! 1. the compositor is alive (a pump that panics is a failure);
+//! 1. The compositor is alive (a pump that panics is a failure);
 //! 2. a client that got a protocol error got a documented one;
 //! 3. a healthy bystander completes a roundtrip and its state is unchanged;
 //! 4. `Model::check_invariants` holds;

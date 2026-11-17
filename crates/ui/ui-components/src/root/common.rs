@@ -8,11 +8,11 @@ use crate::root::pass_through::{DataAttr, ExtraClass, attributes, class_list};
 use dioxus::prelude::*;
 use std::fmt;
 
-/// What a consumer may put on any Bardo component's own element.
+/// What a consumer may put on any UI kit component's own element.
 ///
 /// `data` and `extra_class` are checked when built ([`DataName::parse`], [`ExtraClass::parse`]):
-/// a `ds-` name or class, or a `data-*` name Bardo writes itself, is refused, so nothing added
-/// here can restyle the element through Bardo's rules.
+/// a `ds-` name or class, or a `data-*` name the UI kit writes itself, is refused, so nothing added
+/// here can restyle the element through the UI kit's rules.
 ///
 /// [`DataName::parse`]: crate::root::pass_through::DataName::parse
 /// [`ExtraClass::parse`]: crate::root::pass_through::ExtraClass::parse
@@ -43,7 +43,7 @@ impl fmt::Debug for Common {
 }
 
 impl Common {
-    /// `own` (Bardo's class list) with the consumer's classes after it.
+    /// `own` (the UI kit's class list) with the consumer's classes after it.
     #[must_use]
     pub fn class(&self, own: &str) -> String {
         class_list(own, self.extra_class.as_ref())

@@ -10,7 +10,7 @@
 #   (b) No module outside a `desktop/` directory names `crate::desktop` or zbus: the core never
 #       reaches the desktop modules or a D-Bus crate. (A service client crate's own D-Bus
 #       transport is a `dbus` or `desktop` module of that crate, so it falls under the same rule.)
-# A repo whose crates ARE the D-Bus layer (Bardo's ui-settings, ui-helpers, ui-blitz, ui-desktop) lists
+# A repo whose crates ARE the D-Bus layer (the UI kit's ui-settings, ui-helpers, ui-blitz, ui-desktop) lists
 # path regexes, one per line, in `<workspace-dir>/.portable-allow`; matching files are skipped by (b).
 # An app repo leaves the file out. Exit status 0 when both hold.
 set -uo pipefail

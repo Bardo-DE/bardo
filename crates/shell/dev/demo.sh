@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# A demo session: today's bardo-shell inside a headless the compositor, left running between commands.
+# A demo session: today's bardo-shell inside a headless compositor, left running between commands.
 #
 #   dev/demo.sh start            build, seed a scratch desktop, leave it up
 #   dev/demo.sh tour             play the tour and write a frame of each beat to dev/out/demo-*.png

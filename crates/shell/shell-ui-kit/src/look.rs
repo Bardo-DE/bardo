@@ -4,7 +4,7 @@
 //! Every surface draws its `Ds { look }` from [`use_active_look`], so an output follows its own
 //! active workspace (rule 6).
 //!
-//! Bardo has no `spaces.json` store yet (design/21 §10 names `ui-settings`' writer); until it
+//! The UI kit has no `spaces.json` store yet (design/21 §10 names `ui-settings`' writer); until it
 //! does [`use_space_look`] returns the design/21 §4 default for the workspace's index:
 //! `PRESETS[index % 8]`, the preset's own grain (35 and 55 for presets 1 and 2) or
 //! no grain. The card always wears the appearance accent.

@@ -17,7 +17,7 @@ mod sheet;
 
 const FILE: &str = "shell/settings.toml";
 
-/// One corner key of the stand-in schema, as Bardo declares it: text, drawn by the `corners`
+/// One corner key of the stand-in schema, as the UI kit declares it: text, drawn by the `corners`
 /// control, empty at first.
 fn corner_key(path: &str) -> KeySpec {
     let (kind, default, control) = (

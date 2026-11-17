@@ -1,7 +1,7 @@
 //! Geometry for a file manager's glyphs: Home, the drives, Eject and the per-type file glyphs.
 //! Lucide, transcribed from `lucide-static` 1.47.0
 //! (<https://unpkg.com/lucide-static@1.47.0/icons/>), ISC licence; see `super`, except the
-//! marks Lucide has no icon for, which are Bardo's own on Lucide's grid (24, a 2 px round
+//! marks Lucide has no icon for, which are the UI kit's own on Lucide's grid (24, a 2 px round
 //! stroke, no fills):
 //!
 //! - `DriveExternal`: a drive's flat body (a pill-cornered box 20 x 10 with an activity dot)
@@ -81,7 +81,7 @@ const DRIVE_INTERNAL: &[Shape] = &[
     Shape::Path("M6 16h.01"),
 ];
 
-/// Bardo's own: a flat drive body with a connector plug standing on it.
+/// The UI kit's own: a flat drive body with a connector plug standing on it.
 const DRIVE_EXTERNAL: &[Shape] = &[
     Shape::Rect {
         x: "2",
@@ -181,7 +181,7 @@ const FILE_CODE: &[Shape] = &[
     Shape::Path("m14 12.5 2 2.5-2 2.5"),
 ];
 
-/// Bardo's own: Lucide `file` with a letter P inside.
+/// The UI kit's own: Lucide `file` with a letter P inside.
 const FILE_PDF: &[Shape] = &[
     Shape::Path(
         "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
@@ -217,7 +217,7 @@ const LINES: &[Shape] = &[
     Shape::Path("M17 18H3"),
 ];
 
-/// Bardo's own: the letter P of `FILE_PDF`, alone.
+/// The UI kit's own: the letter P of `FILE_PDF`, alone.
 const PDF: &[Shape] = &[Shape::Path("M9 20V4h4.5a4 4 0 0 1 0 8H9")];
 
 /// Lucide `puzzle`: one piece with a knob on each side.

@@ -1,5 +1,5 @@
 //! The Settings window: a search field and the page list in a sidebar, the selected page on the
-//! right, drawn only with Bardo's components. Values are read and written through
+//! right, drawn only with the UI kit's components. Values are read and written through
 //! `settings-app-files`; the programs' own watches apply them.
 
 mod accounts;

@@ -1,4 +1,4 @@
-//! The screen-sharing picker's host side on a private bus: a stand-in the portal (the owner of the
+//! The screen-sharing picker's host side on a private bus: a stand-in portal (the owner of the
 //! portal backend's name) calls `PickCaptureSource` on the connection the seat holds; the shell's
 //! own part is stepped through `Answer`. Only the portal backend may ask (who counts as it is
 //! `callers_bus.rs`'s), and a second call while one is open is refused. `PickColor` is the same:
@@ -143,7 +143,7 @@ async fn portal_asks_the_person_picks_and_the_answer_comes_back() {
     assert_eq!(answer, (vec![("window".to_owned(), "w-1".to_owned())], 1));
 }
 
-/// The service serving on a private bus, with a stand-in the portal connected.
+/// The service serving on a private bus, with a stand-in portal connected.
 pub(crate) async fn serving(
     bus: &PrivateBus,
     scratch: &TempDir,

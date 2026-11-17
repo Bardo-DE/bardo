@@ -74,7 +74,7 @@ touching the person's session.
 
 ## The same scripts on the compositor
 
-`COMPOSITOR=compositor scripts/dev/accept-<name>.sh` (hover, scroll, drag, ime, lock, modifiers,
+`COMPOSITOR=bardo scripts/dev/accept-<name>.sh` (hover, scroll, drag, ime, lock, modifiers,
 popup-keyboard, swipe; lock runs only there) runs a script against the compositor, our compositor, instead of a headless
 KWin. The script builds its demos outside the jail, then `lib/compositor.sh` re-executes it in
 `packaging/harness/jail.sh` (no GPU, no network, no `/dev/input`, no session), where the compositor's

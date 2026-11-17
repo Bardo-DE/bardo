@@ -222,7 +222,7 @@ Played from the freedesktop sound theme (`sound.theme`, default `freedesktop`) b
 
 ### 13.3.11 Window frame (our client-decorated windows; settled 2026-09-25)
 
-The frame Bardo draws for a window that asks for no server decorations
+The frame the UI kit draws for a window that asks for no server decorations
 (`Ds { window: WindowFrame::Titlebar }`, design/04 "Window frame"). It acts through the host seam
 `ds::prelude::HostWindow`: ui-blitz over winit, sill over layer-shell-host's `SurfaceHandle`.
 

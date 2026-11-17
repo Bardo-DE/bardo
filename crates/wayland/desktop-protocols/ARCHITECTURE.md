@@ -250,7 +250,7 @@ Rules the XML states and the consumers rely on:
 
 - **Version gate.** All three say `since="5"`; a shell that bound an older version never sees an
   ask, and the compositor refuses the program unremembered (fail closed).
-- **Allow Once is not an answer.** the compositor decides what an answer is kept as (`memory`); the
+- **Allow Once is not an answer.** The compositor decides what an answer is kept as (`memory`); the
   shell answers `allow` to an ask whose `memory` is `this_time_only` and that is Allow Once.
 - **Replay.** An ask stays open until answered or withdrawn, with or without a shell. A shell that
   binds sees every open ask again, in first-sent order, with the same ids, right after the bind
@@ -258,7 +258,7 @@ Rules the XML states and the consumers rely on:
 - **Denial.** `deny` and `dismissed` both refuse the power, with the refusal of the protocol the
   program used; only `deny` on a `remembered` ask is kept. No shell for the grace period, a locked
   screen, too many open asks and an unanswered ask all refuse unremembered.
-- **One at a time.** the compositor keeps at most one ask open toward the shell; a shell may still
+- **One at a time.** The compositor keeps at most one ask open toward the shell; a shell may still
   queue.
 
 `desktop-client`: `ShellEvent::{PermissionAsk(PermissionAsk), PermissionWithdraw(AskId)}` (moments,

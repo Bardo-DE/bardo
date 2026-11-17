@@ -1,5 +1,5 @@
-//! The widget contract as markup (design/23-WIDGETS.md section 9): Bardo's own widgets drawn
-//! only through `WidgetCard`, each size and state they take, with the card Bardo owns around
+//! The widget contract as markup (design/23-WIDGETS.md section 9): the UI kit's own widgets drawn
+//! only through `WidgetCard`, each size and state they take, with the card the UI kit owns around
 //! them. Each specimen lints clean and every `ds-` class in it is styled by the stylesheet. The
 //! timeline's clock behaviour is proven on the virtual clock in
 //! `ui-conformance/tests/widget_timeline.rs`.

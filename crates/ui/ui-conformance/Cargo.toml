@@ -1,6 +1,6 @@
 [package]
 name = "ui-conformance"
-description = "Behaviour tests for every bardo component, driven through ui-harness on a real Blitz document. Test-only."
+description = "Behaviour tests for every UI kit component, driven through ui-harness on a real Blitz document. Test-only."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -20,7 +20,7 @@ image = { workspace = true, features = ["png", "jpeg"] }
 
 [features]
 default = ["desktop"]
-# Desktop integration of Bardo crates this one uses (design/36 section 1).
+# Desktop integration of UI kit crates this one uses (design/36 section 1).
 desktop = ["ui-blitz/desktop"]
 
 [lints]

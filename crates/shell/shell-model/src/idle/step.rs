@@ -136,7 +136,7 @@ pub enum IdleHint {
 pub enum IdleEffect {
     /// Destroy every idle notification and hold these instead.
     Watch(Vec<Watch>),
-    /// Publish `DimShown::Dimmed(level)` (the overlay fades in with Bardo's motion).
+    /// Publish `DimShown::Dimmed(level)` (the overlay fades in with the UI kit's motion).
     Dim(DimLevel),
     Undim,
     Displays(DisplayPower),

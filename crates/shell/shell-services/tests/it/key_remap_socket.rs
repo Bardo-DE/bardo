@@ -136,7 +136,7 @@ fn readable(fd: &OwnedFd, limit: Duration) -> bool {
     poll(&mut fds, Some(&timeout)).is_ok_and(|ready| ready > 0)
 }
 
-/// The fake the key remap daemon: a listening socket.
+/// The fake key remap daemon: a listening socket.
 struct Daemon {
     listener: OwnedFd,
     _folder: TempDir,

@@ -5,7 +5,7 @@
 //! (`menu`).
 //!
 //! No `Material::Window`: design/20 §1.4 gives the wallpaper no material at all ("opaque
-//! image"), and Bardo's eight materials (`ui_components::prelude::Material`) have no such variant. `Window` is the
+//! image"), and the UI kit's eight materials (`ui_components::prelude::Material`) have no such variant. `Window` is the
 //! one wrong choice regardless — its own frame paints the Space's gradient
 //! (`--m-tint-solid:var(--f-grad)`, `materials_css.rs`), which is exactly the per-workspace tint
 //! design/21 §8 says the wallpaper must not have. `Material::Widget` is used instead (closest

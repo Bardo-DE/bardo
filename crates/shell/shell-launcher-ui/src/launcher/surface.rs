@@ -13,7 +13,7 @@ use super::tokens::LauncherTokens;
 use shell_ui_kit::links::{LauncherLink, Links};
 use shell_ui_kit::surface::{ClosesOnFocusLoss, FocusLoss, OutputPolicy, Place, Presence, Surface};
 
-/// The centred search panel: Bardo's `CommandPalette` over the runner's results.
+/// The centred search panel: the UI kit's `CommandPalette` over the runner's results.
 #[derive(Debug)]
 pub enum Launcher {}
 

@@ -1,4 +1,4 @@
-//! What the lock screen hands Bardo's `LockClock` and `LockPrompt`, from the auth service's
+//! What the lock screen hands the UI kit's `LockClock` and `LockPrompt`, from the auth service's
 //! state, the keyboard and the clock: pure.
 
 use shell_kit::lock::vocab::{CapsLock, LockUser, PromptState};
@@ -19,7 +19,7 @@ pub fn caps_of(key: layer_shell_types::LockKey) -> CapsLock {
     }
 }
 
-/// Bardo's prompt state for `phase`: `Accepted` is Bardo's `Accepted` (its beat plays before the
+/// The UI kit's prompt state for `phase`: `Accepted` is the UI kit's `Accepted` (its beat plays before the
 /// unlock), and `Unavailable` is `Idle` (the service's notes are the hint line). Bardo's
 /// `LockedOut` is never shown: there is no lockout.
 pub fn prompt_state(phase: &AuthPhase) -> PromptState {
@@ -31,7 +31,7 @@ pub fn prompt_state(phase: &AuthPhase) -> PromptState {
     }
 }
 
-/// The person as Bardo's prompt shows them: the real name (the login name when it is empty),
+/// The person as the UI kit's prompt shows them: the real name (the login name when it is empty),
 /// and their picture ([`picture_of`]).
 pub fn lock_user(account: &Account) -> LockUser {
     let name = if account.name.0.trim().is_empty() {
@@ -70,7 +70,7 @@ fn face_of(name: &str, user: &UserName) -> AvatarFace {
     }
 }
 
-/// The clock's two lines, for Bardo's `LockClock`.
+/// The clock's two lines, for the UI kit's `LockClock`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub struct ClockLines {
     /// `14:05` (24-hour) or `2:05` (12-hour, no AM/PM, macOS's lock screen).

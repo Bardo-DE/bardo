@@ -2,7 +2,7 @@
 # Scenario `shell-host-on-compositor-and-kwin` (plan §4.14): layer-shell-host's accept scripts pass on bardo-compositor.
 #
 # The bardo-compositor half: layer-shell-host's eight real-input scripts (scripts/dev/accept-*.sh) run one after the
-# other, each as `COMPOSITOR=bardo-compositor`, in this jail. The scripts start their own headless bardo-compositor
+# other, each as `COMPOSITOR=bardo`, in this jail. The scripts start their own headless bardo-compositor
 # through bardo-compositor's dev/up.sh and drive it through `bardo-compositorctl debug inject`; this scenario only
 # supplies the artefacts (built outside by harness/scenario-build.sh, A7), the bardo-compositor tools, foot
 # and the demos' CPU backend, and reads each script's verdict. Each script's exit code is its
@@ -30,7 +30,7 @@ scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-composit
   "$EXAMPLES/demo_switcher" "$EXAMPLES/demo_drag" "$EXAMPLES/demo_lock" "$EXAMPLES/demo_popup_keys" \
   "$EXAMPLES/demo_window" "$EXAMPLES/probe_toplevel"
 
-export COMPOSITOR=bardo-compositor BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+export COMPOSITOR=bardo BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 # accept-ime runs fcitx5, which takes the input method and the virtual keyboard; accept-lock locks with demo_lock (a floor row for the built demo).
 # The demos that map the shell's surfaces are rows of the caller list as the shell; the ones that keep an exclusive keyboard
 # (accept-modifiers, accept-ime) start through compositor-shell-exec, which asks for the shell's connection and so holds the

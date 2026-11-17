@@ -45,7 +45,7 @@ pub enum IconRef {
 pub struct Action {
     pub id: ActionId,
     pub label: String,
-    /// The shared action that runs it straight from the results, drawn beside it (Bardo design/09 H5: every
+    /// The shared action that runs it straight from the results, drawn beside it (the UI kit design/09 H5: every
     /// action has a key).
     #[serde(default)]
     pub keys: ActionKeys,

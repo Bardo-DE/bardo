@@ -4,26 +4,26 @@ Open items and standing facts. An entry names the condition that closes it.
 
 ## Bardo gaps (the Settings app does not work around them by editing Bardo)
 
-### KeyKinds with no Bardo component
+### KeyKinds with no UI kit component
 
 `ds_settings::schema::KeyKind` has nine kinds; seven have a component (Fixed: `Label`, Toggle:
 `Toggle`, Segmented: `SegmentedControl`, Menu: `PopUpButton`, Bounded: `Slider`, Text: `TextField`,
 Colour: `RadioGroup` with `Arrangement::Swatches`). Two have none (and a third, Rows, is composed below) and render read-only with an
 "Edit in file" note (`settings-app-ui/src/controls/file_only.rs`):
 
-- **Shortcut** (a captured key chord): Bardo has no key-capture field. Closes when Bardo adds one.
+- **Shortcut** (a captured key chord): the UI kit has no key-capture field. Closes when the UI kit adds one.
 - **Rows** (`Rows { columns }`, cua's `cua.apps`) is edited in `settings-app-ui/src/controls/rows.rs`, composed of Bardo's
-  `TextField`, `PopUpButton` and `Button`: Bardo has no rows-editor component of its own, so a
+  `TextField`, `PopUpButton` and `Button`: the UI kit has no rows-editor component of its own, so a
   component there would replace it. Rows the editor cannot hold (an unknown cell, a word outside
   a column) are shown read-only and kept byte for byte.
-- **List** (`List(Box<KeyKind>)`): Bardo has no list editor. Today three sill keys
+- **List** (`List(Box<KeyKind>)`): the UI kit has no list editor. Today three sill keys
   are lists (`control_center.modules`, `widgets.center`, `widgets.desktop_widgets`).
 
-Colour is drawn with what Bardo has and it fits badly: a `Choice` swatch names a CSS custom property
+Colour is drawn with what the UI kit has and it fits badly: a `Choice` swatch names a CSS custom property
 (`swatch_var(Accent)`), so only the eight accents exist as swatches. The Settings app draws those eight for a
 Colour key and for any Menu or Segmented key whose words are all accent names
 (`appearance.accent`), and stores the accent's word. A free hex colour has no control. No Colour
-key exists in any schema yet. Closes when Bardo has a colour well or a swatch that takes a value.
+key exists in any schema yet. Closes when the UI kit has a colour well or a swatch that takes a value.
 
 ### Untyped settings I/O
 
@@ -33,7 +33,7 @@ therefore re-implements, small and tested, the two rules that matter: the lenien
 the control cannot hold is kept as written and shown read-only, unknown keys reported by dotted path
 cut at the first unknown table) and a save that sets one key in place with `toml_edit` through an
 atomic write (`ds_helpers::write_atomic`, the one writer `Store::save` uses too). It returns
-`ds_settings::Loaded`, `UnknownKey` and `InvalidKey` so callers see Bardo's types. Closes when
+`ds_settings::Loaded`, `UnknownKey` and `InvalidKey` so callers see the UI kit's types. Closes when
 `ds-settings` offers a table-level `Store::load_table`/`save_table` (or a `RawDoc`) that takes the
 schema's keys.
 
@@ -62,7 +62,7 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
 - `deep_link` in `ds_settings::schema` answers only a unique match; the Settings app's search ranks (label,
   help, then every word) and highlights all hits. The launcher's provider still uses `deep_link`.
 - design/22 section 2 says every file has a top-level `version = 1`. `bardo/appearance.toml` has it
-  (`AppearanceFile::version`), `sill/settings.toml` does not. the Settings app carries `version` through a
+  (`AppearanceFile::version`), `sill/settings.toml` does not. The Settings app carries `version` through a
   save when the file has one and never adds it.
 - `Page` has no Spotlight page (design/22 section 5 lists one); sill's launcher keys are on
   Appearance. `Apps` is a page nothing fills.
@@ -104,7 +104,7 @@ of `gestures.toml`, so a save from the Settings app drops nothing the mouse gest
 - A gesture's action is a `Menu` of the words that need no value (`back`, `forward`,
   `workspace_prev`, ...). An action with a value (`{ kind = "keys", v = "alt+left" }`, a command, a
   shell request) is not one of the words, so the Settings app shows it read-only with "Edit in file" and every save keeps it
-  byte for byte. Closes when Bardo has a kind for a tagged value, or a
+  byte for byte. Closes when the UI kit has a kind for a tagged value, or a
   shortcut field the Settings app can use for `keys`.
 
 ## Intents (`org.bardo.Settings`)
@@ -165,7 +165,7 @@ Open items, each with its closing condition:
   `ds_blitz::launch_idle` with an `AppHandle` that opens the window only for `settings.page.show`.
 - **No single instance, and the window is not raised.** A second `bardo-settings` loses the bus name and runs
   without the service, so intents reach the first. `settings.page.show` switches the page of the
-  running window but does not focus it (Bardo has no window-raise request in `ds-blitz`).
+  running window but does not focus it (the UI kit has no window-raise request in `ds-blitz`).
 - **A key path two programs share names no key.** `Catalogue::entry` answers only an unambiguous
   path; the entity key of `settings.key` is the dotted path alone. Closes if two shipped schemas ever
   reuse a path (then the key becomes `<file>:<path>`).
@@ -175,7 +175,7 @@ Open items, each with its closing condition:
 - **Read results are labelled untrusted (a file's content).** A free-text key can hold anything, so
   the manifest declares `third_party(file)` for `settings.key.read` and every value carries it.
 - **The Viewer page has no real schema to draw.** anyview has no `--write-schema` yet (its FINDINGS wait
-  for Bardo's `viewer.*` rows), so `tests/viewer_page.rs` installs a scratch schema of the keys
+  for the UI kit's `viewer.*` rows), so `tests/viewer_page.rs` installs a scratch schema of the keys
   anyview's FINDINGS name. Closes when anyview ships `anyview.settings.toml`: replace the scratch schema
   with a fixture from `scripts/gen-fixtures.sh`.
 - **No `org.bardo.Settings.ui.toml`.** The menu and shortcut rule of cli.md section 6 has nothing to
@@ -185,7 +185,7 @@ Open items, each with its closing condition:
 
 - **The pane's Bardo seam is `accounts/adapter.rs`.** It holds the button roles, the alert, and the
   client-id `TextField` that keeps its own draft (and is made anew when the stored value changes,
-  because Bardo's `TextField` is not controlled). Closes when Bardo's R2a lands: the adapter takes
+  because the UI kit's `TextField` is not controlled). Closes when the UI kit's R2a lands: the adapter takes
   the controlled field.
 - **The list is grouped by the `group` row** (Internet Accounts, Intelligence, Assistants), a row per
   account with a plus and a minus under it; the minus removes the selected account after the usual
@@ -203,9 +203,9 @@ Open items, each with its closing condition:
 ## Assistants and Spaces (`settings-app-ui/src/assistants/`, `spaces/`)
 
 - **There is no Assistants page.** A fixed page is a variant of `ds_settings::schema::Page`, which is
-  Bardo's to add. Until it is, the assistants are a block of the Intelligence page, right after
+  The UI kit's to add. Until it is, the assistants are a block of the Intelligence page, right after
   Companion (`Block::Assistants`). The runtimes group that was "On this computer" is now "Models on
-  this computer", because the assistant's own group has that name. Closes when Bardo adds the page
+  this computer", because the assistant's own group has that name. Closes when the UI kit adds the page
   variant and the block moves to its own page.
 - **No source lists a person's other computers.** `docket_settings::PlaceSource` has no
   implementation; "Your computers" shows the rows the settings file already holds, each off or on as
@@ -251,10 +251,10 @@ Open items, each with its closing condition:
   Automatic still routes by privacy and load. A runtime that lists no model yet, or an inferd that
   is not running, keeps the window open with the reason; `ai.local_only` is written first and again
   on the next Done. A stopped runtime is greyed in the menu and cannot be picked.
-- **The window's size is fixed by the binary** (440 by 520) and the hero mark is Bardo's violet plate
+- **The window's size is fixed by the binary** (440 by 520) and the hero mark is the UI kit's violet plate
   with the sparkles glyph; there is no round hero mark in Bardo to use instead (`Avatar` holds a
   letter, `ProviderMark` is a square letter chip), so the runtimes' marks are `Avatar` discs in the
-  person-hue of the runtime's name, and a stopped one is `Muting::Muted`. Closes when Bardo has a
+  person-hue of the runtime's name, and a stopped one is `Muting::Muted`. Closes when the UI kit has a
   mark for a local runtime.
 - **`settings.intelligence.open`** only shows the page. Every `ai.*` row is hands-off
   (`settings-app-intents/tests/intents/intelligence.rs`), and the manifest has no other `settings.intelligence.*`
@@ -289,7 +289,7 @@ Open items, each with its closing condition:
 
 ## Shortcuts (Keyboard page)
 
-- The chord recorder is Bardo's `ShortcutField`, named only in `settings-app-ui/src/shortcuts/field.rs`.
+- The chord recorder is the UI kit's `ShortcutField`, named only in `settings-app-ui/src/shortcuts/field.rs`.
   Clearing is its Delete key; there is no separate Clear button.
 - `settings-app-files::KeymapFiles` wraps the key remap daemon's `KeyRemapSource` (key-remap-client, by git rev, as the compositor
   and sill take it): this computer's layer (`machine()`, from the daemon or its file), the desktop's
@@ -307,13 +307,13 @@ Open items, each with its closing condition:
   (`settings-app-model/src/updates/page.rs` is the only place that knows): its label is that name, its slug is
   `software-update` (hyphenated because the updater's notification runs `bardo-settings --page software-update`; the
   fixed pages use underscores), it is always listed (no file names it, like Accounts) and sits after
-  Viewer. Closes when Bardo adds `Page::SoftwareUpdate`: delete that file's sentinel and the three
+  Viewer. Closes when the UI kit adds `Page::SoftwareUpdate`: delete that file's sentinel and the three
   guards on `Page::App` (`page.rs`, `layout.rs`, `icons.rs`).
 - **No "General" group.** macOS has General > Software Update; the Settings app's sidebar is flat, so the page is a
   sidebar row of its own. Closes when the sidebar has groups.
 - **Wire words are parsed by hand.** `UpdatePhase::of_word` is a hand-written match: `settings-app-model` has no
   `ds-core` (the `Word` derive) and gaining it is a Cargo change. Closes with that dependency.
-- **The service is looked for, never started.** the updater ships a D-Bus activation file for
+- **The service is looked for, never started.** The updater ships a D-Bus activation file for
   `org.bardo.Updates1` (`dist/org.bardo.Updates1.service`, which starts its user unit), but opening
   Settings must not wake a service the session did not start, so the page reads `NameHasOwner` first; a
   service that starts later is followed (name changes and `PropertiesChanged` tick a re-read). The
@@ -465,7 +465,7 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
 - **The note.** Under the "Models on this computer" group (drawn by `LocalRuntimes`, outside the
   `.runtimes` block, so the rows count does not change), while llama.cpp is missing: "To run
   models on this computer, install llama.cpp." in the quiet footnote style, then the install line,
-  then a "Start using it" button. The install line is Bardo's `CommandLine` (a copyable line; the
+  then a "Start using it" button. The install line is the UI kit's `CommandLine` (a copyable line; the
   window writes the clipboard with `ds_blitz::clipboard::write_text` and says "Copied").
 - **The install line per distro** (`install_advice`, pure, from the `os-release` text):
   `ds_helpers::Family::detect` gives the family and `Family::install_command` the start of the
@@ -504,7 +504,7 @@ The pages Bardo v0.3.36 declares (`wifi`, `bluetooth`, `displays`). Each is a pu
 
 - **Wi-Fi** reads and drives the network service on the system bus (the radio, the wireless device's access points, the saved connections; joining a new network adds a connection with the password and deletes it again when the network refuses it). A known network has Forget… (every kept connection of that name is deleted, after a question). Other Networks ends in an "Other…" row: a sheet for a network that does not announce its name (name, security: None, WPA2/WPA3 Personal, WPA3 Personal, WPA2/WPA3 Enterprise; a hidden connection is added with `hidden = true`, and a refusal is said in a sentence, not asked again, since the name, security or password may be what is wrong). A network that signs in with an account (access point flags say 802.1X) asks for a username and password and joins with PEAP and MSCHAPv2, the server's certificate checked against the computer's own authorities (`system-ca-certs`); other EAP methods, a certificate of its own and a trust prompt for an unknown server are not offered, so a campus network with a private authority fails with the generic join sentence. Not offered: "Ask to join networks" (the service has no such setting, so the page has no such control), forgetting the network the computer is on, a network's address details. Not tested against a real 802.1X network.
 - **Bluetooth** reads BlueZ's object tree in one answer and serves a pairing agent (yes or no on a number, allow, a number to type on the device, and a PIN or passkey typed here; the agent says `KeyboardDisplay`) while the page is open; discovery runs for as long as the page is shown. A device that reports `org.bluez.Battery1` `Percentage` shows it in its row (BlueZ's property-changed signal for the interface makes the page read again). Missing: a device's details sheet. A device nobody hears is listed only when paired (BlueZ remembers unpaired ones for a while).
-- **Displays** goes through `desktop-client`, so a change is a program's change to the compositor: applied at once, with the shell's own "Keep these display settings?" countdown (15 seconds, reverts by itself). Offered: the pixel size of the mode ("Display Mode", every size the display lists, the native one marked; the refresh rate stays when the new size has it, else the fastest), resolution as the scales 1, 1.25, 1.5, 1.75, 2, 2.5 and 3 over the display's current mode ("Default for display" is the scale that brings its density nearest 115 points per inch), refresh rate at the current size, rotation, which side of another display it sits on, and a Brightness slider under each display the shell lists one for (see below). Not offered, for lack of a protocol word or a decision: mirroring and flipping (a flipped display reads as its rotation), switching a display off, a main display (the compositor derives the primary output as the leftmost lit one; there is no word to choose it), colour, a freely dragged arrangement (the compositor takes any position, the page offers the four sides; Bardo has no draggable-tiles component to draw it with), the compositor's own default scale (it is derived here from the density because the protocol does not carry it). The window reads the environment's Wayland display itself (`desktop_client::client::WaylandRoute::Environment`), since the route cannot be cloned into `Env`; the compositor hides output management from a program the person has refused.
+- **Displays** goes through `desktop-client`, so a change is a program's change to the compositor: applied at once, with the shell's own "Keep these display settings?" countdown (15 seconds, reverts by itself). Offered: the pixel size of the mode ("Display Mode", every size the display lists, the native one marked; the refresh rate stays when the new size has it, else the fastest), resolution as the scales 1, 1.25, 1.5, 1.75, 2, 2.5 and 3 over the display's current mode ("Default for display" is the scale that brings its density nearest 115 points per inch), refresh rate at the current size, rotation, which side of another display it sits on, and a Brightness slider under each display the shell lists one for (see below). Not offered, for lack of a protocol word or a decision: mirroring and flipping (a flipped display reads as its rotation), switching a display off, a main display (the compositor derives the primary output as the leftmost lit one; there is no word to choose it), colour, a freely dragged arrangement (the compositor takes any position, the page offers the four sides; the UI kit has no draggable-tiles component to draw it with), the compositor's own default scale (it is derived here from the density because the protocol does not carry it). The window reads the environment's Wayland display itself (`desktop_client::client::WaylandRoute::Environment`), since the route cannot be cloned into `Env`; the compositor hides output management from a program the person has refused.
 - **Displays brightness** is the shell's `org.bardo.Displays1` (sill): `Brightness() -> a(su)` lists only the displays whose brightness it can read (a built-in panel, a monitor that answers DDC/CI), `SetBrightness(s, u)` sets one (only Settings may), and `Changed` follows keys and the control centre. The page asks the owner of the name only after it holds role `shell`, and shows a Brightness slider under each listed display and none under another; with no shell on the bus there are no sliders. Ticked: brightness. A drag moves the slider at once and sends the percentage; the next list from the shell decides where it rests, and a refusal is said in a toast and the list read again.
 
 ## Not in v1
@@ -537,26 +537,26 @@ What the audit found and where each landed. A row marked deferred or needing a d
 | SETTINGS-04 | fixed in this process, open across programs | Saves of settings files take one process-wide turn around read and write (the window thread and the intents provider both save), and the temporary names are unique. A write by another program (sill) of the same file between the Settings app's read and rename is still lost: that needs a cross-process lock in `ds_helpers` (interface ask in the audit report: an `update_atomic` that holds the lock across the read). The keymap's `save_person` still writes the whole text it was given. |
 | SETTINGS-15 | fixed | `save_places` is one edit of the `assistant` table's keys and one rename; the arm that returned `Ok` without writing is an error. |
 | SETTINGS-02 | fixed here | The side reader is deleted and an agent mark is honoured only for a schema from a root-owned, closed folder (above). Tests: `settings-app-model/tests/model/agent_marks.rs` (a user-directory schema lends no marks to an installed one, a stale schema lends none, a never-settable mark drops the schema, a file not named for its program marks nothing, a schema from a folder the person can write is shown with every key hands-off, an open folder is the person's whoever owns it, `/usr` is system and a missing folder is not), `settings-app-model/src/origin.rs` (the owner and mode table). |
-| SETTINGS-07 | fixed in the Settings app, Bardo carries the live calls | Every call the Settings app makes to another process runs under a named Bardo `Deadline` (`settings-app-system/src/deadline.rs`: `answered`, plus `within` where the failure keeps its type; `peer::*` are the plain names a sentence uses): connecting to the bus, who owns a name, the Spaces, memory, sync, assistant, account and update calls, the service manager, the add sheets (the prompt deadline), the intents service's startup and a second `bardo-settings`'s hand-over (`serve_session`, `hand_over_session` in `settings-app-intents`), and the whole of `read_accounts` (one action deadline, so an agent's `settings.accounts.list` cannot hold the router for as long as every call could). `LiveClient` carries its own read and action deadlines (Bardo); a `LiveError::Timeout` is the words the module gives ("The service is not answering"), feeds `Failed` to the Accounts pane (which clears the row's pending latch) and `Absence::Failed` elsewhere. A refusal shown to the person is the module's own sentence (`live::plain`), not the error's bus name. Tests: `settings-app-system/src/deadline_tests.rs` (a call that never returns ends at its deadline). Not tested end to end: a module that never answers an action, because the deadlines are Bardo's fixed values (a test would wait ten real seconds); the Accounts pane's `Failed` clearing `pending` is covered by the model tests. |
+| SETTINGS-07 | fixed in the Settings app, Bardo carries the live calls | Every call the Settings app makes to another process runs under a named Bardo `Deadline` (`settings-app-system/src/deadline.rs`: `answered`, plus `within` where the failure keeps its type; `peer::*` are the plain names a sentence uses): connecting to the bus, who owns a name, the Spaces, memory, sync, assistant, account and update calls, the service manager, the add sheets (the prompt deadline), the intents service's startup and a second `bardo-settings`'s hand-over (`serve_session`, `hand_over_session` in `settings-app-intents`), and the whole of `read_accounts` (one action deadline, so an agent's `settings.accounts.list` cannot hold the router for as long as every call could). `LiveClient` carries its own read and action deadlines (Bardo); a `LiveError::Timeout` is the words the module gives ("The service is not answering"), feeds `Failed` to the Accounts pane (which clears the row's pending latch) and `Absence::Failed` elsewhere. A refusal shown to the person is the module's own sentence (`live::plain`), not the error's bus name. Tests: `settings-app-system/src/deadline_tests.rs` (a call that never returns ends at its deadline). Not tested end to end: a module that never answers an action, because the deadlines are the UI kit's fixed values (a test would wait ten real seconds); the Accounts pane's `Failed` clearing `pending` is covered by the model tests. |
 | SETTINGS-09 | fixed | `settings-app-system/src/ticks.rs`: `Ticks` is a one-slot wake-up (ticks that come while one waits are one, so a service flooding signals cannot grow a queue or make the page re-read faster than it can) and owns its relay tasks (dropping it aborts them, so leaving the page ends the connection's tasks at once instead of at the service's next signal). Used by the Software Update page and by the computers list. `UpdateTicks` is now `Ticks`; the test service makes one with `UpdateTicks::channel()`. Tests: `settings-app-system/src/ticks_tests.rs`. |
-| SETTINGS-06 | fixed here; the name's owner is SETTINGS-05 | The page reads the service's eight properties in one `GetAll` (`updates/wire.rs`, tested) and `UpdateStatus::of_wire` bounds what the service may make it hold (`settings-app-model/src/updates/limits.rs`: a version is at most 64 version characters or the service is taken as making no sense; notes at most 200 lines and 16 KiB; a problem one line of at most 300 characters). Tests: `settings-app-model/tests/model/update_limits.rs`. Install carries the version (the updater 5c33809, `Install(version: s)`): `UpdatesEffect::Install` holds an `UpdateVersion`, a newtype made only by `UpdateVersion::parse` (the same bounds) and taken from the offer on the page, so with no offer there is no install effect to carry out (`updates_step`, tested for every standing); the proxy's `install(&self, version: &str)` sends it. `VersionChanged` (or a failed state whose `ProblemKind` is `version-changed`: the updater publishes a machine-readable `ProblemKind` beside `Problem`, read in the same `GetAll` into `UpdateWire.problem_kind` and parsed once into the typed `ProblemKind` by `updates/limits.rs` `kind_of`; a word longer than 64 bytes, an unknown word and a missing one, from an older the updater, are all `ProblemKind::Other`, a plain failure shown in the updater's own sentence; the kind is never shown; the copy of the updater's sentence is gone) makes the page read the service again and show the new version with the note "A newer version arrived. Check what's new before installing." (`UpdatesNotice::NewerVersion`; gone on the next press or when no offer waits); `NotAVersion` and `Refused` are told in their own sentence in a toast. Tests: `settings-app-model/tests/model/update_limits.rs` (`a_failure_kind_the_page_does_not_know_is_a_plain_failure`), `settings-app-system/src/updates/wire.rs` (a missing or odd kind reads as none), `settings-app-model/src/updates/tests/` (`an_install_names_the_version…`, `an_offer_that_changed…`, `a_failure_that_says_the_offer_changed…`), `settings-app-ui/tests/ui/software_update.rs`. The owner of the name is checked as SETTINGS-05 describes. |
-| SETTINGS-05 | fixed here (Bardo `OwnerCheck`, peephole) | Before anything is read from a service or sent to it, the owner of its bus name must hold the service's role in the desktop's caller table, proved in full (the unit manager confirms the unit): `org.bardo.Accounts1` holds `accounts`, `Sync1` `sync`, `Inference1` `inference`, `Updates1` `updater`, `Memory1` `memory`. `settings-app-callers::RoleCheck` is the `OwnerCheck` over peephole's `BusPeers`; every `LiveClient` takes it (Bardo asks it before the first read or `Set` and again whenever the name changes hands, and then speaks to the owner by its unique name, so a typed client secret cannot reach a program that merely took the name). The direct callers ask `live::confirmed` (sync holds: the signal is not joined, the discard is not confirmed; the Software Update page; memory's controls; inferd's computers and AI-key sheet) or `live::not_squatted` (the Spaces registry, memory's Space removal and the add sheet, which still ask by name when nobody owns it, as before, so the bus may start the real service). A refused owner is `Absence::Unavailable` ("could not be confirmed", per pane) and a `LiveError::NotTheService` becomes the same. Sync1's `NeedsConfirmation` is parsed with a name bound (`DATASET_NAME_MAX = 256`, a longer name drops the signal) and the banners with a row bound (`HOLDS_MAX = 64`, in `hold_step`); the rest of the service's strings were bounded by SETTINGS-06 and Bardo's reply caps. Tests: `settings-app-ui/tests/ui/accounts/trust.rs` (squatter not read, sent no call and no secret; wrong role; right role read), `holds.rs` (squatter's hold not shown, nothing confirmed to it), `settings-app-model/src/accounts/hold_tests.rs` (the bounds), `settings-app-callers` (names to roles). Residual: the page's update subscription is made before the check, though everything it hears is read again through the check. Whether the updater's session-bus proxy lets a sandboxed app own those names is still the owner's call. If `/etc/bardo/desktop-callers.toml` is missing or not root-only, no program is trusted and every one of the five services shows as unavailable (a line in the log says why). |
+| SETTINGS-06 | fixed here; the name's owner is SETTINGS-05 | The page reads the service's eight properties in one `GetAll` (`updates/wire.rs`, tested) and `UpdateStatus::of_wire` bounds what the service may make it hold (`settings-app-model/src/updates/limits.rs`: a version is at most 64 version characters or the service is taken as making no sense; notes at most 200 lines and 16 KiB; a problem one line of at most 300 characters). Tests: `settings-app-model/tests/model/update_limits.rs`. Install carries the version (the updater 5c33809, `Install(version: s)`): `UpdatesEffect::Install` holds an `UpdateVersion`, a newtype made only by `UpdateVersion::parse` (the same bounds) and taken from the offer on the page, so with no offer there is no install effect to carry out (`updates_step`, tested for every standing); the proxy's `install(&self, version: &str)` sends it. `VersionChanged` (or a failed state whose `ProblemKind` is `version-changed`: the updater publishes a machine-readable `ProblemKind` beside `Problem`, read in the same `GetAll` into `UpdateWire.problem_kind` and parsed once into the typed `ProblemKind` by `updates/limits.rs` `kind_of`; a word longer than 64 bytes, an unknown word and a missing one, from an older updater, are all `ProblemKind::Other`, a plain failure shown in the updater's own sentence; the kind is never shown; the copy of the updater's sentence is gone) makes the page read the service again and show the new version with the note "A newer version arrived. Check what's new before installing." (`UpdatesNotice::NewerVersion`; gone on the next press or when no offer waits); `NotAVersion` and `Refused` are told in their own sentence in a toast. Tests: `settings-app-model/tests/model/update_limits.rs` (`a_failure_kind_the_page_does_not_know_is_a_plain_failure`), `settings-app-system/src/updates/wire.rs` (a missing or odd kind reads as none), `settings-app-model/src/updates/tests/` (`an_install_names_the_version…`, `an_offer_that_changed…`, `a_failure_that_says_the_offer_changed…`), `settings-app-ui/tests/ui/software_update.rs`. The owner of the name is checked as SETTINGS-05 describes. |
+| SETTINGS-05 | fixed here (Bardo `OwnerCheck`, peephole) | Before anything is read from a service or sent to it, the owner of its bus name must hold the service's role in the desktop's caller table, proved in full (the unit manager confirms the unit): `org.bardo.Accounts1` holds `accounts`, `Sync1` `sync`, `Inference1` `inference`, `Updates1` `updater`, `Memory1` `memory`. `settings-app-callers::RoleCheck` is the `OwnerCheck` over peephole's `BusPeers`; every `LiveClient` takes it (Bardo asks it before the first read or `Set` and again whenever the name changes hands, and then speaks to the owner by its unique name, so a typed client secret cannot reach a program that merely took the name). The direct callers ask `live::confirmed` (sync holds: the signal is not joined, the discard is not confirmed; the Software Update page; memory's controls; inferd's computers and AI-key sheet) or `live::not_squatted` (the Spaces registry, memory's Space removal and the add sheet, which still ask by name when nobody owns it, as before, so the bus may start the real service). A refused owner is `Absence::Unavailable` ("could not be confirmed", per pane) and a `LiveError::NotTheService` becomes the same. Sync1's `NeedsConfirmation` is parsed with a name bound (`DATASET_NAME_MAX = 256`, a longer name drops the signal) and the banners with a row bound (`HOLDS_MAX = 64`, in `hold_step`); the rest of the service's strings were bounded by SETTINGS-06 and the UI kit's reply caps. Tests: `settings-app-ui/tests/ui/accounts/trust.rs` (squatter not read, sent no call and no secret; wrong role; right role read), `holds.rs` (squatter's hold not shown, nothing confirmed to it), `settings-app-model/src/accounts/hold_tests.rs` (the bounds), `settings-app-callers` (names to roles). Residual: the page's update subscription is made before the check, though everything it hears is read again through the check. Whether the updater's session-bus proxy lets a sandboxed app own those names is still the owner's call. If `/etc/bardo/desktop-callers.toml` is missing or not root-only, no program is trusted and every one of the five services shows as unavailable (a line in the log says why). |
 | SETTINGS-08 | fixed here | A Space removal where either choice is Delete is refused while memory is not running (`NoDaemon`): `WithoutMemory::of` in `settings-app-model/src/spaces/removal.rs` decides, `spaces/io.rs` returns before it calls `Spaces1.Remove`, and the person reads `MEMORY_NOT_RUNNING` ("Memory isn’t running right now, so this Space can’t be deleted. Try again in a moment."). A removal that keeps everything still proceeds with memory down. Tests: `settings-app-model/src/spaces/tests.rs` (the four choices), `settings-app-ui/tests/ui/spaces.rs` (each delete choice with no memory: a toast, the registry never asked, the Space stays). Residual: memory and the registry are still two calls, so a registry that denies after memory deleted leaves the memories gone and the Space listed (a retry deletes nothing more); closing that needs a pending-removal record in the registry (porter and almanac). |
 | SETTINGS-18 | fixed | A read's problems are said once, until they change (`settings-app-ui/src/reported.rs`), and the invalid-value line no longer prints the value (a free-text key can hold a token). The in-window notice for an unreadable or invalid file is still absent (see "Not in v1"); the refusal toast on the first edit is the only in-window word. |
 | SETTINGS-10 | partly fixed | A read of a key and the accounts list are cut to the manifest's declared sizes, one line for a key (`settings-app-intents/src/limits.rs`, one named constant per output; a unit test holds the numbers equal to the manifest's, and the provider tests read an oversized key and an oversized accounts list back through the bus: `intents/provider.rs`, `intents/accounts.rs`; the cut is on a character). The journal keeps only settable keys' values, which are small. Open: whether docket asks before an undoable write of `launcher.web_search` or `notifications.dnd` is docket's policy (its FINDINGS says an undoable write still asks under "ask more"); making those two "ask every time" in the manifest is an owner decision. |
-| SETTINGS-11 | fixed here, to move to Bardo | `crates/settings-app/src/dirs.rs` ignores an empty or relative `XDG_*_HOME` and `HOME`, as Bardo does for its own directories. It repeats Bardo's rule because `ds_settings::xdg` is crate-private; the ask to Bardo is to make `base_dir` public, after which `dirs.rs` calls it. |
+| SETTINGS-11 | fixed here, to move to Bardo | `crates/settings-app/src/dirs.rs` ignores an empty or relative `XDG_*_HOME` and `HOME`, as the UI kit does for its own directories. It repeats the UI kit's rule because `ds_settings::xdg` is crate-private; the ask to Bardo is to make `base_dir` public, after which `dirs.rs` calls it. |
 | SETTINGS-13 | fixed here | A sign-in secret is write-only. The model marks one by its path (`accounts.clients.<issuer>.secret`, the same rule that makes it wait for its key; nothing in the schema marks it). It is still read to learn whether there is one, but `standing_only` (applied when a module's rows are heard) replaces its text with a mark at once and `SignInClient::read` keeps only `SecretStanding::{Set, NotSet}`, so neither the pane nor the rows it keeps hold the text. The field is a secure one that starts empty with "Set" or "Not set" where the text would be; what is typed replaces the secret (trimmed; an empty field writes nothing, because a field the person only passed through must not wipe the secret) and the field is made anew. A set secret has a Clear button beside it (`AccountsInput::SecretCleared`, `SignInClient::cleared`): it writes the empty text, which accountd takes as removing the secret (`client_rows.rs`, `RowEdit::Secret("")`), and the row reads Not set until the list is read again; nothing is sent for a secret there is none of, for a key, or while another change is in flight. The typed text travels as `Secret` (a newtype with a hand-written `Debug` that prints `Secret(<hidden>)`) in `ClientText::Secret` and `AccountsEffect::SetSecret`, so a derived `Debug` on an input or an effect cannot print it. Tests: `settings-app-model/src/accounts/flow_tests.rs` (a stored secret keeps only its standing, typing replaces it, an empty field writes nothing, Clear writes the empty text and only for a set secret, `Debug` of the secret, the input and the effect never prints it), `settings-app-ui/tests/ui/accounts/secrets.rs` (the field says Set, the text is nowhere on screen, typing sends the new one; Clear sends the empty text, then the field says Not set and the button is gone). Residual: the text exists in memory while it is typed and sent, and in the module's reply before `standing_only`. |
 | SETTINGS-14 | partly fixed | `Range` works the span of a slider in floating point (`i64::MIN..i64::MAX` no longer overflows) and the key-step uses `saturating_sub`. Not done: a pattern's regular expression is still compiled per cell per render (its size is bounded by the `regex` crate's limit). |
 | SETTINGS-16 | fixed here | `Activate` and `ActivateAction` are admitted only from roles `shell`, `settings` (a second `bardo-settings`) and `agent_tier`, proved in full; any other caller, an unidentifiable one and a message with no sender get `AccessDenied` and nothing reaches the window (`settings-app-intents/src/callers.rs`; a line in the log for the 1st, 2nd, 4th, 8th... refusal). The window's inbox is `NOTICE_INBOX = 32` (was 64); more are dropped and the first drop after the window caught up is said once (`settings-app-model/src/notice.rs`). A second `bardo-settings` asks peephole whether the owner of `org.bardo.Settings` holds `settings` before sending its activation token or page, and calls that owner by its unique name; otherwise `HandOverFault::NotSettings` and nothing is sent (`hand_over`, `hand_over_session`). Consequence worth knowing: a `bardo-settings` started by hand (a terminal, an app scope) has no Settings role, so it neither passes as the running Settings nor is admitted when it asks a running one to show itself; the launcher (the shell) is. Tests: `settings-app-intents/tests/intents/application.rs` (the table over every role of the desktop, a stranger, a hand-over to an owner that is not Settings), `settings-app-model/src/notice_tests.rs`. The claim that Skip/Continue of the model step quits the whole Settings was not read and is not addressed here. |
 | SETTINGS-17 | fixed | `deny.toml` has advisories, bans and sources (git hosts limited to the ones the lock holds); `scripts/install.sh` escapes `PREFIX` for `sed` (test in `crates/settings-app/tests/settings-app/install.rs`). The lock still needs the sibling checkouts through `[patch]`, as every repo here does. |
 
-### Bardo's schema rule against porter's inferd schema (found 2026-10-16)
+### the UI kit's schema rule against porter's inferd schema (found 2026-10-16)
 
 `ds_settings::schema::discover` (BARDO-13) now admits a schema only when its `file` lies in the
 program's own directory. porter's `dist/inferd.settings.toml` names `file = "bardo/inferd.toml"`
 for `app = "inferd"`, so with the new Bardo the Intelligence page's rows (and `fixtures/schemas/inferd.settings.toml`,
 which every `Sandbox` test seeds) are skipped with a line on stderr. Not worked around here: either
-porter moves inferd's file to `inference/inferd.toml` (Bardo's own test uses that name) and this repo's
+porter moves inferd's file to `inference/inferd.toml` (the UI kit's own test uses that name) and this repo's
 fixture and its `bardo/inferd.toml` test paths follow, or Bardo exempts it. The gate will show it
 as the Intelligence tests failing and the `every_key_of_every_schema...` file list losing
 `bardo/inferd.toml`.
@@ -585,10 +585,10 @@ is given before it, so a jail with no manager does not stop it (read in peephole
   `~/.config/bardo/shell/settings.toml` and sill's dock reacts. Only the harness has run the window: a
   launch of the binary on scratch directories reached window creation and stopped with "no
   adapter found" (the build sandbox had no Vulkan device), so the real window is unchecked.
-- The Software Update page against the real the updater service: Check for Updates, Update Now through the
+- The Software Update page against the real updater service: Check for Updates, Update Now through the
   download and the install, "Log Out..." opening the shell's power menu, and the notification's button
   opening this page in a running Settings. The tests use a stand-in service and a counted log-out only.
-- The Software Update page's refusals against the real the updater service: an Update Now pressed after a newer
+- The Software Update page's refusals against the real updater service: an Update Now pressed after a newer
   release landed shows the new version and the note (the error name `org.bardo.Updates1.Error.VersionChanged`
   read from `zbus::Error::MethodError`), and a refusal while busy is told in the service's sentence. The
   tests use a stand-in service that answers with the same outcomes, not the bus's error replies.
@@ -632,10 +632,10 @@ is given before it, so a jail with no manager does not stop it (read in peephole
 
 - The Wallpaper page is the key `wallpaper.picture` (`control = "picture"`) drawn by `controls/picture.rs`:
   rows of four thumbnails (one `RadioGroup` per row, `Arrangement::Row`, each choice an external image icon
-  72 px square) and "Add Picture...". Bardo has no picture-grid component, so the thumbnails are the radio
+  72 px square) and "Add Picture...". The UI kit has no picture-grid component, so the thumbnails are the radio
   group's images: an icon is drawn square with `background-size: 100% 100%`, so a wide picture is
   squeezed, and the arrow keys move within one row only. A grid with a cover fit and one roving focus is
-  Bardo's to add.
+  The UI kit's to add.
 - The folders listed are `/usr/share/backgrounds`, `/usr/local/share/backgrounds` and `/usr/share/wallpapers`
   (neither the Settings app nor sill knew any before), three levels deep, png and jpeg only (what sill's wallpaper
   service decodes); an added picture is copied to `<data home>/settings-app/pictures/` under a name no other
@@ -644,7 +644,7 @@ is given before it, so a jail with no manager does not stop it (read in peephole
 - Not run: nothing was compiled. `tests/ui/wallpaper_page.rs` reads its selectors (`.ds-radio-group-item:nth-child(2)`,
   `aria-checked`) from the code. The fixture `fixtures/schemas/sill.settings.toml` predates `wallpaper.picture`;
   regenerate it with `scripts/gen-fixtures.sh`, after which `coherence.rs` lints the page's markup too.
-- The page's title and the sidebar names come from Bardo's page table (`settings-app-model::page_title`), and the
+- The page's title and the sidebar names come from the UI kit's page table (`settings-app-model::page_title`), and the
   page is a declared page (`Page::declared("wallpaper")`), not a variant of the old enum.
 
 ## Open any Settings target (lane pages2, 2026-10-21)

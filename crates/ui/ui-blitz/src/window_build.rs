@@ -1,5 +1,5 @@
 //! One window's document, built the way dioxus-native's `launch_cfg_with_props` builds it (with
-//! Bardo's features: no `net`, no hot reload), so the first window and every window
+//! The UI kit's features: no `net`, no hot reload), so the first window and every window
 //! `open_window` adds get the same document: `Host` around the root, the app's root contexts,
 //! the net, HTML-parser and navigation providers dioxus-native would give it, and Bardo faces.
 //! dioxus-native adds its window contexts (the document, the window, `use_window_event`'s

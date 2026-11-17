@@ -36,11 +36,11 @@ use crate::launch::Launch;
 use self::file_icons::use_file_icons;
 use self::window::Window;
 
-/// files' own CSS: layout only, Bardo's tokens only.
+/// files' own CSS: layout only, the UI kit's tokens only.
 pub const STYLE: &str = include_str!("style.css");
 
 /// The window's root component: the look from the person's settings and the desktop, then the
-/// window itself under Bardo's `Ds`.
+/// window itself under the UI kit's `Ds`.
 #[component]
 pub fn App() -> Element {
     let launch = use_hook(consume_context::<Launch>);

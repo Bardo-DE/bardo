@@ -5,10 +5,10 @@
 //! the surface unmapped (the link has no "leaving" state, so the exit is the surface's own to
 //! count).
 
-/// The panel's corner: Bardo's Popover (`--r-panel`, 14).
+/// The panel's corner: the UI kit's Popover (`--r-panel`, 14).
 pub const PANEL_RADIUS: i32 = 14;
 
-/// Bardo's `SidePanel` pads its content by `--s-12`: the column inside is that much smaller.
+/// The UI kit's `SidePanel` pads its content by `--s-12`: the column inside is that much smaller.
 pub const PANEL_PADDING: i32 = 12;
 
 /// One opening: each one remounts the column, so its entrance plays and its focus and opened

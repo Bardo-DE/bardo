@@ -1,4 +1,4 @@
-//! PDF output: a Bardo document laid out by Blitz, paginated by Bardo's rules, and painted into
+//! PDF output: a UI kit document laid out by Blitz, paginated by the UI kit's rules, and painted into
 //! a vector PDF through the pdfrum painter (`pdfrum-anyrender`). Text is real text in embedded,
 //! subsetted faces (selectable, searchable, taken from the layout rather than guessed from the
 //! font); a JPEG is embedded as it arrived.
@@ -6,7 +6,7 @@
 //! [`content_size`], [`print_viewport`] and [`print_document`] let `ui-harness` print a
 //! harness's document.
 //!
-//! The document is built as a snapshot's is (Bardo's faces, the HTML parser, sequential
+//! The document is built as a snapshot's is (the UI kit's faces, the HTML parser, sequential
 //! styling) with `@media print` applied, laid out once at the content box's width at scale 1,
 //! and cut into pages by `paginate`'s rules, which read markers rather than CSS (Blitz drops
 //! `break-*` and `@page`): `data-break-before="page"` and `data-break-inside="avoid"`.

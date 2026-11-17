@@ -252,7 +252,7 @@ fn group_pages(entries: &[KeyEntry], footnotes: &[&Footnote]) -> Vec<PageModel> 
             });
         }
     }
-    // Bardo's table says which pages the sidebar lists and in what order.
+    // The UI kit's table says which pages the sidebar lists and in what order.
     let mut placed: Vec<_> = pages
         .into_iter()
         .filter_map(|model| sidebar_place(&table, &model.page).map(|place| (place, model)))

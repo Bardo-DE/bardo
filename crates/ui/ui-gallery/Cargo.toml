@@ -1,6 +1,6 @@
 [package]
 name = "ui-gallery"
-description = "Gallery of every bardo component across theme, accent, motion and material."
+description = "Gallery of every UI kit component across theme, accent, motion and material."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -27,7 +27,7 @@ dioxus-ssr = { workspace = true }
 
 [features]
 default = ["desktop"]
-# Desktop integration of Bardo crates this one uses (design/36 section 1).
+# Desktop integration of UI kit crates this one uses (design/36 section 1).
 desktop = ["ui-settings/desktop", "ui-blitz/desktop"]
 
 [lints]

@@ -1,4 +1,4 @@
-//! One HTML document for print: Bardo's faces, a network sealed to `data:` URLs (a printout
+//! One HTML document for print: the UI kit's faces, a network sealed to `data:` URLs (a printout
 //! fetches nothing and reads no file), the HTML parser for `<iframe srcdoc>`, `@media print`
 //! applied, laid out once at the page's content width.
 

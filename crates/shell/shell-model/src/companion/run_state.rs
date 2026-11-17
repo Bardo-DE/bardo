@@ -9,7 +9,7 @@ use shell_launcher::RunControl;
 
 use super::model::Companion;
 
-/// A run as a row words it. The view enum of Bardo's run row has the same variants; the
+/// A run as a row words it. The view enum of the UI kit's run row has the same variants; the
 /// conversion between them is `shell-ui-kit`'s `*_total` test.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum RunState {

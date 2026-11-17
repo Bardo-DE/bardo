@@ -6,7 +6,7 @@
 //! through `CaptureCommand::Answer`.
 //!
 //! A segmented control (Screens, Windows) shows only when the app accepts both; the pointer
-//! control only when the app accepts more than one way to draw it. The rows are Bardo's `List`
+//! control only when the app accepts more than one way to draw it. The rows are the UI kit's `List`
 //! and `Row`: a click picks (a second source is added when the app takes several), the arrow keys
 //! move, Return shares, Space picks the row under the keys, Escape cancels. Allow stays disabled
 //! until something is picked, so a stray Return shares nothing.

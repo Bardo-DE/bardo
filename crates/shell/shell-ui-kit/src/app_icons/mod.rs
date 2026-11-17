@@ -1,6 +1,6 @@
 //! App icons in the icon style (design/08-ICONS.md §4).
 //!
-//! Every app's own (hicolor, or the entry's own file) icon on Bardo's neutral plate, re-coloured
+//! Every app's own (hicolor, or the entry's own file) icon on the UI kit's neutral plate, re-coloured
 //! for `icons.style` (Colour, Muted, Monochrome) and `icons.monochrome_tint`. Every entry takes
 //! this one path.
 //!

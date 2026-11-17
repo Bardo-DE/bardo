@@ -138,7 +138,7 @@ fn the_chosen_looks_stylesheet_is_read_with_its_folder() {
     );
 }
 
-/// The looks Bardo ships, as their folders sit in the repo (`extensions/<id>/`).
+/// The looks the UI kit ships, as their folders sit in the repo (`extensions/<id>/`).
 const SHIPPED: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../extensions");
 
 #[test]

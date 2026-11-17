@@ -4,7 +4,7 @@
 
 use super::shape::Shape;
 
-/// Bardo's own download drawing (an arrow over a baseline), the same silhouette as the solid
+/// The UI kit's own download drawing (an arrow over a baseline), the same silhouette as the solid
 /// glyph: the native pick keeps Download a replacement, now drawn by us.
 pub(super) const DOWNLOAD: &[Shape] = super::solid_shell::DOWNLOAD;
 

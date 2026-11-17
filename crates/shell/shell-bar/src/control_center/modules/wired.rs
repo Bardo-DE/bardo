@@ -108,7 +108,7 @@ pub(crate) fn brightness_of(
     (level, availability)
 }
 
-/// A percentage (over 100 clamped) as Bardo's thousandths.
+/// A percentage (over 100 clamped) as the UI kit's thousandths.
 pub(crate) fn fraction_of(percent: Percent) -> Fraction {
     Fraction(percent.0.min(100) * 10)
 }

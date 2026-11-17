@@ -1,4 +1,4 @@
-//! The dock's settings and tokens as `crate::magnify`'s parameters and as Bardo's `DockMetrics`
+//! The dock's settings and tokens as `crate::magnify`'s parameters and as the UI kit's `DockMetrics`
 //! (the macOS polish pass: tile 48, gap 8, pad 6, dot 4 centred 3 under the tile, floor off).
 
 use crate::dock::tokens::DockTokens;
@@ -9,7 +9,7 @@ use shell_settings::DockSettings;
 use ui_components::prelude::*;
 use ui_components::style::tokens::shape::Corner;
 
-/// Bardo's dock tokens from `dock.tile_size_px` and `dock.floor`: written inline around the
+/// The UI kit's dock tokens from `dock.tile_size_px` and `dock.floor`: written inline around the
 /// dock's root (`DockMetrics::style_attr`), where `DockFloor` reads them. The gap, padding and
 /// dot are stylesheet tokens (`DockToken`), not written here.
 pub fn dock_metrics(dock: &DockSettings) -> DockMetrics {

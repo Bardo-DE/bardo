@@ -1,4 +1,4 @@
-//! The permission question's host side on a private bus: a stand-in the portal (the owner of the
+//! The permission question's host side on a private bus: a stand-in portal (the owner of the
 //! portal backend's name) calls `AskPermission` on the connection the seat holds and gets each
 //! answer the shell steps through `PermissionAnswer`: 0 for the yes button, 1 for the no button,
 //! 2 for a closed sheet. The app's words reach the sheet cleaned. One sheet at a time: a second

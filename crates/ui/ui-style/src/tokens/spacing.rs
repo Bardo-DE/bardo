@@ -7,7 +7,7 @@
 //! The eighteen common steps (design/34-MODERN-LOOK.md section 2.4 adds 20, 24, 28, 32, 40 and 48 for the larger Look's margins and group gaps), plus the three values 04-COMPONENTS quotes exactly for a Bardo
 //! component and the common steps miss: 1.5 (the chip's and the image provider mark's
 //! padding), 13 (the hover card's inline padding) and 15 (the toast's leading padding). The
-//! section's other odd values (40, 46, 50, 56) belong to mail surfaces Bardo does not draw; the
+//! section's other odd values (40, 46, 50, 56) belong to mail surfaces the UI kit does not draw; the
 //! floating clamp margin and the card inset are both `--s-8`.
 
 use crate::tokens::token::{Token, TokenScope};

@@ -1,4 +1,4 @@
-//! The key remap daemon daemon as the shell sees it.
+//! The key remap daemon as the shell sees it.
 //!
 //! Its connection state, the events that move it, and the pure decisions around it: when the person
 //! should be told something and what, which focus and config the key remap daemon is sent, when systemd is asked

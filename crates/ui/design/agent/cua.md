@@ -2,14 +2,14 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/cua.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area: cua — the computer-use runtime and its desktop plumbing
 
-Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, Bardo design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
+Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, the UI kit design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
 
 I also checked the installed binaries on this machine (Fedora 44: the compositor, kwin 6.7.5) and the nested compositor globals the harness recorded (`~/shell-host/scripts/dev/out/globals.txt`):
 
 - **Window capture on a stock compositor.** It advertises `ext_image_copy_capture_manager_v1`, `ext_foreign_toplevel_image_capture_source_manager_v1`, `ext_foreign_toplevel_list_v1`, a private toplevel-info global (its `geometry` event exists since v2), a private toplevel manager (`move_to_ext_workspace` since v4), `ext_workspace_manager_v1`, `zwp_virtual_keyboard_manager_v1`, `zwp_text_input_manager_v3`, a private accessibility manager and `wp_security_context_manager_v1`. It has **no** `zwlr_virtual_pointer` and **no** `ext_transient_seat`.
 - **Input on a stock compositor.** The EIS server is reached over D-Bus as a private D-Bus input service, method `GetSenderSocket(device_types)`. reis is vendored in the binary. The exact argument types and who may call it are [unverified]; Spike A settles them.
 - **KWin 6.7.5.** The plugins `eis.so` (`org.kde.KWin.EIS.RemoteDesktop`), `screencast.so` (`zkde_screencast` stream_window over PipeWire, with off-screen rendering of windows) and `screenshot.so` are installed. `libkwin` has no ext-image-copy-capture.
-- **Licences.** the compositor is GPL-3.0-only, and our deny.toml keeps GPL out. So the fork is a separate GPL repo, and no crate of ours may depend on it. The private protocol crate it uses is ours, under MIT OR Apache-2.0.
+- **Licences.** The compositor is GPL-3.0-only, and our deny.toml keeps GPL out. So the fork is a separate GPL repo, and no crate of ours may depend on it. The private protocol crate it uses is ours, under MIT OR Apache-2.0.
 - **Protocol bindings.** wayland-protocols 0.32.13 (already pinned) contains ext-image-copy-capture, ext-image-capture-source, ext-foreign-toplevel-list, ext-transient-seat and ext-workspace.
 
 ---
@@ -51,7 +51,7 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 
 ### New repo `~/cua` (working name; Q3), MIT OR Apache-2.0, porter-style
 
-Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, Bardo's `deny.toml` verbatim, `CONVENTIONS.md` pointing at Bardo's with the porter additions (closed sets are enums with serde slugs and no `Word`; async seams are `-> impl Future + Send`; closed sets of implementations are enums, not `dyn`; `todo!()` only behind a frozen interface and listed in FINDINGS; nothing ambient below the daemon). It also gets `ARCHITECTURE.md`, `FINDINGS.md`, `dbus/`, `protocols/` and `scripts/`.
+Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, the UI kit's `deny.toml` verbatim, `CONVENTIONS.md` pointing at the UI kit's with the porter additions (closed sets are enums with serde slugs and no `Word`; async seams are `-> impl Future + Send`; closed sets of implementations are enums, not `dyn`; `todo!()` only behind a frozen interface and listed in FINDINGS; nothing ambient below the daemon). It also gets `ARCHITECTURE.md`, `FINDINGS.md`, `dbus/`, `protocols/` and `scripts/`.
 
 | Crate | Purpose | I/O | Portable |
 |---|---|---|---|
@@ -84,10 +84,10 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, B
 
 All Bardo code goes in `src/bardo/` (agent seat, masked source, lease and glow globals, input-origin gate, kill chord), with small hook calls into upstream files. The fork depends on `bardo-agent-protocol` (feature `server`) by git rev. The double-tap ⌘ detection (COMPANION item 7) also lands here later; whoever owns it shares the branch. Ownership: Q11.
 
-### Adopted crates (from Bardo's pinned block unless marked "joins the block")
+### Adopted crates (from the UI kit's pinned block unless marked "joins the block")
 
 - **Already pinned:** `wayland-client 0.31`, `wayland-backend 0.3`, `wayland-protocols 0.32.13` (staging), `the Wayland client toolkit` (pinned rev), `xkbcommon 0.8` (text → keysym → keycode on the EIS keymap), `zbus 5.19` (tokio), `tokio 1`, `serde`/`serde_json`, `thiserror 2`, `image 0.25.6` (PNG for thumbnails only), `memfd 0.6` (shm buffers for capture), `rustix 1.1`.
-- **Joins the block:** `reis 0.7` (MIT; pin the minor that the fork's the compositor `Cargo.lock` resolves; the README says its API may change) and `atspi 0.30` (Apache-2.0 OR MIT).
+- **Joins the block:** `reis 0.7` (MIT; pin the minor that the fork's compositor `Cargo.lock` resolves; the README says its API may change) and `atspi 0.30` (Apache-2.0 OR MIT).
 - **Later, joins the block:** `ashpd 0.13` (RemoteDesktop/ScreenCast portal fallback if `GetSenderSocket` is owner-restricted) and `pipewire` (KWin window capture; [unverified] version and licence).
 - **From other areas:** `computer-use-action`, `model-provider` (models); `prov`, `permission-policy`, `bardo-intents` (actions); `eventlog`, `memfiles` (memory); `account-core` (`DataClass::Screen`, `AppId`, `Locality`).
 
@@ -719,7 +719,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
   - every crate's types and traits, with `todo!()` bodies for behaviour;
   - all shape tests in §5 that need no behaviour: wire round-trips, slugs, introspection, fixtures load;
   - `scripts/check-boundary.sh`;
-  - joining reis and atspi into Bardo's `docs/workspace-deps.toml` first (a Bardo edit, coordinated).
+  - joining reis and atspi into the UI kit's `docs/workspace-deps.toml` first (a Bardo edit, coordinated).
 - **Agent `fork-setup`** owns `~/bardo/compositor`: fork at the upstream 1.8 tag, branch `bardo`, an empty `src/bardo/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
 
 ### Fill waves (disjoint file ownership)
@@ -838,7 +838,7 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 - /home/pohsuanlai/rs-wt/companion/cua-integration.md
 - /home/pohsuanlai/porter/ARCHITECTURE.md (the repo shape, boundary script and frozen-trait conventions to copy)
 - /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.4 Inference1, §4.5 consent, §5.5 data-class floors)
-- /home/pohsuanlai/shell-host/scripts/dev/README.md (the the nested compositor and headless KWin harness the spikes reuse)
+- /home/pohsuanlai/shell-host/scripts/dev/README.md (the nested compositor and headless KWin harness the spikes reuse)
 - /home/pohsuanlai/sill/crates/sill-launcher/src/activation.rs and provider.rs (where the run strip plugs in)
 
 <!-- paths: end -->

@@ -1,10 +1,10 @@
-//! The actions Bardo's own components take: declared with the chord keymap like any app's, so a person
+//! The actions the UI kit's own components take: declared with the chord keymap like any app's, so a person
 //! can rebind them and no app can take their chord by accident.
 
 use super::handle::Keys;
 use keymap::{AppAction, AppId, DefaultChord};
 
-/// Bardo's name as the owner of its actions.
+/// The UI kit's name as the owner of its actions.
 const OWNER: &str = "bardo";
 
 /// Go back one page of a pane stack.
@@ -18,7 +18,7 @@ pub(crate) fn pane_back() -> Option<AppAction> {
     AppAction::new(PANE_BACK).ok()
 }
 
-/// Declares Bardo's own actions on `keys`. Idempotent; a conflict (an app that already has the
+/// Declares the UI kit's own actions on `keys`. Idempotent; a conflict (an app that already has the
 /// chord) leaves the action unbound and is kept in `Keys::problems`.
 pub(crate) fn register_bardo_actions(keys: &Keys) {
     let Some((app, actions)) = rows() else {
@@ -31,7 +31,7 @@ pub(crate) fn register_bardo_actions(keys: &Keys) {
 
 type Rows = (AppId, Vec<(AppAction, DefaultChord)>);
 
-/// Bardo's rows, or `None` when a name or chord above does not read (a test rules that out).
+/// The UI kit's rows, or `None` when a name or chord above does not read (a test rules that out).
 fn rows() -> Option<Rows> {
     let chord = PANE_BACK_CHORD.parse::<DefaultChord>().ok()?;
     Some((AppId::new(OWNER).ok()?, vec![(pane_back()?, chord)]))

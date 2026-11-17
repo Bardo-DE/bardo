@@ -233,7 +233,7 @@ pub fn watch(harness: &mut Harness, done: impl Fn(&Harness) -> bool) -> Seen {
 
 /// Wait for work done on another thread (a PDF page's raster, a file's head read) to land,
 /// on the wall clock and without moving the harness clock: a loaded machine may take seconds,
-/// and advancing the virtual clock meanwhile would cross Bardo's pending cap and change what is
+/// and advancing the virtual clock meanwhile would cross the UI kit's pending cap and change what is
 /// drawn. `advance(ZERO)` runs whatever the landing woke, at the current instant.
 pub fn await_off_thread(harness: &mut Harness, done: impl Fn(&Harness) -> bool) -> Seen {
     let deadline = std::time::Instant::now() + OFF_THREAD_LIMIT;
@@ -254,7 +254,7 @@ pub fn await_off_thread(harness: &mut Harness, done: impl Fn(&Harness) -> bool) 
 /// How long [`await_off_thread`] waits on the wall clock.
 const OFF_THREAD_LIMIT: Duration = Duration::from_secs(30);
 
-/// The preview pane is up with nothing left loading (Bardo's `aria-busy` is gone).
+/// The preview pane is up with nothing left loading (the UI kit's `aria-busy` is gone).
 pub fn loaded(harness: &Harness) -> bool {
     harness.count(".ds-preview") == 1 && harness.attr(".ds-preview", "aria-busy").is_none()
 }

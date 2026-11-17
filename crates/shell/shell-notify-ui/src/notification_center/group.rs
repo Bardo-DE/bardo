@@ -1,6 +1,6 @@
-//! One row of the center's list, as Bardo's `List` takes it: a group's
-//! header (Bardo's `GroupHeader`: the app's icon and name, the count, "N more" or "Show less",
-//! Clear) keyed by its `AppKey`, or a card (Bardo's `NotificationCard` through [`NoteCard`], the
+//! One row of the center's list, as the UI kit's `List` takes it: a group's
+//! header (the UI kit's `GroupHeader`: the app's icon and name, the count, "N more" or "Show less",
+//! Clear) keyed by its `AppKey`, or a card (the UI kit's `NotificationCard` through [`NoteCard`], the
 //! newest stacked over the rest while folded) keyed by its `NotificationId`. The keyboard's
 //! ring is Bardo's: the header or card it is on carries `data-focus=ring`. The gap between rows
 //! is the row's own padding (`.shell-nc-item`), never the list's.

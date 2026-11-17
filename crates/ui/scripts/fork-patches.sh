@@ -3,7 +3,7 @@
 #   fork-patches.sh print                     the block, to paste into a consumer's workspace root
 #   fork-patches.sh check <Cargo.toml>        exit 1 unless that manifest's [patch.crates-io]
 #                                             carries exactly the block's entries
-#   fork-patches.sh generate                  rewrite docs/fork-patches.toml from Bardo's root
+#   fork-patches.sh generate                  rewrite docs/fork-patches.toml from the UI kit's root
 #                                             Cargo.toml (the source of truth)
 #   fork-patches.sh selftest                  the docs file matches the root; a changed copy fails
 # Comments and blank lines are ignored when comparing; entries are compared as sorted lines.
@@ -39,7 +39,7 @@ selftest() {
   local tmp
   tmp=$(mktemp -d)
   trap 'rm -rf "$tmp"' RETURN
-  # The published block is Bardo's own.
+  # The published block is the UI kit's own.
   check "$here/../../Cargo.toml" >/dev/null
   # A consumer copy that moved a rev fails.
   sed '/^vello_common = /s/rev = "[0-9a-f]\{40\}"/rev = "0000000000000000000000000000000000000000"/' \

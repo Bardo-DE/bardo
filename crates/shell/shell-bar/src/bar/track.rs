@@ -1,4 +1,4 @@
-//! The bar's menu tracker: Bardo's `MenuTrack` (design/13 §13.4), keyed by [`MenuId`], with the
+//! The bar's menu tracker: the UI kit's `MenuTrack` (design/13 §13.4), keyed by [`MenuId`], with the
 //! bar's `Stamp` time and integer points converted at this boundary.
 
 use std::time::Duration;

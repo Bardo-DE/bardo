@@ -12,7 +12,7 @@ publish.workspace = true
 # The Linux desktop's services: D-Bus single instance with bus activation and the agent intents. Opt in:
 # the default build is the traits, the portable implementations and the `testing` fakes, with no zbus.
 # The code behind the feature is also gated on `target_os = "linux"`, so a build for another platform
-# ignores it (Bardo design/36).
+# ignores it (the UI kit design/36).
 default = []
 desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:base-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus"]
 # The fakes (`anyview_platform::testing`), for the tests of the crates that consume the traits.

@@ -3,7 +3,7 @@
 //! dialog-like window (a sheet of steps, an alert) never guesses its own height, so a sentence that
 //! wraps, a longer translation or a larger text size is never cut off.
 //!
-//! The measuring is Bardo's frame phase (`ui_components::host::measure::use_rect`); the asking is the
+//! The measuring is the UI kit's frame phase (`ui_components::host::measure::use_rect`); the asking is the
 //! window's [`WindowSizer`](crate::WindowSizer), so a window the person has resized themselves
 //! ([`SizeOrigin::Person`]) is left as they made it.
 

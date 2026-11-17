@@ -189,7 +189,7 @@ Ubuntu 24.04 stops programs without an AppArmor profile from creating user names
 (`kernel.apparmor_restrict_unprivileged_userns=1`). Bubblewrap is one of those programs, so on a stock install:
 
 - the test jail (`harness/jail.sh`, the gate) refuses to start and prints the fix;
-- the agent sandbox cannot start and refuses to run shell tools rather than run them unprotected.
+- The agent sandbox cannot start and refuses to run shell tools rather than run them unprotected.
 
 Two fixes, pick one:
 

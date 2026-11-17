@@ -13,7 +13,7 @@ use ui_components::style::tokens::layer::ZLayer;
 use ui_components::style::tokens::shape::Radius;
 use ui_components::style::tokens::token::{Token, TokenScope};
 
-/// design/01-LAYOUT.md section 2's common steps. The design names these values and Bardo has no
+/// design/01-LAYOUT.md section 2's common steps. The design names these values and the UI kit has no
 /// token for them (a limit the Blitz limits page lists): every padding is a raw length today.
 const SPACING: [u16; 18] = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 22, 26, 36,

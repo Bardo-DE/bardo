@@ -1,4 +1,4 @@
-//! A [`Preview`] as Bardo's `PaneContent`, with what it names on disk loaded off the UI thread: a
+//! A [`Preview`] as the UI kit's `PaneContent`, with what it names on disk loaded off the UI thread: a
 //! file's peek through `load.rs` (the viewer's `anyview_peek`, drawn by its `Card` in Bardo's
 //! slot so one `PreviewPane` keeps its actions, its cue, its pending look and its entrance
 //! whatever it shows), a clipboard image's bytes from the clipboard service.
@@ -153,7 +153,7 @@ fn answer_card(task: &provenance::TaskId, companion: &Companion) -> PaneContent 
         zone: &zone,
         display: &display,
     };
-    // A text answer is drawn here, its marks read as emphasis; Bardo's card draws every other kind.
+    // A text answer is drawn here, its marks read as emphasis; the UI kit's card draws every other kind.
     let (body, card) = match &answer.wire.body {
         AnswerBody::Text { .. } => (Some(answer_text(answer)), None),
         _ => (

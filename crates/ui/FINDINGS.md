@@ -3,7 +3,7 @@
 This file holds two kinds of entry about the renderer stack (Blitz, stylo, taffy, parley, vello,
 dioxus-native, winit) and the design system built on it: **open items**, things still
 unresolved, and **standing facts**, things true at the current pin that code and tests rely on,
-with the workaround Bardo uses. It is a reference, not a log: how each fact was found, and what
+with the workaround the UI kit uses. It is a reference, not a log: how each fact was found, and what
 changed when, lives in git history. Code cites sections by name (FINDINGS "Edit surface"), so a
 renamed heading needs its citations updated.
 
@@ -57,7 +57,7 @@ that rev.
   winit's `request_surface_size` returns `Some(size)` when the platform applied the size at once,
   and then emits no `SurfaceResized`; winit-wayland always returns `Some` (`window/state.rs`) and
   sends `SurfaceResized` only for a compositor `configure` or a scale change, so a client-initiated
-  resize left Blitz's viewport and renderer, Bardo's `framed.refresh()`/`resized.bump()` and the
+  resize left Blitz's viewport and renderer, the UI kit's `framed.refresh()`/`resized.bump()` and the
   `SizeLedger` unaware (the box kept its size, the request read `Expired`). `WinitSized` and
   `WinitWindow::tile` now pass `Some(size)` to `Requests::applied`, which queues
   `Request::Resized` and wakes the loop; `Windows::serve` hands the window a synthetic
@@ -122,7 +122,7 @@ Upstream (pinned around; re-check at every toolchain bump):
   Unprefixed attribute selectors never match (S2), and a `details { open }` written by dioxus
   never opens ("Selectors and cascade"). Fixed in our fork at `1b23fbd9` (branch
   `g296-unprefixed-attr`, G296): attributes are written with no namespace, so the plain selector
-  matches and `[*|…]` still does. Not offered upstream (PRs on hold). Bardo's own sheet keeps `[*|…]`.
+  matches and `[*|…]` still does. Not offered upstream (PRs on hold). The UI kit's own sheet keeps `[*|…]`.
 - **`get_client_rect` borrows the document mutably** when a shared borrow would do, which is why
   rect reads can collide with the renderer ("Bar gaps"). Upstream report material.
 - **Hit test in an inline formatting context** returns the parent, not an atomic inline
@@ -137,7 +137,7 @@ Upstream (pinned around; re-check at every toolchain bump):
   says "TODO: queue focus events"). Bardo tells the newly focused field itself; the element that
   *loses* the caret to a host focus write still hears no `blur` on Blitz.
 - **blitz-shell panics on a session with no clipboard** (it unwraps `arboard::Clipboard::new()`).
-  Bardo's own calls catch it; a field's own Ctrl+C in such a session still panics.
+  The UI kit's own calls catch it; a field's own Ctrl+C in such a session still panics.
 - **anyrender's `draw_glyphs` carries no text.** PDF output walks the parley layouts to recover
   each glyph's text ("PDF output"); the clean fix is a text-and-clusters argument upstream.
 - **vello_hybrid's glyph atlas cache is off** (`atlas_cache_enabled: false`, never turned on by
@@ -146,7 +146,7 @@ Upstream (pinned around; re-check at every toolchain bump):
 - **CJK line breaking**: parley at this rev prints `ICU4X data error: No segmentation model for
   complex script` and wraps CJK without dictionary word boundaries.
 - **Closing a second window's vello_hybrid renderer crashes the first window on NVIDIA/Wayland**
-  (`vkAcquireNextImageKHR` through a null function pointer). Bardo keeps closed renderers alive
+  (`vkAcquireNextImageKHR` through a null function pointer). The UI kit keeps closed renderers alive
   and reuses them. Not reported upstream; other drivers untested.
 - **Blitz reads `Instant` itself** for the double-click interval and the scrollbar fade, in
   `pub(crate)` fields, so the virtual clock cannot reach them ("Timing tests").
@@ -166,10 +166,10 @@ Not built, or limited, in Bardo:
   replay; they must call
   `ds_blitz::snap_to_device` after each resolve themselves. Each needs a ds-blitz entry point
   the host calls.
-- **shell-host does not register Bardo's faces.** `SharedFonts::system()` never calls
+- **shell-host does not register the UI kit's faces.** `SharedFonts::system()` never calls
   `SharedFonts::register`, and Inter is not installed system-wide, so sill draws system-ui
   wherever it asks for Inter, Inter Display, Bricolage, Karla, Space Mono or Noto Serif (its
-  headless `Fonts::Bundled` registers only the first `.ttf` in Bardo's font folder). The fix is
+  headless `Fonts::Bundled` registers only the first `.ttf` in the UI kit's font folder). The fix is
   shell-host's: register `ds::style::fonts::FACES` (`ds_blitz::register_fonts`). Until then, never put the
   emoji face in a stack that carries ordinary text ("Colour emoji").
 - **`ds_blitz::launch` is not pixel-snapped and gets no hover replay**: blitz-shell resolves and
@@ -178,7 +178,7 @@ Not built, or limited, in Bardo:
   overlay that shows a Bardo `Tooltip` for a hovered element's `title`; meanwhile
   `Button { title }` and `HoverTarget` cover the places that matter.
 - **Scrollbars on the launch path.** blitz-paint's `scrollbars` feature is off in the pinned
-  block and Bardo's scroll containers set `scrollbar-width: none`; whether a window should draw
+  block and the UI kit's scroll containers set `scrollbar-width: none`; whether a window should draw
   a thumb (with `--scroll-thumb`) is a design decision not taken.
 - **`Slider` carries `data-wheel="capture"` but has no `onwheel` handler**, and whether a host
   reads `data-wheel`/`data-overscroll` correctly is shell-host's test to write.
@@ -367,7 +367,7 @@ anyrender_vello_hybrid) as a `DioxusDocument` driven with `resolve(t)`, `poll` a
   `qual_name(name, None)`, in the HTML namespace, and Stylo's `attr_matches` compares
   namespaces, so `[data-theme=dark]`, `[aria-selected=true]` and `[data-variant=…]` never match
   an attribute dioxus sets (fixed at fork rev `1b23fbd9`, G296: the plain form now matches).
-  `[*|data-theme=dark]` (valid CSS that browsers also match) and classes do. Every attribute selector in Bardo's CSS is written with `*|`, and the lint flags
+  `[*|data-theme=dark]` (valid CSS that browsers also match) and classes do. Every attribute selector in the UI kit's CSS is written with `*|`, and the lint flags
   an unprefixed one under the Blitz profile. This is the most far-reaching finding.
 - **S3.** Keyframes with literal values, `var()` colours, `var()` distances and a `var()`
   duration all interpolate (a 1 s, 300 px linear move is at x = 90 at 0.3 s). motion.css and
@@ -483,15 +483,15 @@ adapter opens).
   (`Availability::Disabled` writes `disabled="true"` beside `aria-disabled`).
 - **`data-*` names are case-sensitive on Blitz** (HTML folds them to lowercase), so
   `DataName::parse` takes lowercase letters, digits and `-` only, and refuses `ds-` names and the
-  names Bardo writes or reads (`variant`, `size`, `theme`, `accent`, `motion`, `material`,
+  names the UI kit writes or reads (`variant`, `size`, `theme`, `accent`, `motion`, `material`,
   `slot`). dioxus names attributes by `&'static str`, so each distinct runtime `data-*` name is
   interned once (a leaked string per name for the program's life); a spread goes after the named
   attributes.
 - **`:where` works.** The reset is written `:where(.ds) button, :where(.ds) input, …`
   (specificity 0,0,1), so a component rule of one class outranks it. Written `.ds button`
   (0,1,1), the reset takes a lone class's `color` and `font` on every `button` and `input`.
-  `self_lint` counts `:where(.ds)` as Bardo's own ground.
-- **Blitz's user-agent sheet** gives `button { justify-content: center }` (Bardo's items set
+  `self_lint` counts `:where(.ds)` as the UI kit's own ground.
+- **Blitz's user-agent sheet** gives `button { justify-content: center }` (the UI kit's items set
   `flex-start`) and gives an unsized `input` the 300 x 150 replaced-element default (Bardo sizes
   every input).
 - **Cascade order matters at equal specificity**: components come after motion, so a component
@@ -499,20 +499,20 @@ adapter opens).
   (`.ds-chip[*|data-variant=person]:not(.a-chip-flash)`); `button.css` comes after
   `pin_tile.css`, so the add tile's rule names both classes; the shared drop rules
   (the shared drop rules) sort last because they tie with the items' hover and current rules.
-- **`DsInternals`** forbids a consumer selector on Bardo's classes or root attributes
+- **`DsInternals`** forbids a consumer selector on the UI kit's classes or root attributes
   (`data-theme`, `data-hover`, `data-extent`, …); `data-slot` is a consumer seam
   (`CONSUMER_SEAMS` in `ds-lint/selector.rs`). A type selector on a Bardo element trips the
   consumer-only exemption, which keys on a selector starting `.ds`, so a `div`/`li` hover target
   carries `data-as`.
 - **A custom property on a `ds-*` element is how Bardo hands its sheet a per-instance colour**
   (`--dot-c1..3`, `--plate-*-l/-d`, `--av-bg`, `--f-*`, `--ic-size`): the markup lint allows
-  custom properties inline on Bardo's elements and flags a literal colour in any other property
-  on any element. An `<svg>` is Bardo's when it is `.ds-ic` or carries `data-ds-svg`.
+  custom properties inline on the UI kit's elements and flags a literal colour in any other property
+  on any element. An `<svg>` is the UI kit's when it is `.ds-ic` or carries `data-ds-svg`.
 - **`scroll-behavior: smooth` is in `Rule::BlitzUnsupported`'s table** (as `position: sticky`
   is); `scroll-behavior: auto` lints clean.
 - **`Rule::UnknownAnimation` parses the `animation` shorthand**: each animation's name is its
   first identifier that is not a shorthand keyword; a name behind `var()` or in a string is not
-  judged. A consumer sheet that defines `@keyframes` under one of Bardo's names shadows Bardo's.
+  judged. A consumer sheet that defines `@keyframes` under one of the UI kit's names shadows Bardo's.
 - **Other lint rules**: `Rule::RawHairline` (Strict) flags a literal `1px`/`.5px` border or
   outline width and a box whose whole width or height is `1px`, naming the pixel token;
   `Rule::RawSpacing` (Strict) flags a literal `px` in margin, padding and gaps (`0`, `auto`, `%`,
@@ -540,7 +540,7 @@ adapter opens).
 - **Glyph strokes at a fractional scale** are an even number of device pixels (`icon/stroke.rs`,
   design/08 section 1.4.1): a 16 px glyph's stroke is 2 device pixels at 1.25, 1.5 and 1.75.
 - **Lucide transcriptions** come from lucide-static 1.47.0 (ISC). A `<line>` is written as the
-  equivalent path. `Icon::Switches` and `Icon::MoonFilled` are Bardo's own compositions from
+  equivalent path. `Icon::Switches` and `Icon::MoonFilled` are the UI kit's own compositions from
   Lucide parts (`icon/geometry_own.rs` explains each number); a filled glyph is
   `Shape::Solid(d)`, which fills and still strokes, so its silhouette equals the outline glyph's.
   At 16 px a ring knob would touch its track, so a knob is a stroked point, as Lucide draws dots.
@@ -675,7 +675,7 @@ own caret and selection. The route needs no Blitz fork.
   factor); while captured the surface ignores its own `pointermove`/`pointerup`.
 - **Clipboard HTML.** `ShellProvider` has text only; the window reads `text/html` through arboard
   directly (`ds_blitz::clipboard::read_html()`). On Wayland arboard goes through XWayland, as
-  blitz-shell's text clipboard does: Bardo does not use `wayland-data-control` (decided 2026-10-16,
+  blitz-shell's text clipboard does: the UI kit does not use `wayland-data-control` (decided 2026-10-16,
   production audit BARDO-08; the workspace `arboard` asks for no features). The blitz fork's own
   workspace still enables the feature for blitz-shell's arboard, so the lock keeps `wl-clipboard-rs`
   until the fork drops it (an ask to the blitz fork, see "Clipboard" below).
@@ -710,7 +710,7 @@ own caret and selection. The route needs no Blitz fork.
   `provide_host()` (shell surfaces) has the same part, with no keeper. Blitz counts `tabindex="-1"`
   as not focusable (`flush_is_focussable`: `index >= 0`), so a panel that is the keyboard's home
   must carry `tabindex="0"` to be the ancestor a press on empty space lands on; a browser would
-  take `-1` too, and Bardo does not yet (departure from the browser, kept to leave menus' and
+  take `-1` too, and the UI kit does not yet (departure from the browser, kept to leave menus' and
   radios' roving `-1` items out of the click chain).
 - **The kept-click rule.** dioxus 0.7 has no capture phase and Blitz dispatches bottom-up only
   (blitz-dom's events/driver.rs), so a control that stops a click keeps it from the root. Every Bardo click
@@ -917,14 +917,14 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
 - dioxus-native's `clipboard` feature is on (blitz-shell over arboard 3.6), so Ctrl+C/X/V work in
   every field of a `launch` window. The app's calls answer `NoHost` outside a ds-blitz document,
   or `Unavailable`. The harness keeps an in-memory clipboard with an HTML slot.
-- **No data-control (2026-10-16, BARDO-08).** Bardo reads and writes the clipboard as a client with
+- **No data-control (2026-10-16, BARDO-08).** The UI kit reads and writes the clipboard as a client with
   a window, never through `zwlr`/`ext` data-control, which would let a background client read it:
   so the compositor need not offer that protocol to every app for Bardo apps to paste. The cost is that
   arboard reaches the Wayland selection through XWayland. The workspace `arboard` has no features;
   blitz-shell's arboard (in the blitz fork's workspace, `features = ["wayland-data-control"]`)
   still turns it on in the build, so **ask to the blitz fork:** drop `wayland-data-control` from
   `arboard` in the fork's root `Cargo.toml` (the fork commit 15ead74d added it), after which the
-  lock loses `wl-clipboard-rs`. Until then the build contains the backend but Bardo's own reads do
+  lock loses `wl-clipboard-rs`. Until then the build contains the backend but the UI kit's own reads do
   not depend on it.
 - **The primary selection** is `ClipboardTarget::Primary` on `ds_blitz::clipboard::{read_from, write_to}` (a terminal's OSC 52 `p`).
   Linux reaches it through arboard's `LinuxClipboardKind::Primary` (`clipboard/primary.rs`), so on Wayland it goes through
@@ -1023,7 +1023,7 @@ on a machine other builds were also using, so about +-10 ms).
   others are sorted by `node_to_paint_order`, positioned above in-flow and floated, tree order
   within a level, **per parent**: a static box sorts below its positioned siblings, so an
   `absolute` card with no z-index inside a static wrapper after `relative` rows goes under the
-  rows (a browser puts it on top). Bardo's floating surfaces render in the overlay host with a
+  rows (a browser puts it on top). The UI kit's floating surfaces render in the overlay host with a
   z-index, so they are hoisted and safe.
 - **Hoisted boxes' hit offsets trail a layout change by one resolve** (`flush_styles_to_layout`
   runs before `resolve_layout`). The overlay host covers the root, so its offsets never move.
@@ -1289,7 +1289,7 @@ names only anyrender, peniko, pdfrum and skrifa (no Blitz, no parley).
   print in a process (font context and system scan), 5.8-6.9 ms after; rasterised at 96 dpi
   against the headless snapshot, mean channel difference 0.52/255 and 0.13 % of pixels off by
   more than 64 (anti-aliasing only; the layout is identical).
-- **Limits**: pagination is Bardo's heuristic (backgrounds and borders split at a cut; a line or
+- **Limits**: pagination is the UI kit's heuristic (backgrounds and borders split at a cut; a line or
   image taller than a page is cut; table headers do not repeat; floats and absolute boxes are
   not kept; orphans and widows fixed at 2; no `break-after`; no running headers, footers or page
   numbers). Font fallback is fontique's (the fixture's Karla heading got its CJK from
@@ -1331,7 +1331,7 @@ What Blitz at the pinned rev paints (48 px, headless):
   (which maps emoji itself, from Symbola). With the emoji face first, "Ab 2#" drew "Ab" and
   nothing for "2#". `--font-emoji` (`"Inter","Noto Color Emoji",system-ui,sans-serif`) and
   `.ds-emoji-text` are for emoji content only (the emoji grid, the preview glyph); the text
-  stacks name no emoji face while shell-host lacks Bardo's faces (Open items).
+  stacks name no emoji face while shell-host lacks the UI kit's faces (Open items).
   `ds-blitz/tests/it/text_stack_fonts.rs` lays the stack out under both font contexts: under shell-host's,
   "00:22" is 84 px against 45 for Inter and 41 for system-ui.
 - **Unnamed-stack emoji (anyview report, 2026-10-14).** A ZWJ family drew as four monochrome
@@ -1657,7 +1657,7 @@ the decisions and what was verified:
   has no user any more and can go with the token pass. (5) `ProviderMark` is on the `ControlSize`
   ladder (Mini 11, Small 13, Regular 14, Large as Regular). (6) `RichText` and `TextRuns` draw
   inline runs with no element of their own, so they take no `Common`. (7) `LinkPill` takes
-  `href` and `oncopy` (Bardo has no clipboard write on the `DocumentHost`); "Copied" shows for the
+  `href` and `oncopy` (the UI kit has no clipboard write on the `DocumentHost`); "Copied" shows for the
   toast hold, not until the pointer leaves, since the pill shrinks out from under it.
   (8) `space_pressed` reads Ctrl+1..9; the Space colour cross-fade over `--t-big` is the frame's,
   already built. (9) `Anim::{MenuPop, BubblePop, PillUp, RingDrain, LinkPillIn}` and their keyframes
@@ -1766,7 +1766,7 @@ Open:
   the only place a dioxus key and its modifiers become a chord keymap `KeyInput` (Ctrl, Alt, Shift, Super
   and Meta are kept apart; the chord keymap's normaliser folds Meta into Super on every platform; lock and
   AltGraph flags are not chord modifiers). `Keys::action_of` / `Keys::resolve` read the active keymap,
-  `Context` decides what a text field or a terminal keeps. Nothing else in Bardo reads
+  `Context` decides what a text field or a terminal keeps. Nothing else in the UI kit reads
   `Modifiers::CONTROL`, `SUPER` or `META` to decide a chord.
 - Standing: on our desktop (and macOS) Command arrives as Super and Ctrl+V is not a paste;
   on KDE, GNOME, Windows and other Linux Ctrl+V is. A document under no `KeySource` takes our
@@ -1950,7 +1950,7 @@ second line (a focus that lands before layout owes the caret).
 
 ## chrome numbers for the compositor (2026-10-15)
 
-The compositor draws window chrome itself and reaches Bardo only through the pure crates, so the numbers
+The compositor draws window chrome itself and reaches the UI kit only through the pure crates, so the numbers
 the chrome stylesheet writes are now public as numbers, each from the table the CSS is written from:
 
 - `Radius::px() -> u16` (`--r-window` is 10). `Radius::value()` now returns a `String` formatted
@@ -2042,7 +2042,7 @@ Lane `q-barasks`, written without a build: nothing here has been compiled or run
 - **Why an `img` for the backdrop.** The thumbnail picture is already an `img` with `object-fit: cover` clipped by the card's `overflow:hidden`
   and radius, which Blitz draws (and an `img` takes `file:` and `data:` through the net provider). A CSS `background-image` through a custom
   property is what sill called unproven; S8 (above) proves only `data:` backgrounds with a `data:` NetProvider.
-- **Why `on_layout` and not per-tile hooks.** Every Bardo component that exposes geometry does it with `use_rect` (the host's frame phase) and a
+- **Why `on_layout` and not per-tile hooks.** Every UI kit component that exposes geometry does it with `use_rect` (the host's frame phase) and a
   callback or anchor (palette `on_rect`, menus' `Anchor::Mounted`), not ids for the caller to measure. One event with all rects lets the host
   send one update per change. Each part (`Tile`, `Card`, `Plus`) owns a probe and publishes into a book the bar shares by context; a `Reporter`
   child reads the book in the bar's order and calls `on_layout` when the layout differs; nothing is reported until a part is laid out. The card
@@ -2185,7 +2185,7 @@ apps (first the Settings app's Settings, "install llama.cpp" with a copyable com
   entry on a repeated group or a localized key with no default), and the same locale rule in every app. What it costs: sill reads
   more accessors than `DesktopFile` has (`only_show_in`, `not_show_in`, `flatpak`, `startup_wm_class`, `dbus_activatable`, `Iter`'s
   directory walk and app ids), which stay with the caller as plain `string`/`list`/`is_true` reads. Whether to move is the owner's call;
-  the reader is additive and nothing in Bardo uses it yet.
+  the reader is additive and nothing in the UI kit uses it yet.
 
 ## Type rules (2026-10-28)
 

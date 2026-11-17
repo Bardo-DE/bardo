@@ -21,7 +21,7 @@ use crate::words::{SIGN_IN_BUTTON, status_words, trouble_title};
 /// showed; a row that never had one draws nothing.
 #[component]
 pub(super) fn CloudBadge(badge: Badge) -> Element {
-    // The last badge drawn: what fades out when the row needs none. Not reactive, like Bardo's own
+    // The last badge drawn: what fades out when the row needs none. Not reactive, like the UI kit's own
     // `ds-busy-seen` flag, so keeping it never schedules another render.
     let mut last = use_hook(|| CopyValue::new(Badge::Clear));
     if badge != Badge::Clear && *last.peek() != badge {

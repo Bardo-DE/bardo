@@ -1,4 +1,4 @@
-//! A minimal page proving Bardo's coherence rules from outside Bardo workspace
+//! A minimal page proving the UI kit's coherence rules from outside Bardo workspace
 //! (`../../CONSUMING.md` "The consumer example"): one `Ds` root, a page built only from Bardo
 //! components (`Button`, `TextField`, `Menu`, `Toast`), a stylesheet of its own, and motion
 //! driven only by `ui_components::motion` timers, never an ad-hoc sleep.
@@ -22,7 +22,7 @@ use ui_settings::{SystemPrefsSource, use_environment};
 /// This example's own stylesheet, Bardo tokens only (`tests/coherence.rs::our_stylesheet_lints_clean`).
 pub const STYLE: &str = include_str!("style.css");
 
-/// The example's one page, wrapped in the root every Bardo surface draws inside.
+/// The example's one page, wrapped in the root every UI kit surface draws inside.
 ///
 /// Reads its settings through `ui_settings::use_environment` (`../../CONSUMING.md` "Reading
 /// appearance"), live file and portal watches included. Its watches run on the Tokio runtime

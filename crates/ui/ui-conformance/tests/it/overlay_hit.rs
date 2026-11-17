@@ -2,7 +2,7 @@
 //! leave is not the row's enter"). Blitz's hit test follows paint order: a card over rows that
 //! are `position: relative` takes the pointer and the click, whether it is `position: fixed`
 //! after the rows, `position: absolute` with a z-index before or after them, or drawn through
-//! Bardo's overlay host. What swapped mailo's card was the name's leave, which it read as "back
+//! The UI kit's overlay host. What swapped mailo's card was the name's leave, which it read as "back
 //! on the row"; `ThreadRow`'s `onpointerback` says that only when it is so.
 
 use dioxus::prelude::*;
@@ -50,7 +50,7 @@ enum Card {
     RaisedAfter,
     /// `position: absolute; z-index: 5`, before the rows.
     RaisedBefore,
-    /// Through Bardo's overlay host, on the card layer, at the end of `.ds`.
+    /// Through the UI kit's overlay host, on the card layer, at the end of `.ds`.
     Overlay,
 }
 

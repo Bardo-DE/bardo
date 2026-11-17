@@ -16,7 +16,7 @@ PREFIX=/usr/local
 DESTDIR=
 NO_BUILD=0
 
-# The bardo-shell session's the key remap daemon layer. bardo-shell forwards this user file to the key remap daemon, which lays it over
+# The bardo-shell session's key remap daemon layer. bardo-shell forwards this user file to the key remap daemon, which lays it over
 # /etc/bardo/key-remap/key-remap.toml (the Plasma overlay, which Plasma never overrides); the file is copied
 # when missing and never overwritten.
 BARDO_KEY_REMAP_LAYER_SRC="$DIST/key-remap/key-remap.toml"

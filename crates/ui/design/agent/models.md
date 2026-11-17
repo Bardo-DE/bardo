@@ -110,7 +110,7 @@ Boundary script (stoker `scripts/check-boundary.sh`, porter's form):
 
 Allowed new edges: `inference-core -> computer-use-action`; `inferd -> computer-use-action, model-vision-prep, model-provider, computer-use-session, model-catalog, engine-supervisor, model-http, model-openai-compat`.
 
-### 2.4 Dependencies: what joins Bardo's pinned block first 
+### 2.4 Dependencies: what joins the UI kit's pinned block first 
 
 | Dep | Version | For | Note |
 |---|---|---|---|
@@ -749,7 +749,7 @@ Fakes and fixtures:
 - add `stoker` crates as git deps pinned by rev, the way the service locator is;
 - add design/22 rows for every `ai.*` key named here.
 
-Verify with Bardo's gate.
+Verify with the UI kit's gate.
 
 **Freeze wave (parallel; one agent per repo):**
 

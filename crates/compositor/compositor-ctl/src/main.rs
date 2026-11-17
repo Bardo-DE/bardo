@@ -1,4 +1,4 @@
-//! `bardo-compositorctl`: drives a jailed the compositor over its private bus.
+//! `bardo-compositorctl`: drives a jailed compositor over its private bus.
 //!
 //! ```text
 //! bardo-compositorctl debug inject            lines on stdin, `ok <line>` each (compositor-ipc's grammar)

@@ -1,8 +1,8 @@
-//! A Space's colours handed to one of Bardo's own dots as custom properties, so the stylesheet
+//! A Space's colours handed to one of the UI kit's own dots as custom properties, so the stylesheet
 //! paints them.
 //!
 //! Writing `background:linear-gradient(…#hex…)` inline was a literal colour past the stylesheet,
-//! which Bardo's own markup lint flags (`Rule::HexColour`); a custom property on a `ds-*` element
+//! which the UI kit's own markup lint flags (`Rule::HexColour`); a custom property on a `ds-*` element
 //! is how Bardo hands a per-instance value to its sheet, as `FrameVars` does for `--f-*`.
 //!
 //! The stops are `--dot-c1`, `--dot-c2`, `--dot-c3`, and `data-stops` says how many there are,

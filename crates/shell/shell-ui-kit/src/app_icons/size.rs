@@ -1,9 +1,9 @@
 //! Which raster size an icon is loaded at: its logical size times the output scale, rounded up
-//! to a size Bardo draws. Pure.
+//! to a size the UI kit draws. Pure.
 //!
 //! `ui_settings::app_icon_path` already picks the nearest file to a size a
 //! caller asks for, so it could take a raw device-pixel count; [`pick`] stays in front of it
-//! anyway (behaviour Bardo does not cover), because bardo-shell still needs to know the bucket itself,
+//! anyway (behaviour the UI kit does not cover), because bardo-shell still needs to know the bucket itself,
 //! not just get a file back: the retint cache key names it, and a dock tile is loaded once for
 //! the largest size it is ever drawn at (the magnified size when magnification is on), so a
 //! magnification sweep never swaps files mid-flight — [`pick`] is what makes that one, stable
@@ -20,7 +20,7 @@ pub struct AssetPx(pub u16);
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct LogicalPx(pub u16);
 
-/// The sizes Bardo draws each app icon at, every one directly (not downscaled).
+/// The sizes the UI kit draws each app icon at, every one directly (not downscaled).
 pub const ASSET_SIZES: [u16; 13] = [16, 22, 24, 32, 36, 44, 48, 64, 72, 96, 128, 256, 512];
 
 /// The smallest drawn size covering `logical` at `scale` (so the raster is never stretched up),

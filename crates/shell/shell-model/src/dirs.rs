@@ -150,7 +150,7 @@ impl Dirs {
         self.state.join("bardo").join("shell")
     }
 
-    /// The desktop's shared folder under the state directory (`bardo`): where Bardo keeps records
+    /// The desktop's shared folder under the state directory (`bardo`): where the UI kit keeps records
     /// every app shares, such as the styles guard's.
     #[must_use]
     pub fn bardo_state(&self) -> PathBuf {

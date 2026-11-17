@@ -223,8 +223,8 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 ```sh
 journalctl -b --no-pager | grep -iE 'sill|the compositor|bardo-session' | tail -100   # the session script, compositor, shell
 journalctl --user -b -u bardo-compositor.service -u bardo-session.target -u xdg-desktop-portal
-journalctl --user -b -u the mouse gestures daemon -u 'app-org.fcitx.Fcitx5@autostart'
-journalctl -b -u the key remap daemon                                              # system unit
+journalctl --user -b -u bardo-mouse-gestures -u 'app-org.fcitx.Fcitx5@autostart'
+journalctl -b -u bardo-key-remap                                              # system unit
 cat "$XDG_RUNTIME_DIR"/bardo-session/guard.log                     # the crash-loop guard's decisions
 ```
 

@@ -20,7 +20,7 @@ require_jail
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
   "$SCEN_BUILD/shell-target/debug/bardo-shell"
 
-export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 floor_shim desktop-menu-click bardo-shell
 # shellcheck source=/dev/null

@@ -2,7 +2,7 @@
 //! `org.bardo.Workspaces1`.
 //!
 //! So an app that keeps its Spaces from the desktop paints the active workspace's look. The look is
-//! the one every shell surface draws (`shell_ui_kit::look`), as Bardo's compact JSON.
+//! the one every shell surface draws (`shell_ui_kit::look`), as the UI kit's compact JSON.
 
 use shell_model::workspace_looks::{WorkspaceLooksCommand, published};
 use shell_ui_kit::look::use_space_look;

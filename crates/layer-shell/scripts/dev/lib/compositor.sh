@@ -3,7 +3,7 @@
 #
 #   COMPOSITOR=kwin       (default) a headless KWin on the host (kwin-virtual.sh), input through
 #                         fake-input.sh. Runs on the host, never the user's session.
-#   COMPOSITOR=the compositor   the compositor (our compositor) started by its dev/up.sh inside
+#   COMPOSITOR=bardo   the compositor (our compositor) started by its dev/up.sh inside
 #                         packaging/harness/jail.sh, input through `bardo-compositorctl debug inject`.
 #                         The script re-executes itself in the jail (`comp_enter`) after its
 #                         cargo builds, which never happen inside the jail.
@@ -27,7 +27,7 @@ COMP_DEV_DIR="$(dirname "$COMP_LIB_DIR")"
 COMP_ROOT="$(cd "$COMP_DEV_DIR/../.." && pwd)"
 COMPOSITOR="${COMPOSITOR:-kwin}"
 case "$COMPOSITOR" in
-  kwin | compositor) ;;
+  kwin | bardo) ;;
   *) echo "COMPOSITOR must be kwin or compositor, not '$COMPOSITOR'" >&2; exit 64 ;;
 esac
 BARDO_COMPOSITOR_DIR="${BARDO_COMPOSITOR_DIR:-$COMP_ROOT/../compositor}"
@@ -66,7 +66,7 @@ comp_as_shell() {
   local tools
   case "$COMPOSITOR" in
     kwin) exec "$@" ;;
-    compositor)
+    bardo)
       tools="$(comp_tools)" || exit 3
       if [ ! -x "$tools/bin/compositor-shell-exec" ]; then
         echo "comp: $tools/bin/compositor-shell-exec is missing: run $BARDO_COMPOSITOR_DIR/dev/bootstrap.sh --build-only outside the jail" >&2
@@ -77,10 +77,10 @@ comp_as_shell() {
   esac
 }
 
-# comp_enter SCRIPT ARGS...: COMPOSITOR=the compositor outside the jail runs SCRIPT ARGS in a new jail
+# comp_enter SCRIPT ARGS...: COMPOSITOR=bardo outside the jail runs SCRIPT ARGS in a new jail
 # (and exits with its code); anything else returns at once. Call it after the script's builds.
 comp_enter() {
-  [ "$COMPOSITOR" = compositor ] || return 0
+  [ "$COMPOSITOR" = bardo ] || return 0
   if comp_in_jail; then return 0; fi
   local script=$1 name tools jail scratch var envs=()
   shift
@@ -91,7 +91,7 @@ comp_enter() {
   scratch="$COMP_DEV_DIR/out/compositor-${name#accept-}"
   rm -rf "$scratch"
   mkdir -p "$scratch"
-  envs=(--env "COMPOSITOR=compositor" --env "BARDO_COMPOSITOR_DIR=$BARDO_COMPOSITOR_DIR" --env "BARDO_COMPOSITOR_TOOLS=$tools"
+  envs=(--env "COMPOSITOR=bardo" --env "BARDO_COMPOSITOR_DIR=$BARDO_COMPOSITOR_DIR" --env "BARDO_COMPOSITOR_TOOLS=$tools"
     --env "BARDO_LAYER_SHELL_HOST_BACKEND=${BARDO_LAYER_SHELL_HOST_BACKEND:-cpu}")
   # The scripts' own knobs, passed through the jail's cleared environment when set.
   for var in BARDO_COMPOSITOR_DMABUF BARDO_COMPOSITOR_CLOCK BARDO_COMPOSITOR_START_TENTHS FOOT FOOT_LIBS DRAG_ICON \
@@ -103,7 +103,7 @@ comp_enter() {
 
 # comp_out: the directory for the script's logs, fifos and captures.
 comp_out() {
-  if [ "$COMPOSITOR" = compositor ]; then
+  if [ "$COMPOSITOR" = bardo ]; then
     echo "$JAIL_SCRATCH/out"
   else
     echo "$COMP_DEV_DIR/out"
@@ -120,7 +120,7 @@ comp_start() {
       "$COMP_DEV_DIR/kwin-virtual.sh" start "$size" >&2 || return 1
       COMP_ENV="$COMP_DEV_DIR/.kwin-env"
       ;;
-    compositor)
+    bardo)
       local up out
       up="$BARDO_COMPOSITOR_DIR/dev/up.sh"
       out="$(unset BARDO_COMPOSITOR_STATE; XDG_RUNTIME_DIR="${COMP_RUNTIME:-$XDG_RUNTIME_DIR}" \
@@ -136,7 +136,7 @@ comp_start() {
 comp_stop() {
   case "$COMPOSITOR" in
     kwin) "$COMP_DEV_DIR/kwin-virtual.sh" stop >&2 ;;
-    compositor) [ -z "$COMP_ENV" ] || "$BARDO_COMPOSITOR_DIR/dev/down.sh" "$COMP_ENV" >&2 ;;
+    bardo) [ -z "$COMP_ENV" ] || "$BARDO_COMPOSITOR_DIR/dev/down.sh" "$COMP_ENV" >&2 ;;
   esac
 }
 
@@ -148,7 +148,7 @@ comp_source() {
       # shellcheck source=/dev/null
       source "$COMP_ENV"
       ;;
-    compositor)
+    bardo)
       set -a
       # shellcheck source=/dev/null
       source "$COMP_ENV"

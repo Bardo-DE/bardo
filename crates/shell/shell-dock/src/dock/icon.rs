@@ -1,6 +1,6 @@
 //! A tile's icon (design/08-ICONS.md §4): the app's own themed icon as it is, on no plate
 //! (`Symbolic` for a freedesktop `*-symbolic` file, recoloured like a glyph; `Image` for the
-//! rest), Bardo's `Window` glyph when the app has none (§4.3), `Trash` for the Trash tile. Every
+//! rest), the UI kit's `Window` glyph when the app has none (§4.3), `Trash` for the Trash tile. Every
 //! entry takes this one path.
 //!
 //! The icon fills the whole tile, in whole pixels through `IconSize::Px`, at every magnified size
@@ -27,7 +27,7 @@ use shell_ui_kit::app_icons::{IconFile, LogicalPx, pick, theme_art};
 /// What a tile shows, before sizes and styles.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TileArt {
-    /// A Bardo glyph.
+    /// A UI kit glyph.
     Glyph(Icon),
     /// An icon file: a symbolic one in the dock's ink, a theme (or the entry's own) one as it is.
     File(IconFile),

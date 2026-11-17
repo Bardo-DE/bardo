@@ -6,12 +6,12 @@
 # scripts/dev/ime-config (McBopomofo, active by default: no toggle key needed). The user's fcitx5,
 # its bus name and its config are never touched.
 #
-# COMPOSITOR=the compositor: the compositor has no `--inputmethod`; the script starts the same fcitx5 (same
+# COMPOSITOR=bardo: the compositor has no `--inputmethod`; the script starts the same fcitx5 (same
 # profile, private config, data and cache under the jail's scratch) as an ordinary client of the
 # The compositor in the jail, and it binds zwp_input_method_v2 (WAYLANDIM V2) instead of v1.
 #
 #   scripts/dev/accept-ime.sh
-#   COMPOSITOR=the compositor scripts/dev/accept-ime.sh
+#   COMPOSITOR=bardo scripts/dev/accept-ime.sh
 #
 # Steps on examples/demo_ime (a plain <input> focused on mount, on an exclusive-keyboard
 # Overlay layer), each PASS/FAIL:
@@ -58,7 +58,7 @@ case "$COMPOSITOR" in
     KWIN_VIRTUAL_RUNTIME="$RUNTIME" KWIN_VIRTUAL_INPUTMETHOD="$DEV/ime-fcitx5.sh" \
       KWIN_VIRTUAL_CONFIG_SEED="$DEV/ime-config" comp_start 1920x1080 || exit 1
     ;;
-  compositor)
+  bardo)
     IME_BIND="WAYLANDIM V2"
     comp_start 1920x1080 || exit 1
     ;;
@@ -86,7 +86,7 @@ esac
 
 # The compositor has no `--inputmethod`: fcitx5 is an ordinary client of it, on the same private bus,
 # with the seeded profile and its data under the jail's scratch (never the user's).
-if [ "$COMPOSITOR" = compositor ]; then
+if [ "$COMPOSITOR" = bardo ]; then
   IME_HOME="$OUT/ime-home"
   mkdir -p "$IME_HOME/config" "$IME_HOME/data" "$IME_HOME/cache" "$IME_HOME/state"
   cp -r "$DEV/ime-config/." "$IME_HOME/config/"

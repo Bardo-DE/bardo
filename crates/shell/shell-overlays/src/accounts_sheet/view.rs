@@ -1,6 +1,6 @@
 //! The accounts sheet's root: while accountd has a sheet open and the sheets' output is this one,
-//! the surface maps itself and a window stands centred in it: Bardo's titlebar carrying the step's
-//! title, over the step's own column. The consent question is Bardo's `ConsentBody` in the same window. Every part is Bardo's; what bardo-shell adds is the window's place
+//! the surface maps itself and a window stands centred in it: the UI kit's titlebar carrying the step's
+//! title, over the step's own column. The consent question is the UI kit's `ConsentBody` in the same window. Every part is Bardo's; what bardo-shell adds is the window's place
 //! and look (`style.css`, tokens only) and where each event goes (`io.rs`).
 
 use dioxus::prelude::*;

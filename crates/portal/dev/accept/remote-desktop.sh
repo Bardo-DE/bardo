@@ -15,7 +15,7 @@ require_jail
 # shellcheck source=dev/lib/chain.sh
 source "$root/dev/lib/chain.sh"
 
-# 1. dev/up.sh --env <compositor env file> (a headless the compositor with its debug peer-unit table
+# 1. dev/up.sh --env <compositor env file> (a headless compositor with its debug peer-unit table
 #    mapping bardo-portal's pid to bardo-portal.service), and a stub Shell1 that answers a pick.
 # 2. org.freedesktop.portal.RemoteDesktop through xdg-desktop-portal: CreateSession, SelectDevices
 #    (types=3), Start (wait for Response 0, devices=3), ConnectToEIS (an fd comes back).

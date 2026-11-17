@@ -1,7 +1,7 @@
 # shot TARGET OUT.png: captures an output, a window or a region through `bardo-compositorctl shot`
 # (an ext-image-copy-capture client, P1-C1). TARGET is `output`, `output:NAME`, `window:ID` or
 # `region:X,Y,W,H`; a TARGET starting `masked:` (`masked:output`) masks sensitive regions. Until
-# the compositor has the capture protocols bardo-compositorctl exits 2 (could not run), and so does this.
+# The compositor has the capture protocols bardo-compositorctl exits 2 (could not run), and so does this.
 #
 # Owner: P0-T-dev. Sourceable.
 

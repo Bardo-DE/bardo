@@ -40,7 +40,7 @@ pub fn use_frame_tick() -> ReadSignal<FrameTick> {
 /// tree that had already read it. A surface starts at `Scale120::ONE` until the compositor says
 /// otherwise.
 ///
-/// For a design system's device-pixel snapping (Bardo's `HostScale`, or `Ds { scale }`); the
+/// For a design system's device-pixel snapping (the UI kit's `HostScale`, or `Ds { scale }`); the
 /// layout half of snapping is `HostConfig::prepaint`.
 #[must_use]
 pub fn use_surface_scale() -> ReadSignal<Scale120> {
@@ -125,7 +125,7 @@ pub fn use_modifiers() -> ReadSignal<Modifiers> {
 /// Enter) starts at `Keyboard`. `Pointer` before any input.
 ///
 /// What a design system's `:focus-visible`-like focus ring follows (Blitz never matches
-/// `:focus-visible`): Bardo's `ui_components::HostModality`, bridged in the shell's root (README,
+/// `:focus-visible`): the UI kit's `ui_components::HostModality`, bridged in the shell's root (README,
 /// "Consuming: input modality").
 #[must_use]
 pub fn use_input_modality() -> ReadSignal<InputModality> {

@@ -3,7 +3,7 @@
 //!
 //! Each item draws its own icon: a pixmap or a theme icon through `tray_icon::icon_art`,
 //! symbolic (drawn in the frame's ink, like a glyph) or an image by design/08-ICONS.md §1.5, as
-//! `tray_input::icon_source` decides with Bardo's `ui_components::style::icon::classify::classify_with`. The button carries the
+//! `tray_input::icon_source` decides with the UI kit's `ui_components::style::icon::classify::classify_with`. The button carries the
 //! `tray-<n>` id and hands its pointer to the session (`BarMenu::Tray`), so an item with a
 //! dbusmenu opens it on the press, switches to it on hover from another menu and shows it open
 //! as every bar item does; `dbusmenu` turns the rows into entries, submenus included, and the
@@ -60,7 +60,7 @@ pub fn Tray(output: OutputInfo) -> Element {
     }
 }
 
-/// `icon`'s art as Bardo draws it at the chroma `limit`, resolved (theme lookup, file read,
+/// `icon`'s art as the UI kit draws it at the chroma `limit`, resolved (theme lookup, file read,
 /// chroma test) only when the icon or the limit changes, not on every render.
 fn use_icon_source(icon: &TrayIcon, size_px: u16, limit: ChromaLimit) -> IconSource {
     let mut cache = use_hook(|| CopyValue::new(None::<(TrayIcon, ChromaLimit, IconSource)>));
@@ -137,7 +137,7 @@ fn TrayButtonView(
     onwheel: EventHandler<WheelEvent>,
 ) -> Element {
     let title = item.title.clone();
-    // The tip is the name alone (Bardo's tip house style); the accessible name keeps the status.
+    // The tip is the name alone (the UI kit's tip house style); the accessible name keeps the status.
     let spoken = match item.status {
         TrayStatus::NeedsAttention => Some(format!("{title}, needs attention")),
         TrayStatus::Passive | TrayStatus::Active => None,

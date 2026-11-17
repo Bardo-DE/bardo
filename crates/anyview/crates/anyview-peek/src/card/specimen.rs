@@ -1,6 +1,6 @@
 //! A font's specimen: each sample line is an inline SVG of the face's own outlines, filled with
 //! the card's ink, so the face shown is exactly the one the file holds. The `data-ds-svg` marker is
-//! Bardo's word for a component that draws its own vector, which its markup lint then allows.
+//! The UI kit's word for a component that draws its own vector, which its markup lint then allows.
 
 use anyview_font::{FontPeeked, SpecimenLine};
 use dioxus::prelude::*;

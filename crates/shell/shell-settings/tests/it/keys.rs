@@ -27,7 +27,7 @@ const SECTIONS: &[(&str, &str)] = &[
 /// `SILL_OWNED` list (its `tests/keys.rs`).
 const FROM_APPEARANCE: &[&str] = &[];
 
-/// Keys bardo-shell ships that design/22 has no row for yet; the row is Bardo's to add (FINDINGS: open
+/// Keys bardo-shell ships that design/22 has no row for yet; the row is the UI kit's to add (FINDINGS: open
 /// items), and this list ends when it does. `bar.autohide` is the Mac's "Automatically hide and
 /// show the menu bar".
 const UNCATALOGUED: &[&str] = &["voice.hold_to_talk", "bar.autohide"];

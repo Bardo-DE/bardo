@@ -1,7 +1,7 @@
-//! Where Bardo's app-icon files are, and which file draws an app at a size and a style
+//! Where the UI kit's app-icon files are, and which file draws an app at a size and a style
 //! (design/08-ICONS.md 2.11).
 //!
-//! Bardo ships `assets/icons/apps/<app>/[muted|monochrome/]<px>.png`; every consumer used to
+//! The UI kit ships `assets/icons/apps/<app>/[muted|monochrome/]<px>.png`; every consumer used to
 //! guess where that directory lands (bardo-shell searched its own variable, then the data dirs, then a
 //! sibling checkout). The order is settled here, once, and documented in CONSUMING.md:
 //!

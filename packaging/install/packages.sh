@@ -29,7 +29,7 @@
 # them the same) and the two lines that give a source install the same program.
 XWAYLAND_SATELLITE_TAG=v0.8.3
 XWAYLAND_SATELLITE_CARGO_LINE="cargo install --locked --git https://github.com/Supreeeme/xwayland-satellite --tag $XWAYLAND_SATELLITE_TAG"
-# the compositor's own setting for the program's place (xwayland.satellite in compositor/settings.toml): a full path, no ~.
+# The compositor's own setting for the program's place (xwayland.satellite in compositor/settings.toml): a full path, no ~.
 XWAYLAND_SATELLITE_CONFIG_LINE="satellite = \"${HOME:-/home/YOU}/.cargo/bin/xwayland-satellite\""
 XWAYLAND_SATELLITE_APT_LINE="sudo apt install clang pkg-config libxcb1-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-res0-dev libxcb-cursor-dev"
 

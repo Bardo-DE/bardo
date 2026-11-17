@@ -1,4 +1,4 @@
-//! Table tests for the glyph states: every row of Bardo's status glyph table.
+//! Table tests for the glyph states: every row of the UI kit's status glyph table.
 
 use super::{NetworkGlyph, battery_glyph, bluetooth_glyph_state, network_glyph, volume_glyph};
 use shell_model::attempt::{Attempt, Attempts, OpStamp};

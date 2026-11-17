@@ -3,7 +3,7 @@
 //! An action is bound to a chord keymap [`Action`]: a standard one (Copy, Reveal, Quick Look, Open)
 //! whose chord the desktop decides, or one of the launcher's own ([`OwnAction`]) whose portable
 //! default chord is written here and which the panel registers once. The launcher never reads a
-//! modifier and never draws a chord of its own: the keymap resolves the key and Bardo draws the
+//! modifier and never draws a chord of its own: the keymap resolves the key and the UI kit draws the
 //! shortcut. Pure.
 
 use base_words::Word;

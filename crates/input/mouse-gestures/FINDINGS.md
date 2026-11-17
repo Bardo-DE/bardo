@@ -164,17 +164,17 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   replaced; libinput sees the contact until the next stroke lands or lifts. Dropped frames are
   logged at the 1st, 2nd, 4th, 8th... loss. Revisit if the log ever shows any: the fix is to
   resend the pad's state, not to block.
-- *`input-broker-wire` is no longer a direct dependency.* the input broker v0.1.1's client re-exports
+- *`input-broker-wire` is no longer a direct dependency.* The input broker v0.1.1's client re-exports
   `Kind` and `Create`, which the direct path matches, and its stand-in is a dev-only feature.
 - *Rust 1.92.* `input-broker-client` declares `rust-version = "1.92"`, so the workspace's moved
   from 1.91. The pinned toolchain (1.98.1) already satisfies it.
-- *Who may talk to the mouse gestures daemon (INPUT-03, INPUT-14): done (2026-10-17).* the mouse gestures daemon is a system service
+- *Who may talk to the mouse gestures daemon (INPUT-03, INPUT-14): done (2026-10-17).* The mouse gestures daemon is a system service
   (owner decision), so its socket is `/run/bardo/mouse-gestures/events.sock`, mode 0666, and the socket thread
   serves only the person at the seat and believes only the shell (peephole, as the key remap daemon's `Steering`)
   about the pointer and an unlocked session. The hidraw rule gives the node to the `input` group and
   no person (INPUT-19's second half: the raw node and its feature reports are no longer reachable
   from the logged-in user's programs).
-- *Shell side of the lock (INPUT-09).* the mouse gestures daemon drops gesture keys and actions while a
+- *Shell side of the lock (INPUT-09).* The mouse gestures daemon drops gesture keys and actions while a
   subscriber says the session is locked (`SessionLock`). Nothing sends it yet: shell-host must
   send `ToDaemon::SessionLock` when the lock service reports Locked or Unlocked (interface ask in
   the lane report). Neither the compositor nor sill publishes a lock state a daemon outside the session
@@ -182,7 +182,7 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 - *Settings and actions after the move to a system service (2026-10-17): done.* The service
   (a dynamic user with `ProtectHome=yes`) reads `/etc/bardo/mouse-gestures/gestures.toml`; the person's
   `~/.config/bardo/mouse-gestures/gestures.toml` reaches it as `ToDaemon::UserConfig`, sent by the shell
-  (shell-host's the mouse gestures daemon client reads the file, at most 24 KiB, after connecting and whenever it
+  (shell-host's mouse gestures daemon client reads the file, at most 24 KiB, after connecting and whenever it
   changes; it polls the file's modification time every two seconds, since shell-host watches no
   files). The daemon believes it from the shell's connection only, merges it key by key over the
   machine's file (`config::layer`), drops what a person may not set (a program or
@@ -281,7 +281,7 @@ the listed id, not read from a device) and the Magic Mouse 1 (`0005:05ac:030d`),
 The Magic Mouse 1 is refused on hidraw: it sends report
 0x29 (different header, 6-byte touches), which `decode` does not read.
 
-**0xF7 doubles.** the mouse gestures daemon checks the report id and decodes both halves of a Bluetooth double.
+**0xF7 doubles.** The mouse gestures daemon checks the report id and decodes both halves of a Bluetooth double.
 The reference sessions contain none.
 
 **Latency, replay only.** 10 000 synthesised reads (`daemon/latency/tests.rs`, release build): read

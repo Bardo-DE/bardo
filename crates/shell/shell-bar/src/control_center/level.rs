@@ -1,11 +1,11 @@
 //! The one level control the Sound and Display modules share.
 //!
-//! Bardo's `ModulePanel` headed by the title alone, as on the Mac (no glyph, no percentage: the
+//! The UI kit's `ModulePanel` headed by the title alone, as on the Mac (no glyph, no percentage: the
 //! knob carries the glyph and the slider says its value to assistive technology), over Bardo's
 //! `Slider` in its `Mac` look: the Control Center's slider, a Regular well (22) under a 20 knob
-//! that carries the level's glyph, click to jump, drag the knob, arrows to step (Bardo design/29
+//! that carries the level's glyph, click to jump, drag the knob, arrows to step (the UI kit design/29
 //! §16). The look is chosen here and nowhere else ([`LOOK`]). The OSD draws the same level through
-//! Bardo's `Osd`, as the bezel's sixteen squares.
+//! The UI kit's `Osd`, as the bezel's sixteen squares.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;

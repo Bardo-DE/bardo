@@ -4,7 +4,7 @@ use jiff::Zoned;
 
 /// `at` as `2026-10-21 14:03`, in the zone `at` carries.
 ///
-/// Bardo has no date formatter yet (the relative "Today, 14:03" Finder shows is its to add), so
+/// The UI kit has no date formatter yet (the relative "Today, 14:03" Finder shows is its to add), so
 /// the column writes the full date.
 #[must_use]
 pub fn date_words(at: &Zoned) -> String {

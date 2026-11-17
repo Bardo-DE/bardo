@@ -109,7 +109,7 @@ whole surface. If the process dies while locked the session stays locked (FINDIN
 
 ## Consuming: the window seam (client-decorated frames)
 
-What a design system's window frame (Bardo's `ds::HostWindow`, implemented in sill's and mailo's
+What a design system's window frame (the UI kit's `ds::HostWindow`, implemented in sill's and mailo's
 glue) calls. Open the window with `ToplevelConfig { decorations: Decorations::CLIENT, .. }`
 (or `Decorations::Client(ResizeMargin(n))`); `size`, `min_size` and `max_size` are the visible
 frame's. Inside the window's document, `let window = use_surface();`:
@@ -144,7 +144,7 @@ Tab in one surface and a popup opened by a key both show the ring. `SurfaceHandl
 current_input_modality()` reads it without subscribing. It is what a `:focus-visible`-like ring
 follows (Blitz never matches `:focus-visible`).
 
-layer-shell-host cannot name Bardo's `ds::HostModality` (`scripts/check-boundary.sh`), so the shell
+layer-shell-host cannot name the UI kit's `ds::HostModality` (`scripts/check-boundary.sh`), so the shell
 bridges it once in each surface's root component, above its `Ds`:
 
 ```rust
@@ -179,7 +179,7 @@ its own subtree; the bridge sees every key the seat delivers to any surface.
 layer-shell-host bundles no faces of its own (it never depends on a design system,
 `scripts/check-boundary.sh`) and its `FontContext` is built from `SharedFonts::system()` alone:
 fontconfig's system fonts, plus Blitz's own list-bullet glyph. A shell's design-system faces
-(Bardo's Inter, Inter Display, Space Mono, Bricolage Grotesque, Karla, Noto Serif) reach every
+(the UI kit's Inter, Inter Display, Space Mono, Bricolage Grotesque, Karla, Noto Serif) reach every
 document only through `HostConfig::fonts: FontFaces`, a `Vec<&'static [u8]>` of each face's raw
 TTF/OTF bytes, `#[serde(skip)]` — code, not settings, same as `HostConfig::prepaint`.
 `Host::connect` registers each one into the host's one shared `FontContext` right after `bind`,

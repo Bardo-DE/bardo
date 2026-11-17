@@ -1,4 +1,4 @@
-//! How a chord is shown and changed in a row: Bardo's recorder. The one file that names it.
+//! How a chord is shown and changed in a row: the UI kit's recorder. The one file that names it.
 
 use crate::copy::shortcuts::{action_name, standard_action_name};
 use dioxus::prelude::*;

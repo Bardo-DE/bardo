@@ -1,4 +1,4 @@
-//! Where an app's exported menu is served: Bardo's `AppMenuAddress`, the one derivation, as the
+//! Where an app's exported menu is served: the UI kit's `AppMenuAddress`, the one derivation, as the
 //! function the menu service and the agent's actions are given (a services crate links no
 //! design system).
 

@@ -13,7 +13,7 @@
 //! (`crate::focus_chain`), and `restore` focuses the first of them still in the document when it
 //! runs.
 //!
-//! A click a Bardo control keeps to itself never reaches the root, and Bardo's control hands it
+//! A click a UI kit control keeps to itself never reaches the root, and the UI kit's control hands it
 //! over itself (`ui_components::focus::click::kept_click`): through `ClickFocusHost::fallback` when the click's
 //! default still runs, and through `ClickFocusHost::press` when the control prevented it. Blitz
 //! then leaves the focus where it was, so `press` moves it at once to the nearest focusable element from
@@ -69,7 +69,7 @@ fn pressed(doc: &BaseDocument) -> Option<NodeId> {
 }
 
 /// Whether an element edits text: a Blitz text field, or an editable surface (`role=textbox`,
-/// Bardo's `EditSurface`).
+/// The UI kit's `EditSurface`).
 fn edits(node: &Node) -> bool {
     node.element_data().is_some_and(|element| {
         element.text_input_data().is_some()

@@ -2,7 +2,7 @@
 //! Control is open).
 //!
 //! One Top surface per output, kept warm and hidden, that appears when the compositor opens Mission
-//! Control on that output ([`shell_ui_kit::links::SpacesBarLink`]) and hangs Bardo's `SpacesBar`
+//! Control on that output ([`shell_ui_kit::links::SpacesBarLink`]) and hangs the UI kit's `SpacesBar`
 //! under the menu bar. It drops in as the windows spread and lifts away as they return. It lists
 //! the output's Spaces by name ("Desktop 1", and the apps of a full-screen or Split View Space),
 //! each over a picture of the Space when the compositor has made one (of every Space, hidden ones

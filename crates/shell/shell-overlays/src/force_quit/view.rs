@@ -3,8 +3,8 @@
 //! While the link holds an opening on this output the surface maps itself
 //! (`SurfaceHandle::set_visibility`, [`super::io::use_stage`]) and a `Ds { material: Sheet, extent:
 //! Viewport }` holds one `Sheet` per opening, keyed by its serial: the title, the line that says
-//! what the panel is for, Bardo's `List` of `Row`s (the app's icon, its name, "(not responding)"
-//! after a hung one's) and the Force Quit button. The button asks Bardo's `Alert` ("Do you want
+//! what the panel is for, the UI kit's `List` of `Row`s (the app's icon, its name, "(not responding)"
+//! after a hung one's) and the Force Quit button. The button asks the UI kit's `Alert` ("Do you want
 //! to force quit ...?") whose Force Quit is destructive and whose Cancel is the default. Nothing
 //! is styled under `.ds-sheet*`, `.ds-list*`, `.ds-row*`, `.ds-alert*` or `.ds-button*`.
 //!

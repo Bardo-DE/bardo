@@ -1,4 +1,4 @@
-//! Every bardo-shell process registers Bardo's faces with layer-shell-host: a document under the host that
+//! Every bardo-shell process registers the UI kit's faces with layer-shell-host: a document under the host that
 //! names Inter must find Inter, not the system face.
 
 use std::path::Path;

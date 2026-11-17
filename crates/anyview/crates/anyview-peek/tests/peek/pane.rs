@@ -1,5 +1,5 @@
 //! The pane drawn: server-side renders of each body kept as goldens, the markup and stylesheet held
-//! to Bardo's coherence rules, and behaviour through `ui_harness`'s real Blitz document.
+//! to the UI kit's coherence rules, and behaviour through `ui_harness`'s real Blitz document.
 //!
 //! `DS_BLESS=1 cargo test -p anyview-peek --test peek pane::` writes the goldens; read the diff before
 //! committing one.
@@ -188,8 +188,8 @@ fn the_stylesheet_uses_design_system_tokens_only() {
     );
 }
 
-/// Bardo's `TextureLayer` carries `ds-texture-layer` and styles itself inline, so its own class has
-/// no rule: Bardo's markup lint flags Bardo's own component (FINDINGS: open item for Bardo).
+/// The UI kit's `TextureLayer` carries `ds-texture-layer` and styles itself inline, so its own class has
+/// no rule: the UI kit's markup lint flags the UI kit's own component (FINDINGS: open item for Bardo).
 fn is_texture_layer(offence: &ui_lint::Offence) -> bool {
     offence.selector == "object.ds-texture-layer"
 }
@@ -300,7 +300,7 @@ fn the_specimen_is_inked_in_a_real_document_with_the_panes_ink() {
     );
 }
 
-/// The launcher's box for the pane: its column inside Bardo's padding.
+/// The launcher's box for the pane: its column inside the UI kit's padding.
 const HOST: Viewport = Viewport {
     width: 328,
     height: 318,

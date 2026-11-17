@@ -1,7 +1,7 @@
 //! The ids a banner writes, so its surface can name them in an element region (layer-shell-host's
 //! `RegionSpec::Elements`).
 //!
-//! Bardo's plate (`NotificationCard { id }`, design/20 §1.6 `Element("toast-<id>")`) and
+//! The UI kit's plate (`NotificationCard { id }`, design/20 §1.6 `Element("toast-<id>")`) and
 //! bardo-shell's wrapper around the whole card, which a group's layers reach below the plate.
 //! Unique per document, since a notification id is.
 
@@ -10,7 +10,7 @@ use shell_model::notifications::NotificationId;
 /// One named part of a banner.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CardPart {
-    /// Bardo's plate: the card itself.
+    /// The UI kit's plate: the card itself.
     Plate,
     /// The whole card, the group's layers under the plate included.
     Whole,

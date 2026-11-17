@@ -1,4 +1,4 @@
-//! How long the host waits before it looks for the mouse gestures daemon daemon again after it was not there.
+//! How long the host waits before it looks for the mouse gestures daemon again after it was not there.
 //!
 //! A missing daemon is looked for on a timer, not only when the pointer enters one of our
 //! surfaces: while the session is locked the pointer stays inside the lock surface, and a daemon

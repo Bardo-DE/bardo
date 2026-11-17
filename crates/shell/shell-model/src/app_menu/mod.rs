@@ -1,6 +1,6 @@
 //! The focused app's menus as the bar draws them and an agent reads them.
 //!
-//! An app that serves `com.canonical.dbusmenu` at `org.bardo.AppMenu.<app_id>` (Bardo design/27
+//! An app that serves `com.canonical.dbusmenu` at `org.bardo.AppMenu.<app_id>` (the UI kit design/27
 //! §5.2 rule a), what the service follows of it, the titles the bar makes from it, and what
 //! activating an item means for the gate.
 //!

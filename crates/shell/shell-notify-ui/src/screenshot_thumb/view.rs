@@ -1,6 +1,6 @@
 //! The thumbnail's root: one transparent Toast root as big as the surface, holding Bardo's
-//! `BannerStack` at the bottom right with at most one row, Bardo's `ShotThumbnail`
-//! ([`super::card`]). The card plays its own entrance and exit (Bardo's `panel-in` and `panel-out`) and says when
+//! `BannerStack` at the bottom right with at most one row, the UI kit's `ShotThumbnail`
+//! ([`super::card`]). The card plays its own entrance and exit (the UI kit's `panel-in` and `panel-out`) and says when
 //! the exit has settled; after a swipe the row is unlisted and the stack flies it out along the
 //! swipe (`panel-out`) and says so instead. It follows `use_service::<ScreenshotsService>` and the
 //! `BannerLink` through [`super::follow`] and [`super::step::step`].

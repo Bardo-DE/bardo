@@ -22,7 +22,7 @@ pub(crate) enum BarEffect {
     Run(BarPick),
 }
 
-/// An enabled item of the open menu: its place among the menu's choices (Bardo's numbering:
+/// An enabled item of the open menu: its place among the menu's choices (the UI kit's numbering:
 /// items and submenu parents, not headers, status lines or rules) and what it picks.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Choice {
@@ -94,7 +94,7 @@ fn item(index: usize) -> Target {
     }
 }
 
-/// What a release over choice `index` of `entries` lands on, numbered as Bardo's `Menu` numbers
+/// What a release over choice `index` of `entries` lands on, numbered as the UI kit's `Menu` numbers
 /// `on_hover`: items and submenu parents count, headers, status lines and rules do not.
 pub(crate) fn landing(entries: &[MenuItem<BarPick>], index: usize) -> Landing {
     let entry = entries
@@ -285,7 +285,7 @@ mod tests {
                         index: 0,
                         pick: settings.clone(),
                     }))),
-                    // Bardo's own pick follows the release, and finds the session closed.
+                    // The UI kit's own pick follows the release, and finds the session closed.
                     Input::Popup(PopupReport::Picked(settings.clone())),
                 ],
                 vec![

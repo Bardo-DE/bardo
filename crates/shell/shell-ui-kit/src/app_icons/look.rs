@@ -1,8 +1,8 @@
 //! The icon style the dock and the launcher draw in.
 //!
-//! `icons.style` (Bardo's appearance file) read against the active Space (Monochrome takes the
+//! `icons.style` (the UI kit's appearance file) read against the active Space (Monochrome takes the
 //! Space's hue), and the scheme the surface paints (in the dark, Muted and Monochrome lift a raster
-//! into Bardo's tone band, design/29 §11 F3). Pure.
+//! into the UI kit's tone band, design/29 §11 F3). Pure.
 
 use ui_components::prelude::*;
 use ui_components::style::icon::retint::IconStyle;

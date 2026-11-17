@@ -22,7 +22,7 @@ use shell_settings::ShellFile;
 use shell_ui_kit::panel::{PANEL_PADDING, PANEL_RADIUS};
 use shell_ui_kit::surface::namespace;
 
-/// The element id of the column inside Bardo's `Panel` (which takes no id of its own): the blur
+/// The element id of the column inside the UI kit's `Panel` (which takes no id of its own): the blur
 /// region, grown by the panel's padding to the panel's own box.
 pub const PANEL_ID: &str = "notification-center-panel";
 

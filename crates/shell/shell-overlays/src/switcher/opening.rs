@@ -1,4 +1,4 @@
-//! One opening's machine: Bardo's switcher ([`ui_behaviour::switcher::Phase`], the one the
+//! One opening's machine: the UI kit's switcher ([`ui_behaviour::switcher::Phase`], the one the
 //! compositor runs too) with the one fact only this surface knows. Whether the show delay's wake
 //! ends a tap depends on what the modifiers have told the opening (`hold.rs`), so the surface
 //! provides that beside the app list as the machine's context at every step, including the step

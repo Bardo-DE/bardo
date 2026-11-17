@@ -4,7 +4,7 @@
 //! room, the extension as a small bold label; a folder is the blue Mac folder, a special one with
 //! its glyph embossed; a picture is the file's own thumbnail on a page frame; artwork (a chosen
 //! set's icon, or the person's own) is drawn whole. The standard shapes are inline SVG and the
-//! marks are Bardo's glyphs, so it scales from 16 to 512 px.
+//! marks are the UI kit's glyphs, so it scales from 16 to 512 px.
 //!
 //! The page stays light in the dark scheme, as the reference's does; the folder takes its dark
 //! tones. Under `icons.style = monochrome` (`style: FileIconStyle::Monochrome(tint)`) the folder

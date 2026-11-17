@@ -100,7 +100,7 @@ pub enum CapabilityKind { Identity, Mail, Calendar, Contacts, Tasks, Notes, Stor
 ```
 
 Every closed set's stable slug is its serde `snake_case` form (files, bus, consent store). porter
-does not depend on Bardo's `ui-core`, so these enums do not implement `Word`: the account core
+does not depend on the UI kit's `ui-core`, so these enums do not implement `Word`: the account core
 builds below the design system for mailo on every platform; UI crates map slugs to labels.
 
 Every field is an enum or a newtype; no `bool` (no `bool`). Shared small enums:
@@ -188,7 +188,7 @@ pub struct Restriction {
 }                                      // LimitReason: AppendOnly | PickerOnly | AppFolderOnly | ProviderOffersNone
 ```
 
-The the Settings app page (§5.6) turns each variant into one secondary line. Limits are per kind: one
+The Settings app page (§5.6) turns each variant into one secondary line. Limits are per kind: one
 Google account is `PickerOnly` for Photos and `AppFolderOnly` for Storage at once.
 
 ## 3. Providers
@@ -308,7 +308,7 @@ AI providers:
 | `accountd` | account registry, provider registry, token broker, secrets, consent store, discovery and probes, the Settings live module | the control plane; small, must never stall | P |
 | `syncd` | the sync journal, anchors, the polling scheduler, dataset plug-ins (Photos first) | a failing backend or a long upload cannot block sign-in ([R] §3) | P |
 | `inferd` | the AI broker: routing, policy, spend, audit, wire adapters, engine supervision, GPU queue, streaming sessions | streams and big payloads; restartable alone | P |
-| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws Bardo's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to the compositor's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
+| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws the UI kit's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **sill** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to the compositor's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
 
 All are user-session services, D-Bus activated on Linux, single-instance through the service locator
 ([R] §1). syncd gets tokens and authenticated streams from accountd like any client; inferd also
@@ -394,7 +394,7 @@ proposal can reuse it ([R] §2 portals).
 | | `OpenAuthenticated(grant: s, endpoint: s) -> h` | a socket fd to a daemon-side authenticated relay. **v1 [departs §7.1/§7.2, owner 2026-10-05]**: IMAP (the relay logs in; the app sees a `* PREAUTH` greeting), SMTP (the relay does EHLO, STARTTLS and AUTH; the app sees a greeting and an EHLO reply without them), HTTP/1.1 for WebDAV, CalDAV, CardDAV and OCS (the relay adds `Authorization`, speaks TLS, reaches only the endpoint's origin and drops an app's own `Authorization`) | password protocols without releasing the password: a password never leaves accountd, to any app, sandboxed or not |
 | `.Request` (per sheet) | `Close()`; signal `Response(response: u, results: a{sv})` | 0 done, 1 cancelled, 2 other | the portal Request shape |
 | Signals on `.Manager` | `AccountAdded(o)`, `AccountRemoved(o)`, `CapabilityChanged(o)`, `NeedsReauth(o)`, `GrantChanged(s)` | sent only to holders of a relevant grant (unicast) | |
-| `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in Bardo's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | the Settings app reads it; `Set` only from the `Settings` role |
+| `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in the UI kit's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | the Settings app reads it; `Set` only from the `Settings` role |
 | `.Peer` | `Verdicts(app, need, class, usage)`, `ResolveKey(grant) -> h` (the key on a sealed memfd, never a string), `ReportLocal(provider, claims, state)` | only the `PorterDaemon` role [2026-10-05] | inferd asks with the app it derived from its own connection |
 | `org.bardo.AccountsSheet1` (served by the sheet host) | `Open(handle, parent_window, view: s)`, `Update(handle, view: s)`, `Close(handle)`, signal `Input(handle, input: s)` | only accountd's connection may `Open`; only the sheet owner's `Input` counts [refines §4.6: a typed password travels inward here, nothing outward] | the add, re-auth, device-code and consent conversations [2026-10-05] |
 | `.Manager` (mailo migration) | `Adopt(legacy)` | the daemon reads an app's own legacy keyring entries itself (gated by an `[adopt]` table, `org.bardo.Mail = "mailo"`), so no credential crosses a transport | [2026-10-05] |

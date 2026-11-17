@@ -4,7 +4,7 @@
 //! sections 10.3.1 and 10.3.2): the tile, the gap between tiles, the pill's padding, the running
 //! dot, the pill's corner, the edge clamp and the separator, each a tuned token a look or the
 //! person's style sheet moves; only the tile's size has a settings key (macOS's Size slider).
-//! The floor's own token, `--dock-floor`, is Bardo's `DockFloorToken`, because Bardo's stylesheet
+//! The floor's own token, `--dock-floor`, is the UI kit's `DockFloorToken`, because the UI kit's stylesheet
 //! draws `.ds-dock-floor`. The shell lays the dock out itself; these are the numbers it and its
 //! dock pieces (`RunningDot`, `DockFloor`, an `IconView` plate) share.
 

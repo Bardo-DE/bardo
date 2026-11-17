@@ -27,7 +27,7 @@ impl StyleOwner {
 pub struct StyleNote {
     /// The 1-based line.
     pub line: u32,
-    /// What it says, in the plain words Bardo's lint gives it.
+    /// What it says, in the plain words the UI kit's lint gives it.
     pub words: String,
 }
 

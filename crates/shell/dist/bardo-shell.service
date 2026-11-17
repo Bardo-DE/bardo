@@ -7,7 +7,7 @@
 # repo's installer (install/install.sh) puts it there.
 #
 # The desktop session (bardo-session) starts it with `systemctl --user start bardo-shell.service` once
-# the compositor is up; other session managers may enable it for graphical-session.target.
+# The compositor is up; other session managers may enable it for graphical-session.target.
 # `bardo-shell run` takes a single-instance lock (the service locator) and exits 0 when one is already running,
 # so a client that started the daemon on demand and this unit never race into two shells.
 [Unit]

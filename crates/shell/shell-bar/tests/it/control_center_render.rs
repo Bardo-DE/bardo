@@ -1,7 +1,7 @@
 //! The control center's SSR render reads the frozen channels: its modules in
-//! `control_center.modules` order on Bardo's `ModuleGrid` (columns and gap from the settings),
+//! `control_center.modules` order on the UI kit's `ModuleGrid` (columns and gap from the settings),
 //! each tile's state and status line from the fake services, the full-width modules on Bardo's
-//! `ModulePanel` (bare in a module's dropdown), the levels on Bardo's `LevelControl`, and a fed
+//! `ModulePanel` (bare in a module's dropdown), the levels on the UI kit's `LevelControl`, and a fed
 //! value replacing the default.
 
 use crate::cc_support;
@@ -190,7 +190,7 @@ fn a_chevron_slides_its_pane_in_and_escape_unwinds() {
         Some(WifiCommand::Radio(Radio::On))
     );
     running.harness.send(Input::click(chevron));
-    // Bardo's PaneSwitcher slides the detail in and drops the grid once it settles.
+    // The UI kit's PaneSwitcher slides the detail in and drops the grid once it settles.
     running.harness.advance(Duration::from_millis(600));
     assert_eq!(
         running.harness.attr(".ds-panes", "data-shown").as_deref(),

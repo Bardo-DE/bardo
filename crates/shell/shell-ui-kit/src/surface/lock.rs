@@ -37,7 +37,7 @@ impl MountLockProps {
     }
 }
 
-/// The root component of a lock surface: Bardo's document host and the seat's signals, then its
+/// The root component of a lock surface: the UI kit's document host and the seat's signals, then its
 /// `root`, in the component's scope.
 #[expect(
     clippy::missing_errors_doc,

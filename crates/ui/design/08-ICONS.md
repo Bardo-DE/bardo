@@ -96,7 +96,7 @@ either style, with no stroke. Only permissively licensed sources ship.
 
 | Icon | Source | Licence | State |
 | --- | --- | --- | --- |
-| `Download` | Bardo's own drawing (2026-10-20, owner's pick of a reference style): an arrow with an open chevron head over a baseline, the solid glyph's silhouette | ours | shipped |
+| `Download` | The UI kit's own drawing (2026-10-20, owner's pick of a reference style): an arrow with an open chevron head over a baseline, the solid glyph's silhouette | ours | shipped |
 | `Upload` | Bootstrap Icons 1.13.2 `cloud-upload`, scaled by 22/16 from its 16 grid and moved 1 unit so the 1 px padding holds; its `evenodd` is dropped, each path being one simple contour | MIT, `LICENSE-bootstrap.txt` | shipped |
 | `Sparkles` | Remix Icon 4.6.0 `sparkling-line`, verbatim (the Apache-2.0 release; later releases carry a restrictive licence, so the version is pinned) | Apache-2.0, `LICENSE-remixicon.txt` | shipped |
 | `LogOut` | SVG Repo download `logout-svgrepo-com.svg`, SVG Repo Mixer Tools, no author or licence in the file; its page could not be reached | unconfirmed | not shipped: the Lucide outline stays |
@@ -138,7 +138,7 @@ no solid glyph carries a stroke attribute.
 | `Mail` | Tabler filled `mail` |
 | `MailOpen` | Tabler filled `mail-opened` |
 | `Tag` | Tabler filled `tag` |
-| `Refresh` | Bardo's own sync drawing (2026-10-20): two clockwise arcs, solid heads |
+| `Refresh` | The UI kit's own sync drawing (2026-10-20): two clockwise arcs, solid heads |
 | `Send` | Tabler filled `send` |
 | `Command` | Phosphor Fill `command` |
 | `Columns` | Tabler filled `columns-3` |
@@ -206,7 +206,7 @@ no solid glyph carries a stroke attribute.
 | `Terminal` | Phosphor Fill `terminal-window` |
 | `StickyNote` | Phosphor Fill `note` |
 | `Camera` | Tabler filled `camera` |
-| `Download` | Bardo's own drawing (2026-10-20): arrow, open chevron head, baseline |
+| `Download` | The UI kit's own drawing (2026-10-20): arrow, open chevron head, baseline |
 | `Upload` | Phosphor Fill `upload-simple` |
 | `Copy` | Tabler filled `copy` |
 | `Link` | Tabler filled `link` |

@@ -135,7 +135,7 @@ The 8 presets (settled, S; Appendix A3):
 The names are mailo's (`space/presets.rs::PRESET_NAMES`, settled with the mailo gaps 2 wave);
 the editor's preset buttons are named by them. Work and Home are the Spaces S made from the
 first two, not the presets' names. mailo's six further presets (the retired accent hues:
-Postmark, Graphite, Pine, Indigo, Oxblood, Vermilion) are not in Bardo's eight.
+Postmark, Graphite, Pine, Indigo, Oxblood, Vermilion) are not in the UI kit's eight.
 
 Default `SpaceLook` for a workspace with no stored look (proposed):
 - `dots = PRESETS[index % 8]`, index = the workspace's 0-based position on its output.

@@ -329,7 +329,7 @@ run_bar_demo() {
 import json, os, queue, re, subprocess, sys, threading, time
 
 OUT, PNG, MODE = os.environ["BARDO_ACCEPT_OUT"], os.environ["BARDO_ACCEPT_PNG"], os.environ["BARDO_ACCEPT_MODE"]
-COMPOSITOR = os.environ.get("BARDO_ACCEPT_COMPOSITOR") == "compositor"
+COMPOSITOR = os.environ.get("BARDO_ACCEPT_COMPOSITOR") == "bardo"
 SKIPS = {}
 LOG = open(f"{OUT}/accept-{MODE}.log", "w")
 PROCS = []

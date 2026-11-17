@@ -1,7 +1,7 @@
 //! Pictures the app supplies.
 //!
-//! Where the pixels come from ([`ImageSource`]) and how big they are ([`ImageSize`]). Bardo never
-//! fetches: a source is a `data:` URI or a `file:` URL, the two schemes a Bardo document's net
+//! Where the pixels come from ([`ImageSource`]) and how big they are ([`ImageSize`]). The UI kit never
+//! fetches: a source is a `data:` URI or a `file:` URL, the two schemes a UI kit document's net
 //! provider answers. `ProviderMark`'s favicon and the screenshot thumbnail both take one.
 
 use std::path::Path;

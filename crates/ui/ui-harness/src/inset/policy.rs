@@ -48,7 +48,7 @@ impl Policy {
         }
     }
 
-    /// Bardo's own policy: the default inset, with [`BARDO_ALLOW`].
+    /// The UI kit's own policy: the default inset, with [`BARDO_ALLOW`].
     #[must_use]
     pub fn bardo() -> Self {
         Policy::new().allowing(BARDO_ALLOW)
@@ -87,7 +87,7 @@ impl Default for Policy {
     }
 }
 
-/// Bardo components the design holds to a smaller inset than `--s-8`, each with its reason.
+/// The UI kit components the design holds to a smaller inset than `--s-8`, each with its reason.
 /// Every value is the component's own padding token plus any hairline, read from its stylesheet;
 /// a regular-size control keeps 8 or more (`--ctl-pad-m` 10, `--tf-pad` 8, `--s-8`).
 pub const BARDO_ALLOW: &[Allow] = &[

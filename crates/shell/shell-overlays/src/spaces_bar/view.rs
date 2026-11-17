@@ -1,6 +1,6 @@
 //! The bar's render: one transparent viewport root holding, under the menu bar's height, Bardo's
 //! `SpacesBar` with the output's Spaces (the one on show marked, a picture on each that has
-//! one, over the output's wallpaper) and the plus. Bardo's bar plays its own drop-in and lift;
+//! one, over the output's wallpaper) and the plus. The UI kit's bar plays its own drop-in and lift;
 //! [`super::io`] follows the link, writes the clicks and publishes where the cards and the plus
 //! lie; this file only draws.
 
@@ -27,7 +27,7 @@ pub(super) fn spaces_bar(output: OutputInfo) -> Element {
     }
 }
 
-/// The strip itself, inside the root: Bardo's bar reads the motion level the root provides.
+/// The strip itself, inside the root: the UI kit's bar reads the motion level the root provides.
 #[component]
 fn SpacesStrip(output: OutputInfo) -> Element {
     let link = use_context::<SpacesBarLink>();

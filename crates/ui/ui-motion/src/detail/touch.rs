@@ -49,7 +49,7 @@ impl Contact {
         self.velocity
     }
 
-    /// The contact a Bardo button's press is, for a part of Bardo's own that hears a `Button`'s
+    /// The contact a Bardo button's press is, for a part of the UI kit's own that hears a `Button`'s
     /// `onclick` (which hands a [`crate::Press`], not the event): a press reaches it only from the
     /// person's click or key on that button. Crate-private, so a caller outside Bardo still
     /// proves contact with an event.

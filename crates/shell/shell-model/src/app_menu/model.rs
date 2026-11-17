@@ -10,7 +10,7 @@ use crate::tray::TrayMenuEntry;
 pub struct MenuApp(pub String);
 
 /// The well-known bus name an app's menu is served at (`org.bardo.AppMenu.<app_id>`), derived
-/// from its [`MenuApp`] by Bardo's `AppMenuAddress` and nowhere else.
+/// from its [`MenuApp`] by the UI kit's `AppMenuAddress` and nowhere else.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct MenuName(pub String);
 

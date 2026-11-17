@@ -1,6 +1,6 @@
 //! The Extensions installed on this computer: what the Look menu offers, what the Extensions
 //! page lists, and the switch that turns one off in `bardo/extensions.toml`. The folder scan, the
-//! checks and the on and off state are Bardo's (`ui-extensions`); this reads them for the window
+//! checks and the on and off state are the UI kit's (`ui-extensions`); this reads them for the window
 //! and writes the one file.
 
 use crate::error::FilesError;
@@ -139,7 +139,7 @@ fn words_of(candidate: &Candidate<Raw>) -> Vec<String> {
 }
 
 /// Whether the person's own changes block taking their Extension away: they do while it holds
-/// any, and a folder that cannot be read counts as holding some (Bardo's rule).
+/// any, and a folder that cannot be read counts as holding some (the UI kit's rule).
 fn holds_changes(search: &Search) -> bool {
     YourChanges::of(search).is_some_and(|changes| !changes.removable())
 }

@@ -1,5 +1,5 @@
 //! The power menu's render: one `Ds` root in the sheet material (the active Space's look),
-//! as large as the output (`RootExtent::Viewport`), holding Bardo's `Alert` centred on its `Sheet`
+//! as large as the output (`RootExtent::Viewport`), holding the UI kit's `Alert` centred on its `Sheet`
 //! (it dims nothing), as macOS's shut-down dialog: the question about the opening's action, Cancel
 //! (Escape presses it) and that action's button (Return presses it), side by side. An action that
 //! ends the apps counts down under the question and carries itself out when the count runs out. The alert is keyed by the opening, so each opening plays the

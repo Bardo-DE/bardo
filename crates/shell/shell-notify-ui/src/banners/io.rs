@@ -1,6 +1,6 @@
 //! The effects end of the column: follow the service's banners and the [`BannerLink`] into the
-//! [`deck`](super::deck), carry out what it decides with Bardo's one timer (`ui_components::base::time::clock::sleep`, for
-//! Bardo's `FRAME_SLACK` or the hold from `notifications.*`, never a literal), turn the card's
+//! [`deck`](super::deck), carry out what it decides with the UI kit's one timer (`ui_components::base::time::clock::sleep`, for
+//! The UI kit's `FRAME_SLACK` or the hold from `notifications.*`, never a literal), turn the card's
 //! presses, hover and swipe and the stack's `on_hidden` into the deck's inputs, and send the
 //! service what a press means (`commands.rs`). Once the last card has gone, no task runs.
 //!
@@ -175,7 +175,7 @@ impl Column {
         self.input(DeckIn::Card(key, input));
     }
 
-    /// Bardo's stack has played `key`'s card out.
+    /// The UI kit's stack has played `key`'s card out.
     pub fn hidden(self, key: EntryKey) {
         self.input(DeckIn::Card(key, BannerIn::Left));
     }

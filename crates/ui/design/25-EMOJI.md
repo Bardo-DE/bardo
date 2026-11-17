@@ -145,7 +145,7 @@ would have played, then the pick's.
   3.8 s between loops; as a `UserPortrait`, each mood shows its emoji and is at rest with no
   frame asked for 21 s after the last wake. `emoji/tests.rs` checks every script of every emoji
   in every mood ends on frame 0 within the window.
-- Loops are Bardo's one bounded exception to "nothing loops" (design/05 section 2): finite
+- Loops are the UI kit's one bounded exception to "nothing loops" (design/05 section 2): finite
   plays inside the awake window, never `infinite`.
 
 ## 7. The emoji as the user's picture (2026-09-26)

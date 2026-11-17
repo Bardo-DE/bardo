@@ -2,10 +2,10 @@
 //!
 //! `shell_launcher::shown` decides which rows each section shows; this names them for Bardo's
 //! `CommandPalette` and says what each header's trailing action is ("Show More" or "Show Less",
-//! Bardo's `PaletteGroup::with_action`).
+//! The UI kit's `PaletteGroup::with_action`).
 //!
 //! [`palette_groups`] is what the panel draws: each section a `PaletteGroup` with its header's
-//! action, the Emoji section Bardo's emoji grid, a file row Bardo's `RowShape::File` and a
+//! action, the Emoji section the UI kit's emoji grid, a file row the UI kit's `RowShape::File` and a
 //! clipboard row `RowShape::Clip`.
 
 use std::path::Path;
@@ -60,7 +60,7 @@ impl HeaderAction {
 /// What the rows are drawn with: each row's tile, a picture file's thumbnail
 /// ([`crate::launcher::row_thumb::RowThumbs`]), a clipboard image's pixels and the clock.
 ///
-/// The selection's chord is Bardo's to place (`RowChord::on_selected`).
+/// The selection's chord is the UI kit's to place (`RowChord::on_selected`).
 pub struct Draw<'a> {
     pub tile_of: &'a dyn Fn(&Item) -> RowLeading,
     pub thumb_of: &'a dyn Fn(&str, &Path) -> Option<ImageSource>,
@@ -78,7 +78,7 @@ impl std::fmt::Debug for Draw<'_> {
     }
 }
 
-/// `shown` as Bardo's palette groups.
+/// `shown` as the UI kit's palette groups.
 ///
 /// Rows (file and clipboard rows in their shapes) or, for Emoji, the grid; a capped or expanded
 /// section's header offering "Show More" or "Show Less", which runs `on_more(section)`.

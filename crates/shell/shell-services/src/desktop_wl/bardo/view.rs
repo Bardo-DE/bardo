@@ -1,4 +1,4 @@
-//! Bardo state as the shell's [`DesktopView`]: apps from `bardo_desktop_app_v1`, windows
+//! The UI kit state as the shell's [`DesktopView`]: apps from `bardo_desktop_app_v1`, windows
 //! joined to their ext toplevels, Spaces in order, and what is active.
 
 use account_core::SpaceId;

@@ -1,4 +1,4 @@
-//! A PDF page across the boundary: `ui_blitz` hands back Bardo's `PdfPage`, the card draws Bardo's
+//! A PDF page across the boundary: `ui_blitz` hands back the UI kit's `PdfPage`, the card draws Bardo's
 //! `PdfThumb`, and the peek in between speaks its own [`PageLook`].
 
 use crate::pdf::{PageLook, PageTrouble};

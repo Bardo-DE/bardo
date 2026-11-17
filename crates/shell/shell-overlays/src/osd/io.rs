@@ -1,6 +1,6 @@
 //! The effects end of one indicator: follow the [`OsdLink`], feed the [`step`] machine, wake it
-//! with Bardo's one timer (`ui_components::base::time::clock::sleep`, for durations from [`HOLD`], never a literal), map
-//! the surface once the machine shows something, unmap it once Bardo's `Osd` card says its exit
+//! with the UI kit's one timer (`ui_components::base::time::clock::sleep`, for durations from [`HOLD`], never a literal), map
+//! the surface once the machine shows something, unmap it once the UI kit's `Osd` card says its exit
 //! has settled (`on_hidden`). Once hidden and
 //! gone, no task runs and nothing asks for a frame.
 
@@ -26,7 +26,7 @@ pub fn times() -> OsdTimes {
 }
 
 /// What the view draws: the phase, the change it shows (the last one for this output), and the
-/// handler for Bardo's `Osd::on_hidden`.
+/// handler for the UI kit's `Osd::on_hidden`.
 #[derive(Clone)]
 pub(crate) struct Drawn {
     pub phase: OsdHold,

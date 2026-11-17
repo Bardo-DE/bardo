@@ -37,7 +37,7 @@ use shell_ui_kit::root::{StylesNotice, use_root_style};
 pub const BAR_CSS: &str = include_str!("style.css");
 
 /// The bar on `output`. The root draws the Space gradient at the Bar's tint alpha and puts its
-/// content on the frame ground (Bardo's `FrameTint::Tinted` and `Ground::Frame`, the Bar's
+/// content on the frame ground (the UI kit's `FrameTint::Tinted` and `Ground::Frame`, the Bar's
 /// defaults), so the bar paints no tint of its own.
 pub(super) fn bar(output: OutputInfo) -> Element {
     let file = use_settings()();

@@ -1,5 +1,5 @@
 //! A `style` attribute's declarations, checked one by one: a literal colour or duration is an
-//! offence, except inside a custom property a Bardo component writes on its own element.
+//! offence, except inside a custom property a UI kit component writes on its own element.
 //!
 //! Some values Bardo can only compute per instance and must write inline: the Space's `--f-*`
 //! frame variables and the layer gradient `--f-grad` (design/03-COLOR.md section 4), an
@@ -17,7 +17,7 @@ use super::tokenize::{self, Located};
 /// Who drew the element whose `style` this is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum Owner {
-    /// It carries the root's `ds` class or a `ds-*` one: a Bardo component wrote it.
+    /// It carries the root's `ds` class or a `ds-*` one: a UI kit component wrote it.
     Bardo,
     /// Anything else.
     Consumer,

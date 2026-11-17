@@ -1,7 +1,7 @@
-//! The card: Bardo's `ShotThumbnail`, the picture letterboxed in a Toast card with its
+//! The card: the UI kit's `ShotThumbnail`, the picture letterboxed in a Toast card with its
 //! entrance, exit, hover row, swipe to dismiss and drag threshold. The thumbnail feeds it what
 //! the machine says (shown or leaving) and hears its presses: a click opens the file, Delete
-//! trashes it, a swipe right keeps it (Bardo's swipe, with the notification keys' metrics, the
+//! trashes it, a swipe right keeps it (the UI kit's swipe, with the notification keys' metrics, the
 //! row carrying the flight), a press crossing the drag threshold carries the file out
 //! ([`super::drag`]), and the pointer on it pauses the hold. `THUMB_ID` names the plate, the
 //! surface's input and blur region.

@@ -5,7 +5,7 @@
 use ui_components::stylesheet;
 use ui_style::tokens::type_scale::Family;
 
-/// The Editorial look's sheet, as Bardo ships it.
+/// The Editorial look's sheet, as the UI kit ships it.
 const EDITORIAL: &str = include_str!("../../../extensions/org.bardo.look.Editorial/look.css");
 
 /// The `.ds` token block of the stylesheet.

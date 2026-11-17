@@ -464,7 +464,7 @@ recover() {
     open_lock >/dev/null 2>&1
     stop_daemon
   fi
-  if [ "$COMPOSITOR" = compositor ]; then
+  if [ "$COMPOSITOR" = bardo ]; then
     echo "recovery: compositor is private to this jail (it goes with it), no stand-in locker needed" >&2
   elif nested_locker 0 >"$OUT_DIR/recovery.log" 2>&1; then
     echo "recovery: the stand-in locked and unlocked the nested session (it is unlocked)" >&2

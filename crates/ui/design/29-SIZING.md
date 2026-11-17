@@ -17,7 +17,7 @@ mode are "too black, unusable as UI".
 
 This document:
 
-1. lists every size, spacing and radius token, and every hard-coded size in Bardo's component
+1. lists every size, spacing and radius token, and every hard-coded size in the UI kit's component
    sheets, with what sill's bar and control center add on top (section 3);
 2. ranks the inconsistencies (section 4);
 3. collects the reference numbers with a source and a confidence each (section 5);
@@ -28,7 +28,7 @@ This document:
 
 ## 2. How the audit was made
 
-The audit's working files (a CSS parse of every literal `px` in Bardo's component sheets,
+The audit's working files (a CSS parse of every literal `px` in the UI kit's component sheets,
 specimen sheets, gallery crops, sill captures and HTML mockups of the options) were removed once
 the decisions settled; the numbers below are what they measured. The measured boxes come from
 `cargo run --release -p ui-blitz --example sizing_audit -- DIR`: the laid-out rect of each part
@@ -69,13 +69,13 @@ the decisions settled; the numbers below are what they measured. The measured bo
 | Settings row | min 44 | literal |
 | Menu row, slim/dropdown | 22 | `--shell-menu-row` |
 
-The literal sizes in Bardo's component sheets fall into these groups: avatar sizes 16, 18, 20,
+The literal sizes in the UI kit's component sheets fall into these groups: avatar sizes 16, 18, 20,
 22, 26, 28, 30, 34, 48, 64; glyph boxes 11, 13, 14, 16, 17, 18, 20, 22; control boxes 22, 24,
 26, 28, 34, 38; widths of floating surfaces 220, 226, 250, 260, 280, 296, 300, 540.
 
 ### 3.3 How sill's bar and control center use them
 
-sill reads its sizes from `shell-settings` and writes some of them into Bardo's tuned tokens;
+sill reads its sizes from `shell-settings` and writes some of them into the UI kit's tuned tokens;
 others are its own constants, so there are two copies of several sizes.
 
 | sill value | Default | Where | Goes to |
@@ -208,7 +208,7 @@ These are the principles; the options differ only in the numbers fed to them.
   kept for offsets only (the hairline is its own token).
 - **R8. Glyph size follows control size** (a table per option), so a glyph never sets a box.
 - **R9. One source of truth.** sill's size estimates (`control_center/geometry.rs`,
-  sill's `shell-bar/src/bar/` geometry) read Bardo's size tokens (a `ds::style::tokens::control_size::ControlSize` / module-height API) instead
+  sill's `shell-bar/src/bar/` geometry) read the UI kit's size tokens (a `ds::style::tokens::control_size::ControlSize` / module-height API) instead
   of their own constants.
 
 R1-R6 are checkable: a unit test over the token tables (every capsule radius is h/2, every knob
@@ -315,7 +315,7 @@ computed from a height and the section 6 rules in Rust (one `SizeScale` struct, 
 sweeps R1-R6), written as tokens (`--ctl-h-*`, `--ctl-r-*`, `--knob-*`, `--seg-*`), so a
 density can be added later without a second system. The shell ships Compact (A's numbers); the
 app side (mailo) can sit one step larger until it is audited separately. C's two cheap fixes
-(sill reading Bardo's sizes, the gallery's progress-dir gotcha) go first whichever option is
+(sill reading the UI kit's sizes, the gallery's progress-dir gotcha) go first whichever option is
 taken.
 
 Why not B alone: its Regular keeps the shell a step larger than the reference, the thing the

@@ -1,10 +1,10 @@
 # Where the sibling layer-shell-host checkout and this repo are, and the two compositors a script runs
 # on: the compositor (the sibling the compositor checkout's dev/up.sh, headless, INSIDE the jail: only
-# dev/accept.sh --compositor the compositor, or a script run under packaging/harness/jail.sh, can use
+# dev/accept.sh --compositor bardo, or a script run under packaging/harness/jail.sh, can use
 # it) and layer-shell-host's headless KWin (kwin-virtual.sh). The KWin harness belongs to layer-shell-host;
 # bardo-shell only wraps it.
 #
-# BARDO_SHELL_COMPOSITOR=the compositor|kwin picks the compositor for `start_compositor`; unset, each script
+# BARDO_SHELL_COMPOSITOR=bardo|kwin picks the compositor for `start_compositor`; unset, each script
 # keeps its own choice: the compositor by default, kwin where it runs headless KWin (its
 # `start_compositor --default kwin ...`).
 # One set of helpers answers for both: start_compositor / stop_compositor, set_scale,
@@ -165,19 +165,19 @@ await_no_process() {
 compositor_kind() {
   local kind="${BARDO_SHELL_COMPOSITOR:-$1}"
   case "$kind" in
-    compositor|kwin) echo "$kind" ;;
-    *) echo "dev: BARDO_SHELL_COMPOSITOR must be compositor or kwin, not '$kind'" >&2; return 1 ;;
+    bardo|kwin) echo "$kind" ;;
+    *) echo "dev: BARDO_SHELL_COMPOSITOR must be bardo or kwin, not '$kind'" >&2; return 1 ;;
   esac
 }
 
-# start_compositor [--default the compositor|kwin] [SIZE]: brings the compositor up and sets WL (its
+# start_compositor [--default bardo|kwin] [SIZE]: brings the compositor up and sets WL (its
 # socket, absolute) and BUS (the private bus standing in for the session and the system bus).
 #   kwin      layer-shell-host's headless KWin at SIZE (default $SIZE) on its private bus;
-#   The compositor  dev/up.sh of the compositor checkout in this jail: a headless the compositor on the
+#   The compositor  dev/up.sh of the compositor checkout in this jail: a headless compositor on the
 #             wall clock at SIZE, its private bus (also fake-logind's), WL and BUS from its env file.
 # Needs OUT_DIR. Fails (exit code 2 for "not here") when the compositor is asked for outside the jail.
 start_compositor() {
-  local default=compositor
+  local default=bardo
   if [ "${1:-}" = --default ]; then default="$2"; shift 2; fi
   COMPOSITOR=$(compositor_kind "$default") || return 1
   case "$COMPOSITOR" in
@@ -347,7 +347,7 @@ nested() {
 # The output's logical size, "W H".
 output_size() {
   case "$COMPOSITOR" in
-    compositor)
+    bardo)
       bardo-compositorctl debug output list --json | python3 -c '
 import json, sys
 o = json.load(sys.stdin)[0]
@@ -359,7 +359,7 @@ print(*o["logical"])' ;;
 # The first output's name and scale (a decimal), by compositor.
 output_scale() {
   case "$COMPOSITOR" in
-    compositor)
+    bardo)
       bardo-compositorctl debug output list --json | python3 -c '
 import json, sys
 print(json.load(sys.stdin)[0]["scale"] / 120)' ;;
@@ -370,7 +370,7 @@ print(json.load(sys.stdin)[0]["scale"] / 120)' ;;
 # Sets scale $1 on the one output.
 set_scale() {
   case "$COMPOSITOR" in
-    compositor)
+    bardo)
       local name
       name=$(bardo-compositorctl debug output list --json | python3 -c '
 import json, sys
@@ -399,10 +399,10 @@ require_scale() {
 # KWin's own scripts use spectacle themselves.
 shot() {
   case "$COMPOSITOR" in
-    compositor)
+    bardo)
       mkdir -p "$(dirname "$1")"
       local rc
-      # The headless the compositor's first output (dev/up.sh) is HEADLESS-1.
+      # The headless compositor's first output (dev/up.sh) is HEADLESS-1.
       bardo-compositorctl shot --output "${BARDO_COMPOSITOR_OUTPUT:-HEADLESS-1}" "$1" >/dev/null
       rc=$?
       [ "$rc" != 2 ] || expected_skip "this compositor build has no screenshot (bardo-compositorctl shot exits 2)"
@@ -421,7 +421,7 @@ shot() {
 # prints no `maximised` field) or the compositor's P0 floating windows are never configured maximised.
 PROBE="${BARDO_SHELL_PROBE:-$BARDO_SHELL_TARGET/release/examples/probe_toplevel}"
 maximised_height() {
-  [ "$COMPOSITOR" != compositor ] || { maximised_height_compositor; return; }
+  [ "$COMPOSITOR" != bardo ] || { maximised_height_compositor; return; }
   [ -x "$PROBE" ] || (cd "$BARDO_SHELL_TREE" && CARGO_TARGET_DIR="$BARDO_SHELL_TARGET" cargo build --release -p layer-shell-host --features debug-inject \
     --example probe_toplevel >&2) || return 1
   local log="$OUT_DIR/probe.log" probe

@@ -162,7 +162,7 @@ grep -q "^compositor/scripts/install.sh --prefix /opt/d --locked --no-build --de
 # the session step is this repo's own installer: really run, into the staging root
 [ -x "$dest/opt/d/bin/bardo-session" ] || fail "bardo-session was not staged under the prefix"
 [ -f "$dest/etc/systemd/user/bardo-session.target" ] || fail "the user target was not staged"
-# the portal frontend's own unit gets a root-held drop-in that unsets the loader variables (NEW-PI-1): staged next to the units, the
+# The portal frontend's own unit gets a root-held drop-in that unsets the loader variables (NEW-PI-1): staged next to the units, the
 # same bytes as the repo's, and complete against peephole's list (the check skips, exit 2, when no peephole checkout is beside this one)
 dropin="$dest/etc/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf"
 [ -f "$dropin" ] || fail "the portal frontend's drop-in was not staged"

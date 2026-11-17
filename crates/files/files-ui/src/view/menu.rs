@@ -1,4 +1,4 @@
-//! The context menu on a row or on the folder's background, drawn with Bardo's `Menu`.
+//! The context menu on a row or on the folder's background, drawn with the UI kit's `Menu`.
 
 use dioxus::prelude::*;
 use files_model::KeptMark;
@@ -21,7 +21,7 @@ pub(super) struct ContextAt {
     pub(super) over: Over,
 }
 
-/// The pointer's place in a press, as Bardo's placement takes it.
+/// The pointer's place in a press, as the UI kit's placement takes it.
 #[expect(
     clippy::cast_possible_truncation,
     reason = "layout and pointer lengths are far inside f32's exact range"

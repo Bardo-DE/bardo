@@ -31,7 +31,7 @@ ui-settings = { path = "../../ui/ui-settings", default-features = false, feature
 ui-harness = {path = "../../ui/ui-harness", optional = true}
 shell-settings = {path = "../shell-settings"}
 shell-launcher = {path = "../shell-launcher"}
-# The companion's wire and the types it names, converted to Bardo's view types in `companion`.
+# The companion's wire and the types it names, converted to the UI kit's view types in `companion`.
 companion-wire = {path = "../../actions/companion-wire"}
 action-core = {path = "../../actions/action-core"}
 ui-core = {path = "../../ui/ui-core"}
@@ -47,7 +47,7 @@ dirs = { workspace = true }
 # Civil dates for the calendar widgets' month grid and the world clock.
 jiff = { workspace = true }
 thiserror = { workspace = true }
-# The widgets' entries are serde data (Bardo's `ds::Widget::Entry`); the desktop widgets' state
+# The widgets' entries are serde data (the UI kit's `ds::Widget::Entry`); the desktop widgets' state
 # file is JSON.
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

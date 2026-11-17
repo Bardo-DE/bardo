@@ -381,7 +381,7 @@ build_satellite() {
 # system file that bardo-updater-apply copies, as a plain root-owned file, to /usr/lib/systemd/user. A file staged in lib/systemd/user
 # is exported as a link into /opt/bardo/current instead, and the unit manager's judge reads a link as writable (its mode is
 # 0777), so a unit laid out that way, or with a drop-in that is such a link, is refused at `Full`: the shell, the compositor,
-# the portal backend and the accounts services would not be trusted. The drop-ins of a unit staged here (the sandbox.conf
+# The portal backend and the accounts services would not be trusted. The drop-ins of a unit staged here (the sandbox.conf
 # of each background service) are appended to the unit's own text, in file-name order, which systemd reads the same as
 # the drop-in; a drop-in of a unit staged elsewhere (the portal frontend is the distribution's) is a system file of its own, which
 # a rule of release/system-files.list must name. Other user units (mailo-watch.service, bardo-session.target) stay exported

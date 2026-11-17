@@ -1,6 +1,6 @@
-//! Bardo's own generated stylesheet, linted under the strictest profile (the coherence rules,
+//! The UI kit's own generated stylesheet, linted under the strictest profile (the coherence rules,
 //! ARCHITECTURE.md "Repo rules": every downstream crate runs this same check on its own CSS, and
-//! Bardo's own output has to pass it too).
+//! The UI kit's own output has to pass it too).
 //!
 //! The details grammar's two rules are judged per sheet in `details_lint.rs`, which names the
 //! sheets allowed to loop. Two rules exist only for consumers and are set aside whole: [`Rule::DsInternals`] (Bardo is
@@ -101,7 +101,7 @@ fn config() -> LintConfig {
     }
 }
 
-/// Whether `offence` is one of the two consumer-only rules on Bardo's own ground (the reset's
+/// Whether `offence` is one of the two consumer-only rules on the UI kit's own ground (the reset's
 /// element rules scope through `:where(.ds)`).
 fn bardo_own(offence: &Offence) -> bool {
     match offence.rule {

@@ -115,7 +115,7 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 | `components/content/icon_source.rs`, `ui-style/icon/url.rs` | 08-ICONS §1.5 (settled mechanics): `IconSource`, `ExternalIcon`; `IconUrl` (`data:`/`file:` only) |
 | `ui-style/icon/classify.rs` | 08-ICONS §1.5 step 2: `classify_with(png, limit) -> Result<IconKind::{Symbolic, Image}>`, OKLCH chroma < 0.04 on every half-covered pixel (`ChromaLimit`) |
 | `ui-core/error.rs` | `DsError`, the crate's one error enum (a refused icon URL, an unreadable icon PNG) |
-| `ui-lint/*` | the coherence rules (ARCHITECTURE.md "Repo rules"); spike S2, S6, S12 rules. 24 `Rule`s: the stylesheet rules (`RawSpacing` and `RawHairline` the Strict-profile spacing and line-width rules), plus `UnstyledClass` and `RawMarkup` for markup; inline custom properties on a `ds`/`ds-*` element and an `<svg>` marked `data-ds-svg` are Bardo's own, not offences (`ui-lint/inline_style.rs`); `Exception{rule, selector, reason}` in `LintConfig.exceptions`; the vocabulary (variables, keyframes, grammar timing) is `Kits::vocabulary()`, read into `LintConfig::new(&kits)`, and `ui-lint` names no motion crate |
+| `ui-lint/*` | the coherence rules (ARCHITECTURE.md "Repo rules"); spike S2, S6, S12 rules. 24 `Rule`s: the stylesheet rules (`RawSpacing` and `RawHairline` the Strict-profile spacing and line-width rules), plus `UnstyledClass` and `RawMarkup` for markup; inline custom properties on a `ds`/`ds-*` element and an `<svg>` marked `data-ds-svg` are the UI kit's own, not offences (`ui-lint/inline_style.rs`); `Exception{rule, selector, reason}` in `LintConfig.exceptions`; the vocabulary (variables, keyframes, grammar timing) is `Kits::vocabulary()`, read into `LintConfig::new(&kits)`, and `ui-lint` names no motion crate |
 
 ## `ds`: components
 
@@ -199,7 +199,7 @@ The shell-only settings of 22-SETTINGS (§3.4-3.14, `ShellFile`, `GesturesFile`,
 | shell-kit/widget/card.rs | 23-WIDGETS §9.3 | `WidgetCard`: the only way a widget is drawn; the card is `WidgetFrame`'s |
 | shell-kit/widget/registry.rs | 23-WIDGETS §9.4 | `WidgetRegistry`, `WidgetInfo` (type-erased preview) |
 | shell-kit/widget/wire.rs | 23-WIDGETS §9.5 | `WireTimeline`: the out-of-process format (the transport is not built) |
-| `shell-kit/widget/{battery,clock,calendar}.rs`, shell-kit/widget/views.css | 23-WIDGETS §4.1, §4.2, §5.2, §9.6 | Bardo's three widgets and their compositions |
+| `shell-kit/widget/{battery,clock,calendar}.rs`, shell-kit/widget/views.css | 23-WIDGETS §4.1, §4.2, §5.2, §9.6 | The UI kit's three widgets and their compositions |
 | shell-kit/widget/layout.rs | 23-WIDGETS §9.7 | `WidgetLayout`, `WidgetAt`, `WidgetEdit`, `apply`, `first_free` |
 | shell-kit/widget/gallery.rs, shell-kit/widget/gallery.css | 23-WIDGETS §9.7 | `WidgetGallery` ("Edit Widgets"), `GalleryWords` |
 | shell-kit/catalog/placement.rs | 23-WIDGETS §9.1 | `Placed`, `Placements`, `PlacementId`: placements as data, generic over kind, size and position |

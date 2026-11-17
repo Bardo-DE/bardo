@@ -39,7 +39,7 @@ pub fn html(dir: &Path, shots: &[Shot]) -> std::io::Result<String> {
     ))
 }
 
-/// The sheet's own look: a plain review page, not a Bardo surface.
+/// The sheet's own look: a plain review page, not a UI kit surface.
 const STYLE: &str = "body{margin:24px;font:14px system-ui,sans-serif;background:#f4f4f1;color:#1b1d1a}h2{margin:28px 0 4px}p{margin:0 0 10px;max-width:900px}.row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}figure{margin:0}img{width:100%;height:auto;border:1px solid #ccc;display:block}figcaption{font:12px ui-monospace,monospace;margin-top:4px}nav a{color:inherit}";
 
 /// One picture with its caption.

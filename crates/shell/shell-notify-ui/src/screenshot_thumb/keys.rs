@@ -1,5 +1,5 @@
 //! The thumbnail's keymap: the keys the card takes once it holds the keyboard, beyond the ones
-//! Bardo's picture takes itself (Enter and Space open it; Tab moves between the picture and the
+//! The UI kit's picture takes itself (Enter and Space open it; Tab moves between the picture and the
 //! card's action buttons by the document's own order).
 
 use dioxus::prelude::Key;

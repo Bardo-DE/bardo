@@ -48,7 +48,7 @@ pub struct AppConfig {
     /// The first window: its title and size, and the application id and decorations every
     /// later window falls back to.
     first: WindowSpec,
-    /// What the document is given beyond Bardo's own contexts.
+    /// What the document is given beyond the UI kit's own contexts.
     setup: Setup,
     /// What the app does when its last window closes.
     last_window: LastWindowClosed,

@@ -1,6 +1,6 @@
-//! Bridges layer-shell-host's raw seat modality and surface scale into Bardo's `ui_components::prelude::HostSignals`, the
+//! Bridges layer-shell-host's raw seat modality and surface scale into the UI kit's `ui_components::prelude::HostSignals`, the
 //! root context `Ds` reads to stamp `data-modality` (and so decide whether the focus ring shows)
-//! and to size the pixel tokens. layer-shell-host cannot name Bardo's `ds` crate
+//! and to size the pixel tokens. layer-shell-host cannot name the UI kit's `ds` crate
 //! (`scripts/check-boundary.sh`), so bardo-shell republishes: [`use_host_signals`] reads layer-shell-host's
 //! `use_input_modality()` (one value per seat, shared by every surface) and `use_surface_scale()`
 //! and provides them as `ui_components::prelude::HostSignals` with a `use_effect` (layer-shell-host README, "Consuming:
@@ -20,7 +20,7 @@ use layer_shell_hooks::SurfaceHandle;
 use layer_shell_types::{InputModality as SeatModality, Scale120};
 use ui_components::prelude::*;
 
-/// layer-shell-host's raw modality, as Bardo's own: whether the person last used the keyboard.
+/// layer-shell-host's raw modality, as the UI kit's own: whether the person last used the keyboard.
 fn to_ds(modality: SeatModality) -> bool {
     matches!(modality, SeatModality::Keyboard)
 }

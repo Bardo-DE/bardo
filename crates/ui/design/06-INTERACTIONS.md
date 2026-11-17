@@ -10,7 +10,7 @@ Durations named here (HoverOpen, ToastHold, `settle()`, …) are defined in `05-
 
 ## 1. What this governs
 
-Every behaviour a Bardo surface performs in response to input: the keyboard maps, the
+Every behaviour a UI kit surface performs in response to input: the keyboard maps, the
 hover-card intent machine, where menus and floating surfaces are placed and how they are
 dismissed, drag and drop, the sidebar and its edge peek, Space switching, the undo toast and its
 pull tab, undo send, the command menu's search and ranking, the selection bubble, the link pill,

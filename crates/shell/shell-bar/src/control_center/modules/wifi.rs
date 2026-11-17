@@ -70,7 +70,7 @@ pub(crate) fn radio_availability(wifi: &Wifi) -> Availability {
     }
 }
 
-/// The disc's Wi-Fi state: the bar item's (Bardo's `WifiGlyph`: searching while it joins, its
+/// The disc's Wi-Fi state: the bar item's (the UI kit's `WifiGlyph`: searching while it joins, its
 /// bars and badge once joined), off with the radio off, and not connected over a wire or
 /// another link, which is not Wi-Fi.
 pub(crate) fn wifi_tile_state(wifi: &Wifi, network: &Network) -> WifiState {

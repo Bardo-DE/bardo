@@ -3,7 +3,7 @@
 anyview is a file viewer for Linux desktops (it also compiles for macOS and Windows): images, PDF, text and code, Markdown, tables, JSON, audio and
 video, fonts, archives and books (EPUB and CBZ) in one window, and the same format library as the launcher's
 preview pane. It is a Rust workspace written in layers, from the pure vocabulary (`anyview-core`) up to the
-app, and builds on Bardo design system. `ARCHITECTURE.md` is the map, `CONVENTIONS.md` the rules,
+app, and builds on the UI kit design system. `ARCHITECTURE.md` is the map, `CONVENTIONS.md` the rules,
 `FINDINGS.md` the open items, `CHANGELOG.md` what changed. This is a beta: version 0.1.0-beta.1.
 
 anyview links no codec library. Video, HEIC and camera raw files are handled by your own tools through
@@ -25,8 +25,8 @@ target/release/anyview --version
 
 Bardo (the design system), blitz-embed, the Blitz, vello and anyrender forks are git dependencies
 pinned by revision in `Cargo.toml` and `Cargo.lock`: cargo fetches them, and nothing needs to sit next to this
-checkout. The pins live in `[workspace.dependencies]`; Bardo crates (`ds`, `ui-core`, `ui-blitz`,
-`ui-settings`, `ui-harness`, `ui-lint`) are the lines that name Bardo's rev.
+checkout. The pins live in `[workspace.dependencies]`; UI kit crates (`ds`, `ui-core`, `ui-blitz`,
+`ui-settings`, `ui-harness`, `ui-lint`) are the lines that name the UI kit's rev.
 
 To work on Bardo or blitz-embed at the same time, check them out beside this repository and add a
 `[patch."https://github.com/Bardo-DE/quire.git"]` (or blitz-embed) table pointing at the local path to
@@ -50,9 +50,9 @@ cargo build --release --locked -p anyview --no-default-features --features audio
 (`--no-default-features` drops `audio` too; add it back as above for the built-in audio player.) Such a build
 uses a per-user socket for single instance, opens links and shows files in their folder through the platform's
 opener (`xdg-open`, `open`, `explorer`), and has no Share, Print, desktop file chooser or
-now-playing entry: those actions are not offered (the palette, the menus, the buttons and their keys leave them out). Until Bardo's own portable build lands
-the dependency tree still holds Bardo's `zbus` and Wayland crates; this is about the viewer's own code.
-Check the portable build with `scripts/check-portable.sh` (Bardo's two rules: the workspace builds without the feature and no core module names `crate::desktop` or zbus, plus the platform crate's own zbus check).
+now-playing entry: those actions are not offered (the palette, the menus, the buttons and their keys leave them out). Until the UI kit's own portable build lands
+the dependency tree still holds the UI kit's `zbus` and Wayland crates; this is about the viewer's own code.
+Check the portable build with `scripts/check-portable.sh` (the UI kit's two rules: the workspace builds without the feature and no core module names `crate::desktop` or zbus, plus the platform crate's own zbus check).
 
 ## Install and uninstall
 

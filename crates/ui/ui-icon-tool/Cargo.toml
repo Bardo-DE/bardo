@@ -22,7 +22,7 @@ ui-settings = { path = "../ui-settings", default-features = false }
 
 [features]
 default = ["desktop"]
-# Desktop integration of Bardo crates this one uses (design/36 section 1).
+# Desktop integration of UI kit crates this one uses (design/36 section 1).
 desktop = ["ui-settings/desktop"]
 
 [lints]

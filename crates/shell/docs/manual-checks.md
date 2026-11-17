@@ -75,7 +75,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   group's "N more" or invokes a lone card's default action, Backspace (the Mac keyboard's
   Delete) clears the focused row, Escape closes.
 - [ ] **The capsule level look on the light scheme** (the fill reads faintly on its track) when
-  picking the level look from Bardo's sheets.
+  picking the level look from the UI kit's sheets.
 - [ ] **Drag icon follows the real pointer**: run layer-shell-host's `examples/demo_drag.rs
   --icon=root` and drag from its square: the icon follows the pointer the whole way (the
   headless KWin draws no cursor). The screenshot thumbnail's own drag is automated up to a drop
@@ -129,7 +129,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 
 - [ ] **Icon styles in dark mode**: Colour, Muted and Monochrome in the dock
   (`dev/out/dock-icons-*.png` are light-mode only). A third-party raster in Muted or Monochrome
-  goes through Bardo's dark tone band: check a black logo (Chrome's ring, a terminal) reads on
+  goes through the UI kit's dark tone band: check a black logo (Chrome's ring, a terminal) reads on
   its plate in the dark, and that nothing looks washed out.
 - [ ] **The 24 bar and the control center by eye**: the bar at 24 with 22 items, 30-wide status
   slots with no gap, the control center's 22 capsule with its white knob, the 10/10 grid.
@@ -381,7 +381,7 @@ the real daemons or a real keyboard.
 - [ ] **Ask from the launcher** (flows (a) and (b), real companiond): ask "what is on my calendar
   today": the answer's card shows in the pane as it streams, the field empties, the selection moves to
   the answer; Escape returns to the Ask row; Command-Enter on a card with an "Open" button opens the
-  app and closes the panel. Needs Bardo's `AnswerCard` fill; until then the pane's card is an empty
+  app and closes the panel. Needs the UI kit's `AnswerCard` fill; until then the pane's card is an empty
   placeholder and only the row's words and buttons show.
 - [ ] **Command-period** in the prompt: stops the answer being made; on a run's row (Tab to Runs) it
   stops the run. `bardo-shell companion stop-all` pauses every run that is going and leaves paused and ended
@@ -414,7 +414,7 @@ the real daemons or a real keyboard.
   Space picks, Return shares, Escape cancels; Share stays dim until something is picked; a second
   request while one is open is refused; the window list matches the open windows (needs the compositor's
   identifiers).
-- [ ] **Mac level sliders** (Bardo design/29 section 16): in the control center the Display, Sound and
+- [ ] **Mac level sliders** (the UI kit design/29 section 16): in the control center the Display, Sound and
   Keyboard Brightness sliders are a 22 high well under a round white knob that holds the glyph
   (sun, speaker with waves, keys); a click on the well jumps the knob, a drag moves it, the arrows
   step a sixteenth (Shift a sixty-fourth); disabled keeps the knob, dimmed. The volume and
@@ -458,7 +458,7 @@ the real daemons or a real keyboard.
   bar. With two monitors the bar is on the monitors Mission Control is up on, each with its own Spaces.
 - [ ] **Drag a window onto a Space**: in Mission Control drag a window tile up onto a card. The card under the dragged window lights
   (accent wash, ringed card) and the window moves to that Space on release. The lit card is the one the window is over, not a
-  neighbour (the card rectangles are worked out from the bar's box and Bardo's card size: if they are off, FINDINGS `mc2`).
+  neighbour (the card rectangles are worked out from the bar's box and the UI kit's card size: if they are off, FINDINGS `mc2`).
 - [ ] **Drag a window onto the plus**: in Mission Control drag a window tile up onto the plus at the bar's right edge. The plus lights
   (accent wash and ring) while the window is over it, and no card is lit at the same time; releasing makes a new Desktop on that
   output, moves the window to it and stays in Mission Control, where the new card appears with its picture. Moving the window off the
@@ -489,7 +489,7 @@ the real daemons or a real keyboard.
 
 ## The dev scripts under the compositor's per-app consent (a compositor jail)
 
-- [ ] **Run `dev/accept/{clipboard,screenshot,launcher}.sh` under the compositor**: `dev/accept.sh --compositor compositor clipboard
+- [ ] **Run `dev/accept/{clipboard,screenshot,launcher}.sh` under the compositor**: `dev/accept.sh --compositor bardo clipboard
   screenshot launcher` in the jail. Each starts compositor with the floor `start_compositor` writes (`compositor-floor/privacy.toml` in
   the script's output folder: `grim` the screen, `wl-copy` and `wl-paste` the clipboard). Look for: no permission sheet left on
   screen, `grim`'s shot is not refused, `wl-copy`/`wl-paste` work, and `compositor.log` has no line saying the floor was not
@@ -620,7 +620,7 @@ the real daemons or a real keyboard.
 
 - [ ] **The pictures show**: Settings, Wallpaper shows every system wallpaper as a picture, one tile per wallpaper (a KDE wallpaper folder is one tile under its own name, not one per size). The first opening fills the tiles in within a few seconds; the second shows them at once. A picture that cannot be shrunk is a tile with only its name. Clicking a tile changes the desktop's wallpaper. Fedora's own .jxl wallpaper is not offered yet (the desktop cannot draw .jxl).
 
-## Hiding the menu bar (lane barhide, not built or run when written; a real the compositor login)
+## Hiding the menu bar (lane barhide, not built or run when written; a real compositor login)
 
 Settings > Appearance, "Automatically hide and show the menu bar" (`bar.autohide`): Always, On Desktop Only, In Full Screen Only (the default), Never. The slide uses the dock's delay and duration (the shared delay and slide constants) and the dock's edge strip height.
 

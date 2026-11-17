@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# The portable build (Bardo's check-portable.sh convention, design/36 section 4, in this repo's terms):
+# The portable build (the UI kit's check-portable.sh convention, design/36 section 4, in this repo's terms):
 #   (a) the whole workspace compiles with every default feature off, so without `desktop`, the
 #       Linux desktop's services; anyview-platform's own tree has no zbus. Bardo still brings zbus
 #       (ui-settings, ui-helpers) and wayland-client (ui-blitz) into the dependency graph until its
 #       own portable lane lands; this checks anyview's code, not the final graph.
 #   (b) no module outside a `desktop/` directory or a file named `desktop.rs` names `crate::desktop`
 #       or zbus: the core never reaches the desktop modules or a D-Bus crate. Tests and the platform crate's `testing` support are exempt.
-#       ui-desktop is not a leak: it is Bardo's probe, and without its `dbus` feature it has no bus.
+#       ui-desktop is not a leak: it is the UI kit's probe, and without its `dbus` feature it has no bus.
 #   (c) anyview-peek compiles on its own, headless and with `media` (see below).
 #   (d) anyview-pane, the viewer as a pane another app hosts, compiles on its own and reaches no bus
 #       and no docket or porter: it asks the OS for nothing (abilities arrive as `PlatformAbilities`).

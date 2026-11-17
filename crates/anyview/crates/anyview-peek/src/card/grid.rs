@@ -1,4 +1,4 @@
-//! The first rows of a table and the top level of a tree, both as Bardo's `Table`.
+//! The first rows of a table and the top level of a tree, both as the UI kit's `Table`.
 
 use anyview_archive::{ArchivePeeked, EntryKind};
 use anyview_core::FactValue;

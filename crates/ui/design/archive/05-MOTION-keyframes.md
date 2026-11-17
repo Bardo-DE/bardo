@@ -376,7 +376,7 @@ Settled for the port; the catalogue above is unchanged except where named.
   S's `fade` still serves the scrim that rests at 1.
 - `pill-up`: `from{ transform:translate(-50%,160%) } to{ transform:translate(-50%,0) }` at
   `--t-big --e-spring`, the entrance of a pill centred by `translateX(-50%)` (mailo's toast and
-  send pill). Bardo's `SendPill` and `Toast` keep their `data-shown` transition, which also
+  send pill). The UI kit's `SendPill` and `Toast` keep their `data-shown` transition, which also
   carries them down.
 - `ring-drain`: `stroke-dashoffset` 0 to 57 at `--t-send-ring` linear, forwards, where CSS reaches
   the ring (the webview; on Blitz the SendPill writes the offset as an attribute, spike S6).

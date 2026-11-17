@@ -49,7 +49,7 @@ pub struct BackendCaps {
     pub consent: ConsentGuard,
     /// Whether a window on another workspace, or minimized, keeps rendering for capture: frames
     /// keep arriving and the content keeps updating (measured on a stock compositor). When not,
-    /// the compositor stops rendering it.
+    /// The compositor stops rendering it.
     pub hidden_renders: bool,
 }
 

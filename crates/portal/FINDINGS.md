@@ -89,7 +89,7 @@ Not compiled; the orchestrator gates. `remote_desktop.rs` has no `todo!()`.
 - **Open: request objects.** `Start` waits for the person; the frontend cancels it with `Request.Close` on `handle`, which no
   interface here serves yet (same for ScreenCast and Screenshot).
 - **Open: acceptance.** `dev/accept/remote-desktop.sh` is still a skeleton: it needs a stub `org.bardo.Shell1` on the private
-  bus (for consent), the unit-check override in the compositor's debug peer table (so the jailed the portal reads as
+  bus (for consent), the unit-check override in the compositor's debug peer table (so the jailed portal reads as
   `bardo-portal.service`), and a client that receives a file descriptor over D-Bus and speaks EIS. None exists in the jail.
 - **Spots most likely not to compile.** `OwnedValue::downcast_ref::<u32>()` on `&OwnedValue`; `#[zbus(object_server)]` as a
   parameter next to `ObjectPath` arguments; `server.at(session_handle, object)` and `server.remove::<SessionObject, _>(&str)`;
@@ -142,7 +142,7 @@ Not compiled; the orchestrator gates.
   screencast-output.sh` starts its own fake shell (`start_fake_shell`), as do `chooser.sh` and `screencast-window.sh`; its
   step 1 of `chooser.sh` (no shell) still passes with response 1. `dev/lib/portal_client.py`'s fake shell now also serves
   `PickColor` (a fixed colour, a cancel for `none`); no script exercises it yet.
-- **Environment.** the portal reads the display the way Wayland clients do (`WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`), so the
+- **Environment.** The portal reads the display the way Wayland clients do (`WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`), so the
   D-Bus-activated process needs both: the session must run `dbus-update-activation-environment --systemd
   WAYLAND_DISPLAY XDG_RUNTIME_DIR` (or the unit must import them). The screencast path had the same need already.
 
@@ -399,7 +399,7 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   connection that owns the portal's name, the way `ConnectEis` is asked, within `LINE_DEADLINE`) and speaks Wayland on the
   descriptor it gets back (`DisplayName::route` gives `Route::Handed`). The compositor trusts that connection for the screen and the
   windows, so its own Screen sheet is no longer raised over the portal's chooser. When nobody owns the name, the call is refused
-  or it times out (another compositor, an older the compositor), the capture connects the way any Wayland client does (`Route::Env`)
+  or it times out (another compositor, an older compositor), the capture connects the way any Wayland client does (`Route::Env`)
   and the log says so once. A display named by a socket path is used as given and the compositor is not asked. A call over
   The compositor's rate (four a second) is asked once more after a pause. Closes when the compositor has `Connect("portal")`
   (the compositor `fb1-portal-connect`); `desktop/harness/lib/compositor-floor.sh` `floor_powers` can then drop its allow row for portal.
@@ -428,7 +428,7 @@ unknown caller. peephole v0.1.4 adds developer rows (`dev-rows`: `Table::from_to
   (`portal-core/tests/it/restore.rs`), the file (`restore_file.rs`), the bus method and its guard (`grants.rs`), and the
   no-ask path for input (`remote_desktop.rs`). The screen path in `Shared::restored` shares the lookup but has no
   stand-alone test: it needs a live `capture::Job`; the real run covers it (dev/accept).
-- **Asks of other repos.** the Settings app (Privacy page): a row per remembered app with "Let <name> share this screen without
+- **Asks of other repos.** The Settings app (Privacy page): a row per remembered app with "Let <name> share this screen without
   asking" (screens: every display, or one by name; input on/off) calling `Allow`; the existing list and Remove button
   already show and revoke it. sill (picker): for a proven app a "Don't ask again for <name>" box that makes the shell call
   `Allow` after the yes. Neither is done.

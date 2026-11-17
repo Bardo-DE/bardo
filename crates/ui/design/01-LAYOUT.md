@@ -32,9 +32,9 @@ both schemes and at every motion level. The lint's Strict profile has `Rule::Raw
 literal `px` in `margin`, `padding` (and their sides and logical forms) or a `gap` is an
 offence in consumer CSS. The odd values stay with their one component each.
 
-**Settled (Polish pass, 2026-09-24).** Bardo's own component sheets read the tokens, and
+**Settled (Polish pass, 2026-09-24).** The UI kit's own component sheets read the tokens, and
 `Rule::RawSpacing` runs on them. Three steps were added because 04-COMPONENTS quotes them
-exactly for a Bardo component: `--s-1-5` (1.5, the chip and the image provider mark), `--s-13`
+exactly for a UI kit component: `--s-1-5` (1.5, the chip and the image provider mark), `--s-13`
 (13, the hover card's `12px 13px`) and `--s-15` (15, the toast's `5px 5px 5px 15px`).
 
 Measures: reading and writing text is capped at `66ch` (`S:462`, `S:608`, `S:728`); focus-mode

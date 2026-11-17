@@ -26,7 +26,7 @@
 # thumbnail sits at the output's true bottom-right corner):
 #   1. `bardo-shell debug screenshot <temp>/Screenshot_drag.png` (a copy of the services' fixture): the
 #      thumbnail shows.
-#   2. A real press on the card's picture, a first step 12 px left (past Bardo's 8 px drag
+#   2. A real press on the card's picture, a first step 12 px left (past the UI kit's 8 px drag
 #      threshold, and not rightwards, which is the swipe's), a glide up-left over the bare
 #      desktop and a release there. With no foot terminal installed there is no drop target, so
 #      layer-shell-host answers `Cancelled`: the daemon logs `screenshot drag: Cancelled`, the card is

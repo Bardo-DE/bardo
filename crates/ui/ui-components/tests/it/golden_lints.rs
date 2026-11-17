@@ -10,7 +10,7 @@ use ui_lint::{Exception, LintConfig, Rule, markup};
 /// The consumer classes the mail-app goldens put on a button through `extra_class`, and the edit
 /// surface 2 golden on the surface (mailo's `.c-body`, positioned so its text stacks over a
 /// selection layer): a consumer's own sheet styles them, as it would in the app, so they are in
-/// scope here and nowhere in Bardo's sheet. `.ds-space-dot` is the picker's Space dot, styled by
+/// scope here and nowhere in the UI kit's sheet. `.ds-space-dot` is the picker's Space dot, styled by
 /// a sheet above `ds`.
 const STAND_INS: &str = ".row-reveal{opacity:0}\n.quiet-until-hover{opacity:0}\n.fold-more{opacity:0}\n\
      .c-body{position:relative}\n.ds-space-dot{}";
@@ -55,7 +55,7 @@ const DIRS: &[(&str, usize)] = &[
     ("structure", 1),
 ];
 
-/// Coherence rule 2 on Bardo's own output: every golden of every directory above.
+/// Coherence rule 2 on the UI kit's own output: every golden of every directory above.
 #[test]
 fn every_golden_lints_clean() {
     let config = LintConfig {

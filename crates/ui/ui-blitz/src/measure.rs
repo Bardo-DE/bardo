@@ -6,7 +6,7 @@
 //! scope) runs while the mutation writer holds that borrow, and the read panics with "`RefCell`
 //! already borrowed" (the hover card's anchor read, 450 ms after the pointer
 //! came to rest). Reading through `NodeHandle::try_doc` turns that into `Measured::Busy`, and
-//! Bardo's reader waits a frame.
+//! The UI kit's reader waits a frame.
 //!
 //! Every Blitz host has it: `launch` and the harness wire it, and a shell's surface root gets it
 //! from [`provide_host`](crate::provide_host).

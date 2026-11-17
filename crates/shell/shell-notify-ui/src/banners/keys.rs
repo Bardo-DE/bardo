@@ -1,5 +1,5 @@
 //! The banner column's keymap: the keys a card takes once the column holds the keyboard, beyond
-//! the ones Bardo's card takes itself (Enter and Space press the card or the button that has the
+//! the ones the UI kit's card takes itself (Enter and Space press the card or the button that has the
 //! focus; Tab moves between the card's close button, its buttons and the next card by the
 //! document's own order). Up and Down move along the stack as it is drawn, newest on top;
 //! Escape, Delete and Backspace dismiss.

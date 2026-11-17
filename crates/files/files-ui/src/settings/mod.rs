@@ -1,5 +1,5 @@
 //! files' own settings: one file, `files/settings.toml`, and the schema that describes it
-//! (Bardo design/22 section 9).
+//! (the UI kit design/22 section 9).
 //!
 //! Each table is a struct deriving `SettingsSchema`, so the desktop's Settings app draws a Files
 //! page from the schema `files --write-schema <dir>` writes, and writes the same file this reads.

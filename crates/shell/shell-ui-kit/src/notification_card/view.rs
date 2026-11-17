@@ -1,4 +1,4 @@
-//! A notification as Bardo's `NotificationCard`: bardo-shell finds the app's icon and name, writes the
+//! A notification as the UI kit's `NotificationCard`: bardo-shell finds the app's icon and name, writes the
 //! age, turns the body's runs and the actions into Bardo's, and hears the card's presses as one
 //! [`CardPress`]. The card's look (the plate, the clamp, hover, the close button, the group's
 //! layers, the swipe) is Bardo's.
@@ -46,7 +46,7 @@ pub(super) struct CardWiring {
     pub on_press: EventHandler<CardPress>,
 }
 
-/// `note` as Bardo's card, standing for `count` notifications, drawn at `place`.
+/// `note` as the UI kit's card, standing for `count` notifications, drawn at `place`.
 pub(super) fn card(
     note: &Notification,
     count: usize,
@@ -137,7 +137,7 @@ fn theme_icon(name: &str, dirs: &Dirs) -> Option<PathBuf> {
     }
 }
 
-/// The card's icon at `size`: the file, else Bardo's bell.
+/// The card's icon at `size`: the file, else the UI kit's bell.
 fn icon_source(art: Option<&IconFile>, size: IconSize) -> IconSource {
     let external = |path: &PathBuf| {
         IconUrl::file(path)

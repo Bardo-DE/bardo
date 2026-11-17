@@ -77,7 +77,7 @@ pub(super) fn mark_of(mark: &str) -> MarkProvider {
     }
 }
 
-/// The face the provider file gives `row`'s mark (a letter on a colour), in Bardo's type; `None`
+/// The face the provider file gives `row`'s mark (a letter on a colour), in the UI kit's type; `None`
 /// when the file gives none, and the named mark is worn.
 pub(super) fn face_of(row: &ProviderRow) -> Option<MarkFace> {
     row.mark_face

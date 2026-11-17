@@ -1,4 +1,4 @@
-//! Each page's slug (design/22 section 9.3) and where Bardo's page table puts it in the sidebar.
+//! Each page's slug (design/22 section 9.3) and where the UI kit's page table puts it in the sidebar.
 
 use crate::page_kind::PageKind;
 use settings_types::schema::{Page, PageOrder, PageTable};
@@ -19,7 +19,7 @@ impl PageSlug {
     }
 }
 
-/// Where `page` sits in the sidebar, by Bardo's page table: its declared order, or none when the
+/// Where `page` sits in the sidebar, by the UI kit's page table: its declared order, or none when the
 /// table declares it hidden. A page nothing declares (a third-party program's) comes after every
 /// declared one, by id.
 pub(crate) fn sidebar_place(table: &PageTable, page: &Page) -> Option<(PageOrder, String)> {

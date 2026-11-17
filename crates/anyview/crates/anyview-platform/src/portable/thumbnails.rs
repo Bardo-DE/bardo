@@ -200,7 +200,7 @@ fn create_private_dir(directory: &Path) -> std::io::Result<()> {
 /// a thumbnail.
 const THUMBNAIL_CAP: base_fs::ReadCap = base_fs::ReadCap::mib(32);
 
-/// Write `bytes` as the file `path` with Bardo's `base_fs::write_atomic`, so a reader never sees
+/// Write `bytes` as the file `path` with the UI kit's `base_fs::write_atomic`, so a reader never sees
 /// half a file: a temporary file of this writer's own beside it, synced, renamed over it. A new
 /// thumbnail is readable by its owner alone, as the thumbnail specification asks.
 fn write_atomically(path: &Path, bytes: &[u8]) -> Result<(), PlatformError> {

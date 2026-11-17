@@ -2,7 +2,7 @@
 //! the undo journal, and the words each of them wears in the launcher.
 //!
 //! The pure half of the companion service. [`Tap`] and [`Summon`] are timed [`Machine`]s on
-//! Bardo's clock (the service owns and steps them); [`presence_of`] derives the one presence
+//! The UI kit's clock (the service owns and steps them); [`presence_of`] derives the one presence
 //! the orb and the glow show; [`run_state_of`] and [`run_controls`] read a run; [`step`] keeps
 //! the published [`Companion`]. `shell-services` does the bus.
 //!

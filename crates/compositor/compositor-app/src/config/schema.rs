@@ -1,4 +1,4 @@
-//! `bardo-compositor --write-schema DIR`: the schema the Settings app and the Settings app read.
+//! `bardo-compositor --write-schema DIR`: the schema the Settings app read.
 
 use super::ConfigError;
 use super::sections::{

@@ -1,4 +1,4 @@
-//! A `data-*` mark on a Bardo component, which the window's tests address a row by.
+//! A `data-*` mark on a UI kit component, which the window's tests address a row by.
 
 use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};

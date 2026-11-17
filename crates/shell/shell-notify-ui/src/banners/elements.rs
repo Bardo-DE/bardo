@@ -11,7 +11,7 @@ use shell_model::notifications::NotificationId;
 use super::layer::CARD_RADIUS;
 use shell_ui_kit::notification_card::{CardPart, part_id};
 
-/// How far Bardo's close button stands out past the plate's top left corner (`--s-6`): the
+/// How far the UI kit's close button stands out past the plate's top left corner (`--s-6`): the
 /// input region reaches that far round the plate so the whole button takes a press.
 const CLOSE_OVERHANG: i32 = 6;
 

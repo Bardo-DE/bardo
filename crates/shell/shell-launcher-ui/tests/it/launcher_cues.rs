@@ -1,4 +1,4 @@
-//! Bardo's launcher cues as the real panel plays them, on the virtual clock: the pane enters
+//! The UI kit's launcher cues as the real panel plays them, on the virtual clock: the pane enters
 //! and rests, another kind cross-fades the media in place, a slow text head shows "Loading…" at
 //! once and keeps turning for as long as it reads, a later result set replaces in place, Show
 //! More enters its rows and Show Less heals. Every step but the pending one ends at 0 frames.
@@ -200,7 +200,7 @@ fn show_more_enters_its_rows_and_show_less_heals() {
 }
 
 /// The same Show More through the link (`bardo-shell debug launcher-key`): bardo-shell runs the group's
-/// action itself and marks it on Bardo's palette handle, so the rows still enter.
+/// action itself and marks it on the UI kit's palette handle, so the rows still enter.
 #[test]
 fn a_show_more_through_the_link_still_enters() {
     let mut open = open("m9");

@@ -20,7 +20,7 @@ cd "$(dirname "$0")/.."
 # through watch channels read by shell-ui-kit's hooks, so neither links a renderer. shell-services
 # names ui-settings (its dioxus feature off) for Night Shift's SettingsWriter edits.
 # shell-testkit is std only and names no bardo-shell crate.
-# shell-kit (the shell-only parts over Bardo's `ds`) names no other bardo-shell crate and no service,
+# shell-kit (the shell-only parts over the UI kit's `ds`) names no other bardo-shell crate and no service,
 # bus, runtime or compositor client: it is what the surfaces and shell-ui-kit draw with.
 # shell-ui-kit is what every surface shares, so it reaches no surface crate and not the binary.
 # `bardo-shell` (the whole process) takes the viewer's light tier, its history, its vocabulary and its

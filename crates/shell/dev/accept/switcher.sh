@@ -50,7 +50,7 @@ DEMO="$HOST_TARGET/debug/examples/demo_window"
 SHOW_DELAY_MS=400
 
 start_compositor || exit 1
-if [ "$COMPOSITOR" = compositor ]; then
+if [ "$COMPOSITOR" = bardo ]; then
   # The switcher lists real toplevels (foot, layer-shell-host's demo_window, kcalc) through the
   # compositor's toplevel protocols and a held Alt; the compositor's window management (activation, the
   # toplevel list, a focused app's modifiers) is P1/P2 work, and the apps themselves are not in

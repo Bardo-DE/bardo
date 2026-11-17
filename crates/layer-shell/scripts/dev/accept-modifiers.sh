@@ -4,7 +4,7 @@
 # session (every client here sources .kwin-env), no keyboard grab.
 #
 #   scripts/dev/accept-modifiers.sh
-#   COMPOSITOR=the compositor scripts/dev/accept-modifiers.sh   the same on the compositor, in a jail
+#   COMPOSITOR=bardo scripts/dev/accept-modifiers.sh   the same on the compositor, in a jail
 #
 # Three cases, each its own compositor instance (kwin-virtual.sh; the compositor: its own dev/up.sh
 # run, so neither's modifier state leaks into the other) and its own demo_switcher, mapped only

@@ -1,4 +1,4 @@
-//! The harness's input vocabulary: Bardo's keys and pointer buttons as the Blitz events a window
+//! The harness's input vocabulary: the UI kit's keys and pointer buttons as the Blitz events a window
 //! would deliver for them.
 
 use crate::input::PasteChord;

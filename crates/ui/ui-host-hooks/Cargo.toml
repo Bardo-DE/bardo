@@ -1,6 +1,6 @@
 [package]
 name = "ui-host-hooks"
-description = "What a bardo component calls on the document that hosts it, with no Blitz, GPU or windowing type: the document host, styles guard, resolved tokens, clipboard and spawner seams."
+description = "What a UI kit component calls on the document that hosts it, with no Blitz, GPU or windowing type: the document host, styles guard, resolved tokens, clipboard and spawner seams."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

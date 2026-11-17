@@ -16,7 +16,7 @@ const OURS: Platform = Platform::Linux {
 /// Where a layer of overrides came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Origin {
-    /// The key remap daemon daemon, serving the machine's keymap file.
+    /// The key remap daemon, serving the machine's keymap file.
     Daemon,
     /// The machine's keymap file, read directly because no daemon answered.
     MachineFile,

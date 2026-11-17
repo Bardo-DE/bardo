@@ -196,7 +196,7 @@ fn across_outputs<R: Offscreen1>(renderer: &mut R, right_scale: u32) -> image::R
 }
 
 /// What the blur scene asks of its blur: a short sigma, so the stripes still show through, and
-/// the compositor's saturation.
+/// The compositor's saturation.
 const SCENE_LOOK: BlurLook = BlurLook {
     sigma: 6.0,
     ..BlurLook::MATERIAL

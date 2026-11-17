@@ -12,7 +12,7 @@ use crate::wallpaper::WALLPAPER_SLUG;
 use crate::wifi::WIFI_SLUG;
 use settings_types::schema::Page;
 
-/// What a page is: one of Bardo's fixed pages, one of the pages the catalogue declares itself, or
+/// What a page is: one of the UI kit's fixed pages, one of the pages the catalogue declares itself, or
 /// a third-party program's.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum PageKind {

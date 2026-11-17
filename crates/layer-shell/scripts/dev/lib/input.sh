@@ -9,7 +9,7 @@ LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$LIB/compositor.sh"
 case "$COMPOSITOR" in
   kwin) exec "$LIB/../fake-input.sh" ;;
-  compositor)
+  bardo)
     tools="$(comp_tools)"
     comp_source
     exec "$tools/bin/bardo-compositorctl" debug inject

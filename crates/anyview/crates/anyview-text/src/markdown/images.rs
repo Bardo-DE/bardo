@@ -1,4 +1,4 @@
-//! Images in a Markdown document. Bardo's sealed frames load only `data:` URLs, so a local image
+//! Images in a Markdown document. The UI kit's sealed frames load only `data:` URLs, so a local image
 //! is read through an injected reader and written into the HTML as one.
 
 use super::links::scheme;

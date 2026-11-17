@@ -1,4 +1,4 @@
-//! One Bardo document with no window: the pieces `Harness` and `snapshot` share. It gets the
+//! One UI kit document with no window: the pieces `Harness` and `snapshot` share. It gets the
 //! shared font context, the app's net policy, the HTML parser (so an `<iframe srcdoc>` is a
 //! real sub-document, as in the window), a shell whose clipboard is in memory, sequential styling (deterministic, and
 //! no rayon pool per test), the host's input modality, device scale, rect read and focus write as

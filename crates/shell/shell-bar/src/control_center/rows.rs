@@ -68,7 +68,7 @@ pub(crate) fn RowList<T: Clone + PartialEq + 'static>(
     }
 }
 
-/// Bardo's leading element for a row's glyph and disc.
+/// The UI kit's leading element for a row's glyph and disc.
 fn leading(glyph: Icon, disc: RowDisc) -> RowLeading {
     match disc {
         RowDisc::None => RowLeading::Icon(glyph),
@@ -85,7 +85,7 @@ fn availability(own: Availability, phase: ItemPhase) -> Availability {
     }
 }
 
-/// Bardo's accessory for `mark`.
+/// The UI kit's accessory for `mark`.
 fn accessory(mark: RowMark) -> Accessory {
     match mark {
         RowMark::Nothing => Accessory::None,

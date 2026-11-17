@@ -1,4 +1,4 @@
-//! The lock surface's content inside its `Ds` root: Bardo's stage, the clock, the prompt on the
+//! The lock surface's content inside its `Ds` root: the UI kit's stage, the clock, the prompt on the
 //! prompt's output, and the unlock fade (the module doc of `screen.rs` has the rules).
 
 use base_secret::SecretText;

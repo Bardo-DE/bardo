@@ -9,7 +9,7 @@
 //!
 //! `appearance.theme = "system"` follows the desktop: the scheme is read from the settings
 //! portal once, when the theme first is `system` (at start or after the file changes to it), and
-//! the portal's changes are followed after that (`compositor_ipc::system_scheme`, a thread with its
+//! The portal's changes are followed after that (`compositor_ipc::system_scheme`, a thread with its
 //! own runtime; the answers come back over a calloop channel like the file's). Until the portal
 //! has answered, and on a desktop without one, `system` paints Light. Where the portal is
 //! reached is the config home seam: the real config tree uses the session bus, a stand-in

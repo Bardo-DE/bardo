@@ -126,7 +126,7 @@ pub enum DesktopCommand {
     },
     /// The person answered a question the compositor asked
     /// ([`super::ShellNote::PermissionAsk`]), or its sheet went away unanswered
-    /// ([`Answer::Dismissed`]). Bardo only, on the connection that holds the shell role.
+    /// ([`Answer::Dismissed`]). The UI kit only, on the connection that holds the shell role.
     AnswerPermission {
         /// The question, by the number it came with.
         ask: AskId,
@@ -135,7 +135,7 @@ pub enum DesktopCommand {
     },
     /// The person kept or reverted a changed display setup
     /// ([`super::ShellNote::DisplaysTrial`]); a question taken down with no answer is
-    /// [`TrialAnswer::Revert`]. Bardo only, on the connection that holds the shell role.
+    /// [`TrialAnswer::Revert`]. The UI kit only, on the connection that holds the shell role.
     AnswerTrial {
         /// The trial, by the number it came with.
         trial: TrialId,
@@ -143,10 +143,10 @@ pub enum DesktopCommand {
         answer: TrialAnswer,
     },
     /// Say what the bar does in full screen: slide in at the top edge, or stay up with the
-    /// full-screen window sized below it. Bardo only, sent at the start and on each change.
+    /// full-screen window sized below it. The UI kit only, sent at the start and on each change.
     SetFullScreenBar(FullScreenBar),
     /// Say how much motion the person allows; reduced makes the full-screen bar and dock
-    /// cross-fade. Bardo only, sent at the start and on each change.
+    /// cross-fade. The UI kit only, sent at the start and on each change.
     SetMotion(Motion),
 }
 

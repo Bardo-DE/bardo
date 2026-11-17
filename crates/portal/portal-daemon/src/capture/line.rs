@@ -6,7 +6,7 @@
 //! (`org.bardo.Compositor1.Connect("portal")`), where the portal is proven all the way; that
 //! connection is trusted for the screen and the windows and for nothing else. [`PortalLine`] is
 //! the seam that asks for it, [`CompositorLine`] the real one and [`FakeLine`] a test's. When no such
-//! connection can be had (another compositor, an older the compositor) the capture connects the way any
+//! connection can be had (another compositor, an older compositor) the capture connects the way any
 //! Wayland client does, and the portal's own sheet is the only question ([`super::DisplayName`]).
 //! The compositor limits how often one caller may ask, so a capture job asks once and runs all its
 //! steps on the connection it gets ([`super::Job`]).

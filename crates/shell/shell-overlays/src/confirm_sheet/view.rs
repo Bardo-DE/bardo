@@ -4,7 +4,7 @@
 //! surface maps itself (`SurfaceHandle::set_visibility`) and a `Ds { material: Sheet, extent: Viewport }`
 //! holds one `Sheet` per question, keyed by the question's id so the next one enters again and
 //! starts its arming over: the title (the action's own label), who asks and where, the arguments
-//! as Bardo's `FactList`, the reasons, and the buttons. The buttons are Bardo's `Button`s: Don't
+//! as the UI kit's `FactList`, the reasons, and the buttons. The buttons are the UI kit's `Button`s: Don't
 //! Allow (answers Escape), the offered second answer ("Allow from the terminal: this action,
 //! until logout", or "Always Allow"), and Allow, which for a destructive action is a hold
 //! ([`super::gate`]). Nothing is styled under `.ds-sheet*` or `.ds-button*`.

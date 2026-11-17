@@ -1,6 +1,6 @@
 [package]
 name = "ui-blitz"
-description = "Blitz glue for bardo: launch, fonts, headless snapshots, PDF output and printing, test harness."
+description = "Blitz glue for the UI kit: launch, fonts, headless snapshots, PDF output and printing, test harness."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -74,7 +74,7 @@ spellbook = { workspace = true, optional = true }
 dirs = { workspace = true, optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
-# The print portal (the `print` feature): zbus with Bardo's async-io default (no executor is
+# The print portal (the `print` feature): zbus with the UI kit's async-io default (no executor is
 # forced on the app), and a sealed memfd for the PDF's file descriptor.
 zbus = {workspace = true, features = ["default"], optional = true}
 memfd = { workspace = true, optional = true }

@@ -1,4 +1,4 @@
-//! Where a surface's keymap comes from: our desktop's the key remap daemon, unless the document already has one.
+//! Where a surface's keymap comes from: our desktop's key remap daemon, unless the document already has one.
 
 use dioxus::prelude::{provide_context, try_consume_context, use_hook};
 use key_remap_client::KeyRemapSource;

@@ -155,7 +155,7 @@ scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" compositor-ta
 [ -s "$DRAW_DIR/main.js" ] || die "the drawing app is not built at $DRAW_DIR: run $WF/fixtures/w2/build-excalidraw.sh outside the jail"
 for tool in socat curl python3 busctl gdbus; do command -v "$tool" >/dev/null || die "$tool is missing"; done
 
-export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 # bardo-compositor asks before a program watches the screen, types or lists windows, and nobody answers inside a scenario, so
 # the floor allows exactly the programs this run starts that take those powers: bardo-computer-use and bardo-compositorctl (the pictures).

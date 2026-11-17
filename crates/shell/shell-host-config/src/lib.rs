@@ -1,4 +1,4 @@
-//! What a bardo-shell process hands layer-shell-host: Bardo's faces, the pre-paint pass and the
+//! What a bardo-shell process hands layer-shell-host: the UI kit's faces, the pre-paint pass and the
 //! folders pictures may be read from. The one place the shell's UI libraries meet the host and
 //! the renderer, so they name neither.
 

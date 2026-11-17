@@ -4,7 +4,7 @@
 //! clock opens no menu: it toggles the notification center.
 //!
 //! Status lines are `MenuItem::Info` rows: an item's weight without the header's eyebrow,
-//! never a choice (Bardo's bar gaps).
+//! never a choice (the UI kit's bar gaps).
 
 use shell_launcher::SessionAction;
 use shell_launcher::WindowKey;

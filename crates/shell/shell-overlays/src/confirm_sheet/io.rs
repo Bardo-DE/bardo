@@ -1,4 +1,4 @@
-//! The effects end of one question's card: the gate on Bardo's clock, and the answer sent to the
+//! The effects end of one question's card: the gate on the UI kit's clock, and the answer sent to the
 //! intents service. The card is keyed by the question's id, so each question starts its own gate
 //! (and its arming) afresh.
 

@@ -37,10 +37,10 @@ and the programs) that names `layer-shell-host`, `ui-blitz`, `blitz-dom`, `blitz
 `[dependencies]` or `[dev-dependencies]` respectively.
 
 Forbidden for `layer-shell-host`: `zbus`,
-`libpulse-binding`, every Bardo crate, sill, and the `mouse_gestures` daemon crate.
+`libpulse-binding`, every UI kit crate, sill, and the `mouse_gestures` daemon crate.
 `scripts/check-boundary.sh` checks this list, and that Blitz's own scrollbars stay off (the host
 paints the thumb). `blitz-embed` forbids `smithay-client-toolkit`, `wayland-*`, `dioxus*`, every
-Bardo crate and sill; its own repo carries the same script. Sibling repos are path
+The UI kit crate and sill; its own repo carries the same script. Sibling repos are path
 dependencies, as sill's are on layer-shell-host.
 
 ### Moves into other crates
@@ -156,7 +156,7 @@ and IME see it as they see a real key. The stdin grammar adds `<surface> key <na
 
 ## 4. blitz-embed (sibling repo)
 
-Portable Blitz repairs shared by layer-shell-host and Bardo's `ui-blitz`; each was written twice, and
+Portable Blitz repairs shared by layer-shell-host and the UI kit's `ui-blitz`; each was written twice, and
 the copies in both are deleted. layer-shell-host is its first consumer. It has no Wayland, no Dioxus,
 no design-system type, and takes and returns CSS px `f64` in Blitz's own units.
 
@@ -169,7 +169,7 @@ no design-system type, and takes and returns CSS px `f64` in Blitz's own units.
 | `hit` | `element_at(&BaseDocument, PagePoint) -> Option<NodeId>`, `element_of(&BaseDocument, NodeId) -> Option<NodeId>`, `is_content_element` (transform-aware: the point is carried back through each transformed ancestor) | `dom/document.rs` |
 | `paint_rect` | `Affine2`, `Placed`, `painted_bounds(Bounds, &[Placed]) -> Bounds`, `painted_rect(&BaseDocument, NodeId) -> Option<Bounds>` (layout box carried through its own and its ancestors' transforms) | `dom/painted.rs`, `dom/document.rs` |
 | `snap` | `snap_layout(&mut BaseDocument, Scale120)`: whole device pixels for every box after a resolve | consumers' prepaint hooks |
-| `after_resolve` | `AfterResolve::{watch, read}`, `Registration`, `publish`: components' readings of their node (Bardo's `use_resolved`), provided as a root context and run after every resolve, publishing only what changed | `SurfaceDocument::build`, `SurfaceDocument::resolve` |
+| `after_resolve` | `AfterResolve::{watch, read}`, `Registration`, `publish`: components' readings of their node (the UI kit's `use_resolved`), provided as a root context and run after every resolve, publishing only what changed | `SurfaceDocument::build`, `SurfaceDocument::resolve` |
 
 `Bounds`, `PagePoint`, `Scale120` (integer 120ths, the same type layer-shell-host exports) are defined in
 `blitz-embed::units`. layer-shell-host converts at its own boundary (`PointerPos`, `Rect`);
@@ -351,7 +351,7 @@ the compositor for the acceptance scripts. Handlers become table-testable by str
    pixels (no redefinition); private session bus, scratch `HOME`/`XDG_*`; flags for variants
    (`--real-input`), not a second script.
 3. A row in `scripts/dev/README.md` and, for the render items, an entry in `accept-demo.sh`.
-4. Live acceptance runs on the headless KWin or a nested the compositor, never on the person's
+4. Live acceptance runs on the headless KWin or a nested compositor, never on the person's
    session.
 
 ## 8. Test harness

@@ -47,7 +47,7 @@ lists as `release.py`'s):
   `/usr/lib/systemd/system`), `70-key-remap.rules`, `key_remap.polkit.rules` and `modules-load.d/key-remap.conf` (`uinput`,
   written by build.sh because the key remap daemon ships none), the mouse gestures daemon's `70-mouse-gestures.rules` and `modprobe.d/99-mouse-gestures.conf`,
   and porter's `/etc/porter/callers.toml` (porter's installer is pointed at `<prefix>/system/etc`).
-- Still data only (no home on the system): `share/sill/key-remap.toml` (the sill session's the key remap daemon layer, which sill's
+- Still data only (no home on the system): `share/sill/key-remap.toml` (the sill session's key remap daemon layer, which sill's
   installer copied into the home), `share/key_remap/key_remap.plasma.toml` (the Plasma overlay; not used by this
   desktop).
 - Not staged yet: sill's DDC/CI udev rule and `i2c-dev` module list (`dist/udev`, `dist/modules-load.d`; sill's own
@@ -314,7 +314,7 @@ check first is listed under "Not verified" at the end of this section.
   not group/other writable; the policy has exactly the three actions, each naming its program; apply and health allow only an
   active local session without a password, rollback is `auth_admin_keep`. `smoke.sh` now installs the three programs and the
   policy the way the updater's install does and runs it before the release; `bootstrap.sh` runs it before it asks for anything.
-  The workflow's `small` job uploads all four the updater programs and the policy file (artifact `helper`). The selftest covers
+  The workflow's `small` job uploads all four updater programs and the policy file (artifact `helper`). The selftest covers
   a complete install, a rollback without a password, a missing program and a group-writable one.
 - `docs/distros.md` has a short "Updates" section (what is installed where, the password rules, the by-hand way back).
 - Not verified: `scripts/install.sh --bin-dir` flow on a real machine; that polkit follows the policy file's `exec.path`
@@ -431,7 +431,7 @@ check first is listed under "Not verified" at the end of this section.
 What changed: `dist/desktop-callers.toml` (peephole's table, one row per role, `settings` twice, four paths per program), placed by
 `install.sh` first (`install/system.sh callers`) and by every release (`system/etc/bardo/desktop-callers.toml`); the input service
 (`input_broker`: program, `/usr/local/bin/input_broker` export, socket, service, `72-input-broker.rules`, `input-broker.conf`) in the release and in
-`install.sh`; the key remap daemon installed by `install/system.sh key_remap`, not by the key remap daemon's installer; `release/system-files.list` takes the updater's four the input broker
+`install.sh`; the key remap daemon installed by `install/system.sh key_remap`, not by the key remap daemon's installer; `release/system-files.list` takes the updater's four input broker
 rules (it equals the updater origin/master, 17 rules, `check-system-list.sh` says so); three new gate checks and one test for them.
 
 - **The socket lets any local program connect, on purpose.** `bardo-input-broker.socket` is `SocketMode=0666`, `DirectoryMode=0755`
@@ -468,9 +468,9 @@ rules (it equals the updater origin/master, 17 rules, `check-system-list.sh` say
   helper refuses that release whole), (2) a `/etc/bardo/key-remap/key-remap.toml` an earlier `./install.sh` wrote stays (it holds the same rule, so
   it changes nothing; delete it by hand, `--remove key_remap` no longer looks at it), (3) the key remap daemon and the updater pins in `manifest.toml`
   must move to revs that have the vendor layer and the rule before a release is cut (until then `check-system-list.sh` fails against
-  the old the updater pin, on purpose), and (4) the key remap daemon watches `/usr/lib/bardo/key-remap` only if it exists when the daemon starts; `system.sh`
+  the old updater pin, on purpose), and (4) the key remap daemon watches `/usr/lib/bardo/key-remap` only if it exists when the daemon starts; `system.sh`
   restarts a running service when it changed any file, which covers a first install.
-- **A table or a unit placed by `install.sh` and a later release can conflict.** the updater replaces a system file only if it is absent, equal, or what
+- **A table or a unit placed by `install.sh` and a later release can conflict.** The updater replaces a system file only if it is absent, equal, or what
   an earlier release placed; anything else it leaves and reports (`plan_system`, `Conflict`). `desktop-callers.toml`, `input_broker.*` and the
   rules come from the same sources in both paths, so they are equal when the desktop checkout is the release's. `bardo-key-remap.service` was not (the
   release started `/opt/bardo/current/bin/key_remap`, `install.sh` started `<prefix>/bin/key_remap`): fixed by lane dharn, see its section below.
@@ -488,7 +488,7 @@ syntax check, and `gate/installer-check.sh`, `release/*.sh` and `install/system.
 | 1 | `Table::from_toml` accepts `dist/desktop-callers.toml` (the repo's checks re-implement the reader's rules in Python from peephole's docs; peephole was not compiled) | `cargo test` in peephole with `include_str!` of this file, or `TableFiles::load` on an installed copy |
 | 2 | `/usr/libexec/xdg-desktop-portal` (Ubuntu, Fedora) and `/usr/lib/xdg-desktop-portal` (Arch) are the frontend's paths; `bardo-updater.service` and `xdg-desktop-portal.service` ExecStart are not compared (not in a checkout) | `dpkg -L`, `rpm -ql`, `pacman -Ql` per distribution |
 | 3 | `gate/installer-check.sh` passes with the new order (callers first, the input broker before the key remap daemon, the key remap daemon's own installer never run) | run it |
-| 4 | `release/build.sh --only input_broker,key_remap,mouse_gestures,session` stages the four the input broker files, the table and no key remap daemon device rule; `retarget` accepts the mouse gestures daemon's `/usr/local/bin/mouse_gestures` | a local build (`release/README.md`, "Local trial") |
+| 4 | `release/build.sh --only input_broker,key_remap,mouse_gestures,session` stages the four input broker files, the table and no key remap daemon device rule; `retarget` accepts the mouse gestures daemon's `/usr/local/bin/mouse_gestures` | a local build (`release/README.md`, "Local trial") |
 | 5 | `bardo-input-broker.service`, `bardo-input-broker.socket` and `bardo-key-remap.service` as the checkouts ship them pass `systemd-analyze verify` here (Fedora 44; the only complaint is that `/usr/local/bin/input_broker` does not exist yet); the rendered `ExecStart` differs only when the prefix is not `/usr/local`; not tried on Ubuntu or Arch | `systemd-analyze verify` there |
 | 6 | `modprobe uinput` and the `uinput` module exist on all three; `udevadm trigger --subsystem-match=misc` re-applies `72-input-broker.rules` to a node that is already there | the three distributions |
 | 7 | `/etc/bardo/key-remap` ownership when `ConfigurationDirectory=key_remap` meets `DynamicUser=yes` (the key remap daemon's own open item) and whether the daemon reads a root-owned `key-remap.toml` there | a start of the real service |
@@ -512,7 +512,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   `shell-host-on-compositor-and-kwin` (floor: fcitx5, which accept-ime runs), `minimise-target-round-trip`, `space-id-survives-restart` and
   `session-crash-guard` (through the session's backend arguments). `key-remap-yields-and-regrabs` starts nothing (a skip). Most floors are empty on
   purpose: the shell, the Settings app and the rig take no power a row can name.
-- **Programs run from `build/` (lane dharn, second pass).** the compositor judges a program by its image, and a program under `build/` is writable by the
+- **Programs run from `build/` (lane dharn, second pass).** The compositor judges a program by its image, and a program under `build/` is writable by the
   person, so it is "unverified" and asked every time, whatever the floor says; and without `/etc/bardo/desktop-callers.toml` (the jail has none) sill,
   The Settings app and the portal are nobody and the shell cannot connect. The compositor 679e93d (cas12) lets a debug-inject build's `--system-dir` floor name such a
   program by its `readlink -f` path; the cas13 lane makes the same build read `DIR/desktop-callers.toml` (owned by the person, not group or world
@@ -584,7 +584,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   `safe` before `bardo-compositor --safe`, in the user manager's environment (`systemctl --user set-environment`, the route `COMPOSITOR_SESSION_ARGS` takes; sill.service reads the
   manager's environment when it starts, and so does a restart by the manager) and exported for the nested test path; both variables are unset at every way out
   (`unset_session_args`). The reader is sill: it must skip `updater confirm` when the variable is `safe` (interface ask to the sill lane, below in the report: sill's `release.rs`).
-  Until sill lands that, nothing changes for the person. Test: `scenarios/session-crash-guard.sh` (the fake the compositor logs the variable: three `normal`, then `safe`; the sill
+  Until sill lands that, nothing changes for the person. Test: `scenarios/session-crash-guard.sh` (the fake compositor logs the variable: three `normal`, then `safe`; the sill
   stand-in sees `normal`). The non-nested `set-environment` call is not covered by a test (the scenario runs without a user manager).
 - **NEW-PI-1: every trusted unit throws away the loader variables, and the portal frontend gets a drop-in.** peephole proves `Full` only when a unit's `UnsetEnvironment=`
   holds all 22 names of `LOADER_VARIABLES` (peephole-core `facts.rs`), and the compositor and the portal require `Full`; the distro's `xdg-desktop-portal.service` has none, so

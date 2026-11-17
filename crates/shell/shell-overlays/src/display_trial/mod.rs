@@ -2,7 +2,7 @@
 //!
 //! When a program other than the shell changes the displays, the compositor applies the change and
 //! asks whether to keep it, going back by itself if the person does not say so in time (a bad mode
-//! can blank the screen). The question is the Mac's: Bardo's `Alert` "Keep these display settings?"
+//! can blank the screen). The question is the Mac's: the UI kit's `Alert` "Keep these display settings?"
 //! centred on the sheets' output over an Overlay layer that takes the keyboard, with a line under
 //! the headline that counts the seconds down ("Reverting in 15 seconds", changed every second).
 //! Revert comes first, so it is the default (Return) and the button Escape presses; Keep Changes
@@ -15,7 +15,7 @@
 //!
 //! No trial takes an answer for [`QUESTION_ARM_AFTER`](crate::arming::QUESTION_ARM_AFTER) after
 //! it is drawn, the permission sheet's wait: the buttons are disabled and Return, Escape and
-//! clicks do nothing until then (Bardo's `Alert` `arm_after`).
+//! clicks do nothing until then (the UI kit's `Alert` `arm_after`).
 
 mod io;
 mod surface;

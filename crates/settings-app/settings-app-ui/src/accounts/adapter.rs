@@ -1,4 +1,4 @@
-//! The pieces of the Accounts pane that Bardo's R2a release changes (button roles, a controlled
+//! The pieces of the Accounts pane that the UI kit's R2a release changes (button roles, a controlled
 //! plain text field, initial focus on an alert). Every use of them in the pane goes through here,
 //! so the switch to R2a is these few lines and nothing else.
 

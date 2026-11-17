@@ -5,7 +5,7 @@
 #
 #   scripts/dev/accept-scroll.sh              builds demo_scroll, runs the steps, stops everything
 #   SCROLL_TRACE=1 scripts/dev/accept-scroll.sh   the same with WAYLAND_DEBUG=1 on demo_scroll
-#   COMPOSITOR=the compositor scripts/dev/accept-scroll.sh   the same on the compositor, in a jail
+#   COMPOSITOR=bardo scripts/dev/accept-scroll.sh   the same on the compositor, in a jail
 #
 # On the compositor `axis vertical 15` is one wheel detent (axis_source wheel, value120 120): the same
 # 60 px per detent is asserted, now from the compositor's own value120.

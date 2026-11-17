@@ -1,4 +1,4 @@
-# Bardo design docs
+# The UI kit design docs
 
 These documents are the canonical UX specification for Bardo (design system), layer-shell-host
 and sill (the shell), mailo and every bundled app. Agents build from them; reviewers check

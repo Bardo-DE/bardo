@@ -1,6 +1,6 @@
 [package]
 name = "ui-harness"
-description = "Test driver for bardo documents on Blitz: Harness, Clock::Virtual, snapshots, painters. Dev-only."
+description = "Test driver for UI kit documents on Blitz: Harness, Clock::Virtual, snapshots, painters. Dev-only."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -49,7 +49,7 @@ serde = { workspace = true, features = ["derive"] }
 
 [features]
 default = ["desktop"]
-# Desktop integration of Bardo crates this one uses (design/36 section 1).
+# Desktop integration of UI kit crates this one uses (design/36 section 1).
 desktop = ["ui-blitz/desktop"]
 # `pdf_app` and `Harness::pdf`: a harness's document printed as it is now.
 pdf = ["ui-blitz/pdf"]

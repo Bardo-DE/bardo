@@ -1,6 +1,6 @@
 //! `NoteCard` on its own, as a banner and as a notification center row, SSR-rendered inside a
-//! `Ds`: it is Bardo's `NotificationCard` with bardo-shell's words: the app's name, the age, the
-//! summary, the body as Bardo's runs, every action but `default` as a button, a group's count
+//! `Ds`: it is the UI kit's `NotificationCard` with bardo-shell's words: the app's name, the age, the
+//! summary, the body as the UI kit's runs, every action but `default` as a button, a group's count
 //! and layers, the plate's id; a center row paints the Popover material, and an inverse banner
 //! the other scheme.
 

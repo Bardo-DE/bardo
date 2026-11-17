@@ -3,7 +3,7 @@
 use base_fs::{ReadCap, ReadError, read_text_capped};
 use std::path::Path;
 
-/// The most a settings file may hold: the cap Bardo's own settings reader uses. Hand-edited
+/// The most a settings file may hold: the cap the UI kit's own settings reader uses. Hand-edited
 /// settings are a few KiB; a megabyte is already a mistake, and a bigger file (or a pipe or a
 /// device pointed at by a link) must not stall the window, which reads it on its own task.
 pub(crate) const SETTINGS_CAP: ReadCap = ReadCap::mib(1);

@@ -1,5 +1,5 @@
 //! What the polkit prompt draws and sends: nothing while the agent has no request or the
-//! banners are elsewhere; with one, Bardo's `PolkitPrompt` on a narrow centred sheet over the
+//! banners are elsewhere; with one, the UI kit's `PolkitPrompt` on a narrow centred sheet over the
 //! full-output modal scrim (the action's sentence, the identity asked for, the details); Enter
 //! sends the typed text as the answer and Escape a dismissal; a wrong try shakes; a request
 //! that goes plays the sheet out and draws nothing once it has settled.

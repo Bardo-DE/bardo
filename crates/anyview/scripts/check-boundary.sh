@@ -54,7 +54,7 @@ cd "$(dirname "$0")/.."
 # anyview-platform is the edge: it alone names the bus and the freedesktop formats (checked for every
 # other crate further down), and it reaches no UI, GPU, decoder, player or highlighter. It runs on
 # the binary's tokio runtime (zbus's tokio feature) and spawns nothing itself.
-# anyview-peek is the light tier the launcher links: its `pane` feature draws with Bardo's `ds` and `ui-blitz` (so
+# anyview-peek is the light tier the launcher links: its `pane` feature draws with the UI kit's `ds` and `ui-blitz` (so
 # Blitz, the renderer and, through `ui-blitz`, `wgpu` and pdfrum are in its tree) but never libmpv or
 # D-Bus, and never libav or libmpv: its `media` feature reads a recording's facts and
 # cover art with pure-Rust parsers (symphonia, mp4parse, matroska-demuxer), and a video's frame comes
@@ -167,7 +167,7 @@ DIRECT=(
 # ui-helpers (the catalog and PackageKit install, named by the binary); everything else they use was already in the tree.
 # Single instance without D-Bus adds three: the service locator, interprocess (its Unix socket and named pipe
 # transport) and doctest-file (interprocess's proc macro), which the portable build needs and the Linux
-# desktop build links as well. Hiding what the platform cannot do adds one: ui-desktop (Bardo's capability
+# desktop build links as well. Hiding what the platform cannot do adds one: ui-desktop (the UI kit's capability
 # probe: whether PackageKit answers, so an Install... is offered only where it can work; it has no
 # dependency of its own without its `dbus` feature, which `desktop` turns on, and then only the
 # zbus already in the tree). anyview-peek is 591 since Bardo v0.2.22: `ds` itself now depends on `ui-desktop` (the capsule and menus ask which desktop services answer), so the
@@ -218,7 +218,7 @@ DIRECT=(
 # ui-motion and ui-style along; the PDF page and the pane's size now have headless types of the peek's
 # own and `ds` is the `pane` feature's), with no renderer, no window system, no dioxus and no encoder.
 # It reaches none of HEADLESS_FORBIDDEN, and CI builds it on macOS and Windows.
-# Bardo's ui-helpers (capped reads and atomic writes, for anyview-fs, -store and -platform) adds
+# The UI kit's ui-helpers (capped reads and atomic writes, for anyview-fs, -store and -platform) adds
 # ui-helpers and base-time everywhere, and to the headless peek toml with serde_spanned and toml_writer
 # too (its catalog is TOML): the headless budget rose by five, the others by one or two.
 # porter 063e9db's account-dbus checks callers through peephole (peephole, -core and -bus) instead of
@@ -496,7 +496,7 @@ for dir in crates/*/ plugins/*/; do
 done
 # anyview-platform reaches the bus and the freedesktop entry readers only through its opt-in `desktop`
 # feature (ARCHITECTURE.md section 2e): with it off, none of them is in its tree. This is the
-# crate's own tree; Bardo's `ui-settings` still brings zbus into the binary's until Bardo's portable
+# crate's own tree; the UI kit's `ui-settings` still brings zbus into the binary's until the UI kit's portable
 # build lands, and that is not the platform crate's doing.
 for dep in zbus ashpd freedesktop-desktop-entry memfd; do
   if cargo tree -p anyview-platform --no-default-features -e normal,build -i "$dep" 2>/dev/null | grep -q .; then
@@ -506,7 +506,7 @@ for dep in zbus ashpd freedesktop-desktop-entry memfd; do
 done
 echo "portable build holds: anyview-platform --no-default-features reaches none of zbus ashpd freedesktop-desktop-entry memfd"
 
-# The machines are pure: their source names no view, no Bardo component, no decoder, no disk, no thread
+# The machines are pure: their source names no view, no UI kit component, no decoder, no disk, no thread
 # and no clock. The effects are carried out by anyview-ui's `io`, `families` and `views`. Every file of
 # anyview-machines is held to it, and the crate's tree must hold no dioxus (the loop above says the same
 # of the whole tree; this line names the one the audit asked for).

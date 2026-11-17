@@ -1,7 +1,7 @@
 [package]
 publish.workspace = true
 name = "key-remap-client"
-description = "A program's end of the key remap daemon: the socket client, and KeyRemapSource, this desktop's the chord keymap keymap source (conventions, the desktop's own bindings and the person's keymap file)"
+description = "A program's end of the key remap daemon: the socket client, and KeyRemapSource, this desktop's chord keymap source (conventions, the desktop's own bindings and the person's keymap file)"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

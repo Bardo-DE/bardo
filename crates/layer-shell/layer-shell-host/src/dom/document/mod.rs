@@ -30,12 +30,12 @@ use layer_shell_hooks::HostRoot;
 /// The host's user-agent stylesheet, added to every document. A sized root is what lets Blitz
 /// hit-test into the content at all (with `html,body` at zero height, hover never reached
 /// the dock icons), and a transparent body is what lets blur and the
-/// desktop show through. Margins and the rest of the reset come from Bardo's `css/reset.css`.
+/// desktop show through. Margins and the rest of the reset come from the UI kit's `css/reset.css`.
 pub(crate) const UA_STYLESHEET: &str = "html,body{height:100%;background:transparent}";
 
 /// Zero `<body>`'s margin, added to every document the host builds (the headless path too):
 /// Blitz's default stylesheet gives it `margin: 8px` (`blitz-dom/assets/default.css`), which
-/// kept a bare document, one without Bardo's reset, from ever reaching its surface's (0, 0)
+/// kept a bare document, one without the UI kit's reset, from ever reaching its surface's (0, 0)
 /// corner. A user-agent sheet, so any rule of the document's own wins.
 pub(crate) const BODY_RESET: &str = "body{margin:0}";
 
@@ -73,7 +73,7 @@ pub(crate) struct SurfaceDocument {
     last_move: LastMove,
     /// The document's shell provider, for `resolve`'s IME repair.
     shell: Arc<HostShellProvider>,
-    /// The readings components take after every resolve (Bardo's `use_resolved`), provided as
+    /// The readings components take after every resolve (the UI kit's `use_resolved`), provided as
     /// a root context and run by `resolve`.
     after: AfterResolve,
 }

@@ -8,7 +8,7 @@ use ui_components::prelude::*;
 /// What the scrim draws: its opacity and whether it is dimming.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct DimScene {
-    /// The scrim's opacity at rest while dimmed, Bardo's `IdleDim.level`.
+    /// The scrim's opacity at rest while dimmed, the UI kit's `IdleDim.level`.
     pub level: Percent,
     pub phase: IdleDimPhase,
 }

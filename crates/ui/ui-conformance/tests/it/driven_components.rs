@@ -22,7 +22,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-/// Wraps a test's content in the root every Bardo surface draws inside.
+/// Wraps a test's content in the root every UI kit surface draws inside.
 #[component]
 fn Root(children: Element) -> Element {
     rsx! {

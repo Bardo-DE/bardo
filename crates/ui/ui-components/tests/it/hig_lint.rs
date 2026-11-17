@@ -1,6 +1,6 @@
 //! The HIG guardrails (design/27-HIG-PARITY.md section 7, H0): one passing and one failing case
 //! per warning rule, that they stay warnings (never in `stylesheet` or `markup`, never failing
-//! `assert_clean`), that Standard does not run them, and Bardo's own stylesheet under them.
+//! `assert_clean`), that Standard does not run them, and the UI kit's own stylesheet under them.
 
 use ui_lint::{
     Exception, LintConfig, Offence, Profile, Rule, Severity, WARNINGS, assert_clean, markup,
@@ -280,7 +280,7 @@ fn an_exception_covers_a_warning() {
     assert_clean(".row { cursor: pointer; }", &config);
 }
 
-/// Bardo's own stylesheet under the guardrails: every warning left is named here with its
+/// The UI kit's own stylesheet under the guardrails: every warning left is named here with its
 /// reason, so a new one fails this test (Bardo is held to them now; consumers are warned).
 #[test]
 fn bardo_own_sheet_warns_only_where_reviewed() {

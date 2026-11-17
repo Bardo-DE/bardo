@@ -1,4 +1,4 @@
-//! The low-level device calls the key remap daemon daemon and its device-test harness both make: the
+//! The low-level device calls the key remap daemon and its device-test harness both make: the
 //! evdev and uinput ioctls behind safe handles (`sys`), and reading a nonblocking event node
 //! until it has nothing queued (`drain`). No `unsafe`, no key remap daemon concepts: raw codes and bytes
 //! in, `io::Error` out.

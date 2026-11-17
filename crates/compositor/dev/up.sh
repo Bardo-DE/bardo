@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts one headless the compositor session inside the jail: a private dbus-daemon on
+# Starts one headless compositor session inside the jail: a private dbus-daemon on
 # dev/private-bus.conf (session and system bus), fake-logind on it, then
 # `bardo-compositor --backend headless --clock stepped` with --outputs from the arguments; waits for the
 # socket and writes the run's env file (WAYLAND_DISPLAY, DBUS_SESSION_BUS_ADDRESS, pids) under

@@ -1,10 +1,10 @@
 //! The effects end of the thumbnail: feed [`step`] and carry out what it returns. The hold is
-//! Bardo's timer (`ui_components::base::time::clock::sleep`, for the thumbnail hold or the banners' rest after a
+//! The UI kit's timer (`ui_components::base::time::clock::sleep`, for the thumbnail hold or the banners' rest after a
 //! hover, never a literal), one at a time and a task of the thumbnail's own scope; `Show` maps
 //! the surface, `Hide` unmaps it, `Leave` tells the service; a drag out is a task of the same
 //! scope awaiting layer-shell-host's outcome. `TakeKeyboard` asks the compositor for the keyboard
 //! (`Exclusive`, the one mode that takes it without a click), marks the seat's modality as the
-//! keyboard's so Bardo's focus ring shows before the first key, and focuses the picture;
+//! keyboard's so the UI kit's focus ring shows before the first key, and focuses the picture;
 //! `ReleaseKeyboard` sets the mode back to `None`. While hidden no task runs.
 
 use std::time::Duration;
@@ -29,7 +29,7 @@ use super::ghost::GhostLook;
 use super::picture::ThumbPicture;
 use super::step::{DragEnd, ThumbExit, ThumbIn, ThumbOut, ThumbParams, ThumbState, step};
 
-/// The card's press target, the element the keyboard lands on (Bardo's `ShotThumbnail`).
+/// The card's press target, the element the keyboard lands on (the UI kit's `ShotThumbnail`).
 const PICTURE: &str = ".ds-shot-picture";
 
 /// How long a drag out of the card may run before it is taken as lost.
@@ -71,7 +71,7 @@ impl Thumb {
         }
     }
 
-    /// Carry shot `id`'s file out of the surface (Bardo's card said a press crossed its drag
+    /// Carry shot `id`'s file out of the surface (the UI kit's card said a press crossed its drag
     /// threshold; the press is still down), its ghost drawn in `look`, and feed the machine the
     /// outcome when the drop or the cancel comes back. Without a host (a test, an SSR render)
     /// the drag is refused at once.

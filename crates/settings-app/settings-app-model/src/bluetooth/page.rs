@@ -1,4 +1,4 @@
-//! The page's place among the pages: Bardo declares it by the id `bluetooth`.
+//! The page's place among the pages: the UI kit declares it by the id `bluetooth`.
 
 use settings_types::schema::Page;
 

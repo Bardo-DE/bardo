@@ -132,7 +132,7 @@ mod keep {
 }
 
 mod kept_click {
-    //! A click a Bardo control keeps to itself still moves the keyboard (mailo, against v0.1.10).
+    //! A click a UI kit control keeps to itself still moves the keyboard (mailo, against v0.1.10).
     //!
     //! A strip button, a row's disclosure triangle and anything in its trailing slot stop their
     //! click, so it never reached `Ds`'s click-focus fallback; Blitz then cleared the focus (or,

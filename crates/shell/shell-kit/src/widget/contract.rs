@@ -3,7 +3,7 @@
 //! A
 //! widget is data in, content out: it names its kind and the sizes it draws, gives a placeholder
 //! entry for a size, and draws an entry at a size. It never draws its card: the corner, the
-//! inset and the title row are Bardo's ([`crate::widget::card::WidgetCard`]),
+//! inset and the title row are the UI kit's ([`crate::widget::card::WidgetCard`]),
 //! so every widget, ours and other apps', sits on the same card.
 
 use crate::widget::kind::{WidgetSize, WidgetTitle};

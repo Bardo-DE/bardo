@@ -5,7 +5,7 @@ restyles, delete it and they return to the design system's own look. `bardo-shel
 reports what is wrong or worth knowing in it.
 
 Every surface's root carries `data-surface`, so `.ds[data-surface=bar]` is the bar's root. The rest of the public
-selector surface (component classes, attribute axes, token variables) is Bardo's `docs/selectors.md`.
+selector surface (component classes, attribute axes, token variables) is the UI kit's `docs/selectors.md`.
 Token overrides are the recommended form: `.ds { --accent: ... }` restyles every surface at once.
 
 Renaming a surface below is a breaking change for your file, so it is named in the release notes.
@@ -36,7 +36,7 @@ Renaming a surface below is a breaking change for your file, so it is named in t
 | `empty-trash` | the question before the Trash is emptied: "Are you sure you want to permanently erase the items in the Trash?" with Cancel (the default) and Empty Trash |
 | `permission` | the permission sheet (an app asks, through the portal, to take a screenshot or control the computer; Allow or Don't Allow) |
 | `switcher` | the app switcher |
-| `spaces-bar` | Mission Control's Spaces bar (the Spaces of the output across the top, each over a picture of the Space on the output's wallpaper, and a plus that lights under a dragged window; styled by Bardo's `.ds-spaces-bar-*` classes, `img.ds-spaces-bar-backdrop` is the wallpaper, `.ds-spaces-bar-add[data-drop=target]` the lit plus) |
+| `spaces-bar` | Mission Control's Spaces bar (the Spaces of the output across the top, each over a picture of the Space on the output's wallpaper, and a plus that lights under a dragged window; styled by the UI kit's `.ds-spaces-bar-*` classes, `img.ds-spaces-bar-backdrop` is the wallpaper, `.ds-spaces-bar-add[data-drop=target]` the lit plus) |
 | `split-picker` | the Split View picker (which window fills the other half) |
 | `force-quit` | Force Quit Applications (the list of running apps and the question before one is ended) |
 | `wallpaper` | the wallpaper |

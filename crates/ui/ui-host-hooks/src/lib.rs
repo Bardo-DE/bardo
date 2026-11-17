@@ -1,4 +1,4 @@
-//! What a Bardo component calls on the document that hosts it, without linking the renderer that
+//! What a UI kit component calls on the document that hosts it, without linking the renderer that
 //! hosts it: `provide_host` (a root's document host), the crash guard for the person's styles
 //! (`StylesGuard`), the resolved tokens of an element (`use_resolved`, `use_tokens`), the system
 //! clipboard (`clipboard`), the runtime spawner (`TokioSpawner`), and what a window's root may ask

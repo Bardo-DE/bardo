@@ -1,4 +1,4 @@
-//! The companion's wire as Bardo's view types.
+//! The companion's wire as the UI kit's view types.
 //!
 //! Bardo may not name an agent crate, so each wire type that has a view (an effect, a run's state,
 //! an answer, a plan, a form, a footer) is converted here, by a total function pinned by a

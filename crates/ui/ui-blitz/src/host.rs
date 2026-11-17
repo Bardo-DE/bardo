@@ -12,7 +12,7 @@
 //!   geometry and IME through its edit part (`crate::edit`).
 //! - Under `FocusFallback::Ancestor` (the default), the host's click-focus part: a click on
 //!   nothing focusable leaves the keyboard on the nearest focusable ancestor, and a click a
-//!   Bardo control kept to itself on the pressed control (`crate::click_focus`),
+//!   The UI kit control kept to itself on the pressed control (`crate::click_focus`),
 //!   and so does the removal of the focused element (`crate::focus_keep`), looked at on every
 //!   window event before the document hears it, so a key after a menu closed reaches the app.
 //! - IME events: dioxus-native-dom drops them, but this window hook hears each winit event

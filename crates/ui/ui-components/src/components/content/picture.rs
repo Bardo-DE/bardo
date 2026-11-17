@@ -5,7 +5,7 @@
 //! the 16:10 of a screen); the picture is cropped to it and never stretched. The corner radius is
 //! `--r-media`.
 //!
-//! The alt text is required: it is the picture's accessible name. Bardo never fetches, so the
+//! The alt text is required: it is the picture's accessible name. The UI kit never fetches, so the
 //! source is an [`ImageSource`] (a `data:` URI or a `file:` URL).
 //!
 //! Markup: `div.ds-picture[data-shape]` of `img.ds-picture-image`.

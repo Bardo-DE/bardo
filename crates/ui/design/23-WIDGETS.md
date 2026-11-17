@@ -125,7 +125,7 @@ with confidence (H high, M medium, L low):
 | F5 | Whether the number counts through every integer or rolls its digits once | not seen for this widget; F2 suggests a digit roll | L |
 | F6 | The charging bolt's arrival relative to the sweep | not seen | L |
 
-**What Bardo does** (section 4.1): the arc sweeps from twelve over `--t-fill` (800 ms, at the slow end of F4's
+**What the UI kit does** (section 4.1): the arc sweeps from twelve over `--t-fill` (800 ms, at the slow end of F4's
 default spring and well under F1's 1.8 s sample; a guess, not a measurement) at `--e-out`
 (deceleration without overshoot: principle 2 of design/05 keeps springs for contact, and a ring
 past its level would claim charge the battery has not got). The figure counts through the whole
@@ -209,7 +209,7 @@ The widget style's name is **Flat, bright, measured** (proposed 2026-09-26, the 
 Sizes (`02-TYPE.md`): `--fs-dial` 9 and `--fs-dial-large` 18 (the numerals, M18, M19),
 `--fs-widget-figure` 20 (a battery's percentage in a row, M15), `--fs-widget-hero` 47 (a small
 battery's percentage, M13), each set so the display face's cap (.66 em) matches the measured cap.
-These are the prototype's (Editorial) sizes; for Inter Display (cap .7275 em) Bardo's sheet uses
+These are the prototype's (Editorial) sizes; for Inter Display (cap .7275 em) the UI kit's sheet uses
 8, 16.5, 18 and 42.5, the same caps (`02-TYPE.md` section 4.1).
 The third pass's `--soft-*` tokens are removed.
 
@@ -437,7 +437,7 @@ only), and a search found no capture to measure, so the row rule is from use of 
 from pixels. The fixed-six-rows alternative was rejected: it is the "third left empty" the user
 reported, for every five-week month.
 
-**What Bardo draws** (design/04-COMPONENTS.md section 39, the compact table): the header 14 and
+**What the UI kit draws** (design/04-COMPONENTS.md section 39, the compact table): the header 14 and
 the heads 12 keep their heights; the weeks share the rest evenly (19.67 for six weeks, 23.6 for
 five); seven 20 columns across the 140; the number centred in its row with the 20 disc; the
 weeks run 4 past the content box so the ink's insets come out even (top 15.2, left 16.5, right
@@ -504,7 +504,7 @@ draws it.
 5. **Filled device glyphs**: a new filled set, abstract and on the Lucide grid, not copies of the
    reference's symbols (section 4.4, `DeviceGlyph`).
 6. **Every widget card is tinted by the Space** (history: retired 2026-10-02, 1.0; neutral plates now): `CardTint::Space` is the
-   default, laid by Bardo's card and never by a widget; a notification-center tile lays no
+   default, laid by the UI kit's card and never by a widget; a notification-center tile lays no
    second gradient on the center's already tinted popover. The widget's own accent text takes a
    title colour chosen for the see-through card (section 4.3, sill Q412: two options rendered,
    the user picks). `CardTint::Material` stays for a comparison page.
@@ -516,7 +516,7 @@ draws it.
    tint stay queued for the Calendar app.
 
 And the card became an interface (section 9): every widget, ours and other apps', plugs in
-through one trait and is drawn only on Bardo's card; the person chooses which widgets go where
+through one trait and is drawn only on the UI kit's card; the person chooses which widgets go where
 through a gallery, and the choice is data.
 
 ## 7. Sources
@@ -687,7 +687,7 @@ pub struct WidgetContext<I> { pub size: WidgetSize, pub host: WidgetHost, pub wa
 - **A size a widget does not draw** is never asked of it: `fit::<W>(size)` holds it to the first
   of `W::sizes()`.
 
-### 9.3 The card is Bardo's (`WidgetCard`)
+### 9.3 The card is the UI kit's (`WidgetCard`)
 
 `WidgetCard { widget, timeline, size, host, wake, id, onrefresh, onintent, lift }` is the only
 way a widget is drawn. It owns the `WidgetFrame`: the footprint on the grid unit, the corner
@@ -695,13 +695,13 @@ way a widget is drawn. It owns the `WidgetFrame`: the footprint on the grid unit
 center), the Space's tint (section 6 item 6), the title row (`W::title`), `data-widget` (the
 kind), and the lift (9.8). A widget draws only its content inside the body; it writes no CSS
 for the card and cannot reach it. The compositions the shell used to lay out (the batteries'
-solo, grid and row; the clocks' row with its notes) are Bardo's views now (`widget/views.css`).
+solo, grid and row; the clocks' row with its notes) are the UI kit's views now (`widget/views.css`).
 
 ### 9.4 The registry (`WidgetRegistry`)
 
-`WidgetRegistry::bardo()` holds Bardo's three; a host adds its own and the apps' with
+`WidgetRegistry::bardo()` holds the UI kit's three; a host adds its own and the apps' with
 `.with::<W>()` (a kind registered twice is `TakenKind`) and provides it with
-`provide_widget_registry`; `use_widget_registry` reads it (Bardo's own when none is provided).
+`provide_widget_registry`; `use_widget_registry` reads it (the UI kit's own when none is provided).
 Each `WidgetInfo` carries the kind, name, description and sizes, and draws the widget's card
 with its preview entry at any size, lifted or not, without its type: what the gallery shows.
 Each also carries **one size per host** (`WidgetInfo::size_in(host)`, from `Widget::size_in`;
@@ -736,7 +736,7 @@ An app that is not linked into the shell provides a widget the same way, across 
 `ds::widget::wire` is the format, with a round-trip test; the bus, the templates and the
 remote-kind registry are the pass that builds out-of-process widgets.
 
-### 9.6 Bardo's own widgets on the contract
+### 9.6 the UI kit's own widgets on the contract
 
 | Widget | Kind | Sizes | Entry | Intent |
 | --- | --- | --- | --- | --- |
@@ -824,7 +824,7 @@ use, no frame-accurate recording found).
   thrown). At rest nothing runs. The gallery lifts the size picked with the same `Lift`.
 - **`WidgetSlotGuide { size, host }`**: the footprint of a `size` widget, a quiet plate
   (`--line` fill and hairline) in the card's corner, faded in (`a-fade`) as the drag reaches the
-  cell, `aria-hidden`. The host places it at the snap cell; Bardo draws it.
+  cell, `aria-hidden`. The host places it at the snap cell; the UI kit draws it.
 
 Both settle to zero frames (sill's ui-conformance/tests/widget_edit.rs, on the virtual clock).
 

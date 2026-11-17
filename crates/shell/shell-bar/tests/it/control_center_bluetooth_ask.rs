@@ -1,6 +1,6 @@
 //! Asking before Bluetooth goes off: on the real control center in a
 //! Bardo `Popover`, on the fake services, on the virtual clock with a pinned appearance. A press
-//! that would turn Bluetooth off, on its tile or the pane's switch, shows Bardo's inline `Alert`
+//! that would turn Bluetooth off, on its tile or the pane's switch, shows the UI kit's inline `Alert`
 //! over the panel and sends nothing; Escape, Cancel and a press on the scrim leave it on; Turn
 //! Off and Return turn it off; turning it on asks nothing. Nothing here reaches a real radio.
 

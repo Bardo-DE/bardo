@@ -785,7 +785,7 @@ is required so the global focus ring does not double the accent ring.
 - `TextInputKind::File`: the chosen name in a read-only `span.ds-input[data-kind=file]` (a
   `role=textbox`, `aria-readonly`) and a Tool `IconButton` (folder, titled "Choose…", named
   "{label}: Choose…") after it, gap 6. Blitz has no file picker (blitz-dom's `file-input` feature
-  is off in Bardo's pin, and even on it only draws a Browse button), so a click on either calls
+  is off in the UI kit's pin, and even on it only draws a Browse button), so a click on either calls
   `on_pick` and the host opens its own chooser and hands the name back as `value`.
 - `TextInputKind::Multiline { rows: Rows(n), grow: Grow::{Fixed, ToContent} }`: a `textarea`
   with `rows`, `height:auto`, no resize handle. blitz-dom makes a `textarea` a multiline text
@@ -3237,7 +3237,7 @@ rule for both schemes, written inline as `--plate-base-l`/`-deep-l`/`-ink-l` and
 **Purpose.** One month of days in seven columns: the calendar widget of the notification center
 and the desktop (design/20 section 1.12, "month grid (new ds component `MonthGrid`)"; section
 1.14). The shell computes the month (which days, which column comes first, which day is today,
-which days have an event, the ISO week of each row); Bardo only draws it (sill Q180). Its data
+which days have an event, the ISO week of each row); the UI kit only draws it (sill Q180). Its data
 mirrors the shell's grid field for field, so the shell's mapping is a plain `From`.
 
 **Markup.**
@@ -4105,7 +4105,7 @@ pub struct SpellConfig { pub dictionaries: Vec<PathBuf>, pub user: PathBuf }
 | `--spell-mark` | the danger hue at full strength: `#E9152D` light, `#FF4245` dark | proposed: a dot a few pixels across needs all its chroma to read as red |
 | Mark height | half the line box plus .62 em, so the dots sit just under the descenders whatever the line height | proposed |
 | Debounce | `DelayToken::SpellDebounce`, 300 ms after the last input or caret move | proposed |
-| Menu | Bardo's context `Menu` at the pointer (or under the caret for the key): up to 5 suggestions (`No Guesses Found` when none), a rule, `Ignore Spelling`, `Learn Spelling` | the reference's spelling items |
+| Menu | The UI kit's context `Menu` at the pointer (or under the caret for the key): up to 5 suggestions (`No Guesses Found` when none), a rule, `Ignore Spelling`, `Learn Spelling` | the reference's spelling items |
 | Language | the surface's `lang`, else the host's: `LC_ALL`, else `LANG`; a region with no dictionary falls back (`en_NZ` → `en_US`, `de_CH` → `de_DE`) | proposed; the list setting is not in design/22 yet |
 | User dictionary | `$XDG_DATA_HOME/bardo/spelling/<lang>.dic`, one word per line | proposed |
 
@@ -4410,7 +4410,7 @@ positioned ancestor, so render it last in that container.
 permission) must not be answered by a keypress or click already in flight when it appeared. With a
 delay the alert is unarmed until it passes: the buttons are `Availability::Disabled` (dimmed, no
 hover or press), and Return, Escape, Space and clicks do nothing, Escape included (it neither
-dismisses nor reports a dismissal). The delay is an `Arming` state machine on Bardo's clock
+dismisses nor reports a dismissal). The delay is an `Arming` state machine on the UI kit's clock
 (`alert_model`), started when the alert mounts, and the keyboard moves to the default button when
 it arms. Unset, the alert is armed at once and is as above.
 
@@ -4503,7 +4503,7 @@ suggestion.
 | O-17 | Accent count | Plan: "Accent(6)" in the gallery and a moved test named "exactly-four-accent". | 03-COLOR decides; the picker renders the table. |
 | O-18 | S vs C contradictions | Resolved "S wins" in each section; listed here so nobody re-opens them silently: strip buttons 26 vs 28, gap 3 vs 4, icons 14 vs 15; star inset 6/7 vs 8/8, icon 14 vs 15; icon stroke 2 vs 1.7/1.8; toast hidden 160% vs 140%, hint opacity .7 vs .72; seg padding 5/11 12px vs 6/13 12.5px; Primary padding 14 vs 15; palette 540 vs 420, top 11% vs 14%, input 16 vs 14.5, list 360 vs 252, enter `peek-in` vs `cmdk-in`; peek inset `36px 12%` vs `34px 10%`, `peek-in` .95/12px vs .97/10px; scrim `--scrim` vs ink .16; row dot top 6 vs 5; stagger cap none (S, first show only; ds caps 12) vs 8; sidebar item radius 9 on the frame vs `--r-chip` on the card, seal -7 in `--f-ink` vs -10 in `--seal`; toast click-to-undo |dx| < 3 vs dx == 0; send ring 20 vs 22. | S wins, as written in each section. |
 | O-19 | Field plane | No canvas in Blitz. | PNG per scheme generated in Rust (static per scheme), handles as divs. |
-| O-20 | Send ring animation | SVG `stroke-dashoffset` transition likely does not run in Blitz. | Rust drives `Fraction` per frame; fallback a custom Widget. The ring carries `data-ds-svg="ring"`, so the markup lint knows it is Bardo's own vector (Gallery fixes B). |
+| O-20 | Send ring animation | SVG `stroke-dashoffset` transition likely does not run in Blitz. | Rust drives `Fraction` per frame; fallback a custom Widget. The ring carries `data-ds-svg="ring"`, so the markup lint knows it is the UI kit's own vector (Gallery fixes B). |
 | O-21 | Selection source | The bubble needs a selection rect and mark states that only the composer's Rust model has. | ds owns surface + placement; mailo owns selection. |
 | O-22 | Pseudo-elements | Seal `::before`, header rule and tab underline `::after`. | Spike confirms; fallback real spans. |
 | O-23 | `::placeholder` | Not confirmed in Blitz. | Spike; fallback overlay span. |

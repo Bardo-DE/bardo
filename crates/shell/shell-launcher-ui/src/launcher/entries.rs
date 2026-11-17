@@ -1,12 +1,12 @@
-//! A launcher row's parts as Bardo's palette and menus take them (design/13 §13.3.9: a 34 px tile,
+//! A launcher row's parts as the UI kit's palette and menus take them (design/13 §13.3.9: a 34 px tile,
 //! the title, the subtitle as its detail, a trailing hint).
 //!
 //! Each row carries its chord ([`row_chord`]: its first action's, `⌘K` for actions without one,
-//! else `↵`) as Bardo's `RowChord::on_selected`, so only the selected row shows it and Bardo moves
+//! else `↵`) as the UI kit's `RowChord::on_selected`, so only the selected row shows it and Bardo moves
 //! it with the selection, as Spotlight's hint does; a row in a mixed section trails its kind. Pure.
 //!
 //! A row's tile is the icon file the app index resolved (`IconRef::File`) drawn at 48 px, as a
-//! `Symbolic` for a freedesktop `*-symbolic` file and an `Image` otherwise; else Bardo glyph
+//! `Symbolic` for a freedesktop `*-symbolic` file and an `Image` otherwise; else UI kit glyph
 //! its `IconRef::Glyph` names; else its provider's glyph.
 
 use std::path::Path;
@@ -63,7 +63,7 @@ pub fn action_entries(actions: &[Action]) -> Vec<MenuItem<ActionId>> {
         .collect()
 }
 
-/// A row's chord, shown by Bardo only while the row is the selection (Spotlight's hint): its
+/// A row's chord, shown by the UI kit only while the row is the selection (Spotlight's hint): its
 /// first action's chord, `⌘K` (the shared show-actions key) when it has actions but none has a
 /// chord, else `↵` (Enter runs it).
 pub(crate) fn row_chord(item: &Item) -> RowChord {
@@ -157,7 +157,7 @@ pub fn glyph(item: &Item) -> Icon {
 }
 
 /// Bardo icon whose kebab-case name is `name` (`power`, `wifi-low`), as `IconRef::Glyph`
-/// carries it. Bardo has no name lookup, so the variant's own name is kebab-cased.
+/// carries it. The UI kit has no name lookup, so the variant's own name is kebab-cased.
 #[must_use]
 pub fn named(name: &str) -> Option<Icon> {
     Icon::ALL

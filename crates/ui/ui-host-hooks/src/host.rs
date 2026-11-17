@@ -1,4 +1,4 @@
-//! `provide_host`, the one call that gives a root Bardo's document host, and the seam the renderer
+//! `provide_host`, the one call that gives a root the UI kit's document host, and the seam the renderer
 //! fills for a root that has none.
 //!
 //! A window, the test harness and a layer-shell surface's root all read the host the same way. A
@@ -25,7 +25,7 @@ pub fn set_standalone_host(build: StandaloneHost) {
     let _first_wins = STANDALONE.set(build);
 }
 
-/// Give this root Bardo's document host, once, before any Bardo component reads the document.
+/// Give this root the UI kit's document host, once, before any UI kit component reads the document.
 ///
 /// A root that already has a host (a window's, the harness's) keeps it, so a component calling this
 /// under one takes what the window wired. A shell surface's root has none: it is built by the

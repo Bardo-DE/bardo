@@ -19,7 +19,7 @@ How to read this file:
 | "agent", "planner", "agent-loop", "companion daemon" | docket: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
 | "security" | labels: porter `prov`; policy, review, breaker, budgets: docket; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (stoker `model-http` already takes a proxy `HttpTarget`) |
 | "compositor" | the compositor (cua repo owns the protocol crate; the compositor branch is shared with double-tap ⌘ later) and sill (`shell-overlays` phase A) |
-| "launcher", "presence", "settings" | ux (sill, Bardo ds, the Settings app; design/22 rows by Bardo agent) |
+| "launcher", "presence", "settings" | ux (sill, the UI kit ds, the Settings app; design/22 rows by Bardo agent) |
 | "intents" | docket |
 
 ---
@@ -29,7 +29,7 @@ How to read this file:
 ### 1.1 Repos
 
 Four new library repos plus one GPL fork. Every new repo copies porter's shape: `rust-toolchain.toml`
-(1.98.1), Bardo's `deny.toml`, `rustfmt.toml`, CONVENTIONS pointer + porter additions, ARCHITECTURE.md
+(1.98.1), the UI kit's `deny.toml`, `rustfmt.toml`, CONVENTIONS pointer + porter additions, ARCHITECTURE.md
 (crate map, one-home table, recipes), FINDINGS.md (every `todo!()`), `scripts/check-boundary.sh`,
 `dbus/*.xml` checked by an introspection test. Licence MIT OR Apache-2.0 except the fork.
 
@@ -180,7 +180,7 @@ crates; each pair gets a `*_total` conversion test in `shell-ui-kit::companion`.
 | `ConfirmReceipt`, `ConfirmId`, `InputProof`, `Witness` | prov/docket-core; almanac `Confirmation` | **prov** | almanac `Settlement::Keep(ConfirmReceipt)` |
 | `ConfirmRequest`, `ConfirmAnswer`, `TaintNote`, `ConfirmOffer`, `Gesture` | action-core; ui-shell `ConfirmView/ConfirmAnswer/TaintNote/ScopeOffer` | **action-core** (wire) | ui-shell: `ConfirmView`, `ConfirmChoice` (renamed), `TaintLine` (renamed), `ScopeOffer`, + `gesture: GestureMark` |
 | `Preview` (content vocabulary) | action-core; shell-launcher `Preview` (pane selector) | **action-core** for content | sill `Preview::Intent(docket_core::Preview)`; ux `AnswerView` is a view |
-| `Fact` (label line) vs memory `Fact` | action-core `Fact`, almanac `Fact`, ds `FactList` | almanac `Fact` = a memory fact; docket's renamed **`FactLine`** | ui-shell `ConfirmView.facts` uses Bardo's FactList items |
+| `Fact` (label line) vs memory `Fact` | action-core `Fact`, almanac `Fact`, ds `FactList` | almanac `Fact` = a memory fact; docket's renamed **`FactLine`** | ui-shell `ConfirmView.facts` uses the UI kit's FactList items |
 | `Count` | account-core `Count(u32)`; ui-settings `Count(u16)` | **account-core** on wires | ui-core gains view `Tally(u32)`; ui-settings Count stays settings-only |
 | `Fraction` | ui-core | **ui-core** (view) | |
 | `ServedBy` | inference-core; ux `ServedByView`; cua `ServedByNote` | **inference-core** | cua records `ServedBy`; ux view `ServedByView` |
@@ -843,7 +843,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C26 | Esc halts/pauses (actions, cua-integration) vs Esc closes one level (ux) | ux: ⌘. and Stop stop; `HaltCause::StopKey` |
 | C27 | ux's memory method names vs memory.md | memory.md: `PlanForget`/`Forget(token)`/`Settle`/`Consolidation`/`Export(options, h)` |
 | C28 | "context area" `Summon` method | `IntentProvider1.Summon` |
-| C29 | `ui-intents` using action-client (actions) vs "Bardo never names daemon crates" (ux) | Bardo `ui-intents` is view-only; `action-ui-adapter` adapter in docket |
+| C29 | `ui-intents` using action-client (actions) vs "the UI kit never names daemon crates" (ux) | Bardo `ui-intents` is view-only; `action-ui-adapter` adapter in docket |
 | C30 | design/30 §3.4 defers companion work; new catalogue rows need the user | freeze types now; fills wait on Q-P7 |
 | C31 | Settings key duplicates | §2 last row |
 | C32 | Name collisions (Verdict, Decision, Need, Fact, Visibility, Usage, Role, Latency2, CallId, Repeat, Space, Budget, TaintNote, ConfirmAnswer, MemoryVerb, Actor) | §2 renames |

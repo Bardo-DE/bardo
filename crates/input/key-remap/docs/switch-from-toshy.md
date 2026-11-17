@@ -4,7 +4,7 @@ Written for KDE Plasma 6. The order below keeps two remappers from fighting over
 keyboard is held by one program at a time, so the key remap daemon goes in first and waits, Toshy comes off,
 and the key remap daemon takes over.
 
-**Emergency chord: hold both Shift keys and press Esc.** the key remap daemon gives the keyboards back to the
+**Emergency chord: hold both Shift keys and press Esc.** The key remap daemon gives the keyboards back to the
 kernel at once; `key_remap resume` takes them again. `sudo systemctl stop key_remap` does the same
 until the next start. Keep a terminal open throughout, and remember that Cmd is Ctrl and Ctrl is
 Super while the key remap daemon runs.

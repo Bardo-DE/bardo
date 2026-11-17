@@ -1,4 +1,4 @@
-//! The center's own Bardo controls (Clear All) show Bardo's focus ring
+//! The center's own Bardo controls (Clear All) show the UI kit's focus ring
 //! under the keyboard. The center runs the real `NotificationCenter`, whose root wraps Bardo's
 //! `Ds` under the `HostSignals` that `mount` provides; with no layer-shell-host `SurfaceHandle` (`ui_harness::Harness` has no
 //! seat) the bridge provides nothing, and the harness's own root

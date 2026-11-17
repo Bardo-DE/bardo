@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The accounts sheet's acceptance, on a private headless compositor (the compositor under
-# dev/accept.sh --compositor the compositor, else KWin, started and stopped by the script), against a
+# dev/accept.sh --compositor bardo, else KWin, started and stopped by the script), against a
 # stand-in accountd: examples/accountd_standin.rs owns `org.bardo.Accounts1` on the private bus,
 # drives bardo-shell's `org.bardo.AccountsSheet1` (Open, Update, Close) with SheetView JSON from this
 # directory's heredocs, and prints each `Input` the sheet sends back. Keys are `bardo-shell debug key

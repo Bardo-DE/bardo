@@ -13,7 +13,7 @@
 //! mid-transition bakes the colour it was built at, not the one the transition ends on). The first
 //! `follow_root` after the last transition has ended turns it back on.
 //!
-//! This is the rule of Bardo's `ui_blitz::scheme::follow_root`, written against `blitz-dom`
+//! This is the rule of the UI kit's `ui_blitz::scheme::follow_root`, written against `blitz-dom`
 //! because the host stands below the design system and may not depend on it (ARCHITECTURE
 //! section 1).
 

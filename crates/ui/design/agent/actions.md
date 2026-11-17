@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/actions.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "actions": the typed action layer and its safety core
 
-Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, Bardo design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, Bardo CONVENTIONS.md, porter (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, Bardo `ds` host seams and `toast_hub::UndoToken`.
+Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, the UI kit design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, Bardo CONVENTIONS.md, porter (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, Bardo `ds` host seams and `toast_hub::UndoToken`.
 
 This version includes the coordinator's scope addition, the **auto-mode action reviewer** (§3.9, §4.4, §5.6).
 
@@ -78,7 +78,7 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 
 **Sibling path dependencies:** `account-core` and `inference-core` (`../porter/crates/...`).
 
-**Third-party, joining Bardo's `docs/workspace-deps.toml` first**:
+**Third-party, joining the UI kit's `docs/workspace-deps.toml` first**:
 - `cedar-policy = "4.13"` (4.13.0, 2026-09-15, Apache-2.0)
 - `rmcp = { version = "3.5", default-features = false, features = ["server", "transport-io"] }` (3.5.0, 2026-09-28). Pin the minor; 3.x churns.
 - Already in the pinned block: `serde`, `serde_json`, `thiserror 2`, `toml 1`, `zbus 5.19` (tokio), `tokio 1`.
@@ -991,7 +991,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - **U3.** May the reviewer ever allow `Destructive` (proposed: only under `TrustMore` with an Authorization and untainted args), and may it ever allow tainted `Outbound` (proposed: only `TrustMore` with an Authorization)?
 - **U4.** Authorizations: is the reviewer's check of your own words enough, or should each one also get a one-time compositor confirm ("Let it archive newsletters in Work for an hour?")? Default length is 1 h, this session only.
 - **U5.** The shadow index stores third-party titles (mail subjects) outside the app. Allow it, per app opt-out, and encrypted at rest when?
-- **U6.** May Bardo's `ds` gain context reporting (`thing` props, text targets) now, despite 30 §3.4's deferral?
+- **U6.** May the UI kit's `ds` gain context reporting (`thing` props, text targets) now, despite 30 §3.4's deferral?
 - **U7.** Expose actions to external MCP clients in v1 (off by default), or not at all?
 - **U8.** Companion text replace into your field: run at once (item 9), or show a TextChange preview and wait for Apply (agent-ux P1)?
 - **U9.** Budget defaults (§3.7) and the reviewer timeout of 2 s. Is any of them yours to set rather than a setting?

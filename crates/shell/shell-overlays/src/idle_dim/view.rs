@@ -1,4 +1,4 @@
-//! The dim's render: Bardo's `IdleDim` alone in a transparent viewport root.
+//! The dim's render: the UI kit's `IdleDim` alone in a transparent viewport root.
 
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;

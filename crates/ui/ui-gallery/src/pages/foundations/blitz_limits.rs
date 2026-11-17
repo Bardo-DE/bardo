@@ -1,5 +1,5 @@
-//! Blitz limits: what Blitz cannot do and what Bardo draws instead (FINDINGS spike S1-S16), each shown
-//! working or visibly absent; and what the design names that Bardo does not draw yet, as the
+//! Blitz limits: what Blitz cannot do and what the UI kit draws instead (FINDINGS spike S1-S16), each shown
+//! working or visibly absent; and what the design names that the UI kit does not draw yet, as the
 //! gallery found it.
 
 use crate::axes::{Axes, Showcase};
@@ -14,7 +14,7 @@ use ui_components::style::icon::render::Glyph;
 use ui_core::text::clip::clip_chars;
 use ui_core::time::clock::sleep;
 
-/// Each spike finding: its id, what Blitz does, and what Bardo does about it.
+/// Each spike finding: its id, what Blitz does, and what the UI kit does about it.
 const LIMITS: [(&str, &str, &str); 16] = [
     (
         "S1",

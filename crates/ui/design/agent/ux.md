@@ -1,6 +1,6 @@
 <!-- paths: skip -->
 <!-- Reference copy of ~/rs-wt/agent-spec/ux.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
-# Area "ux": the companion's user-facing surfaces (Bardo components, sill surfaces)
+# Area "ux": the companion's user-facing surfaces (UI kit components, sill surfaces)
 
 Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, sill `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and the Settings app.
 
@@ -33,7 +33,7 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 
 ## 2. Repos and crates
 
-Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < ui-shell`. The pure sill crates sit below the sill surface crates. The daemons' wire crates are leaves that sill depends on, the same way it depends on `key-remap-proto` today. Bardo never names a companion daemon crate: its types are presentational, and sill converts wire types into props.
+Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < ui-shell`. The pure sill crates sit below the sill surface crates. The daemons' wire crates are leaves that sill depends on, the same way it depends on `key-remap-proto` today. The UI kit never names a companion daemon crate: its types are presentational, and sill converts wire types into props.
 
 | Piece | Lives in | New / existing | Notes |
 |---|---|---|---|

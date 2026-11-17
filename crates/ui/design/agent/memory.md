@@ -73,7 +73,7 @@ Why a separate repo: memory is not accounts. The three owned crates (`eventlog`,
 
 ### 2.3 Adopted externals (versions as surveyed 2026-10-02; re-check at freeze)
 
-- **From Bardo's pinned block:** serde 1, serde_json 1, thiserror 2, zbus 5.19 (tokio), tokio 1, jiff 0.2, **notify 8.2**. The ecosystem survey named notify 9.0.0-rc.5; use the pinned 8.2. A bump is a toolchain-wave decision.
+- **From the UI kit's pinned block:** serde 1, serde_json 1, thiserror 2, zbus 5.19 (tokio), tokio 1, jiff 0.2, **notify 8.2**. The ecosystem survey named notify 9.0.0-rc.5; use the pinned 8.2. A bump is a toolchain-wave decision.
 - **New lines for `bardo/docs/workspace-deps.toml` (wave 0):**
   - `rusqlite = { version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"] }`. mailo is on 0.40 `bundled`, in a separate tree, so there is no conflict. Spike S2 verifies that FTS5 is compiled in.
   - `blake3 = "1"`, `chacha20poly1305 = "0.10"` (XChaCha20-Poly1305), `zeroize = "1"`, `getrandom = "0.3"`, `tar = "0.4"`, `tempfile = "3"` (dev only).

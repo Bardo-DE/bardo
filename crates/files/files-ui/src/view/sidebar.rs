@@ -1,4 +1,4 @@
-//! The sidebar: Favorites and Locations in Bardo's source list. Under Locations, between the
+//! The sidebar: Favorites and Locations in the UI kit's source list. Under Locations, between the
 //! computer and the Trash, are the disks that are attached, each with its eject button.
 
 use dioxus::prelude::*;
@@ -16,7 +16,7 @@ use crate::cloud::drive_mark;
 use crate::places::{Heading, PlaceKey, PlaceKind, Places, cloud_key, groups, volume_key};
 use crate::state::Browse;
 
-/// The glyph of a place. Bardo has no Home, Desktop or Videos glyph yet, so the nearest stand in.
+/// The glyph of a place. The UI kit has no Home, Desktop or Videos glyph yet, so the nearest stand in.
 fn icon_of(kind: PlaceKind) -> Icon {
     match kind {
         PlaceKind::Home => Icon::Folder,
@@ -31,7 +31,7 @@ fn icon_of(kind: PlaceKind) -> Icon {
     }
 }
 
-/// The glyph of a disk. Bardo has no drive glyph yet, so a disk is a folder, and a disc a speaker's
+/// The glyph of a disk. The UI kit has no drive glyph yet, so a disk is a folder, and a disc a speaker's
 /// nearest relative, the music note.
 fn icon_of_volume(kind: VolumeKind) -> Icon {
     match kind {

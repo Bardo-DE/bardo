@@ -1,4 +1,4 @@
-//! The indicator's render: one transparent Osd root (design/20 §1.7) holding Bardo's `Osd` card.
+//! The indicator's render: one transparent Osd root (design/20 §1.7) holding the UI kit's `Osd` card.
 //! The card paints its own tinted frame, owns its own entrance and exit fade, and calls
 //! `on_hidden` once the exit has settled, so `io.rs` can unmap the surface then; bardo-shell's own
 //! hold machine (`step.rs`) only decides when the card is shown.
@@ -25,7 +25,7 @@ use shell_ui_kit::root::SurfaceRoot;
 pub const OSD_CSS: &str = include_str!("style.css");
 
 /// The level's style: the bezel's sixteen squares, as the Mac's volume and brightness keys draw
-/// them (Bardo design/29 section 16); the capsule was the iOS pill. Not a setting: the OSD has no
+/// them (the UI kit design/29 section 16); the capsule was the iOS pill. Not a setting: the OSD has no
 /// look key, and this is the one place.
 const LOOK: LevelStyle = LevelStyle::Discrete;
 

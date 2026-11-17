@@ -63,7 +63,7 @@ fn HostedStage(output: OutputInfo) -> Element {
     }
 }
 
-/// The `Ds` root; everything that needs Bardo's environment is [`LockBody`].
+/// The `Ds` root; everything that needs the UI kit's environment is [`LockBody`].
 #[component]
 fn Stage(
     output: OutputInfo,

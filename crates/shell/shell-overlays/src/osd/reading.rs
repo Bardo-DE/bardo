@@ -45,7 +45,7 @@ pub fn level_of(
     }
 }
 
-/// The level Bardo's card draws: the fill (empty when muted or unknown) and the glyph
+/// The level the UI kit's card draws: the fill (empty when muted or unknown) and the glyph
 /// `LevelControl` follows it with (a speaker's waves for volume, the sun for brightness).
 pub fn card_level(kind: OsdKind, level: Option<Level>) -> OsdLevel {
     OsdLevel {

@@ -36,7 +36,7 @@ how the agent works inside.
 5. **Coupling:** the launcher and apps couple fully: the launcher runs app actions headless, shows
    app previews, expands into compact forms, promotes into the app window.
 6. **Context** comes through the same app interface (here, the selection as typed things, what is
-   visible, the editable text target), mostly reported by Bardo components automatically.
+   visible, the editable text target), mostly reported by UI kit components automatically.
 7. **The key is a double tap of Command.** It works inside text fields and collides with nothing.
    In a field, that field becomes the prompt, keeping query, results and selection. Elsewhere, the
    launcher opens in companion mode with the focused window's context. Holding is voice (later).
@@ -176,7 +176,7 @@ and the consolidation switches are `memory.*` settings (`22-SETTINGS.md` section
 | `Page::Intelligence` | `ui-settings::schema::key` |
 
 `ui-intents` names no agent type. The adapter that converts the agent's wire to these marks
-(`action-ui-adapter`) lives in the docket repo, so Bardo never links an agent crate.
+(`action-ui-adapter`) lives in the docket repo, so the UI kit never links an agent crate.
 
 ## 8. Confirmation
 

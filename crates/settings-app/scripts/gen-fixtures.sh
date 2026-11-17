@@ -4,7 +4,7 @@
 #
 #   bardo-shell        bardo-shell --write-schema <dir>
 #   mouse-gestures  bardo-mouse-gestures --write-schema <dir>
-#   Bardo       ui-settings' `write_schema` example (Bardo has no app binary)
+#   Bardo       ui-settings' `write_schema` example (the UI kit has no app binary)
 #   inferd      ../inference/dist/inference.settings.toml (written by hand, no --write-schema yet)
 #   docket      ../actions/dist/settings/actions.settings.toml
 #   almanac     ../memory/memory-settings/schema/memory.settings.toml

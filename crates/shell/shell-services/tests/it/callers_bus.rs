@@ -150,7 +150,7 @@ async fn only_the_portal_backend_that_owns_its_name_asks_the_picker() {
 }
 
 /// A build with `dev-callers` lets in a stand-in named in the person's own rows (`Proof::Dev`) as
-/// the portal backend, and only as the role it is named for; the build without the feature has no
+/// The portal backend, and only as the role it is named for; the build without the feature has no
 /// such standing.
 #[cfg(feature = "dev-callers")]
 #[tokio::test(flavor = "multi_thread")]

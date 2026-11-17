@@ -190,7 +190,7 @@ async fn portal(connection: &Connection) -> zbus::Result<Proxy<'static>> {
 }
 
 /// The answers to the request that `handle` will name, subscribed before the call, and a watch on
-/// the portal's name so a portal that goes away is noticed.
+/// The portal's name so a portal that goes away is noticed.
 async fn answers(connection: &Connection, handle: &str) -> zbus::Result<Answers> {
     let sender = connection
         .unique_name()

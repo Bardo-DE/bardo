@@ -1,4 +1,4 @@
-//! The four coherence rules (Bardo's `CONSUMING.md` section 5) for files' window, as Bardo's
+//! The four coherence rules (the UI kit's `CONSUMING.md` section 5) for files' window, as Bardo's
 //! consumer example proves them (`examples/consumer/tests/it/coherence.rs` at the pin):
 //! 1. [`our_stylesheet_lints_clean`]: no literal design value in the window's own CSS.
 //! 2. [`rendered_markup_uses_only_styled_classes`] and [`no_raw_form_control_or_svg_is_rendered`]:
@@ -10,7 +10,7 @@
 //!    the folder.
 //! 3. Rule 3 (a missing component is added to Bardo first) is a review discipline, not a check;
 //!    the gaps are listed in the lane's report.
-//! 4. Rule 4 (motion only through Bardo's timers): the window draws no motion of its own.
+//! 4. Rule 4 (motion only through the UI kit's timers): the window draws no motion of its own.
 
 use std::sync::Arc;
 use std::time::Duration;
@@ -27,7 +27,7 @@ use ui_lint::{LintConfig, Profile, Rule, assert_clean, markup};
 
 use super::support::{RecordingOpener, harness, launch_remembering, scratch_folder};
 
-/// What `markup` needs to know is styled: Bardo's own stylesheet, plus the window's.
+/// What `markup` needs to know is styled: the UI kit's own stylesheet, plus the window's.
 fn window_css() -> String {
     // The card of Quick Look is anyview's and brings its own stylesheet, as it does at run time.
     format!(
@@ -256,7 +256,7 @@ fn our_stylesheet_lints_clean() {
     );
 }
 
-/// Rule 2: every class the page carries is one Bardo's stylesheet or the window's styles.
+/// Rule 2: every class the page carries is one the UI kit's stylesheet or the window's styles.
 #[test]
 fn rendered_markup_uses_only_styled_classes() {
     for pose in POSES {
@@ -293,7 +293,7 @@ fn no_raw_form_control_or_svg_is_rendered() {
 }
 
 /// Rule 2's inline-style half: the window writes no style attribute of its own with a literal
-/// colour or duration (Bardo's own custom properties are allowed).
+/// colour or duration (the UI kit's own custom properties are allowed).
 #[test]
 fn no_inline_style_carries_a_literal_colour_or_duration() {
     let html = page(Pose::Renaming);

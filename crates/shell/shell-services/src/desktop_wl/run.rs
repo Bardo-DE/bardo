@@ -106,7 +106,7 @@ impl Wlr {
     }
 }
 
-/// The desktop's view of `state`: Bardo state projected when the compositor is the
+/// The desktop's view of `state`: UI kit state projected when the compositor is the
 /// desktop's own, so the view and the windows come from one `DesktopState` and cannot disagree
 /// on which window is active; empty on any other compositor.
 fn desktop_of_state(state: &DesktopState) -> DesktopView {

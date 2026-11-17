@@ -1,6 +1,6 @@
 //! The four corners and the keys of the settings file that hold them.
 
-// The marker is Bardo's control name `corners` (`Control::Corners`) on the four corner keys.
+// The marker is the UI kit's control name `corners` (`Control::Corners`) on the four corner keys.
 /// The control name a schema gives the corner keys to have the sheet draw them.
 pub const HOT_CORNERS_CONTROL: &str = "corners";
 

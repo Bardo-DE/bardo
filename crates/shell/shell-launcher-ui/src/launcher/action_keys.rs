@@ -1,6 +1,6 @@
-//! A row action's key as Bardo draws it: the shortcut of the shared action it is bound to.
+//! A row action's key as the UI kit draws it: the shortcut of the shared action it is bound to.
 //!
-//! A standard action shows the chord this desktop's keymap really binds it to (Bardo's `Shortcut`
+//! A standard action shows the chord this desktop's keymap really binds it to (the UI kit's `Shortcut`
 //! is written in Mac terms and drawn through the keymap); the launcher's own actions show their
 //! default chord. The panel never reads a modifier to know which row action a key means: the keymap
 //! resolves the key to the action and the row that carries it runs (`pane_keys.rs`). Pure.

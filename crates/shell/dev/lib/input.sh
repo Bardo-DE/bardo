@@ -71,7 +71,7 @@ surface_click() {
     esac
   done
   case "$COMPOSITOR" in
-    compositor)
+    bardo)
       local reply
       reply=$(bardo-compositorctl debug inject "move $(( origin_x + x )) $(( origin_y + y ))" "sleep 60" \
         "press $button" "sleep 40" "release $button" "sleep 200") \

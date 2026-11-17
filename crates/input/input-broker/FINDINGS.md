@@ -58,7 +58,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     dev-dependency, so their tests always have it; this repo's gate runs `--all-features`, and a plain
     `cargo test` skips the client's `fake` tests.
 
-11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** the mouse gestures daemon and the key remap daemon are admitted at peephole's
+11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** The mouse gestures daemon and the key remap daemon are admitted at peephole's
     `Full` only. With no manager to ask, `identity/unit_files` supplies the unit's facts from the unit
     files and the process (ARCHITECTURE "Who may have what"). `MainPID` is taken as the caller's own pid.
     That was a residual for the mouse gestures daemon while it was a user unit (a same-user process could fill the

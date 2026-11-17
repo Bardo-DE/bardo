@@ -1,5 +1,5 @@
 //! The month grid, computed: pure over the month, the first weekday, today and the busy days,
-//! so the widget and Bardo's `MonthGrid` take the same data.
+//! so the widget and the UI kit's `MonthGrid` take the same data.
 
 use std::cmp::Ordering;
 

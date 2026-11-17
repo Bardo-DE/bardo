@@ -1,15 +1,15 @@
-//! The body as Bardo draws it: the service's parsed markup (`shell_model::notifications::Body`,
-//! `<b>`, `<i>`, `<u>`, `<a href>`) as Bardo's [`Rich`] runs.
+//! The body as the UI kit draws it: the service's parsed markup (`shell_model::notifications::Body`,
+//! `<b>`, `<i>`, `<u>`, `<a href>`) as the UI kit's [`Rich`] runs.
 //!
 //! A run has one tone in Bardo, so a run that is several at once takes the strongest: a link, then
-//! bold, then italic, then underline. The line clamp and its fade are Bardo's (`NotificationCard`),
+//! bold, then italic, then underline. The line clamp and its fade are the UI kit's (`NotificationCard`),
 //! so nothing is clipped here.
 
 use shell_model::notifications::{Body, BodyRun, RunLink, RunStyle, Slant, Underline, Weight};
 use ui_components::components::content::rich_text::{Rich, RichRun};
 use ui_components::prelude::*;
 
-/// `body` as Bardo's runs; `None` for an empty body (the card then draws no body line).
+/// `body` as the UI kit's runs; `None` for an empty body (the card then draws no body line).
 pub fn rich_body(body: &Body) -> Option<Rich> {
     let runs: Vec<RichRun> = body
         .runs

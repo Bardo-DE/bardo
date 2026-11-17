@@ -1,5 +1,5 @@
 //! The column's cards over time, pure: which cards the stack lists (the [`stack`](super::stack)'s)
-//! and which are still drawn while Bardo's `BannerStack` plays them out, one banner
+//! and which are still drawn while the UI kit's `BannerStack` plays them out, one banner
 //! [`step`](super::step) per card, and what the column must do next (start a hold, tell the
 //! service). The view (`io.rs`) owns the timers; the motion is Bardo's. Everything it decides
 //! with is here, tested by table (`deck_tests.rs`).

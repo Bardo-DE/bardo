@@ -239,7 +239,7 @@ pub fn Button(
     }
 }
 
-/// `icon` at `size`; a Bardo glyph under `cross_fade` fades into the next one it is
+/// `icon` at `size`; a UI kit glyph under `cross_fade` fades into the next one it is
 /// given. A toggle's `value` picks the glyph's style: a star, heart, pin or bell is outline
 /// while off (`GlyphStyle::for_state`); any other glyph draws its own pick (`Icon::native`).
 fn icon_view(icon: IconSource, size: IconSize, cross_fade: bool, value: Option<Check>) -> Element {

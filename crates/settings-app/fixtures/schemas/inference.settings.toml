@@ -16,7 +16,7 @@
 app = "inference"
 file = "inference/inferd.toml"
 version = 1
-# The tables inferd keeps in its file beside the rows (Bardo's ForeignTables; v0.2.19's parser
+# The tables inferd keeps in its file beside the rows (the UI kit's ForeignTables; v0.2.19's parser
 # ignores this line, v0.2.20 reads it).
 foreign = ["engines", "probe", "callers"]
 

@@ -5,7 +5,7 @@
 //!
 //! [`super::io`] follows the [`shell_ui_kit::links::SwitcherLink`] for this output and runs the machine;
 //! this file only draws: the tiles from [`super::tiles`] over the opening's apps (a quit tile is left out of the list
-//! while its fold plays: Bardo keeps drawing it until it settles), `selected` the machine's selection as
+//! while its fold plays: the UI kit keeps drawing it until it settles), `selected` the machine's selection as
 //! [`super::key_of`], `metrics` [`shell_ui_kit::app_icons::metrics_of`], `output` [`super::output_width`], and
 //! `onhover` / `onactivate` as `Hover` / `Click`. Style nothing under `.ds-switcher*`.
 

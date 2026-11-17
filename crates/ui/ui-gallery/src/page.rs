@@ -45,7 +45,7 @@ pub enum Page {
     Motion,
     /// The Space editor and the eight presets.
     Space,
-    /// What Blitz cannot do and what Bardo draws instead, and what the design names that Bardo
+    /// What Blitz cannot do and what the UI kit draws instead, and what the design names that Bardo
     /// does not draw yet.
     BlitzLimits,
     /// Every component in every state, one grid.

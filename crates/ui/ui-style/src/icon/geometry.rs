@@ -74,7 +74,7 @@ pub const TAG: &[Shape] = &[
     },
 ];
 
-/// Refresh is the sync glyph, Bardo's own drawing: two clockwise arcs of 130 degrees on one circle
+/// Refresh is the sync glyph, the UI kit's own drawing: two clockwise arcs of 130 degrees on one circle
 /// (centre 12 12, radius 8), the second the first turned half a turn about the centre. Each ends
 /// in a filled triangle: the solid glyph's head inset by half a unit, since `Shape::Solid` is stroked
 /// as well and the 2 px round stroke grows it back; the arcs keep the set's round cap. Arc, head,

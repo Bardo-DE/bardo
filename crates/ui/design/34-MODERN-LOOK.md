@@ -17,7 +17,7 @@ the one check to do before step 2 lands.
 
 ## 1. Decision and scope
 
-Owner decision, 2026-10-07: Bardo reads like macOS 10.x. Move the one Look in two steps; no
+Owner decision, 2026-10-07: the UI kit reads like macOS 10.x. Move the one Look in two steps; no
 Look switch, token-level so Bardo, sill, the Settings app, mailo and anyview move together.
 
 1. **Step 1, Sonoma/Sequoia (macOS 14-15) base.** Inset grouped rounded lists; borderless filled
@@ -289,7 +289,7 @@ top-rounded corners.
 ### 3.9 Window frame, Titlebar, Toolbar (`chrome/window_frame.css`, `chrome/toolbar/toolbar.css`, `tokens/chrome/scale.rs`)
 
 Now: titlebar 28 (`titlebar_height`), lights 12 / gap 8 / inset 13 (M: these are the
-Sonoma lights: 12 px, 8 gap, 20 from the left edge; Bardo has 13, small drift), title 13/600
+Sonoma lights: 12 px, 8 gap, 20 from the left edge; the UI kit has 13, small drift), title 13/600
 centred; toolbar below with a hairline; `--r-window` 10.
 
 Step 1: `titlebar_height` 28 -> 28; window content margin 20; no behaviour change besides the
@@ -409,8 +409,8 @@ The owner took every recommended default below; they are decisions, not open que
 4. **Sheet entry**: keep slide-from-top (macOS AppKit still does it, M) or the fade-and-scale
    card (section 7)? Default: card, 160 ms; the owner's observation is that slide is rare.
 5. **Per-app hero icon source**: apps pass their icon, or Bardo resolves it from the app id?
-   Default: the caller passes it; Bardo only lays it out.
-6. **Menu icons**: mandatory for built-in menus or optional? Default optional; Bardo's own menus
+   Default: the caller passes it; the UI kit only lays it out.
+6. **Menu icons**: mandatory for built-in menus or optional? Default optional; the UI kit's own menus
    (sill, the Settings app) get symbols in step 2 per HIG "where it helps recognition".
 7. **Keep the `inset` list style name?** Default: alias for one release, then remove.
 

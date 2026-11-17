@@ -1,4 +1,4 @@
-//! The one error Bardo's design system returns: input it was handed that it cannot draw.
+//! The one error the UI kit's design system returns: input it was handed that it cannot draw.
 
 use std::path::PathBuf;
 

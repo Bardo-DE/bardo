@@ -1,6 +1,6 @@
 //! One opening of the sheet, pure: the action the alert is about ([`super::choice`]) plus whether
 //! the sheet is up or on its way out. Escape, a press outside the sheet and a chosen action all leave the
-//! same way, Bardo's `Sheet` playing its own exit (`sheet-out`, the scrim fading); at its
+//! same way, the UI kit's `Sheet` playing its own exit (`sheet-out`, the scrim fading); at its
 //! `on_hidden` the menu closes and, for a chosen action, the action runs, so a suspend or a
 //! polkit prompt never finds the sheet still up. Shown again while leaving, it is up again.
 
@@ -44,7 +44,7 @@ pub enum SheetInput {
     Pressed(SessionAction),
     /// Cancel, Escape through the alert, or a press outside it.
     Dismissed,
-    /// The sheet's exit settled (Bardo's `on_hidden`).
+    /// The sheet's exit settled (the UI kit's `on_hidden`).
     Settled,
     /// Opened again the same way while leaving.
     Reshown,

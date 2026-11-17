@@ -10,7 +10,7 @@ LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$LIB/compositor.sh"
 case "$COMPOSITOR" in
   kwin) exec "$LIB/../kwin-windows.sh" "$@" ;;
-  compositor)
+  bardo)
     tools="$(comp_tools)"
     class=""
     case "${1:-}" in

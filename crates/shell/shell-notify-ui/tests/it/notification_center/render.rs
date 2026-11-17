@@ -1,6 +1,6 @@
-//! What the notification center draws: nothing while closed; open, Bardo's `Panel`
+//! What the notification center draws: nothing while closed; open, the UI kit's `Panel`
 //! `--notifications-center-width` wide at the right edge and the height of the surface, the
-//! title and Clear All, the history grouped by app (Bardo's `GroupHeader` over the newest card,
+//! title and Clear All, the history grouped by app (the UI kit's `GroupHeader` over the newest card,
 //! stacked over the rest), the footer when another daemon holds the name, the widgets slot
 //! last; and what its presses send.
 

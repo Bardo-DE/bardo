@@ -12,7 +12,7 @@ pub struct PublishedWorkspace {
     pub name: String,
     /// The connector name of the first output its group shows; empty when the group has none.
     pub output: String,
-    /// The workspace's `SpaceLook`, as the JSON Bardo reads (`SpaceLook::from_json`).
+    /// The workspace's `SpaceLook`, as the JSON the UI kit reads (`SpaceLook::from_json`).
     pub look: String,
     /// Whether it is the active workspace of its group.
     pub active: bool,

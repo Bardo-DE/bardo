@@ -4,7 +4,7 @@
 //! following the bar's view channel: a new view swaps the contents and, when its anchor moved,
 //! repositions the popup (`xdg_popup.reposition`), none closes it. layer-shell-host fits the popup to
 //! the frame (`PopupSize::FitContent`), so the popup is the card and its room. The root is
-//! `Material::Popover`, which paints nothing on its own box (Bardo's transparent popup root);
+//! `Material::Popover`, which paints nothing on its own box (the UI kit's transparent popup root);
 //! the menu card paints the material. The menu opens with no entrance (design/13 §13.3.2) and
 //! reports the pointer's hover and release to the bar's tracking machine. A menu's submenus
 //! (a tray item's dbusmenu has them) are the `Menu`'s own, timed by `menus.submenu_*`.
@@ -62,7 +62,7 @@ pub(crate) const CONTROL_CENTER_CSS: &str = include_str!("../control_center/styl
 const GAP: Px = Px(7.0);
 
 /// The popup root. A popup is a `VirtualDom` of its own and inherits nothing from the bar, so
-/// it provides Bardo's document host itself.
+/// it provides the UI kit's document host itself.
 #[component]
 pub(crate) fn BarPopup() -> Element {
     // Providing the host and the key source is the point; the handles are read through context.
@@ -152,7 +152,7 @@ pub(crate) fn PopupDocument(current: PopupView) -> Element {
 }
 
 /// How much wider than a card each level of submenu makes the popup: its card (a text menu's
-/// minimum 186 and what a longer label adds) and the gap and margin Bardo keeps around it.
+/// minimum 186 and what a longer label adds) and the gap and margin the UI kit keeps around it.
 pub(crate) const SUBMENU_ROOM: i32 = 260;
 
 /// The room `entries`' submenus need beside the card, a level of [`SUBMENU_ROOM`] for each they
@@ -173,7 +173,7 @@ pub(crate) fn submenu_room<T>(entries: &[MenuItem<T>]) -> i32 {
 
 /// A ds `Menu{Dropdown}`, at once (no entrance: a bar menu, and every hover switch); the root
 /// keys it by the bar menu so a switch starts a fresh selection. Its hover and releases go to
-/// the tracking machine, which decides a press-drag-release; Bardo's own pick then finds the
+/// the tracking machine, which decides a press-drag-release; the UI kit's own pick then finds the
 /// session closed. The keyboard's pick still arrives as `Picked`, and Bardo calls `onpick`
 /// before `onclose`, so a close reports a dismissal only when nothing was picked.
 #[component]

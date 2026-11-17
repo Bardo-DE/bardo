@@ -129,7 +129,7 @@ writes, `led_fd` and `leds` are unchanged. Without the socket, or if nothing ans
 `bardo-key-remap.service.d/10-uinput.conf` for the standalone install, with `70-bardo-key-remap.rules` as before. The desktop's
 packaging ships neither the drop-in nor the udev line. `--check-uinput` connects to the service when the socket
 is there (it creates nothing) and otherwise opens the node as before. Unverified: the service's behaviour
-against a real the key remap daemon (needs the desktop gate), and `After=bardo-input-broker.socket` ordering on a real boot.
+against a real key remap daemon (needs the desktop gate), and `After=bardo-input-broker.socket` ordering on a real boot.
 
 **The profile mechanism cannot see inside a window.** A terminal embedded in another app (an
 editor's terminal panel) gets the window's profile, not `terminal`: the desktop knows the
@@ -210,7 +210,7 @@ real machine's sysfs masks, and what stays open.
 
 ## The desktop keymap
 
-**Who owns what.** the chord keymap holds every keymap noun (actions, chords, overrides, the resolver,
+**Who owns what.** The chord keymap holds every keymap noun (actions, chords, overrides, the resolver,
 display) and the platform sources. The key remap daemon is this desktop's source and remapper, and defines no
 such type. It stores the person's overrides, serves them, tells apps when they change, and
 supplies the desktop's own bindings.
@@ -275,7 +275,7 @@ registers no absolute axes, so a touchpad stops until the next grab while a mous
 no `EV_MSC`. Absolute-axis state is not tracked: destroying the twin ends any touch the desktop
 saw.
 
-**The lamps are written once per grab.** the key remap daemon remembers the last LED state the desktop set on
+**The lamps are written once per grab.** The key remap daemon remembers the last LED state the desktop set on
 the virtual keyboard and writes it to a device when it is grabbed; a lamp the desktop never set
 is not written. Later changes are forwarded as before.
 
@@ -333,7 +333,7 @@ seat owner's programs, the shell or not, may register actions.
 or `kill -9` closes every fd, so the keyboard returns to the kernel at once; systemd restarts
 The key remap daemon and the grab gate waits for all keys to be up before grabbing again.
 
-**Repeat is the compositor's job.** the key remap daemon drops `Repeat` events and sends only presses and
+**Repeat is the compositor's job.** The key remap daemon drops `Repeat` events and sends only presses and
 releases; the compositor generates repeat from the held virtual key, so a repeating mapped
 chord repeats its output.
 

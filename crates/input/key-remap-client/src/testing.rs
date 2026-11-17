@@ -1,4 +1,4 @@
-//! Test support: a fake the key remap daemon daemon on a private socket that speaks
+//! Test support: a fake key remap daemon on a private socket that speaks
 //! the keymap part of the protocol. It needs no devices, so these tests run everywhere.
 
 use key_remap_proto::{

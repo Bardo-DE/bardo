@@ -34,7 +34,7 @@ pub(super) fn shapes(icon: Icon) -> &'static [Shape] {
     }
 }
 
-/// Bardo's own `DriveExternal` as fills: the drive's body and the connector plug on top.
+/// The UI kit's own `DriveExternal` as fills: the drive's body and the connector plug on top.
 const DRIVE_EXTERNAL: &[Shape] = &[
     Shape::Solid("M4 11h16a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2z"),
     Shape::Solid("M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7H9z"),

@@ -2,7 +2,7 @@
 //!
 //! `DS_BLESS=1 cargo test ...` writes the actual output instead of comparing. Read the diff
 //! before committing a bless: a golden that was rewritten to match is not evidence of anything.
-//! Copied from Bardo's `ds/tests/support/golden.rs`, minus the directory scan.
+//! Copied from the UI kit's `ds/tests/support/golden.rs`, minus the directory scan.
 
 use std::path::PathBuf;
 

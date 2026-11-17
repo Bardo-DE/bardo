@@ -2,7 +2,7 @@
 //!
 //! The month, today marked, ISO week numbers when `calendar.week_numbers` shows them, days with
 //! events marked, today's weekday and date, and today's events still to come. [`grid::month_grid`]
-//! computes the month and Bardo's `MonthWidget` draws it on its card (Medium: today beside the
+//! computes the month and the UI kit's `MonthWidget` draws it on its card (Medium: today beside the
 //! month); its step buttons send `MonthIntent::Step`, which shifts the month.
 
 pub mod grid;

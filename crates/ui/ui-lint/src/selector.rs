@@ -8,11 +8,11 @@ use super::rule::{Offence, Rule};
 use super::text::render;
 use super::tokenize::Located;
 
-/// Attributes Bardo writes as documented seams a consumer may select on, and so never
+/// Attributes the UI kit writes as documented seams a consumer may select on, and so never
 /// `DsInternals`, unlike the internal ones below: `data-slot` names a component's slot for the
 /// consumer's element (`[*|data-slot=trailing] .fold-more` on a `TreeItem`'s hover-revealed
 /// trailing slot), as `--dot-c*` are the custom properties a Space's colours reach
-/// its dots by. Styling inside a slot through Bardo's own class (`.ds-tree-item-trail`) is still
+/// its dots by. Styling inside a slot through the UI kit's own class (`.ds-tree-item-trail`) is still
 /// `DsInternals`.
 pub(crate) const CONSUMER_SEAMS: &[&str] = &["data-slot"];
 

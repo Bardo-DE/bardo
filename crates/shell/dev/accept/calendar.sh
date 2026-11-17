@@ -14,10 +14,10 @@
 #      with today on the accent disc (dev/out/calendar-compositor.png; the output with the center
 #      open, dev/out/calendar-widget-compositor.png).
 #   2. The center's Calendar tile is the Medium card (a today column beside the compact month): it
-#      shows the NEXT event of the agenda Up Next reads, one row (Bardo's `MonthFace.events`: Medium
+#      shows the NEXT event of the agenda Up Next reads, one row (the UI kit's `MonthFace.events`: Medium
 #      takes the first, only Large lists several). Then Up Next lists the fixture's next events in
 #      order, as many as the Medium tile's body holds without clipping (two, at the default cell). The colour bars, top to bottom, are the Calendar's work, then Up Next's
-#      work and team (Bardo's label hues
+#      work and team (the UI kit's label hues
 #      `--c-{red,amber,green,blue,violet}`, picked by the calendar's name as
 #      `widgets::up_next::calendar_hue` picks it); personal's (tomorrow's Dentist) is not today's
 #      and is Up Next's third-soonest, so it draws nowhere.
@@ -27,7 +27,7 @@
 #      card, whose compact month never draws the week column whatever the setting says (Bardo's
 #      `month_grid::shown_weeks`: "a week column would not fit"), so today's disc stays where it
 #      was (within 2 px) and the card still draws (the reload broke nothing). The week column
-#      itself is Bardo's Regular grid, covered by Bardo's own tests.
+#      itself is the UI kit's Regular grid, covered by the UI kit's own tests.
 #   5. 5 s idle while open, clear of the minute's turn: 0 frames on the center.
 #
 # Exit 0 when every step passed, 2 when the notification center draws no widgets (the widget
@@ -102,7 +102,7 @@ img = np.asarray(Image.open(sys.argv[1]).convert("RGBA")).astype(int)
 ys, xs = np.nonzero(img[..., 3] > 200)
 img = img[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
 rgb, alpha = img[..., :3], img[..., 3]
-# Bardo's label hues (`LabelHue::family`), light then dark, in the order red, amber, green,
+# The UI kit's label hues (`LabelHue::family`), light then dark, in the order red, amber, green,
 # blue, violet.
 swatches = np.array([[0xE8, 0x48, 0x3C], [0xF0, 0xA8, 0x1E], [0x28, 0xB2, 0x4A], [0x2B, 0x7C, 0xFF],
                      [0x8B, 0x5C, 0xF0], [0xFF, 0x6B, 0x60], [0xF5, 0xBC, 0x4E], [0x4F, 0xD0, 0x6A],

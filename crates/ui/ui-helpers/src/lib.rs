@@ -1,4 +1,4 @@
-//! Missing helpers, and the safe file reader and writer every Bardo crate shares.
+//! Missing helpers, and the safe file reader and writer every UI kit crate shares.
 //!
 //! The file half ([`read_capped`], [`write_atomic`], [`update_atomic`], [`move_aside`]) is UI-free:
 //! it needs only `std`, so a core crate with no window,

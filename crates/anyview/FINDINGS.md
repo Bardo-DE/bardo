@@ -70,7 +70,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   page with 680 points of text between 48-point side margins) in 14 point Inter at line-height 1.6, so that a
   page at 100% reads at `--fs-reading` on the Markdown measure. The chapter's own styles come first and the page's
   rules after, so the reading face and measure win; its colours, rules and pictures stay. Fixed-layout books,
-  columns, floats and `break-*` rules are laid out as Blitz and Bardo's pagination do: a break is made only
+  columns, floats and `break-*` rules are laid out as Blitz and the UI kit's pagination do: a break is made only
   between lines, rows and pictures, so a picture taller than a page is cut.
 - **A contents line that leads into the middle of a chapter file goes to the page that shows its words.** A book
   whose chapters are a few long files lists its parts by fragment (`file.xhtml#part-2`); the binder does not
@@ -104,9 +104,9 @@ on. It is a reference, not a log: how each was found lives in git history.
   through the vocabulary: a window told it is tiled on any edge is never asked for a size.
 - **A double-click on the left panel's divider returns to the width kept, not to 240.** The panel's width is kept
   across launches (`PanelMemory`, `panel.json` in the store), and a window opens at it by making it the pane's
-  `preferred` size, which Bardo's split view also resets to; it has no separate starting size. The width is read
+  `preferred` size, which the UI kit's split view also resets to; it has no separate starting size. The width is read
   once as the program starts, so a second process sees what the first wrote only on its own start. Ends when
-  Bardo's `SplitPane` takes a starting size apart from `preferred`.
+  The UI kit's `SplitPane` takes a starting size apart from `preferred`.
 - **The harness cannot hold a key.** `Input::key` is a press and a release, so a test cannot show Space held across
   a window deactivation; the release on `WindowState::activated == Inactive` (`views/window/`) is covered by the
   pure `hand` machine's cases and the viewer step, not by a held key in the harness.
@@ -154,12 +154,12 @@ on. It is a reference, not a log: how each was found lives in git history.
   (`dist/org.bardo.Anyview1.service`); the per-user socket (the service locator) does not, so a launcher cannot call a
   viewer that is not running. Linux with `desktop` keeps the bus for that, and `forward_over` stays the
   launcher's call. Ends if a launcher without the bus needs it: `service_locator::spawn` is the closure it would pass.
-- **Bardo's `PdfPage::Ready` carries a PNG `data:` URL.** The PDF peek goes through `ds_blitz::pdf_thumb_blocking`
+- **The UI kit's `PdfPage::Ready` carries a PNG `data:` URL.** The PDF peek goes through `ds_blitz::pdf_thumb_blocking`
   (the cache the launcher already uses), whose page is `ImageSource`, so a PDF's first page is the one
-  picture here that is not a `TextureLayer`. Ends when Bardo's `PdfPage::Ready` can hold pixels for a
+  picture here that is not a `TextureLayer`. Ends when the UI kit's `PdfPage::Ready` can hold pixels for a
   `TextureLayer` (a `TextureHandle` or a `Pixels`); then `PdfPeek` hands them over and the pane draws them
   the way it draws any picture.
-- **Bardo's markup lint flags Bardo's own `TextureLayer`.** The `object.ds-texture-layer` it renders has a
+- **The UI kit's markup lint flags the UI kit's own `TextureLayer`.** The `object.ds-texture-layer` it renders has a
   class no stylesheet rule defines (it styles itself inline), so `ds_lint::markup` reports
   `UnstyledClass` for any page that shows one. `crates/anyview-peek/tests/peek/pane.rs` skips exactly that selector. Ends when Bardo
   gives the class a rule or the lint an allowance for it.
@@ -254,7 +254,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   their size from that box. `PdfThumb` cannot (it draws a page into the `Size` it is given), so `Card`'s
   `page_room` prop (default `PANE_MEDIA`, 328 by 220 px) is the page's box and the host passes what its box
   leaves. A table still shows at most six columns and forty rows, and code and plain lines are clipped, not
-  wrapped or scrolled. Ends when Bardo's `PdfPage::Ready` becomes a texture the card draws like a picture.
+  wrapped or scrolled. Ends when the UI kit's `PdfPage::Ready` becomes a texture the card draws like a picture.
 - **The Markdown start is shown on a white sheet.** The peek's HTML goes into an `<iframe srcdoc>` whose own
   stylesheet has literal colours, because a frame cannot read the pane's tokens; it is dark on white in both
   schemes, as a mail's original message is (`--foreign-ground`). Ends when the Markdown stage's stylesheet
@@ -268,19 +268,19 @@ on. It is a reference, not a log: how each was found lives in git history.
   `anyview_image::encode`), which this crate does not carry.
 - **`NoExportKind` is a hand-written `Word`.** `#[derive(Word)]` refuses an enum with no variant,
   and `ExportChoice::Kind` must be a `Word` even for a format with no export. The impl lists no
-  variants. Ends when Bardo's derive accepts an empty enum.
+  variants. Ends when the UI kit's derive accepts an empty enum.
 - **Two `Percent` types.** `anyview_core::Percent` is an unclamped whole percentage (a volume goes
   to 150); `ds_core::vocab::Percent` clamps to 100. They share no definition because their ranges
-  differ. Ends if Bardo's grows an unclamped sibling.
+  differ. Ends if the UI kit's grows an unclamped sibling.
 - **Export defaults and peek budgets are not settings yet.** The JPEG quality (90), the AVIF
   quality (65) and the default paper (A4, portrait) are constants in `export/`; `PeekBudget` has no
-  default at all, so the caller reads it from settings. Ends when Bardo's `22-SETTINGS` has
+  default at all, so the caller reads it from settings. Ends when the UI kit's `22-SETTINGS` has
   `viewer.export.*` and `viewer.peek.*` keys that supply them.
 - **The pinned block has no image codecs beyond png and jpeg, and none of the back-end crates.**
   `anyview-image` adds `gif webp bmp tiff ico tga qoi exr hdr` to the pinned `image` line from its own
   manifest, and `jxl-oxide`, `psd`, `icns`, `resvg`, `kamadak-exif`, `img-parts`, `ravif`, `syntect`,
   `pulldown-cmark`, `csv` and `encoding_rs` sit below the pinned block next to `infer`. Ends at the next
-  change to Bardo's `docs/workspace-deps.toml`: add those features to its `image` line and those crates
+  change to the UI kit's `docs/workspace-deps.toml`: add those features to its `image` line and those crates
   to it, then copy the block verbatim here.
 - **AVIF decoding is not built or tested here.** The `avif` feature of `anyview-image` needs the dav1d
   C library with its headers and a `dav1d.pc` for pkg-config; this build image has the runtime library
@@ -295,7 +295,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **The back ends' limits are constants.** `PEEK_LINES` (40), `DETECT_BYTES` (1 MiB), the largest image
   to decode (16384 by 16384), the largest animation in memory (512 MiB), the SVG long edge (1024 to 4096),
   the AVIF encoder speed (6), the longest line highlighted (4096 bytes), the largest inlined Markdown
-  image (8 MiB) and the top-level keys a fact names (8) are not settings. Ends when Bardo's `22-SETTINGS`
+  image (8 MiB) and the top-level keys a fact names (8) are not settings. Ends when the UI kit's `22-SETTINGS`
   has `viewer.peek.*` and `viewer.image.*` keys; the callers then pass them in.
 - **`CodePeek` builds the highlighter's syntax set on every call.** `Peek::peek` takes no state to keep it
   in, and a global is not allowed. `syntect` loads syntaxes lazily, so a call costs the one syntax it
@@ -338,7 +338,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   the format. Ends if the export sheet offers BMP (the core target and `RasterExportKind` gain it).
 - **The history cap and the pruning rule are not settings yet.** `HistoryCap::DEFAULT` is 200
   files, and `record_view` prunes view memory of vanished, replaced and no-longer-listed files
-  with no switch. Ends when Bardo's `22-SETTINGS` has `viewer.history.*` keys; the caller then
+  with no switch. Ends when the UI kit's `22-SETTINGS` has `viewer.history.*` keys; the caller then
   passes the cap to `StoreWriter::new`.
 - **A history row's media type is its kind's commonest one.** `mime_for(kind)` gives `image/png` for a raster and
   `text/plain` for code and plain text alike, so a launcher row built from the history shows that type's glyph and
@@ -358,10 +358,10 @@ on. It is a reference, not a log: how each was found lives in git history.
   they restore and what they set, so no state of theirs holds an unclamped scale. Ends when `Scale`
   takes a validated scale type.
 - **Proposed values of the machines are not settings yet.** The chrome's idle delay
-  (`ChromeParams::HIDE_AFTER`, 2000 ms, Bardo design/20 section 2.6) should read
+  (`ChromeParams::HIDE_AFTER`, 2000 ms, the UI kit design/20 section 2.6) should read
   `viewer.chrome.hide_after`; the zoom step (x1.25, `viewer.zoom.step`) and the seek step (5 s,
   `viewer.media.seek_step`) likewise. The reveal and hide fades are the motion token `--t-quick`
-  (150 ms) and stay tokens. Ends when Bardo's `22-SETTINGS` has the `viewer.chrome.*`,
+  (150 ms) and stay tokens. Ends when the UI kit's `22-SETTINGS` has the `viewer.chrome.*`,
   `viewer.zoom.*` and `viewer.media.*` keys; the view then builds `ViewerParams` from them.
 - **Which tabs a kind has is the family's, not the profile table's.** `PanelTabs` and `PanelTab` live in
   `anyview-ui`, so `anyview-core`'s `profile` cannot carry a `panel_tabs` column without moving them down.
@@ -396,7 +396,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   Blitz's and untested here. Ends if Bardo offers the frame's token block alone.
 - **The launch presentation is not applied.** `Launch` carries no presentation: the window starts as
   `Presentation::Window`, and `Mini` and `Background` need the binary to create the window that way.
-- **The capsule's rotate buttons borrow Bardo's `Undo` and `Refresh` glyphs.** Bardo has no rotate marks.
+- **The capsule's rotate buttons borrow the UI kit's `Undo` and `Refresh` glyphs.** The UI kit has no rotate marks.
   Ends when they are added there (Bardo FINDINGS).
 - **Plain keys are a fixed table.** The keys with no command modifier (`+ = - 0 1 9 v w c h Space ⇧← ⇧→
   PageUp PageDown Home End Return` and, for a recording, `[ ] ⌫ n p a s . , i o`) are `StageCommand`'s `KEYS`
@@ -408,10 +408,10 @@ on. It is a reference, not a log: how each was found lives in git history.
   modifier is the text's own table, as Blitz's text hook is. Ends when Bardo feeds the keymap's text
   actions to the surface.
 - **A rebound action keeps its declared chord in the menus.** The palette draws a standard action's chord as
-  the keymap really binds it (Redo is Ctrl+Y on Windows), but Bardo draws a `Shortcut` of the viewer's own
+  the keymap really binds it (Redo is Ctrl+Y on Windows), but the UI kit draws a `Shortcut` of the viewer's own
   as it was declared, so a person's own change to Info shows the old chord there. Ends when `Keys::text_of`
   draws an app action's live chord.
-- **Zoom to Fit and Actual Size are the viewer's own actions.** the chord keymap has no standard action for them:
+- **Zoom to Fit and Actual Size are the viewer's own actions.** The chord keymap has no standard action for them:
   Bigger and Smaller are ⌘+ and ⌘−, Fit is ⌘0 and Actual Size ⌥⌘0, and Zoom to Width has only its key `9`.
   ⌘1 and ⌘9 are left to the tab and Space convention. Ends when the chord keymap names them.
 - **Info is ⌘I because the viewer forgoes Italic.** The viewer never styles text and text editing is plain,
@@ -421,7 +421,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   the keymap gives a chord to one action. Rebinding Duplicate rebinds Don't Save with it.
 - **The viewer registers its actions by growing one registration, not with `use_register_actions`.** A
   registration is all or nothing and replaces the app's earlier one, so each row is tried added to what
-  was accepted and a refused row is dropped. Ends when Bardo's registration reports the rows it took.
+  was accepted and a refused row is dropped. Ends when the UI kit's registration reports the rows it took.
 - **Mini stays when the file stops being media.** Walking the sequence from a video in the mini
   window to an image leaves the presentation `Mini`; `Presentation` only leaves `Mini` on
   `ToWindow`. Ends when the root promotes the window as the stage family changes.
@@ -461,9 +461,9 @@ on. It is a reference, not a log: how each was found lives in git history.
   high zoom one step is several pixels. The view keeps the exact position itself (`steer.rs`'s `Cursor`) and
   tells the machine only when the page or its offset changes. Ends if the machine takes a finer offset.
 - **PDF thumbnails are a fixed width, and the outline's fold is not kept.** The panel's lists are windowed
-  (Bardo's `VirtualList`), which needs every row's height up front; a thumbnail's height at the panel's own
+  (the UI kit's `VirtualList`), which needs every row's height up front; a thumbnail's height at the panel's own
   width is not known until the panel is measured, so a thumbnail is drawn 140 logical pixels wide in the
-  middle of its row, not filled to the panel's width as the design standard says. Ends when Bardo has
+  middle of its row, not filled to the panel's width as the design standard says. Ends when the UI kit has
   measured row heights (`RowHeight::Measured`). Which bookmarks are folded lives in `OutlineFold` on the PDF
   shelf, so it holds while the tab is changed and is dropped with the document: it is not kept for next
   time. Textures of thumbnails already drawn stay on the shelf when their rows scroll away.
@@ -474,9 +474,9 @@ on. It is a reference, not a log: how each was found lives in git history.
   facts. Ends per type when a family holds it.
 - **`anyview-platform`'s dependencies sit below the pinned block.** `md-5`, `percent-encoding`, `png` and
   `futures-util` are in no pinned list; `zbus` (with `tokio`), `dirs`, `memfd` and `freedesktop-desktop-entry`
-  are. Ends at the next change to Bardo's `docs/workspace-deps.toml`: add the four and copy the block here.
+  are. Ends at the next change to the UI kit's `docs/workspace-deps.toml`: add the four and copy the block here.
   `ashpd` is not used: the print portal is called through `zbus` as `ds-blitz`'s `print` does, so the portal
-  code exists twice (Bardo's blocking one and this async one). Ends if `ds-blitz` exposes its portal call or
+  code exists twice (the UI kit's blocking one and this async one). Ends if `ds-blitz` exposes its portal call or
   the viewer prints through it.
 - **No clipboard in `Share`.** The plan's "copy" is the window's clipboard, which must outlive the call and
   belongs to the UI crate; `ShareTarget` has only `Mail` (`xdg-email --attach`). Ends when a freedesktop share
@@ -535,7 +535,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   mpv-wgpu `d017756` (master) with only its `subprocess` feature (the person's `mpv` as a child process: no
   `rsmpv`, no libmpv), which resolves the one `wgpu` 29.0.4 the tree already has, and neither is shared with Bardo,
   shell-host or sill, so they stay outside the block like `jxl-oxide` (the block is for
-  what the repos share). Ends if another repo links either: they then move into Bardo's `docs/workspace-deps.toml`
+  what the repos share). Ends if another repo links either: they then move into the UI kit's `docs/workspace-deps.toml`
   first.
 - **The media crate carries its own fixtures.** `crates/anyview-media/tests/fixtures/` holds `clip.mkv`
   (3 s, mpeg4 64 by 48, two Vorbis tracks, a subtitle track, chapters), `tone.flac` (2 s) and
@@ -612,7 +612,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   "not carried out" (`host::Declined`) and, where a person should hear of it, told too (`feedback`): `Present` of a
   quick look or a background session (a window becomes a window or the mini window, nothing offers the others),
   `Run(CopyFile)` (the clipboard of `ds-blitz` holds text only, so the palette hides Copy File until it can hold a
-  `text/uri-list`; a patch for Bardo's `Clipboard` is the way), `Run(Print)` of anything that does not print and the
+  `text/uri-list`; a patch for the UI kit's `Clipboard` is the way), `Run(Print)` of anything that does not print and the
   edits of a kind that has none. Each ends with the feature it waits for.
 - **A renamed file keeps its window and its place.** The host tells the window (`Edge::moved`) and the window opens
   the file again under its new name, where the person is; the folder's list the arrows walk still holds the old
@@ -629,7 +629,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   window is up), as the arrow keys already take it.
 - **Appearance, window size, history cap and the store folder are constants.** `Appearance::default()`, 1000 by
   700, `HistoryCap::DEFAULT` and `anyview_store::STORE_FOLDER` (`<data>/anyview`, which the launcher reads by the
-  same constant) are not settings. Ends with Bardo's `22-SETTINGS` keys.
+  same constant) are not settings. Ends with the UI kit's `22-SETTINGS` keys.
 - **`anyview-fs` stats a path before it opens it.** `open_regular` refuses a FIFO by `stat` first, so a path swapped
   for a FIFO between the `stat` and the `open` still blocks the reader's thread, and `ReadAt::len` (infallible in
   `anyview-core`) reads 0 when the open file's metadata fails. Opening with `O_NONBLOCK` closes the first and needs
@@ -643,7 +643,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **The cold launch is over its budget, and the GPU stack is the reason.** PLAN section 7 sets 150 ms from the
   process starting to the first content of a JPEG cold, and 50 ms warm. Measured 2026-10-03 on the release binary
   with a real window (KWin on Wayland, a 1058 x 618 JPEG, no bus, 8 runs, a machine other builds were also using,
-  so +-10 ms; method and the step table in Bardo's FINDINGS, "Cold start of the first window"): the first frame is
+  so +-10 ms; method and the step table in the UI kit's FINDINGS, "Cold start of the first window"): the first frame is
   painted 190 to 200 ms after the process starts, of which `wgpu::Instance::new` (77 ms) and the adapter probe
   across every backend (60 to 68 ms, the GL one can never succeed under the renderer's `display: None`) are 140. The
   picture is ready about 8 ms after the first frame (`tests/launch.rs` below), so first content is near 210 ms.
@@ -796,7 +796,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   they installed. The viewer bounds what it will accept (1 MiB of JSON, 512 MiB of pixels, a time limit on
   silence) and nothing else. Ends if plugins come from outside the distribution: a sandbox (bubblewrap, or
   Flatpak's) wraps the spawn.
-- **The install of a missing tool has only run against Bardo's fake installer.** `HelperHost::provide` is tested through
+- **The install of a missing tool has only run against the UI kit's fake installer.** `HelperHost::provide` is tested through
   `Installer::Fake`; no test and no author has yet run `Installer::PackageKit` against a real PackageKit and polkit
   (a real install is a change to the person's system, and tests never touch it). Ends when it has been tried once on
   Fedora, and on Debian or Ubuntu and Arch: open a HEIC with `heif-dec` and `heif-convert` absent, press Install…, and
@@ -824,7 +824,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   Ends with the desktop settings keys.
 - **A selection across lines draws no box over the line numbers only because the editor drops them.** The edit
   surface boxes every run of text between a selection's ends, the gutter's included; `families/text/edit`
-  drops the boxes left of the text. Bardo's `edit_tree` can leave unmarked text out itself (a small patch to
+  drops the boxes left of the text. The UI kit's `edit_tree` can leave unmarked text out itself (a small patch to
   `ds-blitz`'s `edit_tree.rs`, not in v0.3.1); nothing here waits for it.
 - **Find in a pane is the host's palette, fed through the handle.** A pane draws no palette and lists no Find command
   (the host owns ⌘F), and its capsule has no Find button. The host opens its palette in a find mode, feeds each query
@@ -834,11 +834,11 @@ on. It is a reference, not a log: how each was found lives in git history.
   (the stage's `dismissal`) when it closes the mode. Picking a hit leaves the find up with its marks, so the host
   must end it; Esc in the pane ends it too. The hit rows are kept as the stage's find has them, so a document
   that changes under a find needs `find` sent again (see "Find hits are addressed by index").
-- **The palette's scope is not in Bardo's machine.** `PaletteState` holds the query and the highlight only, and names a row by index;
+- **The palette's scope is not in the UI kit's machine.** `PaletteState` holds the query and the highlight only, and names a row by index;
   whether the palette lists commands or a find's hits is `Viewer::palette_scope`, stepped with it by `step_with_scope`,
   which handles the three inputs that change the scope (opening as a find, the Find row, "Show All") and hands the rest
   to bardo. A second host with a scope of its own (a bar with tabs) will want the same, and then the scope belongs in
-  Bardo's machine as a type parameter; until a second one does, it stays here.
+  The UI kit's machine as a type parameter; until a second one does, it stays here.
 - **A pane's activity is its own only under a `look` feed.** Without a feed the pane takes the host's tokens and draws
   in the host's `Ds` root, whose `HostSignals.activity` is the host's window, so the pane cannot mark its selection
   and caret at rest without marking the whole window. With a feed the pane is a `Ds` root of its own and provides
@@ -880,13 +880,13 @@ on. It is a reference, not a log: how each was found lives in git history.
 
 ## Standing facts
 
-- **A capsule thins itself to the stage's width, and Bardo's capsule has no overflow of its own.** Bardo's capsule is as
+- **A capsule thins itself to the stage's width, and the UI kit's capsule has no overflow of its own.** The UI kit's capsule is as
   wide as its slots (the media one is `calc(100% - 32px)` up to 640, its progress bar at least 120), so each family ranks
   its slots and `families/capsule_fit.rs` drops the least important rank at a time until the rest fits
-  `StageCx::area` (the widths are Bardo's tokens: a Large button 32, a gap 4, padding 8, a readout 36 at least, a divider
+  `StageCx::area` (the widths are the UI kit's tokens: a Large button 32, a gap 4, padding 8, a readout 36 at least, a divider
   9, a level 96). The media capsule loses the export, the speed, the length, the level and then the clock, in that
-  order; the PDF's, the find, the fits and the zoom; a picture's, the rotate buttons and the zoom. The whole video capsule is 640 with Bardo's 120 px bar (v0.2.21) and the widest a capsule goes is 640, so the export
-  comes back on a stage of 672 and up and goes first below that; `SCRUB_LEAST` follows Bardo's bar. There is no mute button, so a stage
+  order; the PDF's, the find, the fits and the zoom; a picture's, the rotate buttons and the zoom. The whole video capsule is 640 with the UI kit's 120 px bar (v0.2.21) and the widest a capsule goes is 640, so the export
+  comes back on a stage of 672 and up and goes first below that; `SCRUB_LEAST` follows the UI kit's bar. There is no mute button, so a stage
   under about 490 px (a window at its least width, or a wider one with a panel open) has no volume control in the
   capsule; the system's volume is still there.
 - **The missing-tool sheet is Bardo's, and its pieces are not where the guide says.** `HelperSheet` and `HelperBody` are
@@ -901,13 +901,13 @@ on. It is a reference, not a log: how each was found lives in git history.
   are news.
 - **Spreadsheet and office peeks add `calamine` and `quick-xml`, and the budgets moved for them.** `anyview-text` reads
   XLSX, ODS and XLS through `calamine` (MIT) and `anyview-archive` reads office metadata through `quick-xml`; both are
-  outside Bardo's pinned block. On top of the 600 and 670 the other readers left, they take `anyview-peek` to 605 packages and `anyview` to 675 in
+  outside the UI kit's pinned block. On top of the 600 and 670 the other readers left, they take `anyview-peek` to 605 packages and `anyview` to 675 in
   `scripts/check-boundary.sh`: calamine and quick-xml for XLSX and ODS, with the crates they pull in. A workbook larger than the viewer opens, and a JSON file larger than the peek budget,
   are `Unsupported`, not damaged.
-- **The `[patch]` sections are Bardo's, copied.** The root `Cargo.toml` carries Bardo's `[patch.crates-io]` (the
+- **The `[patch]` sections are Bardo's, copied.** The root `Cargo.toml` carries the UI kit's `[patch.crates-io]` (the
   vello and anyrender forks) and its `[patch."https://github.com/Bardo-DE/blitz-kit"]` path entry, because a
   patch applies only at a workspace root and `anyview-ui` now names the render stack through `ds-blitz`. A
-  change to either block in Bardo's root is made here in the same change.
+  change to either block in the UI kit's root is made here in the same change.
 
 - **`redb` cannot be shared between the viewer and the launcher.** It takes `flock(LOCK_EX)` on
   open and has no shared-reader mode, so the launcher could not read while the viewer ran. The
@@ -931,7 +931,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   inflate and SIMD crates `exr` needs, and one more for `roxmltree`, the EPUB package reader, and five more for `calamine` and `quick-xml`, which read XLSX and ODS);
   `anyview-peek` is 605 today, of which `ds` and `ds-blitz` are about 530 and the container codecs of
   `anyview-archive`, `skrifa` and the media parsers the rest.
-- **The `[patch]` sections are copied from Bardo's and sill's root manifests.** `blitz-kit` points at the
+- **The `[patch]` sections are copied from the UI kit's and sill's root manifests.** `blitz-kit` points at the
   sibling checkout and the vello and anyrender crates at the `bardo-filters` forks, at the revs those
   manifests name; they apply only at a workspace root, so they live in this root. They were added with
   `anyview-peek`, the first crate here that names the renderer, since cargo warns about every unused patch.
@@ -1008,7 +1008,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **JPEG XL fixtures are made with ffmpeg's `libjxl`** (`-distance 0`, lossless); `cjxl` is not
   installed. The AVIF fixture exists but is decoded only under the `avif` feature.
 - **pdfrum is pinned at 048515cd (PR #101), through bardo.** Its `thiserror` and `smallvec` are exact
-  pins one patch ahead of Bardo's older lock, so Bardo's `Cargo.lock` moved with the pin. The facade is
+  pins one patch ahead of the UI kit's older lock, so the UI kit's `Cargo.lock` moved with the pin. The facade is
   built without `edit` and `forms`: page edits and page-range writes go through `pdfrum-edit` directly,
   and the `markdown` feature (plain-layout text and Markdown) is added by `anyview-pdf`'s manifest.
 - **Tiles equal the whole page.** At a zoom bucket's scale, a tile drawn with `Region::Rect` is byte for
@@ -1090,9 +1090,9 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **`ds-settings` brings `zbus` to the binary only.** `anyview-ui` takes `Look` as data and does not name
   `ds-settings` (its rule forbids `zbus`); the binary converts `Environment` to `Look` (`host/appearance.rs`).
   `ds-settings`' `tokio` feature is on, matching the pinned `zbus`.
-- **`bardo/docs/workspace-deps.toml` has drifted from Bardo's `Cargo.toml`.** The doc still pins blitz-kit
+- **`bardo/docs/workspace-deps.toml` has drifted from the UI kit's `Cargo.toml`.** The doc still pins blitz-kit
   54b7908 and lacks the fork comment, `proc-macro-crate` and the zbus note; anyview took the doc and moved only
-  the blitz-kit rev to Bardo's 43a6030.
+  the blitz-kit rev to the UI kit's 43a6030.
 - **`install.sh --set-default` is not undone by `uninstall.sh`.** The default is a line in the person's
   mimeapps.list; a default naming a missing entry is ignored by the desktop. The default covers images, plain
   text, Markdown and PDF, never HTML, tables, audio or video.
@@ -1109,7 +1109,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 
 - **Feedback is a toast and a log line, from one seam.** `host/feedback.rs` words every outcome from the task that
   ran (`Doing`) and how it ended (`Outcome`); the window's end of the task asks it. The wording is the host's, the
-  drawing the window's (`Done::Notice` to Bardo's `Toast`), and what the system said stays in the log. An export, a
+  drawing the window's (`Done::Notice` to the UI kit's `Toast`), and what the system said stays in the log. An export, a
   duplicate and a copy say the name they took and offer Show in Folder.
 - **A launch with no file waits 400 ms for the bus.** A process the bus starts has no file of its own and the
   request that started it arrives just after, so the welcome window opens after `WELCOME_AFTER` unless another window
@@ -1211,7 +1211,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   signatures, not code the viewer runs. `anyview-peek` stays at 590. Ends when docket-core splits the app-facing
   types from the planner and reader vocabulary.
 
-- **The viewer's package budget is 683 (was 682).** the plugin host, the plugin library, is one package. The plugin
+- **The viewer's package budget is 683 (was 682).** The plugin host, the plugin library, is one package. The plugin
   machinery it took over (the frames, the manifest envelope, discovery, the process handling) was already in the
   tree as the code of `anyview-plugin`, `anyview-plugin-protocol` and `anyview-platform`, and its dependencies
   (`toml`, `rustix`, `serde`, `serde_json`, `thiserror`) were already there, so nothing else is added.
@@ -1219,7 +1219,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   its `host` feature, so `toml` stays out of their trees. Ends never: this is a package moved out of the
   workspace into its own repo.
 
-- **A drag of files Viewer cannot show is not refused at the cursor.** The protocol allows it: Bardo's drop board
+- **A drag of files Viewer cannot show is not refused at the cursor.** The protocol allows it: the UI kit's drop board
   already tells the platform `set_valid_dnd_actions(&[])` for a drag that is not over a target, and the paths of a
   drag are known before the release (the `Offered` input). What is missing is a way for a target to say no to
   these paths. `bardo.patch` adds `use_file_drop_if(accepts, ondrop)`; with it the window would refuse a drag

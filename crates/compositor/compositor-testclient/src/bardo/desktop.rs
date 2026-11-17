@@ -100,7 +100,7 @@ pub struct DesktopWatch {
 
 impl DesktopWatch {
     /// Binds the first `wl_output`, a `wl_seat`, the window list when offered, and the manager;
-    /// the compositor announces the desktop at the fixture's next pump.
+    /// The compositor announces the desktop at the fixture's next pump.
     ///
     /// The manager is bound at the newest version the compositor serves (2); a client that
     /// wants version 1 behaviour uses [`DesktopWatch::start_at`].

@@ -2,7 +2,7 @@
 //!
 //! What an app asked to share (`Ask`), what there is to share (`Candidates`), the choices that
 //! follow from both (`plan`), what the person has picked (`Picks`) and the answer that goes back
-//! (`reply`). The portal portal backend asks on `org.bardo.Shell1.PickCaptureSource`;
+//! (`reply`). The portal backend asks on `org.bardo.Shell1.PickCaptureSource`;
 //! `shell-services` serves it and `shell-overlays` draws the sheet. Everything here is pure and
 //! table-tested.
 //!

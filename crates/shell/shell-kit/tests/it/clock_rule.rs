@@ -1,4 +1,4 @@
-//! The clock rule, held over the shell parts' sources: like Bardo's own (`ds/tests/clock_rule.rs`),
+//! The clock rule, held over the shell parts' sources: like the UI kit's own (`ds/tests/clock_rule.rs`),
 //! they read time only through `ui_components::base::time::clock` (`now`, `since`, `sleep`), so a harness's
 //! virtual clock reaches every timer and every "now". Test modules (from a file's `#[cfg(test)]`
 //! on, and `*tests.rs` files) are exempt; comments are skipped.

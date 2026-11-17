@@ -1,5 +1,5 @@
 //! The panel's render (design/13 §13.3.9, design/20 §1.3): a `Ds` root on the active Space's
-//! look in the sheet material, holding Bardo's `CommandPalette` embedded in the
+//! look in the sheet material, holding the UI kit's `CommandPalette` embedded in the
 //! surface (no scrim; the card is as tall as its content, its corner a squircle, and it is the
 //! blur and input region; `card.rs` measures it) over the fresh results in the runner's
 //! sections, the selected row's actions as a Bardo `Menu{Rich}` hung from that row
@@ -60,7 +60,7 @@ pub const LAUNCHER_CSS: &str = include_str!("style.css");
 /// Where the actions menu hangs while the palette has reported no usable rect: under the first
 /// row (its rect in the embedded palette is 6, 80.5, 668 x 38 in the card, which starts
 /// `SHADOW_SIDE` and `CARD_INSET` in; the menu hangs 6 px below).
-/// Bardo reads a new palette's first row before the freshly mapped surface has laid it out and
+/// The UI kit reads a new palette's first row before the freshly mapped surface has laid it out and
 /// reports 0 x 0, then nothing more until the selection moves, and the selection
 /// is always the first row then.
 #[expect(
@@ -226,7 +226,7 @@ pub(crate) struct Aside {
     touch: ui_components::motion::detail::touch::Touch,
 }
 
-/// The pane while it shows, and after it is hidden until Bardo has played it out
+/// The pane while it shows, and after it is hidden until the UI kit has played it out
 /// (`on_hidden`), so it leaves as it came.
 fn use_aside(
     shown: Option<&Shown>,

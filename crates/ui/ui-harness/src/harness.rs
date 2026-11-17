@@ -4,7 +4,7 @@
 //! Timers run on the harness's clock, so a test advances 450 ms and sees the hover card open, not
 //! before.
 //!
-//! Time. Bardo's timers are `futures-timer` sleeps and its hover intent reads `Instant::now()`,
+//! Time. The UI kit's timers are `futures-timer` sleeps and its hover intent reads `Instant::now()`,
 //! both on the wall clock, so a harness cannot fake time: [`Harness::advance`] really lets it
 //! pass. It does not spin: it sleeps on a condition variable that the document's waker signals,
 //! so it wakes exactly when a timer fires (or a resource lands), runs the renders that queued,
@@ -13,7 +13,7 @@
 //! frame's CSS time never depends on how slow the machine running the test is.
 //!
 //! That is the default, [`Clock::Wall`]. A harness built with
-//! `HarnessConfig::with_clock(Clock::Virtual)` runs Bardo's timers on the same clock as its CSS
+//! `HarnessConfig::with_clock(Clock::Virtual)` runs the UI kit's timers on the same clock as its CSS
 //! instead, and `advance` takes no wall-clock time at all (`crate::harness_clock`).
 
 use crate::error::HarnessError;

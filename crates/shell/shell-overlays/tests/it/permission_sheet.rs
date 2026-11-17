@@ -1,6 +1,6 @@
 //! What the permission sheet draws and sends, on the harness over the fake capture service:
 //! nothing until a question is put, or while the sheets are on another output; with a question,
-//! Bardo's `Alert` with the app's words and the two buttons the question names; each button, and
+//! The UI kit's `Alert` with the app's words and the two buttons the question names; each button, and
 //! Escape, sending its answer once; nothing after the question is gone. The compositor's question
 //! says what the program may do and ends with the Settings line; Escape dismisses it instead of
 //! refusing. All on the harness's virtual clock; nothing here reaches a bus.

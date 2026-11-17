@@ -1,5 +1,5 @@
 //! A text answer in the preview pane: the question as the heading, then every line of the
-//! answer in order, its emphasis set in Bardo's text runs (`ds-run`), never as markup.
+//! answer in order, its emphasis set in the UI kit's text runs (`ds-run`), never as markup.
 
 use dioxus::prelude::*;
 use shell_model::companion::{

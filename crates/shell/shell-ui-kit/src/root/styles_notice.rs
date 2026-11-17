@@ -1,6 +1,6 @@
 //! The crash guard's two jobs on the surface that carries it: mark the start good once the
 //! surface has been alive long enough, and say so when the person's styles were left off because
-//! the last two starts never got there. The notice is Bardo's `StylesOffNotice`; its Turn On
+//! the last two starts never got there. The notice is the UI kit's `StylesOffNotice`; its Turn On
 //! Again button asks the daemon on the feed's `turn_on` (nothing here opens Settings or turns a
 //! style on by itself). A surface that has no [`SettingsFeed`], or whose feed has no guard,
 //! shows nothing.
@@ -37,7 +37,7 @@ pub fn StylesNotice() -> Element {
     }
 }
 
-/// Holds Bardo's wait that marks the start good: a component of its own so the hook is called
+/// Holds the UI kit's wait that marks the start good: a component of its own so the hook is called
 /// only when there is a guard.
 #[component]
 fn StylesAlive(guard: StylesGuard) -> Element {

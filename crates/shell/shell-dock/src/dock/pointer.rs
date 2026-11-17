@@ -105,7 +105,7 @@ pub(crate) fn button(event: &MouseData) -> Option<Button> {
     }
 }
 
-/// design/10 §10.3.6: the platform's primary modifier is Cmd (Bardo's `holds_primary`: Command
+/// design/10 §10.3.6: the platform's primary modifier is Cmd (the UI kit's `holds_primary`: Command
 /// on our desktop), Alt is Option.
 pub(crate) fn modifier(event: &MouseData, platform: Platform) -> Modifier {
     let held = event.modifiers();

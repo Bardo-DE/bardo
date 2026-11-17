@@ -68,9 +68,9 @@ pub(crate) struct PanelCtx {
     /// may not).
     pub(crate) actions: Option<ActionLink>,
     pub(crate) picking: CopyValue<Picking>,
-    /// How many times the preview pane has finished leaving (Bardo's `on_hidden`).
+    /// How many times the preview pane has finished leaving (the UI kit's `on_hidden`).
     pub(crate) left: Signal<u64>,
-    /// Bardo's palette handle: a Show More / Show Less run here, not through the
+    /// The UI kit's palette handle: a Show More / Show Less run here, not through the
     /// palette's own Enter or click, still plays the group's rise or heal.
     pub(crate) palette: PaletteHandle,
     /// The answer the selection is to move to once the rows have it (after an ask).

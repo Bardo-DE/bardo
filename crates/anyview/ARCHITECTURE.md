@@ -192,7 +192,7 @@ one file.
 Token classes are words (`keyword`, `string`, `comment`, …), never colours: the stylesheet maps each
 `tok-<class>` to a design-system colour token. Markdown never passes raw HTML through (it is shown
 as text), keeps only web, mail and relative link targets, and writes local images as `data:` URLs
-read through `LocalFiles`, because Bardo's sealed frames load nothing else.
+read through `LocalFiles`, because the UI kit's sealed frames load nothing else.
 
 ## 2e. Modules inside `anyview-platform`
 
@@ -272,7 +272,7 @@ peeks on another).
 | `pdf` | `PdfPeek`, `PdfPeeked`, `PageLook`, `PageTrouble` (a page drawn, blank or failed, in no component's types): the first page, through `ui-blitz`'s thumbnail cache for a file and `pdf_thumb_bytes` for bytes handed in; facts only without the `pane` feature |
 | `worker` | `PeekWorker` (`spawn`, or `looking` for `look` itself), `WorkerConfig` (with `with_*` builders): the one thread that looks at the latest file asked for (`ask(input, reply)`), a thread per peek with an 8 MiB stack, the 4 s overrun and the cap on abandoned peeks; it takes no async runtime |
 | `when` | `modified_text`: a modification time as the Info panel words it, in the person's zone |
-| `card` | `Card`, `Part`, `Parts` (which of the media, the name and the facts it draws; all by default), `STYLE`; `page` (a `PageLook` to and from Bardo's `PdfPage`, the only place the two meet), `picture` (a `TextureLayer`), `lines` (plain and highlighted), `grid` (a table, a tree's top level and an archive's first entries, all as Bardo's `Table`), `specimen` (a font's sample lines, each an inline SVG of the face's outlines) and `frame` (Markdown in a sealed frame) are private, and `card.css` is its stylesheet |
+| `card` | `Card`, `Part`, `Parts` (which of the media, the name and the facts it draws; all by default), `STYLE`; `page` (a `PageLook` to and from the UI kit's `PdfPage`, the only place the two meet), `picture` (a `TextureLayer`), `lines` (plain and highlighted), `grid` (a table, a tree's top level and an archive's first entries, all as the UI kit's `Table`), `specimen` (a font's sample lines, each an inline SVG of the face's outlines) and `frame` (Markdown in a sealed frame) are private, and `card.css` is its stylesheet |
 
 `peek(src, sniffed, budget)` never fails: a peek that cannot be made returns a `Body::Unavailable` with the
 reason and the facts the file can still give. The pane draws a `Body` over the file's name and a `FactList`

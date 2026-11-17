@@ -1,5 +1,5 @@
 //! A page's advanced keys: one drill-in row per section; a press shows a page of that section's
-//! rows in place of the page, under Bardo's `PageHeader` with its back button.
+//! rows in place of the page, under the UI kit's `PageHeader` with its back button.
 
 use crate::files::{Edit, Files};
 use crate::icons::{GREY, tile_on};

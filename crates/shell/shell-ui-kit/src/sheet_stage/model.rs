@@ -23,7 +23,7 @@ pub enum SheetStage<T> {
 pub(super) enum StageIn<T> {
     /// The value on screen on this output now (`None`: none, or another output).
     Want(Option<T>),
-    /// The sheet's exit settled (Bardo's `on_hidden`).
+    /// The sheet's exit settled (the UI kit's `on_hidden`).
     Settled,
 }
 
@@ -63,7 +63,7 @@ impl<T> SheetStage<T> {
         }
     }
 
-    /// The value drawn and Bardo's `shown` for it.
+    /// The value drawn and the UI kit's `shown` for it.
     pub fn drawn(&self) -> Option<(&T, bool)> {
         match self {
             SheetStage::Empty => None,

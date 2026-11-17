@@ -26,7 +26,7 @@ use super::io::use_end;
 use super::surface::PANEL_ID;
 use super::words::{app_named, escape_answer, words};
 
-/// The app icon's side in points: Bardo's alert draws its hero icon at 64.
+/// The app icon's side in points: the UI kit's alert draws its hero icon at 64.
 const ICON_PX: u16 = 64;
 
 /// The buttons' element ids (the tests', and a person's stylesheet's, handles).

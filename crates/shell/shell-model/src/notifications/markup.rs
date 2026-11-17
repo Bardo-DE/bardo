@@ -1,6 +1,6 @@
 //! A notification body: the spec's markup subset (`<b>`, `<i>`, `<u>`, `<a href>`, `<img src
 //! alt>`, the five XML entities and numeric references) parsed once, at the D-Bus boundary, into
-//! styled runs the surfaces draw with Bardo's text components. Nothing downstream sees markup.
+//! styled runs the surfaces draw with the UI kit's text components. Nothing downstream sees markup.
 //!
 //! Parse at the boundary: a body that is not well-formed still becomes runs. An
 //! unknown tag is dropped and its text kept; a `<` that opens no tag is text; `<br>` (not in the

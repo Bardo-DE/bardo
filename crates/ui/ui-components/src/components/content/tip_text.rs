@@ -1,9 +1,9 @@
 //! The words of a tooltip, in one house style (owner decision 2026-10-09, design/30 section 2.5).
 //!
 //! A tooltip is "just a noun with keybinds", written `Name  ⌘K`: a short noun phrase in title case,
-//! two spaces, then the key as Bardo draws it. No parentheses, no sentence, no full stop.
+//! two spaces, then the key as the UI kit draws it. No parentheses, no sentence, no full stop.
 //!
-//! Every tip Bardo draws is built here, so the style cannot drift. The tip is separate from the
+//! Every tip the UI kit draws is built here, so the style cannot drift. The tip is separate from the
 //! accessible name: a control's `aria-label` keeps its full wording ("Star this thread") while
 //! its tip is terse ("Star  S").
 

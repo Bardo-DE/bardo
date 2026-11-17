@@ -49,7 +49,7 @@ pub struct DockProps {
     pub cards: Cards,
 }
 
-/// The margin and padding reset Bardo's `css/reset.css` would bring; the host's UA sheet sizes
+/// The margin and padding reset the UI kit's `css/reset.css` would bring; the host's UA sheet sizes
 /// the root but leaves the reset to the design system.
 const RESET_CSS: &str = "html,body{margin:0;padding:0}";
 

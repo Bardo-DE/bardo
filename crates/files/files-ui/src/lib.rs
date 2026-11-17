@@ -1,4 +1,4 @@
-//! The window of files: a Finder-like folder view drawn only with Bardo's components.
+//! The window of files: a Finder-like folder view drawn only with the UI kit's components.
 //!
 //! The parts, top to bottom:
 //!
@@ -13,7 +13,7 @@
 //! - [`looks`] and [`thumbs`] hold what the edge's workers made for the window: the previews of
 //!   Quick Look and the preview pane, and the icon view's thumbnails.
 //! - [`words`] are the pure functions that say sizes, kinds and dates the way a person reads them.
-//! - [`places`], [`rows`] and [`menu`] are the pure mappings from the model to what Bardo draws:
+//! - [`places`], [`rows`] and [`menu`] are the pure mappings from the model to what the UI kit draws:
 //!   the sidebar's sections, the table's selection and sort, the context menu's commands.
 //! - [`App`] is the window's root; its `view` is `Ds`, `SplitView`, `Sidebar`, `Toolbar` and
 //!   `VirtualTable`, and nothing is drawn by hand. The `files` program opens the window with it.

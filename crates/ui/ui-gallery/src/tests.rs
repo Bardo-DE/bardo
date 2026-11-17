@@ -1,5 +1,5 @@
 //! Whole-gallery tests: every page renders through the real root, and what it renders is
-//! Bardo's markup only (coherence rule 2); one page snapshots to real pixels.
+//! The UI kit's markup only (coherence rule 2); one page snapshots to real pixels.
 
 use crate::app::App;
 use crate::axes::{Axes, Showcase, start_with};
@@ -11,9 +11,9 @@ use ui_components::prelude::*;
 use ui_harness::{Clock, HarnessConfig, Viewport, snapshot_with};
 use ui_lint::{Exception, LintConfig, Profile, markup};
 
-/// Offences in Bardo's own markup the gallery lives with: none. Every one would be drawn by a
-/// Bardo component, not by the gallery, and a gap reported to Bardo (the Gaps page lists them).
-/// The computed custom properties Bardo writes inline on its own elements (the `--f-*` frame,
+/// Offences in the UI kit's own markup the gallery lives with: none. Every one would be drawn by a
+/// The UI kit component, not by the gallery, and a gap reported to Bardo (the Gaps page lists them).
+/// The computed custom properties the UI kit writes inline on its own elements (the `--f-*` frame,
 /// `--f-grad`, `--av-bg`, `--pc`, a Space dot's `--dot-c*`) and the `SendPill`'s marked ring are
 /// not offences. The Space editor's five inline gradients and fills were the last.
 const EXCEPTIONS: &[Exception] = &[];
