@@ -3,7 +3,8 @@
 
 use account_core::AppName;
 use action_core::AgentConfig;
-use action_settings::{AgentSettings, locator, read};
+use action_settings::{AgentSettings, read};
+use action_settings_fs::locator;
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;

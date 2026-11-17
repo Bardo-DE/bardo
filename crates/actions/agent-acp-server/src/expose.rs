@@ -2,7 +2,8 @@
 //! `true`. The binary checks it before it builds a server, so one that was never switched on has
 //! nothing to serve with.
 
-use action_settings::{AgentSettings, locator, read};
+use action_settings::{AgentSettings, read};
+use action_settings_fs::locator;
 
 /// Whether the text of a settings file says `agent.acp.expose` is on; anything but `true` is off.
 #[must_use]

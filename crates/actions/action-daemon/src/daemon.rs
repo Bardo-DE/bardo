@@ -225,7 +225,7 @@ impl Setup {
             callers,
             identity: None,
             proc_root: ProcRoot::Unset,
-            settings: action_settings::locator(env),
+            settings: action_settings_fs::locator(env),
             trace: InferWatch::off(),
             floor: Floor::none(),
             permissions,

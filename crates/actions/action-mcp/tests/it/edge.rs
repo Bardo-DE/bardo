@@ -337,7 +337,8 @@ async fn call_can_be_used_without_a_server() {
 
 #[tokio::test]
 async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
-    use action_settings::{AgentSettings, locator, read};
+    use action_settings::{AgentSettings, read};
+    use action_settings_fs::locator;
     let home = tempfile::tempdir().expect("scratch");
     let env = |key: &str| match key {
         "XDG_CONFIG_HOME" => Some(home.path().display().to_string()),

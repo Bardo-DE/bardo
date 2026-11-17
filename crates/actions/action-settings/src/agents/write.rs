@@ -2,8 +2,6 @@
 //! the history of the files of one entry, and nothing else. The file is edited in place, so comments and every other field stay.
 
 use action_core::Rewind;
-use action_store::write_atomic;
-use std::path::Path;
 use toml_edit::{DocumentMut, Item, value};
 
 /// What to do with one field of the entry.
@@ -130,34 +128,4 @@ pub fn edit_agent_rewind(text: &str, program: &str, rewind: Rewind) -> Result<St
     };
     entry.insert("checkpoints", value(word));
     Ok(doc.to_string())
-}
-
-/// Sets `checkpoints` in the entry of `program` in the file at `path`; the file is replaced
-/// whole or not at all.
-///
-/// # Errors
-///
-/// [`ChoiceFault`] when the file cannot be read or written, or [`edit_agent_rewind`] refuses the
-/// edit.
-pub fn write_agent_rewind(path: &Path, program: &str, rewind: Rewind) -> Result<(), ChoiceFault> {
-    let text = std::fs::read_to_string(path).map_err(ChoiceFault::Io)?;
-    let edited = edit_agent_rewind(&text, program, rewind)?;
-    write_atomic(path, edited.as_bytes()).map_err(ChoiceFault::Io)
-}
-
-/// Sets the choices in the entry of `program` in the file at `path`; the file is replaced whole
-/// or not at all.
-///
-/// # Errors
-///
-/// [`ChoiceFault`] when the file cannot be read or written, or [`edit_agent_choice`] refuses the
-/// edit.
-pub fn write_agent_choice(
-    path: &Path,
-    program: &str,
-    choice: &AgentChoice,
-) -> Result<(), ChoiceFault> {
-    let text = std::fs::read_to_string(path).map_err(ChoiceFault::Io)?;
-    let edited = edit_agent_choice(&text, program, choice)?;
-    write_atomic(path, edited.as_bytes()).map_err(ChoiceFault::Io)
 }

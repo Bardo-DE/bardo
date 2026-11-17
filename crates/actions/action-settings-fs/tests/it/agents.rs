@@ -2,6 +2,9 @@
 //! edit of `agents.toml`. A scratch agents directory; no agent starts and no clock is read.
 
 use action_settings::*;
+use action_settings_fs::{
+    read_agents_in, write_agent_add, write_agent_choice, write_agent_remove, write_agent_rewind,
+};
 use agent_registry::dirs::AgentsDir;
 use agent_registry::offered::{Named, Offered, Start};
 use agent_registry::slug::Slug;
@@ -68,7 +71,7 @@ fn record(start: Start, models: Vec<Named>, ways: Vec<Named>) -> Offered {
 #[test]
 fn an_agent_never_started_has_nothing_offered_and_says_so() {
     let tmp = tempfile::tempdir().expect("tmp");
-    let agents = read_agents(FILE, &AgentsDir::at(tmp.path()));
+    let agents = read_agents_in(FILE, &AgentsDir::at(tmp.path()));
     assert_eq!(agents.rows.len(), 2);
     let row = agents.get("antigravity").expect("row");
     assert_eq!(row.label, "Antigravity");
@@ -92,11 +95,11 @@ fn a_program_of_your_own_is_there_when_its_file_is() {
         )
     };
     let dir = AgentsDir::at(&tmp.path().join("agents"));
-    let row = read_agents(&file(&program), &dir).rows.remove(0);
+    let row = read_agents_in(&file(&program), &dir).rows.remove(0);
     assert_eq!(row.install_line(), "Not installed");
     assert_eq!(row.source, Source::Own { installed: false });
     std::fs::write(&program, "#!/bin/sh\n").expect("program");
-    let row = read_agents(&file(&program), &dir).rows.remove(0);
+    let row = read_agents_in(&file(&program), &dir).rows.remove(0);
     assert_eq!(row.install_line(), "Installed");
     assert_eq!(row.command.as_deref(), program.to_str());
 }
@@ -115,7 +118,7 @@ fn the_record_decides_the_models_and_whether_the_choice_is_still_offered() {
         &dir,
         "antigravity-acp",
     );
-    let row = read_agents(FILE, &dir).rows.remove(0);
+    let row = read_agents_in(FILE, &dir).rows.remove(0);
     assert_eq!(row.install_line(), "Installed");
     assert_eq!(row.sign_in_line(), "Signed in");
     assert_eq!(row.model_line(), "Model: Gemini Pro");
@@ -130,7 +133,7 @@ fn the_record_decides_the_models_and_whether_the_choice_is_still_offered() {
         &dir,
         "antigravity-acp",
     );
-    let row = read_agents(FILE, &dir).rows.remove(0);
+    let row = read_agents_in(FILE, &dir).rows.remove(0);
     assert_eq!(row.model_line(), "Model: pro (no longer offered)");
 }
 
@@ -158,7 +161,7 @@ fn needing_sign_in_lists_the_ways_and_keeps_the_models_seen_before() {
     );
     assert_eq!(after.seen, 2, "a counter, not a clock");
     assert_eq!(after.models.len(), 1);
-    let row = read_agents(FILE, &dir).rows.remove(0);
+    let row = read_agents_in(FILE, &dir).rows.remove(0);
     assert_eq!(row.sign_in_line(), "Needs signing in");
     assert_eq!(
         row.ways_line().as_deref(),
@@ -218,7 +221,7 @@ fn the_file_is_replaced_whole_and_a_refresh_names_only_the_agent() {
         way: Pick::Keep,
     };
     write_agent_choice(&path, "antigravity", &choice).expect("write");
-    let rows = read_agents(
+    let rows = read_agents_in(
         &std::fs::read_to_string(&path).expect("read"),
         &AgentsDir::at(tmp.path()),
     );
@@ -243,7 +246,7 @@ fn who_keeps_the_history_is_read_with_the_profile_as_default_and_edited_in_place
     let tmp = tempfile::tempdir().expect("tmp");
     let dir = AgentsDir::at(tmp.path());
     let read = |text: &str, program: &str| {
-        read_agents(text, &dir)
+        read_agents_in(text, &dir)
             .get(program)
             .map(|row| (row.rewind, row.rewind_line()))
     };
@@ -301,7 +304,7 @@ fn an_agent_from_the_registry_is_added_after_the_others_and_taken_out_again() {
     ] {
         assert!(added.contains(line), "{line} in {added}");
     }
-    let rows = read_agents(&out, &AgentsDir::at(std::path::Path::new("/nonexistent")));
+    let rows = read_agents_in(&out, &AgentsDir::at(std::path::Path::new("/nonexistent")));
     assert!(rows.get("agy").is_some());
 
     let back = edit_agent_remove(&out, "agy").expect("remove");
@@ -357,7 +360,7 @@ fn the_first_agent_makes_the_file_and_the_last_one_out_leaves_it_valid() {
     write_agent_remove(&path, "agy").expect("remove");
     let text = std::fs::read_to_string(&path).expect("read");
     assert!(
-        read_agents(&text, &AgentsDir::at(tmp.path()))
+        read_agents_in(&text, &AgentsDir::at(tmp.path()))
             .get("agy")
             .is_none()
     );

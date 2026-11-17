@@ -1,8 +1,9 @@
 //! docket's settings (design/22 section 3.27): the `agent.*` keys the Settings app writes to
 //! `$XDG_CONFIG_HOME/actions/settings.toml`, the schema it draws them from, and the lenient reader
 //! the daemons share. A bad value falls back per key and is reported; the file is never fatal.
-//! Reading is a pure function of text; only [`Locator::read`] touches the disk, and the live
-//! watch is the daemon's (intentd), so this crate reaches no runtime and no watcher.
+//! Everything here is a pure function of text (and of what a caller says about the records beside
+//! the agents); `action-settings-fs` finds and reads and writes the files, and the live watch is
+//! the daemon's (intentd).
 
 mod agents;
 mod keys;
@@ -12,14 +13,12 @@ mod read;
 mod tests;
 
 use action_core::AgentConfig;
-use settings_store_fs::Locator;
 
 pub use agents::{
-    AddFault, AgentChoice, AgentRow, Agents, Availability, ChoiceFault, Found, KNOWN, KnownAgent,
-    ModelState, NewAgent, Offers, Pick, REFRESH_PROGRAM, RefreshRequest, SignInState, Source,
-    dirs_of, edit_agent_add, edit_agent_choice, edit_agent_remove, edit_agent_rewind, find_known,
-    read_agents, unlisted, write_agent_add, write_agent_choice, write_agent_remove,
-    write_agent_rewind,
+    AddFault, AgentChoice, AgentRecords, AgentRow, Agents, Availability, ChoiceFault, Found, KNOWN,
+    KnownAgent, ModelState, NewAgent, Offers, Pick, REFRESH_PROGRAM, RefreshRequest, SignInState,
+    Source, dirs_of, edit_agent_add, edit_agent_choice, edit_agent_remove, edit_agent_rewind,
+    find_known, read_agents, unlisted,
 };
 pub use places::{
     CloudAccount, CloudAllowed, Floor, Known, KnownPlace, ModelChoice, OwnComputer, PLACES_PATH,
@@ -33,15 +32,6 @@ pub const SCHEMA: &str = include_str!("../../dist/settings/actions.settings.toml
 
 /// The file the settings live in, under the configuration directory.
 pub const SETTINGS_FILE: &str = "actions/settings.toml";
-
-/// Where the settings file is.
-///
-/// `$XDG_CONFIG_HOME/bardo/actions/settings.toml`, then the same under each of `$XDG_CONFIG_DIRS`.
-/// Read it with
-/// [`Locator::read`](settings_store_fs::Locator::read)`(base, read)`.
-pub fn locator(env: &impl Fn(&str) -> Option<String>) -> Locator {
-    Locator::from_env(env, SETTINGS_FILE)
-}
 
 /// The reviewers' own timeouts when the router enforces its deadline: long ones, so the router's
 /// live deadline is the one that fires.

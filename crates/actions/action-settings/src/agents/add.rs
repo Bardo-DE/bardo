@@ -6,8 +6,6 @@
 //! and the other entries stay.
 
 use super::write::ChoiceFault;
-use action_store::write_atomic;
-use std::path::Path;
 use toml_edit::{ArrayOfTables, DocumentMut, Item, Table, value};
 
 /// An agent to add from the registry.
@@ -126,36 +124,4 @@ pub fn edit_agent_remove(text: &str, program: &str) -> Result<String, ChoiceFaul
         return Err(ChoiceFault::NoSuchAgent);
     }
     Ok(doc.to_string())
-}
-
-/// Adds `agent` to the file at `path`, which need not exist yet; the file is replaced whole or
-/// not at all.
-///
-/// # Errors
-///
-/// [`AddFault`] when the file cannot be read or written, or [`edit_agent_add`] refuses the edit.
-pub fn write_agent_add(path: &Path, agent: &NewAgent) -> Result<(), AddFault> {
-    let text = match std::fs::read_to_string(path) {
-        Ok(text) => text,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => String::new(),
-        Err(error) => return Err(AddFault::Io(error.into())),
-    };
-    let edited = edit_agent_add(&text, agent)?;
-    if let Some(dir) = path.parent() {
-        std::fs::create_dir_all(dir).map_err(|error| AddFault::Io(error.into()))?;
-    }
-    write_atomic(path, edited.as_bytes()).map_err(|error| AddFault::Io(error.into()))
-}
-
-/// Takes the entry of `program` out of the file at `path`; the file is replaced whole or not at
-/// all.
-///
-/// # Errors
-///
-/// [`ChoiceFault`] when the file cannot be read or written, or [`edit_agent_remove`] refuses the
-/// edit.
-pub fn write_agent_remove(path: &Path, program: &str) -> Result<(), ChoiceFault> {
-    let text = std::fs::read_to_string(path).map_err(ChoiceFault::Io)?;
-    let edited = edit_agent_remove(&text, program)?;
-    write_atomic(path, edited.as_bytes()).map_err(ChoiceFault::Io)
 }

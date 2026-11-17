@@ -23,6 +23,7 @@ action-client = {path = "../action-client", default-features = false, features =
 action-dbus = {path = "../action-dbus"}
 action-manifest = {path = "../action-manifest"}
 action-settings = {path = "../action-settings"}
+action-settings-fs = {path = "../action-settings-fs"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 rmcp = { workspace = true, features = ["server", "transport-io"] }

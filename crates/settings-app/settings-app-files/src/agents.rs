@@ -4,10 +4,8 @@
 use crate::error::FilesError;
 use crate::read::text_of;
 use crate::values::{ConfigHome, DataHome};
-use action_settings::{
-    AddFault, AgentChoice, Agents, ChoiceFault, NewAgent, read_agents, write_agent_add,
-    write_agent_choice, write_agent_remove,
-};
+use action_settings::{AddFault, AgentChoice, Agents, ChoiceFault, NewAgent};
+use action_settings_fs::{read_agents_in, write_agent_add, write_agent_choice, write_agent_remove};
 use agent_install::store::{agents, versions};
 use agent_registry::dirs::AgentsDir;
 use settings_app_model::FoundAgent;
@@ -26,7 +24,7 @@ pub fn load_agents(config: &ConfigHome, data: &DataHome) -> Agents {
         .ok()
         .flatten()
         .unwrap_or_default();
-    read_agents(&text, &AgentsDir::at(&data.0.join(AGENTS_DIR)))
+    read_agents_in(&text, &AgentsDir::at(&data.0.join(AGENTS_DIR)))
 }
 
 /// Sets the person's `choice` in the entry of `program`; nothing else in the file changes.

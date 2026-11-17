@@ -1,6 +1,6 @@
 [package]
 name = "action-settings"
-description = "docket's settings file ($XDG_CONFIG_HOME/actions/settings.toml, design/22 section 3.27): the key table, the lenient reader that falls back per key, the schema the Settings app draws, and where the file is found. Pure but for reading the file and the agents records beside it; the watch lives in the daemon."
+description = "docket's settings file ($XDG_CONFIG_HOME/actions/settings.toml, design/22 section 3.27): the key table, the lenient reader that falls back per key, the schema the Settings app draws, and where the file is found. Pure: reading the file and the agents records beside it is action-settings-fs."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -13,18 +13,13 @@ agent-registry = {path = "../agent-registry"}
 action-core = {path = "../action-core"}
 permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
-action-store = {path = "../action-store"}
 settings-store = { path = "../../settings/settings-store" }
-settings-store-fs = { path = "../../settings/settings-store-fs" }
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 toml = { workspace = true }
 toml_edit = { workspace = true }
-
-[dev-dependencies]
-tempfile = { workspace = true }
 
 [lints]
 workspace = true

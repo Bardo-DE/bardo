@@ -37,6 +37,7 @@ action-router = {path = "../action-router"}
 agent-skills = {path = "../agent-skills"}
 agent-skills-disk = {path = "../agent-skills-disk"}
 action-settings = {path = "../action-settings"}
+action-settings-fs = {path = "../action-settings-fs"}
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 action-client = {path = "../action-client", default-features = false, features = ["dbus"]}

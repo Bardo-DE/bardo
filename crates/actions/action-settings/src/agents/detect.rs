@@ -85,7 +85,26 @@ pub fn unlisted<'a>(agents: &Agents, found: &'a [Found]) -> Vec<&'a Found> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use agent_registry::dirs::AgentsDir;
+    use crate::agents::AgentRecords;
+    use agent_registry::offered::Offered;
+    use agent_registry::slug::Slug;
+
+    /// No record of any agent, and no file.
+    struct Nothing;
+
+    impl AgentRecords for Nothing {
+        fn installed(&self, _: &Slug, _: &Slug) -> bool {
+            false
+        }
+
+        fn offered(&self, _: &Slug) -> Option<Offered> {
+            None
+        }
+
+        fn is_file(&self, _: &Path) -> bool {
+            false
+        }
+    }
 
     fn dirs() -> Vec<PathBuf> {
         dirs_of("/first/bin::/second/bin")
@@ -123,8 +142,7 @@ mod tests {
     #[test]
     fn a_found_program_that_an_entry_runs_is_listed_and_one_that_none_runs_is_not() {
         let file = "[[agent]]\nprogram = \"claude-code\"\ncommand = \"/opt/x/claude-agent-acp\"\n";
-        let tmp = std::env::temp_dir();
-        let agents = crate::agents::read_agents(file, &AgentsDir::at(&tmp.join("none")));
+        let agents = crate::agents::read_agents(file, &Nothing);
         let found = vec![
             Found {
                 known: KNOWN[0],

@@ -1,0 +1,25 @@
+[package]
+name = "action-settings-fs"
+description = "docket's settings on disk: where settings.toml is, the agent records read from the agents directory, and the writes of agents.toml. The rules and the text edits are action-settings."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+action-settings = {path = "../action-settings"}
+action-store = {path = "../action-store"}
+action-core = {path = "../action-core"}
+agent-registry = {path = "../agent-registry"}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+
+[dev-dependencies]
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
+settings-store = { path = "../../settings/settings-store" }
+tempfile = { workspace = true }
+
+[lints]
+workspace = true

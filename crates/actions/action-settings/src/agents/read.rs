@@ -2,10 +2,9 @@
 
 use super::model::{AgentRow, Agents, Availability, ModelState, Offers, SignInState, Source};
 use action_core::Rewind;
-use agent_registry::dirs::AgentsDir;
 use agent_registry::offered::{Offered, Start};
-use agent_registry::record::{FILE, Record};
 use agent_registry::slug::Slug;
+use std::path::Path;
 
 fn text(t: &toml::Table, key: &str) -> Option<String> {
     t.get(key)?
@@ -14,30 +13,30 @@ fn text(t: &toml::Table, key: &str) -> Option<String> {
         .map(str::to_owned)
 }
 
-/// Whether `version` of `id` is installed: its install record is there and is one.
-fn is_installed(dir: &AgentsDir, id: &Slug, version: &Slug) -> bool {
-    std::fs::read_to_string(dir.installed(id, version).join(FILE))
-        .is_ok_and(|text| Record::parse(&text).is_ok())
+/// What the records beside the agents say. The disk is behind it; this crate reads none.
+pub trait AgentRecords {
+    /// Whether `version` of `id` is installed: its install record is there and is one.
+    fn installed(&self, id: &Slug, version: &Slug) -> bool;
+
+    /// What the agent installed as `id` last offered; none when it never started or the record
+    /// is not readable.
+    fn offered(&self, id: &Slug) -> Option<Offered>;
+
+    /// Whether `path` is a file.
+    fn is_file(&self, path: &Path) -> bool;
 }
 
-/// What the agent installed as `id` last offered; none when it never started or the record is
-/// not readable.
-fn offered(dir: &AgentsDir, id: &str) -> Option<Offered> {
-    let text = std::fs::read_to_string(dir.offered(&Slug::parse(id).ok()?)).ok()?;
-    Offered::parse(&text).ok()
-}
-
-fn source(entry: &toml::Table, dir: &AgentsDir) -> Source {
+fn source(entry: &toml::Table, records: &impl AgentRecords) -> Source {
     let (Some(id), Some(version)) = (text(entry, "registry"), text(entry, "version")) else {
         // The program the person named is there if the file is: nothing is run to find out.
         let installed =
-            text(entry, "command").is_some_and(|command| std::path::Path::new(&command).is_file());
+            text(entry, "command").is_some_and(|command| records.is_file(Path::new(&command)));
         return Source::Own { installed };
     };
     let installed = Slug::parse(&id)
         .ok()
         .zip(Slug::parse(&version).ok())
-        .is_some_and(|(id, version)| is_installed(dir, &id, &version));
+        .is_some_and(|(id, version)| records.installed(&id, &version));
     Source::Registry {
         id,
         version,
@@ -89,11 +88,11 @@ fn rewind(entry: &toml::Table) -> Rewind {
     }
 }
 
-fn row(entry: &toml::Table, dir: &AgentsDir) -> Option<AgentRow> {
+fn row(entry: &toml::Table, records: &impl AgentRecords) -> Option<AgentRow> {
     let program = text(entry, "program")?;
-    let source = source(entry, dir);
+    let source = source(entry, records);
     let record = match &source {
-        Source::Registry { id, .. } => offered(dir, id),
+        Source::Registry { id, .. } => Slug::parse(id).ok().and_then(|id| records.offered(&id)),
         Source::Own { .. } => None,
     };
     let (offers, sign_in) = seen(record);
@@ -110,11 +109,11 @@ fn row(entry: &toml::Table, dir: &AgentsDir) -> Option<AgentRow> {
     })
 }
 
-/// The rows of `agents.toml` (its text), one per listed agent, against the records in `dir`.
+/// The rows of `agents.toml` (its text), one per listed agent, against `records`.
 ///
-/// Lenient: text that is not TOML gives no rows, and an entry with no name is left out. Reads
-/// files; starts nothing.
-pub fn read_agents(agents_toml: &str, dir: &AgentsDir) -> Agents {
+/// Lenient: text that is not TOML gives no rows, and an entry with no name is left out. Starts
+/// nothing.
+pub fn read_agents(agents_toml: &str, records: &impl AgentRecords) -> Agents {
     let Ok(doc) = agents_toml.parse::<toml::Table>() else {
         return Agents::default();
     };
@@ -124,7 +123,7 @@ pub fn read_agents(agents_toml: &str, dir: &AgentsDir) -> Agents {
         .map(|list| {
             list.iter()
                 .filter_map(toml::Value::as_table)
-                .filter_map(|entry| row(entry, dir))
+                .filter_map(|entry| row(entry, records))
                 .collect()
         })
         .unwrap_or_default();

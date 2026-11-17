@@ -22,6 +22,7 @@ permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 agent-session = {path = "../agent-session"}
 action-settings = {path = "../action-settings"}
+action-settings-fs = {path = "../action-settings-fs"}
 futures-channel = { workspace = true, features = ["std"] }
 futures-util = { workspace = true, features = ["sink", "std"] }
 account-core = {path = "../../accounts/account-core"}

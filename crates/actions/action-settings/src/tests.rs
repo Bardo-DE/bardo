@@ -3,7 +3,7 @@
 use super::*;
 use crate::keys::table;
 use settings_store::rules::Rule;
-use settings_store::{InvalidKey, Loaded, UnknownKey};
+use settings_store::{InvalidKey, UnknownKey};
 use std::collections::BTreeSet;
 
 /// A spend cap of `n` millionths of a US dollar.
@@ -400,37 +400,5 @@ fn unknown_keys_are_reported_and_version_is_not_one() {
             "intentd: settings: agent.budget.bogus: no such key, ignored",
             "intentd: settings: other.x: no such key, ignored"
         ]
-    );
-}
-
-#[test]
-fn the_locator_reads_the_first_file_of_the_configuration_directories() {
-    let home = tempfile::tempdir().unwrap();
-    let etc = tempfile::tempdir().unwrap();
-    for (dir, text) in [
-        (&home, "[agent.budget]\nspend_microusd = 5\n"),
-        (
-            &etc,
-            "[agent.budget]\nspend_microusd = 9\n[agent.mcp]\nexpose = true\n",
-        ),
-    ] {
-        std::fs::create_dir_all(dir.path().join("bardo/actions")).unwrap();
-        std::fs::write(dir.path().join("bardo").join(SETTINGS_FILE), text).unwrap();
-    }
-    let env = |k: &str| match k {
-        "XDG_CONFIG_HOME" => Some(home.path().display().to_string()),
-        "XDG_CONFIG_DIRS" => Some(etc.path().display().to_string()),
-        _ => None,
-    };
-    let found = locator(&env);
-    assert_eq!(found.watch_dir(), Some(home.path().join("bardo/actions")));
-    let value = found.read(AgentSettings::default(), read).value;
-    assert_eq!(value.agent.budget.spend, Some(micro_usd(5)));
-    // The first file wins whole: the later directory's other keys are not merged in.
-    assert!(!value.expose);
-    let none = locator(&|_: &str| None::<String>);
-    assert_eq!(
-        none.read(AgentSettings::default(), read),
-        Loaded::clean(AgentSettings::default())
     );
 }

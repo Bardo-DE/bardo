@@ -35,6 +35,7 @@ action-client = {path = "../action-client", default-features = false, features =
 action-dbus = {path = "../action-dbus", features = ["inferd"]}
 action-procroot = {path = "../action-procroot"}
 action-settings = {path = "../action-settings"}
+action-settings-fs = {path = "../action-settings-fs"}
 futures-util = { workspace = true, features = ["std"] }
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}

@@ -8,7 +8,8 @@
 //! (`scripts/check-boundary.sh`), so the edge reads the file again whenever it is asked whether it
 //! is on: a change in the Settings app applies to the next request.
 
-use action_settings::{AgentSettings, locator, read};
+use action_settings::{AgentSettings, read};
+use action_settings_fs::locator;
 use std::path::PathBuf;
 
 pub use action_settings::{SCHEMA, SETTINGS_FILE};

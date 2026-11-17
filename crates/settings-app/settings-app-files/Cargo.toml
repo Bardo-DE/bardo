@@ -15,6 +15,7 @@ settings-app-model = {path = "../settings-app-model"}
 agent-registry = {path = "../../actions/agent-registry"}
 agent-install = {path = "../../actions/agent-install"}
 action-settings = {path = "../../actions/action-settings"}
+action-settings-fs = {path = "../../actions/action-settings-fs"}
 ui-extensions = {path = "../../ui/ui-extensions"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 freedesktop-icons = { workspace = true }

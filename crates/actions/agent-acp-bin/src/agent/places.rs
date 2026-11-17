@@ -57,7 +57,7 @@ impl Places {
             .join("bardo")
             .join("actions");
         Self {
-            locator: action_settings::locator(&get),
+            locator: action_settings_fs::locator(&get),
             data,
             home: get("HOME").map(PathBuf::from),
             path: get("PATH").unwrap_or_default(),

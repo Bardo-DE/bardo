@@ -137,6 +137,7 @@ members = [
     "crates/actions/action-router",
     "crates/actions/agent-session",
     "crates/actions/action-settings",
+    "crates/actions/action-settings-fs",
     "crates/actions/agent-skills",
     "crates/actions/agent-skills-disk",
     "crates/actions/action-store",
