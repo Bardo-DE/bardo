@@ -240,6 +240,7 @@ fn settings_is_a_unit_and_an_app_name_stands_for_its_service() {
 /// `<root>/units/<unit>` for a unit's main process): only the main process of the Settings unit
 /// has the role; a process moved into its cgroup, and one in an app scope named like the app,
 /// do not.
+#[cfg(feature = "test-proc-root")]
 #[test]
 fn only_the_settings_units_main_process_is_settings() {
     let root = base_testkit::Scratch::new("inferd-settings-unit");
