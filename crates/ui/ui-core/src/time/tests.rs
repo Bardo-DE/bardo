@@ -160,13 +160,17 @@ fn a_wall_install_lifts_to_the_virtual_clock_below_it() {
 #[test]
 fn only_a_finished_wall_sleep_is_counted() {
     let _wall = install_wall();
-    let waker = Waker::from(Arc::new(Count::default()));
+    let woken = Arc::new(Count::default());
+    let waker = Waker::from(Arc::clone(&woken));
     let mut cx = Context::from_waker(&waker);
     let before = wall_sleeps_finished();
     let mut wait = pin!(sleep(ms(5)));
     assert_eq!(wait.as_mut().poll(&mut cx), Poll::Pending);
     assert_eq!(wall_sleeps_finished(), before, "still waiting");
-    std::thread::sleep(ms(30));
+    // The wall timer wakes the task when it is due: wait for that wake.
+    base_testkit::eventually_blocking("the wall sleep woke its task", || {
+        woken.0.load(Ordering::SeqCst) > 0
+    });
     assert_eq!(wait.as_mut().poll(&mut cx), Poll::Ready(()));
     assert_eq!(wall_sleeps_finished(), before + 1);
 

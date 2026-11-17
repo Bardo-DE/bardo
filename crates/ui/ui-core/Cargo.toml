@@ -21,6 +21,8 @@ serde_json = { workspace = true, optional = true }
 
 [dev-dependencies]
 serde_json = { workspace = true }
+# The wall-clock sleep test waits for its timer by the one deadline wait.
+base-testkit = { path = "../../base/base-testkit" }
 
 [features]
 # `ds_core::testing`: checks a stored `Word` against its serde form.
