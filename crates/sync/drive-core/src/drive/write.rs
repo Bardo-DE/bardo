@@ -36,7 +36,6 @@ use std::os::unix::fs::{FileExt, OpenOptionsExt};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
-use std::time::Instant;
 use sync_core::{ItemKind, RemoteId};
 
 /// How many times a change follows bytes that moved under it (sent, or taken into a copy)
@@ -384,10 +383,10 @@ impl Inner {
             let mut writing = held(&self.writing);
             let at = writing.entry(id.clone()).or_insert(Writing {
                 handles: 0,
-                last: Instant::now(),
+                last: self.clock.now(),
             });
             at.handles += 1;
-            at.last = Instant::now();
+            at.last = self.clock.now();
         };
         *held(&self.open).entry(id.clone()).or_default() += 1;
         WriteHandle(handle)
@@ -625,7 +624,7 @@ impl Inner {
     /// Notes that `id` was written or closed now: its quiet time starts again.
     fn touched_write(&self, id: &NodeId) {
         if let Some(writing) = held(&self.writing).get_mut(id) {
-            writing.last = Instant::now();
+            writing.last = self.clock.now();
         }
     }
 
@@ -1136,7 +1135,7 @@ impl Drive {
             match writing.get_mut(&id) {
                 Some(at) => {
                     at.handles = at.handles.saturating_sub(1);
-                    at.last = Instant::now();
+                    at.last = inner.clock.now();
                     at.handles == 0
                 }
                 None => true,

@@ -2,7 +2,30 @@ use super::*;
 use crate::testing::{MemoryListing, MemorySink, MemorySource, Refuse, Took};
 use base_testkit::{Scratch, eventually};
 
+/// The system's monotonic clock that a test can step forward by hand: time still passes by
+/// itself, and `step` moves it on past any wait at once.
+#[derive(Default)]
+struct Stepped {
+    by: Mutex<Duration>,
+}
+
+impl Stepped {
+    fn step(&self, by: Duration) {
+        *held(&self.by) += by;
+    }
+}
+
+impl Monotonic for Stepped {
+    fn now(&self) -> Instant {
+        Instant::now() + *held(&self.by)
+    }
+}
+
+/// More than the longest wait the sender ever sets (its backoff, [`send::BACKOFF_MOST`]).
+const PAST_EVERY_WAIT: Duration = Duration::from_secs(600);
+
 struct Rig {
+    clock: Arc<Stepped>,
     dir: Scratch,
     listing: Arc<MemoryListing>,
     source: Arc<MemorySource>,
@@ -27,8 +50,12 @@ async fn rig() -> Rig {
         std::sync::Arc::clone(&source),
         4,
     ));
+    let clock = Arc::new(Stepped::default());
     let drive = Drive::open_writable(
-        config(&dir),
+        DriveConfig {
+            clock: Arc::<Stepped>::clone(&clock),
+            ..config(&dir)
+        },
         std::sync::Arc::<MemoryListing>::clone(&listing),
         std::sync::Arc::<MemorySource>::clone(&source),
         std::sync::Arc::<MemorySink>::clone(&sink),
@@ -36,6 +63,7 @@ async fn rig() -> Rig {
     .await
     .expect("drive");
     Rig {
+        clock,
         dir,
         listing,
         source,
@@ -47,6 +75,7 @@ async fn rig() -> Rig {
 /// `rig` with its drive closed and opened again over the same cache.
 async fn restarted(rig: Rig) -> Rig {
     let Rig {
+        clock,
         dir,
         listing,
         source,
@@ -60,6 +89,7 @@ async fn restarted(rig: Rig) -> Rig {
     let drive = Drive::open_writable(
         DriveConfig {
             lock_wait: base_testkit::GENEROUS,
+            clock: Arc::<Stepped>::clone(&clock),
             ..config(&dir)
         },
         std::sync::Arc::<MemoryListing>::clone(&listing),
@@ -69,20 +99,13 @@ async fn restarted(rig: Rig) -> Rig {
     .await
     .expect("drive");
     Rig {
+        clock,
         dir,
         listing,
         source,
         sink,
         drive,
     }
-}
-
-/// A best-effort absence check: lets `ms` of the wall clock pass so a send that must not happen
-/// has had its chance. Nothing announces a send that does not happen, and the sender times its
-/// quiet window and its backoff by `Instant`, not by a clock a test can step, so neither a marker
-/// nor a paused clock reaches it. The windows are several times the 30 ms quiet time.
-async fn rule_out_stray(ms: u64) {
-    tokio::time::sleep(Duration::from_millis(ms)).await;
 }
 
 fn remote(id: &str) -> NodeId {
@@ -133,10 +156,19 @@ impl Rig {
         self.drive.release_write(handle);
     }
 
+    /// Moves the sender's clock past every wait it has (the quiet time, the backoff after a
+    /// refusal) and waits until it has looked again: whatever was due is sent by the time this
+    /// returns, so what is not sent was not sent for a reason other than waiting. It must not
+    /// be called while the sink holds an upload.
+    async fn ruled_out(&self) {
+        self.clock.step(PAST_EVERY_WAIT);
+        self.drive.sender_settled().await;
+    }
+
     /// Waits for `n` changes to be sent, and checks no more follow.
     async fn sent(&self, n: usize) {
         eventually(&format!("{n} changes sent"), || self.sink.took().len() >= n).await;
-        rule_out_stray(80).await;
+        self.ruled_out().await;
         assert_eq!(self.sink.took().len(), n, "{:?}", self.sink.took());
     }
 }
@@ -186,7 +218,7 @@ async fn a_file_made_and_removed_before_it_was_sent_is_never_sent() {
         b"temp"
     );
     rig.drive.release_write(handle);
-    rule_out_stray(150).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took(), []);
     assert!(rig.names(&NodeId::Top).is_empty());
     assert_eq!(rig.drive.local_bytes(), 0);
@@ -277,13 +309,13 @@ async fn offline_or_paused_a_change_waits_and_is_sent_after() {
     let rig = rig().await;
     rig.sink.refuse(Some(Refuse::Offline));
     let id = rig.write_new(&NodeId::Top, "a.txt", b"abc").await;
-    rule_out_stray(100).await;
+    eventually("tried and refused", || rig.sink.tries() >= 1).await;
     assert_eq!(rig.state(&id), ItemState::Waiting);
     rig.drive.set_paused(true);
     rig.sink.refuse(None);
     rig.drive.set_offline(true);
     rig.drive.set_offline(false);
-    rule_out_stray(100).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took(), [], "held while paused");
     assert_eq!(rig.state(&id), ItemState::Waiting);
     rig.drive.set_paused(false);
@@ -368,7 +400,7 @@ async fn a_name_the_drive_refuses_is_refused_when_made_and_lock_files_stay_here(
     );
     let lock = rig.write_new(&NodeId::Top, "~$Plan.docx", b"me").await;
     let other = rig.write_new(&NodeId::Top, ".~lock.Plan.odt#", b"me").await;
-    rule_out_stray(150).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took(), [], "lock files are never sent");
     assert_eq!(rig.state(&lock), ItemState::Downloaded);
     assert_eq!(rig.state(&other), ItemState::Downloaded);
@@ -380,8 +412,8 @@ async fn eviction_never_takes_what_was_changed_here() {
     rig.file("r", None, "r.txt", b"drive bytes");
     rig.drive.set_paused(true);
     rig.write_at("r", 0, b"DRIVE").await;
+    // Eviction is done by the time `set_limit` returns.
     rig.drive.set_limit(CacheLimit::Bytes(0));
-    rule_out_stray(50).await;
     assert_eq!(
         rig.drive.read(&remote("r"), 0, 64).await.expect("read"),
         b"DRIVE bytes"
@@ -406,7 +438,7 @@ async fn opened_and_closed_with_nothing_written_is_left_as_the_drive_has_it() {
         .await
         .expect("open");
     rig.drive.release_write(handle);
-    rule_out_stray(100).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took(), []);
     assert_eq!(rig.drive.unsent(), 0);
 }
@@ -540,7 +572,7 @@ async fn a_removal_of_a_file_changed_on_the_drive_brings_the_drives_version_back
     let mut names = rig.names(&NodeId::Top);
     names.sort();
     assert_eq!(names, ["Keep", "Plan.txt"]);
-    rule_out_stray(100).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took(), [], "nothing was removed");
     assert_eq!(rig.drive.unsent(), 0);
 }
@@ -644,7 +676,7 @@ async fn the_desktop_trash_stays_here_and_sends_what_goes_in_to_the_recycle_bin(
     // Emptied: only the bytes here go.
     rig.drive.remove(&note).expect("empty");
     rig.drive.remove_folder(&info).expect("empty");
-    rule_out_stray(100).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took().len(), 2);
 }
 
@@ -712,7 +744,9 @@ async fn a_write_while_its_upload_lands_is_never_lost() {
     meet(&hook).await.expect("met");
     *held(&rig.drive.inner.write_hook) = None;
     rig.sink.release();
-    rule_out_stray(100).await;
+    // The upload's bytes are all with the sink; its landing then waits for the bytes' lock the
+    // write holds.
+    eventually("the upload went", || !rig.sink.uploads().is_empty()).await;
     meet(&hook).await.expect("met");
     writing.await.expect("joined").expect("write");
     rig.drive.release_write(handle);
@@ -983,7 +1017,7 @@ async fn a_new_file_whose_answer_was_lost_is_taken_as_made_and_never_made_twice(
         rig.sink.tries() >= 2 && rig.drive.unsent() == 0
     })
     .await;
-    rule_out_stray(80).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took(), [Took::New(None, "a.txt".into(), 7)]);
     assert_eq!(rig.names(&NodeId::Top), ["a.txt"]);
 }
@@ -999,7 +1033,7 @@ async fn new_bytes_whose_answer_was_lost_are_taken_as_sent_not_split_off() {
         rig.sink.tries() >= 2 && rig.drive.unsent() == 0
     })
     .await;
-    rule_out_stray(80).await;
+    rig.ruled_out().await;
     assert_eq!(rig.sink.took(), [Took::Replace("r".into(), 9)]);
     assert_eq!(rig.names(&NodeId::Top), ["r.txt"]);
 }
@@ -1024,7 +1058,7 @@ async fn what_is_made_under_a_reserved_id_is_made_once_however_often_it_is_sent(
         rig.sink.tries() >= 4 && rig.drive.unsent() == 0
     })
     .await;
-    rule_out_stray(80).await;
+    rig.ruled_out().await;
     let NodeId::Remote(folder) = &work else {
         panic!("{work:?}")
     };
@@ -1044,8 +1078,8 @@ async fn a_sign_in_the_drive_refuses_holds_what_waits_until_it_is_signed_in_agai
     rig.sink.refuse(Some(Refuse::SignedOut));
     rig.write_new(&NodeId::Top, "a.txt", b"a").await;
     eventually("held", || rig.drive.signed_out()).await;
-    // Longer than the first wait after a change the drive could not take.
-    rule_out_stray(1500).await;
+    // Past the first wait after a change the drive could not take.
+    rig.ruled_out().await;
     assert_eq!(rig.sink.tries(), 1, "nothing more is sent meanwhile");
     rig.sink.refuse(None);
     rig.drive.set_signed_out(false);
@@ -1210,7 +1244,7 @@ async fn bytes_written_between_two_tries_under_a_reserved_id_are_sent_over_what_
         rig.sink.uploads().len() >= 2 && rig.drive.unsent() == 0
     })
     .await;
-    rule_out_stray(80).await;
+    rig.ruled_out().await;
     assert_eq!(
         rig.sink.uploads(),
         [b"first".to_vec(), b"FIRST, then more".to_vec()]
@@ -1243,7 +1277,7 @@ async fn a_new_file_is_never_taken_for_a_drive_item_another_change_here_is_of() 
     // The drive's "a.txt" holds just these bytes, and is the file renamed here.
     rig.write_new(&NodeId::Top, "a.txt", b"same").await;
     eventually("tried", || rig.sink.tries() >= 2).await;
-    rule_out_stray(200).await;
+    rig.ruled_out().await;
     let edit = rig
         .drive
         .inner
@@ -1279,7 +1313,9 @@ async fn a_write_through_a_file_saved_over_never_lands_in_the_bytes_that_replace
     meet(&hook).await.expect("met");
     let drive = rig.drive.clone();
     let late = tokio::spawn(async move { drive.write(handle, 0, b"ZZZ").await });
-    rule_out_stray(100).await;
+    // Best effort: nothing announces that the write is waiting on the lock. It is there to give
+    // the write the chance to be; if it is not yet, it finds the file gone all the same.
+    tokio::time::sleep(Duration::from_millis(100)).await;
     held(&rig.drive.inner.hooks).remove("saved over");
     meet(&hook).await.expect("met");
     saving.await.expect("joined").expect("saved");
@@ -1391,7 +1427,9 @@ async fn an_older_copy_of_the_index_is_never_written_over_a_newer_one() {
         .expect("folder");
     let inner = Arc::clone(&rig.drive.inner);
     let newer = tokio::task::spawn_blocking(move || inner.flush_now());
-    rule_out_stray(100).await;
+    // Best effort: nothing announces that the second write is waiting for the first. If it has
+    // not begun yet it simply goes after, which the file also shows.
+    tokio::time::sleep(Duration::from_millis(100)).await;
     held(&rig.drive.inner.hooks).remove("flush");
     meet(&hook).await.expect("met");
     older.await.expect("joined").expect("written");
@@ -1463,6 +1501,7 @@ async fn a_drive_reopened_on_a_one_thread_runtime_gets_the_lock_when_the_old_one
         source,
         sink,
         drive,
+        ..
     } = rig;
     drop(drive);
     let wait = Duration::from_secs(10);

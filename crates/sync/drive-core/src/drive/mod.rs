@@ -48,7 +48,7 @@ use crate::limit::CacheLimit;
 use crate::listing::{Listing, ListingError};
 use crate::sink::Sink;
 use crate::source::Source;
-use base_time::UnixSeconds;
+use base_time::{Monotonic, SystemMonotonic, UnixSeconds};
 use fetch::Transfer;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -171,7 +171,7 @@ pub enum DriveError {
 }
 
 /// How a drive's cache is set up.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone)]
 pub struct DriveConfig {
     /// The cache directory (`$XDG_CACHE_HOME/bardo/sync/drives/<account>/`).
     pub cache: PathBuf,
@@ -191,6 +191,24 @@ pub struct DriveConfig {
     /// How the free space keeping everything downloaded is held against is found (measured each
     /// time it is asked, by default).
     pub free_space: FreeSpace,
+    /// The clock the quiet time and the wait after a refusal are counted on (the system's, by
+    /// default; a test steps its own).
+    pub clock: Arc<dyn Monotonic>,
+}
+
+impl std::fmt::Debug for DriveConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DriveConfig")
+            .field("cache", &self.cache)
+            .field("chunk", &self.chunk)
+            .field("limit", &self.limit)
+            .field("parallel", &self.parallel)
+            .field("deadline", &self.deadline)
+            .field("lock_wait", &self.lock_wait)
+            .field("quiet", &self.quiet)
+            .field("free_space", &self.free_space)
+            .finish_non_exhaustive()
+    }
 }
 
 impl DriveConfig {
@@ -208,6 +226,7 @@ impl DriveConfig {
             lock_wait: Duration::from_secs(2),
             quiet: QUIET,
             free_space: FreeSpace::Measured,
+            clock: Arc::new(SystemMonotonic),
         }
     }
 }
@@ -279,6 +298,11 @@ pub(crate) struct Inner {
     /// The files open for writing, and when each was last touched.
     writing: Mutex<HashMap<NodeId, Writing>>,
     quiet: Duration,
+    /// What the quiet time and the backoff are counted on.
+    clock: Arc<dyn Monotonic>,
+    /// A test's way to ask the sender whether it has looked again.
+    #[cfg(test)]
+    probe: send::Probe,
     /// The change being sent now.
     sending: Mutex<Option<send::Sent>>,
     /// Wakes the sender: something changed, or it may send again.
@@ -601,6 +625,9 @@ impl Drive {
             deadline: config.deadline,
             writing: Mutex::default(),
             quiet: config.quiet,
+            clock: config.clock,
+            #[cfg(test)]
+            probe: send::Probe::default(),
             sending: Mutex::new(None),
             wake: Arc::new(Notify::new()),
             wanted: Arc::new(Notify::new()),

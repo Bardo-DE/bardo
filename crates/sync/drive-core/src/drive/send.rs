@@ -41,6 +41,8 @@ use sync_core::{
     RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
 };
 use tokio::sync::Notify;
+#[cfg(test)]
+use tokio::sync::watch;
 
 /// The first wait after the drive could not take a change.
 const BACKOFF_FIRST: Duration = Duration::from_secs(1);
@@ -109,11 +111,29 @@ impl Op {
     }
 }
 
+/// A test's way to know the sender has looked again at what is to send: it asks with a number,
+/// and the sender, each time it finds nothing ready, says the last number it saw before looking.
+#[cfg(test)]
+pub(super) struct Probe {
+    pub(super) asked: std::sync::atomic::AtomicU64,
+    pub(super) looked: watch::Sender<u64>,
+}
+
+#[cfg(test)]
+impl Default for Probe {
+    fn default() -> Self {
+        Self {
+            asked: std::sync::atomic::AtomicU64::new(0),
+            looked: watch::channel(0).0,
+        }
+    }
+}
+
 /// What the sender does next.
 enum Next {
     Send(Op),
     /// Nothing is ready before this time (`None`: until something changes).
-    Wait(Option<Instant>),
+    Wait(Option<Duration>),
 }
 
 /// The folder `parent` as the drive names it, when it is on the drive.
@@ -199,7 +219,7 @@ impl Inner {
             Some(writing) if writing.handles > 0 => Err(None),
             Some(writing) => {
                 let at = writing.last + self.quiet;
-                if at <= Instant::now() {
+                if at <= self.clock.now() {
                     Ok(())
                 } else {
                     Err(Some(at))
@@ -346,10 +366,11 @@ impl Inner {
         {
             return Next::Wait(None);
         }
+        let now = self.clock.now();
         if let Some((until, _)) = *held(&self.backoff)
-            && until > Instant::now()
+            && until > now
         {
-            return Next::Wait(Some(until));
+            return Next::Wait(Some(until.saturating_duration_since(now)));
         }
         let edits: Vec<Edit> = {
             let index = held(&self.index);
@@ -379,7 +400,7 @@ impl Inner {
                 Err(None) => {}
             }
         }
-        Next::Wait(soonest)
+        Next::Wait(soonest.map(|at| at.saturating_duration_since(now)))
     }
 
     /// Waits longer before the next try: the drive could not take a change now.
@@ -389,7 +410,7 @@ impl Inner {
             .map_or(BACKOFF_FIRST, |(_, last)| last * 2)
             .max(asked)
             .min(BACKOFF_MOST);
-        *backoff = Some((Instant::now() + wait, wait));
+        *backoff = Some((self.clock.now() + wait, wait));
     }
 
     /// The drive took `op` (with `made`, only the item it makes: an earlier try made it with
@@ -861,7 +882,17 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
     loop {
         let next = {
             let Some(inner) = weak.upgrade() else { return };
-            inner.next()
+            #[cfg(test)]
+            let asked = inner.probe.asked.load(Ordering::SeqCst);
+            let next = inner.next();
+            #[cfg(test)]
+            if matches!(next, Next::Wait(_)) {
+                inner
+                    .probe
+                    .looked
+                    .send_modify(|seen| *seen = (*seen).max(asked));
+            }
+            next
         };
         let op = match next {
             Next::Send(op) => op,
@@ -869,8 +900,8 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
                 wake.notified().await;
                 continue;
             }
-            Next::Wait(Some(at)) => {
-                let _ = tokio::time::timeout_at(at.into(), wake.notified()).await;
+            Next::Wait(Some(wait)) => {
+                let _ = tokio::time::timeout(wait, wake.notified()).await;
                 continue;
             }
         };
@@ -1121,5 +1152,23 @@ impl Drive {
             .values()
             .filter(|edit| edit.pending())
             .count()
+    }
+
+    /// Wakes the sender and waits until it has looked again, from the clock as it stands now,
+    /// and found nothing more ready: what was due has been sent, and what is not sent was not
+    /// due. A test that steps the clock calls it to make an absence observable.
+    #[cfg(test)]
+    pub(crate) async fn sender_settled(&self) {
+        let probe = &self.inner.probe;
+        let asked = probe.asked.fetch_add(1, Ordering::SeqCst) + 1;
+        let mut looked = probe.looked.subscribe();
+        self.inner.wake.notify_one();
+        tokio::time::timeout(
+            base_testkit::GENEROUS,
+            looked.wait_for(|seen| *seen >= asked),
+        )
+        .await
+        .expect("the sender looked again")
+        .expect("the drive is open");
     }
 }
