@@ -34,7 +34,6 @@ settings-app-callers = {path = "../settings-app-callers"}
 settings-app-link = {path = "../settings-app-link"}
 settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
-ui-peer = {path = "../../ui/ui-peer"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
 settings-types = { path = "../../settings/settings-types" }
 md-5 = { workspace = true }

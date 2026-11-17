@@ -8,7 +8,7 @@ use settings_app_link::{Deadline, peer};
 use settings_app_model::{Person, Work, passwd_name};
 use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
-use ui_peer::within;
+use base_time::deadline::within;
 use zbus::Proxy;
 use zbus::zvariant::OwnedObjectPath;
 

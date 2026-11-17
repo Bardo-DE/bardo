@@ -7,7 +7,7 @@ use crate::deadline::{Deadline, peer};
 use settings_app_model::{Existing, LendFailure, Work};
 use std::fmt::Debug;
 use std::sync::Arc;
-use ui_peer::within;
+use base_time::deadline::within;
 
 /// The two things the switch does, and what is there before it does them.
 pub trait Lend: Debug + Send + Sync {

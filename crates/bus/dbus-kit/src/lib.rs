@@ -1,5 +1,6 @@
 //! What every D-Bus service and client of the desktop shares.
 //!
+//! - [`caller`]: `SenderName` and `Verdict`, the words for who called and whether they may.
 //! - [`connect`]: which bus to connect to, and the connection.
 //! - [`name`]: taking a well-known name without queueing for it.
 //! - `ready` (feature `tokio`): waiting until a connection's object server takes calls, before the name is taken.
@@ -10,6 +11,7 @@
 // The macro's expansion names `::dbus_kit::Call`; this makes that path work in this crate too.
 extern crate self as dbus_kit;
 
+pub mod caller;
 pub mod connect;
 pub mod name;
 #[cfg(feature = "tokio")]

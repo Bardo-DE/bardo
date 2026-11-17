@@ -15,7 +15,7 @@ use zbus::message::Header;
 /// about which check it failed.
 const DENIED: &str = "this caller may not use the menu";
 
-pub use ui_peer::{SenderName, Verdict};
+pub use dbus_kit::caller::{SenderName, Verdict};
 
 /// Who is calling: the sender's unique bus name and the connection that received the call, so the
 /// permit can resolve the peer its own way.

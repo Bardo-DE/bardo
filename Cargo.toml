@@ -259,7 +259,6 @@ members = [
     "crates/ui/ui-intents",
     "crates/ui/ui-lint",
     "crates/ui/ui-motion",
-    "crates/ui/ui-peer",
     "crates/ui/ui-settings",
     "crates/ui/ui-shell",
     "crates/ui/ui-style",

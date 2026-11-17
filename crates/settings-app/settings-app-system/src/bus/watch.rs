@@ -7,7 +7,7 @@ use settings_app_link::{Deadline, peer};
 use settings_app_link::{Ticker, Ticks};
 use settings_app_model::Absence;
 use std::pin::Pin;
-use ui_peer::within;
+use base_time::deadline::within;
 use zbus::export::futures_core::Stream;
 use zbus::fdo::DBusProxy;
 use zbus::message::Type as MessageType;

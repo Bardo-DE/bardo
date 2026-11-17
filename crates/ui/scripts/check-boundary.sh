@@ -18,7 +18,7 @@ cd "$(dirname "$0")/.."
 # compositor runs too, so like ui-core it reaches no Dioxus and no renderer. ds is renderer-free
 # and effect-free; ui-settings does I/O but never renders, and takes a Spawner instead of naming a
 # runtime. ui-helpers (missing helpers: probe PATH, ask PackageKit) is I/O too: zbus only, no
-# renderer, no runtime, and no quire crate but ui-peer (the deadline on each call to a peer).
+# renderer, no runtime, and no quire crate but base-time (the deadline on each call to a peer).
 # chordkit (the keymap core) is pure and ui-core and ds take it; its I/O sources (keymap-kde, keymap-gnome
 # read a settings file) are named by ui-blitz alone, which injects them as the launch's default KeySource.
 # ui-desktop (the capability probe) names zbus only through its opt-in `dbus` feature and dioxus
@@ -53,7 +53,6 @@ RULES=(
   "ui-blitz: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
   "ui-host-hooks: zbus notify winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context ui-blitz blitz-embed layer-shell-host"
   "ui-harness: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
-  "ui-peer: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "base-words-macros: dioxus zbus tokio"
   "base-words: dioxus zbus tokio"
   "base-spawn: dioxus zbus tokio"
@@ -100,13 +99,12 @@ EDGES=(
   "ui-behaviour: ui-core"
   "ui-components: base-ids base-spawn base-words ui-core ui-intents ui-motion ui-style"
   "ui-shell: ui-components ui-core ui-motion ui-style"
-  "ui-settings: ui-core ui-helpers ui-peer ui-style ui-settings-derive"
+  "ui-settings: ui-core ui-helpers base-time ui-style ui-settings-derive"
   "ui-extensions: ui-core ui-helpers ui-settings ui-style"
-  "ui-peer:"
-  "ui-helpers: ui-peer"
-  "ui-desktop: ui-peer"
+  "ui-helpers: base-time"
+  "ui-desktop: base-time outputs-dbus"
   "ui-host-hooks: ui-components"
-  "ui-blitz: blitz-embed blitz-embed-types ui-components ui-desktop ui-helpers ui-peer ui-emoji ui-host-hooks"
+  "ui-blitz: blitz-embed blitz-embed-types ui-components ui-desktop ui-helpers base-time dbus-kit ui-emoji ui-host-hooks"
   "ui-harness: blitz-embed ui-components ui-blitz ui-core ui-host-hooks"
   "ui-gallery: ui-components ui-core ui-harness ui-lint ui-blitz ui-settings ui-shell"
   "ui-conformance:"

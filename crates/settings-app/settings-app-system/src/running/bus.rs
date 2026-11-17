@@ -10,7 +10,7 @@ use settings_app_link::bus::BusSource;
 use settings_app_link::running::RunningLink;
 use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, ModelRun, RunAction, RunStanding, Work};
-use ui_peer::within;
+use base_time::deadline::within;
 
 /// What the person reads when a model could not be started or stopped and the assistant gave no
 /// sentence.

@@ -13,7 +13,7 @@ use settings_app_model::{
     Absence, AccessPoint, NetworkLink, SignalStrength, Ssid, WifiRadio, WifiStatus, WifiWire,
     wifi_link_of, wifi_security_of,
 };
-use ui_peer::within;
+use base_time::deadline::within;
 use zbus::Connection;
 use zbus::zvariant::OwnedObjectPath;
 

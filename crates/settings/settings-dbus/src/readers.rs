@@ -8,7 +8,7 @@
 
 use super::SenderName;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
-use ui_peer::{Deadline, within};
+use base_time::deadline::{Deadline, within};
 use zbus::Connection;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;

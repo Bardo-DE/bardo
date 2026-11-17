@@ -9,7 +9,7 @@ use settings_app_model::{AccountTarget, Notice, Outbox, PageSlug};
 use settings_types::target::SettingsTarget;
 use std::collections::HashMap;
 use std::sync::Arc;
-use ui_peer::{Deadline, within};
+use base_time::deadline::{Deadline, within};
 use zbus::fdo;
 use zbus::message::Header;
 use zbus::zvariant::{OwnedValue, Value};

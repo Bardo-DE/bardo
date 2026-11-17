@@ -11,7 +11,9 @@ publish.workspace = true
 [dependencies]
 settings-types = { path = "../settings-types" }
 # The deadline every call to another process runs under.
-ui-peer = { path = "../../ui/ui-peer" }
+base-time = { path = "../../base/base-time" }
+# `SenderName` and `Verdict`; no executor of its own, `tokio` below picks zbus's.
+dbus-kit = { path = "../../bus/dbus-kit", default-features = false }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

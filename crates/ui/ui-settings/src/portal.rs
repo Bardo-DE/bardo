@@ -83,7 +83,7 @@ impl SystemPrefsWatch {
     /// Subscribe to `source` and then read it, the subscription's task running on `spawn`. A
     /// [`SystemPrefsSource::Fixed`] watch, a desktop without the portal and a build without the
     /// portal client never fire after their first answer. A portal that does not answer within
-    /// [`Deadline::START`](ui_peer::Deadline::START) is the defaults, so this returns in a few
+    /// [`Deadline::START`](base_time::deadline::Deadline::START) is the defaults, so this returns in a few
     /// seconds at worst; a caller that must not wait at all starts it beside its other work
     /// (`use_environment` does).
     pub async fn start(source: &SystemPrefsSource, spawn: &dyn Spawner) -> Self {

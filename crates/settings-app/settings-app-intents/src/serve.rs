@@ -9,7 +9,7 @@ use action_dbus::callers::Callers;
 use action_provider::{ServeError, serve_on, serve_on_with};
 use settings_app_callers::{BusPeers, desktop_peers};
 use std::sync::Arc;
-use ui_peer::{Deadline, within};
+use base_time::deadline::{Deadline, within};
 
 /// Exports `provider` at `/org/bardo/IntentProvider1` on `connection` and claims the bus name
 /// `org.bardo.Settings`. Returns once the name is ours; the connection keeps serving.

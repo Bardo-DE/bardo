@@ -18,7 +18,7 @@ use settings_app_model::{
     Work, picker_row_is_choice, server_models,
 };
 use std::path::Path;
-use ui_peer::within;
+use base_time::deadline::within;
 
 /// Why a call was refused, as the pane knows it.
 fn reason_of(error: &ClientError) -> ComputersReason {

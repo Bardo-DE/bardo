@@ -4,7 +4,7 @@
 use super::{LiveError, LiveSchema, Snapshot};
 use settings_types::schema::KeyPath;
 
-pub use ui_peer::{SenderName, Verdict};
+pub use dbus_kit::caller::{SenderName, Verdict};
 
 /// Who is calling: the sender's bus name and the connection that received the call.
 ///

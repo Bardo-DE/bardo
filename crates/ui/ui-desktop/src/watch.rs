@@ -84,7 +84,7 @@ mod live {
     use std::future::{Future, poll_fn};
     use std::pin::pin;
     use std::task::Poll;
-    use ui_peer::{Deadline, within};
+    use base_time::deadline::{Deadline, within};
     use zbus::export::ordered_stream::OrderedStreamExt;
     use zbus::fdo::NameOwnerChangedStream;
 

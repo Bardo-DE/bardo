@@ -19,7 +19,7 @@ impl Outputs {
     }
 
     /// The shell's outputs over `connection` (a private bus in tests); empty when nothing
-    /// answers, or the shell does not answer within [`Deadline::START`](ui_peer::Deadline::START).
+    /// answers, or the shell does not answer within [`Deadline::START`](base_time::deadline::Deadline::START).
     pub async fn read_on(connection: &Connection) -> Outputs {
         let Some(proxy) = answered(Outputs1Proxy::new(connection)).await else {
             return Outputs::default();

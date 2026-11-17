@@ -24,7 +24,7 @@ use settings_app_model::{
     Absence, Brightness, BrightnessList, DisplayChange, DisplayEdit, DisplayMode, DisplaysStatus,
     OutputId, Work, mode_at,
 };
-use ui_peer::within;
+use base_time::deadline::within;
 
 const CANNOT: &str = "Displays can\u{2019}t be changed right now.";
 

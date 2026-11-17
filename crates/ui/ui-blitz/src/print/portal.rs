@@ -3,7 +3,7 @@
 //! answers on a Request object whose path is known in advance from the `handle_token` option,
 //! so the answer is subscribed to before the call is made and cannot be missed.
 //!
-//! Every wait has a deadline (`ui-peer`): the calls themselves are short, the person's answer to
+//! Every wait has a deadline (`base_time::deadline`): the calls themselves are short, the person's answer to
 //! the dialog gets the long prompt bound, and a portal that vanishes while the dialog is up ends
 //! the wait at once. The answers are taken only from the portal's own unique name (the proxy
 //! filters on it), so another process cannot answer for the dialog.
@@ -15,7 +15,7 @@ use std::io::{Seek, SeekFrom, Write};
 use std::os::fd::OwnedFd;
 use std::pin::Pin;
 use std::task::Poll;
-use ui_peer::{Deadline, NotAnswering, within};
+use base_time::deadline::{Deadline, NotAnswering, within};
 use zbus::export::futures_core::Stream;
 use zbus::proxy::{OwnerChangedStream, SignalStream};
 use zbus::zvariant::{Fd, OwnedValue, Value};

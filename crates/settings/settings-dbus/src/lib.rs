@@ -62,7 +62,7 @@ pub use schema::{LiveSchema, LiveSchemaError};
 pub use skeleton::{Served, serve};
 pub use snapshot::Snapshot;
 pub use timeouts::Timeouts;
-pub use ui_peer::Deadline;
+pub use base_time::deadline::Deadline;
 
 /// The D-Bus interface name.
 pub const INTERFACE: &str = "org.bardo.SettingsModule1";

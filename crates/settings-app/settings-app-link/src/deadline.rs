@@ -7,9 +7,9 @@
 //! kind of wait it is and never writes a bare duration. Live-module calls (`LiveClient`) carry
 //! theirs inside; this is for the calls bardo-settings makes itself.
 
-use ui_peer::within;
+use base_time::deadline::within;
 
-pub use ui_peer::Deadline;
+pub use base_time::deadline::Deadline;
 
 /// Who is waited on, as a sentence names them ("The account service is not answering").
 pub mod peer {

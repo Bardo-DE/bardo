@@ -8,7 +8,7 @@ use settings_app_model::{
     Absence, BtAddress, BtDeviceWire, BtLink, BtStatus, bt_device_of, is_under_adapter,
 };
 use std::collections::HashMap;
-use ui_peer::within;
+use base_time::deadline::within;
 use zbus::Connection;
 use zbus::fdo::ObjectManagerProxy;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue};

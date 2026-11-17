@@ -10,7 +10,7 @@
 use std::future::poll_fn;
 use std::pin::Pin;
 use std::task::Poll;
-use ui_peer::{Deadline, NotAnswering, within};
+use base_time::deadline::{Deadline, NotAnswering, within};
 use zbus::export::futures_core::Stream;
 use zbus::message::Type;
 use zbus::names::UniqueName;

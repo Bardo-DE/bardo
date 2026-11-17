@@ -15,7 +15,7 @@ settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 # The deadline the portal client runs its calls under (UI-free).
-ui-peer = {path = "../ui-peer"}
+base-time = { path = "../../base/base-time" }
 ui-style = {path = "../ui-style", default-features = false}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 serde = { workspace = true, features = ["derive"] }

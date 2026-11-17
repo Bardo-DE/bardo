@@ -14,7 +14,7 @@ use settings_app_model::{
     HiddenLogin, HiddenNetwork, JoinFailure, JoinSecret, JoinVerdict, Passphrase, Ssid, WifiLogin,
     WifiSecurity, WifiVisibility, join_verdict, wifi_security_of,
 };
-use ui_peer::within;
+use base_time::deadline::within;
 use zbus::Connection;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 

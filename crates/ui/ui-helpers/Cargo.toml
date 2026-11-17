@@ -11,7 +11,6 @@ publish.workspace = true
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
 base-fs = { path = "../../base/base-fs" }
-ui-peer = {path = "../ui-peer"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 toml = { workspace = true }

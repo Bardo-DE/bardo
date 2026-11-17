@@ -101,5 +101,5 @@ pub use installer::{BoxFuture, FakeInstaller, Install, PackageKit, Request, Stan
 pub use os_release::OsRelease;
 pub use outcome::{Missing, Outcome};
 pub use probe::Environment;
-pub use ui_peer::Deadline;
+pub use base_time::deadline::Deadline;
 pub use watch::{Availability, Subscription};

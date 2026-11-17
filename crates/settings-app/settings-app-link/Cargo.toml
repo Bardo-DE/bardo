@@ -20,7 +20,7 @@ settings-types = { path = "../../settings/settings-types" }
 sync-bus = {path = "../../sync/sync-bus"}
 tokio = {workspace = true, features = ["rt", "sync"]}
 toml = { workspace = true }
-ui-peer = {path = "../../ui/ui-peer"}
+base-time = { path = "../../base/base-time" }
 
 [dev-dependencies]
 settings-app-callers = {path = "../settings-app-callers"}

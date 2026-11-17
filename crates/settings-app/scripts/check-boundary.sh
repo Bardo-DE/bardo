@@ -85,10 +85,10 @@ EDGES=(
   "settings-app-callers: ui-settings"
   "settings-app-model: memory-core action-core action-manifest action-settings action-vocab ui-helpers ui-settings account-capability account-core account-ids inference-core account-sheet inference-tailnet account-tailscale"
   "settings-app-files: agent-registry settings-app-model agent-install action-settings ui-extensions ui-helpers ui-settings"
-  "settings-app-link: settings-app-model account-tailscale account-wire compositor-dbus inference-dbus memory-core settings-dbus settings-types sync-bus ui-peer"
+  "settings-app-link: settings-app-model account-tailscale account-wire compositor-dbus inference-dbus memory-core settings-dbus settings-types sync-bus base-time"
   "settings-app-client: settings-app-files settings-app-link settings-app-model ui-settings inference-core account-provider"
-  "settings-app-intents: settings-app-callers settings-app-client settings-app-files settings-app-model action-core action-dbus action-manifest action-provider action-vocab action-wire ui-peer ui-settings account-core account-ids prov"
-  "settings-app-system: settings-app-link memory-core anyview-core anyview-fs anyview-image anyview-platform desktop-protocols desktop-client settings-app-callers settings-app-files settings-app-model ui-peer ui-settings engine-install engine-manifest engine-probe engine-spec inference-client model-catalog account-callers account-client account-client-dbus account-core account-dbus inference-tailnet account-tailscale account-wire inference-dbus sync-bus"
+  "settings-app-intents: settings-app-callers settings-app-client settings-app-files settings-app-model action-core action-dbus action-manifest action-provider action-vocab action-wire base-time ui-settings account-core account-ids prov"
+  "settings-app-system: settings-app-link memory-core anyview-core anyview-fs anyview-image anyview-platform desktop-protocols desktop-client settings-app-callers settings-app-files settings-app-model base-time ui-settings engine-install engine-manifest engine-probe engine-spec inference-client model-catalog account-callers account-client account-client-dbus account-core account-dbus inference-tailnet account-tailscale account-wire inference-dbus sync-bus"
   "settings-app-ui: settings-app-client settings-app-model ds ui-blitz ui-helpers ui-lint ui-settings"
   "bardo-settings: settings-app-callers settings-app-client settings-app-files settings-app-intents settings-app-link settings-app-model settings-app-system settings-app-ui ui-blitz ui-settings"
 )

@@ -5,7 +5,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Poll};
 
-use ui_peer::{Deadline, within};
+use base_time::deadline::{Deadline, within};
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 use zbus::zvariant::{OwnedValue, Value};

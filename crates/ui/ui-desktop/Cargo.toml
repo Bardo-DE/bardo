@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 shell-dbus = { path = "../../shell/shell-dbus" }
-ui-peer = {path = "../ui-peer"}
+base-time = { path = "../../base/base-time" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 zbus = {workspace = true, features = ["default"], optional = true}
 

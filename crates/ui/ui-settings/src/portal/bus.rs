@@ -5,7 +5,7 @@ use super::{SystemPrefs, contrast_from_portal, reduced_motion_from_portal, schem
 use base_spawn::Spawner;
 use settings_store::latest::{self, Receiver, Sender};
 use std::collections::HashMap;
-use ui_peer::{Deadline, within};
+use base_time::deadline::{Deadline, within};
 use zbus::export::ordered_stream::OrderedStreamExt;
 use zbus::proxy;
 use zbus::zvariant::OwnedValue;

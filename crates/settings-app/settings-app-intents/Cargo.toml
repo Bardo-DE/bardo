@@ -20,7 +20,7 @@ settings-app-model = {path = "../settings-app-model"}
 action-provider = {path = "../../actions/action-provider", features = ["dbus"]}
 action-core = {path = "../../actions/action-core"}
 action-dbus = {path = "../../actions/action-dbus"}
-ui-peer = {path = "../../ui/ui-peer"}
+base-time = { path = "../../base/base-time" }
 settings-types = { path = "../../settings/settings-types" }
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}

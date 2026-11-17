@@ -11,7 +11,7 @@ use settings_app_link::updates::{InstallRefusal, UpdateTicks, UpdatesLink};
 use settings_app_link::{Deadline, peer};
 use settings_app_model::{Absence, UnixSeconds, UpdateStatus, UpdateVersion, Work};
 use std::collections::HashMap;
-use ui_peer::{NotAnswering, within};
+use base_time::deadline::{NotAnswering, within};
 use updater_dbus::{
     BUS_NAME, ERROR_NOT_A_VERSION, ERROR_REFUSED, ERROR_VERSION_CHANGED, INTERFACE, PATH,
     UpdatesProxy,

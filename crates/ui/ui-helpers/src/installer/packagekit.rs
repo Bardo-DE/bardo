@@ -6,7 +6,7 @@
 use super::transaction::{Budget, Fault, PEER, Report, transact};
 use super::{BoxFuture, Install, Request, Timeouts};
 use crate::outcome::{Missing, Outcome};
-use ui_peer::within;
+use base_time::deadline::within;
 use zbus::Connection;
 
 /// `PK_FILTER_ENUM_NONE` as a bitfield value (`1 << 1`; `UNKNOWN` is bit 0).

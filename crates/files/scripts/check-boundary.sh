@@ -6,7 +6,7 @@
 #   - the pure crates (files-core, files-model) name no I/O crate;
 #   - only files-desktop names zbus, docket, porter (and its `prov`), ferry or peephole;
 #   - only files-ui and the binary name dioxus or quire's
-#     UI crates (ds, ui-blitz, ui-settings, ...); ui-helpers and ui-peer are UI-free and allowed lower.
+#     UI crates (ds, ui-blitz, ui-settings, ...); ui-helpers is UI-free and allowed lower.
 # Prints each violation as `crate -> dep (rule)` and exits 1 when there is any.
 set -euo pipefail
 

@@ -219,7 +219,7 @@ DIRECT=(
 # own and `ds` is the `pane` feature's), with no renderer, no window system, no dioxus and no encoder.
 # It reaches none of HEADLESS_FORBIDDEN, and CI builds it on macOS and Windows.
 # quire's ui-helpers (capped reads and atomic writes, for anyview-fs, -store and -platform) adds
-# ui-helpers and ui-peer everywhere, and to the headless peek toml with serde_spanned and toml_writer
+# ui-helpers and base-time everywhere, and to the headless peek toml with serde_spanned and toml_writer
 # too (its catalog is TOML): the headless budget rose by five, the others by one or two.
 # porter 063e9db's account-dbus checks callers through peephole (peephole, -core and -bus) instead of
 # account-daemon-support, and reaches the viewer through action-dbus: two more than before account-daemon-support left.

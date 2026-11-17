@@ -1,6 +1,6 @@
 //! How long a client waits on a live module.
 
-use ui_peer::Deadline;
+use base_time::deadline::Deadline;
 
 /// How long each call to a live module may take before it is [`LiveError::Timeout`](super::LiveError::Timeout).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

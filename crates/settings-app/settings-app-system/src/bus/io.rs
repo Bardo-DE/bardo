@@ -10,7 +10,7 @@ use settings_app_link::{Deadline, peer};
 use settings_app_model::Absence;
 use settings_dbus::{Changes, LiveClient, LiveError, OwnerCheck, SenderName, Verdict};
 use settings_types::schema::KeyPath;
-use ui_peer::within;
+use base_time::deadline::within;
 use zbus::Connection;
 use zbus::fdo::{DBusProxy, NameOwnerChangedStream};
 use zbus::names::BusName;

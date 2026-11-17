@@ -1,8 +1,49 @@
-//! Running a call to a peer under a [`Deadline`].
+//! How long a call to another process may take, and the bound that enforces it.
+//!
+//! A peer can be slow, crashed, wedged behind a password prompt or simply absent, and a bus
+//! call has no timeout of its own. Wrapping the call in [`within`] gives it one: the call either
+//! answers inside its [`Deadline`] or ends as [`NotAnswering`], which a screen shows as "X is not
+//! answering" instead of spinning forever.
+//!
+//! The deadlines are named, one per kind of wait ([`Deadline::READ`], [`Deadline::START`],
+//! [`Deadline::ACTION`], [`Deadline::PROMPT`]); a caller picks one and never writes a bare
+//! duration. This is the peer-facing layer over [`crate::timeout::within`], which takes a bare
+//! duration. No runtime and no bus: a wall-clock delay and a future.
 
-use crate::Deadline;
-use base_time::timeout::{TimedOut, within as bounded};
+use crate::timeout::{TimedOut, within as bounded};
 use std::time::Duration;
+
+/// How long a call to a peer may take before it counts as not answering.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct Deadline(Duration);
+
+impl Deadline {
+    /// A read from a peer that is running: a property, a settings value, a name's owner. A
+    /// healthy peer answers in milliseconds; this is slack for a busy machine.
+    pub const READ: Deadline = Deadline(Duration::from_secs(10));
+    /// A read the app waits on before it can draw (the first probe of what is installed, the
+    /// first read of the desktop's appearance). Short, so a wedged peer costs a start a moment
+    /// and no more; what arrives later is picked up by the follow.
+    pub const START: Deadline = Deadline(Duration::from_secs(3));
+    /// A call that changes something and returns when it is done: setting a value, creating a
+    /// transaction, asking a service to start an action.
+    pub const ACTION: Deadline = Deadline(Duration::from_secs(30));
+    /// A wait on the person: a password prompt, a print dialog. Long, because they may be
+    /// reading it, but not for ever; a peer that vanished is noticed sooner by watching its name.
+    pub const PROMPT: Deadline = Deadline(Duration::from_secs(600));
+
+    /// A deadline of `duration`, for a test that must not wait the real one out.
+    #[must_use]
+    pub const fn of(duration: Duration) -> Deadline {
+        Deadline(duration)
+    }
+
+    /// How long it is.
+    #[must_use]
+    pub const fn duration(self) -> Duration {
+        self.0
+    }
+}
 
 /// A peer that did not answer inside its deadline. The words are for a person: "The package
 /// manager is not answering."
