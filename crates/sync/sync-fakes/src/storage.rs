@@ -12,6 +12,7 @@
 use account_dbus::{Call, Details};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use sync_bus::STORAGE_PATH;
@@ -1039,6 +1040,7 @@ fn object(path: &str) -> Value<'static> {
 #[derive(Debug, Clone)]
 pub struct FakeStorage {
     world: Arc<Mutex<World>>,
+    watches: Arc<AtomicUsize>,
 }
 
 impl FakeStorage {
@@ -1047,7 +1049,15 @@ impl FakeStorage {
     pub fn new(world: World) -> FakeStorage {
         FakeStorage {
             world: Arc::new(Mutex::new(world)),
+            watches: Arc::new(AtomicUsize::new(0)),
         }
+    }
+
+    /// How many `Watch` calls the fake has answered: a client that follows the news has joined
+    /// once this has grown, so a test waits on it instead of the clock.
+    #[must_use]
+    pub fn watches(&self) -> usize {
+        self.watches.load(Ordering::SeqCst)
     }
 
     /// Runs `step` on the world and sends what it changed: the drives too when `step` says so
@@ -1177,11 +1187,8 @@ impl StorageServer for FakeStorage {
 
     /// The fake tells every connection; it takes the call so Files can make it as it will to
     /// syncd.
-    #[expect(
-        clippy::unused_async_trait_impl,
-        reason = "the trait method is async; this impl has nothing to wait for"
-    )]
     async fn watch(&self, _: Call<'_>) -> fdo::Result<()> {
+        self.watches.fetch_add(1, Ordering::SeqCst);
         Ok(())
     }
 }

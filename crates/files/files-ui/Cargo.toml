@@ -45,6 +45,7 @@ anyview-platform = {features = ["testing"], path = "../../anyview/crates/anyview
 ui-harness = {path = "../../ui/ui-harness"}
 ui-lint = {path = "../../ui/ui-lint"}
 files-fs = {path = "../files-fs", features = ["testing"]}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 files-trash = {path = "../files-trash", features = ["testing"]}
 tempfile = { workspace = true }
 toml = { workspace = true }

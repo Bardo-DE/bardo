@@ -2,7 +2,6 @@
 
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
 
 use files_core::{ByteSize, Entry, EntryKind, FileName, FolderPath, ItemRef, Location};
 use files_fs::{
@@ -73,19 +72,14 @@ pub(super) fn rig_over(volumes: Arc<dyn Volumes>) -> Rig {
     }
 }
 
-/// The next thing the edge said, waiting up to five seconds for a worker.
+/// The next thing the edge said, waiting for a worker.
 pub(super) fn next(inbox: &mut UnboundedReceiver<Heard>) -> Heard {
-    let started = Instant::now();
-    loop {
-        if let Ok(heard) = inbox.try_recv() {
-            return heard;
-        }
-        assert!(
-            started.elapsed() < Duration::from_secs(5),
-            "nothing was said"
-        );
-        std::thread::sleep(Duration::from_millis(5));
-    }
+    let mut heard = None;
+    base_testkit::eventually_blocking("the edge said something", || {
+        heard = inbox.try_recv().ok();
+        heard.is_some()
+    });
+    heard.expect("the wait ended with something heard")
 }
 
 pub(super) fn folder(path: &str) -> FolderPath {

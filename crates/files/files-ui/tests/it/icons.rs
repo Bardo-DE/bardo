@@ -102,11 +102,9 @@ fn the_view_is_remembered_for_the_folder_and_not_for_another() {
     settle_until(&mut first, |h| h.count(".ds-cv-item") > 0);
     // The store is written from a thread of its own: wait for the write before the "quit".
     let folder = FolderPath::new(dir.path()).unwrap();
-    let started = std::time::Instant::now();
-    while prefs.load(&folder).view != ViewMode::Icons {
-        assert!(started.elapsed() < Duration::from_secs(5), "never saved");
-        std::thread::sleep(Duration::from_millis(5));
-    }
+    base_testkit::eventually_blocking("the preferences were saved", || {
+        prefs.load(&folder).view == ViewMode::Icons
+    });
     drop(first);
 
     let (mut second, _opener, _again) = open(dir.path(), &prefs);

@@ -102,11 +102,9 @@ fn a_sort_change_survives_a_relaunch_through_the_store() {
     let sorted = first.text_of(&row(0));
     // The store is written from a thread of its own: wait for the write before the "quit".
     let folder = FolderPath::new(dir.path()).unwrap();
-    let started = std::time::Instant::now();
-    while prefs.load(&folder) == FolderPrefs::default() {
-        assert!(started.elapsed() < Duration::from_secs(5), "never saved");
-        std::thread::sleep(Duration::from_millis(5));
-    }
+    base_testkit::eventually_blocking("the preferences were saved", || {
+        prefs.load(&folder) != FolderPrefs::default()
+    });
     drop(first);
 
     let (mut second, _again) = open(dir.path(), &prefs);

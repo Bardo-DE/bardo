@@ -37,6 +37,7 @@ zbus-ready = { path = "../../zbus-ready" }
 [dev-dependencies]
 files-desktop = { path = ".", features = ["testing"] }
 files-fs = {path = "../files-fs", features = ["testing"]}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 # Porter's fake Storage1, served on the tests' private bus (test tooling, never shipped).
 sync-fakes = {path = "../../sync/sync-fakes"}
 serde = { workspace = true, features = ["derive"] }

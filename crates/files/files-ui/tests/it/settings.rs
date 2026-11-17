@@ -259,15 +259,13 @@ async fn old_items_leave_the_trash_only_when_the_person_asked() {
         settings::store(root.clone()).save(&doc).unwrap();
 
         let _feed = settings::follow(root, &Handle::current(), Arc::<FakeTrash>::clone(&trash));
-        if !switch {
-            // Give a sweep that should not happen the time to show itself.
-            tokio::time::sleep(Duration::from_millis(300)).await;
-        }
-        for _ in 0..100 {
-            if trash.list().unwrap().len() == left {
-                break;
-            }
-            tokio::time::sleep(Duration::from_millis(50)).await;
+        // With the switch off nothing is ever queued (the sweep returns before it spawns), so
+        // there is no later moment to wait for; with it on, the sweep runs off the async threads.
+        if switch {
+            base_testkit::eventually("the old item left the trash", || {
+                trash.list().unwrap().len() == left
+            })
+            .await;
         }
         assert_eq!(trash.list().unwrap().len(), left, "{label}");
     }

@@ -51,10 +51,11 @@ async fn within<T>(work: impl std::future::Future<Output = T>) -> T {
         .expect("the stand-in service answered in time")
 }
 
-/// Starts following and waits until the watch is joined (the first round trip answers).
-fn following(storage: &Storage) -> UnboundedReceiver<CloudNews> {
+/// Starts following and waits until the fake has answered the watch's join.
+async fn following(rig: &Rig) -> UnboundedReceiver<CloudNews> {
+    let joined = rig.fake.watches();
+    let storage = rig.storage.clone();
     let (sender, receiver) = unbounded_channel();
-    let storage = storage.clone();
     tokio::spawn(async move {
         storage
             .follow(Box::new(move |news| {
@@ -62,6 +63,7 @@ fn following(storage: &Storage) -> UnboundedReceiver<CloudNews> {
             }))
             .await;
     });
+    base_testkit::eventually("the watch was joined", || rig.fake.watches() > joined).await;
     receiver
 }
 
@@ -112,8 +114,7 @@ async fn items_stand_where_the_service_says_and_unknown_paths_are_left_out() {
 async fn a_download_moves_and_ends_downloaded_and_the_news_says_so() {
     let rig = rig().await;
     let beach = item(&rig, "OneDrive/Pictures/Beach.jpg");
-    let mut news = following(&rig.storage);
-    tokio::time::sleep(Duration::from_millis(200)).await;
+    let mut news = following(&rig).await;
     let refused = within(rig.storage.download(std::slice::from_ref(&beach)))
         .await
         .unwrap();
@@ -175,12 +176,13 @@ async fn the_service_going_away_is_news_and_no_drives_and_coming_back_is_news_ag
     let mut rig = rig().await;
     let clouds = DesktopClouds::new(rig.storage.clone(), tokio::runtime::Handle::current());
     let (sender, mut news) = unbounded_channel();
+    let joined = rig.fake.watches();
     let guard = clouds
         .watch(Box::new(move |heard| {
             let _ = sender.send(heard);
         }))
         .unwrap();
-    tokio::time::sleep(Duration::from_millis(200)).await;
+    base_testkit::eventually("the watch was joined", || rig.fake.watches() > joined).await;
     let asked = clouds.clone();
     let listed = tokio::task::spawn_blocking(move || asked.drives())
         .await
