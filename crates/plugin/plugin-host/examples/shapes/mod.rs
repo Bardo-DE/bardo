@@ -1,5 +1,5 @@
 //! A host with four capabilities, shared by the demo plugin and the tests: the shapes of
-//! `block.lens`, `open.provider`, `agent.adapter` and `row.facts`, written on bayonet's generic
+//! `block.lens`, `open.provider`, `agent.adapter` and `row.facts`, written on the plugin host's generic
 //! API. `open.provider` carries the wire shape of a launcher provider (`Query` in, `Batch` out,
 //! `Choice` in, `Activation` out), so one plugin can feed a launcher and a document host alike.
 

@@ -82,12 +82,12 @@ cd "$(dirname "$0")/.."
 # `mpv-wgpu-player`'s `subprocess` host, which links no mpv), and probing and writing recordings is the
 # FFmpeg plugin. The media crate itself spawns nothing, reads no clock and draws nothing: no runtime,
 # no bus, no UI.
-# anyview-plugin-protocol is what a plugin author depends on, so it is pure and small: bayonet's wire
-# (bayonet without its `host` feature: `serde`, `serde_json` and `thiserror`), `serde` and `thiserror`
+# anyview-plugin-protocol is what a plugin author depends on, so it is pure and small: the plugin host's wire
+# (the plugin host without its `host` feature: `serde`, `serde_json` and `thiserror`), `serde` and `thiserror`
 # and nothing of the viewer's (no anyview-core, no ui-core, no `toml`), and no runtime, bus, GPU,
 # decoder or UI. anyview-plugin is the viewer's capabilities and the registry as values: it names
-# anyview-core, the protocol and bayonet (whose host half parses the manifest's TOML), and reaches no
-# runtime, bus, GPU, decoder, player or UI. anyview-plugin-fake is a plugin like any other: the protocol crate, and bayonet's testing fake for the wire faults
+# anyview-core, the protocol and the plugin host (whose host half parses the manifest's TOML), and reaches no
+# runtime, bus, GPU, decoder, player or UI. anyview-plugin-fake is a plugin like any other: the protocol crate, and the plugin host's testing fake for the wire faults
 # (its dev-dependencies, which the checks below do not look at, are the host's crates).
 # anyview-ffmpeg (under plugins/, since it is a program shipped as its own package and no layer of
 # the viewer) is a plugin like the fake one: the protocol crate, anyview-plugin-common (std only: how a
@@ -177,8 +177,8 @@ DIRECT=(
 # labels); memory-core, computer-use-action, model-provider, model-genai-names and model-vision-prep (pure vocabulary crates
 # action-core names in its signatures: episodes, computer-use actions, model shapes); and base64 0.22.1 (the
 # older one action-core's wire uses beside the 0.23 already in the tree). The viewer is 682.
-# The plugin machinery moved out to bayonet (a library of its own, shared with other apps): the viewer is 683,
-# one package more, since bayonet is a package where the same code was three workspace crates' own, and its
+# The plugin machinery moved out to the plugin host (a library of its own, shared with other apps): the viewer is 683,
+# one package more, since the plugin host is a package where the same code was three workspace crates' own, and its
 # dependencies (toml, rustix, serde, serde_json, thiserror) were all in the tree already.
 # Bardo v0.2.31 builds arboard with `wayland-data-control`, so copied text reaches a Wayland desktop and outlives
 # the call that set it: the viewer is 687, four packages more (wl-clipboard-rs, which serves the selection, and its
@@ -203,7 +203,7 @@ DIRECT=(
 # viewer 696, two packages more: those two crates, with every dependency they name already in its tree.
 # anyview-runtime is 34 (anyview-core's tree and nothing else). anyview-media-host is 606: anyview-ui's tree
 # and the player (anyview-media with mpv-wgpu-player's subprocess host, anyview-platform's portable half
-# with bayonet and the service locator, and what those bring). The pane with its `player` feature is 607: the pane's 590
+# with the plugin host and the service locator, and what those bring). The pane with its `player` feature is 607: the pane's 590
 # and the media host's extra packages, which are the player's alone.
 # Both ratchet down when a change drops a dependency and are never raised without the reason.
 # chardetng (the legacy-encoding guess of anyview-text, MIT OR Apache-2.0, its own dependencies already in
@@ -236,7 +236,7 @@ DIRECT=(
 # docket ff9d1b73 (the desktop lockstep's wave 4) runs its commands through bulkhead (the owner's
 # bubblewrap sandbox, MIT OR Apache-2.0, its dependencies already in the tree): one more in the viewer
 # alone: 701.
-# Bardo v0.3.45's ui-extensions (the desktop's Extensions, MIT OR Apache-2.0, over bayonet, already in
+# Bardo v0.3.45's ui-extensions (the desktop's Extensions, MIT OR Apache-2.0, over the plugin host, already in
 # the viewer's tree) finds the chosen look's sheet: one more in the viewer alone: 702.
 # The agent layer's Round A (porter f7e47a71, almanac 8d91de73, docket 01390d02): account-core keeps its
 # secrets in secrecy (with subtle, const-hex and cpufeatures) and memory-core names entries by ulid, all
@@ -433,7 +433,7 @@ EDGES=(
   "anyview-pane: anyview-core anyview-media anyview-media-host anyview-peek anyview-store anyview-ui ds"
   "anyview-image: anyview-core ui-core"
   "anyview-text: anyview-core anyview-fs ui-core"
-  "anyview-platform: anyview-core anyview-plugin anyview-plugin-protocol bayonet ui-core ui-extensions ui-helpers ui-settings action-provider action-core action-dbus action-manifest action-vocab action-wire account-core account-ids prov"
+  "anyview-platform: anyview-core anyview-plugin anyview-plugin-protocol plugin_host ui-core ui-extensions ui-helpers ui-settings action-provider action-core action-dbus action-manifest action-vocab action-wire account-core account-ids prov"
   "anyview-peek: anyview-archive anyview-book anyview-core anyview-font anyview-fs anyview-image anyview-text ds ui-blitz ui-core"
   "anyview-media: anyview-core ui-core"
   "anyview-media-host: anyview-core anyview-media anyview-platform anyview-plugin anyview-runtime anyview-ui ds ui-blitz"
@@ -443,22 +443,22 @@ EDGES=(
   "anyview-font: anyview-core"
   "anyview-pdf: anyview-core"
   "anyview-export: anyview-core anyview-image anyview-pdf anyview-store anyview-text ui-blitz ui-core"
-  "anyview-plugin: anyview-core anyview-plugin-protocol bayonet"
-  "anyview-plugin-protocol: bayonet"
-  "anyview-plugin-fake: anyview-plugin-protocol bayonet"
+  "anyview-plugin: anyview-core anyview-plugin-protocol plugin_host"
+  "anyview-plugin-protocol: plugin_host"
+  "anyview-plugin-fake: anyview-plugin-protocol plugin_host"
   "anyview-ffmpeg: anyview-plugin-common anyview-plugin-protocol"
   "anyview-heif: anyview-plugin-protocol anyview-tool-kit"
   "anyview-raw: anyview-plugin-protocol anyview-tool-kit"
   "anyview-tool-kit: anyview-plugin-common anyview-plugin-protocol"
 )
-  # Bardo, docket, porter, prov and bayonet crates are git dependencies, so they show with their url where a
-  # workspace crate shows a path. (bayonet is a path while it sits beside this checkout, and then shows
+  # Bardo, docket, porter, prov and the plugin host crates are git dependencies, so they show with their url where a
+  # workspace crate shows a path. (the plugin host is a path while it sits beside this checkout, and then shows
   # with a path like the workspace's own.)
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
   read -r -a allowed <<<"${edge#*:}"
   found=$(cargo tree -p "$crate" --depth 1 -e normal,build --prefix none --all-features 2>/dev/null \
-    | grep -E '\((/|https://github.com/Bardo-DE/(bardo|docket|porter|prov|bayonet))' | awk '{print $1}' | grep -vx "$crate" | sort -u | tr '\n' ' ')
+    | grep -E '\((/|https://github.com/Bardo-DE/(bardo|docket|porter|prov|plugin_host))' | awk '{print $1}' | grep -vx "$crate" | sort -u | tr '\n' ' ')
   want=$(printf '%s\n' "${allowed[@]}" | grep . | sort -u | tr '\n' ' ')
   if [ "$found" != "$want" ]; then
     echo "EDGE: $crate depends on [${found% }], the table allows [${want% }]"

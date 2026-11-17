@@ -1,12 +1,12 @@
-# bayonet
+# The plugin host
 
-bayonet runs plugins as separate programs. A plugin is an executable a person installs; the host
+The plugin host runs plugins as separate programs. A plugin is an executable a person installs; the host
 never links it. The plugin describes itself in a TOML manifest, the host finds the manifest, starts
 the program for one request, and talks to it over a pipe in length-prefixed JSON frames. A plugin
 that crashes, hangs or lies costs one request and never takes the host down.
 
 It is generic over the host's *capability type*, the things a plugin can offer (`thumbnail`,
-`block.lens`, `open.provider`). bayonet owns the mechanics and none of the vocabulary:
+`block.lens`, `open.provider`). The plugin host owns the mechanics and none of the vocabulary:
 
 | Module | What it does |
 |---|---|
@@ -23,16 +23,16 @@ A host implements two small traits.
 
 ```rust,ignore
 // One `[[provides]]` entry of a manifest, parsed into the host's own type.
-impl bayonet::manifest::Provides for Provision { /* Capability, Fault, parse, capability */ }
+impl plugin_host::manifest::Provides for Provision { /* Capability, Fault, parse, capability */ }
 
 // The messages the host and its plugins exchange, and the greeting that starts them.
-impl bayonet::run::Protocol for Wire { /* Provides, Request, Message, VERSION, greeting */ }
+impl plugin_host::run::Protocol for Wire { /* Provides, Request, Message, VERSION, greeting */ }
 ```
 
 Then:
 
 ```rust,ignore
-let found = bayonet::discover::<Provision>(&Search::new("myapp", user, system, Wire::VERSION));
+let found = plugin_host::discover::<Provision>(&Search::new("myapp", user, system, Wire::VERSION));
 let plugin = found.registry.serving(Cap::Thumbnail, |p| fit(p, &file)).ok_or(missing)?;
 let mut session = Runner::new("myapp", Timeouts::default().with_silence(Duration::from_secs(10)))
     .open::<Wire>(plugin, Cap::Thumbnail, &request, payload_limit)?;
@@ -45,9 +45,9 @@ For a layout of one folder per plugin, with a vocabulary owned by several crates
 ```rust,ignore
 let search = Search::new("bardo", user, system, 1)
     .with_layout(Layout::Folders { dir: "extensions", manifest: "extension.toml" });
-let scanned = bayonet::scan::<Raw>(&search);            // knows no capability word
+let scanned = plugin_host::scan::<Raw>(&search);            // knows no capability word
 let typed = scanned.candidates.into_iter()
-    .map(bayonet::reparse::<Mine>)                       // the owner's words; others are skipped
+    .map(plugin_host::reparse::<Mine>)                       // the owner's words; others are skipped
     /* ...the owner's own checks... */;
 let registry = Registry::resolve(candidates, Wire::VERSION);
 ```
@@ -59,24 +59,24 @@ first, with its greeting. `examples/demo_plugin.rs` is the shortest complete one
 
 `docs/capabilities.md` shows how four capabilities of a document host (`block.lens`, `open.provider`,
 `agent.adapter`, `row.facts`) sit on this API, and how `open.provider` has the wire shape of a
-launcher's provider, so one plugin can feed a launcher and a document host. `tests/bayonet/capabilities.rs` runs
+launcher's provider, so one plugin can feed a launcher and a document host. `tests/plugin_host/capabilities.rs` runs
 them against a real plugin program.
 
 ## Features and portability
 
 - `host` (default): everything but the wire. Without it the crate is `serde`, `serde_json` and
   `thiserror`, which is what a plugin program needs.
-- `testing` (off by default): `bayonet::testing::Fake`, a fake plugin for a host's tests. It greets,
+- `testing` (off by default): `plugin_host::testing::Fake`, a fake plugin for a host's tests. It greets,
   hands each request to a closure of the host's, and misbehaves on the wire on request
   (`--fault mute`, `garbage`, `ignore-cancel`, and the rest of `Fault`). `examples/fake_plugin.rs` is
-  one in a few lines, and `tests/bayonet/testing.rs` runs a `Runner` against it.
+  one in a few lines, and `tests/plugin_host/testing.rs` runs a `Runner` against it.
 - The wire, manifests, discovery and registry build on any platform. `run` needs Unix (process
   groups, `poll`) and is absent elsewhere. There is no bus, no UI toolkit and no async runtime in
   the tree; `cargo deny` bans them.
 
 ## Run, never link
 
-bayonet exists so that copyleft and codec code is never linked into an application.
+The plugin host exists so that copyleft and codec code is never linked into an application.
 
 ## Licence
 

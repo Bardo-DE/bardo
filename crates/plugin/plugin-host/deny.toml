@@ -7,7 +7,7 @@
 targets = ["x86_64-unknown-linux-gnu"]
 
 [licenses]
-# bayonet is MIT OR Apache-2.0, and only permissive licences may reach it. Copyleft (MPL, LGPL,
+# The plugin host is MIT OR Apache-2.0, and only permissive licences may reach it. Copyleft (MPL, LGPL,
 # GPL, AGPL, EUPL) is not allowed.
 allow = [
     "MIT",

@@ -1,9 +1,9 @@
-# Capabilities on bayonet
+# Capabilities on the plugin host
 
-bayonet knows no capability by name. A host defines them, and bayonet carries the value through the
+The plugin host knows no capability by name. A host defines them, and the plugin host carries the value through the
 manifest, the registry and the greeting. This note shows what that looks like for a second host whose
 capabilities are `block.lens`, `open.provider`, `agent.adapter` and `row.facts`. The code is
-`examples/shapes/mod.rs`; `tests/bayonet/capabilities.rs` runs it against `examples/demo_plugin.rs`, a real
+`examples/shapes/mod.rs`; `tests/plugin_host/capabilities.rs` runs it against `examples/demo_plugin.rs`, a real
 program on a real pipe.
 
 ## What a host writes
@@ -16,12 +16,12 @@ program on a real pipe.
 3. **A `Protocol` marker**: the request and message types and the version. `greeting` says which
    message is the plugin's first.
 4. **A fit function** when it routes: `Registry::serving(capability, |entry| Fit)` asks the host how
-   well an entry fits a request, and bayonet orders the answers (exact over broad, serving order for
+   well an entry fits a request, and the plugin host orders the answers (exact over broad, serving order for
    ties).
 
 ## How each capability uses the wire
 
-| Capability | Shape | bayonet API |
+| Capability | Shape | the plugin host API |
 |---|---|---|
 | `row.facts` | one request, one reply (`Facts`) | `open`, then `Session::reply` |
 | `block.lens` | one request, one reply whose payload is the drawing (RGBA8) | `open` with a payload limit, then `reply`; the frame's `payload` holds the pixels |
@@ -29,7 +29,7 @@ program on a real pipe.
 | `open.provider` | a query, a stream of batches for its generation, then `Complete`; a newer keystroke cancels; a second request asks what choosing a row does | `Session::stream` for the query, a fresh `open` for the activation |
 
 A plugin is started for each request, so `Query` and `Activate` are two runs. A plugin that keeps
-state between them keeps it in a file or a daemon of its own; bayonet does not.
+state between them keeps it in a file or a daemon of its own; the plugin host does not.
 
 ## `open.provider` and the launcher
 
@@ -57,7 +57,7 @@ person did not install it to do.
 `the_open_provider_wire_is_the_launchers_provider_shape` pins this: it reads a row as the launcher
 writes it, and checks that a plugin's row plus the host's `provider` is the launcher's row.
 
-## What bayonet does not do
+## What the plugin host does not do
 
 It does not decide what a capability may do. A capability that lets someone act (export a file,
 send a message) is the host's to gate; an agent reaches a plugin only through the host's own

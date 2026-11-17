@@ -1,4 +1,4 @@
-//! What a host teaches bayonet about its wire.
+//! What a host teaches the plugin host about its wire.
 
 use crate::manifest::Provides;
 use serde::Serialize;

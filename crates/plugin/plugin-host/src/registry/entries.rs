@@ -51,7 +51,7 @@ pub struct Unusable<P: Provides> {
     pub reason: ManifestError<P::Capability, P::Fault>,
 }
 
-/// How well a plugin's entry fits a request: the host decides, bayonet only orders.
+/// How well a plugin's entry fits a request: the host decides, the plugin host only orders.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Fit {
     /// The entry does not serve the request.

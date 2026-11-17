@@ -1,4 +1,4 @@
-//! The entries of the words this crate owns, as one bayonet `Provides` type.
+//! The entries of the words this crate owns, as one the plugin host `Provides` type.
 
 use std::path::Path;
 
@@ -45,7 +45,7 @@ impl Provision {
         }
     }
 
-    /// The first problem with the files this entry names that bayonet's own checks do not make
+    /// The first problem with the files this entry names that plugin host's own checks do not make
     /// (a size over its cap, a folder that is not one).
     pub(crate) fn fault(&self) -> Option<Fault> {
         match self {

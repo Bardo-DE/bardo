@@ -1,4 +1,4 @@
-//! A plugin program for bayonet's tests and the shortest example of one: it answers the four
+//! A plugin program for the plugin host's tests and the shortest example of one: it answers the four
 //! capabilities of `shapes`, and misbehaves on request, for the host's tests of timeouts,
 //! crashes and cancellation.
 //!

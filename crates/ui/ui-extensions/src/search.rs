@@ -107,7 +107,7 @@ fn scan_root(root: &Path, origin: Origin) -> (Vec<Candidate<Raw>>, Vec<Rejected<
         manifest: MANIFEST,
     };
     // One root at a time, so each keeps its own origin and the order of the roots stays the order
-    // of the candidates (bayonet's scan marks the first root it is given as the person's).
+    // of the candidates (the plugin host's scan marks the first root it is given as the person's).
     let search = plugin_host::Search::new(APP, root, &[], PROTOCOL).with_layout(layout);
     let scan = plugin_host::scan::<Raw>(&search);
     let candidates = scan

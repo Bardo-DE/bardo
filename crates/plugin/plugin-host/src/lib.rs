@@ -5,7 +5,7 @@
 //! over a pipe in length-prefixed JSON frames. A plugin that crashes, hangs or lies costs one
 //! request and never takes the host down.
 //!
-//! bayonet is generic over the host's *capability type*, the things a plugin can offer. It owns
+//! The plugin host is generic over the host's *capability type*, the things a plugin can offer. It owns
 //! the mechanics and none of the vocabulary:
 //!
 //! - [`wire`]: frames, the blocking reader and writer a plugin uses, and the incremental

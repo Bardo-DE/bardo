@@ -1,4 +1,4 @@
-//! Why this crate refuses an entry it owns: bayonet's `ManifestError::Provision` payload.
+//! Why this crate refuses an entry it owns: the plugin host's `ManifestError::Provision` payload.
 
 use std::path::PathBuf;
 

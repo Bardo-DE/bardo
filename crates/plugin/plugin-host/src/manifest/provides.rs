@@ -1,4 +1,4 @@
-//! What a host teaches bayonet about its `[[provides]]` entries.
+//! What a host teaches the plugin host about its `[[provides]]` entries.
 
 use super::confine::inside;
 use super::error::ManifestError;
@@ -113,7 +113,7 @@ pub fn absolute<E>(path: PathBuf) -> Result<PathBuf, Refusal<E>> {
 /// One `[[provides]]` entry of a manifest, parsed into the host's own type.
 ///
 /// A host implements it for one type (usually an enum with a variant for each capability), and
-/// bayonet's [`Manifest`] and [`Registry`] are generic over it.
+/// The plugin host's [`Manifest`] and [`Registry`] are generic over it.
 ///
 /// [`Manifest`]: super::Manifest
 /// [`Registry`]: crate::registry::Registry

@@ -15,7 +15,7 @@
 //! Ranking waits for the owner of the word, because only the owner knows what is usable: a
 //! missing program, a newer protocol, a file out of the folder. For this crate's words that is
 //! [`Found::resolve`]. Unusable Extensions are set aside first; the rest are ordered by protocol,
-//! then the person's copy over the system's, then the newer version, then the id (bayonet's
+//! then the person's copy over the system's, then the newer version, then the id (the plugin host's
 //! registry does it). An Extension that fails is listed with a reason in plain words
 //! ([`Problem::words`]), and is never half-used.
 //!

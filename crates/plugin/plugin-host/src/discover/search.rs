@@ -32,7 +32,7 @@ pub struct Search<'a> {
     /// The person's data directory (`$XDG_DATA_HOME`).
     pub user: &'a Path,
     /// The system's data directories (`$XDG_DATA_DIRS`), most important first. The host reads
-    /// the environment and passes the result in: bayonet reads none.
+    /// the environment and passes the result in: the plugin host reads none.
     pub system: &'a [PathBuf],
     /// The newest protocol version the host speaks.
     pub protocol: u32,

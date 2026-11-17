@@ -17,7 +17,7 @@ categories = ["development-tools", "os"]
 # brings serde, serde_json and thiserror and nothing else.
 default = ["host"]
 host = ["dep:toml", "dep:rustix"]
-# A fake plugin for a host's tests: `bayonet::testing`. Needs only the wire.
+# A fake plugin for a host's tests: `plugin_host::testing`. Needs only the wire.
 testing = []
 
 [dependencies]
@@ -41,8 +41,8 @@ required-features = ["host", "testing"]
 
 # One integration-test binary, so the tests link once. Its `testing` module is behind the feature.
 [[test]]
-name = "bayonet"
-path = "tests/bayonet/main.rs"
+name = "plugin_host"
+path = "tests/plugin_host/main.rs"
 required-features = ["host"]
 
 [dev-dependencies]

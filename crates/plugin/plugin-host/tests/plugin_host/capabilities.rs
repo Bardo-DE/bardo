@@ -1,5 +1,5 @@
 //! The capabilities of a second host (`block.lens`, `open.provider`, `agent.adapter`,
-//! `row.facts`) on bayonet's generic API, against a real plugin program: discovery finds them,
+//! `row.facts`) on the plugin host's generic API, against a real plugin program: discovery finds them,
 //! the registry routes them, the runner asks them.
 
 use crate::support::shapes::{

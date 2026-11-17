@@ -2,7 +2,7 @@
 //!
 //! Ranking happens after the owner's checks, because only the owner knows what is usable
 //! (design: Extensions, section 4.3). Here the owner is this crate: it reads the raw entries of
-//! the capability asked for, checks the files they name, and lets bayonet's registry set the
+//! the capability asked for, checks the files they name, and lets the plugin host's registry set the
 //! unusable ones aside and rank the rest (protocol, then the person's copy over the system's,
 //! then the newer version, then the id).
 
@@ -21,7 +21,7 @@ use crate::search::{Found, PROTOCOL, names};
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Resolved {
     capability: Capability,
-    /// The usable Extensions in serving order, and the ones bayonet set aside after the checks
+    /// The usable Extensions in serving order, and the ones the plugin host set aside after the checks
     /// ([`Registry::unusable`]): a missing file, a path out of the folder, a sheet over its cap,
     /// a newer entry format.
     pub registry: Registry<Provision>,
@@ -103,7 +103,7 @@ impl Found {
     }
 }
 
-/// `candidate`, set aside if a file it names is not usable by this crate's checks (bayonet has
+/// `candidate`, set aside if a file it names is not usable by this crate's checks (the plugin host has
 /// already made its own: the file is there and stays in the folder).
 fn checked(mut candidate: Candidate<Provision>) -> Candidate<Provision> {
     if matches!(candidate.readiness, Readiness::Unready(_)) {

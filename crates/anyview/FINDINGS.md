@@ -10,7 +10,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   libraries pinned by rev.** Forks of other projects: vello (five crates, `[patch.crates-io]`; ends when the
   changes are released upstream), anyrender (five; the same), dioxus (five; the dirty-task fix, ends when a
   dioxus release has it) and blitz (with taffy reached through it; ends when its changes are released upstream).
-  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, bayonet, docket, porter
+  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, the plugin host, docket, porter
   (with almanac, stoker and peephole), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
   each git source by name. A source build is reproducible while those repositories keep the revs (`Cargo.lock` is
   committed, CI builds with `--locked`). The tag workflow (`.github/workflows/release.yml`) builds the Linux
@@ -144,11 +144,11 @@ on. It is a reference, not a log: how each was found lives in git history.
   `windows-latest` (`cargo check --locked`; nothing is linked or run). `portable`'s opener command lines are
   table-tested for all three platforms. What is Linux's alone is left out of those builds: the video player
   (`anyview-media`'s `session/absent.rs` has its types and refuses to start one), the D-Bus services
-  (`desktop`) and, on Windows, the plugin runner (bayonet starts a plugin with a process group and a
+  (`desktop`) and, on Windows, the plugin runner (the plugin host starts a plugin with a process group and a
   poll on its pipes; `plugin/runner_absent.rs` answers every request that the plugin cannot be started, so
   Windows shows only what the built-in readers give). Bardo still pulls `zbus` (`ds-settings`, `ds-helpers`)
   into every build, unused off Linux. Ends when the viewer is built and run on a Mac and on Windows, a
-  bayonet runner for Windows (a job object and overlapped pipes) exists, and the video player has a
+  The plugin host runner for Windows (a job object and overlapped pipes) exists, and the video player has a
   portable frame transport.
 - **Single instance without the bus starts nothing.** The bus starts the viewer for a call to its name
   (`dist/org.bardo.Anyview1.service`); the per-user socket (the service locator) does not, so a launcher cannot call a
@@ -1211,11 +1211,11 @@ on. It is a reference, not a log: how each was found lives in git history.
   signatures, not code the viewer runs. `anyview-peek` stays at 590. Ends when docket-core splits the app-facing
   types from the planner and reader vocabulary.
 
-- **The viewer's package budget is 683 (was 682).** bayonet, the plugin library, is one package. The plugin
+- **The viewer's package budget is 683 (was 682).** the plugin host, the plugin library, is one package. The plugin
   machinery it took over (the frames, the manifest envelope, discovery, the process handling) was already in the
   tree as the code of `anyview-plugin`, `anyview-plugin-protocol` and `anyview-platform`, and its dependencies
   (`toml`, `rustix`, `serde`, `serde_json`, `thiserror`) were already there, so nothing else is added.
-  `anyview-peek` stays at 591: it does not reach the plugin crates. The plugin programs take bayonet without
+  `anyview-peek` stays at 591: it does not reach the plugin crates. The plugin programs take the plugin host without
   its `host` feature, so `toml` stays out of their trees. Ends never: this is a package moved out of the
   workspace into its own repo.
 

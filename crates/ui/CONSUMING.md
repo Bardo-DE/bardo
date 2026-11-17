@@ -1792,8 +1792,8 @@ let sheet = stylesheet_for(&settings.appearance.look, &looks.registry); // text 
 An Extension that cannot be used is in `looks.problems()` with a line in plain words
 (`Problem::words`). When nothing serves a request and `found.off_serving("look")` is not empty,
 offer "Turn On…" (a link to the `extension:<id>` Settings target) instead of "missing". Another
-owner's words (anyview-plugin's six) are read from `found.candidates` through `bayonet::reparse`
-with that owner's own `Provides` type; `ds_extensions::bayonet` is the same bayonet, re-exported
+owner's words (anyview-plugin's six) are read from `found.candidates` through `plugin_host::reparse`
+with that owner's own `Provides` type; `ds_extensions::plugin_host` is the same the plugin host, re-exported
 so the two agree. `ExtensionsFile` is `bardo/extensions.toml`; its schema is
 `ds_extensions::extensions_schema()`.
 

@@ -32,7 +32,7 @@ cd "$(dirname "$0")/.."
 # hybrid painter) name it; every other crate stays device-free.
 # ui-extensions (Extensions: the folder scan, the checks, on and off, the data capabilities) is a library
 # with no UI, no runtime and no bus: it reads settings through ui-settings, files through ui-helpers'
-# capped reader, and manifests through bayonet (a git dependency, not an in-tree edge). ui-settings must
+# capped reader, and manifests through the plugin host (a git dependency, not an in-tree edge). ui-settings must
 # never name it back (the Provided key kind knows nothing of what is installed).
 # ui-emoji finds the colour emoji face in a fontique collection for ui-blitz and for temor's terminal,
 # which has no toolkit: only fontique, so no renderer, no toolkit, no D-Bus and not even parley.
