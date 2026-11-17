@@ -10,8 +10,8 @@
 use crate::BUS_TIMEOUT;
 use crate::error::UnitError;
 use crate::manager::{SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH};
-use caller_identity_core::{Pid, Uid};
 use base_time::timeout::{TimedOut, within};
+use caller_identity_core::{Pid, Uid};
 use std::sync::Mutex;
 use zbus::Connection;
 use zbus::fdo::{DBusProxy, PropertiesProxy};
