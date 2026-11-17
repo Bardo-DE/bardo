@@ -7,7 +7,6 @@ use settings_app_model::{Origin, ShortcutsEffect, ShortcutsInput, ShortcutsState
 use settings_app_testkit::Scratch;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::time::Duration;
 
 fn scratch(name: &str) -> Scratch {
     Scratch::under(env!("CARGO_TARGET_TMPDIR"), name)
@@ -100,13 +99,7 @@ fn the_watch_fires_when_the_persons_file_changes() {
         .expect("a watch");
     files.save_person("", "copy = none\n").expect("saved");
     // The watch looks on its own thread at its own pace.
-    for _ in 0..200 {
-        if fired.load(Ordering::SeqCst) > 0 {
-            return;
-        }
-        std::thread::sleep(Duration::from_millis(50));
-    }
-    panic!("the watch never fired");
+    base_testkit::eventually_blocking("the watch fires", || fired.load(Ordering::SeqCst) > 0);
 }
 
 #[test]

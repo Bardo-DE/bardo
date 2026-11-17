@@ -27,6 +27,7 @@ toml_edit = { workspace = true }
 tracing = { workspace = true }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 settings-app-testkit = {path = "../settings-app-testkit"}
 
 [lints]

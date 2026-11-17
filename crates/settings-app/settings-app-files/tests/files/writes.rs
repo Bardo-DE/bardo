@@ -91,6 +91,10 @@ fn a_save_waits_for_another_writer_of_the_file_and_keeps_its_change() {
         std::thread::spawn(move || {
             update_atomic(&path, ReadCap::mib(1), NewFileMode::Umask, |text| {
                 held.send(()).expect("the test is listening");
+                // Best-effort ordering check: nothing announces that the save is blocked on the
+                // lock (it waits inside the flock call), so the lock is held long enough for it
+                // to get there. A slow machine only makes the save arrive later, which the
+                // lock still orders correctly; the wait proves the case only when it is reached.
                 std::thread::sleep(Duration::from_millis(300));
                 let text = text.unwrap_or_default();
                 Ok::<_, std::convert::Infallible>(format!("{text}[scroll]\nspeed = 3\n"))
