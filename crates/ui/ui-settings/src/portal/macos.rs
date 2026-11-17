@@ -8,7 +8,7 @@
 //! [`EVERY`] and publishes only what changed. A read is three lookups in `cfprefsd`'s cache.
 
 use super::SystemPrefs;
-use crate::latest::{self, Receiver, Sender};
+use settings_store::latest::{self, Receiver, Sender};
 use objc2_core_foundation::{
     CFBoolean, CFNumber, CFPreferencesAppSynchronize, CFPreferencesCopyAppValue, CFPropertyList,
     CFRetained, CFString,

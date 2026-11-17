@@ -12,6 +12,7 @@ publish.workspace = true
 action-vocab = {path = "../../actions/action-vocab"}
 nucleo-matcher = { workspace = true }
 ui-core = {path = "../../ui/ui-core"}
+settings-types = { path = "../../settings/settings-types" }
 keymap = {features = ["serde"], path = "../../keymap/keymap"}
 action-core = {path = "../../actions/action-core"}
 memory-core = {path = "../../memory/memory-core"}

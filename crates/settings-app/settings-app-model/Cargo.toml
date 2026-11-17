@@ -25,7 +25,6 @@ action-settings = {path = "../../actions/action-settings"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
-ui-settings = { path = "../../ui/ui-settings" }
 key-remap-client = {path = "../../input/key-remap-client"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
