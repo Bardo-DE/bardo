@@ -11,6 +11,7 @@ publish.workspace = true
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
 base-fs = { path = "../../base/base-fs" }
+base-time = { path = "../../base/base-time" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 toml = { workspace = true }
@@ -20,7 +21,6 @@ zbus = {workspace = true, features = ["default"], optional = true}
 
 [dev-dependencies]
 base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
-base-time = { path = "../../base/base-time" }
 # The tests' runtime; the crate itself names none (zbus brings its own executor).
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 # The tests run zbus on that runtime (the fake PackageKit sleeps with tokio inside a zbus

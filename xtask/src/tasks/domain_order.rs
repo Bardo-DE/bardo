@@ -140,7 +140,7 @@ pub fn run() -> Result<bool> {
         let Some(domain) = domain_of(dir) else {
             continue;
         };
-        let has_bin = package.targets.iter().any(|target| target.is_bin());
+        let has_bin = package.targets.iter().any(cargo_metadata::Target::is_bin);
         packages.push(Package {
             program: is_program(&name, dir, has_bin),
             manifest: package.manifest_path.clone().into_std_path_buf(),
