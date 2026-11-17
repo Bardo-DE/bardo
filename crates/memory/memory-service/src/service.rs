@@ -15,7 +15,6 @@ use crate::record::Stored;
 use crate::registry::Listing;
 use crate::runtime::SpaceRuntime;
 use base_time::Clock;
-use chrono::{Offset, Utc};
 use memory_core::{
     AppName, ChainHealth, Count, PlanToken, Record, Refusal, RuleSet, RunState, SpaceId, SpaceKind,
     SpaceMeta, SpaceState, SpaceSummary,
@@ -320,7 +319,7 @@ impl<B: Backend> MemoryService<B> {
             .backend
             .open_index(id, &key)
             .map_err(crate::open::backend_refusal)?;
-        let store = Store::new(files, id.clone(), Utc.fix());
+        let store = Store::new(files, id.clone(), jiff::tz::Offset::UTC);
         let marks = crate::marks::load(store.vault());
         let baseline = crate::baseline::Baseline::load(store.vault());
         let mut open = Open {

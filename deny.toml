@@ -45,10 +45,10 @@ yanked = "deny"
 ignore = [
     # From anyview.
     { id = "RUSTSEC-2025-0141", reason = "bincode unmaintained but complete; syntect reads only its own built-in dump with it" },
-    # chrono, announced unmaintained 2026-11-17. Outside crates still pull it in (cedar-policy-core,
-    # rmcp, schemars, trash), so it stays in the tree even after our own crates move to jiff. No
-    # known flaw. Remove when those upstreams have moved and our nine crates no longer name it.
-    { id = "RUSTSEC-2026-0543", reason = "chrono unmaintained, no known flaw; still reached through cedar-policy-core, rmcp, schemars and trash" },
+    # chrono, announced unmaintained 2026-11-17. None of our crates names it any more (they use
+    # jiff); it stays in the tree through cedar-policy-core, rmcp, schemars and trash. No known
+    # flaw. Remove when those upstreams have moved.
+    { id = "RUSTSEC-2026-0543", reason = "chrono unmaintained, no known flaw; reached only through cedar-policy-core, rmcp, schemars and trash" },
     { id = "RUSTSEC-2024-0436", reason = "paste: compile-time proc macro only, no runtime exposure; arrives through rav1e and pulp" },
     { id = "RUSTSEC-2026-0192", reason = "ttf-parser unmaintained, no known flaw; reached only through the window frame's own font" },
     # From airwaves, anyview, peephole, slipway: zbus 5's companion crates are folded into zbus 6. Remove when the desktop moves to zbus 6.

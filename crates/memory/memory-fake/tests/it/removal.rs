@@ -3,7 +3,7 @@
 //! either is deleted when the person chose that; a move that stopped half way finishes when
 //! asked again. Scratch Spaces, no clock, no bus.
 
-use chrono::{Offset, Utc};
+use jiff::tz::Offset;
 use memory_core::*;
 use memory_fake::*;
 use memory_files_format::Store;
@@ -29,7 +29,7 @@ fn home_of(name: &str) -> SpaceId {
 }
 
 fn store(service: &Service, space: &SpaceId) -> Store<SharedVault> {
-    Store::new(service.backend().vault_of(space), space.clone(), Utc.fix())
+    Store::new(service.backend().vault_of(space), space.clone(), Offset::UTC)
 }
 
 fn fact(n: u8, by: Actor, label: Label) -> Fact {

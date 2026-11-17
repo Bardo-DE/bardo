@@ -1,13 +1,15 @@
 //! Dates and times as Google writes them (RFC 3339, or a bare `YYYY-MM-DD`) and as iCalendar
-//! and vCard want them. Pure; chrono reads them.
+//! and vCard want them. Pure; jiff reads them.
 
-use chrono::{DateTime, Datelike, Duration, NaiveDateTime, Timelike};
+use super::super::civil::{wall_clock, written};
+use jiff::SignedDuration;
+use jiff::civil::DateTime;
 
 /// A parsed RFC 3339 time: the wall-clock fields as written and the offset they were written with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Stamp {
     /// The wall clock as written, to the second (a fraction and a leap second are dropped).
-    local: NaiveDateTime,
+    local: DateTime,
     /// East of UTC, in seconds.
     offset: i32,
 }
@@ -16,20 +18,37 @@ impl Stamp {
     /// Reads `2026-10-06T10:00:00-07:00`, with an optional fraction and `Z` for a zero offset.
     /// A time with no offset at all is read as UTC, and an offset may be written `-0700`.
     pub fn parse(text: &str) -> Option<Self> {
-        let (local, offset) = match DateTime::parse_from_rfc3339(text)
-            .or_else(|_| DateTime::parse_from_str(text, "%Y-%m-%dT%H:%M:%S%.f%z"))
-        {
-            Ok(at) => (at.naive_local(), at.offset().local_minus_utc()),
-            Err(_) => (
-                NaiveDateTime::parse_from_str(text, "%Y-%m-%dT%H:%M:%S%.f").ok()?,
-                0,
-            ),
+        let local = wall_clock(text)?;
+        let mut rest = &text.as_bytes()[19..];
+        if let [b'.', tail @ ..] = rest {
+            let digits = tail.iter().take_while(|c| c.is_ascii_digit()).count();
+            if digits == 0 {
+                return None;
+            }
+            rest = &tail[digits..];
+        }
+        let offset = match rest {
+            [] | [b'Z' | b'z'] => 0,
+            [sign @ (b'+' | b'-'), tail @ ..] => {
+                let (hours, minutes) = match tail {
+                    [h1, h2, b':', m1, m2] | [h1, h2, m1, m2] => ([*h1, *h2], [*m1, *m2]),
+                    _ => return None,
+                };
+                let number = |pair: [u8; 2]| {
+                    pair.iter()
+                        .all(u8::is_ascii_digit)
+                        .then(|| i32::from(pair[0] - b'0') * 10 + i32::from(pair[1] - b'0'))
+                };
+                let (hours, minutes) = (number(hours)?, number(minutes)?);
+                if hours > 23 || minutes > 59 {
+                    return None;
+                }
+                let seconds = hours * 3600 + minutes * 60;
+                if *sign == b'-' { -seconds } else { seconds }
+            }
+            _ => return None,
         };
-        (local.year() >= 1).then_some(())?;
-        Some(Self {
-            local: local.with_nanosecond(0)?,
-            offset,
-        })
+        Some(Self { local, offset })
     }
 
     /// `20261006T100000`: the wall-clock time as written, for a `TZID=` property.
@@ -39,22 +58,11 @@ impl Stamp {
 
     /// `20261006T170000Z`: the same instant in UTC.
     pub fn utc(&self) -> String {
-        let at = self.local - Duration::seconds(i64::from(self.offset));
+        let at = self
+            .local
+            .saturating_sub(SignedDuration::from_secs(i64::from(self.offset)));
         format!("{}Z", written(&at))
     }
-}
-
-/// `20261006T100000` of `at`.
-fn written(at: &NaiveDateTime) -> String {
-    format!(
-        "{:04}{:02}{:02}T{:02}{:02}{:02}",
-        at.year(),
-        at.month(),
-        at.day(),
-        at.hour(),
-        at.minute(),
-        at.second()
-    )
 }
 
 #[cfg(test)]

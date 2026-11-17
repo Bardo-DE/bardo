@@ -2,7 +2,7 @@
 //! can be discarded or superseded, records its outcome instead of vanishing, and the applied
 //! view lists what was applied and what was skipped. Scratch Space, scripted drafts, no clock.
 
-use chrono::{Offset, Utc};
+use jiff::tz::Offset;
 use memory_core::*;
 use memory_fake::*;
 use memory_files_format::{Block, TopicFile, render_topic};
@@ -67,7 +67,7 @@ fn render_with(name: &str, fact: Fact) -> String {
             title: name.to_owned(),
             blocks: vec![Block::Fact(fact)],
         },
-        &Utc.fix(),
+        &Offset::UTC,
     )
 }
 

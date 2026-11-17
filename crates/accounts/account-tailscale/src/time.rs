@@ -1,5 +1,5 @@
 //! Go's `time.Time` as Tailscale writes it (RFC 3339, with a fraction and an offset), read to
-//! whole Unix seconds by `UnixSeconds::from_rfc3339` (chrono).
+//! whole Unix seconds by `UnixSeconds::from_rfc3339` (jiff).
 
 use base_time::UnixSeconds;
 

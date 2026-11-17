@@ -88,7 +88,7 @@ pub fn ana_topic_text() -> String {
             Block::Unstamped("Ana likes tea".to_owned()),
         ],
     };
-    render_topic(&file, &chrono::Offset::fix(&chrono::Utc))
+    render_topic(&file, &jiff::tz::Offset::UTC)
 }
 
 /// The JSON of a link to event `seq`, as a model cites it.

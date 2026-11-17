@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 base-ids = { path = "../../base/base-ids" }
 memory-core = {path = "../../memory/memory-core"}
-chrono = { workspace = true, features = ["clock", "std"] }
+jiff = { workspace = true }
 companion-core = {path = "../companion-core"}
 companion-model = {path = "../companion-model"}
 companion-wire = {path = "../companion-wire"}

@@ -19,7 +19,7 @@ memory-recall = {path = "../memory-recall", features = ["testing"]}
 memory-service = {path = "../memory-service"}
 memory-tidy = {path = "../memory-tidy"}
 memory-files-format = {path = "../memory-files-format"}
-chrono = { workspace = true, features = ["std"] }
+jiff = { workspace = true }
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
 tempfile = { workspace = true }
 serde_json = { workspace = true }

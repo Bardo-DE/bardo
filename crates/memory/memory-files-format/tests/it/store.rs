@@ -1,7 +1,7 @@
 //! The fact store over a vault: add-only appends, the pending area, settling, the strict
 //! cascade and journal rollups. Every test runs over memory and over a scratch directory.
 
-use chrono::{Offset, Utc};
+use jiff::tz::Offset;
 use memory_core::*;
 use memory_files::{MemoryVault, PlainDir};
 use memory_files_format::*;
@@ -59,7 +59,7 @@ fn receipt() -> ConfirmReceipt {
 }
 
 fn store_over<V: Vault>(vault: V) -> Store<V> {
-    Store::new(vault, SpaceId::parse("work").expect("space"), Utc.fix())
+    Store::new(vault, SpaceId::parse("work").expect("space"), Offset::UTC)
 }
 
 /// Either vault behind one type.

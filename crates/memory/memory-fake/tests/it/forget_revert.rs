@@ -1,7 +1,7 @@
 //! Forget wins over Revert: nothing the person forgot comes back by a revert, whatever the last
 //! applied run kept in memory. Every test seeds the Space's files first.
 
-use chrono::{Offset, Utc};
+use jiff::tz::Offset;
 use memory_core::*;
 use memory_fake::*;
 use memory_files_format::{Block, TopicFile, render_topic};
@@ -38,7 +38,7 @@ fn fact(n: u8, text: &str) -> Fact {
 }
 
 fn render(file: &TopicFile) -> String {
-    render_topic(file, &Utc.fix())
+    render_topic(file, &Offset::UTC)
 }
 
 fn file_of(name: &str, blocks: Vec<Block>) -> TopicFile {

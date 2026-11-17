@@ -1519,7 +1519,7 @@ dependencies = [
  "account-core",
  "base-ids",
  "base-time",
- "chrono",
+ "jiff",
  "provenance",
  "serde",
  "serde_json",
@@ -2931,8 +2931,8 @@ dependencies = [
 name = "base-time"
 version = "0.1.0"
 dependencies = [
- "chrono",
  "futures-timer",
+ "jiff",
  "serde",
  "thiserror 2.0.21",
  "tokio",
@@ -3987,7 +3987,6 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
- "chrono",
  "companion-core",
  "companion-helpers",
  "companion-model",
@@ -3996,6 +3995,7 @@ dependencies = [
  "futures-util",
  "inference-client",
  "inference-core",
+ "jiff",
  "memory-core",
  "permission-core",
  "provenance",
@@ -6455,7 +6455,6 @@ dependencies = [
  "anyview-peek",
  "anyview-platform",
  "base-testkit",
- "chrono",
  "dioxus",
  "files-core",
  "files-fs",
@@ -6463,6 +6462,7 @@ dependencies = [
  "files-ops",
  "files-trash",
  "files-ui",
+ "jiff",
  "keymap",
  "serde",
  "settings-store",
@@ -7795,7 +7795,6 @@ dependencies = [
  "base-time",
  "base-url",
  "base-xdg",
- "chrono",
  "clap",
  "computer-use-action",
  "dbus-kit",
@@ -7816,6 +7815,7 @@ dependencies = [
  "inference-tailnet",
  "inference-turns",
  "iso_currency",
+ "jiff",
  "model-catalog",
  "model-http",
  "model-http-reqwest",
@@ -9543,7 +9543,7 @@ name = "memory-fake"
 version = "0.1.0"
 dependencies = [
  "base-time",
- "chrono",
+ "jiff",
  "memory-core",
  "memory-eventlog",
  "memory-files",
@@ -9578,7 +9578,7 @@ dependencies = [
 name = "memory-files-format"
 version = "0.1.0"
 dependencies = [
- "chrono",
+ "jiff",
  "memory-core",
  "memory-files",
  "memory-store",
@@ -9700,8 +9700,8 @@ version = "0.1.0"
 dependencies = [
  "base-time",
  "blake3",
- "chrono",
  "const-hex",
+ "jiff",
  "memory-core",
  "memory-eventlog",
  "memory-fake",
@@ -14851,7 +14851,6 @@ dependencies = [
  "base-url",
  "base-xdg",
  "base64 0.22.1",
- "chrono",
  "clap",
  "dbus-kit",
  "drive-fs",
@@ -14860,6 +14859,7 @@ dependencies = [
  "http-core",
  "http-relay",
  "http-reqwest",
+ "jiff",
  "mime_guess",
  "nanohtml2text",
  "replica-gdrive",

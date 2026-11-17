@@ -11,7 +11,7 @@
 //! comment or a field. The keys `valid` and `origin` are reserved: a trailer carrying them is
 //! refused, not interpreted. Parsing is strict.
 
-use chrono::{DateTime, SecondsFormat, Utc};
+use jiff::Timestamp;
 use memory_core::{Actor, Fact, FactId, FactText, Label, Link, UnixSeconds, Validity};
 use std::sync::Arc;
 
@@ -74,18 +74,17 @@ fn unescape(text: &str) -> String {
 
 /// 0000-01-01T00:00:00Z, the first instant RFC 3339 can print (four-digit years).
 const MIN_SECONDS: i64 = -62_167_219_200;
-/// 9999-12-31T23:59:59Z, the last one.
-const MAX_SECONDS: i64 = 253_402_300_799;
+/// 9999-12-30T22:00:00Z, the last instant jiff holds (it keeps a day's margin for offsets).
+const MAX_SECONDS: i64 = 253_402_207_200;
 
 /// The instant, clamped into the range RFC 3339 can print.
-pub(crate) fn timestamp(at: UnixSeconds) -> DateTime<Utc> {
-    DateTime::from_timestamp(at.0.clamp(MIN_SECONDS, MAX_SECONDS), 0)
-        .unwrap_or(DateTime::UNIX_EPOCH)
+pub(crate) fn timestamp(at: UnixSeconds) -> Timestamp {
+    Timestamp::from_second(at.0.clamp(MIN_SECONDS, MAX_SECONDS)).unwrap_or(Timestamp::UNIX_EPOCH)
 }
 
 /// The instant as the trailer writes it: UTC, whole seconds, `Z`.
-fn render_at(at: DateTime<Utc>) -> String {
-    at.to_rfc3339_opts(SecondsFormat::Secs, true)
+fn render_at(at: Timestamp) -> String {
+    at.to_string()
 }
 
 /// The trailer line (without a newline) for `fact`.
@@ -158,9 +157,9 @@ impl Fields {
         let id = FactId::parse(&need(self.id, "fact")?)
             .map_err(|e| TrailerFault::BadValue("fact", Some(Cause::of(e))))?;
         let at = need(self.at, "at")?;
-        let parsed = DateTime::parse_from_rfc3339(&at)
-            .map_err(|e| TrailerFault::BadValue("at", Some(Cause::of(e))))?
-            .with_timezone(&Utc);
+        let parsed = at
+            .parse::<Timestamp>()
+            .map_err(|e| TrailerFault::BadValue("at", Some(Cause::of(e))))?;
         if render_at(parsed) != at {
             return Err(TrailerFault::BadValue("at", None));
         }
@@ -175,7 +174,7 @@ impl Fields {
         Ok(Fact {
             id,
             text,
-            recorded: UnixSeconds(parsed.timestamp()),
+            recorded: UnixSeconds(parsed.as_second()),
             by,
             label,
             links,

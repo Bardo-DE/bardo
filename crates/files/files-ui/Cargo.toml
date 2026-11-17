@@ -22,7 +22,7 @@ anyview-peek = {default-features = false, features = ["pane"], path = "../../any
 # The shared thumbnail cache's trait (and its freedesktop implementation, which the binary builds).
 anyview-platform = {path = "../../anyview/crates/anyview-platform"}
 keymap = {path = "../../keymap/keymap"}
-chrono = { workspace = true, features = ["std", "clock"] }
+jiff = { workspace = true }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-extensions = {path = "../../ui/ui-extensions"}

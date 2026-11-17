@@ -1,7 +1,7 @@
 //! Consolidation applies every kind of hunk and a revert puts the files back; every test seeds
 //! the Space's files first, the way a person's editor would have left them.
 
-use chrono::{Offset, Utc};
+use jiff::tz::Offset;
 use memory_core::*;
 use memory_fake::*;
 use memory_files_format::{Block, TopicFile, render_topic};
@@ -38,7 +38,7 @@ fn fact(n: u8, text: &str) -> Fact {
 }
 
 fn render(file: &TopicFile) -> String {
-    render_topic(file, &Utc.fix())
+    render_topic(file, &Offset::UTC)
 }
 
 fn file_of(name: &str, blocks: Vec<Block>) -> TopicFile {

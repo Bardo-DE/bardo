@@ -53,11 +53,11 @@ fn day_of(at: UnixSeconds) -> i64 {
     at.0.div_euclid(86_400)
 }
 
-/// The month `at` is in, as months since year 0 (UTC): `year * 12 + month - 1`. An instant chrono
-/// cannot write (beyond year 262000) is month 0.
+/// The month `at` is in, as months since year 0 (UTC): `year * 12 + month - 1`. An instant jiff
+/// cannot write (beyond year 9999) is month 0.
 fn month_of(at: UnixSeconds) -> i64 {
-    use chrono::Datelike;
-    chrono::DateTime::from_timestamp(at.0, 0).map_or(0, |day| {
+    jiff::Timestamp::from_second(at.0).map_or(0, |instant| {
+        let day = instant.to_zoned(jiff::tz::TimeZone::UTC).date();
         i64::from(day.year()) * 12 + i64::from(day.month()) - 1
     })
 }

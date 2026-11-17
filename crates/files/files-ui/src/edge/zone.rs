@@ -2,7 +2,8 @@
 
 use std::time::SystemTime;
 
-use chrono::{DateTime, Local, Utc};
+use jiff::Timestamp;
+use jiff::tz::TimeZone;
 
 use crate::words::{NONE, date_words};
 
@@ -24,9 +25,13 @@ impl Zone {
         let Some(at) = at else {
             return NONE.to_owned();
         };
-        match self {
-            Zone::Local => date_words(&DateTime::<Local>::from(at)),
-            Zone::Utc => date_words(&DateTime::<Utc>::from(at)),
-        }
+        let Ok(at) = Timestamp::try_from(at) else {
+            return NONE.to_owned();
+        };
+        let zone = match self {
+            Zone::Local => TimeZone::system(),
+            Zone::Utc => TimeZone::UTC,
+        };
+        date_words(&at.to_zoned(zone))
     }
 }

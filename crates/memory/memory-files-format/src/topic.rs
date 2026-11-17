@@ -20,7 +20,7 @@
 //! `render_topic` produced.
 
 use crate::trailer::{Cause, TrailerFault, parse_trailer, render_trailer, timestamp};
-use chrono::FixedOffset;
+use jiff::tz::Offset;
 use memory_core::{Fact, FactText, TopicPath};
 use std::fmt::Write as _;
 
@@ -180,7 +180,7 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
 
 /// Renders a topic file; dated headings use `tz`.
 #[must_use]
-pub fn render_topic(file: &TopicFile, tz: &FixedOffset) -> String {
+pub fn render_topic(file: &TopicFile, tz: &Offset) -> String {
     let mut out = format!(
         "---\nformat: {FORMAT_LINE}\ntopic: {}\ntitle: {}\n---\n\n",
         file.topic, file.title
@@ -189,10 +189,7 @@ pub fn render_topic(file: &TopicFile, tz: &FixedOffset) -> String {
     for (index, block) in file.blocks.iter().enumerate() {
         match block {
             Block::Fact(fact) => {
-                let date = timestamp(fact.recorded)
-                    .with_timezone(tz)
-                    .date_naive()
-                    .to_string();
+                let date = tz.to_datetime(timestamp(fact.recorded)).date().to_string();
                 if heading.as_deref() != Some(date.as_str()) {
                     if index > 0 {
                         out.push('\n');

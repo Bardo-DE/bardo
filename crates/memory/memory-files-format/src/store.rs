@@ -2,7 +2,7 @@
 //! `journal/2026-w40`) are ordinary topics, so nothing here treats them specially (Q10).
 
 use crate::topic::{Block, ParseError, TopicFile, parse_topic, render_topic};
-use chrono::FixedOffset;
+use jiff::tz::Offset;
 use memory_core::{
     Count, Fact, FactId, Integrity, Settlement, Source, SpaceId, TopicPath, UserText,
 };
@@ -78,12 +78,12 @@ impl Primer {
 pub struct Store<V: Vault> {
     vault: V,
     space: SpaceId,
-    tz: FixedOffset,
+    tz: Offset,
 }
 
 impl<V: Vault> Store<V> {
     /// A store over `vault` for `space`; dated headings use `tz`.
-    pub fn new(vault: V, space: SpaceId, tz: FixedOffset) -> Self {
+    pub fn new(vault: V, space: SpaceId, tz: Offset) -> Self {
         Self { vault, space, tz }
     }
 
@@ -98,7 +98,7 @@ impl<V: Vault> Store<V> {
     }
 
     /// The time zone of the headings.
-    pub fn tz(&self) -> &FixedOffset {
+    pub fn tz(&self) -> &Offset {
         &self.tz
     }
 
