@@ -12,8 +12,8 @@
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
 use shell_launcher::AppId;
+use shell_model::capture_pick::CaptureService;
 use shell_model::capture_pick::{PermissionAsking, PermissionOutcome};
-use shell_services::capture_pick::CaptureService;
 use shell_settings::confirm_arm;
 use shell_ui_kit::app_icons::{LogicalPx, use_tile_icons};
 use shell_ui_kit::hooks::{use_service_part, use_sheet_output};

@@ -1,13 +1,13 @@
-//! `services!`: the one declaration of every service. From each `field: Service = deps` line it
-//! writes the [`Services`](super::Services) field, the [`Member`](super::Member) impl, the spawn
-//! (in declaration order, so a service's `deps` can only name the ones declared above it), and,
-//! behind `harness`, the fake channel. A service is added here and nowhere else.
+//! `services!`: the one declaration of every service. From each `field: Service` line it writes the
+//! [`Services`](super::Services) field, the [`Member`](super::Member) impl and, behind `harness`,
+//! the fake channel. A service is added here and in `shell-app`'s `start`, whose struct literal
+//! does not compile while a field is missing.
 
 /// The state a fake service starts at: the one given with `=>`, else its default.
 #[cfg(feature = "harness")]
 macro_rules! fake_state {
     ($service:ty) => {
-        <<$service as shell_services::Service>::State as Default>::default()
+        <<$service as shell_model::service::Service>::State as Default>::default()
     };
     ($service:ty, $fake:expr) => {
         $fake
@@ -18,32 +18,28 @@ macro_rules! fake_state {
 ///
 /// ```ignore
 /// services! {
-///     start(rt, env, wiring: Wiring);
 ///     {
 ///         /// Docs of the field.
-///         battery: BatteryService = ();                       // deps; the fake starts at its default
-///         session: SessionService = SessionLinks { .. } => fake_session();   // deps => fake state
+///         battery: BatteryService;                            // the fake starts at its default
+///         volume: VolumeService => fake_volume();             // the fake starts at this state
 ///     }
 ///     {
-///         dirs: Dirs = env.dirs.clone() => Dirs::under(..);   // the fields that are not services
+///         dirs: Dirs => Dirs::under(..);   // the fields that are not services, and their fakes
 ///     }
 /// }
 /// ```
-///
-/// `deps` is an expression that may name `rt`, `env`, `wiring` and the fields declared above it.
 macro_rules! services {
     (
-        start($rt:ident, $env:ident, $wiring:ident: $wiring_ty:ty);
         {
             $(
                 $(#[$meta:meta])*
-                $field:ident: $service:ty = $deps:expr $(=> $fake:expr)?;
+                $field:ident: $service:ty $(=> $fake:expr)?;
             )*
         }
         {
             $(
                 $(#[$xmeta:meta])*
-                $xfield:ident: $xty:ty = $xstart:expr => $xfake:expr;
+                $xfield:ident: $xty:ty => $xfake:expr;
             )*
         }
     ) => {
@@ -51,12 +47,12 @@ macro_rules! services {
         ///
         /// Surfaces read a service through `shell-ui-kit::hooks::use_service` and command it
         /// through `use_control`; nothing here is a Dioxus signal (review rule: never pass a Signal
-        /// through `Root::context`).
+        /// through `Root::context`). The daemon builds it (`shell-app`'s `start`).
         #[derive(Debug, Clone)]
         pub struct Services {
             $(
                 $(#[$meta])*
-                pub $field: shell_services::Handle<$service>,
+                pub $field: shell_model::service::Handle<$service>,
             )*
             $(
                 $(#[$xmeta])*
@@ -66,7 +62,7 @@ macro_rules! services {
 
         $(
             impl super::Member for $service {
-                fn of(services: &Services) -> &shell_services::Handle<Self> {
+                fn of(services: &Services) -> &shell_model::service::Handle<Self> {
                     &services.$field
                 }
             }
@@ -75,29 +71,14 @@ macro_rules! services {
         impl Services {
             /// Each declared service as `(field, name)`, in start order.
             pub const DECLARED: &'static [(&'static str, &'static str)] =
-                &[$((stringify!($field), <$service as shell_services::Service>::NAME)),*];
-
-            /// Start every service on `rt` against `env`'s seams, each after the ones it depends
-            /// on. A service whose system half is missing still yields its receiver, at its
-            /// default.
-            pub fn start(
-                $rt: &tokio::runtime::Handle,
-                $env: &shell_services::env::Env,
-                $wiring: $wiring_ty,
-            ) -> Services {
-                $(let $field = shell_services::service::spawn::<$service>($rt, $env, $deps);)*
-                Services {
-                    $($field,)*
-                    $($xfield: $xstart,)*
-                }
-            }
+                &[$((stringify!($field), <$service as shell_model::service::Service>::NAME)),*];
 
             /// Each service this value holds, as `(field, name)`: [`Self::DECLARED`] when every
             /// declared service was started or faked.
             pub fn held(&self) -> Vec<(&'static str, &'static str)> {
                 vec![$({
-                    let _held: &shell_services::Handle<$service> = &self.$field;
-                    (stringify!($field), <$service as shell_services::Service>::NAME)
+                    let _held: &shell_model::service::Handle<$service> = &self.$field;
+                    (stringify!($field), <$service as shell_model::service::Service>::NAME)
                 }),*]
             }
 
@@ -107,12 +88,12 @@ macro_rules! services {
             pub(crate) fn fake() -> (Services, Ios) {
                 struct Pairs {
                     $($field: (
-                        shell_services::Handle<$service>,
-                        shell_services::ServiceIo<$service>,
+                        shell_model::service::Handle<$service>,
+                        shell_model::service::ServiceIo<$service>,
                     ),)*
                 }
                 let pairs = Pairs {
-                    $($field: shell_services::Handle::<$service>::channel(
+                    $($field: shell_model::service::Handle::<$service>::channel(
                         fake_state!($service $(, $fake)?),
                     ),)*
                 };

@@ -2,9 +2,9 @@
 //! press on it asks of the item (SNI `Activate`, `SecondaryActivate`, the dbusmenu), where on
 //! the screen that press was, and how far the wheel turned over it.
 
+use super::tray_icon::{IconArt, icon_art};
 use dioxus::html::geometry::WheelDelta;
 use shell_model::tray::{ScrollAxis, ScrollDelta, TrayCommand, TrayIcon, TrayItemId, TrayMenuIcon};
-use shell_services::tray::{IconArt, icon_art};
 use ui_components::base::press::{PointerButton, Press};
 use ui_components::prelude::*;
 use ui_components::style::icon::classify::ChromaLimit;
@@ -146,10 +146,10 @@ mod tests {
         ItemMenu, ScreenOrigin, TrayAction, icon_source, press_action, row_image, screen_point,
         scroll_delta,
     };
+    use crate::bar::tray_icon::IconArt;
     use dioxus::html::geometry::WheelDelta;
     use dioxus::prelude::Modifiers;
     use shell_model::tray::{ScrollAxis, ScrollDelta, TrayCommand, TrayItemId, TrayMenuIcon};
-    use shell_services::tray::IconArt;
     use std::path::PathBuf;
     use ui_components::base::press::{PointerButton, Press};
     use ui_components::prelude::*;

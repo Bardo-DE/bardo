@@ -9,8 +9,8 @@
 //! and draws [`TurnOffAlert`] as the last child of its positioned body.
 
 use dioxus::prelude::*;
+use shell_model::bluetooth::BluetoothService;
 use shell_model::bluetooth::{BluetoothCommand, BtPower};
-use shell_services::BluetoothService;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole};
 use ui_components::prelude::*;
 

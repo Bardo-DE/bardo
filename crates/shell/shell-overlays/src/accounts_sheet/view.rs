@@ -5,8 +5,8 @@
 
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
+use shell_model::accounts::sheet::AccountsSheetService;
 use shell_model::accounts::sheet::{AccountsSheets, SheetAction};
-use shell_services::accounts::sheet::AccountsSheetService;
 use shell_ui_kit::hooks::{use_follow_visibility, use_service, use_sheet_output};
 use shell_ui_kit::root::SurfaceRoot;
 use ui_components::components::chrome::window_frame::WindowTitlebar;

@@ -9,10 +9,11 @@ use ui_components::focus::soon::focus_soon;
 use dioxus::prelude::*;
 use layer_shell_hooks::{SurfaceHandle, use_watch};
 use layer_shell_types::{OutputId, Visibility};
+use shell_model::notifications::NotificationsService;
 use shell_model::notifications::{
     Activation, ActivationToken, Clear, NotificationId, NotificationsCommand,
 };
-use shell_services::{Control, NotificationsService};
+use shell_model::service::Control;
 
 use super::groups::{Expanded, toggle_group};
 use super::rows::RowAct;

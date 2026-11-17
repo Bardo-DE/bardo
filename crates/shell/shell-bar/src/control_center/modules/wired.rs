@@ -2,11 +2,12 @@
 //! Sound and Display dropdowns draw.
 
 use dioxus::prelude::*;
+use shell_model::displays::DisplaysService;
 use shell_model::displays::{BrightnessTarget, Displays, DisplaysCommand, Following};
 use shell_model::ids::OutputName;
 use shell_model::units::{Percent, Presence};
+use shell_model::volume::VolumeService;
 use shell_model::volume::{Volume, VolumeCommand};
-use shell_services::{DisplaysService, VolumeService};
 use ui_components::prelude::*;
 
 use super::{DisplayModule, SoundModule};

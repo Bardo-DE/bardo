@@ -10,12 +10,12 @@
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
 use shell_model::attempt::Attempts;
+use shell_model::bluetooth::BluetoothService;
 use shell_model::bluetooth::{
     Bluetooth, BluetoothCommand, BtAddress, BtBattery, BtConnection, BtDevice, BtKind, BtPairing,
     BtPower, listed_devices,
 };
 use shell_model::units::Presence;
-use shell_services::BluetoothService;
 use ui_components::prelude::*;
 
 use super::feature_switch::{FeatureSwitch, back_button};

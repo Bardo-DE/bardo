@@ -10,8 +10,8 @@ use layer_shell_types::OutputInfo;
 use shell_kit::bar::pointer::BarPointer;
 use shell_kit::prelude::*;
 use shell_model::ids::OutputName;
+use shell_model::windows::WindowsService;
 use shell_model::windows::{WlCommand, Workspace};
-use shell_services::WindowsService;
 use ui_components::base::press::{PointerButton, Press};
 
 use super::reorder::{DRAG_THRESHOLD_PX, Dropped, Pressed, reorder};

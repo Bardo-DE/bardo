@@ -23,7 +23,7 @@ use super::track::{Event, Target};
 use super::tray::Tray;
 use super::workspaces::WorkspaceIndicator;
 use crate::control_center::menu_bar_modules;
-use shell_services::TrayService;
+use shell_model::tray::TrayService;
 use shell_ui_kit::autohide::{self, Phase};
 use shell_ui_kit::hooks::{
     use_appearance, use_follow_layer, use_full_screen, use_service, use_settings,

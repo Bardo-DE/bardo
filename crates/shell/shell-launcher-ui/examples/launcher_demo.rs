@@ -64,7 +64,7 @@ fn run() -> Result<(), String> {
         panels: Vec::new(),
     };
     let host = Host::<DemoMsg>::connect(shell_host_config::host_config(
-        &shell_services::env::Dirs::from_process(),
+        &shell_model::dirs::Dirs::from_process(),
     ))
     .map_err(|e| e.to_string())?;
     read_stdin(host.handle());

@@ -26,7 +26,8 @@ use crate::control_center::item_phase::{
 use crate::control_center::modules::wifi::{radio_availability, radio_of, radio_state};
 use crate::control_center::network_detail;
 use crate::control_center::rows::{RowList, RowMark, RowSpec};
-use shell_services::{NetworkService, WifiService};
+use shell_model::network::NetworkService;
+use shell_model::wifi::WifiService;
 use shell_ui_kit::hooks::{use_service, use_services};
 
 /// What choosing a network row does.

@@ -8,9 +8,9 @@
 use dioxus::prelude::*;
 use layer_shell_hooks::use_watch;
 use layer_shell_types::OutputId;
+use shell_model::service::Control;
+use shell_model::session::ActionReach;
 use shell_model::session::{Session, SessionAction, SessionCommand};
-use shell_services::Control;
-use shell_services::env::ActionReach;
 use shell_ui_kit::hooks::use_follow_visibility as follow_visibility;
 use shell_ui_kit::services::Services;
 
@@ -39,7 +39,7 @@ pub(super) fn use_menu(output: OutputId) -> MenuCtx {
     let control = use_hook(|| {
         eprintln!(
             "power_menu.backend={} output={}",
-            reach_word(services.session_actions.reach()),
+            reach_word(services.session_reach),
             output.0
         );
         services.session.control.clone()

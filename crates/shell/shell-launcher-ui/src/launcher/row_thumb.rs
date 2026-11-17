@@ -19,7 +19,7 @@ use anyview_platform::linux::FreedesktopThumbnails;
 use anyview_platform::{Env, ThumbSize, ThumbnailCache, file_uri};
 use dioxus::prelude::*;
 use md5::{Digest, Md5};
-use shell_services::env::Dirs;
+use shell_model::dirs::Dirs;
 use shell_ui_kit::services::Services;
 use ui_components::components::content::image_source::ImageSource;
 
@@ -139,7 +139,7 @@ mod tests {
     use anyview_core::{FilePath, PixelLen, PixelSize};
     use anyview_platform::linux::FreedesktopThumbnails;
     use anyview_platform::{Env, ThumbPixels, ThumbSize, ThumbnailCache};
-    use shell_services::env::Dirs;
+    use shell_model::dirs::Dirs;
     use shell_testkit::TempDir;
     use ui_components::components::content::image_source::ImageSource;
 

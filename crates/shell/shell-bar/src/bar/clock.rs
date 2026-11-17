@@ -9,8 +9,8 @@ use shell_kit::prelude::*;
 use ui_components::root::common::Common;
 use ui_components::root::pass_through::ExtraClass;
 
+use shell_model::clock::ClockService;
 use shell_model::clock::format_clock;
-use shell_services::ClockService;
 use shell_ui_kit::hooks::{use_hours, use_link, use_service};
 use shell_ui_kit::links::CenterLink;
 

@@ -11,9 +11,9 @@
 
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
+use shell_model::intents::IntentsService;
 use shell_model::intents::sheet::{SheetChoice, SheetFact, SheetView, sheet_view};
 use shell_model::intents::{ConfirmOffer, Gesture, NeverOffer};
-use shell_services::IntentsService;
 use ui_components::base::press::Press;
 use ui_components::components::controls::button_model::{Answers, Bezel};
 use ui_components::components::overlays::sheet_attach::Attach;

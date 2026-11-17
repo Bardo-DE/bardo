@@ -7,9 +7,9 @@
 //! keys included.
 
 use dioxus::prelude::*;
+use shell_model::kbd_backlight::KbdBacklightService;
 use shell_model::kbd_backlight::{KbdBacklight, KbdCommand};
 use shell_model::units::Presence;
-use shell_services::KbdBacklightService;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;
 use ui_components::prelude::*;
 

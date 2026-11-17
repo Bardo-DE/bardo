@@ -12,7 +12,9 @@ use ui_components::prelude::*;
 
 use super::backdrop::backdrop_for;
 use super::model::{clock_lines, lock_user, prompt_state};
-use shell_services::{AuthService, ClockService, WallpaperService};
+use shell_model::auth::AuthService;
+use shell_model::clock::ClockService;
+use shell_model::wallpaper::WallpaperService;
 use shell_ui_kit::hooks::{use_hours, use_service, use_services};
 use shell_ui_kit::links::{LockLink, PromptOutput};
 

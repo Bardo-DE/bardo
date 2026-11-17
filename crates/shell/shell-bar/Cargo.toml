@@ -13,9 +13,11 @@ dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components", features = ["icon-classify"]}
 shell-kit = {path = "../shell-kit"}
 image = { workspace = true, features = ["png", "jpeg", "webp"] }
+# The tray icons' art (`bar/tray_icon.rs`): theme lookup and a capped file read.
+freedesktop-icons = { workspace = true }
+base-fs = { path = "../../base/base-fs" }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
-shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
@@ -24,6 +26,8 @@ layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [dev-dependencies]
+# A fifo in the tray icon tests.
+rustix = {workspace = true, features = ["fs"]}
 shell-testkit = {path = "../shell-testkit"}
 serde_json = { workspace = true }
 ui-harness = {path = "../../ui/ui-harness"}

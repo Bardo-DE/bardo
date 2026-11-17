@@ -1,7 +1,8 @@
 //! What the card says to the companion service.
 
+use shell_model::companion::CompanionService;
 use shell_model::companion::{CompanionCommand, HelpersMsg};
-use shell_services::{CompanionService, Control};
+use shell_model::service::Control;
 use shell_ui_kit::hooks::use_control;
 
 /// The card's way to the companion service.

@@ -22,7 +22,7 @@ use crate::dock::icon::{IconContext, TileSizes, drawn, tile_art};
 use crate::dock::items::{DockItem, ItemKind};
 use crate::dock::machine::{TileApp, TileId};
 use crate::dock::tokens::DockTokens;
-use shell_services::AppsService;
+use shell_model::apps::AppsService;
 use shell_ui_kit::app_icons::{IconLook, use_icon_resolver};
 use shell_ui_kit::hooks::{use_section, use_service};
 

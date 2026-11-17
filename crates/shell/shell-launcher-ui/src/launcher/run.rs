@@ -8,7 +8,7 @@ use layer_shell_types::OutputId;
 use shell_model::clipboard::ClipboardCommand;
 use shell_model::companion::CompanionCommand;
 use shell_model::launch::{LaunchCommand, OpenRequest};
-use shell_services::ServiceError;
+use shell_model::service::Gone;
 use shell_ui_kit::services::Services;
 
 use crate::launcher::activate::LauncherEffect;
@@ -33,7 +33,7 @@ pub async fn run_effect(
     effect: LauncherEffect,
     from: &EffectFrom,
     services: &Services,
-) -> Result<(), ServiceError> {
+) -> Result<(), Gone> {
     match effect {
         LauncherEffect::Launch { app, action } => {
             shell_ui_kit::surface::launch_with_token(

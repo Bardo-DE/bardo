@@ -3,8 +3,8 @@
 //! to answer; the sheet goes with it.
 
 use dioxus::prelude::{Callback, use_callback};
+use shell_model::capture_pick::CaptureService;
 use shell_model::capture_pick::{AskId, CaptureCommand, Picks};
-use shell_services::capture_pick::CaptureService;
 use shell_ui_kit::hooks::use_control;
 
 /// Ends request `id` with the picks it is called with (`None`: cancelled).

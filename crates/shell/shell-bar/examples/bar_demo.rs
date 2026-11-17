@@ -59,7 +59,7 @@ fn run() -> Result<(), String> {
     let settings = SettingsFeed::fixed(ShellFile::default());
     let clock = FrameClock::new(Instant::now());
     let host = Host::<()>::connect(shell_host_config::host_config(
-        &shell_services::env::Dirs::from_process(),
+        &shell_model::dirs::Dirs::from_process(),
     ))
     .map_err(|e| e.to_string())?;
     // `Started` sees the initial outputs, which may also arrive as `OutputAdded`: one bar each.

@@ -1,8 +1,8 @@
 //! The hook that reads the current player for the control center's Now Playing module.
 
 use dioxus::prelude::*;
+use shell_model::now_playing::NowPlayingService;
 use shell_model::now_playing::{MediaCommand, PlayerId};
-use shell_services::NowPlayingService;
 
 use super::face::{MediaFace, Transport, media_face};
 use crate::hooks::{use_control, use_service};

@@ -8,10 +8,10 @@
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
 use shell_model::clock::{ClockHours, time_of_minute};
+use shell_model::night_shift::NightShiftService;
 use shell_model::night_shift::{
     NightShift, NightShiftCommand, Shown, shown, warmth_at, warmth_fraction,
 };
-use shell_services::NightShiftService;
 use ui_components::prelude::*;
 use ui_components::root::pass_through::ExtraClass;
 

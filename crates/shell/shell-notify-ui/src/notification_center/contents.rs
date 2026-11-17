@@ -28,7 +28,8 @@ use super::labels::{EMPTY, TITLE, server_line};
 use super::layer::PANEL_ID;
 use super::rows::{CenterRow, RowKey, activate, dismiss, rows_of};
 use super::widgets::CenterWidgets;
-use shell_services::{ClockService, NotificationsService};
+use shell_model::clock::ClockService;
+use shell_model::notifications::NotificationsService;
 use shell_ui_kit::hooks::{use_service, use_service_part};
 
 /// The column's contents.

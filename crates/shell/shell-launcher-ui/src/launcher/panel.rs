@@ -13,7 +13,7 @@
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
 use shell_launcher::{ActionId, ClipKey, Item, LauncherMode, Preview, Section, preview_for};
-use shell_search::preview::clip_image;
+use shell_model::clipboard::clip_image;
 use ui_components::components::menus::palette::palette_claim::FieldKey;
 use ui_components::host::measure::Anchor;
 use ui_components::prelude::*;
@@ -39,11 +39,13 @@ use crate::launcher::sections_view::{Draw, palette_groups};
 use crate::launcher::session::Session;
 use crate::launcher::tokens::LauncherTokens;
 use crate::launcher::view::View;
+use shell_model::clipboard::ClipboardService;
 use shell_model::clock::ClockHours;
+use shell_model::companion::CompanionService;
 use shell_model::companion::{ModeView, mode_view};
+use shell_model::results::ResultsService;
+use shell_model::voice::VoiceService;
 use shell_model::voice::listening_line;
-use shell_search::ResultsService;
-use shell_services::{ClipboardService, CompanionService, VoiceService};
 use shell_ui_kit::app_icons::{IconContext, IconLook, icon_look, use_icon_resolver};
 use shell_ui_kit::hooks::{
     use_appearance, use_follow_place, use_hours, use_service, use_service_part, use_surface_tokens,

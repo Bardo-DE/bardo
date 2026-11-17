@@ -8,7 +8,7 @@ use crate::bar::{BarMenu, StatusIcon};
 use crate::control_center::modules::use_plate;
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
-use shell_services::NowPlayingService;
+use shell_model::now_playing::NowPlayingService;
 use shell_settings::ControlCenterSettings;
 use shell_ui_kit::hooks::use_service;
 use shell_ui_kit::now_playing::{MediaView, use_media};

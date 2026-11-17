@@ -16,7 +16,8 @@ use super::shown::{Shown, weekday_name};
 use crate::hooks::{use_hours, use_section, use_service};
 use crate::widgets::up_next::today_events;
 use crate::widgets::{CenterWidget, Feed, WidgetProvider};
-use shell_services::{ClockService, EventsService};
+use shell_model::clock::ClockService;
+use shell_model::events::EventsService;
 
 /// The month, today marked; the card's step buttons shift the month.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

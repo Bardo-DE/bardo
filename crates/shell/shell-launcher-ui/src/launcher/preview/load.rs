@@ -25,8 +25,8 @@ use anyview_peek::{
 };
 use dioxus::prelude::*;
 use shell_launcher::ClipKey;
-use shell_search::preview::clip_image;
-use shell_services::ClipboardService;
+use shell_model::clipboard::ClipboardService;
+use shell_model::clipboard::clip_image;
 use shell_ui_kit::hooks::use_service;
 use shell_ui_kit::services::Services;
 use tokio::sync::oneshot;

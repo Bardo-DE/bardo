@@ -12,10 +12,10 @@
 
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
+use shell_model::capture_pick::CaptureService;
 use shell_model::capture_pick::{
     Asking, Picks, Plurality, Pointer, Source, Tab, can_allow, plan, toggle,
 };
-use shell_services::capture_pick::CaptureService;
 use ui_components::base::vocab::RowState;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::controls::segmented::Tracking;

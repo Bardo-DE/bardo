@@ -10,8 +10,8 @@ use layer_shell_hooks::use_watch;
 use layer_shell_types::{OutputId, OutputInfo};
 use shell_kit::notifications::banner_stack::{Banner, BannerKey, BannerPosition};
 use shell_kit::prelude::*;
+use shell_model::screenshots::ScreenshotsService;
 use shell_model::screenshots::ShotId;
-use shell_services::ScreenshotsService;
 use ui_components::motion::swipe::SwipeMetrics;
 use ui_components::prelude::*;
 

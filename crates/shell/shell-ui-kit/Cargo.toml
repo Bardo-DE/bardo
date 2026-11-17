@@ -17,6 +17,7 @@ action-manifest = {path = "../../actions/action-manifest"}
 action-vocab = {path = "../../actions/action-vocab"}
 account-capability = {path = "../../accounts/account-capability"}
 shell-model = {path = "../shell-model"}
+shell-desktop-fs = {path = "../shell-desktop-fs"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 ui-components = {path = "../../ui/ui-components"}
 ui-behaviour = {path = "../../ui/ui-behaviour"}
@@ -28,8 +29,6 @@ settings-types = { path = "../../settings/settings-types" }
 ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 # The test driver, for the `harness` feature.
 ui-harness = {path = "../../ui/ui-harness", optional = true}
-shell-search = {path = "../shell-search"}
-shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-launcher = {path = "../shell-launcher"}
 # The companion's wire and the types it names, converted to quire's view types in `companion`.

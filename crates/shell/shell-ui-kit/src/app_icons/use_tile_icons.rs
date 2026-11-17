@@ -3,7 +3,7 @@
 //! installed apps.
 
 use layer_shell_types::OutputInfo;
-use shell_services::AppsService;
+use shell_model::apps::AppsService;
 use ui_components::prelude::*;
 
 use super::{IconContext, LogicalPx, TileIcons, icon_look, use_icon_resolver};

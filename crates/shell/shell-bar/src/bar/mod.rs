@@ -30,6 +30,7 @@ mod title;
 pub mod tokens;
 pub mod track;
 mod tray;
+mod tray_icon;
 mod tray_input;
 mod view;
 mod workspaces;

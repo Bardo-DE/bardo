@@ -4,7 +4,7 @@
 use std::path::Path;
 
 use layer_shell_host::registered_families;
-use shell_services::env::Dirs;
+use shell_model::dirs::Dirs;
 
 #[test]
 fn the_host_config_registers_quires_faces() {

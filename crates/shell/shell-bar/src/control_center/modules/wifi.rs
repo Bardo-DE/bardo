@@ -7,8 +7,8 @@ use dioxus::prelude::*;
 use shell_kit::prelude::*;
 use shell_model::network::Network;
 use shell_model::units::Presence;
+use shell_model::wifi::WifiService;
 use shell_model::wifi::{Radio, Wifi, WifiCommand};
-use shell_services::WifiService;
 use ui_components::components::content::status::wifi_state::WifiState;
 use ui_components::prelude::*;
 
@@ -17,7 +17,7 @@ use crate::bar::{BarMenu, StatusIcon};
 use crate::control_center::page::Detail;
 use crate::control_center::pages::wifi_networks::WifiPane;
 use crate::control_center::wifi_status;
-use shell_services::NetworkService;
+use shell_model::network::NetworkService;
 use shell_settings::ControlCenterSettings;
 use shell_ui_kit::hooks::{use_control, use_service};
 use shell_ui_kit::status::glyph::{NetworkGlyph, network_glyph};

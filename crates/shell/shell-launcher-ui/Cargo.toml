@@ -38,8 +38,6 @@ provenance = {path = "../../provenance/provenance"}
 base-time = { path = "../../base/base-time" }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
-shell-search = {path = "../shell-search"}
-shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
 shell-kit = {path = "../shell-kit"}
@@ -48,6 +46,8 @@ layer-shell-types = {path = "../../layer-shell/layer-shell-types"}
 layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 
 [dev-dependencies]
+# The real providers the tests give the panel (`tests/it/launcher_support`).
+shell-search = {path = "../shell-search"}
 serde_json = { workspace = true }
 png = { workspace = true }
 shell-testkit = {path = "../shell-testkit"}

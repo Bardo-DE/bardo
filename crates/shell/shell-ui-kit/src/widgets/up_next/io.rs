@@ -2,8 +2,9 @@
 
 use jiff::Timestamp;
 use jiff::tz::TimeZone;
+use shell_model::clock::ClockService;
 use shell_model::events::Days;
-use shell_services::{ClockService, EventsService};
+use shell_model::events::EventsService;
 
 use super::provider::{EVENT_ROWS, up_next_entry};
 use super::widget::UpNext;

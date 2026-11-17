@@ -83,10 +83,7 @@ pub(crate) struct PanelCtx {
 pub(crate) fn use_panel(output: OutputId, results: ReadSignal<Results>) -> PanelCtx {
     let link = use_context::<LauncherLink>();
     let services = use_services();
-    let providers = use_hook(|| {
-        try_consume_context::<LauncherProviders>()
-            .unwrap_or_else(|| LauncherProviders::from_services(&services))
-    });
+    let providers = use_hook(consume_context::<LauncherProviders>);
     let surface = try_use_context::<SurfaceHandle>();
     let shown = use_shown(&link);
     use_follow_visibility(shown, output);
@@ -116,7 +113,7 @@ pub(crate) fn use_panel(output: OutputId, results: ReadSignal<Results>) -> Panel
     use_openings(ctx.clone());
     // The companion's rows come from its own state, which the search does not watch: ask again
     // whenever an answer, a run or the journal moves, in companion mode.
-    let companion = use_service::<shell_services::CompanionService>();
+    let companion = use_service::<shell_model::companion::CompanionService>();
     use_effect({
         let ctx = ctx.clone();
         move || {
@@ -126,7 +123,8 @@ pub(crate) fn use_panel(output: OutputId, results: ReadSignal<Results>) -> Panel
     });
     // The Memory filter is not asked again on every change of that state (asking moves it): only
     // when an answer to a waiting memory comes back, so the answered row leaves at once.
-    let answered = use_service_part::<shell_services::CompanionService, _>(|c| c.memory_answers);
+    let answered =
+        use_service_part::<shell_model::companion::CompanionService, _>(|c| c.memory_answers);
     use_effect({
         let ctx = ctx.clone();
         move || {

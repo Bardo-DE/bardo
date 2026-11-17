@@ -9,8 +9,8 @@ use tokio::sync::oneshot;
 use layer_shell_hooks::SurfaceHandle;
 use shell_launcher::{AppId, DesktopAction, SettingsTarget};
 use shell_model::launch::{LaunchCommand, LaunchRequest, SETTINGS_BUS_NAME, SettingsOpen};
-use shell_services::ServiceError;
-use shell_services::control::Control;
+use shell_model::service::Control;
+use shell_model::service::Gone;
 
 /// How long a launch waits for the compositor's token. It answers within a frame or two when it
 /// answers at all; a person notices a click that takes longer than this to do anything.
@@ -54,14 +54,14 @@ pub async fn token_from(surface: Option<&SurfaceHandle>, app: Option<String>) ->
 ///
 /// # Errors
 ///
-/// Returns [`ServiceError`] when the command could not be started or the service refused it.
+/// Returns [`Gone`] when the launch service has stopped.
 pub async fn launch_with_token(
     surface: Option<&SurfaceHandle>,
     launch: &Control<LaunchCommand>,
     app: AppId,
     action: DesktopAction,
     uris: Vec<String>,
-) -> Result<(), ServiceError> {
+) -> Result<(), Gone> {
     let token = token_from(surface, Some(app.0.clone())).await;
     launch.send(LaunchCommand::Launch(
         LaunchRequest::app(app)
@@ -76,12 +76,12 @@ pub async fn launch_with_token(
 ///
 /// # Errors
 ///
-/// Returns [`ServiceError`] when the command could not be started or the service refused it.
+/// Returns [`Gone`] when the launch service has stopped.
 pub async fn open_settings_with_token(
     surface: Option<&SurfaceHandle>,
     launch: &Control<LaunchCommand>,
     link: SettingsTarget,
-) -> Result<(), ServiceError> {
+) -> Result<(), Gone> {
     let token = token_from(surface, Some(SETTINGS_BUS_NAME.to_owned())).await;
     launch.send(LaunchCommand::OpenSettings(
         SettingsOpen::at(link).with_token(token),

@@ -24,13 +24,14 @@ account-core = {path = "../../accounts/account-core"}
 serde_json = { workspace = true }
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
-shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
 layer-shell-types = {path = "../../layer-shell/layer-shell-types"}
 layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 
 [dev-dependencies]
+# The wallpaper demo starts the real service; `tests/it/switcher_wlr.rs` feeds a fake compositor.
+shell-services = {path = "../shell-services"}
 ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
 shell-testkit = {path = "../shell-testkit"}

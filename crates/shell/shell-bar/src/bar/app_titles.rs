@@ -1,14 +1,16 @@
 //! The focused app's own menus after its name (File, Edit, View, Window, Help): one bar title
 //! each, drawn like the app-name title but regular weight, each a [`BarMenu::AppMenu`] of the
 //! bar's one menu session so hover switching crosses the app's menus, the tray and the status
-//! items alike. The app serves them over D-Bus (`shell_services::AppMenuService`); an app with no
+//! items alike. The app serves them over D-Bus (`shell_model::app_menu::AppMenuService`); an app with no
 //! menu has none of these titles (design/27 §5.2 rule c).
 
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
 use shell_kit::prelude::*;
+use shell_model::app_menu::AppMenuService;
+use shell_model::apps::AppsService;
 use shell_model::ids::OutputName;
-use shell_services::{AppMenuService, AppsService, WindowsService};
+use shell_model::windows::WindowsService;
 use shell_ui_kit::hooks::{use_service, use_service_part};
 use ui_components::host::measure::use_rect;
 use ui_components::root::common::Common;

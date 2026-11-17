@@ -10,7 +10,8 @@ use ui_components::root::common::Common;
 use super::content::front_app;
 use super::menus::BarMenu;
 use super::title::{shown_of, use_title_pointer};
-use shell_services::{AppsService, WindowsService};
+use shell_model::apps::AppsService;
+use shell_model::windows::WindowsService;
 use shell_ui_kit::hooks::{use_service, use_service_part};
 
 /// What the title says with no window on the output.

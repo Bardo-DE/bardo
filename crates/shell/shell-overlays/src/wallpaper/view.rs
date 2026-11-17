@@ -9,7 +9,7 @@ use ui_components::prelude::*;
 use super::io::use_crossfade;
 use super::menu::{secondary_press, use_desktop_menu};
 use super::model::url_for;
-use shell_services::WallpaperService;
+use shell_model::wallpaper::WallpaperService;
 use shell_ui_kit::hooks::{use_appearance, use_service};
 use shell_ui_kit::menu::use_popup_look;
 use shell_ui_kit::root::use_root_style;

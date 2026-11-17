@@ -33,7 +33,10 @@ use crate::dock::pointer::{DockInput, PointerInput, button, modifier, point};
 use crate::dock::rest_rects::app_rects;
 use crate::dock::tile::{LabelShown, Tile, TileLook, px};
 use crate::dock::tokens::DockTokens;
-use shell_services::{AppsService, BadgesService, PinsService, WindowsService};
+use shell_model::apps::AppsService;
+use shell_model::badges::BadgesService;
+use shell_model::pins::PinsService;
+use shell_model::windows::WindowsService;
 use shell_ui_kit::app_icons::icon_look;
 use shell_ui_kit::autohide;
 use shell_ui_kit::hooks::{

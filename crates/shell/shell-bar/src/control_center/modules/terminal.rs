@@ -8,9 +8,9 @@
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
+use shell_model::intents::IntentsService;
 use shell_model::intents::terminal::{Breaker, Terminal, grant_words};
 use shell_model::intents::{ActionRef, IntentsCommand};
-use shell_services::IntentsService;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::prelude::*;
@@ -109,7 +109,7 @@ pub fn TerminalModule() -> Element {
 fn grant_row(
     place: usize,
     row: &GrantRow,
-    control: &shell_services::Control<IntentsCommand>,
+    control: &shell_model::service::Control<IntentsCommand>,
 ) -> Element {
     let (revoke, grant) = (control.clone(), row.grant.clone());
     rsx! {

@@ -5,10 +5,10 @@
 
 use dioxus::prelude::*;
 use provenance::{HelperId, SpaceId};
+use shell_model::companion::CompanionService;
 use shell_model::companion::{
     Draft, HelpersModel, HelpersMsg, Open, Removal, WAITING_BADGE, remove_question,
 };
-use shell_services::CompanionService;
 use shell_ui_kit::hooks::use_service;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::prelude::*;

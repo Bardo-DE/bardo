@@ -3,7 +3,7 @@
 
 use dioxus::prelude::*;
 use shell_model::idle::DimLevel;
-use shell_services::IdleService;
+use shell_model::idle::IdleService;
 
 use super::model::{DimScene, scene_of, scrim_of};
 use shell_ui_kit::hooks::use_service;

@@ -22,8 +22,8 @@ use shell_launcher::{
 use shell_launcher_ui::launcher::LauncherProviders;
 use shell_model::launch::{LaunchCommand, LaunchRequest};
 use shell_model::results::{Results, SearchCommand};
+use shell_model::service::Control;
 use shell_model::windows::WlCommand;
-use shell_services::Control;
 use shell_ui_kit::services::Services;
 use tokio::sync::watch;
 

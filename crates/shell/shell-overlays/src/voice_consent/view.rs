@@ -5,8 +5,8 @@
 
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
+use shell_model::voice::VoiceService;
 use shell_model::voice::{ConsentAnswer, VoiceCommand};
-use shell_services::VoiceService;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::sheet_attach::Attach;
 use ui_components::components::overlays::sheet_width::SheetWidth;

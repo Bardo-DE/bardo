@@ -15,8 +15,9 @@ use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
 use shell_kit::lock::vocab::CapsLock;
 use shell_kit::prelude::*;
+use shell_model::polkit_agent::PolkitAgentService;
 use shell_model::polkit_agent::{Cookie, PolkitCommand};
-use shell_services::{Control, PolkitAgentService};
+use shell_model::service::Control;
 use ui_components::prelude::*;
 
 use super::model::{PolkitPromptView, prompt_view};

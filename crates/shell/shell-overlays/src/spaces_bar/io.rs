@@ -12,7 +12,7 @@ use shell_model::desktop::{
     BarLayout, BarPick, BarShow, BarSpace, BarTile, DesktopView, bar_spaces, thumb_size,
 };
 use shell_model::ids::OutputName;
-use shell_services::WallpaperService;
+use shell_model::wallpaper::WallpaperService;
 use shell_ui_kit::hooks::{use_appearance, use_map_when_shown, use_service};
 use shell_ui_kit::links::{SpacesBarFeed, SpacesBarLink};
 use ui_components::prelude::{

@@ -11,8 +11,8 @@
 
 use layer_shell_types::OutputInfo;
 use shell_model::ids::{OutputName, WorkspaceKey};
+use shell_model::windows::WindowsService;
 use shell_model::windows::{WorkspaceGroup, Workspaces};
-use shell_services::WindowsService;
 use ui_components::prelude::*;
 use ui_components::style::space::presets::default_look;
 

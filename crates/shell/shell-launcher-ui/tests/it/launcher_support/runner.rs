@@ -10,9 +10,9 @@ use shell_launcher_ui::launcher::LauncherProviders;
 use shell_model::companion::Companion;
 use shell_model::launch::LaunchCommand;
 use shell_model::results::{Results, SearchCommand};
+use shell_model::service::Control;
 use shell_model::windows::WlCommand;
 use shell_search::providers::{CompanionProvider, HelpersProvider, RunsProvider};
-use shell_services::Control;
 use tokio::sync::{mpsc, watch};
 
 use super::{carry, placed, search};

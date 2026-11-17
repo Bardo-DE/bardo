@@ -27,10 +27,14 @@ use super::tokens::BarTokens;
 use super::track::{Event, Target, Track, step};
 use super::tray_input::row_image;
 use crate::control_center::{PanelCap, height_cap};
+use shell_model::app_menu::AppMenuService;
 use shell_model::app_menu::{AppMenuCommand, Follower, MenuApp};
+use shell_model::apps::AppsService;
 use shell_model::session::SessionCommand;
+use shell_model::session::SessionService;
 use shell_model::tray::TrayCommand;
-use shell_services::{AppMenuService, AppsService, SessionService, TrayService, WindowsService};
+use shell_model::tray::TrayService;
+use shell_model::windows::WindowsService;
 use shell_ui_kit::autohide::Hold;
 use shell_ui_kit::hooks::{
     use_control, use_link, use_service, use_service_part, use_services, use_settings,

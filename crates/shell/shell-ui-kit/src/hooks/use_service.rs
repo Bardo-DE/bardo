@@ -4,7 +4,7 @@
 use crate::services::Member;
 use dioxus::prelude::{ReadSignal, ReadableExt, use_memo};
 use layer_shell_hooks::use_watch;
-use shell_services::Control;
+use shell_model::service::Control;
 
 use super::use_services;
 

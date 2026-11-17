@@ -15,7 +15,7 @@ use dioxus::prelude::*;
 use layer_shell_hooks::SurfaceHandle;
 use layer_shell_types::{KeyboardMode, Visibility};
 use shell_model::screenshots::{ShotCommand, ShotId};
-use shell_services::Control;
+use shell_model::service::Control;
 use ui_components::focus::select::Select;
 use ui_components::focus::selector::{FocusError, focus_by_selector};
 use ui_components::prelude::*;

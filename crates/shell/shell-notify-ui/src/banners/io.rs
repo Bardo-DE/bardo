@@ -19,7 +19,7 @@ use shell_model::notifications::{
     ActionKey, Activation, ActivationToken, LiveBanner, Notification, NotificationId,
     NotificationsCommand,
 };
-use shell_services::Control;
+use shell_model::service::Control;
 use ui_components::base::time::FRAME_SLACK;
 use ui_components::base::time::stamp::Stamp;
 use ui_components::focus::select::Select;

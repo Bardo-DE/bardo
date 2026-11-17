@@ -6,9 +6,9 @@
 //! is. Reads `use_service::<PowerProfileService>`.
 
 use dioxus::prelude::*;
+use shell_model::power_profile::PowerProfileService;
 use shell_model::power_profile::{Profile, ProfileCommand, ProfileDegraded};
 use shell_model::units::Presence;
-use shell_services::PowerProfileService;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;

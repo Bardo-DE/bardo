@@ -1,7 +1,7 @@
 //! What a fake [`Services`](super::Services) hands the harness: each service's halves of its
 //! channels, which a test claims or leaves to be kept alive.
 
-use shell_services::{Service, ServiceIo};
+use shell_model::service::{Service, ServiceIo};
 
 /// One service's halves of its channels, until something claims them.
 pub(crate) struct Claim<S: Service>(Option<ServiceIo<S>>);

@@ -3,8 +3,8 @@
 //! (and its arming) afresh.
 
 use dioxus::prelude::{Callback, use_callback};
+use shell_model::intents::IntentsService;
 use shell_model::intents::{ConfirmId, IntentsCommand, StandingGrantId};
-use shell_services::IntentsService;
 use shell_ui_kit::hooks::use_control;
 use ui_components::machine::{MachineRef, use_machine};
 

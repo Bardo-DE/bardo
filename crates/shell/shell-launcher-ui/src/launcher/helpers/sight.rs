@@ -2,8 +2,8 @@
 //! button to the Settings page where the model is chosen.
 
 use dioxus::prelude::*;
+use shell_model::companion::CompanionService;
 use shell_model::companion::{HelpersMsg, SightState};
-use shell_services::CompanionService;
 use shell_ui_kit::hooks::use_service;
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::prelude::*;

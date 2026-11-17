@@ -6,7 +6,7 @@
 
 use std::path::PathBuf;
 
-use shell_services::env::Dirs;
+use shell_model::dirs::Dirs;
 
 /// Where `AccountsService` keeps the pictures people chose for their accounts.
 const ACCOUNT_PICTURES: &str = "/var/lib/AccountsService/icons";
@@ -38,7 +38,7 @@ pub fn file_roots(dirs: &Dirs) -> layer_shell_host::FileRoots {
 mod tests {
     use std::path::{Path, PathBuf};
 
-    use shell_services::env::Dirs;
+    use shell_model::dirs::Dirs;
 
     use super::file_root_paths;
 

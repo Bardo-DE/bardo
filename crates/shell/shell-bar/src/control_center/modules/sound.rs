@@ -16,7 +16,7 @@ use super::cc_module::{BarItemFace, CcCx, CcModule, Span};
 use super::wired::WiredSound;
 use crate::bar::{BarMenu, StatusIcon};
 use crate::control_center::LevelModule;
-use shell_services::VolumeService;
+use shell_model::volume::VolumeService;
 use shell_settings::ControlCenterSettings;
 use shell_ui_kit::hooks::use_service;
 use shell_ui_kit::status::glyph::volume_glyph;

@@ -17,7 +17,7 @@ use crate::control_center::modules::bluetooth_ask::use_power_request;
 use crate::control_center::page::Detail;
 use crate::control_center::pages::bluetooth_devices::BluetoothPane;
 use crate::control_center::{bluetooth_status, bluetooth_tile_status};
-use shell_services::BluetoothService;
+use shell_model::bluetooth::BluetoothService;
 use shell_settings::ControlCenterSettings;
 use shell_ui_kit::hooks::use_service;
 use shell_ui_kit::status::glyph::bluetooth_glyph_state;

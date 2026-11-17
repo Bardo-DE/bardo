@@ -14,7 +14,6 @@ ui-components = {path = "../../ui/ui-components"}
 ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 shell-kit = {path = "../shell-kit"}
 shell-model = {path = "../shell-model"}
-shell-services = {path = "../shell-services"}
 shell-settings = {path = "../shell-settings"}
 shell-ui-kit = {path = "../shell-ui-kit"}
 layer-shell-types = {path = "../../layer-shell/layer-shell-types"}

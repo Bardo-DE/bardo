@@ -1,7 +1,7 @@
 //! The tray: one `Button{Status}` per status notifier item, its dbusmenu one more menu of the
 //! bar's session.
 //!
-//! Each item draws its own icon: a pixmap or a theme icon through `shell_services::icon_art`,
+//! Each item draws its own icon: a pixmap or a theme icon through `tray_icon::icon_art`,
 //! symbolic (drawn in the frame's ink, like a glyph) or an image by design/08-ICONS.md §1.5, as
 //! `tray_input::icon_source` decides with quire's `ui_components::style::icon::classify::classify_with`. The button carries the
 //! `tray-<n>` id and hands its pointer to the session (`BarMenu::Tray`), so an item with a
@@ -16,13 +16,13 @@
 //! which a plain unit test cannot construct (`Control` has no `PartialEq`, so it cannot be a
 //! `#[component]` prop at all: `TrayButton` reads it itself instead of receiving it).
 
+use super::tray_icon::icon_art;
 use dioxus::prelude::*;
 use layer_shell_types::OutputInfo;
 use shell_kit::bar::pointer::BarPointer;
 use shell_kit::prelude::*;
+use shell_model::tray::TrayService;
 use shell_model::tray::{TrayCommand, TrayIcon, TrayItem, TrayStatus};
-use shell_services::TrayService;
-use shell_services::tray::icon_art;
 use ui_components::base::press::Press;
 use ui_components::components::controls::button_model::ImagePosition;
 use ui_components::host::measure::use_rect;

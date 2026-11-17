@@ -16,9 +16,9 @@ use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostCtx, HostEvent};
 use layer_shell_types::{OutputId, OutputInfo, Size, buffer_size};
 use shell_model::ids::OutputName;
+use shell_model::service::Control;
 use shell_model::wallpaper::WallpaperCommand;
 use shell_overlays::Wallpaper;
-use shell_services::Control;
 use shell_settings::ShellFile;
 use shell_ui_kit::services::Services;
 use shell_ui_kit::surface::{MountProps, Surface, mount};
@@ -41,7 +41,7 @@ fn run() -> Result<(), String> {
         .build()
         .map_err(|e| e.to_string())?;
     let (mut services, _feeds) = fake::services();
-    let wallpaper = shell_services::service::spawn::<shell_services::WallpaperService>(
+    let wallpaper = shell_services::service::spawn::<shell_model::wallpaper::WallpaperService>(
         runtime.handle(),
         &shell_services::env::Env::from_process(),
         (),
@@ -51,7 +51,7 @@ fn run() -> Result<(), String> {
     services.wallpaper.control = wallpaper.control;
 
     let host = Host::<()>::connect(shell_host_config::host_config(
-        &shell_services::env::Dirs::from_process(),
+        &shell_model::dirs::Dirs::from_process(),
     ))
     .map_err(|e| e.to_string())?;
     let mut done = HashSet::<OutputId>::new();

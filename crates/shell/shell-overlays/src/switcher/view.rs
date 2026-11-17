@@ -25,7 +25,7 @@ use super::surface::PANEL_ID;
 use super::tiles::{key_of, output_width, tiles};
 use super::watch::ChordWatch;
 use shell_kit::switcher::switcher_fit::SwitcherMetrics;
-use shell_services::AppsService;
+use shell_model::apps::AppsService;
 use shell_ui_kit::app_icons::{ICON_SIDE, IconContext, TileIcons, icon_look, use_icon_resolver};
 use shell_ui_kit::hooks::{use_appearance, use_service};
 use shell_ui_kit::links::SwitcherLink;

@@ -1,6 +1,6 @@
 //! What a bardo-shell process hands layer-shell-host: quire's faces and the pre-paint pass.
 
-use shell_services::env::Dirs;
+use shell_model::dirs::Dirs;
 use ui_components::style::fonts::FACES;
 
 use crate::file_roots::file_roots;

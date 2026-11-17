@@ -7,13 +7,13 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 
 use dioxus::prelude::*;
+use shell_desktop_fs::icons::{IconRoots, icon_theme, resolve_icon};
 use shell_kit::notifications::parts::{AppMark, Hover};
 use shell_kit::notifications::swipe::NotificationSwipe;
 use shell_kit::prelude::*;
 use shell_model::apps::AppIcon;
+use shell_model::dirs::Dirs;
 use shell_model::notifications::{AppRef, Href, Notification, UnixMs};
-use shell_services::apps::{IconRoots, icon_theme, resolve_icon};
-use shell_services::env::Dirs;
 use ui_components::prelude::*;
 use ui_components::style::icon::url::IconUrl;
 
@@ -26,7 +26,7 @@ use super::use_tokens::shared_tokens;
 use super::{CardPlace, CardPress};
 use crate::app_icons::IconFile;
 use crate::hooks::{use_service, use_services};
-use shell_services::AppsService;
+use shell_model::apps::AppsService;
 
 /// Now, as the cards' ages count it.
 #[must_use]
