@@ -86,6 +86,8 @@ impl HeldRuntime {
     /// `pause` for the call to leave and then releases it. Does nothing if it ran already.
     pub async fn release_once_sent(&mut self, pause: Duration) {
         if self.release.is_some() {
+            // A best-effort wait: nothing announces that the call has left the client's socket,
+            // and the runtime cannot run to tell us. A loaded machine only makes it pass by luck.
             tokio::time::sleep(pause).await;
             self.release();
         }

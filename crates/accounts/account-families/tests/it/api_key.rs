@@ -19,7 +19,6 @@ use account_provider::{
     SignInStart, SignInStep, Signed,
 };
 use account_sheet::{Entry, FieldAnswer, FieldKind, FieldValue, SignInFault, SignInInput};
-use std::time::Duration;
 
 const PASTED: &str = "sk-live-pasted-key-0001";
 
@@ -251,8 +250,17 @@ async fn signing_in_again_skips_the_review_and_a_dead_server_is_unreachable() {
 
     // A fresh client: the first one may still hold a kept-alive connection to a task of the fake.
     let spec = fake.point(&shipped::ai("openai"));
+    let port: u16 = fake
+        .base_url()
+        .rsplit(':')
+        .next()
+        .and_then(|port| port.parse().ok())
+        .expect("the fake's loopback port");
     drop(fake);
-    tokio::time::sleep(Duration::from_millis(50)).await;
+    base_testkit::eventually("the dropped fake to stop listening", || {
+        std::net::TcpStream::connect(("127.0.0.1", port)).is_err()
+    })
+    .await;
     let provider = ApiKeyProvider::with_http(spec, ReqwestHttp::default());
     let mut signin = provider.sign_in(start(SignInMode::Add)).expect("sign-in");
     signin.next(SignInInput::Start).await;

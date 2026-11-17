@@ -31,13 +31,10 @@ async fn a_socket_nobody_listens_on_is_not_running() {
     api.status().await.unwrap();
     fake.stop();
     // Wait until the aborted server has gone, then ask over its leftover socket.
-    let deadline = base_testkit::Deadline::generous();
-    while api.status().await.is_ok() {
-        if deadline.passed() {
-            deadline.fail("the stopped fake to refuse connections");
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-    }
+    base_testkit::eventually("the stopped fake to refuse connections", || {
+        std::os::unix::net::UnixStream::connect(fake.socket()).is_err()
+    })
+    .await;
     assert_eq!(api.status().await, Err(TailscaleError::NotRunning(None)));
     assert_eq!(
         api.start_login().await,

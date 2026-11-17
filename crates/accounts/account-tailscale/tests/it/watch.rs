@@ -1,8 +1,7 @@
 use crate::common::{LOGIN_PAGE, network, start};
 use account_fake_servers::Daemon;
 use account_tailscale::{Backend, Notice, TailscaleError, Watch};
-use base_testkit::{Deadline, GENEROUS};
-use std::time::Duration;
+use base_testkit::GENEROUS;
 
 async fn next(watch: &mut Watch) -> Notice {
     // A notice that should come is waited for as long as a starved machine needs.
@@ -73,11 +72,5 @@ async fn dropping_the_watch_closes_the_stream() {
     next(&mut watch).await;
     assert_eq!(fake.watchers(), 1);
     drop(watch);
-    let deadline = Deadline::generous();
-    while fake.watchers() != 0 {
-        if deadline.passed() {
-            deadline.fail("the stream to close");
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
+    base_testkit::eventually("the stream to close", || fake.watchers() == 0).await;
 }

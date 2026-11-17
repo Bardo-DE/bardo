@@ -20,7 +20,7 @@ http-body-util = { workspace = true, optional = true }
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"], optional = true}
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 # The integration tests use the client, which the `io` feature builds.
 account-tailscale = {path = ".", features = ["io"]}
 account-fake-servers = {path = "../account-fake-servers"}

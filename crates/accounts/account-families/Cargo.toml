@@ -27,7 +27,7 @@ account-tailscale = {path = "../account-tailscale", optional = true}
 thiserror = { workspace = true, optional = true }
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}

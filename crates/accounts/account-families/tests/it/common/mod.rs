@@ -75,7 +75,7 @@ impl Http for Fakes {
 }
 
 /// Waits a few milliseconds whatever it is asked, so a poll loop does not spin while a person
-/// takes their time.
+/// takes their time. A pacing stand-in for a real wait, not a wait for something to happen.
 #[derive(Debug, Clone, Copy)]
 pub struct Brief;
 
@@ -145,6 +145,31 @@ use account_wire::ParentWindow;
 use base_time::FixedClock;
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};
 
+/// When the person opens the page a browser step shows.
+#[derive(Clone)]
+pub enum Opens {
+    /// As soon as it is shown.
+    Now,
+    /// Once this holds (a fake has seen what the person was waiting for).
+    Once(std::sync::Arc<dyn Fn() -> bool + Send + Sync>),
+}
+
+impl Opens {
+    /// Opens the page once `ready` holds.
+    pub fn once(ready: impl Fn() -> bool + Send + Sync + 'static) -> Self {
+        Self::Once(std::sync::Arc::new(ready))
+    }
+}
+
+impl std::fmt::Debug for Opens {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Now => f.write_str("Now"),
+            Self::Once(_) => f.write_str("Once(..)"),
+        }
+    }
+}
+
 /// What the person at the sheet does.
 #[derive(Debug, Clone, Default)]
 pub struct Person {
@@ -154,8 +179,8 @@ pub struct Person {
     pub answers: Vec<FieldAnswer>,
     /// The services they turn off on the review.
     pub off: Vec<CapabilityKind>,
-    /// Whether they open the page a browser step shows, and after how long.
-    pub opens_page_after: Option<std::time::Duration>,
+    /// Whether they open the page a browser step shows, and when.
+    pub opens_page: Option<Opens>,
     /// Whether they close the sheet when it waits for the browser.
     pub gives_up: bool,
 }
@@ -214,12 +239,15 @@ impl TestLink {
                     .collect(),
             )),
             SheetView::BrowserWait { url, .. } => {
-                match (self.person.gives_up, self.person.opens_page_after) {
+                match (self.person.gives_up, self.person.opens_page.clone()) {
                     (true, _) => Some(SheetInput::Dismiss),
-                    (false, Some(after)) => {
+                    (false, Some(when)) => {
                         let url = url.to_string();
                         tokio::spawn(async move {
-                            tokio::time::sleep(after).await;
+                            if let Opens::Once(ready) = when {
+                                base_testkit::eventually("what the person waits for", || ready())
+                                    .await;
+                            }
                             open_page(&url).await;
                         });
                         None

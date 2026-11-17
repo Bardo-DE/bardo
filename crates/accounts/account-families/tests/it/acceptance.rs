@@ -25,7 +25,7 @@ use account_service_core::audit::AuditEvent;
 use account_sheet::{FieldKind, SheetView};
 use account_wire::{AccountsReply, AccountsRequest};
 use account_wire::{ParentWindow, Refusal};
-use common::{Brief, Fakes, Kept, Person, Service, TestSheets, plain, service};
+use common::{Brief, Fakes, Kept, Opens, Person, Service, TestSheets, plain, service};
 use std::time::Duration;
 
 fn app(name: &str) -> AppId {
@@ -69,7 +69,7 @@ fn adding(server: &str) -> Person {
     Person {
         pick: Some(ProviderId::parse("nextcloud").expect("id")),
         answers: vec![plain(FieldKind::Server, server)],
-        opens_page_after: Some(Duration::ZERO),
+        opens_page: Some(Opens::Now),
         ..Person::default()
     }
 }
@@ -265,7 +265,15 @@ async fn a_hint_for_a_provider_that_is_not_installed_is_unavailable() {
 async fn the_person_may_take_their_time_in_the_browser() {
     let nextcloud = nextcloud().await;
     let mut person = adding(nextcloud.base_url());
-    person.opens_page_after = Some(Duration::from_millis(60));
+    // The person opens the page only once the sign-in has polled twice, so it did wait.
+    let seen = (*nextcloud).clone();
+    person.opens_page = Some(Opens::once(move || {
+        seen.hits()
+            .iter()
+            .filter(|h| h.target == "/index.php/login/v2/poll")
+            .count()
+            >= 2
+    }));
     let (_service, _kept, id) = with_account(&nextcloud, consent(vec![]), vec![person]).await;
     assert_eq!(id.as_str(), expected_id(&nextcloud, ""));
     let polls = nextcloud
@@ -412,7 +420,7 @@ async fn add_account_on_the_alert_adds_and_allows_in_one_step_with_one_grant() {
 async fn cancelling_the_add_from_the_alert_grants_nothing() {
     let nextcloud = nextcloud().await;
     let mut gives_up = adding(nextcloud.base_url());
-    gives_up.opens_page_after = None;
+    gives_up.opens_page = None;
     gives_up.gives_up = true;
     let (service, _kept, _first) = with_account(
         &nextcloud,

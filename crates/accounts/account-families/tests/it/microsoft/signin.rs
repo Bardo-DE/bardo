@@ -330,17 +330,10 @@ async fn cancelling_closes_the_listeners_and_ends_the_sign_in() {
     );
     drop(signin);
     // The listener's task is aborted with the sign-in; give the runtime a turn to close it.
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if tokio::net::TcpStream::connect(("127.0.0.1", port))
-            .await
-            .is_err()
-        {
-            return;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-    deadline.fail("the loopback listener to close");
+    base_testkit::eventually("the loopback listener to close", || {
+        std::net::TcpStream::connect(("127.0.0.1", port)).is_err()
+    })
+    .await;
 }
 
 fn again() -> SignInStart {
