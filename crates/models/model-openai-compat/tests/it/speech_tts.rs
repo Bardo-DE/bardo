@@ -3,8 +3,6 @@
 
 use crate::speech_fake;
 
-use std::sync::atomic::Ordering;
-use std::time::Duration;
 
 use model_openai_compat::{KOKORO_FORMAT, encode_speech_request};
 use model_provider::{ModelName, ProviderError, ServerStatus};
@@ -85,13 +83,9 @@ async fn barge_in_stops_the_stream_and_answers_the_audio_played_so_far() {
     assert_eq!(speaker.chunks.len(), 2);
     assert_eq!(end.audio, AudioMs(100));
     // The connection was closed, so the server's long stream hit a broken pipe.
-    for _ in 0..100 {
-        if server.peer_closed.load(Ordering::SeqCst) {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    panic!("the server was still streaming");
+    tokio::time::timeout(base_testkit::GENEROUS, server.peer_closed.notified())
+        .await
+        .expect("the server stopped streaming");
 }
 
 #[tokio::test]

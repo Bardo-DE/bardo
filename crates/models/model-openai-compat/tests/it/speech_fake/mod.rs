@@ -8,7 +8,7 @@
 use std::collections::VecDeque;
 use std::ops::ControlFlow;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -72,7 +72,9 @@ pub struct Fake {
     dir: PathBuf,
     pub endpoint: HttpEndpoint,
     seen: Arc<Mutex<Vec<Seen>>>,
-    pub peer_closed: Arc<AtomicBool>,
+    /// Told once a reply was cut short because the client closed; the permit is kept, so a close
+    /// before the wait is not missed.
+    pub peer_closed: Arc<tokio::sync::Notify>,
 }
 
 pub fn endpoint(target: HttpTarget) -> HttpEndpoint {
@@ -157,7 +159,7 @@ pub fn fake(handler: impl Fn(&Seen) -> Reply + Send + Sync + 'static) -> Fake {
     let path = scratch();
     let listener = UnixListener::bind(&path).unwrap();
     let seen = Arc::new(Mutex::new(Vec::new()));
-    let peer_closed = Arc::new(AtomicBool::new(false));
+    let peer_closed = Arc::new(tokio::sync::Notify::new());
     let handler: Handler = Arc::new(handler);
     let (log, closed) = (Arc::clone(&seen), Arc::clone(&peer_closed));
     tokio::spawn(async move {
@@ -174,7 +176,7 @@ pub fn fake(handler: impl Fn(&Seen) -> Reply + Send + Sync + 'static) -> Fake {
                 let reply = handler(&request);
                 log.lock().unwrap().push(request);
                 if !write_reply(&mut stream, &reply).await {
-                    closed.store(true, Ordering::SeqCst);
+                    closed.notify_one();
                 }
             });
         }
