@@ -60,6 +60,7 @@ pub fn enter_main(name: &str) -> std::process::ExitCode {
 /// The exec stage's `main` in a build that cannot apply Landlock: not Linux, or without the
 /// `landlock` feature.
 #[cfg(not(all(target_os = "linux", feature = "landlock")))]
+#[must_use]
 pub fn enter_main(name: &str) -> std::process::ExitCode {
     eprintln!("{name} needs Linux and the sandbox crate's `landlock` feature");
     std::process::ExitCode::from(2)

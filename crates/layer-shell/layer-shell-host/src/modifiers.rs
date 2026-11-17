@@ -21,6 +21,7 @@ pub(crate) fn from_sctk(state: SctkModifiers) -> Modifiers {
 
 /// `held` with the four held modifiers taken from the DOM flags `mods`, the locks kept: what an
 /// injected key's modifier change comes to, in place of a `wl_keyboard.modifiers`.
+#[cfg(feature = "debug-inject")]
 pub(crate) fn with_dom(held: Modifiers, mods: keyboard_types::Modifiers) -> Modifiers {
     let of = |flag| Modifier::from(mods.contains(flag));
     Modifiers {

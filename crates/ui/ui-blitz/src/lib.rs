@@ -93,6 +93,7 @@ pub mod snap;
 pub mod spell;
 mod startup_token;
 mod texture_layer;
+#[cfg(any(test, feature = "pdf", feature = "testing"))]
 mod wake;
 #[cfg(all(target_os = "linux", feature = "quire-desktop"))]
 mod wayland_surface;

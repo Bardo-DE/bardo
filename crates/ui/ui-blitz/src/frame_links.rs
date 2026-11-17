@@ -181,6 +181,7 @@ impl std::fmt::Debug for LinkInbox {
 impl LinkInbox {
     /// Hand every click waiting to the app, now: the headless document calls it each frame.
     /// `read` finds what the link says; it must release the document before it returns.
+    #[cfg(any(test, feature = "testing"))]
     pub fn drain(&mut self, read: &dyn Fn(FrameId, &str) -> LinkFacts) {
         while let Ok(link) = self.receiver.try_recv() {
             self.deliver(link, read);

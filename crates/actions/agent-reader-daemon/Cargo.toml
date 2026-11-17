@@ -44,7 +44,7 @@ action-testbus = {path = "../action-testbus"}
 tempfile = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
 action-fake = {path = "../action-fake"}
-inference-core = {path = "../../inference/inference-core"}
+inference-core = {features = ["testing"], path = "../../inference/inference-core"}
 action-context = {path = "../action-context"}
 action-router = {path = "../action-router"}
 action-wire = {path = "../action-wire"}

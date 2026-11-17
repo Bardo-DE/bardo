@@ -234,6 +234,7 @@ impl Gpu {
 
 /// A GPU on a device its owner already has: the headless harness's, which opens one before the
 /// first frame.
+#[cfg(feature = "testing")]
 #[must_use]
 pub fn attached_gpu(
     instance: wgpu::Instance,

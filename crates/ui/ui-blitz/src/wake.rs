@@ -18,6 +18,7 @@ pub struct Wakeup {
 
 impl Wakeup {
     /// How many wakes have happened; pass it to [`Wakeup::wait_past`].
+    #[cfg(any(test, feature = "testing"))]
     pub fn generation(&self) -> u64 {
         *self
             .generation
@@ -26,6 +27,7 @@ impl Wakeup {
     }
 
     /// Sleep until a wake after `seen`, or `limit` has passed.
+    #[cfg(any(test, feature = "testing"))]
     pub fn wait_past(&self, seen: u64, limit: Duration) {
         let guard = self
             .generation

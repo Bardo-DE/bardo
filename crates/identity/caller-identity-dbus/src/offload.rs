@@ -24,6 +24,13 @@ pub enum Offload {
 
 impl Offload {
     /// Runs `work` and yields its result.
+    #[cfg_attr(
+        not(feature = "tokio"),
+        expect(
+            clippy::unused_async,
+            reason = "only the tokio variant awaits; callers await the same signature in every build"
+        )
+    )]
     pub(crate) async fn run<T, F>(self, work: F) -> Result<T, Cancelled>
     where
         F: FnOnce() -> T + Send + 'static,

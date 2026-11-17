@@ -147,6 +147,7 @@ pub enum SandboxLimits {
     Scope,
     /// Per-process limits instead, for a machine with no user manager. Only the acceptance
     /// harness passes it (its jail and its live worlds run no systemd).
+    #[cfg(feature = "testing")]
     PerProcess,
 }
 
@@ -156,6 +157,7 @@ impl SandboxLimits {
     pub fn probe(self, path: &str) -> Detected {
         match self {
             SandboxLimits::Scope => Detected::probe(path),
+            #[cfg(feature = "testing")]
             SandboxLimits::PerProcess => {
                 let hardening = sandbox::Hardening {
                     limits: sandbox::LimitPolicy::Rlimit(sandbox::Limits::default()),

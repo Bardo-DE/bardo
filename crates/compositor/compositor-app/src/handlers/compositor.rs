@@ -129,7 +129,10 @@ impl State {
                             return Vec::new();
                         }
                         // Only the testing build extends the events (A37 below).
-                        #[cfg_attr(not(feature = "testing"), allow(unused_mut))]
+                        #[cfg_attr(
+                            not(feature = "testing"),
+                            expect(unused_mut, reason = "only the testing build extends the events")
+                        )]
                         let mut events =
                             xdg_shell::on_toplevel_commit(&mut self.wl.xdg_shell, surface, state);
                         // A37: a buffer attached before the first ack (see `relax`) is the

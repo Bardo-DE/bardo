@@ -11,6 +11,7 @@ use compositor_core::DeviceId;
 use compositor_core::input::DeviceClass;
 #[cfg(any(feature = "testing", feature = "debug-inject"))]
 use compositor_core::input::{GestureStep, InputKind, KeyCode, TouchStep};
+#[cfg(any(feature = "testing", feature = "debug-inject"))]
 use desktop_protocols::vocab::PressEdge;
 use smithay::backend::input::{Device, DeviceCapability, InputBackend, InputEvent, UnusedEvent};
 #[cfg(any(feature = "testing", feature = "debug-inject"))]

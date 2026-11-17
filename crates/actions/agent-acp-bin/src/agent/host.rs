@@ -39,9 +39,12 @@ impl<A: Accounts + 'static> Seams for Hosting<A> {
 pub type Host<A> = AgentHost<Hosting<A>, EditorDesk>;
 
 /// Everything a host is built from.
-#[expect(
-    missing_debug_implementations,
-    reason = "its fields (a bus connection, hosts and seams) do not implement `Debug`"
+#[cfg_attr(
+    feature = "testing",
+    expect(
+        missing_debug_implementations,
+        reason = "its fields (a bus connection, hosts and seams) do not implement `Debug`"
+    )
 )]
 pub struct Wiring<A: Accounts + 'static> {
     /// The bus connection that plays `org.bardo.AcpAgent`: the host claims the name on it.
@@ -78,9 +81,12 @@ pub struct Wiring<A: Accounts + 'static> {
 }
 
 /// A running host and the session it opened.
-#[expect(
-    missing_debug_implementations,
-    reason = "its fields (a bus connection, hosts and seams) do not implement `Debug`"
+#[cfg_attr(
+    feature = "testing",
+    expect(
+        missing_debug_implementations,
+        reason = "its fields (a bus connection, hosts and seams) do not implement `Debug`"
+    )
 )]
 pub struct Hosted<A: Accounts + 'static> {
     /// The host.

@@ -214,6 +214,7 @@ impl HostState {
     /// Make `mods` the seat's modifiers, as `update_modifiers` does for the compositor's report:
     /// Blitz's copy, the `use_modifiers` cache, and the live copy of the surface holding
     /// keyboard focus (`id` when none does, an injected key's target).
+    #[cfg(feature = "debug-inject")]
     pub(crate) fn set_modifiers(&mut self, id: SurfaceId, mods: keyboard_types::Modifiers) {
         self.input.modifiers = mods;
         self.input.held_modifiers = crate::modifiers::with_dom(self.input.held_modifiers, mods);

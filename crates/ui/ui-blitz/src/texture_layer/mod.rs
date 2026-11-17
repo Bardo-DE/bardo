@@ -79,7 +79,9 @@ mod view;
 mod watch;
 mod widget;
 
-pub use gpu::{Gpu, GpuError, TextureHandle, attached_gpu};
+#[cfg(feature = "testing")]
+pub use gpu::attached_gpu;
+pub use gpu::{Gpu, GpuError, TextureHandle};
 pub use model::{Pace, PixelFormat, Pixels, PixelsError, Sampling, TexelRect, Texels, TextureFit};
 pub(crate) use view::GpuProbe;
 pub use view::{TextureLayer, use_gpu};

@@ -19,4 +19,6 @@ pub mod wheel;
 
 pub use bounds::ScrollBounds;
 pub use handle::{ScrollHandle, use_scroll_handle};
-pub use state::{Handled, WindowScroll};
+#[cfg(feature = "testing")]
+pub use state::Handled;
+pub use state::WindowScroll;

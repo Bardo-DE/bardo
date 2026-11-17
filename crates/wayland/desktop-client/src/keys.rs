@@ -5,15 +5,18 @@
 
 /// Hands out the numbers for ids this client makes (configurations, captures, surfaces): each
 /// call returns a number no earlier call returned.
+#[cfg(any(feature = "client", feature = "fake"))]
 #[derive(Debug)]
 pub(crate) struct Mint(u64);
 
+#[cfg(any(feature = "client", feature = "fake"))]
 impl Default for Mint {
     fn default() -> Self {
         Self(1)
     }
 }
 
+#[cfg(any(feature = "client", feature = "fake"))]
 impl Mint {
     /// The next number.
     pub(crate) fn fresh(&mut self) -> u64 {

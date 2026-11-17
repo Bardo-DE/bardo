@@ -197,7 +197,7 @@ pub struct Identity {
 #[derive(Debug)]
 enum Procs {
     /// porter's reading of `/proc` and the unit manager, or of a fixture tree.
-    Read(ProcCallers),
+    Read(Box<ProcCallers>),
     /// Nobody: a fixture tree was named to a build that cannot read one (no `fixture-callers`),
     /// so no caller is identified rather than the system's `/proc` being read in its place.
     #[cfg(not(feature = "fixture-callers"))]
@@ -208,7 +208,7 @@ impl Identity {
     /// Reads the system's `/proc`, and asks the systemd manager for a service's main process.
     #[must_use]
     pub fn on_system(connection: BusConnection, table: CallerTable) -> Self {
-        Self::over(Procs::Read(ProcCallers::new(connection, table)))
+        Self::over(Procs::Read(Box::new(ProcCallers::new(connection, table))))
     }
 
     /// Reads the fixture tree `proc_root` instead of `/proc` and the unit manager
@@ -218,9 +218,9 @@ impl Identity {
     #[cfg(feature = "fixture-callers")]
     #[must_use]
     pub fn on_fixture(connection: BusConnection, table: CallerTable, proc_root: PathBuf) -> Self {
-        Self::over(Procs::Read(ProcCallers::with_proc_root(
+        Self::over(Procs::Read(Box::new(ProcCallers::with_proc_root(
             connection, table, proc_root,
-        )))
+        ))))
     }
 
     /// The fixture tree when there is one, else the system's `/proc`. A build without
