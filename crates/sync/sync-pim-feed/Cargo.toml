@@ -1,0 +1,38 @@
+[package]
+name = "sync-pim-feed"
+description = "Where the items of a calendar, an address book or a task list come from: the collection kinds, the discovery of an account's collections, and the feeds of CalDAV, CardDAV, Microsoft Graph and Google (Calendar, People, Tasks), each a sync-core Replica for the engine over the Http seam."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-client = {path = "../../accounts/account-client"}
+account-core = {path = "../../accounts/account-core"}
+account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+base-url = { path = "../../base/base-url" }
+http-core = {path = "../../network/http-core"}
+http-relay = {path = "../../accounts/http-relay"}
+replica-webdav = {path = "../replica-webdav"}
+sync-core = {path = "../sync-core"}
+sync-engine = {path = "../sync-engine"}
+sync-relay = {path = "../sync-relay"}
+windows-zones = {path = "../windows-zones"}
+chrono = { workspace = true, features = ["alloc"] }
+hex = { workspace = true }
+nanohtml2text = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tokio = {workspace = true, features = ["macros", "rt-multi-thread"]}
+
+[lints]
+workspace = true

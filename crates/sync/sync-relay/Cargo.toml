@@ -1,0 +1,24 @@
+[package]
+name = "sync-relay"
+description = "The replicas as syncd runs them: WebDAV, Google Drive, Graph and CalDAV/CardDAV collection replicas built over the authenticated relays accountd opens, so syncd never holds the account's credential."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-client = {path = "../../accounts/account-client"}
+account-core = {path = "../../accounts/account-core"}
+base-ids = { path = "../../base/base-ids" }
+base-url = { path = "../../base/base-url" }
+http-relay = {path = "../../accounts/http-relay"}
+replica-gdrive = {path = "../replica-gdrive"}
+replica-graph = {path = "../replica-graph"}
+replica-webdav = {path = "../replica-webdav"}
+sync-core = {path = "../sync-core"}
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

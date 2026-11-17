@@ -1,0 +1,30 @@
+[package]
+name = "sync-journal-sqlite"
+description = "The SQLite files syncd keeps: the journal of one dataset of one account (the sync_engine::journal::JournalStore the engine runs over) and the listing file of an account's drive that Files shows, each change or page one transaction."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+drive-fs = {path = "../drive-fs"}
+sync-core = {path = "../sync-core"}
+sync-engine = {path = "../sync-engine"}
+rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[features]
+# `Journal::open_unflushed`, for tests that make thousands of commits.
+testing = []
+
+[lints]
+workspace = true

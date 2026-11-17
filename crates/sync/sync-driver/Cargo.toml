@@ -1,0 +1,30 @@
+[package]
+name = "sync-driver"
+description = "What runs an engine: the driver that sleeps until the scheduler's next wake-up and runs the cycle, and the hub it publishes each dataset's status to and takes pause, sync-now, resolve and confirm requests from."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-callers = {path = "../../accounts/account-callers"}
+account-core = {path = "../../accounts/account-core"}
+base-time = { path = "../../base/base-time" }
+sync-core = {path = "../sync-core"}
+sync-engine = {path = "../sync-engine"}
+sync-xdg = {path = "../sync-xdg"}
+tokio = {workspace = true, features = ["macros", "rt-multi-thread", "sync", "time"]}
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+sync-core = {path = "../sync-core", features = ["testing"]}
+sync-engine = {path = "../sync-engine", features = ["testing"]}
+sync-journal-sqlite = {path = "../sync-journal-sqlite"}
+tempfile = { workspace = true }
+tokio = {workspace = true, features = ["macros", "rt-multi-thread", "sync", "test-util", "time"]}
+
+[lints]
+workspace = true
