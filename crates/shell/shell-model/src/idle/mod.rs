@@ -21,3 +21,14 @@ pub use policy::{
     resolve_mode, watches,
 };
 pub use step::{DisplayPower, IdleEffect, IdleEvent, IdleHint, IdleState, LockSeen, PASSIVE, step};
+
+/// bardo-shell's own idle as a service, on `env`'s compositor and buses, reading and driving the
+/// services in its `IdleLinks`. Passive until the first command.
+#[derive(Debug)]
+pub enum IdleService {}
+
+impl crate::service::Service for IdleService {
+    const NAME: &'static str = "idle";
+    type State = Idle;
+    type Command = IdleCommand;
+}

@@ -21,3 +21,18 @@ pub use model::{
     TrayMenuIcon, TrayMenuKind, TrayStatus,
 };
 pub use step::step;
+
+/// The tray host as a service.
+///
+/// It registers a `StatusNotifierWatcher` when none is on the bus
+/// (`system_tray::client::Client::new`'s own `StatusNotifierWatcher::attach_to`: it tries to own
+/// `org.kde.StatusNotifierWatcher` and quietly defers when a desktop already does). Without a
+/// session bus the state stays at `Tray::default()`.
+#[derive(Debug)]
+pub enum TrayService {}
+
+impl crate::service::Service for TrayService {
+    const NAME: &'static str = "tray";
+    type State = Tray;
+    type Command = TrayCommand;
+}

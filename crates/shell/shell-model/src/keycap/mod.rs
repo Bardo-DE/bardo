@@ -21,3 +21,14 @@ pub use model::{Attention, KeycapState};
 pub use notice::{Notice, NoticeChange, notice_for, notice_text};
 pub use step::{attention, step};
 pub use unit::{UNIT_GRACE, UNIT_RECHECK, unit_state, watching_unit};
+
+/// The keycap connection as a service, on `env`'s socket and system bus, reading the focused
+/// window and posting its notices through the services in its `KeycapLinks`.
+#[derive(Debug)]
+pub enum KeycapService {}
+
+impl crate::service::Service for KeycapService {
+    const NAME: &'static str = "keycap";
+    type State = KeycapState;
+    type Command = KeycapCommand;
+}

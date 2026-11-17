@@ -1,0 +1,22 @@
+[package]
+name = "shell-desktop-fs"
+description = "The shell's plain file helpers over the freedesktop folders: the Trash, autostart entries and icon lookup. Files only, no bus."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+shell-launcher = {path = "../shell-launcher"}
+shell-model = {path = "../shell-model"}
+freedesktop-icons = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+shell-testkit = {path = "../shell-testkit"}
+
+[lints]
+workspace = true

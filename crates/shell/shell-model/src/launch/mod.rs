@@ -17,3 +17,16 @@ pub use plan::{launch_argv, scope_unit};
 pub use settings_open::{SettingsOpen, assistant_model};
 pub use step::step;
 pub use timing::{LaunchDone, LaunchTiming, Pid, Stamp, answer_to, launch_line};
+
+/// App launching as a service: scopes, activation tokens, opening files.
+///
+/// Its `Deps` is the app index, which resolves ids to entries, and the notifications service that
+/// tells the person an app did not open.
+#[derive(Debug)]
+pub enum LaunchService {}
+
+impl crate::service::Service for LaunchService {
+    const NAME: &'static str = "launch";
+    type State = Launches;
+    type Command = LaunchCommand;
+}

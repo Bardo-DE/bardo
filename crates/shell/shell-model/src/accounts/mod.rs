@@ -18,3 +18,14 @@ pub use notice::{
     NOTICE_ENTRY, Notice, account_of, no_launcher_text, notice_text, shown_for, sign_in_key,
 };
 pub use step::step;
+
+/// The accounts that need signing in again, on `env`'s session bus, told through the
+/// notifications service in its `AccountsLinks`.
+#[derive(Debug)]
+pub enum AccountsService {}
+
+impl crate::service::Service for AccountsService {
+    const NAME: &'static str = "accounts";
+    type State = AccountsState;
+    type Command = AccountsCommand;
+}

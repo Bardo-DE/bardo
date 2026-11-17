@@ -14,3 +14,20 @@ pub use command::{ResultsEvent, SearchCommand};
 pub use model::Results;
 pub use policy::{CurrencyPolicy, LauncherPolicy};
 pub use step::step;
+
+/// The launcher's search as a service.
+///
+/// Its providers queried in parallel on the blocking pool, its history loaded from bardo-shell's
+/// folder of `env`'s state directory.
+///
+/// Tracker (the files
+/// index) is reached on `env`'s session bus; the rates cache and
+/// the files provider's home are `env`'s directories.
+#[derive(Debug)]
+pub enum ResultsService {}
+
+impl crate::service::Service for ResultsService {
+    const NAME: &'static str = "results";
+    type State = Results;
+    type Command = SearchCommand;
+}

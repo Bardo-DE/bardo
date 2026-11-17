@@ -1,8 +1,10 @@
 //! The shell's pure vocabulary: units, identifiers, attempts, and every service's state,
 //! commands, events and effects with the pure `step` that is the only place its state changes.
 //!
-//! Nothing here does I/O or reaches a runtime, a bus or a UI (`scripts/check-boundary.sh`):
-//! `shell-services` carries the effects, and every transition is table-tested without a bus.
+//! Nothing here does I/O beyond reading the process's own directories ([`dirs::Dirs`]) or reaches
+//! a bus or a UI (`scripts/check-boundary.sh`): `shell-services` carries the effects, and every
+//! transition is table-tested without a bus. The one runtime piece is tokio's channels
+//! ([`service`]): what a surface holds of a running service.
 
 pub mod accounts;
 pub mod actions;
@@ -18,6 +20,7 @@ pub mod clipboard;
 pub mod clock;
 pub mod companion;
 pub mod desktop;
+pub mod dirs;
 pub mod displays;
 pub mod events;
 pub mod guest_asks;
@@ -43,6 +46,7 @@ pub mod results;
 pub mod screenshots;
 pub mod seed;
 pub mod serve;
+pub mod service;
 pub mod session;
 pub mod sync_hold;
 pub mod tray;

@@ -16,3 +16,14 @@ pub use types::{
     ActionId, AuthRequest, Cookie, Echo, FAKE_SECRET, Gid, Identity, LastTry, PromptPhase,
     PromptView, Registration, Uid,
 };
+
+/// bardo-shell's polkit agent as a service, registering where `env`'s `PolkitRoute` says (the
+/// daemon's: `PolkitRoute::system`); passive until a `Policy(Own)`.
+#[derive(Debug)]
+pub enum PolkitAgentService {}
+
+impl crate::service::Service for PolkitAgentService {
+    const NAME: &'static str = "polkit_agent";
+    type State = Polkit;
+    type Command = PolkitCommand;
+}

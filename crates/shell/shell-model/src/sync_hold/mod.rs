@@ -14,3 +14,14 @@ pub use command::{SyncHoldCommand, SyncHoldEffect, SyncHoldEvent};
 pub use model::{Dataset, Hold, SyncHoldState};
 pub use notice::{NOTICE_ENTRY, Notice, dataset_of, notice_text, open_key, shown_for};
 pub use step::step;
+
+/// The held mass deletions on `env`'s session bus, told through the notifications service and
+/// opened in Settings through the launch service, both in its `SyncHoldLinks`.
+#[derive(Debug)]
+pub enum SyncHoldService {}
+
+impl crate::service::Service for SyncHoldService {
+    const NAME: &'static str = "sync_hold";
+    type State = SyncHoldState;
+    type Command = SyncHoldCommand;
+}

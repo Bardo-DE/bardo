@@ -72,3 +72,12 @@ impl Session {
         }
     }
 }
+
+/// Whether chosen actions reach logind.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum ActionReach {
+    /// logind carries them out.
+    Logind,
+    /// They are only recorded.
+    DryRun,
+}

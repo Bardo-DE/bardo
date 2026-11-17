@@ -14,3 +14,18 @@ pub use types::{
     Account, Attempt, Attempts, AuthFault, AvatarSource, Outcome, PamNote, PamService, RealName,
     UserName, Verdict,
 };
+
+/// The lock screen's password check as a service.
+///
+/// The lock screen's password check as a service, through `env`'s `Authenticator` (PAM
+/// through `bardo-shell auth-check` in the daemon, a `FakeAuthenticator` in every test), the account
+/// read from `env`'s accounts database, system bus and home. Idle until the first `Submit`: nothing is checked, and
+/// no PAM module runs, before that.
+#[derive(Debug)]
+pub enum AuthService {}
+
+impl crate::service::Service for AuthService {
+    const NAME: &'static str = "auth";
+    type State = Auth;
+    type Command = AuthCommand;
+}

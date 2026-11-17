@@ -11,3 +11,13 @@ mod tests;
 
 pub use model::{PublishedWorkspace, WorkspaceLooks, WorkspaceLooksCommand, WorkspaceLooksLink};
 pub use reduce::published;
+
+/// The workspaces and their looks as a service.
+#[derive(Debug)]
+pub enum WorkspaceLooksService {}
+
+impl crate::service::Service for WorkspaceLooksService {
+    const NAME: &'static str = "workspace-looks";
+    type State = WorkspaceLooks;
+    type Command = WorkspaceLooksCommand;
+}

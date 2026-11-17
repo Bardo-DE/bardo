@@ -55,3 +55,15 @@ pub use rules::holds;
 pub use said::Said;
 pub use step::{assign_id, step};
 pub use stored::{STORED_VERSION, StoredHistory, for_disk};
+
+/// The notifications server as a service: on `env`'s session bus with its clock, the
+/// history in its state directory. Passive until the daemon's first
+/// policy (module doc).
+#[derive(Debug)]
+pub enum NotificationsService {}
+
+impl crate::service::Service for NotificationsService {
+    const NAME: &'static str = "notifications";
+    type State = NotesState;
+    type Command = NotificationsCommand;
+}

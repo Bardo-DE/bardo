@@ -28,3 +28,13 @@ pub enum ServeLink {
     /// It could not be taken.
     Unavailable(ClaimError),
 }
+
+/// The displays' bus interface as a service; its state says whether the name is held.
+#[derive(Debug)]
+pub enum DisplaysBusService {}
+
+impl crate::service::Service for DisplaysBusService {
+    const NAME: &'static str = "displays-bus";
+    type State = ServeLink;
+    type Command = std::convert::Infallible;
+}

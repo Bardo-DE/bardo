@@ -14,3 +14,14 @@ pub use model::{Shot, ShotId, ShotPreview, Shots, Taking, Watching};
 pub use names::{ShotName, folders_of, is_screenshot_name, parse_folders, preview_name};
 pub use step::step;
 pub use tool::{CommandLine, ShotKind, portal_command};
+
+/// Screenshots as a service: watching folders under `env`'s directories, its previews in their
+/// cache. Passive until `Configure`.
+#[derive(Debug)]
+pub enum ScreenshotsService {}
+
+impl crate::service::Service for ScreenshotsService {
+    const NAME: &'static str = "screenshots";
+    type State = Shots;
+    type Command = ShotCommand;
+}

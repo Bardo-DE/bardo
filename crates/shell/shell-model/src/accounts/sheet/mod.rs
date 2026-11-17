@@ -17,3 +17,13 @@ pub use command::{AccountsSheetCommand, Admit, SheetAction, SheetEvent, SheetOut
 pub use draft::{CopyMark, FieldDraft, ListKey, SubmitCount};
 pub use model::{AccountsSheets, Awaiting, Draft, MAX_OPEN, OpenSheet, SheetHandle, SheetLink};
 pub use step::step;
+
+/// The accounts sheet's host side as a service.
+#[derive(Debug)]
+pub enum AccountsSheetService {}
+
+impl crate::service::Service for AccountsSheetService {
+    const NAME: &'static str = "accounts-sheet";
+    type State = AccountsSheets;
+    type Command = AccountsSheetCommand;
+}

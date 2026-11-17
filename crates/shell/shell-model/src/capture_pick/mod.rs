@@ -42,3 +42,13 @@ pub use step::{
     AskId, Asking, CaptureCommand, CaptureEvent, CaptureLink, CaptureOut, CapturePicker,
     WAITING_MAX, admits, holds_consent, permission_admits, step,
 };
+
+/// The picker as a service.
+#[derive(Debug)]
+pub enum CaptureService {}
+
+impl crate::service::Service for CaptureService {
+    const NAME: &'static str = "capture-pick";
+    type State = CapturePicker;
+    type Command = CaptureCommand;
+}

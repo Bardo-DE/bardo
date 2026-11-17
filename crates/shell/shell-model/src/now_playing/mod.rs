@@ -18,3 +18,14 @@ pub use command::{MediaCommand, MediaEvent, MediaVerb};
 pub use limits::{ARTISTS_MAX, PLAYERS_MAX, TEXT_MAX_CHARS};
 pub use model::{Abilities, Art, Media, MediaPlayer, Micros, Playback, PlayerId, Timeline, Track};
 pub use step::step;
+
+/// Now Playing (MPRIS) as a service. Without a session bus the state stays at
+/// `Media::default()` (no players), and the module shows nothing playing.
+#[derive(Debug)]
+pub enum NowPlayingService {}
+
+impl crate::service::Service for NowPlayingService {
+    const NAME: &'static str = "now_playing";
+    type State = Media;
+    type Command = MediaCommand;
+}

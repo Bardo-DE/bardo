@@ -134,3 +134,16 @@ pub struct ClipState {
     /// The key the next kept entry gets; counts up from 1, never reused.
     pub next: u64,
 }
+
+/// The image kept under `key`, if the history still holds it as an image.
+#[must_use]
+pub fn clip_image(history: &Clipboard, key: ClipKey) -> Option<ClipImage> {
+    history
+        .entries
+        .iter()
+        .find(|entry| entry.key == key)
+        .and_then(|entry| match &entry.content {
+            ClipContent::Image(image) => Some(image.clone()),
+            ClipContent::Text(_) => None,
+        })
+}

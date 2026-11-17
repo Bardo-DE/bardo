@@ -20,3 +20,13 @@ pub use model::{
 pub use speech_wire::{CancelCause, VoiceTrigger};
 pub use step::step;
 pub use words::{listening_line, notice_line};
+
+/// Hold-to-talk as a service.
+#[derive(Debug)]
+pub enum VoiceService {}
+
+impl crate::service::Service for VoiceService {
+    const NAME: &'static str = "voice";
+    type State = Voice;
+    type Command = VoiceCommand;
+}

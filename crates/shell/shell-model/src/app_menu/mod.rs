@@ -37,3 +37,13 @@ pub use route::{ActionIndex, Identity, ItemKey, Route, effect_of, route_of};
 pub use step::step;
 pub use titles::{TitledMenu, Titles, titles};
 pub use window::window_of;
+
+/// The followed apps' menus as a service. Without a session bus it publishes nothing.
+#[derive(Debug)]
+pub enum AppMenuService {}
+
+impl crate::service::Service for AppMenuService {
+    const NAME: &'static str = "app_menu";
+    type State = AppMenus;
+    type Command = AppMenuCommand;
+}

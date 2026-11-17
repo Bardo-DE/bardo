@@ -18,3 +18,14 @@ pub use renames::Renames;
 /// A minimal entry with `id` and `name`, for the tests of what reads an index.
 #[cfg(test)]
 pub(crate) use index::tests::app as test_app;
+
+/// The desktop entries and their icons as a service: scanned once and published, then every
+/// applications directory watched and rescanned after half a second of quiet.
+#[derive(Debug)]
+pub enum AppsService {}
+
+impl crate::service::Service for AppsService {
+    const NAME: &'static str = "apps";
+    type State = AppIndex;
+    type Command = AppsCommand;
+}

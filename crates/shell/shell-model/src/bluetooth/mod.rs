@@ -14,3 +14,14 @@ pub use model::{
     listed_devices,
 };
 pub use step::step;
+
+/// BlueZ's adapter and devices as a service. Without BlueZ or an adapter the state stays
+/// at `Bluetooth::default()` (absent), and the control center shows the module unavailable.
+#[derive(Debug)]
+pub enum BluetoothService {}
+
+impl crate::service::Service for BluetoothService {
+    const NAME: &'static str = "bluetooth";
+    type State = Bluetooth;
+    type Command = BluetoothCommand;
+}

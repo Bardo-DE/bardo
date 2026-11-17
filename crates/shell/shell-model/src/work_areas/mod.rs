@@ -14,3 +14,13 @@ mod tests;
 pub use command::WorkAreaCommand;
 pub use model::{Edge, Rect, WorkArea, WorkAreaLink, WorkAreas, Zone};
 pub use reduce::{work_area, work_rect};
+
+/// The work areas as a service.
+#[derive(Debug)]
+pub enum WorkAreaService {}
+
+impl crate::service::Service for WorkAreaService {
+    const NAME: &'static str = "work-areas";
+    type State = WorkAreas;
+    type Command = WorkAreaCommand;
+}

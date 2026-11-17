@@ -41,3 +41,17 @@ pub use ppi::Ppi;
 pub use scale::DisplayScale;
 pub use step::step;
 pub use warmth::warmth_gains;
+
+/// The displays as a service.
+///
+/// It follows the volume service (its `Deps`) for the monitor-speaker path and talks DDC on
+/// `env`'s buses. Until the first `Policy` command it does nothing at all: no bus probe, no
+/// output query, no file.
+#[derive(Debug)]
+pub enum DisplaysService {}
+
+impl crate::service::Service for DisplaysService {
+    const NAME: &'static str = "displays";
+    type State = Displays;
+    type Command = DisplaysCommand;
+}

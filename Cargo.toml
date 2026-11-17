@@ -271,6 +271,7 @@ members = [
     "crates/shell/shell-app",
     "crates/shell/shell-bar",
     "crates/shell/shell-host-config",
+    "crates/shell/shell-desktop-fs",
     "crates/shell/shell-dock",
     "crates/shell/shell-ipc",
     "crates/shell/shell-launcher",

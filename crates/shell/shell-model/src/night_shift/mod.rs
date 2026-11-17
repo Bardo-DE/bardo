@@ -19,3 +19,13 @@ pub use model::{Manual, MinuteOfDay, NightLight, NightShift, Schedule, UnixSecon
 pub use shown::{Shown, shown, warmth_at, warmth_fraction};
 pub use skip::{skip_outputs, unmatched};
 pub use step::{step, until_tomorrow};
+
+/// Night Shift as a service.
+#[derive(Debug)]
+pub enum NightShiftService {}
+
+impl crate::service::Service for NightShiftService {
+    const NAME: &'static str = "night-shift";
+    type State = NightShift;
+    type Command = NightShiftCommand;
+}

@@ -25,3 +25,13 @@ pub use model::{Intents, IntentsLink};
 pub use permission_core::StandingGrantId;
 pub use provenance::Effect;
 pub use step::step;
+
+/// The seat as a service.
+#[derive(Debug)]
+pub enum IntentsService {}
+
+impl crate::service::Service for IntentsService {
+    const NAME: &'static str = "intents";
+    type State = Intents;
+    type Command = IntentsCommand;
+}

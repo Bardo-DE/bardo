@@ -26,3 +26,14 @@ pub use rule::{Freq, Rule, RuleEnd, occurrences, parse_rule, week_start};
 pub use rule_expand::unsupported_parts;
 pub use sources::{AutoEnv, EventSources, IcsPlace, auto_places, is_task_list, parse_sources};
 pub use step::step;
+
+/// Calendar events as a service, found under `env`'s directories and dated by its clock.
+/// Until the first `Sources` the agenda holds today only, with `SourceStatus::Off`.
+#[derive(Debug)]
+pub enum EventsService {}
+
+impl crate::service::Service for EventsService {
+    const NAME: &'static str = "events";
+    type State = Agenda;
+    type Command = EventsCommand;
+}

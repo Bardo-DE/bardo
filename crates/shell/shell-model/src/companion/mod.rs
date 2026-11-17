@@ -84,3 +84,13 @@ pub use terminals::{
     TerminalsMsg, session_subtitle, session_title, update as update_terminals,
 };
 pub use words::{SETTLE_FAILED, activity_line, answer_line, body_lines, memory_line, waiting_line};
+
+/// The companion as a service.
+#[derive(Debug)]
+pub enum CompanionService {}
+
+impl crate::service::Service for CompanionService {
+    const NAME: &'static str = "companion";
+    type State = Companion;
+    type Command = CompanionCommand;
+}

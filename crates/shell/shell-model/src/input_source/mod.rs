@@ -12,3 +12,13 @@ pub use command::InputCommand;
 pub use ibus::address_in;
 pub use model::{InputFramework, InputRefusal, InputSwitch};
 pub use next::next_of;
+
+/// Next Input Source as a service. The state is `InputSwitch::Idle` until the first switch.
+#[derive(Debug)]
+pub enum InputSourceService {}
+
+impl crate::service::Service for InputSourceService {
+    const NAME: &'static str = "input_source";
+    type State = InputSwitch;
+    type Command = InputCommand;
+}
