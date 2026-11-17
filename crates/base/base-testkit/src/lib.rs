@@ -10,5 +10,5 @@ mod scratch;
 pub use deadline::{Deadline, GENEROUS};
 pub use eventually::eventually_blocking;
 #[cfg(feature = "tokio")]
-pub use eventually::{eventually, eventually_some};
+pub use eventually::{eventually, eventually_some, eventually_some_async};
 pub use scratch::Scratch;

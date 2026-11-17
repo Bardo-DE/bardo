@@ -43,6 +43,29 @@ pub async fn eventually_some<T>(what: &str, mut look: impl FnMut() -> Option<T>)
     }
 }
 
+/// Waits until the asynchronous `look` gives a value, looking again every few milliseconds, up to
+/// [`crate::GENEROUS`] by the clock, and returns it. For a condition that is itself a call (a
+/// D-Bus read, a request) and so cannot be a plain closure.
+///
+/// # Panics
+/// When no value comes in time, naming `what`.
+#[cfg(feature = "tokio")]
+pub async fn eventually_some_async<T, F>(what: &str, mut look: impl FnMut() -> F) -> T
+where
+    F: std::future::Future<Output = Option<T>>,
+{
+    let deadline = Deadline::generous();
+    loop {
+        if let Some(value) = look().await {
+            return value;
+        }
+        if deadline.passed() {
+            deadline.fail(what);
+        }
+        tokio::time::sleep(LOOK_AGAIN).await;
+    }
+}
+
 /// The blocking form of [`eventually`], for tests without a runtime.
 ///
 /// # Panics
