@@ -1,8 +1,5 @@
 //! Where a schema came from, and what that lets it say about agents.
 
-use std::os::unix::fs::MetadataExt;
-use std::path::Path;
-
 /// The owner of a folder only an administrator can change.
 const ROOT: u32 = 0;
 
@@ -24,28 +21,9 @@ pub enum SchemaOrigin {
 impl SchemaOrigin {
     /// The origin of a folder (or any of its parents) owned by `owner` with permission bits
     /// `mode`.
-    pub(crate) fn of_owner(owner: u32, mode: u32) -> SchemaOrigin {
-        if owner == ROOT && mode & GROUP_OR_OTHER_WRITE == 0 {
-            SchemaOrigin::System
-        } else {
-            SchemaOrigin::PersonWritable
-        }
-    }
-
-    /// The origin of `dir`: `System` only when the folder and every parent above it (after links
-    /// are resolved) are root's and closed to everyone else, since a writable parent could swap
-    /// the folder. A folder that cannot be read is the person's.
     #[must_use]
-    pub fn of_dir(dir: &Path) -> SchemaOrigin {
-        let Ok(real) = dir.canonicalize() else {
-            return SchemaOrigin::PersonWritable;
-        };
-        let closed = real.ancestors().all(|folder| {
-            folder.metadata().is_ok_and(|meta| {
-                SchemaOrigin::of_owner(meta.uid(), meta.mode()) == SchemaOrigin::System
-            })
-        });
-        if closed {
+    pub fn of_owner(owner: u32, mode: u32) -> SchemaOrigin {
+        if owner == ROOT && mode & GROUP_OR_OTHER_WRITE == 0 {
             SchemaOrigin::System
         } else {
             SchemaOrigin::PersonWritable
@@ -73,19 +51,18 @@ impl OriginRule {
         OriginRule::Declared(system.to_vec())
     }
 
-    /// The origin of `dir` under this rule.
+    /// The origin of `dir` when this rule declares it, none when only the disk can say (the
+    /// ownership rule).
     #[must_use]
-    pub fn judge(&self, dir: &Path) -> SchemaOrigin {
+    pub fn declared_origin(&self, dir: &std::path::Path) -> Option<SchemaOrigin> {
         match self {
-            OriginRule::Ownership => SchemaOrigin::of_dir(dir),
+            OriginRule::Ownership => None,
             #[cfg(debug_assertions)]
-            OriginRule::Declared(system) => {
-                if system.iter().any(|named| named == dir) {
-                    SchemaOrigin::System
-                } else {
-                    SchemaOrigin::PersonWritable
-                }
-            }
+            OriginRule::Declared(system) => Some(if system.iter().any(|named| named == dir) {
+                SchemaOrigin::System
+            } else {
+                SchemaOrigin::PersonWritable
+            }),
         }
     }
 }

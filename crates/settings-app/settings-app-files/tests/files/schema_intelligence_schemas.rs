@@ -1,7 +1,8 @@
 //! The schemas the actions, memory and computer-use programs install under `$XDG_DATA_DIRS/bardo/settings`: found
 //! there, each key in the section it names and the file its program reads.
 
-use settings_app_model::{Catalogue, PageSlug, advanced_name, discover};
+use settings_app_files::discover;
+use settings_app_model::{Catalogue, PageSlug, advanced_name};
 use settings_app_testkit::{Scratch, fixture_dir};
 use std::ffi::OsString;
 use std::path::Path;

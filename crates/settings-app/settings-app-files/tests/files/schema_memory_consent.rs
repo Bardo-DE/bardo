@@ -2,8 +2,9 @@
 //! confirms, the value the note names, and the state's bookkeeping.
 
 use memory_core::WaitingSetting;
+use settings_app_files::discover;
 use settings_app_model::{
-    Catalogue, Confinement, ConsentState, KeptValue, KeyEntry, SettingPair, Trouble, discover,
+    Catalogue, Confinement, ConsentState, KeptValue, KeyEntry, SettingPair, Trouble,
     holds_memory_settings, is_memory_setting, kept_value, tells_confinement, to_confirm,
 };
 use settings_app_testkit::{Scratch, seed_schemas};

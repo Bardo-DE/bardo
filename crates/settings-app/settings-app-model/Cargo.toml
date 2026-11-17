@@ -23,7 +23,6 @@ keymap = {path = "../../keymap/keymap"}
 action-core = {path = "../../actions/action-core"}
 action-settings = {path = "../../actions/action-settings"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
-settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 key-remap-core = {path = "../../input/key-remap-core"}
 account-core = {path = "../../accounts/account-core"}
@@ -32,7 +31,6 @@ regex = { workspace = true, features = ["std", "perf", "unicode"] }
 toml = { workspace = true }
 
 [dev-dependencies]
-settings-app-testkit = {path = "../settings-app-testkit"}
 serde_json = { workspace = true }
 
 [lints]

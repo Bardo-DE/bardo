@@ -1,6 +1,6 @@
 //! The Settings app's pure model: which schemas exist, which pages and sections they make, which
-//! control draws each key, and what a search finds. No I/O beyond the directory scan in
-//! [`discover`], no renderer, no runtime.
+//! control draws each key, and what a search finds. No I/O, no renderer, no runtime: the schemas
+//! come scanned (`settings-app-files` reads the folders), and [`admit_scans`] checks them.
 
 mod absence;
 mod accounts;
@@ -99,7 +99,7 @@ pub use computers::{
 };
 pub use config_file::ConfigFile;
 pub use control::{Control, FileOnly};
-pub use discovery::{Discovery, ProgramSchema, discover, discover_under};
+pub use discovery::{Discovery, ProgramSchema, admit_scans};
 pub use displays::{
     ArrangeSide, Brightness, BrightnessList, DISPLAYS_SLUG, DisplayChange, DisplayEdit,
     DisplayMode, DisplayPosition, DisplayRotation, DisplaysEffect, DisplaysInput, DisplaysReady,

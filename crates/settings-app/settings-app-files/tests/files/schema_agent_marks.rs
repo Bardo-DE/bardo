@@ -1,8 +1,7 @@
 //! Which keys an agent may set: the ones a schema marks `agent = "settable"`, and no other.
 
-use settings_app_model::{
-    AgentSetting, Catalogue, OriginRule, SchemaOrigin, discover, discover_under,
-};
+use settings_app_files::{discover, discover_under, origin_of_dir};
+use settings_app_model::{AgentSetting, Catalogue, OriginRule, SchemaOrigin};
 use settings_app_testkit::{Scratch, fixture_dir};
 use settings_types::schema::KeyPath;
 use std::os::unix::fs::PermissionsExt;
@@ -196,16 +195,16 @@ fn a_folder_is_system_only_when_root_owns_it_and_every_folder_above_it() {
     std::fs::create_dir_all(&own).expect("dir");
     // `/usr` is root's and closed to everyone else on any machine this runs on.
     assert_eq!(
-        SchemaOrigin::of_dir(std::path::Path::new("/usr")),
+        origin_of_dir(std::path::Path::new("/usr")),
         SchemaOrigin::System
     );
     assert_eq!(
-        SchemaOrigin::of_dir(&scratch.join("missing")),
+        origin_of_dir(&scratch.join("missing")),
         SchemaOrigin::PersonWritable,
         "a folder that cannot be read is the person's"
     );
     std::fs::set_permissions(&own, std::fs::Permissions::from_mode(0o777)).expect("chmod");
-    assert_eq!(SchemaOrigin::of_dir(&own), SchemaOrigin::PersonWritable);
+    assert_eq!(origin_of_dir(&own), SchemaOrigin::PersonWritable);
 }
 
 #[test]

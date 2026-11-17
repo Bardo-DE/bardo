@@ -2,6 +2,7 @@
 //! the way the shell does and draw its icon.
 
 use crate::desktop_paths::{app_id, desktop_files};
+use crate::schemas::judge;
 use base_fs::read_text_capped;
 use settings_app_model::{DesktopApp, EntryVisibility, OriginRule, ProgramBook, SchemaOrigin};
 use std::borrow::Cow;
@@ -80,7 +81,7 @@ fn app_of(path: &Path, text: &str, origin: SchemaOrigin) -> Option<DesktopApp> {
 fn system_bins(rule: &OriginRule) -> Vec<PathBuf> {
     let mut found: Vec<PathBuf> = Vec::new();
     for dir in BIN_DIRS.map(PathBuf::from) {
-        if rule.judge(&dir) != SchemaOrigin::System {
+        if judge(rule, &dir) != SchemaOrigin::System {
             continue;
         }
         let real = dir.canonicalize().ok();
@@ -107,7 +108,7 @@ pub fn scan_programs(dirs: &[PathBuf], rule: &OriginRule) -> ProgramBook {
             let folder = path.parent()?.to_owned();
             let origin = *judged
                 .entry(folder)
-                .or_insert_with_key(|folder| rule.judge(folder));
+                .or_insert_with_key(|folder| judge(rule, folder));
             app_of(&path, &text, origin)
         })
         .collect();

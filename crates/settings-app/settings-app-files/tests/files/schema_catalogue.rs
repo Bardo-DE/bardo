@@ -1,8 +1,9 @@
 //! Grouping, ordering and search over the real schemas (`fixtures/schemas`).
 
+use settings_app_files::discover;
 use settings_app_model::{
-    Catalogue, Control, Found, Offer, Offers, PageSlug, Rank, Search, SectionModel, discover,
-    landing, search, visible_pages,
+    Catalogue, Control, Found, Offer, Offers, PageSlug, Rank, Search, SectionModel, landing,
+    search, visible_pages,
 };
 use settings_app_testkit::{Scratch, seed_schemas};
 use settings_types::schema::{Exposure, KeyKind, KeyPath, WordLabels};

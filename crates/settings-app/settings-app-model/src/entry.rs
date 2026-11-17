@@ -47,9 +47,9 @@ impl KeyEntry {
     }
 
     /// Whether an agent may set the key: the mark of the schema that supplied it, which
-    /// `settings_store_fs::discover` admitted and `Schema::from_toml` checked (a key under a
-    /// never-settable prefix cannot carry the mark); `discover` has already cleared it for a schema
-    /// from a folder the person can write.
+    /// the schema scan admitted and `Schema::from_toml` checked (a key under a
+    /// never-settable prefix cannot carry the mark); `admit_scans` has already cleared it for a
+    /// schema from a folder the person can write.
     #[must_use]
     pub fn agent(&self) -> AgentSetting {
         self.spec.agent

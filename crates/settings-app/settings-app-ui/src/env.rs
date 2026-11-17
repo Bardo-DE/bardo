@@ -6,7 +6,7 @@ use crate::marks::ProviderMarks;
 use settings_app_client::{
     Client, ConfigHome, DataHome, ExtensionHome, FirstRunMark, KeymapFiles, StateHome,
 };
-use settings_app_model::{Catalogue, Inbox, OriginRule, PageSlug, Warning, discover};
+use settings_app_model::{Catalogue, Discovery, Inbox, OriginRule, PageSlug, Warning};
 use std::path::PathBuf;
 use std::sync::Arc;
 use ui_helpers::Environment;
@@ -77,11 +77,10 @@ pub struct Homes {
 }
 
 impl Env {
-    /// The environment after scanning `schema_dirs` for schemas, reaching the computer through
-    /// `client`.
+    /// The environment over the schemas `found`, reaching the computer through `client`.
     #[must_use]
-    pub fn discover(
-        schema_dirs: &[PathBuf],
+    pub fn from_schemas(
+        found: Discovery,
         homes: Homes,
         system: SystemPrefsSource,
         opening: Opening,
@@ -92,7 +91,6 @@ impl Env {
             data: data_home,
             state: state_home,
         } = homes;
-        let found = discover(schema_dirs);
         let keymap = KeymapFiles::under(&config_home);
         let extensions = ExtensionHome::under(&config_home, &data_home, &[]);
         Env {

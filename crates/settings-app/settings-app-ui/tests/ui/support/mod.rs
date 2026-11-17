@@ -303,8 +303,8 @@ impl Sandbox {
             None => client,
         }
         .build();
-        Env::discover(
-            &[self.scratch.join("data/bardo/settings")],
+        Env::from_schemas(
+            settings_app_files::discover(&[self.scratch.join("data/bardo/settings")]),
             Homes {
                 config: self.config_home(),
                 data: self.data_home(),

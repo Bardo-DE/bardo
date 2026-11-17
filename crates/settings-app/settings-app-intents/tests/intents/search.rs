@@ -3,7 +3,8 @@
 
 use crate::support::{World, entity};
 use settings_app_intents::search_entries;
-use settings_app_model::{Catalogue, Notice, OriginRule, PageSlug, discover_under};
+use settings_app_files::discover_under;
+use settings_app_model::{Catalogue, Notice, OriginRule, PageSlug};
 use settings_app_testkit::{Scratch, seed_schemas};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");

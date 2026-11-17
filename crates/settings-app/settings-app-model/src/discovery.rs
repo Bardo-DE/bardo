@@ -1,10 +1,9 @@
 //! Finding the schemas programs ship (design/22 section 9.2 and 9.3 item 1).
 
 use crate::config_file::ConfigFile;
-use crate::origin::{OriginRule, SchemaOrigin};
+use crate::origin::SchemaOrigin;
 use crate::warning::{StaleReason, Warning};
 use settings_types::schema::{AgentSetting, AppId, Footnote, ForeignTables, KeySpec, Schema};
-use std::path::PathBuf;
 
 /// The schema `version` this app reads.
 const SUPPORTED_VERSION: u16 = 1;
@@ -35,31 +34,21 @@ pub struct Discovery {
     pub warnings: Vec<Warning>,
 }
 
-/// Every schema under `dirs`, judged by who owns the folders ([`OriginRule::Ownership`]).
-#[must_use]
-pub fn discover(dirs: &[PathBuf]) -> Discovery {
-    discover_under(dirs, &OriginRule::Ownership)
-}
-
-/// Every schema under `dirs` (`settings_store_fs::data_dirs`: the system's directories, then `$XDG_DATA_HOME`'s, in the order of trust), the folders judged by `rule`.
+/// The schemas of each folder, in the order of trust, as the folders were scanned one by one: each
+/// scan is the origin its folder was judged to have and the schemas found in it.
 ///
-/// `settings_store_fs` admits a schema only for its own program and location (the first one found for a
-/// program wins, so the user's directory never replaces an installed schema) and reports the rest
-/// on stderr. One it admits that this app cannot use (an unknown version, a `file` that is not
-/// `<app-dir>/<name>.toml`) is skipped and returned as a warning.
-///
-/// A key's `agent` mark is that of the schema admitted here, and is honoured only when its folder
-/// is [`SchemaOrigin::System`]: a schema from a folder the person can write still describes its
-/// program, but none of its keys is agent-settable. `settings_store_fs` does not say which folder a
-/// schema came from, so each folder is scanned on its own and a program already found in an
-/// earlier folder is not taken again.
+/// The first schema found for a program wins, so a later folder never replaces what an earlier
+/// one gave. A key's `agent` mark is that of the schema admitted here, and is honoured only when
+/// its folder is [`SchemaOrigin::System`]: a schema from a folder the person can write still
+/// describes its program, but none of its keys is agent-settable. A schema this app cannot use
+/// (an unknown version, a `file` that is not `<app-dir>/<name>.toml`) is skipped and returned as
+/// a warning.
 #[must_use]
-pub fn discover_under(dirs: &[PathBuf], rule: &OriginRule) -> Discovery {
+pub fn admit_scans(scans: impl IntoIterator<Item = (SchemaOrigin, Vec<Schema>)>) -> Discovery {
     let mut seen: Vec<AppId> = Vec::new();
     let mut found = Discovery::default();
-    for dir in dirs {
-        let origin = rule.judge(dir);
-        for schema in settings_store_fs::discover(std::slice::from_ref(dir)) {
+    for (origin, schemas) in scans {
+        for schema in schemas {
             if !seen.contains(&schema.app) {
                 seen.push(schema.app.clone());
                 found = admit(found, schema, origin);

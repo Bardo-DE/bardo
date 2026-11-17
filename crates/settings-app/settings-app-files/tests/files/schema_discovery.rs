@@ -1,6 +1,7 @@
 //! Finding schemas: the stale ones are skipped, an earlier directory wins, foreign tables merge.
 
-use settings_app_model::{Catalogue, ConfigFile, ProgramSchema, StaleReason, discover};
+use settings_app_files::discover;
+use settings_app_model::{Catalogue, ConfigFile, ProgramSchema, StaleReason};
 use settings_app_testkit::Scratch;
 use settings_types::schema::{AppId, FilePath, ForeignTables, Schema};
 

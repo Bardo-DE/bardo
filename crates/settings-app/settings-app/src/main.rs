@@ -8,12 +8,12 @@ mod service;
 use clap::Parser;
 use cli::Run;
 use settings_app_client::{ClientBuilder, ClientHomes};
-use settings_app_files::{FirstRunMark, KeymapFiles, find_agents_program};
+use settings_app_files::{FirstRunMark, KeymapFiles, discover, find_agents_program};
 use settings_app_intents::{
     ServeFault, SettingsProvider, hand_over_session, search_entries, serve_session,
 };
 use settings_app_link::bus::BusSource;
-use settings_app_model::{Catalogue, PageKind, PageSlug, discover, inbox};
+use settings_app_model::{Catalogue, PageKind, PageSlug, inbox};
 use settings_app_system::services;
 use settings_app_ui::{App, Env, FirstRunApp, Homes, Opening};
 use std::path::{Path, PathBuf};
@@ -111,8 +111,8 @@ fn environment(opening: Opening) -> Result<Env, ExitCode> {
         &path,
     ))
     .build();
-    let env = Env::discover(
-        &dirs::schema_dirs(),
+    let env = Env::from_schemas(
+        discover(&dirs::schema_dirs()),
         Homes {
             config: config_home,
             data: data_home,

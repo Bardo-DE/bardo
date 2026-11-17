@@ -20,6 +20,7 @@ ui-extensions = {path = "../../ui/ui-extensions"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 freedesktop-icons = { workspace = true }
 settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
 ui-settings = { path = "../../ui/ui-settings", default-features = false }
 serde_json = { workspace = true }
@@ -32,6 +33,7 @@ tracing = { workspace = true }
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 settings-app-testkit = {path = "../settings-app-testkit"}
+memory-core = {path = "../../memory/memory-core"}
 
 [lints]
 workspace = true
