@@ -17,6 +17,9 @@ EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service inter
 RULES=(
   "inference-core: $EFFECTS"
   "inference-bridge: $EFFECTS"
+  "inference-fs: $EFFECTS"
+  "inference-settings: $EFFECTS"
+  "inference-agent-proto: $EFFECTS"
   "inference-router: $EFFECTS inference-daemon"
   "inference-turns: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings inference-daemon"
   "inference-tailnet: $EFFECTS"
@@ -84,9 +87,10 @@ else
   echo "pure: inferd reads the environment only in from_env functions"
 fi
 
-# The inference libraries (inference-router, inference-turns) read no environment variable at all: what a
-# daemon or an app knows is passed in. Their test helpers are outside the rule, as above.
-lib_env_reads=$(find inference-router/src inference-turns/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
+# The inference libraries (inference-router, inference-turns, inference-settings, inference-fs,
+# inference-agent-proto) read no environment variable at all: what a daemon or an app knows is
+# passed in. Their test helpers are outside the rule, as above.
+lib_env_reads=$(find inference-router/src inference-turns/src inference-settings/src inference-fs/src inference-agent-proto/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
   | xargs -0 grep -nE 'env::(var|var_os|vars|vars_os|args|args_os|current_dir|home_dir)\b' | grep -vE '^[^:]*:[0-9]+:[[:space:]]*//' || true)
 if [ -n "$lib_env_reads" ]; then
   echo "$lib_env_reads"
@@ -94,6 +98,22 @@ if [ -n "$lib_env_reads" ]; then
   fail=1
 else
   echo "pure: the inference libraries read no environment variable"
+fi
+
+# PURE MEANS NO IO: inference-router, inference-bridge, inference-settings and inference-agent-proto
+# open no file, read no directory and make no socket or process (the checks above are about what
+# they reach through dependencies; this is about what their own source does). What they are given
+# comes from `inference-fs`. Test helpers are outside the rule, as above.
+pure_io=$(find inference-router/src inference-bridge/src inference-settings/src inference-agent-proto/src -name '*.rs' \
+  ! -name tests.rs ! -name '*_tests.rs' ! -name testkit.rs ! -path '*/testkit/*' ! -path '*/tests/*' ! -path '*/step_tests/*' -print0 \
+  | xargs -0 grep -nE 'std::fs::|File::(open|create|from)|std::net::(Tcp|Udp|Unix)|UnixStream|UnixListener|std::process::Command|rustix::(net|process|fs)' \
+  | grep -vE '^[^:]*:[0-9]+:[[:space:]]*//' || true)
+if [ -n "$pure_io" ]; then
+  echo "$pure_io"
+  echo "LEAK: a pure inference library does file, socket or process io; put it in inference-fs"
+  fail=1
+else
+  echo "pure: the router, bridge, settings and agent protocol do no file, socket or process io"
 fi
 
 # DELETED HELPERS: hand-rolled code that a crate or one shared function replaced must not come
@@ -121,14 +141,17 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 # Dev dependencies are outside it. steward depends on porter by git rev; porter never depends on
 # steward.
 EDGES=(
-  "inference-daemon: computer-use-action computer-use-parse computer-use-session computer-use-vendors settings-dbus settings-types engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus base-fs http-core http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
+  "inference-daemon: inference-agent-proto inference-fs inference-settings computer-use-action computer-use-parse computer-use-session computer-use-vendors settings-dbus settings-types engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus base-fs http-core http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
   "inference-client: model-http model-openai-compat model-provider model-wire inference-bridge account-callers account-capability account-core account-dbus base-fs account-ids inference-core account-match inference-tailnet account-tailscale inference-turns account-wire inference-dbus"
   "inference-probe: account-capability http-core account-ids account-provider"
   "inference-bridge: model-catalog model-openai-compat model-provider account-capability account-core account-ids inference-core account-match model-vision-prep"
   "inference-core: computer-use-action model-provider account-capability account-core account-ids account-match"
   "inference-router: computer-use-action engine-probe engine-spec engine-supervisor model-catalog model-http model-openai-compat model-provider account-capability account-core account-ids inference-core account-match inference-tailnet account-tailscale speech-provider model-vision-prep"
   "inference-tailnet: base-fs account-ids account-tailscale"
-  "inference-turns: computer-use-action computer-use-parse computer-use-session computer-use-vendors engine-supervisor model-extract model-http model-openai-compat model-provider inference-bridge account-capability account-core account-ids inference-core account-match inference-router model-vision-prep"
+  "inference-fs: base-secret inference-bridge inference-router model-catalog"
+  "inference-settings: account-capability account-core base-ids base-time inference-core inference-router model-extract model-provider"
+  "inference-agent-proto: account-capability account-core base-ids inference-core"
+  "inference-turns: inference-settings computer-use-action computer-use-parse computer-use-session computer-use-vendors engine-supervisor model-extract model-http model-openai-compat model-provider inference-bridge account-capability account-core account-ids inference-core account-match inference-router model-vision-prep"
   "inference-dbus: account-core account-dbus dbus-kit account-ids account-match account-wire"
   "inference-rig: inference-client account-capability account-core account-ids inference-core account-match account-rig"
 )

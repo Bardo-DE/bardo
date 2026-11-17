@@ -12,13 +12,16 @@ Status: cut from [porter](https://github.com/Bardo-DE/porter) at `e9e7cdcd`; see
 
 | Crate | What it is |
 | --- | --- |
-| `inferd` | the daemon: serves `org.bardo.Inference1` on the session bus, with the router, the engine host, the model turns and the audit trail |
+| `inferd` | the daemon: wiring, the `org.bardo.Inference1` bus service and supervision, over the libraries below |
 | `inference-client` | the app's client of inferd, over D-Bus or hosted in the app |
 | `inference-dbus` | `org.bardo.Inference1` written once: proxies, server traits, introspection, bus vocabulary |
 | `inference-rig` | test tooling, never installed: `inference-rig-client open`, an app opening an inferd session in a jailed scenario |
 | `inference-probe` | the port probe that finds local runtimes (Ollama, llama.cpp, LM Studio) |
 | `inference-core` | typed requests and replies, the routing policy, spend caps, audit entries |
 | `inference-router` | who answers a session, the catalogue, the local model book, the session machine |
+| `inference-fs` | the file io the pure router and bridge are given as values: the catalogue directories, a key file, a stale engine socket, a frame's descriptors |
+| `inference-settings` | the `[ai]` rows as values: what they resolve to, their slugs and paths, the structured-reply limits and the spend book |
+| `inference-agent-proto` | an external coding agent's Anthropic and OpenAI protocols as bytes in and out |
 | `inference-turns` | running model turns: chat, embeddings, computer-use steps, structured replies |
 | `inference-bridge` | the one mapping between the wire types and stoker's provider types |
 | `inference-tailnet` | lending models to the person's other computers over their Tailscale network |
