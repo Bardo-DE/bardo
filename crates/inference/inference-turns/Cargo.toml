@@ -33,7 +33,6 @@ model-openai-compat = {path = "../../models/model-openai-compat"}
 model-provider = {path = "../../models/model-provider"}
 # `pixels`: the frame resize of a computer-use step.
 model-vision-prep = {features = ["pixels"], path = "../../models/model-vision-prep"}
-serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 tracing = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}

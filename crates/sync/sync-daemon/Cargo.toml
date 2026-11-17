@@ -61,7 +61,6 @@ http-relay = {path = "../../accounts/http-relay"}
 sync-pim-feed = {path = "../sync-pim-feed"}
 sync-vdir = {path = "../sync-vdir"}
 base64 = { workspace = true }
-tempfile = { workspace = true }
 sync-fake-graph = {path = "../sync-fake-graph"}
 # The account service hosted in the test process, as the in-process transport of account-client.
 account-client-inproc = {features = ["relays"], path = "../../accounts/account-client-inproc"}
