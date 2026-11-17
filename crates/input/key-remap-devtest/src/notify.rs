@@ -104,10 +104,9 @@ mod tests {
         for text in ["READY=1", "WATCHDOG=1", "WATCHDOG=1"] {
             sender.send_to(text.as_bytes(), &path).unwrap();
         }
-        let deadline = Instant::now() + Duration::from_secs(2);
-        while listener.all().len() < 3 && Instant::now() < deadline {
-            std::thread::sleep(Duration::from_millis(10));
-        }
+        base_testkit::eventually_blocking("all three messages arrive", || {
+            listener.all().len() >= 3
+        });
         let texts: Vec<String> = listener.all().into_iter().map(|n| n.text).collect();
         assert_eq!(texts, ["READY=1", "WATCHDOG=1", "WATCHDOG=1"]);
         assert_eq!(listener.times_of("WATCHDOG=1").len(), 2);

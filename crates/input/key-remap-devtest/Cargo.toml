@@ -14,5 +14,8 @@ key-remap-client = { path = "../key-remap-client" }
 key-remap-evdev = { path = "../key-remap-evdev" }
 rustix = {version = "1", features = ["event", "fs", "net", "pipe", "process", "time"]}
 
+[dev-dependencies]
+base-testkit = { path = "../../base/base-testkit" }
+
 [lints]
 workspace = true
