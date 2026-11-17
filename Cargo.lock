@@ -2309,6 +2309,7 @@ dependencies = [
  "anyview-core",
  "anyview-fs",
  "roxmltree 0.21.1",
+ "rustix 1.1.6",
  "tempfile",
  "thiserror 2.0.21",
  "ui-core",

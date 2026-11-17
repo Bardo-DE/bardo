@@ -20,6 +20,8 @@ ui-core = {path = "../../../ui/ui-core"}
 anyview-fs = {path = "../anyview-fs"}
 tempfile = { workspace = true }
 zip = { workspace = true, features = ["deflate"] }
+# The hostile tests bound CPU time, not the wall clock.
+rustix = { workspace = true, features = ["time"] }
 
 [lints]
 workspace = true

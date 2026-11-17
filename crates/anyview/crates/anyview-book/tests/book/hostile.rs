@@ -7,11 +7,29 @@ use crate::support;
 use anyview_book::{BookError, Epub};
 use anyview_core::SectionIndex;
 use std::fmt::Write as _;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 use support::write_zip;
 
-/// How long a bounded read may take: the quadratic ones took seconds to minutes.
+/// How much CPU time a bounded read may take: the quadratic ones took seconds to minutes.
 const BOUND: Duration = Duration::from_secs(5);
+
+/// The process's CPU time at a point, so a bound is not missed because a busy machine gave the
+/// test less of the wall clock. Each test runs in its own process under the gate.
+#[derive(Clone, Copy)]
+struct Started(Duration);
+
+impl Started {
+    fn now() -> Started {
+        let spent = rustix::time::clock_gettime(rustix::time::ClockId::ProcessCPUTime);
+        let nanos = u32::try_from(spent.tv_nsec).expect("nanoseconds fit in a u32");
+        let secs = u64::try_from(spent.tv_sec).expect("CPU time is not negative");
+        Started(Duration::new(secs, nanos))
+    }
+
+    fn elapsed(self) -> Duration {
+        Started::now().0.saturating_sub(self.0)
+    }
+}
 
 const CONTAINER: &str = r#"<?xml version="1.0"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -60,7 +78,7 @@ fn a_package_of_tens_of_thousands_of_items_is_read_in_linear_time() {
             ("OEBPS/nav.xhtml", nav.as_bytes()),
         ],
     );
-    let started = Instant::now();
+    let started = Started::now();
     let epub = Epub::open(&path).unwrap();
     assert_eq!(epub.sections().get() as usize, ITEMS);
     let contents = epub.contents();
@@ -154,7 +172,7 @@ fn a_stylesheet_linked_hundreds_of_times_is_sealed_once() {
     let dir = tempfile::tempdir().unwrap();
     let links = vec!["s.css"; 400];
     let epub = linking_book(dir.path(), &[("OEBPS/s.css", sheet.clone())], &links);
-    let started = Instant::now();
+    let started = Started::now();
     let chapter = epub.chapter(SectionIndex(0)).unwrap();
     assert!(started.elapsed() < BOUND, "took {:?}", started.elapsed());
     // Once: the sheet and the newline that ends it, not four hundred times that.
