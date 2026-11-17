@@ -16,7 +16,7 @@ const CHAT: &str = "local/tiny-chat";
 
 fn settings_world(script: Script) -> Plan {
     Plan {
-        role: Role::Settings,
+        role: CallerRole::Settings,
         ..chat_world(script)
     }
 }
@@ -127,7 +127,7 @@ async fn only_settings_may_start_stop_or_list() {
 async fn a_model_inferd_does_not_run_is_refused_in_plain_words() {
     let scratch = base_testkit::Scratch::new("run-attached");
     let world = World::start(Plan {
-        role: Role::Settings,
+        role: CallerRole::Settings,
         catalog: vec![("attached.toml", entries::attached())],
         attached: vec![Attached {
             id: ModelId::parse(entries::ATTACHED).expect("id"),
@@ -158,7 +158,7 @@ async fn a_model_inferd_does_not_run_is_refused_in_plain_words() {
 async fn a_model_that_does_not_fit_fails_to_start_with_the_numbers_in_plain_words() {
     let big = entries::chat().replace("weights_mib = 100", "weights_mib = 20000");
     let world = World::start(Plan {
-        role: Role::Settings,
+        role: CallerRole::Settings,
         catalog: vec![("tiny-chat.toml", big)],
         ..Plan::default()
     })

@@ -46,7 +46,7 @@ fn begin() -> CuaBegin {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
-    let world = World::start(cua_world(Role::Cua)).await;
+    let world = World::start(cua_world(CallerRole::Cua)).await;
     let mut session = world
         .accounts
         .session(&cua_need(), DataClass::Screen, Tier::Best)
@@ -118,7 +118,7 @@ async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_cuad_may_open_a_computer_use_session() {
-    let world = World::start(cua_world(Role::App)).await;
+    let world = World::start(cua_world(CallerRole::App)).await;
     let mut session = world
         .accounts
         .session(&cua_need(), DataClass::Screen, Tier::Best)
@@ -136,7 +136,7 @@ async fn only_cuad_may_open_a_computer_use_session() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_step_before_a_begin_and_a_wrong_class_are_refused() {
-    let world = World::start(cua_world(Role::Cua)).await;
+    let world = World::start(cua_world(CallerRole::Cua)).await;
     let mut early = world
         .accounts
         .session(&cua_need(), DataClass::Screen, Tier::Best)
@@ -184,7 +184,7 @@ fn click_at_middle() -> Chat {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_reply_with_no_call_is_repaired_and_the_next_step_sees_the_earlier_frame() {
-    let mut plan = cua_world(Role::Cua);
+    let mut plan = cua_world(CallerRole::Cua);
     plan.scripts = vec![(
         "tiny-cua",
         Script {

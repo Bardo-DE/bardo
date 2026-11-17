@@ -71,7 +71,7 @@ pub use daemon::{Config, Daemon, StartError, StopError};
 pub use engines::{CLOUD_ACCOUNT, Engines};
 pub use hosts::{HealthProbe, ProcessHost};
 pub use installed::Installed;
-pub use peers::{Caller, CallerTable, Role, TablePeers};
+pub use peers::{CallerTable, TablePeers};
 pub use probe::{Found, ProbeConfig, Probed, Runtime};
 pub use probed::Standing;
 pub use replay::Replays;

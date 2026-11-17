@@ -8,8 +8,9 @@
 use super::open::OpenRequest;
 use super::refusal::{Cause, Refusal};
 use super::session::Agents;
-use crate::peers::{Peers, Role};
+use crate::peers::Peers;
 use account_dbus::Details;
+use caller_role_types::CallerRole;
 use dbus_kit::Call;
 use inference_dbus::inference::{AgentsServer, EndpointArg, RouteArg};
 use std::sync::Arc;
@@ -36,7 +37,7 @@ impl<P> AgentsService<P> {
         };
         let sender = header.sender().ok_or_else(denied)?.to_string();
         match self.peers.caller_of(&sender).await {
-            Some(caller) if caller.role == Role::AgentLauncher => Ok(sender),
+            Some(caller) if caller.role == CallerRole::AgentLauncher => Ok(sender),
             _ => Err(denied()),
         }
     }

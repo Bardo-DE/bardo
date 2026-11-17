@@ -3,9 +3,11 @@
 
 use crate::hosting::bus::{PrivateBus, within};
 
+use account_callers::Caller;
 use account_core::{AppId, AppName, Isolation};
 use base_time::FixedClock;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use engine_manifest::{Arch, Artifact, Backend, Delivery, Manifest, Row};
 use engine_probe::{Record, Roots, Scope, seal_of};
 use inference_core::{Policy, TierMap};
@@ -13,7 +15,7 @@ use inference_daemon::Engines;
 use inference_daemon::Installed;
 use inference_daemon::LocalEngines;
 use inference_daemon::Supervised;
-use inference_daemon::{Caller, Role, TablePeers};
+use inference_daemon::TablePeers;
 use inference_daemon::{ConfigFile, Reload};
 use inference_daemon::{Dirs, InferdConfig, ProgramSearch};
 use inference_daemon::{Inference, serve_on};
@@ -26,7 +28,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-fn who(role: Role) -> Caller {
+fn who(role: CallerRole) -> Caller {
     Caller {
         app: AppId {
             name: AppName::parse("org.bardo.Client").expect("app name"),
@@ -48,7 +50,11 @@ fn dirs(home: &Path) -> Dirs {
 
 /// What `LocalEngines` answers to a caller that is `role`, over `file` as `inferd.toml` and the
 /// fixed paths `fixed`.
-async fn asked(role: Role, file: &str, fixed: Vec<PathBuf>) -> zbus::Result<Vec<LocalEngine>> {
+async fn asked(
+    role: CallerRole,
+    file: &str,
+    fixed: Vec<PathBuf>,
+) -> zbus::Result<Vec<LocalEngine>> {
     let bus = PrivateBus::start();
     let config = InferdConfig::from_toml(file).expect("config");
     let programs = ProgramSearch::in_paths(fixed, std::path::Path::exists);
@@ -93,7 +99,9 @@ async fn a_program_named_in_the_file_is_found_with_its_path() {
     let server = scratch.path().join("llama-server");
     std::fs::write(&server, b"").expect("program");
     let file = format!("[engines]\nllama_server = {:?}\n", server.to_string_lossy());
-    let engines = asked(Role::Settings, &file, Vec::new()).await.expect("ask");
+    let engines = asked(CallerRole::Settings, &file, Vec::new())
+        .await
+        .expect("ask");
     assert_eq!(engines.len(), 5);
     assert_eq!(llama(&engines).state, EngineState::Found(server));
     assert!(llama(&engines).slots.contains(&"text".to_owned()));
@@ -111,7 +119,7 @@ async fn a_program_at_a_fixed_path_is_found_when_the_file_names_none() {
     let server = scratch.path().join("llama-server");
     std::fs::write(&server, b"").expect("program");
     let engines = asked(
-        Role::Shell,
+        CallerRole::SheetHost,
         "",
         vec![scratch.path().join("gone"), server.clone()],
     )
@@ -124,18 +132,20 @@ async fn a_program_at_a_fixed_path_is_found_when_the_file_names_none() {
 async fn no_path_or_a_path_that_is_not_there_is_missing() {
     let scratch = base_testkit::Scratch::new("le-missing");
     let gone = scratch.path().join("gone");
-    let none = asked(Role::Settings, "", vec![gone.clone()])
+    let none = asked(CallerRole::Settings, "", vec![gone.clone()])
         .await
         .expect("ask");
     assert_eq!(llama(&none).state, EngineState::Missing);
     let file = format!("[engines]\nllama_server = {:?}\n", gone.to_string_lossy());
-    let named = asked(Role::Settings, &file, Vec::new()).await.expect("ask");
+    let named = asked(CallerRole::Settings, &file, Vec::new())
+        .await
+        .expect("ask");
     assert_eq!(llama(&named).state, EngineState::Missing);
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_may_not_ask() {
-    let refused = asked(Role::App, "", Vec::new()).await;
+    let refused = asked(CallerRole::App, "", Vec::new()).await;
     assert!(
         matches!(refused, Err(zbus::Error::MethodError(..))),
         "{refused:?}"
@@ -231,10 +241,13 @@ async fn an_install_of_ours_says_its_release_and_place_and_a_changed_one_says_so
     let settings = bus.connect().await;
     peers.introduce(
         settings.unique_name().expect("name").as_str(),
-        who(Role::Settings),
+        who(CallerRole::Settings),
     );
     let app = bus.connect().await;
-    peers.introduce(app.unique_name().expect("name").as_str(), who(Role::App));
+    peers.introduce(
+        app.unique_name().expect("name").as_str(),
+        who(CallerRole::App),
+    );
     let proxy = InferenceProxy::new(&settings).await.expect("proxy");
     let row_of = |id: &'static str| {
         let proxy = proxy.clone();

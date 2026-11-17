@@ -12,6 +12,7 @@ use account_core::consent::Usage;
 use account_match::Need;
 use account_match::{CuaNeed, DimsNeed, EmbedNeed, LlmNeed};
 use base_ids::{Dims, Tokens};
+use caller_role_types::CallerRole;
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::rig::{Plan, World, test_app};
@@ -20,7 +21,6 @@ use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, EmbedRequest, EmbedRole, InferEvent, InferReply,
     InferRequest, MessagePart, Readiness, ReplyShape, Role as ChatRole, StopReason,
 };
-use inference_daemon::Role;
 use serde_json::Value;
 
 fn llm() -> Need {
@@ -387,7 +387,7 @@ async fn a_prompt_class_request_to_a_cloud_only_route_is_refused_by_the_floor() 
     assert!(world.host.spawned.lock().expect("lock").is_empty());
 }
 
-fn cua_world(role: Role) -> Plan {
+fn cua_world(role: CallerRole) -> Plan {
     Plan {
         catalog: vec![("tiny-cua.toml", entries::cua())],
         scripts: vec![(

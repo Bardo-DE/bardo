@@ -12,33 +12,13 @@
 //! names for it, or any identified app scope.
 
 use account_callers::ProcRoot;
-use account_callers::{CallerRow, Install, ProcCallers, installed};
-use account_core::{AppId, AppName};
+use account_callers::{Caller, CallerRow, Install, ProcCallers, installed};
+use account_core::AppName;
 use account_dbus::BusConnection;
 use caller_role_types::CallerRole;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{Mutex, PoisonError};
-
-/// What a caller may ask for, beyond what its data class and consent allow.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Role {
-    /// An app or a daemon that asks for language, embedding and speech models.
-    App,
-    /// cuad: the one caller that may open a computer-use session.
-    Cua,
-    /// detent, the Settings app: the one caller of `org.bardo.SettingsModule1`.
-    Settings,
-    /// The agent launcher (bardo-agent-acp): the one caller of `org.bardo.Inference1.Agents`, and of
-    /// nothing else here.
-    AgentLauncher,
-    /// An app that may choose where the assistant runs (`places` in the options of `Open`,
-    /// `Prepare` and `Availability`): docket's companion, reader and intents daemons. It asks
-    /// for models as an `App` does.
-    Placer,
-    /// The shell: it may list the places (`Inference1.Places`) and ask for nothing else.
-    Shell,
-}
 
 /// The app docket's companion daemon is: with Settings and the shell, the callers of `Places`.
 const COMPANION_APP: &str = "org.bardo.Companion";
@@ -60,54 +40,50 @@ pub enum TableError {
     PlacesNotAnApp(String),
 }
 
-/// Who a connection is.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Caller {
-    /// The identity grants and audit entries bind to.
-    pub app: AppId,
-    /// What it may ask for.
-    pub role: Role,
-}
-
-impl Caller {
+/// What a caller may ask inferd for, over the shared roles ([`CallerRole`]): every role not named
+/// here asks for models as a plain app does.
+pub trait CallerMay {
     /// Whether it may list the places: Settings, the shell, the companion, and cuad, which reads
     /// what the ready models take in to say plainly when none of them can see the screen.
-    #[must_use]
-    pub fn may_list_places(&self) -> bool {
+    fn may_list_places(&self) -> bool;
+    /// Whether it may list the local engine kinds: Settings, the shell and the companion.
+    fn may_list_engines(&self) -> bool;
+    /// Whether it may choose where the assistant runs.
+    fn may_choose_places(&self) -> bool;
+    /// Whether it may set the models Automatic chooses among for a helper: Settings and the
+    /// shell, where the Helpers window lives. No other inferd setting is the shell's.
+    fn may_write_helper_pools(&self) -> bool;
+    /// Whether it may list the computers that ask to use this one and answer one that is
+    /// asking: Settings and the shell.
+    fn may_answer_guests(&self) -> bool;
+}
+
+impl CallerMay for Caller {
+    fn may_list_places(&self) -> bool {
         match self.role {
-            Role::Cua => true,
+            CallerRole::Cua => true,
             _ => self.may_list_engines(),
         }
     }
 
-    /// Whether it may list the local engine kinds: Settings, the shell and the companion.
-    #[must_use]
-    pub fn may_list_engines(&self) -> bool {
+    fn may_list_engines(&self) -> bool {
         match self.role {
-            Role::Settings | Role::Shell => true,
-            Role::Placer => self.app.name.as_str() == COMPANION_APP,
-            Role::App | Role::Cua | Role::AgentLauncher => false,
+            CallerRole::Settings | CallerRole::SheetHost => true,
+            CallerRole::Agent => self.app.name.as_str() == COMPANION_APP,
+            _ => false,
         }
     }
 
-    /// Whether it may choose where the assistant runs.
-    #[must_use]
-    pub fn may_choose_places(&self) -> bool {
-        self.role == Role::Placer
+    fn may_choose_places(&self) -> bool {
+        self.role == CallerRole::Agent
     }
 
-    /// Whether it may set the models Automatic chooses among for a helper: Settings and the
-    /// shell, where the Helpers window lives. No other inferd setting is the shell's.
-    #[must_use]
-    pub fn may_write_helper_pools(&self) -> bool {
-        matches!(self.role, Role::Settings | Role::Shell)
+    fn may_write_helper_pools(&self) -> bool {
+        matches!(self.role, CallerRole::Settings | CallerRole::SheetHost)
     }
 
-    /// Whether it may list the computers that ask to use this one and answer one that is
-    /// asking: Settings and the shell.
-    #[must_use]
-    pub fn may_answer_guests(&self) -> bool {
-        matches!(self.role, Role::Settings | Role::Shell)
+    fn may_answer_guests(&self) -> bool {
+        matches!(self.role, CallerRole::Settings | CallerRole::SheetHost)
     }
 }
 
@@ -293,7 +269,7 @@ impl CallerTable {
                 name: None,
             })
         });
-        // An app whose unit is under `places` is a `Placer`, carried by the shared role `Agent`
+        // An app whose unit is under `places` is one that may choose places, and carries the shared role `Agent`
         // (companiond, readerd and intentd are the ones accountd calls so).
         let apps = self.apps.iter().flat_map(|(app, units)| {
             units.iter().map(move |unit| CallerRow {
@@ -320,7 +296,7 @@ impl CallerTable {
 
     /// The caller that is the unit `unit`, through [`CallerTable::rows`].
     pub fn resolve(&self, unit: &str) -> Option<Caller> {
-        self.rows().resolve_unit(unit).map(Caller::from_shared)
+        self.rows().resolve_unit(unit)
     }
 }
 
@@ -340,24 +316,6 @@ const SHELL_APP: &str = "org.bardo.Shell";
 /// say their units start one of these before they keep a fixed role.
 const SETTINGS_PROGRAM: &str = "bardo-settings";
 const SHELL_PROGRAM: &str = "bardo-shell";
-
-impl Caller {
-    /// A shared caller as inferd knows roles: `Cua` and `Settings`, and `App` for every other.
-    #[must_use]
-    pub fn from_shared(caller: account_callers::Caller) -> Self {
-        Self {
-            app: caller.app,
-            role: match caller.role {
-                CallerRole::Cua => Role::Cua,
-                CallerRole::Settings => Role::Settings,
-                CallerRole::AgentLauncher => Role::AgentLauncher,
-                CallerRole::Agent => Role::Placer,
-                CallerRole::SheetHost => Role::Shell,
-                _ => Role::App,
-            },
-        }
-    }
-}
 
 /// Who a bus connection is.
 pub trait Peers: Send + Sync + 'static {
@@ -399,9 +357,7 @@ pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");
 
 impl Peers for ProcPeers {
     async fn caller_of(&self, sender: &str) -> Option<Caller> {
-        account_callers::Callers::caller_of(&self.callers, sender)
-            .await
-            .map(Caller::from_shared)
+        account_callers::Callers::caller_of(&self.callers, sender).await
     }
 }
 

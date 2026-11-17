@@ -15,7 +15,7 @@ agent_launcher = ["bardo-agent-acp.service"]
     .expect("table")
 }
 
-fn named(caller: &Caller) -> (&str, Role, Isolation) {
+fn named(caller: &Caller) -> (&str, CallerRole, Isolation) {
     (caller.app.name.as_str(), caller.role, caller.app.isolation)
 }
 
@@ -25,7 +25,7 @@ fn a_unit_is_the_caller_the_table_names_for_it() {
     let memory = table.resolve("bardo-memoryd.service").expect("memoryd");
     assert_eq!(
         named(&memory),
-        ("org.bardo.Memory", Role::App, Isolation::Unsandboxed)
+        ("org.bardo.Memory", CallerRole::App, Isolation::Unsandboxed)
     );
     for exe in ["mailo.service", "mailo-dev.service"] {
         let mail = table.resolve(exe).expect("mailo");
@@ -38,7 +38,11 @@ fn cuad_is_the_one_computer_use_caller_and_an_app_entry_cannot_claim_its_unit() 
     let cuad = table().resolve("bardo-computer-use.service").expect("cuad");
     assert_eq!(
         named(&cuad),
-        ("org.bardo.ComputerUse", Role::Cua, Isolation::Unsandboxed)
+        (
+            "org.bardo.ComputerUse",
+            CallerRole::Cua,
+            Isolation::Unsandboxed
+        )
     );
 }
 
@@ -51,7 +55,7 @@ fn the_agent_launcher_is_the_unit_the_table_names_and_an_app_entry_cannot_claim_
         named(&launcher),
         (
             "org.bardo.AgentLauncher",
-            Role::AgentLauncher,
+            CallerRole::AgentLauncher,
             Isolation::Unsandboxed
         )
     );
@@ -60,7 +64,7 @@ fn the_agent_launcher_is_the_unit_the_table_names_and_an_app_entry_cannot_claim_
             .with_agent_launcher(["x.service".to_owned()].into())
             .resolve("x.service")
             .map(|c| c.role),
-        Some(Role::AgentLauncher)
+        Some(CallerRole::AgentLauncher)
     );
 }
 
@@ -110,10 +114,10 @@ places = ["bardo-companiond.service", "bardo-readerd.service"]
 fn the_places_rows_make_placers_the_shell_row_makes_the_shell_and_the_rest_stay_apps() {
     let table = placed_table();
     let role = |unit: &str| table.resolve(unit).map(|c| c.role);
-    assert_eq!(role("bardo-companiond.service"), Some(Role::Placer));
-    assert_eq!(role("bardo-readerd.service"), Some(Role::Placer));
-    assert_eq!(role("bardo-memoryd.service"), Some(Role::App));
-    assert_eq!(role("bardo-shell.service"), Some(Role::Shell));
+    assert_eq!(role("bardo-companiond.service"), Some(CallerRole::Agent));
+    assert_eq!(role("bardo-readerd.service"), Some(CallerRole::Agent));
+    assert_eq!(role("bardo-memoryd.service"), Some(CallerRole::App));
+    assert_eq!(role("bardo-shell.service"), Some(CallerRole::SheetHost));
     assert_eq!(role("bardo-actiond.service"), None);
 }
 
@@ -224,7 +228,11 @@ fn settings_is_a_unit_and_an_app_name_stands_for_its_service() {
             .expect("the unit");
         assert_eq!(
             named(&caller),
-            ("org.bardo.Settings", Role::Settings, Isolation::Unsandboxed),
+            (
+                "org.bardo.Settings",
+                CallerRole::Settings,
+                Isolation::Unsandboxed
+            ),
             "{entry}"
         );
     }

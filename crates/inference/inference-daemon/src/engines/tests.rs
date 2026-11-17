@@ -194,7 +194,7 @@ async fn an_empty_engines_routes_nothing_and_is_idle() {
     let engines = nothing_here();
     assert_eq!(
         engines
-            .route(&spec(llm(), DataClass::Notes), Role::App)
+            .route(&spec(llm(), DataClass::Notes), CallerRole::App)
             .err(),
         Some(InferRefusal::Unavailable)
     );
@@ -212,7 +212,7 @@ async fn a_route_pins_the_model_and_the_engine_is_asked_for_through_the_host_sea
     let host = Recorder::default();
     let engines = start(&scratch, host.clone());
     let (decision, pinned) = engines
-        .route(&spec(llm(), DataClass::Notes), Role::App)
+        .route(&spec(llm(), DataClass::Notes), CallerRole::App)
         .expect("route");
     assert_eq!(decision.served.model.as_str(), "tiny-chat");
     assert_eq!(decision.served.locality, Locality::OnDevice);
@@ -230,7 +230,7 @@ async fn a_route_pins_the_model_and_the_engine_is_asked_for_through_the_host_sea
     assert_eq!(host.spawned.lock().expect("lock").len(), 1);
     assert_eq!(
         engines
-            .route(&spec(llm(), DataClass::Notes), Role::App)
+            .route(&spec(llm(), DataClass::Notes), CallerRole::App)
             .expect("route")
             .0
             .readiness,
@@ -240,7 +240,7 @@ async fn a_route_pins_the_model_and_the_engine_is_asked_for_through_the_host_sea
     engines.release(&model);
     assert_eq!(
         engines
-            .route(&spec(llm(), DataClass::Notes), Role::App)
+            .route(&spec(llm(), DataClass::Notes), CallerRole::App)
             .expect("route")
             .0
             .readiness,
@@ -260,7 +260,7 @@ async fn the_session_router_writes_the_pin_the_runner_reads() {
     let scratch = Scratch::new("eng-pin");
     let engines = start(&scratch, Recorder::default());
     let pin = Pin::new();
-    let router = engines.router(pin.clone(), Role::App);
+    let router = engines.router(pin.clone(), CallerRole::App);
     let decision = router
         .route(&spec(llm(), DataClass::Notes))
         .await
@@ -272,7 +272,7 @@ async fn the_session_router_writes_the_pin_the_runner_reads() {
     );
     // A refusal leaves the cell empty.
     let empty = Pin::new();
-    let none = nothing_here().router(empty.clone(), Role::App);
+    let none = nothing_here().router(empty.clone(), CallerRole::App);
     assert_eq!(
         none.route(&spec(llm(), DataClass::Notes)).await.err(),
         Some(InferRefusal::Unavailable)
@@ -307,7 +307,7 @@ async fn prepare_warms_a_stopped_engine_and_a_later_prepare_says_ready() {
         "an app may not warm a computer-use model"
     );
     assert_eq!(
-        engines.prepare_as(&cua(), DataClass::Screen, Tier::Fast, Role::Cua),
+        engines.prepare_as(&cua(), DataClass::Screen, Tier::Fast, CallerRole::Cua),
         Ok(Readiness::Loading)
     );
 }
@@ -318,12 +318,12 @@ async fn only_cuad_is_routed_a_computer_use_need() {
     let engines = start(&scratch, Recorder::default());
     assert_eq!(
         engines
-            .route(&spec(cua(), DataClass::Screen), Role::App)
+            .route(&spec(cua(), DataClass::Screen), CallerRole::App)
             .err(),
         Some(InferRefusal::Denied)
     );
     let (decision, _) = engines
-        .route(&spec(cua(), DataClass::Screen), Role::Cua)
+        .route(&spec(cua(), DataClass::Screen), CallerRole::Cua)
         .expect("route");
     assert_eq!(decision.served.model.as_str(), "tiny-cua");
 }
@@ -338,35 +338,35 @@ async fn what_an_app_is_told_without_a_session_reveals_no_identity() {
             "a model here",
             llm(),
             DataClass::Notes,
-            Role::App,
+            CallerRole::App,
             Availability::Granted,
         ),
         (
             "computer use for an app",
             cua(),
             DataClass::Screen,
-            Role::App,
+            CallerRole::App,
             Availability::Denied,
         ),
         (
             "computer use for cuad",
             cua(),
             DataClass::Screen,
-            Role::Cua,
+            CallerRole::Cua,
             Availability::Granted,
         ),
         (
             "computer use on mail",
             cua(),
             DataClass::Mail,
-            Role::Cua,
+            CallerRole::Cua,
             Availability::Unsupported,
         ),
         (
             "speech has no runner",
             speech,
             DataClass::Voice,
-            Role::App,
+            CallerRole::App,
             Availability::NeedsAccount,
         ),
     ];
@@ -391,11 +391,11 @@ async fn what_an_app_is_told_without_a_session_reveals_no_identity() {
     )
     .with_remote(vec![cloud()]);
     assert_eq!(
-        remote.availability(&llm(), DataClass::Prompt, Role::App),
+        remote.availability(&llm(), DataClass::Prompt, CallerRole::App),
         Availability::NeedsAccount
     );
     assert_eq!(
-        remote.availability(&llm(), DataClass::Public, Role::App),
+        remote.availability(&llm(), DataClass::Public, CallerRole::App),
         Availability::AvailableNeedsConsent
     );
     assert_eq!(remote.listed().len(), 1);
@@ -406,7 +406,7 @@ async fn a_route_says_why_and_the_snapshot_keeps_the_gpu_the_swap_cost_reads() {
     let scratch = Scratch::new("eng-why");
     let engines = start(&scratch, Recorder::default());
     let (decision, _) = engines
-        .route_detailed(&spec(llm(), DataClass::Notes), Role::App)
+        .route_detailed(&spec(llm(), DataClass::Notes), CallerRole::App)
         .expect("route");
     assert_eq!(decision.why, inference_core::Why::CatalogueOrder);
     assert!(decision.show);

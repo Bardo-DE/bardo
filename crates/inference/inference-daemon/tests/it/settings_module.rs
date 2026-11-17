@@ -4,6 +4,7 @@
 
 use crate::hosting;
 
+use account_callers::Caller;
 use account_capability::ModelId;
 use account_capability::{Billing, Locality};
 use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
@@ -12,11 +13,12 @@ use account_core::{AppId, AppName, Isolation};
 use base_ids::Tokens;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use hosting::bus::{PrivateBus, within};
 use inference_core::{Pick, Policy, Slot, TierMap};
 use inference_daemon::Engines;
 use inference_daemon::Supervised;
-use inference_daemon::{Caller, Role, TablePeers};
+use inference_daemon::TablePeers;
 use inference_daemon::{ConfigFile, InferdSettings, Reload};
 use inference_daemon::{Inference, serve_with_settings};
 use inference_dbus::inference::InferenceProxy;
@@ -39,7 +41,7 @@ struct Rig {
     peers: Arc<TablePeers>,
 }
 
-fn who(name: &str, role: Role) -> Caller {
+fn who(name: &str, role: CallerRole) -> Caller {
     Caller {
         app: AppId {
             name: AppName::parse(name).expect("app name"),
@@ -94,7 +96,7 @@ impl Rig {
     }
 
     /// A client connection that the daemon knows as `role`.
-    async fn client(&self, role: Role) -> Connection {
+    async fn client(&self, role: CallerRole) -> Connection {
         let connection = self.bus.connect().await;
         self.peers.introduce(
             connection.unique_name().expect("name").as_str(),
@@ -158,7 +160,7 @@ async fn the_settings_module_answers_a_call_made_as_soon_as_the_name_is_owned() 
     let client = bus.connect().await;
     peers.introduce(
         client.unique_name().expect("name").as_str(),
-        who("org.bardo.Settings", Role::Settings),
+        who("org.bardo.Settings", CallerRole::Settings),
     );
     let mut owned = zbus::fdo::DBusProxy::new(&client)
         .await
@@ -203,7 +205,7 @@ async fn the_settings_path_is_under_inference1_and_named_in_porter_dbus() {
 #[tokio::test(flavor = "multi_thread")]
 async fn describe_lists_the_picker_rows_of_the_slots_inferd_has_models_for() {
     let rig = Box::pin(Rig::start()).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     let schema: LiveSchema = settings.describe().await.expect("schema");
     schema.check().expect("a clean schema");
     let paths: Vec<&str> = schema.key.iter().map(|k| k.path.0.as_str()).collect();
@@ -272,7 +274,7 @@ async fn a_model_on_this_computer_is_grouped_and_the_default_and_automatic_are_n
     here.model = ModelId::parse("tiny").expect("id");
     here.locality = Locality::OnDevice;
     let rig = Box::pin(Rig::start_with(vec![sonnet(), here])).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     let schema: LiveSchema = settings.describe().await.expect("schema");
     schema.check().expect("a clean schema");
     let pickers = schema
@@ -320,7 +322,7 @@ async fn a_model_on_the_persons_network_with_no_computer_of_its_own_is_listed_wi
     there.model = ModelId::parse("tiny").expect("id");
     there.locality = Locality::LocalNetwork;
     let rig = Box::pin(Rig::start_with(vec![sonnet(), there])).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     let schema: LiveSchema = settings.describe().await.expect("schema");
     schema.check().expect("a clean schema");
     // The text row and the list Automatic chooses from say the same.
@@ -372,7 +374,7 @@ async fn a_model_of_a_probed_runtime_is_listed_under_this_computer_and_stays_lis
         Standing::Online,
         Some(found.local_models(std::path::Path::new("/nonexistent"))),
     );
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     for standing in [Standing::Online, Standing::Offline] {
         rig.engines.probed().set(Runtime::Ollama, standing, None);
         let schema: LiveSchema = settings.describe().await.expect("schema");
@@ -393,7 +395,7 @@ async fn a_model_of_a_probed_runtime_is_listed_under_this_computer_and_stays_lis
 #[tokio::test(flavor = "multi_thread")]
 async fn a_set_by_the_settings_role_is_validated_written_and_in_force_for_the_next_route() {
     let rig = Box::pin(Rig::start()).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     let slot = key("ai.model.text.balanced");
     let in_force = || {
         rig.engines
@@ -433,7 +435,7 @@ async fn a_set_by_the_settings_role_is_validated_written_and_in_force_for_the_ne
 #[tokio::test(flavor = "multi_thread")]
 async fn automatics_pool_is_a_list_of_the_slots_choices_written_and_in_force() {
     let rig = Box::pin(Rig::start()).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     let pool = key("ai.auto.pool.text");
     let list = |items: &[&str]| toml::Value::Array(items.iter().map(|one| text(one)).collect());
     assert_eq!(settings.get(&pool).await.expect("get"), list(&[]));
@@ -476,7 +478,7 @@ async fn automatics_pool_is_a_list_of_the_slots_choices_written_and_in_force() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_set_that_names_no_model_inferd_knows_is_a_bad_value_and_changes_nothing() {
     let rig = Box::pin(Rig::start()).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     let slot = key("ai.model.text.fast");
     for bad in [
         text("local/ghost"),
@@ -511,7 +513,7 @@ async fn a_set_that_names_no_model_inferd_knows_is_a_bad_value_and_changes_nothi
 #[tokio::test(flavor = "multi_thread")]
 async fn a_coding_agent_is_a_choice_of_the_text_slot_alone_listed_in_its_own_group() {
     let rig = Box::pin(Rig::start()).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     let slot = key("ai.model.text.balanced");
     settings
         .set(&slot, &text("agent/claude-code"))
@@ -552,8 +554,8 @@ async fn nobody_but_the_settings_role_may_describe_get_or_set() {
     let slot = key("ai.model.text.fast");
     let stranger = rig.bus.connect().await;
     for connection in [
-        rig.client(Role::App).await,
-        rig.client(Role::Cua).await,
+        rig.client(CallerRole::App).await,
+        rig.client(CallerRole::Cua).await,
         stranger,
     ] {
         let client = Rig::live(&connection);
@@ -577,7 +579,7 @@ async fn nobody_but_the_settings_role_may_describe_get_or_set() {
 #[tokio::test(flavor = "multi_thread")]
 async fn rescan_reads_the_file_again_and_a_file_that_does_not_read_is_its_error() {
     let rig = Box::pin(Rig::start()).await;
-    let connection = rig.client(Role::App).await;
+    let connection = rig.client(CallerRole::App).await;
     let inference = InferenceProxy::new(&connection).await.expect("proxy");
     std::fs::write(&rig.file, "[ai.auto]\nallow_evict = \"never\"\n").expect("write");
     assert_eq!(
@@ -618,7 +620,7 @@ async fn a_slot_with_no_model_here_carries_no_note_about_missing_programs() {
     let client = bus.connect().await;
     peers.introduce(
         client.unique_name().expect("name").as_str(),
-        who("org.bardo.Settings", Role::Settings),
+        who("org.bardo.Settings", CallerRole::Settings),
     );
     let settings =
         LiveClient::new(&client, INFERENCE_BUS, INFERENCE_SETTINGS_PATH, AnyOwner).expect("client");
@@ -639,7 +641,7 @@ fn helper(id: &str) -> inference_core::Chooser {
 #[tokio::test(flavor = "multi_thread")]
 async fn the_shell_may_set_a_helpers_pool_and_it_is_written_and_in_force() {
     let rig = Box::pin(Rig::start()).await;
-    let shell = rig.client(Role::Shell).await;
+    let shell = rig.client(CallerRole::SheetHost).await;
     let proxy = InferenceProxy::new(&shell).await.expect("proxy");
     proxy
         .set_helper_pool(
@@ -656,7 +658,7 @@ async fn the_shell_may_set_a_helpers_pool_and_it_is_written_and_in_force() {
     let written = std::fs::read_to_string(&rig.file).expect("the file");
     assert!(written.contains("\"text.helper.h.1\""), "{written}");
     // Settings reads it back through the settings module by the same key.
-    let settings = Rig::live(&rig.client(Role::Settings).await);
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
     assert_eq!(
         settings
             .get(&key("ai.auto.pool.text.helper.h.1"))
@@ -678,7 +680,7 @@ async fn the_shell_may_set_a_helpers_pool_and_it_is_written_and_in_force() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_helpers_pool_names_only_models_inferd_knows_and_the_settings_role_may_set_it_too() {
     let rig = Box::pin(Rig::start()).await;
-    let settings = rig.client(Role::Settings).await;
+    let settings = rig.client(CallerRole::Settings).await;
     let proxy = InferenceProxy::new(&settings).await.expect("proxy");
     for (slot, helper, models) in [
         ("text", "h.1", vec!["local/ghost"]),
@@ -712,7 +714,7 @@ async fn a_helpers_pool_names_only_models_inferd_knows_and_the_settings_role_may
 #[tokio::test(flavor = "multi_thread")]
 async fn the_shell_may_write_no_other_setting_and_an_app_no_helper_pool() {
     let rig = Box::pin(Rig::start()).await;
-    let shell = Rig::live(&rig.client(Role::Shell).await);
+    let shell = Rig::live(&rig.client(CallerRole::SheetHost).await);
     for path in [
         "ai.auto.pool.text",
         "ai.auto.pool.text.helper.h.1",
@@ -724,7 +726,7 @@ async fn the_shell_may_write_no_other_setting_and_an_app_no_helper_pool() {
             "{path}: {got:?}"
         );
     }
-    let app = rig.client(Role::App).await;
+    let app = rig.client(CallerRole::App).await;
     let got = InferenceProxy::new(&app)
         .await
         .expect("proxy")
@@ -742,8 +744,8 @@ async fn the_shell_may_write_no_other_setting_and_an_app_no_helper_pool() {
 async fn an_engine_program_is_written_read_back_announced_and_cleared_and_a_bad_path_is_refused() {
     use std::os::unix::fs::PermissionsExt;
     let rig = Box::pin(Rig::start()).await;
-    let settings = Rig::live(&rig.client(Role::Settings).await);
-    let listener = rig.client(Role::App).await;
+    let settings = Rig::live(&rig.client(CallerRole::Settings).await);
+    let listener = rig.client(CallerRole::App).await;
     let inference = InferenceProxy::new(&listener).await.expect("proxy");
     let mut heard = inference
         .receive_engines_changed()

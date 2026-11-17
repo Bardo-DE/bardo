@@ -4,6 +4,7 @@
 
 use crate::hosting;
 
+use account_callers::Caller;
 use account_capability::ModelId;
 use account_capability::Tier;
 use account_core::{AppId, AppName, DataClass, Isolation};
@@ -15,7 +16,7 @@ use hosting::rig::{Hosted, Plan, Trust, World};
 use inference_client::{ClientError, TransportError};
 use inference_core::{ComputerName, PlaceKind, PlaceRow, PlaceState, Takes};
 use inference_daemon::{Attached, Place, Reach};
-use inference_daemon::{Caller, Role};
+use caller_role_types::CallerRole;
 
 fn app(name: &str) -> AppId {
     AppId {
@@ -26,7 +27,7 @@ fn app(name: &str) -> AppId {
 
 /// A world with one model on this computer, a lab machine called `lab` with one model, and two
 /// cloud accounts: a working one and one that has to be signed in again.
-async fn world(lab_dir: &str, role: Role, who: &str) -> (World, Lab) {
+async fn world(lab_dir: &str, role: CallerRole, who: &str) -> (World, Lab) {
     let dir = base_testkit::Scratch::new(&format!("pl-{lab_dir}"));
     let lab = Lab::start_in(dir, "lab", &[entries::SERVED], None).await;
     let plan = Plan {
@@ -87,7 +88,7 @@ fn models(row: &PlaceRow) -> Vec<&str> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn settings_lists_this_computer_a_named_computer_and_the_cloud_accounts() {
-    let (world, _lab) = world("list", Role::Settings, "org.bardo.Settings").await;
+    let (world, _lab) = world("list", CallerRole::Settings, "org.bardo.Settings").await;
     let rows = world.accounts.places().await.expect("places");
     assert_eq!(
         ids(&rows),
@@ -139,7 +140,7 @@ async fn settings_lists_this_computer_a_named_computer_and_the_cloud_accounts() 
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_computer_that_does_not_answer_is_listed_but_not_ready() {
-    let (world, lab) = world("down", Role::Settings, "org.bardo.Settings").await;
+    let (world, lab) = world("down", CallerRole::Settings, "org.bardo.Settings").await;
     drop(lab);
     let rows = world.accounts.places().await.expect("places");
     let down = row(&rows, "computer:lab");
@@ -149,17 +150,17 @@ async fn a_computer_that_does_not_answer_is_listed_but_not_ready() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
-    let (world, _lab) = world("callers", Role::Settings, "org.bardo.Settings").await;
+    let (world, _lab) = world("callers", CallerRole::Settings, "org.bardo.Settings").await;
     let me = world.client.unique_name().expect("unique name").to_string();
     let cases = [
-        (Role::Settings, "org.bardo.Settings", true),
-        (Role::Shell, "org.bardo.Shell", true),
-        (Role::Placer, "org.bardo.Companion", true),
-        (Role::Placer, "org.bardo.Reader", false),
-        (Role::Placer, "org.bardo.Intents", false),
-        (Role::App, "org.bardo.Memory", false),
-        (Role::Cua, "org.bardo.ComputerUse", true),
-        (Role::AgentLauncher, "org.bardo.AgentLauncher", false),
+        (CallerRole::Settings, "org.bardo.Settings", true),
+        (CallerRole::SheetHost, "org.bardo.Shell", true),
+        (CallerRole::Agent, "org.bardo.Companion", true),
+        (CallerRole::Agent, "org.bardo.Reader", false),
+        (CallerRole::Agent, "org.bardo.Intents", false),
+        (CallerRole::App, "org.bardo.Memory", false),
+        (CallerRole::Cua, "org.bardo.ComputerUse", true),
+        (CallerRole::AgentLauncher, "org.bardo.AgentLauncher", false),
     ];
     for (role, name, allowed) in cases {
         world.peers.introduce(
@@ -188,7 +189,7 @@ async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_shell_may_list_the_places_and_ask_for_no_model() {
-    let (world, _lab) = world("shell", Role::Shell, "org.bardo.Shell").await;
+    let (world, _lab) = world("shell", CallerRole::SheetHost, "org.bardo.Shell").await;
     world.accounts.places().await.unwrap();
     let need = account_match::Need::Llm(account_match::LlmNeed::new(
         [account_capability::LlmFeature::Chat].into(),
@@ -228,7 +229,7 @@ async fn the_shell_may_list_the_places_and_ask_for_no_model() {
 async fn an_account_that_appears_makes_inferd_say_engines_changed() {
     use account_dbus::BusStream;
     use inference_dbus::inference::InferenceProxy;
-    let (world, _lab) = world("news", Role::Settings, "org.bardo.Settings").await;
+    let (world, _lab) = world("news", CallerRole::Settings, "org.bardo.Settings").await;
     let proxy = InferenceProxy::new(&world.client).await.expect("proxy");
     let mut changed = proxy.receive_engines_changed().await.expect("stream");
     let keys = world.accountd.as_ref().expect("the key store");
@@ -276,12 +277,17 @@ mod routing {
 
     /// A local chat model, a lab machine called `lab` with one model, and `OpenRouter` granted to
     /// the companion; the caller is the companion (a placer) unless the test says otherwise.
-    pub async fn placed_world(dir: &str, role: Role, who: &str) -> (World, Lab) {
+    pub async fn placed_world(dir: &str, role: CallerRole, who: &str) -> (World, Lab) {
         placed_world_with(dir, role, who, true).await
     }
 
     /// `placed_world`, with the local chat model only when `local` says so.
-    pub async fn placed_world_with(dir: &str, role: Role, who: &str, local: bool) -> (World, Lab) {
+    pub async fn placed_world_with(
+        dir: &str,
+        role: CallerRole,
+        who: &str,
+        local: bool,
+    ) -> (World, Lab) {
         let scratch = base_testkit::Scratch::new(&format!("pr-{dir}"));
         let lab = Lab::start_in(scratch, "lab", &[entries::SERVED], None).await;
         let mut catalog = vec![
@@ -337,17 +343,18 @@ mod routing {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn callers_that_may_not_choose_places_are_refused_not_ignored() {
-        let (world, _lab) = placed_world("refused", Role::Settings, "org.bardo.Settings").await;
+        let (world, _lab) =
+            placed_world("refused", CallerRole::Settings, "org.bardo.Settings").await;
         let me = world.client.unique_name().expect("unique name").to_string();
         let options = OpenOptions::default().with_places(vec![place("this-computer")]);
         for (role, name) in [
-            (Role::Settings, "org.bardo.Settings"),
-            (Role::App, "org.bardo.Memory"),
-            (Role::Cua, "org.bardo.ComputerUse"),
+            (CallerRole::Settings, "org.bardo.Settings"),
+            (CallerRole::App, "org.bardo.Memory"),
+            (CallerRole::Cua, "org.bardo.ComputerUse"),
         ] {
             world.peers.introduce(
                 &me,
-                inference_daemon::Caller {
+                account_callers::Caller {
                     app: app(name),
                     role,
                 },
@@ -392,9 +399,9 @@ mod routing {
         // A placer is let through.
         world.peers.introduce(
             &me,
-            inference_daemon::Caller {
+            account_callers::Caller {
                 app: app(COMPANION),
-                role: Role::Placer,
+                role: CallerRole::Agent,
             },
         );
         world
@@ -406,7 +413,7 @@ mod routing {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn a_places_option_that_is_not_what_the_interface_says_is_invalid_args() {
-        let (world, _lab) = placed_world("invalid", Role::Placer, COMPANION).await;
+        let (world, _lab) = placed_world("invalid", CallerRole::Agent, COMPANION).await;
         let proxy = InferenceProxy::new(&world.client).await.expect("proxy");
         let need = inference_dbus::inference::need_to_dbus(&llm());
         let text = |value: &str| {
@@ -490,7 +497,7 @@ mod refusals {
     #[tokio::test(flavor = "multi_thread")]
     async fn the_reply_is_an_error_named_for_the_reason_with_plain_words_and_the_kind_in_its_body()
     {
-        let (world, lab) = placed_world_with("r-wire", Role::Placer, COMPANION, false).await;
+        let (world, lab) = placed_world_with("r-wire", CallerRole::Agent, COMPANION, false).await;
         drop(lab);
         let proxy = InferenceProxy::new(&world.client).await.expect("proxy");
         let options = match account_dbus::zvariant::OwnedValue::try_from(
@@ -600,14 +607,14 @@ mod computers {
                 local_only: false,
                 floors: Vec::new(),
             },
-            role: Role::Settings,
+            role: CallerRole::Settings,
             app: Some(app("org.bardo.Settings")),
             ..Plan::default()
         };
         (World::start(plan).await, lab)
     }
 
-    fn as_caller(world: &World, role: Role, who: &str) {
+    fn as_caller(world: &World, role: CallerRole, who: &str) {
         let me = world.client.unique_name().expect("unique name").to_string();
         world.peers.introduce(
             &me,
@@ -699,7 +706,7 @@ mod computers {
         );
 
         // A companion that names the place is answered by it, and the lab saw the key.
-        as_caller(&world, Role::Placer, COMPANION);
+        as_caller(&world, CallerRole::Agent, COMPANION);
         let options = OpenOptions::default()
             .with_places(vec![PlaceId::parse("computer:studio-pc").expect("place")]);
         let need = account_match::Need::Llm(account_match::LlmNeed::new(
@@ -940,7 +947,7 @@ mod computers {
     #[tokio::test(flavor = "multi_thread")]
     async fn a_computer_written_by_hand_is_listed_but_cannot_be_removed_or_added_again() {
         let (world, _lab) =
-            placed_world_with("hand", Role::Settings, "org.bardo.Settings", false).await;
+            placed_world_with("hand", CallerRole::Settings, "org.bardo.Settings", false).await;
         let proxy = proxy(&world).await;
         let rows = world.accounts.places().await.expect("places");
         assert!(rows.iter().any(|row| row.id.as_str() == "computer:lab"));
@@ -981,10 +988,10 @@ mod computers {
         let proxy = proxy(&world).await;
         let denied = "org.freedesktop.DBus.Error.AccessDenied";
         for (role, who) in [
-            (Role::Placer, COMPANION),
-            (Role::Shell, "org.bardo.Shell"),
-            (Role::App, "org.bardo.Memory"),
-            (Role::AgentLauncher, "org.bardo.AgentLauncher"),
+            (CallerRole::Agent, COMPANION),
+            (CallerRole::SheetHost, "org.bardo.Shell"),
+            (CallerRole::App, "org.bardo.Memory"),
+            (CallerRole::AgentLauncher, "org.bardo.AgentLauncher"),
         ] {
             as_caller(&world, role, who);
             let add = proxy
@@ -998,7 +1005,7 @@ mod computers {
             let remove = proxy.remove_computer("studio-pc").await.expect_err(who);
             assert_eq!(name_and_words(&remove).0, denied, "{who} remove");
         }
-        as_caller(&world, Role::Settings, "org.bardo.Settings");
+        as_caller(&world, CallerRole::Settings, "org.bardo.Settings");
         let rows = world.accounts.places().await.expect("places");
         assert!(rows.iter().all(|row| row.kind != PlaceKind::OwnComputer));
     }

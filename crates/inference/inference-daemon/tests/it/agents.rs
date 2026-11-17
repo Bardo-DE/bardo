@@ -6,14 +6,15 @@
 
 use crate::hosting;
 
+use account_callers::Caller;
 use account_dbus::Details;
 use base_ids::TurnCount;
+use caller_role_types::CallerRole;
 use hosting::accountd::{FakeAccount, Standing};
 use hosting::agent::*;
 use hosting::engine::Chat;
 use hosting::rig::{AgentsPlan, World};
 use inference_core::{ChargeTotal, Period, SpendScope};
-use inference_daemon::{Caller, Role};
 use inference_dbus::inference::AgentsProxy;
 use model_provider::Money;
 use rust_decimal::Decimal;
@@ -347,7 +348,7 @@ async fn the_launchers_connection_going_away_ends_its_sessions() {
         launcher.unique_name().expect("name").as_str(),
         Caller {
             app: agent_app(),
-            role: Role::AgentLauncher,
+            role: CallerRole::AgentLauncher,
         },
     );
     let arg = AgentsProxy::new(&launcher)
@@ -389,7 +390,7 @@ async fn the_launchers_connection_going_away_ends_its_sessions() {
 async fn only_the_agent_launcher_may_open_an_endpoint() {
     let world = World::start(plan(vec![anthropic_account()], say("x"), say("y"))).await;
     let route = account_route("anthropic", &["claude-opus-5-5"]);
-    for role in [Role::App, Role::Cua, Role::Settings] {
+    for role in [CallerRole::App, CallerRole::Cua, CallerRole::Settings] {
         let other = world.bus.connect().await;
         world.peers.introduce(
             other.unique_name().expect("name").as_str(),

@@ -10,19 +10,20 @@ use crate::attached::AttachedBook;
 use crate::cloud::Cloud;
 use crate::cloud::models::RemoteModel;
 use crate::cloud::turn::CloudPin;
-use crate::peers::{Caller, Role};
 use crate::probed::{ProbedBook, Standing};
 use crate::runner::{Pin, Pinned};
 use crate::seats::Gate;
 use crate::settings::Live;
 use crate::supervise::{Snapshot, Supervised};
 use crate::toolproof::{ToolProofs, asks_for_tools};
+use account_callers::Caller;
 use account_capability::SpeechMode;
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
 use account_core::consent::{Availability, Usage};
 use account_core::{AppId, DataClass};
 use account_match::Need;
+use caller_role_types::CallerRole;
 use engine_supervisor::{EngineId, EngineState, MonoMs};
 use inference_core::{
     Asker, ChargeTotal, InferRefusal, LicenceClass, ModelCard, ModelRef, Period, Permit,
@@ -504,7 +505,7 @@ impl Engines {
     pub fn route(
         &self,
         spec: &SessionSpec,
-        role: Role,
+        role: CallerRole,
     ) -> Result<(RouteDecision, Pinned), InferRefusal> {
         self.route_detailed(spec, role)
             .map(|(routing, pinned)| (routing.decision(), pinned))
@@ -519,7 +520,7 @@ impl Engines {
     pub fn route_detailed(
         &self,
         spec: &SessionSpec,
-        role: Role,
+        role: CallerRole,
     ) -> Result<(Routing, Pinned), PickRefusal> {
         self.route_with(spec, role, &Offered::default())
     }
@@ -532,7 +533,7 @@ impl Engines {
     pub fn route_with(
         &self,
         spec: &SessionSpec,
-        role: Role,
+        role: CallerRole,
         offered: &Offered,
     ) -> Result<(Routing, Pinned), PickRefusal> {
         self.route_in(spec, role, offered, None, Unchosen::Refuse)
@@ -552,7 +553,7 @@ impl Engines {
     pub fn route_in(
         &self,
         spec: &SessionSpec,
-        role: Role,
+        role: CallerRole,
         offered: &Offered,
         allowed: Option<&Allowed>,
         unchosen: Unchosen,
@@ -572,7 +573,7 @@ impl Engines {
     pub fn route_as(
         &self,
         spec: &SessionSpec,
-        role: Role,
+        role: CallerRole,
         offered: &Offered,
         allowed: Option<&Allowed>,
         unchosen: Unchosen,
@@ -602,14 +603,14 @@ impl Engines {
     pub fn route_for(
         &self,
         spec: &SessionSpec,
-        role: Role,
+        role: CallerRole,
         offered: &Offered,
         allowed: Option<&Allowed>,
         unchosen: Unchosen,
         named: Option<&ModelRef>,
         who: &Who,
     ) -> Result<(Routing, Pinned), Unplaced> {
-        if matches!(spec.need, Need::ComputerUse(_)) && role != Role::Cua {
+        if matches!(spec.need, Need::ComputerUse(_)) && role != CallerRole::Cua {
             return Err(Unplaced::Other(InferRefusal::Denied.into()));
         }
         let settings = self.settings();
@@ -792,7 +793,7 @@ impl Engines {
         class: DataClass,
         tier: Tier,
     ) -> Result<Readiness, InferRefusal> {
-        self.prepare_as(need, class, tier, Role::App)
+        self.prepare_as(need, class, tier, CallerRole::App)
     }
 
     /// `prepare` for a caller of this role (only cuad may warm a computer-use model).
@@ -805,7 +806,7 @@ impl Engines {
         need: &Need,
         class: DataClass,
         tier: Tier,
-        role: Role,
+        role: CallerRole,
     ) -> Result<Readiness, InferRefusal> {
         self.prepare_with(
             need,
@@ -882,7 +883,7 @@ impl Engines {
         class: DataClass,
         tier: Tier,
         usage: Usage,
-        role: Role,
+        role: CallerRole,
         offered: &Offered,
         allowed: Option<&Allowed>,
         named: Option<&ModelRef>,
@@ -915,7 +916,7 @@ impl Engines {
     /// What an app is told about a need without a session (`Inference1.Availability`): whether
     /// the route would run, without revealing which account or model.
     #[must_use]
-    pub fn availability(&self, need: &Need, class: DataClass, role: Role) -> Availability {
+    pub fn availability(&self, need: &Need, class: DataClass, role: CallerRole) -> Availability {
         self.availability_with(
             need,
             class,
@@ -990,7 +991,7 @@ impl Engines {
         need: &Need,
         class: DataClass,
         usage: Usage,
-        role: Role,
+        role: CallerRole,
         offered: &Offered,
         allowed: Option<&Allowed>,
     ) -> Result<Availability, PlaceRefusal> {
@@ -1018,7 +1019,7 @@ impl Engines {
     /// The router for one session of a caller of this role: it decides once and writes the
     /// decision to `pin`.
     #[must_use]
-    pub fn router(&self, pin: Pin, role: Role) -> SessionRouter {
+    pub fn router(&self, pin: Pin, role: CallerRole) -> SessionRouter {
         SessionRouter {
             engines: self.clone(),
             pin,
@@ -1182,7 +1183,7 @@ impl EngineHost for Engines {
 pub struct SessionRouter {
     engines: Engines,
     pin: Pin,
-    role: Role,
+    role: CallerRole,
     app: Option<AppId>,
     allowed: Option<Allowed>,
     named: Option<ModelRef>,

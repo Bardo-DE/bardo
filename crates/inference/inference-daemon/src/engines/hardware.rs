@@ -5,8 +5,8 @@
 
 use super::{Engines, Offered};
 use crate::failure::{EngineView, Moment};
-use crate::peers::Caller;
 use crate::seats::Gate;
+use account_callers::Caller;
 use base_ids::Bytes;
 use engine_supervisor::{EngineId, EngineState};
 use inference_core::{HardwareFacts, HardwareNote, MemoryFacts, ModelRef, hardware_notes};

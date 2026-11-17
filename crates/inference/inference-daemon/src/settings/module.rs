@@ -11,9 +11,10 @@ use super::missing;
 use super::pool;
 use super::programs::{self, ROWS, Row, row_at};
 use crate::cloud::picker::{Availability, Choice, NEEDS_ACCOUNT};
-use crate::peers::{Peers, Role};
+use crate::peers::Peers;
 use crate::spend_rows::SpendRows;
 use account_capability::{Locality, Tier};
+use caller_role_types::CallerRole;
 use inference_core::{Chooser, ModelRef, Slot, tier_label};
 use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 use inference_router::local::LocalModel;
@@ -427,7 +428,7 @@ fn failed(why: impl ToString) -> LiveError {
 impl<P: Peers> LiveModule for InferdSettings<P> {
     async fn permit(&self, caller: &Caller, _access: Access) -> Verdict {
         match self.peers.caller_of(&caller.sender.0).await {
-            Some(who) if who.role == Role::Settings => Verdict::Allow,
+            Some(who) if who.role == CallerRole::Settings => Verdict::Allow,
             _ => Verdict::Refuse,
         }
     }

@@ -2,7 +2,8 @@
 //! names for itself (`model`). Only a caller that may choose places (docket's daemons) may send
 //! either; from anyone else the call is refused, not ignored.
 
-use crate::peers::Caller;
+use crate::peers::CallerMay;
+use account_callers::Caller;
 use account_dbus::Details;
 use inference_core::{Asker, ModelRef};
 use inference_dbus::inference::{OPTION_ASKER, OPTION_MODEL};
@@ -71,8 +72,8 @@ pub fn own_of(caller: &Caller, options: &Details) -> fdo::Result<Own> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::peers::Role;
     use account_core::{AppId, AppName, Isolation};
+    use caller_role_types::CallerRole;
     use zbus::zvariant::{OwnedValue, Value};
 
     fn options(pairs: &[(&str, &str)]) -> Details {
@@ -87,7 +88,7 @@ mod tests {
             .collect()
     }
 
-    fn caller(role: Role) -> Caller {
+    fn caller(role: CallerRole) -> Caller {
         Caller {
             app: AppId {
                 name: AppName::parse("org.bardo.Companion").expect("app"),
@@ -100,15 +101,15 @@ mod tests {
     #[test]
     fn asker_and_model_are_read_for_a_placer_and_refused_to_anyone_else() {
         let sent = options(&[("asker", "helper:h-1"), ("model", "this-computer/qwen3-4b")]);
-        let own = own_of(&caller(Role::Placer), &sent).expect("placer");
+        let own = own_of(&caller(CallerRole::Agent), &sent).expect("placer");
         assert_eq!(Some(own.asker()), Asker::from_text("helper:h-1"));
         assert_eq!(own.model, ModelRef::parse("this-computer/qwen3-4b"));
         assert!(matches!(
-            own_of(&caller(Role::App), &sent),
+            own_of(&caller(CallerRole::App), &sent),
             Err(fdo::Error::AccessDenied(_))
         ));
         assert_eq!(
-            own_of(&caller(Role::App), &Details::new()),
+            own_of(&caller(CallerRole::App), &Details::new()),
             Ok(Own::default())
         );
         assert_eq!(Own::default().asker(), Asker::Person);
@@ -119,7 +120,7 @@ mod tests {
         ] {
             assert!(
                 matches!(
-                    own_of(&caller(Role::Placer), &options(&[bad])),
+                    own_of(&caller(CallerRole::Agent), &options(&[bad])),
                     Err(fdo::Error::InvalidArgs(_))
                 ),
                 "{bad:?}"

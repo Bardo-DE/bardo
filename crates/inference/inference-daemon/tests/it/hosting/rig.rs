@@ -6,10 +6,12 @@ use super::cloud::FakeCloud;
 use super::engine::{FakeEngine, Script};
 use super::speech_host::SpeechEngines;
 use super::tailnet::{FakeTailscale, TailnetPlan};
+use account_callers::Caller;
 use account_core::{AppId, AppName, Isolation};
 use base_testkit::Scratch;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use engine_supervisor::{
     EngineHost, EngineId, ExitCode, FakeGpu, GpuMemory, HostError, Probe, ReadyProbe,
     SupervisorConfig, UnitSpec,
@@ -22,7 +24,7 @@ use inference_daemon::ProbeConfig;
 use inference_daemon::Replays;
 use inference_daemon::{Attached, AttachedBook};
 use inference_daemon::{BusMachines, Parts, Tailnet};
-use inference_daemon::{Caller, Role, TablePeers};
+use inference_daemon::TablePeers;
 use inference_daemon::{Door, Doors};
 use inference_daemon::{HealthProbe, ProcessHost};
 use inference_daemon::{Inference, serve_on};
@@ -187,7 +189,7 @@ pub struct Plan {
     /// The policy in force.
     pub policy: Policy,
     /// The role of the client connection.
-    pub role: Role,
+    pub role: CallerRole,
     /// The app the client connection is (`test_app()` when none).
     pub app: Option<AppId>,
     /// Hosted models: a fake accountd and a fake provider; none when absent.
@@ -251,7 +253,7 @@ impl Default for Plan {
             replay: Vec::new(),
             remote: Vec::new(),
             policy: Policy::proposed(),
-            role: Role::App,
+            role: CallerRole::App,
             app: None,
             hosted: None,
             spend: SpendLine::default(),
@@ -697,7 +699,7 @@ impl World {
     /// needs the shell and Settings at once, or an app, in one world.
     pub async fn connect_as(
         &self,
-        role: Role,
+        role: CallerRole,
         app: AppId,
     ) -> (zbus::Connection, InferenceClient<DbusTransport>) {
         let connection = self.bus.connect().await;

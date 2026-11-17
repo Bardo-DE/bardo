@@ -4,12 +4,12 @@
 
 use crate::hosting;
 
+use caller_role_types::CallerRole;
 use hosting::agent::*;
 use hosting::engine::Chat;
 use hosting::entries;
 use hosting::rig::{AgentsPlan, Plan, World};
 use inference_core::Policy;
-use inference_daemon::Role;
 use serde_json::json;
 
 // ---- a model on this computer --------------------------------------------------------------
@@ -241,7 +241,7 @@ async fn an_attached_my_network_engine_follows_the_floor_and_the_my_network_sett
             place: Place::MyNetwork,
             computer: None,
         }],
-        role: Role::AgentLauncher,
+        role: CallerRole::AgentLauncher,
         agents: Some(AgentsPlan { endpoint: true }),
         ..Plan::default()
     };

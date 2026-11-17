@@ -8,8 +8,8 @@ use super::entries;
 use super::rig::{AgentsPlan, Hosted, Plan, Trust, World};
 use account_core::{AppId, AppName, Isolation};
 use account_dbus::Details;
+use caller_role_types::CallerRole;
 use inference_core::{Period, Policy, SpendScope};
-use inference_daemon::Role;
 use inference_dbus::inference::{AgentsProxy, EndpointArg};
 use serde_json::{Value, json};
 use std::fmt::Write as _;
@@ -73,7 +73,7 @@ pub fn plan(accounts: Vec<FakeAccount>, cloud: Chat, local: Chat) -> Plan {
             },
         )],
         policy: open_policy(),
-        role: Role::AgentLauncher,
+        role: CallerRole::AgentLauncher,
         hosted: Some(Hosted {
             accounts,
             chat: Script {

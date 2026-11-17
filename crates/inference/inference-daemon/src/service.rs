@@ -14,7 +14,7 @@ use crate::attached::{
     ComputerError, Computers, NewComputer, NewModel, NewReach, NewTailnetComputer,
 };
 use crate::engines::Engines;
-use crate::peers::{Caller, Peers, Role};
+use crate::peers::{CallerMay, Peers};
 use crate::pipeline::Hearing;
 use crate::runner::{Pin, Turns};
 use crate::seats::Gate;
@@ -23,6 +23,7 @@ use crate::settings::{HelperPools, LocalEngines, Reload};
 use crate::tailnet::{Candidate, Tailnet};
 use crate::toolproof::ToolWatch;
 use crate::watch::Probing;
+use account_callers::Caller;
 use account_capability::ModelId;
 use account_capability::Tier;
 use account_core::HelperId;
@@ -30,6 +31,7 @@ use account_core::{DataClass, SecretText};
 use account_dbus::Details;
 use account_tailscale::NodeId;
 use base_time::Clock;
+use caller_role_types::CallerRole;
 use dbus_kit::Call;
 use inference_core::{InferRefusal, PlaceId, PlaceRow, PlaceState};
 use inference_dbus::inference::{
@@ -251,7 +253,7 @@ fn failed(why: impl ToString) -> fdo::Error {
 }
 
 /// The places a call may run (`places` and `place_models` in the options), when it names them.
-/// Only a caller that may choose places (`Role::Placer`) may send either key: from anyone else
+/// Only a caller that may choose places (`CallerRole::Agent`) may send either key: from anyone else
 /// the call is refused, not ignored. `place_models` without `places`, or naming a place outside
 /// it, is invalid args, as is a value that is not what the interface says.
 fn allowed_of(caller: &Caller, options: &Details) -> fdo::Result<Option<Allowed>> {
@@ -312,11 +314,11 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> Inference<P, O
         let caller = self.identified(header).await?;
         match caller.role {
             // The agent launcher has the endpoint interface and nothing else here.
-            Role::AgentLauncher => Err(fdo::Error::AccessDenied(
+            CallerRole::AgentLauncher => Err(fdo::Error::AccessDenied(
                 "inferd: the agent launcher may only open agent endpoints".into(),
             )),
             // The shell lists the places and asks for no model.
-            Role::Shell => Err(fdo::Error::AccessDenied(
+            CallerRole::SheetHost => Err(fdo::Error::AccessDenied(
                 "inferd: the shell may only list the places".into(),
             )),
             _ => Ok(caller),
@@ -327,7 +329,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> Inference<P, O
     /// `ForgetGuest`: Settings, by its unit, and no one else.
     async fn settings_caller(&self, header: &Header<'_>) -> fdo::Result<Caller> {
         let caller = self.identified(header).await?;
-        if caller.role == Role::Settings {
+        if caller.role == CallerRole::Settings {
             Ok(caller)
         } else {
             Err(fdo::Error::AccessDenied(
@@ -848,7 +850,9 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
         let tailnet = self.tailnet.as_ref().ok_or(ComputerError::Unavailable)?;
         let now = self.clock.now();
         match tailnet.guests().answer(&node, answer, now) {
-            Err(inference_tailnet::GuestError::NotAsking) if caller.role == Role::Settings => {
+            Err(inference_tailnet::GuestError::NotAsking)
+                if caller.role == CallerRole::Settings =>
+            {
                 let machines = tailnet.machines().machines().await;
                 let machine = machines
                     .iter()

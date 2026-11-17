@@ -171,7 +171,7 @@ fn the_default_route_serves_a_prompt_from_a_runtime_that_is_up() {
         Some(models_of(Runtime::Ollama, 11_434, &["llama3.2-3b"])),
     );
     let (routing, pinned) = engines
-        .route_detailed(&spec(DataClass::Prompt), crate::peers::Role::App)
+        .route_detailed(&spec(DataClass::Prompt), CallerRole::App)
         .expect("a route");
     assert_eq!(routing.served.account.as_str(), "ollama");
     assert_eq!(routing.served.locality, Locality::OnDevice);
@@ -192,7 +192,7 @@ fn a_runtime_that_is_down_is_unavailable_and_never_replaced_by_a_remote_model() 
         .probed()
         .set(Runtime::Ollama, Standing::Offline, None);
     let refused = engines
-        .route(&spec(DataClass::Prompt), crate::peers::Role::App)
+        .route(&spec(DataClass::Prompt), CallerRole::App)
         .expect_err("nothing serves");
     assert_eq!(refused, InferRefusal::Unavailable);
 }
@@ -216,7 +216,7 @@ fn local_only_on_leaves_the_runtime_the_only_answer() {
         Some(models_of(Runtime::LlamaCpp, 8080, &["gemma-3-4b"])),
     );
     let (routing, _) = engines
-        .route_detailed(&spec(DataClass::Mail), crate::peers::Role::App)
+        .route_detailed(&spec(DataClass::Mail), CallerRole::App)
         .expect("a route");
     assert_eq!(routing.served.account.as_str(), "llama-cpp");
     engines
@@ -224,7 +224,7 @@ fn local_only_on_leaves_the_runtime_the_only_answer() {
         .set(Runtime::LlamaCpp, Standing::Offline, None);
     assert_eq!(
         engines
-            .route(&spec(DataClass::Mail), crate::peers::Role::App)
+            .route(&spec(DataClass::Mail), CallerRole::App)
             .expect_err("local only and nothing local"),
         InferRefusal::Unavailable
     );
@@ -268,7 +268,7 @@ fn a_probed_model_is_eligible_for_auto_and_for_a_named_pick() {
             Some(models_of(Runtime::Ollama, 11_434, &["llama3.2-3b"])),
         );
         let (routing, _) = engines
-            .route_detailed(&spec(DataClass::Prompt), crate::peers::Role::App)
+            .route_detailed(&spec(DataClass::Prompt), CallerRole::App)
             .expect("a route");
         assert_eq!(routing.served.model.as_str(), "llama3.2-3b");
     }

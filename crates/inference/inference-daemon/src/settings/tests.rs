@@ -4,7 +4,6 @@
 use super::*;
 use crate::config::InferdConfig;
 use crate::engines::Engines;
-use crate::peers::Role;
 use crate::supervise::{Ports, Supervised};
 use crate::testkit::{Recorder, models};
 use account_capability::{LlmFeature, Tier};
@@ -13,6 +12,7 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::Tokens;
 use base_testkit::Scratch;
+use caller_role_types::CallerRole;
 use engine_supervisor::{FakeGpu, FakeReadyProbe, GpuMemory, Probe, SupervisorConfig};
 use inference_core::Policy;
 use inference_router::session::SessionSpec;
@@ -66,7 +66,7 @@ async fn show_reason_off_stops_the_answers_saying_why_and_a_reload_applies_it() 
     let reload = Reload::new(file.clone(), engines.clone());
     let show = || {
         engines
-            .route_detailed(&spec(), Role::App)
+            .route_detailed(&spec(), CallerRole::App)
             .expect("route")
             .0
             .show
@@ -100,7 +100,7 @@ async fn a_reload_changes_the_route_of_the_next_session_and_a_bad_file_changes_n
     let reload = Reload::new(file.clone(), engines.clone());
     let route = || {
         engines
-            .route_detailed(&spec(), Role::App)
+            .route_detailed(&spec(), CallerRole::App)
             .map(|(r, _)| r.served.model)
     };
     route().unwrap();
