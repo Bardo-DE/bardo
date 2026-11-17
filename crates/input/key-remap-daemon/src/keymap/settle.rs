@@ -1,6 +1,6 @@
 //! Judging a reading of the keymap file against the last good copy. Pure.
 //!
-//! chordkit reads the file leniently: a bad line is reported and skipped. The key remap daemon adds one rule
+//! The chord keymap reads the file leniently: a bad line is reported and skipped. The key remap daemon adds one rule
 //! on top: a file that is unusable, or whose every line is bad, is a bad edit (half a save, a
 //! pasted error), so the last good copy stays in force and the problem is reported.
 
@@ -110,7 +110,7 @@ mod tests {
     }
 
     #[test]
-    fn a_clean_file_is_served_in_chordkits_canonical_form_with_no_problems() {
+    fn a_clean_file_is_served_in_keymap_canonical_form_with_no_problems() {
         let state = good();
         assert_eq!(state.problems, []);
         let (round, bad) = Overrides::parse(&state.overrides);

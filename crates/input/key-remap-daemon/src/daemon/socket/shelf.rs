@@ -121,7 +121,7 @@ fn within_reply(all: Vec<Registration>) -> Vec<Registration> {
         .collect()
 }
 
-/// The registration with only the actions chordkit would accept, or `None` for a bad app name.
+/// The registration with only the actions the chord keymap would accept, or `None` for a bad app name.
 fn vetted(registration: Registration) -> Option<Registration> {
     let app = AppId::new(&registration.app).ok()?;
     let actions = registration
@@ -262,7 +262,7 @@ mod tests {
     }
 
     #[test]
-    fn what_chordkit_would_refuse_is_dropped_and_the_number_of_apps_is_bounded() {
+    fn what_keymap_would_refuse_is_dropped_and_the_number_of_apps_is_bounded() {
         let mut shelf = shelf();
         let mixed = registration(
             "mail",

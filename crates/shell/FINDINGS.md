@@ -1389,7 +1389,7 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
   menu item "Force Quit..." has nowhere to live. The Mac sorts the list by when the apps were
   opened, not by use; this one is by recency (`AppView::mru`), which keeps the app that just hung
   near the top. Windowless apps (background helpers) and launching apps are not listed.
-- **The key.** chordkit has the action (`StandardAction::ForceQuit`, Option+Command+Escape on the
+- **The key.** the chord keymap has the action (`StandardAction::ForceQuit`, Option+Command+Escape on the
   Mac convention; the key remap daemon writes it as Alt+Super+Esc). The compositor binds the action to
   `DesktopCommand::ForceQuitPanel`, which does nothing and swallows the chord
   (`crates/compositor/src/keymap/shell.rs`, `ROWS`) and the shell protocol has no event for

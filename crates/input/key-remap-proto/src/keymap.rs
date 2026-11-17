@@ -1,8 +1,8 @@
 //! The words the keymap messages are made of: the person's overrides, what was wrong with them,
 //! and the actions an app registers.
 //!
-//! Plain strings on purpose: the overrides are chordkit's line format and a chord is chordkit's
-//! text, converted by the client that owns chordkit. This crate stays light.
+//! Plain strings on purpose: the overrides are the chord keymap's line format and a chord is the chord keymap's
+//! text, converted by the client that owns keymap. This crate stays light.
 
 use serde::{Deserialize, Serialize};
 
@@ -17,14 +17,14 @@ pub struct KeymapProblem {
 /// The person's keymap as the key remap daemon serves it.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct KeymapState {
-    /// The overrides in chordkit's line format (`copy = Primary+C`), only lines that read.
+    /// The overrides in the chord keymap's line format (`copy = Primary+C`), only lines that read.
     /// Empty when the person has changed nothing.
     pub overrides: String,
     /// What was skipped or refused, so a settings screen can say so.
     pub problems: Vec<KeymapProblem>,
 }
 
-/// One action an app handles, as chordkit writes it.
+/// One action an app handles, as the chord keymap writes it.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct RegisteredAction {
     /// `app.action`, such as `mail.compose`.

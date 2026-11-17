@@ -19,7 +19,7 @@ cd "$(dirname "$0")/.."
 # and effect-free; ui-settings does I/O but never renders, and takes a Spawner instead of naming a
 # runtime. ui-helpers (missing helpers: probe PATH, ask PackageKit) is I/O too: zbus only, no
 # renderer, no runtime, and no Bardo crate but base-time (the deadline on each call to a peer).
-# chordkit (the keymap core) is pure and ui-core and ds take it; its I/O sources (keymap-kde, keymap-gnome
+# The chord keymap (the keymap core) is pure and ui-core and ds take it; its I/O sources (keymap-kde, keymap-gnome
 # read a settings file) are named by ui-blitz alone, which injects them as the launch's default KeySource.
 # ui-desktop (the capability probe) names zbus only through its opt-in `dbus` feature and dioxus
 # only through `dioxus`, so a build without them links neither; the rule below checks the default
@@ -230,8 +230,8 @@ else
 fi
 
 # The pinned block consumers copy (docs/workspace-deps.toml) names every git dependency at the
-# root manifest's revision or tag (it once lagged a toolchain bump, and later the chordkit rows lagged
-# a chordkit move, and a consumer noticed both).
+# root manifest's revision or tag (it once lagged a toolchain bump, and later the chord keymap rows lagged
+# a chord keymap move, and a consumer noticed both).
 for crate in $(grep -E '^[A-Za-z0-9_-]+ *= *\{.*git = ' docs/workspace-deps.toml | cut -d= -f1 | tr -d ' '); do
   root=$(grep -E "^$crate *=" ../../Cargo.toml | grep -oE '(rev|tag) = "[^"]+"' | head -1)
   doc=$(grep -E "^$crate *=" docs/workspace-deps.toml | grep -oE '(rev|tag) = "[^"]+"' | head -1)

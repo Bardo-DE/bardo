@@ -2261,7 +2261,7 @@ rsx! { Ds { appearance, material, look: spaces.look(),
   forgotten with `today.drop_space(id)` in `SpaceMenu`'s `on_deleted`.
 - The chord is the app's: `SwitchChord::Primary` (Primary+1..9: ⌘1-9 on a Mac and our desktop, Ctrl+1..9
   elsewhere) or `Unbound`. Ctrl+1..9 on our desktop is the desktop's own Space switch (a standard
-  action chordkit reserves), so there is no `Control` variant.
+  action the chord keymap reserves), so there is no `Control` variant.
 - Slide content with `spaces.slide()` (`in-r` or `in-l`). `SpacesSource::Desktop` is an experiment
   that is not built (design/21 section 13.6); pass nothing.
 
@@ -2281,17 +2281,17 @@ The backdrop is the desktop's own picture (the output's wallpaper), drawn under 
 ## 15. Keyboard: actions, not modifiers
 
 An app never reads which modifier is held and never decides Command versus Ctrl. Bardo is the one
-toolkit integration of chordkit (github.com/Bardo-DE/chordkit, the keymap core): a key event
-becomes a chordkit key press in one place (`ds_core::command::key_input`), resolves to an `Action`
-in the right `Context`, and every shortcut is drawn through chordkit's display. On each OS the
+toolkit integration of the chord keymap (github.com/Bardo-DE/chordkit, the keymap core): a key event
+becomes a chord keymap key press in one place (`ds_core::command::key_input`), resolves to an `Action`
+in the right `Context`, and every shortcut is drawn through the chord keymap's display. On each OS the
 keymap follows that OS's own shortcut settings when it has any (kdeglobals on KDE, a dconf dump on
 GNOME, our desktop's the key remap daemon), and its conventions otherwise (Command on a Mac and our desktop, Ctrl
 on Windows and other Linux). The nouns (`StandardAction`, `AppAction`, `DefaultChord`, `Primary`,
-`Keymap`, `Context`, `Platform`) are chordkit's; Bardo keeps no copy. Add chordkit to your
+`Keymap`, `Context`, `Platform`) are the chord keymap's; Bardo keeps no copy. Add the chord keymap to your
 workspace by the same git rev as Bardo's (`docs/workspace-deps.toml`).
 
 ```text
-use chordkit::{Action, AppAction, AppId, Context, DefaultChord, StandardAction};
+use keymap::{Action, AppAction, AppId, Context, DefaultChord, StandardAction};
 use ds::prelude::*;   // Keys, on_action, ActionTaken, use_keys, use_register_actions
 
 fn Editor() -> Element {
@@ -2331,7 +2331,7 @@ fn Editor() -> Element {
   the default has no live form. Registering an app again **replaces** its earlier registration (the
   same rows again do nothing), so changed defaults never clash with the app's own old ones; a
   refused one leaves the earlier registration standing.
-- **App overrides.** An app with its own rebinding file reads it into chordkit `Overrides` and lays
+- **App overrides.** An app with its own rebinding file reads it into the chord keymap `Overrides` and lays
   them over the shared keymap: `AppConfig::with_keymap_overrides(overrides)` (the detected or given
   source stays) or `KeySource::with_overrides(overrides)` (harness: `with_keymap_source`). They are
   applied before registrations, again after every reload, and the lines the platform refuses are
@@ -2354,7 +2354,7 @@ fn Editor() -> Element {
   order and words) elsewhere. A `Shortcut` is written in Mac terms; Command in it is Primary, and a
   shortcut that is a standard action's shows the chord the keymap really binds it to (Windows Redo is
   Ctrl+Y). `Shortcut::standard(action)` is the action's chord on our desktop; `Shortcut::custom(keys)`
-  is refused with chordkit's `Conflict` when a standard action has the chord or the desktop keeps it.
+  is refused with the chord keymap's `Conflict` when a standard action has the chord or the desktop keeps it.
 - **What Bardo resolves itself.** Clipboard chords on `EditSurface` and the secure field, the
   desktop's Space switch (`space_switch::space_pressed(&keymap, ..)` reads the platform's
   Switch-to-Space action), an app's own Spaces (`SwitchChord::Primary`), the pane stack's back chord
@@ -2364,10 +2364,10 @@ fn Editor() -> Element {
 - **Where the keymap comes from.** `Ds` loads it from the `KeySource` in the root context. A launch
   provides one: `AppConfig::with_keymap_source(Box<dyn KeymapSource + Send + Sync>)` (the platform
   is detected, `BARDO_KEYMAP_PLATFORM` overrides) or `with_keymap(platform, source)`. Without either,
-  `launch` uses the platform `chordkit::detect` finds and the desktop's own shortcut settings for
+  `launch` uses the platform `keymap::detect` finds and the desktop's own shortcut settings for
   it: `kdeglobals` on Plasma; on GNOME the dconf database through `dconf dump /`, read when the
   source is made and again on the watch's thread when the database changes (a failed `dconf` keeps
-  the last dump; with no `dconf` program, the dump saved at `$XDG_CONFIG_HOME/chordkit/dconf-dump`
+  the last dump; with no `dconf` program, the dump saved at `$XDG_CONFIG_HOME/keymap/dconf-dump`
   is read); elsewhere the conventions. Both stores are watched, so a change in the desktop's
   settings reloads the keymap. An app that builds a keymap of its own on the system's, outside any
   window, takes `ds_blitz::system_key_source(platform, lookup)` (the config directory read through
@@ -2378,7 +2378,7 @@ fn Editor() -> Element {
   let config = AppConfig::new("Mail", size).with_keymap_source(Box::new(key_remap_client::Source::connect()));
   ```
 
-  and the key remap daemon implements `chordkit::KeymapSource` (`load`, and `watch` for a live reload; the
+  and the key remap daemon implements `keymap::KeymapSource` (`load`, and `watch` for a live reload; the
   callback may run on any thread and `Ds` re-renders itself to pick it up).
 - **Tests.** `HarnessConfig::with_platform(Platform)` fixes the keymap to a platform's conventions
   and reads no real system; the default is our desktop's (Command arrives as Super).
@@ -2403,7 +2403,7 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   `view.rs:1244` `command_shortcut` with `AppAction`s and `DefaultChord`s (`Primary+Shift+N`) registered
   through `use_register_actions`, handled in `on_action`. `keymap.rs:26-40` single-key `DEFAULTS` and
   the user's `keyboard.json` stay the app's (single keys are `DefaultChord`s with no Primary); read the
-  file into chordkit `Overrides` if a person's change should win everywhere. `window/root.rs:117-124`
+  file into the chord keymap `Overrides` if a person's change should win everywhere. `window/root.rs:117-124`
   tests `.ctrl()` only, which is the Cmd+P bug in thread windows: resolve `StandardAction::Print`
   instead. The composer's `is_command` calls resolve `Context::TextEntry`. `SwitchChord::Command`
   becomes `Primary`.
@@ -2411,7 +2411,7 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   (Cmd+K/I/W/O) become `AppAction`s, or `StandardAction::Close`/`Open` where they are those.
   `command.rs:94-129` (zoom, find, page edit) map to `StandardAction::{Bigger, Smaller, Find, ...}`;
   `action/spec.rs` `Binding::Own` rows are `AppAction`s. Cmd+1/9 as zoom conflicts with the app's
-  Primary+1..9 Space chord: chordkit's registration refuses it, so pick one (the zoom is `Bigger` and
+  Primary+1..9 Space chord: the chord keymap's registration refuses it, so pick one (the zoom is `Bigger` and
   `Smaller`; set the Space chord `Unbound` if the app has no Spaces).
 - **sill.** `shell-launcher/src/chord.rs:55-95` (`reveal`, `copy`, `search_web`, `quick_look`, `forget`)
   and `launcher/chord_keys.rs:41-61` are `StandardAction::{Reveal, Copy, QuickLook}` plus `AppAction`s;

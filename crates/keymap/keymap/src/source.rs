@@ -3,7 +3,7 @@
 //! A source turns what a platform stores into a `Keymap`. The trait is runtime-agnostic: loading
 //! is a plain call, and change notification is a callback. Sources live in their own crates
 //! (`keymap-kde`, `keymap-gnome`) or in the program that owns the settings (the key remap daemon's daemon
-//! implements this trait for our desktop on top of chordkit).
+//! implements this trait for our desktop on top of the chord keymap).
 
 use thiserror::Error;
 

@@ -1,6 +1,6 @@
 # Architecture
 
-chordkit is the one place keymap nouns live: actions, modifiers, chords, platforms, conventions,
+The chord keymap is the one place keymap nouns live: actions, modifiers, chords, platforms, conventions,
 the resolver. `CONVENTIONS.md` points to the shared style guides,
 `FINDINGS.md` the open items and standing facts, `CONSUMING.md` how a toolkit and an app use it.
 
@@ -8,18 +8,18 @@ the resolver. `CONVENTIONS.md` points to the shared style guides,
 
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
-| `chordkit` | `crates/chordkit` | the pure core | `thiserror`; `serde` behind the `serde` feature |
-| `keymap-kde` | `crates/chordkit-kde` | `KdeSource`, `parse_kdeglobals` | `chordkit` |
-| `keymap-gnome` | `crates/chordkit-gnome` | `GnomeSource`, `parse_dconf_dump`, `parse_accelerator` | `chordkit` |
+| `keymap` | `crates/keymap` | the pure core | `thiserror`; `serde` behind the `serde` feature |
+| `keymap-kde` | `crates/keymap-kde` | `KdeSource`, `parse_kdeglobals` | `keymap` |
+| `keymap-gnome` | `crates/keymap-gnome` | `GnomeSource`, `parse_dconf_dump`, `parse_accelerator` | `keymap` |
 
-Edges: every source crate depends on `chordkit` (and a file-reading one on `base-fs`); `chordkit` depends on no
+Edges: every source crate depends on `keymap` (and a file-reading one on `base-fs`); `keymap` depends on no
 workspace crate. The core is I/O-free by design and the boundary script keeps it so.
 `scripts/check-boundary.sh` asserts the core reaches no I/O, runtime, bus,
 file-watching or plist crate (nor `base-fs`). The only file reads are in `KdeSource::load` and
 `GnomeSource::load` (a path injected by the caller), and both go through `base_fs::read_text_capped`. Our desktop's source is not here: the key remap daemon implements
 `KeymapSource` in its own repo.
 
-## 2. Core modules (`crates/chordkit/src`)
+## 2. Core modules (`crates/keymap/src`)
 
 Layers, lowest first; a module imports from its own layer or a lower one.
 
@@ -58,9 +58,9 @@ with a reason; the coverage test fails otherwise), bump the count in the two slu
 
 Add a platform family: add the `Platform`/`Desktop` variant, its slug, a `Platform::primary` arm, a display style in `chord_text/`, a reserved list, and a convention file.
 
-Add a source: a new crate depending on `chordkit`; parse into `SystemImport`; implement
+Add a source: a new crate depending on `keymap`; parse into `SystemImport`; implement
 `KeymapSource::load` as `Keymap::conventional(platform).with_system(import.bindings)`. Read the
-settings file with `chordkit_file::read_text(path, SETTINGS_FILE_LIMIT)`, never `std::fs::read_to_string`: a
+settings file with `keymap_file::read_text(path, SETTINGS_FILE_LIMIT)`, never `std::fs::read_to_string`: a
 `ReadError::Missing` means nothing was changed (the conventions), any other error becomes
 `SourceError::Read`, which the caller logs and skips.
 

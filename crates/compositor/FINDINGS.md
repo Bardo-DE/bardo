@@ -673,13 +673,13 @@ W13 8 to 0.
 - **Bindings come from the keymap, not a file or a table** (AUDIT (e)3): before, `settings.bindings` was empty by default
   and held only what a `[bindings]` entry in `settings.toml` said, so a fresh the compositor bound nothing.
   `compositor::keymap::attach` (called from `main.rs` after the outputs are announced) loads
-  `KeyRemapSource::load_reporting(Linux/Ours)` (chordkit conventions, the desktop's own bindings, the machine
+  `KeyRemapSource::load_reporting(Linux/Ours)` (the chord keymap conventions, the desktop's own bindings, the machine
   keymap, the person's keymap), maps each standard action the compositor carries out (`keymap/shell.rs`
   `ROWS`: force quit, Space left/right/1-9,
   and sill's launcher, switcher, screenshots and power menu as `sill ...` spawns) to a `BindingAction`, converts
-  each chord (`keymap/chord.rs`: Super is Command, Alt is Option; chordkit's `+` and `?` become shifted `=` and
+  each chord (`keymap/chord.rs`: Super is Command, Alt is Option; the chord keymap's `+` and `?` become shifted `=` and
   `/`) and appends the result after the document's own bindings. No `dist/compositor/bindings.toml` ships:
-  the action vocabulary is chordkit's `StandardAction`, so the contract with the key remap daemon is action names already.
+  the action vocabulary is the chord keymap's `StandardAction`, so the contract with the key remap daemon is action names already.
 - **Reload**: `KeyRemapSource::watch` (daemon message, or the keymap files polled) sends on a calloop channel; the
   handler recomputes the bindings and feeds `Event::SettingsChanged` only when they differ. The watch lives in
   the handler's closure. Under `ConfigHome::At(dir)` (tests, the jail) the source reads only inside `dir`
@@ -693,7 +693,7 @@ W13 8 to 0.
   are not in `ROWS` (a test asserts none of those chords is bound), and `DesktopCommand::ToggleFullScreenKey`, added
   for full screen and used by nothing else, is dropped. ForceQuit (Cmd+Opt+Esc, system-level), Space switching and
   the sill hand-offs stay.
-- **Dependencies**: `chordkit` (rev ba094c62) and `key-remap-client` (rev 31e21db1) are git dependencies of the
+- **Dependencies**: `keymap` (rev ba094c62) and `key-remap-client` (rev 31e21db1) are git dependencies of the
   workspace and of `compositor`; `Cargo.lock` must be regenerated (`cargo metadata`) with network access.
 - Caps Lock no longer blocks bindings: `deliver::chord_mods` leaves it out of the chord (Num Lock was never in `MacMods`).
 
@@ -2567,7 +2567,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   a press would. Leaving lays the windows out as a desktop again (the model reads `Desktop` for `Leaving` and `Closed`), so
   motion flies them back. A locked session ignores every way in. Not done: a Space switch, a lock or a new window does not close
   the overview (a new window gets a slot at once); the model does not close it when its last window goes.
-- **The ways in.** `DesktopCommand::MissionControl` (a toggle; the config word `mission_control`; the chordkit standard action
+- **The ways in.** `DesktopCommand::MissionControl` (a toggle; the config word `mission_control`; the chord keymap standard action
   `MissionControl` is bound to it: Ctrl+Up on our desktop) and the shell's own `bardo_shell_v1.overview(mode, toggle)` request
   (`ShellRequest::Overview`, `bardo/shell_overview.rs`): Mission Control on or off, the other modes change nothing. The wire
   event `overview_state(mode, state, progress)` is sent (progress 0 entering and closed, 1000 open and leaving). The wire
@@ -3701,9 +3701,9 @@ the pinned sources, none was built. Look here first when it fails to compile.
   pointer's output. (7) Esc during the drag does not cancel (no keyboard route into the grab yet); Option pressed or released with
   the pointer still does not re-evaluate until the next motion. (8) `rust_scene/fill.rs` was not made: Fill is `filled_target`
   already, and the plan's file would only repeat it.
-- **Keys (D12) are an interface ask, not built.** chordkit 55a62b2 has no `StandardAction` for tiling (no left/right/top/bottom/
+- **Keys (D12) are an interface ask, not built.** the chord keymap 55a62b2 has no `StandardAction` for tiling (no left/right/top/bottom/
   quarters/fill/centre/return), so the compositor's `keymap/shell.rs` has no row to bind: the keymap module holds action names only.
-  Ask to chordkit (and the key remap daemon for the layers): add `TileLeft`, `TileRight`, `TileTop`, `TileBottom`, `TileTopLeft`,
+  Ask to the chord keymap (and the key remap daemon for the layers): add `TileLeft`, `TileRight`, `TileTop`, `TileBottom`, `TileTopLeft`,
   `TileTopRight`, `TileBottomLeft`, `TileBottomRight`, `TileFill`, `TileCentre`, `TileReturn` with the Sequoia chords (Globe/Fn+Ctrl
   plus arrows, F, C, R) and, because Fn is often invisible to the OS (D12), the reachable set Ctrl+Option plus the same keys. Then
   The compositor adds eleven rows to `ROWS` mapping to `DesktopCommand::Place(..)`, which already exists. Until then a person can bind

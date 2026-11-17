@@ -71,7 +71,7 @@ impl Keys {
         self.register(app, &registration)
     }
 
-    /// Declares what `registration` (built for `app`; chordkit offers no way to read the app
+    /// Declares what `registration` (built for `app`; the chord keymap offers no way to read the app
     /// back, so it is named again) holds: the app's actions with their defaults and fallbacks,
     /// and the standard actions it does not offer (`Registration::forgo`, `IfOffered` ones only).
     /// All or nothing; the `Conflict` says in plain words why it was refused.

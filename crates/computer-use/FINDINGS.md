@@ -695,7 +695,7 @@ single-variant `SeatBackend`, `SystemDesktop`, `SystemA11y`, `CaptureKind` and t
 capture-session kind are gone); one `Switch` for `cua.enabled`, `cua.autopause`,
 `cua.accessibility` and `cua.screens.keep` (keys and stored words unchanged; the reader takes
 the word through serde); the yes/no enums of the run machine, the host's drive loop and the
-gate are `bool`/`Option`; `GlowDraw`, `KeyWorld` (chordkit's `Platform` is used instead),
+gate are `bool`/`Option`; `GlowDraw`, `KeyWorld` (the chord keymap's `Platform` is used instead),
 `ProcedureUse`, `ControlRefusal::error_name`, `ModeChoice`, the `ScreenCheck` trait and the two
 `Stalls` twins are deleted; the phrase, window-class, commit-word and sensitive-title tables are
 `dist/screen-rules.toml` (built into cuad, replaced whole by `/etc/bardo/screen-rules.toml`),

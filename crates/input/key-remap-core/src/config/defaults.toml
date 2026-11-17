@@ -80,7 +80,7 @@ rules = [
 ]
 
 # An app that reads the desktop keymap itself (temor, and any app that resolves chords through
-# chordkit) gets Command as Super, unchanged: it needs Cmd+D and Cmd+Shift+D told apart, which
+# The chord keymap) gets Command as Super, unchanged: it needs Cmd+D and Cmd+Shift+D told apart, which
 # the terminal profile's Ctrl+Shift+letter cannot do. Physical Control stays Control, as in a
 # terminal. The editing rules `default` rewrites (Cmd+arrows to Home/End, Option+arrows to word
 # moves, the Backspace and Delete family, Control+A/E) are restated as themselves so the app sees

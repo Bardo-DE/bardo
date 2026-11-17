@@ -12,7 +12,7 @@ pub(super) enum Binding {
     /// A combination the Mac reserves for this meaning (copy, print…): the only way to bind one.
     Standard(StandardAction),
     /// An action of the viewer's own: its id in the keymap and its default chord, written in
-    /// chordkit's text (`Primary` is Command or Ctrl, whichever the platform means). Registering
+    /// The chord keymap's text (`Primary` is Command or Ctrl, whichever the platform means). Registering
     /// it refuses a chord a standard action or the desktop has.
     Own(&'static str, &'static str),
 }

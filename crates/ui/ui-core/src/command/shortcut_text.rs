@@ -1,4 +1,4 @@
-//! How a [`Shortcut`] reads on a platform: through chordkit's chord display, so a Mac-style
+//! How a [`Shortcut`] reads on a platform: through the chord keymap's chord display, so a Mac-style
 //! platform draws `⇧⌘Z`, Windows `Ctrl+Y`, KDE its own order. A shortcut that is a standard
 //! action's shows the chord the keymap really binds it to (a person's or the system's change
 //! included); any other shortcut shows its own chord with Command as the platform's primary.
@@ -29,7 +29,7 @@ pub fn shortcut_text(keymap: &Keymap, shortcut: &Shortcut) -> String {
     let live = owner_of(shortcut)
         .and_then(|action| keymap.chords_of(&Action::Standard(action)).first().copied());
     match live.or(own) {
-        // The design glyphs (`ShortcutKey::glyph`) draw what the shortcut itself says; chordkit
+        // The design glyphs (`ShortcutKey::glyph`) draw what the shortcut itself says; the chord keymap
         // draws a chord the keymap changed, and every chord on a word-style platform.
         Some(drawn) if platform.is_mac_style() && Some(drawn) == own => shortcut.glyphs(),
         Some(drawn) => drawn.display(platform),

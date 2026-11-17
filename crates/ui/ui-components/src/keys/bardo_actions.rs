@@ -1,4 +1,4 @@
-//! The actions Bardo's own components take: declared with chordkit like any app's, so a person
+//! The actions Bardo's own components take: declared with the chord keymap like any app's, so a person
 //! can rebind them and no app can take their chord by accident.
 
 use super::handle::Keys;

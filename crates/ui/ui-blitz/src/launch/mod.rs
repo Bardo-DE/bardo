@@ -115,7 +115,7 @@ impl AppConfig {
     }
 
     /// Where the app's keymap comes from, loaded for the platform `keymap::detect_process`
-    /// finds (default: chordkit's own source for that platform: kdeglobals on KDE, a saved
+    /// finds (default: the chord keymap's own source for that platform: kdeglobals on KDE, a saved
     /// dconf dump on GNOME, else the platform's conventions). Our desktop's launcher passes
     /// The key remap daemon's source here. The source is called from any thread when its settings change
     /// (`KeymapSource::watch`), so it is `Send + Sync`.
@@ -137,7 +137,7 @@ impl AppConfig {
         self
     }
 
-    /// The app's own keymap changes (an app with its own rebinding file reads it into chordkit
+    /// The app's own keymap changes (an app with its own rebinding file reads it into the chord keymap
     /// `Overrides`), laid on top of the keymap source, detected or given, so the shared keymap
     /// holds them and the detection stays. Kept across a reload; those it cannot apply are in
     /// `Keys::problems`. A second call replaces the first.

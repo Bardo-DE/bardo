@@ -1,14 +1,14 @@
 //! A program's end of key_remap.
 //!
 //! - [`Connection`]: the socket, one message per packet, `Hello` checked.
-//! - [`KeyRemapSource`]: this desktop's `keymap::KeymapSource`. It lays chordkit's conventions
+//! - [`KeyRemapSource`]: this desktop's `keymap::KeymapSource`. It lays the chord keymap's conventions
 //!   for our desktop, the desktop's own bindings ([`system_bindings`]) and the person's keymap
 //!   over each other, and tells the program when the person's keymap changes. Without a
 //!   daemon it reads the keymap file itself, so a program still honours the person's keymap.
 //! - [`Registered`]: an app's actions told to the key remap daemon so Settings can list them. Informational:
-//!   resolution stays in each app, through chordkit.
+//!   resolution stays in each app, through keymap.
 //!
-//! No keymap noun is defined here; every action, chord and keymap is chordkit's.
+//! No keymap noun is defined here; every action, chord and keymap is the chord keymap's.
 
 mod bounded;
 mod connection;

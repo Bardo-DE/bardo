@@ -1,7 +1,7 @@
 [package]
 publish.workspace = true
 name = "keymap-kde"
-description = "chordkit source for kde shortcut settings."
+description = "the chord keymap source for kde shortcut settings."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

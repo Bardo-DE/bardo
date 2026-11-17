@@ -1,5 +1,5 @@
-//! A [`Shortcut`] as chordkit's portable chord and back. The shortcut is written in Mac terms
-//! (Command is [`ShortcutKey::Super`]); chordkit says what that is on each platform, so
+//! A [`Shortcut`] as the chord keymap's portable chord and back. The shortcut is written in Mac terms
+//! (Command is [`ShortcutKey::Super`]); the chord keymap says what that is on each platform, so
 //! Command here is `Primary` there and the other modifiers stay what they are.
 
 use crate::standard_action::normalized;
@@ -9,7 +9,7 @@ use keymap::{Chord, DefaultChord, Key};
 
 impl Shortcut {
     /// The portable chord this shortcut is: Command is `Primary`. `None` for no key at all, or
-    /// a key chordkit has no name for (the Menu key).
+    /// a key the chord keymap has no name for (the Menu key).
     #[must_use]
     pub fn default_chord(&self) -> Option<DefaultChord> {
         let keys = self.keys();
@@ -60,7 +60,7 @@ fn modifier_of(key: ShortcutKey) -> Option<Modifiers> {
         .filter(|flag| *flag != Modifiers::META)
 }
 
-/// Each named key chordkit and the shortcut vocabulary both have.
+/// Each named key the chord keymap and the shortcut vocabulary both have.
 const NAMED: [(ShortcutKey, NamedKey); 14] = [
     (ShortcutKey::Enter, NamedKey::Enter),
     (ShortcutKey::Escape, NamedKey::Escape),

@@ -1,5 +1,5 @@
 //! The keymap source a launched app gets when it names none, and the one an app that builds its own
-//! keymap asks for: the platform from the environment (chordkit's `detect`), and for it the
+//! keymap asks for: the platform from the environment (the chord keymap's `detect`), and for it the
 //! desktop's own shortcut settings. Plasma's are in `kdeglobals`; GNOME's are in the dconf
 //! database, read through `dconf dump /`; every other platform has its conventions alone. Both
 //! stores are watched, so a change the person makes in the desktop's settings reaches the app as it
@@ -19,7 +19,7 @@ use ui_components::keys::KeySource;
 
 /// Where, under the config directory, a GNOME session's saved `dconf dump /` is looked for when
 /// there is no `dconf` to run.
-pub(crate) const GNOME_DUMP: &str = "chordkit/dconf-dump";
+pub(crate) const GNOME_DUMP: &str = "keymap/dconf-dump";
 
 /// How often a watched settings file's modified time is looked at.
 const LOOK_EVERY: Duration = Duration::from_secs(2);

@@ -118,7 +118,7 @@ toast in the front tab, and still updates what Undo would take back. The clipboa
 would take back are the window's, copied to every tab when one changes them. Closing the last tab is
 `Effect::CloseWindow`, which the edge says as `Heard::CloseWindow` and the window turns into the
 window handle's `close`. The tab bar is Bardo's `SegmentedControl` (the strip `TabView` is made of),
-drawn only from two tabs on; ⌘T, ⇧⌘] and ⇧⌘[ are files' actions, ⌘W is chordkit's standard Close.
+drawn only from two tabs on; ⌘T, ⇧⌘] and ⇧⌘[ are files' actions, ⌘W is the chord keymap's standard Close.
 Requests from outside (FileManager1, the intents) act on the front tab. Folder views and Quick Look
 are per tab.
 

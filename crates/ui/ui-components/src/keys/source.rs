@@ -1,4 +1,4 @@
-//! Where the keymap comes from, as the toolkit holds it: chordkit's source and the platform it
+//! Where the keymap comes from, as the toolkit holds it: the chord keymap's source and the platform it
 //! loads for. The launcher injects it (`ui_blitz::AppConfig::with_keymap_source`); without one a
 //! document takes our desktop's conventions, so a test reads no real system.
 

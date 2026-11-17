@@ -48,7 +48,7 @@
   slug strings stay as they are: cua depends on them. The nine `Ctrl+1`..`Ctrl+9` reserved rows on
   our desktop are one `CtrlDigit` rule, so the reason reads "switches to a Space" without the number.
   `AltGr` waits for wave 2 (Bardo uses it).
-- **keyboard-types (2026-11-15).** chordkit's own `Modifier`, `Modifiers`, `NamedKey` and `AltGr` are
+- **keyboard-types (2026-11-15).** the chord keymap's own `Modifier`, `Modifiers`, `NamedKey` and `AltGr` are
   gone: modifiers are keyboard-types' `Modifiers` (the OS key is `META`; its deprecated `SUPER` is
   not read), named keys are its `NamedKey`, AltGr is its `ALT_GRAPH` flag. `Key` stays as the chord's
   `Copy` form (one character or a named key); a tapped modifier is that modifier's named key, and
@@ -68,7 +68,7 @@
   1. `NSUserKeyEquivalents` (System Settings > Keyboard > App Shortcuts), in
      `~/Library/Preferences/.GlobalPreferences.plist` and each app's domain plist. Keyed by menu item
      title (localised: "Copy", "Save As..."); values like `@$z` (`@` Command, `$` Shift, `~` Option,
-     `^` Control). `chordkit-macos` has the value parser (`parse_key_equivalent`), an English
+     `^` Control). `keymap-macos` has the value parser (`parse_key_equivalent`), an English
      title table and `import_user_key_equivalents`; the program that reads the plist supplies titles per
      locale.
   2. `AppleSymbolicHotKeys` in `~/Library/Preferences/com.apple.symbolichotkeys.plist`: system shortcuts
@@ -83,19 +83,19 @@
 - Windows has no central or user-editable keymap: standard chords are built into the common controls,
   app accelerators are per app, and RegisterHotKey hotkeys cannot be listed. The source is the
   conventions table plus the reserved chords (any Win+key, Alt+Tab, Ctrl+Alt+Del, Ctrl+Esc).
-- Foreign settings files are read through `chordkit-file` only (INPUT-12): opened without blocking (a pipe
+- Foreign settings files are read through `keymap-file` only (INPUT-12): opened without blocking (a pipe
   cannot stop `open`), regular files only (links are followed, then the target is checked), 4 MiB at most
   (`SETTINGS_FILE_LIMIT`), UTF-8 only. A refusal is a `ReadError`, which a source turns into
   `SourceError::Read`; the caller skips the source and logs it. A missing file is not an error (nothing
   was changed). Open: the key remap daemon (`key-remap-client/src/fallback.rs`, `key_remap/src/keymap/file.rs`) and the mouse gestures daemon
-  (`config/load.rs`) still open their own files; they take `chordkit-file` in their own repos (pin
-  `chordkit-file` by git rev, as the key remap daemon pins `chordkit`).
+  (`config/load.rs`) still open their own files; they take `keymap-file` in their own repos (pin
+  `keymap-file` by git rev, as the key remap daemon pins `keymap`).
 - Change notification: the trait is a callback; no source here implements a file watcher (that would
   need a watcher crate in a source crate). The default `watch` never fires.
 
 ## Open items
 
-- Condition to close each: names in `chordkit-kde/src/names.rs` come from memory of KStandardShortcut,
+- Condition to close each: names in `keymap-kde/src/names.rs` come from memory of KStandardShortcut,
   and the GNOME dconf keys from memory of the schemas; verify both against a real kdeglobals and
   `dconf dump /` on a KDE and a GNOME machine.
 - Default chords for GNOME screenshots, GNOME and KDE workspace switching, KDE overview and Meta
@@ -107,7 +107,7 @@
 - Window tiling in sources: GNOME keys `maximize`, `move-to-center` (wm keybindings) and
   `toggle-tiled-left`, `toggle-tiled-right` (org/gnome/mutter/keybindings) are mapped from memory;
   verify against a real `dconf dump /`. KDE's tiling actions are kwin global shortcuts, not
-  KStandardShortcut names, so `chordkit-kde` maps none. The macOS title table maps only the titles that
+  KStandardShortcut names, so `keymap-kde` maps none. The macOS title table maps only the titles that
   are unambiguous in an app's menus (the four quarters, Return to Previous Size); "Left", "Right",
   "Top", "Bottom", "Fill" and "Center" also name text alignment and fill items, so they stay out until
   the importer knows which menu a title came from.

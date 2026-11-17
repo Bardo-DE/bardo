@@ -19,7 +19,7 @@ cd "$(dirname "$0")/.."
 # when they exist; ARCHITECTURE.md section 1 lists the rule each will carry. anyview-store does
 # blocking file I/O and nothing else (the launcher links it): no runtime, no UI, no decoder.
 # anyview-machines holds the viewer's pure state machines (chrome, panel, palette, sheet, navigation,
-# presentation, loading, the stages, key routing, the root) over anyview-core, ui-core and chordkit alone:
+# presentation, loading, the stages, key routing, the root) over anyview-core, ui-core and the chord keymap alone:
 # no dioxus, no ds, no ui-blitz, no ui-shell, no runtime, no GPU, no decoder, no bus, no player. A host that
 # is not the viewer's window (temor, a terminal) drives the same machines without compiling a window.
 # anyview-ui holds the views that draw those machines and the effects that feed them. The crate itself may name the
@@ -189,12 +189,12 @@ DIRECT=(
 # 571, the headless peek 250 and the viewer 689.
 # anyview-fs (the one place a path is opened, so anyview-core does no I/O; it depends on core alone) is one package
 # more in each: the peek is 572, the headless peek 193 and the viewer 690.
-# The desktop key system (batch 11: Bardo v0.3.6 resolves keys to actions through chordkit, and anyview-core
-# declares the viewer's own actions' default chords with it) adds chordkit to every tree, and Bardo's
+# The desktop key system (batch 11: Bardo v0.3.6 resolves keys to actions through the chord keymap, and anyview-core
+# declares the viewer's own actions' default chords with it) adds the chord keymap to every tree, and Bardo's
 # keymap-kde and keymap-gnome (the system shortcut readers) to the windowed ones: the peek is 575, the
 # headless peek 194 and the viewer 693.
 # Splitting the machines out of anyview-ui (layering audit F2) adds anyview-machines to the viewer's tree: 694.
-# anyview-machines is 34: anyview-core's tree (ui-core, chordkit, jiff, thiserror and the like) and nothing of
+# anyview-machines is 34: anyview-core's tree (ui-core, the chord keymap, jiff, thiserror and the like) and nothing of
 # the window.
 # The pane (anyview-pane) is 590: anyview-ui's tree (589) and the pane crate itself; its own dependencies
 # (anyview-core, anyview-peek, anyview-ui, dioxus, ds, futures-channel, futures-util) were all in that tree already.
@@ -227,7 +227,7 @@ DIRECT=(
 # (C, LGPL) and five others the viewer reached: 695.
 # peephole v0.1.6 reads a socket peer's pidfd through nix (the owner's choice where rustix has no safe
 # wrapper), which brings nix and memoffset, and docket's helpers reach inference-core through action-dbus: 698.
-# key-remap-client 52c66c7 reads the shared key file through keymap-fs (chordkit's own file reader, MIT OR
+# key-remap-client 52c66c7 reads the shared key file through keymap-fs (the chord keymap's own file reader, MIT OR
 # Apache-2.0, its dependencies already in every tree): one more in each windowed tree: the peek 579, the viewer
 # 699, the pane 591, the media host 611 and the pane with its player 612.
 # Bardo v0.3.38 draws emoji through its own ui-emoji (the kit's, MIT OR Apache-2.0, over fontique,

@@ -1,4 +1,4 @@
-//! chordkit: a portable keymap core.
+//! The chord keymap: a portable keymap core.
 //!
 //! Apps declare their own actions with a portable default chord and handle actions; they never
 //! read modifiers or decide Cmd versus Ctrl. A [`Keymap`] holds, for one [`Platform`], the
@@ -9,7 +9,7 @@
 //! crates and implement [`KeymapSource`].
 //!
 //! Keys and modifier flags are [`keyboard_types`]' own, re-exported here so a toolkit hands in
-//! the same version chordkit reads; a [`Chord`] narrows them to its canonical, `Copy` form.
+//! the same version the chord keymap reads; a [`Chord`] narrows them to its canonical, `Copy` form.
 
 pub use keyboard_types;
 

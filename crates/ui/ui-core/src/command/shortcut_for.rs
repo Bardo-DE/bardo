@@ -1,5 +1,5 @@
 //! Chords and actions drawn without a runtime or a `Shortcut`: pure functions of a platform (or a
-//! keymap) and chordkit's own types, for code that has neither a window nor a `Keys` handle (a
+//! keymap) and the chord keymap's own types, for code that has neither a window nor a `Keys` handle (a
 //! command panel's hints, a help sheet built in a worker). They draw as `shortcut_text` does for
 //! a chord the keymap binds: `⌘C` on a Mac-style platform, `Ctrl+C` in a word-style one.
 

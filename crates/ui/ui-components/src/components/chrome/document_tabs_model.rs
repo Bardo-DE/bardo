@@ -23,7 +23,7 @@ pub enum TabCommand {
     CloseSelected,
 }
 
-/// The command `action` is for the strip, if any. chordkit has no next or previous tab action,
+/// The command `action` is for the strip, if any. The chord keymap has no next or previous tab action,
 /// so the strip moves between its tabs with the arrows, Home and End only.
 #[must_use]
 pub fn command_of(action: &Action) -> Option<TabCommand> {

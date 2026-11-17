@@ -1,6 +1,6 @@
-//! The standard shortcut table (design/27-HIG-PARITY.md section 6.2): chordkit's conventions on
+//! The standard shortcut table (design/27-HIG-PARITY.md section 6.2): the chord keymap's conventions on
 //! this desktop, drawn in the Mac's order, and the refusals `Shortcut::custom` gets from
-//! chordkit's registration. chordkit's own tests cover that no two actions share a chord.
+//! The chord keymap's registration. The chord keymap's own tests cover that no two actions share a chord.
 
 use ui_components::prelude::*;
 use ui_core::standard_action::{Conflict, SpaceNumber, StandardAction};

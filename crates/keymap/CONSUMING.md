@@ -1,6 +1,6 @@
-# Consuming chordkit
+# Consuming the chord keymap
 
-Two roles use chordkit: a **toolkit** (Bardo) that turns key events into actions, and an **app**
+Two roles use the chord keymap: a **toolkit** (Bardo) that turns key events into actions, and an **app**
 that declares and handles actions. Neither reads modifiers or decides Command versus Ctrl.
 
 ## The toolkit
@@ -8,7 +8,7 @@ that declares and handles actions. Neither reads modifiers or decides Command ve
 ### 1. Pick the platform once
 
 ```rust
-use chordkit::{detect_process, Platform};
+use keymap::{detect_process, Platform};
 
 let platform: Platform = detect_process(); // BARDO_KEYMAP_PLATFORM overrides; tests use `detect(os, lookup)`
 ```
@@ -16,8 +16,8 @@ let platform: Platform = detect_process(); // BARDO_KEYMAP_PLATFORM overrides; t
 ### 2. Load a keymap from a source
 
 ```rust
-use chordkit::{KeymapSource, ConventionSource, Desktop, Platform};
-use chordkit_kde::KdeSource;
+use keymap::{KeymapSource, ConventionSource, Desktop, Platform};
+use keymap_kde::KdeSource;
 
 let source: Box<dyn KeymapSource> = match platform {
     Platform::Linux { desktop: Desktop::Kde } => Box::new(KdeSource::new(config_dir.join("kdeglobals"))),
@@ -29,7 +29,7 @@ let mut keymap = source.load(platform)?;
 Then lay the person's changes over it and keep the problems for a settings screen:
 
 ```rust
-let (overrides, bad_lines) = chordkit::Overrides::parse(&std::fs::read_to_string(path)?);
+let (overrides, bad_lines) = keymap::Overrides::parse(&std::fs::read_to_string(path)?);
 let (keymap, refused) = keymap.with_overrides(&overrides);
 ```
 
@@ -43,12 +43,12 @@ let _watch = source.watch(Box::new(move || tell_main_loop_to_reload()))?; // kee
 
 `KeyInput` is keyboard-types' modifier flags as the toolkit reports them plus the logical key with
 Shift not applied (winit's `key_without_modifiers`, GTK's keyval of the unshifted level, Qt's key).
-chordkit re-exports the keyboard-types it reads as `chordkit::keyboard_types`; a toolkit that already
+The chord keymap re-exports the keyboard-types it reads as `keymap::keyboard_types`; a toolkit that already
 speaks keyboard-types (winit, blitz) hands its values straight in.
 
 ```rust
-use chordkit::KeyInput;
-use chordkit::keyboard_types::{Key, Modifiers};
+use keymap::KeyInput;
+use keymap::keyboard_types::{Key, Modifiers};
 
 fn to_input(modifiers: Modifiers, key_without_modifiers: &Key) -> Option<KeyInput> {
     // `None` only for composed text of more than one character.
@@ -71,16 +71,16 @@ Set `ALT_GRAPH` whenever the toolkit has the flag (GTK's level-3 shift too). Loc
 rest are dropped from chords; the OS key must be `META`.
 A press with AltGr held types a character: `resolve` returns `None` and `is_primary_form` is false,
 so it never matches a Ctrl or Alt chord. Windows reports AltGr as Ctrl+Alt plus the flag; leave Ctrl
-and Alt as the toolkit has them, chordkit drops them. Without the flag, Ctrl+Alt+T is an ordinary
+and Alt as the toolkit has them, the chord keymap drops them. Without the flag, Ctrl+Alt+T is an ordinary
 Ctrl+Alt chord. Chords themselves never contain AltGr.
 
 Pass modifiers as the hardware has them. If a toolkit swaps Ctrl and Command (Qt on macOS does), undo
-the swap in `to_input`; chordkit assumes physical keys.
+the swap in `to_input`; the chord keymap assumes physical keys.
 
 ### 4. Resolve, and hand the app an action
 
 ```rust
-use chordkit::Context;
+use keymap::Context;
 
 let context = match focus {
     Focus::TextField => Context::TextEntry,
@@ -140,7 +140,7 @@ match keymap.resolve(&input, Context::Terminal) {
 An app declares its actions with a portable default chord, registers them, and handles actions.
 
 ```rust
-use chordkit::{Action, AppAction, AppId, DefaultChord, StandardAction};
+use keymap::{Action, AppAction, AppId, DefaultChord, StandardAction};
 
 let mail = AppId::new("mail")?;
 let compose = AppAction::new("mail.compose")?;
@@ -181,7 +181,7 @@ its own keymap, still sees it). Forgoing a universal action is refused (`Conflic
 reserved platform chord is refused as before.
 
 ```rust
-use chordkit::{Registration, StandardAction};
+use keymap::{Registration, StandardAction};
 
 let registration = Registration::new(&temor)
     .forgo(StandardAction::ShowFonts)                 // temor has no font panel
@@ -213,7 +213,7 @@ chord the platform reserves is refused, with a reason in `with_overrides`' probl
 ## A source in another repo (the key remap daemon)
 
 ```rust
-use chordkit::{Keymap, KeymapSource, Platform, SourceError, SystemBinding, Watch, ChangeCallback};
+use keymap::{Keymap, KeymapSource, Platform, SourceError, SystemBinding, Watch, ChangeCallback};
 
 struct OurDesktopSource { /* socket to the daemon */ }
 

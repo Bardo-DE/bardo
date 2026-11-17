@@ -1,10 +1,10 @@
-# chordkit
+# The chord keymap
 
 A portable keymap core: actions, chords, a resolver and display, with per-platform sources that read the system's own shortcut settings.
 
 Apps declare their own actions with a portable default chord and handle actions. They never read modifiers or decide Command versus Ctrl: on each OS the keymap follows that OS's own shortcut settings when there are any, and that OS's conventions otherwise.
 
-- `chordkit`: the pure core (no I/O, no async).
+- `keymap`: the pure core (no I/O, no async).
 - `keymap-kde`: reads kdeglobals.
 - `keymap-gnome`: reads a dconf dump.
 

@@ -1,6 +1,6 @@
-//! Keys as actions: the one toolkit integration of chordkit (the keymap core).
+//! Keys as actions: the one toolkit integration of the chord keymap (the keymap core).
 //!
-//! A dioxus key event becomes a chordkit key press in one place (`ui_core::command::key_input`),
+//! A dioxus key event becomes a chord keymap key press in one place (`ui_core::command::key_input`),
 //! the active keymap comes from an injected [`KeySource`], and a press resolves to an `Action` in
 //! the right `Context`. Apps declare their own actions with a portable default chord and handle
 //! actions; they never read modifiers or decide Command versus Ctrl. See CONSUMING.md "Keyboard:

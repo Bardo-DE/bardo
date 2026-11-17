@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 
 EFFECTS="tokio async-std smol futures zbus zvariant notify rustix libc nix mio evdev toml serde_json plist base-fs"
 RULES=(
-  "chordkit: $EFFECTS"
+  "keymap: $EFFECTS"
 )
 fail=0
 for rule in "${RULES[@]}"; do

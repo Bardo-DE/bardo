@@ -15,7 +15,7 @@ pub struct Registered {
 
 impl KeyRemapSource {
     /// Tells the key remap daemon `app`'s actions and their default chords. Informational: each app resolves
-    /// its own keys in-process through chordkit, and this changes no binding. Keep the result
+    /// its own keys in-process through the chord keymap, and this changes no binding. Keep the result
     /// alive while the app runs.
     ///
     /// # Errors

@@ -2,10 +2,10 @@
 //! desktop reserves for itself.
 //!
 //! See design/27-HIG-PARITY.md section 6.2 and design/06-INTERACTIONS.md section 2. The actions and
-//! their chords are chordkit's (`StandardAction`, its conventions table); this file binds them to
+//! their chords are the chord keymap's (`StandardAction`, its conventions table); this file binds them to
 //! the design vocabulary: [`Shortcut::standard`] is an action's chord on this desktop, written in
 //! Mac terms (Command is [`ShortcutKey::Super`], drawn `⌘`), and [`Shortcut::custom`] asks
-//! chordkit's registration whether an app may take a combination.
+//! The chord keymap's registration whether an app may take a combination.
 
 use crate::vocab::{Shortcut, ShortcutKey};
 use keymap::{AppAction, AppId, Convention, ConventionTable, Desktop, Keymap, Platform};
@@ -30,13 +30,13 @@ impl Shortcut {
         }
     }
 
-    /// A shortcut of the app's own, modifiers put in the Mac's order; refused with chordkit's
+    /// A shortcut of the app's own, modifiers put in the Mac's order; refused with the chord keymap's
     /// plain-words [`Conflict`] when this desktop keeps the combination for itself or a standard
     /// action has it (design/27 section 6.2: never repurpose one).
     ///
     /// # Errors
     ///
-    /// Returns chordkit's [`Conflict`] when this desktop keeps the combination for itself or a
+    /// Returns the chord keymap's [`Conflict`] when this desktop keeps the combination for itself or a
     /// standard action has it.
     pub fn custom(keys: impl IntoIterator<Item = ShortcutKey>) -> Result<Shortcut, Conflict> {
         let shortcut = Shortcut(normalized(keys));

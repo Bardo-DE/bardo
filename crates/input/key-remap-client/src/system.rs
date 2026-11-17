@@ -1,6 +1,6 @@
-//! The bindings our desktop owns itself, as chordkit `SystemBinding` data.
+//! The bindings our desktop owns itself, as the chord keymap `SystemBinding` data.
 //!
-//! chordkit's conventions for our desktop (`Desktop::Ours`) already carry the launcher, the app
+//! The chord keymap's conventions for our desktop (`Desktop::Ours`) already carry the launcher, the app
 //! switcher, the input source, the emoji picker and Ctrl+1 to Ctrl+9 for Spaces, and its
 //! reserved table keeps apps off them. This table holds only what the desktop adds to or
 //! changes from those conventions: a row replaces the action's chords, so it lists every chord,
@@ -10,7 +10,7 @@ use keymap::{Chord, StandardAction, SystemBinding};
 
 type Row = (StandardAction, &'static [&'static str]);
 
-/// One row per action the desktop binds differently from chordkit's conventions.
+/// One row per action the desktop binds differently from the chord keymap's conventions.
 const ROWS: &[Row] = &[
     // sill's launcher is also on Ctrl+Alt+Space, where a keyboard has no Command key.
     (StandardAction::Launcher, &["Super+Space", "Ctrl+Alt+Space"]),

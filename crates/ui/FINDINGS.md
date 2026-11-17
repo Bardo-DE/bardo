@@ -1760,11 +1760,11 @@ Open:
 - The goldens are markup (`crates/ds-shell/tests/snapshots/accounts/*-light.html` and `-dark.html`);
   no pixel snapshot of the Accounts gallery page is kept.
 
-## Keys as actions (chordkit)
+## Keys as actions (the chord keymap)
 
 - Standing: a key press resolves to an action through one chain. `ds_core::command::key_input` is
-  the only place a dioxus key and its modifiers become a chordkit `KeyInput` (Ctrl, Alt, Shift, Super
-  and Meta are kept apart; chordkit's normaliser folds Meta into Super on every platform; lock and
+  the only place a dioxus key and its modifiers become a chord keymap `KeyInput` (Ctrl, Alt, Shift, Super
+  and Meta are kept apart; the chord keymap's normaliser folds Meta into Super on every platform; lock and
   AltGraph flags are not chord modifiers). `Keys::action_of` / `Keys::resolve` read the active keymap,
   `Context` decides what a text field or a terminal keeps. Nothing else in Bardo reads
   `Modifiers::CONTROL`, `SUPER` or `META` to decide a chord.
@@ -1774,16 +1774,16 @@ Open:
   otherwise. Tests that pressed Ctrl for a clipboard chord or a wheel zoom now press the platform's
   primary (`edit_surface`, `window_scroll_fingers`).
 - Standing: the design glyphs (`ShortcutKey::glyph`: Enter `↵`, Escape `Esc`) draw every shortcut on a
-  Mac-style platform that is what its `Shortcut` says, so the SSR goldens are unchanged; chordkit
+  Mac-style platform that is what its `Shortcut` says, so the SSR goldens are unchanged; the chord keymap
   draws a chord the keymap changed, and every chord on a word-style platform (`Ctrl+Shift+Z`, KDE's
-  `Meta+...` order). chordkit's own Mac glyphs differ for Enter (`↩`) and Escape (`⎋`); align them when
+  `Meta+...` order). The chord keymap's own Mac glyphs differ for Enter (`↩`) and Escape (`⎋`); align them when
   design/04 O-2 signs off the glyph set.
 - Standing: `ShortcutKey::Super` in a `Shortcut` is Command, which is `Primary`: on Windows
   `Shortcut(vec![Super, Char('k')])` is Ctrl+K. A literal Windows-key chord is not expressible as a
   `Shortcut` (it is a `DefaultChord` with `Super`). A desktop-owned chord (`Shortcut::standard`) is
   drawn from the live keymap, so a remapped Copy shows its new chord.
 - Standing: `SwitchChord` is `Primary` or `Unbound`; the `Control` variant is gone because Ctrl+1..9 is the
-  desktop's Space switch on our desktop (chordkit reserves it).
+  desktop's Space switch on our desktop (the chord keymap reserves it).
 - Standing: `PaneStack` registers `bardo.pane-back` (Primary+`[`) on first render; an app that already
   holds that chord leaves the pane stack's Command+`[` unbound (the conflict is in `Keys::problems`),
   while Escape and Alt+Left still go back.
@@ -1796,7 +1796,7 @@ Open:
 - Closed 2026-10-19: the GNOME source runs `dconf dump /` itself, when the source is made and on the
   watch's thread when `$XDG_CONFIG_HOME/dconf/user` changes, and holds the dump in memory, so a load
   (which `Keys` may do during a render) only parses. A failed `dconf` keeps the last dump; the dump
-  saved at `$XDG_CONFIG_HOME/chordkit/dconf-dump` is read only when there is no `dconf` program, and
+  saved at `$XDG_CONFIG_HOME/keymap/dconf-dump` is read only when there is no `dconf` program, and
   that file is not watched. The `dconf` call is injected, so tests never read the real database.
   Moved from temor's own keymap source, which now takes Bardo's.
 - Open: `Keys` reloads inside `Ds`'s render (the watch callback sets a flag and schedules the render),
@@ -1808,9 +1808,9 @@ Open:
 
 ## Keys: registration with forgo, overrides, pure drawing (wh-keys7)
 
-- `Keys::register(&AppId, &Registration)` and `ds::keys::use_register` carry chordkit's `forgo` and
-  fallbacks; `register_actions` is a wrapper over it. The app is passed again because chordkit's
-  `Registration::app()` is `pub(crate)`: ask chordkit for a public accessor and the argument goes.
+- `Keys::register(&AppId, &Registration)` and `ds::keys::use_register` carry the chord keymap's `forgo` and
+  fallbacks; `register_actions` is a wrapper over it. The app is passed again because the chord keymap's
+  `Registration::app()` is `pub(crate)`: ask the chord keymap for a public accessor and the argument goes.
 - A registration replaces its app's earlier one (the replay too), built from a kept base keymap
   (source plus overrides); a refused replacement leaves the earlier one standing. An identical one
   is a no-op.

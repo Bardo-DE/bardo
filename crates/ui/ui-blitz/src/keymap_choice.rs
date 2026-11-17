@@ -11,7 +11,7 @@ type SharedSource = Arc<dyn KeymapSource + Send + Sync>;
 /// Where an app's keymap comes from.
 #[derive(Clone, Default)]
 pub(crate) enum KeymapChoice {
-    /// The platform's own: chordkit's detection and the sources it has for that platform.
+    /// The platform's own: the chord keymap's detection and the sources it has for that platform.
     #[default]
     Detected,
     /// The app's source (our desktop's the key remap daemon, say), for the detected platform.

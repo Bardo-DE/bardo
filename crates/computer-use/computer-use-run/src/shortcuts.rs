@@ -2,7 +2,7 @@
 //!
 //! A computer-use model types key chords itself and nothing else tells it which key is the
 //! primary one here: on a Mac, and on our desktop, it is the Command key (which reaches the
-//! window as Super); elsewhere it is Ctrl. The chords are chordkit's, read from the [`Keymap`]
+//! window as Super); elsewhere it is Ctrl. The chords are the chord keymap's, read from the [`Keymap`]
 //! the caller built (the platform's conventions, and the person's own changes when the caller
 //! laid them on); nothing here restates one.
 

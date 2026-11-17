@@ -1,6 +1,6 @@
-//! The person's keymap file: `keymap` in the config directory, in chordkit's overrides line
+//! The person's keymap file: `keymap` in the config directory, in the chord keymap's overrides line
 //! format. This module reads it, judges it against the last good copy and watches it; serving
-//! it is the socket thread's. The nouns (actions, chords, overrides) are chordkit's.
+//! it is the socket thread's. The nouns (actions, chords, overrides) are the chord keymap's.
 
 mod file;
 mod settle;

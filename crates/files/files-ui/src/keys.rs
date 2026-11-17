@@ -1,7 +1,7 @@
 //! What a key press means in the window: files' own actions, the standard ones it answers, and
 //! typing a name to jump to it.
 //!
-//! The window never reads which modifier is held. Bardo's `Keys` turns a press into chordkit's
+//! The window never reads which modifier is held. Bardo's `Keys` turns a press into the chord keymap's
 //! `Action` (the keymap follows the system's own shortcut settings), and this file declares
 //! files' actions with portable chords written with `Primary` and answers the ones the window
 //! offers. Standard actions are handled, never declared.
@@ -17,7 +17,7 @@ use ui_components::prelude::{Keys, use_keys};
 
 use crate::state::Browse;
 
-/// files' name to chordkit: the first part of every action id.
+/// files' name to the chord keymap: the first part of every action id.
 const APP: &str = "files";
 
 /// What an action of files asks of the window.
@@ -207,7 +207,7 @@ fn act(action: &Action, browse: Browse, mut sidebar: Signal<bool>) -> bool {
             true
         }
         Action::App(app) => own_input(app).is_some_and(send),
-        // A standard action the window does not offer, or one chordkit adds later.
+        // A standard action the window does not offer, or one the chord keymap adds later.
         Action::Standard(_) => false,
     }
 }

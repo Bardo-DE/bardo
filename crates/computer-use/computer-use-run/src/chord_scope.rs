@@ -2,7 +2,7 @@
 //!
 //! A chord is injected into the leased window's seat, but the desktop takes some of them for
 //! itself before the window sees them: switching apps, opening the launcher, locking the screen,
-//! logging out, switching Spaces. The answer is chordkit's, from the platform's conventions
+//! logging out, switching Spaces. The answer is the chord keymap's, from the platform's conventions
 //! (`Keymap::conventional`) and what the platform reserves (`reserved_reason`); nothing here
 //! restates a chord. `Super` is not banned as a whole: on our desktop it is the Command key, and
 //! Command+C is an ordinary write.
@@ -58,7 +58,7 @@ fn modifiers_of(chord: &Chord) -> Modifiers {
     })
 }
 
-/// The key as chordkit writes it; `None` for a key no desktop shortcut here uses.
+/// The key as the chord keymap writes it; `None` for a key no desktop shortcut here uses.
 fn key_of(key: &Key) -> Option<ChordKey> {
     let named = |named| Some(ChordKey::Named(named));
     match key {

@@ -3,7 +3,7 @@
 //!
 //! cuad uses the standard shortcuts only (owner decision, 2026-10-10). Its sandbox
 //! (`dist/bardo-computer-use.service`) keeps the person's home and the key remap daemon socket closed, so their own
-//! remappings are not read and the shortcut hints come from chordkit's conventional keymap (with
+//! remappings are not read and the shortcut hints come from the chord keymap's conventional keymap (with
 //! the desktop's own bindings). A source that cannot be opened is therefore not a problem: it is
 //! skipped without a word, and only what was read and found wrong (a bad line in a keymap file
 //! that did open) is reported.

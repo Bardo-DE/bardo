@@ -9,7 +9,7 @@ use crate::message::ToClient;
 pub const SOCKET_PATH: &str = "/run/bardo/key-remap/key-remap.sock";
 /// Where the key remap daemon's configuration lives unless `BARDO_KEY_REMAP_CONFIG_DIR` says otherwise.
 pub const CONFIG_DIR: &str = "/etc/bardo/key-remap";
-/// The person's keymap file inside the config directory, in chordkit's overrides line format.
+/// The person's keymap file inside the config directory, in the chord keymap's overrides line format.
 pub const KEYMAP_FILE: &str = "keymap";
 /// The largest keymap file anyone reads. With the problem list bounded where the file is
 /// judged (`keymap::settle`), the served copy always fits one packet.

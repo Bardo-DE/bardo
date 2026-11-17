@@ -1,4 +1,4 @@
-//! A function key sent through the harness reaches an app as chordkit's action: F9 is
+//! A function key sent through the harness reaches an app as the chord keymap's action: F9 is
 //! `ToggleSidebar` in the CUA table, and a Mac table (Ctrl+Command+S) leaves it alone.
 
 use dioxus::prelude::*;

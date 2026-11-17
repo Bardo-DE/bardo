@@ -11,12 +11,12 @@ how to add the next thing. The key remap daemon depends on no desktop crate and 
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
 | `key-remap-proto` | `crates/key-remap-protocol` | the socket contract: `ToDaemon` (`Steer` or `KeymapCall`), `ToClient`, `Status`, `ProfileName`, `KeymapState`, `Registration`, `PROTOCOL_VERSION`, `MIN_PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
-| `key-remap-client` | `crates/key-remap-client` | a program's end of the socket (`Connection`) and `KeyRemapSource`, this desktop's `chordkit::KeymapSource`: chordkit's conventions for our desktop, `system_bindings`, the machine's keymap from the daemon or its file, then the person's own file; `register` | `key-remap-proto`, `chordkit`, `rustix` (std has no `SOCK_SEQPACKET`) |
+| `key-remap-client` | `crates/key-remap-client` | a program's end of the socket (`Connection`) and `KeyRemapSource`, this desktop's `keymap::KeymapSource`: the chord keymap's conventions for our desktop, `system_bindings`, the machine's keymap from the daemon or its file, then the person's own file; `register` | `key-remap-proto`, `keymap`, `rustix` (std has no `SOCK_SEQPACKET`) |
 | `key-remap-evdev` | `crates/key-remap-sys` | tier C (IO, no key remap daemon concepts): the evdev and uinput ioctls through `input-linux`'s safe `EvdevHandle` and `UInputHandle` (`EVIOCGRAB`, `EVIOCGKEY`, `EVIOCGLED`, `EVIOCGBIT`, `EVIOCGPROP`, `EVIOCGABS`, uinput incl. `UI_ABS_SETUP`; raw codes in, typed handles inside, `io::Error` out) and `drain`, reading a nonblocking event node until it would block; shared by the daemon and `key-remap-devtest`, so neither keeps a copy | `input-linux`, `rustix`, `thiserror` |
-| `key_remap` | `crates/key_remap` | the pure core and the daemon; library plus the `key_remap` binary | `key-remap-core`, `key-remap-proto`, `key-remap-client`, `key-remap-evdev`, `chordkit`, `serde`, `serde_json`, `thiserror`, `notify`, `rustix`, `peephole`, `caller-identity-core` (who is on the socket), `input-broker-client` (the root device service's client, which re-exports the wire types the key remap daemon names); the three are git deps by tag, `peephole` and `input-broker-client` with their `fake` features only as dev dependencies |
+| `key_remap` | `crates/key_remap` | the pure core and the daemon; library plus the `key_remap` binary | `key-remap-core`, `key-remap-proto`, `key-remap-client`, `key-remap-evdev`, `keymap`, `serde`, `serde_json`, `thiserror`, `notify`, `rustix`, `peephole`, `caller-identity-core` (who is on the socket), `input-broker-client` (the root device service's client, which re-exports the wire types the key remap daemon names); the three are git deps by tag, `peephole` and `input-broker-client` with their `fake` features only as dev dependencies |
 | `key-remap-devtest` | `crates/key-remap-devtest` | test-only (`publish = false`): fake keyboards on `/dev/uinput`, the daemon as a child process, the output device reader, a socket client | `key-remap-proto`, `key-remap-client` (its `Heard`), `key-remap-evdev`, `rustix` |
 
-Edges: `key_remap` -> `key-remap-proto` and `key-remap-client` (the `status` verb's socket client), and `key-remap-client` -> `key-remap-proto` and `chordkit`, never `key_remap`; `key_remap` also takes `chordkit` for the keymap file's judgement. The key remap daemon defines no action, chord or keymap type: those are chordkit's. And `key_remap` dev-depends on `key-remap-devtest`, which
+Edges: `key_remap` -> `key-remap-proto` and `key-remap-client` (the `status` verb's socket client), and `key-remap-client` -> `key-remap-proto` and `keymap`, never `key_remap`; `key_remap` also takes `keymap` for the keymap file's judgement. The key remap daemon defines no action, chord or keymap type: those are the chord keymap's. And `key_remap` dev-depends on `key-remap-devtest`, which
 depends on `key-remap-proto`, `key-remap-client` and `key-remap-evdev`, and never on `key_remap`. `key-remap-proto` depends on no other workspace
 crate, and has no `toml`, `notify` or `rustix`, so a desktop takes it without pulling the
 daemon. sill imports it as a path dependency. `scripts/check-boundary.sh` holds the edges
@@ -35,7 +35,7 @@ never name `daemon` modules.
 | L0 vocabulary | `key` (`Key`, `Modifier`, `Side`, `Mods`), `event` (`Edge`, `KeyEvent`, `Physical`, `Logical`), `time` (`Mono`) | newtypes | `pub` |
 | L1 layout | `layout` (`Layout`, `role`) | pure tables | `pub` |
 | L2 profiles | `profile` (`Trigger`, `Stroke`, `RuleAction`, `Profile`, `Profiles`), `config` (`ConfigLayer`, `resolve`, `lenient`, `load`, `vendor`, `watch`) | pure except `load`, `vendor` and `watch` (file reads, inotify; `load` and `vendor` share the root-only reader `trusted`) | `pub` |
-| L2 keymap | `keymap` (`read`, `settle`, `spawn`): the person's keymap file in chordkit's overrides format, judged against the last good copy by the pure `settle`; its watch is `config::watch::spawn_reading` | pure except `read` and `spawn` | `pub(crate)` |
+| L2 keymap | `keymap` (`read`, `settle`, `spawn`): the person's keymap file in the chord keymap's overrides format, judged against the last good copy by the pure `settle`; its watch is `config::watch::spawn_reading` | pure except `read` and `spawn` | `pub(crate)` |
 | L3 state | `held`, `gate`, `escape`, `backoff` | pure state machines | `pub` |
 | L4 remapper | `remap` (`Remapper::step`, `RemapInput`, `RemapOut`) | pure composition: `Remapper::step(self, RemapInput, &Profiles) -> (Self, Vec<RemapOut>)` | `pub` |
 | L5 effects | `daemon` (`reader`, `socket`, `discover`, `uinput`, `sdnotify`, `env`) | threads, sockets, devices, clocks; the ioctls are `key-remap-evdev` | `pub(crate)` |
@@ -113,7 +113,7 @@ Two outside parties decide what the key remap daemon trusts, and both are in the
 | Every default mapping | `defaults.toml` |
 | Lenient per-key reading, config layers, inheritance flattening | `config::{lenient, ConfigLayer, resolve}` |
 | How large a configuration may be (profiles, inherit steps, rules) | `config::limits` (`within_limits`); the daemon takes a layer only through `Layers::accepted` |
-| A text file read safely (regular file, not blocking, bounded) | `key_remap_client::read_text`, which is `chordkit_file::read_text` mapped to `FileText` |
+| A text file read safely (regular file, not blocking, bounded) | `key_remap_client::read_text`, which is `keymap_file::read_text` mapped to `FileText` |
 | What each press emitted, and which written keys are lifted | `held::Held` |
 | The pointer half of a combo device | `daemon::pointer::PointerCaps` |
 | Which lamps the desktop last set | `daemon::leds::LedState` |
@@ -123,10 +123,10 @@ Two outside parties decide what the key remap daemon trusts, and both are in the
 | The emergency chord | `escape` |
 | The mapping state machine | `remap::Remapper` |
 | Socket messages | `key-remap-proto` |
-| Actions, chords, keymaps, overrides, conventions, the resolver | `chordkit` (never redefined here) |
+| Actions, chords, keymaps, overrides, conventions, the resolver | `keymap` (never redefined here) |
 | The machine's keymap file | `keymap`, served by `daemon::socket::shelf` |
 | The person's keymap file | read by `key_remap_client::KeyRemapSource` (Settings writes it); the daemon never reads it |
-| The desktop's own bindings beyond chordkit's conventions | `key_remap_client::system_bindings` |
+| The desktop's own bindings beyond the chord keymap's conventions | `key_remap_client::system_bindings` |
 | A program's socket client | `key_remap_client::Connection` |
 | Threads, sockets, devices, clocks | `daemon` |
 | ioctls, draining an event node | `key-remap-evdev` |

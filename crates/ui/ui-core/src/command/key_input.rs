@@ -1,4 +1,4 @@
-//! A key press as chordkit reads it: the one place a toolkit's modifiers and key become a
+//! A key press as the chord keymap reads it: the one place a toolkit's modifiers and key become a
 //! [`keymap::KeyInput`]. Everything that resolves a key to an action goes through it, so no
 //! other file decides what Ctrl, Super or Meta mean.
 
@@ -6,10 +6,10 @@ use keyboard_types::{Key, Modifiers};
 use keymap::keyboard_types::{Key as LogicalKey, Modifiers as ChordModifiers, NamedKey};
 use keymap::{Key as ChordKey, KeyInput};
 
-// The toolkit (dioxus) hands in keyboard-types 0.7 values and chordkit reads 0.8: the two
+// The toolkit (dioxus) hands in keyboard-types 0.7 values and the chord keymap reads 0.8: the two
 // conversions below go away when dioxus moves to 0.8 (phase 1b).
 
-/// The chordkit flags `held` reports, by name: Super and Meta are both the OS key (`META`).
+/// The chord keymap flags `held` reports, by name: Super and Meta are both the OS key (`META`).
 /// Locks and the like are left out; `AltGraph` is kept for [`key_input`].
 fn flags_of(held: Modifiers) -> ChordModifiers {
     [
@@ -47,7 +47,7 @@ pub fn modifiers_held(held: ChordModifiers) -> Modifiers {
     .fold(Modifiers::empty(), |flags, (_, mapped)| flags | mapped)
 }
 
-/// `key` as chordkit's keyboard-types names it, for the keys a chord can have; `None` for a
+/// `key` as the chord keymap's keyboard-types names it, for the keys a chord can have; `None` for a
 /// modifier on its own, a media key or any other.
 fn logical_key(key: &Key) -> Option<LogicalKey> {
     let named = LogicalKey::Named;
@@ -89,11 +89,11 @@ pub fn chord_key_of(key: &Key) -> Option<ChordKey> {
     ChordKey::from_logical(&logical_key(key)?)
 }
 
-/// The key press `key` with `modifiers` held, as chordkit takes it.
+/// The key press `key` with `modifiers` held, as the chord keymap takes it.
 ///
 /// The key is as the toolkit reports it: a shifted symbol (`!` for Shift+1) is not unshifted here,
 /// so an app chord that holds Shift with a symbol key reads the base key from the physical code.
-/// `AltGraph` rides in the flags: it types a character, and chordkit then reads no chord from the
+/// `AltGraph` rides in the flags: it types a character, and the chord keymap then reads no chord from the
 /// press.
 #[must_use]
 pub fn key_input(key: &Key, modifiers: Modifiers) -> Option<KeyInput> {

@@ -54,7 +54,7 @@ EDGES=(
   # key-remap-evdev: the evdev and uinput ioctls and the node drain that bardo-key-remap and key-remap-devtest
   # share; the safe input-linux handles and rustix reads, nothing of bardo-key-remap's own.
   "key-remap-evdev: input-linux rustix thiserror"
-  # key-remap-client: what an app links to read the desktop keymap. The protocol, chordkit's pure core
+  # key-remap-client: what an app links to read the desktop keymap. The protocol, the chord keymap's pure core
   # and the base bounded file reader and XDG folders (base-fs, base-xdg), and rustix for the SOCK_SEQPACKET socket std
   # lacks; no runtime, no file watcher. shell-verbs names the shell's verbs in the handled table.
   "key-remap-client: base-fs base-xdg keymap key-remap-proto rustix shell-verbs"

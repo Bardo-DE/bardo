@@ -201,7 +201,7 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   shell-host sends `SessionLock` first on every connect, so an unlocked desktop opens at once. Cost: a few
   hundred milliseconds of no gesture actions after the mouse gestures daemon starts, until the shell has connected.
 - *Shared bounded reader (INPUT-12).* `config/load.rs` has its own bounded regular-file read;
-  the one shared reader belongs in chordkit and moves there when it exists.
+  the one shared reader belongs in the chord keymap and moves there when it exists.
 
 ## Standing facts
 

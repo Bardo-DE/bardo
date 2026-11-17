@@ -12,7 +12,7 @@
 //! 3 px onto another's place), and the app changes its tabs. A tab's full title is its tooltip.
 //!
 //! Keys: with the keyboard in the strip the arrows, Home and End select a tab, and the standard
-//! New and Close actions (chordkit has none for the next or previous tab) call `onnew` and
+//! New and Close actions (the chord keymap has none for the next or previous tab) call `onnew` and
 //! `onclose` of the selected tab; an app that binds them elsewhere maps them with
 //! [`command_of`] instead. The strip reads no modifiers.
 //!

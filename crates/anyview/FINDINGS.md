@@ -10,7 +10,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   libraries pinned by rev.** Forks of other projects: vello (five crates, `[patch.crates-io]`; ends when the
   changes are released upstream), anyrender (five; the same), dioxus (five; the dirty-task fix, ends when a
   dioxus release has it) and blitz (with taffy reached through it; ends when its changes are released upstream).
-  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, chordkit, bayonet, docket, porter
+  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, bayonet, docket, porter
   (with almanac, stoker and peephole), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
   each git source by name. A source build is reproducible while those repositories keep the revs (`Cargo.lock` is
   committed, CI builds with `--locked`). The tag workflow (`.github/workflows/release.yml`) builds the Linux
@@ -411,9 +411,9 @@ on. It is a reference, not a log: how each was found lives in git history.
   the keymap really binds it (Redo is Ctrl+Y on Windows), but Bardo draws a `Shortcut` of the viewer's own
   as it was declared, so a person's own change to Info shows the old chord there. Ends when `Keys::text_of`
   draws an app action's live chord.
-- **Zoom to Fit and Actual Size are the viewer's own actions.** chordkit has no standard action for them:
+- **Zoom to Fit and Actual Size are the viewer's own actions.** the chord keymap has no standard action for them:
   Bigger and Smaller are ⌘+ and ⌘−, Fit is ⌘0 and Actual Size ⌥⌘0, and Zoom to Width has only its key `9`.
-  ⌘1 and ⌘9 are left to the tab and Space convention. Ends when chordkit names them.
+  ⌘1 and ⌘9 are left to the tab and Space convention. Ends when the chord keymap names them.
 - **Info is ⌘I because the viewer forgoes Italic.** The viewer never styles text and text editing is plain,
   so its registration gives `StandardAction::Italic` away (`Registration::forgo`). Ends if text editing ever
   needs Italic: Info then goes back to ⌥⌘I.

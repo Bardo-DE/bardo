@@ -1,4 +1,4 @@
-//! A chordkit chord as a compositor chord (pure).
+//! A chord keymap chord as a compositor chord (pure).
 
 use compositor_core::input::{Chord, Keysym};
 use desktop_protocols::vocab::HeldMods;
@@ -43,7 +43,7 @@ const UNICODE_BASE: u32 = 0x0100_0000;
 /// `None` for a chord the compositor cannot see as a key press (a tapped modifier, or a function key past
 /// F24).
 ///
-/// chordkit writes `Shift+=` as `+` and `Shift+/` as `?`; the keyboard reports the unshifted
+/// The chord keymap writes `Shift+=` as `+` and `Shift+/` as `?`; the keyboard reports the unshifted
 /// key with Shift held, so those two are written back that way.
 #[must_use]
 pub fn chord_of(chord: keymap::Chord) -> Option<Chord> {
@@ -116,7 +116,7 @@ mod tests {
 
     type Case = (&'static str, &'static str, Option<&'static str>);
 
-    /// (case, chordkit text, the compositor text)
+    /// (case, the chord keymap text, the compositor text)
     const CASES: &[Case] = &[
         ("super is command", "Super+W", Some("cmd+w")),
         ("alt is option", "Alt+Super+H", Some("option+cmd+h")),

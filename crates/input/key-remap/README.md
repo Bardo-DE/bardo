@@ -153,7 +153,7 @@ class lists are at the top of `dist/plasma/bardo-key-remap-focus`. A terminal em
 
 ## Keymap
 
-Apps resolve their shortcuts through [chordkit](https://github.com/Bardo-DE/chordkit) and never
+Apps resolve their shortcuts through [the chord keymap](https://github.com/Bardo-DE/chordkit) and never
 check Command or Control themselves. The key remap daemon is this desktop's source for it. Your own changes
 live in `~/.config/key_remap/keymap` (or `$XDG_CONFIG_HOME/key_remap/keymap`), one `action = shortcut`
 per line (`copy = Primary+Alt+C`, `redo = none`; `#` starts a comment); Settings writes it and
@@ -162,7 +162,7 @@ yours win. The key remap daemon watches the machine file, keeps its last good co
 tells running apps when anything changes. A line it cannot read is skipped and reported; a chord
 the desktop keeps for itself (Command+Space, Ctrl+1 to Ctrl+9) is refused with the reason.
 
-`key-remap-client` is what a program links: `KeyRemapSource::standard()` is a `chordkit::KeymapSource`
+`key-remap-client` is what a program links: `KeyRemapSource::standard()` is a `keymap::KeymapSource`
 that works with or without the daemon.
 
 ## Safety

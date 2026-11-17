@@ -26,7 +26,7 @@ enums that existed only because `bool` was banned are gone.
 
 ## Keymap-aware apps
 
-An app that resolves Cmd itself through chordkit (temor, any Bardo app) must receive Super, not
+An app that resolves Cmd itself through the chord keymap (temor, any Bardo app) must receive Super, not
 the `terminal` profile's Ctrl+Shift+letter: Cmd+D and Cmd+Shift+D collapse to one chord there.
 Foreign terminals (foot, kitty, ...) keep the rewrite.
 
@@ -47,7 +47,7 @@ new `default` rule is neither a desktop chord nor restated.
 Wiring: temor's app id is `org.bardo.Temor` (its desktop entry, `StartupWMClass`). Plasma:
 `OWN_PROFILES` in `dist/plasma/key-remap-focus` maps it to `terminal`, not `keymap-aware` (changed
 2026-10-14): KWin binds Super+T, Super+W, Super+D and Super+V globally, so Command as Super never
-reached temor there, and chordkit's KDE keymap expects the Ctrl+Shift+letter forms `terminal`
+reached temor there, and the chord keymap's KDE keymap expects the Ctrl+Shift+letter forms `terminal`
 writes. The cost on Plasma is that Cmd+D and Cmd+Shift+D arrive as one chord. sill: temor lists `TerminalEmulator`, so
 sill's category table would give it `terminal`; sill's `DeclaredProfile` (`X-Key-Remap-Profile`) or
 `OwnProfiles` must name `keymap-aware` for it (both rank above the category table). Bardo apps
@@ -67,8 +67,8 @@ inherited, but one the desktop restates for a chord (sill's Cmd+H to Ctrl+H) mus
   systemd.exec(5) hands the innermost folder to the service's user for `State`/`Cache`/`Logs`/`RuntimeDirectory=`
   but not for `ConfigurationDirectory=`, so the root-only machine file (see "Vendor layer") is read.
 - *Supply chain (INPUT-16)* closed 2026-10-17: CI runs `cargo deny check licenses` and `advisories bans sources` (deny.toml allows crates.io and the three git sources of Cargo.lock); advisories read a live database, so a new one can fail an unchanged tree.
-- *chordkit's own readers (INPUT-12)* closed: chordkit-kde and chordkit-gnome read their files through
-  `chordkit-file`'s bounded regular-file read.
+- *The chord keymap's own readers (INPUT-12)* closed: keymap-kde and keymap-gnome read their files through
+  `keymap-file`'s bounded regular-file read.
 
 **Vendor layer (2026-10-17).** The desktop's Caps Lock rule must ship with every install and release, but a release
 must never write the administrator's `/etc/key_remap`. So the key remap daemon has a fourth layer, `/usr/lib/key_remap/key-remap.toml`
@@ -210,7 +210,7 @@ real machine's sysfs masks, and what stays open.
 
 ## The desktop keymap
 
-**Who owns what.** chordkit holds every keymap noun (actions, chords, overrides, the resolver,
+**Who owns what.** the chord keymap holds every keymap noun (actions, chords, overrides, the resolver,
 display) and the platform sources. The key remap daemon is this desktop's source and remapper, and defines no
 such type. It stores the person's overrides, serves them, tells apps when they change, and
 supplies the desktop's own bindings.
@@ -218,7 +218,7 @@ supplies the desktop's own bindings.
 **Two files, the person's last.** The machine's `keymap` (`/etc/key_remap/keymap`, admin-owned,
 optional) is read by the daemon; the person's own `$XDG_CONFIG_HOME/key_remap/keymap` (else
 `~/.config/key_remap/keymap`) is read by `key-remap-client` in each program and never by the daemon.
-Both use chordkit's overrides line format. The person's file wins per action. Settings ›
+Both use the chord keymap's overrides line format. The person's file wins per action. Settings ›
 Keyboard writes the person's file (the whole file, to a temporary name and renamed over it) and
 needs no privilege; programs notice by polling its size and time every quarter second, so no
 message to the daemon is involved. `KeyRemapSource::person_file()` says where it is.
@@ -232,15 +232,15 @@ read leniently by the client: a bad line is skipped and reported, and an unusabl
 empty with one problem (no last-good copy is kept for it). Problems from both files are returned
 by `load_reporting`, each labelled "System keymap:" or "Your keymap:".
 
-**How apps get it.** Through Bardo, which takes a `chordkit::KeymapSource`: it passes
-`KeyRemapSource::standard()`, whose `load(platform)` is chordkit's conventions for our desktop, the
-desktop's own bindings (`key_remap_client::system_bindings`, only what chordkit's conventions leave to
+**How apps get it.** Through Bardo, which takes a `keymap::KeymapSource`: it passes
+`KeyRemapSource::standard()`, whose `load(platform)` is the chord keymap's conventions for our desktop, the
+desktop's own bindings (`key_remap_client::system_bindings`, only what the chord keymap's conventions leave to
 the source), the machine's overrides (asked of the daemon with `KeymapCall::Watch`, or, when no daemon
 answers, read from `/etc/key_remap/keymap`) and then the person's.
 `watch(callback)` fires on the daemon's next `Keymap` message that differs from the last one, on a
 change of the person's file, and, while there is no daemon, of the machine's file. Apps may
 `register` their actions so Settings can list them (`registered()`); resolution stays in each
-app, in-process, through chordkit, and registrations end with the connection.
+app, in-process, through the chord keymap, and registrations end with the connection.
 
 **Seat standing of keymap clients.** A connection that only sends keymap messages is an observer
 for the seat even when it runs as the seat owner's uid: it is classed on its first keymap message
@@ -250,18 +250,18 @@ reader. It counts against its own per-uid limit (64), not the owner's (8).
 **What the remap layer still does.** The keyboard is still remapped by profiles (`key-remap.toml`):
 Command acts as Control in apps that only know Control, Cmd+Space becomes Super+Space, and so on.
 That layer works on keys, below the keymap: it does not read `keymap`. An app that resolves
-through chordkit sees keys after that layer, so a shortcut in `keymap` is a shortcut as the
+through the chord keymap sees keys after that layer, so a shortcut in `keymap` is a shortcut as the
 app's keymap names it, and the remap layer can still change which physical key produces it.
 Moving the desktop's own bindings (launcher, switcher) off the remap rules and onto this keymap
 is not done.
 
 **Open.**
 - `system_bindings` has one row (the launcher also on Ctrl+Alt+Space, from sill's custom
-  shortcuts). chordkit's conventions for our desktop already carry the rest; confirm no other
+  shortcuts). The chord keymap's conventions for our desktop already carry the rest; confirm no other
   desktop-owned chord differs from them.
 - A connection that connects and leaves without sending anything is still counted as an owner
   until it goes, so it can trigger the reset; keymap clients always send first.
-- Registrations are not checked against chordkit's conflicts; they are only listed.
+- Registrations are not checked against the chord keymap's conflicts; they are only listed.
 
 ## Standing facts
 

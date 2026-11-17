@@ -12,7 +12,7 @@ pub enum ArgError {
     /// A flag that cannot be used.
     #[error(transparent)]
     Flag(#[from] FlagError),
-    /// A platform name chordkit does not know.
+    /// A platform name the chord keymap does not know.
     #[error("{0}")]
     Platform(#[from] keymap::PlatformError),
 }

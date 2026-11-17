@@ -111,7 +111,7 @@ pub struct ShortcutProblem {
     pub what: String,
 }
 
-/// The desktop's standard keymap: chordkit's conventions for our desktop with `system` (the
+/// The desktop's standard keymap: the chord keymap's conventions for our desktop with `system` (the
 /// desktop's own bindings) laid over them.
 #[must_use]
 pub fn desktop_keymap(system: Vec<SystemBinding>) -> Keymap {
