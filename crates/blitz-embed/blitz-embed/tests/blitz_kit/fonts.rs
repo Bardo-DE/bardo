@@ -43,16 +43,16 @@ fn a_registered_faces_stack_measures_differently_from_system_ui() {
     // The bug this pins: with only `SharedFonts::system()`, a font-family naming a bundled face
     // that is not also a system font fell straight through to `system-ui`, indistinguishable
     // from not naming it at all.
+    let mut machine = SharedFonts::system().for_document();
+    assert!(
+        !machine.collection.family_names().any(|name| name == FAMILY),
+        "{FAMILY} is installed on this machine, so it resolves without being registered; this test needs a machine without it"
+    );
     let family = format!("\"{FAMILY}\"");
-    let unregistered = width(SharedFonts::system().for_document(), &family, "shell-host");
     let system = width(
         SharedFonts::system().for_document(),
         "system-ui,sans-serif",
         "shell-host",
-    );
-    assert!(
-        (unregistered - system).abs() < 0.01,
-        "{FAMILY} is installed on this machine, so it resolves without being registered; this test needs a machine without it"
     );
 
     let registered = width(
