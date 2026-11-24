@@ -13,7 +13,6 @@ use base_testkit::Scratch;
 use md5::{Digest, Md5};
 use shell_launcher_ui::launcher::preview::frames::ThumbnailFrames;
 use shell_launcher_ui::launcher::preview::load::{Look, ViewerLook};
-use base_testkit::Scratch;
 
 /// A recording with no cover of its own.
 const CLIP: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/clip.mp4");

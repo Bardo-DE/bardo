@@ -85,10 +85,7 @@ async fn until(idle: &mut watch::Receiver<Idle>, want: impl Fn(&Idle) -> bool) -
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "live: the nested compositor and a dbus-daemon"]
 async fn idle_locks_at_screen_off_and_a_screensaver_inhibit_holds_it() {
-    let Some(socket) = nested() else {
-        eprintln!("no nested compositor: skipped");
-        return;
-    };
+    let socket = nested();
     let bus = PrivateBus::start();
     let (_lock_tx, lock) = watch::channel(Lock::default());
     let (_battery_tx, battery) = watch::channel(Battery::default());
