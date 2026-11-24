@@ -6,12 +6,12 @@
 //! line, their answers going back to the compositor. A test skips, saying so, without a
 //! `dbus-daemon`. Never the person's session bus.
 
+use crate::capture_pick_bus::{rig, serving, wait_for};
+use base_testkit::{PrivateBus, Scratch};
 use desktop_protocols::vocab::Answer;
+use shell_dbus::Shell1Proxy;
 use shell_model::capture_pick::{AskId, AskedBy, CaptureCommand, CapturePicker, PermissionOutcome};
 use shell_model::desktop::{Consent, ConsentId, DesktopCommand, Memory, Power, SubjectKind};
-use base_testkit::{PrivateBus, Scratch};
-use crate::capture_pick_bus::{rig, serving, wait_for};
-use shell_dbus::Shell1Proxy;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn portal_asks_and_each_button_comes_back_as_its_number() {

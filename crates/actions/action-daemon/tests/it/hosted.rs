@@ -3,7 +3,6 @@
 //! any app, the manifests are listed, and what they do reaches memoryd as audit records.
 
 use crate::support::apps::{Answer, FakeShell};
-use base_testkit::PrivateBus;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::world::introduce;
 use account_core::AppName;
@@ -18,6 +17,7 @@ use action_vocab::{
     ActionRef, CallRequest, CallerRole, LabelText, NoteSlug, Origin, ParamName, TargetValue, Value,
 };
 use action_wire::{NoteAsk, SessionNote, SessionOpen, SessionOpened};
+use base_testkit::PrivateBus;
 use memory_core::{
     FactState, MemoryItem, MemoryReply, MemoryRequest, RecallHit, RecallWhy, Record,
 };

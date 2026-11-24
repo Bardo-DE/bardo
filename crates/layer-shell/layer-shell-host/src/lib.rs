@@ -61,7 +61,6 @@ mod render_gpu;
 mod resolve;
 mod role;
 mod route;
-#[cfg(test)]
 mod scroll;
 mod state;
 mod stats;

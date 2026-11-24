@@ -6,6 +6,7 @@
 use std::pin::Pin;
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_dbus::{DISPLAYS_BUS, DISPLAYS_PATH};
 use shell_model::displays::brightness::{Backlight, BacklightKind, BacklightName};
 use shell_model::displays::ddc::{Controls, DdcDisplay, Endpoint, Level};
@@ -21,7 +22,6 @@ use shell_model::units::Percent;
 use shell_services::displays::bus::DisplaysBusLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
@@ -78,7 +78,10 @@ fn shell(bus: &PrivateBus) -> Shell {
     let scratch = Scratch::new("displays-bus");
     let callers = Introduced::new();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         callers: std::sync::Arc::<Introduced>::clone(&callers),
         claims: shell_services::env::NameClaims::Claim,
         ..Env::isolated(scratch.path())

@@ -1,8 +1,8 @@
 //! The keyring's lock signal drives the key check, and an index that changes state is announced.
 //! A fake Secret Service on a private bus emits the signal; nothing here waits on a timer.
 
-use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, World, connect, dirs_in, listed_spaces, space};
+use base_testkit::PrivateBus;
 use memory_client::{DbusTransport, Memory};
 use memory_core::*;
 use memory_daemon::{LockChanges, SystemBackend, is_lock_change};

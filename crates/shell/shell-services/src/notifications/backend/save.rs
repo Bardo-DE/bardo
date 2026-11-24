@@ -93,9 +93,9 @@ fn write(file: &std::path::Path, stored: &StoredHistory) {
 mod tests {
     use std::time::Duration;
 
-    use shell_model::notifications::{NotificationId, StoredHistory};
-    use base_testkit::Scratch;
     use super::{Saver, history_file};
+    use base_testkit::Scratch;
+    use shell_model::notifications::{NotificationId, StoredHistory};
 
     const SHORT: Duration = Duration::from_millis(30);
     const LONG: Duration = Duration::from_secs(60);

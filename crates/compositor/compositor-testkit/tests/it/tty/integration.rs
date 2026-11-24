@@ -16,9 +16,7 @@ use compositor_core::{DeviceId, OutputName};
 use compositor_testclient::capture::{BufferAsk, CursorMode, OutputCapture};
 use compositor_testclient::manage::gamma::{ControlState as GammaState, GammaControls};
 use compositor_testclient::manage::output_power::{ControlState as PowerState, OutputPowers};
-use compositor_testkit::fakes::{
-    FakeKms, FakeLogind, GlassHandle, SleepPhase, SyntheticTopology,
-};
+use compositor_testkit::fakes::{FakeKms, FakeLogind, GlassHandle, SleepPhase, SyntheticTopology};
 use compositor_testkit::gpu::{
     CrossSupport, FabricatedSysRoot, FormatSet, GpuTopology, SoftGpu, SoftRenderer, VendorFact,
 };
@@ -537,7 +535,8 @@ fn a_whole_session_from_start_to_suspend_and_back() {
     let logind = FakeLogind::serve(bus.address()).expect("the fake logind");
     let mut session = seat.world.session.clone();
     let link = session.sleep_link().expect("the session hears a suspend");
-    let _watch = suspend::watch(link, Some(bus.address().to_owned())).expect("the watcher subscribes");
+    let _watch =
+        suspend::watch(link, Some(bus.address().to_owned())).expect("the watcher subscribes");
     assert_eq!(logind.held_inhibitors(), ["sleep"]);
     let (pauses, resumes) = seat.world.kms.seat_changes();
 

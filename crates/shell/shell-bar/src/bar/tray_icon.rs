@@ -100,8 +100,8 @@ fn pixmap_png(pixmap: &Pixmap) -> Option<Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::{IconArt, icon_art, named_art, pixmap_png, symbolic_name};
-    use shell_model::tray::{Pixmap, TRAY_ICON_FILE_MAX_BYTES, TrayIcon};
     use base_testkit::Scratch;
+    use shell_model::tray::{Pixmap, TRAY_ICON_FILE_MAX_BYTES, TrayIcon};
     use std::path::PathBuf;
     use std::time::{Duration, Instant};
 

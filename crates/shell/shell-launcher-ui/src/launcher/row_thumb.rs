@@ -139,8 +139,8 @@ mod tests {
     use anyview_core::{FilePath, PixelLen, PixelSize};
     use anyview_platform::portable::FreedesktopThumbnails;
     use anyview_platform::{Env, ThumbPixels, ThumbSize, ThumbnailCache};
-    use shell_model::dirs::Dirs;
     use base_testkit::Scratch;
+    use shell_model::dirs::Dirs;
     use ui_components::components::content::image_source::ImageSource;
 
     use super::{RowThumbs, stamp_of, thumbnail_file};

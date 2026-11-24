@@ -21,6 +21,7 @@ impl DesktopCallers {
     }
 
     /// These callers, with `rows` merged after the shipped ones.
+    #[must_use]
     pub fn with_rows(self, rows: Table) -> DesktopCallers {
         DesktopCallers::new(self.table.merge(rows))
     }

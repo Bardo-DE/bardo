@@ -3,8 +3,6 @@
 //! serves, and a shipped build ignores the variable and says so. Nothing here touches the real
 //! Secret Service or keyring; the environment is cleared.
 
-use crate::common;
-
 use base_testkit::PrivateBus;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};

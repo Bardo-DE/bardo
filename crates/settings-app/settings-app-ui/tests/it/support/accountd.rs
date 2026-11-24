@@ -7,8 +7,8 @@
 mod module;
 mod rows;
 
-use base_testkit::PrivateBus;
 use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH, INFERENCE_BUS};
+use base_testkit::PrivateBus;
 use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 use settings_app_link::bus::Daemon;
 use settings_app_model::ModuleId;

@@ -173,8 +173,6 @@ mod tests {
                     .unwrap_or_default()
                     .contains(") Z ")
         };
-        crate::eventually_blocking("the grandchild ended with the child", || {
-            !alive(grandchild)
-        });
+        crate::eventually_blocking("the grandchild ended with the child", || !alive(grandchild));
     }
 }

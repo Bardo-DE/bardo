@@ -2,9 +2,9 @@
 //! connection: the constructor wires it and nothing is called until the first read (the reads
 //! themselves are tested over a scripted inferd in `service.rs`).
 
-use base_testkit::PrivateBus;
 use action_client::{DbusTransport, Intents};
 use agent_reader_daemon::{ReaderHost, ReaderService};
+use base_testkit::PrivateBus;
 
 #[tokio::test]
 async fn the_service_is_built_on_the_bus() {

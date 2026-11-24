@@ -11,8 +11,8 @@ use settings_types::schema::KeyPath;
 use zbus::interface;
 use zbus::zvariant::Value;
 
-use base_testkit::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema};
+use base_testkit::PrivateBus;
 
 const PATH: &str = "/org/bardo/Test1/settings";
 const NAME: &str = "org.bardo.Test1";

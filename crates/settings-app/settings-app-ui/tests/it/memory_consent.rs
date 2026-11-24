@@ -4,10 +4,10 @@
 //! calmly.
 
 use crate::support::Sandbox;
-use base_testkit::PrivateBus;
 use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::memory::{Fake, serve};
+use base_testkit::PrivateBus;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use ui_harness::Harness;

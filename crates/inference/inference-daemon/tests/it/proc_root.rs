@@ -2,12 +2,11 @@
 //! fake `/proc` with `<dir>/<pid>/cgroup` for this test process. Only a `test-proc-root` build
 //! honours the variable; any other build ignores it and says so.
 
-
 use crate::hosting::wait;
-use base_testkit::PrivateBus;
 use account_dbus::Details;
 use account_match::LlmNeed;
 use account_match::Need;
+use base_testkit::PrivateBus;
 use inference_dbus::inference::INFERENCE_BUS;
 use inference_dbus::inference::{InferenceProxy, need_to_dbus};
 use std::path::{Path, PathBuf};

@@ -4,7 +4,6 @@
 )]
 //! A supervisor over the fakes, and the waits a test needs.
 
-
 use computer_use_bus::RunEnd;
 use computer_use_daemon::{ComputerUseDaemonConfig, Supervisor, SupervisorEvent};
 use computer_use_desktop::BackendKind;

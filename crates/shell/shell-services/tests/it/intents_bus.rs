@@ -17,6 +17,7 @@ use action_dbus::{CONFIRM_BUS, ConfirmProxy, INTENTS_BUS};
 use action_vocab::{ActionRef, LabelText, Seconds};
 use base_ids::Count;
 use base_testkit::eventually;
+use base_testkit::{PrivateBus, Scratch};
 use permission_core::{AskReason, LimitLevel, LimitNote, StandingGrantId};
 use provenance::{ActionName, Actor, AppName, Effect, InputProof, SpaceId};
 use shell_launcher::WindowKey;
@@ -34,7 +35,6 @@ use shell_services::env::{BusRoute, Buses, Env, NameClaims};
 use shell_services::seat::seat;
 use shell_services::service::spawn;
 use shell_services::{IntentsLinks, MenuLinks, ShellCall};
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -187,11 +187,7 @@ async fn desk_with(menus: MenuLinks, shots: watch::Receiver<Shots>) -> Desk {
 }
 
 /// As [`desk_with`], the owner of intentd's name being `who` to the seat.
-pub(crate) async fn desk_as(
-    menus: MenuLinks,
-    shots: watch::Receiver<Shots>,
-    who: Who,
-) -> Desk {
+pub(crate) async fn desk_as(menus: MenuLinks, shots: watch::Receiver<Shots>, who: Who) -> Desk {
     desk_on(PrivateBus::start(), menus, shots, who, NameClaims::Claim).await
 }
 
@@ -206,7 +202,10 @@ async fn desk_on(
     let procs = intentd_is_this_process();
     let callers = Introduced::new();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         proc_root: procs.path().to_owned(),
         callers: Arc::<Introduced>::clone(&callers),
         claims,

@@ -7,6 +7,7 @@
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
+use base_testkit::PrivateBus;
 use shell_model::auth::AuthCommand;
 use shell_model::battery::Battery;
 use shell_model::idle::IdleService;
@@ -19,7 +20,6 @@ use shell_model::service::Control;
 use shell_services::env::{BusRoute, Buses, Env, WaylandRoute};
 use shell_services::idle::IdleLinks;
 use shell_services::service::spawn;
-use base_testkit::PrivateBus;
 use tokio::sync::watch;
 
 /// The nested compositor's socket. The live test that asks for it fails, saying so, where there
@@ -96,7 +96,10 @@ async fn idle_locks_at_screen_off_and_a_screensaver_inhibit_holds_it() {
     let (auth, _auth_rx) = Control::<AuthCommand>::channel();
     let env = Env {
         wayland: WaylandRoute::Socket(socket),
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(Path::new("/nonexistent/shell-idle-live"))
     };
     let links = IdleLinks {

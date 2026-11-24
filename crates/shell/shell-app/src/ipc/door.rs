@@ -51,8 +51,8 @@ impl Drop for Door {
 
 #[cfg(test)]
 mod tests {
-    use base_testkit::Scratch;
     use super::Door;
+    use base_testkit::Scratch;
 
     fn door_in(dir: &Scratch) -> (service_locator::Agent, Door) {
         let env = service_locator::Environment {

@@ -5,7 +5,6 @@
 //! process is run by `action-accept`; this is the half that needs intentd's own types.)
 
 use crate::support::apps::FakeShell;
-use base_testkit::PrivateBus;
 use account_core::AppName;
 use action_core::{
     Anchor, ConfirmAnswer, ConfirmDetail, ConfirmEnd, ConfirmId, ConfirmOffer, ConfirmParts,
@@ -19,6 +18,7 @@ use action_vocab::{LabelText, Seconds};
 use agent_acp_bin::confirm::ConfirmObject;
 use agent_session::{SheetChoice, SheetDesk};
 use base_ids::Count;
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole;
 use provenance::{Actor, ClientName, Effect, SessionId, SpaceId};
 use std::sync::Arc;

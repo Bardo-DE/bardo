@@ -61,9 +61,9 @@ mod tests {
     use super::publish;
     use crate::env::FixedClock;
     use crate::service::spawn;
+    use base_testkit::Scratch;
     use shell_model::clock::ClockService;
     use shell_model::clock::{ClockCommand, ClockMinute};
-    use base_testkit::Scratch;
     #[test]
     fn only_a_new_minute_wakes_the_bar() {
         let minute = |m: i8| ClockMinute(jiff::civil::date(2026, 9, 24).at(14, m, 0, 0));

@@ -2,7 +2,6 @@
 //! `Declined` events become the answer's route notes (`Answer.Routing`), and a refusal of a named
 //! model says which and why.
 
-use base_testkit::PrivateBus;
 use crate::support::infer::{Say, served, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -12,6 +11,7 @@ use action_core::*;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details};
 use action_vocab::{Caller, Origin, WindowKey};
 use action_wire::{SessionOpen, SessionOpened};
+use base_testkit::PrivateBus;
 use base_time::Clock as _;
 use companion_daemon::serve_on_rooted;
 use companion_wire::{

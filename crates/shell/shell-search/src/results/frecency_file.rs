@@ -42,8 +42,8 @@ pub fn save_frecency(dir: &Path, frecency: &Frecency) -> Result<(), ServiceError
 #[cfg(test)]
 mod tests {
     use super::{FILE_NAME, load_frecency, save_frecency};
-    use shell_launcher::{Frecency, ItemId, ItemKey, ProviderKind, UnixTime};
     use base_testkit::Scratch;
+    use shell_launcher::{Frecency, ItemId, ItemKey, ProviderKind, UnixTime};
     /// The file `name` was set aside as (`<name>.bad-<seconds>`), if there is one.
     fn set_aside_copy(dir: &std::path::Path, name: &str) -> Option<std::path::PathBuf> {
         let prefix = format!("{name}.bad-");

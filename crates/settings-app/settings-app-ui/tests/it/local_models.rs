@@ -5,11 +5,11 @@
 //! words under the row. And the rows that name an engine's program, set through the fake module.
 
 use crate::support::Sandbox;
-use base_testkit::PrivateBus;
 use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, click_when_still, hold_still, keys, scroll_into_view};
 use crate::support::inferd::{Inferd, NOT_WHOLE};
 use crate::support::running::{Fake, serve};
+use base_testkit::PrivateBus;
 use inference_dbus::inference::{RunState, RunningModel};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;

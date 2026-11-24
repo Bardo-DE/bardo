@@ -3,12 +3,12 @@
 //! queue is full and nothing is written twice. The bus is a private one and memoryd is the
 //! fake that serves the real wire.
 
-use base_testkit::PrivateBus;
 use crate::support::memoryd::{FakeMemoryd, record_fault};
 use account_core::AppName;
 use action_core::*;
 use action_daemon::AuditLog;
 use action_vocab::{ActionRef, CallId, Millis, UndoId};
+use base_testkit::PrivateBus;
 use companion_memory_core::{QueuedSink, kind_tag_of, record_of};
 use memory_client::DbusTransport;
 use memory_core::{AreaTag, Cause, EventBody, MemoryReply, MemoryRequest, Refusal};

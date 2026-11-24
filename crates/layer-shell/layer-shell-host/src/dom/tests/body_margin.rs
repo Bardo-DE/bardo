@@ -103,8 +103,8 @@ fn the_body_reset_puts_a_box_at_the_corner_unless_the_document_sets_its_own_marg
 fn a_headless_bare_document_paints_its_corner() {
     use blitz_traits::shell::ColorScheme;
 
-    use crate::Scale120;
     use crate::headless::{Fonts, HeadlessConfig, PixelSize, bundled_faces, render_png};
+    use layer_shell_types::Scale120;
 
     fn red() -> Element {
         rsx! {

@@ -2,7 +2,6 @@
 //! answer's object path while the loop runs behind it, the roster and the front task read without
 //! waiting for the loop, and the answer object's view.
 
-use base_testkit::PrivateBus;
 use crate::support::infer::{Say, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -13,6 +12,7 @@ use action_dbus::{
 };
 use action_vocab::{Caller, Origin, TurnId, WindowKey};
 use action_wire::{SessionOpen, SessionOpened};
+use base_testkit::PrivateBus;
 use base_time::Clock as _;
 use companion_daemon::serve_on_rooted;
 use companion_wire::{AnswerPhase, AnswerWire, AskWire, FrontTask};

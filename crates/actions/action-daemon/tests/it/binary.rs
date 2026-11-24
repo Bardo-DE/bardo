@@ -2,9 +2,9 @@
 //! mere name, and is started by D-Bus activation from an activation file shaped like `dist/dbus/`'s. Nothing
 //! of the real session is named: the bus, HOME and every XDG directory are scratch.
 
-use base_testkit::PrivateBus;
 use action_client::Transport;
 use action_wire::{IntentsReply, IntentsRequest, WireRefusal};
+use base_testkit::PrivateBus;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use zbus::fdo::DBusProxy;

@@ -98,8 +98,7 @@ async fn a_transaction_cancelled_after_auth_is_declined() {
 
 #[tokio::test]
 async fn no_candidate_in_the_repositories_is_not_found() {
-    let (_bus, installer, calls) =
-        setup(Behaviour::default().available(&["other"])).await;
+    let (_bus, installer, calls) = setup(Behaviour::default().available(&["other"])).await;
     let outcome = installer.install(&request(&["mpv", "mpv-nox"])).await;
     assert_eq!(outcome, Outcome::NotFound(missing(&["mpv", "mpv-nox"])));
     assert!(calls.installed().is_empty());

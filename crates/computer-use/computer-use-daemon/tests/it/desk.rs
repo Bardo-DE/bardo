@@ -1,6 +1,5 @@
 //! A real intentd over the fake router on a private bus, and the records and asks the link tests send it.
 
-use base_testkit::PrivateBus;
 use account_core::AppName;
 use action_client::{DbusTransport, Intents};
 use action_core::{ConfirmAnswer, GrantScope};
@@ -11,6 +10,7 @@ use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_router::Router;
 use action_vocab::CallerRole;
 use action_wire::SessionOpen;
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole as Role;
 use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_action::{RunMode, WindowTrust};

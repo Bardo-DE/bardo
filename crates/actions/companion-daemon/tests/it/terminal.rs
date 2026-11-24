@@ -3,7 +3,6 @@
 //! terminal's scope, or that owns a bus name of its own, may do none of it. The terminal is the
 //! test process, placed in a fake proc root (`serve_on_rooted`), on a private bus.
 
-use base_testkit::PrivateBus;
 use crate::support::infer::words;
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -14,6 +13,7 @@ use action_wire::{
     CallerId, IntentsReply, IntentsRequest, SessionOpen, SessionOpened, StartedFrom, StoredAsk,
     StoredView, TerminalScope,
 };
+use base_testkit::PrivateBus;
 use base_time::Clock as _;
 use caller_role_types::CallerRole as Role;
 use companion_daemon::serve_on_rooted;

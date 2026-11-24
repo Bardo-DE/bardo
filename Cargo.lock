@@ -81,6 +81,7 @@ dependencies = [
 name = "account-callers"
 version = "0.1.0"
 dependencies = [
+ "account-callers",
  "account-core",
  "base-fs",
  "base-testkit",
@@ -826,7 +827,6 @@ dependencies = [
  "action-manifest",
  "action-mcp",
  "action-provider",
- "action-testbus",
  "action-trace",
  "action-vocab",
  "action-wire",
@@ -834,6 +834,7 @@ dependencies = [
  "agent-reader-daemon",
  "agent-session",
  "base-ids",
+ "base-testkit",
  "base-time",
  "companion-daemon",
  "companion-wire",
@@ -899,7 +900,6 @@ dependencies = [
  "action-manifest",
  "action-provider",
  "action-router",
- "action-testbus",
  "action-vocab",
  "action-wire",
  "agent-session",
@@ -1033,7 +1033,6 @@ dependencies = [
  "action-settings",
  "action-settings-fs",
  "action-store",
- "action-testbus",
  "action-vocab",
  "action-wire",
  "agent-acp-bin",
@@ -1257,7 +1256,6 @@ dependencies = [
  "action-review",
  "action-settings",
  "action-store",
- "action-testbus",
  "action-trace",
  "action-vocab",
  "action-wire",
@@ -1272,6 +1270,7 @@ dependencies = [
  "base-fs",
  "base-ids",
  "base-path",
+ "base-testkit",
  "base-time",
  "clap",
  "companion-tasks",
@@ -1333,10 +1332,10 @@ dependencies = [
  "action-router",
  "action-settings",
  "action-settings-fs",
- "action-testbus",
  "action-tools",
  "action-vocab",
  "action-wire",
+ "base-testkit",
  "dbus-kit",
  "permission-core",
  "provenance",
@@ -1477,16 +1476,6 @@ dependencies = [
  "futures-util",
  "tempfile",
  "thiserror 2.0.21",
-]
-
-[[package]]
-name = "action-testbus"
-version = "0.1.0"
-dependencies = [
- "action-dbus",
- "base-testkit",
- "tempfile",
- "zbus",
 ]
 
 [[package]]
@@ -1680,7 +1669,6 @@ dependencies = [
  "action-review",
  "action-router",
  "action-store",
- "action-testbus",
  "action-tools",
  "action-vocab",
  "action-wire",
@@ -1690,6 +1678,7 @@ dependencies = [
  "agent-session",
  "base-ids",
  "base-path",
+ "base-testkit",
  "base-xdg",
  "companion-model",
  "const-hex",
@@ -1717,13 +1706,13 @@ dependencies = [
  "action-fake",
  "action-settings",
  "action-settings-fs",
- "action-testbus",
  "action-vocab",
  "agent-acp-core",
  "agent-client-protocol",
  "agent-session",
  "base-ids",
  "base-path",
+ "base-testkit",
  "companion-model",
  "companion-wire",
  "futures-channel",
@@ -1811,7 +1800,6 @@ dependencies = [
  "action-manifest",
  "action-settings",
  "action-store",
- "action-testbus",
  "action-vocab",
  "agent-acp-core",
  "agent-acp-host",
@@ -1820,6 +1808,7 @@ dependencies = [
  "agent-registry",
  "agent-session",
  "base-path",
+ "base-testkit",
  "companion-model",
  "fnv",
  "inference-dbus",
@@ -1973,7 +1962,6 @@ dependencies = [
  "action-fake",
  "action-log",
  "action-router",
- "action-testbus",
  "action-vocab",
  "action-wire",
  "agent-reader",
@@ -2368,6 +2356,7 @@ version = "0.1.0"
 dependencies = [
  "anyview-core",
  "anyview-fs",
+ "anyview-image",
  "base-words",
  "icns",
  "image",
@@ -2394,6 +2383,7 @@ dependencies = [
  "anyview-font",
  "anyview-fs",
  "anyview-image",
+ "anyview-peek",
  "anyview-text",
  "base-testkit",
  "base-words",
@@ -2428,6 +2418,7 @@ dependencies = [
  "anyview-platform",
  "base-fs",
  "base-ids",
+ "base-testkit",
  "base-words",
  "dirs 6.0.0",
  "log",
@@ -2935,6 +2926,7 @@ name = "base-testkit"
 version = "0.1.0"
 dependencies = [
  "tokio",
+ "zbus",
 ]
 
 [[package]]
@@ -3172,6 +3164,7 @@ dependencies = [
 name = "blitz-embed"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "blitz-dom",
  "blitz-embed-types",
  "blitz-traits",
@@ -3483,6 +3476,7 @@ dependencies = [
 name = "caller-identity-dbus"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "base-time",
  "caller-identity-core",
  "caller-identity-linux",
@@ -3499,6 +3493,7 @@ version = "0.1.0"
 dependencies = [
  "base-fs",
  "caller-identity-core",
+ "caller-identity-linux",
  "nix 0.31.3",
  "rustix 1.1.6",
  "thiserror 2.0.21",
@@ -3952,7 +3947,6 @@ dependencies = [
  "action-settings",
  "action-settings-fs",
  "action-store",
- "action-testbus",
  "action-vocab",
  "action-wire",
  "agent-loop",
@@ -5321,8 +5315,8 @@ dependencies = [
 name = "dbus-kit"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "dbus-kit-macros",
- "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
@@ -8945,6 +8939,7 @@ dependencies = [
  "image",
  "keyboard-types 0.7.0",
  "layer-shell-hooks",
+ "layer-shell-host",
  "layer-shell-types",
  "mouse-gestures-proto",
  "nix 0.31.3",
@@ -9544,6 +9539,7 @@ dependencies = [
  "account-wire",
  "base-fs",
  "base-ids",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "blake3",
@@ -13122,6 +13118,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-ids",
+ "base-testkit",
  "base-time",
  "provenance",
  "serde",
@@ -13198,6 +13195,7 @@ dependencies = [
  "anyview-fs",
  "anyview-image",
  "anyview-platform",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "bluez-proxy",
@@ -13284,6 +13282,7 @@ dependencies = [
 name = "settings-dbus"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "base-time",
  "dbus-kit",
  "serde",
@@ -13449,7 +13448,6 @@ dependencies = [
  "shell-search",
  "shell-services",
  "shell-settings",
- "shell-testkit",
  "shell-ui-kit",
  "shell-verbs",
  "speech-wire",
@@ -13470,6 +13468,7 @@ name = "shell-bar"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-testkit",
  "dioxus",
  "dioxus-ssr",
  "freedesktop-icons",
@@ -13485,7 +13484,6 @@ dependencies = [
  "shell-launcher",
  "shell-model",
  "shell-settings",
- "shell-testkit",
  "shell-ui-kit",
  "tokio",
  "ui-components",
@@ -13505,11 +13503,11 @@ dependencies = [
 name = "shell-desktop-fs"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "freedesktop-icons",
  "serde",
  "shell-launcher",
  "shell-model",
- "shell-testkit",
  "thiserror 2.0.21",
 ]
 
@@ -13530,7 +13528,6 @@ dependencies = [
  "shell-model",
  "shell-services",
  "shell-settings",
- "shell-testkit",
  "shell-ui-kit",
  "tokio",
  "ui-components",
@@ -13545,7 +13542,6 @@ version = "0.1.0"
 dependencies = [
  "layer-shell-host",
  "shell-model",
- "shell-testkit",
  "ui-blitz",
  "ui-components",
 ]
@@ -13561,7 +13557,6 @@ dependencies = [
  "serde_json",
  "shell-launcher",
  "shell-model",
- "shell-testkit",
  "thiserror 2.0.21",
 ]
 
@@ -13574,7 +13569,6 @@ dependencies = [
  "image",
  "serde",
  "serde_json",
- "shell-testkit",
  "ui-blitz",
  "ui-components",
  "ui-core",
@@ -13612,6 +13606,7 @@ dependencies = [
  "anyview-image",
  "anyview-peek",
  "anyview-platform",
+ "base-testkit",
  "base-time",
  "companion-model",
  "companion-wire",
@@ -13636,7 +13631,6 @@ dependencies = [
  "shell-model",
  "shell-search",
  "shell-settings",
- "shell-testkit",
  "shell-ui-kit",
  "tokio",
  "ui-behaviour",
@@ -13659,6 +13653,7 @@ dependencies = [
  "action-wire",
  "base-ids",
  "base-secret",
+ "base-testkit",
  "base-time",
  "base-url",
  "base-words",
@@ -13679,7 +13674,6 @@ dependencies = [
  "serde",
  "serde_json",
  "shell-launcher",
- "shell-testkit",
  "speech-wire",
  "thiserror 2.0.21",
  "tokio",
@@ -13699,7 +13693,6 @@ dependencies = [
  "shell-kit",
  "shell-model",
  "shell-settings",
- "shell-testkit",
  "shell-ui-kit",
  "ui-components",
  "ui-harness",
@@ -13731,7 +13724,6 @@ dependencies = [
  "shell-model",
  "shell-services",
  "shell-settings",
- "shell-testkit",
  "shell-ui-kit",
  "tokio",
  "ui-behaviour",
@@ -13774,7 +13766,6 @@ dependencies = [
  "shell-launcher",
  "shell-model",
  "shell-services",
- "shell-testkit",
  "tokio",
  "ui-core",
  "zbus",
@@ -13856,6 +13847,7 @@ dependencies = [
  "shell-desktop-fs",
  "shell-launcher",
  "shell-model",
+ "shell-services",
  "shell-testkit",
  "smithay-client-toolkit 0.20.0",
  "speech-dbus",
@@ -13878,6 +13870,7 @@ dependencies = [
 name = "shell-settings"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "base-words",
  "key-remap-proto",
  "provenance",
@@ -13887,7 +13880,6 @@ dependencies = [
  "settings-types",
  "shell-launcher",
  "shell-model",
- "shell-testkit",
  "toml",
 ]
 
@@ -13943,7 +13935,6 @@ dependencies = [
  "shell-launcher",
  "shell-model",
  "shell-settings",
- "shell-testkit",
  "shell-ui-kit",
  "thiserror 2.0.21",
  "tokio",
@@ -14235,9 +14226,9 @@ dependencies = [
  "action-dbus",
  "action-log",
  "action-procroot",
- "action-testbus",
  "action-vocab",
  "action-wire",
+ "base-testkit",
  "base-time",
  "caller-role-types",
  "clap",
@@ -15912,6 +15903,7 @@ dependencies = [
  "spellbook",
  "thiserror 2.0.21",
  "tokio",
+ "ui-blitz",
  "ui-components",
  "ui-desktop",
  "ui-emoji",
@@ -15981,6 +15973,7 @@ dependencies = [
 name = "ui-desktop"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "base-time",
  "dbus-kit",
  "dioxus",
@@ -16002,6 +15995,7 @@ name = "ui-extensions"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-testkit",
  "base-words",
  "plugin-host",
  "serde",
@@ -16144,6 +16138,7 @@ version = "0.1.0"
 dependencies = [
  "base-fs",
  "base-spawn",
+ "base-testkit",
  "base-time",
  "base-words",
  "dioxus",

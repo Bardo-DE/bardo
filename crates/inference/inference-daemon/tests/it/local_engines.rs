@@ -1,8 +1,8 @@
 //! `Inference1.LocalEngines` on a private bus: which engine kinds inferd found a program for. The
 //! fixed system paths are a list in scratch here, never this computer's `/usr/bin`.
 
-use base_testkit::PrivateBus;
 use crate::hosting::wait::within;
+use base_testkit::PrivateBus;
 
 use account_callers::Caller;
 use account_core::{AppId, AppName, Isolation};

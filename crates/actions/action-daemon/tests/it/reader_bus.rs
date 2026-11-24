@@ -2,7 +2,6 @@
 //! connection that owns intentd's name is answered, an out-of-schema answer crosses the bus as
 //! the error it is, and a reader that is not there is "unavailable", never a panic or a value.
 
-use base_testkit::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use action_client::{InProcess, Intents};
@@ -14,6 +13,7 @@ use action_router::Router;
 use action_vocab::{CallerRole, ChoiceId, Handle, Value};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
 use agent_reader_daemon::{ReaderHost, ReaderService, serve_on};
+use base_testkit::PrivateBus;
 use provenance::{AgentRef, Label, Labelled, Quarantined, SessionId, Source, SpaceId};
 use std::collections::BTreeSet;
 use std::sync::Arc;

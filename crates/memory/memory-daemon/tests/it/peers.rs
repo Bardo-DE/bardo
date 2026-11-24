@@ -2,9 +2,9 @@
 //! `/proc`, and the real resolution of a bus connection to a process on a private bus where the
 //! caller is this test binary.
 
-use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, TestBackend, connect, dirs_in, service, space};
 use account_callers::{CallerTable, ProcCallers, load_callers, table_from_toml};
+use base_testkit::PrivateBus;
 use memory_client::{ClientError, DbusTransport, Memory};
 use memory_core::*;
 use memory_daemon::{Daemon, Delivery, ProcPeers, caller_for, delivery_of};

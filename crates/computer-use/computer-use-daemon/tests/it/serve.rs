@@ -4,9 +4,9 @@
 //! (`Who`); a bus name decides nothing, and a program that owns `org.bardo.Shell` is only the
 //! shell if its process is.
 
-use base_testkit::PrivateBus;
 use crate::support::enabled;
 use action_dbus::callers::Identity;
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole;
 use computer_use_action::{ComputerUseAction, Summary};
 use computer_use_bus::{

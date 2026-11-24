@@ -45,7 +45,7 @@ const STRUCTURAL: &[u16] = &[
     325,
     339,
 ];
-/// Tags that hold the place of another directory, which cannot move with the picture: SubIFDs, the EXIF directory, the GPS directory and the interoperability directory.
+/// Tags that hold the place of another directory, which cannot move with the picture: `SubIFDs`, the EXIF directory, the GPS directory and the interoperability directory.
 const POINTERS: &[u16] = &[330, 34665, 34853, 40965];
 
 /// What a page says about how it is stored.

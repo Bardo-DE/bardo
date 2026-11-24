@@ -4,6 +4,7 @@
 
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use outputs_dbus::Outputs1Proxy;
 use shell_model::serve::ClaimError;
 use shell_model::service::Handle;
@@ -11,7 +12,6 @@ use shell_model::work_areas::WorkAreaService;
 use shell_model::work_areas::{Rect, WorkArea, WorkAreaCommand, WorkAreaLink, WorkAreas};
 use shell_services::env::{BusRoute, Buses, Env, NameClaims};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::Connection;
 use zbus::connection::Builder;
@@ -48,7 +48,10 @@ fn area(id: u32, top: u32) -> WorkArea {
 fn start(bus: &PrivateBus) -> (Handle<WorkAreaService>, Scratch) {
     let scratch = Scratch::new("work-areas-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         claims: NameClaims::Claim,
         ..Env::isolated(scratch.path())
     };

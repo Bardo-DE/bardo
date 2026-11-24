@@ -4,7 +4,6 @@
 //! that the accounts service cannot read are dropped, never widened. The bus is private and accountd is a
 //! fake that serves only `Spaces1`.
 
-use base_testkit::PrivateBus;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::spaces::FakeSpaces;
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
@@ -12,6 +11,7 @@ use account_core::{AppName, DataClass, GrantId};
 use action_core::AgentConfig;
 use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
 use action_router::GrantStore;
+use base_testkit::PrivateBus;
 use permission_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{ActionName, SpaceId, SpaceScope, UnixSeconds};
 use std::collections::BTreeMap;

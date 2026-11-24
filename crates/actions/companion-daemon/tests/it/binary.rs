@@ -4,10 +4,10 @@
 //! serves: a restart that finds nothing resumes nothing. Nothing of the real session is named: the
 //! bus, HOME and every XDG directory are scratch.
 
-use base_testkit::PrivateBus;
 use action_core::{Roster, TurnVia, UserTurn};
 use action_dbus::CompanionProxy;
 use action_vocab::{Caller, TurnId};
+use base_testkit::PrivateBus;
 use companion_wire::FrontTask;
 use provenance::{AgentRef, TaskId};
 use std::path::Path;

@@ -62,9 +62,9 @@ pub fn spawn(rt: &Handle, door: Door, host: HostHandle<ShellMsg>, stopped: mpsc:
 mod tests {
     use std::time::Duration;
 
-    use base_testkit::Scratch;
     use super::{line, until_displaced};
     use crate::ipc::door::Door;
+    use base_testkit::Scratch;
 
     const QUICK: Duration = Duration::from_millis(10);
 

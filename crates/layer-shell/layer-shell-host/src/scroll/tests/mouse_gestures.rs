@@ -19,11 +19,11 @@ use crate::dom::tests::env::test_env;
 use crate::input::mouse_gestures::route::route;
 use crate::input::mouse_gestures::{MouseGestures, read_all};
 use crate::input::pointer::PointerPos;
-use base_testkit::Scratch;
 use crate::scroll::source::{AxisFrame, AxisSource, AxisValue};
 use crate::scroll::suppress::Suppress;
 use crate::scroll::surface::SurfaceScroll;
 use crate::scroll::tuning::Tuning;
+use base_testkit::Scratch;
 use blitz_embed::scroll::doc as dom;
 use blitz_embed::scroll::engine::Motion;
 use blitz_embed::scroll::geom::{ScrollAxis, Scroller};
@@ -52,7 +52,7 @@ fn document() -> SurfaceDocument {
 
 /// A fake mouse gestures daemon: a listening socket in a private temp directory.
 struct Daemon {
-    dir: Dir,
+    dir: Scratch,
     listener: OwnedFd,
 }
 

@@ -80,9 +80,9 @@ mod tests {
     use std::os::unix::net::UnixListener;
     use std::time::{Duration, SystemTime};
 
-    use shell_model::now_playing::CacheLimits;
-    use base_testkit::Scratch;
     use super::{ART_MAX_BYTES, CopyError, copy_cover, prune_blocking};
+    use base_testkit::Scratch;
+    use shell_model::now_playing::CacheLimits;
 
     #[test]
     fn a_regular_cover_is_copied_into_the_cache_and_nothing_else_is() {

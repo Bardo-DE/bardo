@@ -4,7 +4,6 @@
 //! is as it was: no wait.
 
 use crate::support::apps::{Answer, FakeShell};
-use base_testkit::PrivateBus;
 use crate::support::world::introduce;
 use account_core::AppName;
 use action_client::{DbusTransport, GateEvent, Intents};
@@ -14,6 +13,7 @@ use action_dbus::callers::Identity;
 use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_vocab::CallerRole;
 use action_wire::SessionOpen;
+use base_testkit::PrivateBus;
 use computer_use_action::{RunMode, WindowTrust};
 use provenance::{AgentRef, Effect, Label, RunId, SpaceId, UnixSeconds};
 use std::collections::BTreeMap;

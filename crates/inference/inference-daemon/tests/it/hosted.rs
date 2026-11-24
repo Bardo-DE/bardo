@@ -3,7 +3,6 @@
 //! supervisor driver, runner and audit sink. Nothing here starts an engine or touches the GPU,
 //! the real bus or the user's files.
 
-use base_testkit::PrivateBus;
 use crate::hosting;
 
 use account_capability::Tier;

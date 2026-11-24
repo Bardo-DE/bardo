@@ -4,11 +4,11 @@
 //! settings-app-system.)
 
 use crate::support::Sandbox;
-use base_testkit::PrivateBus;
 use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
 use crate::support::handover::HandsOver;
 use crate::support::portal;
+use base_testkit::PrivateBus;
 use settings_app_link::bus::Vouch;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;

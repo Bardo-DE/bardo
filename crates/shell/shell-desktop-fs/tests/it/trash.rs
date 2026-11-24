@@ -1,8 +1,8 @@
 //! Emptying the home Trash on a scratch data folder, per the freedesktop Trash layout.
 
+use base_testkit::Scratch;
 use shell_desktop_fs::trash::{empty, is_empty, root};
 use shell_model::dirs::Dirs;
-use base_testkit::Scratch;
 fn fill(dirs: &Dirs) {
     let trash = root(dirs);
     std::fs::create_dir_all(trash.join("files/folder/inner")).expect("files");

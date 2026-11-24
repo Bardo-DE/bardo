@@ -6,6 +6,7 @@
 
 use std::time::Duration;
 
+use base_testkit::Scratch;
 use shell_model::displays::Displays;
 use shell_model::displays::NightWarmthMode;
 use shell_model::displays::ddc::{Controls, DdcDisplay, Endpoint, RgbGain};
@@ -15,7 +16,6 @@ use shell_model::night_shift::{NightShift, NightShiftCommand, Schedule, Shown, s
 use shell_model::service::Handle;
 use shell_services::env::Env;
 use shell_services::service::spawn;
-use base_testkit::Scratch;
 use tokio::sync::watch;
 
 const SETTLE: Duration = Duration::from_secs(5);

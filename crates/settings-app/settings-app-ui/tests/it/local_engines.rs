@@ -5,10 +5,10 @@
 //! asks first and restarts once.
 
 use crate::support::Sandbox;
-use base_testkit::PrivateBus;
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::drive::{let_threads_run, settle_on_threads};
 use crate::support::engines::{Fake, serve};
+use base_testkit::PrivateBus;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use ui_harness::Harness;

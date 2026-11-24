@@ -3,7 +3,6 @@
 //! or another session is refused.
 
 use crate::serve_helpers::EmptyRoutines;
-use base_testkit::PrivateBus;
 use crate::support::infer::{ScriptedInfer, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -11,6 +10,7 @@ use action_core::*;
 use action_dbus::CompanionHelpers2Proxy;
 use action_vocab::{CallerRole, Origin};
 use action_wire::SessionOpen;
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole as HeldRole;
 use companion_daemon::serve_with_routines;
 use companion_helpers::RoutineDesk;

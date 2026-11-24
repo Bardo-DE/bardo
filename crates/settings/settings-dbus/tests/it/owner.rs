@@ -12,8 +12,8 @@ use settings_dbus::{
 };
 use settings_types::schema::{KeyKind, KeyPath};
 
-use base_testkit::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema, spec};
+use base_testkit::PrivateBus;
 
 const PATH: &str = "/org/bardo/Owner1/settings";
 const NAME: &str = "org.bardo.Owner1";

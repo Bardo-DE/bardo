@@ -3,8 +3,8 @@
 //! channel the test owns), the name is owned and answers once `Daemon::build` has returned, and
 //! `run` ends and lets the name go when its shutdown completes.
 
-use base_testkit::PrivateBus;
 use base_testkit::GENEROUS;
+use base_testkit::PrivateBus;
 use dbus_kit::connect::BusTarget;
 use std::path::Path;
 use std::time::Duration;

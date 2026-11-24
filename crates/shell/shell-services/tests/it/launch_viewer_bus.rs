@@ -14,6 +14,7 @@ use anyview_platform::linux::DbusInstance;
 use anyview_platform::{
     BusRoute as ViewerRoute, Claim, Env as ViewerEnv, Instance, Primary, Request,
 };
+use base_testkit::{PrivateBus, Scratch};
 use shell_launcher::{Generation, OpenTarget, ViewerOpen};
 use shell_model::apps::AppIndex;
 use shell_model::launch::LaunchService;
@@ -23,7 +24,6 @@ use shell_services::Answers;
 use shell_services::env::{BusRoute, Buses, Env, RecordedChildren};
 use shell_services::launch::LaunchLinks;
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 
 const WAIT: Duration = Duration::from_secs(5);
@@ -53,7 +53,10 @@ fn launcher(
 ) {
     let children = RecordedChildren::shared();
     let mut env = Env::isolated(scratch.path());
-    env.buses = Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned()));
+    env.buses = Buses::new(
+        BusRoute::Absent,
+        BusRoute::Address(bus.address().to_owned()),
+    );
     env.children = Arc::<RecordedChildren>::clone(&children);
     let (_apps, apps) = watch::channel(AppIndex::default());
     let rt = tokio::runtime::Handle::current();

@@ -4,8 +4,8 @@
 //! lab engine that is a process of its own. Nothing outside the scratch directories and loopback
 //! ports the tests bind is touched; the only pids signalled are ones these tests started.
 
-use base_testkit::PrivateBus;
 use crate::hosting;
+use base_testkit::PrivateBus;
 
 use account_capability::LlmFeature;
 use account_capability::ModelId;
@@ -17,9 +17,9 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::Tokens;
 use base_testkit::Scratch;
+use hosting::entries;
 use hosting::lab::Lab;
 use hosting::rig::{Plan, World};
-use hosting::{bus, entries};
 use inference_client::InferSession;
 use inference_core::{
     ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest,

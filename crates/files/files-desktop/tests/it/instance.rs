@@ -7,8 +7,8 @@ use files_desktop::{Claim, InstanceError, Show, ShowRequest, StartupId, claim, f
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
-use base_testkit::PrivateBus;
 use crate::file_manager::{folder, next, reveal, sink};
+use base_testkit::PrivateBus;
 
 fn shows() -> Vec<Show> {
     vec![

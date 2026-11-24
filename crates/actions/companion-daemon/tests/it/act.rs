@@ -1,12 +1,12 @@
 //! `Companion1.Answer.Act` on a private bus: a card of the answer becomes a watched `Run.Perform`
 //! in the answer's session, the answer follows it (`Updated`), and only the shell may press.
 
-use base_testkit::PrivateBus;
 use crate::support::world::*;
 use account_callers::ProcRoot;
 use action_core::*;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy};
 use action_vocab::{ActionRef, Args, CallRequest, CardActionId, LabelText, Origin, TargetValue};
+use base_testkit::PrivateBus;
 use companion_daemon::serve_on_rooted;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, CardWire, StepWireState};
 use futures_util::StreamExt;

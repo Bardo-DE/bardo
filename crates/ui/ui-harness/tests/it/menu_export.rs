@@ -6,7 +6,6 @@
 
 #![cfg(target_os = "linux")]
 
-
 use base_testkit::PrivateBus;
 use dioxus::prelude::*;
 use std::cell::RefCell;

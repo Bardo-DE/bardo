@@ -60,9 +60,9 @@ pub fn set_aside(path: &Path) {
 mod tests {
     use std::os::unix::fs::{PermissionsExt, symlink};
 
+    use super::{set_aside, write};
     use base_fs::NewFileMode;
     use base_testkit::Scratch;
-    use super::{set_aside, write};
 
     fn mode(path: &std::path::Path) -> u32 {
         std::fs::metadata(path)

@@ -12,8 +12,8 @@ use portal_daemon::settings::DesktopAppearance;
 use portal_daemon::{Parts, serve_on};
 use zbus::Connection;
 
-use base_testkit::PrivateBus;
 use crate::guard::{as_frontend, call, introduce, is_refused};
+use base_testkit::PrivateBus;
 
 const GRANTS: &str = "org.bardo.Portal1";
 const APP: &str = "org.example.Meet";

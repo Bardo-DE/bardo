@@ -3,13 +3,11 @@
 //! (`account_rig::fixture`), the way a scenario's `test-proc-root` daemons do: the client is
 //! `org.example.Rig`, a Flatpak app, and nothing else says so.
 
-use crate::common;
-
 use account_callers::{CallerTable, ProcCallers};
 use account_core::AppName;
+use base_testkit::PrivateBus;
 use base_testkit::Scratch;
 use base_time::UnixSeconds;
-use base_testkit::PrivateBus;
 use serde_json::Value;
 use std::collections::BTreeSet;
 use std::process::Stdio;

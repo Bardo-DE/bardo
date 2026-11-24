@@ -5,13 +5,13 @@
 
 use std::collections::HashMap;
 
+use base_testkit::PrivateBus;
 use shell_model::notifications::{
     ACTIONS_MAX, BANNERS_PER_APP_MAX, BODY_MAX_BYTES, HINTS_MAX, IconRef, NOTIFY_CALL_MAX_BYTES,
     NoteImage, NotesState, Notification, NotificationId, SENDER_BURST, SENDER_REFILL_MS,
     SUMMARY_MAX_BYTES,
 };
 use shell_services::notifications::BUS_NAME;
-use base_testkit::PrivateBus;
 use tokio::sync::watch;
 use zbus::fdo::RequestNameFlags;
 use zbus::zvariant::{OwnedValue, Value};

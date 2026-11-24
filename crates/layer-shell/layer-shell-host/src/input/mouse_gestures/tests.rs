@@ -6,7 +6,7 @@ use mouse_gestures_proto::Phase;
 use rustix::net::{accept, bind, listen};
 
 /// A fake daemon: a listening `SOCK_SEQPACKET` socket at a temp path.
-fn daemon() -> (Dir, OwnedFd) {
+fn daemon() -> (Scratch, OwnedFd) {
     let dir = Scratch::new("shell-host");
     let path = dir.path().join("events.sock");
     std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");

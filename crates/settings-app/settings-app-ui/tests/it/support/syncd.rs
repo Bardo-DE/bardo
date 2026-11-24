@@ -2,8 +2,8 @@
 //! sets. `Watch` tells the holds on now; `ConfirmDiscard` clears one and tells the end, or answers
 //! `NothingHeld`; every call is recorded.
 
-use base_testkit::PrivateBus;
 use account_dbus::Details;
+use base_testkit::PrivateBus;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
 use sync_bus::{SYNC_BUS, SYNC_PATH};

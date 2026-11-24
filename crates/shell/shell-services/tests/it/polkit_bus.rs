@@ -8,6 +8,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use base_secret::SecretText;
+use base_testkit::PrivateBus;
 use shell_model::polkit_agent::PolkitAgentService;
 use shell_model::polkit_agent::machine::MAX_TRIES;
 use shell_model::polkit_agent::{
@@ -18,7 +19,6 @@ use shell_model::service::Control;
 use shell_services::env::{Bus, BusRoute, Env};
 use shell_services::polkit_agent::{AGENT_PATH, HelperChoice, PolkitRoute, SessionChoice};
 use shell_services::service::spawn;
-use base_testkit::PrivateBus;
 use tokio::sync::{mpsc, watch};
 use zbus::message::Header;
 use zbus::zvariant::{OwnedValue, Value};

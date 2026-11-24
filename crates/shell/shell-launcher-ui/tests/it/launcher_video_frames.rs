@@ -9,6 +9,7 @@ use std::sync::Arc;
 use std::time::UNIX_EPOCH;
 
 use anyview_peek::Body;
+use base_testkit::Scratch;
 use md5::{Digest, Md5};
 use shell_launcher_ui::launcher::preview::frames::ThumbnailFrames;
 use shell_launcher_ui::launcher::preview::load::{Look, ViewerLook};

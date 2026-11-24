@@ -4,11 +4,11 @@
 //! system's `/proc`, which no test may move, so who it does answer (intentd's unit, as the
 //! callers file names it) is tested in process, over a fake proc root (`callers.rs`).
 
-use base_testkit::PrivateBus;
 use action_core::{ReaderAsk, ReaderTask, ValueSchema};
 use action_dbus::{Details, ReaderProxy};
 use action_vocab::Handle;
 use base_testkit::GENEROUS;
+use base_testkit::PrivateBus;
 use futures_util::StreamExt;
 use std::path::Path;
 use std::process::{Child, Command, Stdio};

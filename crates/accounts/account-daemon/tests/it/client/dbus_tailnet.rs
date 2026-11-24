@@ -3,8 +3,6 @@
 //! one): the typed `Machine`s, the stream of changes, and the refusals read back as
 //! `LinkError`s. No dictionary is parsed here: that is what the reader is for.
 
-use super::common;
-
 use account_callers::Caller;
 use account_client::LinkError;
 use account_client_dbus::Bus;

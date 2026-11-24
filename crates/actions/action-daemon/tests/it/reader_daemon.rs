@@ -3,7 +3,6 @@
 //! (the router names the session, readerd resolves the handle through `Session.Resolve` as the
 //! reader) whose model is a scripted inferd. Everything is on a private bus.
 
-use base_testkit::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::world::introduce;
@@ -16,6 +15,7 @@ use action_vocab::{CallerRole, ChoiceId, Handle, Value};
 use action_wire::{ReadAsk, RecallAsk, RecallView, SessionOpen};
 use agent_reader_daemon::{ReaderHost, ReaderService, serve_on};
 use base_ids::{Count, Tokens};
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole as Role;
 use memory_core::{
     InjectQuery, MemoryItem, MemoryReply, MemoryRequest, RecallHit, RecallOver, RecallWhy,

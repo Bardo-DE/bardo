@@ -1,8 +1,6 @@
 //! `keyboard.overrides` (design/22-SETTINGS.md §3.25): the typed values a load makes, the rows a
 //! load keeps when one is malformed, and the file round trip.
 
-use crate::common;
-
 use base_testkit::Scratch;
 use settings_store_fs::{ConfigRoot, Store};
 use shell_settings::{APP, KeyboardOverride, KeyboardSettings, ShellFile, overrides};

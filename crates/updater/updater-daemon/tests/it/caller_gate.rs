@@ -3,8 +3,8 @@
 //! caller sees them.
 
 use crate::feed_stage::{block_on, engine_serving};
-use base_testkit::{PrivateBus, name_of};
 use crate::support::Sandbox;
+use base_testkit::{PrivateBus, name_of};
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table, WhyNot};
 use caller_identity_dbus::caller_identity_linux::fake::{
     introduced_program, introduced_service, introduced_unverified,

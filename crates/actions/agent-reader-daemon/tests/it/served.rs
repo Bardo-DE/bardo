@@ -1,7 +1,6 @@
 //! readerd serves `org.bardo.Reader1` as declared: the interface on the bus is the one in
 //! `dbus/org.bardo.Reader1.xml`, and the name is claimed once.
 
-use base_testkit::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
 use account_core::{AppId, AppName, Isolation};
 use action_client::{InProcess, Intents};
@@ -12,6 +11,7 @@ use action_fake::fake_router;
 use action_vocab::CallerRole;
 use action_wire::CallerId;
 use agent_reader_daemon::{ReaderHost, ReaderService, ServeError, serve_on};
+use base_testkit::PrivateBus;
 use std::collections::BTreeSet;
 use std::sync::Arc;
 

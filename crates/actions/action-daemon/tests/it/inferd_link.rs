@@ -3,7 +3,6 @@
 //! reviewer then asks the person) instead of the daemon failing to start. The link is
 //! `action_dbus::inferd_transport`, the one constructor intentd, companiond and readerd share.
 
-use base_testkit::PrivateBus;
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
@@ -11,6 +10,7 @@ use account_match::LlmNeed;
 use account_match::Need;
 use action_daemon::{InferdModel, InferdWriter, inferd_transport};
 use base_ids::Tokens;
+use base_testkit::PrivateBus;
 use inference_client::{Transport, TransportError};
 use inference_core::{Model, ModelCard};
 use std::collections::BTreeSet;

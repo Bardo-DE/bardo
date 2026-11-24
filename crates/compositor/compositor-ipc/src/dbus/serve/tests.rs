@@ -3,8 +3,8 @@
 
 use super::*;
 use crate::dbus::{DebugReply, DebugRequest};
-use base_testkit::PrivateBus;
 use crate::{InjectLine, WaitPredicate};
+use base_testkit::PrivateBus;
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
 

@@ -33,9 +33,7 @@ pub use kms::{
     KmsWorld, LinkBehaviour, SceneBehaviour, SyntheticTopology, edid, load_fixture,
 };
 pub use lock_marker::MemoryLockMarker;
-pub use logind::{
-    FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, SleepPhase,
-};
+pub use logind::{FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, SleepPhase};
 pub use mouse_gestures::FakeMouseGestures;
 pub use notify::FakeNotify;
 pub use scanout::{FakeScanout, GlassHandle, Pacing};

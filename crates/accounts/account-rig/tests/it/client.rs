@@ -3,8 +3,6 @@
 //! the client writes under a proc root (`fixture`), the way a scenario's `test-proc-root` daemons
 //! do: the client is `org.example.Rig`, a Flatpak app, and nothing else says so.
 
-use crate::common;
-
 use account_callers::{CallerTable, ProcCallers};
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::AccountId;

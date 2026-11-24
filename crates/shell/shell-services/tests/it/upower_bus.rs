@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::battery::BatteryService;
 use shell_model::battery::{Battery, Charge};
 use shell_model::kbd_backlight::KbdBacklightService;
@@ -15,7 +16,6 @@ use shell_model::power_profile::{PowerProfiles, Profile, ProfileDegraded};
 use shell_model::units::{Percent, Presence, Seconds};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::interface;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
@@ -164,7 +164,10 @@ async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
 
 fn env_for(bus: &PrivateBus, scratch: &Scratch) -> Env {
     Env {
-        buses: Buses::new(BusRoute::Address(bus.address().to_owned()), BusRoute::Absent),
+        buses: Buses::new(
+            BusRoute::Address(bus.address().to_owned()),
+            BusRoute::Absent,
+        ),
         ..Env::isolated(scratch.path())
     }
 }

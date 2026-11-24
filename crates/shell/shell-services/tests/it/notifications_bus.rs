@@ -7,6 +7,7 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::notifications::NotificationsService;
 use shell_model::notifications::{
     ActionKey, Activation, ActivationToken, NameHolder, NotesState, NotificationId,
@@ -16,7 +17,6 @@ use shell_model::service::Control;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::notifications::{self, Answers, BUS_NAME};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use shell_testkit::{Heard, Signals};
 use tokio::sync::watch;
 use zbus::Message;
@@ -82,7 +82,10 @@ fn start(
     scratch: &Scratch,
 ) -> (watch::Receiver<NotesState>, Control<NotificationsCommand>) {
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(scratch.path())
     };
     let service = spawn::<NotificationsService>(runtime.handle(), &env, Answers::default());

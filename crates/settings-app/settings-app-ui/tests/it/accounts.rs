@@ -5,11 +5,11 @@
 
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held, ModuleAt, SECRET};
-use base_testkit::PrivateBus;
 use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
 use crate::support::syncd::{Standing, Syncd};
 use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH};
+use base_testkit::PrivateBus;
 use settings_app_callers::{RoleCheck, RoleName, introduce_service, private_peers, roles};
 use settings_app_link::bus::Vouch;
 use settings_app_model::{ModuleId, PageSlug};

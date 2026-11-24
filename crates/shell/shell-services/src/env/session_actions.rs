@@ -127,8 +127,8 @@ impl SessionActions for DryRunActions {
 #[cfg(test)]
 mod tests {
     use super::{DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line};
-    use shell_model::session::{ActionReach, Session, SessionAction};
     use base_testkit::Scratch;
+    use shell_model::session::{ActionReach, Session, SessionAction};
     #[test]
     fn a_dry_run_offers_as_told_and_only_records() {
         let scratch = Scratch::new("dry-run");

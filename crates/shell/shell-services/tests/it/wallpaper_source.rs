@@ -4,12 +4,12 @@
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
+use base_testkit::Scratch;
 use shell_model::ids::OutputName;
 use shell_model::wallpaper::WallpaperService;
 use shell_model::wallpaper::{WallpaperCommand, WallpaperPicture, Wallpapers};
 use shell_services::env::Env;
 use shell_services::service::spawn;
-use base_testkit::Scratch;
 use tokio::sync::watch;
 
 /// A small PNG of one `shade` in `dir`.

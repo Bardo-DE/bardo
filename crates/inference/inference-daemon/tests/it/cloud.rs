@@ -4,7 +4,6 @@
 //! Acceptance 7 of design/31 section 7.1: no key is on any bus, in any file or in any audit line,
 //! checked by a scan that has a positive control.
 
-use base_testkit::PrivateBus;
 use crate::hosting;
 
 use account_capability::LlmFeature;
@@ -15,10 +14,10 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::{Tokens, TurnCount};
 use hosting::accountd::{FakeAccount, Standing};
-use hosting::wait::within;
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::rig::{Hosted, Plan, Trust, World};
+use hosting::wait::within;
 use inference_client::InferSession;
 use inference_core::{
     ChargeTotal, ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusedError, InferReply,

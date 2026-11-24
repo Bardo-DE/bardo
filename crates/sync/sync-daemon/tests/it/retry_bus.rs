@@ -2,13 +2,13 @@
 //! seconds (`next_look`) and not at the next ten-minute rescan: a grant list that does not answer
 //! yet on a loaded machine must not leave a granted account unmirrored for ten minutes.
 
-use base_testkit::PrivateBus;
 use crate::common::hosted::host;
 use account_client::{GrantsError, LinkError};
 use account_core::Candidate;
 use account_fake::cloud_provider;
 use account_secrets::MemorySecrets;
 use account_service_core::registry::Registry;
+use base_testkit::PrivateBus;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_driver::hub::{Access, Hub};

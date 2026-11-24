@@ -10,6 +10,7 @@ use std::os::unix::net::UnixStream;
 use std::sync::{Arc, Mutex};
 
 use account_core::SpaceId;
+use base_testkit::PrivateBus;
 use desktop_client::bardo::{
     AppChange, AppEvent, DisplayTrial as WireTrial, MenuSource, RevealOutput, ShellEvent,
     SpaceChange, SpaceEvent, SpacePlace, WindowChange, WindowEvent,
@@ -40,7 +41,6 @@ use shell_services::desktop_wl::bardo::{
 };
 use shell_services::desktop_wl::{CommandError as WlCommandError, project_subjects};
 use shell_services::env::{Bus, BusRoute};
-use base_testkit::PrivateBus;
 fn bardo_offer() -> ProtocolSet {
     [
         Protocol::ExtForeignToplevelList,

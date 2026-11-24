@@ -1,8 +1,8 @@
 //! The person's settings file reaches a running service: a change in the file applies to the next
 //! request without a restart. The wait is the watch's own event, never a sleep.
 
-use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, World, dirs_in};
+use base_testkit::PrivateBus;
 use memory_core::{
     AppId, DayCount, Isolation, MemoryReply, MemoryRequest, Refusal, VaultKind, WaitingSetting,
 };

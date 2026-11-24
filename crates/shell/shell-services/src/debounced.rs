@@ -180,11 +180,11 @@ pub(crate) async fn settled(watch: &mut Option<Debounced>) -> Option<()> {
 
 #[cfg(test)]
 mod tests {
+    use super::{Debounced, EventFilter, OWN_FILE_QUIET, Place};
+    use base_testkit::Scratch;
     use notify::event::{
         AccessKind, AccessMode, CreateKind, DataChange, Event, EventKind, ModifyKind, RemoveKind,
     };
-    use base_testkit::Scratch;
-    use super::{Debounced, EventFilter, OWN_FILE_QUIET, Place};
 
     const FILE_NAME: &str = "layout.toml";
 

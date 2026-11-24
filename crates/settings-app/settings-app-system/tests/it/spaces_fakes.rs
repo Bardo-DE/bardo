@@ -1,8 +1,8 @@
 //! A registry (`org.bardo.Spaces1` on accountd's name) and a memory (`org.bardo.Memory1.Control`)
 //! on a private bus, writing what they were asked, in order, into one log.
 
-use base_testkit::PrivateBus;
 use account_dbus::accounts::{SPACE_KEY_CREATED, SPACE_KEY_LOOK, SPACE_KEY_NAME};
+use base_testkit::PrivateBus;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use zbus::zvariant::{OwnedValue, Value};

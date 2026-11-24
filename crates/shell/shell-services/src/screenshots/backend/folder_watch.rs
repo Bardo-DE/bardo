@@ -86,8 +86,8 @@ fn named(path: &&Path) -> bool {
 mod tests {
     use std::path::Path;
 
-    use base_testkit::Scratch;
     use super::{named, shots_in};
+    use base_testkit::Scratch;
 
     #[test]
     fn only_a_screenshots_name_counts() {

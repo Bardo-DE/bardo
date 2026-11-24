@@ -128,7 +128,7 @@ pub(super) fn with_profile(mut avif: Vec<u8>, profile: &[u8]) -> Result<Vec<u8>,
         vec![index as u8] // below 128, checked above
     };
     avif[count_at] += 1;
-    avif.splice(count_at + 1..count_at + 1, assoc);
+    avif.splice((count_at + 1)..=count_at, assoc);
     grow(&mut avif, ipma, assoc_len)?;
 
     let mut colr = Vec::with_capacity(colr_len);

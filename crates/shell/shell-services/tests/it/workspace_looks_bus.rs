@@ -4,6 +4,7 @@
 
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::serve::ClaimError;
 use shell_model::service::Handle;
 use shell_model::workspace_looks::WorkspaceLooksService;
@@ -12,7 +13,6 @@ use shell_model::workspace_looks::{
 };
 use shell_services::env::{BusRoute, Buses, Env, NameClaims};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::connection::Builder;
 use zbus::export::futures_core::Stream;
@@ -51,7 +51,10 @@ fn workspace(id: &str, active: bool) -> PublishedWorkspace {
 fn start(bus: &PrivateBus) -> (Handle<WorkspaceLooksService>, Scratch) {
     let scratch = Scratch::new("workspace-looks-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         claims: NameClaims::Claim,
         ..Env::isolated(scratch.path())
     };

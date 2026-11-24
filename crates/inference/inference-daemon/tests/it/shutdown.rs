@@ -8,7 +8,6 @@
 //! starting a real engine needs a caller the real binary only names in a `test-proc-root` build,
 //! and no model is ever run here. Only pids these tests started are signalled.
 
-
 use base_testkit::PrivateBus;
 use base_testkit::Scratch;
 use engine_spec::ProgramPath;

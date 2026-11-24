@@ -7,6 +7,7 @@
 
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use desktop_protocols::vocab::{
     Emphasis, LeaseState, Modality, PlacementMark, Responsiveness, SensitivityLevel, WindowRole,
     WindowStateKind,
@@ -23,7 +24,6 @@ use shell_services::capture_pick::CaptureLinks;
 use shell_services::env::Env;
 use shell_services::seat::seat;
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::Connection;
 use zbus::connection::Builder;

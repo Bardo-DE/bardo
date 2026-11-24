@@ -3,9 +3,9 @@
 //! absent, so the page says it is unavailable as before.
 
 use crate::support::Sandbox;
-use base_testkit::PrivateBus;
 use crate::support::drive::{let_threads_run, settle_on_threads};
 use account_wire::names::{ACCOUNTS_BUS, INFERENCE_BUS};
+use base_testkit::PrivateBus;
 use memory_dbus::MEMORY_BUS;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;

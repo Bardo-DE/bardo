@@ -1,14 +1,14 @@
 //! What the agent endpoint tests share: the accounts and plan of a world with agent endpoints, the
 //! launcher's calls over the bus, and a plain HTTP client that plays the agent.
 
-use base_testkit::PrivateBus;
 use super::accountd::{FakeAccount, Standing};
-use super::wait::{DEADLINE, within};
 use super::engine::{Chat, Script};
 use super::entries;
 use super::rig::{AgentsPlan, Hosted, Plan, Trust, World};
+use super::wait::{DEADLINE, within};
 use account_core::{AppId, AppName, Isolation};
 use account_dbus::Details;
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole;
 use inference_core::{Period, Policy, SpendScope};
 use inference_dbus::inference::{AgentsProxy, EndpointArg};

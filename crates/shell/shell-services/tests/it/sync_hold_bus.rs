@@ -10,6 +10,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Duration;
 
 use crate::accounts_bus::accounts_support::{ACCOUNT, FakeAccountd, Listing};
+use base_testkit::{PrivateBus, Scratch};
 use shell_launcher::settings_target::{AccountRef, SettingsTarget};
 use shell_model::launch::{LaunchCommand, SettingsOpen};
 use shell_model::notifications::NotificationsService;
@@ -25,7 +26,6 @@ use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::notifications::Answers;
 use shell_services::service::spawn;
 use shell_services::sync_hold::SyncHoldLinks;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
@@ -127,7 +127,10 @@ struct Shell {
 async fn shell(bus: &PrivateBus) -> Shell {
     let scratch = Scratch::new("sync-hold-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();

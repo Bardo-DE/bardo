@@ -6,11 +6,11 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::input_source::InputSourceService;
 use shell_model::input_source::{InputCommand, InputRefusal, InputSwitch};
 use shell_services::env::{BusRoute, Buses, Env, IbusRoute};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::interface;
 use zbus::zvariant::{StructureBuilder, Value};
@@ -94,7 +94,10 @@ impl Ibus {
 
 fn env_for(bus: &PrivateBus, scratch: &Scratch) -> Env {
     Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ibus: IbusRoute::Absent,
         ..Env::isolated(scratch.path())
     }
@@ -143,9 +146,8 @@ fn next_input_source_tells_fcitx5_the_entry_after_the_current_one_or_refuses() {
 
 #[test]
 fn next_input_source_tells_ibus_the_engine_after_the_current_one() {
-    let (Some(session), Some(ibus_bus)) = (PrivateBus::start(), PrivateBus::start()) else {
-        return;
-    };
+    let session = PrivateBus::start();
+    let ibus_bus = PrivateBus::start();
     let scratch = Scratch::new("input-source-ibus");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {

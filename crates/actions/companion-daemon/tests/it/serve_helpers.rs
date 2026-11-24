@@ -3,13 +3,13 @@
 //! bridge reading them and changing nothing.
 
 use crate::serve::{block, introspect};
-use base_testkit::PrivateBus;
 use crate::support::world::*;
 use account_callers::ProcRoot;
 use action_dbus::{
     Bus, COMPANION_PATH, CompanionHelpers2Proxy, CompanionHelpersProxy, CompanionTerminalsProxy,
     introspection,
 };
+use base_testkit::PrivateBus;
 use companion_daemon::{serve_on_rooted, serve_with_routines};
 use companion_helpers::RoutineDesk;
 use companion_model::helper::{Ceiling, HelperModel, HelperName, Role};

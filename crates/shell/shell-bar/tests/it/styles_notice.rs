@@ -4,8 +4,8 @@
 
 use std::time::Duration;
 
-use shell_bar::Bar;
 use base_testkit::Scratch;
+use shell_bar::Bar;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::ControlCenterLink;
 use ui_components::style::kit::{Styles, UserStyle};

@@ -9,6 +9,7 @@ pub(crate) mod accounts_support;
 use std::time::Duration;
 
 use accounts_support::{ACCOUNT, FakeAccountd, Listing};
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::accounts::AccountsService;
 use shell_model::accounts::{AccountKey, AccountsState, shown_for, sign_in_key};
 use shell_model::notifications::NotificationsService;
@@ -21,7 +22,6 @@ use shell_services::accounts::AccountsLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::notifications::Answers;
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 
 const SETTLE: Duration = Duration::from_secs(5);
@@ -46,7 +46,10 @@ struct Shell {
 async fn shell(bus: &PrivateBus) -> Shell {
     let scratch = Scratch::new("accounts-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();
@@ -320,7 +323,10 @@ fn shell_under(bus: &PrivateBus) -> (Shell, Voice) {
     let answers = Answers::default();
     let scratch = Scratch::new("accounts-bus-id");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();

@@ -8,8 +8,8 @@ use files_core::{EjectError, FolderPath, MountError, ProgramName, VolumeId, Volu
 use files_desktop::disks::FakeUsers;
 use files_desktop::{DiskUsers, Disks, NoUsers};
 
-use base_testkit::PrivateBus;
 use crate::udisks::{Device, DriveSpec, ROOT, Shared, plug, serve};
+use base_testkit::PrivateBus;
 
 const STICK: DriveSpec = DriveSpec {
     node: "stick",

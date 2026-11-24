@@ -7,6 +7,7 @@
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::apps::AppIndex;
 use shell_model::key_remap::KeyRemapService;
 use shell_model::key_remap::{Attention, KeyRemapCommand, KeyRemapState, notice_text};
@@ -16,7 +17,6 @@ use shell_model::windows::WindowModel;
 use shell_services::env::{BusRoute, Buses, Env, UnitWait};
 use shell_services::key_remap::KeyRemapLinks;
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::interface;
 use zbus::zvariant::OwnedObjectPath;
@@ -200,7 +200,10 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
     let scratch = Scratch::new("key-remap-grace");
     let env = Env {
         key_remap_socket: Some(scratch.path().join("key-remap.sock")),
-        buses: Buses::new(BusRoute::Address(bus.address().to_owned()), BusRoute::Absent),
+        buses: Buses::new(
+            BusRoute::Address(bus.address().to_owned()),
+            BusRoute::Absent,
+        ),
         key_remap_unit_wait: UnitWait {
             grace: Duration::from_secs(60),
             recheck: Duration::from_secs(60),

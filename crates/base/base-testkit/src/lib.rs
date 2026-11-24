@@ -12,9 +12,9 @@ pub mod hang_guard;
 mod reaped;
 mod scratch;
 
+pub use bus::PrivateBus;
 #[cfg(feature = "dbus")]
 pub use bus::name_of;
-pub use bus::PrivateBus;
 pub use deadline::{Deadline, GENEROUS};
 pub use eventually::eventually_blocking;
 #[cfg(feature = "tokio")]

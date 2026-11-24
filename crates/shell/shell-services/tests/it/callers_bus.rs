@@ -16,8 +16,8 @@ use std::time::Duration;
 
 use action_core::ConfirmOffer;
 use action_dbus::ConfirmProxy;
-use shell_model::screenshots::Shots;
 use base_testkit::{PrivateBus, Scratch};
+use shell_model::screenshots::Shots;
 use tokio::sync::watch;
 use zbus::Connection;
 

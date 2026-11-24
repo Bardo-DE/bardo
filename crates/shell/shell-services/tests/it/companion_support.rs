@@ -12,6 +12,7 @@ use std::sync::Arc;
 use action_core::{ContextKeep, Hit, Keep, UndoEntry, UndoState};
 use action_vocab::{EntityRef, UndoId};
 use base_ids::Count;
+use base_testkit::PrivateBus;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, FooterWire};
 use memory_core::{
     EntryBody, EventRef, KindTag, ReplicaId, Seq, ThingView, TimelineEntry, UndoRef, UserText,
@@ -34,7 +35,6 @@ use shell_services::CompanionLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::seat::{SeatPublisher, seat};
 use shell_services::service::spawn;
-use base_testkit::PrivateBus;
 use tokio::sync::{mpsc, watch};
 use zbus::Connection;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
@@ -158,7 +158,10 @@ pub fn ask_input(prompt: &str) -> AskInput {
 pub async fn desk() -> Desk {
     let bus = PrivateBus::start();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(Path::new("/nonexistent/shell-companion-bus"))
     };
     let (seat_publisher, seat_view) = seat();

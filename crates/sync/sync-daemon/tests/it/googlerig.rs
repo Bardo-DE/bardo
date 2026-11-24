@@ -7,7 +7,6 @@
     reason = "a shared test helper: each test binary uses only part of it"
 )]
 
-use base_testkit::PrivateBus;
 use crate::common::hosted::{Link, host};
 use crate::common::{Known, PhotosGrant, client};
 use account_capability::StorageScope;
@@ -29,6 +28,7 @@ use account_fake_servers::{FakeGoogle, GoogleHandle, Running};
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
+use base_testkit::PrivateBus;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
 use std::sync::Arc;

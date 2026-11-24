@@ -106,6 +106,7 @@ pub enum Loss {
 
 impl Loss {
     /// One plain sentence for what is lost.
+    #[must_use]
     pub fn sentence(self) -> &'static str {
         match self {
             Loss::Pages => "Only the first page will be kept.",

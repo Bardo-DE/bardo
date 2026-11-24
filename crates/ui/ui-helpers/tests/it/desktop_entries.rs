@@ -124,7 +124,11 @@ fn the_walk_recurses_in_order_ends_at_a_loop_and_the_first_folder_shadows() {
     second.write("a.desktop", "");
     second.write("z.desktop", "");
     std::os::unix::fs::symlink(&first.0, first.0.join("kde/loop")).expect("link");
-    let roots = [first.0.to_path_buf(), second.0.join("missing"), second.0.to_path_buf()];
+    let roots = [
+        first.0.to_path_buf(),
+        second.0.join("missing"),
+        second.0.to_path_buf(),
+    ];
 
     let all = walk_applications(&roots);
     let ids: Vec<&str> = all.iter().map(|file| file.id.as_str()).collect();

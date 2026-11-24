@@ -3,7 +3,6 @@
 //! app that is away is "unavailable" rather than a panic, and a slow one is cut at its latency.
 
 use crate::support::apps::{Blank, answering_intentd, serve_mail};
-use base_testkit::PrivateBus;
 use crate::support::world::app;
 use action_core::*;
 use action_daemon::DbusLink;
@@ -15,6 +14,7 @@ use action_vocab::{
     ActionRef, Args, CallId, EntityRef, IntentsVocab, Origin, ParamName, TargetValue, UndoToken,
     Value,
 };
+use base_testkit::PrivateBus;
 use provenance::{Actor, EntityId, EntityKey, EntityKind, SpaceId};
 
 fn mail() -> account_core::AppName {

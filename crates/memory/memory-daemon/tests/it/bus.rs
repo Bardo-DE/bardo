@@ -2,8 +2,8 @@
 //! from an app's `record` to the `SQLCipher` file and back, and the refusals, the signals and the
 //! export that cross the bus. Every bus, directory and key here is the test's own.
 
-use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, World, connect, dirs_in, space};
+use base_testkit::PrivateBus;
 use memory_client::{ClientError, DbusTransport, Memory, Recorded, Transport, TransportError};
 use memory_core::*;
 use memory_dbus::{ControlProxy, MEMORY_BUS};

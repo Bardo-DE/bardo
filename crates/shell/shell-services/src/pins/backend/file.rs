@@ -136,10 +136,10 @@ fn render(mut table: Table, pins: &DockPins) -> String {
 #[cfg(test)]
 mod tests {
     use super::{FILE_NAME, load, save, store};
+    use base_testkit::Scratch;
     use shell_launcher::AppId;
     use shell_model::pins::DockPins;
     use shell_model::seed::Store;
-    use base_testkit::Scratch;
     /// The file `name` was set aside as (`<name>.bad-<seconds>`), if there is one.
     fn set_aside_copy(dir: &std::path::Path, name: &str) -> Option<std::path::PathBuf> {
         let prefix = format!("{name}.bad-");

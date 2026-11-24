@@ -1,10 +1,10 @@
 //! Open at Login on a scratch config folder: the entry is a marked copy, turning off removes only
 //! a file bardo-shell wrote, and a file someone else put there is shown as on and kept.
 
+use base_testkit::Scratch;
 use shell_desktop_fs::autostart::{Login, file_of, login_of, turn_off, turn_on};
 use shell_launcher::AppId;
 use shell_model::dirs::Dirs;
-use base_testkit::Scratch;
 const ENTRY: &str =
     "[Desktop Entry]\nName=Example\nExec=example %U\n\n[Desktop Action new]\nName=New\n";
 

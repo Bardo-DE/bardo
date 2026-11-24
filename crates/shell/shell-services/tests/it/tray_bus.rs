@@ -12,8 +12,8 @@ use std::process::{Child, ChildStdin, Command, Stdio};
 use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
-use shell_model::tray::{Tray, TrayCommand, TrayItemId, TrayMenuEntry, TrayMenuKind};
 use base_testkit::{PrivateBus, Scratch};
+use shell_model::tray::{Tray, TrayCommand, TrayItemId, TrayMenuEntry, TrayMenuKind};
 const WAIT: Duration = Duration::from_secs(20);
 
 /// A stand-in (`src/bin/NAME.rs`), built with this test: nextest's own path when it runs from an

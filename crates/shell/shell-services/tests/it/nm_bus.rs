@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::network::NetworkService;
 use shell_model::network::{Connectivity, Link, Network, NetworkCommand};
 use shell_model::units::{Percent, Presence};
@@ -14,7 +15,6 @@ use shell_model::wifi::WifiService;
 use shell_model::wifi::{Association, Radio, Security, Ssid, Wifi, WifiCommand};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::interface;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
@@ -273,7 +273,10 @@ async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
 
 fn env_for(bus: &PrivateBus, scratch: &Scratch) -> Env {
     Env {
-        buses: Buses::new(BusRoute::Address(bus.address().to_owned()), BusRoute::Absent),
+        buses: Buses::new(
+            BusRoute::Address(bus.address().to_owned()),
+            BusRoute::Absent,
+        ),
         ..Env::isolated(scratch.path())
     }
 }

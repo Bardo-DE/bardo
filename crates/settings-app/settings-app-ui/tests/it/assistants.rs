@@ -6,12 +6,12 @@
 
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held};
-use base_testkit::PrivateBus;
 use crate::support::computers::{Asker, Fake, Lender, Own, serve_with};
 use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, click_when_still, scroll_into_view, type_into};
 use crate::support::inferd::Inferd;
 use action_settings::{CloudAllowed, read_places};
+use base_testkit::PrivateBus;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use settings_dbus::Verdict;

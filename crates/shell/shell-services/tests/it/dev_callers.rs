@@ -7,8 +7,8 @@ use std::fs;
 use std::os::unix::fs::{PermissionsExt, symlink};
 use std::path::{Path, PathBuf};
 
-use shell_services::callers::DesktopCallers;
 use base_testkit::Scratch;
+use shell_services::callers::DesktopCallers;
 const ROWS: &str = "[[peer]]\napp = \"org.bardo.Accounts\"\nrole = \"accounts\"\nexe = [\"/opt/checkout/standin\"]\n";
 
 fn write(dir: &Path, name: &str, text: &str, mode: u32) -> PathBuf {

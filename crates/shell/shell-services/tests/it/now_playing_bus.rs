@@ -5,11 +5,11 @@
 use std::collections::HashMap;
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::now_playing::NowPlayingService;
 use shell_model::now_playing::{Media, TEXT_MAX_CHARS};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use zbus::interface;
 use zbus::zvariant::{OwnedValue, Value};
 
@@ -129,7 +129,10 @@ fn a_player_that_never_answers_does_not_hide_the_others_and_long_titles_are_cut(
     let bus = PrivateBus::start();
     let scratch = Scratch::new("now-playing");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(scratch.path())
     };
     let long_title = "t".repeat(TEXT_MAX_CHARS * 10);

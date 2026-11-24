@@ -55,6 +55,7 @@ action-vocab = {path = "../action-vocab"}
 agent-acp-core = {path = "../agent-acp-core"}
 serde_json = { workspace = true }
 tempfile = { workspace = true }
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 action-settings = {path = "../action-settings"}
 agent-session = {path = "../agent-session"}
 

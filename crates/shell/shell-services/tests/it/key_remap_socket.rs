@@ -5,6 +5,7 @@ use std::os::fd::OwnedFd;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
+use base_testkit::Scratch;
 use key_remap_proto::{
     Grab, Keyboard, KeyboardInfo, PROTOCOL_VERSION, ProfileName, Status, Steer, ToClient, ToDaemon,
     decode, encode,
@@ -30,7 +31,6 @@ use shell_model::windows::{Sizing, Toplevel, Toplevels, WindowModel};
 use shell_services::env::Env;
 use shell_services::key_remap::KeyRemapLinks;
 use shell_services::service::spawn;
-use base_testkit::Scratch;
 use tokio::sync::{mpsc, watch};
 
 /// How long a thing that must not happen is given to happen: a best-effort absence check, as

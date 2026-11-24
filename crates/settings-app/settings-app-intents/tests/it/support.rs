@@ -5,7 +5,6 @@
     reason = "each test binary uses some of the world's helpers, and the others stay unused in it"
 )]
 
-
 use action_core::{AppRefusal, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault};
 use action_dbus::callers::{INTENTD, Identity, intentd_only};
 use action_dbus::{Details, INTENTS_BUS, IntentProviderProxy};

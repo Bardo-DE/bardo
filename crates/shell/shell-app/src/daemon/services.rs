@@ -119,8 +119,8 @@ pub(crate) fn follow_settings(
 #[cfg(test)]
 mod tests {
     use crate::daemon::start::{Wiring, start};
-    use shell_services::env::Env;
     use base_testkit::Scratch;
+    use shell_services::env::Env;
     use shell_ui_kit::services::Services;
 
     /// `start` must never panic — the daemon has to reach the host connect and the

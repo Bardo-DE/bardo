@@ -6,8 +6,8 @@
 use crate::common;
 
 use account_fake_servers::HeldRuntime;
-use common::Known;
 use base_testkit::PrivateBus;
+use common::Known;
 use std::time::Duration;
 use sync_bus::SYNC_BUS;
 use sync_daemon::service::serve;

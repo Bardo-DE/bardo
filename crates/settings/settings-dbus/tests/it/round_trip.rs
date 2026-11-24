@@ -6,8 +6,8 @@ use settings_dbus::{AnyOwner, Change, INTERFACE, LiveClient, LiveError, serve};
 use settings_types::schema::{AgentSetting, KeyKind, KeyPath};
 use zbus::export::futures_core::Stream;
 
-use base_testkit::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema, spec};
+use base_testkit::PrivateBus;
 
 const PATH: &str = "/org/bardo/Test1/settings";
 const NAME: &str = "org.bardo.Test1";

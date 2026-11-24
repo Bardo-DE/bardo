@@ -12,8 +12,8 @@ use zbus::export::futures_core::Stream;
 use zbus::message::Type;
 use zbus::{MatchRule, MessageStream};
 
-use base_testkit::PrivateBus;
 use crate::module::{Accounts, TOGGLE};
+use base_testkit::PrivateBus;
 
 const PATH: &str = "/org/bardo/Peers1/settings";
 const NAME: &str = "org.bardo.Peers1";

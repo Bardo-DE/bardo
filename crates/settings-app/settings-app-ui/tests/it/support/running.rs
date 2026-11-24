@@ -2,8 +2,8 @@
 //! with the `RunningChanged` signal, on a private bus. A Start can be held until the test lets it
 //! finish, a call can be refused with inferd's own sentence, and every call is written down.
 
-use base_testkit::PrivateBus;
 use account_dbus::Details;
+use base_testkit::PrivateBus;
 use inference_dbus::inference::{
     INFERENCE_BUS, INFERENCE_PATH, RunState, RunningModel, running_to_dbus,
 };

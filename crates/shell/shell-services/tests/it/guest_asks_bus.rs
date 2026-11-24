@@ -8,6 +8,7 @@
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::guest_asks::GuestAsksService;
 use shell_model::guest_asks::{Computer, GuestAsksState, Verdict, choice_key, shown_for};
 use shell_model::notifications::NotificationsService;
@@ -20,7 +21,6 @@ use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::guest_asks::GuestAsksLinks;
 use shell_services::notifications::Answers;
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
@@ -194,7 +194,10 @@ struct Shell {
 async fn shell(bus: &PrivateBus) -> Shell {
     let scratch = Scratch::new("guest-asks-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();

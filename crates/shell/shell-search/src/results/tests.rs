@@ -6,10 +6,10 @@ mod fake;
 use std::sync::Arc;
 use std::time::Duration;
 
+use base_testkit::Scratch;
 use fake::{Fake, Heard, Obeys};
 use shell_launcher::{Choice, ItemId, ItemKey, Provider, ProviderKind};
 use shell_model::results::{Results, SearchCommand};
-use base_testkit::Scratch;
 use tokio::runtime::Handle;
 use tokio::sync::watch;
 

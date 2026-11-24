@@ -5,12 +5,12 @@
 //! `/proc/<pid>/cgroup` says what it is.
 
 use crate::served::service;
-use base_testkit::PrivateBus;
 use action_core::{ReaderAsk, ReaderError, ReaderTask, ValueSchema};
 use action_dbus::callers::Identity;
 use action_dbus::{Details, ReaderProxy};
 use action_vocab::{Handle, Value};
 use agent_reader_daemon::serve_on;
+use base_testkit::PrivateBus;
 use std::path::Path;
 use std::sync::Arc;
 

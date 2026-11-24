@@ -2,7 +2,6 @@
 //! until the answer is dismissed (`Companion1.Close`), at most a bounded number of finished tasks
 //! at once, and the answer object names that session so any surface can ask for it.
 
-use base_testkit::PrivateBus;
 use crate::support::infer::{Say, call, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -10,6 +9,7 @@ use action_core::*;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details};
 use action_vocab::{Caller, Handle, Origin, WindowKey};
 use action_wire::{SessionOpen, SessionOpened, WireRefusal};
+use base_testkit::PrivateBus;
 use base_time::Clock as _;
 use companion_daemon::serve_on_rooted;
 use companion_wire::{AnswerPhase, AskWire};

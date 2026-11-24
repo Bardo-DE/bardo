@@ -3,11 +3,11 @@
 //! refusal is told. The rest is tested in `settings-app-model`.
 
 use crate::support::Sandbox;
-use base_testkit::PrivateBus;
 use crate::support::compositor::{Compositor, Row};
 use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
 use crate::support::portal::{Fake, Remembered, serve};
+use base_testkit::PrivateBus;
 use settings_app_link::bus::Daemon;
 use settings_app_link::bus::Vouch;
 use settings_app_model::PageSlug;

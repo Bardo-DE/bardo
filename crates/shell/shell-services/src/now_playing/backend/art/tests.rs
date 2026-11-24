@@ -4,8 +4,8 @@ use std::collections::HashMap;
 use std::os::unix::net::UnixListener;
 use std::path::Path;
 
-use shell_model::now_playing::{Art, art_cache_name};
 use base_testkit::Scratch;
+use shell_model::now_playing::{Art, art_cache_name};
 use zbus::zvariant::{OwnedValue, Str};
 
 use super::cache::copy_cover;

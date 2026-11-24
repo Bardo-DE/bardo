@@ -258,14 +258,14 @@ pub(super) fn write_manual(dir: &Path, manual: Option<&Manual>) -> Result<(), Fi
 
 #[cfg(test)]
 mod tests {
-    use shell_model::ids::OutputName;
-    use shell_model::night_shift::{
-        Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth,
-    };
-    use base_testkit::Scratch;
     use super::{
         SETTINGS, Skipping, read_light, read_manual, skip_list, write_light, write_manual,
         write_skip,
+    };
+    use base_testkit::Scratch;
+    use shell_model::ids::OutputName;
+    use shell_model::night_shift::{
+        Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth,
     };
 
     fn warm() -> NightLight {

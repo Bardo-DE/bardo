@@ -13,6 +13,7 @@ use account_sheet::{
     Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ProviderRow, SheetInput, SheetView,
     SignInView,
 };
+use base_testkit::{PrivateBus, Scratch};
 use shell_model::accounts::sheet::AccountsSheetService;
 use shell_model::accounts::sheet::{
     AccountsSheetCommand, AccountsSheets, SheetAction, SheetHandle, SheetLink,
@@ -24,7 +25,6 @@ use shell_model::service::Handle;
 use shell_services::accounts::sheet::AccountsSheetLinks;
 use shell_services::env::{BusRoute, Buses, Env, NameClaims};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use std::pin::Pin;
 use tokio::sync::watch;
 use zbus::Connection;
@@ -103,7 +103,10 @@ fn shell_claiming(bus: &PrivateBus, claims: NameClaims) -> Shell {
     let scratch = Scratch::new("accounts-sheet-bus");
     let callers = Introduced::new();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         callers: Arc::<Introduced>::clone(&callers),
         claims,
         ..Env::isolated(scratch.path())

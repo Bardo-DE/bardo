@@ -4,7 +4,6 @@
 //! each time. A provider can only switch what its manifest declares, and one that serves nothing
 //! leaves the file's value.
 
-use base_testkit::PrivateBus;
 use crate::support::world::app;
 use action_core::AgentConfig;
 use action_daemon::{Changed, LiveReach, changes, follow_reach, marks_of, parse_reach, rescan};
@@ -12,6 +11,7 @@ use action_dbus::{BusConnection, ReachNow, ReachServer};
 use action_fake::{FakeSeams, MAIL_MANIFEST, fake_router};
 use action_manifest::AgentReach;
 use action_router::Router;
+use base_testkit::PrivateBus;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;

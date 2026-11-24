@@ -18,6 +18,7 @@ use action_core::{Outcome, Preview, Undoable};
 use action_manifest::{Manifest, ValidManifest, validate};
 use action_vocab::{ActionRef, CallClass, CallRequest, Origin, TargetValue};
 use action_wire::{IntentsReply, IntentsRequest};
+use base_testkit::{PrivateBus, Scratch};
 use provenance::{ActionName, AppName, Effect};
 use shell_launcher::WindowKey;
 use shell_model::app_menu::AppMenuService;
@@ -32,7 +33,6 @@ use shell_services::app_menu::{Activated, AppMenuDeps, MenuAgent, MenuFault, Men
 use shell_services::callers::CallerSource;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::Connection;
 
@@ -153,7 +153,10 @@ fn service_seeing(
     windows: watch::Receiver<WindowModel>,
 ) -> Handle<AppMenuService> {
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
+        buses: Buses::new(
+            BusRoute::Absent,
+            BusRoute::Address(bus.address().to_owned()),
+        ),
         callers: Arc::<Introduced>::clone(callers),
         ..Env::isolated(scratch)
     };

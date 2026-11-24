@@ -127,7 +127,10 @@ impl PrivateBus {
         let services = dir.join("services");
         std::fs::create_dir_all(&services).expect("the service directory");
         for name in names {
-            let exec = format!("/usr/bin/touch {}", dir.join(format!("started-{name}")).display());
+            let exec = format!(
+                "/usr/bin/touch {}",
+                dir.join(format!("started-{name}")).display()
+            );
             std::fs::write(
                 services.join(format!("{name}.service")),
                 format!("[D-BUS Service]\nName={name}\nExec={exec}\n"),

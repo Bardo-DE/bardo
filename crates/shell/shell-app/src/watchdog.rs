@@ -142,8 +142,8 @@ mod tests {
     use std::os::unix::net::UnixDatagram;
     use std::path::PathBuf;
 
-    use base_testkit::Scratch;
     use super::{Address, Notifier, Ping, address_of, ping_for};
+    use base_testkit::Scratch;
 
     #[test]
     fn a_ping_goes_only_when_the_beats_moved() {

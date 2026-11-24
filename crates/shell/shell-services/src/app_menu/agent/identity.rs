@@ -115,9 +115,9 @@ fn flatpak_scope(proc_root: &Path, pid: u32) -> FlatpakScope {
 mod tests {
     use std::path::Path;
 
-    use shell_model::app_menu::{Identity, MenuApp, MenuName};
-    use base_testkit::Scratch;
     use super::{unknown, verified};
+    use base_testkit::Scratch;
+    use shell_model::app_menu::{Identity, MenuApp, MenuName};
 
     #[expect(
         clippy::unnecessary_wraps,

@@ -3,12 +3,12 @@
 //! comments, its spacing, the keys nobody reads and the values a key refused. Scratch config
 //! directory only.
 
+use base_testkit::Scratch;
 use provenance::UnixSeconds;
 use settings_store_fs::{ConfigRoot, Store};
 use shell_app::voice::write_consent;
 use shell_model::voice::VoiceConsent;
 use shell_settings::{APP, Percent, ShellFile};
-use base_testkit::Scratch;
 use tokio::sync::watch;
 
 /// What Settings and a person left in the file: a comment, a key the daemon never reads, and a

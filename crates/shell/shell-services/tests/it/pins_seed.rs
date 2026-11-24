@@ -5,6 +5,7 @@
 use std::path::PathBuf;
 use std::time::Duration;
 
+use base_testkit::Scratch;
 use shell_launcher::AppId;
 use shell_model::apps::{
     App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal, step,
@@ -14,7 +15,6 @@ use shell_model::pins::{DockPins, PinAt, PinEvent};
 use shell_model::service::Handle;
 use shell_services::env::Env;
 use shell_services::service::spawn;
-use base_testkit::Scratch;
 use tokio::sync::watch;
 
 const SETTLE: Duration = Duration::from_secs(5);

@@ -4,8 +4,8 @@
 //! `Invalid("no member")` and never arrives, which is how `Entries` and `RecordDurable` once
 //! worked in process and nowhere else.
 
-use base_testkit::PrivateBus;
 use crate::support::connect;
+use base_testkit::PrivateBus;
 use memory_core::Refusal;
 use memory_dbus::{Call, MemoryError, encode_request, invoke};
 use memory_dbus::{Serve, introspection, serve_on};

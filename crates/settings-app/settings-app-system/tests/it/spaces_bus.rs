@@ -2,8 +2,8 @@
 //! is told the choice before the registry is asked, a removal with no memory running goes on only
 //! when it keeps everything, and nothing is half done.
 
-use base_testkit::PrivateBus;
 use crate::spaces_fakes::serve;
+use base_testkit::PrivateBus;
 use memory_core::{HistoryFate, MemoryFate, Removal};
 use settings_app_link::bus::{BusSource, Vouch};
 use settings_app_link::spaces::SpacesLink;
@@ -11,7 +11,10 @@ use settings_app_model::SpaceKey;
 use settings_app_system::spaces::OnBus;
 use settings_dbus::AnyOwner;
 fn link(bus: &PrivateBus) -> OnBus {
-    OnBus(BusSource::Address(bus.address().to_owned(), Vouch::of(AnyOwner)))
+    OnBus(BusSource::Address(
+        bus.address().to_owned(),
+        Vouch::of(AnyOwner),
+    ))
 }
 
 /// The registry's Spaces.

@@ -53,8 +53,8 @@ impl Run for WindowsService {
 mod tests {
     use std::time::Duration;
 
-    use shell_model::desktop::DesktopView;
     use base_testkit::Scratch;
+    use shell_model::desktop::DesktopView;
     use tokio::sync::watch;
 
     use super::WindowsLinks;
