@@ -13,8 +13,6 @@
 
 #[path = "../../../action-daemon/tests/it/support/apps.rs"]
 mod apps;
-#[path = "../../../action-daemon/tests/it/support/bus.rs"]
-mod bus;
 #[path = "../../../action-daemon/tests/it/support/memoryd.rs"]
 mod memoryd;
 
