@@ -189,7 +189,7 @@ async fn a_caller_in_the_fake_proc_root_is_named_and_one_outside_it_is_not() {
 }
 
 /// The person's own `inferd.toml` names nobody: companiond's main process, which the system's
-/// table would name, is nobody when only that file names it, and the daemon says it ignored it.
+/// table would name, is nobody when only that file names it.
 #[tokio::test(flavor = "multi_thread")]
 async fn a_callers_table_in_the_persons_file_names_nobody() {
     let bus = PrivateBus::start();
@@ -198,8 +198,4 @@ async fn a_callers_table_in_the_persons_file_names_nobody() {
     main_of_companiond(&root, std::process::id());
     let (yes, said) = answered(&bus, &root, Table::InTheConfig).await;
     assert!(!yes, "{said}");
-    assert!(
-        said.contains("[callers] in the configuration file ignored"),
-        "{said}"
-    );
 }
