@@ -29,7 +29,7 @@ impl Grid {
             orientation.turn,
             QuarterTurn::Quarter | QuarterTurn::ThreeQuarter
         );
-        let (out_w, out_h) = if swaps { (h, w) } else { (w, h) };
+        let out_w = if swaps { h } else { w };
         let (width, height) = if swaps {
             (self.height, self.width)
         } else {
