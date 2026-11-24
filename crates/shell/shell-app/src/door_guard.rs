@@ -62,14 +62,13 @@ pub fn spawn(rt: &Handle, door: Door, host: HostHandle<ShellMsg>, stopped: mpsc:
 mod tests {
     use std::time::Duration;
 
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{line, until_displaced};
     use crate::ipc::door::Door;
 
     const QUICK: Duration = Duration::from_millis(10);
 
-    fn held_in(dir: &TempDir) -> (service_locator::Agent, Door) {
+    fn held_in(dir: &Scratch) -> (service_locator::Agent, Door) {
         let env = service_locator::Environment {
             runtime_dir: Some(dir.path().as_os_str().to_owned()),
             ..Default::default()
@@ -82,7 +81,7 @@ mod tests {
 
     #[tokio::test(start_paused = true)]
     async fn a_removed_lock_file_ends_the_watch_with_the_line() {
-        let dir = TempDir::new("door-guard-removed");
+        let dir = Scratch::new("door-guard-removed");
         let (agent, door) = held_in(&dir);
         let watching = tokio::spawn(until_displaced(door, QUICK));
         // Several looks go by (on the paused clock) while the file is there: the watch keeps going.
@@ -101,7 +100,7 @@ mod tests {
 
     #[tokio::test(start_paused = true)]
     async fn a_lock_file_replaced_by_another_ends_the_watch() {
-        let dir = TempDir::new("door-guard-replaced");
+        let dir = Scratch::new("door-guard-replaced");
         let (agent, door) = held_in(&dir);
         // A cleaner removed it and a second `bardo-shell` made a new one in its place.
         std::fs::remove_file(&agent.address().lock).unwrap_or_else(|e| panic!("{e}"));

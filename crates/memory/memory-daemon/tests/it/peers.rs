@@ -2,7 +2,7 @@
 //! `/proc`, and the real resolution of a bus connection to a process on a private bus where the
 //! caller is this test binary.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, TestBackend, connect, dirs_in, service, space};
 use account_callers::{CallerTable, ProcCallers, load_callers, table_from_toml};
 use memory_client::{ClientError, DbusTransport, Memory};
@@ -249,9 +249,9 @@ async fn world(
     String,
 ) {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let dirs = dirs_in(&scratch.path().join("home"));
-    let server = connect(&bus.address).await;
+    let server = connect(bus.address()).await;
     let peers = ProcPeers::with_proc_root(server.clone(), table, proc_root.to_owned());
     let daemon = Arc::new(Daemon::new(
         service(&dirs, &SharedKeys::default()),
@@ -260,7 +260,7 @@ async fn world(
     ));
     serve_on(&server, Arc::clone(&daemon)).await.expect("serve");
     daemon.attach(server);
-    let address = bus.address.clone();
+    let address = bus.address().to_owned();
     (scratch, bus, daemon, address)
 }
 

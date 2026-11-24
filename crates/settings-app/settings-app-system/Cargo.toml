@@ -59,6 +59,7 @@ dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 # The integration tests use the fakes, which the library has behind `testing`.
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 settings-app-system = {path = ".", features = ["testing"]}
 settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["testing"] }

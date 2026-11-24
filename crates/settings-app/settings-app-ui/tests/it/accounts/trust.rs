@@ -65,12 +65,12 @@ fn vouching(
 #[test]
 fn a_program_that_took_accountds_name_is_not_read_and_is_sent_nothing() {
     let rt = runtime();
-    let bus = PrivateBus::start("accounts-squatter");
+    let bus = PrivateBus::start();
     let squatter = Accountd::new(Verdict::Allow, identities());
     let daemon = rt.block_on(squatter.serve_on(&bus));
     let vouch = vouching(&rt, &bus, &daemon, Owner::Nobody);
     let mut harness = Sandbox::new("accounts-squatter")
-        .on_bus_vouched(&bus.address, vouch)
+        .on_bus_vouched(bus.address(), vouch)
         .harness(accounts());
     settle_on_threads(&mut harness, "the pane giving up", |h| {
         h.html().contains("could not be confirmed")
@@ -88,12 +88,12 @@ fn a_program_that_took_accountds_name_is_not_read_and_is_sent_nothing() {
 #[test]
 fn a_program_with_another_services_role_is_not_accountd_either() {
     let rt = runtime();
-    let bus = PrivateBus::start("accounts-wrong-role");
+    let bus = PrivateBus::start();
     let other = Accountd::new(Verdict::Allow, identities());
     let daemon = rt.block_on(other.serve_on(&bus));
     let vouch = vouching(&rt, &bus, &daemon, Owner::Holding(roles::SYNC));
     let mut harness = Sandbox::new("accounts-wrong-role")
-        .on_bus_vouched(&bus.address, vouch)
+        .on_bus_vouched(bus.address(), vouch)
         .harness(accounts());
     settle_on_threads(&mut harness, "the pane giving up", |h| {
         h.html().contains("could not be confirmed")
@@ -104,12 +104,12 @@ fn a_program_with_another_services_role_is_not_accountd_either() {
 #[test]
 fn the_program_that_holds_accountds_role_is_read() {
     let rt = runtime();
-    let bus = PrivateBus::start("accounts-owner-vouched");
+    let bus = PrivateBus::start();
     let accountd = Accountd::new(Verdict::Allow, identities());
     let daemon = rt.block_on(accountd.serve_on(&bus));
     let vouch = vouching(&rt, &bus, &daemon, Owner::Holding(roles::ACCOUNTS));
     let mut harness = Sandbox::new("accounts-owner-vouched")
-        .on_bus_vouched(&bus.address, vouch)
+        .on_bus_vouched(bus.address(), vouch)
         .harness(accounts());
     settle_on_threads(&mut harness, "the rows", |h| {
         h.count(".account-row-body") == 2
@@ -120,7 +120,7 @@ fn the_program_that_holds_accountds_role_is_read() {
 #[test]
 fn a_typed_secret_is_never_sent_to_a_program_that_took_the_name() {
     let rt = runtime();
-    let bus = PrivateBus::start("accounts-squatter-secret");
+    let bus = PrivateBus::start();
     let squatter = Accountd::new(Verdict::Allow, identities());
     let daemon = rt.block_on(squatter.serve_on(&bus));
     let vouch = vouching(&rt, &bus, &daemon, Owner::Nobody);

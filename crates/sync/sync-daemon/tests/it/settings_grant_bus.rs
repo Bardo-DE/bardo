@@ -22,7 +22,7 @@ use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host, keep};
 use common::{Known, client, eventually};
 use settings_dbus::{AnyOwner, LiveClient};

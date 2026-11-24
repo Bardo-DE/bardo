@@ -2,9 +2,10 @@
 //! `PrepareForSleep` held by inhibitors, the session and seat calls recorded. Everything runs
 //! on a private dbus-daemon; the client side is a second connection to it.
 
+use base_testkit::PrivateBus;
 use compositor_ipc::sleep::{SleepHandler, SleepWatch};
 use compositor_testkit::fakes::{
-    FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, PrivateBus, SleepPhase,
+    FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, SleepPhase,
 };
 use std::future::poll_fn;
 use std::pin::Pin;
@@ -87,12 +88,12 @@ async fn inhibit(manager: &Proxy<'_>, what: &str) -> OwnedFd {
 #[test]
 fn an_inhibitor_is_held_until_its_pipe_closes() {
     let bus = PrivateBus::start();
-    let logind = FakeLogind::serve(&bus.address).expect("serve");
+    let logind = FakeLogind::serve(bus.address()).expect("serve");
     let rt = runtime();
     // Connections and streams drop at the end of the test, and dropping one spawns on the runtime.
     let _in_runtime = rt.enter();
     let fd = rt.block_on(async {
-        let client = connect(&bus.address).await;
+        let client = connect(bus.address()).await;
         inhibit(&proxy(&client, MANAGER_PATH, MANAGER).await, "sleep").await
     });
     assert_eq!(logind.held_inhibitors(), ["sleep"]);
@@ -111,12 +112,12 @@ fn an_inhibitor_is_held_until_its_pipe_closes() {
 #[test]
 fn lock_and_unlock_signals_reach_a_listener() {
     let bus = PrivateBus::start();
-    let logind = FakeLogind::serve(&bus.address).expect("serve");
+    let logind = FakeLogind::serve(bus.address()).expect("serve");
     let rt = runtime();
     // Connections and streams drop at the end of the test, and dropping one spawns on the runtime.
     let _in_runtime = rt.enter();
     let (client, mut heard) = rt.block_on(async {
-        let client = connect(&bus.address).await;
+        let client = connect(bus.address()).await;
         let heard = signals(&client, SESSION_PATH, SESSION).await;
         (client, heard)
     });
@@ -134,12 +135,12 @@ fn lock_and_unlock_signals_reach_a_listener() {
 #[test]
 fn prepare_for_sleep_waits_for_inhibitors() {
     let bus = PrivateBus::start();
-    let logind = FakeLogind::serve(&bus.address).expect("serve");
+    let logind = FakeLogind::serve(bus.address()).expect("serve");
     let rt = runtime();
     // Connections and streams drop at the end of the test, and dropping one spawns on the runtime.
     let _in_runtime = rt.enter();
     let (client, mut heard, fd) = rt.block_on(async {
-        let client = connect(&bus.address).await;
+        let client = connect(bus.address()).await;
         let heard = signals(&client, MANAGER_PATH, MANAGER).await;
         let fd = inhibit(&proxy(&client, MANAGER_PATH, MANAGER).await, "sleep").await;
         (client, heard, fd)
@@ -174,12 +175,12 @@ fn prepare_for_sleep_waits_for_inhibitors() {
 #[test]
 fn session_and_seat_calls_are_recorded_and_device_signals_sent() {
     let bus = PrivateBus::start();
-    let logind = FakeLogind::serve(&bus.address).expect("serve");
+    let logind = FakeLogind::serve(bus.address()).expect("serve");
     let rt = runtime();
     // Connections and streams drop at the end of the test, and dropping one spawns on the runtime.
     let _in_runtime = rt.enter();
     let (client, mut heard) = rt.block_on(async {
-        let client = connect(&bus.address).await;
+        let client = connect(bus.address()).await;
         let heard = signals(&client, SESSION_PATH, SESSION).await;
         let session = proxy(&client, SESSION_PATH, SESSION).await;
         let seat = proxy(&client, SEAT_PATH, SEAT).await;
@@ -279,15 +280,15 @@ impl SleepHandler for Record {
 #[test]
 fn a_prepare_for_sleep_from_anyone_but_logind_is_not_acted_on() {
     let bus = PrivateBus::start();
-    let logind = FakeLogind::serve(&bus.address).expect("serve");
+    let logind = FakeLogind::serve(bus.address()).expect("serve");
     let told = Arc::new(Mutex::new(Vec::new()));
-    let _watch = SleepWatch::start(Some(bus.address.clone()), Record(Arc::clone(&told)))
+    let _watch = SleepWatch::start(Some(bus.address().to_owned()), Record(Arc::clone(&told)))
         .expect("the watcher subscribes");
     let rt = runtime();
     // Connections and streams drop at the end of the test, and dropping one spawns on the runtime.
     let _in_runtime = rt.enter();
     let spoofer = rt.block_on(async {
-        let spoofer = connect(&bus.address).await;
+        let spoofer = connect(bus.address()).await;
         spoofer
             .emit_signal(
                 None::<&str>,

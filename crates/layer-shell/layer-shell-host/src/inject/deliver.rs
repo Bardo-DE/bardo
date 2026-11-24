@@ -169,7 +169,7 @@ mod tests {
         let frame = image::RgbaImage::from_fn(240, 160, |x, y| {
             image::Rgba([(x % 256) as u8, (y % 256) as u8, 64, 255])
         });
-        let scratch = crate::scratch::Dir::new();
+        let scratch = base_testkit::Scratch::new("shell-host");
         let path = scratch.path().join("capture.png");
 
         let written = write_capture(&frame, path.clone()).expect("capture written");

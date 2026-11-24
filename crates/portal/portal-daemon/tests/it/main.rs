@@ -3,7 +3,6 @@
 //! install it, without a `dbus-daemon`. The jailed chain's checks live in `dev/accept/`.
 
 mod app_proof;
-mod bus;
 mod capture;
 mod chooser;
 mod dev_callers;

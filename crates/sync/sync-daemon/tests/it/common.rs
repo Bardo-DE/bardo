@@ -5,12 +5,11 @@
     reason = "a shared test helper: each test binary uses only part of it"
 )]
 
-pub mod bus;
 pub mod hosted;
 
 use account_callers::{Caller, Callers};
 use account_core::{AppId, AppName, Isolation};
-use bus::PrivateBus;
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};

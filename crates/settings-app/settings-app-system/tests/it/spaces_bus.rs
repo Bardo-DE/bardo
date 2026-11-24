@@ -2,7 +2,7 @@
 //! is told the choice before the registry is asked, a removal with no memory running goes on only
 //! when it keeps everything, and nothing is half done.
 
-use crate::private_bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::spaces_fakes::serve;
 use memory_core::{HistoryFate, MemoryFate, Removal};
 use settings_app_link::bus::{BusSource, Vouch};
@@ -11,7 +11,7 @@ use settings_app_model::SpaceKey;
 use settings_app_system::spaces::OnBus;
 use settings_dbus::AnyOwner;
 fn link(bus: &PrivateBus) -> OnBus {
-    OnBus(BusSource::Address(bus.address.clone(), Vouch::of(AnyOwner)))
+    OnBus(BusSource::Address(bus.address().to_owned(), Vouch::of(AnyOwner)))
 }
 
 /// The registry's Spaces.
@@ -28,7 +28,7 @@ fn trip() -> SpaceKey {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_removal_tells_memory_first_and_then_asks_the_registry() {
-    let bus = PrivateBus::start("spaces-order");
+    let bus = PrivateBus::start();
     let fakes = serve(&bus, &SPACES, true).await;
     let link = link(&bus);
     link.remove(trip(), KEEP).await.expect("removed");
@@ -61,7 +61,7 @@ async fn with_no_memory_a_delete_choice_removes_nothing_and_says_why() {
             },
         ),
     ] {
-        let bus = PrivateBus::start(name);
+        let bus = PrivateBus::start();
         let fakes = serve(&bus, &SPACES, false).await;
         let ended = link(&bus).remove(trip(), removal).await;
         let words = ended.expect_err("a delete choice waits for memory");

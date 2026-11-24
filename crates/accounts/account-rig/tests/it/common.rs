@@ -5,8 +5,6 @@
     reason = "a helper shared by the test modules; each module uses some of them"
 )]
 
-pub mod bus;
-
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
 

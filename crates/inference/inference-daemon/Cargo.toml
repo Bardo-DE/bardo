@@ -95,7 +95,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 inference-daemon = {path = ".", features = ["test-system-callers"]}
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 futures-util = { workspace = true, features = ["std"] }
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 # The client side the tests drive inferd through.

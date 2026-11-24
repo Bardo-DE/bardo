@@ -3,7 +3,8 @@
 //! descriptor it arrives on, the servers of the person's own, a probed runtime reported as an
 //! account, and what a refusal or a missing accountd is to the one who asked. The keys are fakes.
 
-use crate::hosting::bus::{PrivateBus, within};
+use base_testkit::PrivateBus;
+use crate::hosting::wait::within;
 
 use account_client_dbus::AiAccounts;
 use account_client_dbus::Bus;

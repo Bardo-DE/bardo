@@ -5,7 +5,7 @@
 //! `/proc/<pid>/cgroup` says what it is.
 
 use crate::served::service;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use action_core::{ReaderAsk, ReaderError, ReaderTask, ValueSchema};
 use action_dbus::callers::Identity;
 use action_dbus::{Details, ReaderProxy};
@@ -51,7 +51,7 @@ async fn asked_in(leaf: Option<(&str, Main)>) -> Result<String, zbus::Error> {
     if let Some((leaf, main)) = leaf {
         place_me(&root, leaf, main);
     }
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let daemon = bus.connect().await;
     let who = Arc::new(Identity::on_fixture(
         daemon.clone(),

@@ -16,7 +16,7 @@ publish.workspace = true
 default = []
 desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "dep:action-vocab", "dep:action-manifest", "dep:action-wire", "dep:base-ids", "dep:account-core", "dep:provenance", "dep:toml", "dep:zbus"]
 # The fakes (`anyview_platform::testing`), for the tests of the crates that consume the traits.
-testing = ["dep:tempfile"]
+testing = []
 
 [dependencies]
 base-words = { path = "../../../base/base-words" }
@@ -30,7 +30,6 @@ md-5 = { workspace = true }
 percent-encoding = { workspace = true }
 png = { workspace = true }
 serde_json = { workspace = true }
-tempfile = { workspace = true, optional = true }
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
@@ -49,8 +48,9 @@ base-ids = { path = "../../../base/base-ids", optional = true }
 toml = { workspace = true, optional = true }
 
 [dev-dependencies]
-# The integration tests use the fakes and, with `desktop`, the private bus behind `testing`.
+# The integration tests use the fakes and, with `desktop`, the shared private bus.
 anyview-platform = { path = ".", default-features = false, features = ["testing"] }
+base-testkit = {path = "../../../base/base-testkit", features = ["dbus"]}
 tempfile = { workspace = true }
 
 # The agent tests stand in for intentd with a fixture /proc, which action-dbus reads only with

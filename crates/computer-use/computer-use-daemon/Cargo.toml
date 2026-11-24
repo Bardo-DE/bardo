@@ -61,7 +61,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 [dev-dependencies]
 # The tests read a callers table and screen rules of their own, which only a test build does.
 computer-use-daemon = {path = ".", features = ["fixture-callers"]}
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 action-gate-wire = {path = "../../actions/action-gate-wire"}
 permission-core = {path = "../../actions/permission-core"}
 account-capability = {path = "../../accounts/account-capability"}

@@ -8,7 +8,7 @@ use settings_store_fs::{ConfigRoot, Store};
 use shell_app::voice::write_consent;
 use shell_model::voice::VoiceConsent;
 use shell_settings::{APP, Percent, ShellFile};
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use tokio::sync::watch;
 
 /// What Settings and a person left in the file: a comment, a key the daemon never reads, and a
@@ -23,29 +23,29 @@ mystery = \"kept\"
 tile_size_px = 200
 ";
 
-fn file_in(dir: &TempDir) -> std::path::PathBuf {
+fn file_in(dir: &Scratch) -> std::path::PathBuf {
     dir.path().join("bardo/shell/settings.toml")
 }
 
-fn store_in(dir: &TempDir) -> Store {
+fn store_in(dir: &Scratch) -> Store {
     Store::new(ConfigRoot::Scratch(dir.path().to_path_buf()), APP)
 }
 
 /// A file the daemon never read: written after its feed was filled with the defaults.
-fn edited_behind_its_back(dir: &TempDir) {
+fn edited_behind_its_back(dir: &Scratch) {
     let file = file_in(dir);
     std::fs::create_dir_all(file.parent().unwrap_or_else(|| panic!("a parent")))
         .unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(file, EDITED).unwrap_or_else(|e| panic!("{e}"));
 }
 
-fn text(dir: &TempDir) -> String {
+fn text(dir: &Scratch) -> String {
     std::fs::read_to_string(file_in(dir)).unwrap_or_else(|e| panic!("{e}"))
 }
 
 #[test]
 fn an_edit_of_another_key_survives_the_consent_answer() {
-    let dir = TempDir::new("patch-consent");
+    let dir = Scratch::new("patch-consent");
     let (tx, rx) = watch::channel(ShellFile::default());
     edited_behind_its_back(&dir);
 
@@ -71,7 +71,7 @@ fn an_edit_of_another_key_survives_the_consent_answer() {
 
 #[test]
 fn a_second_write_replaces_the_key_in_place() {
-    let dir = TempDir::new("patch-twice");
+    let dir = Scratch::new("patch-twice");
     let (tx, _rx) = watch::channel(ShellFile::default());
     edited_behind_its_back(&dir);
     let store = store_in(&dir);
@@ -93,7 +93,7 @@ fn a_second_write_replaces_the_key_in_place() {
 
 #[test]
 fn a_consent_given_is_stored_as_voiced_reads_it_and_a_missing_file_is_made() {
-    let dir = TempDir::new("patch-new-file");
+    let dir = Scratch::new("patch-new-file");
     let (tx, _rx) = watch::channel(ShellFile::default());
 
     let given = VoiceConsent::Given(UnixSeconds(1_760_000_000));
@@ -108,7 +108,7 @@ fn a_consent_given_is_stored_as_voiced_reads_it_and_a_missing_file_is_made() {
 
 #[test]
 fn a_file_that_is_not_toml_is_left_alone() {
-    let dir = TempDir::new("patch-garbled");
+    let dir = Scratch::new("patch-garbled");
     let (tx, _rx) = watch::channel(ShellFile::default());
     let file = file_in(&dir);
     std::fs::create_dir_all(file.parent().unwrap_or_else(|| panic!("a parent")))

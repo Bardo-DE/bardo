@@ -19,10 +19,10 @@ use account_secrets::{MemorySecrets, Secrets};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_wire::Refusal;
+use base_testkit::PrivateBus;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
-use common::bus::PrivateBus;
 use std::sync::Arc;
 
 const KEY: &str = "sk-fake-client-0001";

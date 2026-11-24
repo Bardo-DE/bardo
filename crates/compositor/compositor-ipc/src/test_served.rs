@@ -4,7 +4,7 @@
 
 use crate::dbus::{CallerSetup, ConnectAsk, ConnectCall, ConnectReply, serve_compositor_at};
 use crate::privacy::PrivacyLink;
-use crate::test_bus::{PrivateBus, name_of};
+use base_testkit::{PrivateBus, name_of};
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table};
 use caller_identity_dbus::caller_identity_linux::fake::introduced_service;
 use caller_identity_dbus::{BusPeers, ManagerCheck};
@@ -123,7 +123,7 @@ impl Served {
             Some(link) => setup.with_privacy(link),
             None => setup,
         };
-        let (channel, connection) = serve_compositor_at(&bus.address, setup).expect("serve");
+        let (channel, connection) = serve_compositor_at(bus.address(), setup).expect("serve");
         let (drained, undrained) = if reads {
             (Some(StandInLoop::run(channel)), None)
         } else {
@@ -147,7 +147,7 @@ impl Served {
 
     /// A new client that stands as `standing`, with a proxy on Compositor1.
     pub(crate) async fn caller(&self, standing: Standing) -> zbus::Proxy<'static> {
-        let client = self.bus.client().await;
+        let client = self.bus.connect().await;
         self.peers
             .get()
             .expect("served")

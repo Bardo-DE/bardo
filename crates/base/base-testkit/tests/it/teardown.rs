@@ -1,7 +1,7 @@
 //! Teardown is certain: the daemon is gone after the guard drops and after a panic (a kill is in
 //! `group_kill`). Every check goes by PID; nothing is matched by name.
 
-use action_testbus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 /// The command line of a live process, `None` once it is gone (or only a zombie).
@@ -17,8 +17,8 @@ fn cmdline(pid: u32) -> Option<String> {
 
 #[test]
 fn the_pid_is_the_daemons_and_dropping_the_bus_ends_it() {
-    let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let dir = base_testkit::Scratch::new("teardown");
+    let bus = PrivateBus::start_in(dir.path());
     let pid = bus.pid();
     let line = cmdline(pid).expect("the daemon is running");
     assert!(line.starts_with("dbus-daemon "), "not the daemon: {line}");
@@ -29,10 +29,10 @@ fn the_pid_is_the_daemons_and_dropping_the_bus_ends_it() {
 
 #[test]
 fn a_panic_in_the_test_still_ends_the_daemon() {
-    let dir = tempfile::tempdir().expect("scratch");
+    let dir = base_testkit::Scratch::new("teardown");
     let mut seen = 0;
     let outcome = catch_unwind(AssertUnwindSafe(|| {
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
         seen = bus.pid();
         panic!("the test fails with the bus held");
     }));

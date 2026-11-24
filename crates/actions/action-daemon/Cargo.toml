@@ -71,7 +71,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 action-daemon = {path = ".", features = ["test-system-callers"]}
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 account-match = {path = "../../accounts/account-match"}
@@ -80,7 +80,6 @@ memory-core = {path = "../../memory/memory-core"}
 agent-acp-bin = {path = "../agent-acp-bin"}
 action-host = {path = "../action-host"}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
-action-testbus = {path = "../action-testbus"}
 action-fake = {path = "../action-fake"}
 inference-core = {features = ["testing"], path = "../../inference/inference-core"}
 account-wire = {path = "../../accounts/account-wire"}

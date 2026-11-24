@@ -16,7 +16,8 @@ use shell_model::service::Control;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::notifications::{self, Answers, BUS_NAME};
 use shell_services::service::spawn;
-use shell_testkit::{Heard, PrivateBus, Signals, TempDir};
+use base_testkit::{PrivateBus, Scratch};
+use shell_testkit::{Heard, Signals};
 use tokio::sync::watch;
 use zbus::Message;
 use zbus::zvariant::OwnedValue;
@@ -35,7 +36,7 @@ pub(crate) async fn wait_for<T>(
 }
 
 pub(crate) async fn connect(bus: &PrivateBus) -> zbus::Connection {
-    zbus::connection::Builder::address(bus.address.as_str())
+    zbus::connection::Builder::address(bus.address())
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await
@@ -78,10 +79,10 @@ async fn released(connection: &zbus::Connection) {
 fn start(
     runtime: &tokio::runtime::Runtime,
     bus: &PrivateBus,
-    scratch: &TempDir,
+    scratch: &Scratch,
 ) -> (watch::Receiver<NotesState>, Control<NotificationsCommand>) {
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ..Env::isolated(scratch.path())
     };
     let service = spawn::<NotificationsService>(runtime.handle(), &env, Answers::default());
@@ -98,8 +99,7 @@ fn own() -> NotificationsPolicy {
 #[test]
 fn the_private_bus_starts_empty_and_activates_nothing() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     runtime.block_on(async {
         let connection = connect(&bus).await;
         assert_eq!(owner(&connection).await, None, "nobody holds the name");
@@ -122,9 +122,8 @@ fn the_private_bus_starts_empty_and_activates_nothing() {
 #[test]
 fn a_passive_service_never_asks_for_the_name_but_reports_its_holder() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("notes-passive");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("notes-passive");
     let (mut notes, control) = start(&runtime, &bus, &scratch);
     let seen = runtime.block_on(wait_for(&mut notes, SETTLE, |n: &NotesState| {
         n.live.server.holder == NameHolder::Nobody
@@ -146,9 +145,8 @@ fn a_passive_service_never_asks_for_the_name_but_reports_its_holder() {
 #[test]
 fn owning_serves_notify_and_close_with_their_signal() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("notes-own");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("notes-own");
     let (mut notes, control) = start(&runtime, &bus, &scratch);
     control
         .send(NotificationsCommand::Policy(own()))
@@ -231,7 +229,7 @@ pub(crate) async fn notify(connection: &zbus::Connection, app: &str, actions: Ve
 pub(crate) fn owning(
     runtime: &tokio::runtime::Runtime,
     bus: &PrivateBus,
-    scratch: &TempDir,
+    scratch: &Scratch,
 ) -> (watch::Receiver<NotesState>, Control<NotificationsCommand>) {
     let (mut notes, control) = start(runtime, bus, scratch);
     control
@@ -246,9 +244,8 @@ pub(crate) fn owning(
 #[test]
 fn capabilities_and_server_information_answer_as_the_spec_says() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("notes-capabilities");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("notes-capabilities");
     let _service = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
         let connection = connect(&bus).await;
@@ -276,9 +273,8 @@ fn capabilities_and_server_information_answer_as_the_spec_says() {
 #[test]
 fn an_action_is_invoked_then_closed_and_a_swipe_keeps_the_history() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("notes-action");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("notes-action");
     let (mut notes, control) = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
         let connection = connect(&bus).await;
@@ -342,9 +338,8 @@ fn an_action_is_invoked_then_closed_and_a_swipe_keeps_the_history() {
 #[test]
 fn the_history_survives_a_restart() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("notes-restart");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("notes-restart");
     let (mut notes, control) = owning(&runtime, &bus, &scratch);
     let first = runtime.block_on(async {
         let connection = connect(&bus).await;
@@ -371,15 +366,14 @@ fn the_history_survives_a_restart() {
 #[test]
 fn notify_send_and_gdbus_reach_the_server() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("notes-notify-send");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("notes-notify-send");
     let (mut notes, control) = owning(&runtime, &bus, &scratch);
     // Only the child's environment names the private bus; this process never uses it.
     let run = |program: &str, args: &[&str]| {
         let out = std::process::Command::new(program)
             .args(args)
-            .env("DBUS_SESSION_BUS_ADDRESS", &bus.address)
+            .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
             .output()
             .unwrap_or_else(|e| panic!("{program}: {e}"));
         assert!(out.status.success(), "{program}: {out:?}");
@@ -420,7 +414,7 @@ fn notify_send_and_gdbus_reach_the_server() {
             ]
             .concat(),
         )
-        .env("DBUS_SESSION_BUS_ADDRESS", &bus.address)
+        .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
         .output()
         .unwrap_or_else(|e| panic!("gdbus: {e}"));
     assert!(!refused.status.success(), "another connection closed it");
@@ -435,8 +429,7 @@ fn notify_send_and_gdbus_reach_the_server() {
 #[test]
 fn another_holder_is_never_replaced_and_the_name_is_taken_when_free() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let other = runtime.block_on(async {
         let other = connect(&bus).await;
         other
@@ -445,7 +438,7 @@ fn another_holder_is_never_replaced_and_the_name_is_taken_when_free() {
             .unwrap_or_else(|e| panic!("{e}"));
         other
     });
-    let scratch = TempDir::new("notes-other-holder");
+    let scratch = Scratch::new("notes-other-holder");
     let (mut notes, control) = start(&runtime, &bus, &scratch);
     control
         .send(NotificationsCommand::Policy(own()))

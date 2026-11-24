@@ -155,7 +155,7 @@ async fn connected(slot: &mut Option<Connection>, address: &str) -> zbus::Result
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_bus::{PrivateBus, name_of};
+    use base_testkit::{PrivateBus, name_of};
 
     fn ask(pid: u32, bus_name: &str) -> A11yAsk {
         A11yAsk {
@@ -172,8 +172,8 @@ mod tests {
     #[tokio::test]
     async fn a_root_verifies_only_when_the_owner_is_the_clients_own_process() {
         let bus = PrivateBus::start();
-        let owner = bus.client().await;
-        let (worker, answers) = A11yWorker::start(bus.address.clone()).expect("a thread");
+        let owner = bus.connect().await;
+        let (worker, answers) = A11yWorker::start(bus.address().to_owned()).expect("a thread");
         let ours = std::process::id();
         let theirs = ours.wrapping_add(1);
         let unique = name_of(&owner);

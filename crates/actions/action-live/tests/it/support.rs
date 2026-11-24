@@ -26,7 +26,7 @@ pub fn accept_bin(name: &str) -> PathBuf {
 
 pub fn binaries() -> Binaries {
     // Every test starts here: a test that waits for ever ends the process after 20 minutes.
-    action_testbus::hang_guard::arm();
+    base_testkit::hang_guard::arm();
     Binaries::beside(&accept_bin("agent-live"), &|_: &str| None)
 }
 

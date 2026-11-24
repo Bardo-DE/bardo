@@ -1,7 +1,7 @@
 //! The person's settings file reaches a running service: a change in the file applies to the next
 //! request without a restart. The wait is the watch's own event, never a sleep.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, World, dirs_in};
 use memory_core::{
     AppId, DayCount, Isolation, MemoryReply, MemoryRequest, Refusal, VaultKind, WaitingSetting,
@@ -118,7 +118,7 @@ async fn pending_over_bus(client: &zbus::Connection) -> Result<Vec<WaitingSettin
 #[tokio::test]
 async fn a_loosened_value_waits_until_the_settings_app_confirms_it_over_the_bus() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let dirs = dirs_in(&scratch.path().join("home"));
     let config = scratch.path().join("config");
     write_atomically(&config, "[memory.retention]\nsearch_days = 3\n");

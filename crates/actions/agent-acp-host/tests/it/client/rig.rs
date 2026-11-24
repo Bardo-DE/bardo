@@ -260,7 +260,7 @@ where
     X: Seams<Court = TheCourt, Sandbox = FakeSandbox, Spawn = FakeSpawn>,
     X::Files: Clone + 'static,
 {
-    action_testbus::hang_guard::arm();
+    base_testkit::hang_guard::arm();
     let desk = EditorDesk::new();
     let clock = FixedClock::at(UnixSeconds(1_760_000_000));
     let confirmer = DeskConfirmer {

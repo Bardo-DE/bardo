@@ -2,7 +2,7 @@
 //! private bus, holding the apps a test sets. It writes down every removal, and can be made to
 //! refuse the next removal or allowance.
 
-use super::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use zbus::fdo;

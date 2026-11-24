@@ -94,8 +94,7 @@ mod tests {
     use std::time::Duration;
 
     use shell_model::notifications::{NotificationId, StoredHistory};
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{Saver, history_file};
 
     const SHORT: Duration = Duration::from_millis(30);
@@ -110,7 +109,7 @@ mod tests {
 
     #[tokio::test]
     async fn nothing_is_due_until_a_change_asks_and_asks_are_gathered() {
-        let dir = TempDir::new("notes-save");
+        let dir = Scratch::new("notes-save");
         let mut saver = Saver::new(dir.path().join("h.json"), SHORT);
         assert!(!saver.busy());
         assert!(
@@ -143,7 +142,7 @@ mod tests {
 
     #[tokio::test]
     async fn a_change_still_waiting_when_the_loop_ends_is_written_then() {
-        let dir = TempDir::new("notes-save-finish");
+        let dir = Scratch::new("notes-save-finish");
         let file = dir.path().join("h.json");
         let mut saver = Saver::new(file.clone(), LONG);
         saver.request();
@@ -153,7 +152,7 @@ mod tests {
 
     #[tokio::test]
     async fn the_loop_ending_with_nothing_pending_writes_nothing() {
-        let dir = TempDir::new("notes-save-idle");
+        let dir = Scratch::new("notes-save-idle");
         let file = dir.path().join("h.json");
         Saver::new(file.clone(), SHORT).finish(|| stored(1)).await;
         assert!(!file.exists());

@@ -25,7 +25,7 @@ use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::notifications::Answers;
 use shell_services::service::spawn;
 use shell_services::sync_hold::SyncHoldLinks;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
@@ -83,7 +83,7 @@ struct FakeSyncd {
 impl FakeSyncd {
     async fn start(bus: &PrivateBus, already: Option<Held>) -> FakeSyncd {
         let watched = Arc::new(AtomicUsize::new(0));
-        let connection = zbus::connection::Builder::address(bus.address.as_str())
+        let connection = zbus::connection::Builder::address(bus.address())
             .unwrap_or_else(|e| panic!("{e}"))
             .serve_at(
                 SYNC_PATH,
@@ -121,13 +121,13 @@ struct Shell {
     notes: Handle<NotificationsService>,
     hold: Handle<SyncHoldService>,
     launched: mpsc::UnboundedReceiver<LaunchCommand>,
-    _scratch: TempDir,
+    _scratch: Scratch,
 }
 
 async fn shell(bus: &PrivateBus) -> Shell {
-    let scratch = TempDir::new("sync-hold-bus");
+    let scratch = Scratch::new("sync-hold-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();
@@ -186,8 +186,7 @@ async fn until(what: &str, done: impl FnMut() -> bool) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_hold_is_told_opens_settings_at_the_account_and_is_withdrawn_when_it_ends() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let _accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let syncd = FakeSyncd::start(&bus, None).await;
     let mut shell = shell(&bus).await;
@@ -257,8 +256,7 @@ async fn a_hold_is_told_opens_settings_at_the_account_and_is_withdrawn_when_it_e
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_hold_already_on_is_told_at_start_and_a_new_syncd_is_joined_again() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let _accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let syncd = FakeSyncd::start(&bus, Some(counts(40, 40))).await;
     let mut shell = shell(&bus).await;

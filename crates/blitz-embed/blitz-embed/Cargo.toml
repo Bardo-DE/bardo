@@ -41,3 +41,6 @@ required-features = ["blitz"]
 
 [lints]
 workspace = true
+
+[dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}

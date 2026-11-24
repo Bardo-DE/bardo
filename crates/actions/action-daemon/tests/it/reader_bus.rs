@@ -2,7 +2,7 @@
 //! connection that owns intentd's name is answered, an out-of-schema answer crosses the bus as
 //! the error it is, and a reader that is not there is "unavailable", never a panic or a value.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use action_client::{InProcess, Intents};
@@ -93,7 +93,7 @@ struct Rig {
 /// readerd on a bus whose model says `answer`, and a connection that owns intentd's name.
 async fn rig(answer: &str) -> Rig {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let (router, session, handle) = world().await;
     let service = ReaderService::new(
         ReaderHost::start(),
@@ -191,7 +191,7 @@ async fn only_the_process_in_intentds_unit_is_answered() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_reader_that_is_not_on_the_bus_is_unavailable() {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let client = ReaderClient::new(bus.connect().await);
     let value = client
         .extract_in(&SessionId::parse("s-1").expect("session"), &ask(Handle(1)))

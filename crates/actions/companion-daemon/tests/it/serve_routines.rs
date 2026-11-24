@@ -3,7 +3,7 @@
 //! or another session is refused.
 
 use crate::serve_helpers::EmptyRoutines;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::infer::{ScriptedInfer, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -66,7 +66,7 @@ impl RoutineDesk for RecordingRoutines {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, shell, editor, stranger) = (
         bus.connect().await,
         bus.connect().await,
@@ -196,7 +196,7 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
 async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_another_session_is_refused()
  {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, shell, editor, stranger) = (
         bus.connect().await,
         bus.connect().await,

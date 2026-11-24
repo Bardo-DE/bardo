@@ -9,7 +9,7 @@ use action_accept::world::{Binaries, Cassette, World};
 
 pub fn binaries() -> Binaries {
     // Every test starts here: a test that waits for ever ends the process after 20 minutes.
-    action_testbus::hang_guard::arm();
+    base_testkit::hang_guard::arm();
     Binaries {
         intentd: env!("CARGO_BIN_EXE_accept-actiond").into(),
         companiond: env!("CARGO_BIN_EXE_accept-companiond").into(),

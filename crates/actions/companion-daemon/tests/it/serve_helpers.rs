@@ -3,7 +3,7 @@
 //! bridge reading them and changing nothing.
 
 use crate::serve::{block, introspect};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::world::*;
 use account_callers::ProcRoot;
 use action_dbus::{
@@ -27,7 +27,7 @@ use std::time::Duration;
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_helpers_are_served_beside_the_conversation_to_the_shell_alone() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, shell, stranger) = (
         bus.connect().await,
         bus.connect().await,
@@ -141,7 +141,7 @@ impl RoutineDesk for EmptyRoutines {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shell_alone() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, shell, stranger) = (
         bus.connect().await,
         bus.connect().await,
@@ -266,7 +266,7 @@ async fn helpers2_is_served_beside_helpers_with_sign_in_and_routines_to_the_shel
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_editor_bridge_reads_the_helpers_and_changes_nothing_and_a_stranger_reads_nothing() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, shell, editor, stranger) = (
         bus.connect().await,
         bus.connect().await,

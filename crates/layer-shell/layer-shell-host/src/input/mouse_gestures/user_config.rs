@@ -100,7 +100,7 @@ mod tests {
 
     #[test]
     fn the_text_is_read_and_anything_unusable_is_empty() {
-        let scratch = crate::scratch::Dir::new();
+        let scratch = base_testkit::Scratch::new("shell-host");
         let dir = scratch.path();
         let file = dir.join("gestures.toml");
         assert_eq!(read(&file), "", "no file");

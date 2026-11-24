@@ -42,7 +42,6 @@ zbus = {workspace = true, features = ["tokio"]}
 shell-desktop-fs = {path = "../shell-desktop-fs"}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 computer-use-bus = {path = "../../computer-use/computer-use-bus"}
-shell-testkit = {path = "../shell-testkit"}
 serde_json = { workspace = true }
 
 [lints]

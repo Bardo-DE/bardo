@@ -3,7 +3,7 @@
 //! reviewer then asks the person) instead of the daemon failing to start. The link is
 //! `action_dbus::inferd_transport`, the one constructor intentd, companiond and readerd share.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
@@ -18,7 +18,7 @@ use std::collections::BTreeSet;
 #[tokio::test]
 async fn an_absent_inferd_is_unreachable_on_the_link() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let connection = bus.connect().await;
 
     let link = inferd_transport(&connection, action_dbus::InferWatch::off());
@@ -37,7 +37,7 @@ async fn an_absent_inferd_is_unreachable_on_the_link() {
 #[tokio::test]
 async fn the_models_and_the_writer_are_built_on_the_bus() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let connection = bus.connect().await;
     let card = ModelCard {
         account: account_core::AccountId::parse("local").expect("account"),

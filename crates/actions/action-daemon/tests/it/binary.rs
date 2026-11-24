@@ -2,7 +2,7 @@
 //! mere name, and is started by D-Bus activation from an activation file shaped like `dist/dbus/`'s. Nothing
 //! of the real session is named: the bus, HOME and every XDG directory are scratch.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use action_client::Transport;
 use action_wire::{IntentsReply, IntentsRequest, WireRefusal};
 use std::path::{Path, PathBuf};
@@ -96,7 +96,7 @@ async fn until_served(connection: &zbus::Connection) {
 async fn the_binary_claims_the_name_and_a_name_alone_gives_no_role() {
     let dir = tempfile::tempdir().expect("scratch");
     let (_data, env) = scratch_world(dir.path());
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let me = bus.connect().await;
     let mut daemon = intentd(&env, bus.address());
     until_served(&me).await;
@@ -178,7 +178,7 @@ async fn said_about_the_proc_root(fixture: &Path) -> String {
         "BARDO_ACTIOND_PROC_ROOT".to_owned(),
         fixture.display().to_string(),
     ));
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let me = bus.connect().await;
     let log = dir.path().join("intentd.log");
     let mut daemon = Daemon(

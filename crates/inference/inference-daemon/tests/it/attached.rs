@@ -4,6 +4,7 @@
 //! lab engine that is a process of its own. Nothing outside the scratch directories and loopback
 //! ports the tests bind is touched; the only pids signalled are ones these tests started.
 
+use base_testkit::PrivateBus;
 use crate::hosting;
 
 use account_capability::LlmFeature;
@@ -553,7 +554,7 @@ async fn an_eviction_pass_leaves_the_attached_engines_process_alive_and_still_re
 
 /// The real inferd on a private bus with `config`, a scratch XDG and the catalog of `catalog`
 /// (file name, text) in its user catalog directory.
-fn real_inferd(bus: &bus::PrivateBus, config: &str, catalog: &[(&str, String)]) -> Started {
+fn real_inferd(bus: &PrivateBus, config: &str, catalog: &[(&str, String)]) -> Started {
     let scratch = bus.scratch();
     let file = scratch.join("inferd.toml");
     std::fs::write(&file, config).expect("config");
@@ -624,7 +625,7 @@ const NO_PROBE: &str = "[probe]\nollama = []\nllama_cpp = []\nlm_studio = []\n";
 
 #[tokio::test(flavor = "multi_thread")]
 async fn sigterm_to_the_real_inferd_leaves_the_attached_engines_process_alive() {
-    let bus = bus::PrivateBus::start();
+    let bus = PrivateBus::start();
     let dir = Dir::new();
     let lab = lab_process(&dir, None);
     let pid = lab.0.id();
@@ -680,7 +681,7 @@ async fn the_real_inferd_refuses_to_start_on_a_bad_attached_table_and_says_which
         ),
     ];
     for (tables, why) in table {
-        let bus = bus::PrivateBus::start();
+        let bus = PrivateBus::start();
         let mut inferd = real_inferd(
             &bus,
             &format!("{NO_PROBE}\n{tables}"),

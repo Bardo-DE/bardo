@@ -4,26 +4,17 @@
 use std::ffi::OsString;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU32, Ordering};
 use ui_helpers::{
     AppIdentity, AppKeys, DESKTOP_ENTRY_CAP, DesktopFile, DesktopId, XdgEnv, entry_for_window,
     first_of_each_id, load_entries, match_app, walk_applications,
 };
 
-/// One test's own directory under the system temp dir, removed on drop.
-struct Scratch(PathBuf);
+/// One test's own directory, removed on drop.
+struct Scratch(base_testkit::Scratch);
 
 impl Scratch {
     fn new(tag: &str) -> Self {
-        static NEXT: AtomicU32 = AtomicU32::new(0);
-        let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let path = std::env::temp_dir().join(format!(
-            "ds-helpers-entries-{}-{n}-{tag}",
-            std::process::id()
-        ));
-        let _ = fs::remove_dir_all(&path);
-        fs::create_dir_all(&path).expect("scratch dir");
-        Scratch(path)
+        Scratch(base_testkit::Scratch::new(tag))
     }
 
     fn write(&self, name: &str, text: &str) -> PathBuf {
@@ -31,12 +22,6 @@ impl Scratch {
         fs::create_dir_all(path.parent().expect("parent")).expect("folders");
         fs::write(&path, text).expect("write");
         path
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.0);
     }
 }
 
@@ -139,7 +124,7 @@ fn the_walk_recurses_in_order_ends_at_a_loop_and_the_first_folder_shadows() {
     second.write("a.desktop", "");
     second.write("z.desktop", "");
     std::os::unix::fs::symlink(&first.0, first.0.join("kde/loop")).expect("link");
-    let roots = [first.0.clone(), second.0.join("missing"), second.0.clone()];
+    let roots = [first.0.to_path_buf(), second.0.join("missing"), second.0.to_path_buf()];
 
     let all = walk_applications(&roots);
     let ids: Vec<&str> = all.iter().map(|file| file.id.as_str()).collect();
@@ -271,7 +256,7 @@ fn a_window_finds_its_entry_on_disk_by_the_same_rules() {
         "org.b.Shop.desktop",
         "[Desktop Entry]\nIcon=shop\nX-Flatpak=com.shop.App\n",
     );
-    let entries = load_entries(&[first.0.clone(), second.0.clone()]);
+    let entries = load_entries(&[first.0.to_path_buf(), second.0.to_path_buf()]);
     // name, app id, icon
     let cases = [
         ("the file named so", "org.a.Exact", Some("exact")),

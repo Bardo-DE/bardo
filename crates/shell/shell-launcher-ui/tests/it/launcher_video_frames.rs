@@ -12,20 +12,20 @@ use anyview_peek::Body;
 use md5::{Digest, Md5};
 use shell_launcher_ui::launcher::preview::frames::ThumbnailFrames;
 use shell_launcher_ui::launcher::preview::load::{Look, ViewerLook};
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 
 /// A recording with no cover of its own.
 const CLIP: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures/clip.mp4");
 
 /// A scratch `XDG_CACHE_HOME` and a copy of the clip next to it.
 struct Scene {
-    _dir: TempDir,
+    _dir: Scratch,
     cache: PathBuf,
     video: PathBuf,
 }
 
 fn scene() -> Scene {
-    let dir = TempDir::new("launcher-video-frames");
+    let dir = Scratch::new("launcher-video-frames");
     let cache = dir.path().join("cache");
     let video = dir.path().join("clip.mp4");
     std::fs::copy(CLIP, &video).unwrap();

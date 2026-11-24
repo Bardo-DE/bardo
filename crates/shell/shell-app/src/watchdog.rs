@@ -142,8 +142,7 @@ mod tests {
     use std::os::unix::net::UnixDatagram;
     use std::path::PathBuf;
 
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{Address, Notifier, Ping, address_of, ping_for};
 
     #[test]
@@ -179,7 +178,7 @@ mod tests {
 
     #[test]
     fn ready_reaches_a_listening_socket_and_no_socket_is_a_no_op() {
-        let dir = TempDir::new("watchdog");
+        let dir = Scratch::new("watchdog");
         let path: PathBuf = dir.path().join("notify");
         let listener = UnixDatagram::bind(&path).unwrap_or_else(|e| panic!("{e}"));
         let notifier = Notifier::from_value(path.to_str());

@@ -30,7 +30,7 @@ use shell_model::windows::{Sizing, Toplevel, Toplevels, WindowModel};
 use shell_services::env::Env;
 use shell_services::key_remap::KeyRemapLinks;
 use shell_services::service::spawn;
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use tokio::sync::{mpsc, watch};
 
 /// How long a thing that must not happen is given to happen: a best-effort absence check, as
@@ -139,12 +139,12 @@ fn readable(fd: &OwnedFd, limit: Duration) -> bool {
 /// The fake key remap daemon: a listening socket.
 struct Daemon {
     listener: OwnedFd,
-    _folder: TempDir,
+    _folder: Scratch,
 }
 
 impl Daemon {
     fn start() -> (Daemon, PathBuf) {
-        let folder = TempDir::new("key-remap-daemon");
+        let folder = Scratch::new("key-remap-daemon");
         let path = folder.path().join("key-remap.sock");
         let listener = socket_with(
             AddressFamily::UNIX,
@@ -205,7 +205,7 @@ struct Rig {
     _apps: watch::Sender<AppIndex>,
     notices: mpsc::UnboundedReceiver<NotificationsCommand>,
     notes: watch::Sender<NotesState>,
-    scratch: TempDir,
+    scratch: Scratch,
 }
 
 impl Rig {
@@ -218,7 +218,7 @@ impl Rig {
 /// The service against a fake daemon, with `config` as the person's `key-remap.toml` if given.
 fn rig(config: Option<&str>) -> Rig {
     let (daemon, socket) = Daemon::start();
-    let scratch = TempDir::new("key-remap-scratch");
+    let scratch = Scratch::new("key-remap-scratch");
     let config_dir = shell_model::dirs::Dirs::under(scratch.path()).key_remap_config();
     if let Some(text) = config {
         std::fs::create_dir_all(&config_dir).unwrap_or_else(|e| panic!("{e}"));
@@ -518,7 +518,7 @@ async fn resume_reaches_the_daemon() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_isolated_env_never_connects_and_stays_unknown() {
-    let scratch = TempDir::new("key-remap-isolated");
+    let scratch = Scratch::new("key-remap-isolated");
     let env = Env::isolated(Path::new(scratch.path()));
     assert_eq!(env.key_remap_socket, None);
     let (_apps, apps_rx) = watch::channel(AppIndex::default());

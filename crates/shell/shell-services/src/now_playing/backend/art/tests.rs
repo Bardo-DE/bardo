@@ -5,7 +5,7 @@ use std::os::unix::net::UnixListener;
 use std::path::Path;
 
 use shell_model::now_playing::{Art, art_cache_name};
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use zbus::zvariant::{OwnedValue, Str};
 
 use super::cache::copy_cover;
@@ -29,7 +29,7 @@ fn job_of(art: &Art, job: Option<ArtJob>) -> ArtJob {
 
 #[test]
 fn a_remote_cover_is_a_job_until_it_is_in_the_cache() {
-    let dir = TempDir::new("art-remote");
+    let dir = Scratch::new("art-remote");
     let url = "https://example.com/cover.png";
     let (art, job) = resolve_art(&metadata(url), Some(dir.path()));
     let cache_path = dir.path().join(art_cache_name(url));
@@ -50,7 +50,7 @@ fn a_remote_cover_is_a_job_until_it_is_in_the_cache() {
 
 #[test]
 fn a_local_cover_is_copied_into_the_cache_and_drawn_from_there() {
-    let dir = TempDir::new("art-local");
+    let dir = Scratch::new("art-local");
     let cache = dir.path().join("art");
     let source = dir.path().join("elsewhere").join("cover.png");
     std::fs::create_dir_all(source.parent().unwrap_or(dir.path()))
@@ -79,7 +79,7 @@ fn a_local_cover_is_copied_into_the_cache_and_drawn_from_there() {
 
 #[test]
 fn a_player_that_rewrites_one_file_for_each_track_gets_a_new_copy_each_time() {
-    let dir = TempDir::new("art-rewritten");
+    let dir = Scratch::new("art-rewritten");
     let source = dir.path().join("cover.png");
     std::fs::write(&source, b"first").unwrap_or_else(|e| panic!("{e}"));
     let url = file_url(&source);
@@ -91,7 +91,7 @@ fn a_player_that_rewrites_one_file_for_each_track_gets_a_new_copy_each_time() {
 
 #[test]
 fn only_a_regular_file_of_a_sane_size_is_a_local_cover() {
-    let dir = TempDir::new("art-refused");
+    let dir = Scratch::new("art-refused");
     let big = dir.path().join("big.png");
     std::fs::File::create(&big)
         .and_then(|file| file.set_len(ART_MAX_BYTES + 1))
@@ -118,7 +118,7 @@ fn only_a_regular_file_of_a_sane_size_is_a_local_cover() {
 
 #[test]
 fn without_a_cache_folder_no_cover_is_taken() {
-    let dir = TempDir::new("art-no-cache");
+    let dir = Scratch::new("art-no-cache");
     let source = dir.path().join("cover.png");
     std::fs::write(&source, b"cover").unwrap_or_else(|e| panic!("{e}"));
     for url in [file_url(&source), "https://example.com/a.png".to_owned()] {

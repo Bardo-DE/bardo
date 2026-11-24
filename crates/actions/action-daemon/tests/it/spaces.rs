@@ -4,7 +4,7 @@
 //! that the accounts service cannot read are dropped, never widened. The bus is private and accountd is a
 //! fake that serves only `Spaces1`.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::spaces::FakeSpaces;
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
@@ -131,7 +131,7 @@ impl Desk {
     /// intentd starts.
     async fn start(listed: &[&str], prefill: impl FnOnce(&std::path::Path)) -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
         let memoryd = FakeMemoryd::recording();
         let memory_connection = bus.connect().await;
         memoryd.serve(&memory_connection).await;

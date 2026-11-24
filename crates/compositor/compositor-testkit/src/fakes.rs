@@ -34,7 +34,7 @@ pub use kms::{
 };
 pub use lock_marker::MemoryLockMarker;
 pub use logind::{
-    FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, PrivateBus, SleepPhase,
+    FakeLogind, IdleHint, LogindCall, LogindError, PauseKind, SleepPhase,
 };
 pub use mouse_gestures::FakeMouseGestures;
 pub use notify::FakeNotify;

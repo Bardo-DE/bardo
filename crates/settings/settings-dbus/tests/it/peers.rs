@@ -12,7 +12,7 @@ use zbus::export::futures_core::Stream;
 use zbus::message::Type;
 use zbus::{MatchRule, MessageStream};
 
-use crate::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::module::{Accounts, TOGGLE};
 
 const PATH: &str = "/org/bardo/Peers1/settings";
@@ -28,7 +28,7 @@ fn key(path: &str) -> KeyPath {
 
 #[tokio::test]
 async fn changed_reaches_the_peers_that_may_read_and_not_one_that_was_refused() {
-    let bus = PrivateBus::start("hears");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let spy = bus.connect().await;
@@ -116,7 +116,7 @@ impl LiveModule for Hanging {
 
 #[tokio::test]
 async fn a_module_that_does_not_answer_ends_every_call_as_a_timeout() {
-    let bus = PrivateBus::start("hangs");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     serve(&daemon, PATH, Hanging).await.expect("serves");

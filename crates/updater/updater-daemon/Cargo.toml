@@ -34,7 +34,7 @@ tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"]
 dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
-base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 tempfile = { workspace = true }
 tar = {workspace = true, features = ["default"]}

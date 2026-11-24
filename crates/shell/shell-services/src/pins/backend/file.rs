@@ -139,8 +139,7 @@ mod tests {
     use shell_launcher::AppId;
     use shell_model::pins::DockPins;
     use shell_model::seed::Store;
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     /// The file `name` was set aside as (`<name>.bad-<seconds>`), if there is one.
     fn set_aside_copy(dir: &std::path::Path, name: &str) -> Option<std::path::PathBuf> {
         let prefix = format!("{name}.bad-");
@@ -161,17 +160,17 @@ mod tests {
         }
     }
 
-    fn write(dir: &TempDir, name: &str, text: &str) {
+    fn write(dir: &Scratch, name: &str, text: &str) {
         std::fs::write(dir.path().join(name), text).unwrap_or_else(|e| panic!("{e}"));
     }
 
-    fn read(dir: &TempDir, name: &str) -> String {
+    fn read(dir: &Scratch, name: &str) -> String {
         std::fs::read_to_string(dir.path().join(name)).unwrap_or_default()
     }
 
     #[test]
     fn save_then_load_round_trips_in_order() {
-        let dir = TempDir::new("pins-round-trip");
+        let dir = Scratch::new("pins-round-trip");
         let want = pins(&["org.mozilla.firefox", "foot", "btop"]);
         save(dir.path(), &want).unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(load(dir.path()), want);
@@ -183,7 +182,7 @@ mod tests {
 
     #[test]
     fn a_save_keeps_the_tables_it_does_not_own() {
-        let dir = TempDir::new("pins-keeps-others");
+        let dir = Scratch::new("pins-keeps-others");
         write(
             &dir,
             FILE_NAME,
@@ -197,7 +196,7 @@ mod tests {
 
     #[test]
     fn the_old_dock_is_carried_over_once_and_left_in_place() {
-        let dir = TempDir::new("pins-migrate");
+        let dir = Scratch::new("pins-migrate");
         let old = r#"{"pinned":["foot","btop"]}"#;
         write(&dir, "dock.json", old);
         assert_eq!(store(dir.path()), Store::Missing);
@@ -211,7 +210,7 @@ mod tests {
 
     #[test]
     fn an_existing_dock_in_layout_is_never_replaced_by_the_old_file() {
-        let dir = TempDir::new("pins-no-migrate");
+        let dir = Scratch::new("pins-no-migrate");
         save(dir.path(), &pins(&["mine"])).unwrap_or_else(|e| panic!("{e}"));
         write(&dir, "dock.json", r#"{"pinned":["old"]}"#);
         assert_eq!(load(dir.path()), pins(&["mine"]));
@@ -223,7 +222,7 @@ mod tests {
 
     #[test]
     fn a_missing_file_loads_as_no_pins_and_writes_nothing() {
-        let dir = TempDir::new("pins-missing");
+        let dir = Scratch::new("pins-missing");
         assert_eq!(load(dir.path()), DockPins::default());
         assert!(!dir.path().join(FILE_NAME).exists());
         assert_eq!(store(dir.path()), Store::Missing);
@@ -231,7 +230,7 @@ mod tests {
 
     #[test]
     fn a_damaged_layout_is_kept_and_the_old_dock_still_carries_over() {
-        let dir = TempDir::new("pins-damaged-layout");
+        let dir = Scratch::new("pins-damaged-layout");
         write(&dir, FILE_NAME, "not = [toml");
         write(&dir, "dock.json", r#"{"pinned":["foot"]}"#);
         assert_eq!(load(dir.path()), pins(&["foot"]));
@@ -245,7 +244,7 @@ mod tests {
 
     #[test]
     fn a_damaged_old_file_is_no_pins_and_stays_where_it_is() {
-        let dir = TempDir::new("pins-damaged-old");
+        let dir = Scratch::new("pins-damaged-old");
         for text in ["", "{\"pinned\": 3}", "garbage"] {
             write(&dir, "dock.json", text);
             assert_eq!(load(dir.path()), DockPins::default(), "{text:?}");
@@ -256,7 +255,7 @@ mod tests {
 
     #[test]
     fn rows_of_another_kind_or_without_an_app_are_left_out() {
-        let dir = TempDir::new("pins-lenient-rows");
+        let dir = Scratch::new("pins-lenient-rows");
         write(
             &dir,
             FILE_NAME,

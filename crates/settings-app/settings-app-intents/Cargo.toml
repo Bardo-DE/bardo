@@ -30,6 +30,7 @@ zbus = {workspace = true, features = ["default", "tokio"]}
 
 [dev-dependencies]
 account-sheet = {path = "../../accounts/account-sheet"}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
 action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"]}
 settings-app-testkit = {path = "../settings-app-testkit"}

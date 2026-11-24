@@ -2,7 +2,7 @@
 //! from an app's `record` to the `SQLCipher` file and back, and the refusals, the signals and the
 //! export that cross the bus. Every bus, directory and key here is the test's own.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, World, connect, dirs_in, space};
 use memory_client::{ClientError, DbusTransport, Memory, Recorded, Transport, TransportError};
 use memory_core::*;
@@ -32,7 +32,7 @@ struct Rig {
 
 async fn rig() -> Rig {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let dirs = dirs_in(&scratch.path().join("home"));
     let world = World::start(&bus, &dirs, &SharedKeys::default()).await;
     Rig {
@@ -227,8 +227,8 @@ async fn a_batch_the_person_spaces_and_rules_travel_too() {
 #[tokio::test]
 async fn without_a_daemon_the_transport_says_there_is_no_memory() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
-    let lonely = Memory::over(DbusTransport::new(connect(&bus.address).await));
+    let bus = PrivateBus::start_in(scratch.path());
+    let lonely = Memory::over(DbusTransport::new(connect(bus.address()).await));
     assert_eq!(
         lonely.search(budget_search()).await,
         Err(ClientError::Transport(TransportError::Absent))
@@ -571,7 +571,7 @@ async fn the_confinement_property_reads_what_the_daemon_started_with() {
     ];
     for (confinement, word) in rows {
         let scratch = tempfile::tempdir().expect("scratch");
-        let bus = PrivateBus::start(scratch.path());
+        let bus = PrivateBus::start_in(scratch.path());
         let dirs = dirs_in(&scratch.path().join("home"));
         let world = World::start_confined(&bus, &dirs, &SharedKeys::default(), confinement).await;
         let client = world.client(Caller::shell_ui()).await;

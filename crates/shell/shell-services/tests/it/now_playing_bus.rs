@@ -9,7 +9,7 @@ use shell_model::now_playing::NowPlayingService;
 use shell_model::now_playing::{Media, TEXT_MAX_CHARS};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use zbus::interface;
 use zbus::zvariant::{OwnedValue, Value};
 
@@ -99,7 +99,7 @@ async fn serve_player(
     identity: Option<&str>,
     title: &str,
 ) -> zbus::Connection {
-    zbus::connection::Builder::address(bus.address.as_str())
+    zbus::connection::Builder::address(bus.address())
         .and_then(|builder| builder.name(name.to_owned()))
         .and_then(|builder| {
             builder.serve_at(
@@ -126,11 +126,10 @@ async fn serve_player(
 #[test]
 fn a_player_that_never_answers_does_not_hide_the_others_and_long_titles_are_cut() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("now-playing");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("now-playing");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ..Env::isolated(scratch.path())
     };
     let long_title = "t".repeat(TEXT_MAX_CHARS * 10);

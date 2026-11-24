@@ -23,7 +23,7 @@ use shell_services::capture_pick::CaptureLinks;
 use shell_services::env::Env;
 use shell_services::seat::seat;
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::Connection;
 use zbus::connection::Builder;
@@ -42,7 +42,7 @@ pub(crate) async fn wait_for<T>(
 }
 
 pub(crate) async fn connect(bus: &PrivateBus, name: Option<&str>) -> Connection {
-    let builder = Builder::address(bus.address.as_str())
+    let builder = Builder::address(bus.address())
         .unwrap_or_else(|e| panic!("{e}"))
         // A call the other end never answers fails the test instead of hanging it.
         .method_timeout(std::time::Duration::from_secs(8));
@@ -84,9 +84,8 @@ fn desktop_with_notes() -> DesktopView {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn portal_asks_the_person_picks_and_the_answer_comes_back() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("capture-pick-bus");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("capture-pick-bus");
     let Rig {
         mut service,
         portal,
@@ -144,7 +143,7 @@ async fn portal_asks_the_person_picks_and_the_answer_comes_back() {
 /// The service serving on a private bus, with a stand-in portal connected.
 pub(crate) async fn serving(
     bus: &PrivateBus,
-    scratch: &TempDir,
+    scratch: &Scratch,
 ) -> (shell_model::service::Handle<CaptureService>, Connection) {
     let rig = rig(bus, scratch).await;
     (rig.service, rig.portal)
@@ -164,12 +163,12 @@ pub(crate) struct Rig {
     pub desktop: watch::Sender<DesktopView>,
 }
 
-pub(crate) async fn rig(bus: &PrivateBus, scratch: &TempDir) -> Rig {
+pub(crate) async fn rig(bus: &PrivateBus, scratch: &Scratch) -> Rig {
     rig_as(bus, scratch, Who::Service(Role::Portal)).await
 }
 
 /// As [`rig`], the owner of the portal backend's name being `who` to the shell.
-pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig {
+pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &Scratch, who: Who) -> Rig {
     let callers = Introduced::new();
     let env = Env {
         callers: std::sync::Arc::<Introduced>::clone(&callers),
@@ -233,9 +232,8 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_colour_request_is_cancelled_at_once_while_nothing_draws_the_eyedropper() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("capture-pick-colour-absent");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("capture-pick-colour-absent");
     let (service, portal) = serving(&bus, &scratch).await;
     let proxy = Shell1Proxy::new(&portal)
         .await
@@ -261,9 +259,8 @@ async fn draw_eyedropper(service: &mut shell_model::service::Handle<CaptureServi
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_colour_is_asked_one_at_a_time_and_the_click_comes_back_as_floats() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("capture-pick-colour");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("capture-pick-colour");
     let (mut service, portal) = serving(&bus, &scratch).await;
     draw_eyedropper(&mut service).await;
     let proxy = Shell1Proxy::new(&portal)
@@ -311,9 +308,8 @@ async fn a_colour_is_asked_one_at_a_time_and_the_click_comes_back_as_floats() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_colour_request_from_anyone_but_the_portal_backend_is_refused() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("capture-pick-colour-forged");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("capture-pick-colour-forged");
     let (mut service, _portal) = serving(&bus, &scratch).await;
     draw_eyedropper(&mut service).await;
     let forger = connect(&bus, None).await;

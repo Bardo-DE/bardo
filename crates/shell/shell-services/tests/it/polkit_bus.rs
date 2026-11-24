@@ -18,7 +18,7 @@ use shell_model::service::Control;
 use shell_services::env::{Bus, BusRoute, Env};
 use shell_services::polkit_agent::{AGENT_PATH, HelperChoice, PolkitRoute, SessionChoice};
 use shell_services::service::spawn;
-use shell_testkit::PrivateBus;
+use base_testkit::PrivateBus;
 use tokio::sync::{mpsc, watch};
 use zbus::message::Header;
 use zbus::zvariant::{OwnedValue, Value};
@@ -187,8 +187,7 @@ fn answer(control: &shell_model::service::Control<PolkitCommand>, cookie: &str, 
 )]
 fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
     let helper = helper_program();
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let (heard_tx, mut heard_rx) = mpsc::unbounded_channel();
@@ -197,7 +196,7 @@ fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
             heard: heard_tx,
             agent: Arc::clone(&agent),
         };
-        let authority = zbus::connection::Builder::address(bus.address.as_str())
+        let authority = zbus::connection::Builder::address(bus.address())
             .and_then(|b| b.name("org.freedesktop.PolicyKit1"))
             .and_then(|b| b.serve_at("/org/freedesktop/PolicyKit1/Authority", stand_in))
             .unwrap_or_else(|e| panic!("{e}"))
@@ -205,7 +204,7 @@ fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
             .await
             .unwrap_or_else(|e| panic!("{e}"));
         let (mut rx, control) = start(PolkitRoute {
-            bus: Bus::system(BusRoute::Address(bus.address.clone())),
+            bus: Bus::system(BusRoute::Address(bus.address().to_owned())),
             helper: HelperChoice::Use(HelperRoute::Setuid(helper)),
             session: SessionChoice::Id("c42".to_owned()),
         });

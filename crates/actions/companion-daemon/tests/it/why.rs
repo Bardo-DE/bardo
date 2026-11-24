@@ -2,7 +2,7 @@
 //! `Declined` events become the answer's route notes (`Answer.Routing`), and a refusal of a named
 //! model says which and why.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::infer::{Say, served, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -138,7 +138,7 @@ async fn automatic_with_no_model_that_uses_apps_says_so_in_plain_words() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_answer_object_serves_the_routing_property() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![Say::Routed(hosted(), Box::new(words("Done.")))]);
     let (launcher, hand) = (w.launcher, w.clock);

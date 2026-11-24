@@ -7,9 +7,9 @@
     reason = "each test binary uses a subset of the shared support"
 )]
 
-pub mod bus;
 pub mod inferd;
 
+use base_testkit::PrivateBus;
 use memory_core::{Dirs, SpaceId};
 use memory_daemon::{Confinement, Consent, Daemon, SpaceRegistry, SystemBackend, TablePeers};
 use memory_dbus::serve_on;
@@ -112,13 +112,13 @@ pub struct World {
 
 impl World {
     /// The daemon, serving on `bus`'s address.
-    pub async fn start(bus: &bus::PrivateBus, dirs: &Dirs, keys: &SharedKeys) -> World {
+    pub async fn start(bus: &PrivateBus, dirs: &Dirs, keys: &SharedKeys) -> World {
         Self::start_with(bus, dirs, keys, None).await
     }
 
     /// The daemon, with `consent` as the place the person's confirmations of loosened settings go.
     pub async fn start_with(
-        bus: &bus::PrivateBus,
+        bus: &PrivateBus,
         dirs: &Dirs,
         keys: &SharedKeys,
         consent: Option<Consent>,
@@ -133,7 +133,7 @@ impl World {
 
     /// The daemon, told it started `confinement` (what `start` computes from the sandbox).
     pub async fn start_confined(
-        bus: &bus::PrivateBus,
+        bus: &PrivateBus,
         dirs: &Dirs,
         keys: &SharedKeys,
         confinement: Confinement,
@@ -144,19 +144,19 @@ impl World {
     }
 
     async fn serving(
-        bus: &bus::PrivateBus,
+        bus: &PrivateBus,
         dirs: &Dirs,
         keys: &SharedKeys,
         daemon: Daemon<TestBackend, TablePeers>,
     ) -> World {
-        let server = connect(&bus.address).await;
+        let server = connect(bus.address()).await;
         let daemon = Arc::new(daemon);
         serve_on(&server, Arc::clone(&daemon)).await.expect("serve");
         daemon.attach(server.clone());
         World {
             daemon,
             server,
-            address: bus.address.clone(),
+            address: bus.address().to_owned(),
             dirs: dirs.clone(),
             keys: keys.clone(),
         }

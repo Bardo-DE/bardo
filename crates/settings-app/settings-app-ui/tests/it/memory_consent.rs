@@ -4,7 +4,7 @@
 //! calmly.
 
 use crate::support::Sandbox;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::memory::{Fake, serve};
@@ -48,8 +48,8 @@ fn confining(name: &str, file: Option<&str>, word: &'static str) -> World {
         .enable_all()
         .build()
         .expect("a runtime for the fake");
-    let bus = PrivateBus::start(name);
-    let sandbox = Sandbox::new(name).on_bus(&bus.address);
+    let bus = PrivateBus::start();
+    let sandbox = Sandbox::new(name).on_bus(bus.address());
     let path = sandbox.config_home().0.join("bardo/memory/settings.toml");
     if let Some(text) = file {
         sandbox.write("memory/settings.toml", text);

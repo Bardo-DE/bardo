@@ -123,7 +123,7 @@ pub fn rig_with<S: Helpers>(
     editor_app: &str,
     helpers: S,
 ) -> (TestServer<S>, Editor) {
-    action_testbus::hang_guard::arm();
+    base_testkit::hang_guard::arm();
     let (client_end, server_end) = duplex(1 << 16);
     let (server_read, server_write) = split(server_end);
     let (client_read, client_write) = split(client_end);

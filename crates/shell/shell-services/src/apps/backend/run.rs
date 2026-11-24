@@ -122,7 +122,7 @@ mod tests {
     #[test]
     fn spawn_does_not_panic_and_the_receiver_is_usable() {
         let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-        let scratch = shell_testkit::TempDir::new("apps-spawn");
+        let scratch = base_testkit::Scratch::new("apps-spawn");
         let apps = crate::service::spawn::<AppsService>(
             rt.handle(),
             &crate::env::Env::isolated(scratch.path()),

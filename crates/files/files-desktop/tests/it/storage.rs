@@ -9,8 +9,7 @@ use files_fs::{CloudError, Clouds};
 use sync_fakes::storage::{FakeStorage, World, serve};
 use tokio::sync::mpsc::{UnboundedReceiver, unbounded_channel};
 
-use crate::bus::PrivateBus;
-
+use base_testkit::PrivateBus;
 const NAME: &str = "org.bardo.Sync1";
 
 struct Rig {
@@ -23,7 +22,7 @@ struct Rig {
 }
 
 async fn rig() -> Rig {
-    let bus = PrivateBus::start("storage");
+    let bus = PrivateBus::start();
     let scratch = tempfile::tempdir().unwrap();
     let world = World::plant(scratch.path()).unwrap();
     let fake = FakeStorage::new(world);

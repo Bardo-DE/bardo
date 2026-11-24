@@ -4,7 +4,7 @@
 //! each time. A provider can only switch what its manifest declares, and one that serves nothing
 //! leaves the file's value.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::world::app;
 use action_core::AgentConfig;
 use action_daemon::{Changed, LiveReach, changes, follow_reach, marks_of, parse_reach, rescan};
@@ -39,7 +39,7 @@ async fn rig() -> Rig {
     let intents = data.join("bardo").join("intents");
     std::fs::create_dir_all(&intents).expect("intents dir");
     std::fs::write(intents.join("org.bardo.Mail.toml"), MAIL_MANIFEST).expect("manifest");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     let router = Arc::new(fake_router(AgentConfig::default()).expect("router"));
     // The fake router starts with its own fixtures; one plain load makes the installed set the

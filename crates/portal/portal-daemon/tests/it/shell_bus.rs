@@ -22,8 +22,7 @@ use zbus::message::Header;
 use zbus::names::BusName;
 use zbus::{Connection, fdo};
 
-use crate::bus::PrivateBus;
-
+use base_testkit::PrivateBus;
 const SETTLE: Duration = Duration::from_secs(5);
 
 /// The stand-in for the shell's side of `org.bardo.Shell1`.
@@ -123,8 +122,7 @@ fn request() -> ChoiceRequest {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_portal_asks_the_shell_from_the_connection_that_owns_its_name() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let shell = shell_on(&bus).await;
     let scratch = tempfile::tempdir().expect("scratch");
     let parts = Parts::real(

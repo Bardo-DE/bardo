@@ -3,7 +3,7 @@
 
 use crate::common;
 
-use common::TempDir;
+use base_testkit::Scratch;
 use settings_store_fs::{ConfigRoot, Store};
 use shell_settings::{APP, KeyboardOverride, KeyboardSettings, ShellFile, overrides};
 
@@ -98,11 +98,11 @@ fn rows_become_overrides_and_only_a_bad_row_is_dropped() {
     }
 }
 
-fn store(dir: &TempDir) -> Store {
+fn store(dir: &Scratch) -> Store {
     Store::new(ConfigRoot::Scratch(dir.path().to_owned()), APP)
 }
 
-fn write(dir: &TempDir, text: &str) {
+fn write(dir: &Scratch, text: &str) {
     let app = dir.path().join("bardo").join("shell");
     std::fs::create_dir_all(&app).unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(app.join("settings.toml"), text).unwrap_or_else(|e| panic!("{e}"));
@@ -110,7 +110,7 @@ fn write(dir: &TempDir, text: &str) {
 
 #[test]
 fn a_malformed_row_costs_only_that_row() {
-    let dir = TempDir::new("keyboard-rows");
+    let dir = Scratch::new("keyboard-rows");
     write(
         &dir,
         "[[keyboard.overrides]]\napp = \"a\"\nprofile = \"one\"\n\n\
@@ -146,7 +146,7 @@ fn a_malformed_row_costs_only_that_row() {
 
 #[test]
 fn a_row_that_is_not_a_table_is_rejected_by_its_place() {
-    let dir = TempDir::new("keyboard-not-a-table");
+    let dir = Scratch::new("keyboard-not-a-table");
     write(
         &dir,
         "[keyboard]\noverrides = [\"x\", { app = \"a\", profile = \"p\" }]\n",
@@ -159,7 +159,7 @@ fn a_row_that_is_not_a_table_is_rejected_by_its_place() {
 
 #[test]
 fn a_key_that_is_not_a_list_costs_the_key_and_the_default_is_used() {
-    let dir = TempDir::new("keyboard-not-a-list");
+    let dir = Scratch::new("keyboard-not-a-list");
     write(
         &dir,
         "[keyboard]\noverrides = \"files\"\n\n[dock]\ntile_size_px = 60\n",
@@ -173,7 +173,7 @@ fn a_key_that_is_not_a_list_costs_the_key_and_the_default_is_used() {
 
 #[test]
 fn overrides_round_trip_through_the_settings_file() {
-    let dir = TempDir::new("keyboard-round-trip");
+    let dir = Scratch::new("keyboard-round-trip");
     let file = ShellFile {
         keyboard: settings(&[("org.gnome.Nautilus", "files"), ("foot", "term")]),
         ..ShellFile::default()

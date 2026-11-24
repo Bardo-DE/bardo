@@ -57,7 +57,7 @@ required-features = ["pipewire"]
 [dev-dependencies]
 action-vocab = {path = "../../actions/action-vocab"}
 action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"]}
-action-testbus = {path = "../../actions/action-testbus"}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 inference-core = {features = ["testing"], path = "../../inference/inference-core"}
 tempfile = { workspace = true }
 futures-util = { workspace = true, features = ["std"] }

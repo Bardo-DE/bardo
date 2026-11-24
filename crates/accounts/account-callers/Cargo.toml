@@ -32,7 +32,7 @@ file = ["dep:toml"]
 test-proc-root = ["caller-identity-linux/fake"]
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]

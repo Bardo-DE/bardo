@@ -15,12 +15,12 @@ use shell_model::night_shift::{NightShift, NightShiftCommand, Schedule, Shown, s
 use shell_model::service::Handle;
 use shell_services::env::Env;
 use shell_services::service::spawn;
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use tokio::sync::watch;
 
 const SETTLE: Duration = Duration::from_secs(5);
 
-fn files(scratch: &TempDir) -> (std::path::PathBuf, std::path::PathBuf) {
+fn files(scratch: &Scratch) -> (std::path::PathBuf, std::path::PathBuf) {
     let env = Env::isolated(scratch.path());
     (
         env.dirs
@@ -32,13 +32,13 @@ fn files(scratch: &TempDir) -> (std::path::PathBuf, std::path::PathBuf) {
     )
 }
 
-fn start(scratch: &TempDir) -> Handle<NightShiftService> {
+fn start(scratch: &Scratch) -> Handle<NightShiftService> {
     let (_, displays) = watch::channel(Displays::default());
     start_following(scratch, displays)
 }
 
 fn start_following(
-    scratch: &TempDir,
+    scratch: &Scratch,
     displays: watch::Receiver<Displays>,
 ) -> Handle<NightShiftService> {
     let env = Env::isolated(scratch.path());
@@ -108,7 +108,7 @@ fn mode_in(settings: &std::path::Path) -> String {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_switch_warms_until_tomorrow_and_off_puts_compositor_back() {
-    let scratch = TempDir::new("night-shift-switch");
+    let scratch = Scratch::new("night-shift-switch");
     let (settings, manual) = files(&scratch);
     let mut service = start(&scratch);
     let ready = until(&mut service, |s| s.reached).await;
@@ -129,7 +129,7 @@ async fn the_switch_warms_until_tomorrow_and_off_puts_compositor_back() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_turn_on_that_ran_out_while_shell_was_away_is_ended_at_start() {
-    let scratch = TempDir::new("night-shift-stale");
+    let scratch = Scratch::new("night-shift-stale");
     let (settings, manual) = files(&scratch);
     for file in [&settings, &manual] {
         std::fs::create_dir_all(file.parent().unwrap_or(scratch.path()))
@@ -151,7 +151,7 @@ async fn a_turn_on_that_ran_out_while_shell_was_away_is_ended_at_start() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn where_shell_warms_monitors_compositor_is_told_to_leave_them_alone_and_warms_the_rest() {
-    let scratch = TempDir::new("night-shift-hardware");
+    let scratch = Scratch::new("night-shift-hardware");
     let (settings, _) = files(&scratch);
     std::fs::create_dir_all(settings.parent().unwrap_or(scratch.path()))
         .unwrap_or_else(|e| panic!("{e}"));

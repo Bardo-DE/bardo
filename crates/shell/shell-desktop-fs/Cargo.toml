@@ -16,7 +16,7 @@ serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-shell-testkit = {path = "../shell-testkit"}
+base-testkit = {path = "../../base/base-testkit"}
 
 [lints]
 workspace = true

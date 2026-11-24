@@ -6,7 +6,7 @@
 //! intentd on it, `e2e.rs` runs the same binary against intentd's real `start`; every exit code
 //! is also tested through the library against action-fake (`exit_codes.rs`).
 
-use action_testbus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::path::Path;
 use std::process::Command;
 

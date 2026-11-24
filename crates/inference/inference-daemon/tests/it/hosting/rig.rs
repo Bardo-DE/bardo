@@ -1,7 +1,8 @@
 //! The world of one test.
 
 use super::accountd::{FakeAccount, FakeAccountd};
-use super::bus::{PrivateBus, within};
+use base_testkit::PrivateBus;
+use super::wait::within;
 use super::cloud::FakeCloud;
 use super::engine::{FakeEngine, Script};
 use super::speech_host::SpeechEngines;

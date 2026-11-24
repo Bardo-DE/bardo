@@ -3,7 +3,7 @@
 //! terminal's scope, or that owns a bus name of its own, may do none of it. The terminal is the
 //! test process, placed in a fake proc root (`serve_on_rooted`), on a private bus.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::infer::words;
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -60,7 +60,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
     let scratch = tempfile::tempdir().expect("scratch");
     let proc_root = scratch.path().join("proc");
     place(&proc_root, "vte-spawn-1.scope");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![words("Hello there.")]);
     let (launcher, hand) = (w.launcher, w.clock);
@@ -156,7 +156,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
 async fn a_process_that_is_not_a_terminal_or_owns_a_name_speaks_for_nobody() {
     let scratch = tempfile::tempdir().expect("scratch");
     let proc_root = scratch.path().join("proc");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![]);
     let companion = Arc::new(Mutex::new(w.companion));
@@ -212,7 +212,7 @@ async fn a_conversation_a_terminal_opens_records_the_terminal_and_the_shells_doe
     let scratch = tempfile::tempdir().expect("scratch");
     let proc_root = scratch.path().join("proc");
     place(&proc_root, "vte-spawn-7.scope");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![]);
     let router = Arc::clone(&w.router);
@@ -283,7 +283,7 @@ async fn a_process_the_table_names_as_less_than_the_shell_speaks_for_nobody() {
         let scratch = tempfile::tempdir().expect("scratch");
         let proc_root = scratch.path().join("proc");
         place(&proc_root, "vte-spawn-1.scope");
-        let bus = PrivateBus::start(scratch.path());
+        let bus = PrivateBus::start_in(scratch.path());
         let (server, client) = (bus.connect().await, bus.connect().await);
         let w = world(vec![]);
         let companion = Arc::new(Mutex::new(w.companion));

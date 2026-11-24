@@ -2,7 +2,7 @@
 //! round trip over a private dbus-daemon (the wire types the interface macro derives).
 
 use super::*;
-use crate::test_bus::PrivateBus;
+use base_testkit::PrivateBus;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::{ButtonCode, Keysym};
 use desktop_protocols::vocab::PressEdge;
@@ -224,7 +224,7 @@ async fn malformed_calls_are_refused_before_the_loop_sees_them() {
 async fn the_interface_answers_over_a_private_bus() {
     let bus = PrivateBus::start();
     let (debug, _seen) = stand_in(echo());
-    let _server = zbus::connection::Builder::address(bus.address.as_str())
+    let _server = zbus::connection::Builder::address(bus.address())
         .expect("address")
         .name(Debug1::BUS_NAME)
         .expect("name")
@@ -233,7 +233,7 @@ async fn the_interface_answers_over_a_private_bus() {
         .build()
         .await
         .expect("server");
-    let client = zbus::connection::Builder::address(bus.address.as_str())
+    let client = zbus::connection::Builder::address(bus.address())
         .expect("address")
         .build()
         .await

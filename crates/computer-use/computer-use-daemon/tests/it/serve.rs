@@ -4,7 +4,7 @@
 //! (`Who`); a bus name decides nothing, and a program that owns `org.bardo.Shell` is only the
 //! shell if its process is.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::enabled;
 use action_dbus::callers::Identity;
 use caller_role_types::CallerRole;
@@ -83,7 +83,7 @@ async fn fixture(
 
 async fn fixture_in(world: computer_use_fake::World) -> Fixture {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     let supervisor = Arc::new(Supervisor::new(world, enabled()));
     // The fixture tree is empty: nobody is identified but whom a test introduces.

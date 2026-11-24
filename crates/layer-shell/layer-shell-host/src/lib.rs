@@ -62,7 +62,6 @@ mod resolve;
 mod role;
 mod route;
 #[cfg(test)]
-mod scratch;
 mod scroll;
 mod state;
 mod stats;

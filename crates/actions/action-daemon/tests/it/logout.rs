@@ -1,7 +1,7 @@
 //! "Until logout": a fake logind on the private bus removes the person's session, and the
 //! terminal's standing grant goes with it. Another session's removal leaves it.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::world::{app, caller, mail_router};
 use action_core::*;
 use action_daemon::watch_logind;
@@ -80,7 +80,7 @@ async fn terminal_with_a_grant() -> Arc<action_router::Router<action_fake::FakeS
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_persons_session_ending_takes_the_terminals_grants_with_it() {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let logind = bus.connect().await;
     logind
         .request_name("org.freedesktop.login1")
@@ -129,7 +129,7 @@ async fn the_persons_session_ending_takes_the_terminals_grants_with_it() {
 async fn with_no_session_id_known_any_logout_counts() {
     // Ending a grant early only means the next call from the terminal asks again.
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let logind = bus.connect().await;
     logind
         .request_name("org.freedesktop.login1")

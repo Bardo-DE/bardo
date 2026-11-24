@@ -3,7 +3,7 @@
 
 use crate::common;
 
-use common::TempDir;
+use base_testkit::Scratch;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use settings_store_fs::{ConfigRoot, Store};
@@ -14,18 +14,18 @@ use shell_settings::{
 };
 
 /// The store whose `bardo-shell` directory is inside `dir`.
-fn store(dir: &TempDir) -> Store {
+fn store(dir: &Scratch) -> Store {
     Store::new(ConfigRoot::Scratch(dir.path().to_owned()), APP)
 }
 
 /// Write `settings.toml` (raw bytes) into the store's directory.
-fn write(dir: &TempDir, bytes: &[u8]) {
+fn write(dir: &Scratch, bytes: &[u8]) {
     let app = dir.path().join("bardo").join("shell");
     std::fs::create_dir_all(&app).unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(app.join("settings.toml"), bytes).unwrap_or_else(|e| panic!("{e}"));
 }
 
-fn load(dir: &TempDir) -> ShellFile {
+fn load(dir: &Scratch) -> ShellFile {
     store(dir).load::<ShellFile>().value
 }
 
@@ -85,7 +85,7 @@ fn a_bad_value_costs_only_its_own_key() {
             with(|f| f.control_center.menu_bar_wifi = true),
         ),
     ];
-    let dir = TempDir::new("lenient");
+    let dir = Scratch::new("lenient");
     for (name, text, want) in cases {
         write(&dir, text.as_bytes());
         let got = load(&dir);
@@ -96,7 +96,7 @@ fn a_bad_value_costs_only_its_own_key() {
 
 #[test]
 fn missing_or_garbage_files_are_the_defaults() {
-    let dir = TempDir::new("garbage");
+    let dir = Scratch::new("garbage");
     assert_eq!(load(&dir), ShellFile::default(), "missing");
     for bytes in [&b""[..], b"not toml [[[", &[0xff, 0xfe]] {
         write(&dir, bytes);
@@ -106,7 +106,7 @@ fn missing_or_garbage_files_are_the_defaults() {
 
 #[test]
 fn a_save_is_one_file_and_reads_back() {
-    let dir = TempDir::new("save");
+    let dir = Scratch::new("save");
     let target = dir.path().join("bardo").join("shell");
     let file = with(|f| {
         f.dock.autohide = true;
@@ -128,7 +128,7 @@ fn a_save_is_one_file_and_reads_back() {
 
 #[test]
 fn unknown_keys_are_reported_and_kept() {
-    let dir = TempDir::new("unknown");
+    let dir = Scratch::new("unknown");
     let text = "version = 1\nfuture = \"x\"\n[dock]\npuppy = true\ntile_size_px = 40\n\
                 [later]\nanswer = 42\n[control_center]\nmodules = [\"wifi\"]\n";
     write(&dir, text.as_bytes());
@@ -151,7 +151,7 @@ fn unknown_keys_are_reported_and_kept() {
 /// A retired key is a key nobody reads: the file that still sets it is told so.
 #[test]
 fn a_retired_key_is_reported_unknown() {
-    let dir = TempDir::new("retired");
+    let dir = Scratch::new("retired");
     write(
         &dir,
         b"[bar]\ntitle_hit_height_px = 24\nglyph_size_policy = \"icon_size_bar22\"\n[dock]\ncontext_menu_order = \"windows_first\"\nposition = \"bottom\"\nprogress_style = \"ring\"\nbadge_size_px = 18\n[session]\nuser_picture = \"auto\"\n\
@@ -190,7 +190,7 @@ fn idle_seconds_and_minutes_are_plain_integers_both_ways() {
     ];
 
     use shell_settings::{Mins, Secs};
-    let dir = TempDir::new("idle-units");
+    let dir = Scratch::new("idle-units");
     let text = "[session]\nlock_grace_s = 12\n\
                 [idle]\nscreen_off_ac_min = 20\nscreen_off_battery_min = 3\n\
                 suspend_ac_min = 0\nsuspend_battery_min = 45\n";

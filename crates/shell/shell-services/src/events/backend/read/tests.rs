@@ -229,9 +229,8 @@ fn a_missing_place_is_a_problem_and_costs_nothing_else() {
 
 #[test]
 fn a_calendar_file_that_is_huge_or_not_a_file_is_a_problem_not_a_read() {
-    use shell_testkit::TempDir;
-
-    let dir = TempDir::new("ics-caps");
+    use base_testkit::Scratch;
+    let dir = Scratch::new("ics-caps");
     let huge = dir.path().join("huge.ics");
     std::fs::File::create(&huge)
         .and_then(|file| file.set_len(64 << 20))

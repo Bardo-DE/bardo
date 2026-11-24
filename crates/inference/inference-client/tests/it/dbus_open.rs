@@ -13,7 +13,7 @@ use account_core::consent::Usage;
 use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::{Permille, Tokens};
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use common::inferd::{Behaviour, FakeInferd, Seen, slugs};
 use inference_client::{
     ClientError, DbusSession, DbusTransport, InferSession, Inference, SessionError, TransportError,

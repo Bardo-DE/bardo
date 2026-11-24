@@ -1,7 +1,7 @@
 //! The keyring's lock signal drives the key check, and an index that changes state is announced.
 //! A fake Secret Service on a private bus emits the signal; nothing here waits on a timer.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::{SharedKeys, World, connect, dirs_in, listed_spaces, space};
 use memory_client::{DbusTransport, Memory};
 use memory_core::*;
@@ -77,10 +77,10 @@ fn only_a_collections_locked_property_is_a_lock_change() {
 #[tokio::test]
 async fn the_keyrings_lock_signal_closes_and_reopens_the_space() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let dirs = dirs_in(&scratch.path().join("home"));
     let world = World::start(&bus, &dirs, &SharedKeys::default()).await;
-    let fake_service = connect(&bus.address).await;
+    let fake_service = connect(bus.address()).await;
 
     let watcher = world.client(Caller::shell_ui()).await;
     let control = ControlProxy::new(&watcher).await.expect("proxy");

@@ -3,7 +3,7 @@
 //! caller sees them.
 
 use crate::feed_stage::{block_on, engine_serving};
-use crate::private_bus::{PrivateBus, name_of};
+use base_testkit::{PrivateBus, name_of};
 use crate::support::Sandbox;
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table, WhyNot};
 use caller_identity_dbus::caller_identity_linux::fake::{

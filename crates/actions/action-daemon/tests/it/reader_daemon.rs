@@ -3,7 +3,7 @@
 //! (the router names the session, readerd resolves the handle through `Session.Resolve` as the
 //! reader) whose model is a scripted inferd. Everything is on a private bus.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::world::introduce;
@@ -75,7 +75,7 @@ impl Desk {
     /// intentd over a fake memoryd that holds one untrusted hit; readerd is started by the test.
     async fn start() -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
         let memoryd = FakeMemoryd::with(|request| match request {
             MemoryRequest::Inject(_) => Some(MemoryReply::Hits(vec![receipt_hit()])),
             _ => None,

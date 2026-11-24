@@ -50,13 +50,12 @@ pacman = ["libraw"]
 "#;
 
 struct Scratch {
-    root: PathBuf,
+    root: base_testkit::Scratch,
 }
 
 impl Scratch {
     fn new(tag: &str, os_release: &str) -> Scratch {
-        let root = std::env::temp_dir().join(format!("ds-helpers-{}-{tag}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&root);
+        let root = base_testkit::Scratch::new(tag);
         std::fs::create_dir_all(root.join("bin")).expect("scratch");
         std::fs::write(root.join("os-release"), os_release).expect("os-release");
         Scratch { root }
@@ -69,12 +68,6 @@ impl Scratch {
             path: self.bin().into(),
             os_release: self.root.join("os-release"),
         }
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.root);
     }
 }
 

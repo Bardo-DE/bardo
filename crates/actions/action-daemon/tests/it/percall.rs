@@ -8,7 +8,7 @@
 //! inner Destructive action, none for an inner Read one).
 
 use crate::support::apps::Blank;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use account_core::{AppId, AppName, Isolation};
 use action_core::*;
 use action_daemon::DbusLink;
@@ -155,7 +155,7 @@ fn companion() -> CallerId {
 /// A router over a private bus with the menu app serving on it, and a session ready.
 async fn desk(answers: usize) -> Desk {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     daemon
         .request_name(INTENTS_BUS)

@@ -3,7 +3,7 @@
 //! it was asked to confirm, and carries the `Confinement` word it is given. It knows two keys and the shipped value of each; a value is loose when
 //! it is a different word, or a number below the shipped one.
 
-use super::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::collections::{BTreeMap, HashMap};
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};

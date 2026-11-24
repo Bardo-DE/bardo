@@ -161,8 +161,7 @@ mod tests {
     use std::sync::atomic::{AtomicU32, Ordering};
     use std::time::Duration;
 
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use shell_model::service::{Handle, Service, ServiceIo};
 
     use super::{Run, spawn_with};
@@ -254,7 +253,7 @@ mod tests {
 
     #[tokio::test]
     async fn a_service_that_panics_once_is_running_again_and_takes_commands() {
-        let scratch = TempDir::new("service-restart");
+        let scratch = Scratch::new("service-restart");
         let env = Env::isolated(scratch.path());
         let runs = Arc::new(AtomicU32::new(0));
         let mut handle = spawn_with::<Flaky>(
@@ -271,7 +270,7 @@ mod tests {
 
     #[tokio::test(start_paused = true)]
     async fn a_service_that_always_panics_is_given_up_on_after_the_limit() {
-        let scratch = TempDir::new("service-giveup");
+        let scratch = Scratch::new("service-giveup");
         let env = Env::isolated(scratch.path());
         let runs = Arc::new(AtomicU32::new(0));
         let handle = spawn_with::<Broken>(
@@ -293,7 +292,7 @@ mod tests {
 
     #[tokio::test(start_paused = true)]
     async fn dropping_every_control_ends_the_run_that_was_going() {
-        let scratch = TempDir::new("service-close");
+        let scratch = Scratch::new("service-close");
         let env = Env::isolated(scratch.path());
         let runs = Arc::new(AtomicU32::new(1));
         let handle = spawn_with::<Flaky>(

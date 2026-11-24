@@ -8,8 +8,8 @@
 //! starting a real engine needs a caller the real binary only names in a `test-proc-root` build,
 //! and no model is ever run here. Only pids these tests started are signalled.
 
-use crate::hosting::bus;
 
+use base_testkit::PrivateBus;
 use base_testkit::Scratch;
 use engine_spec::ProgramPath;
 use engine_supervisor::{EngineHost, EngineId, GpuAccess, Network, Sandbox, UnitSpec};
@@ -291,7 +291,7 @@ fn a_shutdown_that_overruns_its_bound_kills_everything_and_exits_nonzero() {
 }
 
 /// The real inferd on a private bus, no engines, nothing probed: the name is held, then released.
-fn real_inferd(bus: &bus::PrivateBus) -> Started {
+fn real_inferd(bus: &PrivateBus) -> Started {
     let scratch = bus.scratch();
     let config = scratch.join("inferd.toml");
     std::fs::write(
@@ -328,7 +328,7 @@ fn real_inferd(bus: &bus::PrivateBus) -> Started {
 }
 
 async fn real_binary_stops_on(signal_sent: Signal) {
-    let bus = bus::PrivateBus::start();
+    let bus = PrivateBus::start();
     let client = bus.connect().await;
     let dbus = zbus::fdo::DBusProxy::new(&client).await.expect("dbus");
     let name = zbus::names::BusName::try_from(INFERENCE_BUS).expect("bus name");

@@ -128,11 +128,10 @@ impl SessionActions for DryRunActions {
 mod tests {
     use super::{DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line};
     use shell_model::session::{ActionReach, Session, SessionAction};
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     #[test]
     fn a_dry_run_offers_as_told_and_only_records() {
-        let scratch = TempDir::new("dry-run");
+        let scratch = Scratch::new("dry-run");
         let record = crate::env::Env::isolated(scratch.path())
             .dirs
             .state

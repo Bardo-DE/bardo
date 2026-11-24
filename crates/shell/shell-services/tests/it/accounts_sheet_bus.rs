@@ -24,7 +24,7 @@ use shell_model::service::Handle;
 use shell_services::accounts::sheet::AccountsSheetLinks;
 use shell_services::env::{BusRoute, Buses, Env, NameClaims};
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use std::pin::Pin;
 use tokio::sync::watch;
 use zbus::Connection;
@@ -92,7 +92,7 @@ pub(crate) struct Shell {
     pub(crate) callers: Arc<Introduced>,
     /// What the sheet asked the launch service to do.
     launched: tokio::sync::mpsc::UnboundedReceiver<LaunchCommand>,
-    _scratch: TempDir,
+    _scratch: Scratch,
 }
 
 pub(crate) fn shell(bus: &PrivateBus) -> Shell {
@@ -100,10 +100,10 @@ pub(crate) fn shell(bus: &PrivateBus) -> Shell {
 }
 
 fn shell_claiming(bus: &PrivateBus, claims: NameClaims) -> Shell {
-    let scratch = TempDir::new("accounts-sheet-bus");
+    let scratch = Scratch::new("accounts-sheet-bus");
     let callers = Introduced::new();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         callers: Arc::<Introduced>::clone(&callers),
         claims,
         ..Env::isolated(scratch.path())
@@ -134,7 +134,7 @@ pub(crate) async fn serving(shell: &mut Shell) {
 
 /// A connection on `bus`, holding `name` when given.
 pub(crate) async fn connect(bus: &PrivateBus, name: Option<&str>) -> Connection {
-    let builder = Builder::address(bus.address.as_str())
+    let builder = Builder::address(bus.address())
         .unwrap_or_else(|e| panic!("{e}"))
         // A call the other end never answers fails the test instead of hanging it.
         .method_timeout(std::time::Duration::from_secs(8));
@@ -204,8 +204,7 @@ async fn inputs_of(connection: &Connection) -> zbus::MessageStream {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn accountd_opens_updates_and_closes_and_hears_what_the_person_does() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -307,8 +306,7 @@ async fn opened(shell: &mut Shell, count: usize) -> Vec<LaunchCommand> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -353,8 +351,7 @@ async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_forged_caller_is_refused_and_draws_nothing() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -408,8 +405,7 @@ async fn a_forged_caller_is_refused_and_draws_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn what_the_person_typed_reaches_accountd_and_nobody_else() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -436,8 +432,7 @@ async fn what_the_person_typed_reaches_accountd_and_nobody_else() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_bad_call_is_refused_and_accountd_leaving_takes_the_sheets_down() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let accountd = serviced(&bus, &shell, "org.bardo.Accounts1", Role::Accounts).await;
     serving(&mut shell).await;
@@ -473,8 +468,7 @@ async fn a_bad_call_is_refused_and_accountd_leaving_takes_the_sheets_down() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_passive_environment_claims_nothing_and_a_taken_name_is_never_fought_over() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let _passive = shell_claiming(&bus, NameClaims::Passive);
     tokio::time::sleep(QUIET).await;
     let stranger = connect(&bus, None).await;
@@ -502,8 +496,7 @@ async fn a_passive_environment_claims_nothing_and_a_taken_name_is_never_fought_o
 
 #[tokio::test(flavor = "multi_thread")]
 async fn each_account_service_is_served_and_its_sheets_go_when_it_leaves() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     serving(&mut shell).await;
     let owners = [

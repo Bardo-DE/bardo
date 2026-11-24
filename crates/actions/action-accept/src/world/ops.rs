@@ -1,7 +1,7 @@
 //! What a running world does: connections, the model's audit, `bardo-do`, the daemons' logs.
 
 use super::{Cgroup, World, env_of, place};
-use action_testbus::Reaped;
+use base_testkit::Reaped;
 use std::fmt::Write as _;
 use std::path::Path;
 use std::process::{Command, Stdio};

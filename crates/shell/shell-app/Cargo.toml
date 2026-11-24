@@ -59,7 +59,6 @@ zbus = {workspace = true, features = ["tokio"]}
 speech-wire = {path = "../../speech/speech-wire"}
 dbus-kit = { path = "../../bus/dbus-kit" }
 ui-harness = {path = "../../ui/ui-harness"}
-shell-testkit = {path = "../shell-testkit"}
 # `tests/lint.rs` mounts every surface on the harness and lints its markup and stylesheet.
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 # The key a `debug key` request parses to (dispatch/debug/inject.rs tests).

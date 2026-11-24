@@ -9,10 +9,10 @@ use crate::common;
 use account_core::AccountId;
 use account_core::{Credential, SecretKey, SecretPurpose, SecretText};
 use account_secrets::{Oo7Secrets, Secrets, SecretsError};
+use base_testkit::PrivateBus;
 use base_testkit::Scratch;
 use base_time::UnixSeconds;
 use common::Proc;
-use common::bus::PrivateBus;
 use futures_util::StreamExt;
 use std::process::{Command, Stdio};
 

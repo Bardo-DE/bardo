@@ -11,7 +11,7 @@ use account_core::{AppId, AppName, Isolation};
 use account_dbus::Details;
 use caller_role_types::CallerRole;
 use hosting::accountd::{FakeAccount, Standing};
-use hosting::bus::within;
+use hosting::wait::within;
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::lab::Lab;

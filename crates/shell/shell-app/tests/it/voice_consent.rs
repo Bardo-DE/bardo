@@ -11,7 +11,7 @@ use shell_app::voice::write_consent;
 use shell_launcher::WindowKey;
 use shell_model::voice::{AskScope, ConsentAnswer, Notice, Phase, VoiceCommand, VoiceParams};
 use shell_settings::{APP, ShellFile};
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use speech_wire::{VoiceRefusedError, VoiceTrigger};
 use tokio::sync::watch;
 
@@ -35,7 +35,7 @@ fn begins(desk: &Desk) -> usize {
 
 /// Ask, answer, write the consent the service sent, and tell the service what the file says now,
 /// as the daemon's policy would. Returns the settings text.
-async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &TempDir) -> toml::Table {
+async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &Scratch) -> toml::Table {
     desk.seated().await;
     desk.send(start());
     desk.state(|v| v.sheet.then_some(())).await;
@@ -58,7 +58,7 @@ async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &TempDir) -> toml
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
-    let dir = TempDir::new("voice-consent-allow");
+    let dir = Scratch::new("voice-consent-allow");
     let file = dir.path().join("bardo/shell/settings.toml");
     let mut desk = desk(BeginAnswer::FromSettings(file)).await;
     assert_eq!(begins(&desk), 0);
@@ -86,7 +86,7 @@ async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn not_now_writes_declined_and_the_next_hold_never_calls_begin() {
-    let dir = TempDir::new("voice-consent-not-now");
+    let dir = Scratch::new("voice-consent-not-now");
     let file = dir.path().join("bardo/shell/settings.toml");
     let mut desk = desk(BeginAnswer::FromSettings(file)).await;
     let table = answered(&mut desk, ConsentAnswer::NotNow, &dir).await;

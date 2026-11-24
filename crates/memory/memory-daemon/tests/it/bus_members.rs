@@ -4,7 +4,7 @@
 //! `Invalid("no member")` and never arrives, which is how `Entries` and `RecordDurable` once
 //! worked in process and nowhere else.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::connect;
 use memory_core::Refusal;
 use memory_dbus::{Call, MemoryError, encode_request, invoke};
@@ -43,13 +43,13 @@ fn members_of(xml: &str) -> BTreeSet<String> {
 #[tokio::test]
 async fn every_member_of_the_interface_is_invoked_over_the_bus() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let witness = Arc::new(Witness::default());
-    let server = connect(&bus.address).await;
+    let server = connect(bus.address()).await;
     serve_on(&server, Arc::clone(&witness))
         .await
         .expect("serve");
-    let client = connect(&bus.address).await;
+    let client = connect(bus.address()).await;
 
     let mut reached = BTreeSet::new();
     for request in crate::wire::requests() {

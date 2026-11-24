@@ -3,8 +3,6 @@
 //! launcher connections the caller table knows as the agent launcher. No test touches the real
 //! bus or keyring.
 
-use crate::common::bus::PrivateBus;
-
 use account_callers::Caller;
 use account_capability::CapabilityKind;
 use account_capability::StorageScope;
@@ -26,6 +24,7 @@ use account_fake::{
 use account_secrets::{MemorySecrets, Secrets, SecretsError};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
+use base_testkit::PrivateBus;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole;

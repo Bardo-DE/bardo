@@ -22,6 +22,7 @@ zbus = { workspace = true, features = ["default"] }
 
 [dev-dependencies]
 # The tests' runtime; the crate itself names none.
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 tokio = { workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"] }
 dbus-kit = { path = "../../bus/dbus-kit" }
 

@@ -34,7 +34,7 @@ use shell_services::env::{BusRoute, Buses, Env, NameClaims};
 use shell_services::seat::seat;
 use shell_services::service::spawn;
 use shell_services::{IntentsLinks, MenuLinks, ShellCall};
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
@@ -134,7 +134,7 @@ impl StandInControl {
 
 /// The seat under test, its bus and the stand-in intentd.
 pub(crate) struct Desk {
-    procs: TempDir,
+    procs: Scratch,
     pub(crate) bus: PrivateBus,
     pub(crate) seat: Handle<IntentsService>,
     shell_calls: mpsc::UnboundedReceiver<ShellCall>,
@@ -146,8 +146,8 @@ pub(crate) struct Desk {
 
 /// A fake proc root in which this process is `bardo-actiond.service`'s main process: every connection
 /// of the test is this one process, and the shell's provider answers only intentd.
-fn intentd_is_this_process() -> TempDir {
-    let procs = TempDir::new("intents-procs");
+fn intentd_is_this_process() -> Scratch {
+    let procs = Scratch::new("intents-procs");
     let pid = std::process::id();
     let write = |path: std::path::PathBuf, text: String| {
         std::fs::create_dir_all(path.parent().unwrap_or_else(|| panic!("a parent")))
@@ -187,10 +187,12 @@ async fn desk_with(menus: MenuLinks, shots: watch::Receiver<Shots>) -> Desk {
 }
 
 /// As [`desk_with`], the owner of intentd's name being `who` to the seat.
-pub(crate) async fn desk_as(menus: MenuLinks, shots: watch::Receiver<Shots>, who: Who) -> Desk {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    desk_on(bus, menus, shots, who, NameClaims::Claim).await
+pub(crate) async fn desk_as(
+    menus: MenuLinks,
+    shots: watch::Receiver<Shots>,
+    who: Who,
+) -> Desk {
+    desk_on(PrivateBus::start(), menus, shots, who, NameClaims::Claim).await
 }
 
 /// As [`desk_as`], on `bus` (a test may arrange the bus first) and with `claims` for the seat.
@@ -204,7 +206,7 @@ async fn desk_on(
     let procs = intentd_is_this_process();
     let callers = Introduced::new();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         proc_root: procs.path().to_owned(),
         callers: Arc::<Introduced>::clone(&callers),
         claims,
@@ -222,7 +224,7 @@ async fn desk_on(
         },
     );
     let held = Arc::new(Mutex::new(Held::default()));
-    let intentd = connect(&bus.address).await;
+    let intentd = connect(bus.address()).await;
     callers.make(&intentd, who);
     intentd
         .object_server()
@@ -301,8 +303,7 @@ pub(crate) fn no_menus() -> MenuLinks {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_seat_in_a_passive_environment_owns_no_name() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let shots = watch::channel(Shots::default()).1;
     let desk = desk_on(
         bus,
@@ -508,7 +509,7 @@ async fn a_question_nobody_answers_expires_and_a_cancel_withdraws_it() {
 async fn only_intentd_may_ask_or_cancel() {
     let desk = desk().await;
     desk.serving().await;
-    let stranger = connect(&desk.bus.address).await;
+    let stranger = connect(desk.bus.address()).await;
     let proxy = ConfirmProxy::new(&stranger)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
@@ -607,9 +608,8 @@ async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal(
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_name_somebody_else_owns_is_the_links_trouble() {
     for taken in ["org.bardo.Shell", CONFIRM_BUS] {
-        let bus = PrivateBus::start()
-            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-        let squatter = connect(&bus.address).await;
+        let bus = PrivateBus::start();
+        let squatter = connect(bus.address()).await;
         squatter
             .request_name(taken)
             .await
@@ -740,7 +740,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
         "0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-org.example.Stranger-1.scope\n",
     )
     .unwrap_or_else(|e| panic!("{e}"));
-    let stranger = connect(&desk.bus.address).await;
+    let stranger = connect(desk.bus.address()).await;
     let refused = provider(&stranger)
         .await
         .perform(&invocation("shell.lock"), &HashMap::default())

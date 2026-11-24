@@ -22,8 +22,8 @@ tokio = ["dep:tokio", "zbus/tokio"]
 async-io = ["zbus/async-io"]
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "process", "io-util", "test-util"] }
-tempfile.workspace = true
 
 [lints]
 workspace = true

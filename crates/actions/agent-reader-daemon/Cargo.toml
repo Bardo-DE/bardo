@@ -37,11 +37,10 @@ dbus-kit = { path = "../../bus/dbus-kit" }
 [dev-dependencies]
 agent-reader-daemon = {path = ".", features = ["test-system-callers"]}
 base-ids = { path = "../../base/base-ids" }
-base-testkit = { path = "../../base/base-testkit" }
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
-action-testbus = {path = "../action-testbus"}
 tempfile = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}
 action-fake = {path = "../action-fake"}

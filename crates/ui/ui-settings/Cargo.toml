@@ -29,6 +29,7 @@ toml = { workspace = true }
 objc2-core-foundation = { workspace = true, features = ["std", "CFBase", "CFString", "CFNumber", "CFPreferences", "CFPropertyList"] }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 base-words = { path = "../../base/base-words" }
 settings-dbus = { path = "../../settings/settings-dbus" }
 ui-components = {path = "../ui-components"}

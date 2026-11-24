@@ -4,7 +4,7 @@
 //! system's `/proc`, which no test may move, so who it does answer (intentd's unit, as the
 //! callers file names it) is tested in process, over a fake proc root (`callers.rs`).
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use action_core::{ReaderAsk, ReaderTask, ValueSchema};
 use action_dbus::{Details, ReaderProxy};
 use action_vocab::Handle;
@@ -84,7 +84,7 @@ fn ask() -> String {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_binary_refuses_a_stranger_claims_the_name_once_and_frees_it_when_it_stops() {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let me = bus.connect().await;
     let mut daemon = readerd(dir.path(), bus.address());
     until_served(&me).await;

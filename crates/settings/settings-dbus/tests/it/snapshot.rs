@@ -11,7 +11,7 @@ use settings_types::schema::KeyPath;
 use zbus::interface;
 use zbus::zvariant::Value;
 
-use crate::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema};
 
 const PATH: &str = "/org/bardo/Test1/settings";
@@ -129,7 +129,7 @@ async fn another_get_failure_fails_the_snapshot() {
 
 #[tokio::test]
 async fn snapshot_over_the_bus_equals_describe_and_get() {
-    let bus = PrivateBus::start("snapshot");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     serve(&daemon, PATH, Accounts::new(None))
@@ -153,7 +153,7 @@ async fn snapshot_over_the_bus_equals_describe_and_get() {
 
 #[tokio::test]
 async fn a_vanished_key_is_absent_from_the_bus_snapshot_too() {
-    let bus = PrivateBus::start("snapshot-gone");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let module = Vanishing {
@@ -175,7 +175,7 @@ async fn a_vanished_key_is_absent_from_the_bus_snapshot_too() {
 
 #[tokio::test]
 async fn a_refused_reader_gets_not_permitted() {
-    let bus = PrivateBus::start("snapshot-refused");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     serve(&daemon, PATH, Closed(Accounts::new(None)))
@@ -195,7 +195,7 @@ async fn a_refused_reader_gets_not_permitted() {
 
 #[tokio::test]
 async fn a_module_without_snapshot_is_read_by_the_client() {
-    let bus = PrivateBus::start("snapshot-legacy");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     daemon

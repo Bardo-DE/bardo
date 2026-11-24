@@ -99,7 +99,7 @@ percent-encoding = { workspace = true }
 dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 account-capability = {path = "../../accounts/account-capability"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
 # A caller that is only a claim (`BusPeers::introduce`): the tests name who their stand-ins are.

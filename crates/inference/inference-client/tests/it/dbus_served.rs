@@ -15,7 +15,7 @@ use account_core::consent::Usage;
 use account_match::Need;
 use account_match::{ComputerUseNeed, DimsNeed, EmbedNeed};
 use base_ids::{Dims, Tokens};
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use common::inferd::{Behaviour, FakeInferd, Served};
 use common::served::{Gate, Route, Scripted};
 use inference_client::{DbusTransport, InferSession, Inference};

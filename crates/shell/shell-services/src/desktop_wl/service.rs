@@ -54,7 +54,7 @@ mod tests {
     use std::time::Duration;
 
     use shell_model::desktop::DesktopView;
-    use shell_testkit::TempDir;
+    use base_testkit::Scratch;
     use tokio::sync::watch;
 
     use super::WindowsLinks;
@@ -67,7 +67,7 @@ mod tests {
     /// compositor to reach), and is over once every control is gone.
     #[tokio::test]
     async fn the_run_lasts_as_long_as_its_thread() {
-        let scratch = TempDir::new("windows-run");
+        let scratch = Scratch::new("windows-run");
         let env = Env::isolated(scratch.path());
         let (handle, io) = Handle::<WindowsService>::channel(WindowModel::default());
         let links = WindowsLinks {

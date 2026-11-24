@@ -3,7 +3,7 @@
 
 use super::*;
 use crate::dbus::{DebugReply, DebugRequest};
-use crate::test_bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::{InjectLine, WaitPredicate};
 use std::sync::{Arc, Mutex};
 use std::thread::JoinHandle;
@@ -86,9 +86,9 @@ async fn client(address: &str) -> zbus::Proxy<'static> {
 #[tokio::test]
 async fn a_client_call_reaches_the_channel_and_gets_the_reply() {
     let bus = PrivateBus::start();
-    let (channel, _connection) = serve_debug_at(&bus.address).expect("serve");
+    let (channel, _connection) = serve_debug_at(bus.address()).expect("serve");
     let event_loop = StandInLoop::run(channel);
-    let proxy = client(&bus.address).await;
+    let proxy = client(bus.address()).await;
 
     let windows: String = proxy.call("Windows", &()).await.expect("Windows");
     assert_eq!(windows, "[]");
@@ -118,7 +118,7 @@ async fn a_client_call_reaches_the_channel_and_gets_the_reply() {
 #[tokio::test]
 async fn the_name_is_owned_by_the_connection_serve_debug_returns() {
     let bus = PrivateBus::start();
-    let (_channel, connection) = serve_debug_at(&bus.address).expect("serve");
+    let (_channel, connection) = serve_debug_at(bus.address()).expect("serve");
     let owner = zbus::fdo::DBusProxy::new(&connection)
         .await
         .expect("dbus proxy")
@@ -134,8 +134,8 @@ async fn the_name_is_owned_by_the_connection_serve_debug_returns() {
 #[test]
 fn a_second_server_on_the_same_bus_is_refused_and_a_dead_bus_is_an_error() {
     let bus = PrivateBus::start();
-    let first = serve_debug_at(&bus.address).expect("serve");
-    let second = serve_debug_at(&bus.address);
+    let first = serve_debug_at(bus.address()).expect("serve");
+    let second = serve_debug_at(bus.address());
     assert!(matches!(second, Err(IpcError::Bus(_))), "{second:?}");
     drop(first);
     let nowhere = serve_debug_at("unix:path=/nonexistent/compositor-debug1-test");

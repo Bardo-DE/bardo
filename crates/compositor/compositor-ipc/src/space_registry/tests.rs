@@ -3,7 +3,7 @@
 //! [`RegisterFault::Refused`] once and ends the asking. No real bus, no real account service.
 
 use super::*;
-use crate::test_bus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::sync::{Arc, Mutex, PoisonError};
 use zbus::fdo;
 
@@ -73,8 +73,8 @@ fn registration(id: &str, name: &str) -> SpaceRegistration {
 #[test]
 fn a_batch_reaches_the_service_with_the_default_look() {
     let bus = PrivateBus::start();
-    let served = serve(&bus.address, false);
-    let mut registry = ZbusSpaceRegistry::at(bus.address.clone());
+    let served = serve(bus.address(), false);
+    let mut registry = ZbusSpaceRegistry::at(bus.address().to_owned());
     registry
         .register(vec![
             registration("s-1", "Desktop 1"),
@@ -107,8 +107,8 @@ fn a_batch_reaches_the_service_with_the_default_look() {
 #[test]
 fn a_refusal_is_reported_once_and_ends_the_asking() {
     let bus = PrivateBus::start();
-    let served = serve(&bus.address, true);
-    let mut registry = ZbusSpaceRegistry::at(bus.address.clone());
+    let served = serve(bus.address(), true);
+    let mut registry = ZbusSpaceRegistry::at(bus.address().to_owned());
     registry
         .register(vec![
             registration("s-1", "Desktop 1"),
@@ -143,7 +143,7 @@ fn a_refusal_is_reported_once_and_ends_the_asking() {
 #[test]
 fn no_service_on_the_bus_means_try_again_later() {
     let bus = PrivateBus::start();
-    let mut registry = ZbusSpaceRegistry::at(bus.address.clone());
+    let mut registry = ZbusSpaceRegistry::at(bus.address().to_owned());
     registry
         .register(vec![registration("s-1", "Desktop 1")])
         .expect("queued");

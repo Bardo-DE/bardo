@@ -2,7 +2,7 @@
 //! scripted engine behind the recording host.
 
 use super::*;
-use crate::hosting::bus::within;
+use crate::hosting::wait::within;
 use account_capability::ModelId;
 use account_dbus::Details;
 use inference_daemon::{Attached, Reach, Site};

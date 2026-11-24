@@ -40,7 +40,7 @@ account-callers = {features = ["test-proc-root"], path = "../../accounts/account
 account-core = {path = "../../accounts/account-core"}
 base-time = { path = "../../base/base-time" }
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 
 [lints]
 workspace = true

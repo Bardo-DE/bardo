@@ -6,7 +6,6 @@
     reason = "helpers shared by the test files; each file uses some of them"
 )]
 
-pub mod bus;
 pub mod host;
 
 pub use account_fake::{mail_account, storage_account};
@@ -25,9 +24,9 @@ use account_secrets::{MemorySecrets, Secrets, SecretsError};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_wire::names::{SHEET_BUS, SHEET_PATH};
+use base_testkit::PrivateBus;
 use base_testkit::Scratch;
 use base_time::FixedClock;
-use bus::PrivateBus;
 use caller_role_types::CallerRole;
 use host::HostLog;
 use std::sync::Arc;

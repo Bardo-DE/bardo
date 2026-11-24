@@ -3,7 +3,7 @@
 //! any app, the manifests are listed, and what they do reaches memoryd as audit records.
 
 use crate::support::apps::{Answer, FakeShell};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::memoryd::FakeMemoryd;
 use crate::support::world::introduce;
 use account_core::AppName;
@@ -81,7 +81,7 @@ impl Desk {
     async fn start_with(memoryd: Arc<FakeMemoryd>, prefill: impl FnOnce(&std::path::Path)) -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
         prefill(&dir.path().join("data"));
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
         let memory_connection = bus.connect().await;
         memoryd.serve(&memory_connection).await;
         let home = dir.path().display().to_string();

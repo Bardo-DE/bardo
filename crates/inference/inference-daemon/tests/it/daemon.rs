@@ -3,7 +3,8 @@
 //! Tailscale socket from the config), the name is owned and answers once `Daemon::build` has
 //! returned, and `run` ends and lets the name go when its stop is asked for.
 
-use crate::hosting::bus::{self, PrivateBus};
+use crate::hosting::wait;
+use base_testkit::PrivateBus;
 
 use dbus_kit::connect::BusTarget;
 use inference_daemon::{Config, Daemon};
@@ -52,7 +53,7 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
         // No program of this computer's own is found.
         .with_programs(ProgramSearch::in_paths(Vec::new(), |_| false));
 
-    let daemon = Box::pin(bus::within("inferd to start", Daemon::build(config)))
+    let daemon = Box::pin(wait::within("inferd to start", Daemon::build(config)))
         .await
         .expect("inferd starts");
 
@@ -63,7 +64,7 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
         dbus.name_has_owner(name.clone()).await.expect("ask"),
         "the name is owned once build has returned"
     );
-    bus::within(
+    wait::within(
         "inferd to answer a ping",
         probe.call_method(
             Some(INFERENCE_BUS),
@@ -83,7 +84,7 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
     tokio::time::sleep(Duration::from_millis(100)).await;
     assert!(!running.is_finished(), "run waits for its stop");
     stop.send(()).expect("run is waiting");
-    bus::within("inferd to stop", running)
+    wait::within("inferd to stop", running)
         .await
         .expect("run's task")
         .expect("a clean stop");

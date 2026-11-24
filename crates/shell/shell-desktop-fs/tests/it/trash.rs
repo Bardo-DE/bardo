@@ -2,8 +2,7 @@
 
 use shell_desktop_fs::trash::{empty, is_empty, root};
 use shell_model::dirs::Dirs;
-use shell_testkit::TempDir;
-
+use base_testkit::Scratch;
 fn fill(dirs: &Dirs) {
     let trash = root(dirs);
     std::fs::create_dir_all(trash.join("files/folder/inner")).expect("files");
@@ -17,7 +16,7 @@ fn fill(dirs: &Dirs) {
 
 #[test]
 fn a_missing_trash_is_empty_and_emptying_it_is_fine() {
-    let root = TempDir::new("trash-missing");
+    let root = Scratch::new("trash-missing");
     let dirs = Dirs::under(root.path());
     assert!(is_empty(&dirs));
     empty(&dirs).expect("nothing to do");
@@ -25,7 +24,7 @@ fn a_missing_trash_is_empty_and_emptying_it_is_fine() {
 
 #[test]
 fn emptying_removes_files_and_infos_and_keeps_the_folders() {
-    let scratch = TempDir::new("trash-fill");
+    let scratch = Scratch::new("trash-fill");
     let dirs = Dirs::under(scratch.path());
     fill(&dirs);
     assert!(!is_empty(&dirs));
@@ -39,7 +38,7 @@ fn emptying_removes_files_and_infos_and_keeps_the_folders() {
 
 #[test]
 fn a_link_in_the_trash_is_removed_and_its_target_is_not_followed() {
-    let scratch = TempDir::new("trash-link");
+    let scratch = Scratch::new("trash-link");
     let dirs = Dirs::under(scratch.path());
     let outside = scratch.path().join("outside");
     std::fs::create_dir_all(&outside).expect("outside");

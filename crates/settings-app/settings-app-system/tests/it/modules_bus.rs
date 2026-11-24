@@ -1,7 +1,7 @@
 //! The real modules link over a module served on a private bus: the module is found, its rows are
 //! read with their values, and a row set through the handle comes back as a change the module sent.
 
-use crate::private_bus::PrivateBus;
+use base_testkit::PrivateBus;
 use settings_app_link::bus::{BusSource, Daemon, Vouch};
 use settings_app_link::modules::{Followed, ModulesLink};
 use settings_app_model::Absence;
@@ -129,7 +129,7 @@ async fn opened(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_module_on_the_bus_is_opened_and_its_changes_are_heard() {
-    let bus = PrivateBus::start("modules-follow");
+    let bus = PrivateBus::start();
     let connection = bus.connect().await;
     serve(&connection, PATH, Words::holding("first", Verdict::Allow))
         .await
@@ -138,7 +138,7 @@ async fn a_module_on_the_bus_is_opened_and_its_changes_are_heard() {
         .await
         .expect("the object server answers");
     connection.request_name(NAME).await.expect("name");
-    let link = OnBus(BusSource::Address(bus.address.clone(), Vouch::of(AnyOwner)));
+    let link = OnBus(BusSource::Address(bus.address().to_owned(), Vouch::of(AnyOwner)));
     let daemon = daemon();
     let (told, mut heard) = unbounded_channel();
     let following = link.follow(&daemon, is_text, told);
@@ -166,7 +166,7 @@ async fn a_module_on_the_bus_is_opened_and_its_changes_are_heard() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_module_that_refuses_the_settings_app_is_gone_as_not_permitted() {
-    let bus = PrivateBus::start("modules-refused");
+    let bus = PrivateBus::start();
     let connection = bus.connect().await;
     serve(&connection, PATH, Words::holding("first", Verdict::Refuse))
         .await
@@ -175,7 +175,7 @@ async fn a_module_that_refuses_the_settings_app_is_gone_as_not_permitted() {
         .await
         .expect("the object server answers");
     connection.request_name(NAME).await.expect("name");
-    let link = OnBus(BusSource::Address(bus.address.clone(), Vouch::of(AnyOwner)));
+    let link = OnBus(BusSource::Address(bus.address().to_owned(), Vouch::of(AnyOwner)));
     let daemon = daemon();
     let (told, mut heard) = unbounded_channel();
     let following = link.follow(&daemon, is_text, told);
@@ -193,8 +193,8 @@ async fn a_module_that_refuses_the_settings_app_is_gone_as_not_permitted() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn looking_for_a_module_that_is_not_there_says_so_and_never_starts_it() {
-    let bus = PrivateBus::start("modules-absent");
-    let link = OnBus(BusSource::Address(bus.address.clone(), Vouch::of(AnyOwner)));
+    let bus = PrivateBus::start();
+    let link = OnBus(BusSource::Address(bus.address().to_owned(), Vouch::of(AnyOwner)));
     let daemon = daemon();
     let (told, mut heard) = unbounded_channel();
     let following = link.follow(&daemon, is_text, told);

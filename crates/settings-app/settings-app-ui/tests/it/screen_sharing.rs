@@ -3,7 +3,7 @@
 //! refusal is told. The rest is tested in `settings-app-model`.
 
 use crate::support::Sandbox;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::compositor::{Compositor, Row};
 use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
@@ -73,7 +73,7 @@ fn world(name: &str, apps: &[Remembered]) -> World {
         .enable_all()
         .build()
         .expect("a runtime for the fakes");
-    let bus = PrivateBus::start(name);
+    let bus = PrivateBus::start();
     // The compositor's module is in memory: the portal is the bus's, and no live module.
     let modules = FakeModules::new();
     modules.host(
@@ -83,7 +83,7 @@ fn world(name: &str, apps: &[Remembered]) -> World {
     let portal = Some(rt.block_on(serve(&bus, apps)));
     let vouch = Vouch::of(AnyOwner);
     let sandbox = Sandbox::new(name)
-        .on_bus_vouched(&bus.address, vouch)
+        .on_bus_vouched(bus.address(), vouch)
         .with_modules(modules);
     sandbox.write_application(
         MEET,

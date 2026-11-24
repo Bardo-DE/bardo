@@ -19,6 +19,7 @@ path = "src/bin/agent-bringup.rs"
 # The daemons the world starts are action-accept's binaries (`accept-actiond` and the rest), found
 # beside the running program (`Binaries::beside`): build them first with `cargo build -p action-accept --bins`.
 [dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 base-time = { path = "../../base/base-time" }
 base-fs = { path = "../../base/base-fs" }
 account-match = {path = "../../accounts/account-match"}
@@ -50,7 +51,6 @@ agent-reader = {path = "../agent-reader"}
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-store = {path = "../action-store"}
 companion-tasks = {path = "../companion-tasks"}
-action-testbus = {path = "../action-testbus"}
 action-trace = {path = "../action-trace"}
 action-eval-core = {path = "../action-eval-core"}
 inference-client = {features = ["dbus"], path = "../../inference/inference-client"}

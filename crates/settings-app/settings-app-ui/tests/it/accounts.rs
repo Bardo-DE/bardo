@@ -5,7 +5,7 @@
 
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held, ModuleAt, SECRET};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
 use crate::support::syncd::{Standing, Syncd};
@@ -147,7 +147,7 @@ fn start_syncing(
     sync1: Syncd,
 ) -> World {
     let rt = runtime();
-    let bus = PrivateBus::start(name);
+    let bus = PrivateBus::start();
     let held = |module: ModuleId, count: usize| if served.contains(&module) { count } else { 0 };
     let expected = held(ModuleId::Accountd, rows.len()) + held(ModuleId::Syncd, mirrored.len());
     // inferd only sends the spend rows of the accounts accountd lists.
@@ -172,7 +172,7 @@ fn start_syncing(
         .contains(&ModuleId::Syncd)
         .then(|| rt.block_on(sync1.serve_on(&bus)));
     let sandbox = Sandbox::new(name)
-        .on_bus(&bus.address)
+        .on_bus(bus.address())
         .with_modules(modules.clone());
     let mut harness = sandbox.harness_in(accounts(), scheme);
     settle_on_threads(&mut harness, "the list", |h| {

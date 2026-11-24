@@ -34,7 +34,7 @@ use shell_services::CompanionLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::seat::{SeatPublisher, seat};
 use shell_services::service::spawn;
-use shell_testkit::PrivateBus;
+use base_testkit::PrivateBus;
 use tokio::sync::{mpsc, watch};
 use zbus::Connection;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath, OwnedValue};
@@ -156,10 +156,9 @@ pub fn ask_input(prompt: &str) -> AskInput {
 }
 
 pub async fn desk() -> Desk {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ..Env::isolated(Path::new("/nonexistent/shell-companion-bus"))
     };
     let (seat_publisher, seat_view) = seat();
@@ -174,7 +173,7 @@ pub async fn desk() -> Desk {
             launch,
         },
     );
-    let shell = connect(&bus.address).await;
+    let shell = connect(bus.address()).await;
     Desk {
         bus,
         companion,
@@ -189,7 +188,7 @@ pub async fn desk() -> Desk {
 impl Desk {
     /// A connection owning `name`.
     pub async fn peer(&self, name: &str) -> Connection {
-        let connection = connect(&self.bus.address).await;
+        let connection = connect(self.bus.address()).await;
         connection
             .request_name(name)
             .await

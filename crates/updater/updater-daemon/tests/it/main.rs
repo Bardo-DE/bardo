@@ -6,7 +6,6 @@ mod download_resume;
 mod elevate_run;
 mod feed_stage;
 mod health_start;
-mod private_bus;
 mod session_guard;
 mod small;
 mod support;

@@ -15,8 +15,7 @@ use files_desktop::{Ask, Reply, Undoing, Window, WindowError};
 use provenance::{ActionName, Actor, Label, Labelled, SpaceId};
 use zbus::zvariant::Value as BusValue;
 
-use crate::bus::PrivateBus;
-
+use base_testkit::PrivateBus;
 const PROVIDER_PATH: &str = "/org/bardo/IntentProvider1";
 const PROVIDER_INTERFACE: &str = "org.bardo.IntentProvider1";
 
@@ -110,7 +109,7 @@ pub(super) struct Served {
 }
 
 pub(super) async fn served(window: FakeWindow) -> Served {
-    let bus = PrivateBus::start("intents");
+    let bus = PrivateBus::start();
     let window = Arc::new(window);
     let server = bus.connect().await;
     let router = bus.connect().await;

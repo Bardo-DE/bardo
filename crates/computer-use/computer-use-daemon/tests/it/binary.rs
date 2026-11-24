@@ -2,7 +2,7 @@
 //! owns both of its names, reports the backend as unavailable, leaves `computer_use.enabled` off, and
 //! stops cleanly on SIGTERM and when the bus goes away.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use computer_use_dbus::ManagerProxy;
 use std::path::Path;
 use std::process::{Child, Command, ExitStatus, Stdio};
@@ -75,7 +75,7 @@ fn sigterm(pid: u32) {
 #[tokio::test]
 async fn computer_use_daemon_without_a_compositor_serves_its_names_and_says_the_backend_is_none() {
     let dir = tempfile::tempdir().expect("dir");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let mut daemon = Daemon::start(&bus, dir.path(), &[]);
     let me = bus.connect().await;
     owned(&me, "org.bardo.ComputerUse1").await;
@@ -93,7 +93,7 @@ async fn computer_use_daemon_without_a_compositor_serves_its_names_and_says_the_
 #[tokio::test]
 async fn computer_use_daemon_stops_when_the_bus_goes_away() {
     let dir = tempfile::tempdir().expect("dir");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let mut daemon = Daemon::start(&bus, dir.path(), &[]);
     let me = bus.connect().await;
     owned(&me, "org.bardo.ComputerUse1").await;
@@ -105,7 +105,7 @@ async fn computer_use_daemon_stops_when_the_bus_goes_away() {
 #[tokio::test]
 async fn a_bad_configuration_is_a_start_failure_not_a_panic() {
     let dir = tempfile::tempdir().expect("dir");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let config = dir.path().join("computer-use.toml");
     std::fs::write(&config, "settings = 3").expect("config");
     let mut daemon = Daemon::start(
@@ -120,7 +120,7 @@ async fn a_bad_configuration_is_a_start_failure_not_a_panic() {
 #[tokio::test]
 async fn a_missing_configuration_file_means_the_defaults() {
     let dir = tempfile::tempdir().expect("dir");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let missing = dir.path().join("nothing.toml");
     let mut daemon = Daemon::start(
         &bus,

@@ -36,10 +36,10 @@ tracing = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 permission-core = {path = "../permission-core"}
 action-vocab = {path = "../action-vocab"}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
-action-testbus = {path = "../action-testbus"}
 action-daemon = { path = "../action-daemon" }
 tempfile = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}

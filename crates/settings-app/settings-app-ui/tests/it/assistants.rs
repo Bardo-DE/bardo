@@ -6,7 +6,7 @@
 
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::computers::{Asker, Fake, Lender, Own, serve_with};
 use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, click_when_still, scroll_into_view, type_into};
@@ -138,9 +138,9 @@ fn build(
         .enable_all()
         .build()
         .expect("a runtime for the fake daemon");
-    let bus = PrivateBus::start(name);
+    let bus = PrivateBus::start();
     let fake = rt.block_on(serve_with(&bus, own, lenders, askers, models));
-    let sandbox = Sandbox::new(name).on_bus(&bus.address);
+    let sandbox = Sandbox::new(name).on_bus(bus.address());
     if let Some(text) = file {
         sandbox.write(SETTINGS, text);
     }

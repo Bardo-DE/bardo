@@ -26,13 +26,14 @@ pub struct FakeLogind {
 }
 
 impl FakeLogind {
-    /// Serves on the bus at `address` (a [`PrivateBus`](super::PrivateBus) in a test) and owns
+    /// Serves on the bus at `address` (a `base_testkit::PrivateBus` in a test) and owns
     /// `org.freedesktop.login1` there.
     ///
     /// ```no_run
-    /// use compositor_testkit::fakes::{FakeLogind, PrivateBus};
+    /// use base_testkit::PrivateBus;
+    /// use compositor_testkit::fakes::FakeLogind;
     /// let bus = PrivateBus::start();
-    /// let logind = FakeLogind::serve(&bus.address).expect("serve");
+    /// let logind = FakeLogind::serve(bus.address()).expect("serve");
     /// assert!(logind.calls().is_empty());
     /// ```
     ///

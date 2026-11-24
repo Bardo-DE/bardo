@@ -63,8 +63,7 @@ mod tests {
     use crate::service::spawn;
     use shell_model::clock::ClockService;
     use shell_model::clock::{ClockCommand, ClockMinute};
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     #[test]
     fn only_a_new_minute_wakes_the_bar() {
         let minute = |m: i8| ClockMinute(jiff::civil::date(2026, 9, 24).at(14, m, 0, 0));
@@ -86,7 +85,7 @@ mod tests {
             .at(14, 5, 0, 0)
             .to_zoned(jiff::tz::TimeZone::UTC)
             .expect("a valid instant"); // test-only
-        let scratch = TempDir::new("clock");
+        let scratch = Scratch::new("clock");
         let env = crate::env::Env {
             clock: Arc::new(FixedClock(at)),
             ..crate::env::Env::isolated(scratch.path())

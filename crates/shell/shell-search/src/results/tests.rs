@@ -9,7 +9,7 @@ use std::time::Duration;
 use fake::{Fake, Heard, Obeys};
 use shell_launcher::{Choice, ItemId, ItemKey, Provider, ProviderKind};
 use shell_model::results::{Results, SearchCommand};
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use tokio::runtime::Handle;
 use tokio::sync::watch;
 
@@ -41,14 +41,14 @@ async fn until(rx: &mut watch::Receiver<Results>, ready: impl FnMut(&Results) ->
 
 fn search(
     providers: Vec<Arc<dyn Provider>>,
-    dir: &TempDir,
+    dir: &Scratch,
 ) -> (watch::Receiver<Results>, Control<SearchCommand>, History) {
     search_to(providers, dir, Outlets::default())
 }
 
 fn search_to(
     providers: Vec<Arc<dyn Provider>>,
-    dir: &TempDir,
+    dir: &Scratch,
     outlets: Outlets,
 ) -> (watch::Receiver<Results>, Control<SearchCommand>, History) {
     let history = History::default();
@@ -71,7 +71,7 @@ fn send(control: &Control<SearchCommand>, command: SearchCommand) {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_first_batch_shows_before_the_second_and_both_merge_in_groups() {
-    let dir = TempDir::new("runner-order");
+    let dir = Scratch::new("runner-order");
     let apps = Fake::new(ProviderKind::Apps)
         .first(&[("Firefox", 700), ("Files", 400)])
         .then(&[("Fire Starter", 900)]);
@@ -97,7 +97,7 @@ async fn the_first_batch_shows_before_the_second_and_both_merge_in_groups() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_newer_keystroke_cancels_the_older_query_and_its_late_rows_never_show() {
-    let dir = TempDir::new("runner-cancel");
+    let dir = Scratch::new("runner-cancel");
     let obeys = Fake::new(ProviderKind::Apps)
         .first(&[("Firefox", 700)])
         .then(&[("Late", 999)]);
@@ -154,7 +154,7 @@ async fn a_newer_keystroke_cancels_the_older_query_and_its_late_rows_never_show(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn closing_cancels_the_running_query_and_empties_the_list() {
-    let dir = TempDir::new("runner-close");
+    let dir = Scratch::new("runner-close");
     let slow = Fake::new(ProviderKind::Apps)
         .first(&[("Firefox", 700)])
         .then(&[("Late", 999)]);
@@ -175,7 +175,7 @@ async fn closing_cancels_the_running_query_and_empties_the_list() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_query_nothing_matches_publishes_an_empty_list_once_every_provider_is_done() {
-    let dir = TempDir::new("runner-empty");
+    let dir = Scratch::new("runner-empty");
     let apps = Fake::new(ProviderKind::Apps).first(&[("Firefox", 700)]);
     let (mut rx, control, _) = search(vec![apps.provider()], &dir);
     send(&control, SearchCommand::Query("f".to_owned()));
@@ -188,7 +188,7 @@ async fn a_query_nothing_matches_publishes_an_empty_list_once_every_provider_is_
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_panicking_provider_does_not_hold_up_the_others() {
-    let dir = TempDir::new("runner-panic");
+    let dir = Scratch::new("runner-panic");
     let apps = Fake::new(ProviderKind::Apps).first(&[("Firefox", 700)]);
     let broken = Fake::new(ProviderKind::Calculator).panics();
     let (mut rx, control, _) = search(vec![broken.provider(), apps.provider()], &dir);
@@ -208,7 +208,7 @@ async fn a_panicking_provider_does_not_hold_up_the_others() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_choice_is_counted_saved_and_shown_under_recent() {
-    let dir = TempDir::new("runner-chosen");
+    let dir = Scratch::new("runner-chosen");
     let apps = Fake::new(ProviderKind::Apps).first(&[("Firefox", 0), ("Files", 0)]);
     let system = Fake::new(ProviderKind::System).first(&[("Lock", 0)]);
     let (mut rx, control, history) = search(vec![apps.provider(), system.provider()], &dir);
@@ -439,7 +439,7 @@ async fn a_chosen_row_focuses_or_closes_through_its_service() {
     use shell_launcher::{ActionId, WindowKey};
     use shell_model::windows::WlCommand;
 
-    let dir = TempDir::new("runner-activate");
+    let dir = Scratch::new("runner-activate");
     let windows = Fake::new(ProviderKind::Windows).first(&[("7", 800)]);
     let apps = Fake::new(ProviderKind::Apps).first(&[("foot", 700)]);
     let broken = Fake::new(ProviderKind::Settings)

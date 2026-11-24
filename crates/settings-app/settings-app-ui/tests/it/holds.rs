@@ -3,7 +3,7 @@
 
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::drive::click;
 use crate::support::drive::{let_threads_run, settle_on_threads};
 use crate::support::handover::HandsOver;
@@ -62,7 +62,7 @@ fn world_trusting(name: &str, before: &[(&str, u64, u64)], trust: &Trust) -> Wor
         .enable_all()
         .build()
         .expect("a runtime for the fake daemons");
-    let bus = PrivateBus::start(name);
+    let bus = PrivateBus::start();
     let fake = Accountd::new(
         Verdict::Allow,
         vec![Held::new("home", "Home cloud", "ok", &["storage"]).syncing()],
@@ -96,7 +96,7 @@ fn world_trusting(name: &str, before: &[(&str, u64, u64)], trust: &Trust) -> Wor
         }
     };
     let mut harness = Sandbox::new(name)
-        .on_bus_vouched(&bus.address, vouch)
+        .on_bus_vouched(bus.address(), vouch)
         .harness(opening);
     settle_on_threads(&mut harness, "the list", |h| h.count(".accounts-list") == 1);
     click(&mut harness, HOME);

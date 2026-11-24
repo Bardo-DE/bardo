@@ -167,7 +167,7 @@ mod tests {
     use std::path::Path;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
-    use shell_testkit::TempDir;
+    use base_testkit::Scratch;
     use tokio::sync::Semaphore;
 
     use super::{Turns, bring_once};
@@ -183,7 +183,7 @@ mod tests {
 
     #[tokio::test(start_paused = true)]
     async fn two_jobs_for_one_cover_fetch_it_once() {
-        let dir = TempDir::new("art-once");
+        let dir = Scratch::new("art-once");
         let (turns, slots) = (Turns::default(), Semaphore::new(2));
         let (runs, cover) = (AtomicUsize::new(0), dir.path().join("a.png"));
         let (first, second) = tokio::join!(
@@ -196,7 +196,7 @@ mod tests {
 
     #[tokio::test(start_paused = true)]
     async fn jobs_for_different_covers_each_run() {
-        let dir = TempDir::new("art-each");
+        let dir = Scratch::new("art-each");
         let (turns, slots) = (Turns::default(), Semaphore::new(2));
         let runs = AtomicUsize::new(0);
         let (a, b) = (dir.path().join("a.png"), dir.path().join("b.png"));
@@ -210,7 +210,7 @@ mod tests {
 
     #[tokio::test]
     async fn a_cover_already_in_the_cache_runs_nothing() {
-        let dir = TempDir::new("art-cached");
+        let dir = Scratch::new("art-cached");
         let (turns, slots) = (Turns::default(), Semaphore::new(1));
         let (runs, cover) = (AtomicUsize::new(0), dir.path().join("a.png"));
         std::fs::write(&cover, b"cover").unwrap_or_else(|e| panic!("{e}"));

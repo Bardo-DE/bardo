@@ -9,7 +9,7 @@ use shell_model::wallpaper::WallpaperService;
 use shell_model::wallpaper::{WallpaperCommand, WallpaperPicture, Wallpapers};
 use shell_services::env::Env;
 use shell_services::service::spawn;
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use tokio::sync::watch;
 
 /// A small PNG of one `shade` in `dir`.
@@ -37,7 +37,7 @@ fn light_of(wallpapers: &Wallpapers) -> Option<PathBuf> {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_setting_wins_and_the_old_file_serves_while_it_is_empty() {
-    let scratch = TempDir::new("wallpaper-source");
+    let scratch = Scratch::new("wallpaper-source");
     let env = Env::isolated(scratch.path());
     let old = png(scratch.path(), "old.png", 40);
     let chosen = png(scratch.path(), "chosen.png", 200);

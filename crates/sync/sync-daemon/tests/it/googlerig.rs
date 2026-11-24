@@ -7,7 +7,7 @@
     reason = "a shared test helper: each test binary uses only part of it"
 )]
 
-use crate::common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::common::hosted::{Link, host};
 use crate::common::{Known, PhotosGrant, client};
 use account_capability::StorageScope;

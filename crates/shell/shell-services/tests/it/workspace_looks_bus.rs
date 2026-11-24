@@ -12,7 +12,7 @@ use shell_model::workspace_looks::{
 };
 use shell_services::env::{BusRoute, Buses, Env, NameClaims};
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::connection::Builder;
 use zbus::export::futures_core::Stream;
@@ -48,10 +48,10 @@ fn workspace(id: &str, active: bool) -> PublishedWorkspace {
     }
 }
 
-fn start(bus: &PrivateBus) -> (Handle<WorkspaceLooksService>, TempDir) {
-    let scratch = TempDir::new("workspace-looks-bus");
+fn start(bus: &PrivateBus) -> (Handle<WorkspaceLooksService>, Scratch) {
+    let scratch = Scratch::new("workspace-looks-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         claims: NameClaims::Claim,
         ..Env::isolated(scratch.path())
     };
@@ -60,7 +60,7 @@ fn start(bus: &PrivateBus) -> (Handle<WorkspaceLooksService>, TempDir) {
 }
 
 async fn client(bus: &PrivateBus) -> Connection {
-    Builder::address(bus.address.as_str())
+    Builder::address(bus.address())
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await
@@ -69,8 +69,7 @@ async fn client(bus: &PrivateBus) -> Connection {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_property_answers_and_a_change_is_announced() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let (mut shell, _scratch) = start(&bus);
     let _ = shell
         .control
@@ -123,9 +122,8 @@ async fn the_property_answers_and_a_change_is_announced() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_taken_name_is_reported() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let _owner = Builder::address(bus.address.as_str())
+    let bus = PrivateBus::start();
+    let _owner = Builder::address(bus.address())
         .and_then(|b| b.name("org.bardo.Workspaces1"))
         .unwrap_or_else(|e| panic!("{e}"))
         .build()

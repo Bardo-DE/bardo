@@ -1,7 +1,7 @@
 //! readerd serves `org.bardo.Reader1` as declared: the interface on the bus is the one in
 //! `dbus/org.bardo.Reader1.xml`, and the name is claimed once.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::inferd::ScriptedInferd;
 use account_core::{AppId, AppName, Isolation};
 use action_client::{InProcess, Intents};
@@ -56,7 +56,7 @@ fn block(xml: &str, name: &str) -> String {
 #[tokio::test]
 async fn the_served_interface_is_the_declared_one_and_the_name_is_claimed_once() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let first = bus.connect().await;
     serve_on(&first, service(), nobody(&first, scratch.path()))
         .await

@@ -3512,7 +3512,7 @@ Likely cause: a wait in the harness with no deadline, on a peer that stopped ans
 
 Changed: `world::within(what, wait)` (60 s, `GIVE_UP`) wraps every bus call and wait in the harness
 and panics naming what it waited for; `try_history_until` has a total of four patiences; the
-hostile planner tests use 20 s patience; `binaries()` arms `action_testbus::hang_guard`;
+hostile planner tests use 20 s patience; `binaries()` arms `base_testkit::hang_guard`;
 `.config/nextest.toml` (`slow-timeout` 30 s, terminate after 4) and `scripts/gate.sh` runs
 `cargo nextest run --profile default` (plus `cargo test --doc`). Closes when a loaded full run has
 passed a week of gates, or the next hang names its wait.

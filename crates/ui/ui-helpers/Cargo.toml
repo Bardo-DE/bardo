@@ -20,7 +20,7 @@ zbus = {workspace = true, features = ["default"], optional = true}
 # `update_atomic` locks a sidecar file between programs.
 
 [dev-dependencies]
-base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 # The tests' runtime; the crate itself names none (zbus brings its own executor).
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 # The tests run zbus on that runtime (the fake PackageKit sleeps with tokio inside a zbus

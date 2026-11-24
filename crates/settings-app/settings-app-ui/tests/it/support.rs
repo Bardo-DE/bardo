@@ -3,7 +3,6 @@
 //! config, the session bus or the portal.
 
 pub mod accountd;
-pub mod bus;
 pub mod compositor;
 pub mod computers;
 pub mod corners;

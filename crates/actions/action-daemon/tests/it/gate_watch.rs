@@ -4,7 +4,7 @@
 //! is as it was: no wait.
 
 use crate::support::apps::{Answer, FakeShell};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::world::introduce;
 use account_core::AppName;
 use action_client::{DbusTransport, GateEvent, Intents};
@@ -73,7 +73,7 @@ struct Desk {
 impl Desk {
     async fn start() -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
         let home = dir.path().display().to_string();
         let env = |key: &str| match key {
             "HOME" => Some(home.clone()),

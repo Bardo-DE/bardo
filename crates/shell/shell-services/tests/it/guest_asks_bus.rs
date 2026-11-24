@@ -20,7 +20,7 @@ use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::guest_asks::GuestAsksLinks;
 use shell_services::notifications::Answers;
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, Value};
@@ -131,7 +131,7 @@ impl FakeInferd {
             rows,
             ..Book::default()
         }));
-        let connection = zbus::connection::Builder::address(bus.address.as_str())
+        let connection = zbus::connection::Builder::address(bus.address())
             .unwrap_or_else(|e| panic!("{e}"))
             .serve_at(
                 PATH,
@@ -188,13 +188,13 @@ impl FakeInferd {
 struct Shell {
     notes: Handle<NotificationsService>,
     asks: Handle<GuestAsksService>,
-    _scratch: TempDir,
+    _scratch: Scratch,
 }
 
 async fn shell(bus: &PrivateBus) -> Shell {
-    let scratch = TempDir::new("guest-asks-bus");
+    let scratch = Scratch::new("guest-asks-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();
@@ -275,8 +275,7 @@ async fn until(what: &str, done: impl FnMut() -> bool) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_computer_asking_is_asked_about_and_allow_reaches_inferd_as_a_word() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let inferd = FakeInferd::start(&bus, vec![row("old", "Studio", "approved")]).await;
     let mut shell = shell(&bus).await;
     until("the service never read Guests", || inferd.reads() == 1).await;
@@ -316,8 +315,7 @@ async fn a_computer_asking_is_asked_about_and_allow_reaches_inferd_as_a_word() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_question_already_waiting_is_told_at_start_and_one_answered_elsewhere_is_withdrawn() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let inferd = FakeInferd::start(
         &bus,
         vec![

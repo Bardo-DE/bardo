@@ -41,14 +41,12 @@ xkbcommon = {workspace = true, features = ["wayland"]}
 dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 # `BusPeers::introduce`, `FixtureProc`: the tests make a sender stand as a chosen caller on a
 # private bus and never read the real `/proc` for it.
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 
 [features]
-# `test_bus::PrivateBus`: a private dbus-daemon for other crates' tests.
-testing = []
 # org.bardo.Compositor.Debug1 on the private bus (B10): never in a release build.
 debug-inject = ["dep:compositor-backend", "compositor-backend/debug-inject"]
 # Developer rows (the caller-identity library's `dev-rows`): a program named in a file the person owns is a desktop

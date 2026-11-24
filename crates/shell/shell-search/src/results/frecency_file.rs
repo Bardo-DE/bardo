@@ -43,8 +43,7 @@ pub fn save_frecency(dir: &Path, frecency: &Frecency) -> Result<(), ServiceError
 mod tests {
     use super::{FILE_NAME, load_frecency, save_frecency};
     use shell_launcher::{Frecency, ItemId, ItemKey, ProviderKind, UnixTime};
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     /// The file `name` was set aside as (`<name>.bad-<seconds>`), if there is one.
     fn set_aside_copy(dir: &std::path::Path, name: &str) -> Option<std::path::PathBuf> {
         let prefix = format!("{name}.bad-");
@@ -67,7 +66,7 @@ mod tests {
 
     #[test]
     fn save_then_load_round_trips_and_leaves_no_temp_file() {
-        let dir = TempDir::new("frecency-round-trip");
+        let dir = Scratch::new("frecency-round-trip");
         let frecency = Frecency::default()
             .record(key(ProviderKind::Apps, "foot"), NOW)
             .record(key(ProviderKind::Apps, "foot"), NOW)
@@ -87,7 +86,7 @@ mod tests {
 
     #[test]
     fn a_missing_or_damaged_file_is_an_empty_history() {
-        let dir = TempDir::new("frecency-damaged");
+        let dir = Scratch::new("frecency-damaged");
         assert_eq!(load_frecency(dir.path()), Frecency::default(), "missing");
         for text in ["", "not json", r#"{"entries":{"apps:x":{"count":-1}}}"#] {
             std::fs::write(dir.path().join(FILE_NAME), text).unwrap_or_else(|e| panic!("{e}"));
@@ -104,7 +103,7 @@ mod tests {
 
     #[test]
     fn a_file_written_by_hand_keeps_its_counts() {
-        let dir = TempDir::new("frecency-by-hand");
+        let dir = Scratch::new("frecency-by-hand");
         let text = r#"{"entries":{"apps:foot":{"count":3,"last":1790000000},"x":{"count":1,"last":0}},"later":1}"#;
         std::fs::write(dir.path().join(FILE_NAME), text).unwrap_or_else(|e| panic!("{e}"));
         let loaded = load_frecency(dir.path());

@@ -1,6 +1,6 @@
 [package]
 name = "shell-testkit"
-description = "Dev only: a private bus, scratch folders, signal listeners and the stand-in programs the tests and dev scripts run against."
+description = "Dev only: signal listeners and the stand-in programs the tests and dev scripts run against."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

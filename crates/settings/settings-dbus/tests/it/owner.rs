@@ -12,7 +12,7 @@ use settings_dbus::{
 };
 use settings_types::schema::{KeyKind, KeyPath};
 
-use crate::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema, spec};
 
 const PATH: &str = "/org/bardo/Owner1/settings";
@@ -104,7 +104,7 @@ fn not_the_service<T>(answer: &Result<T, LiveError>) -> bool {
 
 #[tokio::test]
 async fn a_refused_owner_is_sent_nothing_and_no_secret() {
-    let bus = PrivateBus::start("owner-refused");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let witness = Witness::default();
@@ -146,7 +146,7 @@ async fn a_refused_owner_is_sent_nothing_and_no_secret() {
 
 #[tokio::test]
 async fn a_new_owner_of_the_name_is_checked_again() {
-    let bus = PrivateBus::start("handover");
+    let bus = PrivateBus::start();
     let first = bus.connect().await;
     let second = bus.connect().await;
     let settings = bus.connect().await;
@@ -246,7 +246,7 @@ fn over_the_caps() -> Vec<(&'static str, Vec<settings_types::schema::KeySpec>)> 
 
 #[tokio::test]
 async fn a_schema_over_a_cap_is_refused_and_one_at_the_cap_is_read() {
-    let bus = PrivateBus::start("caps");
+    let bus = PrivateBus::start();
     let settings = bus.connect().await;
     let mut cases = over_the_caps();
     cases.push(("at the rows cap", texts(KEYS_MAX)));
@@ -315,7 +315,7 @@ impl LiveModule for Bulky {
 
 #[tokio::test]
 async fn a_value_over_the_cap_is_refused() {
-    let bus = PrivateBus::start("bulky");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     serve(&daemon, PATH, Bulky).await.expect("serves");

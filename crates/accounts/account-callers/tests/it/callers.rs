@@ -3,12 +3,10 @@
 //! `/proc` or `/etc`: the roots and the table paths are the test's own. Needs feature
 //! `test-proc-root` (main.rs declares this module only then).
 
-mod bus;
-
 use account_callers::{Caller, CallerTable, Callers, ProcCallers};
 use account_core::Isolation;
+use base_testkit::PrivateBus;
 use base_testkit::Scratch;
-use bus::PrivateBus;
 use caller_role_types::CallerRole;
 use std::path::Path;
 

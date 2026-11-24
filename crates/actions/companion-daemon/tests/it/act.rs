@@ -1,7 +1,7 @@
 //! `Companion1.Answer.Act` on a private bus: a card of the answer becomes a watched `Run.Perform`
 //! in the answer's session, the answer follows it (`Updated`), and only the shell may press.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::world::*;
 use account_callers::ProcRoot;
 use action_core::*;
@@ -73,7 +73,7 @@ fn only_step(answer: &AnswerWire) -> StepWireState {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_pressed_card_is_performed_in_the_answers_session_and_the_answer_follows_it() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, shell, stranger) = (
         bus.connect().await,
         bus.connect().await,

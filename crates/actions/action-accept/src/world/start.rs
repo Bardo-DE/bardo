@@ -11,7 +11,7 @@ use crate::things::{AcceptThings, App};
 use crate::world::settings_toml;
 use action_dbus::callers::Identity;
 use action_manifest::{ValidManifest, parse};
-use action_testbus::PrivateBus;
+use base_testkit::PrivateBus;
 use futures_util::StreamExt;
 use std::path::Path;
 use zbus::fdo::DBusProxy;
@@ -91,7 +91,7 @@ impl World {
         )
         .expect("run dir mode");
         crate::runlink::link_run(root).expect("short runtime name");
-        let bus = PrivateBus::start(root);
+        let bus = PrivateBus::start_in(root);
         let address = bus.address().to_owned();
 
         // The shell is on the bus before any daemon needs it.

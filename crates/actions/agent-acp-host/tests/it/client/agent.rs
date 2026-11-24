@@ -330,7 +330,7 @@ pub fn agent_resuming(
     (auth, offer): (Auth, Offer),
     resumes: Resumes,
 ) -> (ChannelWire, View) {
-    action_testbus::hang_guard::arm();
+    base_testkit::hang_guard::arm();
     let (client, far) = pipe();
     let view = View::default();
     tokio::spawn(play::run(

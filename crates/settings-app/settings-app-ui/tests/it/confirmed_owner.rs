@@ -4,7 +4,7 @@
 //! settings-app-system.)
 
 use crate::support::Sandbox;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
 use crate::support::handover::HandsOver;
@@ -36,7 +36,7 @@ fn an_app_is_taken_back_at_the_portal_that_was_checked() {
         .enable_all()
         .build()
         .expect("a runtime for the fakes");
-    let bus = PrivateBus::start("owner-portal");
+    let bus = PrivateBus::start();
     let apps = [portal::Remembered {
         app: MEET,
         label: "Meet",
@@ -50,7 +50,7 @@ fn an_app_is_taken_back_at_the_portal_that_was_checked() {
         original.connection.clone(),
         successor.connection.clone(),
     );
-    let sandbox = Sandbox::new("owner-portal").on_bus_vouched(&bus.address, Vouch::of(check));
+    let sandbox = Sandbox::new("owner-portal").on_bus_vouched(bus.address(), Vouch::of(check));
     sandbox.write_application(
         MEET,
         "[Desktop Entry]\nType=Application\nName=Video Meet\nExec=flatpak run org.example.Meet\nX-Flatpak=org.example.Meet\n",

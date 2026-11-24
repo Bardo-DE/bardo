@@ -121,8 +121,8 @@ mod tests {
 
     #[test]
     fn a_grandchild_in_a_group_of_its_own_goes_too() {
-        let dir = tempfile::tempdir().expect("dir");
-        let pidfile = dir.path().join("grandchild");
+        let dir = crate::Scratch::new("reaped");
+        let pidfile = dir.join("grandchild");
         // `setsid` puts the sleeper in a session and group of its own, as inferd does an engine;
         // `trap '' TERM` keeps the shell from ending it, as a daemon dying on SIGTERM would not.
         let script = format!(
@@ -131,7 +131,7 @@ mod tests {
         );
         let guard = Reaped::spawn(Command::new("/bin/sh").args(["-c", &script])).expect("spawn");
         let mut started = None;
-        base_testkit::eventually_blocking("the grandchild started", || {
+        crate::eventually_blocking("the grandchild started", || {
             started = std::fs::read_to_string(&pidfile)
                 .ok()
                 .and_then(|t| t.trim().parse::<u32>().ok());
@@ -140,11 +140,11 @@ mod tests {
         let grandchild = started.expect("the grandchild started");
         // The pid is written before `setsid` has run: dropping now races the move into a group of
         // its own, and a group read before it and signalled after it misses the sleeper.
-        base_testkit::eventually_blocking("the grandchild led a group of its own", || {
+        crate::eventually_blocking("the grandchild led a group of its own", || {
             group_of(grandchild) == Some(grandchild)
         });
         drop(guard);
-        base_testkit::eventually_blocking("the grandchild ended with the guard", || {
+        crate::eventually_blocking("the grandchild ended with the guard", || {
             !std::path::Path::new(&format!("/proc/{grandchild}")).exists()
                 || std::fs::read_to_string(format!("/proc/{grandchild}/stat"))
                     .unwrap_or_default()
@@ -154,12 +154,12 @@ mod tests {
 
     #[test]
     fn a_grandchild_goes_with_the_child() {
-        let dir = tempfile::tempdir().expect("dir");
-        let pidfile = dir.path().join("grandchild");
+        let dir = crate::Scratch::new("reaped");
+        let pidfile = dir.join("grandchild");
         let script = format!("sleep 300 & echo $! > {}; wait", pidfile.display());
         let guard = Reaped::spawn(Command::new("/bin/sh").args(["-c", &script])).expect("spawn");
         let mut started = None;
-        base_testkit::eventually_blocking("the grandchild started", || {
+        crate::eventually_blocking("the grandchild started", || {
             started = std::fs::read_to_string(&pidfile)
                 .ok()
                 .and_then(|t| t.trim().parse::<u32>().ok());
@@ -173,7 +173,7 @@ mod tests {
                     .unwrap_or_default()
                     .contains(") Z ")
         };
-        base_testkit::eventually_blocking("the grandchild ended with the child", || {
+        crate::eventually_blocking("the grandchild ended with the child", || {
             !alive(grandchild)
         });
     }

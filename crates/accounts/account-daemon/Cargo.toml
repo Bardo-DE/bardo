@@ -51,7 +51,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 # The client crates are tested against this daemon (tests/it/client), not the other way round.
 account-client = {path = "../account-client"}
 account-client-dbus = {path = "../account-client-dbus"}
-base-testkit = {features = ["tokio"], path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 account-fake = {path = "../account-fake"}
 account-daemon = {path = ".", features = ["test-system-callers"]}

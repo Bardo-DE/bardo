@@ -61,8 +61,7 @@ mod tests {
     use std::os::unix::fs::{PermissionsExt, symlink};
 
     use base_fs::NewFileMode;
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{set_aside, write};
 
     fn mode(path: &std::path::Path) -> u32 {
@@ -86,7 +85,7 @@ mod tests {
 
     #[test]
     fn a_new_file_is_private_whole_and_leaves_nothing_beside_it() {
-        let dir = TempDir::new("durable-new");
+        let dir = Scratch::new("durable-new");
         let path = dir.path().join("state/bardo/shell/a.json");
         write(&path, b"one", NewFileMode::OwnerOnly).unwrap_or_else(|e| panic!("{e}"));
         write(&path, b"two", NewFileMode::OwnerOnly).unwrap_or_else(|e| panic!("{e}"));
@@ -97,7 +96,7 @@ mod tests {
 
     #[test]
     fn a_file_keeps_the_permissions_it_had() {
-        let dir = TempDir::new("durable-as-found");
+        let dir = Scratch::new("durable-as-found");
         let path = dir.path().join("shared.toml");
         std::fs::write(&path, b"x").unwrap_or_else(|e| panic!("{e}"));
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644))
@@ -108,7 +107,7 @@ mod tests {
 
     #[test]
     fn a_link_in_the_files_place_is_written_through() {
-        let dir = TempDir::new("durable-link");
+        let dir = Scratch::new("durable-link");
         let real = dir.path().join("dotfiles/settings.toml");
         std::fs::create_dir_all(dir.path().join("dotfiles")).unwrap_or_else(|e| panic!("{e}"));
         std::fs::write(&real, b"old").unwrap_or_else(|e| panic!("{e}"));
@@ -124,7 +123,7 @@ mod tests {
 
     #[test]
     fn a_file_that_could_not_be_read_is_kept_aside() {
-        let dir = TempDir::new("durable-aside");
+        let dir = Scratch::new("durable-aside");
         let path = dir.path().join("a.json");
         std::fs::write(&path, b"{ broken").unwrap_or_else(|e| panic!("{e}"));
         set_aside(&path);

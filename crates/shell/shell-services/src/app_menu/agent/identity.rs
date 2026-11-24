@@ -116,8 +116,7 @@ mod tests {
     use std::path::Path;
 
     use shell_model::app_menu::{Identity, MenuApp, MenuName};
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{unknown, verified};
 
     #[expect(
@@ -168,7 +167,7 @@ mod tests {
             ),
         ];
         for (name, leaf, want) in cases {
-            let scratch = TempDir::new("app-menu-identity");
+            let scratch = Scratch::new("app-menu-identity");
             proc_with(scratch.path(), leaf, None);
             assert_eq!(unknown(scratch.path(), 7), want, "{name}");
         }

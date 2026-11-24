@@ -4,7 +4,7 @@
 //! serves: a restart that finds nothing resumes nothing. Nothing of the real session is named: the
 //! bus, HOME and every XDG directory are scratch.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use action_core::{Roster, TurnVia, UserTurn};
 use action_dbus::CompanionProxy;
 use action_vocab::{Caller, TurnId};
@@ -90,7 +90,7 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
         "shell = \"org.bardo.Desk\"\n",
     )
     .expect("config");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let me = bus.connect().await;
     let mut daemon = companiond(dir.path(), bus.address());
     until_served(&me).await;

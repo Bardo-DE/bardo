@@ -120,7 +120,7 @@ pub(crate) fn follow_settings(
 mod tests {
     use crate::daemon::start::{Wiring, start};
     use shell_services::env::Env;
-    use shell_testkit::TempDir;
+    use base_testkit::Scratch;
     use shell_ui_kit::services::Services;
 
     /// `start` must never panic — the daemon has to reach the host connect and the
@@ -132,7 +132,7 @@ mod tests {
         let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
         // No bus, no compositor, every directory in a scratch folder: nothing here reaches the
         // person's session or files.
-        let scratch = TempDir::new("services-spawn");
+        let scratch = Scratch::new("services-spawn");
         let (calls, _shell_calls) = tokio::sync::mpsc::unbounded_channel();
         let (summons, _launcher_effects) = tokio::sync::mpsc::unbounded_channel();
         let (consents, _written) = tokio::sync::mpsc::unbounded_channel();

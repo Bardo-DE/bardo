@@ -3,7 +3,7 @@
 //! app that is away is "unavailable" rather than a panic, and a slow one is cut at its latency.
 
 use crate::support::apps::{Blank, answering_intentd, serve_mail};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::world::app;
 use action_core::*;
 use action_daemon::DbusLink;
@@ -49,7 +49,7 @@ async fn bus_with_intentd() -> (
     DbusLink,
 ) {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     daemon
         .request_name(INTENTS_BUS)

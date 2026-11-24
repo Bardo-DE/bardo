@@ -86,8 +86,7 @@ fn named(path: &&Path) -> bool {
 mod tests {
     use std::path::Path;
 
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{named, shots_in};
 
     #[test]
@@ -99,7 +98,7 @@ mod tests {
 
     #[test]
     fn a_folder_lists_its_finished_screenshots_only() {
-        let dir = TempDir::new("shots-in");
+        let dir = Scratch::new("shots-in");
         for name in ["Screenshot_1.png", "Screenshot_2.png.part", "notes.txt"] {
             std::fs::write(dir.path().join(name), b"x").unwrap_or_else(|e| panic!("{e}"));
         }

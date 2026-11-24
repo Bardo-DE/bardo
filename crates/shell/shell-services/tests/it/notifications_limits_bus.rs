@@ -11,7 +11,7 @@ use shell_model::notifications::{
     SUMMARY_MAX_BYTES,
 };
 use shell_services::notifications::BUS_NAME;
-use shell_testkit::PrivateBus;
+use base_testkit::PrivateBus;
 use tokio::sync::watch;
 use zbus::fdo::RequestNameFlags;
 use zbus::zvariant::{OwnedValue, Value};
@@ -41,9 +41,8 @@ async fn notify_with(
 #[test]
 fn oversize_fields_are_cut_and_a_flood_of_hints_is_refused() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = shell_testkit::TempDir::new("notes-oversize");
+    let bus = PrivateBus::start();
+    let scratch = base_testkit::Scratch::new("notes-oversize");
     let (mut notes, _control) = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
         let connection = connect(&bus).await;
@@ -108,9 +107,8 @@ fn oversize_fields_are_cut_and_a_flood_of_hints_is_refused() {
 #[test]
 fn a_call_longer_than_any_notification_is_refused_unread_and_nothing_is_posted() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = shell_testkit::TempDir::new("notes-too-long");
+    let bus = PrivateBus::start();
+    let scratch = base_testkit::Scratch::new("notes-too-long");
     let (mut notes, _control) = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
         let connection = connect(&bus).await;
@@ -186,9 +184,8 @@ fn banner_of(notes: &watch::Receiver<NotesState>, app: &str) -> Notification {
 #[test]
 fn a_picture_a_caller_names_is_drawn_only_from_the_icon_folders() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = shell_testkit::TempDir::new("notes-pictures");
+    let bus = PrivateBus::start();
+    let scratch = base_testkit::Scratch::new("notes-pictures");
     let (mut notes, _control) = owning(&runtime, &bus, &scratch);
     let themed = scratch.path().join("data/icons/hicolor/48x48/apps/a.png");
     let themed = themed.to_string_lossy().into_owned();
@@ -220,9 +217,8 @@ fn a_picture_a_caller_names_is_drawn_only_from_the_icon_folders() {
 #[test]
 fn a_sender_that_floods_is_refused_and_its_banners_are_capped() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = shell_testkit::TempDir::new("notes-flood");
+    let bus = PrivateBus::start();
+    let scratch = base_testkit::Scratch::new("notes-flood");
     let (mut notes, _control) = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
         let flooder = connect(&bus).await;
@@ -257,9 +253,8 @@ fn a_sender_that_floods_is_refused_and_its_banners_are_capped() {
 #[test]
 fn only_the_sender_or_the_same_app_may_replace_and_only_the_sender_may_close() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = shell_testkit::TempDir::new("notes-owner");
+    let bus = PrivateBus::start();
+    let scratch = base_testkit::Scratch::new("notes-owner");
     let (mut notes, _control) = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
         let (owner, other) = (connect(&bus).await, connect(&bus).await);
@@ -335,9 +330,8 @@ fn only_the_sender_or_the_same_app_may_replace_and_only_the_sender_may_close() {
 #[test]
 fn the_name_cannot_be_taken_from_the_server() {
     let runtime = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = shell_testkit::TempDir::new("notes-name");
+    let bus = PrivateBus::start();
+    let scratch = base_testkit::Scratch::new("notes-name");
     let (_notes, _control) = owning(&runtime, &bus, &scratch);
     runtime.block_on(async {
         let thief = connect(&bus).await;

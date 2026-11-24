@@ -11,7 +11,7 @@
 //! The same start-up is also run as a library call, `memory_daemon::start`, over an injected environment
 //! (the variables are a map, the bus address among them) on a thread of the test process.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::process::{Child, ChildStderr, Command, Stdio};
@@ -73,7 +73,7 @@ fn daemon_env(root: &Path, bus: &PrivateBus, keys: &str) -> Vec<(&'static str, S
         ("XDG_CACHE_HOME", at("cache")),
         ("XDG_CONFIG_HOME", at("config")),
         ("XDG_RUNTIME_DIR", at("run")),
-        ("DBUS_SESSION_BUS_ADDRESS", bus.address.clone()),
+        ("DBUS_SESSION_BUS_ADDRESS", bus.address().to_owned()),
         ("BARDO_MEMORYD_KEYS", keys.to_owned()),
         ("BARDO_MEMORYD_PROC_ROOT", at("proc")),
         (memory_daemon::SYSTEM_CALLERS_VAR, at("system-callers.toml")),
@@ -117,7 +117,7 @@ async fn record_into_desktop<G>(
     use memory_fake::mail_thread_archived;
     use std::time::Duration;
     use zbus::export::futures_core::Stream;
-    let client = connect(&bus.address).await;
+    let client = connect(bus.address()).await;
     // Watch for the name before the daemon starts: no sleep, no polling.
     let dbus = zbus::fdo::DBusProxy::new(&client)
         .await
@@ -164,7 +164,7 @@ async fn the_test_keys_binary_starts_with_file_keys_and_takes_a_desktop_record()
     let scratch = tempfile::tempdir().expect("scratch");
     let root = scratch.path();
     scratch_home(root);
-    let bus = PrivateBus::start(root);
+    let bus = PrivateBus::start_in(root);
     let (_daemon, stderr) = record_into_desktop(root, &bus, |keys_file| {
         spawn(root, &bus, &format!("file:{}", keys_file.display()))
     })
@@ -178,7 +178,7 @@ fn the_default_binary_ignores_the_variable_and_says_so() {
     let scratch = tempfile::tempdir().expect("scratch");
     let root = scratch.path();
     scratch_home(root);
-    let bus = PrivateBus::start(root);
+    let bus = PrivateBus::start_in(root);
     let keys_file = root.join("keys").join("memoryd.keys");
     let (_daemon, stderr) = spawn(root, &bus, &format!("file:{}", keys_file.display()));
     assert!(first_line(stderr).contains("ignoring it"));

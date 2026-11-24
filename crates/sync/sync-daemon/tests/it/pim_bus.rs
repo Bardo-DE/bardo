@@ -26,7 +26,7 @@ use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use common::caller as caller_of;
 use common::hosted::{Link, Service, host, keep};
 use std::path::PathBuf;

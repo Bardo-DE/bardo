@@ -10,21 +10,14 @@ use base_time::UnixSeconds;
 use std::convert::Infallible;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Barrier};
 
-/// One test's own directory under the system temp dir, removed on drop.
-struct Scratch(PathBuf);
+/// One test's own directory, removed on drop.
+struct Scratch(base_testkit::Scratch);
 
 impl Scratch {
     fn new(tag: &str) -> Self {
-        static NEXT: AtomicU32 = AtomicU32::new(0);
-        let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let path =
-            std::env::temp_dir().join(format!("ds-helpers-files-{}-{n}-{tag}", std::process::id()));
-        let _ = fs::remove_dir_all(&path);
-        fs::create_dir_all(&path).expect("scratch dir");
-        Scratch(path)
+        Scratch(base_testkit::Scratch::new(tag))
     }
 
     fn file(&self, name: &str) -> PathBuf {
@@ -45,12 +38,6 @@ impl Scratch {
             .collect();
         names.sort();
         names
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.0);
     }
 }
 

@@ -4,7 +4,6 @@
 )]
 //! A supervisor over the fakes, and the waits a test needs.
 
-pub mod bus;
 
 use computer_use_bus::RunEnd;
 use computer_use_daemon::{ComputerUseDaemonConfig, Supervisor, SupervisorEvent};

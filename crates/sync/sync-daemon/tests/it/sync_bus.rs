@@ -8,7 +8,7 @@ use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use caller_role_types::CallerRole;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use common::{ACCESS_DENIED, INVALID_ARGS, Known, NO_FITTING, client, error_name, eventually};
 use std::collections::BTreeSet;
 use std::pin::Pin;

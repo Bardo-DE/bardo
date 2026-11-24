@@ -4,7 +4,8 @@
 //! the real session bus, the real inferd or the real Secret Service.
 
 use crate::support::inferd::{FakeInferd, Seen};
-use crate::support::{SharedKeys, bus::PrivateBus, connect, dirs_in, listed_spaces, space};
+use crate::support::{SharedKeys, connect, dirs_in, listed_spaces, space};
+use base_testkit::PrivateBus;
 use memory_core::*;
 use memory_daemon::{SystemBackend, inferd_link};
 use memory_fake::{mail_label, mail_thread_archived};
@@ -35,17 +36,17 @@ struct Rig {
 /// `inferd_link` builds from a connection to it (as `main` does).
 async fn rig(draft: Option<&str>) -> Rig {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (seen, daemon) = match draft {
         Some(draft) => {
             let (fake, seen) = FakeInferd::new(draft);
-            let daemon = connect(&bus.address).await;
+            let daemon = connect(bus.address()).await;
             fake.serve(&daemon).await;
             (seen, Some(daemon))
         }
         None => (Arc::default(), None),
     };
-    let memoryd = connect(&bus.address).await;
+    let memoryd = connect(bus.address()).await;
     let link = inferd_link(&memoryd);
     let card = FakeEmbedder::new().card().clone();
     let backend = SystemBackend::with(
@@ -236,7 +237,7 @@ async fn inferd_that_starts_later_is_found_at_the_next_call() {
     assert_eq!(ask().await, Err(EmbedError::Unavailable));
 
     let (fake, _seen) = FakeInferd::new("{}");
-    let daemon = connect(&rig.bus.address).await;
+    let daemon = connect(rig.bus.address()).await;
     fake.serve(&daemon).await;
     assert_eq!(ask().await, Ok(vec![FakeEmbedder::vector("x")]));
 }

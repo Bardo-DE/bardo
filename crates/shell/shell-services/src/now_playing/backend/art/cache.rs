@@ -81,13 +81,12 @@ mod tests {
     use std::time::{Duration, SystemTime};
 
     use shell_model::now_playing::CacheLimits;
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{ART_MAX_BYTES, CopyError, copy_cover, prune_blocking};
 
     #[test]
     fn a_regular_cover_is_copied_into_the_cache_and_nothing_else_is() {
-        let dir = TempDir::new("art-copy");
+        let dir = Scratch::new("art-copy");
         let cache = dir.path().join("cache").join("art");
         let source = dir.path().join("cover.png");
         std::fs::write(&source, b"cover bytes").unwrap_or_else(|e| panic!("{e}"));
@@ -124,7 +123,7 @@ mod tests {
 
     #[test]
     fn a_cover_at_the_size_limit_is_copied() {
-        let dir = TempDir::new("art-copy-limit");
+        let dir = Scratch::new("art-copy-limit");
         let source = dir.path().join("cover.png");
         std::fs::File::create(&source)
             .and_then(|file| file.set_len(ART_MAX_BYTES))
@@ -139,7 +138,7 @@ mod tests {
 
     #[test]
     fn pruning_removes_the_oldest_files_and_keeps_the_newest() {
-        let dir = TempDir::new("art-prune");
+        let dir = Scratch::new("art-prune");
         let total = 7_u64;
         for n in 0..total {
             let path = dir.path().join(format!("{n}.png"));

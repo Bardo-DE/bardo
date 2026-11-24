@@ -1,8 +1,9 @@
 //! What the agent endpoint tests share: the accounts and plan of a world with agent endpoints, the
 //! launcher's calls over the bus, and a plain HTTP client that plays the agent.
 
+use base_testkit::PrivateBus;
 use super::accountd::{FakeAccount, Standing};
-use super::bus::{DEADLINE, within};
+use super::wait::{DEADLINE, within};
 use super::engine::{Chat, Script};
 use super::entries;
 use super::rig::{AgentsPlan, Hosted, Plan, Trust, World};
@@ -362,7 +363,7 @@ pub fn contains(haystack: &[u8], needle: &str) -> bool {
 pub struct Tap(zbus::MessageStream);
 
 impl Tap {
-    pub async fn start(bus: &super::bus::PrivateBus) -> Self {
+    pub async fn start(bus: &PrivateBus) -> Self {
         let monitor = bus.connect().await;
         zbus::fdo::MonitoringProxy::new(&monitor)
             .await

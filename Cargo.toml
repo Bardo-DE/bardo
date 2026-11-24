@@ -142,7 +142,6 @@ members = [
     "crates/actions/agent-skills-disk",
     "crates/actions/action-store",
     "crates/actions/companion-tasks",
-    "crates/actions/action-testbus",
     "crates/actions/action-trace",
     "crates/actions/action-vocab",
     "crates/actions/action-wire",

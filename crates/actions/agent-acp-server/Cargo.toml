@@ -37,7 +37,7 @@ base-ids = { path = "../../base/base-ids" }
 base-path = { path = "../../base/base-path" }
 agent-session = {path = "../agent-session", features = ["testing"]}
 action-fake = {path = "../action-fake"}
-action-testbus = {path = "../action-testbus"}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 jsonschema = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

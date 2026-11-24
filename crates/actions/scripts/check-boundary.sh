@@ -83,7 +83,6 @@ LAYERS=(
   # app / daemon / test binary
   "agent-acp-bin:A"
   "action-eval:A"
-  "action-testbus:A"
   "action-accept:A"
   # operator tools over the acceptance world (agent-live, agent-bringup)
   "action-live:A"
@@ -413,8 +412,6 @@ RULES=(
   "action-eval: $NO_CEDAR"
   # The suite as values: the case and attack formats, the judgement, the scores and the summary. No router, so no Cedar; no bus, runtime or network.
   "action-eval-core: $EFFECTS"
-  # Test only: a private bus for the daemons' tests; nothing of the router, Cedar or the effects.
-  "action-testbus: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
   # bardo-do is a thin client: it reaches the bus only through action-client (LAYERS
   # keeps it a C or A crate that cannot reach the router), never the router, the policy point, the reviewer's
   # cascade or Cedar: a terminal has no way around intentd's gate.

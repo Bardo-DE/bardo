@@ -40,8 +40,7 @@ use shell_services::desktop_wl::bardo::{
 };
 use shell_services::desktop_wl::{CommandError as WlCommandError, project_subjects};
 use shell_services::env::{Bus, BusRoute};
-use shell_testkit::PrivateBus;
-
+use base_testkit::PrivateBus;
 fn bardo_offer() -> ProtocolSet {
     [
         Protocol::ExtForeignToplevelList,
@@ -835,9 +834,8 @@ impl Compositor {
 
 #[tokio::test]
 async fn the_compositor_on_the_bus_hands_the_shell_a_connected_socket() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let route = Bus::session(BusRoute::Address(bus.address.clone()));
+    let bus = PrivateBus::start();
+    let route = Bus::session(BusRoute::Address(bus.address().to_owned()));
     assert!(
         shell_connection(&route).await.is_none(),
         "no compositor owns the name: the environment route stays"
@@ -845,7 +843,7 @@ async fn the_compositor_on_the_bus_hands_the_shell_a_connected_socket() {
 
     let roles = Arc::new(Mutex::new(Vec::new()));
     let kept = Arc::new(Mutex::new(Vec::new()));
-    let _compositor = zbus::connection::Builder::address(bus.address.as_str())
+    let _compositor = zbus::connection::Builder::address(bus.address())
         .unwrap_or_else(|e| panic!("{e}"))
         .serve_at(
             "/org/bardo/Compositor1",

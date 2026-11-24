@@ -3,7 +3,7 @@
 //! owns it.
 
 use crate::handover::HandsOver;
-use crate::private_bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::spaces_fakes::{Fakes, serve, serve_unnamed};
 use memory_core::Removal;
 use settings_app_link::bus::{BusSource, Vouch};
@@ -28,7 +28,7 @@ struct World {
 }
 
 async fn world(name: &str) -> World {
-    let bus = PrivateBus::start(name);
+    let bus = PrivateBus::start();
     let original = serve(&bus, &[("space-1", "Trip")], true).await;
     let successor = serve_unnamed(&bus, &[("space-9", "Imposter")]).await;
     let (check, armed) = HandsOver::new(
@@ -36,7 +36,7 @@ async fn world(name: &str) -> World {
         original.registry.clone(),
         successor.registry.clone(),
     );
-    let link = OnBus(BusSource::Address(bus.address.clone(), Vouch::of(check)));
+    let link = OnBus(BusSource::Address(bus.address().to_owned(), Vouch::of(check)));
     World {
         original,
         successor,

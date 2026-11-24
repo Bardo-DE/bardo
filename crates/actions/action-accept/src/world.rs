@@ -6,7 +6,7 @@
 //! the bus.
 //!
 //! Teardown is certain: every daemon is a `Reaped` child (killed by PID and waited for on drop,
-//! with a watchdog if the test process itself dies) and the bus is `action-testbus`'s. Waits are
+//! with a watchdog if the test process itself dies) and the bus is `base-testkit`'s. Waits are
 //! on bus events (a name appearing); the long bounds exist only to turn a hang into a failure.
 
 //!
@@ -32,7 +32,7 @@ use crate::confirm::Sheet;
 use crate::provider::{AppLog, Focus};
 use crate::things::App;
 use action_core::ConfirmRequest;
-use action_testbus::{PrivateBus, Reaped};
+use base_testkit::{PrivateBus, Reaped};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tokio::sync::mpsc;

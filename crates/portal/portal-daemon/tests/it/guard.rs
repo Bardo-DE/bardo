@@ -18,8 +18,7 @@ use portal_dbus::{BUS_NAME, PORTAL_PATH};
 use zbus::zvariant::{ObjectPath, OwnedValue};
 use zbus::{Connection, Message, fdo};
 
-use crate::bus::PrivateBus;
-
+use base_testkit::PrivateBus;
 const SETTLE: Duration = Duration::from_secs(5);
 
 type Dict = HashMap<String, OwnedValue>;
@@ -85,8 +84,7 @@ pub struct Portal {
 }
 
 pub async fn start_portal() -> Portal {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let scratch = tempfile::tempdir().expect("scratch");
     let parts = Parts::real(
         FileStore::new(scratch.path().join("restore")),

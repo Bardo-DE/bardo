@@ -4,29 +4,21 @@
 use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU32, Ordering};
 
 /// The program name every test's store uses.
 pub const APP: AppName = AppName::desktop("probe");
 
-/// One test's own directory under the system temp dir, removed on drop. (No `tempfile`: it is not
-/// in the pinned dependency block.)
-pub struct Scratch(PathBuf);
+/// One test's own directory, removed on drop.
+pub struct Scratch(base_testkit::Scratch);
 
 impl Scratch {
     pub fn new() -> Self {
-        static NEXT: AtomicU32 = AtomicU32::new(0);
-        let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let path =
-            std::env::temp_dir().join(format!("ds-settings-test-{}-{n}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&path);
-        std::fs::create_dir_all(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-        Scratch(path)
+        Scratch(base_testkit::Scratch::new("settings"))
     }
 
     /// The store whose program directory is inside this scratch directory.
     pub fn store(&self) -> Store {
-        Store::new(ConfigRoot::Scratch(self.0.clone()), APP)
+        Store::new(ConfigRoot::Scratch(self.0.to_path_buf()), APP)
     }
 
     /// The directory standing in for `$XDG_CONFIG_HOME`.
@@ -37,12 +29,6 @@ impl Scratch {
     /// The program directory itself, where the store's files land.
     pub fn app_dir(&self) -> PathBuf {
         APP.under(&self.0)
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.0);
     }
 }
 

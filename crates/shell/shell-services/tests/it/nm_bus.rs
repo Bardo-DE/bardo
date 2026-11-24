@@ -14,7 +14,7 @@ use shell_model::wifi::WifiService;
 use shell_model::wifi::{Association, Radio, Security, Ssid, Wifi, WifiCommand};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::interface;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
@@ -254,7 +254,7 @@ async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
         wireless_enabled: true,
         calls: Vec::new(),
     }));
-    let connection = zbus::connection::Builder::address(bus.address.as_str())
+    let connection = zbus::connection::Builder::address(bus.address())
         .and_then(|b| b.name("org.freedesktop.NetworkManager"))
         .and_then(|b| b.serve_at(NM, Manager(Arc::clone(&shared))))
         .and_then(|b| b.serve_at(ACTIVE, Active))
@@ -271,9 +271,9 @@ async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
     (connection, shared)
 }
 
-fn env_for(bus: &PrivateBus, scratch: &TempDir) -> Env {
+fn env_for(bus: &PrivateBus, scratch: &Scratch) -> Env {
     Env {
-        buses: Buses::new(BusRoute::Address(bus.address.clone()), BusRoute::Absent),
+        buses: Buses::new(BusRoute::Address(bus.address().to_owned()), BusRoute::Absent),
         ..Env::isolated(scratch.path())
     }
 }
@@ -292,9 +292,8 @@ async fn calls_include(shared: &Shared, wanted: &str) {
 
 #[test]
 fn the_network_follows_the_primary_wifi_connection() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("nm-network");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("nm-network");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let (_nm, _shared) = serve(&bus).await;
@@ -317,9 +316,8 @@ fn the_network_follows_the_primary_wifi_connection() {
 
 #[test]
 fn wifi_reads_the_device_and_carries_out_commands() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("nm-wifi");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("nm-wifi");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let (_nm, shared) = serve(&bus).await;
@@ -359,9 +357,8 @@ fn wifi_reads_the_device_and_carries_out_commands() {
 
 #[test]
 fn wifi_follows_networkmanager_that_starts_after_the_shell() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("nm-wifi-late");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("nm-wifi-late");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let env = env_for(&bus, &scratch);

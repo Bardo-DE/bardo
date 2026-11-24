@@ -5,7 +5,7 @@
 use std::time::Duration;
 
 use shell_bar::Bar;
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use shell_ui_kit::harness::SurfaceHarness;
 use shell_ui_kit::links::ControlCenterLink;
 use ui_components::style::kit::{Styles, UserStyle};
@@ -24,7 +24,7 @@ fn styles() -> Styles {
 }
 
 /// The guard of the `starts`th start with the same sheets, none of the earlier ones good.
-fn guard_after(dir: &TempDir, starts: usize) -> StylesGuard {
+fn guard_after(dir: &Scratch, starts: usize) -> StylesGuard {
     let styles = styles();
     // Every start is recorded in turn, so each one must run: the last guard is the answer.
     (0..starts)
@@ -45,7 +45,7 @@ fn start(guard: StylesGuard) -> SurfaceHarness<Bar> {
 
 #[test]
 fn a_start_with_its_styles_shows_no_notice_and_draws_them() {
-    let dir = TempDir::new("styles-notice-with");
+    let dir = Scratch::new("styles-notice-with");
     let guard = guard_after(&dir, 1);
     assert!(guard.load());
     let html = start(guard).harness.html();
@@ -55,7 +55,7 @@ fn a_start_with_its_styles_shows_no_notice_and_draws_them() {
 
 #[test]
 fn a_start_the_guard_turned_the_styles_off_for_says_so_and_draws_none() {
-    let dir = TempDir::new("styles-notice-without");
+    let dir = Scratch::new("styles-notice-without");
     let guard = guard_after(&dir, 3);
     assert!(!guard.load());
     let html = start(guard).harness.html();
@@ -66,7 +66,7 @@ fn a_start_the_guard_turned_the_styles_off_for_says_so_and_draws_none() {
 
 #[test]
 fn turn_on_again_asks_the_daemon() {
-    let dir = TempDir::new("styles-notice-press");
+    let dir = Scratch::new("styles-notice-press");
     let mut bar = start(guard_after(&dir, 3));
     assert_eq!(bar.turn_on.latest(), None);
     let at = bar

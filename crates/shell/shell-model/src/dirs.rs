@@ -253,7 +253,7 @@ mod tests {
 
     #[test]
     fn app_stores_are_both_opts_and_each_snaps_current_folder() {
-        let scratch = shell_testkit::TempDir::new("app-stores");
+        let scratch = base_testkit::Scratch::new("app-stores");
         let snap = scratch.path().join("snap");
         for current in [
             "firefox/current",

@@ -24,7 +24,7 @@ use action_daemon::{IntentdConfig, ProcRoot, Running, Setup, start};
 use action_dbus::callers::Identity;
 use action_vocab::ActionRef;
 use apps::{Answer, FakeShell, SharedMail, answering_intentd, introduce, serve_mail};
-use bus::PrivateBus;
+use base_testkit::PrivateBus;
 use memoryd::FakeMemoryd;
 use permission_core::AskReason;
 use provenance::{Actor, ConfirmId, ConfirmReceipt, InputProof, SpaceScope, UnixSeconds};
@@ -86,7 +86,7 @@ impl Desk {
             action_fake::FILES_MANIFEST,
         )
         .expect("files manifest");
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
 
         let daemon_connection = bus.connect().await;
         let mail_connection = bus.connect().await;

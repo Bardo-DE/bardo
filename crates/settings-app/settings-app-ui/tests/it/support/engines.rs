@@ -2,7 +2,7 @@
 //! manager (`org.freedesktop.systemd1.Manager`) that writes down each `RestartUnit` and, as a
 //! restart does, lets inferd find llama.cpp from then on. Both are on the test's private bus.
 
-use super::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use inference_dbus::inference::{
     EngineState, INFERENCE_BUS, INFERENCE_PATH, LocalEngine, local_engine_to_dbus,
 };

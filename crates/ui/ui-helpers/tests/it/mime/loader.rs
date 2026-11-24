@@ -9,15 +9,11 @@ use ui_helpers::mime::{Associations, DesktopId, LoadError, MimeDb, NameGuess, Xd
 use super::{mt, name};
 
 /// A scratch folder that removes itself.
-struct Scratch(PathBuf);
+struct Scratch(base_testkit::Scratch);
 
 impl Scratch {
     fn new(tag: &str) -> Scratch {
-        let dir =
-            std::env::temp_dir().join(format!("ds-helpers-mime-{tag}-{}", std::process::id()));
-        let _ = fs::remove_dir_all(&dir);
-        fs::create_dir_all(&dir).unwrap();
-        Scratch(dir)
+        Scratch(base_testkit::Scratch::new(tag))
     }
 
     fn write(&self, rel: &str, text: &str) {
@@ -28,12 +24,6 @@ impl Scratch {
 
     fn path(&self, rel: &str) -> PathBuf {
         self.0.join(rel)
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.0);
     }
 }
 

@@ -9,8 +9,7 @@
 use desktop_protocols::vocab::Answer;
 use shell_model::capture_pick::{AskId, AskedBy, CaptureCommand, CapturePicker, PermissionOutcome};
 use shell_model::desktop::{Consent, ConsentId, DesktopCommand, Memory, Power, SubjectKind};
-use shell_testkit::{PrivateBus, TempDir};
-
+use base_testkit::{PrivateBus, Scratch};
 use crate::capture_pick_bus::{rig, serving, wait_for};
 use shell_dbus::Shell1Proxy;
 
@@ -21,9 +20,8 @@ async fn portal_asks_and_each_button_comes_back_as_its_number() {
         (PermissionOutcome::Deny, 1),
         (PermissionOutcome::Closed, 2),
     ];
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("capture-pick-permission");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("capture-pick-permission");
     let (mut service, portal) = serving(&bus, &scratch).await;
     let proxy = Shell1Proxy::new(&portal)
         .await
@@ -98,9 +96,8 @@ fn grim() -> Consent {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_portals_question_and_the_compositors_wait_in_one_line_one_sheet_at_a_time() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("capture-pick-consent-line");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("capture-pick-consent-line");
     let mut rig = rig(&bus, &scratch).await;
     let proxy = Shell1Proxy::new(&rig.portal)
         .await
@@ -180,9 +177,8 @@ async fn the_portals_question_and_the_compositors_wait_in_one_line_one_sheet_at_
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_withdrawn_question_comes_down_unanswered_and_a_dismissal_is_told_as_one() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("capture-pick-consent-withdrawn");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("capture-pick-consent-withdrawn");
     let mut rig = rig(&bus, &scratch).await;
     let _ = rig.service.control.send(CaptureCommand::Consent(grim()));
     assert!(

@@ -1,13 +1,13 @@
 //! The mouse gestures daemon client against a fake daemon: a listening socket at a scratch path.
 
 use super::*;
-use crate::scratch::Dir;
+use base_testkit::Scratch;
 use mouse_gestures_proto::Phase;
 use rustix::net::{accept, bind, listen};
 
 /// A fake daemon: a listening `SOCK_SEQPACKET` socket at a temp path.
 fn daemon() -> (Dir, OwnedFd) {
-    let dir = Dir::new();
+    let dir = Scratch::new("shell-host");
     let path = dir.path().join("events.sock");
     std::fs::create_dir_all(path.parent().expect("parent")).expect("mkdir");
     let fd = socket_with(
@@ -30,7 +30,7 @@ fn received(fd: &OwnedFd) -> String {
 
 #[test]
 fn no_daemon_is_a_no_op() {
-    let dir = Dir::new();
+    let dir = Scratch::new("shell-host");
     let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     assert!(client.retry_due());
     assert!(client.connect().is_none());
@@ -133,7 +133,7 @@ fn the_lock_is_sent_on_change_and_again_after_a_reconnect() {
 
 #[test]
 fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
-    let dir = Dir::new();
+    let dir = Scratch::new("shell-host");
     let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     client.session_lock(true);
     assert!(client.connect().is_none(), "no daemon yet");
@@ -174,7 +174,7 @@ fn a_daemon_that_starts_late_is_found_on_the_timer_without_a_pointer_enter() {
 
 #[test]
 fn a_lock_while_the_daemon_is_away_makes_an_attempt_due_and_an_unlock_does_not() {
-    let dir = Dir::new();
+    let dir = Scratch::new("shell-host");
     let mut client = MouseGestures::trusting(dir.path().join("events.sock"), None);
     assert!(client.connect().is_none());
     assert!(!client.retry_due());

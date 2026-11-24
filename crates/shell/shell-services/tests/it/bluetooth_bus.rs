@@ -11,7 +11,7 @@ use shell_model::bluetooth::{Bluetooth, BtPower};
 use shell_model::units::Presence;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use shell_testkit::PrivateBus;
+use base_testkit::PrivateBus;
 use tokio::sync::watch;
 
 fn fake_bluez() -> PathBuf {
@@ -23,7 +23,7 @@ fn fake_bluez() -> PathBuf {
 fn start_fake(bus: &PrivateBus, log: &Path) -> Child {
     let mut child = Command::new("python3")
         .arg(fake_bluez())
-        .arg(&bus.address)
+        .arg(bus.address())
         .arg(log)
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
@@ -78,8 +78,7 @@ fn on(bluetooth: &Bluetooth) -> bool {
 
 #[test]
 fn bluez_starting_late_dying_and_returning_is_followed() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let scratch = std::env::temp_dir().join(format!("shell-bt-bus-{}", std::process::id()));
     std::fs::create_dir_all(&scratch).unwrap_or_else(|e| panic!("{e}"));
     let log = scratch.join("powered.log");
@@ -87,8 +86,8 @@ fn bluez_starting_late_dying_and_returning_is_followed() {
     rt.block_on(async {
         let env = Env {
             buses: Buses::new(
-                BusRoute::Address(bus.address.clone()),
-                BusRoute::Address(bus.address.clone()),
+                BusRoute::Address(bus.address().to_owned()),
+                BusRoute::Address(bus.address().to_owned()),
             ),
             ..Env::isolated(&scratch)
         };

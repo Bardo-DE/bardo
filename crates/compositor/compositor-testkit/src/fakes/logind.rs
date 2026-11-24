@@ -5,7 +5,7 @@
 //! `SetIdleHint` and the `Lock`, `Unlock`, `PauseDevice`, `ResumeDevice` signals; Seat `SwitchTo`.
 //! One file per object: [`manager`], [`session`], [`seat`].
 //!
-//! The server only ever connects to the address it is given: a [`PrivateBus`] in a test, the
+//! The server only ever connects to the address it is given: a `base_testkit::PrivateBus` in a test, the
 //! jail's private bus in a scenario. It never touches the system bus.
 
 mod control;
@@ -17,7 +17,6 @@ mod server;
 pub mod session;
 mod signals;
 
-pub use compositor_ipc::test_bus::PrivateBus;
 pub use manager::SleepPhase;
 pub use server::FakeLogind;
 pub use session::{IdleHint, PauseKind};

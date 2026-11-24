@@ -61,7 +61,7 @@ otlp = ["action-log/otlp"]
 [dev-dependencies]
 companion-daemon = {path = ".", features = ["test-system-callers"]}
 base-time = { path = "../../base/base-time" }
-base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
@@ -72,7 +72,6 @@ action-manifest = {path = "../action-manifest"}
 permission-core = {path = "../permission-core"}
 inference-client = {path = "../../inference/inference-client"}
 inference-core = {path = "../../inference/inference-core"}
-action-testbus = {path = "../action-testbus"}
 action-client = {path = "../action-client", default-features = false, features = ["in_process"]}
 action-fake = {path = "../action-fake"}
 action-router = {path = "../action-router"}

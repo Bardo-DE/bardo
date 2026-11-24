@@ -64,7 +64,7 @@ inference-client = {path = "../../inference/inference-client", features = ["lend
 keymap = {path = "../../keymap/keymap"}
 dbus-kit = { path = "../../bus/dbus-kit" }
 # The settle waits on real threads with the one deadline.
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 
 [lints]
 workspace = true

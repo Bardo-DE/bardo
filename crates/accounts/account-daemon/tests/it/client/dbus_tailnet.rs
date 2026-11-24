@@ -21,10 +21,10 @@ use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_tailscale::LocalApi;
 use account_tailscale::{Machine, MachineOwner};
+use base_testkit::PrivateBus;
 use base_testkit::Scratch;
 use base_time::FixedClock;
 use caller_role_types::CallerRole;
-use common::bus::PrivateBus;
 use std::sync::Arc;
 use std::time::Duration;
 

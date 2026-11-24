@@ -10,7 +10,7 @@ use action_daemon::{IntentdConfig, ProcRoot, serve_on_with};
 use action_fake::{MailThread, fake_router};
 use action_mcp::McpConfig;
 use action_router::GrantStore;
-use action_testbus::PrivateBus;
+use base_testkit::PrivateBus;
 use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{ClientName, DataClass, SpaceId, SpaceScope, UnixSeconds};
 use rmcp::model::{CallToolRequestParams, CallToolResult};
@@ -141,7 +141,7 @@ async fn read_thread(client: &RunningService<RoleClient, ()>) -> CallToolResult 
 
 async fn desk() -> (tempfile::TempDir, PrivateBus, action_dbus::BusConnection) {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     serve_on_with(
         &daemon,

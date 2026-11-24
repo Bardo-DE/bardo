@@ -10,7 +10,7 @@ use crate::common;
 use account_dbus::{BusStream, Details};
 use account_tailscale::NodeId;
 use base_time::UnixSeconds;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use inference_client::{
     ClientError, ComputerError, DbusTransport, GuestChange, Inference, TransportError,
 };

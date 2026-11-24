@@ -47,10 +47,10 @@ layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 
 [dev-dependencies]
 # The real providers the tests give the panel (`tests/it/launcher_support`).
+base-testkit = {path = "../../base/base-testkit"}
 shell-search = {path = "../shell-search"}
 serde_json = { workspace = true }
 png = { workspace = true }
-shell-testkit = {path = "../shell-testkit"}
 ui-harness = {path = "../../ui/ui-harness"}
 image = { workspace = true, features = ["png", "jpeg", "webp"] }
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}

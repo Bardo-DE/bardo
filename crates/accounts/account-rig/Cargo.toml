@@ -21,7 +21,7 @@ name = "account-rig-secrets"
 path = "src/bin/account-rig-secrets.rs"
 
 [dependencies]
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 account-fake-secret-service = {path = "../account-fake-secret-service"}
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}

@@ -2,8 +2,9 @@
 //! fake `/proc` with `<dir>/<pid>/cgroup` for this test process. Only a `test-proc-root` build
 //! honours the variable; any other build ignores it and says so.
 
-use crate::hosting::bus;
 
+use crate::hosting::wait;
+use base_testkit::PrivateBus;
 use account_dbus::Details;
 use account_match::LlmNeed;
 use account_match::Need;
@@ -53,7 +54,7 @@ impl Daemon {
             .receive_name_owner_changed_with_args(&[(0, INFERENCE_BUS)])
             .await
             .expect("subscribe to the name's owner");
-        let deadline = tokio::time::Instant::now() + bus::DEADLINE;
+        let deadline = tokio::time::Instant::now() + wait::DEADLINE;
         while !dbus.name_has_owner(name.clone()).await.expect("ask") {
             // The claim wakes this at once. Nothing announces the daemon's exit, so the wait is
             // cut short every so often to look at it.
@@ -67,7 +68,7 @@ impl Daemon {
             assert!(
                 tokio::time::Instant::now() < deadline,
                 "waited {} s for inferd to own {INFERENCE_BUS}: {}",
-                bus::DEADLINE.as_secs(),
+                wait::DEADLINE.as_secs(),
                 self.said()
             );
         }
@@ -81,7 +82,7 @@ impl Drop for Daemon {
     }
 }
 
-fn start(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> Daemon {
+fn start(bus: &PrivateBus, proc_root: &Path, table: Table) -> Daemon {
     let scratch = bus.scratch();
     let config = scratch.join("inferd.toml");
     let system = scratch.join("inferd-callers.toml");
@@ -124,7 +125,7 @@ fn start(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> Daemon {
 
 /// Whether `availability` from this process is answered (a named caller) or refused as nobody
 /// (`AccessDenied`). Any other end, a timeout among them, fails the test with what inferd said.
-async fn answered(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> (bool, String) {
+async fn answered(bus: &PrivateBus, proc_root: &Path, table: Table) -> (bool, String) {
     let client = bus.connect().await;
     let dbus = zbus::fdo::DBusProxy::new(&client).await.expect("dbus");
     let mut daemon = start(bus, proc_root, table);
@@ -134,7 +135,7 @@ async fn answered(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> (boo
         std::collections::BTreeSet::default(),
         base_ids::Tokens(1),
     )));
-    let reply = bus::within(
+    let reply = wait::within(
         "inferd's answer to Availability",
         proxy.availability(&need, "notes", &Details::new()),
     )
@@ -167,7 +168,7 @@ fn main_of_companiond(root: &Path, pid: u32) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_caller_in_the_fake_proc_root_is_named_and_one_outside_it_is_not() {
-    let named = bus::PrivateBus::start();
+    let named = PrivateBus::start();
     let root = named.scratch().join("proc");
     fake_proc(&root, std::process::id(), Some(CGROUP));
     main_of_companiond(&root, std::process::id());
@@ -175,13 +176,13 @@ async fn a_caller_in_the_fake_proc_root_is_named_and_one_outside_it_is_not() {
     assert!(yes, "{said}");
     assert!(said.contains("test system callers"), "{said}");
 
-    let nobody = bus::PrivateBus::start();
+    let nobody = PrivateBus::start();
     let root = nobody.scratch().join("proc");
     fake_proc(&root, std::process::id(), None);
     assert!(!answered(&nobody, &root, Table::System).await.0);
 
     // In the unit's cgroup but not its main process (it moved itself in): nobody.
-    let moved = bus::PrivateBus::start();
+    let moved = PrivateBus::start();
     let root = moved.scratch().join("proc");
     fake_proc(&root, std::process::id(), Some(CGROUP));
     main_of_companiond(&root, std::process::id() + 1);
@@ -192,7 +193,7 @@ async fn a_caller_in_the_fake_proc_root_is_named_and_one_outside_it_is_not() {
 /// table would name, is nobody when only that file names it, and the daemon says it ignored it.
 #[tokio::test(flavor = "multi_thread")]
 async fn a_callers_table_in_the_persons_file_names_nobody() {
-    let bus = bus::PrivateBus::start();
+    let bus = PrivateBus::start();
     let root = bus.scratch().join("proc");
     fake_proc(&root, std::process::id(), Some(CGROUP));
     main_of_companiond(&root, std::process::id());

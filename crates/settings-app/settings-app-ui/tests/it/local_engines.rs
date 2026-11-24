@@ -5,7 +5,7 @@
 //! asks first and restarts once.
 
 use crate::support::Sandbox;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::drive::{let_threads_run, settle_on_threads};
 use crate::support::engines::{Fake, serve};
@@ -53,8 +53,8 @@ fn runtime() -> tokio::runtime::Runtime {
 /// program there or not) and the service manager on the bus.
 fn world(name: &str, os_release: &str, found: bool) -> World {
     let rt = runtime();
-    let bus = PrivateBus::start(name);
-    let sandbox = Sandbox::new(name).on_bus(&bus.address);
+    let bus = PrivateBus::start();
+    let sandbox = Sandbox::new(name).on_bus(bus.address());
     sandbox.write_os_release(os_release);
     let fake = rt.block_on(serve(&bus, found));
     let harness = sandbox.harness(intelligence());

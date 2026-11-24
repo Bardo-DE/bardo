@@ -3,6 +3,7 @@
 //! supervisor driver, runner and audit sink. Nothing here starts an engine or touches the GPU,
 //! the real bus or the user's files.
 
+use base_testkit::PrivateBus;
 use crate::hosting;
 
 use account_capability::Tier;
@@ -317,7 +318,7 @@ async fn an_embedding_request_returns_a_vector_per_text_in_order_with_the_models
 
 #[tokio::test(flavor = "multi_thread")]
 async fn inferd_absent_is_unreachable() {
-    let bus = hosting::bus::PrivateBus::start();
+    let bus = base_testkit::PrivateBus::start();
     let accounts = Inference::over(DbusTransport::over(bus.connect().await));
     let got = accounts.session(&llm(), DataClass::Notes, Tier::Fast).await;
     assert!(

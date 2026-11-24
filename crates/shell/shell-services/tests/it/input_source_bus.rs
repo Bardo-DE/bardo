@@ -10,7 +10,7 @@ use shell_model::input_source::InputSourceService;
 use shell_model::input_source::{InputCommand, InputRefusal, InputSwitch};
 use shell_services::env::{BusRoute, Buses, Env, IbusRoute};
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::interface;
 use zbus::zvariant::{StructureBuilder, Value};
@@ -92,9 +92,9 @@ impl Ibus {
     }
 }
 
-fn env_for(bus: &PrivateBus, scratch: &TempDir) -> Env {
+fn env_for(bus: &PrivateBus, scratch: &Scratch) -> Env {
     Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ibus: IbusRoute::Absent,
         ..Env::isolated(scratch.path())
     }
@@ -110,9 +110,8 @@ async fn until(rx: &mut watch::Receiver<InputSwitch>, ok: impl FnMut(&InputSwitc
 
 #[test]
 fn next_input_source_tells_fcitx5_the_entry_after_the_current_one_or_refuses() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("input-source");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("input-source");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let env = env_for(&bus, &scratch);
@@ -128,7 +127,7 @@ fn next_input_source_tells_fcitx5_the_entry_after_the_current_one_or_refuses() {
         );
 
         let heard: Heard = Arc::default();
-        let _fcitx = zbus::connection::Builder::address(bus.address.as_str())
+        let _fcitx = zbus::connection::Builder::address(bus.address())
             .and_then(|b| b.name("org.fcitx.Fcitx5"))
             .and_then(|b| b.serve_at("/controller", Controller(Arc::clone(&heard))))
             .unwrap_or_else(|e| panic!("{e}"))
@@ -144,19 +143,18 @@ fn next_input_source_tells_fcitx5_the_entry_after_the_current_one_or_refuses() {
 
 #[test]
 fn next_input_source_tells_ibus_the_engine_after_the_current_one() {
-    let session = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let ibus_bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("input-source-ibus");
+    let (Some(session), Some(ibus_bus)) = (PrivateBus::start(), PrivateBus::start()) else {
+        return;
+    };
+    let scratch = Scratch::new("input-source-ibus");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let env = Env {
-            ibus: IbusRoute::Address(ibus_bus.address.clone()),
+            ibus: IbusRoute::Address(ibus_bus.address().to_owned()),
             ..env_for(&session, &scratch)
         };
         let heard: Heard = Arc::default();
-        let _ibus = zbus::connection::Builder::address(ibus_bus.address.as_str())
+        let _ibus = zbus::connection::Builder::address(ibus_bus.address())
             .and_then(|b| b.name("org.freedesktop.IBus"))
             .and_then(|b| b.serve_at("/org/freedesktop/IBus", Ibus(Arc::clone(&heard))))
             .unwrap_or_else(|e| panic!("{e}"))
@@ -174,9 +172,8 @@ fn next_input_source_tells_ibus_the_engine_after_the_current_one() {
 
 #[test]
 fn an_ibus_address_that_connects_to_nothing_is_no_framework() {
-    let session = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("input-source-no-ibus");
+    let session = PrivateBus::start();
+    let scratch = Scratch::new("input-source-no-ibus");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let gone = scratch.path().join("no-ibus-socket");

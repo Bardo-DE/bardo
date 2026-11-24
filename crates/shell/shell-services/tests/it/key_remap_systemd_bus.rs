@@ -16,7 +16,7 @@ use shell_model::windows::WindowModel;
 use shell_services::env::{BusRoute, Buses, Env, UnitWait};
 use shell_services::key_remap::KeyRemapLinks;
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::interface;
 use zbus::zvariant::OwnedObjectPath;
@@ -99,7 +99,7 @@ async fn serve(bus: &PrivateBus, loaded: bool, active_state: &str) -> (zbus::Con
         active_state: active_state.to_owned(),
         calls: Vec::new(),
     }));
-    let connection = zbus::connection::Builder::address(bus.address.as_str())
+    let connection = zbus::connection::Builder::address(bus.address())
         .unwrap_or_else(|e| panic!("{e}"))
         .name("org.freedesktop.systemd1")
         .unwrap_or_else(|e| panic!("{e}"))
@@ -123,13 +123,13 @@ struct Rig {
         watch::Sender<WindowModel>,
         watch::Sender<AppIndex>,
         watch::Sender<NotesState>,
-        TempDir,
+        Scratch,
     ),
 }
 
 /// The service with `system` as its system bus and a socket path nobody listens on.
 fn rig(system: BusRoute) -> Rig {
-    let scratch = TempDir::new("key-remap-systemd");
+    let scratch = Scratch::new("key-remap-systemd");
     let env = Env {
         key_remap_socket: Some(scratch.path().join("key-remap.sock")),
         buses: Buses::new(system, BusRoute::Absent),
@@ -160,8 +160,7 @@ fn rig(system: BusRoute) -> Rig {
 
 /// A private bus and the stand-in on it.
 async fn with_systemd(loaded: bool, active_state: &str) -> (PrivateBus, zbus::Connection, Shared) {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let (connection, shared) = serve(&bus, loaded, active_state).await;
     (bus, connection, shared)
 }
@@ -180,7 +179,7 @@ async fn until(state: &mut watch::Receiver<KeyRemapState>, want: KeyRemapState) 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_failed_unit_is_failed_and_the_person_is_told() {
     let (bus, _systemd, _shared) = with_systemd(true, "failed").await;
-    let mut rig = rig(BusRoute::Address(bus.address.clone()));
+    let mut rig = rig(BusRoute::Address(bus.address().to_owned()));
     until(&mut rig.state, KeyRemapState::Failed).await;
     let posted = tokio::time::timeout(LONG, rig.notices.recv())
         .await
@@ -198,10 +197,10 @@ async fn a_failed_unit_is_failed_and_the_person_is_told() {
 #[tokio::test(flavor = "multi_thread")]
 async fn the_unit_is_not_asked_about_within_the_grace_period() {
     let (bus, _systemd, shared) = with_systemd(true, "failed").await;
-    let scratch = TempDir::new("key-remap-grace");
+    let scratch = Scratch::new("key-remap-grace");
     let env = Env {
         key_remap_socket: Some(scratch.path().join("key-remap.sock")),
-        buses: Buses::new(BusRoute::Address(bus.address.clone()), BusRoute::Absent),
+        buses: Buses::new(BusRoute::Address(bus.address().to_owned()), BusRoute::Absent),
         key_remap_unit_wait: UnitWait {
             grace: Duration::from_secs(60),
             recheck: Duration::from_secs(60),
@@ -231,7 +230,7 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
 #[tokio::test(flavor = "multi_thread")]
 async fn a_unit_the_manager_has_not_loaded_is_not_installed_and_silent() {
     let (bus, _systemd, shared) = with_systemd(false, "inactive").await;
-    let mut rig = rig(BusRoute::Address(bus.address.clone()));
+    let mut rig = rig(BusRoute::Address(bus.address().to_owned()));
     until(&mut rig.state, KeyRemapState::NotInstalled).await;
     tokio::time::sleep(SHORT).await;
     assert_eq!(*rig.state.borrow(), KeyRemapState::NotInstalled);
@@ -247,7 +246,7 @@ async fn a_unit_the_manager_has_not_loaded_is_not_installed_and_silent() {
 #[tokio::test(flavor = "multi_thread")]
 async fn an_activating_unit_is_restarting_and_silent() {
     let (bus, _systemd, _shared) = with_systemd(true, "activating").await;
-    let mut rig = rig(BusRoute::Address(bus.address.clone()));
+    let mut rig = rig(BusRoute::Address(bus.address().to_owned()));
     until(&mut rig.state, KeyRemapState::Restarting).await;
     tokio::time::sleep(SHORT).await;
     assert_eq!(*rig.state.borrow(), KeyRemapState::Restarting);
@@ -257,7 +256,7 @@ async fn an_activating_unit_is_restarting_and_silent() {
 #[tokio::test(flavor = "multi_thread")]
 async fn the_unit_is_read_again_and_a_later_failure_is_seen() {
     let (bus, _systemd, shared) = with_systemd(true, "activating").await;
-    let mut rig = rig(BusRoute::Address(bus.address.clone()));
+    let mut rig = rig(BusRoute::Address(bus.address().to_owned()));
     until(&mut rig.state, KeyRemapState::Restarting).await;
     rig.notices.try_recv().unwrap_err();
     lock(&shared).active_state = "failed".to_owned();
@@ -272,7 +271,7 @@ async fn the_unit_is_read_again_and_a_later_failure_is_seen() {
 #[tokio::test(flavor = "multi_thread")]
 async fn retry_resets_the_failure_then_restarts_the_unit() {
     let (bus, _systemd, shared) = with_systemd(true, "inactive").await;
-    let rig = rig(BusRoute::Address(bus.address.clone()));
+    let rig = rig(BusRoute::Address(bus.address().to_owned()));
     rig.control
         .send(KeyRemapCommand::Retry)
         .unwrap_or_else(|e| panic!("{e}"));

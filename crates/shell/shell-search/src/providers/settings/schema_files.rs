@@ -58,12 +58,12 @@ pub fn fingerprint(paths: &[PathBuf]) -> Vec<(PathBuf, u64, u64)> {
 #[cfg(test)]
 mod tests {
     use super::{fingerprint, schema_paths};
-    use shell_testkit::TempDir;
+    use base_testkit::Scratch;
     use std::fs;
 
     #[test]
     fn only_schema_files_are_listed_and_a_missing_directory_is_skipped() {
-        let dir = TempDir::new("schema-files-list");
+        let dir = Scratch::new("schema-files-list");
         fs::write(dir.path().join("b.settings.toml"), "").unwrap();
         fs::write(dir.path().join("a.settings.toml"), "").unwrap();
         fs::write(dir.path().join("notes.toml"), "").unwrap();
@@ -80,7 +80,7 @@ mod tests {
 
     #[test]
     fn the_fingerprint_changes_when_a_schema_file_does() {
-        let dir = TempDir::new("schema-files-fingerprint");
+        let dir = Scratch::new("schema-files-fingerprint");
         let file = dir.path().join("a.settings.toml");
         fs::write(&file, "one").unwrap();
         let before = fingerprint(std::slice::from_ref(&file));

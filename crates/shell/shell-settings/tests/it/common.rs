@@ -1,34 +1,6 @@
-//! Shared by the integration tests: a temp directory (no `tempfile`: not in the pinned block)
-//! and the design doc's key tables.
+//! Shared by the integration tests: the design doc's key tables.
 
-use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU32, Ordering};
-
-/// A fresh directory under the system temp dir, removed on drop.
-#[derive(Debug)]
-pub struct TempDir(PathBuf);
-
-impl TempDir {
-    pub fn new(tag: &str) -> Self {
-        static NEXT: AtomicU32 = AtomicU32::new(0);
-        let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let path =
-            std::env::temp_dir().join(format!("shell-settings-{tag}-{}-{n}", std::process::id()));
-        let _ = std::fs::remove_dir_all(&path);
-        std::fs::create_dir_all(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-        TempDir(path)
-    }
-
-    pub fn path(&self) -> &Path {
-        &self.0
-    }
-}
-
-impl Drop for TempDir {
-    fn drop(&mut self) {
-        let _ = std::fs::remove_dir_all(&self.0);
-    }
-}
+use std::path::Path;
 
 /// The UI kit's `design/22-SETTINGS.md`, a sibling checkout of this repository.
 pub fn doc() -> String {

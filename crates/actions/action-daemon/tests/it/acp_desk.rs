@@ -5,7 +5,7 @@
 //! process is run by `action-accept`; this is the half that needs intentd's own types.)
 
 use crate::support::apps::FakeShell;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use account_core::AppName;
 use action_core::{
     Anchor, ConfirmAnswer, ConfirmDetail, ConfirmEnd, ConfirmId, ConfirmOffer, ConfirmParts,
@@ -41,7 +41,7 @@ struct Fixture {
 impl Fixture {
     async fn start(gate: AcpGate) -> Fixture {
         let dir = tempfile::tempdir().expect("scratch");
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
         let intentd = bus.connect().await;
         intentd.request_name(INTENTS_BUS).await.expect("name");
         let acp = bus.connect().await;

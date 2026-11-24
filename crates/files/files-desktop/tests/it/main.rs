@@ -2,7 +2,6 @@
 //! private `dbus-daemon` with a scratch config and fail, saying how to install it, when there is none; nothing
 //! touches the person's session bus or home folder.
 
-mod bus;
 mod disks;
 mod exec;
 mod file_manager;

@@ -150,8 +150,7 @@ async fn needs_consent_opens_the_sheet_and_each_answer_is_the_consent_to_write()
         (ConsentAnswer::NotNow, VoiceConsent::Declined),
         (ConsentAnswer::Allow, VoiceConsent::Given(UnixSeconds(0))),
     ] {
-        let mut desk =
-            voice_support::desk(BeginAnswer::Refuse(VoiceRefusedError::NeedsConsent)).await;
+        let mut desk = voice_support::desk(BeginAnswer::Refuse(VoiceRefusedError::NeedsConsent)).await;
         desk.seated().await;
         desk.send(start());
         desk.state(|v| v.sheet.then_some(())).await;
@@ -212,8 +211,7 @@ async fn a_declined_consent_never_calls_begin() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_missing_microphone_is_said_plainly() {
-    let mut desk =
-        voice_support::desk(BeginAnswer::Refuse(VoiceRefusedError::MicUnavailable)).await;
+    let mut desk = voice_support::desk(BeginAnswer::Refuse(VoiceRefusedError::MicUnavailable)).await;
     desk.seated().await;
     desk.send(start());
     let notice = desk

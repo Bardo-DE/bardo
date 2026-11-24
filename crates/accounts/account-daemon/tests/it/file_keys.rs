@@ -5,7 +5,7 @@
 
 use crate::common;
 
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 

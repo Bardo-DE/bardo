@@ -5,7 +5,7 @@
 //! words under the row. And the rows that name an engine's program, set through the fake module.
 
 use crate::support::Sandbox;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, click_when_still, hold_still, keys, scroll_into_view};
 use crate::support::inferd::{Inferd, NOT_WHOLE};
@@ -52,11 +52,11 @@ fn world(name: &str, rows: Vec<RunningModel>) -> World {
         .enable_all()
         .build()
         .expect("a runtime for the fake daemon");
-    let bus = PrivateBus::start(name);
+    let bus = PrivateBus::start();
     let module = Inferd::new(Verdict::Allow).on_slots().with_programs();
     let fake = rt.block_on(serve(&bus, rows));
     let harness = Sandbox::new(name)
-        .on_bus(&bus.address)
+        .on_bus(bus.address())
         .with_modules(module.hosted())
         .harness(intelligence());
     World {

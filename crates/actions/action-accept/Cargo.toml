@@ -51,6 +51,7 @@ name = "accept-fake-agent"
 path = "src/bin/accept-fake-agent.rs"
 
 [dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 base-time = { path = "../../base/base-time" }
 base-ids = { path = "../../base/base-ids" }
 action-mcp = {path = "../action-mcp"}
@@ -69,7 +70,6 @@ action-dbus = {path = "../action-dbus", features = ["fixture-callers", "inferd"]
 action-log = {path = "../action-log"}
 action-trace = {path = "../action-trace"}
 agent-session = {path = "../agent-session"}
-action-testbus = {path = "../action-testbus"}
 fnv = { workspace = true }
 futures-util = { workspace = true, features = ["std"] }
 action-daemon = {path = "../action-daemon"}

@@ -183,8 +183,7 @@ mod tests {
     use notify::event::{
         AccessKind, AccessMode, CreateKind, DataChange, Event, EventKind, ModifyKind, RemoveKind,
     };
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{Debounced, EventFilter, OWN_FILE_QUIET, Place};
 
     const FILE_NAME: &str = "layout.toml";
@@ -193,7 +192,7 @@ mod tests {
     /// and a change to an unrelated sibling file is not reported at all.
     #[tokio::test]
     async fn a_file_watch_fires_once_on_rename_and_ignores_siblings() {
-        let dir = TempDir::new("fs-watch");
+        let dir = Scratch::new("fs-watch");
         let mut touched = Debounced::file(dir.path(), FILE_NAME).unwrap_or_else(|e| panic!("{e}"));
 
         let tmp = dir.path().join("layout.toml.part");
@@ -267,7 +266,7 @@ mod tests {
 
     #[test]
     fn an_appearing_file_is_watched_from_the_nearest_folder_that_exists() {
-        let dir = TempDir::new("debounced-appearing");
+        let dir = Scratch::new("debounced-appearing");
         let target = dir.path().join("bardo/shell/wallpaper-source");
         let above = |place: &Place| place.folder().map(|(folder, _)| folder);
         assert_eq!(

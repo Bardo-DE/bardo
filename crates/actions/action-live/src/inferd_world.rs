@@ -15,7 +15,7 @@ use action_accept::world::{
     place, spawn, until_owned, write,
 };
 use action_dbus::BusConnection;
-use action_testbus::{PrivateBus, Reaped};
+use base_testkit::{PrivateBus, Reaped};
 use inference_core::ChargeTotal;
 use model_provider::Money;
 use rust_decimal::Decimal;
@@ -58,7 +58,7 @@ impl InferdWorld {
         .expect("run dir mode");
         action_accept::runlink::link_run(root).expect("short runtime name");
         action_accept::world::copy_catalog(options.catalog.as_deref(), root);
-        let bus = PrivateBus::start(root);
+        let bus = PrivateBus::start_in(root);
         let client = bus.connect().await;
         place(root, std::process::id(), Cgroup::Unit("bardo-actiond"));
         action_accept::world::write_system_callers(root).expect("the system callers files");

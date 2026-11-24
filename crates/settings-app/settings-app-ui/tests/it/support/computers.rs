@@ -2,7 +2,7 @@
 //! candidates and the guests, on a private bus. Every call that changes something is written, in
 //! order, into one log; a change can be made to fail with one of inferd's named refusals.
 
-use super::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use super::inferd::Inferd;
 use inference_dbus::inference::{
     CANDIDATE_KEY_MODELS, CANDIDATE_KEY_NAME, CANDIDATE_KEY_NEEDS_APPROVAL, GUEST_KEY_NAME,

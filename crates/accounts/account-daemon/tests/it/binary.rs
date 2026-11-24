@@ -8,7 +8,7 @@ use account_capability::StorageScope;
 use account_core::AuthKind;
 use account_core::store::Persisted;
 use account_dbus::accounts::IdentitiesProxy;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 

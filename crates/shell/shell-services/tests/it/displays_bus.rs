@@ -21,7 +21,7 @@ use shell_model::units::Percent;
 use shell_services::displays::bus::DisplaysBusLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::{mpsc, watch};
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
@@ -38,7 +38,7 @@ struct Shell {
     callers: std::sync::Arc<Introduced>,
     displays: watch::Sender<Displays>,
     commands: mpsc::UnboundedReceiver<DisplaysCommand>,
-    _scratch: TempDir,
+    _scratch: Scratch,
 }
 
 fn desk(panel_value: u32) -> Displays {
@@ -75,10 +75,10 @@ fn desk(panel_value: u32) -> Displays {
 }
 
 fn shell(bus: &PrivateBus) -> Shell {
-    let scratch = TempDir::new("displays-bus");
+    let scratch = Scratch::new("displays-bus");
     let callers = Introduced::new();
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         callers: std::sync::Arc::<Introduced>::clone(&callers),
         claims: shell_services::env::NameClaims::Claim,
         ..Env::isolated(scratch.path())
@@ -161,8 +161,7 @@ fn pair(name: &str, percent: u32) -> (String, u32) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_levels_are_listed_and_settings_sets_one() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let settings = settings_of(&bus, &shell).await;
     serving(&mut shell).await;
@@ -185,8 +184,7 @@ async fn the_levels_are_listed_and_settings_sets_one() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_stranger_or_a_bad_request_changes_nothing() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let settings = settings_of(&bus, &shell).await;
     let stranger = standing_in(&bus, &shell, "org.example.Stranger", Who::Program).await;
@@ -201,8 +199,7 @@ async fn a_stranger_or_a_bad_request_changes_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_change_of_the_levels_is_announced() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let mut shell = shell(&bus);
     let settings = settings_of(&bus, &shell).await;
     serving(&mut shell).await;

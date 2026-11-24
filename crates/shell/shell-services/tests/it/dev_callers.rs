@@ -8,8 +8,7 @@ use std::os::unix::fs::{PermissionsExt, symlink};
 use std::path::{Path, PathBuf};
 
 use shell_services::callers::DesktopCallers;
-use shell_testkit::TempDir;
-
+use base_testkit::Scratch;
 const ROWS: &str = "[[peer]]\napp = \"org.bardo.Accounts\"\nrole = \"accounts\"\nexe = [\"/opt/checkout/standin\"]\n";
 
 fn write(dir: &Path, name: &str, text: &str, mode: u32) -> PathBuf {
@@ -21,7 +20,7 @@ fn write(dir: &Path, name: &str, text: &str, mode: u32) -> PathBuf {
 
 #[test]
 fn only_the_persons_own_plain_unshared_file_that_parses_adds_rows() {
-    let dir = TempDir::new("dev-callers");
+    let dir = Scratch::new("dev-callers");
     let own = write(dir.path(), "own.toml", ROWS, 0o600);
     let link = dir.path().join("link.toml");
     symlink(&own, &link).unwrap_or_else(|e| panic!("{e}")); // test-only

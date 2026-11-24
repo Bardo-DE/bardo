@@ -6,9 +6,8 @@
 
 #![cfg(target_os = "linux")]
 
-mod bus;
 
-use bus::PrivateBus;
+use base_testkit::PrivateBus;
 use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -167,7 +166,7 @@ struct Client {
 
 /// A new client connection to the private bus, and its unique name (what a permit sees).
 fn connect(bus: &PrivateBus) -> (Connection, String) {
-    let connection = zbus::blocking::connection::Builder::address(bus.address.as_str())
+    let connection = zbus::blocking::connection::Builder::address(bus.address())
         .expect("a unix address")
         .build()
         .expect("the client connects to the private bus");
@@ -279,7 +278,7 @@ fn start_with(
 ) -> MenuExport {
     let config = MenuExportConfig {
         app_id: AppId(APP_ID.to_owned()),
-        bus: Bus::Address(bus.address.clone()),
+        bus: Bus::Address(bus.address().to_owned()),
     };
     let tree = MenuTree::from_bar(&bar(Availability::Enabled)).expect("a tree");
     MenuExport::start(
@@ -295,7 +294,7 @@ fn start_with(
 
 #[test]
 fn the_edit_menu_is_served_and_a_click_on_undo_runs_the_apps_undo() {
-    let bus = PrivateBus::start("click");
+    let bus = PrivateBus::start();
     let (tx, rx) = unbounded_channel();
     ACTIVATIONS.with(|slot| *slot.borrow_mut() = Some(rx));
     let mut harness = Harness::new(Notes, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
@@ -335,7 +334,7 @@ fn the_edit_menu_is_served_and_a_click_on_undo_runs_the_apps_undo() {
 
 #[test]
 fn disabling_an_item_announces_a_new_layout_and_refuses_its_click() {
-    let bus = PrivateBus::start("disable");
+    let bus = PrivateBus::start();
     let (tx, rx) = unbounded_channel();
     ACTIVATIONS.with(|slot| *slot.borrow_mut() = Some(rx));
     let mut harness = Harness::new(Notes, HarnessConfig::new(VIEW).with_clock(Clock::Virtual));
@@ -398,7 +397,7 @@ fn disabling_an_item_announces_a_new_layout_and_refuses_its_click() {
 
 #[test]
 fn a_second_process_of_the_same_app_id_is_refused_the_name() {
-    let bus = PrivateBus::start("second");
+    let bus = PrivateBus::start();
     let (tx, _rx) = unbounded_channel();
     let first = start(&bus, tx.clone());
     let service = AppMenuAddress::for_app_id(APP_ID)
@@ -407,7 +406,7 @@ fn a_second_process_of_the_same_app_id_is_refused_the_name() {
 
     let config = MenuExportConfig {
         app_id: AppId(APP_ID.to_owned()),
-        bus: Bus::Address(bus.address.clone()),
+        bus: Bus::Address(bus.address().to_owned()),
     };
     let tree = MenuTree::from_bar(&bar(Availability::Enabled)).expect("a tree");
     let second = MenuExport::start(&config, tree, |_| {}, AllowAnyCaller);
@@ -423,7 +422,7 @@ fn a_second_process_of_the_same_app_id_is_refused_the_name() {
 
 #[test]
 fn only_a_caller_the_permit_lets_may_press_an_item_but_anyone_may_read() {
-    let bus = PrivateBus::start("permit");
+    let bus = PrivateBus::start();
     let (tx, mut activations) = unbounded_channel();
     let service = AppMenuAddress::for_app_id(APP_ID)
         .expect("an address")
@@ -450,7 +449,7 @@ fn only_a_caller_the_permit_lets_may_press_an_item_but_anyone_may_read() {
 
 #[test]
 fn an_event_group_is_limited_in_size_and_in_calls_per_second() {
-    let bus = PrivateBus::start("group");
+    let bus = PrivateBus::start();
     let (tx, mut activations) = unbounded_channel();
     let export = start(&bus, tx);
     let service = AppMenuAddress::for_app_id(APP_ID)

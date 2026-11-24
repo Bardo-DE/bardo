@@ -5,7 +5,6 @@
 )]
 
 pub mod accountd;
-pub mod bus;
 pub mod fake_accountd;
 
 pub use base_testkit::eventually;

@@ -262,8 +262,7 @@ mod tests {
     use shell_model::night_shift::{
         Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth,
     };
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::{
         SETTINGS, Skipping, read_light, read_manual, skip_list, write_light, write_manual,
         write_skip,
@@ -281,7 +280,7 @@ mod tests {
 
     #[test]
     fn a_missing_file_is_the_defaults_and_a_written_light_reads_back() {
-        let dir = TempDir::new("night-shift-light");
+        let dir = Scratch::new("night-shift-light");
         assert_eq!(
             read_light(dir.path()).unwrap_or_else(|e| panic!("{e}")),
             NightLight::default()
@@ -295,7 +294,7 @@ mod tests {
 
     #[test]
     fn writing_the_light_leaves_the_rest_of_compositor_file_alone() {
-        let dir = TempDir::new("night-shift-merge");
+        let dir = Scratch::new("night-shift-merge");
         std::fs::write(
             dir.path().join(SETTINGS),
             "[pointer]\nnatural_scroll = true\n\n[night_light]\nmode = \"off\"\nfuture_key = 7\n",
@@ -318,7 +317,7 @@ mod tests {
 
     #[test]
     fn a_file_that_is_not_toml_is_not_overwritten() {
-        let dir = TempDir::new("night-shift-damaged");
+        let dir = Scratch::new("night-shift-damaged");
         std::fs::write(dir.path().join(SETTINGS), "this = is = not toml").unwrap_or_default();
         read_light(dir.path()).unwrap_err();
         assert!(write_light(dir.path(), &warm()).is_err());
@@ -328,7 +327,7 @@ mod tests {
 
     #[test]
     fn keys_that_mean_nothing_fall_back_one_by_one() {
-        let dir = TempDir::new("night-shift-lenient");
+        let dir = Scratch::new("night-shift-lenient");
         std::fs::write(
             dir.path().join(SETTINGS),
             "[night_light]\nmode = \"dusk\"\nfrom = -5\nto = 1500\nkelvin = 9000\nfade_minutes = \"long\"\n",
@@ -352,7 +351,7 @@ mod tests {
 
     #[test]
     fn the_manual_turn_on_is_kept_and_forgotten() {
-        let dir = TempDir::new("night-shift-manual");
+        let dir = Scratch::new("night-shift-manual");
         assert_eq!(read_manual(dir.path()), None);
         let manual = Manual {
             until: UnixSeconds(1_792_200_000),
@@ -434,7 +433,7 @@ mod tests {
 
     #[test]
     fn the_monitors_shell_warms_are_written_once_beside_the_rest_of_the_file() {
-        let dir = TempDir::new("night-shift-skip");
+        let dir = Scratch::new("night-shift-skip");
         std::fs::write(
             dir.path().join(SETTINGS),
             "[pointer]\ntap = \"on\"\n\n[night_light]\nmode = \"scheduled\"\nskip_outputs = [\"edid:A/B/C\", \"DP-7\"]\n",
@@ -461,7 +460,7 @@ mod tests {
 
     #[test]
     fn nothing_to_skip_creates_no_file_and_removes_an_emptied_key() {
-        let dir = TempDir::new("night-shift-skip-none");
+        let dir = Scratch::new("night-shift-skip-none");
         let none = write_skip(dir.path(), &[]).unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(none, Skipping::AsWas);
         assert!(!dir.path().join(SETTINGS).exists(), "no file for no list");
@@ -477,7 +476,7 @@ mod tests {
 
     #[test]
     fn a_file_that_is_not_toml_is_not_overwritten_by_the_skip_list() {
-        let dir = TempDir::new("night-shift-skip-damaged");
+        let dir = Scratch::new("night-shift-skip-damaged");
         std::fs::write(dir.path().join(SETTINGS), "this = is = not toml").unwrap_or_default();
         write_skip(dir.path(), &outputs(&["DP-1"])).unwrap_err();
         let kept = std::fs::read_to_string(dir.path().join(SETTINGS)).unwrap_or_default();
@@ -486,7 +485,7 @@ mod tests {
 
     #[test]
     fn the_persons_comments_and_layout_survive_an_edit() {
-        let dir = TempDir::new("night-shift-comments");
+        let dir = Scratch::new("night-shift-comments");
         std::fs::write(
             dir.path().join(SETTINGS),
             "# my settings\n[pointer]\ntap = \"on\"  # taps\n\n[night_light]\n# when it starts\nfrom = 1200 # evening\nmode = \"off\"\n",
@@ -507,7 +506,7 @@ mod tests {
     #[test]
     fn a_linked_settings_file_is_written_through_and_keeps_its_permissions() {
         use std::os::unix::fs::{PermissionsExt, symlink};
-        let dir = TempDir::new("night-shift-link");
+        let dir = Scratch::new("night-shift-link");
         let real = dir.path().join("dotfiles.toml");
         std::fs::write(&real, "[night_light]\nmode = \"off\"\n").unwrap_or_else(|e| panic!("{e}"));
         std::fs::set_permissions(&real, std::fs::Permissions::from_mode(0o640))
@@ -529,7 +528,7 @@ mod tests {
 
     #[test]
     fn a_light_the_file_already_has_is_not_written_again() {
-        let dir = TempDir::new("night-shift-same");
+        let dir = Scratch::new("night-shift-same");
         write_light(dir.path(), &warm()).unwrap_or_else(|e| panic!("{e}"));
         let path = dir.path().join(SETTINGS);
         // Dated long ago: a second write would show as a newer time at any clock resolution.

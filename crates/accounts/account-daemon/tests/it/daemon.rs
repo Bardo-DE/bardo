@@ -3,12 +3,11 @@
 //! owned and answers once `Daemon::build` has returned, and `run` ends and lets the name go when
 //! its shutdown completes.
 
-use crate::common::bus::PrivateBus;
-
 use account_daemon::paths::Paths;
 use account_daemon::{Config, Daemon};
 use account_wire::names::ACCOUNTS_BUS;
 use base_testkit::GENEROUS;
+use base_testkit::PrivateBus;
 use dbus_kit::connect::BusTarget;
 use std::path::Path;
 use std::time::Duration;

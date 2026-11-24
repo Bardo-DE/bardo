@@ -12,7 +12,7 @@ use portal_daemon::settings::DesktopAppearance;
 use portal_daemon::{Parts, serve_on};
 use zbus::Connection;
 
-use crate::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::guard::{as_frontend, call, introduce, is_refused};
 
 const GRANTS: &str = "org.bardo.Portal1";
@@ -43,8 +43,7 @@ async fn client(bus: &PrivateBus) -> Connection {
 
 /// A portal whose book holds one grant of `APP`.
 async fn portal_with_a_grant() -> Portal {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let scratch = tempfile::tempdir().expect("scratch");
     let path = scratch.path().join("restore");
     let mut book = RestoreBook::new();

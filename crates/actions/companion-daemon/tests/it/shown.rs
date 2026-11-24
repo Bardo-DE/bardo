@@ -2,7 +2,7 @@
 //! until the answer is dismissed (`Companion1.Close`), at most a bounded number of finished tasks
 //! at once, and the answer object names that session so any surface can ask for it.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::infer::{Say, call, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -203,7 +203,7 @@ async fn a_workers_report_still_ends_its_task_while_its_session_waits() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_answer_object_names_its_session_and_close_removes_it() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![read_t1(), words("Read it.")]);
     let (launcher, clock) = (w.launcher, w.clock);

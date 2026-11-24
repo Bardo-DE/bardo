@@ -13,7 +13,7 @@ use account_core::audit::CredentialEnd;
 use account_dbus::BusStream;
 use account_wire::LauncherWireError;
 use account_wire::Refusal;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use common::eventually;
 use common::fake_accountd::{FakeAccountd, KEY, Sheets};
 use std::io::Read;

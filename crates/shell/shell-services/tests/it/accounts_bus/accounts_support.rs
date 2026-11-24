@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 
-use shell_testkit::PrivateBus;
+use base_testkit::PrivateBus;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue};
 
@@ -143,7 +143,7 @@ impl FakeAccountd {
     /// Start it with the account at `state`.
     pub async fn start(bus: &PrivateBus, state: &str, listing: Listing) -> FakeAccountd {
         let record = Shared::default();
-        let builder = zbus::connection::Builder::address(bus.address.as_str())
+        let builder = zbus::connection::Builder::address(bus.address())
             .unwrap_or_else(|e| panic!("{e}"))
             .serve_at(
                 ACCOUNT,

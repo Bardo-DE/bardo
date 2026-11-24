@@ -3,19 +3,17 @@
 
 use std::path::{Path, PathBuf};
 
-use shell_testkit::TempDir;
-
 use super::{Terminal, TerminalSearch, choose, wrapper};
 
 /// A scratch computer: one config folder, one data folder, one program folder.
 struct Scratch {
-    dir: TempDir,
+    dir: base_testkit::Scratch,
 }
 
 impl Scratch {
     fn new(name: &str) -> Scratch {
         let scratch = Scratch {
-            dir: TempDir::new(name),
+            dir: base_testkit::Scratch::new(name),
         };
         for sub in ["config", "data/applications", "bin"] {
             std::fs::create_dir_all(scratch.dir.path().join(sub)).unwrap_or_else(|e| panic!("{e}"));

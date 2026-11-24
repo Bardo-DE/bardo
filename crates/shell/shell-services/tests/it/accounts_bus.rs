@@ -21,7 +21,7 @@ use shell_services::accounts::AccountsLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::notifications::Answers;
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 
 const SETTLE: Duration = Duration::from_secs(5);
@@ -40,13 +40,13 @@ async fn wait_for<T>(receiver: &mut watch::Receiver<T>, want: impl Fn(&T) -> boo
 struct Shell {
     notes: Handle<NotificationsService>,
     accounts: Handle<AccountsService>,
-    _scratch: TempDir,
+    _scratch: Scratch,
 }
 
 async fn shell(bus: &PrivateBus) -> Shell {
-    let scratch = TempDir::new("accounts-bus");
+    let scratch = Scratch::new("accounts-bus");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();
@@ -136,8 +136,7 @@ async fn until_reauthenticated(accountd: &FakeAccountd, times: usize) -> bool {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_refused_account_posts_a_notice_and_its_button_signs_in_again() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let mut shell = shell(&bus).await;
     assert!(needing(&mut shell, 0).await, "accountd was not met");
@@ -178,8 +177,7 @@ async fn a_refused_account_posts_a_notice_and_its_button_signs_in_again() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_testing_app_sign_out_says_google_does_it_every_seven_days() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let mut shell = shell(&bus).await;
     assert!(needing(&mut shell, 0).await, "accountd was not met");
@@ -202,8 +200,7 @@ async fn a_testing_app_sign_out_says_google_does_it_every_seven_days() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_refused_first_call_is_tried_again_and_the_account_is_told() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     // Three refusals fit inside the backoff (100, 250, 500 ms); the fourth try is let through.
     let _accountd = FakeAccountd::start(
         &bus,
@@ -218,8 +215,7 @@ async fn a_refused_first_call_is_tried_again_and_the_account_is_told() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_refusal_past_the_backoff_waits_for_the_name_to_change() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     // Five refusals outlast the four waits: only a new owner of the name starts it over.
     let first = FakeAccountd::start(&bus, "ok", Listing::Refusing(5, vec![])).await;
     let mut shell = shell(&bus).await;
@@ -239,8 +235,7 @@ async fn a_refusal_past_the_backoff_waits_for_the_name_to_change() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_notice_goes_when_the_account_is_well_without_the_button() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let mut shell = shell(&bus).await;
     assert!(needing(&mut shell, 0).await);
@@ -255,8 +250,7 @@ async fn the_notice_goes_when_the_account_is_well_without_the_button() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_account_already_refused_when_accountd_is_met_is_told() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let _accountd = FakeAccountd::start(
         &bus,
         "needs_reauth",
@@ -270,8 +264,7 @@ async fn an_account_already_refused_when_accountd_is_met_is_told() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_action_signal_from_any_other_connection_signs_nothing_in() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let mut shell = shell(&bus).await;
     assert!(needing(&mut shell, 0).await);
@@ -279,7 +272,7 @@ async fn an_action_signal_from_any_other_connection_signs_nothing_in() {
     let id = notice_shown(&mut shell).await;
 
     // Another program says the person pressed the button.
-    let stranger = zbus::connection::Builder::address(bus.address.as_str())
+    let stranger = zbus::connection::Builder::address(bus.address())
         .unwrap_or_else(|e| panic!("{e}"))
         .build()
         .await
@@ -325,9 +318,9 @@ impl Voice {
 /// The shell with its notifications service passive, and a voice on its answers.
 fn shell_under(bus: &PrivateBus) -> (Shell, Voice) {
     let answers = Answers::default();
-    let scratch = TempDir::new("accounts-bus-id");
+    let scratch = Scratch::new("accounts-bus-id");
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         ..Env::isolated(scratch.path())
     };
     let runtime = tokio::runtime::Handle::current();
@@ -353,8 +346,7 @@ fn shell_under(bus: &PrivateBus) -> (Shell, Voice) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_server_naming_the_notice_shell_posted_signs_in_once() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);
@@ -368,8 +360,7 @@ async fn the_server_naming_the_notice_shell_posted_signs_in_once() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_id_shell_did_not_post_for_the_account_does_nothing() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);
@@ -391,8 +382,7 @@ async fn an_id_shell_did_not_post_for_the_account_does_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_closed_notice_does_nothing() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);
@@ -410,8 +400,7 @@ async fn a_closed_notice_does_nothing() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn after_the_account_is_well_and_needs_them_again_only_the_new_id_works() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let accountd = FakeAccountd::start(&bus, "ok", Listing::Of(vec![])).await;
     let (mut shell, voice) = shell_under(&bus);
     assert!(needing(&mut shell, 0).await);

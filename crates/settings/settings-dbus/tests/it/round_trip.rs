@@ -6,7 +6,7 @@ use settings_dbus::{AnyOwner, Change, INTERFACE, LiveClient, LiveError, serve};
 use settings_types::schema::{AgentSetting, KeyKind, KeyPath};
 use zbus::export::futures_core::Stream;
 
-use crate::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::module::{Accounts, CLIENT, REMOVE, TOGGLE, schema, spec};
 
 const PATH: &str = "/org/bardo/Test1/settings";
@@ -23,7 +23,7 @@ fn key(path: &str) -> KeyPath {
 
 #[tokio::test]
 async fn set_get_describe_and_changed_round_trip() {
-    let bus = PrivateBus::start("round");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
@@ -83,7 +83,7 @@ async fn set_get_describe_and_changed_round_trip() {
 
 #[tokio::test]
 async fn a_daemon_originated_change_reaches_the_reader() {
-    let bus = PrivateBus::start("served");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let served = serve(&daemon, PATH, Accounts::new(None))
@@ -114,7 +114,7 @@ async fn a_daemon_originated_change_reaches_the_reader() {
 
 #[tokio::test]
 async fn an_action_key_runs_through_set() {
-    let bus = PrivateBus::start("action");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
@@ -133,7 +133,7 @@ async fn an_action_key_runs_through_set() {
 
 #[tokio::test]
 async fn set_from_a_caller_without_the_role_is_refused_by_name() {
-    let bus = PrivateBus::start("refused");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let agent = bus.connect().await;
     let module = std::sync::Arc::new(Accounts::new(Some(":1.nobody".to_owned())));
@@ -183,7 +183,7 @@ async fn set_from_a_caller_without_the_role_is_refused_by_name() {
 
 #[tokio::test]
 async fn unknown_keys_and_bad_values_have_their_own_names() {
-    let bus = PrivateBus::start("errors");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();
@@ -211,7 +211,7 @@ async fn unknown_keys_and_bad_values_have_their_own_names() {
 
 #[tokio::test]
 async fn a_module_with_an_agent_settable_accounts_key_is_not_served() {
-    let bus = PrivateBus::start("never");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let mut bad = schema();
     let mut agent_key = spec(
@@ -250,7 +250,7 @@ impl settings_dbus::LiveModule for Shared {
 #[tokio::test]
 async fn a_set_to_an_unavailable_choice_is_refused_with_its_reason() {
     use settings_types::schema::{ChoiceWord, UnavailableReason};
-    let bus = PrivateBus::start("unavailable");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     let role = settings.unique_name().expect("named").to_string();

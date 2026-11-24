@@ -1,4 +1,4 @@
-use crate::private_bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::{Accept, Recipe, Reject, Sandbox, build, v};
 use caller_identity_dbus::caller_identity_core::Table;
 use semver::Version;

@@ -23,15 +23,15 @@ use shell_services::Answers;
 use shell_services::env::{BusRoute, Buses, Env, RecordedChildren};
 use shell_services::launch::LaunchLinks;
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 
 const WAIT: Duration = Duration::from_secs(5);
 
 /// The viewer on `bus`: owning the name, ready to hear the launcher.
-async fn viewer(bus: &PrivateBus, scratch: &TempDir) -> Primary {
+async fn viewer(bus: &PrivateBus, scratch: &Scratch) -> Primary {
     let mut env = ViewerEnv::isolated(scratch.path());
-    env.session = ViewerRoute::Address(bus.address.clone());
+    env.session = ViewerRoute::Address(bus.address().to_owned());
     match DbusInstance::new(env)
         .claim(&Request::Open(Vec::new()))
         .await
@@ -46,14 +46,14 @@ async fn viewer(bus: &PrivateBus, scratch: &TempDir) -> Primary {
 /// started (the isolated `Env` starts none: a fallback to `xdg-open` is recorded, never run).
 fn launcher(
     bus: &PrivateBus,
-    scratch: &TempDir,
+    scratch: &Scratch,
 ) -> (
     shell_model::service::Control<LaunchCommand>,
     Arc<RecordedChildren>,
 ) {
     let children = RecordedChildren::shared();
     let mut env = Env::isolated(scratch.path());
-    env.buses = Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone()));
+    env.buses = Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned()));
     env.children = Arc::<RecordedChildren>::clone(&children);
     let (_apps, apps) = watch::channel(AppIndex::default());
     let rt = tokio::runtime::Handle::current();
@@ -88,9 +88,8 @@ fn file(text: &str) -> FilePath {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_file_chosen_in_the_launcher_reaches_the_viewer_with_the_results_it_came_from() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("launch-viewer-handoff");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("launch-viewer-handoff");
     let mut viewer = viewer(&bus, &scratch).await;
     let (control, _children) = launcher(&bus, &scratch);
 
@@ -138,9 +137,8 @@ async fn a_file_chosen_in_the_launcher_reaches_the_viewer_with_the_results_it_ca
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_play_control_asks_the_viewer_to_play_the_file() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("launch-viewer-play");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("launch-viewer-play");
     let mut viewer = viewer(&bus, &scratch).await;
     let (control, _children) = launcher(&bus, &scratch);
 
@@ -155,9 +153,8 @@ async fn the_play_control_asks_the_viewer_to_play_the_file() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn without_a_viewer_on_the_bus_the_file_goes_to_the_default_handler() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("launch-viewer-absent");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("launch-viewer-absent");
     let (control, children) = launcher(&bus, &scratch);
 
     control

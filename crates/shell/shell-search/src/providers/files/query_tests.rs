@@ -201,7 +201,7 @@ fn viewed(
 
 #[test]
 fn a_file_the_viewer_remembers_is_a_row_the_index_did_not_bring() {
-    let dir = shell_testkit::TempDir::new("files-viewed-row");
+    let dir = base_testkit::Scratch::new("files-viewed-row");
     let book = dir.path().join("elsewhere/novel.pdf");
     std::fs::create_dir_all(book.parent().unwrap_or(dir.path())).unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(&book, b"%PDF").unwrap_or_else(|e| panic!("{e}"));
@@ -231,7 +231,7 @@ fn a_file_the_viewer_remembers_is_a_row_the_index_did_not_bring() {
 
 #[test]
 fn a_viewed_file_outranks_its_namesake_the_index_brought_with_the_same_age() {
-    let dir = shell_testkit::TempDir::new("files-viewed-rank");
+    let dir = base_testkit::Scratch::new("files-viewed-rank");
     let (a, b) = (
         dir.path().join("a/notes.pdf"),
         dir.path().join("b/notes.pdf"),

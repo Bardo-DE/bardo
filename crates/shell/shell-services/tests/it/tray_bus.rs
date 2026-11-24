@@ -13,8 +13,7 @@ use std::sync::mpsc;
 use std::time::{Duration, Instant};
 
 use shell_model::tray::{Tray, TrayCommand, TrayItemId, TrayMenuEntry, TrayMenuKind};
-use shell_testkit::{PrivateBus, TempDir};
-
+use base_testkit::{PrivateBus, Scratch};
 const WAIT: Duration = Duration::from_secs(20);
 
 /// A stand-in (`src/bin/NAME.rs`), built with this test: nextest's own path when it runs from an
@@ -45,7 +44,7 @@ impl Fixture {
     fn start(bus: &PrivateBus, scratch: &Path) -> Fixture {
         let mut host = Command::new(tray_host())
             .arg(scratch)
-            .env("DBUS_SESSION_BUS_ADDRESS", &bus.address)
+            .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
             .env_remove("DBUS_SYSTEM_BUS_ADDRESS")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -69,7 +68,7 @@ impl Fixture {
         });
         let log = scratch.join("item.log");
         let mut item = Command::new(tray_item())
-            .arg(&bus.address)
+            .arg(bus.address())
             .arg(&log)
             .stdout(Stdio::piped())
             .stderr(Stdio::inherit())
@@ -154,9 +153,8 @@ const MENU: &str = "Open#1 Devices#2(Ping#3 Share#4) -#5 Refresh#6 Quit#7";
 
 #[test]
 fn a_submenu_row_click_reaches_the_item_and_its_context_menu_and_layout_updates_follow() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("tray-bus");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("tray-bus");
     let mut fixture = Fixture::start(&bus, scratch.path());
 
     // The item and its whole menu, submenu included, arrive.

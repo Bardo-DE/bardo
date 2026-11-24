@@ -1,6 +1,6 @@
 //! A real intentd over the fake router on a private bus, and the records and asks the link tests send it.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use account_core::AppName;
 use action_client::{DbusTransport, Intents};
 use action_core::{ConfirmAnswer, GrantScope};
@@ -68,7 +68,7 @@ pub(crate) struct Desk {
 
 pub(crate) async fn desk(answers: Vec<ConfirmAnswer>) -> Desk {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     let mut router: Router<action_fake::FakeSeams> =
         fake_router(action_core::AgentConfig::default()).expect("a router");

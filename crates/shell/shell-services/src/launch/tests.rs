@@ -50,7 +50,7 @@ async fn a_launch_runs_in_a_real_systemd_scope_and_exits() {
     let (_apps_tx, apps_rx) =
         tokio::sync::watch::channel(index_with("shell-launch-test", "/bin/true"));
     let rt = tokio::runtime::Handle::current();
-    let scratch = shell_testkit::TempDir::new("launch-scope");
+    let scratch = base_testkit::Scratch::new("launch-scope");
     let mut env = crate::env::Env::isolated(scratch.path());
     env.dirs.runtime = std::env::var_os("XDG_RUNTIME_DIR").map(std::path::PathBuf::from);
     let notifications = spawn::<NotificationsService>(&rt, &env, Answers::default()).control;
@@ -119,7 +119,7 @@ async fn opening_with_no_session_records_the_opener_and_starts_nothing() {
     use crate::env::{ProcessGroup, RecordedChildren};
 
     let (_apps_tx, apps_rx) = tokio::sync::watch::channel(AppIndex::default());
-    let scratch = shell_testkit::TempDir::new("launch-open-recorded");
+    let scratch = base_testkit::Scratch::new("launch-open-recorded");
     let children = RecordedChildren::shared();
     let mut env = crate::env::Env::isolated(scratch.path());
     env.children = std::sync::Arc::<RecordedChildren>::clone(&children);
@@ -179,11 +179,11 @@ fn start_over_scratch(
 ) -> (
     tokio::sync::watch::Receiver<Launches>,
     Control<LaunchCommand>,
-    shell_testkit::TempDir,
+    base_testkit::Scratch,
 ) {
     let (_apps_tx, apps_rx) = tokio::sync::watch::channel(index);
     let rt = tokio::runtime::Handle::current();
-    let scratch = shell_testkit::TempDir::new("launch-timing");
+    let scratch = base_testkit::Scratch::new("launch-timing");
     let env = crate::env::Env::isolated(scratch.path());
     let notifications = spawn::<NotificationsService>(&rt, &env, Answers::default()).control;
     let launch = spawn::<LaunchService>(

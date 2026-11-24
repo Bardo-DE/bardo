@@ -422,7 +422,7 @@ fn a_prefix_names_the_shipped_file_where_install_sh_puts_it() {
 #[cfg(feature = "dbus")]
 mod session_bus {
     use super::*;
-    use crate::common::bus::PrivateBus;
+    use base_testkit::PrivateBus;
     use inference_client::SessionUnits;
     use zbus::fdo;
     use zbus::object_server::SignalEmitter;

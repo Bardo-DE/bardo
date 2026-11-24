@@ -55,7 +55,7 @@ action-fake = {path = "../action-fake"}
 action-host = {path = "../action-host"}
 action-router = {path = "../action-router"}
 agent-session = {path = "../agent-session", features = ["testing"]}
-action-testbus = {path = "../action-testbus"}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 jsonschema = { workspace = true }
 tempfile = { workspace = true }
 

@@ -51,11 +51,10 @@ impl Drop for Door {
 
 #[cfg(test)]
 mod tests {
-    use shell_testkit::TempDir;
-
+    use base_testkit::Scratch;
     use super::Door;
 
-    fn door_in(dir: &TempDir) -> (service_locator::Agent, Door) {
+    fn door_in(dir: &Scratch) -> (service_locator::Agent, Door) {
         let env = service_locator::Environment {
             runtime_dir: Some(dir.path().as_os_str().to_owned()),
             ..Default::default()
@@ -68,7 +67,7 @@ mod tests {
 
     #[test]
     fn a_door_dropped_after_its_lock_file_went_leaves_the_socket_alone() {
-        let dir = TempDir::new("door-displaced");
+        let dir = Scratch::new("door-displaced");
         let (agent, door) = door_in(&dir);
         let socket = agent
             .socket()
@@ -90,7 +89,7 @@ mod tests {
 
     #[test]
     fn a_door_dropped_while_ours_unlinks_its_socket() {
-        let dir = TempDir::new("door-ours");
+        let dir = Scratch::new("door-ours");
         let (agent, door) = door_in(&dir);
         let socket = agent
             .socket()

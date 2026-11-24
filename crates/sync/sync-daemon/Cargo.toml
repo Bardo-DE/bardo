@@ -49,7 +49,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 sync-daemon = {path = ".", features = ["test-system-callers"]}
-base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 sync-engine = {path = "../sync-engine", features = ["testing"]}
 sync-journal-sqlite = {path = "../sync-journal-sqlite", features = ["testing"]}

@@ -9,7 +9,7 @@ use account_callers::{CallerTable, ProcCallers};
 use account_core::AppName;
 use base_testkit::Scratch;
 use base_time::UnixSeconds;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use serde_json::Value;
 use std::collections::BTreeSet;
 use std::process::Stdio;

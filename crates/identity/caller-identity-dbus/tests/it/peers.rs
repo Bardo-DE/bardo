@@ -1,7 +1,7 @@
 //! Identifying a bus sender: the real pidfd of this process, a fixture tree for what `/proc`
 //! says, and a stand-in unit manager for the proof that needs it.
 
-use crate::bus::{PrivateBus, name_of};
+use base_testkit::{PrivateBus, name_of};
 use crate::manager::{FakeUnit, serve};
 use caller_identity_core::{
     FileTrust, LOADER_VARIABLES, NotHeldError, Pid, Pin, Proof, Requirement, RoleName, Standing,

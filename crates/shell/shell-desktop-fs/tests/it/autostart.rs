@@ -4,8 +4,7 @@
 use shell_desktop_fs::autostart::{Login, file_of, login_of, turn_off, turn_on};
 use shell_launcher::AppId;
 use shell_model::dirs::Dirs;
-use shell_testkit::TempDir;
-
+use base_testkit::Scratch;
 const ENTRY: &str =
     "[Desktop Entry]\nName=Example\nExec=example %U\n\n[Desktop Action new]\nName=New\n";
 
@@ -14,8 +13,8 @@ fn app() -> AppId {
 }
 
 /// A scratch home with the app's own entry written, and the entry's path.
-fn setup(name: &str) -> (TempDir, Dirs, std::path::PathBuf) {
-    let root = TempDir::new(name);
+fn setup(name: &str) -> (Scratch, Dirs, std::path::PathBuf) {
+    let root = Scratch::new(name);
     let dirs = Dirs::under(root.path());
     let entry = root.path().join("example.desktop");
     std::fs::write(&entry, ENTRY).expect("entry");

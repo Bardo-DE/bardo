@@ -15,7 +15,7 @@ use shell_model::power_profile::{PowerProfiles, Profile, ProfileDegraded};
 use shell_model::units::{Percent, Presence, Seconds};
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::service::spawn;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::interface;
 use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
@@ -147,7 +147,7 @@ impl Profiles {
 /// daemon's name, as the real pair does on a laptop.
 async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
     let shared: Shared = Arc::default();
-    let built = zbus::connection::Builder::address(bus.address.as_str())
+    let built = zbus::connection::Builder::address(bus.address())
         .and_then(|b| b.name("org.freedesktop.UPower"))
         .and_then(|b| b.name("org.freedesktop.UPower.PowerProfiles"))
         .and_then(|b| b.serve_at(UPOWER, Manager))
@@ -162,9 +162,9 @@ async fn serve(bus: &PrivateBus) -> (zbus::Connection, Shared) {
     (connection, shared)
 }
 
-fn env_for(bus: &PrivateBus, scratch: &TempDir) -> Env {
+fn env_for(bus: &PrivateBus, scratch: &Scratch) -> Env {
     Env {
-        buses: Buses::new(BusRoute::Address(bus.address.clone()), BusRoute::Absent),
+        buses: Buses::new(BusRoute::Address(bus.address().to_owned()), BusRoute::Absent),
         ..Env::isolated(scratch.path())
     }
 }
@@ -176,9 +176,8 @@ async fn until<T>(rx: &mut watch::Receiver<T>, what: &str, ok: impl FnMut(&T) ->
 
 #[test]
 fn the_three_follow_a_upower_that_starts_late_and_leaves() {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-    let scratch = TempDir::new("upower");
+    let bus = PrivateBus::start();
+    let scratch = Scratch::new("upower");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));
     rt.block_on(async {
         let env = env_for(&bus, &scratch);

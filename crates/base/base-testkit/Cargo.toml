@@ -1,6 +1,6 @@
 [package]
 name = "base-testkit"
-description = "Test-only utilities that know nothing of the accounts service: scratch directories and the one wait deadline."
+description = "Test-only utilities that know nothing of the accounts service: scratch directories, the one wait deadline, a child process that cannot outlive its test and a private session bus."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,10 +10,19 @@ publish.workspace = true
 
 [dependencies]
 tokio = {workspace = true, features = ["time"], optional = true}
+zbus = {workspace = true, features = ["tokio"], optional = true}
 
 [features]
 # `tokio`: the async waits, on tokio's timer.
 tokio = ["dep:tokio"]
+# `dbus`: `PrivateBus::connect` and `builder`, on zbus.
+dbus = ["dep:zbus"]
+
+# The private bus's tests: the daemon's teardown and a killed test's leftovers.
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+required-features = ["dbus"]
 
 [lints]
 workspace = true

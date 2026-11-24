@@ -12,7 +12,7 @@ use account_core::{AppId, AppName, DataClass, Isolation};
 use account_match::Need;
 use account_match::SpeechNeed;
 use base_ids::Permille;
-use common::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use common::inferd::{Behaviour, FakeInferd, Seen, slugs};
 use inference_client::{
     Brokered, ClientError, DbusTransport, Inference, NoBroker, SessionHost, TransportError,

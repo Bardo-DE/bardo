@@ -14,7 +14,7 @@ use shell_model::pins::{DockPins, PinAt, PinEvent};
 use shell_model::service::Handle;
 use shell_services::env::Env;
 use shell_services::service::spawn;
-use shell_testkit::TempDir;
+use base_testkit::Scratch;
 use tokio::sync::watch;
 
 const SETTLE: Duration = Duration::from_secs(5);
@@ -56,7 +56,7 @@ fn ids(pins: &DockPins) -> Vec<&str> {
     pins.pinned.iter().map(|app| app.0.as_str()).collect()
 }
 
-fn start(scratch: &TempDir) -> (Handle<PinsService>, watch::Sender<AppIndex>, PathBuf) {
+fn start(scratch: &Scratch) -> (Handle<PinsService>, watch::Sender<AppIndex>, PathBuf) {
     let env = Env::isolated(scratch.path());
     let file = env.dirs.shell_config().join("layout.toml");
     let (apps, index) = watch::channel(AppIndex::default());
@@ -76,7 +76,7 @@ async fn pinned_within(
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_fresh_dock_starts_with_the_desktops_apps_once_they_are_installed() {
-    let scratch = TempDir::new("pins-seed-fresh");
+    let scratch = Scratch::new("pins-seed-fresh");
     let (mut pins, apps, file) = start(&scratch);
     assert!(
         !pinned_within(&mut pins, QUIET, |p| !p.pinned.is_empty()).await,
@@ -102,7 +102,7 @@ async fn a_fresh_dock_starts_with_the_desktops_apps_once_they_are_installed() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_emptied_dock_stays_empty() {
-    let scratch = TempDir::new("pins-seed-emptied");
+    let scratch = Scratch::new("pins-seed-emptied");
     let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     std::fs::write(folder.join("layout.toml"), "version = 1\ndock = []\n")
@@ -117,7 +117,7 @@ async fn an_emptied_dock_stays_empty() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_pin_made_before_the_apps_were_known_is_kept() {
-    let scratch = TempDir::new("pins-seed-pinned-first");
+    let scratch = Scratch::new("pins-seed-pinned-first");
     let (mut pins, apps, _) = start(&scratch);
     let _ = pins.control.send(PinEvent::Pin {
         app: AppId("firefox".to_owned()),
@@ -133,7 +133,7 @@ async fn a_pin_made_before_the_apps_were_known_is_kept() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_old_dock_file_is_carried_over_and_never_seeded_over() {
-    let scratch = TempDir::new("pins-seed-migrated");
+    let scratch = Scratch::new("pins-seed-migrated");
     let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     let old = r#"{"pinned":["firefox"]}"#;
@@ -155,7 +155,7 @@ async fn an_old_dock_file_is_carried_over_and_never_seeded_over() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_edit_of_layout_toml_reaches_the_dock() {
-    let scratch = TempDir::new("pins-live-reload");
+    let scratch = Scratch::new("pins-live-reload");
     // The folder is there before the shell starts, as on any login: the watch is on it.
     let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
@@ -177,7 +177,7 @@ async fn an_edit_of_layout_toml_reaches_the_dock() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_pin_under_an_old_id_is_the_renamed_app_and_the_file_follows_the_next_save() {
-    let scratch = TempDir::new("pins-renamed");
+    let scratch = Scratch::new("pins-renamed");
     let folder = scratch.path().join("config/bardo/shell");
     std::fs::create_dir_all(&folder).unwrap_or_else(|e| panic!("{e}"));
     let row = |app: &str| format!("[[dock]]\nkind = \"bardo.dock.app\"\napp = \"{app}\"\n");

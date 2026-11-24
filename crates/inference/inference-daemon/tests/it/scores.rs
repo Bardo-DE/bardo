@@ -14,7 +14,7 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::Tokens;
 use hosting::agent::{completions, model_route, open, plan, say};
-use hosting::bus::within;
+use hosting::wait::within;
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::rig::{Plan, World};

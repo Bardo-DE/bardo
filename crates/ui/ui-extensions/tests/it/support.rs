@@ -2,11 +2,9 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU32, Ordering};
 
-/// One test's own directory under the system temp dir, removed on drop. (No `tempfile`: it is not
-/// in the pinned dependency block.)
-pub struct Scratch(PathBuf);
+/// One test's own directory, removed on drop.
+pub struct Scratch(base_testkit::Scratch);
 
 /// A look entry, as a manifest writes it.
 pub const LOOK: &str =
@@ -17,13 +15,7 @@ pub const ICONS: &str = "[[provides]]\ncapability = \"file_icons\"\ndir = \"file
 
 impl Scratch {
     pub fn new() -> Scratch {
-        static NEXT: AtomicU32 = AtomicU32::new(0);
-        let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let path =
-            std::env::temp_dir().join(format!("ds-extensions-test-{}-{n}", std::process::id()));
-        let _ = fs::remove_dir_all(&path);
-        fs::create_dir_all(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
-        Scratch(path)
+        Scratch(base_testkit::Scratch::new("extensions"))
     }
 
     pub fn path(&self) -> &Path {
@@ -35,12 +27,6 @@ impl Scratch {
         let root = self.0.join(name);
         fs::create_dir_all(&root).unwrap_or_else(|e| panic!("{}: {e}", root.display()));
         root
-    }
-}
-
-impl Drop for Scratch {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.0);
     }
 }
 

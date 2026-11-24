@@ -5,7 +5,6 @@
     reason = "each test binary uses some of the world's helpers, and the others stay unused in it"
 )]
 
-mod bus;
 
 use action_core::{AppRefusal, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault};
 use action_dbus::callers::{INTENTD, Identity, intentd_only};
@@ -19,7 +18,7 @@ use settings_app_model::{Absence, AccountsPane, Catalogue, Notice, OriginRule, R
 use settings_app_testkit::{Scratch, seed_schemas_settable};
 use std::sync::{Arc, Mutex};
 
-pub use bus::PrivateBus;
+use base_testkit::PrivateBus;
 
 pub const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const APP: &str = "org.bardo.Settings";
@@ -143,7 +142,7 @@ impl World {
         )
         .expect("a provider");
 
-        let bus = PrivateBus::start(scratch.path());
+        let bus = PrivateBus::start_in(scratch.path());
         let app = bus.connect().await;
         // Every connection of a test is one process, so intentd's stand-in is introduced as the
         // router the provider answers rather than found by its unit.

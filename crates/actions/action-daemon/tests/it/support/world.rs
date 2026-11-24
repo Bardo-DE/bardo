@@ -17,8 +17,7 @@ use action_wire::CallerId;
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
-use super::bus::PrivateBus;
-
+use base_testkit::PrivateBus;
 /// The name that plays every role, for a test that calls every member.
 pub const EVERYTHING: &str = "org.bardo.Everything";
 
@@ -88,7 +87,7 @@ impl World {
         std::fs::create_dir_all(&me).expect("fake proc");
         let slice = "0::/user.slice/user-1000.slice/user@1000.service/app.slice";
         std::fs::write(me.join("cgroup"), format!("{slice}/{leaf}\n")).expect("cgroup");
-        let bus = PrivateBus::start(dir.path());
+        let bus = PrivateBus::start_in(dir.path());
         let daemon = bus.connect().await;
         let router = Arc::new(router);
         let root = ProcRoot::Honoured(dir.path().join("proc"));

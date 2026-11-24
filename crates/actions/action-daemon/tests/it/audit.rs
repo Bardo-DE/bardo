@@ -3,7 +3,7 @@
 //! queue is full and nothing is written twice. The bus is a private one and memoryd is the
 //! fake that serves the real wire.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::memoryd::{FakeMemoryd, record_fault};
 use account_core::AppName;
 use action_core::*;
@@ -346,7 +346,7 @@ fn times(records: &[memory_core::Record]) -> Vec<i64> {
 #[tokio::test]
 async fn audit_records_reach_memoryd_by_space_in_order_and_the_queue_empties() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let memoryd = FakeMemoryd::recording();
     let server = bus.connect().await;
     memoryd.serve(&server).await;
@@ -394,7 +394,7 @@ async fn audit_records_reach_memoryd_by_space_in_order_and_the_queue_empties() {
 #[tokio::test]
 async fn a_review_lands_in_the_space_of_its_call_and_a_breaker_where_the_router_says() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let memoryd = FakeMemoryd::recording();
     let server = bus.connect().await;
     memoryd.serve(&server).await;
@@ -431,7 +431,7 @@ async fn a_review_lands_in_the_space_of_its_call_and_a_breaker_where_the_router_
 #[tokio::test]
 async fn while_memoryd_is_away_nothing_is_lost_and_nothing_is_written_twice() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let client = bus.connect().await;
     let mut log = AuditLog::over(DbusTransport::new(client));
     let sink = QueuedSink::new();
@@ -464,7 +464,7 @@ async fn while_memoryd_is_away_nothing_is_lost_and_nothing_is_written_twice() {
 #[tokio::test]
 async fn a_memoryd_that_is_never_there_costs_a_bounded_queue_and_a_count_of_what_was_dropped() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let mut log = AuditLog::over(DbusTransport::new(bus.connect().await));
     let sink = QueuedSink::bounded(3);
     (1..=5).for_each(|n| sink.append(call(n, "work")));
@@ -477,7 +477,7 @@ async fn a_memoryd_that_is_never_there_costs_a_bounded_queue_and_a_count_of_what
 #[tokio::test]
 async fn a_record_memoryd_refuses_for_good_is_dropped_and_the_rest_are_kept() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let memoryd = FakeMemoryd::with(|request| {
         let bad = |r: &memory_core::Record| r.body.kind().as_str() == "actions.breaker";
         match request {
@@ -506,7 +506,7 @@ async fn a_record_memoryd_refuses_for_good_is_dropped_and_the_rest_are_kept() {
 #[tokio::test]
 async fn a_locked_space_waits_and_is_tried_again() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let locked = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(1));
     let flag = std::sync::Arc::clone(&locked);
     let memoryd = FakeMemoryd::with(move |request| match request {
@@ -530,7 +530,7 @@ async fn a_locked_space_waits_and_is_tried_again() {
 #[tokio::test]
 async fn a_space_memoryd_does_not_know_is_counted_lost_and_named_once() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let memoryd = FakeMemoryd::with(|request| match request {
         MemoryRequest::RecordBatch(_) | MemoryRequest::Record(_) => Some(MemoryReply::Refused(
             Refusal::Invalid("unknown space".into()),

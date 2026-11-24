@@ -2,10 +2,9 @@
 //! `NotFound`, plus the failure and absent-daemon cases. Nothing here reaches the real system or
 //! session bus, and nothing is installed.
 
-mod bus;
 mod fake_pk;
 
-use bus::PrivateBus;
+use base_testkit::PrivateBus;
 use fake_pk::{Behaviour, Calls, serve};
 use std::time::Duration;
 use ui_helpers::{
@@ -37,8 +36,8 @@ fn missing(names: &[&str]) -> Missing {
 }
 
 /// A fake daemon with `behaviour` and a client connection to the same private bus.
-async fn setup(tag: &str, behaviour: Behaviour) -> (PrivateBus, PackageKit, Calls) {
-    let bus = PrivateBus::start(tag);
+async fn setup(behaviour: Behaviour) -> (PrivateBus, PackageKit, Calls) {
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let calls = serve(&daemon, behaviour).await;
     // The daemon connection must outlive the test: leak it into the guard's scope by
@@ -52,7 +51,7 @@ async fn setup(tag: &str, behaviour: Behaviour) -> (PrivateBus, PackageKit, Call
 #[tokio::test]
 async fn installs_the_first_candidate_that_exists() {
     let behaviour = Behaviour::default().available(&["ffmpeg-free"]);
-    let (_bus, installer, calls) = setup("first", behaviour).await;
+    let (_bus, installer, calls) = setup(behaviour).await;
     let outcome = installer
         .install(&request(&["ffmpeg", "ffmpeg-free"]))
         .await;
@@ -66,7 +65,7 @@ async fn installs_the_first_candidate_that_exists() {
 #[tokio::test]
 async fn an_already_installed_package_installs_nothing() {
     let behaviour = Behaviour::default().already(&["mpv"]);
-    let (_bus, installer, calls) = setup("already", behaviour).await;
+    let (_bus, installer, calls) = setup(behaviour).await;
     assert_eq!(
         installer.install(&request(&["mpv"])).await,
         Outcome::Installed
@@ -77,7 +76,7 @@ async fn an_already_installed_package_installs_nothing() {
 #[tokio::test]
 async fn a_cancelled_password_prompt_is_declined() {
     let behaviour = Behaviour::default().available(&["mpv"]).refuse_policy();
-    let (_bus, installer, calls) = setup("declined", behaviour).await;
+    let (_bus, installer, calls) = setup(behaviour).await;
     assert_eq!(
         installer.install(&request(&["mpv"])).await,
         Outcome::Declined
@@ -90,7 +89,7 @@ async fn a_transaction_cancelled_after_auth_is_declined() {
     let behaviour = Behaviour::default()
         .available(&["mpv"])
         .cancel_transaction();
-    let (_bus, installer, _calls) = setup("cancelled", behaviour).await;
+    let (_bus, installer, _calls) = setup(behaviour).await;
     assert_eq!(
         installer.install(&request(&["mpv"])).await,
         Outcome::Declined
@@ -100,7 +99,7 @@ async fn a_transaction_cancelled_after_auth_is_declined() {
 #[tokio::test]
 async fn no_candidate_in_the_repositories_is_not_found() {
     let (_bus, installer, calls) =
-        setup("absent", Behaviour::default().available(&["other"])).await;
+        setup(Behaviour::default().available(&["other"])).await;
     let outcome = installer.install(&request(&["mpv", "mpv-nox"])).await;
     assert_eq!(outcome, Outcome::NotFound(missing(&["mpv", "mpv-nox"])));
     assert!(calls.installed().is_empty());
@@ -109,7 +108,7 @@ async fn no_candidate_in_the_repositories_is_not_found() {
 #[tokio::test]
 async fn a_package_not_found_error_counts_as_absent() {
     let behaviour = Behaviour::default().resolve_errors(8, "no such package");
-    let (_bus, installer, _calls) = setup("notfound-err", behaviour).await;
+    let (_bus, installer, _calls) = setup(behaviour).await;
     assert_eq!(
         installer.install(&request(&["mpv"])).await,
         Outcome::NotFound(missing(&["mpv"]))
@@ -121,7 +120,7 @@ async fn an_install_error_carries_the_daemons_words() {
     let behaviour = Behaviour::default()
         .available(&["mpv"])
         .fail_install("no network");
-    let (_bus, installer, _calls) = setup("failed", behaviour).await;
+    let (_bus, installer, _calls) = setup(behaviour).await;
     assert_eq!(
         installer.install(&request(&["mpv"])).await,
         Outcome::Failed("no network".to_owned())
@@ -145,7 +144,7 @@ async fn install_error_codes_map_to_outcomes() {
         let behaviour = Behaviour::default()
             .available(&["mpv"])
             .install_errors(code, text);
-        let (_bus, installer, _calls) = setup(&format!("code-{code}"), behaviour).await;
+        let (_bus, installer, _calls) = setup(behaviour).await;
         assert_eq!(
             installer.install(&request(&["mpv"])).await,
             want,
@@ -156,7 +155,7 @@ async fn install_error_codes_map_to_outcomes() {
 
 #[tokio::test]
 async fn no_packagekit_on_the_bus_is_unsupported() {
-    let bus = PrivateBus::start("nopk");
+    let bus = PrivateBus::start();
     let client = bus.connect().await;
     let installer = PackageKit::on(client);
     assert_eq!(
@@ -172,7 +171,7 @@ fn timeouts(install: Duration) -> Timeouts {
 
 #[tokio::test]
 async fn signals_from_another_process_are_not_believed() {
-    let bus = PrivateBus::start("forged");
+    let bus = PrivateBus::start();
     let forger = bus.connect().await;
     let daemon = bus.connect().await;
     let calls = serve(
@@ -191,7 +190,7 @@ async fn signals_from_another_process_are_not_believed() {
 
 #[tokio::test]
 async fn a_transaction_that_goes_quiet_is_cancelled_and_reported_as_not_answering() {
-    let bus = PrivateBus::start("quiet");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let calls = serve(
         &daemon,
@@ -209,7 +208,7 @@ async fn a_transaction_that_goes_quiet_is_cancelled_and_reported_as_not_answerin
 
 #[tokio::test]
 async fn a_package_manager_that_vanishes_ends_the_wait_at_once() {
-    let bus = PrivateBus::start("vanish");
+    let bus = PrivateBus::start();
     let daemon = bus.connect().await;
     let calls = serve(
         &daemon,

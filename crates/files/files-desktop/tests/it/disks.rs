@@ -8,7 +8,7 @@ use files_core::{EjectError, FolderPath, MountError, ProgramName, VolumeId, Volu
 use files_desktop::disks::FakeUsers;
 use files_desktop::{DiskUsers, Disks, NoUsers};
 
-use crate::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::udisks::{Device, DriveSpec, ROOT, Shared, plug, serve};
 
 const STICK: DriveSpec = DriveSpec {
@@ -98,7 +98,7 @@ struct Rig {
 }
 
 async fn rig(users: Arc<dyn DiskUsers>) -> Rig {
-    let bus = PrivateBus::start("disks");
+    let bus = PrivateBus::start();
     let server = bus.connect().await;
     let world = serve(&server, &devices()).await;
     let disks = Disks::new(bus.connect().await, users);

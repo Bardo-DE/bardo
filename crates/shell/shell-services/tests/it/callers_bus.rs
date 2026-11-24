@@ -17,7 +17,7 @@ use std::time::Duration;
 use action_core::ConfirmOffer;
 use action_dbus::ConfirmProxy;
 use shell_model::screenshots::Shots;
-use shell_testkit::{PrivateBus, TempDir};
+use base_testkit::{PrivateBus, Scratch};
 use tokio::sync::watch;
 use zbus::Connection;
 
@@ -106,9 +106,8 @@ async fn only_the_portal_backend_that_owns_its_name_asks_the_picker() {
         ),
     ];
     for (name, owner, caller, want) in cases {
-        let bus = PrivateBus::start()
-            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-        let scratch = TempDir::new("callers-picker");
+        let bus = PrivateBus::start();
+        let scratch = Scratch::new("callers-picker");
         let rig = rig_as(&bus, &scratch, owner).await;
         let calling = match caller {
             Caller::Owner => rig.portal.clone(),
@@ -167,9 +166,8 @@ async fn a_stand_in_named_in_the_persons_rows_is_let_in_only_as_its_own_role() {
         ),
     ];
     for (name, owner, want) in cases {
-        let bus = PrivateBus::start()
-            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
-        let scratch = TempDir::new("callers-dev-rows");
+        let bus = PrivateBus::start();
+        let scratch = Scratch::new("callers-dev-rows");
         let rig = rig_as(&bus, &scratch, owner).await;
         let proxy = Shell1Proxy::new(&rig.portal)
             .await
@@ -247,8 +245,7 @@ async fn only_an_account_service_that_owns_its_own_name_drives_the_accounts_shee
         ),
     ];
     for (name, held, owner, caller, want) in cases {
-        let bus = PrivateBus::start()
-            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+        let bus = PrivateBus::start();
         let mut shell = sheet_shell(&bus);
         serve_sheet(&mut shell).await;
         let owning = standing_in(&bus, &shell, held, owner).await;
@@ -316,7 +313,7 @@ async fn only_intentd_that_owns_its_name_asks_the_confirmation_sheet() {
         let calling: Connection = match caller {
             Caller::Owner => desk.intentd.clone(),
             Caller::Another(who) => {
-                let other = connect_intents_bus(&desk.bus.address).await;
+                let other = connect_intents_bus(desk.bus.address()).await;
                 desk.callers.make(&other, who);
                 other
             }

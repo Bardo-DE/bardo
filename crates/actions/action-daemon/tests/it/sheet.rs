@@ -4,7 +4,7 @@
 //! expiry, never an allow.
 
 use crate::support::apps::{Answer, FakeShell};
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::world::{app, introduce};
 use action_core::*;
 use action_daemon::{IntentdConfig, SheetConfirmer};
@@ -79,7 +79,7 @@ fn identity(dir: &tempfile::TempDir, daemon: &action_dbus::BusConnection) -> Arc
 
 async fn desk() -> Desk {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     let config = IntentdConfig::shipped().expect("the shipped configuration");
     let who = identity(&dir, &daemon);
@@ -222,7 +222,7 @@ fn hosted(id: &str) -> ConfirmRequest {
 
 async fn gated_desk(agents: bool) -> Desk {
     let dir = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(dir.path());
+    let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
     let config = IntentdConfig::shipped().expect("the shipped configuration");
     let gate = action_daemon::AcpGate::shut();

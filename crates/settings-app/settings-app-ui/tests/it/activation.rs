@@ -3,7 +3,7 @@
 //! absent, so the page says it is unavailable as before.
 
 use crate::support::Sandbox;
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::drive::{let_threads_run, settle_on_threads};
 use account_wire::names::{ACCOUNTS_BUS, INFERENCE_BUS};
 use memory_dbus::MEMORY_BUS;
@@ -26,8 +26,8 @@ fn page(slug: &str) -> Opening {
 /// the `expected` daemons and returns the names it started, with the window. A page that starts
 /// nothing has nothing to wait for: the window then runs a fair while (best effort).
 fn visit(test: &str, slug: &str, services: &[&str], expected: &[&str]) -> (Vec<String>, Harness) {
-    let bus = PrivateBus::start_with_services(test, services);
-    let mut harness = Sandbox::new(test).on_bus(&bus.address).harness(page(slug));
+    let bus = PrivateBus::start_activatable(services);
+    let mut harness = Sandbox::new(test).on_bus(bus.address()).harness(page(slug));
     // The starts are asked of the bus on real threads.
     if expected.is_empty() {
         let_threads_run(&mut harness, 100);

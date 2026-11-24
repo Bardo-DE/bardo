@@ -557,7 +557,7 @@ mod computers {
     use super::*;
     use account_dbus::zvariant::{OwnedValue, Value};
     use account_dbus::{BusStream, Details};
-    use hosting::bus::within;
+    use hosting::wait::within;
     use inference_client::InferSession;
     use inference_core::{
         ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, MessagePart, OpenOptions,

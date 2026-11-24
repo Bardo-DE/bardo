@@ -101,7 +101,7 @@ fn pixmap_png(pixmap: &Pixmap) -> Option<Vec<u8>> {
 mod tests {
     use super::{IconArt, icon_art, named_art, pixmap_png, symbolic_name};
     use shell_model::tray::{Pixmap, TRAY_ICON_FILE_MAX_BYTES, TrayIcon};
-    use shell_testkit::TempDir;
+    use base_testkit::Scratch;
     use std::path::PathBuf;
     use std::time::{Duration, Instant};
 
@@ -118,7 +118,7 @@ mod tests {
 
     #[test]
     fn a_fifo_png_is_refused_at_once() {
-        let dir = TempDir::new("tray-icon-fifo");
+        let dir = Scratch::new("tray-icon-fifo");
         let fifo = dir.path().join("spin.png");
         rustix::fs::mknodat(
             rustix::fs::CWD,
@@ -138,7 +138,7 @@ mod tests {
 
     #[test]
     fn a_png_over_the_cap_is_refused() {
-        let dir = TempDir::new("tray-icon-big");
+        let dir = Scratch::new("tray-icon-big");
         let path = dir.path().join("big.png");
         let big = std::fs::File::create(&path).unwrap_or_else(|e| panic!("{e}"));
         big.set_len(TRAY_ICON_FILE_MAX_BYTES + 1)
@@ -148,7 +148,7 @@ mod tests {
 
     #[test]
     fn a_small_png_is_read_whole() {
-        let dir = TempDir::new("tray-icon-small");
+        let dir = Scratch::new("tray-icon-small");
         let path = dir.path().join("small.png");
         std::fs::write(&path, b"\x89PNG").unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(

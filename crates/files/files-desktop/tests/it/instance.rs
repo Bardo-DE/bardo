@@ -7,7 +7,7 @@ use files_desktop::{Claim, InstanceError, Show, ShowRequest, StartupId, claim, f
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
-use crate::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::file_manager::{folder, next, reveal, sink};
 
 fn shows() -> Vec<Show> {
@@ -35,7 +35,7 @@ fn shows() -> Vec<Show> {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_second_claim_finds_the_first_running_and_forwards_to_it() {
-    let bus = PrivateBus::start("claim_twice");
+    let bus = PrivateBus::start();
     let (first_sink, mut first_heard) = sink();
     let first = bus.connect().await;
     let Claim::First(served) = claim(&first, first_sink).await.unwrap() else {
@@ -60,7 +60,7 @@ async fn the_second_claim_finds_the_first_running_and_forwards_to_it() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn another_file_manager_keeps_its_name_and_the_app_still_runs() {
-    let bus = PrivateBus::start("name_taken");
+    let bus = PrivateBus::start();
     let other = bus.connect().await;
     other.request_name(INTERFACE).await.unwrap();
 
@@ -91,7 +91,7 @@ async fn another_file_manager_keeps_its_name_and_the_app_still_runs() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn forwarding_with_no_app_running_says_so() {
-    let bus = PrivateBus::start("not_running");
+    let bus = PrivateBus::start();
     let client = bus.connect().await;
     let result = forward(&client, &shows().remove(0)).await;
     assert!(

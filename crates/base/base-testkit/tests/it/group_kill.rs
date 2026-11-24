@@ -1,7 +1,7 @@
 //! A test process killed without unwinding (a timeout's SIGKILL, sent to its whole group) leaves
 //! no bus and no service behind. The test re-runs this executable as the doomed process.
 
-use action_testbus::{PrivateBus, Reaped};
+use base_testkit::{PrivateBus, Reaped};
 use std::io::{BufRead, BufReader};
 use std::os::unix::process::CommandExt;
 use std::path::Path;
@@ -17,7 +17,7 @@ fn doomed_process() {
     let Ok(dir) = std::env::var(DOOMED) else {
         return;
     };
-    let bus = PrivateBus::start(Path::new(&dir));
+    let bus = PrivateBus::start_in(Path::new(&dir));
     let service = Reaped::spawn(Command::new("/bin/sleep").arg("600")).expect("service starts");
     println!("PIDS {} {}", bus.pid(), service.pid());
     loop {
@@ -41,7 +41,7 @@ fn pids_of(line: &str) -> Vec<u32> {
 
 #[test]
 fn a_killed_test_group_leaves_no_bus_and_no_service() {
-    let dir = tempfile::tempdir().expect("scratch dir");
+    let dir = base_testkit::Scratch::new("group-kill");
     let mut child = Command::new(std::env::current_exe().expect("test binary"))
         .args(["group_kill::doomed_process", "--exact", "--nocapture"])
         .env_clear()

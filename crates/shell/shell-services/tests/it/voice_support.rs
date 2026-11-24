@@ -24,7 +24,7 @@ use shell_services::VoiceLinks;
 use shell_services::env::{BusRoute, Buses, Env};
 use shell_services::seat::{SeatPublisher, seat};
 use shell_services::service::spawn;
-use shell_testkit::PrivateBus;
+use base_testkit::PrivateBus;
 use speech_wire::{
     CancelCause, Envelope, UtteranceEnd, VoiceEvent as Frame, VoiceRefusedError, VoiceVocab, frame,
     seal,
@@ -323,13 +323,12 @@ pub async fn desk(answer: BeginAnswer) -> Desk {
 
 /// [`desk`], with the program behind the stand-in's connection being `is` to the shell.
 pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Desk {
-    let bus = PrivateBus::start()
-        .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+    let bus = PrivateBus::start();
     let script = Script::new(answer);
-    let voiced = connect(&bus.address).await;
+    let voiced = connect(bus.address()).await;
     let callers = VoicedCallers::new(&voiced, is);
     let env = Env {
-        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
+        buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address().to_owned())),
         callers: Arc::<VoicedCallers>::clone(&callers),
         ..Env::isolated(Path::new("/nonexistent/shell-voice-bus"))
     };
@@ -375,7 +374,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Desk {
             consents: consents_tx,
         },
     );
-    let shell = connect(&bus.address).await;
+    let shell = connect(bus.address()).await;
     Desk {
         bus,
         voice,

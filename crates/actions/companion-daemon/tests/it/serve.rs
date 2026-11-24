@@ -2,7 +2,7 @@
 //! answer's object path while the loop runs behind it, the roster and the front task read without
 //! waiting for the loop, and the answer object's view.
 
-use crate::support::bus::PrivateBus;
+use base_testkit::PrivateBus;
 use crate::support::infer::{Say, words};
 use crate::support::world::*;
 use account_callers::ProcRoot;
@@ -66,7 +66,7 @@ pub async fn view_until_done(answers: &CompanionAnswerProxy<'_>) -> AnswerWire {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![words("Hello there.")]);
     let (launcher, hand) = (w.launcher, w.clock);
@@ -198,7 +198,7 @@ async fn companion1_is_served_as_declared_and_an_ask_runs_to_its_answer() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_roster_and_the_front_answer_while_a_planner_turn_is_still_running() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, client) = (bus.connect().await, bus.connect().await);
     let w = world(vec![Say::Hang]);
     let launcher = w.launcher;
@@ -281,7 +281,7 @@ async fn the_roster_and_the_front_answer_while_a_planner_turn_is_still_running()
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn only_the_shell_speaks_for_the_person() {
     let scratch = tempfile::tempdir().expect("scratch");
-    let bus = PrivateBus::start(scratch.path());
+    let bus = PrivateBus::start_in(scratch.path());
     let (server, shell, stranger) = (
         bus.connect().await,
         bus.connect().await,

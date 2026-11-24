@@ -4,6 +4,7 @@
 //! Acceptance 7 of design/31 section 7.1: no key is on any bus, in any file or in any audit line,
 //! checked by a scan that has a positive control.
 
+use base_testkit::PrivateBus;
 use crate::hosting;
 
 use account_capability::LlmFeature;
@@ -14,7 +15,7 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::{Tokens, TurnCount};
 use hosting::accountd::{FakeAccount, Standing};
-use hosting::bus::within;
+use hosting::wait::within;
 use hosting::engine::{Chat, Script};
 use hosting::entries;
 use hosting::rig::{Hosted, Plan, Trust, World};
@@ -206,7 +207,7 @@ fn contains(haystack: &[u8], needle: &str) -> bool {
 struct Tap(zbus::MessageStream);
 
 impl Tap {
-    async fn start(bus: &hosting::bus::PrivateBus) -> Self {
+    async fn start(bus: &base_testkit::PrivateBus) -> Self {
         let monitor = bus.connect().await;
         zbus::fdo::MonitoringProxy::new(&monitor)
             .await

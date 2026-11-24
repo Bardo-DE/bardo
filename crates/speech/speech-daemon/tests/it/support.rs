@@ -12,7 +12,7 @@ pub mod infer;
 use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use action_dbus::callers::Identity;
-use action_testbus::PrivateBus;
+use base_testkit::PrivateBus;
 use caller_role_types::CallerRole;
 use device::{Hand, ScriptedDevice};
 use infer::{ScriptedInfer, Seen};
@@ -186,10 +186,10 @@ pub async fn world(options: Options) -> World {
 }
 
 pub async fn world_with(options: Options, config: VoicedConfig) -> World {
-    action_testbus::hang_guard::arm();
+    base_testkit::hang_guard::arm();
     let home = TempDir::new().expect("scratch");
     // The daemon reads nothing of the person's: HOME and XDG point at the scratch directory.
-    let bus = PrivateBus::start(home.path());
+    let bus = PrivateBus::start_in(home.path());
     let (device, hand) = options.device;
     let seen = Arc::clone(&options.infer.seen);
     let daemon = bus.connect().await;

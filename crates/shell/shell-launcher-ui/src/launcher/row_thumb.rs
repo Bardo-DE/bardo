@@ -140,20 +140,20 @@ mod tests {
     use anyview_platform::portable::FreedesktopThumbnails;
     use anyview_platform::{Env, ThumbPixels, ThumbSize, ThumbnailCache};
     use shell_model::dirs::Dirs;
-    use shell_testkit::TempDir;
+    use base_testkit::Scratch;
     use ui_components::components::content::image_source::ImageSource;
 
     use super::{RowThumbs, stamp_of, thumbnail_file};
 
     /// A scratch home with a picture outside Pictures, and the thumbnail cache of its directories.
     struct Scene {
-        _dir: TempDir,
+        _dir: Scratch,
         dirs: Dirs,
         picture: PathBuf,
     }
 
     fn scene() -> Scene {
-        let dir = TempDir::new("row-thumbs");
+        let dir = Scratch::new("row-thumbs");
         let dirs = Dirs {
             pictures: Some(dir.path().join("home/Pictures")),
             ..Dirs::under(dir.path())

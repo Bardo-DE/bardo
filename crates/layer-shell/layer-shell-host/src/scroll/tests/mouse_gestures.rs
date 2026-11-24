@@ -19,7 +19,7 @@ use crate::dom::tests::env::test_env;
 use crate::input::mouse_gestures::route::route;
 use crate::input::mouse_gestures::{MouseGestures, read_all};
 use crate::input::pointer::PointerPos;
-use crate::scratch::Dir;
+use base_testkit::Scratch;
 use crate::scroll::source::{AxisFrame, AxisSource, AxisValue};
 use crate::scroll::suppress::Suppress;
 use crate::scroll::surface::SurfaceScroll;
@@ -58,7 +58,7 @@ struct Daemon {
 
 impl Daemon {
     fn start() -> Daemon {
-        let dir = Dir::new();
+        let dir = Scratch::new("shell-host");
         let path = dir.path().join("events.sock");
         let listener = socket_with(
             AddressFamily::UNIX,

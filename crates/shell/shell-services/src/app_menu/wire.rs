@@ -214,7 +214,7 @@ pub(crate) async fn about_to_show(
 mod tests {
     use std::time::{Duration, Instant};
 
-    use shell_testkit::PrivateBus;
+    use base_testkit::PrivateBus;
     use zbus::interface;
 
     use super::{MENU_PATH, WireError, about_to_show, click, read_layout};
@@ -242,13 +242,12 @@ mod tests {
     }
 
     fn connect(bus: &PrivateBus) -> zbus::connection::Builder<'_> {
-        zbus::connection::Builder::address(bus.address.as_str()).unwrap_or_else(|e| panic!("{e}"))
+        zbus::connection::Builder::address(bus.address()).unwrap_or_else(|e| panic!("{e}"))
     }
 
     #[tokio::test]
     async fn a_menu_that_never_answers_is_given_up_on_for_each_call() {
-        let bus = PrivateBus::start()
-            .expect("the private bus needs dbus-daemon on PATH (a required test tool)");
+        let bus = PrivateBus::start();
         let name = "org.bardo.AppMenu.hung";
         let _app = connect(&bus)
             .name(name)
