@@ -3481,7 +3481,6 @@ dependencies = [
  "caller-identity-core",
  "caller-identity-linux",
  "dbus-kit",
- "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "zbus",

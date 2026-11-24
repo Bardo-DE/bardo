@@ -32,7 +32,6 @@ dev-rows = ["caller-identity-linux/dev-rows"]
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 caller-identity-linux = {path = "../caller-identity-linux", features = ["fake"]}
-tempfile = { workspace = true }
 dbus-kit = {path = "../../bus/dbus-kit", features = ["tokio"]}
 
 # One integration binary that needs the `fake` seams (an introduced standing, a fixture tree).
