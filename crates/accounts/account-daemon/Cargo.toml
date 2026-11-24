@@ -54,7 +54,7 @@ account-client-dbus = {path = "../account-client-dbus"}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus", "tokio"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 account-fake = {path = "../account-fake"}
-account-daemon = {path = ".", features = ["test-system-callers"]}
+account-daemon = {path = ".", features = ["test-system-callers", "test-keys", "test-proc-root"]}
 account-fake-servers = {path = "../account-fake-servers"}
 http-core = {path = "../../network/http-core"}
 http-reqwest = {path = "../../network/http-reqwest"}

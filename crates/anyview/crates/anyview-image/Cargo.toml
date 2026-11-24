@@ -35,6 +35,8 @@ resvg = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
+# The crate's own tests need its test-only features.
+anyview-image = {path = ".", features = ["avif", "encode"]}
 # `OnDisk`: the input of a fixture on disk (core opens no file).
 anyview-fs = {path = "../anyview-fs"}
 # The CPU time a refusal costs, so the hostile tests do not count time spent waiting on a loaded

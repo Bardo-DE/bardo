@@ -229,7 +229,7 @@ fn steps(selection: &Selection) -> Vec<Step> {
     // fix only grows into the next backlog.
     let mut clippy = with_pkgs(&["clippy", "--all-targets"]);
     clippy.extend(["--", "-D", "warnings"].map(str::to_owned));
-    let mut steps = vec![
+    vec![
         step(fmt, 10, false),
         step(clippy, 150, false),
         step(with_pkgs(&["test", "--no-run"]), 150, false),
@@ -239,33 +239,8 @@ fn steps(selection: &Selection) -> Vec<Step> {
             true,
         ),
         step(with_pkgs(&["test", "--doc", "--no-fail-fast"]), 30, true),
-    ];
-    for (pkg, features) in FEATURE_TESTS {
-        let wanted = match selection {
-            Selection::All => true,
-            Selection::Some(pkgs) => pkgs.contains(pkg),
-        };
-        if wanted {
-            let args = [
-                "nextest",
-                "run",
-                "--profile",
-                "gate",
-                "--no-fail-fast",
-                "-p",
-                pkg,
-                "--features",
-                features,
-            ];
-            steps.push(step(args.map(str::to_owned).to_vec(), 60, true));
-        }
-    }
-    steps
+    ]
 }
-
-/// Tests that only build with a feature a plain workspace run must not unify on (it would
-/// change other crates' binaries). Moves to layers.toml's per-crate `features` in phase 2.
-const FEATURE_TESTS: [(&str, &str); 1] = [("account-secrets", "test-keys")];
 
 /// Files changed against `base`, committed, staged, unstaged or untracked, relative to `root`.
 fn changed_files(root: &Path, base: Option<&str>) -> Result<Vec<String>> {

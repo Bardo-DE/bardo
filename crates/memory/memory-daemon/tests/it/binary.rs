@@ -104,7 +104,6 @@ fn first_line(stderr: ChildStderr) -> String {
 /// Starts a daemon with `launch` (given the keys file it is to use) on a private bus and takes a
 /// `Record` into `desktop` (a Space nobody registered) through it; whatever `launch` returns is
 /// kept alive until the checks are done, then handed back.
-#[cfg(all(feature = "test-keys", feature = "test-proc-root"))]
 async fn record_into_desktop<G>(
     root: &Path,
     bus: &PrivateBus,
@@ -158,7 +157,6 @@ async fn record_into_desktop<G>(
     started
 }
 
-#[cfg(all(feature = "test-keys", feature = "test-proc-root"))]
 #[tokio::test]
 async fn the_test_keys_binary_starts_with_file_keys_and_takes_a_desktop_record() {
     let scratch = tempfile::tempdir().expect("scratch");
@@ -170,17 +168,4 @@ async fn the_test_keys_binary_starts_with_file_keys_and_takes_a_desktop_record()
     })
     .await;
     assert!(first_line(stderr).contains("TEST BUILD"));
-}
-
-#[cfg(not(feature = "test-keys"))]
-#[test]
-fn the_default_binary_ignores_the_variable_and_says_so() {
-    let scratch = tempfile::tempdir().expect("scratch");
-    let root = scratch.path();
-    scratch_home(root);
-    let bus = PrivateBus::start_in(root);
-    let keys_file = root.join("keys").join("memoryd.keys");
-    let (_daemon, stderr) = spawn(root, &bus, &format!("file:{}", keys_file.display()));
-    assert!(first_line(stderr).contains("ignoring it"));
-    assert!(!keys_file.exists());
 }

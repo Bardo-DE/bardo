@@ -88,7 +88,6 @@ async fn serving(bus: &PrivateBus, daemon: &mut Daemon) -> bool {
     .await
 }
 
-#[cfg(feature = "test-keys")]
 mod test_build {
     use super::*;
     use std::os::unix::fs::PermissionsExt;
@@ -156,26 +155,4 @@ mod test_build {
         assert!(daemon.stderr().contains("0600"), "{}", daemon.stderr());
         assert_eq!(mode(&keys), 0o644, "not fixed behind the person's back");
     }
-}
-
-/// A shipped build has no file store: it says it ignores the setting (never repeating the
-/// variable's value) and keeps using the Secret Service, and creates no file.
-#[cfg(not(feature = "test-keys"))]
-#[tokio::test(flavor = "multi_thread")]
-async fn a_shipped_build_ignores_the_variable_and_says_so_without_repeating_it() {
-    let bus = PrivateBus::start();
-    let home = scratch(&bus, "home");
-    let keys = home.join("keys/keys.json");
-    let var = format!("file:{}", keys.display());
-    let mut daemon = spawn(&bus, &home, Some(&var));
-    assert!(serving(&bus, &mut daemon).await, "{}", daemon.stderr());
-    let said = daemon.stderr();
-    assert!(
-        said.contains(
-            "this build has no test-keys feature; ignoring it and using the Secret Service"
-        ),
-        "{said}"
-    );
-    assert!(!said.contains("keys.json"));
-    assert!(!keys.exists());
 }

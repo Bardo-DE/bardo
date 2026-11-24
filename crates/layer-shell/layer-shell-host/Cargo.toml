@@ -117,6 +117,8 @@ name = "demo_popup_keys"
 [[example]]
 name = "demo_swipe"
 [dev-dependencies]
+# The crate's own tests need its test-only features.
+layer-shell-host = {path = ".", features = ["headless"]}
 # The drag outcome's wire form in tests, and demo_drag's JSON lines.
 serde_json = { workspace = true }
 # The pulse test waits for a timer by a blocking dispatch with the one generous limit.
