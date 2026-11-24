@@ -43,7 +43,12 @@ fn raster_codec(format: RasterFormat) -> Result<Codec, ImageError> {
         RasterFormat::Ico => Ok(Codec::Image(ImageFormat::Ico)),
         RasterFormat::Tga => Ok(Codec::Image(ImageFormat::Tga)),
         RasterFormat::Qoi => Ok(Codec::Image(ImageFormat::Qoi)),
-        RasterFormat::Avif => avif(),
+        #[cfg(feature = "avif")]
+        RasterFormat::Avif => Ok(Codec::Image(ImageFormat::Avif)),
+        #[cfg(not(feature = "avif"))]
+        RasterFormat::Avif => Err(ImageError::NotCompiledIn {
+            format: RasterFormat::Avif,
+        }),
         RasterFormat::Jxl => Ok(Codec::Jxl),
         RasterFormat::Psd => Ok(Codec::Psd),
         RasterFormat::Icns => Ok(Codec::Icns),
@@ -52,18 +57,6 @@ fn raster_codec(format: RasterFormat) -> Result<Codec, ImageError> {
         RasterFormat::Raw => Ok(Codec::RawPreview),
         RasterFormat::Heic => Err(ImageError::Unsupported { format }),
     }
-}
-
-#[cfg(feature = "avif")]
-fn avif() -> Result<Codec, ImageError> {
-    Ok(Codec::Image(ImageFormat::Avif))
-}
-
-#[cfg(not(feature = "avif"))]
-fn avif() -> Result<Codec, ImageError> {
-    Err(ImageError::NotCompiledIn {
-        format: RasterFormat::Avif,
-    })
 }
 
 #[cfg(test)]

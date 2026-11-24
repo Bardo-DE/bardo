@@ -141,10 +141,15 @@ pub fn fidelity(bytes: &[u8], sniffed: &Sniffed) -> Fidelity {
     }
 }
 
-/// The file `bytes`, which `sniffed` says is a picture, with `edit` applied, keeping what
-/// [`fidelity`] says it keeps: a file that loses something is written anyway (the caller asked
-/// first). Blocking: a re-encoded format is decoded and written whole. An edit of pages, a vector
-/// picture and a format with no writer are refused.
+/// The file `bytes` with `edit` applied, keeping what [`fidelity`] says it keeps.
+///
+/// `sniffed` says the file is a picture. A file that loses something is written anyway (the
+/// caller asked first). Blocking: a re-encoded format is decoded and written whole.
+///
+/// # Errors
+///
+/// Returns an error for an edit of pages, a vector picture, a format with no writer, or a file
+/// that cannot be decoded or written.
 pub fn edited(bytes: &[u8], sniffed: &Sniffed, edit: Edit) -> Result<Vec<u8>, ImageError> {
     let placing = match edit {
         Edit::Rotate(turn) => Placing { turn, axis: None },

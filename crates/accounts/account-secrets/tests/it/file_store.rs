@@ -116,9 +116,11 @@ fn a_directory_or_a_file_that_is_not_a_key_file_is_refused() {
         let path = dir.join(name);
         std::fs::write(&path, text).expect("write");
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).expect("chmod");
-        assert_eq!(
-            FileSecrets::open(&path),
-            Err(FileSecretsError::Corrupt),
+        assert!(
+            matches!(
+                FileSecrets::open(&path),
+                Err(FileSecretsError::Corrupt | FileSecretsError::Unparsable { .. })
+            ),
             "{name}"
         );
         assert_eq!(

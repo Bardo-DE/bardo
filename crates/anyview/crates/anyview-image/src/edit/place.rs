@@ -30,6 +30,11 @@ impl Grid {
             QuarterTurn::Quarter | QuarterTurn::ThreeQuarter
         );
         let (out_w, out_h) = if swaps { (h, w) } else { (w, h) };
+        let (width, height) = if swaps {
+            (self.height, self.width)
+        } else {
+            (self.width, self.height)
+        };
         let mut out = vec![0u8; w * h * unit];
         for y in 0..h {
             for x in 0..w {
@@ -46,8 +51,8 @@ impl Grid {
             }
         }
         Grid {
-            width: out_w as u32, // at most the old width or height
-            height: out_h as u32,
+            width,
+            height,
             unit,
             bytes: out,
         }
@@ -71,7 +76,9 @@ mod tests {
         use crate::pixels::Rgba8;
         use anyview_core::{PixelLen, PixelSize};
         let (w, h) = (3u32, 2u32);
-        let bytes: Vec<u8> = (0..w * h * 4).map(|i| i as u8).collect();
+        let bytes: Vec<u8> = (0..w * h * 4)
+            .map(|i| u8::try_from(i).expect("below 256"))
+            .collect();
         let picture = Rgba8::new(
             PixelSize {
                 width: PixelLen(w),

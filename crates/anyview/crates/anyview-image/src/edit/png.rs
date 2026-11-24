@@ -67,12 +67,12 @@ fn crc32(parts: &[&[u8]]) -> u32 {
     !crc
 }
 
-fn chunk_bytes(kind: &[u8; 4], data: &[u8]) -> Vec<u8> {
+fn chunk_bytes(kind: [u8; 4], data: &[u8]) -> Vec<u8> {
     let mut out = Vec::with_capacity(data.len() + 12);
     out.extend_from_slice(&u32::try_from(data.len()).unwrap_or(u32::MAX).to_be_bytes()); // a chunk is under 4 GiB
-    out.extend_from_slice(kind);
+    out.extend_from_slice(&kind);
     out.extend_from_slice(data);
-    out.extend_from_slice(&crc32(&[kind, data]).to_be_bytes());
+    out.extend_from_slice(&crc32(&[&kind, data]).to_be_bytes());
     out
 }
 
@@ -246,7 +246,7 @@ pub(super) fn rewritten(file: &[u8], placing: Placing) -> Result<Vec<u8>, ImageE
     ihdr.extend_from_slice(&grid.height.to_be_bytes());
     ihdr.extend_from_slice(&[head.depth, head.colour, 0, 0, 0]);
     let mut out = SIGNATURE.to_vec();
-    out.extend(chunk_bytes(b"IHDR", &ihdr));
+    out.extend(chunk_bytes(*b"IHDR", &ihdr));
     let mut idat_done = false;
     for chunk in &chunks {
         match &chunk.kind {
@@ -259,16 +259,16 @@ pub(super) fn rewritten(file: &[u8], placing: Placing) -> Result<Vec<u8>, ImageE
             }
             b"pHYs" if swaps_axes(total) && chunk.data.len() == 9 => {
                 let swapped = [&chunk.data[4..8], &chunk.data[0..4], &chunk.data[8..9]].concat();
-                out.extend(chunk_bytes(b"pHYs", &swapped));
+                out.extend(chunk_bytes(*b"pHYs", &swapped));
             }
             b"eXIf" if ExifFacts::has_orientation(file) => {
                 if let Ok(upright) = with_orientation(chunk.data, ExifOrientation::UPRIGHT) {
-                    out.extend(chunk_bytes(b"eXIf", &upright));
+                    out.extend(chunk_bytes(*b"eXIf", &upright));
                 }
             }
             _ => out.extend_from_slice(chunk.raw),
         }
     }
-    out.extend(chunk_bytes(b"IEND", &[]));
+    out.extend(chunk_bytes(*b"IEND", &[]));
     Ok(out)
 }

@@ -197,6 +197,10 @@ mod file_store {
 
     struct File(FileSecrets);
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait is async; reading the key file is synchronous"
+    )]
     impl Fixture for File {
         type Store = FileSecrets;
         fn store(&self) -> &FileSecrets {

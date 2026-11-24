@@ -14,10 +14,11 @@ use anyview_core::{
     SniffStep, Sniffed, sniff,
 };
 
-/// The jobs that write `choice` for the image `file`. A re-encode keeps the original's EXIF and
-/// ICC profile unless the choice drops them (a vector image has none to keep); one of an
-/// adjusted picture has the person's turns, mirrors and cuts in its pixels; a PDF puts the image
-/// on one page.
+/// The jobs that write `choice` for the image `file`.
+///
+/// A re-encode keeps the original's EXIF and ICC profile unless the choice drops them (a vector
+/// image has none to keep); one of an adjusted picture has the person's turns, mirrors and cuts
+/// in its pixels; a PDF puts the image on one page.
 #[must_use]
 pub fn plan_export(file: &FilePath, choice: RasterExport) -> Vec<ExportJob> {
     match choice {
@@ -56,6 +57,10 @@ pub struct ImageFile {
 
 impl ImageFile {
     /// The file at `file`, read whole and sniffed. Blocking.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the file cannot be read or is not an image.
     pub fn read(file: &FilePath) -> Result<ImageFile, ImageError> {
         let bytes = std::fs::read(file.as_path()).map_err(|error| ImageError::Read {
             path: file.as_path().to_path_buf(),
@@ -69,6 +74,10 @@ impl ImageFile {
     }
 
     /// The image whose bytes are `bytes`, called `name` (an entry of a comic, say), sniffed.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the bytes sniff as something that is not an image.
     pub fn from_bytes(bytes: Vec<u8>, name: &FileName) -> Result<ImageFile, ImageError> {
         let head = FileHead::new(&bytes);
         match sniff(&head, name) {
@@ -80,6 +89,10 @@ impl ImageFile {
     }
 
     /// The size an SVG declares, or `None` for a file that is not one.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the SVG does not parse.
     pub fn vector_size(&self) -> Result<Option<PixelSize>, ImageError> {
         if self.sniffed.kind() == FormatKind::Vector {
             Svg::parse(&self.bytes).map(|svg| Some(svg.intrinsic()))
@@ -90,6 +103,10 @@ impl ImageFile {
 
     /// The size of a JPEG that is already upright, which a PDF can hold as the file is; `None`
     /// for anything else (a PDF reads no EXIF orientation, so a turned one is drawn instead).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the JPEG's declared size cannot be read.
     pub fn upright_jpeg_size(&self) -> Result<Option<PixelSize>, ImageError> {
         let is_jpeg = self.sniffed.detail() == &FormatDetail::Raster(RasterFormat::Jpeg);
         if !is_jpeg || ExifFacts::read(&self.bytes).orientation != ExifOrientation::UPRIGHT {
@@ -99,6 +116,10 @@ impl ImageFile {
     }
 
     /// The upright picture of a still image. An animation is exported as its first frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the image cannot be decoded.
     pub fn picture(&self) -> Result<Rgba8, ImageError> {
         match decode_bytes(&self.bytes, &self.sniffed)? {
             Decoded::Still(picture) | Decoded::HeldStill { picture, .. } => Ok(picture),
@@ -107,9 +128,14 @@ impl ImageFile {
     }
 }
 
-/// The bytes of the image `file` with `adjust` applied to its pixels, resized and encoded as
-/// `target`. A vector image carries no metadata, whatever `keep` says. Blocking, and slow for
-/// AVIF at a large size.
+/// The bytes of the image `file` with `adjust` applied, resized and encoded as `target`.
+///
+/// A vector image carries no metadata, whatever `keep` says. Blocking, and slow for AVIF at a
+/// large size.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read, decoded or encoded.
 pub fn encode_file(
     file: &FilePath,
     adjust: Adjust,
@@ -120,11 +146,17 @@ pub fn encode_file(
     encode_file_via(file, adjust, resize, target, keep, |_| None)
 }
 
-/// [`encode_file`] for a file whose pixels a plugin may decode: `plugin` is asked for the upright
-/// picture of a camera raw file first (the viewer shows the plugin's development, not the preview
-/// inside the file) and of a file the built-in decoders have no decoder for. A picture a plugin
-/// made is written with no metadata: its pixels are not in the file's colour space, and what the
-/// file says of orientation and place was not read by anyone here.
+/// [`encode_file`] for a file whose pixels a plugin may decode.
+///
+/// `plugin` is asked for the upright picture of a camera raw file first (the viewer shows the
+/// plugin's development, not the preview inside the file) and of a file the built-in decoders have
+/// no decoder for. A picture a plugin made is written with no metadata: its pixels are not in the
+/// file's colour space, and what the file says of orientation and place was not read by anyone
+/// here.
+///
+/// # Errors
+///
+/// Returns an error if the file cannot be read, decoded or encoded.
 pub fn encode_file_via(
     file: &FilePath,
     adjust: Adjust,

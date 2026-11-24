@@ -238,7 +238,6 @@ impl PrivateBus {
     ///
     /// When the bus address is not valid.
     #[cfg(feature = "dbus")]
-    #[must_use]
     pub fn builder(&self) -> zbus::connection::Builder<'_> {
         zbus::connection::Builder::address(self.address.as_str()).expect("a bus address")
     }

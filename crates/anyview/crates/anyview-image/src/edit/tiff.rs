@@ -60,7 +60,7 @@ struct Facts {
     supported: bool,
 }
 
-fn tiff_error(error: tiff::TiffError) -> ImageError {
+fn tiff_error(error: &tiff::TiffError) -> ImageError {
     ImageError::Container {
         reason: error.to_string(),
     }
@@ -70,27 +70,27 @@ fn facts_of(decoder: &mut Decoder<Cursor<&[u8]>>) -> Result<Facts, ImageError> {
     let unsigned = |decoder: &mut Decoder<Cursor<&[u8]>>, tag: Tag| {
         decoder
             .find_tag_unsigned::<u16>(tag)
-            .map_err(tiff_error)
+            .map_err(|error| tiff_error(&error))
             .map(|found| found.unwrap_or(0))
     };
     let compression = unsigned(decoder, Tag::Compression)?;
     let predictor = unsigned(decoder, Tag::Predictor)?;
     let photometric = decoder
         .find_tag_unsigned::<u16>(Tag::PhotometricInterpretation)
-        .map_err(tiff_error)?
+        .map_err(|error| tiff_error(&error))?
         .unwrap_or(u16::MAX);
     let planar = unsigned(decoder, Tag::PlanarConfiguration)?;
     let depths = decoder
         .find_tag_unsigned_vec::<u16>(Tag::BitsPerSample)
-        .map_err(tiff_error)?
+        .map_err(|error| tiff_error(&error))?
         .unwrap_or_default();
     let formats = decoder
         .find_tag_unsigned_vec::<u16>(Tag::SampleFormat)
-        .map_err(tiff_error)?
+        .map_err(|error| tiff_error(&error))?
         .unwrap_or_default();
     let tag = decoder
         .find_tag_unsigned::<u16>(Tag::Orientation)
-        .map_err(tiff_error)?
+        .map_err(|error| tiff_error(&error))?
         .and_then(ExifOrientation::from_tag)
         .unwrap_or(ExifOrientation::UPRIGHT);
     let tags: Vec<u16> = decoder
@@ -212,8 +212,8 @@ fn predicted<T: Copy>(row: &[T], result: &mut Vec<T>, stride: usize, minus: fn(T
 /// Reads the pixels of the current page as one byte-addressed grid, with a white-is-zero page
 /// turned back to the values the file stores.
 fn page_grid(decoder: &mut Decoder<Cursor<&[u8]>>, facts: &Facts) -> Result<Grid, ImageError> {
-    let (width, height) = decoder.dimensions().map_err(tiff_error)?;
-    let bytes = match decoder.read_image().map_err(tiff_error)? {
+    let (width, height) = decoder.dimensions().map_err(|error| tiff_error(&error))?;
+    let bytes = match decoder.read_image().map_err(|error| tiff_error(&error))? {
         DecodingResult::U8(v) => v,
         DecodingResult::U16(v) => v.iter().flat_map(|s| s.to_ne_bytes()).collect(),
         DecodingResult::U32(_)
@@ -276,7 +276,7 @@ fn carried_tags(
         let found = decoder
             .image_ifd()
             .find_tag_buf(tag, &mut buffer)
-            .map_err(tiff_error)?;
+            .map_err(|error| tiff_error(&error))?;
         if found.is_none() {
             continue;
         }
@@ -312,14 +312,14 @@ fn write_page<W: Write + Seek>(
         ($colour:ty, $data:expr) => {{
             let mut image = encoder
                 .new_image::<$colour>(grid.width, grid.height)
-                .map_err(tiff_error)?;
+                .map_err(|error| tiff_error(&error))?;
             for (tag, value) in tags {
                 image
                     .encoder()
                     .write_tag_buf(*tag, value)
-                    .map_err(tiff_error)?;
+                    .map_err(|error| tiff_error(&error))?;
             }
-            image.write_data($data).map_err(tiff_error)
+            image.write_data($data).map_err(|error| tiff_error(&error))
         }};
     }
     match (samples, facts.samples) {
@@ -351,10 +351,10 @@ pub(super) fn rewritten(file: &[u8], placing: Placing) -> Result<Vec<u8>, ImageE
     let first = all.first().ok_or_else(|| ImageError::Container {
         reason: "a TIFF with no pages".to_owned(),
     })?;
-    let mut decoder = Decoder::new(Cursor::new(file)).map_err(tiff_error)?;
+    let mut decoder = Decoder::new(Cursor::new(file)).map_err(|error| tiff_error(&error))?;
     let mut out = Cursor::new(Vec::new());
     let mut encoder = TiffEncoder::new(&mut out)
-        .map_err(tiff_error)?
+        .map_err(|error| tiff_error(&error))?
         .with_compression(compression_of(first))
         .with_predictor(if first.predictor == 2 {
             Predictor::Horizontal
@@ -363,9 +363,9 @@ pub(super) fn rewritten(file: &[u8], placing: Placing) -> Result<Vec<u8>, ImageE
         });
     for (index, facts) in all.iter().enumerate() {
         if index > 0 {
-            decoder.next_image().map_err(tiff_error)?;
+            decoder.next_image().map_err(|error| tiff_error(&error))?;
         }
-        let (width, height) = decoder.dimensions().map_err(tiff_error)?;
+        let (width, height) = decoder.dimensions().map_err(|error| tiff_error(&error))?;
         crate::decode::admit_rewrite(width, height)?;
         let total = placing.over(facts.orientation);
         let tags = carried_tags(&mut decoder, swaps_axes(total))?;

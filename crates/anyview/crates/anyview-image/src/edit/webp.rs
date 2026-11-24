@@ -64,7 +64,7 @@ pub(super) fn fidelity(file: &[u8]) -> Fidelity {
     }
 }
 
-fn chunk(code: &[u8; 4], data: &[u8]) -> Vec<u8> {
+fn chunk(code: [u8; 4], data: &[u8]) -> Vec<u8> {
     let mut out = code.to_vec();
     out.extend_from_slice(&u32::try_from(data.len()).unwrap_or(u32::MAX).to_le_bytes()); // a chunk is under 4 GiB
     out.extend_from_slice(data);
@@ -133,7 +133,7 @@ pub(super) fn rewritten(file: &[u8], moved: &Rgba8) -> Result<Vec<u8>, ImageErro
         match &c.code {
             b"ICCP" => {
                 flags |= VP8X_ICC;
-                before.extend(chunk(b"ICCP", c.data));
+                before.extend(chunk(*b"ICCP", c.data));
             }
             b"EXIF" => {
                 flags |= VP8X_EXIF;
@@ -143,15 +143,15 @@ pub(super) fn rewritten(file: &[u8], moved: &Rgba8) -> Result<Vec<u8>, ImageErro
                     Some(c.data.to_vec())
                 };
                 if let Some(data) = data {
-                    after.extend(chunk(b"EXIF", &data));
+                    after.extend(chunk(*b"EXIF", &data));
                 }
             }
             b"XMP " => {
                 flags |= VP8X_XMP;
-                after.extend(chunk(b"XMP ", c.data));
+                after.extend(chunk(*b"XMP ", c.data));
             }
             b"VP8X" | b"VP8L" | b"VP8 " | b"ALPH" | b"ANIM" | b"ANMF" => {}
-            code => after.extend(chunk(code, c.data)),
+            code => after.extend(chunk(*code, c.data)),
         }
     }
     let mut body = b"WEBP".to_vec();
@@ -160,10 +160,10 @@ pub(super) fn rewritten(file: &[u8], moved: &Rgba8) -> Result<Vec<u8>, ImageErro
         let mut vp8x = vec![flags, 0, 0, 0];
         vp8x.extend_from_slice(&(size.width.0 - 1).to_le_bytes()[..3]);
         vp8x.extend_from_slice(&(size.height.0 - 1).to_le_bytes()[..3]);
-        body.extend(chunk(b"VP8X", &vp8x));
+        body.extend(chunk(*b"VP8X", &vp8x));
     }
     body.extend(before);
-    body.extend(chunk(b"VP8L", &picture));
+    body.extend(chunk(*b"VP8L", &picture));
     body.extend(after);
     let mut out = b"RIFF".to_vec();
     out.extend_from_slice(&u32::try_from(body.len()).unwrap_or(u32::MAX).to_le_bytes()); // a file is under 4 GiB

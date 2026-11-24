@@ -74,7 +74,7 @@ fn grey16_png() -> Vec<u8> {
         .unwrap();
     let mut writer = encoder.write_header().unwrap();
     let data: Vec<u8> = (0..w * h)
-        .flat_map(|i| (i as u16 * 4001 + 17).to_be_bytes())
+        .flat_map(|i| (u16::try_from(i).unwrap() * 4001 + 17).to_be_bytes())
         .collect();
     writer.write_image_data(&data).unwrap();
     writer.finish().unwrap();
@@ -124,7 +124,7 @@ fn palette_png(depth: png::BitDepth) -> Vec<u8> {
     let mut data = vec![0u8; line * h as usize];
     for y in 0..h as usize {
         for x in 0..w as usize {
-            let index = ((x + y * 3) % 4) as u8;
+            let index = u8::try_from((x + y * 3) % 4).unwrap();
             let bit = x * bits;
             data[y * line + bit / 8] |= index << (8 - bits - bit % 8);
         }
@@ -173,7 +173,9 @@ fn tiff_pages(white_is_zero: bool) -> Vec<u8> {
                 .encoder()
                 .write_tag(Tag::PhotometricInterpretation, 0u16)
                 .unwrap();
-            let data: Vec<u8> = (0..w * h).map(|i| (i * 9 + n as u32) as u8).collect();
+            let data: Vec<u8> = (0..w * h)
+                .map(|i| low_byte(i * 9 + u32::try_from(n).unwrap()))
+                .collect();
             image.write_data(&data).unwrap();
         } else {
             let mut image = encoder.new_image::<RGB16>(w, h).unwrap();
@@ -184,7 +186,7 @@ fn tiff_pages(white_is_zero: bool) -> Vec<u8> {
                 .write_tag(Tag::ImageDescription, &*format!("page {n}"))
                 .unwrap();
             let data: Vec<u16> = (0..w * h * 3)
-                .map(|i| (i * 1021 + n as u32 * 7) as u16)
+                .map(|i| low_word(i * 1021 + u32::try_from(n).unwrap() * 7))
                 .collect();
             image.write_data(&data).unwrap();
         }
@@ -220,9 +222,12 @@ fn pages_of(file: &[u8]) -> Vec<Page> {
                 rational(&mut decoder, Tag::XResolution),
                 rational(&mut decoder, Tag::YResolution),
             ),
-            compression: decoder.get_tag_u32(Tag::Compression).unwrap() as u16,
+            compression: u16::try_from(decoder.get_tag_u32(Tag::Compression).unwrap()).unwrap(),
             bits: decoder.get_tag_u16_vec(Tag::BitsPerSample).unwrap(),
-            photometric: decoder.get_tag_u32(Tag::PhotometricInterpretation).unwrap() as u16,
+            photometric: u16::try_from(
+                decoder.get_tag_u32(Tag::PhotometricInterpretation).unwrap(),
+            )
+            .unwrap(),
             pixels: decoder.read_image().unwrap(),
         });
         if !decoder.more_images() {
@@ -286,18 +291,29 @@ fn a_white_is_zero_tiff_stays_white_is_zero() {
     }
 }
 
+/// The low byte of `n`: a deterministic, varied sample value.
+fn low_byte(n: u32) -> u8 {
+    n.to_le_bytes()[0]
+}
+
+/// The low 16 bits of `n`: a deterministic, varied sample value.
+fn low_word(n: u32) -> u16 {
+    let [a, b, ..] = n.to_le_bytes();
+    u16::from_le_bytes([a, b])
+}
+
 fn riff(chunks: &[(&[u8; 4], Vec<u8>)]) -> Vec<u8> {
     let mut body = b"WEBP".to_vec();
     for (code, data) in chunks {
         body.extend_from_slice(*code);
-        body.extend_from_slice(&(data.len() as u32).to_le_bytes());
+        body.extend_from_slice(&u32::try_from(data.len()).unwrap().to_le_bytes());
         body.extend_from_slice(data);
         if data.len() % 2 == 1 {
             body.push(0);
         }
     }
     let mut out = b"RIFF".to_vec();
-    out.extend_from_slice(&(body.len() as u32).to_le_bytes());
+    out.extend_from_slice(&u32::try_from(body.len()).unwrap().to_le_bytes());
     out.extend(body);
     out
 }
@@ -318,7 +334,7 @@ fn riff_chunks(file: &[u8]) -> Vec<(String, Vec<u8>)> {
 
 fn lossless_webp_with_metadata() -> Vec<u8> {
     let (w, h) = (6u32, 4u32);
-    let pixels: Vec<u8> = (0..w * h * 4).map(|i| (i * 7) as u8).collect();
+    let pixels: Vec<u8> = (0..w * h * 4).map(|i| low_byte(i * 7)).collect();
     let mut plain = Vec::new();
     WebPEncoder::new_lossless(&mut plain)
         .write_image(&pixels, w, h, ExtendedColorType::Rgba8)
@@ -328,11 +344,11 @@ fn lossless_webp_with_metadata() -> Vec<u8> {
         .find(|(code, _)| code == "VP8L")
         .unwrap()
         .1;
-    let mut vp8x = vec![0x20 | 0x10 | 0x04, 0, 0, 0];
-    vp8x.extend_from_slice(&(w - 1).to_le_bytes()[..3]);
-    vp8x.extend_from_slice(&(h - 1).to_le_bytes()[..3]);
+    let mut extended = vec![0x20 | 0x10 | 0x04, 0, 0, 0];
+    extended.extend_from_slice(&(w - 1).to_le_bytes()[..3]);
+    extended.extend_from_slice(&(h - 1).to_le_bytes()[..3]);
     riff(&[
-        (b"VP8X", vp8x),
+        (b"VP8X", extended),
         (b"ICCP", b"profile-bytes".to_vec()),
         (b"VP8L", vp8l),
         (b"XMP ", b"<x:xmpmeta>hi</x:xmpmeta>".to_vec()),
@@ -388,13 +404,13 @@ fn a_lossy_webp_is_written_without_asking_and_an_animated_one_asks() {
 fn a_bmp_keeps_its_depth_palette_and_resolution() {
     let (w, h) = (5u32, 3u32);
     let mut paletted = Vec::new();
-    let palette: Vec<[u8; 3]> = (0..256).map(|i| [i as u8, 255 - i as u8, 7]).collect();
-    let indices: Vec<u8> = (0..w * h).map(|i| (i * 17) as u8).collect();
+    let palette: Vec<[u8; 3]> = (0..=u8::MAX).map(|i| [i, 255 - i, 7]).collect();
+    let indices: Vec<u8> = (0..w * h).map(|i| low_byte(i * 17)).collect();
     BmpEncoder::new(&mut paletted)
         .encode_with_palette(&indices, w, h, ExtendedColorType::L8, Some(&palette))
         .unwrap();
     let mut rgb = Vec::new();
-    let colour: Vec<u8> = (0..w * h * 3).map(|i| (i * 5) as u8).collect();
+    let colour: Vec<u8> = (0..w * h * 3).map(|i| low_byte(i * 5)).collect();
     BmpEncoder::new(&mut rgb)
         .encode(&colour, w, h, ExtendedColorType::Rgb8)
         .unwrap();

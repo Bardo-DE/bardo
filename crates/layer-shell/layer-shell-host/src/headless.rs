@@ -1,5 +1,6 @@
-//! Render a Dioxus root component to `image::RgbaImage` buffers with no Wayland connection,
-//! no window and no GPU surface. This is the CI gate for every future surface: every
+//! Render a Dioxus root component to `image::RgbaImage` buffers with no Wayland connection.
+//!
+//! There is no window and no GPU surface. This is the CI gate for every future surface: every
 //! `examples/demo_*.rs` and every UI kit component eventually gets a `render_png` snapshot
 //! test.
 //!
@@ -45,8 +46,9 @@ impl PixelSize {
     }
 }
 
-/// Which fonts a headless render has available. `Bundled` is the reproducible choice for a
-/// snapshot test: it registers exactly the given faces and turns system font discovery off, so
+/// Which fonts a headless render has available.
+///
+/// `Bundled` is the reproducible choice for a snapshot test: it registers exactly the given faces and turns system font discovery off, so
 /// a render does not vary with whatever happens to be installed on the machine that runs it, and
 /// (unlike the old single-arbitrary-TTF path this replaced) uses the same face list a real
 /// surface would get from `HostConfig::fonts` — see [`bundled_faces`] for layer-shell-host's own
@@ -92,7 +94,12 @@ pub fn render_png(root: fn() -> Element, config: HeadlessConfig) -> Vec<RgbaImag
         fonts,
     } = config;
 
-    let viewport = Viewport::new(size.width, size.height, scale.factor() as f32, color_scheme);
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a display scale factor is a small number that f32 holds"
+    )]
+    let factor = scale.factor() as f32;
+    let viewport = Viewport::new(size.width, size.height, factor, color_scheme);
     let mut doc = DioxusDocument::new(
         VirtualDom::new(root),
         DocumentConfig {
@@ -157,15 +164,21 @@ fn build_font_context(fonts: Fonts) -> FontContext {
     .for_document()
 }
 
-/// A `Fonts::Bundled` face list for layer-shell-host's own examples and tests, which (unlike a real
-/// shell) bundle no design system of their own to pass through `HostConfig::fonts`.
+/// A `Fonts::Bundled` face list for layer-shell-host's own examples and tests.
+///
+/// Unlike a real shell, these bundle no design system of their own to pass through
+/// `HostConfig::fonts`.
 ///
 /// Prefers `~/bardo/crates/ds/assets/fonts` (the UI kit's own bundled faces); falls back to the first
 /// TTF under `/usr/share/fonts` in sorted path order, deterministic on a given machine but not
-/// portable across machines with a different font package set. Panics if neither location has a
-/// usable font — a render with no glyphs at all is a broken environment, not a value this
-/// function can return. Leaks the bytes to get `&'static [u8]` (`FontFaces`' bound): fine for a
-/// one-time test/example fixture, not something a real host's hot path does.
+/// portable across machines with a different font package set. Leaks the bytes to get
+/// `&'static [u8]` (`FontFaces`' bound): fine for a one-time test/example fixture, not something a
+/// real host's hot path does.
+///
+/// # Panics
+///
+/// Panics if neither location has a usable font: a render with no glyphs at all is a broken
+/// environment, not a value this function can return.
 #[must_use]
 pub fn bundled_faces() -> FontFaces {
     let bardo_fonts = home_dir().join("bardo/crates/ds/assets/fonts");

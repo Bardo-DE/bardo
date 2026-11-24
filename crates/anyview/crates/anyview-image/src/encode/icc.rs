@@ -20,6 +20,10 @@ fn bad(reason: &str) -> ImageError {
     }
 }
 
+fn bad_because(reason: &str, cause: &dyn std::error::Error) -> ImageError {
+    bad(&format!("{reason}: {cause}"))
+}
+
 fn be32(file: &[u8], at: usize) -> Result<u32, ImageError> {
     let quad: [u8; 4] = file
         .get(at..at + 4)
@@ -41,7 +45,7 @@ fn boxes(file: &[u8], from: usize, to: usize) -> Result<Vec<([u8; 4], Span)>, Im
     let mut found = Vec::new();
     let mut at = from;
     while at < to {
-        let size = usize::try_from(be32(file, at)?).map_err(|_| bad("size"))?;
+        let size = usize::try_from(be32(file, at)?).map_err(|error| bad_because("size", &error))?;
         let kind: [u8; 4] = file
             .get(at + 4..at + 8)
             .and_then(|b| b.try_into().ok())
@@ -55,15 +59,16 @@ fn boxes(file: &[u8], from: usize, to: usize) -> Result<Vec<([u8; 4], Span)>, Im
     Ok(found)
 }
 
-fn find(list: &[([u8; 4], Span)], kind: &[u8; 4]) -> Result<Span, ImageError> {
+fn find(list: &[([u8; 4], Span)], kind: [u8; 4]) -> Result<Span, ImageError> {
     list.iter()
-        .find(|(k, _)| k == kind)
+        .find(|(k, _)| *k == kind)
         .map(|(_, span)| *span)
         .ok_or_else(|| bad("a box is missing"))
 }
 
 fn grow(file: &mut [u8], span: Span, by: usize) -> Result<(), ImageError> {
-    let size = u32::try_from(span.end - span.at + by).map_err(|_| bad("too big"))?;
+    let size =
+        u32::try_from(span.end - span.at + by).map_err(|error| bad_because("too big", &error))?;
     file[span.at..span.at + 4].copy_from_slice(&size.to_be_bytes());
     Ok(())
 }
@@ -71,15 +76,15 @@ fn grow(file: &mut [u8], span: Span, by: usize) -> Result<(), ImageError> {
 /// `avif` with `profile` as the colour profile of its primary picture.
 pub(super) fn with_profile(mut avif: Vec<u8>, profile: &[u8]) -> Result<Vec<u8>, ImageError> {
     let top = boxes(&avif, 0, avif.len())?;
-    let meta = find(&top, b"meta")?;
+    let meta = find(&top, *b"meta")?;
     let inside = boxes(&avif, meta.at + 12, meta.end)?;
     let (iloc, iprp, pitm) = (
-        find(&inside, b"iloc")?,
-        find(&inside, b"iprp")?,
-        find(&inside, b"pitm")?,
+        find(&inside, *b"iloc")?,
+        find(&inside, *b"iprp")?,
+        find(&inside, *b"pitm")?,
     );
     let parts = boxes(&avif, iprp.at + 8, iprp.end)?;
-    let (ipco, ipma) = (find(&parts, b"ipco")?, find(&parts, b"ipma")?);
+    let (ipco, ipma) = (find(&parts, *b"ipco")?, find(&parts, *b"ipma")?);
     if ipco.end > ipma.at || iprp.at < iloc.at {
         return Err(bad("boxes in an unexpected order"));
     }
@@ -89,7 +94,7 @@ pub(super) fn with_profile(mut avif: Vec<u8>, profile: &[u8]) -> Result<Vec<u8>,
         be32(&avif, pitm.at + 12)?
     };
     let index = u16::try_from(boxes(&avif, ipco.at + 8, ipco.end)?.len() + 1)
-        .map_err(|_| bad("too many properties"))?;
+        .map_err(|error| bad_because("too many properties", &error))?;
 
     // The new property box: size, "colr", "prof", the profile.
     let colr_len = 12 + profile.len();
@@ -105,7 +110,8 @@ pub(super) fn with_profile(mut avif: Vec<u8>, profile: &[u8]) -> Result<Vec<u8>,
     // The association comes first in the primary picture's list. Later bytes first, so the
     // earlier positions stay true.
     let wide_ids = avif[ipma.at + 8] != 0;
-    let entries = usize::try_from(be32(&avif, ipma.at + 12)?).map_err(|_| bad("size"))?;
+    let entries =
+        usize::try_from(be32(&avif, ipma.at + 12)?).map_err(|error| bad_because("size", &error))?;
     let mut at = ipma.at + 16;
     let mut target = None;
     for _ in 0..entries {
@@ -125,7 +131,8 @@ pub(super) fn with_profile(mut avif: Vec<u8>, profile: &[u8]) -> Result<Vec<u8>,
     let assoc = if wide {
         index.to_be_bytes().to_vec()
     } else {
-        vec![index as u8] // below 128, checked above
+        // Below 128, checked above.
+        vec![u8::try_from(index).map_err(|error| bad_because("too many properties", &error))?]
     };
     avif[count_at] += 1;
     avif.splice((count_at + 1)..=count_at, assoc);
@@ -134,7 +141,7 @@ pub(super) fn with_profile(mut avif: Vec<u8>, profile: &[u8]) -> Result<Vec<u8>,
     let mut colr = Vec::with_capacity(colr_len);
     colr.extend_from_slice(
         &u32::try_from(colr_len)
-            .map_err(|_| bad("too big"))?
+            .map_err(|error| bad_because("too big", &error))?
             .to_be_bytes(),
     );
     colr.extend_from_slice(b"colrprof");
@@ -173,7 +180,8 @@ fn patch_locations(
     } else {
         (
             iloc.at + 18,
-            usize::try_from(be32(avif, iloc.at + 14)?).map_err(|_| bad("size"))?,
+            usize::try_from(be32(avif, iloc.at + 14)?)
+                .map_err(|error| bad_because("size", &error))?,
         )
     };
     for _ in 0..items {
@@ -210,12 +218,12 @@ fn bump(
 ) -> Result<(), ImageError> {
     let field = avif.get_mut(at..at + width).ok_or_else(|| bad("cut off"))?;
     let value = field.iter().fold(0u64, |n, b| (n << 8) | u64::from(*b));
-    if usize::try_from(value).map_err(|_| bad("offset"))? < limit {
+    if usize::try_from(value).map_err(|error| bad_because("offset", &error))? < limit {
         return Ok(());
     }
     let moved = value + delta as u64; // a delta is a profile's size
     for (i, byte) in field.iter_mut().rev().enumerate() {
-        *byte = (moved >> (8 * i)) as u8;
+        *byte = moved.to_le_bytes()[i];
     }
     Ok(())
 }

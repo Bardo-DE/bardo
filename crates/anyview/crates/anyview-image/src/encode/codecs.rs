@@ -11,7 +11,7 @@ use image::codecs::webp::WebPEncoder;
 use image::{ExtendedColorType, ImageEncoder};
 use std::io::Cursor;
 
-fn encode_error(error: image::ImageError) -> ImageError {
+fn encode_error(error: &image::ImageError) -> ImageError {
     ImageError::Encode {
         reason: error.to_string(),
     }
@@ -35,8 +35,10 @@ fn flattened(picture: &Rgba8) -> Vec<u8> {
         .iter()
         .flat_map(|pixel| {
             let alpha = u32::from(pixel[3]);
-            [pixel[0], pixel[1], pixel[2]]
-                .map(|c| ((u32::from(c) * alpha + 255 * (255 - alpha) + 127) / 255) as u8) // at most 255
+            [pixel[0], pixel[1], pixel[2]].map(|c| {
+                let over_white = (u32::from(c) * alpha + 255 * (255 - alpha) + 127) / 255;
+                u8::try_from(over_white).unwrap_or(u8::MAX) // at most 255
+            })
         })
         .collect()
 }
@@ -47,7 +49,7 @@ pub(super) fn jpeg(picture: &Rgba8, quality: Quality) -> Result<Vec<u8>, ImageEr
     let mut out = Vec::new();
     JpegEncoder::new_with_quality(&mut out, percent)
         .write_image(&flattened(picture), width, height, ExtendedColorType::Rgb8)
-        .map_err(encode_error)?;
+        .map_err(|error| encode_error(&error))?;
     Ok(out)
 }
 
@@ -56,7 +58,7 @@ pub(super) fn webp(picture: &Rgba8) -> Result<Vec<u8>, ImageError> {
     let mut out = Vec::new();
     WebPEncoder::new_lossless(&mut out)
         .write_image(picture.bytes(), width, height, ExtendedColorType::Rgba8)
-        .map_err(encode_error)?;
+        .map_err(|error| encode_error(&error))?;
     Ok(out)
 }
 
@@ -65,7 +67,7 @@ pub(super) fn tiff(picture: &Rgba8) -> Result<Vec<u8>, ImageError> {
     let mut out = Cursor::new(Vec::new());
     TiffEncoder::new(&mut out)
         .write_image(picture.bytes(), width, height, ExtendedColorType::Rgba8)
-        .map_err(encode_error)?;
+        .map_err(|error| encode_error(&error))?;
     Ok(out.into_inner())
 }
 
@@ -74,7 +76,7 @@ pub(super) fn bmp(picture: &Rgba8) -> Result<Vec<u8>, ImageError> {
     let mut out = Vec::new();
     BmpEncoder::new(&mut out)
         .write_image(picture.bytes(), width, height, ExtendedColorType::Rgba8)
-        .map_err(encode_error)?;
+        .map_err(|error| encode_error(&error))?;
     Ok(out)
 }
 

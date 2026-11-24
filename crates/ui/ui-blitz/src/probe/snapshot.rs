@@ -3,6 +3,7 @@
 use super::name::name_of;
 use super::role::{attr, role_of};
 use blitz_dom::{BaseDocument, ElementData, Node};
+use std::fmt::Write as _;
 
 /// One line per control with a role and a box, in document order.
 pub fn snapshot(doc: &BaseDocument) -> String {
@@ -37,14 +38,15 @@ fn line(doc: &BaseDocument, node: &Node, element: &ElementData, out: &mut String
         return;
     }
     let state = state_of(element);
-    out.push_str(&format!(
-        "{role}\t{:.1}\t{:.1}\t{:.1}\t{:.1}\t{state}\t{}\n",
+    let _ = writeln!(
+        out,
+        "{role}\t{:.1}\t{:.1}\t{:.1}\t{:.1}\t{state}\t{}",
         rect.x,
         rect.y,
         rect.width,
         rect.height,
         name_of(doc, node)
-    ));
+    );
 }
 
 /// The words for what `element` says about its state, `-` for none.

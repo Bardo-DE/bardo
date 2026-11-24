@@ -77,7 +77,7 @@ pub(super) fn fidelity(file: &[u8]) -> Fidelity {
     }
 }
 
-fn encode_error(error: image::ImageError) -> ImageError {
+fn encode_error(error: &image::ImageError) -> ImageError {
     ImageError::Encode {
         reason: error.to_string(),
     }
@@ -140,7 +140,7 @@ pub(super) fn rewritten(
                     ExtendedColorType::L8,
                     Some(&shape.palette),
                 )
-                .map_err(encode_error)?;
+                .map_err(|error| encode_error(&error))?;
         }
         24 => {
             let size = moved.size();
@@ -153,7 +153,7 @@ pub(super) fn rewritten(
                 .collect();
             encoder
                 .encode(&rgb, size.width.0, size.height.0, ExtendedColorType::Rgb8)
-                .map_err(encode_error)?;
+                .map_err(|error| encode_error(&error))?;
         }
         _ => {
             let size = moved.size();
@@ -164,7 +164,7 @@ pub(super) fn rewritten(
                     size.height.0,
                     ExtendedColorType::Rgba8,
                 )
-                .map_err(encode_error)?;
+                .map_err(|error| encode_error(&error))?;
         }
     }
     Ok(with_resolution(out, shape.ppm, swap))

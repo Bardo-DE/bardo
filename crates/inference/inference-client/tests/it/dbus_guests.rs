@@ -5,8 +5,6 @@
 //! checked, which a program that takes the name afterwards does not get.
 #![cfg(feature = "dbus")]
 
-use crate::common;
-
 use account_dbus::{BusStream, Details};
 use account_tailscale::NodeId;
 use base_testkit::PrivateBus;

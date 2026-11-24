@@ -11,9 +11,14 @@ use caller_identity_dbus::caller_identity_linux::{LoadError, RealProc, TableFile
 use super::DesktopCallers;
 
 impl DesktopCallers {
-    /// These callers, with the developer rows in `path` added after the shipped ones (a row never
-    /// takes a unit the shipped table names). The file must be a plain file of this user's (or
-    /// root's) that no one else can write; otherwise nothing is added and the error says why.
+    /// These callers, with the developer rows in `path` added after the shipped ones.
+    ///
+    /// A row never takes a unit the shipped table names. The file must be a plain file of this
+    /// user's (or root's) that no one else can write.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error, and adds nothing, if the file is not such a file or cannot be loaded.
     pub fn with_dev_rows(self, path: &Path) -> Result<DesktopCallers, LoadError> {
         let person = Uid::new(rustix::process::getuid().as_raw());
         let rows = TableFiles::load_dev(&RealProc::system(), path, person)?;

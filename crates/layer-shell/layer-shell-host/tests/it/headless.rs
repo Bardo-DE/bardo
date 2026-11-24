@@ -9,7 +9,6 @@
 //! from the first call, which is what a render test wants.
 
 use blitz_traits::shell::ColorScheme;
-use dioxus::core::Element;
 use dioxus::prelude::*;
 use image::RgbaImage;
 use layer_shell_host::headless::{Fonts, HeadlessConfig, PixelSize, render_png};
@@ -108,6 +107,9 @@ const RAISED_STYLES: &str = "
 .body { position: relative; z-index: 1; margin-top: 20px; height: 20px; background: rgb(255, 0, 0); }
 ";
 
+const RED: [u8; 4] = [255, 0, 0, 255];
+const BLUE: [u8; 4] = [0, 0, 255, 255];
+
 /// A document's very first resolve paints its z-indexed boxes in place: Blitz gathers them
 /// before laying out, when every location is still zero, so without the
 /// re-hoist the second tile's body painted over the first tile's.
@@ -124,8 +126,6 @@ fn the_first_frame_paints_raised_boxes_where_layout_put_them() {
         },
     );
     let frame = &frames[0];
-    const RED: [u8; 4] = [255, 0, 0, 255];
-    const BLUE: [u8; 4] = [0, 0, 255, 255];
     for (y, want, what) in [
         (10, BLUE, "tile 0 above its body"),
         (30, RED, "tile 0's body"),

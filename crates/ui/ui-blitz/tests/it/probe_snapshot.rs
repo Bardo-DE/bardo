@@ -11,7 +11,7 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a component function is named like its tag")]
 fn Page() -> Element {
     rsx! {
         div { style: "padding:20px",

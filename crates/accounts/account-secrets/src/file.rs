@@ -1,15 +1,16 @@
-//! A file-backed store for private-bus and scratch runs: TEST ONLY, behind the non-default
-//! `test-keys` feature, never compiled into a default or release build.
+//! A file-backed store for private-bus and scratch runs.
+//!
+//! TEST ONLY, behind the non-default `test-keys` feature, never compiled into a default or
+//! release build.
 //!
 //! One JSON file holds every credential as plain text, so it protects nothing but the file's
 //! mode: it is created `0600` and refused, on open and on every later use, when any group or
 //! other bit is set. Items are addressed as the keyring backends address them (`service` the
 //! store's namespace, `bardo` unless the host names another; the account; the purpose in its
-//! serde form). Every use takes an advisory lock on a
-//! sibling `<file>.lock`, reads the file and, for a change, writes it through `account_core`'s
-//! atomic writer (a staging file, synced, renamed over the file), so a crash leaves the old file
-//! whole and writers in this or any other process
-//! (a daemon and `accountd add`) are serialised. The I/O is synchronous: the files are tiny and
+//! serde form). Every use takes an advisory lock on a sibling `<file>.lock`, reads the file and,
+//! for a change, writes it through `account_core`'s atomic writer (a staging file, synced,
+//! renamed over the file), so a crash leaves the old file whole and writers in this or any other
+//! process (a daemon and `accountd add`) are serialised. The I/O is synchronous: the files are tiny and
 //! nothing awaits while the lock is held.
 
 use crate::attributes::attributes_in;
@@ -29,7 +30,7 @@ use std::path::{Path, PathBuf};
 const VERSION: u64 = 1;
 
 /// Why the key file could not be used.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum FileSecretsError {
     /// The path is not absolute.
     #[error("the key file path is not absolute")]
@@ -46,6 +47,12 @@ pub enum FileSecretsError {
     /// The file is not a key file this build reads.
     #[error("the key file does not parse as a key file")]
     Corrupt,
+    /// The file could not be read as text or JSON; `reason` is the underlying error.
+    #[error("the key file could not be read as a key file: {reason}")]
+    Unparsable {
+        /// The underlying error's text.
+        reason: String,
+    },
     /// The file system refused.
     #[error("the key file could not be read or written: {0:?}")]
     Io(ErrorKind),
@@ -60,7 +67,9 @@ impl From<std::io::Error> for FileSecretsError {
 impl From<FileSecretsError> for SecretsError {
     fn from(error: FileSecretsError) -> Self {
         match error {
-            FileSecretsError::Corrupt => SecretsError::Unreadable(None),
+            FileSecretsError::Corrupt | FileSecretsError::Unparsable { .. } => {
+                SecretsError::Unreadable(None)
+            }
             FileSecretsError::NotAbsolute
             | FileSecretsError::NotAFile
             | FileSecretsError::Mode { .. }
@@ -116,7 +125,9 @@ impl Item {
 }
 
 fn parse(text: &str) -> Result<Vec<Item>, FileSecretsError> {
-    let root: Value = serde_json::from_str(text).map_err(|_| FileSecretsError::Corrupt)?;
+    let root: Value = serde_json::from_str(text).map_err(|error| FileSecretsError::Unparsable {
+        reason: error.to_string(),
+    })?;
     if root.get("version").and_then(Value::as_u64) != Some(VERSION) {
         return Err(FileSecretsError::Corrupt);
     }
@@ -145,16 +156,26 @@ pub struct FileSecrets {
 }
 
 impl FileSecrets {
-    /// The store in the file at `path` (absolute), filing under [`Namespace::ACCOUNTS`]: created
-    /// empty with mode `0600` (and its directories) if missing, refused if it is not a regular
-    /// file, has a group or other permission bit set, or does not parse.
+    /// The store in the file at `path` (absolute), filing under [`Namespace::ACCOUNTS`].
+    ///
+    /// The file is created empty with mode `0600` (and its directories) if missing.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the path is not absolute, the file is not a regular file, has a group
+    /// or other permission bit set, does not parse, or cannot be read or written.
     pub fn open(path: impl Into<PathBuf>) -> Result<Self, FileSecretsError> {
         Self::open_in(path, Namespace::ACCOUNTS)
     }
 
-    /// The store in the file at `path`, filing under `namespace`: [`FileSecrets::open`] for a
-    /// host with a namespace of its own. Items of other namespaces in the same file are kept
-    /// and never read.
+    /// The store in the file at `path`, filing under `namespace`.
+    ///
+    /// This is [`FileSecrets::open`] for a host with a namespace of its own. Items of other
+    /// namespaces in the same file are kept and never read.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error in the cases [`FileSecrets::open`] does.
     pub fn open_in(
         path: impl Into<PathBuf>,
         namespace: Namespace,
@@ -232,7 +253,9 @@ impl FileSecrets {
         }
         let mut text = String::new();
         file.read_to_string(&mut text)
-            .map_err(|_| FileSecretsError::Corrupt)?;
+            .map_err(|error| FileSecretsError::Unparsable {
+                reason: error.to_string(),
+            })?;
         parse(&text)
     }
 
@@ -251,6 +274,12 @@ fn private_options() -> OpenOptions {
     options
 }
 
+// The trait's methods are `async`; this store does synchronous file I/O under a lock and
+// nothing awaits, so each body completes on its first poll.
+#[expect(
+    clippy::unused_async_trait_impl,
+    reason = "the `Secrets` trait is async; this test-only store is synchronous by design"
+)]
 impl Secrets for FileSecrets {
     async fn put(&self, key: &SecretKey, value: &Credential) -> Result<(), SecretsError> {
         let credential = serde_json::to_value(value).map_err(SecretsError::unreadable)?;

@@ -16,6 +16,10 @@ use anyview_core::{MetadataCarry, RasterTarget};
 /// JPEG has none); lossless WebP; AVIF at its quality; or TIFF. No metadata is written.
 ///
 /// AVIF is slow on large pictures: run it on a worker.
+///
+/// # Errors
+///
+/// Returns an error if the encoder fails.
 pub fn encode(picture: &Rgba8, target: RasterTarget) -> Result<Vec<u8>, ImageError> {
     match target {
         RasterTarget::Png => codecs::png(picture),
@@ -28,15 +32,24 @@ pub fn encode(picture: &Rgba8, target: RasterTarget) -> Result<Vec<u8>, ImageErr
 
 /// `picture` as an uncompressed Windows bitmap. `RasterTarget` has no BMP entry because the
 /// export sheet does not offer one; the conversion exists for callers that need the format.
+///
+/// # Errors
+///
+/// Returns an error if the encoder fails.
 pub fn encode_bmp(picture: &Rgba8) -> Result<Vec<u8>, ImageError> {
     codecs::bmp(picture)
 }
 
-/// `picture` encoded as `target`, with the colour profile of `original` (the file the picture was
-/// decoded from) and, as `keep` says, its EXIF block carried across when the container can hold
-/// them. The profile always travels: the pixels are in its space, and without it a wide-gamut photo
-/// looks washed out. The carried EXIF has its orientation reset to upright, because the pixels
-/// already are.
+/// `picture` encoded as `target`, carrying the metadata of `original` across.
+///
+/// `original` is the file the picture was decoded from. Its colour profile always travels: the
+/// pixels are in its space, and without it a wide-gamut photo looks washed out. As `keep` says,
+/// its EXIF block is carried across too when the container can hold it, with its orientation
+/// reset to upright, because the pixels already are.
+///
+/// # Errors
+///
+/// Returns an error if the encoder fails or the metadata cannot be spliced into the container.
 pub fn encode_with_metadata(
     picture: &Rgba8,
     target: RasterTarget,
