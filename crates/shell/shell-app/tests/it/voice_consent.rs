@@ -3,7 +3,7 @@
 //! service refused with `NeedsConsent`, the answer turned into the consent the daemon writes, and
 //! the next hold either begun (Allow) or never attempted (Not Now). Never the person's `~/.config`.
 
-use crate::voice_support::{BeginAnswer, Desk, desk_or_return};
+use crate::voice_support::{BeginAnswer, Desk, desk};
 use settings_store_fs::{ConfigRoot, Store};
 use shell_app::policy::Policy;
 use shell_app::policy::voice::VoiceBridge;
@@ -60,7 +60,7 @@ async fn answered(desk: &mut Desk, answer: ConsentAnswer, dir: &TempDir) -> toml
 async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
     let dir = TempDir::new("voice-consent-allow");
     let file = dir.path().join("bardo/shell/settings.toml");
-    let mut desk = desk_or_return!(BeginAnswer::FromSettings(file));
+    let mut desk = desk(BeginAnswer::FromSettings(file)).await;
     assert_eq!(begins(&desk), 0);
     let table = answered(&mut desk, ConsentAnswer::Allow, &dir).await;
     assert_eq!(begins(&desk), 1, "the first hold was refused");
@@ -88,7 +88,7 @@ async fn allow_writes_the_given_consent_and_the_next_hold_begins() {
 async fn not_now_writes_declined_and_the_next_hold_never_calls_begin() {
     let dir = TempDir::new("voice-consent-not-now");
     let file = dir.path().join("bardo/shell/settings.toml");
-    let mut desk = desk_or_return!(BeginAnswer::FromSettings(file));
+    let mut desk = desk(BeginAnswer::FromSettings(file)).await;
     let table = answered(&mut desk, ConsentAnswer::NotNow, &dir).await;
     assert_eq!(table["voice"]["consent"].as_str(), Some("declined"));
     assert_eq!(begins(&desk), 1);

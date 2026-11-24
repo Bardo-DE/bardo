@@ -38,7 +38,7 @@ impl Run for VolumeService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use shell_model::volume::VolumeCommand;
+    use shell_model::volume::{Volume, VolumeCommand};
     use tokio::sync::{mpsc, watch};
 
     #[tokio::test]
@@ -46,7 +46,7 @@ mod tests {
         let scratch = std::env::temp_dir();
         let env = Env::isolated(&scratch);
         assert_eq!(env.sound, SoundRoute::Absent);
-        let (state, _published) = watch::channel(Default::default());
+        let (state, _published) = watch::channel(Volume::default());
         let (control, commands) = mpsc::unbounded_channel();
         control
             .send(VolumeCommand::ToggleMute)
