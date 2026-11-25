@@ -287,8 +287,8 @@ fn marks(node: &Node) -> Vec<String> {
     attributes
         .iter()
         .filter(|attribute| attribute.value.len() <= 12 && !attribute.value.contains(' '))
-        .filter(|attribute| attribute.name.local.as_ref().starts_with("data-"))
-        .filter(|attribute| attribute.name.local.as_ref() != "data-dioxus-id")
+        .filter(|attribute| attribute.name.local.starts_with("data-"))
+        .filter(|attribute| &*attribute.name.local != "data-dioxus-id")
         .map(|attribute| format!("[{}={}]", attribute.name.local, attribute.value))
         .collect()
 }

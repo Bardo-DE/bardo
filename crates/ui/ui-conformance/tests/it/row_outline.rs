@@ -262,11 +262,11 @@ fn Rename(start: Start) -> Element {
                     focus: FieldFocus::Controlled(request),
                     oninput: move |next: String| name.set(next),
                     onkey: move |event: KeyboardEvent| match event.key() {
-                        dioxus::prelude::Key::Enter => {
+                        dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Enter) => {
                             note(format!("enter:{}", name.peek()));
                             renaming.set(false);
                         }
-                        dioxus::prelude::Key::Escape => {
+                        dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Escape) => {
                             note("escape".to_string());
                             renaming.set(false);
                         }

@@ -102,13 +102,14 @@ impl GpuPainter {
         height: u32,
     ) -> Result<Self, HarnessError> {
         let (handle, adapter) = open_device(pref, diagnostics)?;
+        let (scene_width, scene_height) = scene_size(width, height)?;
         let (renderer, resources) = Renderer::new(
             &handle.device,
             &handle.queue,
             &RenderTargetConfig {
                 format: FORMAT,
-                width,
-                height,
+                width: scene_width,
+                height: scene_height,
             },
         );
         let mut images = ImageCache::default();
@@ -124,10 +125,7 @@ impl GpuPainter {
             gpu,
             renderer,
             resources,
-            scene: Scene::new(
-                u16::try_from(width).unwrap_or(u16::MAX),
-                u16::try_from(height).unwrap_or(u16::MAX),
-            ),
+            scene: Scene::new(scene_width, scene_height),
             images,
             textures: ExternalTextures::default(),
             target,
@@ -211,11 +209,9 @@ impl GpuPainter {
         let started = Instant::now();
         let device = &self.handle.device;
         if (self.target.width, self.target.height) != (canvas.width, canvas.height) {
+            let (width, height) = scene_size(canvas.width, canvas.height)?;
             self.target = Target::new(device, canvas.width, canvas.height);
-            self.scene = Scene::new(
-                u16::try_from(canvas.width).unwrap_or(u16::MAX),
-                u16::try_from(canvas.height).unwrap_or(u16::MAX),
-            );
+            self.scene = Scene::new(width, height);
         }
         self.scene.reset();
         let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -273,6 +269,16 @@ impl GpuPainter {
             .poll(wgpu::PollType::wait_indefinitely())
             .map(|_| ())
             .map_err(|error| HarnessError::Renderer(format!("wgpu poll: {error}")))
+    }
+}
+
+/// `width` x `height` as the renderer's 16-bit scene size, or an error naming the limit.
+fn scene_size(width: u32, height: u32) -> Result<(u16, u16), HarnessError> {
+    match (u16::try_from(width), u16::try_from(height)) {
+        (Ok(w), Ok(h)) => Ok((w, h)),
+        _ => Err(HarnessError::Renderer(format!(
+            "{width}x{height} exceeds the renderer's 65535 px limit"
+        ))),
     }
 }
 

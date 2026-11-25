@@ -255,7 +255,8 @@ fn ClaimPalette() -> Element {
     let claim = move |key: FieldKey| -> bool {
         let name = key.event.key();
         let taken = match name {
-            dioxus::prelude::Key::ArrowDown | dioxus::prelude::Key::ArrowUp => {
+            dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowDown)
+            | dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowUp) => {
                 browsing.set(true);
                 None
             }
@@ -264,7 +265,11 @@ fn ClaimPalette() -> Element {
                 browsing.set(false);
                 None
             }
-            dioxus::prelude::Key::ArrowRight if key.caret == Caret::AtEnd => Some("show"),
+            dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowRight)
+                if key.caret == Caret::AtEnd =>
+            {
+                Some("show")
+            }
             _ => None,
         };
         log.with_mut(|log| {
@@ -354,7 +359,7 @@ fn AsidePalette(host: CommandPaletteHost) -> Element {
     // Tab toggles the pane: over a window the palette's scrim takes every click outside it.
     let claim = move |key: FieldKey| -> bool {
         match key.event.key() {
-            dioxus::prelude::Key::Tab => {
+            dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Tab) => {
                 pane.toggle();
                 true
             }

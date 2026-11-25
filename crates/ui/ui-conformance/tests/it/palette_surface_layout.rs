@@ -171,7 +171,7 @@ fn TabPage(takes: TakesTab) -> Element {
                     host: CommandPaletteHost::Surface,
                     id: "card".to_string(),
                     onkey: move |event: KeyboardEvent| {
-                        if event.key() == dioxus::prelude::Key::Tab {
+                        if event.key() == dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Tab) {
                             tabs += 1;
                             if takes == TakesTab::Consumes {
                                 event.prevent_default();

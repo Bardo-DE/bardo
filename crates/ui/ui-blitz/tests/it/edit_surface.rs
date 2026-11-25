@@ -161,7 +161,7 @@ fn typed_keys_arrive_as_text_and_keys_in_order() {
             EditInput::Text("h".to_owned()),
             EditInput::Text("i".to_owned()),
             EditInput::Key(KeyInput {
-                key: dioxus::prelude::Key::Enter,
+                key: dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Enter),
                 modifiers: Modifiers::empty(),
             }),
             EditInput::Key(KeyInput {

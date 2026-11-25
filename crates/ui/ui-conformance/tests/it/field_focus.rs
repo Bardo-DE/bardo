@@ -137,7 +137,7 @@ fn Asked() -> Element {
                 TextField { label: "Q", value: text(), focus: FieldFocus::Controlled(request),
                     oninput: move |next: String| text.set(next),
                     onkey: move |event: KeyboardEvent| {
-                        if event.key() == dioxus::prelude::Key::Escape {
+                        if event.key() == dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Escape) {
                             request.request();
                         }
                     },

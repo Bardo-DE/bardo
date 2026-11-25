@@ -519,7 +519,7 @@ mod removed {
                                 TextField { label: "Name", value: "Inbox",
                                     oninput: |_| {},
                                     onkey: move |event: KeyboardEvent| {
-                                        if event.key() == dioxus::prelude::Key::Enter {
+                                        if event.key() == dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Enter) {
                                             editing.set(false);
                                         }
                                     },

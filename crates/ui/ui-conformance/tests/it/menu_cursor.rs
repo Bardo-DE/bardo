@@ -55,8 +55,8 @@ fn Page(drive: Drive) -> Element {
                         oninput: move |_| {},
                         focus: FieldFocus::OnMount,
                         onkey: move |event: KeyboardEvent| match event.key() {
-                            dioxus::prelude::Key::ArrowDown => at.set((at() + 1).min(NAMES.len() - 1)),
-                            dioxus::prelude::Key::ArrowUp => at.set(at().saturating_sub(1)),
+                            dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowDown) => at.set((at() + 1).min(NAMES.len() - 1)),
+                            dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowUp) => at.set(at().saturating_sub(1)),
                             _ => {}
                         },
                     }

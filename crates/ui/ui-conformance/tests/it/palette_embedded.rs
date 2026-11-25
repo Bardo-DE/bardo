@@ -108,7 +108,7 @@ fn Panel(selection: Selection, give_back: GiveBack) -> Element {
                         row.set(Some(rect));
                     },
                     onkey: move |event: KeyboardEvent| {
-                        if event.key() == dioxus::prelude::Key::Tab {
+                        if event.key() == dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::Tab) {
                             note("key:Tab".to_string());
                             actions.set(true);
                         }

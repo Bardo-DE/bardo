@@ -67,8 +67,10 @@ impl Model {
                         self.caret = caret;
                     }
                 }
-                dioxus::prelude::Key::ArrowLeft => self.caret = self.caret.saturating_sub(1),
-                dioxus::prelude::Key::ArrowRight => {
+                dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowLeft) => {
+                    self.caret = self.caret.saturating_sub(1)
+                }
+                dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowRight) => {
                     self.caret = (self.caret + 1).min(self.text.len());
                 }
                 _ => {}
