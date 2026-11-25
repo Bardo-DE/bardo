@@ -135,6 +135,7 @@ debug-probe = []
 testing = []
 
 [dev-dependencies]
+tempfile = { workspace = true }
 # The crate's own tests need its test-only features.
 ui-blitz = {path = ".", features = ["debug-probe"]}
 # The driver every host test in this crate runs through.

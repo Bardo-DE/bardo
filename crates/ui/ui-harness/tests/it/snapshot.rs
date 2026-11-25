@@ -121,9 +121,16 @@ fn the_spinner_turns() {
 /// A green square as an SVG, the shape the UI kit's icon masks and grain arrive in.
 const GREEN_SVG: &str = "<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><rect width='10' height='10' fill='rgb(0,160,0)'/></svg>";
 
-/// Where the `file:` copy of [`GREEN_SVG`] lives.
+/// Where the `file:` copy of [`GREEN_SVG`] lives: a folder of this process's own, written once,
+/// so no other test process truncates it while it is read.
 fn green_file() -> std::path::PathBuf {
-    std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("green.svg")
+    static DIR: std::sync::OnceLock<tempfile::TempDir> = std::sync::OnceLock::new();
+    let dir = DIR.get_or_init(|| {
+        let dir = tempfile::tempdir().expect("a scratch folder");
+        std::fs::write(dir.path().join("green.svg"), GREEN_SVG).expect("write the svg");
+        dir
+    });
+    dir.path().join("green.svg")
 }
 
 #[allow(non_snake_case, reason = "components are named in PascalCase")]
@@ -146,14 +153,16 @@ fn ImageApp() -> Element {
 
 #[test]
 fn data_and_file_images_land_before_the_snapshot() {
-    std::fs::write(green_file(), GREEN_SVG).expect("write the svg");
     let view = Viewport {
         width: 60,
         height: 100,
         scale_percent: 100,
     };
     // The app names the directory its file lives in, or the document would read no file.
-    let roots = FileRoots::new([std::path::PathBuf::from(env!("CARGO_TARGET_TMPDIR"))]);
+    let roots = FileRoots::new([green_file()
+        .parent()
+        .map(std::path::PathBuf::from)
+        .unwrap_or_default()]);
     let config = HarnessConfig::new(view).with_file_roots(roots);
     let frame = snapshot_with(ImageApp, config, &[Duration::from_secs(10)])
         .expect("renders")

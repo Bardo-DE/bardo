@@ -16,20 +16,19 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A 7 x 5 PNG on disk: an `img` that loads it lays out 7 px wide, one that does not, 0.
-/// Written once, whole, before any test reads it. Each test process (nextest runs one per test)
-/// writes its own file, so one process's write never truncates the file another is reading.
+/// Written once, whole, before any test of this process reads it, in a folder of this process's
+/// own (nextest runs each test in its own process): a fixed shared path let one process's write
+/// truncate the file another was reading.
 fn swatch() -> PathBuf {
-    static WRITTEN: OnceLock<PathBuf> = OnceLock::new();
-    WRITTEN
-        .get_or_init(|| {
-            let path = std::path::Path::new(env!("CARGO_TARGET_TMPDIR"))
-                .join(format!("net-swatch-{}.png", std::process::id()));
-            image::RgbaImage::from_pixel(7, 5, image::Rgba([0, 160, 0, 255]))
-                .save(&path)
-                .expect("write the swatch");
-            path
-        })
-        .clone()
+    static DIR: OnceLock<tempfile::TempDir> = OnceLock::new();
+    let dir = DIR.get_or_init(|| {
+        let dir = tempfile::tempdir().expect("a scratch folder");
+        image::RgbaImage::from_pixel(7, 5, image::Rgba([0, 160, 0, 255]))
+            .save(dir.path().join("swatch.png"))
+            .expect("write the swatch");
+        dir
+    });
+    dir.path().join("swatch.png")
 }
 
 /// The one directory the swatch is in, as the roots an app that shows it names.

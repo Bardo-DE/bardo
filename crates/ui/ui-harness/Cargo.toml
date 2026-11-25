@@ -40,6 +40,7 @@ peniko = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
+tempfile = { workspace = true }
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 # The virtual-clock ask test wakes the document from a watch channel.
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
