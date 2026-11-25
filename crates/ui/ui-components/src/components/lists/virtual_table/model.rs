@@ -5,7 +5,7 @@ use crate::components::lists::virtual_list::model::roved;
 use crate::components::lists::virtual_table::outline::{ToggleReach, reach_of};
 use crate::host::narrow;
 use crate::stack::roving::{Rove, Step};
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::Platform;
 use ui_core::command::holds_primary;
 use ui_core::selection::PickHow;
@@ -29,7 +29,7 @@ pub(crate) enum TableKey {
 
 /// Whether `modifiers` hold a modifier that makes a key a command and not a movement.
 fn chorded(modifiers: Modifiers) -> bool {
-    modifiers.intersects(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SUPER | Modifiers::META)
+    modifiers.intersects(Modifiers::CONTROL | Modifiers::ALT | Modifiers::META)
 }
 
 /// The table's reading of `key` on `platform`; `None` for a key it leaves alone. Letters are not
@@ -39,12 +39,12 @@ fn chorded(modifiers: Modifiers) -> bool {
 /// Left, which open and close an outline's branch (Option widens them to the subtree).
 pub(crate) fn table_key(key: &Key, modifiers: Modifiers, platform: Platform) -> Option<TableKey> {
     let to = match key {
-        Key::ArrowRight => Some(true),
-        Key::ArrowLeft => Some(false),
+        Key::Named(NamedKey::ArrowRight) => Some(true),
+        Key::Named(NamedKey::ArrowLeft) => Some(false),
         _ => None,
     };
-    let plain_or_option = !modifiers
-        .intersects(Modifiers::CONTROL | Modifiers::SUPER | Modifiers::META | Modifiers::SHIFT);
+    let plain_or_option =
+        !modifiers.intersects(Modifiers::CONTROL | Modifiers::META | Modifiers::SHIFT);
     if let (Some(to), true) = (to, plain_or_option) {
         return Some(TableKey::Disclose {
             to,
@@ -54,11 +54,12 @@ pub(crate) fn table_key(key: &Key, modifiers: Modifiers, platform: Platform) -> 
     if chorded(modifiers) {
         let primary_alone = holds_primary(platform, modifiers)
             && !modifiers.intersects(Modifiers::SHIFT | Modifiers::ALT);
-        return (primary_alone && *key == Key::ArrowDown).then_some(TableKey::Open);
+        return (primary_alone && *key == Key::Named(NamedKey::ArrowDown))
+            .then_some(TableKey::Open);
     }
     match key {
-        Key::PageDown => Some(TableKey::Page(Step::Down)),
-        Key::PageUp => Some(TableKey::Page(Step::Up)),
+        Key::Named(NamedKey::PageDown) => Some(TableKey::Page(Step::Down)),
+        Key::Named(NamedKey::PageUp) => Some(TableKey::Page(Step::Up)),
         _ => match list_key(key, modifiers)? {
             ListKey::Move(rove) => Some(TableKey::Move(rove)),
             ListKey::Pick => Some(TableKey::Pick),
@@ -110,7 +111,7 @@ pub(crate) fn page_rows(height: f32, pitch: f32) -> usize {
 mod tests {
     use super::{TableKey, ToggleReach, held_columns, key_how, page_rows, table_key, target};
     use crate::stack::roving::{Edge, Rove, Step};
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use keymap::Platform;
     use ui_core::selection::PickHow;
 
@@ -148,23 +149,32 @@ mod tests {
     #[test]
     fn a_key_is_read_as_a_move_a_page_or_a_pick_and_letters_are_left_alone() {
         let cases: &[(Key, Option<TableKey>)] = &[
-            (Key::PageDown, Some(TableKey::Page(Step::Down))),
-            (Key::PageUp, Some(TableKey::Page(Step::Up))),
-            (Key::ArrowDown, Some(TableKey::Move(Rove::Step(Step::Down)))),
-            (Key::Home, Some(TableKey::Move(Rove::Edge(Edge::First)))),
-            (Key::Enter, Some(TableKey::Pick)),
+            (
+                Key::Named(NamedKey::PageDown),
+                Some(TableKey::Page(Step::Down)),
+            ),
+            (Key::Named(NamedKey::PageUp), Some(TableKey::Page(Step::Up))),
+            (
+                Key::Named(NamedKey::ArrowDown),
+                Some(TableKey::Move(Rove::Step(Step::Down))),
+            ),
+            (
+                Key::Named(NamedKey::Home),
+                Some(TableKey::Move(Rove::Edge(Edge::First))),
+            ),
+            (Key::Named(NamedKey::Enter), Some(TableKey::Pick)),
             (Key::Character(" ".to_owned()), Some(TableKey::Pick)),
             (Key::Character("a".to_owned()), None),
-            (Key::Tab, None),
+            (Key::Named(NamedKey::Tab), None),
             (
-                Key::ArrowRight,
+                Key::Named(NamedKey::ArrowRight),
                 Some(TableKey::Disclose {
                     to: true,
                     reach: ToggleReach::Row,
                 }),
             ),
             (
-                Key::ArrowLeft,
+                Key::Named(NamedKey::ArrowLeft),
                 Some(TableKey::Disclose {
                     to: false,
                     reach: ToggleReach::Row,
@@ -180,11 +190,15 @@ mod tests {
     #[test]
     fn a_modified_arrow_is_the_apps_except_shift_and_the_primary_modifier_with_down() {
         let mac = Platform::MacOs;
-        let down = Key::ArrowDown;
-        let up = Key::ArrowUp;
-        let (home, page_down, enter) = (Key::Home, Key::PageDown, Key::Enter);
+        let down = Key::Named(NamedKey::ArrowDown);
+        let up = Key::Named(NamedKey::ArrowUp);
+        let (home, page_down, enter) = (
+            Key::Named(NamedKey::Home),
+            Key::Named(NamedKey::PageDown),
+            Key::Named(NamedKey::Enter),
+        );
         let step_down = Some(TableKey::Move(Rove::Step(Step::Down)));
-        let right = Key::ArrowRight;
+        let right = Key::Named(NamedKey::ArrowRight);
         let option_right = Some(TableKey::Disclose {
             to: true,
             reach: ToggleReach::Subtree,
@@ -192,16 +206,16 @@ mod tests {
         // (key, modifiers, wanted)
         let cases: &[(&Key, Modifiers, Option<TableKey>)] = &[
             (&down, Modifiers::SHIFT, step_down),
-            (&down, Modifiers::SUPER, Some(TableKey::Open)),
-            (&up, Modifiers::SUPER, None),
-            (&down, Modifiers::SUPER | Modifiers::SHIFT, None),
+            (&down, Modifiers::META, Some(TableKey::Open)),
+            (&up, Modifiers::META, None),
+            (&down, Modifiers::META | Modifiers::SHIFT, None),
             (&down, Modifiers::ALT, None),
             (&down, Modifiers::CONTROL, None),
-            (&home, Modifiers::SUPER, None),
+            (&home, Modifiers::META, None),
             (&page_down, Modifiers::ALT, None),
-            (&enter, Modifiers::SUPER, None),
+            (&enter, Modifiers::META, None),
             (&right, Modifiers::ALT, option_right),
-            (&right, Modifiers::SUPER, None),
+            (&right, Modifiers::META, None),
             (&right, Modifiers::SHIFT, None),
         ];
         for &(key, modifiers, want) in cases {

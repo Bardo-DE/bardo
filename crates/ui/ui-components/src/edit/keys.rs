@@ -5,7 +5,7 @@
 //! (Shift+Insert, Ctrl+Insert, Shift+Delete) are read as they are.
 
 use crate::edit::input::KeyInput;
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::{Action, Context, Keymap, StandardAction};
 use ui_core::command::{resolve, types_text};
 
@@ -50,9 +50,9 @@ pub fn classify(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> KeyAction {
 /// Shift+Insert pastes, Ctrl+Insert copies and Shift+Delete cuts on every platform.
 fn shared_clipboard_key(key: &Key, modifiers: Modifiers) -> Option<KeyAction> {
     match key {
-        Key::Insert if modifiers == Modifiers::SHIFT => Some(KeyAction::Paste),
-        Key::Insert if modifiers == Modifiers::CONTROL => Some(KeyAction::Copy),
-        Key::Delete if modifiers == Modifiers::SHIFT => Some(KeyAction::Cut),
+        Key::Named(NamedKey::Insert) if modifiers == Modifiers::SHIFT => Some(KeyAction::Paste),
+        Key::Named(NamedKey::Insert) if modifiers == Modifiers::CONTROL => Some(KeyAction::Copy),
+        Key::Named(NamedKey::Delete) if modifiers == Modifiers::SHIFT => Some(KeyAction::Cut),
         _ => None,
     }
 }
@@ -68,7 +68,7 @@ fn chord(key: &Key, modifiers: Modifiers) -> KeyAction {
 mod tests {
     use super::{KeyAction, classify};
     use crate::edit::input::KeyInput;
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use keymap::{Desktop, Keymap, Platform};
 
     fn text(s: &str) -> Key {
@@ -117,10 +117,10 @@ mod tests {
                 plain,
                 KeyAction::Text("你好".to_owned()),
             ),
-            (ours(), text("v"), Modifiers::SUPER, KeyAction::Paste),
+            (ours(), text("v"), Modifiers::META, KeyAction::Paste),
             (ours(), text("V"), Modifiers::META, KeyAction::Paste),
-            (ours(), text("x"), Modifiers::SUPER, KeyAction::Cut),
-            (ours(), text("c"), Modifiers::SUPER, KeyAction::Copy),
+            (ours(), text("x"), Modifiers::META, KeyAction::Cut),
+            (ours(), text("c"), Modifiers::META, KeyAction::Copy),
             (
                 ours(),
                 text("v"),
@@ -133,8 +133,8 @@ mod tests {
             (
                 kde(),
                 text("v"),
-                Modifiers::SUPER,
-                key(text("v"), Modifiers::SUPER),
+                Modifiers::META,
+                key(text("v"), Modifiers::META),
             ),
             (
                 kde(),
@@ -142,19 +142,54 @@ mod tests {
                 Modifiers::CONTROL,
                 key(text("b"), Modifiers::CONTROL),
             ),
-            (ours(), Key::Insert, Modifiers::SHIFT, KeyAction::Paste),
-            (kde(), Key::Insert, Modifiers::CONTROL, KeyAction::Copy),
-            (kde(), Key::Delete, Modifiers::SHIFT, KeyAction::Cut),
-            (ours(), Key::Enter, plain, key(Key::Enter, plain)),
             (
                 ours(),
-                Key::Enter,
+                Key::Named(NamedKey::Insert),
                 Modifiers::SHIFT,
-                key(Key::Enter, Modifiers::SHIFT),
+                KeyAction::Paste,
             ),
-            (ours(), Key::Backspace, plain, key(Key::Backspace, plain)),
-            (ours(), Key::Delete, plain, key(Key::Delete, plain)),
-            (ours(), Key::Tab, plain, key(Key::Tab, plain)),
+            (
+                kde(),
+                Key::Named(NamedKey::Insert),
+                Modifiers::CONTROL,
+                KeyAction::Copy,
+            ),
+            (
+                kde(),
+                Key::Named(NamedKey::Delete),
+                Modifiers::SHIFT,
+                KeyAction::Cut,
+            ),
+            (
+                ours(),
+                Key::Named(NamedKey::Enter),
+                plain,
+                key(Key::Named(NamedKey::Enter), plain),
+            ),
+            (
+                ours(),
+                Key::Named(NamedKey::Enter),
+                Modifiers::SHIFT,
+                key(Key::Named(NamedKey::Enter), Modifiers::SHIFT),
+            ),
+            (
+                ours(),
+                Key::Named(NamedKey::Backspace),
+                plain,
+                key(Key::Named(NamedKey::Backspace), plain),
+            ),
+            (
+                ours(),
+                Key::Named(NamedKey::Delete),
+                plain,
+                key(Key::Named(NamedKey::Delete), plain),
+            ),
+            (
+                ours(),
+                Key::Named(NamedKey::Tab),
+                plain,
+                key(Key::Named(NamedKey::Tab), plain),
+            ),
         ];
         for (platform, pressed, held, expected) in cases {
             let keymap = Keymap::conventional(platform);

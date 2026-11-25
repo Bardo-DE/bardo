@@ -114,8 +114,8 @@ pub fn FieldMenu() -> Element {
                         oninput: move |_| {},
                         focus: FieldFocus::Manual,
                         onkey: move |event: KeyboardEvent| match event.key() {
-                            Key::ArrowDown => at.set((at() + 1).min(last)),
-                            Key::ArrowUp => at.set(at().saturating_sub(1)),
+                            Key::Named(NamedKey::ArrowDown) => at.set((at() + 1).min(last)),
+                            Key::Named(NamedKey::ArrowUp) => at.set(at().saturating_sub(1)),
                             _ => {}
                         },
                     }

@@ -125,7 +125,7 @@ pub(crate) fn search_item(search: &ToolbarSearch, fit: SearchFit, opened: Signal
             "data-seat": (place == SeatPlace::Expanded).then_some("expanded"),
             style: "width:{width}px",
             onkeydown: move |event: KeyboardEvent| {
-                if event.key() == Key::Escape && place == SeatPlace::Expanded {
+                if event.key() == Key::Named(NamedKey::Escape) && place == SeatPlace::Expanded {
                     fold.call(());
                 }
             },

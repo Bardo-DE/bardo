@@ -129,10 +129,10 @@ pub fn EmojiGrid<T: Clone + PartialEq + 'static>(
         let pick = pick.clone();
         move |event: KeyboardEvent| {
             let step = match event.key() {
-                Key::ArrowUp => Some(GridStep::Up),
-                Key::ArrowDown => Some(GridStep::Down),
-                Key::ArrowLeft => Some(GridStep::Left),
-                Key::ArrowRight => Some(GridStep::Right),
+                Key::Named(NamedKey::ArrowUp) => Some(GridStep::Up),
+                Key::Named(NamedKey::ArrowDown) => Some(GridStep::Down),
+                Key::Named(NamedKey::ArrowLeft) => Some(GridStep::Left),
+                Key::Named(NamedKey::ArrowRight) => Some(GridStep::Right),
                 key if is_pick(&key) => {
                     event.prevent_default();
                     if let Some(at) = selected {
@@ -184,7 +184,7 @@ pub fn EmojiGrid<T: Clone + PartialEq + 'static>(
 /// Enter and Space pick the selected cell.
 fn is_pick(key: &Key) -> bool {
     match key {
-        Key::Enter => true,
+        Key::Named(NamedKey::Enter) => true,
         Key::Character(text) => text == " ",
         _ => false,
     }
@@ -193,7 +193,7 @@ fn is_pick(key: &Key) -> bool {
 #[cfg(test)]
 mod tests {
     use super::{grid_style, is_pick};
-    use dioxus::prelude::Key;
+    use dioxus::prelude::{Key, NamedKey};
     use ui_core::geometry::units::Px;
 
     #[test]
@@ -210,9 +210,9 @@ mod tests {
 
     #[test]
     fn enter_and_space_pick() {
-        assert!(is_pick(&Key::Enter));
+        assert!(is_pick(&Key::Named(NamedKey::Enter)));
         assert!(is_pick(&Key::Character(" ".to_string())));
         assert!(!is_pick(&Key::Character("a".to_string())));
-        assert!(!is_pick(&Key::Tab));
+        assert!(!is_pick(&Key::Named(NamedKey::Tab)));
     }
 }

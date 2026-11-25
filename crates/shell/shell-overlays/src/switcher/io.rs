@@ -285,7 +285,7 @@ impl SwitcherCtx {
     /// keyboard's own, say), and a release with no key-up at all is the modifiers' publish.
     pub fn key_up(self, event: &KeyboardEvent) {
         let key = event.key();
-        if matches!(key, Key::Alt | Key::Meta | Key::Super)
+        if matches!(key, Key::Named(NamedKey::Alt | NamedKey::Meta))
             && chord_after_keyup(&key, event.modifiers()) == Chord::Released
         {
             self.input(SwIn::ModifierReleased);

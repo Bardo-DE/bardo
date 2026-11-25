@@ -1,7 +1,7 @@
 //! Keyboard scrolling (design/11 §11.3.10, §11.5.4): which keys scroll, by how much, the held
 //! arrow's ramp and the spring that ends it. Settled values (R18), so constants.
 
-use keyboard_types::{Key, Modifiers};
+use keyboard_types::{Key, Modifiers, NamedKey};
 
 use crate::scroll::geom::{Dir, ScrollAxis};
 
@@ -47,20 +47,32 @@ impl ScrollKey {
 /// scrolls; Ctrl only turns Up/Down into Home/End.
 #[must_use]
 pub fn scroll_key(key: &Key, mods: Modifiers) -> Option<ScrollKey> {
-    if mods.intersects(Modifiers::ALT | Modifiers::META | Modifiers::SUPER | Modifiers::HYPER) {
+    if mods.intersects(Modifiers::ALT | Modifiers::META) {
         return None;
     }
     let ctrl = mods.contains(Modifiers::CONTROL);
     let shift = mods.contains(Modifiers::SHIFT);
     match (key, ctrl, shift) {
-        (Key::ArrowUp, true, false) | (Key::Home, _, false) => Some(ScrollKey::Edge(Dir::Neg)),
-        (Key::ArrowDown, true, false) | (Key::End, _, false) => Some(ScrollKey::Edge(Dir::Pos)),
-        (Key::ArrowUp, false, false) => Some(ScrollKey::Line(ScrollAxis::Y, Dir::Neg)),
-        (Key::ArrowDown, false, false) => Some(ScrollKey::Line(ScrollAxis::Y, Dir::Pos)),
-        (Key::ArrowLeft, false, false) => Some(ScrollKey::Line(ScrollAxis::X, Dir::Neg)),
-        (Key::ArrowRight, false, false) => Some(ScrollKey::Line(ScrollAxis::X, Dir::Pos)),
-        (Key::PageUp, false, false) => Some(ScrollKey::Page(Dir::Neg)),
-        (Key::PageDown, false, false) => Some(ScrollKey::Page(Dir::Pos)),
+        (Key::Named(NamedKey::ArrowUp), true, false) | (Key::Named(NamedKey::Home), _, false) => {
+            Some(ScrollKey::Edge(Dir::Neg))
+        }
+        (Key::Named(NamedKey::ArrowDown), true, false) | (Key::Named(NamedKey::End), _, false) => {
+            Some(ScrollKey::Edge(Dir::Pos))
+        }
+        (Key::Named(NamedKey::ArrowUp), false, false) => {
+            Some(ScrollKey::Line(ScrollAxis::Y, Dir::Neg))
+        }
+        (Key::Named(NamedKey::ArrowDown), false, false) => {
+            Some(ScrollKey::Line(ScrollAxis::Y, Dir::Pos))
+        }
+        (Key::Named(NamedKey::ArrowLeft), false, false) => {
+            Some(ScrollKey::Line(ScrollAxis::X, Dir::Neg))
+        }
+        (Key::Named(NamedKey::ArrowRight), false, false) => {
+            Some(ScrollKey::Line(ScrollAxis::X, Dir::Pos))
+        }
+        (Key::Named(NamedKey::PageUp), false, false) => Some(ScrollKey::Page(Dir::Neg)),
+        (Key::Named(NamedKey::PageDown), false, false) => Some(ScrollKey::Page(Dir::Pos)),
         (Key::Character(c), false, shifted) if c == " " => {
             Some(ScrollKey::Page(if shifted { Dir::Neg } else { Dir::Pos }))
         }
@@ -123,25 +135,25 @@ mod tests {
         let cases = [
             (
                 "down",
-                Key::ArrowDown,
+                Key::Named(NamedKey::ArrowDown),
                 none,
                 Some(ScrollKey::Line(ScrollAxis::Y, Dir::Pos)),
             ),
             (
                 "up",
-                Key::ArrowUp,
+                Key::Named(NamedKey::ArrowUp),
                 none,
                 Some(ScrollKey::Line(ScrollAxis::Y, Dir::Neg)),
             ),
             (
                 "right",
-                Key::ArrowRight,
+                Key::Named(NamedKey::ArrowRight),
                 none,
                 Some(ScrollKey::Line(ScrollAxis::X, Dir::Pos)),
             ),
             (
                 "page down",
-                Key::PageDown,
+                Key::Named(NamedKey::PageDown),
                 none,
                 Some(ScrollKey::Page(Dir::Pos)),
             ),
@@ -157,16 +169,36 @@ mod tests {
                 Modifiers::SHIFT,
                 Some(ScrollKey::Page(Dir::Neg)),
             ),
-            ("home", Key::Home, none, Some(ScrollKey::Edge(Dir::Neg))),
+            (
+                "home",
+                Key::Named(NamedKey::Home),
+                none,
+                Some(ScrollKey::Edge(Dir::Neg)),
+            ),
             (
                 "ctrl down",
-                Key::ArrowDown,
+                Key::Named(NamedKey::ArrowDown),
                 Modifiers::CONTROL,
                 Some(ScrollKey::Edge(Dir::Pos)),
             ),
-            ("alt down", Key::ArrowDown, Modifiers::ALT, None),
-            ("shift down selects", Key::ArrowDown, Modifiers::SHIFT, None),
-            ("super end", Key::End, Modifiers::META, None),
+            (
+                "alt down",
+                Key::Named(NamedKey::ArrowDown),
+                Modifiers::ALT,
+                None,
+            ),
+            (
+                "shift down selects",
+                Key::Named(NamedKey::ArrowDown),
+                Modifiers::SHIFT,
+                None,
+            ),
+            (
+                "super end",
+                Key::Named(NamedKey::End),
+                Modifiers::META,
+                None,
+            ),
             ("a letter", Key::Character("j".into()), none, None),
         ];
         for (name, key, mods, want) in cases {

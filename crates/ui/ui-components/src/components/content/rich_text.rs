@@ -162,7 +162,7 @@ fn link(text: &str, href: &str, on_link: Option<EventHandler<String>>) -> Elemen
                 kept_click(&event);
             },
             onkeydown: move |event| {
-                if event.key() == Key::Enter {
+                if event.key() == Key::Named(NamedKey::Enter) {
                     event.stop_propagation();
                     event.prevent_default();
                     if let Some(on_link) = on_link {

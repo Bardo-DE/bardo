@@ -99,8 +99,8 @@ enum Nudge {
 /// The key's nudge: Left and Down lower the value, Right and Up raise it.
 fn nudge(key: &Key) -> Option<Nudge> {
     match key {
-        Key::ArrowLeft | Key::ArrowDown => Some(Nudge::Down),
-        Key::ArrowRight | Key::ArrowUp => Some(Nudge::Up),
+        Key::Named(NamedKey::ArrowLeft) | Key::Named(NamedKey::ArrowDown) => Some(Nudge::Down),
+        Key::Named(NamedKey::ArrowRight) | Key::Named(NamedKey::ArrowUp) => Some(Nudge::Up),
         _ => None,
     }
 }
@@ -316,11 +316,11 @@ mod tests {
 
     #[test]
     fn arrows_nudge_and_other_keys_do_not() {
-        assert_eq!(nudge(&Key::ArrowLeft), Some(Nudge::Down));
-        assert_eq!(nudge(&Key::ArrowDown), Some(Nudge::Down));
-        assert_eq!(nudge(&Key::ArrowRight), Some(Nudge::Up));
-        assert_eq!(nudge(&Key::ArrowUp), Some(Nudge::Up));
-        assert_eq!(nudge(&Key::Enter), None);
+        assert_eq!(nudge(&Key::Named(NamedKey::ArrowLeft)), Some(Nudge::Down));
+        assert_eq!(nudge(&Key::Named(NamedKey::ArrowDown)), Some(Nudge::Down));
+        assert_eq!(nudge(&Key::Named(NamedKey::ArrowRight)), Some(Nudge::Up));
+        assert_eq!(nudge(&Key::Named(NamedKey::ArrowUp)), Some(Nudge::Up));
+        assert_eq!(nudge(&Key::Named(NamedKey::Enter)), None);
     }
 
     #[test]

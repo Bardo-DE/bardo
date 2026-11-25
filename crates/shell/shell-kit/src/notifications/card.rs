@@ -149,7 +149,7 @@ pub fn NotificationCard(
 
 /// Whether a key on the plate opens the notification: Enter or Space, a button's own keys.
 fn opens(key: &Key) -> bool {
-    matches!(key, Key::Enter) || *key == Key::Character(" ".into())
+    matches!(key, Key::Named(NamedKey::Enter)) || *key == Key::Character(" ".into())
 }
 
 /// The first line: the summary, the group's count from two, and the age.
@@ -201,15 +201,15 @@ fn close_button(on_close: EventHandler<Press>) -> Element {
 #[cfg(test)]
 mod tests {
     use super::opens;
-    use dioxus::prelude::Key;
+    use dioxus::prelude::{Key, NamedKey};
 
     #[test]
     fn enter_and_space_open_the_card() {
         let cases = [
-            (Key::Enter, true),
+            (Key::Named(NamedKey::Enter), true),
             (Key::Character(" ".into()), true),
-            (Key::Escape, false),
-            (Key::Tab, false),
+            (Key::Named(NamedKey::Escape), false),
+            (Key::Named(NamedKey::Tab), false),
         ];
         for (key, want) in cases {
             assert_eq!(opens(&key), want, "{key:?}");

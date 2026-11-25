@@ -3,7 +3,7 @@
 //! `src/input/{keysym,keycode,modifiers}.rs`; these check the combination.
 
 use crate::input::key::key_event;
-use keyboard_types::{Code, Key, Location, Modifiers};
+use keyboard_types::{Code, Key, Location, Modifiers, NamedKey};
 use smithay_client_toolkit::seat::keyboard::{KeyEvent, Keysym};
 
 fn press(raw_code: u32, keysym: Keysym, utf8: Option<&str>) -> KeyEvent {
@@ -56,7 +56,7 @@ fn ctrl_c_is_the_letter_not_the_control_character() {
     assert_eq!(got.text, None);
 }
 
-/// The Super key: key `Super`, code `MetaLeft`, location `Left`, and `SUPER` set on the next key.
+/// The Super key: key `Meta`, code `MetaLeft`, location `Left`, and `META` set on the next key.
 #[test]
 fn super_is_super_everywhere() {
     let super_l = press(125, Keysym::Super_L, None);
@@ -67,7 +67,7 @@ fn super_is_super_everywhere() {
         false,
         false,
     );
-    assert_eq!(got.key, Key::Super);
+    assert_eq!(got.key, Key::Named(NamedKey::Meta));
     assert_eq!(got.code, Code::MetaLeft);
     assert_eq!(got.location, Location::Left);
 
@@ -75,13 +75,13 @@ fn super_is_super_everywhere() {
     let tab = press(15, Keysym::Tab, None);
     let with_super_held = key_event(
         &tab,
-        Modifiers::SUPER,
+        Modifiers::META,
         blitz_traits::events::KeyState::Pressed,
         false,
         false,
     );
-    assert_eq!(with_super_held.key, Key::Tab);
-    assert_eq!(with_super_held.modifiers, Modifiers::SUPER);
+    assert_eq!(with_super_held.key, Key::Named(NamedKey::Tab));
+    assert_eq!(with_super_held.modifiers, Modifiers::META);
 }
 
 /// A repeated press sets `is_auto_repeating`; a release has no text.
@@ -144,7 +144,7 @@ fn cases() -> Vec<Case> {
             raw_code: 1,
             keysym: Keysym::Escape,
             utf8: None,
-            want_key: Key::Escape,
+            want_key: Key::Named(NamedKey::Escape),
             want_code: Code::Escape,
             want_location: Location::Standard,
         },
@@ -162,7 +162,7 @@ fn cases() -> Vec<Case> {
             raw_code: 63,
             keysym: Keysym::F5,
             utf8: None,
-            want_key: Key::F5,
+            want_key: Key::Named(NamedKey::F5),
             want_code: Code::F5,
             want_location: Location::Standard,
         },
@@ -171,7 +171,7 @@ fn cases() -> Vec<Case> {
             raw_code: 102,
             keysym: Keysym::Home,
             utf8: None,
-            want_key: Key::Home,
+            want_key: Key::Named(NamedKey::Home),
             want_code: Code::Home,
             want_location: Location::Standard,
         },
@@ -180,7 +180,7 @@ fn cases() -> Vec<Case> {
             raw_code: 105,
             keysym: Keysym::Left,
             utf8: None,
-            want_key: Key::ArrowLeft,
+            want_key: Key::Named(NamedKey::ArrowLeft),
             want_code: Code::ArrowLeft,
             want_location: Location::Standard,
         },
@@ -189,7 +189,7 @@ fn cases() -> Vec<Case> {
             raw_code: 42,
             keysym: Keysym::Shift_L,
             utf8: None,
-            want_key: Key::Shift,
+            want_key: Key::Named(NamedKey::Shift),
             want_code: Code::ShiftLeft,
             want_location: Location::Left,
         },
@@ -198,7 +198,7 @@ fn cases() -> Vec<Case> {
             raw_code: 54,
             keysym: Keysym::Shift_R,
             utf8: None,
-            want_key: Key::Shift,
+            want_key: Key::Named(NamedKey::Shift),
             want_code: Code::ShiftRight,
             want_location: Location::Right,
         },
@@ -207,7 +207,7 @@ fn cases() -> Vec<Case> {
             raw_code: 29,
             keysym: Keysym::Control_L,
             utf8: None,
-            want_key: Key::Control,
+            want_key: Key::Named(NamedKey::Control),
             want_code: Code::ControlLeft,
             want_location: Location::Left,
         },
@@ -216,7 +216,7 @@ fn cases() -> Vec<Case> {
             raw_code: 56,
             keysym: Keysym::Alt_L,
             utf8: None,
-            want_key: Key::Alt,
+            want_key: Key::Named(NamedKey::Alt),
             want_code: Code::AltLeft,
             want_location: Location::Left,
         },
@@ -225,7 +225,7 @@ fn cases() -> Vec<Case> {
             raw_code: 58,
             keysym: Keysym::Caps_Lock,
             utf8: None,
-            want_key: Key::CapsLock,
+            want_key: Key::Named(NamedKey::CapsLock),
             want_code: Code::CapsLock,
             want_location: Location::Standard,
         },
@@ -234,7 +234,7 @@ fn cases() -> Vec<Case> {
             raw_code: 96,
             keysym: Keysym::KP_Enter,
             utf8: Some("\r"),
-            want_key: Key::Enter,
+            want_key: Key::Named(NamedKey::Enter),
             want_code: Code::NumpadEnter,
             want_location: Location::Numpad,
         },

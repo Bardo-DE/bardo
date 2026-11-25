@@ -15,7 +15,7 @@
 //! ring it is following.
 
 #[cfg(feature = "debug-inject")]
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 use layer_shell_types::InputModality;
 use smithay_client_toolkit::seat::keyboard::Keysym;
 
@@ -50,20 +50,18 @@ pub(crate) fn is_modifier(keysym: Keysym) -> bool {
 pub(crate) fn is_modifier_key(key: &Key) -> bool {
     matches!(
         key,
-        Key::Alt
-            | Key::AltGraph
-            | Key::CapsLock
-            | Key::Control
-            | Key::Fn
-            | Key::FnLock
-            | Key::Meta
-            | Key::NumLock
-            | Key::ScrollLock
-            | Key::Shift
-            | Key::Symbol
-            | Key::SymbolLock
-            | Key::Hyper
-            | Key::Super
+        Key::Named(NamedKey::Alt)
+            | Key::Named(NamedKey::AltGraph)
+            | Key::Named(NamedKey::CapsLock)
+            | Key::Named(NamedKey::Control)
+            | Key::Named(NamedKey::Fn)
+            | Key::Named(NamedKey::FnLock)
+            | Key::Named(NamedKey::Meta)
+            | Key::Named(NamedKey::NumLock)
+            | Key::Named(NamedKey::ScrollLock)
+            | Key::Named(NamedKey::Shift)
+            | Key::Named(NamedKey::Symbol)
+            | Key::Named(NamedKey::SymbolLock)
     )
 }
 

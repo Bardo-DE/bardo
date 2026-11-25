@@ -113,7 +113,7 @@ fn panel() -> Element {
             },
             onkeydown: move |event: KeyboardEvent| {
                 print(&json!({"event": "key", "key": event.key().to_string()}));
-                if event.key() == Key::Escape {
+                if event.key() == Key::Named(NamedKey::Escape) {
                     surface.close();
                     print(&json!({"event": "closed"}));
                 }

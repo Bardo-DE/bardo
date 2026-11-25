@@ -5,28 +5,28 @@
 
 use crate::surface::Stroke;
 use computer_use_seat_input::{Keycode, Keymap, KeymapEntry, Produces, ShiftLevel};
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 use keymap::keyboard_types::Modifiers;
 
 /// The named keys, each with its code.
 const NAMED: &[(Key, u32)] = &[
-    (Key::Enter, 1),
-    (Key::Tab, 2),
-    (Key::Backspace, 3),
-    (Key::Escape, 4),
-    (Key::Delete, 5),
-    (Key::Control, 6),
-    (Key::Shift, 7),
-    (Key::Alt, 8),
-    (Key::Meta, 9),
-    (Key::ArrowUp, 10),
-    (Key::ArrowDown, 11),
-    (Key::ArrowLeft, 12),
-    (Key::ArrowRight, 13),
-    (Key::Home, 14),
-    (Key::End, 15),
-    (Key::PageUp, 16),
-    (Key::PageDown, 17),
+    (Key::Named(NamedKey::Enter), 1),
+    (Key::Named(NamedKey::Tab), 2),
+    (Key::Named(NamedKey::Backspace), 3),
+    (Key::Named(NamedKey::Escape), 4),
+    (Key::Named(NamedKey::Delete), 5),
+    (Key::Named(NamedKey::Control), 6),
+    (Key::Named(NamedKey::Shift), 7),
+    (Key::Named(NamedKey::Alt), 8),
+    (Key::Named(NamedKey::Meta), 9),
+    (Key::Named(NamedKey::ArrowUp), 10),
+    (Key::Named(NamedKey::ArrowDown), 11),
+    (Key::Named(NamedKey::ArrowLeft), 12),
+    (Key::Named(NamedKey::ArrowRight), 13),
+    (Key::Named(NamedKey::Home), 14),
+    (Key::Named(NamedKey::End), 15),
+    (Key::Named(NamedKey::PageUp), 16),
+    (Key::Named(NamedKey::PageDown), 17),
 ];
 
 /// Where the character codes start.
@@ -74,14 +74,14 @@ pub fn decode(code: Keycode) -> Decoded {
         return Decoded::Char(c);
     }
     match NAMED.iter().find(|(_, n)| *n == code.0).map(|(k, _)| k) {
-        Some(Key::Enter) => Decoded::Stroke(Stroke::Enter),
-        Some(Key::Tab) => Decoded::Stroke(Stroke::Tab),
-        Some(Key::Backspace) => Decoded::Stroke(Stroke::Backspace),
-        Some(Key::Escape) => Decoded::Stroke(Stroke::Escape),
-        Some(Key::Control) => Decoded::Modifier(Modifiers::CONTROL),
-        Some(Key::Alt) => Decoded::Modifier(Modifiers::ALT),
-        Some(Key::Shift) => Decoded::Modifier(Modifiers::SHIFT),
-        Some(Key::Meta) => Decoded::Modifier(Modifiers::META),
+        Some(Key::Named(NamedKey::Enter)) => Decoded::Stroke(Stroke::Enter),
+        Some(Key::Named(NamedKey::Tab)) => Decoded::Stroke(Stroke::Tab),
+        Some(Key::Named(NamedKey::Backspace)) => Decoded::Stroke(Stroke::Backspace),
+        Some(Key::Named(NamedKey::Escape)) => Decoded::Stroke(Stroke::Escape),
+        Some(Key::Named(NamedKey::Control)) => Decoded::Modifier(Modifiers::CONTROL),
+        Some(Key::Named(NamedKey::Alt)) => Decoded::Modifier(Modifiers::ALT),
+        Some(Key::Named(NamedKey::Shift)) => Decoded::Modifier(Modifiers::SHIFT),
+        Some(Key::Named(NamedKey::Meta)) => Decoded::Modifier(Modifiers::META),
         _ => Decoded::Other,
     }
 }

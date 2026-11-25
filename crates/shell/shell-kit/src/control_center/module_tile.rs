@@ -101,7 +101,10 @@ pub fn ModuleTile(
 
 /// Whether a key on the chevron opens the detail: Enter, or Right (into the pane).
 fn opens(key: &Key) -> bool {
-    matches!(key, Key::Enter | Key::ArrowRight)
+    matches!(
+        key,
+        Key::Named(NamedKey::Enter) | Key::Named(NamedKey::ArrowRight)
+    )
 }
 
 /// The chevron: its own hit target, named for the module, keeping every press it takes.
@@ -149,16 +152,16 @@ fn chevron_button(
 #[cfg(test)]
 mod tests {
     use super::opens;
-    use dioxus::prelude::Key;
+    use dioxus::prelude::{Key, NamedKey};
 
     #[test]
     fn the_chevron_opens_on_enter_and_right() {
         let cases = [
-            (Key::Enter, true),
+            (Key::Named(NamedKey::Enter), true),
             (Key::Character(" ".into()), false),
-            (Key::ArrowRight, true),
-            (Key::ArrowLeft, false),
-            (Key::Tab, false),
+            (Key::Named(NamedKey::ArrowRight), true),
+            (Key::Named(NamedKey::ArrowLeft), false),
+            (Key::Named(NamedKey::Tab), false),
         ];
         for (key, chevron) in cases {
             assert_eq!(opens(&key), chevron, "chevron {key:?}");

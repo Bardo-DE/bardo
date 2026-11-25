@@ -46,12 +46,12 @@ pub(super) fn ContinueBody(
         div {
             class: "ds-alert",
             onkeydown: move |event| match event.key() {
-                Key::Escape => {
+                Key::Named(NamedKey::Escape) => {
                     event.stop_propagation();
                     event.prevent_default();
                     on_answer.call(ConsentAnswer::Dismiss);
                 }
-                Key::Enter => {
+                Key::Named(NamedKey::Enter) => {
                     event.stop_propagation();
                     event.prevent_default();
                     go_key(());

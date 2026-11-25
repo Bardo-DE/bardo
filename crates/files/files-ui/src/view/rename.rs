@@ -31,7 +31,7 @@ pub(super) fn RenameCell(browse: Browse, draft: String, problem: Option<RenameEr
             onsubmit: move |_: String| browse.send(Input::CommitRename),
             onblur: move |()| browse.send(Input::CommitRename),
             onkey: move |event: KeyboardEvent| {
-                if event.key() == Key::Escape {
+                if event.key() == Key::Named(NamedKey::Escape) {
                     browse.send(Input::CancelRename);
                 }
             },

@@ -3,90 +3,29 @@
 //! other file decides what Ctrl, Super or Meta mean.
 
 use keyboard_types::{Key, Modifiers};
-use keymap::keyboard_types::{Key as LogicalKey, Modifiers as ChordModifiers, NamedKey};
 use keymap::{Key as ChordKey, KeyInput};
 
-// The toolkit (dioxus) hands in keyboard-types 0.7 values and the chord keymap reads 0.8: the two
-// conversions below go away when dioxus moves to 0.8 (phase 1b).
-
-/// The chord keymap flags `held` reports, by name: Super and Meta are both the OS key (`META`).
-/// Locks and the like are left out; `AltGraph` is kept for [`key_input`].
-fn flags_of(held: Modifiers) -> ChordModifiers {
-    [
-        (Modifiers::CONTROL, ChordModifiers::CONTROL),
-        (Modifiers::ALT, ChordModifiers::ALT),
-        (Modifiers::SHIFT, ChordModifiers::SHIFT),
-        (Modifiers::SUPER, ChordModifiers::META),
-        (Modifiers::META, ChordModifiers::META),
-        (Modifiers::ALT_GRAPH, ChordModifiers::ALT_GRAPH),
-    ]
-    .into_iter()
-    .filter(|(flag, _)| held.contains(*flag))
-    .fold(ChordModifiers::empty(), |flags, (_, mapped)| flags | mapped)
+/// The chord flags `held` reports: Ctrl, Alt, Shift, the OS key (`META`) and `AltGraph`. Locks
+/// and the like are left out; `AltGraph` is kept for [`key_input`].
+fn flags_of(held: Modifiers) -> Modifiers {
+    held & (Modifiers::CONTROL
+        | Modifiers::ALT
+        | Modifiers::SHIFT
+        | Modifiers::META
+        | Modifiers::ALT_GRAPH)
 }
 
 /// The chord modifiers `held` reports (Ctrl, Alt, Shift and the OS key). Lock and `AltGraph`
 /// flags are not chord modifiers.
 #[must_use]
-pub fn modifiers_of(held: Modifiers) -> ChordModifiers {
-    flags_of(held).difference(ChordModifiers::ALT_GRAPH)
+pub fn modifiers_of(held: Modifiers) -> Modifiers {
+    flags_of(held).difference(Modifiers::ALT_GRAPH)
 }
 
-/// The toolkit flags that stand for the chord modifiers `held`: the reverse of
-/// [`modifiers_of`], for a test or a driver that presses a chord. The OS key is `META`.
-#[must_use]
-pub fn modifiers_held(held: ChordModifiers) -> Modifiers {
-    [
-        (ChordModifiers::CONTROL, Modifiers::CONTROL),
-        (ChordModifiers::ALT, Modifiers::ALT),
-        (ChordModifiers::SHIFT, Modifiers::SHIFT),
-        (ChordModifiers::META, Modifiers::META),
-    ]
-    .into_iter()
-    .filter(|(flag, _)| held.contains(*flag))
-    .fold(Modifiers::empty(), |flags, (_, mapped)| flags | mapped)
-}
-
-/// `key` as the chord keymap's keyboard-types names it, for the keys a chord can have; `None` for a
-/// modifier on its own, a media key or any other.
-fn logical_key(key: &Key) -> Option<LogicalKey> {
-    let named = LogicalKey::Named;
-    Some(match key {
-        Key::Character(text) => LogicalKey::Character(text.clone()),
-        Key::Enter => named(NamedKey::Enter),
-        Key::Tab => named(NamedKey::Tab),
-        Key::Escape => named(NamedKey::Escape),
-        Key::Backspace => named(NamedKey::Backspace),
-        Key::Delete => named(NamedKey::Delete),
-        Key::Insert => named(NamedKey::Insert),
-        Key::Home => named(NamedKey::Home),
-        Key::End => named(NamedKey::End),
-        Key::PageUp => named(NamedKey::PageUp),
-        Key::PageDown => named(NamedKey::PageDown),
-        Key::ArrowUp => named(NamedKey::ArrowUp),
-        Key::ArrowDown => named(NamedKey::ArrowDown),
-        Key::ArrowLeft => named(NamedKey::ArrowLeft),
-        Key::ArrowRight => named(NamedKey::ArrowRight),
-        Key::PrintScreen => named(NamedKey::PrintScreen),
-        other => function_key(other)?,
-    })
-}
-
-/// `F1` to `F24`, read from the key's name (`F5`), so no arm per function key.
-fn function_key(key: &Key) -> Option<LogicalKey> {
-    let name = key.to_string();
-    let digits = name.strip_prefix('F')?;
-    match ChordKey::function(digits.parse().ok()?)? {
-        ChordKey::Named(named) => Some(LogicalKey::Named(named)),
-        ChordKey::Char(_) => None,
-    }
-}
-
-/// The chord key `key` is, or `None` for a key that is no chord key (a modifier on its own, a
-/// multi-character string from an IME, a media key).
+/// The chord key `key` is, or `None` for a multi-character string from an IME.
 #[must_use]
 pub fn chord_key_of(key: &Key) -> Option<ChordKey> {
-    ChordKey::from_logical(&logical_key(key)?)
+    ChordKey::from_logical(key)
 }
 
 /// The key press `key` with `modifiers` held, as the chord keymap takes it.
@@ -97,12 +36,13 @@ pub fn chord_key_of(key: &Key) -> Option<ChordKey> {
 /// press.
 #[must_use]
 pub fn key_input(key: &Key, modifiers: Modifiers) -> Option<KeyInput> {
-    KeyInput::from_logical(flags_of(modifiers), &logical_key(key)?)
+    KeyInput::from_logical(flags_of(modifiers), key)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use keyboard_types::NamedKey;
     use keymap::{Chord, Desktop, Platform};
 
     type Case = (
@@ -131,7 +71,7 @@ mod tests {
             (
                 "mac super",
                 Platform::MacOs,
-                Modifiers::SUPER,
+                Modifiers::META,
                 "c",
                 "Super+C",
             ),
@@ -143,7 +83,7 @@ mod tests {
                 "c",
                 "Ctrl+C",
             ),
-            ("ours super", ours(), Modifiers::SUPER, "C", "Super+C"),
+            ("ours super", ours(), Modifiers::META, "C", "Super+C"),
             ("ours meta", ours(), Modifiers::META, "c", "Super+C"),
             ("ours ctrl", ours(), Modifiers::CONTROL, "c", "Ctrl+C"),
             (
@@ -186,14 +126,12 @@ mod tests {
     }
 
     #[test]
-    fn flags_and_modifiers_round_trip() {
-        let held = Modifiers::CONTROL | Modifiers::SHIFT | Modifiers::META;
-        assert_eq!(modifiers_held(modifiers_of(held)), held);
+    fn modifiers_drop_locks_and_alt_graph() {
+        let held = Modifiers::CONTROL | Modifiers::SHIFT | Modifiers::META | Modifiers::CAPS_LOCK;
         assert_eq!(
-            modifiers_of(Modifiers::SUPER),
-            modifiers_of(Modifiers::META)
+            modifiers_of(held | Modifiers::ALT_GRAPH),
+            Modifiers::CONTROL | Modifiers::SHIFT | Modifiers::META
         );
-        assert_eq!(modifiers_held(ChordModifiers::empty()), Modifiers::empty());
     }
 
     #[test]
@@ -202,13 +140,20 @@ mod tests {
             (Key::Character(" ".into()), Some(ChordKey::SPACE)),
             (Key::Character("Z".into()), Some(ChordKey::Char('z'))),
             (Key::Character("ab".into()), None),
-            (Key::Enter, Some(ChordKey::Named(NamedKey::Enter))),
-            (Key::ArrowLeft, Some(ChordKey::Named(NamedKey::ArrowLeft))),
-            (Key::F5, ChordKey::function(5)),
-            (Key::F24, ChordKey::function(24)),
-            (Key::Control, None),
-            (Key::Fn, None),
-            (Key::AudioVolumeUp, None),
+            (
+                Key::Named(NamedKey::Enter),
+                Some(ChordKey::Named(NamedKey::Enter)),
+            ),
+            (
+                Key::Named(NamedKey::ArrowLeft),
+                Some(ChordKey::Named(NamedKey::ArrowLeft)),
+            ),
+            (Key::Named(NamedKey::F5), ChordKey::function(5)),
+            (Key::Named(NamedKey::F24), ChordKey::function(24)),
+            (
+                Key::Named(NamedKey::Control),
+                Some(ChordKey::Named(NamedKey::Control)),
+            ),
         ];
         for (key, want) in cases {
             assert_eq!(chord_key_of(&key), want, "{key:?}");

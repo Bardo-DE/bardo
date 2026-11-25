@@ -3,7 +3,7 @@
 
 use blitz_traits::SmolStr;
 use blitz_traits::events::{BlitzKeyEvent, KeyState};
-use keyboard_types::{Code, Key, Location, Modifiers};
+use keyboard_types::{Code, Key, Location, Modifiers, NamedKey};
 
 use super::{KeyAction, KeyStroke};
 use crate::input::key::unshifted;
@@ -39,11 +39,11 @@ pub(super) fn deliver_key(
 /// The DOM modifier flag a modifier key holds, if it is one.
 fn flag_of(key: &Key) -> Modifiers {
     match key {
-        Key::Alt => Modifiers::ALT,
-        Key::Control => Modifiers::CONTROL,
-        Key::Shift => Modifiers::SHIFT,
-        Key::Meta => Modifiers::META,
-        Key::Super => Modifiers::SUPER,
+        Key::Named(NamedKey::Alt) => Modifiers::ALT,
+        Key::Named(NamedKey::Control) => Modifiers::CONTROL,
+        Key::Named(NamedKey::Shift) => Modifiers::SHIFT,
+        Key::Named(NamedKey::Meta) => Modifiers::META,
+        Key::Named(NamedKey::Meta) => Modifiers::META,
         _ => Modifiers::empty(),
     }
 }
@@ -125,7 +125,7 @@ mod tests {
             ),
             (
                 "named key",
-                stroke(Key::Tab, Code::Tab, Modifiers::empty()),
+                stroke(Key::Named(NamedKey::Tab), Code::Tab, Modifiers::empty()),
                 KeyState::Pressed,
                 None,
             ),
@@ -142,8 +142,8 @@ mod tests {
     #[test]
     fn injected_modifier_keys_and_mods_move_the_seat_modifiers() {
         let key = |key: Key, code, mods| KeyStroke { key, code, mods };
-        let alt = || key(Key::Alt, Code::AltLeft, Modifiers::empty());
-        let tab = |mods| key(Key::Tab, Code::Tab, mods);
+        let alt = || key(Key::Named(NamedKey::Alt), Code::AltLeft, Modifiers::empty());
+        let tab = |mods| key(Key::Named(NamedKey::Tab), Code::Tab, mods);
         let none = Modifiers::empty();
         let cases: &[(&str, Modifiers, KeyStroke, KeyAction, Modifiers)] = &[
             ("alt press", none, alt(), KeyAction::Press, Modifiers::ALT),
@@ -205,7 +205,7 @@ mod tests {
         assert_eq!(held.alt, Modifier::Held);
         assert_eq!(held.shift, Modifier::Released);
         assert_eq!(
-            crate::modifiers::with_dom(HeldModifiers::default(), Modifiers::SUPER).logo,
+            crate::modifiers::with_dom(HeldModifiers::default(), Modifiers::META).logo,
             Modifier::Held
         );
     }
@@ -224,8 +224,8 @@ mod tests {
 
     #[test]
     fn only_modifier_keys_are_modifiers() {
-        assert!(is_modifier_key(&Key::Shift));
-        assert!(!is_modifier_key(&Key::Tab));
+        assert!(is_modifier_key(&Key::Named(NamedKey::Shift)));
+        assert!(!is_modifier_key(&Key::Named(NamedKey::Tab)));
         assert!(!is_modifier_key(&Key::Character("a".to_owned())));
     }
 }

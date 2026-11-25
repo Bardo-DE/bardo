@@ -36,9 +36,9 @@ fn suggest_key(event: &KeyboardEvent) -> Option<SuggestKey> {
         return None;
     }
     match event.key() {
-        Key::ArrowUp => Some(SuggestKey::Up),
-        Key::ArrowDown => Some(SuggestKey::Down),
-        Key::Escape => Some(SuggestKey::Escape),
+        Key::Named(NamedKey::ArrowUp) => Some(SuggestKey::Up),
+        Key::Named(NamedKey::ArrowDown) => Some(SuggestKey::Down),
+        Key::Named(NamedKey::Escape) => Some(SuggestKey::Escape),
         _ => None,
     }
 }

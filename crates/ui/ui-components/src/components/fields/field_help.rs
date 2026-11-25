@@ -50,7 +50,7 @@ pub(crate) fn HelpButton(label: TextLine, help: TextLine) -> Element {
         span {
             class: "ds-field-row-about",
             onkeydown: move |event| {
-                if event.key() == Key::Escape && shown() {
+                if event.key() == Key::Named(NamedKey::Escape) && shown() {
                     event.stop_propagation();
                     shown.set(false);
                 }

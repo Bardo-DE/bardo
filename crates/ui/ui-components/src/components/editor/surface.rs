@@ -207,8 +207,8 @@ pub fn EditSurface(
 /// The context-menu key, or Shift+F10, its stand-in on keyboards without one.
 fn menu_key(event: &KeyboardEvent) -> bool {
     match event.key() {
-        Key::ContextMenu => true,
-        Key::F10 => event.modifiers() == Modifiers::SHIFT,
+        Key::Named(NamedKey::ContextMenu) => true,
+        Key::Named(NamedKey::F10) => event.modifiers() == Modifiers::SHIFT,
         _ => false,
     }
 }

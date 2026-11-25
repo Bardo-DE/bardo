@@ -137,7 +137,7 @@ fn TopHitSearch() -> Element {
                     oninput: move |next: String| query.set(next),
                     onpick: move |value: String| picked.set(format!("picked {value}")),
                     onkey: move |event: KeyboardEvent| {
-                        if event.key() == Key::Tab
+                        if event.key() == Key::Named(NamedKey::Tab)
                             && let Some(row) = lit()
                         {
                             event.prevent_default();

@@ -7,7 +7,7 @@ use action_gate_wire::EffectBasis;
 use computer_use_a11y_tree::{A11yNode, TypedHint};
 use computer_use_action::WindowClass;
 use computer_use_action::{ActionClass, ComputerUseAction, WindowSpace};
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 use provenance::Effect;
 
 /// The effect of `action`, and why.
@@ -77,7 +77,7 @@ fn commits_in(
 fn sends_something(action: &ComputerUseAction<WindowSpace>) -> bool {
     match action {
         ComputerUseAction::Type { .. } => true,
-        ComputerUseAction::Key { chord, .. } => chord.key == Key::Enter,
+        ComputerUseAction::Key { chord, .. } => chord.key == Key::Named(NamedKey::Enter),
         _ => false,
     }
 }

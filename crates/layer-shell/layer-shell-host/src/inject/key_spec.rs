@@ -5,7 +5,7 @@
 
 use std::str::FromStr;
 
-use keyboard_types::{Code, Key, Modifiers};
+use keyboard_types::{Code, Key, Modifiers, NamedKey};
 
 use super::KeyStroke;
 use super::command::CommandError;
@@ -53,7 +53,7 @@ fn modifier(word: &str) -> Option<Modifiers> {
         "shift" => Some(Modifiers::SHIFT),
         "ctrl" => Some(Modifiers::CONTROL),
         "alt" => Some(Modifiers::ALT),
-        "super" => Some(Modifiers::SUPER),
+        "super" => Some(Modifiers::META),
         _ => None,
     }
 }
@@ -67,10 +67,10 @@ fn code_of(key: &Key) -> Option<Code> {
             .next()
             .filter(|_| text.chars().count() == 1)
             .and_then(code_of_char),
-        Key::Shift => Some(Code::ShiftLeft),
-        Key::Control => Some(Code::ControlLeft),
-        Key::Alt => Some(Code::AltLeft),
-        Key::Meta | Key::Super => Some(Code::MetaLeft),
+        Key::Named(NamedKey::Shift) => Some(Code::ShiftLeft),
+        Key::Named(NamedKey::Control) => Some(Code::ControlLeft),
+        Key::Named(NamedKey::Alt) => Some(Code::AltLeft),
+        Key::Named(NamedKey::Meta) => Some(Code::MetaLeft),
         named => Code::from_str(&named.to_string()).ok(),
     }
 }
@@ -143,20 +143,46 @@ mod tests {
     fn a_spec_names_key_code_and_modifiers() {
         let ch = |c: &str| Key::Character(c.to_owned());
         let cases: Vec<(&str, Result<KeyStroke, CommandError>)> = vec![
-            ("Tab", Ok(stroke(Key::Tab, Code::Tab, Modifiers::empty()))),
+            (
+                "Tab",
+                Ok(stroke(
+                    Key::Named(NamedKey::Tab),
+                    Code::Tab,
+                    Modifiers::empty(),
+                )),
+            ),
             (
                 "Enter",
-                Ok(stroke(Key::Enter, Code::Enter, Modifiers::empty())),
+                Ok(stroke(
+                    Key::Named(NamedKey::Enter),
+                    Code::Enter,
+                    Modifiers::empty(),
+                )),
             ),
             (
                 "ArrowDown",
-                Ok(stroke(Key::ArrowDown, Code::ArrowDown, Modifiers::empty())),
+                Ok(stroke(
+                    Key::Named(NamedKey::ArrowDown),
+                    Code::ArrowDown,
+                    Modifiers::empty(),
+                )),
             ),
             (
                 "Home",
-                Ok(stroke(Key::Home, Code::Home, Modifiers::empty())),
+                Ok(stroke(
+                    Key::Named(NamedKey::Home),
+                    Code::Home,
+                    Modifiers::empty(),
+                )),
             ),
-            ("F5", Ok(stroke(Key::F5, Code::F5, Modifiers::empty()))),
+            (
+                "F5",
+                Ok(stroke(
+                    Key::Named(NamedKey::F5),
+                    Code::F5,
+                    Modifiers::empty(),
+                )),
+            ),
             ("a", Ok(stroke(ch("a"), Code::KeyA, Modifiers::empty()))),
             ("7", Ok(stroke(ch("7"), Code::Digit7, Modifiers::empty()))),
             (
@@ -177,7 +203,11 @@ mod tests {
             ),
             (
                 "Shift",
-                Ok(stroke(Key::Shift, Code::ShiftLeft, Modifiers::empty())),
+                Ok(stroke(
+                    Key::Named(NamedKey::Shift),
+                    Code::ShiftLeft,
+                    Modifiers::empty(),
+                )),
             ),
             (
                 "k+ctrl",
@@ -185,18 +215,26 @@ mod tests {
             ),
             (
                 "Super",
-                Ok(stroke(Key::Super, Code::MetaLeft, Modifiers::empty())),
+                Ok(stroke(
+                    Key::Named(NamedKey::Meta),
+                    Code::MetaLeft,
+                    Modifiers::empty(),
+                )),
             ),
             (
                 "Tab+shift",
-                Ok(stroke(Key::Tab, Code::Tab, Modifiers::SHIFT)),
+                Ok(stroke(
+                    Key::Named(NamedKey::Tab),
+                    Code::Tab,
+                    Modifiers::SHIFT,
+                )),
             ),
             (
                 "y+super+alt",
                 Ok(stroke(
                     ch("y"),
                     Code::KeyY,
-                    Modifiers::SUPER | Modifiers::ALT,
+                    Modifiers::META | Modifiers::ALT,
                 )),
             ),
             ("Tabb", Err(CommandError::NotAKey("Tabb".into()))),

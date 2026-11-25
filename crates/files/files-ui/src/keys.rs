@@ -7,7 +7,7 @@
 //! offers. Standard actions are handled, never declared.
 
 use dioxus::prelude::{
-    Key, KeyboardEvent, ModifiersInteraction, ReadableExt, Signal, WritableExt, use_hook,
+    Key, KeyboardEvent, ModifiersInteraction, NamedKey, ReadableExt, Signal, WritableExt, use_hook,
 };
 use files_core::ViewMode;
 use files_model::{Browser, GoTo, InfoView, Input};
@@ -153,7 +153,7 @@ pub(crate) fn pressed(
     if browse.renaming() {
         return false;
     }
-    if event.key() == Key::Escape {
+    if event.key() == Key::Named(NamedKey::Escape) {
         return escape(browse);
     }
     // Get Info, Go to Folder and the sheet of apps are sheets over the window: the keys behind

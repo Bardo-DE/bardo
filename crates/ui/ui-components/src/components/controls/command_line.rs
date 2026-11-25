@@ -23,7 +23,7 @@ pub fn CommandLine(
         div {
             class: "ds-command-line",
             onkeydown: move |event| {
-                if event.key() == Key::Enter {
+                if event.key() == Key::Named(NamedKey::Enter) {
                     event.stop_propagation();
                 }
             },

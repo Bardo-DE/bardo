@@ -727,7 +727,7 @@ mod fingers {
     fn a_wheel_under_the_primary_modifier_is_a_zoom_delivered_whole_never_eased() {
         let mut harness = harness();
         let zoom = |harness: &mut Harness| {
-            harness.send(Input::detents_held(AT, 0.0, -1.0, Modifiers::SUPER));
+            harness.send(Input::detents_held(AT, 0.0, -1.0, Modifiers::META));
         };
         zoom(&mut harness);
         zoom(&mut harness);

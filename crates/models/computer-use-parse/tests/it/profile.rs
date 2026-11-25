@@ -13,7 +13,7 @@ use computer_use_action::{
     Summary, Target, ToolDialect, VerbAlias, WaitMs,
 };
 use computer_use_parse::{CursorAt, DropReason, Parsed, ToolContext, parse_tool_calls_with};
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 
 const QWEN: ToolDialect = ToolDialect::QwenComputerUse;
 const CURSOR: CursorAt = CursorAt { x: 100, y: 200 };
@@ -105,7 +105,7 @@ fn every_ui_mate_verb_reads_through_its_profile() {
         (
             r#"{"action":"press","keys":["escape"]}"#,
             ComputerUseAction::Key {
-                chord: Chord::new(BTreeSet::new(), Key::Escape).unwrap(),
+                chord: Chord::new(BTreeSet::new(), Key::Named(NamedKey::Escape)).unwrap(),
                 repeat: Repeat::ONCE,
             },
         ),

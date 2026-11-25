@@ -65,10 +65,10 @@ pub(crate) fn marked(choice: PictureChoice) -> Option<usize> {
 /// The key's step, if it is an arrow.
 fn step_of(key: &Key) -> Option<GridStep> {
     match key {
-        Key::ArrowUp => Some(GridStep::Up),
-        Key::ArrowDown => Some(GridStep::Down),
-        Key::ArrowLeft => Some(GridStep::Left),
-        Key::ArrowRight => Some(GridStep::Right),
+        Key::Named(NamedKey::ArrowUp) => Some(GridStep::Up),
+        Key::Named(NamedKey::ArrowDown) => Some(GridStep::Down),
+        Key::Named(NamedKey::ArrowLeft) => Some(GridStep::Left),
+        Key::Named(NamedKey::ArrowRight) => Some(GridStep::Right),
         _ => None,
     }
 }

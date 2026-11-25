@@ -118,11 +118,11 @@ fn Page() -> Element {
                     oninput: move |next: String| query.set(next),
                     onpick: move |value: String| log.with_mut(|log| log.push(format!("pick:{value}"))),
                     onkey: move |event: KeyboardEvent| match event.key() {
-                        Key::Tab if lit().is_some() => {
+                        Key::Named(NamedKey::Tab) if lit().is_some() => {
                             event.prevent_default();
                             query.set(lit().unwrap_or_default());
                         }
-                        Key::Escape => log.with_mut(|log| log.push("window-escape".to_owned())),
+                        Key::Named(NamedKey::Escape) => log.with_mut(|log| log.push("window-escape".to_owned())),
                         _ => {}
                     },
                 }

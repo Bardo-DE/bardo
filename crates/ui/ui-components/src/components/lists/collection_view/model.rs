@@ -5,7 +5,7 @@ use crate::components::lists::emoji_grid::nav::{GridMove, GridStep, grid_step};
 use crate::components::lists::list::keys::{ListKey, list_key};
 use crate::components::lists::virtual_list::model::roved;
 use crate::stack::roving::{Edge, Rove};
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::Platform;
 use std::ops::Range;
 use ui_core::command::holds_primary;
@@ -34,18 +34,18 @@ pub(crate) fn collection_key(
     modifiers: Modifiers,
     platform: Platform,
 ) -> Option<CollectionKey> {
-    let chorded = modifiers
-        .intersects(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SUPER | Modifiers::META);
+    let chorded = modifiers.intersects(Modifiers::CONTROL | Modifiers::ALT | Modifiers::META);
     if chorded {
         let primary_alone = holds_primary(platform, modifiers)
             && !modifiers.intersects(Modifiers::SHIFT | Modifiers::ALT);
-        return (primary_alone && *key == Key::ArrowDown).then_some(CollectionKey::Open);
+        return (primary_alone && *key == Key::Named(NamedKey::ArrowDown))
+            .then_some(CollectionKey::Open);
     }
     match key {
-        Key::ArrowLeft => Some(CollectionKey::Arrow(GridStep::Left)),
-        Key::ArrowRight => Some(CollectionKey::Arrow(GridStep::Right)),
-        Key::ArrowUp => Some(CollectionKey::Arrow(GridStep::Up)),
-        Key::ArrowDown => Some(CollectionKey::Arrow(GridStep::Down)),
+        Key::Named(NamedKey::ArrowLeft) => Some(CollectionKey::Arrow(GridStep::Left)),
+        Key::Named(NamedKey::ArrowRight) => Some(CollectionKey::Arrow(GridStep::Right)),
+        Key::Named(NamedKey::ArrowUp) => Some(CollectionKey::Arrow(GridStep::Up)),
+        Key::Named(NamedKey::ArrowDown) => Some(CollectionKey::Arrow(GridStep::Down)),
         _ => match list_key(key, modifiers)? {
             ListKey::Move(Rove::Edge(edge)) => Some(CollectionKey::Edge(edge)),
             ListKey::Move(Rove::Step(_)) | ListKey::Pick => None,
@@ -91,25 +91,43 @@ mod tests {
     use super::{CollectionKey, collection_key, target, tiles_in};
     use crate::components::lists::emoji_grid::nav::GridStep;
     use crate::stack::roving::Edge;
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use keymap::Platform;
 
     #[test]
     fn a_key_is_read_as_an_arrow_an_edge_an_open_or_letters_and_the_rest_are_left_alone() {
         let cases: &[(Key, Option<CollectionKey>)] = &[
-            (Key::ArrowLeft, Some(CollectionKey::Arrow(GridStep::Left))),
-            (Key::ArrowRight, Some(CollectionKey::Arrow(GridStep::Right))),
-            (Key::ArrowUp, Some(CollectionKey::Arrow(GridStep::Up))),
-            (Key::ArrowDown, Some(CollectionKey::Arrow(GridStep::Down))),
-            (Key::Home, Some(CollectionKey::Edge(Edge::First))),
-            (Key::End, Some(CollectionKey::Edge(Edge::Last))),
-            (Key::Enter, None),
+            (
+                Key::Named(NamedKey::ArrowLeft),
+                Some(CollectionKey::Arrow(GridStep::Left)),
+            ),
+            (
+                Key::Named(NamedKey::ArrowRight),
+                Some(CollectionKey::Arrow(GridStep::Right)),
+            ),
+            (
+                Key::Named(NamedKey::ArrowUp),
+                Some(CollectionKey::Arrow(GridStep::Up)),
+            ),
+            (
+                Key::Named(NamedKey::ArrowDown),
+                Some(CollectionKey::Arrow(GridStep::Down)),
+            ),
+            (
+                Key::Named(NamedKey::Home),
+                Some(CollectionKey::Edge(Edge::First)),
+            ),
+            (
+                Key::Named(NamedKey::End),
+                Some(CollectionKey::Edge(Edge::Last)),
+            ),
+            (Key::Named(NamedKey::Enter), None),
             (
                 Key::Character("r".to_owned()),
                 Some(CollectionKey::Jump("r".to_owned())),
             ),
-            (Key::Tab, None),
-            (Key::PageDown, None),
+            (Key::Named(NamedKey::Tab), None),
+            (Key::Named(NamedKey::PageDown), None),
         ];
         for (key, want) in cases {
             assert_eq!(

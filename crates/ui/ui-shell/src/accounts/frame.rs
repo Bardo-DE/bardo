@@ -31,12 +31,12 @@ pub(crate) fn StepFrame(
             class: "ds-acc-step",
             "data-step": step,
             onkeydown: move |event| match event.key() {
-                Key::Escape => {
+                Key::Named(NamedKey::Escape) => {
                     event.stop_propagation();
                     event.prevent_default();
                     oncancel.call(());
                 }
-                Key::Enter => {
+                Key::Named(NamedKey::Enter) => {
                     if let Some(enter) = onenter {
                         event.stop_propagation();
                         event.prevent_default();

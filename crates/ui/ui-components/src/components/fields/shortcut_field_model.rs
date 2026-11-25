@@ -1,7 +1,7 @@
 //! What the shortcut field decides from a key while it records: the pure step, apart from the
 //! view that carries it out.
 
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{Chord, Key as ChordKey, Platform};
 use ui_core::command::{chord_of, modifiers_of};
@@ -55,9 +55,10 @@ pub(crate) fn hear(
 ) -> Heard {
     let bare = modifiers_of(modifiers).is_empty();
     match (key, bare, single_keys) {
-        (Key::Escape, true, _) => Heard::Cancel,
-        (Key::Backspace, true, _) | (Key::Delete, true, false) => Heard::Clear,
-        (Key::Tab, true, _) => Heard::Leave,
+        (Key::Named(NamedKey::Escape), true, _) => Heard::Cancel,
+        (Key::Named(NamedKey::Backspace), true, _)
+        | (Key::Named(NamedKey::Delete), true, false) => Heard::Clear,
+        (Key::Named(NamedKey::Tab), true, _) => Heard::Leave,
         _ => match chord_of(platform, key, modifiers)
             .filter(|chord| is_shortcut(single_keys, chord))
         {
@@ -105,26 +106,31 @@ mod tests {
         let cases: Vec<(&str, Key, Modifiers, Heard)> = vec![
             (
                 "escape cancels",
-                Key::Escape,
+                Key::Named(NamedKey::Escape),
                 Modifiers::empty(),
                 Heard::Cancel,
             ),
             (
                 "backspace clears",
-                Key::Backspace,
+                Key::Named(NamedKey::Backspace),
                 Modifiers::empty(),
                 Heard::Clear,
             ),
             (
                 "delete clears",
-                Key::Delete,
+                Key::Named(NamedKey::Delete),
                 Modifiers::empty(),
                 Heard::Clear,
             ),
-            ("tab leaves", Key::Tab, Modifiers::empty(), Heard::Leave),
+            (
+                "tab leaves",
+                Key::Named(NamedKey::Tab),
+                Modifiers::empty(),
+                Heard::Leave,
+            ),
             (
                 "caps lock does not make escape a combination",
-                Key::Escape,
+                Key::Named(NamedKey::Escape),
                 Modifiers::CAPS_LOCK,
                 Heard::Cancel,
             ),
@@ -142,26 +148,26 @@ mod tests {
             ),
             (
                 "a lone modifier waits",
-                Key::Shift,
+                Key::Named(NamedKey::Shift),
                 Modifiers::SHIFT,
                 Heard::Wait,
             ),
             (
                 "a bare arrow waits",
-                Key::ArrowUp,
+                Key::Named(NamedKey::ArrowUp),
                 Modifiers::empty(),
                 Heard::Wait,
             ),
             (
                 "command and a letter",
                 letter("k"),
-                Modifiers::SUPER,
+                Modifiers::META,
                 chord(ChordModifiers::META, ChordKey::Char('k')),
             ),
             (
                 "shift command and a letter",
                 letter("K"),
-                Modifiers::SUPER | Modifiers::SHIFT,
+                Modifiers::META | Modifiers::SHIFT,
                 chord(
                     ChordModifiers::META | ChordModifiers::SHIFT,
                     ChordKey::Char('k'),
@@ -169,7 +175,7 @@ mod tests {
             ),
             (
                 "control and an arrow",
-                Key::ArrowLeft,
+                Key::Named(NamedKey::ArrowLeft),
                 Modifiers::CONTROL,
                 chord(
                     ChordModifiers::CONTROL,
@@ -178,13 +184,13 @@ mod tests {
             ),
             (
                 "a function key needs no modifier",
-                Key::F5,
+                Key::Named(NamedKey::F5),
                 Modifiers::empty(),
                 chord(ChordModifiers::empty(), ChordKey::Named(NamedKey::F5)),
             ),
             (
                 "option escape is a combination",
-                Key::Escape,
+                Key::Named(NamedKey::Escape),
                 Modifiers::ALT,
                 chord(ChordModifiers::ALT, ChordKey::Named(NamedKey::Escape)),
             ),
@@ -212,26 +218,31 @@ mod tests {
             ),
             (
                 "delete is a key",
-                Key::Delete,
+                Key::Named(NamedKey::Delete),
                 Modifiers::empty(),
                 chord(ChordModifiers::empty(), ChordKey::Named(NamedKey::Delete)),
             ),
             (
                 "backspace clears",
-                Key::Backspace,
+                Key::Named(NamedKey::Backspace),
                 Modifiers::empty(),
                 Heard::Clear,
             ),
             (
                 "escape cancels",
-                Key::Escape,
+                Key::Named(NamedKey::Escape),
                 Modifiers::empty(),
                 Heard::Cancel,
             ),
-            ("tab leaves", Key::Tab, Modifiers::empty(), Heard::Leave),
+            (
+                "tab leaves",
+                Key::Named(NamedKey::Tab),
+                Modifiers::empty(),
+                Heard::Leave,
+            ),
             (
                 "a bare arrow is offered",
-                Key::ArrowUp,
+                Key::Named(NamedKey::ArrowUp),
                 Modifiers::empty(),
                 chord(ChordModifiers::empty(), ChordKey::Named(NamedKey::ArrowUp)),
             ),
@@ -243,7 +254,7 @@ mod tests {
             ),
             (
                 "a lone modifier waits",
-                Key::Shift,
+                Key::Named(NamedKey::Shift),
                 Modifiers::SHIFT,
                 Heard::Wait,
             ),

@@ -28,9 +28,7 @@ pub(crate) fn with_dom(held: Modifiers, mods: keyboard_types::Modifiers) -> Modi
         shift: of(keyboard_types::Modifiers::SHIFT),
         ctrl: of(keyboard_types::Modifiers::CONTROL),
         alt: of(keyboard_types::Modifiers::ALT),
-        logo: Modifier::from(
-            mods.intersects(keyboard_types::Modifiers::SUPER | keyboard_types::Modifiers::META),
-        ),
+        logo: Modifier::from(mods.intersects(keyboard_types::Modifiers::META)),
         ..held
     }
 }

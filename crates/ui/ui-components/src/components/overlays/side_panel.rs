@@ -72,7 +72,7 @@ pub fn SidePanel(
                     style: "width:{width.0}px",
                     onmounted: move |event| common.mounted(event),
                     onkeydown: move |event| {
-                        if event.key() == Key::Escape {
+                        if event.key() == Key::Named(NamedKey::Escape) {
                             event.stop_propagation();
                             close.call(());
                         }

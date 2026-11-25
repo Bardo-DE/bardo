@@ -4,7 +4,7 @@
 //! disabled item is passed over, and only a menu wraps. Pure: the menu, the command palette and a
 //! list step through it, and [`Roving`] holds the same rules over keyed items.
 
-use dioxus::prelude::Key;
+use dioxus::prelude::{Key, NamedKey};
 use ui_core::vocab::Availability;
 
 /// One step of the selection.
@@ -104,10 +104,14 @@ impl Rove {
     #[must_use]
     pub fn of(key: &Key) -> Option<Rove> {
         match key {
-            Key::ArrowLeft | Key::ArrowUp => Some(Rove::Step(Step::Up)),
-            Key::ArrowRight | Key::ArrowDown => Some(Rove::Step(Step::Down)),
-            Key::Home => Some(Rove::Edge(Edge::First)),
-            Key::End => Some(Rove::Edge(Edge::Last)),
+            Key::Named(NamedKey::ArrowLeft) | Key::Named(NamedKey::ArrowUp) => {
+                Some(Rove::Step(Step::Up))
+            }
+            Key::Named(NamedKey::ArrowRight) | Key::Named(NamedKey::ArrowDown) => {
+                Some(Rove::Step(Step::Down))
+            }
+            Key::Named(NamedKey::Home) => Some(Rove::Edge(Edge::First)),
+            Key::Named(NamedKey::End) => Some(Rove::Edge(Edge::Last)),
             _ => None,
         }
     }
@@ -269,11 +273,20 @@ mod tests {
     #[test]
     fn keys_ask_for_moves() {
         use super::Rove;
-        use dioxus::prelude::Key;
-        assert_eq!(Rove::of(&Key::ArrowRight), Some(Rove::Step(Step::Down)));
-        assert_eq!(Rove::of(&Key::ArrowLeft), Some(Rove::Step(Step::Up)));
-        assert_eq!(Rove::of(&Key::Home), Some(Rove::Edge(Edge::First)));
-        assert_eq!(Rove::of(&Key::Enter), None);
+        use dioxus::prelude::{Key, NamedKey};
+        assert_eq!(
+            Rove::of(&Key::Named(NamedKey::ArrowRight)),
+            Some(Rove::Step(Step::Down))
+        );
+        assert_eq!(
+            Rove::of(&Key::Named(NamedKey::ArrowLeft)),
+            Some(Rove::Step(Step::Up))
+        );
+        assert_eq!(
+            Rove::of(&Key::Named(NamedKey::Home)),
+            Some(Rove::Edge(Edge::First))
+        );
+        assert_eq!(Rove::of(&Key::Named(NamedKey::Enter)), None);
     }
 
     #[test]

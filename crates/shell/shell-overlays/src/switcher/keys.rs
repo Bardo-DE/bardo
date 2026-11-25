@@ -9,7 +9,7 @@
 //! key, not only the modifiers. A release before the surface has the keyboard is never seen as
 //! a key; that needs layer-shell-host's modifiers on focus.
 
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 
 use ui_behaviour::switcher::SwKey;
@@ -26,11 +26,11 @@ pub enum Chord {
 /// `` ` ``, the arrows, Q, H (either case), Escape; anything else is `None`.
 pub fn sw_key(key: &Key, modifiers: Modifiers) -> Option<SwKey> {
     match key {
-        Key::Tab if modifiers.contains(Modifiers::SHIFT) => Some(SwKey::ShiftTab),
-        Key::Tab => Some(SwKey::Tab),
-        Key::ArrowLeft => Some(SwKey::Left),
-        Key::ArrowRight => Some(SwKey::Right),
-        Key::Escape => Some(SwKey::Escape),
+        Key::Named(NamedKey::Tab) if modifiers.contains(Modifiers::SHIFT) => Some(SwKey::ShiftTab),
+        Key::Named(NamedKey::Tab) => Some(SwKey::Tab),
+        Key::Named(NamedKey::ArrowLeft) => Some(SwKey::Left),
+        Key::Named(NamedKey::ArrowRight) => Some(SwKey::Right),
+        Key::Named(NamedKey::Escape) => Some(SwKey::Escape),
         Key::Character(text) => match text.to_lowercase().as_str() {
             "`" => Some(SwKey::Grave),
             "q" => Some(SwKey::Q),
@@ -46,8 +46,8 @@ pub fn sw_key(key: &Key, modifiers: Modifiers) -> Option<SwKey> {
 /// in `modifiers`; any other key-up leaves it as `modifiers` say.
 pub fn chord_after_keyup(key: &Key, modifiers: Modifiers) -> Chord {
     match key {
-        Key::Alt => held_while(ChordModifiers::META, modifiers),
-        Key::Meta | Key::Super => held_while(ChordModifiers::ALT, modifiers),
+        Key::Named(NamedKey::Alt) => held_while(ChordModifiers::META, modifiers),
+        Key::Named(NamedKey::Meta) => held_while(ChordModifiers::ALT, modifiers),
         _ => held_while(ChordModifiers::ALT | ChordModifiers::META, modifiers),
     }
 }
@@ -65,7 +65,7 @@ fn held_while(holding: ChordModifiers, modifiers: Modifiers) -> Chord {
 
 #[cfg(test)]
 mod tests {
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
 
     use super::{Chord, chord_after_keyup, sw_key};
     use ui_behaviour::switcher::SwKey;
@@ -75,17 +75,21 @@ mod tests {
         let ch = |c: &str| Key::Character(c.to_owned());
         let alt = Modifiers::ALT;
         let cases = [
-            (Key::Tab, alt, Some(SwKey::Tab)),
-            (Key::Tab, alt | Modifiers::SHIFT, Some(SwKey::ShiftTab)),
+            (Key::Named(NamedKey::Tab), alt, Some(SwKey::Tab)),
+            (
+                Key::Named(NamedKey::Tab),
+                alt | Modifiers::SHIFT,
+                Some(SwKey::ShiftTab),
+            ),
             (ch("`"), alt, Some(SwKey::Grave)),
-            (Key::ArrowLeft, alt, Some(SwKey::Left)),
-            (Key::ArrowRight, alt, Some(SwKey::Right)),
+            (Key::Named(NamedKey::ArrowLeft), alt, Some(SwKey::Left)),
+            (Key::Named(NamedKey::ArrowRight), alt, Some(SwKey::Right)),
             (ch("q"), alt, Some(SwKey::Q)),
             (ch("Q"), alt, Some(SwKey::Q)),
             (ch("h"), Modifiers::META, Some(SwKey::H)),
-            (Key::Escape, alt, Some(SwKey::Escape)),
+            (Key::Named(NamedKey::Escape), alt, Some(SwKey::Escape)),
             (ch("x"), alt, None),
-            (Key::Enter, alt, None),
+            (Key::Named(NamedKey::Enter), alt, None),
         ];
         for (key, modifiers, want) in cases {
             assert_eq!(sw_key(&key, modifiers), want, "{key:?} {modifiers:?}");
@@ -95,15 +99,25 @@ mod tests {
     #[test]
     fn the_chord_goes_up_with_its_modifier() {
         let cases = [
-            (Key::Alt, Modifiers::ALT, Chord::Released),
-            (Key::Meta, Modifiers::META, Chord::Released),
-            (Key::Super, Modifiers::META, Chord::Released),
-            (Key::Alt, Modifiers::ALT | Modifiers::META, Chord::Held),
-            (Key::Alt, Modifiers::ALT | Modifiers::SUPER, Chord::Held),
-            (Key::Tab, Modifiers::SUPER, Chord::Held),
-            (Key::Tab, Modifiers::ALT, Chord::Held),
-            (Key::Shift, Modifiers::ALT | Modifiers::SHIFT, Chord::Held),
-            (Key::Tab, Modifiers::empty(), Chord::Released),
+            (Key::Named(NamedKey::Alt), Modifiers::ALT, Chord::Released),
+            (Key::Named(NamedKey::Meta), Modifiers::META, Chord::Released),
+            (
+                Key::Named(NamedKey::Alt),
+                Modifiers::ALT | Modifiers::META,
+                Chord::Held,
+            ),
+            (Key::Named(NamedKey::Tab), Modifiers::META, Chord::Held),
+            (Key::Named(NamedKey::Tab), Modifiers::ALT, Chord::Held),
+            (
+                Key::Named(NamedKey::Shift),
+                Modifiers::ALT | Modifiers::SHIFT,
+                Chord::Held,
+            ),
+            (
+                Key::Named(NamedKey::Tab),
+                Modifiers::empty(),
+                Chord::Released,
+            ),
         ];
         for (key, modifiers, want) in cases {
             assert_eq!(

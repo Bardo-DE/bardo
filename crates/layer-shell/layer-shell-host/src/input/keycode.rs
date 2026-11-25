@@ -5,7 +5,7 @@
 //! `src/platform_impl/linux/common/xkb/keymap.rs` (`scancode_to_physicalkey`), Copyright the
 //! winit contributors, licensed under the Apache License 2.0
 //! (<https://www.apache.org/licenses/LICENSE-2.0>). Changes from the original: it targets
-//! keyboard-types 0.7's `Code`; the Super keys (125, 126) are `MetaLeft`/`MetaRight`, the W3C
+//! keyboard-types 0.8's `Code`; the Super keys (125, 126) are `MetaLeft`/`MetaRight`, the W3C
 //! names; codes winit leaves unidentified are `Code::Unidentified`; commented-out rows are
 //! omitted. The numbers are the kernel's `linux/input-event-codes.h`. FINDINGS.md has the
 //! licence note.

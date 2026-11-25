@@ -61,8 +61,8 @@ pub fn ProviderList(
                     landing: Landing::Here,
                     onkey: move |event: KeyboardEvent| {
                         let step = match event.key() {
-                            Key::ArrowDown => CursorStep::Next,
-                            Key::ArrowUp => CursorStep::Previous,
+                            Key::Named(NamedKey::ArrowDown) => CursorStep::Next,
+                            Key::Named(NamedKey::ArrowUp) => CursorStep::Previous,
                             _ => return,
                         };
                         event.prevent_default();

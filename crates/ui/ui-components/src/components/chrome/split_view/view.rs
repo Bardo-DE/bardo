@@ -127,8 +127,14 @@ fn sizes_now(splits: Splits, panes: &[SplitPane]) -> Vec<PaneSize> {
 /// and the one that grows it.
 fn arrows(axis: SplitAxis) -> (Key, Key) {
     match axis {
-        SplitAxis::Row => (Key::ArrowLeft, Key::ArrowRight),
-        SplitAxis::Column => (Key::ArrowUp, Key::ArrowDown),
+        SplitAxis::Row => (
+            Key::Named(NamedKey::ArrowLeft),
+            Key::Named(NamedKey::ArrowRight),
+        ),
+        SplitAxis::Column => (
+            Key::Named(NamedKey::ArrowUp),
+            Key::Named(NamedKey::ArrowDown),
+        ),
     }
 }
 
@@ -173,7 +179,7 @@ fn divider(
                     now - KEY_STEP
                 } else if key == grow {
                     now + KEY_STEP
-                } else if key == Key::Enter {
+                } else if key == Key::Named(NamedKey::Enter) {
                     keys.get(at).map_or(now, |pane| pane.spec.preferred_px(splits.extent).0)
                 } else {
                     return;

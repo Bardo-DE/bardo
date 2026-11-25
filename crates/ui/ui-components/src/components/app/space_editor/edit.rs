@@ -2,7 +2,7 @@
 //! (design/04-COMPONENTS.md section 32 behaviour, design/06-INTERACTIONS.md section 2.8).
 
 use base_ids::Fraction;
-use dioxus::prelude::Key;
+use dioxus::prelude::{Key, NamedKey};
 use ui_style::space::{look::SpaceLook, palette::Dot, presets::PRESETS};
 
 /// A Space holds at most three dots (`S:1425`).
@@ -31,10 +31,10 @@ impl Nudge {
     /// The nudge an arrow key asks for; other keys ask for none.
     pub(super) fn of(key: &Key) -> Option<Nudge> {
         match key {
-            Key::ArrowLeft => Some(Nudge::HueDown),
-            Key::ArrowRight => Some(Nudge::HueUp),
-            Key::ArrowUp => Some(Nudge::ChromaUp),
-            Key::ArrowDown => Some(Nudge::ChromaDown),
+            Key::Named(NamedKey::ArrowLeft) => Some(Nudge::HueDown),
+            Key::Named(NamedKey::ArrowRight) => Some(Nudge::HueUp),
+            Key::Named(NamedKey::ArrowUp) => Some(Nudge::ChromaUp),
+            Key::Named(NamedKey::ArrowDown) => Some(Nudge::ChromaDown),
             _ => None,
         }
     }

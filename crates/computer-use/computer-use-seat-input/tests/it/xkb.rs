@@ -2,7 +2,7 @@
 //! host's xkb data is read): characters at both levels, named keys, and what is left out.
 
 use computer_use_seat_input::{Keycode, Keymap, Produces, ShiftLevel};
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 
 const XKB: &str = r#"
 xkb_keymap {
@@ -81,14 +81,14 @@ fn characters_come_at_their_level_with_evdev_codes() {
 fn named_keys_use_their_w3c_values() {
     let keymap = keymap();
     let table = [
-        (Key::Enter, 28),
-        (Key::Escape, 1),
-        (Key::Backspace, 14),
-        (Key::Tab, 15),
-        (Key::Control, 29),
-        (Key::Shift, 42),
-        (Key::F5, 63),
-        (Key::ArrowUp, 103),
+        (Key::Named(NamedKey::Enter), 28),
+        (Key::Named(NamedKey::Escape), 1),
+        (Key::Named(NamedKey::Backspace), 14),
+        (Key::Named(NamedKey::Tab), 15),
+        (Key::Named(NamedKey::Control), 29),
+        (Key::Named(NamedKey::Shift), 42),
+        (Key::Named(NamedKey::F5), 63),
+        (Key::Named(NamedKey::ArrowUp), 103),
     ];
     for (key, code) in table {
         assert_eq!(keymap.code_of(&key), Some(Keycode(code)), "{key:?}");

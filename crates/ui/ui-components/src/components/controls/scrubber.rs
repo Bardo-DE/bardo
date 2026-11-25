@@ -29,10 +29,14 @@ use ui_style::tokens::control_size::ControlSize;
 fn jump(key: &Key, modifiers: Modifiers) -> Option<Jump> {
     let far = modifiers.contains(Modifiers::SHIFT);
     match key {
-        Key::ArrowLeft | Key::ArrowDown => Some(if far { Jump::BackFar } else { Jump::Back }),
-        Key::ArrowRight | Key::ArrowUp => Some(if far { Jump::ForwardFar } else { Jump::Forward }),
-        Key::Home => Some(Jump::Start),
-        Key::End => Some(Jump::End),
+        Key::Named(NamedKey::ArrowLeft) | Key::Named(NamedKey::ArrowDown) => {
+            Some(if far { Jump::BackFar } else { Jump::Back })
+        }
+        Key::Named(NamedKey::ArrowRight) | Key::Named(NamedKey::ArrowUp) => {
+            Some(if far { Jump::ForwardFar } else { Jump::Forward })
+        }
+        Key::Named(NamedKey::Home) => Some(Jump::Start),
+        Key::Named(NamedKey::End) => Some(Jump::End),
         _ => None,
     }
 }
@@ -147,7 +151,7 @@ pub fn Scrubber(
                 if !takes_input {
                     return;
                 }
-                if event.key() == Key::Escape {
+                if event.key() == Key::Named(NamedKey::Escape) {
                     apply.call(ScrubInput::Cancel);
                 } else if let Some(jump) = jump(&event.key(), event.modifiers()) {
                     apply.call(ScrubInput::Key(jump));
@@ -165,13 +169,37 @@ mod tests {
     fn keys_jump_and_shift_makes_it_far() {
         // (key, shift, jump)
         let cases: Vec<(Key, Modifiers, Option<Jump>)> = vec![
-            (Key::ArrowLeft, Modifiers::empty(), Some(Jump::Back)),
-            (Key::ArrowRight, Modifiers::empty(), Some(Jump::Forward)),
-            (Key::ArrowLeft, Modifiers::SHIFT, Some(Jump::BackFar)),
-            (Key::ArrowRight, Modifiers::SHIFT, Some(Jump::ForwardFar)),
-            (Key::Home, Modifiers::empty(), Some(Jump::Start)),
-            (Key::End, Modifiers::empty(), Some(Jump::End)),
-            (Key::Enter, Modifiers::empty(), None),
+            (
+                Key::Named(NamedKey::ArrowLeft),
+                Modifiers::empty(),
+                Some(Jump::Back),
+            ),
+            (
+                Key::Named(NamedKey::ArrowRight),
+                Modifiers::empty(),
+                Some(Jump::Forward),
+            ),
+            (
+                Key::Named(NamedKey::ArrowLeft),
+                Modifiers::SHIFT,
+                Some(Jump::BackFar),
+            ),
+            (
+                Key::Named(NamedKey::ArrowRight),
+                Modifiers::SHIFT,
+                Some(Jump::ForwardFar),
+            ),
+            (
+                Key::Named(NamedKey::Home),
+                Modifiers::empty(),
+                Some(Jump::Start),
+            ),
+            (
+                Key::Named(NamedKey::End),
+                Modifiers::empty(),
+                Some(Jump::End),
+            ),
+            (Key::Named(NamedKey::Enter), Modifiers::empty(), None),
         ];
         for (key, modifiers, want) in cases {
             assert_eq!(jump(&key, modifiers), want, "{key:?}");

@@ -49,6 +49,7 @@ pub fn holds_primary(platform: Platform, held: Modifiers) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use keyboard_types::NamedKey;
     use keymap::{Desktop, SpaceNumber, StandardAction};
 
     fn ours() -> Platform {
@@ -96,7 +97,7 @@ mod tests {
                 "ours cmd c",
                 ours(),
                 Context::Normal,
-                Modifiers::SUPER,
+                Modifiers::META,
                 "c",
                 standard(StandardAction::Copy),
             ),
@@ -120,7 +121,7 @@ mod tests {
                 "mac cmd z",
                 Platform::MacOs,
                 Context::Normal,
-                Modifiers::SUPER,
+                Modifiers::META,
                 "z",
                 standard(StandardAction::Undo),
             ),
@@ -128,7 +129,7 @@ mod tests {
                 "mac cmd shift z",
                 Platform::MacOs,
                 Context::Normal,
-                Modifiers::SUPER | shift,
+                Modifiers::META | shift,
                 "z",
                 standard(StandardAction::Redo),
             ),
@@ -152,7 +153,7 @@ mod tests {
                 "windows super c is not copy",
                 Platform::Windows,
                 Context::Normal,
-                Modifiers::SUPER,
+                Modifiers::META,
                 "c",
                 None,
             ),
@@ -176,7 +177,7 @@ mod tests {
                 "ours cmd 3 is the app's",
                 ours(),
                 Context::Normal,
-                Modifiers::SUPER,
+                Modifiers::META,
                 "3",
                 None,
             ),
@@ -208,7 +209,7 @@ mod tests {
                 "ours terminal cmd c",
                 ours(),
                 Context::Terminal,
-                Modifiers::SUPER,
+                Modifiers::META,
                 "c",
                 standard(StandardAction::Copy),
             ),
@@ -236,11 +237,11 @@ mod tests {
             (Key::Character("a".into()), Modifiers::CONTROL, false),
             (Key::Character("a".into()), Modifiers::ALT, false),
             (Key::Character("a".into()), Modifiers::META, false),
-            (Key::Character("a".into()), Modifiers::SUPER, false),
+            (Key::Character("a".into()), Modifiers::META, false),
             (Key::Character("你好".into()), Modifiers::empty(), true),
             (Key::Character("你好".into()), Modifiers::CONTROL, false),
-            (Key::Backspace, Modifiers::empty(), true),
-            (Key::Escape, Modifiers::empty(), false),
+            (Key::Named(NamedKey::Backspace), Modifiers::empty(), true),
+            (Key::Named(NamedKey::Escape), Modifiers::empty(), false),
         ];
         for (key, held, want) in cases {
             assert_eq!(types_text(&key, held), want, "{key:?} {held:?}");
@@ -250,12 +251,12 @@ mod tests {
     #[test]
     fn the_primary_modifier_is_command_on_a_mac_and_ctrl_elsewhere() {
         let cases = [
-            (ours(), Modifiers::SUPER, true),
+            (ours(), Modifiers::META, true),
             (ours(), Modifiers::META, true),
             (ours(), Modifiers::CONTROL, false),
-            (Platform::MacOs, Modifiers::SUPER | Modifiers::SHIFT, true),
+            (Platform::MacOs, Modifiers::META | Modifiers::SHIFT, true),
             (Platform::Windows, Modifiers::CONTROL, true),
-            (Platform::Windows, Modifiers::SUPER, false),
+            (Platform::Windows, Modifiers::META, false),
             (kde(), Modifiers::CONTROL | Modifiers::ALT, true),
             (kde(), Modifiers::empty(), false),
         ];

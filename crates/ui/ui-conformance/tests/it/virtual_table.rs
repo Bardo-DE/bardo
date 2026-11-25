@@ -425,8 +425,8 @@ fn a_click_replaces_a_command_click_toggles_and_a_shift_click_extends_in_either_
     let steps: Vec<(String, Modifiers, &str, &str)> = vec![
         (held(1), Modifiers::empty(), "1", "1"),
         (side(3), Modifiers::SHIFT, "3", "3"),
-        (held(4), Modifiers::SUPER, "4", "4"),
-        (side(2), Modifiers::SUPER, "3", "2"),
+        (held(4), Modifiers::META, "4", "4"),
+        (side(2), Modifiers::META, "3", "2"),
         (side(3), Modifiers::empty(), "1", "3"),
     ];
     for (selector, held_keys, count, cursor) in steps {

@@ -8,8 +8,7 @@
 //! Command+C is an ordinary write.
 
 use computer_use_action::{Chord, Modifier};
-use keyboard_types::Key;
-use keymap::keyboard_types::{Modifiers, NamedKey};
+use keymap::keyboard_types::Modifiers;
 use keymap::{
     Action, Chord as KeyChord, Context, Desktop, Key as ChordKey, Keymap, Platform, StandardAction,
     reserved_reason,
@@ -58,55 +57,11 @@ fn modifiers_of(chord: &Chord) -> Modifiers {
     })
 }
 
-/// The key as the chord keymap writes it; `None` for a key no desktop shortcut here uses.
-fn key_of(key: &Key) -> Option<ChordKey> {
-    let named = |named| Some(ChordKey::Named(named));
-    match key {
-        Key::Character(text) => {
-            let mut chars = text.chars();
-            match (chars.next(), chars.next()) {
-                (Some(' '), None) => Some(ChordKey::SPACE),
-                (Some(c), None) => Some(ChordKey::character(c)),
-                _ => None,
-            }
-        }
-        Key::Tab => named(NamedKey::Tab),
-        Key::Enter => named(NamedKey::Enter),
-        Key::Escape => named(NamedKey::Escape),
-        Key::ArrowLeft => named(NamedKey::ArrowLeft),
-        Key::ArrowRight => named(NamedKey::ArrowRight),
-        Key::ArrowUp => named(NamedKey::ArrowUp),
-        Key::ArrowDown => named(NamedKey::ArrowDown),
-        Key::Delete => named(NamedKey::Delete),
-        Key::Super | Key::Meta => named(NamedKey::Meta),
-        other => function_key(other),
-    }
-}
-
-fn function_key(key: &Key) -> Option<ChordKey> {
-    let n = match key {
-        Key::F1 => 1,
-        Key::F2 => 2,
-        Key::F3 => 3,
-        Key::F4 => 4,
-        Key::F5 => 5,
-        Key::F6 => 6,
-        Key::F7 => 7,
-        Key::F8 => 8,
-        Key::F9 => 9,
-        Key::F10 => 10,
-        Key::F11 => 11,
-        Key::F12 => 12,
-        _ => return None,
-    };
-    ChordKey::function(n)
-}
-
 /// The standard actions `chord` is bound to in any platform's conventions (Ctrl+N and Command+N
 /// are both "new"). Empty for a key no shortcut here uses.
 #[must_use]
 pub fn standard_actions_of(chord: &Chord) -> Vec<StandardAction> {
-    let Some(key) = key_of(&chord.key) else {
+    let Some(key) = ChordKey::from_logical(&chord.key) else {
         return Vec::new();
     };
     let pressed = KeyChord::new(modifiers_of(chord), key);
@@ -132,7 +87,7 @@ pub fn standard_actions_of(chord: &Chord) -> Vec<StandardAction> {
 /// undo, save, find) are not.
 #[must_use]
 pub fn acts_on_desktop(chord: &Chord, platform: Platform) -> bool {
-    let Some(key) = key_of(&chord.key) else {
+    let Some(key) = ChordKey::from_logical(&chord.key) else {
         return false;
     };
     let pressed = KeyChord::new(modifiers_of(chord), key);
@@ -150,6 +105,7 @@ pub fn acts_on_desktop(chord: &Chord, platform: Platform) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use keyboard_types::{Key, NamedKey};
     use std::collections::BTreeSet;
 
     fn chord(mods: &[Modifier], key: Key) -> Chord {
@@ -172,14 +128,18 @@ mod tests {
             (chord(&[Super], letter("v")), OURS, false),
             (chord(&[Super], letter("z")), OURS, false),
             (chord(&[Ctrl], letter("c")), KDE, false),
-            (chord(&[], Key::Enter), OURS, false),
-            (chord(&[Super], Key::Tab), OURS, true),
-            (chord(&[Shift, Super], Key::Tab), OURS, true),
+            (chord(&[], Key::Named(NamedKey::Enter)), OURS, false),
+            (chord(&[Super], Key::Named(NamedKey::Tab)), OURS, true),
+            (
+                chord(&[Shift, Super], Key::Named(NamedKey::Tab)),
+                OURS,
+                true,
+            ),
             (chord(&[Super], letter(" ")), OURS, true),
             (chord(&[Ctrl], letter("1")), OURS, true),
-            (chord(&[Alt], Key::Tab), KDE, true),
-            (chord(&[Ctrl, Alt], Key::Delete), KDE, true),
-            (chord(&[], Key::Super), OURS, true),
+            (chord(&[Alt], Key::Named(NamedKey::Tab)), KDE, true),
+            (chord(&[Ctrl, Alt], Key::Named(NamedKey::Delete)), KDE, true),
+            (chord(&[], Key::Named(NamedKey::Meta)), OURS, true),
         ];
         for (chord, platform, want) in table {
             assert_eq!(

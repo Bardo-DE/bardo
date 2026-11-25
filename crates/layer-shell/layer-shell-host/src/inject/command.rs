@@ -175,7 +175,7 @@ fn parse_button(word: &str) -> Result<PointerButton, CommandError> {
 #[cfg(test)]
 mod tests {
     use crate::inject::KeyStroke;
-    use keyboard_types::{Code, Key, Modifiers};
+    use keyboard_types::{Code, Key, Modifiers, NamedKey};
 
     use super::*;
 
@@ -282,7 +282,7 @@ mod tests {
                     "power-menu",
                     DebugAction::Inject(Inject::Key {
                         stroke: KeyStroke {
-                            key: Key::Escape,
+                            key: Key::Named(NamedKey::Escape),
                             code: Code::Escape,
                             mods: Modifiers::empty(),
                         },
@@ -310,7 +310,7 @@ mod tests {
                     "launcher",
                     DebugAction::Inject(Inject::Key {
                         stroke: KeyStroke {
-                            key: Key::Tab,
+                            key: Key::Named(NamedKey::Tab),
                             code: Code::Tab,
                             mods: Modifiers::empty(),
                         },

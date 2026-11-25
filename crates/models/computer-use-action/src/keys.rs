@@ -77,8 +77,10 @@ impl Chord {
     /// Returns [`ChordError`] when `key` is `Unidentified` or `Dead`, which no chord can name.
     pub fn new(mods: BTreeSet<Modifier>, key: keyboard_types::Key) -> Result<Self, ChordError> {
         match key {
-            keyboard_types::Key::Unidentified => Err(ChordError::Unidentified),
-            keyboard_types::Key::Dead => Err(ChordError::Dead),
+            keyboard_types::Key::Named(keyboard_types::NamedKey::Unidentified) => {
+                Err(ChordError::Unidentified)
+            }
+            keyboard_types::Key::Named(keyboard_types::NamedKey::Dead) => Err(ChordError::Dead),
             key => Ok(Chord { mods, key }),
         }
     }

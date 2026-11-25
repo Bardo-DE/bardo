@@ -57,7 +57,7 @@ fn Editor() -> Element {
                             anchor.set(low + typed.len());
                             focus.set(low + typed.len());
                         }
-                        EditInput::Key(key) if key.key == Key::ArrowRight => {
+                        EditInput::Key(key) if key.key == Key::Named(NamedKey::ArrowRight) => {
                             focus.set((focus() + 1).min(text.read().len()));
                         }
                         _ => {}

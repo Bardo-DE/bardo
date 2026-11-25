@@ -5,7 +5,7 @@ use crate::components::lists::column_browser::item::{BrowserColumn, BrowserRowKi
 use crate::components::lists::list::keys::{ListKey, list_key};
 use crate::components::lists::virtual_list::model::roved;
 use crate::stack::roving::Rove;
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::Platform;
 use ui_core::command::holds_primary;
 use ui_core::geometry::units::Px;
@@ -35,16 +35,16 @@ pub(crate) fn browser_key(
     modifiers: Modifiers,
     platform: Platform,
 ) -> Option<BrowserKey> {
-    let chorded = modifiers
-        .intersects(Modifiers::CONTROL | Modifiers::ALT | Modifiers::SUPER | Modifiers::META);
+    let chorded = modifiers.intersects(Modifiers::CONTROL | Modifiers::ALT | Modifiers::META);
     if chorded {
         let primary_alone = holds_primary(platform, modifiers)
             && !modifiers.intersects(Modifiers::SHIFT | Modifiers::ALT);
-        return (primary_alone && *key == Key::ArrowDown).then_some(BrowserKey::Open);
+        return (primary_alone && *key == Key::Named(NamedKey::ArrowDown))
+            .then_some(BrowserKey::Open);
     }
     match key {
-        Key::ArrowRight => Some(BrowserKey::Enter),
-        Key::ArrowLeft => Some(BrowserKey::Leave),
+        Key::Named(NamedKey::ArrowRight) => Some(BrowserKey::Enter),
+        Key::Named(NamedKey::ArrowLeft) => Some(BrowserKey::Leave),
         _ => match list_key(key, modifiers)? {
             ListKey::Move(rove) => Some(BrowserKey::Move(rove)),
             ListKey::Pick => None,
@@ -131,7 +131,7 @@ mod tests {
     use crate::components::content::icon_source::IconSource;
     use crate::components::lists::column_browser::item::{BrowserColumn, BrowserRow};
     use crate::stack::roving::{Edge, Rove, Step};
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use keymap::Platform;
     use ui_core::selection::{PickHow, RowSelection};
     use ui_style::icon::Icon;
@@ -165,26 +165,38 @@ mod tests {
     fn keys_are_read_as_moves_enter_leave_open_and_letters_and_the_rest_are_left_alone() {
         let plain = Modifiers::empty();
         let cases: &[(Key, Modifiers, Option<BrowserKey>)] = &[
-            (Key::ArrowRight, plain, Some(BrowserKey::Enter)),
-            (Key::ArrowLeft, plain, Some(BrowserKey::Leave)),
             (
-                Key::ArrowDown,
+                Key::Named(NamedKey::ArrowRight),
+                plain,
+                Some(BrowserKey::Enter),
+            ),
+            (
+                Key::Named(NamedKey::ArrowLeft),
+                plain,
+                Some(BrowserKey::Leave),
+            ),
+            (
+                Key::Named(NamedKey::ArrowDown),
                 plain,
                 Some(BrowserKey::Move(Rove::Step(Step::Down))),
             ),
             (
-                Key::ArrowUp,
+                Key::Named(NamedKey::ArrowUp),
                 Modifiers::SHIFT,
                 Some(BrowserKey::Move(Rove::Step(Step::Up))),
             ),
             (
-                Key::End,
+                Key::Named(NamedKey::End),
                 plain,
                 Some(BrowserKey::Move(Rove::Edge(Edge::Last))),
             ),
-            (Key::Enter, plain, None),
-            (Key::ArrowRight, Modifiers::ALT, None),
-            (Key::ArrowDown, Modifiers::SUPER, Some(BrowserKey::Open)),
+            (Key::Named(NamedKey::Enter), plain, None),
+            (Key::Named(NamedKey::ArrowRight), Modifiers::ALT, None),
+            (
+                Key::Named(NamedKey::ArrowDown),
+                Modifiers::META,
+                Some(BrowserKey::Open),
+            ),
             (
                 Key::Character("m".to_owned()),
                 plain,

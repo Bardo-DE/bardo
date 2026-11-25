@@ -77,8 +77,8 @@ pub(crate) fn PasswordField(
                     focus: FieldFocus::OnMount,
                     oninput: move |next: String| password.input(next),
                     onkey: move |event: KeyboardEvent| match (event.key(), escape) {
-                        (Key::Enter, _) => onsubmit.call(()),
-                        (Key::Escape, Escape::Clears) => {
+                        (Key::Named(NamedKey::Enter), _) => onsubmit.call(()),
+                        (Key::Named(NamedKey::Escape), Escape::Clears) => {
                             event.prevent_default();
                             password.clear();
                         }

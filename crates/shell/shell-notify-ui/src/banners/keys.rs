@@ -4,7 +4,7 @@
 //! document's own order). Up and Down move along the stack as it is drawn, newest on top;
 //! Escape, Delete and Backspace dismiss.
 
-use dioxus::prelude::Key;
+use dioxus::prelude::{Key, NamedKey};
 
 use super::deck_keys::{KeysIn, Neighbour};
 
@@ -12,16 +12,18 @@ use super::deck_keys::{KeysIn, Neighbour};
 pub(super) fn banner_key(key: &Key) -> Option<KeysIn> {
     match key {
         // The newest card is the top one; older ones hang below it.
-        Key::ArrowUp => Some(KeysIn::Moved(Neighbour::Newer)),
-        Key::ArrowDown => Some(KeysIn::Moved(Neighbour::Older)),
-        Key::Escape | Key::Delete | Key::Backspace => Some(KeysIn::Dismissed),
+        Key::Named(NamedKey::ArrowUp) => Some(KeysIn::Moved(Neighbour::Newer)),
+        Key::Named(NamedKey::ArrowDown) => Some(KeysIn::Moved(Neighbour::Older)),
+        Key::Named(NamedKey::Escape)
+        | Key::Named(NamedKey::Delete)
+        | Key::Named(NamedKey::Backspace) => Some(KeysIn::Dismissed),
         _ => None,
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use dioxus::prelude::Key;
+    use dioxus::prelude::{Key, NamedKey};
 
     use super::banner_key;
     use crate::banners::deck_keys::KeysIn::{Dismissed, Moved};
@@ -30,13 +32,17 @@ mod tests {
     #[test]
     fn arrows_follow_the_stack_as_drawn_and_three_keys_dismiss() {
         let cases = [
-            ("up", Key::ArrowUp, Some(Moved(Newer))),
-            ("down", Key::ArrowDown, Some(Moved(Older))),
-            ("Escape", Key::Escape, Some(Dismissed)),
-            ("Delete", Key::Delete, Some(Dismissed)),
-            ("Backspace", Key::Backspace, Some(Dismissed)),
-            ("Enter is bardo's", Key::Enter, None),
-            ("Tab is the document's", Key::Tab, None),
+            ("up", Key::Named(NamedKey::ArrowUp), Some(Moved(Newer))),
+            ("down", Key::Named(NamedKey::ArrowDown), Some(Moved(Older))),
+            ("Escape", Key::Named(NamedKey::Escape), Some(Dismissed)),
+            ("Delete", Key::Named(NamedKey::Delete), Some(Dismissed)),
+            (
+                "Backspace",
+                Key::Named(NamedKey::Backspace),
+                Some(Dismissed),
+            ),
+            ("Enter is bardo's", Key::Named(NamedKey::Enter), None),
+            ("Tab is the document's", Key::Named(NamedKey::Tab), None),
             ("a letter", Key::Character("x".into()), None),
         ];
         for (name, key, want) in cases {

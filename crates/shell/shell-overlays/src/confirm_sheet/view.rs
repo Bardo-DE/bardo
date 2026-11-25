@@ -105,7 +105,7 @@ fn SheetCard(view: SheetView, shown: bool, stage: Signal<SheetStage<SheetView>>)
                 tabindex: "0",
                 onmounted: move |event: MountedEvent| focus_soon(event.data()),
                 onkeydown: move |event: KeyboardEvent| {
-                    if event.key() == Key::Escape {
+                    if event.key() == Key::Named(NamedKey::Escape) {
                         gate.send(GateIn::Escape);
                     } else {
                         gate.send(GateIn::Activity);

@@ -538,8 +538,8 @@ mod tests {
         let cases = [
             (Modifiers::empty(), PickHow::Replace),
             (Modifiers::SHIFT, PickHow::Extend),
-            (Modifiers::SUPER, PickHow::Toggle),
-            (Modifiers::SUPER | Modifiers::SHIFT, PickHow::Extend),
+            (Modifiers::META, PickHow::Toggle),
+            (Modifiers::META | Modifiers::SHIFT, PickHow::Extend),
             (Modifiers::ALT, PickHow::Replace),
         ];
         for (held, want) in cases {

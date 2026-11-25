@@ -269,7 +269,7 @@ mod tests {
         let cases = [
             (Modifiers::empty(), MarqueeHow::Replace),
             (Modifiers::SHIFT, MarqueeHow::Add),
-            (Modifiers::SUPER, MarqueeHow::Add),
+            (Modifiers::META, MarqueeHow::Add),
             (Modifiers::ALT, MarqueeHow::Replace),
         ];
         for (held, want) in cases {

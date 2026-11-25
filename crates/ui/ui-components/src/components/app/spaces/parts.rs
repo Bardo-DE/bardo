@@ -71,15 +71,15 @@ where
                     onkey: move |event: KeyboardEvent| {
                         match event.key() {
                             // A new Space is added with its name, never with none.
-                            Key::Enter if new => {
+                            Key::Named(NamedKey::Enter) if new => {
                                 event.prevent_default();
                                 handle.keep_pending();
                             }
-                            Key::Enter => {
+                            Key::Named(NamedKey::Enter) => {
                                 event.prevent_default();
                                 handle.close_menu();
                             }
-                            Key::Escape => {
+                            Key::Named(NamedKey::Escape) => {
                                 event.prevent_default();
                                 event.stop_propagation();
                                 if !new {

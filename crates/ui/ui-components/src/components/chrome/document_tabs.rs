@@ -165,9 +165,15 @@ pub fn DocumentTabs(
     });
     let on_key = move |event: KeyboardEvent| {
         let key = event.key();
-        let roved = matches!(key, Key::ArrowLeft | Key::ArrowRight | Key::Home | Key::End)
-            .then(|| Rove::of(&key))
-            .flatten();
+        let roved = matches!(
+            key,
+            Key::Named(NamedKey::ArrowLeft)
+                | Key::Named(NamedKey::ArrowRight)
+                | Key::Named(NamedKey::Home)
+                | Key::Named(NamedKey::End)
+        )
+        .then(|| Rove::of(&key))
+        .flatten();
         if let Some(rove) = roved {
             event.prevent_default();
             let to = rove_to(rove, selected, count);

@@ -396,7 +396,7 @@ fn px(length: Px) -> String {
 /// Close on Escape when this surface is the topmost layer that takes it; stop the key there so
 /// one Escape closes one layer (design/06-INTERACTIONS.md section 18).
 pub(crate) fn escape_closes(float: &Float, event: &KeyboardEvent, onclose: EventHandler<()>) {
-    if event.key() == Key::Escape && float.takes_escape() {
+    if event.key() == Key::Named(NamedKey::Escape) && float.takes_escape() {
         event.stop_propagation();
         event.prevent_default();
         onclose.call(());

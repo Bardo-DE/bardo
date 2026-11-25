@@ -29,7 +29,7 @@ pub fn space_shortcut(space: SpaceNumber) -> Shortcut {
 #[cfg(test)]
 mod tests {
     use super::{space_pressed, space_shortcut};
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use keymap::{Desktop, Keymap, Platform};
     use ui_core::standard_action::SpaceNumber;
 
@@ -56,7 +56,7 @@ mod tests {
             (ours(), key("0"), Modifiers::CONTROL, None),
             (ours(), key("1"), Modifiers::empty(), None),
             (ours(), key("1"), Modifiers::META, None),
-            (ours(), key("1"), Modifiers::SUPER, None),
+            (ours(), key("1"), Modifiers::META, None),
             (
                 ours(),
                 key("1"),
@@ -65,8 +65,18 @@ mod tests {
             ),
             (ours(), key("a"), Modifiers::CONTROL, None),
             (ours(), key("12"), Modifiers::CONTROL, None),
-            (ours(), Key::Enter, Modifiers::CONTROL, None),
-            (kde, Key::F3, Modifiers::CONTROL, SpaceNumber::new(3)),
+            (
+                ours(),
+                Key::Named(NamedKey::Enter),
+                Modifiers::CONTROL,
+                None,
+            ),
+            (
+                kde,
+                Key::Named(NamedKey::F3),
+                Modifiers::CONTROL,
+                SpaceNumber::new(3),
+            ),
             (kde, key("3"), Modifiers::CONTROL, None),
             (Platform::Windows, key("3"), Modifiers::CONTROL, None),
         ];

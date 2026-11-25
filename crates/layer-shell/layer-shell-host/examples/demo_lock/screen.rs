@@ -103,7 +103,7 @@ pub fn lock_screen(screen: Screen) -> Element {
                     value.set(text);
                 },
                 onkeydown: move |event: KeyboardEvent| {
-                    if event.key() != Key::Enter {
+                    if event.key() != Key::Named(NamedKey::Enter) {
                         return;
                     }
                     if *value.peek() == PASSWORD {

@@ -71,7 +71,7 @@ fn typed(key: &Key, modifiers: Modifiers) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::{KeyPhase, RawKey};
-    use dioxus::prelude::{Code, Key, Location, Modifiers};
+    use dioxus::prelude::{Code, Key, Location, Modifiers, NamedKey};
 
     fn character(text: &str) -> Key {
         Key::Character(text.to_owned())
@@ -105,7 +105,7 @@ mod tests {
             ),
             (
                 "Super types nothing",
-                made(character("t"), Modifiers::SUPER),
+                made(character("t"), Modifiers::META),
                 None,
             ),
             (
@@ -115,7 +115,7 @@ mod tests {
             ),
             (
                 "a named key types nothing",
-                made(Key::Enter, Modifiers::empty()),
+                made(Key::Named(NamedKey::Enter), Modifiers::empty()),
                 None,
             ),
         ];

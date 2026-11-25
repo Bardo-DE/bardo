@@ -124,7 +124,7 @@ pub fn Sheet(
             onkeydown: move |event| {
                 escape_closes(&float, &event, onclose);
                 if let Some(press) = on_return
-                    && event.key() == Key::Enter
+                    && event.key() == Key::Named(NamedKey::Enter)
                 {
                     event.stop_propagation();
                     event.prevent_default();

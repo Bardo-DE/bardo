@@ -3,7 +3,7 @@ use super::menu_link::{DesktopSpace, LinkChange, Linking};
 use super::menu_pick::{SpacePick, Then, apply, delete_words, rows};
 use super::open_menu::Showing;
 use crate::components::menus::item::item::MenuItem;
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::{Desktop, Platform};
 use ui_style::appearance::theme::Theme;
 use ui_style::space::look::SpaceLook;
@@ -26,7 +26,7 @@ fn only_the_platforms_primary_modifier_and_a_digit_from_one_to_nine_switches() {
             SwitchChord::Primary,
             ours,
             key("1"),
-            Modifiers::SUPER,
+            Modifiers::META,
             Some(1),
         ),
         (
@@ -63,7 +63,7 @@ fn only_the_platforms_primary_modifier_and_a_digit_from_one_to_nine_switches() {
         (
             SwitchChord::Primary,
             ours,
-            Key::Enter,
+            Key::Named(NamedKey::Enter),
             Modifiers::META,
             None,
         ),

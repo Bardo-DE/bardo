@@ -5,10 +5,9 @@ use crate::input::PasteChord;
 use blitz_traits::events::{
     BlitzPointerEvent, BlitzPointerId, MouseEventButton, MouseEventButtons, PointerCoords,
 };
-use keyboard_types::{Code, Key as DomKey, Modifiers};
+use keyboard_types::{Code, Key as DomKey, Modifiers, NamedKey};
 use keymap::{Context as KeyContext, Platform};
 use ui_components::prelude::*;
-use ui_core::command::modifiers_held;
 use ui_core::press::PointerButton;
 
 /// The Blitz button, and the held-buttons set while it is down, for a Bardo pointer button.
@@ -85,27 +84,27 @@ pub(crate) fn pointer(
 /// The DOM key and physical code for a Bardo key.
 pub(crate) fn keyboard(key: ShortcutKey) -> (DomKey, Code) {
     match key {
-        ShortcutKey::Ctrl => (DomKey::Control, Code::ControlLeft),
-        ShortcutKey::Shift => (DomKey::Shift, Code::ShiftLeft),
-        ShortcutKey::Alt => (DomKey::Alt, Code::AltLeft),
-        ShortcutKey::Super => (DomKey::Meta, Code::MetaLeft),
+        ShortcutKey::Ctrl => (DomKey::Named(NamedKey::Control), Code::ControlLeft),
+        ShortcutKey::Shift => (DomKey::Named(NamedKey::Shift), Code::ShiftLeft),
+        ShortcutKey::Alt => (DomKey::Named(NamedKey::Alt), Code::AltLeft),
+        ShortcutKey::Super => (DomKey::Named(NamedKey::Meta), Code::MetaLeft),
         ShortcutKey::Char(c) => (DomKey::Character(c.to_string()), letter(c)),
         ShortcutKey::Space => (DomKey::Character(" ".into()), Code::Space),
-        ShortcutKey::Enter => (DomKey::Enter, Code::Enter),
-        ShortcutKey::Escape => (DomKey::Escape, Code::Escape),
-        ShortcutKey::Tab => (DomKey::Tab, Code::Tab),
-        ShortcutKey::Backspace => (DomKey::Backspace, Code::Backspace),
-        ShortcutKey::Up => (DomKey::ArrowUp, Code::ArrowUp),
-        ShortcutKey::Down => (DomKey::ArrowDown, Code::ArrowDown),
-        ShortcutKey::Left => (DomKey::ArrowLeft, Code::ArrowLeft),
-        ShortcutKey::Right => (DomKey::ArrowRight, Code::ArrowRight),
-        ShortcutKey::Home => (DomKey::Home, Code::Home),
-        ShortcutKey::End => (DomKey::End, Code::End),
-        ShortcutKey::Delete => (DomKey::Delete, Code::Delete),
-        ShortcutKey::PageUp => (DomKey::PageUp, Code::PageUp),
-        ShortcutKey::PageDown => (DomKey::PageDown, Code::PageDown),
-        ShortcutKey::Insert => (DomKey::Insert, Code::Insert),
-        ShortcutKey::ContextMenu => (DomKey::ContextMenu, Code::ContextMenu),
+        ShortcutKey::Enter => (DomKey::Named(NamedKey::Enter), Code::Enter),
+        ShortcutKey::Escape => (DomKey::Named(NamedKey::Escape), Code::Escape),
+        ShortcutKey::Tab => (DomKey::Named(NamedKey::Tab), Code::Tab),
+        ShortcutKey::Backspace => (DomKey::Named(NamedKey::Backspace), Code::Backspace),
+        ShortcutKey::Up => (DomKey::Named(NamedKey::ArrowUp), Code::ArrowUp),
+        ShortcutKey::Down => (DomKey::Named(NamedKey::ArrowDown), Code::ArrowDown),
+        ShortcutKey::Left => (DomKey::Named(NamedKey::ArrowLeft), Code::ArrowLeft),
+        ShortcutKey::Right => (DomKey::Named(NamedKey::ArrowRight), Code::ArrowRight),
+        ShortcutKey::Home => (DomKey::Named(NamedKey::Home), Code::Home),
+        ShortcutKey::End => (DomKey::Named(NamedKey::End), Code::End),
+        ShortcutKey::Delete => (DomKey::Named(NamedKey::Delete), Code::Delete),
+        ShortcutKey::PageUp => (DomKey::Named(NamedKey::PageUp), Code::PageUp),
+        ShortcutKey::PageDown => (DomKey::Named(NamedKey::PageDown), Code::PageDown),
+        ShortcutKey::Insert => (DomKey::Named(NamedKey::Insert), Code::Insert),
+        ShortcutKey::ContextMenu => (DomKey::Named(NamedKey::ContextMenu), Code::ContextMenu),
         ShortcutKey::F(n) => function_keyboard(n),
     }
 }
@@ -113,23 +112,23 @@ pub(crate) fn keyboard(key: ShortcutKey) -> (DomKey, Code) {
 /// `F1` to `F12`; any other number is an unidentified key.
 fn function_keyboard(n: u8) -> (DomKey, Code) {
     let keys = [
-        (DomKey::F1, Code::F1),
-        (DomKey::F2, Code::F2),
-        (DomKey::F3, Code::F3),
-        (DomKey::F4, Code::F4),
-        (DomKey::F5, Code::F5),
-        (DomKey::F6, Code::F6),
-        (DomKey::F7, Code::F7),
-        (DomKey::F8, Code::F8),
-        (DomKey::F9, Code::F9),
-        (DomKey::F10, Code::F10),
-        (DomKey::F11, Code::F11),
-        (DomKey::F12, Code::F12),
+        (DomKey::Named(NamedKey::F1), Code::F1),
+        (DomKey::Named(NamedKey::F2), Code::F2),
+        (DomKey::Named(NamedKey::F3), Code::F3),
+        (DomKey::Named(NamedKey::F4), Code::F4),
+        (DomKey::Named(NamedKey::F5), Code::F5),
+        (DomKey::Named(NamedKey::F6), Code::F6),
+        (DomKey::Named(NamedKey::F7), Code::F7),
+        (DomKey::Named(NamedKey::F8), Code::F8),
+        (DomKey::Named(NamedKey::F9), Code::F9),
+        (DomKey::Named(NamedKey::F10), Code::F10),
+        (DomKey::Named(NamedKey::F11), Code::F11),
+        (DomKey::Named(NamedKey::F12), Code::F12),
     ];
     usize::from(n)
         .checked_sub(1)
         .and_then(|at| keys.get(at).cloned())
-        .unwrap_or((DomKey::Unidentified, Code::Unidentified))
+        .unwrap_or((DomKey::Named(NamedKey::Unidentified), Code::Unidentified))
 }
 
 /// The modifier flag a held Bardo key sets; any other key sets none.
@@ -138,7 +137,7 @@ pub(crate) fn modifier(key: ShortcutKey) -> Modifiers {
         ShortcutKey::Ctrl => Modifiers::CONTROL,
         ShortcutKey::Shift => Modifiers::SHIFT,
         ShortcutKey::Alt => Modifiers::ALT,
-        ShortcutKey::Super => Modifiers::SUPER,
+        ShortcutKey::Super => Modifiers::META,
         _ => Modifiers::empty(),
     }
 }
@@ -149,7 +148,7 @@ pub(crate) fn paste_keys(chord: PasteChord, platform: Platform) -> (DomKey, Code
         PasteChord::Primary => (
             DomKey::Character("v".into()),
             Code::KeyV,
-            modifiers_held(platform.primary(KeyContext::Normal)),
+            platform.primary(KeyContext::Normal),
         ),
         PasteChord::CtrlV => (
             DomKey::Character("v".into()),
@@ -161,8 +160,12 @@ pub(crate) fn paste_keys(chord: PasteChord, platform: Platform) -> (DomKey, Code
             Code::KeyV,
             Modifiers::CONTROL | Modifiers::SHIFT,
         ),
-        PasteChord::SuperV => (DomKey::Character("v".into()), Code::KeyV, Modifiers::SUPER),
-        PasteChord::ShiftInsert => (DomKey::Insert, Code::Insert, Modifiers::SHIFT),
+        PasteChord::SuperV => (DomKey::Character("v".into()), Code::KeyV, Modifiers::META),
+        PasteChord::ShiftInsert => (
+            DomKey::Named(NamedKey::Insert),
+            Code::Insert,
+            Modifiers::SHIFT,
+        ),
     }
 }
 

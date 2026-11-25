@@ -8,7 +8,7 @@ use computer_use_action::{
     NodeId, Notches, Point, Rect, Repeat, ScrollBy, ScrollDir, Size, Summary, Target, TextError,
     TypedText, WaitMs, WindowSpace,
 };
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 
 fn p(x: u32, y: u32) -> Point<WindowSpace> {
     Point::new(Coord(x), Coord(y))
@@ -153,10 +153,13 @@ fn number_limits_refuse() {
 fn chords_refuse_unidentified_and_dead_keys() {
     let none = BTreeSet::new();
     assert_eq!(
-        Chord::new(none.clone(), Key::Unidentified),
+        Chord::new(none.clone(), Key::Named(NamedKey::Unidentified)),
         Err(ChordError::Unidentified)
     );
-    assert_eq!(Chord::new(none, Key::Dead), Err(ChordError::Dead));
+    assert_eq!(
+        Chord::new(none, Key::Named(NamedKey::Dead)),
+        Err(ChordError::Dead)
+    );
 }
 
 #[test]

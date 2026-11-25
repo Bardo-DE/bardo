@@ -90,7 +90,7 @@ pub(crate) fn control_center(
             onkeydown: move |event: KeyboardEvent| {
                 // Escape on a detail page goes back; on the grid it reaches the popover, which
                 // closes.
-                if event.key() == Key::Escape && *page.peek() != CcPage::Modules {
+                if event.key() == Key::Named(NamedKey::Escape) && *page.peek() != CcPage::Modules {
                     event.stop_propagation();
                     event.prevent_default();
                     go.call(PageInput::Escape);

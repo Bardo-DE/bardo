@@ -71,7 +71,7 @@ pub(crate) fn area(field: Field, value: &str) -> Element {
                 onkeydown: move |event: KeyboardEvent| {
                     blink.restart();
                     // Enter is this field's newline: no outer default button takes it.
-                    if event.key() == Key::Enter {
+                    if event.key() == Key::Named(NamedKey::Enter) {
                         event.stop_propagation();
                     }
                     handlers.onkey.call(event);

@@ -181,8 +181,8 @@ mod tests {
         let cases = [
             (Modifiers::empty(), DropOperation::Move),
             (Modifiers::ALT, DropOperation::Copy),
-            (Modifiers::SUPER, DropOperation::Move),
-            (Modifiers::ALT | Modifiers::SUPER, DropOperation::Link),
+            (Modifiers::META, DropOperation::Move),
+            (Modifiers::ALT | Modifiers::META, DropOperation::Link),
             (Modifiers::SHIFT, DropOperation::Move),
         ];
         for (modifiers, want) in cases {

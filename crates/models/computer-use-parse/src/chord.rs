@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 use std::str::FromStr;
 
 use computer_use_action::{Chord, Modifier};
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 
 use crate::DropReason;
 
@@ -75,10 +75,10 @@ fn modifier(word: &str) -> Option<Modifier> {
 
 fn modifier_key(m: Modifier) -> Key {
     match m {
-        Modifier::Ctrl => Key::Control,
-        Modifier::Alt => Key::Alt,
-        Modifier::Shift => Key::Shift,
-        Modifier::Super => Key::Super,
+        Modifier::Ctrl => Key::Named(NamedKey::Control),
+        Modifier::Alt => Key::Named(NamedKey::Alt),
+        Modifier::Shift => Key::Named(NamedKey::Shift),
+        Modifier::Super => Key::Named(NamedKey::Meta),
     }
 }
 

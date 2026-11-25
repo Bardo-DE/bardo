@@ -122,13 +122,17 @@ fn a_press_with_a_platform_text_reports_it_and_a_chord_types_nothing_of_its_own(
 fn tab_stays_in_the_surface_and_the_side_of_a_key_is_kept() {
     let mut harness = start();
     harness.send(Input::raw_key(
-        RawKeyInput::down(Key::Shift, Code::ShiftRight).at_location(Location::Right),
+        RawKeyInput::down(Key::Named(NamedKey::Shift), Code::ShiftRight)
+            .at_location(Location::Right),
     ));
-    harness.send(Input::raw_key(RawKeyInput::down(Key::Tab, Code::Tab)));
+    harness.send(Input::raw_key(RawKeyInput::down(
+        Key::Named(NamedKey::Tab),
+        Code::Tab,
+    )));
     let got = heard();
     assert_eq!(got.len(), 2);
     assert_eq!(got[0].location, Location::Right);
-    assert_eq!(got[1].key, Key::Tab);
+    assert_eq!(got[1].key, Key::Named(NamedKey::Tab));
 }
 
 #[test]
@@ -139,7 +143,7 @@ fn super_chords_carry_super_and_not_meta() {
         ui_components::prelude::ShortcutKey::Char('t'),
     ));
     let key = heard().into_iter().last().expect("a key");
-    assert_eq!(key.modifiers, Modifiers::SUPER);
+    assert_eq!(key.modifiers, Modifiers::META);
 }
 
 #[test]

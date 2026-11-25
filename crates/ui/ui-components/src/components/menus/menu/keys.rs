@@ -31,14 +31,14 @@ pub(crate) enum KeyAct {
 pub(crate) fn key_act(key: &Key, modifiers: Modifiers) -> Option<KeyAct> {
     let chord = !types_text(key, modifiers);
     match key {
-        Key::ArrowDown => Some(KeyAct::Move(Step::Down)),
-        Key::ArrowUp => Some(KeyAct::Move(Step::Up)),
-        Key::Home => Some(KeyAct::Edge(Edge::First)),
-        Key::End => Some(KeyAct::Edge(Edge::Last)),
-        Key::ArrowRight => Some(KeyAct::Open),
-        Key::ArrowLeft => Some(KeyAct::Back),
-        Key::Enter | Key::Tab => Some(KeyAct::Pick),
-        Key::Escape => Some(KeyAct::Close),
+        Key::Named(NamedKey::ArrowDown) => Some(KeyAct::Move(Step::Down)),
+        Key::Named(NamedKey::ArrowUp) => Some(KeyAct::Move(Step::Up)),
+        Key::Named(NamedKey::Home) => Some(KeyAct::Edge(Edge::First)),
+        Key::Named(NamedKey::End) => Some(KeyAct::Edge(Edge::Last)),
+        Key::Named(NamedKey::ArrowRight) => Some(KeyAct::Open),
+        Key::Named(NamedKey::ArrowLeft) => Some(KeyAct::Back),
+        Key::Named(NamedKey::Enter) | Key::Named(NamedKey::Tab) => Some(KeyAct::Pick),
+        Key::Named(NamedKey::Escape) => Some(KeyAct::Close),
         Key::Character(text) if !chord && !text.trim().is_empty() => {
             Some(KeyAct::Jump(text.clone()))
         }
@@ -50,7 +50,7 @@ pub(crate) fn key_act(key: &Key, modifiers: Modifiers) -> Option<KeyAct> {
 mod tests {
     use super::{KeyAct, key_act};
     use crate::stack::roving::{Edge, Step};
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
 
     #[test]
     fn menu_keys_follow_section_2_4_and_13_3() {
@@ -58,20 +58,20 @@ mod tests {
         let a = Key::Character("a".to_string());
         #[rustfmt::skip]
         let cases: Vec<(Key, Modifiers, Option<KeyAct>)> = vec![
-            (Key::ArrowDown, none, Some(KeyAct::Move(Step::Down))),
-            (Key::ArrowUp, none, Some(KeyAct::Move(Step::Up))),
-            (Key::Home, none, Some(KeyAct::Edge(Edge::First))),
-            (Key::End, none, Some(KeyAct::Edge(Edge::Last))),
-            (Key::ArrowRight, none, Some(KeyAct::Open)),
-            (Key::ArrowLeft, none, Some(KeyAct::Back)),
-            (Key::Enter, none, Some(KeyAct::Pick)),
-            (Key::Tab, none, Some(KeyAct::Pick)),
-            (Key::Escape, none, Some(KeyAct::Close)),
+            (Key::Named(NamedKey::ArrowDown), none, Some(KeyAct::Move(Step::Down))),
+            (Key::Named(NamedKey::ArrowUp), none, Some(KeyAct::Move(Step::Up))),
+            (Key::Named(NamedKey::Home), none, Some(KeyAct::Edge(Edge::First))),
+            (Key::Named(NamedKey::End), none, Some(KeyAct::Edge(Edge::Last))),
+            (Key::Named(NamedKey::ArrowRight), none, Some(KeyAct::Open)),
+            (Key::Named(NamedKey::ArrowLeft), none, Some(KeyAct::Back)),
+            (Key::Named(NamedKey::Enter), none, Some(KeyAct::Pick)),
+            (Key::Named(NamedKey::Tab), none, Some(KeyAct::Pick)),
+            (Key::Named(NamedKey::Escape), none, Some(KeyAct::Close)),
             (a.clone(), none, Some(KeyAct::Jump("a".to_string()))),
             (a.clone(), Modifiers::SHIFT, Some(KeyAct::Jump("a".to_string()))),
             (a, Modifiers::CONTROL, None),
             (Key::Character(" ".to_string()), none, None),
-            (Key::Backspace, none, None),
+            (Key::Named(NamedKey::Backspace), none, None),
         ];
         for (key, modifiers, want) in cases {
             assert_eq!(key_act(&key, modifiers), want, "{key:?} {modifiers:?}");

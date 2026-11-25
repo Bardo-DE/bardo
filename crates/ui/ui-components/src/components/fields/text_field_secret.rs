@@ -18,7 +18,7 @@ pub(crate) fn takes_text_out(keymap: &Keymap, key: &Key, modifiers: Modifiers) -
 
 /// C or X held with Control, Command (Super) or Meta: a copy or cut to some layer on some platform.
 fn any_layers_copy(key: &Key, modifiers: Modifiers) -> bool {
-    let commanding = modifiers.intersects(Modifiers::CONTROL | Modifiers::SUPER | Modifiers::META);
+    let commanding = modifiers.intersects(Modifiers::CONTROL | Modifiers::META);
     let letter = matches!(key, Key::Character(text) if text.eq_ignore_ascii_case("c") || text.eq_ignore_ascii_case("x"));
     commanding && letter
 }
@@ -26,7 +26,7 @@ fn any_layers_copy(key: &Key, modifiers: Modifiers) -> bool {
 #[cfg(test)]
 mod tests {
     use super::takes_text_out;
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use keymap::{Desktop, Keymap, Platform};
 
     type Case = (&'static str, Platform, Key, Modifiers, bool);
@@ -51,7 +51,7 @@ mod tests {
                 "ours cmd c",
                 ours(),
                 Key::Character("c".into()),
-                Modifiers::SUPER,
+                Modifiers::META,
                 true,
             ),
             (
@@ -68,12 +68,30 @@ mod tests {
                 ctrl,
                 true,
             ),
-            ("ctrl insert", kde, Key::Insert, ctrl, true),
-            ("shift delete", kde, Key::Delete, Modifiers::SHIFT, true),
+            ("ctrl insert", kde, Key::Named(NamedKey::Insert), ctrl, true),
+            (
+                "shift delete",
+                kde,
+                Key::Named(NamedKey::Delete),
+                Modifiers::SHIFT,
+                true,
+            ),
             ("kde ctrl v", kde, Key::Character("v".into()), ctrl, false),
-            ("shift insert", kde, Key::Insert, Modifiers::SHIFT, false),
+            (
+                "shift insert",
+                kde,
+                Key::Named(NamedKey::Insert),
+                Modifiers::SHIFT,
+                false,
+            ),
             ("plain c", kde, Key::Character("c".into()), none, false),
-            ("plain delete", kde, Key::Delete, none, false),
+            (
+                "plain delete",
+                kde,
+                Key::Named(NamedKey::Delete),
+                none,
+                false,
+            ),
             ("kde ctrl a", kde, Key::Character("a".into()), ctrl, false),
         ];
         for (name, platform, key, modifiers, want) in cases {

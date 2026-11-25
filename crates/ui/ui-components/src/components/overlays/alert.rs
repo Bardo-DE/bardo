@@ -316,12 +316,12 @@ fn AlertBody(words: Words, children: Element) -> Element {
             class: "ds-alert",
             "data-style": words.style.slug(),
             onkeydown: move |event| match event.key() {
-                Key::Escape => {
+                Key::Named(NamedKey::Escape) => {
                     event.stop_propagation();
                     event.prevent_default();
                     answer.call(AlertInput::Escape);
                 }
-                Key::Enter => {
+                Key::Named(NamedKey::Enter) => {
                     event.stop_propagation();
                     event.prevent_default();
                     answer.call(AlertInput::Return);
@@ -404,7 +404,7 @@ fn slot(slot: &Slot<'_>) -> Element {
                     event.stop_propagation();
                     event.prevent_default();
                     answer.call(AlertInput::Press(index));
-                } else if key == Key::Tab {
+                } else if key == Key::Named(NamedKey::Tab) {
                     event.stop_propagation();
                     event.prevent_default();
                     let target = tab_target(count, index, event.modifiers().shift());

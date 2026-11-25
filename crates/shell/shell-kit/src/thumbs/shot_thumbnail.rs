@@ -224,7 +224,7 @@ fn picture(image: ImageSource, style: String, press: &Press) -> Element {
             onpointercancel: move |_| press.feed(PressInput::Up),
             onclick: move |_| press.click(),
             onkeydown: move |event| {
-                if matches!(event.key(), Key::Enter) || event.key() == Key::Character(" ".into()) {
+                if matches!(event.key(), Key::Named(NamedKey::Enter)) || event.key() == Key::Character(" ".into()) {
                     event.prevent_default();
                     press.open();
                 }

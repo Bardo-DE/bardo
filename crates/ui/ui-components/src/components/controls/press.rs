@@ -91,7 +91,9 @@ pub(crate) fn is_space(key: &Key) -> bool {
 /// Whether `key` activates a control that takes `keys`.
 pub(crate) fn is_activation_key(key: &Key, keys: ActivationKeys) -> bool {
     match keys {
-        ActivationKeys::ReturnAndSpace => matches!(key, Key::Enter) || is_space(key),
+        ActivationKeys::ReturnAndSpace => {
+            matches!(key, Key::Named(NamedKey::Enter)) || is_space(key)
+        }
         ActivationKeys::SpaceOnly => is_space(key),
     }
 }
@@ -234,7 +236,7 @@ impl Pressing {
 mod tests {
     use super::{ActivationKeys, button_of, disabled, is_activation_key};
     use dioxus::html::input_data::MouseButton;
-    use dioxus::prelude::Key;
+    use dioxus::prelude::{Key, NamedKey};
     use ui_core::press::PointerButton;
     use ui_core::vocab::Availability;
 
@@ -249,13 +251,13 @@ mod tests {
     fn return_and_space_activate_and_nothing_else_does() {
         use ActivationKeys::{ReturnAndSpace, SpaceOnly};
         let cases = [
-            (Key::Enter, ReturnAndSpace, true),
-            (Key::Enter, SpaceOnly, false),
+            (Key::Named(NamedKey::Enter), ReturnAndSpace, true),
+            (Key::Named(NamedKey::Enter), SpaceOnly, false),
             (Key::Character(" ".to_string()), ReturnAndSpace, true),
             (Key::Character(" ".to_string()), SpaceOnly, true),
             (Key::Character("a".to_string()), ReturnAndSpace, false),
-            (Key::Tab, ReturnAndSpace, false),
-            (Key::Escape, ReturnAndSpace, false),
+            (Key::Named(NamedKey::Tab), ReturnAndSpace, false),
+            (Key::Named(NamedKey::Escape), ReturnAndSpace, false),
         ];
         for (key, keys, want) in cases {
             assert_eq!(is_activation_key(&key, keys), want, "{key:?} {keys:?}");

@@ -141,7 +141,7 @@ fn bubble_press_keeps_the_surface(fallback: FocusFallback) {
         .collect();
     assert!(
         keys.iter().any(
-            |key| key.modifiers.contains(keyboard_types::Modifiers::SUPER)
+            |key| key.modifiers.contains(keyboard_types::Modifiers::META)
                 && key.key == Key::Character("i".into())
         ),
         "command-I reached the edit's key handler: {keys:?}"

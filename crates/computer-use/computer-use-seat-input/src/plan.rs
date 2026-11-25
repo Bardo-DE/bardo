@@ -10,7 +10,7 @@ use computer_use_action::{
     Target, WindowSpace,
 };
 use computer_use_desktop::Ms;
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeSet;
 
@@ -129,10 +129,10 @@ fn key(code: Keycode, dir: Press) -> InputOp {
 
 fn modifier_key(modifier: Modifier) -> Key {
     match modifier {
-        Modifier::Ctrl => Key::Control,
-        Modifier::Alt => Key::Alt,
-        Modifier::Shift => Key::Shift,
-        Modifier::Super => Key::Meta,
+        Modifier::Ctrl => Key::Named(NamedKey::Control),
+        Modifier::Alt => Key::Named(NamedKey::Alt),
+        Modifier::Shift => Key::Named(NamedKey::Shift),
+        Modifier::Super => Key::Named(NamedKey::Meta),
     }
 }
 
@@ -236,8 +236,8 @@ fn chord_ops(chord: &Chord, repeat: Repeat, keymap: &Keymap) -> Result<Vec<Input
 /// the Enter and Tab keys.
 fn char_ops(c: char, keymap: &Keymap) -> Result<Vec<InputOp>, PlanError> {
     let named = match c {
-        '\n' => Some(Key::Enter),
-        '\t' => Some(Key::Tab),
+        '\n' => Some(Key::Named(NamedKey::Enter)),
+        '\t' => Some(Key::Named(NamedKey::Tab)),
         _ => None,
     };
     if let Some(named) = named {
@@ -248,7 +248,10 @@ fn char_ops(c: char, keymap: &Keymap) -> Result<Vec<InputOp>, PlanError> {
     let strokes = vec![key(code, Press::Down), key(code, Press::Up)];
     match level {
         ShiftLevel::Plain => Ok(strokes),
-        ShiftLevel::Shifted => Ok(bracketed(&[code_for(keymap, &Key::Shift)?], strokes)),
+        ShiftLevel::Shifted => Ok(bracketed(
+            &[code_for(keymap, &Key::Named(NamedKey::Shift))?],
+            strokes,
+        )),
     }
 }
 

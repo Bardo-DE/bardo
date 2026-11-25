@@ -68,14 +68,14 @@ pub(super) fn split_picker(output: OutputInfo) -> Element {
                                     .and_then(|key| index_of(&all, key))
                                     .unwrap_or(0);
                                 match event.key() {
-                                    Key::Escape => by_key.cancel(),
-                                    Key::Enter => {
+                                    Key::Named(NamedKey::Escape) => by_key.cancel(),
+                                    Key::Named(NamedKey::Enter) => {
                                         if let Some(window) = all.get(at) {
                                             by_key.pick(window);
                                         }
                                     }
-                                    Key::ArrowRight => select(&mut selected, &all, moved(all.len(), at, Dir::Next)),
-                                    Key::ArrowLeft => select(&mut selected, &all, moved(all.len(), at, Dir::Previous)),
+                                    Key::Named(NamedKey::ArrowRight) => select(&mut selected, &all, moved(all.len(), at, Dir::Next)),
+                                    Key::Named(NamedKey::ArrowLeft) => select(&mut selected, &all, moved(all.len(), at, Dir::Previous)),
                                     _ => {}
                                 }
                             },

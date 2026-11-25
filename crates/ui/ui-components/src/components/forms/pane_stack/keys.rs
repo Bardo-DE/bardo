@@ -1,7 +1,7 @@
 //! What a key means to a pane stack, pure: the keys that go back one page.
 
 use crate::keys::pane_back_action;
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use keymap::{Action, Context, Keymap};
 use ui_core::command::resolve;
 
@@ -9,8 +9,8 @@ use ui_core::command::resolve;
 /// chord the UI kit's `bardo.pane-back` action holds (Command and `[` by default).
 pub(crate) fn goes_back(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> bool {
     match key {
-        Key::Escape => modifiers.is_empty(),
-        Key::ArrowLeft => modifiers == Modifiers::ALT,
+        Key::Named(NamedKey::Escape) => modifiers.is_empty(),
+        Key::Named(NamedKey::ArrowLeft) => modifiers == Modifiers::ALT,
         _ => {
             let back = pane_back_action().map(Action::App);
             back.is_some() && resolve(keymap, key, modifiers, Context::Normal) == back
@@ -21,7 +21,7 @@ pub(crate) fn goes_back(keymap: &Keymap, key: &Key, modifiers: Modifiers) -> boo
 #[cfg(test)]
 mod tests {
     use super::goes_back;
-    use dioxus::prelude::{Key, Modifiers};
+    use dioxus::prelude::{Key, Modifiers, NamedKey};
     use keymap::{AppAction, AppId, Desktop, Keymap, Platform};
 
     fn registered(platform: Platform) -> Keymap {
@@ -40,8 +40,14 @@ mod tests {
         };
         let bracket = || Key::Character("[".into());
         let cases = [
-            ("escape", ours, Key::Escape, Modifiers::empty(), true),
-            ("command bracket", ours, bracket(), Modifiers::SUPER, true),
+            (
+                "escape",
+                ours,
+                Key::Named(NamedKey::Escape),
+                Modifiers::empty(),
+                true,
+            ),
+            ("command bracket", ours, bracket(), Modifiers::META, true),
             ("meta bracket", ours, bracket(), Modifiers::META, true),
             (
                 "ctrl bracket on a Mac-style desktop",
@@ -57,7 +63,13 @@ mod tests {
                 Modifiers::CONTROL,
                 true,
             ),
-            ("alt left", ours, Key::ArrowLeft, Modifiers::ALT, true),
+            (
+                "alt left",
+                ours,
+                Key::Named(NamedKey::ArrowLeft),
+                Modifiers::ALT,
+                true,
+            ),
             (
                 "bare bracket types a bracket",
                 ours,
@@ -68,16 +80,22 @@ mod tests {
             (
                 "bare left moves a caret",
                 ours,
-                Key::ArrowLeft,
+                Key::Named(NamedKey::ArrowLeft),
                 Modifiers::empty(),
                 false,
             ),
-            ("shift escape", ours, Key::Escape, Modifiers::SHIFT, false),
+            (
+                "shift escape",
+                ours,
+                Key::Named(NamedKey::Escape),
+                Modifiers::SHIFT,
+                false,
+            ),
             (
                 "command right bracket",
                 ours,
                 Key::Character("]".into()),
-                Modifiers::SUPER,
+                Modifiers::META,
                 false,
             ),
         ];

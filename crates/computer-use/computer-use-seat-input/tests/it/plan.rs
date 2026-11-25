@@ -479,17 +479,21 @@ fn what_is_not_input_and_unknown_keys_are_named() {
             Err(PlanError::NotAnInput)
         );
     }
-    let hyper = at_target(
+    let standby = at_target(
         ComputerUseAction::Key {
-            chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Hyper).unwrap(),
+            chord: Chord::new(
+                BTreeSet::new(),
+                keyboard_types::Key::Named(keyboard_types::NamedKey::Standby),
+            )
+            .unwrap(),
             repeat: Repeat::ONCE,
         },
         ResolvedPoints::None,
         window(),
     );
     assert_eq!(
-        plan(&hyper, &us_keymap(), &caps()),
-        Err(PlanError::UnknownKey("Hyper".into()))
+        plan(&standby, &us_keymap(), &caps()),
+        Err(PlanError::UnknownKey("Standby".into()))
     );
 }
 

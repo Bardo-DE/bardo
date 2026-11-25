@@ -33,8 +33,8 @@ fn arrow_size(size: ControlSize) -> IconSize {
 /// The direction a key asks for, if it is one of the arrows.
 fn arrow(key: &Key) -> Option<StepDirection> {
     match key {
-        Key::ArrowUp => Some(StepDirection::Up),
-        Key::ArrowDown => Some(StepDirection::Down),
+        Key::Named(NamedKey::ArrowUp) => Some(StepDirection::Up),
+        Key::Named(NamedKey::ArrowDown) => Some(StepDirection::Down),
         _ => None,
     }
 }
@@ -173,8 +173,8 @@ pub fn Stepper(
                 "aria-disabled": availability.aria_disabled(),
                 onkeydown: move |event: KeyboardEvent| {
                     match event.key() {
-                        Key::Home if live => stepping.change(range.min()),
-                        Key::End if live => stepping.change(range.max()),
+                        Key::Named(NamedKey::Home) if live => stepping.change(range.min()),
+                        Key::Named(NamedKey::End) if live => stepping.change(range.max()),
                         _ => on_key(event),
                     }
                 },

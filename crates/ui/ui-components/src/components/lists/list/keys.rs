@@ -4,7 +4,7 @@
 
 use crate::components::lists::list::model::{ListItem, ListRole};
 use crate::stack::roving::{Rove, Roving};
-use dioxus::prelude::{Key, Modifiers};
+use dioxus::prelude::{Key, Modifiers, NamedKey};
 use ui_core::command::types_text;
 use ui_core::vocab::Availability;
 
@@ -23,10 +23,16 @@ pub(crate) enum ListKey {
 pub(crate) fn list_key(key: &Key, modifiers: Modifiers) -> Option<ListKey> {
     let chord = !types_text(key, modifiers);
     match key {
-        Key::ArrowDown => Some(ListKey::Move(Rove::of(&Key::ArrowDown)?)),
-        Key::ArrowUp => Some(ListKey::Move(Rove::of(&Key::ArrowUp)?)),
-        Key::Home | Key::End => Some(ListKey::Move(Rove::of(key)?)),
-        Key::Enter => Some(ListKey::Pick),
+        Key::Named(NamedKey::ArrowDown) => {
+            Some(ListKey::Move(Rove::of(&Key::Named(NamedKey::ArrowDown))?))
+        }
+        Key::Named(NamedKey::ArrowUp) => {
+            Some(ListKey::Move(Rove::of(&Key::Named(NamedKey::ArrowUp))?))
+        }
+        Key::Named(NamedKey::Home) | Key::Named(NamedKey::End) => {
+            Some(ListKey::Move(Rove::of(key)?))
+        }
+        Key::Named(NamedKey::Enter) => Some(ListKey::Pick),
         Key::Character(text) if text == " " && !chord => Some(ListKey::Pick),
         Key::Character(text) if !chord && !text.trim().is_empty() => {
             Some(ListKey::Jump(text.clone()))
@@ -98,7 +104,7 @@ mod tests {
     use super::{ListKey, labelled, list_key, moved};
     use crate::components::lists::list::model::ListItem;
     use crate::stack::roving::{Edge, Rove, Step};
-    use dioxus::prelude::{Element, Key, Modifiers, VNode};
+    use dioxus::prelude::{Element, Key, Modifiers, NamedKey, VNode};
     use ui_core::vocab::Availability;
 
     fn items() -> Vec<ListItem<u8>> {
@@ -116,22 +122,26 @@ mod tests {
         let none = Modifiers::empty();
         let cases: Vec<(Key, Modifiers, Option<ListKey>)> = vec![
             (
-                Key::ArrowDown,
+                Key::Named(NamedKey::ArrowDown),
                 none,
                 Some(ListKey::Move(Rove::Step(Step::Down))),
             ),
             (
-                Key::ArrowUp,
+                Key::Named(NamedKey::ArrowUp),
                 none,
                 Some(ListKey::Move(Rove::Step(Step::Up))),
             ),
             (
-                Key::Home,
+                Key::Named(NamedKey::Home),
                 none,
                 Some(ListKey::Move(Rove::Edge(Edge::First))),
             ),
-            (Key::End, none, Some(ListKey::Move(Rove::Edge(Edge::Last)))),
-            (Key::Enter, none, Some(ListKey::Pick)),
+            (
+                Key::Named(NamedKey::End),
+                none,
+                Some(ListKey::Move(Rove::Edge(Edge::Last))),
+            ),
+            (Key::Named(NamedKey::Enter), none, Some(ListKey::Pick)),
             (Key::Character(" ".into()), none, Some(ListKey::Pick)),
             (
                 Key::Character("m".into()),
@@ -139,7 +149,7 @@ mod tests {
                 Some(ListKey::Jump("m".into())),
             ),
             (Key::Character("m".into()), Modifiers::CONTROL, None),
-            (Key::ArrowLeft, none, None),
+            (Key::Named(NamedKey::ArrowLeft), none, None),
         ];
         for (key, modifiers, want) in cases {
             assert_eq!(list_key(&key, modifiers), want, "{key:?} {modifiers:?}");

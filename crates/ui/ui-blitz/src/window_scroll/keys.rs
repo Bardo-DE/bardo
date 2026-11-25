@@ -1,20 +1,20 @@
 //! The scroll key a winit key press is, if it is one.
 
 use blitz_embed::scroll::keys::{ScrollKey, scroll_key};
-use dioxus_native::winit::keyboard::{Key as WinitKey, NamedKey};
-use keyboard_types::{Key, Modifiers};
+use dioxus_native::winit::keyboard::{Key as WinitKey, NamedKey as WinitNamedKey};
+use keyboard_types::{Key, Modifiers, NamedKey};
 
 /// The scroll key `key` with `held` modifiers is: arrows, Page Up and Down, Home and End, Space.
 pub(super) fn scroll_key_of(key: &WinitKey, held: Modifiers) -> Option<ScrollKey> {
     let named = match key {
-        WinitKey::Named(NamedKey::ArrowUp) => Key::ArrowUp,
-        WinitKey::Named(NamedKey::ArrowDown) => Key::ArrowDown,
-        WinitKey::Named(NamedKey::ArrowLeft) => Key::ArrowLeft,
-        WinitKey::Named(NamedKey::ArrowRight) => Key::ArrowRight,
-        WinitKey::Named(NamedKey::PageUp) => Key::PageUp,
-        WinitKey::Named(NamedKey::PageDown) => Key::PageDown,
-        WinitKey::Named(NamedKey::Home) => Key::Home,
-        WinitKey::Named(NamedKey::End) => Key::End,
+        WinitKey::Named(WinitNamedKey::ArrowUp) => Key::Named(NamedKey::ArrowUp),
+        WinitKey::Named(WinitNamedKey::ArrowDown) => Key::Named(NamedKey::ArrowDown),
+        WinitKey::Named(WinitNamedKey::ArrowLeft) => Key::Named(NamedKey::ArrowLeft),
+        WinitKey::Named(WinitNamedKey::ArrowRight) => Key::Named(NamedKey::ArrowRight),
+        WinitKey::Named(WinitNamedKey::PageUp) => Key::Named(NamedKey::PageUp),
+        WinitKey::Named(WinitNamedKey::PageDown) => Key::Named(NamedKey::PageDown),
+        WinitKey::Named(WinitNamedKey::Home) => Key::Named(NamedKey::Home),
+        WinitKey::Named(WinitNamedKey::End) => Key::Named(NamedKey::End),
         WinitKey::Character(text) if text.as_str() == " " => Key::Character(" ".into()),
         _ => return None,
     };
@@ -32,13 +32,13 @@ mod tests {
         let cases = [
             (
                 "down",
-                WinitKey::Named(NamedKey::ArrowDown),
+                WinitKey::Named(WinitNamedKey::ArrowDown),
                 Modifiers::empty(),
                 Some(ScrollKey::Line(ScrollAxis::Y, Dir::Pos)),
             ),
             (
                 "page down",
-                WinitKey::Named(NamedKey::PageDown),
+                WinitKey::Named(WinitNamedKey::PageDown),
                 Modifiers::empty(),
                 Some(ScrollKey::Page(Dir::Pos)),
             ),
@@ -56,13 +56,13 @@ mod tests {
             ),
             (
                 "end",
-                WinitKey::Named(NamedKey::End),
+                WinitKey::Named(WinitNamedKey::End),
                 Modifiers::empty(),
                 Some(ScrollKey::Edge(Dir::Pos)),
             ),
             (
                 "alt down is a shortcut",
-                WinitKey::Named(NamedKey::ArrowDown),
+                WinitKey::Named(WinitNamedKey::ArrowDown),
                 Modifiers::ALT,
                 None,
             ),
@@ -74,7 +74,7 @@ mod tests {
             ),
             (
                 "enter",
-                WinitKey::Named(NamedKey::Enter),
+                WinitKey::Named(WinitNamedKey::Enter),
                 Modifiers::empty(),
                 None,
             ),

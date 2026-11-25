@@ -50,7 +50,7 @@ pub(crate) fn buttons(confirm: &RowConfirm) -> Element {
         span {
             class: "ds-row-confirm",
             onkeydown: move |event| {
-                if event.key() == Key::Escape {
+                if event.key() == Key::Named(NamedKey::Escape) {
                     event.stop_propagation();
                     on_cancel.call(());
                 }

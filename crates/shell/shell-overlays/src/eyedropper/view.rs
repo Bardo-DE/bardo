@@ -72,7 +72,7 @@ fn Dropper(
             tabindex: "0",
             onmounted: move |event: MountedEvent| focus_soon(event.data()),
             onkeydown: move |event: KeyboardEvent| {
-                if event.key() == Key::Escape {
+                if event.key() == Key::Named(NamedKey::Escape) {
                     ended.call((id, None));
                 }
             },

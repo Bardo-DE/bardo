@@ -10,7 +10,7 @@ use computer_use_action::{
     ScrollBy, ScrollDir, Summary, TypedText, WaitMs,
 };
 use computer_use_parse::{ByteOffset, DropReason, ParseError};
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 
 fn fixture(name: &str) -> String {
     let path = format!(
@@ -138,20 +138,26 @@ fn hotkey_spellings() {
     assert_eq!(key("Action: hotkey(key='ctrl+shift+t')"), ctrl_shift_t);
     assert_eq!(
         key("Action: hotkey(key='enter')"),
-        (BTreeSet::new(), Key::Enter)
+        (BTreeSet::new(), Key::Named(NamedKey::Enter))
     );
     assert_eq!(
         key("Action: hotkey(key='alt Tab')"),
-        (BTreeSet::from([Modifier::Alt]), Key::Tab)
+        (BTreeSet::from([Modifier::Alt]), Key::Named(NamedKey::Tab))
     );
     assert_eq!(
         key("Action: hotkey(key='cmd up')"),
-        (BTreeSet::from([Modifier::Super]), Key::ArrowUp)
+        (
+            BTreeSet::from([Modifier::Super]),
+            Key::Named(NamedKey::ArrowUp)
+        )
     );
-    assert_eq!(key("Action: hotkey(key='f5')"), (BTreeSet::new(), Key::F5));
+    assert_eq!(
+        key("Action: hotkey(key='f5')"),
+        (BTreeSet::new(), Key::Named(NamedKey::F5))
+    );
     assert_eq!(
         key("Action: hotkey(key='super')"),
-        (BTreeSet::new(), Key::Super)
+        (BTreeSet::new(), Key::Named(NamedKey::Meta))
     );
     assert_eq!(
         key("Action: hotkey(key='ctrl +')"),

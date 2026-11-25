@@ -182,7 +182,7 @@ pub(crate) fn line(field: Field, kind: FieldKind, value: String) -> Element {
                     {
                         event.prevent_default();
                     }
-                    if event.key() == Key::Enter {
+                    if event.key() == Key::Named(NamedKey::Enter) {
                         handlers.onchange.call(());
                         if availability == Availability::Enabled {
                             handlers.onsubmit.call(());

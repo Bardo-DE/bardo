@@ -101,7 +101,7 @@ pub(crate) fn TrafficLightGroup(timing: FrameTiming, pose: bool) -> Element {
                     }
                 },
                 onkeydown: move |event: KeyboardEvent| {
-                    if event.key() == Key::ArrowDown {
+                    if event.key() == Key::Named(NamedKey::ArrowDown) {
                         event.prevent_default();
                         opener.open();
                     }

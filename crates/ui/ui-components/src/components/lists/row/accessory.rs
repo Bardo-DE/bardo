@@ -175,7 +175,7 @@ fn toggle(
             // The switch takes Space itself; Return and Escape are the window's (a sheet's default
             // and cancel buttons), and every other key stays here.
             onkeydown: move |event| {
-                if !matches!(event.key(), Key::Enter | Key::Escape) {
+                if !matches!(event.key(), Key::Named(NamedKey::Enter) | Key::Named(NamedKey::Escape)) {
                     event.stop_propagation();
                 }
             },

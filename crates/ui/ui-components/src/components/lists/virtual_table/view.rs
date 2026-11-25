@@ -269,7 +269,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
         .collect();
     let step_of = |row: usize| steps.get(row - start).copied().flatten();
     let onkeydown = move |event: KeyboardEvent| {
-        if event.key() == Key::Escape {
+        if event.key() == Key::Named(NamedKey::Escape) {
             row_drag.cancel();
         }
         let Some(act) = table_key(&event.key(), event.modifiers(), reach.platform) else {

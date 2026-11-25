@@ -140,7 +140,7 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
     let on_space = {
         let now = now.clone();
         move |event: KeyboardEvent| match event.key() {
-            Key::Enter => {
+            Key::Named(NamedKey::Enter) => {
                 event.prevent_default();
                 allow.call(());
             }
@@ -171,7 +171,7 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
                 tabindex: "0",
                 onmounted: move |event: MountedEvent| focus_soon(event.data()),
                 onkeydown: move |event: KeyboardEvent| {
-                    if event.key() == Key::Escape {
+                    if event.key() == Key::Named(NamedKey::Escape) {
                         end.call(None);
                     }
                 },

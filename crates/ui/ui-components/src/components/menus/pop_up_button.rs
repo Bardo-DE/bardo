@@ -173,7 +173,7 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
     let mounted = common.clone();
     let typed = items.clone();
     let onkey = move |event: KeyboardEvent| match event.key() {
-        Key::ArrowDown | Key::ArrowUp if live => {
+        Key::Named(NamedKey::ArrowDown) | Key::Named(NamedKey::ArrowUp) if live => {
             event.prevent_default();
             set_open(true);
         }
@@ -181,7 +181,7 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
         // does so a frame or two after it mounts): the menu's own Escape is on its panel, which
         // is not under this span, so the button closes the menu it opened. The button already
         // has the keyboard, which is where a closed menu leaves it.
-        Key::Escape if shown => {
+        Key::Named(NamedKey::Escape) if shown => {
             event.stop_propagation();
             event.prevent_default();
             set_open(false);

@@ -126,10 +126,10 @@ mod tests {
         let cases = [
             ("none", Modifiers::empty(), None),
             ("option", Modifiers::ALT, Some(DropOperation::Copy)),
-            ("command", Modifiers::SUPER, Some(DropOperation::Move)),
+            ("command", Modifiers::META, Some(DropOperation::Move)),
             (
                 "option and command",
-                Modifiers::ALT | Modifiers::SUPER,
+                Modifiers::ALT | Modifiers::META,
                 Some(DropOperation::Link),
             ),
             ("shift is not an operation", Modifiers::SHIFT, None),

@@ -11,7 +11,7 @@ use computer_use_action::{
     WaitMs,
 };
 use computer_use_parse::{DropReason, ParseError};
-use keyboard_types::Key;
+use keyboard_types::{Key, NamedKey};
 use serde_json::Value;
 
 const QWEN: ToolDialect = ToolDialect::QwenComputerUse;
@@ -310,7 +310,7 @@ fn key_spellings_in_tool_calls() {
         ComputerUseAction::Key { chord, .. } => chord.clone(),
         other => panic!("{other:?}"),
     };
-    let want = Chord::new(BTreeSet::from([Modifier::Alt]), Key::Tab).unwrap();
+    let want = Chord::new(BTreeSet::from([Modifier::Alt]), Key::Named(NamedKey::Tab)).unwrap();
     assert_eq!(chord(r#"{"action":"key","keys":["alt","tab"]}"#), want);
     assert_eq!(chord(r#"{"action":"key","keys":"Alt+Tab"}"#), want);
     let p = qwen(r#"{"action":"key","keys":[1,2]}"#);

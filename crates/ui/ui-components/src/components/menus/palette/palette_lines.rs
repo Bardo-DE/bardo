@@ -4,7 +4,7 @@ use crate::components::content::text_runs::TextLine;
 use crate::components::menus::menu_match::fuzzy;
 use crate::components::menus::palette::palette_group::PaletteRow;
 use crate::stack::roving::Step;
-use dioxus::prelude::Key;
+use dioxus::prelude::{Key, NamedKey};
 
 /// What a key in the search field does to the palette.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -22,12 +22,12 @@ pub(crate) enum PaletteKey {
 /// The palette's reading of a key (design/06-INTERACTIONS.md section 2.3).
 pub(crate) fn palette_key(key: &Key) -> Option<PaletteKey> {
     match key {
-        Key::ArrowDown => Some(PaletteKey::Move(Step::Down)),
-        Key::ArrowUp => Some(PaletteKey::Move(Step::Up)),
-        Key::ArrowLeft => Some(PaletteKey::Side(Step::Up)),
-        Key::ArrowRight => Some(PaletteKey::Side(Step::Down)),
-        Key::Enter => Some(PaletteKey::Run),
-        Key::Escape => Some(PaletteKey::Close),
+        Key::Named(NamedKey::ArrowDown) => Some(PaletteKey::Move(Step::Down)),
+        Key::Named(NamedKey::ArrowUp) => Some(PaletteKey::Move(Step::Up)),
+        Key::Named(NamedKey::ArrowLeft) => Some(PaletteKey::Side(Step::Up)),
+        Key::Named(NamedKey::ArrowRight) => Some(PaletteKey::Side(Step::Down)),
+        Key::Named(NamedKey::Enter) => Some(PaletteKey::Run),
+        Key::Named(NamedKey::Escape) => Some(PaletteKey::Close),
         _ => None,
     }
 }
@@ -59,20 +59,20 @@ pub(crate) fn marked<'a, T>(rows: &'a [PaletteRow<T>], query: &str) -> Vec<Marke
 mod tests {
     use super::{PaletteKey, palette_key};
     use crate::stack::roving::Step;
-    use dioxus::prelude::Key;
+    use dioxus::prelude::{Key, NamedKey};
 
     #[test]
     fn palette_keys_follow_section_2_3() {
         #[rustfmt::skip]
         let cases: Vec<(Key, Option<PaletteKey>)> = vec![
-            (Key::ArrowDown, Some(PaletteKey::Move(Step::Down))),
-            (Key::ArrowUp, Some(PaletteKey::Move(Step::Up))),
-            (Key::ArrowLeft, Some(PaletteKey::Side(Step::Up))),
-            (Key::ArrowRight, Some(PaletteKey::Side(Step::Down))),
-            (Key::Enter, Some(PaletteKey::Run)),
-            (Key::Escape, Some(PaletteKey::Close)),
+            (Key::Named(NamedKey::ArrowDown), Some(PaletteKey::Move(Step::Down))),
+            (Key::Named(NamedKey::ArrowUp), Some(PaletteKey::Move(Step::Up))),
+            (Key::Named(NamedKey::ArrowLeft), Some(PaletteKey::Side(Step::Up))),
+            (Key::Named(NamedKey::ArrowRight), Some(PaletteKey::Side(Step::Down))),
+            (Key::Named(NamedKey::Enter), Some(PaletteKey::Run)),
+            (Key::Named(NamedKey::Escape), Some(PaletteKey::Close)),
             // Tab is the menu's pick, not the palette's.
-            (Key::Tab, None),
+            (Key::Named(NamedKey::Tab), None),
             (Key::Character("a".to_string()), None),
         ];
         for (key, want) in cases {
