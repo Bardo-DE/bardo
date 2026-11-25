@@ -1,9 +1,13 @@
 //! `cargo xtask check product-words`: the retired product names stay out of the tree.
 //!
 //! A word of the list is a hit when it stands alone or is one part of a snake, kebab, camel or upper-case
-//! name (`Porter`, `porter_core`, `PORTER_DIR`), in a `.rs` file, in a file or directory name under
-//! `crates/` and `xtask/`, or in a `Cargo.toml` feature or description. `require` or `acquire` is
-//! not a hit: only whole parts count. URLs of external repositories are skipped.
+//! name (`Porter`, `porter_core`, `PORTER_DIR`), in the text of any tracked file (a `.rs` file, a
+//! `.md`, `.toml`, `.sh`, unit file, XML, script or fixture; binary files and `Cargo.lock` are not read)
+//! or in a file or directory name. `require` or `acquire` is not a hit: only whole parts count. A
+//! name made of the parts `blitz` and `kit` next to each other is a hit too. URLs of external
+//! repositories are skipped, but a `github.com/Bardo-DE/` URL is read: a retired repository named there
+//! is a hit. `THIRD-PARTY-NOTICES.md` holds other people's license texts word for word (the Mozilla
+//! license names its "steward"), so its text is not read; its file name still is.
 
 use std::fs;
 use std::ops::Range;
@@ -17,7 +21,7 @@ use crate::workspace::Workspace;
 const THIS_FILE: &str = "xtask/src/tasks/product_words.rs";
 
 /// The retired product names.
-const WORDS: [&str; 22] = [
+const WORDS: [&str; 25] = [
     "quire",
     "casement",
     "detent",
@@ -40,11 +44,20 @@ const WORDS: [&str; 22] = [
     "steward",
     "peephole",
     "ferry",
+    "intentd",
+    "maskcap",
+    "memfiles",
 ];
 
+/// The file whose text is other people's license texts, copied word for word.
+const LICENSE_TEXTS: &str = "THIRD-PARTY-NOTICES.md";
+
 /// Words that are also plain English where they are not the product: a mouse wheel's `detent`.
-/// They are not checked inside `.rs` files (a name or a `Cargo.toml` line is still checked).
-const ENGLISH_IN_SOURCE: [&str; 1] = ["detent"];
+/// They are not checked inside the text of a file (a file name is still checked).
+const ENGLISH_IN_TEXT: [&str; 1] = ["detent"];
+
+/// The retired name made of two parts: `blitz-kit`, `blitz_kit`, `BlitzKit`.
+const PAIR: (&str, &str) = ("blitz", "kit");
 
 /// The parts of one name: split at `_`, `-` and digits, then at camel-case humps, lower-cased.
 fn parts(name: &str) -> Vec<String> {
@@ -69,7 +82,8 @@ fn parts(name: &str) -> Vec<String> {
     out
 }
 
-/// The text of `line` without the external URLs in it.
+/// The text of `line` without the external URLs in it. A URL of a `github.com/Bardo-DE/`
+/// repository stays: the repository named there is read like any other name.
 fn without_urls(line: &str) -> String {
     let mut out = String::new();
     let mut rest = line;
@@ -77,11 +91,15 @@ fn without_urls(line: &str) -> String {
         let scheme_start = rest[..at]
             .rfind(|c: char| !c.is_ascii_alphabetic())
             .map_or(0, |i| i + 1);
-        out.push_str(&rest[..scheme_start]);
         let after = &rest[at + 3..];
         let end = after
             .find(|c: char| c.is_whitespace() || matches!(c, ')' | '>' | '"' | '\'' | '`' | ']'))
             .unwrap_or(after.len());
+        if after.starts_with("github.com/Bardo-DE/") {
+            out.push_str(&rest[..at + 3 + end]);
+        } else {
+            out.push_str(&rest[..scheme_start]);
+        }
         rest = &after[end..];
     }
     out.push_str(rest);
@@ -109,75 +127,70 @@ fn names(text: &str) -> Vec<Range<usize>> {
     found
 }
 
-/// The retired words in `text`, each with the name it was found in. `in_source` also lets the
+/// The retired words in `text`, each with the name it was found in. `in_text` also lets the
 /// words that are English pass.
-fn hits(text: &str, in_source: bool) -> Vec<(String, &'static str)> {
+fn hits(text: &str, in_text: bool) -> Vec<(String, &'static str)> {
     let mut found = Vec::new();
     for range in names(text) {
         let name = &text[range.clone()];
-        for part in parts(name) {
+        let parts = parts(name);
+        for part in &parts {
             let Some(word) = WORDS.iter().find(|word| **word == part) else {
                 continue;
             };
-            if in_source && ENGLISH_IN_SOURCE.contains(word) {
+            if in_text && ENGLISH_IN_TEXT.contains(word) {
                 continue;
             }
             found.push((name.to_owned(), *word));
+        }
+        if parts
+            .windows(2)
+            .any(|pair| pair[0] == PAIR.0 && pair[1] == PAIR.1)
+        {
+            found.push((name.to_owned(), "blitz-kit"));
         }
     }
     found
 }
 
-/// Whether the `Cargo.toml` line `line`, under table `table`, is one the check reads: a
-/// description, a feature, or a `features = [...]` list.
-fn is_manifest_line(table: &str, line: &str) -> bool {
-    let line = line.trim_start();
-    table == "features" || line.starts_with("description") || line.starts_with("features")
-}
-
-/// Every problem in the tracked files `files` under `root`, as printable lines.
-fn problems(root: &std::path::Path, files: &[String]) -> Result<Vec<String>> {
+/// Every problem in the file `file` whose text is `text`, as printable lines.
+fn file_problems(file: &str, text: &str) -> Vec<String> {
     let mut out = Vec::new();
-    for file in files {
-        for (name, word) in hits(&file.replace(['/', '.'], " "), false) {
-            out.push(format!("{file}: the file name has `{word}` (in `{name}`)"));
-        }
-        let rust = std::path::Path::new(file)
-            .extension()
-            .is_some_and(|ext| ext == "rs");
-        let manifest = std::path::Path::new(file)
-            .file_name()
-            .is_some_and(|n| n == "Cargo.toml");
-        if (!rust && !manifest) || file == THIS_FILE {
-            continue;
-        }
-        let text =
-            fs::read_to_string(root.join(file)).with_context(|| format!("reading {file}"))?;
-        let mut table = String::new();
-        for (number, line) in text.lines().enumerate() {
-            if manifest {
-                if let Some(header) = line.trim().strip_prefix('[') {
-                    header.trim_end_matches(']').clone_into(&mut table);
-                }
-                if !is_manifest_line(&table, line) {
-                    continue;
-                }
-            }
-            let plain = without_urls(line);
-            for (name, word) in hits(&plain, rust) {
-                out.push(format!("{file}:{}: `{word}` (in `{name}`)", number + 1));
-            }
+    for (name, word) in hits(&file.replace(['/', '.'], " "), false) {
+        out.push(format!("{file}: the file name has `{word}` (in `{name}`)"));
+    }
+    let license_texts = file.rsplit('/').next() == Some(LICENSE_TEXTS);
+    if file == THIS_FILE || license_texts {
+        return out;
+    }
+    for (number, line) in text.lines().enumerate() {
+        let plain = without_urls(line);
+        for (name, word) in hits(&plain, true) {
+            out.push(format!("{file}:{}: `{word}` (in `{name}`)", number + 1));
         }
     }
-    Ok(out)
+    out
 }
 
-/// Checks every tracked `.rs` file, `Cargo.toml` and file name under `crates/` and `xtask/`.
+/// Every problem in the tracked files `files` under `root`, as printable lines. A file that is not
+/// UTF-8 text (an image, a font) is not read.
+fn problems(root: &std::path::Path, files: &[String]) -> Vec<String> {
+    let mut out = Vec::new();
+    for file in files {
+        if file == "Cargo.lock" || file.ends_with("/Cargo.lock") {
+            continue;
+        }
+        let text = fs::read_to_string(root.join(file)).unwrap_or_default();
+        out.extend(file_problems(file, &text));
+    }
+    out
+}
+
+/// Checks every tracked file: its name and, when it is text, its text.
 pub fn run() -> Result<bool> {
     let ws = Workspace::load()?;
-    let files =
-        git_lines(&ws.root, &["ls-files", "crates", "xtask"])?.context("git ls-files failed")?;
-    let found = problems(&ws.root, &files)?;
+    let files = git_lines(&ws.root, &["ls-files"])?.context("git ls-files failed")?;
+    let found = problems(&ws.root, &files);
     for line in &found {
         eprintln!("product-words: {line}");
     }
@@ -186,10 +199,10 @@ pub fn run() -> Result<bool> {
 
 #[cfg(test)]
 mod tests {
-    use super::{hits, without_urls};
+    use super::{file_problems, hits, without_urls};
 
-    fn words(text: &str, in_source: bool) -> Vec<&'static str> {
-        hits(text, in_source)
+    fn words(text: &str, in_text: bool) -> Vec<&'static str> {
+        hits(text, in_text)
             .into_iter()
             .map(|(_, word)| word)
             .collect()
@@ -211,6 +224,20 @@ mod tests {
     }
 
     #[test]
+    fn the_words_the_first_list_missed_are_hits() {
+        assert_eq!(
+            words("IntentdConfig and bardo-intentd", true),
+            ["intentd", "intentd"]
+        );
+        assert_eq!(words("maskcap memfiles", true), ["maskcap", "memfiles"]);
+        assert_eq!(
+            words("blitz-kit blitz_kit BlitzKit", true),
+            ["blitz-kit"; 3]
+        );
+        assert!(words("blitz-embed and a kit", true).is_empty());
+    }
+
+    #[test]
     fn a_longer_word_is_not_a_hit() {
         assert!(
             words(
@@ -223,14 +250,52 @@ mod tests {
     }
 
     #[test]
-    fn english_detent_passes_in_source_but_not_in_a_name() {
+    fn english_detent_passes_in_text_but_not_in_a_name() {
         assert!(words("one wheel detent", true).is_empty());
         assert_eq!(words("tests detent main rs", false), ["detent"]);
     }
 
     #[test]
     fn an_external_url_is_skipped() {
+        let line = without_urls(
+            "see https://example.com/stoker and https://github.com/PoHsuanLai/porter now",
+        );
+        assert!(words(&line, true).is_empty());
+    }
+
+    #[test]
+    fn a_retired_bardo_repository_url_is_a_hit() {
         let line = without_urls("repository = \"https://github.com/Bardo-DE/stoker\" # stoker");
-        assert_eq!(words(&line, true), ["stoker"]);
+        assert_eq!(words(&line, true), ["stoker", "stoker"]);
+        let live =
+            without_urls("https://github.com/Bardo-DE/bardo and https://github.com/Bardo-DE/vello");
+        assert!(words(&live, true).is_empty());
+    }
+
+    #[test]
+    fn a_markdown_script_or_manifest_text_is_read() {
+        assert_eq!(
+            file_problems("crates/x/README.md", "fine\nthe porter says").len(),
+            1
+        );
+        assert_eq!(
+            file_problems("crates/x/run.sh", "exec quire-do --now").len(),
+            1
+        );
+        assert_eq!(
+            file_problems(
+                "crates/x/Cargo.toml",
+                "[package]\nname = \"x\"\nkeywords = [\"casement\"]"
+            )
+            .len(),
+            1
+        );
+        assert!(file_problems("crates/x/README.md", "a wheel detent").is_empty());
+    }
+
+    #[test]
+    fn a_file_name_is_read_and_license_text_is_not() {
+        assert_eq!(file_problems("crates/porter/a.txt", "ok").len(), 1);
+        assert!(file_problems("crates/x/THIRD-PARTY-NOTICES.md", "the license steward").is_empty());
     }
 }

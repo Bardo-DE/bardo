@@ -22,7 +22,7 @@ commands:
   check test-modules            one test binary per crate (tests/it), every tests/it file a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
   check domain-order            a library crate depends only on its own domain folder or a lower one
-  check product-words           no retired product name in a .rs file, a file name or a Cargo.toml feature or description
+  check product-words           no retired product name in a file name or in the text of any tracked file
   check error-names             a type that implements std::error::Error has a name ending in Error
   check no-mod-rs               no mod.rs file
   check no-prefs                no identifier ending in Prefs
