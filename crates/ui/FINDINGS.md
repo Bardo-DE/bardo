@@ -914,18 +914,18 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
 
 ### Clipboard
 
-- dioxus-native's `clipboard` feature is on (blitz-shell over arboard 3.6), so Ctrl+C/X/V work in
-  every field of a `launch` window. The app's calls answer `NoHost` outside a ui-blitz document,
-  or `Unavailable`. The harness keeps an in-memory clipboard with an HTML slot.
+- **Blitz's own text fields** (render stack of 2026-11-25: blitz main, winit 0.31) paste through
+  the window's own connection: a field asks `ShellProvider::request_clipboard_text`, blitz-shell
+  asks winit for the selection (`fetch_data_transfer`, the window's `wl_data_device`, natively on
+  Wayland), and the text arrives later as `UiEvent::Paste`. Nothing waits on the owner. The
+  harness's `MemoryShell` answers the same way, after the event that asked. blitz-shell no longer
+  carries arboard, so `wl-clipboard-rs` and the data-control backend have left the lock.
 - **No data-control (2026-10-16, BARDO-08).** The UI kit reads and writes the clipboard as a client with
   a window, never through `zwlr`/`ext` data-control, which would let a background client read it:
-  so the compositor need not offer that protocol to every app for Bardo apps to paste. The cost is that
-  arboard reaches the Wayland selection through XWayland. The workspace `arboard` has no features;
-  blitz-shell's arboard (in the blitz fork's workspace, `features = ["wayland-data-control"]`)
-  still turns it on in the build, so **ask to the blitz fork:** drop `wayland-data-control` from
-  `arboard` in the fork's root `Cargo.toml` (the fork commit 15ead74d added it), after which the
-  lock loses `wl-clipboard-rs`. Until then the build contains the backend but the UI kit's own reads do
-  not depend on it.
+  so the compositor need not offer that protocol to every app for Bardo apps to paste. The app's own
+  calls (`ui_blitz::clipboard`, arboard with no features) reach the Wayland selection through
+  XWayland. They answer `NoHost` outside a ui-blitz document, or `Unavailable`. The harness keeps an
+  in-memory clipboard with an HTML slot.
 - **The primary selection** is `ClipboardTarget::Primary` on `ui_blitz::clipboard::{read_from, write_to}` (a terminal's OSC 52 `p`).
   Linux reaches it through arboard's `LinuxClipboardKind::Primary` (`clipboard/primary.rs`), so on Wayland it goes through
   XWayland like the regular clipboard and is not shared with native Wayland clients; other platforms read nothing and refuse a
@@ -933,9 +933,8 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
 - **Reads are bounded (BARDO-08).** `ui_blitz::clipboard` reads on a worker thread (`clipboard/read.rs`):
   the UI waits at most 500 ms, takes at most 16 MiB, and starts no second read while one is stuck.
   An owner that is slow, silent or huge reads as an empty clipboard. Still open: the `EditHost::paste`
-  seam is synchronous, so a paste still holds the UI for up to those 500 ms, and blitz-shell's own
-  Ctrl+V inside a text field reads on the UI thread with no bound (the same fork, same ask: read
-  on a worker with a deadline). An async paste seam is the full fix and is not done.
+  seam (the UI kit's edit surface) is synchronous, so its paste still holds the UI for up to those
+  500 ms; moving it onto `UiEvent::Paste` as Blitz's fields do is the full fix and is not done.
 
 ### Cold start of the first window
 

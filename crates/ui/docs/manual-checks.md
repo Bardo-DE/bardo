@@ -4,6 +4,15 @@ Things only a person at the machine can verify. While the user is away they are 
 work; each is ticked off with the date and what was seen. The shell keeps its own queue at
 The shell's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there.
 
+## Render stack (queued 2026-11-25)
+
+- [ ] **Paste into a Blitz field** (plan item 1b.4): in an installed Bardo app (Files' rename
+  field, a Settings text row) and in a shell surface (the launcher's search field), paste text
+  copied from another app (a browser, a terminal) and from the same app. The text lands at the
+  caret once it arrives. Paste while a copying app is stopped (`kill -STOP <pid>` of the app that
+  copied) and confirm the field and the window stay responsive; `kill -CONT` it after. The tests
+  cover the request and the `UiEvent::Paste` delivery, not a real selection owner.
+
 ## Keys as actions (queued 2026-10-10)
 
 - [ ] **Clipboard and Space chords per session**: in a Bardo app's edit surface and secure field,
