@@ -1214,7 +1214,7 @@ For a bar (FINDINGS "Bar gaps"):
   ```rust,ignore
   #[component]
   fn BarRoot() -> Element {
-      ui_host_hooks::provide_host();
+      let _ = ui_host_hooks::provide_host();
       rsx! { Ds { appearance, material: Material::Bar, look, /* … */ } }
   }
   ```
@@ -1315,7 +1315,7 @@ For a launcher and a dock (FINDINGS "Launcher gaps"):
   ```rust,ignore
   #[component]
   fn LauncherRoot() -> Element {
-      ui_host_hooks::provide_host();
+      let _ = ui_host_hooks::provide_host();
       rsx! { Ds { appearance, material: Material::Sheet, look, /* … */ } }
   }
   ```

@@ -147,7 +147,7 @@ fn BarRoot() -> Element {
     let appearance = Appearance::default();
     let look = SpaceLook::default();
     ui_blitz::use_standalone_host();
-    ui_host_hooks::provide_host();
+    let _ = ui_host_hooks::provide_host();
     rsx! { Ds { appearance, material: Material::Bar, look, YourPage {} } }
 }
 
@@ -163,7 +163,7 @@ fn LauncherRoot() -> Element {
     let appearance = Appearance::default();
     let look = SpaceLook::default();
     ui_blitz::use_standalone_host();
-    ui_host_hooks::provide_host();
+    let _ = ui_host_hooks::provide_host();
     rsx! { Ds { appearance, material: Material::Sheet, look, YourPage {} } }
 }
 

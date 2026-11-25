@@ -27,13 +27,13 @@ ui-host-hooks = { path = "../../ui-host-hooks" }
 # workspace (crates/ds/Cargo.toml has no [workspace] of its own, so it joins whichever ancestor
 # has one: the UI kit's root, not this one) — this package only needs to name what it writes rsx!
 # and cargo test against itself.
-dioxus = { version = "0.7", default-features = false, features = ["hooks", "html", "macro", "signals"] }
+dioxus = { version = "0.8.0-alpha.3", default-features = false, features = ["hooks", "html", "macro", "signals"] }
 
 [dev-dependencies]
 base-words = { path = "../../../base/base-words" }
 settings-store = { path = "../../../settings/settings-store" }
 serde = { version = "1", features = ["derive"] }
-dioxus-ssr = { version = "0.7" }
+dioxus-ssr = { version = "0.8.0-alpha.3" }
 # The test driver: a real Blitz document on a fast-forwarded clock (CONSUMING.md section 5, rule 4).
 ui-harness = { path = "../../ui-harness" }
 # The linter: a consumer's own tests call it (CONSUMING.md section 5).
@@ -42,29 +42,19 @@ ui-lint = { path = "../../ui-lint" }
 [lints.rust]
 unsafe_code = "deny"
 
-# Patches apply only at a workspace root, so this root repeats the UI kit's block verbatim.
-# vello and anyrender come from our forks (github.com/Bardo-DE/vello and /anyrender, branch
-# bardo-filters): the colour matrix filter, multi-threaded filter layers and CSS filter lists, so
-# every CSS `filter` function paints on both backends. Move back to crates.io once upstream has
-# them (blitz-embed docs/blitz-gaps.md tracks the PRs).
+# Patches apply only at a workspace root, so this root repeats the root workspace's block (xtask
+# workspace-deps checks each entry is the root's). vello and anyrender come from our forks
+# (github.com/Bardo-DE/vello and /anyrender, branch bardo-2026-11-25): the colour matrix filter,
+# multi-threaded filter layers and CSS filter lists, so every CSS `filter` function paints on both
+# backends (blitz-embed docs/blitz-gaps.md tracks the PRs).
 [patch.crates-io]
-vello_common = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-vello_cpu = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-vello_hybrid = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-vello_sparse_shaders = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-glifo = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-anyrender = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-anyrender_vello_cpu = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-anyrender_vello_hybrid = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-wgpu_context = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-pixels_window_renderer = { git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826" }
-# dioxus-core 0.7.10 can spin forever in VirtualDom::wait_for_work: a task woken and then cancelled
-# before it is polled (a use_resource restart) leaves an empty entry in the dirty-task queue that
-# pop_task never removes. Fixed upstream in DioxusLabs/dioxus#5554 (0.8-alpha only); this fork
-# (github.com/Bardo-DE/dioxus, the 0.7 backport branch) backports it onto 0.7.10. Remove when Bardo
-# moves to dioxus 0.8.
-dioxus-core = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-dioxus-core-types = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-generational-box = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-subsecond = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
-subsecond-types = { git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439" }
+anyrender = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_svg = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_vello_cpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_vello_gpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+glifo = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_common = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_cpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_gpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_gpu_shaders = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+wgpu_context = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}

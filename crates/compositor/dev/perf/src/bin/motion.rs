@@ -59,8 +59,8 @@ fn scene(n: u64, outputs: u64) -> (Arrangement, Arrangement) {
             ),
             // Centred under the slot, overlapping its bottom edge.
             icon: rect(
-                40 + (i % 10) as i32 * 186 + (w / 8) as i32 - 16,
-                200 + (i / 10) as i32 * 170 + (h / 4) as i32 - 16,
+                40 + (i % 10) as i32 * 186 + (w / 8) - 16,
+                200 + (i / 10) as i32 * 170 + (h / 4) - 16,
                 32,
                 32,
             ),

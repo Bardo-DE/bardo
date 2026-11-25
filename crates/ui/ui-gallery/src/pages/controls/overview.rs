@@ -5,7 +5,7 @@ use crate::pages::content::glyphs::Glyphs;
 use crate::pages::content::plate_tints::PlateTints;
 use crate::pages::{Section, Specimen};
 use dioxus::prelude::*;
-use keymap::keyboard_types::{Modifiers as ChordModifiers, NamedKey};
+use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{Chord, Key as ChordKey};
 use ui_components::components::app::command_pill::CommandPill;
 use ui_components::components::app::pin_tile::{PinFace, PinTile};

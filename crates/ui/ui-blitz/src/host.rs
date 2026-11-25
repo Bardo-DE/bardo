@@ -65,7 +65,7 @@ use blitz_traits::shell::ShellProvider;
 use dioxus::core::Runtime;
 use dioxus::prelude::*;
 use dioxus_native::winit::event::{ElementState, WindowEvent};
-use dioxus_native::winit::keyboard::{Key as WinitKey, NamedKey};
+use dioxus_native::winit::keyboard::Key as WinitKey;
 use dioxus_native::winit::window::Theme;
 use dioxus_native::{use_window, use_window_event};
 use dioxus_native_dom::NodeHandle;
