@@ -6,7 +6,7 @@
 //! fixed role; a scope is never more than a plain app.
 
 use action_dbus::callers::{
-    Caller, CallerFileError, CallerTable, Callers, ACTIOND, Identity, SHELL, Standing,
+    ACTIOND, Caller, CallerFileError, CallerTable, Callers, Identity, SHELL, Standing,
     read_table_in, table_from_toml,
 };
 use caller_role_types::CallerRole;

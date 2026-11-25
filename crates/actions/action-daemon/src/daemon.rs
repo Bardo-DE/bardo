@@ -7,7 +7,7 @@ use crate::builtin::{HostedLink, builtin_manifests};
 use crate::builtin_checkpoints::CheckpointsPort;
 use crate::builtin_companion::CompanionPort;
 use crate::callers;
-use crate::config::{ConfigError, ActiondConfig};
+use crate::config::{ActiondConfig, ConfigError};
 use crate::floor::{FLOOR_FILE, read_floor};
 use crate::grants::FileGrants;
 use crate::index_files::IndexStore;

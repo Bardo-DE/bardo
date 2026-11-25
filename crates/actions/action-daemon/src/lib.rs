@@ -55,7 +55,7 @@ pub use builtin::{HostedLink, builtin_manifests, is_builtin};
 pub use builtin_checkpoints::{CheckpointsPort, CheckpointsProvider};
 pub use builtin_companion::{CompanionPort, CompanionProvider};
 pub use companion_memory::MemoryServiceLink;
-pub use config::{ConfigError, ActiondConfig};
+pub use config::{ActiondConfig, ConfigError};
 pub use daemon::{
     DaemonError, HarnessSeams, Running, Setup, SystemFiles, data_dirs, run, run_with, start,
 };

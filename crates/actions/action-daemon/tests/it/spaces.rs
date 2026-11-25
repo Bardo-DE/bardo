@@ -9,7 +9,7 @@ use crate::support::spaces::FakeSpaces;
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use account_core::{AppName, DataClass, GrantId};
 use action_core::AgentConfig;
-use action_daemon::{Cadence, FileGrants, ActiondConfig, Setup, start};
+use action_daemon::{ActiondConfig, Cadence, FileGrants, Setup, start};
 use action_router::GrantStore;
 use base_testkit::PrivateBus;
 use permission_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget};

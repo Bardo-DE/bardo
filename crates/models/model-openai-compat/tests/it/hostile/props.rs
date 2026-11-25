@@ -4,7 +4,9 @@
 use model_openai_compat::{KOKORO_FORMAT, PcmDecoder};
 use proptest::prelude::*;
 
-use model_openai_compat::testing::{Reply, assert_sound, call, calls, chunk, run_cut, scenario, sse};
+use model_openai_compat::testing::{
+    Reply, assert_sound, call, calls, chunk, run_cut, scenario, sse,
+};
 use serde_json::json;
 
 fn cuts() -> impl Strategy<Value = Vec<usize>> {

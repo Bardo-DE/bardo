@@ -9,7 +9,7 @@ use account_core::AppName;
 use account_core::consent::{Decision, Grant, Usage};
 use action_client::{DbusTransport, Intents};
 use action_core::*;
-use action_daemon::{Cadence, FileGrants, ActiondConfig, Setup, start};
+use action_daemon::{ActiondConfig, Cadence, FileGrants, Setup, start};
 use action_dbus::callers::Identity;
 use action_manifest::AgentReach;
 use action_router::GrantStore;

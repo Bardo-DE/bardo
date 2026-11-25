@@ -7,7 +7,9 @@ use serde_json::json;
 
 use model_wire::ChatDecoder;
 
-use model_openai_compat::testing::{Refused, Reply, assert_sound, call, calls, chunk, done, run, scenario, sse};
+use model_openai_compat::testing::{
+    Refused, Reply, assert_sound, call, calls, chunk, done, run, scenario, sse,
+};
 
 fn go(frames: &[String]) -> Reply {
     let reply = run(&[&sse(frames)]);

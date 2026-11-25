@@ -8,7 +8,7 @@ use crate::support::world::introduce;
 use account_core::AppName;
 use action_client::{DbusTransport, GateEvent, Intents};
 use action_core::*;
-use action_daemon::{Cadence, ActiondConfig, Setup, start};
+use action_daemon::{ActiondConfig, Cadence, Setup, start};
 use action_dbus::callers::Identity;
 use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_vocab::CallerRole;

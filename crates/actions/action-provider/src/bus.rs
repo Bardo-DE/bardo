@@ -11,7 +11,7 @@
 
 use crate::error::ServeError;
 use crate::provider::{ContextSource, IntentProvider, SummonTarget};
-use action_dbus::callers::{Callers, ACTIOND, Identity, actiond_only, require};
+use action_dbus::callers::{ACTIOND, Callers, Identity, actiond_only, require};
 use action_dbus::{BusConnection, Details, PROVIDER_PATH};
 use action_manifest::ValidManifest;
 use action_wire::SummonSerial;
