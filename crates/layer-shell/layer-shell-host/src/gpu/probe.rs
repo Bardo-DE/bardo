@@ -198,6 +198,7 @@ fn present_once(
             present_mode: choose_present(&caps.present_modes),
             desired_maximum_frame_latency: 2,
             alpha_mode: choose_alpha(&caps.alpha_modes, false),
+            color_space: wgpu::SurfaceColorSpace::Auto,
             view_formats: vec![],
         },
     );
@@ -211,7 +212,7 @@ fn present_once(
     let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor::default());
     clear(&mut encoder, &view);
     gpu_queue.submit([encoder.finish()]);
-    frame.present();
+    gpu_queue.present(frame);
     // A one-off startup probe, not a frame: waiting here is what makes the present reach the
     // compositor before the round trip that looks for its verdict.
     device

@@ -1,7 +1,7 @@
 //! Painting the overlay thumbs (design/11 §11.3.12) into a surface's scene, after the document,
 //! in document logical px scaled to the buffer. The one impure part of the indicator.
 
-use anyrender::PaintScene;
+use anyrender::{AntiAliasing, PaintScene};
 use blitz_traits::shell::ColorScheme;
 use peniko::kurbo::{Affine, RoundedRect};
 use peniko::{Color, Fill};
@@ -57,6 +57,7 @@ pub(crate) fn paint(
                 color,
                 None,
                 &pill(thumb.track, 0.0),
+                AntiAliasing::Enabled,
             );
         }
         let radius = thumb.thumb.width.min(thumb.thumb.height) / 2.0;
@@ -67,6 +68,7 @@ pub(crate) fn paint(
             color,
             None,
             &pill(thumb.thumb, radius),
+            AntiAliasing::Enabled,
         );
     }
 }

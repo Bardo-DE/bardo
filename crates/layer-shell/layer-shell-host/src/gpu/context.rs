@@ -6,12 +6,11 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
-use anyrender_vello_gpu::ImageUploads;
+use anyrender_vello_gpu::ImageCache;
 use blitz_embed::adapter::{
     ADAPTER_ENV, AdapterFacts, AdapterPref, DeviceHealth, WatchedDevice, block_on, ranked,
     request_watched_device,
 };
-use rustc_hash::FxHashMap;
 use vello_gpu::{RenderTargetConfig, Renderer, Resources};
 use wayland_client::Connection;
 use wgpu_context::DeviceHandle;
@@ -43,11 +42,9 @@ pub(crate) struct GpuContext {
     pub(crate) device: DeviceHandle,
     pub(crate) renderer: Renderer,
     pub(crate) resources: Resources,
-    /// Uploaded images by content hash, kept across frames.
-    pub(crate) images: ImageUploads,
-    /// Whether the next frame starts from an empty image cache: a painting had an upload
-    /// refused (`image_cache::trim`).
-    pub(crate) evict: bool,
+    /// The images the renderer has uploaded, by content, kept across frames; the cache
+    /// evicts what no frame has drawn for a while.
+    pub(crate) images: ImageCache,
     pub(crate) widgets: ContextProxy,
     pub(crate) adapter: AdapterFacts,
     /// Whether the device still works; set by wgpu's device-lost callback, read at the start of
@@ -168,14 +165,17 @@ fn create(instance: &wgpu::Instance, adapter: wgpu::Adapter) -> Result<GpuContex
     DEVICES_CREATED.fetch_add(1, Ordering::Relaxed);
     // The render target size is rewritten by every `render`, so one renderer serves
     // surfaces of every size.
-    let renderer = Renderer::new(
+    let (renderer, resources) = Renderer::new(
         &device,
+        &queue,
         &RenderTargetConfig {
             format: SURFACE_FORMAT,
             width: 1,
             height: 1,
         },
     );
+    let mut images = ImageCache::default();
+    images.set_max_image_size(max_image_size(&device));
     Ok(GpuContext {
         device: DeviceHandle {
             instance: instance.clone(),
@@ -184,13 +184,19 @@ fn create(instance: &wgpu::Instance, adapter: wgpu::Adapter) -> Result<GpuContex
             queue,
         },
         renderer,
-        resources: Resources::new(),
-        images: FxHashMap::default(),
-        evict: false,
+        resources,
+        images,
         widgets: ContextProxy::default(),
         adapter: facts,
         health,
     })
+}
+
+/// The largest image the renderer uploads as it is: the device's texture limit, within what
+/// `vello_gpu` sizes can hold. A larger image is scaled down to it on upload.
+fn max_image_size(device: &wgpu::Device) -> (u16, u16) {
+    let side = u16::try_from(device.limits().max_texture_dimension_2d).unwrap_or(u16::MAX);
+    (side, side)
 }
 
 impl std::fmt::Debug for GpuContext {

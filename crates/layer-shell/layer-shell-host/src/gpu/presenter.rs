@@ -92,23 +92,21 @@ impl Presenter {
     /// Paint, render and present `doc`, which the caller has just resolved (with its pre-paint
     /// hook, `SurfaceDocument::resolve`): resolving again here would re-round the layout the
     /// hook snapped. The caller has also requested the frame callback (`wl_surface.frame`), so
-    /// the present's commit carries it. Never waits on the device. Says whether an image was
-    /// left out for want of atlas room, so the caller paints again.
+    /// the present's commit carries it. Never waits on the device.
     pub(crate) fn present(
         &mut self,
         gpu: Option<&mut GpuContext>,
         doc: &mut SurfaceDocument,
         target: FrameTarget,
         overlay: &Overlay,
-    ) -> Result<bool> {
+    ) -> Result<()> {
         match self {
             Presenter::Wgpu(swapchain) => {
                 present_wgpu(swapchain, need_gpu(gpu)?, doc, target, overlay)
             }
             Presenter::Shm(buffers) => {
                 let mut base = doc.dioxus().inner.borrow_mut();
-                buffers.present(&mut base, target, overlay)?;
-                Ok(false)
+                buffers.present(&mut base, target, overlay)
             }
         }
     }
@@ -172,7 +170,7 @@ fn present_wgpu(
     doc: &mut SurfaceDocument,
     target: FrameTarget,
     overlay: &Overlay,
-) -> Result<bool> {
+) -> Result<()> {
     let frame = swapchain.acquire(gpu, target.buffer)?;
     let view = frame
         .texture
@@ -183,7 +181,7 @@ fn present_wgpu(
         .create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some("shell-host frame"),
         });
-    let painted = render_into(
+    render_into(
         gpu,
         doc,
         &mut swapchain.scene,
@@ -193,6 +191,6 @@ fn present_wgpu(
         &view,
     )?;
     gpu.device.queue.submit([encoder.finish()]);
-    frame.present();
-    Ok(painted)
+    gpu.device.queue.present(frame);
+    Ok(())
 }

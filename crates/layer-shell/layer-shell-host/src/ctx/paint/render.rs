@@ -29,7 +29,7 @@ pub(super) fn render(state: &mut HostState, id: SurfaceId) -> Result<()> {
             return Ok(());
         };
         // The scroll engine first: this frame's raw offsets are written before the resolve,
-        // which hoists positioned descendants with the offsets current then.
+        // whose paint tree then reads the offsets current at paint time.
         {
             let mut doc = surface.document.base_mut();
             surface.scroll.frame(&mut doc, now_host)
@@ -116,12 +116,7 @@ pub(super) fn render(state: &mut HostState, id: SurfaceId) -> Result<()> {
             eprintln!("shell-host: present {id:?}: {error}");
             Ok(())
         }
-        Ok(true) => {
-            // The atlas was full: the next frame starts from an empty cache and draws them.
-            state.frame_input(id, FrameInput::Invalidate);
-            Ok(())
-        }
-        Ok(false) => Ok(()),
+        Ok(()) => Ok(()),
     }
 }
 

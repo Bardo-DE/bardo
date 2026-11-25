@@ -111,6 +111,7 @@ fn first_config(
         present_mode: choose_present(&caps.present_modes),
         desired_maximum_frame_latency: 2,
         alpha_mode: choose_alpha(&caps.alpha_modes, opaque),
+        color_space: wgpu::SurfaceColorSpace::Auto,
         view_formats: vec![],
     };
     eprintln!(

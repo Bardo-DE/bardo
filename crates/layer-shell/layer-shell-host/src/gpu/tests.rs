@@ -15,7 +15,7 @@ use crate::gpu::swapchain::{
     alpha_mode_of, choose_alpha, choose_present, pixel_extent, present_mode_of,
 };
 use crate::stats::{AlphaMode, PresentMode};
-use anyrender::{PaintRef, PaintScene as _, RenderContext, ResourceId, Scene};
+use anyrender::{AntiAliasing, PaintRef, PaintScene as _, RenderContext, ResourceId, Scene};
 use blitz_dom::node::ComputedStyles;
 use blitz_dom::{Document as _, DocumentConfig, Widget};
 use blitz_traits::events::UiEvent;
@@ -303,6 +303,8 @@ fn a_document_renders_to_a_texture_at_each_scale_and_reads_back() {
 
 /// Times any `Swatch` registered a texture.
 static SWATCH_REGISTRATIONS: AtomicU32 = AtomicU32::new(0);
+/// The id the latest `Swatch` registration got.
+static SWATCH_ID: Mutex<Option<ResourceId>> = Mutex::new(None);
 const SWATCH_GREEN: wgpu::Color = wgpu::Color {
     r: 0.0,
     g: 1.0,
@@ -360,6 +362,9 @@ impl Swatch {
         device.queue.submit([encoder.finish()]);
         let id = ctx.try_register_custom_resource(Box::new(texture)).ok()?;
         SWATCH_REGISTRATIONS.fetch_add(1, Ordering::SeqCst);
+        *SWATCH_ID
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(id);
         Some(id)
     }
 }
@@ -396,6 +401,7 @@ impl Widget for Swatch {
                 }),
                 None,
                 &Rect::new(0.0, 0.0, f64::from(width), f64::from(height)),
+                AntiAliasing::Enabled,
             );
         }
         scene
@@ -410,11 +416,11 @@ fn swatch_app() -> Element {
     }
 }
 
-/// The swatch tests count the shared map's textures, so they take turns.
+/// The swatch tests read the latest registration's id, so they take turns.
 static WIDGET_TESTS: Mutex<()> = Mutex::new(());
 
 #[test]
-fn a_closed_documents_widget_textures_leave_the_shared_map() {
+fn a_closed_documents_widget_textures_leave_the_shared_set() {
     let _turn = WIDGET_TESTS
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner);
@@ -423,17 +429,18 @@ fn a_closed_documents_widget_textures_leave_the_shared_map() {
         height: 16,
     };
     let mut doc = document(swatch_app, buffer, Scale120::ONE);
-    let before = gpu().widgets.textures.len();
     render(&mut doc, buffer, Scale120::ONE);
-    assert_eq!(
-        gpu().widgets.textures.len(),
-        before + 1,
-        "the widget's texture is in the map after its first paint"
+    let id = SWATCH_ID
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .expect("the widget registered a texture on its first paint");
+    assert!(
+        gpu().widgets.textures.contains(id),
+        "the widget's texture is in the set after its first paint"
     );
     gpu().widgets.forget_document(&mut doc.inner.borrow_mut());
-    assert_eq!(
-        gpu().widgets.textures.len(),
-        before,
+    assert!(
+        !gpu().widgets.textures.contains(id),
         "closing the document gave its texture back"
     );
 }
@@ -497,7 +504,7 @@ fn every_render_shares_one_device() {
     assert_eq!(devices_created(), before, "rendering never creates another");
 }
 
-// ---- the image atlas ----------------------------------------------------------------------
+// ---- uploaded images ----------------------------------------------------------------------
 
 /// A widget that draws one solid 24x24 image, the same blob every frame (as a decoded icon is).
 struct Picture {
@@ -558,51 +565,25 @@ fn green_picture() -> Element {
 }
 
 #[test]
-fn an_image_the_full_atlas_refused_is_drawn_on_the_next_frame() {
-    use vello_gpu::{AtlasConfig, Resources};
-
-    // An atlas with room for one 24x24 image, so the second one is refused, as a dock icon is
-    // once the launcher's icons fill the real one.
-    let tiny = Resources::new_with_config(AtlasConfig {
-        initial_atlas_count: 1,
-        max_atlases: 1,
-        atlas_size: (32, 32),
-        auto_grow: false,
-        ..AtlasConfig::default()
-    });
-    let (resources, images) = {
-        let mut gpu = gpu();
-        let images = std::mem::take(&mut gpu.images);
-        (std::mem::replace(&mut gpu.resources, tiny), images)
-    };
+fn images_of_two_documents_draw_on_every_frame_through_the_renderers_cache() {
     let buffer = Size {
         width: 32,
         height: 32,
     };
     let mut red = document(red_picture, buffer, Scale120::ONE);
     let mut green = document(green_picture, buffer, Scale120::ONE);
-    let first_red = pixel(&render(&mut red, buffer, Scale120::ONE), 8, 8);
-    let refused = pixel(&render(&mut green, buffer, Scale120::ONE), 8, 8);
-    let pending = gpu().evict;
-    let retried = pixel(&render(&mut green, buffer, Scale120::ONE), 8, 8);
-    let after = gpu().evict;
-    {
-        let mut gpu = gpu();
-        gpu.resources = resources;
-        gpu.images = images;
-    };
-    assert!(
-        close(first_red, [255, 0, 0, 255]),
-        "red drawn: {first_red:?}"
-    );
-    assert!(
-        close(refused, [0, 0, 0, 0]),
-        "the atlas is full, so green is missing: {refused:?}"
-    );
-    assert!(pending, "the refusal asks for an empty cache");
-    assert!(
-        close(retried, [0, 255, 0, 255]),
-        "the next frame draws green: {retried:?}"
-    );
-    assert!(!after, "drawn whole, nothing more is asked");
+    // Each frame uploads or reuses its own image: neither is left blank, however many the
+    // renderer already holds.
+    for frame in 0..3 {
+        let red_pixel = pixel(&render(&mut red, buffer, Scale120::ONE), 8, 8);
+        let green_pixel = pixel(&render(&mut green, buffer, Scale120::ONE), 8, 8);
+        assert!(
+            close(red_pixel, [255, 0, 0, 255]),
+            "frame {frame}: red {red_pixel:?}"
+        );
+        assert!(
+            close(green_pixel, [0, 255, 0, 255]),
+            "frame {frame}: green {green_pixel:?}"
+        );
+    }
 }

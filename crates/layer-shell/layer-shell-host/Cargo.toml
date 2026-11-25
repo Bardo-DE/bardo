@@ -43,9 +43,6 @@ image = { workspace = true, features = ["png", "jpeg"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-# The per-device image cache (`gpu::context`).
-rustc-hash = { workspace = true }
-vello_common = { workspace = true }
 # The debug-inject JSON stats lines.
 serde_json = { workspace = true }
 # The pulse test waits for a timer by a blocking dispatch with the one generous limit.

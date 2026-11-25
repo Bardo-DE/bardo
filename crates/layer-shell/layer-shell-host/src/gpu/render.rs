@@ -1,21 +1,20 @@
 //! Painting a resolved document through the shared renderer: `paint_scene` into the
-//! surface's `vello_gpu::Scene` via a `VelloHybridScenePainter` borrowing the device's image
-//! cache and widget textures, then `Renderer::render` into the swapchain texture. The frame
-//! callback is requested before this, and `SurfaceTexture::present` after.
+//! surface's `vello_gpu::Scene` via a `VelloGpuScenePainter` borrowing the device's image
+//! cache and texture set, then `Renderer::render` into the swapchain texture. The frame
+//! callback is requested before this, and `Queue::present` after.
 //!
 //! See FINDINGS F75.
 
-use anyrender_vello_gpu::{ImageManager, VelloHybridScenePainter};
+use anyrender_vello_gpu::{ImageManager, VelloGpuScenePainter};
 use blitz_dom::BaseDocument;
 use blitz_paint::paint_scene;
-use vello_gpu::RenderSize;
+use vello_gpu::{RenderOptions, RenderTarget};
 
 use crate::dom::document::SurfaceDocument;
 use crate::error::{HostError, Result};
 use crate::gpu::context::GpuContext;
 #[cfg(any(feature = "debug-inject", test))]
 use crate::gpu::context::SURFACE_FORMAT;
-use crate::gpu::image_cache;
 use crate::gpu::presenter::{FrameTarget, Overlay};
 #[cfg(any(feature = "debug-inject", test))]
 use crate::gpu::shm::swap_red_blue;
@@ -31,15 +30,15 @@ pub(crate) fn render_into(
     overlay: &Overlay,
     encoder: &mut wgpu::CommandEncoder,
     view: &wgpu::TextureView,
-) -> Result<bool> {
+) -> Result<()> {
     let mut base = doc.dioxus().inner.borrow_mut();
     paint_document(gpu, &mut base, scene, (target, overlay), encoder, view)
 }
 
 /// Paint an already resolved document into `scene` and render it into `view`: [`render_into`]
 /// on a bare `BaseDocument`. Widgets in the document see the shared device and register their
-/// textures into it, where they stay for later frames. Says whether the atlas refused an image
-/// the document draws, so the caller paints it again.
+/// textures into it, where they stay for later frames. Images are uploaded by the renderer's
+/// own cache, which lets go of the ones no frame draws any more.
 pub(crate) fn paint_document(
     gpu: &mut GpuContext,
     doc: &mut BaseDocument,
@@ -47,7 +46,7 @@ pub(crate) fn paint_document(
     (target, overlay): (FrameTarget, &Overlay),
     encoder: &mut wgpu::CommandEncoder,
     view: &wgpu::TextureView,
-) -> Result<bool> {
+) -> Result<()> {
     let (width, height) = pixel_extent(target.buffer);
     let (paint_width, paint_height, x, y) = target.paint_area();
     fit_scene(scene, width, height)?;
@@ -56,30 +55,19 @@ pub(crate) fn paint_document(
         renderer,
         resources,
         images,
-        evict,
         widgets,
         ..
     } = gpu;
-    let evicted = image_cache::trim(
-        images,
-        evict,
-        renderer,
-        resources,
-        (&device.device, &device.queue),
-    );
-    let refused_before = image_cache::refused(images);
     widgets.forget_dropped(doc);
     {
         let image_manager = ImageManager::new(
-            &mut *renderer,
             &mut *resources,
             &device.device,
             &device.queue,
-            &mut *encoder,
-            images,
+            &mut *images,
+            &mut widgets.textures,
         );
-        let mut painter =
-            VelloHybridScenePainter::new(&mut *scene, image_manager, &mut widgets.textures, device);
+        let mut painter = VelloGpuScenePainter::new(&mut *scene, image_manager, device);
         paint_scene(
             &mut painter,
             doc,
@@ -96,28 +84,32 @@ pub(crate) fn paint_document(
             target.scale.factor(),
             (f64::from(x), f64::from(y)),
         );
-    };
-    let painted =
-        image_cache::painted_missing_images(evicted, refused_before, image_cache::refused(images));
-    if painted {
-        *evict = true;
     }
-    renderer
-        .render(
-            scene,
-            resources,
-            &device.device,
-            &device.queue,
-            encoder,
-            &RenderSize { width, height },
+    let rendered = renderer.render(
+        scene,
+        resources,
+        encoder,
+        RenderTarget {
             view,
-            &widgets.bindings(),
-        )
-        .map_err(|e| HostError::Render(format!("{e:?}")))?;
-    Ok(painted)
+            depth_view: None,
+        },
+        widgets.textures.bindings(),
+        RenderOptions::default(),
+    );
+    // Evict the images no recent frame drew, whether or not this one rendered.
+    ImageManager::new(
+        resources,
+        &device.device,
+        &device.queue,
+        images,
+        &mut widgets.textures,
+    )
+    .finish_frame();
+    rendered.map_err(|e| HostError::Render(format!("{e:?}")))
 }
 
-/// An empty scene of exactly the render size (`vello_gpu` wants the two equal).
+/// An empty scene of exactly the render size (`vello_gpu` wants the two equal; a scene cannot
+/// be resized, so a new size makes a new scene).
 fn fit_scene(scene: &mut vello_gpu::Scene, width: u32, height: u32) -> Result<()> {
     // The error holds no more than "does not fit", which `too_large` says with the sizes.
     let (Ok(w), Ok(h)) = (u16::try_from(width), u16::try_from(height)) else {
@@ -126,7 +118,7 @@ fn fit_scene(scene: &mut vello_gpu::Scene, width: u32, height: u32) -> Result<()
     if scene.width() == w && scene.height() == h {
         scene.reset();
     } else {
-        scene.reset_and_resize(w, h);
+        *scene = vello_gpu::Scene::new(w, h);
     }
     Ok(())
 }
@@ -219,7 +211,6 @@ fn read_rows(
     let tight = (width * 4) as usize;
     let mut rgba = vec![0u8; tight * height as usize];
     {
-        let data = slice.get_mapped_range();
         for (src, dst) in data.chunks(row as usize).zip(rgba.chunks_mut(tight)) {
             swap_red_blue(&src[..tight], dst);
         }

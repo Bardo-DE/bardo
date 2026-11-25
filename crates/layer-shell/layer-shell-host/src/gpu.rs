@@ -6,7 +6,6 @@ pub(crate) mod adapter;
 pub(crate) mod context;
 pub(crate) mod context_proxy;
 mod deadline;
-pub(crate) mod image_cache;
 pub(crate) mod presenter;
 mod probe;
 pub(crate) mod raw_handle;
