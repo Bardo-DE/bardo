@@ -148,6 +148,7 @@ impl WindowFrame {
     }
 
     /// The root's `data-window-frame` word, absent with no frame.
+    #[must_use]
     pub fn attribute(&self) -> Option<&'static str> {
         match self {
             WindowFrame::None => None,

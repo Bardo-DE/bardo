@@ -37,7 +37,7 @@ pub(crate) fn key_act(key: &Key, modifiers: Modifiers) -> Option<KeyAct> {
         Key::Named(NamedKey::End) => Some(KeyAct::Edge(Edge::Last)),
         Key::Named(NamedKey::ArrowRight) => Some(KeyAct::Open),
         Key::Named(NamedKey::ArrowLeft) => Some(KeyAct::Back),
-        Key::Named(NamedKey::Enter) | Key::Named(NamedKey::Tab) => Some(KeyAct::Pick),
+        Key::Named(NamedKey::Enter | NamedKey::Tab) => Some(KeyAct::Pick),
         Key::Named(NamedKey::Escape) => Some(KeyAct::Close),
         Key::Character(text) if !chord && !text.trim().is_empty() => {
             Some(KeyAct::Jump(text.clone()))

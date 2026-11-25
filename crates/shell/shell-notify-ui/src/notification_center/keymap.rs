@@ -13,7 +13,7 @@ pub fn center_key(key: &Key) -> Option<CenterKey> {
         Key::Named(NamedKey::ArrowUp) => Some(CenterKey::Up),
         Key::Named(NamedKey::ArrowDown) => Some(CenterKey::Down),
         Key::Named(NamedKey::Enter) => Some(CenterKey::Return),
-        Key::Named(NamedKey::Delete) | Key::Named(NamedKey::Backspace) => Some(CenterKey::Delete),
+        Key::Named(NamedKey::Delete | NamedKey::Backspace) => Some(CenterKey::Delete),
         _ => None,
     }
 }

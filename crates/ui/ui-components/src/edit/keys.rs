@@ -94,7 +94,7 @@ mod tests {
     type Case = (Platform, Key, Modifiers, KeyAction);
 
     #[test]
-    fn keys_read_as_text_gestures_or_keys_on_each_platform() {
+    fn text_and_clipboard_chords_read_as_text_or_gestures_on_each_platform() {
         let plain = Modifiers::empty();
         let cases: Vec<Case> = vec![
             (ours(), text("a"), plain, KeyAction::Text("a".to_owned())),
@@ -142,55 +142,68 @@ mod tests {
                 Modifiers::CONTROL,
                 key(text("b"), Modifiers::CONTROL),
             ),
+        ];
+        check(cases);
+    }
+
+    #[test]
+    fn named_keys_read_as_gestures_or_keys_on_each_platform() {
+        let plain = Modifiers::empty();
+        let named = Key::Named;
+        let cases: Vec<Case> = vec![
             (
                 ours(),
-                Key::Named(NamedKey::Insert),
+                named(NamedKey::Insert),
                 Modifiers::SHIFT,
                 KeyAction::Paste,
             ),
             (
                 kde(),
-                Key::Named(NamedKey::Insert),
+                named(NamedKey::Insert),
                 Modifiers::CONTROL,
                 KeyAction::Copy,
             ),
             (
                 kde(),
-                Key::Named(NamedKey::Delete),
+                named(NamedKey::Delete),
                 Modifiers::SHIFT,
                 KeyAction::Cut,
             ),
             (
                 ours(),
-                Key::Named(NamedKey::Enter),
+                named(NamedKey::Enter),
                 plain,
-                key(Key::Named(NamedKey::Enter), plain),
+                key(named(NamedKey::Enter), plain),
             ),
             (
                 ours(),
-                Key::Named(NamedKey::Enter),
+                named(NamedKey::Enter),
                 Modifiers::SHIFT,
-                key(Key::Named(NamedKey::Enter), Modifiers::SHIFT),
+                key(named(NamedKey::Enter), Modifiers::SHIFT),
             ),
             (
                 ours(),
-                Key::Named(NamedKey::Backspace),
+                named(NamedKey::Backspace),
                 plain,
-                key(Key::Named(NamedKey::Backspace), plain),
+                key(named(NamedKey::Backspace), plain),
             ),
             (
                 ours(),
-                Key::Named(NamedKey::Delete),
+                named(NamedKey::Delete),
                 plain,
-                key(Key::Named(NamedKey::Delete), plain),
+                key(named(NamedKey::Delete), plain),
             ),
             (
                 ours(),
-                Key::Named(NamedKey::Tab),
+                named(NamedKey::Tab),
                 plain,
-                key(Key::Named(NamedKey::Tab), plain),
+                key(named(NamedKey::Tab), plain),
             ),
         ];
+        check(cases);
+    }
+
+    fn check(cases: Vec<Case>) {
         for (platform, pressed, held, expected) in cases {
             let keymap = Keymap::conventional(platform);
             assert_eq!(

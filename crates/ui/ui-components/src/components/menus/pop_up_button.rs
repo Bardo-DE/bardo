@@ -173,7 +173,7 @@ pub fn PopUpButton<T: Clone + PartialEq + 'static>(
     let mounted = common.clone();
     let typed = items.clone();
     let onkey = move |event: KeyboardEvent| match event.key() {
-        Key::Named(NamedKey::ArrowDown) | Key::Named(NamedKey::ArrowUp) if live => {
+        Key::Named(NamedKey::ArrowDown | NamedKey::ArrowUp) if live => {
             event.prevent_default();
             set_open(true);
         }

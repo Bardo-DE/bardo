@@ -168,6 +168,7 @@ pub struct SplitPane {
 
 impl SplitPane {
     /// An open pane of `spec` holding `body`.
+    #[must_use]
     pub fn new(spec: PaneSpec, body: Element) -> Self {
         SplitPane {
             spec,

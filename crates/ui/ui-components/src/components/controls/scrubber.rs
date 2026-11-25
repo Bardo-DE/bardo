@@ -29,10 +29,10 @@ use ui_style::tokens::control_size::ControlSize;
 fn jump(key: &Key, modifiers: Modifiers) -> Option<Jump> {
     let far = modifiers.contains(Modifiers::SHIFT);
     match key {
-        Key::Named(NamedKey::ArrowLeft) | Key::Named(NamedKey::ArrowDown) => {
+        Key::Named(NamedKey::ArrowLeft | NamedKey::ArrowDown) => {
             Some(if far { Jump::BackFar } else { Jump::Back })
         }
-        Key::Named(NamedKey::ArrowRight) | Key::Named(NamedKey::ArrowUp) => {
+        Key::Named(NamedKey::ArrowRight | NamedKey::ArrowUp) => {
             Some(if far { Jump::ForwardFar } else { Jump::Forward })
         }
         Key::Named(NamedKey::Home) => Some(Jump::Start),

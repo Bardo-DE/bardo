@@ -87,7 +87,7 @@ pub fn PullDownButton<T: Clone + PartialEq + 'static>(
     let label = title.unwrap_or_else(|| "Menu".to_owned());
     let mounted = common.clone();
     let onkey = move |event: KeyboardEvent| match event.key() {
-        Key::Named(NamedKey::ArrowDown) | Key::Named(NamedKey::ArrowUp) if live => {
+        Key::Named(NamedKey::ArrowDown | NamedKey::ArrowUp) if live => {
             event.prevent_default();
             set_open(true);
         }

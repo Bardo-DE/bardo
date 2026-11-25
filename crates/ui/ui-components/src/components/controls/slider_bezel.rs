@@ -149,8 +149,8 @@ fn travel(rail: Rect) -> Rect {
 /// The key's nudge: Left and Down lower the level, Right and Up raise it.
 fn nudge(key: &Key) -> Option<Nudge> {
     match key {
-        Key::Named(NamedKey::ArrowLeft) | Key::Named(NamedKey::ArrowDown) => Some(Nudge::Down),
-        Key::Named(NamedKey::ArrowRight) | Key::Named(NamedKey::ArrowUp) => Some(Nudge::Up),
+        Key::Named(NamedKey::ArrowLeft | NamedKey::ArrowDown) => Some(Nudge::Down),
+        Key::Named(NamedKey::ArrowRight | NamedKey::ArrowUp) => Some(Nudge::Up),
         _ => None,
     }
 }

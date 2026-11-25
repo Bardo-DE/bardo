@@ -67,7 +67,7 @@ impl PanelCtx {
             // ← and → the claim passed on an emoji cell: the palette moved the cell.
             None if matches!(
                 event.key(),
-                Key::Named(NamedKey::ArrowLeft) | Key::Named(NamedKey::ArrowRight)
+                Key::Named(NamedKey::ArrowLeft | NamedKey::ArrowRight)
             ) && self.selected_layout() == Layout::Grid =>
             {
                 self.preview_key(PreviewKey::Moved);

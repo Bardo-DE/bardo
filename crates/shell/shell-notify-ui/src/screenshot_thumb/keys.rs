@@ -9,7 +9,7 @@ use super::step::ThumbIn;
 /// What `key` does to the card; `None` leaves it to the document.
 pub(super) fn thumb_key(key: &Key) -> Option<ThumbIn> {
     match key {
-        Key::Named(NamedKey::Delete) | Key::Named(NamedKey::Backspace) => {
+        Key::Named(NamedKey::Delete | NamedKey::Backspace) => {
             Some(ThumbIn::TrashPressed)
         }
         Key::Named(NamedKey::Escape) => Some(ThumbIn::Dismissed),

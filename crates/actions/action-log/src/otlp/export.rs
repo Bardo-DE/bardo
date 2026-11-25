@@ -203,7 +203,7 @@ mod tests {
             Err(why) if why.kind() == io::ErrorKind::WouldBlock => false,
             Err(why) => panic!("accepting the exporter failed: {why}"),
         });
-        let stream = accepted.expect("the exporter connected");
+        let mut stream = accepted.expect("the exporter connected");
         stream.set_nonblocking(false).expect("blocking");
         stream
             .set_read_timeout(Some(Duration::from_secs(5)))

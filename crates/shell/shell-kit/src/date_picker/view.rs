@@ -138,16 +138,16 @@ pub fn DatePicker(
             .unwrap_or(0);
         match event.key() {
             Key::Named(NamedKey::ArrowUp) => {
-                onchange.call(value.stepped(current, StepDirection::Up))
+                onchange.call(value.stepped(current, StepDirection::Up));
             }
             Key::Named(NamedKey::ArrowDown) => {
-                onchange.call(value.stepped(current, StepDirection::Down))
+                onchange.call(value.stepped(current, StepDirection::Down));
             }
             Key::Named(NamedKey::ArrowLeft) => {
-                selected.set(keys.get(at.saturating_sub(1)).copied())
+                selected.set(keys.get(at.saturating_sub(1)).copied());
             }
             Key::Named(NamedKey::ArrowRight) => {
-                selected.set(keys.get(at + 1).or_else(|| keys.last()).copied())
+                selected.set(keys.get(at + 1).or_else(|| keys.last()).copied());
             }
             _ => return,
         }

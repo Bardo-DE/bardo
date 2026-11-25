@@ -255,8 +255,8 @@ fn ClaimPalette() -> Element {
     let claim = move |key: FieldKey| -> bool {
         let name = key.event.key();
         let taken = match name {
-            dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowDown)
-            | dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowUp) => {
+            dioxus::prelude::Key::Named(dioxus::prelude::NamedKey::ArrowDown |
+dioxus::prelude::NamedKey::ArrowUp) => {
                 browsing.set(true);
                 None
             }

@@ -34,11 +34,7 @@ pub fn pane_key(
         (Key::Character(text), ..) if text == " " && modifiers.is_empty() => {
             Some(PreviewKey::Space)
         }
-        (
-            Key::Named(NamedKey::ArrowRight) | Key::Named(NamedKey::ArrowLeft),
-            false,
-            Layout::Grid,
-        ) => None,
+        (Key::Named(NamedKey::ArrowRight | NamedKey::ArrowLeft), false, Layout::Grid) => None,
         (Key::Named(NamedKey::ArrowRight), ..) => Some(PreviewKey::Right(caret)),
         (Key::Named(NamedKey::ArrowLeft), true, _) => Some(PreviewKey::Left),
         (Key::Named(NamedKey::Tab), true, _) if shift => Some(PreviewKey::ShiftTab),

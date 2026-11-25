@@ -186,7 +186,7 @@ fn is_pick(key: &Key) -> bool {
     match key {
         Key::Named(NamedKey::Enter) => true,
         Key::Character(text) => text == " ",
-        _ => false,
+        Key::Named(_) => false,
     }
 }
 

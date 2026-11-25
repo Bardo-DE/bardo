@@ -231,7 +231,7 @@ impl GpuPainter {
             );
             let mut painter = VelloGpuScenePainter::new(&mut self.scene, images, &self.handle);
             draw(&mut painter, doc, canvas);
-        }
+        };
         let encode_time = started.elapsed();
         let rendered = self.renderer.render(
             &self.scene,

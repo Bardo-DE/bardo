@@ -103,7 +103,7 @@ pub fn ModuleTile(
 fn opens(key: &Key) -> bool {
     matches!(
         key,
-        Key::Named(NamedKey::Enter) | Key::Named(NamedKey::ArrowRight)
+        Key::Named(NamedKey::Enter | NamedKey::ArrowRight)
     )
 }
 
