@@ -9,7 +9,7 @@
 # Every crate is one tier:
 #   P  pure: no std::fs/env/process/net, no clock reads, no sleeps, no tokio, hyper, reqwest, zbus
 #      or rustix, and no UI words.
-#   C  client/IO: may do IO, but has no UI words (Help, Sheet, SettingRow, ds_settings).
+#   C  client/IO: may do IO, but has no UI words (Help, Sheet, SettingRow, ui_settings).
 #   A  app/daemon: wiring only. Its libraries read no environment variable outside main.rs.
 # A crate depends on its own tier or a lower one (P < C < A), never up.
 #
@@ -73,7 +73,7 @@ BANS=(
 
 # RULES: what a crate reaches through ANY path (transitive, default features).
 #
-# The pure crates (computer-use-desktop, maskcap, computer-use-seat-input, computer-use-a11y-tree, computer-use-bus, computer-use-run) never reach a
+# The pure crates (computer-use-desktop, computer-use-capture, computer-use-seat-input, computer-use-a11y-tree, computer-use-bus, computer-use-run) never reach a
 # bus, a runtime, an HTTP client, a wayland connection, an EIS client, an accessibility stack,
 # a database, a file watcher, an embedding runtime, the MCP SDK or the policy engine: their
 # backends are the C crates computer-use-capture-wayland, computer-use-seat-ei and computer-use-a11y-atspi. `toml` is parsed at the

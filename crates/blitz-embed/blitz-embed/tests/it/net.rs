@@ -35,7 +35,7 @@ async fn a_data_url_is_decoded() {
 
 #[tokio::test]
 async fn an_absolute_file_url_inside_the_roots_is_read() {
-    let path = std::env::temp_dir().join(format!("blitz-kit-net-{}.txt", std::process::id()));
+    let path = std::env::temp_dir().join(format!("blitz-embed-net-{}.txt", std::process::id()));
     std::fs::write(&path, b"from disk").expect("scratch file");
     let url = Url::from_file_path(&path).expect("absolute").to_string();
     let net = LocalNet::new(FileRoots::new([std::env::temp_dir()]));
@@ -46,7 +46,7 @@ async fn an_absolute_file_url_inside_the_roots_is_read() {
 
 #[tokio::test]
 async fn a_file_url_the_roots_do_not_hold_is_left_unanswered() {
-    let path = std::env::temp_dir().join(format!("blitz-kit-net-no-{}.txt", std::process::id()));
+    let path = std::env::temp_dir().join(format!("blitz-embed-net-no-{}.txt", std::process::id()));
     std::fs::write(&path, b"private").expect("scratch file");
     let url = Url::from_file_path(&path).expect("absolute").to_string();
     let elsewhere = LocalNet::new(FileRoots::new([std::path::PathBuf::from("/nonexistent")]));

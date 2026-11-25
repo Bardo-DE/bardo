@@ -10,7 +10,7 @@ or code, **M** reliable secondary source or imitation code, **L** observed or in
 ## 11.1 What this governs
 
 Every scroll in every surface rendered by `layer-shell-host` and every window `ui-blitz` opens (Blitz
-documents, one engine: `blitz_kit::scroll`): which node
+documents, one engine: `blitz_embed::scroll`): which node
 scrolls (latching), the phases, tracking, momentum, rubber band, axis lock, conversion from
 device units to pixels, keyboard scrolling, wheel mice, touchpads, the overlay scrollbar,
 natural scrolling and double-scroll suppression. Device decoding and gesture recognition are
@@ -49,7 +49,7 @@ clients scroll with their own toolkit physics; for them we only shape the input 
 ### 11.3.1 Ownership (settled)
 
 The host owns scroll physics for every Blitz document (plan B "Ownership decision"); the engine
-is `blitz_kit::scroll`, which `layer-shell-host` runs for a shell's surfaces and `ui-blitz` for an app's
+is `blitz_embed::scroll`, which `layer-shell-host` runs for a shell's surfaces and `ui-blitz` for an app's
 windows:
 
 1. The host does not forward wheel/axis input to Blitz's default scroll action. It runs its
@@ -225,7 +225,7 @@ gesture in this document if still under the pointer, else the document viewport.
 | Held arrow (key repeat) | velocity ramps linearly to `25 x step` per second (1000 px/s for a line) in 0.2 s; on release a spring (m 1, k 175, c 20) runs from the current position and velocity to `target = x + v x 0.1 s`, clamped | settled numbers (R18 H), interpretation of "top 25x step in 0.2 s" and release target proposed |
 | Edges | clamp; no rubber band | proposed |
 
-**Wheel and fling acceleration (`blitz_kit::scroll::accel`, v0.2.31).** macOS accelerates wheel
+**Wheel and fling acceleration (`blitz_embed::scroll::accel`, v0.2.31).** macOS accelerates wheel
 clicks and momentum (R15), but the curve is not published, so these are our own values, chosen so
 a flick of the wheel crosses a long page without a hundred turns and a reading pace is untouched.
 Proposed; tune by feel.
@@ -302,12 +302,12 @@ ever re-enabled). Wayland does not identify the device, so (settled rule, plan B
 - The engine requests frames only while Tracking with new deltas, Momentum, Rebound, Smooth,
   HeldKey, Spring, or while the thumb is fading/expanding. Idle = 0 frames.
 - Each frame: `resolve(t)`, write raw offsets, paint, then emit
-  `ScrollNotification{node, offset, phase}` on a `watch` channel; `ds_blitz::use_scroll(node)`
+  `ScrollNotification{node, offset, phase}` on a `watch` channel; `ui_blitz::use_scroll(node)`
   exposes it to components. Blitz's own `onscroll` does not fire for raw writes (B).
 
 ## 11.4 State machine
 
-Pure, `blitz-embed/crates/blitz-kit/src/scroll/engine/`. Geometry is passed in as values; the host reads it
+Pure, `blitz-embed/blitz-embed/src/scroll/engine/`. Geometry is passed in as values; the host reads it
 from Blitz before calling `step` and applies effects after.
 
 ```rust

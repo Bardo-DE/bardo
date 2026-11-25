@@ -153,7 +153,7 @@ class lists are at the top of `dist/plasma/bardo-key-remap-focus`. A terminal em
 
 ## Keymap
 
-Apps resolve their shortcuts through [the chord keymap](https://github.com/Bardo-DE/chordkit) and never
+Apps resolve their shortcuts through [the chord keymap](https://github.com/Bardo-DE/bardo) and never
 check Command or Control themselves. The key remap daemon is this desktop's source for it. Your own changes
 live in `~/.config/bardo/key-remap/keymap` (or `$XDG_CONFIG_HOME/bardo/key-remap/keymap`), one `action = shortcut`
 per line (`copy = Primary+Alt+C`, `redo = none`; `#` starts a comment); Settings writes it and

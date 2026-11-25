@@ -50,7 +50,7 @@ when the compositor says which GPU it renders on: the host binds `zwp_linux_dmab
 reads the default feedback's `main_device` (a `dev_t`) in the roundtrip `Host::connect` runs
 before any surface exists, and maps it through `/sys/dev/char/<major>:<minor>/device/{vendor,
 device}` to PCI ids (`render_gpu`, pure over a sysfs root). `render_gpu::follow_compositor`
-turns `Auto` into `AdapterPref::Device { vendor, device }`, which `blitz_kit::adapter::rank`
+turns `Auto` into `AdapterPref::Device { vendor, device }`, which `blitz_embed::adapter::rank`
 puts first (both backends, Vulkan before GL); the rest keeps the default order.
 
 - Why: on a hybrid machine whose compositor renders on the iGPU, a discrete-first shell renders
@@ -193,12 +193,12 @@ and the headless `render_frame`). It reads `data-theme` on the outermost `.ds`, 
 viewport's colour scheme at it, and on a change turns incremental layout off, so every resolve
 rebuilds every box; it stays off while a transition runs (a box built mid-transition bakes that
 frame's colour) and the first frame after the last transition turns it back on. It is the rule of
-The UI kit's `ds_blitz::scheme::follow_root`, written against `blitz-dom` because the host may not
+The UI kit's `ui_blitz::scheme::follow_root`, written against `blitz-dom` because the host may not
 depend on a UI kit crate. A document with no `.ds` keeps the scheme the host gave it
 (`HostCtx::set_color_scheme`); the scroll thumb's ink and a resize's new viewport read the
 document's scheme, so they follow the root too. `dom/tests/scheme_follow.rs` reads the painted
 pixels across a live switch with the same nodes. Upstream fix: mark colour-dependent boxes damaged
-on a `color` change (blitz-kit `docs/blitz-gaps.md`, not filed); once a Blitz rev has it,
+on a `color` change (blitz-embed `docs/blitz-gaps.md`, not filed); once a Blitz rev has it,
 `dom/scheme.rs` can shrink to the viewport copy.
 
 ### F77. Blitz and sctk API facts
@@ -298,7 +298,7 @@ anything else, and a failed read, stays unanswered. Blitz's handler requests a r
 completion, so the image appears on the next frame (F40).
 
 A file is served only when it is a regular file (not a symlink, device or pipe), at most 32 MiB
-(`blitz_kit::net::MAX_RESOURCE_BYTES`, also the cap of a `data:` URL), and inside one of the
+(`blitz_embed::net::MAX_RESOURCE_BYTES`, also the cap of a `data:` URL), and inside one of the
 `FileRoots` in `HostConfig::file_roots` after symlinks and `..` are resolved. The default holds no
 roots, so a shell that passes none serves no files: a notification's image path comes from any
 program on the bus, and `file:///dev/zero` or a pipe must not stall or exhaust the host. A shell
@@ -383,7 +383,7 @@ removed, never blanks the others. A region that should vanish with its element i
 `SurfaceDocument::element_rect` (regions, `PopupAnchor::Element`) carries the layout box through
 every transform on its layout-parent chain, the chain `blitz-paint` composes; Blitz's
 `get_client_bounding_rect` is the layout box, and layout never sees `transform`.
-`blitz_kit::paint_rect::painted_bounds` (pure) maps the rect's corners through the chain; each transform
+`blitz_embed::paint_rect::painted_bounds` (pure) maps the rect's corners through the chain; each transform
 is Blitz's resolved `Node::transform()` in device px (`Affine2::from_device` divides the
 translation by the scale), about the box's untransformed origin plus its own scroll offset.
 Translation and scale are exact; rotation and skew give the axis-aligned bounding box. Not
@@ -553,15 +553,15 @@ so). The event driver diffs the next move against that already-moved hover, so a
 arrives under a resting pointer is never entered and the one it covered never left, and the
 `:hover` restyle it asks for would be dropped as the render's own redraw.
 
-`SurfaceDocument` remembers the last real pointer move (`blitz_kit::hover::LastMove`, forgotten in
-`clear_hover`). When the hovered element changed across a resolve, `blitz_kit::hover::decide` (pure)
+`SurfaceDocument` remembers the last real pointer move (`blitz_embed::hover::LastMove`, forgotten in
+`clear_hover`). When the hovered element changed across a resolve, `blitz_embed::hover::decide` (pure)
 restores the old hover without dispatch (probing the old element's box: centre, then corners
 1 px inside) or clears it, and the remembered move is fed again so Blitz's driver dispatches
 exactly the leave/enter diff. It runs after the resolve and the re-hoist, before the pre-paint
 hook, and `ctx::paint` invalidates after the present when the hover moved. Limits: an old
 element that cannot be restored makes the new chain's shared ancestors get a second
 `pointerenter`; windows run through `dioxus-native`'s own shell are not covered.
-`blitz-kit`'s `tests/hover_sync.rs`, `scripts/dev/accept-hover.sh`.
+`blitz-embed`'s `tests/hover_sync.rs`, `scripts/dev/accept-hover.sh`.
 
 ### F14. Wheel pixels are logical
 
@@ -650,7 +650,7 @@ accepted when an injected key's flags become the seat's `logo` (`with_dom`), and
 fill the Blitz text-action resolver (`blitz_dom::DocumentConfig::text_action_resolver`): Blitz's
 default resolver, unchanged from before, treats SUPER (and META) as Command and CONTROL as
 Command off macOS. The embedder that links Bardo (the shell) builds the `TextActionResolver` from
-The UI kit's key resolution (ds-blitz) and passes it in the `DocumentConfig` it hands the host, so a
+The UI kit's key resolution (ui-blitz) and passes it in the `DocumentConfig` it hands the host, so a
 chord the UI kit does not map to a text action (Ctrl+C on our desktop) is not a copy.
 
 ## Drag source
@@ -860,7 +860,7 @@ never allowed to wedge the single event-loop thread:
 | A GPU adapter's first present | 5 s; the device request 10 s | `gpu/adapter`, `gpu/context` |
 
 - **A lost GPU device is rebuilt** (`ctx/paint/recover.rs`, `gpu/rebuild.rs`). wgpu's default
-  error handler panics the process, so `blitz_kit::adapter::request_watched_device` installs a
+  error handler panics the process, so `blitz_embed::adapter::request_watched_device` installs a
   logging uncaptured-error handler (the first 16 lines per device) and a device-lost callback that
   flips a `DeviceHealth`. At the start of every frame step a lost device drops every presenter,
   the device and the image cache, then makes presenters again, lock surfaces first, from the same
@@ -1043,10 +1043,10 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   `input_method` for a change that follows an applied `done`, `other` for everything else.
   The `done` serial is still not used to drop events: the protocol uses it so that a client does
   not send stale surrounding text, and a dropped `done` would lose a commit. Condition to close:
-  the Blitz rev with these commits is pinned (blitz-kit and shell-host re-locked), and an input
+  the Blitz rev with these commits is pinned (blitz-embed and shell-host re-locked), and an input
   method (fcitx5) is tried with a deletion in a real field.
 - **HOST-15.** `mouse-gestures-protocol` is a path dependency (`../input/mouse-gestures-proto`)
-  and the blitz-kit `[patch]` is a path, so a clone of this repo alone cannot build. Pinning
+  and the blitz-embed `[patch]` is a path, so a clone of this repo alone cannot build. Pinning
   The mouse gestures daemon by git rev like `desktop-protocols` would make the shell (which takes shell-host by path)
   fetch the mouse gestures daemon from the network unless the shell adds the same `[patch]`. Condition to close: the
   installer/CI lane decides the dev overlay for all consumers at once.

@@ -422,7 +422,7 @@ Platform limits:
 
 ## 13.8 Acceptance tests
 
-Driven by `ds_harness::Harness` (pure menus) and `bardo-shell debug` in the nested compositor.
+Driven by `ui_harness::Harness` (pure menus) and `bardo-shell debug` in the nested compositor.
 
 1. **Open on press**: a press on a bar title shows its menu on the next frame; release on the
    title leaves it open; a second press on the title closes it.

@@ -92,7 +92,10 @@ fn on_every_vault(check: impl Fn(&Store<Either>)) {
 fn append_is_add_only() {
     on_every_vault(|store| {
         let t = topic("people/sam-lee");
-        assert_eq!(store.read(&t), Err(MemfilesError::NoSuchTopic(t.clone())));
+        assert_eq!(
+            store.read(&t),
+            Err(MemoryFilesError::NoSuchTopic(t.clone()))
+        );
         store.append(&t, fact(1, vec![thread("a")])).expect("first");
         let path = VaultPath::topic(&t);
         let before = store.vault().read(&path).expect("bytes");
@@ -139,7 +142,10 @@ fn untrusted_fact_lands_in_pending() {
         let t = topic("people/sam-lee");
         store.stage(fact(3, vec![thread("a")]), &t).expect("stage");
         assert_eq!(store.topics().expect("topics"), []);
-        assert_eq!(store.read(&t), Err(MemfilesError::NoSuchTopic(t.clone())));
+        assert_eq!(
+            store.read(&t),
+            Err(MemoryFilesError::NoSuchTopic(t.clone()))
+        );
         let waiting = store.pending().expect("pending");
         assert_eq!(waiting.len(), 1);
         assert_eq!(waiting[0].0, t);
@@ -174,11 +180,11 @@ fn confirm_requires_witness() {
         // Not pending any more.
         assert_eq!(
             store.settle(&id(3), Settlement::Discard),
-            Err(MemfilesError::NotPending(id(3)))
+            Err(MemoryFilesError::NotPending(id(3)))
         );
         assert_eq!(
             store.settle(&id(9), Settlement::Keep(receipt())),
-            Err(MemfilesError::NotPending(id(9)))
+            Err(MemoryFilesError::NotPending(id(9)))
         );
     });
 }
@@ -259,7 +265,7 @@ fn a_corrupt_file_is_named_not_swallowed() {
             .expect("seed");
         assert!(matches!(
             store.read(&t),
-            Err(MemfilesError::Parse {
+            Err(MemoryFilesError::Parse {
                 err: ParseError::MissingFrontMatter,
                 ..
             })

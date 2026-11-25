@@ -1,7 +1,7 @@
 /target
 /target-*
 tools/progress/out/
-crates/ds-gallery/out/
+crates/ui-gallery/out/
 __pycache__/
 tools/emoji/.venv/
 tools/emoji/.cache/

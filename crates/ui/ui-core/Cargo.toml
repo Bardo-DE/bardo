@@ -25,7 +25,7 @@ serde_json = { workspace = true }
 base-testkit = { path = "../../base/base-testkit" }
 
 [features]
-# `ds_core::testing`: checks a stored `Word` against its serde form.
+# `ui_core::testing`: checks a stored `Word` against its serde form.
 testing = ["dep:serde_json"]
 
 [lints]

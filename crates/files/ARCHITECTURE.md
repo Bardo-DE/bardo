@@ -8,14 +8,14 @@ below and fails on any edge it does not allow, or on a crate it does not list.
 
 | Layer | Crate | Holds |
 |---|---|---|
-| 0, data | `files-core` | The vocabulary (a name and a type are the UI kit's `ds_helpers::mime::FileName` and `MimeType`): names, entries, locations, views, sort, conflicts, progress and plans of work (`OpPlan`), trashed items, cloud drives and where their files stand (`CloudDrive`, `CloudItem`), as plain data. Names no other workspace crate and does no I/O. |
+| 0, data | `files-core` | The vocabulary (a name and a type are the UI kit's `ui_helpers::mime::FileName` and `MimeType`): names, entries, locations, views, sort, conflicts, progress and plans of work (`OpPlan`), trashed items, cloud drives and where their files stand (`CloudDrive`, `CloudItem`), as plain data. Names no other workspace crate and does no I/O. |
 | 0, library | `files-fs` | The disk behind traits: listing a folder and the facts of one item (Get Info), watching it, the remembered view of each folder (`PrefsStore`, kept as TOML in the app's state folder by the UI kit's `ui-helpers` file helpers), and the cloud drives (`Clouds`: list them, where items stand, download, remove a download, keep, a stream of news; `NoClouds`). Fakes behind the `testing` feature. |
 | 0, library | `files-trash` | The freedesktop.org Trash behind a trait: move to it, list it, put back, delete now, empty, the per-volume `.Trash-$uid` folders. A fake keeps a Trash in a scratch folder. |
 | 0, library | `files-ops` | Copy, move, trash and rename as a queue: progress, cancel, conflict questions (keep both, replace, skip, stop), an undo journal. Each job is submitted with a caller's tag (`Worker<T>`) that comes back with every `OpEvent` of it; `OpEvent`, `Finish` and `Outcome` are `files-core`'s, so the model matches what the queue sends and no layer re-wraps it. Plain threads and channels; links are copied as links. |
 | 1, logic | `files-model` | Pure state machines, `step(state, input, now) -> (state, effects)`: the browser (history, selection, rename, Go to Folder, type-to-select, sort and view per folder, disks), tabs (`tabs/`), the queue as shown (work and questions), Quick Look, Get Info and the preview pane. No I/O. |
 | 2, desktop | `files-desktop` | The only crate that names a bus, the actions service or the accounts service: `org.freedesktop.FileManager1`, the app's intents (`IntentProvider1`), UDisks2 on the system bus, the cloud drives (`org.bardo.Storage1`, the accounts service's, behind `files_fs::Clouds`), opening an online document's address through the portal, launching apps with an activation token, one instance. |
 | 3, UI | `files-ui` | The window, drawn only with the UI kit's components, and the seams it is given (`Opener`, `Apps`, `Volumes`, `Requests`). `settings/` is the program's own settings file and its schema. `edge/` carries out the model's effects against the layer 0 traits and those seams, one module per family (`read`, `ops`, `prefs`, `volumes`, `look`, `thumbs`, `file_icons`: the Extensions folders read into the UI kit's icon resolver), and runs anyview's peek worker for Quick Look and the preview pane (its `Card` is drawn inside the UI kit's `Peek` and `PreviewPane`) and the threads that make the icon view's thumbnails. The sidebar's sections are `places`. `icons` asks the resolver for an entry and maps its answer to the UI kit's `FileIconChoice`. |
-| 4, binary | `files` | `main`: arguments, the runtime, `ds_blitz::launch`, and the glue between layers 2 and 3: `files-desktop`'s launcher, disks and intents adapted to `files-ui`'s seams, the XDG folders, the session bus. Each file is one adapter. |
+| 4, binary | `files` | `main`: arguments, the runtime, `ui_blitz::launch`, and the glue between layers 2 and 3: `files-desktop`'s launcher, disks and intents adapted to `files-ui`'s seams, the XDG folders, the session bus. Each file is one adapter. |
 
 ## 2. Data and logic
 
@@ -34,7 +34,7 @@ read the same browser and answer the same inputs: a pick is an `Input::Click`, a
 Command+Down (their `onopen`) is `Input::Open`. The view is the folder's remembered `ViewMode`, set by the
 toolbar's switcher or Command+1 (icons) and Command+2 (list). Nothing missing is drawn locally; it is asked
 of Bardo first. Keys the views leave alone (Return renames, Space is Quick Look, Command+Up and Command+Down
-with a modifier, Shift+Command+G for Go to Folder) reach the app's keymap in `files-ui/src/keys.rs`. App CSS, if any, is layout only and passes `ds_lint` Strict with no exceptions.
+with a modifier, Shift+Command+G for Go to Folder) reach the app's keymap in `files-ui/src/keys.rs`. App CSS, if any, is layout only and passes `ui_lint` Strict with no exceptions.
 
 ## 4. Quick Look, Get Info and remembered views
 
@@ -176,7 +176,7 @@ open Accounts, only when pressed. Files has no Pause Syncing: only the shell and
 
 ## 11. Settings
 
-The person's choices are `$XDG_CONFIG_HOME/files/settings.toml`, read through the UI kit's `ds_settings::Store`
+The person's choices are `$XDG_CONFIG_HOME/files/settings.toml`, read through the UI kit's `ui_settings::Store`
 (lenient: a bad value costs only its own key; atomic write; a directory watch). `files-ui/src/settings`
 holds the document (`FilesDoc`: `general`, `sidebar`, `advanced`, each a struct deriving
 `SettingsSchema`), its `Word` enums, the schema (`files --write-schema DIR` writes

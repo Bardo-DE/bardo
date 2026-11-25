@@ -15,7 +15,7 @@ No stub is left. Ignored tests by lane: P3-Z 1 (`crates/compositor-layout/tests/
 Mission Control spread's properties from SP8, for the P3 freeze to inherit).
 
 P0-F1-ids had no stub: ids, geometry and time are implemented at the freeze, with their
-tables (the clock's ds-core conformance cases, stop order, chunk invariance, ten minutes
+tables (the clock's ui-core conformance cases, stop order, chunk invariance, ten minutes
 without drift, `buffer_size` at 1, 1.25, 1.5 and 2).
 
 ### P0-Z2: the smithay-facing crates, the root, the test kit
@@ -128,9 +128,9 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 | Item | Closes when |
 | --- | --- |
 | `taffy` (git rev `4863877b`, A14/A24) is declared here outside the block copied from Bardo's `docs/workspace-deps.toml` | Bardo's pinned block carries the line and this workspace copies it verbatim |
-| ds-core's `Scale` has no serde, so stored types write it through `geometry::scale_serde` | ds-core derives `Serialize, Deserialize` (transparent) on `Scale` (interface ask to Bardo); the helper module is deleted |
-| ds-style without dioxus still pulls `image` (png, jpeg, moxcms) into compositor-core's graph (A22, SP8) | Bardo makes `image` an optional ds-style feature |
-| ds-behaviour: the switcher and hot-corner machines have no caller yet (the Space-swipe machine runs since lane cas21-gesture, `model/swipe.rs`, fed through `Mono::stamp`) | the switcher and hot-corner machines run in the compositor (C41, P3-Z), with their `*Params` in `CompositorSettings` |
+| ui-core's `Scale` has no serde, so stored types write it through `geometry::scale_serde` | ui-core derives `Serialize, Deserialize` (transparent) on `Scale` (interface ask to Bardo); the helper module is deleted |
+| ui-style without dioxus still pulls `image` (png, jpeg, moxcms) into compositor-core's graph (A22, SP8) | Bardo makes `image` an optional ui-style feature |
+| ui-behaviour: the switcher and hot-corner machines have no caller yet (the Space-swipe machine runs since lane cas21-gesture, `model/swipe.rs`, fed through `Mono::stamp`) | the switcher and hot-corner machines run in the compositor (C41, P3-Z), with their `*Params` in `CompositorSettings` |
 | `CompositorSettings::defaults` carries no bindings (C30 says the settings document holds the defaults) | the shell's chords are not defaults of the settings document: c17 reads them from the desktop keymap (`compositor::keymap`, see the c17 rows below); `settings/bindings.rs` stays empty and a `[bindings]` entry is only an addition or a win over the keymap for one chord |
 | The smithay fork `Bardo-DE/smithay` (branch `compositor`, C2) exists (P0-fork) and the pin names its commit; it carries two patches, listed below | a further patch is one more commit on the fork and a new rev in the root Cargo.toml and `wlcs-compositor/Cargo.toml` |
 | Workspace pins outside Bardo's pinned block: smithay, wayland-protocols-wlr, wayland-protocols-misc, xkbcommon 0.9 (Bardo's block says 0.8 through sctk 0.20, A14), libseat, tracing, tracing-subscriber | Bardo's `docs/workspace-deps.toml` carries them (with the xkbcommon note) and this workspace copies the block verbatim |
@@ -150,13 +150,13 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 | A minimised window travels to the bottom centre of its output (`Cause::Minimise` needs a target and the model does not know the dock) | the dock's tile arrives as an event or a layer fact (P3-Z) |
 | `focus::step` on `SheetClosed` keys the parent even when the parent is in the dock or on a Space nobody sees (found by the T0 proptest); `Model::step` skips the feed for a parent it cannot see | the focus machine checks `is_visible` in `sheet_closed`; the model's guard goes |
 | A window moved by a grab has no event to report its place, so a placed window stays `WindowState::New` until a placement request moves it | P0-H2's grabs report geometry (an `Event`) or P3-Z's `Drag` cause does |
-| ds-motion's `Contact::pressed` is public without dioxus although its doc says crate-private (A23) | decided in Bardo (S0-QM1 follow-up): intended for compositor swipe releases, or closed |
+| ui-motion's `Contact::pressed` is public without dioxus although its doc says crate-private (A23) | decided in Bardo (S0-QM1 follow-up): intended for compositor swipe releases, or closed |
 
 ## Departures from 20-FREEZE-PLAN §4.2
 
 - `TimerBook` keeps an issue counter beside the map, so same-instant timers fire in arming
   order (SP3, A1); the private field set differs from the sketch.
-- `VirtualClock` mirrors ds-core's API (A1): `elapsed`, `next_due`, `schedule`, plus
+- `VirtualClock` mirrors ui-core's API (A1): `elapsed`, `next_due`, `schedule`, plus
   `fire_due` and `timers`, beside the frozen `new`, `now`, `with_timers`, `with_output`,
   `without_output`, `next_stop`, `advance_to`. The calloop event source over it is P0-Z2's.
 - `Model::new` takes a `SpaceSeed`: `Model::step` mints Space ids and must stay pure.
@@ -243,7 +243,7 @@ module); `Rgba8`; `TextureBook`; `Transcript`, `Pattern`; `FixtureSpec`, `TestOr
 - **`dev/gate.sh`.** §6.2's `jail` was a shell function, which `step.sh` (its own process)
   cannot call; it is an array. `scripts/check-boundary.sh` skips comment lines in its "names"
   rows (B20 still reads comments), matches the libinput crate by its items (the compositor has its own
-  `input` modules), and lets the test kit reach ds-settings through `compositor` while naming none
+  `input` modules), and lets the test kit reach ui-settings through `compositor` while naming none
   of it.
 
 ## Departures in the P0-R-scene fill
@@ -359,7 +359,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
 - **Benches live outside `crates/`** (A30): B8 bans `Instant::now` there; P0-Z2 hosts a perf
   project under dev, and until then the layout and motion benches sit in their lane worktrees,
   beside the checkout.
-- **Layout reads a chrome token** (A31): the cascade step is ds-style's
+- **Layout reads a chrome token** (A31): the cascade step is ui-style's
   `ChromeToken::TitlebarHeight` (28).
 - **A timer and vblanks that share an instant arrive together** (A32): `VirtualClock::arrive(t)`
   reports timers in arming order, then vblanks by output key; the calloop source steps with
@@ -379,7 +379,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
 - **Bindings are word lists** (P0-F1-output): a `[bindings]` entry is chord text to a list of
   words (`"cmd+q" = ["desktop", "quit_active"]`, `"ctrl+option+t" = ["spawn", "foot", ...]`),
   not a nested table; an entry whose chord or words do not parse is dropped with a warning.
-- **compositor-core's settings enums derive `Word`** (P0-F1-output): the ds-settings derive gives
+- **compositor-core's settings enums derive `Word`** (P0-F1-output): the ui-settings derive gives
   each its document spelling; the serde derives stay for the model's own stores.
 - **The compositor takes a `toml` dev-dependency** (P0-F1-output): `tests/config.rs` writes and reads
   documents through it.
@@ -1991,7 +1991,7 @@ without a compiler (wave rule); the orchestrator builds.
   `compositor-layout/src/frame.rs` (chrome lengths from `ChromeToken`, colours from `ColourToken`, `light_state`'s reveal rule);
   `compositor-render/src/element/frame{.rs,/raster.rs}` (titlebar and shadow rasters, analytic coverage, no text);
   `compositor/src/core_loop/frames.rs` (which windows, hover, press glue). No new crate and no Cargo edit: compositor-core has no
-  ds-style, so the lengths travel as `FrameMetrics` data, filled in layout; the compositor reaches ds-style types through
+  ui-style, so the lengths travel as `FrameMetrics` data, filled in layout; the compositor reaches ui-style types through
   `compositor_layout::{Scheme, GroupHover}` re-exports.
 - **Geometry choice.** The titlebar is drawn just above the window's content rectangle (the model rect stays the client's
   size), so a window at the top of the usable area has its bar under the menu bar. The resize zones are 4 px strips outside
@@ -2016,11 +2016,11 @@ without a compiler (wave rule); the orchestrator builds.
   chrome2: layout reserves the titlebar, lights act on release, Option-click zoom, the colour scheme from settings; done by
   clip: the rounded bottom corners.)
 - **Interface asks for Bardo** (exact):
-  1. `ds-style/src/tokens/shape.rs`: `impl Radius { pub fn px(self) -> u16 }` returning the number `value()` writes (Window
+  1. `ui-style/src/tokens/shape.rs`: `impl Radius { pub fn px(self) -> u16 }` returning the number `value()` writes (Window
      10 in the next batch), so the compositor stops hard-coding `WINDOW_RADIUS`.
-  2. `ds-style/src/tokens/elevation.rs`: numeric `Shadow::layers(self, scheme: Scheme) -> &'static [ShadowLayer { dx, dy, blur,
+  2. `ui-style/src/tokens/elevation.rs`: numeric `Shadow::layers(self, scheme: Scheme) -> &'static [ShadowLayer { dx, dy, blur,
      spread, rgba }]` for `Window`.
-  3. `ds-style/src/tokens/chrome/light.rs`: `pub fn light_hue(light: Light, scheme: Scheme) -> (Hex, Hex)` (disc, mark ink)
+  3. `ui-style/src/tokens/chrome/light.rs`: `pub fn light_hue(light: Light, scheme: Scheme) -> (Hex, Hex)` (disc, mark ink)
      for close, minimise and zoom; the candy colours are stylesheet-only today.
   4. A title font family and size token reachable as numbers (`--fs-control` 13/600) for the future `compositor-chrome`.
 - **Gate and real run.** Gate: everything here is uncompiled; likeliest compile faults are `frames.rs` (let-chain over
@@ -2054,12 +2054,12 @@ orchestrator builds.
   None }` (it exists). Option held at release is zoom (`Maximise`), today's behaviour. `chrome_action` takes the `MacMods`.
   Double click on the title still follows `windows.double_click_title`. The hover menu of the Mac's green light (Move and Resize,
   tile) is not built. A full-screen window draws no frame, so leaving full screen is by the app, its key or the shell.
-- **The colour scheme.** `compositor::appearance` reads Bardo's `appearance.toml` (`AppName::BARDO`, the file ds-settings owns)
+- **The colour scheme.** `compositor::appearance` reads Bardo's `appearance.toml` (`AppName::BARDO`, the file ui-settings owns)
   through a `Store`, puts `compositor_layout::scheme_of(appearance.theme)` in `RenderState::scheme`, and follows the file with
-  `Store::watch` (ds-settings' task runs on a small thread-per-task `Spawner`, `block_on` by parking; the compositor runs no async
+  `Store::watch` (ui-settings' task runs on a small thread-per-task `Spawner`, `block_on` by parking; the compositor runs no async
   runtime). The watch forwards the scheme over a calloop channel; the next vblank draws the frame in it (`styles` reads it each
-  frame). `theme = "system"` paints Light: following the desktop needs the settings portal, which is ds-settings' `desktop`
-  feature and is off in the workspace's `ds-settings` dependency. Ask for the orchestrator: if `system` should follow the
+  frame). `theme = "system"` paints Light: following the desktop needs the settings portal, which is ui-settings' `desktop`
+  feature and is off in the workspace's `ui-settings` dependency. Ask for the orchestrator: if `system` should follow the
   desktop, enable that feature (a Cargo edit) and read `SystemPrefsSource::Portal` once at startup and on its watch.
   Only the frame follows the scheme; the cursor and everything else the compositor draws is scheme-free.
 - **Departures.** `LightArm` lives in `compositor-core::window` with the other frame machines, and the scheme reader is
@@ -2070,7 +2070,7 @@ orchestrator builds.
   decoration protocol test places nothing by hand, so none is expected to change, but the gate will say.
 - **Gate and real run.** Likeliest compile faults: `frames.rs` `decorated()` (returned `impl Iterator` over the model's
   `BTreeMap` iter, edition 2024 capture), `appearance.rs` (the `Watch<AppearanceFile>` moved into a `Send` future; `Loaded`
-  field names; `ds_core::spawner` reachable without a feature), `LightArm` being `non_exhaustive` (matched only through
+  field names; `ui_core::spawner` reachable without a feature), `LightArm` being `non_exhaustive` (matched only through
   `==`/`step`), `compositor_layout::Theme` re-export. Real run: press a light and drag off it (it un-darkens), back on (darkens),
   release off it (nothing happens), release on it (acts); green click goes full screen, Option-click zooms and a second one
   restores; a window opened at the top of the screen has its bar under the menu bar's exclusive zone, not beneath it; fill
@@ -2253,7 +2253,7 @@ Title text, Bardo's numbers, `theme = "system"`. Written without a compiler (wav
   (Inter 13 px, weight 600), shapes with parley (`FontContext` made once, kept; fontique scans the system fonts on the first
   title, never per frame), rasterises with vello_cpu to premultiplied RGBA8 as big as the titlebar at the output's native scale
   (`device`: half-up, the rounding of `buffer_size`). The family is `Inter, system-ui, sans-serif`, so a missing Inter falls to any
-  sans (no bundled face; the spike bundled ds-style's `FACES`, the compositor does not). Ink: `ColourToken::Ink` for the key window,
+  sans (no bundled face; the spike bundled ui-style's `FACES`, the compositor does not). Ink: `ColourToken::Ink` for the key window,
   `InkSoft` otherwise, in the frame's scheme (`ink(scheme, activity)`). Layout (`place`): the title is centred in the bar, pushed
   off the lights (left margin 73 = inset 13 + three 12 px lights + two 8 px gaps + one gap) and off a 13 px right margin, and
   when even that room is too little it is cut with an ellipsis (binary search over the characters, `longest_fit`). Not the CSS's
@@ -2283,8 +2283,8 @@ Title text, Bardo's numbers, `theme = "system"`. Written without a compiler (wav
   `system` (at start, or when the file changes to it), and its answers join the file's over the same calloop channel
   (`Input::Theme`/`Input::System`); `resolve(theme, system)` picks the scheme. Until it answers, and with no portal, `system`
   paints Light. The seam is `ConfigHome`: `Xdg` reads the portal, `At(dir)` a fixed default answer, so no test reaches a bus
-  (`SystemPrefsSource::Fixed`). `compositor-ipc` has no ds-style dependency, so its callback takes its own `DesktopScheme`
-  (it compares the portal's scheme with `scheme_from_portal(1)` rather than naming `Scheme`); if a ds-style line is added to its
+  (`SystemPrefsSource::Fixed`). `compositor-ipc` has no ui-style dependency, so its callback takes its own `DesktopScheme`
+  (it compares the portal's scheme with `scheme_from_portal(1)` rather than naming `Scheme`); if a ui-style line is added to its
   manifest, `DesktopScheme` can become `Scheme`. A custom `--config-home` therefore does not follow the desktop (a jail).
 - **Tests.** Table: `place` (device rounding, room, left edge, longest fit, margins), `key` (tidy, device size, key fields),
   `ink` (token to ink, per scheme and activity), `cache` (LRU, bound), `TitleDraw::argb`, `appearance::{resolve, Heard,
@@ -2586,7 +2586,7 @@ one, Escape or the same key leaves. Written without a compiler (the lane rules);
   tall, built every frame while hovering).
 - **Departures.** (1) The frame is not scaled with the window: lights and titlebar keep their full size round a small slot (the
   existing Scale-flight behaviour). macOS scales it. The box reserves that size. A fix is a scaled `FrameStyle`. (2) The ring colour
-  is the Mac blue written as a constant in `element/overview.rs`, and the dim alpha too: no ds-style token is read. (3) The
+  is the Mac blue written as a constant in `element/overview.rs`, and the dim alpha too: no ui-style token is read. (3) The
   title under the window has no app icon. (4) The hover label's buffer is made per frame while hovering (no cache). (5) The
   motion goals, settle time and the spring are the `Overview` cause's `Move` response; 350 ms is a guess to confirm in a real
   run. (6) Windows of other Spaces, full-screen and Split View Spaces: the overview of such a Space has no slots (the
@@ -2795,7 +2795,7 @@ Rounded corners and shadows right everywhere (wave 5). Written without a compile
 Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted, not changed" of `session`.
 
 - **Live apply.** The compositor watched no `settings.toml` before (only Bardo's `appearance.toml`). New
-  `compositor::settings_live` watches the document through ds-settings (the appearance watch's thread
+  `compositor::settings_live` watches the document through ui-settings (the appearance watch's thread
   spawner, now `pub(crate)`), and `settings_live::apply` tells the model `followed(current, doc)`:
   the file's pointer and touchpad profiles and the key repeat; everything else (bindings from the
   keymap, the layout, windows, outputs) stays as running. `core_loop::note_settings` now also calls
@@ -2866,8 +2866,8 @@ Mission Control polish (the follow-ups "Overview polish" and "Hard-coded colours
   Departures: (1) the overview is global, so a Space switch on any output closes it on all; (2) the last-window rule reads the
   output of the closing window, so a close on output B with output A's windows gone does not close it; (3) which relayout cause
   the switch sends first (`SpaceSwitch`, then `Overview`) is moot: exec keeps the first and both travel on the Move spring.
-- **Themed colours.** Boundary: `scripts/check-boundary.sh` has no row against `ds-style` in `compositor-layout` (B1 limits only
-  `compositor-core`'s own dependencies; B13 limits only ds-settings), and `frame.rs` already reads ColourToken there. So the values
+- **Themed colours.** Boundary: `scripts/check-boundary.sh` has no row against `ui-style` in `compositor-layout` (B1 limits only
+  `compositor-core`'s own dependencies; B13 limits only ui-settings), and `frame.rs` already reads ColourToken there. So the values
   are read in a new `compositor-layout/src/look.rs` and reach the renderer through the loop: `overview_ring(scheme)` is
   `ColourToken::Accent` (Bardo's accent fill, Blue until the person's accent is carried to the compositor; the compositor has no accent setting
   today), `overview_dim(scheme)` is `ColourToken::Scrim` (black at .22: alpha 56 where 64 was written), `split_backdrop()` is
@@ -3326,7 +3326,7 @@ Lane cas12-winit: the winit backend usable for hands-on testing in a host deskto
   layout has no slots, so `IconBook::remembered` keeps the last ones.
 - **The theme** follows the desktop (cas14-mcfit): `gtk-icon-theme-name` in `gtk-3.0/settings.ini` under
   `$XDG_CONFIG_HOME` (else `$HOME/.config`), the file the shell reads too (Bardo has no icon-theme setting of its own;
-  `ds-settings::icon_assets` is Bardo's own app-icon set). `IconBook` reads it again each time Mission Control opens
+  `ui-settings::icon_assets` is Bardo's own app-icon set). `IconBook` reads it again each time Mission Control opens
   (a change while it is open shows at the next opening; no watcher), `hicolor` when the file names none.
   `freedesktop-icons` reads the process's own folders (`$XDG_DATA_DIRS`) and cannot be pointed elsewhere, so
   `ThemeLookup` is the seam the tests fake.
@@ -3417,7 +3417,7 @@ Lane `cas20-multigpu` (not compiled; the orchestrator gates). Supersedes the "Mu
 
 Built, uncompiled (wave 6 lanes do not build): `input/gesture_route.rs` (finger-count gate, axis lock at
 10 px, whole-pixel steps with a sub-pixel carry), `input/lift.rs` (the vertical machine), `model/swipe.rs`
-(the model glue; the Space swipe is ds-behaviour's `space_swipe::Swipe`), `settings/gestures.rs` and the
+(the model glue; the Space swipe is ui-behaviour's `space_swipe::Swipe`), `settings/gestures.rs` and the
 `[gestures]` section (`spaces`, `mission_control`: off/three/four, default four as on the Mac; `natural`).
 
 | Item | Decision / open |
@@ -3589,7 +3589,7 @@ the old renderer departure 4 (`OutputFrame.strip` was not applied).
   GLES its draw is `draw_stand_in` (the path `EffectSupport::Plain` takes on pixman). The colour is per scheme:
   `compositor_layout::reduced_stand_in(scheme)`, Bardo's `Paper` token (the Window material has no tint; its solid fallback is the page,
   `#ECECEC` light, `#1E1E1E` dark) at alpha 245/255 (0.96, above Bardo's .94 floor, design/03 17.1). The element's commit includes the
-  colour, so a scheme change repaints. DEPENDS ON BARDO: `ds_style::appearance::transparency::Transparency` (re-exported by
+  colour, so a scheme change repaints. DEPENDS ON BARDO: `ui_style::appearance::transparency::Transparency` (re-exported by
   `compositor-layout`) and `Appearance::transparency` do not exist until Bardo lane lands, so compositor-layout and the compositor do not
   compile before then (the path follows `appearance::theme::Theme`; adjust the one `pub use` in `compositor-layout/src/lib.rs` if Bardo
   re-exports it elsewhere).
@@ -4099,7 +4099,7 @@ Deferred:
   unit would fail to start. Needs a system-level grant (a drop-in installed as root); not added.
 - CASB-12, the `unwrap`s in smithay's libseat session: fixed in the fork (`lane/libseat-errors` 30e544aa, which compositor pins). A failed
   dispatch pauses the session and removes the source, a refused disable is logged, and the fd and token paths return errors.
-- CASB-13, CASB-14: Bardo's ds-settings (bounded reader, hardened writer): interface ask, not this repo.
+- CASB-13, CASB-14: Bardo's ui-settings (bounded reader, hardened writer): interface ask, not this repo.
 - CASB-20, CASB-21, CASB-28: left, as decided.
 ## pa-cassec: production-audit fixes in compositor-core, compositor-layout, compositor-wayland and compositor-ipc (2026-10-16)
 
@@ -4510,7 +4510,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
     the name requested with `DoNotQueue` and without replacement (zbus' builder cannot take an object that needs the connection).
   - The rate window is a timer task that clears the table, not a sliding window: up to 8 calls can straddle a boundary. The shell
     connects once, the portal once per session, so the loose edge costs nothing.
-  - `Page::Apps` was the interim page of the Privacy keys (ds-settings had no `Privacy` page); closed in pa2-cwl2: they are on `Page::Privacy`.
+  - `Page::Apps` was the interim page of the Privacy keys (ui-settings had no `Privacy` page); closed in pa2-cwl2: they are on `Page::Privacy`.
   - A person's row shadowed by an administrator's refusal is still listed (core's `rows()` lists both and `decide` lets the person
     switch off an administrator's allow), so a program can show twice, once read-only.
 - **Needed from the root lane (`pa2-croot`, the `compositor` crate; the build breaks there until done).**
@@ -4526,14 +4526,14 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
     text; `ConnectRefusal::UnknownUnit`/`RoleNotAllowed` are unchanged in name.
   - `set_a11y_root`: the handler leaves `A11yRoot::Unknown` and the root queues `A11yWorker::check(A11yAsk { window, client_pid, .. })`
     (the client's pinned pid), feeding the `Channel<A11yVerdict>` back as `WindowHintChange::A11y(verdict.root)`.
-- **Interface asks.** Bardo `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
+- **Interface asks.** Bardo `ui-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
   `PRIVACY_PAGE` in `compositor-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
   the rows `shell` (shell.service), `agent_tier` (computer_use_daemon.service), `portal` (bardo-portal.service), `settings` (the Settings app) and `manager`
   (systemd, `Exe`) with `exe` lists.
 - **Not verified by reading (the gate run looks here).** That `BusPeers::who`'s future is `Send` (the boxed `WhoFuture` and zbus
   interface methods need it); that `Arc::new(BusPeers)` coerces at the closure return in `CallerSetup::with`; `tokio::spawn` of
   `privacy::follow` (needs `Served: Send`); `Connection::request_name_with_flags(.., DoNotQueue.into())` yields `NameTaken` for a held
-  name; the FNV-1a test vector for "a"; that `ds-settings`' `live` feature unifies with the workspace's zbus `tokio` feature.
+  name; the FNV-1a test vector for "a"; that `ui-settings`' `live` feature unifies with the workspace's zbus `tokio` feature.
 
 ## pa2-croot: the composition root for per-app consent (CASW-01, CASW-05, PORTAL-02, PORTAL-15; 2026-10-17)
 
@@ -4560,8 +4560,8 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     (the subcommand table), `wall.rs`.
 - **Decided here (not in the design).**
   - *A new crate, `compositor-privacy`.* `bardo-compositorctl privacy list` has to read the two files the way the compositor does, and a dependency
-    on `compositor` would make bardo-compositorctl reach ds-settings and the text stack (boundary rows B13, B15). The crate has compositor-core,
-    desktop-protocols and ds-helpers (no features, no bus); the date and every folder are arguments (B8). Cargo.lock was edited by hand
+    on `compositor` would make bardo-compositorctl reach ui-settings and the text stack (boundary rows B13, B15). The crate has compositor-core,
+    desktop-protocols and ui-helpers (no features, no bus); the date and every folder are arguments (B8). Cargo.lock was edited by hand
     for the new package and the new edges; the first cargo run normalises it.
   - *A floor that cannot be believed is "ask for everything", the same as no floor.* A floor file that exists but does not parse, or is
     not the administrator's alone (owner, group/other write bit, a link, or its folder), is skipped; the files that are believed are still
@@ -4595,7 +4595,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
     not). Force quit never signals this process (`signal_all` spares `own`).
 - **Seams touched outside the named crates.** `compositor-ipc/src/dbus/mod.rs`: a `pub mod peer` re-exporting the caller-identity library
   items the root needs to hold, probe and judge a peer (`Pinned`, `Prober`, `Facts`, `Exe`, `Standing`, `judge`, `roles`, ...), the same
-  reason `LoadError`/`TableFiles` are re-exported there; no other file. Workspace `Cargo.toml`: members and `ds-helpers`,
+  reason `LoadError`/`TableFiles` are re-exported there; no other file. Workspace `Cargo.toml`: members and `ui-helpers`,
   `compositor-privacy`. Nothing in compositor-core, compositor-wayland or compositor-agent.
 - **Deleted/replaced tests.** `FakeCgroups` and its unit test; the cases "a process nobody knows" in `remote_eis.rs` and
   `bardo_shell.rs` (the bus thread refuses it before the loop hears of it; `compositor-ipc` tests that); the unit-name wording of the
@@ -4603,7 +4603,7 @@ group/world writable; a user-writable program or an interpreter gets Allow Once 
   verdict.
 - **Not verified by reading (the gate run looks here).**
   - Cargo: the hand-edited `Cargo.lock` (new package `compositor-privacy`; `bardo-compositorctl` gains `compositor-privacy` and `rustix`);
-    `ds-helpers` with `default-features = false` resolving beside ds-settings' default one.
+    `ui-helpers` with `default-features = false` resolving beside ui-settings' default one.
   - `compositor-ipc::dbus::peer` names: `Alive`, `PinError`, `Pinned`, `ProbeError`, `Prober` (the caller-identity library) and `AppKey`, `Engine`, `Exe`,
     `ExePath`, `Facts`, `FileTrust`, `Pin`, `Proof`, `RoleName`, `Standing`, `Table`, `WhyNot`, `judge`, `roles` (caller-identity-core v0.1.1,
     read from the checkout, not compiled). Tests build `Standing::Service/Program/Sandboxed/Unverified` and `Exe::Read` from outside

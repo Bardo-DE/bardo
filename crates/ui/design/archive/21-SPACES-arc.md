@@ -11,7 +11,7 @@ workspace's look: its colour tints the shell chrome around the apps, never the a
 Status: **settled** = decided with the user (PLAN "UX decisions settled", 2026-09-23, second
 round) or copied from the prototypes/code; **proposed** = open until signed off.
 S = `~/mailo-design/mailo-spaces.html`; palette.rs = `~/mailo/crates/mail-app/src/palette.rs`
-(moves verbatim into `crates/ds-style/src/space/palette.rs`).
+(moves verbatim into `crates/ui-style/src/space/palette.rs`).
 
 ## 1. The model (settled)
 
@@ -226,7 +226,7 @@ repaint on every switch and would compete with the tint as the Space's colour cl
 
 `$XDG_CONFIG_HOME/bardo/spaces.json`, atomic write (the `ui-settings` writer), watched with
 `notify` (rename replaces inode; debounce 30 ms). **Settled** (2026-09-24, the shell gap Q3):
-`ds::style::space::store::SpaceStore` is this schema (`crates/ds-style/src/space/store.rs`); a consumer reads, writes and
+`ds::style::space::store::SpaceStore` is this schema (`crates/ui-style/src/space/store.rs`); a consumer reads, writes and
 watches it through `ui-settings`'s generic settings file API (`Settings<SpaceStore>` with
 `Format::Json`). A `null` in `by_index` means "no look stored at this
 position".

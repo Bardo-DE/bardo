@@ -20,10 +20,10 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 | `memory-seal` | `SpaceKey`, purpose subkeys (`derive`), `DbKey`, `seal`/`unseal` for files, the `KeyStore` seam, `ProvidedKeys` (Space keys derived from a master key the app provides: the portable key source), `MemoryKeys` (feature `testing`), `Oo7Keys` (feature `oo7`) | none (oo7 behind its feature) |
 | `memory-keyfile` | `FileKeys`: a `KeyStore` in one sealed file, replaced through `atomic-write-file` (synced); TEST ONLY, reached only through memoryd's `test-keys` feature | the file |
 | `memory-store` | the seams the service stands on, traits and types only: the log (`LogRead`, `LogWrite`, `Entry`, `Header`, `NewHeader`, `verify_chain`, `LogError`), the vault (`Vault`, `VaultPath`, `VaultError`), the search index (`SearchIndex`, `IndexFailure`, `SearchQuery`, `Doc`, `DocId`, `Allow`, `IndexView` (core's), `Embedder`, `EmbedderCard`, `Vector`, `fuse_rrf`, `chunk`). Each store crate implements them and re-exports the names it used to hold | none |
-| `eventlog` | `SqliteLog` (SQLCipher), `MemoryLog` (feature `testing`), the schema; re-exports the log seam from `memory-store` | rusqlite |
-| `memory-files-format` | pure: the topic file format (`parse_topic`, `render_topic`, the trailer), `Store` over a `Vault` (from `memory-store`), `Primer`, `MemfilesError`. No file IO | none |
-| `memfiles` | the vaults on disk: `PlainDir`, `SealedDir`, and `MemoryVault` (feature `testing`). The `Vault` seam and `VaultPath` are in `memory-store` | the filesystem |
-| `recall` | generic: `VectorIndex`, `Fts5`, `ExactScan`, `Index` (implements `SearchIndex`), `FakeEmbedder` (feature `testing`); re-exports the `Embedder` and document types from `memory-store`; the vector, card and fusion code (`Vector`, `EmbedderCard`, `fuse_rrf`, `chunk`, `nearest_exact`) lives only there. Knows nothing of the memory service's domain | rusqlite |
+| `memory-eventlog` | `SqliteLog` (SQLCipher), `MemoryLog` (feature `testing`), the schema; re-exports the log seam from `memory-store` | rusqlite |
+| `memory-files-format` | pure: the topic file format (`parse_topic`, `render_topic`, the trailer), `Store` over a `Vault` (from `memory-store`), `Primer`, `MemoryFilesError`. No file IO | none |
+| `memory-files` | the vaults on disk: `PlainDir`, `SealedDir`, and `MemoryVault` (feature `testing`). The `Vault` seam and `VaultPath` are in `memory-store` | the filesystem |
+| `memory-recall` | generic: `VectorIndex`, `Fts5`, `ExactScan`, `Index` (implements `SearchIndex`), `FakeEmbedder` (feature `testing`); re-exports the `Embedder` and document types from `memory-store`; the vector, card and fusion code (`Vector`, `EmbedderCard`, `fuse_rrf`, `chunk`, `nearest_exact`) lives only there. Knows nothing of the memory service's domain | rusqlite |
 | `memory-settings` | pure: what the person can set for memory: `MemorySettings`, `ConsolidateWhen`, `ConsolidateApply`, `SCHEMA` (`schema/memory.settings.toml`, the file the Settings app draws them from; `memoryd --write-schema` writes it), `SETTINGS_FILE`, the lenient reader `read` (`Loaded`, `Fallback`, `Why`), the key table, and the consent gate (`Confirmations`, `gate`, `waiting`, `loosenings`: a value looser than shipped applies only once the person confirmed it). No file is read | none |
 | `memory-tidy` | pure: what memory learns and keeps tidy: the fact lifecycle machine (`fact`), the consolidation run machine, the `Consolidator` seam and `check_draft` (`consolidation`), the consolidation prompt and the parse of the model's draft (`render_prompt`, `parse_draft`), `tidy_is_acceptable`, `changes` (what a reply changed, as the pure `Change` events the daemon turns into bus signals), the removal notes (`Removals` over the `RemovalLedger` seam and the `removals.toml` text) | none |
 | `memory-search` | pure: how memory is searched: `docs` (the recall documents facts and events contribute to the index: `event_docs`, `fact_doc`, `indexed_docs`, `DocRef`, `newest_episodes`), `SpaceReader` (the narrow view of a Space that a search reads: its index, its log entries, its stored facts), `embed_query`, `search` and `inject` (fused lexical and semantic ranking, reciprocal-rank merge of facts and events, the token budget) | none |
@@ -45,7 +45,7 @@ cross-platform, and the desktop's features are additive. For the memory service:
 
 | Portable core (builds with `--no-default-features`) | Desktop extra |
 | --- | --- |
-| `memory-core`, `memory-seal` (`ProvidedKeys`), `memory-store`, `eventlog`, `memfiles`, `recall`, `memory-tidy`, `memory-search`, `memory-service`, `memory-local` (the app's disk `Backend`), `memory-client` with `in_process`, `memory-watch`'s seam and `join` | `memory-dbus`, `memory-dbus`, `memoryd` (the one shared memory daemon: Secret Service keys, Landlock, the bus, file watching, the nightly timer), `memory-client`'s `dbus` feature, `memory-seal`'s `oo7` feature, `memory-watch`'s `linux` feature (`InotifyWatch`) |
+| `memory-core`, `memory-seal` (`ProvidedKeys`), `memory-store`, `memory-eventlog`, `memory-files`, `memory-recall`, `memory-tidy`, `memory-search`, `memory-service`, `memory-local` (the app's disk `Backend`), `memory-client` with `in_process`, `memory-watch`'s seam and `join` | `memory-dbus`, `memory-dbus`, `memoryd` (the one shared memory daemon: Secret Service keys, Landlock, the bus, file watching, the nightly timer), `memory-client`'s `dbus` feature, `memory-seal`'s `oo7` feature, `memory-watch`'s `linux` feature (`InotifyWatch`) |
 | test helpers: `memory-fake` | |
 
 An app on another desktop hosts the service itself: `Memory::over(InProcess::new(service,
@@ -81,7 +81,7 @@ A crate depends on its own tier or a lower one (P < C < A), never up; `dev-depen
 | Tier | Crates |
 | --- | --- |
 | P | `memory-core`, `memory-seal`, `memory-store`, `memory-files-format`, `memory-settings`, `memory-tidy`, `memory-search`, `memory-service` |
-| C | `memory-keyfile`, `memory-host`, `eventlog`, `memfiles`, `recall`, `memory-watch`, `memory-infer`, `memory-dbus`, `memory-dbus`, `memory-client`, `memory-fake`, `memory-local` |
+| C | `memory-keyfile`, `memory-host`, `memory-eventlog`, `memory-files`, `memory-recall`, `memory-watch`, `memory-infer`, `memory-dbus`, `memory-dbus`, `memory-client`, `memory-fake`, `memory-local` |
 | A | `memoryd` |
 
 The script also reports source files over 500 lines (`--long-files`, report only) and seeds one violation per tier to prove the bans fire (`--self-test`). The `KNOWN` list names each violation that exists today and the plan lane (`~/rs-wt/agent-layers/PLAN.md`) that removes it; a row whose violation is gone fails, so the list only shrinks. It is empty today.
@@ -92,8 +92,8 @@ fails if any of their crates enters the tree. Other crates reach the accounts se
 `memory-core`'s re-exports, so the dependency tiers stay this exact.
 
 External boundaries (default features): `memory-core` never reaches `zbus zvariant tokio
-reqwest hyper oo7 ort fastembed rusqlite notify toml`; `memory-seal`, `memfiles`, `memory-files-format`: the same
-minus `toml`/with `rusqlite` forbidden; `eventlog`, `recall`, `memory-fake`,
+reqwest hyper oo7 ort fastembed rusqlite notify toml`; `memory-seal`, `memory-files`, `memory-files-format`: the same
+minus `toml`/with `rusqlite` forbidden; `memory-eventlog`, `memory-recall`, `memory-fake`,
 `memory-client` (default features) never reach the effect list (`zbus ... fastembed`) or `notify`; `memory-store`, `memory-tidy`, `memory-search` and `memory-service` also never reach `rusqlite`, `libsqlite3-sys` (SQLCipher), `openssl-sys` or `openssl`; `memory-infer` reaches no bus, HTTP client, keyring, embedding runtime or storage (inferd is behind the `Transport` it is given); `memory-watch`
 may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus` reach `tokio` only through zbus's
 `tokio` feature. `oo7` is behind `memory-seal`'s `oo7` feature only; `zbus` behind
@@ -106,10 +106,10 @@ may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus` reach `
 | `memory-core` | `slug`, `text` (ids, `Digest32`/`Link32`/`ContentDigest`/`PlanDigest`, `UserText`, `JsonText`) < `ids`, `thing`, `file`, `area`, `op`, `chain` < `event` < `fact`, `rules`, `space` < `admit` < `query`, `timeline`, `views`, `export` < `request`, `reply`, `caller`, `dirs` |
 | `memory-seal` | `keys` (`SpaceKey`, `Purpose`, `derive`, `SubKey`, `DbKey`), `seal`, `store`, `memory`, `oo7` |
 | `memory-keyfile` | `FileKeys` (one file) |
-| `eventlog` | `header` < `chain`, `filter`, `traits` < `memory`, `sqlite` |
+| `memory-eventlog` | `header` < `chain`, `filter`, `traits` < `memory`, `sqlite` |
 | `memory-files-format` | `trailer` < `topic` < `store` |
-| `memfiles` | `memory`, `dirs` |
-| `recall` | `doc`, `state`, `embed` < `fts`, `exact`, `fake` < `index` |
+| `memory-files` | `memory`, `dirs` |
+| `memory-recall` | `doc`, `state`, `embed` < `fts`, `exact`, `fake` < `index` |
 | `memory-tidy` | `fact`, `consolidation` < `prompt`, `tidy`, `change`, `removals` |
 | `memory-search` | `docs`, `reader` < `plan` |
 | `memory-infer` | `deadline` < `embed`, `consolidate` |
@@ -136,11 +136,11 @@ may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus` reach `
 | admission, retention defaults, "do not remember" | `memory-core::admit`, `rules` (the only place) |
 | who may ask what | `memory-service::auth::allowed` (the only place) |
 | the wire (requests, replies, refusals) | `memory-core::{request, reply}` |
-| the header's bytes, the chain | `eventlog::header`, `eventlog::chain` |
+| the header's bytes, the chain | `memory-eventlog::header`, `memory-eventlog::chain` |
 | keys, derivation contexts, the sealed-file format | `memory-seal` |
-| the topic file and its trailer | `memfiles_format::topic`, `memfiles_format::trailer` |
+| the topic file and its trailer | `memory_files_format::topic`, `memory_files_format::trailer` |
 | where files live in a Space | `memory-store` (`VaultPath`) and `memory-core::dirs` (`Dirs`) |
-| search, fusion, chunking, the index state, adopting an index file at start (`Index::sync`) | `recall` |
+| search, fusion, chunking, the index state, adopting an index file at start (`Index::sync`) | `memory-recall` |
 | the Space, fact, plan and run machines | `memory-service::{space, forget}` and `memory-tidy::{fact, consolidation}` |
 | where a removed desktop-wide Space's memories and event history go (each person's choice, `Removal { memories, history }`), and who may reach an App Space | `memory-service::{rehome, relocate, relocate_events}` and `auth::allowed`; the registry's removals and the note (with the choice) that finishes a crashed move are `memory_tidy::Removals` over `memoryd::{Daemon, FileLedger}` |
 | topic files edited outside the service (the baseline) | `memory-service::{baseline, edits}` |
@@ -176,7 +176,7 @@ pub trait LogWrite: LogRead {
     fn prune_before(&mut self, cut: Seq) -> Result<Checkpoint, LogError>;
 }
 
-// memfiles: PlainDir, SealedDir, MemoryVault.
+// memory-files: PlainDir, SealedDir, MemoryVault.
 pub trait Vault: Send + Sync {
     fn list(&self, dir: &VaultPath) -> Result<Vec<VaultPath>, VaultError>;
     fn read(&self, p: &VaultPath) -> Result<Vec<u8>, VaultError>;
@@ -216,7 +216,7 @@ pub trait Transport: Send + Sync { fn call(&self, request: MemoryRequest) -> imp
 Closed sets stay enums: `EventBody`, `MemoryOp`, `FileChange`, `RuleScope`, `RememberMode`,
 `Retention`, `Admission`, `DropReason`, `MemoryRequest`/`MemoryReply`/`Refusal`, `memory-service`'s `Caller`,
 `Link`, `FactState`, `Settlement`, `Hunk`, `RunState`, `SpaceState`, `IndexView`, `Break`,
-`ChainReport`, `ExportedBody`, memfiles' `SpaceVault`.
+`ChainReport`, `ExportedBody`, memory-files' `SpaceVault`.
 
 ## 5. What is frozen, what is built
 
@@ -355,12 +355,12 @@ the D-Bus member in `memory-dbus` (proxy) and `memory-dbus` (skeleton and served
 `decode_reply`, `encode_reply` and `invoke`; the sample in `memory-core/tests/it/support/samples.rs`
 (the wire and codec tests read it); its queue claim in `memory_service::claim_of`.
 
-**Add a vector backend**: a `VectorIndex` implementation in its own crate (never in `recall`
+**Add a vector backend**: a `VectorIndex` implementation in its own crate (never in `memory-recall`
 if it needs `unsafe` or an extension: the rule is no `unsafe` anywhere); the contract tests of
 `recall/tests/it/recall.rs`; a `Backend::Vectors` choice in memoryd.
 
 **Add a vault**: a `Vault` implementation, the `vault_contract` test over it, a variant in
-memfiles' `SpaceVault` and in `VaultKind`.
+memory-files' `SpaceVault` and in `VaultKind`.
 
 **Add a state machine step**: a row in that machine's table test first (`machines.rs`); the
 effects are values, so the service applies them and the table needs no I/O.

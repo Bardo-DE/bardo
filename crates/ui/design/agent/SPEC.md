@@ -37,7 +37,7 @@ Four new library repos plus one GPL fork. Every new repo copies the accounts ser
 |---|---|---|---|
 | `~/models` | new (name: Q-P1) | the model layer: provider trait, backends, computer use action/parse/session, vision prep, catalog, engine supervisor | yes, no accounts dependency |
 | `~/accounts` | existing | + `prov` (labels and shared who/what vocabulary), `SpaceId`, ComputerUse vocabulary, streaming inference, inferd engines | yes |
-| `~/memory` | new | memory: eventlog, memfiles, recall, memoryd | yes (memoryd Linux) |
+| `~/memory` | new | memory: eventlog, memory-files, recall, memoryd | yes (memoryd Linux) |
 | `~/actions` | new | typed actions, router, policy, review, eval, MCP edge, **and the companion agent** (agent-loop, companiond, readerd), the ds adapter | core yes; daemons Linux |
 | `~/computer_use` | new (name: Q-P1) | computer-use runtime: a11y tree, agent seat, masked capture, desktop leases, run machine, the computer-use daemon, `bardo-agent-v1` protocol | core yes; the computer-use daemon Linux |
 | `~/bardo/compositor` | new fork, GPL-3.0-only | `src/bardo/**` only (agent seat, masked source, trusted surface, glow, kill chord, later double-tap) | no; nothing of ours depends on it |
@@ -84,7 +84,7 @@ Bardo depends on none of them.  The compositor → computer_use's bardo-agent-pr
 | 13 | `memory-core` | the memory service | pure, serde-only | **account-core, prov** |
 | 14 | `memory-seal` | the memory service | pure | memory-core |
 | 15 | `eventlog` | the memory service | sqlite | memory-core, memory-seal |
-| 16 | `memfiles` | the memory service | fs via `Vault` | memory-core, memory-seal |
+| 16 | `memory-files` | the memory service | fs via `Vault` | memory-core, memory-seal |
 | 17 | `recall` | the memory service | sqlite; generic | — |
 | 18 | `recall-fastembed` | the memory service | ort (excluded from gate) | recall |
 | 19 | `memory-service` | the memory service | pure over seams | 13-17 |
@@ -110,7 +110,7 @@ Bardo depends on none of them.  The compositor → computer_use's bardo-agent-pr
 | 39 | `action-ui-adapter` | the actions service | adapter used by Bardo apps | action-client, companion-wire, **ui-intents** |
 | 40 | `computer-use-a11y-tree` | computer use | pure; `atspi` feature | **computer-use-action, prov** |
 | 41 | `computer-use-seat-input` | computer use | pure; `ei` feature | **computer-use-action** |
-| 42 | `maskcap` | computer use | pure; `wayland` feature | **computer-use-action** |
+| 42 | `computer-use-capture` | computer use | pure; `wayland` feature | **computer-use-action** |
 | 43 | `computer-use-desktop` | computer use | pure; `wayland` feature | **computer-use-action, action-core** (`RunMode`, `WindowTrust`), bardo-agent-protocol (feature) |
 | 44 | `bardo-agent-protocol` | computer use | wayland-scanner | — |
 | 45 | `computer-use-bus` (new split) | computer use | pure, serde-only (`ComputerUse1` bodies, `ComputerUseRecord`) | **prov, action-core, inference-core** |
@@ -191,7 +191,7 @@ crates; each pair gets a `*_total` conversion test in `shell-ui-kit::companion`.
 | Presence | ux `CompanionPresence`; Companion1 `Presence` property | **ui-core::vocab::CompanionPresence**, derived only by `shell-model::companion::presence_of` | Companion1 has no Presence property; apps derive in-field presence from their own `PromptState` |
 | `MemoryVerb` | ds and shell-launcher (twice) | **ui-core::vocab::MemoryVerb** | shell-launcher uses it |
 | `ComputerUseAction` | computer-use-action (models), computer_use.md §3.0 | **computer-use-action** (merged, §3.3) | `TargetedAction`, `WindowRef` → computer-use-run |
-| Frame types | model-vision-prep `RawFrame`, computer use `RawFrame/PixelBuf/PxSize`, inference-core `FrameLayout` | `PixelFormat`, `DeviceSize`, `Scale120` → **computer-use-action**; `PixelBuf` → maskcap; `RawFrame<'a>` → model-vision-prep | `PxSize` deleted (= `DeviceSize`) |
+| Frame types | model-vision-prep `RawFrame`, computer use `RawFrame/PixelBuf/PxSize`, inference-core `FrameLayout` | `PixelFormat`, `DeviceSize`, `Scale120` → **computer-use-action**; `PixelBuf` → computer-use-capture; `RawFrame<'a>` → model-vision-prep | `PxSize` deleted (= `DeviceSize`) |
 | Computer-use model step | computer use `ComputerUseTurn/StepReply/StepEvent`, models `ComputerUseStepRequest/Reply` | **inference-core::computer_use** | computer-use-run `turn(obs) -> ComputerUseStepRequest` |
 | Event payloads (policy, consent, computer use, session) | the memory service re-declared each | **their owners** (`action-core::AuditRecord`, `computer-use-bus::ComputerUseRecord`, `companion-wire::SessionRecord`) | the memory service stores them as `EventBody::Area` (§3.4) |
 | Budgets | the actions service `Budget/BudgetKind`, computer use `Budget/BudgetKind` | session budget **action-core**; per-run budget **computer-use-run `RunBudget/RunBudgetKind`** | computer use `denials` field removed: the router's breaker counts |
@@ -731,7 +731,7 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | 1a | Deleting the mail in mailo: mailo records `Thing{verb: Deleted}` → memoryd creates an internal Thing plan, applied without UI (deleting the source is the consent) | mailo, the memory service |
 | 1b | "Forget" on a memory row: the shell (ShellUi) `PlanForget(space, Thing(id))` → ForgetPlanView → Alert "Also forgets 3 facts and 1 routine" → `Forget(token)` | ux, the memory service |
 | 2 | Closure: events whose subjects/sources include the thing (including `Area` payloads by their `things` lists: router audit, computer-use records), facts linked transitively, pending facts, procedures, kept computer use thumbnails, index docs | the memory service |
-| 3 | Apply: index → memfiles → event bodies (headers stay, Q-Me3) → `Memory.Forgot` → WAL truncate; signal `Forgotten` → the shell refreshes | the memory service, ux |
+| 3 | Apply: index → memory-files → event bodies (headers stay, Q-Me3) → `Memory.Forgot` → WAL truncate; signal `Forgotten` → the shell refreshes | the memory service, ux |
 | 4 | Outside memory: mailo pushes `Index.Push(removals)` to actiond's shadow index; undo journal holds no entity ids; inferd audit holds no content; actiond sessions keep no content after Close | mailo, the actions service, the accounts service |
 | 5 | Forgetting a memory never deletes the mail itself (stated in the Alert) | ux |
 
@@ -760,7 +760,7 @@ JSON, step tables of the pure parts) pass.
 | **S0 Holo-3.1-4B chat template** (read `chat_template.jinja`, `preprocessor_config.json`, `config.json` via WebFetch; read-only) | the model agent, step 0 | `ToolDialect` variants, `GridMax`/`PatchFactor` values, `catalog/holo-3.1-4b.toml`, computer-use-parse fixtures (W1b) | geometry and every other the model type |
 | **S-SQL** SQLCipher bundled build with FTS5 + `cargo deny` | scratch crate `~/rs-wt/spikes/sqlcipher` | wave 0's rusqlite line → the memory service freeze (eventlog/recall hold rusqlite types) | — |
 | **S-Cedar** `cargo deny` for cedar-policy 4.13 | wave 0 agent | wave 0 line → the actions service freeze | — |
-| **Spike A** a stock compositor nested: capture + EI inject (computer_use.md §6) | `~/rs-wt/spikes/computer-use-a/`, then moved to `~/computer_use/spike/` | computer use fill 2 (computer-use-seat-input `ei`, maskcap `wayland`, computer-use-desktop `desktop`), stock `mode_support` values, Q-P2 | the computer use freeze |
+| **Spike A** a stock compositor nested: capture + EI inject (computer_use.md §6) | `~/rs-wt/spikes/computer-use-a/`, then moved to `~/computer_use/spike/` | computer use fill 2 (computer-use-seat-input `ei`, computer-use-capture `wayland`, computer-use-desktop `desktop`), stock `mode_support` values, Q-P2 | the computer use freeze |
 | **Spike T** Toshy double-tap route (does a tap-vs-hold remap on ⌘ disturb ⌘-click/⌘-drag?) | manual check queued in `shell/docs/manual-checks.md` (needs the real keyboard) | the shell W4 wiring of `Tap` vs `Summon`, `dist/toshy/companion_tap.py`; default route A until it runs | the shell freeze (both variants frozen) |
 | models S1 (engines on Unix sockets under `PrivateNetwork`) | dev script, scratch user unit | the model layer W2b, inferd W3 | freeze |
 | memory S1 (embedding throughput), S3 (fscrypt), S4 (fanotify), S5 (sqlite-vec), S6 (xattr) | dev scripts | memoryd embedder default, Q-Me1, Q-P4, Q-P5 | freeze |
@@ -803,8 +803,8 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | Wave | Parallel agents (repo: owned paths) | Source |
 |---|---|---|
-| F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. The accounts service: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. The memory service: eventlog; memfiles; recall (+fastembed); seal + watch. The actions service: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. Computer use: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, computer use §6, ux §6 |
-| F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. The memory service: memory-service + memory-fake. The actions service: actiond (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. Computer use (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
+| F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. The accounts service: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. The memory service: eventlog; memory-files; recall (+fastembed); seal + watch. The actions service: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. Computer use: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; computer-use-capture. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, computer use §6, ux §6 |
+| F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. The memory service: memory-service + memory-fake. The actions service: actiond (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. Computer use (after Spike A/E): computer-use-seat-input `ei`; computer-use-capture `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
 | F3 daemons | the accounts service: inferd bridge, engines, fd session server with memfds, Prepare, `computer_use_run`; client `DbusTransport::open`. The memory service: memory-dbus, memory-client, memoryd + unit. Computer use: the computer-use daemon, computer-use-dbus codec, computer-use-fake harness, `dist/`. The actions service: action-ui-adapter against bardo. The shell W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
 | F4 integration | mailo session (manifest, provider, actor on UndoStack, undo-send window); the shell W6 (replace fakes; nested compositor, private bus, scratch HOME); fork fill F1-F7 with acceptance scripts; acceptance `dev/computer-use-step-holo.sh` (GPU, by hand) | — |
 | Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `bardo_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |

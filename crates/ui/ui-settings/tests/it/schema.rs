@@ -1,5 +1,5 @@
 //! design/22-SETTINGS.md section 9.6's acceptance list, for the two domains this wave's derive
-//! covers: `AppearanceSettings` and `IconsSettings` (`crates/ds-settings/src/settings.rs`).
+//! covers: `AppearanceSettings` and `IconsSettings` (`crates/ui-settings/src/settings.rs`).
 //!
 //! Run as an integration test, not a unit test, because the section 9.7 check reads a file outside
 //! the crate (`doc_tables.rs` does the same: `cargo test`'s working directory for a `tests/`

@@ -76,7 +76,7 @@ fn open_new(
     for adapter in ranked(adapters, pref) {
         let info = adapter.get_info();
         let label = format!("{} ({:?})", info.name, info.backend);
-        match request_device(&adapter, "ds-harness") {
+        match request_device(&adapter, "ui-harness") {
             Ok((device, queue)) => {
                 let handle = DeviceHandle {
                     instance,

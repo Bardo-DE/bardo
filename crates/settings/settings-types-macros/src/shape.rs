@@ -65,7 +65,7 @@ impl fmt::Display for ShapeError {
 }
 
 /// The numeric types a field is recognised by: the primitives and settings-types' own units
-/// (`crates/ds-settings/src/units.rs`). A caller's own numeric newtype is caught at compile
+/// (`crates/ui-settings/src/units.rs`). A caller's own numeric newtype is caught at compile
 /// time instead: it is not a `Word`, and `kind_of` asks for one.
 const NUMBERS: &[&str] = &[
     "u8", "u16", "u32", "u64", "u128", "usize", "i8", "i16", "i32", "i64", "i128", "isize", "f32",

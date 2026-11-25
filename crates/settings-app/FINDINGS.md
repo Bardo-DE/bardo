@@ -6,7 +6,7 @@ Open items and standing facts. An entry names the condition that closes it.
 
 ### KeyKinds with no UI kit component
 
-`ds_settings::schema::KeyKind` has nine kinds; seven have a component (Fixed: `Label`, Toggle:
+`ui_settings::schema::KeyKind` has nine kinds; seven have a component (Fixed: `Label`, Toggle:
 `Toggle`, Segmented: `SegmentedControl`, Menu: `PopUpButton`, Bounded: `Slider`, Text: `TextField`,
 Colour: `RadioGroup` with `Arrangement::Swatches`). Two have none (and a third, Rows, is composed below) and render read-only with an
 "Edit in file" note (`settings-app-ui/src/controls/file_only.rs`):
@@ -27,26 +27,26 @@ key exists in any schema yet. Closes when the UI kit has a colour well or a swat
 
 ### Untyped settings I/O
 
-`ds_settings::Store::load` and `save` need a typed `SettingsDoc` with a `const FILE`, and the lenient
+`ui_settings::Store::load` and `save` need a typed `SettingsDoc` with a `const FILE`, and the lenient
 reader (`lenient::read`) is crate-private. A schema-driven app knows no struct. `settings-app-files`
 therefore re-implements, small and tested, the two rules that matter: the lenient overlay (a value
 the control cannot hold is kept as written and shown read-only, unknown keys reported by dotted path
 cut at the first unknown table) and a save that sets one key in place with `toml_edit` through an
-atomic write (`ds_helpers::write_atomic`, the one writer `Store::save` uses too). It returns
-`ds_settings::Loaded`, `UnknownKey` and `InvalidKey` so callers see the UI kit's types. Closes when
-`ds-settings` offers a table-level `Store::load_table`/`save_table` (or a `RawDoc`) that takes the
+atomic write (`ui_helpers::write_atomic`, the one writer `Store::save` uses too). It returns
+`ui_settings::Loaded`, `UnknownKey` and `InvalidKey` so callers see the UI kit's types. Closes when
+`ui-settings` offers a table-level `Store::load_table`/`save_table` (or a `RawDoc`) that takes the
 schema's keys.
 
-### ds-settings drags zbus into a pure crate
+### ui-settings drags zbus into a pure crate
 
-`settings-app-model` and `settings-app-files` use only `ds_settings::schema` and `Loaded`, but `ds-settings`
+`settings-app-model` and `settings-app-files` use only `ui_settings::schema` and `Loaded`, but `ui-settings`
 builds zbus for its portal watch, so both reach zbus and `scripts/check-boundary.sh` cannot forbid it
 (it forbids dioxus, tokio, blitz-dom and the ds crates). Closes when Bardo splits the schema module
 and the lenient types into a crate with no zbus (or gates the portal behind a feature).
 
 ### Schema discovery reports stale files only on stderr
 
-`ds_settings::schema::discover` prints "skipping stale schema" for a file that does not parse and
+`ui_settings::schema::discover` prints "skipping stale schema" for a file that does not parse and
 returns nothing about it. The Settings app adds its own warnings as data (`Warning`: unsupported version, a
 `file` that is not `<app>/<name>.toml`, an app an earlier directory already supplied) but a parse
 failure is only on stderr. Nothing detects "a schema whose program is gone" (design/22 section 9.2),
@@ -59,7 +59,7 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
   value; the Settings app adds a `Label` beside it.
 - `Disclosure` without `common.id` gives every instance the id `ds-disclosure-body`; the Settings app passes an
   id per section. Bardo should derive a unique one.
-- `deep_link` in `ds_settings::schema` answers only a unique match; the Settings app's search ranks (label,
+- `deep_link` in `ui_settings::schema` answers only a unique match; the Settings app's search ranks (label,
   help, then every word) and highlights all hits. The launcher's provider still uses `deep_link`.
 - design/22 section 2 says every file has a top-level `version = 1`. `bardo/appearance.toml` has it
   (`AppearanceFile::version`), `shell/settings.toml` does not. The Settings app carries `version` through a
@@ -117,14 +117,14 @@ Open items, each with its closing condition:
 
 - **Agent marks come from the admitted schema, and only from a folder the person cannot write
   (SETTINGS-02).** `KeyEntry::agent()` is the key's own `KeySpec::agent`, read from the schema
-  `ds_settings::schema::discover` admitted (named for its program, its file inside that program's
+  `ui_settings::schema::discover` admitted (named for its program, its file inside that program's
   directory, the system's directories before the user's, never settable under `ai.`, `computer_use.` and the
   other prefixes); there is no second parser. `discover` also judges the schema's folder
   (`SchemaOrigin`): `System` is a folder owned by root with every folder above it, closed to group
   and others; anything else (`~/.local/share/bardo/settings`) is `PersonWritable`, and such a schema
   still describes its program for display and the person's own edits, but every key of it reads
-  hands-off. `ds-settings` does not say which folder a schema came from, so the Settings app scans the folders
-  one at a time and keeps the first schema per program, as `ds-settings` does. Debug builds only,
+  hands-off. `ui-settings` does not say which folder a schema came from, so the Settings app scans the folders
+  one at a time and keeps the first schema per program, as `ui-settings` does. Debug builds only,
   `OriginRule::declared` names folders to treat as system (the intents tests; a developer install
   that wants agent keys); a release build has no such rule and no environment variable. A developer
   install under `~/.local/share` (`--write-schema`) therefore shows its keys but offers none to an
@@ -162,10 +162,10 @@ Open items, each with its closing condition:
     says otherwise; not tried on a real session.
 - **No headless activation.** The bus file starts `bardo-settings`, which opens its window; a read or a set
   that arrives by D-Bus activation therefore shows Settings. A background provider needs
-  `ds_blitz::launch_idle` with an `AppHandle` that opens the window only for `settings.page.show`.
+  `ui_blitz::launch_idle` with an `AppHandle` that opens the window only for `settings.page.show`.
 - **No single instance, and the window is not raised.** A second `bardo-settings` loses the bus name and runs
   without the service, so intents reach the first. `settings.page.show` switches the page of the
-  running window but does not focus it (the UI kit has no window-raise request in `ds-blitz`).
+  running window but does not focus it (the UI kit has no window-raise request in `ui-blitz`).
 - **A key path two programs share names no key.** `Catalogue::entry` answers only an unambiguous
   path; the entity key of `settings.key` is the dotted path alone. Closes if two shipped schemas ever
   reuse a path (then the key becomes `<file>:<path>`).
@@ -202,7 +202,7 @@ Open items, each with its closing condition:
 
 ## Assistants and Spaces (`settings-app-ui/src/assistants/`, `spaces/`)
 
-- **There is no Assistants page.** A fixed page is a variant of `ds_settings::schema::Page`, which is
+- **There is no Assistants page.** A fixed page is a variant of `ui_settings::schema::Page`, which is
   The UI kit's to add. Until it is, the assistants are a block of the Intelligence page, right after
   Companion (`Block::Assistants`). The runtimes group that was "On this computer" is now "Models on
   this computer", because the assistant's own group has that name. Closes when the UI kit adds the page
@@ -302,7 +302,7 @@ Open items, each with its closing condition:
 
 ## Software Update (`settings-app-model/src/updates/`, `settings-app-ui/src/updates/`)
 
-- **Not a fixed page of bardo.** `ds_settings::schema::Page` has no Software Update variant, and the Settings app
+- **Not a fixed page of bardo.** `ui_settings::schema::Page` has no Software Update variant, and the Settings app
   does not edit bardo. The catalogue holds the page as `Page::App("Software Update")`
   (`settings-app-model/src/updates/page.rs` is the only place that knows): its label is that name, its slug is
   `software-update` (hyphenated because the updater's notification runs `bardo-settings --page software-update`; the
@@ -312,7 +312,7 @@ Open items, each with its closing condition:
 - **No "General" group.** macOS has General > Software Update; the Settings app's sidebar is flat, so the page is a
   sidebar row of its own. Closes when the sidebar has groups.
 - **Wire words are parsed by hand.** `UpdatePhase::of_word` is a hand-written match: `settings-app-model` has no
-  `ds-core` (the `Word` derive) and gaining it is a Cargo change. Closes with that dependency.
+  `ui-core` (the `Word` derive) and gaining it is a Cargo change. Closes with that dependency.
 - **The service is looked for, never started.** The updater ships a D-Bus activation file for
   `org.bardo.Updates1` (`dist/org.bardo.Updates1.service`, which starts its user unit), but opening
   Settings must not wake a service the session did not start, so the page reads `NameHasOwner` first; a
@@ -466,16 +466,16 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
   `.runtimes` block, so the rows count does not change), while llama.cpp is missing: "To run
   models on this computer, install llama.cpp." in the quiet footnote style, then the install line,
   then a "Start using it" button. The install line is the UI kit's `CommandLine` (a copyable line; the
-  window writes the clipboard with `ds_blitz::clipboard::write_text` and says "Copied").
+  window writes the clipboard with `ui_blitz::clipboard::write_text` and says "Copied").
 - **The install line per distro** (`install_advice`, pure, from the `os-release` text):
-  `ds_helpers::Family::detect` gives the family and `Family::install_command` the start of the
+  `ui_helpers::Family::detect` gives the family and `Family::install_command` the start of the
   line. Fedora and relatives: `sudo dnf install llama-cpp`. Arch and relatives: `sudo pacman -S
   llama-cpp`. Debian from 14 (a Debian with no `VERSION_ID`, testing, counts as new) and Ubuntu
   from 26.04: `sudo apt install llama.cpp-tools`. Older Debian and Ubuntu, other apt distros
   (Mint, Pop, derivatives with their own `ID`), openSUSE and unknown distros get "Get llama.cpp's
   server from its releases page" as plain text and no command. A derivative of Ubuntu is judged by
   its own `ID`, not its parent's, because its numbers are its own.
-- **Reading the distro.** `Env::os_release` is a path (`ds_helpers::Environment::system()`'s,
+- **Reading the distro.** `Env::os_release` is a path (`ui_helpers::Environment::system()`'s,
   `/etc/os-release`); a test hands in a scratch file. The note reads it once when it appears.
 - **"Start using it".** The assistant finds engines when it starts, so installing one needs a
   restart. The button asks first: "Restart the assistant to use llama.cpp?" / "The assistant
@@ -494,7 +494,7 @@ recommended; the person chooses, or skips and is asked when a turn needs one.
   covers a restart done another way. While the restart runs, an assistant that is away does not
   make the note disappear.
 - **Words.** No systemd, D-Bus or inferd in anything the person reads: "the assistant".
-- Not checked here: written without a build. `Cargo.lock` needs `ds-helpers` (and Bardo's
+- Not checked here: written without a build. `Cargo.lock` needs `ui-helpers` (and Bardo's
   `CommandLine`/`CopyState` in `ds`, the accounts service at 58add48) before it compiles. The note against a real
   session (a real install and restart) is a manual check.
 
@@ -533,8 +533,8 @@ What the audit found and where each landed. A row marked deferred or needing a d
 | --- | --- | --- |
 | SETTINGS-01 | fixed | `settings-app-files/src/read.rs::text_of` is the one read: a missing file is empty, every other failure (no permission, not text, a directory, a pipe or device, over 1 MiB) is an error. `load` reports it as the file's one invalid key and shows the defaults; `save` returns `FilesError::Unreadable` and writes nothing. Test: `settings-app-files/tests/files/unreadable.rs`. The in-window notice for an unreadable file is still the stderr line plus the refusal toast on the first edit; a banner on the page is a UX item. |
 | SETTINGS-12 | fixed in `settings-app-files` | The same read caps a settings file at 1 MiB and refuses anything but a regular file (the keymap keeps its 32 KiB cap through the same helper). Reading off the UI task and coalescing `Reload` are not done (deferred: the cap bounds the stall to a megabyte read per file). |
-| SETTINGS-03 | fixed | `save`, `save_places`, `KeymapFiles::save_person` and `FirstRunMark::record` go through `ds_helpers::write_atomic`: a unique temporary name, `sync_all`, a directory sync, the file's mode kept and a symlink written through. Tests: `tests/files/writes.rs`. |
-| SETTINGS-04 | fixed in this process, open across programs | Saves of settings files take one process-wide turn around read and write (the window thread and the intents provider both save), and the temporary names are unique. A write by another program (the shell) of the same file between the Settings app's read and rename is still lost: that needs a cross-process lock in `ds_helpers` (interface ask in the audit report: an `update_atomic` that holds the lock across the read). The keymap's `save_person` still writes the whole text it was given. |
+| SETTINGS-03 | fixed | `save`, `save_places`, `KeymapFiles::save_person` and `FirstRunMark::record` go through `ui_helpers::write_atomic`: a unique temporary name, `sync_all`, a directory sync, the file's mode kept and a symlink written through. Tests: `tests/files/writes.rs`. |
+| SETTINGS-04 | fixed in this process, open across programs | Saves of settings files take one process-wide turn around read and write (the window thread and the intents provider both save), and the temporary names are unique. A write by another program (the shell) of the same file between the Settings app's read and rename is still lost: that needs a cross-process lock in `ui_helpers` (interface ask in the audit report: an `update_atomic` that holds the lock across the read). The keymap's `save_person` still writes the whole text it was given. |
 | SETTINGS-15 | fixed | `save_places` is one edit of the `assistant` table's keys and one rename; the arm that returned `Ok` without writing is an error. |
 | SETTINGS-02 | fixed here | The side reader is deleted and an agent mark is honoured only for a schema from a root-owned, closed folder (above). Tests: `settings-app-model/tests/model/agent_marks.rs` (a user-directory schema lends no marks to an installed one, a stale schema lends none, a never-settable mark drops the schema, a file not named for its program marks nothing, a schema from a folder the person can write is shown with every key hands-off, an open folder is the person's whoever owns it, `/usr` is system and a missing folder is not), `settings-app-model/src/origin.rs` (the owner and mode table). |
 | SETTINGS-07 | fixed in the Settings app, Bardo carries the live calls | Every call the Settings app makes to another process runs under a named Bardo `Deadline` (`settings-app-system/src/deadline.rs`: `answered`, plus `within` where the failure keeps its type; `peer::*` are the plain names a sentence uses): connecting to the bus, who owns a name, the Spaces, memory, sync, assistant, account and update calls, the service manager, the add sheets (the prompt deadline), the intents service's startup and a second `bardo-settings`'s hand-over (`serve_session`, `hand_over_session` in `settings-app-intents`), and the whole of `read_accounts` (one action deadline, so an agent's `settings.accounts.list` cannot hold the router for as long as every call could). `LiveClient` carries its own read and action deadlines (Bardo); a `LiveError::Timeout` is the words the module gives ("The service is not answering"), feeds `Failed` to the Accounts pane (which clears the row's pending latch) and `Absence::Failed` elsewhere. A refusal shown to the person is the module's own sentence (`live::plain`), not the error's bus name. Tests: `settings-app-system/src/deadline_tests.rs` (a call that never returns ends at its deadline). Not tested end to end: a module that never answers an action, because the deadlines are the UI kit's fixed values (a test would wait ten real seconds); the Accounts pane's `Failed` clearing `pending` is covered by the model tests. |
@@ -544,7 +544,7 @@ What the audit found and where each landed. A row marked deferred or needing a d
 | SETTINGS-08 | fixed here | A Space removal where either choice is Delete is refused while memory is not running (`NoDaemon`): `WithoutMemory::of` in `settings-app-model/src/spaces/removal.rs` decides, `spaces/io.rs` returns before it calls `Spaces1.Remove`, and the person reads `MEMORY_NOT_RUNNING` ("Memory isn’t running right now, so this Space can’t be deleted. Try again in a moment."). A removal that keeps everything still proceeds with memory down. Tests: `settings-app-model/src/spaces/tests.rs` (the four choices), `settings-app-ui/tests/ui/spaces.rs` (each delete choice with no memory: a toast, the registry never asked, the Space stays). Residual: memory and the registry are still two calls, so a registry that denies after memory deleted leaves the memories gone and the Space listed (a retry deletes nothing more); closing that needs a pending-removal record in the registry (the accounts service and the memory service). |
 | SETTINGS-18 | fixed | A read's problems are said once, until they change (`settings-app-ui/src/reported.rs`), and the invalid-value line no longer prints the value (a free-text key can hold a token). The in-window notice for an unreadable or invalid file is still absent (see "Not in v1"); the refusal toast on the first edit is the only in-window word. |
 | SETTINGS-10 | partly fixed | A read of a key and the accounts list are cut to the manifest's declared sizes, one line for a key (`settings-app-intents/src/limits.rs`, one named constant per output; a unit test holds the numbers equal to the manifest's, and the provider tests read an oversized key and an oversized accounts list back through the bus: `intents/provider.rs`, `intents/accounts.rs`; the cut is on a character). The journal keeps only settable keys' values, which are small. Open: whether the actions service asks before an undoable write of `launcher.web_search` or `notifications.dnd` is the actions service's policy (its FINDINGS says an undoable write still asks under "ask more"); making those two "ask every time" in the manifest is an owner decision. |
-| SETTINGS-11 | fixed here, to move to Bardo | `crates/settings-app/src/dirs.rs` ignores an empty or relative `XDG_*_HOME` and `HOME`, as the UI kit does for its own directories. It repeats the UI kit's rule because `ds_settings::xdg` is crate-private; the ask to Bardo is to make `base_dir` public, after which `dirs.rs` calls it. |
+| SETTINGS-11 | fixed here, to move to Bardo | `crates/settings-app/src/dirs.rs` ignores an empty or relative `XDG_*_HOME` and `HOME`, as the UI kit does for its own directories. It repeats the UI kit's rule because `ui_settings::xdg` is crate-private; the ask to Bardo is to make `base_dir` public, after which `dirs.rs` calls it. |
 | SETTINGS-13 | fixed here | A sign-in secret is write-only. The model marks one by its path (`accounts.clients.<issuer>.secret`, the same rule that makes it wait for its key; nothing in the schema marks it). It is still read to learn whether there is one, but `standing_only` (applied when a module's rows are heard) replaces its text with a mark at once and `SignInClient::read` keeps only `SecretStanding::{Set, NotSet}`, so neither the pane nor the rows it keeps hold the text. The field is a secure one that starts empty with "Set" or "Not set" where the text would be; what is typed replaces the secret (trimmed; an empty field writes nothing, because a field the person only passed through must not wipe the secret) and the field is made anew. A set secret has a Clear button beside it (`AccountsInput::SecretCleared`, `SignInClient::cleared`): it writes the empty text, which accountd takes as removing the secret (`client_rows.rs`, `RowEdit::Secret("")`), and the row reads Not set until the list is read again; nothing is sent for a secret there is none of, for a key, or while another change is in flight. The typed text travels as `Secret` (a newtype with a hand-written `Debug` that prints `Secret(<hidden>)`) in `ClientText::Secret` and `AccountsEffect::SetSecret`, so a derived `Debug` on an input or an effect cannot print it. Tests: `settings-app-model/src/accounts/flow_tests.rs` (a stored secret keeps only its standing, typing replaces it, an empty field writes nothing, Clear writes the empty text and only for a set secret, `Debug` of the secret, the input and the effect never prints it), `settings-app-ui/tests/ui/accounts/secrets.rs` (the field says Set, the text is nowhere on screen, typing sends the new one; Clear sends the empty text, then the field says Not set and the button is gone). Residual: the text exists in memory while it is typed and sent, and in the module's reply before `standing_only`. |
 | SETTINGS-14 | partly fixed | `Range` works the span of a slider in floating point (`i64::MIN..i64::MAX` no longer overflows) and the key-step uses `saturating_sub`. Not done: a pattern's regular expression is still compiled per cell per render (its size is bounded by the `regex` crate's limit). |
 | SETTINGS-16 | fixed here | `Activate` and `ActivateAction` are admitted only from roles `shell`, `settings` (a second `bardo-settings`) and `agent_tier`, proved in full; any other caller, an unidentifiable one and a message with no sender get `AccessDenied` and nothing reaches the window (`settings-app-intents/src/callers.rs`; a line in the log for the 1st, 2nd, 4th, 8th... refusal). The window's inbox is `NOTICE_INBOX = 32` (was 64); more are dropped and the first drop after the window caught up is said once (`settings-app-model/src/notice.rs`). A second `bardo-settings` asks the caller-identity library whether the owner of `org.bardo.Settings` holds `settings` before sending its activation token or page, and calls that owner by its unique name; otherwise `HandOverFault::NotSettings` and nothing is sent (`hand_over`, `hand_over_session`). Consequence worth knowing: a `bardo-settings` started by hand (a terminal, an app scope) has no Settings role, so it neither passes as the running Settings nor is admitted when it asks a running one to show itself; the launcher (the shell) is. Tests: `settings-app-intents/tests/intents/application.rs` (the table over every role of the desktop, a stranger, a hand-over to an owner that is not Settings), `settings-app-model/src/notice_tests.rs`. The claim that Skip/Continue of the model step quits the whole Settings was not read and is not addressed here. |
@@ -552,7 +552,7 @@ What the audit found and where each landed. A row marked deferred or needing a d
 
 ### the UI kit's schema rule against the accounts service's inferd schema (found 2026-10-16)
 
-`ds_settings::schema::discover` (BARDO-13) now admits a schema only when its `file` lies in the
+`ui_settings::schema::discover` (BARDO-13) now admits a schema only when its `file` lies in the
 program's own directory. The accounts service's `dist/inferd.settings.toml` names `file = "bardo/inferd.toml"`
 for `app = "inferd"`, so with the new Bardo the Intelligence page's rows (and `fixtures/schemas/inferd.settings.toml`,
 which every `Sandbox` test seeds) are skipped with a line on stderr. Not worked around here: either
@@ -624,7 +624,7 @@ is given before it, so a jail with no manager does not stop it (read in the call
 | --- | --- | --- |
 | NEW-QDH-1 | fixed here | The Privacy page no longer names a program by what a desktop entry says about itself. The program is the compositor's proven identity (image path, or the sandboxed app's id); an entry names it, and lends its icon, only when the entry is in a system folder (`SchemaOrigin::System`: the folder and every parent root-owned and closed, judged by `Env::entry_rule`) and its `Exec`/`TryExec` is the image's absolute path, or a bare name for an image in a system program folder (`/usr/bin`, `/usr/local/bin` and the like that are themselves closed), or its Flatpak or entry id is the app's id. An entry of a sandboxed app (`X-Flatpak`) no longer names a host program. Anything else shows the file name and, under it, "In <folder>"; names and folders have controls and direction overrides replaced and are cut (name 48, folder 60 characters, the tail kept). Consequence: an app installed in the person's own Flatpak or home folders shows its file name or id rather than its entry's name (the entry is the person's to write); a Debian `/usr/local` that is group-writable reads as the person's too. Tests: `settings-app-model` `privacy/tests.rs` (a planted `~/.local` entry named "Firefox" for `/tmp/evil` shows "evil"; the table over launch lines, bare names, sandboxed ids; a planted entry ahead of the system one), `settings-app-files/tests/files/programs.rs` (the scan judges folders; a person-owned folder names nobody), `settings-app-ui/tests/ui/privacy.rs` (the folder is on the row). The shell's permission sheet looks an app up by the name the compositor sends (`shell-overlays/src/permission_sheet/words.rs::app_named`); that is a different rule and is the shell's to review. |
 | NEW-PI-7 | fixed here (the portal serves the list and the revoke) | The Privacy page has a Screen sharing group: one row per app the screen-sharing portal lets share the screen without asking again, with when it was allowed and for how long, and Remove, which calls the portal's `Revoke` and reads the list again (`settings-app-ui/src/screen_sharing/`, `settings-app-model/src/screen_sharing/`). The portal is `org.bardo.Portal1` on `org.freedesktop.impl.portal.desktop.bardo`; its owner must hold role `portal` in the desktop's caller table, proved in full, and the call goes to that owner's unique name (`settings-app-callers::PORTAL_BUS`). An app is named by the id the portal proved it by, through `ProgramBook::look_of` (a system entry may lend its name, as NEW-QDH-1 says); the portal's own name for it, which is read from a desktop entry the app or the person may have written, is never read. The list is bounded (`GRANTS_MAX` 256 rows, ids up to 255 bytes, one row per app, a mode other than 1 or 2 or a date out of range leaves a row out). Showing the group starts the portal when nobody owns its name (`pinned_starting`: the bus starts it, then the owner must hold the role, then it is called), because the portal keeps its apps on disk across restarts and is bus-activatable, so a person who has shared before sees their remembered apps rather than a service that is not running; a portal that cannot be started (no activation file, start refused) is one line, "could not be started", and the rest of the page is as before. Remove never starts it. Tests: `settings-app-ui/tests/ui/screen_sharing.rs`, `confirmed_owner.rs::an_app_is_taken_back_at_the_portal_that_was_checked`, `settings-app-model/src/screen_sharing/tests.rs`, `settings-app-system/src/screen_sharing/proxy.rs`. |
-| SETTINGS-04 | fixed here | `save_keys` (every settings key, the assistant's places) is one `ds_helpers::update_atomic`: read, edit and rename under the file's lock, so another program that changes the same file through `update_atomic` is queued rather than overwritten (the process-wide `TURN` mutex is gone; the lock queues this process's writers too). `KeymapFiles::save_person(base, text)` writes only if the file still holds `base`, the text the list read; otherwise `FilesError::Changed`, the toast says another program changed the shortcuts, and the list re-reads. Tests: `settings-app-files/tests/files/writes.rs` (a save waits for a writer holding the lock and keeps its change), `keymap.rs` (a stale write is refused), `settings-app-model` shortcuts `a_save_carries_the_text_the_edit_started_from`. Residual: a program that writes the file without `update_atomic` is not held up; the lock file `.<name>.lock` is left beside the settings file (mode 0600). |
+| SETTINGS-04 | fixed here | `save_keys` (every settings key, the assistant's places) is one `ui_helpers::update_atomic`: read, edit and rename under the file's lock, so another program that changes the same file through `update_atomic` is queued rather than overwritten (the process-wide `TURN` mutex is gone; the lock queues this process's writers too). `KeymapFiles::save_person(base, text)` writes only if the file still holds `base`, the text the list read; otherwise `FilesError::Changed`, the toast says another program changed the shortcuts, and the list re-reads. Tests: `settings-app-files/tests/files/writes.rs` (a save waits for a writer holding the lock and keeps its change), `keymap.rs` (a stale write is refused), `settings-app-model` shortcuts `a_save_carries_the_text_the_edit_started_from`. Residual: a program that writes the file without `update_atomic` is not held up; the lock file `.<name>.lock` is left beside the settings file (mode 0600). |
 | SETTINGS-05 | finished here | Every call to a service goes to the owner that was confirmed, by its unique name, so a name that changes hands between the check and the call is not called: the call reaches the program that was checked, or fails. `settings-app-system/src/bus/` (`Pinned`) holds the connection and the owner (`Pinned`): zbus proxies take it as their destination (`destination()`), and the accounts service's carrier is aimed with it (`accounts()` is `DbusTransport::accounts_at`, `inference()` is `inference_at`; the Spaces list is `Spaces::connect_at` through `accounts()`). Reading and writing calls that never start a service ask `pinned` (sync holds, the Software Update page, memory's controls, inferd's computers and engines); the ones the person just asked for, or that a page is already starting, ask `pinned_starting` (the Spaces list and removal, memory's Space removal, the add sheets): a name nobody owns is asked to start, and the call goes to the owner that is then confirmed. Tests: `settings-app-ui/tests/ui/holds.rs::a_discard_goes_to_the_program_that_was_checked_even_when_the_name_changes_hands_after`, `confirmed_owner.rs` (the Spaces list is read from, and a removal sent to, the program that was checked while a second registry takes the name right after the check; `support/handover.rs`). Not covered by a hand-over test: inferd's computers and engines and the add sheet use the same `Pinned` aims and are exercised only for the program that owns the name. Whether the updater's session-bus proxy lets a sandboxed app own those names is still the owner's call. |
 | SETTINGS-14 | fixed here | A rows key's patterns are compiled once, when the control is built (`Columns::new` in `settings-app-model/src/rows.rs`, which keeps the whole-text expression of each column), not for each cell of each render; `cell_fits` is replaced by `Columns::fits(at, text)`. A pattern that is not a regular expression admits nothing (the doc line that said it admitted anything described code that never did). Tests: `rows.rs` (the pattern table through `fits`, a broken pattern, a column that is not there). |
 

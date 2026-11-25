@@ -23,7 +23,7 @@ jiff = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-# `ds_core::testing::word_matches_serde`, for the stored `Word` enums.
+# `ui_core::testing::word_matches_serde`, for the stored `Word` enums.
 ui-core = {features = ["testing"], path = "../../../ui/ui-core"}
 serde_json = { workspace = true }
 

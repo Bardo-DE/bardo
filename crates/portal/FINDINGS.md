@@ -16,7 +16,7 @@ One ignored test: `fill::the_pipewire_sink_accepts_a_run_of_frames` needs a Pipe
    2026-10-15, see "portal-shot" below). Closed on this side; the jailed chain's fake shell still stands in for the shell.
 2. **Settings source.** `DesktopAppearance` reads `bardo/appearance.toml` with a small parser of its
    own (`settings::parse_appearance`: `theme` and `accent` in `[appearance]`; no contrast key exists
-   in the document yet). Bardo's `ds-settings` (v0.3.16) was not added: it pulls `ds-core`, `ds-style`
+   in the document yet). Bardo's `ui-settings` (v0.3.16) was not added: it pulls `ui-core`, `ui-style`
    (with an image decoder), `keymap`, `toml` and `notify`, a graph far heavier than three keys. The
    eight accent colours are the macOS system values written into `settings.rs`; check them against
    Bardo's token table. Changes are found by looking at the file every 2 seconds.

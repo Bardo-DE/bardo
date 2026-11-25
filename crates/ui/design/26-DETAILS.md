@@ -209,7 +209,7 @@ operation timeouts are the services' (the shell), not motion tokens.
 
 Typed, no `bool`, small structs, every effect started from a handler or an
 effect hook, never from render (design/05 §7.1). Each primitive is a hook returning what the
-component renders, plus, where it helps, a thin component. Names avoid the existing `ds_settings::Count`
+component renders, plus, where it helps, a thin component. Names avoid the existing `ui_settings::Count`
 (the count badge): the counting primitive is `CountUp`.
 
 ```rust

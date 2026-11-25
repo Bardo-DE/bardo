@@ -124,7 +124,7 @@ impl<B: Backend> Open<B> {
     ) -> Result<(), Refusal> {
         match step {
             ApplyStep::Index => self.index_remove(&plan.index_docs)?,
-            ApplyStep::Memfiles => {
+            ApplyStep::MemoryFiles => {
                 let ids: Vec<FactId> = plan.facts.iter().chain(&plan.pending).cloned().collect();
                 self.rt.store.remove(&ids).map_err(files_refusal)?;
                 self.prune_flags(&ids)?;

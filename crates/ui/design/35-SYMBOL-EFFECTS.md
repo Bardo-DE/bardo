@@ -104,7 +104,7 @@ The motion values are the UI kit's own. The shapes of the gestures (a lid that t
 bell that swings from its top and settles, a flap that opens about its edge, a shackle that
 lifts) follow the idea of pqoqubbw's animated Lucide icons (lucide-animated, MIT); no code or
 timing table is copied, and the durations are the tokens above. Lucide's drawings are ISC
-(`crates/ds-style/assets/icons/LICENSE-lucide.txt`).
+(`crates/ui-style/assets/icons/LICENSE-lucide.txt`).
 
 ## 5. Tests
 

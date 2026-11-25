@@ -395,7 +395,7 @@ lint (`Rule::RawControlHeight`).
 - bjango, "Designing menu bar extras": `https://bjango.com/articles/designingmenubarextras/`.
 - WWDC25 (Liquid Glass) for concentricity as a named rule; not in the target period.
 - This repo: `crates/ds/src/tokens/{spacing,shape,shell,type_scale}.rs`,
-  `crates/ds/src/components/*.css`, `crates/ds-style/src/material/recipe.rs`,
+  `crates/ds/src/components/*.css`, `crates/ui-style/src/material/recipe.rs`,
   `crates/ds/src/icon/{family,plate_tint,retint}.rs`; the shell (read only):
   `crates/shell-settings/src/{bar,control_center}.rs`,
   `crates/shell-surfaces/src/surfaces/{bar,control_center}/`, the shell's `crates/shell-bar/src/bar/style.css`.
@@ -419,7 +419,7 @@ lint (`Rule::RawControlHeight`).
   appearance picker are not yet moved (a separate branch owns them).
 - F3: `icon/tone_band.rs`; `retint_in` and `PlateStops::tinted_in` take the scheme, `retint`
   keeps the light rule for existing callers.
-- `ds-gallery --snapshot/--level-sheet/--accent-sheet` write only to DIR; `--progress` asks for
+- `ui-gallery --snapshot/--level-sheet/--accent-sheet` write only to DIR; `--progress` asks for
   the progress page's copy.
 - Still open: R7's sweep of the off-grid spacing steps (section 12 step 6), the
   `Rule::RawControlHeight` lint, the shell reading these sizes (R9), mailo's own density step.

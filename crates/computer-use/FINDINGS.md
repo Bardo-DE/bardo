@@ -2,7 +2,7 @@
 
 Open items and standing facts. An entry names the condition that closes it. `computer-use-bus`,
 `computer-use-dbus` has no `todo!()`: its behaviour is serde and tables. `bardo-agent-protocol` is gone
-(S0-CU2): computer-use-desktop and maskcap name `desktop-protocols` directly.
+(S0-CU2): computer-use-desktop and computer-use-capture name `desktop-protocols` directly.
 
 ## Stubs behind frozen interfaces
 
@@ -14,7 +14,7 @@ files (`a11y-tree` fixtures and golden renders).
 | Where | Count | Closes when |
 | --- | --- | --- |
 
-Per crate: none; total 0. `maskcap_wayland::BardoMaskedCapture::open` is built over a lease (`create_lease`, `get_capture_source`, `create_session`, `set_mask_hints` before each frame) and tested against a fake `bardo_agent_manager_v1`; the compositor master does not serve that global yet, so against it `open` answers `BackendUnavailable`. computer-use-desktop has none: the stock half is built, and the compositor half (`Backend::Compositor`, `bardo_agent_v1` leases, suspend, resume and glow in the compositor, the agent workspace) is P4-Z-computer-use. There is no `BackendKind` for it yet, so no arm could hold a `todo!()` that is reachable; KWin (`KwinStock`) refuses every lease with `ModeUnsupported` until Spike B. (`EiSeat`, `FakeEis::serve` and `ScriptedModel::from_cassette` are built: see "The f4-computer-use-seat fill".)
+Per crate: none; total 0. `computer_use_capture_wayland::BardoMaskedCapture::open` is built over a lease (`create_lease`, `get_capture_source`, `create_session`, `set_mask_hints` before each frame) and tested against a fake `bardo_agent_manager_v1`; the compositor master does not serve that global yet, so against it `open` answers `BackendUnavailable`. computer-use-desktop has none: the stock half is built, and the compositor half (`Backend::Compositor`, `bardo_agent_v1` leases, suspend, resume and glow in the compositor, the agent workspace) is P4-Z-computer-use. There is no `BackendKind` for it yet, so no arm could hold a `todo!()` that is reachable; KWin (`KwinStock`) refuses every lease with `ModeUnsupported` until Spike B. (`EiSeat`, `FakeEis::serve` and `ScriptedModel::from_cassette` are built: see "The f4-computer-use-seat fill".)
 
 What is built, not stubbed (all behind the frozen signatures): `BackendCaps::of`, `LeaseRequest::check`,
 glow, revoke, suspend and mode wire codes (pinned against the generated protocol enums under the
@@ -24,7 +24,7 @@ facts, the `ModeSupport` and `Modes`/`Backend` wire strings, `ComputerUseOutcome
 `report_draft`, `ControlRefusal` names, `computer_use_daemon::guard`, `computer_use_daemon::classify`, `manifest_for`,
 `record_of`, `capture_kind`, `ComputerUseDaemonConfig::from_toml`, and the fakes other than the stubs above; and,
 from the w4-computer-use fill: the a11y-tree functions (`prune`, `render`, `diff`, `secret_rects`,
-`resolve`), maskcap (`apply_masks`, `digest`, `settle`, `pixel_diff`), `Keymap::parse_xkb`, computer-use-run
+`resolve`), computer-use-capture (`apply_masks`, `digest`, `settle`, `pixel_diff`), `Keymap::parse_xkb`, computer-use-run
 (`classify_effect`, `stalled`, `LeaseBook`, `turn`, `note_of`, the machine `Run::{start, step,
 wake}`, and `Exec`, which carries a run's effects out against the seams), `run_harness`, and computer_use_daemon
 (`IntentsGate`, `DaemonLinks`, `Supervisor`, `serve`/`serve_on`, `ComputerUseProvider::perform`) and computer-use-system (`Links`).
@@ -40,7 +40,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
   messages in and widens nothing.
 - **A message carries no authority.** No input grants a lease, mode, budget or permission;
   `a_message_changes_no_authority` pins it (ignored until the machine).
-- **Edges.** SPEC 1.3 gives seat-input, maskcap and a11y-tree only `computer-use-action`, and computer-use-bus only
+- **Edges.** SPEC 1.3 gives seat-input, computer-use-capture and a11y-tree only `computer-use-action`, and computer-use-bus only
   prov, action-core and inference-core. Its own types need more: a lease, a `Stamp` and `SeatIsolation`
   are named by `AgentSeat::attach`, `WindowCapture::open` and `BackendCaps`; the records name
   `InputReceipt`, `FrameDigest`, `NodeSelector`. So `computer-use-desktop` is the base crate and the leaf
@@ -87,11 +87,11 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - `wayland-scanner 0.31`, `wayland-backend 0.3` and `wayland-server 0.31` (dev-dependency: the fake compositors); see the f4-computer-use-capture fill.
 - `atspi` is pinned with `default-features = false, features = ["connection", "proxies", "tokio"]`
   (the block's bare `0.30` cannot be narrowed by a member); `reis` gains `tokio` in seat-input;
-  `base64 0.22` is already in the block (maskcap's serde form).
+  `base64 0.22` is already in the block (computer-use-capture's serde form).
 - `rustix 1.1` (`std`, `fs`), the accounts service's line narrowed: the computer-use daemon makes the frame memfd (`memfd_create` and its seals).
 - `xkbcommon 0.8` with `default-features = false` (seat-input `Keymap::parse_xkb` reads the text
   of a keymap and no wayland keymap fd; the block's bare line enables `wayland` and `memmap2`);
-  `blake3 1` (maskcap's frame digest and computer-use-run's thought digest; already in the lock); `futures-util`
+  `blake3 1` (computer-use-capture's frame digest and computer-use-run's thought digest; already in the lock); `futures-util`
   on the actions service's line (the computer-use daemon waits for its connection to close).
 - Dev-dependencies of the computer-use daemon's tests only, so not in any tree the boundary script checks: `actiond`,
   `action-fake`, `action-router` (a real actiond over the actions service's fakes on a private bus) and
@@ -319,10 +319,10 @@ the machine under it. What was decided:
 ## The f4-computer-use-capture fill (2026-10-06): the stock wayland backends and the daemon's seams
 
 - **S0 done.** `crates/bardo-agent-protocol` is deleted and
-  computer-use-desktop and maskcap-wayland depend on `desktop-protocols` (client) by sibling
+  computer-use-desktop and computer-use-capture-wayland depend on `desktop-protocols` (client) by sibling
   path; the glow, revoke, suspend, mode and mask-reason tables are pinned against its generated
   enums. check-boundary rows follow.
-- **One pump per connection (`maskcap_wayland::Pump`, public).** A wayland
+- **One pump per connection (`computer_use_capture_wayland::Pump`, public).** A wayland
   connection has one event queue and one state behind an async mutex; callers take turns
   (`drive(step)`), only the holder reads the socket (non-blocking guard), and a `Notify` wakes the
   others when a turn dispatched something. Two queues on one connection would lose wake-ups.
@@ -333,7 +333,7 @@ the machine under it. What was decided:
   (`org.bardo.Shell*`, `Shell*`, `Desktop*` are `Shell`, other `org.bardo.*` `Bardo`, the rest
   `Native`; Flatpak cannot be told). Ask: a pid and a sandbox id on the toplevel (the compositor's
   `bardo_desktop_v1` can carry them).
-- **maskcap stock capture.** `StockToplevelCapture::open` finds the toplevel by identifier,
+- **computer-use-capture stock capture.** `StockToplevelCapture::open` finds the toplevel by identifier,
   `create_source`, `create_session`, waits for the constraints and picks `ABGR8888`, `XBGR8888`,
   `ARGB8888`, `XRGB8888` in that order (`Format` if only the 10-bit ones are offered). The buffer
   is a memfd the compositor maps and the computer-use daemon reads with `pread` (no mapping, so no `unsafe`); a
@@ -350,9 +350,9 @@ the machine under it. What was decided:
   tries the compositor (none is not fatal), serves `org.bardo.ComputerUse1` and `org.bardo.ComputerUse`, and
   stops with 0 on SIGTERM or when the bus closes.
 - **Tests, all over an in-process wayland-server on socketpairs or a private bus.**
-  `maskcap/tests/it/wayland.rs` (8), `computer_use_daemon/tests/it/binary.rs` (4: env cleared, no compositor).
+  `computer-use-capture/tests/it/wayland.rs` (8), `computer_use_daemon/tests/it/binary.rs` (4: env cleared, no compositor).
 - **Dependencies added** (not in Bardo's block): `wayland-scanner`, `wayland-backend` for
-  computer-use-desktop (generation) and `wayland-server` as a dev-dependency of maskcap
+  computer-use-desktop (generation) and `wayland-server` as a dev-dependency of computer-use-capture
   (the fake compositor; MIT, already in the lock through desktop-protocols); `tokio` and
   `rustix` become optional deps under the `wayland` features; `tokio`'s `signal` feature in the computer-use daemon.
   `wayland-protocols` gains `server` as a dev-dependency.
@@ -403,8 +403,8 @@ section 9.2). Computer use's covers the `computer_use.*` keys of section 3.29 th
    The actions service's actiond and the memory service's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
    The accounts service has a place for it.
 9. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent`
-   mark) and parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a
-   scratch project: a dev-dependency on ds-settings would unify zbus's executor features); every schema key
+   mark) and parses with the Settings app's loader (`ui_settings::Schema::from_toml`, run by hand from a
+   scratch project: a dev-dependency on ui-settings would unify zbus's executor features); every schema key
    is read (table test), every key has a bad-value fallback case, `computer_use.apps` rows read one by one;
    `computer_use_daemon/tests/it/settings.rs` changes the file under a running supervisor and waits on the watch's own event.
 
@@ -704,7 +704,7 @@ handed to `computer-use-run` as `Rules` through `Parts`. Left as they were, each
 authorise step), `Verb` (serialised in the run track: F18),
 `ComputerUseSignal` against `StepEvent` (the proposed action is re-targeted, not re-typed: F16),
 `AxRole` (`Role` is adjacently tagged, so a TOML string cannot read it: F15), `Drivable` (an
-alias for twenty bounds), `Reason`/`Cause` (F8) and the a11y-tree/maskcap option-shaped enums
+alias for twenty bounds), `Reason`/`Cause` (F8) and the a11y-tree/computer-use-capture option-shaped enums
 (F10; they re-record goldens), the keys table of computer-use-eval (F22), and F3 (waits for the accounts service
 re-pin).
 

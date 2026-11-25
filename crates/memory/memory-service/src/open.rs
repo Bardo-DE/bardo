@@ -12,7 +12,7 @@ use memory_core::{
     MemoryOp, Record, Refusal, RuleSet, RunId, RunState, Seq, SpaceId, SystemPart, TopicPath,
     UnixSeconds,
 };
-use memory_files_format::{Block, MemfilesError};
+use memory_files_format::{Block, MemoryFilesError};
 use memory_seal::{KeyError, SubKey};
 use memory_search::docs::{event_ref, fact_doc, indexed_docs, newest_episodes};
 use memory_store::{Doc, DocId, SearchIndex, SearchIndexError};
@@ -126,7 +126,7 @@ pub(crate) fn backend_refusal(e: BackendError) -> Refusal {
     }
 }
 
-pub(crate) fn files_refusal(e: MemfilesError) -> Refusal {
+pub(crate) fn files_refusal(e: MemoryFilesError) -> Refusal {
     failed(e)
 }
 

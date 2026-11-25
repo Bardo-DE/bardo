@@ -40,7 +40,7 @@ disabled .35, Reduced-motion rules.
 
 ## 2. Token table
 
-Current values read from `crates/ds-style/src/tokens/*.rs` and `css/*.rs` at origin/master
+Current values read from `crates/ui-style/src/tokens/*.rs` and `css/*.rs` at origin/master
 361d9bf2. "Step 1" and "Step 2" are the values after that step; blank means unchanged.
 
 ### 2.1 Radii (`tokens/shape.rs`, `Radius::value`)
@@ -329,8 +329,8 @@ Segmented control, Stepper, Chip, Badge, Tooltip, HoverCard, Toast take radii/he
 ## 4. Consumer impact
 
 Goldens in Bardo (all must be re-recorded in the lane that changes them, never mixed):
-`crates/ds-shell/tests/snapshots/stylesheet.css` (3849 lines): every step changes them;
-ds-gallery `--snapshot` images; ui-conformance size-rule tests
+`crates/ui-shell/tests/snapshots/stylesheet.css` (3849 lines): every step changes them;
+ui-gallery `--snapshot` images; ui-conformance size-rule tests
 (`tokens/size_rules_tests.rs`, ladder values), `ui-style` token tests, `ui-lint` CSS rules
 that name tokens.
 Consumers: the shell (`launcher_card.rs`, `osd.rs`, `switcher.rs`, `screenshot_thumb`, battery
@@ -483,8 +483,8 @@ and `easing.rs` (token retune, keyframe edits, golden of the motion lab). Verify
 ## 8. BEFORE material
 
 Run: `CARGO_TARGET_DIR=~/rs-wt/modern-look/target cargo run -p ui-gallery --release --
---snapshot ~/rs-wt/modern-look/before` (needs `~/rs-wt/modern-look/blitz-kit` symlink to
-`~/blitz-kit`, the path dependency). The accounts shots in `~/rs-wt/accounts/shots-w2f/` show
+--snapshot ~/rs-wt/modern-look/before` (needs `~/rs-wt/modern-look/blitz-embed` symlink to
+`~/blitz-embed`, the path dependency). The accounts shots in `~/rs-wt/accounts/shots-w2f/` show
 today's consent alert: no hero icon, 340 wide, three Regular buttons stacked, a 1 px outlined
 search field, bordered provider list rows with 4 px marks. The mock-up of the target is
 `~/rs-wt/modern-look/mock/mock.html` and `mock.png`.

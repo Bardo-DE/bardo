@@ -5,7 +5,7 @@
 //! * the search index: [`SearchIndex`], with the documents, vectors and [`IndexView`] it speaks
 //!   in, and the [`Embedder`] it is fed by.
 //!
-//! Each store crate implements them: `eventlog` (`SqliteLog`), `memfiles` (`PlainDir`,
+//! Each store crate implements them: `memory-eventlog` (`SqliteLog`), `memory-files` (`PlainDir`,
 //! `SealedDir`), `recall` (`Index`), plus the in-memory ones behind their `testing` features.
 //! The service depends on this crate and on none of them, so a build of the service links no
 //! SQLite, `SQLCipher` or OpenSSL; whoever builds a service picks the concrete stores

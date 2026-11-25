@@ -21,7 +21,7 @@ const LIFETIME: Duration = Duration::from_secs(3);
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(
         App,
-        AppConfig::new("bardo: ds-blitz window", WindowSize::new(480, 320))
+        AppConfig::new("bardo: ui-blitz window", WindowSize::new(480, 320))
             .with_app_id(AppId("dev.bardo.Window".to_owned())),
     )
 }

@@ -21,7 +21,7 @@ const SIDE: u32 = 256;
 fn main() -> Result<(), ui_blitz::LaunchError> {
     launch(
         App,
-        AppConfig::new("bardo: ds-blitz texture layer", WindowSize::new(480, 320))
+        AppConfig::new("bardo: ui-blitz texture layer", WindowSize::new(480, 320))
             .with_app_id(AppId("dev.bardo.TextureLayer".to_owned())),
     )
 }

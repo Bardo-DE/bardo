@@ -965,7 +965,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 | **Computer use** | Draws `org.bardo.Confirm1` and the acting-here glow; kill chord → `Control.Halt`; effect classification for pixel actions | `permission-policy::Decision`, `gate`, `Actor::ComputerUse`, `Effect`, `ConfirmRequest`, `prov::Source::Screen` |
 | **ux** | Look of the confirmation and companion strip, Activity/"Undo all" UI, launcher companion mode | `Preview`, `UndoEntry`, `Journal`, `Control` signals, the shell variants |
 | **models** | inferd serving the reviewer and reader models (small local, no tools, grammar-constrained JSON), model latency | `ReviewRequest`/`render`/`parse_verdict`, `ValueSchema` → grammar, `tool_schema` |
-| **memory** | `eventlog` crate taking `AuditRecord`; `Actor` shared; memfiles' write action declared `Lasting::AgentMemory` | `AuditRecord`, `Actor`, `prov::Label`, `EntityId` |
+| **memory** | `eventlog` crate taking `AuditRecord`; `Actor` shared; memory-files' write action declared `Lasting::AgentMemory` | `AuditRecord`, `Actor`, `prov::Label`, `EntityId` |
 | **planner / agent loop** (name unknown) | Session driving (`Session.Open/Turn`), planner prompt from `PlannerView`, the reader process, proposing Authorizations, adapting to `Denied` reasons | §3.8, §3.9, `CallRefusal` |
 | **security / sandbox** (if separate) | systemd, Landlock and seccomp units for actiond and bardo-actions-mcp; bubblewrap for imported MCP tools | caller roles config |
 

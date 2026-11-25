@@ -1,4 +1,4 @@
-//! Where the generated code finds the crate that owns a trait: the crate itself, or `ds`'s facade.
+//! Where the generated code finds the crate that owns a trait: the crate itself, or `ui-components`'s facade.
 
 use proc_macro_crate::{FoundCrate, crate_name};
 use proc_macro2::{Span, TokenStream};
@@ -6,13 +6,13 @@ use quote::quote;
 use syn::Ident;
 
 /// The crate a derive names, as a path: `::base_words` where the caller depends on `base-words`
-/// (or is it), else `::ds::words`. Each crate declares `extern crate self` under its own name.
+/// (or is it), else `::ui_components::words`. Each crate declares `extern crate self` under its own name.
 pub(crate) fn words() -> TokenStream {
     home("base-words", "words")
 }
 
 /// The path to `ui-style`: `::ui_style` where the caller depends on it (or is it), else
-/// `::ds::style`.
+/// `::ui_components::style`.
 pub(crate) fn style() -> TokenStream {
     home("ui-style", "style")
 }
@@ -22,9 +22,9 @@ fn home(krate: &str, facade: &str) -> TokenStream {
         return path;
     }
     match named("ui-components") {
-        Some(ds) => {
+        Some(ui) => {
             let facade = Ident::new(facade, Span::call_site());
-            quote! { #ds::#facade }
+            quote! { #ui::#facade }
         }
         None => named_default(krate),
     }

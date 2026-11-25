@@ -177,7 +177,7 @@ fn apply_runs_index_then_files_then_bodies_then_audit_then_wal() {
         ApplyStep::ORDER,
         [
             ApplyStep::Index,
-            ApplyStep::Memfiles,
+            ApplyStep::MemoryFiles,
             ApplyStep::EventBodies,
             ApplyStep::AuditEntry,
             ApplyStep::WalTruncate

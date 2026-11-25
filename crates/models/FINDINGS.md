@@ -784,7 +784,7 @@ transcript), where it builds the computer use profile (`ComputerUseProfile::for_
 
 ## Standing facts
 
-- No ds-core, no accounts service: a closed set's serde form is its slug.
+- No ui-core, no accounts service: a closed set's serde form is its slug.
 - `todo!()` is allowed only behind a frozen interface; every such stub is listed above.
 - The catalog file is `ModelEntry`'s serde form: every field is written, none defaulted, and the
   capability fields sit at the top level beside `id` and `label`.

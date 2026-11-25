@@ -5,7 +5,7 @@ use super::LocalSource;
 #[test]
 fn a_local_source_that_cannot_be_read_gives_nothing() {
     assert_eq!(
-        LocalSource::File("/nonexistent/blitz-kit".into()).read(),
+        LocalSource::File("/nonexistent/blitz-embed".into()).read(),
         None
     );
     assert_eq!(LocalSource::Unservable.read(), None);

@@ -54,44 +54,13 @@ wildcards = "allow"
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-# The pinned git dependencies, all rev-pinned in Cargo.lock: Bardo and blitz-embed (the desktop
-# manifest's revs), our forks, mpv-wgpu, and
+# The pinned git dependencies, all rev-pinned in Cargo.lock: our forks, mpv-wgpu, and
 # taffy (reached through blitz).
 allow-git = [
     "https://github.com/Bardo-DE/anyrender",
-    # The viewer's preview, thumbnail and file-kind crates (Quick Look, the icon view). MIT OR Apache-2.0.
-    "https://github.com/Bardo-DE/anyview",
     "https://github.com/Bardo-DE/blitz",
-    "https://github.com/Bardo-DE/blitz-kit",
-    # The desktop's portable keymap (Bardo v0.3.14 resolves keys to actions with it, and anyview-core
-    # declares the viewer's own default chords): one rev, Bardo's. MIT OR Apache-2.0.
-    "https://github.com/Bardo-DE/chordkit",
-    # dioxus-core 0.7.10 with the dirty-task fix backported (the UI kit's [patch], v0.2.15+).
     "https://github.com/Bardo-DE/dioxus",
-    # Single instance without D-Bus (anyview-platform): MIT OR Apache-2.0, one rev in Cargo.toml.
-    "https://github.com/Bardo-DE/latchkey",
-    "https://github.com/Bardo-DE/quire",
-    # The plugin library (the wire, the manifest envelope, discovery and the process handling): one
-    # rev in Cargo.toml. MIT OR Apache-2.0.
-    "https://github.com/Bardo-DE/bayonet",
     "https://github.com/Bardo-DE/mpv-wgpu",
     "https://github.com/Bardo-DE/vello",
-    # The desktop's agent layer (anyview-platform, desktop): the actions service at the manifest's rev, and
-    # The accounts service, the memory service and the model layer at the revs the actions pins, and the caller-identity library (account-dbus's caller check,
-    # at the tag the accounts pins). All MIT OR Apache-2.0.
-    "https://github.com/Bardo-DE/docket",
-    "https://github.com/Bardo-DE/porter",
-    "https://github.com/Bardo-DE/almanac",
-    "https://github.com/Bardo-DE/stoker",
-    "https://github.com/Bardo-DE/peephole",
-    # syncd's bus vocabulary and its test fake (files-desktop, Storage1): the sync service at the rev that pins
-    # the same the accounts service. MIT OR Apache-2.0.
-    "https://github.com/Bardo-DE/ferry",
-    # The AI crates the actions pins (the inference service) and the provenance types (prov), at the revs the actions pins.
-    # MIT OR Apache-2.0.
-    "https://github.com/Bardo-DE/steward",
-    "https://github.com/Bardo-DE/prov",
-    # The actions service's sandbox wrapper (the actions service ff9d1b73 and later): MIT OR Apache-2.0, at the rev the actions pins.
-    "https://github.com/Bardo-DE/bulkhead",
     "https://github.com/DioxusLabs/taffy",
 ]

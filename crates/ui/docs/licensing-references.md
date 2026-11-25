@@ -61,7 +61,7 @@ renders are not committed; the exported PNGs are.
 CC BY 4.0 is a licence on the *data*, not on a crate: `cargo deny check licenses` reads only
 each crate's declared licence (`ds` stays MIT OR Apache-2.0 for its code), so it neither sees
 nor needs an allow entry for the sheets, as it does not for the OFL fonts in
-`crates/ds-style/assets/fonts`. The obligation CC BY places on us, attribution with a link to the
+`crates/ui-style/assets/fonts`. The obligation CC BY places on us, attribution with a link to the
 licence and a note that the files were changed, is met by `ATTRIBUTION.txt` beside the files and
 by the credit line in design/25; a distributor of a Bardo binary must carry that line in its
 credits (CONSUMING, "Animated emoji"). The still `512.png` files `tools/emoji` reads to find each
@@ -69,8 +69,8 @@ loop's rest pose stay in its cache and are not shipped.
 
 ## Glyph sets (small glyphs, `Icon`)
 
-All permissive and vendored as data (paths in `crates/ds-style/src/icon/`), with the notice kept
-beside the Lucide one in `crates/ds-style/assets/icons/` and mirrored in `assets/icons/`.
+All permissive and vendored as data (paths in `crates/ui-style/src/icon/`), with the notice kept
+beside the Lucide one in `crates/ui-style/assets/icons/` and mirrored in `assets/icons/`.
 
 | Set | Version | Licence | Notice | Used for |
 | --- | --- | --- | --- | --- |

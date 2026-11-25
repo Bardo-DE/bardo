@@ -27,7 +27,7 @@ Space tint (21 section 3).
 
 ## 3. Paper tokens
 
-The Mac values (30 section 3.2), as the code has them (`crates/ds-style/src/tokens/colour.rs`):
+The Mac values (30 section 3.2), as the code has them (`crates/ui-style/src/tokens/colour.rs`):
 
 | Token | Light | Dark | Role |
 | --- | --- | --- | --- |
@@ -53,7 +53,7 @@ The prototype's greenish Post palette (`#E9ECE6` and friends) is history. `--sea
 | `--danger` | `#E9152D` | `#FF4245` | `--danger` at .16 over transparent |
 
 Apple system green/orange/red, 2025 (the system hue table's increased-contrast form in light,
-the normal form in dark; `crates/ds-style/src/tokens/system_hue.rs`). `--spell-mark` is the
+the normal form in dark; `crates/ui-style/src/tokens/system_hue.rs`). `--spell-mark` is the
 `--danger` value. Each status colour keeps its `X-ink` (`--ok-ink`, `--warn-ink`,
 `--danger-ink`) for text on it, chosen so every `X` / `X-ink` pair clears 4.5:1 in both schemes
 (`crates/ds/tests/it/legibility.rs::every_ink_on_its_colour_is_legible_in_both_schemes`): light
@@ -505,8 +505,8 @@ toggle read by their shape and knob, not their colour, which WCAG 1.4.11 allows 
 the state is not shown by colour alone.
 
 The candidate sheets (proposal commit): `tools/progress/shots/accent/accent-candidates-{light,dark}.png`
-and one crop per column. The settled sheet (`ds-gallery --accent-sheet DIR`,
-`crates/ds-gallery/src/accent_sheet.rs`) draws B alone, per scheme, over the calm wallpaper and a Popover, Widget and Sheet material:
+and one crop per column. The settled sheet (`ui-gallery --accent-sheet DIR`,
+`crates/ui-gallery/src/accent_sheet.rs`) draws B alone, per scheme, over the calm wallpaper and a Popover, Widget and Sheet material:
 the primary button, a toggle on, the segmented control (it selects in `--ink`, unchanged by any
 band), a chip, a link, the focus ring, a menu highlight, a selected row, the control center's
 tiles, the compact calendar (month title, today disc, dots), the launcher's selected row, and the

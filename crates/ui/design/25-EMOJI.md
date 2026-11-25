@@ -18,9 +18,9 @@ moods, `Mood`, `UserPortrait`, the accept beat and the accept beat's file.
 
 ## 1. What this governs
 
-`ds_shell::prelude::AnimatedEmoji` (the picture), `ds_shell::emoji::id::EmojiId` (which emoji, user data), `ds_shell::emoji::disc::EmojiDisc`
-(none, or a tinted disc on a `DiscHue`), `ds_shell::emoji::disc::EmojiPlayback` (awake or still),
-`ds_shell::emoji::EMOJI_ATTRIBUTION`, the sheets and manifest under `crates/shell-kit/assets/emoji/`, and the
+`ui_shell::prelude::AnimatedEmoji` (the picture), `ui_shell::emoji::id::EmojiId` (which emoji, user data), `ui_shell::emoji::disc::EmojiDisc`
+(none, or a tinted disc on a `DiscHue`), `ui_shell::emoji::disc::EmojiPlayback` (awake or still),
+`ui_shell::emoji::EMOJI_ATTRIBUTION`, the sheets and manifest under `crates/shell-kit/assets/emoji/`, and the
 pipeline that makes them, `tools/emoji`; and the user's picture (section 7): `UserPicture`,
 `UserPortrait`, `PictureChoice`, `resolve_picture`, `UserPicturePicker`, `Mood`, `WakeStamp`,
 `PictureSize` and the accept beat `Anim::PictureAccept`.
@@ -34,7 +34,7 @@ pipeline that makes them, `tools/emoji`; and the user's picture (section 7): `Us
   animated assets commercially…?": "Animated Noto Emoji is licensed under CC BY 4.0. See the
   full license for all details.", linking https://creativecommons.org/licenses/by/4.0/legalcode).
   The full legal code is committed as `crates/shell-kit/assets/emoji/CC-BY-4.0.txt`.
-- **Attribution** (required; `ds_shell::emoji::EMOJI_ATTRIBUTION` carries it, and a surface that shows these
+- **Attribution** (required; `ui_shell::emoji::EMOJI_ATTRIBUTION` carries it, and a surface that shows these
   emoji puts it in its about box or credits):
 
   > Animated emoji: Noto Animated Emoji by Google, CC BY 4.0

@@ -114,5 +114,5 @@ origin = "bat d9559c69f541873f8c47ac8ad81d985f4441edf6"
 [[source]]
 dir = "ini"
 languages = "INI"
-repository = "https://github.com/Bardo-DE/anyview"
+repository = "https://github.com/Bardo-DE/bardo"
 licence = "MIT OR Apache-2.0"

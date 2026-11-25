@@ -17,7 +17,7 @@ and the development packages of the system libraries the build links: fontconfig
 libxml2, libpng, zlib, bzip2, xz, GLib and ALSA (`libasound2-dev`, `alsa-lib-devel`: the sound card).
 
 ```sh
-git clone https://github.com/Bardo-DE/anyview.git
+git clone https://github.com/Bardo-DE/bardo
 cd anyview
 cargo build --release --locked
 target/release/anyview --version
@@ -29,7 +29,7 @@ checkout. The pins live in `[workspace.dependencies]`; UI kit crates (`ds`, `ui-
 `ui-settings`, `ui-harness`, `ui-lint`) are the lines that name the UI kit's rev.
 
 To work on Bardo or blitz-embed at the same time, check them out beside this repository and add a
-`[patch."https://github.com/Bardo-DE/quire.git"]` (or blitz-embed) table pointing at the local path to
+`[patch."https://github.com/Bardo-DE/bardo"]` (or blitz-embed) table pointing at the local path to
 your own copy of `Cargo.toml`; do not commit it.
 
 Checks: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --all-features -- -D warnings`,
@@ -167,7 +167,7 @@ All panes of a window share the one `Workers` pool. With `with_store(root)` the 
 If anyview panics it prints a short report and keeps the last ten under
 `$XDG_STATE_HOME/anyview/crash/` (by default `~/.local/state/anyview/crash/`). Attach the newest one, the
 output of `anyview --version` and the file type involved to an issue at
-<https://github.com/Bardo-DE/anyview/issues>.
+<https://github.com/Bardo-DE/bardo/issues>.
 
 ## Licence
 

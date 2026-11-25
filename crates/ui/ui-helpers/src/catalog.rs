@@ -293,7 +293,7 @@ mod tests {
 
     #[test]
     fn load_takes_the_first_data_dir_that_has_the_file() {
-        let root = std::env::temp_dir().join(format!("ds-helpers-load-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("ui-helpers-load-{}", std::process::id()));
         let (first, second) = (root.join("a"), root.join("b"));
         for (dir, tool) in [(&first, "first"), (&second, "second")] {
             let folder = dir.join("bardo/helpers");

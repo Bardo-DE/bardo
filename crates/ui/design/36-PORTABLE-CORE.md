@@ -37,7 +37,7 @@ more: the extras are additive, never a different program.
 
 ## 3. In code
 
-- **Probe:** `ds_desktop::Desktop` (UI kit crate `ui-desktop`): `Desktop::probe()` answers per
+- **Probe:** `ui_desktop::Desktop` (UI kit crate `ui-desktop`): `Desktop::probe()` answers per
   capability (`Capability::{Intents, Accounts, Memory, Companion, Appearance, Materials, Peek,
   Share, Helpers}` → `Presence::{Here, Absent}`), cached and refreshed on the bus's
   NameOwnerChanged. `use_desktop()` gives components the answer as a signal. Off Linux, or

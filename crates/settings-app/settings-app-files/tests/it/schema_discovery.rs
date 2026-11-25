@@ -55,7 +55,7 @@ fn a_stale_schema_is_skipped_with_a_warning() {
             ),
             ("future".to_owned(), StaleReason::UnsupportedVersion(2)),
         ],
-        "the malformed file is reported by ds-settings on stderr, the rest here"
+        "the malformed file is reported by ui-settings on stderr, the rest here"
     );
 }
 

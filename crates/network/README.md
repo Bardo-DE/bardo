@@ -16,7 +16,7 @@ a desktop: any zbus program on any Linux distribution can use them.
 Pin by tag:
 
 ```toml
-networkmanager-proxy = { git = "https://github.com/Bardo-DE/airwaves", tag = "v0.1.0", default-features = false, features = ["tokio"] }
+networkmanager-proxy = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.0", default-features = false, features = ["tokio"] }
 ```
 
 zbus runs on its own executor by default (`async-io`); a tokio program turns default features off

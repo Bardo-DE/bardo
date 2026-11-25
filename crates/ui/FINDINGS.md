@@ -33,7 +33,7 @@ that rev.
   app, BARDO-12 the shell side) is the shell's; (4) a second copy of an app no longer queues for the menu name
   and shows no menu in the bar: its `start` fails with `NameTaken` and the app decides (run without a
   menu, or exit); (5) `LiveClient` caps `Describe`/`Snapshot`/`Get`/`Changed` replies
-  (`ds_settings::live::limits`), but the Settings app's own `Holds`/`NeedsConfirmation` parsing (Sync1) is
+  (`ui_settings::live::limits`), but the Settings app's own `Holds`/`NeedsConfirmation` parsing (Sync1) is
   The Settings app's to cap; (6) the first check after a name changes hands costs one `GetNameOwner` on every
   call (the owner is looked up each time so a name that moved is never trusted for one call), and a
   refused owner is asked again on every call, not cached; (7) `ShellOnly` has no test of its own in
@@ -44,13 +44,13 @@ that rev.
   while `state()` stays `Live`. The portal and output watches still end silently on a bus error
   (bus lane). Ends when `Watch` re-arms on a vanished directory and reports `Blind`.
 - **The password in a field is copied into the DOM value (BARDO-22).** `Hidden` now wipes its
-  own memory on drop, but `ds-shell`'s `Entry` hands the secret to `TextField` as a `String`
+  own memory on drop, but `ui-shell`'s `Entry` hands the secret to `TextField` as a `String`
   prop. Ends when the secure field holds a wiping secret type instead of a `String`.
 - **The print fallback's PDF is not deleted when the viewer exits (BARDO-11).** It is written
   0600 in `$XDG_RUNTIME_DIR/bardo-print` (else the temp directory), and the next print sweeps
   files older than a day; `xdg-open` returns before the viewer has read it, so no earlier
   delete is safe.
-- **Sibling `[patch]` for blitz-kit still in the root `Cargo.toml` (BARDO-24).** The repo rules want
+- **Sibling `[patch]` for blitz-embed still in the root `Cargo.toml` (BARDO-24).** The repo rules want
   it in the work dir above the siblings; moving it needs a `.cargo/config.toml` outside this repo
   and a `Cargo.lock` refresh against the pinned git rev.
 - **`WindowSizer::request_size` on Wayland (fixed on `lane/wayland-resize`, live check not run).**
@@ -68,21 +68,21 @@ that rev.
   still expires after 500 ms rather than at once. The harness's `SizerAck::Applied` reproduces
   the Wayland answer.
 - **`PdfPage::Ready` carries a PNG `data:` URL, not pixels.** `ds` is renderer-free and `PdfThumb` is a `ds`
-  component, while `TextureLayer` lives in `ds-blitz`, so the page type in `ds` cannot hold a texture
+  component, while `TextureLayer` lives in `ui-blitz`, so the page type in `ds` cannot hold a texture
   or be drawn as one; `pdf_thumb_bytes` rasterises, encodes a PNG and `PdfThumb` draws it as an `<img>`
   (`pdf_thumb/raster.rs`). A consumer that draws pictures as textures (anyview's pane) meets one picture
-  that is not. Ends when `ds-blitz` offers the cached first page as straight RGBA (a `pdf_thumb_pixels`
+  that is not. Ends when `ui-blitz` offers the cached first page as straight RGBA (a `pdf_thumb_pixels`
   beside `pdf_thumb_blocking`, over the same cache and the same `DeviceBox`) and the PNG is made only
   where `PdfThumb` draws it; `PdfPage::Ready` then keeps its `ImageSource` for `ds`'s own users.
-- **Part 4 names still alive after step 4a.8.** `use_pulse`, `PulseKey` and `Pulse` stay in `ds-motion` as
+- **Part 4 names still alive after step 4a.8.** `use_pulse`, `PulseKey` and `Pulse` stay in `ui-motion` as
   the alias machinery of the one shake (`use_shake`); they are no longer a way to flourish, and
   `use_once` is private. `PaneSlide` stays because `PaneSwitcher` draws from it.
-- **Lower crates' CSS names variables the shell declares.** `ds-motion`'s keyframes read
-  `--osd-dy`, `--banner-dx` and `--banner-dy`, and `ds-style`'s shapes read `--dock-floor`, all
-  declared by `ds-shell`'s kit, so the stylesheet of `ds` alone (`ds::stylesheet()`) lints with
-  `UndeclaredVar` and only `ds_shell::stylesheet()` lints clean (`ds-shell/tests/it/self_lint.rs`).
+- **Lower crates' CSS names variables the shell declares.** `ui-motion`'s keyframes read
+  `--osd-dy`, `--banner-dx` and `--banner-dy`, and `ui-style`'s shapes read `--dock-floor`, all
+  declared by `ui-shell`'s kit, so the stylesheet of `ds` alone (`ds::stylesheet()`) lints with
+  `UndeclaredVar` and only `ui_shell::stylesheet()` lints clean (`ui-shell/tests/it/self_lint.rs`).
   Nothing under `ds` alone draws the OSD, the banners or the dock floor, so the reads are inert
-  there. Ends when the keyframes and the floor shape move to `ds-shell`'s own sheets.
+  there. Ends when the keyframes and the floor shape move to `ui-shell`'s own sheets.
 - **Motion and interaction primitives of step 4a.3 have consumers still to move.** `Swipe` keeps its own `swipe_damping`
   setting (a quarter, not `.55`) until design/22 decides the key. The tooltip is driven by
   `HoverProfile::Tip` since step 4a.6 (the CSS Fly and its `2.5 x --t-big` delay are gone). `SubmenuOpen` and `TriangleTimeout` are read by no menu tracker yet
@@ -109,7 +109,7 @@ that rev.
   (step 4a.6), and its search kind has neither the cancel button of a window's toolbar nor a suggestions
   list; the file and multiline kinds and `Password` are gone (a mail signature editor is a `TextView`).
   `Label` is built and the plain spans, `StatusLine`s and header fields are not yet moved onto it (each
-  moves with its component). `RadioGroup` draws the accent choice as colour circles (`Arrangement::Swatches`). The battery rings of `ds-shell` draw their own
+  moves with its component). `RadioGroup` draws the accent choice as colour circles (`Arrangement::Swatches`). The battery rings of `ui-shell` draw their own
   SVG on the arc geometry `ProgressIndicator` now owns; step 4a.7 recomposes them from it. The hover card's
   `KeyHint` still draws its own key cap; step 4a.6 uses `KeyEquivalent`. A `Badge` at zero draws nothing,
   so a row that reserved its width for the count no longer does.
@@ -126,7 +126,7 @@ Upstream (pinned around; re-check at every toolchain bump):
 - **`get_client_rect` borrows the document mutably** when a shared borrow would do, which is why
   rect reads can collide with the renderer ("Bar gaps"). Upstream report material.
 - **Hit test in an inline formatting context** returns the parent, not an atomic inline
-  (`inline-flex`) Button ("Polish pass"). `crates/ds-conformance/tests/it/button_click.rs` keeps the failing
+  (`inline-flex`) Button ("Polish pass"). `crates/ui-conformance/tests/it/button_click.rs` keeps the failing
   shape as an ignored reproduction for an upstream report.
 - **Paint and hit order of `z-index: auto` positioned boxes** is ranked per parent, not across
   the stacking context as CSS 2.1 Appendix E step 8 says ("Hit testing"). The fix (hoist them
@@ -159,20 +159,20 @@ Upstream (pinned around; re-check at every toolchain bump):
 Not built, or limited, in Bardo:
 
 - **Other Blitz hosts get less than `launch` and the harness.** shell-host and the shell call
-  `ds_blitz::provide_host()`, which installs every part of the document host, but do not
+  `ui_blitz::provide_host()`, which installs every part of the document host, but do not
   forward IME events or pointer capture to an `EditSurface`, have no hand-back of a removed
   element's keyboard (no `FocusKeeper`; the click-focus part they do have), find no element by
-  selector, and provide no spell checker (`ds_blitz::spell::provide()`) or resting-pointer hover
+  selector, and provide no spell checker (`ui_blitz::spell::provide()`) or resting-pointer hover
   replay; they must call
-  `ds_blitz::snap_to_device` after each resolve themselves. Each needs a ds-blitz entry point
+  `ui_blitz::snap_to_device` after each resolve themselves. Each needs a ui-blitz entry point
   the host calls.
 - **shell-host does not register the UI kit's faces.** `SharedFonts::system()` never calls
   `SharedFonts::register`, and Inter is not installed system-wide, so the shell draws system-ui
   wherever it asks for Inter, Inter Display, Bricolage, Karla, Space Mono or Noto Serif (its
   headless `Fonts::Bundled` registers only the first `.ttf` in the UI kit's font folder). The fix is
-  shell-host's: register `ds::style::fonts::FACES` (`ds_blitz::register_fonts`). Until then, never put the
+  shell-host's: register `ds::style::fonts::FACES` (`ui_blitz::register_fonts`). Until then, never put the
   emoji face in a stack that carries ordinary text ("Colour emoji").
-- **`ds_blitz::launch` is not pixel-snapped and gets no hover replay**: blitz-shell resolves and
+- **`ui_blitz::launch` is not pixel-snapped and gets no hover replay**: blitz-shell resolves and
   paints in one redraw with no hook between.
 - **No tooltips for `title=` on the launch path.** Blitz draws none. Closing it means a host
   overlay that shows a Bardo `Tooltip` for a hovered element's `title`; meanwhile
@@ -236,12 +236,12 @@ Not built, or limited, in Bardo:
   renders every row, and a viewer of a large text file windows its own lines (it owns the wheel
   and the line index). The glyph set has no clockwise and counter-clockwise rotate marks: the
   viewer's capsule borrows `Refresh` and `Undo`. The rotate glyphs end when they are added here.
-  `ds::components::lists::virtual_list::model::exit_anim` repeats `Exit::anim`, which ds-motion
-  keeps `pub(crate)`; it ends when ds-motion makes that method public.
+  `ds::components::lists::virtual_list::model::exit_anim` repeats `Exit::anim`, which ui-motion
+  keeps `pub(crate)`; it ends when ui-motion makes that method public.
 - **The media scrubber and the export `Sheet` layout are not built.** `Slider` (capsule look) and
   `Sheet` are what a viewer composes today.
 - **`TreeItem` has no keyboard toggle of its own**; no harness test presses Enter on a summary.
-- **The virtual clock is opt-in** (`Clock::Virtual`): 24 ds-blitz tests assume the wall clock
+- **The virtual clock is opt-in** (`Clock::Virtual`): 24 ui-blitz tests assume the wall clock
   (they time with `Instant::now()`, sleep the thread, or click one spot twice with a long
   `advance` between). Off-thread work (the settings watch, D-Bus replies, an `AppNet` answering
   from another thread) is never on the virtual clock.
@@ -283,14 +283,14 @@ Not built, or limited, in Bardo:
   roots that should fill the viewport; unsure whether anything else is still affected.
 - **The gallery's own wallpaper, stage and grid layout** have no Bardo token or component (unsure
   whether this still matters).
-- **`ds-behaviour` keeps no `ds-motion` dependency (recommended to stay that way).** The Space
+- **`ui-behaviour` keeps no `ui-motion` dependency (recommended to stay that way).** The Space
   swipe's finish is an ease-out-cubic sampled by the caller from `Swipe::Finishing`, and its
   duration, rubber band and commit are integer maths in `space_swipe::numbers`, so the crate needs
-  only `ds-core`, which is what lets a compositor link it with no style or Dioxus. The cost is that
-  `ds-motion` also has a rubber band (`rubber::resist`, over `Px` and `MotionLevel`) and a swipe
+  only `ui-core`, which is what lets a compositor link it with no style or Dioxus. The cost is that
+  `ui-motion` also has a rubber band (`rubber::resist`, over `Px` and `MotionLevel`) and a swipe
   with its own damping, so two rubber bands exist: the numbers here follow design/12 12.3.7 and
   the tables in `space_swipe/tests.rs`, not shared code. Ends when the user either accepts the
-  split or asks for the gesture maths to move down into `ds-core` for both to read.
+  split or asks for the gesture maths to move down into `ui-core` for both to read.
 - **A keyboard Space change takes up to 400 ms through `finish_duration`; 03 proposed 300 ms.**
   `Swipe` runs a `Go` (a key, an intent, an overview click) through the same finish as a lift, with
   a start speed of zero, so `clamp(|Δp| / 2 pages/s × 3, 100, 400 ms)` gives one Space 400 ms
@@ -305,7 +305,7 @@ The companion's types are frozen with placeholder views (design/32, design/33,
 
 Placeholder views (each draws one root `div.ds-<name>` and its sheet is a comment): `CompanionOrb`,
 `ContextChips`, `AnswerCard`, `PlanList`, `ReplaceBar`, `RunRow`, `ActivityStrip`,
-`MemoryTimeline`, `ConsolidationView`, `ServedByChip`, `ds_shell::confirm::view::ConfirmCard`.
+`MemoryTimeline`, `ConsolidationView`, `ServedByChip`, `ui_shell::confirm::view::ConfirmCard`.
 The compact form has no component of its own: `AnswerCard` draws it.
 
 Open items:
@@ -319,9 +319,9 @@ Open items:
   has the footer every card has (`footer_always_present`). The activity key is the journal's
   `UndoToken`, as `ActivityKey` is `UndoId`.
 - **Where the seam types live.** SPEC section 3.7 puts `CompanionPort` and `use_prompt_target` in
-  `ds-intents`, but `ds-intents` depends on `ds-core` alone while they name `ContextChip`,
+  `ui-intents`, but `ui-intents` depends on `ui-core` alone while they name `ContextChip`,
   `AnswerView`, `FieldHandle`, `Callback` and `ReadSignal`. They stay in `ds`
-  (`components/companion/port.rs`, `prompt/binding.rs`). `ds-intents` holds the plain values:
+  (`components/companion/port.rs`, `prompt/binding.rs`). `ui-intents` holds the plain values:
   `ThingMark`, `ContextChip`, `ChipKind`, `Removal`, `FieldMode`, `SummonSerial`,
   `SummonAnswerMark` and the `ContextModel` struct. `ContextChip` and `FieldMode` are there, below
   the `fields` group, because `TextField` takes both as props at the fill and a group may not name
@@ -384,7 +384,7 @@ anyrender_vello_hybrid) as a `DioxusDocument` driven with `resolve(t)`, `poll` a
 - **S7.** With the default `DocumentConfig` (`DummyNetProvider`) a `data:` mask image never
   loads and the element is fully masked. With a `data:`-only `NetProvider` (the logic of
   blitz-shell's `DataUriNetProvider`, behind a feature not in the pinned set) it paints. The
-  image arrives one resolve late, so the first frame is blank. Every ds-blitz document installs
+  image arrives one resolve late, so the first frame is blank. Every ui-blitz document installs
   a `data:` provider and a `NetWaker` that requests a redraw.
 - **S8.** The same condition as S7; with the provider an 8 x 8 PNG tiles correctly. The grain
   tile and the gallery wallpaper rely on it.
@@ -397,7 +397,7 @@ anyrender_vello_hybrid) as a `DioxusDocument` driven with `resolve(t)`, `poll` a
   family name in the file, and `font-family` picks it. Faces are registered once in a shared
   `FontContext` cloned into each document.
 - **S12.** blitz-dom's stylo.rs hard-codes `NonTSPseudoClass::FocusVisible => false` and
-  `FocusWithin => false`, and pointer-down focuses only text inputs and checkboxes. ds-blitz
+  `FocusWithin => false`, and pointer-down focuses only text inputs and checkboxes. ui-blitz
   tracks input modality and stamps `data-modality=keyboard|pointer` on `.ds`; focus rings are
   `.ds[*|data-modality=keyboard] :focus`, and the lint bans `:focus-visible` and
   `:focus-within` in the Blitz profile. Anything that must show while focus is inside a row (the
@@ -406,7 +406,7 @@ anyrender_vello_hybrid) as a `DioxusDocument` driven with `resolve(t)`, `poll` a
   `mask-image: linear-gradient(to right, black 70%, transparent)` fade; a real ellipsis is
   computed in Rust (`text/clip.rs`). Since Blitz fork e7f9f877 (review fixes 851fa7dd) a nowrap
   line that overflows a clipping block ends in its ellipsis, left to right only; the layout keeps
-  the whole text for selection and hit testing (`ds-conformance` `text_overflow_ellipsis`).
+  the whole text for selection and hit testing (`ui-conformance` `text_overflow_ellipsis`).
 - **S14.** `color-mix(in srgb | in oklab, …)` works, `var()` inside it too. The precomputed
   washes stay for determinism, not because Blitz forces them.
 - **S15.** Both anyrender backends take `backdrop-filter` as `_backdrop_filter` and ignore it.
@@ -422,7 +422,7 @@ anyrender_vello_hybrid) as a `DioxusDocument` driven with `resolve(t)`, `poll` a
 
 ## CSS `filter`
 
-Measured by `ds-blitz/tests/it/css_filter.rs`: one swatch per function, and per filter list, beside an
+Measured by `ui-blitz/tests/it/css_filter.rs`: one swatch per function, and per filter list, beside an
 unfiltered control, read back from the pixels of each backend (the hybrid cases skip where no GPU
 adapter opens).
 
@@ -462,7 +462,7 @@ adapter opens).
 
 - `conic-gradient(from calc(var(--a) * 2) at 25% 70%, ...)` with transparent stops paints and
   turns with the variable; `mask-image: radial-gradient(...)` masks; several layered conics under
-  `border-radius` clip to the circle (`ds-conformance/tests/it/voice_orb.rs`).
+  `border-radius` clip to the circle (`ui-conformance/tests/it/voice_orb.rs`).
 - `@property --angle` with `@keyframes { to { --angle: 360deg } }` animates a conic gradient on the
   headless harness exactly as a `rotate()` keyframe does (`registered_property_animation.rs`); not
   measured in a window. The voice orb drives its turn from Rust regardless (design/30 `VoiceOrb`).
@@ -501,7 +501,7 @@ adapter opens).
   (the shared drop rules) sort last because they tie with the items' hover and current rules.
 - **`DsInternals`** forbids a consumer selector on the UI kit's classes or root attributes
   (`data-theme`, `data-hover`, `data-extent`, …); `data-slot` is a consumer seam
-  (`CONSUMER_SEAMS` in `ds-lint/selector.rs`). A type selector on a Bardo element trips the
+  (`CONSUMER_SEAMS` in `ui-lint/selector.rs`). A type selector on a Bardo element trips the
   consumer-only exemption, which keys on a selector starting `.ds`, so a `div`/`li` hover target
   carries `data-as`.
 - **A custom property on a `ds-*` element is how Bardo hands its sheet a per-instance colour**
@@ -547,10 +547,10 @@ adapter opens).
 - **App icons.** The shipped set is in design/08 section 2.11 (`assets/icons/apps/`): thirteen
   sizes, three styles (Colour, Muted, Monochrome). Monochrome ships neutral and is tinted at run
   time by `ds::style::icon::retint::retint`, so one set serves every Space. The lookup
-  (`ds_settings::app_icon_path`) tries `$BARDO_ICON_ASSETS` (the apps directory itself),
+  (`ui_settings::app_icon_path`) tries `$BARDO_ICON_ASSETS` (the apps directory itself),
   `$XDG_DATA_HOME/bardo/icons/apps`, each `$XDG_DATA_DIRS/bardo/icons/apps`, then the
   repository's `assets/icons/apps` in development; the first existing directory wins whole; the
-  exact size, else the nearest larger, else the largest smaller. It lives in `ds-settings`
+  exact size, else the nearest larger, else the largest smaller. It lives in `ui-settings`
   because it reads the disk and `ds` stays effect-free.
 - **Plate tint.** `IconView { plate_tint }` sends the plate's two stops and its ink through the
   same `retint::recolour` as the raster, per scheme, written as `--plate-{base,deep,ink}-{l,d}`;
@@ -570,7 +570,7 @@ adapter opens).
 - **Inter is the system typeface** (`Typeface::System`; `Editorial` is Bricolage, Karla and Space
   Mono). Blitz sets no optical size from the font size (no `font-optical-sizing`), so Inter's
   `opsz` is pinned into two families: Inter (opsz 14, wght 400..700, italic 400) and Inter
-  Display (opsz 32, wght 500..800), cut from Inter 4.1 (`crates/ds-style/scripts/cut-inter.sh`
+  Display (opsz 32, wght 500..800), cut from Inter 4.1 (`crates/ui-style/scripts/cut-inter.sh`
   records the release hash). parley applies `font-variant-numeric`, so `tnum` works; the layout
   features kept are `kern mark mkmk ccmp locl calt case tnum pnum zero`. Inter's `tnum` also
   makes `-` and `:` tabular, so a date under `.ds-mono` reads a little open; accepted, it keeps
@@ -640,8 +640,8 @@ own caret and selection. The route needs no Blitz fork.
 - **IME never reaches a dioxus handler.** blitz-shell converts winit `Ime` to `UiEvent::Ime`;
   blitz-dom's default action edits only a focused `input`/`textarea`; dioxus-native-dom maps
   `DomEventData::Ime(_)` to `None` and its composition converter is `unimplemented!()`.
-- **ds-blitz sees window events first.** dioxus-native runs every `use_window_event` handler
-  before passing the winit event to blitz-shell (blitz-shell's dioxus_application.rs), so ds-blitz's `Host`
+- **ui-blitz sees window events first.** dioxus-native runs every `use_window_event` handler
+  before passing the winit event to blitz-shell (blitz-shell's dioxus_application.rs), so ui-blitz's `Host`
   takes `WindowEvent::Ime` there and routes it to the surface registered at the focused node or
   its nearest registered ancestor (`EditListeners`); blitz-dom's own IME handling then no-ops.
   The harness calls the same router. If a Blitz bump reorders `use_window_event` after the
@@ -662,7 +662,7 @@ own caret and selection. The route needs no Blitz fork.
   paragraphs or past a line's end still lands.
 - **The layout does not name text nodes.** A glyph run's brush is the element of its style span,
   and the layout text is every text node concatenated after white-space collapsing (plus case
-  transforms, list markers, `br` as `\n`). ds-blitz aligns DOM text nodes to the layout text
+  transforms, list markers, `br` as `\n`). ui-blitz aligns DOM text nodes to the layout text
   character by character, so a layout offset maps to (text node, byte) and back. A caret between
   two text nodes that an inline atom separates resolves to the later node's start.
 - **Focus.** A press would start Blitz's own document text selection and the click after it would
@@ -674,7 +674,7 @@ own caret and selection. The route needs no Blitz fork.
   window's hook hears winit's pointer events before the document (logical = physical / scale
   factor); while captured the surface ignores its own `pointermove`/`pointerup`.
 - **Clipboard HTML.** `ShellProvider` has text only; the window reads `text/html` through arboard
-  directly (`ds_blitz::clipboard::read_html()`). On Wayland arboard goes through XWayland, as
+  directly (`ui_blitz::clipboard::read_html()`). On Wayland arboard goes through XWayland, as
   blitz-shell's text clipboard does: the UI kit does not use `wayland-data-control` (decided 2026-10-16,
   production audit BARDO-08; the workspace `arboard` asks for no features). The blitz fork's own
   workspace still enables the feature for blitz-shell's arboard, so the lock keeps `wl-clipboard-rs`
@@ -698,7 +698,7 @@ own caret and selection. The route needs no Blitz fork.
   `onblur` itself; a node found by selector is matched to a mounted `TextField` through
   `GeometryHost::same` so it is told too.
 - **No `MountedData` can be built for a node found by selector**: `NodeHandle` has crate-private
-  fields and no constructor. ds-blitz wraps a found node in its own `RenderedElementBacking`
+  fields and no constructor. ui-blitz wraps a found node in its own `RenderedElementBacking`
   (`FoundNode`), which answers focus, blur and select only. `focus_by_selector` waits up to
   twenty frames for the element to be drawn.
 - **Keep-focus.** Under `FocusFallback::Ancestor` (the default), `Ds`'s root click handler asks
@@ -746,14 +746,14 @@ own caret and selection. The route needs no Blitz fork.
 - **`NodeHandle::set_focus` borrows the document when called, not when polled.** dioxus polls a
   task woken in the same turn as a dirty scope inside `render_immediate`, while the mutation
   writer holds the document, so a focus from such a task panics "RefCell already borrowed". Every
-  focus change goes through `FocusHost` (ds-blitz's probes with `NodeHandle::try_doc` first and
+  focus change goes through `FocusHost` (ui-blitz's probes with `NodeHandle::try_doc` first and
   answers `Busy`); `Busy` retries. Without a host the call is guarded and a panic reads as busy.
 - **An `EventHandler` made inside `queue_effect` has no scope** and panics when called; timer
   handlers are made in render and started from an effect.
 
 ### Bar gaps: rect reads and stacking
 
-- **The frame phase runs where a driver runs it.** `ds-blitz`'s window loop runs `Phase` after each
+- **The frame phase runs where a driver runs it.** `ui-blitz`'s window loop runs `Phase` after each
   drawn frame (layout fresh: writes apply once, watched rects publish when they changed) and after
   each wake-up (layout stale: writes apply and stay queued for the next frame). The harness runs
   it after each layout. A document a shell-host surface drives is not run by either, so its host
@@ -767,7 +767,7 @@ own caret and selection. The route needs no Blitz fork.
   host runs no phase. Each leaves when its caller reads a `use_layout` signal instead.
 - **Rect reads can collide with the renderer** the same way: dioxus-native-dom's
   `get_client_rect` borrows the document mutably on its first poll. Every rect read goes through
-  `geometry::measure::client_rect`, which asks the host's `GeometryHost::measure` (ds-blitz's answers
+  `geometry::measure::client_rect`, which asks the host's `GeometryHost::measure` (ui-blitz's answers
   `Measured::Busy` and the reader waits a frame); without a measurer the poll is guarded.
 - **Busy retries land in the same frame.** The first four `Busy` retries of a focus write, a rect
   read and a list scroll wait for `ds::busy::after_render` (an effect, which dioxus runs outside
@@ -781,14 +781,14 @@ own caret and selection. The route needs no Blitz fork.
 ### Other seams
 
 - **Every host seam is a part of `ds::prelude::DocumentHost`, `ds::prelude::HostSignals` or a trait**, provided by
-  `ds_blitz::launch`, the harness and `ds_blitz::provide_host()`: the host's `FocusHost`,
+  `ui_blitz::launch`, the harness and `ui_blitz::provide_host()`: the host's `FocusHost`,
   `CaretHost`, `GeometryHost`, `ClickFocusHost`, `EditHost` (with `ImeHost`) and `FileDropHost`;
   the `FileDropBoard` and `Rc<dyn Clipboard>` beside it; `HostSignals` (modality, scale,
   activity); `WindowHost`. `ds` names none of Blitz's types.
 - **`use_environment` runs its watches on a `Spawner`** (`ds::spawn::Spawner`; the portal watch and
-  the file watch are tasks it hands over). `ds_blitz::TokioSpawner::current` is the one
-  implementor; `ds_blitz::launch` and `Harness` enter a process-wide two-worker runtime for it.
-  `ds` and `ds-settings` may not depend on a renderer, and `scripts/check-boundary.sh` forbids
+  the file watch are tasks it hands over). `ui_blitz::TokioSpawner::current` is the one
+  implementor; `ui_blitz::launch` and `Harness` enter a process-wide two-worker runtime for it.
+  `ds` and `ui-settings` may not depend on a renderer, and `scripts/check-boundary.sh` forbids
   `tokio` in both. The file watch's debounce is a `futures_timer` wait on the spawner's own thread:
   `ds::sleep` follows the clock installed on its caller's thread and is not `Send`.
 - **A `Signal` read guard lives through an `if let` body** (edition 2024): copy a peeked value out
@@ -799,37 +799,37 @@ own caret and selection. The route needs no Blitz fork.
 ## Frames and links
 
 - **A frame's document is built through the parent's HTML parser** with a config that inherits
-  the parent's net provider (blitz-dom's iframe.rs). ds-blitz wraps the parser, so every
+  the parent's net provider (blitz-dom's iframe.rs). ui-blitz wraps the parser, so every
   frame document (a `srcdoc`, a `src` load, a nested frame) is born with the frame's own net and
   navigation providers. The app renders one frame after the host installs its providers, so no
   frame is parsed with dioxus-native's.
 - **Network policy.** `data:` is always served; `about:` never fetches. The app's document gets
   `file:` under `NetPolicy::Local` and `Custom`, only from inside the `FileRoots` the app names
   (`AppConfig::with_file_roots`; none named, none read; HOST-09) and only a regular file of at
-  most 32 MiB; a frame never gets `file:` from ds-blitz (under
+  most 32 MiB; a frame never gets `file:` from ui-blitz (under
   `Local` and `Sealed` a frame gets `data:` only; under `Custom` everything else is put to
   `AppNet::decide`). An `<iframe src>` in the app's own markup is fetched by the app's document
   (`start_iframe_load` uses the parent's id and provider).
 - **A frame's first requests are made before it has an element**: `attach_iframe_document`
   parses the sub-document (where its images are requested) and attaches it afterwards, with the
-  parent mutably borrowed throughout. ds-blitz holds a frame's requests in a per-document
+  parent mutably borrowed throughout. ui-blitz holds a frame's requests in a per-document
   `FrameBook` until the next walk of the document's `iframe`s reads its `data-frame-tag`, then
   hands them to `AppNet::decide`. (The thread-local list of books behind `tag_of` and
   `frame_by_tag` is deleted: nothing called them but one test; the tag arrives with the request
   and the link.)
 - **Parser.** blitz-html pulls html5ever, markup5ever and xml5ever 0.39.0 (pinned to match
-  stylo's `web_atoms`), not `markup5ever_rcdom`. No JS engine is in ds-blitz's graph. The
+  stylo's `web_atoms`), not `markup5ever_rcdom`. No JS engine is in ui-blitz's graph. The
   security boundary for mail stays ammonia upstream; the worst case of a parser differential is
   markup resurrected inside the frame's own document, where the network is sealed and navigation
   frozen.
 - **Links.** Blitz's `IframeNavigationProvider` reloads a frame with a clicked link's target;
-  ds-blitz replaces it, so a frame never navigates: `FrameLinks::default()` does nothing, and
+  ui-blitz replaces it, so a frame never navigates: `FrameLinks::default()` does nothing, and
   `Intercept` hands the app a `FrameLink { frame, tag, href, text, title }` through a channel,
   with the document free. The navigation provider hears only a URL, so the text is read at
   delivery (the anchor under the frame's hover node, else the focused one, else the first
   `a[href]` resolving to the same URL). Links in the app's own document open http(s) and mailto
   in the browser.
-- **Hover over frame links is hit-tested by ds-blitz**, not read from Blitz: Blitz forwards the
+- **Hover over frame links is hit-tested by ui-blitz**, not read from Blitz: Blitz forwards the
   move into the frame and keeps the hover state there, and the window hook hears a move before
   the document. `frame_hit.rs` goes into the frame's document as Blitz forwards events (minus the
   element's position, plus the frame's scroll); only a change of link is reported.
@@ -871,7 +871,7 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
 
 - **dioxus-native has no public way for a running app to open a window**: `add_window` pushes
   onto `pending_windows`, drained only on resume, and such a window gets none of dioxus-native's
-  contexts (the `use_window_event` registry's type is crate-private). ds-blitz runs the event
+  contexts (the `use_window_event` registry's type is crate-private). ui-blitz runs the event
   loop itself, one `DioxusNativeApplication` per window under its own `ApplicationHandler`
   (`window_shell`), with its own copies of the two private providers (the `dioxus:` asset net
   provider and the link opener).
@@ -907,7 +907,7 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
   release that arrives before the paths is held until they come. X11 gives no position on enter,
   proposes only `Copy`, and answers each position with the state set before it (the cursor
   trails by one move).
-- blitz-shell ignores the drag events and the document has no drag events; ds-blitz reads them
+- blitz-shell ignores the drag events and the document has no drag events; ui-blitz reads them
   in the same window hook as IME. A URI list with any non-`file:` entry is `Offer::Other`,
   refused. A target writes the existing `DropState` values (`target` over it, `accepts`
   elsewhere during a file drag).
@@ -915,7 +915,7 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
 ### Clipboard
 
 - dioxus-native's `clipboard` feature is on (blitz-shell over arboard 3.6), so Ctrl+C/X/V work in
-  every field of a `launch` window. The app's calls answer `NoHost` outside a ds-blitz document,
+  every field of a `launch` window. The app's calls answer `NoHost` outside a ui-blitz document,
   or `Unavailable`. The harness keeps an in-memory clipboard with an HTML slot.
 - **No data-control (2026-10-16, BARDO-08).** The UI kit reads and writes the clipboard as a client with
   a window, never through `zwlr`/`ext` data-control, which would let a background client read it:
@@ -926,11 +926,11 @@ winit at the pinned rev is 0.31.0-beta.3. What the client-drawn frame relies on,
   `arboard` in the fork's root `Cargo.toml` (the fork commit 15ead74d added it), after which the
   lock loses `wl-clipboard-rs`. Until then the build contains the backend but the UI kit's own reads do
   not depend on it.
-- **The primary selection** is `ClipboardTarget::Primary` on `ds_blitz::clipboard::{read_from, write_to}` (a terminal's OSC 52 `p`).
+- **The primary selection** is `ClipboardTarget::Primary` on `ui_blitz::clipboard::{read_from, write_to}` (a terminal's OSC 52 `p`).
   Linux reaches it through arboard's `LinuxClipboardKind::Primary` (`clipboard/primary.rs`), so on Wayland it goes through
   XWayland like the regular clipboard and is not shared with native Wayland clients; other platforms read nothing and refuse a
   write, never falling back to the regular clipboard. The harness keeps it in memory (`Harness::primary_text`).
-- **Reads are bounded (BARDO-08).** `ds_blitz::clipboard` reads on a worker thread (`clipboard/read.rs`):
+- **Reads are bounded (BARDO-08).** `ui_blitz::clipboard` reads on a worker thread (`clipboard/read.rs`):
   the UI waits at most 500 ms, takes at most 16 MiB, and starts no second read while one is stuck.
   An owner that is slow, silent or huge reads as an empty clipboard. Still open: the `EditHost::paste`
   seam is synchronous, so a paste still holds the UI for up to those 500 ms, and blitz-shell's own
@@ -986,7 +986,7 @@ on a machine other builds were also using, so about +-10 ms).
 - **So no CSS value alone makes a crisp line at a fractional scale.** A black `height: 1px` line
   on white inks its device rows 255, 128 at 1.5 (y 10); 128, 191 at 1.25; 128, 255, 64 at 1.75;
   two full rows at 2.
-- **`ds_blitz::snap_to_device`** runs after every resolve in the harness and `snapshot`: it
+- **`ui_blitz::snap_to_device`** runs after every resolve in the harness and `snapshot`: it
   redoes taffy's cumulative rounding from each node's unrounded layout on the device grid,
   rounds border widths to whole device pixels (at least one), re-derives transforms and
   scrollable overflow, and rounds pure translations, through blitz-dom's public layout
@@ -1037,7 +1037,7 @@ on a machine other builds were also using, so about +-10 ms).
 - **A hidden node keeps its last layout box**; read a following element to measure a collapse.
 - **An element's own client rect is offset by its own scroll offset** (`absolute_position`
   subtracts it), so a scrolled list's rect moves with its content.
-- **`scroll_into_view` scrolls the document viewport only.** ds-blitz's `GeometryHost::reveal` sets a
+- **`scroll_into_view` scrolls the document viewport only.** ui-blitz's `GeometryHost::reveal` sets a
   nested list's own offset (instant, clamped) by CSSOM's `block: nearest`
   (`ds::nearest_scroll`).
 
@@ -1047,7 +1047,7 @@ on a machine other builds were also using, so about +-10 ms).
   Button alone, beside a placeholder, or beside inline text) the parent is an inline formatting
   context, and blitz-dom's `Node::hit` returns the parent, so the click goes to the parent. A
   block sibling or a flex parent gives the Button its own box. Every Bardo container is a flex
-  row; a consumer puts a lone button in one. `crates/ds-conformance/tests/it/button_click.rs` pins both working
+  row; a consumer puts a lone button in one. `crates/ui-conformance/tests/it/button_click.rs` pins both working
   shapes and keeps the failing one ignored.
 
 ### Hover under a resting pointer
@@ -1057,7 +1057,7 @@ on a machine other builds were also using, so about +-10 ms).
   without dispatching (a TODO says so); the next move's diff is then empty, so an element that
   slid under the pointer never hears `pointerover`/`pointerenter`, and the one left never hears
   `pointerout`/`pointerleave`.
-- **blitz-kit replays** (`hover/decide.rs` decides, `hover/repair.rs` acts, from
+- **blitz-embed replays** (`hover/decide.rs` decides, `hover/repair.rs` acts, from
   `Headless::resolve`): when the hovered node changed across a resolve and a pointer event has
   arrived, put Blitz's hover back on the old element without events (probe its rect's centre,
   then its corners inset 1 px, through `hit()` and `nearest_non_anonymous_ancestor`, then
@@ -1084,16 +1084,16 @@ on a machine other builds were also using, so about +-10 ms).
   moving right, the opposite of the web's `deltaX`), multiplies a line by 20 px only for its own
   scrolling, targets the hover node (set only by a pointer move), and carries no scroll phase, so
   a touchpad gesture's end is a quiet spell (`DelayToken::SwipeQuiet`, 120 ms).
-  `Harness::wheel` moves the pointer first. A `ds_blitz` window does not leave its containers to
+  `Harness::wheel` moves the pointer first. A `ui_blitz` window does not leave its containers to
   that scroll: its loop gives each winit event to `window_scroll` first, which takes the wheel
-  for the shared engine (`blitz_kit::scroll`, 60 px a detent, eased) and hands Blitz only a wheel
+  for the shared engine (`blitz_embed::scroll`, 60 px a detent, eased) and hands Blitz only a wheel
   over a `data-wheel="capture"` element; `Harness::wheel` stays the raw one, `Input::detents`
   the engine's.
 - **No pointer capture in Blitz**: a drag that leaves an element is noticed at the next move with
   no button down. The window hook hears winit's pointer events first, so `use_pointer_capture` asks
   the host to route every move and the primary release to one element until the button comes up
   (the edit surface's route, now general). The level control and swipe still use their own events.
-- **`use_rect` measures once, and a window resize changes what it measured.** ds-blitz bumps a
+- **`use_rect` measures once, and a window resize changes what it measured.** ui-blitz bumps a
   `WindowResized` counter (root context) on every `SurfaceResized` and `ScaleFactorChanged`, and
   `use_rect` reads its element again a frame later, after the layout the resize caused. The
   harness has no resize, and a shell surface's host does not bump it.
@@ -1101,7 +1101,7 @@ on a machine other builds were also using, so about +-10 ms).
   its own state would read them one render late; `MachineRef::set_params` sets them before a send.
 - **Phased wheel and pinch come from winit, not Blitz.** `WindowEvent::MouseWheel` carries a
   `TouchPhase` and `WindowEvent::PinchGesture` exists on Wayland and macOS; Blitz forwards neither
-  to the document, but the window sees both before it, so `ds-blitz` publishes them as
+  to the document, but the window sees both before it, so `ui-blitz` publishes them as
   `Gesture`s on a per-window `GestureBus` (`use_gestures`): the wheel from `window_scroll` (which
   also scrolls with it, and may ease its detents for listeners that ask,
   `WheelDelivery::Eased`), the pinch from the window hook. No change to the Blitz fork. A gesture
@@ -1118,7 +1118,7 @@ on a machine other builds were also using, so about +-10 ms).
   transform); a monitor's scale is the integer `wl_output` one, while `Window::scale_factor`
   follows `wp_fractional_scale_v1`; `Window::current_monitor` is the output the surface entered;
   there is no primary monitor; the compositor's exclusive zones are never sent to clients, so no
-  work area exists. `ds_blitz::ScreenArea` says which of these it used.
+  work area exists. `ui_blitz::ScreenArea` says which of these it used.
 
 ### Scrolling
 
@@ -1133,11 +1133,11 @@ on a machine other builds were also using, so about +-10 ms).
   Chromium-like: 10 px, 32 px minimum, 500 ms fade delay, 200 ms fade). Every ds scroll container
   sets it.
 - **A scroll does not relayout**: wheel plus style and layout is 0.03 to 0.1 ms p50.
-- **A `ds-blitz` window paints no overlay thumb** (design/11 §11.3.12): the engine writes raw
+- **A `ui-blitz` window paints no overlay thumb** (design/11 §11.3.12): the engine writes raw
   offsets, which Blitz's own scrollbar never reacts to, and the pinned blitz-dom builds without
   its `scrollbars` feature anyway, so an app window has shown none before and after the shared
   engine. Open: the thumb's paint and fade (`shell-host/src/scroll/{indicator,paint}`) would move
-  into `blitz-kit` for a `ds-blitz` window to draw it too.
+  into `blitz-embed` for a `ui-blitz` window to draw it too.
 
 ## Motion and timing
 
@@ -1167,15 +1167,15 @@ on a machine other builds were also using, so about +-10 ms).
   test harness now names its clock and runs on `Clock::Virtual` (`ds/tests/it/clock_rule.rs` enforces
   it); the bullets below describe the `Clock::Wall` exceptions. The exceptions are the tests that
   assert real time: Blitz's wall-clock double click (`keep_focus`, `window_frame_controls`), the
-  split-clock repro (`cancelled_animation`), and the clock's own tests in `ds-harness/tests`. Tests
+  split-clock repro (`cancelled_animation`), and the clock's own tests in `ui-harness/tests`. Tests
   that wait on a real thread (spell worker, PDF raster) wait on the event
-  (`ds-blitz/tests/support/worker.rs`); wall-time budgets are `#[ignore = "perf: ..."]` and run by
+  (`ui-blitz/tests/support/worker.rs`); wall-time budgets are `#[ignore = "perf: ..."]` and run by
   `scripts/perf.sh`.
 - **The split clock.** On `Clock::Wall`, CSS resolves at the harness's own time (the sum of
   `advance`s) while ds timers and `Instant::now()` run on the wall clock, and `advance` only
   guarantees *at least* the time asked. Under load a check near a boundary lands on either side.
 - **The rule** (ARCHITECTURE.md "Repo rules"): never assert a state at one fixed instant near a
-  timer boundary. Poll with `ds_harness::harness::settle_until` (10 ms steps, `SETTLE_BOUND` 3 s,
+  timer boundary. Poll with `ui_harness::harness::settle_until` (10 ms steps, `SETTLE_BOUND` 3 s,
   returns the instant the condition first held, panics with the document's HTML on timeout) and
   assert order, or that it landed at least the window after it was asked
   (`landed.duration_since(asked) >= window`, safe because real time only overshoots). A "not yet"
@@ -1230,7 +1230,7 @@ on a machine other builds were also using, so about +-10 ms).
 
 ## PDF output
 
-Blitz lays the document out, `pdfrum-anyrender` (a pdfrum crate, from crates.io, behind `ds-blitz`'s `pdf` feature)
+Blitz lays the document out, `pdfrum-anyrender` (a pdfrum crate, from crates.io, behind `ui-blitz`'s `pdf` feature)
 replays anyrender's recording `Scene` onto a pdfrum canvas, and the result is a vector PDF. It
 names only anyrender, peniko, pdfrum and skrifa (no Blitz, no parley).
 
@@ -1257,7 +1257,7 @@ names only anyrender, peniko, pdfrum and skrifa (no Blitz, no parley).
   (`Margins::default()` is 18 mm / 16 mm).
 - **The text behind each glyph**: blitz-paint hands anyrender glyph ids and positions only, but
   the parley layouts are public (`inline_layout_data`, a list item's marker, a text input's
-  editor). Before painting, ds-blitz pairs each glyph run's glyphs with their clusters' text,
+  editor). Before painting, ui-blitz pairs each glyph run's glyphs with their clusters' text,
   keyed by face blob id and index, size and each glyph's id and position bits
   (`pdf/run_texts.rs`); a ligature's continuation clusters join its glyph. pdfrum writes the text
   into `/ToUnicode`, or `/ActualText` where a mapping would conflict. The key includes the blob
@@ -1275,7 +1275,7 @@ names only anyrender, peniko, pdfrum and skrifa (no Blitz, no parley).
   instance as `Karla_550wght`). Noto Sans CJK on this machine is one variable CFF2 collection
   (32 MB) whose default instance is Thin, so ignoring the coordinates prints Thin; it is shared
   into pdfrum without a copy and subset to about 20 KB.
-- **Images**: Blitz keeps only decoded RGBA, so ds-blitz re-decodes `data:` URLs to recover the
+- **Images**: Blitz keeps only decoded RGBA, so ui-blitz re-decodes `data:` URLs to recover the
   encoded bytes. JPEG and opaque PNG are written as-is; a PNG with alpha is drawn from pixels with
   an SMask; images an `AppNet` fetched are drawn from pixels. An image brush draws once, clipped;
   Blitz tiles backgrounds itself.
@@ -1311,11 +1311,11 @@ What Blitz at the pinned rev paints (48 px, headless):
 | Noto Color Emoji COLRv1 (Fedora's default), named in the stack | colour, including skin tones, flags and ZWJ sequences shaped to single glyphs (Noto draws the family in greys) | colour, the same to within anti-aliasing |
 | Noto Color Emoji CBDT, Apple Color Emoji `sbix` (bitmaps), glifo's `png` feature off | nothing (0 inked) | nothing |
 | the same with `png` on (vello fork 5379e4a8: a default feature of vello_hybrid) | colour, including flags and skin tones | colour: each bitmap is put in the atlas for its frame (before 5379e4a8 it **panicked**, `pixmap image sources are not supported by Vello Hybrid`) |
-| no emoji family named, before `ds_blitz::EmojiChoice` | monochrome from Symbola, with tofu for modifiers and flags | |
+| no emoji family named, before `ui_blitz::EmojiChoice` | monochrome from Symbola, with tofu for modifiers and flags | |
 | Noto Emoji (monochrome), named | monochrome outlines | |
 
 - **COLRv1 needs no change in Bardo**: glifo interprets the paint graphs (layers, gradients,
-  clips) on either backend. `ds-blitz/tests/it/colour_emoji.rs` keeps it as a regression test (skipped where
+  clips) on either backend. `ui-blitz/tests/it/colour_emoji.rs` keeps it as a regression test (skipped where
   the font is not installed).
 - **Bitmap colour emoji draw since vello fork 5379e4a8.** glifo decodes `sbix` and `CBDT` glyphs
   only with its `png` feature, and vello_hybrid sampled only images uploaded beforehand, so the
@@ -1323,7 +1323,7 @@ What Blitz at the pinned rev paints (48 px, headless):
   vello_hybrid now uploads a frame's pixmap images before drawing it and frees them after, and
   turns `png` on by default (which turns it on for vello_cpu's glifo too). This is what draws
   emoji on a Mac at all: Apple Color Emoji is `sbix`, and macOS has no COLR emoji face.
-  `ds-blitz/tests/it/colour_emoji.rs` `the_macs_bitmap_emoji_paint_in_colour` keeps it on vello_cpu;
+  `ui-blitz/tests/it/colour_emoji.rs` `the_macs_bitmap_emoji_paint_in_colour` keeps it on vello_cpu;
   the hybrid path needs a GPU adapter to test.
 - **Stack order.** Noto Color Emoji's cmap maps U+0020, the digits, `#` and `*` (the key remap daemon bases),
   and parley takes each cluster from the first family in the stack that maps it. So the text
@@ -1332,7 +1332,7 @@ What Blitz at the pinned rev paints (48 px, headless):
   nothing for "2#". `--font-emoji` (`"Inter","Noto Color Emoji",system-ui,sans-serif`) and
   `.ds-emoji-text` are for emoji content only (the emoji grid, the preview glyph); the text
   stacks name no emoji face while shell-host lacks the UI kit's faces (Open items).
-  `ds-blitz/tests/it/text_stack_fonts.rs` lays the stack out under both font contexts: under shell-host's,
+  `ui-blitz/tests/it/text_stack_fonts.rs` lays the stack out under both font contexts: under shell-host's,
   "00:22" is 84 px against 45 for Inter and 41 for system-ui.
 - **Unnamed-stack emoji (anyview report, 2026-10-14).** A ZWJ family drew as four monochrome
   faces and a flag as two boxes in a window whose stack names no emoji family. Cause: fallback,
@@ -1340,12 +1340,12 @@ What Blitz at the pinned rev paints (48 px, headless):
   `big_colr`) and the named-family rows above prove it. Parley (shape/mod.rs, `select_font`)
   asks the element's stack, then the `emoji` generic, and `system-ui`/`sans-serif` expand to the
   whole fontconfig match list (`fc-match -s`), which reaches Symbola before the `emoji` generic
-  is consulted. Fix: `ds_blitz::font_context` (`bardo-emoji`, `face.rs`; shared with temor's terminal) detects the first COLR family of
+  is consulted. Fix: `ui_blitz::font_context` (`bardo-emoji`, `face.rs`; shared with temor's terminal) detects the first COLR family of
   the `emoji` generic, else the COLRv1 file, else the first `sbix` or `CBDT` family, and inserts it into each generic list
   just before the first family mapping U+1F600, so text fonts earlier in the list keep digits and
   spaces. `BARDO_EMOJI_FAMILY=<name>` (`EmojiChoice::Named`) overrides the detection. Not
   covered: contexts not built by Bardo (shell-host's `SharedFonts::system`) still need the
-  emoji face named, or the same call; the fix would belong in `blitz_kit::fonts::SharedFonts`.
+  emoji face named, or the same call; the fix would belong in `blitz_embed::fonts::SharedFonts`.
 
 - **For an emoji grid**: COLRv1 by name for the whole set; AnimatedEmoji's still first frames
   (`EmojiPlayback::Still`) where a cell must match the picture it becomes; pre-rendered sprite
@@ -1361,7 +1361,7 @@ that text, and Chinese and Japanese get no dictionary word boundaries (word sele
 by word fall back). Line wrapping between ideographs is UAX #14 and works either way. The
 workspace turns the feature on (`parley = { features = ["std", "complex-scripts"] }`); Blitz
 (checked at the pinned rev) builds no segmenter of its own, so nothing else logs it.
-`ds-blitz/tests/it/cjk_line_break.rs` checks only that Chinese wraps: the log is not observable
+`ui-blitz/tests/it/cjk_line_break.rs` checks only that Chinese wraps: the log is not observable
 from a test, `word-break: keep-all` does not use the dictionary for Chinese (it keeps ideograph
 runs whole either way), and parley's cluster flags do not expose the dictionary's word starts.
 
@@ -1417,8 +1417,8 @@ runs whole either way), and parley's cluster flags do not expose the dictionary'
   16 processes of 32 test threads at once): 12 of 960 runs crashed before; with naming off 1 of 960, a second
   race (concurrent `vkCreateInstance`, SIGSEGV in `terminator_EnumerateInstanceExtensionProperties`),
   which a process-wide lock around opening a harness's device (`gpu_device::OPENING`, no data, no
-  shared device) removes; 0 of 1920 after both. The `ds-conformance` tests paint on vello_cpu and
-  never open wgpu, so the GPU-using tests are the `ds-harness` hybrid and texture-layer ones.
+  shared device) removes; 0 of 1920 after both. The `ui-conformance` tests paint on vello_cpu and
+  never open wgpu, so the GPU-using tests are the `ui-harness` hybrid and texture-layer ones.
   Consumers can drop `WGPU_DEBUG=0` and
   `WGPU_VALIDATION=0` from `.cargo/config.toml`. **Not shared**: one process-wide device would
   be a hidden global of the kind the tooling review warns about, `paint_timed` waits on the whole
@@ -1427,7 +1427,7 @@ runs whole either way), and parley's cluster flags do not expose the dictionary'
 - **The render-loop cap counts only rounds the document made itself.** On the wall clock a ds
   timer that ran out during a round makes the next round render; under load (rounds slower than
   a 16 ms tick) that happens every round and the cap fired on a document that was only waiting.
-  `ds_core::time::clock::wall_sleeps_finished` counts the finished wall sleeps on the thread, and
+  `ui_core::time::clock::wall_sleeps_finished` counts the finished wall sleeps on the thread, and
   a round in which one finished is not counted (`round_budget`); a loop finishes none, so it
   still panics on both clocks, and a total of 16 caps even a loop hidden by a steady timer. Wakes
   cannot tell them apart (a timer that fires mid-render wakes nobody). `launcher_unmount` ran 2 of
@@ -1435,8 +1435,8 @@ runs whole either way), and parley's cluster flags do not expose the dictionary'
 
 ## Texture layer
 
-A GPU texture inside the document (`ds_blitz::TextureLayer`), for decoded images, PDF page tiles
-and video frames. The design note is the module doc of `crates/ds-blitz/src/texture_layer/mod.rs`;
+A GPU texture inside the document (`ui_blitz::TextureLayer`), for decoded images, PDF page tiles
+and video frames. The design note is the module doc of `crates/ui-blitz/src/texture_layer/mod.rs`;
 the decisions and what was verified:
 
 - **Feasible with the fork and anyrender as they are.** The route is a Blitz custom widget: the
@@ -1445,14 +1445,14 @@ the decisions and what was verified:
   kept by anyrender_vello_hybrid as `ResourceId -> TextureView`) and records a fill whose paint is
   `Paint::Resource`. vello_hybrid binds the view and samples it in the same pass as the rest of the
   document, so layers, clips, opacity, `border-radius` and paint order apply and nothing is copied.
-  Widgets paint only with `blitz-paint/custom-widget` (ds-blitz had it); the shell also needs
-  `blitz-shell/custom-widget`, now on in ds-blitz's manifest, or a removed layer's texture stays in
+  Widgets paint only with `blitz-paint/custom-widget` (ui-blitz had it); the shell also needs
+  `blitz-shell/custom-widget`, now on in ui-blitz's manifest, or a removed layer's texture stays in
   the renderer's bindings and a suspended window never re-registers. Other routes were not needed:
   an `<img>` with a decoded image copies through vello's image atlas (no external textures, no
   per-frame upload), and a `<canvas>` is a CPU painter.
 - **The device** is the renderer's own. A widget is handed the renderer's context when it is first
   painted (`can_create_surfaces`, and again on resume); `renderer_specific_context()` downcasts to
-  `wgpu_context::DeviceHandle` (instance, adapter, device, queue). `ds_blitz::Gpu` holds it,
+  `wgpu_context::DeviceHandle` (instance, adapter, device, queue). `ui_blitz::Gpu` holds it,
   `use_gpu()` returns it and re-renders the caller when it arrives or changes, and `Host` mounts a
   one-pixel transparent `TextureLayer` so it arrives on the first frame with no app layer. One `Gpu`
   per window (each window's renderer makes its own device; textures do not cross windows). `ds`
@@ -1462,7 +1462,7 @@ the decisions and what was verified:
   being a `RenderContext` with the harness device, so no harness code draws the layer. The harness
   opens the device before the app's first render and provides a `Gpu` already attached to it
   (`Harness::gpu()`, `use_gpu()` agree), which is how a test makes textures first.
-  `crates/ds-harness/tests/it/texture_layer.rs` checks pixels on llvmpipe (GL; no Vulkan ICD in this
+  `crates/ui-harness/tests/it/texture_layer.rs` checks pixels on llvmpipe (GL; no Vulkan ICD in this
   sandbox) and skips with no adapter. The CPU painter has no device: a layer draws nothing there.
 - **What the renderer's texture paint cannot do, and how it is done.** `draw_texture_rects` always
   samples the whole texture and ignores extend modes. A fit and a source rectangle are therefore
@@ -1501,7 +1501,7 @@ the decisions and what was verified:
 ## Settings and schema
 
 - **Settings files** are `bardo/appearance.toml` (design/22) and `spaces.json`, each a
-  `SettingsDoc` read, saved and watched through `ds_settings::Store`. The read is lenient key by
+  `SettingsDoc` read, saved and watched through `ui_settings::Store`. The read is lenient key by
   key: each key is laid over the struct's default and kept only if it deserialises (a
   per-field `deserialize_with` would turn a bad key into the type's zero, not the key's default).
   A number that does not fit its type falls back to the field's default. A malformed `by_index`
@@ -1512,8 +1512,8 @@ the decisions and what was verified:
   when the file is there and cannot be used (not text, over the 1 MiB settings cap, not a regular
   file, refused by the system); only a deleted file returns the defaults, and a refused read is
   asked again after 250 ms and then at doubling waits, six times.
-- **A file that is there and cannot be used is never a missing file** (`ds-helpers::files`,
-  `ds-settings::damaged`). `read_capped` opens without blocking (`O_NONBLOCK` where its value is
+- **A file that is there and cannot be used is never a missing file** (`ui-helpers::files`,
+  `ui-settings::damaged`). `read_capped` opens without blocking (`O_NONBLOCK` where its value is
   known, plus a regular-file check before and after the open), refuses a file over the caller's
   cap, and reports only `NotFound` as missing. `Store::load` and `SpacesStorage` give defaults for
   that run and leave the file; `Store::save`, `save_spaces` and `save_today` move an unusable
@@ -1523,11 +1523,11 @@ the decisions and what was verified:
   process behind a lock. Caps: settings 1 MiB and 4 000 keys, Spaces and Today 16 MiB, a schema
   file 256 KiB. `spaces.json` and `today.json` are created 0600.
 - **A TOML settings save merges into the file** (BARDO-10, BARDO-02; owner decision 2026-10-16,
-  preserve). `Store::save` runs under `ds_helpers::update_atomic`: it takes the in-process path
+  preserve). `Store::save` runs under `ui_helpers::update_atomic`: it takes the in-process path
   lock and an `flock` on the sidecar `.<name>.lock` (0600, left in place, waited for at most five
   seconds), reads the file through the capped reader, and publishes through the same writer as
   `write_atomic`. For TOML the typed document is laid over the parsed file with `toml_edit`
-  (`ds-settings/src/preserve.rs`): a value that means the same is untouched, a changed one keeps
+  (`ui-settings/src/preserve.rs`): a value that means the same is untouched, a changed one keeps
   its spacing and trailing comment, a new key is added, a key the type owns and no longer writes
   (a `None`, a removed map entry) is taken out, and every key `Loaded::unknown` reported, with all
   comments, stays. An inline table the type writes as a table is opened so its unknown keys
@@ -1544,8 +1544,8 @@ the decisions and what was verified:
   preference maps to Light.
 - **Types.** `Motion` is the preference (Standard or Reduced, default Standard, with a `label()`; the
   desktop's reduce-motion preference makes Standard resolve to Reduced); `MotionLevel` is the
-  resolved pair, so a picker offers `Motion`. `ds::prelude::Px(f32)` is for layout, `ds_settings::Px(u16)` for stored keys; `ds::prelude::Percent`
-  and `ds_settings::Percent` agree by shape because `ds` may not depend on `ds-settings`. There
+  resolved pair, so a picker offers `Motion`. `ds::prelude::Px(f32)` is for layout, `ui_settings::Px(u16)` for stored keys; `ds::prelude::Percent`
+  and `ui_settings::Percent` agree by shape because `ds` may not depend on `ui-settings`. There
   is one unclamped `Fraction`; components clamp. `Secs(u16)` and `Mins(u16)` are unit newtypes
   like `Px`/`Ms`/`Count`, rendered as sliders from the field's own `#[settings(range, unit)]`.
 - **The schema derive** recognises text by type (`String`, `PathBuf`, `Cow<str>`) or by
@@ -1570,7 +1570,7 @@ the decisions and what was verified:
   nothing rather than everything.
 - **ds stays pure**: tokenising, skip rules, the CJK test, mark tracking and the word being typed
   are pure functions in `ds::spell`; the seam is the `SpellService` trait with boxed futures, so
-  `ds` needs no executor; `ds_blitz::spell` (feature `spellcheck`) owns file access and the
+  `ds` needs no executor; `ui_blitz::spell` (feature `spellcheck`) owns file access and the
   worker thread.
 - **Marks are decoration**: a layer, last in the surface and absolutely positioned, holds a
   `border-bottom: dotted` box per line of each marked word from `EditHost::selection_rects`. It
@@ -1635,7 +1635,7 @@ the decisions and what was verified:
   `(HoverKey, HoverProfile)`. (5) `EmptyState`'s Retry and `Alert`'s buttons use the current
   `Button`/`ButtonVariant`; they follow the rebuilt `Button` in step 4a.4. (6) `Toast` places
   bottom right (it slides in from the right); its swipe glue (`toast_swipe`) copies the
-  notification card's (`ds-shell::notifications::swipe`) and should share one home when step 4a.7
+  notification card's (`ui-shell::notifications::swipe`) and should share one home when step 4a.7
   rebuilds the card. (7) Skeleton has no `-shape` part: the root is the shape (`data-shape`).
   (8) Public parts are in `ds::selectors`; the gallery example that restyles each and the
   `lint::user_stylesheet` cases wait for step 16.
@@ -1663,7 +1663,7 @@ the decisions and what was verified:
   already built. (9) `Anim::{MenuPop, BubblePop, PillUp, RingDrain, LinkPillIn}` and their keyframes
   are deleted.
 
-## Menu export (`ds-blitz::menus`, `ds::components::menus::export`)
+## Menu export (`ui-blitz::menus`, `ds::components::menus::export`)
 
 - **A bar is served per app, not per window.** The address is derived from the `app_id` alone, so
   every window of an app shows the one menu (the Mac's model). A per-window menu (a document's own
@@ -1674,7 +1674,7 @@ the decisions and what was verified:
   `wayland_surface::adopt` is a one-call borrow of winit's display and surface; a persistent
   adopted connection per window needs a design of its own (who drops it before winit closes the
   display). No compositor offered such a global, so nothing could be tested; the compositor P3-MN adds the
-  server side, then ds-blitz binds `org_kde_kwin_appmenu_manager` and sets the same address.
+  server side, then ui-blitz binds `org_kde_kwin_appmenu_manager` and sets the same address.
 - **zbus's default name flags replace a running owner.** `request_name_with_flags` with the default
   flags is `AllowReplacement | ReplaceExisting | DoNotQueue`, so a second process of the same
   `app_id` steals the name (found in the private-bus test). `MenuExport` asks with no flags, so the
@@ -1687,12 +1687,12 @@ the decisions and what was verified:
   property (every item is shown; a context menu is not exported). `Info` and `Header` rows become
   disabled labels. `AboutToShow` answers "no update needed": the tree is always current.
 - **Activations arrive on a bus thread.** The callback must hand the `CommandId` to the UI thread
-  (a channel and `AppHandle::redraw`); `ds-blitz` has no such bridge of its own yet, so each app
+  (a channel and `AppHandle::redraw`); `ui-blitz` has no such bridge of its own yet, so each app
   writes the four lines (CONSUMING.md "Exporting the menu bar").
 - **Consumers to wire:** an app turns it on in its own repo (mailo, the Settings app, anyview, the shell's own
   windows); the shell lane reads `AppMenuAddress::for_app_id` and `GetLayout`. Nothing else changes.
 
-## Live settings modules (`ds-settings::live`, feature `live`; W1b)
+## Live settings modules (`ui-settings::live`, feature `live`; W1b)
 
 Open:
 
@@ -1710,7 +1710,7 @@ Open:
 - `Describe` and `Get` also go through `permit(.., Access::Read)`; accountd and inferd allow reads
   to the Settings role only, as the plan has it. A module that wants public reads returns `Allow`.
 
-## Account sheets (`ds-shell::accounts`)
+## Account sheets (`ui-shell::accounts`)
 
 Standing facts:
 
@@ -1737,7 +1737,7 @@ Standing facts:
   `ReviewServices` uses the real row toggle.
 - Down and Up in the provider search move the host's cursor through the rows.
 - Copy Link and Copy Code report the text through `on_copy`; the host writes it with
-  `ds_blitz::clipboard::write_text` and answers `CopyState::Copied`.
+  `ui_blitz::clipboard::write_text` and answers `CopyState::Copied`.
 - Every sentence is in `accounts::wording`; the host words nothing, except a choice's option labels
   (`Choice { slug, label }`) and a port's hint.
 - Every use of a piece R2a made controlled is in `accounts::adapter` (`Entry`, `PickRows`,
@@ -1750,19 +1750,19 @@ Open:
   both would run the default twice).
 - `PopUpButton` has no leading mark and `MenuImage` cannot hold an element, so the account pop-up
   shows its round mark beside it, not inside it, and the menu's lines have none.
-- `ds-shell` may not depend on `ds-blitz` (check-boundary's table), so the copy buttons cannot call
-  `ds_blitz::clipboard::write_text` themselves and the host does the copy. A clipboard seam in `ds`
+- `ui-shell` may not depend on `ui-blitz` (check-boundary's table), so the copy buttons cannot call
+  `ui_blitz::clipboard::write_text` themselves and the host does the copy. A clipboard seam in `ds`
   (a trait the host provides, as `provide_host` does) would let the buttons copy.
 - `Sheet` still slides in from the top even when centred; a window panel wants a fade or scale.
 - The gallery's dark Accounts snapshot hit the render loop's round limit twice under heavy machine
   load (the document kept re-rendering); it passed on a quiet rerun and the conformance tests
   never saw it.
-- The goldens are markup (`crates/ds-shell/tests/snapshots/accounts/*-light.html` and `-dark.html`);
+- The goldens are markup (`crates/ui-shell/tests/snapshots/accounts/*-light.html` and `-dark.html`);
   no pixel snapshot of the Accounts gallery page is kept.
 
 ## Keys as actions (the chord keymap)
 
-- Standing: a key press resolves to an action through one chain. `ds_core::command::key_input` is
+- Standing: a key press resolves to an action through one chain. `ui_core::command::key_input` is
   the only place a dioxus key and its modifiers become a chord keymap `KeyInput` (Ctrl, Alt, Shift, Super
   and Meta are kept apart; the chord keymap's normaliser folds Meta into Super on every platform; lock and
   AltGraph flags are not chord modifiers). `Keys::action_of` / `Keys::resolve` read the active keymap,
@@ -1819,14 +1819,14 @@ Open:
   lines are in `Keys::problems`. A second call replaces the first (no merge).
 - `use_keys_provider` is in `ds::prelude`, documented as the hook for a component between `App`
   and `Ds`.
-- `ds_core::command::{chord_text, chord_caps, shortcut_text_for, shortcut_caps_for}` draw a chord
+- `ui_core::command::{chord_text, chord_caps, shortcut_text_for, shortcut_caps_for}` draw a chord
   or a keymap's action for a platform with no runtime. `shortcut_text` (a `Shortcut`) is unchanged.
 
 ## Window host, icon and re-focus (v0.3.3 queue)
 
 - A field that already has the keyboard is not focused again. Blitz's `set_focus_to` on the focused
   field put its caret back at the start; a palette asking `focus_by_selector(.., Select::All)` on
-  each open, and a `Select::None` ask made again, typed "nvoicei" for "Invoice". `ds-blitz`'s
+  each open, and a `Select::None` ask made again, typed "nvoicei" for "Invoice". `ui-blitz`'s
   `focus` now answers `Focused::Done` with no write for the focused node, so the caret stays and
   a following select-all applies in the same frame. Regression: `field_handle_focus.rs`.
 - The window icon is `HostWindow::set_icon(&WindowIcon)` (default: ignored). `WinitWindow` sends it
@@ -1843,9 +1843,9 @@ Open:
   `focus::soon::focus_landing_told` is public, because custom
   surfaces (a terminal grid, a `TextureLayer` pane) need the same waits.
 - `.ds-texture-layer` is a rule of the `texture_layer` sheet in `ds` (the class is written by
-  `ds-blitz`'s `TextureLayer`; the sheet is a ds sheet because the stylesheet is assembled there).
+  `ui-blitz`'s `TextureLayer`; the sheet is a ds sheet because the stylesheet is assembled there).
   Blitz still sets the size inline.
-- Needs blessing by the orchestrator: `ds-shell`'s `stylesheet.css` golden (the `column` and
+- Needs blessing by the orchestrator: `ui-shell`'s `stylesheet.css` golden (the `column` and
   `texture_layer` sheets; the `ds` copy is gone), and the new `structure/column/*.html` goldens.
 
 
@@ -1880,7 +1880,7 @@ Open:
    `.ds-palette-list`. New test `a_menu_row_and_a_palette_row_are_concentric_in_their_containers`
    (`tokens/shape.rs`) checks container radius less inset equals the highlight radius for the menu
    (14, 6) and the palette (20, 12). The rule was only a test for the menu item before.
-4. **Goldens that change (orchestrator: `DS_BLESS=1`).** `ds-shell/tests/snapshots/stylesheet.css`:
+4. **Goldens that change (orchestrator: `DS_BLESS=1`).** `ui-shell/tests/snapshots/stylesheet.css`:
    new `--sel-neutral` in both scheme blocks, new `--shell-palette-inset`, `.ds-palette-list`
    padding, the source-list selection rules in the row sheet, `.ds-sidebar[data-fill=flat]`.
    Any stylesheet golden of `ds` that embeds the same sheets. SSR/structure goldens: unchanged
@@ -1914,14 +1914,14 @@ Two requests from temor (a terminal).
    decorative orb or dot should use `RowLeading::Element` instead; Slot's behaviour is unchanged.
 4. **Public names for temor.** `ds::prelude::RunTone::Mono`, `ds::prelude::RowLeading::Element`.
 5. **Goldens that change (orchestrator: `DS_BLESS=1`).** Stylesheet goldens that embed the sheets
-   (`ds-shell/tests/snapshots/stylesheet.css`, any `ds` stylesheet golden): new `.ds-run[...mono]`
+   (`ui-shell/tests/snapshots/stylesheet.css`, any `ds` stylesheet golden): new `.ds-run[...mono]`
    rule, new `.ds-row-leading[...element]` rule, one added grouped-list selector. No SSR golden
    renders either new case, so markup goldens are unchanged. Tests added:
    `crates/ds/tests/it/row_leading_element_ssr.rs` (structure) and
-   `crates/ds-conformance/tests/it/row_leading_element.rs` (click on the leading element fires the
+   `crates/ui-conformance/tests/it/row_leading_element.rs` (click on the leading element fires the
    row's onclick).
 6. **Likeliest compile issues.** `leading.rs` `draw` (the `hidden` `Option<&str>` attribute and
-   `element.clone()` as an `Element`); the new tests' imports (`ds_harness` API as in
+   `element.clone()` as an `Element`); the new tests' imports (`ui_harness` API as in
    `row_slot.rs`; `dioxus_ssr` in the ds test as in `row_outline_editing_states_ssr.rs`).
 
 ## q22
@@ -1929,7 +1929,7 @@ Two requests from temor (a terminal).
 Mailo #28 ("nvoicei"): a key typed right after a text field gains focus lands before its text.
 Written by reading only; the orchestrator runs these (expectations, not results).
 
-Tests (`crates/ds-conformance/tests/it/search_summon_prefilled.rs`, Ctrl+K summons a `TextField`, frames stepped until it reads focused, then "nvoice" is typed, the field's signal read from `#value`):
+Tests (`crates/ui-conformance/tests/it/search_summon_prefilled.rs`, Ctrl+K summons a `TextField`, frames stepped until it reads focused, then "nvoice" is typed, the field's signal read from `#value`):
 - `prefilled_own_focus*`, `prefilled_selector_none*` (0/1/2 idle siblings with a timer `use_future`): the field mounts with value "i" so Blitz builds its editor WITH text; focused by `FieldFocus::OnMount` or `focus_by_selector(.., Select::None)`. Assert "invoice".
 - `prefilled_selector_all*`: same with `Select::All`; the selection of "i" must survive, so the first key replaces it. Assert "nvoice".
 - `replaced_*`: the field mounts empty and focused, then the signal is set to "i" from outside (Ctrl+J); the next keys go after it. Assert "invoice".
@@ -1968,12 +1968,12 @@ the chrome stylesheet writes are now public as numbers, each from the table the 
   600.
 
 Nothing in the stylesheet changed. Tests pin the generated strings to the old literals and to
-`crates/ds-shell/tests/snapshots/stylesheet.css`.
+`crates/ui-shell/tests/snapshots/stylesheet.css`.
 
 ## Traffic lights use macOS's own colours (lane mac-lights)
 
 The window lights no longer borrow the candy label hues (`--c-red|amber|green` and their
-`-deep`/`-soft`). `ds-style/tokens/chrome/light_paint.rs` holds a table per light: disc, hairline
+`-deep`/`-soft`). `ui-style/tokens/chrome/light_paint.rs` holds a table per light: disc, hairline
 rim and mark ink, written as `--light-close`, `--light-close-rim`, `--light-close-mark` (and
 `minimize`, `zoom`). Values are observed from the macOS Sonoma traffic lights: close #FF5F57 / rim
 #E2463F / mark #4D0000, minimise #FEBC2E / #E1A116 / #995700, zoom #28C840 / #12AC28 / #006500.
@@ -2019,14 +2019,14 @@ Lane `q-spacesbar`, written without a build: nothing here has been compiled or r
   5. The thumbnail card is 160 x 100 with no wallpaper stand-in; a Space with no `ImageSource` draws a quiet blank
      card. When expanded the bar is taller than the collapsed row, so the host's surface must be at least
      `padding + 100 + gap + name` (about 150 px) high, or the thumbnails are cut.
-- **Hand-written, to confirm at the gate (no build in this lane).** `ds-shell/tests/snapshots/stylesheet.css` (token
+- **Hand-written, to confirm at the gate (no build in this lane).** `ui-shell/tests/snapshots/stylesheet.css` (token
   `--t-overview` in `.ds` and the Reduced block, the `drop-in` / `lift-out` keyframes and `--b` aliases, four pulse
   classes and four Reduced rules, the `spaces_bar` sheet before `slider`), `ds/tests/snapshots/overlays/spaces_bar/
   {collapsed,expanded}.html`, `docs/selectors.md`. If any differs, read the diff against the generated text before
   blessing: the cause may be a mistake in the hand-written golden or in the component.
-- **Tests added.** `ds-motion` (reduced-form and keyframe tables cover the two new `Anim`s by `Anim::ALL`);
-  `ds/tests/it/motion_drift.rs` settle rows (384 ms); `ds-conformance/tests/it/drop_in_lift_out.rs` (presence on a
-  virtual clock, exact settle, Reduced); `ds-conformance/tests/it/spaces_bar.rs` (hover expands and collapses, press and
+- **Tests added.** `ui-motion` (reduced-form and keyframe tables cover the two new `Anim`s by `Anim::ALL`);
+  `ds/tests/it/motion_drift.rs` settle rows (384 ms); `ui-conformance/tests/it/drop_in_lift_out.rs` (presence on a
+  virtual clock, exact settle, Reduced); `ui-conformance/tests/it/spaces_bar.rs` (hover expands and collapses, press and
   right-click, the plus, held expansion, the drop highlight, the lift); `SpaceTile` and `BarExpansion` unit tests; two
   goldens.
 
@@ -2051,7 +2051,7 @@ Lane `q-barasks`, written without a build: nothing here has been compiled or run
   The plus rect is the `span.ds-spaces-bar-add` around the button (the same box).
 - **Goldens that will change.** None of the existing: `spaces_bar/collapsed` and `expanded` gain no attribute (an `Idle` plus has no
   `data-drop`; probes add no markup). New, to be created on bless: `ds/tests/snapshots/overlays/spaces_bar/plus-lit.html` and `backdrops.html`.
-  Hand-edited, to confirm: `ds-shell/tests/snapshots/stylesheet.css` (the three added rules after the `spaces_bar` sheet's last rule) and
+  Hand-edited, to confirm: `ui-shell/tests/snapshots/stylesheet.css` (the three added rules after the `spaces_bar` sheet's last rule) and
   `docs/selectors.md`.
 - **Likeliest first-compile faults.** `use_reactive!(|layout| ..)` capturing `on_layout` (an `EventHandler`, `Copy`); `use_drop` / `try_write`
   on the book signal (needs the `Writable` trait in scope via the dioxus prelude); the `Plus` prop named `drop` next to `core::mem::drop` used in
@@ -2076,7 +2076,7 @@ way forward.
 - **Found already landed.** Commit `a781b8b2` (before this lane) had added the whole mechanism: `Missing::install_lines` (`InstallLine`, built
   from `Family::install_command()` and the first candidate of the helpers file, so no distro is hardcoded and an unknown distro lists every
   family), `HelperPhase::Unsupported { program, command: Option<String> }`, the `CommandLine` part (selectable data-face line plus the existing
-  `CopyAction`, the one copy path ds-shell has: the host writes the clipboard and says `CopyState::Copied`), and an `ds-helpers` test row
+  `CopyAction`, the one copy path ui-shell has: the host writes the clipboard and says `CopyState::Copied`), and an `ui-helpers` test row
   "arch without a way to install". This lane found that and changed no type.
 - **What this lane changed.** The words, the fixtures and the docs. With a command the body now reads "Run this in Terminal to install it
   yourself, then try again:" (before: "Install a package that provides ... for example with this command:", which did not say the computer could
@@ -2089,7 +2089,7 @@ way forward.
 - **Public API.** No public item changed shape in this lane. The shape anyview must already match (from `a781b8b2`): `HelperPhase::Unsupported`
   has the extra field `command: Option<String>`; `HelperBody` / `HelperSheet` gained props `on_copy: EventHandler<String>` and `copy: CopyState`
   (both default).
-- **Goldens, hand-edited, to confirm on bless.** `ds-shell/tests/snapshots/helpers/unsupported-command-{light,dark}.html` (new body text and
+- **Goldens, hand-edited, to confirm on bless.** `ui-shell/tests/snapshots/helpers/unsupported-command-{light,dark}.html` (new body text and
   command); new `unsupported-copied-{light,dark}.html` (the same with the label `Copied`), written by hand from the first pair.
 - **Test cut.** The Copied label is asserted inside the existing `an_unsupported_system_with_a_command_...` test through one new specimen, not as
   a new test function. No test became redundant.
@@ -2099,7 +2099,7 @@ way forward.
 ## q-cmdline
 
 Lane `q-cmdline`, written without a build: nothing here has been compiled or run, so the gate decides. Two small additive changes so other
-apps (first the Settings app's Settings, "install llama.cpp" with a copyable command) reuse what ds-shell's helper sheet had.
+apps (first the Settings app's Settings, "install llama.cpp" with a copyable command) reuse what ui-shell's helper sheet had.
 
 - **`ds::components::controls::command_line::CommandLine`** (`command_line.rs` + `command_line.css`, sheet `command_line` registered in
   `assembly/sheets.rs`, 98 -> 99): props `text: String`, `copy: CopyState` (default `Idle`), `on_copy: EventHandler<String>`. The host writes
@@ -2107,43 +2107,43 @@ apps (first the Settings app's Settings, "install llama.cpp" with a copyable com
   `.ds-command-line` and `.ds-command-line-text` (the old `.ds-helper-command{,-text}`), tokens only. The old rule's `margin-top:var(--s-12)`
   is the parent's business and moved to the helper sheet as `.ds-alert .ds-command-line`, so the component sets no margin. It keeps the Return
   rule (Return on Copy does not reach the sheet's own Return).
-- **`ds::components::controls::copy_state::CopyState`** (`Idle`, `Copied`, default `Idle`, `Word`) moved from ds-shell. The path
-  `ds_shell::accounts::model::CopyState` still resolves: it is now `pub use` of the `ds` type, same variants and derives, so no public
-  ds-shell path changed. The type is the same one for `CopyAction`, `ShowCode`, `BrowserWait` and `HelperSheet`.
-- **Deleted in ds-shell:** helpers/command.rs (`pub(crate) CommandLine`) and its CSS in `helpers/style.css`. `CopyAction` stays: it is the
+- **`ds::components::controls::copy_state::CopyState`** (`Idle`, `Copied`, default `Idle`, `Word`) moved from ui-shell. The path
+  `ui_shell::accounts::model::CopyState` still resolves: it is now `pub use` of the `ds` type, same variants and derives, so no public
+  ui-shell path changed. The type is the same one for `CopyAction`, `ShowCode`, `BrowserWait` and `HelperSheet`.
+- **Deleted in ui-shell:** helpers/command.rs (`pub(crate) CommandLine`) and its CSS in `helpers/style.css`. `CopyAction` stays: it is the
   accounts sheets' Copy Link / Copy Code button, not the command line's. `CommandLine` does not use it (it draws `ds`'s `Button` with the same
   props `Action` passed, so the button markup is byte for byte the old one).
-- **`ds_helpers::OsRelease`** (`os_release.rs`): `parse(&str)` gives `id` (lower case), `id_like` (words, lower case) and `version_id`
+- **`ui_helpers::OsRelease`** (`os_release.rs`): `parse(&str)` gives `id` (lower case), `id_like` (words, lower case) and `version_id`
   (`None` when absent or empty); `Family::detect` is built on it and `Family` is unchanged. Two small differences from the old inline reader:
   `#` lines are skipped and the last assignment of a key wins (as when the shell sources the file); neither changes a real file's result. The
   table test uses full os-release texts for Fedora 44, Ubuntu 24.04, Ubuntu 26.04, Debian 13, Debian 14 (forky, still testing, so no
   `VERSION_ID`), Arch and openSUSE Tumbleweed (with its commented `# VERSION=` line). The Fedora, Ubuntu and Tumbleweed texts are written
   from memory of the real files for those releases (the 26.04 and 44 files were not fetched), so the gate cannot catch a wrong detail in
   an unused field; the fields the test reads (`ID`, `ID_LIKE`, `VERSION_ID`) are the ones those distros are known to carry.
-- **Goldens hand-edited (class rename only), to confirm on bless:** `ds-shell/tests/snapshots/helpers/unsupported-command-{light,dark}.html`,
+- **Goldens hand-edited (class rename only), to confirm on bless:** `ui-shell/tests/snapshots/helpers/unsupported-command-{light,dark}.html`,
   `unsupported-copied-{light,dark}.html` (`ds-helper-command` -> `ds-command-line`, `-text` likewise);
-  `ds-shell/tests/snapshots/stylesheet.css` (the `helper_sheet` section lost the two rules and gained the `.ds-alert .ds-command-line`
+  `ui-shell/tests/snapshots/stylesheet.css` (the `helper_sheet` section lost the two rules and gained the `.ds-alert .ds-command-line`
   rule; a new `command_line` section sits before `command_palette`). New by hand: `ds/tests/snapshots/controls/command_line/{idle,copied}.html`
   (the same markup as the helper goldens' command line). No other SSR golden under `crates/*/tests/snapshots/` contains the line or the
   stylesheet (searched for the class names and for the section markers).
 - **Tests.** Two `command_line` cases in `ds/tests/it/controls/cases.rs` (goldens above), the sheet in `css_scan::STYLES` (every class in a
-  golden is styled) and in `sheet_hygiene::SHEETS` (tokens only). `ds-shell`'s `helpers_ssr` assertions only changed class names; the
-  selectable-text check there stays (it is the one place `user-select:text` is asserted). `ds-helpers`: `os_release.rs` has the table over the
+  golden is styled) and in `sheet_hygiene::SHEETS` (tokens only). `ui-shell`'s `helpers_ssr` assertions only changed class names; the
+  selectable-text check there stays (it is the one place `user-select:text` is asserted). `ui-helpers`: `os_release.rs` has the table over the
   seven texts and a table of the file shapes (empty, single quotes with CRLF, empty `VERSION_ID`, repeated key, a key that only ends in
   `VERSION_ID`). The existing `Family::detect` table stays: it tests the mapping, the new one tests the reading.
 - **Gallery.** The controls page has a "CommandLine" section (a live one that turns to Copied, a Copied one, a long wrapping command); the
   shell Helpers page already shows it inside the sheet.
 - **Public items.** Added: `ds::components::controls::command_line::CommandLine`, `ds::components::controls::copy_state::CopyState`,
-  `ds_helpers::OsRelease` (fields `id`, `id_like`, `version_id`; `parse`). Changed: `ds_shell::accounts::model::CopyState` is a re-export of
+  `ui_helpers::OsRelease` (fields `id`, `id_like`, `version_id`; `parse`). Changed: `ui_shell::accounts::model::CopyState` is a re-export of
   the `ds` type (same path, same variants). Removed: nothing public.
 - **Open.** `Helpers` does not hand out its os-release text or `OsRelease`; the Settings app reads the file itself or `Helpers` grows an accessor
   (not asked for here).
 
 ## Peers: deadlines, who is believed, who hears (production audit, lane pa-qbus, 2026-10-16)
 
-- **One deadline helper: `ds-peer`.** `Deadline` (`READ` 10 s, `START` 3 s, `ACTION` 30 s, `PROMPT` 10 min), `within(deadline,
-  peer, work)` and the typed `NotAnswering` ("The package manager is not answering"). Used by ds-helpers (PackageKit), ds-settings (the
-  live client, the portal read), ds-desktop (probe, `Outputs`) and ds-blitz (print portal). The values are the audit's (10 s reads,
+- **One deadline helper: `ui-peer`.** `Deadline` (`READ` 10 s, `START` 3 s, `ACTION` 30 s, `PROMPT` 10 min), `within(deadline,
+  peer, work)` and the typed `NotAnswering` ("The package manager is not answering"). Used by ui-helpers (PackageKit), ui-settings (the
+  live client, the portal read), ui-desktop (probe, `Outputs`) and ui-blitz (print portal). The values are the audit's (10 s reads,
   30 s actions); the owner has not confirmed them. A new peer call takes one of the four, never a bare `Duration`.
 - **PackageKit (BARDO-05, 06).** The match rule names PackageKit's unique name (from the `CreateTransaction` reply) and `apply` checks the
   sender again; a `NameOwnerChanged` watch ends the wait if PackageKit disconnects; a quiet transaction is cancelled. `Resolve` ignores any
@@ -2163,13 +2163,13 @@ apps (first the Settings app's Settings, "install llama.cpp" with a copyable com
   read (the compositor and anyview call it), so only `use_environment` stopped waiting.
 - **Not done.** (BARDO-03 and BARDO-12's library side landed in wave 2: see Open items.) BARDO-25's owner check (is the holder
   of `org.bardo.Outputs1` the shell?) belongs with the shell; Bardo now drops rows with no size or no scale and caps the list at 16. The dbusmenu
-  `RequestName` in `ds-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (BARDO-21) is still
+  `RequestName` in `ui-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (BARDO-21) is still
   unbounded. The Settings app's half of SETTINGS-07 (feeding `Failed` on `LiveError::Timeout`, awaiting `invoke` off the effect loop) and the same
   convention in account-dbus are theirs.
 
-## One reader for desktop files (ds-helpers `DesktopFile`)
+## One reader for desktop files (ui-helpers `DesktopFile`)
 
-- **What landed.** `ds_helpers::DesktopFile` reads the text of a `.desktop` file (or any key file in that format) into groups and
+- **What landed.** `ui_helpers::DesktopFile` reads the text of a `.desktop` file (or any key file in that format) into groups and
   keys: `Name[de_DE@euro]` picked by `EntryLocale` variants (`lang_COUNTRY@MODIFIER`, `lang_COUNTRY`, `lang@MODIFIER`, `lang`, then the
   default), the value escapes (`\s \n \t \r \\`, and `\;` inside a list), `;` lists with empty items dropped, `true`/`false`
   booleans, comments, a byte order mark, CRLF. A group named twice is one group and a key given twice keeps its last value (GLib's key

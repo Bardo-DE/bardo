@@ -226,7 +226,7 @@ fn bytes_that_are_not_utf8_are_replaced_not_refused() {
 
 #[test]
 fn a_file_on_disk_reads_through_the_capped_reader() {
-    let dir = std::env::temp_dir().join(format!("ds-helpers-desktop-file-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("ui-helpers-desktop-file-{}", std::process::id()));
     let _ = fs::remove_dir_all(&dir);
     fs::create_dir_all(&dir).expect("scratch dir");
     let path = dir.join("files.desktop");

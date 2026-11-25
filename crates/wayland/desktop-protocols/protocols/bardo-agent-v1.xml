@@ -110,7 +110,7 @@
 
     <enum name="mask_reason">
       <description summary="why a region is masked">
-        The same set as maskcap's `MaskReason`.
+        The same set as computer-use-capture's `MaskReason`.
       </description>
       <entry name="password_field" value="0" summary="a password field"/>
       <entry name="surface_declared" value="1" summary="the app declared the region sensitive"/>

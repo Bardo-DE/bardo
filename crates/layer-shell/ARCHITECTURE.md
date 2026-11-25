@@ -101,7 +101,7 @@ pure decision behind an effectful handler), `wire.rs` (mapping to protocol enums
 | `ctx/paint.rs` (437) | `ctx/paint/{mod.rs (step_all, step_one), presenter.rs, geometry.rs (sync_geometry, viewport), render.rs, regions.rs (send_regions, region_of, in_surface), capture.rs}` |
 | `resolve.rs` (437) | `resolve/{mod.rs, spec.rs (resolve, rounded_rect), anchor.rs (resolve_popup_anchor), tracked.rs (Tracked, Change)}` |
 | `csd.rs` (404) | `csd/{mod.rs (Inset, inset_for), geometry.rs (surface_of, frame_of, window_geometry, content_px, to_document, to_surface), band.rs (Zone, band, zone_at, cursor_for)}` |
-| `scroll/engine.rs` (401) | `blitz_kit::scroll::engine::{mod.rs (Engine, step), types.rs (ScrollIn, ScrollOut, Motion, Track, Flight, ...), phases.rs (may_begin, began, changed, lifted)}` |
+| `scroll/engine.rs` (401) | `blitz_embed::scroll::engine::{mod.rs (Engine, step), types.rs (ScrollIn, ScrollOut, Motion, Track, Flight, ...), phases.rs (may_begin, began, changed, lifted)}` |
 | `inject.rs` (308) + `inject/stdin.rs` | `inject/{mod.rs, request.rs (Inject, Injected, KeyStroke), deliver.rs, command.rs, stdin.rs}` |
 
 `input/keysym.rs` (507) is a table and stays whole. Tests that move with a split go beside the
@@ -209,8 +209,8 @@ neither side names the other's types. Tests for each module live in the kit agai
 | The mouse gestures daemon socket client (pointer, session lock, the person's gesture settings, the daemon's proof) | `input/mouse_gestures` (socket, `peer_trust`: the peer held by `SO_PEERPIDFD` through `nix`, its cgroup read from `/proc`), `input/mouse_gestures/user_config` (the settings file), `input/mouse_gestures/route` (meaning); the lock is told from `ctx/lock`; the settings look is `ctx/mouse_gestures` |
 | What the mouse gestures daemon asks of the session (`ToHost::Run`) | `HostEvent::MouseGestures(MouseGesturesAction)`, from `input/scroll::mouse_gestures_message`; the embedder carries it out |
 | The mouse gestures daemon messages | `mouse-gestures-proto` |
-| Scroll physics, latching, document side, driver | `blitz_kit::scroll` (shared with `ui-blitz`) |
-| Scroll settings (engine part) | `blitz_kit::scroll::config::ScrollSettings`; `scroll/config` holds `ScrollConfig` (it and the thumb's settings) |
+| Scroll physics, latching, document side, driver | `blitz_embed::scroll` (shared with `ui-blitz`) |
+| Scroll settings (engine part) | `blitz_embed::scroll::config::ScrollSettings`; `scroll/config` holds `ScrollConfig` (it and the thumb's settings) |
 | Scroll thumb, the mouse gestures daemon and Wayland axis input, double-scroll rule | `scroll/{indicator,source,suppress,paint}`, `scroll/surface` (the surface's driver, thumb and the mouse gestures daemon tracker) |
 | What a component hears of a wheel or touchpad (source, phase, distance) | `scroll/wheel` (the meaning), `scroll/wheel_feed` (the queue), `use_wheel` |
 | Scroll view of Blitz (scroller chain, raw offsets) | `dom/scroll` |

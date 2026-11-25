@@ -201,7 +201,7 @@ fi
 # The crate roots of ds and ui-shell hold declarations, `prelude` and the curated roots (the
 # stylesheet assembly) only: every other name has one path, its home module or the prelude. A new
 # `pub use` at either root introduces a name outside the allowed set below and fails here.
-# The three facades (`pub use ds_core as base;`, `ds_style as style`, `ds_motion as motion`) are the
+# The three facades (`pub use ui_core as base;`, `ui_style as style`, `ui_motion as motion`) are the
 # only crate re-exports.
 ROOT_ALLOWED_DS="pub use crate assembly selectors kit KIT kits stylesheet component_sheets ui_core base ui_style style ui_motion motion as"
 ROOT_ALLOWED_DS_SHELL="pub use crate kit KIT kits stylesheet component_sheets"

@@ -298,7 +298,7 @@ mod tests {
 
     #[test]
     fn a_kde_file_changes_the_keymap_and_a_missing_one_leaves_the_conventions() {
-        let dir = std::env::temp_dir().join(format!("ds-blitz-keymap-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("ui-blitz-keymap-{}", std::process::id()));
         let written = std::fs::create_dir_all(&dir).and_then(|()| {
             std::fs::write(dir.join("kdeglobals"), "[Shortcuts]\nCopy=Ctrl+Insert\n")
         });
@@ -321,7 +321,7 @@ mod tests {
     }
 
     fn scratch(tag: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("ds-blitz-keys-{}-{tag}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("ui-blitz-keys-{}-{tag}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let made = std::fs::create_dir_all(&dir);
         assert!(made.is_ok(), "{made:?}");

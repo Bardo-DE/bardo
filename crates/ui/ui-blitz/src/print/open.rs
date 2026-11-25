@@ -148,7 +148,7 @@ mod tests {
     use std::time::SystemTime;
 
     fn scratch(tag: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("ds-blitz-print-{}-{tag}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("ui-blitz-print-{}-{tag}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         dir.join(STAGING)
     }

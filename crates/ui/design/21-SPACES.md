@@ -9,7 +9,7 @@ is `archive/21-SPACES-arc.md`.
 Status: **settled** = decided with the user (PLAN "UX decisions settled", 2026-09-23; the
 2026-10-02 decisions in 30 section 3.4) or copied from code; **target (clean-up phase)** = settled
 here, not yet in the code (`ui-style/space/palette.rs`, `SpaceEditor`, `SpaceStore`).
-`palette.rs` = `crates/ds-style/src/space/palette.rs`.
+`palette.rs` = `crates/ui-style/src/space/palette.rs`.
 
 ## 1. The model (settled)
 
@@ -149,7 +149,7 @@ never reaches it.
 
 `$XDG_CONFIG_HOME/bardo/spaces.json`, atomic write (the `ui-settings` writer), watched with
 `notify` (rename replaces inode; debounce 30 ms). `ds::style::space::store::SpaceStore` is the
-schema (`crates/ds-style/src/space/store.rs`), read and written through `ui-settings`'s
+schema (`crates/ui-style/src/space/store.rs`), read and written through `ui-settings`'s
 `Settings<SpaceStore>` with `Format::Json`. A `null` in `by_index` means "no look stored at this
 position".
 
@@ -187,7 +187,7 @@ id (ext-workspace `id` event), else `by_index[position]`, else the §4 default. 
 
 - PLAN "UX decisions settled with the user (2026-09-23, second round)", "Spaces on the desktop";
   `30-CATALOGUE.md` section 3.4.
-- `crates/ds-style/src/space/palette.rs` (the quiet tint's constants).
+- `crates/ui-style/src/space/palette.rs` (the quiet tint's constants).
 - SPEC "Workspaces" (the toplevel client, pinning, naming, reorder).
 
 ## 13. Apps' Spaces: the kit
@@ -199,7 +199,7 @@ An app's Spaces (Work, Home...) are Arc-style tinted contexts that the app owns.
 generic over the app's payload `P` (what a Space holds that is the app's: mail scope, a working
 directory) and over `R`, the place the app was left at in a Space.
 
-### 13.1 Model (pure, `ds_style::space::list`)
+### 13.1 Model (pure, `ui_style::space::list`)
 
 - `Space<P> { id: SpaceId, name, look: SpaceLook, payload: P }`; `Spaces<P, R> { list, current, recall }`.
   Never empty: the last Space cannot be removed. `SpaceId` is stable: Today and Recall key on it,
@@ -214,7 +214,7 @@ directory) and over `R`, the place the app was left at in a Space.
   to be reopened, sent or discarded). `live` lists what has time left; an app whose entries stay
   until they are closed or cleared lists `all` and loads with `load_today`, which does not prune.
 - Files: `spaces.json` in the app's config directory, `today.json` in its state directory
-  (`ds_settings::SpacesStorage`, atomic writes). Payload keys sit flat beside the Space's own.
+  (`ui_settings::SpacesStorage`, atomic writes). Payload keys sit flat beside the Space's own.
   A Space with no `id` (a file written before the kit) takes its position, so the position-keyed
   `recall` and Today of such a file keep their meaning. Reading is lenient field by field (an unknown
   theme word is the default, dots are clamped, a missing grain is the preset's own, `current` is held

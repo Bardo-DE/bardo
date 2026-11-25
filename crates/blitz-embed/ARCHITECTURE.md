@@ -9,7 +9,7 @@ every repo follows; where the two disagree, this file wins for this repo.
 
 ## 1. Crate map
 
-One crate, `blitz-embed` (`crates/blitz-kit`). Allowed dependencies, behind the default feature
+One crate, `blitz-embed` (`crates/blitz-embed/blitz-embed`). Allowed dependencies, behind the default feature
 `blitz` (every module that works on a Blitz document): `blitz-dom`, `blitz-traits`,
 `parley`, `keyboard-types` (`scroll::keys` names the keys a scroll answers to), `tokio` (`net` reads
 files on the caller's blocking pool), and, behind feature `adapter`, `wgpu` and `serde`

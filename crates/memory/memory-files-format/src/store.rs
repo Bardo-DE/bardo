@@ -12,7 +12,7 @@ use std::fmt::Write as _;
 
 /// Why a store operation failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum MemfilesError {
+pub enum MemoryFilesError {
     /// The vault failed.
     #[error("vault: {0}")]
     Vault(#[from] VaultError),
@@ -106,8 +106,8 @@ impl<V: Vault> Store<V> {
     ///
     /// # Errors
     ///
-    /// Returns a [`MemfilesError`] when the directory cannot be read or a file name is not a topic.
-    pub fn topics(&self) -> Result<Vec<TopicPath>, MemfilesError> {
+    /// Returns a [`MemoryFilesError`] when the directory cannot be read or a file name is not a topic.
+    pub fn topics(&self) -> Result<Vec<TopicPath>, MemoryFilesError> {
         let primer = VaultPath::primer();
         let files = self.vault.list(&VaultPath::facts_dir())?;
         Ok(files
@@ -127,20 +127,20 @@ impl<V: Vault> Store<V> {
     ///
     /// # Errors
     ///
-    /// Returns a [`MemfilesError`] when the file cannot be read or does not parse.
-    pub fn read(&self, t: &TopicPath) -> Result<TopicFile, MemfilesError> {
+    /// Returns a [`MemoryFilesError`] when the file cannot be read or does not parse.
+    pub fn read(&self, t: &TopicPath) -> Result<TopicFile, MemoryFilesError> {
         self.load(&VaultPath::topic(t))?
-            .ok_or_else(|| MemfilesError::NoSuchTopic(t.clone()))
+            .ok_or_else(|| MemoryFilesError::NoSuchTopic(t.clone()))
     }
 
     /// Appends a fact to a topic (creating the file): add-only, existing blocks unchanged.
     ///
     /// # Errors
     ///
-    /// Returns a [`MemfilesError`] when the file cannot be read, parsed or written.
-    pub fn append(&self, t: &TopicPath, fact: Fact) -> Result<(), MemfilesError> {
+    /// Returns a [`MemoryFilesError`] when the file cannot be read, parsed or written.
+    pub fn append(&self, t: &TopicPath, fact: Fact) -> Result<(), MemoryFilesError> {
         let mut file = match self.read(t) {
-            Err(MemfilesError::NoSuchTopic(_)) => new_file(t),
+            Err(MemoryFilesError::NoSuchTopic(_)) => new_file(t),
             other => other?,
         };
         file.blocks.push(Block::Fact(fact));
@@ -151,8 +151,8 @@ impl<V: Vault> Store<V> {
     ///
     /// # Errors
     ///
-    /// Returns a [`MemfilesError`] when the pending file cannot be written.
-    pub fn stage(&self, fact: Fact, topic: &TopicPath) -> Result<(), MemfilesError> {
+    /// Returns a [`MemoryFilesError`] when the pending file cannot be written.
+    pub fn stage(&self, fact: Fact, topic: &TopicPath) -> Result<(), MemoryFilesError> {
         let path = VaultPath::pending(&fact.id);
         let mut file = new_file(topic);
         file.blocks.push(Block::Fact(fact));
@@ -163,8 +163,8 @@ impl<V: Vault> Store<V> {
     ///
     /// # Errors
     ///
-    /// Returns a [`MemfilesError`] when a pending file cannot be read or does not parse.
-    pub fn pending(&self) -> Result<Vec<(TopicPath, Fact)>, MemfilesError> {
+    /// Returns a [`MemoryFilesError`] when a pending file cannot be read or does not parse.
+    pub fn pending(&self) -> Result<Vec<(TopicPath, Fact)>, MemoryFilesError> {
         let mut out = Vec::new();
         for (_, file) in self.load_all(&VaultPath::pending_dir())? {
             out.extend(file.blocks.into_iter().filter_map(|block| match block {
@@ -180,12 +180,12 @@ impl<V: Vault> Store<V> {
     ///
     /// # Errors
     ///
-    /// Returns a [`MemfilesError`] when the fact is not pending or a file cannot be read or written.
-    pub fn settle(&self, id: &FactId, settlement: Settlement) -> Result<(), MemfilesError> {
+    /// Returns a [`MemoryFilesError`] when the fact is not pending or a file cannot be read or written.
+    pub fn settle(&self, id: &FactId, settlement: Settlement) -> Result<(), MemoryFilesError> {
         let path = VaultPath::pending(id);
         let file = self
             .load(&path)?
-            .ok_or_else(|| MemfilesError::NotPending(id.clone()))?;
+            .ok_or_else(|| MemoryFilesError::NotPending(id.clone()))?;
         match settlement {
             Settlement::Discard => {}
             Settlement::Keep(_receipt) => {
@@ -215,8 +215,8 @@ impl<V: Vault> Store<V> {
     ///
     /// # Errors
     ///
-    /// Returns a [`MemfilesError`] when a file cannot be read or written.
-    pub fn remove(&self, ids: &[FactId]) -> Result<Count, MemfilesError> {
+    /// Returns a [`MemoryFilesError`] when a file cannot be read or written.
+    pub fn remove(&self, ids: &[FactId]) -> Result<Count, MemoryFilesError> {
         let doomed: BTreeSet<&FactId> = ids.iter().collect();
         let mut removed = 0u32;
         for (path, mut file) in self.load_every()? {
@@ -238,13 +238,13 @@ impl<V: Vault> Store<V> {
     }
 
     /// A parsed file, or `None` when it is absent.
-    fn load(&self, path: &VaultPath) -> Result<Option<TopicFile>, MemfilesError> {
+    fn load(&self, path: &VaultPath) -> Result<Option<TopicFile>, MemoryFilesError> {
         let bytes = match self.vault.read(path) {
             Ok(bytes) => bytes,
             Err(VaultError::NotFound(_)) => return Ok(None),
             Err(err) => return Err(err.into()),
         };
-        let parse_err = |err| MemfilesError::Parse {
+        let parse_err = |err| MemoryFilesError::Parse {
             path: path.clone(),
             err,
         };
@@ -253,7 +253,7 @@ impl<V: Vault> Store<V> {
     }
 
     /// Every parsed file under `dir` (the primer excluded), with its path.
-    fn load_all(&self, dir: &VaultPath) -> Result<Vec<(VaultPath, TopicFile)>, MemfilesError> {
+    fn load_all(&self, dir: &VaultPath) -> Result<Vec<(VaultPath, TopicFile)>, MemoryFilesError> {
         let primer = VaultPath::primer();
         let mut out = Vec::new();
         for path in self.vault.list(dir)?.into_iter().filter(|p| *p != primer) {
@@ -263,13 +263,13 @@ impl<V: Vault> Store<V> {
     }
 
     /// Topic files and pending files.
-    fn load_every(&self) -> Result<Vec<(VaultPath, TopicFile)>, MemfilesError> {
+    fn load_every(&self) -> Result<Vec<(VaultPath, TopicFile)>, MemoryFilesError> {
         let mut all = self.load_all(&VaultPath::facts_dir())?;
         all.extend(self.load_all(&VaultPath::pending_dir())?);
         Ok(all)
     }
 
-    fn save(&self, path: &VaultPath, file: &TopicFile) -> Result<(), MemfilesError> {
+    fn save(&self, path: &VaultPath, file: &TopicFile) -> Result<(), MemoryFilesError> {
         Ok(self
             .vault
             .write_atomic(path, render_topic(file, &self.tz).as_bytes())?)

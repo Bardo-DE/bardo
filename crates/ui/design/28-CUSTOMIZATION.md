@@ -82,7 +82,7 @@ Our own: `20-SURFACES.md`, `22-SETTINGS.md` (sections 2, 3, 9), `23-WIDGETS.md`,
 `desktop_widgets/{saved,placement,drag,arrange,view}.rs`, `widgets/mod.rs` `size_of`),
 `shell-services/src/{pins,tray,notifications}/`, `shell-launcher/src/rank/sections.rs`,
 shell-settings/tests/keys.rs,
-The shell `FINDINGS.md` F270-F271; Bardo `crates/ds-settings/src/schema/key.rs`, and the in-progress
+The shell `FINDINGS.md` F270-F271; Bardo `crates/ui-settings/src/schema/key.rs`, and the in-progress
 `crates/ds/src/widget/{contract,registry,wire}.rs` in the `widget-interface` worktree.
 
 ## 3. The surface table
@@ -903,7 +903,7 @@ running it (the widget gallery shows apps that are closed), and a **live interfa
 | `ds::widget::WidgetKind` (`widget-interface`) | `KindId` | `ui-settings` (data) |
 | `shell_launcher::ids::AppId` | `AppId`, shared by launcher, layouts and `notifications.apps` | `ui-settings` |
 | `ds::widget::WidgetRegistry`, `WidgetInfo::of`, `TakenKind`, `provide_/use_widget_registry` | `Registry<I>`, `KindInfo`, `provide_/use_registry` | `ds::place` |
-| the widget gallery page (`ds-gallery` pages `widgets`, the picker being built) | `KindGallery` | `ds::components::kind_gallery` |
+| the widget gallery page (`ui-gallery` pages `widgets`, the picker being built) | `KindGallery` | `ds::components::kind_gallery` |
 | `ds::components::widget_kind::WidgetSize`; the shell `widgets::size_of(kind, host)` | `Shape`; `KindInfo::size_in(host)` | `ui-settings`; `ds::place` |
 | The shell `desktop_widgets::saved::{SavedEntry, OutputKey}` | `Cell { instance, output: Option<OutputName>, column, row }` (`OutputKey::Any` is `None`) | `ui-settings`; the shell keeps the file and `with_output` |
 | The shell `desktop_widgets::placement::{GridSlot, clamp, nearest_free}` | stay the shell's (the desktop grid is the shell's); `clamp` keeps rule 5.2.6 | the shell |

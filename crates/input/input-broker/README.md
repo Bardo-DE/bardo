@@ -13,7 +13,7 @@ The input broker closes the node to everyone but itself and makes devices for tw
 | The key remap daemon (Mac keyboard mapping) | a full keyboard with its lights, the pointer half of a combo device | handed: the input broker makes the device and passes the key remap daemon its file descriptor |
 
 Who is calling is decided by the kernel (the process behind the socket, held by a pidfd) and a
-root-owned table of desktop programs read through [the caller-identity library](https://github.com/Bardo-DE/peephole),
+root-owned table of desktop programs read through [the caller-identity library](https://github.com/Bardo-DE/bardo),
 not by anything the caller says. A kind of device is only made for the program it belongs to.
 
 ## Crates

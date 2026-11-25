@@ -31,9 +31,9 @@ deliberately.
 
 **Imports.** `use ds::prelude::*;` brings in the names an app draws with (the root, the appearance
 axes, the vocabulary, geometry, icons, the overlays, lists, fields and the common controls); an app
-that shows account sheets or the missing-helper sheet adds `use ds_shell::prelude::*;`. The crate roots hold nothing else but the stylesheet
+that shows account sheets or the missing-helper sheet adds `use ui_shell::prelude::*;`. The crate roots hold nothing else but the stylesheet
 assembly (`ds::stylesheet()`, `ds::kits()`, `ds::component_sheets()`, `ds::KIT`, `ds::selectors`, and
-the same four in `ds_shell`) and the three facades. Every other name is reached by its home path
+the same four in `ui_shell`) and the three facades. Every other name is reached by its home path
 (`ds::components::..`, `ds::host::..`, `ds::stack::..`, `ds::style::..`, `ds::base::..`,
 `ds::motion::..`), one path each. A program depends on `ds` alone: `ds::base` (`ui-core`),
 `ds::style` (`ui-style`) and `ds::motion` (`ui-motion`) are the three crates under it,
@@ -61,12 +61,12 @@ The crates and what each holds: `ds` (the components, the `Ds` root, the host se
 portal, `use_environment`), `ui-blitz` (the Blitz host: `launch`, windows, PDF, print, spell),
 `ui-lint` (the linter), `ui-harness` (the test driver). `ui-core`, `ui-style` and `ui-motion` sit
 under `ds` and are reached as `ds::base`, `ds::style` and `ds::motion`. `ui-conformance` and
-`ds-gallery` are the UI kit's own tests and contact sheet (section 9), not for consumers.
+`ui-gallery` are the UI kit's own tests and contact sheet (section 9), not for consumers.
 
 The linter is its own crate, `ui-lint` (coherence rules 1 and 2, section 5 below), so a consumer
 that never lints does not pull in `cssparser`. The app-facing parts are `ui-shell`, which an app
-depends on next to `ds` and draws with `Ds { sheet: Some(ds_shell::stylesheet()) }`; it lints
-against `ds_shell::kits()` where an app that takes `ds` alone lints against `ds::kits()`. The
+depends on next to `ds` and draws with `Ds { sheet: Some(ui_shell::stylesheet()) }`; it lints
+against `ui_shell::kits()` where an app that takes `ds` alone lints against `ds::kits()`. The
 surfaces only our desktop shell draws (bar, dock, control center, lock, switcher, OSD,
 notifications, widgets, emoji, month grid, date picker) are not Bardo's: they are the shell's
 `shell-kit`, which adds its own kit and `stylesheet()` over these.
@@ -75,15 +75,15 @@ notifications, widgets, emoji, month grid, date picker) are not Bardo's: they ar
 with the release it is in a trailing comment:
 
 ```toml
-ds       = { git = "https://github.com/Bardo-DE/quire.git", rev = "<full sha>" }  # v0.2.31
-ui-blitz = { git = "https://github.com/Bardo-DE/quire.git", rev = "<full sha>" }  # v0.2.31; only if you run on Blitz
+ds       = { git = "https://github.com/Bardo-DE/bardo", rev = "<full sha>" }  # v0.2.31
+ui-blitz = { git = "https://github.com/Bardo-DE/bardo", rev = "<full sha>" }  # v0.2.31; only if you run on Blitz
 ```
 
 The spelling is the same in every repo: the URL ends in `.git`, the revision is the full 40-character
 sha (never a tag, never a branch), and a trailing `# vX.Y.Z` names the release it is. Cargo finds each
 crate by name in the one repository, so the crates of a revision share it.
 Nothing else is needed for the UI kit's own dependencies: `blitz-embed` (its own public repo,
-github.com/Bardo-DE/blitz-kit) comes transitively at the rev the UI kit's `Cargo.toml` pins, and so
+github.com/Bardo-DE/bardo) comes transitively at the rev the UI kit's `Cargo.toml` pins, and so
 does the rest of the pinned block. Do not add a `[patch]` for it unless you develop `blitz-embed`
 alongside: the UI kit's own `[patch]` table (its local `blitz-embed` checkout, the vello and anyrender
 forks) applies only when Bardo is the workspace root, never to a consumer, so a consumer that
@@ -94,10 +94,10 @@ from the UI kit's root `Cargo.toml` into its own workspace root. The same block 
 in `wait_for_work` when a task is cancelled before it is polled (a `use_resource` restart), fixed
 upstream only in 0.8 (DioxusLabs/dioxus#5554). Every consumer that runs a `VirtualDom` copies those
 five lines too, and drops them when Bardo moves to dioxus 0.8. layer-shell-host and the shell add, for their
-local checkouts, `[patch."https://github.com/Bardo-DE/blitz-kit"]` pointing at a sibling
+local checkouts, `[patch."https://github.com/Bardo-DE/bardo"]` pointing at a sibling
 `blitz-embed` so every path-linked repo builds one copy.
 
-**Launching on Blitz.** `ds_blitz::launch(app, AppConfig::new(title, WindowSize::new(width, height)))`
+**Launching on Blitz.** `ui_blitz::launch(app, AppConfig::new(title, WindowSize::new(width, height)))`
 runs `app` until its window closes and returns `Result<(), LaunchError>` (no runtime, or an event loop that cannot run; `main` can return it). The app's `tokio::spawn` calls run on a runtime `launch` builds and owns, or on the caller's own via `AppConfig::with_runtime(handle)`. A `WindowSize` is what the window opens at and, with
 `.with_least(width, height)`, the least a person may resize it to: give the least your layout's
 panes fit in, so no pane is squeezed past its own least (`WindowSpec::new` takes the same value
@@ -212,7 +212,7 @@ the token is spent once and child processes do not inherit it.
 **Refusing a close (unsaved work).** The person's close (the frame's close button, the
 compositor's) drops the window at once unless the app answers first:
 `use_close_request(|| false)` in any component of the window registers its handler
-(`ds_blitz::use_close_request`; GTK's `close-request`, AppKit's `windowShouldClose:`).
+(`ui_blitz::use_close_request`; GTK's `close-request`, AppKit's `windowShouldClose:`).
 The event loop calls it for each such request and closes when it answers `true`; with no handler
 the window closes as before. A handler that answers `false` shows its own question (a `Sheet` or
 `Alert`: "Do you want to save the changes made to ...") and, when the person decides, closes the
@@ -268,7 +268,7 @@ does (the UI kit's root, not yours). You only need to pin the lines **you** name
 (the pinned block is copied verbatim into
 every workspace; `docs/workspace-deps.toml` is the UI kit's own copy of the source of truth, not
 owned by this doc). If you also run on Blitz (`ui-blitz`), your own crate that calls
-`dioxus_native::*` directly (rare — most consumers only call `ds_blitz::launch`) needs the
+`dioxus_native::*` directly (rare — most consumers only call `ui_blitz::launch`) needs the
 `dioxus-native`/`blitz-*` lines too, exactly as pinned, never a different revision.
 
 **If your own crate sits inside a Cargo workspace tree it does not own** (as `examples/consumer`
@@ -284,7 +284,7 @@ does; `scripts/check-consumer.sh` builds, lints and tests that example in the ga
 surface) still carries Blitz's user-agent stylesheet, which sets `body { margin: 8px }`: its
 content never reaches the true (0, 0) corner, and `position: absolute`/`fixed` with `inset: 0`
 paints nothing on it (the shell's hot corners). layer-shell-host injects `body { margin: 0 }`
-into every document it hosts; a bare document elsewhere (`ds_blitz::launch`,
+into every document it hosts; a bare document elsewhere (`ui_blitz::launch`,
 a test) must cancel the margin itself or draw inside a `Ds`.
 
 Every UI kit component must be drawn inside one `Ds` (design/03-COLOR.md
@@ -325,7 +325,7 @@ fn App() -> Element {
 | `material` | `Material` | required | which of the eight materials this root paints (design/03-COLOR.md §17.1) |
 | `blur` | `BlurState` | `BlurState::default()` | whether the compositor blurs behind this surface |
 | `stylesheet` | `Inject` | `Inject::Inline` | `Inline` puts a `<style>` inside `.ds` (spike S1); `Host` lets you inject `ds::stylesheet()` yourself |
-| `sheet` | `Option<&'static str>` | `None`: `ds::stylesheet()` | the text `Inject::Inline` writes; an app that takes `ui-shell` passes `Some(ds_shell::stylesheet())` |
+| `sheet` | `Option<&'static str>` | `None`: `ds::stylesheet()` | the text `Inject::Inline` writes; an app that takes `ui-shell` passes `Some(ui_shell::stylesheet())` |
 | `styles` | `ReadSignal<Styles>` | empty | the look and the person's desktop-wide and per-app stylesheets, drawn after the design system's (section 12) |
 | `custom_styles` | `bool` | `true` | `false` draws none of the three sheets (`appearance.custom_styles`, "Use my styles", section 12) |
 | `surface` | `Option<&'static str>` | `None` | stamped as `data-surface`, the name a user stylesheet selects this root by |
@@ -334,7 +334,7 @@ fn App() -> Element {
 | `frame` | `Option<FrameTint>` | `None`: `FrameTint::of(material, chrome)` | `Opaque` (the window's frame), `Tinted` (the Space gradient at the tint alpha: bar, dock, a painted popover, OSD, widget) or `None` (the material's flat tint) |
 | `radius` | `Option<Corner>` | `None`: the material's own corner | `Corner::Token(Radius::…)` or `Corner::Px(Px(n))`: overrides `--m-radius` inline, for a root whose corner is a setting (the dock's `dock.pill_radius_px`) |
 | `extent` | `RootExtent` | `RootExtent::Content` | `Content`: as tall as the root's content (a window, the bar, a card). `Viewport`: at least the viewport (`min-height:100vh; min-width:100vw`), **the option for an overlay surface** (an OSD, a sheet, a click catcher) whose content is all positioned and would otherwise leave the root, and everything it places, 0 px tall (FINDINGS "Root height") |
-| `scale` | `Option<Scale>` | `None`: the host's `ds::prelude::HostSignals` scale, else 1x | the device scale this root draws for, in 120ths (`Scale(180)` is 1.5x, the `wp_fractional_scale_v1` unit and layer-shell-host's `Scale`); the root writes the pixel tokens for it (below). `ds_blitz::launch`, `Harness` and `snapshot` provide `HostSignals` themselves; a host that is not `ui-blitz` passes `scale` |
+| `scale` | `Option<Scale>` | `None`: the host's `ds::prelude::HostSignals` scale, else 1x | the device scale this root draws for, in 120ths (`Scale(180)` is 1.5x, the `wp_fractional_scale_v1` unit and layer-shell-host's `Scale`); the root writes the pixel tokens for it (below). `ui_blitz::launch`, `Harness` and `snapshot` provide `HostSignals` themselves; a host that is not `ui-blitz` passes `scale` |
 | `window` | `WindowFrame` | `WindowFrame::None`: the root is what it was | `WindowFrame::Titlebar { title, lights: bool, timing }` (or `WindowFrame::titlebar(title, lights)`): the client-decorated window's frame, a 28 px titlebar that moves and zooms the window, the traffic lights, the body and eight resize edges, all acting through the host's `ds::prelude::HostWindow` — section 6, "Window frame" |
 
 ### Pixel snapping: `scale`, the pixel tokens and `snap_to_device`
@@ -362,10 +362,10 @@ full row and one half row. Three pieces keep every line whole device pixels (des
    and a box whose whole `width`/`height` is `1px`, and names the token to use.
 3. **The layout is snapped to the device grid.** Blitz rounds every box to whole *logical*
    pixels, so at 1.5 a box at y 11 starts at device y 16.5 whatever its width.
-   `ds_blitz::snap_to_device(&mut BaseDocument)` re-rounds the laid-out document on the device
+   `ui_blitz::snap_to_device(&mut BaseDocument)` re-rounds the laid-out document on the device
    grid (and rounds a pure translation to whole device pixels). `Harness` and `snapshot` run it
    every frame. **A host that resolves its own documents (layer-shell-host) calls it after every
-   `resolve` and before painting**; it does nothing at a whole scale. `ds_blitz::launch`'s
+   `resolve` and before painting**; it does nothing at a whole scale. `ui_blitz::launch`'s
    window cannot (blitz-shell resolves and paints in one call), so there the tokens apply but a
    line may still sit half a device pixel off.
 
@@ -388,7 +388,7 @@ nothing paints and in the shell no press lands.
   `Ds { extent: RootExtent::Viewport }`, or put the floor on your frame: `display:grid; width:100vw; min-height:100vh` in flow, the
   room around the card as the frame's padding; the grid's one cell stretches the `Ds` root to
   fill it, so the root has the viewport's height too. The same floor holds even if the frame is
-  absolutely placed (`crates/ds-conformance/tests/it/root_frame.rs` measures all three).
+  absolutely placed (`crates/ui-conformance/tests/it/root_frame.rs` measures all three).
 - **The surface is sized by its content** (a bar, a dock, an OSD card's surface): leave the
   content in flow; a card that must be positioned is positioned inside a frame that has a height.
 - **Debug it** with the Harness before looking at the compositor: `harness.rect("html")`,
@@ -407,9 +407,9 @@ value.
 
 ## 3. Reading appearance
 
-### `ds_settings::use_environment`
+### `ui_settings::use_environment`
 
-`ds_settings::use_environment(store, system, spawner) -> ReadSignal<Environment>` (feature
+`ui_settings::use_environment(store, system, spawner) -> ReadSignal<Environment>` (feature
 `dioxus` of `ui-settings`; `ui-settings/src/environment.rs`) is the one hook that gives you a live
 `Environment { settings: AppearanceFile, system: SystemPrefs }`: it loads `appearance.toml` from
 the `Store`, watches the directory for edits (30 ms debounce), reads the freedesktop settings
@@ -418,9 +418,9 @@ Unknown and invalid keys in the file are printed to stderr as they are read and 
 next save.
 
 ```rust,ignore
-use ds_settings::{AppName, ConfigRoot, Store, SystemPrefsSource, use_environment};
+use ui_settings::{AppName, ConfigRoot, Store, SystemPrefsSource, use_environment};
 use ds::prelude::*;
-use ds_blitz::TokioSpawner;
+use ui_blitz::TokioSpawner;
 use dioxus::prelude::*;
 use std::sync::Arc;
 
@@ -448,13 +448,13 @@ it reads `theme` from.
 
 **Nothing here names a runtime.** The file watch and the portal watch are tasks handed to the
 `ds::spawn::Spawner` you pass (`ui-settings` may not depend on `tokio`, `scripts/check-boundary.sh`).
-On Blitz, `ds_blitz::TokioSpawner::current()` is the implementor: `ds_blitz::launch` enters a
+On Blitz, `ui_blitz::TokioSpawner::current()` is the implementor: `ui_blitz::launch` enters a
 process-wide, lazily built Tokio runtime (multi-thread, two workers;
-`crates/ds-blitz/src/launch/runtime.rs`) and holds the guard for the process's life, and
-`ds_harness::Harness` enters it (`ds_blitz::enter_runtime`) in `Harness::new` for the harness's own life, so `current()` works
+`crates/ui-blitz/src/launch/runtime.rs`) and holds the guard for the process's life, and
+`ui_harness::Harness` enters it (`ui_blitz::enter_runtime`) in `Harness::new` for the harness's own life, so `current()` works
 in anything launched with `launch` or rendered inside a `Harness`. A test never reaches the real
 config or the session bus: it passes `ConfigRoot::Scratch(dir)` and
-`SystemPrefsSource::Fixed(prefs)` (`crates/ds-conformance/tests/driven_components.rs::
+`SystemPrefsSource::Fixed(prefs)` (`crates/ui-conformance/tests/driven_components.rs::
 use_environment_does_not_panic_under_the_harness`). `examples/consumer::App` shows the real
 wiring.
 
@@ -462,7 +462,7 @@ wiring.
 
 Inside any component under a `Ds`, `ds::prelude::use_scope() -> Scope` gives you what that scope resolved to:
 `resolved: Resolved{scheme, accent, motion}`, `scheme`, `material`, `blur`, `modality`
-(`crates/ds-style/src/scope.rs`). Components use this to size icons, choose overlay placement and read the motion
+(`crates/ui-style/src/scope.rs`). Components use this to size icons, choose overlay placement and read the motion
 level for their own timers (section 6); you will rarely need it directly unless you are building
 your own component.
 
@@ -509,7 +509,7 @@ tests/it/coherence.rs` is these four, verbatim, run against a real app.
 ### Rule 1 — no literal design values in your own CSS
 
 ```rust
-use ds_lint::{assert_clean, Exception, LintConfig, Profile, Rule};
+use ui_lint::{assert_clean, Exception, LintConfig, Profile, Rule};
 
 const OUR_CSS: &str = ".row { color: var(--ink); }\n.fade { mask-image: linear-gradient(#000, transparent); }";
 const EXCEPTIONS: &[Exception] = &[Exception {
@@ -565,7 +565,7 @@ markup lint runs on what your app *actually renders*, not on what you believe it
 
 ```rust,ignore
 use dioxus::core::VirtualDom;
-use ds_lint::{markup, LintConfig, Rule};
+use ui_lint::{markup, LintConfig, Rule};
 
 fn render_ssr() -> String {
     let mut dom = VirtualDom::new(YourApp);
@@ -598,7 +598,7 @@ class, or an `<svg>` that is neither `Glyph`'s `.ds-ic` nor marked `data-ds-svg`
 a UI kit component that draws its own vector writes, as the SendPill's ring does), and the
 inline-style rules below.
 
-Every `style` attribute is checked declaration by declaration (`ds_lint`'s `inline_style`): a
+Every `style` attribute is checked declaration by declaration (`ui_lint`'s `inline_style`): a
 literal colour (`Rule::HexColour`, `Rule::ColourFunction`, `Rule::NamedColour`) or a raw
 duration (`Rule::RawDuration`) is an offence. The one allowance is a custom property (`--*`) on
 an element carrying `ds` or a `ds-*` class: that is Bardo handing a value it computes per
@@ -623,14 +623,14 @@ crate. `examples/consumer` never needed this escape hatch; note in your own repo
 Never `std::thread::sleep`, `tokio::time::sleep` or a hand-rolled `setTimeout`-equivalent to
 drive a class toggle. Use `ds::prelude::use_motion_timer` (`MotionTimer::start(on_settled)`, which runs for exactly
 `ds::prelude::settle(anim, level)`); both read the enclosing `Ds`'s resolved motion level, so
-`MotionLevel::Reduced` collapses them automatically. Prove it with `ds_harness::Harness`, which
+`MotionLevel::Reduced` collapses them automatically. Prove it with `ui_harness::Harness`, which
 drives a real Blitz document on a real (if fast-forwarded) clock — the test below is
 `examples/consumer/tests/it/coherence.rs::the_sent_badge_times_out_on_ds_motions_own_clock`,
 shortened:
 
 ```rust,ignore
 use ds::prelude::*;
-use ds_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 use std::time::Duration;
 
 let resolved = resolve(Appearance::default(), SpaceLook::default().theme, SystemPrefs::default());
@@ -673,7 +673,7 @@ for the defaults) and renders the first frame. A test sends `Input` and lets tim
 | Where something is | `harness.centre(selector) -> Option<Point>`, `harness.rect(selector)`, `harness.hits(point, selector)` |
 | What it says | `harness.text_of(selector)`, `harness.attr(selector, name)`, `harness.count(selector)`, `harness.has_class(selector, class)`, `harness.focus_of(selector)` |
 | How it looks | `harness.ink_of(selector)`, `harness.fill_of(selector, Part::..)`, `harness.render()`, `harness.html()` |
-| Pictures without a harness | `ds_harness::snapshot(app, viewport)` and `snapshot_at`, `snapshot_with`, `snapshot_placed` |
+| Pictures without a harness | `ui_harness::snapshot(app, viewport)` and `snapshot_at`, `snapshot_with`, `snapshot_placed` |
 
 | Want | Call | Notes |
 | --- | --- | --- |
@@ -683,7 +683,7 @@ for the defaults) and renders the first frame. A test sends `Input` and lets tim
 | Read the time in your own component | `ds::base::time::clock::now()`, `ds::base::time::clock::since(instant)`, `ds::base::time::clock::sleep(d)` | Whatever clock the thread has installed: the wall clock in a window, the harness's in a test. A component that calls `Instant::now()` or `futures_timer` itself stays on the wall clock and drifts from the harness |
 | Install a virtual clock yourself (another harness) | `ds::base::time::clock::VirtualClock::new()`, `.install() -> ClockGuard`, `.advance_to(d)`, `.next_due()`, `.now()`, `.elapsed()`, `.waiting()`, `.due_times()` | Thread-local, restored when the guard drops. Step through `next_due` and poll your executor between steps, as `Harness::advance` does |
 
-Not on the virtual clock: work off the harness's thread (a Tokio task such as `ds_settings`'
+Not on the virtual clock: work off the harness's thread (a Tokio task such as `ui_settings`'
 file watch, a D-Bus reply, a resource fetched by a custom `AppNet` on another thread).
 `advance` on the virtual clock never waits for the wall clock, so a test that needs such work
 to land stays on `Clock::Wall`. Nor Blitz's own clock reads (rev e99fbdbd): its double-click
@@ -692,7 +692,7 @@ host cannot set, so on the virtual clock two clicks at one spot are always a dou
 far apart the test advanced them; click a second spot in between, or keep that test on the wall
 clock.
 
-**`ds_harness::harness::assert_settles_to_zero_frames` is only a strict check on `Clock::Virtual`.** It drains
+**`ui_harness::harness::assert_settles_to_zero_frames` is only a strict check on `Clock::Virtual`.** It drains
 `VirtualClock::next_due` — advancing straight to each pending sleep's due instant, earliest
 first, until none remain — then asserts a quiet window right after, so "at rest" means exactly
 design/26 R3: no CSS animation, no pending `ds` timer, nothing woke the document. On
@@ -709,8 +709,8 @@ so one test renders your surface and measures the laid-out document. `ui-harness
 dev-dependency you already have:
 
 ```rust,ignore
-use ds_harness::inset::{assert_insets, Allow, Policy};
-use ds_harness::{Harness, HarnessConfig, Viewport};
+use ui_harness::inset::{assert_insets, Allow, Policy};
+use ui_harness::{Harness, HarnessConfig, Viewport};
 use ds::prelude::Px;
 
 #[test]
@@ -1001,13 +1001,13 @@ A few props worth knowing about before you read the signatures:
   battery) and fall back to Bounce and Pulse on any other icon. Nothing plays by itself, and Reduced
   motion holds or fades each. A component that wants only the wrapper's class calls
   `use_symbol_attrs(effect)`.
-- Copying to the clipboard from an action is `ds_blitz::clipboard::write_text(&str)` (read: `read_text`),
+- Copying to the clipboard from an action is `ui_blitz::clipboard::write_text(&str)` (read: `read_text`),
   reached through the document's host, so call it from a handler; a test reads it back with
   `Harness::clipboard_text()`. `write_to(ClipboardTarget::Primary, text)` and `read_from(target)` reach the
   primary selection (Linux only; elsewhere a write is `Unavailable`), read back with `Harness::primary_text()`.
   A custom `Clipboard` implements `read_from` and `write_to`; `read_text`/`write_text` are provided.
   ui-shell has no clipboard of its own.
-- Files on the clipboard: `ds_blitz::clipboard::write_files(&ClipboardFiles::new(FileOp::Copy, paths))` on
+- Files on the clipboard: `ui_blitz::clipboard::write_files(&ClipboardFiles::new(FileOp::Copy, paths))` on
   ⌘C/⌘X and `read_files()` on ⌘V (`ClipboardFiles { op, paths }`; `uris()` for the `file://` form). The system
   clipboard carries a `text/uri-list` only, so another app pastes a copy and reads back as `FileOp::Copy`.
   A **cut cannot cross apps**: on ⌘X keep the cut set in your own state, write it (as `Cut`), and on paste
@@ -1030,7 +1030,7 @@ A few props worth knowing about before you read the signatures:
 - `Row` takes `#[props(default)] drop: DropState` (`Idle`, `Target`,
   `Source`) — drag-and-drop visual state (design/04-COMPONENTS.md §34); leave it `Idle` unless
   you are wiring up drag and drop for that row.
-- `ds_shell::accounts::model::SignInForm` fields for a hand-typed server: `FormField::new(role,
+- `ui_shell::accounts::model::SignInForm` fields for a hand-typed server: `FormField::new(role,
   requirement, text)` plus `.choosing(Vec<Choice>)`, `.hinted(text)` and `.in_part(FormPart)`.
   `FieldRole` is one-to-one with the accounts service's `FieldKind` (`Protocol`, `Port`, `Security`,
   `OutgoingServer`, `OutgoingPort`, `OutgoingSecurity`, `SessionUrl`; `Token` stays the secret);
@@ -1201,7 +1201,7 @@ External icons and a caller-driven tooltip (FINDINGS "Pointer events"):
 
 For a bar (FINDINGS "Bar gaps"):
 
-- **A Blitz host that is not `ds_blitz::launch`** (layer-shell-host's surfaces, a popup's document)
+- **A Blitz host that is not `ui_blitz::launch`** (layer-shell-host's surfaces, a popup's document)
   calls `ui_host_hooks::provide_host()` (a library takes `ui-host-hooks`, never `ui-blitz`) at the top of its root component, before any Bardo
   component reads the document. It installs every part of `ds::prelude::DocumentHost` at once (rects,
   focus, caret, scroll, edit, drop), so a root can never hold a subset; a root under a window's
@@ -1310,7 +1310,7 @@ For a launcher and a dock (FINDINGS "Launcher gaps"):
 - **Focus waits out a busy document.** `Focus::OnMount`, a menu taking the keyboard and every
   other focus change go through the host's `ds::host::parts::FocusHost` (`Focused::{Done, Busy, Unknown}`),
   tried again a frame later while the renderer holds the document. A Blitz host that is not
-  `ds_blitz::launch` provides it with the rest of the host:
+  `ui_blitz::launch` provides it with the rest of the host:
 
   ```rust,ignore
   #[component]
@@ -1431,7 +1431,7 @@ Palette behaviour:
   the menu and hand the field the keyboard back. The palette's `onkey` must stop the first
   Ctrl+K as well as prevent it: the key it opens the menu on bubbles on to the same root
   handler, which would see the menu open and close it at once
-  (`crates/ds-conformance/tests/it/palette_actions_key.rs`):
+  (`crates/ui-conformance/tests/it/palette_actions_key.rs`):
 
   ```rust,ignore
   div {
@@ -1463,17 +1463,17 @@ measured numbers.
 
 | Need | API | Notes |
 | --- | --- | --- |
-| An HTML document as a PDF | feature `pdf`: `ds_blitz::pdf(&html, PageSpec::default()) -> Result<Vec<u8>, PdfError>` | A whole document (`<!DOCTYPE html>...`). The UI kit's faces are registered; the network is sealed: only `data:` URLs load (no `file:`, no fetch). `@media print` applies. Laid out once at the page's content width, at scale 1. |
-| A Dioxus tree as a PDF | `ds_harness::pdf_app(app, HarnessConfig::new(viewport), spec)`, ui-harness feature `pdf` | Built as `config` says (its contexts and `NetPolicy`; the viewport is replaced by the page's content box), rendered until its mount-time work and images have landed (as `snapshot`), then printed. |
+| An HTML document as a PDF | feature `pdf`: `ui_blitz::pdf(&html, PageSpec::default()) -> Result<Vec<u8>, PdfError>` | A whole document (`<!DOCTYPE html>...`). The UI kit's faces are registered; the network is sealed: only `data:` URLs load (no `file:`, no fetch). `@media print` applies. Laid out once at the page's content width, at scale 1. |
+| A Dioxus tree as a PDF | `ui_harness::pdf_app(app, HarnessConfig::new(viewport), spec)`, ui-harness feature `pdf` | Built as `config` says (its contexts and `NetPolicy`; the viewport is replaced by the page's content box), rendered until its mount-time work and images have landed (as `snapshot`), then printed. |
 | In a test | `Harness::pdf(spec) -> Result<Vec<u8>, PdfError>` | Prints the harness's document as it is now, at the page width with `@media print`; the harness's own viewport and media come back afterwards. Read the PDF back with `pdfrum` (dev-dependency) to assert on text. |
 | The sheet | `PageSpec { size, margins }`; `PageSize::{A4, Letter, Custom { width: Pt, height: Pt }}`; `Margins { top, right, bottom, left }`, `Margins::uniform(Pt)`, `Margins::symmetric(vertical, horizontal)`; `Pt::from_mm`, `Pt::from_inches` | `PageSpec::default()` is A4 with 18 mm above and below, 16 mm at the sides. `@page` is not read: the spec's margins are the only ones. `PdfError::NoContentArea` when the margins meet. |
 | Start a new page at an element | `"data-break-before": "page"` | CSS `break-before`/`page-break-before` do nothing on Blitz (stylo drops them). A marker at the document's top makes no blank page. |
 | Keep a box on one page | `"data-break-inside": "avoid"` | Moved whole to the next page when it would straddle the cut, unless it is taller than a page (then it is cut between its lines). Lines, images, `svg`, `canvas`, `iframe` and table rows are kept whole on their own; a text block keeps its first two and last two lines together (orphans and widows of 2). |
 | Screen-only or print-only styling | `@media print { .. }` | Applies in `pdf`, `pdf_app` and `Harness::pdf`. |
 | CJK text | name the family: `font-family: "Noto Sans CJK TC", sans-serif` | Otherwise fontique's fallback picks (DroidSansFallback on this machine). A variable face prints at the instance the layout used. |
-| Print it | `ds_blitz::print_dialog(&pdf, title) -> Result<PrintOutcome, PrintError>`, feature `print` | Linux: the desktop portal's print dialog (GTK or KDE backend), then the portal prints the PDF. No portal or no print backend, and other systems: the PDF is written to a temp file and opened in the viewer. `PrintOutcome::{Printed, Cancelled, Opened(PathBuf)}`, `PrintError::{Portal, Write, NoViewer}`. **Blocks** until the dialog is answered: call it off the UI thread. The dialog is not parented to the window. |
+| Print it | `ui_blitz::print_dialog(&pdf, title) -> Result<PrintOutcome, PrintError>`, feature `print` | Linux: the desktop portal's print dialog (GTK or KDE backend), then the portal prints the PDF. No portal or no print backend, and other systems: the PDF is written to a temp file and opened in the viewer. `PrintOutcome::{Printed, Cancelled, Opened(PathBuf)}`, `PrintError::{Portal, Write, NoViewer}`. **Blocks** until the dialog is answered: call it off the UI thread. The dialog is not parented to the window. |
 | Try it by hand | `cargo run --release -p ui-blitz --example pdf -- out.pdf`; `cargo run -p ui-blitz --features print --example print` | The first writes the fixture and prints its size and time; the second opens the real dialog. |
-| The painter alone | the `pdfrum-anyrender` crate, on crates.io | Pages recorded into anyrender's `Scene` by any anyrender renderer, written as one PDF; Blitz-free. `ui-blitz`'s `pdf` feature depends on it as a git dependency pinned to pdfrum rev 61371040, so a consumer that only prints through `ds_blitz::pdf` names nothing new; one that calls the painter directly adds the same git dependency at the same rev. Its own docs describe its page and source types. |
+| The painter alone | the `pdfrum-anyrender` crate, on crates.io | Pages recorded into anyrender's `Scene` by any anyrender renderer, written as one PDF; Blitz-free. `ui-blitz`'s `pdf` feature depends on it as a git dependency pinned to pdfrum rev 61371040, so a consumer that only prints through `ui_blitz::pdf` names nothing new; one that calls the painter directly adds the same git dependency at the same rev. Its own docs describe its page and source types. |
 
 ### Missing helpers
 
@@ -1503,7 +1503,7 @@ pacman = ["libheif"]
 Families are `dnf`, `apt`, `pacman`, `zypper`, chosen from `ID` then `ID_LIKE` in
 `/etc/os-release`. A family you leave out, or any other distro, is `Outcome::Unsupported`.
 To know the release too (an app that shows a different command for Ubuntu 24.04 and 26.04), read the same text
-with `ds_helpers::OsRelease::parse(&text)`: `id`, `id_like` and `version_id` (`None` on Arch and Debian testing,
+with `ui_helpers::OsRelease::parse(&text)`: `id`, `id_like` and `version_id` (`None` on Arch and Debian testing,
 which carry none); `Family::detect` is built on it.
 
 **The API.**
@@ -1532,10 +1532,10 @@ both its `Outcome` and an `Availability` on its feed, so handle the two as one e
 `Ds` root must draw with it, or the Installing phase has no progress styling:
 
 ```rust,ignore
-rsx! { Ds { sheet: Some(ds_shell::stylesheet()), HelperSheet { /* ... */ } } }
+rsx! { Ds { sheet: Some(ui_shell::stylesheet()), HelperSheet { /* ... */ } } }
 ```
 
-`ds_shell::helpers::{HelperSheet, HelperBody, HelperPhase}` (also in `ds_shell::prelude`).
+`ui_shell::helpers::{HelperSheet, HelperBody, HelperPhase}` (also in `ui_shell::prelude`).
 
 **The sheet.** `HelperSheet { app, tool, purpose, phase, icon, on_install, on_dismiss }` is
 controlled: you own the `HelperPhase` (`Ask`, `Installing`, `Failed { reason }`, `NotFound {
@@ -1547,13 +1547,13 @@ the first candidate package, `Unsupported` the first probe executable: take them
 family and pass its `.text()` (`None` when the list is empty, or when you cannot tell which family
 is theirs). With `Some`, the sheet says to run it in Terminal (the person's computer cannot install it for them, as on a stock Arch with no PackageKit) and shows it as a selectable line with a Copy button: give
 `HelperSheet` / `HelperBody` an `on_copy: EventHandler<String>` (default: nothing) that writes the
-clipboard (`ds_blitz::clipboard::write_text`; ui-shell does not depend on ui-blitz) and a
-`copy: CopyState` (`ds::components::controls::copy_state::CopyState`, also at `ds_shell::accounts::model::CopyState`; default `Idle`; set `Copied` after you copied, as `BrowserWait` does) so the
+clipboard (`ui_blitz::clipboard::write_text`; ui-shell does not depend on ui-blitz) and a
+`copy: CopyState` (`ds::components::controls::copy_state::CopyState`, also at `ui_shell::accounts::model::CopyState`; default `Idle`; set `Copied` after you copied, as `BrowserWait` does) so the
 button says "Copied". The line itself is `ds`'s `CommandLine` (next section). `on_dismiss` is Not Now and Close;
 Escape does nothing while `Installing`. `HelperBody` is the same column without the sheet; both are
 `ds`'s `Alert` column (`AlertColumn`) with the install command or spinner in its content slot.
 
-### File types: `ds_helpers::mime`
+### File types: `ui_helpers::mime`
 
 What type a file is, which apps open it, the default one and its icon name, per shared-mime-info,
 `mimeapps.list` and `mimeinfo.cache`. It moved here from the files app so the shell, mailo, anyview and
@@ -1568,9 +1568,9 @@ environment).
 | Parents, aliases, relation | `db.canonical(&mime)`, `db.ancestors(&mime)`, `db.is_a(&child, &parent) -> Relation` |
 | Icon names | `db.icon_name(&mime) -> IconName`: `.specific()` (`application-pdf`), `.generic()` (`x-office-document`), `.in_order()` |
 | Which apps open it | `Associations::load(&dirs, &db, installed)`, `.default_for(&mime, &db)`, `.apps_for(&mime, &db)`, `.file_manager_default()`; `installed` is `Fn(&DesktopId) -> Installed` |
-| The two small types | `MimeType::new("image/png")?` (lower-cased, `.major()`, `MimeType::FOLDER`), `FileName::new(name)?` (`.stem()`, `.extension()`, `.display()`); their errors are `MimeError` and `NameError` (in `ds_helpers::mime` only, since the crate root already has a `NameError`) |
+| The two small types | `MimeType::new("image/png")?` (lower-cased, `.major()`, `MimeType::FOLDER`), `FileName::new(name)?` (`.stem()`, `.extension()`, `.display()`); their errors are `MimeError` and `NameError` (in `ui_helpers::mime` only, since the crate root already has a `NameError`) |
 
-The id of an app is the desktop-entry layer's `ds_helpers::DesktopId`; `DesktopId::new(text)` is the
+The id of an app is the desktop-entry layer's `ui_helpers::DesktopId`; `DesktopId::new(text)` is the
 strict reading (`DesktopIdError`), `DesktopId::parse` the lenient one.
 
 ### Showing a command to copy
@@ -1579,7 +1579,7 @@ strict reading (`DesktopIdError`), `DesktopId::parse` the lenient one.
 selectable line in the data face with a Copy button beside it: use it wherever the person has to run
 something in a terminal (Settings that say how to install a tool, an error that names the fix).
 `ds` is renderer-free and cannot write the clipboard, so the host does: `on_copy` hears the `text`
-when Copy is pressed, you write it (`ds_blitz::clipboard::write_text(&text)`), and you hold a
+when Copy is pressed, you write it (`ui_blitz::clipboard::write_text(&text)`), and you hold a
 `CopyState` (`ds::components::controls::copy_state::CopyState`, `Idle` or `Copied`, default `Idle`)
 that you pass as `copy`, set to `Copied` after the write, so the label reads "Copied"; set it back to
 `Idle` when the text changes or after a moment. The component sets no margin; space it from its
@@ -1596,7 +1596,7 @@ rsx! {
         text: "sudo dnf install llama-cpp".to_owned(),
         copy: copy(),
         on_copy: move |text: String| {
-            let _ = ds_blitz::clipboard::write_text(&text);
+            let _ = ui_blitz::clipboard::write_text(&text);
             copy.set(CopyState::Copied);
         },
     }
@@ -1615,7 +1615,7 @@ list and run them (design/27 section 5.2 rule a). Off by default: feature `menus
 
    ```rust,ignore
    let tree = MenuTree::from_bar(&bar)?;                      // ds::components::menus::export
-   let export = MenuExport::start(                            // ds_blitz::menus, feature `menus`
+   let export = MenuExport::start(                            // ui_blitz::menus, feature `menus`
        &MenuExportConfig { app_id: AppId("dev.mailo.Mailo".into()), bus: Bus::Session },
        tree,
        move |command: CommandId| { let _ = tx.send(command); }, // runs on a bus thread
@@ -1646,7 +1646,7 @@ list and run them (design/27 section 5.2 rule a). Off by default: feature `menus
 | EventGroup | the same per event, at most 64 events a call (`InvalidArgs` beyond) and 8 calls a second per sender (`LimitsExceeded` beyond) |
 
 Tests start a private `dbus-daemon` and pass `Bus::Address(..)`; never export to the real session
-bus from a test (`crates/ds-harness/tests/menu_export.rs` is the model). Under a shell that turns on
+bus from a test (`crates/ui-harness/tests/menu_export.rs` is the model). Under a shell that turns on
 zbus's `tokio` feature, `MenuExport::start` enters the process-wide runtime itself.
 
 ### Pointer capture, gestures and the capsule
@@ -1661,7 +1661,7 @@ Blitz fork is needed.
 | --- | --- | --- |
 | A drag that leaves its element | `ds::host::pointer_capture::use_pointer_capture(on_pointer) -> PointerCapture`; wire `capture.on_mounted(event)` to `onmounted`, call `capture.begin() -> PointerHold` from `onpointerdown` | `on_pointer` hears every move (`PointerPhase::Drag`) and the primary release (`PointerPhase::Release`) in the window's logical pixels, wherever the pointer is, until the button comes up. `PointerHold::Local` means the host cannot (no host, not mounted yet): the element's own `onpointermove` and `onpointerup` are all there is. The edit surface uses the same route. |
 | A pinch or a phased scroll | `ds::host::gesture::use_gestures(on_gesture)`; `Gesture::Pinch { phase, by: Magnification, at }`, `Gesture::Scroll { source: ScrollSource, phase, by: Point, at, held: Modifiers }`, `ScrollSource::{Wheel, Finger}`, `GesturePhase::{Began, Changed, Ended, Cancelled}` | A gesture reaches every listener with the pointer's place; the listener checks it is over its own element. `Magnification(50)` is 5% larger. A scroll's `by` is how far the content moves in logical pixels (winit's sign; a wheel detent is 60 px, the distance a native container moves for it, and a wheel with no phases reports `Changed` only; `source` says which: `Wheel` for detents, `Finger` for a touchpad (winit reports a pointing stick as pixels too, so it reads as `Finger`); `held` is the modifier keys down, so a wheel under Control can zoom). `use_gestures_with(WheelDelivery::Eased, ..)` hears the detents eased over frames instead, and a touchpad's run with its glide (section 11). Pinch exists on Wayland and macOS, where winit has it. |
-| In a test | `Input::gesture(Gesture::Pinch { .. })`; `Input::wheel(..)` publishes a scroll too | `ds_blitz::launch` and `Harness` provide the `GestureBus`; with no host `use_gestures` hears nothing. |
+| In a test | `Input::gesture(Gesture::Pinch { .. })`; `Input::wheel(..)` publishes a scroll too | `ui_blitz::launch` and `Harness` provide the `GestureBus`; with no host `use_gestures` hears nothing. |
 | A measure that follows the window | `ds::host::measure::use_rect()` | It reads again after each `ds::host::resized::WindowResized` bump, which `launch` makes on every window resize or scale change; a host with no such source (a shell surface) never bumps, and the rect stays where it was measured. |
 | A machine whose parameters come from its own state | `MachineRef::set_params(params)` before `send` | `use_machine` takes parameters at each render, one render behind a machine whose parameters are derived from its state (a zoom step reads the scale the last step made): compute them from the state just read and set them, then send. |
 | A timed machine your surface owns | `ds::machine::use_machine(|now| first_state, params, || ctx, |out, machine| ...) -> MachineRef<M>`; the controlled form is `use_machine_state(|now| first_state)` then `use_machine_in(held, params, || ctx, on_out)` | There is no `Default` bound: you give the first state, and `now` is the stamp of the mount, so a seeded deadline counts on the hook's clock. `ctx` is a closure that reads the facts the step needs (`type Ctx`, `()` if none); it runs at every step, including the one a wake causes. `on_out` gets the `MachineRef`, so a follow-up is `machine.send(input)`. With `MachineState { state, clock }` you hold the signal yourself: read it from a sibling, persist it, or write it (the timer follows the state's `wake()`). From a component body (an input made by a prop) use `send_from_render`, before reading the state. |
@@ -1676,7 +1676,7 @@ copy. FINDINGS.md "Texture layer" has the reasons and limits.
 
 | Need | API | Notes |
 | --- | --- | --- |
-| The window's device | `ds_blitz::use_gpu() -> Gpu`; `gpu.device()`, `queue()`, `adapter()`, `instance()` | `None` until the window's first frame; the component calling `use_gpu` re-renders when it arrives (and when `gpu.generation()` changes, after which textures made on the old device stop drawing). One `Gpu` per window. |
+| The window's device | `ui_blitz::use_gpu() -> Gpu`; `gpu.device()`, `queue()`, `adapter()`, `instance()` | `None` until the window's first frame; the component calling `use_gpu` re-renders when it arrives (and when `gpu.generation()` changes, after which textures made on the old device stop drawing). One `Gpu` per window. |
 | A handle to show | `gpu.handle()` (empty), `gpu.register(Texture)`, `gpu.register_view(TextureView)`, `gpu.upload(&Pixels)` | A registered texture is premultiplied, non-sRGB (`Rgba8Unorm`, `Bgra8Unorm`, `Rgba16Float`), one mip, `TEXTURE_BINDING`. |
 | CPU pixels | `Pixels::new(PixelFormat, width, height, &bytes)`; `handle.update(&pixels)` | `Rgba8Premultiplied` (pdfrum's `Pixmap`) as is, `Rgb8` made opaque, `Rgba8Straight` multiplied at upload. The same size writes in place; another size makes a new texture. Errors: `GpuError::{NotReady, TooLarge}`. |
 | The element | `TextureLayer { texture, fit, source, sampling, pace, common }` | `fit: TextureFit::{Contain, Cover, Fill, Actual, Tile}`; `source: Option<TexelRect>` in texture pixels (crop; the whole texture when `None`); `sampling: Sampling::{Nearest, Bilinear, Bicubic}`; `pace: Pace::{OnDemand, EveryFrame}`. It fills the box it is in (give the parent a size, as for any frame), and takes part in paint order, `opacity`, `filter` and `border-radius` like an image. `Actual` and `Tile` are one texel per device pixel. |
@@ -1710,16 +1710,16 @@ already derives), give it a schema the same way so the Settings app can render i
 
 The struct takes the derive (a `KeySpec` per field, from `#[settings(...)]`); every enum one of
 its fields holds derives `ds::prelude::Word` with `#[word(case = snake)]`, whose `ALL` gives the derive
-the variant words to pick a widget by arity (`ds_settings::schema::kind_from_variants`, section
+the variant words to pick a widget by arity (`ui_settings::schema::kind_from_variants`, section
 9.1). The trait `.schema()` calls through is
-`ds_settings::schema::SettingsSchema` — a different item from the `SettingsSchema` the derive
-macro re-exports at the crate root (`crates/ds-settings/tests/it/schema.rs` is the UI kit's own worked
+`ui_settings::schema::SettingsSchema` — a different item from the `SettingsSchema` the derive
+macro re-exports at the crate root (`crates/ui-settings/tests/it/schema.rs` is the UI kit's own worked
 example of both imports together):
 
 ```rust,ignore
 use ds::prelude::*;
-use ds_settings::SettingsSchema;               // the derive macro (macro namespace)
-use ds_settings::schema::{Page, SettingsSchema};   // the trait `.schema()` needs (type namespace)
+use ui_settings::SettingsSchema;               // the derive macro (macro namespace)
+use ui_settings::schema::{Page, SettingsSchema};   // the trait `.schema()` needs (type namespace)
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
@@ -1747,12 +1747,12 @@ impl Default for ReaderSettings {
 ```
 
 Wire `--write-schema <dir>` into your `main`'s argument parsing with
-`ds_settings::schema::maybe_write_schema` (also in the `schema` module, not the crate root):
+`ui_settings::schema::maybe_write_schema` (also in the `schema` module, not the crate root):
 
 ```rust,ignore
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if ds_settings::schema::maybe_write_schema(&ReaderSettings::schema(), &args).unwrap_or(false) {
+    if ui_settings::schema::maybe_write_schema(&ReaderSettings::schema(), &args).unwrap_or(false) {
         return;
     }
     // ...normal startup...
@@ -1764,7 +1764,7 @@ fn main() {
 next to your `.desktop` file. `KeyKind` picks the widget for you — a two-variant enum is a
 `Toggle` when its words are an on/off pair and two segments otherwise, three to five a
 `SegmentedControl`, more a `Menu`, a `#[settings(range = "..")]` newtype a `Slider` — see
-`ds_settings::schema::KeyKind::widget` (design/22-SETTINGS.md section 9.1) for the full table; you
+`ui_settings::schema::KeyKind::widget` (design/22-SETTINGS.md section 9.1) for the full table; you
 never choose a widget yourself. The UI kit's own schema is written the same way by the `ui-settings`
 example: `cargo run -p ui-settings --example write_schema -- --write-schema target/schema`.
 
@@ -1773,8 +1773,8 @@ example: `cargo run -p ui-settings --example write_schema -- --write-schema targ
 `ui-extensions` is a library with no UI, runtime or bus. A host that reads Extensions:
 
 ```rust,ignore
-use ds_extensions::{Capability, ExtensionsFile, Search, choices_for, chosen};
-use ds_extensions::look::stylesheet_for;
+use ui_extensions::{Capability, ExtensionsFile, Search, choices_for, chosen};
+use ui_extensions::look::stylesheet_for;
 
 // Off is stored and on is the default: read the file, hand the ids to the scan.
 let off = store.load::<ExtensionsFile>().value.off_ids();
@@ -1793,9 +1793,9 @@ An Extension that cannot be used is in `looks.problems()` with a line in plain w
 (`Problem::words`). When nothing serves a request and `found.off_serving("look")` is not empty,
 offer "Turn On…" (a link to the `extension:<id>` Settings target) instead of "missing". Another
 owner's words (anyview-plugin's six) are read from `found.candidates` through `plugin_host::reparse`
-with that owner's own `Provides` type; `ds_extensions::plugin_host` is the same plugin host, re-exported
+with that owner's own `Provides` type; `ui_extensions::plugin_host` is the same plugin host, re-exported
 so the two agree. `ExtensionsFile` is `bardo/extensions.toml`; its schema is
-`ds_extensions::extensions_schema()`.
+`ui_extensions::extensions_schema()`.
 
 ### File icons
 
@@ -1807,8 +1807,8 @@ The UI kit draws.
 ```rust,ignore
 use std::sync::Arc;
 use ds::prelude::*;                                   // FileIcon, FileIconChoice, ImageSource ...
-use ds_extensions::{FileFacts, FileIcons, FolderFacts, IconPick, Search};
-use ds_helpers::mime::{FileName, MimeDb, MimeType, NameGuess, XdgDirs};
+use ui_extensions::{FileFacts, FileIcons, FolderFacts, IconPick, Search};
+use ui_helpers::mime::{FileName, MimeDb, MimeType, NameGuess, XdgDirs};
 
 // Once: the MIME database (an Arc, so a rebuild below does not reload it).
 let db = Arc::new(MimeDb::from_layers(&layers));      // see "File types" above
@@ -1849,7 +1849,7 @@ before the parents on purpose, as it does for the standard kinds (`kind_for_mime
 has the parent `application/zip` but the generic icon `x-office-document`. A folder tries
 `folder-<kind>` and then `folder`.
 
-Your changes is `ds_extensions::YourChanges::in_root(&data_root)` (or `YourChanges::of(&search)`):
+Your changes is `ui_extensions::YourChanges::in_root(&data_root)` (or `YourChanges::of(&search)`):
 `set(&icon_name, &picture)` copies a picked `.svg` or `.png` into the Extension (`user.YourChanges`,
 shown as "Your changes") under the type's icon name (`db.icon_name(&mime)`) and writes its
 `extension.toml`; `clear(&icon_name)` takes it away; `changed()` lists the types; `removal()` is
@@ -1860,8 +1860,8 @@ whatever is chosen. The Get Info and Settings screens that ask for the picture a
 ## 8. What Blitz cannot do, and what to use instead
 
 Everything below is from `FINDINGS.md` spikes S1-S16 (blitz @ `e99fbdbd`, dioxus 0.7.10) — the
-authority; this table is a pointer. `ds_lint::Rule::BlitzUnsupported`
-(`crates/ds-lint/src/blitz.rs`) catches most of the CSS-level ones for you under
+authority; this table is a pointer. `ui_lint::Rule::BlitzUnsupported`
+(`crates/ui-lint/src/blitz.rs`) catches most of the CSS-level ones for you under
 `Profile::Strict` (well, under any profile — it is not one of the three raw-geometry rules
 `Profile::Standard` skips) if you write the banned property in your own stylesheet.
 
@@ -1869,15 +1869,15 @@ authority; this table is a pointer. `ds_lint::Rule::BlitzUnsupported`
 | --- | --- | --- |
 | `backdrop-filter: blur()` | S15 | ask the compositor to blur behind the surface (`Material`/`BlurState`), not CSS |
 | CSS `stroke`/`fill` reaching `<svg>` children | S6 | `ds::style::icon::render::Glyph` (renders `.ds-ic` with `stroke="currentColor"` as an attribute, not a rule); `Rule::SvgPaintInCss` |
-| `:focus-visible` / `:focus-within` (hard-coded `false`) | S12 | `.ds[*|data-modality=keyboard] :focus` — `Ds`/`ds_blitz::launch` track modality for you; `Rule::FocusPseudoClass` |
+| `:focus-visible` / `:focus-within` (hard-coded `false`) | S12 | `.ds[*|data-modality=keyboard] :focus` — `Ds`/`ui_blitz::launch` track modality for you; `Rule::FocusPseudoClass` |
 | `onmounted` + `get_client_rect()` inside the handler itself (returns 0×0) | S9 | `ds::host::measure::use_rect()` — measures one frame later, never inside the handler; to anchor an overlay, `Anchor::Mounted` does this for you |
-| a click on a `Button` whose parent holds only inline content (the button alone, or beside text) | blitz-dom hit test | put the button in a flex row (every Bardo container is one) or a block; the parent of an atomic inline is hit instead (`crates/ds-conformance/tests/it/button_click.rs`, FINDINGS "Polish pass") |
-| `mask-image:url(data:...)` / `background-image:url(data:...)` without a `data:` `NetProvider` | S7, S8 | `ds_blitz::launch`/`Harness` already install one; nothing to do if you use them |
+| a click on a `Button` whose parent holds only inline content (the button alone, or beside text) | blitz-dom hit test | put the button in a flex row (every Bardo container is one) or a block; the parent of an atomic inline is hit instead (`crates/ui-conformance/tests/it/button_click.rs`, FINDINGS "Polish pass") |
+| `mask-image:url(data:...)` / `background-image:url(data:...)` without a `data:` `NetProvider` | S7, S8 | `ui_blitz::launch`/`Harness` already install one; nothing to do if you use them |
 | `mix-blend-mode`, `position: sticky`, `line-clamp`, `text-shadow` | risk table | avoid outright; `ds::base::text::clip::clip_chars` covers the line-clamp case |
 | `line-clamp` for a multi-line clamp that opens on hover | notification parts | a `max-height` in whole `em` lines with a transition, and a fade decided by measuring (`NotificationCard`'s body); the hidden lines are still hit-tested, so give them `pointer-events:none` |
 | a wheel phase (a touchpad gesture's end), a pinch | notification parts | `ds::host::gesture::use_gestures` (above): winit's phased wheel and pinch, published by the window; a window with no such source still ends a swipe by a quiet spell (`DelayToken::SwipeQuiet`, `use_swipe`) |
 | a clean removal of a running animation | notification parts | Blitz keeps the last animated value when an animation is taken off an element before a frame resolved past its end: put an entrance on an element that mounts with it rather than on a presence attribute that changes (`BannerStack`) |
-| `break-before`, `break-inside`, `page-break-*`, `@page` (printing) | FINDINGS "PDF output" | `data-break-before="page"`, `data-break-inside="avoid"`, and `PageSpec` margins, read by `ds_blitz::pdf` (section 6, "PDF and printing") |
+| `break-before`, `break-inside`, `page-break-*`, `@page` (printing) | FINDINGS "PDF output" | `data-break-before="page"`, `data-break-inside="avoid"`, and `PageSpec` margins, read by `ui_blitz::pdf` (section 6, "PDF and printing") |
 
 What *does* work and needs no fallback: a `<style>` in the body (S1), the `.ds[data-*]` custom
 property cascade with plain `[data-x=v]` attribute selectors (S2, fixed in the Blitz fork at `1b23fbd9`; the UI kit's own sheet still writes `[*|data-x=v]`, which matches too), `@keyframes` including `var()` inside them (S3),
@@ -1888,7 +1888,7 @@ and every Bardo timer uses), registering a bundled font through a shared `FontCo
 
 ## 9. Comparing your surface against the reference
 
-`ds-gallery` (`crates/ds-gallery`) is the UI kit's own contact sheet: every component across its
+`ui-gallery` (`crates/ui-gallery`) is the UI kit's own contact sheet: every component across its
 pages (tokens, type, controls, lists, overlays, materials, motion, space, gaps, matrix,
 motion-lab), with a toolbar for theme, accent, motion, material, blur and Space preset. Its
 "Gaps" page lists what the UI kit does not draw yet, each with the FINDINGS section that owns it.
@@ -1937,7 +1937,7 @@ Build `MenuTiming` from `menus.submenu_delay_ms` and `menus.submenu_triangle_tim
 keys inside a menu, wrap, disabled skipping and filtering stay with the `Menu` component; the
 machine takes `MenuKey::{Escape, Left, Right, Enter}` (map Space and Tab to `Enter`).
 
-**Curves** (`crates/ds-style/src/tokens/curve.rs`). For motion you drive from a frame clock rather
+**Curves** (`crates/ui-style/src/tokens/curve.rs`). For motion you drive from a frame clock rather
 than CSS: `EasingToken::Out.easing().at(Fraction(t))` gives progress in thousandths at time
 `t` (thousandths). `Easing::curve()` gives the `CubicBezier` (`linear` is `(0,0,1,1)`), and
 `CubicBezier::at` evaluates it. Integer arithmetic throughout; a spring's overshoot reads above
@@ -1951,19 +1951,19 @@ anchor: Some(Anchor::Point(Point { x: Px(40.0), y: Px(20.0) })), .. }` (or click
 `crates/ds/tests/it/pop_up_button_open_ssr.rs` does. On a real document `start` opens the menu once
 the button is laid out, and `anchor` moves it elsewhere.
 
-**Spaces store** (`ds::style::space::store::SpaceStore`, `crates/ds-style/src/space/store.rs`; design/21 §4, §10). Which
+**Spaces store** (`ds::style::space::store::SpaceStore`, `crates/ui-style/src/space/store.rs`; design/21 §4, §10). Which
 look each workspace wears. `store.look_for_workspace(&Workspace { id, index }, defaults)` looks
 up by compositor id, then by position, then falls back to `PRESETS[index % 8]`;
 `store.look_for(WorkspaceIndex(i), defaults)` skips the id. `SpaceDefaults` carries
 `spaces.default_grain` (default 0; was 40); a Space has no card accent, since the card wears the desktop's. `store.with_look(&workspace, look)`
 records a look under the id (when there is one) and always under the position.
 
-**Settings files** (`ds_settings::{SettingsDoc, Store}`). A file is a serde type that names
+**Settings files** (`ui_settings::{SettingsDoc, Store}`). A file is a serde type that names
 its file and format; a `Store` is one program's config directory, and the only way to load, save
 and watch it:
 
 ```rust,ignore
-use ds_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store};
+use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store};
 
 impl SettingsDoc for YourFile {
     const FILE: FileName = FileName("your-file.toml");
@@ -1983,7 +1983,7 @@ big, refused by the system); only a deleted file returns the defaults. A file th
 cannot be used is never taken for a missing one and never overwritten: `load` gives the defaults for
 this run and reports the file in `invalid`, and `save` first moves it aside to `<name>.bad-<seconds>`
 (`Saved::kept_at` says where, so tell the person). Core crates that read or write the person's own
-files use `ds_helpers::{read_capped, read_text_capped, write_atomic, update_atomic, move_aside}` (no UI; `update_atomic` is the read-modify-write for a file another program may also change).
+files use `ui_helpers::{read_capped, read_text_capped, write_atomic, update_atomic, move_aside}` (no UI; `update_atomic` is the read-modify-write for a file another program may also change).
 Tests use
 `ConfigRoot::Scratch(dir)`, never real XDG.
 
@@ -1996,24 +1996,24 @@ the derive cannot place at all gets an error saying what to add.
 ## 11. Scrolling
 
 One engine owns scroll physics for every Blitz document (design/11-BEHAVIOUR-scroll.md section
-11.3.1): `blitz_kit::scroll`, which layer-shell-host (a shell's surfaces) and `ui-blitz` (an app's
-windows, `ds_blitz::launch`) both run. It does not let Blitz's default scroll act (Blitz jumps 20 px
+11.3.1): `blitz_embed::scroll`, which layer-shell-host (a shell's surfaces) and `ui-blitz` (an app's
+windows, `ui_blitz::launch`) both run. It does not let Blitz's default scroll act (Blitz jumps 20 px
 a line), it writes raw offsets itself every frame, and a wheel detent is 60 px eased over at most
 200 ms, detents accumulating; a touchpad flick glides and may stretch past an edge where a
 container opts in; arrows scroll 40 px, Page Up/Down and Space a page (`max(0.8 v, v - 40)`),
 Home/End jump to an edge. Everything below is the UI kit's side of that split (design/11 section 11.7).
 
 **Native overflow needs nothing from you.** A container with `overflow: auto` or `scroll` scrolls
-by all of the above in a `ds_blitz` window the moment it has content to scroll, under the wheel,
+by all of the above in a `ui_blitz` window the moment it has content to scroll, under the wheel,
 a touchpad and the keys (a scroll key acts on the focused container, else on the one under the
 pointer, else on the page; it leaves a key to the document when an element on the focus path has
 its own `onkeydown`, is a text field, or is marked `data-keys="capture"`). Do not call Blitz's own
 scroll (`MountedData::scroll_to`, `scroll-behavior: smooth`).
 
-**Programmatic scrolls go through the engine.** `ds_blitz::use_scroll_handle()` gives the window's
+**Programmatic scrolls go through the engine.** `ui_blitz::use_scroll_handle()` gives the window's
 `ScrollHandle` (`None` outside a window), and `handle.send(ScrollCmd::To { element, axis, offset,
 animate })`, `ScrollCmd::By { element, axis, delta, animate }` or `ScrollCmd::IntoView { element,
-animate }` runs at the next frame; `element` is a `ds_blitz::ElementId` naming the container by its
+animate }` runs at the next frame; `element` is a `ui_blitz::ElementId` naming the container by its
 `id` attribute, `animate` is `ScrollAnimate::Smooth` (the 200 ms ease) or `Instant`. The same
 `ScrollCmd` is layer-shell-host's `SurfaceHandle::scroll`. `ScrollerRef::scroll_to` (the `Scroller`
 component's own offset) is a separate thing and writes at once.
@@ -2055,7 +2055,7 @@ hands it the raw `BlitzWheelEvent` through `handle_ui_event` instead of scrollin
 contains it, and the engine does nothing for that wheel; the component's own handler must call
 `prevent_default`, or Blitz's own scroll (20 px a line, in one jump) still acts (design/11
 section 11.3.1 item 2). An element with a plain `onwheel` and no marker never hears the wheel in a
-`ds_blitz` window: the engine takes it first, so mark it, or listen with `use_gestures`. It is a marker only: the UI kit does not itself drive a wheel-triggered value
+`ui_blitz` window: the engine takes it first, so mark it, or listen with `use_gestures`. It is a marker only: the UI kit does not itself drive a wheel-triggered value
 change on `Slider` yet, so add the same attribute to your own wheel-consuming controls even before
 you wire up the handler, and remove it from a component that turns out not to need it — an
 un-marked wheel-consumer silently gets scrolled instead of heard.
@@ -2069,7 +2069,7 @@ the excluded kinds; an un-marked container the host finds just clamps at its edg
 safer failure than defaulting to elastic.
 
 **`scroll-behavior: smooth` is banned**, in your own CSS as much as Bardo's:
-`ds_lint::Rule::BlitzUnsupported` flags it (`crates/ds-lint/src/blitz.rs`) because Blitz's own
+`ui_lint::Rule::BlitzUnsupported` flags it (`crates/ui-lint/src/blitz.rs`) because Blitz's own
 300 ms `ScrollTo` would fight the host's engine. Drive a programmatic scroll through the host's
 `ScrollCmd` instead (design/11 sections 11.3.1 and 11.3.11); `scroll-behavior: auto` (the
 default) lints clean.
@@ -2090,7 +2090,7 @@ chose (`@layer look`, found by the look Extension machinery, not by `Ds`), the p
 `~/.config/<app>/style.css`. The last two are unlayered, desktop-wide first. The UI kit owns the
 mechanism; you wire two things.
 
-**Load and watch them into `Ds`.** `ds_settings::UserStyle` is a `SettingsDoc` for `style.css`: a
+**Load and watch them into `Ds`.** `ui_settings::UserStyle` is a `SettingsDoc` for `style.css`: a
 missing file is an empty style and no text is refused at load. The desktop-wide file is the same
 document under `AppName::BARDO`, so you load and `Store::watch` two stores. `Ds` takes the three
 sheets as one value, `styles: ReadSignal<Styles>` (`ds::style::kit::Styles { look, desktop, app,
@@ -2105,7 +2105,7 @@ the three.
 
 ```rust,ignore
 use ds::style::kit::{Styles, UserStyle};
-use ds_settings::{AppName, ConfigRoot, Store};
+use ui_settings::{AppName, ConfigRoot, Store};
 
 let desktop = Store::new(ConfigRoot::Xdg, AppName::BARDO);
 let own = Store::new(ConfigRoot::Xdg, AppName("your-app-id"));
@@ -2122,7 +2122,7 @@ use_future({
     move || {
         let desktop = desktop.clone();
         async move {
-            let spawner = ds_blitz::TokioSpawner::current();
+            let spawner = ui_blitz::TokioSpawner::current();
             let mut watch = desktop.watch::<UserStyle>(&spawner);
             while let Some(loaded) = watch.changed().await {
                 styles.write().desktop = loaded.value;
@@ -2133,7 +2133,7 @@ use_future({
 use_future(move || {
     let own = own.clone();
     async move {
-        let spawner = ds_blitz::TokioSpawner::current();
+        let spawner = ui_blitz::TokioSpawner::current();
         let mut watch = own.watch::<UserStyle>(&spawner);
         while let Some(loaded) = watch.changed().await {
             styles.write().app = loaded.value;
@@ -2153,11 +2153,11 @@ rsx! {
 which files the document may read at all (`FileRoots`): name the folders of the sheets.
 
 **Do not let a bad style lock the person out.** Before the first window loads styles, call
-`ds_blitz::StylesGuard::begin(&state_dir, "your-app", &styles)` (`state_dir` is
+`ui_blitz::StylesGuard::begin(&state_dir, "your-app", &styles)` (`state_dir` is
 `ConfigRoot::state_dir(AppName::BARDO)`). If your last two starts with the same sheets never
 reached a first frame plus five seconds alive, `guard.load()` is `false`: draw with
 `custom_styles: false`, show `StylesOffNotice { program: "your-app", onturnon }`, and in
-`onturnon` call `guard.turn_on_again(&styles)`. Call `ds_blitz::use_styles_guard(guard)` once in the
+`onturnon` call `guard.turn_on_again(&styles)`. Call `ui_blitz::use_styles_guard(guard)` once in the
 root so the start is marked good. The next change to any of the three sheets clears the guard
 (`guard.changed(&styles)`).
 
@@ -2177,14 +2177,14 @@ otherwise, and an unlayered rule beats every `@layer ds` rule, so a `.card { ...
 beat the UI kit's more specific rule where before it lost. Draw each one with `ds::prelude::AppStyle {
 css: MY_CSS }` instead of `style { {MY_CSS} }`: it wraps the text in `@layer app`, after `ds` and
 before the look and the person's unlayered rules, so your rules and the UI kit's keep the order and
-specificity they always had, and the look and the person's still beat both (`ds_style::css::layers` holds the names). Never write
+specificity they always had, and the look and the person's still beat both (`ui_style::css::layers` holds the names). Never write
 `@layer ds` in a sheet of your own (`Rule::LayerDs`).
 
-**Report, never block.** `ds_lint::user_stylesheet(css, &ds::kits())` returns notes (unknown
+**Report, never block.** `ui_lint::user_stylesheet(css, &ds::kits())` returns notes (unknown
 variables, selectors outside the public surface, `!important`, `url()` that is not a local `file:` or `data:`
 URL, parse errors with line numbers, and cost notes: heavy blur, large shadows, an animation that
 never stops, `transition: all`, a property with no effect here; `note.kind.plain_words()` is the
-text to show). Pass the apps' tables with `ds_lint::user_stylesheet_with`. A settings page or a `--check-style` command can print
+text to show). Pass the apps' tables with `ui_lint::user_stylesheet_with`. A settings page or a `--check-style` command can print
 them; loading never waits on them. User CSS is exempt from the design-system lint rules.
 
 ## 13. Portable core, desktop extras
@@ -2220,7 +2220,7 @@ rsx! {
 
 Arc-style tinted contexts (Work, Home...) are a kit every app shares; the app brings only its
 payload. The model is pure (`ds::components::app::spaces`: `Space<P>`, `Spaces<P, R>`, `Today<I, K>`), persistence is
-`ds_settings::SpacesStorage` (`spaces.json` in the config directory, `today.json` in the state
+`ui_settings::SpacesStorage` (`spaces.json` in the config directory, `today.json` in the state
 directory, atomic, readable by the person only; a missing file is a first run, a file that is there
 and cannot be used is `Origin::Damaged(..)`: the app runs on first-run Spaces in memory, nothing is
 written, and the first `save_spaces` keeps the old file as `spaces.json.bad-<seconds>`), and the views are `SpaceHead`, `SpacesFoot`,
@@ -2281,8 +2281,8 @@ The backdrop is the desktop's own picture (the output's wallpaper), drawn under 
 ## 15. Keyboard: actions, not modifiers
 
 An app never reads which modifier is held and never decides Command versus Ctrl. Bardo is the one
-toolkit integration of the chord keymap (github.com/Bardo-DE/chordkit, the keymap core): a key event
-becomes a chord keymap key press in one place (`ds_core::command::key_input`), resolves to an `Action`
+toolkit integration of the chord keymap (github.com/Bardo-DE/bardo, the keymap core): a key event
+becomes a chord keymap key press in one place (`ui_core::command::key_input`), resolves to an `Action`
 in the right `Context`, and every shortcut is drawn through the chord keymap's display. On each OS the
 keymap follows that OS's own shortcut settings when it has any (kdeglobals on KDE, a dconf dump on
 GNOME, our desktop's key remap daemon), and its conventions otherwise (Command on a Mac and our desktop, Ctrl
@@ -2345,7 +2345,7 @@ fn Editor() -> Element {
   launcher's `KeySource` calls `ds::prelude::use_keys_provider()` (it makes the root keymap, or
   joins the enclosing one); `use_keys` there would build a keymap of our conventions. Under `Ds`
   always use `use_keys`.
-- **Drawing without a runtime.** `ds_core::command::shortcut_text_for(&keymap, &action)`,
+- **Drawing without a runtime.** `ui_core::command::shortcut_text_for(&keymap, &action)`,
   `chord_text(platform, &chord)` and the `*_caps` forms draw an action's best chord or a chord for
   a platform: `⌘C` on a Mac or our desktop, `Ctrl+C` on Windows and KDE. For pure code (a command
   panel's hints) that holds a `Keymap` (`Keys::with_keymap`) or only a `Platform`.
@@ -2370,7 +2370,7 @@ fn Editor() -> Element {
   the last dump; with no `dconf` program, the dump saved at `$XDG_CONFIG_HOME/keymap/dconf-dump`
   is read); elsewhere the conventions. Both stores are watched, so a change in the desktop's
   settings reloads the keymap. An app that builds a keymap of its own on the system's, outside any
-  window, takes `ds_blitz::system_key_source(platform, lookup)` (the config directory read through
+  window, takes `ui_blitz::system_key_source(platform, lookup)` (the config directory read through
   its lookup) and loads and watches the `KeySource` it returns (`source()`, `watch`).
   The UI kit does not depend on the key remap daemon: our desktop's launcher plugs its source in,
 
@@ -2426,7 +2426,7 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   the pty. A terminal keeps `SwitchChord::Unbound`.
 - **The Settings app.** No key handling today. Settings › Keyboard needs a shortcut-capture control: it will
   show `Keys::with_keymap(|k| k.bindings(Context::Normal))` and read a new chord with
-  `ds_core::command::key_input`; `KeyKind::Shortcut` stays file-only until that lands.
+  `ui_core::command::key_input`; `KeyKind::Shortcut` stays file-only until that lands.
 - **The compositor** (compositor) reads shell bindings from the same keymap with `Keymap::resolve` and
-  `ds_core::command::{key_input, resolve}`, which need no dioxus.
+  `ui_core::command::{key_input, resolve}`, which need no dioxus.
 <!-- paths: end -->

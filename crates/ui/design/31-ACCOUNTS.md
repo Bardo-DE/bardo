@@ -782,7 +782,7 @@ stores elsewhere. Items 4-13 stand as recommended.
 ## 11. Frozen interfaces (the accounts service)
 
 The interfaces of sections 2 to 6 are frozen as code in the accounts repo
-(github.com/Bardo-DE/accounts, private): types, traits, the provider file format, the wire
+(github.com/Bardo-DE/bardo, private): types, traits, the provider file format, the wire
 protocol and the D-Bus signatures compile, pure logic is implemented with table tests, and
 behaviour that needs a provider, a vendor, a bus or a keyring is stubbed. The accounts service's
 `ARCHITECTURE.md` is the map (section 5 there says what is built and what is stubbed; section 8

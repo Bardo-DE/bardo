@@ -62,7 +62,7 @@ mod tests {
     #[cfg(unix)]
     fn probing_walks_path_for_an_executable_file() {
         use std::os::unix::fs::PermissionsExt;
-        let root = std::env::temp_dir().join(format!("ds-helpers-probe-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("ui-helpers-probe-{}", std::process::id()));
         let (bin, other) = (root.join("bin"), root.join("other"));
         std::fs::create_dir_all(&bin).expect("scratch");
         std::fs::create_dir_all(&other).expect("scratch");

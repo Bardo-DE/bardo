@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-capture-wayland"
-description = "The capture backend of maskcap over a wayland connection: ext-image-copy-capture (the stock toplevel source and the bardo masked source over an agent lease), and the pump that drives a connection from async code."
+description = "The capture backend of computer-use-capture over a wayland connection: ext-image-copy-capture (the stock toplevel source and the bardo masked source over an agent lease), and the pump that drives a connection from async code."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

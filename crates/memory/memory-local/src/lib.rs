@@ -4,7 +4,7 @@
 //! `Memory::over(InProcess::new(service, caller))` from it: no daemon, no bus, no Secret
 //! Service, no inotify, no Landlock, no XDG lookups.
 //!
-//! What it wires together: `SqliteLog` (eventlog), `SealedDir` or `PlainDir` (memfiles),
+//! What it wires together: `SqliteLog` (memory-eventlog), `SealedDir` or `PlainDir` (memory-files),
 //! `ExactScan` over FTS5 (recall) and `ProvidedKeys` (memory-seal). The embedder and the
 //! consolidator are the app's (generic parameters, defaulting to [`NoEmbedder`], which leaves
 //! recall lexical-only, and [`NoConsolidator`]); the clock is a parameter too, and `base_time::SystemClock` is the

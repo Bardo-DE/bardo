@@ -452,7 +452,7 @@ pub fn run_controls(state: RunStateWire, place: RunPlaceWire) -> Vec<RunControl>
 **`shell-settings::companion`** (data; full now):
 
 ```rust
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ds_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "companion", page = Page::Intelligence)]
 pub struct CompanionSettings {
@@ -616,7 +616,7 @@ Bardo:
   - `answer_view_variants_render` (SSR golden per variant);
   - `outbound_action_never_primary_without_effect_mark`;
   - `footer_always_present` (every variant draws served-by);
-  - lint `ds_lint::markup` clean.
+  - lint `ui_lint::markup` clean.
 - `plan`: `plan_step_table`; `excluded_steps_not_run`; `stop_keeps_done_steps`; `undo_all_only_after_run`.
 - `replace`: `replace_step_table`; editor conformance `proposal_marks_do_not_enter_text`.
 - `run_row`, `activity`, `memory`: SSR goldens; `forget_preview_names_counts`.
@@ -747,5 +747,5 @@ Fakes and fixtures:
 - /home/pohsuanlai/bardo/crates/ds/src/components/menus/palette/command_palette.rs
 - /home/pohsuanlai/shell/crates/shell-launcher/src/activation.rs
 - /home/pohsuanlai/shell/crates/shell-launcher-ui/src/launcher/keys.rs
-- /home/pohsuanlai/bardo/crates/ds-settings/src/schema/key.rs
+- /home/pohsuanlai/bardo/crates/ui-settings/src/schema/key.rs
 <!-- paths: end -->

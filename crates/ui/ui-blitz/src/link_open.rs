@@ -46,7 +46,7 @@ impl LinkFailureHandler {
 
 impl Default for LinkFailureHandler {
     fn default() -> Self {
-        LinkFailureHandler::new(|error| eprintln!("ds-blitz: {error}"))
+        LinkFailureHandler::new(|error| eprintln!("ui-blitz: {error}"))
     }
 }
 

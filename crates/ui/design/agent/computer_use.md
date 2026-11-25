@@ -21,7 +21,7 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 - **The run state machine**: pure, with every state, input, effect and transition (§4).
 - **Observations**: masked window frame, an optional a11y tree, typed context, the agent cursor and the outcomes of the previous step. Also the `computer-use-a11y-tree` model (snapshot, prune, render to text, diff, selectors).
 - **`computer-use-seat-input`**: the agent seat over reis/libei against the compositor's EIS server, plus pure action→input planning and keymap/text handling.
-- **`maskcap`**: masked per-window capture over ext-image-copy-capture (stock) or the fork's masked source, plus damage-based settling and stall digests.
+- **`computer-use-capture`**: masked per-window capture over ext-image-copy-capture (stock) or the fork's masked source, plus damage-based settling and stall digests.
 - **`computer-use-desktop`**: windows, geometry, leases, workspaces, glow, the kill chord, and the stock consent guard.
 - **Run modes**: in place, agent workspace, nested session; which backend supports which.
 - **The compositor**: what must change, against what works on stock protocols.
@@ -31,7 +31,7 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 **Non-goals**
 - Model choice, the model wire formats, action parsing, image resize/encode, and inferd routing. These belong to the **models** area. Computer use consumes `computer-use-action` and the `ComputerUseModel` seam.
 - Cedar policy text, the typed-action registry, `prov` labels, and the confirmation wording. These belong to the **actions** area. Computer use builds the request and executes the verdict.
-- Event-log storage, hash chain, memfiles and recall. These belong to the **memory** area. Computer use defines its record payloads only.
+- Event-log storage, hash chain, memory-files and recall. These belong to the **memory** area. Computer use defines its record payloads only.
 - The launcher's run strip and orb drawing. These belong to whoever owns the shell's launcher and companion UX; computer use provides the `ComputerUse1` bus they subscribe to.
 - The planner and router tiering decision (typed action, then hook, then computer use). Computer use is called; it does not decide to be called.
 - uinput, in any form, ever.
@@ -57,7 +57,7 @@ Workspace conventions are copied from the accounts service: `rust-toolchain.toml
 |---|---|---|---|
 | `computer-use-a11y-tree` | snapshot model (`A11ySnapshot`, `A11yNode`, `Role`), prune, render to model text, diff, `NodeSelector`; trait `A11ySource`; feature `atspi` = AT-SPI backend | none by default; zbus behind `atspi` | core yes |
 | `computer-use-seat-input` | `InputOp`, `plan(action) -> Vec<InputOp>`, chord/keymap mapping, `InputReceipt`; trait `AgentSeat`; feature `ei` = reis client backend | none by default; reis behind `ei` | core yes |
-| `maskcap` | `Frame`, `PixelBuf`, `MaskRegion`, `MaskReport`, `apply_masks`, `FrameDigest`, settle logic; traits `WindowCapture` and `CaptureSession`; feature `wayland` = ext-image-copy-capture plus Bardo masked source | none by default | core yes |
+| `computer-use-capture` | `Frame`, `PixelBuf`, `MaskRegion`, `MaskReport`, `apply_masks`, `FrameDigest`, settle logic; traits `WindowCapture` and `CaptureSession`; feature `wayland` = ext-image-copy-capture plus Bardo masked source | none by default | core yes |
 | `computer-use-desktop` | `ToplevelInfo`, `LeaseRequest`/`LeaseGrant`, `BackendCaps`, `GlowState`, `DesktopEvent`; traits `Desktop` and `LeaseControl`; feature `wayland` = the Wayland client toolkit, ext-workspace and the bardo-agent protocol | none by default | core yes |
 | `bardo-agent-protocol` | `protocols/bardo-agent-v1.xml` plus wayland-scanner bindings; features `client` and `server` (the fork uses `server`) | none | yes |
 | `computer-use-run` | pure core: ids, `ComputerUseTask`, `ComputerUseResult`, `RunMode`, `Budget`, `Observation`, `ActionOutcome`, `classify_effect`, `LeaseBook`, the run machine (`Run::step`), stall detection, `ComputerUseRecord` (event-log payloads), `Procedure` types, the `ComputerUse1` wire bodies, `mode_support` | none | yes |
@@ -71,9 +71,9 @@ Workspace conventions are copied from the accounts service: `rust-toolchain.toml
 |---|---|
 | `computer-use-a11y-tree` | `computer-use-action` (models), `prov` (actions) |
 | `computer-use-seat-input` | `computer-use-action` |
-| `maskcap` | `computer-use-action` |
+| `computer-use-capture` | `computer-use-action` |
 | `computer-use-desktop` | `computer-use-action`; `bardo-agent-protocol` (feature `wayland`) |
-| `computer-use-run` | `computer-use-action`, `computer-use-a11y-tree`, `computer-use-seat-input`, `maskcap`, `computer-use-desktop` (all default features), `prov`, `bardo-intents` (types), `account-core` (`DataClass`, `AppId`, `Locality`) |
+| `computer-use-run` | `computer-use-action`, `computer-use-a11y-tree`, `computer-use-seat-input`, `computer-use-capture`, `computer-use-desktop` (all default features), `prov`, `bardo-intents` (types), `account-core` (`DataClass`, `AppId`, `Locality`) |
 | `computer-use-dbus` | `computer-use-run` |
 | `computer-use-fake` | everything above with default features, plus `reis` (for `FakeEis`), plus models' `model-provider` (replay) |
 | `computer_use_daemon` | all of the above with their I/O features, plus `model-provider` (models), `permission-policy` (actions), `eventlog` (memory), `account-client` (`DbusTransport`) |
@@ -89,7 +89,7 @@ All Bardo code goes in `src/bardo/` (agent seat, masked source, lease and glow g
 - **Already pinned:** `wayland-client 0.31`, `wayland-backend 0.3`, `wayland-protocols 0.32.13` (staging), `the Wayland client toolkit` (pinned rev), `xkbcommon 0.8` (text → keysym → keycode on the EIS keymap), `zbus 5.19` (tokio), `tokio 1`, `serde`/`serde_json`, `thiserror 2`, `image 0.25.6` (PNG for thumbnails only), `memfd 0.6` (shm buffers for capture), `rustix 1.1`.
 - **Joins the block:** `reis 0.7` (MIT; pin the minor that the fork's compositor `Cargo.lock` resolves; the README says its API may change) and `atspi 0.30` (Apache-2.0 OR MIT).
 - **Later, joins the block:** `ashpd 0.13` (RemoteDesktop/ScreenCast portal fallback if `GetSenderSocket` is owner-restricted) and `pipewire` (KWin window capture; [unverified] version and licence).
-- **From other areas:** `computer-use-action`, `model-provider` (models); `prov`, `permission-policy`, `bardo-intents` (actions); `eventlog`, `memfiles` (memory); `account-core` (`DataClass::Screen`, `AppId`, `Locality`).
+- **From other areas:** `computer-use-action`, `model-provider` (models); `prov`, `permission-policy`, `bardo-intents` (actions); `eventlog`, `memory-files` (memory); `account-core` (`DataClass::Screen`, `AppId`, `Locality`).
 
 Image resize and encoding are models' `model-vision-prep`. Computer use hands over raw masked pixels.
 
@@ -186,7 +186,7 @@ pub struct NodeBudget(pub u32);                     // setting computer_use.tree
 pub fn prune(s: &A11ySnapshot, budget: NodeBudget) -> A11ySnapshot;          // visible+actionable first
 pub fn render(s: &A11ySnapshot) -> String;   // "[12] button \"Save\" enabled,focusable @340,20 80x24"; Secret values never rendered
 pub fn diff(a: &A11ySnapshot, b: &A11ySnapshot) -> TreeDiff;               // added/removed/changed ids
-pub fn secret_rects(s: &A11ySnapshot) -> Vec<WinRect>;                      // mask hints for maskcap
+pub fn secret_rects(s: &A11ySnapshot) -> Vec<WinRect>;                      // mask hints for computer-use-capture
 pub fn resolve(s: &A11ySnapshot, sel: &NodeSelector) -> Resolution;         // procedures (later)
 pub enum Resolution { One(NodeId), Many(Vec<NodeId>), None }
 pub struct NodeSelector { pub path: Vec<SelectorStep> }     // later
@@ -243,7 +243,7 @@ pub enum SeatError { NotConnected, Refused, OutsideLease, TargetGone, Suspended,
 
 Backend enum in `computer_use_daemon`: `SeatBackend { Ei(EiSeat) }`; tests use `FakeSeat` and `EiSeat` over `FakeEis`. Mapping from the window to the EI region: on the fork, the lease's EI region *is* the window (identity). On stock, `GlobalPoint = window_origin + WinPoint`, taken from `computer-use-desktop` geometry. That transform lives in `computer-use-seat-input::region` (pure).
 
-### 3.3 `maskcap` — freeze now
+### 3.3 `computer-use-capture` — freeze now
 
 ```rust
 pub struct Frame {
@@ -350,7 +350,7 @@ pub struct Budget { pub steps: u32, pub active: Ms, pub stall_frames: u8, pub ac
                     pub denials: u8, pub model_failures: u8, pub spend: MicroUsd }
 
 pub struct Observation {
-    pub step: StepIndex, pub window: WindowInfo, pub frame: Frame,      // maskcap::Frame (masked)
+    pub step: StepIndex, pub window: WindowInfo, pub frame: Frame,      // computer-use-capture::Frame (masked)
     pub tree: TreeObs, pub context: ContextObs, pub cursor: CursorObs, pub prev: Vec<ActionOutcome>,
 }
 pub struct WindowInfo { pub window: WindowRef, pub app: AppName, pub title: Labelled<String>,
@@ -394,7 +394,7 @@ pub fn stalled(history: &[FrameDigest], limit: u8) -> Stall;
 pub enum Stall { Moving, Stalled }
 ```
 
-The run machine has the same shape as `ds_core::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like the accounts service.
+The run machine has the same shape as `ui_core::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like the accounts service.
 
 ```rust
 pub struct Run { pub id: RunId, pub task: ComputerUseTask, pub phase: RunPhase, pub used: BudgetUse, pub taint: Label,
@@ -464,7 +464,7 @@ Default: `NotKept`. The setting `computer_use.screens.keep` (proposed `off`) con
 
 ### 3.7 Procedures file format — later (Phase 3; types sketched now)
 
-The file is `procedures/<app-id>/<slug>.md` in the Space's memory folder (memory's `memfiles` owns the folder). It is add-only, has TOML frontmatter between `+++` lines, and the body holds human notes:
+The file is `procedures/<app-id>/<slug>.md` in the Space's memory folder (memory's `memory-files` owns the folder). It is add-only, has TOML frontmatter between `+++` lines, and the body holds human notes:
 
 ```toml
 procedure = "org.mozilla.firefox/download-invoice"
@@ -641,7 +641,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 - `stock_region_transform_round_trips`
 - `ei_seat_against_fake_eis`, under feature `ei`: handshake, bind, start_emulating, pointer_absolute and button frames received in order by `FakeEis`, detach sends stop_emulating.
 
-**`maskcap`**
+**`computer-use-capture`**
 - `apply_masks_blacks_exact_device_pixels_at_scale_150`: a 2-lpx rect becomes exactly 3 device px, the same rounding as layer-shell-host F-f.
 - `whole_window_mask_blacks_all`
 - `digest_differs_on_one_pixel`
@@ -728,10 +728,10 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
   1. `crates/computer-use-run/src/{run/**, budget.rs, stall.rs, effect_class.rs, lease_book.rs, mode.rs, turn.rs}`
   2. `crates/a11y-tree/src/{prune.rs, render.rs, diff.rs, secret.rs}` plus fixtures
   3. `crates/seat-input/src/{plan.rs, chord.rs, keymap.rs, region.rs}`
-  4. `crates/maskcap/src/{apply.rs, digest.rs, settle.rs}`
+  4. `crates/computer-use-capture/src/{apply.rs, digest.rs, settle.rs}`
 - **Fill 2 (backends, 4 agents; each after its spike)**
   1. `crates/seat-input/src/ei/**` plus `crates/computer-use-fake/src/eis.rs`
-  2. `crates/maskcap/src/wayland/**`
+  2. `crates/computer-use-capture/src/wayland/**`
   3. `crates/a11y-tree/src/atspi/**`
   4. `crates/computer-use-desktop/src/wayland/**`
 - **Fill 3 (1 agent):** `crates/computer_use_daemon/**`, `crates/computer-use-dbus/src/codec.rs`, `crates/computer-use-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
@@ -787,7 +787,7 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 **memory**
 - `eventlog` append taking `ComputerUseRecord` as a namespaced kind with actor `Companion(ComputerUseRun)`.
 - The Space's encrypted thumbnail store, with forget cascade, for `FrameNote::Kept`.
-- `memfiles` folder `procedures/` (later).
+- `memory-files` folder `procedures/` (later).
 - Supplying the user's recent events for `HandedBack.user_events` and Handover starts.
 
 **launcher / companion UX (the shell)**

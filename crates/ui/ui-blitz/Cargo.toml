@@ -29,7 +29,7 @@ blitz-traits = {workspace = true}
 blitz-html = {workspace = true}
 dioxus-native-dom = {workspace = true, features = ["svg", "system-fonts", "accessibility"]}
 # `html`: an `<iframe srcdoc>` in the window parses into a real sub-document (G4). `clipboard`:
-# copy and paste in every text field, and `ds_blitz::clipboard` (G5).
+# copy and paste in every text field, and `ui_blitz::clipboard` (G5).
 dioxus-native = {workspace = true, features = ["accessibility", "clipboard", "html", "svg", "system-fonts", "vello-hybrid"]}
 # A deadline for each call to the print portal (the `print` feature).
 base-time = {path = "../../base/base-time", optional = true}
@@ -104,7 +104,7 @@ desktop = ["dep:wayland-client", "dep:wayland-backend", "dep:wayland-protocols",
 # `print_dialog`: the system print dialog (the desktop portal on Linux), else the viewer.
 # Off by default, so an app that never prints builds no D-Bus client for it.
 print = ["desktop", "dep:zbus", "dep:memfd", "dep:base-time"]
-# `ds_blitz::menus`: the app's menu bar served as `com.canonical.dbusmenu` on its own bus
+# `ui_blitz::menus`: the app's menu bar served as `com.canonical.dbusmenu` on its own bus
 # connection, so the shell's bar shows the focused app's menus (design/27 section 5.2). Off by
 # default, so an app that exports no menu builds no D-Bus client for it.
 menus = ["desktop", "dep:zbus", "dep:serde", "dep:dbus-kit"]
@@ -120,7 +120,7 @@ desktop-outputs = ["ui-desktop/dbus"]
 # thread and cached, drawn by `ds::PdfThumb`. Off by default, so an app that writes and shows no
 # PDF builds no PDF writer or reader.
 pdf = ["dep:pdfrum-anyrender", "dep:pdfrum", "dep:skrifa"]
-# `ds_blitz::spell`: an `EditSurface`'s spellchecker (`ds::HostSpell`), system Hunspell
+# `ui_blitz::spell`: an `EditSurface`'s spellchecker (`ds::HostSpell`), system Hunspell
 # dictionaries checked on one worker thread. Off by default, so an app that never checks
 # spelling builds no checker.
 spell = ["dep:spellbook", "dep:dirs"]
@@ -130,7 +130,7 @@ spell = ["dep:spellbook", "dep:dirs"]
 # Off by default and never in a release build: a scenario build turns it on with
 # `--features ui-blitz/debug-probe`.
 debug-probe = []
-# `ds_blitz::seam`: the parts a headless host wires a document from. For `ui-harness` and tests
+# `ui_blitz::seam`: the parts a headless host wires a document from. For `ui-harness` and tests
 # only; an app has no use for them, so they are off by default and carry no stability promise.
 testing = []
 

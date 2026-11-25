@@ -3,7 +3,7 @@
 The sync service keeps the copies of your calendars, contacts, tasks, files and photos on your computer in
 step with the services your accounts reach, and shows an account's whole drive as a folder
 (`~/Cloud/OneDrive`, `~/Cloud/Google Drive`) whose files come down when they are opened. It is the
-sync half of what began as the accounts service; [the accounts service](https://github.com/Bardo-DE/porter) is the accounts
+sync half of what began as the accounts service; [the accounts service](https://github.com/Bardo-DE/bardo) is the accounts
 half (sign-in, consent, the keyring), and the sync service depends on it by git rev.
 
 ## What runs

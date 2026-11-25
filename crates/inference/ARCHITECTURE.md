@@ -13,7 +13,7 @@ This cut only moves code. Crate names are the accounts service's; renames and ca
 ## 1. Crates and allowed edges
 
 The edge rule: **the inference service depends on the accounts service by git rev; the accounts service never depends on the inference service.** Every
-`accounts-*` crate that is not in the table is the accounts service's, taken from `https://github.com/Bardo-DE/porter`
+`accounts-*` crate that is not in the table is the accounts service's, taken from `https://github.com/Bardo-DE/bardo`
 at the one `rev` in the root `Cargo.toml` (`[workspace.dependencies]`). The model layer's crates and Bardo's
 `ui-settings` are git dependencies at their pinned revs in the same block.
 
@@ -145,7 +145,7 @@ annotated sample configuration). One `Open` is:
 
 ## 4. Caller identity (the caller-identity library)
 
-`account-callers::ProcCallers` identifies a bus sender with [the caller-identity library](https://github.com/Bardo-DE/peephole)
+`account-callers::ProcCallers` identifies a bus sender with [the caller-identity library](https://github.com/Bardo-DE/bardo)
 (`BusPeers`, by git tag, never by path): the sender's process is held by pidfd, `/proc` and the user
 manager state what it is, and `judge` returns a `Standing`. `standing.rs` turns the standing into a
 `Caller`; `translate.rs` turns the accounts service's table into the caller-identity library's.

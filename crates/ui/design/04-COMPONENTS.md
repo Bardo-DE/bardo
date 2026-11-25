@@ -3707,7 +3707,7 @@ never rasterises anything itself.
 
 **Split.** `ds::prelude::PdfThumb` draws a page it is handed (`PdfPage`) and reads no file: ds stays
 renderer-free and effect-free (`scripts/check-boundary.sh`), and pdfrum's CPU rasteriser is a
-renderer. `ds_blitz::PdfFileThumb` (cargo feature `pdf`, off by default so an app that
+renderer. `ui_blitz::PdfFileThumb` (cargo feature `pdf`, off by default so an app that
 shows no PDF builds no PDF reader) takes the path, reads and rasterises page 1 with pdfrum 0.4's
 `VelloCpuBackend` on a worker thread, caches the result by (path, modification time, device
 size, scale), and feeds `PdfThumb`. A consumer that is not on Blitz (mailo on the webview)
@@ -3892,7 +3892,7 @@ region (`"{label} preview"`). The element is the caller's: its styles come from 
 layer (`AppStyle`), and a slot's markup is linted like any other.
 
 **The PDF split.** ds reads no file (section 45), so `PaneContent::Pdf` takes the page, not the
-path. A Blitz app gets the page from `ds_blitz::use_pdf_page(path, ds::components::lists::preview::content::PANE_MEDIA)`, the hook
+path. A Blitz app gets the page from `ui_blitz::use_pdf_page(path, ds::components::lists::preview::content::PANE_MEDIA)`, the hook
 `PdfFileThumb` itself now runs on: cached, else asked of the one `pdf-thumb` worker, `Loading`
 until it lands. It takes an `Option` so the component that draws the pane calls it on every
 render and passes the path only while the content is a PDF: the pane stays one mounted element
@@ -4026,7 +4026,7 @@ first, with where the caret is:
 pub struct FieldKey { pub event: KeyboardEvent, pub caret: Caret }
 pub enum Claim { Take, Pass }
 pub enum Caret { AtEnd, Inside, Unknown }   // ds::host::caret; Unknown: no host, no field
-// the host's read: ds::host::parts::CaretHost::caret, on ds_blitz's Blitz host
+// the host's read: ds::host::parts::CaretHost::caret, on ui_blitz's Blitz host
 ```
 
 `Claim::Take` keeps the key from everything else: the palette does not read it, its default is
@@ -4057,10 +4057,10 @@ so a surface that says nothing draws exactly what it drew before.
 **Split.** `ds` holds the vocabulary and the pure rules: `Spell`, `Lang`, the tokeniser and its
 skip rules (`spell::words`), the CJK test (`spell::script`), how marks follow an edit and which
 word is being typed (`spell::marks`), and the seam `Rc<dyn SpellService>`, a root context.
-`ds_blitz::spell` (cargo feature `spell`) implements the seam: the system's Hunspell
+`ui_blitz::spell` (cargo feature `spell`) implements the seam: the system's Hunspell
 dictionaries, checked and suggested by `spellbook` (MPL-2.0, used unmodified) on one worker
-thread per configuration; nothing is bundled. `ds_blitz::launch` provides it under the
-feature; another root calls `ds_blitz::spell::provide()`.
+thread per configuration; nothing is bundled. `ui_blitz::launch` provides it under the
+feature; another root calls `ui_blitz::spell::provide()`.
 
 **Markup.** The marks never touch the app's document: a layer is the surface's last child,
 absolutely positioned (out of the flow, so an app rule such as `.c-body > *` cannot move the
@@ -4208,7 +4208,7 @@ moment ending in `assert_settles_to_zero_frames`, each with a Reduced case. Gall
 
 ### Window frame: WindowFrame, the titlebar and the traffic lights (settled 2026-09-25)
 
-**Purpose.** The frame of a client-decorated window: our apps on `ds_blitz::launch` (mailo)
+**Purpose.** The frame of a client-decorated window: our apps on `ui_blitz::launch` (mailo)
 and, later, the shell's apps on layer-shell-host toplevels. It moves, resizes and zooms the window
 through the host seam `ds::prelude::HostWindow` (design/13 section 13.3.11; FINDINGS "Window frame").
 **Props.** `Ds { window: WindowFrame }`. `WindowFrame::None` (default) draws nothing and leaves

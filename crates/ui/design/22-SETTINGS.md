@@ -48,7 +48,7 @@ doc is the authority on where each key actually lives, and supersedes those inli
 
 | File | Owner | Domains |
 | --- | --- | --- |
-| `$XDG_CONFIG_HOME/bardo/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
+| `$XDG_CONFIG_HOME/bardo/appearance.toml` | `ui-settings` (crate `crates/ui-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
 | `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`shell-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
 | `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (the accounts service), actiond and companiond (the actions service), memoryd (the memory service), the computer-use daemon (computer use); each repo names its file and ships its schema (section 9.2). Named so far: the actions service `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is the accounts service's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `computer_use` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
@@ -121,8 +121,8 @@ hand-written. Where a note's default disagrees with the table, the table (the co
 | `appearance.accent` | settled 2026-09-30; a stored `postmark`, `amber` or `violet` is not migrated: it reads as an invalid value and falls to `Blue` | `03-COLOR.md#open-decisions` item 6 | settled (preference), partial |
 | `appearance.motion_level` | the portal's `prefers-reduced-motion` makes `Standard` resolve to `Reduced` | `30-CATALOGUE.md` section 1.1 | settled (user, 2026-09-29) |
 | `appearance.transparency` | the portal has no key for it, so ours is a setting; `Reduced` paints every material solid and drops the vibrancy boost; the compositor reads it from this file, as it reads `theme` | `27-HIG-PARITY.md` section 3.1 | settled (adopted in 27) |
-| `appearance.look` | `standard`, or the id of an installed look Extension; a stored id that is not installed or is turned off reads as `standard` where the installed Extensions are known, and is reported once (`ds_extensions::chosen`). The choices come from the caller (9.1, `Provided`) | the customization design, sections 5 and 7.7 | proposed (2026-10-23) |
-| `appearance.file_icons` | `standard`, or the id of an installed file-icons Extension (a folder of pictures keyed by file type); a stored id that is not installed or is turned off reads as `standard` and is reported once (`ds_extensions::chosen`). A type the Extension has no picture for keeps the standard icon. Section "Files" of the Appearance page | the customization design, sections 5 and 6 | proposed (2026-10-24) |
+| `appearance.look` | `standard`, or the id of an installed look Extension; a stored id that is not installed or is turned off reads as `standard` where the installed Extensions are known, and is reported once (`ui_extensions::chosen`). The choices come from the caller (9.1, `Provided`) | the customization design, sections 5 and 7.7 | proposed (2026-10-23) |
+| `appearance.file_icons` | `standard`, or the id of an installed file-icons Extension (a folder of pictures keyed by file type); a stored id that is not installed or is turned off reads as `standard` and is reported once (`ui_extensions::chosen`). A type the Extension has no picture for keeps the standard icon. Section "Files" of the Appearance page | the customization design, sections 5 and 6 | proposed (2026-10-24) |
 | `appearance.custom_styles` | "Use my styles": off makes `Ds` draw none of the look, the desktop-wide `style.css` or the app's `style.css`, live; the way back from a broken style (customization design section 7.4) | customization/DESIGN.md section 7.4 | proposed (2026-10-23) |
 
 **Removed 2026-10-27 (settings keep only what macOS offers or a real behaviour choice).** The seven
@@ -553,7 +553,7 @@ schema (`scripts/gen-doc-keys.sh`).
 <!-- keys:end region -->
 
 `region.hours` is `auto`, `12` or `24`. `auto` follows the locale of the session
-(`ds_settings::time_locale` picks it from `LC_ALL`, `LC_TIME` and `LANG`): `en_US`, `en_CA`,
+(`ui_settings::time_locale` picks it from `LC_ALL`, `LC_TIME` and `LANG`): `en_US`, `en_CA`,
 `zh_TW` and a few more write 12 hours, `en_GB`, `de_DE`, `ja_JP` and `C` write 24. A program asks
 `Environment::hours(locale)` (or `HourCycle::resolve`) and draws what comes back; it never reads
 the key itself. The bar, the calendar and mail's snooze times read the same answer. So does the lock screen: its
@@ -571,7 +571,7 @@ shows a grid of pictures with "Add Picture...".
 
 ## 4. Rust shape
 
-Adds to `crates/ds-settings` (appearance/icons/motion) and a new `shell-settings` module
+Adds to `crates/ui-settings` (appearance/icons/motion) and a new `shell-settings` module
 (bar/dock/launcher/scroll/scrollbar/menus/notifications/control_center/spaces); `gestures`/
 `palm_rejection` live in `mouse_gestures`'s own crate but follow the identical shape so the three
 loaders share one macro/derive story.
@@ -1004,7 +1004,7 @@ word `standard` or the id of what was chosen. The schema lists no choices: the p
 the key fills them in with `KeySpec::offering(words, labels)`, which turns the kind into a `Menu`
 (`standard` first, labels by id), so the `menu` control draws it and no widget is added.
 `ui-settings` knows nothing of what is installed. The reader of the key checks the stored id
-against what it found (`ds_extensions::chosen`): an id nobody installed, or one that is turned off,
+against what it found (`ui_extensions::chosen`): an id nobody installed, or one that is turned off,
 reads as `standard` and is reported once. A reader that predates the kind refuses the schema file
 it is in, as it does for any unknown kind (`Schema::discover` skips the file with a warning).
 
@@ -1128,7 +1128,7 @@ are `b`, `x`, `s` or `as` only. Value keys of a live module use the ordinary kin
 rows use `kind = Live{action}` (a label plus weight `plain` or `destructive`), are run by
 `Set(key, true)` and draw as a button (`Widget::ActionButton`; a destructive one behind
 `Alert{Critical}`). A toggle's value is a boolean on the wire. The serving daemon implements
-`ds_settings::live::LiveModule` and holds all state; it decides who may `Get` or `Set` in
+`ui_settings::live::LiveModule` and holds all state; it decides who may `Get` or `Set` in
 `permit` (accountd and inferd allow only the Settings role), and a refusal is
 `org.bardo.SettingsModule1.Error.NotPermitted`. `serve` and `LiveClient::describe` both refuse a
 schema that marks an `AGENT_NEVER_SETTABLE` key agent-settable, the same check
@@ -1243,7 +1243,7 @@ mark is written; a person never edits it, and a settings file cannot carry it.
 
 The list below is a **proposal for the user to accept or trim**, not a grant. It is conservative on
 purpose: each key is cosmetic or a convenience that one click undoes, and none touches data,
-accounts, spend or a lock. `ds_settings::schema::AGENT_SETTABLE_PROPOSED` holds the same list so
+accounts, spend or a lock. `ui_settings::schema::AGENT_SETTABLE_PROPOSED` holds the same list so
 Bardo's, the shell's and the Settings app's tests check their schemas against one source.
 
 | Key | Owner | Why an agent may set it | Status |
@@ -1278,7 +1278,7 @@ Six additions to the schema contract, all additive: a schema or a file written b
 unchanged.
 
 1. **Pages are data.** A schema may carry `[[page]]` tables (`id`, `title`, `symbol`, `order`,
-   optional `aliases`). The built-in table is `crates/ds-settings/src/schema/pages.toml`: the
+   optional `aliases`). The built-in table is `crates/ui-settings/src/schema/pages.toml`: the
    twelve fixed pages (their old snake-case names are aliases of their kebab-case ids) and
    `wallpaper`, `displays`, `wifi`, `bluetooth` and `extensions` (title "Extensions", symbol
    `puzzle`, order 45, just after Appearance). `Page` stays a typed layer over `PageId`; a key
@@ -1291,7 +1291,7 @@ unchanged.
    table from kind to control, `TogglePair` the only on/off rule; an id this build does not know,
    or one that does not fit the kind, is ignored and the default control is drawn. `picture` is a
    grid of pictures with "Add Picture…" whose value is a path; it fits a text key. `corners` is the Hot Corners sheet: its value is the corner's list of bindings; it fits a text key.
-3. **A target for every entrance.** `SettingsTarget` (defined in `ds_core::settings`, pure, so a compositor holds it without `ui-settings`; re-exported as `ds_settings::target::SettingsTarget`) is `Page(PageId)`,
+3. **A target for every entrance.** `SettingsTarget` (defined in `ui_core::settings`, pure, so a compositor holds it without `ui-settings`; re-exported as `ui_settings::target::SettingsTarget`) is `Page(PageId)`,
    `Key(KeyPath)`, `Account(AccountRef)` or `Extension(ExtensionId)`, written `page:wallpaper`,
    `key:dock.tile_size_px`, `account:<id>`, `extension:<id>` (Settings > Extensions at that row). It is the payload of the `settings.page.show` intent. A page may say `listing = "hidden"`
    (`Listing::Hidden`): it resolves by id (`assistant-model-setup`, the model picker's first-run step)

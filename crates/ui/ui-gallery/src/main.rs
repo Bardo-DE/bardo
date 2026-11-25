@@ -36,20 +36,20 @@ fn main() {
     let args = match args {
         Ok(args) => args,
         Err(error) => {
-            eprintln!("ds-gallery: {error}");
+            eprintln!("ui-gallery: {error}");
             std::process::exit(2);
         }
     };
     if let Some(dir) = args.accent_sheet {
         if let Err(error) = accent_sheet::run(&dir, args.progress) {
-            eprintln!("ds-gallery: {error}");
+            eprintln!("ui-gallery: {error}");
             std::process::exit(1);
         }
         return;
     }
     if let Some(dir) = args.detail_frames {
         if let Err(error) = detail_frames::run(&dir) {
-            eprintln!("ds-gallery: {error}");
+            eprintln!("ui-gallery: {error}");
             std::process::exit(1);
         }
         return;
@@ -57,7 +57,7 @@ fn main() {
     if let Some(dir) = args.snapshot {
         if let Err(error) = snapshot::run(&dir, args.page, args.scale.unwrap_or(100), args.progress)
         {
-            eprintln!("ds-gallery: {error}");
+            eprintln!("ui-gallery: {error}");
             std::process::exit(1);
         }
     } else {
@@ -71,7 +71,7 @@ fn main() {
                 FileRoots::new([Path::new(env!("CARGO_MANIFEST_DIR")).join("assets")]),
             ),
         ) {
-            eprintln!("ds-gallery: {error}");
+            eprintln!("ui-gallery: {error}");
             std::process::exit(1);
         }
     }

@@ -26,7 +26,7 @@ and margin in `S`'s app surfaces is one of these values:
 `P:955-956`, derived from the `S` rules cited in the sections below.
 
 **Settled (Gallery fixes B, 2026-09-24).** The common steps are tokens: `ds::style::tokens::spacing::SpacingToken`
-(`crates/ds-style/src/tokens/spacing.rs`) emits `--s-1`, `--s-2`, … `--s-12`, `--s-14`, `--s-16`,
+(`crates/ui-style/src/tokens/spacing.rs`) emits `--s-1`, `--s-2`, … `--s-12`, `--s-14`, `--s-16`,
 `--s-18`, `--s-22`, `--s-26`, `--s-36` on `.ds`, each named by its own pixel value, the same in
 both schemes and at every motion level. The lint's Strict profile has `Rule::RawSpacing`: a
 literal `px` in `margin`, `padding` (and their sides and logical forms) or a `gap` is an
@@ -55,7 +55,7 @@ scale, so a `1px` line would be 1.25-1.75 device pixels and blur into two half-i
   whole device pixels; `--dpr` the scale itself. At 1x every token is its design value, so
   nothing drawn at 1x changes.
 - Positions are snapped by the host: Blitz rounds boxes to whole logical pixels, which at a
-  fractional scale starts a box half-way through a device pixel. `ds_blitz::snap_to_device`
+  fractional scale starts a box half-way through a device pixel. `ui_blitz::snap_to_device`
   re-rounds the laid-out document on the device grid after every resolve (ui-blitz's snapshots
   and harness do; a host that resolves its own documents calls it).
 - A glyph's stroke is an even number of device pixels at a fractional scale (08-ICONS §1.4.1).
@@ -63,7 +63,7 @@ scale, so a `1px` line would be 1.25-1.75 device pixels and blur into two half-i
 
 What stays unsnapped is recorded in FINDINGS "Pixel snapping": text, a transform that is not a
 pure translation (a motion part-way through), a glyph's diagonals and curves, and the portable
-`ds_blitz::launch` window, which has no hook between Blitz's resolve and its paint.
+`ui_blitz::launch` window, which has no hook between Blitz's resolve and its paint.
 
 ## 3. The window
 

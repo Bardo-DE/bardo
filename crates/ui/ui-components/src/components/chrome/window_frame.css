@@ -1,8 +1,8 @@
 /* Window frame (design/04-COMPONENTS.md "Window frame"; design/13-BEHAVIOUR-menus-windows.md
    section 13.3.11). A framed root is a column: the titlebar, then `.ds-window-body` taking the
    rest; the resize edges lie over both. The titlebar is on the frame colour, so its inks are
-   the `--f-*` ones. The lengths are the `--chrome-*` tokens (`ds_style::tokens::chrome`), the
-   lights' colouring `ds_style::tokens::chrome::light_state`: coloured in the active window,
+   the `--f-*` ones. The lengths are the `--chrome-*` tokens (`ui_style::tokens::chrome`), the
+   lights' colouring `ui_style::tokens::chrome::light_state`: coloured in the active window,
    `--f-pill` with a hairline in an inactive one; any light under the pointer colours the group
    and shows the marks, as on macOS. */
 

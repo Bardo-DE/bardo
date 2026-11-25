@@ -11,7 +11,7 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 
 **In scope**
 - **`eventlog`.** The per-Space event log. It is typed, append-only and hash-chained, and it is also the audit log. Each event records: actor, provenance label, Space, effect, the things it is about and the things it came from. Retention can erase an event's body without breaking the chain. Old prefixes can be pruned behind checkpoints.
-- **`memfiles`.** The per-Space agent memory as plain markdown files. Facts are add-only, dated, and linked to their sources. Facts derived from untrusted text are held in a pending area until the user confirms them. Deleting a source cascades. A nightly consolidation produces a diff the user can review and revert.
+- **`memory-files`.** The per-Space agent memory as plain markdown files. Facts are add-only, dated, and linked to their sources. Facts derived from untrusted text are held in a pending area until the user confirms them. Deleting a source cascades. A nightly consolidation produces a diff the user can review and revert.
 - **`recall`.** A rebuildable index. FTS5 lexical search through rusqlite. An `Embedder` trait and a `VectorIndex` trait, with exact scan as the default backend and sqlite-vec as a swappable backend. Results from both are fused (RRF).
 - Per-Space keys and encryption at rest; XDG storage layout.
 - Retention and "do not remember" rules, keyed by thing type, app, path or Space; pausing memory.
@@ -20,7 +20,7 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 - The data the user control UI needs: timeline pages, "what it knows about X", forget preview and execution, export, pending facts, the consolidation diff, rules and status. **Drawing that UI is the "ux" area.**
 
 **Non-goals (owned elsewhere)**
-- The planner's working memory and the handover context (query, results, selection) belong to the agent-loop area. Only what the user confirms reaches `memfiles`.
+- The planner's working memory and the handover context (query, results, selection) belong to the agent-loop area. Only what the user confirms reaches `memory-files`.
 - The launcher's entity "shadow index" belongs to the intents/actions router. It may reuse the `recall` crate, but it is not memoryd's data.
 - The policy decision point and Cedar belong to actions. memoryd only stores the decisions as audit events.
 - AT-SPI capture of third-party apps belongs to the a11y/COMPUTER_USE areas. They record through the same `Record` API (`Channel::Atspi`).
@@ -33,12 +33,12 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 
 ### 2.1 Placement
 
-A **new repo `~/memory`** (github.com/Bardo-DE/memory). It is shaped like the accounts service: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like the accounts service's `accountd`, `inferd` and `syncd`. The bus name is `org.bardo.Memory1`.
+A **new repo `~/memory`** (github.com/Bardo-DE/bardo). It is shaped like the accounts service: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like the accounts service's `accountd`, `inferd` and `syncd`. The bus name is `org.bardo.Memory1`.
 
-Why a separate repo: memory is not accounts. The three owned crates (`eventlog`, `memfiles`, `recall`) are meant to be reusable. memoryd also has its own confinement unit.
+Why a separate repo: memory is not accounts. The three owned crates (`eventlog`, `memory-files`, `recall`) are meant to be reusable. memoryd also has its own confinement unit.
 
 **Portability boundary.**
-- Builds on macOS and Windows, with no zbus, tokio, oo7 or inotify: `memory-core`, `memory-seal`, `eventlog`, `memfiles`, `recall`, `memory-service`, `memory-client` (without its `dbus` feature).
+- Builds on macOS and Windows, with no zbus, tokio, oo7 or inotify: `memory-core`, `memory-seal`, `eventlog`, `memory-files`, `recall`, `memory-service`, `memory-client` (without its `dbus` feature).
 - Linux only: `memory-watch`, `memory-dbus`, `memoryd`.
 
 ### 2.2 Crates
@@ -48,23 +48,23 @@ Why a separate repo: memory is not accounts. The three owned crates (`eventlog`,
 | `memory-core` | Vocabulary: `ThingRef`, `ThingKind`, `KindPattern`, `Verb`, `EventBody`, `EventHeader` fields, `EventRef`, `FactId`, `Fact`, `Link`, `RememberRule`, `Retention`, `ForgetScope`, the wire `MemoryRequest`/`MemoryReply`, timeline, export manifest, `Caller` | account-core, prov | serde, serde_json, thiserror |
 | `memory-seal` | `SpaceKey`, subkey derivation, `DbKey`, `seal`/`unseal` for files, the `KeyStore` trait, `MemoryKeys` (feature `testing`), `Oo7Keys` (stub) | memory-core | blake3, chacha20poly1305, zeroize, getrandom; oo7 behind feature `oo7` |
 | `eventlog` | Canonical header bytes, the chain (`link`, `verify_chain`), the `LogRead`/`LogWrite` traits, `SqliteLog` (SQLCipher), `MemoryLog` (feature `testing`), checkpoints | memory-core, memory-seal | rusqlite, blake3 |
-| `memfiles` | Topic file format (`parse_topic`/`render_topic`), `Store`, the `Vault` trait, `PlainDir`, `SealedDir`, `MemoryVault` (testing), pending, procedures folder, cascade lookup | memory-core, memory-seal | jiff |
+| `memory-files` | Topic file format (`parse_topic`/`render_topic`), `Store`, the `Vault` trait, `PlainDir`, `SealedDir`, `MemoryVault` (testing), pending, procedures folder, cascade lookup | memory-core, memory-seal | jiff |
 | `recall` | Traits `Embedder` and `VectorIndex`; `Fts5` lexical; `ExactScan` vectors; `chunk`; `fuse_rrf`; `Index` (rebuild/upsert/search); `FakeEmbedder` (testing). Generic: knows nothing of memory-core. | none | rusqlite |
 | `recall-fastembed` | `FastembedEmbedder` (in-process CPU/CUDA ONNX). Kept out of `recall` so ort's binary download never enters the gate. | recall | fastembed 7.1, ort 2.0.0-rc.13 (via fastembed) |
 | `recall-sqlite-vec` [later, Q6] | `SqliteVec: VectorIndex` | recall | sqlite-vec 0.1.10-alpha.4 |
-| `memory-service` | memoryd's core over seams: admission, forget planner, fact pipeline, consolidation machine, retention sweep, timeline assembly, export writer, Space lifecycle; traits `Consolidator` and `Clock` | core, seal, eventlog, memfiles, recall | tar |
+| `memory-service` | memoryd's core over seams: admission, forget planner, fact pipeline, consolidation machine, retention sweep, timeline assembly, export writer, Space lifecycle; traits `Consolidator` and `Clock` | core, seal, eventlog, memory-files, recall | tar |
 | `memory-watch` | `FileWatch` trait, `InotifyWatch` (notify 8.2), `FanotifyWatch` [later], the pure `join` of observed changes and app-supplied reasons | memory-core | notify, nix [later] |
 | `memory-dbus` | `org.bardo.Memory1` proxies and skeletons, introspection, the codec (stub) | memory-core | zbus |
 | `memory-client` | App-facing `Memory` API with a `Transport` trait: `InProcess`, `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`) | core, service; dbus (feature) | — |
-| `memory-fake` | Test harness: `fake_service`, `FixedClock`, `ScriptedConsolidator`, fixtures, golden files | core, seal, eventlog, memfiles, recall, service | — |
+| `memory-fake` | Test harness: `fake_service`, `FixedClock`, `ScriptedConsolidator`, fixtures, golden files | core, seal, eventlog, memory-files, recall, service | — |
 | `memoryd` | The daemon. Wiring, the system clock, `InferdEmbedder` and `InferdConsolidator` (through account-client), the systemd unit | all of the above + account-client | tokio, zbus, oo7 |
 
 **Allowed edges** (in `check-boundary.sh`, the accounts service style):
 - `memory-core` → `account-core`, `prov`.
 - `memory-seal` → `memory-core`.
-- `eventlog` and `memfiles` → `memory-core`, `memory-seal`.
+- `eventlog` and `memory-files` → `memory-core`, `memory-seal`.
 - `recall` → nothing of ours.
-- `memory-service` → `core`, `seal`, `eventlog`, `memfiles`, `recall`.
+- `memory-service` → `core`, `seal`, `eventlog`, `memory-files`, `recall`.
 - `memory-watch` and `memory-dbus` → `memory-core`.
 - `memory-client` → `core`, `service`, and `dbus` only behind its feature.
 - `memoryd` → everything, plus `account-client`.
@@ -351,7 +351,7 @@ pub enum LogError { Locked, Corrupt { at: Seq }, Full, Sqlite(String), Schema { 
 // Impls: SqliteLog (open(path, &DbKey)), MemoryLog (testing).
 ```
 
-### 3.7 memfiles [freeze now]
+### 3.7 memory-files [freeze now]
 
 ```rust
 pub struct VaultPath(String);                    // relative, no "..", validated at construction
@@ -370,17 +370,17 @@ pub fn render_topic(file: &TopicFile, tz: &jiff::tz::TimeZone) -> String;
 
 pub struct Store<V: Vault> { /* vault, space */ }
 impl<V: Vault> Store<V> {
-    pub fn topics(&self) -> Result<Vec<TopicPath>, MemfilesError>;
-    pub fn read(&self, t: &TopicPath) -> Result<TopicFile, MemfilesError>;
-    pub fn append(&self, t: &TopicPath, fact: Fact) -> Result<(), MemfilesError>;       // add-only
-    pub fn stage(&self, fact: Fact, topic: TopicPath) -> Result<(), MemfilesError>;     // pending/
-    pub fn pending(&self) -> Result<Vec<(TopicPath, Fact)>, MemfilesError>;
-    pub fn settle(&self, id: &FactId, verdict: Verdict) -> Result<(), MemfilesError>;   // Confirm(Confirmation)|Reject
-    pub fn derived_from(&self, links: &[Link]) -> Result<Vec<FactId>, MemfilesError>;  // transitive over Link::Fact
-    pub fn remove(&self, ids: &[FactId], plan: &PlanDigest) -> Result<Count, MemfilesError>; // only with a plan
-    pub fn write_primer(&self, primer: &Primer) -> Result<(), MemfilesError>;
+    pub fn topics(&self) -> Result<Vec<TopicPath>, MemoryFilesError>;
+    pub fn read(&self, t: &TopicPath) -> Result<TopicFile, MemoryFilesError>;
+    pub fn append(&self, t: &TopicPath, fact: Fact) -> Result<(), MemoryFilesError>;       // add-only
+    pub fn stage(&self, fact: Fact, topic: TopicPath) -> Result<(), MemoryFilesError>;     // pending/
+    pub fn pending(&self) -> Result<Vec<(TopicPath, Fact)>, MemoryFilesError>;
+    pub fn settle(&self, id: &FactId, verdict: Verdict) -> Result<(), MemoryFilesError>;   // Confirm(Confirmation)|Reject
+    pub fn derived_from(&self, links: &[Link]) -> Result<Vec<FactId>, MemoryFilesError>;  // transitive over Link::Fact
+    pub fn remove(&self, ids: &[FactId], plan: &PlanDigest) -> Result<Count, MemoryFilesError>; // only with a plan
+    pub fn write_primer(&self, primer: &Primer) -> Result<(), MemoryFilesError>;
 }
-pub enum MemfilesError { Vault(VaultError), Parse { path: VaultPath, err: ParseError }, NotPending(FactId), NoSuchTopic(TopicPath) }
+pub enum MemoryFilesError { Vault(VaultError), Parse { path: VaultPath, err: ParseError }, NotPending(FactId), NoSuchTopic(TopicPath) }
 ```
 `Verdict::Confirm` takes a `prov::Confirmation`, which only the ShellUi caller path can mint (§3.8).
 
@@ -604,7 +604,7 @@ The closure is computed by `plan_forget(scope, &LogRead, &facts_graph) -> Plan` 
 - matching events, and events whose subjects or sources match;
 - facts linked to any of those or to the thing (transitively through `Link::Fact`), pending facts, procedures, and index documents.
 
-Apply order: index → memfiles → event bodies, then `Memory.Forgot`, then a WAL truncate. The order is idempotent, so a crash is re-run from the plan.
+Apply order: index → memory-files → event bodies, then `Memory.Forgot`, then a WAL truncate. The order is idempotent, so a crash is re-run from the plan.
 
 A deleted source automatically creates an internal `Thing` plan, applied without the UI. Example: an app records `Thing{verb: Deleted}`, or the watcher sees `file.deleted`. The user deleting the source is the confirmation.
 
@@ -670,13 +670,13 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 | eventlog | `prune_prefix_leaves_checkpoint` | Verification from the checkpoint passes; a pruned middle is impossible. |
 | eventlog | `sqlite_and_memory_logs_agree` | The same script on both gives identical entries (contract test). |
 | eventlog | `wrong_key_is_locked` | SqliteLog opened with another DbKey → `LogError::Locked`. |
-| memfiles | `topic_round_trip_golden` | render ∘ parse is the identity on the goldens. |
-| memfiles | `unstamped_and_verbatim_survive` | |
-| memfiles | `append_is_add_only` | File bytes before are a prefix-preserving subset after, existing blocks unchanged. |
-| memfiles | `untrusted_fact_lands_in_pending` | |
-| memfiles | `confirm_requires_witness` | Does not compile or construct without `Confirmation`, plus a runtime test of the path. |
-| memfiles | `derived_from_is_transitive` | |
-| memfiles | `vault_contract` | The same suite over PlainDir, SealedDir and MemoryVault. |
+| memory-files | `topic_round_trip_golden` | render ∘ parse is the identity on the goldens. |
+| memory-files | `unstamped_and_verbatim_survive` | |
+| memory-files | `append_is_add_only` | File bytes before are a prefix-preserving subset after, existing blocks unchanged. |
+| memory-files | `untrusted_fact_lands_in_pending` | |
+| memory-files | `confirm_requires_witness` | Does not compile or construct without `Confirmation`, plus a runtime test of the path. |
+| memory-files | `derived_from_is_transitive` | |
+| memory-files | `vault_contract` | The same suite over PlainDir, SealedDir and MemoryVault. |
 | recall | `fuse_rrf_table` | |
 | recall | `chunk_table` | |
 | recall | `exact_scan_nearest_orders_by_cosine` | |
@@ -723,7 +723,7 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 
 **Fill wave 1 (parallel; file ownership = crate directory)**
 - A: `eventlog` (SqliteLog, MemoryLog, prune, verify).
-- B: `memfiles` (Store, PlainDir, SealedDir, pending, derived_from).
+- B: `memory-files` (Store, PlainDir, SealedDir, pending, derived_from).
 - C: `recall` (Fts5, ExactScan, Index, FakeEmbedder) and `recall-fastembed`.
 - D: `memory-seal` and `memory-watch` (InotifyWatch). `Oo7Keys` stays a stub until oo7 is pinned.
 
@@ -769,7 +769,7 @@ cargo deny check licenses
   - Chat for consolidation.
   - The embedding model's identity comes from `ServedBy.model` into the stored `EmbedderCard`.
   - inferd owns the GPU queue, so the default embedder is `InferdEmbedder`. `FastembedEmbedder` exists for standalone or portable use.
-- **Computer use:** `computer_use.*` payloads (opaque `ComputerUseStep` re-declared), procedures written through memfiles with the same metadata trailer, and the run-link purge on forget.
+- **Computer use:** `computer_use.*` payloads (opaque `ComputerUseStep` re-declared), procedures written through memory-files with the same metadata trailer, and the run-link purge on forget.
 - **ux:** draws the timeline, "what it knows", forget preview, pending, the consolidation diff, rules and pause. Uses §3.11 only. Pause appears in the presence glow.
 - **Bardo Spaces/settings:** the stable `SpaceId` per workspace (design/21 §11.3) and the design/22 rows for `memory.retention.*`, `memory.pending_ttl_days`, `memory.join_window_ms`, `memory.consolidation.*`.
 - **agent-loop:** reads `Primer` at session start and `Search` as needed. The handover working memory is its own.

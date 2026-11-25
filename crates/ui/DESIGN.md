@@ -3,7 +3,7 @@
 Which design doc section each module implements. The docs in `design/` are canonical; this file
 only says where in the code a section lives, so a reviewer can go from a paragraph to a file and
 back. Paths are under `crates/ds/src/` unless another crate is named first (`ui-core/colour/srgb.rs`
-is `crates/ds-core/src/colour/srgb.rs`).
+is `crates/ui-core/src/colour/srgb.rs`).
 
 The direction is one quiet Look (`design/30-CATALOGUE.md` section 3, which wins). Rows for the
 frame model (`space/frame_vars.rs`, `ground_css.rs`, `root/chrome.rs` `FrameTint`/`Ground`, the
@@ -13,7 +13,7 @@ keep a "moved to" stub in their old file, so a section number here still resolve
 
 The design system's crates each name only the ones below them (`scripts/check-boundary.sh`
 holds the allowed edges); `ui-settings`, `ui-blitz`, `ui-harness`, `ui-conformance` and
-`ds-gallery` sit beside and above them (the last table). The layers: `ui-core` (vocabulary, geometry units, time, errors, text, colour, PNG
+`ui-gallery` sit beside and above them (the last table). The layers: `ui-core` (vocabulary, geometry units, time, errors, text, colour, PNG
 and base64, the `Spawner` trait: plain data and maths with no Dioxus), `ui-style` (appearance,
 tokens, materials, Space palettes, fonts, icons, the stylesheet's sections, the scope a component
 draws in, the tasks a scope owns; the scope, scale, task, busy and `Glyph` parts are its
@@ -24,7 +24,7 @@ the keyframes, and `ui-motion/detail/`), `ui-lint` (the linter: strings in, offe
 of every component sheet, and `Ds`), and `ui-shell` (the app-facing parts above `ds`: the account sheets,
 the consent alert, the missing-helper sheet and their sheets; the shell surfaces' parts, the widgets
 and their catalog and the shell's tokens are the shell's `shell-kit`, see ARCHITECTURE.md section 3). Inside `ds` the layers are directories named in
-that order. `lib.rs` names `ds`'s public surface: `ds::prelude` and `ds_shell::prelude` hold what a
+that order. `lib.rs` names `ds`'s public surface: `ds::prelude` and `ui_shell::prelude` hold what a
 consumer draws with, `ds::base`, `ds::style` and `ds::motion` re-export the three lower crates,
 and every other name is at its home path (the root keeps only the stylesheet assembly).
 
@@ -59,13 +59,13 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 | `ui-style/tokens/label_hue.rs` | `archive/03-COLOR-arc.md` §15 (Candy hues, history); `archive/07-LOOKS.md` §6.2 (`--c-*`) |
 | `ui-style/tokens/hex.rs`, `ui-style/tokens/name.rs` | the value and name types every table uses |
 | `ui-style/tokens/{token,set}.rs`, `base-words-macros` | `Token` (`#[derive(Word, Token)]`: a family's custom properties and values from its variants' attributes), `TokenScope`, `CssValue`, `TokenSet` (a family as data, placed in the `.ds` block) |
-| `ui-style/kit/`, `ui-style/kit/style_kit.rs`, `ui-motion/kit.rs`, `assembly/kit.rs`, `ui-shell/kit.rs` | `Kit` (a layer's token families, stylesheet sections, component `Sheet`s each placed after the sheet it follows, and lint vocabulary), `KitRank`, `Kits` (`stylesheet`, `vocabulary`, `token_blocks`, `sheets`); `ds::kits()` is style, motion and the components; `ds_shell::kits()` adds the shell's, `ds_shell::stylesheet()` is the sheet a shell surface draws with (`Ds { sheet: Some(..) }`); `LintConfig::new(&ds_shell::kits())` |
+| `ui-style/kit/`, `ui-style/kit/style_kit.rs`, `ui-motion/kit.rs`, `assembly/kit.rs`, `ui-shell/kit.rs` | `Kit` (a layer's token families, stylesheet sections, component `Sheet`s each placed after the sheet it follows, and lint vocabulary), `KitRank`, `Kits` (`stylesheet`, `vocabulary`, `token_blocks`, `sheets`); `ds::kits()` is style, motion and the components; `ui_shell::kits()` adds the shell's, `ui_shell::stylesheet()` is the sheet a shell surface draws with (`Ds { sheet: Some(..) }`); `LintConfig::new(&ui_shell::kits())` |
 | `ui-style/tokens/timing.rs`, `ui-style/tokens/delay.rs` | 05-MOTION §3.1-3.4, §7.2 (`DurationToken`; `DelayToken`, the timer and delay lengths) |
 | `ui-style/tokens/easing.rs` | 05-MOTION §3.1-3.3 |
 | `ui-style/tokens/shape.rs` | 01-LAYOUT §10 (`Radius::px` is the number `value()` formats; a compositor reads it) |
 | `ui-style/tokens/row_scale.rs` | 30 §1.6 (the settings row's 44 height and 34 avatar as `--row-settings-h` and `--row-avatar`, emitted on `.ds` with the ladder; `Row` and `SkeletonRow` both read them) |
 | `ui-style/tokens/spacing.rs` | 01-LAYOUT §2 (the 18 common steps plus the 1.5, 13 and 15 04-COMPONENTS quotes, as `--s-1`, `--s-1-5` … `--s-36`, emitted on `.ds`; every component sheet reads them) |
-| `ui-style/tokens/pixel.rs`, `ui-core/geometry/scale.rs`, `ui-style/scale.rs`, `ui-style/icon/stroke.rs` | 01-LAYOUT §2.1 (pixel snapping): `Scale` in 120ths, `PixelToken` (`--hair`, `--hairline`, `--px`, `--ring`, `--focus-ring`, `--dpr`, tuned tokens the root writes for its scale), `Ds { scale }` / `HostSignals`, a glyph's stroke snapped to an even number of device pixels (08-ICONS §1.4.1); the layout snap itself is `ds_blitz::snap` |
+| `ui-style/tokens/pixel.rs`, `ui-core/geometry/scale.rs`, `ui-style/scale.rs`, `ui-style/icon/stroke.rs` | 01-LAYOUT §2.1 (pixel snapping): `Scale` in 120ths, `PixelToken` (`--hair`, `--hairline`, `--px`, `--ring`, `--focus-ring`, `--dpr`, tuned tokens the root writes for its scale), `Ds { scale }` / `HostSignals`, a glyph's stroke snapped to an even number of device pixels (08-ICONS §1.4.1); the layout snap itself is `ui_blitz::snap` |
 | `ui-style/tokens/elevation_layers.rs` | `ShadowLayer`, `Shadow::layers`: `--shadow-window` and `--shadow-drag` as numbers, their CSS written from them (the other shadows read `var()` and stay CSS-only) |
 | `ui-style/tokens/chrome/{light_hue,light_paint,title_font}.rs` | the traffic lights' disc, rim and mark ink (`light_hue`, `light_rim`, `light_colours`, from `light_paint.rs`, macOS's own colours, written as `--light-*`) and the title's font (`title_font`, 13 at 600) as numbers for a compositor |
 | `ui-style/tokens/elevation.rs` | 03-COLOR §10 (the four shadows; target (clean-up phase): the code still has about twelve), §17.2 |
@@ -166,7 +166,7 @@ Props worth knowing: `TextField`
 DropState{Idle, Target, Source}` (`ui-core/vocab.rs`, §34); `BubbleAction::{Button(BubbleButton),
 Separator}`; `AccountFace::One{address}`; `SpaceEditor` `name` and `on_active_dot:
 EventHandler<ActiveDot>`; `Ds` `tint_alpha: Option<Alpha>`, fed by
-`ds_settings::Environment::tint_alpha`.
+`ui_settings::Environment::tint_alpha`.
 
 Props added in the launcher gaps (FINDINGS "Launcher gaps"): `FieldFocus::Controlled(FocusRequest)`;
 `CommandPalette` `host: CommandPaletteHost{Overlay, Surface}`, `id`, `focus`, `selected`, `on_select`, `on_select_rect`,
@@ -182,10 +182,10 @@ Props added in the launcher gaps (FINDINGS "Launcher gaps"): `FieldFocus::Contro
 | `ui-settings/src/{appearance,units,lenient}` | 22-SETTINGS §3.1-3.3, §4 (`AppearanceFile`, `AppearanceSettings`, `IconsSettings`, the unit newtypes, lenient read and the unknown-key report) |
 | `ui-settings/src/{watch,latest}.rs` | 22-SETTINGS §2 "Live reload", §6.3 (`Store::watch` on a `Spawner`) |
 | `ui-settings/src/{portal,environment}.rs` | the plan's `ui-settings` design (portal, `use_environment`); `Environment::tint_alpha` feeds `Ds{tint_alpha}` |
-| `ui-blitz` | the plan's `ui-blitz` design; spike S7/S8 (`data:` net provider), S11 (font registration), S12 (modality); `blitz_host.rs` is `ds::prelude::DocumentHost` on Blitz, which `launch` and the harness wire and `ds_blitz::provide_host()` gives any other Blitz host whole; `measure.rs` and `focus.rs` are its geometry and focus parts; `texture_layer/` is `TextureLayer`, `use_gpu` and the window's `Gpu` (a GPU texture inside the document; FINDINGS "Texture layer"); features `pdf` (PDF output and `PdfFileThumb`, painted by pdfrum's `pdfrum-anyrender` crate, a git dependency pinned to pdfrum rev 61371040), `print` and `spell`; `tokio` is named by `launch/runtime.rs` alone (plus `tokio::sync` channels in the workers) |
-| `ui-harness` | the plan's test driver, `Harness` (`send` takes every `Input`; its query methods read the document; `render_over(Backdrop::Clear)` paints a document's own coverage), `HarnessConfig`, `HarnessError`, `Clock::Virtual`, `snapshot*`, the painters; it builds its document from `ds_blitz::seam`, what a window's is built from; feature `pdf`: `pdf_app`, `Harness::pdf` |
+| `ui-blitz` | the plan's `ui-blitz` design; spike S7/S8 (`data:` net provider), S11 (font registration), S12 (modality); `blitz_host.rs` is `ds::prelude::DocumentHost` on Blitz, which `launch` and the harness wire and `ui_blitz::provide_host()` gives any other Blitz host whole; `measure.rs` and `focus.rs` are its geometry and focus parts; `texture_layer/` is `TextureLayer`, `use_gpu` and the window's `Gpu` (a GPU texture inside the document; FINDINGS "Texture layer"); features `pdf` (PDF output and `PdfFileThumb`, painted by pdfrum's `pdfrum-anyrender` crate, a git dependency pinned to pdfrum rev 61371040), `print` and `spell`; `tokio` is named by `launch/runtime.rs` alone (plus `tokio::sync` channels in the workers) |
+| `ui-harness` | the plan's test driver, `Harness` (`send` takes every `Input`; its query methods read the document; `render_over(Backdrop::Clear)` paints a document's own coverage), `HarnessConfig`, `HarnessError`, `Clock::Virtual`, `snapshot*`, the painters; it builds its document from `ui_blitz::seam`, what a window's is built from; feature `pdf`: `pdf_app`, `Harness::pdf` |
 | `ui-conformance` | `tests/it/<component>.rs`: every component's behaviour through `ui-harness` on a real Blitz document (`tests/it/support/probe.rs` is the shared probes and the how-to-write-a-test note); test-only, no code of its own |
-| `ds-gallery` | the plan's gallery (axes, `pages/<group>/<component>.rs`, `--snapshot`) |
+| `ui-gallery` | the plan's gallery (axes, `pages/<group>/<component>.rs`, `--snapshot`) |
 
 The shell-only settings of 22-SETTINGS (§3.4-3.14, `ShellFile`, `GesturesFile`, `Settings`,
 `SettingsWatch`, `apply`) belong to the shell and the mouse gestures daemon, not to this workspace.

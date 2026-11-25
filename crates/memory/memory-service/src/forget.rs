@@ -221,7 +221,7 @@ pub enum ApplyStep {
     /// Remove index documents.
     Index,
     /// Remove facts, pending facts and procedures from the files.
-    Memfiles,
+    MemoryFiles,
     /// Erase event bodies and their `things` rows.
     EventBodies,
     /// Log `Memory.Forgot`.
@@ -234,7 +234,7 @@ impl ApplyStep {
     /// Every step, in the order they run.
     pub const ORDER: [ApplyStep; 5] = [
         ApplyStep::Index,
-        ApplyStep::Memfiles,
+        ApplyStep::MemoryFiles,
         ApplyStep::EventBodies,
         ApplyStep::AuditEntry,
         ApplyStep::WalTruncate,

@@ -89,7 +89,7 @@ pub fn FileIconsPage() -> Element {
                 }
             }
         }
-        Section { title: "Artwork", note: "FileIcon {{ choice: Artwork(source) }}: a finished icon from a chosen set of file icons, or one the person set for a type (Your changes), drawn whole in the square: contained, never cropped, no page frame. Which choice a file gets is the resolver's (ds-extensions' FileIcons::of, which reads the Extensions folders), so this page shows the drawing only.",
+        Section { title: "Artwork", note: "FileIcon {{ choice: Artwork(source) }}: a finished icon from a chosen set of file icons, or one the person set for a type (Your changes), drawn whole in the square: contained, never cropped, no page frame. Which choice a file gets is the resolver's (ui-extensions' FileIcons::of, which reads the Extensions folders), so this page shows the drawing only.",
             Surface { material: Material::Popover, theme: Some(Scheme::Light),
                 div { class: "g-row g-row-top g-stage-pad",
                     {ladder(&FileIconChoice::Artwork(wide_image()), FileIconStyle::Colour)}

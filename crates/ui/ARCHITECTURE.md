@@ -35,7 +35,7 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 | `ui-emoji` | the machine's colour emoji face, found and put first in a `fontique::Collection`: `prefer_colour`, `EmojiChoice` (`BARDO_EMOJI_FAMILY`), `colrv1_emoji_file`, `table_listed`. Depends on fontique alone, so a program without Blitz (temor's terminal) shares ui-blitz's detection |
 | `ui-harness` | dev-only test driver: `Harness` with its `send` and query methods, snapshots, painters |
 | `ui-conformance` | test-only crate: every component's behaviour tests, one file per component |
-| `ds-gallery` | the visual reference binary: every component across theme, accent, motion, material |
+| `ui-gallery` | the visual reference binary: every component across theme, accent, motion, material |
 | `tools/icons` | app-icon post-process (binary) |
 | `blitz-embed` (own repo) | portable Blitz repairs shared with layer-shell-host: hover sync, net provider, fonts, adapter, hit test, pixel snap; names no `ds*` crate |
 
@@ -60,7 +60,7 @@ Workspace crates (`crates/<name>`), plus one sibling repo (`blitz-embed`) and on
 | `ui-blitz` | `ui-host-hooks`, `blitz-embed-types`, `ui-emoji`, `ds`, `ui-style`, `ui-core`, `ui-helpers` (feature `spell`: the capped file reader), `ui-desktop` (the shell's `Outputs` as data; feature `desktop-outputs` adds its D-Bus reading), `base-time` (`deadline`: the print portal's deadlines), `dbus-kit` (feature `menus`: `SenderName`, `Verdict`), `blitz-embed`; feature `pdf`: `pdfrum-anyrender` (git dependency from the pdfrum repo) |
 | `ui-harness` | `ui-blitz`, `ui-host-hooks`, `ui-core`, `blitz-embed` |
 | `ui-conformance` | dev-dependencies only: `ds`, `ui-shell`, `ui-lint`, `ui-settings`, `ui-blitz`, `ui-harness` |
-| `ds-gallery` | `ds`, `ui-shell`, `ui-lint`, `ui-settings`, `ui-blitz`, `ui-harness` (snapshots) |
+| `ui-gallery` | `ds`, `ui-shell`, `ui-lint`, `ui-settings`, `ui-blitz`, `ui-harness` (snapshots) |
 | `tools/icons` | `ds`, `ui-style`, `ui-settings` (`ds` for the Space palette derivation) |
 
 Dev-dependencies follow the same table, plus: every crate may dev-depend on `ds` with feature
@@ -103,13 +103,13 @@ declarations and re-exports. Directories group a concept; role files are named f
 | `ui-behaviour` | `dir` (`Dir`) < `switcher`, `hot_corner`, `modifier_tap` (`tap`, `hold`), `space_swipe` (`numbers`, `velocity`, `finish`; each concept holds `model`, `step`, `tests`) |
 | `ui-extensions` | `capability` (`Capability`) < `fault` < `look`, `file_icons::{folder, pictures}` (the entry type `IconFolder`, a pack's picture table) < `provision` (`Provision`, the `Provides` impl) < `search` (`Search`, `Found`, `Off`) < `resolve` (`Found::resolve`, `Resolved`, `Problem`) < `choices` (`Choices`, `chosen`) < `your_changes` (`YourChanges`) < `file_icons::resolver` (the resolver `FileIcons`: it reads the scan, the choices and Your changes) < `extensions_file` |
 | `ui-lint` | `rule` (`Rule`, `Severity`, `Profile`, `Exception`), `tokenize`, `walk`, `stylesheet` rules, `markup` rules, `hig`, `details`, `assert` |
-| `ds` | `host` (the seam traits: `DocumentHost`, `FocusHost`, `CaretHost`, `GeometryHost`, `ClickFocusHost`, `EditHost`, `ImeHost`, `FileDropHost`, `NoHost`, `HostSignals`) < `focus`, `edit`, `file_drop`, `keys` (the window's chord keymap), `machine` (re-exports `ds_motion::machine`), `spell`, `window` (hooks and pure logic over the seams) < `stack` (overlay stack, hover hub, toast hub, menu tracker, pull tab) < `root` (`Surface`, chrome, extent) < components `content` < `controls` < `overlays` < `forms` < `lists` < `fields` < `menus` < `editor` < `chrome` < `companion` < `app` (mail-only, named by nothing but `assembly`) < `assembly` (`Ds`, stylesheet, sheet registration) < `prelude`, `testing` |
+| `ds` | `host` (the seam traits: `DocumentHost`, `FocusHost`, `CaretHost`, `GeometryHost`, `ClickFocusHost`, `EditHost`, `ImeHost`, `FileDropHost`, `NoHost`, `HostSignals`) < `focus`, `edit`, `file_drop`, `keys` (the window's chord keymap), `machine` (re-exports `ui_motion::machine`), `spell`, `window` (hooks and pure logic over the seams) < `stack` (overlay stack, hover hub, toast hub, menu tracker, pull tab) < `root` (`Surface`, chrome, extent) < components `content` < `controls` < `overlays` < `forms` < `lists` < `fields` < `menus` < `editor` < `chrome` < `companion` < `app` (mail-only, named by nothing but `assembly`) < `assembly` (`Ds`, stylesheet, sheet registration) < `prelude`, `testing` |
 | `ui-shell` | `confirm`, `accounts` (`adapter` is the one file that reaches the components R2 makes controlled), `helpers` < `sheets` < `kit` < `prelude` |
 | `ui-settings` | `error` < `root` (`ConfigRoot`, `AppName`) < `lenient` < `damaged` (`DamagedFile`, `Saved`: a file that is there and unusable is kept) < `doc` (`SettingsDoc`, `Format`, `FileName`) < `preserve` (a TOML save merged into the parsed file) < `store` < `writer` (`SettingsWriter`: one key patched in place) < `spaces_storage` < `watch` < `schema` (keys, pages, controls, the doc tables) < `target` (`SettingsTarget`) < `region` (`HourCycle`) < `appearance` (file, settings structs) < `portal` < `live` (feature `live`: `org.bardo.SettingsModule1`) < `environment` (feature `dioxus`) < `icon_assets` < `units` |
-| `ui-blitz` | `error`, `contexts`, `setup`, `document` (node ref, origin, wake) < `focus`, `measure`, `resolved` (`Resolved::length` and `number`: a token's value from a node's computed style, after the cascade; `BlitzTokens`, the `TokenSource` `use_tokens` and `use_resolved` read through), `reveal`, `phase` (the frame phase: `Phase`, its book of watches and queued writes, the reads), `edit` (+ ime, tree, geometry), `file_drop`, `clipboard` (+ `read`: reads on a worker, with a wait and a size cap), `frames` < `host` (`BlitzHost`, `use_standalone_host`) < `window` (build, place, platform, requests, hover, drop, shell), `window_scroll` (`WindowScroll`: winit's wheel and keys as `blitz_kit::scroll` inputs and as gestures, the fingers' glide for eased listeners, `ScrollHandle`), `window_fit` (the cap), `size_ledger`, `sized_window` < `window_sizer`, `screen_area` < `window_screen`, `startup_token`, `window_activate` (raising a window, with or without a token), `link_open` (a clicked link opened on a worker, failures reported, `mailto` without `attach`) < `xdg_activation` and `bardo_window` (the window's shadow and corner clip, asked of the compositor; `window_frame` holds it per window) over `wayland_surface` (Linux; the one `unsafe`) < `app_life` (`LastWindowClosed`, the pure `Lifecycle`), `app_handle` (`AppHandle`, `AppHold`) < `launch`, `open_window` < `texture_layer` (model, fit, convert, gpu, widget, view) < features `pdf`, `print`, `spell`, `menus` (`service` over `wire`, over the pure `ds::menus::export`) |
+| `ui-blitz` | `error`, `contexts`, `setup`, `document` (node ref, origin, wake) < `focus`, `measure`, `resolved` (`Resolved::length` and `number`: a token's value from a node's computed style, after the cascade; `BlitzTokens`, the `TokenSource` `use_tokens` and `use_resolved` read through), `reveal`, `phase` (the frame phase: `Phase`, its book of watches and queued writes, the reads), `edit` (+ ime, tree, geometry), `file_drop`, `clipboard` (+ `read`: reads on a worker, with a wait and a size cap), `frames` < `host` (`BlitzHost`, `use_standalone_host`) < `window` (build, place, platform, requests, hover, drop, shell), `window_scroll` (`WindowScroll`: winit's wheel and keys as `blitz_embed::scroll` inputs and as gestures, the fingers' glide for eased listeners, `ScrollHandle`), `window_fit` (the cap), `size_ledger`, `sized_window` < `window_sizer`, `screen_area` < `window_screen`, `startup_token`, `window_activate` (raising a window, with or without a token), `link_open` (a clicked link opened on a worker, failures reported, `mailto` without `attach`) < `xdg_activation` and `bardo_window` (the window's shadow and corner clip, asked of the compositor; `window_frame` holds it per window) over `wayland_surface` (Linux; the one `unsafe`) < `app_life` (`LastWindowClosed`, the pure `Lifecycle`), `app_handle` (`AppHandle`, `AppHold`) < `launch`, `open_window` < `texture_layer` (model, fit, convert, gpu, widget, view) < features `pdf`, `print`, `spell`, `menus` (`service` over `wire`, over the pure `ds::menus::export`) |
 | `ui-harness` | `input` (`Input` and its parts) < `query` (the `Harness` read methods) < `headless` (document, painter, backend, gpu paint, clock, settle) < `harness` (`Harness`) < `snapshot`; `inset` (the content inset check: `scene` < `read`, `measure`, `policy`, `offence`) |
 | `ui-conformance` | `tests/<component>.rs`, `tests/support/` |
-| `ds-gallery` | `axes`, `args`, `page`, `registry`, `pages/<group>/<component>.rs`, `sheet`, `snapshot`, `app` |
+| `ui-gallery` | `axes`, `args`, `page`, `registry`, `pages/<group>/<component>.rs`, `sheet`, `snapshot`, `app` |
 
 Component groups inside `ds` and the layer order inside the components tier: `content` (icons,
 images, avatars, status glyphs, rich text, marks, PDF thumbs) < `controls` (buttons, toggles, sliders, chips, `CommandLine` with its `CopyState`, ...) < `overlays` (alert,
@@ -187,7 +187,7 @@ A name in `{...}` is a set of files. Anything not listed keeps its file name.
 | `shell/{bar,battery,clock,control_center,emoji,lock,month_grid*,notifications,now_playing*,osd*,switcher,thumbs,user_picture*,dock*,idle_dim*}` | `ui-shell::` same names |
 | `shell/widget/{contract,registry,scope,slot,layout,kind,wire,card,frame,gallery*,use_widget,timeline}.rs`, `shell/catalog/*` | `ui-shell::widgets::{contract, registry, scope, slot, layout, kind, wire, card, frame, gallery, use_widget, timeline, catalog}` |
 | `shell/widget/{battery,calendar,clock}.rs` | `ui-shell::widgets::{battery, calendar, clock}/` (one directory each) |
-| `style/tokens/{control_center,dock,notifications,osd,shell,shell_scale,widgets,widget_paint}.rs` | `ui-shell::tokens::*`, each implementing `Token` and listed in `ds_shell::KIT` |
+| `style/tokens/{control_center,dock,notifications,osd,shell,shell_scale,widgets,widget_paint}.rs` | `ui-shell::tokens::*`, each implementing `Token` and listed in `ui_shell::KIT` |
 | `lib.rs` root re-exports | deleted; replaced by `ds::prelude` and each crate's curated root |
 | `detail.rs`, `icon.rs`, `time.rs`, `widget.rs`, `catalog.rs` (public shim modules) | deleted; their items are reached by the owning crate's root |
 
@@ -199,11 +199,11 @@ and emoji assets, to `crates/shell-kit` in the shell workspace under the same mo
 `bar`, `battery`, `catalog`, `clock`, `control_center`, `date_picker`, `dock`, `emoji`,
 `idle_dim`, `lock`, `month_grid`, `notifications`, `now_playing`, `osd`, `switcher`, `thumbs`,
 `user_picture`, `widget`, `tokens` (and the pieces they share: `kept`). The evidence is that
-mailo and anyview name only `ds_shell::stylesheet()`, `ds_shell::helpers::model::HelperPhase`
-and `ds_shell::prelude::HelperSheet`. `ui-style::tokens::dock_floor` stays here because the shape
+mailo and anyview name only `ui_shell::stylesheet()`, `ui_shell::helpers::model::HelperPhase`
+and `ui_shell::prelude::HelperSheet`. `ui-style::tokens::dock_floor` stays here because the shape
 section draws `.ds-dock-floor`. The moved sheets are consumer CSS there: a `shell_kit::KIT`
 of rank `Shell` (placed first among the shell-rank kits, so the cascade is byte for byte the old
-one) next to `ds_shell::KIT`. The gallery drops the pages and sections for the moved components (the shell, chrome targets, level,
+one) next to `ui_shell::KIT`. The gallery drops the pages and sections for the moved components (the shell, chrome targets, level,
 widget, lock and emoji pages, the notification and thumbnail overlays, the date picker and the
 Settings window's Date & Time pane, the control center, player and status-item details, and the
 `--level-sheet` mode); the shell's
@@ -226,8 +226,8 @@ Settings window's Date & Time pane, the control center, player and status-item d
 | `ds-native/tests/*` naming a component (`alert`, `bar_menu`, `banner_*`, `cc_*`, `details_*`, `mailo*`, `launcher*`, `palette*`, `month_grid*`, `notification_*`, `widget_*`, `status_*`, `send_pill_moods`, ...) | `ui-conformance/tests/<component>.rs`, merged per component; a test named for work (`mailo4_*`, `*_gaps`, `*_fixes`, `polish`, `macos_polish`, `launcher_v2`) is renamed for the behaviour it checks |
 | `ds-native/tests/*` naming a host behaviour (`native_*`, `hover_sync`, `file_drop`, `spell_*`, `pdf*`, `virtual_clock*`, `snapshot`, `harness*`, `hybrid_backend`, `pixel_snap`, `text_stack_fonts`, `cancelled_animation`) | `ui-blitz/tests/<topic>.rs`, or `ui-harness/tests/<topic>.rs` for driver and painter behaviour |
 | `ds/tests/*_ssr.rs`, `ds/tests/{lint_*,self_lint,hig_lint,...}.rs`, `snapshots/` | beside the crate that owns the component (`ds`, `ui-shell`, `ui-lint`); `mailo_gaps*` files renamed by component |
-| `ds-native/examples/*` | `ui-blitz/examples/*` (pdf, print, window, edit, file_drop, second_window); `sizing_audit` -> `ds-gallery` |
-| `ds-gallery/src/pages/*_mailo*.rs`, `*_gaps.rs`, `polish*.rs` | `pages/<group>/<component>.rs` |
+| `ds-native/examples/*` | `ui-blitz/examples/*` (pdf, print, window, edit, file_drop, second_window); `sizing_audit` -> `ui-gallery` |
+| `ui-gallery/src/pages/*_mailo*.rs`, `*_gaps.rs`, `polish*.rs` | `pages/<group>/<component>.rs` |
 <!-- paths: end -->
 
 ## 4. One home per concept
@@ -295,11 +295,11 @@ The single place a concept lives. Extend it; never write a second one.
 | Stylesheet and markup linting | `ui-lint` |
 | The document seam (focus, caret, geometry, edit, drop) | `ds::host::DocumentHost` |
 | A mounted element's rect, kept current | `ds::host::layout::use_layout` (typed `MountedRef` in, `ReadSignal<Option<Rect>>` out); `ds::host::measure::use_rect` is the probe over it |
-| Scrolling a window's containers: wheel, touchpad, keys, `ScrollCmd` | `blitz_kit::scroll` (the engine, shared with layer-shell-host) driven by `ui-blitz::window_scroll::WindowScroll`, which the window loop runs on every winit event and the harness runs before each layout |
-| What a touchpad's run and a zoom wheel say to an eased listener (the glide after a lift, Control delivered whole) | `ui-blitz::window_scroll::{coast, state}` over `blitz_kit::scroll::{momentum, velocity}`; the vocabulary is `ds::host::gesture::{Gesture, ScrollSource}` |
+| Scrolling a window's containers: wheel, touchpad, keys, `ScrollCmd` | `blitz_embed::scroll` (the engine, shared with layer-shell-host) driven by `ui-blitz::window_scroll::WindowScroll`, which the window loop runs on every winit event and the harness runs before each layout |
+| What a touchpad's run and a zoom wheel say to an eased listener (the glide after a lift, Control delivered whole) | `ui-blitz::window_scroll::{coast, state}` over `blitz_embed::scroll::{momentum, velocity}`; the vocabulary is `ds::host::gesture::{Gesture, ScrollSource}` |
 | A window's size: the cap to the screen, who resized it, whether a request was answered | `ui-blitz::window_fit` (`Fit`, `Extent::fit_with`, `WindowSize::fitting_with`), `size_ledger` (`SizeOrigin`, `SizeRequest`, the 500 ms answer window), `window_sizer` (`WindowSizer`, `use_window_sizer`) over `sized_window::SizedWindow` |
 | The output a window is on: size, work area, scale | `ui-blitz::screen_area` (`ScreenArea`, `ScreenOf`, `WorkBasis`, `Reserve`), read from winit's monitors by `window_screen` and, under our shell, replaced by `ui-desktop::Outputs` (`ScreenArea::on_desktop`, `AppHandle::set_desktop_outputs`) |
-| A scroller's range, its clamp and its rubber-band stretch | `ui-blitz::window_scroll::ScrollBounds`, over `blitz_kit::scroll::rubber::Band` |
+| A scroller's range, its clamp and its rubber-band stretch | `ui-blitz::window_scroll::ScrollBounds`, over `blitz_embed::scroll::rubber::Band` |
 | A stand-in window for a component that sizes its window | `ui-harness::fake_window` (`SizerAck`, `WindowScreen`) behind `HarnessConfig::with_sizer_ack` and the `Harness::{window_requests, window_size, resize_window, window_sizer}` methods |
 | What a component asks the host to publish after layout, and the writes it queues for it | `ds::host::phase` (`Observe`, `Watch`, `PhaseWrite`) through `GeometryHost::{observe, write}`; the step is `ui-blitz::phase::Phase`, run by the window loop after each frame and by the harness after each layout. `Observe::Caret` is also run **before** a frame paints when the caret or selection moved (`Phase::early`: lay out, publish, render, then the draw paints), so an app's caret and selection (`ds::edit::caret::use_caret_rect`, `ds::edit::selection::use_selection_rects`) is drawn in the frame of the text it follows |
 | Focus hooks, focus requests, whether a pressed control takes the keyboard (`FocusOnPressScope`) | `ds::focus` |
@@ -316,7 +316,7 @@ The single place a concept lives. Extend it; never write a second one.
 | A search field with suggestions under it: the panel it owns, its keys (Up, Down, Enter, Escape), its sections; and a menu hung from any field | `ds::menus::search` (`SearchField`, `SuggestionSection`, `step`); `ds::menus::menu::hung` (`Hung`, `PanelWidth`) |
 | A result row's marked characters, avatar and second line | `ds::menus::item::text` (`Marks`, `ItemText`); `MenuImage::Avatar` |
 | A toolbar's search item that collapses to a magnifier | `ds::chrome::toolbar::search` (`ToolbarSearch`, `SearchSeat`); the threshold is `toolbar::model::search_fit` |
-| A palette's query, selection and what Enter runs, over any row type, named by index: the pure `Machine` a command palette, a launcher or a new-tab bar runs beside `CommandPalette`. Rows come in as params, ranked by the caller and kept in order; `Refreshed` re-clamps the selection when a provider changes them under an open palette | `ds::menus::palette::machine` (`PaletteState`, `PaletteIn`, `PaletteOut`, `PaletteParams`, `PaletteIndex`, `PaletteMove`); the typed query is `ds_core::text::typed::TypedText` |
+| A palette's query, selection and what Enter runs, over any row type, named by index: the pure `Machine` a command palette, a launcher or a new-tab bar runs beside `CommandPalette`. Rows come in as params, ranked by the caller and kept in order; `Refreshed` re-clamps the selection when a provider changes them under an open palette | `ds::menus::palette::machine` (`PaletteState`, `PaletteIn`, `PaletteOut`, `PaletteParams`, `PaletteIndex`, `PaletteMove`); the typed query is `ui_core::text::typed::TypedText` |
 | A filterable list in a popover | `ds::menus::pick_list::PickList` (its rows and keys are the palette's) |
 | Toasts | `ds::overlays::toast` + `ds::stack::toast_hub` |
 | The root component and stylesheet assembly | `ds::assembly::{Ds, stylesheet}` |
@@ -330,8 +330,8 @@ The single place a concept lives. Extend it; never write a second one.
 | The names one app is known by (desktop id, window `app_id`, session-bus names, intents app) | `ui-helpers::AppIdentity`, read from the `X-Bardo-WindowId`, `X-Bardo-BusNames` and `X-Bardo-IntentsApp` keys of the app's desktop entry; nothing guesses one name from another |
 | Settings file I/O (lenient load, atomic save, watch) | `ui-settings::store::Store` |
 | Settings schema | `ui-settings::schema` (derived) |
-| Where in Settings a link points (a page, a key, an account, an Extension) and its text form | `ds_core::settings::SettingsTarget`, re-exported as `ui-settings::target::SettingsTarget` (`FromStr` and `Display` are the whole grammar; with `PageId`, `KeyPath`, `AccountRef`, `ExtensionId`) |
-| The pages of Settings: id, title, glyph, order, aliases; an unknown page tolerated | `ui-settings::schema::{PageTable, PageDecl, Listing}` (`PageId` is `ds_core::settings::PageId`) over the built-in `schema/pages.toml`; `Page` is the typed layer |
+| Where in Settings a link points (a page, a key, an account, an Extension) and its text form | `ui_core::settings::SettingsTarget`, re-exported as `ui-settings::target::SettingsTarget` (`FromStr` and `Display` are the whole grammar; with `PageId`, `KeyPath`, `AccountRef`, `ExtensionId`) |
+| The pages of Settings: id, title, glyph, order, aliases; an unknown page tolerated | `ui-settings::schema::{PageTable, PageDecl, Listing}` (`PageId` is `ui_core::settings::PageId`) over the built-in `schema/pages.toml`; `Page` is the typed layer |
 | Which control draws a key, and the on/off pair rule | `ui-settings::schema::{Control, TogglePair}` (`KeyKind::default_control`, `KeySpec::control`); no program keeps its own table |
 | Changing one key of a settings file in place | `ui-settings::SettingsWriter::patch` |
 | A key's range, enforced on load and reported | `ui-settings::{Limits, ClampedKey}` through `SettingsDoc::limits` |
@@ -354,8 +354,8 @@ The single place a concept lives. Extend it; never write a second one.
 | What an app tells the companion (a thing, a chip, a summon, a field's mode) | `ui-intents`; re-exported once from `ds::components::companion` |
 | The companion's components: orb, chips, answer cards, plan, replace, run row, activity, memory, served-by | `ds::components::companion` |
 | The mark of a result the person has not seen yet (still, ok or danger), on the orb and on a run row; the consumer passes `Some(Outcome)` and clears it with `None` | `ds::components::companion::outcome` (`Outcome`, `OutcomeMark`) |
-| A Space's look as compact JSON of at most 1024 bytes, both ways | `ds_style::space::look_json` (`SpaceLook::to_json`, `SpaceLook::from_json`) |
-| Text cut to a width in Rust, from the end (`clip_chars`) or the middle keeping an extension (`clip_middle`), chosen by `Truncate` | `ds_core::text::clip` |
+| A Space's look as compact JSON of at most 1024 bytes, both ways | `ui_style::space::look_json` (`SpaceLook::to_json`, `SpaceLook::from_json`) |
+| Text cut to a width in Rust, from the end (`clip_chars`) or the middle keeping an extension (`clip_middle`), chosen by `Truncate` | `ui_core::text::clip` |
 | The confirmation card | `ui-shell::confirm` |
 | The window glow's values (`GlowLook`, `GlowSpec`, `glow_spec`) | `ui-style::tokens::glow` (the shell's `shell-kit::tokens::glow` re-exports them) |
 | Mail-only components | `ds::components::app` |
@@ -371,12 +371,12 @@ The single place a concept lives. Extend it; never write a second one.
 | `Timeline` | `ui-motion` | `Ease`, `Spring`, `Glide`, `Pending` | a Rust-driven animation | never |
 | `Detailed` | `ui-motion` | 13 component state enums | a component with moments | never |
 | `Widget` | the shell's `shell-kit` | battery, world clock, month, and each widget kind | a new widget kind | never |
-| `DocumentHost` (+ parts) | `ds` | `ds_blitz::BlitzHost`, `ds::host::NoHost` | a new renderer | a new capability of the document a component needs |
-| `SpellService`, `HostWindow` | `ds` | `ds_blitz::spell::Hunspell`, a test fake; `ds_blitz::window::WinitWindow`, the shell's layer-shell-host window, a test stub | a new platform | never |
+| `DocumentHost` (+ parts) | `ds` | `ui_blitz::BlitzHost`, `ds::host::NoHost` | a new renderer | a new capability of the document a component needs |
+| `SpellService`, `HostWindow` | `ds` | `ui_blitz::spell::Hunspell`, a test fake; `ui_blitz::window::WinitWindow`, the shell's layer-shell-host window, a test stub | a new platform | never |
 | `SettingsDoc` | `ui-settings` | `AppearanceFile`; each consumer's file | a new settings file | never |
-| `Machine` | `ui-core` | each consumer's timed pure state (the shell's dock, OSD, banners, ...; anyview), `ds::menus::palette::machine::PaletteState`, `ds_behaviour::{Tap, HoldKey, Swipe, Phase (the switcher), Corner}`, `ds_motion::{Life (presence), RosterState, HoverIntent, SwipeState}`, `ds::stack::menu_track::MenuTrack` (the menu tracker), the components' own timers (the stepper's hold, the green light's hold, a pill's hold, a thread row's pointer, the voice orb's turn, an alert's arming delay), `ds_shell`'s widget follower, track position and emoji frames | a state that changes by input and by time | never |
+| `Machine` | `ui-core` | each consumer's timed pure state (the shell's dock, OSD, banners, ...; anyview), `ds::menus::palette::machine::PaletteState`, `ui_behaviour::{Tap, HoldKey, Swipe, Phase (the switcher), Corner}`, `ui_motion::{Life (presence), RosterState, HoverIntent, SwipeState}`, `ds::stack::menu_track::MenuTrack` (the menu tracker), the components' own timers (the stepper's hold, the green light's hold, a pill's hold, a thread row's pointer, the voice orb's turn, an alert's arming delay), `ui_shell`'s widget follower, track position and emoji frames | a state that changes by input and by time | never |
 | `AppCommand` | `ui-core` | each app's command type (what its menu items yield and its shortcuts fire) | an app with menus or shortcuts | never |
-| `Spawner` | `base-spawn` | `ds_blitz::TokioSpawner`, a test's inline spawner | a new runtime | never |
+| `Spawner` | `base-spawn` | `ui_blitz::TokioSpawner`, a test's inline spawner | a new runtime | never |
 | `Clipboard` | `ui-blitz` | `System`, `Memory` | never | never |
 | `SizedWindow` | `ui-blitz` | `WinitSized` (a winit window), the harness's `FakeWindow` | a host that is not winit | never |
 
@@ -392,7 +392,7 @@ pub trait Word: Copy + Eq + std::hash::Hash + 'static {
 }
 // #[derive(Word)]: slug = kebab-case of the variant; #[word(slug = "x")] on a variant;
 // #[word(case = snake)] on an enum that is stored and so matches its serde name;
-// #[word(label = "x")]. ds_core::testing::word_matches_serde::<T>() checks the last.
+// #[word(label = "x")]. ui_core::testing::word_matches_serde::<T>() checks the last.
 
 // ui-style::tokens
 pub trait Token: Word {
@@ -419,10 +419,10 @@ pub enum KitRank { Style, Motion, Components, Shell, User }  // cascade order; f
 pub struct Kits { ... }
 impl Kits { pub fn of(kits: &[&'static Kit]) -> Kits; pub fn stylesheet(&self) -> String;
             pub fn vocabulary(&self) -> Vocabulary; }
-// Each crate exports `KIT`: ds_style::KIT, ds_motion::KIT, ds::KIT, ds_shell::KIT (and shell's
-// shell_kit::KIT, which a shell lists before ds_shell's so the sheets keep their cascade).
-// ds::kits() = style + motion + ds; ds_shell::kits() = ds::kits() + the app-facing parts;
-// shell_kit::kits() = ds_shell's kits + the shell's own.
+// Each crate exports `KIT`: ui_style::KIT, ui_motion::KIT, ds::KIT, ui_shell::KIT (and shell's
+// shell_kit::KIT, which a shell lists before ui_shell's so the sheets keep their cascade).
+// ds::kits() = style + motion + ds; ui_shell::kits() = ds::kits() + the app-facing parts;
+// shell_kit::kits() = ui_shell's kits + the shell's own.
 
 // ui-motion::timeline
 pub trait Timeline: Clone + PartialEq + 'static {
@@ -509,7 +509,7 @@ pub trait ImeHost {
     fn forget(&self, listener: ImeListener);
 }
 pub trait FileDropHost { fn hit(&self, targets: &[Rc<MountedData>], at: Point) -> DropHit; }
-// The host provides one `Rc<dyn DocumentHost>` as root context (`ds_blitz::provide_host`
+// The host provides one `Rc<dyn DocumentHost>` as root context (`ui_blitz::provide_host`
 // installs every part, so a root can never install a subset) and one `HostSignals
 // { modality: Signal<bool>, scale: Signal<Scale>, activity: Signal<bool> }`;
 // components read `use_document_host()` and get `NoHost` (every method answers `Busy`/absent) under SSR.
@@ -663,7 +663,7 @@ point.
 
 Every crate re-exports its public items once, at its root or from one public module; modules are
 private; no glob re-exports; no `#[doc(hidden)]`. An item another crate needs is `pub` at its
-home module (`ds_style::css::grain`), one path, and absent from every prelude.
+home module (`ui_style::css::grain`), one path, and absent from every prelude.
 
 `ds` re-exports its three lower crates as facade modules, `ds::base` (`ui-core`), `ds::style`
 (`ui-style`) and `ds::motion` (`ui-motion`), the only three root re-exports besides the stylesheet
@@ -680,7 +680,7 @@ from `ui-core`, `ui-style`, `ui-motion` and `ds`, one `pub use` per name:
 | Vocabulary | `Availability`, `Check`, `DropState`, `Fraction`, `Percent`, `Shortcut`, `ShortcutKey`, `Word` |
 | Geometry | `Placement`, `Scale`, `Point`, `Px`, `Rect`, `Size`, `Alpha` |
 | Icons | `ExternalIcon`, `IconSource`, `IconView`, `BatteryGlyph`, `BluetoothGlyph`, `StatusState`, `VolumeGlyph`, `WifiGlyph`, `Icon`, `IconSize` |
-| File icons | `FileIcon`, `FileIconChoice` (`Standard`, `Folder`, `Picture`, `Artwork`), `FileIconStyle`, `FileKind`, `FolderKind`, `ExtLabel` (data in `ds_style::icon::file_kind`, `mime::kind_for_mime`, `file_tint`) |
+| File icons | `FileIcon`, `FileIconChoice` (`Standard`, `Folder`, `Picture`, `Artwork`), `FileIconStyle`, `FileKind`, `FolderKind`, `ExtLabel` (data in `ui_style::icon::file_kind`, `mime::kind_for_mime`, `file_tint`) |
 | Menus | `MenuCursor`, `Hung`, `PanelWidth`, `ItemText`, `Marks` |
 | Fields | `EditSurface`, `TextField`, `SearchField`, `SuggestionSection`, `FieldFocus`, `FieldBezel`, `FieldKind`, `Validity` |
 | Overlays | `Alert`, `DragGhost`, `HoverCard`, `InlineBanner`, `Loadable`, `Phase`, `Popover`, `Sheet`, `Skeleton`, `SkeletonShape`, `SkeletonLines`, `SkeletonRow`, `use_toasts`, `Tooltip`, `use_overlays` |
@@ -691,7 +691,7 @@ from `ui-core`, `ui-style`, `ui-motion` and `ds`, one `pub use` per name:
 | Host | `DocumentHost`, `use_document_host`, `Focused`, `Measured`, `HostSignals`, `SpellService`, `HostWindow` |
 | Controls, menus and root pieces | `Label`, `Button`, `Choice`, `RadioGroup`, `SegmentedControl`, `Slider`, `Toggle`, `MenuItem`, `MenuImage`, `Menu`, `MenuPlacement`, `CommandPalette`, `CommandPaletteHost`, `PaletteClose`, `PaletteState`, `PaletteIn`, `PaletteOut`, `PaletteParams`, `PaletteIndex`, `PaletteMove`, `EmptyState`, `Flow`, `SidePanel`, `SpacesBar`, `SpaceTile`, `BarSpaceKey`, `BarExpansion`, `RootChrome`, `RootExtent`, `settle`, `use_motion_timer`, `resolve` |
 
-`ds_shell::prelude` (16 names) holds the account sheets' components and the missing-helper sheet.
+`ui_shell::prelude` (16 names) holds the account sheets' components and the missing-helper sheet.
 The shell's `shell_kit::prelude` holds the shell components' names and `Widget`, `WidgetKind`,
 `WidgetRegistry`, `WidgetSize`, `WidgetHost`, `WidgetContext`. Mail-only components (`ds::components::app`)
 are reached as `ds::components::app::X`, not through the prelude.
@@ -728,15 +728,15 @@ are reached as `ds::components::app::X`, not through the prelude.
 5. Add the name to `ds::prelude` only if a consumer draws it; otherwise it is reached by its
    group path.
 6. Tests: `crates/ds/tests/<name>_ssr.rs` (a `VirtualDom` rendered with `dioxus_ssr`, linted through
-   `ds/tests/it/support/specimen.rs`, then `ds_lint::markup` filtered to the rule under test), and
-   `crates/ds-conformance/tests/<name>.rs` when it responds to input or time (through `Driver`).
-7. Gallery: `crates/ds-gallery/src/pages/<group>/<name>.rs`, one `Page` registered in
+   `ds/tests/it/support/specimen.rs`, then `ui_lint::markup` filtered to the rule under test), and
+   `crates/ui-conformance/tests/<name>.rs` when it responds to input or time (through `Driver`).
+7. Gallery: `crates/ui-gallery/src/pages/<group>/<name>.rs`, one `Page` registered in
    `registry.rs`. Add the `DESIGN.md` row that names the design section.
 
 ### Add an app-facing part above `ds` (`ui-shell`)
 
-1. Component: the same as above under `crates/ds-shell/src/<part>/{model.rs, step.rs, view.rs,
-   style.css}`; its sheet goes in `crates/ds-shell/src/sheets.rs`; its tests in `crates/ds-shell/tests`.
+1. Component: the same as above under `crates/ui-shell/src/<part>/{model.rs, step.rs, view.rs,
+   style.css}`; its sheet goes in `crates/ui-shell/src/sheets.rs`; its tests in `crates/ui-shell/tests`.
 2. It must work on every platform (no D-Bus, no compositor). A surface only our desktop shell draws
    (bar, dock, widgets, lock, notifications, OSD) is not added here: it goes in the shell's
    `shell-kit` (its recipe is in the shell's ARCHITECTURE.md).
@@ -799,7 +799,7 @@ are reached as `ds::components::app::X`, not through the prelude.
 
 ### Add an Extension capability
 
-Add a variant to `ds_extensions::Capability` (its word is the manifest's capability name), have `Found::resolve` check and rank entries for it, and add a table test beside the others in `ui-extensions`.
+Add a variant to `ui_extensions::Capability` (its word is the manifest's capability name), have `Found::resolve` check and rank entries for it, and add a table test beside the others in `ui-extensions`.
 
 ### Add a document-host capability
 
@@ -819,14 +819,14 @@ Add a variant to `ds_extensions::Capability` (its word is the manifest's capabil
 
 ### Add a conformance test
 
-1. `crates/ds-conformance/tests/<component>.rs`, named for the component (never a work item).
+1. `crates/ui-conformance/tests/<component>.rs`, named for the component (never a work item).
 2. Build `Harness::new(app, viewport_or_config)`, drive with `Harness::send`, read with
    its query methods; the assertion names the difference the action makes.
 3. Timing on the wall clock uses `settle_until`; virtual-clock tests assert the boundary exactly.
 
 ### Add a gallery page
 
-`crates/ds-gallery/src/pages/<group>/<component>.rs` exporting one `Page`; register in
+`crates/ui-gallery/src/pages/<group>/<component>.rs` exporting one `Page`; register in
 `registry.rs`. Pages read tokens, never write CSS values.
 
 ## 8. Test harness
@@ -838,13 +838,13 @@ Add a variant to `ds_extensions::Capability` (its word is the manifest's capabil
 | --- | --- | --- |
 | Pure function or step | table test: `const CASES: &[(Input, Expected)]`, one loop | beside the code |
 | Word, Token, Timeline, Detailed | table over `ALL` / sample instants / `moment_table` | the owning crate |
-| Component markup | SSR render, `ds_lint::markup` | `crates/<crate>/tests/it/<component>_ssr.rs` |
-| Stylesheet | `ds_lint::assert_clean(css, &LintConfig::new(kits))` (`self_lint`) | `ui-shell/tests/it/self_lint.rs` (the shell: shell-kit/tests/self_lint.rs) |
+| Component markup | SSR render, `ui_lint::markup` | `crates/<crate>/tests/it/<component>_ssr.rs` |
+| Stylesheet | `ui_lint::assert_clean(css, &LintConfig::new(kits))` (`self_lint`) | `ui-shell/tests/it/self_lint.rs` (the shell: shell-kit/tests/self_lint.rs) |
 | Component behaviour (pointer, keys, focus, time, paint) | `Harness` through `Driver` and `Query` | `ui-conformance/tests/<component>.rs` |
 | Host behaviour (frames, clipboard, edit, drop, spell, PDF) | `Harness` on the real `BlitzHost` | `ui-blitz/tests/<topic>.rs` |
 | Settings | `Store` on `ConfigRoot::Scratch`, `SystemPrefsSource::Fixed` | `ui-settings/tests` |
 | Pixels | `Harness::render`, probed pixel by pixel; no stored pictures | the owning crate |
-| Content inset (text, glyphs, images 8 px off a painted box edge) | `ds_harness::inset::assert_insets(&harness, &Policy::bardo())` | `ds-gallery/src/inset_tests.rs` (every page, light and dark); `ui-harness/tests/it/inset.rs` (the detector) |
+| Content inset (text, glyphs, images 8 px off a painted box edge) | `ui_harness::inset::assert_insets(&harness, &Policy::bardo())` | `ui-gallery/src/inset_tests.rs` (every page, light and dark); `ui-harness/tests/it/inset.rs` (the detector) |
 | A consumer | `examples/consumer/tests/it/coherence.rs` | `examples/consumer` |
 
 The one harness is `ui-harness`: `Harness` implements `Driver` and `DocQuery` over one headless
@@ -900,7 +900,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
   ships them in every release binary). `cargo deny check advisories` runs wherever the advisory
   database is reachable (a RUSTSEC entry or a yanked crate in the tree fails it).
 
-- **One module allowed `unsafe`:** `crates/ds-blitz/src/wayland_surface.rs` (`#![allow(unsafe_code)]`;
+- **One module allowed `unsafe`:** `crates/ui-blitz/src/wayland_surface.rs` (`#![allow(unsafe_code)]`;
   Linux only), everywhere else `unsafe_code = "deny"` at the workspace. It holds three blocks:
   in `adopt`, `Backend::from_foreign_display` over the `wl_display*` of a window's
   `DisplayHandle`, and `ObjectId::from_ptr` over the `wl_surface*` of its `WindowHandle`
@@ -908,7 +908,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
   reports. The result, `Adopted<'a>`, borrows both handles, so neither
   the connection nor the surface outlives the window's handles; `xdg_activation` is safe code
   on top of it, and `WindowHandle::focus_with_token` is the only caller. The module's tests
-  run it against a fake compositor (`crates/ds-blitz/src/xdg_activation/fake_compositor.rs`). Its test-only
+  run it against a fake compositor (`crates/ui-blitz/src/xdg_activation/fake_compositor.rs`). Its test-only
   `Foreign` holds the other two `unsafe` blocks (`borrow_raw`).
 - **One Look.** The token table is the Look's values (`design/30` section 3); there is no Look type
   and no `data-look`. What the design takes from Arc are features, not values.
@@ -918,13 +918,13 @@ the components the design holds under `--s-8`, each with its reason; an app adds
 - **Coherence rules for every consumer:** no stylesheet outside Bardo contains a hex/rgb/hsl
   colour, a raw `ms`/`s` duration, a raw `cubic-bezier`, a `@keyframes`, a `font-family` or a
   `:root` selector, and none styles `.ds-*` or `[data-theme|accent|motion|material]`
-  (`ds_lint::stylesheet`, which every downstream crate runs in its own tests); no surface or app
-  writes raw `button`/`input`/menu markup (`ds_lint::markup` over an SSR render).
+  (`ui_lint::stylesheet`, which every downstream crate runs in its own tests); no surface or app
+  writes raw `button`/`input`/menu markup (`ui_lint::markup` over an SSR render).
   `CONSUMING.md` section 5 has the tests.
 - **Lint profile:** `Profile::Strict` is the default and runs every rule but `OffGrammarTiming`
   (HIG guardrails report as warnings); `Profile::Details` adds the details grammar's timing. Consumers read Bardo by path, so
   a new failing rule breaks every consumer's tests at once: tell their owners before it lands.
-- **Time in `ds*`** is read only through `ds_core::time::{now, since, sleep}`, never
+- **Time in `ds*`** is read only through `ui_core::time::{now, since, sleep}`, never
   `Instant::now()` or `futures_timer` directly (`ds/tests/it/clock_rule.rs`), so the virtual
   clock reaches it. Library crates never call `tokio::spawn`; they take a `Spawner`.
 - **Tests run on the virtual clock.** Every test harness names its clock
@@ -954,7 +954,7 @@ the components the design holds under `--s-8`, each with its reason; an app adds
   `Cargo.toml` and every consumer copy it verbatim. `blitz-embed` copies it too. The block holds the
   `blitz-embed` line, a git dependency at a pinned rev (public repo). Each workspace root that
   builds it from a sibling checkout (Bardo, layer-shell-host, the shell) adds
-  `[patch."https://github.com/Bardo-DE/blitz-kit"] blitz-embed = { path = "../blitz-embed/blitz-embed" }`,
+  `[patch."https://github.com/Bardo-DE/bardo"] blitz-embed = { path = "../blitz-embed/blitz-embed" }`,
   so local builds use one checkout while a git consumer of Bardo, whose `[patch]` is ignored,
   gets the pinned rev. A blitz-embed bump is a rev change in the block, in all three repos.
 - **`docs/licensing-references.md`** is the verified licence table the borrowing rules cite.
@@ -987,7 +987,7 @@ The cascade, lowest to highest:
 | What a sheet may fetch | `ui-style::kit::reach::within` | `url()`, `@import` and `@font-face` in sheets 3-5 may name `data:` or a file inside the sheet's own folder (`StyleHomes`); the rest is rewritten away before the text goes into `<style>` (a `url()` becomes an empty `data:` URL, an `@import` is removed) and recorded as `Dropped`. Blitz's net provider cannot tell which sheet asked, so the rule is a rewrite, not a provider check; an app's `FileRoots` still decide which files the document may read at all |
 | Crash guard | `ui-blitz::styles_guard::StylesGuard`, `use_styles_guard`, `ds::prelude::StylesOffNotice` | before the first window loads the sheets, `begin` writes `<state>/bardo/styles-guard/<program>` (the fingerprint of the three sheets and `good = false`); `use_styles_guard` marks it `good` after the first frame plus five seconds alive; the last two starts with the same sheets never `good` turn the styles off (the pure `decide`, `false`), and the app draws with `custom_styles: false` and shows `StylesOffNotice` ("Turn On Again" calls `turn_on_again`); a change to any sheet clears it (`changed`). The state directory is a parameter (`ConfigRoot::state_dir(AppName::BARDO)`; a test passes a scratch one) |
 | Public selector surface | `ds::selectors` (a table, and its doc page) | what a user stylesheet may rely on: `[data-surface=<name>]` on every surface root; `.ds-<component>` on every component root; the parts each component lists as public (`.ds-<component>-<part>`); `data-variant`, `data-size`, `data-state`, `aria-*`; every token variable (`--<prefix><slug>`). Anything else is internal and may change without notice. |
-| Report | `ui-lint::user_stylesheet(css, &Kits) -> Vec<UserStyleNote>` | report-only, never blocks loading: unknown variables, selectors outside the public surface, `url()` that is not a local `file:`/`data:` URL, parse errors with line numbers, and cost notes (heavy blur, large shadows, an endless animation, `transition: all`, a property with no effect here; limits in `ds_lint::limits`). `user_stylesheet_with` also takes the parts apps publish (`ds::selectors::AppSelectors`) |
+| Report | `ui-lint::user_stylesheet(css, &Kits) -> Vec<UserStyleNote>` | report-only, never blocks loading: unknown variables, selectors outside the public surface, `url()` that is not a local `file:`/`data:` URL, parse errors with line numbers, and cost notes (heavy blur, large shadows, an endless animation, `transition: all`, a property with no effect here; limits in `ui_lint::limits`). `user_stylesheet_with` also takes the parts apps publish (`ds::selectors::AppSelectors`) |
 
 Rules:
 
@@ -1008,7 +1008,7 @@ Rules:
 
 - **A consumer's sheets go in `app`**: draw each with `ds::prelude::AppStyle`, never a bare
   `style { {CSS} }`. A bare sheet is unlayered and would outrank every `ds` rule whatever its
-  specificity. `ds_lint::Rule::LayerDs` rejects a consumer sheet that opens `@layer ds`.
+  specificity. `ui_lint::Rule::LayerDs` rejects a consumer sheet that opens `@layer ds`.
 - **One path for sheets 3-5**: the shell and every app hand `Ds` the same `Styles` value; nothing
   else writes a `<style>` for the look or the person's CSS. A look's text arrives as a string the
   app fills (`Styles::look`); `Ds` does not find look Extensions. A look is written without a

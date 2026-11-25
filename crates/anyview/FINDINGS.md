@@ -10,7 +10,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   libraries pinned by rev.** Forks of other projects: vello (five crates, `[patch.crates-io]`; ends when the
   changes are released upstream), anyrender (five; the same), dioxus (five; the dirty-task fix, ends when a
   dioxus release has it) and blitz (with taffy reached through it; ends when its changes are released upstream).
-  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, the plugin host, the actions service, the accounts service
+  The owner's own libraries, none yet a crates.io release: Bardo, blitz-embed, the chord keymap, the plugin host, the actions service, the accounts service
   (with the memory service, the model layer and the caller-identity library), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
   each git source by name. A source build is reproducible while those repositories keep the revs (`Cargo.lock` is
   committed, CI builds with `--locked`). The tag workflow (`.github/workflows/release.yml`) builds the Linux
@@ -76,7 +76,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   whose chapters are a few long files lists its parts by fragment (`file.xhtml#part-2`); the binder does not
   know where a fragment fell, so it takes the first page, from the previous line's on, whose text holds the
   line's words (`anyview_pdf::bind`). A title the text does not repeat (a contents line "I" over a heading
-  "Chapter the First") stays on the previous line's page. Ends if `ds_blitz::pdf` reports where each
+  "Chapter the First") stays on the previous line's page. Ends if `ui_blitz::pdf` reports where each
   `id` landed.
 - **A book has no export or print.** `anyview-export` reads the file named by the path as the PDF it is, and a
   book's PDF exists only in the window (`bound`), so the Export and Print rows stay off the book's menu
@@ -98,7 +98,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **A tiled window is still resized by a new file, until the blitz fork patches winit.** `WindowFit::loaded`
   leaves a maximized, fullscreen or tiled window alone: `holds_its_size` is `maximized || fullscreen ||
   tiled.any()`, with the tiled edges read from `WindowHost::tiled()` (bardo v0.3.1's `Tiled` and `TileEdge`).
-  The check is wired, but ds-blitz always reports `Tiled::NONE` because winit does not expose xdg_toplevel's
+  The check is wired, but ui-blitz always reports `Tiled::NONE` because winit does not expose xdg_toplevel's
   tiled states, so on a real desktop a snapped window is still resized (the compositor answers with its own
   size). It starts working when the blitz fork patches winit to report them. The unit test covers it
   through the vocabulary: a window told it is tiled on any edge is never asked for a size.
@@ -136,7 +136,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   Open..., Print and Share where their service is absent, so the portable build shows none of them
   (a launch with files, drag and drop and the command line still open files). Ends when a portable chooser is
   written: `NoPicker` is replaced and its `present()` says yes.
-- **The install offer follows PackageKit as the program started.** `ds-desktop`'s `Helpers` capability is probed
+- **The install offer follows PackageKit as the program started.** `ui-desktop`'s `Helpers` capability is probed
   once at start (`program::start::can_install`); a PackageKit that appears later is not noticed until a restart.
   Without `desktop` the probe has no bus, so no Install... is offered (the row still names the tool).
 - **The portable build compiles on macOS and Windows and has not been run on either.** CI builds the workspace
@@ -146,7 +146,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   (`anyview-media`'s `session/absent.rs` has its types and refuses to start one), the D-Bus services
   (`desktop`) and, on Windows, the plugin runner (the plugin host starts a plugin with a process group and a
   poll on its pipes; `plugin/runner_absent.rs` answers every request that the plugin cannot be started, so
-  Windows shows only what the built-in readers give). Bardo still pulls `zbus` (`ds-settings`, `ds-helpers`)
+  Windows shows only what the built-in readers give). Bardo still pulls `zbus` (`ui-settings`, `ui-helpers`)
   into every build, unused off Linux. Ends when the viewer is built and run on a Mac and on Windows, a
   The plugin host runner for Windows (a job object and overlapped pipes) exists, and the video player has a
   portable frame transport.
@@ -154,13 +154,13 @@ on. It is a reference, not a log: how each was found lives in git history.
   (`dist/org.bardo.Anyview1.service`); the per-user socket (the service locator) does not, so a launcher cannot call a
   viewer that is not running. Linux with `desktop` keeps the bus for that, and `forward_over` stays the
   launcher's call. Ends if a launcher without the bus needs it: `service_locator::spawn` is the closure it would pass.
-- **The UI kit's `PdfPage::Ready` carries a PNG `data:` URL.** The PDF peek goes through `ds_blitz::pdf_thumb_blocking`
+- **The UI kit's `PdfPage::Ready` carries a PNG `data:` URL.** The PDF peek goes through `ui_blitz::pdf_thumb_blocking`
   (the cache the launcher already uses), whose page is `ImageSource`, so a PDF's first page is the one
   picture here that is not a `TextureLayer`. Ends when the UI kit's `PdfPage::Ready` can hold pixels for a
   `TextureLayer` (a `TextureHandle` or a `Pixels`); then `PdfPeek` hands them over and the pane draws them
   the way it draws any picture.
 - **The UI kit's markup lint flags the UI kit's own `TextureLayer`.** The `object.ds-texture-layer` it renders has a
-  class no stylesheet rule defines (it styles itself inline), so `ds_lint::markup` reports
+  class no stylesheet rule defines (it styles itself inline), so `ui_lint::markup` reports
   `UnstyledClass` for any page that shows one. `crates/anyview-peek/tests/peek/pane.rs` skips exactly that selector. Ends when Bardo
   gives the class a rule or the lint an allowance for it.
 - **A decoder we do not own cannot be stopped from outside, only its worker abandoned.** `PeekBudget::time` is a
@@ -175,15 +175,15 @@ on. It is a reference, not a log: how each was found lives in git history.
   thread until it returns: the `image` crate's decoders and `jxl-oxide`, `resvg`, pdfrum (a PDF's page, which
   has its own flag in the viewer but not in a peek), `calamine` reading a whole XLS or ODS, `symphonia`'s
   probe once it is inside a tag, `mp4parse` on a header already gathered, the `zip`, `sevenz-rust2` and
-  codec crates inside one call, `syntect` inside one line, and `ds_blitz::pdf` laying out one EPUB chapter.
+  codec crates inside one call, `syntect` inside one line, and `ui_blitz::pdf` laying out one EPUB chapter.
   The launcher abandons such a peek's worker (`h3`'s `shell.patch`), and the viewer's pool thread holds until the
   call returns. Ends when those decoders run in a plugin process the host can kill.
 - **A peek refuses a picture, font, book or office file over the budget's bytes.** The check is in
   `anyview_peek::peek` (`look` runs it), ahead of the peeks that read the file whole; a very large camera RAW file shows
   its facts card in the launcher until the image peek reads only the preview it needs.
-- **A PDF's page count and title are not known to a peek.** pdfrum is reached only through `ds-blitz`, whose
+- **A PDF's page count and title are not known to a peek.** pdfrum is reached only through `ui-blitz`, whose
   thumbnail answers the first page's raster and size; the facts list the page size in points, and the
-  Pages and Title rows wait for `anyview-pdf`. A PDF is read whole by `ds-blitz`, so `PdfPeek` refuses one
+  Pages and Title rows wait for `anyview-pdf`. A PDF is read whole by `ui-blitz`, so `PdfPeek` refuses one
   longer than the budget's bytes (`PeekError::OverBudget`): the launcher's budget must cover the PDFs it
   wants to show. Ends when `anyview-pdf` supplies a peek that reads only the first page (the registry arm
   names it instead).
@@ -270,7 +270,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   and `ExportChoice::Kind` must be a `Word` even for a format with no export. The impl lists no
   variants. Ends when the UI kit's derive accepts an empty enum.
 - **Two `Percent` types.** `anyview_core::Percent` is an unclamped whole percentage (a volume goes
-  to 150); `ds_core::vocab::Percent` clamps to 100. They share no definition because their ranges
+  to 150); `ui_core::vocab::Percent` clamps to 100. They share no definition because their ranges
   differ. Ends if the UI kit's grows an unclamped sibling.
 - **Export defaults and peek budgets are not settings yet.** The JPEG quality (90), the AVIF
   quality (65) and the default paper (A4, portrait) are constants in `export/`; `PeekBudget` has no
@@ -475,8 +475,8 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **`anyview-platform`'s dependencies sit below the pinned block.** `md-5`, `percent-encoding`, `png` and
   `futures-util` are in no pinned list; `zbus` (with `tokio`), `dirs`, `memfd` and `freedesktop-desktop-entry`
   are. Ends at the next change to the UI kit's `docs/workspace-deps.toml`: add the four and copy the block here.
-  `ashpd` is not used: the print portal is called through `zbus` as `ds-blitz`'s `print` does, so the portal
-  code exists twice (the UI kit's blocking one and this async one). Ends if `ds-blitz` exposes its portal call or
+  `ashpd` is not used: the print portal is called through `zbus` as `ui-blitz`'s `print` does, so the portal
+  code exists twice (the UI kit's blocking one and this async one). Ends if `ui-blitz` exposes its portal call or
   the viewer prints through it.
 - **No clipboard in `Share`.** The plan's "copy" is the window's clipboard, which must outlive the call and
   belongs to the UI crate; `ShareTarget` has only `Mail` (`xdg-email --attach`). Ends when a freedesktop share
@@ -595,7 +595,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   read once into `Env`; a name that is none of them is said and ignored. `null` plays nothing: it is how the
   tests and a run on a machine with a person asleep nearby are made quiet.
 - **A process that plays with no window stays up.** `Play` (the command line or the bus) starts a player with
-  no window, held by `ds_blitz::AppHandle::hold`; stopping it from the now-playing entry (or its recording
+  no window, held by `ui_blitz::AppHandle::hold`; stopping it from the now-playing entry (or its recording
   ending) lets the hold go, and the process exits one `WARM_FOR` later if no window opened.
 - **A pool shared by several back ends has one worker scratch per back end per thread.** A back end whose
   scratch is large (pdfrum's `RenderSession` caches) is held by every worker that ran one of its jobs, up
@@ -611,7 +611,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **Requests the host does not carry out.** The few `HostRequest`s and file actions with no effect are logged as
   "not carried out" (`host::Declined`) and, where a person should hear of it, told too (`feedback`): `Present` of a
   quick look or a background session (a window becomes a window or the mini window, nothing offers the others),
-  `Run(CopyFile)` (the clipboard of `ds-blitz` holds text only, so the palette hides Copy File until it can hold a
+  `Run(CopyFile)` (the clipboard of `ui-blitz` holds text only, so the palette hides Copy File until it can hold a
   `text/uri-list`; a patch for the UI kit's `Clipboard` is the way), `Run(Print)` of anything that does not print and the
   edits of a kind that has none. Each ends with the feature it waits for.
 - **A renamed file keeps its window and its place.** The host tells the window (`Edge::moved`) and the window opens
@@ -662,7 +662,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   inside 50 ms; a viewer with a window open and the arrow key to the next picture's first frame is 4.5 to 4.8 ms.
   The bare process (`anyview --help`, exec to exit) is a median 1.1 to 1.4 ms. `crates/anyview/tests/launch.rs`
   (ignored; `cargo test --release -p anyview --test launch -- --ignored --nocapture --test-threads=1`) runs under
-  `ds_harness` (no window, no compositor) and holds the ratchet: 300 ms cold, 15 ms warm and 5 ms for the bare
+  `ui_harness` (no window, no compositor) and holds the ratchet: 300 ms cold, 15 ms warm and 5 ms for the bare
   process, to be lowered whenever a run beats them and never raised. Two more are in the same file, with ratchets
   whose first run is still to be set from a quiet machine: a one-page PDF's cold peek (500 ms, the launcher's own
   time budget) and the first frame a seeded thumbnail cache paints for a 3000 by 2000 noise PNG (300 ms, printed
@@ -825,7 +825,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **A selection across lines draws no box over the line numbers only because the editor drops them.** The edit
   surface boxes every run of text between a selection's ends, the gutter's included; `families/text/edit`
   drops the boxes left of the text. The UI kit's `edit_tree` can leave unmarked text out itself (a small patch to
-  `ds-blitz`'s `edit_tree.rs`, not in v0.3.1); nothing here waits for it.
+  `ui-blitz`'s `edit_tree.rs`, not in v0.3.1); nothing here waits for it.
 - **Find in a pane is the host's palette, fed through the handle.** A pane draws no palette and lists no Find command
   (the host owns ⌘F), and its capsule has no Find button. The host opens its palette in a find mode, feeds each query
   to `PaneHandle::find` (the link sends the stage's own `find_input`, as the window's palette does through
@@ -890,12 +890,12 @@ on. It is a reference, not a log: how each was found lives in git history.
   under about 490 px (a window at its least width, or a wider one with a panel open) has no volume control in the
   capsule; the system's volume is still there.
 - **The missing-tool sheet is Bardo's, and its pieces are not where the guide says.** `HelperSheet` and `HelperBody` are
-  exported by `ds_shell::prelude`, not by `ds_shell::helpers` (which holds `model::HelperPhase`). The sheet's one rule,
-  `.ds-helper-progress`, is in the shell's stylesheet, so the viewer's `Ds` root is given `ds_shell::stylesheet()` as
-  its `sheet`. `ds-helpers` names zbus with no runtime feature; in the viewer the tokio feature `anyview-platform`
+  exported by `ui_shell::prelude`, not by `ui_shell::helpers` (which holds `model::HelperPhase`). The sheet's one rule,
+  `.ds-helper-progress`, is in the shell's stylesheet, so the viewer's `Ds` root is given `ui_shell::stylesheet()` as
+  its `sheet`. `ui-helpers` names zbus with no runtime feature; in the viewer the tokio feature `anyview-platform`
   enables is unified in, so `Helpers::provide` must run on the platform's tokio runtime, as `Task::Provide` does
   (`subscribe` is runtime-free).
-- **`Availability` is only as live as someone's `refresh`.** `ds-helpers` announces a change only when `Helpers::refresh`
+- **`Availability` is only as live as someone's `refresh`.** `ui-helpers` announces a change only when `Helpers::refresh`
   (or `provide`) is called; nothing watches. The viewer watches the folders of `PATH` with `notify` (`host::PathWatch`,
   a burst settling for 750 ms) and calls `look_again` after each, and records what is there once at start so only changes
   are news.
@@ -905,8 +905,8 @@ on. It is a reference, not a log: how each was found lives in git history.
   `scripts/check-boundary.sh`: calamine and quick-xml for XLSX and ODS, with the crates they pull in. A workbook larger than the viewer opens, and a JSON file larger than the peek budget,
   are `Unsupported`, not damaged.
 - **The `[patch]` sections are Bardo's, copied.** The root `Cargo.toml` carries the UI kit's `[patch.crates-io]` (the
-  vello and anyrender forks) and its `[patch."https://github.com/Bardo-DE/blitz-kit"]` path entry, because a
-  patch applies only at a workspace root and `anyview-ui` now names the render stack through `ds-blitz`. A
+  vello and anyrender forks) and its `[patch."https://github.com/Bardo-DE/bardo"]` path entry, because a
+  patch applies only at a workspace root and `anyview-ui` now names the render stack through `ui-blitz`. A
   change to either block in the UI kit's root is made here in the same change.
 
 - **`redb` cannot be shared between the viewer and the launcher.** It takes `flock(LOCK_EX)` on
@@ -919,19 +919,19 @@ on. It is a reference, not a log: how each was found lives in git history.
   lose an update and share the `.tmp` name. The viewer is a single instance.
 
 - **The pane and `wgpu`.** The plan says `anyview-peek` reaches none of `wgpu`, but the two things it needs from
-  Bardo, `TextureLayer` (`use_gpu`) and the PDF thumbnail cache (`pdf` feature), both live in `ds-blitz`,
+  Bardo, `TextureLayer` (`use_gpu`) and the PDF thumbnail cache (`pdf` feature), both live in `ui-blitz`,
   which depends on `wgpu`, the renderer and pdfrum unconditionally or by feature. So they are in
   `cargo tree -p anyview-peek` and cannot be forbidden there. The boundary is kept where it protects the
   launcher: its tree has no `mpv-wgpu-player`, `rsmpv`, `zbus` or `ashpd` (the script's RULES), its own
   manifest names none of `wgpu`, pdfrum, `tokio`, `anyrender` or the `blitz-*` and `vello` crates (the
-  script's DIRECT table), and the pane gets the device only from `ds_blitz::use_gpu`, calling
+  script's DIRECT table), and the pane gets the device only from `ui_blitz::use_gpu`, calling
   `Gpu::device().is_some()` without naming a `wgpu` type. The launcher is a Blitz window on the hybrid
   renderer, so it links all of it already. The dependency budget (`BUDGETS`) is 605 distinct packages (raised from 590 for the PSD,
   ICNS and OpenEXR/HDR still formats in `anyview-image`, which the peek links: `psd`, `icns`, `exr` and the
   inflate and SIMD crates `exr` needs, and one more for `roxmltree`, the EPUB package reader, and five more for `calamine` and `quick-xml`, which read XLSX and ODS);
-  `anyview-peek` is 605 today, of which `ds` and `ds-blitz` are about 530 and the container codecs of
+  `anyview-peek` is 605 today, of which `ds` and `ui-blitz` are about 530 and the container codecs of
   `anyview-archive`, `skrifa` and the media parsers the rest.
-- **The `[patch]` sections are copied from the UI kit's and the shell's root manifests.** `blitz-kit` points at the
+- **The `[patch]` sections are copied from the UI kit's and the shell's root manifests.** `blitz-embed` points at the
   sibling checkout and the vello and anyrender crates at the `bardo-filters` forks, at the revs those
   manifests name; they apply only at a workspace root, so they live in this root. They were added with
   `anyview-peek`, the first crate here that names the renderer, since cargo warns about every unused patch.
@@ -943,7 +943,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 - **`peek` and `look` never fail.** A peek that errors is `Body::Unavailable(reason)` (an `Unavailable`:
   `Missing`, `Unreadable`, `TooBig` or `Damaged(why)`) with the file's kind, size and
   date, so the launcher always has something to draw; `JsonOverBudget`, an undecodable image and an
-  unreadable folder are shown that way. A PDF that pdfrum cannot read is not an error: ds-blitz answers
+  unreadable folder are shown that way. A PDF that pdfrum cannot read is not an error: ui-blitz answers
   with a page that says so (`PdfPage::Failed`), and `PdfThumb` draws the glyph plate.
 - **A path is opened in `anyview-fs`, not in `anyview-core` or `anyview-store`.** Core does no I/O, so
   `Input::from(&FilePath)` is `FilePath::on_disk()` (the `OnDisk` trait). The adapter is its own crate because
@@ -1087,12 +1087,12 @@ on. It is a reference, not a log: how each was found lives in git history.
   (a `SpaceLook`) has no key in `appearance.toml`, so it stays the default. A change of the file or the portal
   reaches an open window through `Appearances` and `LookFeed`; the first read of the portal is awaited before
   the first window, so a dark desktop does not flash light.
-- **`ds-settings` brings `zbus` to the binary only.** `anyview-ui` takes `Look` as data and does not name
-  `ds-settings` (its rule forbids `zbus`); the binary converts `Environment` to `Look` (`host/appearance.rs`).
-  `ds-settings`' `tokio` feature is on, matching the pinned `zbus`.
-- **`bardo/docs/workspace-deps.toml` has drifted from the UI kit's `Cargo.toml`.** The doc still pins blitz-kit
+- **`ui-settings` brings `zbus` to the binary only.** `anyview-ui` takes `Look` as data and does not name
+  `ui-settings` (its rule forbids `zbus`); the binary converts `Environment` to `Look` (`host/appearance.rs`).
+  `ui-settings`' `tokio` feature is on, matching the pinned `zbus`.
+- **`bardo/docs/workspace-deps.toml` has drifted from the UI kit's `Cargo.toml`.** The doc still pins blitz-embed
   54b7908 and lacks the fork comment, `proc-macro-crate` and the zbus note; anyview took the doc and moved only
-  the blitz-kit rev to the UI kit's 43a6030.
+  the blitz-embed rev to the UI kit's 43a6030.
 - **`install.sh --set-default` is not undone by `uninstall.sh`.** The default is a line in the person's
   mimeapps.list; a default naming a missing entry is ignored by the desktop. The default covers images, plain
   text, Markdown and PDF, never HTML, tables, audio or video.

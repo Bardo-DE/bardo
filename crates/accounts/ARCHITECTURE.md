@@ -116,11 +116,11 @@ Allowed direct edges (checked by `scripts/check-boundary.sh`; dev-dependencies a
 | `accountd` | `account-core`, `account-match`, `account-capability`, `account-sheet`, `account-wire`, `account-ids`, `account-daemon-support`, `account-callers` (feature `file`: `ProcRoot`, the choice of the `/proc` it reads callers from, and the caller table), `account-dbus`, `account-families` (feature `set`: the provider files and which family serves each), `account-family-oauth` (`ClientFiles`), `base-fs`, `account-provider`, `account-proxy` (feature `tls`: the relay of `Grants1.OpenAuthenticated`), `account-secrets` (namespace `bardo.accountd`, `keysel`, `sealed_key`), `account-service`, `account-service-accounts`, `account-service-core`, `account-identities`, `account-spaces`, `account-settings`, `account-sheets` (`BusSheets`, `AppNames`, the Request objects), `account-store`, `account-tailscale` (feature `io`: follows Tailscale for the account's state and `org.bardo.Tailnet1`), and Bardo's `ui-settings` (feature `live`, by git rev) for `org.bardo.SettingsModule1`: the one accounts service -> Bardo edge, accountd alone, never a library crate (check-boundary forbids it everywhere else) |
 
 Cross-repo dependencies are git deps at pinned revs, so a git checkout of the accounts service builds with no
-sibling checkout: Bardo's `ui-settings` (`https://github.com/Bardo-DE/quire.git`, rev as Bardo's pinned block). To
+sibling checkout: Bardo's `ui-settings` (`https://github.com/Bardo-DE/bardo`, rev as Bardo's pinned block). To
 work on them locally, put a git-ignored `.cargo/config.toml` in the accounts service root (never commit it):
 
 ```toml
-[patch."https://github.com/Bardo-DE/quire.git"]
+[patch."https://github.com/Bardo-DE/bardo"]
 ui-settings = { path = "../ui/ui-settings" }
 # plus every ds-* crate that resolves from the same rev, so one copy of each is built
 ```
@@ -202,7 +202,7 @@ reaches `reqwest`, `hyper` and `tokio` (http-reqwest); `tailnet` reaches `hyper`
 | credentials, where they are filed | `account-core::secret`; attributes in `account-secrets::attributes` |
 | the wire protocol and its framing | `account-wire` |
 | a Space's id and scope | `account-core::space` |
-| who acted, labels, effects, the confirmation witness | `prov`, in its own repo (Bardo-DE/prov) |
+| who acted, labels, effects, the confirmation witness | `prov`, in its own repo (Bardo-DE/bardo) |
 | a message between agents (companion, worker, computer-use run, the person; across Spaces too), its thread, kind and typed parts | `prov::message` (there is no other return, result or report type) |
 | the roster's agent reference and a message's address | `prov::agent` |
 | how the `desktop` scope joins a Space's labels | `prov::scope` |
@@ -527,7 +527,7 @@ D-Bus on the desktop). Where each mailo piece lands:
 
 ## Caller identity (the caller-identity library)
 
-`account-callers::ProcCallers` identifies a bus sender with [the caller-identity library](https://github.com/Bardo-DE/peephole)
+`account-callers::ProcCallers` identifies a bus sender with [the caller-identity library](https://github.com/Bardo-DE/bardo)
 (`BusPeers`, by git tag, never by path): the sender's process is held by pidfd, `/proc` and the user
 manager state what it is, and `judge` returns a `Standing`. `standing.rs` turns the standing into a
 `Caller`; `translate.rs` turns the accounts service's table into the caller-identity library's.

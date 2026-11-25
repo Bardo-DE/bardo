@@ -406,7 +406,7 @@ Settled for the port; the catalogue above is unchanged except where named.
 - `osd-out`: `from{ opacity:1; transform:none } to{ opacity:0;
   transform:translateY(calc(var(--osd-dy) * .5)) }` at `--t-move --e-exit`, forwards (§10's exit
   rule), `Anim::OsdOut`.
-- `--osd-dy` is the card's signed offset for its anchor, declared by `ds_shell::prelude::Osd` per position:
+- `--osd-dy` is the card's signed offset for its anchor, declared by `ui_shell::prelude::Osd` per position:
   `-8px` at the top right (drops in from above, lifts back out), `8px` at the bottom centre
   (rises in, drops away). Played outside the card, the fallback is the top right's.
 

@@ -81,7 +81,7 @@ oniguruma), `pulldown-cmark`, `csv`, `serde_json`, `serde`, `encoding_rs`, `unic
 `PdfPage` at its boundary (`card/page.rs`). The headless tree has no dioxus, `ui-motion` or `ui-style`, and
 `scripts/check-boundary.sh` fails if one returns. `wgpu` is not an exception to its rule so much as a fact of `ui-blitz`: `TextureLayer` and the PDF
 thumbnail cache both live there, the launcher is a Blitz window and already links the renderer, and the
-pane reaches the device only through `ds_blitz::use_gpu`, never by naming a `wgpu` type (FINDINGS, "The pane
+pane reaches the device only through `ui_blitz::use_gpu`, never by naming a `wgpu` type (FINDINGS, "The pane
 and `wgpu`").
 
 `anyview-core` depends on `serde`, `thiserror`, `infer` and `ui-core` and nothing else. It does no
@@ -186,7 +186,7 @@ one file.
 | `tree` | `Tree` (`read`, `children`, and `visible` / `visible_count`, the document flattened under an `OpenNodes` set and cut to a window), `TreeRow`, `VisibleRow`, `Openness`, `RowLabel`, `NodeKind`, `ChildCount`; `TreePath` and `OpenNodes` live in `anyview-core`. A tree is never parsed whole: one streaming scan checks the document is well formed (`grammar`) and indexes the children of its top level (`level`: the offset of every 64th child, sooner when children are large, as `lines` does), a container is indexed when it is first shown or opened, and a node's rows are read from the file when asked for, so a document of any size costs its index and the rows on screen and a number reads as written. A file longer than the limit given to `read` shows its start (`Coverage::Prefix`), and a peek of a JSON document over its budget lists the top-level keys that fit. `cursor` (bytes read in chunks) and `rows` are private |
 | `edit` | the editor's model: `Buffer` (a piece table over the file's bytes with undo and redo: a run of typing, of Backspaces or of Deletes is one step, cut where the kind of character changes and at a line break, and a paste, a cut or a replaced selection is a step of its own; `Revision` stamps the text so "unsaved" is a comparison with the saved one), `Session` (a buffer with a caret or selection, the IME's preedit, and the commands a key, a click or the clipboard means; `Motion`, `Selection`, `Preedit`; `find` reads the edited text), `EditText` (a file read whole for editing, or the `EditRefusal` that stops it: not UTF-8, over `EDIT_BYTES` (8 MiB), unreadable); `motion` (grapheme and word boundaries, `unicode-segmentation`) is private. Line endings and a UTF-8 byte-order mark stay in the text as the file had them, so `Session::file_bytes` writes back what was read plus the edits. The data views edit without a buffer: `TableEdits` (in `table`) holds a table's changed cells, added rows and rows taken away as a sparse overlay of the file's rows, and `Table::write_edited` copies the file's own bytes around them (a changed cell is written quoted as it was, an added row in the file's line ending, so a diff shows only what changed); `TreeSession` (in `tree`) holds a JSON document as its bytes and edits it by splicing the spans the tree keeps (a value, a key, a node with its comma), so the indentation stays the file's; both keep their history in `edit`'s `Log`, whose `EditStamp` makes "unsaved" a comparison |
 | `peek` | `PlainPeek`, `CodePeek`, `MarkdownPeek`, `TablePeek`, `TreePeek` and their `*Peeked` types, `Tally`, `PEEK_LINES` |
-| `export` | `plan_export` and `plan_print` (a text choice, or a printout, as `ExportJob`s: pure) and `printable_html` (a Markdown, code or plain-text file as the whole page `ds_blitz::pdf` prints: Markdown rendered with its local images inlined, code highlighted, text as it is; `print.css` is its stylesheet, with fixed colours since paper is white) |
+| `export` | `plan_export` and `plan_print` (a text choice, or a printout, as `ExportJob`s: pure) and `printable_html` (a Markdown, code or plain-text file as the whole page `ui_blitz::pdf` prints: Markdown rendered with its local images inlined, code highlighted, text as it is; `print.css` is its stylesheet, with fixed colours since paper is white) |
 | `escape` | HTML escaping, the one place it is written (private) |
 
 Token classes are words (`keyword`, `string`, `comment`, …), never colours: the stylesheet maps each
@@ -351,7 +351,7 @@ An EPUB and a comic zip are shown by the PDF stage (the registry maps `FormatKin
 `PdfStageView`), so they have its page stack, find, zoom, thumbnails, contents and resume (`Resume::Pdf`:
 page and offset) and one wheel, with no frame to swallow it. `families/pdf/bound` makes the document on the
 open worker: `epub` lays each chapter (sealed HTML with `data:` images, plus the book's styles) out with
-`ds_blitz::pdf` on one fixed page of 776 by 1164 points, text 680 wide in 14 point Inter at line-height 1.6
+`ui_blitz::pdf` on one fixed page of 776 by 1164 points, text 680 wide in 14 point Inter at line-height 1.6
 (`book.css`: the Reading face of the text family, in points so that a page at 100% reads at `--fs-reading`);
 `comic` puts each picture on a page of its own size (`anyview_pdf::pdf_of_pictures`, twelve at a time so a
 comic is never all decoded at once); `anyview_pdf::bind` joins the parts and writes the outline: each line of

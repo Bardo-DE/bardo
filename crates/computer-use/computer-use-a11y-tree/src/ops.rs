@@ -136,7 +136,7 @@ pub fn diff(before: &A11ySnapshot, after: &A11ySnapshot) -> TreeDiff {
 }
 
 /// The regions of secret nodes (marked secret, or a password entry), window-local, as mask
-/// hints for `maskcap`, in tree order.
+/// hints for `computer-use-capture`, in tree order.
 #[must_use]
 pub fn secret_rects(snapshot: &A11ySnapshot) -> Vec<Rect<WindowSpace>> {
     secret_rects_of(&snapshot.nodes)

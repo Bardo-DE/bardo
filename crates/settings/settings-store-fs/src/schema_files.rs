@@ -290,7 +290,7 @@ mod tests {
     #[test]
     fn discover_skips_a_schema_that_marks_a_never_key_settable() {
         let dir = std::env::temp_dir().join(format!(
-            "ds-settings-schema-test-{}-{}",
+            "ui-settings-schema-test-{}-{}",
             std::process::id(),
             "never-settable"
         ));
@@ -306,7 +306,7 @@ mod tests {
     #[test]
     fn write_to_then_discover_finds_it() {
         let dir = std::env::temp_dir().join(format!(
-            "ds-settings-schema-test-{}-{}",
+            "ui-settings-schema-test-{}-{}",
             std::process::id(),
             "write-then-discover"
         ));
@@ -320,7 +320,7 @@ mod tests {
 
     fn scratch(tag: &str) -> std::path::PathBuf {
         let dir = std::env::temp_dir().join(format!(
-            "ds-settings-schema-test-{}-{tag}",
+            "ui-settings-schema-test-{}-{tag}",
             std::process::id()
         ));
         let _ = std::fs::remove_dir_all(&dir);
@@ -377,7 +377,7 @@ mod tests {
 
     #[test]
     fn a_missing_directory_and_a_malformed_file_are_skipped() {
-        let dir = std::env::temp_dir().join("ds-settings-schema-test-does-not-exist");
+        let dir = std::env::temp_dir().join("ui-settings-schema-test-does-not-exist");
         let _ = std::fs::remove_dir_all(&dir);
         assert_eq!(discover(&[dir]), Vec::new());
 
@@ -443,7 +443,7 @@ mod tests {
     #[test]
     fn maybe_write_schema_writes_only_when_the_flag_is_present() {
         let dir = std::env::temp_dir().join(format!(
-            "ds-settings-schema-test-{}-{}",
+            "ui-settings-schema-test-{}-{}",
             std::process::id(),
             "cli"
         ));

@@ -12,7 +12,7 @@
 # so a client that started the daemon on demand and this unit never race into two shells.
 [Unit]
 Description=bardo-shell, the shell (bar, wallpaper, dock, launcher)
-Documentation=https://github.com/Bardo-DE/sill
+Documentation=https://github.com/Bardo-DE/bardo
 # The shell is part of the graphical session and of the compositor it draws on: both stopping or
 # restarting take it along. It is not started on its own without them (Requisite=), and it starts
 # after the compositor is ready.

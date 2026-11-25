@@ -1,4 +1,4 @@
-//! The gallery's command line: `ds-gallery [--page PAGE]
+//! The gallery's command line: `ui-gallery [--page PAGE]
 //! [--snapshot DIR [--scale PERCENT]] [--detail-frames DIR]
 //! [--accent-sheet DIR] [--progress]`. A sheet is written only to its DIR; `--progress` also
 //! copies it into the progress page's tracked shots.
@@ -36,7 +36,7 @@ impl std::fmt::Display for ArgsError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}\nusage: ds-gallery [--page {}] [--snapshot DIR [--scale PERCENT]] [--detail-frames DIR] [--accent-sheet DIR] [--progress]",
+            "{}\nusage: ui-gallery [--page {}] [--snapshot DIR [--scale PERCENT]] [--detail-frames DIR] [--accent-sheet DIR] [--progress]",
             self.0,
             slugs()
         )

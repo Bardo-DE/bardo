@@ -95,7 +95,7 @@ The shell's `desktop_wl` is not touched here).
 | `Event::Active.key` and `Parent` name window objects; an unlinked one resolves to `None` | the next `active` event corrects it | same |
 | A Bardo window's `place`, `output` and `parent` arrive per object; a Space's activity and shown state: the Space protocol has no active flag | `DesktopState::space_shown` joins the Space `id` to the ext-workspace `id` and its `active` flag | the compositor adds an active event to `bardo_desktop_space_v1`, or never |
 | `SurfaceKey`s name surfaces of this client's own connection; `bardo_shell_v1` is bound on the shell connection | a caller that wants `SetMinimiseTarget`/`SetShellRole` builds the `DesktopClient` on the connection that owns the dock/bar surfaces (`DesktopConfig::holding_shell()`) | never; it is the protocol's shape |
-| `bardo_window_manager_v1` (an app's own say about its toplevels, `request_placement`) is not bound here | it belongs to the app's toolkit (shell-host, ds-blitz); `Protocol::BardoWindow` only records the offer | never |
+| `bardo_window_manager_v1` (an app's own say about its toplevels, `request_placement`) is not bound here | it belongs to the app's toolkit (shell-host, ui-blitz); `Protocol::BardoWindow` only records the offer | never |
 | No unit test of the wire layer (it needs a compositor), as before | Bardo dispatch and `bardo_commands` are untested except through the Linker, the reducer and the fake | the compositor P2 lands and the testkit can drive it |
 
 ### What the shell must change to adopt it

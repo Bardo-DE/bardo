@@ -1,7 +1,7 @@
 //! Lucide glyphs, as data.
 //!
 //! The geometry is Lucide (<https://lucide.dev>), ISC licence, notice in
-//! `crates/ds-style/assets/icons/LICENSE-lucide.txt`.
+//! `crates/ui-style/assets/icons/LICENSE-lucide.txt`.
 //!
 //! The outline style is a 24 grid, 2px stroke, round caps and joins, one colour; the solid
 //! style (`style`, `solid_*`; each icon's default is its `native` pick) is filled paths on the same grid. The

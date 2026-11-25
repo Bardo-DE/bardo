@@ -24,7 +24,7 @@ picture), section 6 (copy the recipe).
 | --- | --- | --- |
 | `computer-use-desktop` | the base: windows (`ToplevelInfo`), leases (`LeaseRequest`, `LeaseGrant`, `Leased`, `EiSocket`), `BackendKind` and `BackendCaps::of`, `GlowState` and the protocol codes, `DesktopEvent`, the `Desktop` and `LeaseControl` seams, and the units every crate shares (`Stamp`, `Ms`, `Digest32`, `GlobalRect`). Re-exports `RunMode` and `WindowTrust` from the actions service. No backend lives here | none |
 | `computer-use-types` | the leaf types the bus bodies carry and the capability crates produce: `Role`, `NodeSelector` (with `NameMatch`, `SelectorStep`), `InputReceipt`, `InputOrigin`, `TextPath`, `SeatError`, `FrameDigest`. The capability crates re-export them, so every old path works | none |
-| `maskcap` | `Frame`, `PixelBuf`, `MaskReport`, `apply_masks`, `FrameDigest`, `settle`, `pixel_diff`, the `WindowCapture` and `CaptureSession` seams. | none |
+| `computer-use-capture` | `Frame`, `PixelBuf`, `MaskReport`, `apply_masks`, `FrameDigest`, `settle`, `pixel_diff`, the `WindowCapture` and `CaptureSession` seams. | none |
 | `computer-use-seat-input` | `InputOp`, `Keymap`, `SeatCaps`, `plan`, `InputReceipt`, `region`, the `AgentSeat` seam. | none |
 | `computer-use-a11y-tree` | `A11ySnapshot`, `A11yNode`, `prune`, `render`, `diff`, `secret_rects`, selectors, the `A11ySource` seam. | none |
 | `computer-use-bus` | what crosses the bus and the log, serde bodies over the vocabulary crates memory-core, action-core, account-core, inference-core, prov and computer-use-action (no capability crate is linked; the leaf types come from `computer-use-types`; `scripts/check-boundary.sh` ONLY pins this list): the `Start` body (`ComputerUseTask`), `RunStateSlug`, `ComputerUseOutcome`, `ModeSupport`, `ComputerUseRecord`, `ActionResult`, `RunBudget`, `ControlRefusal`, `permits`, `report_draft` | none |
@@ -34,7 +34,7 @@ picture), section 6 (copy the recipe).
 | `computer-use-eval` | the computer-use model eval (section 8): fake `surface`s drawn as pixels, a `Stage` shared by an `EvalSeat`, an `EvalCapture` and an `EvalDesktop`, a reference gate, `ScriptModel` (lines of moves) and `ProviderModel` (a model on a local engine, over the model layer's `ComputerUseSession`), `Corpus` (`eval/surfaces`, `eval/tasks`), verdicts, rates with Wilson bounds, the markdown report, and the `computer-use-eval` binary | the binary: files; `live`: loopback HTTP to an engine the caller started |
 | `computer-use-eval-cloud` | the eval against a hosted model (section 8): `InferdProvider` (a model layer `Provider` whose turns are inferd chat turns, `Need::Llm` with images on class `screen`), `request` (a model layer turn as an inferd `ChatRequest`), `Watch` (turns, tokens, the charges the provider reported, a spend refusal), `isolation` (what this process can reach), and the `computer-use-eval-cloud` binary | the bus to inferd (the key stays in accountd) |
 | `computer-use-host` | the run executor as a library: `Supervisor` (a task per run), `SupervisorEvent`, `IntentsGate`, `DaemonLinks`, `record_of`, `guard`, `ComputerUseDaemonConfig`, `SystemClock`, and the settings read from text: `read`, `Locator` (over the caller's `ReadText`; `bardo-computer-use` supplies the disk reader), `ReadFailure`, `SCHEMA`, `Supervisor::{settings, apps, apply_settings, adopt}`. No backend, bus or file watch | action-client and memory-client without `dbus` |
-| `computer-use-capture-wayland` | the capture backend of `maskcap`: `StockToplevelCapture`, `BardoMaskedCapture`, `WaylandSession`, `StampClock`, and the `Pump` that drives one wayland connection from async code (with `ObjectKey`, `Rounds`, `SyncTag`) | wayland-client, tokio, rustix |
+| `computer-use-capture-wayland` | the capture backend of `computer-use-capture`: `StockToplevelCapture`, `BardoMaskedCapture`, `WaylandSession`, `StampClock`, and the `Pump` that drives one wayland connection from async code (with `ObjectKey`, `Rounds`, `SyncTag`) | wayland-client, tokio, rustix |
 | `computer-use-seat-ei` | the EI client of the agent's seat: `EiSeat`, an `AgentSeat` over reis (the connection lives on a thread of its own) | reis, tokio |
 | `computer-use-a11y-atspi` | the AT-SPI backend of `computer-use-a11y-tree`: `AtspiSource`, `AtspiTree`, `read_window` (the walk, over any `AtspiTree`) | zbus, atspi, tokio |
 | `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CompositorDesktop` (the compositor's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdComputerUseModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
@@ -43,7 +43,7 @@ picture), section 6 (copy the recipe).
 Tiers (the LAYERS table of `scripts/check-boundary.sh`; a crate depends on its own tier or a
 lower one, and the script bans source patterns per tier):
 
-- **P (pure):** `computer-use-desktop`, `computer-use-types`, `maskcap`, `computer-use-seat-input`, `computer-use-a11y-tree`, `computer-use-bus`,
+- **P (pure):** `computer-use-desktop`, `computer-use-types`, `computer-use-capture`, `computer-use-seat-input`, `computer-use-a11y-tree`, `computer-use-bus`,
   `computer-use-run`. No `std::fs/env/process/net`, clock reads, sleeps, tokio, hyper, reqwest, zbus,
   rustix or UI words. Their backends are the C crates `computer-use-capture-wayland`, `computer-use-seat-ei` and
   `computer-use-a11y-atspi`.
@@ -60,23 +60,23 @@ is a description (dev-dependencies are outside it):
 | --- | --- |
 | `computer-use-desktop` | `computer-use-action`, `prov`, `account-core` |
 | `computer-use-types` | `computer-use-desktop`, `account-core` |
-| `maskcap` | `computer-use-action`, `computer-use-desktop`, `computer-use-types` |
+| `computer-use-capture` | `computer-use-action`, `computer-use-desktop`, `computer-use-types` |
 | `computer-use-seat-input` | `computer-use-action`, `computer-use-desktop`, `computer-use-types`, `account-core` |
 | `computer-use-a11y-tree` | `computer-use-action`, `computer-use-desktop`, `computer-use-types`, `prov`, `account-core` |
 | `computer-use-bus` | `memory-core`, `computer-use-action`, `computer-use-desktop`, `computer-use-types`, `action-core`, `prov`, `account-core`, `inference-core` |
-| `computer-use-run` | `computer-use-a11y-tree`, `keymap`, `computer-use-action`, `computer-use-bus`, `computer-use-desktop`, `maskcap`, `computer-use-seat-input`, `action-core`, `prov`, `account-core`, `inference-core` |
+| `computer-use-run` | `computer-use-a11y-tree`, `keymap`, `computer-use-action`, `computer-use-bus`, `computer-use-desktop`, `computer-use-capture`, `computer-use-seat-input`, `action-core`, `prov`, `account-core`, `inference-core` |
 | `computer-use-dbus` | `computer-use-bus`, `prov` |
-| `computer-use-fake` | `computer-use-a11y-tree`, `computer-use-action`, `computer-use-bus`, `computer-use-desktop`, `computer-use-run`, `maskcap`, `computer-use-seat-input`, `action-core`, `prov`, `account-core`, `inference-core`, `model-replay`, `model-provider`, `computer-use-parse` |
-| `computer-use-eval` | `computer-use-a11y-tree`, `keymap`, `computer-use-action`, `computer-use-bus`, `computer-use-desktop`, `computer-use-fake`, `computer-use-parse`, `computer-use-run`, `computer-use-session`, `computer-use-vendors`, `action-core`, `maskcap`, `model-catalog`, `model-http`, `model-openai-compat`, `model-provider`, `account-core`, `inference-core`, `prov`, `computer-use-seat-input`, `model-vision-prep` |
+| `computer-use-fake` | `computer-use-a11y-tree`, `computer-use-action`, `computer-use-bus`, `computer-use-desktop`, `computer-use-run`, `computer-use-capture`, `computer-use-seat-input`, `action-core`, `prov`, `account-core`, `inference-core`, `model-replay`, `model-provider`, `computer-use-parse` |
+| `computer-use-eval` | `computer-use-a11y-tree`, `keymap`, `computer-use-action`, `computer-use-bus`, `computer-use-desktop`, `computer-use-fake`, `computer-use-parse`, `computer-use-run`, `computer-use-session`, `computer-use-vendors`, `action-core`, `computer-use-capture`, `model-catalog`, `model-http`, `model-openai-compat`, `model-provider`, `account-core`, `inference-core`, `prov`, `computer-use-seat-input`, `model-vision-prep` |
 | `computer-use-eval-cloud` | `computer-use-eval`, `model-catalog`, `model-provider`, `inference-client`, `account-core`, `inference-core`, `model-vision-prep` |
 | `computer-use-host` | `computer-use-bus`, `computer-use-desktop`, `computer-use-run`, `action-core`, `action-client`, `prov`, `account-core`, `memory-core`, `memory-client` |
-| `computer-use-capture-wayland` | `maskcap`, `computer-use-action`, `computer-use-desktop`; `desktop-protocols` (client) |
+| `computer-use-capture-wayland` | `computer-use-capture`, `computer-use-action`, `computer-use-desktop`; `desktop-protocols` (client) |
 | `computer-use-seat-ei` | `computer-use-seat-input`, `computer-use-action`, `computer-use-desktop`, `account-core` |
 | `computer-use-a11y-atspi` | `computer-use-a11y-tree`, `computer-use-action`, `computer-use-desktop`, `prov`, `account-core` |
-| `computer-use-system` | `computer-use-a11y-atspi`, `computer-use-a11y-tree`, `computer-use-desktop`, `computer-use-host`, `computer-use-run`, `maskcap`, `computer-use-capture-wayland`, `computer-use-seat-ei`, `computer-use-seat-input`, `desktop-client`, `action-client`, `memory-client`, `inference-client`, `account-core`, `inference-core` |
+| `computer-use-system` | `computer-use-a11y-atspi`, `computer-use-a11y-tree`, `computer-use-desktop`, `computer-use-host`, `computer-use-run`, `computer-use-capture`, `computer-use-capture-wayland`, `computer-use-seat-ei`, `computer-use-seat-input`, `desktop-client`, `action-client`, `memory-client`, `inference-client`, `account-core`, `inference-core` |
 | `bardo-computer-use` | `keymap`, `key-remap-client` (feature `key_remap`, on by default), `computer-use-bus`, `computer-use-dbus`, `computer-use-host`, `computer-use-desktop`, `computer-use-run`, `computer-use-system`, `action-core`, `action-client`, `prov`, `account-core` |
 
-The edges differ from SPEC 1.3 in one way, forced by its own types: `computer-use-seat-input`, `maskcap` and
+The edges differ from SPEC 1.3 in one way, forced by its own types: `computer-use-seat-input`, `computer-use-capture` and
 `computer-use-a11y-tree` take `computer-use-desktop` as their base (a lease, a stamp, a seat's isolation and who masks
 are named by both the desktop and the crates that serve it), and `computer-use-bus` takes `computer-use-types`,
 where the leaf types its records and the `Start` body name now live (it links none of the capability crates). See FINDINGS, "Spec
@@ -105,7 +105,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | --- | --- |
 | `computer-use-desktop` | `units`, `window`, `lease`, `caps`, `glow`, `event`, `error`, `traits` |
 | `computer-use-types` | `role`, `selector`, `seat`, `digest` |
-| `maskcap` | `pixels`, `mask`, `digest`, `settle`, `frame`, `capture` |
+| `computer-use-capture` | `pixels`, `mask`, `digest`, `settle`, `frame`, `capture` |
 | `computer-use-seat-input` | `op`, `keymap`, `caps`, `plan`, `receipt`, `seat`, `region` |
 | `computer-use-a11y-tree` | `model`, `selector`, `ops`, `source` |
 | `computer-use-capture-wayland` | `pump`, `key`, `state`, `lease`, `shm`, `session` |
@@ -134,7 +134,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | the confirmation | the router's, through `Confirm1`; computer use only stops its input (`RunEffect::SuspendLease(Consent)`, then `Proceed`) |
 | the per-app consent | the actions service's `ActionGrant` with caller computer use, asked through `Gate.Grant` at the level the person's `computer_use.apps` row gives (`RunEnv::grant_level`) |
 | desktop vocabulary, units (`Stamp`, `Ms`, `Digest32`), leases, backend capabilities | `computer-use-desktop` |
-| frames, masks, digests, settling | `maskcap` |
+| frames, masks, digests, settling | `computer-use-capture` |
 | input operations, the plan, the keymap, the EI region map | `computer-use-seat-input` (the region map is `seat_input::region`; nothing else names a global position) |
 | the accessibility tree, selectors | `computer-use-a11y-tree` |
 | run states and slugs, outcomes, `ModeSupport`/`ModeGap`, the log records, `RunBudget`, control refusals and who may call which member | `computer-use-bus` |
@@ -153,7 +153,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | Trait | Home | Implemented by |
 | --- | --- | --- |
 | `Desktop`, `LeaseControl` | `computer-use-desktop` | `CompositorDesktop`, `FakeDesktop`; `Option<D>` (no desktop) |
-| `WindowCapture`, `CaptureSession` | `maskcap` | `StockToplevelCapture`, `BardoMaskedCapture` (through `CaptureBackend`; `Option<C>` is the absent one), `FakeCapture` |
+| `WindowCapture`, `CaptureSession` | `computer-use-capture` | `StockToplevelCapture`, `BardoMaskedCapture` (through `CaptureBackend`; `Option<C>` is the absent one), `FakeCapture` |
 | `AgentSeat` | `computer-use-seat-input` | `seat_ei::EiSeat`, `FakeSeat` |
 | `A11ySource` | `computer-use-a11y-tree` | `LoggedAtspi` (over `AtspiSource`), `FakeA11y`; `Option<S>` (no tree) |
 | `ComputerUseModel`, `StepSink` | `computer-use-run` | `InferdComputerUseModel`, `ScriptedModel` |

@@ -35,7 +35,7 @@ pub fn html(dir: &Path, shots: &[Shot]) -> std::io::Result<String> {
         .collect::<Vec<_>>()
         .join(" · ");
     Ok(format!(
-        "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><title>bardo gallery</title>\n<style>{STYLE}</style></head>\n<body><h1>bardo gallery</h1><p>Every page in light and dark, Blue and pink, standard motion; rendered headless on the CPU by ds-gallery --snapshot.</p><nav>{nav}</nav>\n{body}</body></html>\n"
+        "<!doctype html>\n<html lang=\"en\"><head><meta charset=\"utf-8\"><title>bardo gallery</title>\n<style>{STYLE}</style></head>\n<body><h1>bardo gallery</h1><p>Every page in light and dark, Blue and pink, standard motion; rendered headless on the CPU by ui-gallery --snapshot.</p><nav>{nav}</nav>\n{body}</body></html>\n"
     ))
 }
 

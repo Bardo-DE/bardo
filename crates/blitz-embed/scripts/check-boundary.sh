@@ -3,7 +3,7 @@
 #
 # `cargo tree` lists every normal and build dependency of the kit with all features on; any
 # package whose name starts with a forbidden prefix is a leak. Prefixes cover a family (dioxus*,
-# wayland-*, ds-*) without spelling out its members. wgpu is pruned from the walk: its own
+# wayland-*, ui-*) without spelling out its members. wgpu is pruned from the walk: its own
 # backends (wgpu-hal's EGL path) link `wayland-sys` for their own windows, which is the GPU
 # driver's business and no Wayland use by the kit; `wgpu` itself is a listed dependency.
 set -uo pipefail

@@ -165,4 +165,4 @@ if [ ${#MANUAL[@]} -gt 0 ] && [ "$dry" = no ]; then
   exit 1
 fi
 step "done"
-note "The desktop session starts bardo-compositor.service; install the login entry from the desktop repo."
+note "The desktop session starts bardo-compositor.service; install the login entry from packaging/session."

@@ -137,7 +137,7 @@ impl AgentSetting {
 
 /// A key's shape: what values it can hold, and so which control draws it.
 ///
-/// Inferred from the field's own type by the derive (`crates/ds-settings-derive/src/shape.rs`):
+/// Inferred from the field's own type by the derive (`crates/ui-settings-derive/src/shape.rs`):
 /// a `bool` is [`KeyKind::Toggle`], a one-variant enum is [`KeyKind::Fixed`], two to five [`KeyKind::Segmented`], more
 /// [`KeyKind::Menu`]; a newtype with `range` is [`KeyKind::Bounded`]; `String`, `PathBuf`,
 /// `Cow<str>` or a field marked `#[settings(text)]` is [`KeyKind::Text`]; `Hex` is [`KeyKind::Colour`]; `Vec<String>` and `Vec<Word enum>` are [`KeyKind::List`]; `Vec<T>` with

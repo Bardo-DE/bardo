@@ -32,7 +32,7 @@ rules = [
   { when = "control+right", then = "ctrl+super+right" },
   # Caps Lock rules are not here: the key remap daemon's user layer refuses a rule whose trigger has no modifier
   # or only Shift. Both (Caps Lock -> Ctrl+Space, and Shift+Caps Lock -> Caps Lock) live in the
-  # desktop's vendor file, /usr/lib/bardo/key-remap/key-remap.toml (the desktop repo's dist/key-remap.toml);
+  # desktop's vendor file, /usr/lib/bardo/key-remap/key-remap.toml (packaging/dist/key-remap.toml);
   # bardo-shell ships no machine file.
 ]
 

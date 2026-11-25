@@ -628,8 +628,8 @@ companiond and readerd by unit. The reader-class assertion is back (flow c: the 
 
 Nothing below was edited in the other repos. Asks 1 to 4 of the freeze are cleared: the memory service's
 `RecentEntry` carries `body` under `BodyMode::Json` (companiond reads it through `RecentSource`),
-memory-client's `memory-service` is behind `in_process`, Bardo's `ds-intents` has the voice
-marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), and Bardo's
+memory-client's `memory-service` is behind `in_process`, Bardo's `ui-intents` has the voice
+marks and re-exports `Tally` (action-ui-adapter no longer reaches `ui-core`), and Bardo's
 `docs/workspace-deps.toml` has `pipewire = "0.10"`.
 
 1. **the accounts service `prov` fills** are done (`Label::{trusted_user, untrusted, join}`); the actions service's tests and
@@ -754,11 +754,11 @@ builds the connection first and passes it here.
 
 ## f4-actions-2: edges and renames
 
-- **`agent.mcp.expose` and ds-settings.** the actions service's boundary table does not allow Bardo's `ds-settings` (the `agent`
+- **`agent.mcp.expose` and ui-settings.** the actions service's boundary table does not allow Bardo's `ui-settings` (the `agent`
   key rows are `action-core::SETTING_ROWS`, the keys are the shell's). actions-mcp therefore reads
   `$XDG_CONFIG_HOME/actions/settings.toml` (`[agent.mcp] expose = "on"`) with a small lenient reader
   (`actions-mcp/src/settings.rs`) and the actions service ships a static design/22 schema, `dist/settings/actions.settings.toml`
-  (`actions-mcp --write-schema <dir>` writes it). Question for Bardo: should the actions service depend on `ds-settings` (derive
+  (`actions-mcp --write-schema <dir>` writes it). Question for Bardo: should the actions service depend on `ui-settings` (derive
   and `write_schema`) for the whole `agent` domain, and is `actions/settings.toml` the file design/22 wants? The old
   `access` key of `actions-mcp.toml` is gone (a file that still has it is refused). `McpAccess` is now `McpExpose`.
 - **Rename `mail.thread.find` to `mail.thread.search`** in action-accept (fixture, provider, planner scripts, tests,
@@ -812,7 +812,7 @@ builds the connection first and passes it here.
      `action-core/tests/it/manifests.rs` (`an_indexed_kind_declares_its_open_action_and_every_open_has_the_one_shape`),
      `action-router/tests/it/index.rs` (`a_hit_is_opened_by_its_kinds_open_action_performed_as_the_launcher`).
 
-3. **The other f4-actions-2 items** are not behaviour over fakes in the actions service's own paths: the `ds-settings` question is
+3. **The other f4-actions-2 items** are not behaviour over fakes in the actions service's own paths: the `ui-settings` question is
    Bardo's, the `mail.thread.find` rename is in action-accept (lane f4-e2e-2's files), the `inferd` cassette is the accounts service's;
    first-use consent was already tested. Nothing further closed.
 
@@ -961,8 +961,8 @@ section 9.2). The actions service's covers every `agent.*` key of section 3.27, 
    (the new crate's table is the one the schema is held to).
 7. **Consumers' lockfiles** (computer use, the shell) gain `action-settings` and `notify` when they next update the actions service:
    `cargo update -p action-daemon` (computer use also takes it through its dev-dependency on actiond).
-8. **Tests.** The schema parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand
-   from a scratch project: a dev-dependency on ds-settings would unify zbus's executor features across this
+8. **Tests.** The schema parses with the Settings app's loader (`ui_settings::Schema::from_toml`, run by hand
+   from a scratch project: a dev-dependency on ui-settings would unify zbus's executor features across this
    workspace) and is held structurally by `action-settings` tests; every schema key is read (table test);
    every key has a bad-value fallback case; `actiond/tests/it/settings_live.rs` changes the file under a running
    router and waits on the watch's own event; `action-router/tests/it/live_settings.rs` changes strictness under
@@ -1598,8 +1598,8 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
 9. DONE (inapp-tasks lane). Skills. The host installs no skills (`Sources.skills` is empty). Owner: the actions service (`agent-inapp`
    takes `Vec<Skill>` and calls `router.install_skills`, as the companiond tests do).
 10. The capability probe. design/36 has the app choose in-app or desktop at run time (`Desktop::probe()`
-    of Bardo's `ds-desktop`). Nothing here chooses; an app builds `InAppAgent` or talks to actiond.
-    Owner: Bardo (`ds-desktop`, planned) and each app.
+    of Bardo's `ui-desktop`). Nothing here chooses; an app builds `InAppAgent` or talks to actiond.
+    Owner: Bardo (`ui-desktop`, planned) and each app.
 
 ## inapp-seams: the real parts behind agent-inapp's stubs
 
@@ -1622,7 +1622,7 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
 Interface asks.
 - The accounts service: item 1 (a `SessionHost` that routes to a model without the bus) and the Windows named pipe.
 - The memory service: none (item 3 is done over `memory-client` `in_process`).
-- Bardo: `ds-desktop` for item 10; nothing else.
+- Bardo: `ui-desktop` for item 10; nothing else.
 - The model layer: none.
 
 ## inapp-tasks: the in-app agent reaches parity with companiond's task model

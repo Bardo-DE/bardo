@@ -97,13 +97,13 @@ One quiet Look (design/30 §3). Shell chrome is the Mac material alone and takes
 | Blur / input | per toast `Element("toast-<id>")`; input same | P |
 | Milestone | M6 | S |
 
-Components (CONSUMING.md "Notification parts"): the banner is `ds_shell::prelude::NotificationCard` (app icon at
+Components (CONSUMING.md "Notification parts"): the banner is `ui_shell::prelude::NotificationCard` (app icon at
 32, summary 13/700, age in the data face, a `Rich` body clamped two lines to six on hover,
 `CardAction` Mini buttons, the 18 px close button at the top left, a `GroupCount` chip with up to
 three offset layers, dismissed by `use_swipe`), in the Toast material by default from inside its own
-transparent scope; the stack is `ds_shell::prelude::BannerStack` (`BannerPosition::{TopRight, BottomRight}`,
+transparent scope; the stack is `ui_shell::prelude::BannerStack` (`BannerPosition::{TopRight, BottomRight}`,
 `on_hidden` per key once the exit ends); the center is a `SidePanel` (right edge,
-`notifications.center_width_px`, Popover material, `shown` and `on_hidden`) of `ds_shell::prelude::GroupHeader`s
+`notifications.center_width_px`, Popover material, `shown` and `on_hidden`) of `ui_shell::prelude::GroupHeader`s
 over cards. The center's material is Popover. `NotificationMetrics` writes the geometry keys.
 
 ### 1.7 OSD (SPEC Tier 1)
@@ -118,9 +118,9 @@ over cards. The center's material is Popover. `NotificationMetrics` writes the g
 | Keyboard / blur / input | `None`; blur `Element("osd")`; input `Empty` | P |
 | Milestone | M6 | S |
 
-Components: `ds_shell::prelude::Osd` (the card and its presence, `on_hidden` once the exit ends, inside one
-transparent Osd root), `ds::components::controls::level_indicator::LevelIndicator` (the level with its glyph inside), `ds_shell::osd::OsdPosition`
-and `ds_shell::tokens::osd::OsdMetrics` (`osd.position`, `osd.margin_px`); CONSUMING.md "OSD parts".
+Components: `ui_shell::prelude::Osd` (the card and its presence, `on_hidden` once the exit ends, inside one
+transparent Osd root), `ds::components::controls::level_indicator::LevelIndicator` (the level with its glyph inside), `ui_shell::osd::OsdPosition`
+and `ui_shell::tokens::osd::OsdMetrics` (`osd.position`, `osd.margin_px`); CONSUMING.md "OSD parts".
 
 ### 1.8 Power menu (SPEC Tier 1)
 
@@ -313,7 +313,7 @@ paper (`--paper`), flush with their sidebar (no inset card, 30 §3.4). A window'
 | Material | `Window` | P |
 | Components | toolbar `Button{Toolbar}`, pdfrum page widget (`blitz_dom::Widget`) | S |
 | Motion | `peek-in` in, `fade` out | P |
-| Thumbnails | a PDF's first page (and the page strip's pages) reuse the launcher preview's part, `ds_blitz::PdfFileThumb` over `ds::prelude::PdfThumb` (design/04 section 45): same raster, same cache | S |
+| Thumbnails | a PDF's first page (and the page strip's pages) reuse the launcher preview's part, `ui_blitz::PdfFileThumb` over `ds::prelude::PdfThumb` (design/04 section 45): same raster, same cache | S |
 | Keyboard | Space and Esc close | P |
 | Milestone | M12 | S |
 

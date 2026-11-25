@@ -1,7 +1,7 @@
 # Findings
 
 Open items and standing facts. An entry names the condition that closes it. At the freeze
-(the accounts service 4623e18) there were 59 `todo!()` bodies; fill waves 1 and 2 (eventlog, memfiles, recall, seal,
+(the accounts service 4623e18) there were 59 `todo!()` bodies; fill waves 1 and 2 (memory-eventlog, memory-files, memory-recall, seal,
 watch, memory-service) removed 53 and the bus and daemon wave (F2 memoryd, below) removed the last
 6, so **0 remain**. No contract test is `#[ignore]`d.
 
@@ -9,7 +9,7 @@ watch, memory-service) removed 53 and the bus and daemon wave (F2 memoryd, below
 
 The plain-Rust rule is now shared (bool allowed; one fact, one type; `Result`/`Option`
 for two-way outcomes; growing sets are data; newtypes only with a rule); `Box<dyn Trait>` is allowed for
-configuration-picked implementations. Enum audit lane E-A1: done A1 (`SpaceVault` once, in memfiles), A2 (store
+configuration-picked implementations. Enum audit lane E-A1: done A1 (`SpaceVault` once, in memory-files), A2 (store
 uses core's `IndexView`, `StaleWhy`, `DegradedWhy`, `Count`), A3 (`allowed` returns `Result<(), Refusal>`), A4
 phase 1 (`TrustTier` is `Integrity`), A5 (`HitWhy` is `RecallWhy`), A7 (`Enforcement` is `Confinement`), and P7
 (`desktop_admits` moved from prov to `memory-core::desktop`, returning `Result<(), DesktopRefusal>`). At the next
@@ -26,7 +26,7 @@ None. What still waits on other repos is under "Open" below (the accounts servic
 
 memory-core (ids and grammars, `admit`, `allowed`'s inputs, every wire and stored form round
 trip, kind tags, `Dirs`), memory-seal (derivation goldens, seal/unseal, `MemoryKeys`),
-eventlog (header bytes golden, chain, `verify_chain`, `MemoryLog`, schema as SQL), memfiles
+memory-eventlog (header bytes golden, chain, `verify_chain`, `MemoryLog`, schema as SQL), memory-files
 (topic file golden, trailer grammar, `VaultPath`, `MemoryVault`, `Primer`), recall (`fuse_rrf`,
 `chunk`, `nearest_exact`, the vector BLOB, the index state machine, `FakeEmbedder`),
 memory-tidy (the fact and consolidation machines, the prompt and its parse, the removal notes, `Change`),
@@ -188,7 +188,7 @@ Nothing below is built; the interfaces it will use are.
   - `RuleSet.defaults` is `Vec<KindRetention { kind, retention }>`, not `Vec<(KindPattern,
     Retention)>`: tuples of mixed types do not survive `memory.toml` readably.
   - `ChainReport`, `Break`, `Head`, `Checkpoint` and `Link32`/`Digest32` live in `memory-core`
-    (not `eventlog`) because `MemoryReply::Verified` and `SpaceStatus` carry them; `eventlog` uses
+    (not `memory-eventlog`) because `MemoryReply::Verified` and `SpaceStatus` carry them; `memory-eventlog` uses
     them. `SpaceStatus.index` is the wire form `IndexView`, mapped from `recall::IndexState`
     (recall is generic and cannot name memory-core); likewise `RecallWhy` vs `memory_store::HitWhy`.
   - `seal` returns `Result<Vec<u8>, SealError>` (a new `TooLarge` variant) where memory.md writes
@@ -224,8 +224,8 @@ Nothing below is built; the interfaces it will use are.
 - **The accounts service's `prov::Label` constructors and `Label::join` are stubs** until the accounts service's fill, so
   The memory service's tests build labels from their fields and `check_draft` is a stub with them.
 - **Cross-repo dependencies are git deps at pinned revs** (`account-core`, `prov`, `account-client`,
-  `account-client-dbus`, `account-dbus` from `https://github.com/Bardo-DE/porter`; `inference-core`,
-  `inferd-client`, `inference-dbus` from `https://github.com/Bardo-DE/steward`), so a plain `git clone`
+  `account-client-dbus`, `account-dbus` from `https://github.com/Bardo-DE/bardo`; `inference-core`,
+  `inferd-client`, `inference-dbus` from `https://github.com/Bardo-DE/bardo`), so a plain `git clone`
   builds with no sibling checkout (Bardo `CONSUMING.md` section 1). The URL spelling and the rev
   match the accounts service's own pins of the model layer and Bardo, so cargo sees one copy of each crate. For work that
   spans repos, override the pin locally with a `[patch]` that is never committed: put it in a
@@ -233,12 +233,12 @@ Nothing below is built; the interfaces it will use are.
   directory; this repo's own `.cargo/config.toml` is tracked), for example
 
   ```toml
-  [patch."https://github.com/Bardo-DE/porter"]
+  [patch."https://github.com/Bardo-DE/bardo"]
   account-core = { path = "/path/to/accounts/crates/account-core" }
   # one line per accounts crate memory names; add the same for models/bardo crates if the
   # local accounts checkout pins a different rev than the one in Cargo.lock
 
-  [patch."https://github.com/Bardo-DE/prov"]
+  [patch."https://github.com/Bardo-DE/bardo"]
   prov = { path = "/path/to/prov/prov" }
   ```
 
@@ -598,8 +598,8 @@ reads them.
    code has the same shape as the actions service's actiond and computer use's computer-use daemon (`SettingsWatch`): one shared crate replaces the
    three copies when the accounts service has a place for it.
 7. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent` mark) and
-   parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a scratch
-   project: a dev-dependency on ds-settings would unify zbus's executor features); every schema key is read
+   parses with the Settings app's loader (`ui_settings::Schema::from_toml`, run by hand from a scratch
+   project: a dev-dependency on ui-settings would unify zbus's executor features); every schema key is read
    (table test), every key has a bad-value fallback case; `memory-fake/tests/it/settings.rs` changes the
    settings under a serving service (pending ttl, new Space vault, sweep retention, `when`);
    `memory-core/tests/it/retention_days.rs`; `memoryd/tests/it/settings.rs` changes the file under a running
@@ -720,7 +720,7 @@ The earlier gap (a forgotten event whose text lives only in a pre-image) is clos
   (default on) is the app-level desktop switch (ARCHITECTURE 1a names the two kinds of feature).
 - Open: `InotifyWatch` pairs renames by inotify cookie; a notify-backed watcher for macOS/Windows needs its
   own translation (FSEvents and ReadDirectoryChanges report renames differently).
-- Open: cross-checking `eventlog`, `recall`, `memory-service` and `memory-client` needs the target's C
+- Open: cross-checking `memory-eventlog`, `memory-recall`, `memory-service` and `memory-client` needs the target's C
   toolchain for SQLCipher and OpenSSL; only a macOS/Windows CI runner can check them.
 
 ## memory-local (design/36)
@@ -756,7 +756,7 @@ The app calls `create_space(&service, id, VaultKind)` once per Space (it writes 
 the Spaces in that file at every start, as memoryd does. The rule set is the app's (`RuleSet::standard()` or
 its own), and it keeps it: there is no `memory.toml`. Settings reach the service by `apply_settings`.
 Cross-target: the crate depends on SQLCipher with vendored OpenSSL, so only a macOS or Windows runner can
-check it (the same note as `eventlog`; `check-portable.sh` reports it).
+check it (the same note as `memory-eventlog`; `check-portable.sh` reports it).
 
 Closed asks (memory-local follow-ups): a locked log or key store opening a Space is `Refusal::SpaceLocked`
 (it was `Invalid("event log: the event log is locked")`; the wire text changes only for that case, the

@@ -33,5 +33,5 @@ desktop = ["ui-settings/desktop", "ui-blitz/desktop"]
 [lints]
 workspace = true
 [[bin]]
-name = "ds-gallery"
+name = "ui-gallery"
 path = "src/main.rs"

@@ -4,7 +4,7 @@
 //! values are screen content and carry an `Untrusted(Screen)` label. The model sees the tree as
 //! text ([`render`]), cut to a budget ([`prune`]); secret nodes (password entries, bardo-declared
 //! sensitive controls) are never rendered and their rectangles ([`secret_rects`]) become mask
-//! hints for `maskcap`.
+//! hints for `computer-use-capture`.
 //!
 //! Pure: the AT-SPI backend is `computer-use-a11y-atspi`. A missing bus, an app with no tree and a slow bus
 //! are [`A11yError`] values, and a run goes on from pixels alone.

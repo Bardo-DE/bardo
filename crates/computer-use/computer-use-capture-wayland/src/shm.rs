@@ -54,7 +54,7 @@ impl Shared {
         if bytes == 0 {
             return Err(CaptureError::Format);
         }
-        let file = memfd_create("maskcap-frame", MemfdFlags::CLOEXEC).map_err(io)?;
+        let file = memfd_create("computer-use-capture-frame", MemfdFlags::CLOEXEC).map_err(io)?;
         ftruncate(&file, u64::from(bytes)).map_err(io)?;
         let qh = state.qh().clone();
         let pool = state

@@ -5,8 +5,8 @@
 //! `#[word(slug = "x")]`) and `label` (the variant's words in sentence case, or a variant's
 //! `#[word(label = "x")]`). `parse` is the trait's provided method. The
 //! generated code names the trait through the crate the caller depends on (`proc-macro-crate`):
-//! `::base_words` (or `::ui_style` for `Token`) where the manifest names it, else `::ds::words` (or
-//! `::ds::style`), so a consumer that depends on `ds` alone can derive. Each of the two crates
+//! `::base_words` (or `::ui_style` for `Token`) where the manifest names it, else `::ui_components::words` (or
+//! `::ui_components::style`), so a consumer that depends on `ui-components` alone can derive. Each of the two crates
 //! declares `extern crate self` under its own name to derive inside itself.
 
 mod attrs;

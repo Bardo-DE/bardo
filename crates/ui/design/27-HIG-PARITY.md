@@ -514,11 +514,11 @@ entry; the emphasis keyframes (bump, gulp, seal-pop, pop-in, rise, fold, curl) a
 
 **Status 2026-10-06 (rule a, Bardo half).** Built. The model is `ds::components::menus::export`
 (pure: `MenuTree`, the `com.canonical.dbusmenu` layout and properties, an `Event` mapped back to a
-`CommandId`, the revision book); the server is `ds_blitz::menus::MenuExport` (feature `menus`).
+`CommandId`, the revision book); the server is `ui_blitz::menus::MenuExport` (feature `menus`).
 Every command item of the tree carries the `CommandId` it runs (an item without one is refused), ids
 are hashed from those `CommandId`s so they are stable, and a bar that changes (`MenuBarModel::availability`,
 a check, an added item) is announced with `LayoutUpdated` (and `ItemsPropertiesUpdated` for a
-property-only change). Test: `crates/ds-harness/tests/menu_export.rs` (a harness app's Edit menu lists
+property-only change). Test: `crates/ui-harness/tests/menu_export.rs` (a harness app's Edit menu lists
 Undo with its title and ⌘Z on a private bus; a click runs the app's Undo; disabling announces a layout).
 The `ds::commands::MenuModel` named above is `MenuBarModel` (design/30 section 2.4); no second type.
 

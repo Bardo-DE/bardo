@@ -203,7 +203,7 @@ A settled item is deleted, not marked closed.
   failures in 30 s) is `Failed`. The key remap daemon's notices carry no action, so they point at `bardo-shell key-remap retry` and
   `bardo-shell key-remap resume`.
   `keyboard.overrides` (design/22 §3.25) is a list of `{ app, profile }` tables, which needs
-  The UI kit's `ds-settings` list-of-tables keys (`SettingsRow`, Bardo PR #2): the shell builds against
+  The UI kit's `ui-settings` list-of-tables keys (`SettingsRow`, Bardo PR #2): the shell builds against
   The UI kit's `claude/settings-rows` branch until that PR merges. A row whose `profile` is not a
   profile name or whose `app` is empty is dropped, a row that is not a table of two texts is
   dropped on load, each costs only itself and is logged as `shell: settings.toml: ...`, and when
@@ -308,14 +308,14 @@ A settled item is deleted, not marked closed.
   card plus its room, and a press reaches it. A press in the transparent room no longer closes the
   menu (the catcher is 0 px tall); one outside the popup is the compositor's grab.
 - **A popup is its own `VirtualDom`** and inherits no context from the surface that opened it; it
-  calls `ds_blitz::provide_host()` itself, as `mount` and `mount_lock` do for a surface; its `PopupFrame` provides the seat's `HostSignals`. The screenshot drag icon is the one `Ds` root outside them: it is a picture that takes no input and has no focusable child, so modality and scale do not apply.
+  calls `ui_blitz::provide_host()` itself, as `mount` and `mount_lock` do for a surface; its `PopupFrame` provides the seat's `HostSignals`. The screenshot drag icon is the one `Ds` root outside them: it is a picture that takes no input and has no focusable child, so modality and scale do not apply.
 - **shell-host unmaps by destroying and rebuilding the layer surface**, so the presenter is
   recreated on every show. Warm surfaces are spawned hidden at start and shown with
   `set_visibility`.
 - **Element regions** (`RegionSpec::Elements`) are resolved after every layout and follow CSS
   transforms; one `RegionSpec::Element` keeps its last rect once its element is gone.
 - **Tokio**: services spawn on the `Handle` they are given, never with a bare `tokio::spawn`;
-  the settings watch runs on a `ds_blitz::TokioSpawner` over the daemon's runtime.
+  the settings watch runs on a `ui_blitz::TokioSpawner` over the daemon's runtime.
 - **Every Harness test runs on `Clock::Virtual`** and pins `PinnedAppearance`: the UI kit's live
   `use_environment` reads the settings portal and `appearance.toml` off-thread on wall time and
   wakes a settled document with no change (Q455). The bar clock is a `watch` fed by
@@ -442,8 +442,8 @@ A settled item is deleted, not marked closed.
 ### Settings
 
 - **`shell-settings` is pure data**: the domain structs, `Section`, `ShellFile` as a
-  `ds_settings::SettingsDoc`, and the schema. The daemon reads, saves, watches and publishes the
-  file (`shell::daemon::settings`, over `ds_settings::Store`); surfaces receive it through a second
+  `ui_settings::SettingsDoc`, and the schema. The daemon reads, saves, watches and publishes the
+  file (`shell::daemon::settings`, over `ui_settings::Store`); surfaces receive it through a second
   root context, `SettingsFeed` (`shell-ui-kit`), and read one domain with `use_section`.
 - **Retired keys**: `control_center.material`, `dock.position`, `session.user_picture`,
   `spaces.lookup_order`, `notifications.banner_entry_direction` and, with step 4a.8, `bar.title_hit_height_px` (a
@@ -589,7 +589,7 @@ a source; `assumed` means not yet checked.
   animates to the compositor's default place. Ends when shell-host exports the surface to a client
   that can register it with `DesktopClient::register_surface`.
 
-- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ds_shell::ProviderEntry` has no face (`gap(bardo)` at `mark_of`); Bardo v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.bardo.Settings` (`ActivateAction("open-account", [account path])` at `/org/bardo/Settings`), so it runs as `org.bardo.Settings.service`; the Settings app must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: the UI kit has no help line under a field for the accounts service's full sentence.
+- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ui_shell::ProviderEntry` has no face (`gap(bardo)` at `mark_of`); Bardo v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.bardo.Settings` (`ActivateAction("open-account", [account path])` at `/org/bardo/Settings`), so it runs as `org.bardo.Settings.service`; the Settings app must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: the UI kit has no help line under a field for the accounts service's full sentence.
 
 ### The shell
 
@@ -766,7 +766,7 @@ a source; `assumed` means not yet checked.
   service's local `ManagerSignIn` proxy is replaced by `account_dbus::ManagerProxy::needing_reauth`.
 
 - **The accounts sheet's props live in `shell-overlays`, not `shell-model`.** PLAN §2.4 and the lane brief put the
-  `SheetView` to props table in `shell-model`; the props are the UI kit's (`ds-shell::accounts::model` names `MarkProvider`
+  `SheetView` to props table in `shell-model`; the props are the UI kit's (`ui-shell::accounts::model` names `MarkProvider`
   and its own `Word` enums), and `shell-model` may reach no design system (`scripts/check-boundary.sh`). The pure half
   (what is open, what is typed, what is sent back) is `shell_model::accounts::sheet`; the table is
   `shell_overlays::accounts_sheet::props` (with `words.rs`, `events.rs`). `shell-model` takes `account-core` for it.
@@ -1456,7 +1456,7 @@ Fixed by reading, not built: the gate run is the first compile.
     never waited on) and `write_atomic` (own temporary name, synced, renamed, owner-only). Its name
     is a hash of the path, the time and the size (`local_art_cache_name`), so a rewritten file is a
     new copy. A `file:` address that is not an absolute path, or holds a control character, is no
-    art. New dependency: `ds-helpers` (path, `default-features = false`) in `shell-services`.
+    art. New dependency: `ui-helpers` (path, `default-features = false`) in `shell-services`.
   - *A picture file's thumbnail in a launcher row* outside Pictures comes from the freedesktop
     thumbnail cache, and `Dirs::thumbnails` (`$XDG_CACHE_HOME/thumbnails`) is a root. A root, not a
     copy, because the thumbnail specification already is the shared copy: a file manager or a
@@ -1721,12 +1721,12 @@ only in `shell-services`' dev-dependencies). `Cargo.lock` is the orchestrator's 
   and `FakeDesktop::script` takes the two new `ShellEvent` variants (read from desktop-protocols
   8cebc9b, not compiled).
 
-## dfile: .desktop files are read with ds_helpers::DesktopFile (2026-10-17)
+## dfile: .desktop files are read with ui_helpers::DesktopFile (2026-10-17)
 
 - **What changed.** The apps scan no longer uses `freedesktop-desktop-entry` (it pulled gettext-rs, C
   and LGPL, into a permissive-only stack). `apps/backend/entry.rs` reads a file's text with
-  `ds_helpers::DesktopFile` (capped at `DESKTOP_ENTRY_CAP`, read by `read_text_capped`), `walk.rs`
-  finds the files, `locales.rs` reads the session's locales into `ds_helpers::EntryLocale`. `Exec`
+  `ui_helpers::DesktopFile` (capped at `DESKTOP_ENTRY_CAP`, read by `read_text_capped`), `walk.rs`
+  finds the files, `locales.rs` reads the session's locales into `ui_helpers::EntryLocale`. `Exec`
   field codes stay the shell's own (`shell_model::apps::exec`).
 - **Behaviour kept.** The same keys, the same dedup order, `[Desktop Action x]` groups, the
   locale list (`LANG`, then each item of `LANGUAGES`, as before). The `.desktop` file read is now

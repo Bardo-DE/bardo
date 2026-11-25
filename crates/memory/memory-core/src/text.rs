@@ -128,7 +128,7 @@ macro_rules! digest {
 }
 
 digest!(
-    /// A keyed digest of an event body (`blake3` keyed hash; see `eventlog`).
+    /// A keyed digest of an event body (`blake3` keyed hash; see `memory-eventlog`).
     Digest32
 );
 digest!(

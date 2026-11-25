@@ -60,7 +60,7 @@ impl Environment {
 /// Print what the file held that did not become a setting, once per read.
 fn report(loaded: &Loaded<AppearanceFile>) {
     for line in loaded.diagnostics(AppearanceFile::FILE) {
-        eprintln!("ds-settings: {line}");
+        eprintln!("ui-settings: {line}");
     }
 }
 

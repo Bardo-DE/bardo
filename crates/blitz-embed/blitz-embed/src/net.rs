@@ -50,7 +50,7 @@ impl NetProvider for LocalNet {
                 tokio::task::spawn_blocking(move || {
                     match LocalSource::File(path.clone()).read_within(&roots) {
                         Some(bytes) => handler.bytes(resolved, Bytes::from(bytes)),
-                        None => eprintln!("blitz-kit: will not read {}", path.display()),
+                        None => eprintln!("blitz-embed: will not read {}", path.display()),
                     }
                 });
             }

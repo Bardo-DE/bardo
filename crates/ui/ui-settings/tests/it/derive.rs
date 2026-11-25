@@ -1,7 +1,7 @@
 //! `#[derive(SettingsSchema)]` on the shapes bardo-shell needed and the derive used to refuse:
 //! text by type (`String`, `PathBuf`, `Cow<str>`), a text newtype through
 //! `#[settings(text)]`, and a one-variant enum. The refusals (`MissingRange`, an empty enum)
-//! are compile errors, tested on the expansion in `crates/ds-settings-derive/src`.
+//! are compile errors, tested on the expansion in `crates/ui-settings-derive/src`.
 
 use std::borrow::Cow;
 use std::path::PathBuf;

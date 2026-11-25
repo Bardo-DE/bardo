@@ -130,7 +130,7 @@ mod tests {
 
     #[test]
     fn a_file_over_the_cap_or_not_a_file_is_not_read() {
-        let dir = std::env::temp_dir().join(format!("ds-blitz-pdf-read-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("ui-blitz-pdf-read-{}", std::process::id()));
         std::fs::create_dir_all(&dir).expect("scratch dir");
         let small = dir.join("small.pdf");
         let big = dir.join("big.pdf");

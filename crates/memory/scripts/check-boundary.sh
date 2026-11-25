@@ -9,7 +9,7 @@
 # Every crate is one tier:
 #   P  pure: no std::fs/env/process/net, no clock reads, no sleeps, no tokio, hyper, reqwest, zbus
 #      or rustix, and no UI words.
-#   C  client/IO: may do IO, but has no UI words (Help, Sheet, SettingRow, ds_settings).
+#   C  client/IO: may do IO, but has no UI words (Help, Sheet, SettingRow, ui_settings).
 #   A  app/daemon: wiring only. Its libraries read no environment variable outside main.rs.
 # A crate depends on its own tier or a lower one (P < C < A), never up.
 #
@@ -71,8 +71,8 @@ BANS=(
 
 # RULES: what a crate reaches through ANY path (transitive, default features). The portable
 # crates never reach a bus, a runtime, an HTTP client, a keyring, an ONNX runtime or an
-# embedding library. rusqlite is allowed to eventlog, recall and everything above them (it is
-# their storage), but never to memory-core, memory-seal, memfiles or memory-files-format; notify only to
+# embedding library. rusqlite is allowed to memory-eventlog, memory-recall and everything above them (it is
+# their storage), but never to memory-core, memory-seal, memory-files or memory-files-format; notify only to
 # memory-watch (the Space roots) and memoryd (the directory watch on the person's settings file). memory-seal reaches oo7 only through its `oo7` feature, memory-client reaches
 # zbus only through its `dbus` feature, and links no rusqlite or openssl-sys (SQLCipher, vendored
 # OpenSSL) even with its `in_process` feature (the service is generic over the store seams), and memory-dbus and memory-dbus-serve reach tokio only through zbus's

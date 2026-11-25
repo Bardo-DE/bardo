@@ -10,7 +10,7 @@ use super::key::{KeyKind, kind_from_variants};
 use super::program::Schema;
 
 /// A settings domain struct: `AppearanceSettings`, `IconsSettings`, .... Implemented by
-/// `#[derive(SettingsSchema)]`, never by hand (`crates/ds-settings-derive`).
+/// `#[derive(SettingsSchema)]`, never by hand (`crates/ui-settings-derive`).
 pub trait SettingsSchema {
     /// Every key this struct's fields describe, built from `Self::default()` and each field's
     /// `#[settings(...)]` attributes.
@@ -53,7 +53,7 @@ pub fn choice_of<T: Word + Serialize>() -> ColumnKind {
 }
 
 /// A struct that is one row of a list-of-tables key. Implemented by `#[derive(SettingsRow)]`,
-/// never by hand (`crates/ds-settings-derive`).
+/// never by hand (`crates/ui-settings-derive`).
 pub trait SettingsRow {
     /// One column per field, in declaration order.
     fn columns() -> Vec<Column>;

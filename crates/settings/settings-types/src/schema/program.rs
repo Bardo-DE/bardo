@@ -11,7 +11,7 @@ use super::page_decl::PageDecl;
 /// The directory name a schema's owning program installs under: `bardo`, `shell`, `mailo`.
 ///
 /// The derive reads it off the first path segment of `#[settings(file = "...")]`
-/// (`crates/ds-settings-derive/src/gen_struct.rs`).
+/// (`crates/ui-settings-derive/src/gen_struct.rs`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct AppId(pub String);

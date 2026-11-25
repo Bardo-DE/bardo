@@ -36,7 +36,7 @@ prototypes' set. Its Fill weight is a fallback for the solid form (1.2.1).
 
 Decision, owner, 2026-10-09: each glyph has its own pick, made in the gallery, and the desktop
 draws that. This reverses the 2026-10-07 "solid by default" rule (which itself replaced "no
-fills"). The picks are data: `Icon::native` reads the table in `crates/ds-style/src/icon/native.rs`.
+fills"). The picks are data: `Icon::native` reads the table in `crates/ui-style/src/icon/native.rs`.
 The picks are mostly outline; 16 are solid (`Battery`, `BatteryCharging`, `BatteryFull`, `BatteryLow`,
 `BatteryMedium`, the four chevrons, `Key`, `Pause`, `Pen`, `Play`, `Refresh`,
 `Restart`, `Terminal`), and 3 are replaced by a drawing the owner chose (1.2.2).
@@ -107,7 +107,7 @@ from filled shapes that move, so they stay solid whatever the table says.
 
 ### 1.2.1 Solid sources (settled 2026-10-07)
 
-Every `Icon` has a solid form in `crates/ds-style/src/icon/solid_*.rs`; a test walks `Icon::ALL`
+Every `Icon` has a solid form in `crates/ui-style/src/icon/solid_*.rs`; a test walks `Icon::ALL`
 and fails on an empty one. 63 are Tabler filled (MIT, `@tabler/icons` 3.48.0, verbatim except for
 the invisible bounding path; `ChevronLeft` and `ChevronUp` are Tabler's right and down chevrons
 turned 180 degrees), 38 are Phosphor Fill (MIT, `@phosphor-icons/core` 2.1.1, scaled by 3/32 from
@@ -346,7 +346,7 @@ rim and highlight are `--hair`.
   `[data-kind=image]` with the URL as `background-image`, `background-size:100% 100%`. Both are
   squares of `--ic-size` (the `ExternalIcon`'s size). Proved on Blitz with a PNG mask (the
   opaque pixels take `--ink`, the transparent ones show the ground) and an RGB PNG (keeps its
-  red), `crates/ds-conformance/tests/it/tray_menu.rs`. Step 3 (`--warn` for `NeedsAttention`) stays
+  red), `crates/ui-conformance/tests/it/tray_menu.rs`. Step 3 (`--warn` for `NeedsAttention`) stays
   the caller's: it sets the colour of the icon's parent.
 - Image filtering (2026-10-09): Blitz paints `<img>` (and an `Image` icon's `background-image`)
   with bilinear filtering, and `object-fit` is honoured (blitz-paint `render.rs`), so an image
@@ -933,8 +933,8 @@ Recorded in `docs/licensing-references.md` (settled location, PLAN "Icons"):
 
 | Item | Licence | What to record |
 | --- | --- | --- |
-| Lucide | ISC | notice file `crates/ds-style/assets/icons/LICENSE-lucide.txt`, version/commit of the geometry |
-| Tabler Icons | MIT | notice file `crates/ds-style/assets/icons/LICENSE-tabler.txt` (added 2026-10-07), imported glyph names (1.2.1), version 3.48.0 |
+| Lucide | ISC | notice file `crates/ui-style/assets/icons/LICENSE-lucide.txt`, version/commit of the geometry |
+| Tabler Icons | MIT | notice file `crates/ui-style/assets/icons/LICENSE-tabler.txt` (added 2026-10-07), imported glyph names (1.2.1), version 3.48.0 |
 | Phosphor Icons | MIT | notice file `LICENSE-phosphor.txt` beside it, glyph names (1.2.1), version 2.1.1 |
 | Bootstrap Icons | MIT | notice file `LICENSE-bootstrap.txt` beside it, `Upload` (1.2.2), version 1.13.2 |
 | Remix Icon | Apache-2.0 | notice file `LICENSE-remixicon.txt` beside it, `Sparkles` (1.2.2), version 4.6.0 only |

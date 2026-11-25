@@ -1,5 +1,5 @@
 /* The accounts sheet (design/31 section 4.5 and 5.6): a window of its own, centred on the output.
-   Its titlebar is bardo's `WindowTitlebar`, its steps are `ds-shell::accounts` parts; this only
+   Its titlebar is bardo's `WindowTitlebar`, its steps are `ui-shell::accounts` parts; this only
    stands the window in the middle and gives it the window's look from the tokens: the window
    gradient, `--r-window`, `--shadow-window`. */
 
