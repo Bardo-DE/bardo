@@ -35,6 +35,8 @@ allow = [
 # SQLCipher's sources: SQLite's public-domain blessing and libtomcrypt's WTFPL, for this crate only.
 exceptions = [
     { crate = "sqlcipher-src", allow = ["blessing", "WTFPL"] },
+    # libFuzzer (LLVM's, BSD-style), in the fuzz targets only; nothing shipped links it.
+    { crate = "libfuzzer-sys", allow = ["NCSA"] },
 ]
 confidence-threshold = 0.9
 
