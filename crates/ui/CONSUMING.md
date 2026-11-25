@@ -282,8 +282,7 @@ does; `scripts/check-consumer.sh` builds, lints and tests that example in the ga
 
 **A bare document, with no `Ds` root** (a never-painted input catcher, a 2 px hot-corner
 surface) still carries Blitz's user-agent stylesheet, which sets `body { margin: 8px }`: its
-content never reaches the true (0, 0) corner, and `position: absolute`/`fixed` with `inset: 0`
-paints nothing on it (the shell's hot corners). layer-shell-host injects `body { margin: 0 }`
+content in flow never reaches the true (0, 0) corner. layer-shell-host injects `body { margin: 0 }`
 into every document it hosts; a bare document elsewhere (`ui_blitz::launch`,
 a test) must cancel the margin itself or draw inside a `Ds`.
 
@@ -378,11 +377,11 @@ One rule for every surface whose document is a frame around a `Ds` root: a popup
 overlay root, a wallpaper, the launcher's catcher. **The frame (the
 document's first box, the one around the `Ds`) is in normal flow and has a height; it is never
 absolutely or fixed positioned, and never left to be sized by content that is itself out of
-flow.** Blitz lays out `#main` and `.ds` at `height:auto`: a frame with `position:absolute;
-inset:0` or `position:fixed` resolves against that 0 px box (Taffy places a fixed box against
-its parent, not the viewport), a `height:100%` resolves against it too, and a frame whose only
-content is a card hung from its anchor is 0 px tall. Then every box from `html` down is 0 px,
-nothing paints and in the shell no press lands.
+flow.** Blitz lays out `#main` and `.ds` at `height:auto`: a `height:100%` resolves against a 0 px box,
+and a box whose only content is a card hung from its anchor is 0 px tall. A frame with
+`position:absolute; inset:0` covers the viewport, but the `Ds` root inside it is still such a
+box. Then the root and every box from `html` down are 0 px, nothing paints and in the shell no
+press lands.
 
 - **The surface fills its surface** (popup frame, overlay, wallpaper, catcher): pass
   `Ds { extent: RootExtent::Viewport }`, or put the floor on your frame: `display:grid; width:100vw; min-height:100vh` in flow, the

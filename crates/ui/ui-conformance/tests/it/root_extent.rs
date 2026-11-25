@@ -1,6 +1,7 @@
 //! A root holding only a Sheet is 0 px tall unless it asks for the
 //! viewport. `RootExtent::Viewport` makes it the viewport's size, measured on a real Blitz
-//! document, and the sheet it hosts has that area to be placed in.
+//! document. The sheet's overlay is placed against the viewport either way, so the sheet stands
+//! in the same place in both; what the 0 px root loses is its own box (its ground, its hits).
 
 use crate::support::probe::length;
 use dioxus::prelude::*;
@@ -54,14 +55,24 @@ fn laid_out(app: fn() -> Element) -> Harness {
     clippy::float_cmp,
     reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
 )]
-fn a_content_root_of_only_a_sheet_is_zero_tall() {
+fn a_content_root_of_only_a_sheet_is_zero_tall_while_its_overlay_covers_the_viewport() {
     let harness = laid_out(Content);
     let root = harness.rect(".ds").expect("the root is laid out");
     assert_eq!(root.size.height.0, 0.0, "the trap Q94 names: {root:?}");
-    // The overlay fills the 0 px root, so the sheet's `max-height:calc(100% - 72px)` is
-    // nothing: the sheet draws no body at all.
-    let sheet = harness.rect(".ds-sheet").expect("the sheet is laid out");
-    assert_eq!(sheet.size.height.0, 0.0, "{sheet:?}");
+    let overlay = harness
+        .rect(".ds-overlay")
+        .expect("the overlay is laid out");
+    assert_eq!(
+        (overlay.size.width.0, overlay.size.height.0),
+        (length(VIEW.width), length(VIEW.height)),
+        "{overlay:?}"
+    );
+    let sheet = |harness: &Harness| harness.rect(".ds-sheet").expect("the sheet is laid out");
+    assert_eq!(
+        sheet(&harness),
+        sheet(&laid_out(Full)),
+        "placed as in a viewport root"
+    );
 }
 
 #[test]

@@ -1,7 +1,8 @@
 //! A document's frame must have a height (CONSUMING section 2 "A
-//! document's frame"). Blitz lays out `#main` at `height:auto`, so a frame placed with
-//! `position:absolute; inset:0` whose content is out of flow (a card hung from its anchor) is
-//! 0 px tall, and so is the `Ds` root in it. The floor (`display:grid; min-width:100vw;
+//! document's frame"). Blitz lays out `#main` at `height:auto`. A frame placed with
+//! `position:absolute; inset:0` is placed against the initial containing block and covers the
+//! viewport, but the `Ds` root in it, whose content is out of flow (a card hung from its anchor),
+//! is 0 px tall, and so is every box from `html` down. The floor (`display:grid; min-width:100vw;
 //! min-height:100vh` on the frame: the viewport's size, and the root stretched to fill its one
 //! cell) gives the root the viewport's height even inside an absolutely placed parent; a frame in
 //! flow at the viewport's size with the same grid does too. Measured on a real Blitz document.
@@ -20,7 +21,7 @@ use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 /// How the page places the frame around its `Ds` root.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum Frame {
-    /// Out of flow with insets: the trap.
+    /// Out of flow with insets: the trap (the root inside is 0 px).
     Absolute,
     /// Out of flow with insets, and the floor.
     AbsoluteWithFloor,
@@ -104,10 +105,14 @@ fn press(harness: &mut Harness) -> u32 {
     clippy::float_cmp,
     reason = "exact by construction (clamped, copied or integer-valued), so exact equality is the assertion and a tolerance would hide drift"
 )]
-fn an_absolutely_placed_frame_with_no_floor_is_0_px() {
+fn an_absolutely_placed_frame_with_no_floor_leaves_its_root_0_px() {
     let harness = laid_out(Frame::Absolute);
-    assert_eq!(height(&harness, ".frame"), 0.0, "the trap is still a trap");
-    assert_eq!(height(&harness, ".ds"), 0.0);
+    assert_eq!(
+        height(&harness, ".frame"),
+        160.0,
+        "the frame covers the viewport"
+    );
+    assert_eq!(height(&harness, ".ds"), 0.0, "the trap is still a trap");
     assert_eq!(height(&harness, "html"), 0.0, "every box from html down");
 }
 
