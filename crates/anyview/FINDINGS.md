@@ -19,8 +19,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   covers the vendored tree (deny's graph is x86_64 Linux), and a tag on every fork rev so a rewritten branch
   cannot orphan it. The pins move with the desktop manifest, so they are not changed here.
   `scripts/check-release.sh` (CI) fails when `MPV_WGPU_REV` in `dist/install.sh` differs from the
-  `mpv-wgpu-player` rev in `Cargo.toml`, and when the version in `Cargo.toml`, the metainfo's newest release and
-  `CHANGELOG.md`'s newest numbered entry differ. Ends when every fork above is released (or the desktop manifest
+  `mpv-wgpu-player` rev in `Cargo.toml`, and when the version in `Cargo.toml`, the metainfo's newest release differ. Ends when every fork above is released (or the desktop manifest
   vendors them).
 - **The metainfo has no `<screenshots>`.** Software centres list the entry without a picture. The repository
   holds no checked-in screenshot of the viewer, and the entry may not point at an image that is not published. Ends when a screenshot of the running viewer is

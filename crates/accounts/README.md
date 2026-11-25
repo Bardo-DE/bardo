@@ -8,8 +8,7 @@ may do, and you can take it back at any time.
 It is for people who use a desktop made of many small apps and do not want each of them to ask
 for the same password, keep its own copy of it, or reach further than it needs to.
 
-Status: `0.1.0-beta.1`. See [CHANGELOG.md](CHANGELOG.md) for what is in it and what has not yet met
-the real services.
+Status: `0.1.0-beta.1`. [FINDINGS.md](FINDINGS.md) lists what has not yet met the real services.
 
 ## What runs
 
@@ -76,7 +75,6 @@ These two need a sign-in client id registered with the company. Google's has to 
 - [CONVENTIONS.md](CONVENTIONS.md): how the code is written and tested.
 - [FINDINGS.md](FINDINGS.md): open items, standing facts and what each piece of work found.
 - [docs/google.md](docs/google.md): registering a Google client and what the accounts service does with each Google service.
-- [CHANGELOG.md](CHANGELOG.md).
 
 ## Working on the accounts service
 

@@ -4,7 +4,7 @@ anyview is a file viewer for Linux desktops (it also compiles for macOS and Wind
 video, fonts, archives and books (EPUB and CBZ) in one window, and the same format library as the launcher's
 preview pane. It is a Rust workspace written in layers, from the pure vocabulary (`anyview-core`) up to the
 app, and builds on the UI kit design system. `ARCHITECTURE.md` is the map, `CONVENTIONS.md` the rules,
-`FINDINGS.md` the open items, `CHANGELOG.md` what changed. This is a beta: version 0.1.0-beta.1.
+`FINDINGS.md` the open items. This is a beta: version 0.1.0-beta.1.
 
 anyview links no codec library. Video, HEIC and camera raw files are handled by your own tools through
 small plugins (see Plugins), so the formats you get are the ones your distribution gives you; the common

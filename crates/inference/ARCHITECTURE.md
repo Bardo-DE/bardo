@@ -2,7 +2,7 @@
 
 The inference service is the desktop's AI broker: `inferd` serves `org.bardo.Inference1` on the session bus, routes
 each session to a model on this computer, on another of the person's computers, or one they hold an
-account for, and runs the turns. This repository was cut from the accounts service at `e9e7cdcd` (CHANGELOG.md).
+account for, and runs the turns.
 The design is Bardo's `design/31-ACCOUNTS.md` and the agent layering in `agent-layers/inference.md`;
 this file is the map of the code that exists today. `CONVENTIONS.md` holds the rules; `FINDINGS.md`
 the open items.
