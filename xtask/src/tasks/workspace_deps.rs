@@ -21,10 +21,8 @@ use super::{finish, git_lines};
 use crate::workspace::Workspace;
 
 /// `(member, dependency)` pairs that keep their own version until the keyboard stack moves to one
-/// major (keyboard-types 0.8 and xkbcommon 0.9); the workspace table holds the version most
-/// members use.
-const UNTIL_KEYBOARD_UPGRADE: [(&str, &str); 3] = [
-    ("keymap", "keyboard-types"),
+/// major (xkbcommon 0.9); the workspace table holds the version most members use.
+const UNTIL_KEYBOARD_UPGRADE: [(&str, &str); 2] = [
     ("computer-use-seat-input", "xkbcommon"),
     ("fake-input", "xkbcommon"),
 ];

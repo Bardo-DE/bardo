@@ -57,7 +57,7 @@ calloop = "0.14"
 calloop-wayland-source = "0.4"
 xkbcommon = "0.8"
 raw-window-handle = "0.6"
-keyboard-types = { version = "0.7", features = ["serde"] }
+keyboard-types = { version = "0.8", features = ["serde"] }
 cursor-icon = "1"
 
 # Common.

@@ -12,7 +12,7 @@ repository.workspace = true
 serde = ["dep:serde"]
 
 [dependencies]
-keyboard-types = {version = "0.8", default-features = false, features = ["std"]}
+keyboard-types = { workspace = true, features = ["std"] }
 serde = { workspace = true, optional = true }
 thiserror = { workspace = true }
 
