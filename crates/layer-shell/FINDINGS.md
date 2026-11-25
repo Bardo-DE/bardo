@@ -8,13 +8,15 @@ never reused, so gaps are entries that were closed and removed.
 
 ### F1. One renderer across surfaces; the image cache is per device
 
-One `vello_hybrid::Renderer` + `Resources` serves surfaces of different sizes: `render()`
-rewrites its view-config buffer when `RenderSize` changes, and a second surface costs about
-1.8 MB, so per-surface devices are unnecessary. The image cache must live per device, across
-frames: `anyrender_vello_hybrid::ImageManager::new` borrows an `FxHashMap<u64,
-vello_common::paint::ImageId>` and `VelloHybridScenePainter::new` an `FxHashMap<ResourceId,
-TextureView>`, and nothing re-exports `rustc_hash` or `ImageId`, so both crates are named in the
-pinned block (`gpu/context.rs`).
+One `vello_gpu::Renderer` + `Resources` serves surfaces of different sizes: a scene is sized
+for one render size (a new size makes a new `Scene`), and the render target's size is that of
+the texture it is given, so one renderer serves them all and a second surface costs about
+1.8 MB; per-surface devices are unnecessary. The image cache lives per device, across frames:
+`anyrender_vello_gpu::ImageManager::new` borrows an `ImageCache` and an `ExternalTextures` set
+(the uploaded images' and the widgets' textures), and `VelloGpuScenePainter::new` takes the
+image manager and the device. Each image has its own texture, so there is no atlas to fill; the
+cache lets go of images no recent frame drew (`finish_frame`, after every render), so the host
+keeps no eviction of its own (`gpu/context.rs`).
 
 ### F16. Adapter choice is validated by a first present, on a throwaway connection
 
@@ -164,23 +166,6 @@ too; the shell passes the UI kit's device-pixel snapping.
   publishes a changed scale, so the same flush's poll re-renders the documents that read it
   before the frame is painted. On some compositors `preferred_scale` arrives in the same dispatch as
   the first configure, so the first frame's tree has it.
-
-### F69. Blitz gathers z-indexed boxes before it lays out
-
-`BaseDocument::resolve` runs `flush_styles_to_layout` before `resolve_layout`. That walk moves
-every child with a non-zero `z-index` into its stacking context's hoisted children and records
-its offset from its ancestors' *previous* layout; paint and hit test use the recorded offset. So
-a resolve that moves a z-indexed box's ancestors paints it where they were (a new node's raised
-children paint at the stacking context's origin, as does every raised box on a document's first
-frame). The host resolves once per frame and then idles, so the stale position would stay on
-screen.
-
-`dom/stacking.rs::rehoist` calls Blitz's public `flush_styles_to_layout(<html>)` again after the
-resolve (and after the pre-paint hook when one ran); the walk only rebuilds paint order and the
-hoisted lists, so repeating it is idempotent. Blitz's own `refresh_hover` inside `resolve` still
-hit-tests the stale lists; the hover repair (F59) runs after the re-hoist. `tests/hoisted.rs`,
-`tests/shell_host/headless.rs`. Upstream fix: gather hoisted children after `resolve_layout`; once a Blitz
-rev with it is pinned, `rehoist` can go. Not filed.
 
 ### F81. A colour-only restyle keeps the old ink; the host follows the root's scheme
 
@@ -614,8 +599,9 @@ candidate list. `scripts/dev/accept-ime.sh`.
 
 ### F22. Paste reads the selection ahead of time; the text can be a few ms stale
 
-`ShellProvider::get_clipboard_text` is synchronous on the main thread, which also serves the
-pipe when the selection is ours, so a paste cannot block on a read. Every
+`ShellProvider::request_clipboard_text` is called on the main thread, which also serves the
+pipe when the selection is ours, so a paste cannot block on a read; the provider remembers the
+request and the flush answers with `UiEvent::Paste` (`ctx::ops::answer_pastes`). Every
 `wl_data_device.selection` runs `Clipboard::follow`: `receive` for the best text MIME, then the
 pipe is read from the event loop (`ctx::paste`) on a non-blocking descriptor, and the text is
 published into a generation-checked `SharedSelection` every surface's provider holds. Between a
@@ -855,7 +841,7 @@ never allowed to wedge the single event-loop thread:
 | A selection read | 1 MiB, 200 ms, one at a time | `paste` |
 | The mouse gestures daemon datagrams per read | 256; the daemon must be this user or root | `input/mouse_gestures` |
 | Local files a document reads | roots, regular files, 32 MiB | F21 |
-| Uploaded images | emptied past 1024 | `gpu/image_cache` |
+| Uploaded images | the renderer's cache drops the unused ones over 64 MiB, each frame | `anyrender_vello_gpu::ImageCache` |
 | Widget textures | a dropped widget's is forgotten before the next paint; a closed surface's all at once | `gpu/context_proxy` (`forget_dropped`, `forget_document`) |
 | A GPU adapter's first present | 5 s; the device request 10 s | `gpu/adapter`, `gpu/context` |
 

@@ -1,4 +1,4 @@
-//! One resolve: layout, hoisting, the IME and hover repairs, and the pre-paint hook.
+//! One resolve: layout, the IME and hover repairs, and the pre-paint hook.
 
 use blitz_dom::Document as _;
 use blitz_dom::node::SurroundingText;
@@ -10,7 +10,7 @@ use super::SurfaceDocument;
 use crate::dom::ime_focus;
 #[cfg(feature = "debug-inject")]
 use crate::dom::ime_focus::FieldText;
-use crate::dom::{scheme, stacking};
+use crate::dom::scheme;
 
 /// What one `SurfaceDocument::resolve` did besides laying out.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -25,12 +25,10 @@ pub(crate) struct Resolved {
 }
 
 impl SurfaceDocument {
-    /// Resolve style and layout at document time `t` (seconds on the host clock), hoist the
-    /// z-indexed boxes again from the fresh layout (Blitz gathers them from the previous one),
-    /// enable the IME for a text field focused before it had a layout, repair the hover the resolve
-    /// moved, then run the pre-paint hook on the result (and hoist once more after it). Resolve and
-    /// hook are one call because Blitz re-rounds the layout on every resolve: a hook that snapped
-    /// it must follow each one, or the paint shows the unsnapped layout. So a frame resolves
+    /// Resolve style and layout at document time `t` (seconds on the host clock), enable the IME
+    /// for a text field focused before it had a layout, repair the hover the resolve moved, then
+    /// run the pre-paint hook on the result. Resolve and hook are one call because Blitz
+    /// re-rounds the layout on every resolve: a hook that snapped it must follow each one, or the paint shows the unsnapped layout. So a frame resolves
     /// exactly once, here, and paints what this left. The hover repair touches hover state and runs
     /// handlers, never layout, so the hook and the paint see the same layout; the restyle it causes
     /// is the next frame's (`Resolved::hover`). Last, the components' after-resolve readings run on
@@ -41,15 +39,10 @@ impl SurfaceDocument {
         let before = self.hovered();
         scheme::follow_root(&mut self.doc.inner_mut());
         self.doc.inner_mut().resolve(t);
-        stacking::rehoist(&mut self.doc.inner_mut());
         self.repair_ime();
         let after = self.hovered();
         self.sync_hover(Shift { before, after });
         let prepainted = self.prepaint.run(&mut self.doc.inner_mut());
-        if prepainted {
-            // The hook may have moved boxes (snapping); hoist from where it left them.
-            stacking::rehoist(&mut self.doc.inner_mut());
-        }
         let to_publish = self.after.read(&self.doc.inner());
         let published = self
             .doc

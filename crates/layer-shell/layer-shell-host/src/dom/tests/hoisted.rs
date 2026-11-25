@@ -1,4 +1,5 @@
-//! A z-indexed box whose ancestors moved in the same resolve paints where layout put it.
+//! A z-indexed box whose ancestors moved in the same resolve paints where layout put it
+//! (Blitz's paint-tree pass runs inside `resolve`).
 //!
 //! The shape is bardo-shell's widget centre: a column of tiles whose body is `position: relative;
 //! z-index` (bardo's `.ds-widget-body`). Tiles added after the first layout used to paint their

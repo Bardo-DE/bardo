@@ -108,7 +108,8 @@ pub fn render_png(root: fn() -> Element, config: HeadlessConfig) -> Vec<RgbaImag
             ..Default::default()
         },
     );
-    doc.inner_mut().add_user_agent_stylesheet(BODY_RESET);
+    doc.inner_mut()
+        .add_user_agent_stylesheet(BODY_RESET.clone());
 
     doc.initial_build();
     for _ in 0..MAX_POLL_ITERATIONS {
@@ -128,8 +129,6 @@ fn render_frame(doc: &mut DioxusDocument, t: f64, size: PixelSize, scale: Scale1
     // The live path's order: the root's scheme first, so a switch rebuilds every box.
     crate::dom::scheme::follow_root(&mut inner);
     inner.resolve(t);
-    // The same re-hoist the live path does after every resolve.
-    crate::dom::stacking::rehoist(&mut inner);
 
     let buffer = render_to_buffer::<VelloCpuImageRenderer, _>(
         |painter| {
