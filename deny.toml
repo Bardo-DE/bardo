@@ -37,6 +37,8 @@ exceptions = [
     { crate = "sqlcipher-src", allow = ["blessing", "WTFPL"] },
     # libFuzzer (LLVM's, BSD-style), in the fuzz targets only; nothing shipped links it.
     { crate = "libfuzzer-sys", allow = ["NCSA"] },
+    # The xxHash port dioxus-core 0.8 hashes templates with: the Boost licence, permissive, attribution only.
+    { crate = "xxhash-rust", allow = ["BSL-1.0"] },
 ]
 confidence-threshold = 0.9
 
@@ -82,9 +84,7 @@ allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 allow-git = [
     "https://github.com/Bardo-DE/anyrender",
     "https://github.com/Bardo-DE/blitz",
-    "https://github.com/Bardo-DE/dioxus",
     "https://github.com/Bardo-DE/smithay",
     "https://github.com/Bardo-DE/vello",
-    "https://github.com/DioxusLabs/taffy",
     "https://github.com/pop-os/dbus-settings-bindings",
 ]
