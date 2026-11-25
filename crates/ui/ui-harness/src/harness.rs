@@ -248,6 +248,11 @@ impl Harness {
         self.route_captured(&event);
         self.doc.note_pointer(&event);
         self.doc.doc.handle_ui_event(event);
+        // The document may have asked for the clipboard's text (a paste in a field): answered as
+        // a windowed shell answers, with the text as an event of its own.
+        if let Some(text) = self.doc.shell.take_paste() {
+            self.doc.doc.handle_ui_event(UiEvent::Paste(text));
+        }
         match delivery {
             Delivery::Settled => self.settle(),
             Delivery::Pending => self.doc.owed = true,

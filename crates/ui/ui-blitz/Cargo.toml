@@ -60,6 +60,8 @@ peniko = { workspace = true }
 # PDF output (the `pdf` feature): the painter, which writes through pdfrum.
 pdfrum-anyrender = { workspace = true, optional = true }
 thiserror = { workspace = true }
+# `file:` URIs of a file drag, as paths.
+url = { workspace = true }
 # `menus`: the wire layout derives `Serialize`.
 serde = { workspace = true, features = ["derive"], optional = true }
 # The window's display and surface handles, for the activation token (Linux: `wayland_surface`).

@@ -4,6 +4,7 @@
 //! else a shell does (a cursor, a title, a redraw) has anywhere to go headless.
 
 use blitz_traits::shell::{ClipboardError, ShellProvider};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Mutex, PoisonError};
 use ui_components::prelude::*;
 use ui_host_hooks::clipboard::ClipboardFiles;
@@ -16,6 +17,9 @@ pub struct MemoryShell {
     primary: Mutex<Option<String>>,
     files: Mutex<FileFormats>,
     ime: Mutex<ImeState>,
+    /// Set when the document asked for the clipboard's text; the harness answers it
+    /// ([`MemoryShell::take_paste`]).
+    paste_asked: AtomicBool,
 }
 
 /// The file formats on the clipboard, as the owning app offered them.
@@ -43,6 +47,7 @@ impl Default for MemoryShell {
                 switch: false,
                 area: None,
             }),
+            paste_asked: AtomicBool::new(false),
         }
     }
 }
@@ -129,6 +134,14 @@ impl MemoryShell {
         *lock(&self.html) = Some(html);
     }
 
+    /// The text to paste into the document if it asked for the clipboard's since the last call:
+    /// what was last copied, which the harness hands over as `UiEvent::Paste`, as a windowed
+    /// shell answers its own request. `None` when it asked for nothing, or the clipboard is empty.
+    pub fn take_paste(&self) -> Option<String> {
+        let asked = self.paste_asked.swap(false, Ordering::SeqCst);
+        asked.then(|| self.text()).flatten()
+    }
+
     /// What was last put on the primary selection, if anything.
     pub fn primary_text(&self) -> Option<String> {
         lock(&self.primary).clone()
@@ -151,8 +164,9 @@ impl MemoryShell {
 }
 
 impl ShellProvider for MemoryShell {
-    fn get_clipboard_text(&self) -> Result<String, ClipboardError> {
-        self.text().ok_or(ClipboardError)
+    fn request_clipboard_text(&self) -> Result<(), ClipboardError> {
+        self.paste_asked.store(true, Ordering::SeqCst);
+        Ok(())
     }
 
     fn set_clipboard_text(&self, text: String) -> Result<(), ClipboardError> {
@@ -172,5 +186,31 @@ impl ShellProvider for MemoryShell {
                 height: Px(height),
             },
         });
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_paste_request_is_answered_with_the_clipboard_once() {
+        let shell = MemoryShell::default();
+        assert_eq!(shell.take_paste(), None, "nothing asked");
+        assert!(shell.request_clipboard_text().is_ok());
+        assert_eq!(
+            shell.take_paste(),
+            None,
+            "asked, but the clipboard is empty"
+        );
+        shell.put("from another app".to_owned());
+        assert_eq!(
+            shell.take_paste(),
+            None,
+            "the empty answer used up the request"
+        );
+        assert!(shell.request_clipboard_text().is_ok());
+        assert_eq!(shell.take_paste().as_deref(), Some("from another app"));
+        assert_eq!(shell.take_paste(), None, "answered once");
     }
 }

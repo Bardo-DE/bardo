@@ -16,6 +16,7 @@ use dioxus_native::winit::event::WindowEvent;
 use dioxus_native::winit::event_loop::{ActiveEventLoop, DndAction};
 use keyboard_types::Modifiers;
 use std::io::ErrorKind;
+use std::path::PathBuf;
 use ui_components::file_drop::drag::{DropAcceptance, FileDragInput, Offer};
 use ui_components::prelude::*;
 
@@ -59,8 +60,11 @@ impl WindowDrop {
                 }
             }
             WindowEvent::DataTransferReceived { id, value, .. } if self.transfer == Some(*id) => {
-                match value.try_as_file_paths() {
-                    Ok(paths) => vec![FileDragInput::Offered(Offer::Files(paths))],
+                match value.try_as_uris() {
+                    Ok(uris) => vec![FileDragInput::Offered(match file_paths(&uris) {
+                        Some(paths) => Offer::Files(paths),
+                        None => Offer::Other,
+                    })],
                     Err(error) if error.kind() == ErrorKind::WouldBlock => Vec::new(),
                     Err(_) => vec![FileDragInput::Offered(Offer::Other)],
                 }
@@ -100,6 +104,14 @@ impl WindowDrop {
     }
 }
 
+/// The local paths of `uris`, or `None` when any of them is not a `file:` URI (a link or text
+/// dragged out of a browser).
+fn file_paths(uris: &[String]) -> Option<Vec<PathBuf>> {
+    uris.iter()
+        .map(|uri| url::Url::parse(uri).ok()?.to_file_path().ok())
+        .collect()
+}
+
 /// Whether the drag offers a URI list and its paths are on their way; false when it offers none or
 /// the platform would not fetch it.
 fn asked_for_paths(event_loop: &dyn ActiveEventLoop, id: DataTransferId) -> bool {
@@ -110,4 +122,26 @@ fn asked_for_paths(event_loop: &dyn ActiveEventLoop, id: DataTransferId) -> bool
         && event_loop
             .fetch_data_transfer(id, &TypeHint::UriList)
             .is_ok()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn file_uris_become_paths_and_a_link_among_them_refuses_the_lot() {
+        let files = [
+            "file:///tmp/a%20b.txt".to_owned(),
+            "file:///tmp/c".to_owned(),
+        ];
+        assert_eq!(
+            file_paths(&files),
+            Some(vec![PathBuf::from("/tmp/a b.txt"), PathBuf::from("/tmp/c")])
+        );
+        let mixed = [
+            "file:///tmp/c".to_owned(),
+            "https://example.org/".to_owned(),
+        ];
+        assert_eq!(file_paths(&mixed), None);
+    }
 }

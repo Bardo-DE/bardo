@@ -6,6 +6,11 @@
 //! an owner that is slow, silent or enormous is read as an empty clipboard. Bardo asks for the
 //! selection with the window's own connection and does not use the privileged data-control
 //! protocol (FINDINGS "Clipboard"), which would let a client read the clipboard unfocused.
+//!
+//! What Blitz's own text inputs paste is not read here: they ask the window's shell
+//! (`ShellProvider::request_clipboard_text`), which answers with `UiEvent::Paste` when the
+//! text has arrived, and a harness's [`MemoryShell`] answers the same way after the event that
+//! asked. This module's reads are the app's own calls (`read_text`, `read_from`).
 
 mod files;
 mod primary;
@@ -51,10 +56,11 @@ impl System {
 impl Clipboard for System {
     fn read_from(&self, target: ClipboardTarget) -> Option<String> {
         match target {
-            ClipboardTarget::Clipboard => {
-                let shell = self.shell()?;
-                self.reader.text(move || shell.get_clipboard_text().ok())
-            }
+            ClipboardTarget::Clipboard => self.reader.text(|| {
+                arboard::Clipboard::new()
+                    .and_then(|mut clipboard| clipboard.get_text())
+                    .ok()
+            }),
             ClipboardTarget::Primary => self.reader.text(primary::read),
         }
     }
