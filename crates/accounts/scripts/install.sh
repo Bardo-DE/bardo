@@ -221,17 +221,16 @@ if [ -f "$dist/clients.toml" ]; then
 fi
 
 # --- The caller tables ---------------------------------------------------------------------------
-# accountd's and syncd's (dist/callers.toml, installed as accountd-callers.toml); the inference service's install.sh installs the AI broker's own. It is the
-# machine owner's to edit once installed: a copy that differs is kept, and the shipped one is left
-# beside it as <name>.dist for them to compare.
+# accountd's and syncd's (dist/callers.toml, installed as accountd-callers.toml); the inference service's install.sh installs
+# the AI broker's own. A copy that differs from the shipped one is moved aside as <name>.old.
 for table in callers.toml; do
     callers=$sysconfdir/bardo/accountd-$table
     if [ -f "$destdir$callers" ] && ! cmp -s "$dist/$table" "$destdir$callers"; then
-        echo "kept $callers (it differs from the shipped one; the shipped one is $callers.dist)"
-        put 644 "$dist/$table" "$callers.dist"
-    else
-        put 644 "$dist/$table" "$callers"
+        mv -f "$destdir$callers" "$destdir$callers.old"
+        echo "replaced $callers (the one that was there is now $callers.old)"
     fi
+    rm -f "$destdir$callers.dist"
+    put 644 "$dist/$table" "$callers"
 done
 
 if [ "$changed" -eq 0 ]; then

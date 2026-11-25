@@ -214,3 +214,46 @@ fn the_sandbox_confines_the_thread_that_applies_it() {
     // This thread was never restricted.
     std::fs::read(root.join("elsewhere/secret")).unwrap();
 }
+
+/// The home directory is read-only under the unit's sandbox, so memoryd cannot make a directory
+/// there itself: the unit's pre-start step makes every directory of its policy before the sandbox
+/// starts, and the sandbox makes the writable ones writable (a `-` entry would leave a missing
+/// directory read-only).
+#[test]
+fn the_unit_makes_every_directory_memoryd_opens() {
+    let dbus = Path::new(env!("CARGO_MANIFEST_DIR")).join("../dbus");
+    let read = |name: &str| std::fs::read_to_string(dbus.join(name)).expect(name);
+    let values = |text: &str, key: &str| -> Vec<PathBuf> {
+        // The specifiers as `dirs()` resolves them.
+        let expand = |p: &str| {
+            PathBuf::from(
+                p.replace("%h/.local/share", "/d")
+                    .replace("%h/.cache", "/c")
+                    .replace("%h/.config", "/cfg")
+                    .replace("%t", "/run/user/7"),
+            )
+        };
+        text.lines()
+            .filter_map(|l| l.strip_prefix(key)?.strip_prefix('='))
+            .flat_map(|v| v.split_whitespace().map(expand).collect::<Vec<_>>())
+            .collect()
+    };
+    let unit = read("bardo-memoryd.service");
+    let made = values(&unit, "ExecStartPre");
+    assert_eq!(
+        made.get(..2),
+        Some(&[PathBuf::from("+/usr/bin/mkdir"), PathBuf::from("-p")][..])
+    );
+    let writable = values(
+        &read("bardo-memoryd.service.d/sandbox.conf"),
+        "ReadWritePaths",
+    );
+    let policy = policy_for(&dirs(), None);
+    assert_eq!(writable, policy.writable);
+    for dir in policy.writable.iter().chain(&policy.read_dirs) {
+        assert!(
+            made[2..].contains(dir),
+            "{dir:?} is not made before start: {made:?}"
+        );
+    }
+}

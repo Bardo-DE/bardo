@@ -20,6 +20,11 @@ Documentation=man:bardo-memoryd(1)
 [Service]
 Type=dbus
 BusName=org.bardo.Memory1
+# systemd has no data-directory setting for these, so the pre-start step, outside the sandbox,
+# makes every directory memoryd opens: the memory directories, which sandbox.conf makes writable
+# (a ReadWritePaths entry that does not exist would fail the unit), and the settings folder, which
+# it reads.
+ExecStartPre=+/usr/bin/mkdir -p %h/.local/share/bardo/memory %h/.cache/bardo/memory %h/.config/bardo/memoryd %h/.config/bardo/memory %t/bardo/memory
 ExecStart=/usr/libexec/bardo/bardo-memoryd
 # No loader variables from the session reach the daemon: the accounts service gives its fixed caller role only
 # to a unit that unsets them (applied after the manager environment and Environment=).

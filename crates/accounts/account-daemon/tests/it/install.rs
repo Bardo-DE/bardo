@@ -243,24 +243,34 @@ fn the_sandbox_drop_ins_land_next_to_their_units_without_a_probe_when_staging() 
 }
 
 #[test]
-fn a_caller_table_the_person_changed_is_kept_and_the_shipped_one_is_put_beside_it() {
-    let run = Run::new("kept");
+fn a_caller_table_that_differs_is_replaced_and_the_old_one_moved_aside() {
+    let run = Run::new("replaced");
     run.install(&[]);
     let table = run.at("/etc/bardo/accountd-callers.toml");
     fs::write(&table, "# mine\n").expect("edit");
+    fs::write(
+        run.at("/etc/bardo/accountd-callers.toml.dist"),
+        "# left by an earlier install\n",
+    )
+    .expect("dist");
     let out = run.install(&[]);
     assert!(
-        out.contains("kept /etc/bardo/accountd-callers.toml"),
+        out.contains("replaced /etc/bardo/accountd-callers.toml"),
         "{out}"
     );
-    assert_eq!(fs::read_to_string(&table).expect("read"), "# mine\n");
     assert_eq!(
-        fs::read_to_string(run.at("/etc/bardo/accountd-callers.toml.dist")).expect("dist"),
+        fs::read_to_string(&table).expect("read"),
         fs::read_to_string(repo().join("dist/callers.toml")).expect("shipped")
     );
-    // And that is also a state a further run leaves as it is.
+    assert_eq!(
+        fs::read_to_string(run.at("/etc/bardo/accountd-callers.toml.old")).expect("old"),
+        "# mine\n"
+    );
+    assert!(!run.at("/etc/bardo/accountd-callers.toml.dist").exists());
+    // And a further run changes nothing.
     let again = run.install(&[]);
     assert!(!again.contains("installed"), "{again}");
+    assert!(!again.contains("replaced"), "{again}");
 }
 
 #[test]

@@ -30,7 +30,7 @@
 #                                        <unit>.service.d/sandbox.conf, their protections
 #   PREFIX/share/dbus-1/services/        activation files; interfaces/ has the interface XML
 #   PREFIX/share/bardo/{settings,skills,intents}/ and PREFIX/share/bardo/actions/permissions/
-#   SYSCONFDIR/xdg/bardo/actions/                default configuration (never replaces a file already there)
+#   SYSCONFDIR/xdg/bardo/actions/                default configuration (replaced; with --user, yours is kept)
 #   SYSCONFDIR/bardo/*-callers.toml     which units may call each daemon. They are the machine's
 #                                        security tables: always replaced, reset on every install.
 #                                        Need root; read when a daemon starts, so restart them after
@@ -85,10 +85,14 @@ install_rest() {
   put_tree 644 "$ROOT/dist/skills" "$SHARE/bardo/skills"
   put_tree 644 "$ROOT/dist/intents" "$SHARE/bardo/intents"
   put_tree 644 "$ROOT/policy/presets" "$SHARE/bardo/actions/permissions"
+  # With --user the configuration is the person's own and is never replaced; the system's copy
+  # holds the shipped defaults (a person's own one in ~/.config takes their place), so it is.
+  local conf=replace
+  if [ "$MODE" = user ]; then conf=keep; fi
   for name in actiond companiond actions-mcp; do
-    put 644 "$ROOT/dist/$name.toml" "$CONF_DIR/$name.toml" copy keep
+    put 644 "$ROOT/dist/$name.toml" "$CONF_DIR/$name.toml" copy "$conf"
   done
-  if [ "$WITH_VOICE" = 1 ]; then put 644 "$ROOT/dist/voiced.toml" "$SYS_BARDO/voiced.toml" copy keep; fi
+  if [ "$WITH_VOICE" = 1 ]; then put 644 "$ROOT/dist/voiced.toml" "$SYS_BARDO/voiced.toml" copy "$conf"; fi
   put 644 "$ROOT/dist/completions/bardo-do.bash" "$SHARE/bash-completion/completions/bardo-do" copy
   put 644 "$ROOT/dist/completions/_bardo-do" "$SHARE/zsh/site-functions/_bardo-do" copy
   put 644 "$ROOT/dist/completions/bardo-do.fish" "$SHARE/fish/vendor_completions.d/bardo-do.fish" copy

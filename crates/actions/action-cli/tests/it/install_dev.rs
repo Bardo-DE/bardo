@@ -487,6 +487,20 @@ fn the_system_installer_puts_each_piece_under_the_prefix_and_the_protections_are
 }
 
 #[test]
+fn the_system_installer_replaces_an_earlier_default_configuration() {
+    let jail = Jail::new();
+    let conf = jail.home().join("root/etc/xdg/bardo/actions/actiond.toml");
+    std::fs::create_dir_all(conf.parent().expect("dir")).expect("dir");
+    std::fs::write(&conf, "[roles]\nstale = [\"org.example.Gone1\"]\n").expect("stale");
+    let out = jail.run_system(&["--sandbox", "off"]);
+    assert!(out.status.success(), "{out:?}");
+    assert_eq!(
+        std::fs::read_to_string(&conf).expect("read"),
+        include_str!("../../../dist/actiond.toml")
+    );
+}
+
+#[test]
 fn the_system_installer_dry_run_prints_every_action_and_writes_nothing() {
     let jail = Jail::new();
     let out = jail.run_system(&["--dry-run", "--sandbox", "on"]);
