@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-outputs-dbus = { path = "../../wayland/outputs-dbus" }
+outputs-dbus = { path = "../../wayland/outputs-dbus", optional = true }
 base-time = { path = "../../base/base-time" }
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 zbus = {workspace = true, features = ["default"], optional = true}
@@ -18,11 +18,12 @@ zbus = {workspace = true, features = ["default"], optional = true}
 base-testkit = {path = "../../base/base-testkit", features = ["dbus"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 dbus-kit = { path = "../../bus/dbus-kit" }
+outputs-dbus = { path = "../../wayland/outputs-dbus" }
 
 [features]
 # `Desktop::probe` and `Desktop::watch` over the session bus (and the system bus for PackageKit).
 # Without it every capability is Absent and zbus is not in the dependency tree.
-dbus = ["dep:zbus"]
+dbus = ["dep:zbus", "dep:outputs-dbus"]
 # `use_desktop`, the signal a component gates a desktop extra on.
 dioxus = ["dep:dioxus"]
 
