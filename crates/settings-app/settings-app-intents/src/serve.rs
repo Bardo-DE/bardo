@@ -31,7 +31,7 @@ pub async fn serve(
 
 /// [`serve`], with a test's stand-ins for the router and the shell.
 ///
-/// It answers the process `callers` names as intentd instead of intentd's unit on the system's
+/// It answers the process `callers` names as actiond instead of actiond's unit on the system's
 /// `/proc`, and judges who may activate the window with `peers` instead of the desktop's caller
 /// table.
 ///

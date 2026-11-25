@@ -23,7 +23,7 @@ pub enum ConfigError {
 
 /// The daemon's configuration.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct IntentdConfig {
+pub struct ActiondConfig {
     /// The bus names that play each role; one name may play several. A name that is in none is
     /// a plain app (its own actions, plus search, preview and suggest).
     pub roles: BTreeMap<CallerRole, Vec<AppName>>,
@@ -34,7 +34,7 @@ pub struct IntentdConfig {
     pub agent: AgentConfig,
 }
 
-impl IntentdConfig {
+impl ActiondConfig {
     /// Reads and checks the file: the reviewer set, if there is one, has a second opinion of
     /// another family.
     ///
@@ -43,7 +43,7 @@ impl IntentdConfig {
     /// Returns a [`ConfigError`] when `text` is not a configuration, or the second opinion is of
     /// the deliberate model's family.
     pub fn parse(text: &str) -> Result<Self, ConfigError> {
-        let config: IntentdConfig =
+        let config: ActiondConfig =
             toml::from_str(text).map_err(|e| ConfigError::Toml(e.to_string()))?;
         if let Some(set) = &config.reviewers
             && !set.second_is_other_family()

@@ -1,4 +1,4 @@
-//! The companion service on a private bus: stand-ins for intentd, companiond, the computer-use daemon, memoryd and
+//! The companion service on a private bus: stand-ins for actiond, companiond, the computer-use daemon, memoryd and
 //! an app own their names; the shell is the connection the intents service would publish on its
 //! seat. Everything waits on the service's published state or on a stand-in's record, never on a
 //! clock; a test skips, saying so, without a `dbus-daemon`. Never the person's session bus.
@@ -147,9 +147,9 @@ async fn summon_falls_back_to_launcher_after_app_wait() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
     let mut desk = companion_support::desk().await;
-    let intentd = desk.peer(INTENTS_BUS).await;
+    let actiond = desk.peer(INTENTS_BUS).await;
     serve(
-        &intentd,
+        &actiond,
         "/org/bardo/Intents1",
         StandInSession(desk.log.clone()),
     )
@@ -245,24 +245,24 @@ async fn an_ask_opens_a_session_records_the_turn_and_follows_the_answer() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
     let mut desk = companion_support::desk().await;
-    let intentd = desk.peer(INTENTS_BUS).await;
+    let actiond = desk.peer(INTENTS_BUS).await;
     let search = StandInSearch {
         log: desk.log.clone(),
         hits: Arc::new(Mutex::new(vec![hit("a")])),
     };
-    serve(&intentd, "/org/bardo/Intents1", search).await;
+    serve(&actiond, "/org/bardo/Intents1", search).await;
     let rows = Arc::new(Mutex::new(vec![entry(
         1,
         "Archived 3 threads",
         UndoState::Available,
     )]));
-    intentd
+    actiond
         .object_server()
         .at("/org/bardo/Intents1", StandInControl(rows))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     desk.seated().await;
-    // The first journal says the service listens to intentd's signals.
+    // The first journal says the service listens to actiond's signals.
     desk.state(|c| (!c.journal.is_empty()).then_some(())).await;
     desk.send(CompanionCommand::Things {
         text: "receipt".to_owned(),
@@ -278,7 +278,7 @@ async fn a_search_answers_for_its_generation_and_late_hits_extend_it() {
     assert_eq!(found, vec![hit("a")]);
     assert_eq!(desk.log.lines(), vec!["search receipt 9".to_owned()]);
     let shell = desk.shell.unique_name().map(ToString::to_string);
-    intentd
+    actiond
         .emit_signal(
             shell.as_deref(),
             "/org/bardo/Intents1",
@@ -315,21 +315,21 @@ async fn a_lookup_without_the_seat_fails_instead_of_waiting() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it_again() {
+async fn the_journal_is_read_and_follows_the_actiond_signal_and_an_undo_reads_it_again() {
     let mut desk = companion_support::desk().await;
     let rows = Arc::new(Mutex::new(vec![entry(
         1,
         "Archived 3 threads",
         UndoState::Available,
     )]));
-    let intentd = desk.peer(INTENTS_BUS).await;
-    intentd
+    let actiond = desk.peer(INTENTS_BUS).await;
+    actiond
         .object_server()
         .at("/org/bardo/Intents1", StandInControl(Arc::clone(&rows)))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     serve(
-        &intentd,
+        &actiond,
         "/org/bardo/Intents1",
         StandInRun(desk.log.clone()),
     )
@@ -343,7 +343,7 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
     rows.lock()
         .unwrap_or_else(|e| panic!("{e}"))
         .insert(0, entry(2, "Archived a thread", UndoState::Available));
-    intentd
+    actiond
         .emit_signal(
             None::<&str>,
             "/org/bardo/Intents1",

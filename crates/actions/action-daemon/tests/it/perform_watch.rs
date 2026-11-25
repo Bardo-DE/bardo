@@ -5,15 +5,15 @@
 use crate::support::world::*;
 use action_client::{DbusTransport, Intents, PerformEvent};
 use action_core::*;
-use action_daemon::IntentdConfig;
+use action_daemon::ActiondConfig;
 use action_vocab::{ActionRef, Args, CallRequest, CallerRole, Origin, TargetValue};
 use provenance::{ActionName, EntityId, EntityKey, EntityKind};
 use std::collections::BTreeMap;
 
 const TERMINAL: &str = "org.bardo.Do";
 
-fn config() -> IntentdConfig {
-    IntentdConfig {
+fn config() -> ActiondConfig {
+    ActiondConfig {
         roles: BTreeMap::from([(CallerRole::Cli, vec![app(TERMINAL)])]),
         reviewers: None,
         agent: AgentConfig::default(),

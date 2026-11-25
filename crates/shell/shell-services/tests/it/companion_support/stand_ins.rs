@@ -1,4 +1,4 @@
-//! The stand-ins the companion service talks to on a private bus: intentd's session, search,
+//! The stand-ins the companion service talks to on a private bus: actiond's session, search,
 //! control and run objects, companiond and its answer, an app that serves the summon, the computer-use daemon's
 //! manager and runs, and memoryd. Each records what it was asked on the shared [`Log`].
 
@@ -21,7 +21,7 @@ use action_core::{CallRefusal, Delivery, Follow, Outcome, Preview, SendRefusal, 
 use action_manifest::ValidManifest;
 use provenance::{MessageId, ThreadId};
 
-// ---- intentd ----
+// ---- actiond ----
 
 pub struct StandInSession(pub Log);
 

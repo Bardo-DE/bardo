@@ -6,7 +6,7 @@
 use crate::support::apps::{Answer, FakeShell};
 use crate::support::world::{app, introduce};
 use action_core::*;
-use action_daemon::{IntentdConfig, SheetConfirmer};
+use action_daemon::{ActiondConfig, SheetConfirmer};
 use action_dbus::callers::Identity;
 use action_vocab::{LabelText, Seconds};
 use base_ids::Count;
@@ -64,10 +64,10 @@ struct Desk {
     bus: PrivateBus,
     sheet: SheetConfirmer,
     who: Arc<Identity>,
-    config: IntentdConfig,
+    config: ActiondConfig,
 }
 
-/// The table intentd reads, over a fake proc root in which this test process is in a unit nothing
+/// The table actiond reads, over a fake proc root in which this test process is in a unit nothing
 /// names: a connection is nobody unless the test introduces it.
 fn identity(dir: &tempfile::TempDir, daemon: &action_dbus::BusConnection) -> Arc<Identity> {
     Arc::new(Identity::on_fixture(
@@ -81,7 +81,7 @@ async fn desk() -> Desk {
     let dir = tempfile::tempdir().expect("scratch");
     let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
-    let config = IntentdConfig::shipped().expect("the shipped configuration");
+    let config = ActiondConfig::shipped().expect("the shipped configuration");
     let who = identity(&dir, &daemon);
     let sheet = SheetConfirmer::trusting(daemon, Arc::new(config.clone()), Arc::clone(&who))
         .waiting(Duration::from_millis(100));
@@ -224,7 +224,7 @@ async fn gated_desk(agents: bool) -> Desk {
     let dir = tempfile::tempdir().expect("scratch");
     let bus = PrivateBus::start_in(dir.path());
     let daemon = bus.connect().await;
-    let config = IntentdConfig::shipped().expect("the shipped configuration");
+    let config = ActiondConfig::shipped().expect("the shipped configuration");
     let gate = action_daemon::AcpGate::shut();
     gate.set_agents(agents);
     let who = identity(&dir, &daemon);

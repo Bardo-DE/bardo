@@ -10,7 +10,7 @@
 use caller_role_types::CallerRole;
 use memory_service::Caller;
 
-/// The app that is intentd, the action router (its row has the `agent` role).
+/// The app that is actiond, the action router (its row has the `agent` role).
 pub const ROUTER_APP: &str = "org.bardo.Intents";
 /// The app that is the shell, the shell (its row has the `sheet_host` role).
 pub const SHELL_APP: &str = "org.bardo.Shell";

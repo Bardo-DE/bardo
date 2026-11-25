@@ -11,7 +11,7 @@ pub fn binaries() -> Binaries {
     // Every test starts here: a test that waits for ever ends the process after 20 minutes.
     base_testkit::hang_guard::arm();
     Binaries {
-        intentd: env!("CARGO_BIN_EXE_accept-actiond").into(),
+        actiond: env!("CARGO_BIN_EXE_accept-actiond").into(),
         companiond: env!("CARGO_BIN_EXE_accept-companiond").into(),
         readerd: env!("CARGO_BIN_EXE_accept-readerd").into(),
         memoryd: env!("BARDO_ACCEPT_MEMORYD").into(),

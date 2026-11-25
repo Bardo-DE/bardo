@@ -163,25 +163,25 @@ impl Standing {
     }
 }
 
-/// intentd, the router: the `agent` role of the app `org.bardo.Intents`.
-pub const INTENTD: Standing = Standing::new("org.bardo.Intents", CallerRole::Agent);
+/// actiond, the router: the `agent` role of the app `org.bardo.Intents`.
+pub const ACTIOND: Standing = Standing::new("org.bardo.Intents", CallerRole::Agent);
 /// companiond, the assistant: the `agent` role of the app `org.bardo.Companion1`. It is the only
 /// caller of the agent host's `HandOver`.
 pub const COMPANIOND: Standing = Standing::new("org.bardo.Companion1", CallerRole::Agent);
 /// The shell, the shell and the sheet host: the `sheet_host` role of the app `org.bardo.Shell`.
 pub const SHELL: Standing = Standing::new("org.bardo.Shell", CallerRole::SheetHost);
 
-/// The table of a process that answers intentd alone and reads no file: one row, intentd's unit.
+/// The table of a process that answers actiond alone and reads no file: one row, actiond's unit.
 ///
 /// An app serving `IntentProvider1` has no `/etc/bardo` file of its own to keep, and the router is
 /// the same on every machine.
-pub const INTENTD_ONLY: &str =
+pub const ACTIOND_ONLY: &str =
     "[[caller]]\napp = \"org.bardo.Intents\"\nunit = \"bardo-actiond.service\"\nrole = \"agent\"\n";
 
-/// The table of [`INTENTD_ONLY`]: one row, intentd's unit.
+/// The table of [`ACTIOND_ONLY`]: one row, actiond's unit.
 #[must_use]
-pub fn intentd_only() -> CallerTable {
-    table_from_toml(INTENTD_ONLY).unwrap_or_default()
+pub fn actiond_only() -> CallerTable {
+    table_from_toml(ACTIOND_ONLY).unwrap_or_default()
 }
 
 /// Why a caller was refused.

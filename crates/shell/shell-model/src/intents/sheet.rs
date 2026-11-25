@@ -1,4 +1,4 @@
-//! The confirmations intentd asks the person: a queue, one on screen at a time, and how an answer,
+//! The confirmations actiond asks the person: a queue, one on screen at a time, and how an answer,
 //! a withdrawal or an expiry moves it.
 //!
 //! An unanswered question is a dismissal or an expiry, never an allow: the only way to a yes is a

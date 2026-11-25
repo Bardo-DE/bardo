@@ -29,9 +29,9 @@ async fn the_daemon_links_are_built_over_one_connection_and_each_reaches_its_nei
             })
             .await,
         Ok(GrantAnswer::Granted),
-        "the gate reaches intentd"
+        "the gate reaches actiond"
     );
-    // The inbox is intentd's too, and nothing waits for the run yet.
+    // The inbox is actiond's too, and nothing waits for the run yet.
     let waiting = links
         .events
         .inbox(InboxAsk {

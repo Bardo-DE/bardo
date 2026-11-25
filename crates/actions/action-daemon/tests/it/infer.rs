@@ -1,4 +1,4 @@
-//! intentd's models over a scripted inferd session: what is asked (the need, the data class,
+//! actiond's models over a scripted inferd session: what is asked (the need, the data class,
 //! the tier, the frame), what comes back, and that every way inferd can fail is an error the
 //! reviewer turns into asking the person, never a reply.
 

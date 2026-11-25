@@ -13,7 +13,7 @@ use action_core::{
     AppRefusal, ContextSnapshot, FailText, Follow, Here, Hit, Invocation, Outcome, Preview,
     Selection, SuggestAsk, TextTarget, UndoFault, Undoable, Visible, WindowPrivacy,
 };
-use action_dbus::callers::{Identity, intentd_only};
+use action_dbus::callers::{Identity, actiond_only};
 use action_manifest::{Manifest, ValidManifest, validate};
 use action_provider::{ContextSource, IntentProvider, SummonTarget};
 use action_vocab::{EntityRef, FileRef, LabelText, TargetValue, UndoToken};
@@ -52,7 +52,7 @@ fn intents_error(reason: &dyn std::fmt::Display) -> PlatformError {
 }
 
 /// Serve the viewer's intents on `connection`, which already owns the viewer's own name, and claim
-/// the app name the actions service calls. Requests the router makes arrive on `sender`. Only intentd's unit is
+/// the app name the actions service calls. Requests the router makes arrive on `sender`. Only actiond's unit is
 /// answered, found by its main process in the system's `/proc`, or in `proc_root` when a test
 /// gives a fixture tree of its own.
 pub(super) async fn serve(
@@ -63,7 +63,7 @@ pub(super) async fn serve(
     let manifest = manifest()?;
     let window = PrivateWindow::new(&manifest);
     let provider = ViewerIntents::new(manifest, sender);
-    let callers = Arc::new(Identity::on(connection.clone(), intentd_only(), proc_root));
+    let callers = Arc::new(Identity::on(connection.clone(), actiond_only(), proc_root));
     action_provider::serve_on_with(connection, provider, window, NoPrompt, callers)
         .await
         .map_err(|error| PlatformError::Bus {

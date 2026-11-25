@@ -16,11 +16,11 @@ use futures_util::StreamExt;
 use std::path::Path;
 use zbus::fdo::DBusProxy;
 
-/// Who the app's provider answers: the process the scratch root's fake proc has as intentd's unit.
-fn intentd_only(connection: &zbus::Connection, root: &Path) -> std::sync::Arc<Identity> {
+/// Who the app's provider answers: the process the scratch root's fake proc has as actiond's unit.
+fn actiond_only(connection: &zbus::Connection, root: &Path) -> std::sync::Arc<Identity> {
     std::sync::Arc::new(Identity::on_fixture(
         connection.clone(),
-        action_dbus::callers::intentd_only(),
+        action_dbus::callers::actiond_only(),
         root.join("proc"),
     ))
 }
@@ -48,7 +48,7 @@ pub async fn until_owned(connection: &zbus::Connection, name: &str) {
 
 impl World {
     /// Starts everything, in dependency order: the bus, the shell, accountd, inferd (replaying `cassette`),
-    /// memoryd, intentd (with the mail manifest installed), the mail provider, readerd, companiond.
+    /// memoryd, actiond (with the mail manifest installed), the mail provider, readerd, companiond.
     pub async fn start(binaries: &Binaries, consent: Consent, cassette: Cassette) -> World {
         let model = ModelSource::Scripted(cassette.0.to_owned());
         World::start_model(binaries, consent, &model, &Options::default()).await
@@ -100,7 +100,7 @@ impl World {
             .await
             .expect("Confirm1");
 
-        // Files the daemons read: memoryd's callers, its Spaces, intentd's manifest and consent.
+        // Files the daemons read: memoryd's callers, its Spaces, actiond's manifest and consent.
         // The test process is the shell (the shell): the fake proc root says so.
         let record = options.record.then(|| root.join("record.jsonl"));
         place(root, std::process::id(), Cgroup::Unit("bardo-shell"));
@@ -156,7 +156,7 @@ impl World {
         start("bardo-accountd", &binaries.accountd, "org.bardo.Accounts1").await;
         start("bardo-inferd", &binaries.inferd, "org.bardo.Inference1").await;
         start("bardo-memoryd", &binaries.memoryd, "org.bardo.Memory1").await;
-        start("bardo-actiond", &binaries.intentd, "org.bardo.Intents1").await;
+        start("bardo-actiond", &binaries.actiond, "org.bardo.Intents1").await;
 
         // The app's provider: its own connection, its own name, the manifest's wire.
         let provider_connection =
@@ -179,7 +179,7 @@ impl World {
                         mail,
                         quiet.clone(),
                         quiet,
-                        intentd_only(&provider_connection, root),
+                        actiond_only(&provider_connection, root),
                     ),
                 )
                 .await
@@ -195,7 +195,7 @@ impl World {
                         things,
                         quiet.clone(),
                         quiet,
-                        intentd_only(&provider_connection, root),
+                        actiond_only(&provider_connection, root),
                     ),
                 )
                 .await

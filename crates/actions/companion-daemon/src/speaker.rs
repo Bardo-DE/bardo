@@ -6,7 +6,7 @@
 //!
 //! The shell is the process the callers table names, never the owner of a bus name: a scope that
 //! claims the shell's app is a plain app, and a plain app is refused. The terminal is identified
-//! the way intentd identifies the cli role (`action_wire::is_terminal_scope` over the cgroup
+//! the way actiond identifies the cli role (`action_wire::is_terminal_scope` over the cgroup
 //! behind the pid the bus names for the connection) and only when the table names nothing and the
 //! connection owns no name of its own; it is
 //! the person at a keyboard, or whatever is typing in one, and that is why it gets no more than
@@ -16,7 +16,7 @@
 //! process the table names as the app `org.bardo.Acp` in the role `agent`, by its scope and its
 //! program path), so an editor can show the helpers the person keeps. It is identified by the
 //! table alone, never by a name it sends or a bus name it owns.
-//! Every call the companion then makes goes through intentd's gate in the role `companion`, and
+//! Every call the companion then makes goes through actiond's gate in the role `companion`, and
 //! a confirmation is still answered on the sheet by the person.
 
 use account_callers::ProcRoot;

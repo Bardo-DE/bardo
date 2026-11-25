@@ -1,4 +1,4 @@
-//! `org.bardo.Reader1`: the quarantined reader, served by readerd. Only intentd may call it.
+//! `org.bardo.Reader1`: the quarantined reader, served by readerd. Only actiond may call it.
 
 use account_dbus::Details;
 use zbus::fdo;

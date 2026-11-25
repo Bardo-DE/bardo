@@ -6,8 +6,8 @@
 //! it. Off unless `agent.acp.agents` is on in the settings file; the programs come from
 //! `agents.toml` under the configuration directory.
 //!
-//! The person is asked the way every call is: the router's sheet, through intentd's confirmer
-//! (the shell's). `--tty` is a development fallback: the host asks intentd to hand it this session's
+//! The person is asked the way every call is: the router's sheet, through actiond's confirmer
+//! (the shell's). `--tty` is a development fallback: the host asks actiond to hand it this session's
 //! sheets and puts them to you on the terminal, `y` once, `a` always (when offered), anything
 //! else no. Standing grants live in the actions service's store, listed and revoked in Settings, not here.
 //!

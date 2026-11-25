@@ -2,7 +2,7 @@
 //! only teaches, so the call is a Read like any other (gated, audited), it adds no grant and
 //! removes no check, and a task may load at most three.
 //!
-//! The skills are the valid files intentd found in the data directories at start
+//! The skills are the valid files actiond found in the data directories at start
 //! (`install_skills`); this module never reads a file. A skill is loadable only when every action
 //! it uses is registered and offered to the companion, so a skill cannot point the planner at an
 //! action that does not exist or is hidden.

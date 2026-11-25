@@ -3,7 +3,7 @@
 use crate::acp_gate::AcpGate;
 use crate::bus::{Gateway, Handler, IndexedSearch, export};
 use crate::callers;
-use crate::config::IntentdConfig;
+use crate::config::ActiondConfig;
 use crate::index_files::IndexStore;
 use crate::peer::Peers;
 use account_callers::ProcRoot;
@@ -75,7 +75,7 @@ fn search_port<S: Seams + 'static>(router: Arc<Router<S>>) -> IndexedSearch {
 pub async fn serve_on<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
-    config: Arc<IntentdConfig>,
+    config: Arc<ActiondConfig>,
 ) -> Result<(), ServeError> {
     serve_on_with(connection, router, config, &ProcRoot::Unset).await
 }
@@ -89,7 +89,7 @@ pub async fn serve_on<S: Seams + 'static>(
 pub async fn serve_on_with<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
-    config: Arc<IntentdConfig>,
+    config: Arc<ActiondConfig>,
     proc_root: &ProcRoot,
 ) -> Result<(), ServeError> {
     let who = Arc::new(Identity::on(
@@ -119,7 +119,7 @@ pub async fn serve_on_with<S: Seams + 'static>(
 pub async fn serve_on_gated<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
-    config: Arc<IntentdConfig>,
+    config: Arc<ActiondConfig>,
     who: Arc<Identity>,
     proc_root: &ProcRoot,
     acp: AcpGate,
@@ -132,7 +132,7 @@ pub async fn serve_on_gated<S: Seams + 'static>(
     );
     export(connection, &gateway).await.map_err(bus)?;
     dbus_kit::ready::serving(connection).await.map_err(bus)?;
-    // Never queued behind another intentd: two routers would be two breakers and two journals.
+    // Never queued behind another actiond: two routers would be two breakers and two journals.
     dbus_kit::name::claim(connection, INTENTS_BUS)
         .await
         .map_err(|error| ServeError::Bus(error.to_string()))
@@ -148,7 +148,7 @@ pub async fn serve_on_gated<S: Seams + 'static>(
 /// Returns a [`ServeError`] when the bus name is taken or the connection fails.
 pub async fn serve<S: Seams + 'static>(
     router: Arc<Router<S>>,
-    config: Arc<IntentdConfig>,
+    config: Arc<ActiondConfig>,
 ) -> Result<(), ServeError> {
     let connection = BusConnection::session().await.map_err(bus)?;
     serve_on(&connection, router, config).await?;

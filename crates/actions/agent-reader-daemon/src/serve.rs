@@ -3,7 +3,7 @@
 use crate::service::ReaderService;
 use action_client::Transport as IntentsTransport;
 use action_core::{ReaderAsk, ReaderError};
-use action_dbus::callers::{INTENTD, Identity, require};
+use action_dbus::callers::{ACTIOND, Identity, require};
 use action_dbus::{BusConnection, Details, READER_BUS, READER_PATH};
 use action_vocab::Value;
 use inference_client::Transport as InferTransport;
@@ -54,8 +54,8 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
     ) -> fdo::Result<String> {
         let _ = options;
         let sender = header.sender().map(zbus::names::UniqueName::as_str);
-        if let Err(refused) = require(&self.callers, sender, &[INTENTD]).await {
-            tracing::warn!(%refused, "refused a caller that is not intentd");
+        if let Err(refused) = require(&self.callers, sender, &[ACTIOND]).await {
+            tracing::warn!(%refused, "refused a caller that is not actiond");
             return Err(refused.into());
         }
         let session = SessionId::parse(&session).map_err(|error| {
@@ -83,7 +83,7 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
 
 /// Exports `org.bardo.Reader1` at its path on `connection` and claims the name.
 ///
-/// Only the process that `callers` names as intentd (the `agent` role of the app
+/// Only the process that `callers` names as actiond (the `agent` role of the app
 /// `org.bardo.Intents`) may ask. Returns once the name is ours; the connection keeps serving until
 /// it closes.
 ///
@@ -114,7 +114,7 @@ where
 /// Claims `org.bardo.Reader1` on the session bus and serves `Extract(session, ask)` until the
 /// connection closes.
 ///
-/// Only intentd may call it: the process behind the caller is named by `readerd-callers.toml` (the
+/// Only actiond may call it: the process behind the caller is named by `readerd-callers.toml` (the
 /// system's under `/etc/bardo`, the person's over it) before the ask is read.
 ///
 /// # Errors

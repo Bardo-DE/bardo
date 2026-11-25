@@ -1,8 +1,8 @@
-//! The apps over a real bus: `DbusLink` on intentd's side, the real `action_provider::serve_on` on
-//! the app's, with action-fake's mail app behind it. A provider answers nothing but intentd, an
+//! The apps over a real bus: `DbusLink` on actiond's side, the real `action_provider::serve_on` on
+//! the app's, with action-fake's mail app behind it. A provider answers nothing but actiond, an
 //! app that is away is "unavailable" rather than a panic, and a slow one is cut at its latency.
 
-use crate::support::apps::{Blank, answering_intentd, serve_mail};
+use crate::support::apps::{Blank, answering_actiond, serve_mail};
 use crate::support::world::app;
 use action_core::*;
 use action_daemon::DbusLink;
@@ -41,8 +41,8 @@ fn invocation(action: &str, key: &str) -> Invocation {
     }
 }
 
-/// Starts a bus where `daemon` owns intentd's name, as the daemon does.
-async fn bus_with_intentd() -> (
+/// Starts a bus where `daemon` owns actiond's name, as the daemon does.
+async fn bus_with_actiond() -> (
     tempfile::TempDir,
     PrivateBus,
     action_dbus::BusConnection,
@@ -54,16 +54,16 @@ async fn bus_with_intentd() -> (
     daemon
         .request_name(INTENTS_BUS)
         .await
-        .expect("intentd's name");
+        .expect("actiond's name");
     let link = DbusLink::new(daemon.clone());
     (dir, bus, daemon, link)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn every_member_reaches_the_app_and_comes_back_typed() {
-    let (dir, bus, daemon, link) = bus_with_intentd().await;
+    let (dir, bus, daemon, link) = bus_with_actiond().await;
     let app_connection = bus.connect().await;
-    let who = answering_intentd(&app_connection, &daemon, dir.path());
+    let who = answering_actiond(&app_connection, &daemon, dir.path());
     let mail_app = serve_mail(&app_connection, who).await;
 
     // Perform, within the action's latency.
@@ -138,7 +138,7 @@ async fn every_member_reaches_the_app_and_comes_back_typed() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_app_that_is_away_is_unavailable_and_never_a_panic() {
-    let (_dir, _bus, _daemon, link) = bus_with_intentd().await;
+    let (_dir, _bus, _daemon, link) = bus_with_actiond().await;
     let gone = app("org.bardo.Gone");
     let performed = link
         .perform(&gone, invocation("gone.do", "x"), Latency::Instant)
@@ -208,9 +208,9 @@ impl IntentProvider for Slow {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_slow_app_is_cut_at_its_latency() {
-    let (dir, bus, daemon, link) = bus_with_intentd().await;
+    let (dir, bus, daemon, link) = bus_with_actiond().await;
     let slow_connection = bus.connect().await;
-    let who = answering_intentd(&slow_connection, &daemon, dir.path());
+    let who = answering_actiond(&slow_connection, &daemon, dir.path());
     let manifest = validate(Manifest {
         vocab: IntentsVocab(1),
         app: app("org.bardo.Slow"),
@@ -237,13 +237,13 @@ async fn a_slow_app_is_cut_at_its_latency() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_provider_answers_nobody_but_intentd() {
-    let (dir, bus, daemon, _link) = bus_with_intentd().await;
+async fn a_provider_answers_nobody_but_actiond() {
+    let (dir, bus, daemon, _link) = bus_with_actiond().await;
     let app_connection = bus.connect().await;
-    let who = answering_intentd(&app_connection, &daemon, dir.path());
+    let who = answering_actiond(&app_connection, &daemon, dir.path());
     serve_mail(&app_connection, std::sync::Arc::clone(&who)).await;
-    // A terminal, another app, a scope that claims intentd's app, anything that is not the process
-    // in intentd's unit calling the app's bus name directly gets no way around the gate.
+    // A terminal, another app, a scope that claims actiond's app, anything that is not the process
+    // in actiond's unit calling the app's bus name directly gets no way around the gate.
     let stranger = bus.connect().await;
     let lookalike = bus.connect().await;
     who.introduce_app(
@@ -284,7 +284,7 @@ async fn a_provider_answers_nobody_but_intentd() {
         .await;
     let error = direct.expect_err("refused");
     assert!(
-        error.to_string().contains("only intentd calls a provider"),
+        error.to_string().contains("only actiond calls a provider"),
         "{error}"
     );
     for member in [
@@ -368,9 +368,9 @@ impl IntentProvider for Keeps {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_activation_token_rides_beside_the_invocation_to_the_provider() {
-    let (dir, bus, daemon, link) = bus_with_intentd().await;
+    let (dir, bus, daemon, link) = bus_with_actiond().await;
     let connection = bus.connect().await;
-    let who = answering_intentd(&connection, &daemon, dir.path());
+    let who = answering_actiond(&connection, &daemon, dir.path());
     let manifest = validate(Manifest {
         vocab: IntentsVocab(1),
         app: app("org.bardo.Keeps"),

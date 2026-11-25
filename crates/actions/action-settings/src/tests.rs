@@ -395,10 +395,10 @@ fn unknown_keys_are_reported_and_version_is_not_one() {
         ]
     );
     assert_eq!(
-        loaded.lines("intentd"),
+        loaded.lines("actiond"),
         [
-            "intentd: settings: agent.budget.bogus: no such key, ignored",
-            "intentd: settings: other.x: no such key, ignored"
+            "actiond: settings: agent.budget.bogus: no such key, ignored",
+            "actiond: settings: other.x: no such key, ignored"
         ]
     );
 }

@@ -15,7 +15,7 @@ pub type InferLink = Watched<DbusTransport>;
 ///
 /// Nothing is called here: inferd is found, and started by activation, at the first `open`, so a
 /// daemon that starts before inferd still starts and, while inferd is away, asks the person instead
-/// of failing. intentd, companiond and readerd all build their link through this one function.
+/// of failing. actiond, companiond and readerd all build their link through this one function.
 #[must_use]
 pub fn inferd_transport(connection: &crate::BusConnection, watch: InferWatch) -> InferLink {
     Watched::new(DbusTransport::over(connection.clone()), watch)

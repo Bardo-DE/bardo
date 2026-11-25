@@ -6,12 +6,12 @@ use provenance::TaskId;
 /// The option of `Gate.Check` that says its caller watches the request: it listens for
 /// `Request.Progress` and will call `Request.Proceed` before the sheet may be drawn.
 pub const OPTION_WATCH: &str = "watch";
-/// The option of `Run.Perform` that carries the launcher's activation token (a string). intentd
+/// The option of `Run.Perform` that carries the launcher's activation token (a string). actiond
 /// honours it from the launcher role only and passes it unchanged to the app's `Perform`.
 pub const OPTION_ACTIVATION: &str = "activation";
-/// intentd's bus name.
+/// actiond's bus name.
 pub const INTENTS_BUS: &str = "org.bardo.Intents1";
-/// intentd's root object (every `org.bardo.Intents1.*` interface).
+/// actiond's root object (every `org.bardo.Intents1.*` interface).
 pub const INTENTS_PATH: &str = "/org/bardo/Intents1";
 /// The object every provider serves `org.bardo.IntentProvider1` at, on its own bus name.
 pub const PROVIDER_PATH: &str = "/org/bardo/IntentProvider1";

@@ -86,7 +86,7 @@ impl IndexStore {
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Err(why) = self.write(app, router.pushed_entries(app)) {
-            eprintln!("intentd: the index of {app} was not kept: {why}");
+            eprintln!("actiond: the index of {app} was not kept: {why}");
         }
     }
 
@@ -111,7 +111,7 @@ impl IndexStore {
             }
             match Self::read(&path) {
                 Ok(entries) => router.restore_index(&app, entries),
-                Err(why) => eprintln!("intentd: {} not read: {why}", path.display()),
+                Err(why) => eprintln!("actiond: {} not read: {why}", path.display()),
             }
         }
     }

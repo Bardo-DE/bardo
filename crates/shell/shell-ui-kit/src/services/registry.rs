@@ -130,7 +130,7 @@ services! {
         events: EventsService;
         /// The polkit agent (passive until the daemon's policy).
         polkit_agent: PolkitAgentService;
-        /// bardo-shell's seat at intentd: the confirmation sheet it serves, the terminal's grants, the shell's
+        /// bardo-shell's seat at actiond: the confirmation sheet it serves, the terminal's grants, the shell's
         /// own actions as `org.bardo.Shell`; passive until the daemon says to serve.
         intents: IntentsService;
         /// Each output's work area and scale, served on `org.bardo.Outputs1`; passive until the daemon

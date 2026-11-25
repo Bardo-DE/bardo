@@ -46,7 +46,7 @@ impl ControlRefusal {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ComputerUseCaller {
-    /// intentd: the router, acting for a `computeruse.run.start` call.
+    /// actiond: the router, acting for a `computeruse.run.start` call.
     Router,
     /// companiond: the planner.
     Companion,

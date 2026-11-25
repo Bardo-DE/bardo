@@ -7,7 +7,7 @@
 //! XDG directory, the bus. The model is a cassette or the owner's own `inferd.toml`.
 //!
 //! The corpus cases play the router in this process (a hijacked planner mints handles in router
-//! state, which the bus has no way to do), so intentd, readerd, companiond and memoryd are not
+//! state, which the bus has no way to do), so actiond, readerd, companiond and memoryd are not
 //! started here; `dev/live-smoke.sh` runs all of them.
 
 use action_accept::world::{

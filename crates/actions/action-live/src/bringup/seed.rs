@@ -111,7 +111,7 @@ pub const SHELL_UNIT: &str = "bardo-shell";
 /// Writes the configuration files a World writes and puts the shell in the fake proc root.
 ///
 /// Writes the configuration files a World writes (memoryd's callers and Spaces, inferd's
-/// configuration, the system callers files with accountd's among them), and puts the shell in the fake proc root. intentd and companiond read no
+/// configuration, the system callers files with accountd's among them), and puts the shell in the fake proc root. actiond and companiond read no
 /// file: without one they run on the configuration they ship.
 ///
 /// # Errors

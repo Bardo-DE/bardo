@@ -17,7 +17,7 @@
 
 use crate::acp_gate::AcpGate;
 use crate::callers;
-use crate::config::IntentdConfig;
+use crate::config::ActiondConfig;
 use crate::peer::Peers;
 use account_callers::ProcRoot;
 use account_core::AppName;
@@ -29,7 +29,7 @@ use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 
-/// How long past the sheet's own expiry intentd waits before it stops: the shell that never answers
+/// How long past the sheet's own expiry actiond waits before it stops: the shell that never answers
 /// must not hold a call open for ever.
 const GRACE: Duration = Duration::from_secs(10);
 
@@ -86,7 +86,7 @@ impl Surface {
 #[derive(Debug, Clone)]
 pub struct SheetConfirmer {
     connection: BusConnection,
-    config: Arc<IntentdConfig>,
+    config: Arc<ActiondConfig>,
     who: Arc<Identity>,
     peers: Peers,
     grace: Duration,
@@ -99,7 +99,7 @@ impl SheetConfirmer {
     /// the processes the shipped `actiond-callers.toml` names.
     #[must_use]
     pub fn new(connection: BusConnection) -> Self {
-        let config = IntentdConfig::shipped().unwrap_or_else(|_| IntentdConfig::empty());
+        let config = ActiondConfig::shipped().unwrap_or_else(|_| ActiondConfig::empty());
         let who = Arc::new(Identity::on_system(connection.clone(), callers::shipped()));
         Self::trusting(connection, Arc::new(config), who)
     }
@@ -107,7 +107,7 @@ impl SheetConfirmer {
     /// Asks over `connection`, trusting the `confirm` role of `config` for the app `who` names.
     pub fn trusting(
         connection: BusConnection,
-        config: Arc<IntentdConfig>,
+        config: Arc<ActiondConfig>,
         who: Arc<Identity>,
     ) -> Self {
         let peers = Peers::new(connection.clone(), Arc::clone(&config), Arc::clone(&who));
@@ -149,7 +149,7 @@ impl SheetConfirmer {
         }
     }
 
-    /// Whether the owner of `surface`'s service is the one process intentd trusts to draw there.
+    /// Whether the owner of `surface`'s service is the one process actiond trusts to draw there.
     async fn trusted(&self, surface: &Surface) -> bool {
         self.peers
             .owner_of(surface.service())

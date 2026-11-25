@@ -1,4 +1,4 @@
-//! Who readerd answers, over a private bus and a fake proc root: the process in intentd's unit,
+//! Who readerd answers, over a private bus and a fake proc root: the process in actiond's unit,
 //! as the shipped callers file names it, and no other. A scope that claims the app, a process of
 //! the unit that is not its main process, a unit the table does not name and a process nothing
 //! names are refused before the ask is read. The test process is every connection, so the fake
@@ -70,8 +70,8 @@ fn denied(error: &zbus::Error) -> bool {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn only_the_main_process_of_intentds_unit_is_answered() {
-    // intentd's unit is answered: the ask is read, and with no model and no session to read from
+async fn only_the_main_process_of_actionds_unit_is_answered() {
+    // actiond's unit is answered: the ask is read, and with no model and no session to read from
     // there is no value, never an AccessDenied.
     let answer = asked_in(Some(("bardo-actiond.service", Main::Yes)))
         .await
@@ -80,16 +80,16 @@ async fn only_the_main_process_of_intentds_unit_is_answered() {
     assert!(answer.is_err(), "{answer:?}");
     for (what, leaf) in [
         (
-            "a process of intentd's unit that is not its main process",
+            "a process of actiond's unit that is not its main process",
             Some(("bardo-actiond.service", Main::No)),
         ),
         (
-            "an app scope called like intentd",
+            "an app scope called like actiond",
             Some(("app-org.bardo.Intents-1.scope", Main::No)),
         ),
         (
-            "a scope that claims intentd's name",
-            Some(("intentd.scope", Main::No)),
+            "a scope that claims actiond's name",
+            Some(("actiond.scope", Main::No)),
         ),
         (
             "a unit the table does not name",

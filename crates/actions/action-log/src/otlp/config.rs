@@ -248,7 +248,7 @@ mod tests {
     }
 
     fn planned(vars: &[(&str, &str)]) -> Plan {
-        plan("intentd", |key| {
+        plan("actiond", |key| {
             vars.iter()
                 .find(|(name, _)| *name == key)
                 .map(|(_, value)| (*value).to_owned())
@@ -269,22 +269,22 @@ mod tests {
         let rows: [(&[(&str, &str)], Plan); 10] = [
             (&[], Plan::Off),
             (&[(BASE, "  ")], Plan::Off),
-            (&[(BASE, "http://a:4318")], on("a", "/v1/traces", "intentd")),
+            (&[(BASE, "http://a:4318")], on("a", "/v1/traces", "actiond")),
             (
                 &[(BASE, "http://a:4318"), ("OTEL_SERVICE_NAME", "desk")],
                 on("a", "/v1/traces", "desk"),
             ),
             (
                 &[(BASE, "http://a:4318"), ("OTEL_SERVICE_NAME", " ")],
-                on("a", "/v1/traces", "intentd"),
+                on("a", "/v1/traces", "actiond"),
             ),
             (
                 &[(BASE, "http://a:4318"), (TRACES, "http://b:4318/t")],
-                on("b", "/t", "intentd"),
+                on("b", "/t", "actiond"),
             ),
             (
                 &[(BASE, "http://a:4318"), (TRACES, " ")],
-                on("a", "/v1/traces", "intentd"),
+                on("a", "/v1/traces", "actiond"),
             ),
             (
                 &[(BASE, "http://a:4318"), ("OTEL_SDK_DISABLED", "TRUE")],
@@ -292,7 +292,7 @@ mod tests {
             ),
             (
                 &[(BASE, "http://a:4318"), ("OTEL_SDK_DISABLED", "false")],
-                on("a", "/v1/traces", "intentd"),
+                on("a", "/v1/traces", "actiond"),
             ),
             (
                 &[(BASE, "https://a:4318")],

@@ -1,6 +1,6 @@
 //! `bardo-do ask` as the real binary against the real daemons on a private bus: a terminal's
 //! child (a `vte-spawn-*` scope of the fake proc root) opens a conversation with companiond, its
-//! turn is recorded by intentd, the replayed model searches and answers, and the answer is
+//! turn is recorded by actiond, the replayed model searches and answers, and the answer is
 //! printed. A confirmation is shown on the shell's sheet and never answered by `bardo-do`.
 
 use crate::support::*;

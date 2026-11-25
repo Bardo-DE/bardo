@@ -20,7 +20,7 @@ pub enum ControlCenterModule {
     NowPlaying,
     Appearance,
     Battery,
-    /// What the terminal may do without asking, and the way back from a pause (intentd's
+    /// What the terminal may do without asking, and the way back from a pause (actiond's
     /// `Control`); drawn only while it has a grant or a pause to show.
     Terminal,
 }

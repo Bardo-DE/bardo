@@ -170,7 +170,7 @@ impl CallerTable {
     /// The system's table with the user's laid over it: a user row replaces the system's row
     /// for the same unit, or for the same app when neither names a unit. A user row may add a
     /// plain app or lower a role, never give a fixed role ([`CallerRole::is_fixed`]). Nor may it
-    /// add a row for an app the system's table names (intentd, the companion, Settings…): such
+    /// add a row for an app the system's table names (actiond, the companion, Settings…): such
     /// an app's identity is its system rows, which the actions service and memoryd answer by, so a user row
     /// for it is kept only where it replaces one of them. A row left out gets one warning on
     /// stderr.

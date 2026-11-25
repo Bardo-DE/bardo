@@ -171,7 +171,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 - Summon the assistant once with no model installed (`bardo-shell companion summon`): it must
   end with a plain failure within a few seconds, and the session keeps working.
 - `journalctl --user -u memoryd -b`: no crash loop. With the keyring locked or absent, memoryd reports the
-  Space locked and intentd counts audit records as lost; that is expected.
+  Space locked and actiond counts audit records as lost; that is expected.
 - `journalctl --user -u computer_use_daemon -b`: idle, no error loop; `computer_use.enabled` stays off.
 - Any hang or loop: save the journal lines for the agent session.
 

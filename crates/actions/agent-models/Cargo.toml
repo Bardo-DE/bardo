@@ -1,6 +1,6 @@
 [package]
 name = "agent-models"
-description = "The models the actions service asks, portable: a inference-core `Model` over any inference-client Transport (`TransportModel`), the task-policy writer (`TransportWriter`) and the reviewer cascade's placeholder set. No bus, no runtime: intentd's `InferdModel` and `InferdWriter` are thin adapters over these."
+description = "The models the actions service asks, portable: a inference-core `Model` over any inference-client Transport (`TransportModel`), the task-policy writer (`TransportWriter`) and the reviewer cascade's placeholder set. No bus, no runtime: actiond's `InferdModel` and `InferdWriter` are thin adapters over these."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

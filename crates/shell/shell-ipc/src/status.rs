@@ -32,7 +32,7 @@ pub enum StatusRequest {
     Idle,
     /// Whether the key remap daemon runs, and what it says about its mode and the keyboards.
     KeyRemap,
-    /// Whether bardo-shell serves intentd's sheet, what waits on it, and the terminal's grants.
+    /// Whether bardo-shell serves actiond's sheet, what waits on it, and the terminal's grants.
     Intents,
 }
 
@@ -110,7 +110,7 @@ impl PolkitStatus {
     }
 }
 
-/// Where bardo-shell stands with intentd: whether it serves the sheet, what is on it, and the terminal.
+/// Where bardo-shell stands with actiond: whether it serves the sheet, what is on it, and the terminal.
 /// Names and counts only: a question's arguments are the person's, never on the wire.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct IntentsStatus {
@@ -122,7 +122,7 @@ pub struct IntentsStatus {
     /// The terminal's standing grants, `app:action`.
     pub grants: Vec<String>,
     pub breaker: Breaker,
-    /// Whether intentd's `Control` answered the last read.
+    /// Whether actiond's `Control` answered the last read.
     pub reach: ControlReach,
 }
 

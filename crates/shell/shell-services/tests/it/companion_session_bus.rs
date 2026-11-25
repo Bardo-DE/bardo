@@ -2,7 +2,7 @@
 //! behind each handle through it: for an answer the shell asked and for one anybody else started,
 //! with the session the ask opened as the fallback for an older companion, and a plain reading
 //! for a handle the router refuses once the session is closed. On a private bus, with stand-ins
-//! for companiond and intentd; every wait is on published state or on a stand-in's record.
+//! for companiond and actiond; every wait is on published state or on a stand-in's record.
 
 use crate::companion_support;
 
@@ -40,10 +40,10 @@ struct Bench {
     desk: Desk,
     companiond: Connection,
     view: Arc<Mutex<String>>,
-    _intentd: Connection,
+    _actiond: Connection,
 }
 
-/// The router the stand-in intentd is.
+/// The router the stand-in actiond is.
 #[derive(Clone, Copy)]
 enum Router {
     /// Knows the labelled reading of a handle.
@@ -75,8 +75,8 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Benc
         },
     )
     .await;
-    let intentd = desk.peer(INTENTS_BUS).await;
-    let served = intentd.object_server();
+    let actiond = desk.peer(INTENTS_BUS).await;
+    let served = actiond.object_server();
     match router {
         Router::Labelled => served
             .at("/org/bardo/Intents1", StandInSession(desk.log.clone()))
@@ -87,7 +87,7 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Benc
             .await
             .unwrap_or_else(|e| panic!("{e}")),
     };
-    dbus_kit::ready::serving(&intentd)
+    dbus_kit::ready::serving(&actiond)
         .await
         .expect("the object server answers");
     desk.seated().await;
@@ -95,7 +95,7 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Benc
         desk,
         companiond,
         view,
-        _intentd: intentd,
+        _actiond: actiond,
     }
 }
 

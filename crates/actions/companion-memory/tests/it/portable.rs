@@ -1,6 +1,6 @@
 //! The memory seam over memory-client transports that are not the bus: the service hosted in
 //! this process (memory-fake's backend) and no service at all. The D-Bus path is covered by
-//! intentd's `audit.rs` through its re-exports.
+//! actiond's `audit.rs` through its re-exports.
 
 use action_core::{AuditRecord, HaltCause};
 use action_core::{EventSink, LinkError, MemoryLink};

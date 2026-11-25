@@ -3,7 +3,7 @@
 use action_vocab::ActionRef;
 use serde::{Deserialize, Serialize};
 
-/// Whether intentd's breaker has paused the terminal. It pauses a terminal session after too many
+/// Whether actiond's breaker has paused the terminal. It pauses a terminal session after too many
 /// refusals in a row and only the person lifts it, so the control center says so and offers the
 /// way back.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
@@ -14,7 +14,7 @@ pub enum Breaker {
     Tripped,
 }
 
-/// Whether intentd's `Control` was reachable at the last read.
+/// Whether actiond's `Control` was reachable at the last read.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ControlReach {
@@ -23,14 +23,14 @@ pub enum ControlReach {
     Unread,
     /// Read.
     Reached,
-    /// intentd is not on the bus, or refused the read.
+    /// actiond is not on the bus, or refused the read.
     Unreachable,
 }
 
 /// The terminal as the person can see and change it.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Terminal {
-    /// The actions the terminal may run without asking until logout, in intentd's order.
+    /// The actions the terminal may run without asking until logout, in actiond's order.
     pub grants: Vec<ActionRef>,
     pub breaker: Breaker,
     pub reach: ControlReach,

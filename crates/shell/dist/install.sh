@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install bardo-shell from the bardo tree: build `bardo-shell` in release, then put the binary, the PAM service,
-# the intents manifest (`org.bardo.Shell`, for intentd and `bardo-do`), the companion skills
+# the intents manifest (`org.bardo.Shell`, for actiond and `bardo-do`), the companion skills
 # (dist/skills) and the settings schema where a login reads them, and copy the key remap daemon layer for
 # the bardo-shell session to ~/.config/bardo/key-remap/key-remap.toml when that file is missing (never over yours).
 # The login itself, "Bardo", is the desktop repo's session/ and install/. Run as
@@ -59,7 +59,7 @@ put 755 "$BUILT" "$BIN_DEST"
 
 step "5/8 the PAM service, the intents manifest, the skills and the settings schema"
 put 644 "$DIST/pam.d/bardo-shell" "$PAM_DEST"
-# intentd (the actions service) lists it, and `bardo-do shell --list` shows it: bardo-shell serves it as `org.bardo.Shell`.
+# actiond (the actions service) lists it, and `bardo-do shell --list` shows it: bardo-shell serves it as `org.bardo.Shell`.
 put 644 "$DIST/intents/org.bardo.Shell.toml" "$INTENTS_DEST"
 # The skills the companion loads (agent-eval --check-skills validates them); they grant nothing.
 while IFS= read -r file; do

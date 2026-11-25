@@ -115,7 +115,7 @@ pub enum Command {
         #[command(subcommand)]
         action: KeyRemapAction,
     },
-    /// What intentd may ask of bardo-shell: its confirmation sheet, and the terminal's standing grants.
+    /// What actiond may ask of bardo-shell: its confirmation sheet, and the terminal's standing grants.
     Intents {
         #[command(subcommand)]
         action: IntentsAction,

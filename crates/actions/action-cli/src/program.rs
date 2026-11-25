@@ -41,7 +41,7 @@ fn unavailable(what: &impl std::fmt::Display) -> Report {
     }
 }
 
-/// `bardo-do ask`: intentd records the turn, companiond is asked.
+/// `bardo-do ask`: actiond records the turn, companiond is asked.
 async fn ask(
     buses: &SessionBus,
     text: &str,

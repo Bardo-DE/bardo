@@ -4,7 +4,7 @@
 //!
 //! - `org.bardo.Shell1` (the picker, the colour, `AskPermission`): the portal backend;
 //! - `org.bardo.AccountsSheet1`: accountd, inferd or syncd, each as the owner of its own name;
-//! - `org.bardo.Confirm1`: intentd.
+//! - `org.bardo.Confirm1`: actiond.
 //!
 //! Every case names what the owner of the service's name is to the shell, who calls (the owner
 //! itself, or another connection) and what that caller is. A refusal is `AccessDenied` and draws
@@ -277,31 +277,31 @@ async fn only_an_account_service_that_owns_its_own_name_drives_the_accounts_shee
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn only_intentd_that_owns_its_name_asks_the_confirmation_sheet() {
+async fn only_actiond_that_owns_its_name_asks_the_confirmation_sheet() {
     use Verdict::{LetIn, Refused};
     let router = Who::Service(Role::Router);
     let cases: [Case; 5] = [
-        ("intentd", router, Caller::Owner, LetIn),
+        ("actiond", router, Caller::Owner, LetIn),
         (
-            "a program of the system that took intentd's name",
+            "a program of the system that took actiond's name",
             Who::Program,
             Caller::Owner,
             Refused,
         ),
         (
-            "a program nobody can name that took intentd's name",
+            "a program nobody can name that took actiond's name",
             Who::Nobody,
             Caller::Owner,
             Refused,
         ),
         (
-            "the portal backend, which took intentd's name",
+            "the portal backend, which took actiond's name",
             Who::Service(Role::Portal),
             Caller::Owner,
             Refused,
         ),
         (
-            "intentd's role, on a connection that does not own the name",
+            "actiond's role, on a connection that does not own the name",
             router,
             Caller::Another(router),
             Refused,
@@ -311,7 +311,7 @@ async fn only_intentd_that_owns_its_name_asks_the_confirmation_sheet() {
         let desk = desk_as(no_menus(), watch::channel(Shots::default()).1, owner).await;
         desk.serving().await;
         let calling: Connection = match caller {
-            Caller::Owner => desk.intentd.clone(),
+            Caller::Owner => desk.actiond.clone(),
             Caller::Another(who) => {
                 let other = connect_intents_bus(desk.bus.address()).await;
                 desk.callers.make(&other, who);

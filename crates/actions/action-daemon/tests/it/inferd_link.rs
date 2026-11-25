@@ -1,7 +1,7 @@
-//! intentd's inferd link is inference-client's D-Bus transport on the daemon's own connection. The
+//! actiond's inferd link is inference-client's D-Bus transport on the daemon's own connection. The
 //! bus here is a private one with no inferd on it, so the first `open` says inferd is away (the
 //! reviewer then asks the person) instead of the daemon failing to start. The link is
-//! `action_dbus::inferd_transport`, the one constructor intentd, companiond and readerd share.
+//! `action_dbus::inferd_transport`, the one constructor actiond, companiond and readerd share.
 
 use account_capability::LlmFeature;
 use account_capability::Tier;

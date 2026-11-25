@@ -1,4 +1,4 @@
-//! intentd's models, over inferd: the reviewer's stages and the policy writer ask through
+//! actiond's models, over inferd: the reviewer's stages and the policy writer ask through
 //! inference-client sessions, and the quarantined reader is a client of `Reader1`. The model logic
 //! is `agent-models`' (portable, over any transport); what is here is the bus constructor.
 

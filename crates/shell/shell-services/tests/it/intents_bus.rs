@@ -1,8 +1,8 @@
-//! bardo-shell's seat at intentd on a private bus: a stand-in intentd owns `org.bardo.Intents1`, asks the
+//! bardo-shell's seat at actiond on a private bus: a stand-in actiond owns `org.bardo.Intents1`, asks the
 //! sheet through the actions service's own client (`ConfirmProxy` and `action_client::requested`, the calls
-//! intentd's `SheetConfirmer` makes), serves `Control`, and calls the shell's `IntentProvider1`.
+//! actiond's `SheetConfirmer` makes), serves `Control`, and calls the shell's `IntentProvider1`.
 //! Never the person's session bus; a test skips, saying so, without a `dbus-daemon`. The same chain
-//! against the real intentd binary is `dev/accept/confirm.sh`.
+//! against the real actiond binary is `dev/accept/confirm.sh`.
 
 use std::collections::HashMap;
 use std::path::Path;
@@ -132,21 +132,21 @@ impl StandInControl {
     async fn breaker_tripped(emitter: &SignalEmitter<'_>, session: &str) -> zbus::Result<()>;
 }
 
-/// The seat under test, its bus and the stand-in intentd.
+/// The seat under test, its bus and the stand-in actiond.
 pub(crate) struct Desk {
     procs: Scratch,
     pub(crate) bus: PrivateBus,
     pub(crate) seat: Handle<IntentsService>,
     shell_calls: mpsc::UnboundedReceiver<ShellCall>,
-    pub(crate) intentd: Connection,
+    pub(crate) actiond: Connection,
     held: Arc<Mutex<Held>>,
     /// Who the stand-ins are, to the seat.
     pub(crate) callers: Arc<Introduced>,
 }
 
 /// A fake proc root in which this process is `bardo-actiond.service`'s main process: every connection
-/// of the test is this one process, and the shell's provider answers only intentd.
-fn intentd_is_this_process() -> Scratch {
+/// of the test is this one process, and the shell's provider answers only actiond.
+fn actiond_is_this_process() -> Scratch {
     let procs = Scratch::new("intents-procs");
     let pid = std::process::id();
     let write = |path: std::path::PathBuf, text: String| {
@@ -176,7 +176,7 @@ pub(crate) async fn connect(address: &str) -> Connection {
         .unwrap_or_else(|e| panic!("connecting to the private bus: {e}"))
 }
 
-/// A private bus, the seat started on it (claiming its names), and the stand-in intentd owning its name.
+/// A private bus, the seat started on it (claiming its names), and the stand-in actiond owning its name.
 async fn desk() -> Desk {
     desk_with(no_menus(), watch::channel(Shots::default()).1).await
 }
@@ -186,7 +186,7 @@ async fn desk_with(menus: MenuLinks, shots: watch::Receiver<Shots>) -> Desk {
     desk_as(menus, shots, Who::Service(Role::Router)).await
 }
 
-/// As [`desk_with`], the owner of intentd's name being `who` to the seat.
+/// As [`desk_with`], the owner of actiond's name being `who` to the seat.
 pub(crate) async fn desk_as(menus: MenuLinks, shots: watch::Receiver<Shots>, who: Who) -> Desk {
     desk_on(PrivateBus::start(), menus, shots, who, NameClaims::Claim).await
 }
@@ -199,7 +199,7 @@ async fn desk_on(
     who: Who,
     claims: NameClaims,
 ) -> Desk {
-    let procs = intentd_is_this_process();
+    let procs = actiond_is_this_process();
     let callers = Introduced::new();
     let env = Env {
         buses: Buses::new(
@@ -223,17 +223,17 @@ async fn desk_on(
         },
     );
     let held = Arc::new(Mutex::new(Held::default()));
-    let intentd = connect(bus.address()).await;
-    callers.make(&intentd, who);
-    intentd
+    let actiond = connect(bus.address()).await;
+    callers.make(&actiond, who);
+    actiond
         .object_server()
         .at("/org/bardo/Intents1", StandInControl(Arc::clone(&held)))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    dbus_kit::ready::serving(&intentd)
+    dbus_kit::ready::serving(&actiond)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    intentd
+    actiond
         .request_name(INTENTS_BUS)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
@@ -242,7 +242,7 @@ async fn desk_on(
         bus,
         seat,
         shell_calls,
-        intentd,
+        actiond,
         held,
         callers,
     }
@@ -273,13 +273,13 @@ impl Desk {
         state
     }
 
-    /// What intentd's `SheetConfirmer` does: ask `Confirm1` and wait for the request's `Response`.
+    /// What actiond's `SheetConfirmer` does: ask `Confirm1` and wait for the request's `Response`.
     async fn ask(&self, request: ConfirmRequest) -> (u32, String) {
-        let proxy = ConfirmProxy::new(&self.intentd)
+        let proxy = ConfirmProxy::new(&self.actiond)
             .await
             .unwrap_or_else(|e| panic!("{e}"));
         let text = serde_json::to_string(&request).unwrap_or_else(|e| panic!("{e}"));
-        let asked = action_client::requested(&self.intentd, CONFIRM_BUS, proxy.confirm(&text));
+        let asked = action_client::requested(&self.actiond, CONFIRM_BUS, proxy.confirm(&text));
         match tokio::time::timeout(WAIT, asked).await {
             Ok(Ok(Ok(answer))) => answer,
             other => panic!("the sheet did not answer: {other:?}"),
@@ -315,7 +315,7 @@ async fn a_seat_in_a_passive_environment_owns_no_name() {
     // Best-effort absence check: a name never claimed announces nothing, so the seat is given a
     // moment to have claimed one.
     tokio::time::sleep(Duration::from_millis(300)).await;
-    let dbus = fdo::DBusProxy::new(&desk.intentd)
+    let dbus = fdo::DBusProxy::new(&desk.actiond)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     for name in [CONFIRM_BUS, "org.bardo.Shell"] {
@@ -377,7 +377,7 @@ async fn allow_from_the_terminal_is_answered_and_the_grants_are_read_again() {
     let mut watching = state.clone();
     let answerer = tokio::spawn(async move {
         until(&mut watching, "the sheet", |s| s.sheets.current().is_some()).await;
-        // intentd stores the grant when it has the answer.
+        // actiond stores the grant when it has the answer.
         held.lock().unwrap_or_else(|e| panic!("{e}")).grants = vec![grant("mail.thread.archive")];
         let id = ConfirmId::parse("c-1").unwrap_or_else(|e| panic!("{e}"));
         control
@@ -443,10 +443,10 @@ async fn never_goes_back_as_never_with_the_sheets_receipt() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn undo_reaches_intentd_and_only_then_the_sheet_loses_its_line() {
+async fn undo_reaches_actiond_and_only_then_the_sheet_loses_its_line() {
     let desk = desk().await;
     let mut state = desk.serving().await;
-    let proxy = ConfirmProxy::new(&desk.intentd)
+    let proxy = ConfirmProxy::new(&desk.actiond)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let text = serde_json::to_string(&limited_request("c-1", "00000000000000a1"))
@@ -475,7 +475,7 @@ async fn undo_reaches_intentd_and_only_then_the_sheet_loses_its_line() {
         .unwrap_or_else(|e| panic!("{e}"))
         .unheld
         .clone();
-    assert_eq!(unheld, vec![entry], "intentd was told, once");
+    assert_eq!(unheld, vec![entry], "actiond was told, once");
     assert_eq!(state.borrow().sheets.queue.len(), 1, "the question stays");
 }
 
@@ -487,7 +487,7 @@ async fn a_question_nobody_answers_expires_and_a_cancel_withdraws_it() {
     assert_eq!(code, 0);
     assert_eq!(answer_of(&body), ConfirmAnswer::Ended(ConfirmEnd::Expired));
     // A withdrawn question answers code 1, "cancelled".
-    let proxy = ConfirmProxy::new(&desk.intentd)
+    let proxy = ConfirmProxy::new(&desk.actiond)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let canceller = tokio::spawn({
@@ -505,7 +505,7 @@ async fn a_question_nobody_answers_expires_and_a_cancel_withdraws_it() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn only_intentd_may_ask_or_cancel() {
+async fn only_actiond_may_ask_or_cancel() {
     let desk = desk().await;
     desk.serving().await;
     let stranger = connect(desk.bus.address()).await;
@@ -521,25 +521,25 @@ async fn only_intentd_may_ask_or_cancel() {
     );
     assert!(proxy.cancel("c-1").await.is_err());
     assert!(desk.seat.state.borrow().sheets.queue.is_empty());
-    // And a malformed request from intentd itself is refused, not shown.
-    let proxy = ConfirmProxy::new(&desk.intentd)
+    // And a malformed request from actiond itself is refused, not shown.
+    let proxy = ConfirmProxy::new(&desk.actiond)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     proxy.confirm("{\"not\":\"a request\"}").await.unwrap_err();
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn intentd_leaving_drops_the_questions_nobody_waits_for() {
+async fn actiond_leaving_drops_the_questions_nobody_waits_for() {
     let desk = desk().await;
     let mut state = desk.serving().await;
-    let proxy = ConfirmProxy::new(&desk.intentd)
+    let proxy = ConfirmProxy::new(&desk.actiond)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     let text = serde_json::to_string(&request("c-1", ConfirmOffer::OnceOnly, 120))
         .unwrap_or_else(|e| panic!("{e}"));
     proxy.confirm(&text).await.unwrap_or_else(|e| panic!("{e}"));
     until(&mut state, "the sheet", |s| s.sheets.current().is_some()).await;
-    desk.intentd
+    desk.actiond
         .release_name(INTENTS_BUS)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
@@ -550,7 +550,7 @@ async fn intentd_leaving_drops_the_questions_nobody_waits_for() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal() {
+async fn revoking_and_resuming_go_to_actiond_and_the_breaker_follows_its_signal() {
     let desk = desk().await;
     desk.held.lock().unwrap_or_else(|e| panic!("{e}")).grants =
         vec![grant("mail.thread.archive"), grant("mail.thread.read")];
@@ -567,15 +567,15 @@ async fn revoking_and_resuming_go_to_intentd_and_the_breaker_follows_its_signal(
         s.terminal.grants == vec![grant("mail.thread.read")]
     })
     .await;
-    // The list follows at once; intentd hears the revoke a moment later.
+    // The list follows at once; actiond hears the revoke a moment later.
     let held = Arc::clone(&desk.held);
-    eventually("intentd told of the revoke", move || {
+    eventually("actiond told of the revoke", move || {
         held.lock().unwrap_or_else(|e| panic!("{e}")).revoked == vec![grant("mail.thread.archive")]
     })
     .await;
-    // The breaker pauses the terminal: intentd says so on the bus.
+    // The breaker pauses the terminal: actiond says so on the bus.
     let emitter =
-        SignalEmitter::new(&desk.intentd, "/org/bardo/Intents1").unwrap_or_else(|e| panic!("{e}"));
+        SignalEmitter::new(&desk.actiond, "/org/bardo/Intents1").unwrap_or_else(|e| panic!("{e}"));
     StandInControl::breaker_tripped(&emitter, "s-1")
         .await
         .unwrap_or_else(|e| panic!("{e}"));
@@ -656,7 +656,7 @@ async fn no_session_bus_is_no_sheet_and_not_a_crash() {
     seat.control.send(IntentsCommand::RefreshGrants).unwrap();
 }
 
-/// An invocation of `action` with no arguments, as intentd sends it.
+/// An invocation of `action` with no arguments, as actiond sends it.
 fn invocation(action: &str) -> String {
     invocation_with(action, &[])
 }
@@ -696,10 +696,10 @@ async fn provider(connection: &Connection) -> action_dbus::IntentProviderProxy<'
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn intentd_performs_a_shell_action_through_the_provider() {
+async fn actiond_performs_a_shell_action_through_the_provider() {
     let mut desk = desk().await;
     desk.serving().await;
-    let proxy = provider(&desk.intentd).await;
+    let proxy = provider(&desk.actiond).await;
     // The daemon's side: do what is asked and say how it went.
     let doer = tokio::spawn(async move {
         let call = desk
@@ -731,7 +731,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
     let refused: Result<action_core::Outcome, action_core::AppRefusal> =
         serde_json::from_str(&reply).unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(refused, Err(action_core::AppRefusal::Unsupported));
-    // Nobody but intentd may call the provider: a stranger's call is refused. Every connection
+    // Nobody but actiond may call the provider: a stranger's call is refused. Every connection
     // here is this one process, so it is the stranger once the fake proc root puts it in an app's
     // scope.
     std::fs::write(
@@ -754,7 +754,7 @@ async fn intentd_performs_a_shell_action_through_the_provider() {
 async fn a_failed_action_is_the_providers_refusal_with_the_daemons_words() {
     let mut desk = desk().await;
     desk.serving().await;
-    let proxy = provider(&desk.intentd).await;
+    let proxy = provider(&desk.actiond).await;
     let doer = tokio::spawn(async move {
         let call = desk
             .shell_calls
@@ -836,7 +836,7 @@ async fn the_window_list_is_the_compositors_windows_labelled_untrusted() {
     let (links, _windows, _commands) = compositor();
     let desk = desk_with(links, watch::channel(Shots::default()).1).await;
     desk.serving().await;
-    let proxy = provider(&desk.intentd).await;
+    let proxy = provider(&desk.actiond).await;
     let outcome = performed(&proxy, &invocation("shell.window.list"))
         .await
         .unwrap_or_else(|e| panic!("{e:?}"));
@@ -879,7 +879,7 @@ async fn window_actions_reach_the_compositor_and_an_unknown_id_is_refused() {
     let (links, _windows, mut commands) = compositor();
     let desk = desk_with(links, watch::channel(Shots::default()).1).await;
     desk.serving().await;
-    let proxy = provider(&desk.intentd).await;
+    let proxy = provider(&desk.actiond).await;
     let sent = [
         ("shell.window.focus", WlCommand::Activate(WindowKey(2))),
         ("shell.window.minimise", WlCommand::Minimize(WindowKey(2))),
@@ -925,7 +925,7 @@ async fn a_screenshot_answers_with_the_path_the_watch_saw() {
     let (shots_tx, shots) = watch::channel(Shots::default());
     let mut desk = desk_with(no_menus(), shots).await;
     desk.serving().await;
-    let proxy = provider(&desk.intentd).await;
+    let proxy = provider(&desk.actiond).await;
     let doer = tokio::spawn(async move {
         let call = desk
             .shell_calls

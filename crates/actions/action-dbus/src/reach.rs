@@ -1,7 +1,7 @@
 //! `org.bardo.IntentReach1`: which of a provider's actions are on right now. The installed manifest
 //! says what an action is; a provider whose actions come and go with a setting (computer use is
 //! off until the person turns it on) says so here, on the object it serves `IntentProvider1` at.
-//! intentd asks the provider's own bus name, caches the answer, and asks again on `ReachChanged`.
+//! actiond asks the provider's own bus name, caches the answer, and asks again on `ReachChanged`.
 
 use crate::names::PROVIDER_PATH;
 use action_manifest::AgentReach;

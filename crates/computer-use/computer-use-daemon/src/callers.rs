@@ -6,7 +6,7 @@
 //! fixed role; a scope is never more than a plain app.
 
 use action_dbus::callers::{
-    Caller, CallerFileError, CallerTable, Callers, INTENTD, Identity, SHELL, Standing,
+    Caller, CallerFileError, CallerTable, Callers, ACTIOND, Identity, SHELL, Standing,
     read_table_in, table_from_toml,
 };
 use caller_role_types::CallerRole;
@@ -22,10 +22,10 @@ const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
 pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", CallerRole::Agent);
 
 /// The standing each caller class needs, in the order they are tried. The shell is the actions service's
-/// [`SHELL`] and the router the actions service's [`INTENTD`], so the computer-use daemon and the daemons beside it agree on who
+/// [`SHELL`] and the router the actions service's [`ACTIOND`], so the computer-use daemon and the daemons beside it agree on who
 /// they are.
 const CLASSES: [(Standing, ComputerUseCaller); 3] = [
-    (INTENTD, ComputerUseCaller::Router),
+    (ACTIOND, ComputerUseCaller::Router),
     (COMPANION, ComputerUseCaller::Companion),
     (SHELL, ComputerUseCaller::Shell),
 ];

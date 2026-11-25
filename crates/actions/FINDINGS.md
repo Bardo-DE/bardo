@@ -1,12 +1,12 @@
 # Findings
 
 Open items and standing facts. An entry names the condition that closes it. After fill wave 1,
-the actions service amendment, the intentd bus fill (F3), the w4-companion fill (the persistent companion,
+the actions service amendment, the actiond bus fill (F3), the w4-companion fill (the persistent companion,
 the MCP edge), the w4-actions fill (the audit trail, the built-in providers, the inferd bodies, the
 signals), the w5-actions fill (the reader's session, the gate's watch, the companion's asks, the
 daemons' binaries) and the f4-actions fill (the MCP binary, the watched perform, the resolver seam) there is **1 `todo!()` body** in library and daemon code (the voice wave's v-voiced lane filled the other: `voiced::serve`), listed below; the tests contain
 none, and no test is `#[ignore]`d. (The freeze had 37: `agent_step` was filled in fill wave 1; F3 filled
-`DbusTransport::call`, `action_provider::serve`, `DbusLink`, `SheetConfirmer`, `FileGrants` and intentd's
+`DbusTransport::call`, `action_provider::serve`, `DbusLink`, `SheetConfirmer`, `FileGrants` and actiond's
 `serve` and `main`; w4-companion filled companiond and `McpEdge::call`; w4-actions filled `record_of`,
 `InferdModel::{chat, embed}`, `InferdWriter::derive`, `ReaderClient::extract`, both providers' `perform`,
 `reader_request`, `ReaderService::{extract, extract_in}` and readerd's `serve`. w5-actions filled no stub: it
@@ -20,7 +20,7 @@ path: a limit's id is a `StandingGrantId`, so Undo on the sheet calls the existi
 `ControlStandingRevoke`). The router applies them after the gate, so no grant, standing grant or
 approval lifts one; only agents meet them. The administrator's floor is `/etc/bardo/actions-floor.toml`
 (`dist/actions-floor.example.toml`, not installed): a loosest strictness and locked entries; a
-missing file is no floor, a file that does not parse stops intentd. `Gate.Grant` takes the whole
+missing file is no floor, a file that does not parse stops actiond. `Gate.Grant` takes the whole
 `GrantAsk` as JSON, so computer use's allow level and the run it asks for cross the bus (COMPUTER-USE-14; before,
 only the app and the Space did, and a later run of a conversation was asked again). Open:
 agent-inapp's in-process store keeps no limits (the
@@ -60,7 +60,7 @@ section, masking, deterministic), `choose_tier`, `front_step`, `completion_line`
 lists; the options dictionary on every call that starts work; broadcasts carry no content.
 action-client: `Intents` over a scripted transport. action-fake and action-eval: fixtures and fakes,
 the corpus loads and every case meets its expectation, `wilson` and `judge` tables. actions-mcp: tool names, hints, offered
-actions, `mcp_label`. intentd: the configuration, the built-in manifests, record kinds, the queue,
+actions, `mcp_label`. actiond: the configuration, the built-in manifests, record kinds, the queue,
 the memory seam, the clock, every unit file's sandbox lines. readerd: the fixed instructions, the
 reader host. action-ui-adapter: every mark conversion. voice-wire, voice-loop, voiced: see their rows in
 `ARCHITECTURE.md` (the utterance and speech machines, the sentencer, the buffer, the introspection).
@@ -156,9 +156,9 @@ Built, with tests against `action-fake` (the router in process) and a private bu
 
 Open, and the asks they make (nothing below was edited in the other repos):
 
-1. **Closed by F3 (interface-asks 84, 89, 95):** `DbusTransport::call` and intentd's `serve` and `main` are built,
-   so `bardo-do` reaches a real intentd on a D-Bus session bus (see "The bus path" below).
-2. **Closed by F3:** intentd derives the caller from the connection (a `bardo-do` process owns no bus name, so
+1. **Closed by F3 (interface-asks 84, 89, 95):** `DbusTransport::call` and actiond's `serve` and `main` are built,
+   so `bardo-do` reaches a real actiond on a D-Bus session bus (see "The bus path" below).
+2. **Closed by F3:** actiond derives the caller from the connection (a `bardo-do` process owns no bus name, so
    it is named by its executable: `org.bardo.Do`, role cli), calls `Router::end_terminal_sessions` when logind
    removes the person's session, and serves `Run.DryRun`, `Control.TerminalGrants` and
    `Control.RevokeTerminalGrant`.
@@ -186,7 +186,7 @@ Open, and the asks they make (nothing below was edited in the other repos):
    breaker stopped go on by waiting, and each round costs the person a sheet. A paused terminal says "paused: too
    many refusals in a row; the person has to resume it" (exit 7). Ask (the shell): a "Resume the terminal" button
    in the control centre that calls `Control.Resume`; until it exists the person's ways back are `systemctl
-   --user restart intentd` or logging out.
+   --user restart actiond` or logging out.
 7. **The terminal's session is in the `desktop` Space** (the implicit session of every role without a session
    of its own), so a terminal call's target counts as `Same` (ask 42 stands).
 8. **`--session`** is passed to `Run.Perform` and ignored by the router for every role but the companion.
@@ -194,12 +194,12 @@ Open, and the asks they make (nothing below was edited in the other repos):
    and usable as an argument by a later command); `Session.Display` is not open to the `cli` role, so a person
    at a terminal cannot read a held title. Ask: say whether the terminal may display what it holds.
 
-## The bus path: `bardo-do` to intentd to an app (F3)
+## The bus path: `bardo-do` to actiond to an app (F3)
 
 Built and tested on a private `dbus-daemon` (nothing of the real session is named):
 
 - **`DbusTransport::call`** (`action-client/src/bus.rs`): one arm per `IntentsRequest` (all 32 members). Bodies
-  are the JSON of the typed value the `action-dbus` proxy documents. A request intentd refuses before it is a
+  are the JSON of the typed value the `action-dbus` proxy documents. A request actiond refuses before it is a
   call (`NotAllowed`, `NoSuchSession`, `Malformed`) is the bus error `org.bardo.Intents1.Error.<Variant>` and
   comes back as `IntentsReply::Refused`; a refused *call* is an answer: the body of `Run.DryRun`, `Run.Preview`,
   `Run.Suggest` and `Context.Current` is `Result<T, CallRefusal>`, and `Message.Send`'s is `Result<Delivery,
@@ -207,48 +207,48 @@ Built and tested on a private `dbus-daemon` (nothing of the real session is name
   `Session.Widen`, `Gate.Grant`, `Gate.Check`): the answer is the `org.bardo.Intents1.Request.Response(code, body)`
   signal at the returned path, sent to the caller alone; code 0 carries the typed answer, code 2 a `WireRefusal`.
   The signal is subscribed to before the call (`action_client::requested`), counts only from the owner of
-  intentd's name, and the wait ends `Closed` when intentd leaves the bus. `DbusTransport::connect` does not ask
+  actiond's name, and the wait ends `Closed` when actiond leaves the bus. `DbusTransport::connect` does not ask
   the bus to activate a name that already has an owner.
-- **intentd's side** (`intentd/src/bus/`): one struct per interface with the signatures of `action-dbus`'s
+- **actiond's side** (`actiond/src/bus/`): one struct per interface with the signatures of `action-dbus`'s
   skeletons (a test holds the served introspection to `dbus/org.bardo.Intents1.xml`; no member may carry a doc
   comment, zbus copies it into the XML). `serve_on(connection, router, config)` exports them and claims the
-  name with `DoNotQueue` (a second intentd stops); `serve(router, config)` is the same on the session bus. `tests/it/bus_members.rs` sends every member over the bus and in process and requires the
+  name with `DoNotQueue` (a second actiond stops); `serve(router, config)` is the same on the session bus. `tests/it/bus_members.rs` sends every member over the bus and in process and requires the
   same reply.
-- **Identity** (`intentd/src/peer.rs`): from the bus's own credentials for the connection: the same user, the
+- **Identity** (`actiond/src/peer.rs`): from the bus's own credentials for the connection: the same user, the
   well-known names it owns, and for a process that owns none, the cgroup behind its pid (f4-actions-ident: a
-  terminal's child is `org.bardo.Do`, see "f4-actions-ident" below; `/proc/<pid>/exe` is no longer read). Roles are `intentd.toml`'s (`dist/intentd.toml` is the shipped default; a file in
+  terminal's child is `org.bardo.Do`, see "f4-actions-ident" below; `/proc/<pid>/exe` is no longer read). Roles are `actiond.toml`'s (`dist/actiond.toml` is the shipped default; a file in
   `$XDG_CONFIG_HOME/bardo` replaces it whole). An unknown connection is `NotAllowed`. This is advisory on a
   desktop where every process runs as the person: the cli role asks for everything but a read, and the
   stronger binding (Flatpak, a systemd scope) is later.
   **One narrowing (acp-gate):** `org.bardo.Acp` is listed as an editor and a companion, but its owner exists only
   while `agent.acp.expose = "on"`, so the name is usually unowned and any process of the person could take it.
-  `AcpGate` (intentd) drops that name from a connection's facts unless the setting is on, read at each call
+  `AcpGate` (actiond) drops that name from a connection's facts unless the setting is on, read at each call
   (`Peers::facts`); the daemon sets it from the settings watch, so a flip applies to the next call and nothing is
   cached. Off means the name is nobody (the connection falls back to its cgroup, usually a plain app).
   Identity stays advisory for same-user processes: with the setting on, any of them can still own the name and
   play both roles. The gate narrows exposure while the feature is off, nothing more. A library caller of
-  `serve_on` / `serve_on_with` gets a shut gate; `serve_on_gated` takes one. Tests: `intentd/tests/it/acp_gate.rs`;
+  `serve_on` / `serve_on_with` gets a shut gate; `serve_on_gated` takes one. Tests: `actiond/tests/it/acp_gate.rs`;
   the acceptance world writes the setting (`AcpSetting::On`, `World::start_acp`).
 - **Apps** (`DbusLink`): `IntentProvider1` on the app's own name, started by activation when absent, the
   owner checked to be the person's own process; latencies 250 ms (instant), 5 s (quick), 10 min (long, reports
   progress itself); a timeout is `AppFault::TimedOut`. `action_provider::serve_on` / `serve` serve a provider and
-  answer only intentd (every member but `Summon`). The mail app of the tests is action-fake's `FakeMail`
+  answer only actiond (every member but `Summon`). The mail app of the tests is action-fake's `FakeMail`
   behind it.
 - **The sheet** (`SheetConfirmer`): `Confirm1` is asked only when its owner plays the `confirm` role; no shell, an
   untrusted owner, a shell that vanishes or never answers is a dismissal or an expiry, never an allow. The
   Request object the shell returns must send `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`.
-- **Logout** (`intentd/src/logout.rs`): `SessionRemoved` of logind on the system bus ends the terminal sessions
+- **Logout** (`actiond/src/logout.rs`): `SessionRemoved` of logind on the system bus ends the terminal sessions
   (the session of `XDG_SESSION_ID`, any session when it is unknown); the unit is `PartOf=graphical-session.target`.
   Tested against a fake logind on the private bus.
 - **Files:** `FileGrants` (atomic, a damaged file is no grants), the manifests of `$XDG_DATA_HOME` and
-  `$XDG_DATA_DIRS` (`bardo/intents/*.toml`, the first directory wins), `dist/intentd.service`, `dist/intentd.toml`.
-- **`bardo-do` end to end** (`action-cli/tests/e2e.rs`): the real binary, intentd's `start`, a fake mail provider,
+  `$XDG_DATA_DIRS` (`bardo/intents/*.toml`, the first directory wins), `dist/bardo-actiond.service`, `dist/actiond.toml`.
+- **`bardo-do` end to end** (`action-cli/tests/e2e.rs`): the real binary, actiond's `start`, a fake mail provider,
   a fake shell `Confirm1`: a read exits 0, a write asks and the answer decides, "from the terminal" skips the next
   ask until the control centre revokes it, a hidden action exits 3, three refusals pause it (exit 7) until
-  `Control.Resume`, `undo --last` reaches the app, and with intentd stopped every call exits 6.
+  `Control.Resume`, `undo --last` reaches the app, and with actiond stopped every call exits 6.
 
-By hand: `scripts/try-bardo-do.sh` starts a scratch `dbus-daemon`, intentd, a fake mail app and a sheet that asks
-on the terminal (`intentd/examples/try_apps.rs`), all with a scratch HOME and XDG directories, and prints the
+By hand: `scripts/try-bardo-do.sh` starts a scratch `dbus-daemon`, actiond, a fake mail app and a sheet that asks
+on the terminal (`actiond/examples/try_apps.rs`), all with a scratch HOME and XDG directories, and prints the
 `source` line for a second terminal where `bardo-do` then works.
 
 Built in the w4-actions fill (each with tests on a private bus, a scripted inferd or the fakes):
@@ -259,11 +259,11 @@ Built in the w4-actions fill (each with tests on a private bus, a scripted infer
    the call it reviews, else the session or task the router still holds, else `desktop`). `QueuedSink` is bounded
    (4096 records; the oldest are dropped and counted) and shared by clone; `AuditLog` writes one batch per Space as the
    router's `Caller`. **Degraded path:** while memoryd is away, locked or busy, what could not be written goes back in
-   front of the queue in its original order, intentd says once that memoryd is not answering and once that it is back,
+   front of the queue in its original order, actiond says once that memoryd is not answering and once that it is back,
    and says how many records it had to drop; a record memoryd refuses for good is dropped and counted, never retried.
    `Setup.audit_every` (5 s) is the cadence. `Cause` is `None` on every record: a review names its call by id inside
    its payload, because the call's `EventRef` is memoryd's to make after the batch is written.
-2. **intentd hosts `org.bardo.Memory` and `org.bardo.Companion`.** `HostedLink` (the `AppLink` of `SystemSeams`) answers
+2. **actiond hosts `org.bardo.Memory` and `org.bardo.Companion`.** `HostedLink` (the `AppLink` of `SystemSeams`) answers
    those two names in process and every other app over D-Bus; their manifests are built in (`builtin_manifests`) and
    inserted before the installed ones, so `bardo-do apps` lists them, and a file that declares either name is skipped
    with a reason. Memory: `recall` (a search of the session's Space, `RecallOver::Both`), `facts` and `propose`
@@ -285,7 +285,7 @@ Built in the w4-actions fill (each with tests on a private bus, a scripted infer
    this computer), `answer_of` (the reply read back under the schema, entities only among those offered, `conforms`
    before anything is passed on), `ReaderService::{extract, extract_in}` (every handle resolved through
    `Session.Resolve`, the whole read fails if one cannot be) and `serve` / `serve_on` (`Reader1`, answering only the
-   owner of intentd's name). `ReaderClient::extract_in` is the call from intentd; see the ask below for the seam.
+   owner of actiond's name). `ReaderClient::extract_in` is the call from actiond; see the ask below for the seam.
 4. **The signals.** `ManifestChanged`, `JournalChanged`, `BreakerTripped` and `Arrived` are the difference between two
    looks at the router's state (`Marks`, `changes`, every 200 ms; table-tested), so every way the state can change says
    so the same way; the manifest directories are rescanned every few looks (polling, since `notify` is outside the
@@ -411,8 +411,8 @@ Open, and the asks they make (nothing was edited in the other crates beyond the 
     MCP edge has no stdio or socket serve behind `McpAccess::On` and no `mcp.enabled` settings row (ask:
     the row, read by the hosting daemon). `McpFault` lost `Copy`.
 
-Seams served: companiond to intentd (`Session.*`, `Run.Perform`, `Message.*`) and to inferd
-(`Open` with `Need::Llm`), the shell and the shell through `Companion1`; actions-mcp to intentd through
+Seams served: companiond to actiond (`Session.*`, `Run.Perform`, `Message.*`) and to inferd
+(`Open` with `Need::Llm`), the shell and the shell through `Companion1`; actions-mcp to actiond through
 `Intents::perform`. Scenarios that prove them later (`~/rs-wt/integration/MAP.md`): the double-tap summon
 that reads mail and answers with a handle; a follow-up task an hour later seeing the last episode; the
 user redirecting a run and the front agent quoting them; two Spaces with a labelled message and a
@@ -426,8 +426,8 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
 1. **`Session.Read` works in the running daemon (ask 126).** `Reader::extract(&self, session: &SessionId, ask,
    inputs)`: the router passes the session in `session_read`, `ReaderClient::extract` calls `Reader1.Extract(session,
    ask)`, `ReaderService::extract` ignores it (readerd resolves the handles itself), `ScriptedReader` records it
-   (`sessions()`). `intentd/tests/it/reader_daemon.rs` runs the whole path on a private bus: a companion recalls untrusted
-   text (a handle), `Session.Read` goes to intentd, to readerd and to a scripted inferd, and the answer comes back plain
+   (`sessions()`). `actiond/tests/it/reader_daemon.rs` runs the whole path on a private bus: a companion recalls untrusted
+   text (a handle), `Session.Read` goes to actiond, to readerd and to a scripted inferd, and the answer comes back plain
    (an answer outside the schema, and a bus with no readerd, are refused). **Known limit (closed by the f4-actions fill, item 4):** `Session.Resolve` answers the
    text alone, so readerd cannot class it and sends it as the person's own words (`DataClass::Prompt`, pinned on this
    computer); the class of the handle's own label (mail) would pin it harder. Ask: `Session.Resolve` answers the
@@ -439,12 +439,12 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
    says `Progress(Confirming(id))`, waits for `Proceed` (10 s, then the step is refused unasked: `Unconfirmed(Expired)`;
    the 10 s is a setting since the f4-actions fill and is tested on a virtual clock) and only then draws the sheet; `Close` withdraws the
    request and its sheet (`Cancelled`), no `Response` follows. An unwatched check is exactly as before. On the bus the
-   caller says it watches with the `watch` option of `Gate.Check` (`action_dbus::OPTION_WATCH`), intentd's Request
+   caller says it watches with the `watch` option of `Gate.Check` (`action_dbus::OPTION_WATCH`), actiond's Request
    object answers `Proceed` and `Close` for the owner of the request only, and `Proceed` on a request nobody watches is
    still `Malformed`. The client: `Transport::watch` (default: the answer alone), `Intents::gate_check_watched(ask)` ->
    `GateWatch` (`next()` gives `GateEvent::Confirming(id)` then `Verdict(answer)`, `proceed()`, `close()`, and a cloneable
    `GateSteer` for another task); `InProcess` drives the router's future from `next()` (no runtime here). Tests:
-   `action-router/tests/it/watching.rs`, `intentd/tests/it/gate_watch.rs` (bus: told before the sheet, no sheet before
+   `action-router/tests/it/watching.rs`, `actiond/tests/it/gate_watch.rs` (bus: told before the sheet, no sheet before
    `Proceed`, `Close` before and during a sheet, an unwatched check), `action-fake/tests/it/fakes.rs`.
 3. **The companion's asks (121), all but the scheduler and the settings row:**
    - `AskWire { session, turn: UserTurn, keep, parent_window, app }` (so a real `Companion1.Ask` works; `Companiond::heard`
@@ -453,7 +453,7 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
      handed is the person's words and the router never recorded this copy. `Open` and `Close` are still open to any
      caller (see asks).
    - `NoteAsk` is `Episode(Episode) | Narrative { episode, narrative } | Record(SessionNote)`. `Record` is the serde JSON of
-     a `companion-wire` `SessionRecord` under its slug: the router stores it as `AuditRecord::Session`, intentd as
+     a `companion-wire` `SessionRecord` under its slug: the router stores it as `AuditRecord::Session`, actiond as
      `Area { Companion }` of kind `companion.session.<slug>` (trusted, private to the session's Space), and companiond now
      writes `opened`, `asked`, `replied`, `finished` and `closed` records. `Episode` is refused for another Space or an
      untrusted skeleton. `Narrative` names the episode; the router merges it into its own skeleton from the task's ledger and
@@ -485,16 +485,16 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
    - **`mcp.enabled` (ask, not done here):** Bardo's settings gain a row `mcp.enabled` (an on or off setting: off by default,
      QUESTIONS S7), read by the daemon that hosts the MCP edge (`actions-mcp`'s binary), which passes
      `McpAccess::On` to `McpEdge` and serves it over stdio or a socket; nothing was edited in bardo.
-4. **128:** `BreakerTripped` is emitted (intentd `signals`, `tests/it/signals.rs`: said once, again after a resume and a second
+4. **128:** `BreakerTripped` is emitted (actiond `signals`, `tests/it/signals.rs`: said once, again after a resume and a second
    pause): closed. `Resume(Only(space))` also lifts a global halt for that Space (the global halt becomes a halt of every other
    Space the router has a session in; `tests/it/control.rs`). The effect classes **"changes only the view"** and **"file with no
    undo"** cannot grow additively here: `Effect` is the accounts service's `prov::Effect` (`Read < UndoableWrite < Outbound < Destructive`),
    ordered, and the Cedar grid, the budgets and the ceilings are written over it. Ask (the accounts service): the two classes, with the grid rows
    and the ceilings decided by the person; until then a view-only action is `read` and a file with no undo is `destructive`.
 5. **The daemons' `main`s.** `readerd::run` / `readerd::start` and `companiond::run` / `companiond::start` (configuration,
-   `action_dbus::session_connection` (shared with intentd), `DbusTransport`, `inferd_transport`, `restore`, `serve_on`),
+   `action_dbus::session_connection` (shared with actiond), `DbusTransport`, `inferd_transport`, `restore`, `serve_on`),
    `CompaniondConfig` (`dist/companiond.toml`, every key optional: `shell`, `spaces`, `[agent]`). Binary tests on a private bus
-   (`readerd/tests/it/binary.rs`, `companiond/tests/it/binary.rs`): the name is claimed, `Reader1` answers intentd alone and says
+   (`readerd/tests/it/binary.rs`, `companiond/tests/it/binary.rs`): the name is claimed, `Reader1` answers actiond alone and says
    unavailable with no router behind it, `Roster()` and `Front()` answer with nothing running, the configured shell is heard
    and another is not, a second daemon stops, and killing the daemon frees the name. `voiced` stays a skeleton.
 
@@ -516,12 +516,12 @@ Branch `f4-actions`. Each item has tests on a private bus, in process, or over t
 1. **`actions-mcp` is a binary** (stdio by default, `--socket PATH` for a long-lived socket, `--client NAME`).
    `McpConfig` (`$XDG_CONFIG_HOME/bardo/actions-mcp.toml`, shipped as `dist/actions-mcp.toml`: `access = "off"`,
    `client`): off by default, so an edge nobody switched on lists nothing and refuses every call (it still runs,
-   and says so on stderr). It claims `org.bardo.ActionsMcp`, the name `intentd.toml` gives the `mcp` role, and a
+   and says so on stderr). It claims `org.bardo.ActionsMcp`, the name `actiond.toml` gives the `mcp` role, and a
    second edge stops (several clients share one edge through the socket; each connection gets its own `McpEdge`).
    The router names an MCP caller by that bus name, so consent grants are per edge process, while the `client`
    name labels the arguments (`Source::Mcp(client)`); per-client grants would need the client on the wire.
    `action-dbus` and `zbus` join `actions-mcp`'s edges (`check-boundary.sh` rules updated). Tests
-   (`actions-mcp/tests/it/binary.rs`, `env_clear`, private bus, intentd's `serve_on` over the fake router, an rmcp
+   (`actions-mcp/tests/it/binary.rs`, `env_clear`, private bus, actiond's `serve_on` over the fake router, an rmcp
    client on the child's pipes and on the socket): off lists nothing, on serves the registry and a read is allowed
    as the role, a second edge stops, two socket clients share one edge, the unit's command line parses.
 2. **`Companion1.Open` and `Close` are the shell's** (the `Ask` check). `companiond/tests/it/serve.rs`.
@@ -529,11 +529,11 @@ Branch `f4-actions`. Each item has tests on a private bus, in process, or over t
    `Confirming(id)` (told as the sheet is drawn, not waited on), `Dispatched`. `Watch::listening` is the
    listen-only watcher; `Run.Perform` takes the `watch` option (`Watching::Listening`: `Close` still aborts the
    call as for any request); the client has `Intents::perform_watched` -> `PerformWatch::next()` ->
-   `PerformEvent::{Progress, Done}`. Tests: `action-router/tests/it/watching.rs`, `intentd/tests/it/perform_watch.rs`.
+   `PerformEvent::{Progress, Done}`. Tests: `action-router/tests/it/watching.rs`, `actiond/tests/it/perform_watch.rs`.
 4. **`Session.Resolve` answers the label** (ask 147): `IntentsReply::Resolved(Resolved { text, label })`
    (`Session.Display` still answers `Text`); the D-Bus out argument stays one string (now the JSON of
    `Resolved`, so `org.bardo.Intents1.xml` is unchanged). readerd classes a read by the handle's own label
-   (`intentd/tests/it/reader_daemon.rs`: mail, not `Prompt`); `resolved_label` is gone.
+   (`actiond/tests/it/reader_daemon.rs`: mail, not `Prompt`); `resolved_label` is gone.
 5. **A restart reads more Spaces than `companiond.toml`'s**: `RecallAsk::Spaces` / `RecallView::Spaces`
    (any session may ask): the router answers the open and paused Spaces memory lists, the Spaces it holds a session
    or a task in, and the desktop; `restore` takes the union with the configured list. Memory's `Spaces` read is
@@ -541,7 +541,7 @@ Branch `f4-actions`. Each item has tests on a private bus, in process, or over t
    The memory service lets `Caller::Router` ask it. Ask (the memory service): in `allowed`, move `R::Spaces` from the
    `Caller::ShellUi`-only group to `R::Spaces => yes_if(router_or_shell)`.
 6. **The `Proceed` wait is a setting**: `AgentConfig.confirm_proceed` (`agent.confirm.proceed_ms`, 10 000, serde
-   default so an old `intentd.toml` still reads; shipped in `dist/intentd.toml`). `FixedClock` is a virtual clock
+   default so an old `actiond.toml` still reads; shipped in `dist/actiond.toml`). `FixedClock` is a virtual clock
    now (`FixedClock::at`, `advance`, `asked`, `next_ask`; `after(Millis(0))` still completes at once), and
    `a_watcher_that_never_proceeds_is_refused_unasked_after_the_configured_time` runs on it: the router asks for
    the configured time, 2 499 ms more does nothing, the last millisecond expires the step.
@@ -558,7 +558,7 @@ Branch `f4-actions`. Each item has tests on a private bus, in process, or over t
 ## The f4-e2e acceptance
 
 Branch `f4-e2e`. `crates/action-accept` and `dev/accept/` (README: what is real, what is scripted, what mailo's
-provider must match). The real intentd, companiond, readerd and memoryd run as processes on a private bus with a
+provider must match). The real actiond, companiond, readerd and memoryd run as processes on a private bus with a
 scripted `Inference1`, a `Confirm1` server and a mail provider; SPEC section 5 flows (a) and (c) pass in the gate.
 Tests: flow (a) Allow through undo and the audit in memoryd, flow (a) refused (nothing sent, nothing journaled),
 flow (c) (the injected body never reaches the planner; the reader saw it fenced, with no tools, in class Mail;
@@ -572,8 +572,8 @@ recipient `Quoted{from: Mail}`, taint `ReadUntrusted(Mail)`), and one ignored (f
    Done, with an `Updated` signal at each. The card is the body while the phase is Thinking, Streaming or
    `NeedsYou(Confirm)`; a finished answer shows its words. Test `flow_a_the_answer_shows_the_sheet_while_it_waits`
    (un-ignored) and unit tests in `plan.rs` and `task.rs`.
-2. **Records that name no Space go to `desktop`** (`intentd/src/audit.rs`). `desktop` stays the default Space
-   (SPEC P6). When memoryd refuses a Space's records, intentd now says so once per Space on stderr (`tell_refused`)
+2. **Records that name no Space go to `desktop`** (`actiond/src/audit.rs`). `desktop` stays the default Space
+   (SPEC P6). When memoryd refuses a Space's records, actiond now says so once per Space on stderr (`tell_refused`)
    and counts every lost record in `Control.State` (`KillSwitch::audit_lost`, additive, `serde(default)`). The run
    still registers `desktop` until the memory service makes memoryd always know it.
 3. **memoryd cannot run as its binary without a Secret Service.** CLOSED (f4-e2e-2, `MEMORYD_KEYS`; sandbox on since f4-e2e-3). Was: `accept-memoryd` is the memory service's `main.rs` with
@@ -610,7 +610,7 @@ test process cannot satisfy. Both daemons are built with their test-only `test-p
 `test-keys`) and run with `INFERD_PROC_ROOT` / `MEMORYD_PROC_ROOT` = `<scratch>/proc`. `World` writes
 `<scratch>/proc/<pid>/cgroup` for each daemon it spawns (`.../app.slice/<name>.service`) and for the test
 process as the shell (`shell.service`). memoryd's sandbox is now ON (no `MEMORYD_SANDBOX=off`); its callers file
-(`memory-callers.toml`) has rows for intentd, the shell, companiond and readerd; `inferd.toml` names memoryd, intentd,
+(`memory-callers.toml`) has rows for actiond, the shell, companiond and readerd; `inferd.toml` names memoryd, actiond,
 companiond and readerd by unit. The reader-class assertion is back (flow c: the reader's one audit entry is class
 `Mail`). `ACCEPT_RECORD=1` makes the replay engine record request bodies, printed when the world drops.
 - Mailo's real provider mode was not built: see the mailo ask below.
@@ -620,7 +620,7 @@ companiond and readerd by unit. The reader-class assertion is back (flow c: the 
   builder, or `mailo intents --fixture <dir>`, would do); (2) `mail-app` builds only with Bardo and pdfrum git
   dependencies (network at build time) and the GUI stack (a ~900 MB debug build): a `--no-default-features`
   headless `mailo-intents` binary (or package) with no `ds`/blitz deps; (3) a caller check that accepts the
-  fake-proc-root router (it asks for the owner of `org.bardo.Intents1`, which intentd is, so this may need nothing).
+  fake-proc-root router (it asks for the owner of `org.bardo.Intents1`, which actiond is, so this may need nothing).
   Mailo's manifest also differs from the stand-in's (`dist/intents/org.bardo.Mail.toml`), so flows (a) and (c)
   need their own cassettes for it.
 
@@ -739,16 +739,16 @@ marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), an
 ## inferd link (ask 81)
 
 Closed by F3 (ask 95): the one constructor is `action_dbus::inferd_transport` (feature `inferd`);
-intentd's `inferd_transport`, `PlannerModel::on_bus` and `ReaderService::on_bus` call it.
+actiond's `inferd_transport`, `PlannerModel::on_bus` and `ReaderService::on_bus` call it.
 
 `ConfirmReceipt` literals gained `covers` (`Confidentiality::Secret`: a confirmation here opens
-nothing; the actions service never calls `declassify`, so no caller handles its `Result`). intentd's
+nothing; the actions service never calls `declassify`, so no caller handles its `Result`). actiond's
 `inferd_transport(connection)`, `InferdModel::on_bus`, `InferdWriter::on_bus`, companiond's
 `PlannerModel::on_bus` and readerd's `ReaderService::on_bus` build
 `AnyTransport::Dbus(DbusTransport::over(connection))` (account-client with feature `dbus`); nothing is
 called until the first session, so an absent inferd is `Unreachable` at the first `open`. The models' and the
 reader's bodies are filled (see "The bus path") and tested over a scripted session (`ScriptedInferd`, in
-`intentd/tests/support/inferd.rs`, account-fake's session with the opens and frames logged). The companiond and
+`actiond/tests/support/inferd.rs`, account-fake's session with the opens and frames logged). The companiond and
 voiced `main`s are still skeletons (exit 2) and the planner's and `serve` bodies are `todo!()`: whoever fills them
 builds the connection first and passes it here.
 
@@ -818,12 +818,12 @@ builds the connection first and passes it here.
 
 ## f4-actions-ident: cgroup identity and the activation token
 
-1. **Caller identity moved off `/proc/<pid>/exe` onto the cgroup** (`intentd/src/peer.rs`). The bus still names the
+1. **Caller identity moved off `/proc/<pid>/exe` onto the cgroup** (`actiond/src/peer.rs`). The bus still names the
    pid; `account_dbus::ProcCallers::caller_of_pid` reads only `/proc/<pid>/cgroup` (no ptrace check, works in a
    Landlock domain). Order, unchanged for names: a connection that owns application-shaped well-known names is
-   those names, with `intentd.toml`'s roles (confirm = owner of `org.bardo.Confirm1` through the `confirm` row).
+   those names, with `actiond.toml`'s roles (confirm = owner of `org.bardo.Confirm1` through the `confirm` row).
    A connection that owns no name is identified by its cgroup alone:
-   - `app-[<launcher>-]<id>-<n>.scope` or `app-flatpak-<id>-<n>.scope`: that app, with the roles `intentd.toml`
+   - `app-[<launcher>-]<id>-<n>.scope` or `app-flatpak-<id>-<n>.scope`: that app, with the roles `actiond.toml`
      lists under `<id>` (none for almost every app: a plain app). This is also how a user whose terminal runs in
      an app scope (konsole in `app-org.kde.konsole-<n>.scope`) opts in: list `org.kde.konsole` under `cli`.
    - **a terminal child: `vte-spawn-*.scope`, `tmux-spawn-*.scope`, a login `session-*.scope`: `org.bardo.Do`, the
@@ -835,18 +835,18 @@ builds the connection first and passes it here.
      `bardo-do` (the old exe name was as forgeable by a copy of any binary); and stronger in another: a binary
      named `bardo-do` outside a terminal scope (a service, a cron job's scope) is no longer the cli. The cli role
      still asks for everything that is not a read, so it stays advisory on a desktop where every process runs as
-     the person. No callers file is read: intentd has no unit rows (the accounts service's `CallerTable` is passed empty); a
+     the person. No callers file is read: actiond has no unit rows (the accounts service's `CallerTable` is passed empty); a
      daemon that is a service owns a well-known name, which already names it.
    - Tests: `peer/tests.rs` (a table of names x cgroup facts; the cgroup leaves over a fixture proc tree),
      `tests/it/identity.rs` (over a private bus with a fake proc root: the shell's token goes through, a nameless
      connection is cli / plain app / nobody by its leaf).
-2. **`INTENTD_PROC_ROOT` / feature `test-proc-root`** (`intentd/src/procroot.rs`, the same three guards as memoryd and
+2. **`ACTIOND_PROC_ROOT` / feature `test-proc-root`** (`actiond/src/procroot.rs`, the same three guards as memoryd and
    inferd): off by default; `scripts/check-boundary.sh` fails if `cargo tree -p action-daemon` shows a `test-` feature in a
    default build; with the feature the daemon prints one stderr line naming the root
    (`TEST BUILD: reading callers from the proc root <dir>, not /proc`); without it a set variable is ignored with one
-   stderr line (`INTENTD_PROC_ROOT is set but this build has no test-proc-root feature ...`). Tests: pure
+   stderr line (`ACTIOND_PROC_ROOT is set but this build has no test-proc-root feature ...`). Tests: pure
    `proc_root_choice` table, and the real binary on a private bus for whichever build is under test
-   (`tests/it/binary.rs`). action-accept needed no change: its test processes own bus names, so intentd never reads
+   (`tests/it/binary.rs`). action-accept needed no change: its test processes own bus names, so actiond never reads
    their cgroups; `Peers::with_proc_root` and `serve_on_with` take a `ProcRoot` for tests that do.
 3. **Activation token.** `action_core::Invocation` is unchanged (consumers' struct literals keep compiling). The
    token rides beside it: `ActivatedInvocation { #[serde(flatten)] invocation, activation: Option<ActivationToken> }`
@@ -861,8 +861,8 @@ builds the connection first and passes it here.
    `DbusLink` and `HostedLink` deliver it), `IntentProvider::perform_activated` (default: ignore the token, call
    `perform`). `action-client`: `Intents::perform_activated` and `perform_watched_activated`.
    Tests: `action-router/tests/it/activation.rs` (launcher gets it through; cli, field, companion, mcp dropped; wire
-   form), `intentd/tests/it/identity.rs` (launcher token crosses the real bus; the cli's is dropped),
-   `intentd/tests/it/link.rs` (the token reaches a real provider through `DbusLink`).
+   form), `actiond/tests/it/identity.rs` (launcher token crosses the real bus; the cli's is dropped),
+   `actiond/tests/it/link.rs` (the token reaches a real provider through `DbusLink`).
 4. **The shell is `shell.service`.** the accounts service's caller table names the shell by that service unit alone (a scope never
    carries a fixed role; there is no `bardo-shell.scope`). action-accept's fake proc root puts the fake shell in
    `shell.service` with its main pid registered (`proc/units/shell.service`), and memoryd's callers fixture has the one
@@ -880,16 +880,16 @@ What landed: the skills format, discovery, validation and the three places they 
   fields, `skills` and `skill_texts` (`agent-loop::Sources` has the same two).
 - **Only installed files.** `discover` takes `Roots` (directory paths) and nothing else; there is no way to give
   it text. Roots are built from the environment only in a daemon's or bardo-do's `main`
-  (`Roots::from_env`; intentd uses its own `data_dirs`). `$XDG_DATA_HOME/bardo/skills/<id>/` wins over
+  (`Roots::from_env`; actiond uses its own `data_dirs`). `$XDG_DATA_HOME/bardo/skills/<id>/` wins over
   `$XDG_DATA_DIRS`; earlier data dirs win over later; a directory that fails does not shadow another of its id.
 - **Trust.** Shipped text is `SkillText` with integrity Trusted and `Source::App(owner)`; the person's own is
   `Source::User`. The prompt introduces each body as installed text for the planner that grants nothing.
 - **Load.** `companion.skill.load { id }` is in `manifests/org.bardo.Companion.toml` (Read, no undo, instant) and
-  served by the router's `companion_perform` (`action-router/src/skills.rs`), so intentd's hosted provider and the
+  served by the router's `companion_perform` (`action-router/src/skills.rs`), so actiond's hosted provider and the
   fake world run the same code. A skill is loadable only if every action it uses is registered and not Hidden;
-  the cap of three per session is `SessionRecord::skill_loads`; reloading one already loaded is free. intentd
+  the cap of three per session is `SessionRecord::skill_loads`; reloading one already loaded is free. actiond
   installs the skills at start (`Router::install_skills`) and logs rejected and hidden ones on stderr. They are
-  not rescanned while it runs (the manifests are); a new skill needs an intentd and companiond restart.
+  not rescanned while it runs (the manifests are); a new skill needs an actiond and companiond restart.
 - **Planner.** companiond keeps a task's loaded ids (`TaskRuntime::loaded`), shows loaded bodies and the preselected
   ones (always first, then by id, at most two) every turn, and puts the loaded skills' actions first in the action
   list. The tool order of the request now follows `view.actions` (it was the catalogue's order filtered by the
@@ -909,7 +909,7 @@ What landed: the skills format, discovery, validation and the three places they 
   manifests. A manifest reached twice is read once. Pass every repo whose actions the skills use. A missing
   action fails; an action Hidden from the companion is a note.
 - **`bardo-do skills`** lists the installed skills from `$XDG_DATA_*`, each marked offered, hidden (missing action,
-  with which) or not offered (Hidden action), plus directories that did not load. It needs intentd for the manifests.
+  with which) or not offered (Hidden action), plus directories that did not load. It needs actiond for the manifests.
 - **voiced.service** lost its `[Install]` section: voiced was a skeleton that exits 2, so `systemctl --user enable`
   must not start it at login in beta. `serve` is filled now (v-voiced), but the section stays out until the owner
   says the daemon may start with the session.
@@ -932,13 +932,13 @@ section 9.2). The actions service's covers every `agent.*` key of section 3.27, 
 2. **The reader is `action-settings`** (new crate; `read(text, base)`, `Locator`). The file is
    `$XDG_CONFIG_HOME/actions/settings.toml` (then each of `$XDG_CONFIG_DIRS`; the first file that reads wins
    whole). A value that is the wrong type, out of range or not a word of its key falls back **to the base
-   value of that key** (intentd.toml's `[agent]`, itself the shipped defaults) and is returned as a
-   `Fallback`; the daemon logs one line per fallback and per unknown key (`intentd: settings: agent.budget.
+   value of that key** (actiond.toml's `[agent]`, itself the shipped defaults) and is returned as a
+   `Fallback`; the daemon logs one line per fallback and per unknown key (`actiond: settings: agent.budget.
    calls: outside 1..=10000; using the previous value`). A file that is not TOML keeps every base value. A key
    the file stops setting is its base again (each read is over the same base, not over the previous read).
    `denials_in_a_row` is `AgentConfig.breaker.consecutive`; the rest of the breaker (`recent`, `window`,
-   `probing`) is not a key of 3.27 and stays in intentd.toml.
-3. **intentd follows the file live** (`settings_watch.rs`): a `notify` watch on `$XDG_CONFIG_HOME/actions`
+   `probing`) is not a key of 3.27 and stays in actiond.toml.
+3. **actiond follows the file live** (`settings_watch.rs`): a `notify` watch on `$XDG_CONFIG_HOME/actions`
    (created if missing), 30 ms debounce, the whole file read again, then `Router::apply_settings`. The router
    reads `agent_config()` afresh in every decision (a settings value wins over `Router.config`, which tests
    still set directly). A session already open keeps its ledger; its next charge is measured against the new
@@ -952,19 +952,19 @@ section 9.2). The actions service's covers every `agent.*` key of section 3.27, 
    The keys it uses are `agent.budget.calls` (the session call count) only; making it live means its
    `Runtime` holding the config behind the same `apply_settings` shape, in `runtime.rs`, which the
    f4-actions-shown lane owns. Closes when that lane has merged: one `RwLock<AgentConfig>` in `Runtime` and a
-   `settings_watch` task in companiond's `daemon.rs`, as in intentd.
+   `settings_watch` task in companiond's `daemon.rs`, as in actiond.
 6. **Left out of the schema, and why.** Fields of `AgentConfig` with no row in design/22 section 3.27 are not
    settings: `mass_at`, `confirm_expiry`, `confirm_proceed`, the breaker's `recent`/`window`/`probing`, and
-   `companion.*` (assembler budgets, idle rules). They stay in `intentd.toml` / `companiond.toml`. action-core's
+   `companion.*` (assembler budgets, idle rules). They stay in `actiond.toml` / `companiond.toml`. action-core's
    `SETTING_ROWS` still lists them under the older names (`agent.task_policy.max_s`, `agent.budget.wall_s`,
    no `spend_microusd`) and is read by no daemon; it closes when section 3.27 and the table are made one list
    (the new crate's table is the one the schema is held to).
 7. **Consumers' lockfiles** (computer use, the shell) gain `action-settings` and `notify` when they next update the actions service:
-   `cargo update -p action-daemon` (computer use also takes it through its dev-dependency on intentd).
+   `cargo update -p action-daemon` (computer use also takes it through its dev-dependency on actiond).
 8. **Tests.** The schema parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand
    from a scratch project: a dev-dependency on ds-settings would unify zbus's executor features across this
    workspace) and is held structurally by `action-settings` tests; every schema key is read (table test);
-   every key has a bad-value fallback case; `intentd/tests/it/settings_live.rs` changes the file under a running
+   every key has a bad-value fallback case; `actiond/tests/it/settings_live.rs` changes the file under a running
    router and waits on the watch's own event; `action-router/tests/it/live_settings.rs` changes strictness under
    a live router; actions-mcp's edge follows a changed file.
 
@@ -999,7 +999,7 @@ An action's declared effect is a **ceiling**; an action may opt in to a per-call
   to it unchanged (tests: AskMore asks for a classified undoable write; TrustMore still asks for a Destructive one
   outside a task policy). A dry run (`Run.DryRun` preview) is prepared at the ceiling.
 - **Tests.** `action-router/src/classify.rs` (table), `action-router/tests/it/percall.rs` (action-fake's `FakeMenu`),
-  `intentd/tests/it/percall.rs` (a router over `DbusLink` and a real provider on a private bus).
+  `actiond/tests/it/percall.rs` (a router over `DbusLink` and a real provider on a private bus).
 
 ## f4-demo-install: the dev installer and `bardo-do ask`
 
@@ -1018,7 +1018,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
     (inferd reads its model entries only from `$XDG_DATA_HOME/models/catalog` and `/usr/share/models/catalog`;
     without them there is no `cloud/<entry>`).
   - Left out on purpose: `voiced` (skeleton), `syncd`, `computer_use_daemon`; `actions/manifests` (the Memory and Companion
-    manifests are built into intentd, which logs "built into intentd" and skips a file of theirs). `intentd.toml`,
+    manifests are built into actiond, which logs "built into actiond" and skips a file of theirs). `actiond.toml`,
     `companiond.toml` and `actions-mcp.toml` are installed only if absent as asked, but note that each replaces the
     built-in default whole, so a later change to the shipped file does not reach a machine that has a copy.
   - Skills land in `$XDG_DATA_HOME/bardo/skills`, which agent-skills reads as the person's own (`Origin::Own`,
@@ -1035,7 +1035,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
     rows win); inferd's own caller table is `/etc/accounts/inferd-callers.toml` (root's; a `[callers]` table in `inferd.toml` is ignored), and memoryd's is
     `memory-callers.toml` (installed in the user config, which layers over `/etc/bardo/`), so neither needs root.
 - **`bardo-do ask [--space <id>] "<text>"`**: `Companion1.Open` in the Space (default `desktop`), `Session.Turn`
-  through intentd, `Companion1.Ask`, then the answer object is followed (its current `View`, then each `Updated`)
+  through actiond, `Companion1.Ask`, then the answer object is followed (its current `View`, then each `Updated`)
   until it is no longer Thinking or Streaming. Prints the text, the plan steps, what is waited for and the footer
   (model, where it ran); `--json` or a pipe prints the answer object. `NeedsYou(Confirm)` prints the request and
   exits **8** (new code, `needs_you`) with "answered in the shell": `bardo-do` is not `Confirm1`, nothing answers
@@ -1049,20 +1049,20 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 - **Security: the cli role speaks for the person in three calls.** companiond used to accept only the owner of
   `org.bardo.Shell`. It now also accepts, for `Open`, `Ask` and `Close` only, a connection that (1) is the same
   user (`GetConnectionCredentials`), (2) is in a terminal's scope (`vte-spawn-*`, `tmux-spawn-*`, a login
-  `session-*`: the same `action_core::is_terminal_scope` intentd derives the cli role from, over the cgroup of the
-  pid the bus names), and (3) owns no well-known name (a name makes it that app, as in intentd's `Peers`). `Told`
+  `session-*`: the same `action_core::is_terminal_scope` actiond derives the cli role from, over the cgroup of the
+  pid the bus names), and (3) owns no well-known name (a name makes it that app, as in actiond's `Peers`). `Told`
   (words to a subagent) and the answer object's `Act` (pressing a card) stay the shell's alone; `Cancel` and `View` were
-  never restricted. The reasoning: the cli role is the person at a terminal, same uid, which intentd already
+  never restricted. The reasoning: the cli role is the person at a terminal, same uid, which actiond already
   treats as asking for everything that is not a read, with a confirmation for each act; `Open`, `Ask` and `Close`
   hand the companion words and a conversation, and every call the companion then makes still goes through
-  intentd's gate in role `companion` with the sheet for the person. What it adds: a process in a terminal (an
+  actiond's gate in role `companion` with the sheet for the person. What it adds: a process in a terminal (an
   agent running shell commands, say) can now put words in the companion's mouth, which it could already do to
   `bardo-do <app> <action>` one call at a time; it cannot answer a confirmation, press a card, or reach a
   subagent. The router's side: `Member::SessionTurn` now permits `Cli` (it was Launcher and Field only), because a
   turn the router did not record is not a turn; such a turn is recorded as the new `TurnSource::Terminal`, not as
   the launcher's, so a later rule can treat it differently (nothing does yet; the shell only constructs `TurnSource`,
   so adding the variant breaks no match there). `COMPANIOND_PROC_ROOT` (feature `test-proc-root`, ignored with a
-  line on stderr in any other build, and now checked by `check-boundary.sh` beside intentd's) lets the acceptance
+  line on stderr in any other build, and now checked by `check-boundary.sh` beside actiond's) lets the acceptance
   run present a process as a terminal; `serve_on_rooted` is the in-process seam.
 - **Cannot work yet, for the demo.** (1) A confirmation cannot be answered without the shell's `Confirm1` sheet: a write
   (`memory.propose`) stops at "Waiting for your confirmation" (exit 8); reads and plain chat work. (2) The first use
@@ -1100,7 +1100,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 1. **One shipped default.** `dist/intents/default-grants.json` holds two grants (Interactive and Background):
    caller Companion, owner `org.bardo.Shell`, target App, class `app_own`, every Space, `allow`, `always`. It is
    installed with the other `dist/intents` files (the installer on `f4-demo-install` copies that tree whole, so
-   it needs no change). intentd reads `bardo/intents/default-grants.json` under every data directory at each
+   it needs no change). actiond reads `bardo/intents/default-grants.json` under every data directory at each
    consent lookup (`FileGrants::with_defaults`) and puts it under the person's `grants.json`.
    Why this is safe: the shell is the desktop itself. Its `app_own` data is window, menu, workspace and dock state,
    which the person already sees and drives from the same screen; nothing in it is mail, files, the screen or
@@ -1111,7 +1111,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
    key wins, a denial wins a tie) lets any entry of the person's outrank them. `consent_for` already tries the
    narrowest key first, so a denial for one action or one Space also wins over the broad default.
 3. **Revoking.** No new form was needed: a grant already carries `Decision::Deny`. A revoke of a default is the
-   person's own entry with the same key and `decision = deny` (`intentd::revoking(default, id, at)` builds it from
+   person's own entry with the same key and `decision = deny` (`actiond::revoking(default, id, at)` builds it from
    the default); it is written to the person's `grants.json`, never to the shipped file, and survives a restart.
    A later `allow` from the person brings the key back.
 4. **A guard on the file.** The person's own data directory is also a data directory, so the loader accepts only
@@ -1121,7 +1121,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
    the same Space is final in all three strictnesses, so a shell Read row (Hide, Minimise) never asks, AskMore
    included. An undoable write still asks under AskMore (judged under Default), an Outbound or Destructive act
    asks in every strictness, and a tainted session still asks again before leaning on an Always for a write.
-   Tests: `crates/action-router/tests/it/shell_defaults.rs`, `crates/intentd/tests/it/files.rs`.
+   Tests: `crates/action-router/tests/it/shell_defaults.rs`, `crates/actiond/tests/it/files.rs`.
 6. **`--check-skills`** now finds manifests where apps keep them (item above in f4-actions-skills). The line to change
    in agent-spec `skills-format.md`: "`action-eval --check-skills <dir>... [--manifests <dir>]...`: manifests are
    those under each dir (as `--check-app` finds them, `dist/intents/*.toml` included), the `intents` directory
@@ -1306,8 +1306,8 @@ scripted|local|cloud`, a private bus, scratch HOME and XDG, `env -i`, network on
   `every_regression_cassette_replays_and_its_case_holds`.
 
 Gaps and decisions.
-- Corpus cases play through the router in the `action-live` process, not through intentd's bus: a hijacked
-  planner mints handles in router state, which the bus cannot do. The writer and the cascade are intentd's and
+- Corpus cases play through the router in the `action-live` process, not through actiond's bus: a hijacked
+  planner mints handles in router state, which the bus cannot do. The writer and the cascade are actiond's and
   action-review's real code over a real inferd. The bus path (all daemons) is only the smoke flows.
 - Corpus size is 28 cases (injection 6, overeager 6+3 terminal, exfiltration 3, adaptive-judge 4, benign 4+2 cross-space);
   with 6 injection cases, zero misses still has a Wilson upper end near 39%. No `UiSpoofing` cases exist. The planner is
@@ -1349,7 +1349,7 @@ What it adds.
 - The gate plays them three ways: `action-eval/tests/it/hostile.rs` (reviewer words through the real `parse_verdict` over
   `ParsedReviewer`, router cases over the fake router, no daemon), `action-accept/tests/it/live_eval.rs` and `hostile.rs`
   (`run_corpus_live` over inferd's replay engine, one cassette whose spoiled entries pick a case out by quoting its first
-  turn: `scripted_cassette`), and `action-accept/tests/it/hostile.rs` (`run_planner_case`: real companiond, intentd and apps).
+  turn: `scripted_cassette`), and `action-accept/tests/it/hostile.rs` (`run_planner_case`: real companiond, actiond and apps).
   `action-live smoke --engine scripted|local|cloud` plays the planner cases after the flows (`--flow <id>`).
 - Mutation check: with the fixes below turned off, the planner cases for them fail (calls in text, very large reply,
   bidi words, over-long and over-many questions); with them on, all pass.
@@ -1376,7 +1376,7 @@ Where the stack did NOT fail safe, and the fix (each pinned by a test above).
    a repeated, missing, extra or non-string key.
 7. action-review: a reviewer's reason (shown in the activity view) could carry control characters and reordering or hidden
    marks. Fixed: such a reason is `OutOfVocabulary`, which asks.
-8. intentd `InferdWriter`: "the person wrote it" was a substring test, so a draft naming `com` kept `Domain("com")`
+8. actiond `InferdWriter`: "the person wrote it" was a substring test, so a draft naming `com` kept `Domain("com")`
    (every `.com` recipient) when the person had written `alice@example.com`, and a draft naming `/` kept `Under("/")`
    when any path was written. Fixed: a recipient or destination is kept only as a whole word of a turn (the address, or
    the domain of an address, or a domain written alone); a path only whole and never the root.
@@ -1409,7 +1409,7 @@ action-core `tests/it/args_props.rs` (typed values or a typed fault, only declar
 free of marks), voice-wire `tests/it/props.rs` (`unframe` outcomes follow the four length bytes, never overrun, a stream
 split anywhere reads the same frames), companion-wire `tests/it/props.rs` (damaged bodies never panic and what reads is
 stable), agent-loop `tests/it/leak.rs`, action-eval `tests/it/props.rs` (damaged case files; a cassette is a header and one
-JSON entry per exchange), intentd `tests/it/writer_hostile.rs`, companiond `tests/it/hostile.rs`.
+JSON entry per exchange), actiond `tests/it/writer_hostile.rs`, companiond `tests/it/hostile.rs`.
 Fuzz: `fuzz/` (cargo-fuzz, outside the workspace and the gate) with six targets (`parse_verdict`, `tool_args`, `unframe`,
 `companion_wire`, `leaked_call`, `case_files`) and `dev/fuzz.sh`; it needs nightly (installed here) and `cargo-fuzz`
 (not installed; the script says so and exits 2, and installs nothing).
@@ -1569,13 +1569,13 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
    inferd and the service locator socket (`SocketTransport`, feature `socket`); the Windows named pipe is not
    built there either (the accounts service).
 2. DONE. Reviewer and policy writer over a model. `agent-models` (portable) holds `TransportModel<T>`,
-   `TransportWriter<T>` and `reviewer_over`; intentd's `InferdModel` and `InferdWriter` are thin adapters
+   `TransportWriter<T>` and `reviewer_over`; actiond's `InferdModel` and `InferdWriter` are thin adapters
    (the bus constructor). `InAppKit::writer` takes the writer, `InAppParts::reviewer` the cascade.
 3. DONE. Memory. `companion-memory` (portable) holds `MemoryServiceLink<T>` over any memory-client Transport
-   (intentd's `MemoryServiceLink` is the same type), and `InAppKit::memory` plus `AuditTo::Memory` give the
+   (actiond's `MemoryServiceLink` is the same type), and `InAppKit::memory` plus `AuditTo::Memory` give the
    planner primer, profile, recall and episodes and write the turn's audit as records with the task's
    episode. Tested over the memory service's `in_process` transport with memory-fake's backend.
-4. DONE. Consent storage. `FileGrantStore` (agent-inapp): a path the app gives, intentd's file format,
+4. DONE. Consent storage. `FileGrantStore` (agent-inapp): a path the app gives, actiond's file format,
    atomic writes, typed `GrantFileError`; a write that fails is kept for `take_fault` because the
    `GrantStore` seam has no way to say so. The app decides where the file lives.
 5. DONE (inapp-tasks lane). The audit trail. `AuditBuffer` is now a bounded `QueuedSink`; with `AuditTo::Memory` each turn drains it
@@ -1598,14 +1598,14 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
 9. DONE (inapp-tasks lane). Skills. The host installs no skills (`Sources.skills` is empty). Owner: the actions service (`agent-inapp`
    takes `Vec<Skill>` and calls `router.install_skills`, as the companiond tests do).
 10. The capability probe. design/36 has the app choose in-app or desktop at run time (`Desktop::probe()`
-    of Bardo's `ds-desktop`). Nothing here chooses; an app builds `InAppAgent` or talks to intentd.
+    of Bardo's `ds-desktop`). Nothing here chooses; an app builds `InAppAgent` or talks to actiond.
     Owner: Bardo (`ds-desktop`, planned) and each app.
 
 ## inapp-seams: the real parts behind agent-inapp's stubs
 
-- Moved, behaviour unchanged (intentd's and readerd's own tests run through the adapters; the hostile
-  writer corpus and the reader's tests are untouched but for their `use` line): intentd's `infer.rs` and
-  `writer.rs` bodies to `agent-models`; intentd's `memory.rs`, `record.rs`, `sink.rs` and the logic of
+- Moved, behaviour unchanged (actiond's and readerd's own tests run through the adapters; the hostile
+  writer corpus and the reader's tests are untouched but for their `use` line): actiond's `infer.rs` and
+  `writer.rs` bodies to `agent-models`; actiond's `memory.rs`, `record.rs`, `sink.rs` and the logic of
   `audit.rs` to `companion-memory` (`AuditLog` keeps the memoryd link and the `eprintln` lines; the pure
   `AuditState::flush` returns a `Report` and prints nothing, and works over `MemoryLink` instead of the
   The memory service `Memory`, with the same mapping of refusals and link faults); readerd's `request.rs` and
@@ -1672,7 +1672,7 @@ Still missing for the in-app agent (none blocks the app):
 1. Workers. `companion.task.start` is the built-in `org.bardo.Companion` provider, which the in-app
    registry does not hold (only the app's manifest), so the model cannot start a subagent in an app. Side
    conversations and restart recovery work for workers that exist (the tests open one session with
-   `AgentRef::Worker`); starting one needs the built-in provider hosted over `ProviderLink` as intentd's
+   `AgentRef::Worker`); starting one needs the built-in provider hosted over `ProviderLink` as actiond's
    `HostedLink` does (`Router::companion_perform`).
 2. A restart reopens the front task as a fresh session: the roster and the front pointer come back, the
    conversation does not (the digest holds no goals); same as companiond.
@@ -1766,7 +1766,7 @@ one by one is refused), and raising to it would let the writer's say-so on the c
 an app-wide entry mentions. The existing upper cut is unchanged (ceiling at most the highest of the chosen
 actions and the `app_up_to` levels). The reverse case, a ceiling above everything chosen, is left alone: it is
 cut to what the actions and grants need as before, and the actions list bounds what runs either way. Tests:
-`crates/intentd/tests/it/writer_ceiling.rs` (archive, forward, higher ceiling, grants, invented action).
+`crates/actiond/tests/it/writer_ceiling.rs` (archive, forward, higher ceiling, grants, invented action).
 
 **The planner's step history hid older steps' values.** A masked step rendered `action [outcome: said]`: no
 arguments and no handles returned. In smoke flow-a, after two thread reads returned #4 and #5, the next
@@ -1933,7 +1933,7 @@ choice is testable with `MemoryLog` (`LogMood::RefusingTaint`, `crash_after(n)`)
 - The log lives in one Space (the desktop Space, named when `MemorySessionLog` is built). `SessionLog`
   carries no Space; a per-Space placement needs the trait to take one (S2).
 - Implicit sessions (an app, a terminal or an MCP client that opened none) are not recorded (`Wal::Off`).
-- Ids: session, task, turn and call numbers come from one counter. `adopt_sessions` (called by intentd at
+- Ids: session, task, turn and call numbers come from one counter. `adopt_sessions` (called by actiond at
   start through `SessionLog::sessions`) lifts the counter above every session the log holds, and a restore
   lifts it above the numbers in that session, so nothing minted later reuses a restored name. If memoryd is
   not up at start, `adopt_sessions` fails and a new session may reuse a stored name; its writer then stops
@@ -1972,7 +1972,7 @@ plan. The cost is one arm in five exhaustive matches (agent-loop twice, agent-pl
 **Finding for the memory service: the bus client cannot call `Entries` or `RecordDurable`.** the memory service master's
 `memory-dbus/src/invoke.rs` (the zbus proxy dispatch behind `DbusTransport`) has no `Recall.Entries` and no
 `Record.RecordDurable` arm: both answer `Invalid("no member ...")` over the bus, though the codec, the
-service and the in-process transport have them. Until that lands, intentd's log is `DaemonLog::Off`
+service and the in-process transport have them. Until that lands, actiond's log is `DaemonLog::Off`
 (sessions unrecorded, one stderr line at start) rather than refusing every call for want of a record: the
 daemon probes the log once at start (`adopt_sessions`) and falls back if it is not usable. The same
 fallback covers memoryd being down at start. Once the memory service ships the arms the same code records sessions with
@@ -2014,7 +2014,7 @@ waits until the owner has named the session once. `Router::restore_session` (the
 carries no check.
 
 Listings: `adopt_sessions` is a public method that returns every stored id, but its only caller
-(`intentd`'s start-up) discards the list and no D-Bus member or reply carries it, so no other app's
+(`actiond`'s start-up) discards the list and no D-Bus member or reply carries it, so no other app's
 session id is exposed by it. The one trace is that it lifts the id counter, so the first id a new
 session gets reveals roughly how many sessions were ever stored; that is a count, not an id.
 
@@ -2049,7 +2049,7 @@ before dispatch (a revocation in flight stops the call), and `.Control.StandingG
 `.RevokeStandingGrant` (Control role; D-Bus `Control` interface; `Intents::standing_grants`,
 `revoke_standing_grant`). Tests: `action-core/tests/it/standing.rs` (scope tables, offer table, a proptest
 that nothing never-grantable is offered or lifted), `action-router/tests/it/standing.rs` (the gate around a
-grant), `agent-inapp/tests/it/grants.rs` and `intentd/tests/it/files.rs` (restart, revoke seen by the next
+grant), `agent-inapp/tests/it/grants.rs` and `actiond/tests/it/files.rs` (restart, revoke seen by the next
 reader, damaged file).
 
 Open, and why:
@@ -2337,7 +2337,7 @@ process with a real host.
   `SessionLog`. The router lists and pages only the sessions the caller `may_restore`; anything else is
   answered as a session the log does not hold. `SessionOpen.cwd` (`Workspace` moved to action-core)
   carries the editor's directory into the `Opened` entry, which S3's load and list read.
-- **`agent-acp-bin`**: the process. It owns the bus name `org.bardo.Acp`; `dist/intentd.toml` lists
+- **`agent-acp-bin`**: the process. It owns the bus name `org.bardo.Acp`; `dist/actiond.toml` lists
   it as an `editor` and a `companion`. One identity plays both because the router's role table gives
   the editor open/turn/close/stored and the companion everything the planner calls. Deployment
   consequence to read: whoever may own that name on the session bus gets the companion's
@@ -2353,7 +2353,7 @@ app's call log is empty and the log has no `Call`; a restart over the same log r
 and the planner is shown it; fork and export; a sheet reaches the edge as `Sheet` and its answer goes
 to the desk); `agent-session/tests/it/contract.rs`; `action-router/tests/it/stored.rs`;
 `agent-inapp` desk unit tests; `action-accept/tests/it/acp.rs`: `agent-acp-server` as a process on the
-private bus beside the real intentd, memoryd, inferd (a cassette) and the mail provider, spoken to by
+private bus beside the real actiond, memoryd, inferd (a cassette) and the mail provider, spoken to by
 a scripted editor: initialize, new, prompt, a permission round, done; an editor's reject (the mail
 app's call log shows no forward, no sheet, no message); and the same two-turn session with and without a
 restart of the host between the turns, with `session/load` replaying the first turn and the second
@@ -2364,11 +2364,11 @@ turn's updates and the app's calls equal in both.
   front pointer still rebuild after a restart from the old `companion.session.*` notes (`recover`),
   and its lock is tokio's, `NativeHost`'s a futures mutex. Moving the roster to `Session.Stored` and
   the lock across is the next lane; `Session.Stored` is the member it needed.
-- **Sheets for an editor session over the bus.** (Closed, see below.) The router in intentd asked the shell's `Confirm1`; no
+- **Sheets for an editor session over the bus.** (Closed, see below.) The router in actiond asked the shell's `Confirm1`; no
   confirmer handed a request to the editor's host, so `LiveHost` uses `NoDesk` and the editor is
   told "waiting on the desktop" (the S3 behaviour). `EditorDesk` is the in-process half: an
   `InAppAgent`-style router can route an editor session's sheets to it today. The bus half needs a
-  `Confirm1` server for the acp process that intentd's confirmer prefers for editor sessions.
+  `Confirm1` server for the acp process that actiond's confirmer prefers for editor sessions.
 - **bardo-do / the shell: list, load, fork.** (`bardo-do sessions` is built, see below.) The host side and the router member exist; a `bardo-do
   sessions` needs the `cli` role on `Session.Stored` and a renderer. Not built.
 - **A cancel does not interrupt a call or a model in flight**, and the router's pending sheet for
@@ -2391,7 +2391,7 @@ A sheet for a call in an editor's session no longer goes to the shell.
   editor's connection as the router saw it, and `session`), set from `Who::editor` for a call and from the
   session record for the "Allow more for this task" sheet; absent for everything else and for a computer-use step.
   It is skipped when absent, so the shell's wire is unchanged.
-- **intentd** (`SheetConfirmer`): a request with a route goes to `Confirm1` on the bus name `client`, trusted only
+- **actiond** (`SheetConfirmer`): a request with a route goes to `Confirm1` on the bus name `client`, trusted only
   while its owner plays the `editor` role (which, for `org.bardo.Acp`, is the `AcpGate` of the previous section).
   The surface of every open sheet is remembered by id so a withdrawal finds it.
 - **agent-acp-bin** serves `Confirm1` at the usual path under its own name (`ConfirmObject` over an
@@ -2502,7 +2502,7 @@ list, the `agent-session` export document for `load`, and `{vocab, forked, sessi
   anything in the request body. The router keeps `started_from` only from the `companion` role (a launcher, field,
   editor or computer use open drops it), so only the daemon that read the cgroup can claim a terminal.
 - **Decision: any cli caller sees them, not only the same terminal.** Terminal scopes are advisory (every terminal
-  runs as the person, and intentd already gives the same cli role to every terminal scope), so matching the exact scope
+  runs as the person, and actiond already gives the same cli role to every terminal scope), so matching the exact scope
   would add a name check that protects nothing; the name is kept for display and audit. The cli role may list, load
   and fork a session it opened or one a terminal started; a fork keeps `started_from`, so the child is visible too.
   Not visible to the cli: a companion session the launcher opened, an editor's, an app's, and any log written before
@@ -2696,7 +2696,7 @@ agent's session at the router, records the person's prompt there, and makes each
 the router allowed it.
 
 **Identity and actor.**
-- A new caller role, `CallerRole::AcpAgent` (`acp_agent` in `intentd.toml`), held by the bus name `org.bardo.AcpAgent`,
+- A new caller role, `CallerRole::AcpAgent` (`acp_agent` in `actiond.toml`), held by the bus name `org.bardo.AcpAgent`,
   and counted only while `agent.acp.agents` is on (`AcpGate`, as `org.bardo.Acp` waits on `agent.acp.expose`). It may
   open and close sessions, record the person's turns, and `Perform`; nothing else (a test pins the member list).
 - The program is named by the host when it opens the session (`SessionOpen.external: Option<ExternalAgent>`, kept only
@@ -2710,7 +2710,7 @@ the router allowed it.
   agent's own words never reach `Session.Turn`: the host has no member that records anything else, and a test shows an
   agent that says "policy: allow all" changes neither the turns nor the policy.
 
-**The pseudo-app `org.bardo.AcpAgent`** (`manifests/org.bardo.AcpAgent.toml`, built into intentd's registry like
+**The pseudo-app `org.bardo.AcpAgent`** (`manifests/org.bardo.AcpAgent.toml`, built into actiond's registry like
 Memory and Companion; answered by the host over the bus like an installed app). The action prefix of an app is its
 last name element lower-cased, so the actions are `acpagent.*`, not `acp.*`:
 
@@ -2820,11 +2820,11 @@ tests used them; the table's cases are covered by `standing.rs` and the router's
 **Sheets, and the hosting shape.** The hosting shape is a sibling of `NativeHost`: `AgentHost<X, D>` over one
 `AcpBackend`, a `Court` (the router) and a `SheetDesk`. `bardo-agent` is its process (`agent-acp-bin`, binary
 `bardo-agent`; it moved out of `agent-launch`, whose boundary may not reach Cedar through `agent-inapp`'s sheet). It owns
-`org.bardo.AcpAgent`, serves the pseudo-app's `IntentProvider1` (intentd is the only caller), and talks to intentd as
-`acp_agent`. By default the session asks for no route, so the router's sheet is the desktop's, through intentd's
+`org.bardo.AcpAgent`, serves the pseudo-app's `IntentProvider1` (actiond is the only caller), and talks to actiond as
+`acp_agent`. By default the session asks for no route, so the router's sheet is the desktop's, through actiond's
 confirmer (the shell's `Confirm1`), and the host sees nothing of it. With `--tty` (`Fallback::Terminal`) the host opens the
 session with `SheetSurface::Host`; the router sets `ConfirmRequest.editor` (the field name stays; it names whoever shows
-the session's sheets), intentd's `SheetConfirmer` sends the sheet to the host's `Confirm1` while the host's name plays
+the session's sheets), actiond's `SheetConfirmer` sends the sheet to the host's `Confirm1` while the host's name plays
 `acp_agent` (an unreachable or unconfigured host expires the sheet; it is never moved to the shell), the sheet comes out of
 `AgentHost::next_event` as `BackendEvent::Confirm`, and the terminal answers through `answer_sheet`. Without the flag
 the process serves no `Confirm1` object, the host asks for no route (`SheetSurface::Desktop`) and its desk is never
@@ -2841,7 +2841,7 @@ hostile,contract,osfiles,schema}.rs` against the real router over the fakes (`Fa
 terminal and permission request reaches the router and is audited as the agent; a reviewer deny refuses; the breaker
 trips; an Always is created, used (`StandingUsed`), listed and revoked over Control; confinement refuses before any sheet;
 the agent's text never becomes policy; S4's hostile corpus re-run (each case ends safely); sheets reach the confirmer and
-come back (desktop; host only with the flag); a dropped call asked again is one router call; `intentd` (the agent host
+come back (desktop; host only with the flag); a dropped call asked again is one router call; `actiond` (the agent host
 name waits on `agent.acp.agents`; its sheet route). `agent-acp-server/tests/it/terminals.rs` for the runner.
 
 ## Narrowing the execute taint (R11)
@@ -2943,8 +2943,8 @@ The S4 hostile corpus ran unchanged and every case still ends safely.
 
 **Owner-run check for Claude Code, updated since S4.**
 1. As S4 (adapter installed, signed in). `~/.config/actions/settings.toml`: `[agent.acp]` `agents = "on"`.
-2. `intentd.toml` must list `org.bardo.AcpAgent` under `acp_agent` (the shipped `dist/intentd.toml` does; a replaced file
-   needs the line). The setting is read live; intentd need not restart.
+2. `actiond.toml` must list `org.bardo.AcpAgent` under `acp_agent` (the shipped `dist/actiond.toml` does; a replaced file
+   needs the line). The setting is read live; actiond need not restart.
 3. `~/.config/actions/agents.toml` as S4. Build with `cargo build -p agent-acp-bin` (the binary is now `bardo-agent`
    of `agent-acp-bin`; `bardo-agent-net-forward` still sits beside it).
 4. A policy writer and, ideally, reviewer models should be configured (inferd), or every judged act asks.
@@ -3022,7 +3022,7 @@ never the agent's:
 
 The cost to know: the token and the socket are readable by any process of the same user that can read the agent's
 environment. That is the same trust boundary as the session bus, where any of the user's processes can already call
-intentd under a name it can take. What the edge buys is that the agent cannot act as anyone but itself, in any session
+actiond under a name it can take. What the edge buys is that the agent cannot act as anyone but itself, in any session
 but its own, and that a stranger without the token gets nothing.
 
 **Network mode `none`/`endpoint_only` and the sandbox.** The edge is a unix socket: no TCP, no namespace crossing. A
@@ -3405,7 +3405,7 @@ by the large model on fatcat; the corpus must grow roughly tenfold before any pr
 
 ## agentrows (2026-10-09): the agent rows for Settings
 
-- The actions service has no settings bus: settings are a file that intentd watches. So the Settings app reads rows with `action_settings::read_agents(text, &AgentsDir)` and refreshes by running `bardo-agent PROGRAM --refresh` (`RefreshRequest::arguments`); it re-reads the rows when that exits, whatever the status (a start that needed signing in exits 2 and is still written down).
+- The actions service has no settings bus: settings are a file that actiond watches. So the Settings app reads rows with `action_settings::read_agents(text, &AgentsDir)` and refreshes by running `bardo-agent PROGRAM --refresh` (`RefreshRequest::arguments`); it re-reads the rows when that exits, whatever the status (a start that needed signing in exits 2 and is still written down).
 - The record is written in `agent-acp-bin`'s `host()` right after the session opens or fails to open: signed in (models, in use, ways), `SignInNeeded` / `SignInChoose` (needs sign-in, the ways), `ModelNotOffered` (signed in, the models it listed). Any other failure writes nothing. A start without models keeps the models listed before. `--acp-list-models` goes through the same `host()`, so a registry agent's list is recorded too.
 - `bardo-agent` now reads `agents.toml` with the agents directory (`agents` under the data directory), so a registry entry starts there; before it only accepted entries with a `command`.
 - `toml_edit` is a new direct dependency (action-settings): `write_agent_choice` must keep the comments of a file the person also edits by hand. It was already in the lock file.
@@ -3475,7 +3475,7 @@ Evidence: `/tmp/action-live.xYM2Fo/out/smoke/flow-c.run*of5.trace.txt` (Kimi K3,
 
 **Consumer impact.** All additive: `EntityDecl.relations` and `ActionCard.related` are `serde(default)` and skipped when empty; new public items `RelationDecl`, `Cardinality`, `RelationName`, `RELATION_ARG`, `related_name`, `Manifest::related_kind`, `EntityDecl::{related_action, relation}`, `ManifestError::{DuplicateRelation, RelatedDeclared}` (a new variant of an exhaustive enum: a consumer that matches `ManifestError` without a wildcard must add two arms), `TOOL_RELATED`. A consumer that builds `EntityDecl` or `ActionCard` as a struct literal (the shell, anyview, computer use, mailo) must add `relations: vec![]` / `related: vec![]` when it next moves its actions pin; none reads a field that changed. A manifest that validates now has more actions than it declares if it declares relations (`ValidManifest::manifest().actions`), and nothing else about validation changed for a manifest without them. No wire (`Intents1`, `IntentProvider1`, `Companion1`) change.
 
-**Open.** A provider's `Perform` of `<kind>.related` is still its own code; a helper that answers it from the declaration is possible when a second real app declares relations. `ResultShape::Entities` of the derived action names only the first relation's kind. `agent-inapp` and `actions-kit` use the same planner and so get the tool; neither has a relation to test with. The two `terminal::bardo_do_ask_*` tests of action-accept fail in this sandbox with `only the shell or a terminal speaks for the person` (intentd ignores `INTENTD_PROC_ROOT` without its test feature): an access error on the bus, in code this change does not touch; not checked against the base commit.
+**Open.** A provider's `Perform` of `<kind>.related` is still its own code; a helper that answers it from the declaration is possible when a second real app declares relations. `ResultShape::Entities` of the derived action names only the first relation's kind. `agent-inapp` and `actions-kit` use the same planner and so get the tool; neither has a relation to test with. The two `terminal::bardo_do_ask_*` tests of action-accept fail in this sandbox with `only the shell or a terminal speaks for the person` (actiond ignores `ACTIOND_PROC_ROOT` without its test feature): an access error on the bus, in code this change does not touch; not checked against the base commit.
 
 ## Memory comes to the planner; the reply is a tool; progress is not the answer
 
@@ -3492,7 +3492,7 @@ the `it` binary (`--exact hostile::hermes_call_in_text`), a live `accept-compani
 proof.
 
 Likely cause: a wait in the harness with no deadline, on a peer that stopped answering.
-- `drive.rs` made every call to companiond and intentd bare: `Companion1.Open`, `Session.Turn`,
+- `drive.rs` made every call to companiond and actiond bare: `Companion1.Open`, `Session.Turn`,
   `Companion1.Ask`, the answer's `View`, the proxy builds. zbus has no method timeout of its own, so
   a daemon that never replies holds the test for ever. Only the later wait on `Updated` had a limit.
 - That limit was per change: `try_history_until` restarted `patience` (120 s) at every `Updated`, so
@@ -3506,7 +3506,7 @@ Likely cause: a wait in the harness with no deadline, on a peer that stopped ans
   `Notify::notify_one` keeps its permit for `Sheet::release`; `Answer::watch` subscribes to `Updated`
   before the first `View`.
 - Candidate not changed: `place(root, pid, ...)` puts a daemon in the fake proc root only after
-  `spawn` returns. A daemon that reaches intentd or memoryd first (a loaded machine can delay the
+  `spawn` returns. A daemon that reaches actiond or memoryd first (a loaded machine can delay the
   harness thread) is seen as an unknown caller. If that shows up as a retry loop in a daemon, place
   the pid before exec as `bardo_do` does.
 
@@ -3547,22 +3547,22 @@ names the unit or app scope, the daemon's callers file names the role) and check
 owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
 
 - **Role map per daemon** (app, role, in `dist/<daemon>-callers.toml`):
-  - intentd (`intentd-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` (the roles `launcher`, `confirm`,
+  - actiond (`actiond-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` (the roles `launcher`, `confirm`,
     `control` need it); `org.bardo.ComputerUse1` `computer_use` = `computer_use_daemon.service` (`computer_use`); `org.bardo.Companion1`, `org.bardo.Reader1`,
     `org.bardo.ActionsMcp` `agent` = their `.service` units (`companion`, `reader`, `mcp`); `org.bardo.Acp`,
-    `org.bardo.AcpAgent` `agent` = the scopes `agent-acp-server.scope`, `bardo-agent.scope` (`editor`, `acp_agent`). `intentd.toml`
+    `org.bardo.AcpAgent` `agent` = the scopes `agent-acp-server.scope`, `bardo-agent.scope` (`editor`, `acp_agent`). `actiond.toml`
     still says which app plays which role; the table says which process is that app. `Peers::backs` is the bridge: sheet
     roles need `sheet_host`, `computer_use` and `compositor` their own, the daemons' and editors' roles any role above a plain app.
     An app scope or Flatpak app is a plain app; a terminal's child (nothing names it) is the cli role.
   - readerd (`readerd-callers.toml`) and agent-acp-server's / bardo-agent's `Confirm1` (`acp-callers.toml`): `org.bardo.Intents`
-    `agent` = `intentd.service`, the only caller (`INTENTD`). Provider apps (`action_provider::serve_on`) answer the same
-    one-row table, built in (`action_dbus::callers::INTENTD_ONLY`); `serve_on_with` takes another `Identity`.
+    `agent` = `bardo-actiond.service`, the only caller (`ACTIOND`). Provider apps (`action_provider::serve_on`) answer the same
+    one-row table, built in (`action_dbus::callers::ACTIOND_ONLY`); `serve_on_with` takes another `Identity`.
   - companiond (`companiond-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` speaks for the person; a
     terminal's child that nothing names and that owns no name of its own may open, ask, close, cancel and read.
   - voiced (`voiced-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` begins; an app attaches as the app its
     scope or Flatpak metadata names (it was the owner of the routed name).
 - **Addressing, not trust** (kept): `action-client`'s `awaiting.rs` and `watch_bus.rs` resolve the owner of the service
-  they just called to accept its `Response` signal only from the connection the call went to; `intentd`'s
+  they just called to accept its `Response` signal only from the connection the call went to; `actiond`'s
   `Peers::owner_of` finds the unique name of `Confirm1` to send the sheet to, and then identifies the process behind it.
 - **Open**: the harness cannot give the shell a fixed role at memoryd (its system file path is fixed at
   `/etc/bardo/memory-callers.toml`, the user's file may not carry `sheet_host`); the harness already writes the system file
@@ -3756,7 +3756,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Launcher search: one index
 
 - A search is answered from the router's index alone and never asks an app, so typing in the launcher starts
-  nothing. The index has two sources: what a running app pushes (`Index.Reset` / `Push`; intentd keeps each app's
+  nothing. The index has two sources: what a running app pushes (`Index.Reset` / `Push`; actiond keeps each app's
   entries in `bardo/intents/index/<App>.json`, restores them at start and drops the file of an app with no manifest)
   and what an app ships in `bardo/search/<App>.toml` (read at start; a `Reset` never touches them). Hits are ranked:
   title starts with the text, title contains it, a keyword does, the subtitle does; ties newest first.
@@ -3775,16 +3775,16 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 
 ## Layering lane D0.7 (2026-10-28)
 
-- `action-store` (client/IO tier) holds what did IO in `action-core`: `write_atomic` and `read_optional`, the grant file's disk rules (`GrantFileError`, `read_grant_file`, `read_grant_list`, `write_grant_list`), the runtime-free waits (`within`, `until`, `stop_after`, `Cancel`, `Stop`, `Waits`, `thread_sleep`; U0.8: the runtime crates `agent-launch` and `agent-acp-host` use `tokio::time::timeout` instead of `within`, and `companion-tasks`, which may not reach tokio, keeps the seam) and `SystemClock`. `action-core` has no features and no IO. Nothing is re-exported from `action-core`, `agent-inapp` or `intentd`.
-- One clock: the `Clock` trait is in `action-core` (it left `action-router`); `SystemClock` is in `action-store` (a thread-timer deadline, no runtime named); `FixedClock` stays in `action-fake`. Deleted: `companion_tasks::Now`, `agent_acp_server::{Ticks, SystemTicks}`, `agent_acp_bin::Wall`, `intentd::SystemClock`, `agent_inapp::{SystemClock, HostClock}`, `companiond::Clock` (and its `Manual` test switch). `companiond`'s `Companiond`, `Hub`, `HubHost` and `Routines` are generic over the clock; the daemon passes `SystemClock`, its tests `FixedClock`.
+- `action-store` (client/IO tier) holds what did IO in `action-core`: `write_atomic` and `read_optional`, the grant file's disk rules (`GrantFileError`, `read_grant_file`, `read_grant_list`, `write_grant_list`), the runtime-free waits (`within`, `until`, `stop_after`, `Cancel`, `Stop`, `Waits`, `thread_sleep`; U0.8: the runtime crates `agent-launch` and `agent-acp-host` use `tokio::time::timeout` instead of `within`, and `companion-tasks`, which may not reach tokio, keeps the seam) and `SystemClock`. `action-core` has no features and no IO. Nothing is re-exported from `action-core`, `agent-inapp` or `actiond`.
+- One clock: the `Clock` trait is in `action-core` (it left `action-router`); `SystemClock` is in `action-store` (a thread-timer deadline, no runtime named); `FixedClock` stays in `action-fake`. Deleted: `companion_tasks::Now`, `agent_acp_server::{Ticks, SystemTicks}`, `agent_acp_bin::Wall`, `actiond::SystemClock`, `agent_inapp::{SystemClock, HostClock}`, `companiond::Clock` (and its `Manual` test switch). `companiond`'s `Companiond`, `Hub`, `HubHost` and `Routines` are generic over the clock; the daemon passes `SystemClock`, its tests `FixedClock`.
 - `atomic-write-file` 0.3 (BSD-3-Clause, already allowed in deny.toml) replaces the temp-file-and-rename copy and fsyncs. The old guarantee "no temporary file is left after a failed rename" is the crate's, and it leaves one when the rename itself fails.
-- `FileGrants` (intentd) holds its write lock as a field (`WriteLock`, shared by clones) instead of a process-wide static. Not done: `FileGrants` and `FileGrantStore` (agent-inapp) are still two stores. They differ in the standing file's name (`standing.json` vs `grants.json.standing`), in limits, rules and defaults, and in what a damaged file does; merging them needs a design call.
+- `FileGrants` (actiond) holds its write lock as a field (`WriteLock`, shared by clones) instead of a process-wide static. Not done: `FileGrants` and `FileGrantStore` (agent-inapp) are still two stores. They differ in the standing file's name (`standing.json` vs `grants.json.standing`), in limits, rules and defaults, and in what a damaged file does; merging them needs a design call.
 
 ## Layering lanes D0.8 and D0.9 (2026-10-28)
 
 - `MemoryLink`, `LinkFault`, `SpaceMemories` and `EventSink` are in `action-core` (`memory_link.rs`); `action-router` no longer defines or re-exports them. `LinkFault` came along because `MemoryLink::ask` returns it (`AppLink` in the router uses it too). `EventSink` came along because `QueuedSink` implements it: with it in the router, `companion-memory` would still depend on the whole router. Every importer in this repo now names `action_core::...`.
 - `companion-memory` has no regular dependency on `action-router` any more (it is a dev-dependency, for the session-log test that runs a real router). Its `RULES` row drops the Cedar exception.
-- `companion-memory-core` (pure) holds `record_of`, `kind_tag_of`, `space_named_by` and `QueuedSink` / `QUEUE_LIMIT`, with the record-mapping test. `companion-memory` keeps `MemoryServiceLink`, `MemorySessionLog` and `AuditState`. The re-exports of these names in `intentd` and `agent-inapp` are gone: import them from `companion_memory_core`.
+- `companion-memory-core` (pure) holds `record_of`, `kind_tag_of`, `space_named_by` and `QueuedSink` / `QUEUE_LIMIT`, with the record-mapping test. `companion-memory` keeps `MemoryServiceLink`, `MemorySessionLog` and `AuditState`. The re-exports of these names in `actiond` and `agent-inapp` are gone: import them from `companion_memory_core`.
 - Not done: the `kind_tag_of` / `record_of` `expect`s on fixed literals (H19), and `companion-memory`'s `Link` enum keeps its name. Not verified by a build in the lane that made the change.
 
 ## Layering lane D0.5 (2026-10-28)
@@ -3823,13 +3823,13 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lane D0.24: agent-skills (2026-10-28)
 
 - `agent-skills` (pure) no longer uses `std::fs`. It defines `SkillFolder` (`subdirs`, `read`) and `FolderError`; `discover(roots, folder)` and `load_dir(folder, dir, origin)` take the folder as an argument. The `KNOWN` row `agent-skills src:std::fs` is deleted.
-- `agent-skills-disk` (client/IO, new) holds `DiskFolder`, the one folder over `std::fs`. It is a new crate because `action-store` may not reach `toml` (its `RULES` row) and `agent-skills` needs it. intentd, companiond, action-cli, agent-inapp and action-eval depend on it and pass `&DiskFolder`.
+- `agent-skills-disk` (client/IO, new) holds `DiskFolder`, the one folder over `std::fs`. It is a new crate because `action-store` may not reach `toml` (its `RULES` row) and `agent-skills` needs it. actiond, companiond, action-cli, agent-inapp and action-eval depend on it and pass `&DiskFolder`.
 - Tests: the `agent-skills` tests use an in-memory folder instead of tempdirs. The tests that read the real disk (the shipped `dist/skills`, a skill written to a tempdir, the sorted listing) moved to `agent-skills-disk/tests/it`. Nothing is re-exported.
 - Not done: `agent-skills-disk` is not in `scripts/check-portable.sh`'s list, although agent-inapp and action-eval, which are, now depend on it (it uses only `std::fs`). Not verified by a build in the lane that made the change.
 
-## Layering lane D0.25: intentd, companiond and readerd read no environment (2026-10-28)
+## Layering lane D0.25: actiond, companiond and readerd read no environment (2026-10-28)
 
-- `intentd::{run, run_with}`, `companiond::{run, run_with, serve}` and `readerd::{run, run_with, serve}` take the process's environment lookup (`&impl Fn(&str) -> Option<String>`, the shape `actions-mcp::run` and `action-cli` use). Each `main.rs` builds it from `std::env::var` once. The three `env D0.25` rows are gone from `scripts/check-boundary.sh`.
+- `actiond::{run, run_with}`, `companiond::{run, run_with, serve}` and `readerd::{run, run_with, serve}` take the process's environment lookup (`&impl Fn(&str) -> Option<String>`, the shape `actions-mcp::run` and `action-cli` use). Each `main.rs` builds it from `std::env::var` once. The three `env D0.25` rows are gone from `scripts/check-boundary.sh`.
 - Their tests already passed configuration directly and mutate no environment (`set_var` and `remove_var` do not appear in the three crates).
 - The three `accept-*` mains only pass `&env` to `run_with` (the lane that owns action-accept removes their own env reads).
 - Not done: `companiond/src/serve.rs` is still 557 lines (it was 556); splitting it is a separate move.
@@ -3838,9 +3838,9 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 
 - `action-provider` (C) is new: the app side of Intents1. `IntentProvider`, `ContextSource` and `SummonTarget` (from `action-client/src/provider.rs`), and behind its `dbus` feature `serve`, `serve_on` and `serve_on_with` (from `action-client`'s `serve.rs` and `provider_bus.rs`, now `serve.rs` and `bus.rs`). `action-client` is the caller side only (`Intents<Transport>`). Closes F11.
 - `serve_on` / `serve_on_with` / `serve` return the new `ServeError` (`Bus(String)`, `Taken(String)`) instead of `action_client::TransportError`. A taken name used to be `TransportError::Bus("<name> is taken")`; it is now `ServeError::Taken(name)`, so callers can match it instead of reading text. Without the `dbus` feature `serve` no longer exists (it used to answer `Closed`).
-- `MemoryProvider` and `MEMORY_APP` moved from intentd's `builtin_memory.rs` to `companion-memory` (`provider.rs`), with their test (`tests/it/provider.rs`, which now parses `manifests/org.bardo.Memory.toml` itself). intentd imports them for `HostedLink`. Closes the Memory half of F9.
-- Not moved, needs a decision: `CompanionProvider` and `CheckpointsProvider` (with `CompanionPort`, `CheckpointsPort`). They hold no logic of their own; each forwards to `Router::companion_perform` / `checkpoints_perform` through a port attached to the router. A crate that holds them has to depend on `action-router` (pure, with cedar below it), which `action-provider` and `companion-memory` must not. They are router glue, so they stay in intentd with `HostedLink` until the plan names a home (for example a `action-router` hook that the daemon registers, with the `IntentProvider` impl left to intentd).
-- Moved public items other repos name: `action_client::{IntentProvider, ContextSource, SummonTarget, serve, serve_on, serve_on_with}` are now `action_provider::...`; `intentd::{MemoryProvider, MEMORY_APP}` are `companion_memory::{MemoryProvider, MEMORY_APP}` (intentd no longer exports them).
+- `MemoryProvider` and `MEMORY_APP` moved from actiond's `builtin_memory.rs` to `companion-memory` (`provider.rs`), with their test (`tests/it/provider.rs`, which now parses `manifests/org.bardo.Memory.toml` itself). actiond imports them for `HostedLink`. Closes the Memory half of F9.
+- Not moved, needs a decision: `CompanionProvider` and `CheckpointsProvider` (with `CompanionPort`, `CheckpointsPort`). They hold no logic of their own; each forwards to `Router::companion_perform` / `checkpoints_perform` through a port attached to the router. A crate that holds them has to depend on `action-router` (pure, with cedar below it), which `action-provider` and `companion-memory` must not. They are router glue, so they stay in actiond with `HostedLink` until the plan names a home (for example a `action-router` hook that the daemon registers, with the `IntentProvider` impl left to actiond).
+- Moved public items other repos name: `action_client::{IntentProvider, ContextSource, SummonTarget, serve, serve_on, serve_on_with}` are now `action_provider::...`; `actiond::{MemoryProvider, MEMORY_APP}` are `companion_memory::{MemoryProvider, MEMORY_APP}` (actiond no longer exports them).
 
 
 ## D0.11: the `Planner` trait (H8, part one)
@@ -3941,7 +3941,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 
 - `action-host` (C) is new. It holds `ConfirmSheet`, `SheetAnswer`, `SheetConfirmer` and `EditorDesk`, moved out of `agent-inapp` (X8: one confirmer). `EditorDesk` is a host-side desk (a map of open requests and a oneshot per request), not app UI, so it moved whole. `agent-inapp`, `agent-acp-bin`, and the tests of `agent-acp-host` and `action-accept` import them from `action_host`; nothing is re-exported from `agent-inapp`.
 - The one system clock was already `action_store::SystemClock`; `Wall`, inapp's `SystemClock` and `SystemTicks` were gone before this lane, so no clock moved.
-- `action_core::parse` and `ManifestFileError` (was `action_router::parse` and `RegistryError`) read a manifest file. They sit in `action-core` behind the `manifest-file` feature so the pure crates still reach no TOML parser; `action-router`, `action-fake`, `action-eval`, `intentd`, `action-accept` and `agent-acp-bin` turn it on. `action-router` no longer depends on `toml`.
+- `action_core::parse` and `ManifestFileError` (was `action_router::parse` and `RegistryError`) read a manifest file. They sit in `action-core` behind the `manifest-file` feature so the pure crates still reach no TOML parser; `action-router`, `action-fake`, `action-eval`, `actiond`, `action-accept` and `agent-acp-bin` turn it on. `action-router` no longer depends on `toml`.
 - `agent-acp-bin` reads no environment below `main`: `serve`, `serve_with`, `agent::run`, `serve::run` and `serve::run_with` take the environment closure. `agent::places::Places` reads the data and config directories, home, `PATH`, the runtime directory and the login variables once; `Wiring` carries it as `places`. The KNOWN row `agent-acp-bin env D0.21` is deleted.
 - `agent/serve.rs` (471 lines, not the 645 of the audit; `folders.rs` had already taken `plain_name` and `workspace_name`) is split into the service, `serve/watchdog.rs` (idle end, drain, caller gone) and `serve/object.rs` (the `AgentHost1` object).
 - Not changed: `sandbox::UserSession::from_env()` in `SandboxLimits::probe` reads the environment inside sandbox.
@@ -3967,23 +3967,23 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 Two commits: the harness seams first, then the split.
 
 - `agent-acp-bin`: `agent` is a private module. The lib's entries are `serve`, `entry::bardo_agent` (what `src/bin/bardo-agent.rs` wires) and, behind the new `testing` feature, `harness`: `harness::acp` (`HarnessSeams`, `serve_with`, moved out of the lib root; `serve` calls a private `serve_on`), `harness::serve` (`HarnessSeams`, `run_with` of `bardo-agent --serve`) and `harness::host` (`Hosted`, `Wiring`, `host`, `Places`, `SandboxLimits`, what `action-live` hosts an agent from). The `remember` tests are unit tests in `agent/remember.rs` now (the module is no longer reachable from `tests/it`).
-- `action-accept` takes no daemon type any more: `InferdModel`/`InferdWriter` are `agent_models::{TransportModel, TransportWriter}`, `Companiond` is `companion_tasks::Companion<_, _, _, Quiet>` over `agent_planner::PlannerModel` (in `action-live`, where that code went). The daemons' own entry points (`run_with`, `HarnessSeams`, `ProcRoot`) stay as they were: their lib roots also serve their own `tests/it`, so intentd, companiond and readerd were not given a `testing` module or made private (not done: it would need those tests rewritten as unit tests).
-- `acp_confirm` moved to `intentd/tests/it/acp_desk.rs` (it needs `SheetConfirmer`, `AcpGate`, `IntentdConfig`, `ProcRoot`); it uses intentd's `FakeShell` instead of `action-accept`'s `Sheet`. intentd gains dev-dependencies on `agent-acp-bin` and `action-host`.
+- `action-accept` takes no daemon type any more: `InferdModel`/`InferdWriter` are `agent_models::{TransportModel, TransportWriter}`, `Companiond` is `companion_tasks::Companion<_, _, _, Quiet>` over `agent_planner::PlannerModel` (in `action-live`, where that code went). The daemons' own entry points (`run_with`, `HarnessSeams`, `ProcRoot`) stay as they were: their lib roots also serve their own `tests/it`, so actiond, companiond and readerd were not given a `testing` module or made private (not done: it would need those tests rewritten as unit tests).
+- `acp_confirm` moved to `actiond/tests/it/acp_desk.rs` (it needs `SheetConfirmer`, `AcpGate`, `ActiondConfig`, `ProcRoot`); it uses actiond's `FakeShell` instead of `action-accept`'s `Sheet`. actiond gains dev-dependencies on `agent-acp-bin` and `action-host`.
 - No library of `action-accept` or `action-live` reads the environment: `seams::{trace, proc_root, system_callers, switched_on}` take the environment closure the mains hand in; `Binaries::beside(exe, env)` reads `ACTIONS_LIVE_ENGINE_CACHE` into `Binaries::engine_cache` (passed to inferd as `world::InferdEnv`); `bringup::run_cli(args, exe, env)` and `Own::read(env)`. `ACCEPT_RECORD` is gone: `Options::record` (`Record::On`) turns the recording on, so `dev/accept/run.sh` no longer passes it. The KNOWN row `action-accept env D0.22` is deleted.
 - New crate `action-live` (A): `live/` (now the crate root: `flows`, `acp`, `corpus`, `attack_planner`, `cli`, ...), `bringup/`, the binaries `action-live` and `actions-bringup`, and the tests of those (`live_*`, `acp_*`, `hostile`, `pattern_pure`, `bringup`, `warm_identity`). `cargo test -p action-accept` no longer builds them. `keys_home` and `catalog` moved from `live/` to the `action-accept` root (`world` names them); `runlink` is public for `action-live`.
 - The daemons `action-live` and its tests start are `action-accept`'s `accept-*` binaries, found beside the running program (`Binaries::beside`; the tests take them beside the test binary, `tests/it/support.rs`). `cargo build -p action-accept --bins` has to come first, or a workspace build; `dev/live-smoke.sh`, `scripts/eval-release.sh` and `docs/demo-bringup.md` build both packages. The nextest `hostile-worlds` group names `package(action-live)`.
 - Split (files over 500 lines): `world.rs` (867) into `world/{mod,env,proc,files,start,ops}.rs` (`mod.rs` re-exports the items its children define, so `action_accept::world::X` paths are unchanged); `provider.rs` (604) into `provider/{mod,mail,window,words}.rs`; `flows.rs` (767) into `flows/{mod,judge,report,run}.rs` (same re-exports); `bin/action-live.rs` (628) into `command/{mod,corpus,smoke}.rs` and a main that parses, builds `Binaries` and calls `command::run`; the tests `live_pure` (724) into `live_cli`, `live_judge`, `live_planner`, `acp_pure` (522) into `acp_cli`, `acp_login`, `acp_judge`.
 - `scripts/check-boundary.sh`: LAYERS and RULES rows for `action-live`; the action-trace and test-switch rules name it beside `action-accept`.
 - Follow-up: no `Result<_, String>` is left in `action-live`, `action-accept` or `agent-acp-bin`. New typed errors: `CommandFault` (`command`), `ReportFault`, `AttackFault`, `PlayFault`, and in `agent-acp-bin` `LiveFault`, `FolderFault`; `HostError` is a `thiserror` enum (`Setup(LiveFault)`, `Invalid`, `Open(HostFault)`) and `host_typed` is gone (`host` returns it). The words each prints are unchanged. The dead `agent::Live` alias is deleted.
-- The daemons' (intentd, companiond, readerd) pub internals are trimmed by D4.11 (library surface).
+- The daemons' (actiond, companiond, readerd) pub internals are trimmed by D4.11 (library surface).
 - Not verified by a build in the lane that made the change.
-- D0.26: the last `Result<_, String>` are typed: `SnapshotError` (agent-install), `LoadFault` (voiced), `SearchFileFault` (intentd), `LinkFault` (companiond), `ProposalIdFault` (companion-wire), `ReadFault` (policy-point, the error side of `PolicySource::text`); printed text unchanged. Not verified by a build.
+- D0.26: the last `Result<_, String>` are typed: `SnapshotError` (agent-install), `LoadFault` (voiced), `SearchFileFault` (actiond), `LinkFault` (companiond), `ProposalIdFault` (companion-wire), `ReadFault` (policy-point, the error side of `PolicySource::text`); printed text unchanged. Not verified by a build.
 
 ## Layering lane D4.12: one proc-root crate (2026-10-28)
 
-- New crate `action-procroot` (C): `terminal_scope(root, pid)` and `own_uid()`. It replaces two copies of the cgroup-to-terminal read (`intentd/src/peer.rs` `in_terminal`, a `bool` over `is_terminal_scope`; `companiond/src/speaker.rs` `in_terminal`, a `TerminalScope`) and four copies of the `/proc/self` owner read (`intentd` `peer.rs` and `link.rs`, `companiond` `speaker.rs`, `voiced` `peer.rs`) and one inline (`agent-acp-host` `edge/serve.rs`). intentd's terminal test table moved into the crate.
-- The `ProcRoot` type itself was already one type, the accounts service's `account_daemon_support::ProcRoot`; the actions service had a second spelling of it in companiond (`HarnessSeams::proc_root: PathBuf`, compared with `/proc` to find the fixture; `serve_on_rooted` and `serve_with_routines` took a `PathBuf`). companiond now takes `ProcRoot` from `main` through `HarnessSeams`, as intentd does; `serve_on_rooted`, `serve_with_routines` and `Speakers::new` take a `ProcRoot`; `serve_on` passes `ProcRoot::System`. `accept-companiond` builds `ProcRoot::Fake` (action-accept gains a `account-daemon-support` dependency; companiond does not re-export it).
-- One behaviour note: intentd's cli-role test is now `TerminalScope::from_cgroup(..).is_ok()` (the same scope rule as companiond's, and the leaf must be graphic ASCII, at most 255 bytes) where it was `is_terminal_scope` on the whole path; every scope the table of the old test names gives the same answer.
+- New crate `action-procroot` (C): `terminal_scope(root, pid)` and `own_uid()`. It replaces two copies of the cgroup-to-terminal read (`actiond/src/peer.rs` `in_terminal`, a `bool` over `is_terminal_scope`; `companiond/src/speaker.rs` `in_terminal`, a `TerminalScope`) and four copies of the `/proc/self` owner read (`actiond` `peer.rs` and `link.rs`, `companiond` `speaker.rs`, `voiced` `peer.rs`) and one inline (`agent-acp-host` `edge/serve.rs`). actiond's terminal test table moved into the crate.
+- The `ProcRoot` type itself was already one type, the accounts service's `account_daemon_support::ProcRoot`; the actions service had a second spelling of it in companiond (`HarnessSeams::proc_root: PathBuf`, compared with `/proc` to find the fixture; `serve_on_rooted` and `serve_with_routines` took a `PathBuf`). companiond now takes `ProcRoot` from `main` through `HarnessSeams`, as actiond does; `serve_on_rooted`, `serve_with_routines` and `Speakers::new` take a `ProcRoot`; `serve_on` passes `ProcRoot::System`. `accept-companiond` builds `ProcRoot::Fake` (action-accept gains a `account-daemon-support` dependency; companiond does not re-export it).
+- One behaviour note: actiond's cli-role test is now `TerminalScope::from_cgroup(..).is_ok()` (the same scope rule as companiond's, and the leaf must be graphic ASCII, at most 255 bytes) where it was `is_terminal_scope` on the whole path; every scope the table of the old test names gives the same answer.
 - readerd's and agent-acp-bin's `HarnessSeams` (and its crate-private `Callers`) take `ProcRoot` too, with hand-written `Default` (`ProcRoot::System`; `ProcRoot` has no `Default`). `action-accept`'s `seams::proc_root` returns a `ProcRoot` for every daemon, so no `Option<PathBuf>` is left on the proc-root path. `Identity::on` (action-dbus) still takes `Option<&Path>`; the daemons convert at the call with `ProcRoot::fixture()`. readerd and agent-acp-bin gain a `account-daemon-support` dependency.
 - The memory service (memoryd) has its own `MEMORYD_PROC_ROOT` choice and cgroup read; not touched. For a later lane: it could take `account_daemon_support::ProcRoot` the same way.
 - `Folder` seam: not added. The only audit row (H16, `action-checkpoint-git` `files.rs` and `git.rs`) asks for a fake of `symlink_metadata`, `remove` and `create_dir_all`, but those tests exist to meet hostile folders (symlinks, permissions) and must run on the real file system; a fake would test the fake. No other C-tier library reads a directory in a way a test wants to fake (`agent-skills-disk` already has `DiskFolder` behind a skills trait).
@@ -4011,7 +4011,7 @@ Two commits: the harness seams first, then the split.
 
 - New P crate `action-manifest`: `manifest`, `manifest_file`, `args` and `validate` left `action-core` with their inline tests; `tests/it/args_props.rs` and `tests/it/manifests.rs` went with them into one `it` binary (`manifests.rs` was 515 lines, so its relation tests are now `relations.rs`, and the builders they share are in `tests/it/support`). The crate depends on `action-vocab` and no `action-core` item (`check-core-layers.sh` found 0 upward edges before the move). The `manifest-file` feature (and `dep:toml`) moved with `parse`; `action-core` no longer has a `toml` dependency or a feature.
 - Every moved item has one copy. Importers in this repo (31 crates, `fuzz`, and `action-core`'s own modules and tests) now say `action_manifest::`. Re-exports of moved items are gone: `actions-tools` (its `args` module, which re-exported `TARGET_KEY` and renamed `args_from_json` and `target_from_json` as `read_call` and `target`, and `fault`'s `ArgsFault`, `TargetFault`, `Why`), `agent-planner` (`ArgsFault`) and `companiond` (`ArgsFault`, by way of `agent_planner`). The users say `action_manifest::args_from_json`, `TARGET_KEY` and `ArgsFault`.
-- The crates that read manifest files (`action-router`, `intentd`, `action-fake`, `action-eval`, `action-live`, `action-accept`, `agent-acp-bin`) turn `manifest-file` on in their `action-manifest` line instead of their `action-core` line. `agent-skills-disk` used `action-core` only in a test for `ValidManifest`; it now has `action-manifest` and no `action-core`.
+- The crates that read manifest files (`action-router`, `actiond`, `action-fake`, `action-eval`, `action-live`, `action-accept`, `agent-acp-bin`) turn `manifest-file` on in their `action-manifest` line instead of their `action-core` line. `agent-skills-disk` used `action-core` only in a test for `ValidManifest`; it now has `action-manifest` and no `action-core`.
 - `scripts/check-boundary.sh`: LAYERS row (`action-manifest` P) and RULES row (effects and `toml` banned by default features); `scripts/check-portable.sh` lists it. `scripts/check-core-layers.sh` drops level 1, whose modules are now a crate, and still passes (0 upward edges).
 - Moved public items: manifest (`ActionDecl`, `AgentReach`, `ArgSink`, `Cardinality`, `DryRun`, `EntityDecl`, `Filled`, `IndexPolicy`, `KeyHint`, `Lasting`, `Latency`, `Manifest`, `ParamDecl`, `ParamNeed`, `PropDecl`, `RELATION_ARG`, `RelationDecl`, `ResultShape`, `TargetKind`, `TitleTrust`, `UndoSupport`, `Visibility`, `related_name`), manifest_file (`ManifestFileError`, `parse`), args (`ArgsFault`, `TARGET_KEY`, `TargetFault`, `Why`, `args_from_json`, `target_from_json`), validate (`ManifestError`, `ValidManifest`, `fits`, `is_offered`, `open_name`, `validate`).
 - Not verified by a build in the lane that made the change; `cargo metadata --offline` resolved and `cargo fmt --all` ran.
@@ -4031,7 +4031,7 @@ Two commits: the harness seams first, then the split.
 
 - New P crate `companion-model`: `helper` (with `agent`, `apps`, `apps_wire`, `board`, `card`, `hand`, `ids`, `job`, `notice`, `post`, `reach`, `records`, `rules`, `seat`), `routine` (with `book`, `kept`, `schedule`, `trigger`) and `hand` left `action-core` with their tests. It depends on `action-vocab`, `action-manifest`, `permission-core`, `account-core`, `inference-core` (moved with `helper/card.rs`), `prov`, `memory-core`, `serde`, `serde_json` and `thiserror`, and on no `action-core` item; `check-core-layers.sh` found 0 upward edges. `action-core` depends on it and no longer on `inference-core`.
 - Paths: `helper` and `routine` stay public modules, so `action_core::helper::X` is `companion_model::helper::X` and `action_core::routine::X` is `companion_model::routine::X`. The `hand` items were re-exported at the `action-core` root and are now at the `companion-model` root (`companion_model::WatchedAgent`, `HandTo`, `HandNote`, `Watching`, `WatchOwner`, `WatchedLine`, `AppSessionId`, `AppSessionIdError`, `SeenCommand`, `SeenCommandFault`).
-- Re-exports gone: `action-core`'s root `pub use hand::{...}` and its `pub mod helper` / `pub mod routine`. Importers in this repo (`companion-core`, `companion-wire`, `companion-client`, `companiond`, `agent-acp-server`, `agent-acp-bin`, `agent-acp-host`, `action-client`, `companion-helpers`, `agent-launch`, `companion-memory-core`, `agent-native`, `agent-planner`, `action-router`, `agent-session`, `companion-tasks`, `intentd`, `acp-core`, and `action-core`'s own `audit`, `confirm`, `roster`, `task` and `wire`) say `companion_model::`.
+- Re-exports gone: `action-core`'s root `pub use hand::{...}` and its `pub mod helper` / `pub mod routine`. Importers in this repo (`companion-core`, `companion-wire`, `companion-client`, `companiond`, `agent-acp-server`, `agent-acp-bin`, `agent-acp-host`, `action-client`, `companion-helpers`, `agent-launch`, `companion-memory-core`, `agent-native`, `agent-planner`, `action-router`, `agent-session`, `companion-tasks`, `actiond`, `acp-core`, and `action-core`'s own `audit`, `confirm`, `roster`, `task` and `wire`) say `companion_model::`.
 - Files split to stay under 500 lines: `helper/board.rs` (794) into `board.rs` (types, queries, `step`) and `board/moves.rs` (one method per event); `routine/book.rs` (543) into `book.rs` and `shapes.rs` (`NewRoutine`, `RunRequest`, `JobEnd`, `RoutineRecord`, `RoutineNotice`); the board test file into `board.rs` and `board_records.rs`.
 - Tests that went with the modules into one `it` binary: `board`, `helper`, `routine`, and `hand` (the app-id and seen-command test, taken out of `action-core`'s `checkpoint.rs`), plus a small `support`. The test that also builds `IntentsRequest` and `IntentsReply` stays in `action-core`.
 - `scripts/check-boundary.sh`: LAYERS row (`companion-model` P) and RULES row (effects and `toml` banned); `scripts/check-portable.sh` lists it; `scripts/check-core-layers.sh` drops level 3.
@@ -4056,7 +4056,7 @@ Two commits: the harness seams first, then the split.
 
 ## E-D1: core family types (2026-10-28)
 - The type rules of this pass (plain Rust first) cover `ALL` lists and `dyn` too.
-- `Member`, `Member::ALL` and `IntentsRequest::member` now come from one `members!` list in `action-wire` (was a 47-variant enum, a hand `ALL` and a 47-arm `member`). `Member` stays: the router table, intentd's bus-coverage test and the introspection count name it, and no strum-free derive reads simpler.
+- `Member`, `Member::ALL` and `IntentsRequest::member` now come from one `members!` list in `action-wire` (was a 47-variant enum, a hand `ALL` and a 47-arm `member`). `Member` stays: the router table, actiond's bus-coverage test and the introspection count name it, and no strum-free derive reads simpler.
 - `RoutinePause` is gone: `RoutineState::Paused` holds `PauseWhy` (same JSON). `Reviewed` is `Cost::reviewed: bool`. `Awake` is a `bool`. `ReaderTask::tier()` replaces the reader's `tier_of`. `Refusal`'s five app/host variants are `NotAnApp(AppStep)` and `NoAppHost(AppStep)`.
 - Left alone: the two-arm answers on the bus or in the audit log (`GateAnswer`, `WidenAnswer`, `ClassifyAnswer`, `HandReply`, the helper-app outcomes, `SayReply`, `RoutineReply`, `BroughtBack`, `CallEnd`) and `JobEnd` (it rides in a traced event and reads better named); `KeyHint` and `DryRun` (their values are written in app manifests: `dry_run = "none"`); `GoalSource` (stored on a job), `HelperPhase` and `HelperNeeds` (the shell), `HelperRecordKind` (the stored kind key); `CardRecord`/`RoutineRecord` (different JSON); `BudgetKind` (bus; the ladder has distinct conditions); view twins `Here`/`Selection`/`TextTarget` (generics would touch 100+ sites); `ValueSchema`/`ParamType` (different invariants).
 
@@ -4074,7 +4074,7 @@ Two commits: the harness seams first, then the split.
 - F11: the hand-written slugs of `AttackStyle` and `CarrierKind` are gone; the report uses the serde form (`trace::slug`).
 - F17: `MicNow` is `bool` (`UtteranceState::mic_open`, `SpeechState::mic_open`, `SpeechEvent::Mic { open }`); `EndOfAudio` is `SttLink::Cold { end_pending }`. `MicState` and `Speaking` are on the wire to the shell and stay.
 - F22: the "which future won" enums `Woke`, `Listened`, `Heard` (agent-acp-server) and `Woke` (agent-native) are `futures_util::future::Either`.
-- F5: `intentd` answers Memory, Companion and Checkpoints through a `Builtins` trait (`builtin_chain.rs`; blanket over `IntentProvider`) and a `Chain<A, B>`. `Host`, `host_of` and the seven 4-arm matches are gone. No `dyn`. `is_builtin` stays: it also names the external agents' pseudo-app, which is no provider.
+- F5: `actiond` answers Memory, Companion and Checkpoints through a `Builtins` trait (`builtin_chain.rs`; blanket over `IntentProvider`) and a `Chain<A, B>`. `Host`, `host_of` and the seven 4-arm matches are gone. No `dyn`. `is_builtin` stays: it also names the external agents' pseudo-app, which is no provider.
 - Skipped: F2 (acceptance apps, flows and cassettes to data: ~60 references across three crates, not safe to move without a build), F3 (`ReportStatus` has a fourth value, `Progress`, and the endings carry different payloads in persisted `LoopState`), F12 (needs the core owner), F19 (neither `action-review` nor `policy-point` may depend on the other; the twin needs a lower home, `permission-core`), F20 (`SessionEntry::slug` would serialise a whole entry for its tag; `Mode::id` is an ACP constant the shell uses), F21 (needs a typed stop in `LoopEffect` read by `companion-tasks` and companiond, and about 15 guard tests), F13's `PlannerMode` (a different axis from `Engine`: `--planner live` with a scripted engine is a usage error).
 - Not verified by a build in the lane that made the change; `cargo fmt --all` ran. `Cargo.lock` was edited by hand for the new edges (policy-point, agent-loop, action-accept on agent-session).
 
@@ -4097,7 +4097,7 @@ Two commits: the harness seams first, then the split.
 - New P-tier crate `action-context`: what the router remembers and shows. It holds `state` (`RouterState`, `SessionRecord`), `session`, `tasks` (with `end_task`, moved out of `opening`), `wal`, `journal`, `registry`, `handles`, `handle_views`, `labels`, `rebuild`, `who`, `asks`, `owned`, `spacing`, and the `recording` impls. It names nothing of `Router` or `Seams`; `action-router` depends on it.
 - Also moved because the above name them: `index` (`RouterState::index_event` uses `index_step`), `spoken` (`labels` uses `whole_in`) and `convert` (the `CloseCause`/`EndCause` conversions: with `CloseCause` in the new crate the orphan rule needs them beside it). `RouterState::mode_of`, `conversation_of` and `terminal_sessions` moved out of the router's `mode.rs` and `terminal.rs` into `state.rs`, because an inherent impl must sit in the crate that owns the type.
 - `opening` stays in the router: it is almost all `impl Router`. Its only free function, `end_task`, moved to `action-context::tasks`.
-- No re-exports: the router's `lib.rs` no longer exports the moved names. Importers in `action-eval`, `action-fake`, `agent-inapp`, `companion-memory` (test), `intentd`, `readerd` (test) and the router's tests use `action_context::<module>::`. The `pub(crate)` items the router uses are `pub` with docs.
+- No re-exports: the router's `lib.rs` no longer exports the moved names. Importers in `action-eval`, `action-fake`, `agent-inapp`, `companion-memory` (test), `actiond`, `readerd` (test) and the router's tests use `action_context::<module>::`. The `pub(crate)` items the router uses are `pub` with docs.
 - Tests: `machines.rs`, `tasks.rs` and the registry and handle half of `behaviour.rs` moved to `action-context/tests/it`; the message half of `behaviour.rs` stays.
 - `action-context` also depends on `action-review`, `agent-skills`, `policy-point` and `memory-core` (all P tier): `RouterState` holds a `Breaker` and the skill list, `spacing` names `SpaceRelation`, `rebuild` names `EpisodeId`.
 - `action-router` no longer depends on `futures-channel`. Rows added in `scripts/check-boundary.sh` (layers and rules) and `scripts/check-portable.sh`.

@@ -1,5 +1,5 @@
 //! The model, the writer and the reviewer cascade over a transport that is not the bus: here a
-//! scripted one. The hostile-model corpora run through intentd's adapters (`intentd/tests`); these
+//! scripted one. The hostile-model corpora run through actiond's adapters (`actiond/tests`); these
 //! pin what the portable crate owes on its own.
 
 #[allow(

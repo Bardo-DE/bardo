@@ -3,7 +3,7 @@
 //! nothing for `[]` or for an older companion without the property. The words the footer shows
 //! are `companion_wire::footer_line`'s. A named model that cannot serve fails the task with a
 //! readable reason, which the answer's view carries. On a private bus, with stand-ins for
-//! companiond and intentd.
+//! companiond and actiond.
 
 use crate::companion_support;
 
@@ -23,7 +23,7 @@ struct Bench {
     companiond: Connection,
     view: Arc<Mutex<String>>,
     routing: Arc<Mutex<String>>,
-    _intentd: Connection,
+    _actiond: Connection,
 }
 
 /// The stand-ins are up and the shell holds its seat. The answers companiond makes have a
@@ -45,9 +45,9 @@ async fn bench(first: Option<&str>) -> Bench {
         },
     )
     .await;
-    let intentd = desk.peer(INTENTS_BUS).await;
+    let actiond = desk.peer(INTENTS_BUS).await;
     serve(
-        &intentd,
+        &actiond,
         "/org/bardo/Intents1",
         StandInSession(desk.log.clone()),
     )
@@ -58,7 +58,7 @@ async fn bench(first: Option<&str>) -> Bench {
         companiond,
         view,
         routing,
-        _intentd: intentd,
+        _actiond: actiond,
     }
 }
 

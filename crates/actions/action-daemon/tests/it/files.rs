@@ -85,7 +85,7 @@ fn the_environment_says_where_everything_is() {
         Setup::from_env(&crate::support::system::scratch(home.path()), &env).expect("setup");
     assert_eq!(
         setup.config,
-        action_daemon::IntentdConfig::shipped().expect("shipped")
+        action_daemon::ActiondConfig::shipped().expect("shipped")
     );
     assert_eq!(setup.manifests.manifests.len(), 1);
     assert_eq!(setup.grants, data.join("bardo/intents/grants.json"));
@@ -115,7 +115,7 @@ fn the_environment_says_where_everything_is() {
 #[test]
 fn the_shipped_configuration_gives_a_terminal_the_cli_role_and_shell_the_rest() {
     use action_vocab::CallerRole as R;
-    let config = action_daemon::IntentdConfig::shipped().expect("shipped");
+    let config = action_daemon::ActiondConfig::shipped().expect("shipped");
     let roles = |name: &str| {
         config
             .roles_of(&AppName::parse(name).expect("app"))

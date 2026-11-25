@@ -1,4 +1,4 @@
-//! What the shell asks intentd as the launcher: the things apps index, the undo journal, undoing,
+//! What the shell asks actiond as the launcher: the things apps index, the undo journal, undoing,
 //! and performing an action the person picked.
 
 use std::collections::BTreeSet;
@@ -126,7 +126,7 @@ fn mode_of(word: &str) -> Option<Mode> {
     serde_json::from_value(serde_json::Value::String(word.to_owned())).ok()
 }
 
-/// What intentd says on its own while it is on the bus: the hits an app answered late, the
+/// What actiond says on its own while it is on the bus: the hits an app answered late, the
 /// journal's changes and the apps' manifests. The streams are subscribed before the journal and
 /// the manifests are first read, so the first journal the service publishes says they are up.
 /// Ends when the bus or the receiver goes.

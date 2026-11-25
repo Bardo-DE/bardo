@@ -1,4 +1,4 @@
-//! Settings' account actions, called over a private bus the way intentd calls an app: the list
+//! Settings' account actions, called over a private bus the way actiond calls an app: the list
 //! says what an agent may know of the accounts, and nothing in the manifest changes one.
 
 use crate::support::{Listed, World, entity, key};

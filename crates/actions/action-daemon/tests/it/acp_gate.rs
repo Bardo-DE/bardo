@@ -5,17 +5,17 @@
 
 use crate::support::world::*;
 use action_client::Transport;
-use action_daemon::{ACP_NAME, AcpGate, IntentdConfig};
+use action_daemon::{ACP_NAME, AcpGate, ActiondConfig};
 use action_vocab::CallerRole;
 use action_wire::{IntentsReply, IntentsRequest, RecallAsk, SessionOpen, WireRefusal};
 use provenance::{AgentRef, SessionId, SpaceId};
 use std::collections::BTreeMap;
 
 /// A configuration in which the ACP name plays exactly `role`.
-fn only(role: CallerRole) -> IntentdConfig {
-    IntentdConfig {
+fn only(role: CallerRole) -> ActiondConfig {
+    ActiondConfig {
         roles: BTreeMap::from([(role, vec![app(ACP_NAME)])]),
-        ..IntentdConfig::empty()
+        ..ActiondConfig::empty()
     }
 }
 
@@ -87,7 +87,7 @@ async fn flipping_the_setting_changes_the_next_call() {
 async fn other_names_do_not_wait_on_the_setting() {
     let world = World::serving_gated(
         mail_router(),
-        IntentdConfig::shipped().expect("shipped"),
+        ActiondConfig::shipped().expect("shipped"),
         "test-runner.service",
         AcpGate::shut(),
     )
@@ -119,12 +119,12 @@ fn turn() -> IntentsRequest {
 async fn host_allowed(agents: bool, expose: bool) -> bool {
     let gate = AcpGate::new(expose);
     gate.set_agents(agents);
-    let config = IntentdConfig {
+    let config = ActiondConfig {
         roles: BTreeMap::from([(
             CallerRole::AcpAgent,
             vec![app(permission_core::ACP_AGENT_APP)],
         )]),
-        ..IntentdConfig::empty()
+        ..ActiondConfig::empty()
     };
     let world = World::serving_gated(mail_router(), config, "test-runner.service", gate).await;
     let (host, _keep) = world.client(&[permission_core::ACP_AGENT_APP]).await;

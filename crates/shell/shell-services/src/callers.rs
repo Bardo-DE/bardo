@@ -10,7 +10,7 @@
 //! |---|---|
 //! | `org.bardo.Shell1` (the picker, `AskPermission`) | the portal backend (role `portal`) |
 //! | `org.bardo.AccountsSheet1` | accountd, inferd or syncd (roles `accounts`, `inference`, `sync`) |
-//! | `org.bardo.Confirm1` | intentd (role `router`) |
+//! | `org.bardo.Confirm1` | actiond (role `router`) |
 //! | `org.bardo.Displays1.SetBrightness` (reading is open) | Settings (role `settings`, owner of `org.bardo.Settings`) |
 //! | `org.bardo.Voice1.Utterance.Ended` (a signal to the shell), and the ask before `Begin` | voiced (role `voice`, owner of `org.bardo.Voice1`) |
 //!

@@ -1,4 +1,4 @@
-//! The objects bardo-shell exports for intentd: `org.bardo.Confirm1` and one `org.bardo.Intents1.Request`
+//! The objects bardo-shell exports for actiond: `org.bardo.Confirm1` and one `org.bardo.Intents1.Request`
 //! per question. They do nothing but check who is calling and hand the call to the service's
 //! loop; the loop decides.
 
@@ -61,10 +61,10 @@ pub(super) struct RequestObject {
 }
 
 impl ConfirmObject {
-    /// The unique name of the caller, when it is intentd: the program the table names as the
-    /// router, which owns intentd's name. Nobody else may ask the person a question in intentd's
+    /// The unique name of the caller, when it is actiond: the program the table names as the
+    /// router, which owns actiond's name. Nobody else may ask the person a question in actiond's
     /// name, withdraw one, or answer for it.
-    async fn admit_intentd(&self, header: &Header<'_>) -> fdo::Result<OwnedUniqueName> {
+    async fn admit_actiond(&self, header: &Header<'_>) -> fdo::Result<OwnedUniqueName> {
         let claims = [Claim {
             name: INTENTS_BUS,
             role: roles::ROUTER,
@@ -84,7 +84,7 @@ impl ConfirmObject {
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &Connection,
     ) -> fdo::Result<OwnedObjectPath> {
-        let asker = self.admit_intentd(&header).await?;
+        let asker = self.admit_actiond(&header).await?;
         let parsed: ConfirmRequest = serde_json::from_str(&request)
             .map_err(|e| fdo::Error::InvalidArgs(format!("not a ConfirmRequest: {e}")))?;
         let serial = Serial(self.serials.fetch_add(1, Ordering::Relaxed) + 1);
@@ -111,7 +111,7 @@ impl ConfirmObject {
     }
 
     async fn cancel(&self, id: String, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
-        self.admit_intentd(&header).await?;
+        self.admit_actiond(&header).await?;
         let id = ConfirmId::parse(&id).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
         self.calls
             .send(Call::Cancel(id))

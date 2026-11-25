@@ -47,11 +47,11 @@ pub fn load_manifests(data_dirs: &[PathBuf]) -> Loaded {
                 }
             };
             match parse(&text) {
-                // The built-in providers' declarations are intentd's own.
+                // The built-in providers' declarations are actiond's own.
                 Ok(manifest) if is_builtin(&manifest.manifest().app) => {
                     loaded
                         .skipped
-                        .push((file, "that app is built into intentd".to_owned()));
+                        .push((file, "that app is built into actiond".to_owned()));
                 }
                 Ok(manifest) if seen.insert(manifest.manifest().app.clone()) => {
                     loaded.manifests.push(manifest);

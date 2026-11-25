@@ -1,4 +1,4 @@
-//! A handle's text for the screen, marked by who wrote it. intentd labels each handle; the text
+//! A handle's text for the screen, marked by who wrote it. actiond labels each handle; the text
 //! of what the person wrote shows as it is, and the text of anyone else's words (mail, the web, a
 //! file) shows quoted, so the card never reads as the companion's own voice. A router that does
 //! not know the labelled reading, or does not give this caller it, is read the old way and

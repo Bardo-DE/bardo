@@ -1,5 +1,5 @@
 //! Watching a request over D-Bus: the Request object's `Progress` and `Response` signals come
-//! out in order (from intentd's own connection, at the request's path), and `Proceed` and
+//! out in order (from actiond's own connection, at the request's path), and `Proceed` and
 //! `Close` are calls on the same object. The signals are subscribed to before the method that
 //! starts the request, so nothing quicker than its reply is lost.
 
@@ -126,7 +126,7 @@ pub(crate) async fn watching(
     let dbus = DBusProxy::new(connection).await.map_err(bus)?;
     let name = zbus::names::BusName::try_from(INTENTS_BUS).map_err(bus)?;
     // Addressing, not trust: the watch follows the connection the call goes to (the owner of
-    // intentd's name now), and ends when it leaves.
+    // actiond's name now), and ends when it leaves.
     let owner = dbus
         .get_name_owner(name)
         .await

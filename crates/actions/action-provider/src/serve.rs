@@ -8,7 +8,7 @@ use crate::provider::{ContextSource, IntentProvider, SummonTarget};
 /// manifest's app) on the session bus, until the connection closes.
 ///
 /// The router calls it only after checking that the name's owner derives to the same `AppId`; every
-/// member but `Summon` refuses any caller that is not intentd.
+/// member but `Summon` refuses any caller that is not actiond.
 ///
 /// # Errors
 ///

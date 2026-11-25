@@ -105,19 +105,19 @@ pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static
         // the scratch root's fake proc, and read the system's callers file from the scratch
         // root's own system directory.
         "bardo-actiond" => vec![
-            (crate::seams::INTENTD_PROC_ROOT_VAR, proc_root),
-            (crate::seams::INTENTD_SYSTEM_CALLERS_VAR, system("actiond")),
+            (crate::seams::ACTIOND_PROC_ROOT_VAR, proc_root),
+            (crate::seams::ACTIOND_SYSTEM_CALLERS_VAR, system("actiond")),
             // No floor and no administrator's policies: the harness's own system has none, and
             // this computer's `/etc/bardo` is never read.
             (
-                crate::seams::INTENTD_FLOOR_VAR,
+                crate::seams::ACTIOND_FLOOR_VAR,
                 dir.join("system")
                     .join("actions-floor.toml")
                     .display()
                     .to_string(),
             ),
             (
-                crate::seams::INTENTD_PERMISSIONS_VAR,
+                crate::seams::ACTIOND_PERMISSIONS_VAR,
                 dir.join("system").join("permissions").display().to_string(),
             ),
         ],

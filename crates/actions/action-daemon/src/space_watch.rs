@@ -59,7 +59,7 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
                         .append(AuditRecord::GrantsEnded { at, ended });
                 }
             }
-            Err(why) => eprintln!("intentd: {why}"),
+            Err(why) => eprintln!("actiond: {why}"),
         }
     }
 
@@ -88,7 +88,7 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
             match change {
                 Ok((space, SpaceChange::Removed)) => self.removed(space).await,
                 Ok(_) => {}
-                Err(why) => eprintln!("intentd: a Space change was not understood: {why:?}"),
+                Err(why) => eprintln!("actiond: a Space change was not understood: {why:?}"),
             }
         }
         Ok(())
@@ -100,7 +100,7 @@ impl<S: Seams<Grants = FileGrants>> SpaceKeeper<S> {
         loop {
             let spaces = Bus::over(bus.clone()).spaces();
             if let Err(why) = self.follow(&spaces).await {
-                eprintln!("intentd: the Spaces are not followed for now: {why}");
+                eprintln!("actiond: the Spaces are not followed for now: {why}");
             }
             tokio::time::sleep(self.retry).await;
         }

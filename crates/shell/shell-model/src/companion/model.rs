@@ -130,7 +130,7 @@ impl<T> Default for Lookup<T> {
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct Companion {
     /// True once the service is connected as the shell; false while it is not on the bus yet (the
-    /// shell's seat at intentd has not claimed its names).
+    /// shell's seat at actiond has not claimed its names).
     pub reached: bool,
     /// The double tap.
     pub tap: Tap,

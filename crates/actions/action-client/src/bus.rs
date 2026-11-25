@@ -1,13 +1,13 @@
 //! `DbusTransport::call`: one match from a request to the member of `org.bardo.Intents1` that
 //! carries it. Bodies are the JSON of the typed value named in `action-dbus`; a request that
-//! `intentd` refuses before it is a call arrives as a bus error (`IntentsError`) and comes back
+//! `actiond` refuses before it is a call arrives as a bus error (`IntentsError`) and comes back
 //! as `IntentsReply::Refused`, a refused call or message as part of its body.
 //!
 //! Six members answer a Request object (`Run.Perform`, `Run.Undo`, `Run.UndoAll`,
 //! `Session.Widen`, `Gate.Grant`, `Gate.Check`): the reply is the `Response` signal at the
 //! returned path, whose body is the JSON of the typed answer under code 0, or of a
 //! `WireRefusal` under code 2. The signal is subscribed to before the call, so an answer that
-//! is quicker than the method's own reply is not lost, and it counts only from intentd's own
+//! is quicker than the method's own reply is not lost, and it counts only from actiond's own
 //! connection.
 
 use crate::transport::TransportError;
@@ -50,7 +50,7 @@ fn refusal_of(error: zbus::Error) -> Result<WireRefusal, TransportError> {
     }
 }
 
-/// A bus error that means intentd is not there is `Closed`; anything else is the bus's.
+/// A bus error that means actiond is not there is `Closed`; anything else is the bus's.
 pub(crate) fn fault_of(error: zbus::Error) -> TransportError {
     match &error {
         zbus::Error::MethodError(name, _, _)
@@ -151,7 +151,7 @@ fn with_activation(mut options: Details, token: Option<&action_core::ActivationT
     options
 }
 
-/// `Gate.Check` and `Run.Perform` for a caller that watches them: the option tells intentd to say
+/// `Gate.Check` and `Run.Perform` for a caller that watches them: the option tells actiond to say
 /// how far the request is, and for a gate check to wait for `Proceed` before it draws the sheet.
 /// Any other request is answered in one piece.
 pub(crate) async fn watch(

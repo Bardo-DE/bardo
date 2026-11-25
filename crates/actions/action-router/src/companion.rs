@@ -1,4 +1,4 @@
-//! The two actions of `org.bardo.Companion`, which intentd hosts as a built-in provider: starting
+//! The two actions of `org.bardo.Companion`, which actiond hosts as a built-in provider: starting
 //! a worker task and messaging one. They live here because both are the router's own business:
 //! a worker is a child session under the spawner's task policy (never wider), and a message goes
 //! through the same stamping, labelling and delivery as `.Message.Send`.

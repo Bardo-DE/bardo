@@ -1,7 +1,7 @@
 //! The real `readerd` binary on a private bus: it claims `org.bardo.Reader1`, refuses a caller that
-//! is not intentd's unit, claims the name once and frees it when it stops. Nothing of the real
+//! is not actiond's unit, claims the name once and frees it when it stops. Nothing of the real
 //! session is named: the bus, HOME and every XDG directory are scratch. The binary reads the
-//! system's `/proc`, which no test may move, so who it does answer (intentd's unit, as the
+//! system's `/proc`, which no test may move, so who it does answer (actiond's unit, as the
 //! callers file names it) is tested in process, over a fake proc root (`callers.rs`).
 
 use action_core::{ReaderAsk, ReaderTask, ValueSchema};
@@ -89,7 +89,7 @@ async fn the_binary_refuses_a_stranger_claims_the_name_once_and_frees_it_when_it
     let mut daemon = readerd(dir.path(), bus.address());
     until_served(&me).await;
 
-    // A process that is not intentd's unit is refused before the ask is read, whatever the
+    // A process that is not actiond's unit is refused before the ask is read, whatever the
     // system's `/proc` says this test process is: only bardo-actiond.service's main process passes.
     let stranger = ReaderProxy::new(&me).await.expect("proxy");
     let refused = stranger

@@ -28,7 +28,7 @@ pub const HONOURS_SYSTEM_CALLERS: bool = cfg!(feature = "test-system-callers");
 pub fn system_override(env: &impl Fn(&str) -> Option<String>) -> Option<PathBuf> {
     action_dbus::callers::system_override(
         HONOURS_SYSTEM_CALLERS,
-        "intentd",
+        "actiond",
         SYSTEM_CALLERS_VAR,
         env,
     )

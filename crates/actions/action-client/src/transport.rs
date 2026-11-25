@@ -78,7 +78,7 @@ impl<S: Seams + 'static> Transport for InProcess<S> {
     }
 }
 
-/// The desktop's intentd over D-Bus.
+/// The desktop's actiond over D-Bus.
 #[cfg(feature = "dbus")]
 #[derive(Debug)]
 pub struct DbusTransport {
@@ -87,17 +87,17 @@ pub struct DbusTransport {
 
 #[cfg(feature = "dbus")]
 impl DbusTransport {
-    /// Talks to intentd over `connection`.
+    /// Talks to actiond over `connection`.
     #[must_use]
     pub fn new(connection: action_dbus::BusConnection) -> Self {
         Self { connection }
     }
 
-    /// Connects to the session bus and makes sure intentd is there: already running, or started
-    /// through D-Bus activation when it is installed and not running. A bus with no intentd on
+    /// Connects to the session bus and makes sure actiond is there: already running, or started
+    /// through D-Bus activation when it is installed and not running. A bus with no actiond on
     /// it, installed or running, is `Closed`: the caller says "unavailable", and no request was
     /// sent. (A name that already has an owner is not activated: a bus without an activation
-    /// file for it, a private bus a person started intentd on by hand, answers
+    /// file for it, a private bus a person started actiond on by hand, answers
     /// `StartServiceByName` with an error even then.)
     ///
     /// # Errors

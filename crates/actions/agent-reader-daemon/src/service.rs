@@ -8,7 +8,7 @@ use action_vocab::Value;
 use inference_client::Transport as InferTransport;
 use provenance::{Labelled, Quarantined, SessionId};
 
-/// Reads for intentd.
+/// Reads for actiond.
 ///
 /// Resolves handles through `Intents1.Session.Resolve` (the reader role), asks the reader model
 /// through inferd (`Need::Llm` with structured output, no tools), and answers a value that fits the

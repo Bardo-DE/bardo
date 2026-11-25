@@ -205,7 +205,7 @@ fn ask_about_everything() -> Limit {
 /// What a store does with a fault: the person is asked again (no grants held), and the line says
 /// why. The damaged file is left alone for the person to look at.
 fn logged<T>(done: Result<T, GrantFileError>) -> Option<T> {
-    done.map_err(|why| eprintln!("intentd: {why}")).ok()
+    done.map_err(|why| eprintln!("actiond: {why}")).ok()
 }
 
 impl GrantStore for FileGrants {
@@ -301,7 +301,7 @@ impl GrantStore for FileGrants {
         match load_policies(self.rules.as_ref()?) {
             Ok(loaded) => Some(loaded.presets),
             Err(why) => {
-                eprintln!("intentd: policies not reloaded, the set in force stays: {why}");
+                eprintln!("actiond: policies not reloaded, the set in force stays: {why}");
                 None
             }
         }

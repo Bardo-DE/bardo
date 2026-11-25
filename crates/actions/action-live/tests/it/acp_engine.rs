@@ -1,4 +1,4 @@
-//! The ACP engine end to end, with a fake agent: the real intentd, inferd (replaying a cassette),
+//! The ACP engine end to end, with a fake agent: the real actiond, inferd (replaying a cassette),
 //! memoryd and the mail provider on a private bus, the agent in the real bubblewrap sandbox with
 //! no network, its MCP server the real `bardo-actions-mcp` bridge over the per-session socket, and the
 //! calls it makes the host's router calls. No real agent, no real login, no network; HOME and

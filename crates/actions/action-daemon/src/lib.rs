@@ -1,9 +1,9 @@
-//! intentd's library: everything the daemon is made of except `main`, so each part is tested
+//! actiond's library: everything the daemon is made of except `main`, so each part is tested
 //! without a bus. The router is pure (`action-router`); this crate gives it its seams.
 //!
-//! - `IntentdConfig`: which bus names play which role, and which reviewers are installed.
+//! - `ActiondConfig`: which bus names play which role, and which reviewers are installed.
 //! - `builtin_manifests`, `CompanionProvider`, `CheckpointsProvider`, `HostedLink`: the providers
-//!   whose router-side half intentd hosts (`MemoryProvider` is `companion-memory`'s), and the `AppLink`
+//!   whose router-side half actiond hosts (`MemoryProvider` is `companion-memory`'s), and the `AppLink`
 //!   that answers them in process.
 //! - `MemoryServiceLink`: the router's memory seam over memoryd; `AuditLog`: the way of the event
 //!   sink (`companion_memory_core::QueuedSink`) to memoryd.
@@ -55,7 +55,7 @@ pub use builtin::{HostedLink, builtin_manifests, is_builtin};
 pub use builtin_checkpoints::{CheckpointsPort, CheckpointsProvider};
 pub use builtin_companion::{CompanionPort, CompanionProvider};
 pub use companion_memory::MemoryServiceLink;
-pub use config::{ConfigError, IntentdConfig};
+pub use config::{ConfigError, ActiondConfig};
 pub use daemon::{
     DaemonError, HarnessSeams, Running, Setup, SystemFiles, data_dirs, run, run_with, start,
 };

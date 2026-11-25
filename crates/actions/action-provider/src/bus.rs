@@ -3,15 +3,15 @@
 //! list, its signatures and its signals are those of `action-dbus`'s `IntentProviderSkeleton`
 //! (a test holds the introspection to `dbus/org.bardo.IntentProvider1.xml`).
 //!
-//! The gate lives in intentd: a provider answers nothing but intentd, so a process that calls
-//! an app's bus name directly gets no way around it. Intentd is the process the accounts service's callers table
+//! The gate lives in actiond: a provider answers nothing but actiond, so a process that calls
+//! an app's bus name directly gets no way around it. Actiond is the process the accounts service's callers table
 //! names as the router (its unit, `bardo-actiond.service`, by the main process the systemd manager
 //! reports), never whoever owns a well-known name. `Summon` is the one member that also comes
 //! from the shell.
 
 use crate::error::ServeError;
 use crate::provider::{ContextSource, IntentProvider, SummonTarget};
-use action_dbus::callers::{Callers, INTENTD, Identity, intentd_only, require};
+use action_dbus::callers::{Callers, ACTIOND, Identity, actiond_only, require};
 use action_dbus::{BusConnection, Details, PROVIDER_PATH};
 use action_manifest::ValidManifest;
 use action_wire::SummonSerial;
@@ -39,17 +39,17 @@ struct ProviderObject<P, C, S, K> {
     callers: Arc<K>,
 }
 
-/// Whether the caller is intentd: the process `callers` names as the router.
-async fn from_intentd(callers: &impl Callers, header: &Header<'_>) -> fdo::Result<()> {
+/// Whether the caller is actiond: the process `callers` names as the router.
+async fn from_actiond(callers: &impl Callers, header: &Header<'_>) -> fdo::Result<()> {
     require(
         callers,
         header.sender().map(zbus::names::UniqueName::as_str),
-        &[INTENTD],
+        &[ACTIOND],
     )
     .await
     .map(drop)
     .map_err(|refused| {
-        fdo::Error::AccessDenied(format!("only intentd calls a provider ({refused})"))
+        fdo::Error::AccessDenied(format!("only actiond calls a provider ({refused})"))
     })
 }
 
@@ -73,7 +73,7 @@ where
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
         let _ = options;
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         let delivered: action_core::ActivatedInvocation = parse(&invocation)?;
         render(
             &self
@@ -94,7 +94,7 @@ where
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
         let _ = options;
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         render(&self.provider.classify(parse(&invocation)?).await)
     }
 
@@ -105,7 +105,7 @@ where
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
         let _ = options;
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         render(&self.provider.dry_run(parse(&invocation)?).await)
     }
 
@@ -115,12 +115,12 @@ where
         actor: String,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         render(&self.provider.undo(parse(&token)?, parse(&actor)?).await)
     }
 
     async fn context(&self, #[zbus(header)] header: Header<'_>) -> fdo::Result<String> {
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         render(&self.context.snapshot())
     }
 
@@ -135,7 +135,7 @@ where
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
         let _ = generation;
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         render(&self.provider.search(&text).await)
     }
 
@@ -144,7 +144,7 @@ where
         entity: String,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         render(&self.provider.preview(&parse(&entity)?).await)
     }
 
@@ -153,7 +153,7 @@ where
         ask: String,
         #[zbus(header)] header: Header<'_>,
     ) -> fdo::Result<String> {
-        from_intentd(self.callers.as_ref(), &header).await?;
+        from_actiond(self.callers.as_ref(), &header).await?;
         render(&self.provider.suggest(parse(&ask)?).await)
     }
 
@@ -180,7 +180,7 @@ where
 /// Exports `provider` at `/org/bardo/IntentProvider1` on `connection` and claims the manifest's app
 /// as its bus name.
 ///
-/// Only intentd's unit (`bardo-actiond.service`, by its main process, over the system's `/proc`) is
+/// Only actiond's unit (`bardo-actiond.service`, by its main process, over the system's `/proc`) is
 /// answered. Returns once the name is ours; the connection keeps serving.
 ///
 /// # Errors
@@ -198,11 +198,11 @@ where
     C: ContextSource + 'static,
     S: SummonTarget + 'static,
 {
-    let callers = Arc::new(Identity::on_system(connection.clone(), intentd_only()));
+    let callers = Arc::new(Identity::on_system(connection.clone(), actiond_only()));
     serve_on_with(connection, provider, context, summon, callers).await
 }
 
-/// [`serve_on`], answering the process that `callers` names as intentd (a test's fake proc root,
+/// [`serve_on`], answering the process that `callers` names as actiond (a test's fake proc root,
 /// or a host with a table of its own).
 ///
 /// # Errors

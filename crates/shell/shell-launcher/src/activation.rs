@@ -41,7 +41,7 @@ pub enum Activation {
     SetClipboard { entry: ClipKey },
     /// Drop a clipboard history entry (its row's "Forget" action; the launcher stays open).
     ForgetClipboard { entry: ClipKey },
-    /// Perform an action of an app through intentd (a thing's primary action, from the things
+    /// Perform an action of an app through actiond (a thing's primary action, from the things
     /// provider).
     Intent(Box<action_vocab::CallRequest>),
     /// Something for the companion: ask, press a card's button, steer a run, undo, settle a
@@ -52,7 +52,7 @@ pub enum Activation {
 }
 
 impl Activation {
-    /// Perform `action` of `app` through intentd, on nothing and with no arguments (a hot
+    /// Perform `action` of `app` through actiond, on nothing and with no arguments (a hot
     /// corner's app action). `None` when either name is not a valid name.
     #[must_use]
     pub fn app_action(app: &str, action: &str) -> Option<Activation> {

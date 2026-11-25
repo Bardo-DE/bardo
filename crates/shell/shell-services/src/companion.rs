@@ -5,8 +5,8 @@
 //! the things apps index (`org.bardo.Intents1.Search`), the undo journal, the computer-use runs
 //! (`org.bardo.ComputerUse1`) and the memory timeline (`org.bardo.Memory1`).
 //!
-//! Everything said to intentd and the companion goes out on the connection the intents service
-//! holds as `org.bardo.Shell` (`seat`): intentd names a caller's role from the names its
+//! Everything said to actiond and the companion goes out on the connection the intents service
+//! holds as `org.bardo.Shell` (`seat`): actiond names a caller's role from the names its
 //! connection owns, so a turn or a search from any other connection would not be the launcher's.
 //! Without the seat the machines still run (a summon opens the launcher) and every lookup is
 //! `Failed`.
@@ -33,7 +33,7 @@ use shell_model::service::ServiceIo;
 /// effects go, and the launch service that opens Settings' model picker.
 #[derive(Debug, Clone)]
 pub struct CompanionLinks {
-    /// The shell's connection at intentd.
+    /// The shell's connection at actiond.
     pub seat: SeatView,
     /// The launcher effects of a summon (`OpenLauncher`, `SwitchLauncher`, `CloseLauncher`).
     pub summons: mpsc::UnboundedSender<SummonOut>,

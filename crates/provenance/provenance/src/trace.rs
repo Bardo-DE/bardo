@@ -1,7 +1,7 @@
 //! The names of our own span attributes, in the `bardo.*` namespace.
 //!
 //! Pure constants and slug functions: no `tracing` dependency here. Spans are created only in the
-//! daemons (inferd, companiond, readerd, the computer-use daemon, memoryd, intentd), each in one `telemetry.rs`
+//! daemons (inferd, companiond, readerd, the computer-use daemon, memoryd, actiond), each in one `telemetry.rs`
 //! whose `macro_rules!` span constructors spell these names as literals; a unit test there asserts
 //! the macro's declared field set equals [`attr::ALL`] (and `model-genai-names` for the `gen_ai.*`
 //! half). The OpenTelemetry `GenAI` names live in the model layer's `model-genai-names`, the lowest repo.

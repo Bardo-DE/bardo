@@ -1,4 +1,4 @@
-//! The desktop's buses: intentd and the assistant, both on the session bus.
+//! The desktop's buses: actiond and the assistant, both on the session bus.
 
 use action_client::{DbusTransport, Intents, TransportError};
 use companion_client::DbusCompanion;
@@ -8,7 +8,7 @@ use companion_client::DbusCompanion;
 pub struct SessionBus;
 
 impl SessionBus {
-    /// Connects to intentd. A connection is made only when a command needs it.
+    /// Connects to actiond. A connection is made only when a command needs it.
     ///
     /// # Errors
     ///

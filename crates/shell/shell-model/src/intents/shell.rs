@@ -1,5 +1,5 @@
 //! The shell's own actions, as `org.bardo.Shell` declares them
-//! (`dist/intents/org.bardo.Shell.toml`) and intentd calls them (`IntentProvider1.Perform`).
+//! (`dist/intents/org.bardo.Shell.toml`) and actiond calls them (`IntentProvider1.Perform`).
 //!
 //! What an invocation of each means, and what an answer says. The daemon turns a [`ShellAction`]
 //! into the same request `bardo-shell <verb>` makes.

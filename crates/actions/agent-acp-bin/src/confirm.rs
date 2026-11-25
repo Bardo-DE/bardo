@@ -1,26 +1,26 @@
 //! `org.bardo.Confirm1` served by the bardo-agent-acp process, under its own bus name.
 //!
-//! intentd hands a
+//! actiond hands a
 //! sheet for a call in an editor's session here instead of to the shell (`ConfirmRequest::editor`,
 //! trusted only while this name plays the `editor` role); the sheet waits on the [`EditorDesk`],
 //! the server shows it to the editor as an ACP permission request, and the editor's choice comes
 //! back through the host as the answer, with a receipt minted here (`SheetConfirmer`).
 //!
-//! Only intentd may ask or withdraw: a call from any other process is refused, so another
-//! process cannot put sheets on the editor or take them down. Intentd is the process
+//! Only actiond may ask or withdraw: a call from any other process is refused, so another
+//! process cannot put sheets on the editor or take them down. Actiond is the process
 //! `agent-acp-callers.toml` names as the router (the `agent` role of the app `org.bardo.Intents`, by its
 //! unit's main process), never whoever owns a well-known name.
 
 use action_core::{ConfirmId, ConfirmRequest, Confirmer};
 use action_dbus::CONFIRM_PATH;
-use action_dbus::callers::{INTENTD, Identity, require};
+use action_dbus::callers::{ACTIOND, Identity, require};
 use action_host::{EditorDesk, SheetConfirmer};
 use std::sync::Arc;
 use zbus::fdo;
 use zbus::message::Header;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
-/// The sheets intentd put to this process, answered through the shared desk.
+/// The sheets actiond put to this process, answered through the shared desk.
 #[derive(Debug)]
 pub struct ConfirmObject<K: action_vocab::Clock + 'static> {
     sheets: Arc<SheetConfirmer<EditorDesk, K>>,
@@ -30,7 +30,7 @@ pub struct ConfirmObject<K: action_vocab::Clock + 'static> {
 
 impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
     /// Answers for the sheets on `desk`, stamping receipts with `clock`, to the process that
-    /// `callers` names as intentd.
+    /// `callers` names as actiond.
     pub fn new(desk: EditorDesk, clock: K, callers: Arc<Identity>) -> Self {
         Self {
             sheets: Arc::new(SheetConfirmer::new(desk, clock)),
@@ -40,11 +40,11 @@ impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
     }
 }
 
-/// Whether `header` is a message from the process the callers table names as intentd: the only
+/// Whether `header` is a message from the process the callers table names as actiond: the only
 /// one that may ask or withdraw a sheet.
-async fn from_intentd(header: &Header<'_>, callers: &Identity) -> fdo::Result<()> {
+async fn from_actiond(header: &Header<'_>, callers: &Identity) -> fdo::Result<()> {
     let sender = header.sender().map(zbus::names::UniqueName::as_str);
-    require(callers, sender, &[INTENTD]).await?;
+    require(callers, sender, &[ACTIOND]).await?;
     Ok(())
 }
 
@@ -56,7 +56,7 @@ impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &zbus::Connection,
     ) -> fdo::Result<OwnedObjectPath> {
-        from_intentd(&header, &self.callers).await?;
+        from_actiond(&header, &self.callers).await?;
         let parsed: ConfirmRequest =
             serde_json::from_str(&request).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
         let n = self.next.fetch_add(1, std::sync::atomic::Ordering::Relaxed) + 1;
@@ -89,7 +89,7 @@ impl<K: action_vocab::Clock + 'static> ConfirmObject<K> {
     }
 
     async fn cancel(&self, id: String, #[zbus(header)] header: Header<'_>) -> fdo::Result<()> {
-        from_intentd(&header, &self.callers).await?;
+        from_actiond(&header, &self.callers).await?;
         let id = ConfirmId::parse(&id).map_err(|e| fdo::Error::InvalidArgs(e.to_string()))?;
         self.sheets.cancel(&id).await;
         Ok(())

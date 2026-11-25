@@ -28,7 +28,7 @@ const fn session(name: &'static str) -> Service {
 /// One extra the desktop adds to an app's portable core.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Capability {
-    /// intentd: the registry of what apps can do (`bardo do`, the companion's actions).
+    /// actiond: the registry of what apps can do (`bardo do`, the companion's actions).
     Intents,
     /// accountd: the session's one account store and consent sheet.
     Accounts,
@@ -76,7 +76,7 @@ impl Capability {
     )]
     pub const fn service(self) -> Option<Service> {
         match self {
-            // design/33-AGENT.md section 5 (intentd, the actions repo).
+            // design/33-AGENT.md section 5 (actiond, the actions repo).
             Capability::Intents => Some(session("org.bardo.Intents1")),
             // accountd, the accounts repo (accounts/crates/accountd/src/lib.rs:2); also named by
             // ui-settings' live client docs.

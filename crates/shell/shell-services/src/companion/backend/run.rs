@@ -4,7 +4,7 @@
 //! daemon, the ask to the app, the warm-up to the companion.
 //!
 //! The seat arrives and leaves with the intents service. While it is held the loop follows the
-//! companion's answers, the computer-use daemon's runs and intentd's journal and late hits; while it is not, the
+//! companion's answers, the computer-use daemon's runs and actiond's journal and late hits; while it is not, the
 //! machines still run and every lookup answers `Failed`.
 
 use std::collections::{HashMap, HashSet};
@@ -459,7 +459,7 @@ impl Live {
         }
     }
 
-    /// Start following what the companion, the computer-use daemon and intentd say.
+    /// Start following what the companion, the computer-use daemon and actiond say.
     fn watch(&mut self, connection: &Connection) {
         self.watchers.push(tokio::spawn(computer_use::follow(
             connection.clone(),
@@ -469,7 +469,7 @@ impl Live {
             connection.clone(),
             self.inner.clone(),
         )));
-        self.watchers.push(tokio::spawn(follow_intentd(
+        self.watchers.push(tokio::spawn(follow_actiond(
             connection.clone(),
             self.events.clone(),
         )));
@@ -728,8 +728,8 @@ async fn announce(connection: &Connection, inner: &mpsc::UnboundedSender<Inner>)
     }
 }
 
-/// intentd's journal and late hits, while intentd is on the bus.
-async fn follow_intentd(connection: Connection, events: mpsc::UnboundedSender<CompanionEvent>) {
+/// actiond's journal and late hits, while actiond is on the bus.
+async fn follow_actiond(connection: Connection, events: mpsc::UnboundedSender<CompanionEvent>) {
     Box::pin(owner::while_owned(
         &connection,
         INTENTS_BUS,

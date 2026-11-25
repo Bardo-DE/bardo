@@ -106,7 +106,7 @@ pub struct Env {
 
 /// Whether the services that serve a well-known bus name claim it when they start.
 ///
-/// The names are `org.bardo.Outputs1`, the accounts sheet, the seat at intentd. A test's `start`
+/// The names are `org.bardo.Outputs1`, the accounts sheet, the seat at actiond. A test's `start`
 /// never claims one, so it cannot take a name from the person's running shell.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum NameClaims {

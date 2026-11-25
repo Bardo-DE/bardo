@@ -1,4 +1,4 @@
-//! Settings' three actions, called over a private bus the way intentd calls an app.
+//! Settings' three actions, called over a private bus the way actiond calls an app.
 
 use crate::support::{World, entity, key, text};
 use action_core::{AppRefusal, Preview, UndoFault, Undoable};

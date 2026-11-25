@@ -80,13 +80,13 @@ fn plan_wire(phase: AnswerPhase, state: StepWireState) -> AnswerWire {
     }
 }
 
-/// The bench for an answer: stand-in companiond and intentd are up, the shell holds its seat, and
+/// The bench for an answer: stand-in companiond and actiond are up, the shell holds its seat, and
 /// an ask has made the answer, whose view is `first`.
 struct Bench {
     desk: Desk,
     companiond: Connection,
-    /// Held so the stand-in intentd keeps its name while the test runs.
-    _intentd: Connection,
+    /// Held so the stand-in actiond keeps its name while the test runs.
+    _actiond: Connection,
     view: Arc<Mutex<String>>,
 }
 
@@ -106,9 +106,9 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Bench {
         },
     )
     .await;
-    let intentd = desk.peer(INTENTS_BUS).await;
+    let actiond = desk.peer(INTENTS_BUS).await;
     serve(
-        &intentd,
+        &actiond,
         "/org/bardo/Intents1",
         StandInSession(desk.log.clone()),
     )
@@ -127,7 +127,7 @@ async fn bench(acts: ActsAs, first: &AnswerWire) -> Bench {
     Bench {
         desk,
         companiond,
-        _intentd: intentd,
+        _actiond: actiond,
         view,
     }
 }
@@ -432,23 +432,23 @@ fn mail_manifest() -> action_manifest::ValidManifest {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_apps_that_declare_an_open_action_are_known_and_a_perform_is_the_launchers() {
     let mut desk = companion_support::desk().await;
-    let intentd = desk.peer(INTENTS_BUS).await;
+    let actiond = desk.peer(INTENTS_BUS).await;
     for object in [
-        intentd
+        actiond
             .object_server()
             .at(
                 "/org/bardo/Intents1",
                 StandInRegistry(vec![mail_manifest()]),
             )
             .await,
-        intentd
+        actiond
             .object_server()
             .at("/org/bardo/Intents1", StandInRun(desk.log.clone()))
             .await,
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));
     }
-    dbus_kit::ready::serving(&intentd)
+    dbus_kit::ready::serving(&actiond)
         .await
         .expect("the object server answers");
     desk.seated().await;
@@ -511,20 +511,20 @@ async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion
         },
     )
     .await;
-    let intentd = desk.peer(INTENTS_BUS).await;
+    let actiond = desk.peer(INTENTS_BUS).await;
     for object in [
-        intentd
+        actiond
             .object_server()
             .at("/org/bardo/Intents1", StandInSession(desk.log.clone()))
             .await,
-        intentd
+        actiond
             .object_server()
             .at("/org/bardo/Intents1", StandInMessage(desk.log.clone()))
             .await,
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));
     }
-    dbus_kit::ready::serving(&intentd)
+    dbus_kit::ready::serving(&actiond)
         .await
         .expect("the object server answers");
     desk.seated().await;

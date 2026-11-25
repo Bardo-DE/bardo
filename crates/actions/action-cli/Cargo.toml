@@ -1,6 +1,6 @@
 [package]
 name = "action-cli"
-description = "bardo-do: every app we ship, driven from a command line generated from its intents manifest. A thin client over action-client with caller role cli; every call goes through intentd's full gate."
+description = "bardo-do: every app we ship, driven from a command line generated from its intents manifest. A thin client over action-client with caller role cli; every call goes through actiond's full gate."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

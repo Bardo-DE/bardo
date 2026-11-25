@@ -1,5 +1,5 @@
 //! Per-call effects over a real bus: the router's `Classify` and `Perform` reach a provider
-//! through intentd's `DbusLink` and the real `action_provider::serve_on`, with action-fake's menu
+//! through actiond's `DbusLink` and the real `action_provider::serve_on`, with action-fake's menu
 //! app behind it. The seams that ask a person or a model are scripted; nothing else is.
 //!
 //! Covered: a Read item is not asked, a Destructive one is, a provider that classifies above its
@@ -160,11 +160,11 @@ async fn desk(answers: usize) -> Desk {
     daemon
         .request_name(INTENTS_BUS)
         .await
-        .expect("intentd's name");
+        .expect("actiond's name");
     let app = bus.connect().await;
     let manifest = action_fake::menu_manifest().expect("manifest");
     let menu = SharedMenu(Arc::new(FakeMenu::new(manifest.clone())));
-    let who = crate::support::apps::answering_intentd(&app, &daemon, dir.path());
+    let who = crate::support::apps::answering_actiond(&app, &daemon, dir.path());
     serve_on_with(
         &app,
         menu.clone(),

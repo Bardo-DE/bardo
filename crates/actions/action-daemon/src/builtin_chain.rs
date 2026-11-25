@@ -1,4 +1,4 @@
-//! The providers intentd answers in process, as a chain: each is asked for the app its manifest
+//! The providers actiond answers in process, as a chain: each is asked for the app its manifest
 //! names, so a new built-in is one more link in `HostedLink` and no new arm anywhere.
 
 use account_core::AppName;

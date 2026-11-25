@@ -7,7 +7,7 @@ use crate::builtin::{HostedLink, builtin_manifests};
 use crate::builtin_checkpoints::CheckpointsPort;
 use crate::builtin_companion::CompanionPort;
 use crate::callers;
-use crate::config::{ConfigError, IntentdConfig};
+use crate::config::{ConfigError, ActiondConfig};
 use crate::floor::{FLOOR_FILE, read_floor};
 use crate::grants::FileGrants;
 use crate::index_files::IndexStore;
@@ -169,7 +169,7 @@ pub enum DaemonError {
 #[derive(Debug, Clone)]
 pub struct Setup {
     /// The configuration.
-    pub config: IntentdConfig,
+    pub config: ActiondConfig,
     /// The installed manifests.
     pub manifests: Loaded,
     /// The consent file.
@@ -240,8 +240,8 @@ impl Setup {
             .map(|d| d.join("bardo").join("actions").join("actiond.toml"))
             .find_map(|path| std::fs::read_to_string(path).ok());
         let config = match found {
-            Some(text) => IntentdConfig::parse(&text),
-            None => IntentdConfig::shipped(),
+            Some(text) => ActiondConfig::parse(&text),
+            None => ActiondConfig::shipped(),
         }
         .map_err(DaemonError::Config)?;
         let callers = callers::read_at(&system.callers, env)
@@ -376,7 +376,7 @@ pub async fn start(
         permissions,
     } = setup;
     for (file, why) in &manifests.skipped {
-        eprintln!("intentd: skipped {}: {why}", file.display());
+        eprintln!("actiond: skipped {}: {why}", file.display());
     }
     // The ACP name plays its roles only while the setting is on; the settings watch below keeps the
     // gate current, for the bus (who is an editor) and for the sheets (whose process is trusted).
@@ -427,19 +427,19 @@ pub async fn start(
     // back to the built-in one (both logged); a bad administrator file stops the daemon.
     let loaded = load_policies(&permissions).map_err(|e| DaemonError::Policy(e.to_string()))?;
     for rejected in &loaded.skipped {
-        eprintln!("intentd: skipped policy {rejected}");
+        eprintln!("actiond: skipped policy {rejected}");
     }
     // The Settings page has no read-only row, so where the preset came from is said here.
-    eprintln!("intentd: permissions: {}", loaded.preset);
+    eprintln!("actiond: permissions: {}", loaded.preset);
     for dir in &loaded.unused {
-        eprintln!("intentd: unused policy folder {}", dir.display());
+        eprintln!("actiond: unused policy folder {}", dir.display());
     }
     let mut router = Router::new(seams, config.agent, loaded.presets);
     router.floor = floor;
     // The person's settings over actiond.toml's proposed values, now and whenever the file changes.
     let mut watched = watch_settings(&settings, AgentSettings::over(config.agent));
     if let WatchState::Blind { reason } = watched.state() {
-        eprintln!("intentd: settings are read once, not watched: {reason}");
+        eprintln!("actiond: settings are read once, not watched: {reason}");
     }
     apply(&router, &watched.current());
     {
@@ -463,7 +463,7 @@ pub async fn start(
     let found = discover(&Roots::from_dirs(&data_dirs), &DiskFolder);
     for rejected in &found.rejected {
         eprintln!(
-            "intentd: skill {}: {}",
+            "actiond: skill {}: {}",
             rejected.dir.display(),
             rejected.fault
         );
@@ -472,12 +472,12 @@ pub async fn start(
     router
         .hidden_skills()
         .iter()
-        .for_each(|line| eprintln!("intentd: {line}"));
+        .for_each(|line| eprintln!("actiond: {line}"));
     // A session the log already holds keeps its name: nothing opened from now on takes it. Each
     // is restored when a request names it. Without memoryd the log is unreadable and the daemon
     // starts anyway; sessions then cannot be recorded or restored.
     if let Err(why) = router.adopt_sessions().await {
-        eprintln!("intentd: the session log is not usable ({why}): sessions are not recorded");
+        eprintln!("actiond: the session log is not usable ({why}): sessions are not recorded");
         router.seams.log = DaemonLog::Off(action_router::NoLog);
     }
     let router = Arc::new(router);
@@ -557,7 +557,7 @@ pub async fn start(
                 let router = Arc::clone(&router);
                 tasks.spawn("logind", logouts.end_terminals(router, login));
             }
-            Err(why) => eprintln!("intentd: not watching logind: {why}"),
+            Err(why) => eprintln!("actiond: not watching logind: {why}"),
         }
     }
     Ok(Running {
@@ -572,7 +572,7 @@ async fn prune_checkpoints<S: Seams + 'static>(router: Arc<Router<S>>) {
     loop {
         let forgotten = router.prune_checkpoints().await;
         if forgotten.0 > 0 {
-            eprintln!("intentd: forgot {} old restore points", forgotten.0);
+            eprintln!("actiond: forgot {} old restore points", forgotten.0);
         }
         tokio::time::sleep(PRUNE_EVERY).await;
     }
@@ -653,7 +653,7 @@ pub async fn run_with(
         .map_err(|e| DaemonError::Serve(ServeError::Bus(e.to_string())))?;
     let system = BusConnection::system().await.ok();
     if system.is_none() {
-        eprintln!("intentd: no system bus: the terminal's grants end only when intentd does");
+        eprintln!("actiond: no system bus: the terminal's grants end only when actiond does");
     }
     let mut running = start(&session, system.as_ref(), setup).await?;
     tokio::select! {
@@ -662,7 +662,7 @@ pub async fn run_with(
             Ok(())
         }
         fault = running.duty_ended() => {
-            eprintln!("intentd: {fault}: exiting so the unit restarts the daemon");
+            eprintln!("actiond: {fault}: exiting so the unit restarts the daemon");
             running.stop().await;
             Err(fault)
         }

@@ -1,4 +1,4 @@
-//! `agent-bringup`: the agent services (accountd, inferd, memoryd, intentd, companiond) on a bus
+//! `agent-bringup`: the agent services (accountd, inferd, memoryd, actiond, companiond) on a bus
 //! that already exists, for a demo shell whose companion pane should really answer.
 //!
 //! It reuses the acceptance world's pieces: the same daemons, `env_clear` plus the scratch

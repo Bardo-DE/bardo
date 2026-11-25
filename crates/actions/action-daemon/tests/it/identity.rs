@@ -5,7 +5,7 @@
 use crate::support::world::*;
 use action_client::{Intents, Transport};
 use action_core::ActivationToken;
-use action_daemon::IntentdConfig;
+use action_daemon::ActiondConfig;
 use action_vocab::{Args, CallRequest, Origin, TargetValue};
 use action_wire::{IntentsReply, IntentsRequest, JournalFilter, WireRefusal};
 use provenance::ActionName;
@@ -30,8 +30,8 @@ fn read_t2() -> CallRequest {
     }
 }
 
-fn shipped() -> IntentdConfig {
-    IntentdConfig::shipped().expect("the shipped configuration")
+fn shipped() -> ActiondConfig {
+    ActiondConfig::shipped().expect("the shipped configuration")
 }
 
 fn performed(world: &World) -> Vec<Option<ActivationToken>> {

@@ -361,7 +361,7 @@ impl From<ReaderError> for ReadFault {
     }
 }
 
-/// What `readerd` implements; `intentd` calls it over `Reader1`. The inputs are quarantined:
+/// What `readerd` implements; `actiond` calls it over `Reader1`. The inputs are quarantined:
 /// only the reader's host holds the key that opens them.
 pub trait Reader: Send + Sync {
     /// Reads the inputs under the schema and answers with a value that fits it. `session` is the

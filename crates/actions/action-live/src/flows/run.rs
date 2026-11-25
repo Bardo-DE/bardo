@@ -29,7 +29,7 @@ pub(crate) async fn undo_held(launcher: &Launcher, world: &World) -> UndoCheck {
         return UndoCheck::NothingHeld;
     }
     let journal = Box::pin(action_accept::world::within(
-        "intentd's journal",
+        "actiond's journal",
         launcher.intents.journal(JournalFilter {
             run: None,
             session: None,
@@ -41,7 +41,7 @@ pub(crate) async fn undo_held(launcher: &Launcher, world: &World) -> UndoCheck {
         return UndoCheck::Failed("the journal has no row for the held message".to_owned());
     };
     match Box::pin(action_accept::world::within(
-        "intentd's undo",
+        "actiond's undo",
         launcher.intents.undo(entry.id),
     ))
     .await

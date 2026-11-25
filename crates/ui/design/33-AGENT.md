@@ -64,11 +64,11 @@ The spec's section 2 holds the whole table; the ones the UI kit's part touches:
 | Daemon | Repo | Serves | Calls |
 | --- | --- | --- | --- |
 | inferd | the accounts service | `org.bardo.Inference1`: availability, open and prepare a model session, usage; engines over Unix sockets in transient units | engines |
-| intentd | the actions service | `org.bardo.Intents1`: registry, search, run, context, session, the computer-use gate, control, request | apps' providers, the confirm surface, the reader, memory, inferd |
-| companiond | the actions service | `org.bardo.Companion1`: prepare, open, ask, close, and an answer object per task | intentd, inferd |
-| readerd | the actions service | `org.bardo.Reader1`: the quarantined reader, a separate process | intentd, inferd |
+| actiond | the actions service | `org.bardo.Intents1`: registry, search, run, context, session, the computer-use gate, control, request | apps' providers, the confirm surface, the reader, memory, inferd |
+| companiond | the actions service | `org.bardo.Companion1`: prepare, open, ask, close, and an answer object per task | actiond, inferd |
+| readerd | the actions service | `org.bardo.Reader1`: the quarantined reader, a separate process | actiond, inferd |
 | memoryd | the memory service | `org.bardo.Memory1`: record, recall, control | inferd |
-| The computer-use daemon | computer use | `org.bardo.ComputerUse1`, and a provider as `org.bardo.ComputerUse` | intentd's gate, inferd, memory, the compositor |
+| The computer-use daemon | computer use | `org.bardo.ComputerUse1`, and a provider as `org.bardo.ComputerUse` | actiond's gate, inferd, memory, the compositor |
 | The shell's daemon | the shell | `org.bardo.Confirm1` and a provider as `org.bardo.Shell` | all of the above as a client |
 
 Caller identity is always derived from the connection, never sent. Every interface we own is

@@ -303,7 +303,7 @@ impl IntentProvider for SettingsProvider {
         Ok(())
     }
 
-    /// Never answers: the launcher's search reads intentd's own index (the pages and keys in
+    /// Never answers: the launcher's search reads actiond's own index (the pages and keys in
     /// `bardo/actions/search/org.bardo.Settings.toml`, see `search_file`), so a query never reaches
     /// this app. Design: search-index/DESIGN.md, "Launcher search".
     #[expect(

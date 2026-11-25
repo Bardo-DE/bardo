@@ -1,4 +1,4 @@
-//! The real `bardo-actions-mcp` binary on a private bus: intentd's own `serve_on` behind the fake router
+//! The real `bardo-actions-mcp` binary on a private bus: actiond's own `serve_on` behind the fake router
 //! and the shipped roles, the binary over stdio (an rmcp client on its pipes) and over a Unix
 //! socket. Nothing of the real session is named: the bus, HOME and every XDG directory are scratch,
 //! the daemon's environment is cleared, and the child is killed when the test ends.
@@ -6,7 +6,7 @@
 use account_core::AppName;
 use account_core::consent::{Decision, Grant, Usage};
 use action_core::*;
-use action_daemon::{IntentdConfig, ProcRoot, serve_on_with};
+use action_daemon::{ActiondConfig, ProcRoot, serve_on_with};
 use action_fake::{MailThread, fake_router};
 use action_mcp::McpConfig;
 use action_router::GrantStore;
@@ -84,8 +84,8 @@ fn spawn(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
     Edge { child }
 }
 
-/// `spawn`, with the edge's process placed in `bardo-actions-mcp.service` of the fake proc root intentd
-/// reads (the child is a process of its own, so intentd can tell it from this test): its main
+/// `spawn`, with the edge's process placed in `bardo-actions-mcp.service` of the fake proc root actiond
+/// reads (the child is a process of its own, so actiond can tell it from this test): its main
 /// process, which is all a service's role goes to.
 fn spawn_as_the_unit(dir: &Path, bus: &str, extra: &[&str]) -> Edge {
     let edge = spawn(dir, bus, extra);
@@ -146,17 +146,17 @@ async fn desk() -> (tempfile::TempDir, PrivateBus, action_dbus::BusConnection) {
     serve_on_with(
         &daemon,
         Arc::new(router()),
-        Arc::new(IntentdConfig::shipped().expect("shipped")),
+        Arc::new(ActiondConfig::shipped().expect("shipped")),
         &ProcRoot::Honoured(dir.path().join("proc")),
     )
     .await
-    .expect("intentd serves");
+    .expect("actiond serves");
     (dir, bus, daemon)
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn over_stdio_a_switched_on_edge_serves_the_registry_as_the_mcp_role() {
-    let (dir, bus, _intentd) = desk().await;
+    let (dir, bus, _actiond) = desk().await;
     switch_on(dir.path());
     configure(dir.path(), &format!("client = \"{CLIENT}\"\n"));
     let mut edge = spawn_as_the_unit(dir.path(), bus.address(), &[]);
@@ -172,7 +172,7 @@ async fn over_stdio_a_switched_on_edge_serves_the_registry_as_the_mcp_role() {
         names.contains(&"mail__mail_thread_read".to_owned()),
         "{names:?}"
     );
-    // A read is allowed for the role the bus name gives: it reached intentd as Actor::Mcp.
+    // A read is allowed for the role the bus name gives: it reached actiond as Actor::Mcp.
     let result = read_thread(&client).await;
     assert_eq!(result.is_error, Some(false), "{result:?}");
     // A second edge finds the bus name taken (several clients share one edge through the socket).
@@ -185,7 +185,7 @@ async fn over_stdio_a_switched_on_edge_serves_the_registry_as_the_mcp_role() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn with_no_configuration_the_edge_is_off_and_lists_nothing() {
-    let (dir, bus, _intentd) = desk().await;
+    let (dir, bus, _actiond) = desk().await;
     let mut edge = spawn_as_the_unit(dir.path(), bus.address(), &[]);
     let client = client_over_stdio(&mut edge).await;
     assert!(client.list_all_tools().await.expect("list").is_empty());
@@ -195,7 +195,7 @@ async fn with_no_configuration_the_edge_is_off_and_lists_nothing() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn over_a_unix_socket_many_clients_share_one_edge() {
-    let (dir, bus, _intentd) = desk().await;
+    let (dir, bus, _actiond) = desk().await;
     switch_on(dir.path());
     configure(dir.path(), &format!("client = \"{CLIENT}\"\n"));
     let socket = dir.path().join("mcp.sock");

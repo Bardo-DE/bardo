@@ -383,7 +383,7 @@ RULES=(
   # is wiring over clients: it reaches no router.
   "agent-acp-bin: action-router reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp"
   # The models, the quarantined reader and the memory seam are portable too (moved out of
-  # intentd and readerd): they ask any inference-client or memory-client Transport, never a bus or
+  # actiond and readerd): they ask any inference-client or memory-client Transport, never a bus or
   # a runtime; memory-client hosts its service only behind `in_process` (a dev-dependency here)
   # and reaches the bus only behind `dbus`. companion-memory no longer sits on the router (the memory
   # seam is in action-core), so Cedar is not below it either.
@@ -414,12 +414,12 @@ RULES=(
   "action-eval-core: $EFFECTS"
   # bardo-do is a thin client: it reaches the bus only through action-client (LAYERS
   # keeps it a C or A crate that cannot reach the router), never the router, the policy point, the reviewer's
-  # cascade or Cedar: a terminal has no way around intentd's gate.
+  # cascade or Cedar: a terminal has no way around actiond's gate.
   "companion-client: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
   "action-cli: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
-  # The edge reaches rmcp, tokio and, as a bus client of intentd (action-client `dbus`), zbus; nothing else of the effects.
+  # The edge reaches rmcp, tokio and, as a bus client of actiond (action-client `dbus`), zbus; nothing else of the effects.
   "action-mcp: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify"
-  # The settings reader is pure but for reading the file: no bus, no runtime, no watcher (intentd
+  # The settings reader is pure but for reading the file: no bus, no runtime, no watcher (actiond
   # owns the directory watch), so bardo-actions-mcp, which may not link one, can share the reader.
   "action-settings: $EFFECTS"
   # The daemons reach the bus and a runtime; none reaches HTTP, an embedding runtime or the MCP

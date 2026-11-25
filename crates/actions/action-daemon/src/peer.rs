@@ -22,7 +22,7 @@
 //! process is usually not there.
 
 use crate::acp_gate::AcpGate;
-use crate::config::IntentdConfig;
+use crate::config::ActiondConfig;
 use account_callers::ProcRoot;
 use account_core::{AppId, AppName, Isolation};
 use action_dbus::BusConnection;
@@ -48,7 +48,7 @@ pub enum PeerError {
     /// It belongs to another user.
     #[error("another user's connection")]
     WrongUser,
-    /// No process, unit or app scope intentd knows is behind it.
+    /// No process, unit or app scope actiond knows is behind it.
     #[error("an unknown caller")]
     Unknown,
     /// The bus failed.
@@ -65,7 +65,7 @@ pub(crate) enum Found {
     Terminal,
 }
 
-/// Whether a process the callers file gives the role `held` may play the intentd role `role`.
+/// Whether a process the callers file gives the role `held` may play the actiond role `role`.
 /// The sheet roles need the system's `sheet_host`, `computer_use` and `compositor` need their own, and
 /// the roles of the other daemons and of the editor hosts need a role above a plain app (`agent`,
 /// or any fixed role). The roles of a plain app, a terminal's child and a field are open to any
@@ -85,8 +85,8 @@ pub(crate) fn backs(role: CallerRole, held: Role) -> bool {
 }
 
 /// The caller `found` makes, with the roles of its app that its role in the table backs; none for
-/// a process that is nobody intentd knows. An ACP app that the gate has shut is nobody.
-pub(crate) fn derive(config: &IntentdConfig, acp: &AcpGate, found: &Found) -> Option<CallerId> {
+/// a process that is nobody actiond knows. An ACP app that the gate has shut is nobody.
+pub(crate) fn derive(config: &ActiondConfig, acp: &AcpGate, found: &Found) -> Option<CallerId> {
     let (app, held) = match found {
         Found::Process(caller) => {
             if !acp.keeps(&caller.app.name) {
@@ -124,7 +124,7 @@ pub(crate) fn classify(root: &Path, pid: Option<u32>, named: Option<Caller>) -> 
 #[derive(Debug, Clone)]
 pub struct Peers {
     connection: BusConnection,
-    config: Arc<IntentdConfig>,
+    config: Arc<ActiondConfig>,
     who: Arc<Identity>,
     proc_root: PathBuf,
     acp: AcpGate,
@@ -133,7 +133,7 @@ pub struct Peers {
 impl Peers {
     /// Derives identities on `connection` with the roles of `config`, naming processes through
     /// `who`; terminals' cgroups are read from the system's `/proc`.
-    pub fn new(connection: BusConnection, config: Arc<IntentdConfig>, who: Arc<Identity>) -> Self {
+    pub fn new(connection: BusConnection, config: Arc<ActiondConfig>, who: Arc<Identity>) -> Self {
         Self::with_proc_root(connection, config, who, &ProcRoot::Unset)
     }
 
@@ -141,7 +141,7 @@ impl Peers {
     /// fixture tree in a test build).
     pub fn with_proc_root(
         connection: BusConnection,
-        config: Arc<IntentdConfig>,
+        config: Arc<ActiondConfig>,
         who: Arc<Identity>,
         proc_root: &ProcRoot,
     ) -> Self {
@@ -152,7 +152,7 @@ impl Peers {
     /// `acp` shows the setting on.
     pub fn gated(
         connection: BusConnection,
-        config: Arc<IntentdConfig>,
+        config: Arc<ActiondConfig>,
         who: Arc<Identity>,
         proc_root: &ProcRoot,
         acp: AcpGate,
@@ -168,7 +168,7 @@ impl Peers {
 
     /// The roles `actiond.toml` gives.
     #[must_use]
-    pub fn config(&self) -> &IntentdConfig {
+    pub fn config(&self) -> &ActiondConfig {
         &self.config
     }
 

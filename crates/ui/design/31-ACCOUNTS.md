@@ -319,7 +319,7 @@ resolution and reporting probed local runtimes.
 by accountd and inferd) maps a connection's pid, through its cgroup scope or Flatpak info and
 `identity_of`, to an `AppId` and a role from a shipped table (`/etc/bardo/accountd-callers.toml`, the
 user file wins): `App`, `Settings` (the Settings app), `SheetHost` (the shell), `AccountDaemon` (inferd, syncd),
-`Agent` (intentd, companiond, readerd, the computer-use daemon, bardo-do, bardo-actions-mcp), `ComputerUse` (the computer-use daemon, for inferd). A
+`Agent` (actiond, companiond, readerd, the computer-use daemon, bardo-do, bardo-actions-mcp), `ComputerUse` (the computer-use daemon, for inferd). A
 sender with no app scope and no Flatpak info is refused. accountd refuses every account call from
 the `Agent` role (`Choose`, `AddAccount`, `Reauthenticate`, `IssueToken`, `OpenAuthenticated`);
 agents keep inferd.

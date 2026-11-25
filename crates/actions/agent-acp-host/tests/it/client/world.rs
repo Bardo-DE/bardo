@@ -19,7 +19,7 @@ use sandbox::fake::FakeSandbox;
 use std::sync::Arc;
 
 /// The desktop's sheet (a script of the person's answers) for a call, and the host's own desk for
-/// a session whose host asked to show its sheets: the route intentd makes.
+/// a session whose host asked to show its sheets: the route actiond makes.
 pub struct DeskConfirmer {
     pub desktop: ScriptedConfirmer,
     pub(super) host: SheetConfirmer<EditorDesk, FixedClock>,

@@ -1,6 +1,6 @@
 //! The viewer offered to the actions service, the agent layer: the shipped manifest is a valid one, and a
 //! `Perform` from the router on a private bus reaches the viewer's own request channel. No real
-//! session bus, router or desktop is involved: a provider answers only intentd's main process, and
+//! session bus, router or desktop is involved: a provider answers only actiond's main process, and
 //! a fixture `/proc` says the test's process is it.
 
 #![cfg(feature = "desktop")]
@@ -167,7 +167,7 @@ async fn a_missing_file_refuses_the_whole_call_and_opens_nothing() {
 #[tokio::test]
 async fn only_the_router_may_call_the_provider() {
     let bus = PrivateBus::start();
-    // In intentd's unit, but not its main process: a process that moved itself in.
+    // In actiond's unit, but not its main process: a process that moved itself in.
     let scratch = tempfile::tempdir().unwrap();
     let proc_root = scratch.path().join("proc");
     router_proc(&proc_root);

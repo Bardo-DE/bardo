@@ -531,11 +531,11 @@ The computer-use daemon, reads the person's events during the takeover (`Recent`
   read-files rule. A startup line says `TEST BUILD: reading callers from the proc root <dir>, not /proc`. Without the
   feature the variable is ignored and a line says `ignoring it and reading /proc`. A harness
   writes, for each test process pid (the bus's pid of the connection), a file
-  `<dir>/<pid>/cgroup` containing `0::/system.slice/intentd.service` (router),
+  `<dir>/<pid>/cgroup` containing `0::/system.slice/bardo-actiond.service` (router),
   `0::/system.slice/shell.service` (shell), `0::/system.slice/computer_use_daemon.service` (the computer-use daemon) or
   `0::/user.slice/app.slice/app-org.example.Mail-1.scope` (an app), plus a callers file with
   `[[caller]]` rows for the units (the format above). Files may be written after the daemon
-  starts: it reads at call time. Unit names checked: intentd, companiond, readerd, the computer-use daemon,
+  starts: it reads at call time. Unit names checked: actiond, companiond, readerd, the computer-use daemon,
   voiced, actions-mcp (actions/computer_use `dist/*.service`), the shell (`shell/dist/shell.service`), inferd.
   `~/desktop` has no unit files. `voiced.service` and `actions-mcp.service` have no row (neither
   calls memoryd yet).
@@ -595,7 +595,7 @@ reads them.
    (a rule can only name a path that exists when it is applied). memoryd never writes it.
 6. **`memoryd --write-schema DIR`** writes `memory.settings.toml` for a local install. `notify` is now a
    dependency of memoryd as well as memory-watch (`scripts/check-boundary.sh` comment updated); the watch
-   code has the same shape as the actions service's intentd and computer use's computer-use daemon (`SettingsWatch`): one shared crate replaces the
+   code has the same shape as the actions service's actiond and computer use's computer-use daemon (`SettingsWatch`): one shared crate replaces the
    three copies when the accounts service has a place for it.
 7. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent` mark) and
    parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a scratch
@@ -1042,7 +1042,7 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
   local, memoryd, tests). No re-export is left in `memory-core`.
 - Needs a change at the next re-pin (`use memory_core::Caller` becomes `use memory_service::Caller`):
   The actions service (`agent-inapp` tests `audit_queue`, `multi`, `seams`; `companion-memory` tests `portable`,
-  `session_log`; `intentd` test support only mentions it in a comment), computer use (`computer_use_daemon` tests
+  `session_log`; `actiond` test support only mentions it in a comment), computer use (`computer_use_daemon` tests
   `links.rs:102,223`). The shell, the Settings app, files, mailo and anyview do not name it. Those users already
   depend on `memory-service` for `MemoryService`, since `InProcess` takes one.
 

@@ -9,7 +9,7 @@ use shell_model::intents::{ActionRef, IntentsAsk};
 /// `bardo-shell intents ...`.
 #[derive(Debug, Clone, PartialEq, Eq, Subcommand)]
 pub enum IntentsAction {
-    /// Whether bardo-shell serves intentd's sheet, what waits on it, and what the terminal may do
+    /// Whether bardo-shell serves actiond's sheet, what waits on it, and what the terminal may do
     /// without asking.
     Status,
     /// Withdraw one standing terminal grant: `bardo-shell intents revoke org.bardo.Shell:shell.dock.pin`.

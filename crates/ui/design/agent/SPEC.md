@@ -52,7 +52,7 @@ Why the companion agent lives in the actions service and not its own repo: the p
 the planner/reader contract types are already the actions service's. This saves a repo.
 
 Why `prov` lives in the accounts service: memory (the memory service) needs labels, `Actor`, `Effect` and `EntityId`; the actions service's
-intentd needs the memory service's client. With `prov` in the actions service the repos would form a cycle. The accounts service is already
+actiond needs the memory service's client. With `prov` in the actions service the repos would form a cycle. The accounts service is already
 the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`.
 
 ### 1.2 Repo dependency direction (acyclic; enforced per repo by `check-boundary.sh` rows)
@@ -102,7 +102,7 @@ Bardo depends on none of them.  The compositor → computer_use's bardo-agent-pr
 | 31 | `action-fake` | the actions service | test | 25-30 |
 | 32 | `agent-eval` | the actions service | test + release script | action-fake and its deps, **inference-core** |
 | 33 | `bardo-actions-mcp` | the actions service | rmcp edge binary, off by default | action-core, action-client |
-| 34 | `intentd` | the actions service | daemon (also hosts the built-in `org.bardo.Memory` provider) | 25-30, **memory-core, memory-client, account-core** |
+| 34 | `actiond` | the actions service | daemon (also hosts the built-in `org.bardo.Memory` provider) | 25-30, **memory-core, memory-client, account-core** |
 | 35 | `companion-wire` | the actions service | pure, serde-only | action-core, **prov, inference-core** (`ServedBy`) |
 | 36 | `agent-loop` | the actions service | pure step machine | action-core, companion-wire, **prov** |
 | 37 | `companiond` | the actions service | daemon | agent-loop, companion-wire, action-client, **account-client** |
@@ -201,7 +201,7 @@ crates; each pair gets a `*_total` conversion test in `shell-ui-kit::companion`.
 | `Need` | account-core `Need`; the actions service `Need` (param); ds `Need` (form) | account-core | the actions service → `ParamNeed`; ds → `FieldNeed` |
 | `Visibility<T>` (plain or handle) | the actions service | action-core, renamed **`Reveal<T>`** | computer-use-run's window `Visibility` keeps its name |
 | `Usage` | the accounts service consent `Usage`; model-provider `Usage` (tokens) | the accounts service keeps `Usage` | model-provider → `TurnUsage`; inference-core `TokenUsage` unchanged |
-| `Role` | model-provider message `Role`; catalog `roles`; intentd caller roles | model-provider `Role` | catalog `roles: BTreeSet<AiKind>`; intentd `CallerRole` |
+| `Role` | model-provider message `Role`; catalog `roles`; actiond caller roles | model-provider `Role` | catalog `roles: BTreeSet<AiKind>`; actiond `CallerRole` |
 | `Latency` | the actions service `Latency` (decl), addendum `Latency2` | the actions service `Latency` | → `StageLatency` |
 | `Repeat` | computer-use-action `Repeat` (key repeat), the actions gate param | computer-use-action | the actions gate → `RepeatState` |
 | `Need::ComputerUse` vs `Need::ComputerUse` | computer_use.md, models.md | **account-core `Need::ComputerUse(ComputerUseNeed)`** | |
@@ -488,14 +488,14 @@ pub struct ReaderAsk { pub inputs: Vec<Handle>, pub want: ValueSchema, pub task:
 pub enum ReaderTask { Classify, Extract, Summarise, Compare }
 pub enum ValueSchema { Choice(Vec<ChoiceId>), Integer { min: i64, max: i64 }, Date, DateTime,
     EntitiesAmong(Vec<EntityId>), Text { max: CharCount }, Record(Vec<(ParamName, ValueSchema)>), List { of: Box<ValueSchema>, max: Count } }
-pub trait Reader: Send + Sync {   // readerd implements; intentd calls it via Reader1
+pub trait Reader: Send + Sync {   // readerd implements; actiond calls it via Reader1
     fn extract(&self, ask: ReaderAsk, inputs: Vec<Quarantined<String>>) -> impl Future<Output = Result<Value, ReaderError>> + Send;
 }
 
 // per-task policy, breaker, strictness: addendum A1, A3 verbatim (TaskPolicy, ActionMatch, TrustedPattern,
 // PolicyChange, Widening, Coverage, covers, compare, PolicyWriter; Breaker, BreakerTrip; Strictness).
 
-// the COMPUTER_USE gate (new; computer_use_daemon -> intentd)
+// the COMPUTER_USE gate (new; computer_use_daemon -> actiond)
 pub enum RunMode { InPlace, AgentWorkspace, NestedSession }
 pub enum WindowTrust { Bardo, Flatpak, Native, Shell }
 pub struct ComputerUseAsk { pub run: RunId, pub step: u32, pub app: AppName, pub trust: WindowTrust, pub mode: RunMode,
@@ -506,7 +506,7 @@ pub enum WindowClass { Ordinary, MailCompose, Terminal, Payments, Admin, Passwor
 pub struct NodeFacts { pub role: String, pub name: Labelled<String> }
 pub enum GateAnswer { Run, Refused(CallRefusal) }   // confirmations are resolved inside the router before answering
 
-// audit (stored by intentd as memory EventBody::Area{area: Actions})
+// audit (stored by actiond as memory EventBody::Area{area: Actions})
 pub enum AuditRecord { /* actions.md §3.11 + addendum: Review{stage}, Call{decided}, Confirm, Undo, Halt, TaskPolicy, Breaker */ }
 pub enum HaltCause { KillChord, ControlCentre, StopKey, Budget(BudgetKind), Breaker(BreakerTrip) }   // Esc -> StopKey (⌘.)
 
@@ -617,9 +617,9 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
 | Daemon | Repo | Merges | Bus name / object | Serves | Calls |
 |---|---|---|---|---|---|
 | **inferd** (existing) | the accounts service | models' engine host; 31's MCP host role removed (C16) | `org.bardo.Inference1` `/org/bardo/Inference1`; `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | `Availability`, `Open(need,class,tier)->h` (fd stream of ClientFrame/InferEvent, memfds), **`Prepare(need,class,tier)->s`**, `Usage`, `Rescan`; signal **`EnginesChanged()`**; property **`Gpu s`** | engines over Unix sockets (transient systemd units) |
-| **intentd** | the actions service | actions' router, ux's "security" checks, computer use's per-step PDP, the planner's memory path | `org.bardo.Intents1` `/org/bardo/Intents1` | §4.2 | `IntentProvider1` on apps, `Confirm1` (the shell), `Reader1`, `Memory1` (Record; Recall for the built-in Memory provider), inferd (reviewer, policy writer) |
+| **actiond** | the actions service | actions' router, ux's "security" checks, computer use's per-step PDP, the planner's memory path | `org.bardo.Intents1` `/org/bardo/Intents1` | §4.2 | `IntentProvider1` on apps, `Confirm1` (the shell), `Reader1`, `Memory1` (Record; Recall for the built-in Memory provider), inferd (reviewer, policy writer) |
 | **companiond** | the actions service | ux's "agent daemon", actions' "companion", computer use's "planner/router that calls Start", memory's "agent-loop" | `org.bardo.Companion1` `/org/bardo/Companion1` | §4.2 | `Intents1` (role companion), inferd (planner) |
-| **readerd** | the actions service | actions' quarantined reader | `org.bardo.Reader1` `/org/bardo/Reader1` | `Extract(session s, ask s) -> s` (caller must be intentd) | `Intents1.Session.Resolve`, inferd (reader: `Need::Llm{StructuredOutput}`, no tools) |
+| **readerd** | the actions service | actions' quarantined reader | `org.bardo.Reader1` `/org/bardo/Reader1` | `Extract(session s, ask s) -> s` (caller must be actiond) | `Intents1.Session.Resolve`, inferd (reader: `Need::Llm{StructuredOutput}`, no tools) |
 | **memoryd** | the memory service | ux's "memory daemon" | `org.bardo.Memory1` `/org/bardo/Memory1` (memory.md §3.10; ux's names mapped C27) | Record / Recall / Control | inferd (embed, consolidation) |
 | **The computer-use daemon** | computer use | computer-use-integration's computer-use daemon | `org.bardo.ComputerUse1` `/org/bardo/ComputerUse1` (+ `/run/<id>`); `IntentProvider1` as `org.bardo.ComputerUse` | computer_use.md §3.8 | `Intents1.Gate`, inferd (ComputerUse, class Screen), `Memory1.Record`, `the compositor's input service` (stock) or `bardo-agent-v1` (fork) |
 | The shell daemon (existing) | the shell | ux's confirm phase A and glow phase A | serves **`org.bardo.Confirm1`** `/org/bardo/Confirm1` and `IntentProvider1` as `org.bardo.Shell` | `Confirm(request s)->o`, `Cancel(id s)` | all of the above as a client |
@@ -627,7 +627,7 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
 
 ### 4.2 Interfaces (bodies are JSON of the named type in `s`, envelope `{vocab, body}`; caller identity is always derived from the connection, never sent)
 
-**`org.bardo.Intents1`** (intentd). actions.md §3.12 with the addendum, plus the rows marked new.
+**`org.bardo.Intents1`** (actiond). actions.md §3.12 with the addendum, plus the rows marked new.
 
 | Interface | Members | Callers |
 |---|---|---|
@@ -645,7 +645,7 @@ Caller roles (`actiond.toml`): `launcher` = the shell; `field` = any Bardo app r
 field (TurnSource::Field); `companion` = companiond; `reader` = readerd; `computer_use` = the computer-use daemon; `mcp` =
 bardo-actions-mcp; `confirm` = the shell (the only Confirm1 server it trusts); `compositor` = the fork; `control` = the shell.
 
-**`org.bardo.IntentProvider1`** (every provider: apps, `org.bardo.Shell`, `org.bardo.ComputerUse`; `org.bardo.Memory` is built into intentd)
+**`org.bardo.IntentProvider1`** (every provider: apps, `org.bardo.Shell`, `org.bardo.ComputerUse`; `org.bardo.Memory` is built into actiond)
 `Perform(inv s)->s`, **`DryRun(inv s)->s`**, `Undo(token s, actor s)->s`, `Context(scope s)->s`,
 **`Summon(serial t, origin s)->s`** (`SummonAnswer`; ds answers via action-ui-adapter), `Search(text s, gen t)->s`,
 `Preview(entity s)->s`, `Suggest(ask s)->s`, `Resolve(keys s)->s`; sigs `UndoChanged(token s, state s)`, `IndexStale(epoch t)`.
@@ -689,7 +689,7 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | 2 | `Tap` machine → `Summon` machine: mailo focused, owns `org.bardo.Mail` with a manifest → `AskApp` → `IntentProvider1.Summon(serial)`; the shell calls `Companion1.Prepare()` in parallel | ux (the shell), the actions service (method) |
 | 3 | In mailo, action-ui-adapter asks ds's `CompanionPort`: the search field answers `TookField`; **ui-intents freezes the context at this moment** (query "lisbon receipts", 12 visible results, selection) before the field turns into a prompt; chips Query, Results(12) | Bardo ui-intents, action-ui-adapter |
 | 4 | User types and sends. action-ui-adapter: `Companion1.Open(space)` → `Intents1.Session.Turn(session, TurnIn{text, InWindowField, keep})` (role field, `TurnSource::Field(org.bardo.Mail)`) → `Companion1.Ask` | the actions service |
-| 5 | intentd: PolicyWriter derives a TaskPolicy from the turn only (Mail actions up to Outbound, kind mail.message, max 12; recipients unresolved); Field turns are capped to Mail + Read elsewhere | the actions service |
+| 5 | actiond: PolicyWriter derives a TaskPolicy from the turn only (Mail actions up to Outbound, kind mail.message, max 12; recipients unresolved); Field turns are capped to Mail + Read elsewhere | the actions service |
 | 6 | companiond/agent-loop: `PlannerView` (result titles are third-party → handles); planner calls `contacts.search("accounting")` (Read, AllowFinal; Contacts is a trusted store → the contact is a Trusted sink); if it must pick which results are receipts, `Session.Read(ReaderAsk{Classify, EntitiesAmong})` → plain entity ids, planner taint becomes Untrusted | the actions service (+ models for the planner/reader models) |
 | 7 | Plan card `Plan[forward 12 → Accounting]` streams to mailo's prompt (answer `Updated`); plans run at once, confirmations happen per call (C40) | the actions service, ux |
 | 8 | `Run.Perform(mail.message.forward, Many(12), {to: Entity(contact)})`: no halt, budget ok; consent first use Mail×Mail×Space; Ruling **Ask** (Outbound, tainted planner; Rule of Two also fires); `Previewing`: mailo `DryRun` → `Preview::Message`; `Progress(Confirming)` → answer phase `NeedsYou(Confirm)` → presence Waiting | the actions service, mailo |
@@ -732,7 +732,7 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | 1b | "Forget" on a memory row: the shell (ShellUi) `PlanForget(space, Thing(id))` → ForgetPlanView → Alert "Also forgets 3 facts and 1 routine" → `Forget(token)` | ux, the memory service |
 | 2 | Closure: events whose subjects/sources include the thing (including `Area` payloads by their `things` lists: router audit, computer-use records), facts linked transitively, pending facts, procedures, kept computer use thumbnails, index docs | the memory service |
 | 3 | Apply: index → memfiles → event bodies (headers stay, Q-Me3) → `Memory.Forgot` → WAL truncate; signal `Forgotten` → the shell refreshes | the memory service, ux |
-| 4 | Outside memory: mailo pushes `Index.Push(removals)` to intentd's shadow index; undo journal holds no entity ids; inferd audit holds no content; intentd sessions keep no content after Close | mailo, the actions service, the accounts service |
+| 4 | Outside memory: mailo pushes `Index.Push(removals)` to actiond's shadow index; undo journal holds no entity ids; inferd audit holds no content; actiond sessions keep no content after Close | mailo, the actions service, the accounts service |
 | 5 | Forgetting a memory never deletes the mail itself (stated in the Alert) | ux |
 
 Gaps found by the walk and fixed above: who may record a turn (TurnSource); context captured before
@@ -804,7 +804,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | Wave | Parallel agents (repo: owned paths) | Source |
 |---|---|---|
 | F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. The accounts service: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. The memory service: eventlog; memfiles; recall (+fastembed); seal + watch. The actions service: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. Computer use: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, computer use §6, ux §6 |
-| F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. The memory service: memory-service + memory-fake. The actions service: intentd (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. Computer use (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
+| F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. The memory service: memory-service + memory-fake. The actions service: actiond (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. Computer use (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
 | F3 daemons | the accounts service: inferd bridge, engines, fd session server with memfds, Prepare, `computer_use_run`; client `DbusTransport::open`. The memory service: memory-dbus, memory-client, memoryd + unit. Computer use: the computer-use daemon, computer-use-dbus codec, computer-use-fake harness, `dist/`. The actions service: action-ui-adapter against bardo. The shell W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
 | F4 integration | mailo session (manifest, provider, actor on UndoStack, undo-send window); the shell W6 (replace fakes; nested compositor, private bus, scratch HOME); fork fill F1-F7 with acceptance scripts; acceptance `dev/computer-use-step-holo.sh` (GPU, by hand) | — |
 | Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `bardo_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
@@ -833,7 +833,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | C16 | inferd as MCP host (31 §5.5) vs `bardo-actions-mcp` edge-only | bardo-actions-mcp; 31 edited |
 | C17 | async-openai in the build map | not adopted |
 | C18 | memory re-declares policy/consent/COMPUTER_USE/session payloads | `EventBody::Area`; owners keep types |
-| C19 | companion reads memory directly, so the router cannot compute taint | memory reads/writes for the planner are router actions of `org.bardo.Memory` (built into intentd); `Caller::Companion` removed |
+| C19 | companion reads memory directly, so the router cannot compute taint | memory reads/writes for the planner are router actions of `org.bardo.Memory` (built into actiond); `Caller::Companion` removed |
 | C20 | "Lasting from untrusted → Ask" (actions) vs pending facts (memory) | `Lasting::Staged`: pending queue is the confirmation |
 | C21 | Undo/activity duplicated in Companion1 and ComputerUse1 (ux) | router journal and `Run.Undo/UndoAll`; `Replay` later |
 | C22 | UndoAll offered for every computer-use run (ux) | only when the journal holds typed entries for the run |

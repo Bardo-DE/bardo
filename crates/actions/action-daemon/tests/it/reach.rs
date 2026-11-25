@@ -32,7 +32,7 @@ impl Drop for Rig {
     }
 }
 
-/// intentd following reach on a private bus, with the mail manifest installed as a file.
+/// actiond following reach on a private bus, with the mail manifest installed as a file.
 async fn rig() -> Rig {
     let dir = tempfile::tempdir().expect("scratch");
     let data: PathBuf = dir.path().join("data");

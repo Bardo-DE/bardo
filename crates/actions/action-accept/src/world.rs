@@ -1,5 +1,5 @@
 //! The acceptance world: a private bus, the real daemons as processes (accountd, inferd and memoryd
-//! as the packaged binaries of their repos, intentd, readerd and companiond).
+//! as the packaged binaries of their repos, actiond, readerd and companiond).
 //!
 //! And the fakes on the bus around them: the shell's `Confirm1` and a mail provider. The model is
 //! inferd's replay engine playing a cassette. Everything is scratch: HOME, every XDG directory and
@@ -57,7 +57,7 @@ pub async fn within<T>(what: &str, wait: impl std::future::Future<Output = T>) -
         .unwrap_or_else(|_| panic!("timed out after {GIVE_UP:?} waiting for {what}"))
 }
 
-/// The manifest the mail provider answers for, installed for intentd to read.
+/// The manifest the mail provider answers for, installed for actiond to read.
 pub const MAIL_MANIFEST: &str = include_str!("../../dev/accept/fixtures/org.bardo.Mail.toml");
 
 /// Where the daemon binaries are (`env!("CARGO_BIN_EXE_*")` of the test), and the directory the
@@ -65,7 +65,7 @@ pub const MAIL_MANIFEST: &str = include_str!("../../dev/accept/fixtures/org.bard
 #[derive(Debug, Clone)]
 pub struct Binaries {
     /// `accept-actiond`.
-    pub intentd: PathBuf,
+    pub actiond: PathBuf,
     /// `accept-companiond`.
     pub companiond: PathBuf,
     /// `accept-readerd`.
@@ -98,7 +98,7 @@ impl Binaries {
     pub fn beside(exe: &Path, env: &impl Fn(&str) -> Option<String>) -> Self {
         let beside = |name: &str| exe.with_file_name(name);
         Self {
-            intentd: beside("accept-actiond"),
+            actiond: beside("accept-actiond"),
             companiond: beside("accept-companiond"),
             readerd: beside("accept-readerd"),
             memoryd: PathBuf::from(env!("BARDO_ACCEPT_MEMORYD")),
@@ -129,7 +129,7 @@ pub enum ModelSource {
     Live(String),
 }
 
-/// The person's `agent.acp.expose`, written into the scratch settings file. intentd honours the
+/// The person's `agent.acp.expose`, written into the scratch settings file. actiond honours the
 /// roles of `org.bardo.Acp` only while it is on.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum AcpSetting {
@@ -138,7 +138,7 @@ pub enum AcpSetting {
     Off,
     /// `[agent.acp] expose = true`.
     On,
-    /// `[agent.acp] agents = true`: intentd counts the host of an external agent
+    /// `[agent.acp] agents = true`: actiond counts the host of an external agent
     /// (`org.bardo.AcpAgent`) and `agents.toml` may start programs.
     Agents,
 }

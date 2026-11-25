@@ -53,7 +53,7 @@ pub struct DebugSeams {
     pub dev_callers: Option<std::path::PathBuf>,
     /// Name callers by this stand-in `/proc` (`<DIR>/<pid>/cgroup`, `<DIR>/units/<unit>` for a
     /// unit's main process) instead of the system's and its systemd manager: a jail has neither,
-    /// so a test names intentd here as the actions service's own harness does (`BARDO_ACTIOND_PROC_ROOT`).
+    /// so a test names actiond here as the actions service's own harness does (`BARDO_ACTIOND_PROC_ROOT`).
     #[arg(long, value_name = "DIR")]
     pub proc_root: Option<std::path::PathBuf>,
 }

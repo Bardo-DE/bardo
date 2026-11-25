@@ -48,7 +48,7 @@ pub enum ExchangeAnswer {
 /// One chat request and its answer, as the daemon that asked saw them.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ModelExchange {
-    /// Which process asked (`intentd`, `companiond`, `readerd`, or the eval runner).
+    /// Which process asked (`actiond`, `companiond`, `readerd`, or the eval runner).
     pub by: String,
     /// Its place in that tap's order, from 1.
     pub n: u32,

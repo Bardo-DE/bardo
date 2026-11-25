@@ -19,7 +19,7 @@ pub(super) const PRESET: LayerPreset = LayerPreset::PanelOnly {
     panel: PanelBlur::sheet(PANEL_ID),
 };
 
-/// The sheet that asks before intentd lets something that asks happen.
+/// The sheet that asks before actiond lets something that asks happen.
 #[derive(Debug)]
 pub enum ConfirmSheet {}
 

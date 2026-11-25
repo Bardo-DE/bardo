@@ -140,7 +140,7 @@ pub fn write(path: &Path, text: &str) {
     std::fs::write(path, text).expect("file");
 }
 
-/// `spaces.toml`: the Space `work`, and `desktop` where intentd places the records that name no
+/// `spaces.toml`: the Space `work`, and `desktop` where actiond places the records that name no
 /// Space (a confirmation, an undo), both sealed with fixed replicas.
 pub const SPACES: &str = r#"[[spaces]]
 id = "work"

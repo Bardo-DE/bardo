@@ -24,7 +24,7 @@ fn grants_load_sorted_without_repeats_and_mark_the_control_reached() {
 }
 
 #[test]
-fn an_unreachable_intentd_keeps_what_was_shown_and_says_so() {
+fn an_unreachable_actiond_keeps_what_was_shown_and_says_so() {
     let a = grant("org.bardo.Mail", "mail.thread.archive");
     let loaded = step(Terminal::default(), TerminalEvent::Loaded(vec![a.clone()]));
     let after = step(loaded, TerminalEvent::Unreachable);

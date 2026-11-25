@@ -1,5 +1,5 @@
 //! The daemon: the session bus, an inferd link and the router's `Intents1` as the reader (its
-//! unit is `bardo-readerd.service`, which intentd's callers file names as the reader), and the one
+//! unit is `bardo-readerd.service`, which actiond's callers file names as the reader), and the one
 //! `ReaderHost` of the process.
 
 use crate::callers;
@@ -15,8 +15,8 @@ use futures_util::StreamExt;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-/// Serves `org.bardo.Reader1` on `connection` over the inferd and intentd it reaches through it,
-/// answering the process `who` names as intentd.
+/// Serves `org.bardo.Reader1` on `connection` over the inferd and actiond it reaches through it,
+/// answering the process `who` names as actiond.
 ///
 /// Returns once the name is ours; the connection keeps serving until it closes.
 ///

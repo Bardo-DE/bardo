@@ -4,7 +4,7 @@
 //! seams the daemon passes in. What it remembers and shows (the sessions, the handle table, the
 //! undo journal, the registry) is `action-context`. `Router` ties them to the seams (`seams`).
 //!
-//! No clock, bus, file or runtime is reached here; the daemon (`intentd`) passes them in.
+//! No clock, bus, file or runtime is reached here; the daemon (`actiond`) passes them in.
 //!
 //! A router over the neutral fake apps, asked what is installed (any caller may ask):
 //!

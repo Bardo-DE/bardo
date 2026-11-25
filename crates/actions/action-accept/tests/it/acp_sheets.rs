@@ -1,4 +1,4 @@
-//! The router's sheets for an editor's session go to the editor, over the bus: intentd hands them
+//! The router's sheets for an editor's session go to the editor, over the bus: actiond hands them
 //! to the `bardo-agent-acp` process (which serves `Confirm1` under its own name), and the editor sees
 //! them as ACP permission requests. The desktop's sheet (the shell) is never asked for these.
 

@@ -1,22 +1,22 @@
-//! bardo-shell's seat at intentd. One connection to the session bus owns three things, because intentd
+//! bardo-shell's seat at actiond. One connection to the session bus owns three things, because actiond
 //! names a caller's role from the well-known names its connection owns:
 //!
 //! - `org.bardo.Shell`, where bardo-shell is the **provider** of the shell's own actions
 //!   (`IntentProvider1`; `dist/intents/org.bardo.Shell.toml` declares them). A `Perform` is handed
 //!   to the daemon as a [`ShellCall`] and answered when the daemon has done it. This name also
-//!   gives the connection the `launcher`, `confirm` and `control` roles in intentd's shipped
+//!   gives the connection the `launcher`, `confirm` and `control` roles in actiond's shipped
 //!   configuration, so it is claimed first.
 //! - `org.bardo.Confirm1`, the **sheet**: `Confirm(request) -> request object` and `Cancel(id)`.
 //!   The service publishes the queue (`Intents::sheets`) for the confirm surface to draw and sends
 //!   the answer as `org.bardo.Intents1.Request.Response(0, <ConfirmAnswer JSON>)`, to the asker
-//!   alone. Only intentd (the owner of `org.bardo.Intents1`) may ask; an unanswered question
+//!   alone. Only actiond (the owner of `org.bardo.Intents1`) may ask; an unanswered question
 //!   expires with its own clock and is never an allow.
 //! - the **control** client: the terminal's standing grants (`Control.TerminalGrants`,
 //!   `Control.RevokeTerminalGrant`) and `Control.Resume` for a terminal the breaker paused.
 //!
 //! **Claims the names at start**, unless [`Env::claims`] is `Passive` (a test's `start` never
 //! claims them; every live test runs on a private bus with a stand-in asker). With no session bus the link
-//! is `Unavailable(NoBus)` and intentd, finding no trusted sheet, dismisses what it asks.
+//! is `Unavailable(NoBus)` and actiond, finding no trusted sheet, dismisses what it asks.
 
 mod backend;
 

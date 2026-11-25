@@ -1,5 +1,5 @@
 //! readerd: the quarantined reader. It is a separate process with its own bus name, and the
-//! only caller `intentd` lets resolve a handle. It answers one caller, intentd, as `readerd-callers.toml`
+//! only caller `actiond` lets resolve a handle. It answers one caller, actiond, as `readerd-callers.toml`
 //! names it. It reads untrusted text under a closed
 //! [`ReaderTask`](action_core::ReaderTask) and a [`ValueSchema`](action_core::ValueSchema),
 //! has no tools, and answers a typed value only; text inside the answer reaches the planner as

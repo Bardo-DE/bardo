@@ -12,7 +12,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 
 **In scope**
 - The vocabulary: Entity, Action, Param, Value, Effect, Preview, Context, Invocation, Outcome, Refusal. Also the app manifest file and its validation.
-- The router `org.bardo.Intents1` (daemon `intentd`) and the per-app `org.bardo.IntentProvider1`. This covers D-Bus activation, the pushed entity index and the caller identity the transport derives.
+- The router `org.bardo.Intents1` (daemon `actiond`) and the per-app `org.bardo.IntentProvider1`. This covers D-Bus activation, the pushed entity index and the caller identity the transport derives.
 - The Context call. It reports where the user is, the selection as typed things, what is visible, and the editable text target. Bardo layer answers it on the app's behalf.
 - The shared undo history, labelled by actor: app stacks plus the router's journal.
 - `prov`: the provenance and taint label lattice (FIDES-style integrity × confidentiality).
@@ -53,7 +53,7 @@ It mirrors the accounts service's layout, conventions, gate and `check-boundary.
 | `action-client` | the app side (the `IntentProvider` trait, `serve`) and the caller side (`Intents` over a `Transport`: `InProcess`, and `DbusTransport` behind feature `dbus`) | per transport | yes |
 | `action-fake` | test only: FakeMail and FakeFiles providers from real manifest files, `ScriptedConfirmer`, `ScriptedReviewer`, `FixedClock`, `RecordingSink`, `fake_router` | none | yes |
 | `bardo-actions-mcp` | an rmcp server generated from the registry. Every call goes through the router as `Actor::Mcp`. Importing third-party MCP tools comes later. | rmcp, its own binary | yes |
-| `intentd` | the daemon: builds the router over its seams and serves the bus. Until then it is a skeleton that exits 2 with "not implemented". | everything | Linux first |
+| `actiond` | the daemon: builds the router over its seams and serves the bus. Until then it is a skeleton that exits 2 with "not implemented". | everything | Linux first |
 
 **Allowed edges** (enforced by `scripts/check-boundary.sh`):
 
@@ -68,10 +68,10 @@ It mirrors the accounts service's layout, conventions, gate and `check-boundary.
 | `action-client` | `action-core`, `action-router` (for InProcess), `action-dbus` (feature `dbus`) |
 | `action-fake` | `action-core`, `action-router`, `action-client`, `permission-policy`, `action-review`, `account-core` |
 | `bardo-actions-mcp` | `action-core`, `action-client` (+ `rmcp`) |
-| `intentd` | `action-core`, `action-router`, `action-dbus`, `permission-policy`, `action-review`, `account-core` |
+| `actiond` | `action-core`, `action-router`, `action-dbus`, `permission-policy`, `action-review`, `account-core` |
 
 **External boundaries**
-- No crate except `action-dbus`, `intentd` and `bardo-actions-mcp` ever reaches `zbus`, `zvariant`, `tokio`, `reqwest` or `hyper`.
+- No crate except `action-dbus`, `actiond` and `bardo-actions-mcp` ever reaches `zbus`, `zvariant`, `tokio`, `reqwest` or `hyper`.
 - Only `permission-policy` (and the crates above it) reaches `cedar-policy`.
 - Only `bardo-actions-mcp` reaches `rmcp`.
 - `prov` and `action-core` never reach `toml`. Manifest TOML is parsed in `action-router::registry::parse`.
@@ -452,7 +452,7 @@ pub fn halted(k: &KillSwitch, space: &SpaceId) -> Option<HaltCause>;   // all ov
 
 Rules:
 - The router owns a per-session `HandleTable`. When the router hands anything to a companion session (context, search hits, Read outcomes, previews), every `Labelled<String>` whose integrity is `Untrusted` is replaced by a `Handle`. Plain text reaches only the **reader identity**.
-- The reader is a separate process with its own bus name. `intentd` is configured with that identity. Only the reader may call `Session.Resolve`.
+- The reader is a separate process with its own bus name. `actiond` is configured with that identity. Only the reader may call `Session.Resolve`.
 - The router computes the session's planner taint itself, as the join of the labels of every plain value it delivered. A model cannot forge it.
 
 ```rust
@@ -659,7 +659,7 @@ Note: `DecidedBy::Reviewer` carries `{ code: ReasonCode, under: Option<AuthId> }
 
 There is one protocol with two carriers, as in the accounts service. `IntentsRequest`/`IntentsReply` are serde enums in `action-core::wire`. The socket frame reuses the accounts service's `{ vocab, body }` frame. Over D-Bus, bodies travel as JSON in `s`. The caller's identity is derived from the connection (the accounts service `AppId`) and is never sent.
 
-Caller roles are configured in `intentd`'s config:
+Caller roles are configured in `actiond`'s config:
 - `launcher`: the shell. Gets Actor::User when `Origin::Launcher`/`InWindowField`.
 - `companion`: the agent daemon. Actor::Companion.
 - `reader`: the reader process.
@@ -669,7 +669,7 @@ Caller roles are configured in `intentd`'s config:
 - `control`: the shell's control centre. May call `Halt`/`Resume`.
 - Any other app gets Actor::App: its own actions only, plus Search, Preview, Suggest.
 
-**`org.bardo.Intents1`** at `/org/bardo/Intents1` (served by intentd):
+**`org.bardo.Intents1`** at `/org/bardo/Intents1` (served by actiond):
 
 | Interface | Member | Who |
 |---|---|---|
@@ -682,7 +682,7 @@ Caller roles are configured in `intentd`'s config:
 | `.Control` | `Halt(scope s)`, `Resume(scope s)`, `State() -> s`, `Journal(filter s) -> s`; signals `Halted(s)`, `Resumed(s)`, `JournalChanged(t)` | compositor, control |
 | `.Request` (per call `/org/bardo/Intents1/request/<n>`) | `Close()`; signals `Progress(s)`, `Response(u, s)` | portal shape |
 
-`IndexEntry` is `{ key, kind, title, subtitle, keywords: Vec<String>, updated, space: SpaceScope }`. It is stored by `intentd` per Space; encryption at rest comes later (U5).
+`IndexEntry` is `{ key, kind, title, subtitle, keywords: Vec<String>, updated, space: SpaceScope }`. It is stored by `actiond` per Space; encryption at rest comes later (U5).
 
 **`org.bardo.IntentProvider1`** at `/org/bardo/IntentProvider1`, on the app's own activatable bus name (= `AppName`). The router calls it only after checking that the name's owner derives to the same `AppId`.
 
@@ -701,7 +701,7 @@ Caller roles are configured in `intentd`'s config:
 - `Cancel(id s)`.
 - The interface is frozen now; who serves it is decided later.
 
-**Daemon config**, `$XDG_CONFIG_HOME/bardo/actiond.toml`, the serde form of `IntentdConfig { roles: BTreeMap<Role, Vec<AppName>>, reviewer: ReviewerChoice, … }`. Freeze later; budgets and strictness come from settings keys.
+**Daemon config**, `$XDG_CONFIG_HOME/bardo/actiond.toml`, the serde form of `ActiondConfig { roles: BTreeMap<Role, Vec<AppName>>, reviewer: ReviewerChoice, … }`. Freeze later; budgets and strictness come from settings keys.
 
 ### 3.13 `action-client` (freeze now)
 
@@ -892,14 +892,14 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - `reader_only_may_resolve_handles`.
 - `every_call_appends_one_audit_record`, plus `every_verdict_is_logged` (asserting exact counts).
 
-### 5.6 `action-dbus`, `action-client`, `bardo-actions-mcp`, `intentd`
+### 5.6 `action-dbus`, `action-client`, `bardo-actions-mcp`, `actiond`
 
 - `introspection_matches_xml`: the accounts service pattern. It fails with the new text.
 - `p2p_perform_round_trip`: a zbus p2p proxy against the skeleton backed by the fake router.
 - `caller_identity_derived_not_sent`.
 - `tools_only_offered_actions` and `tool_hints_follow_effect`.
 - `mcp_call_goes_through_router_as_untrusted`: an rmcp in-memory transport, asserting a Confirm for an UndoableWrite.
-- `intentd_skeleton_exits_2`.
+- `actiond_skeleton_exits_2`.
 
 **Fixtures and fakes in `action-fake`:** two manifests, FakeMail and FakeFiles providers (in-memory stores with real undo tokens), `ScriptedConfirmer` (answers queue), `ScriptedReviewer` (verdict queue, `AlwaysAllow`, `Timeout`), `FixedClock`, `RecordingSink`, `MemoryGrants`, the injection corpus `fixtures/injection/*.toml`, and a private-bus helper.
 
@@ -941,7 +941,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### Fill wave 2 (cross-repo)
 
-- **The actions service F2a**: `intentd` serves the bus over the private bus, with seams wired: `AppLink` over zbus, `GrantStore` file, `EventSink` to the memory area's `eventlog` (or a JSONL stub until it exists).
+- **The actions service F2a**: `actiond` serves the bus over the private bus, with seams wired: `AppLink` over zbus, `GrantStore` file, `EventSink` to the memory area's `eventlog` (or a JSONL stub until it exists).
 - **The actions service F2b**: `bardo-actions-mcp` over rmcp.
 - **The shell agent**: the `shell-launcher` variants, following the warn-before-lint-rules practice. Pinned wire tests for the new `Activation::Intent`/`Subject::Entity`/`Preview::Intent`. `ThingsProvider` in `shell-search` over `action-client`. `org.bardo.Shell` provider in `shell-services`. Verify with the shell's gate.
 - **Bardo agent**: `ui-intents` (`ContextModel`, a `thing` prop on `Row`/`List`, edit-surface text targets, a default `ContextSource`). Only after the user answers U6.
@@ -967,7 +967,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 | **models** | inferd serving the reviewer and reader models (small local, no tools, grammar-constrained JSON), model latency | `ReviewRequest`/`render`/`parse_verdict`, `ValueSchema` → grammar, `tool_schema` |
 | **memory** | `eventlog` crate taking `AuditRecord`; `Actor` shared; memfiles' write action declared `Lasting::AgentMemory` | `AuditRecord`, `Actor`, `prov::Label`, `EntityId` |
 | **planner / agent loop** (name unknown) | Session driving (`Session.Open/Turn`), planner prompt from `PlannerView`, the reader process, proposing Authorizations, adapting to `Denied` reasons | §3.8, §3.9, `CallRefusal` |
-| **security / sandbox** (if separate) | systemd, Landlock and seccomp units for intentd and bardo-actions-mcp; bubblewrap for imported MCP tools | caller roles config |
+| **security / sandbox** (if separate) | systemd, Landlock and seccomp units for actiond and bardo-actions-mcp; bubblewrap for imported MCP tools | caller roles config |
 
 ### 7.2 Conflicts between docs, with proposed resolutions
 

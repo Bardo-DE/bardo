@@ -1,4 +1,4 @@
-//! The confirmation sheet (design/32 section 8, phase A): what intentd asks the person before it
+//! The confirmation sheet (design/32 section 8, phase A): what actiond asks the person before it
 //! lets the terminal, the companion or an outside agent do something that asks.
 //!
 //! One Overlay per output, kept warm and hidden like the polkit prompt, shown on the sheets' output

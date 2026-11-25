@@ -55,7 +55,7 @@ pub(crate) fn read_defaults(path: &Path) -> Vec<ActionGrant> {
         Ok(text) => text,
         Err(why) if why.kind() == std::io::ErrorKind::NotFound => return Vec::new(),
         Err(why) => {
-            eprintln!("intentd: cannot read {}: {why}", path.display());
+            eprintln!("actiond: cannot read {}: {why}", path.display());
             return Vec::new();
         }
     };
@@ -63,13 +63,13 @@ pub(crate) fn read_defaults(path: &Path) -> Vec<ActionGrant> {
         Ok((kept, 0)) => kept,
         Ok((kept, refused)) => {
             eprintln!(
-                "intentd: {}: {refused} default(s) skipped, only Always allowances over app_own are accepted",
+                "actiond: {}: {refused} default(s) skipped, only Always allowances over app_own are accepted",
                 path.display()
             );
             kept
         }
         Err(why) => {
-            eprintln!("intentd: {} is not a list of grants: {why}", path.display());
+            eprintln!("actiond: {} is not a list of grants: {why}", path.display());
             Vec::new()
         }
     }

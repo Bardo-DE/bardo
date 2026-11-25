@@ -19,7 +19,7 @@ impl ReaderClient {
     }
 
     /// `Reader1.Extract(session, ask)`: readerd resolves the ask's handles in `session` through
-    /// `Session.Resolve` (the inputs stay in intentd's handle table) and answers a value that
+    /// `Session.Resolve` (the inputs stay in actiond's handle table) and answers a value that
     /// fits the schema, as the JSON of `Result<Value, ReaderError>`. A reader that is not on the
     /// bus is `ModelUnavailable`: never a value, never a panic.
     ///

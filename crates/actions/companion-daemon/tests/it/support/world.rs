@@ -130,7 +130,7 @@ fn world_all(
     grant_mail(&router, "home");
     router.install_skills(skills.clone());
     let router = Arc::new(router);
-    // The built-in `org.bardo.Companion` provider answers through the router, as in intentd.
+    // The built-in `org.bardo.Companion` provider answers through the router, as in actiond.
     action_fake::host_companion(&router);
     let infer = ScriptedInfer::new(script);
     let clock = FixedClock::at(provenance::UnixSeconds(1_000));

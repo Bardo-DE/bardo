@@ -80,7 +80,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
   targeting `TaskTarget::App` ends `Blocked(NeedsCapability)` until launch-into-mode lands.
 - **The computer-use daemon has no edge to `policy-point`** (the edge table enforces it), and no longer reaches
   `cedar-policy` either: action-client's `InProcess` is behind its `in_process` feature, which
-  only the computer-use daemon's tests turn on, through the dev-dependency on intentd.
+  only the computer-use daemon's tests turn on, through the dev-dependency on actiond.
 
 ## Dependencies added to this workspace (not in Bardo's pinned block)
 
@@ -93,8 +93,8 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
   of a keymap and no wayland keymap fd; the block's bare line enables `wayland` and `memmap2`);
   `blake3 1` (maskcap's frame digest and computer-use-run's thought digest; already in the lock); `futures-util`
   on the actions service's line (the computer-use daemon waits for its connection to close).
-- Dev-dependencies of the computer-use daemon's tests only, so not in any tree the boundary script checks: `intentd`,
-  `action-fake`, `action-router` (a real intentd over the actions service's fakes on a private bus) and
+- Dev-dependencies of the computer-use daemon's tests only, so not in any tree the boundary script checks: `actiond`,
+  `action-fake`, `action-router` (a real actiond over the actions service's fakes on a private bus) and
   `memory-fake` with `memory-client`'s `in_process` (a real memory service); `tokio`'s `test-util`.
 - computer-use-eval only, the model layer's crates at the pinned rev: `computer-use-session`, `computer-use-vendors`, `model-catalog`, `model-http` (feature `hyper`), `model-openai-compat` and `vision-prep` (feature `pixels`, so `image` and `fast_image_resize`), the same ones the accounts service's inferd uses to run a step. The eval's 8x16 font is cut from Hack Regular by `scripts/dev/gen-eval-font.py`; no font crate.
 - Not added: `ashpd`, `pipewire` (KWin).
@@ -260,7 +260,7 @@ the machine under it. What was decided:
   nothing.
 - **`FakeDesktop::next_event`** wakes when an event is raised (it used to wait forever if none was
   queued when it was first polled). `computer_use_fake::scene` holds the scenes the tests share.
-- **Tests.** `computer_use_daemon/tests/it/links.rs` runs `IntentsGate` and `DaemonLinks` against a real intentd on a
+- **Tests.** `computer_use_daemon/tests/it/links.rs` runs `IntentsGate` and `DaemonLinks` against a real actiond on a
   private bus (the actions service's fakes behind it) and a real memory service (the memory service's fakes);
   `computer_use_daemon/tests/it/serve.rs` runs `serve_on_with` on a private bus with callers introduced as their process's app and role;
   `computer_use_daemon/tests/it/{supervisor,inflight}.rs` run the supervisor over the fakes with paused time.
@@ -400,7 +400,7 @@ section 9.2). Computer use's covers the `computer_use.*` keys of section 3.29 th
 7. **`computer_use_daemon --write-schema DIR`** writes `computer_use.settings.toml` for a local install, like `actions-mcp
    --write-schema`.
 8. **Lockfile.** `notify` joins computer use's `Cargo.lock` (the computer-use daemon's watch). The watch code is the same shape as
-   The actions service's intentd and the memory service's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
+   The actions service's actiond and the memory service's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
    The accounts service has a place for it.
 9. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent`
    mark) and parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a
@@ -542,13 +542,13 @@ a real desktop. The model-time figures are wall time on a shared machine and are
   `187751f`: `action_dbus::callers::Identity` (the accounts service's `ProcCallers`) names the unit or app scope
   from `/proc/<pid>/cgroup` and the systemd manager's main pid, and `computer-use-callers.toml`
   (`dist/computer-use-callers.toml`, laid over by the person's file; only the system's can give a fixed
-  role) gives the role. The router is the actions service's `INTENTD` (`org.bardo.Intents`, `agent`), the planner
+  role) gives the role. The router is the actions service's `ACTIOND` (`org.bardo.Intents`, `agent`), the planner
   is `org.bardo.Companion1` (`agent`), the shell is the actions service's `SHELL` (`org.bardo.Shell`,
   `sheet_host`); everything else, an app scope called like any of them included, is `Other`.
   `CallerNames` and `ComputerUseDaemonConfig::callers` are gone (an old `callers` key in `computer-use.toml` is ignored).
 - **Shell-only signals** (`ThoughtDelta`, `ActionProposed`, `ActionDone`, `AskUser`) go to the owner
   of `org.bardo.Shell` only if that owner's process holds `SHELL`; otherwise nothing is emitted.
-- **Provider.** `org.bardo.ComputerUse` still answers intentd's unit alone (`action_client::serve_on`).
+- **Provider.** `org.bardo.ComputerUse` still answers actiond's unit alone (`action_client::serve_on`).
   `serve_on_with` is the test seam: one `Identity` for the objects and the provider.
 - **API.** `serve_on(connection, supervisor, table)` takes the callers table (`read_callers`);
   `serve_on_with(connection, supervisor, identity)` is the seam. No environment variable or feature
@@ -648,14 +648,14 @@ changes (a page title) is a new window to the check.
 ### Wiring the reader (not done)
 
 The actions service's quarantined reader (`agent-reader`: `reader_request`, `read`, `TransportReader`) is not
-in computer use's lock at the actions service `e1e5802`, and `org.bardo.Reader1.Extract` is served to intentd alone
-(`dist/readerd-callers.toml`: one row, `org.bardo.Intents`, `intentd.service`, role `agent`), and it
+in computer use's lock at the actions service `e1e5802`, and `org.bardo.Reader1.Extract` is served to actiond alone
+(`dist/readerd-callers.toml`: one row, `org.bardo.Intents`, `bardo-actiond.service`, role `agent`), and it
 reads handles of a session, not text sent by a caller. The two clean ways are: (a) bump the actions service past
 the commit that has `agent-reader` and have `InferdComputerUseModel` implement `classify_screen` with a
 `TransportReader` over the inferd transport the computer-use daemon already holds (a closed `ReaderTask::Classify`
 over `ValueSchema::Choice([clear, instructions])`); no caller row, because inferd is the callee;
 (b) an `Intents1` method that takes screen text, makes the handle and calls readerd, which needs
-a caller row for the computer-use daemon's unit in `readerd-callers.toml` (or no row if intentd keeps the call). (a)
+a caller row for the computer-use daemon's unit in `readerd-callers.toml` (or no row if actiond keeps the call). (a)
 needs: the actions pin bump, `agent-reader` in `[workspace.dependencies]`, and the computer-use daemon's
 `ReaderMode` switch (a `computer_use.screen_reader` setting, off by default).
 

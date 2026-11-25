@@ -22,7 +22,7 @@ pub fn watch_settings(locator: &Locator, base: AgentSettings) -> LocatedWatch<Ag
 
 /// Logs what a read refused, then puts its values in force on `router`.
 pub fn apply<S: Seams>(router: &Router<S>, loaded: &Loaded<AgentSettings>) {
-    for line in loaded.lines("intentd") {
+    for line in loaded.lines("actiond") {
         eprintln!("{line}");
     }
     router.apply_settings(loaded.value.agent);

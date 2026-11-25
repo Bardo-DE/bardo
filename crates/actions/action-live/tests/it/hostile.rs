@@ -1,5 +1,5 @@
 //! The hostile-model corpus in the gate: the planner cases over their cassettes with the real
-//! companion, intentd and the apps; and the spoiled writer and reviewer replies through the real
+//! companion, actiond and the apps; and the spoiled writer and reviewer replies through the real
 //! writer and cascade over inferd's replay engine.
 
 use crate::support::*;

@@ -119,7 +119,7 @@ A settled item is deleted, not marked closed.
   item, whatever its title ("View", "Window") or id, is a `Destructive` dbusmenu click. A person's own
   click in the bar is unaffected. Tests: `crates/shell-model/src/app_menu/tests.rs` (the tables),
   `crates/shell-services/tests/it/app_menu_bus.rs` (private bus, `shell-testkit`'s `app_menu_app`, a
-  recording intentd).
+  recording actiond).
 - **`com.canonical.Unity.LauncherEntry`** is a broadcast with no well-known name: a raw
   `MatchRule` through `MessageStream::for_match_rule`. Values are decoded per key; a wrong-typed
   key is dropped, not the message. A clear is a `NameOwnerChanged` with an empty new owner for a
@@ -350,10 +350,10 @@ A settled item is deleted, not marked closed.
   screen shows the real account's name from `/etc/passwd` (by uid), which no environment
   variable sandboxes.
 
-## Standing facts: the seat at intentd
+## Standing facts: the seat at actiond
 
-- **One connection owns three roles.** intentd names a caller's role from the well-known names its
-  connection owns (`dist/intentd.toml`: `org.bardo.Shell` is `launcher`, `confirm` and `control`;
+- **One connection owns three roles.** actiond names a caller's role from the well-known names its
+  connection owns (`dist/actiond.toml`: `org.bardo.Shell` is `launcher`, `confirm` and `control`;
   `Confirm1`'s owner is trusted only while it also owns that name). So `shell_services::intents`
   claims `org.bardo.Shell` first (the provider, `action_client::serve_on`), then
   `org.bardo.Confirm1`, and makes its `Control` calls from the same connection. It is passive until
@@ -367,7 +367,7 @@ A settled item is deleted, not marked closed.
   JSON>)` to the caller's unique name (a withdrawn question: code 1). Only the owner of
   `org.bardo.Intents1` may call `Confirm`, `Cancel` or the provider, and only a question's own
   asker may close its request object. A question expires on its own clock (`expires`), is
-  dropped when intentd leaves the bus, and is never an allow.
+  dropped when actiond leaves the bus, and is never an allow.
 - **The sheet arms for 500 ms and a destructive action is a 1 s hold**, both constants in
   `crates/shell-overlays/src/confirm_sheet/gate.rs` until design/22 has `confirm.arm_ms` and `confirm.hold_ms`. Return and
   every button are ignored while it arms; Escape denies at any time; the keyboard lands on Allow
@@ -385,7 +385,7 @@ A settled item is deleted, not marked closed.
 
 ## Standing facts: the companion
 
-- **Everything said to intentd and the companion goes out on the shell's own connection.** intentd
+- **Everything said to actiond and the companion goes out on the shell's own connection.** actiond
   names a caller's role from the names its connection owns, so a turn (`Session.Turn`), a search,
   an undo or a journal read from any other connection would not be the launcher's. The intents
   service claims `org.bardo.Shell`, then publishes that connection on `shell_services::seat`; the
@@ -1566,7 +1566,7 @@ only in `shell-services`' dev-dependencies). `Cargo.lock` is the orchestrator's 
   shell reads the desktop's table once (`/etc/bardo/desktop-callers.toml`; a jail has none, so it is
   empty), and the caller-identity library judges an image the person can write `Unverified` before it looks at any row,
   so a stand-in built in a checkout is never a service: `dev/accept/accounts.sh` (the
-  `accountd_standin` example) and `dev/accept/confirm.sh` (the actions service's `accept-intentd`) were refused on
+  `accountd_standin` example) and `dev/accept/confirm.sh` (the actions service's `accept-actiond`) were refused on
   every call. The caller-identity library v0.1.4 added the seam (feature `dev-rows`: `Table::from_toml_dev`,
   `TableFiles::load_dev`, `RowOrigin::Dev`, `Proof::Dev` below `Proof::Cgroup`, `Requirement::dev`).
   The shell's side: `bardo-shell run --dev-callers FILE` exists only in a build with the shell crate's `debug`
@@ -1654,7 +1654,7 @@ only in `shell-services`' dev-dependencies). `Cargo.lock` is the orchestrator's 
   `arm_after: Some(PERMISSION_ARM_AFTER)` (600 ms, `shell_overlays::permission_sheet`): the buttons
   are disabled and Return, Escape and clicks do nothing until it has been up that long, and each
   question in the line starts its own wait when drawn. The compositor may refuse an answer sooner than
-  500 ms after its question; it does not enforce that yet. The confirmation sheet (intentd's
+  500 ms after its question; it does not enforce that yet. The confirmation sheet (actiond's
   questions) is a different component with its own gate (`ARM_MS`, 500 ms) and is unchanged.
 - **Caps Lock.** Neither Caps Lock rule is in `dist/key_remap/key-remap.toml`: the key remap daemon's user layer
   refuses a rule whose trigger has no modifier (`capslock` -> `ctrl+space`) or only Shift

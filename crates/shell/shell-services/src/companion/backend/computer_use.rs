@@ -238,7 +238,7 @@ pub(super) async fn control(
         RunControl::Stop => proxy.cancel().await.map_err(CallError::from),
         RunControl::TakeOver => proxy.take_over().await.map_err(CallError::from),
         RunControl::HandBack => proxy.hand_back().await.map_err(CallError::from),
-        // Watching is the compositor's: it shows the run's window; and undoing is intentd's,
+        // Watching is the compositor's: it shows the run's window; and undoing is actiond's,
         // which the caller sends instead.
         RunControl::Watch | RunControl::UndoAll => Ok(()),
     }

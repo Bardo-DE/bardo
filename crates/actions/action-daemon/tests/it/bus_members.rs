@@ -1,11 +1,11 @@
-//! Every member of `org.bardo.Intents1` over a real bus: intentd's `serve_on` on one end, the
+//! Every member of `org.bardo.Intents1` over a real bus: actiond's `serve_on` on one end, the
 //! client's `DbusTransport` on the other, and a second router, in process, given the same
 //! requests as the same caller. Whatever the transport, the reply must be the router's own, so
 //! the codec of each member (the JSON of its arguments, the Request objects of the members that
 //! wait, the bus errors of a request refused before it was a call) is held to the router
 //! instead of to a second opinion of what it should say.
 //!
-//! Also: the introspection of what intentd serves is `dbus/org.bardo.Intents1.xml`, and the
+//! Also: the introspection of what actiond serves is `dbus/org.bardo.Intents1.xml`, and the
 //! caller's identity is derived from the connection, never sent.
 
 use crate::support::world::*;
@@ -614,7 +614,7 @@ async fn a_name_the_configuration_does_not_list_gets_no_roles_even_if_it_says_it
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn the_interfaces_intentd_serves_are_the_declared_ones() {
+async fn the_interfaces_actiond_serves_are_the_declared_ones() {
     let world = World::serving(mail_router(), everything_config()).await;
     let (client, connection) = world.client(&[EVERYTHING]).await;
     let _ = client;
@@ -664,7 +664,7 @@ fn block(xml: &str, name: &str) -> String {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn a_request_that_the_bus_cannot_carry_to_intentd_is_closed_not_a_hang() {
+async fn a_request_that_the_bus_cannot_carry_to_actiond_is_closed_not_a_hang() {
     let world = World::serving(mail_router(), everything_config()).await;
     let (everything, _keep) = world.client(&[EVERYTHING]).await;
     world.daemon().clone().close().await.expect("close");

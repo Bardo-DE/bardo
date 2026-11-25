@@ -57,7 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         &mail_connection,
         std::sync::Arc::new(action_dbus::callers::Identity::on_system(
             mail_connection.clone(),
-            action_dbus::callers::intentd_only(),
+            action_dbus::callers::actiond_only(),
         )),
     )
     .await;

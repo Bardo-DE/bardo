@@ -5,8 +5,8 @@ use super::sheet::Sheets;
 use super::terminal::Terminal;
 use crate::serve::ServeLink;
 
-/// Whether bardo-shell serves intentd's questions: `org.bardo.Confirm1` and `org.bardo.Shell` are ours.
-/// When it could not, the sheet will never appear and intentd dismisses what it asks.
+/// Whether bardo-shell serves actiond's questions: `org.bardo.Confirm1` and `org.bardo.Shell` are ours.
+/// When it could not, the sheet will never appear and actiond dismisses what it asks.
 pub type IntentsLink = ServeLink;
 
 /// Everything the seat publishes.

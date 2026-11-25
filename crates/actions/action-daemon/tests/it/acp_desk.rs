@@ -1,8 +1,8 @@
-//! The bus half of an editor's sheets, without the rest of the world: intentd's `SheetConfirmer`
+//! The bus half of an editor's sheets, without the rest of the world: actiond's `SheetConfirmer`
 //! asks the `Confirm1` the bardo-agent-acp process serves (`ConfirmObject` over an `EditorDesk`), the
 //! host's side of the desk hands the sheet out and answers it, and what comes back is the
 //! router's answer. The roles are the shipped `actiond.toml`'s, read through the ACP gate. (The packaged `bardo-agent-acp`
-//! process is run by `action-accept`; this is the half that needs intentd's own types.)
+//! process is run by `action-accept`; this is the half that needs actiond's own types.)
 
 use crate::support::apps::FakeShell;
 use account_core::AppName;
@@ -10,7 +10,7 @@ use action_core::{
     Anchor, ConfirmAnswer, ConfirmDetail, ConfirmEnd, ConfirmId, ConfirmOffer, ConfirmParts,
     ConfirmRequest, Confirmer, EditorRoute, Gesture, GrantScope, TaintNote,
 };
-use action_daemon::{AcpGate, IntentdConfig, ProcRoot, SheetConfirmer};
+use action_daemon::{AcpGate, ActiondConfig, ProcRoot, SheetConfirmer};
 use action_dbus::callers::Identity;
 use action_dbus::{CONFIRM_PATH, ConfirmProxy, INTENTS_BUS};
 use action_host::EditorDesk;
@@ -25,7 +25,7 @@ use std::sync::Arc;
 
 const ACP: &str = "org.bardo.Acp";
 
-/// Everything on a private bus: "intentd" (owns `Intents1`, asks), the acp process (owns its name
+/// Everything on a private bus: "actiond" (owns `Intents1`, asks), the acp process (owns its name
 /// and serves `Confirm1` over `desk`), and a scripted the shell that would answer if it were asked.
 struct Fixture {
     _dir: tempfile::TempDir,
@@ -42,11 +42,11 @@ impl Fixture {
     async fn start(gate: AcpGate) -> Fixture {
         let dir = tempfile::tempdir().expect("scratch");
         let bus = PrivateBus::start_in(dir.path());
-        let intentd = bus.connect().await;
-        intentd.request_name(INTENTS_BUS).await.expect("name");
+        let actiond = bus.connect().await;
+        actiond.request_name(INTENTS_BUS).await.expect("name");
         let acp = bus.connect().await;
         // Every connection here is this one process, so the test says who each is. The acp
-        // process answers the process its callers file names as intentd.
+        // process answers the process its callers file names as actiond.
         let proc = dir.path().join("proc");
         // Its lookups go over a connection of their own: the served object holds them, and on
         // `acp` itself they would keep the connection alive after the test lets it go.
@@ -56,7 +56,7 @@ impl Fixture {
             agent_acp_bin::callers::shipped(),
             proc.clone(),
         ));
-        acp_who.introduce_app(&intentd, "org.bardo.Intents", CallerRole::Agent);
+        acp_who.introduce_app(&actiond, "org.bardo.Intents", CallerRole::Agent);
         let desk = EditorDesk::new();
         acp.object_server()
             .at(
@@ -80,16 +80,16 @@ impl Fixture {
             &["org.bardo.Confirm1", "org.bardo.Shell"],
         )
         .await;
-        let config = Arc::new(IntentdConfig::shipped().expect("shipped"));
-        // intentd trusts the sheet host and the editor's process by the callers table.
+        let config = Arc::new(ActiondConfig::shipped().expect("shipped"));
+        // actiond trusts the sheet host and the editor's process by the callers table.
         let who = Arc::new(Identity::on_fixture(
-            intentd.clone(),
+            actiond.clone(),
             action_daemon::callers::shipped(),
             proc.clone(),
         ));
         who.introduce_app(&shell_connection, "org.bardo.Shell", CallerRole::SheetHost);
         who.introduce_app(&acp, ACP, CallerRole::Agent);
-        let confirmer = SheetConfirmer::trusting(intentd.clone(), config, who)
+        let confirmer = SheetConfirmer::trusting(actiond.clone(), config, who)
             .gated(gate, &ProcRoot::Honoured(proc));
         let stranger = bus.connect().await;
         Fixture {
@@ -100,7 +100,7 @@ impl Fixture {
             acp: Some(acp),
             shell,
             stranger,
-            _keep: vec![intentd, shell_connection, lookups],
+            _keep: vec![actiond, shell_connection, lookups],
         }
     }
 
@@ -120,7 +120,7 @@ impl Fixture {
         self.shell.shown().len()
     }
 
-    /// Whether a connection that is not intentd is refused when it asks the acp process.
+    /// Whether a connection that is not actiond is refused when it asks the acp process.
     async fn stranger_asks(&self, ask: &ConfirmRequest) -> bool {
         let text = serde_json::to_string(ask).expect("json");
         let proxy = ConfirmProxy::builder(&self.stranger)
@@ -219,10 +219,10 @@ async fn with_the_acp_process_gone_the_sheet_expires_and_is_not_moved_to_the_des
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn only_intentd_may_put_a_sheet_on_the_acp_desk() {
+async fn only_actiond_may_put_a_sheet_on_the_acp_desk() {
     let fixture = Fixture::start(AcpGate::new(true)).await;
     let ask = request("c-4", ConfirmOffer::OnceOnly).for_editor(Some(route(&session())));
     let refused = fixture.stranger_asks(&ask).await;
-    assert!(refused, "a connection that is not intentd is refused");
+    assert!(refused, "a connection that is not actiond is refused");
     assert_eq!(fixture.desk.waiting(), 0);
 }

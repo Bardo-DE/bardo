@@ -1,6 +1,6 @@
 //! `agent-acp-callers.toml`.
 //!
-//! The one process bardo-agent-acp and bardo-agent answer when they serve `Confirm1` is intentd's
+//! The one process bardo-agent-acp and bardo-agent answer when they serve `Confirm1` is actiond's
 //! unit.
 //!
 //! The shipped file is `dist/agent-acp-callers.toml`; the system's copy

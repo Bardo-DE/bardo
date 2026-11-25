@@ -14,7 +14,7 @@ use zbus::object_server::Interface;
 /// One of the buses declared here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Bus {
-    /// `org.bardo.Intents1` (intentd).
+    /// `org.bardo.Intents1` (actiond).
     Intents,
     /// `org.bardo.IntentProvider1` (every provider).
     IntentProvider,

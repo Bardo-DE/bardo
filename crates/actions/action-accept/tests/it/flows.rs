@@ -126,7 +126,7 @@ async fn flow_a_prompt_plan_confirm_perform_journal_undo() {
     assert_eq!(turns_of(&world, "org.bardo.Companion"), 4);
     assert_eq!(turns_of(&world, "org.bardo.Intents"), 1);
 
-    // The router's audit records reached memoryd, from intentd's process, over the bus.
+    // The router's audit records reached memoryd, from actiond's process, over the bus.
     let recorded = recorded(
         &world,
         &[

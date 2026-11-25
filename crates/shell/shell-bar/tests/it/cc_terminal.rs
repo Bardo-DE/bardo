@@ -2,7 +2,7 @@
 //! terminal has no grant and is not paused; each standing grant as a row with its Revoke, which
 //! sends `RevokeGrant`; a paused terminal's reason and "Resume the terminal", which sends
 //! `ResumeTerminal`; and opening the panel asks for the grants to be read again. Nothing here
-//! reaches intentd.
+//! reaches actiond.
 
 use crate::cc_support;
 

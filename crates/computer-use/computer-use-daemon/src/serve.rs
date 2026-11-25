@@ -77,10 +77,10 @@ impl Drop for Serving {
     }
 }
 
-/// Who the provider answers: intentd by the system's `/proc` in the daemon, or whom a test's
-/// identity says is intentd.
+/// Who the provider answers: actiond by the system's `/proc` in the daemon, or whom a test's
+/// identity says is actiond.
 enum Answering {
-    IntentdOnly,
+    ActiondOnly,
     Told(Arc<Identity>),
 }
 
@@ -88,7 +88,7 @@ enum Answering {
 ///
 /// They are `org.bardo.ComputerUse1` (`Manager` at `/org/bardo/ComputerUse1`, a `Run` per live run at
 /// `/org/bardo/ComputerUse1/run/<id>`) and `org.bardo.IntentProvider1` as `org.bardo.ComputerUse`. Each caller's role is its process's, named by `table` (`computer-use-callers.toml`) over
-/// the system's `/proc`, never a bus name it owns; the provider answers intentd's unit alone.
+/// the system's `/proc`, never a bus name it owns; the provider answers actiond's unit alone.
 /// Returns once the names are ours; the connection keeps serving until the returned guard is
 /// dropped.
 ///
@@ -102,14 +102,14 @@ pub async fn serve_on<S: Seams>(
     table: CallerTable,
 ) -> Result<Serving, ServeError> {
     let who = Arc::new(Identity::on_system(connection.clone(), table));
-    serve_as(connection, supervisor, who, Answering::IntentdOnly).await
+    serve_as(connection, supervisor, who, Answering::ActiondOnly).await
 }
 
 /// [`serve_on`] with callers named by `who`, the provider answering the process `who` names as
-/// intentd.
+/// actiond.
 ///
 /// This is the daemon's way in, where `who` reads the system's `/proc` (or a test build's fixture
-/// tree, which the provider must read too, or intentd is a stranger to it).
+/// tree, which the provider must read too, or actiond is a stranger to it).
 ///
 /// # Errors
 ///
@@ -131,7 +131,7 @@ pub async fn serve_on_as<S: Seams>(
 }
 
 /// [`serve_on`] with callers named by `who` (a test's fixture proc root and introductions), which
-/// also says who the provider takes for intentd.
+/// also says who the provider takes for actiond.
 ///
 /// # Errors
 ///
@@ -184,13 +184,13 @@ async fn serve_as<S: Seams>(
     let (provider, queues) =
         ComputerUseProvider::starting(supervisor.settings().enabled).map_err(bus)?;
     match answering {
-        Answering::IntentdOnly => {
+        Answering::ActiondOnly => {
             action_provider::serve_on(connection, provider, NoContext, NoSummon)
                 .await
                 .map_err(bus)?;
         }
-        Answering::Told(intentd) => {
-            action_provider::serve_on_with(connection, provider, NoContext, NoSummon, intentd)
+        Answering::Told(actiond) => {
+            action_provider::serve_on_with(connection, provider, NoContext, NoSummon, actiond)
                 .await
                 .map_err(bus)?;
         }

@@ -51,7 +51,7 @@ fn plan(binaries: &Binaries) -> [(&'static str, &Path, &'static str); 5] {
         ),
         (
             "bardo-actiond",
-            binaries.intentd.as_path(),
+            binaries.actiond.as_path(),
             "org.bardo.Intents1",
         ),
         (
@@ -117,7 +117,7 @@ fn check_binaries(binaries: &Binaries) -> Result<(), BringupError> {
     Ok(())
 }
 
-/// Starts accountd, inferd, memoryd, intentd and companiond on `args.bus`, rooted in `args.root`, and
+/// Starts accountd, inferd, memoryd, actiond and companiond on `args.bus`, rooted in `args.root`, and
 /// waits for each one's bus name. On any failure everything started so far is stopped again.
 ///
 /// # Errors

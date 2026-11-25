@@ -1,7 +1,7 @@
-//! The connection the shell holds at intentd.
+//! The connection the shell holds at actiond.
 //!
-//! intentd names a caller's role from the well-known
-//! names its connection owns, so everything bardo-shell says to intentd and the companion as the
+//! actiond names a caller's role from the well-known
+//! names its connection owns, so everything bardo-shell says to actiond and the companion as the
 //! launcher (a turn, a search, an undo) must go out on the connection that owns `org.bardo.Shell`.
 //! The intents service claims the names and publishes that connection here; the companion
 //! service follows it.

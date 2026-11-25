@@ -1,5 +1,5 @@
 //! `Session.Read` through the running daemon: a companion recalls untrusted text (a handle),
-//! asks the quarantined reader about it, and intentd carries the ask to readerd over `Reader1`
+//! asks the quarantined reader about it, and actiond carries the ask to readerd over `Reader1`
 //! (the router names the session, readerd resolves the handle through `Session.Resolve` as the
 //! reader) whose model is a scripted inferd. Everything is on a private bus.
 
@@ -9,7 +9,7 @@ use crate::support::world::introduce;
 use account_core::{AppName, DataClass};
 use action_client::{DbusTransport, Intents};
 use action_core::*;
-use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
+use action_daemon::{Cadence, FileGrants, ActiondConfig, Setup, start};
 use action_dbus::callers::Identity;
 use action_vocab::{CallerRole, ChoiceId, Handle, Value};
 use action_wire::{ReadAsk, RecallAsk, RecallView, SessionOpen};
@@ -36,8 +36,8 @@ fn space() -> SpaceId {
     SpaceId::parse("work").expect("space")
 }
 
-fn config() -> IntentdConfig {
-    IntentdConfig {
+fn config() -> ActiondConfig {
+    ActiondConfig {
         roles: BTreeMap::from([
             (CallerRole::Companion, vec![app(COMPANIOND)]),
             (CallerRole::Reader, vec![app(action_dbus::READER_BUS)]),
@@ -63,16 +63,16 @@ fn receipt_hit() -> RecallHit {
 struct Desk {
     dir: tempfile::TempDir,
     bus: PrivateBus,
-    intentd_connection: action_dbus::BusConnection,
+    actiond_connection: action_dbus::BusConnection,
     companion: Intents<DbusTransport>,
     inferd: ScriptedInferd,
     who: Arc<Identity>,
     connections: Vec<action_dbus::BusConnection>,
-    _intentd: action_daemon::Running,
+    _actiond: action_daemon::Running,
 }
 
 impl Desk {
-    /// intentd over a fake memoryd that holds one untrusted hit; readerd is started by the test.
+    /// actiond over a fake memoryd that holds one untrusted hit; readerd is started by the test.
     async fn start() -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
         let bus = PrivateBus::start_in(dir.path());
@@ -108,9 +108,9 @@ impl Desk {
             every: Duration::from_millis(30),
             rescan_every: 2,
         };
-        let intentd = start(&daemon_connection, None, setup)
+        let actiond = start(&daemon_connection, None, setup)
             .await
-            .expect("intentd");
+            .expect("actiond");
         let companion_connection = bus.connect().await;
         companion_connection
             .request_name(COMPANIOND)
@@ -120,12 +120,12 @@ impl Desk {
         Desk {
             dir,
             bus,
-            intentd_connection: daemon_connection.clone(),
+            actiond_connection: daemon_connection.clone(),
             companion: Intents::over(DbusTransport::new(companion_connection.clone())),
             inferd: ScriptedInferd::away(),
             who,
             connections: vec![memory_connection, daemon_connection, companion_connection],
-            _intentd: intentd,
+            _actiond: actiond,
         }
     }
 
@@ -133,8 +133,8 @@ impl Desk {
     async fn with_reader(mut self, answer: &str) -> Desk {
         self.inferd = ScriptedInferd::answering(answer);
         let connection = self.bus.connect().await;
-        // readerd's own Intents1 caller is this connection: it is readerd's unit for intentd, and
-        // intentd is the process readerd's callers file names as the router.
+        // readerd's own Intents1 caller is this connection: it is readerd's unit for actiond, and
+        // actiond is the process readerd's callers file names as the router.
         introduce(
             &self.who,
             &connection,
@@ -146,7 +146,7 @@ impl Desk {
             agent_reader_daemon::shipped_callers(),
             self.dir.path().join("proc-readerd"),
         ));
-        reader_who.introduce_app(&self.intentd_connection, "org.bardo.Intents", Role::Agent);
+        reader_who.introduce_app(&self.actiond_connection, "org.bardo.Intents", Role::Agent);
         let service = ReaderService::new(
             ReaderHost::start(),
             self.inferd.clone(),

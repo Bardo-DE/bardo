@@ -28,7 +28,7 @@ impl Roots {
         }
     }
 
-    /// The roots for data directories in precedence order, the person's own first (what intentd
+    /// The roots for data directories in precedence order, the person's own first (what actiond
     /// holds as `data_dirs`). Empty: no skills.
     #[must_use]
     pub fn from_dirs(dirs: &[PathBuf]) -> Self {

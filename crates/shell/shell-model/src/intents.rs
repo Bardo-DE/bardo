@@ -1,9 +1,9 @@
-//! bardo-shell's seat at intentd.
+//! bardo-shell's seat at actiond.
 //!
 //! The confirmation sheet it serves (`org.bardo.Confirm1`), the standing terminal grants and the
 //! breaker it holds the `control` role over (`org.bardo.Intents1.Control`), and the shell's own
 //! actions it provides as `org.bardo.Shell` (`IntentProvider1`). One connection owns all three,
-//! because intentd names a caller's role from the well-known names its connection owns.
+//! because actiond names a caller's role from the well-known names its connection owns.
 //!
 //! This is the pure half: what a confirmation queue is and how an answer, a withdrawal or an
 //! expiry moves it ([`sheet`]), what the person sees of the terminal's grants ([`terminal`]), and

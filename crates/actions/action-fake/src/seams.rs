@@ -72,7 +72,7 @@ impl std::fmt::Debug for Hosted {
     }
 }
 
-/// Attaches `router` as the host of the built-in `org.bardo.Companion` provider, as intentd does:
+/// Attaches `router` as the host of the built-in `org.bardo.Companion` provider, as actiond does:
 /// the app answers through the router's own `companion_perform`. The router is held weakly.
 pub fn host_companion(router: &std::sync::Arc<action_router::Router<FakeSeams>>) {
     let weak = std::sync::Arc::downgrade(router);

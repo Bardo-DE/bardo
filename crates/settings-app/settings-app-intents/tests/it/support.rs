@@ -1,4 +1,4 @@
-//! Settings served on a private bus, called the way intentd calls an app: from the connection
+//! Settings served on a private bus, called the way actiond calls an app: from the connection
 //! that owns `org.bardo.Intents1`, through `IntentProvider1`.
 #![allow(
     dead_code,
@@ -6,7 +6,7 @@
 )]
 
 use action_core::{AppRefusal, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault};
-use action_dbus::callers::{INTENTD, Identity, intentd_only};
+use action_dbus::callers::{ACTIOND, Identity, actiond_only};
 use action_dbus::{Details, INTENTS_BUS, IntentProviderProxy};
 use action_vocab::{Args, CallId, EntityRef, Origin, ParamName, UndoToken, Value};
 use provenance::{Actor, EntityId, Label, Labelled, Source, SpaceId};
@@ -49,14 +49,14 @@ impl AccountsSource for Listed {
     }
 }
 
-/// The Settings provider serving, and intentd's stand-in calling it.
+/// The Settings provider serving, and actiond's stand-in calling it.
 pub struct World {
     pub window: Arc<WrittenDown>,
     scratch: Scratch,
     proxy: IntentProviderProxy<'static>,
     bus: PrivateBus,
     app: zbus::Connection,
-    _intentd: zbus::Connection,
+    _actiond: zbus::Connection,
     /// What the activation object judges its callers with: nobody is anyone until a test says so.
     peers: Arc<BusPeers>,
 }
@@ -143,24 +143,24 @@ impl World {
 
         let bus = PrivateBus::start_in(scratch.path());
         let app = bus.connect().await;
-        // Every connection of a test is one process, so intentd's stand-in is introduced as the
+        // Every connection of a test is one process, so actiond's stand-in is introduced as the
         // router the provider answers rather than found by its unit.
         let who = Arc::new(Identity::on_fixture(
             app.clone(),
-            intentd_only(),
+            actiond_only(),
             scratch.join("proc"),
         ));
         let peers = Arc::new(private_peers(&app));
         serve_with(&app, provider, Arc::clone(&who), Arc::clone(&peers))
             .await
             .expect("settings serves");
-        let intentd = bus.connect().await;
-        who.introduce_app(&intentd, INTENTD.app, INTENTD.role);
-        intentd
+        let actiond = bus.connect().await;
+        who.introduce_app(&actiond, ACTIOND.app, ACTIOND.role);
+        actiond
             .request_name(INTENTS_BUS)
             .await
-            .expect("intentd's name");
-        let proxy = IntentProviderProxy::builder(&intentd)
+            .expect("actiond's name");
+        let proxy = IntentProviderProxy::builder(&actiond)
             .destination(APP)
             .expect("destination")
             .build()
@@ -172,7 +172,7 @@ impl World {
             proxy,
             bus,
             app,
-            _intentd: intentd,
+            _actiond: actiond,
             peers,
         }
     }

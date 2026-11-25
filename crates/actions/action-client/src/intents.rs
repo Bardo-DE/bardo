@@ -110,7 +110,7 @@ impl<T: Transport> Intents<T> {
             .await
     }
 
-    /// `perform` with the launcher's activation token, which intentd passes to the app when the
+    /// `perform` with the launcher's activation token, which actiond passes to the app when the
     /// caller is the launcher and drops for every other role.
     ///
     /// # Errors

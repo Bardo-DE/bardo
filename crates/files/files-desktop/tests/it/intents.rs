@@ -1,5 +1,5 @@
 //! Files offered to the agent layer: a call from "the router" (the connection the test names as
-//! intentd, on a bus of its own) reaches a fake window, and nobody else is answered.
+//! actiond, on a bus of its own) reaches a fake window, and nobody else is answered.
 
 use std::collections::HashMap;
 use std::path::PathBuf;

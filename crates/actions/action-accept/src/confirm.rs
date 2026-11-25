@@ -1,6 +1,6 @@
 //! A scripted `org.bardo.Confirm1` server: the shell's role in the acceptance run.
 //!
-//! It owns the two names the shell owns (`org.bardo.Confirm1` and `org.bardo.Shell`), so intentd derives
+//! It owns the two names the shell owns (`org.bardo.Confirm1` and `org.bardo.Shell`), so actiond derives
 //! the `confirm` role for it from `actiond.toml` exactly as it would for the shell. Every request it is
 //! shown is kept for the test and handed out on a channel; the verdict comes from a queue the test
 //! fills (the sheet's answer: Allow with a receipt, or the person saying no).
@@ -119,7 +119,7 @@ impl Sheet {
         self.edit(|i| i.shown.clone())
     }
 
-    /// The ids intentd withdrew.
+    /// The ids actiond withdrew.
     #[must_use]
     pub fn cancelled(&self) -> Vec<String> {
         self.edit(|i| i.cancelled.clone())
@@ -181,7 +181,7 @@ impl ConfirmObject {
             .map_err(|e| fdo::Error::Failed(e.to_string()))?
             .into();
         let caller = header.sender().map(zbus::names::UniqueName::to_owned);
-        // No verdict queued: the sheet stays open until intentd withdraws it.
+        // No verdict queued: the sheet stays open until actiond withdraws it.
         if let (Some((verdict, held)), Some(caller)) = (verdict, caller) {
             let reply = serde_json::to_string(&answer_of(verdict, &parsed))
                 .map_err(|e| fdo::Error::Failed(e.to_string()))?;

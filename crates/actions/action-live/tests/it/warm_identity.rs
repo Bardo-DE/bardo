@@ -1,20 +1,20 @@
-//! A live run warms its models with the harness standing in as the intentd unit. The stand-in
+//! A live run warms its models with the harness standing in as the actiond unit. The stand-in
 //! must give the unit back: a service caller is known by its unit's main pid, and while the
-//! harness held it every call of the real intentd was unidentified, so memoryd refused its
+//! harness held it every call of the real actiond was unidentified, so memoryd refused its
 //! audit records and no app call could be recorded (`NotRecorded`).
 
 use crate::support::*;
 use action_accept::drive::{Launcher, recorded};
 use action_accept::world::{Consent, World, unit_main};
-use action_live::warm_bus::as_intentd;
+use action_live::warm_bus::as_actiond;
 use agent_session::SheetChoice;
 use companion_wire::AnswerPhase;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn after_the_warm_up_the_real_intentd_is_still_the_intentd_unit() {
+async fn after_the_warm_up_the_real_actiond_is_still_the_actiond_unit() {
     let world = World::start(&binaries(), Consent::Standing, FLOW_A).await;
     let before = unit_main(world.dir.path(), "bardo-actiond");
-    let during = as_intentd(&world, async {
+    let during = as_actiond(&world, async {
         unit_main(world.dir.path(), "bardo-actiond")
     })
     .await;
@@ -40,7 +40,7 @@ async fn after_the_warm_up_the_real_intentd_is_still_the_intentd_unit() {
         Some(AnswerPhase::Done)
     );
     let seen = recorded(&world, &["actions.call"]).await;
-    assert!(!seen.is_empty(), "memoryd took intentd's audit records");
+    assert!(!seen.is_empty(), "memoryd took actiond's audit records");
     assert!(
         !world.logs().contains("refused the audit records"),
         "{}",

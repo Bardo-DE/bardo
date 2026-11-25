@@ -1,9 +1,9 @@
-//! A real intentd over the fake router on a private bus, and the records and asks the link tests send it.
+//! A real actiond over the fake router on a private bus, and the records and asks the link tests send it.
 
 use account_core::AppName;
 use action_client::{DbusTransport, Intents};
 use action_core::{ConfirmAnswer, GrantScope};
-use action_daemon::{AcpGate, IntentdConfig, ProcRoot, serve_on_gated};
+use action_daemon::{AcpGate, ActiondConfig, ProcRoot, serve_on_gated};
 use action_dbus::callers::{CallerTable, Identity};
 use action_fake::{ScriptedConfirmer, fake_router};
 use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
@@ -58,7 +58,7 @@ pub(crate) fn yes() -> ConfirmAnswer {
     }
 }
 
-/// A real intentd over the fake router, on a private bus.
+/// A real actiond over the fake router, on a private bus.
 pub(crate) struct Desk {
     _dir: tempfile::TempDir,
     bus: PrivateBus,
@@ -82,7 +82,7 @@ pub(crate) async fn desk(answers: Vec<ConfirmAnswer>) -> Desk {
         CallerRole::ComputerUse,
         vec![AppName::parse(COMPUTER_USE_DAEMON).unwrap()],
     );
-    let config = IntentdConfig {
+    let config = ActiondConfig {
         roles,
         reviewers: None,
         agent: action_core::AgentConfig::default(),
@@ -104,7 +104,7 @@ pub(crate) async fn desk(answers: Vec<ConfirmAnswer>) -> Desk {
         None,
     )
     .await
-    .expect("intentd serves");
+    .expect("actiond serves");
     Desk {
         _dir: dir,
         bus,

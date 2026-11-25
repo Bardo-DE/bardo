@@ -1,5 +1,5 @@
 //! The shipped [`Prepare`]: inference-client's `Transport::prepare` over a private bus, as the
-//! intentd unit (the policy writer's identity, which inferd serves every tier of a run to).
+//! actiond unit (the policy writer's identity, which inferd serves every tier of a run to).
 
 use crate::warm::{POLL, Prepare, WarmError, plan, warm_all};
 use account_capability::LlmFeature;
@@ -70,7 +70,7 @@ impl Prepare for BusPrepare {
 }
 
 /// Warms every model `source` routes to over `connection` (a cassette routes to none, and this
-/// does nothing), printing each as it is ready. The caller is placed as intentd.
+/// does nothing), printing each as it is ready. The caller is placed as actiond.
 ///
 /// # Errors
 ///
@@ -87,13 +87,13 @@ pub async fn warm_up(
         .map(drop)
 }
 
-/// Runs `work` with the harness process standing in as the intentd unit, then puts both back.
+/// Runs `work` with the harness process standing in as the actiond unit, then puts both back.
 ///
-/// Runs `work` with the harness process standing in as the intentd unit, then puts both back:
+/// Runs `work` with the harness process standing in as the actiond unit, then puts both back:
 /// the harness in the shell's unit, and the unit's main pid with the daemon that really is
-/// intentd (a service caller is known by its unit's main pid, so leaving the harness there would
-/// make memoryd refuse every record of the real intentd).
-pub async fn as_intentd<T>(world: &World, work: impl std::future::Future<Output = T>) -> T {
+/// actiond (a service caller is known by its unit's main pid, so leaving the harness there would
+/// make memoryd refuse every record of the real actiond).
+pub async fn as_actiond<T>(world: &World, work: impl std::future::Future<Output = T>) -> T {
     let (root, pid) = (world.dir.path(), std::process::id());
     let daemon = unit_main(root, "bardo-actiond");
     place(root, pid, Cgroup::Unit("bardo-actiond"));
@@ -104,7 +104,7 @@ pub async fn as_intentd<T>(world: &World, work: impl std::future::Future<Output 
 }
 
 /// Warms a smoke world's models. The harness process stands in for the shell there; for the warm-up
-/// it is placed as intentd (the identity inferd serves a run's models to) and put back after.
+/// it is placed as actiond (the identity inferd serves a run's models to) and put back after.
 ///
 /// # Errors
 ///
@@ -118,5 +118,5 @@ pub async fn warm_world(
         return Ok(());
     }
     let connection = world.connect().await;
-    as_intentd(world, warm_up(source, connection, patience)).await
+    as_actiond(world, warm_up(source, connection, patience)).await
 }

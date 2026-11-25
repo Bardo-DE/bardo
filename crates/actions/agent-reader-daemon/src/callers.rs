@@ -1,4 +1,4 @@
-//! `readerd-callers.toml`: the one caller readerd answers is intentd's unit. The shipped file is
+//! `readerd-callers.toml`: the one caller readerd answers is actiond's unit. The shipped file is
 //! `dist/readerd-callers.toml`; the system's copy under `/etc/bardo` and the person's over it are
 //! laid over each other (`action_dbus::callers::read_table`), and only the system's can give a
 //! fixed role.

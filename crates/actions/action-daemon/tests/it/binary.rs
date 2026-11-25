@@ -1,4 +1,4 @@
-//! The real `intentd` binary on a private bus: it claims `org.bardo.Intents1`, gives no role to a
+//! The real `actiond` binary on a private bus: it claims `org.bardo.Intents1`, gives no role to a
 //! mere name, and is started by D-Bus activation from an activation file shaped like `dist/dbus/`'s. Nothing
 //! of the real session is named: the bus, HOME and every XDG directory are scratch.
 
@@ -50,7 +50,7 @@ impl Drop for Daemon {
     }
 }
 
-fn intentd(env: &[(String, String)], bus: &str) -> Daemon {
+fn actiond(env: &[(String, String)], bus: &str) -> Daemon {
     Daemon(
         Command::new(env!("CARGO_BIN_EXE_bardo-actiond"))
             .env_clear()
@@ -59,7 +59,7 @@ fn intentd(env: &[(String, String)], bus: &str) -> Daemon {
             .env("DBUS_SYSTEM_BUS_ADDRESS", bus)
             .stdin(Stdio::null())
             .spawn()
-            .expect("intentd starts"),
+            .expect("actiond starts"),
     )
 }
 
@@ -89,7 +89,7 @@ async fn until_owned(connection: &zbus::Connection, owned: bool, what: &str) {
 }
 
 async fn until_served(connection: &zbus::Connection) {
-    until_owned(connection, true, "intentd never claimed org.bardo.Intents1").await;
+    until_owned(connection, true, "actiond never claimed org.bardo.Intents1").await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -98,7 +98,7 @@ async fn the_binary_claims_the_name_and_a_name_alone_gives_no_role() {
     let (_data, env) = scratch_world(dir.path());
     let bus = PrivateBus::start_in(dir.path());
     let me = bus.connect().await;
-    let mut daemon = intentd(&env, bus.address());
+    let mut daemon = actiond(&env, bus.address());
     until_served(&me).await;
 
     // The binary reads the system's `/proc`, which no test may move, and a callers file of the
@@ -127,7 +127,7 @@ async fn the_binary_claims_the_name_and_a_name_alone_gives_no_role() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn d_bus_activation_starts_the_binary_for_a_caller_and_a_second_intentd_cannot_take_the_name()
+async fn d_bus_activation_starts_the_binary_for_a_caller_and_a_second_actiond_cannot_take_the_name()
 {
     let dir = tempfile::tempdir().expect("scratch");
     let (_data, env) = scratch_world(dir.path());
@@ -158,19 +158,19 @@ async fn d_bus_activation_starts_the_binary_for_a_caller_and_a_second_intentd_ca
     until_served(&me).await;
 
     // A second one finds the name taken and stops, leaving the first serving.
-    let mut second = intentd(&env, bus.address());
+    let mut second = actiond(&env, bus.address());
     let status = tokio::task::spawn_blocking(move || second.0.wait())
         .await
         .expect("joined")
         .expect("waited");
     assert!(
         !status.success(),
-        "a second intentd is not served: {status:?}"
+        "a second actiond is not served: {status:?}"
     );
     assert!(has_owner(&me).await, "the first is still there");
 }
 
-/// What intentd says on stderr when it serves with `BARDO_ACTIOND_PROC_ROOT` set to `fixture`.
+/// What actiond says on stderr when it serves with `BARDO_ACTIOND_PROC_ROOT` set to `fixture`.
 async fn said_about_the_proc_root(fixture: &Path) -> String {
     let dir = tempfile::tempdir().expect("scratch");
     let (_data, mut env) = scratch_world(dir.path());
@@ -180,7 +180,7 @@ async fn said_about_the_proc_root(fixture: &Path) -> String {
     ));
     let bus = PrivateBus::start_in(dir.path());
     let me = bus.connect().await;
-    let log = dir.path().join("intentd.log");
+    let log = dir.path().join("actiond.log");
     let mut daemon = Daemon(
         Command::new(env!("CARGO_BIN_EXE_bardo-actiond"))
             .env_clear()
@@ -190,7 +190,7 @@ async fn said_about_the_proc_root(fixture: &Path) -> String {
             .stdin(Stdio::null())
             .stderr(std::fs::File::create(&log).expect("log"))
             .spawn()
-            .expect("intentd starts"),
+            .expect("actiond starts"),
     );
     until_served(&me).await;
     daemon.0.kill().expect("kill");

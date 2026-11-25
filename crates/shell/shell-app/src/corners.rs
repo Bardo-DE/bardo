@@ -136,7 +136,7 @@ fn act(effect: CornerEffect, output: OutputId, doing: &Doing) {
 }
 
 /// Carry out what a corner opens or asks of an app: a launch and an open go to the launch
-/// service and an app's action to intentd through the companion service, as the launcher's own
+/// service and an app's action to actiond through the companion service, as the launcher's own
 /// rows do. A corner has no surface of its own, so no activation token goes with them.
 fn activate(activation: Activation, services: &Services) -> Result<(), ServiceGoneError> {
     match activation {

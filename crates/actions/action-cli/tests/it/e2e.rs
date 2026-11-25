@@ -1,4 +1,4 @@
-//! `bardo-do` end to end: the real binary, intentd's real `start` (the router over `DbusLink`,
+//! `bardo-do` end to end: the real binary, actiond's real `start` (the router over `DbusLink`,
 //! `SheetConfirmer` and `FileGrants`, serving `org.bardo.Intents1`), a mail app that is
 //! action-fake's `FakeMail` behind `action_provider::serve_on`, and the shell's `Confirm1` as a fake
 //! that answers from a script. All of it on a private `dbus-daemon`, with a scratch HOME and
@@ -6,7 +6,7 @@
 //! person's real session bus and `~/.config` are never named.
 //!
 //! The terminal's `AppId` (`org.bardo.Do`, role cli) comes from the cgroup of the pid behind its
-//! connection: the binary owns no bus name, so intentd names it by the scope it runs in. The test
+//! connection: the binary owns no bus name, so actiond names it by the scope it runs in. The test
 //! reads a fake proc root: `bardo()` starts the binary through `sh`, which waits for a line on
 //! its stdin, so the child's pid (kept by `exec`) is placed in a `vte-spawn-*.scope` before the
 //! binary exists, with no timing to rely on.
@@ -18,10 +18,10 @@ mod memoryd;
 
 use action_client::{DbusTransport, Intents};
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmOffer, GrantScope};
-use action_daemon::{IntentdConfig, ProcRoot, Running, Setup, start};
+use action_daemon::{ActiondConfig, ProcRoot, Running, Setup, start};
 use action_dbus::callers::Identity;
 use action_vocab::ActionRef;
-use apps::{Answer, FakeShell, SharedMail, answering_intentd, introduce, serve_mail};
+use apps::{Answer, FakeShell, SharedMail, answering_actiond, introduce, serve_mail};
 use base_testkit::PrivateBus;
 use memoryd::FakeMemoryd;
 use permission_core::AskReason;
@@ -53,11 +53,11 @@ fn refused() -> Answer {
     Answer::With(ConfirmAnswer::Ended(ConfirmEnd::Refused))
 }
 
-/// The world: a bus, intentd, a mail app, the shell, and a scratch home for `bardo-do`.
+/// The world: a bus, actiond, a mail app, the shell, and a scratch home for `bardo-do`.
 struct Desk {
     dir: tempfile::TempDir,
     bus: PrivateBus,
-    intentd: Option<Running>,
+    actiond: Option<Running>,
     shell: FakeShell,
     mail: SharedMail,
     /// memoryd, as the audit trail reaches it.
@@ -90,7 +90,7 @@ impl Desk {
         let mail_connection = bus.connect().await;
         let mail = serve_mail(
             &mail_connection,
-            answering_intentd(&mail_connection, &daemon_connection, dir.path()),
+            answering_actiond(&mail_connection, &daemon_connection, dir.path()),
         )
         .await;
         let memory_connection = bus.connect().await;
@@ -134,18 +134,18 @@ impl Desk {
         introduce(
             &who,
             &shell_connection,
-            &IntentdConfig::shipped().expect("the shipped configuration"),
+            &ActiondConfig::shipped().expect("the shipped configuration"),
             &["org.bardo.Confirm1", "org.bardo.Shell"],
         );
-        let intentd = start(&daemon_connection, None, setup)
+        let actiond = start(&daemon_connection, None, setup)
             .await
-            .expect("intentd starts");
+            .expect("actiond starts");
 
         let control = Intents::over(DbusTransport::new(shell_connection.clone()));
         Desk {
             dir,
             bus,
-            intentd: Some(intentd),
+            actiond: Some(actiond),
             shell,
             mail,
             memoryd,
@@ -192,8 +192,8 @@ impl Desk {
         child.wait_with_output().await.expect("bardo-do runs")
     }
 
-    async fn stop_intentd(&mut self) {
-        if let Some(running) = self.intentd.take() {
+    async fn stop_actiond(&mut self) {
+        if let Some(running) = self.actiond.take() {
             running.stop().await;
         }
     }
@@ -224,7 +224,7 @@ fn archive() -> ActionRef {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn the_real_bardo_do_reaches_the_real_intentd_on_a_private_bus() {
+async fn the_real_bardo_do_reaches_the_real_actiond_on_a_private_bus() {
     let desk = Desk::start().await;
     for key in ["t3", "t4"] {
         desk.mail.0.add_thread(action_fake::MailThread {
@@ -235,11 +235,11 @@ async fn the_real_bardo_do_reaches_the_real_intentd_on_a_private_bus() {
         });
     }
 
-    // The installed apps come from the scratch XDG_DATA_DIRS, through intentd's registry.
+    // The installed apps come from the scratch XDG_DATA_DIRS, through actiond's registry.
     let apps = desk.bardo(&["apps"]).await;
     assert_eq!(code(&apps), 0, "{}", say(&apps));
     assert!(text(&apps.stdout).contains("mail"), "{}", say(&apps));
-    // The two providers intentd hosts itself are listed without any file installed.
+    // The two providers actiond hosts itself are listed without any file installed.
     for hosted in ["memory", "companion"] {
         assert!(
             text(&apps.stdout).contains(hosted),
@@ -358,11 +358,11 @@ async fn three_refusals_in_a_row_pause_the_terminal_until_the_control_centre_res
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn with_intentd_stopped_every_call_exits_6_and_sends_nothing() {
+async fn with_actiond_stopped_every_call_exits_6_and_sends_nothing() {
     let mut desk = Desk::start().await;
     let up = desk.bardo(&["mail", "thread.read", "t2"]).await;
     assert_eq!(code(&up), 0, "{}", say(&up));
-    desk.stop_intentd().await;
+    desk.stop_actiond().await;
     for words in [
         vec!["apps"],
         vec!["mail", "--list"],
@@ -487,7 +487,7 @@ async fn an_app_that_is_absent_is_exit_6() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn a_process_that_is_not_bardo_do_is_not_the_terminal() {
     let desk = Desk::start().await;
-    // This test binary owns no name and has no cgroup in the fake proc root: intentd names it nobody.
+    // This test binary owns no name and has no cgroup in the fake proc root: actiond names it nobody.
     let stranger = DbusTransport::new(desk.bus.connect().await);
     let intents = Intents::over(stranger);
     let reply = intents.manifests().await;

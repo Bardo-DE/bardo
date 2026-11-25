@@ -1,6 +1,6 @@
 //! The entries Settings ships for the launcher's search: `bardo/actions/search/org.bardo.Settings.toml`,
 //! generated from the catalogue so the file and the pages and keys cannot drift. The launcher
-//! answers from intentd's index and never calls the app (search-index/DESIGN.md), so what is
+//! answers from actiond's index and never calls the app (search-index/DESIGN.md), so what is
 //! not in this file cannot be found while Settings is closed.
 //!
 //! The file is written at install time (`bardo-settings --write-search-entries`, scripts/install.sh)

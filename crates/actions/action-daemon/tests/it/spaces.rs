@@ -1,4 +1,4 @@
-//! Consent keyed by Space, on disk and through a whole intentd: another app's own Space is
+//! Consent keyed by Space, on disk and through a whole actiond: another app's own Space is
 //! never held, a removed Space drops the grants scoped to it (never moving them), a restart
 //! drops the grants of a Space that went while the daemon was away, and an old file's entries
 //! that the accounts service cannot read are dropped, never widened. The bus is private and accountd is a
@@ -9,7 +9,7 @@ use crate::support::spaces::FakeSpaces;
 use account_core::consent::{Decision, Grant, GrantScope, Usage};
 use account_core::{AppName, DataClass, GrantId};
 use action_core::AgentConfig;
-use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
+use action_daemon::{Cadence, FileGrants, ActiondConfig, Setup, start};
 use action_router::GrantStore;
 use base_testkit::PrivateBus;
 use permission_core::{ActionGrant, ActionGrantKey, GrantCaller, GrantTarget};
@@ -123,12 +123,12 @@ struct Desk {
     spaces_connection: zbus::Connection,
     path: PathBuf,
     _connections: Vec<action_dbus::BusConnection>,
-    _intentd: action_daemon::Running,
+    _actiond: action_daemon::Running,
 }
 
 impl Desk {
     /// A desk whose consent file `prefill` fills, and whose accountd lists `listed`, before
-    /// intentd starts.
+    /// actiond starts.
     async fn start(listed: &[&str], prefill: impl FnOnce(&std::path::Path)) -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
         let bus = PrivateBus::start_in(dir.path());
@@ -152,7 +152,7 @@ impl Desk {
         // Nothing of the real system's callers file: this test calls no one's methods.
         setup.callers = action_dbus::callers::CallerTable::default();
         prefill(&setup.grants);
-        setup.config = IntentdConfig {
+        setup.config = ActiondConfig {
             roles: BTreeMap::new(),
             reviewers: None,
             agent: AgentConfig::default(),
@@ -164,9 +164,9 @@ impl Desk {
         };
         let path = setup.grants.clone();
         let daemon_connection = bus.connect().await;
-        let intentd = start(&daemon_connection, None, setup)
+        let actiond = start(&daemon_connection, None, setup)
             .await
-            .expect("intentd");
+            .expect("actiond");
         Desk {
             _dir: dir,
             _bus: bus,
@@ -175,7 +175,7 @@ impl Desk {
             spaces_connection,
             path,
             _connections: vec![memory_connection, daemon_connection],
-            _intentd: intentd,
+            _actiond: actiond,
         }
     }
 

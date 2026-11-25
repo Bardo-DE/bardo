@@ -1,8 +1,8 @@
 //! The models the actions service asks, portable: a inference-core `Model` over any `inference_client::Transport`
 //! (inferd over D-Bus on the desktop, the service locator socket or `InProcess` elsewhere), the
-//! task-policy writer and the reviewer cascade's construction. Moved out of intentd as
+//! task-policy writer and the reviewer cascade's construction. Moved out of actiond as
 //! `agent-planner` was moved out of companiond, so an app-hosted agent builds the same model-backed
-//! reviewer and writer with the transport it has; intentd's `InferdModel` and `InferdWriter` are
+//! reviewer and writer with the transport it has; actiond's `InferdModel` and `InferdWriter` are
 //! thin adapters that add the bus constructor.
 //!
 //! - [`TransportModel`]: chat and embeddings through a session per request.

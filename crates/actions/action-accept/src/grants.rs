@@ -1,4 +1,4 @@
-//! The consent file intentd reads (`$XDG_DATA_HOME/bardo/intents/grants.json`): the person's
+//! The consent file actiond reads (`$XDG_DATA_HOME/bardo/intents/grants.json`): the person's
 //! standing "always" for the companion to use an app's data in one Space.
 
 use crate::things::App;
@@ -8,7 +8,7 @@ use permission_core::{ActionGrantKey, GrantCaller, GrantTarget};
 use provenance::{SpaceId, SpaceScope, UnixSeconds};
 
 /// The grants of the companion for `app`'s classes (mail's are `mail` and `contacts`) in `space`, for
-/// interactive use, as the JSON intentd reads.
+/// interactive use, as the JSON actiond reads.
 ///
 /// # Panics
 ///

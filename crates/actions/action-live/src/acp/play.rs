@@ -2,7 +2,7 @@
 //!
 //! The host is the one `bardo-agent` runs (`agent_acp_bin::harness::host`), with no accountd
 //! behind it (`LoginOnly`): the agent's sandbox is bubblewrap, its calls are router calls over the
-//! world's private bus, the sheets go to the world's scripted person (intentd's confirmer), and
+//! world's private bus, the sheets go to the world's scripted person (actiond's confirmer), and
 //! the per-session tool edge is offered with the bridge program of `Binaries::action_mcp`.
 
 use super::spec::AcpSpec;
@@ -122,7 +122,7 @@ async fn open(
         .connect_as(&binaries.relay, Cgroup::Scope("bardo-agent"))
         .await;
     let wiring = Wiring {
-        // The pseudo-app's provider answers the process of intentd's unit, as the world's fake
+        // The pseudo-app's provider answers the process of actiond's unit, as the world's fake
         // proc root has it (the world places each daemon it starts).
         callers: Arc::new(action_dbus::callers::Identity::on_fixture(
             bus.clone(),

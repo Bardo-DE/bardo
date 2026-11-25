@@ -20,15 +20,15 @@ pub fn reload<S: Seams>(router: &Router<S>, dirs: &PolicyDirs) {
     match load_policies(dirs) {
         Ok(loaded) => {
             for rejected in &loaded.skipped {
-                eprintln!("intentd: skipped policy {rejected}");
+                eprintln!("actiond: skipped policy {rejected}");
             }
-            eprintln!("intentd: permissions: {}", loaded.preset);
+            eprintln!("actiond: permissions: {}", loaded.preset);
             for dir in &loaded.unused {
-                eprintln!("intentd: unused policy folder {}", dir.display());
+                eprintln!("actiond: unused policy folder {}", dir.display());
             }
             router.set_presets(loaded.presets);
         }
-        Err(why) => eprintln!("intentd: policies not reloaded, the set in force stays: {why}"),
+        Err(why) => eprintln!("actiond: policies not reloaded, the set in force stays: {why}"),
     }
 }
 
@@ -71,7 +71,7 @@ pub async fn follow<S: Seams>(router: Arc<Router<S>>, dirs: PolicyDirs) {
             Ok(watcher) => Some(watcher),
             Err(why) => {
                 eprintln!(
-                    "intentd: policies in {} are read once, not watched: {why}",
+                    "actiond: policies in {} are read once, not watched: {why}",
                     dir.display()
                 );
                 None

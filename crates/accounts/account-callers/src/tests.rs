@@ -266,7 +266,7 @@ fn a_user_row_cannot_name_an_app_the_system_owns() {
             None,
         ),
     ];
-    for (case, mine, intentd, helper) in cases {
+    for (case, mine, actiond, helper) in cases {
         let merged = CallerTable::layered(
             system(),
             CallerTable {
@@ -279,7 +279,7 @@ fn a_user_row_cannot_name_an_app_the_system_owns() {
                 .map(|c| (c.app.name.to_string(), c.role))
         };
         let want = |w: Option<(&str, CallerRole)>| w.map(|(n, r)| (n.to_owned(), r));
-        assert_eq!(found("bardo-actiond.service"), want(intentd), "{case}");
+        assert_eq!(found("bardo-actiond.service"), want(actiond), "{case}");
         assert_eq!(found("helper.service"), want(helper), "{case}");
         assert_eq!(
             merged.role_of(&name("org.bardo.Intents")),

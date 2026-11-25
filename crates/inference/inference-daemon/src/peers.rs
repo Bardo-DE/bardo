@@ -270,7 +270,7 @@ impl CallerTable {
             })
         });
         // An app whose unit is under `places` is one that may choose places, and carries the shared role `Agent`
-        // (companiond, readerd and intentd are the ones accountd calls so).
+        // (companiond, readerd and actiond are the ones accountd calls so).
         let apps = self.apps.iter().flat_map(|(app, units)| {
             units.iter().map(move |unit| CallerRow {
                 unit: Some(unit.name().to_owned()),

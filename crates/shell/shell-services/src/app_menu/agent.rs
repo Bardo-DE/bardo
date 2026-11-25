@@ -3,7 +3,7 @@
 //! The menu is read fresh from the app on every call (nothing here uses the bar's followed
 //! state), and everything the app sent is a claim. [`MenuAgent::activate`] sends a dbusmenu click
 //! only for an item the table calls a click, and does a verified app's own action through
-//! intentd instead, as the shell, so the gate, confirmation, undo journal and audit apply as for
+//! actiond instead, as the shell, so the gate, confirmation, undo journal and audit apply as for
 //! a typed call. The effect table itself is `shell_model::app_menu::route_of`.
 
 mod activate;
@@ -49,8 +49,8 @@ pub struct MenuAgent<T: Transport> {
 }
 
 impl MenuAgent<DbusTransport> {
-    /// The agent speaking to intentd on `connection`, which is the one that owns
-    /// `org.bardo.Shell`: intentd names the caller's role from the names it owns. `proc_root` is
+    /// The agent speaking to actiond on `connection`, which is the one that owns
+    /// `org.bardo.Shell`: actiond names the caller's role from the names it owns. `proc_root` is
     /// where a process's cgroup is read to prove who owns a menu's name, and `peers` says whether
     /// the owner is the app the window belongs to.
     pub fn over(
@@ -65,7 +65,7 @@ impl MenuAgent<DbusTransport> {
 }
 
 impl<T: Transport> MenuAgent<T> {
-    /// The agent calling intentd through `intents`.
+    /// The agent calling actiond through `intents`.
     pub fn with_intents(
         connection: Connection,
         links: MenuLinks,

@@ -57,7 +57,7 @@ use shell_model::service::ServiceIo;
 /// compositor's answers go.
 #[derive(Debug, Clone)]
 pub struct CaptureLinks {
-    /// The shell's connection at intentd, which owns `org.bardo.Shell`.
+    /// The shell's connection at actiond, which owns `org.bardo.Shell`.
     pub seat: SeatView,
     pub displays: watch::Receiver<Displays>,
     /// The desktop's view, whose windows are the ones the picker offers.

@@ -1,4 +1,4 @@
-//! A watched gate check over a private bus: intentd says `Progress(Confirming(id))` before it
+//! A watched gate check over a private bus: actiond says `Progress(Confirming(id))` before it
 //! draws a sheet, waits for the run's daemon to `Proceed` (its input is suspended), draws the
 //! sheet, and answers. `Close` takes the check back, and the sheet with it. An unwatched check
 //! is as it was: no wait.
@@ -8,7 +8,7 @@ use crate::support::world::introduce;
 use account_core::AppName;
 use action_client::{DbusTransport, GateEvent, Intents};
 use action_core::*;
-use action_daemon::{Cadence, IntentdConfig, Setup, start};
+use action_daemon::{Cadence, ActiondConfig, Setup, start};
 use action_dbus::callers::Identity;
 use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_vocab::CallerRole;
@@ -67,7 +67,7 @@ struct Desk {
     computer_use_daemon: Intents<DbusTransport>,
     run: RunId,
     _connections: Vec<action_dbus::BusConnection>,
-    _intentd: action_daemon::Running,
+    _actiond: action_daemon::Running,
 }
 
 impl Desk {
@@ -86,7 +86,7 @@ impl Desk {
         };
         let mut setup =
             Setup::from_env(&crate::support::system::scratch(dir.path()), &env).expect("setup");
-        let config = IntentdConfig {
+        let config = ActiondConfig {
             roles: BTreeMap::from([
                 (CallerRole::ComputerUse, vec![app(COMPUTER_USE_DAEMON)]),
                 (CallerRole::Confirm, vec![app(SHELL)]),
@@ -107,7 +107,7 @@ impl Desk {
         ));
         setup.identity = Some(Arc::clone(&who));
         setup.proc_root = action_daemon::ProcRoot::Honoured(dir.path().join("proc"));
-        let intentd = start(&daemon, None, setup).await.expect("intentd");
+        let actiond = start(&daemon, None, setup).await.expect("actiond");
         let shell_connection = bus.connect().await;
         let shell = FakeShell::start(&shell_connection, &["org.bardo.Confirm1", SHELL]).await;
         introduce(
@@ -150,7 +150,7 @@ impl Desk {
             computer_use_daemon,
             run,
             _connections: vec![daemon, shell_connection, computer_use_daemon_connection],
-            _intentd: intentd,
+            _actiond: actiond,
         }
     }
 }

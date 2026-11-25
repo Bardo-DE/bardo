@@ -1,5 +1,5 @@
 //! The audit log's way to memory: the queue the router fills (`QueuedSink`) is drained by the
-//! host (a timer in intentd, the end of a turn in the in-app agent), each record becomes an
+//! host (a timer in actiond, the end of a turn in the in-app agent), each record becomes an
 //! The memory service `Record` (`record_of`) in the Space it happened in, and each Space's records go in one
 //! batch as the router's own `Caller`, through any `MemoryLink`.
 //!

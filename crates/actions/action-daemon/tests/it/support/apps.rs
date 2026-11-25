@@ -1,6 +1,6 @@
 //! The other processes on the private bus: a mail app (action-fake's `FakeMail` behind
 //! `action_provider::serve_on`, so the app side of `IntentProvider1` is the real one) and the shell's
-//! `Confirm1` with scripted answers. Shared by intentd's tests and `bardo-do`'s end-to-end test.
+//! `Confirm1` with scripted answers. Shared by actiond's tests and `bardo-do`'s end-to-end test.
 #![allow(
     dead_code,
     reason = "helpers shared by the test files; each file uses some of them"
@@ -11,7 +11,7 @@ use action_core::{
     AppRefusal, ConfirmAnswer, ConfirmEnd, ConfirmRequest, ContextSnapshot, Here, Hit, Invocation,
     Outcome, Preview, Selection, SuggestAsk, TextTarget, UndoFault, Visible, WindowPrivacy,
 };
-use action_daemon::IntentdConfig;
+use action_daemon::ActiondConfig;
 use action_dbus::BusConnection;
 use action_dbus::callers::Identity;
 use action_fake::{FakeMail, MailThread};
@@ -61,7 +61,7 @@ pub fn held_by(roles: &BTreeSet<CallerRole>) -> Role {
 pub fn introduce(
     who: &Identity,
     connection: &action_dbus::BusConnection,
-    config: &IntentdConfig,
+    config: &ActiondConfig,
     names: &[&str],
 ) {
     let listed = names.iter().find(|n| {
@@ -141,24 +141,24 @@ impl SummonTarget for Blank {
     }
 }
 
-/// Who a provider on `connection` answers: the process told to be intentd (`intentd`, a connection
-/// of the same process as everything in a test), by the table that names intentd's unit alone. The
+/// Who a provider on `connection` answers: the process told to be actiond (`actiond`, a connection
+/// of the same process as everything in a test), by the table that names actiond's unit alone. The
 /// fake proc root under `dir` names nobody else.
-pub fn answering_intentd(
+pub fn answering_actiond(
     connection: &BusConnection,
-    intentd: &BusConnection,
+    actiond: &BusConnection,
     dir: &std::path::Path,
 ) -> Arc<Identity> {
     let who = Arc::new(Identity::on_fixture(
         connection.clone(),
-        action_dbus::callers::intentd_only(),
+        action_dbus::callers::actiond_only(),
         dir.join("proc"),
     ));
-    who.introduce_app(intentd, "org.bardo.Intents", Role::Agent);
+    who.introduce_app(actiond, "org.bardo.Intents", Role::Agent);
     who
 }
 
-/// Starts the mail app on `connection` with the fixture's two threads, answering `who`'s intentd.
+/// Starts the mail app on `connection` with the fixture's two threads, answering `who`'s actiond.
 pub async fn serve_mail(connection: &BusConnection, who: Arc<Identity>) -> SharedMail {
     let manifest = action_fake::mail_manifest().expect("the fixture manifest");
     let mail = FakeMail::new(manifest, SpaceId::parse("work").expect("space"));

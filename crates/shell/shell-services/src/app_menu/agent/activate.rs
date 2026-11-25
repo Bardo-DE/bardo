@@ -198,7 +198,7 @@ impl<T: Transport> MenuAgent<T> {
             .intents
             .manifests()
             .await
-            .map_err(|why| MenuFault::failed("intentd could not be asked", why))?;
+            .map_err(|why| MenuFault::failed("actiond could not be asked", why))?;
         let actions: BTreeMap<ActionRef, _> = manifests
             .iter()
             .flat_map(|valid| {

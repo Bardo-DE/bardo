@@ -3,7 +3,7 @@
 //! [`serve::take`] claims the names at the start (unless the environment leaves names alone) and
 //! the state says `Serving` (or why not). From there every thing that happens is an
 //! [`IntentsEvent`] fed to the pure `step`: a `Confirm` call (given its asker, remembered by
-//! serial), a `Cancel`, the person's answer (stamped with the wall clock), a question's expiry (a sleep of its own), intentd arriving or
+//! serial), a `Cancel`, the person's answer (stamped with the wall clock), a question's expiry (a sleep of its own), actiond arriving or
 //! leaving (the owner of `org.bardo.Intents1`: arriving reads the grants, leaving drops the
 //! questions nobody waits for), and the control's signals. What `step` asks of the outside is
 //! carried out here: the `Response` signal to the asker alone, the sleeps, the reads.
@@ -36,7 +36,7 @@ use crate::owner;
 use shell_model::intents::IntentsService;
 use shell_model::service::ServiceIo;
 
-/// How long after a "from the terminal" answer the grants are read again, so intentd has stored
+/// How long after a "from the terminal" answer the grants are read again, so actiond has stored
 /// the grant the answer made.
 const GRANT_SETTLE: Duration = Duration::from_millis(400);
 
@@ -114,7 +114,7 @@ pub(crate) async fn run(reach: Reach, links: IntentsLinks, io: ServiceIo<Intents
         askers: HashMap::new(),
         inner: inner_tx,
     };
-    live.watch_intentd();
+    live.watch_actiond();
     live.watch_signals();
     live.feed(IntentsEvent::Link(IntentsLink::Serving));
     live.reload();
@@ -285,7 +285,7 @@ impl Live {
         }
     }
 
-    /// intentd left: its questions have no one waiting; their request objects go with them.
+    /// actiond left: its questions have no one waiting; their request objects go with them.
     fn asker_gone(&mut self) {
         self.feed(IntentsEvent::Sheet(SheetEvent::AskerGone));
         let connection = self.connection.clone();
@@ -305,7 +305,7 @@ impl Live {
         });
     }
 
-    /// Withdraw `grant`: gone from the list now, read again once intentd has answered (a refusal
+    /// Withdraw `grant`: gone from the list now, read again once actiond has answered (a refusal
     /// brings it back).
     fn revoke(&mut self, grant: ActionRef) {
         self.feed(IntentsEvent::Terminal(TerminalEvent::Revoked(
@@ -320,7 +320,7 @@ impl Live {
         });
     }
 
-    /// Take away the limit `id`; the sheets drop their line once intentd has said it is gone.
+    /// Take away the limit `id`; the sheets drop their line once actiond has said it is gone.
     fn undo_limit(&self, id: StandingGrantId) {
         let (connection, inner) = (self.connection.clone(), self.inner.clone());
         tokio::spawn(async move {
@@ -336,9 +336,9 @@ impl Live {
         });
     }
 
-    /// Follow intentd on the bus: read the grants when it arrives, drop its questions when it
+    /// Follow actiond on the bus: read the grants when it arrives, drop its questions when it
     /// leaves. Costs nothing while it is absent (`NameOwnerChanged`, no timer).
-    fn watch_intentd(&self) {
+    fn watch_actiond(&self) {
         let (connection, inner) = (self.connection.clone(), self.inner.clone());
         tokio::spawn(async move {
             loop {

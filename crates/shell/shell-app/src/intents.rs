@@ -1,11 +1,11 @@
-//! The shell's own actions as `org.bardo.Shell`: what the daemon does when intentd calls its
+//! The shell's own actions as `org.bardo.Shell`: what the daemon does when actiond calls its
 //! `IntentProvider1.Perform`.
 //!
 //! The intents service reads the invocation into a `ShellAction` and hands the daemon a
 //! `ShellCall`; [`spawn_follower`] makes the request the matching `bardo-shell <verb>` would make
 //! ([`request_of`]), has the host thread answer it the way an IPC request is answered
 //! (`ShellMsg::Ipc`: one dispatch for the command line, the corners and the agents), and tells the
-//! service how it went. Nothing here decides who may ask: intentd's gate did, and the provider
+//! service how it went. Nothing here decides who may ask: actiond's gate did, and the provider
 //! answers nobody else.
 
 use std::sync::mpsc;

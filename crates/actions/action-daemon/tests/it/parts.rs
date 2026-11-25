@@ -1,4 +1,4 @@
-//! intentd's parts without a bus: the configuration, the built-in manifests, the record kinds,
+//! actiond's parts without a bus: the configuration, the built-in manifests, the record kinds,
 //! the queue, the memory seam and the clock.
 
 use account_core::AppName;
@@ -18,7 +18,7 @@ fn fixture() -> String {
 
 #[test]
 fn the_fixture_parses_and_one_name_may_play_several_roles() {
-    let config = IntentdConfig::parse(&fixture()).expect("a configuration");
+    let config = ActiondConfig::parse(&fixture()).expect("a configuration");
     let shell = AppName::parse("org.bardo.Shell").expect("app");
     let roles = config.roles_of(&shell);
     assert_eq!(
@@ -51,9 +51,9 @@ fn the_fixture_parses_and_one_name_may_play_several_roles() {
 #[test]
 fn a_second_opinion_of_the_same_family_does_not_load() {
     let same = fixture().replace("family = \"other\"", "family = \"holo\"");
-    assert_eq!(IntentdConfig::parse(&same), Err(ConfigError::SameFamily));
+    assert_eq!(ActiondConfig::parse(&same), Err(ConfigError::SameFamily));
     assert!(matches!(
-        IntentdConfig::parse("roles = 3"),
+        ActiondConfig::parse("roles = 3"),
         Err(ConfigError::Toml(_))
     ));
 }
@@ -173,7 +173,7 @@ fn the_binary_with_no_bus_to_serve_on_says_so_and_exits_one() {
         .output()
         .expect("runs");
     assert_eq!(output.status.code(), Some(1));
-    assert!(String::from_utf8_lossy(&output.stderr).starts_with("intentd: "));
+    assert!(String::from_utf8_lossy(&output.stderr).starts_with("actiond: "));
 }
 
 #[test]
@@ -253,7 +253,7 @@ fn every_unit_carries_the_sandbox_lines_and_every_activation_file_names_a_unit()
 }
 
 #[test]
-fn intentds_unit_ends_with_the_graphical_session_and_makes_the_directory_it_may_write() {
+fn actionds_unit_ends_with_the_graphical_session_and_makes_the_directory_it_may_write() {
     let dist = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../dist");
     let text = std::fs::read_to_string(dist.join("bardo-actiond.service")).expect("unit");
     let has = |line: &str| text.lines().any(|l| l == line);

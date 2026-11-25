@@ -41,7 +41,7 @@ pub fn ship_search_files<S: Seams>(router: &Router<S>, data_dirs: &[PathBuf]) {
             }
             match read(&file) {
                 Ok(entries) => router.ship_index(&app, entries.into_entries()),
-                Err(why) => eprintln!("intentd: search file {} skipped: {why}", file.display()),
+                Err(why) => eprintln!("actiond: search file {} skipped: {why}", file.display()),
             }
         }
     }

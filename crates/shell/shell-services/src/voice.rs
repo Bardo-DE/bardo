@@ -27,7 +27,7 @@ use tokio::sync::mpsc;
 /// the question.
 #[derive(Debug, Clone)]
 pub struct VoiceLinks {
-    /// The shell's connection at intentd.
+    /// The shell's connection at actiond.
     pub seat: SeatView,
     /// Where the transcript goes as a spoken ask.
     pub companion: Control<CompanionCommand>,

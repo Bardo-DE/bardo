@@ -33,7 +33,7 @@ Ids match the references in SPEC.md.
 | S5 | Budgets and eval gates | the session budgets (actions §3.7), computer-use run budgets (computer use §7), reviewer timeouts (300/3000/3000 ms), per-corpus FNR release targets; settings, or fixed by you | settings with the proposed defaults; FNR targets set by you, only you may raise them |
 | S6 | Actions you pick yourself in the launcher | skip policy (the app's own alerts apply) or go through it | skip |
 | S7 | External MCP clients | expose actions in v1 (off by default) or not at all | off by default, present |
-| S8 | Shadow index of third-party titles (mail subjects in intentd) | allow, per-app opt-out, encrypted at rest when | allow, per-app opt-out, encrypted with the Space key in fill 2 |
+| S8 | Shadow index of third-party titles (mail subjects in actiond) | allow, per-app opt-out, encrypted at rest when | allow, per-app opt-out, encrypted with the Space key in fill 2 |
 | S9 | Browser computer use grants | Once/per-session only, or "Always" allowed | Once/per-session only |
 | S10 | CJK/Unicode typing by computer use on stock | allow the virtual-keyboard keymap trick (it targets your focus) or only the fork's agent text input | fork only; stock types ASCII via EI |
 | S11 | Screenshots of computer-use runs | off, no thumbnails | off |

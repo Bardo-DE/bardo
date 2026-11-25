@@ -1,6 +1,6 @@
 //! The launcher's side of the run, over the bus: what the shell and the launcher do for the person.
 //!
-//! Open a conversation, record the turn with intentd, hand it to companiond, and watch the answer
+//! Open a conversation, record the turn with actiond, hand it to companiond, and watch the answer
 //! object until it is done. Every step is a call or a signal on the private bus.
 
 use crate::world::{GIVE_UP, World, within};
@@ -28,13 +28,13 @@ pub fn keep_nothing() -> ContextKeep {
     }
 }
 
-/// The shell's calls into intentd and companiond.
+/// The shell's calls into actiond and companiond.
 ///
 /// The connection owns `org.bardo.Shell`, which `actiond.toml` gives the launcher, confirm and
 /// control roles and `companiond.toml` the right to speak for the person.
 #[derive(Debug)]
 pub struct Launcher {
-    /// intentd, as the launcher.
+    /// actiond, as the launcher.
     pub intents: Intents<DbusTransport>,
     connection: zbus::Connection,
     companion: CompanionProxy<'static>,
@@ -104,12 +104,12 @@ impl Launcher {
         serde_json::from_str(&text).expect("SessionOpened")
     }
 
-    /// The person says `text`: intentd records the turn, companiond is asked. Returns the answer
+    /// The person says `text`: actiond records the turn, companiond is asked. Returns the answer
     /// being watched, subscribed before the loop can say anything.
     ///
     /// # Panics
     ///
-    /// Panics when a call to intentd or companiond fails.
+    /// Panics when a call to actiond or companiond fails.
     pub async fn say(&self, opened: &SessionOpened, text: &str) -> Answer {
         let id = Box::pin(within(
             "Session.Turn to answer",
@@ -267,7 +267,7 @@ impl Answer {
 /// identity is this test process, placed in the fake proc root as the shell).
 ///
 /// The recent entries, polled until every kind in `kinds` is among them (the audit kinds of
-/// `intentd`'s `record.rs`). intentd drains its audit queue into memoryd on a timer, so there is no
+/// `actiond`'s `record.rs`). actiond drains its audit queue into memoryd on a timer, so there is no
 /// event to wait on; the bound only turns a missing record into a failure.
 ///
 /// # Panics

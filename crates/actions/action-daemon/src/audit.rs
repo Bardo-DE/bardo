@@ -45,24 +45,24 @@ impl<T: Transport> AuditLog<T> {
         let report = self.state.flush(&self.memory, sink, place).await;
         match report.link {
             (Link::Up, Link::Down) => eprintln!(
-                "intentd: memoryd is not answering: {} audit records wait for it",
+                "actiond: memoryd is not answering: {} audit records wait for it",
                 report.queued
             ),
             (Link::Down, Link::Up) => eprintln!(
-                "intentd: memoryd answers again: {} audit records written",
+                "actiond: memoryd answers again: {} audit records written",
                 report.flushed.written
             ),
             (Link::Up, Link::Up) | (Link::Down, Link::Down) => {}
         }
         if report.overflow > 0 {
             eprintln!(
-                "intentd: {} audit records were dropped (the queue was full)",
+                "actiond: {} audit records were dropped (the queue was full)",
                 report.overflow
             );
         }
         for (space, why) in &report.refused {
             eprintln!(
-                "intentd: memoryd refused the audit records of Space {space} ({why}); they are dropped and counted in Control.State"
+                "actiond: memoryd refused the audit records of Space {space} ({why}); they are dropped and counted in Control.State"
             );
         }
         report.flushed

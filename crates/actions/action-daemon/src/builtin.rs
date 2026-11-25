@@ -1,4 +1,4 @@
-//! The providers intentd hosts itself: `org.bardo.Memory` (the planner reaches memory only
+//! The providers actiond hosts itself: `org.bardo.Memory` (the planner reaches memory only
 //! through these router actions, so the router can label what it delivers) and
 //! `org.bardo.Companion` (starting a worker task, messaging one), and `org.bardo.Checkpoints`.
 //! `HostedLink` is the router's `AppLink` with those answered in process and every other app over
@@ -188,7 +188,7 @@ impl<T: MemoryTransport> AppLink for HostedLink<T> {
     }
 
     async fn running(&self, app: &AppName) -> bool {
-        // Hosted in intentd itself, so running whenever the router is.
+        // Hosted in actiond itself, so running whenever the router is.
         self.builtins.serves(app) || self.apps.running(app).await
     }
 

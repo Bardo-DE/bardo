@@ -38,7 +38,7 @@ pub(crate) fn follow_settings(
         },
         services.notifications.control.clone(),
     );
-    // The lock and the polkit agent are bardo-shell's own; the seat at intentd (the confirmation sheet,
+    // The lock and the polkit agent are bardo-shell's own; the seat at actiond (the confirmation sheet,
     // the terminal's grants, `org.bardo.Shell`), the accounts sheet and the outputs' and
     // workspaces' names claim themselves at start (`Env::claims`).
     let _ = services.locker.control.send(LockerCommand::Configure);

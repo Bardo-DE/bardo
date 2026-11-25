@@ -1,4 +1,4 @@
-//! The built-in providers through a whole intentd on a private bus: `org.bardo.Memory` over a
+//! The built-in providers through a whole actiond on a private bus: `org.bardo.Memory` over a
 //! fake memoryd and `org.bardo.Companion` over the router itself. A companion calls them like
 //! any app, the manifests are listed, and what they do reaches memoryd as audit records.
 
@@ -9,7 +9,7 @@ use account_core::AppName;
 use account_core::consent::{Decision, Grant, Usage};
 use action_client::{DbusTransport, Intents};
 use action_core::*;
-use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
+use action_daemon::{Cadence, FileGrants, ActiondConfig, Setup, start};
 use action_dbus::callers::Identity;
 use action_manifest::AgentReach;
 use action_router::GrantStore;
@@ -34,8 +34,8 @@ fn app(name: &str) -> AppName {
     AppName::parse(name).expect("app")
 }
 
-fn config() -> IntentdConfig {
-    IntentdConfig {
+fn config() -> ActiondConfig {
+    ActiondConfig {
         roles: BTreeMap::from([
             (CallerRole::Companion, vec![app(COMPANIOND)]),
             (CallerRole::Confirm, vec![app(SHELL)]),
@@ -52,7 +52,7 @@ struct Desk {
     shell: FakeShell,
     companion: Intents<DbusTransport>,
     _connections: Vec<action_dbus::BusConnection>,
-    _intentd: action_daemon::Running,
+    _actiond: action_daemon::Running,
 }
 
 fn mail_hit() -> RecallHit {
@@ -77,7 +77,7 @@ impl Desk {
         Desk::start_with(memoryd, |_| {}).await
     }
 
-    /// A desk whose data directory (`$XDG_DATA_HOME`) `prefill` fills before intentd starts.
+    /// A desk whose data directory (`$XDG_DATA_HOME`) `prefill` fills before actiond starts.
     async fn start_with(memoryd: Arc<FakeMemoryd>, prefill: impl FnOnce(&std::path::Path)) -> Desk {
         let dir = tempfile::tempdir().expect("scratch");
         prefill(&dir.path().join("data"));
@@ -131,9 +131,9 @@ impl Desk {
             every: Duration::from_millis(30),
             rescan_every: 2,
         };
-        let intentd = start(&daemon_connection, None, setup)
+        let actiond = start(&daemon_connection, None, setup)
             .await
-            .expect("intentd");
+            .expect("actiond");
         let shell_connection = bus.connect().await;
         let shell = FakeShell::start(&shell_connection, &["org.bardo.Confirm1", SHELL]).await;
         introduce(
@@ -161,7 +161,7 @@ impl Desk {
                 companion_connection,
                 shell_connection,
             ],
-            _intentd: intentd,
+            _actiond: actiond,
         }
     }
 
@@ -266,7 +266,7 @@ async fn a_companion_recalls_through_memory_and_what_it_gets_carries_the_hits_la
         .expect("the call ran");
 
     let asked = memoryd.seen();
-    // intentd lists the stored sessions at start, so the search is not the first request.
+    // actiond lists the stored sessions at start, so the search is not the first request.
     let Some(query) = asked.iter().find_map(|r| match r {
         MemoryRequest::Search(q) => Some(q),
         _ => None,

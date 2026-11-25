@@ -53,7 +53,7 @@ anyview-platform = { path = ".", default-features = false, features = ["testing"
 base-testkit = {path = "../../../base/base-testkit", features = ["dbus"]}
 tempfile = { workspace = true }
 
-# The agent tests stand in for intentd with a fixture /proc, which action-dbus reads only with
+# The agent tests stand in for actiond with a fixture /proc, which action-dbus reads only with
 # `fixture-callers`: a test build's feature, never a shipped one (check-boundary.sh).
 [target.'cfg(target_os = "linux")'.dev-dependencies]
 action-dbus = {features = ["fixture-callers"], path = "../../../actions/action-dbus"}

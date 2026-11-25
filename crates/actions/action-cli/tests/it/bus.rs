@@ -2,8 +2,8 @@
 //! in a scratch directory, a scratch HOME and runtime directory, and nothing from the
 //! environment. The person's real session bus is never named, so it is never reached.
 //!
-//! Where intentd is not on the bus the binary exits 6 and sends nothing (this file). With an
-//! intentd on it, `e2e.rs` runs the same binary against intentd's real `start`; every exit code
+//! Where actiond is not on the bus the binary exits 6 and sends nothing (this file). With an
+//! actiond on it, `e2e.rs` runs the same binary against actiond's real `start`; every exit code
 //! is also tested through the library against action-fake (`exit_codes.rs`).
 
 use base_testkit::PrivateBus;
@@ -30,7 +30,7 @@ fn text(bytes: &[u8]) -> String {
 }
 
 #[test]
-fn where_intentd_is_not_the_exit_is_6_and_nothing_is_sent() {
+fn where_actiond_is_not_the_exit_is_6_and_nothing_is_sent() {
     let dir = tempfile::tempdir().expect("scratch dir");
     let bus = PrivateBus::start_eavesdropping(dir.path());
     assert!(bus.address().starts_with("unix:"), "{}", bus.address());

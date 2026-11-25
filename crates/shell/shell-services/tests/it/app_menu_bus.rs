@@ -313,15 +313,15 @@ async fn an_app_with_no_owner_has_no_menu_until_one_appears_and_none_after_it_le
     .await;
 }
 
-/// What the recording transport saw of intentd.
+/// What the recording transport saw of actiond.
 #[derive(Debug, Default)]
 struct Seen {
     performed: Vec<CallRequest>,
 }
 
-/// A stand-in for intentd: the notes app's manifest, and a record of every call performed.
+/// A stand-in for actiond: the notes app's manifest, and a record of every call performed.
 #[derive(Debug, Clone)]
-struct RecordingIntentd {
+struct RecordingActiond {
     seen: Arc<Mutex<Seen>>,
 }
 
@@ -367,7 +367,7 @@ fn manifests() -> Vec<ValidManifest> {
     vec![shell, validate(notes).unwrap_or_else(|e| panic!("{e:?}"))]
 }
 
-impl Transport for RecordingIntentd {
+impl Transport for RecordingActiond {
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "`Transport::call` is async; the recorder answers at once"
@@ -408,11 +408,11 @@ fn window(key: u64, app_id: &str) -> Toplevel {
     }
 }
 
-/// An agent on `bus` whose windows are `apps` (the first focused), whose intentd records, and
+/// An agent on `bus` whose windows are `apps` (the first focused), whose actiond records, and
 /// whose `/proc` says the process `pid` was launched as `launched_as` (nobody, when `None`).
 struct Agent {
-    menu: MenuAgent<RecordingIntentd>,
-    intentd: RecordingIntentd,
+    menu: MenuAgent<RecordingActiond>,
+    actiond: RecordingActiond,
     wl: tokio::sync::mpsc::UnboundedReceiver<WlCommand>,
     _windows: watch::Sender<WindowModel>,
 }
@@ -466,19 +466,19 @@ async fn agent_reporting(
         wl,
         name_of,
     };
-    let intentd = RecordingIntentd {
+    let actiond = RecordingActiond {
         seen: Arc::default(),
     };
     let agent = MenuAgent::with_intents(
         Connection::clone(&connection),
         links,
         proc_root,
-        Intents::over(intentd.clone()),
+        Intents::over(actiond.clone()),
         callers.peers_on(connection.clone()),
     );
     Agent {
         menu: agent,
-        intentd,
+        actiond,
         wl: wl_commands,
         _windows: windows_tx,
     }
@@ -486,7 +486,7 @@ async fn agent_reporting(
 
 impl Agent {
     fn performed(&self) -> Vec<CallRequest> {
-        self.intentd
+        self.actiond
             .seen
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
@@ -577,7 +577,7 @@ async fn an_unverified_apps_items_are_destructive_whatever_their_titles_or_comma
         (own.how, own.effect),
         (Activated::Clicked, Effect::Destructive)
     );
-    assert!(agent.performed().is_empty(), "nothing went through intentd");
+    assert!(agent.performed().is_empty(), "nothing went through actiond");
 
     // A submenu parent and an unknown key run nothing.
     assert_eq!(

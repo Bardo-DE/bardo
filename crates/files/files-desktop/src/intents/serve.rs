@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use account_core::AppName;
-use action_dbus::callers::{Identity, intentd_only};
+use action_dbus::callers::{Identity, actiond_only};
 use action_manifest::{Manifest, ValidManifest, validate};
 use action_provider::serve_on_with;
 use zbus::Connection;
@@ -22,7 +22,7 @@ pub(super) fn load_manifest() -> Result<ValidManifest, IntentError> {
 
 /// Offers Files' actions on `connection`, answered by `window`.
 ///
-/// The connection keeps serving for as long as it lives. Only intentd is answered, known by its
+/// The connection keeps serving for as long as it lives. Only actiond is answered, known by its
 /// unit (`bardo-actiond.service`) as `/proc` reports it. `connection` is the one that owns
 /// `org.bardo.Files`.
 ///
@@ -30,12 +30,12 @@ pub(super) fn load_manifest() -> Result<ValidManifest, IntentError> {
 ///
 /// `IntentError` when the actions cannot be put on `connection`.
 pub async fn offer<W: Window>(connection: &Connection, window: Arc<W>) -> Result<(), IntentError> {
-    let callers = Identity::on_system(connection.clone(), intentd_only());
+    let callers = Identity::on_system(connection.clone(), actiond_only());
     serve(connection, window, callers).await
 }
 
 /// [`offer`] on a test's private bus, where every connection is one process and no unit names
-/// intentd: `router` stands in for it.
+/// actiond: `router` stands in for it.
 ///
 /// # Errors
 ///
@@ -47,7 +47,7 @@ pub async fn offer_for_router<W: Window>(
     router: &Connection,
 ) -> Result<(), IntentError> {
     use caller_role_types::CallerRole;
-    let callers = Identity::on_system(connection.clone(), intentd_only());
+    let callers = Identity::on_system(connection.clone(), actiond_only());
     callers.introduce_app(router, "org.bardo.Intents", CallerRole::Agent);
     serve(connection, window, callers).await
 }

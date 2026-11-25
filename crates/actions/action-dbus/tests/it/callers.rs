@@ -3,7 +3,7 @@
 //! process that is not the unit's main process, and a process nothing names.
 
 use account_callers::{CallerTable, ProcCallers};
-use action_dbus::callers::{INTENTD, SHELL, Standing, config_home, load_callers, table_from_toml};
+use action_dbus::callers::{ACTIOND, SHELL, Standing, config_home, load_callers, table_from_toml};
 use std::path::Path;
 
 const SYSTEM: &str = r#"
@@ -69,11 +69,11 @@ fn a_standing_is_held_by_the_unit_and_by_nothing_that_only_claims_it() {
         ("a terminal's child", 7, false, false),
         ("no such process", 99, false, false),
     ] {
-        assert_eq!(holds(root, pid, &table, INTENTD), router, "{what}: router");
+        assert_eq!(holds(root, pid, &table, ACTIOND), router, "{what}: router");
         assert_eq!(holds(root, pid, &table, SHELL), shell, "{what}: shell");
     }
     assert!(
-        !holds(root, 1, &CallerTable::default(), INTENTD),
+        !holds(root, 1, &CallerTable::default(), ACTIOND),
         "an empty table names nobody"
     );
 }
@@ -98,7 +98,7 @@ fn the_users_file_cannot_give_a_fixed_role_and_can_lower_one() {
         "the user's sheet_host row is left out"
     );
     assert!(
-        !holds(root.path(), 2, &table, INTENTD),
+        !holds(root.path(), 2, &table, ACTIOND),
         "the user's row lowered the router's unit"
     );
 }

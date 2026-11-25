@@ -332,8 +332,8 @@ The shell layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/ke
 
 ## The confirmation sheet and `bardo-do` on a real shell (the compositor) login
 
-Needs the actions service's `intentd` running (`systemctl --user start intentd` from the actions service's `dist/`) and
-`bardo-do` on the PATH; `dist/install.sh` has put `org.bardo.Shell.toml` where intentd reads it.
+Needs the actions service's `actiond` running (`systemctl --user start actiond` from the actions service's `dist/`) and
+`bardo-do` on the PATH; `dist/install.sh` has put `org.bardo.Shell.toml` where actiond reads it.
 `dev/accept/confirm.sh` runs the whole chain on a private headless KWin; these are the parts that
 need a person, a real compositor or real eyes.
 
@@ -355,14 +355,14 @@ need a person, a real compositor or real eyes.
   the foot of the control center listing the action with Revoke. Revoke it: the row goes and the
   next `bardo-do` call asks again. (The module is absent while nothing is granted.)
 - [ ] **A paused terminal**: three refused calls in a row (`bardo-do memory forget memory.fact:x`,
-  exit 3) pause it; the next call exits 7. Intentd does not yet announce the pause
+  exit 3) pause it; the next call exits 7. Actiond does not yet announce the pause
   (`BreakerTripped` is declared and not emitted), so the Terminal module shows nothing until a grant
   exists; `bardo-shell intents resume` is the way back today.
 - [ ] **The keyboard still reaches the window behind**: after answering, typing reaches the
   terminal again (the sheet's `Exclusive` keyboard is released when it leaves).
 - [ ] **Phase A is forgeable**: a key typed by uinput answers the sheet. Known; Phase B closes it.
 
-## The assistant (a shell session with intentd, companiond, the computer-use daemon and memoryd installed)
+## The assistant (a shell session with actiond, companiond, the computer-use daemon and memoryd installed)
 
 The service, the machines and the launcher's mode are tested on stand-ins and fakes; these need
 the real daemons or a real keyboard.
@@ -408,7 +408,7 @@ the real daemons or a real keyboard.
   reads as plain.
 - [ ] **temor** (profile `keymap-aware`): Cmd+H reaches temor as Super+H (hide), not Ctrl+H.
 - [ ] **Assistant answer text**: a handle that holds mail or web text shows between curly quotes; one
-  the person typed shows plain; against an older intentd every handle is quoted.
+  the person typed shows plain; against an older actiond every handle is quoted.
 - [ ] **Screen-sharing picker**: from an app that shares (a browser's "share screen"), the sheet
   appears centred on the main display with Screens and Windows when both are allowed; arrows move,
   Space picks, Return shares, Escape cancels; Share stays dim until something is picked; a second

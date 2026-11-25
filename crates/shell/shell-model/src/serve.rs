@@ -1,7 +1,7 @@
 //! Serving a well-known bus name: whether the shell holds it, and why not.
 //!
 //! One vocabulary for every service that claims a name (the work areas, the workspaces, the
-//! accounts sheet, the seat at intentd), so none of them spells "not told yet / serving / could
+//! accounts sheet, the seat at actiond), so none of them spells "not told yet / serving / could
 //! not" its own way.
 
 /// Why a bus name is not served.

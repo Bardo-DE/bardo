@@ -9,7 +9,7 @@ use action_core::{ConfirmAnswer, ConfirmEnd};
 use action_fake::Answering;
 use action_wire::{IntentsReply, IntentsRequest};
 
-/// The intentd that is not there.
+/// The actiond that is not there.
 struct Down;
 
 impl Transport for Down {
@@ -245,7 +245,7 @@ async fn an_app_that_is_not_installed_is_exit_6_not_5() {
 }
 
 #[tokio::test]
-async fn intentd_being_down_is_exit_6_for_every_command() {
+async fn actiond_being_down_is_exit_6_for_every_command() {
     let intents = Intents::over(Down);
     for words in [
         vec!["apps"],
@@ -266,7 +266,7 @@ async fn intentd_being_down_is_exit_6_for_every_command() {
         .await;
         println!(
             "{:<46} {:>4}  {}",
-            format!("{words:?} with intentd down"),
+            format!("{words:?} with actiond down"),
             report.exit.code(),
             report.exit.word()
         );

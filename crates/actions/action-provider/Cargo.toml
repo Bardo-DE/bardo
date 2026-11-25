@@ -23,7 +23,7 @@ zbus = {workspace = true, features = ["tokio"], optional = true}
 dbus-kit = { path = "../../bus/dbus-kit", optional = true }
 
 [features]
-# `serve` and `serve_on`: the provider on the session bus (Linux, the desktop's intentd calls it).
+# `serve` and `serve_on`: the provider on the session bus (Linux, the desktop's actiond calls it).
 dbus = ["dep:action-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus", "dep:dbus-kit"]
 
 [lints]

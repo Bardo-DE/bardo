@@ -3,7 +3,7 @@
 //!
 //! The queue is bounded. While memoryd is away the daemon puts what it could not write back
 //! (`restore`), and when the queue is full the oldest record is dropped and counted (`dropped`),
-//! so a desktop that never has a memoryd cannot grow intentd without end.
+//! so a desktop that never has a memoryd cannot grow actiond without end.
 
 use action_core::{AuditRecord, EventSink};
 use std::collections::VecDeque;

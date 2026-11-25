@@ -2,7 +2,7 @@
 //! a review stage, the planner, or the reader.
 //!
 //! A tap line says who asked and what; this reads the rest from the words, because the reviewer's
-//! and the writer's instructions are fixed text (`action-review`'s render, `intentd`'s writer).
+//! and the writer's instructions are fixed text (`action-review`'s render, `actiond`'s writer).
 
 use action_core::ModelExchange;
 use permission_core::Stage;

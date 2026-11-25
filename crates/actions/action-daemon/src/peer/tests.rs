@@ -3,8 +3,8 @@ use crate::callers;
 use account_callers::ProcCallers;
 use action_dbus::callers::CallerTable;
 
-fn config() -> IntentdConfig {
-    IntentdConfig::shipped().expect("the shipped configuration")
+fn config() -> ActiondConfig {
+    ActiondConfig::shipped().expect("the shipped configuration")
 }
 
 fn held(app: &str, role: Role) -> Found {

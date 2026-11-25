@@ -112,7 +112,7 @@ async fn serve_on(
     let connection = dbus_kit::connect::session_from_env(env)
         .await
         .map_err(bus)?;
-    // The sheets intentd hands this process for an editor's session wait on the desk the host
+    // The sheets actiond hands this process for an editor's session wait on the desk the host
     // shows the editor. Served before the name is claimed, so the first sheet finds it.
     let desk = EditorDesk::new();
     let table = match &seams.system_callers {

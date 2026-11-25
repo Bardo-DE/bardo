@@ -106,7 +106,7 @@ account-capability = {path = "../../accounts/account-capability"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
 # A caller that is only a claim (`BusPeers::introduce`): the tests name who their stand-ins are.
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
-# intentd is named from a fixture tree (`<root>/<pid>/cgroup`) in the private-bus tests.
+# actiond is named from a fixture tree (`<root>/<pid>/cgroup`) in the private-bus tests.
 action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"]}
 shell-testkit = {path = "../shell-testkit"}
 action-router = {path = "../../actions/action-router"}

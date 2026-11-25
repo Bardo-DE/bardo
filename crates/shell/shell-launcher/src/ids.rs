@@ -25,7 +25,7 @@ pub enum ProviderKind {
     Emoji,
     /// "Search the web for …": the fallback row.
     Web,
-    /// Things apps index (mail, contacts, events), found through intentd's shadow index.
+    /// Things apps index (mail, contacts, events), found through actiond's shadow index.
     Things,
     /// The companion: the Ask row, the live answer and recent activity.
     Companion,

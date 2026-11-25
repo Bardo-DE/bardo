@@ -85,11 +85,11 @@ mod tests {
             ("real", Value::Real(1.5)),
             ("nan", Value::Real(f64::NAN)),
         ];
-        let body = request("intentd", &[sample(None, fields)]);
+        let body = request("actiond", &[sample(None, fields)]);
         let want = json!({
             "resourceSpans": [{
                 "resource": { "attributes": [
-                    { "key": "service.name", "value": { "stringValue": "intentd" } }
+                    { "key": "service.name", "value": { "stringValue": "actiond" } }
                 ] },
                 "scopeSpans": [{
                     "scope": { "name": "action-log", "version": env!("CARGO_PKG_VERSION") },

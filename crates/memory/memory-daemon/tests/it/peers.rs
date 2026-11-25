@@ -283,7 +283,7 @@ fn proc_with_me_in(leaf: &str) -> tempfile::TempDir {
 #[tokio::test]
 async fn a_connection_is_resolved_through_its_process_to_its_cgroup() {
     let table = table_from_toml(TABLE).expect("table");
-    // This test binary is intentd: its search is allowed.
+    // This test binary is actiond: its search is allowed.
     let proc = proc_with_me_in("bardo-actiond.service");
     let (_scratch, _bus, _daemon, address) = world(table.clone(), proc.path()).await;
     let router = Memory::over(DbusTransport::new(connect(&address).await));

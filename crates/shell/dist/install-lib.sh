@@ -33,7 +33,7 @@ DDC_MODULES_DEST=/etc/modules-load.d/bardo-shell-ddc.conf
 set_dests() {
   BIN_DEST="$PREFIX/bin/bardo-shell"
   PAM_DEST=/etc/pam.d/bardo-shell
-  # What the shell can be asked to do (`org.bardo.Shell`): intentd reads every manifest under
+  # What the shell can be asked to do (`org.bardo.Shell`): actiond reads every manifest under
   # $XDG_DATA_DIRS/bardo/intents/, and /usr/local/share is in the default XDG_DATA_DIRS.
   INTENTS_DEST="$PREFIX/share/bardo/intents/org.bardo.Shell.toml"
   # The skills bardo-shell teaches the companion (dist/skills/<id>/): the actions service's loader reads every directory

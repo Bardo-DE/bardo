@@ -142,7 +142,7 @@ impl<A: Accounts + 'static> Live<A> {
                 )
                 .await?;
         }
-        // The pseudo-app's provider answers the same process `Confirm1` does: intentd's unit.
+        // The pseudo-app's provider answers the same process `Confirm1` does: actiond's unit.
         serve_on_with(
             &bus,
             PerformerProvider::new(manifest, performer.clone()),

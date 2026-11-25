@@ -10,7 +10,7 @@ use memory_core::{AppId, AppName, Isolation};
 /// Of the roles, four stand for the fixed callers of memoryd, and every other is a plain app for
 /// its own things:
 ///
-/// - `Agent`: the actions service's intentd, the router;
+/// - `Agent`: the actions service's actiond, the router;
 /// - `ComputerUse`: the computer-use daemon, for its run records;
 /// - `SheetHost`: the shell's own UI (the shell), the person;
 /// - `Settings`: the System Settings app (the Settings app), the person, saving a setting. Not an app with
@@ -19,7 +19,7 @@ use memory_core::{AppId, AppName, Isolation};
 /// A library user picks the caller when it builds its transport (`memory-client`'s `InProcess`).
 ///
 /// The companion has no role of its own here: it reads and proposes through the action router
-/// (`org.bardo.Memory` is a built-in provider of intentd), which calls as the router acting for
+/// (`org.bardo.Memory` is a built-in provider of actiond), which calls as the router acting for
 /// `Actor::Companion` with the Space taken from the invocation.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Caller {
@@ -48,7 +48,7 @@ impl Caller {
         Self::new(CallerRole::App, app)
     }
 
-    /// The action router (intentd).
+    /// The action router (actiond).
     #[must_use]
     pub fn router() -> Self {
         Self::fixed(CallerRole::Agent, "org.bardo.Intents")

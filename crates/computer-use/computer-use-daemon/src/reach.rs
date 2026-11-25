@@ -1,8 +1,8 @@
 //! `org.bardo.IntentReach1` on the provider's object: whether `computeruse.run.start` is on now.
 //!
 //! The installed manifest (`manifests/org.bardo.ComputerUse.toml`) declares the action `hidden`, as it is
-//! while `computer_use.enabled = off`; intentd only knows installed files, so the computer-use daemon says the live value
-//! here and intentd lays it over the manifest. The computer-use daemon reloads the person's settings file while it
+//! while `computer_use.enabled = off`; actiond only knows installed files, so the computer-use daemon says the live value
+//! here and actiond lays it over the manifest. The computer-use daemon reloads the person's settings file while it
 //! runs ([`follow_settings`]), so a change of `computer_use.enabled` is announced with `ReachChanged`.
 //!
 //! This mirrors action-dbus's `IntentReach1` (name, `Reach() -> s`, signal `ReachChanged`)

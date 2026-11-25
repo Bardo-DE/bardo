@@ -1,4 +1,4 @@
-//! The install path puts the intents manifest where intentd reads it, beside the D-Bus service
+//! The install path puts the intents manifest where actiond reads it, beside the D-Bus service
 //! file that starts the app. Staged under a scratch `DESTDIR`; nothing reaches the real system.
 
 use settings_app_testkit::Scratch;
@@ -32,7 +32,7 @@ fn install_under(scratch: &Scratch, prefix: &str) -> PathBuf {
 }
 
 #[test]
-fn the_manifest_is_installed_where_intentd_reads_it() {
+fn the_manifest_is_installed_where_actiond_reads_it() {
     let scratch = Scratch::under(TMP, "install-manifest");
     let usr = install_into(&scratch);
     let installed = usr.join("share/bardo/intents/org.bardo.Settings.toml");
@@ -56,7 +56,7 @@ fn the_manifest_is_installed_where_intentd_reads_it() {
 const ROW_FIELDS: [&str; 5] = ["kind", "key", "title", "subtitle", "keywords"];
 
 #[test]
-fn the_search_entries_are_installed_where_intentd_reads_them() {
+fn the_search_entries_are_installed_where_actiond_reads_them() {
     let scratch = Scratch::under(TMP, "install-search");
     let usr = install_into(&scratch);
     let text =

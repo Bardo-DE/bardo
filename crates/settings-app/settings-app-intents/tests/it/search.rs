@@ -1,4 +1,4 @@
-//! The launcher finds Settings' pages and keys in intentd's index, from the file generated
+//! The launcher finds Settings' pages and keys in actiond's index, from the file generated
 //! from the catalogue; the provider itself answers no search and opens what a hit names.
 
 use crate::support::{World, entity};

@@ -13,21 +13,21 @@ use std::path::PathBuf;
 /// The variable that names the file the model tap appends to (prompts go to disk).
 pub const TRACE_VAR: &str = "BARDO_ACTIONS_MODEL_TRACE";
 
-/// The variable that moves the `/proc` intentd reads its callers from.
-pub const INTENTD_PROC_ROOT_VAR: &str = "BARDO_ACTIOND_PROC_ROOT";
+/// The variable that moves the `/proc` actiond reads its callers from.
+pub const ACTIOND_PROC_ROOT_VAR: &str = "BARDO_ACTIOND_PROC_ROOT";
 
 /// The variable that moves the `/proc` companiond reads its callers from.
 pub const COMPANIOND_PROC_ROOT_VAR: &str = "BARDO_COMPANIOND_PROC_ROOT";
 
-/// The variable that names the system's callers file intentd reads (`actiond-callers.toml`): the
+/// The variable that names the system's callers file actiond reads (`actiond-callers.toml`): the
 /// harness is its own system, and a fixed role (the shell's) comes from no file of the person's.
-pub const INTENTD_SYSTEM_CALLERS_VAR: &str = "BARDO_ACTIOND_SYSTEM_CALLERS";
+pub const ACTIOND_SYSTEM_CALLERS_VAR: &str = "BARDO_ACTIOND_SYSTEM_CALLERS";
 
-/// The variable that names the administrator's floor file intentd reads (`actions-floor.toml`).
-pub const INTENTD_FLOOR_VAR: &str = "BARDO_ACTIOND_FLOOR";
+/// The variable that names the administrator's floor file actiond reads (`actions-floor.toml`).
+pub const ACTIOND_FLOOR_VAR: &str = "BARDO_ACTIOND_FLOOR";
 
-/// The variable that names the administrator's policy folder intentd reads.
-pub const INTENTD_PERMISSIONS_VAR: &str = "BARDO_ACTIOND_ADMIN_PERMISSIONS";
+/// The variable that names the administrator's policy folder actiond reads.
+pub const ACTIOND_PERMISSIONS_VAR: &str = "BARDO_ACTIOND_ADMIN_PERMISSIONS";
 
 /// The variable that names the system's callers file companiond reads.
 pub const COMPANIOND_SYSTEM_CALLERS_VAR: &str = "BARDO_COMPANIOND_SYSTEM_CALLERS";

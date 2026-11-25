@@ -1,6 +1,6 @@
-//! The host's side of the `org.bardo.AcpAgent` pseudo-app on the bus: intentd calls
+//! The host's side of the `org.bardo.AcpAgent` pseudo-app on the bus: actiond calls
 //! `org.bardo.IntentProvider1` here after the router allowed an agent's call, and the performer
-//! does it. Only intentd may call a provider (`action-client` enforces it), so nothing reaches
+//! does it. Only actiond may call a provider (`action-client` enforces it), so nothing reaches
 //! the performer that the gate did not allow.
 
 use account_core::AppName;

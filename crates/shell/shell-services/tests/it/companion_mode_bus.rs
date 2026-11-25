@@ -1,7 +1,7 @@
 //! The conversation's mode over the bus: the box learns it from the session an ask opened,
 //! switches it with `Session.SetMode`, follows the router's `ModeChanged`, carries it on the next
 //! turn, and goes locked when the router refuses a switch. On a private bus, with stand-ins for
-//! companiond and intentd; every wait is on published state or on a stand-in's record.
+//! companiond and actiond; every wait is on published state or on a stand-in's record.
 
 use crate::companion_support;
 
@@ -19,7 +19,7 @@ struct Bench {
     desk: Desk,
     answer: Arc<Mutex<SwitchAnswer>>,
     _companiond: Connection,
-    _intentd: Connection,
+    _actiond: Connection,
 }
 
 async fn bench() -> Bench {
@@ -39,9 +39,9 @@ async fn bench() -> Bench {
     )
     .await;
     let answer = Arc::new(Mutex::new(SwitchAnswer::Done));
-    let intentd = desk.peer(INTENTS_BUS).await;
+    let actiond = desk.peer(INTENTS_BUS).await;
     serve(
-        &intentd,
+        &actiond,
         "/org/bardo/Intents1",
         StandInModeSession {
             log: desk.log.clone(),
@@ -54,7 +54,7 @@ async fn bench() -> Bench {
         desk,
         answer,
         _companiond: companiond,
-        _intentd: intentd,
+        _actiond: actiond,
     }
 }
 

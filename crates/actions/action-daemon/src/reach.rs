@@ -5,7 +5,7 @@
 //! laid over the manifest each time the manifests are loaded (`LiveReach::overlay`), so the
 //! registry, the manifests clients read and the planners' menus all see one reach. It is asked
 //! again when the app's name appears or vanishes and when any provider says `ReachChanged`; a
-//! stranger's signal only makes intentd ask again, never decides anything.
+//! stranger's signal only makes actiond ask again, never decides anything.
 
 use crate::builtin::is_builtin;
 use crate::link::owned_by_us;

@@ -640,7 +640,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   `/usr/lib/systemd/user`; the unit manager's judge (`caller-identity-dbus` `fragment`, `trust_of_path` over `symlink_metadata`) reads a link
   (mode 0777) as `Writable`, so the unit never proves `Full` (the unverified note of NEW-PI-1 is now settled the other way for a link:
   it reads writable). `release/build.sh` `plain_units` stages every unit that a `unit =` row of `dist/desktop-callers.toml` names
-  (the shell, the compositor, the portal, Settings, accountd, syncd, inferd, memoryd, intentd, companiond, the computer-use daemon) as a system file at
+  (the shell, the compositor, the portal, Settings, accountd, syncd, inferd, memoryd, actiond, companiond, the computer-use daemon) as a system file at
   `/usr/lib/systemd/user/X.service`, with its `sandbox.conf` drop-ins appended to its text (the same to systemd, and a drop-in that is
   a link would also read as writable), and the portal frontend's drop-in at `.../xdg-desktop-portal.service.d/10-bardo.conf`; it
   stops if a named unit is still staged where it would be exported. The paths are in `release/stage-owners.list` by exact name.

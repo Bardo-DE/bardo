@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The release eval: plays every corpus of eval/ through the router with the REAL policy writer and
-# the REAL reviewer cascade (intentd's and action-review's code) asking a real inferd, over
+# the REAL reviewer cascade (actiond's and action-review's code) asking a real inferd, over
 # action-fake's providers, and writes eval/reports/<label>.md. A dev script, not part of the gate.
 #
 #   scripts/eval-release.sh --engine scripted

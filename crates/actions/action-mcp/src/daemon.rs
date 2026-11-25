@@ -61,7 +61,7 @@ impl From<rmcp::service::ServerInitializeError> for DaemonError {
 
 /// Takes the `mcp` role's bus name.
 ///
-/// intentd derives a caller's roles from the names its connection owns, so this process is
+/// actiond derives a caller's roles from the names its connection owns, so this process is
 /// `Actor::Mcp` only while it holds it; a second edge finds it taken and stops (several clients
 /// share one edge through the socket).
 ///

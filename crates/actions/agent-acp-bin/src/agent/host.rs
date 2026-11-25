@@ -70,7 +70,7 @@ pub struct Wiring<A: Accounts + 'static> {
     pub terminal_fallback: bool,
     /// The desk those sheets land on, served as `Confirm1` by the caller when it is used.
     pub desk: EditorDesk,
-    /// Who is intentd on the bus: the only process that may ask or withdraw a sheet the host
+    /// Who is actiond on the bus: the only process that may ask or withdraw a sheet the host
     /// serves as `Confirm1`.
     pub callers: Arc<Identity>,
     /// The agents directory a registry agent was installed in: what an opening shows of the

@@ -63,7 +63,7 @@ pub struct Feeds {
     /// The polkit agent's request (none until a test feeds one), and what the prompt sends it.
     pub polkit: watch::Sender<shell_model::polkit_agent::Polkit>,
     pub polkit_commands: mpsc::UnboundedReceiver<shell_model::polkit_agent::PolkitCommand>,
-    /// intentd's seat: the confirmations waiting and the terminal's grants (none until a test feeds
+    /// actiond's seat: the confirmations waiting and the terminal's grants (none until a test feeds
     /// them), and what the sheet and the control center send it.
     pub accounts_sheet: watch::Sender<shell_model::accounts::sheet::AccountsSheets>,
     pub accounts_sheet_commands:

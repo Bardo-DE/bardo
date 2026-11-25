@@ -9,7 +9,7 @@ use super::model::{Breaker, ControlReach, Terminal};
 pub enum TerminalEvent {
     /// The grants were read.
     Loaded(Vec<ActionRef>),
-    /// intentd could not be read (not on the bus, or it refused).
+    /// actiond could not be read (not on the bus, or it refused).
     Unreachable,
     /// A grant was revoked.
     Revoked(ActionRef),

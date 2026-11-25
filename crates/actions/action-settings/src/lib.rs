@@ -3,7 +3,7 @@
 //! the daemons share. A bad value falls back per key and is reported; the file is never fatal.
 //! Everything here is a pure function of text (and of what a caller says about the records beside
 //! the agents); `action-settings-fs` finds and reads and writes the files, and the live watch is
-//! the daemon's (intentd).
+//! the daemon's (actiond).
 
 mod agents;
 mod keys;

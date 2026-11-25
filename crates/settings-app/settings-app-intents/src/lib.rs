@@ -8,7 +8,7 @@
 //! [`Outbox`](settings_app_model::Outbox) the binary hands in. The same bus name
 //! also serves `org.freedesktop.Application` at `/org/bardo/Settings` (the Desktop Entry
 //! spec's D-Bus activation), so a launcher can start Settings, raise it, or open an account. The launcher finds the pages and
-//! keys in intentd's index, from `search_entries`' file; the provider answers no search.
+//! keys in actiond's index, from `search_entries`' file; the provider answers no search.
 
 mod accounts;
 mod answer;

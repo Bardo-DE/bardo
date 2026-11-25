@@ -410,7 +410,7 @@ else
 fi
 
 # action-dbus reads callers from a fixture /proc only with `fixture-callers`, a test build's
-# feature: the shipped viewer must never turn it on, or a fake /proc could name intentd.
+# feature: the shipped viewer must never turn it on, or a fake /proc could name actiond.
 if cargo tree -p anyview -e features -i action-dbus 2>/dev/null | grep -q 'fixture-callers'; then
   echo "LEAK: the viewer builds action-dbus with fixture-callers"
   fail=1

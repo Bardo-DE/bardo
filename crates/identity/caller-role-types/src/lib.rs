@@ -31,7 +31,7 @@ pub enum CallerRole {
     /// key behind a permit. It also reads the person's computers from `org.bardo.Tailnet1`, as
     /// the accounts service daemons do. Given by the unit that is inferd, never by an app scope's name.
     AiBroker,
-    /// intentd, companiond, readerd, the computer-use daemon, bardo-do, bardo-actions-mcp: refused accountd's `Keys`
+    /// actiond, companiond, readerd, the computer-use daemon, bardo-do, bardo-actions-mcp: refused accountd's `Keys`
     /// (`RequestKey`) and `AddAccount` and `Reauthenticate`; they keep inferd's own inference
     /// calls. memoryd takes the one named `org.bardo.Intents` for the action router, and inferd
     /// the ones its table lists under `places` for those that may choose where the assistant runs.

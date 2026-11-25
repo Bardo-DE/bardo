@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# The confirmation sheet and the seat at intentd, end to end, with the REAL intentd and `bardo-do`
+# The confirmation sheet and the seat at actiond, end to end, with the REAL actiond and `bardo-do`
 # from the actions service and the real bardo-shell daemon, on a private headless KWin started and stopped by the
 # script (a private copy of layer-shell-host's scripts/dev, so nothing of another session's
 # `.kwin-env` is read or written). The chain under test is the one a login has:
 #
-#   bardo-do  ->  intentd (the gate)  ->  org.bardo.Confirm1 (bardo-shell's sheet)  ->  the person's answer
+#   bardo-do  ->  actiond (the gate)  ->  org.bardo.Confirm1 (bardo-shell's sheet)  ->  the person's answer
 #                                    ->  org.bardo.Shell IntentProvider1 (bardo-shell does the action)
 #
 # Nothing here reaches the person's session bus, logind, polkit, ~/.config or a real keyboard.
 # One private bus is the daemon's session AND system bus (start_compositor refuses anything else);
-# intentd, bardo-do and bardo-shell all run in a scratch HOME and scratch XDG directories, with an
+# actiond, bardo-do and bardo-shell all run in a scratch HOME and scratch XDG directories, with an
 # XDG_DATA_DIRS that names nothing, so the only manifests are the two the script copies in
 # (`dist/intents/org.bardo.Shell.toml`, and the actions service's `org.bardo.Memory.toml` for a hidden action).
 # The person's answers are `bardo-shell debug key SURFACE KEY`: layer-shell-host's Inject::Key, which enters
@@ -31,7 +31,7 @@
 #      button answers nothing, Space held for 1.5 s allows it: exit 0.
 #   8. Three refused calls in a row (a hidden action, exit 3) pause the terminal: the next call
 #      exits 7; `bardo-shell intents resume` lets it go on.
-#   9. With intentd gone, `bardo-do` exits 6, no sheet is left on screen, and bardo-shell is still alive.
+#   9. With actiond gone, `bardo-do` exits 6, no sheet is left on screen, and bardo-shell is still alive.
 #
 # Exit 0 when every step passed, 1 on a failure, 2 when a step could not run.
 #
@@ -50,7 +50,7 @@ SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 BARDO_ACTIONS_DIR="${BARDO_ACTIONS_DIR:-$BARDO_SHELL_REPO/../actions}"
 BARDO_ACTIONS_TARGET="${BARDO_ACTIONS_TARGET:-$OUT_DIR/actions-target}"
-INTENTD="$BARDO_ACTIONS_TARGET/debug/accept-actiond"
+ACTIOND="$BARDO_ACTIONS_TARGET/debug/accept-actiond"
 BARDO_DO="$BARDO_ACTIONS_TARGET/debug/bardo-do"
 BARDO_ACTIOND_PID=
 ASKER=
@@ -59,10 +59,10 @@ SHEET=
 scratch_new
 mkdir -p "$CONFIG/bardo/shell" "$DATA/bardo/intents"
 
-# intentd names a caller that owns no bus name by its cgroup, and only a terminal's child
+# actiond names a caller that owns no bus name by its cgroup, and only a terminal's child
 # (`vte-spawn-*.scope`) is the cli that `bardo-do` must be; this script runs in whatever scope its
 # caller has (a gate, an agent's shell, a service), so it presents `bardo-do` as a terminal's
-# child: it runs action-accept's `accept-actiond` (the shipped intentd ignores BARDO_ACTIOND_PROC_ROOT),
+# child: it runs action-accept's `accept-actiond` (the shipped actiond ignores BARDO_ACTIOND_PROC_ROOT),
 # which reads its callers from a scratch proc root, where `as_terminal` writes the cgroup of the
 # process it then execs.
 PROC_ROOT="$OUT_DIR/proc"
@@ -72,14 +72,14 @@ as_terminal() {
   exec "$@"
 }
 
-# intentd and the daemon each know the other by its systemd unit: intentd gives the sheet host's
+# actiond and the daemon each know the other by its systemd unit: actiond gives the sheet host's
 # role only to the main process of bardo-shell.service (the system's callers file, the actions service
 # dist/actiond-callers.toml, handed over as BARDO_ACTIOND_SYSTEM_CALLERS), and the daemon's provider
 # answers only bardo-actiond.service's main process. Each judges the other at its first call, at the
 # start, so each is started through `as_unit UNIT`, which names its own process in the scratch proc
 # root as the actions service's own harness does (world.rs `place`): its cgroup, and it as the unit's main
 # process. It then execs the program, which keeps the pid. The daemon reads that root
-# (`--proc-root`), intentd too (BARDO_ACTIOND_PROC_ROOT).
+# (`--proc-root`), actiond too (BARDO_ACTIOND_PROC_ROOT).
 as_unit() {
   local unit="$1"
   shift
@@ -172,20 +172,20 @@ fresh() {
   return 1
 }
 
-start_intentd() {
+start_actiond() {
   mkdir -p "$PROC_ROOT"
   cp "$BARDO_ACTIONS_DIR/dist/actiond-callers.toml" "$OUT_DIR/actiond-callers.toml" || return 1
   unit_prefix bardo-actiond
   in_env env BARDO_ACTIOND_PROC_ROOT="$PROC_ROOT" BARDO_ACTIOND_SYSTEM_CALLERS="$OUT_DIR/actiond-callers.toml" \
-    "${UNIT_PREFIX[@]}" "$INTENTD" >"$OUT_DIR/intentd.log" 2>&1 &
+    "${UNIT_PREFIX[@]}" "$ACTIOND" >"$OUT_DIR/actiond.log" 2>&1 &
   BARDO_ACTIOND_PID=$!
-  # intentd owns org.bardo.Intents1 once `bardo-do apps` answers.
+  # actiond owns org.bardo.Intents1 once `bardo-do apps` answers.
   for _ in $(seq 100); do
     bardo_do apps >/dev/null 2>&1 && return 0
-    kill -0 "$BARDO_ACTIOND_PID" 2>/dev/null || { echo "intentd died (see $OUT_DIR/intentd.log)" >&2; return 1; }
+    kill -0 "$BARDO_ACTIOND_PID" 2>/dev/null || { echo "actiond died (see $OUT_DIR/actiond.log)" >&2; return 1; }
     sleep 0.1
   done
-  echo "intentd never answered (see $OUT_DIR/intentd.log)" >&2
+  echo "actiond never answered (see $OUT_DIR/actiond.log)" >&2
   return 1
 }
 
@@ -341,7 +341,7 @@ step_the_breaker_pauses_and_resume_lets_go() {
 }
 
 # 9.
-step_intentd_gone() {
+step_actiond_gone() {
   local log="$OUT_DIR/9-gone.log" code
   bardo_do_bg orphan shell dock.pin --app e2e-orphan.desktop
   await_sheet 10 >/dev/null || { echo "no sheet appeared" | tee "$log" >&2; return 1; }
@@ -354,7 +354,7 @@ step_intentd_gone() {
   bardo_do shell launcher.open >>"$log" 2>&1
   local gone=$?
   bardo-shell ping >/dev/null 2>&1 || { echo "bardo-shell is gone" | tee -a "$log" >&2; return 1; }
-  echo "the waiting call exited $code, a new one $gone (6: intentd is not there); bardo-shell answers ping" | tee -a "$log" >&2
+  echo "the waiting call exited $code, a new one $gone (6: actiond is not there); bardo-shell answers ping" | tee -a "$log" >&2
   [ "$gone" = 6 ]
 }
 
@@ -371,7 +371,7 @@ trap cleanup EXIT
 build_actions() {
   if [ -n "${BARDO_SHELL_PREBUILT:-}" ]; then
     # dev/accept.sh built the actions service outside the jail (BARDO_ACTIONS_TARGET); only check it is there.
-    [ -x "$INTENTD" ] && [ -x "$BARDO_DO" ] || { echo "$INTENTD or $BARDO_DO is missing: run dev/accept.sh --build" >&2; return 1; }
+    [ -x "$ACTIOND" ] && [ -x "$BARDO_DO" ] || { echo "$ACTIOND or $BARDO_DO is missing: run dev/accept.sh --build" >&2; return 1; }
     return 0
   fi
   {
@@ -388,11 +388,11 @@ cp "$BARDO_ACTIONS_DIR/manifests/org.bardo.Memory.toml" "$DATA/bardo/intents/"
 backdrop_seed "$CONFIG" || exit 1
 : >"$CONFIG/shell/settings.toml"
 status=0
-# The stand-in intentd is the router for this daemon only (a debug build's `--dev-callers`).
-dev_caller org.bardo.Intents router "$INTENTD" || exit 1
+# The stand-in actiond is the router for this daemon only (a debug build's `--dev-callers`).
+dev_caller org.bardo.Intents router "$ACTIOND" || exit 1
 unit_prefix bardo-shell
 LAUNCH_PREFIX=("${UNIT_PREFIX[@]}")
-if start_intentd && launch_daemon --proc-root "$PROC_ROOT"; then
+if start_actiond && launch_daemon --proc-root "$PROC_ROOT"; then
   NAME=$(output_name) || exit 1
   SHEET="shell-confirm-$NAME"
   # The daemon names the seat: serving, and the surface exists.
@@ -400,7 +400,7 @@ if start_intentd && launch_daemon --proc-root "$PROC_ROOT"; then
   run_steps step_manifest_listed step_a_read_asks_nobody step_a_write_asks_and_allow_pins \
     step_escape_denies step_allow_from_the_terminal step_revoke_asks_again \
     step_a_destructive_action_asks_for_a_hold step_the_breaker_pauses_and_resume_lets_go \
-    step_intentd_gone
+    step_actiond_gone
   [ "$status" = 0 ] && status=$STATUS
 else
   status=1
