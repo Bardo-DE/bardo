@@ -86,5 +86,6 @@ allow-git = [
     "https://github.com/Bardo-DE/blitz",
     "https://github.com/Bardo-DE/smithay",
     "https://github.com/Bardo-DE/vello",
+    "https://github.com/PoHsuanLai/pdfrum",
     "https://github.com/pop-os/dbus-settings-bindings",
 ]

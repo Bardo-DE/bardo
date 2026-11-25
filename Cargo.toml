@@ -582,7 +582,7 @@ anyrender_vello_cpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a49
 anyrender_vello_gpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
 glifo = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
 input-linux-sys = {path = "crates/input/input-broker/vendor/input-linux-sys"}
-pdfrum-anyrender = {path = "/home/pohsuanlai/rs-wt/wh-rs-forks/pdfrum/crates/pdfrum-anyrender"}
+pdfrum-anyrender = {git = "https://github.com/PoHsuanLai/pdfrum", rev = "dea36b2adf11c1a53f5e92bfdafeba17cdf2b1de"}
 vello_common = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
 vello_cpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
 vello_gpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
