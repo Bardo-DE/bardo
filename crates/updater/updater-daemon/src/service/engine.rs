@@ -122,7 +122,7 @@ impl Engine {
 
     async fn run(self: Arc<Self>, job: Job) {
         let result = match job {
-            Job::Check => self.check().await,
+            Job::Check => self.check(false).await,
             Job::Install(wanted) => self.install(&wanted).await,
             Job::Rollback => self.rollback().await,
         };
@@ -201,7 +201,12 @@ impl Engine {
         });
     }
 
-    async fn check(self: &Arc<Self>) -> Result<(), Problem> {
+    /// Looks for a newer version and publishes what it found. A check that is the whole job ends
+    /// in `Available` or `Idle`. One that is the first step of an install (`within_install`)
+    /// stays in `Checking`, so the status is busy until the install itself ends: a reader never
+    /// sees `Available` while the install is still deciding whether to go on, and no other job
+    /// can begin in that gap.
+    async fn check(self: &Arc<Self>, within_install: bool) -> Result<(), Problem> {
         let auth = self.authenticator()?;
         let (engine, source) = (Arc::clone(self), self.ctx.source.clone());
         let fetched =
@@ -214,13 +219,13 @@ impl Engine {
         match fetched {
             Ok(fetched) => {
                 self.record_check(Outcome::Succeeded);
-                self.found(fetched).await;
+                self.found(fetched, within_install).await;
                 Ok(())
             }
             Err(fetch::FeedError::Fetch(crate::fetch::FetchError::Refused(404))) => {
                 // No release has been published yet: nothing newer than what is installed.
                 self.record_check(Outcome::Succeeded);
-                self.found_nothing().await;
+                self.found_nothing(within_install).await;
                 Ok(())
             }
             Err(e) => {
@@ -231,11 +236,15 @@ impl Engine {
         }
     }
 
-    async fn found_nothing(&self) {
+    async fn found_nothing(&self, within_install: bool) {
         let checked = Some(now());
         *lock(&self.offer) = None;
         self.change(|s| {
-            s.phase = Phase::Idle;
+            s.phase = if within_install {
+                Phase::Checking
+            } else {
+                Phase::Idle
+            };
             s.available = None;
             s.notes.clear();
             s.size = 0;
@@ -244,20 +253,24 @@ impl Engine {
         .await;
     }
 
-    async fn found(&self, fetched: Fetched) {
+    async fn found(&self, fetched: Fetched, within_install: bool) {
         let current = self
             .installed_version()
             .unwrap_or_else(|| Version::new(0, 0, 0));
         let refused = self.ctx.store.load().refused;
         if offer(&current, &fetched.release.version, refused.as_ref()) != Offer::Present {
-            self.found_nothing().await;
+            self.found_nothing(within_install).await;
             return;
         }
         let release = fetched.release.clone();
         *lock(&self.offer) = Some(fetched);
         let checked = Some(now());
         self.change(|s| {
-            s.phase = Phase::Available;
+            s.phase = if within_install {
+                Phase::Checking
+            } else {
+                Phase::Available
+            };
             s.available = Some(release.version.clone());
             s.notes.clone_from(&release.notes);
             s.size = release.bundle.size;
@@ -296,7 +309,7 @@ impl Engine {
     async fn install(self: &Arc<Self>, wanted: &Wanted) -> Result<(), Problem> {
         let auth = self.authenticator()?;
         if lock(&self.offer).is_none() {
-            self.check().await?;
+            self.check(true).await?;
         }
         // Nothing newer on offer after the check: not the version the person was shown either.
         let Some(fetched) = lock(&self.offer).clone() else {
