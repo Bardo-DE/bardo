@@ -3,9 +3,9 @@
 //! no stylesheet of its own) reaches its surface's (0, 0) corner, while a document's own body
 //! rule still wins.
 //!
-//! The reset fixes the corner, not the height: an `inset:0` box is placed against its parent,
-//! dioxus-native-dom's `height:auto` `#main`, which an all-positioned document leaves 0 px tall
-//! (the UI kit's `RootExtent::Viewport`). A box sized in viewport units covers it all.
+//! An absolute `inset:0` box has no positioned ancestor, so Blitz places it against the initial
+//! containing block (the surface), not dioxus-native-dom's `height:auto` `#main`: it covers the
+//! surface, as a box sized in viewport units does.
 
 use std::task::Context;
 
@@ -65,12 +65,11 @@ type Case = (&'static str, fn() -> Element, (i32, i32), i32, Option<i32>);
 fn the_body_reset_puts_a_box_at_the_corner_unless_the_document_sets_its_own_margin() {
     let cases: &[Case] = &[
         (
-            // `#main` is as tall as its flow content, none here: unchanged by the reset.
-            "a bare document's inset-zero box starts at the corner and spans the width",
+            "a bare document's inset-zero box covers the whole surface",
             bare_inset,
             (0, 0),
             WIDTH as i32,
-            Some(0),
+            Some(HEIGHT as i32),
         ),
         (
             "a bare document's viewport box covers the whole surface",

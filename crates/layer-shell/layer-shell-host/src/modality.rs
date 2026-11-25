@@ -50,18 +50,20 @@ pub(crate) fn is_modifier(keysym: Keysym) -> bool {
 pub(crate) fn is_modifier_key(key: &Key) -> bool {
     matches!(
         key,
-        Key::Named(NamedKey::Alt)
-            | Key::Named(NamedKey::AltGraph)
-            | Key::Named(NamedKey::CapsLock)
-            | Key::Named(NamedKey::Control)
-            | Key::Named(NamedKey::Fn)
-            | Key::Named(NamedKey::FnLock)
-            | Key::Named(NamedKey::Meta)
-            | Key::Named(NamedKey::NumLock)
-            | Key::Named(NamedKey::ScrollLock)
-            | Key::Named(NamedKey::Shift)
-            | Key::Named(NamedKey::Symbol)
-            | Key::Named(NamedKey::SymbolLock)
+        Key::Named(
+            NamedKey::Alt
+                | NamedKey::AltGraph
+                | NamedKey::CapsLock
+                | NamedKey::Control
+                | NamedKey::Fn
+                | NamedKey::FnLock
+                | NamedKey::Meta
+                | NamedKey::NumLock
+                | NamedKey::ScrollLock
+                | NamedKey::Shift
+                | NamedKey::Symbol
+                | NamedKey::SymbolLock
+        )
     )
 }
 

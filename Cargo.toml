@@ -602,11 +602,11 @@ atspi = { version = "0.30", default-features = false }
 base64 = "0.22"
 bitflags = "2"
 blake3 = "1"
-blitz-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
-blitz-html = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672" }
-blitz-paint = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672" }
-blitz-shell = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
-blitz-traits = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672" }
+blitz-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "bed4fb22b43f85dbd2d097305c2b677bcf23a1fc", default-features = false }
+blitz-html = { git = "https://github.com/Bardo-DE/blitz", rev = "bed4fb22b43f85dbd2d097305c2b677bcf23a1fc" }
+blitz-paint = { git = "https://github.com/Bardo-DE/blitz", rev = "bed4fb22b43f85dbd2d097305c2b677bcf23a1fc" }
+blitz-shell = { git = "https://github.com/Bardo-DE/blitz", rev = "bed4fb22b43f85dbd2d097305c2b677bcf23a1fc", default-features = false }
+blitz-traits = { git = "https://github.com/Bardo-DE/blitz", rev = "bed4fb22b43f85dbd2d097305c2b677bcf23a1fc" }
 bzip2 = "0.6"
 calamine = { version = "0.38", default-features = false }
 calloop = "0.14"
@@ -626,8 +626,8 @@ digest = "0.10"
 dioxus = { version = "0.8.0-alpha.3", default-features = false }
 dioxus-asset-resolver = "0.8.0-alpha.3"
 dioxus-document = "0.8.0-alpha.3"
-dioxus-native = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
-dioxus-native-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
+dioxus-native = { git = "https://github.com/Bardo-DE/blitz", rev = "bed4fb22b43f85dbd2d097305c2b677bcf23a1fc", default-features = false }
+dioxus-native-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "bed4fb22b43f85dbd2d097305c2b677bcf23a1fc", default-features = false }
 dioxus-ssr = "0.8.0-alpha.3"
 dirs = "6"
 emojis = "0.9"

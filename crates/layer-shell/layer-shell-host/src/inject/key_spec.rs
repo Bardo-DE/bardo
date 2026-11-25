@@ -32,6 +32,8 @@ pub fn parse_key(spec: &str) -> Result<KeyStroke, CommandError> {
 fn key_named(name: &str) -> Option<Key> {
     match name {
         "Space" => Some(Key::Character(" ".to_owned())),
+        // The OS key is Meta; the deprecated Super name is read as it.
+        "Super" | "Meta" => Some(Key::Named(NamedKey::Meta)),
         _ => Key::from_str(name).ok(),
     }
 }
@@ -71,7 +73,7 @@ fn code_of(key: &Key) -> Option<Code> {
         Key::Named(NamedKey::Control) => Some(Code::ControlLeft),
         Key::Named(NamedKey::Alt) => Some(Code::AltLeft),
         Key::Named(NamedKey::Meta) => Some(Code::MetaLeft),
-        named => Code::from_str(&named.to_string()).ok(),
+        named @ Key::Named(_) => Code::from_str(&named.to_string()).ok(),
     }
 }
 
@@ -142,54 +144,33 @@ mod tests {
     #[test]
     fn a_spec_names_key_code_and_modifiers() {
         let ch = |c: &str| Key::Character(c.to_owned());
+        let none = Modifiers::empty();
         let cases: Vec<(&str, Result<KeyStroke, CommandError>)> = vec![
             (
                 "Tab",
-                Ok(stroke(
-                    Key::Named(NamedKey::Tab),
-                    Code::Tab,
-                    Modifiers::empty(),
-                )),
+                Ok(stroke(Key::Named(NamedKey::Tab), Code::Tab, none)),
             ),
             (
                 "Enter",
-                Ok(stroke(
-                    Key::Named(NamedKey::Enter),
-                    Code::Enter,
-                    Modifiers::empty(),
-                )),
+                Ok(stroke(Key::Named(NamedKey::Enter), Code::Enter, none)),
             ),
             (
                 "ArrowDown",
                 Ok(stroke(
                     Key::Named(NamedKey::ArrowDown),
                     Code::ArrowDown,
-                    Modifiers::empty(),
+                    none,
                 )),
             ),
             (
                 "Home",
-                Ok(stroke(
-                    Key::Named(NamedKey::Home),
-                    Code::Home,
-                    Modifiers::empty(),
-                )),
+                Ok(stroke(Key::Named(NamedKey::Home), Code::Home, none)),
             ),
-            (
-                "F5",
-                Ok(stroke(
-                    Key::Named(NamedKey::F5),
-                    Code::F5,
-                    Modifiers::empty(),
-                )),
-            ),
-            ("a", Ok(stroke(ch("a"), Code::KeyA, Modifiers::empty()))),
-            ("7", Ok(stroke(ch("7"), Code::Digit7, Modifiers::empty()))),
-            (
-                "Space",
-                Ok(stroke(ch(" "), Code::Space, Modifiers::empty())),
-            ),
-            (",", Ok(stroke(ch(","), Code::Comma, Modifiers::empty()))),
+            ("F5", Ok(stroke(Key::Named(NamedKey::F5), Code::F5, none))),
+            ("a", Ok(stroke(ch("a"), Code::KeyA, none))),
+            ("7", Ok(stroke(ch("7"), Code::Digit7, none))),
+            ("Space", Ok(stroke(ch(" "), Code::Space, none))),
+            (",", Ok(stroke(ch(","), Code::Comma, none))),
             ("@", Ok(stroke(ch("@"), Code::Digit2, Modifiers::SHIFT))),
             ("_", Ok(stroke(ch("_"), Code::Minus, Modifiers::SHIFT))),
             (":", Ok(stroke(ch(":"), Code::Semicolon, Modifiers::SHIFT))),
@@ -203,11 +184,7 @@ mod tests {
             ),
             (
                 "Shift",
-                Ok(stroke(
-                    Key::Named(NamedKey::Shift),
-                    Code::ShiftLeft,
-                    Modifiers::empty(),
-                )),
+                Ok(stroke(Key::Named(NamedKey::Shift), Code::ShiftLeft, none)),
             ),
             (
                 "k+ctrl",
@@ -215,11 +192,7 @@ mod tests {
             ),
             (
                 "Super",
-                Ok(stroke(
-                    Key::Named(NamedKey::Meta),
-                    Code::MetaLeft,
-                    Modifiers::empty(),
-                )),
+                Ok(stroke(Key::Named(NamedKey::Meta), Code::MetaLeft, none)),
             ),
             (
                 "Tab+shift",

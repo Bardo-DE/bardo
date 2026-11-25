@@ -48,7 +48,6 @@ pub(crate) fn paint_document(
     view: &wgpu::TextureView,
 ) -> Result<()> {
     let (width, height) = pixel_extent(target.buffer);
-    let (paint_width, paint_height, x, y) = target.paint_area();
     fit_scene(scene, width, height)?;
     let GpuContext {
         device,
@@ -59,32 +58,20 @@ pub(crate) fn paint_document(
         ..
     } = gpu;
     widgets.forget_dropped(doc);
-    {
-        let image_manager = ImageManager::new(
-            &mut *resources,
-            &device.device,
-            &device.queue,
-            &mut *images,
-            &mut widgets.textures,
-        );
-        let mut painter = VelloGpuScenePainter::new(&mut *scene, image_manager, device);
-        paint_scene(
-            &mut painter,
-            doc,
-            target.scale.factor(),
-            paint_width,
-            paint_height,
-            x,
-            y,
-        );
-        crate::scroll::paint::paint(
-            &mut painter,
-            &overlay.thumbs,
-            overlay.scheme,
-            target.scale.factor(),
-            (f64::from(x), f64::from(y)),
-        );
-    }
+    let image_manager = ImageManager::new(
+        &mut *resources,
+        &device.device,
+        &device.queue,
+        &mut *images,
+        &mut widgets.textures,
+    );
+    // The painter borrows the scene and the image cache only for this statement.
+    paint_layers(
+        &mut VelloGpuScenePainter::new(&mut *scene, image_manager, device),
+        doc,
+        target,
+        overlay,
+    );
     let rendered = renderer.render(
         scene,
         resources,
@@ -106,6 +93,25 @@ pub(crate) fn paint_document(
     )
     .finish_frame();
     rendered.map_err(|e| HostError::Render(format!("{e:?}")))
+}
+
+/// Paint the document and, over it, the host's overlay (the scroll thumbs) through `painter`.
+fn paint_layers(
+    painter: &mut VelloGpuScenePainter<'_>,
+    doc: &mut BaseDocument,
+    target: FrameTarget,
+    overlay: &Overlay,
+) {
+    let (paint_width, paint_height, x, y) = target.paint_area();
+    let scale = target.scale.factor();
+    paint_scene(painter, doc, scale, paint_width, paint_height, x, y);
+    crate::scroll::paint::paint(
+        painter,
+        &overlay.thumbs,
+        overlay.scheme,
+        scale,
+        (f64::from(x), f64::from(y)),
+    );
 }
 
 /// An empty scene of exactly the render size (`vello_gpu` wants the two equal; a scene cannot
@@ -211,6 +217,9 @@ fn read_rows(
     let tight = (width * 4) as usize;
     let mut rgba = vec![0u8; tight * height as usize];
     {
+        let data = slice
+            .get_mapped_range()
+            .map_err(|e| HostError::Render(e.to_string()))?;
         for (src, dst) in data.chunks(row as usize).zip(rgba.chunks_mut(tight)) {
             swap_red_blue(&src[..tight], dst);
         }

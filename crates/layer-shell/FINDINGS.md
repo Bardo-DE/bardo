@@ -141,8 +141,9 @@ still decides (`tests/body_margin.rs`).
 ### F41. dioxus-native-dom's `#main` is `height:auto`
 
 Every `VirtualDom` renders into `<main id="main">`, which has `height:auto` and no flow content
-of its own. A `height:100%` root under it is 0 px tall, and an absolute or fixed `inset:0` box
-(placed against `#main`) spans the width but is 0 px tall. A bare document that must cover its
+of its own. A `height:100%` root under it is 0 px tall. An absolute or fixed `inset:0` box with
+no positioned ancestor is placed against the initial containing block and covers the surface
+(Blitz's out-of-flow containing block, `Node::containing_block`). A bare document that must cover its
 surface sizes its box in viewport units (`width:100vw; height:100vh`), which lands exactly on
 the surface; the UI kit's `RootExtent::Viewport` does that for `Ds` roots. The host does not size
 `#main`: a percentage height on a content root would then resolve against the surface and change

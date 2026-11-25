@@ -43,7 +43,6 @@ fn flag_of(key: &Key) -> Modifiers {
         Key::Named(NamedKey::Control) => Modifiers::CONTROL,
         Key::Named(NamedKey::Shift) => Modifiers::SHIFT,
         Key::Named(NamedKey::Meta) => Modifiers::META,
-        Key::Named(NamedKey::Meta) => Modifiers::META,
         _ => Modifiers::empty(),
     }
 }
