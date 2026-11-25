@@ -37,7 +37,7 @@ pub fn sw_key(key: &Key, modifiers: Modifiers) -> Option<SwKey> {
             "h" => Some(SwKey::H),
             _ => None,
         },
-        _ => None,
+        Key::Named(_) => None,
     }
 }
 

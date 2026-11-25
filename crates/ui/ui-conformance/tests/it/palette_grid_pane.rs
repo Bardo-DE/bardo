@@ -271,7 +271,7 @@ fn ClaimPalette() -> Element {
             {
                 Some("show")
             }
-            _ => None,
+            dioxus::prelude::Key::Named(_) => None,
         };
         log.with_mut(|log| {
             log.push(format!("{name}@{}", caret_word(key.caret)));

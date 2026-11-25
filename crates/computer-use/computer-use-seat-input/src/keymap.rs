@@ -191,7 +191,7 @@ impl Keymap {
                     _ => return None,
                 }
             }
-            named => Produces::Named(named.to_string()),
+            Key::Named(named) => Produces::Named(named.to_string()),
         };
         // A shifted letter names the same key as its lower case.
         let lower = match &wanted {

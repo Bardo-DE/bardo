@@ -46,7 +46,7 @@ fn jump(key: &dioxus::prelude::Key) -> Option<usize> {
             "n" => Some(1),
             _ => None,
         },
-        _ => None,
+        dioxus::prelude::Key::Named(_) => None,
     }
 }
 

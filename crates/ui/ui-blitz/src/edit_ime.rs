@@ -92,7 +92,7 @@ pub(crate) fn ime_of(event: &Ime) -> Option<ImeEvent> {
         }),
         Ime::Commit(text) => Some(ImeEvent::Commit(text.clone())),
         Ime::Disabled => Some(ImeEvent::Disabled),
-        _ => None,
+        Ime::DeleteSurrounding { .. } => None,
     }
 }
 

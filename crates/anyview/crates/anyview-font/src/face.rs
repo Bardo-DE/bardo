@@ -94,8 +94,7 @@ fn face_of(font: &FontRef<'_>) -> Face {
                 skrifa::instance::Size::unscaled(),
                 skrifa::instance::LocationRef::default(),
             )
-            .glyph_count
-            .into(),
+            .glyph_count,
         variable,
         specimen: specimen(font, &title),
     }
