@@ -3,6 +3,8 @@
 [workspace]
 resolver = "3"
 members = [
+    "crates/accounts/account-calendar",
+    "crates/ui/ui-settings-page",
     "crates/network/bluez-proxy",
     "crates/network/http-core",
     "crates/accounts/http-relay",

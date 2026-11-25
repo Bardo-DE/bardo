@@ -93,6 +93,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "account-calendar"
+version = "0.1.0"
+dependencies = [
+ "account-dav-proto",
+ "account-fake-servers",
+ "base-url",
+ "base64 0.22.1",
+ "http-core",
+ "http-relay",
+ "jiff",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
 name = "account-callers"
 version = "0.1.0"
 dependencies = [
@@ -16680,6 +16697,18 @@ dependencies = [
  "ui-components",
  "ui-style",
  "zbus",
+]
+
+[[package]]
+name = "ui-settings-page"
+version = "0.1.0"
+dependencies = [
+ "dioxus",
+ "dioxus-ssr",
+ "settings-types",
+ "toml",
+ "ui-components",
+ "ui-lint",
 ]
 
 [[package]]
