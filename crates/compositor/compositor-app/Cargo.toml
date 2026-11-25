@@ -96,7 +96,6 @@ ignored-paths = [
     "src/handlers/relative_pointer.rs",
     "src/handlers/single_pixel.rs",
     "src/handlers/subcompositor.rs",
-    "src/handlers/text_input.rs",
     "src/handlers/viewporter.rs",
     "src/handlers/xdg_foreign.rs",
     "src/handlers/xdg_toplevel_icon.rs",

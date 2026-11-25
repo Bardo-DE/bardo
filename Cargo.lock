@@ -1547,7 +1547,6 @@ dependencies = [
 name = "actions-fuzz"
 version = "0.1.0"
 dependencies = [
- "action-core",
  "action-eval",
  "action-eval-core",
  "action-fake",
@@ -10000,7 +9999,6 @@ dependencies = [
  "model-openai-compat",
  "model-provider",
  "model-wire",
- "serde_json",
  "speech-host-client",
  "speech-provider",
 ]

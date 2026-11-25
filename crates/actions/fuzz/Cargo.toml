@@ -18,7 +18,6 @@ toml = { workspace = true }
 action-review = { path = "../action-review" }
 agent-loop = { path = "../agent-loop" }
 companion-wire = { path = "../companion-wire" }
-action-core = { path = "../action-core" }
 action-manifest = { path = "../action-manifest" }
 permission-core = { path = "../permission-core" }
 action-vocab = { path = "../action-vocab" }
@@ -37,6 +36,12 @@ doc = false
 [[bin]]
 name = "tool_args"
 path = "fuzz_targets/tool_args.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "unframe"
+path = "fuzz_targets/unframe.rs"
 test = false
 doc = false
 
