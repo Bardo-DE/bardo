@@ -47,6 +47,7 @@ yanked = "deny"
 ignore = [
     # From anyview.
     { id = "RUSTSEC-2025-0141", reason = "bincode unmaintained but complete; syntect reads only its own built-in dump with it" },
+    { id = "RUSTSEC-2024-0320", reason = "yaml-rust unmaintained; only syntax-dump (a dev tool, never shipped) uses it, through syntect's yaml-load, to read our own .sublime-syntax files. Ends when syntect moves off it" },
     # chrono, announced unmaintained 2026-11-17. None of our crates names it any more (they use
     # jiff); it stays in the tree through cedar-policy-core, rmcp, schemars and trash. No known
     # flaw. Remove when those upstreams have moved.
