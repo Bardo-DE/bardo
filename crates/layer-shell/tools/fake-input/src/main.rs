@@ -55,7 +55,7 @@ impl Dispatch<OrgKdeKwinFakeInput, ()> for State {
         _: &mut Self,
         _: &OrgKdeKwinFakeInput,
         _: <OrgKdeKwinFakeInput as wayland_client::Proxy>::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -67,7 +67,7 @@ impl Dispatch<wl_seat::WlSeat, ()> for State {
         _: &mut Self,
         _: &wl_seat::WlSeat,
         _: wl_seat::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -79,7 +79,7 @@ impl Dispatch<wl_keyboard::WlKeyboard, ()> for State {
         state: &mut Self,
         _: &wl_keyboard::WlKeyboard,
         event: wl_keyboard::Event,
-        _: &(),
+        (): &(),
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -321,9 +321,9 @@ mod tests {
         for (line, want) in cases {
             assert_eq!(parse(line), want, "{line}");
         }
-        assert!(parse("press thumb").is_err());
-        assert!(parse("key a sideways").is_err());
-        assert!(parse("jump").is_err());
-        assert!(parse("axis diagonal 1").is_err());
+        parse("press thumb").unwrap_err();
+        parse("key a sideways").unwrap_err();
+        parse("jump").unwrap_err();
+        parse("axis diagonal 1").unwrap_err();
     }
 }

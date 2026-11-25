@@ -57,6 +57,13 @@ fn scene(n: u64, outputs: u64) -> (Arrangement, Arrangement) {
                 (w / 4) as u32,
                 (h / 4) as u32,
             ),
+            // Centred under the slot, overlapping its bottom edge.
+            icon: rect(
+                40 + (i % 10) as i32 * 186 + (w / 8) as i32 - 16,
+                200 + (i / 10) as i32 * 170 + (h / 4) as i32 - 16,
+                32,
+                32,
+            ),
         });
     }
     after.windows = before.windows.clone();

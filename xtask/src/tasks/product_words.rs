@@ -265,11 +265,11 @@ mod tests {
 
     #[test]
     fn a_retired_bardo_repository_url_is_a_hit() {
-        let line = without_urls("repository = \"https://github.com/Bardo-DE/stoker\" # stoker");
-        assert_eq!(words(&line, true), ["stoker", "stoker"]);
-        let live =
+        let retired = without_urls("repository = \"https://github.com/Bardo-DE/stoker\" # stoker");
+        assert_eq!(words(&retired, true), ["stoker", "stoker"]);
+        let current =
             without_urls("https://github.com/Bardo-DE/bardo and https://github.com/Bardo-DE/vello");
-        assert!(words(&live, true).is_empty());
+        assert!(words(&current, true).is_empty());
     }
 
     #[test]

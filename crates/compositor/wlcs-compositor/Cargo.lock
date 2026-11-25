@@ -3,6 +3,78 @@
 version = 4
 
 [[package]]
+name = "account-capability"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "serde",
+]
+
+[[package]]
+name = "account-core"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "base-ids",
+ "base-secret",
+ "base-time",
+ "base-url",
+ "caller-identity-core",
+ "http-core",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-dbus"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-tailscale",
+ "account-wire",
+ "base-ids",
+ "base-time",
+ "dbus-kit",
+ "serde",
+ "serde_json",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "account-match"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "base-ids",
+ "serde",
+]
+
+[[package]]
+name = "account-tailscale"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-time",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "account-wire"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-match",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "adler2"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -225,6 +297,87 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
+name = "base-fs"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "rustix 1.1.5",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "base-ids"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "base-secret"
+version = "0.1.0"
+dependencies = [
+ "secrecy",
+ "serde",
+ "subtle",
+ "zeroize",
+]
+
+[[package]]
+name = "base-spawn"
+version = "0.1.0"
+
+[[package]]
+name = "base-testkit"
+version = "0.1.0"
+dependencies = [
+ "zbus",
+]
+
+[[package]]
+name = "base-time"
+version = "0.1.0"
+dependencies = [
+ "futures-timer",
+ "jiff",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "base-url"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "percent-encoding",
+ "serde",
+]
+
+[[package]]
+name = "base-words"
+version = "0.1.0"
+dependencies = [
+ "base-words-macros",
+]
+
+[[package]]
+name = "base-words-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "base-xdg"
+version = "0.1.0"
+dependencies = [
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "bit-set"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -325,6 +478,38 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc652a48c352aef3ea3aed32080501cf3ef6ed5da78602a020c991775b0aff04"
 
 [[package]]
+name = "caller-identity-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "caller-identity-dbus"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "caller-identity-core",
+ "caller-identity-linux",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "caller-identity-linux"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "caller-identity-core",
+ "nix 0.31.3",
+ "rustix 1.1.5",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "calloop"
 version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -346,252 +531,6 @@ dependencies = [
  "rustix 1.1.5",
  "wayland-backend",
  "wayland-client",
-]
-
-[[package]]
-name = "casement"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "casement-agent",
- "casement-backend",
- "casement-chrome",
- "casement-core",
- "casement-icons",
- "casement-ipc",
- "casement-layout",
- "casement-motion",
- "casement-privacy",
- "casement-protocols",
- "casement-render",
- "casement-wayland",
- "chordkit",
- "ds-core",
- "ds-helpers",
- "ds-settings",
- "jiff",
- "keycap-client",
- "nix 0.31.3",
- "porter-core",
- "rustix 1.1.5",
- "serde",
- "shell-verbs 0.1.0",
- "smithay",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "x11rb",
-]
-
-[[package]]
-name = "casement-agent"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "peephole-core",
- "reis",
- "rustix 1.1.5",
- "smithay",
- "tracing",
-]
-
-[[package]]
-name = "casement-backend"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "casement-render",
- "ds-core",
- "rustix 1.1.5",
- "serde",
- "smithay",
- "thiserror 2.0.21",
- "tracing",
-]
-
-[[package]]
-name = "casement-chrome"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "ds-core",
- "ds-style",
- "parley",
- "thiserror 2.0.21",
- "vello_cpu",
-]
-
-[[package]]
-name = "casement-core"
-version = "0.1.0"
-dependencies = [
- "casement-protocols",
- "ds-behaviour",
- "ds-core",
- "ds-motion",
- "ds-style",
- "porter-core",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml",
-]
-
-[[package]]
-name = "casement-icons"
-version = "0.1.0"
-dependencies = [
- "ds-helpers",
- "freedesktop-icons",
- "image",
- "resvg",
- "rustix 1.1.5",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "casement-ipc"
-version = "0.1.0"
-dependencies = [
- "calloop",
- "casement-core",
- "casement-protocols",
- "ds-core",
- "ds-settings",
- "peephole-bus",
- "porter-core",
- "porter-dbus",
- "thiserror 2.0.21",
- "tokio",
- "toml",
- "tracing",
- "xkbcommon",
- "zbus",
-]
-
-[[package]]
-name = "casement-layout"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "ds-core",
- "ds-style",
- "porter-core",
- "taffy",
-]
-
-[[package]]
-name = "casement-motion"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-layout",
- "casement-protocols",
- "ds-core",
- "ds-motion",
- "ds-style",
-]
-
-[[package]]
-name = "casement-privacy"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "ds-helpers",
- "thiserror 2.0.21",
- "tracing",
-]
-
-[[package]]
-name = "casement-protocols"
-version = "0.1.0"
-dependencies = [
- "bitflags 2.13.2",
- "serde",
- "thiserror 2.0.21",
- "wayland-backend",
- "wayland-client",
- "wayland-protocols",
- "wayland-scanner",
- "wayland-server",
-]
-
-[[package]]
-name = "casement-render"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-motion",
- "casement-protocols",
- "ds-core",
- "image",
- "smithay",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "casement-testclient"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "desktop-client",
- "rustix 1.1.5",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "wayland-backend",
- "wayland-client",
- "wayland-protocols",
- "wayland-protocols-misc",
- "wayland-protocols-wlr",
- "x11rb",
- "zbus",
-]
-
-[[package]]
-name = "casement-testkit"
-version = "0.1.0"
-dependencies = [
- "casement",
- "casement-backend",
- "casement-core",
- "casement-ipc",
- "casement-layout",
- "casement-protocols",
- "casement-render",
- "casement-testclient",
- "casement-wayland",
- "ds-core",
- "image",
- "porter-core",
- "proptest",
- "rustix 1.1.5",
- "serde",
- "serde_json",
- "smithay",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "casement-wayland"
-version = "0.1.0"
-dependencies = [
- "casement-core",
- "casement-protocols",
- "ds-core",
- "porter-core",
- "smithay",
- "thiserror 2.0.21",
- "tracing",
- "xkbcommon",
 ]
 
 [[package]]
@@ -630,32 +569,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chordkit"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/chordkit.git?rev=99eec9ddd03ee345b669fcc7954ed44590724290#99eec9ddd03ee345b669fcc7954ed44590724290"
-dependencies = [
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "chordkit-file"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/chordkit.git?rev=99eec9ddd03ee345b669fcc7954ed44590724290#99eec9ddd03ee345b669fcc7954ed44590724290"
-dependencies = [
- "libc",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "chrono"
-version = "0.4.45"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
 name = "color"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -672,6 +585,271 @@ checksum = "cfc320937d09e6de266b31b9afb480f197d7a861be86be7cb2ea7e5d1bfffc5e"
 dependencies = [
  "bytes",
  "memchr",
+]
+
+[[package]]
+name = "compositor-agent"
+version = "0.1.0"
+dependencies = [
+ "caller-identity-core",
+ "compositor-core",
+ "desktop-protocols",
+ "reis",
+ "rustix 1.1.5",
+ "smithay",
+ "tracing",
+]
+
+[[package]]
+name = "compositor-app"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "base-fs",
+ "base-ids",
+ "base-spawn",
+ "base-time",
+ "base-words",
+ "base-xdg",
+ "calloop",
+ "compositor-agent",
+ "compositor-backend",
+ "compositor-chrome",
+ "compositor-core",
+ "compositor-icons",
+ "compositor-ipc",
+ "compositor-layout",
+ "compositor-motion",
+ "compositor-privacy",
+ "compositor-render",
+ "compositor-wayland",
+ "desktop-protocols",
+ "jiff",
+ "key-remap-client",
+ "keymap",
+ "nix 0.31.3",
+ "rustix 1.1.5",
+ "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
+ "shell-verbs",
+ "smithay",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+ "tracing-subscriber",
+ "ui-core",
+ "ui-settings",
+ "x11rb",
+]
+
+[[package]]
+name = "compositor-backend"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "compositor-core",
+ "compositor-render",
+ "desktop-protocols",
+ "rustix 1.1.5",
+ "serde",
+ "smithay",
+ "thiserror 2.0.21",
+ "tracing",
+ "ui-core",
+]
+
+[[package]]
+name = "compositor-chrome"
+version = "0.1.0"
+dependencies = [
+ "compositor-core",
+ "parley",
+ "thiserror 2.0.21",
+ "ui-core",
+ "ui-style",
+ "vello_cpu",
+]
+
+[[package]]
+name = "compositor-core"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "base-ids",
+ "base-time",
+ "base-words",
+ "desktop-protocols",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "toml",
+ "ui-behaviour",
+ "ui-core",
+ "ui-motion",
+ "ui-style",
+]
+
+[[package]]
+name = "compositor-dbus"
+version = "0.1.0"
+dependencies = [
+ "zbus",
+]
+
+[[package]]
+name = "compositor-icons"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "freedesktop-icons",
+ "image",
+ "resvg",
+ "thiserror 2.0.21",
+ "ui-helpers",
+]
+
+[[package]]
+name = "compositor-ipc"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "account-dbus",
+ "base-ids",
+ "base-spawn",
+ "caller-identity-dbus",
+ "calloop",
+ "compositor-core",
+ "compositor-dbus",
+ "dbus-kit",
+ "desktop-protocols",
+ "settings-dbus",
+ "settings-types",
+ "thiserror 2.0.21",
+ "tokio",
+ "toml",
+ "tracing",
+ "ui-settings",
+ "ui-style",
+ "xkbcommon",
+ "zbus",
+]
+
+[[package]]
+name = "compositor-layout"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "base-ids",
+ "compositor-core",
+ "desktop-protocols",
+ "taffy",
+ "ui-core",
+ "ui-style",
+]
+
+[[package]]
+name = "compositor-motion"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "compositor-core",
+ "compositor-layout",
+ "desktop-protocols",
+ "ui-core",
+ "ui-motion",
+ "ui-style",
+]
+
+[[package]]
+name = "compositor-privacy"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "compositor-core",
+ "desktop-protocols",
+ "thiserror 2.0.21",
+ "tracing",
+]
+
+[[package]]
+name = "compositor-render"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "compositor-core",
+ "compositor-motion",
+ "desktop-protocols",
+ "smithay",
+ "thiserror 2.0.21",
+ "ui-core",
+]
+
+[[package]]
+name = "compositor-testclient"
+version = "0.1.0"
+dependencies = [
+ "base-xdg",
+ "compositor-core",
+ "compositor-dbus",
+ "desktop-client",
+ "desktop-protocols",
+ "rustix 1.1.5",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
+ "wayland-protocols-misc",
+ "wayland-protocols-wlr",
+ "x11rb",
+ "zbus",
+]
+
+[[package]]
+name = "compositor-testkit"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "base-testkit",
+ "base-time",
+ "compositor-app",
+ "compositor-backend",
+ "compositor-core",
+ "compositor-ipc",
+ "compositor-layout",
+ "compositor-render",
+ "compositor-testclient",
+ "compositor-wayland",
+ "desktop-protocols",
+ "image",
+ "proptest",
+ "rustix 1.1.5",
+ "serde",
+ "serde_json",
+ "smithay",
+ "thiserror 2.0.21",
+ "tokio",
+ "ui-core",
+ "zbus",
+]
+
+[[package]]
+name = "compositor-wayland"
+version = "0.1.0"
+dependencies = [
+ "account-core",
+ "base-ids",
+ "compositor-core",
+ "desktop-client",
+ "desktop-protocols",
+ "smithay",
+ "thiserror 2.0.21",
+ "tracing",
+ "ui-core",
+ "xkbcommon",
 ]
 
 [[package]]
@@ -729,6 +907,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be1e0bca6c3637f992fc1cc7cbc52a78c1ef6db076dbf1059c4323d6a2048376"
 
 [[package]]
+name = "dbus-kit"
+version = "0.1.0"
+dependencies = [
+ "dbus-kit-macros",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "dbus-kit-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
 name = "defmt"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -763,8 +960,22 @@ dependencies = [
 name = "desktop-client"
 version = "0.1.0"
 dependencies = [
- "casement-protocols",
+ "desktop-protocols",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "desktop-protocols"
+version = "0.1.0"
+dependencies = [
+ "bitflags 2.13.2",
+ "serde",
+ "thiserror 2.0.21",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
+ "wayland-scanner",
+ "wayland-server",
 ]
 
 [[package]]
@@ -868,101 +1079,6 @@ checksum = "ecc8e1361066d91f5ffccff060a3c3be9c3ecde15be2959c1937595f7a82a9f8"
 dependencies = [
  "libc",
  "linux-raw-sys 0.9.4",
-]
-
-[[package]]
-name = "ds-behaviour"
-version = "0.1.0"
-dependencies = [
- "ds-core",
-]
-
-[[package]]
-name = "ds-core"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "ds-core-derive",
- "futures-timer",
- "keyboard-types 0.7.0",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "ds-core-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "ds-helpers"
-version = "0.1.0"
-dependencies = [
- "ds-peer",
- "rustix 1.1.5",
- "serde",
- "thiserror 2.0.21",
- "toml",
-]
-
-[[package]]
-name = "ds-motion"
-version = "0.1.0"
-dependencies = [
- "ds-core",
- "ds-style",
-]
-
-[[package]]
-name = "ds-peer"
-version = "0.1.0"
-dependencies = [
- "futures-timer",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "ds-settings"
-version = "0.1.0"
-dependencies = [
- "ds-core",
- "ds-helpers",
- "ds-peer",
- "ds-settings-derive",
- "ds-style",
- "futures-timer",
- "notify",
- "objc2-core-foundation",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "toml",
- "toml_edit",
- "zbus",
-]
-
-[[package]]
-name = "ds-settings-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "ds-style"
-version = "0.1.0"
-dependencies = [
- "ds-core",
- "ds-core-derive",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -1294,7 +1410,7 @@ checksum = "37bfe73dc8ec21f54d181e5a60554327ec3f1c600c455a75ccbfc65d2106a6c4"
 [[package]]
 name = "glifo"
 version = "0.2.0"
-source = "git+https://github.com/Bardo-DE/vello?rev=3e43d4af1f1955f2efc2cd52e50350811a1386ca#3e43d4af1f1955f2efc2cd52e50350811a1386ca"
+source = "git+https://github.com/Bardo-DE/vello?rev=5c986661c9e943d26dac8e8ea7812895947722b8#5c986661c9e943d26dac8e8ea7812895947722b8"
 dependencies = [
  "bytemuck",
  "foldhash",
@@ -1348,6 +1464,33 @@ name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
+
+[[package]]
+name = "http"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "918d3568bebf352712bc2ef3d46a8bcf1a75b373be6539de198e9105cbbf9ce0"
+dependencies = [
+ "bytes",
+ "itoa",
+]
+
+[[package]]
+name = "http-core"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "base-url",
+ "http",
+ "httpdate",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "httpdate"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 
 [[package]]
 name = "icu_collections"
@@ -1698,6 +1841,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "key-remap-client"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-xdg",
+ "key-remap-proto",
+ "keymap",
+ "rustix 1.1.5",
+]
+
+[[package]]
+name = "key-remap-proto"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "keyboard-types"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1719,24 +1882,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "keycap-client"
+name = "keymap"
 version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/keycap?rev=c5897ab064c080415002ad32dfc80c7eea981d12#c5897ab064c080415002ad32dfc80c7eea981d12"
 dependencies = [
- "chordkit",
- "chordkit-file",
- "keycap-protocol",
- "rustix 1.1.5",
- "shell-verbs 0.1.0 (git+https://github.com/Bardo-DE/casement-protocols?rev=fa664f1fcb312abd7e7a0e38ccae216406e88139)",
-]
-
-[[package]]
-name = "keycap-protocol"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/keycap?rev=c5897ab064c080415002ad32dfc80c7eea981d12#c5897ab064c080415002ad32dfc80c7eea981d12"
-dependencies = [
- "serde",
- "serde_json",
+ "keyboard-types 0.8.3",
  "thiserror 2.0.21",
 ]
 
@@ -2216,40 +2365,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
-name = "peephole"
-version = "0.1.11"
-source = "git+https://github.com/Bardo-DE/peephole?tag=v0.1.11#06a97c105d833b07a37feb48a16dde49ef4d8bc0"
-dependencies = [
- "nix 0.31.3",
- "peephole-core",
- "rustix 1.1.5",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "peephole-bus"
-version = "0.1.11"
-source = "git+https://github.com/Bardo-DE/peephole?tag=v0.1.11#06a97c105d833b07a37feb48a16dde49ef4d8bc0"
-dependencies = [
- "futures-timer",
- "peephole",
- "peephole-core",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "peephole-core"
-version = "0.1.11"
-source = "git+https://github.com/Bardo-DE/peephole?tag=v0.1.11#06a97c105d833b07a37feb48a16dde49ef4d8bc0"
-dependencies = [
- "serde",
- "thiserror 2.0.21",
- "toml",
-]
-
-[[package]]
 name = "peniko"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2390,95 +2505,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "10ab3eb7f3becc3a1cbc4f2c6f20267996cfc1a6467a873763411b136a122715"
 dependencies = [
  "portable-atomic",
-]
-
-[[package]]
-name = "porter-capability"
-version = "0.1.0"
-dependencies = [
- "porter-ids",
- "serde",
-]
-
-[[package]]
-name = "porter-core"
-version = "0.1.0"
-dependencies = [
- "peephole-core",
- "porter-capability",
- "porter-ids",
- "secrecy",
- "serde",
- "serde_json",
- "subtle",
- "thiserror 2.0.21",
- "zeroize",
-]
-
-[[package]]
-name = "porter-dbus"
-version = "0.1.0"
-dependencies = [
- "porter-core",
- "porter-dbus-macros",
- "porter-ids",
- "porter-tailscale",
- "porter-wire",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
-]
-
-[[package]]
-name = "porter-dbus-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "porter-ids"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "percent-encoding",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-match"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-ids",
- "serde",
-]
-
-[[package]]
-name = "porter-tailscale"
-version = "0.1.0"
-dependencies = [
- "porter-ids",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "porter-wire"
-version = "0.1.0"
-dependencies = [
- "porter-capability",
- "porter-core",
- "porter-match",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2917,6 +2943,69 @@ dependencies = [
 ]
 
 [[package]]
+name = "settings-dbus"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "dbus-kit",
+ "serde",
+ "serde_json",
+ "settings-types",
+ "thiserror 2.0.21",
+ "toml",
+ "zbus",
+]
+
+[[package]]
+name = "settings-store"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "settings-types",
+ "thiserror 2.0.21",
+ "toml",
+ "toml_edit",
+]
+
+[[package]]
+name = "settings-store-fs"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-spawn",
+ "base-time",
+ "base-xdg",
+ "futures-timer",
+ "notify",
+ "settings-store",
+ "settings-types",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "settings-types"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-words",
+ "serde",
+ "settings-types-macros",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "settings-types-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
 name = "sharded-slab"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2928,11 +3017,6 @@ dependencies = [
 [[package]]
 name = "shell-verbs"
 version = "0.1.0"
-
-[[package]]
-name = "shell-verbs"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/casement-protocols?rev=fa664f1fcb312abd7e7a0e38ccae216406e88139#fa664f1fcb312abd7e7a0e38ccae216406e88139"
 
 [[package]]
 name = "shlex"
@@ -3021,7 +3105,7 @@ checksum = "f9395f0f0eee849a9b707b2f06bb92a6a422090e2123bb2ef8e87a0e61892a8e"
 [[package]]
 name = "smithay"
 version = "0.7.0"
-source = "git+https://github.com/Bardo-DE/smithay?rev=cf88ef5174c8bd763c8692cf6ec1d3080713b912#cf88ef5174c8bd763c8692cf6ec1d3080713b912"
+source = "git+https://github.com/Bardo-DE/smithay?rev=919d8dcf7fe0b9ad03f3de53bc178dad30823631#919d8dcf7fe0b9ad03f3de53bc178dad30823631"
 dependencies = [
  "aliasable",
  "appendlist",
@@ -3423,6 +3507,79 @@ dependencies = [
 ]
 
 [[package]]
+name = "ui-behaviour"
+version = "0.1.0"
+dependencies = [
+ "ui-core",
+]
+
+[[package]]
+name = "ui-core"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "futures-timer",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "serde",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "ui-helpers"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-time",
+ "base-xdg",
+ "serde",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "ui-motion"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-words",
+ "ui-core",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-settings"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-spawn",
+ "base-time",
+ "objc2-core-foundation",
+ "serde",
+ "serde_json",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
+ "toml",
+ "ui-style",
+ "zbus",
+]
+
+[[package]]
+name = "ui-style"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-time",
+ "base-words",
+ "base-words-macros",
+ "serde",
+ "serde_json",
+ "settings-store",
+ "ui-core",
+]
+
+[[package]]
 name = "unarray"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3491,7 +3648,7 @@ dependencies = [
 [[package]]
 name = "vello_common"
 version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/vello?rev=3e43d4af1f1955f2efc2cd52e50350811a1386ca#3e43d4af1f1955f2efc2cd52e50350811a1386ca"
+source = "git+https://github.com/Bardo-DE/vello?rev=5c986661c9e943d26dac8e8ea7812895947722b8#5c986661c9e943d26dac8e8ea7812895947722b8"
 dependencies = [
  "bytemuck",
  "fearless_simd",
@@ -3506,7 +3663,7 @@ dependencies = [
 [[package]]
 name = "vello_cpu"
 version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/vello?rev=3e43d4af1f1955f2efc2cd52e50350811a1386ca#3e43d4af1f1955f2efc2cd52e50350811a1386ca"
+source = "git+https://github.com/Bardo-DE/vello?rev=5c986661c9e943d26dac8e8ea7812895947722b8#5c986661c9e943d26dac8e8ea7812895947722b8"
 dependencies = [
  "bytemuck",
  "glifo",
@@ -4395,13 +4552,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "wlcs-casement"
+name = "wlcs-compositor"
 version = "0.1.0"
 dependencies = [
- "casement",
- "casement-core",
- "casement-protocols",
- "casement-testkit",
+ "compositor-app",
+ "compositor-core",
+ "compositor-testkit",
+ "desktop-protocols",
  "wayland-sys",
  "wlcs",
 ]

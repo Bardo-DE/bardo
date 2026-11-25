@@ -7,7 +7,7 @@ use serde_json::json;
 
 use model_wire::ChatDecoder;
 
-use super::pipe::{Refused, Reply, assert_sound, call, calls, chunk, done, run, scenario, sse};
+use model_openai_compat::testing::{Refused, Reply, assert_sound, call, calls, chunk, done, run, scenario, sse};
 
 fn go(frames: &[String]) -> Reply {
     let reply = run(&[&sse(frames)]);
@@ -175,7 +175,7 @@ fn prose_is_not_flagged_and_a_real_call_beside_a_mention_is_not_a_leak() {
 fn a_reply_over_the_stream_limit_is_unreadable() {
     // Frames are read straight from the decoder: one SSE line is capped far below this.
     let big = chunk(json!({"content": "a".repeat(4 << 20)}), None);
-    let mut d = super::pipe::decoder();
+    let mut d = model_openai_compat::testing::decoder();
     let results: Vec<_> = (0..17).map(|_| d.feed(&big)).collect();
     assert!(results[..15].iter().all(Result::is_ok));
     assert_eq!(results[16], Err(CodecError::Unreadable));

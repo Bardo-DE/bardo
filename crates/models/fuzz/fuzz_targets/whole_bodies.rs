@@ -25,6 +25,8 @@ fuzz_target!(|data: &[u8]| {
                     body,
                     retry_after: None,
                     request_id: None,
+                    location: None,
+                    content_range: None,
                 };
                 let _ = codec.classify(&head, data);
             }

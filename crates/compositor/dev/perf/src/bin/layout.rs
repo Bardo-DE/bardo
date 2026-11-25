@@ -36,6 +36,8 @@ fn window(n: u64, placement: WindowPlacement) -> WindowSpec {
             max: None,
         },
         stack: StackIndex(n as u32),
+        // The benches' windows draw their own frames.
+        reserve_top: 0,
     }
 }
 
@@ -75,6 +77,7 @@ fn scene(spaces: usize, per_space: usize, mix: bool) -> SceneSpec {
         outputs: vec![OutputSpec {
             output: key,
             full: rect(0, 0, 1920, 1080),
+            covered: rect(0, 0, 1920, 1080),
             usable: rect(0, 24, 1920, 1056),
             scale: Scale::ONE,
             mode: SceneMode::Desktop {
@@ -91,6 +94,7 @@ fn run(name: &str, spec: &SceneSpec, options: Options) {
         tile_margin: 8,
         spread_gap: 20,
         spread_floor: Fraction(150),
+        grip: LogicalSize { w: 112, h: 28 },
     };
     let windows: usize = spec.outputs[0].spaces.iter().map(|s| s.windows.len()).sum();
     time_row(

@@ -1,22 +1,24 @@
-# Fuzz targets for computer-use-parse (QUESTIONS P11). Not a workspace member and nightly only: it is run
-# by hand with `dev/fuzz-computer-use-parse.sh`, never by CI or the stable gate. Its `[workspace]` table
-# keeps cargo from reading it as part of the model layer's.
+# Fuzz targets for computer-use-parse (QUESTIONS P11). A workspace member so the gate compiles it;
+# fuzzing needs nightly and cargo-fuzz and is run by hand with `dev/fuzz-computer-use-parse.sh`.
 [package]
 name = "computer-use-parse-fuzz"
-version = "0.0.0"
-edition = "2024"
-publish = false
+description = "Developer tool: libFuzzer targets for computer-use-parse."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [package.metadata]
 cargo-fuzz = true
 
 [dependencies]
-libfuzzer-sys = {workspace = true}
+libfuzzer-sys = { workspace = true }
 computer-use-action = { path = "../../computer-use-action" }
 computer-use-parse = { path = ".." }
 model-provider = { path = "../../model-provider" }
 
-[workspace]
 
 [[bin]]
 name = "parse_text"
@@ -38,3 +40,6 @@ path = "fuzz_targets/read_calls.rs"
 test = false
 doc = false
 bench = false
+
+[lints]
+workspace = true

@@ -1,20 +1,20 @@
 [package]
 name = "actions-fuzz"
-version = "0.0.0"
-edition = "2024"
-publish = false
-
-# Not part of the actions workspace and not part of its gate: libFuzzer needs a nightly toolchain
-# and `cargo-fuzz`. Run it with `dev/fuzz.sh`.
-[workspace]
+description = "Developer tool: libFuzzer targets for the actions service's parsers of model and peer output."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [package.metadata]
 cargo-fuzz = true
 
 [dependencies]
-libfuzzer-sys = "0.4"
-serde_json = "1"
-toml = "1"
+libfuzzer-sys = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
 action-review = { path = "../action-review" }
 agent-loop = { path = "../agent-loop" }
 companion-wire = { path = "../companion-wire" }
@@ -25,7 +25,7 @@ action-vocab = { path = "../action-vocab" }
 action-eval = { path = "../action-eval" }
 action-fake = { path = "../action-fake" }
 action-eval-core = { path = "../action-eval-core" }
-provenance = { git = "https://github.com/Bardo-DE/bardo", rev = "5106c0c2f502711411ba82c72b32c7e543b9cc4d" }
+provenance = { path = "../../provenance/provenance" }
 speech-wire = { path = "../../speech/speech-wire" }
 
 [[bin]]
@@ -37,12 +37,6 @@ doc = false
 [[bin]]
 name = "tool_args"
 path = "fuzz_targets/tool_args.rs"
-test = false
-doc = false
-
-[[bin]]
-name = "unframe"
-path = "fuzz_targets/unframe.rs"
 test = false
 doc = false
 
@@ -63,3 +57,6 @@ name = "case_files"
 path = "fuzz_targets/case_files.rs"
 test = false
 doc = false
+
+[lints]
+workspace = true

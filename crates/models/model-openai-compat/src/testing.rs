@@ -1,10 +1,11 @@
-//! The path the driver takes: bytes in chunks, through the SSE framer, into the stream decoder.
+//! Test support (feature `testing`), shared by this crate's `hostile` suite and the model fuzz
+//! targets. The path the driver takes: bytes in chunks, through the SSE framer, into the stream decoder.
 
 use std::collections::BTreeSet;
 use std::fmt::Write as _;
 
+use crate::{CodecError, Flavor, LeakMarker, StreamDecoder};
 use model_http::{SseDecoder, SseError};
-use model_openai_compat::{CodecError, Flavor, LeakMarker, StreamDecoder};
 use model_provider::{ModelName, StopReason, TurnEnd, TurnEvent};
 use model_wire::ChatDecoder;
 use serde_json::{Value, json};
@@ -23,6 +24,7 @@ pub struct Reply {
     pub end: Result<TurnEnd, Refused>,
 }
 
+#[must_use]
 pub fn decoder() -> StreamDecoder {
     StreamDecoder::new(Flavor::Vllm, ModelName("holo".into()))
 }
@@ -60,6 +62,7 @@ pub fn run(chunks: &[&[u8]]) -> Reply {
 }
 
 /// `bytes` cut at `cuts` (each taken modulo the length).
+#[must_use]
 pub fn run_cut(bytes: &[u8], cuts: &[usize]) -> Reply {
     let mut points: Vec<usize> = cuts.iter().map(|c| c % (bytes.len() + 1)).collect();
     points.extend([0, bytes.len()]);
@@ -68,6 +71,7 @@ pub fn run_cut(bytes: &[u8], cuts: &[usize]) -> Reply {
     run(&chunks)
 }
 
+#[must_use]
 pub fn done(reply: &Reply) -> Vec<&model_provider::ToolCall> {
     reply
         .events
@@ -79,9 +83,15 @@ pub fn done(reply: &Reply) -> Vec<&model_provider::ToolCall> {
         .collect()
 }
 
-/// What must hold of every reply whatever the bytes: a delivered call was started first, has a
-/// unique id and arguments that are a whole JSON object; the usage never says cached above input;
-/// a turn that ends cleanly after delivering a call says it used a tool or ran out of tokens.
+/// Asserts what must hold of every reply, whatever the bytes.
+///
+/// A delivered call was started first, has a unique id and arguments that are a whole JSON
+/// object; the usage never says cached above input; a turn that ends cleanly after delivering a
+/// call says it used a tool or ran out of tokens.
+///
+/// # Panics
+///
+/// When `reply` breaks one of those rules: that is the finding.
 pub fn assert_sound(reply: &Reply) {
     let mut started = BTreeSet::new();
     let mut finished = BTreeSet::new();
@@ -123,6 +133,7 @@ pub fn assert_sound(reply: &Reply) {
     }
 }
 
+#[must_use]
 pub fn sse(frames: &[String]) -> Vec<u8> {
     let mut body = String::new();
     for frame in frames {
@@ -136,12 +147,14 @@ pub fn sse(frames: &[String]) -> Vec<u8> {
     clippy::needless_pass_by_value,
     reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
 )]
+#[must_use]
 pub fn chunk(delta: Value, finish: Option<&str>) -> String {
     json!({"id":"c","object":"chat.completion.chunk","model":"holo",
            "choices":[{"index":0,"delta":delta,"finish_reason":finish}]})
     .to_string()
 }
 
+#[must_use]
 pub fn call(index: u32, id: Option<&str>, name: Option<&str>, args: Option<&str>) -> Value {
     let mut c = json!({"index": index, "type": "function", "function": {}});
     if let Some(id) = id {
@@ -160,11 +173,13 @@ pub fn call(index: u32, id: Option<&str>, name: Option<&str>, args: Option<&str>
     clippy::needless_pass_by_value,
     reason = "a test helper whose callers build the JSON inline with json!(); taking it by reference would put & in front of every call"
 )]
+#[must_use]
 pub fn calls(list: Vec<Value>) -> Value {
     json!({ "tool_calls": list })
 }
 
 /// A valid reply with two calls, text with multi-byte characters, a thought, and usage.
+#[must_use]
 pub fn scenario() -> Vec<String> {
     vec![
         chunk(

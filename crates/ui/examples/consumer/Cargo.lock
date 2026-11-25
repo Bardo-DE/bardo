@@ -436,6 +436,61 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
+name = "base-fs"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "rustix",
+ "thiserror 2.0.20",
+]
+
+[[package]]
+name = "base-ids"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "thiserror 2.0.20",
+]
+
+[[package]]
+name = "base-spawn"
+version = "0.1.0"
+
+[[package]]
+name = "base-time"
+version = "0.1.0"
+dependencies = [
+ "futures-timer",
+ "jiff",
+ "serde",
+ "thiserror 2.0.20",
+]
+
+[[package]]
+name = "base-words"
+version = "0.1.0"
+dependencies = [
+ "base-words-macros",
+]
+
+[[package]]
+name = "base-words-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "base-xdg"
+version = "0.1.0"
+dependencies = [
+ "thiserror 2.0.20",
+]
+
+[[package]]
 name = "base64"
 version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -525,6 +580,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "blitz-embed"
+version = "0.1.0"
+dependencies = [
+ "blitz-dom",
+ "blitz-embed-types",
+ "blitz-traits",
+ "keyboard-types 0.7.0",
+ "parley",
+ "serde",
+ "tokio",
+ "wgpu",
+]
+
+[[package]]
+name = "blitz-embed-types"
+version = "0.1.0"
+
+[[package]]
 name = "blitz-html"
 version = "0.3.0-beta.2"
 source = "git+https://github.com/Bardo-DE/blitz?rev=841386a71f17673c211217725e75068774517ba8#841386a71f17673c211217725e75068774517ba8"
@@ -533,20 +606,6 @@ dependencies = [
  "blitz-traits",
  "html5ever",
  "xml5ever",
-]
-
-[[package]]
-name = "blitz-kit"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/blitz-kit?rev=50a25175660922021d25592bdf84b0a5fd723598#50a25175660922021d25592bdf84b0a5fd723598"
-dependencies = [
- "blitz-dom",
- "blitz-traits",
- "keyboard-types 0.7.0",
- "parley",
- "serde",
- "tokio",
- "wgpu",
 ]
 
 [[package]]
@@ -772,41 +831,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f079e83a288787bcd14a6aea84cee5c87a67c5a3e660c30f557a3d24761b3527"
 
 [[package]]
-name = "chordkit"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/chordkit.git?rev=99eec9ddd03ee345b669fcc7954ed44590724290#99eec9ddd03ee345b669fcc7954ed44590724290"
-dependencies = [
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "chordkit-file"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/chordkit.git?rev=99eec9ddd03ee345b669fcc7954ed44590724290#99eec9ddd03ee345b669fcc7954ed44590724290"
-dependencies = [
- "libc",
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "chordkit-gnome"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/chordkit.git?rev=99eec9ddd03ee345b669fcc7954ed44590724290#99eec9ddd03ee345b669fcc7954ed44590724290"
-dependencies = [
- "chordkit",
- "chordkit-file",
-]
-
-[[package]]
-name = "chordkit-kde"
-version = "0.1.0"
-source = "git+https://github.com/Bardo-DE/chordkit.git?rev=99eec9ddd03ee345b669fcc7954ed44590724290#99eec9ddd03ee345b669fcc7954ed44590724290"
-dependencies = [
- "chordkit",
- "chordkit-file",
-]
-
-[[package]]
 name = "clipboard-win"
 version = "5.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -885,14 +909,19 @@ dependencies = [
 name = "consumer"
 version = "0.0.0"
 dependencies = [
+ "base-words",
  "dioxus",
  "dioxus-ssr",
- "ds",
- "ds-blitz",
- "ds-harness",
- "ds-lint",
- "ds-settings",
  "serde",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
+ "ui-blitz",
+ "ui-components",
+ "ui-harness",
+ "ui-host-hooks",
+ "ui-lint",
+ "ui-settings",
 ]
 
 [[package]]
@@ -1017,7 +1046,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d045de693cb712d0b22c6a64be5b953f67b3ce00ab5ad3dd5d8b441886ab8e1a"
 dependencies = [
  "quote",
- "syn 2.0.119",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -1476,204 +1505,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8b14ccef22fc6f5a8f4d7d768562a182c04ce9a3b3157b91390b52ddfdf1a76"
 
 [[package]]
-name = "ds"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "dioxus",
- "ds-core",
- "ds-intents",
- "ds-motion",
- "ds-style",
- "serde",
- "thiserror 2.0.20",
- "toml",
-]
-
-[[package]]
-name = "ds-blitz"
-version = "0.1.0"
-dependencies = [
- "anyrender",
- "anyrender_vello_hybrid",
- "arboard",
- "blitz-dom",
- "blitz-html",
- "blitz-kit",
- "blitz-paint",
- "blitz-shell",
- "blitz-traits",
- "chordkit",
- "chordkit-gnome",
- "chordkit-kde",
- "dioxus",
- "dioxus-asset-resolver",
- "dioxus-native",
- "dioxus-native-dom",
- "ds",
- "ds-desktop",
- "image",
- "keyboard-types 0.7.0",
- "parley",
- "peniko",
- "quire-emoji",
- "raw-window-handle",
- "thiserror 2.0.20",
- "tokio",
- "wayland-backend",
- "wayland-client",
- "wayland-protocols",
- "wayland-scanner",
- "webbrowser",
- "wgpu",
- "wgpu_context",
-]
-
-[[package]]
-name = "ds-core"
-version = "0.1.0"
-dependencies = [
- "chordkit",
- "ds-core-derive",
- "futures-timer",
- "keyboard-types 0.7.0",
- "serde",
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "ds-core-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "ds-desktop"
-version = "0.1.0"
-dependencies = [
- "ds-peer",
-]
-
-[[package]]
-name = "ds-harness"
-version = "0.1.0"
-dependencies = [
- "anyrender",
- "anyrender_vello_cpu",
- "anyrender_vello_hybrid",
- "blitz-dom",
- "blitz-html",
- "blitz-kit",
- "blitz-paint",
- "blitz-traits",
- "chordkit",
- "dioxus",
- "dioxus-native-dom",
- "ds",
- "ds-blitz",
- "ds-core",
- "image",
- "keyboard-types 0.7.0",
- "parley",
- "peniko",
- "rustc-hash 2.1.3",
- "thiserror 2.0.20",
- "vello_hybrid",
- "wgpu",
- "wgpu_context",
-]
-
-[[package]]
-name = "ds-helpers"
-version = "0.1.0"
-dependencies = [
- "ds-peer",
- "rustix",
- "serde",
- "thiserror 2.0.20",
- "toml",
-]
-
-[[package]]
-name = "ds-intents"
-version = "0.1.0"
-dependencies = [
- "ds-core",
-]
-
-[[package]]
-name = "ds-lint"
-version = "0.1.0"
-dependencies = [
- "cssparser",
- "ds-core",
- "ds-style",
-]
-
-[[package]]
-name = "ds-motion"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "ds-core",
- "ds-style",
-]
-
-[[package]]
-name = "ds-peer"
-version = "0.1.0"
-dependencies = [
- "futures-timer",
- "thiserror 2.0.20",
-]
-
-[[package]]
-name = "ds-settings"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "ds-core",
- "ds-helpers",
- "ds-peer",
- "ds-settings-derive",
- "ds-style",
- "futures-timer",
- "notify",
- "objc2-core-foundation",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "toml",
- "toml_edit",
- "zbus",
-]
-
-[[package]]
-name = "ds-settings-derive"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
-]
-
-[[package]]
-name = "ds-style"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "ds-core",
- "ds-core-derive",
- "image",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "dtoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1779,7 +1610,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2527,6 +2358,58 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682"
 
 [[package]]
+name = "jiff"
+version = "0.2.46"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "175dc66334db3b9ab9985bf8b61cfed50dc16d20964bb47f9e479adcae984a7f"
+dependencies = [
+ "jiff-core",
+ "jiff-static",
+ "jiff-tzdb-platform",
+ "log",
+ "portable-atomic",
+ "portable-atomic-util",
+ "serde_core",
+ "windows-link",
+]
+
+[[package]]
+name = "jiff-core"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e599b80292e597019b8b3e392de3f4bea2959ddfb8c7dff60e035e9e311a2c1b"
+dependencies = [
+ "log",
+]
+
+[[package]]
+name = "jiff-static"
+version = "0.2.46"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7b1af7547d47354bc438d797e3854601bde8f8d185780c5ba4ab27afa54f1ba"
+dependencies = [
+ "jiff-core",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
+name = "jiff-tzdb"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0980fca2cc272465bd60e82397607ba9f33add9e48defd77923301bbd03808f2"
+
+[[package]]
+name = "jiff-tzdb-platform"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "875a5a69ac2bab1a891711cf5eccbec1ce0341ea805560dcd90b7a2e925132e8"
+dependencies = [
+ "jiff-tzdb",
+]
+
+[[package]]
 name = "jni"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2649,6 +2532,30 @@ checksum = "0fbe853b403ae61a04233030ae8a79d94975281ed9770a1f9e246732b534b28d"
 dependencies = [
  "bitflags",
  "serde",
+]
+
+[[package]]
+name = "keymap"
+version = "0.1.0"
+dependencies = [
+ "keyboard-types 0.8.3",
+ "thiserror 2.0.20",
+]
+
+[[package]]
+name = "keymap-gnome"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "keymap",
+]
+
+[[package]]
+name = "keymap-kde"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "keymap",
 ]
 
 [[package]]
@@ -3497,7 +3404,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967"
 dependencies = [
  "libc",
- "windows-sys 0.45.0",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "outputs-dbus"
+version = "0.1.0"
+dependencies = [
+ "zbus",
 ]
 
 [[package]]
@@ -3890,13 +3804,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "quire-emoji"
-version = "0.1.0"
-dependencies = [
- "fontique",
-]
-
-[[package]]
 name = "quote"
 version = "1.0.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4075,7 +3982,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4228,6 +4135,55 @@ dependencies = [
 ]
 
 [[package]]
+name = "settings-store"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "settings-types",
+ "thiserror 2.0.20",
+ "toml",
+ "toml_edit",
+]
+
+[[package]]
+name = "settings-store-fs"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-spawn",
+ "base-time",
+ "base-xdg",
+ "futures-timer",
+ "notify",
+ "settings-store",
+ "settings-types",
+ "thiserror 2.0.20",
+ "toml",
+]
+
+[[package]]
+name = "settings-types"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-words",
+ "serde",
+ "settings-types-macros",
+ "thiserror 2.0.20",
+ "toml",
+]
+
+[[package]]
+name = "settings-types-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
+]
+
+[[package]]
 name = "sha3"
 version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4361,6 +4317,16 @@ checksum = "4aaa7368fcf4852a4c2dd92df0cace6a71f2091ca0a23391ce7f3a31833f1523"
 dependencies = [
  "borsh",
  "serde_core",
+]
+
+[[package]]
+name = "socket2"
+version = "0.6.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
+dependencies = [
+ "libc",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4698,7 +4664,7 @@ dependencies = [
  "getrandom",
  "once_cell",
  "rustix",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4716,7 +4682,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4858,8 +4824,15 @@ version = "1.53.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce3335fa71841cda333a58d7615b03901380ecf09d59b3296d21f8bbac0dde4e"
 dependencies = [
+ "bytes",
+ "libc",
+ "mio",
  "pin-project-lite",
+ "signal-hook-registry",
+ "socket2",
  "tokio-macros",
+ "tracing",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4988,7 +4961,199 @@ checksum = "f2f6fb2847f6742cd76af783a2a2c49e9375d0a111c7bef6f71cd9e738c72d6e"
 dependencies = [
  "memoffset",
  "tempfile",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "ui-blitz"
+version = "0.1.0"
+dependencies = [
+ "anyrender",
+ "anyrender_vello_hybrid",
+ "arboard",
+ "base-fs",
+ "base-xdg",
+ "blitz-dom",
+ "blitz-embed",
+ "blitz-embed-types",
+ "blitz-html",
+ "blitz-paint",
+ "blitz-shell",
+ "blitz-traits",
+ "dioxus",
+ "dioxus-asset-resolver",
+ "dioxus-native",
+ "dioxus-native-dom",
+ "image",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "keymap-gnome",
+ "keymap-kde",
+ "parley",
+ "peniko",
+ "raw-window-handle",
+ "thiserror 2.0.20",
+ "tokio",
+ "ui-components",
+ "ui-desktop",
+ "ui-emoji",
+ "ui-host-hooks",
+ "wayland-backend",
+ "wayland-client",
+ "wayland-protocols",
+ "wayland-scanner",
+ "webbrowser",
+ "wgpu",
+ "wgpu_context",
+]
+
+[[package]]
+name = "ui-components"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-spawn",
+ "base-words",
+ "dioxus",
+ "keymap",
+ "serde",
+ "thiserror 2.0.20",
+ "toml",
+ "ui-core",
+ "ui-intents",
+ "ui-motion",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-core"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "futures-timer",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "serde",
+ "thiserror 2.0.20",
+]
+
+[[package]]
+name = "ui-desktop"
+version = "0.1.0"
+dependencies = [
+ "base-time",
+ "outputs-dbus",
+]
+
+[[package]]
+name = "ui-emoji"
+version = "0.1.0"
+dependencies = [
+ "base-xdg",
+ "fontique",
+]
+
+[[package]]
+name = "ui-harness"
+version = "0.1.0"
+dependencies = [
+ "anyrender",
+ "anyrender_vello_cpu",
+ "anyrender_vello_hybrid",
+ "blitz-dom",
+ "blitz-embed",
+ "blitz-html",
+ "blitz-paint",
+ "blitz-traits",
+ "dioxus",
+ "dioxus-native-dom",
+ "image",
+ "keyboard-types 0.7.0",
+ "keymap",
+ "parley",
+ "peniko",
+ "rustc-hash 2.1.3",
+ "thiserror 2.0.20",
+ "ui-blitz",
+ "ui-components",
+ "ui-core",
+ "ui-host-hooks",
+ "vello_hybrid",
+ "wgpu",
+ "wgpu_context",
+]
+
+[[package]]
+name = "ui-host-hooks"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "dioxus",
+ "thiserror 2.0.20",
+ "tokio",
+ "ui-components",
+]
+
+[[package]]
+name = "ui-intents"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "ui-core",
+]
+
+[[package]]
+name = "ui-lint"
+version = "0.1.0"
+dependencies = [
+ "base-words",
+ "cssparser",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-motion"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-words",
+ "dioxus",
+ "ui-core",
+ "ui-style",
+]
+
+[[package]]
+name = "ui-settings"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "base-spawn",
+ "base-time",
+ "dioxus",
+ "objc2-core-foundation",
+ "serde",
+ "serde_json",
+ "settings-store",
+ "settings-store-fs",
+ "settings-types",
+ "toml",
+ "ui-style",
+ "zbus",
+]
+
+[[package]]
+name = "ui-style"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-time",
+ "base-words",
+ "base-words-macros",
+ "dioxus",
+ "serde",
+ "serde_json",
+ "settings-store",
+ "ui-core",
 ]
 
 [[package]]
@@ -5719,7 +5884,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6386,6 +6551,7 @@ dependencies = [
  "rustix",
  "serde",
  "serde_repr",
+ "tokio",
  "tracing",
  "uds_windows",
  "uuid",

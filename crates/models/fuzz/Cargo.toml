@@ -1,27 +1,30 @@
-# Fuzz targets for the decoders of model, engine and socket bytes. Not a workspace member and
-# nightly only: run by hand with `dev/fuzz.sh`, never by CI or the stable gate (the proptest
-# suites `hostile` in model-http, model-openai-compat, bardo-speech-host and speech-host-client are
-# what the gate runs). Its `[workspace]` table keeps cargo from reading it as part of the model layer's.
+# Fuzz targets for the decoders of model, engine and socket bytes. A workspace member so the gate
+# compiles it; fuzzing needs nightly and cargo-fuzz and is run by hand with `dev/fuzz.sh` (the
+# proptest suites `hostile` in model-http, model-openai-compat, bardo-speech-host and
+# speech-host-client are what the gate runs).
 [package]
 name = "model-fuzz"
-version = "0.0.0"
-edition = "2024"
-publish = false
+description = "Developer tool: libFuzzer targets for the decoders of model, engine and socket bytes."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [package.metadata]
 cargo-fuzz = true
 
 [dependencies]
-libfuzzer-sys = {workspace = true}
-serde_json = {workspace = true}
+libfuzzer-sys = { workspace = true }
+serde_json = { workspace = true }
 model-http = { path = "../model-http" }
-model-openai-compat = { path = "../model-openai-compat" }
+model-openai-compat = { path = "../model-openai-compat", features = ["testing"] }
 model-provider = { path = "../model-provider" }
 model-wire = { path = "../model-wire" }
 speech-provider = { path = "../speech-provider" }
 speech-host-client = { path = "../../speech/speech-host-client" }
 
-[workspace]
 
 [[bin]]
 name = "sse_stream"
@@ -57,3 +60,6 @@ path = "fuzz_targets/host_frames.rs"
 test = false
 doc = false
 bench = false
+
+[lints]
+workspace = true

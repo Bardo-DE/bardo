@@ -1,18 +1,25 @@
 # Builds the syntax set anyview-text loads: syntect's default syntaxes plus the .sublime-syntax files
-# under crates/anyview-text/syntaxes, as one packed dump. A tool of its own, outside the workspace
-# (its YAML loader is why), so that nothing it needs is in the viewer's dependency tree.
+# under crates/anyview-text/syntaxes, as one packed dump.
 #
 #     dev/syntax-dump/build.sh
+#
+# A workspace member, so it builds with the very syntect anyview-text loads the dump with (one
+# version in Cargo.lock, the same regex engine): a dump made by another version or engine fails to
+# load, and then every file is shown plain. The `> 90 syntaxes` test in anyview-text
+# (code/tests.rs) is the guard. Its YAML loader and dump writer are its own features; anyview-text
+# never asks for them.
 [package]
 name = "syntax-dump"
-version = "0.0.0"
-edition = "2024"
-publish = false
+description = "Developer tool: packs syntect's default syntaxes and anyview-text's own into the dump the viewer loads."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
-# Keep this syntect version and its regex engine (regex-fancy) the same as the workspace's
-# Cargo.toml (anyview-text): a dump made by another version or engine fails to load, and then every
-# file is shown plain. The `> 90 syntaxes` test in anyview-text (code/tests.rs) is the guard.
 [dependencies]
-syntect = {workspace = true, features = ["parsing", "default-syntaxes", "yaml-load", "dump-create", "regex-fancy"]}
+syntect = { workspace = true, features = ["parsing", "default-syntaxes", "yaml-load", "dump-create", "regex-fancy"] }
 
-[workspace]
+[lints]
+workspace = true

@@ -21,7 +21,13 @@ serde_json = { workspace = true, features = ["raw_value"] }
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 log = { workspace = true }
 
+[features]
+# Test support: the decode pipeline and its invariants (`testing`), for this crate's own tests
+# and the fuzz targets.
+testing = []
+
 [dev-dependencies]
+model-openai-compat = { path = ".", features = ["testing"] }
 base64 = { workspace = true }
 model-http-reqwest = {path = "../model-http-reqwest"}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}

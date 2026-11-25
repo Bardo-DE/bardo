@@ -1,5 +1,6 @@
 //! `cargo xtask gate`: the workspace-deps, renderer-edges, domain-order, product-words, error-names, no-mod-rs,
-//! no-prefs and test-modules checks, then fmt, clippy and tests on the affected set.
+//! no-prefs and test-modules checks, then fmt, clippy and tests on the affected set, then a compile
+//! of every workspace of its own.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -84,6 +85,27 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
             tests_root.apply(&mut cmd, step.args.iter().any(|a| a == "--doc"))?;
         }
         if !run_logged_within(&ws.root, &mut cmd, step.deadline)? {
+            return Ok(finish("gate", false));
+        }
+    }
+    // The workspaces of their own (the UI kit's outside consumer, the perf benches, the wlcs
+    // shim) are built by nothing else, so a change to a crate they use is compiled against them
+    // here.
+    for (file, _) in super::workspace_deps::nested_manifests(&ws.root)? {
+        let mut cmd = Command::new("cargo");
+        cmd.args([
+            "check",
+            "--locked",
+            "--all-targets",
+            "--manifest-path",
+            &file,
+        ]);
+        for var in SESSION_VARS {
+            cmd.env_remove(var);
+        }
+        cmd.env("CARGO_INCREMENTAL", "0");
+        cmd.env("CARGO_PROFILE_DEV_DEBUG", "false");
+        if !run_logged_within(&ws.root, &mut cmd, Duration::from_secs(20 * MINUTE))? {
             return Ok(finish("gate", false));
         }
     }

@@ -2,8 +2,8 @@
 #![no_main]
 
 use action_review::parse_verdict;
-use permission_core::{Stage, VerdictKind};
 use libfuzzer_sys::fuzz_target;
+use permission_core::{Stage, VerdictKind};
 
 fuzz_target!(|input: (u8, &str)| {
     let (pick, raw) = input;
@@ -12,9 +12,7 @@ fuzz_target!(|input: (u8, &str)| {
         1 => Stage::Deliberate,
         _ => Stage::SecondOpinion,
     };
-    let allowed = parse_verdict(raw, stage)
-        .map(|v| v.kind() == VerdictKind::Allow)
-        .unwrap_or(false);
+    let allowed = parse_verdict(raw, stage).is_ok_and(|v| v.kind() == VerdictKind::Allow);
     if !allowed {
         return;
     }

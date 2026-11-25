@@ -3,5 +3,4 @@
 //! typed result, never a panic, and a tool call is reported only when it was read in full.
 
 mod cases;
-mod pipe;
 mod props;

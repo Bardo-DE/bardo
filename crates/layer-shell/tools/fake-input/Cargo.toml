@@ -1,17 +1,19 @@
-# A test-harness client for a nested KWin, outside the layer-shell-host workspace: it needs
-# `wayland-protocols-plasma` (org_kde_kwin_fake_input), which is KDE-specific and not in the
-# pinned dependency block, and it never ships. See scripts/dev/fake-input.sh.
+# A test-harness client for a nested KWin: it presses keys through `org_kde_kwin_fake_input`
+# (`wayland-protocols-plasma`, KDE-specific). It never ships. See scripts/dev/fake-input.sh.
 [package]
 name = "fake-input"
-version = "0.1.0"
-edition = "2024"
-license = "MIT OR Apache-2.0"
-publish = false
+description = "Developer tool: presses keys in a nested KWin through org_kde_kwin_fake_input, for the layer-shell host's harness."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
 
 [dependencies]
-wayland-client = {workspace = true}
-wayland-protocols-plasma = {workspace = true, features = ["client"]}
+wayland-client = { workspace = true }
+wayland-protocols-plasma = { workspace = true, features = ["client"] }
 xkbcommon = { version = "0.8", default-features = false }
 
-# Its own workspace, so the layer-shell-host workspace neither builds it nor lists it.
-[workspace]
+[lints]
+workspace = true

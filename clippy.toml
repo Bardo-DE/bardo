@@ -1,6 +1,6 @@
 # Proper names that clippy's doc_markdown would otherwise want in backticks. ".." keeps clippy's own list.
 doc-valid-idents = [
     "..",
-    "AccountsService", "AltGr", "BlueZ", "IBus", "NetworkManager", "OpenEXR", "PackBits",
+    "AccountsService", "AltGr", "BlueZ", "IBus", "KWin", "NetworkManager", "OpenEXR", "PackBits",
     "PipeWire", "PulseAudio", "SwiftUI", "UPower", "WirePlumber", "XWayland",
 ]

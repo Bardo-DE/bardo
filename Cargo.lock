@@ -1544,6 +1544,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "actions-fuzz"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-eval",
+ "action-eval-core",
+ "action-fake",
+ "action-manifest",
+ "action-review",
+ "action-vocab",
+ "agent-loop",
+ "companion-wire",
+ "libfuzzer-sys",
+ "permission-core",
+ "provenance",
+ "serde_json",
+ "speech-wire",
+ "toml",
+]
+
+[[package]]
 name = "adler2"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4743,6 +4764,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "computer-use-parse-fuzz"
+version = "0.1.0"
+dependencies = [
+ "computer-use-action",
+ "computer-use-parse",
+ "libfuzzer-sys",
+ "model-provider",
+]
+
+[[package]]
 name = "computer-use-run"
 version = "0.1.0"
 dependencies = [
@@ -6259,6 +6290,15 @@ name = "extended"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af9673d8203fcb076b19dfd17e38b3d4ae9f44959416ea532ce72415a6020365"
+
+[[package]]
+name = "fake-input"
+version = "0.1.0"
+dependencies = [
+ "wayland-client",
+ "wayland-protocols-plasma",
+ "xkbcommon 0.8.0",
+]
 
 [[package]]
 name = "fallible-iterator"
@@ -9952,6 +9992,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "model-fuzz"
+version = "0.1.0"
+dependencies = [
+ "libfuzzer-sys",
+ "model-http",
+ "model-openai-compat",
+ "model-provider",
+ "model-wire",
+ "serde_json",
+ "speech-host-client",
+ "speech-provider",
+]
+
+[[package]]
 name = "model-genai-names"
 version = "0.1.0"
 
@@ -9994,6 +10048,7 @@ dependencies = [
  "log",
  "model-http",
  "model-http-reqwest",
+ "model-openai-compat",
  "model-provider",
  "model-replay",
  "model-wire",
@@ -15247,6 +15302,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "syntax-dump"
+version = "0.1.0"
+dependencies = [
+ "syntect",
+]
+
+[[package]]
 name = "syntect"
 version = "5.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -15262,6 +15324,7 @@ dependencies = [
  "serde_derive",
  "thiserror 2.0.21",
  "walkdir",
+ "yaml-rust",
 ]
 
 [[package]]
@@ -18119,6 +18182,15 @@ name = "y4m"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a5a4b21e1a62b67a2970e6831bc091d7b87e119e7f9791aef9702e3bef04448"
+
+[[package]]
+name = "yaml-rust"
+version = "0.4.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56c1936c4cc7a1c9ab21a1ebb602eb942ba868cbd44a99cb7cdc5892335e1c85"
+dependencies = [
+ "linked-hash-map",
+]
 
 [[package]]
 name = "yasna"

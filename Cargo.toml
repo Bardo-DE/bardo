@@ -38,6 +38,7 @@ members = [
     "crates/anyview/crates/anyview-platform",
     "crates/anyview/crates/anyview-store",
     "crates/anyview/crates/anyview-text",
+    "crates/anyview/dev/syntax-dump",
     "crates/plugin/plugin-host",
     "crates/blitz-embed/blitz-embed",
     "crates/blitz-embed/blitz-embed-types",
@@ -149,6 +150,7 @@ members = [
     "crates/actions/action-daemon",
     "crates/actions/permission-policy",
     "crates/actions/agent-reader-daemon",
+    "crates/actions/fuzz",
     "crates/speech/speech-audio",
     "crates/speech/speech-dbus",
     "crates/speech/speech-loop",
@@ -279,6 +281,7 @@ members = [
     "crates/layer-shell/layer-shell-host",
     "crates/layer-shell/layer-shell-hooks",
     "crates/layer-shell/layer-shell-types",
+    "crates/layer-shell/tools/fake-input",
     "crates/shell/shell-app",
     "crates/shell/shell-bar",
     "crates/shell/shell-host-config",
@@ -336,6 +339,8 @@ members = [
     "crates/models/speech-provider",
     "crates/speech/speech-vad",
     "crates/models/model-vision-prep",
+    "crates/models/fuzz",
+    "crates/models/computer-use-parse/fuzz",
     "crates/portal/portal-daemon",
     "crates/portal/portal-dbus",
     "crates/shell/shell-dbus",
@@ -349,7 +354,6 @@ members = [
 ]
 exclude = [
     'crates/compositor/wlcs-compositor',
-    'crates/actions/fuzz',
     'crates/speech/speech-host-sherpa',
     'crates/input/input-broker/vendor/input-linux-sys',
 ]
@@ -669,6 +673,7 @@ keyring-core = "1"
 landlock = "0.4"
 lexopt = "0.3"
 libc = "0.2"
+libfuzzer-sys = "0.4"
 libpulse-binding = "2.30"
 listenfd = "1"
 log = "0.4"
@@ -762,6 +767,7 @@ wayland-backend = "0.3"
 wayland-client = "0.31"
 wayland-protocols = "0.32.13"
 wayland-protocols-misc = "0.3.12"
+wayland-protocols-plasma = "0.3"
 wayland-protocols-wlr = "0.3.12"
 wayland-scanner = "0.31"
 wayland-server = "0.31"
