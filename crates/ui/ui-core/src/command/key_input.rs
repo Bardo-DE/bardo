@@ -2,7 +2,7 @@
 //! [`keymap::KeyInput`]. Everything that resolves a key to an action goes through it, so no
 //! other file decides what Ctrl, Super or Meta mean.
 
-use keyboard_types::{Key, Modifiers};
+use keyboard_types::{Key, Modifiers, NamedKey};
 use keymap::{Key as ChordKey, KeyInput};
 
 /// The chord flags `held` reports: Ctrl, Alt, Shift, the OS key (`META`) and `AltGraph`. Locks
@@ -22,10 +22,39 @@ pub fn modifiers_of(held: Modifiers) -> Modifiers {
     flags_of(held).difference(Modifiers::ALT_GRAPH)
 }
 
-/// The chord key `key` is, or `None` for a multi-character string from an IME.
+/// Whether `key` can be a chord's key: a character, an editing or arrow key, Print Screen or a
+/// function key. A modifier on its own, a media key and the like are not.
+fn is_chord_key(key: &Key) -> bool {
+    match key {
+        Key::Character(_) => true,
+        Key::Named(named) => {
+            matches!(
+                named,
+                NamedKey::Enter
+                    | NamedKey::Tab
+                    | NamedKey::Escape
+                    | NamedKey::Backspace
+                    | NamedKey::Delete
+                    | NamedKey::Insert
+                    | NamedKey::Home
+                    | NamedKey::End
+                    | NamedKey::PageUp
+                    | NamedKey::PageDown
+                    | NamedKey::ArrowUp
+                    | NamedKey::ArrowDown
+                    | NamedKey::ArrowLeft
+                    | NamedKey::ArrowRight
+                    | NamedKey::PrintScreen
+            ) || (1..=24).any(|n| ChordKey::function(n) == Some(ChordKey::Named(*named)))
+        }
+    }
+}
+
+/// The chord key `key` is, or `None` for a key that is no chord key (a modifier on its own, a
+/// multi-character string from an IME, a media key).
 #[must_use]
 pub fn chord_key_of(key: &Key) -> Option<ChordKey> {
-    ChordKey::from_logical(key)
+    is_chord_key(key).then(|| ChordKey::from_logical(key))?
 }
 
 /// The key press `key` with `modifiers` held, as the chord keymap takes it.
@@ -36,13 +65,12 @@ pub fn chord_key_of(key: &Key) -> Option<ChordKey> {
 /// press.
 #[must_use]
 pub fn key_input(key: &Key, modifiers: Modifiers) -> Option<KeyInput> {
-    KeyInput::from_logical(flags_of(modifiers), key)
+    is_chord_key(key).then(|| KeyInput::from_logical(flags_of(modifiers), key))?
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use keyboard_types::NamedKey;
     use keymap::{Chord, Desktop, Platform};
 
     type Case = (
@@ -150,10 +178,9 @@ mod tests {
             ),
             (Key::Named(NamedKey::F5), ChordKey::function(5)),
             (Key::Named(NamedKey::F24), ChordKey::function(24)),
-            (
-                Key::Named(NamedKey::Control),
-                Some(ChordKey::Named(NamedKey::Control)),
-            ),
+            (Key::Named(NamedKey::Control), None),
+            (Key::Named(NamedKey::Fn), None),
+            (Key::Named(NamedKey::AudioVolumeUp), None),
         ];
         for (key, want) in cases {
             assert_eq!(chord_key_of(&key), want, "{key:?}");

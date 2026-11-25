@@ -38,10 +38,11 @@ fn renders(icon: Icon, first: SymbolEffect, then: &[SymbolEffect]) -> Vec<String
     all
 }
 
-/// The symbol's markup: from its wrapper to the end of the page.
+/// The symbol's markup: from its wrapper's start tag to the end of the page.
 fn symbol(dom: &VirtualDom) -> String {
     let page = dioxus_ssr::render(dom);
-    let from = page.find("<span class=\"ds-symbol").expect("a symbol");
+    let class = page.find("class=\"ds-symbol").expect("a symbol");
+    let from = page[..class].rfind('<').expect("the wrapper's tag");
     page[from..].to_owned()
 }
 

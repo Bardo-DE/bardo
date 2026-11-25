@@ -2,6 +2,7 @@
 //! state lints clean and uses only `ds-` classes the stylesheet styles; the markup carries what
 //! the props say, and no state writes a password field's `value`.
 
+use crate::support::markup::start_tag;
 use crate::support::specimens::Specimen;
 
 use dioxus::core::NoOpMutations;
@@ -332,21 +333,23 @@ fn the_picture_is_the_kind_the_user_carries() {
         render(make)
     };
     let photo = by_name("prompt-photo");
-    for want in [
-        "class=\"ds-user-photo\" data-size=\"64\"",
-        "class=\"ds-user-photo-image\"",
-        "src=\"data:image/png;base64,AAAA\"",
-    ] {
-        assert!(photo.contains(want), "{want} in {photo}");
-    }
+    let tag = |html: &str, class: &str| start_tag(html, class).unwrap_or_default().to_owned();
+    assert!(
+        tag(&photo, "ds-user-photo").contains("data-size=\"64\""),
+        "a 64 px photo in {photo}"
+    );
+    assert!(
+        tag(&photo, "ds-user-photo-image").contains("src=\"data:image/png;base64,AAAA\""),
+        "the picture's image in {photo}"
+    );
     assert!(!photo.contains("ds-avatar"), "{photo}");
     assert!(
-        by_name("polkit-photo").contains("class=\"ds-user-photo\" data-size=\"48\""),
+        tag(&by_name("polkit-photo"), "ds-user-photo").contains("data-size=\"48\""),
         "the polkit photo at 48"
     );
     let emoji = by_name("prompt-emoji");
     assert!(
-        emoji.contains("class=\"ds-emoji\" data-size=\"64\""),
+        tag(&emoji, "ds-emoji").contains("data-size=\"64\""),
         "{emoji}"
     );
     assert!(!emoji.contains("ds-avatar"), "{emoji}");

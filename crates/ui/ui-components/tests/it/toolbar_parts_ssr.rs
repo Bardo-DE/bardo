@@ -7,18 +7,19 @@ use ui_components::components::chrome::toolbar::model::{ToolbarItem, ToolbarRoom
 use ui_components::components::chrome::toolbar::view::Toolbar;
 use ui_components::prelude::*;
 
-/// The markup of the element that opens with `start`, to the end of the page (the stylesheet
-/// before it names every class, so a search must begin at the element).
-fn render(app: fn() -> Element, start: &str) -> String {
+/// The markup of the first element whose start tag holds `attribute`, to the end of the page (the
+/// stylesheet before it names every class, so a search must begin at the element).
+fn render(app: fn() -> Element, attribute: &str) -> String {
     let mut dom = VirtualDom::new(app);
     dom.rebuild_in_place();
     dom.render_immediate(&mut NoOpMutations);
     let page = dioxus_ssr::render(&dom);
-    let from = page.find(start).expect("the element");
+    let at = page.find(attribute).expect("the element");
+    let from = page[..at].rfind('<').expect("the element's tag");
     page[from..].to_owned()
 }
 
-const TOOLBAR: &str = "<div class=\"ds-toolbar\"";
+const TOOLBAR: &str = "class=\"ds-toolbar\"";
 
 fn page(content: Element) -> Element {
     rsx! {
@@ -116,7 +117,7 @@ fn a_title_and_a_centre_item_stand_together_and_a_centre_item_alone_takes_the_ti
 
 #[test]
 fn a_sheets_buttons_follow_its_leading_control_in_one_group() {
-    let html = render(Actions, "<div class=\"ds-sheet-actions\"");
+    let html = render(Actions, "class=\"ds-sheet-actions\"");
     assert!(html.contains("role=\"group\""), "{html}");
     assert!(html.find("t-help") < html.find("t-cancel"), "{html}");
     assert!(html.find("t-cancel") < html.find("t-go"), "{html}");

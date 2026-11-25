@@ -2,6 +2,7 @@
 //! the stylesheet styles.
 
 mod cases;
+use crate::support::markup::start_tag;
 use crate::support::specimens::Specimen;
 
 use dioxus::prelude::*;
@@ -27,8 +28,12 @@ fn a_rich_body_draws_its_tones_and_links() {
         "data-tone=\"italic\"",
         "data-tone=\"underline\"",
         "data-tone=\"strong\"",
-        "<a class=\"ds-run-link\" href=\"https://ci.example/runs/42\"",
     ] {
         assert!(html.contains(want), "{want} in {html}");
     }
+    let link = start_tag(&html, "ds-run-link").unwrap_or_default();
+    assert!(
+        link.starts_with("<a ") && link.contains("href=\"https://ci.example/runs/42\""),
+        "a link to the run in {html}"
+    );
 }
