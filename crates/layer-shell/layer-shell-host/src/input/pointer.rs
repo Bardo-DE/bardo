@@ -12,7 +12,7 @@ mod wheel;
 pub(crate) use button::{button_from_evdev, buttons_after};
 pub(crate) use events::{leave_event, move_event, press_events, release_event};
 pub(crate) use first_mouse::first_mouse;
-pub(crate) use wheel::{axis_frame, scrolled, wheel_delta, wheel_event};
+pub(crate) use wheel::{axis_frame, scrolled, wheel_delta, wheel_event, wheel_kind};
 
 /// A pointer position in surface-local logical pixels, fractional as `wl_pointer` sends it.
 #[derive(Debug, Clone, Copy, PartialEq)]

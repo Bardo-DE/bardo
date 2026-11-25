@@ -9,8 +9,8 @@ use crate::dom::tests::env::test_env;
 use crate::input::pointer::{self, PointerPos};
 use blitz_dom::NodeId;
 use blitz_traits::events::{
-    BlitzWheelDelta, BlitzWheelEvent, MouseEventButton, MouseEventButtons, Point, PointerCoords,
-    UiEvent,
+    BlitzWheelDelta, BlitzWheelEvent, BlitzWheelPhase, BlitzWheelSource, MouseEventButton,
+    MouseEventButtons, Point, PointerCoords, UiEvent,
 };
 use dioxus::prelude::*;
 use layer_shell_hooks::HostRoot;
@@ -185,6 +185,8 @@ fn scroll_y(doc: &mut SurfaceDocument, scroller: NodeId) -> f64 {
 fn wheel_event(delta: BlitzWheelDelta) -> BlitzWheelEvent {
     BlitzWheelEvent {
         delta,
+        phase: BlitzWheelPhase::Moved,
+        source: BlitzWheelSource::Wheel,
         coords: PointerCoords {
             page_x: 0.0,
             page_y: 0.0,

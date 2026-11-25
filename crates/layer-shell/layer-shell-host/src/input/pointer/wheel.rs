@@ -3,7 +3,8 @@
 //! the DOM's, so both are negated.
 
 use blitz_traits::events::{
-    BlitzWheelDelta, BlitzWheelEvent, MouseEventButtons, Point, PointerCoords, UiEvent,
+    BlitzWheelDelta, BlitzWheelEvent, BlitzWheelPhase, BlitzWheelSource, MouseEventButtons, Point,
+    PointerCoords, UiEvent,
 };
 use keyboard_types::Modifiers;
 use smithay_client_toolkit::seat::pointer::AxisScroll;
@@ -59,9 +60,28 @@ pub(crate) fn axis_frame(
     }
 }
 
-/// The raw wheel event a `data-wheel="capture"` element receives, at `pos`.
+/// Where `frame` falls in a scroll gesture and what drives it, as Blitz names them: an
+/// `axis_stop` ends the gesture, anything else moves it; a wheel is `Wheel`, fingers are
+/// `Finger`, and a continuous source or one that says nothing is `Unknown`.
+pub(crate) fn wheel_kind(frame: &AxisFrame) -> (BlitzWheelPhase, BlitzWheelSource) {
+    let phase = if frame.horizontal.stop || frame.vertical.stop {
+        BlitzWheelPhase::Ended
+    } else {
+        BlitzWheelPhase::Moved
+    };
+    let source = match frame.source {
+        AxisSource::Wheel | AxisSource::WheelTilt => BlitzWheelSource::Wheel,
+        AxisSource::Finger => BlitzWheelSource::Finger,
+        AxisSource::Continuous | AxisSource::Unknown => BlitzWheelSource::Unknown,
+    };
+    (phase, source)
+}
+
+/// The raw wheel event a `data-wheel="capture"` element receives, at `pos`; `kind` is
+/// [`wheel_kind`] of the frame it came from.
 pub(crate) fn wheel_event(
     delta: BlitzWheelDelta,
+    kind: (BlitzWheelPhase, BlitzWheelSource),
     pos: PointerPos,
     buttons: MouseEventButtons,
     mods: Modifiers,
@@ -71,8 +91,11 @@ pub(crate) fn wheel_event(
         reason = "Blitz takes coordinates as `f32` logical pixels, far inside its range"
     )]
     let (x, y) = (pos.x as f32, pos.y as f32);
+    let (phase, source) = kind;
     UiEvent::Wheel(BlitzWheelEvent {
         delta,
+        phase,
+        source,
         coords: PointerCoords {
             page_x: x,
             page_y: y,
@@ -231,5 +254,48 @@ mod tests {
         assert!(frame.shift);
         let frame = axis_frame(stop, stop, None, Modifiers::empty());
         assert_eq!((frame.source, frame.shift), (AxisSource::Unknown, false));
+    }
+
+    #[test]
+    fn a_frame_is_named_for_blitz_by_its_source_and_stop() {
+        let stop = AxisScroll {
+            stop: true,
+            ..AxisScroll::default()
+        };
+        let cases = [
+            (
+                "a wheel notch",
+                wl_pointer::AxisSource::Wheel,
+                AxisScroll::default(),
+                (BlitzWheelPhase::Moved, BlitzWheelSource::Wheel),
+            ),
+            (
+                "fingers moving",
+                wl_pointer::AxisSource::Finger,
+                AxisScroll::default(),
+                (BlitzWheelPhase::Moved, BlitzWheelSource::Finger),
+            ),
+            (
+                "fingers lifting",
+                wl_pointer::AxisSource::Finger,
+                stop,
+                (BlitzWheelPhase::Ended, BlitzWheelSource::Finger),
+            ),
+            (
+                "a continuous source",
+                wl_pointer::AxisSource::Continuous,
+                AxisScroll::default(),
+                (BlitzWheelPhase::Moved, BlitzWheelSource::Unknown),
+            ),
+        ];
+        for (name, source, vertical, want) in cases {
+            let frame = axis_frame(
+                AxisScroll::default(),
+                vertical,
+                Some(source),
+                Modifiers::empty(),
+            );
+            assert_eq!(wheel_kind(&frame), want, "{name}");
+        }
     }
 }

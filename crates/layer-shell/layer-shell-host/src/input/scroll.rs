@@ -98,8 +98,13 @@ impl HostState {
         let route = dom::wheel_route(&surface.document.base(), ViewPoint { x: at.x, y: at.y });
         if route == WheelRoute::Capture {
             if let Some(delta) = pointer::wheel_delta(horizontal, vertical) {
-                let event =
-                    pointer::wheel_event(delta, at, self.input.buttons, self.input.modifiers);
+                let event = pointer::wheel_event(
+                    delta,
+                    pointer::wheel_kind(&frame),
+                    at,
+                    self.input.buttons,
+                    self.input.modifiers,
+                );
                 self.deliver(id, [event]);
             }
             return;

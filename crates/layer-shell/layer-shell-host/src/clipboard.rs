@@ -1,13 +1,13 @@
 //! The clipboard (`wl_data_device`): copying serves our own text from a cache; pasting answers
 //! from the selection text read ahead of time.
 //!
-//! Blitz asks `ShellProvider::get_clipboard_text` synchronously, from inside its own event
-//! handling on the main thread, which is also the thread that would have to serve the pipe if
-//! the selection were ours. So nothing is read at paste time: every `wl_data_device.selection`
-//! event starts a read of the new offer, which the loop carries out (`ctx::paste`, bounded in
-//! size and time by `paste`) and publishes into a [`SharedSelection`] every surface's shell
-//! provider holds. A paste in the few milliseconds between a new selection and its read
-//! finishing sees the previous text.
+//! Blitz asks `ShellProvider::request_clipboard_text` from inside its own event handling on the
+//! main thread, which is also the thread that would have to serve the pipe if the selection
+//! were ours. So nothing is read at paste time (the flush answers with `UiEvent::Paste`):
+//! every `wl_data_device.selection` event starts a read of the new offer, which the loop
+//! carries out (`ctx::paste`, bounded in size and time by `paste`) and publishes into a
+//! [`SharedSelection`] every surface's shell provider holds. A paste in the few milliseconds
+//! between a new selection and its read finishing sees the previous text.
 
 use std::io;
 use std::sync::{Arc, Mutex, PoisonError};

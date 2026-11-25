@@ -1,6 +1,7 @@
 //! Applying what documents and other threads asked for: ops, popups, closes, clipboard and
 //! activation requests, drags, and visibility changes.
 
+use blitz_traits::events::UiEvent;
 use smithay_client_toolkit::shell::WaylandSurface;
 
 use crate::ctx::{HostCtx, request_token};
@@ -86,6 +87,22 @@ pub(super) fn claim_copied<M: 'static>(ctx: &mut HostCtx<M>) {
     let qh = ctx.state.qh.clone();
     for text in copied {
         claim_selection(&mut ctx.state, &qh, &text);
+    }
+}
+
+/// Answer the documents that asked for the clipboard's text (Blitz's paste in a text input):
+/// each gets the selection as last published as a `UiEvent::Paste`, the way a windowed shell
+/// answers its own clipboard request. Never reads from another client: the text was read ahead
+/// of time (`clipboard`).
+pub(super) fn answer_pastes<M: 'static>(ctx: &mut HostCtx<M>) {
+    let pastes: Vec<(SurfaceId, String)> = ctx
+        .state
+        .surfaces
+        .iter()
+        .filter_map(|(id, surface)| Some((*id, surface.shell.take_paste()?)))
+        .collect();
+    for (id, text) in pastes {
+        ctx.state.deliver(id, [UiEvent::Paste(text)]);
     }
 }
 

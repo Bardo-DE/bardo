@@ -587,6 +587,10 @@ fn a_capturing_element_that_is_not_a_scroller_gets_the_wheel_as_before() {
     let delta = crate::input::pointer::wheel_delta(AxisScroll::default(), notch).expect("a delta");
     let event = crate::input::pointer::wheel_event(
         delta,
+        (
+            blitz_traits::events::BlitzWheelPhase::Moved,
+            blitz_traits::events::BlitzWheelSource::Wheel,
+        ),
         at,
         blitz_traits::events::MouseEventButtons::None,
         keyboard_types::Modifiers::empty(),

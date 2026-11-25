@@ -9,10 +9,10 @@ mod rects;
 mod resolve;
 
 use std::rc::Rc;
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 use std::task::Context;
 
-use blitz_dom::{Document as _, DocumentConfig, FontContext, StyleThreading};
+use blitz_dom::{Document as _, DocumentConfig, FontContext, StyleThreading, UserAgentStylesheet};
 use blitz_embed::after_resolve::AfterResolve;
 use blitz_embed::hover::{LastMove, remember};
 use blitz_embed::net::LocalNet;
@@ -31,13 +31,15 @@ use layer_shell_hooks::HostRoot;
 /// hit-test into the content at all (with `html,body` at zero height, hover never reached
 /// the dock icons), and a transparent body is what lets blur and the
 /// desktop show through. Margins and the rest of the reset come from the UI kit's `css/reset.css`.
-pub(crate) const UA_STYLESHEET: &str = "html,body{height:100%;background:transparent}";
+pub(crate) static UA_STYLESHEET: LazyLock<UserAgentStylesheet> =
+    LazyLock::new(|| UserAgentStylesheet::parse("html,body{height:100%;background:transparent}"));
 
 /// Zero `<body>`'s margin, added to every document the host builds (the headless path too):
 /// Blitz's default stylesheet gives it `margin: 8px` (`blitz-dom/assets/default.css`), which
 /// kept a bare document, one without the UI kit's reset, from ever reaching its surface's (0, 0)
 /// corner. A user-agent sheet, so any rule of the document's own wins.
-pub(crate) const BODY_RESET: &str = "body{margin:0}";
+pub(crate) static BODY_RESET: LazyLock<UserAgentStylesheet> =
+    LazyLock::new(|| UserAgentStylesheet::parse("body{margin:0}"));
 
 /// Everything a document is built with besides its root.
 #[derive(Clone)]
@@ -102,8 +104,10 @@ impl SurfaceDocument {
         };
 
         let mut doc = DioxusDocument::new(vdom, config);
-        doc.inner_mut().add_user_agent_stylesheet(UA_STYLESHEET);
-        doc.inner_mut().add_user_agent_stylesheet(BODY_RESET);
+        doc.inner_mut()
+            .add_user_agent_stylesheet(UA_STYLESHEET.clone());
+        doc.inner_mut()
+            .add_user_agent_stylesheet(BODY_RESET.clone());
         doc.initial_build();
         apply_head(&mut doc, &head);
 

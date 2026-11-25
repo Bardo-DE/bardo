@@ -41,6 +41,9 @@ pub(crate) struct HostShellProvider {
     ime: Mutex<Option<Rect>>,
     /// The selection's text as the seat last published it (`clipboard::SharedSelection`).
     selection: SharedSelection,
+    /// Set when the document asked for the clipboard's text; the flush answers it
+    /// (`take_paste`).
+    paste_asked: AtomicBool,
     /// Text the document copied, waiting for the flush to claim the selection with it.
     copied: Mutex<Option<String>>,
 }
@@ -57,6 +60,7 @@ impl HostShellProvider {
             cursor: Mutex::new(CursorRequest::Unchanged),
             ime: Mutex::new(None),
             selection,
+            paste_asked: AtomicBool::new(false),
             copied: Mutex::new(None),
         }
     }
@@ -89,6 +93,14 @@ impl HostShellProvider {
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .take()
+    }
+
+    /// The text to paste into the document if it asked for the clipboard since the last call:
+    /// the selection as the seat last published it, which the flush hands over as
+    /// `UiEvent::Paste`. `None` when it asked for nothing, or the clipboard is empty.
+    pub(crate) fn take_paste(&self) -> Option<String> {
+        let asked = self.paste_asked.swap(false, Ordering::SeqCst);
+        asked.then(|| self.selection.text()).flatten()
     }
 
     /// The IME state the document last asked for: the caret rectangle when enabled.
@@ -142,11 +154,12 @@ impl ShellProvider for HostShellProvider {
         *self.ime.lock().unwrap_or_else(PoisonError::into_inner) = Some(cursor_area);
     }
 
-    /// The own-selection cache if this process owns the selection, else a pipe read from the
-    /// selection offer with a 200 ms timeout.
-    /// The selection's text as last published; a paste never waits on another client.
-    fn get_clipboard_text(&self) -> Result<String, ClipboardError> {
-        self.selection.text().ok_or(ClipboardError)
+    /// Remember the request and wake the loop; the flush answers with the selection's text as
+    /// last published (`take_paste`), so a paste never waits on another client.
+    fn request_clipboard_text(&self) -> Result<(), ClipboardError> {
+        self.paste_asked.store(true, Ordering::SeqCst);
+        self.wake.ping();
+        Ok(())
     }
 
     /// Queue `text` for the flush, which claims the selection with it.
@@ -188,5 +201,33 @@ mod tests {
         assert!(!provider.drop_echo());
         assert!(provider.take_redraw());
         assert!(!provider.take_redraw(), "taken once");
+    }
+
+    #[test]
+    fn a_paste_request_is_answered_with_the_published_selection_once() {
+        let (ping, _source) = calloop::ping::make_ping().expect("eventfd ping");
+        let seat = SharedSelection::default();
+        let provider = HostShellProvider::new(ping, seat.clone());
+
+        assert_eq!(provider.take_paste(), None, "nothing asked");
+        assert!(provider.request_clipboard_text().is_ok());
+        assert_eq!(
+            provider.take_paste(),
+            None,
+            "asked, but the clipboard is empty"
+        );
+        let generation = seat.begin();
+        seat.publish(generation, Some("from another client".into()));
+        assert_eq!(
+            provider.take_paste(),
+            None,
+            "the empty answer used up the request"
+        );
+        assert!(provider.request_clipboard_text().is_ok());
+        assert_eq!(
+            provider.take_paste().as_deref(),
+            Some("from another client")
+        );
+        assert_eq!(provider.take_paste(), None, "answered once");
     }
 }

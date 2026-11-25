@@ -92,6 +92,7 @@ impl<M: 'static> Flush for HostCtx<M> {
             super::ops::request(self, request);
         }
         super::ops::claim_copied(self);
+        super::ops::answer_pastes(self);
         super::lock::advance(self);
     }
 
