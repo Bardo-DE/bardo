@@ -104,12 +104,8 @@ impl Rove {
     #[must_use]
     pub fn of(key: &Key) -> Option<Rove> {
         match key {
-            Key::Named(NamedKey::ArrowLeft | NamedKey::ArrowUp) => {
-                Some(Rove::Step(Step::Up))
-            }
-            Key::Named(NamedKey::ArrowRight | NamedKey::ArrowDown) => {
-                Some(Rove::Step(Step::Down))
-            }
+            Key::Named(NamedKey::ArrowLeft | NamedKey::ArrowUp) => Some(Rove::Step(Step::Up)),
+            Key::Named(NamedKey::ArrowRight | NamedKey::ArrowDown) => Some(Rove::Step(Step::Down)),
             Key::Named(NamedKey::Home) => Some(Rove::Edge(Edge::First)),
             Key::Named(NamedKey::End) => Some(Rove::Edge(Edge::Last)),
             _ => None,

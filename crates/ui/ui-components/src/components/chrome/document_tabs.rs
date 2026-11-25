@@ -167,8 +167,7 @@ pub fn DocumentTabs(
         let key = event.key();
         let roved = matches!(
             key,
-            Key::Named(NamedKey::ArrowLeft | NamedKey::ArrowRight | NamedKey::Home |
-NamedKey::End)
+            Key::Named(NamedKey::ArrowLeft | NamedKey::ArrowRight | NamedKey::Home | NamedKey::End)
         )
         .then(|| Rove::of(&key))
         .flatten();

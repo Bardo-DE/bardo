@@ -14,7 +14,9 @@ pub(super) fn banner_key(key: &Key) -> Option<KeysIn> {
         // The newest card is the top one; older ones hang below it.
         Key::Named(NamedKey::ArrowUp) => Some(KeysIn::Moved(Neighbour::Newer)),
         Key::Named(NamedKey::ArrowDown) => Some(KeysIn::Moved(Neighbour::Older)),
-        Key::Named(NamedKey::Escape | NamedKey::Delete | NamedKey::Backspace) => Some(KeysIn::Dismissed),
+        Key::Named(NamedKey::Escape | NamedKey::Delete | NamedKey::Backspace) => {
+            Some(KeysIn::Dismissed)
+        }
         _ => None,
     }
 }

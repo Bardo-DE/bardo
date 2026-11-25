@@ -213,7 +213,10 @@ mod tests {
     fn escape_is_the_named_key() {
         assert_eq!(
             keyboard(ShortcutKey::Escape),
-            (keyboard_types::Key::Named(keyboard_types::NamedKey::Escape), Code::Escape)
+            (
+                keyboard_types::Key::Named(keyboard_types::NamedKey::Escape),
+                Code::Escape
+            )
         );
     }
 }

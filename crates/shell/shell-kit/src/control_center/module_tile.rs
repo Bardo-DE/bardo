@@ -101,10 +101,7 @@ pub fn ModuleTile(
 
 /// Whether a key on the chevron opens the detail: Enter, or Right (into the pane).
 fn opens(key: &Key) -> bool {
-    matches!(
-        key,
-        Key::Named(NamedKey::Enter | NamedKey::ArrowRight)
-    )
+    matches!(key, Key::Named(NamedKey::Enter | NamedKey::ArrowRight))
 }
 
 /// The chevron: its own hit target, named for the module, keeping every press it takes.

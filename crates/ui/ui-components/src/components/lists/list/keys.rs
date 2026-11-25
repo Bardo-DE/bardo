@@ -29,9 +29,7 @@ pub(crate) fn list_key(key: &Key, modifiers: Modifiers) -> Option<ListKey> {
         Key::Named(NamedKey::ArrowUp) => {
             Some(ListKey::Move(Rove::of(&Key::Named(NamedKey::ArrowUp))?))
         }
-        Key::Named(NamedKey::Home | NamedKey::End) => {
-            Some(ListKey::Move(Rove::of(key)?))
-        }
+        Key::Named(NamedKey::Home | NamedKey::End) => Some(ListKey::Move(Rove::of(key)?)),
         Key::Named(NamedKey::Enter) => Some(ListKey::Pick),
         Key::Character(text) if text == " " && !chord => Some(ListKey::Pick),
         Key::Character(text) if !chord && !text.trim().is_empty() => {

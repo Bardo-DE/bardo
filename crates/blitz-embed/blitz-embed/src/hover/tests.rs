@@ -1,7 +1,8 @@
 use blitz_dom::NodeId;
 use blitz_traits::events::{
-    BlitzPointerEvent, BlitzPointerId, BlitzWheelDelta, BlitzWheelEvent, BlitzWheelPhase, BlitzWheelSource, MouseEventButton,
-    MouseEventButtons, Point, PointerCoords, PointerDetails, UiEvent,
+    BlitzPointerEvent, BlitzPointerId, BlitzWheelDelta, BlitzWheelEvent, BlitzWheelPhase,
+    BlitzWheelSource, MouseEventButton, MouseEventButtons, Point, PointerCoords, PointerDetails,
+    UiEvent,
 };
 use keyboard_types::Modifiers;
 

@@ -106,6 +106,9 @@ fn after_click(host: &Rc<dyn DocumentHost>, root: Option<Rc<MountedData>>, event
     if let Fallback::Ancestor(ancestor) = click.fallback(&root) {
         let host = Rc::clone(host);
         spawn(async move {
+            // After the render the click's handlers asked for, so a candidate they removed (a
+            // button that leaves on press) is already out of the document when the restore looks.
+            ui_style::busy::after_render().await;
             if let Some(click) = host.click_focus() {
                 let _ = retry_busy(|| click.restore(&ancestor)).await;
             }

@@ -15,9 +15,11 @@
 }
 .ds-section-header-value{ margin-left:auto; letter-spacing:0; text-transform:none; }
 .ds-section-header-actions{ display:flex; align-items:center; gap:var(--s-6); margin-left:auto; }
+/* The action's text sits 2 px inside its box, as it always has; the box is 6 px wider a side and
+   given back by the margin, so a selected action's fill keeps the content inset from its text. */
 .ds-section-header .ds-section-header-action{
   border:0; background:none; cursor:default; font:inherit; letter-spacing:0;
-  color:var(--ink-faint); padding:0 var(--s-2); text-transform:none;
+  color:var(--ink-faint); padding:0 var(--s-8); margin:0 calc(var(--s-2) - var(--s-8)); text-transform:none;
 }
 .ds-section-header .ds-section-header-action:hover{ color:var(--ink); }
 .ds-section-header-value + .ds-section-header-actions{ margin-left:0; }

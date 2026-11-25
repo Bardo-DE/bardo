@@ -79,6 +79,10 @@ fn ink_columns(shot: &RgbaImage, field: Rect) -> Vec<u32> {
         .collect()
 }
 
+/// The password field's frame: its border and focus ring are on it, and its padding holds the
+/// input, whose first dot starts at the input's own left edge.
+const FIELD: &str = ".ds-polkit .ds-text-field-frame";
+
 /// The mask's leading padding: none, as the mask sits inside the frame's inset (8 plus its
 /// hairline, design/29-SIZING.md); its first dot's advance starts at its own left edge.
 const MASK_PAD: f32 = 0.0;
@@ -242,9 +246,7 @@ fn the_drawn_caret_sits_at_the_end_of_the_last_dot() {
     for n in [4, 11, 24] {
         let typed: String = "hunter2xWq".chars().cycle().take(n).collect();
         let mut harness = typed_into(&typed, &[]);
-        let field = harness
-            .rect(".ds-polkit input")
-            .expect("the password field");
+        let field = harness.rect(FIELD).expect("the password field");
         let mask = harness.rect(".ds-polkit .ds-input-mask").expect("the mask");
         let shot = harness.render().expect("a frame");
         let caret = caret_left(&shot, field).expect("a caret in the focused field");
@@ -278,9 +280,7 @@ fn after_left_three_times_the_caret_stands_clear_between_the_eighth_and_ninth_do
         &typed,
         &[ShortcutKey::Left, ShortcutKey::Left, ShortcutKey::Left],
     );
-    let field = harness
-        .rect(".ds-polkit input")
-        .expect("the password field");
+    let field = harness.rect(FIELD).expect("the password field");
     let mask = harness.rect(".ds-polkit .ds-input-mask").expect("the mask");
     let shot = harness.render().expect("a frame");
     let caret = caret_left(&shot, field).expect("a caret in the focused field");
@@ -319,9 +319,7 @@ fn a_typed_secret_draws_its_dots_from_the_leading_edge_in_a_centred_card() {
         "one dot per character typed"
     );
     harness.advance(Duration::from_millis(300));
-    let field = harness
-        .rect(".ds-polkit input")
-        .expect("the password field");
+    let field = harness.rect(FIELD).expect("the password field");
     let shot = harness.render().expect("a frame");
     let ink = ink_columns(&shot, field);
     let (first, last) = (

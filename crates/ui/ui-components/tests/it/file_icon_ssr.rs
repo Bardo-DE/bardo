@@ -1,8 +1,8 @@
 //! The standard file icon as markup: the parts each choice draws, the label rule by size, the
 //! monochrome paint, and that the stylesheet knows every kind and token the markup names.
 
-use ui_components::components::content::file_icon::LABEL_MIN_PX;
 use dioxus::prelude::*;
+use ui_components::components::content::file_icon::LABEL_MIN_PX;
 use ui_components::prelude::*;
 use ui_style::icon::render::IconPx;
 use ui_style::icon::retint::Tint;
