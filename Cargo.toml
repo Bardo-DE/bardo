@@ -756,7 +756,6 @@ ulid = { version = "3", default-features = false }
 unicode-segmentation = "1"
 upower_dbus = { git = "https://github.com/pop-os/dbus-settings-bindings", rev = "eed01dd3609e90e3c8cd043656734c500956c793" }
 url = "2.5"
-vello_common = "0.4"
 vello_cpu = "0.4"
 vello_gpu = "0.4"
 wayland-backend = "0.3"
