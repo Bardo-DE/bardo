@@ -559,7 +559,7 @@ fn green_picture() -> Element {
 
 #[test]
 fn an_image_the_full_atlas_refused_is_drawn_on_the_next_frame() {
-    use vello_hybrid::{AtlasConfig, Resources};
+    use vello_gpu::{AtlasConfig, Resources};
 
     // An atlas with room for one 24x24 image, so the second one is refused, as a dock icon is
     // once the launcher's icons fill the real one.

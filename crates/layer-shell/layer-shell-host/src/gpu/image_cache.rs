@@ -13,8 +13,8 @@
 //! it joins: recorded in the frame's encoder, the clear would wipe the icons that frame uploads
 //! again into the freed slots, and they would stay blank.
 
-use anyrender_vello_hybrid::ImageUploads;
-use vello_hybrid::{Renderer, Resources};
+use anyrender_vello_gpu::ImageUploads;
+use vello_gpu::{Renderer, Resources};
 
 /// How many distinct images may stay uploaded. Beyond it the next frame starts from an empty
 /// cache: the images still on screen upload again within that frame, and the rest are gone.

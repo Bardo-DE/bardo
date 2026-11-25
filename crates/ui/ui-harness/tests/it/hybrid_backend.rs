@@ -1,4 +1,4 @@
-//! The harness's `vello_hybrid` backend: the same document painted on the GPU reads
+//! The harness's `vello_gpu` backend: the same document painted on the GPU reads
 //! back as `vello_cpu` paints it, and the on-demand benchmark times a 300-cell `COLRv1` emoji grid
 //! scrolling for 180 frames on both backends (FINDINGS "Hybrid harness backend"). Every GPU case
 //! is `#[ignore]`d, and fails, saying so, where no adapter opens.
@@ -205,7 +205,7 @@ fn emoji_grid_scrolls_on_both_backends() {
                 continue;
             }
             seen.push(adapter.clone());
-            scroll(&format!("vello_hybrid on {adapter}"), harness);
+            scroll(&format!("vello_gpu on {adapter}"), harness);
         }
     }
 }

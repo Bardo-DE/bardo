@@ -12,7 +12,7 @@ use layer_shell_types::{MAX_SURFACE_EXTENT, Size};
 pub(crate) struct Swapchain {
     pub(crate) surface: wgpu::Surface<'static>,
     pub(crate) config: Option<wgpu::SurfaceConfiguration>,
-    pub(crate) scene: vello_hybrid::Scene,
+    pub(crate) scene: vello_gpu::Scene,
     /// The surface draws only opaque pixels, so an opaque alpha mode is preferred.
     opaque: bool,
 }
@@ -24,7 +24,7 @@ impl Swapchain {
         Swapchain {
             surface,
             config: None,
-            scene: vello_hybrid::Scene::new(1, 1),
+            scene: vello_gpu::Scene::new(1, 1),
             opaque,
         }
     }
@@ -129,7 +129,7 @@ pub(crate) fn choose_present(offered: &[wgpu::PresentMode]) -> wgpu::PresentMode
     }
 }
 
-/// `PreMultiplied` (what `vello_hybrid` emits), else `PostMultiplied`, else `Opaque`; for a
+/// `PreMultiplied` (what `vello_gpu` emits), else `PostMultiplied`, else `Opaque`; for a
 /// surface that draws only opaque pixels (`opaque`), `Opaque` first when offered, so the
 /// compositor can scan it out or skip what it covers, and otherwise as for a translucent one.
 ///

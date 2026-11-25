@@ -24,12 +24,12 @@ blitz-html = {workspace = true}
 parley = { workspace = true, features = ["std", "complex-scripts"] }
 dioxus-native-dom = {workspace = true, features = ["svg", "system-fonts", "accessibility"]}
 anyrender = { workspace = true }
-anyrender_vello_hybrid = { workspace = true }
+anyrender_vello_gpu = { workspace = true }
 anyrender_vello_cpu = { workspace = true, features = ["multithreading", "filters"] }
 wgpu = { workspace = true }
-# The hybrid backend (`gpu_paint`): vello_hybrid driven directly on an offscreen device, and the
-# device handle anyrender_vello_hybrid paints with.
-vello_hybrid = { workspace = true }
+# The hybrid backend (`gpu_paint`): vello_gpu driven directly on an offscreen device, and the
+# device handle anyrender_vello_gpu paints with.
+vello_gpu = { workspace = true }
 wgpu_context = { workspace = true }
 rustc-hash = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg"] }

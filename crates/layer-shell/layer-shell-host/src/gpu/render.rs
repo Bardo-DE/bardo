@@ -1,14 +1,14 @@
 //! Painting a resolved document through the shared renderer: `paint_scene` into the
-//! surface's `vello_hybrid::Scene` via a `VelloHybridScenePainter` borrowing the device's image
+//! surface's `vello_gpu::Scene` via a `VelloHybridScenePainter` borrowing the device's image
 //! cache and widget textures, then `Renderer::render` into the swapchain texture. The frame
 //! callback is requested before this, and `SurfaceTexture::present` after.
 //!
 //! See FINDINGS F75.
 
-use anyrender_vello_hybrid::{ImageManager, VelloHybridScenePainter};
+use anyrender_vello_gpu::{ImageManager, VelloHybridScenePainter};
 use blitz_dom::BaseDocument;
 use blitz_paint::paint_scene;
-use vello_hybrid::RenderSize;
+use vello_gpu::RenderSize;
 
 use crate::dom::document::SurfaceDocument;
 use crate::error::{HostError, Result};
@@ -26,7 +26,7 @@ use crate::gpu::swapchain::pixel_extent;
 pub(crate) fn render_into(
     gpu: &mut GpuContext,
     doc: &mut SurfaceDocument,
-    scene: &mut vello_hybrid::Scene,
+    scene: &mut vello_gpu::Scene,
     target: FrameTarget,
     overlay: &Overlay,
     encoder: &mut wgpu::CommandEncoder,
@@ -43,7 +43,7 @@ pub(crate) fn render_into(
 pub(crate) fn paint_document(
     gpu: &mut GpuContext,
     doc: &mut BaseDocument,
-    scene: &mut vello_hybrid::Scene,
+    scene: &mut vello_gpu::Scene,
     (target, overlay): (FrameTarget, &Overlay),
     encoder: &mut wgpu::CommandEncoder,
     view: &wgpu::TextureView,
@@ -117,8 +117,8 @@ pub(crate) fn paint_document(
     Ok(painted)
 }
 
-/// An empty scene of exactly the render size (`vello_hybrid` wants the two equal).
-fn fit_scene(scene: &mut vello_hybrid::Scene, width: u32, height: u32) -> Result<()> {
+/// An empty scene of exactly the render size (`vello_gpu` wants the two equal).
+fn fit_scene(scene: &mut vello_gpu::Scene, width: u32, height: u32) -> Result<()> {
     // The error holds no more than "does not fit", which `too_large` says with the sizes.
     let (Ok(w), Ok(h)) = (u16::try_from(width), u16::try_from(height)) else {
         return Err(too_large(width, height));
@@ -168,7 +168,7 @@ pub(crate) fn capture_document(
         mapped_at_creation: false,
     });
     let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor::default());
-    let mut scene = vello_hybrid::Scene::new(1, 1);
+    let mut scene = vello_gpu::Scene::new(1, 1);
     paint_document(
         gpu,
         doc,

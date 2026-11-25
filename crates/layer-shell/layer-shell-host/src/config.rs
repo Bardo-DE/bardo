@@ -103,7 +103,7 @@ impl Ms {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Backend {
-    /// wgpu (Vulkan, then GL) with one shared `vello_hybrid` renderer; falls back to `Cpu` when
+    /// wgpu (Vulkan, then GL) with one shared `vello_gpu` renderer; falls back to `Cpu` when
     /// no adapter survives validation.
     #[default]
     Gpu,

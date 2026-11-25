@@ -1,4 +1,4 @@
-//! A hybrid harness's painter: the document painted through `anyrender_vello_hybrid`, the
+//! A hybrid harness's painter: the document painted through `anyrender_vello_gpu`, the
 //! renderer shell surfaces use, into an offscreen texture on one wgpu device kept for the
 //! harness's life. The renderer, its resources (glyph caches, image atlas) and the uploaded
 //! images live across frames, as in a window. Every frame is submitted and waited for, so a
@@ -9,20 +9,20 @@ use crate::gpu_device::open_device;
 use crate::gpu_diagnostics::GpuDiagnostics;
 use crate::painter::{Canvas, PaintTime, draw};
 use anyrender::ResourceId;
-use anyrender_vello_hybrid::{ImageManager, ImageUploads, VelloHybridScenePainter};
+use anyrender_vello_gpu::{ImageManager, ImageUploads, VelloHybridScenePainter};
 use blitz_dom::BaseDocument;
 use blitz_embed::adapter::AdapterPref;
 use rustc_hash::FxHashMap;
 use std::time::{Duration, Instant};
 use ui_blitz::Gpu;
 use ui_blitz::seam::attached_gpu;
-use vello_hybrid::{RenderSize, RenderTargetConfig, Renderer, Resources, Scene, TextureBindings};
+use vello_gpu::{RenderSize, RenderTargetConfig, Renderer, Resources, Scene, TextureBindings};
 use wgpu_context::DeviceHandle;
 
 /// The target format: premultiplied RGBA bytes on readback, the layout `vello_cpu` writes.
 const FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Rgba8Unorm;
 
-/// `vello_hybrid` on one offscreen device.
+/// `vello_gpu` on one offscreen device.
 pub(crate) struct GpuPainter {
     handle: DeviceHandle,
     adapter: String,
@@ -237,7 +237,7 @@ impl GpuPainter {
         let encode_time = started.elapsed();
         let mut textures = TextureBindings::new();
         for (resource, view) in &self.bindings {
-            textures.insert(vello_hybrid::TextureId(resource.into_ffi()), view.clone());
+            textures.insert(vello_gpu::TextureId(resource.into_ffi()), view.clone());
         }
         self.renderer
             .render(
@@ -253,7 +253,7 @@ impl GpuPainter {
                 &self.target.view,
                 &textures,
             )
-            .map_err(|error| HarnessError::Renderer(format!("vello_hybrid: {error:?}")))?;
+            .map_err(|error| HarnessError::Renderer(format!("vello_gpu: {error:?}")))?;
         Ok((encoder, encode_time))
     }
 

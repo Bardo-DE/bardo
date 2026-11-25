@@ -174,5 +174,5 @@ pub use window_sizer::{WindowSizer, use_window_sizer};
 
 // The window renderer dioxus-native runs on; named here so the pinned versions stay the ones
 // the render stack resolves.
-use anyrender_vello_hybrid as _;
+use anyrender_vello_gpu as _;
 use wgpu as _;

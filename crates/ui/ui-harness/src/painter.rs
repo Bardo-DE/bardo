@@ -1,5 +1,5 @@
 //! What paints a headless document: `vello_cpu` (the default, a fresh renderer per picture) or
-//! `vello_hybrid` on a GPU (`crate::gpu_paint`), chosen by
+//! `vello_gpu` on a GPU (`crate::gpu_paint`), chosen by
 //! [`HarnessConfig::with_backend`](crate::HarnessConfig::with_backend). Both paint the same
 //! scene, [`draw`], and hand back the same premultiplied RGBA bytes.
 
@@ -34,10 +34,10 @@ pub(crate) fn draw(scene: &mut impl PaintScene, doc: &mut BaseDocument, canvas: 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct PaintTime {
     /// Building the scene: Blitz walking the document into the renderer's painter (on
-    /// `vello_hybrid` this includes flattening paths and glyphs into strips on the CPU).
+    /// `vello_gpu` this includes flattening paths and glyphs into strips on the CPU).
     pub scene: Duration,
     /// The whole frame: the scene, then rasterising it (`vello_cpu`) or recording, submitting
-    /// and waiting for the GPU to finish it (`vello_hybrid`).
+    /// and waiting for the GPU to finish it (`vello_gpu`).
     pub total: Duration,
 }
 
@@ -59,7 +59,7 @@ pub(crate) enum Painter {
     /// `vello_cpu`, a renderer per picture.
     #[default]
     Cpu,
-    /// `vello_hybrid` on one offscreen device.
+    /// `vello_gpu` on one offscreen device.
     Gpu(Box<GpuPainter>),
     /// A hybrid backend was asked for and no GPU device could be opened: why.
     Unavailable(String),

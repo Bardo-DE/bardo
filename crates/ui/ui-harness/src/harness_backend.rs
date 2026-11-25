@@ -1,4 +1,4 @@
-//! The harness's renderer: `vello_cpu` by default, or `vello_hybrid` on a GPU, the renderer shell
+//! The harness's renderer: `vello_cpu` by default, or `vello_gpu` on a GPU, the renderer shell
 //! surfaces use, so a test can see and time what a surface would paint. Pixel assertions and
 //! PNG captures read the same premultiplied RGBA from either.
 
@@ -16,7 +16,7 @@ pub enum Backend {
     /// `vello_cpu`, as the headless path always has: no GPU needed.
     #[default]
     Cpu,
-    /// `anyrender_vello_hybrid` on an offscreen wgpu device, opened once when the harness is
+    /// `anyrender_vello_gpu` on an offscreen wgpu device, opened once when the harness is
     /// built, on the adapter [`HarnessConfig::with_adapter`] and `WGPU_ADAPTER_NAME` pick.
     /// Where no device opens (CI), [`Harness::try_new`] returns the error and a harness built
     /// with [`Harness::new`] returns it from every picture instead: never a panic.
@@ -54,7 +54,7 @@ impl Harness {
 
     /// Paint the document as it is now over the scheme's ground, to the end, and say how long
     /// it took. Nothing is read back. On `vello_cpu` the frame ends with the pixels in memory; on
-    /// `vello_hybrid` the frame is submitted and the device polled until the GPU has finished
+    /// `vello_gpu` the frame is submitted and the device polled until the GPU has finished
     /// it, so the time is the whole frame's, GPU included, never just the recording. The
     /// document is not resolved here: style and layout (a scroll, a click) happen in the input
     /// call before, so time that separately.

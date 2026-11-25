@@ -10,7 +10,7 @@ use anyrender::ResourceId;
 use blitz_dom::BaseDocument;
 use rustc_hash::FxHashMap;
 use vello_common::TextureId;
-use vello_hybrid::TextureBindings;
+use vello_gpu::TextureBindings;
 
 /// The registered widget textures of one device.
 #[derive(Debug, Default)]

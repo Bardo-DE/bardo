@@ -1,6 +1,6 @@
 //! CSS `filter` on a real Blitz document, one swatch per filter function and per filter list,
 //! read back from the pixels of each backend: `vello_cpu` (the harness default, with the pinned
-//! `multithreading`) and `vello_hybrid` (`#[ignore]`d: it needs a GPU adapter, and fails, saying so, where none opens). Every
+//! `multithreading`) and `vello_gpu` (`#[ignore]`d: it needs a GPU adapter, and fails, saying so, where none opens). Every
 //! case compares the filtered swatch with a control of the same paint and no filter, so a
 //! function that paints nothing reads as the control.
 //!

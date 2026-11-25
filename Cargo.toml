@@ -382,7 +382,7 @@ opt-level = 2
 [profile.dev.package.anyrender_vello_cpu]
 opt-level = 2
 
-[profile.dev.package.anyrender_vello_hybrid]
+[profile.dev.package.anyrender_vello_gpu]
 opt-level = 2
 
 [profile.dev.package."blitz-dom"]
@@ -466,7 +466,7 @@ opt-level = 2
 [profile.dev.package.vello_cpu]
 opt-level = 2
 
-[profile.dev.package.vello_hybrid]
+[profile.dev.package.vello_gpu]
 opt-level = 2
 
 [profile.dev.package."zune-inflate"]
@@ -576,29 +576,25 @@ lto = "thin"
 codegen-units = 1
 
 [patch.crates-io]
-anyrender = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
-anyrender_vello_cpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
-anyrender_vello_hybrid = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
-dioxus-core = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
-dioxus-core-types = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
-generational-box = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
-glifo = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
+anyrender = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_svg = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_vello_cpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+anyrender_vello_gpu = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
+glifo = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
 input-linux-sys = {path = "crates/input/input-broker/vendor/input-linux-sys"}
-pixels_window_renderer = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
-subsecond = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
-subsecond-types = {git = "https://github.com/Bardo-DE/dioxus", rev = "a615fd9f09e272c688a45e366161c576cecf0439"}
-vello_common = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
-vello_cpu = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
-vello_hybrid = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
-vello_sparse_shaders = {git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8"}
-wgpu_context = {git = "https://github.com/Bardo-DE/anyrender", rev = "03fcbe4c746d2334d3fb91e63641741f3dacc826"}
+pdfrum-anyrender = {path = "/home/pohsuanlai/rs-wt/wh-rs-forks/pdfrum/crates/pdfrum-anyrender"}
+vello_common = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_cpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_gpu = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+vello_gpu_shaders = {git = "https://github.com/Bardo-DE/vello", rev = "b73a8dfa23c4e34eeda7f73c1bb2beb10ead5a6a"}
+wgpu_context = {git = "https://github.com/Bardo-DE/anyrender", rev = "a494b4848f971650cd9fb54fe06bec4dda7805a3"}
 
 [workspace.dependencies]
 agent-client-protocol = { version = "3.5", default-features = false }
 anyhow = "1"
-anyrender = "0.13"
-anyrender_vello_cpu = "0.17"
-anyrender_vello_hybrid = "0.10"
+anyrender = "0.15"
+anyrender_vello_cpu = "0.19"
+anyrender_vello_gpu = "0.12"
 apple-native-keyring-store = "1"
 arboard = { version = "3.6", default-features = false }
 async-trait = "0.1"
@@ -606,11 +602,11 @@ atspi = { version = "0.30", default-features = false }
 base64 = "0.22"
 bitflags = "2"
 blake3 = "1"
-blitz-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false }
-blitz-html = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8" }
-blitz-paint = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8" }
-blitz-shell = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false }
-blitz-traits = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8" }
+blitz-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
+blitz-html = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672" }
+blitz-paint = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672" }
+blitz-shell = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
+blitz-traits = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672" }
 bzip2 = "0.6"
 calamine = { version = "0.38", default-features = false }
 calloop = "0.14"
@@ -627,12 +623,12 @@ cursor-icon = "1"
 ddc = "0.2"
 ddc-i2c = { version = "0.2.2", default-features = false }
 digest = "0.10"
-dioxus = { version = "0.7", default-features = false }
-dioxus-asset-resolver = "0.7"
-dioxus-document = "0.7"
-dioxus-native = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false }
-dioxus-native-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "841386a71f17673c211217725e75068774517ba8", default-features = false }
-dioxus-ssr = "0.7"
+dioxus = { version = "0.8.0-alpha.3", default-features = false }
+dioxus-asset-resolver = "0.8.0-alpha.3"
+dioxus-document = "0.8.0-alpha.3"
+dioxus-native = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
+dioxus-native-dom = { git = "https://github.com/Bardo-DE/blitz", rev = "bd669a4a6bbdd5d1b30b9d638360e5da07c5f672", default-features = false }
+dioxus-ssr = "0.8.0-alpha.3"
 dirs = "6"
 emojis = "0.9"
 encoding_rs = "0.8"
@@ -640,7 +636,7 @@ fast_image_resize = "6.1.0"
 fend-core = "1.5.8"
 flate2 = { version = "1.1.10", default-features = false }
 fnv = "1"
-fontique = { version = "0.11.1", default-features = false }
+fontique = { version = "0.13", default-features = false }
 form_urlencoded = "1.2"
 freedesktop-icons = "0.4"
 fuser = { version = "0.18", default-features = false }
@@ -668,7 +664,7 @@ jiff = "0.2"
 jsonschema = { version = "0.58", default-features = false }
 jxl-oxide = "0.12"
 kamadak-exif = "0.6"
-keyboard-types = "0.7"
+keyboard-types = "0.8"
 keyring-core = "1"
 landlock = "0.4"
 lexopt = "0.3"
@@ -694,7 +690,7 @@ notify = "8.2"
 nucleo-matcher = "0.3.1"
 objc2-core-foundation = { version = "0.3.2", default-features = false }
 oo7 = "0.6"
-parley = { version = "0.11.1", default-features = false }
+parley = { version = "0.13", default-features = false }
 pdfrum = { version = "0.5", default-features = false }
 pdfrum-anyrender = "0.5"
 pdfrum-common = "0.5"
@@ -717,7 +713,7 @@ rcgen = { version = "0.13", default-features = false }
 regex = { version = "1", default-features = false }
 reis = "0.7"
 reqwest = { version = "0.13", default-features = false }
-resvg = { version = "0.48.1", default-features = false }
+resvg = { version = "0.50", default-features = false }
 rmcp = { version = "3.5", default-features = false }
 roxmltree = "0.21"
 rusqlite = "0.43"
@@ -734,8 +730,8 @@ serde = "1"
 serde_json = "1"
 sevenz-rust2 = { version = "0.20", default-features = false }
 sha2 = "0.10"
-skrifa = "0.44"
-smithay = { git = "https://github.com/Bardo-DE/smithay", rev = "e6a82ee3af2ab7b391a45ab4c56ab8724c2da440", default-features = false }
+skrifa = "0.49"
+smithay = { git = "https://github.com/Bardo-DE/smithay", rev = "ec8ae8793f603a19f1cacb818dc853a69db6c03d", default-features = false }
 smithay-client-toolkit = { version = "0.20", default-features = false }
 spellbook = "0.4"
 subtle = "2.6.1"
@@ -743,7 +739,7 @@ symphonia = { version = "0.6", default-features = false }
 syn = "2"
 syntect = { version = "5", default-features = false }
 system-tray = "0.8.9"
-taffy = { git = "https://github.com/DioxusLabs/taffy", rev = "4863877b9cab21645b160d7f247901f90214fe27", default-features = false }
+taffy = { version = "0.16", default-features = false }
 tar = { version = "0.4.46", default-features = false }
 tempfile = "3"
 thiserror = "2"
@@ -760,9 +756,9 @@ ulid = { version = "3", default-features = false }
 unicode-segmentation = "1"
 upower_dbus = { git = "https://github.com/pop-os/dbus-settings-bindings", rev = "eed01dd3609e90e3c8cd043656734c500956c793" }
 url = "2.5"
-vello_common = "0.1"
-vello_cpu = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }
-vello_hybrid = "0.1"
+vello_common = "0.4"
+vello_cpu = "0.4"
+vello_gpu = "0.4"
 wayland-backend = "0.3"
 wayland-client = "0.31"
 wayland-protocols = "0.32.13"
@@ -773,11 +769,11 @@ wayland-scanner = "0.31"
 wayland-server = "0.31"
 webbrowser = "1.0"
 webpki-roots = "1"
-wgpu = "29"
-wgpu_context = "0.9"
+wgpu = "30"
+wgpu_context = "0.11"
 widestring = "1"
 windows-native-keyring-store = "1"
-x11rb = "0.13"
+x11rb = "0.14"
 xkbcommon = "0.9"
 zbus = { version = "5.19", default-features = false }
 zeroize = "1"

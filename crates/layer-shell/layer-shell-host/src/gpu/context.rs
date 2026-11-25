@@ -1,18 +1,18 @@
 //! The shared GPU state: the instance, the one validated adapter and device, the one
-//! `vello_hybrid` renderer with its resources, and the per-device image cache.
+//! `vello_gpu` renderer with its resources, and the per-device image cache.
 //!
 //! See FINDINGS F1.
 
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
-use anyrender_vello_hybrid::ImageUploads;
+use anyrender_vello_gpu::ImageUploads;
 use blitz_embed::adapter::{
     ADAPTER_ENV, AdapterFacts, AdapterPref, DeviceHealth, WatchedDevice, block_on, ranked,
     request_watched_device,
 };
 use rustc_hash::FxHashMap;
-use vello_hybrid::{RenderTargetConfig, Renderer, Resources};
+use vello_gpu::{RenderTargetConfig, Renderer, Resources};
 use wayland_client::Connection;
 use wgpu_context::DeviceHandle;
 
@@ -21,7 +21,7 @@ use crate::gpu::adapter;
 use crate::gpu::context_proxy::ContextProxy;
 use crate::gpu::raw_handle::WaylandDisplay;
 
-/// Every surface renders in this format (what `vello_hybrid`'s own window renderer uses).
+/// Every surface renders in this format (what `vello_gpu`'s own window renderer uses).
 pub(crate) const SURFACE_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Bgra8Unorm;
 
 /// How long the driver may take to open the device before the adapter counts as refusing: a
