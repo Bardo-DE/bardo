@@ -37,7 +37,9 @@ use compositor_core::settings::KeyboardSettings;
 use compositor_core::time::Mono;
 use compositor_core::{DeviceId, Event, InputSerial};
 use desktop_protocols::vocab::PressEdge;
-use smithay::input::keyboard::{FilterResult, KeyboardHandle, KeysymHandle, ModifiersState};
+use smithay::input::keyboard::{
+    FilterResult, KeyboardHandle, KeyboardSource, KeysymHandle, ModifiersState,
+};
 use smithay::input::pointer::{CursorImageStatus, PointerHandle};
 use smithay::input::touch::TouchHandle;
 use smithay::input::{Seat, SeatHandler, SeatState};
@@ -260,15 +262,19 @@ where
             filter,
         ));
     }
-    Ok(
-        match keyboard.input_intercept(state, code, key_state, filter).0 {
-            FilterResult::Intercept(answer) => Some(answer),
-            FilterResult::Forward => {
-                key_route::send_past_grab(&keyboard, &delivery);
-                None
-            }
-        },
-    )
+    // `None`: the key was already held (or released), so the event changes nothing.
+    let Some((result, _)) =
+        keyboard.input_intercept(KeyboardSource::Physical, state, code, key_state, filter)
+    else {
+        return Ok(None);
+    };
+    Ok(match result {
+        FilterResult::Intercept(answer) => Some(answer),
+        FilterResult::Forward => {
+            key_route::send_past_grab(&keyboard, &delivery);
+            None
+        }
+    })
 }
 
 /// Changes the repeat rate and delay every keyboard of the seat advertises (a settings

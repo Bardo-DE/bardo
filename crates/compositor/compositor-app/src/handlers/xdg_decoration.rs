@@ -58,4 +58,19 @@ impl XdgDecorationHandler for State {
     fn unset_mode(&mut self, toplevel: ToplevelSurface) {
         self.decorate(&toplevel, DecorationWish::Unset);
     }
+
+    /// The client destroyed its decoration object: it draws its own frame again, so a window
+    /// that had the compositor's frame is laid out again without its titlebar.
+    fn decoration_destroyed(&mut self, toplevel: ToplevelSurface) {
+        let Some(window) = self.wl.xdg_shell.window_of_surface(toplevel.wl_surface()) else {
+            return;
+        };
+        let was = self.wl.xdg_decoration.mode_of(window);
+        self.wl
+            .xdg_decoration
+            .record(window, DecorationMode::ClientSide);
+        if was == DecorationMode::ServerSide && self.core.model.windows().contains_key(&window) {
+            exec::exec(self, vec![Effect::Relayout(Cause::Configure)]);
+        }
+    }
 }
