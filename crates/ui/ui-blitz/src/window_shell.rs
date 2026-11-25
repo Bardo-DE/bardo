@@ -21,7 +21,7 @@
 //! window closes), and how every window is dropped before the loop ends (winit wants windows
 //! dropped before the loop exits).
 //!
-//! **A closed window's renderer is kept, and parked.** Each vello-hybrid renderer owns a wgpu
+//! **A closed window's renderer is kept, and parked.** Each vello_gpu renderer owns a wgpu
 //! instance of its own, and dropping one while another window is still drawing crashed the next
 //! frame of the other inside the NVIDIA Vulkan driver (`vkAcquireNextImageKHR` through a null
 //! pointer, on Wayland, 2026-09-27). So a closing window's renderer is set aside, and the next

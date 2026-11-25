@@ -8,15 +8,13 @@ use crate::error::HarnessError;
 use crate::gpu_device::open_device;
 use crate::gpu_diagnostics::GpuDiagnostics;
 use crate::painter::{Canvas, PaintTime, draw};
-use anyrender::ResourceId;
-use anyrender_vello_gpu::{ImageManager, ImageUploads, VelloHybridScenePainter};
+use anyrender_vello_gpu::{ExternalTextures, ImageCache, ImageManager, VelloGpuScenePainter};
 use blitz_dom::BaseDocument;
 use blitz_embed::adapter::AdapterPref;
-use rustc_hash::FxHashMap;
 use std::time::{Duration, Instant};
 use ui_blitz::Gpu;
 use ui_blitz::seam::attached_gpu;
-use vello_gpu::{RenderSize, RenderTargetConfig, Renderer, Resources, Scene, TextureBindings};
+use vello_gpu::{RenderOptions, RenderTarget, RenderTargetConfig, Renderer, Resources, Scene};
 use wgpu_context::DeviceHandle;
 
 /// The target format: premultiplied RGBA bytes on readback, the layout `vello_cpu` writes.
@@ -31,10 +29,12 @@ pub(crate) struct GpuPainter {
     renderer: Renderer,
     resources: Resources,
     scene: Scene,
-    /// Uploaded images by content hash, kept across frames as layer-shell-host keeps them.
-    images: ImageUploads,
-    /// Textures the document registered (a canvas), by anyrender resource.
-    bindings: FxHashMap<ResourceId, wgpu::TextureView>,
+    /// The images the renderer uploaded, by content, kept across frames as layer-shell-host
+    /// keeps them; the cache evicts what no frame has drawn for a while.
+    images: ImageCache,
+    /// Textures the document registered (a canvas) and the uploaded images', by anyrender
+    /// resource.
+    textures: ExternalTextures,
     target: Target,
 }
 
@@ -102,14 +102,17 @@ impl GpuPainter {
         height: u32,
     ) -> Result<Self, HarnessError> {
         let (handle, adapter) = open_device(pref, diagnostics)?;
-        let renderer = Renderer::new(
+        let (renderer, resources) = Renderer::new(
             &handle.device,
+            &handle.queue,
             &RenderTargetConfig {
                 format: FORMAT,
                 width,
                 height,
             },
         );
+        let mut images = ImageCache::default();
+        images.set_max_image_size(max_image_size(&handle.device));
         let target = Target::new(&handle.device, width, height);
         let gpu = attached_gpu(
             handle.instance.clone(),
@@ -120,13 +123,13 @@ impl GpuPainter {
         Ok(GpuPainter {
             gpu,
             renderer,
-            resources: Resources::new(),
+            resources,
             scene: Scene::new(
                 u16::try_from(width).unwrap_or(u16::MAX),
                 u16::try_from(height).unwrap_or(u16::MAX),
             ),
-            images: FxHashMap::default(),
-            bindings: FxHashMap::default(),
+            images,
+            textures: ExternalTextures::default(),
             target,
             handle,
             adapter,
@@ -191,6 +194,7 @@ impl GpuPainter {
         let row = (self.target.width * 4) as usize;
         let pixels = slice
             .get_mapped_range()
+            .map_err(|error| HarnessError::Renderer(format!("wgpu readback: {error}")))?
             .chunks_exact(self.target.row_bytes as usize)
             .flat_map(|padded| padded[..row].iter().copied())
             .collect();
@@ -217,43 +221,43 @@ impl GpuPainter {
         let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some("harness frame"),
         });
+        // A node that left the document took its widget's textures with it.
+        for id in doc.take_pending_resource_deallocations() {
+            self.textures.remove(id);
+        }
         {
             let images = ImageManager::new(
-                &mut self.renderer,
                 &mut self.resources,
                 device,
                 &self.handle.queue,
-                &mut encoder,
                 &mut self.images,
+                &mut self.textures,
             );
-            let mut painter = VelloHybridScenePainter::new(
-                &mut self.scene,
-                images,
-                &mut self.bindings,
-                &self.handle,
-            );
+            let mut painter = VelloGpuScenePainter::new(&mut self.scene, images, &self.handle);
             draw(&mut painter, doc, canvas);
-        };
-        let encode_time = started.elapsed();
-        let mut textures = TextureBindings::new();
-        for (resource, view) in &self.bindings {
-            textures.insert(vello_gpu::TextureId(resource.into_ffi()), view.clone());
         }
-        self.renderer
-            .render(
-                &self.scene,
-                &mut self.resources,
-                device,
-                &self.handle.queue,
-                &mut encoder,
-                &RenderSize {
-                    width: canvas.width,
-                    height: canvas.height,
-                },
-                &self.target.view,
-                &textures,
-            )
-            .map_err(|error| HarnessError::Renderer(format!("vello_gpu: {error:?}")))?;
+        let encode_time = started.elapsed();
+        let rendered = self.renderer.render(
+            &self.scene,
+            &mut self.resources,
+            &mut encoder,
+            RenderTarget {
+                view: &self.target.view,
+                depth_view: None,
+            },
+            self.textures.bindings(),
+            RenderOptions::default(),
+        );
+        // Evict the images no recent frame drew, whether or not this one rendered.
+        ImageManager::new(
+            &mut self.resources,
+            device,
+            &self.handle.queue,
+            &mut self.images,
+            &mut self.textures,
+        )
+        .finish_frame();
+        rendered.map_err(|error| HarnessError::Renderer(format!("vello_gpu: {error:?}")))?;
         Ok((encoder, encode_time))
     }
 
@@ -270,4 +274,11 @@ impl GpuPainter {
             .map(|_| ())
             .map_err(|error| HarnessError::Renderer(format!("wgpu poll: {error}")))
     }
+}
+
+/// The largest image the renderer uploads as it is: the device's texture limit, within what
+/// `vello_gpu` sizes can hold. A larger image is scaled down to it on upload.
+fn max_image_size(device: &wgpu::Device) -> (u16, u16) {
+    let side = u16::try_from(device.limits().max_texture_dimension_2d).unwrap_or(u16::MAX);
+    (side, side)
 }

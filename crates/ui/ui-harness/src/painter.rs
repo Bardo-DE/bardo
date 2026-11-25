@@ -5,7 +5,7 @@
 
 use crate::error::HarnessError;
 use crate::gpu_paint::GpuPainter;
-use anyrender::{PaintScene, render_to_buffer};
+use anyrender::{AntiAliasing, PaintScene, render_to_buffer};
 use anyrender_vello_cpu::VelloCpuImageRenderer;
 use blitz_dom::BaseDocument;
 use blitz_paint::paint_scene;
@@ -26,7 +26,14 @@ pub(crate) struct Canvas {
 /// The ground, then the document as it was last resolved.
 pub(crate) fn draw(scene: &mut impl PaintScene, doc: &mut BaseDocument, canvas: Canvas) {
     let area = Rect::new(0.0, 0.0, f64::from(canvas.width), f64::from(canvas.height));
-    scene.fill(Fill::NonZero, Affine::IDENTITY, canvas.ground, None, &area);
+    scene.fill(
+        Fill::NonZero,
+        Affine::IDENTITY,
+        canvas.ground,
+        None,
+        &area,
+        AntiAliasing::Enabled,
+    );
     paint_scene(scene, doc, canvas.scale, canvas.width, canvas.height, 0, 0);
 }
 

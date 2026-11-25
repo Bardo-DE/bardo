@@ -319,17 +319,17 @@ filter_case! {
 
 filter_case! {
     gpu
-    vello_hybrid_blurs: Hybrid, 0 => Rendered;
-    vello_hybrid_brightens: Hybrid, 1 => Rendered;
-    vello_hybrid_contrasts: Hybrid, 2 => Rendered;
-    vello_hybrid_casts_a_drop_shadow: Hybrid, 3 => Rendered;
-    vello_hybrid_grays: Hybrid, 4 => Rendered;
-    vello_hybrid_rotates_the_hue: Hybrid, 5 => Rendered;
-    vello_hybrid_inverts: Hybrid, 6 => Rendered;
-    vello_hybrid_fades: Hybrid, 7 => Rendered;
-    vello_hybrid_saturates: Hybrid, 8 => Rendered;
-    vello_hybrid_sepias: Hybrid, 9 => Rendered;
-    vello_hybrid_lists_in_order: Hybrid, 10 => Rendered;
-    vello_hybrid_lists_a_colour_and_a_blur: Hybrid, 11 => Rendered;
-    vello_hybrid_lists_a_blur_and_a_colour: Hybrid, 12 => Rendered;
+    vello_gpu_blurs: Hybrid, 0 => Rendered;
+    vello_gpu_brightens: Hybrid, 1 => Rendered;
+    vello_gpu_contrasts: Hybrid, 2 => Rendered;
+    vello_gpu_casts_a_drop_shadow: Hybrid, 3 => Rendered;
+    vello_gpu_grays: Hybrid, 4 => Rendered;
+    vello_gpu_rotates_the_hue: Hybrid, 5 => Rendered;
+    vello_gpu_inverts: Hybrid, 6 => Rendered;
+    vello_gpu_fades: Hybrid, 7 => Rendered;
+    vello_gpu_saturates: Hybrid, 8 => Rendered;
+    vello_gpu_sepias: Hybrid, 9 => Rendered;
+    vello_gpu_lists_in_order: Hybrid, 10 => Rendered;
+    vello_gpu_lists_a_colour_and_a_blur: Hybrid, 11 => Rendered;
+    vello_gpu_lists_a_blur_and_a_colour: Hybrid, 12 => Rendered;
 }

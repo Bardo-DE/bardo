@@ -5,7 +5,7 @@
 use super::fit::{place, visible_source};
 use super::gpu::{Frame, Gpu, Source, TextureHandle};
 use super::model::{Pace, Sampling, TexelRect, TextureFit};
-use anyrender::{PaintRef, PaintScene, RenderContext, ResourceId, Scene};
+use anyrender::{AntiAliasing, PaintRef, PaintScene, RenderContext, ResourceId, Scene};
 use blitz_dom::IntrinsicSizes;
 use blitz_dom::Widget;
 use blitz_dom::node::ComputedStyles;
@@ -164,13 +164,14 @@ impl Widget for LayerWidget {
             },
         };
         for draw in place(props.fit, source, (f64::from(width), f64::from(height))) {
-            scene.push_clip_layer(Affine::IDENTITY, &draw.clip);
+            scene.push_clip_layer(Fill::NonZero, Affine::IDENTITY, &draw.clip);
             scene.fill(
                 Fill::NonZero,
                 draw.transform,
                 PaintRef::Resource(brush),
                 None,
                 &texture,
+                AntiAliasing::Enabled,
             );
             scene.pop_layer();
         }

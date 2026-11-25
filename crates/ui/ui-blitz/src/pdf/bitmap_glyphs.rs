@@ -11,7 +11,7 @@
 //! pictures draws nothing rather than failing the printout.
 
 use anyrender::recording::{FillCommand, GlyphRunCommand, RenderCommand};
-use anyrender::{Paint, Scene};
+use anyrender::{AntiAliasing, Paint, Scene};
 use peniko::kurbo::{Affine, Rect, Shape, Vec2};
 use peniko::{Blob, Fill, ImageAlphaType, ImageBrush, ImageData, ImageFormat};
 use skrifa::bitmap::{BitmapData, BitmapFormat, BitmapStrikes, Origin};
@@ -91,6 +91,7 @@ fn pictures(run: &GlyphRunCommand) -> Vec<RenderCommand> {
                 brush: Paint::Image(ImageBrush::new(image)),
                 brush_transform: None,
                 shape: Rect::new(0.0, 0.0, width, height).to_path(0.1),
+                anti_aliasing: AntiAliasing::Enabled,
             }))
         })
         .collect()
@@ -115,7 +116,7 @@ fn decode(png: &[u8]) -> Option<ImageData> {
 mod tests {
     use super::as_pictures;
     use anyrender::recording::{GlyphRunCommand, RenderCommand};
-    use anyrender::{Glyph, Paint, Scene};
+    use anyrender::{AntiAliasing, Glyph, Paint, Scene};
     use pdfrum_anyrender::{GlyphArea, Page, Sources, write};
     use peniko::kurbo::{Affine, Point, Rect, Shape, Size};
     use peniko::{Blob, Color, FontData, Style};
@@ -146,6 +147,7 @@ mod tests {
                     x: 0.0,
                     y: 0.0,
                 }],
+                anti_aliasing: AntiAliasing::Enabled,
             }));
         scene
     }
