@@ -1219,8 +1219,7 @@ dependencies = [
 [[package]]
 name = "dioxus"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a20d22ba8ac0eb0267459cfe6dcd3fd57158c37497ef422ba1940c34c5b04524"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-config-macros",
  "dioxus-core",
@@ -1235,8 +1234,7 @@ dependencies = [
 [[package]]
 name = "dioxus-asset-resolver"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3405f8b33c91ddb71cd21c103cec7dde122d3c3e81702f59fa54241c996e9ad8"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-cli-config",
  "http",
@@ -1253,26 +1251,22 @@ dependencies = [
 [[package]]
 name = "dioxus-cli-config"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "594aecf5eaea72c8d6c27fb582cdd882fbbe3d270539888b3e19cdeec0e414b5"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 
 [[package]]
 name = "dioxus-config-macros"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84024d6dfd2ed560c84d874c57435f829daad9edbca907838581e541bebf1224"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 
 [[package]]
 name = "dioxus-const-vec"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09d24d174a15ddf07d157f4644d2f6417f66278d1b90b9aeb45f73d86cbdc157"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 
 [[package]]
 name = "dioxus-core"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44545e820910646b5ea476f913892dfc0302c146d1a8481f7fca75d80b8c6b41"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "anyhow",
  "const_format",
@@ -1297,8 +1291,7 @@ dependencies = [
 [[package]]
 name = "dioxus-core-macro"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13611b6d67fef8f6638e4658547106eaa15d6b5f0e142bf8bb738345e55a3a1c"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "convert_case 0.8.0",
  "dioxus-rsx",
@@ -1310,8 +1303,7 @@ dependencies = [
 [[package]]
 name = "dioxus-core-template"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b111b4b1656abff7b086fc4aee6f1c2fb62473a01a5dba5a94c2024e8640e1c"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-const-vec",
  "serde",
@@ -1321,14 +1313,12 @@ dependencies = [
 [[package]]
 name = "dioxus-core-types"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f1dab6f5671686cbf7f95231180d0937b04198bb5beb55753e1cca5b032f875"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 
 [[package]]
 name = "dioxus-document"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "977047888cad56804a70fc89ae59c5e19c112507b18979b48757524bfac2ed73"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-core",
  "dioxus-core-macro",
@@ -1346,8 +1336,7 @@ dependencies = [
 [[package]]
 name = "dioxus-history"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e03ffeb1cc75a1254d3fae17a5b79413041c8a15d8c247a37a2218d23976a630"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-core",
  "tracing",
@@ -1356,8 +1345,7 @@ dependencies = [
 [[package]]
 name = "dioxus-hooks"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d11c3c292681dee1be9c8826e219b1edbaec6f510e867121dc92707384a631a"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-core",
  "dioxus-signals",
@@ -1372,8 +1360,7 @@ dependencies = [
 [[package]]
 name = "dioxus-html"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c23776aad7ba2effcc0efcb8a4df9adf2f9c3c705fa7695f2efc060ad62681ff"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "async-trait",
  "bytes",
@@ -1399,8 +1386,7 @@ dependencies = [
 [[package]]
 name = "dioxus-html-internal-macro"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "965ae5c5b855cc803b173fa6acbab284057ed0af87f6193f6ab083770756bbb5"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "convert_case 0.8.0",
  "proc-macro2",
@@ -1455,8 +1441,7 @@ dependencies = [
 [[package]]
 name = "dioxus-rsx"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09dff31689498efc0001c8188d549b1ef81775093b269c774fab524bc39405be"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-core-template",
  "proc-macro2",
@@ -1469,8 +1454,7 @@ dependencies = [
 [[package]]
 name = "dioxus-signals"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0093b1cfc9c7e7d9c3ef3fbf79f83ab1de1463f9715fb438328ecefbbfbc7188"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-core",
  "futures-channel",
@@ -1485,8 +1469,7 @@ dependencies = [
 [[package]]
 name = "dioxus-ssr"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b76dff679c4146c188405472e1e3dea78636df1db9fb0e5a0cab5816066d079"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "askama_escape",
  "dioxus-core",
@@ -1497,8 +1480,7 @@ dependencies = [
 [[package]]
 name = "dioxus-stores"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5a8a869da06b6137e008b953812f1e131fe5c02ff1ff56a7bb8317b0be93695"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "dioxus-core",
  "dioxus-signals",
@@ -1509,8 +1491,7 @@ dependencies = [
 [[package]]
 name = "dioxus-stores-macro"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f0e94b059e1b809ca044dc1b6556f19e03e9eaaf0476beae486011ef9866bd3"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "convert_case 0.8.0",
  "proc-macro2",
@@ -1948,8 +1929,7 @@ dependencies = [
 [[package]]
 name = "generational-box"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee2a83dd38383542a7494b942bde9cd0c5efd919402a19ca78fa323f5d351bb9"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "parking_lot",
  "tracing",
@@ -2736,8 +2716,7 @@ dependencies = [
 [[package]]
 name = "lazy-js-bundle"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c79f0c69caec3210fc12f3cb250f3e2179bb76b52edfec846983c5b236fb68b"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 
 [[package]]
 name = "lexical"
@@ -3609,13 +3588,6 @@ checksum = "9aa2b01e1d916879f73a53d01d1d6cee68adbb31d6d9177a8cfce093cced1d50"
 dependencies = [
  "futures-core",
  "pin-project-lite",
-]
-
-[[package]]
-name = "outputs-dbus"
-version = "0.1.0"
-dependencies = [
- "zbus",
 ]
 
 [[package]]
@@ -4615,16 +4587,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "socket2"
-version = "0.6.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
-dependencies = [
- "libc",
- "windows-sys 0.61.2",
-]
-
-[[package]]
 name = "spirv"
 version = "0.4.0+sdk-1.4.341.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4866,8 +4828,7 @@ dependencies = [
 [[package]]
 name = "subsecond"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f21c1509f00df90c330f868b677ea22a7f7138e7649b0f125e95041bdf84d48f"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "js-sys",
  "libc",
@@ -4885,8 +4846,7 @@ dependencies = [
 [[package]]
 name = "subsecond-types"
 version = "0.8.0-alpha.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f9ef2c7a2a28761e9291172753ff82ec56cf46f1d90c808c6bba924f5295057"
+source = "git+https://github.com/Bardo-DE/dioxus?rev=c846221c5e4ca7a6c356a7b5df95cbe79525e247#c846221c5e4ca7a6c356a7b5df95cbe79525e247"
 dependencies = [
  "serde",
 ]
@@ -5130,15 +5090,8 @@ version = "1.53.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce3335fa71841cda333a58d7615b03901380ecf09d59b3296d21f8bbac0dde4e"
 dependencies = [
- "bytes",
- "libc",
- "mio",
  "pin-project-lite",
- "signal-hook-registry",
- "socket2",
  "tokio-macros",
- "tracing",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5338,7 +5291,6 @@ name = "ui-desktop"
 version = "0.1.0"
 dependencies = [
  "base-time",
- "outputs-dbus",
 ]
 
 [[package]]
@@ -7033,7 +6985,6 @@ dependencies = [
  "rustix",
  "serde",
  "serde_repr",
- "tokio",
  "tracing",
  "uds_windows",
  "uuid",
