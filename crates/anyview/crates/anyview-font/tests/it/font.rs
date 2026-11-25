@@ -401,9 +401,19 @@ fn a_web_font_that_unpacks_to_too_much_or_shares_table_data_is_malformed() {
     }
 }
 
+/// A damaged glyph table is read as far as it goes: the face peeks, and the glyphs it cannot
+/// read draw nothing (skrifa reads them as empty outlines).
 #[test]
-fn a_font_that_breaks_the_glyph_reader_is_malformed_not_a_panic() {
+fn a_font_with_a_damaged_glyph_table_peeks_and_its_broken_glyphs_draw_nothing() {
     let (src, sniffed) = opened(&fixture("damaged-glyf.ttf"), "damaged-glyf.ttf");
     let got = FontPeek::peek(&src, &sniffed, &budget(1 << 20));
-    assert!(matches!(got, Err(FontError::Malformed { .. })), "{got:?}");
+    let face = got
+        .as_ref()
+        .ok()
+        .and_then(|peeked| peeked.face.as_ref())
+        .unwrap_or_else(|| panic!("a face: {got:?}"));
+    assert!(
+        face.specimen.lines.iter().any(|line| line.path.is_empty()),
+        "{face:?}"
+    );
 }

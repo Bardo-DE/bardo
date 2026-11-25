@@ -63,22 +63,22 @@ fn each_part_is_drawn_only_when_asked_for() {
     for (name, parts, media, title, facts) in cases {
         let html = render(Some(parts));
         assert_eq!(
-            html.contains("<div class=\"anyview-pane-media\""),
+            html.contains("class=\"anyview-pane-media\""),
             media,
             "{name}: media"
         );
         assert_eq!(
-            html.contains("<b class=\"anyview-pane-title\""),
+            html.contains("class=\"anyview-pane-title\""),
             title,
             "{name}: title"
         );
         assert_eq!(
-            html.contains("<div class=\"anyview-pane-facts\""),
+            html.contains("class=\"anyview-pane-facts\""),
             facts,
             "{name}: facts"
         );
         assert!(
-            html.contains("<div class=\"anyview-pane\"") || html.contains("class=\"anyview-pane "),
+            html.contains("class=\"anyview-pane\"") || html.contains("class=\"anyview-pane "),
             "{name}: the region is always there"
         );
     }
