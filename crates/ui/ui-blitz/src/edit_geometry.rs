@@ -100,7 +100,6 @@ fn segment_rects(
             .map(|(bounds, _line)| to_logical(doc, node, layout.scale(), bounds));
             let boxes = layout
                 .inline_boxes()
-                .iter()
                 .filter(|b| covers((index, b.index, 0), (index, b.index, 2)))
                 .filter_map(|b| doc.get_node(NodeId::from_u64(b.id)))
                 .map(|boxed| border_box(doc, boxed));
@@ -168,12 +167,11 @@ fn border_origin(doc: &BaseDocument, node: &Node) -> (f32, f32) {
     if !crate::layout_chain::placeable(doc, node.id) {
         return (0.0, 0.0);
     }
-    let at = node.unrounded_absolute_position(0.0, 0.0);
-    let scroll = doc.viewport_scroll();
-    (
-        snap(f64::from(at.x) - scroll.x),
-        snap(f64::from(at.y) - scroll.y),
-    )
+    // The client rect is the unrounded layout position, less the page's scroll, to the 64th.
+    let Some(rect) = doc.get_client_bounding_rect(node.id) else {
+        return (0.0, 0.0);
+    };
+    (snap(rect.x), snap(rect.y))
 }
 
 /// A length to the layout unit (a 64th of a pixel), as Blitz's client rects are.

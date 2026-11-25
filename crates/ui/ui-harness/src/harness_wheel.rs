@@ -6,7 +6,9 @@
 use crate::harness::Harness;
 use crate::input::PointerAction;
 use crate::input::PointerInput;
-use blitz_traits::events::{BlitzWheelDelta, BlitzWheelEvent, PointerCoords, UiEvent};
+use blitz_traits::events::{
+    BlitzWheelDelta, BlitzWheelEvent, BlitzWheelPhase, BlitzWheelSource, PointerCoords, UiEvent,
+};
 use keyboard_types::Modifiers;
 use ui_blitz::seam::{WheelDelta, WheelInput};
 use ui_components::host::gesture::{Gesture, GesturePhase, ScrollSource};
@@ -17,7 +19,8 @@ impl Harness {
     /// Scroll by `dx`, `dy` pixels with the pointer at `at`. Like the window, Blitz hands the
     /// delta to the element under the pointer (the hover node, which only a pointer move sets,
     /// so the pointer is moved to `at` first, as a window has always delivered a move there) and
-    /// carries no scroll phase: a gesture's end is only the deltas stopping.
+    /// is told no gesture's end: the wheel is `Moved`, and a gesture's end is only the deltas
+    /// stopping.
     pub(crate) fn wheel(&mut self, at: Point, dx: Px, dy: Px) {
         self.pointer(&PointerInput {
             at,
@@ -27,6 +30,7 @@ impl Harness {
         self.deliver_wheel(
             at,
             BlitzWheelDelta::Pixels(f64::from(dx.0), f64::from(dy.0)),
+            (BlitzWheelPhase::Moved, BlitzWheelSource::Finger),
         );
         self.gesture(Gesture::Scroll {
             source: ScrollSource::Finger,
@@ -53,7 +57,11 @@ impl Harness {
         };
         let handled = self.doc.scroll.wheel(input, now());
         if !handled.taken {
-            self.deliver_wheel(at, BlitzWheelDelta::Lines(x, y));
+            self.deliver_wheel(
+                at,
+                BlitzWheelDelta::Lines(x, y),
+                (BlitzWheelPhase::Moved, BlitzWheelSource::Wheel),
+            );
         }
         self.settle_now();
     }
@@ -79,16 +87,26 @@ impl Harness {
             self.deliver_wheel(
                 at,
                 BlitzWheelDelta::Pixels(f64::from(dx.0), f64::from(dy.0)),
+                (wheel_phase(phase), BlitzWheelSource::Finger),
             );
         }
         self.settle_now();
     }
 
-    /// Hand the document a wheel of `delta` at `at`, as Blitz receives one from the window.
-    fn deliver_wheel(&mut self, at: Point, delta: BlitzWheelDelta) {
+    /// Hand the document a wheel of `delta` at `at`, as Blitz receives one from the window, in
+    /// the gesture phase and from the source `kind` names.
+    fn deliver_wheel(
+        &mut self,
+        at: Point,
+        delta: BlitzWheelDelta,
+        kind: (BlitzWheelPhase, BlitzWheelSource),
+    ) {
         let (x, y) = (at.x.0, at.y.0);
+        let (phase, source) = kind;
         self.deliver(UiEvent::Wheel(BlitzWheelEvent {
             delta,
+            phase,
+            source,
             coords: PointerCoords {
                 page_x: x,
                 page_y: y,
@@ -109,5 +127,15 @@ impl Harness {
         let bus = self.doc.gestures.clone();
         self.doc.doc.vdom.in_runtime(|| bus.publish(gesture));
         self.settle_now();
+    }
+}
+
+/// The phase Blitz names for a gesture's.
+fn wheel_phase(phase: GesturePhase) -> BlitzWheelPhase {
+    match phase {
+        GesturePhase::Began => BlitzWheelPhase::Started,
+        GesturePhase::Changed => BlitzWheelPhase::Moved,
+        GesturePhase::Ended => BlitzWheelPhase::Ended,
+        GesturePhase::Cancelled => BlitzWheelPhase::Cancelled,
     }
 }

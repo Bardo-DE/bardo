@@ -2,8 +2,8 @@
 //! from what is behind it, a gradient, a border on a side, an outline, a shadow.
 
 use crate::inset::scene::{Edges, Paint};
-use blitz_dom::Node;
 use blitz_dom::util::ToColorColor;
+use blitz_dom::{CopyStyleGetters as _, Node};
 
 /// What a box sits on, composited down the tree: an opaque colour, and the background image the
 /// nearest ancestor that has one paints (a child painting the same one is not an edge).

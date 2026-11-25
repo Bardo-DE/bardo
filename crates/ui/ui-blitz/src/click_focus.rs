@@ -97,7 +97,7 @@ pub(crate) fn fallback(root: &MountedData) -> Fallback {
     // Already there: clear it without events, so Blitz's clear has nothing to blur, and give it
     // back after the click.
     if root.read(|doc| doc.get_focussed_node_id() == Some(ancestor)) == Some(true) {
-        let _ = root.write(BaseDocument::clear_focus);
+        let _ = root.write(crate::focus::clear_quietly);
     }
     Fallback::Ancestor(Rc::new(MountedData::new(ChainNode {
         doc: root.doc,

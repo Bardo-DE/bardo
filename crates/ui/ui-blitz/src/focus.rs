@@ -14,6 +14,7 @@
 use crate::blitz_host::FindDocument;
 use crate::node_ref::{Busy, DocRef, FoundNode, NodeRef};
 use blitz_dom::{BaseDocument, LocalName, Node, NodeId};
+use blitz_traits::events::DomEventData;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_components::host::caret::{Caret, FieldSelection, InitialCaret, caret_at, stem_end};
@@ -136,9 +137,38 @@ pub(crate) fn blur(element: &MountedData) -> Focused {
         None => Focused::Busy,
         Some(false) => Focused::Unknown,
         Some(true) => done(node.write(|doc| {
-            doc.clear_focus();
+            clear_quietly(doc);
             doc.shell_provider.request_redraw();
         })),
+    }
+}
+
+/// Clear the document's focus without the `blur` and `focusout` that `BaseDocument::clear_focus`
+/// queues for the element that had it: the events queued before are kept, in order, and the
+/// two the clear added are dropped. For a caller that takes the keyboard on purpose and whose
+/// element must not hear that it did (the field's handle says so itself; a click's fallback
+/// gives the focus back a frame later).
+pub(crate) fn clear_quietly(doc: &mut BaseDocument) {
+    let Some(leaving) = doc.get_focussed_node_id() else {
+        return;
+    };
+    let mut queued = Vec::new();
+    while let Some(event) = doc.pop_pending_event() {
+        queued.push(event);
+    }
+    doc.clear_focus();
+    while let Some(event) = doc.pop_pending_event() {
+        let told = event.target == leaving
+            && matches!(
+                event.data,
+                DomEventData::Blur(_) | DomEventData::FocusOut(_)
+            );
+        if !told {
+            queued.push(event);
+        }
+    }
+    for event in queued {
+        doc.queue_event(event);
     }
 }
 

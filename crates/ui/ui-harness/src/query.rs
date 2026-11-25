@@ -4,7 +4,7 @@
 use crate::harness::Harness;
 use crate::harness_style::{Part, Srgba};
 use blitz_dom::util::ToColorColor;
-use blitz_dom::{BaseDocument, Document as _, LocalName, NodeId};
+use blitz_dom::{BaseDocument, CopyStyleGetters as _, Document as _, LocalName, NodeId};
 use ui_components::prelude::*;
 
 impl Harness {

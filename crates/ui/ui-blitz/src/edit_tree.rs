@@ -2,7 +2,7 @@
 //! document, and the order an edit surface's laid-out text runs in. Reads only; every function
 //! takes the document the caller already holds.
 
-use blitz_dom::{BaseDocument, LocalName, Node, NodeId};
+use blitz_dom::{BaseDocument, CopyStyleGetters as _, LocalName, Node, NodeId};
 use ui_components::host::position::{EDIT_KIND_ATTR, EDIT_NODE_ATTR, EditKind, EditNode};
 
 /// A stretch of a surface in reading order: an inline root's laid-out text, or a block atom.
@@ -106,7 +106,7 @@ pub(crate) fn root_texts(doc: &BaseDocument, root: NodeId) -> Vec<NodeId> {
         .get_node(root)
         .and_then(|node| node.element_data())
         .and_then(|element| element.inline_layout_data.as_ref())
-        .map(|text| text.layout.inline_boxes().iter().map(|b| b.id).collect())
+        .map(|text| text.layout.inline_boxes().map(|b| b.id).collect())
         .unwrap_or_default();
     let mut found = Vec::new();
     collect_laid(doc, root, &boxes, &mut found);
@@ -143,7 +143,6 @@ pub(crate) fn inline_box_of(doc: &BaseDocument, node: &Node) -> Option<(NodeId, 
     let layout = &root.element_data()?.inline_layout_data.as_ref()?.layout;
     layout
         .inline_boxes()
-        .iter()
         .find(|b| b.id == node.id.as_u64())
         .map(|b| (root.id, b.index))
 }

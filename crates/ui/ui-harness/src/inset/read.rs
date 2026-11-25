@@ -5,7 +5,7 @@ use crate::inset::bounds::Bounds;
 use crate::inset::ink;
 use crate::inset::paint::{Ground, painted};
 use crate::inset::scene::{Content, ContentKind, Scene, VisibleBox};
-use blitz_dom::{BaseDocument, LocalName, Node, NodeId};
+use blitz_dom::{BaseDocument, CopyStyleGetters as _, LocalName, Node, NodeId};
 use rustc_hash::FxHashMap;
 
 /// Below this opacity an element and what is in it are not seen.
@@ -198,12 +198,13 @@ impl Walk<'_> {
             let Some(element) = node.element_data() else {
                 continue;
             };
-            let scroll = self.doc.viewport_scroll();
-            let at = node.unrounded_absolute_position(0.0, 0.0);
+            // The client rect: the unrounded position less the page's scroll, to the 64th.
+            let Some(at) = self.doc.get_client_bounding_rect(id) else {
+                continue;
+            };
             let layout = node.unrounded_layout();
-            let x =
-                f64::from(at.x) + f64::from(layout.border.left + layout.padding.left) - scroll.x;
-            let y = f64::from(at.y) + f64::from(layout.border.top + layout.padding.top) - scroll.y;
+            let x = at.x + f64::from(layout.border.left + layout.padding.left);
+            let y = at.y + f64::from(layout.border.top + layout.padding.top);
             let runs = match (&element.inline_layout_data, element.text_input_data()) {
                 (Some(inline), _) => ink::runs(&inline.layout, &inline.text, x, y),
                 (None, Some(input)) => match input.editor.try_layout() {
