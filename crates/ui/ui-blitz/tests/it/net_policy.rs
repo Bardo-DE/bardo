@@ -16,12 +16,14 @@ const VIEW: Viewport = Viewport {
 };
 
 /// A 7 x 5 PNG on disk: an `img` that loads it lays out 7 px wide, one that does not, 0.
-/// Written once, whole, before any test reads it (tests run in parallel).
+/// Written once, whole, before any test reads it. Each test process (nextest runs one per test)
+/// writes its own file, so one process's write never truncates the file another is reading.
 fn swatch() -> PathBuf {
     static WRITTEN: OnceLock<PathBuf> = OnceLock::new();
     WRITTEN
         .get_or_init(|| {
-            let path = std::path::Path::new(env!("CARGO_TARGET_TMPDIR")).join("net-swatch.png");
+            let path = std::path::Path::new(env!("CARGO_TARGET_TMPDIR"))
+                .join(format!("net-swatch-{}.png", std::process::id()));
             image::RgbaImage::from_pixel(7, 5, image::Rgba([0, 160, 0, 255]))
                 .save(&path)
                 .expect("write the swatch");
