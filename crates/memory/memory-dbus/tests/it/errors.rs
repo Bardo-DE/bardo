@@ -31,3 +31,24 @@ fn refusals_map_one_to_one_to_error_names() {
     }
     assert_eq!(names.len(), 13);
 }
+
+#[test]
+fn every_refusal_says_something_in_words() {
+    for refusal in [
+        Refusal::NotAllowed,
+        Refusal::SpaceLocked,
+        Refusal::SpaceUnknown,
+        Refusal::OutsideSpace,
+        Refusal::PlanStale,
+        Refusal::PlanExpired,
+        Refusal::NoSuchFact,
+        Refusal::NotPending,
+        Refusal::Busy,
+        Refusal::SpaceFull,
+        Refusal::Unavailable,
+    ] {
+        let error = MemoryError::from(&refusal);
+        let words = error.description().unwrap_or_default();
+        assert!(!words.trim().is_empty(), "{refusal:?} has no message");
+    }
+}

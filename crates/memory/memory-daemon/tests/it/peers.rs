@@ -8,7 +8,7 @@ use base_testkit::PrivateBus;
 use memory_client::{ClientError, DbusTransport, Memory};
 use memory_core::*;
 use memory_daemon::{Daemon, Delivery, ProcPeers, caller_for, delivery_of};
-use memory_dbus::{Signal, serve_on};
+use memory_dbus::{MemoryError, Signal, serve_on};
 use memory_service::Caller;
 use memory_tidy::Change;
 use std::path::Path;
@@ -386,4 +386,27 @@ fn what_a_change_makes_the_bus_say() {
         delivery_of(Change::StatusChanged(space("work"))),
         Some(Delivery::StatusChanged(space("work")))
     );
+}
+
+/// A caller memoryd cannot place is refused with words that say who and why: `busctl` prints the
+/// message, and an empty one left the person with "Call failed: " and nothing else.
+#[tokio::test]
+async fn an_unknown_caller_is_refused_with_a_message_that_names_it() {
+    let scratch = tempfile::tempdir().expect("scratch");
+    let dirs = dirs_in(scratch.path());
+    let daemon = Daemon::new(
+        service(&dirs, &SharedKeys::default()),
+        memory_daemon::TablePeers::new(),
+        dirs,
+    );
+    let call = memory_dbus::encode_request(&MemoryRequest::PendingSettings).expect("encode");
+    let refused = memory_dbus::Serve::serve(&daemon, ":1.4242", call, None)
+        .await
+        .expect_err("an unknown caller is refused");
+    assert_eq!(refused.refusal(), Some(Refusal::NotAllowed));
+    let MemoryError::NotAllowed(words) = &refused else {
+        panic!("not a NotAllowed: {refused:?}");
+    };
+    assert!(words.contains(":1.4242"), "{words}");
+    assert!(words.contains("not one of the callers"), "{words}");
 }

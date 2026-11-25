@@ -335,6 +335,18 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
     }
 }
 
+/// The error for a caller memoryd could not place: it says who was refused and why, since a bare
+/// refusal prints as an empty message on the bus.
+fn refused_caller(sender: &str, refusal: &Refusal) -> MemoryError {
+    match refusal {
+        Refusal::NotAllowed => MemoryError::NotAllowed(format!(
+            "memory refused the connection {sender}: the program behind it is not one of the \
+             callers memory serves (see memoryd-callers.toml), or it could not be identified"
+        )),
+        other => MemoryError::from(other),
+    }
+}
+
 impl<B: Backend + 'static, P: Peers> Serve for Daemon<B, P> {
     async fn serve(
         &self,
@@ -346,7 +358,7 @@ impl<B: Backend + 'static, P: Peers> Serve for Daemon<B, P> {
             .peers
             .caller_of(sender)
             .await
-            .map_err(|refusal| MemoryError::from(&refusal))?;
+            .map_err(|refusal| refused_caller(sender, &refusal))?;
         self.serve_as(&caller, call, fd).await
     }
 

@@ -39,25 +39,41 @@ pub enum MemoryError {
 
 impl From<&Refusal> for MemoryError {
     fn from(refusal: &Refusal) -> Self {
-        let text = String::new();
+        let said = |words: &str| words.to_owned();
         match refusal {
-            Refusal::NotAllowed => MemoryError::NotAllowed(text),
-            Refusal::SpaceLocked => MemoryError::SpaceLocked(text),
-            Refusal::SpaceUnknown => MemoryError::SpaceUnknown(text),
-            Refusal::OutsideSpace => MemoryError::OutsideSpace(text),
-            Refusal::PlanStale => MemoryError::PlanStale(text),
-            Refusal::PlanExpired => MemoryError::PlanExpired(text),
-            Refusal::NoSuchFact => MemoryError::NoSuchFact(text),
-            Refusal::NotPending => MemoryError::NotPending(text),
-            Refusal::Busy => MemoryError::Busy(text),
-            Refusal::SpaceFull => MemoryError::SpaceFull(text),
+            Refusal::NotAllowed => {
+                MemoryError::NotAllowed(said("the caller is not allowed to do this with memory"))
+            }
+            Refusal::SpaceLocked => MemoryError::SpaceLocked(said(
+                "the key of this Space is not available, so it cannot be opened now",
+            )),
+            Refusal::SpaceUnknown => MemoryError::SpaceUnknown(said("there is no such Space")),
+            Refusal::OutsideSpace => MemoryError::OutsideSpace(said(
+                "the request reaches into a Space other than the one it names",
+            )),
+            Refusal::PlanStale => MemoryError::PlanStale(said(
+                "what the plan covers changed since it was made; make the plan again",
+            )),
+            Refusal::PlanExpired => {
+                MemoryError::PlanExpired(said("the plan lapsed; make the plan again"))
+            }
+            Refusal::NoSuchFact => MemoryError::NoSuchFact(said("there is no such fact")),
+            Refusal::NotPending => {
+                MemoryError::NotPending(said("the fact is not waiting for a decision"))
+            }
+            Refusal::Busy => MemoryError::Busy(said("memory is busy with this Space; try again")),
+            Refusal::SpaceFull => MemoryError::SpaceFull(said(
+                "the storage of this Space is full; nothing was stored",
+            )),
             Refusal::NotKept(why) => {
                 MemoryError::NotKept(serde_json::to_string(why).unwrap_or_default())
             }
             Refusal::Invalid(why) => MemoryError::Invalid(why.clone()),
             // `Unavailable`, and a refusal this build does not know: report it as unavailable, a
             // refusal, never success.
-            _ => MemoryError::Unavailable(text),
+            _ => MemoryError::Unavailable(said(
+                "the storage of this Space cannot be written now; nothing was stored",
+            )),
         }
     }
 }
