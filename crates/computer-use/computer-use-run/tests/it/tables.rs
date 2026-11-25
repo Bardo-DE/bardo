@@ -47,7 +47,7 @@ fn typing() -> ComputerUseAction<WindowSpace> {
 
 fn enter() -> ComputerUseAction<WindowSpace> {
     ComputerUseAction::Key {
-        chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Enter).unwrap(),
+        chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Named(keyboard_types::NamedKey::Enter)).unwrap(),
         repeat: Repeat::ONCE,
     }
 }
@@ -247,7 +247,7 @@ fn classify_effect_table() {
             name: "Command+Tab leaves the window, so the router asks",
             action: chord_press(
                 &[computer_use_action::Modifier::Super],
-                keyboard_types::Key::Tab,
+                keyboard_types::Key::Named(keyboard_types::NamedKey::Tab),
             ),
             class: Ordinary,
             want: (Effect::Outbound, EffectBasis::DefaultTable),
@@ -256,7 +256,7 @@ fn classify_effect_table() {
             name: "the desktop's chord is outbound in any window",
             action: chord_press(
                 &[computer_use_action::Modifier::Super],
-                keyboard_types::Key::Tab,
+                keyboard_types::Key::Named(keyboard_types::NamedKey::Tab),
             ),
             class: Terminal,
             want: (Effect::Outbound, EffectBasis::DefaultTable),

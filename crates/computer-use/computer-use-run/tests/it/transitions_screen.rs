@@ -73,7 +73,7 @@ fn screen_records(d: &Drive) -> Vec<(Vec<ScreenKind>, bool)> {
 
 fn super_tab() -> ComputerUseAction<WindowSpace> {
     ComputerUseAction::Key {
-        chord: Chord::new(BTreeSet::from([Modifier::Super]), keyboard_types::Key::Tab).unwrap(),
+        chord: Chord::new(BTreeSet::from([Modifier::Super]), keyboard_types::Key::Named(keyboard_types::NamedKey::Tab)).unwrap(),
         repeat: Repeat::ONCE,
     }
 }

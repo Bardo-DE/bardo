@@ -208,7 +208,8 @@ fn chord_of(text: &str) -> Result<Chord, MoveError> {
             _ => Err(MoveError::Argument("key", m.to_owned())),
         })
         .collect::<Result<BTreeSet<_>, _>>()?;
-    let key = Key::from_str(key).map_err(|e| MoveError::Argument("key", format!("{key}: {e}")))?;
+    let key = Key::from_str(key)
+        .map_err(|e| MoveError::Argument("key", format!("{key}: not a key name ({e:?})")))?;
     Chord::new(mods, key).map_err(|e| MoveError::Argument("key", e.to_string()))
 }
 

@@ -16,7 +16,7 @@ use crate::root::common::Common;
 use crate::stack::host::{OverlayId, Overlays, use_overlays};
 use crate::stack::layer_stack::{Dismissal, LayerId, LayerStack};
 use base_words::Word;
-use dioxus::core::{current_scope_id, queue_effect};
+use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::geometry::{
@@ -98,7 +98,7 @@ const UNMEASURED: Rect = Rect {
 /// next render on and hidden, and removed from the stack, when the scope drops.
 pub(crate) fn use_float(layer: ZLayer, stacking: Stacking) -> Float {
     let overlays = use_overlays();
-    let key = use_hook(|| u32::try_from(current_scope_id().0).unwrap_or(u32::MAX));
+    let key = use_hook(|| u32::try_from(ui_style::scope::next_instance_id()).unwrap_or(u32::MAX));
     let stack = try_use_context::<Signal<LayerStack>>();
     let float = Float {
         overlays,

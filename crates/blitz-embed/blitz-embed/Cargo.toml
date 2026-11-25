@@ -14,6 +14,8 @@ blitz-embed-types = {path = "../blitz-embed-types"}
 blitz-dom = {workspace = true, features = ["svg", "system-fonts", "custom-widget", "accessibility"], optional = true}
 blitz-traits = {workspace = true, optional = true}
 parley = { workspace = true, features = ["std"], optional = true }
+# `snap` rebuilds a node's scrollable overflow on the device grid.
+taffy = { workspace = true, optional = true }
 # `scroll::keys` names the keys a scroll responds to.
 keyboard-types = {workspace = true, optional = true}
 # `net::LocalNet` reads files on the caller's blocking pool.
@@ -28,7 +30,7 @@ default = ["blitz"]
 # Without it the crate is `data_url`, `element_id`, `units` and, with `adapter`, the adapter
 # ranking and the process-wide `adapter::opening` lock: a layer below Blitz takes
 # `default-features = false, features = ["adapter"]` and gets std, wgpu and serde only.
-blitz = ["dep:blitz-dom", "dep:blitz-traits", "dep:parley", "dep:keyboard-types", "dep:tokio"]
+blitz = ["dep:taffy", "dep:blitz-dom", "dep:blitz-traits", "dep:parley", "dep:keyboard-types", "dep:tokio"]
 adapter = ["dep:wgpu", "dep:serde"]
 # `scroll::config`'s settings read and write as a settings file's `[scroll]` table.
 settings = ["blitz", "dep:serde"]

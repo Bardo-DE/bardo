@@ -10,7 +10,6 @@ use super::parts::{Part, Tenths};
 use super::render::{IconSize, shape_element};
 use super::shape::Shape;
 use super::solid_parts::SolidParts;
-use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 
 /// A number in thousandths: 1000 is one (full size, full ink).
@@ -103,7 +102,7 @@ pub fn PosedGlyph(
     #[props(default = Thousandths(1000))] drawn: Thousandths,
 ) -> Element {
     let px = size.px();
-    let wipe = use_hook(|| format!("ds-wipe-{}", current_scope_id().0));
+    let wipe = use_hook(|| format!("ds-wipe-{}", crate::scope::next_instance_id()));
     let solid = icon.solid_parts().unwrap_or_else(|| SolidParts {
         still: icon.solid_shapes().to_vec(),
         parts: Vec::new(),

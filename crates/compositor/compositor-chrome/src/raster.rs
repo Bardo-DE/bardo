@@ -183,10 +183,19 @@ impl TitleRaster {
                     continue;
                 };
                 let face = run.run();
-                ctx.glyph_run(&mut self.resources, face.font())
+                // The renderer takes variation coordinates as their raw F2Dot14 bits.
+                let coords: Vec<i16> = face
+                    .normalized_coords()
+                    .iter()
+                    .map(|coord| coord.to_bits())
+                    .collect();
+                // A glyph the font cannot draw stays blank; the rest of the title is still worth
+                // showing, so what was skipped is not an error here.
+                let _blank_glyphs = ctx
+                    .glyph_run(&mut self.resources, face.font())
                     .font_size(face.font_size())
                     .hint(false)
-                    .normalized_coords(face.normalized_coords())
+                    .normalized_coords(&coords)
                     .fill_glyphs(run.positioned_glyphs().map(|g| vello_cpu::Glyph {
                         id: g.id,
                         x: g.x,

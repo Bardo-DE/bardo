@@ -46,3 +46,11 @@ pub fn use_scope_provider(env: Scope) -> Signal<Scope> {
     }
     provided
 }
+
+/// A number no other component instance in this process has, for ids that must be unique per
+/// instance (an SVG mask, a hover key). Call it once per instance, inside `use_hook`.
+#[must_use]
+pub fn next_instance_id() -> u64 {
+    static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+}

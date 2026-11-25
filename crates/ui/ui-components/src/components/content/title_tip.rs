@@ -11,7 +11,6 @@ use crate::components::content::tip_text::TipText;
 use crate::host::measure::MountedRef;
 use crate::keys::use_keys;
 use crate::stack::hover_hub::HoverKey;
-use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 
 /// Context a hint provides to what it wraps: a control inside already has its tip.
@@ -20,7 +19,7 @@ pub(crate) struct Hinted;
 
 /// The hover hub key a hint files its target under: its own, so two hints never share a card.
 pub(crate) fn own_key() -> HoverKey {
-    HoverKey(format!("hint:{}", current_scope_id().0))
+    HoverKey(format!("hint:{}", ui_style::scope::next_instance_id()))
 }
 
 /// What `Ds` lends a control to show its title, since the overlays that draw tips sit above

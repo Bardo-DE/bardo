@@ -1,6 +1,6 @@
 use blitz_dom::NodeId;
 use blitz_traits::events::{
-    BlitzPointerEvent, BlitzPointerId, BlitzWheelDelta, BlitzWheelEvent, MouseEventButton,
+    BlitzPointerEvent, BlitzPointerId, BlitzWheelDelta, BlitzWheelEvent, BlitzWheelPhase, BlitzWheelSource, MouseEventButton,
     MouseEventButtons, Point, PointerCoords, PointerDetails, UiEvent,
 };
 use keyboard_types::Modifiers;
@@ -228,6 +228,8 @@ fn moves_presses_and_releases_are_remembered_as_moves_and_other_events_are_not()
     let up = UiEvent::PointerUp(pointer(AT, secondary, MouseEventButtons::None));
     let wheel = UiEvent::Wheel(BlitzWheelEvent {
         delta: BlitzWheelDelta::Lines(0.0, 1.0),
+        phase: BlitzWheelPhase::Moved,
+        source: BlitzWheelSource::Wheel,
         coords: coords(PagePoint { x: 0.0, y: 0.0 }),
         buttons: MouseEventButtons::None,
         mods,

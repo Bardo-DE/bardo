@@ -15,7 +15,6 @@ use super::stroked::{body, core, rays};
 use super::vocab::LevelGlyph;
 use base_ids::Fraction;
 use base_words::Word;
-use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
 use ui_style::icon::posed::Thousandths;
 use ui_style::icon::render::IconSize;
@@ -124,7 +123,7 @@ fn cut(part: Part, glyph: LevelGlyph) -> Thousandths {
 pub(crate) fn LevelGlyphView(glyph: LevelGlyph, value: Fraction, size: IconSize) -> Element {
     let px = size.px();
     let stroke = stroke_width(size, use_scale());
-    let mask = use_hook(|| format!("ds-lcut-{}", current_scope_id().0));
+    let mask = use_hook(|| format!("ds-lcut-{}", ui_style::scope::next_instance_id()));
     rsx! {
         span { class: "ds-level-glyph", "data-size": "{px}", "aria-hidden": "true",
             for part in parts(glyph).iter().copied() {

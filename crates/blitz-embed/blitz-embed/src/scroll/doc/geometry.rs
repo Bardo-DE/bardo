@@ -37,12 +37,12 @@ pub fn geom(doc: &BaseDocument, scroller: Scroller, axis: ScrollAxis) -> Option<
             let root = doc.try_root_element()?;
             let layout = root.final_layout();
             let (vw, vh) = doc.viewport().logical_size();
-            let content_w = f64::from(layout.size.width.max(layout.scrollable_overflow_rect.right));
+            let content_w = f64::from(layout.size.width.max(layout.scrollable_overflow_rect.right()));
             let content_h = f64::from(
                 layout
                     .size
                     .height
-                    .max(layout.scrollable_overflow_rect.bottom),
+                    .max(layout.scrollable_overflow_rect.bottom()),
             );
             let max = pick(content_w - f64::from(vw), content_h - f64::from(vh)).max(0.0);
             let scroll = doc.viewport_scroll();

@@ -101,7 +101,7 @@ fn typing() -> ComputerUseAction<WindowSpace> {
 
 fn enter() -> ComputerUseAction<WindowSpace> {
     ComputerUseAction::Key {
-        chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Enter).unwrap(),
+        chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Named(keyboard_types::NamedKey::Enter)).unwrap(),
         repeat: Repeat::ONCE,
     }
 }

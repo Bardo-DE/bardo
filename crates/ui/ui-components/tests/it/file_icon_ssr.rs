@@ -1,24 +1,16 @@
 //! The standard file icon as markup: the parts each choice draws, the label rule by size, the
 //! monochrome paint, and that the stylesheet knows every kind and token the markup names.
 
-use dioxus::core::VirtualDom;
-use ui_components::components::content::file_icon::{FileIconProps, LABEL_MIN_PX};
+use ui_components::components::content::file_icon::LABEL_MIN_PX;
+use dioxus::prelude::*;
 use ui_components::prelude::*;
 use ui_style::icon::render::IconPx;
 use ui_style::icon::retint::Tint;
 
 fn icon(choice: FileIconChoice, px: u8, style: FileIconStyle) -> String {
-    let mut dom = VirtualDom::new_with_props(
-        FileIcon,
-        FileIconProps {
-            choice,
-            size: IconSize::Px(IconPx(px)),
-            style,
-            common: Common::default(),
-        },
-    );
-    dom.rebuild_in_place();
-    dioxus_ssr::render(&dom)
+    dioxus_ssr::render_element(rsx! {
+        FileIcon { choice, size: IconSize::Px(IconPx(px)), style }
+    })
 }
 
 fn standard(kind: FileKind, extension: &str, px: u8) -> String {

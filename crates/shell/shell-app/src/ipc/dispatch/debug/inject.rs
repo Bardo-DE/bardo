@@ -181,7 +181,7 @@ mod tests {
         else {
             panic!("Tab+shift is a key");
         };
-        assert_eq!(stroke.key, keyboard_types::Key::Tab);
+        assert_eq!(stroke.key, keyboard_types::Key::Named(keyboard_types::NamedKey::Tab));
         assert_eq!(stroke.mods, keyboard_types::Modifiers::SHIFT);
         assert_eq!(action, layer_shell_host::inject::KeyAction::Press);
         key("Tabb", KeyAction::Tap).unwrap_err();

@@ -7,6 +7,7 @@
 
 use blitz_dom::{
     Attribute, BaseDocument, DocumentConfig, FontContext, LocalName, Namespace, NodeId, QualName,
+    UserAgentStylesheet,
 };
 use blitz_traits::shell::{ColorScheme, Viewport};
 
@@ -45,7 +46,7 @@ pub fn page_with(
         font_ctx: fonts,
         ..DocumentConfig::default()
     });
-    doc.add_user_agent_stylesheet(UA);
+    doc.add_user_agent_stylesheet(UserAgentStylesheet::parse(UA));
     let mut mutr = doc.mutate();
     let html = mutr.create_element(name("html"), vec![]);
     mutr.append_children(mutr.doc.root_node().id, &[html]);

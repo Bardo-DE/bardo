@@ -512,14 +512,14 @@ fn the_keymap_finds_characters_and_named_keys() {
         assert_eq!(keymap.code_of(&key), want, "{text:?}");
     }
     assert_eq!(
-        keymap.code_of(&keyboard_types::Key::Control),
+        keymap.code_of(&keyboard_types::Key::Named(keyboard_types::NamedKey::Control)),
         Some(Keycode(29))
     );
     assert_eq!(
-        keymap.code_of(&keyboard_types::Key::Meta),
+        keymap.code_of(&keyboard_types::Key::Named(keyboard_types::NamedKey::Meta)),
         Some(Keycode(125))
     );
-    assert_eq!(keymap.code_of(&keyboard_types::Key::Enter), None);
+    assert_eq!(keymap.code_of(&keyboard_types::Key::Named(keyboard_types::NamedKey::Enter)), None);
     assert_eq!(
         keymap.stroke_for('z'),
         Some((Keycode(55), ShiftLevel::Plain))

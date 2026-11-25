@@ -21,7 +21,6 @@ use super::style::GlyphStyle;
 #[cfg(feature = "dioxus")]
 use crate::scale::use_scale;
 #[cfg(feature = "dioxus")]
-use dioxus::core::current_scope_id;
 #[cfg(feature = "dioxus")]
 use dioxus::prelude::*;
 
@@ -121,7 +120,7 @@ pub fn Glyph(
     let asked = style;
     let style = GlyphStyle::resolve(icon, asked);
     let px = size.px();
-    let mask = use_hook(|| format!("ds-cut-{}", current_scope_id().0));
+    let mask = use_hook(|| format!("ds-cut-{}", crate::scope::next_instance_id()));
     let stroke = stroke_width(size, use_scale());
     let (paint, outline) = match style {
         GlyphStyle::Outline => (("currentColor", "none"), Some(stroke)),

@@ -46,10 +46,16 @@ pub(super) fn place(doc: &mut BaseDocument, id: NodeId, parent: Origin, grid: De
     snapped.scrollbar_size.width = grid.line(exact.scrollbar_size.width);
     snapped.scrollbar_size.height = grid.line(exact.scrollbar_size.height);
     let overflow = exact.scrollable_overflow_rect;
-    snapped.scrollable_overflow_rect.left = grid.span(at.x, overflow.left);
-    snapped.scrollable_overflow_rect.right = grid.span(at.x, overflow.right);
-    snapped.scrollable_overflow_rect.top = grid.span(at.y, overflow.top);
-    snapped.scrollable_overflow_rect.bottom = grid.span(at.y, overflow.bottom);
+    let edges = overflow.rect();
+    snapped.scrollable_overflow_rect = taffy::ScrollableOverflow::new(
+        taffy::Rect {
+            left: grid.span(at.x, edges.left),
+            right: grid.span(at.x, edges.right),
+            top: grid.span(at.y, edges.top),
+            bottom: grid.span(at.y, edges.bottom),
+        },
+        overflow.is_reversed(),
+    );
     if let Some(node) = doc.get_node_mut(id) {
         *node.final_layout_mut() = snapped;
     }
