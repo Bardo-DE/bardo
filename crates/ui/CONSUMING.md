@@ -71,31 +71,20 @@ surfaces only our desktop shell draws (bar, dock, control center, lock, switcher
 notifications, widgets, emoji, month grid, date picker) are not Bardo's: they are the shell's
 `shell-kit`, which adds its own kit and `stylesheet()` over these.
 
-**A git dependency** is how a program outside this checkout takes Bardo, pinned at a full revision,
-with the release it is in a trailing comment:
+**A git dependency** is how a program outside this checkout takes Bardo: each crate it uses, from the
+one repository, at a release tag.
 
 ```toml
-ds       = { git = "https://github.com/Bardo-DE/bardo", rev = "<full sha>" }  # v0.2.31
-ui-blitz = { git = "https://github.com/Bardo-DE/bardo", rev = "<full sha>" }  # v0.2.31; only if you run on Blitz
+ui-components = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }
+ui-blitz      = { git = "https://github.com/Bardo-DE/bardo", tag = "v0.1.2" }  # only if you run on Blitz
 ```
 
-The spelling is the same in every repo: the URL ends in `.git`, the revision is the full 40-character
-sha (never a tag, never a branch), and a trailing `# vX.Y.Z` names the release it is. Cargo finds each
-crate by name in the one repository, so the crates of a revision share it.
-Nothing else is needed for the UI kit's own dependencies: `blitz-embed` (its own public repo,
-github.com/Bardo-DE/bardo) comes transitively at the rev the UI kit's `Cargo.toml` pins, and so
-does the rest of the pinned block. Do not add a `[patch]` for it unless you develop `blitz-embed`
-alongside: the UI kit's own `[patch]` table (its local `blitz-embed` checkout, the vello and anyrender
-forks) applies only when Bardo is the workspace root, never to a consumer, so a consumer that
-needs the forks' behaviour (the CSS `filter` functions) copies the `[patch.crates-io]` block
-from the UI kit's root `Cargo.toml` into its own workspace root. The same block carries the
-`dioxus-core` fork patch (`dioxus-core`, `dioxus-core-types`, `generational-box`, `subsecond`,
-`subsecond-types`, all at one rev of github.com/Bardo-DE/dioxus): dioxus-core 0.7.10 can spin forever
-in `wait_for_work` when a task is cancelled before it is polled (a `use_resource` restart), fixed
-upstream only in 0.8 (DioxusLabs/dioxus#5554). Every consumer that runs a `VirtualDom` copies those
-five lines too, and drops them when Bardo moves to dioxus 0.8. layer-shell-host and the shell add, for their
-local checkouts, `[patch."https://github.com/Bardo-DE/bardo"]` pointing at a sibling
-`blitz-embed` so every path-linked repo builds one copy.
+Every crate is taken at the same tag, so cargo resolves them from one checkout. Bardo's `[patch.crates-io]`
+table (its root `Cargo.toml`: the vello, anyrender and dioxus forks, and pdfrum's renderer) applies only
+when Bardo is the workspace root, so a program that builds the UI kit copies that table into its own
+workspace root, minus Bardo's `path` entries (its vendored crates), and keeps every line for a crate its
+own lock holds. mailo, anyview and temor do; temor's `scripts/check-fork-patches.sh` checks its copy
+against Bardo's at the pinned tag.
 
 **Launching on Blitz.** `ui_blitz::launch(app, AppConfig::new(title, WindowSize::new(width, height)))`
 runs `app` until its window closes and returns `Result<(), LaunchError>` (no runtime, or an event loop that cannot run; `main` can return it). The app's `tokio::spawn` calls run on a runtime `launch` builds and owns, or on the caller's own via `AppConfig::with_runtime(handle)`. A `WindowSize` is what the window opens at and, with

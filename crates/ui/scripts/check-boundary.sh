@@ -220,15 +220,6 @@ for root in "ui-components:$ROOT_ALLOWED_DS" "ui-shell:$ROOT_ALLOWED_DS_SHELL"; 
   fi
 done
 
-# The fork [patch] block consumers copy (docs/fork-patches.toml) is the UI kit's own, and the checker
-# still tells a differing copy from a matching one.
-if ./scripts/fork-patches.sh selftest >/dev/null; then
-  echo "fork patches: docs/fork-patches.toml matches the root manifest"
-else
-  echo "FORK PATCHES: docs/fork-patches.toml differs from the root Cargo.toml; run scripts/fork-patches.sh generate"
-  fail=1
-fi
-
 # The pinned block consumers copy (docs/workspace-deps.toml) names every git dependency at the
 # root manifest's revision or tag (it once lagged a toolchain bump, and later the chord keymap rows lagged
 # a chord keymap move, and a consumer noticed both).
